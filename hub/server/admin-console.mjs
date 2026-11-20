@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { DatabaseSync, backup } from 'node:sqlite';
 import { createHash } from 'node:crypto';
 import { readCatalog } from './catalog.mjs';
@@ -9,6 +10,9 @@ import { createForgeGateway } from './forge-gateway.mjs';
 import { createStoreAdmin } from './store-admin.mjs';
 
 const DAY = 86400000;
+const SAFE_GIT_REF = /^[A-Za-z0-9._/-]{1,120}$/;
+const SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,120}$/;
+const RESERVED_DEVOPS_PORTS = new Set([8080, 8081, 8090, 8091, 4173, 4177]);
 const SUBMISSION_ID = '[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}';
 const CHECKLIST_ROUTE = new RegExp(`^/api/admin/submissions/(${SUBMISSION_ID})/checklist$`);
 const GAME_DETAIL_ROUTE = /^\/api\/admin\/games\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/;
@@ -657,6 +661,233 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     return { audit: filtered };
   }
 
+  function safeGitExec(repoDir, args) {
+    try {
+      return execFileSync('git', ['-C', repoDir, ...args], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+        windowsHide: true
+      }).trim();
+    } catch {
+      return '';
+    }
+  }
+
+  function resolveDevopsRoot() {
+    const candidates = [
+      platformRoot,
+      path.resolve(platformRoot, '..', 'PlayHub-DevOps'),
+      path.resolve(platformRoot, '..', 'PlayHub-Platform')
+    ].filter(Boolean);
+    for (const dir of candidates) {
+      if (safeStat(path.join(dir, 'tools', 'devops', 'local-preview.mjs'))) return dir;
+    }
+    return platformRoot;
+  }
+
+  function isPidAlive(pid) {
+    if (!Number.isInteger(pid) || pid <= 0) return false;
+    try { process.kill(pid, 0); return true; } catch { return false; }
+  }
+
+  function formatKstDateLocal(ts = now()) {
+    const kst = new Date(ts + 9 * 60 * 60 * 1000);
+    return `${kst.getUTCFullYear()}-${String(kst.getUTCMonth() + 1).padStart(2, '0')}-${String(kst.getUTCDate()).padStart(2, '0')}`;
+  }
+
+  function resolveValidatedGitRef(repoDir, rawRef) {
+    const ref = String(rawRef || '').trim();
+    if (!ref || !SAFE_GIT_REF.test(ref) || ref.includes('..') || ref.startsWith('-')) {
+      throw new ApiError(400, 'INVALID_GIT_REF');
+    }
+    const commit = safeGitExec(repoDir, ['rev-parse', '--verify', `${ref}^{commit}`]);
+    if (!/^[a-f0-9]{40}$/.test(commit)) {
+      throw new ApiError(400, 'GIT_REF_NOT_FOUND');
+    }
+    const subject = safeGitExec(repoDir, ['show', '-s', '--format=%s', commit]);
+    return { ref, commit, shortCommit: commit.slice(0, 7), subject };
+  }
+
+  function devopsOverview() {
+    const repoDir = resolveDevopsRoot();
+    const buildsRoot = path.join(repoDir, 'artifacts', 'daily-builds');
+    const branchesRaw = safeGitExec(repoDir, ['for-each-ref', '--sort=-committerdate', '--format=%(refname:short)|%(objectname:short)|%(committerdate:iso-strict)|%(subject)', 'refs/heads']);
+    const branches = branchesRaw
+      ? branchesRaw.split(/\r?\n/).filter(Boolean).slice(0, 30).map(line => {
+          const [name, shortCommit, date, ...subject] = line.split('|');
+          return { name, shortCommit, date, subject: subject.join('|') };
+        })
+      : [];
+    const commitsRaw = safeGitExec(repoDir, ['log', '-n', '20', '--format=%H|%h|%an|%aI|%s']);
+    const commits = commitsRaw
+      ? commitsRaw.split(/\r?\n/).filter(Boolean).map(line => {
+          const [commit, shortCommit, author, date, ...subject] = line.split('|');
+          return { commit, shortCommit, author, date, subject: subject.join('|') };
+        })
+      : [];
+
+    const latestPointer = safeReadJson(path.join(buildsRoot, 'latest.json'), 65536);
+    const latestGood = safeReadJson(path.join(buildsRoot, 'latest-good.json'), 65536);
+    const builds = [];
+    for (const name of safeReadDir(buildsRoot).sort().reverse()) {
+      if (name === 'previews' || name.endsWith('.json')) continue;
+      const manifest =
+        safeReadJson(path.join(buildsRoot, name, 'DAILY_BUILD_MANIFEST.json'), 512 * 1024) ||
+        safeReadJson(path.join(buildsRoot, name, 'deterministic-manifest.json'), 512 * 1024);
+      if (!manifest) continue;
+      builds.push({
+        runId: manifest.runId || name,
+        overallStatus: manifest.overallStatus || 'unknown',
+        source: manifest.deterministicSource || manifest.mode || 'unknown',
+        shortCommit: manifest.git?.shortCommit || '—',
+        branch: manifest.git?.branch || '—',
+        durationMs: manifest.durationMs ?? null,
+        finishedAt: manifest.finishedAt || null,
+        archiveStatus: manifest.archive?.archiveStatus || 'none',
+        summary: manifest.summary || null
+      });
+      if (builds.length >= 15) break;
+    }
+
+    const todayKst = formatKstDateLocal();
+    const latestRunId = latestPointer?.runId || builds[0]?.runId || null;
+    const latestDateMatch = latestRunId ? /(\d{4}-\d{2}-\d{2})/.exec(latestRunId) : null;
+    const latestDate = latestDateMatch ? latestDateMatch[1] : null;
+    const missedToday = !latestRunId || latestDate !== todayKst;
+    const verdict = missedToday ? 'MISSED_TODAY' : String(latestPointer?.overallStatus || builds[0]?.overallStatus || 'unknown').toUpperCase();
+
+    const previews = [];
+    const previewsRoot = path.join(buildsRoot, 'previews');
+    for (const name of safeReadDir(previewsRoot).sort().reverse()) {
+      const state = safeReadJson(path.join(previewsRoot, name, 'preview-state.json'), 65536);
+      if (!state) continue;
+      previews.push({
+        runId: state.runId || name,
+        ref: state.ref || '—',
+        shortCommit: state.shortCommit || '—',
+        subject: state.subject || '',
+        pid: state.pid || null,
+        alive: isPidAlive(state.pid),
+        urls: state.urls || {},
+        ports: state.ports || {},
+        startedAt: state.startedAt || null,
+        stoppedAt: state.stoppedAt || null
+      });
+    }
+
+    return {
+      generatedAt: new Date(now()).toISOString(),
+      todayKst,
+      repoRoot: repoDir,
+      localPreviewAvailable: Boolean(safeStat(path.join(repoDir, 'tools', 'devops', 'local-preview.mjs'))),
+      briefing: {
+        verdict,
+        missedToday,
+        latestRunId,
+        latestDate,
+        latestGoodRunId: latestGood?.runId || null,
+        archiveStatus: latestPointer?.archiveStatus || builds[0]?.archiveStatus || 'none'
+      },
+      refs: { branches, commits },
+      builds,
+      previews
+    };
+  }
+
+  function createDevopsManualPlan(body) {
+    const repoDir = resolveDevopsRoot();
+    const buildTarget = String(body.buildTarget || 'local');
+    const testTarget = String(body.testTarget || 'local-preview');
+    const localBasePort = body.localBasePort === undefined ? 18280 : Number(body.localBasePort);
+    if (!['local', 'cloudbuild'].includes(buildTarget)) throw new ApiError(400, 'INVALID_BUILD_TARGET');
+    if (!['none', 'local-preview', 'dev-tag', 'dev-promote'].includes(testTarget)) throw new ApiError(400, 'INVALID_TEST_TARGET');
+    if (!Number.isInteger(localBasePort) || localBasePort < 1024 || localBasePort > 60000) throw new ApiError(400, 'INVALID_PREVIEW_PORT');
+    for (const p of [localBasePort, localBasePort + 1, localBasePort + 10, localBasePort + 11]) {
+      if (RESERVED_DEVOPS_PORTS.has(p)) throw new ApiError(400, 'RESERVED_PORT_CONFLICT');
+    }
+    const source = resolveValidatedGitRef(repoDir, body.ref || 'HEAD');
+    const today = formatKstDateLocal();
+    const runId = `manual-${today}-${source.shortCommit}`;
+    const revisionTag = `rev-${source.shortCommit}`;
+    const gcpProject = 'playhub-dev-2611';
+    const gcpRegion = 'us-west1';
+    return {
+      schemaVersion: 1,
+      runId,
+      generatedAt: new Date(now()).toISOString(),
+      source,
+      buildTarget,
+      testTarget,
+      ports: {
+        userPort: localBasePort,
+        adminUiPort: localBasePort + 1,
+        publicPort: localBasePort + 10,
+        adminPort: localBasePort + 11
+      },
+      previewUrl:
+        testTarget === 'dev-tag'
+          ? `https://${revisionTag}---playhub-hub-<hash>.${gcpRegion}.run.app`
+          : testTarget === 'dev-promote'
+            ? `https://playhub-hub-<hash>.${gcpRegion}.run.app`
+            : `http://127.0.0.1:${localBasePort}/`,
+      devDeployment: ['dev-tag', 'dev-promote'].includes(testTarget)
+        ? {
+            gcpProject,
+            gcpRegion,
+            mode: testTarget,
+            revisionTag: testTarget === 'dev-tag' ? revisionTag : null,
+            trafficPercent: testTarget === 'dev-promote' ? 100 : 0,
+            cloudBuildConfig: 'tools/devops/cloudbuild.daily.yaml'
+          }
+        : null
+    };
+  }
+
+  function startDevopsLocalPreview(body) {
+    const repoDir = resolveDevopsRoot();
+    const script = path.join(repoDir, 'tools', 'devops', 'local-preview.mjs');
+    if (!safeStat(script)) throw new ApiError(503, 'DEVOPS_PREVIEW_TOOL_UNAVAILABLE');
+    const localBasePort = body.basePort === undefined ? 18280 : Number(body.basePort);
+    if (!Number.isInteger(localBasePort) || localBasePort < 1024 || localBasePort > 60000) throw new ApiError(400, 'INVALID_PREVIEW_PORT');
+    for (const p of [localBasePort, localBasePort + 1, localBasePort + 10, localBasePort + 11]) {
+      if (RESERVED_DEVOPS_PORTS.has(p)) throw new ApiError(400, 'RESERVED_PORT_CONFLICT');
+    }
+    const source = resolveValidatedGitRef(repoDir, body.ref || 'HEAD');
+    const args = [script, 'start', '--repo-root', repoDir, '--ref', source.commit, '--port', String(localBasePort)];
+    if (body.noWorktree === true) args.push('--no-worktree');
+    try {
+      const stdout = execFileSync(process.execPath, args, {
+        encoding: 'utf8',
+        timeout: 180000,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        windowsHide: true
+      });
+      return JSON.parse(stdout);
+    } catch (err) {
+      throw new ApiError(500, 'PREVIEW_START_FAILED', { message: String(err.stderr || err.message || 'failed').slice(0, 300) });
+    }
+  }
+
+  function stopDevopsLocalPreview(body) {
+    const repoDir = resolveDevopsRoot();
+    const script = path.join(repoDir, 'tools', 'devops', 'local-preview.mjs');
+    if (!safeStat(script)) throw new ApiError(503, 'DEVOPS_PREVIEW_TOOL_UNAVAILABLE');
+    const runId = String(body.runId || '').trim();
+    if (!runId || !SAFE_RUN_ID.test(runId) || runId.includes('..')) throw new ApiError(400, 'INVALID_PREVIEW_RUN_ID');
+    const subcmd = body.cleanup === false ? 'stop' : 'cleanup';
+    try {
+      const stdout = execFileSync(process.execPath, [script, subcmd, '--repo-root', repoDir, '--run-id', runId], {
+        encoding: 'utf8',
+        timeout: 60000,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        windowsHide: true
+      });
+      return JSON.parse(stdout);
+    } catch (err) {
+      throw new ApiError(500, 'PREVIEW_STOP_FAILED', { message: String(err.stderr || err.message || 'failed').slice(0, 300) });
+    }
+  }
+
   async function adminRoute(req, res, url, session) {
     const pathname = url.pathname;
     if (pathname === '/api/admin/store' || pathname.startsWith('/api/admin/store/')) {
@@ -681,6 +912,52 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
       const created = await createOnlineBackup(config.dataDir, now);
       audit('system_backup_created', created.filename, { bytes: created.bytes, sha256Prefix: created.sha256Prefix, admin: active.admin_username });
       json(res, 201, { backup: created });
+      return true;
+    }
+    if (pathname === '/api/admin/devops/overview' && req.method === 'GET') {
+      json(res, 200, devopsOverview());
+      return true;
+    }
+    if (pathname === '/api/admin/devops/manual-plan' && req.method === 'POST') {
+      if (rate) rate(`admindevops:${req.socket?.remoteAddress || 'local'}`, 20, 60000);
+      const body = await readJson(req, 4096);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const plan = createDevopsManualPlan(body || {});
+      audit('system_devops_manual_plan', plan.runId, {
+        ref: plan.source.ref,
+        shortCommit: plan.source.shortCommit,
+        buildTarget: plan.buildTarget,
+        testTarget: plan.testTarget,
+        admin: active.admin_username
+      });
+      json(res, 200, { plan });
+      return true;
+    }
+    if (pathname === '/api/admin/devops/preview/start' && req.method === 'POST') {
+      if (rate) rate(`admindevops:${req.socket?.remoteAddress || 'local'}`, 6, 60000);
+      const body = await readJson(req, 4096);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const preview = startDevopsLocalPreview(body || {});
+      audit('system_devops_preview_start', preview.runId, {
+        ref: preview.ref,
+        shortCommit: preview.shortCommit,
+        userUrl: preview.urls?.user || null,
+        admin: active.admin_username
+      });
+      json(res, 201, { preview });
+      return true;
+    }
+    if (pathname === '/api/admin/devops/preview/stop' && req.method === 'POST') {
+      if (rate) rate(`admindevops:${req.socket?.remoteAddress || 'local'}`, 12, 60000);
+      const body = await readJson(req, 4096);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const result = stopDevopsLocalPreview(body || {});
+      audit('system_devops_preview_stop', result.runId, {
+        stopped: result.stopped,
+        cleaned: result.cleaned,
+        admin: active.admin_username
+      });
+      json(res, 200, { result });
       return true;
     }
     if (pathname === '/api/admin/hub/users-summary' && req.method === 'GET') {

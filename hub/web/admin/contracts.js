@@ -12,6 +12,7 @@
         {id:'config',label:'환경·연동 설정',title:'환경·연동 설정',kind:'설정'},
         {id:'access',label:'관리자 계정·권한',title:'관리자 계정·권한',kind:'관리'},
         {id:'backups',label:'백업·유지보수',title:'백업·유지보수',kind:'운영'},
+        {id:'devops',label:'빌드·배포 (DevOps)',title:'데일리 빌드 · 아카이브 · 수동 배포',kind:'운영'},
         {id:'errors',label:'통합 오류 모니터링',title:'통합 오류 모니터링',kind:'운영'},
         {id:'audit',label:'통합 감사 로그',title:'통합 감사 로그',kind:'운영'}
       ]

@@ -9,6 +9,7 @@ import {
   renderSystemConfig,
   renderSystemAccess,
   renderSystemBackups,
+  renderSystemDevops,
   renderForgeOverview,
   renderForgeProjects,
   renderForgeBuilds,
@@ -175,7 +176,7 @@ const ALL_PANELS = [
   'metrics-toolbar-wrap', 'hub-live-bar', 'qa-dataset-bar', 'hub-action-queue',
   'overview', 'trends', 'play-funnel', 'retention', 'games', 'game-detail-panel',
   'submissions', 'community', 'hub-users-panel',
-  'system-overview-panel', 'system-config-panel', 'system-access-panel', 'system-backups-panel', 'errors', 'audit',
+  'system-overview-panel', 'system-config-panel', 'system-access-panel', 'system-backups-panel', 'system-devops-panel', 'errors', 'audit',
   'forge-overview-panel', 'forge-projects-panel', 'forge-builds-panel', 'forge-drive-panel', 'forge-sessions-panel', 'forge-settings-panel',
   'qa-overview-panel', 'qa-runs-panel', 'qa-ai-panel', 'qa-policies-panel', 'qa-run-ids-panel',
   'l10n-overview-panel', 'l10n-strings-panel', 'l10n-gather-panel', 'l10n-ai-panel', 'l10n-glossary-panel', 'l10n-media-panel', 'l10n-releases-panel',
@@ -198,6 +199,7 @@ function updatePanelVisibility() {
     else if (view === 'config') show('system-config-panel');
     else if (view === 'access') show('system-access-panel');
     else if (view === 'backups') show('system-backups-panel');
+    else if (view === 'devops') show('system-devops-panel');
     else if (view === 'errors') show('errors');
     else if (view === 'audit') show('audit');
   } else if (tab === 'forge') {
@@ -683,6 +685,29 @@ async function refreshSystemViews() {
     const res = await api(`/api/admin/audit?${params}`);
     if (token !== generation || !authenticated) return;
     paintAudit(res.audit);
+    return;
+  }
+  if (activeRoute.view === 'devops') {
+    const devopsData = await api('/api/admin/devops/overview');
+    if (token !== generation || !authenticated) return;
+    renderSystemDevops($('system-devops-panel'), devopsData, {
+      kstStamp,
+      onCreateManualPlan: async (payload) => {
+        const res = await api('/api/admin/devops/manual-plan', { method: 'POST', body: payload });
+        notice(`실행 계획 ${res.plan.runId} 생성 완료 (${res.plan.testTarget}).`);
+        return res;
+      },
+      onStartPreview: async (payload) => {
+        const res = await api('/api/admin/devops/preview/start', { method: 'POST', body: payload });
+        notice(`로컬 격리 프리뷰 기동 완료: ${res.preview.urls.user}`);
+        await refreshSystemViews();
+      },
+      onStopPreview: async (payload) => {
+        const res = await api('/api/admin/devops/preview/stop', { method: 'POST', body: payload });
+        notice(`로컬 프리뷰 ${res.result.runId} 중지 및 정리 완료.`);
+        await refreshSystemViews();
+      }
+    });
     return;
   }
   systemCache = await api('/api/admin/system/overview');

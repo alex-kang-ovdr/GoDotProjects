@@ -219,7 +219,7 @@ export function renderSystemOverview(container, data, { number, kstStamp, onNavi
     ['커뮤니티 · 오류 기록', `${number(d.counts.communityItems)} / ${number(d.counts.errors)}`, '전체 누적 건수']
   ]));
   const shortcuts = el('div', '', 'inline-actions');
-  for (const [label, tab, view] of [['환경·연동 설정', 'system', 'config'], ['온라인 백업 실행', 'system', 'backups'], ['통합 오류 확인', 'system', 'errors'], ['통합 감사 로그', 'system', 'audit']]) {
+  for (const [label, tab, view] of [['환경·연동 설정', 'system', 'config'], ['온라인 백업 실행', 'system', 'backups'], ['빌드·배포 (DevOps)', 'system', 'devops'], ['통합 오류 확인', 'system', 'errors'], ['통합 감사 로그', 'system', 'audit']]) {
     const btn = el('button', label, 'quiet');
     btn.type = 'button';
     btn.addEventListener('click', () => onNavigate(tab, view));
@@ -572,4 +572,175 @@ export function renderQaRunIdsTable(container, qaRunIds, { number, kstStamp, onS
     ];
   });
   container.replaceChildren(simpleTable(['qa_run_id', '세션 수', '오류 수', '최근 시각', '조회'], rows, '기록된 QA 실행 ID가 없습니다.'));
+}
+
+export function renderSystemDevops(container, data, { kstStamp, onCreateManualPlan, onStartPreview, onStopPreview }) {
+  const b = data.briefing || {};
+  const verdictTone = b.verdict === 'PASS' ? 'ok' : b.verdict === 'MISSED_TODAY' ? 'warn' : 'danger';
+
+  const briefPanel = panel('DAILY BUILD BRIEFING (READ-ONLY)', `오전 데일리 브리핑 (${data.todayKst || ''})`, pill(b.verdict || 'UNKNOWN', verdictTone, true));
+  briefPanel.append(kpiGrid([
+    ['오늘 빌드 판정', b.verdict || '—', b.latestRunId || '오늘 실행 기록 없음', true],
+    ['최근 정상 빌드 (last-known-good)', b.latestGoodRunId || '—', '롤백 기준 포인터', true],
+    ['Google Drive 아카이브', b.archiveStatus || 'none', 'SHA-256 검증 상태', true],
+    ['로컬 격리 프리뷰', `${(data.previews || []).filter(p => p.alive).length}개 실행 중`, `총 ${(data.previews || []).length}개 기록`]
+  ], true));
+
+  const triggerPanel = panel('MANUAL BUILD & TEST TRIGGER', '특정 브랜치 · 커밋 수동 빌드 및 로컬 / Dev 선택 테스트');
+  const form = el('form', '', 'metrics-filters');
+  form.dataset.testid = 'devops-manual-form';
+
+  const refSelect = el('select', '');
+  refSelect.id = 'devops-ref-select';
+  refSelect.dataset.testid = 'devops-ref-select';
+  for (const br of (data.refs?.branches || [])) {
+    const opt = el('option', `브랜치: ${br.name} (${br.shortCommit})`);
+    opt.value = br.name;
+    refSelect.append(opt);
+  }
+  for (const cm of (data.refs?.commits || []).slice(0, 12)) {
+    const opt = el('option', `커밋: ${cm.shortCommit} — ${cm.subject.slice(0, 48)}`);
+    opt.value = cm.commit;
+    refSelect.append(opt);
+  }
+  const refInput = el('input', '');
+  refInput.id = 'devops-ref-input';
+  refInput.dataset.testid = 'devops-ref-input';
+  refInput.placeholder = '직접 입력 (브랜치명 또는 커밋 SHA)';
+  refInput.value = refSelect.value || 'HEAD';
+  refSelect.addEventListener('change', () => { refInput.value = refSelect.value; });
+
+  const buildSelect = el('select', '');
+  buildSelect.dataset.testid = 'devops-build-target';
+  for (const [val, label] of [['local', '로컬 격리 빌드'], ['cloudbuild', 'Google Cloud Build (playhub-dev-2611)']]) {
+    const opt = el('option', label); opt.value = val; buildSelect.append(opt);
+  }
+
+  const testSelect = el('select', '');
+  testSelect.dataset.testid = 'devops-test-target';
+  for (const [val, label] of [
+    ['local-preview', '로컬 격리 프리뷰 (포트 18280+)'],
+    ['dev-tag', 'Dev 서버 독립 태그 (rev-<sha>, 트래픽 0%)'],
+    ['dev-promote', 'Dev 서버 메인 승격 (트래픽 100%)'],
+    ['none', '빌드·아카이브만 (테스트 서버 없음)']
+  ]) {
+    const opt = el('option', label); opt.value = val; testSelect.append(opt);
+  }
+
+  const portInput = el('input', '');
+  portInput.type = 'number';
+  portInput.min = '1024';
+  portInput.max = '60000';
+  portInput.value = '18280';
+  portInput.dataset.testid = 'devops-preview-port';
+
+  const makeLabel = (text, ctrl) => { const lb = el('label', text); lb.append(ctrl); return lb; };
+  const planBtn = el('button', '실행 계획 생성', 'primary');
+  planBtn.type = 'submit';
+  planBtn.dataset.testid = 'devops-plan-btn';
+  const startBtn = el('button', '로컬 격리 프리뷰 시작', 'quiet');
+  startBtn.type = 'button';
+  startBtn.dataset.testid = 'devops-start-preview-btn';
+  if (!data.localPreviewAvailable) {
+    startBtn.disabled = true;
+    startBtn.title = 'tools/devops/local-preview.mjs가 현재 워크트리에서 확인되지 않았습니다.';
+  }
+
+  form.append(
+    makeLabel('브랜치 / 커밋 선택', refSelect),
+    makeLabel('대상 Ref', refInput),
+    makeLabel('빌드 위치', buildSelect),
+    makeLabel('테스트 대상', testSelect),
+    makeLabel('로컬 포트', portInput),
+    planBtn,
+    startBtn
+  );
+
+  const planResultBox = el('div', '', 'sub-card');
+  planResultBox.hidden = true;
+  planResultBox.dataset.testid = 'devops-plan-output';
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    planBtn.disabled = true;
+    try {
+      const res = await onCreateManualPlan({
+        ref: refInput.value.trim() || 'HEAD',
+        buildTarget: buildSelect.value,
+        testTarget: testSelect.value,
+        localBasePort: Number(portInput.value || 18280)
+      });
+      const plan = res.plan;
+      planResultBox.hidden = false;
+      const linkNode = plan.previewUrl.startsWith('http://127.0.0.1')
+        ? (() => { const a = el('a', plan.previewUrl); a.href = plan.previewUrl; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+        : raw('strong', plan.previewUrl);
+      planResultBox.replaceChildren(
+        el('h3', `생성된 실행 계획 (${plan.runId})`),
+        kvList([
+          ['확정 커밋', `${plan.source.shortCommit} (${plan.source.ref})`, 'info', true],
+          ['빌드 / 테스트', `${plan.buildTarget} → ${plan.testTarget}`, 'ok', true],
+          ['예상 테스트 주소', plan.previewUrl, null, true],
+          ['Dev 트래픽 영향', plan.devDeployment ? `${plan.devDeployment.trafficPercent}% (${plan.devDeployment.revisionTag || 'main'})` : '0% (로컬 격리)', 'ok', true]
+        ]),
+        el('p', '', 'panel-foot')
+      );
+      planResultBox.lastChild.append('테스트 대상 URL: ', linkNode);
+    } finally {
+      planBtn.disabled = false;
+    }
+  });
+
+  startBtn.addEventListener('click', async () => {
+    startBtn.disabled = true;
+    try {
+      await onStartPreview({
+        ref: refInput.value.trim() || 'HEAD',
+        basePort: Number(portInput.value || 18280)
+      });
+    } finally {
+      startBtn.disabled = false;
+    }
+  });
+
+  triggerPanel.append(
+    form,
+    planResultBox,
+    el('p', '보안 경계: 기본 포트(8080/8081/8090/8091/4177) 충돌을 자동 차단하며, 모든 수동 트리거는 관리자 CSRF 검증 및 감사 로그에 기록됩니다.', 'panel-foot')
+  );
+
+  const previewPanel = panel('LOCAL ISOLATED PREVIEWS', '로컬 격리 테스트 인스턴스');
+  const previewRows = (data.previews || []).map(p => {
+    const link = p.urls?.user
+      ? (() => { const a = el('a', p.urls.user); a.href = p.urls.user; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+      : raw('span', '—');
+    const stopBtn = el('button', '중지 및 정리', 'quiet');
+    stopBtn.type = 'button';
+    stopBtn.addEventListener('click', async () => {
+      stopBtn.disabled = true;
+      try { await onStopPreview({ runId: p.runId, cleanup: true }); } finally { stopBtn.disabled = false; }
+    });
+    return [
+      raw('strong', p.runId),
+      raw('span', `${p.ref} (${p.shortCommit})`),
+      pill(p.alive ? 'RUNNING' : 'STOPPED', p.alive ? 'ok' : 'muted', true),
+      link,
+      raw('span', kstStamp(p.startedAt)),
+      stopBtn
+    ];
+  });
+  previewPanel.append(simpleTable(['프리뷰 ID', '브랜치/커밋', '상태', '접속 URL', '시작 시각', '작업'], previewRows, '실행 중인 로컬 프리뷰가 없습니다.'));
+
+  const buildsPanel = panel('DAILY & MANUAL BUILD HISTORY', '최근 빌드 · 아카이브 이력');
+  const buildRows = (data.builds || []).map(row => [
+    raw('strong', row.runId),
+    pill(String(row.overallStatus || '').toUpperCase(), row.overallStatus === 'pass' ? 'ok' : row.overallStatus === 'fail' ? 'danger' : 'warn', true),
+    raw('span', `${row.branch} (${row.shortCommit})`),
+    raw('span', row.source),
+    pill(row.archiveStatus, row.archiveStatus === 'archived' ? 'ok' : 'muted', true),
+    raw('span', kstStamp(row.finishedAt))
+  ]);
+  buildsPanel.append(simpleTable(['실행 ID', '상태', '브랜치/커밋', '소스', '아카이브', '완료 시각'], buildRows, '기록된 데일리/수동 빌드 이력이 아직 없습니다.'));
+
+  container.replaceChildren(briefPanel, triggerPanel, previewPanel, buildsPanel);
 }
