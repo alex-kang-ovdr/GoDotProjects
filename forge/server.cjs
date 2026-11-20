@@ -35,66 +35,228 @@ const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
   '.csv': 'text/csv; charset=utf-8', '.lua': 'text/plain; charset=utf-8',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.zip': 'application/zip' };
 const COMPRESSIBLE_EXTS = new Set(['.wasm', '.pck', '.js', '.css', '.html', '.svg', '.json']);
-const compressedCacheDir = path.join(root, 'Saved', 'HttpCache');
-const inflightCompressed = new Map();
+const DEFAULT_HTTP_CACHE_MAX_BYTES = 256 * 1024 * 1024;
+const DEFAULT_HTTP_CACHE_MAX_FILES = 256;
+const CLOUDRUN_HTTP_CACHE_MAX_BYTES = 32 * 1024 * 1024;
+const CLOUDRUN_HTTP_CACHE_MAX_FILES = 64;
 
-async function getCachedCompressed(file, info, encoding) {
-  const ext = encoding === 'br' ? '.br' : '.gz';
-  const key = crypto.createHash('sha256').update(`${file}:${info.size}:${info.mtimeMs}:${encoding}`).digest('hex').slice(0, 24);
-  const cached = path.join(compressedCacheDir, key + ext);
-  try {
-    const stat = await fs.promises.stat(cached);
-    if (stat.isFile() && stat.size > 0) return { path: cached, size: stat.size };
-  } catch {}
-  const lockKey = key + ext;
-  let pending = inflightCompressed.get(lockKey);
-  if (!pending) {
-    pending = (async () => {
-      await fs.promises.mkdir(compressedCacheDir, { recursive: true });
-      const tmp = `${cached}.${process.pid}.${Date.now()}.tmp`;
-      try {
-        const compressor = encoding === 'br'
-          ? zlib.createBrotliCompress({
-            params: {
-              [zlib.constants.BROTLI_PARAM_QUALITY]: 6,
-              [zlib.constants.BROTLI_PARAM_SIZE_HINT]: info.size,
-            },
-          })
-          : zlib.createGzip({ level: 6 });
-        await pipeline(fs.createReadStream(file), compressor, fs.createWriteStream(tmp));
-        try { await fs.promises.rename(tmp, cached); } catch { await fs.promises.rm(tmp, { force: true }).catch(() => {}); }
-        const stat = await fs.promises.stat(cached);
-        return { path: cached, size: stat.size };
-      } catch (error) {
-        await fs.promises.rm(tmp, { force: true }).catch(() => {});
-        throw error;
-      } finally {
-        inflightCompressed.delete(lockKey);
-      }
-    })();
-    inflightCompressed.set(lockKey, pending);
-  }
-  return pending;
+function envFlag(value) {
+  return ['1', 'true', 'yes', 'on'].includes(String(value || '').trim().toLowerCase());
 }
 
-async function streamStaticFile(req, res, file, info, baseHeaders) {
+function parseNonNegativeInt(value, fallback) {
+  if (value === undefined || value === null || value === '') return fallback;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function internalApiConfigFromEnv(env = process.env) {
+  const directory = env.PLAYHUB_FORGE_DIR ? path.resolve(env.PLAYHUB_FORGE_DIR) : null;
+  const buildsEnabled = envFlag(env.PLAYHUB_FORGE_BUILDS_ENABLED);
+  const driveEnabled = envFlag(env.PLAYHUB_DRIVE_ENABLED) || envFlag(env.PLAYHUB_FORGE_DRIVE_ENABLED);
+  const folderId = String(env.PLAYHUB_DRIVE_FOLDER_ID || env.PLAYHUB_FORGE_DRIVE_FOLDER_ID || '').trim();
+  const packageFolderId = String(env.PLAYHUB_DRIVE_PACKAGE_FOLDER_ID || env.PLAYHUB_FORGE_DRIVE_PACKAGE_FOLDER_ID || '').trim();
+  const packagesEnabled = envFlag(env.PLAYHUB_FORGE_PACKAGES_ENABLED) || envFlag(env.PLAYHUB_PACKAGES_ENABLED);
+  return {
+    directory,
+    builds: buildsEnabled ? { enabled: true } : undefined,
+    drive: driveEnabled ? { enabled: true, folderId, packageFolderId } : undefined,
+    packages: packagesEnabled ? { enabled: true } : undefined,
+  };
+}
+
+function createCompressionCache(options = {}) {
+  const env = options.env || process.env;
+  const isCloudRun = Boolean(env.K_SERVICE);
+  const dir = options.dir
+    ? path.resolve(options.dir)
+    : (env.PLAYFORGE_HTTP_CACHE_DIR ? path.resolve(env.PLAYFORGE_HTTP_CACHE_DIR) : path.join(root, 'Saved', 'HttpCache'));
+  const defaultMaxBytes = isCloudRun ? CLOUDRUN_HTTP_CACHE_MAX_BYTES : DEFAULT_HTTP_CACHE_MAX_BYTES;
+  const defaultMaxFiles = isCloudRun ? CLOUDRUN_HTTP_CACHE_MAX_FILES : DEFAULT_HTTP_CACHE_MAX_FILES;
+  const maxBytes = parseNonNegativeInt(options.maxBytes ?? env.PLAYFORGE_HTTP_CACHE_MAX_BYTES, defaultMaxBytes);
+  const maxFiles = parseNonNegativeInt(options.maxFiles ?? env.PLAYFORGE_HTTP_CACHE_MAX_FILES, defaultMaxFiles);
+  let enabled;
+  if (typeof options.enabled === 'boolean') enabled = options.enabled;
+  else if (env.PLAYFORGE_HTTP_CACHE_ENABLED !== undefined && env.PLAYFORGE_HTTP_CACHE_ENABLED !== '') enabled = envFlag(env.PLAYFORGE_HTTP_CACHE_ENABLED);
+  else enabled = !isCloudRun;
+  if (maxBytes <= 0 || maxFiles <= 0) enabled = false;
+
+  const entries = new Map();
+  const activeReaders = new Map();
+  const inflight = new Map();
+  let totalBytes = 0;
+  let scanPromise = null;
+  let evictChain = Promise.resolve();
+
+  function touchEntry(name, entryPath, size) {
+    const existing = entries.get(name);
+    if (existing) {
+      totalBytes = Math.max(0, totalBytes - existing.size);
+      entries.delete(name);
+    }
+    entries.set(name, { path: entryPath, size });
+    totalBytes += size;
+  }
+
+  function acquireReader(name) {
+    activeReaders.set(name, (activeReaders.get(name) || 0) + 1);
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      const next = (activeReaders.get(name) || 1) - 1;
+      if (next <= 0) activeReaders.delete(name);
+      else activeReaders.set(name, next);
+    };
+  }
+
+  function evictIfNeeded(protectName = null) {
+    evictChain = evictChain.catch(() => {}).then(async () => {
+      while (totalBytes > maxBytes || entries.size > maxFiles) {
+        let victimKey = null;
+        let victim = null;
+        for (const [key, entry] of entries) {
+          if (key === protectName || (activeReaders.get(key) || 0) > 0) continue;
+          victimKey = key;
+          victim = entry;
+          break;
+        }
+        if (!victimKey) break;
+        entries.delete(victimKey);
+        totalBytes = Math.max(0, totalBytes - victim.size);
+        await fs.promises.rm(victim.path, { force: true }).catch(() => {});
+      }
+    });
+    return evictChain;
+  }
+
+  async function ensureScanned() {
+    if (!scanPromise) {
+      scanPromise = (async () => {
+        let names;
+        try { names = await fs.promises.readdir(dir); }
+        catch { return; }
+        const found = [];
+        const staleBefore = Date.now() - 5 * 60 * 1000;
+        for (const name of names) {
+          const full = path.join(dir, name);
+          let stat;
+          try { stat = await fs.promises.stat(full); }
+          catch { continue; }
+          if (!stat.isFile()) continue;
+          if (name.endsWith('.tmp')) {
+            if (stat.mtimeMs < staleBefore) await fs.promises.rm(full, { force: true }).catch(() => {});
+            continue;
+          }
+          if (!name.endsWith('.br') && !name.endsWith('.gz')) continue;
+          found.push({ name, path: full, size: stat.size, lastUsed: Math.max(stat.atimeMs || 0, stat.mtimeMs || 0) });
+        }
+        found.sort((a, b) => a.lastUsed - b.lastUsed);
+        for (const item of found) touchEntry(item.name, item.path, item.size);
+        await evictIfNeeded();
+      })();
+    }
+    return scanPromise;
+  }
+
+  async function get(file, info, encoding) {
+    if (!enabled) return null;
+    await ensureScanned();
+    const ext = encoding === 'br' ? '.br' : '.gz';
+    const key = crypto.createHash('sha256').update(`${file}:${info.size}:${info.mtimeMs}:${encoding}`).digest('hex').slice(0, 24);
+    const name = key + ext;
+    const cached = path.join(dir, name);
+    try {
+      const stat = await fs.promises.stat(cached);
+      if (stat.isFile() && stat.size > 0 && stat.size <= maxBytes) {
+        touchEntry(name, cached, stat.size);
+        const now = new Date();
+        fs.promises.utimes(cached, now, now).catch(() => {});
+        return { path: cached, size: stat.size, release: acquireReader(name) };
+      }
+    } catch {}
+    let pending = inflight.get(name);
+    if (!pending) {
+      pending = (async () => {
+        await fs.promises.mkdir(dir, { recursive: true });
+        const tmp = `${cached}.${process.pid}.${Date.now()}.${crypto.randomBytes(4).toString('hex')}.tmp`;
+        try {
+          const compressor = encoding === 'br'
+            ? zlib.createBrotliCompress({
+              params: {
+                [zlib.constants.BROTLI_PARAM_QUALITY]: 6,
+                [zlib.constants.BROTLI_PARAM_SIZE_HINT]: info.size,
+              },
+            })
+            : zlib.createGzip({ level: 6 });
+          await pipeline(fs.createReadStream(file), compressor, fs.createWriteStream(tmp));
+          const tmpStat = await fs.promises.stat(tmp);
+          if (!tmpStat.isFile() || tmpStat.size <= 0 || tmpStat.size > maxBytes) {
+            await fs.promises.rm(tmp, { force: true }).catch(() => {});
+            return null;
+          }
+          try { await fs.promises.rename(tmp, cached); }
+          catch { await fs.promises.rm(tmp, { force: true }).catch(() => {}); }
+          const stat = await fs.promises.stat(cached);
+          if (!stat.isFile() || stat.size <= 0 || stat.size > maxBytes) {
+            await fs.promises.rm(cached, { force: true }).catch(() => {});
+            return null;
+          }
+          touchEntry(name, cached, stat.size);
+          await evictIfNeeded(name);
+          return { path: cached, size: stat.size };
+        } catch (error) {
+          await fs.promises.rm(tmp, { force: true }).catch(() => {});
+          throw error;
+        } finally {
+          inflight.delete(name);
+        }
+      })();
+      inflight.set(name, pending);
+    }
+    const result = await pending;
+    if (!result) return null;
+    const release = acquireReader(name);
+    try {
+      const stat = await fs.promises.stat(result.path);
+      if (!stat.isFile() || stat.size <= 0) { release(); return null; }
+      return { path: result.path, size: stat.size, release };
+    } catch {
+      release();
+      return null;
+    }
+  }
+
+  return {
+    enabled,
+    get,
+    stats() {
+      return { enabled, isCloudRun, maxBytes, maxFiles, totalBytes, fileCount: entries.size, dir };
+    },
+  };
+}
+
+async function streamStaticFile(req, res, file, info, baseHeaders, compressionCache) {
   const ext = path.extname(file).toLowerCase();
   const acceptEncoding = String(req.headers['accept-encoding'] || '');
   const encoding = /\bbr\b/i.test(acceptEncoding) ? 'br' : /\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null;
-  if (encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+  if (compressionCache?.enabled && encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
     try {
-      const compressed = await getCachedCompressed(file, info, encoding);
-      res.writeHead(200, {
-        ...baseHeaders,
-        'Content-Encoding': encoding,
-        'Content-Length': compressed.size,
-        'Vary': 'Accept-Encoding',
-      });
-      if (req.method === 'HEAD') return res.end();
-      const stream = fs.createReadStream(compressed.path);
-      stream.on('error', () => res.destroy());
-      stream.pipe(res);
-      return;
+      const compressed = await compressionCache.get(file, info, encoding);
+      if (compressed) {
+        res.writeHead(200, {
+          ...baseHeaders,
+          'Content-Encoding': encoding,
+          'Content-Length': compressed.size,
+          'Vary': 'Accept-Encoding',
+        });
+        if (req.method === 'HEAD') { compressed.release(); return res.end(); }
+        const stream = fs.createReadStream(compressed.path);
+        stream.once('close', compressed.release);
+        stream.on('error', () => { compressed.release(); res.destroy(); });
+        stream.pipe(res);
+        return;
+      }
     } catch {}
   }
   res.writeHead(200, { ...baseHeaders, 'Content-Length': info.size });
@@ -134,16 +296,20 @@ function firstOrigin(configured) {
 }
 
 function createServer(options = {}) {
-  const configuredOrigin = options.publicOrigin ?? process.env.PUBLIC_ORIGIN;
+  const serverEnv = options.env || options.internalApi?.env || process.env;
+  const envInternal = internalApiConfigFromEnv(serverEnv);
+  const httpCache = createCompressionCache({ ...(options.httpCache || {}), env: serverEnv });
+  const configuredOrigin = options.publicOrigin ?? serverEnv.PUBLIC_ORIGIN;
   const originAllowed = createOriginPolicy(configuredOrigin);
-  const basePath = normalizeBasePath(options.basePath ?? process.env.PLAYFORGE_BASE_PATH ?? '');
-  const resolvedBuildMode = String(options.buildMode || process.env.PLAYFORGE_BUILD_MODE || process.env.NODE_ENV || 'debug').trim().toLowerCase();
+  const basePath = normalizeBasePath(options.basePath ?? serverEnv.PLAYFORGE_BASE_PATH ?? '');
+  const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
   const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
-  const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv());
-  const hubAccountUrl = validateHubAccountUrl(options.hubAccountUrl || hubAuthConfig?.loginUrl || process.env.PLAYHUB_FORGE_HUB_ACCOUNT_URL || '/?view=account');
+  const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv(serverEnv));
+  const hubAccountUrl = validateHubAccountUrl(options.hubAccountUrl || hubAuthConfig?.loginUrl || serverEnv.PLAYHUB_FORGE_HUB_ACCOUNT_URL || '/?view=account');
   const hubAuth = hubAuthConfig ? createHubSessionAuth({ ...hubAuthConfig, loginUrl: hubAuthConfig.loginUrl || hubAccountUrl }) : null;
-  const accountsDirectory = hubAuth ? path.resolve(hubAuthConfig.accountsDirectory || path.join(root, 'Saved/HubAccounts')) : null;
-  const studioDirectory = hubAuth ? path.resolve(hubAuthConfig.studioDirectory || path.join(root, 'Saved/HubStudios')) : null;
+  const accountsDirectory = hubAuth ? path.resolve(hubAuthConfig.accountsDirectory || (envInternal.directory ? path.join(envInternal.directory, 'accounts') : path.join(root, 'Saved/HubAccounts'))) : null;
+  const studioDirectory = hubAuth ? path.resolve(hubAuthConfig.studioDirectory || (envInternal.directory ? path.join(envInternal.directory, 'studios') : path.join(root, 'Saved/HubStudios'))) : null;
+  const internalDirectory = options.internalApi?.directory || envInternal.directory || (accountsDirectory ? path.dirname(accountsDirectory) : null);
 
   const stripBasePath = rawUrl => {
     if (!basePath || typeof rawUrl !== 'string') return rawUrl;
@@ -160,12 +326,12 @@ function createServer(options = {}) {
   const accountBuilds = hubAuth ? new OwnedBuildPackages({
     root,
     queue: builds,
-    directory: options.internalApi?.directory || (accountsDirectory ? path.dirname(accountsDirectory) : null),
+    directory: internalDirectory,
     storeFor: key => getPlatformFor(key).store
   }) : null;
   // P0: builds and PIE run user content on this host's Godot without isolation; Hub-auth mode only lets
   // allowlisted accounts trigger them (PLAYHUB_FORGE_EXECUTION_ALLOWLIST, fail closed when unset).
-  const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? process.env.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
+  const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? serverEnv.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
   const executionAllowed = accountKey => {
     if (!executionPolicy || executionPolicy.allows(accountKey)) return true;
     // The key is the pseudonymous Hub account hash; operators copy it into the allowlist.
@@ -225,21 +391,26 @@ function createServer(options = {}) {
         build?.status === 'succeeded' && build.projectId === projectId ? build : null;
     } catch { return null; }
   };
+  const resolvedInternalBuilds = options.internalApi?.builds !== undefined
+    ? options.internalApi.builds
+    : (options.buildsEnabled !== undefined ? { enabled: options.buildsEnabled === true } : envInternal.builds);
+  const resolvedInternalDrive = options.internalApi?.drive !== undefined ? options.internalApi.drive : envInternal.drive;
+  const resolvedInternalPackages = options.internalApi?.packages !== undefined ? options.internalApi.packages : envInternal.packages;
   internalApi = (hubAuth || options.internalApi) ? createInternalApi({
     root,
     accountsDirectory: accountsDirectory || options.internalApi?.accountsDirectory,
-    directory: options.internalApi?.directory || (accountsDirectory ? path.dirname(accountsDirectory) : null),
+    directory: internalDirectory,
     buildDirectory: builds.directory,
-    internalSecret: options.internalApi?.internalSecret ?? hubAuthConfig?.internalSecret ?? process.env.PLAYHUB_FORGE_INTERNAL_SECRET,
-    previousInternalSecret: options.internalApi?.previousInternalSecret ?? hubAuthConfig?.previousInternalSecret ?? process.env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS,
+    internalSecret: options.internalApi?.internalSecret ?? hubAuthConfig?.internalSecret ?? serverEnv.PLAYHUB_FORGE_INTERNAL_SECRET,
+    previousInternalSecret: options.internalApi?.previousInternalSecret ?? hubAuthConfig?.previousInternalSecret ?? serverEnv.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS,
     getPlatformFor: hubAuth ? getPlatformFor : undefined,
     accountBuilds: hubAuth ? accountBuilds : undefined,
     validateTemplateBuild,
-    buildsEnabled: options.internalApi?.builds?.enabled === true || options.buildsEnabled === true,
+    buildsEnabled: resolvedInternalBuilds?.enabled === true,
     executionAllowed,
-    drive: options.internalApi?.drive,
-    packages: options.internalApi?.packages,
-    env: options.internalApi?.env || process.env,
+    drive: resolvedInternalDrive,
+    packages: resolvedInternalPackages,
+    env: serverEnv,
     fetchImpl: options.internalApi?.fetchImpl || globalThis.fetch,
     buildMode: options.buildMode,
   }) : null;
@@ -441,7 +612,7 @@ function createServer(options = {}) {
           'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
           'Cache-Control': 'private, max-age=3600',
           ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}),
-        });
+        }, httpCache);
         return;
       }
       if (!['POST', 'PUT'].includes(req.method)) return json(405, { ok: false, error: 'Method not supported' });
@@ -567,7 +738,7 @@ function createServer(options = {}) {
         'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',
-      });
+      }, httpCache);
     } catch (error) {
       if (!res.headersSent) reply(['ENOENT', 'ENOTDIR'].includes(error.code) ? 404 : 500, 'File unavailable');
       else res.destroy();
@@ -627,6 +798,7 @@ function createServer(options = {}) {
   }, 10000);
   cleanup.unref();
   server.on('close', () => { clearInterval(cleanup); closeOwned(); });
+  server.httpCache = httpCache;
   server.shutdown = () => { clearInterval(cleanup); closeOwned(); server.closeAllConnections?.(); server.close(); };
   return server;
 }
@@ -655,4 +827,4 @@ if (require.main === module) {
     process.on('SIGTERM', () => server.shutdown());
   }
 }
-module.exports = { createServer };
+module.exports = { createServer, createCompressionCache, internalApiConfigFromEnv };

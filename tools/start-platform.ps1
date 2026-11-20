@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([switch]$NoBrowser, [switch]$Check)
+param([switch]$NoBrowser, [switch]$Check, [switch]$AllowLocalExecutionWildcard)
 
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
@@ -211,18 +211,21 @@ try {
             }
             # P0: builds/PIE run user content on this machine's Godot without isolation, so Forge and Hub only
             # let allowlisted accounts trigger them. Priority: config forge.executionAllowlist, then the
-            # environment, then '*' only when Hub is reachable from this machine alone.
+            # environment. Wildcard '*' is NEVER auto-enabled (even on loopback, a tunnel may expose Hub);
+            # it requires explicit opt-in (-AllowLocalExecutionWildcard or PLAYHUB_FORGE_ALLOW_LOCAL_WILDCARD=1)
+            # AND Hub must be configured for loopback only.
             $loopbackHosts = @('127.0.0.1', 'localhost', '::1', '[::1]')
             $originsLocal = @($config.userOrigins | Where-Object { $_ -and ($_ -notmatch '^http://(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$') }).Count -eq 0
             $hubLocalOnly = ($loopbackHosts -contains [string]$config.publicHost) -and $originsLocal
+            $wildcardOptIn = $AllowLocalExecutionWildcard.IsPresent -or ($env:PLAYHUB_FORGE_ALLOW_LOCAL_WILDCARD -in @('1', 'true', 'TRUE', 'yes', 'YES'))
             if ($config.forge.executionAllowlist) {
                 $env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST = (@($config.forge.executionAllowlist) -join ',')
                 $executionAllowlistSource = 'config forge.executionAllowlist'
             } elseif ($env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST) {
                 $executionAllowlistSource = 'environment PLAYHUB_FORGE_EXECUTION_ALLOWLIST'
-            } elseif ($hubLocalOnly) {
+            } elseif ($wildcardOptIn -and $hubLocalOnly) {
                 $env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST = '*'
-                $executionAllowlistSource = "'*' (Hub is reachable from this machine only)"
+                $executionAllowlistSource = "'*' (explicit local-only opt-in)"
             } else {
                 Remove-Item Env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST -ErrorAction SilentlyContinue
                 $executionAllowlistSource = $null
@@ -249,9 +252,12 @@ try {
         if ($enforceHubAuth) {
             if ($executionAllowlistSource) {
                 Write-Host "Forge builds/PIE allowlist: $executionAllowlistSource"
-            } else {
-                Write-Host 'Forge builds/PIE: disabled for every account because Hub is reachable beyond this machine.' -ForegroundColor Yellow
+            } elseif ($wildcardOptIn -and -not $hubLocalOnly) {
+                Write-Host 'Forge builds/PIE: wildcard opt-in ignored because Hub is reachable beyond this machine.' -ForegroundColor Yellow
                 Write-Host '  Add your account key to forge.executionAllowlist in the Hub config (Forge prints the key when it refuses a build).' -ForegroundColor Yellow
+            } else {
+                Write-Host 'Forge builds/PIE: disabled by default (fail-closed; tunnels can expose loopback Hub).' -ForegroundColor Yellow
+                Write-Host '  Add your account key to forge.executionAllowlist in the Hub config, or pass -AllowLocalExecutionWildcard (or PLAYHUB_FORGE_ALLOW_LOCAL_WILDCARD=1) only when no tunnel exposes Hub.' -ForegroundColor Yellow
             }
         }
         if (-not $NoBrowser) { Start-Process $browserHubUrl }

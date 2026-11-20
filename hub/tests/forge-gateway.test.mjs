@@ -17,8 +17,10 @@ import { ApiError, uid } from '../server/security.mjs';
 import { createForgeProxy } from '../tools/forge-proxy.mjs';
 
 const require = createRequire(import.meta.url);
-const { createServer: createForgeServer } = require('../../forge/server.cjs');
+const { createServer: createForgeServer, internalApiConfigFromEnv } = require('../../forge/server.cjs');
 const { createInternalApi } = require('../../forge/Tools/internal-api.cjs');
+const { createPlatformApi } = require('../../forge/Tools/platform-api.cjs');
+const { PlatformStore } = require('../../forge/Tools/platform-store.cjs');
 const { zipFiles } = require('../../forge/Tools/export-godot-project.cjs');
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -574,4 +576,276 @@ test('S4 fault tolerance: when remote Forge is down, Hub fails closed (503) on F
   assert.equal(gamesRes.status, 200);
   assert.equal(gamesRes.data.games.length, 1);
   assert.equal(gamesRes.data.games[0].id, 'fixture-game');
+});
+
+test('forge-proxy blocks normalized and encoded /internal bypass paths while allowing normal Forge routes', () => {
+  const proxy = createForgeProxy({ upstream: 'http://127.0.0.1:4177', basePath: '/forge' });
+  const blocked = [
+    '/forge/internal',
+    '/forge/internal/v1/admin/snapshot',
+    '/forge//internal/v1/admin/snapshot',
+    '/forge/./internal/v1/admin/snapshot',
+    '/forge/foo/../internal/v1/admin/snapshot',
+    '/forge/foo/%2e%2e/internal/v1/admin/snapshot',
+    '/forge/%2e%2e/internal/v1/admin/snapshot',
+    '/forge/%252e%252e/internal/v1/admin/snapshot',
+    '/forge/%69nternal/v1/admin/snapshot',
+    '/forge/INTERNAL/v1/admin/snapshot',
+    '/forge/..%5cinternal/v1/admin/snapshot',
+    '/forge/%E0%A4%A/internal/v1/admin/snapshot',
+  ];
+  for (const candidate of blocked) {
+    assert.equal(proxy.stripPrefix(candidate), null, `Expected blocked path: ${candidate}`);
+  }
+  assert.equal(proxy.stripPrefix('/forge/api/health'), '/api/health');
+  assert.equal(proxy.stripPrefix('/forge/OfficialGodot/index.html?v=1'), '/OfficialGodot/index.html?v=1');
+  proxy.close();
+});
+
+test('internal-api idempotency reserves in-flight keys (409), caches 2xx only, enforces byte cap, and re-validates providedBody limits', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-idem-hardening-'));
+  const aliceKey = forgeAccountKey({ iss: 'https://accounts.google.com', sub: 'alice-idem-test' });
+  const store = new PlatformStore(REPO_ROOT, path.join(temp, 'accounts', aliceKey));
+  const realPlatformApi = createPlatformApi(store);
+
+  // Inject an async gate on POST /api/platform/projects to test concurrent in-flight conflict.
+  let releaseFirst;
+  let firstStarted;
+  let createCalls = 0;
+  let shouldGateNext = false;
+  const gatedApi = async (req, res, targetUrl, providedBody) => {
+    if (shouldGateNext && req.method === 'POST' && targetUrl.pathname === '/api/platform/projects') {
+      shouldGateNext = false;
+      createCalls++;
+      firstStarted();
+      await new Promise(resolve => { releaseFirst = resolve; });
+    }
+    return realPlatformApi(req, res, targetUrl, providedBody);
+  };
+  gatedApi.close = () => realPlatformApi.close();
+
+  const internalApi = createInternalApi({
+    root: REPO_ROOT,
+    directory: temp,
+    internalSecret: SECRET,
+    getPlatformFor: () => ({ store, api: gatedApi }),
+    maxIdempotencyEntryBytes: 600,
+    maxIdempotencyTotalBytes: 900,
+  });
+  const server = http.createServer(async (req, res) => {
+    if (!await internalApi.handle(req, res)) res.writeHead(404).end();
+  });
+  const port = await listen(server);
+  t.after(async () => {
+    await closeServer(server);
+    internalApi.close();
+    realPlatformApi.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  const base = `http://127.0.0.1:${port}/internal/v1/accounts/${aliceKey}/platform`;
+
+  // 1. Concurrent same Idempotency-Key while first is in-flight -> 409 IDEMPOTENCY_REQUEST_IN_PROGRESS.
+  shouldGateNext = true;
+  const startedPromise = new Promise(resolve => { firstStarted = resolve; });
+  const req1Promise = fetch(`${base}/projects`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'inflight-key-1',
+    },
+    body: JSON.stringify({ name: 'Inflight Game', template: 'blank3d' }),
+  });
+  await startedPromise;
+
+  const req2 = await fetch(`${base}/projects`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'inflight-key-1',
+    },
+    body: JSON.stringify({ name: 'Inflight Game', template: 'blank3d' }),
+  });
+  assert.equal(req2.status, 409);
+  assert.equal((await req2.json()).error, 'IDEMPOTENCY_REQUEST_IN_PROGRESS');
+
+  releaseFirst();
+  const req1 = await req1Promise;
+  assert.equal(req1.status, 201);
+  const created = await req1.json();
+  const projectId = created.project.id;
+  assert.equal(createCalls, 1);
+
+  // 2. 4xx response must NOT be cached: retry with the same key executes again (not replayed).
+  const bad1 = await fetch(`${base}/projects/${projectId}/activity`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'non-2xx-key-1',
+    },
+    body: JSON.stringify({ clientId: 'bad', kind: 'cursor', label: 'x' }),
+  });
+  assert.equal(bad1.status, 400);
+  assert.equal(bad1.headers.get('x-idempotent-replay'), null);
+
+  const bad2 = await fetch(`${base}/projects/${projectId}/activity`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'non-2xx-key-1',
+    },
+    body: JSON.stringify({ clientId: 'bad', kind: 'cursor', label: 'x' }),
+  });
+  assert.equal(bad2.status, 400);
+  assert.equal(bad2.headers.get('x-idempotent-replay'), null);
+
+  // 3. Entry byte cap: createProject response is > 600 bytes, so inflight-key-1 was NOT cached (totalBytes/entryBytes cap).
+  const afterOversized = await fetch(`${base}/projects`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'inflight-key-1',
+    },
+    body: JSON.stringify({ name: 'Inflight Game', template: 'blank3d' }),
+  });
+  assert.equal(afterOversized.status, 201);
+  assert.equal(afterOversized.headers.get('x-idempotent-replay'), null);
+
+  // Small 202 response on /activity IS cached, and total-bytes cap works cleanly.
+  const actBody = JSON.stringify({ clientId: 'client-12345678', kind: 'cursor', label: 'hello', x: 0.5, y: 0.5 });
+  const act1 = await fetch(`${base}/projects/${projectId}/activity`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'small-2xx-key-1',
+    },
+    body: actBody,
+  });
+  assert.equal(act1.status, 202);
+  const actReplay = await fetch(`${base}/projects/${projectId}/activity`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'small-2xx-key-1',
+    },
+    body: actBody,
+  });
+  assert.equal(actReplay.status, 202);
+  assert.equal(actReplay.headers.get('x-idempotent-replay'), 'true');
+
+  // 4. providedBody route-specific maxBytes (4096 for /activity) is enforced even with Idempotency-Key!
+  const oversizedActivity = await fetch(`${base}/projects/${projectId}/activity`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': 'oversized-activity-key',
+    },
+    body: JSON.stringify({ clientId: 'client-12345678', kind: 'typing', label: 'big', text: 'a'.repeat(5000) }),
+  });
+  assert.equal(oversizedActivity.status, 413);
+
+  // 5. Missing Content-Type on empty POST with Idempotency-Key to /platform/* is rejected with 415.
+  const missingCt = await fetch(`${base}/projects`, {
+    method: 'POST',
+    headers: {
+      'X-PlayHub-Internal-Secret': SECRET,
+      'Idempotency-Key': 'missing-ct-key',
+    },
+  });
+  assert.equal(missingCt.status, 415);
+
+  // 6. Direct platform-api readBody re-validates Content-Type and maxBytes even when providedBody is a plain object.
+  const invokePlatform = async (route, headers, providedObj) => {
+    const req = new PassThrough();
+    req.method = 'POST';
+    req.url = route;
+    req.headers = headers;
+    let status = 200;
+    let body = '';
+    const res = {
+      writableEnded: false,
+      writeHead(code) { status = code; },
+      end(chunk) { if (chunk) body += String(chunk); this.writableEnded = true; },
+    };
+    await realPlatformApi(req, res, new URL(route, 'http://localhost'), providedObj);
+    return { status, data: JSON.parse(body) };
+  };
+  const directNoCt = await invokePlatform(`/api/platform/projects/${projectId}/activity`, {}, { clientId: 'client-12345678', kind: 'cursor', label: 'ok', x: 0.1, y: 0.1 });
+  assert.equal(directNoCt.status, 415);
+  const directTooBig = await invokePlatform(`/api/platform/projects/${projectId}/activity`, { 'content-type': 'application/json' }, { clientId: 'client-12345678', kind: 'typing', label: 'ok', text: 'x'.repeat(5000) });
+  assert.equal(directTooBig.status, 413);
+});
+
+test('forge/server.cjs wires internalApi builds/drive/packages options from environment variables', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-env-wiring-'));
+  const env = {
+    PLAYHUB_FORGE_AUTH_MODE: 'hub',
+    PLAYHUB_SESSION_VERIFY_URL: 'http://127.0.0.1:9/internal/session/verify',
+    PLAYHUB_FORGE_INTERNAL_SECRET: SECRET,
+    PLAYHUB_FORGE_DIR: temp,
+    PLAYHUB_FORGE_BUILDS_ENABLED: '1',
+    PLAYHUB_DRIVE_ENABLED: 'true',
+    PLAYHUB_DRIVE_FOLDER_ID: 'envSnapshotsFolder',
+    PLAYHUB_DRIVE_PACKAGE_FOLDER_ID: 'envPackagesFolder',
+    PLAYHUB_FORGE_PACKAGES_ENABLED: '1',
+  };
+  const parsed = internalApiConfigFromEnv(env);
+  assert.equal(parsed.directory, path.resolve(temp));
+  assert.deepEqual(parsed.builds, { enabled: true });
+  assert.deepEqual(parsed.drive, { enabled: true, folderId: 'envSnapshotsFolder', packageFolderId: 'envPackagesFolder' });
+  assert.deepEqual(parsed.packages, { enabled: true });
+
+  // Starting createServer({ env }) without explicit options.internalApi connects builds, drive, and packages!
+  const forgeServer = createForgeServer({
+    publicOrigin: 'http://127.0.0.1:18080',
+    buildDirectory: path.join(temp, 'queue-builds'),
+    env,
+  });
+  const port = await listen(forgeServer);
+  t.after(() => {
+    forgeServer.shutdown();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  const aliceKey = forgeAccountKey({ iss: 'https://accounts.google.com', sub: 'alice-env-wire' });
+  const base = `http://127.0.0.1:${port}/internal/v1/accounts/${aliceKey}`;
+  const created = await fetch(`${base}/platform/projects`, {
+    method: 'POST',
+    headers: { 'X-PlayHub-Internal-Secret': SECRET, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Env Wired Game', template: 'blank3d' }),
+  });
+  assert.equal(created.status, 201);
+  const projectId = (await created.json()).project.id;
+
+  // Builds route is enabled (returns 403 EXECUTION_NOT_ALLOWED instead of 503 PRIVATE_BUILDS_DISABLED).
+  const buildAttempt = await fetch(`${base}/projects/${projectId}/builds`, {
+    method: 'POST',
+    headers: { 'X-PlayHub-Internal-Secret': SECRET },
+  });
+  assert.equal(buildAttempt.status, 403);
+  assert.equal((await buildAttempt.json()).error, 'EXECUTION_NOT_ALLOWED');
+
+  // Drive cloud history route is enabled (returns 200 with auto-synced revision 1 instead of 503 CLOUD_SYNC_DISABLED).
+  const cloudHistory = await fetch(`${base}/projects/${projectId}/cloud/history`, {
+    headers: { 'X-PlayHub-Internal-Secret': SECRET },
+  });
+  assert.equal(cloudHistory.status, 200);
+  const cloudBody = await cloudHistory.json();
+  assert.ok(Array.isArray(cloudBody.versions));
+  assert.ok(cloudBody.versions.some(v => v.revision === 1));
+
+  // Deployments package status route is enabled (returns 404 for unknown release instead of 503 DEPLOYMENT_ARCHIVE_DISABLED).
+  const deployStatus = await fetch(`${base}/projects/${projectId}/deployments/${'a'.repeat(24)}`, {
+    headers: { 'X-PlayHub-Internal-Secret': SECRET },
+  });
+  assert.equal(deployStatus.status, 404);
+  assert.notEqual((await deployStatus.json()).error, 'DEPLOYMENT_ARCHIVE_DISABLED');
 });
