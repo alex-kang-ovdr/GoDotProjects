@@ -1,0 +1,77 @@
+# Google Cloud Build — PlayHub Deterministic Daily CI
+# Target project: playhub-dev-2611 (region: us-west1)
+# Triggered autonomously at 03:30 KST via Cloud Scheduler -> Cloud Build Trigger,
+# or manually with a specific branch/commit SHA.
+# Free tier safe: uses default e2-standard-2 pool (2,500 build-min/month free)
+# and CLOUD_LOGGING_ONLY to avoid extra log bucket charges.
+
+timeout: "1800s"
+
+substitutions:
+  _MODE: "cloud"
+  _RUN_ID: "daily-${BUILD_ID}"
+  _ARCHIVE_BUCKET: "playhub-daily-ci-2611"
+  _DEPLOY_DEV_TAG: "false"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: "E2_MEDIUM"
+
+steps:
+  - id: "install-deps-and-deterministic-ci"
+    name: "node:24-bookworm"
+    entrypoint: "bash"
+    args:
+      - "-euo"
+      - "pipefail"
+      - "-c"
+      - |
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 git ca-certificates > /dev/null
+        if [ -f hub/package-lock.json ]; then
+          npm --prefix hub ci --no-audit --no-fund
+        fi
+        if [ -f forge/package-lock.json ]; then
+          npm --prefix forge ci --no-audit --no-fund
+        fi
+        OUT_DIR="artifacts/daily-builds/${_RUN_ID}"
+        node tools/devops/run-deterministic-ci.mjs \
+          --mode "${_MODE}" \
+          --run-id "${_RUN_ID}" \
+          --out-dir "${OUT_DIR}"
+
+  - id: "write-latest-pointer"
+    name: "node:24-bookworm"
+    entrypoint: "node"
+    args:
+      - "-e"
+      - |
+        const fs = require('node:fs');
+        const runId = process.env._RUN_ID;
+        const manifestPath = `artifacts/daily-builds/${runId}/deterministic-manifest.json`;
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        const pointer = {
+          runId: manifest.runId,
+          overallStatus: manifest.overallStatus,
+          commit: manifest.git.commit,
+          shortCommit: manifest.git.shortCommit,
+          branch: manifest.git.branch,
+          finishedAt: manifest.finishedAt,
+          cloudBuildId: process.env.BUILD_ID || null,
+          manifestObject: `daily-builds/${runId}/deterministic-manifest.json`,
+        };
+        fs.writeFileSync('artifacts/daily-builds/latest-cloud.json', JSON.stringify(pointer, null, 2) + '\n');
+    env:
+      - "_RUN_ID=${_RUN_ID}"
+      - "BUILD_ID=$BUILD_ID"
+
+artifacts:
+  objects:
+    location: "gs://${_ARCHIVE_BUCKET}/daily-builds/"
+    paths:
+      - "artifacts/daily-builds/${_RUN_ID}/deterministic-manifest.json"
+      - "artifacts/daily-builds/${_RUN_ID}/deterministic-report.md"
+      - "artifacts/daily-builds/${_RUN_ID}/deterministic-report.html"
+      - "artifacts/daily-builds/${_RUN_ID}/reports/**"
+      - "artifacts/daily-builds/${_RUN_ID}/packages/**"
+      - "artifacts/daily-builds/${_RUN_ID}/logs/**"
+      - "artifacts/daily-builds/latest-cloud.json"
