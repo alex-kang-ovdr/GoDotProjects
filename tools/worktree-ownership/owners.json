@@ -216,6 +216,14 @@
         "hub/tests/ssot*.mjs",
         "docs/eos/**"
       ]
+    },
+    "PlayHub-DevOps": {
+      "role": "CI 데일리 빌드(Google Cloud Build) · AI 검증 리포트 · Google Drive 아카이브 · 수동 배포 도구",
+      "owns": [
+        "tools/devops/**",
+        "docs/devops/**",
+        "artifacts/daily-builds/**"
+      ]
     }
   }
 }
