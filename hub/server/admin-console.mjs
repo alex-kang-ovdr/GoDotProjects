@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { DatabaseSync, backup } from 'node:sqlite';
 import { createHash } from 'node:crypto';
 import { readCatalog } from './catalog.mjs';
@@ -13,6 +13,12 @@ const DAY = 86400000;
 const SAFE_GIT_REF = /^[A-Za-z0-9._/-]{1,120}$/;
 const SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,120}$/;
 const RESERVED_DEVOPS_PORTS = new Set([8080, 8081, 8090, 8091, 4173, 4177]);
+const DEVOPS_PREVIEW_JOB_ROUTE = /^\/api\/admin\/devops\/preview\/jobs\/([A-Za-z0-9._-]{1,120})$/;
+export const DEVOPS_PREVIEW_START_TIMEOUT_MS = 300000; // 5m outer timeout (> local-preview 180s build + worktree + readiness)
+export const DEVOPS_PREVIEW_STOP_TIMEOUT_MS = 90000;
+const MAX_DEVOPS_PREVIEW_JOBS = 50;
+const MAX_DEVOPS_JOB_STDOUT_BYTES = 131072;
+const MAX_DEVOPS_JOB_STDERR_BYTES = 16384;
 const SUBMISSION_ID = '[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}';
 const CHECKLIST_ROUTE = new RegExp(`^/api/admin/submissions/(${SUBMISSION_ID})/checklist$`);
 const GAME_DETAIL_ROUTE = /^\/api\/admin\/games\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/;
@@ -296,7 +302,18 @@ async function createOnlineBackup(dataDir, now) {
 export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway }) {
   // Forge templates/projects/builds/Drive state come only from the gateway (admin-only gateway by default).
   const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
-  const storeAdmin = createStoreAdmin({ config, db, now, audit, requireSession });
+  const storeAdmin = createStoreAdmin({ config, db, now, audit, requireSession, env });
+  const devopsPreviewJobs = new Map();
+  const previewStartTimeoutMs = Number.isInteger(config?.devopsPreviewStartTimeoutMs)
+    && config.devopsPreviewStartTimeoutMs >= 100
+    && config.devopsPreviewStartTimeoutMs <= 900000
+    ? config.devopsPreviewStartTimeoutMs
+    : DEVOPS_PREVIEW_START_TIMEOUT_MS;
+  const previewStopTimeoutMs = Number.isInteger(config?.devopsPreviewStopTimeoutMs)
+    && config.devopsPreviewStopTimeoutMs >= 100
+    && config.devopsPreviewStopTimeoutMs <= 300000
+    ? config.devopsPreviewStopTimeoutMs
+    : DEVOPS_PREVIEW_STOP_TIMEOUT_MS;
   db.exec(`
     CREATE TABLE IF NOT EXISTS qa_runs (
       id TEXT PRIMARY KEY,
@@ -790,8 +807,111 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
       },
       refs: { branches, commits },
       builds,
-      previews
+      previews,
+      previewJobs: listDevopsPreviewJobs()
     };
+  }
+
+  function formatDevopsPreviewJob(job) {
+    return {
+      jobId: job.jobId,
+      action: job.action,
+      status: job.status,
+      ref: job.ref,
+      commit: job.commit,
+      shortCommit: job.shortCommit,
+      subject: job.subject,
+      basePort: job.basePort,
+      timeoutMs: job.timeoutMs,
+      startedAt: job.startedAt,
+      finishedAt: job.finishedAt,
+      exitCode: job.exitCode,
+      signal: job.signal,
+      preview: job.preview,
+      error: job.error,
+      requestedBy: job.requestedBy
+    };
+  }
+
+  function listDevopsPreviewJobs() {
+    return [...devopsPreviewJobs.values()]
+      .sort((a, b) => String(b.startedAt || '').localeCompare(String(a.startedAt || '')))
+      .slice(0, 20)
+      .map(formatDevopsPreviewJob);
+  }
+
+  function pruneDevopsPreviewJobs() {
+    if (devopsPreviewJobs.size <= MAX_DEVOPS_PREVIEW_JOBS) return;
+    for (const [id, item] of devopsPreviewJobs.entries()) {
+      if (item.status !== 'running') {
+        devopsPreviewJobs.delete(id);
+        if (devopsPreviewJobs.size <= MAX_DEVOPS_PREVIEW_JOBS) break;
+      }
+    }
+  }
+
+  function appendBoundedChunk(current, chunk, maxBytes) {
+    if (current.length >= maxBytes) return current;
+    const text = Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+    return (current + text).slice(0, maxBytes);
+  }
+
+  function safeAudit(action, target, detail) {
+    try { audit(action, target, detail); } catch {}
+  }
+
+  function spawnJsonAsync(command, args, { timeoutMs, failureCode }) {
+    return new Promise((resolve, reject) => {
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
+      let timedOut = false;
+      let killTimer = null;
+      const child = spawn(command, args, {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        windowsHide: true
+      });
+      const finish = (err, value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (killTimer) clearTimeout(killTimer);
+        if (err) reject(err);
+        else resolve(value);
+      };
+      const timer = setTimeout(() => {
+        timedOut = true;
+        try { child.kill('SIGTERM'); } catch {}
+        killTimer = setTimeout(() => {
+          try { child.kill('SIGKILL'); } catch {}
+        }, 3000);
+        killTimer.unref();
+        finish(new ApiError(504, `${failureCode}_TIMEOUT`, `프리뷰 명령이 제한 시간(${timeoutMs}ms)을 초과했습니다.`));
+      }, timeoutMs);
+      timer.unref();
+
+      child.stdout?.on('data', chunk => {
+        stdout = appendBoundedChunk(stdout, chunk, MAX_DEVOPS_JOB_STDOUT_BYTES);
+      });
+      child.stderr?.on('data', chunk => {
+        stderr = appendBoundedChunk(stderr, chunk, MAX_DEVOPS_JOB_STDERR_BYTES);
+      });
+      child.on('error', err => {
+        finish(new ApiError(500, failureCode, String(err.message || 'spawn failed').slice(0, 300)));
+      });
+      child.on('close', (code, signal) => {
+        if (timedOut) return;
+        if (code !== 0) {
+          finish(new ApiError(500, failureCode, String(stderr || stdout || `exit ${code ?? signal ?? 'unknown'}`).slice(0, 300)));
+          return;
+        }
+        try {
+          finish(null, JSON.parse(stdout.trim()));
+        } catch {
+          finish(new ApiError(500, failureCode, '프리뷰 도구 출력 JSON을 해석할 수 없습니다.'));
+        }
+      });
+    });
   }
 
   function createDevopsManualPlan(body) {
@@ -843,49 +963,162 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     };
   }
 
-  function startDevopsLocalPreview(body) {
-    const repoDir = resolveDevopsRoot();
-    const script = path.join(repoDir, 'tools', 'devops', 'local-preview.mjs');
-    if (!safeStat(script)) throw new ApiError(503, 'DEVOPS_PREVIEW_TOOL_UNAVAILABLE');
+  function startDevopsLocalPreview(body, adminUsername) {
+    if (Object.hasOwn(body, 'noWorktree') && body.noWorktree !== undefined) {
+      throw new ApiError(400, 'NO_WORKTREE_NOT_ALLOWED', 'noWorktree 옵션은 운영 저장소를 오염시킬 수 있어 관리자 API에서 허용되지 않습니다.');
+    }
     const localBasePort = body.basePort === undefined ? 18280 : Number(body.basePort);
     if (!Number.isInteger(localBasePort) || localBasePort < 1024 || localBasePort > 60000) throw new ApiError(400, 'INVALID_PREVIEW_PORT');
-    for (const p of [localBasePort, localBasePort + 1, localBasePort + 10, localBasePort + 11]) {
+    const requestedPorts = new Set([localBasePort, localBasePort + 1, localBasePort + 10, localBasePort + 11]);
+    for (const p of requestedPorts) {
       if (RESERVED_DEVOPS_PORTS.has(p)) throw new ApiError(400, 'RESERVED_PORT_CONFLICT');
     }
-    const source = resolveValidatedGitRef(repoDir, body.ref || 'HEAD');
-    const args = [script, 'start', '--repo-root', repoDir, '--ref', source.commit, '--port', String(localBasePort)];
-    if (body.noWorktree === true) args.push('--no-worktree');
-    try {
-      const stdout = execFileSync(process.execPath, args, {
-        encoding: 'utf8',
-        timeout: 180000,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        windowsHide: true
-      });
-      return JSON.parse(stdout);
-    } catch (err) {
-      throw new ApiError(500, 'PREVIEW_START_FAILED', { message: String(err.stderr || err.message || 'failed').slice(0, 300) });
-    }
-  }
-
-  function stopDevopsLocalPreview(body) {
     const repoDir = resolveDevopsRoot();
     const script = path.join(repoDir, 'tools', 'devops', 'local-preview.mjs');
     if (!safeStat(script)) throw new ApiError(503, 'DEVOPS_PREVIEW_TOOL_UNAVAILABLE');
+    const source = resolveValidatedGitRef(repoDir, body.ref || 'HEAD');
+    for (const activeJob of devopsPreviewJobs.values()) {
+      if (activeJob.status !== 'running') continue;
+      const busyPorts = [activeJob.basePort, activeJob.basePort + 1, activeJob.basePort + 10, activeJob.basePort + 11];
+      if (busyPorts.some(p => requestedPorts.has(p))) {
+        throw new ApiError(409, 'PREVIEW_JOB_PORT_BUSY', '동일한 포트 대역에서 이미 프리뷰 기동 작업이 실행 중입니다.');
+      }
+    }
+
+    const args = [script, 'start', '--repo-root', repoDir, '--ref', source.commit, '--port', String(localBasePort)];
+    const jobId = `pvjob-${uid().slice(0, 12)}`;
+    const actor = adminUsername || 'admin';
+    const job = {
+      jobId,
+      action: 'start',
+      status: 'running',
+      ref: source.ref,
+      commit: source.commit,
+      shortCommit: source.shortCommit,
+      subject: source.subject,
+      basePort: localBasePort,
+      timeoutMs: previewStartTimeoutMs,
+      startedAt: new Date(now()).toISOString(),
+      finishedAt: null,
+      exitCode: null,
+      signal: null,
+      preview: null,
+      error: null,
+      requestedBy: actor
+    };
+    devopsPreviewJobs.set(jobId, job);
+    pruneDevopsPreviewJobs();
+
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    let killTimer = null;
+    const child = spawn(process.execPath, args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      windowsHide: true
+    });
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      job.status = 'timed_out';
+      job.finishedAt = new Date(now()).toISOString();
+      job.error = {
+        code: 'PREVIEW_START_TIMEOUT',
+        message: `로컬 프리뷰 기동이 제한 시간(${previewStartTimeoutMs}ms)을 초과했습니다.`
+      };
+      try { child.kill('SIGTERM'); } catch {}
+      killTimer = setTimeout(() => {
+        try { child.kill('SIGKILL'); } catch {}
+      }, 3000);
+      killTimer.unref();
+      safeAudit('system_devops_preview_failed', jobId, {
+        ref: job.ref,
+        shortCommit: job.shortCommit,
+        basePort: job.basePort,
+        reason: 'timed_out',
+        admin: actor
+      });
+    }, previewStartTimeoutMs);
+    timer.unref();
+
+    child.stdout?.on('data', chunk => {
+      stdout = appendBoundedChunk(stdout, chunk, MAX_DEVOPS_JOB_STDOUT_BYTES);
+    });
+    child.stderr?.on('data', chunk => {
+      stderr = appendBoundedChunk(stderr, chunk, MAX_DEVOPS_JOB_STDERR_BYTES);
+    });
+    child.on('error', err => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (killTimer) clearTimeout(killTimer);
+      job.status = 'failed';
+      job.finishedAt = new Date(now()).toISOString();
+      job.error = { code: 'PREVIEW_START_FAILED', message: String(err.message || 'spawn failed').slice(0, 300) };
+      safeAudit('system_devops_preview_failed', jobId, {
+        ref: job.ref,
+        shortCommit: job.shortCommit,
+        basePort: job.basePort,
+        reason: job.error.message,
+        admin: actor
+      });
+    });
+    child.on('close', (code, signal) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (killTimer) clearTimeout(killTimer);
+      job.exitCode = code;
+      job.signal = signal;
+      job.finishedAt = new Date(now()).toISOString();
+      if (code === 0) {
+        try {
+          const parsed = JSON.parse(stdout.trim());
+          job.status = 'succeeded';
+          job.preview = parsed;
+          safeAudit('system_devops_preview_ready', parsed.runId || jobId, {
+            jobId,
+            ref: parsed.ref || job.ref,
+            shortCommit: parsed.shortCommit || job.shortCommit,
+            userUrl: parsed.urls?.user || null,
+            admin: actor
+          });
+          return;
+        } catch {
+          job.status = 'failed';
+          job.error = { code: 'PREVIEW_START_INVALID_OUTPUT', message: '프리뷰 도구 출력 JSON을 해석할 수 없습니다.' };
+        }
+      } else {
+        job.status = 'failed';
+        job.error = {
+          code: 'PREVIEW_START_FAILED',
+          message: String(stderr || stdout || `exit ${code ?? signal ?? 'unknown'}`).trim().slice(0, 300)
+        };
+      }
+      safeAudit('system_devops_preview_failed', jobId, {
+        ref: job.ref,
+        shortCommit: job.shortCommit,
+        basePort: job.basePort,
+        exitCode: code,
+        reason: job.error?.message || 'failed',
+        admin: actor
+      });
+    });
+
+    return formatDevopsPreviewJob(job);
+  }
+
+  async function stopDevopsLocalPreview(body) {
     const runId = String(body.runId || '').trim();
     if (!runId || !SAFE_RUN_ID.test(runId) || runId.includes('..')) throw new ApiError(400, 'INVALID_PREVIEW_RUN_ID');
+    const repoDir = resolveDevopsRoot();
+    const script = path.join(repoDir, 'tools', 'devops', 'local-preview.mjs');
+    if (!safeStat(script)) throw new ApiError(503, 'DEVOPS_PREVIEW_TOOL_UNAVAILABLE');
     const subcmd = body.cleanup === false ? 'stop' : 'cleanup';
-    try {
-      const stdout = execFileSync(process.execPath, [script, subcmd, '--repo-root', repoDir, '--run-id', runId], {
-        encoding: 'utf8',
-        timeout: 60000,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        windowsHide: true
-      });
-      return JSON.parse(stdout);
-    } catch (err) {
-      throw new ApiError(500, 'PREVIEW_STOP_FAILED', { message: String(err.stderr || err.message || 'failed').slice(0, 300) });
-    }
+    return await spawnJsonAsync(process.execPath, [script, subcmd, '--repo-root', repoDir, '--run-id', runId], {
+      timeoutMs: previewStopTimeoutMs,
+      failureCode: 'PREVIEW_STOP_FAILED'
+    });
   }
 
   async function adminRoute(req, res, url, session) {
@@ -933,25 +1166,44 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
       json(res, 200, { plan });
       return true;
     }
+    if (pathname === '/api/admin/devops/preview/jobs' && req.method === 'GET') {
+      json(res, 200, { jobs: listDevopsPreviewJobs() });
+      return true;
+    }
+    const previewJobMatch = pathname.match(DEVOPS_PREVIEW_JOB_ROUTE);
+    if (previewJobMatch && req.method === 'GET') {
+      const jobId = previewJobMatch[1];
+      const job = devopsPreviewJobs.get(jobId);
+      if (!job) throw new ApiError(404, 'PREVIEW_JOB_NOT_FOUND');
+      json(res, 200, { job: formatDevopsPreviewJob(job) });
+      return true;
+    }
     if (pathname === '/api/admin/devops/preview/start' && req.method === 'POST') {
       if (rate) rate(`admindevops:${req.socket?.remoteAddress || 'local'}`, 6, 60000);
       const body = await readJson(req, 4096);
       const active = requireSession ? requireSession(req, 'admin', true) : session;
-      const preview = startDevopsLocalPreview(body || {});
-      audit('system_devops_preview_start', preview.runId, {
-        ref: preview.ref,
-        shortCommit: preview.shortCommit,
-        userUrl: preview.urls?.user || null,
+      const job = startDevopsLocalPreview(body || {}, active.admin_username);
+      audit('system_devops_preview_start', job.jobId, {
+        jobId: job.jobId,
+        ref: job.ref,
+        shortCommit: job.shortCommit,
+        basePort: job.basePort,
+        status: job.status,
         admin: active.admin_username
       });
-      json(res, 201, { preview });
+      json(res, 202, {
+        jobId: job.jobId,
+        status: job.status,
+        statusUrl: `/api/admin/devops/preview/jobs/${job.jobId}`,
+        job
+      });
       return true;
     }
     if (pathname === '/api/admin/devops/preview/stop' && req.method === 'POST') {
       if (rate) rate(`admindevops:${req.socket?.remoteAddress || 'local'}`, 12, 60000);
       const body = await readJson(req, 4096);
       const active = requireSession ? requireSession(req, 'admin', true) : session;
-      const result = stopDevopsLocalPreview(body || {});
+      const result = await stopDevopsLocalPreview(body || {});
       audit('system_devops_preview_stop', result.runId, {
         stopped: result.stopped,
         cleaned: result.cleaned,
