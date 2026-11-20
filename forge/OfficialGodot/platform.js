@@ -253,6 +253,7 @@ async function build() {
 }
 function panel(title) {
   $("panel").hidden = false;
+  $("panel").classList.remove("publish-drawer");
   $("panelTitle").textContent = title;
   $("panelBody").replaceChildren();
   return $("panelBody");
@@ -260,9 +261,10 @@ function panel(title) {
 function showCollaboration() {
   panelMode = "collaboration";
   $("panel").hidden = false;
+  $("panel").classList.remove("publish-drawer");
   renderCollaboration();
 }
-$("closePanel").onclick = () => { $("panel").hidden = true; panelMode = ""; };
+$("closePanel").onclick = () => { $("panel").hidden = true; $("panel").classList.remove("publish-drawer"); panelMode = ""; };
 $("editor").addEventListener("load", syncCollaboration);
 async function showVersions() {
   panelMode = "versions";
@@ -305,11 +307,27 @@ async function showVersions() {
   }
 };
 async function publishProject() {
-  if (!selected || publishing) return;
+  if (!selected) return;
   panelMode = "publish";
+  await refresh();
+  if (window.PlayForgePublish?.open) {
+    window.PlayForgePublish.open({
+      selected,
+      getSelected: () => selected,
+      lastBuild,
+      hubAuth: Boolean(csrfToken),
+      forgePath,
+      api,
+      status,
+      refresh,
+      build,
+      onBuildChange: (b) => { lastBuild = b; }
+    });
+    return;
+  }
+  if (publishing) return;
   try {
     publishing = true;
-    await refresh();
     if (!lastBuild || lastBuild.revision !== selected.revision) await build();
     if (selected?.project.id !== lastBuild.projectId) throw Error("\uD504\uB85C\uC81D\uD2B8\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uBC30\uD3EC\uD558\uC138\uC694.");
     const label = prompt("\uBC30\uD3EC \uC774\uB984", "\uB9AC\uBE44\uC804 " + lastBuild.revision);

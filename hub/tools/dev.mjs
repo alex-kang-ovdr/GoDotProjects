@@ -40,14 +40,14 @@ export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySec
   const server=http.createServer((request,response)=>{
     const queryAt=request.url.indexOf('?');
     const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
-    let normalizedApiPath=null;
-    if(apiPort&&rawPath.startsWith('/api/')){
+    let normalizedProxyPath=null;
+    if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/'))){
       try{
         const decoded=decodeURIComponent(rawPath);
-        if(!decoded.includes('\0')&&!decoded.includes('\\'))normalizedApiPath=path.posix.normalize(decoded);
+        if(!decoded.includes('\0')&&!decoded.includes('\\'))normalizedProxyPath=path.posix.normalize(decoded);
       }catch{}
     }
-    if(apiPort&&normalizedApiPath&&normalizedApiPath.startsWith('/api/')&&normalizedApiPath!=='/api/admin'&&!normalizedApiPath.startsWith('/api/admin/')){
+    if(apiPort&&normalizedProxyPath&&((normalizedProxyPath.startsWith('/api/')&&normalizedProxyPath!=='/api/admin'&&!normalizedProxyPath.startsWith('/api/admin/'))||normalizedProxyPath.startsWith('/play-ugc/'))){
       const headers={...request.headers,host:`127.0.0.1:${apiPort}`};
       delete headers['x-playhub-proxy-secret'];
       delete headers['cf-connecting-ip'];
