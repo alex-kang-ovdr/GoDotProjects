@@ -30,7 +30,7 @@
       ]
     },
     "PlayHub-Admin": {
-      "role": "Admin / 운영 콘솔",
+      "role": "Admin / 운영 콘솔 (Store Admin 6번째 탭 포함)",
       "owns": [
         "hub/web/admin/admin.css",
         "hub/web/admin/admin.js",
@@ -39,9 +39,12 @@
         "hub/web/admin/domain-views.js",
         "hub/web/admin/index.html",
         "hub/web/admin/local-login-bootstrap.js",
+        "hub/web/admin/store-views.js",
         "hub/web/admin/submission-review.js",
         "hub/server/admin-console.mjs",
+        "hub/server/store-admin.mjs",
         "hub/tests/admin-console*.mjs",
+        "hub/tests/store-admin*.mjs",
         "docs/ADMIN_PAGE_PLAN.md"
       ]
     },
@@ -148,6 +151,33 @@
         "tools/Gamer/GamerQA/suites/runtime-godot/**",
         "tools/Gamer/GamerQA/adapters/forge/**",
         "forge/Tests/gamerqa/**"
+      ]
+    },
+    "PlayHub-Store": {
+      "role": "PlayForge Store 독립 웹·API·Publisher (Store Admin은 PlayHub-Admin 탭)",
+      "owns": [
+        "store/**",
+        "docs/STORE_*.md",
+        "tools/Run_Store.bat"
+      ]
+    },
+    "Forge-RobloxPort": {
+      "role": "Roblox → Godot 자동 포팅 (Converter Lab · IR · 호환 런타임)",
+      "owns": [
+        "tools/RobloxConverter/**",
+        "forge/Godot/addons/playforge_roblox_compat/**",
+        "forge/Tests/playforge_roblox_compat/**"
+      ]
+    },
+    "PlayHub-GameDeploy": {
+      "role": "게임 패키지 통합·아카이브 및 Forge Godot 샘플 배포",
+      "owns": [
+        "forge/Samples/**",
+        "games/crazy-arcade/**",
+        "games/poly-bridge-2/**",
+        "games/project-zomboid/**",
+        "games/survivor-arena-g2/**",
+        "games/kingdom-rush/**"
       ]
     }
   }
