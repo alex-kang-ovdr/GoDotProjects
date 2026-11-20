@@ -1,0 +1,277 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="main"]
+[ext_resource type="Script" path="res://Scripts/MmoNetwork.gd" id="mmo_net"]
+[ext_resource type="Texture2D" path="res://Assets/clouds-far.svg" id="clouds-far"]
+[ext_resource type="Texture2D" path="res://Assets/clouds-near.svg" id="clouds-near"]
+[ext_resource type="Texture2D" path="res://Assets/hills-far.svg" id="hills-far"]
+[ext_resource type="Texture2D" path="res://Assets/hills-near.svg" id="hills-near"]
+[ext_resource type="Texture2D" path="res://Assets/plants.svg" id="plants"]
+[ext_resource type="Texture2D" path="res://Assets/fence.svg" id="fence"]
+[ext_resource type="Texture2D" path="res://Assets/ground.svg" id="ground"]
+[ext_resource type="Texture2D" path="res://Assets/chicken.svg" id="chicken"]
+[ext_resource type="Texture2D" path="res://Assets/pipe.svg" id="pipe"]
+[ext_resource type="Texture2D" path="res://Assets/pipe-down.svg" id="pipe-down"]
+[ext_resource type="Texture2D" path="res://Assets/logo.svg" id="logo"]
+[ext_resource type="Texture2D" path="res://Assets/play.svg" id="play"]
+[ext_resource type="Texture2D" path="res://Assets/game-over.svg" id="game-over"]
+[ext_resource type="Texture2D" path="res://Assets/go.svg" id="go"]
+[ext_resource type="Texture2D" path="res://Assets/ready.svg" id="ready"]
+[ext_resource type="Texture2D" path="res://Assets/scoreboard.svg" id="scoreboard"]
+[ext_resource type="Texture2D" path="res://Assets/egg.svg" id="egg"]
+
+[sub_resource type="Shader" id="SkyGradient"]
+code = "shader_type canvas_item;
+void fragment() {
+	COLOR.rgb = mix(COLOR.rgb, vec3(0.784314, 0.949020, 0.972549), UV.y);
+}"
+
+[sub_resource type="ShaderMaterial" id="SkyMaterial"]
+shader = SubResource("SkyGradient")
+
+[sub_resource type="LabelSettings" id="Numbers"]
+font_size = 34
+font_color = Color(1, 1, 1, 1)
+outline_size = 6
+outline_color = Color(0.12, 0.075, 0.035, 1)
+
+[sub_resource type="LabelSettings" id="Guidance"]
+font_size = 16
+font_color = Color(1, 1, 1, 1)
+outline_size = 5
+outline_color = Color(0.14, 0.1, 0.07, 1)
+
+[sub_resource type="LabelSettings" id="MmoBadge"]
+font_size = 12
+font_color = Color(0.95, 0.98, 1, 0.92)
+outline_size = 4
+outline_color = Color(0.08, 0.12, 0.18, 0.9)
+
+[node name="TappyChickenMMO" type="Node2D"]
+texture_filter = 1
+script = ExtResource("main")
+
+[node name="MmoNetwork" type="Node" parent="."]
+script = ExtResource("mmo_net")
+
+[node name="Sky" type="ColorRect" parent="."]
+material = SubResource("SkyMaterial")
+offset_right = 480.0
+offset_bottom = 640.0
+mouse_filter = 2
+color = Color(0.427451, 0.725490, 0.847059, 1)
+
+[node name="Clouds" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.27)
+texture_repeat = 2
+position = Vector2(0, 82)
+scale = Vector2(2, 2)
+texture = ExtResource("clouds-far")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 39)
+
+[node name="NearClouds" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.83)
+texture_repeat = 2
+position = Vector2(0, 150)
+scale = Vector2(2, 2)
+texture = ExtResource("clouds-near")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 49)
+
+[node name="FarHills" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.55)
+texture_repeat = 2
+position = Vector2(0, 409)
+scale = Vector2(2, 2)
+texture = ExtResource("hills-far")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 62)
+
+[node name="NearHills" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.88)
+texture_repeat = 2
+position = Vector2(0, 465)
+scale = Vector2(2, 2)
+texture = ExtResource("hills-near")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 57)
+
+[node name="Plants" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, 486)
+scale = Vector2(2, 2)
+texture = ExtResource("plants")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 52)
+
+[node name="Fence" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, 510)
+scale = Vector2(2, 2)
+texture = ExtResource("fence")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 44)
+
+[node name="Pipes" type="Node2D" parent="."]
+
+[node name="Ghosts" type="Node2D" parent="."]
+
+[node name="Bird" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(240, 294)
+scale = Vector2(2, 2)
+texture = ExtResource("chicken")
+
+[node name="Ground" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, 570)
+scale = Vector2(2, 2)
+texture = ExtResource("ground")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 97)
+
+[node name="PipeTextureReference" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+texture = ExtResource("pipe")
+
+[node name="UpperPipeTexture" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+texture = ExtResource("pipe-down")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="MmoStatus" type="Label" parent="Hud"]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 270.0
+offset_bottom = 28.0
+mouse_filter = 2
+text = "MMO · CONNECTING..."
+label_settings = SubResource("MmoBadge")
+
+[node name="Logo" type="Sprite2D" parent="Hud"]
+texture_filter = 1
+position = Vector2(240, 137)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("logo")
+
+[node name="Play" type="Sprite2D" parent="Hud"]
+texture_filter = 1
+position = Vector2(240, 467)
+scale = Vector2(2, 2)
+texture = ExtResource("play")
+
+[node name="Ready" type="Sprite2D" parent="Hud"]
+visible = false
+texture_filter = 1
+position = Vector2(240, 382)
+scale = Vector2(2, 2)
+texture = ExtResource("ready")
+
+[node name="Go" type="Sprite2D" parent="Hud"]
+visible = false
+texture_filter = 1
+position = Vector2(240, 180)
+scale = Vector2(2, 2)
+texture = ExtResource("go")
+
+[node name="GameOver" type="Sprite2D" parent="Hud"]
+visible = false
+texture_filter = 1
+position = Vector2(240, 160)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("game-over")
+
+[node name="Board" type="Sprite2D" parent="Hud"]
+visible = false
+texture_filter = 1
+position = Vector2(240, 312)
+scale = Vector2(2, 2)
+texture = ExtResource("scoreboard")
+
+[node name="Egg" type="Sprite2D" parent="Hud"]
+visible = false
+texture_filter = 1
+position = Vector2(156, 326)
+scale = Vector2(2, 2)
+texture = ExtResource("egg")
+
+[node name="Score" type="Label" parent="Hud"]
+visible = false
+offset_left = 180.0
+offset_top = 26.0
+offset_right = 300.0
+offset_bottom = 80.0
+mouse_filter = 2
+text = "0"
+label_settings = SubResource("Numbers")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RoundScore" type="Label" parent="Hud"]
+visible = false
+offset_left = 301.0
+offset_top = 270.0
+offset_right = 371.0
+offset_bottom = 318.0
+mouse_filter = 2
+text = "0"
+label_settings = SubResource("Numbers")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Best" type="Label" parent="Hud"]
+visible = false
+offset_left = 301.0
+offset_top = 332.0
+offset_right = 371.0
+offset_bottom = 380.0
+mouse_filter = 2
+text = "0"
+label_settings = SubResource("Numbers")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Status" type="Label" parent="Hud"]
+visible = false
+offset_left = 60.0
+offset_top = 390.0
+offset_right = 420.0
+offset_bottom = 430.0
+mouse_filter = 2
+text = "TAPPY CHICKEN MMO"
+label_settings = SubResource("Guidance")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hint" type="Label" parent="Hud"]
+offset_left = 20.0
+offset_top = 515.0
+offset_right = 460.0
+offset_bottom = 550.0
+mouse_filter = 2
+text = "SPACE OR CLICK TO PLAY"
+label_settings = SubResource("Guidance")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Flash" type="ColorRect" parent="Hud"]
+visible = false
+offset_right = 480.0
+offset_bottom = 640.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.3)

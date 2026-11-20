@@ -35,6 +35,7 @@ const tests = [
   'Tests/ironwood-physics.test.cjs',
   'Tests/brawllabs-runtime.test.cjs',
   'Tests/brawllabs-multiplayer.test.cjs',
+  'Tests/tappy-chicken-mmo.test.cjs',
   'Tests/build-queue-reuse.test.cjs',
 ];
 const suites = tests.map(file => ({ name: path.basename(file, '.test.cjs'), cwd: root, args: ['--test', file], required: [file] }));

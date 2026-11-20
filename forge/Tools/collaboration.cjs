@@ -28,7 +28,7 @@ function attachCollaboration(server, store, onLeave = () => {}, originAllowed = 
   };
 
   server.on('upgrade', (request, socket, head) => {
-    if (request.url === '/brawllabs' || request.url === '/fortress-war') return;
+    if (request.url === '/brawllabs' || request.url === '/fortress-war' || request.url === '/tappy-chicken-mmo') return;
     if (request.url !== '/collaboration' || !originAllowed(request)) {
       socket.destroy(); return;
     }

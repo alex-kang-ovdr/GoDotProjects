@@ -5,9 +5,11 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
   const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
   const query=new URLSearchParams(location.search),projectId=query.get('project')||'',projectName=query.get('name')||'멀티플레이 테스트 워크스페이스';
-  const fortress=(options.template||query.get('template'))==='fortress-war';
-  const lobbyPath=forgePath(fortress?'/OfficialGodot/fortress-war-lobby.html':'/OfficialGodot/brawllabs-lobby.html');
-  const messagePrefix=fortress?'playforge-fortress':'playforge-brawl';
+  const templateId = options.template || query.get('template') || 'brawllabs';
+  const fortress = templateId === 'fortress-war';
+  const tappyMmo = templateId === 'tappy-chicken-mmo';
+  const lobbyPath = forgePath(tappyMmo ? '/OfficialGodot/tappy-chicken-mmo-lobby.html' : fortress ? '/OfficialGodot/fortress-war-lobby.html' : '/OfficialGodot/brawllabs-lobby.html');
+  const messagePrefix = tappyMmo ? 'playforge-tappy-mmo' : fortress ? 'playforge-fortress' : 'playforge-brawl';
   const nodes=new Map([...root.querySelectorAll('[id]')].map(node=>[node.id,node]));
   const $=id=>nodes.get(id),tabs=$('viewport-tabs'),serverView=$('server-view'),clientsView=$('clients-view');
   const serverFrame=$('server-game');let serverBuild=null,serverWorld=null,serverReady=false;
@@ -22,6 +24,14 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   function renderInspector(){
     const world=worldForActive(),state=world?.lastState,root=$('inspector');root.replaceChildren();
     if(!state){const empty=document.createElement('span');empty.className='muted';empty.textContent='클라이언트 상태를 기다리는 중입니다.';root.append(empty);return;}
+    if(tappyMmo){
+      const stats=state.stats||{};
+      const details=document.createElement('div');details.className='snapshot-summary';details.textContent=`난입 MMO · 방 ${world.roomId||'연결 중'} · 온라인 ${state.onlineCount??0}명 · 반경 ${state.proximityRadius??520}px · RPC 수신 ${stats.eventsReceived??0} · 멀티캐스트 ${stats.multicastsSent??0} · 거리 제외 ${stats.filteredOut??0}`;root.append(details);
+      const players=state.players||[];if(!players.length){const text=document.createElement('p');text.className='muted';text.textContent='아직 난입한 플레이어가 없습니다.';root.append(text);return;}
+      const table=document.createElement('table');table.className='actor-table';table.innerHTML='<thead><tr><th>이름</th><th>상태</th><th>진행 거리</th><th>높이(Y)</th><th>점수</th><th>주변 피어</th></tr></thead>';
+      const body=document.createElement('tbody');for(const p of players){const row=document.createElement('tr');for(const value of [p.name||'—',p.phase||'menu',`${Math.round(p.runDistance||0)}px`,Math.round(p.y||290),p.score??0,p.nearbyCount??0]){const cell=document.createElement('td');cell.textContent=String(value);row.append(cell);}body.append(row);}table.append(body);root.append(table);
+      return;
+    }
     const details=document.createElement('div');details.className='snapshot-summary';details.textContent=`${state.phase==='playing'?'경기 중':state.phase==='finished'?'경기 종료':'로비'} · 방 ${world.roomId||'연결 중'} · 빌드 ${world.buildId||'준비 중'} · 리비전 ${world.revision??'—'}`;root.append(details);
     const actors=state.game?.actors||state.game?.tanks?.map((tank,index)=>({...tank,slot:index,isBot:false}))||[];if(!actors.length){const text=document.createElement('p');text.className='muted';text.textContent='아직 경기 액터가 없습니다.';root.append(text);return;}
     const table=document.createElement('table');table.className='actor-table';table.innerHTML='<thead><tr><th>슬롯</th><th>팀</th><th>이름</th><th>제어</th><th>위치</th><th>체력</th></tr></thead>';

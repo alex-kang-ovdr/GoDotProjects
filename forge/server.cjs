@@ -8,6 +8,7 @@ const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
+const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
 const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
@@ -181,7 +182,7 @@ function createServer(options = {}) {
     if (routePath === '/api/health' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       const status = NativeRuntime.availability(root);
-      return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, fortressWarMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1, hubAuth: Boolean(hubAuth) });
+      return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, fortressWarMultiplayer: true, tappyChickenMmoMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1, hubAuth: Boolean(hubAuth) });
     }
 
     if (routePath === '/api/session' && req.method === 'GET') {
@@ -290,6 +291,11 @@ function createServer(options = {}) {
       const fortressRoomRoute = routePath.match(/^\/api\/fortress-war\/rooms\/([a-f0-9]{12})$/);
       if (fortressRoomRoute && req.method === 'GET') {
         const metadata = fortressWar.metadata(fortressRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
+      const tappyMmoRoomRoute = routePath.match(/^\/api\/tappy-chicken-mmo\/rooms\/([a-f0-9]{12})$/);
+      if (tappyMmoRoomRoute && req.method === 'GET') {
+        const metadata = tappyChickenMmo.metadata(tappyMmoRoomRoute[1]);
         return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
       }
       if (routePath === '/api/export/godot-project.zip' && req.method === 'GET') {
@@ -453,6 +459,7 @@ function createServer(options = {}) {
   };
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('brawllabs') });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('fortress-war') });
+  const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('tappy-chicken-mmo') });
 
   server.on('upgrade', async (req, socket, head) => {
     req.url = stripBasePath(req.url || '');
@@ -476,7 +483,7 @@ function createServer(options = {}) {
       catch { socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); }
       return;
     }
-    if (req.url === '/brawllabs' || req.url === '/fortress-war') {
+    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo') {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -487,6 +494,7 @@ function createServer(options = {}) {
     agentChatProvider?.close();
     brawllabs.close();
     fortressWar.close();
+    tappyChickenMmo.close();
     platformApi?.close?.();
     collaboration?.close?.();
     for (const entry of accountPlatforms.values()) entry.api.close?.();

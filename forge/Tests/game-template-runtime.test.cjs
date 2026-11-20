@@ -10,7 +10,7 @@ const { createServer } = require('../server.cjs');
 const root = path.resolve(__dirname, '..');
 const evidenceDirectory = path.join(root, 'Saved', 'Tests', 'game-templates');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const availableTemplates = ['tappy-chicken', 'iron-wood', 'brawllabs', 'fortress-war'];
+const availableTemplates = ['tappy-chicken', 'tappy-chicken-mmo', 'iron-wood', 'brawllabs', 'fortress-war'];
 const runtimeTemplates = process.env.PLAYFORGE_RUNTIME_TEMPLATE ? [process.env.PLAYFORGE_RUNTIME_TEMPLATE] : availableTemplates;
 assert.ok(runtimeTemplates.every(id => availableTemplates.includes(id)), 'Unknown runtime template');
 
@@ -215,7 +215,7 @@ test('Game templates export and start in headless Chrome without runtime errors'
       if (templateId === 'fortress-war') {
         await page.locator('#status').waitFor({ state: 'hidden', timeout: 90000 });
         await playFortressWar(page, canvas);
-      } else if (templateId === 'tappy-chicken') {
+      } else if (templateId === 'tappy-chicken' || templateId === 'tappy-chicken-mmo') {
         // The 480 × 640 game is centered inside the browser canvas.
         const bounds = await canvas.boundingBox();
         const scale = Math.min(bounds.width / 480, bounds.height / 640);
