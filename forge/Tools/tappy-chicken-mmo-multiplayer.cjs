@@ -310,19 +310,32 @@ class TappyMmoRoom {
   }
 }
 
-function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.now, validateBuild = () => null, compat = null } = {}) {
+function attachTappyChickenMmo(
+  server,
+  {
+    originAllowed = () => true,
+    now = Date.now,
+    validateBuild = () => null,
+    compat = null,
+    joinTimeoutMs = 5000,
+    heartbeatIntervalMs = 2000,
+    maxMessagesPerSec = 80,
+  } = {},
+) {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 });
   const rooms = new Map();
   const socketsByRoom = new Map();
 
   const sendJson = (ws, data) => {
-    if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
+    if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) {
+      ws.send(JSON.stringify(data));
+    }
   };
 
   const broadcastState = room => {
     const encoded = JSON.stringify(room.snapshot());
     for (const ws of socketsByRoom.get(room.id) || []) {
-      if (ws.readyState === WebSocket.OPEN) ws.send(encoded);
+      if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) ws.send(encoded);
     }
   };
 
@@ -350,23 +363,52 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
   }, 500);
   stateTimer.unref();
 
+  const heartbeat = setInterval(() => {
+    for (const socket of wss.clients) {
+      if (!socket.alive) {
+        socket.terminate();
+        continue;
+      }
+      socket.alive = false;
+      socket.ping();
+    }
+  }, heartbeatIntervalMs);
+  heartbeat.unref();
+
   wss.on('connection', (ws, req) => {
     if (compat && !compat.enforceWsConnection(ws, req, sendJson)) return;
+    ws.alive = true;
+    ws.on('pong', () => { ws.alive = true; });
+    let rateAt = now();
+    let msgCount = 0;
     let activeRoom = null;
     let activePlayerId = null;
     let joining = false;
+    const joinTimeout = setTimeout(() => {
+      if (!activePlayerId) ws.close(1008, 'Join required');
+    }, joinTimeoutMs);
+    joinTimeout.unref();
 
     ws.on('message', async raw => {
-      let msg;
       try {
-        msg = JSON.parse(raw.toString());
-        if (!msg || typeof msg !== 'object' || Array.isArray(msg)) throw new Error('잘못된 메시지 형식입니다.');
-      } catch {
-        sendJson(ws, { type: 'error', error: '올바른 JSON 메시지가 아닙니다.' });
-        return;
-      }
+        const currentNow = now();
+        if (currentNow - rateAt > 1000) {
+          rateAt = currentNow;
+          msgCount = 0;
+        }
+        if (++msgCount > maxMessagesPerSec) {
+          throw new Error('요청이 너무 빠릅니다.');
+        }
 
-      try {
+        let msg;
+        try {
+          msg = JSON.parse(raw.toString());
+          if (!msg || typeof msg !== 'object' || Array.isArray(msg)) throw new Error('잘못된 메시지 형식입니다.');
+        } catch {
+          sendJson(ws, { type: 'error', error: '올바른 JSON 메시지가 아닙니다.' });
+          return;
+        }
+
         if (compat) {
           const gate = compat.enforceWsMessage(ws, msg, sendJson);
           if (gate.handled) return;
@@ -374,6 +416,7 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
         if (msg.type === 'join') {
           if (activeRoom || joining) throw new Error('이미 MMO 월드에 참가 중입니다.');
           let room = null;
+          let createdRoom = false;
           if (msg.roomId) {
             if (typeof msg.roomId !== 'string' || !ROOM_ID.test(msg.roomId)) throw new Error('잘못된 방 ID입니다.');
             room = rooms.get(msg.roomId);
@@ -383,6 +426,7 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
             const buildId = msg.buildId;
             if (typeof projectId !== 'string' || !PROJECT_ID.test(projectId)) throw new Error('프로젝트 ID가 올바르지 않습니다.');
             if (typeof buildId !== 'string' || !BUILD_ID.test(buildId)) throw new Error('성공한 프로젝트 빌드가 필요합니다.');
+            if (rooms.size >= MAX_ROOMS) throw new Error('활성 MMO 월드가 너무 많습니다.');
             joining = true;
             let build;
             try {
@@ -401,11 +445,24 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
             }, now);
             rooms.set(id, room);
             socketsByRoom.set(id, new Set());
+            createdRoom = true;
+          }
+          let joined;
+          try {
+            joined = room.join(msg.name, { send: payload => sendJson(ws, payload) });
+          } catch (joinError) {
+            if (createdRoom) {
+              rooms.delete(room.id);
+              socketsByRoom.delete(room.id);
+            }
+            activeRoom = null;
+            activePlayerId = null;
+            throw joinError;
           }
           socketsByRoom.get(room.id).add(ws);
           activeRoom = room;
-          const { player } = room.join(msg.name, { send: payload => sendJson(ws, payload) });
-          activePlayerId = player.id;
+          activePlayerId = joined.player.id;
+          clearTimeout(joinTimeout);
           broadcastState(room);
           return;
         }
@@ -426,6 +483,7 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
     });
 
     ws.on('close', () => {
+      clearTimeout(joinTimeout);
       if (!activeRoom) return;
       socketsByRoom.get(activeRoom.id)?.delete(ws);
       if (activePlayerId) activeRoom.leave(activePlayerId);
@@ -437,12 +495,14 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
   });
 
   return {
+    rooms,
     metadata(roomId) {
       const room = rooms.get(roomId);
       return room ? room.metadata() : null;
     },
     close() {
       clearInterval(stateTimer);
+      clearInterval(heartbeat);
       server.off('upgrade', upgrade);
       for (const client of wss.clients) client.terminate();
       wss.close();

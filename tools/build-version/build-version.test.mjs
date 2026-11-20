@@ -15,6 +15,8 @@ import {
   createDefaultReleasePolicy,
   mergeReleasePolicy,
   applyEnvPolicyOverrides,
+  loadReleasePolicyFile,
+  saveReleasePolicyFile,
   COMPAT_DECISIONS,
   COMPAT_REASONS,
   COMPAT_WS_CLOSE_FORCE_UPDATE,
@@ -309,6 +311,158 @@ test('applyEnvPolicyOverrides applies PLAYHUB_UPDATE_POLICY and PLAYHUB_FORCE_TA
   assert.equal(forcedSubset.targets.aos.updatePolicy, 'force');
   assert.equal(forcedSubset.targets.ios.updatePolicy, 'optional');
   assert.equal(forcedSubset.targets.hub.latestBuildCode, 2026112103);
+  assert.equal(forcedSubset.targets.aos.latestBuildCode, 0);
+  assert.equal(forcedSubset.targets.ios.latestBuildCode, 0);
+});
+
+test('cross-target regression: Hub force build & minClientBuildCode never block AOS/iOS/desktop clients', () => {
+  const hubForce = resolveBuildInfo({
+    target: 'hub',
+    semver: '0.3.1',
+    channel: 'live',
+    buildNum: 55,
+    dailySeq: 12,
+    date: FIXED_DATE,
+    branch: 'PlayHub-Platform',
+    commit: '13c70ba',
+    dirty: false,
+    updatePolicy: 'force',
+  });
+  // Force build must NOT auto-lock minClientBuildCode to buildCode
+  assert.equal(hubForce.minClientBuildCode, 0);
+
+  // Even when serverBuildInfo.minClientBuildCode is explicitly set on hub, it applies ONLY to hub
+  const hubWithFloor = resolveBuildInfo({
+    target: 'hub',
+    semver: '0.3.1',
+    channel: 'live',
+    buildNum: 55,
+    dailySeq: 12,
+    date: FIXED_DATE,
+    branch: 'PlayHub-Platform',
+    commit: '13c70ba',
+    dirty: false,
+    updatePolicy: 'force',
+    minClientBuildCode: 2026112112,
+  });
+
+  const seeded = applyEnvPolicyOverrides(
+    createDefaultReleasePolicy({
+      serverTarget: hubWithFloor.target,
+      updatePolicy: hubWithFloor.updatePolicy,
+      latestBuildCode: hubWithFloor.buildCode,
+      minBuildCode: hubWithFloor.minClientBuildCode,
+    }),
+    { PLAYHUB_UPDATE_POLICY: 'force' },
+    hubWithFloor.buildCode,
+    hubWithFloor.target,
+  );
+  assert.equal(seeded.targets.hub.latestBuildCode, 2026112112);
+  assert.equal(seeded.targets.hub.updatePolicy, 'force');
+  assert.equal(seeded.targets.aos.latestBuildCode, 0);
+  assert.equal(seeded.targets.aos.minBuildCode, 0);
+  assert.equal(seeded.targets.aos.updatePolicy, 'optional');
+  assert.equal(seeded.targets.ios.latestBuildCode, 0);
+  assert.equal(seeded.targets['forge-desktop'].latestBuildCode, 0);
+
+  // Older AOS/iOS/desktop clients remain ALLOWED when only Hub was force-deployed
+  for (const otherTarget of ['aos', 'ios', 'forge-desktop']) {
+    const res = evaluateCompatibility({
+      serverBuildInfo: hubWithFloor,
+      releasePolicy: seeded,
+      client: {
+        target: otherTarget,
+        buildCode: 2026110101,
+        engineAbi: 'godot-4.7',
+        engineApiRev: 1,
+        netProtocol: '1.0',
+        gameplayHash: 'default',
+      },
+    });
+    assert.equal(res.decision, COMPAT_DECISIONS.ALLOW, `${otherTarget} should not be blocked by Hub force/min`);
+    assert.equal(res.httpStatus, 200);
+  }
+
+  // Older Hub client IS blocked by Hub's minClientBuildCode
+  const hubOld = evaluateCompatibility({
+    serverBuildInfo: hubWithFloor,
+    releasePolicy: seeded,
+    client: { target: 'hub', buildCode: 2026110101 },
+  });
+  assert.equal(hubOld.decision, COMPAT_DECISIONS.BLOCK_FORCE_UPDATE);
+  assert.equal(hubOld.reason, COMPAT_REASONS.BELOW_MIN_CLIENT_BUILD);
+});
+
+test('per-target forceSinceUtc prevents grace period reset when unrelated policy fields change or restart occurs', () => {
+  const t0 = Date.parse('2026-11-21T02:00:00Z');
+  const t8m = Date.parse('2026-11-21T02:08:00Z');
+  const t11m = Date.parse('2026-11-21T02:11:00Z');
+  const server = resolveBuildInfo({
+    target: 'hub',
+    semver: '0.3.1',
+    channel: 'live',
+    buildNum: 50,
+    dailySeq: 10,
+    date: FIXED_DATE,
+    branch: 'PlayHub-Platform',
+    commit: '13c70ba',
+    dirty: false,
+  });
+
+  let policy = createDefaultReleasePolicy({
+    serverTarget: 'hub',
+    updatePolicy: 'optional',
+    latestBuildCode: 2026112110,
+    updatedAtUtc: '2026-11-21T01:50:00Z',
+  });
+
+  // Enable force on AOS at t0 with 10-minute grace
+  policy = mergeReleasePolicy(
+    policy,
+    { targets: { aos: { updatePolicy: 'force', latestBuildCode: 2026112110, graceMinutes: 10 } } },
+    { nowMs: t0, updatedBy: 'ops' },
+  );
+  assert.equal(policy.targets.aos.forceSinceUtc, '2026-11-21T02:00:00Z');
+
+  // Unrelated edit on iOS at t0 + 8m updates policy.updatedAtUtc, must NOT reset aos.forceSinceUtc
+  policy = mergeReleasePolicy(
+    policy,
+    { targets: { ios: { notice: 'iOS notice update' } } },
+    { nowMs: t8m, updatedBy: 'ops' },
+  );
+  assert.equal(policy.updatedAtUtc, '2026-11-21T02:08:00Z');
+  assert.equal(policy.targets.aos.forceSinceUtc, '2026-11-21T02:00:00Z');
+
+  // Persist and reload from disk (simulating instance restart)
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'relpol-grace-'));
+  try {
+    const file = path.join(tmp, 'release-policy.json');
+    saveReleasePolicyFile(file, policy);
+    const reloaded = loadReleasePolicyFile(file, createDefaultReleasePolicy({}));
+    assert.equal(reloaded.targets.aos.forceSinceUtc, '2026-11-21T02:00:00Z');
+
+    // At t0 + 8m (within 10m grace from t0), inMatch client is still softly allowed
+    const duringGrace = evaluateCompatibility({
+      serverBuildInfo: server,
+      releasePolicy: reloaded,
+      nowMs: t8m,
+      client: { target: 'aos', buildCode: 2026112105, inMatch: true },
+    });
+    assert.equal(duringGrace.decision, COMPAT_DECISIONS.ALLOW_SOFT_UPDATE);
+    assert.equal(duringGrace.graceRemainingSec, 120);
+
+    // At t0 + 11m (past 10m grace from t0, even though only 3m after t8m edit), inMatch client is BLOCKED
+    const afterGrace = evaluateCompatibility({
+      serverBuildInfo: server,
+      releasePolicy: reloaded,
+      nowMs: t11m,
+      client: { target: 'aos', buildCode: 2026112105, inMatch: true },
+    });
+    assert.equal(afterGrace.decision, COMPAT_DECISIONS.BLOCK_FORCE_UPDATE);
+    assert.equal(afterGrace.reason, COMPAT_REASONS.POLICY_FORCE_UPDATE);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
 });
 
 test('CLI emits BUILD_INFO.json and GITHUB_OUTPUT lines cleanly', () => {
@@ -341,6 +495,7 @@ test('CLI emits BUILD_INFO.json and GITHUB_OUTPUT lines cleanly', () => {
     const ghText = fs.readFileSync(ghOut, 'utf8');
     assert.match(ghText, /^hub_build_id=hub-v0\.3\.0-20261121-0132-playhub-platform-g13c70ba-b77$/m);
     assert.match(ghText, /^hub_build_code=2026112103$/m);
+    assert.match(ghText, /^hub_daily_seq=3$/m);
     assert.match(ghText, /^hub_sha_tag=sha-13c70ba$/m);
     assert.match(ghText, /^hub_revision=ph-pub-20261121-0132-b77-13c70ba$/m);
   } finally {

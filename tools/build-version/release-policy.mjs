@@ -17,12 +17,22 @@ function isValidBuildCode(value) {
   );
 }
 
+function normalizeIsoUtc(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return null;
+  return new Date(parsed).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
 export function createDefaultTargetPolicy(options = {}) {
+  const updatePolicy = options.updatePolicy === 'force' ? 'force' : 'optional';
+  const forceSinceUtc = updatePolicy === 'force' ? normalizeIsoUtc(options.forceSinceUtc) : null;
   return {
-    updatePolicy: options.updatePolicy === 'force' ? 'force' : 'optional',
+    updatePolicy,
     latestBuildCode: Number.isInteger(options.latestBuildCode) ? options.latestBuildCode : 0,
     minBuildCode: Number.isInteger(options.minBuildCode) ? options.minBuildCode : 0,
     graceMinutes: Number.isInteger(options.graceMinutes) ? options.graceMinutes : DEFAULT_GRACE_MINUTES,
+    forceSinceUtc,
     storeUrl: typeof options.storeUrl === 'string' && options.storeUrl.trim() ? options.storeUrl.trim() : null,
     notice: typeof options.notice === 'string' ? options.notice : '',
   };
@@ -32,20 +42,26 @@ export function createDefaultReleasePolicy(options = {}) {
   const defaultUpdatePolicy = options.updatePolicy === 'force' ? 'force' : 'optional';
   const latestBuildCode = Number.isInteger(options.latestBuildCode) ? options.latestBuildCode : 0;
   const minBuildCode = Number.isInteger(options.minBuildCode) ? options.minBuildCode : 0;
+  const serverTarget = TARGETS.includes(options.serverTarget) ? options.serverTarget : null;
+  const updatedAtUtc =
+    normalizeIsoUtc(options.updatedAtUtc) || new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const targets = {};
   for (const target of TARGETS) {
+    const applyServerDefaults = !serverTarget || target === serverTarget;
+    const targetUpdatePolicy = applyServerDefaults ? defaultUpdatePolicy : 'optional';
     targets[target] = createDefaultTargetPolicy({
-      updatePolicy: defaultUpdatePolicy,
-      latestBuildCode,
-      minBuildCode,
+      updatePolicy: targetUpdatePolicy,
+      latestBuildCode: applyServerDefaults ? latestBuildCode : 0,
+      minBuildCode: applyServerDefaults ? minBuildCode : 0,
       graceMinutes: options.graceMinutes ?? DEFAULT_GRACE_MINUTES,
+      forceSinceUtc: targetUpdatePolicy === 'force' ? (options.forceSinceUtc ?? updatedAtUtc) : null,
     });
   }
   return {
     schemaVersion: 1,
     revision: 1,
     defaultUpdatePolicy,
-    updatedAtUtc: options.updatedAtUtc || new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'),
+    updatedAtUtc,
     updatedBy: options.updatedBy || 'system',
     targets,
     activePools: Array.isArray(options.activePools) ? options.activePools : [],
@@ -66,7 +82,7 @@ export function parseForceTargetsList(rawValue) {
   return parsed;
 }
 
-export function applyEnvPolicyOverrides(policy, env = process.env, serverBuildCode = 0) {
+export function applyEnvPolicyOverrides(policy, env = process.env, serverBuildCode = 0, serverTarget = 'hub') {
   const next = structuredClone(policy);
   const envPolicy = String(env.PLAYHUB_UPDATE_POLICY || '').trim().toLowerCase();
   const forceTargets = parseForceTargetsList(env.PLAYHUB_FORCE_TARGETS || '');
@@ -74,24 +90,24 @@ export function applyEnvPolicyOverrides(policy, env = process.env, serverBuildCo
   const graceEnv = env.PLAYHUB_UPDATE_GRACE_MINUTES !== undefined && env.PLAYHUB_UPDATE_GRACE_MINUTES !== ''
     ? Number(env.PLAYHUB_UPDATE_GRACE_MINUTES)
     : null;
+  const resolvedTarget = TARGETS.includes(serverTarget) ? serverTarget : 'hub';
+  const nowUtc = normalizeIsoUtc(next.updatedAtUtc) || new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 
-  if (serverBuildCode > 0) {
-    for (const target of TARGETS) {
-      if (!next.targets[target].latestBuildCode) {
-        next.targets[target].latestBuildCode = serverBuildCode;
-      }
-    }
+  if (serverBuildCode > 0 && next.targets[resolvedTarget] && !next.targets[resolvedTarget].latestBuildCode) {
+    next.targets[resolvedTarget].latestBuildCode = serverBuildCode;
   }
 
   if (UPDATE_POLICIES.includes(envPolicy)) {
     next.defaultUpdatePolicy = envPolicy;
     if (envPolicy === 'force' && forceTargets.length === 0) {
-      for (const target of TARGETS) {
-        next.targets[target].updatePolicy = 'force';
+      if (next.targets[resolvedTarget]) {
+        next.targets[resolvedTarget].updatePolicy = 'force';
+        next.targets[resolvedTarget].forceSinceUtc = next.targets[resolvedTarget].forceSinceUtc || nowUtc;
       }
     } else if (envPolicy === 'optional' && forceTargets.length === 0) {
       for (const target of TARGETS) {
         next.targets[target].updatePolicy = 'optional';
+        next.targets[target].forceSinceUtc = null;
       }
     }
   }
@@ -99,12 +115,16 @@ export function applyEnvPolicyOverrides(policy, env = process.env, serverBuildCo
   if (forceTargets.length > 0) {
     for (const target of forceTargets) {
       next.targets[target].updatePolicy = 'force';
+      next.targets[target].forceSinceUtc = next.targets[target].forceSinceUtc || nowUtc;
     }
   }
 
   if (Number.isInteger(minCodeEnv) && minCodeEnv > 0 && minCodeEnv < MAX_GOOGLE_PLAY_VERSION_CODE) {
-    for (const target of TARGETS) {
-      next.targets[target].minBuildCode = Math.max(next.targets[target].minBuildCode || 0, minCodeEnv);
+    const minTargets = forceTargets.length > 0 ? forceTargets : [resolvedTarget];
+    for (const target of minTargets) {
+      if (next.targets[target]) {
+        next.targets[target].minBuildCode = Math.max(next.targets[target].minBuildCode || 0, minCodeEnv);
+      }
     }
   }
 
@@ -182,6 +202,17 @@ export function validateReleasePolicyPatch(patch) {
           throw new Error(`Invalid graceMinutes for "${target}": ${cfg.graceMinutes}`);
         }
         clean.graceMinutes = val;
+      }
+      if (cfg.forceSinceUtc !== undefined) {
+        if (cfg.forceSinceUtc === null || cfg.forceSinceUtc === '') {
+          clean.forceSinceUtc = null;
+        } else {
+          const normalizedUtc = normalizeIsoUtc(cfg.forceSinceUtc);
+          if (!normalizedUtc) {
+            throw new Error(`Invalid forceSinceUtc for "${target}": ${cfg.forceSinceUtc}`);
+          }
+          clean.forceSinceUtc = normalizedUtc;
+        }
       }
       if (cfg.storeUrl !== undefined) {
         if (cfg.storeUrl !== null && (typeof cfg.storeUrl !== 'string' || cfg.storeUrl.length > 512)) {
@@ -266,6 +297,23 @@ export function mergeReleasePolicy(current, rawPatch, meta = {}) {
     next.activePools = patch.activePools;
   }
 
+  for (const target of TARGETS) {
+    const prevTarget = current.targets?.[target];
+    const nextTarget = next.targets[target];
+    const explicitForceSince = patch.targets?.[target]?.forceSinceUtc;
+    if (nextTarget.updatePolicy === 'force') {
+      if (explicitForceSince !== undefined && explicitForceSince !== null) {
+        nextTarget.forceSinceUtc = explicitForceSince;
+      } else if (prevTarget?.updatePolicy === 'force' && normalizeIsoUtc(prevTarget.forceSinceUtc)) {
+        nextTarget.forceSinceUtc = normalizeIsoUtc(prevTarget.forceSinceUtc);
+      } else {
+        nextTarget.forceSinceUtc = nowIso;
+      }
+    } else {
+      nextTarget.forceSinceUtc = null;
+    }
+  }
+
   next.revision = Number(current.revision || 0) + 1;
   next.updatedAtUtc = nowIso;
   next.updatedBy = meta.updatedBy || 'admin';
@@ -288,10 +336,15 @@ export function loadReleasePolicyFile(filePath, fallback) {
     base.revision = Number.isInteger(parsed.revision) ? parsed.revision : 1;
     for (const target of TARGETS) {
       if (parsed.targets[target]) {
-        base.targets[target] = createDefaultTargetPolicy({
+        const rawTarget = parsed.targets[target];
+        const mergedTarget = {
           ...base.targets[target],
-          ...parsed.targets[target],
-        });
+          ...rawTarget,
+        };
+        if (mergedTarget.updatePolicy === 'force' && !normalizeIsoUtc(rawTarget.forceSinceUtc)) {
+          mergedTarget.forceSinceUtc = base.updatedAtUtc;
+        }
+        base.targets[target] = createDefaultTargetPolicy(mergedTarget);
       }
     }
     return base;

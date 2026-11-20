@@ -89,6 +89,7 @@ function createMultiplayerCompat(options = {}) {
     ? structuredClone(options.releasePolicy)
     : applyEnvPolicyOverrides(
         createDefaultReleasePolicy({
+          serverTarget: serverBuildInfo.target,
           updatePolicy: serverBuildInfo.updatePolicy,
           latestBuildCode: serverBuildInfo.buildCode,
           minBuildCode: serverBuildInfo.minClientBuildCode,
@@ -96,7 +97,31 @@ function createMultiplayerCompat(options = {}) {
         }),
         env,
         serverBuildInfo.buildCode,
+        serverBuildInfo.target,
       );
+
+  const legacyPoolBySocket = new WeakMap();
+
+  function getPublicPolicySummary() {
+    const targets = {};
+    for (const [target, cfg] of Object.entries(releasePolicy.targets || {})) {
+      targets[target] = {
+        updatePolicy: cfg.updatePolicy,
+        latestBuildCode: cfg.latestBuildCode,
+        minBuildCode: cfg.minBuildCode,
+        graceMinutes: cfg.graceMinutes,
+        forceSinceUtc: cfg.forceSinceUtc || null,
+        storeUrl: cfg.storeUrl,
+        notice: cfg.notice,
+      };
+    }
+    return {
+      revision: releasePolicy.revision,
+      defaultUpdatePolicy: releasePolicy.defaultUpdatePolicy,
+      updatedAtUtc: releasePolicy.updatedAtUtc,
+      targets,
+    };
+  }
 
   function extractClientFromRequest(req) {
     let params = null;
@@ -173,6 +198,11 @@ function createMultiplayerCompat(options = {}) {
       ws.close(COMPAT_WS_CLOSE_FORCE_UPDATE, result.reason);
       return false;
     }
+    if (result.decision === COMPAT_DECISIONS.ROUTE_LEGACY_POOL) {
+      legacyPoolBySocket.set(ws, result);
+      sendJson(ws, { type: 'compat', ...result });
+      return true;
+    }
     if (result.decision !== COMPAT_DECISIONS.ALLOW) {
       sendJson(ws, { type: 'compat', ...result });
     }
@@ -191,19 +221,37 @@ function createMultiplayerCompat(options = {}) {
         ws.close(COMPAT_WS_CLOSE_FORCE_UPDATE, result.reason);
         return { handled: true, allowed: false, result };
       }
-      return { handled: true, allowed: true, result };
-    }
-    if (message.type === 'join' && message.compat && typeof message.compat === 'object') {
-      const result = check(message.compat);
-      if (result.decision === COMPAT_DECISIONS.BLOCK_FORCE_UPDATE) {
-        sendJson(ws, { type: 'compat', ...result });
-        ws.close(COMPAT_WS_CLOSE_FORCE_UPDATE, result.reason);
+      if (result.decision === COMPAT_DECISIONS.ROUTE_LEGACY_POOL) {
+        legacyPoolBySocket.set(ws, result);
         return { handled: true, allowed: false, result };
       }
-      if (result.decision !== COMPAT_DECISIONS.ALLOW) {
-        sendJson(ws, { type: 'compat', ...result });
+      legacyPoolBySocket.delete(ws);
+      return { handled: true, allowed: true, result };
+    }
+    if (message.type === 'join') {
+      if (message.compat && typeof message.compat === 'object') {
+        const result = check(message.compat);
+        if (result.decision === COMPAT_DECISIONS.BLOCK_FORCE_UPDATE) {
+          sendJson(ws, { type: 'compat', ...result });
+          ws.close(COMPAT_WS_CLOSE_FORCE_UPDATE, result.reason);
+          return { handled: true, allowed: false, result };
+        }
+        if (result.decision === COMPAT_DECISIONS.ROUTE_LEGACY_POOL) {
+          legacyPoolBySocket.set(ws, result);
+          sendJson(ws, { type: 'compat', ...result });
+          return { handled: true, allowed: false, result };
+        }
+        legacyPoolBySocket.delete(ws);
+        if (result.decision !== COMPAT_DECISIONS.ALLOW) {
+          sendJson(ws, { type: 'compat', ...result });
+        }
+        return { handled: false, allowed: true, result };
       }
-      return { handled: false, allowed: true, result };
+      if (legacyPoolBySocket.has(ws)) {
+        const legacyResult = legacyPoolBySocket.get(ws);
+        sendJson(ws, { type: 'compat', ...legacyResult });
+        return { handled: true, allowed: false, result: legacyResult };
+      }
     }
     return { handled: false, allowed: true, result: null };
   }
@@ -211,6 +259,7 @@ function createMultiplayerCompat(options = {}) {
   return {
     serverBuildInfo,
     getPolicy: () => structuredClone(releasePolicy),
+    getPublicPolicySummary,
     updatePolicy,
     extractClientFromRequest,
     check,

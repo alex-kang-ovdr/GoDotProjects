@@ -6,6 +6,7 @@ import { randomBytes, scryptSync } from 'node:crypto';
 import { PassThrough } from 'node:stream';
 import test from 'node:test';
 import { createApp } from '../server/app.mjs';
+import { createFallbackBuildVersion } from '../server/version-compat.mjs';
 import { inspectDatabase } from '../tools/restore-data.mjs';
 
 function makeAdminCreds(password) {
@@ -119,6 +120,9 @@ test('Hub /api/version, /api/compat/check, and /api/admin/release-policy support
     const verPublic = await callHandler(app.publicHandler, '/api/version');
     assert.equal(verPublic.status, 200);
     assert.equal(verPublic.data.buildInfo.buildCode, 2026112110);
+    assert.equal(verPublic.data.releasePolicy.targets.hub.latestBuildCode, 2026112110);
+    assert.equal(verPublic.data.releasePolicy.targets.aos.latestBuildCode, 0);
+    assert.equal(verPublic.data.releasePolicy.targets.ios.latestBuildCode, 0);
     assert.equal(verPublic.data.releasePolicy.targets.aos.updatePolicy, 'optional');
 
     const verAdmin = await callHandler(app.adminHandler, '/api/version', { origin: 'http://127.0.0.1:8081' });
@@ -129,12 +133,28 @@ test('Hub /api/version, /api/compat/check, and /api/admin/release-policy support
     const publicAdminBlocked = await callHandler(app.publicHandler, '/api/admin/release-policy');
     assert.equal(publicAdminBlocked.status, 404);
 
-    // 3. Under default optional policy, older AOS build (native client with no Origin) gets COMPAT_ALLOW_SOFT_UPDATE (200)
-    const softCheck = await callHandler(app.publicHandler, '/api/compat/check', {
+    // 3a. Cross-target isolation: AOS client is NOT treated as behind Hub's buildCode before AOS latestBuildCode is configured
+    const aosUnseeded = await callHandler(app.publicHandler, '/api/compat/check', {
       method: 'POST',
       origin: '',
       body: {
         target: 'aos',
+        buildCode: 2026112105,
+        engineAbi: 'godot-4.7',
+        engineApiRev: 2,
+        netProtocol: '1.2',
+        gameplayHash: 'rules-v2',
+      },
+    });
+    assert.equal(aosUnseeded.status, 200);
+    assert.equal(aosUnseeded.data.decision, 'COMPAT_ALLOW');
+
+    // 3b. Under default optional policy, older Hub build gets COMPAT_ALLOW_SOFT_UPDATE (200)
+    const softCheck = await callHandler(app.publicHandler, '/api/compat/check', {
+      method: 'POST',
+      origin: '',
+      body: {
+        target: 'hub',
         buildCode: 2026112105,
         engineAbi: 'godot-4.7',
         engineApiRev: 2,
@@ -187,11 +207,12 @@ test('Hub /api/version, /api/compat/check, and /api/admin/release-policy support
         targets: {
           aos: {
             updatePolicy: 'force',
+            latestBuildCode: 2026112110,
             graceMinutes: 10,
             storeUrl: 'https://play.google.com/store/apps/details?id=com.playhub.app',
             notice: '긴급 보안 패치',
           },
-          ios: { updatePolicy: 'optional' },
+          ios: { updatePolicy: 'optional', latestBuildCode: 2026112110 },
         },
         activePools: [
           {
@@ -277,4 +298,103 @@ test('Hub /api/version, /api/compat/check, and /api/admin/release-policy support
     await app.close();
     fs.rmSync(tmp, { recursive: true, force: true });
   }
+});
+
+test('Hub force deploy never blocks AOS/iOS and can be reverted to optional via Admin API', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-compat-force-'));
+  const dataDir = path.join(tmp, 'data');
+  const adminCreds = makeAdminCreds('StrongPass123!');
+  const env = {
+    PLAYHUB_CHANNEL: 'live',
+    PLAYHUB_BUILD_NUM: '50',
+    PLAYHUB_DAILY_SEQ: '12',
+    PLAYHUB_BUILD_DATE: '2026-11-20T16:32:00Z',
+    PLAYHUB_BRANCH: 'PlayHub-Platform',
+    PLAYHUB_COMMIT: '13c70ba',
+    PLAYHUB_UPDATE_POLICY: 'force',
+  };
+  const app = createApp(makeTestConfig(dataDir, adminCreds), { env });
+
+  try {
+    // AOS & iOS older builds are NOT blocked by Hub force deploy
+    const aosCheck = await callHandler(app.publicHandler, '/api/compat/check', {
+      method: 'POST',
+      origin: '',
+      body: { target: 'aos', buildCode: 2026110101 },
+    });
+    assert.equal(aosCheck.status, 200);
+    assert.equal(aosCheck.data.decision, 'COMPAT_ALLOW');
+
+    // Older Hub build IS blocked
+    const hubBlocked = await callHandler(app.publicHandler, '/api/compat/check', {
+      method: 'POST',
+      body: { target: 'hub', buildCode: 2026110101 },
+    });
+    assert.equal(hubBlocked.status, 426);
+    assert.equal(hubBlocked.data.reason, 'COMPAT_REASON_POLICY_FORCE_UPDATE');
+
+    // Admin switches Hub back to optional -> older Hub build is immediately unblocked
+    const auth = await loginAdmin(app, 'StrongPass123!');
+    const reverted = await callHandler(app.adminHandler, '/api/admin/release-policy', {
+      method: 'POST',
+      origin: 'http://127.0.0.1:8081',
+      cookie: auth.cookie,
+      csrf: auth.csrf,
+      body: { targets: { hub: { updatePolicy: 'optional' } } },
+    });
+    assert.equal(reverted.status, 200);
+
+    const hubUnblocked = await callHandler(app.publicHandler, '/api/compat/check', {
+      method: 'POST',
+      body: { target: 'hub', buildCode: 2026110101 },
+    });
+    assert.equal(hubUnblocked.status, 200);
+    assert.equal(hubUnblocked.data.decision, 'COMPAT_ALLOW_SOFT_UPDATE');
+  } finally {
+    await app.close();
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('version-compat fallback enforces hard guardrails (not fail-open) and validates mergeReleasePolicy patches', () => {
+  const fb = createFallbackBuildVersion();
+  const server = fb.resolveBuildInfo({
+    target: 'hub',
+    channel: 'live',
+    dailySeq: 5,
+    date: '2026-11-20T16:32:00Z',
+    engineAbi: 'godot-4.7',
+    engineApiRev: 2,
+    minEngineApiRev: 2,
+    netProtocol: '2.1',
+    gameplayHash: 'rules-v2',
+    updatePolicy: 'optional',
+  });
+  const policy = fb.createDefaultReleasePolicy({
+    serverTarget: 'hub',
+    updatePolicy: 'optional',
+    latestBuildCode: server.buildCode,
+  });
+  assert.equal(policy.targets.hub.latestBuildCode, server.buildCode);
+  assert.equal(policy.targets.aos.latestBuildCode, 0);
+
+  // Hard guardrails must block even in fallback mode
+  const dirtyRes = fb.evaluateCompatibility({ serverBuildInfo: server, releasePolicy: policy, client: { target: 'aos', dirty: true } });
+  assert.equal(dirtyRes.decision, 'COMPAT_BLOCK_FORCE_UPDATE');
+  assert.equal(dirtyRes.httpStatus, 426);
+
+  const abiRes = fb.evaluateCompatibility({ serverBuildInfo: server, releasePolicy: policy, client: { target: 'aos', engineAbi: 'godot-4.6' } });
+  assert.equal(abiRes.decision, 'COMPAT_BLOCK_FORCE_UPDATE');
+  assert.equal(abiRes.reason, 'COMPAT_REASON_ENGINE_ABI_MISMATCH');
+
+  const protoRes = fb.evaluateCompatibility({ serverBuildInfo: server, releasePolicy: policy, client: { target: 'aos', netProtocol: '1.0' } });
+  assert.equal(protoRes.decision, 'COMPAT_BLOCK_FORCE_UPDATE');
+  assert.equal(protoRes.reason, 'COMPAT_REASON_PROTOCOL_MAJOR_MISMATCH');
+
+  // mergeReleasePolicy validation must reject invalid inputs
+  assert.throws(() => fb.mergeReleasePolicy(policy, null), /JSON object/);
+  assert.throws(() => fb.mergeReleasePolicy(policy, { targets: { bogus: { updatePolicy: 'force' } } }), /Unknown target/);
+  assert.throws(() => fb.mergeReleasePolicy(policy, { targets: { aos: { updatePolicy: 'hack' } } }), /Invalid updatePolicy/);
+  assert.throws(() => fb.mergeReleasePolicy(policy, { targets: { aos: { storeUrl: 'javascript:alert(1)' } } }), /http/);
+  assert.throws(() => fb.mergeReleasePolicy(policy, { activePools: [{ poolId: 'p1', gameplayHash: 'h', endpoint: 'ftp://bad' }] }), /endpoint/);
 });

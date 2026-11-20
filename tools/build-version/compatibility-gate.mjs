@@ -66,9 +66,10 @@ function findMatchingDrainPool(releasePolicy, gameplayHash, nowMs) {
 function computeGraceRemainingSec(releasePolicy, targetPolicy, nowMs) {
   const graceMinutes = Number(targetPolicy?.graceMinutes ?? 0);
   if (!Number.isFinite(graceMinutes) || graceMinutes <= 0) return 0;
-  const updatedMs = releasePolicy?.updatedAtUtc ? Date.parse(releasePolicy.updatedAtUtc) : NaN;
-  if (!Number.isFinite(updatedMs)) return 0;
-  const deadlineMs = updatedMs + graceMinutes * 60 * 1000;
+  const anchorUtc = targetPolicy?.forceSinceUtc || releasePolicy?.updatedAtUtc;
+  const anchorMs = anchorUtc ? Date.parse(anchorUtc) : NaN;
+  if (!Number.isFinite(anchorMs)) return 0;
+  const deadlineMs = anchorMs + graceMinutes * 60 * 1000;
   return Math.max(0, Math.ceil((deadlineMs - nowMs) / 1000));
 }
 
@@ -85,7 +86,9 @@ export function evaluateCompatibility({
   const clientTarget = TARGETS.includes(client.target) ? client.target : serverBuildInfo.target;
   const targetPolicy = releasePolicy?.targets?.[clientTarget] || null;
   const effectiveUpdatePolicy =
-    targetPolicy?.updatePolicy || serverBuildInfo.updatePolicy || 'optional';
+    targetPolicy?.updatePolicy ||
+    (clientTarget === serverBuildInfo.target ? serverBuildInfo.updatePolicy : null) ||
+    'optional';
 
   const serverCompat = serverBuildInfo.compat || {
     engineAbi: 'godot-4.7',
@@ -167,8 +170,10 @@ export function evaluateCompatibility({
       ? Number(client.buildCode)
       : null;
 
+  const serverMinBuildCode =
+    clientTarget === serverBuildInfo.target ? Number(serverBuildInfo.minClientBuildCode || 0) : 0;
   const effectiveMinBuildCode = Math.max(
-    Number(serverBuildInfo.minClientBuildCode || 0),
+    serverMinBuildCode,
     Number(targetPolicy?.minBuildCode || 0),
   );
   if (

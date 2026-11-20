@@ -166,7 +166,7 @@ function createMultiplayerServer(options = {}) {
       return json(200, {
         ok: true,
         buildInfo: compat.serverBuildInfo,
-        releasePolicy: compat.getPolicy(),
+        releasePolicy: compat.getPublicPolicySummary(),
       });
     }
 

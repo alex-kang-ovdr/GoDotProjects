@@ -252,9 +252,7 @@ export function resolveBuildInfo(options = {}) {
   const minClientBuildCode =
     options.minClientBuildCode !== undefined && options.minClientBuildCode !== null && options.minClientBuildCode !== ''
       ? Number(options.minClientBuildCode)
-      : updatePolicy === 'force'
-        ? buildCode
-        : 0;
+      : 0;
   if (!Number.isInteger(minClientBuildCode) || minClientBuildCode < 0 || minClientBuildCode >= MAX_GOOGLE_PLAY_VERSION_CODE) {
     throw new Error(`Invalid minClientBuildCode: ${options.minClientBuildCode}`);
   }
@@ -387,6 +385,7 @@ if (isDirectExecution) {
     const lines = [
       `${p}build_id=${info.buildId}`,
       `${p}build_code=${info.buildCode}`,
+      `${p}daily_seq=${info.dailySeq}`,
       `${p}build_tag=${info.artifacts.dockerTag || info.buildId}`,
       `${p}sha_tag=${info.artifacts.shaTag}`,
       `${p}revision=${info.cloudRun.revisionSuffix}`,
