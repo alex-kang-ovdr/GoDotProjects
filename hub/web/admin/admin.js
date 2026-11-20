@@ -10,6 +10,7 @@ import {
   renderSystemAccess,
   renderSystemBackups,
   renderSystemDevops,
+  renderSystemReleasePolicy,
   renderForgeOverview,
   renderForgeProjects,
   renderForgeBuilds,
@@ -176,7 +177,7 @@ const ALL_PANELS = [
   'metrics-toolbar-wrap', 'hub-live-bar', 'qa-dataset-bar', 'hub-action-queue',
   'overview', 'trends', 'play-funnel', 'retention', 'games', 'game-detail-panel',
   'submissions', 'community', 'hub-users-panel',
-  'system-overview-panel', 'system-config-panel', 'system-access-panel', 'system-backups-panel', 'system-devops-panel', 'errors', 'audit',
+  'system-overview-panel', 'system-config-panel', 'system-access-panel', 'system-backups-panel', 'system-devops-panel', 'system-release-policy-panel', 'errors', 'audit',
   'forge-overview-panel', 'forge-projects-panel', 'forge-builds-panel', 'forge-drive-panel', 'forge-sessions-panel', 'forge-settings-panel',
   'qa-overview-panel', 'qa-runs-panel', 'qa-ai-panel', 'qa-policies-panel', 'qa-run-ids-panel',
   'l10n-overview-panel', 'l10n-strings-panel', 'l10n-gather-panel', 'l10n-ai-panel', 'l10n-glossary-panel', 'l10n-media-panel', 'l10n-releases-panel',
@@ -200,6 +201,7 @@ function updatePanelVisibility() {
     else if (view === 'access') show('system-access-panel');
     else if (view === 'backups') show('system-backups-panel');
     else if (view === 'devops') show('system-devops-panel');
+    else if (view === 'release-policy') show('system-release-policy-panel');
     else if (view === 'errors') show('errors');
     else if (view === 'audit') show('audit');
   } else if (tab === 'forge') {
@@ -706,6 +708,20 @@ async function refreshSystemViews() {
         const res = await api('/api/admin/devops/preview/stop', { method: 'POST', body: payload });
         notice(`로컬 프리뷰 ${res.result.runId} 중지 및 정리 완료.`);
         await refreshSystemViews();
+      }
+    });
+    return;
+  }
+  if (activeRoute.view === 'release-policy') {
+    const policyData = await api('/api/admin/release-policy');
+    if (token !== generation || !authenticated) return;
+    renderSystemReleasePolicy($('system-release-policy-panel'), policyData, {
+      kstStamp,
+      onSavePolicy: async (patch, summaryLabel = '릴리스·강업 정책') => {
+        const res = await api('/api/admin/release-policy', { method: 'POST', body: patch });
+        notice(`${summaryLabel} 저장 완료 (revision #${res.policy.revision}, 무재빌드 즉시 반영).`);
+        await refreshSystemViews();
+        return res;
       }
     });
     return;

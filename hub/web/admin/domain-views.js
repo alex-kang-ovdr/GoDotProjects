@@ -744,3 +744,220 @@ export function renderSystemDevops(container, data, { kstStamp, onCreateManualPl
 
   container.replaceChildren(briefPanel, triggerPanel, previewPanel, buildsPanel);
 }
+
+const RELEASE_TARGETS = [
+  { id: 'aos', label: 'AOS (.aab / .apk)' },
+  { id: 'ios', label: 'iOS (.ipa)' },
+  { id: 'forge-desktop', label: '설치형 PlayForge (Desktop)' },
+  { id: 'forge-web', label: '웹 PlayForge (Web)' },
+  { id: 'hub', label: 'PlayHub (Web / Portable)' },
+  { id: 'godot-server', label: 'Godot 멀티플레이어 서버' }
+];
+
+export function renderSystemReleasePolicy(container, data, { kstStamp, onSavePolicy }) {
+  const info = data?.buildInfo || {};
+  const policy = data?.policy || { revision: 1, defaultUpdatePolicy: 'optional', targets: {}, activePools: [] };
+  const compat = info.compat || {};
+  const forceCount = RELEASE_TARGETS.filter(t => policy.targets?.[t.id]?.updatePolicy === 'force').length;
+
+  const summaryPanel = panel(
+    'BUILD IDENTITY & COMPAT GATE',
+    '서버 빌드 식별자 및 릴리스 정책 현황',
+    pill(forceCount > 0 ? `강업 활성 ${forceCount}개 타깃` : '전체 선업 (optional)', forceCount > 0 ? 'warn' : 'ok', true)
+  );
+  summaryPanel.append(kpiGrid([
+    ['서버 빌드 ID', info.buildId || '—', `채널: ${info.channel || 'local'}`, true],
+    ['숫자 빌드 코드 (YYYYMMDDNN)', info.buildCode || '—', `SemVer v${info.semver || '0.0.0'}`, true],
+    ['호환성 계약 키', `${compat.engineAbi || 'godot-4.7'} · proto ${compat.netProtocol || '1.0'}`, `apiRev ${compat.engineApiRev ?? 1} · rules ${compat.gameplayHash || 'default'}`, true],
+    ['정책 리비전', `#${policy.revision ?? 1}`, policy.updatedAtUtc ? `${kstStamp(policy.updatedAtUtc)} (${policy.updatedBy || 'system'})` : '초기 상태', true]
+  ], true));
+
+  const targetsPanel = panel('PER-TARGET UPDATE POLICY (FORCE / OPTIONAL)', '6대 타깃별 강업(force) · 선업(optional) · 매치 유예 제어');
+  const presetBar = el('div', '', 'inline-actions');
+  const makePresetBtn = (label, patch, testId) => {
+    const btn = el('button', label, 'quiet');
+    btn.type = 'button';
+    btn.dataset.testid = testId;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try { await onSavePolicy(patch, label); } finally { btn.disabled = false; }
+    });
+    return btn;
+  };
+  presetBar.append(
+    makePresetBtn('전체 선업(optional)', { defaultUpdatePolicy: 'optional', forceTargets: [] }, 'preset-all-optional'),
+    makePresetBtn('모바일만 강업(aos, ios)', { forceTargets: ['aos', 'ios'] }, 'preset-mobile-force'),
+    makePresetBtn('전체 강업(force)', { defaultUpdatePolicy: 'force', forceTargets: RELEASE_TARGETS.map(t => t.id) }, 'preset-all-force')
+  );
+
+  const form = el('form', '');
+  form.dataset.testid = 'release-policy-form';
+  const controlsByTarget = new Map();
+
+  const rows = RELEASE_TARGETS.map(({ id, label }) => {
+    const cur = policy.targets?.[id] || {};
+    const modeSel = el('select', '');
+    modeSel.dataset.testid = `target-policy-${id}`;
+    for (const [val, txt] of [['optional', '선업 (optional)'], ['force', '강업 (force)']]) {
+      const opt = el('option', txt);
+      opt.value = val;
+      modeSel.append(opt);
+    }
+    modeSel.value = cur.updatePolicy === 'force' ? 'force' : 'optional';
+
+    const latestInput = el('input', '');
+    latestInput.type = 'number';
+    latestInput.min = '0';
+    latestInput.max = '2099123199';
+    latestInput.value = String(cur.latestBuildCode || 0);
+    latestInput.dataset.testid = `target-latest-${id}`;
+
+    const minInput = el('input', '');
+    minInput.type = 'number';
+    minInput.min = '0';
+    minInput.max = '2099123199';
+    minInput.value = String(cur.minBuildCode || 0);
+    minInput.dataset.testid = `target-min-${id}`;
+
+    const graceInput = el('input', '');
+    graceInput.type = 'number';
+    graceInput.min = '0';
+    graceInput.max = '1440';
+    graceInput.value = String(cur.graceMinutes ?? 10);
+    graceInput.dataset.testid = `target-grace-${id}`;
+
+    const storeInput = el('input', '');
+    storeInput.type = 'url';
+    storeInput.placeholder = 'https://...';
+    storeInput.value = cur.storeUrl || '';
+    storeInput.dataset.testid = `target-store-url-${id}`;
+
+    const noticeInput = el('input', '');
+    noticeInput.type = 'text';
+    noticeInput.placeholder = '업데이트 안내 문구';
+    noticeInput.value = cur.notice || '';
+    noticeInput.dataset.testid = `target-notice-${id}`;
+
+    controlsByTarget.set(id, { modeSel, latestInput, minInput, graceInput, storeInput, noticeInput });
+
+    const nameCell = el('div', '');
+    nameCell.append(raw('strong', id), el('small', ` ${label}`, 'muted'));
+    return [
+      nameCell,
+      modeSel,
+      latestInput,
+      minInput,
+      graceInput,
+      storeInput,
+      noticeInput
+    ];
+  });
+
+  const saveBar = el('div', '', 'inline-actions');
+  const saveBtn = el('button', '타깃별 정책 저장 (무재빌드 즉시 반영)', 'primary');
+  saveBtn.type = 'submit';
+  saveBtn.dataset.testid = 'release-policy-save-btn';
+  saveBar.append(saveBtn);
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    saveBtn.disabled = true;
+    try {
+      const targets = {};
+      for (const [id, ctrl] of controlsByTarget.entries()) {
+        targets[id] = {
+          updatePolicy: ctrl.modeSel.value,
+          latestBuildCode: Number(ctrl.latestInput.value || 0),
+          minBuildCode: Number(ctrl.minInput.value || 0),
+          graceMinutes: Number(ctrl.graceInput.value || 0),
+          storeUrl: ctrl.storeInput.value.trim() || null,
+          notice: ctrl.noticeInput.value.trim()
+        };
+      }
+      await onSavePolicy({ targets }, '타깃별 강업/선업 정책');
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  form.append(
+    simpleTable(
+      ['타깃', '업데이트 정책', '최신 코드 (YYYYMMDDNN)', '긴급 하한선 (minBuildCode)', '매치 유예 (분)', '스토어/다운로드 URL', '안내 문구'],
+      rows,
+      '타깃 정책이 없습니다.'
+    ),
+    saveBar
+  );
+
+  targetsPanel.append(
+    presetBar,
+    form,
+    el('p', '하드 기술 가드레일: 선업(optional)을 선택하더라도 engineAbi, engineApiRev, netProtocol.major 불일치 또는 qa/rc/live 채널의 -dirty 빌드는 항상 COMPAT_BLOCK_FORCE_UPDATE (HTTP 426 / WS 4009)로 차단됩니다.', 'panel-foot')
+  );
+
+  const poolsPanel = panel('LEGACY DRAIN POOLS (COMPAT_ROUTE_LEGACY_POOL)', '구버전 게임(gameplayHash) 드레인 풀 관리');
+  const activePools = Array.isArray(policy.activePools) ? policy.activePools : [];
+  const poolRows = activePools.map((pool, idx) => {
+    const removeBtn = el('button', '제거', 'quiet');
+    removeBtn.type = 'button';
+    removeBtn.dataset.testid = `remove-pool-${pool.poolId}`;
+    removeBtn.addEventListener('click', async () => {
+      removeBtn.disabled = true;
+      try {
+        const nextPools = activePools.filter((_, i) => i !== idx);
+        await onSavePolicy({ activePools: nextPools }, `드레인 풀 ${pool.poolId} 제거`);
+      } finally {
+        removeBtn.disabled = false;
+      }
+    });
+    return [
+      raw('strong', pool.poolId),
+      raw('span', pool.gameplayHash),
+      raw('span', pool.endpoint),
+      raw('span', pool.expiresAtUtc ? kstStamp(pool.expiresAtUtc) : '무기한'),
+      removeBtn
+    ];
+  });
+
+  const poolForm = el('form', '', 'metrics-filters');
+  poolForm.dataset.testid = 'drain-pool-form';
+  const makeLabeled = (labelText, inputEl) => { const lb = el('label', labelText); lb.append(inputEl); return lb; };
+  const poolIdInput = el('input', ''); poolIdInput.required = true; poolIdInput.placeholder = 'drain-rules-v1'; poolIdInput.dataset.testid = 'pool-id-input';
+  const poolHashInput = el('input', ''); poolHashInput.required = true; poolHashInput.placeholder = 'rules-v1'; poolHashInput.dataset.testid = 'pool-hash-input';
+  const poolEndpointInput = el('input', ''); poolEndpointInput.required = true; poolEndpointInput.placeholder = 'wss://legacy-v1.playhub.example/ws'; poolEndpointInput.dataset.testid = 'pool-endpoint-input';
+  const poolExpiresInput = el('input', ''); poolExpiresInput.placeholder = '2026-11-22T00:00:00Z (선택)'; poolExpiresInput.dataset.testid = 'pool-expires-input';
+  const addPoolBtn = el('button', '드레인 풀 추가', 'primary');
+  addPoolBtn.type = 'submit';
+  addPoolBtn.dataset.testid = 'pool-add-btn';
+  poolForm.append(
+    makeLabeled('풀 ID', poolIdInput),
+    makeLabeled('gameplayHash', poolHashInput),
+    makeLabeled('엔드포인트 (http/ws)', poolEndpointInput),
+    makeLabeled('만료 시각 (UTC ISO)', poolExpiresInput),
+    addPoolBtn
+  );
+  poolForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    addPoolBtn.disabled = true;
+    try {
+      const nextEntry = {
+        poolId: poolIdInput.value.trim(),
+        gameplayHash: poolHashInput.value.trim(),
+        endpoint: poolEndpointInput.value.trim(),
+        drainOnly: true,
+        ...(poolExpiresInput.value.trim() ? { expiresAtUtc: poolExpiresInput.value.trim() } : {})
+      };
+      const nextPools = [...activePools.filter(p => p.poolId !== nextEntry.poolId), nextEntry];
+      await onSavePolicy({ activePools: nextPools }, `드레인 풀 ${nextEntry.poolId} 등록`);
+    } finally {
+      addPoolBtn.disabled = false;
+    }
+  });
+
+  poolsPanel.append(
+    simpleTable(['풀 ID', 'gameplayHash', '엔드포인트', '만료 시각', '작업'], poolRows, '활성 레거시 드레인 풀이 없습니다. gameplayHash 불일치 클라이언트는 매칭 풀이 없으면 강제 업데이트됩니다.'),
+    poolForm
+  );
+
+  container.replaceChildren(summaryPanel, targetsPanel, poolsPanel);
+}
