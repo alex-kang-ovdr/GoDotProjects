@@ -46,7 +46,15 @@ const OPTIONAL_TABLES={
   leaderboard_boards:['game_id','board_key','sort_order','score_mode','reset_period','max_score_bound','min_play_ms','guest_visible','enabled','created_at','updated_at'],
   leaderboard_entries:['game_id','board_key','period_key','principal_id','score','sort_score','tie_breaker_ms','metadata_json','submission_count','source','traffic_type','qa_run_id','excluded','exclude_reason','achieved_at','updated_at'],
   leaderboard_submissions:['id','game_id','board_key','period_key','principal_id','play_session_id','request_key','request_hash','raw_score','accepted','reject_reason','response_json','source','traffic_type','qa_run_id','created_at'],
-  user_sanctions:['id','principal_id','scope','action','reason','evidence_json','active','expires_at','created_by','created_at','revoked_at','revoked_by','eos_target_puid','eos_sync_status','eos_synced_at']
+  user_sanctions:['id','principal_id','scope','action','reason','evidence_json','active','expires_at','created_by','created_at','revoked_at','revoked_by','eos_target_puid','eos_sync_status','eos_synced_at'],
+  stat_definitions:['game_id','stat_key','agg_mode','min_value','max_value','max_delta','enabled','created_at','updated_at'],
+  player_stats:['game_id','stat_key','principal_id','value','update_count','traffic_type','qa_run_id','updated_at'],
+  achievement_definitions:['game_id','achievement_key','title','description','stat_key','threshold','hidden','points','enabled','created_at','updated_at'],
+  player_achievements:['game_id','achievement_key','principal_id','unlocked_at','progress_value','source','traffic_type','qa_run_id','eos_sync_status','eos_synced_at'],
+  progression_idempotency:['game_id','principal_id','request_key','request_hash','response_json','created_at'],
+  datastore_quotas:['game_id','max_keys','max_value_bytes','max_total_bytes','default_lease_ms','max_lease_ms','enabled','updated_at'],
+  datastore_entries:['game_id','scope','entry_key','owner_principal_id','revision','value_json','bytes','etag','fencing_token','lock_holder','lock_expires_at','updated_by','created_at','updated_at'],
+  datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
