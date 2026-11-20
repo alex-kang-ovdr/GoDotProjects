@@ -3,12 +3,17 @@
   "comment": "브랜치별 단독 쓰기 소유 경로(owns)와 합의 후 수정할 공유 핫스팟(shared). 나머지는 다른 브랜치 소유이면 fail, 소유자 없으면 warn.",
   "shared": [
     "README.md",
+    "CLAUDE.md",
     "tools/launch.cjs",
     "tools/preflight.cjs",
     "tools/Run_*.bat",
     "forge/server.cjs",
     "forge/package.json",
+    "forge/OfficialGodot/editor-bridge.js",
+    "forge/OfficialGodot/editor.html",
+    "forge/Godot/addons/playforge_platform/**",
     "hub/server/app.mjs",
+    "hub/tools/restore-data.mjs",
     "games/catalog.json",
     "games/manifest.json",
     "games/CATALOG.md",
@@ -17,37 +22,132 @@
   "branches": {
     "PlayHub-Platform": {
       "role": "통합 코디네이터 (Trunk)",
-      "owns": ["docs/architecture/**", "Run_PlayHub_Portable.cmd", "tools/start-platform.ps1", "tools/worktree-ownership/**"]
+      "owns": [
+        "docs/architecture/**",
+        "Run_PlayHub_Portable.cmd",
+        "tools/start-platform.ps1",
+        "tools/worktree-ownership/**"
+      ]
     },
     "PlayHub-Admin": {
       "role": "Admin / 운영 콘솔",
-      "owns": ["hub/web/admin/**", "hub/server/admin-console.mjs", "hub/tests/admin-console*.mjs", "docs/ADMIN_PAGE_PLAN.md"]
+      "owns": [
+        "hub/web/admin/admin.css",
+        "hub/web/admin/admin.js",
+        "hub/web/admin/config.js",
+        "hub/web/admin/contracts.js",
+        "hub/web/admin/domain-views.js",
+        "hub/web/admin/index.html",
+        "hub/web/admin/local-login-bootstrap.js",
+        "hub/web/admin/submission-review.js",
+        "hub/server/admin-console.mjs",
+        "hub/tests/admin-console*.mjs",
+        "docs/ADMIN_PAGE_PLAN.md"
+      ]
+    },
+    "PlayHub-L10N": {
+      "role": "플랫폼 다국어 (LOCTEXT · 번역 · 배포)",
+      "owns": [
+        "hub/server/l10n*.mjs",
+        "hub/shared/locale.js",
+        "hub/shared/locales/**",
+        "hub/tools/l10n-*.mjs",
+        "hub/tools/sync-locales.mjs",
+        "hub/web/admin/l10n*.js",
+        "hub/web/admin/locale*.js",
+        "hub/web/user/locale*.js",
+        "hub/tests/l10n*.mjs",
+        "hub/tests/locales-deployment.test.mjs",
+        "hub/tests/localization.browser.test.mjs",
+        "games/*/Web/vendor/playhub-locale.js",
+        "docs/L10N_ADMIN_PLAN.md"
+      ]
     },
     "PlayHub-GamerQA": {
-      "role": "QA / AI 플레이 검수",
-      "owns": ["tools/Gamer/**", "games/*/qa.profile.json", "artifacts/gamerqa/**"]
-    },
-    "Forge-AgentReplay": {
-      "role": "Forge AI 에디터 / 리플레이",
+      "role": "Hub QA / AI 모델 플레이 / 제출 검수",
       "owns": [
-        "forge/Godot/addons/playforge_agent_chat/**",
-        "forge/Godot/addons/playforge_replay/**",
-        "forge/Templates/**",
-        "forge/Tests/playforge_agent_chat/**",
-        "forge/Tests/playforge_replay/**",
-        "forge/Tools/agent-chat-*",
-        "forge/Tools/template-catalog.cjs",
-        "forge/Tools/prepare-template-showcase.cjs",
-        "forge/OfficialGodot/agent*",
-        "forge/Docs/AGENT*",
-        "Run_AgentReplay.cmd"
+        "tools/Gamer/README*.md",
+        "tools/Gamer/.gitignore",
+        "tools/Gamer/*.mjs",
+        "tools/Gamer/*.py",
+        "tools/Gamer/*.ps1",
+        "tools/Gamer/*.json",
+        "tools/Gamer/*.txt",
+        "tools/Gamer/inference/**",
+        "tools/Gamer/vendor/**",
+        "tools/Gamer/Reports/**",
+        "tools/Gamer/GamerQA/README.md",
+        "tools/Gamer/GamerQA/PLAN.md",
+        "tools/Gamer/GamerQA/Run_GamerQA.bat",
+        "tools/Gamer/GamerQA/package*.json",
+        "tools/Gamer/GamerQA/bin/**",
+        "tools/Gamer/GamerQA/core/**",
+        "tools/Gamer/GamerQA/schemas/**",
+        "tools/Gamer/GamerQA/policies/**",
+        "tools/Gamer/GamerQA/planners/**",
+        "tools/Gamer/GamerQA/reporters/**",
+        "tools/Gamer/GamerQA/ops/**",
+        "tools/Gamer/GamerQA/fixtures/**",
+        "tools/Gamer/GamerQA/tests/**",
+        "tools/Gamer/GamerQA/suites/static/**",
+        "tools/Gamer/GamerQA/suites/security/**",
+        "tools/Gamer/GamerQA/suites/runtime-web/**",
+        "tools/Gamer/GamerQA/suites/ai-play/**",
+        "tools/Gamer/GamerQA/adapters/hub/**",
+        "tools/Gamer/GamerQA/adapters/game-test-framework/**",
+        "games/*/qa.profile.json",
+        "artifacts/gamerqa/**"
       ]
     },
     "Forge-RemoteControl": {
       "role": "Forge Remote Control 애드온 (Debug/Test 전용)",
       "owns": [
         "forge/Godot/addons/playforge_remote_control/**",
-        "forge/Tests/playforge_remote_control/**"
+        "forge/Tests/playforge_remote_control/**",
+        "forge/Docs/REMOTE_CONTROL*"
+      ]
+    },
+    "Forge-AgentReplay": {
+      "role": "Forge AgentReplay 독 / 시연 합성기 / MCP 녹화 재생",
+      "owns": [
+        "forge/Godot/addons/playforge_replay/**",
+        "forge/Tests/playforge_replay/**",
+        "forge/Templates/**",
+        "forge/Tools/record-agent-mcp.cjs",
+        "forge/Tools/template-catalog.cjs",
+        "forge/Tools/prepare-template-showcase.cjs",
+        "forge/Docs/AGENT_CHAT_REPLAY_HANDOFF.md",
+        "Run_AgentReplay.cmd"
+      ]
+    },
+    "Forge-AgentChat": {
+      "role": "Forge AI 채팅 독 / 멀티 공급자 / 씬 편집",
+      "owns": [
+        "forge/Godot/addons/playforge_agent_chat/**",
+        "forge/Tests/playforge_agent_chat/**",
+        "forge/Tools/agent-chat-*",
+        "forge/Tools/local-ollama.cjs",
+        "forge/OfficialGodot/agent*",
+        "forge/OfficialGodot/chatgpt-login*",
+        "forge/Docs/SANDBOX_AI_CHAT_AUTH_REFERENCE.md"
+      ]
+    },
+    "Forge-AssetStore": {
+      "role": "Forge 로컬 에셋 스토어 / 팩 설치",
+      "owns": [
+        "forge/Godot/addons/playforge_asset_store/**",
+        "forge/Tests/playforge_asset_store/**",
+        "forge/Tools/asset-library.cjs",
+        "forge/Docs/ASSET_STORE*"
+      ]
+    },
+    "Forge-GamerQA": {
+      "role": "Forge 템플릿·Godot 프로젝트 자동화 QA",
+      "owns": [
+        "tools/Gamer/GamerQA/suites/forge/**",
+        "tools/Gamer/GamerQA/suites/runtime-godot/**",
+        "tools/Gamer/GamerQA/adapters/forge/**",
+        "forge/Tests/gamerqa/**"
       ]
     }
   }
