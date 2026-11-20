@@ -1,0 +1,91 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { exportRobloxPlaceToGodot } from './godot-exporter.mjs';
+
+const __dir = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dir, '..', '..', '..');
+const DEFAULT_PROJECTS_DIR = path.join(REPO_ROOT, 'forge', 'Saved', 'Platform', 'projects');
+
+function collectProjectFiles(rootDir, rel = '', acc = {}) {
+  for (const entry of fs.readdirSync(path.join(rootDir, rel), { withFileTypes: true })) {
+    const childRel = rel ? `${rel}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      if (entry.name.startsWith('.')) continue;
+      collectProjectFiles(rootDir, childRel, acc);
+    } else {
+      // Skip large/meta JSON reports not needed inside Godot Web Editor FS
+      if (childRel === 'ir.json' || childRel === 'conversion_report.json') continue;
+      acc[childRel] = fs.readFileSync(path.join(rootDir, childRel), 'utf8');
+    }
+  }
+  return acc;
+}
+
+export function registerRobloxPortInForge({
+  rbxlxPath,
+  projectId,
+  projectName,
+  projectsDir = DEFAULT_PROJECTS_DIR
+}) {
+  if (!/^[a-f0-9]{24}$/.test(projectId)) {
+    throw new Error(`projectId must be 24 lowercase hex characters, got: ${projectId}`);
+  }
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-roblox-port-'));
+  try {
+    const report = exportRobloxPlaceToGodot(rbxlxPath, tmpDir, { projectName });
+    const files = collectProjectFiles(tmpDir);
+    const now = new Date().toISOString();
+    const record = {
+      id: projectId,
+      name: projectName,
+      template: 'blank3d',
+      revision: 1,
+      files,
+      updatedAt: now,
+      activeReleaseId: null,
+      history: [
+        {
+          revision: 1,
+          files,
+          createdAt: now,
+          clientId: null,
+          message: `Imported Roblox place (${path.basename(rbxlxPath)}) via RobloxConverter`
+        }
+      ],
+      releases: []
+    };
+
+    const targetDir = path.join(projectsDir, projectId);
+    fs.mkdirSync(targetDir, { recursive: true });
+    fs.writeFileSync(path.join(targetDir, 'project.json'), JSON.stringify(record), 'utf8');
+
+    return {
+      projectId,
+      projectName,
+      fileCount: Object.keys(files).length,
+      editorUrlPath: `/OfficialGodot/editor.html?project=${projectId}`,
+      report
+    };
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
+  const fixturesDir = path.resolve(__dir, '..', 'fixtures');
+  const results = [
+    registerRobloxPortInForge({
+      rbxlxPath: path.join(fixturesDir, 'chaos-obby', 'ChaosObby.rbxlx'),
+      projectId: 'c4a050bb0000000000000001',
+      projectName: 'Chaos Obby (Roblox → Godot Port)'
+    }),
+    registerRobloxPortInForge({
+      rbxlxPath: path.join(fixturesDir, 'baseplate-413', 'xml.rbxlx'),
+      projectId: 'ba5e04130000000000000002',
+      projectName: 'Baseplate 413 (Roblox → Godot Port)'
+    })
+  ];
+  console.log(JSON.stringify(results.map(({ report: _r, ...rest }) => rest), null, 2));
+}
