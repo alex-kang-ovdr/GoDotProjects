@@ -179,6 +179,14 @@
         "games/survivor-arena-g2/**",
         "games/kingdom-rush/**"
       ]
+    },
+    "PlayHub-CDN": {
+      "role": "UGC 저장소 (Cloudflare R2 직접 전송·버전·용량·GC) 및 공개 빌드 CDN",
+      "owns": [
+        "hub/server/cdn/**",
+        "hub/tests/cdn*.mjs",
+        "docs/cdn/**"
+      ]
     }
   }
 }
