@@ -8,8 +8,6 @@ export const STORE_STATES = Object.freeze([
   'update_available'
 ]);
 
-const hex64 = (ch) => ch.repeat(64);
-
 export const SAMPLE_CATALOG = Object.freeze([
   {
     schema_version: 1,
@@ -23,16 +21,26 @@ export const SAMPLE_CATALOG = Object.freeze([
     publisher_id: 'pub-playforge-core',
     store_state: 'catalog_listed',
     artifact_id: 'art-lowpoly-fortress-120',
-    artifact_digest: `sha256:${hex64('a')}`,
-    dependency_manifest_hash: `sha256:${hex64('1')}`,
+    artifact_digest: 'sha256:6f5a2837d671daeaedad2440c2620cc2ee2a770622ad0f97cac7c6b7c0a61d04',
+    dependency_manifest_hash: 'sha256:3eeafaac6f7e9433b233d7faff65060438226cdad81972c03f5d3a359592f416',
     engine_compatibility: {
       godot_min: '4.3',
       godot_tested: '4.7.2',
       platforms: ['web', 'windows', 'linux']
     },
     file_manifest: [
-      { path: 'assets/fortress/wall_segment.glb', bytes: 184320, sha256: hex64('b'), executable_addon: false },
-      { path: 'assets/fortress/turret_base.tscn', bytes: 8192, sha256: hex64('c'), executable_addon: false }
+      {
+        path: 'assets/fortress/turret_base.tscn',
+        bytes: 60,
+        sha256: '2f1a36adb06712fb2f76c93ffa8bea892ca6ccbf5a50aa7ef0bb20e956addb0c',
+        executable_addon: false
+      },
+      {
+        path: 'assets/fortress/wall_segment.glb',
+        bytes: 172,
+        sha256: '23c7520116f0c0eb56aeee09a714cd9457ec57b454d10d849f22bc2a999b81fd',
+        executable_addon: false
+      }
     ],
     license_snapshot_ref: 'lic-cc0-v1-20261120',
     installation_record: null
@@ -49,16 +57,26 @@ export const SAMPLE_CATALOG = Object.freeze([
     publisher_id: 'pub-studio-nord',
     store_state: 'catalog_listed',
     artifact_id: 'art-ui-tactical-201',
-    artifact_digest: `sha256:${hex64('d')}`,
-    dependency_manifest_hash: `sha256:${hex64('2')}`,
+    artifact_digest: 'sha256:a2bd71db0c03ed995aa5ab5679584a5911bc811493b520830ed95706b8598801',
+    dependency_manifest_hash: 'sha256:e0f435b1d0a2f7e5a625d8fd8dfd4ff3dbc87f261bfbd29198bd8e883e7e1839',
     engine_compatibility: {
       godot_min: '4.3',
       godot_tested: '4.7.2',
       platforms: ['web', 'windows', 'linux']
     },
     file_manifest: [
-      { path: 'addons/tactical_hud/plugin.cfg', bytes: 512, sha256: hex64('e'), executable_addon: true },
-      { path: 'addons/tactical_hud/hud_theme.tres', bytes: 14336, sha256: hex64('f'), executable_addon: false }
+      {
+        path: 'addons/tactical_hud/hud_theme.tres',
+        bytes: 71,
+        sha256: 'f48d6936aec9fc14ec7ba60728f04f98dc1bb6248c0e3c1aef18b0da1032f73d',
+        executable_addon: false
+      },
+      {
+        path: 'addons/tactical_hud/plugin.cfg',
+        bytes: 142,
+        sha256: 'a8ac43111bac3bf90e5bac244515568713054ce2ca721dfe2a40deb5e8f370bd',
+        executable_addon: true
+      }
     ],
     license_snapshot_ref: 'lic-mit-v1-20261120',
     installation_record: null
@@ -75,15 +93,20 @@ export const SAMPLE_CATALOG = Object.freeze([
     publisher_id: 'pub-audio-atelier',
     store_state: 'catalog_listed',
     artifact_id: 'art-sfx-siege-110',
-    artifact_digest: `sha256:${hex64('3')}`,
-    dependency_manifest_hash: `sha256:${hex64('4')}`,
+    artifact_digest: 'sha256:7415b4b0c938a4cedc681861b7ad323dcbd279d72ab23675b35a43d33cf6abd4',
+    dependency_manifest_hash: 'sha256:2fb36203db57dcd385b91876e695d85db8febf8a670b93a4b69764d18abaf616',
     engine_compatibility: {
       godot_min: '4.3',
       godot_tested: '4.7.2',
       platforms: ['web', 'windows', 'linux', 'macos']
     },
     file_manifest: [
-      { path: 'assets/audio/cannon_fire.ogg', bytes: 92160, sha256: hex64('5'), executable_addon: false }
+      {
+        path: 'assets/audio/cannon_fire.ogg',
+        bytes: 69,
+        sha256: '00b26790e0e58e721e6e7963d9ce9f52b711c3907a8aeaabc4ece6ebbb10662e',
+        executable_addon: false
+      }
     ],
     license_snapshot_ref: 'lic-royalty-free-v1-20261120',
     installation_record: null
@@ -163,4 +186,185 @@ export function validateReleaseContract(entry) {
 
 export function canInstallInStoreWeb() {
   return false;
+}
+
+export function extractCatalogCategories(entries = SAMPLE_CATALOG) {
+  const seen = new Set();
+  const categories = [];
+  for (const item of entries || []) {
+    const category = String(item?.category || '').trim();
+    if (category && !seen.has(category)) {
+      seen.add(category);
+      categories.push(category);
+    }
+  }
+  return categories;
+}
+
+export function filterCatalogEntries(entries = SAMPLE_CATALOG, filters = {}) {
+  const releaseKind = String(filters.release_kind ?? '').trim();
+  const category = String(filters.category ?? '').trim().toLowerCase();
+  const q = String(filters.q ?? '').trim().toLowerCase();
+
+  return (entries || []).filter((item) => {
+    if (releaseKind && releaseKind !== 'all' && item.release_kind !== releaseKind) {
+      return false;
+    }
+    if (category && category !== 'all') {
+      const itemCat = String(item.category || '').toLowerCase();
+      if (itemCat !== category && !itemCat.includes(category)) {
+        return false;
+      }
+    }
+    if (q) {
+      const haystack = [
+        item.title,
+        item.summary,
+        item.category,
+        item.asset_id,
+        item.publisher_id,
+        ...(Array.isArray(item.article_body) ? item.article_body : [])
+      ];
+      if (!haystack.some((field) => String(field ?? '').toLowerCase().includes(q))) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+export function buildCatalogQueryString(filters = {}) {
+  const params = new URLSearchParams();
+  const category = String(filters.category ?? '').trim();
+  const q = String(filters.q ?? '').trim();
+  const releaseKind = String(filters.release_kind ?? '').trim();
+
+  if (category && category !== 'all') params.set('category', category);
+  if (q) params.set('q', q);
+  if (releaseKind && releaseKind !== 'all') params.set('release_kind', releaseKind);
+
+  const qs = params.toString();
+  return qs ? `?${qs}` : '';
+}
+
+export function isStaticFileContext() {
+  return typeof globalThis.location === 'object' && globalThis.location?.protocol === 'file:';
+}
+
+export function isBackendUnavailableError(error) {
+  if (!error) return false;
+  if (error.code === 'STATIC_FILE_CONTEXT' || error.code === 'NON_JSON_RESPONSE' || error.code === 'FETCH_UNAVAILABLE') {
+    return true;
+  }
+  if (typeof error.status === 'number') {
+    return error.status === 404 || error.status === 405 || error.status === 501 || error.status >= 502;
+  }
+  return error.name === 'TypeError';
+}
+
+export function createStoreApiClient({ baseUrl = '', fetchImpl = globalThis.fetch, headers = {} } = {}) {
+  const normalizedBase = String(baseUrl || '').replace(/\/+$/, '');
+
+  async function requestJson(apiPath, options = {}) {
+    if (!normalizedBase && isStaticFileContext()) {
+      const err = new Error('Static file protocol cannot reach HTTP API');
+      err.code = 'STATIC_FILE_CONTEXT';
+      throw err;
+    }
+    if (typeof fetchImpl !== 'function') {
+      const err = new Error('fetch is unavailable');
+      err.code = 'FETCH_UNAVAILABLE';
+      throw err;
+    }
+
+    const url = `${normalizedBase}${apiPath}`;
+    const response = await fetchImpl(url, {
+      ...options,
+      headers: {
+        ...headers,
+        ...(options.headers || {})
+      }
+    });
+
+    const contentType = String(response.headers?.get?.('content-type') || '').toLowerCase();
+    if (!contentType.includes('application/json')) {
+      const err = new Error(`Expected JSON response from ${apiPath} (status ${response.status})`);
+      err.code = 'NON_JSON_RESPONSE';
+      err.status = response.status;
+      throw err;
+    }
+
+    const payload = await response.json();
+    if (!response.ok) {
+      const err = new Error(payload?.error?.message || payload?.error || `HTTP ${response.status}`);
+      err.status = response.status;
+      err.code = payload?.error?.code || 'HTTP_ERROR';
+      err.payload = payload;
+      throw err;
+    }
+    return payload;
+  }
+
+  return {
+    getCatalog(filters = {}) {
+      return requestJson(`/api/store/catalog${buildCatalogQueryString(filters)}`);
+    },
+    getPackage(slug) {
+      return requestJson(`/api/store/packages/${encodeURIComponent(slug)}`);
+    },
+    getMyAssets() {
+      return requestJson('/api/store/my-assets');
+    },
+    mutateMyAssets({ slug, action }) {
+      return requestJson('/api/store/my-assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, action })
+      });
+    },
+    getPublisherDrafts() {
+      return requestJson('/api/store/publisher/drafts');
+    },
+    getSession() {
+      return requestJson('/api/store/session');
+    },
+    getArtifactUrl(slug, version) {
+      return `${normalizedBase}/api/store/packages/${encodeURIComponent(slug)}/releases/${encodeURIComponent(version)}/artifact`;
+    }
+  };
+}
+
+export async function fetchCatalogWithFallback({
+  apiClient = createStoreApiClient(),
+  filters = {},
+  fallbackCatalog = SAMPLE_CATALOG
+} = {}) {
+  try {
+    const data = await apiClient.getCatalog(filters);
+    if (!Array.isArray(data?.items)) {
+      const err = new Error('Invalid catalog payload');
+      err.code = 'NON_JSON_RESPONSE';
+      throw err;
+    }
+    return {
+      mode: 'live',
+      items: data.items,
+      categories: Array.isArray(data.categories) ? data.categories : extractCatalogCategories(fallbackCatalog),
+      account: data.account || null,
+      total: typeof data.total === 'number' ? data.total : data.items.length
+    };
+  } catch (error) {
+    if (!isBackendUnavailableError(error)) {
+      throw error;
+    }
+    const items = filterCatalogEntries(fallbackCatalog, filters);
+    return {
+      mode: 'static',
+      items,
+      categories: extractCatalogCategories(fallbackCatalog),
+      account: null,
+      total: items.length,
+      fallbackReason: error.message
+    };
+  }
 }

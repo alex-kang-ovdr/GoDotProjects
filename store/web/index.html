@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PlayForge Store — 독립 웹 · 내 라이브러리 (P0)</title>
+  <title>PlayForge Store — 독립 웹 · 내 라이브러리 (M1)</title>
   <link rel="stylesheet" href="./store.css" />
 </head>
 <body>
@@ -14,6 +14,7 @@
     </div>
     <div class="identity-bar">
       <span class="sso-pill" id="sso-badge">Hub 계정 연결됨 · creator-demo@playhub.local (SSO)</span>
+      <span class="sub-badge mode-pill" id="connection-badge" data-mode="static">정적 열람 모드</span>
       <span class="boundary-pill">Admin: Hub ?tab=store 분리</span>
     </div>
   </header>
@@ -26,6 +27,9 @@
     </div>
     <div class="filters" id="browse-controls">
       <input id="search-input" type="search" placeholder="에셋 또는 가이드 검색..." aria-label="Store 검색" />
+      <select id="category-filter" aria-label="카테고리 필터">
+        <option value="all">전체 카테고리</option>
+      </select>
       <select id="kind-filter" aria-label="콘텐츠 형식 필터">
         <option value="all">전체 형식</option>
         <option value="package">패키지 (package)</option>
