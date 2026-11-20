@@ -12,5 +12,6 @@
   "secureCookies": false,
   "searchIndexingEnabled": false,
   "google": {"clientId": "", "clientSecret": "", "redirectUri": "http://localhost:8090/api/auth/google/callback"},
-  "admin": {"username": "admin", "passwordHash": "", "salt": "", "localAutoLogin": false}
+  "admin": {"username": "admin", "passwordHash": "", "salt": "", "localAutoLogin": false},
+  "cdn": {"enabled": false, "provider": "local", "accountId": "", "buckets": {"quarantine": "ugc-quarantine-dev", "projects": "ugc-projects-dev"}, "plans": {"free": 1000000000, "pro": 20000000000}, "maxFileBytes": 67108864, "uploadUrlTtlSec": 600, "downloadUrlTtlSec": 300, "retentionDays": 30, "retentionCount": 100}
 }
