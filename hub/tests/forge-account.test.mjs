@@ -29,3 +29,14 @@ test('Hub forgeAccountKey matches Forge accountKey so Hub need not require Forge
  for(const identity of [{iss:'https://accounts.google.com',sub:'1'},{iss:'accounts.google.com',sub:'112233445566778899'},{iss:'https://accounts.google.com',sub:'x'.repeat(255)}])assert.equal(forgeAccountKey(identity),accountKey(identity));
  for(const identity of [null,{iss:'https://evil.example',sub:'1'},{iss:'https://accounts.google.com',sub:''},{iss:'https://accounts.google.com',sub:'a b'}]){assert.throws(()=>forgeAccountKey(identity));assert.throws(()=>accountKey(identity));}
 });
+test('Hub-side builds are refused unless the account is on the execution allowlist (P0)',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'hub-forge-allow-'));const source=path.join(root,'source');fs.mkdirSync(source);
+ const requireSession=req=>({principal_id:req.headers.cookie});
+ const service=createHubForge({config:{enabled:true,directory:path.join(root,'private'),builds:{enabled:true}},root:source,db,requireSession,env:{}});
+ const server=http.createServer(async(req,res)=>{if(!await service.handle(req,res,new URL(req.url,'http://localhost')))res.writeHead(404).end();});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ t.after(async()=>{service.close();await new Promise(r=>server.close(r));fs.rmSync(root,{recursive:true,force:true});});
+ const send=async(route,method='GET',body)=>{const r=await fetch('http://127.0.0.1:'+server.address().port+route,{method,headers:{cookie:'a','content-type':'application/json'},body:body?JSON.stringify(body):undefined});return {status:r.status,body:await r.json()};};
+ const created=await send('/api/platform/projects','POST',{name:'allowlist'});assert.equal(created.status,201);
+ const denied=await send('/api/platform/projects/'+created.body.project.id+'/builds','POST',{});
+ assert.equal(denied.status,403);assert.deepEqual(denied.body,{error:'ACCESS_DENIED'});
+});

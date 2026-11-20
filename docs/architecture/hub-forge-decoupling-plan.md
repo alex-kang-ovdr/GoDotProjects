@@ -49,7 +49,7 @@
 
 - 현재 빌드 큐와 PIE 런타임은 사용자 프로젝트 파일로 호스트의 Godot을 `--editor --import` 등으로 직접 실행한다. Godot import는 `@tool` 스크립트와 에디터 플러그인을 실행할 수 있어, Hub 인증 모드에서 로그인 사용자 누구나 Forge 호스트에서 코드를 실행할 수 있는 경로가 된다(코드 근거, 재현하지 않음).
 - 목표: 매번 폐기하는 격리 환경(VM 또는 검증된 sandbox/microVM)에서 import·export·smoke test를 실행하고, 작업 환경은 Hub/Forge DB·시크릿·호스트 소켓에 접근하지 못한다(컨설팅 계획안 C06, §17.3).
-- 격리 전 임시 조치(결정 필요): 공개 환경에서 빌드·PIE를 허용 목록 사용자로 제한하거나 끈다.
+- 격리 전 임시 조치(**2026-11-20 결정·구현**): Hub 인증 모드에서 사용자 콘텐츠로 Godot을 실행하는 요청(Forge `/api/platform-builds/{id}`, `/api/builds`, `/api/pie`의 `load`, Hub `/api/platform/projects/{id}/builds`)은 `PLAYHUB_FORGE_EXECUTION_ALLOWLIST`에 있는 계정만 허용한다. 미설정이면 아무도 허용하지 않고(fail-closed), `*`는 모든 로그인 계정을 명시적으로 허용한다. 거부 응답은 Forge `403 EXECUTION_NOT_ALLOWED`, Hub `403 ACCESS_DENIED`다. 단독 Forge 모드(Hub 인증 꺼짐)는 바뀌지 않는다. 구현: `forge/Tools/execution-allowlist.cjs`.
 - 완료 기준: 악성 `@tool` 스크립트가 들어간 프로젝트를 빌드해도 호스트 파일·네트워크·자격 증명에 접근하지 못한다는 시험.
 
 ### P1. 세션 검증 원격화 (완료)

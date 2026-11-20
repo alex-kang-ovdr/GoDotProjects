@@ -12,6 +12,7 @@ const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
 const { OwnedBuildPackages } = require('./Tools/owned-build-packages.cjs');
+const { createExecutionPolicy, EXECUTION_NOT_ALLOWED } = require('./Tools/execution-allowlist.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./Tools/hub-session-auth.cjs');
@@ -83,6 +84,10 @@ function createServer(options = {}) {
   // Hub-auth mode: platform builds use the same canonical snapshot and integrity checks as Hub's
   // OwnedBuildPackages (sourceHash over sorted files, artifactSha256), on this server's queue.
   const accountBuilds = hubAuth ? new OwnedBuildPackages({ root, queue: builds, storeFor: key => getPlatformFor(key).store }) : null;
+  // P0: builds and PIE run user content on this host's Godot without isolation; Hub-auth mode only lets
+  // allowlisted accounts trigger them (PLAYHUB_FORGE_EXECUTION_ALLOWLIST, fail closed when unset).
+  const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? process.env.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
+  const executionAllowed = accountKey => !executionPolicy || executionPolicy.allows(accountKey);
   const assetLibrary = createAssetLibraryHandler(root);
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
@@ -323,6 +328,7 @@ function createServer(options = {}) {
         if (platformBuild && req.method === 'POST') {
           const activePlatform = getPlatformFor(auth?.accountKey).store;
           const snapshot = activePlatform.getProject(platformBuild[1]);
+          if (!executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.revision !== snapshot.revision) return json(409, { ok: false, error: 'revision_conflict' });
           if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision) });
           return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
@@ -338,6 +344,7 @@ function createServer(options = {}) {
           return json(200, { ok: true, document: result.document });
         }
         if (routePath === '/api/builds' && req.method === 'POST') {
+          if (!executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.target !== 'web') return json(400, { ok: false, error: 'This PoC builds the web target only' });
           const activeStudio = getStudioFor(auth?.accountKey);
           const document = activeStudio.store.snapshot();
@@ -355,6 +362,7 @@ function createServer(options = {}) {
           const id = body.sessionId;
           if (!/^[a-zA-Z0-9_-]{8,100}$/.test(id || '')) return json(400, { ok: false, error: 'Invalid session ID' });
           if (!['load', 'step', 'input', 'snapshot', 'settings', 'stop'].includes(body.op)) return json(400, { ok: false, error: 'Unknown PIE command' });
+          if (body.op === 'load' && !executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           const runtimeKey = hubAuth ? `${auth.accountKey}:${id}` : id;
           return await inSession(runtimeKey, async () => {
             if (body.op === 'stop') { await closeRuntime(runtimeKey); return json(200, { ok: true, state: null }); }

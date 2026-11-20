@@ -551,6 +551,17 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     });
     assert.doesNotMatch(welcomeBob.document.source, /# alice-private-marker/);
 
+    // P0 execution allowlist: unset in this fixture, so no account may run builds or PIE (fail closed).
+    for (const [route, body] of [
+      [`/forge/api/platform-builds/${aliceProjectId}`, { revision: 1 }],
+      ['/forge/api/builds', { target: 'web', revision: 1 }],
+      ['/forge/api/pie', { sessionId: 'alice-pie-session-1', op: 'load', source: 'extends Node', settings: {} }],
+    ]) {
+      const denied = await alice.site(route, { method: 'POST', body });
+      assert.equal(denied.status, 403, `${route}: ${JSON.stringify(denied.data)}`);
+      assert.equal(denied.data.error, 'EXECUTION_NOT_ALLOWED');
+    }
+
     // Bob cannot inspect or control a runtime session ID outside Bob's account scope.
     const bobPie = await bob.site('/forge/api/pie', {
       method: 'POST', body: { sessionId: 'alice-pie-session-1', op: 'snapshot' },

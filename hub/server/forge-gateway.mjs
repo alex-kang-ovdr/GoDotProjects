@@ -143,10 +143,13 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
   const { SubmissionDriveArchive } = require('../../forge/Tools/submission-drive-archive.cjs');
   const { ProjectDriveSync } = require('../../forge/Tools/project-drive-sync.cjs');
   const { createOperatorOAuthToken } = require('../../forge/Tools/operator-oauth-token.cjs');
+  const { createExecutionPolicy } = require('../../forge/Tools/execution-allowlist.cjs');
   if (!path.isAbsolute(config.directory || '') || !path.isAbsolute(root || '')) throw fail(503, 'FORGE_CONFIGURATION_REQUIRED');
   const rel = path.relative(root, config.directory);
   if (!rel || (!rel.startsWith('..') && !path.isAbsolute(rel))) throw fail(503, 'PRIVATE_STORAGE_MUST_BE_OUTSIDE_SOURCE');
   const builds = new OwnedBuildPackages({ root: path.resolve(root, 'forge'), directory: config.directory, enabled: config.builds?.enabled === true });
+  // P0: Hub-side builds also run Godot on user projects; same fail-closed allowlist as Forge.
+  const executionPolicy = createExecutionPolicy(config.executionAllowlist ?? env.PLAYHUB_FORGE_EXECUTION_ALLOWLIST);
   const directory = path.resolve(config.directory, 'accounts');
   const storeFor = key => new PlatformStore(root, path.resolve(directory, key));
   let oauth, sync, submissions, deployments;
@@ -182,7 +185,7 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
     const buildRoute = url.pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})\/builds(?:\/([a-f0-9]{16}))?$/);
     if (buildRoute) {
       const project = storeFor(key).getProject(buildRoute[1]);
-      if (req.method === 'POST' && !buildRoute[2]) { send(res, 202, { build: builds.enqueue(key, project.id, project.revision) }); return true; }
+      if (req.method === 'POST' && !buildRoute[2]) { if (builds.enabled && !executionPolicy.allows(key)) throw fail(403, 'EXECUTION_NOT_ALLOWED'); send(res, 202, { build: builds.enqueue(key, project.id, project.revision) }); return true; }
       if (req.method === 'GET' && buildRoute[2]) { send(res, 200, { build: builds.publicJob(builds.job(key, project.id, buildRoute[2])) }); return true; }
       throw fail(405, 'METHOD_NOT_ALLOWED');
     }
