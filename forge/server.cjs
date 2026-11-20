@@ -87,7 +87,12 @@ function createServer(options = {}) {
   // P0: builds and PIE run user content on this host's Godot without isolation; Hub-auth mode only lets
   // allowlisted accounts trigger them (PLAYHUB_FORGE_EXECUTION_ALLOWLIST, fail closed when unset).
   const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? process.env.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
-  const executionAllowed = accountKey => !executionPolicy || executionPolicy.allows(accountKey);
+  const executionAllowed = accountKey => {
+    if (!executionPolicy || executionPolicy.allows(accountKey)) return true;
+    // The key is the pseudonymous Hub account hash; operators copy it into the allowlist.
+    console.warn(`[forge] build/PIE refused for account ${accountKey}; add it to PLAYHUB_FORGE_EXECUTION_ALLOWLIST (or Hub config forge.executionAllowlist) to allow.`);
+    return false;
+  };
   const assetLibrary = createAssetLibraryHandler(root);
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);

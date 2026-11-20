@@ -209,6 +209,24 @@ try {
             if ($config.forge.directory) {
                 $env:PLAYHUB_FORGE_ACCOUNTS_DIR = Join-Path $config.forge.directory 'accounts'
             }
+            # P0: builds/PIE run user content on this machine's Godot without isolation, so Forge and Hub only
+            # let allowlisted accounts trigger them. Priority: config forge.executionAllowlist, then the
+            # environment, then '*' only when Hub is reachable from this machine alone.
+            $loopbackHosts = @('127.0.0.1', 'localhost', '::1', '[::1]')
+            $originsLocal = @($config.userOrigins | Where-Object { $_ -and ($_ -notmatch '^http://(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$') }).Count -eq 0
+            $hubLocalOnly = ($loopbackHosts -contains [string]$config.publicHost) -and $originsLocal
+            if ($config.forge.executionAllowlist) {
+                $env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST = (@($config.forge.executionAllowlist) -join ',')
+                $executionAllowlistSource = 'config forge.executionAllowlist'
+            } elseif ($env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST) {
+                $executionAllowlistSource = 'environment PLAYHUB_FORGE_EXECUTION_ALLOWLIST'
+            } elseif ($hubLocalOnly) {
+                $env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST = '*'
+                $executionAllowlistSource = "'*' (Hub is reachable from this machine only)"
+            } else {
+                Remove-Item Env:PLAYHUB_FORGE_EXECUTION_ALLOWLIST -ErrorAction SilentlyContinue
+                $executionAllowlistSource = $null
+            }
         }
 
         if ($hubExists) { Write-Host 'Reusing the active PlayHub instance.' }
@@ -228,6 +246,14 @@ try {
         Write-Host "PlayForge (same-origin): $forgeUrl"
         Write-Host "PlayForge upstream (internal): http://127.0.0.1:$forgePort/"
         Write-Host ("Forge Hub auth: " + $(if ($enforceHubAuth) { 'enabled (Hub Google login required)' } else { 'local mode (configure Google OAuth to enforce Hub login)' }))
+        if ($enforceHubAuth) {
+            if ($executionAllowlistSource) {
+                Write-Host "Forge builds/PIE allowlist: $executionAllowlistSource"
+            } else {
+                Write-Host 'Forge builds/PIE: disabled for every account because Hub is reachable beyond this machine.' -ForegroundColor Yellow
+                Write-Host '  Add your account key to forge.executionAllowlist in the Hub config (Forge prints the key when it refuses a build).' -ForegroundColor Yellow
+            }
+        }
         if (-not $NoBrowser) { Start-Process $browserHubUrl }
     }
 } catch {
