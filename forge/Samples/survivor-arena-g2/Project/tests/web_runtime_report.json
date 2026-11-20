@@ -1,0 +1,20 @@
+{
+  "release": "G2",
+  "platform": "Web",
+  "export_status": "PASS",
+  "runtime_status": "UNVERIFIED_BROWSER_RUNTIME",
+  "attempt_this_release": false,
+  "environment_evidence": "G1 in the same execution environment: Chromium failed before page creation because UNIX socket creation was rejected (process_singleton_posix.cc, Operation not permitted). G2 browser runtime was not repeated.",
+  "page_loaded": false,
+  "browser_gameplay_verified": false,
+  "verified_files": {
+    "index.html": "340b519322a9829a8bfb9239ceced6bf8edc79516d4c03fbebdc3049c50738a5",
+    "index.js": "e3f56ee40e6f84371053db06692cfac15e2c8659547b11c6b2dfa1996dabd981",
+    "index.wasm": "26b61ce95247012ab3dca3ff51e96d1cdbff44ee91a8c20a83e150afca83f1b6",
+    "index.pck": "fa82bcc7e93ebc47b0cd75301521170a5bfdcf21aebb0023abf10b5e64571b78"
+  },
+  "other_limits": [
+    "Windows executable not run on Windows.",
+    "No Android/iOS/Safari hardware tests."
+  ]
+}

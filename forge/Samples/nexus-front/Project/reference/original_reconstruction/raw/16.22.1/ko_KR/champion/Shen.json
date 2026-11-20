@@ -1,0 +1,649 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Shen": {
+      "id": "Shen",
+      "key": "98",
+      "name": "쉔",
+      "title": "황혼의 눈",
+      "image": {
+        "full": "Shen.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 48,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank"
+      ],
+      "partype": "기력",
+      "info": {
+        "attack": 3,
+        "defense": 9,
+        "magic": 3,
+        "difficulty": 4
+      },
+      "stats": {
+        "hp": 610,
+        "hpperlevel": 99,
+        "mp": 400,
+        "mpperlevel": 0,
+        "movespeed": 340,
+        "armor": 34,
+        "armorperlevel": 4.2,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 8.5,
+        "hpregenperlevel": 0.75,
+        "mpregen": 50,
+        "mpregenperlevel": 0,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 64,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3,
+        "attackspeed": 0.751
+      },
+      "spells": [
+        {
+          "id": "ShenQ",
+          "name": "황혼 강습",
+          "maxrank": 5,
+          "cooldown": [
+            8,
+            7.25,
+            6.5,
+            5.75,
+            5
+          ],
+          "cooldownBurn": "8/7.25/6.5/5.75/5",
+          "cost": [
+            140,
+            130,
+            120,
+            110,
+            100
+          ],
+          "costBurn": "140/130/120/110/100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              2,
+              2.5,
+              3,
+              3.5,
+              4
+            ],
+            [
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            [
+              25,
+              30,
+              35,
+              40,
+              45
+            ],
+            [
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            [
+              5,
+              5.5,
+              6,
+              6.5,
+              7
+            ],
+            [
+              100,
+              125,
+              150,
+              175,
+              200
+            ],
+            [
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            [
+              50,
+              50,
+              50,
+              50,
+              50
+            ],
+            [
+              75,
+              75,
+              75,
+              75,
+              75
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "1",
+            "2/2.5/3/3.5/4",
+            "3",
+            "25/30/35/40/45",
+            "2",
+            "5/5.5/6/6.5/7",
+            "100/125/150/175/200",
+            "8",
+            "50",
+            "75"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "ShenQ.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 384,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "baseflatdamage",
+                "basepercenthealth",
+                "emppercenthealth",
+                "numenhancedattacks",
+                "slowduration",
+                "slowpercent",
+                "spellmodifierdescriptionappend",
+                "steroidas"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ShenW",
+          "name": "의지의 결계",
+          "maxrank": 5,
+          "cooldown": [
+            16,
+            14.5,
+            13,
+            11.5,
+            10
+          ],
+          "cooldownBurn": "16/14.5/13/11.5/10",
+          "cost": [
+            40,
+            40,
+            40,
+            40,
+            40
+          ],
+          "costBurn": "40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              1.75,
+              1.75,
+              1.75,
+              1.75,
+              1.75
+            ],
+            [
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "1.75",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "ShenW.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 432,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "zonedelay",
+                "zoneduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ShenE",
+          "name": "그림자 돌진",
+          "maxrank": 5,
+          "cooldown": [
+            18,
+            16,
+            14,
+            12,
+            10
+          ],
+          "cooldownBurn": "18/16/14/12/10",
+          "cost": [
+            150,
+            150,
+            150,
+            150,
+            150
+          ],
+          "costBurn": "150",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "ShenE.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 0,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "ccduration",
+                "energyrefund",
+                "spellmodifierdescriptionappend",
+                "tauntdamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ShenR",
+          "name": "단결된 의지",
+          "maxrank": 3,
+          "cooldown": [
+            200,
+            180,
+            160
+          ],
+          "cooldownBurn": "200/180/160",
+          "cost": [
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            35000,
+            35000,
+            35000
+          ],
+          "rangeBurn": "35000",
+          "image": {
+            "full": "ShenR.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 48,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "channelduration",
+                "maxshield",
+                "shield",
+                "shieldduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "기 보호막",
+        "image": {
+          "full": "Shen_Passive.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 48,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

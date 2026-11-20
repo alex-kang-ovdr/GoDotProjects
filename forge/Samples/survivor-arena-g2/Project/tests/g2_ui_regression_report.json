@@ -1,0 +1,345 @@
+{
+  "checks": [
+    {
+      "detail": "",
+      "name": "last loadout restored before start",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop footer actions remain visible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settings overlay opens in lobby",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settings modal within desktop",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "volume track has visible thickness",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "volume thumb has visible hit marker",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting command updates sound",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting label reflects sound",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting command updates quality",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting label reflects quality",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting command updates screen_shake",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting label reflects screen_shake",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting command updates damage_numbers",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting label reflects damage_numbers",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting command updates radar",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "setting label reflects radar",
+      "passed": true
+    },
+    {
+      "detail": "0.31",
+      "name": "volume pointer changes profile",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "volume label reflects profile",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "overlay hotkey updates sound",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "hotkey preserves settings slider sound",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "toggle remains effective after hotkey sound",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "overlay hotkey updates radar",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "hotkey preserves settings slider radar",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "toggle remains effective after hotkey radar",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "Escape closes lobby overlay",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "empty history has useful state",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "Escape closes history without start",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "recent records rendered newest first",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "loss cause included in records",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "restored options reach new game",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settings keep combat frozen",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "Escape returns to pause instead of resuming",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "radar stays in desktop bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "radar identifies boss",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "radar does not alter simulation",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "boss introduction cue shown",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "boss pattern dodge hint shown",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "radar hotkey hides panel",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "radar hotkey restores panel",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "all upgrade cards show concrete values",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "evolution readiness is explicit",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop card text contained 1",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop card text contained 2",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop card text contained 3",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "upgrade rendering does not consume RNG",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait choice single column",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait modal fits",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait card text contained 1",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait card text contained 2",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait card text contained 3",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait evolved card click works",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait radar and loadout fit",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "XP count visible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait settings shell fits",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait settings control accepts click",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait settings close preserves pause",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait footer accessible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait history shell fits",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait history closes to lobby",
+      "passed": true
+    }
+  ],
+  "clicked_controls": [
+    "SettingsButton",
+    "Setting_sound",
+    "Setting_quality",
+    "Setting_screen_shake",
+    "Setting_damage_numbers",
+    "Setting_radar",
+    "VolumeSlider",
+    "Setting_sound",
+    "Setting_radar",
+    "HistoryButton",
+    "HistoryButton",
+    "HistoryCloseButton",
+    "StartButton",
+    "PauseButton",
+    "PauseSettingsButton",
+    "ResumeButton",
+    "Choice3",
+    "PauseButton",
+    "PauseSettingsButton",
+    "Setting_quality",
+    "SettingsCloseButton",
+    "SaveQuitButton",
+    "HistoryButton",
+    "HistoryCloseButton"
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "limitations": [
+    "Records and upgrade cards use deterministic UI fixtures, not a natural playthrough.",
+    "Font appearance and icon draw output require separate native rendered capture review.",
+    "Portrait is a resized desktop viewport, not a physical mobile device."
+  ],
+  "passed": 59,
+  "runner": "Native main scene and Viewport mouse/keyboard input, headless",
+  "version": "G2",
+  "viewports": [
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ]
+}

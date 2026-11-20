@@ -1,0 +1,307 @@
+{
+  "version": "18.0.0",
+  "date": "2026-11-20",
+  "timezone": "Asia/Seoul",
+  "sourceCommit": "8b26b3305814155734d5341e05e53c5a7e6e4fee",
+  "standaloneHtml": {
+    "filename": "KingdomRush_Playable_v18.html",
+    "sha256": "42ffd4940149321bb4b9919ab267eff3b7e5d661e7b3ea135c7d50fdf0bd8ce3",
+    "bytes": 1089546
+  },
+  "entryPoint": "dist/index.html",
+  "networkRequired": false,
+  "tests": {
+    "engine": 44,
+    "camera": 4,
+    "picking": 4,
+    "checkpoint": 15,
+    "progress": 7,
+    "total": 74
+  },
+  "dataValidation": {
+    "passed": true,
+    "stages": 12,
+    "modes": 36,
+    "waveSlots": 260,
+    "waveInventoryCandidates": 384,
+    "waveConflictsRecorded": 13,
+    "selectedInitialEnemyInventory": 10443,
+    "enemies": 34,
+    "knownDifficultyHpValues": 96,
+    "unknownDifficultyHpValues": 6,
+    "rangedEnemyDefinitions": 3,
+    "enemiesWithExplicitImmunities": 7,
+    "normalizedBehaviorTypes": [
+      "death_explosion",
+      "egg_lay",
+      "enrage",
+      "heal_allies",
+      "immunity",
+      "melee_area",
+      "melee_dodge",
+      "raise_dead",
+      "regeneration",
+      "shield",
+      "turbo"
+    ],
+    "towerStates": 20,
+    "specialAbilities": 18,
+    "starUpgradeDefinitions": 30,
+    "stageEventDefinitions": 5,
+    "towerUnlockEvents": 9,
+    "sourceHpIncludingUnknownNullsPreserved": true,
+    "sourceMeleeAndRangedPreserved": true,
+    "sourceOriginalModeFieldsPreserved": true,
+    "starUpgradeEffectsAndCostsPreserved": true,
+    "abilityLevelParametersPreserved": true,
+    "allSelectedWaveCountsPreserved": true,
+    "waveMetricRows": 260,
+    "entryLabeledWaveSlots": 103,
+    "waveGroups": 797,
+    "waveGroupRoutingStatus": {
+      "mapped_observation_entry_label": 325,
+      "single_visible_route_no_entry_allocation_ambiguity": 22,
+      "unresolved_lane_allocation": 450
+    },
+    "observedLabelsMatchGeometryEntryPathMap": true,
+    "referenceGeometryStages": 12,
+    "referencePaths": 27,
+    "referenceRecordedSites": 155,
+    "referenceSiteTypes": {
+      "prebuilt": 1,
+      "special": 2,
+      "strategic_point": 152
+    },
+    "geometry": [
+      {
+        "stage": "southport",
+        "pathLengthsPx": [
+          1759
+        ],
+        "pads": 10,
+        "padDistanceToRoadPx": [
+          80,
+          105
+        ],
+        "referencePathLengthsPx": [
+          1014
+        ],
+        "referencePads": 8,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "outskirts",
+        "pathLengthsPx": [
+          1813
+        ],
+        "pads": 10,
+        "padDistanceToRoadPx": [
+          75,
+          110
+        ],
+        "referencePathLengthsPx": [
+          1474
+        ],
+        "referencePads": 7,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "pagras",
+        "pathLengthsPx": [
+          1845,
+          1707
+        ],
+        "pads": 10,
+        "padDistanceToRoadPx": [
+          78,
+          100
+        ],
+        "referencePathLengthsPx": [
+          1492,
+          1299
+        ],
+        "referencePads": 12,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "twin_rivers",
+        "pathLengthsPx": [
+          1866,
+          1915
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          80,
+          149
+        ],
+        "referencePathLengthsPx": [
+          832,
+          903
+        ],
+        "referencePads": 15,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "silveroak",
+        "pathLengthsPx": [
+          2283,
+          1823
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          45,
+          117
+        ],
+        "referencePathLengthsPx": [
+          980,
+          869,
+          650
+        ],
+        "referencePads": 14,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "citadel",
+        "pathLengthsPx": [
+          1865,
+          1664
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          75,
+          154
+        ],
+        "referencePathLengthsPx": [
+          930,
+          739,
+          739,
+          930
+        ],
+        "referencePads": 15,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "coldstep",
+        "pathLengthsPx": [
+          1860,
+          1694
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          80,
+          120
+        ],
+        "referencePathLengthsPx": [
+          1546,
+          819,
+          392
+        ],
+        "referencePads": 11,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "icewind",
+        "pathLengthsPx": [
+          1878,
+          1320
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          58,
+          111
+        ],
+        "referencePathLengthsPx": [
+          1385,
+          914
+        ],
+        "referencePads": 12,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "stormcloud",
+        "pathLengthsPx": [
+          1859,
+          1671
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          83,
+          149
+        ],
+        "referencePathLengthsPx": [
+          918,
+          892,
+          493
+        ],
+        "referencePads": 16,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "wastes",
+        "pathLengthsPx": [
+          1867,
+          1891
+        ],
+        "pads": 11,
+        "padDistanceToRoadPx": [
+          88,
+          130
+        ],
+        "referencePathLengthsPx": [
+          1155,
+          1127
+        ],
+        "referencePads": 14,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "forsaken",
+        "pathLengthsPx": [
+          1846,
+          1683
+        ],
+        "pads": 12,
+        "padDistanceToRoadPx": [
+          80,
+          153
+        ],
+        "referencePathLengthsPx": [
+          832,
+          856
+        ],
+        "referencePads": 18,
+        "referenceStatus": "visual_estimate"
+      },
+      {
+        "stage": "dark_tower",
+        "pathLengthsPx": [
+          1867,
+          1676,
+          1859
+        ],
+        "pads": 12,
+        "padDistanceToRoadPx": [
+          80,
+          152
+        ],
+        "referencePathLengthsPx": [
+          1361,
+          1228
+        ],
+        "referencePads": 13,
+        "referenceStatus": "visual_estimate"
+      }
+    ],
+    "version": "18.0.0",
+    "playableSpecialFacilityTypes": 2,
+    "timedEventDefinitions": 1,
+    "sourceNullsStillPreserved": true
+  },
+  "notes": [
+    "Game content tables are structurally unchanged from v17; v18 improves saving, controls, UI and result telemetry.",
+    "Original-build fidelity is not claimed: secondary candidate values and estimated geometry remain labeled.",
+    "Gameplay uses independently authored Canvas/SVG artwork.",
+    "A single active battle slot is supported; completed battles preserve progression separately.",
+    "Screenshots, credentials, hosting identity and temporary QA fixtures are excluded."
+  ]
+}

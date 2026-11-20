@@ -1,0 +1,198 @@
+{
+  "checks": [
+    {
+      "detail": "",
+      "name": "main_native_modules_ready",
+      "passed": true
+    },
+    {
+      "detail": "(0.0, -190.0001)",
+      "name": "input_W",
+      "passed": true
+    },
+    {
+      "detail": "(0.0, 190.0001)",
+      "name": "input_S",
+      "passed": true
+    },
+    {
+      "detail": "(-190.0001, 0.0)",
+      "name": "input_A",
+      "passed": true
+    },
+    {
+      "detail": "(190.0001, 0.0)",
+      "name": "input_D",
+      "passed": true
+    },
+    {
+      "detail": "(0.0, -190.0001)",
+      "name": "input_Up",
+      "passed": true
+    },
+    {
+      "detail": "(0.0, 190.0001)",
+      "name": "input_Down",
+      "passed": true
+    },
+    {
+      "detail": 190.000045776367,
+      "name": "diagonal_speed_normalized",
+      "passed": true
+    },
+    {
+      "detail": "paused",
+      "name": "P_key_pauses",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "pause_freezes_simulation",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "escape_resumes",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "build_overlay_pauses",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "build_overlay_resumes",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "levelup_opens_cards",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "R_key_consumes_one_reroll",
+      "passed": true
+    },
+    {
+      "detail": "magnet",
+      "name": "number_key_applies_card",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "focus_loss_pauses",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "focus_loss_clears_movement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "disk_checkpoint_written",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "disk_checkpoint_restores",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "disk_position_preserved",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "disk_ammo_and_reload_preserved",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "choice_checkpoint_written",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "choice_checkpoint_restores",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "choice_and_candidates_unchanged",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "corrupt_primary_recovers_backup",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "backup_is_previous_checkpoint",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "clear_removes_primary_backup_temp",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "profile_persists",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "result_first_settlement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settled_result_values",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "duplicate_settlement_is_idempotent",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settlement_ledger_survives_reload",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "duplicate_after_reload_is_idempotent",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "malformed_vector_rejected",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "invalid_restore_is_atomic",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "unknown_equipped_weapon_rejected",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "invalid_hp_rejected",
+      "passed": true
+    }
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "passed": 38,
+  "suite": "Godot native integration"
+}

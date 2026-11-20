@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "project-zomboid",
+  "slug": "project-zomboid",
+  "title": {
+    "ko": "KNOX · LAST SIGNAL (좀보이드 프로토타입)",
+    "en": "KNOX · LAST SIGNAL (Project Zomboid Prototype)"
+  },
+  "summary": {
+    "ko": "부품을 모아 대피소 무전기를 수리하고 90초간 신호를 송출해 탈출하는 오프라인 생존 웹 프로토타입입니다.",
+    "en": "An offline survival web prototype where you salvage parts, repair the shelter radio, and hold out for 90 seconds."
+  },
+  "instructions": {
+    "ko": "WASD/방향키 이동, 마우스 조준/공격, Space 밀치기, Shift 달리기, C 은신, E 상호작용, I 가방, B 제작, M 지도, Esc 메뉴. 터치 지원.",
+    "en": "WASD/Arrows move, Mouse aim/attack, Space shove, Shift sprint, C sneak, E interact, I inventory, B craft, M map, Esc menu."
+  },
+  "rules": {
+    "ko": "배터리 2, 전자 부품 2, 덕트 테이프 1을 모아 무전기를 수리하고 90초 송출을 완료하면 승리합니다. 단일 슬롯 자동 저장 및 JSON 백업 지원.",
+    "en": "Collect 2 batteries, 2 electronics, and 1 duct tape to repair the radio and transmit for 90s. Supports 1-slot auto-save and JSON export."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "updatedOn": "2026-11-20",
+  "tags": [
+    "survival",
+    "action",
+    "rpg"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": [
+      "assets/gameplay-intro.png"
+    ]
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Project Zomboid",
+  "supportedLocales": [
+    "ko"
+  ]
+}

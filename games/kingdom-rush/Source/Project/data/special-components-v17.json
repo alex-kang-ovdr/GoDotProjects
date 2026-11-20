@@ -1,0 +1,560 @@
+{
+  "schemaVersion": 17,
+  "datasetVersion": "17.0.0",
+  "title": "특수 시설·전장 이벤트 실행 구성요소",
+  "coordinateSystem": {
+    "width": 1000,
+    "height": 620,
+    "originalEngineUnits": false
+  },
+  "provenancePolicy": {
+    "numericStatus": "secondary_candidate",
+    "measuredInTargetBuild": false,
+    "notes": [
+      "공식 공략은 스테이지 존재와 영상 링크를 확인하는 용도이며 수치의 근거로 인용하지 않는다.",
+      "시설 수치는 공개 커뮤니티 문서의 후보값이다. 원본 실행 파일·특정 플랫폼에서 측정한 값으로 취급하지 않는다.",
+      "기록 좌표, 시각 추정 경로, 웹 실행 보정값을 구분하며 unknown 값은 null로 보존한다."
+    ]
+  },
+  "sources": [
+    {
+      "id": "primary_official_strategy",
+      "title": "Ironhide Kingdom Rush strategy guide",
+      "url": "https://www.kingdomrush.com/kingdom-rush-strategy-guide",
+      "kind": "official_walkthrough_index",
+      "accessed": "2026-11-19",
+      "supports": [
+        "stage_identity",
+        "public_walkthrough_links"
+      ],
+      "doesNotEstablish": [
+        "facility_numeric_stats",
+        "event_frame_timing"
+      ]
+    },
+    {
+      "id": "primary_scott_positions",
+      "title": "Scott Louvau Kingdom Rush positions",
+      "url": "https://raw.githubusercontent.com/ScottLouvau/kingdomrush/a3c8218c19fab8e43596309de31eeeeb4a0bc8d6/js/data/positions.json",
+      "kind": "direct_player_recorded_coordinates",
+      "commit": "a3c8218c19fab8e43596309de31eeeeb4a0bc8d6",
+      "accessed": "2026-11-19",
+      "localReference": "geometry_reconstruction_v16.json",
+      "supports": [
+        "facility_screenshot_coordinates"
+      ],
+      "doesNotEstablish": [
+        "original_engine_coordinates",
+        "facility_numeric_stats"
+      ]
+    },
+    {
+      "id": "wikily_sylvan_elf_v17",
+      "title": "Sylvan Elf Halls, Cost and Stats",
+      "url": "https://wikily.gg/kingdom-rush/towers/sylvan-elf/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-19"
+    },
+    {
+      "id": "wikily_sunray_v17",
+      "title": "Sunray Tower Sorcerer Levels and Cost",
+      "url": "https://wikily.gg/kingdom-rush/towers/sunray-tower/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-19"
+    },
+    {
+      "id": "wikily_stormcloud_v17",
+      "title": "Stormcloud Temple",
+      "url": "https://wikily.gg/kingdom-rush/stages/stormcloud-temple/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-19"
+    },
+    {
+      "id": "wikily_silveroak_v17",
+      "title": "Silveroak Forest",
+      "url": "https://wikily.gg/kingdom-rush/stages/silveroak-forest/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-19"
+    },
+    {
+      "id": "wikily_forsaken_v17",
+      "title": "Forsaken Valley",
+      "url": "https://wikily.gg/kingdom-rush/stages/forsaken-valley/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-19"
+    }
+  ],
+  "facilities": {
+    "sylvan_elf_hall": {
+      "id": "sylvan_elf_hall",
+      "name": "실반 엘프 훈련소",
+      "stageId": "silveroak",
+      "modes": [
+        "campaign",
+        "heroic",
+        "iron"
+      ],
+      "evidenceStatus": "secondary_candidate",
+      "measuredInTargetBuild": false,
+      "placement": {
+        "layout": "reconstructed",
+        "siteId": "B8",
+        "x": 331.25,
+        "y": 149.26,
+        "coordinateStatus": "source_recorded_screenshot_coordinate",
+        "sourceId": "primary_scott_positions",
+        "reportedCountByMode": {
+          "campaign": 1,
+          "heroic": 1,
+          "iron": 2
+        },
+        "implementedCountByMode": {
+          "campaign": 1,
+          "heroic": 1,
+          "iron": 1
+        },
+        "unresolved": "Iron의 두 번째 시설 위치와 모드별 배치가 확인되지 않아 공통 B8 한 곳만 활성화한다."
+      },
+      "sourceFacts": {
+        "repairCost": 100,
+        "hireCost": 100,
+        "maxUnits": 4,
+        "hpByDifficulty": {
+          "casual": 120,
+          "normal": 100,
+          "veteran": 100
+        },
+        "armor": 0,
+        "damage": [
+          25,
+          50
+        ],
+        "interval": 1,
+        "ranged": {
+          "damage": [
+            26,
+            50
+          ],
+          "interval": 1.5,
+          "minRange": 50,
+          "range": 205,
+          "type": "physical",
+          "targets": [
+            "ground",
+            "air"
+          ]
+        },
+        "rallyRange": 145,
+        "regenPerSecond": 20,
+        "regenDelaySeconds": 2,
+        "autoRespawn": false,
+        "sellable": false,
+        "upgradeEffects": {
+          "improvedDeploymentMultiplier": 1.2,
+          "spikedArmorFraction": 0.1
+        },
+        "moveSpeed": null
+      },
+      "runtime": {
+        "repairCost": 100,
+        "hireCost": 100,
+        "maxUnits": 4,
+        "hpByDifficulty": {
+          "casual": 120,
+          "normal": 100,
+          "veteran": 100
+        },
+        "armor": 0,
+        "damage": [
+          25,
+          50
+        ],
+        "interval": 1,
+        "ranged": {
+          "damage": [
+            26,
+            50
+          ],
+          "interval": 1.5,
+          "minRange": 50,
+          "range": 205,
+          "type": "physical",
+          "targets": [
+            "ground",
+            "air"
+          ]
+        },
+        "rallyRange": 145,
+        "regenPerSecond": 20,
+        "regenDelaySeconds": 2,
+        "autoRespawn": false,
+        "sellable": false,
+        "upgradeEffects": {
+          "improvedDeploymentMultiplier": 1.2,
+          "spikedArmorFraction": 0.1
+        },
+        "moveSpeed": 85,
+        "initiallyRestored": false,
+        "damageRoll": "deterministic_mean",
+        "attackPriority": "melee_over_ranged_when_in_reach"
+      },
+      "fieldProvenance": [
+        {
+          "fields": [
+            "repairCost",
+            "hireCost",
+            "maxUnits",
+            "hpByDifficulty",
+            "armor",
+            "damage",
+            "interval",
+            "ranged.damage",
+            "ranged.interval",
+            "ranged.minRange",
+            "ranged.range",
+            "rallyRange",
+            "regenPerSecond",
+            "regenDelaySeconds",
+            "autoRespawn",
+            "sellable",
+            "upgradeEffects"
+          ],
+          "sourceIds": [
+            "wikily_sylvan_elf_v17"
+          ],
+          "status": "secondary_candidate"
+        },
+        {
+          "fields": [
+            "placement.reportedCountByMode"
+          ],
+          "sourceIds": [
+            "wikily_silveroak_v17"
+          ],
+          "status": "secondary_candidate"
+        },
+        {
+          "fields": [
+            "runtime.moveSpeed"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "원작 이동 속도를 확인하지 못해 웹 전투용 85 world units/s를 사용한다."
+        },
+        {
+          "fields": [
+            "runtime.ranged.minRange",
+            "runtime.ranged.range",
+            "runtime.rallyRange"
+          ],
+          "sourceIds": [
+            "wikily_sylvan_elf_v17"
+          ],
+          "status": "source_number_custom_world_units",
+          "reason": "보고된 거리 수치를 1000×620 웹 좌표계에 적용한다. 원작 거리 단위와의 동일성은 미확정이다."
+        },
+        {
+          "fields": [
+            "runtime.damageRoll"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "피해 범위는 원자료 후보로 보존하고 실제 특수 시설 피해는 범위의 평균값으로 계산한다. 원작 난수 분포를 복원한 것은 아니다."
+        },
+        {
+          "fields": [
+            "runtime.attackPriority"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "같은 프레임의 근접 타격·원거리 사격 중복을 막기 위해 근접 사정거리 안에서 근접 공격을 우선한다. 원작 행동 트리의 정확한 복원은 아니다."
+        }
+      ],
+      "behaviorNotes": [
+        "아군 1명을 골드로 고용한다. 사망하면 빈 슬롯만 생기며 자동 부활하지 않는다.",
+        "전투 중인 적을 근접 저지하고, 비전투 원거리 공격은 지상·비행 적을 겨냥한다.",
+        "병영 별 강화의 적용 범위는 개선된 배치와 가시 갑옷 후보만 연결한다.",
+        "근접 사정거리 안의 저지 대상이 있으면 원거리 사격을 보류한다. 이 우선순위는 웹 구현 규칙이다."
+      ]
+    },
+    "sunray_tower": {
+      "id": "sunray_tower",
+      "name": "태양광선 탑",
+      "stageId": "stormcloud",
+      "modes": [
+        "campaign",
+        "heroic",
+        "iron"
+      ],
+      "evidenceStatus": "secondary_candidate",
+      "measuredInTargetBuild": false,
+      "placement": {
+        "layout": "reconstructed",
+        "siteId": "A1",
+        "x": 269.79,
+        "y": 492.56,
+        "coordinateStatus": "source_recorded_screenshot_coordinate",
+        "sourceId": "primary_scott_positions",
+        "reportedCountByMode": {
+          "campaign": 1,
+          "heroic": 1,
+          "iron": 1
+        },
+        "implementedCountByMode": {
+          "campaign": 1,
+          "heroic": 1,
+          "iron": 1
+        }
+      },
+      "sourceFacts": {
+        "repairCost": 0,
+        "initiallyRestored": true,
+        "workerCost": 100,
+        "maxWorkers": 4,
+        "damageByWorkers": [
+          [
+            76,
+            125
+          ],
+          [
+            126,
+            175
+          ],
+          [
+            176,
+            225
+          ],
+          [
+            226,
+            275
+          ]
+        ],
+        "cooldownByWorkers": [
+          19,
+          16,
+          13,
+          10
+        ],
+        "damageType": "true",
+        "targets": [
+          "ground",
+          "air"
+        ],
+        "globalRange": true,
+        "readyOnPurchase": true,
+        "sellable": false
+      },
+      "runtime": {
+        "repairCost": 0,
+        "initiallyRestored": true,
+        "workerCost": 100,
+        "maxWorkers": 4,
+        "damageByWorkers": [
+          [
+            76,
+            125
+          ],
+          [
+            126,
+            175
+          ],
+          [
+            176,
+            225
+          ],
+          [
+            226,
+            275
+          ]
+        ],
+        "cooldownByWorkers": [
+          19,
+          16,
+          13,
+          10
+        ],
+        "damageType": "true",
+        "targets": [
+          "ground",
+          "air"
+        ],
+        "globalRange": true,
+        "readyOnPurchase": true,
+        "sellable": false,
+        "targetHitRadius": 38,
+        "damageRoll": "deterministic_mean"
+      },
+      "fieldProvenance": [
+        {
+          "fields": [
+            "repairCost",
+            "initiallyRestored",
+            "workerCost",
+            "maxWorkers",
+            "damageByWorkers",
+            "cooldownByWorkers",
+            "damageType",
+            "targets",
+            "globalRange",
+            "sellable"
+          ],
+          "sourceIds": [
+            "wikily_sunray_v17"
+          ],
+          "status": "secondary_candidate"
+        },
+        {
+          "fields": [
+            "readyOnPurchase"
+          ],
+          "sourceIds": [
+            "wikily_stormcloud_v17"
+          ],
+          "status": "secondary_candidate"
+        },
+        {
+          "fields": [
+            "runtime.targetHitRadius"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "터치 선택 보정을 위한 웹 좌표 반경이다."
+        },
+        {
+          "fields": [
+            "runtime.damageRoll"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "피해 범위는 원자료 후보로 보존하고 실제 특수 시설 피해는 범위의 평균값으로 계산한다. 원작 난수 분포를 복원한 것은 아니다."
+        }
+      ],
+      "behaviorNotes": [
+        "수리 단계 없이 전투 시작부터 시설을 선택할 수 있다. 마술사를 구매해야 광선을 쓸 수 있다.",
+        "마술사 고용 시 즉시 발사 가능하며, 발사 후 해당 인원 단계의 재충전 시간이 시작된다.",
+        "광선은 사용자가 선택한 살아 있는 적 1명에게 고정 피해를 가하며 사거리 제한이 없다."
+      ]
+    }
+  },
+  "stageEvents": [
+    {
+      "id": "forsaken_lava",
+      "name": "화산 분출",
+      "stageId": "forsaken",
+      "mode": "all",
+      "type": "timed_repeat",
+      "enemyId": "magma_elemental",
+      "countPerCycle": 1,
+      "startOffsetSeconds": 400,
+      "intervalSeconds": 120,
+      "timeOrigin": "first_wave_started",
+      "totalCount": null,
+      "evidenceStatus": "secondary_candidate",
+      "measuredInTargetBuild": false,
+      "sourceIds": [
+        "wikily_forsaken_v17"
+      ],
+      "inheritedReferenceId": "forsaken_lava",
+      "sourceFacts": {
+        "startOffsetSeconds": 400,
+        "intervalSeconds": 120,
+        "countPerCycle": 1,
+        "timeOrigin": "first_wave_started",
+        "spawnRegion": "central_magma_field",
+        "distribution": null,
+        "exactSubpath": null
+      },
+      "runtime": {
+        "enabled": true,
+        "stopAtTerminal": true,
+        "pathPolicy": "volcano_connector_west_then_main",
+        "pathFallback": "authored_primary_entry",
+        "pathStatus": "custom_visual_route_adaptation",
+        "connectorFeatureId": "volcano_connector",
+        "mainPathIndex": 0,
+        "reconstructedJoinIndex": 2,
+        "warningSeconds": 10,
+        "normalWaveInventoryUnchanged": true
+      },
+      "fieldProvenance": [
+        {
+          "fields": [
+            "startOffsetSeconds",
+            "intervalSeconds",
+            "countPerCycle",
+            "timeOrigin"
+          ],
+          "sourceIds": [
+            "wikily_forsaken_v17"
+          ],
+          "status": "secondary_candidate"
+        },
+        {
+          "fields": [
+            "runtime.pathPolicy",
+            "runtime.pathFallback",
+            "runtime.reconstructedJoinIndex"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "v16에서 시각 추정한 서쪽 연결로를 본선과 접합한다. 원작 좌우 선택 확률과 서브패스를 복원한 것이 아니다."
+        },
+        {
+          "fields": [
+            "runtime.warningSeconds"
+          ],
+          "sourceIds": [],
+          "status": "custom_web",
+          "reason": "웹판 플레이 편의를 위한 10초 예고다."
+        }
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "silveroak_iron_second_elf_hall",
+      "status": "position_unresolved",
+      "reportedCount": 2,
+      "implementedCount": 1,
+      "sourceIds": [
+        "wikily_silveroak_v17"
+      ]
+    },
+    {
+      "id": "challenge_preplaced_towers",
+      "status": "mode_specific_coordinates_unverified",
+      "candidates": {
+        "silveroak": {
+          "campaign": 1,
+          "heroic": 1,
+          "iron": 3,
+          "towerId": "archer_3"
+        },
+        "stormcloud": {
+          "iron": 9,
+          "towerId": "mage_1"
+        }
+      },
+      "sourceIds": [
+        "wikily_silveroak_v17",
+        "wikily_stormcloud_v17"
+      ],
+      "action": "기존 v16 모드별 배치 데이터는 유지한다. 후보값을 근거 없이 확정 배치로 승격하지 않는다."
+    },
+    {
+      "id": "graveyard_reanimation",
+      "status": "not_activated",
+      "reason": "묘지 영역, 원본 최대 체력 정의 및 사망 위치→부활 경로 연결이 미확정이다. v14 정의만 보존한다."
+    },
+    {
+      "id": "stormcloud_jt_repeat_adds",
+      "status": "not_activated",
+      "reason": "반복 간격과 시작 지연이 null이며 정확한 재현을 위한 자료가 부족하다."
+    },
+    {
+      "id": "facility_distance_scale",
+      "status": "not_original_engine_units",
+      "reason": "보고된 수치를 웹 좌표계에 적용했으므로 원작 실거리·행동 시간과 동일하다고 볼 수 없다."
+    }
+  ]
+}

@@ -1,0 +1,2802 @@
+{
+  "version": "16.0.0",
+  "evidencePolicy": "Source candidates and runtime adapters are separate. Unknown source fields stay null; sourceMelee, sourceRanged, sourceBehaviors and hpByDifficulty retain v14 values.",
+  "enemies": [
+    {
+      "id": "bandit",
+      "name": "Bandit",
+      "nameKo": "도적",
+      "hp": 70,
+      "hpByDifficulty": {
+        "casual": 56,
+        "normal": 70,
+        "veteran": 84
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 38,
+      "damage": 25.0,
+      "damageMin": 20,
+      "damageMax": 30,
+      "attackTime": 1,
+      "gold": 8,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          30
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 46.1,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_bandit"
+      ],
+      "analysis": {
+        "roles": [
+          "evasive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "brigand",
+      "name": "Brigand",
+      "nameKo": "강도",
+      "hp": 160,
+      "hpByDifficulty": {
+        "casual": 128,
+        "normal": 160,
+        "veteran": 192
+      },
+      "armor": 0.5,
+      "resist": 0,
+      "speed": 26,
+      "damage": 8.0,
+      "damageMin": 6,
+      "damageMax": 10,
+      "attackTime": 1.5,
+      "gold": 15,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 0.8,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_brigand"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "dark_knight",
+      "name": "Dark Knight",
+      "nameKo": "암흑 기사",
+      "hp": 300,
+      "hpByDifficulty": {
+        "casual": 240,
+        "normal": 300,
+        "veteran": 360
+      },
+      "armor": 0.8,
+      "resist": 0,
+      "speed": 23,
+      "damage": 20.0,
+      "damageMin": 15,
+      "damageMax": 25,
+      "attackTime": 1.5,
+      "gold": 25,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 0.7,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_dark_knight"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "dark_slayer",
+      "name": "Dark Slayer",
+      "nameKo": "암흑 학살자",
+      "hp": 1200,
+      "hpByDifficulty": {
+        "casual": 960,
+        "normal": 1200,
+        "veteran": 1440
+      },
+      "armor": 0.95,
+      "resist": 0,
+      "speed": 20,
+      "damage": 50.0,
+      "damageMin": 24,
+      "damageMax": 76,
+      "attackTime": 1,
+      "gold": 100,
+      "lifeCost": 3,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": {
+        "damage": [
+          24,
+          76
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 26.9,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_dark_slayer"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "demon_hound",
+      "name": "Demon Hound",
+      "nameKo": "악마 사냥개",
+      "hp": 350,
+      "hpByDifficulty": {
+        "casual": 280,
+        "normal": 350,
+        "veteran": 420
+      },
+      "armor": 0,
+      "resist": 0.6,
+      "speed": 50,
+      "damage": 30.0,
+      "damageMin": 20,
+      "damageMax": 40,
+      "attackTime": 1,
+      "gold": 25,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        },
+        {
+          "type": "death_explosion",
+          "damage": [
+            70,
+            140
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni",
+          "runtimeRange": 65,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          40
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        },
+        {
+          "type": "death_explosion",
+          "damage": [
+            70,
+            140
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni"
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 57.6,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_demon_hound"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "explosive",
+          "evasive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "demon_imp",
+      "name": "Demon Imp",
+      "nameKo": "악마 임프",
+      "hp": 350,
+      "hpByDifficulty": {
+        "casual": 280,
+        "normal": 350,
+        "veteran": 420
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 34,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 25,
+      "lifeCost": 1,
+      "air": true,
+      "blockable": false,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "immunity",
+          "effect": "wrath_forest"
+        }
+      ],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "immunity",
+          "effect": "wrath_forest"
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "wrath_forest"
+      ],
+      "reportedSpeed": 38.4,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_demon_imp"
+      ],
+      "analysis": {
+        "roles": [
+          "air"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "demon_lord",
+      "name": "Demon Lord",
+      "nameKo": "악마 군주",
+      "hp": 1000,
+      "hpByDifficulty": {
+        "casual": 800,
+        "normal": 1000,
+        "veteran": 1200
+      },
+      "armor": 0,
+      "resist": 0.6,
+      "speed": 23,
+      "damage": 45.0,
+      "damageMin": 15,
+      "damageMax": 75,
+      "attackTime": 1.67,
+      "gold": 60,
+      "lifeCost": 5,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "shield",
+          "cooldownSeconds": 6,
+          "maxTargets": 4,
+          "hitCharges": 4,
+          "canTargetSelf": false,
+          "durationSeconds": null,
+          "lifetimePolicy": "until_charges_consumed",
+          "targetTags": [
+            "infernal_shield_eligible"
+          ],
+          "poisonConsumesCharge": false,
+          "continuousAttackChargePolicy": "one_per_attack",
+          "instantKillBypasses": true,
+          "runtimeRange": 145,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        },
+        {
+          "type": "death_explosion",
+          "damage": [
+            200,
+            400
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni",
+          "runtimeRange": 65,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          15,
+          75
+        ],
+        "intervalSeconds": 1.67,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "shield",
+          "cooldownSeconds": 6,
+          "maxTargets": 4,
+          "hitCharges": 4,
+          "canTargetSelf": false,
+          "durationSeconds": null,
+          "lifetimePolicy": "until_charges_consumed",
+          "targetTags": [
+            "infernal_shield_eligible"
+          ],
+          "poisonConsumesCharge": false,
+          "continuousAttackChargePolicy": "one_per_attack",
+          "instantKillBypasses": true
+        },
+        {
+          "type": "death_explosion",
+          "damage": [
+            200,
+            400
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni"
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 23,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_demon_lord"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "support",
+          "explosive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "demon_spawn",
+      "name": "Demon Spawn",
+      "nameKo": "악마 병사",
+      "hp": 250,
+      "hpByDifficulty": {
+        "casual": 200,
+        "normal": 250,
+        "veteran": 300
+      },
+      "armor": 0,
+      "resist": 0.6,
+      "speed": 30,
+      "damage": 20.0,
+      "damageMin": 10,
+      "damageMax": 30,
+      "attackTime": 1,
+      "gold": 20,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "death_explosion",
+          "damage": [
+            50,
+            100
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni",
+          "runtimeRange": 65,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          10,
+          30
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "death_explosion",
+          "damage": [
+            50,
+            100
+          ],
+          "damageType": "physical",
+          "radius": null,
+          "excludedHero": "oni"
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 30.7,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_demon_spawn"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "explosive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "gargoyle",
+      "name": "Gargoyle",
+      "nameKo": "가고일",
+      "hp": 90,
+      "hpByDifficulty": {
+        "casual": 72,
+        "normal": 90,
+        "veteran": 108
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 37,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 12,
+      "lifeCost": 1,
+      "air": true,
+      "blockable": false,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 1.2,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_gargoyle"
+      ],
+      "analysis": {
+        "roles": [
+          "air"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "giant_spider",
+      "name": "Giant Spider",
+      "nameKo": "거대 거미",
+      "hp": 60,
+      "hpByDifficulty": {
+        "casual": 48,
+        "normal": 60,
+        "veteran": 72
+      },
+      "armor": 0,
+      "resist": 0.65,
+      "speed": 32,
+      "damage": 14.0,
+      "damageMin": 10,
+      "damageMax": 18,
+      "attackTime": 1,
+      "gold": 6,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          10,
+          18
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "poison_arrows"
+      ],
+      "reportedSpeed": 57.6,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_giant_spider"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "nameKo": "고블린",
+      "hp": 20,
+      "hpByDifficulty": {
+        "casual": 16,
+        "normal": 20,
+        "veteran": 24
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 31,
+      "damage": 3.0,
+      "damageMin": 2,
+      "damageMax": 4,
+      "attackTime": 1.5,
+      "gold": 3,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 1.2,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_goblin"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "golem_head",
+      "name": "Golem Head",
+      "nameKo": "골렘 머리",
+      "hp": 125,
+      "hpByDifficulty": {
+        "casual": 100,
+        "normal": 125,
+        "veteran": 150
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 30,
+      "damage": 15.0,
+      "damageMin": 10,
+      "damageMax": 20,
+      "attackTime": 1.67,
+      "gold": 10,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": {
+        "damage": [
+          10,
+          20
+        ],
+        "intervalSeconds": 1.67,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 26.9,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_golem_head"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "jt",
+      "name": "J.T.",
+      "nameKo": "J.T.",
+      "hp": 11000,
+      "hpByDifficulty": {
+        "normal": 11000,
+        "casual": null,
+        "veteran": null
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 10,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 0,
+      "lifeCost": 20,
+      "air": false,
+      "blockable": null,
+      "boss": true,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": null,
+      "speedUnits": null,
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_boss_candidate",
+      "radius": 29,
+      "sourceIds": [
+        "wiki_jt",
+        "wiki_stage_09"
+      ],
+      "analysis": {
+        "roles": [
+          "boss"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      },
+      "bossPhases": [
+        11000
+      ],
+      "sourceBossBehaviors": [
+        "consume_blocker",
+        "freeze_nearby_towers",
+        "pause_after_slam",
+        "boss_linked_reinforcement_stream"
+      ]
+    },
+    {
+      "id": "juggernaut",
+      "name": "The Juggernaut",
+      "nameKo": "저거너트",
+      "hp": 10000,
+      "hpByDifficulty": {
+        "normal": 10000,
+        "casual": null,
+        "veteran": null
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 10,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 0,
+      "lifeCost": 20,
+      "air": false,
+      "blockable": null,
+      "boss": true,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": null,
+      "speedUnits": null,
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_boss_candidate",
+      "radius": 29,
+      "sourceIds": [
+        "wiki_juggernaut",
+        "wiki_stage_06"
+      ],
+      "analysis": {
+        "roles": [
+          "boss"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      },
+      "bossPhases": [
+        10000
+      ],
+      "sourceBossBehaviors": [
+        "melee_area_attack",
+        "spawn_golem_heads_near_exit",
+        "long_range_missile"
+      ]
+    },
+    {
+      "id": "magma_elemental",
+      "name": "Magma Elemental",
+      "nameKo": "용암 정령",
+      "hp": 2500,
+      "hpByDifficulty": {
+        "casual": 2000,
+        "normal": 2500,
+        "veteran": 3000
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 19,
+      "damage": 100.0,
+      "damageMin": 50,
+      "damageMax": 150,
+      "attackTime": 2.5,
+      "gold": 100,
+      "lifeCost": 5,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_area",
+          "maxTargets": 10
+        },
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          50,
+          150
+        ],
+        "intervalSeconds": 2.5,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_area",
+          "maxTargets": 10
+        },
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "poison_arrows"
+      ],
+      "reportedSpeed": 19.2,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 20,
+      "sourceIds": [
+        "wikily_enemy_magma_elemental"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "marauder",
+      "name": "Marauder",
+      "nameKo": "약탈자",
+      "hp": 600,
+      "hpByDifficulty": {
+        "casual": 480,
+        "normal": 600,
+        "veteran": 720
+      },
+      "armor": 0.6,
+      "resist": 0,
+      "speed": 24,
+      "damage": 20.0,
+      "damageMin": 16,
+      "damageMax": 24,
+      "attackTime": 1.5,
+      "gold": 40,
+      "lifeCost": 3,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 0.8,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_marauder"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "necromancer",
+      "name": "Necromancer",
+      "nameKo": "강령술사",
+      "hp": 700,
+      "hpByDifficulty": {
+        "casual": 560,
+        "normal": 700,
+        "veteran": 840
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 23,
+      "damage": 30.0,
+      "damageMin": 20,
+      "damageMax": 40,
+      "attackTime": 1,
+      "gold": 50,
+      "lifeCost": 3,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "raise_dead",
+          "cooldownSeconds": 8,
+          "requiresUnblocked": true,
+          "childrenPerCast": 5,
+          "children": [
+            {
+              "id": "skeleton_knight",
+              "probability": 0.05
+            },
+            {
+              "id": "skeleton",
+              "probability": 0.95
+            }
+          ],
+          "childRewardOverride": 0,
+          "aliveLimit": 35,
+          "aliveLimitScope": null,
+          "intraCastIntervalSeconds": null
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          40
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": {
+        "damage": [
+          21,
+          40
+        ],
+        "intervalSeconds": 1.77,
+        "damageType": "physical",
+        "range": null
+      },
+      "sourceBehaviors": [
+        {
+          "type": "raise_dead",
+          "cooldownSeconds": 8,
+          "requiresUnblocked": true,
+          "childrenPerCast": 5,
+          "children": [
+            {
+              "id": "skeleton_knight",
+              "probability": 0.05
+            },
+            {
+              "id": "skeleton",
+              "probability": 0.95
+            }
+          ],
+          "childRewardOverride": 0,
+          "aliveLimit": 35,
+          "aliveLimitScope": null,
+          "intraCastIntervalSeconds": null
+        }
+      ],
+      "ranged": {
+        "damage": [
+          21,
+          40
+        ],
+        "intervalSeconds": 1.77,
+        "damageType": "physical",
+        "range": 145,
+        "reportedRange": null,
+        "rangeStatus": "custom_pixel_radius_source_range_unknown"
+      },
+      "immunities": [],
+      "reportedSpeed": 23,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_necromancer"
+      ],
+      "analysis": {
+        "roles": [
+          "ranged",
+          "summoner"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "ogre",
+      "name": "Ogre",
+      "nameKo": "오우거",
+      "hp": 800,
+      "hpByDifficulty": {
+        "casual": 640,
+        "normal": 800,
+        "veteran": 960
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 21,
+      "damage": 50.0,
+      "damageMin": 40,
+      "damageMax": 60,
+      "attackTime": 1,
+      "gold": 50,
+      "lifeCost": 3,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": {
+        "damage": [
+          40,
+          60
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 0.7,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 20,
+      "sourceIds": [
+        "wiki_ogre"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "orc",
+      "name": "Orc",
+      "nameKo": "오크",
+      "hp": 80,
+      "hpByDifficulty": {
+        "casual": 64,
+        "normal": 80,
+        "veteran": 96
+      },
+      "armor": 0.3,
+      "resist": 0,
+      "speed": 25,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 9,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 0.8,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_orc"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "rocket_rider",
+      "name": "Rocket Rider",
+      "nameKo": "로켓 기수",
+      "hp": 340,
+      "hpByDifficulty": {
+        "casual": 272,
+        "normal": 340,
+        "veteran": 408
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 32,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 30,
+      "lifeCost": 1,
+      "air": true,
+      "blockable": false,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "turbo",
+          "trigger": "first_damage",
+          "speedMultiplier": 3.6,
+          "durationSeconds": 2,
+          "suspendedBy": [
+            "frozen"
+          ]
+        },
+        {
+          "type": "immunity",
+          "effect": "wrath_forest"
+        }
+      ],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "turbo",
+          "trigger": "first_damage",
+          "speedMultiplier": 3.6,
+          "durationSeconds": 2,
+          "suspendedBy": [
+            "frozen"
+          ]
+        },
+        {
+          "type": "immunity",
+          "effect": "wrath_forest"
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "wrath_forest"
+      ],
+      "reportedSpeed": 46.1,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_rocket_rider"
+      ],
+      "analysis": {
+        "roles": [
+          "air",
+          "runner"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "mage"
+        ]
+      }
+    },
+    {
+      "id": "shadow_archer",
+      "name": "Shadow Archer",
+      "nameKo": "그림자 궁수",
+      "hp": 180,
+      "hpByDifficulty": {
+        "casual": 144,
+        "normal": 180,
+        "veteran": 216
+      },
+      "armor": 0,
+      "resist": 0.3,
+      "speed": 31,
+      "damage": 15.0,
+      "damageMin": 10,
+      "damageMax": 20,
+      "attackTime": 1,
+      "gold": 16,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": {
+        "damage": [
+          10,
+          20
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": {
+        "damage": [
+          21,
+          30
+        ],
+        "intervalSeconds": 1.4,
+        "damageType": "physical",
+        "range": null
+      },
+      "sourceBehaviors": [],
+      "ranged": {
+        "damage": [
+          21,
+          30
+        ],
+        "intervalSeconds": 1.4,
+        "damageType": "physical",
+        "range": 155,
+        "reportedRange": null,
+        "rangeStatus": "custom_pixel_radius_source_range_unknown"
+      },
+      "immunities": [],
+      "reportedSpeed": 46.1,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_shadow_archer"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "ranged"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "shaman",
+      "name": "Shaman",
+      "nameKo": "주술사",
+      "hp": 100,
+      "hpByDifficulty": {
+        "casual": 80,
+        "normal": 100,
+        "veteran": 120
+      },
+      "armor": 0,
+      "resist": 0.85,
+      "speed": 25,
+      "damage": 4.0,
+      "damageMin": 3,
+      "damageMax": 5,
+      "attackTime": 1.5,
+      "gold": 10,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "kind": "heal_allies",
+          "amount": 50,
+          "cooldownSeconds": 8,
+          "rangeSourceUnits": 95,
+          "rangeWorldUnits": null,
+          "usableWhileBlocked": true,
+          "interruptsMeleeAttack": true,
+          "flashIOSAttackIntervalSeconds": 1.0,
+          "type": "heal_allies",
+          "runtimeRange": 150,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          3,
+          5
+        ],
+        "intervalSeconds": 1.5,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "kind": "heal_allies",
+          "amount": 50,
+          "cooldownSeconds": 8,
+          "rangeSourceUnits": 95,
+          "rangeWorldUnits": null,
+          "usableWhileBlocked": true,
+          "interruptsMeleeAttack": true,
+          "flashIOSAttackIntervalSeconds": 1.0
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 1,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_shaman"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "healer"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "nameKo": "해골",
+      "hp": 120,
+      "hpByDifficulty": {
+        "casual": 96,
+        "normal": 120,
+        "veteran": 144
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 30,
+      "damage": 15.0,
+      "damageMin": 10,
+      "damageMax": 20,
+      "attackTime": 1,
+      "gold": 2,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "immunity",
+          "effects": [
+            "polymorph",
+            "poison_arrows"
+          ]
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          10,
+          20
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "immunity",
+          "effects": [
+            "polymorph",
+            "poison_arrows"
+          ]
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "poison_arrows",
+        "polymorph"
+      ],
+      "reportedSpeed": 23,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_skeleton"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "skeleton_knight",
+      "name": "Skeleton Knight",
+      "nameKo": "해골 기사",
+      "hp": 400,
+      "hpByDifficulty": {
+        "casual": 320,
+        "normal": 400,
+        "veteran": 480
+      },
+      "armor": 0.3,
+      "resist": 0,
+      "speed": 25,
+      "damage": 30.0,
+      "damageMin": 20,
+      "damageMax": 40,
+      "attackTime": 1,
+      "gold": 10,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "immunity",
+          "effects": [
+            "polymorph",
+            "poison_arrows"
+          ]
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          40
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "immunity",
+          "effects": [
+            "polymorph",
+            "poison_arrows"
+          ]
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "poison_arrows",
+        "polymorph"
+      ],
+      "reportedSpeed": 23,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_skeleton_knight"
+      ],
+      "analysis": {
+        "roles": [
+          "armored"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "spider_hatchling",
+      "name": "Spider Hatchling",
+      "nameKo": "새끼 거미",
+      "hp": 10,
+      "hpByDifficulty": {
+        "casual": 8,
+        "normal": 10,
+        "veteran": 12
+      },
+      "armor": 0,
+      "resist": 0.5,
+      "speed": 44,
+      "damage": 3.0,
+      "damageMin": 1,
+      "damageMax": 5,
+      "attackTime": 1,
+      "gold": 0,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": null,
+      "boss": false,
+      "behaviors": [],
+      "sourceMelee": {
+        "damage": [
+          1,
+          5
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 76.8,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_spider_matriarch"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "spider_matriarch",
+      "name": "Spider Matriarch",
+      "nameKo": "거미 여왕",
+      "hp": 250,
+      "hpByDifficulty": {
+        "casual": 200,
+        "normal": 250,
+        "veteran": 300
+      },
+      "armor": 0,
+      "resist": 0.8,
+      "speed": 23,
+      "damage": 20.0,
+      "damageMin": 15,
+      "damageMax": 25,
+      "attackTime": 1,
+      "gold": 20,
+      "lifeCost": 2,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        },
+        {
+          "type": "egg_lay",
+          "requiresUnblocked": true,
+          "periodSampledOnceSeconds": [
+            5,
+            10
+          ],
+          "maxEggs": 3,
+          "childrenPerEgg": 3,
+          "childId": "spider_hatchling"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          15,
+          25
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "immunity",
+          "effect": "poison_arrows"
+        },
+        {
+          "type": "egg_lay",
+          "requiresUnblocked": true,
+          "periodSampledOnceSeconds": [
+            5,
+            10
+          ],
+          "maxEggs": 3,
+          "childrenPerEgg": 3,
+          "childId": "spider_hatchling"
+        }
+      ],
+      "ranged": null,
+      "immunities": [
+        "poison_arrows"
+      ],
+      "reportedSpeed": 38.4,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_spider_matriarch"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "summoner"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "troll",
+      "name": "Troll",
+      "nameKo": "트롤",
+      "hp": 280,
+      "hpByDifficulty": {
+        "casual": 224,
+        "normal": 280,
+        "veteran": 336
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 30,
+      "damage": 30.0,
+      "damageMin": 20,
+      "damageMax": 40,
+      "attackTime": 1,
+      "gold": 25,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 1,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen"
+          ],
+          "notSuspendedBy": [
+            "stunned"
+          ]
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          40
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 1,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen"
+          ],
+          "notSuspendedBy": [
+            "stunned"
+          ]
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 34.6,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_troll"
+      ],
+      "analysis": {
+        "roles": [
+          "regenerator"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "troll_champion",
+      "name": "Troll Champion",
+      "nameKo": "트롤 투사",
+      "hp": 600,
+      "hpByDifficulty": {
+        "casual": 480,
+        "normal": 600,
+        "veteran": 720
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 27,
+      "damage": 40.0,
+      "damageMin": 30,
+      "damageMax": 50,
+      "attackTime": 1,
+      "gold": 50,
+      "lifeCost": 3,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 2,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen",
+            "stunned"
+          ]
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          30,
+          50
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": {
+        "damage": [
+          41,
+          80
+        ],
+        "intervalSeconds": 1.5,
+        "damageType": "true",
+        "range": null
+      },
+      "sourceBehaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 2,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen",
+            "stunned"
+          ]
+        }
+      ],
+      "ranged": {
+        "damage": [
+          41,
+          80
+        ],
+        "intervalSeconds": 1.5,
+        "damageType": "true",
+        "range": 160,
+        "reportedRange": null,
+        "rangeStatus": "custom_pixel_radius_source_range_unknown"
+      },
+      "immunities": [],
+      "reportedSpeed": 30.7,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_troll_champion"
+      ],
+      "analysis": {
+        "roles": [
+          "ranged",
+          "regenerator"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "troll_chieftain",
+      "name": "Troll Chieftain",
+      "nameKo": "트롤 족장",
+      "hp": 1200,
+      "hpByDifficulty": {
+        "casual": 960,
+        "normal": 1200,
+        "veteran": 1440
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 24,
+      "damage": 20.0,
+      "damageMin": 10,
+      "damageMax": 30,
+      "attackTime": 1,
+      "gold": 70,
+      "lifeCost": 6,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 4,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen"
+          ],
+          "notSuspendedBy": [
+            "stunned"
+          ]
+        },
+        {
+          "type": "enrage",
+          "requiresUnblocked": true,
+          "cooldownSeconds": 6,
+          "roars": 3,
+          "targetsPerRoar": 3,
+          "durationSeconds": 6,
+          "armorAdd": 0.5,
+          "meleeDamageAdd": [
+            15,
+            30
+          ],
+          "sourceSpeedAdd": 30.7,
+          "heal": 50,
+          "targetTypes": [
+            "troll",
+            "troll_champion",
+            "troll_pathfinder"
+          ],
+          "excludeStates": [
+            "enraged",
+            "slowed"
+          ],
+          "runtimeRange": 140,
+          "runtimeRangeStatus": "custom_pixel_radius"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          10,
+          30
+        ],
+        "intervalSeconds": 1,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "regeneration",
+          "hpPerPulse": 4,
+          "intervalSeconds": 0.2,
+          "suspendedBy": [
+            "frozen"
+          ],
+          "notSuspendedBy": [
+            "stunned"
+          ]
+        },
+        {
+          "type": "enrage",
+          "requiresUnblocked": true,
+          "cooldownSeconds": 6,
+          "roars": 3,
+          "targetsPerRoar": 3,
+          "durationSeconds": 6,
+          "armorAdd": 0.5,
+          "meleeDamageAdd": [
+            15,
+            30
+          ],
+          "sourceSpeedAdd": 30.7,
+          "heal": 50,
+          "targetTypes": [
+            "troll",
+            "troll_champion",
+            "troll_pathfinder"
+          ],
+          "excludeStates": [
+            "enraged",
+            "slowed"
+          ]
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 23,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 20,
+      "sourceIds": [
+        "wikily_enemy_troll_chieftain"
+      ],
+      "analysis": {
+        "roles": [
+          "support",
+          "regenerator"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "veznan",
+      "name": "Vez’nan",
+      "nameKo": "베즈난",
+      "hp": 6666,
+      "hpByDifficulty": {
+        "normal": 6666,
+        "casual": null,
+        "veteran": null
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 11,
+      "damage": 6.0,
+      "damageMin": 4,
+      "damageMax": 8,
+      "attackTime": 1.5,
+      "gold": 0,
+      "lifeCost": 20,
+      "air": false,
+      "blockable": null,
+      "boss": true,
+      "behaviors": [],
+      "sourceMelee": null,
+      "sourceRanged": null,
+      "sourceBehaviors": [],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": null,
+      "speedUnits": null,
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_boss_candidate",
+      "radius": 29,
+      "sourceIds": [
+        "wiki_veznan",
+        "wiki_stage_12"
+      ],
+      "analysis": {
+        "roles": [
+          "boss"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      },
+      "bossPhases": [
+        6666,
+        6666
+      ],
+      "sourceBossBehaviors": [
+        "untargetable_stage_controller",
+        "tower_hold",
+        "demon_portals",
+        "mage_phase",
+        "demon_phase"
+      ]
+    },
+    {
+      "id": "winter_wolf",
+      "name": "Winter Wolf",
+      "nameKo": "겨울 늑대",
+      "hp": 350,
+      "hpByDifficulty": {
+        "casual": 280,
+        "normal": 350,
+        "veteran": 420
+      },
+      "armor": 0,
+      "resist": 0.5,
+      "speed": 51,
+      "damage": 30.0,
+      "damageMin": 20,
+      "damageMax": 40,
+      "attackTime": 1.47,
+      "gold": 35,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          20,
+          40
+        ],
+        "intervalSeconds": 1.47,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 76.8,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_winter_wolf"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "evasive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "worg",
+      "name": "Worg",
+      "nameKo": "워그",
+      "hp": 120,
+      "hpByDifficulty": {
+        "casual": 96,
+        "normal": 120,
+        "veteran": 144
+      },
+      "armor": 0,
+      "resist": 0.5,
+      "speed": 55,
+      "damage": 15.0,
+      "damageMin": 12,
+      "damageMax": 18,
+      "attackTime": 1.47,
+      "gold": 12,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          12,
+          18
+        ],
+        "intervalSeconds": 1.47,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_dodge",
+          "probability": 0.5
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 76.8,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wikily_enemy_worg"
+      ],
+      "analysis": {
+        "roles": [
+          "magic_resistant",
+          "evasive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "archer",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "wulf",
+      "name": "Wulf",
+      "nameKo": "늑대",
+      "hp": 35,
+      "hpByDifficulty": {
+        "casual": 28,
+        "normal": 35,
+        "veteran": 42
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 62,
+      "damage": 2.0,
+      "damageMin": 1,
+      "damageMax": 3,
+      "attackTime": 1.5,
+      "gold": 5,
+      "lifeCost": 1,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "kind": "dodge_melee",
+          "probability": 0.3,
+          "type": "melee_dodge"
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          1,
+          3
+        ],
+        "intervalSeconds": 1.5,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "kind": "dodge_melee",
+          "probability": 0.3
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 2.5,
+      "speedUnits": "legacy_source_scalar_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "inherited_documented_candidate",
+      "radius": 11,
+      "sourceIds": [
+        "wiki_wulf"
+      ],
+      "analysis": {
+        "roles": [
+          "evasive"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    },
+    {
+      "id": "yeti",
+      "name": "Yeti",
+      "nameKo": "설인",
+      "hp": 2000,
+      "hpByDifficulty": {
+        "casual": 1600,
+        "normal": 2000,
+        "veteran": 2400
+      },
+      "armor": 0,
+      "resist": 0,
+      "speed": 20,
+      "damage": 100.0,
+      "damageMin": 50,
+      "damageMax": 150,
+      "attackTime": 2.5,
+      "gold": 120,
+      "lifeCost": 5,
+      "air": false,
+      "blockable": true,
+      "boss": false,
+      "behaviors": [
+        {
+          "type": "melee_area",
+          "maxTargets": 10
+        }
+      ],
+      "sourceMelee": {
+        "damage": [
+          50,
+          150
+        ],
+        "intervalSeconds": 2.5,
+        "damageType": "physical"
+      },
+      "sourceRanged": null,
+      "sourceBehaviors": [
+        {
+          "type": "melee_area",
+          "maxTargets": 10
+        }
+      ],
+      "ranged": null,
+      "immunities": [],
+      "reportedSpeed": 26.9,
+      "speedUnits": "source_numeric_unconverted",
+      "speedStatus": "custom_pixel_speed",
+      "evidenceStatus": "documented_candidate",
+      "radius": 20,
+      "sourceIds": [
+        "wikily_enemy_yeti"
+      ],
+      "analysis": {
+        "roles": [
+          "frontline"
+        ],
+        "status": "derived_classification",
+        "counterFamilies": [
+          "barracks",
+          "artillery"
+        ]
+      }
+    }
+  ],
+  "appearances": {
+    "bandit": {
+      "firstCampaign": {
+        "stageId": "twin_rivers",
+        "stageNameKo": "쌍둥이 강",
+        "wave": 6
+      },
+      "stages": [
+        "twin_rivers",
+        "silveroak",
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 1127
+    },
+    "brigand": {
+      "firstCampaign": {
+        "stageId": "twin_rivers",
+        "stageNameKo": "쌍둥이 강",
+        "wave": 11
+      },
+      "stages": [
+        "twin_rivers",
+        "silveroak",
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 1133
+    },
+    "dark_knight": {
+      "firstCampaign": {
+        "stageId": "citadel",
+        "stageNameKo": "왕국의 성채",
+        "wave": 3
+      },
+      "stages": [
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 737
+    },
+    "dark_slayer": {
+      "firstCampaign": {
+        "stageId": "stormcloud",
+        "stageNameKo": "폭풍구름 사원",
+        "wave": 9
+      },
+      "stages": [
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 122
+    },
+    "demon_hound": {
+      "firstCampaign": {
+        "stageId": "wastes",
+        "stageNameKo": "황무지",
+        "wave": 10
+      },
+      "stages": [
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 105
+    },
+    "demon_imp": {
+      "firstCampaign": {
+        "stageId": "forsaken",
+        "stageNameKo": "버려진 계곡",
+        "wave": 3
+      },
+      "stages": [
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 96
+    },
+    "demon_lord": {
+      "firstCampaign": {
+        "stageId": "wastes",
+        "stageNameKo": "황무지",
+        "wave": 9
+      },
+      "stages": [
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 51
+    },
+    "demon_spawn": {
+      "firstCampaign": {
+        "stageId": "wastes",
+        "stageNameKo": "황무지",
+        "wave": 5
+      },
+      "stages": [
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 627
+    },
+    "gargoyle": {
+      "firstCampaign": {
+        "stageId": "citadel",
+        "stageNameKo": "왕국의 성채",
+        "wave": 5
+      },
+      "stages": [
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 640
+    },
+    "giant_spider": {
+      "firstCampaign": {
+        "stageId": "silveroak",
+        "stageNameKo": "은빛 참나무 숲",
+        "wave": 3
+      },
+      "stages": [
+        "silveroak",
+        "icewind",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 354
+    },
+    "goblin": {
+      "firstCampaign": {
+        "stageId": "southport",
+        "stageNameKo": "남부 항구",
+        "wave": 1
+      },
+      "stages": [
+        "southport",
+        "outskirts",
+        "pagras",
+        "twin_rivers",
+        "citadel"
+      ],
+      "totalInitialInventory": 1456
+    },
+    "golem_head": {
+      "firstCampaign": null,
+      "stages": [],
+      "totalInitialInventory": 0
+    },
+    "jt": {
+      "firstCampaign": {
+        "stageId": "stormcloud",
+        "stageNameKo": "폭풍구름 사원",
+        "wave": 19
+      },
+      "stages": [
+        "stormcloud"
+      ],
+      "totalInitialInventory": 1
+    },
+    "juggernaut": {
+      "firstCampaign": {
+        "stageId": "citadel",
+        "stageNameKo": "왕국의 성채",
+        "wave": 17
+      },
+      "stages": [
+        "citadel"
+      ],
+      "totalInitialInventory": 1
+    },
+    "magma_elemental": {
+      "firstCampaign": {
+        "stageId": "forsaken",
+        "stageNameKo": "버려진 계곡",
+        "wave": 19
+      },
+      "stages": [
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 40
+    },
+    "marauder": {
+      "firstCampaign": {
+        "stageId": "silveroak",
+        "stageNameKo": "은빛 참나무 숲",
+        "wave": 15
+      },
+      "stages": [
+        "silveroak",
+        "citadel",
+        "coldstep",
+        "icewind",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 180
+    },
+    "necromancer": {
+      "firstCampaign": {
+        "stageId": "forsaken",
+        "stageNameKo": "버려진 계곡",
+        "wave": 8
+      },
+      "stages": [
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 45
+    },
+    "ogre": {
+      "firstCampaign": {
+        "stageId": "pagras",
+        "stageNameKo": "파그라스",
+        "wave": 10
+      },
+      "stages": [
+        "pagras",
+        "twin_rivers",
+        "citadel"
+      ],
+      "totalInitialInventory": 36
+    },
+    "orc": {
+      "firstCampaign": {
+        "stageId": "southport",
+        "stageNameKo": "남부 항구",
+        "wave": 4
+      },
+      "stages": [
+        "southport",
+        "outskirts",
+        "pagras",
+        "twin_rivers",
+        "citadel"
+      ],
+      "totalInitialInventory": 506
+    },
+    "rocket_rider": {
+      "firstCampaign": {
+        "stageId": "stormcloud",
+        "stageNameKo": "폭풍구름 사원",
+        "wave": 11
+      },
+      "stages": [
+        "stormcloud",
+        "wastes",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 50
+    },
+    "shadow_archer": {
+      "firstCampaign": {
+        "stageId": "citadel",
+        "stageNameKo": "왕국의 성채",
+        "wave": 7
+      },
+      "stages": [
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 394
+    },
+    "shaman": {
+      "firstCampaign": {
+        "stageId": "pagras",
+        "stageNameKo": "파그라스",
+        "wave": 7
+      },
+      "stages": [
+        "pagras",
+        "twin_rivers",
+        "citadel"
+      ],
+      "totalInitialInventory": 110
+    },
+    "skeleton": {
+      "firstCampaign": null,
+      "stages": [],
+      "totalInitialInventory": 0
+    },
+    "skeleton_knight": {
+      "firstCampaign": null,
+      "stages": [],
+      "totalInitialInventory": 0
+    },
+    "spider_hatchling": {
+      "firstCampaign": null,
+      "stages": [],
+      "totalInitialInventory": 0
+    },
+    "spider_matriarch": {
+      "firstCampaign": {
+        "stageId": "silveroak",
+        "stageNameKo": "은빛 참나무 숲",
+        "wave": 11
+      },
+      "stages": [
+        "silveroak",
+        "icewind",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 132
+    },
+    "troll": {
+      "firstCampaign": {
+        "stageId": "coldstep",
+        "stageNameKo": "콜드스텝 광산",
+        "wave": 6
+      },
+      "stages": [
+        "coldstep",
+        "icewind",
+        "stormcloud"
+      ],
+      "totalInitialInventory": 616
+    },
+    "troll_champion": {
+      "firstCampaign": {
+        "stageId": "icewind",
+        "stageNameKo": "얼음바람 고개",
+        "wave": 6
+      },
+      "stages": [
+        "icewind",
+        "stormcloud"
+      ],
+      "totalInitialInventory": 46
+    },
+    "troll_chieftain": {
+      "firstCampaign": {
+        "stageId": "icewind",
+        "stageNameKo": "얼음바람 고개",
+        "wave": 13
+      },
+      "stages": [
+        "icewind",
+        "stormcloud"
+      ],
+      "totalInitialInventory": 15
+    },
+    "veznan": {
+      "firstCampaign": {
+        "stageId": "dark_tower",
+        "stageNameKo": "어둠의 탑",
+        "wave": null,
+        "trigger": "after_wave_15",
+        "inventoryMember": false
+      },
+      "stages": [],
+      "totalInitialInventory": 0
+    },
+    "winter_wolf": {
+      "firstCampaign": {
+        "stageId": "coldstep",
+        "stageNameKo": "콜드스텝 광산",
+        "wave": 8
+      },
+      "stages": [
+        "coldstep",
+        "icewind",
+        "stormcloud"
+      ],
+      "totalInitialInventory": 117
+    },
+    "worg": {
+      "firstCampaign": {
+        "stageId": "silveroak",
+        "stageNameKo": "은빛 참나무 숲",
+        "wave": 8
+      },
+      "stages": [
+        "silveroak",
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 320
+    },
+    "wulf": {
+      "firstCampaign": {
+        "stageId": "outskirts",
+        "stageNameKo": "변두리 농장",
+        "wave": 4
+      },
+      "stages": [
+        "outskirts",
+        "pagras",
+        "twin_rivers",
+        "silveroak",
+        "citadel",
+        "coldstep",
+        "icewind",
+        "stormcloud",
+        "wastes",
+        "forsaken",
+        "dark_tower"
+      ],
+      "totalInitialInventory": 1336
+    },
+    "yeti": {
+      "firstCampaign": {
+        "stageId": "icewind",
+        "stageNameKo": "얼음바람 고개",
+        "wave": 10
+      },
+      "stages": [
+        "icewind",
+        "stormcloud"
+      ],
+      "totalInitialInventory": 50
+    }
+  }
+}

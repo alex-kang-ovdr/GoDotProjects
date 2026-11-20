@@ -1,0 +1,644 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Xayah": {
+      "id": "Xayah",
+      "key": "498",
+      "name": "자야",
+      "title": "저항하는 자",
+      "image": {
+        "full": "Xayah.png",
+        "sprite": "champion5.png",
+        "group": "champion",
+        "x": 336,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 10,
+        "defense": 6,
+        "magic": 1,
+        "difficulty": 5
+      },
+      "stats": {
+        "hp": 630,
+        "hpperlevel": 107,
+        "mp": 340,
+        "mpperlevel": 40,
+        "movespeed": 330,
+        "armor": 25,
+        "armorperlevel": 4.2,
+        "spellblock": 33,
+        "spellblockperlevel": 1.1,
+        "attackrange": 525,
+        "hpregen": 3.25,
+        "hpregenperlevel": 0.75,
+        "mpregen": 8.25,
+        "mpregenperlevel": 0.8,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 60,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3.9,
+        "attackspeed": 0.658
+      },
+      "spells": [
+        {
+          "id": "XayahQ",
+          "name": "깃털 연타",
+          "maxrank": 5,
+          "cooldown": [
+            10,
+            9.5,
+            9,
+            8.5,
+            8
+          ],
+          "cooldownBurn": "10/9.5/9/8.5/8",
+          "cost": [
+            35,
+            35,
+            35,
+            35,
+            35
+          ],
+          "costBurn": "35",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              45,
+              60,
+              75,
+              90,
+              105
+            ],
+            [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            [
+              0.334,
+              0.334,
+              0.334,
+              0.334,
+              0.334
+            ],
+            [
+              0.584,
+              0.584,
+              0.584,
+              0.584,
+              0.584
+            ],
+            [
+              3500,
+              3500,
+              3500,
+              3500,
+              3500
+            ],
+            [
+              3500,
+              3500,
+              3500,
+              3500,
+              3500
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "45/60/75/90/105",
+            "0.5",
+            "0.33",
+            "0.58",
+            "3500",
+            "3500",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "XayahQ.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 96,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "multihitdamage",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "XayahW",
+          "name": "죽음의 깃",
+          "maxrank": 5,
+          "cooldown": [
+            18,
+            17,
+            16,
+            15,
+            14
+          ],
+          "cooldownBurn": "18/17/16/15/14",
+          "cost": [
+            60,
+            55,
+            50,
+            45,
+            40
+          ],
+          "costBurn": "60/55/50/45/40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              35,
+              40,
+              45,
+              50,
+              55
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            [
+              30,
+              30,
+              30,
+              30,
+              30
+            ],
+            [
+              1.5,
+              1.5,
+              1.5,
+              1.5,
+              1.5
+            ],
+            [
+              20,
+              20,
+              20,
+              20,
+              20
+            ],
+            [
+              1000,
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "35/40/45/50/55",
+            "4",
+            "30",
+            "1.5",
+            "20",
+            "1000",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1000,
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "rangeBurn": "1000",
+          "image": {
+            "full": "XayahW.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 144,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bonusdamagepercent",
+                "spellmodifierdescriptionappend",
+                "wattackspeedamount",
+                "wattackspeedduration",
+                "wmovespeedamount",
+                "wmovespeedduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "XayahE",
+          "name": "깃부르미",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            11,
+            10,
+            9,
+            8
+          ],
+          "cooldownBurn": "12/11/10/9/8",
+          "cost": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "costBurn": "20",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            2000,
+            2000,
+            2000,
+            2000,
+            2000
+          ],
+          "rangeBurn": "2000",
+          "image": {
+            "full": "XayahE.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 192,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "featherdamage",
+                "featherthreshold",
+                "rootduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "XayahR",
+          "name": "저항의 비상",
+          "maxrank": 3,
+          "cooldown": [
+            140,
+            120,
+            100
+          ],
+          "cooldownBurn": "140/120/100",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            450,
+            450,
+            450
+          ],
+          "rangeBurn": "450",
+          "image": {
+            "full": "XayahR.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 240,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "관통상",
+        "image": {
+          "full": "XayahPassive.png",
+          "sprite": "passive5.png",
+          "group": "passive",
+          "x": 336,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2236 @@
+[
+  {
+    "summoner_spell_id": 1,
+    "spell_key": "SummonerBoost",
+    "name_ko": "정화",
+    "name_en": "Cleanse",
+    "summoner_level": 9,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "FIRSTBLOOD",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "URF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "ONEFORALL",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerBoost",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 3,
+    "spell_key": "SummonerExhaust",
+    "name_ko": "탈진",
+    "name_en": "Exhaust",
+    "summoner_level": 4,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      650
+    ],
+    "modes_raw": [
+      "URF",
+      "PRACTICETOOL",
+      "CLASSIC",
+      "ULTBOOK",
+      "DOOMBOTSTEEMO",
+      "ARAM",
+      "RUBY_TRIAL_3",
+      "NEXUSBLITZ",
+      "SWIFTPLAY",
+      "ONEFORALL",
+      "TUTORIAL",
+      "RUBY",
+      "WIPMODEWIP",
+      "RUBY_TRIAL_2",
+      "WIPMODEWIP3",
+      "RUBY_TRIAL_1",
+      "ARSR"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerExhaust",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 4,
+    "spell_key": "SummonerFlash",
+    "name_ko": "점멸",
+    "name_en": "Flash",
+    "summoner_level": 7,
+    "cooldown_raw": [
+      300
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      425
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "FIRSTBLOOD",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "WIPMODEWIP4",
+      "URF",
+      "SNOWURF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "ONEFORALL",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        400
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerFlash",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 6,
+    "spell_key": "SummonerHaste",
+    "name_ko": "유체화",
+    "name_en": "Ghost",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL_MODULE_1",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "FIRSTBLOOD",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "URF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "TUTORIAL_MODULE_2",
+      "ONEFORALL",
+      "ASSASSINATE",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerHaste",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 7,
+    "spell_key": "SummonerHeal",
+    "name_ko": "회복",
+    "name_en": "Heal",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      875
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL_MODULE_1",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "URF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "TUTORIAL_MODULE_2",
+      "ONEFORALL",
+      "ASSASSINATE",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerHeal",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 11,
+    "spell_key": "SummonerSmite",
+    "name_ko": "강타",
+    "name_en": "Smite",
+    "summoner_level": 3,
+    "cooldown_raw": [
+      15
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      500
+    ],
+    "modes_raw": [
+      "DOOMBOTSTEEMO",
+      "PRACTICETOOL",
+      "CLASSIC",
+      "SWIFTPLAY",
+      "URF",
+      "NEXUSBLITZ",
+      "ONEFORALL",
+      "TUTORIAL",
+      "ARSR"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        15
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerSmite",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 12,
+    "spell_key": "SummonerTeleport",
+    "name_ko": "순간이동",
+    "name_en": "Teleport",
+    "summoner_level": 7,
+    "cooldown_raw": [
+      300
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "CLASSIC",
+      "SWIFTPLAY",
+      "ULTBOOK",
+      "WIPMODEWIP4",
+      "DOOMBOTSTEEMO",
+      "PRACTICETOOL",
+      "ONEFORALL",
+      "RUBY",
+      "ARSR",
+      "RUBY_TRIAL_2",
+      "TUTORIAL",
+      "ASSASSINATE",
+      "RUBY_TRIAL_3",
+      "RUBY_TRIAL_1"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerTeleport",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 13,
+    "spell_key": "SummonerMana",
+    "name_ko": "총명",
+    "name_en": "Clarity",
+    "summoner_level": 6,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      600
+    ],
+    "modes_raw": [
+      "KIWI",
+      "FIRSTBLOOD",
+      "ARAM",
+      "KIWI_JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        50
+      ],
+      [
+        25
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerMana",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 14,
+    "spell_key": "SummonerDot",
+    "name_ko": "점화",
+    "name_en": "Ignite",
+    "summoner_level": 9,
+    "cooldown_raw": [
+      180
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      600
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "FIRSTBLOOD",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "URF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "ONEFORALL",
+      "ASSASSINATE",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerDot",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 21,
+    "spell_key": "SummonerBarrier",
+    "name_ko": "방어막",
+    "name_en": "Barrier",
+    "summoner_level": 4,
+    "cooldown_raw": [
+      180
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      1200
+    ],
+    "modes_raw": [
+      "ARAM",
+      "TUTORIAL",
+      "KIWI",
+      "ULTBOOK",
+      "FIRSTBLOOD",
+      "SWIFTPLAY",
+      "CLASSIC",
+      "PRACTICETOOL",
+      "RUBY",
+      "RUBY_TRIAL_1",
+      "BRAWL",
+      "URF",
+      "KIWI_JADE",
+      "RUBY_TRIAL_3",
+      "ONEFORALL",
+      "ASSASSINATE",
+      "ARSR",
+      "NEXUSBLITZ",
+      "DOOMBOTSTEEMO",
+      "RUBY_TRIAL_2"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerBarrier",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 30,
+    "spell_key": "SummonerPoroRecall",
+    "name_ko": "왕을 향해!",
+    "name_en": "To the King!",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      10
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "KINGPORO"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        3000
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerPoroRecall",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 31,
+    "spell_key": "SummonerPoroThrow",
+    "name_ko": "포로 던지기",
+    "name_en": "Poro Toss",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      20
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      2500
+    ],
+    "modes_raw": [
+      "KINGPORO"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        20
+      ],
+      [
+        10
+      ],
+      [
+        3
+      ],
+      [
+        5
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerPoroThrow",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 32,
+    "spell_key": "SummonerSnowball",
+    "name_ko": "표식",
+    "name_en": "Mark",
+    "summoner_level": 6,
+    "cooldown_raw": [
+      80
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      1600
+    ],
+    "modes_raw": [
+      "KIWI",
+      "KIWI_JADE",
+      "ARAM",
+      "FIRSTBLOOD"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        10
+      ],
+      [
+        5
+      ],
+      [
+        3
+      ],
+      [
+        25
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerSnowball",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 39,
+    "spell_key": "SummonerSnowURFSnowball_Mark",
+    "name_ko": "표식",
+    "name_en": "Mark",
+    "summoner_level": 6,
+    "cooldown_raw": [
+      80
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      8000
+    ],
+    "modes_raw": [
+      "SNOWURF"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        10
+      ],
+      [
+        5
+      ],
+      [
+        3
+      ],
+      [
+        25
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerSnowURFSnowball_Mark",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 54,
+    "spell_key": "Summoner_UltBookPlaceholder",
+    "name_ko": "게임 시작 후 결정",
+    "name_en": "Placeholder",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      0
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      400
+    ],
+    "modes_raw": [
+      "ULTBOOK"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/Summoner_UltBookPlaceholder",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 55,
+    "spell_key": "Summoner_UltBookSmitePlaceholder",
+    "name_ko": "TBD 및 공격-강타",
+    "name_en": "Placeholder and Attack-Smite",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      0
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      400
+    ],
+    "modes_raw": [
+      "ULTBOOK"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/Summoner_UltBookSmitePlaceholder",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 71,
+    "spell_key": "SummonerBoost_Jade",
+    "name_ko": "정화",
+    "name_en": "Cleanse",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      210
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerBoost_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 73,
+    "spell_key": "SummonerExhaust_Jade",
+    "name_ko": "탈진",
+    "name_en": "Exhaust",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      210
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      550
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerExhaust_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 74,
+    "spell_key": "SummonerFlash_Jade",
+    "name_ko": "점멸",
+    "name_en": "Flash",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      300
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      425
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        400
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerFlash_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 75,
+    "spell_key": "SummonerClairvoyance_Jade",
+    "name_ko": "천리안",
+    "name_en": "Clairvoyance",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      60
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerClairvoyance_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 76,
+    "spell_key": "SummonerHaste_Jade",
+    "name_ko": "유체화",
+    "name_en": "Ghost",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      240
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerHaste_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 77,
+    "spell_key": "SummonerHeal_Jade",
+    "name_ko": "회복",
+    "name_en": "Heal",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      300
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      600
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerHeal_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 705,
+    "spell_key": "SummonerFortify_Jade",
+    "name_ko": "구축",
+    "name_en": "Fortify",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      180
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerFortify_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 709,
+    "spell_key": "SummonerRally_Jade",
+    "name_ko": "결집",
+    "name_en": "Rally",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      270
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerRally_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 711,
+    "spell_key": "SummonerSmite_Jade",
+    "name_ko": "강타",
+    "name_en": "Smite",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      70
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      760
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerSmite_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 712,
+    "spell_key": "SummonerTeleport_Jade",
+    "name_ko": "순간이동",
+    "name_en": "Teleport",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      300
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerTeleport_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 713,
+    "spell_key": "SummonerMana_Jade",
+    "name_ko": "총명",
+    "name_en": "Clarity",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      135
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      600
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerMana_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 714,
+    "spell_key": "SummonerDot_Jade",
+    "name_ko": "점화",
+    "name_en": "Ignite",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      210
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      600
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerDot_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 716,
+    "spell_key": "SummonerBattleCry_Jade",
+    "name_ko": "고양",
+    "name_en": "Surge",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      180
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerBattleCry_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 720,
+    "spell_key": "SummonerSpell_Promote_Jade",
+    "name_ko": "진급",
+    "name_en": "Promote",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      270
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      4294967295
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerSpell_Promote_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 721,
+    "spell_key": "SummonerBarrier_Jade",
+    "name_ko": "방어막",
+    "name_en": "Barrier",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      210
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      1200
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerBarrier_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 777,
+    "spell_key": "SummonerRevive_Jade",
+    "name_ko": "부활",
+    "name_en": "Revive",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      510
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      200
+    ],
+    "modes_raw": [
+      "JADE"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerRevive_Jade",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 2201,
+    "spell_key": "SummonerCherryHold",
+    "name_ko": "도주",
+    "name_en": "Flee",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      45
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      25000
+    ],
+    "modes_raw": [
+      "CHERRY"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        20
+      ],
+      [
+        10
+      ],
+      [
+        3
+      ],
+      [
+        5
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerCherryHold",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  },
+  {
+    "summoner_spell_id": 2202,
+    "spell_key": "SummonerCherryFlash",
+    "name_ko": "점멸",
+    "name_en": "Flash",
+    "summoner_level": 1,
+    "cooldown_raw": [
+      0.25
+    ],
+    "cost_raw": [
+      0
+    ],
+    "range_raw": [
+      425
+    ],
+    "modes_raw": [
+      "CHERRY"
+    ],
+    "maxrank_raw": 1,
+    "effect_raw": [
+      null,
+      [
+        400
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ],
+      [
+        0
+      ]
+    ],
+    "vars_raw": [],
+    "runtime_status": "static_metadata_only; mode_modifiers_and_upgrades_not_proven",
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/summoner.json",
+    "source_json_pointer": "/data/SummonerCherryFlash",
+    "source_sha256": "175328bb1cafb64c6e457555b61a4da9a47e5447d9419dd293bf2d36b127e89b",
+    "name_en_source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/summoner.json"
+  }
+]

@@ -1,3 +1,4 @@
+### engine
 PASS invalid purchases and upgrade paths are atomic
 PASS every advanced branch and all eighteen abilities can be purchased
 PASS building and selling soldiers never leaves orphan units
@@ -14,8 +15,80 @@ PASS final campaign boss is included before victory, challenges skip post-boss
 PASS polymorphed enemies take three clicks and keep reward semantics
 PASS manual wave queue exactly preserves the source inventory
 PASS a seed and command replay reproduce all game outcomes
-  BALANCE {"won":true,"stars":3,"lives":20,"kills":56,"duration":191.7000000000447,"gold":166,"cheated":false}
+  BALANCE {"won":true,"stars":3,"stageId":"southport","mode":"campaign","difficulty":"normal","lives":20,"maxLives":20,"kills":56,"duration":191.7000000000447,"gold":166,"cheated":false,"ruleset":"assisted","layout":"authored","leaks":0,"escapedEnemies":0,"lifeLoss":0,"spent":350,"damage":1600.000000000003,"killsByEnemy":{"goblin":48,"orc":8},"leaksByEnemy":{},"lifeLossByEnemy":{},"damageByType":{"physical":960.3390167007212,"magical":639.6609832992776},"spellCasts":{},"towerPerformance":[{"id":2,"defId":"archer_2","nameKo":"명사수탑","kind":"tower","sold":false,"damage":846.5723160959781,"kills":23,"invested":180},{"id":3,"defId":"mage_1","nameKo":"마법사탑","kind":"tower","sold":false,"damage":639.6609832992776,"kills":30,"invested":100},{"id":4,"defId":"barracks_1","nameKo":"민병대 병영","kind":"tower","sold":false,"damage":82.50253126379107,"kills":2,"invested":70}],"goldEarned":216,"unitLosses":2,"facilityHires":0,"sunrayShots":0,"stageEventSpawns":0}
 PASS normal stage one wins without cheats using three towers and one upgrade
 PASS unprotected exit produces terminal defeat and stops time
+PASS source difficulty HP is used while null boss difficulty remains an explicit fallback
+PASS reference restrictions disable heroes without respawning and gate wave-five Rangers
+PASS reference discounts charge actual gold and salvage refunds the actual investment
+PASS reference barracks upgrades combine base HP additively and use the documented respawn candidate
+PASS archer penetration is an armor point reduction and full resistance truly blocks damage
+PASS enemy ranged attacks stop movement and true ranged damage bypasses soldier armor
+PASS necromancers respect blocking, source child count and the per-caster live limit
+PASS poison and polymorph respect plural immunity definitions
+PASS regeneration uses discrete source pulses and source stun exceptions
+PASS infernal shields cap targets and charges without spending a charge on poison ticks
+PASS sorcerer curse deals four pulses and mage upgrades chip armor and slow eligible enemies
+PASS reference fire and reinforcement trees apply every final-tier branch
+PASS reconstructed geometry is isolated per world and special sites reject generic construction
+PASS all reconstructed waves preserve counts and route source-labeled groups to the mapped entry
+PASS observed preplaced Silveroak tower belongs only to its campaign mode
+  V16_RECONSTRUCTED_PLAY {"won":true,"stars":3,"stageId":"southport","mode":"campaign","difficulty":"normal","lives":20,"maxLives":20,"kills":56,"duration":174.40000000003093,"gold":276,"cheated":false,"ruleset":"assisted","layout":"reconstructed","leaks":0,"escapedEnemies":0,"lifeLoss":0,"spent":240,"damage":1599.9999999999998,"killsByEnemy":{"goblin":48,"orc":8},"leaksByEnemy":{},"lifeLossByEnemy":{},"damageByType":{"physical":834.4665551396532,"magical":736.0770926016849,"true":29.456352258659905},"spellCasts":{},"towerPerformance":[{"id":3,"defId":"mage_1","nameKo":"마법사탑","kind":"tower","sold":false,"damage":736.0770926016849,"kills":30,"invested":100},{"id":2,"defId":"archer_1","nameKo":"궁수탑","kind":"tower","sold":false,"damage":583.0374592550099,"kills":16,"invested":70},{"id":4,"defId":"barracks_1","nameKo":"민병대 병영","kind":"tower","sold":false,"damage":163.1312584418805,"kills":6,"invested":70}],"goldEarned":216,"unitLosses":1,"facilityHires":0,"sunrayShots":0,"stageEventSpawns":0}
+  V16_RECONSTRUCTED_PLAY {"won":true,"stars":3,"stageId":"southport","mode":"campaign","difficulty":"normal","lives":19,"maxLives":20,"kills":55,"duration":173.98333333336393,"gold":132,"cheated":false,"ruleset":"reference","layout":"reconstructed","leaks":1,"escapedEnemies":1,"lifeLoss":1,"spent":340,"damage":1590.0311516019985,"killsByEnemy":{"goblin":48,"orc":7},"leaksByEnemy":{"orc":1},"lifeLossByEnemy":{"orc":1},"damageByType":{"physical":753.030474794887,"magical":837.0006768071091},"spellCasts":{},"towerPerformance":[{"id":3,"defId":"mage_1","nameKo":"마법사탑","kind":"tower","sold":false,"damage":706.5808566129765,"kills":36,"invested":100},{"id":2,"defId":"archer_1","nameKo":"궁수탑","kind":"tower","sold":false,"damage":589.9009231382513,"kills":13,"invested":70},{"id":4,"defId":"barracks_1","nameKo":"민병대 병영","kind":"tower","sold":false,"damage":163.12955165663752,"kills":5,"invested":70},{"id":113,"defId":"mage_1","nameKo":"마법사탑","kind":"tower","sold":false,"damage":130.41982019413263,"kills":1,"invested":100}],"goldEarned":207,"unitLosses":1,"facilityHires":0,"sunrayShots":0,"stageEventSpawns":0}
+PASS reconstructed Southport is playable with both assisted and source economy settings
+PASS special facilities appear only at documented reconstructed sites in supported modes
+PASS elf repair, hiring limits and permanent casualties preserve atomic gold semantics
+PASS elves block ground enemies, shoot air, regenerate out of combat and obey rally limits
+PASS Sunray enforces purchase, state and cooldown while true single-target damage reaches air globally
+PASS magma starts 400 simulation seconds after the first call and repeats on a separate visual connector
+PASS future magma repeats never delay final-wave victory and authored fallback stays explicit
+  V17_FACILITY_PLAY {"result":{"won":true,"stars":3,"stageId":"silveroak","mode":"campaign","difficulty":"normal","lives":20,"maxLives":20,"kills":359,"duration":446.1166666665896,"gold":81,"cheated":false,"ruleset":"assisted","layout":"reconstructed","leaks":0,"escapedEnemies":0,"lifeLoss":0,"spent":3045,"damage":25954.99999999997,"killsByEnemy":{"brigand":39,"bandit":59,"giant_spider":35,"wulf":55,"worg":32,"spider_matriarch":19,"spider_hatchling":117,"marauder":3},"leaksByEnemy":{},"lifeLossByEnemy":{},"damageByType":{"physical":19201.27104736246,"true":3453.4689643932506,"magical":2299.8584269313715,"explosive":1000.4015613129013},"spellCasts":{"meteor":8,"reinforcements":32},"towerPerformance":[{"id":3,"defId":"sylvan_elf_hall","nameKo":"실반 엘프 훈련소","kind":"facility","sold":false,"damage":9481.6367920703,"kills":153,"invested":1000},{"id":12,"defId":"archer_3","nameKo":"저격수탑","kind":"tower","sold":false,"damage":2818.5130705573597,"kills":34,"invested":340},{"id":2,"defId":"archer_3","nameKo":"저격수탑","kind":"tower","sold":false,"damage":2316.8275997228457,"kills":29,"invested":340},{"id":41,"defId":"mage_2","nameKo":"비전술사탑","kind":"tower","sold":false,"damage":1356.7550128675066,"kills":18,"invested":260},{"id":6,"defId":"barracks_3","nameKo":"기사 병영","kind":"tower","sold":false,"damage":1114.8512572916225,"kills":17,"invested":340},{"id":11,"defId":"artillery_2","nameKo":"발전형 포대","kind":"tower","sold":false,"damage":1000.4015613129013,"kills":13,"invested":345},{"id":5,"defId":"mage_3","nameKo":"마도사탑","kind":"tower","sold":false,"damage":756.6916180401576,"kills":8,"invested":500},{"id":10,"defId":"mage_2","nameKo":"비전술사탑","kind":"tower","sold":false,"damage":186.41179602370835,"kills":6,"invested":260}],"goldEarned":2426,"unitLosses":52,"facilityHires":9,"sunrayShots":0,"stageEventSpawns":0},"facility":{"damage":9481.6367920703,"kills":153,"shots":321}}
+PASS reconstructed Silveroak wins a complete normal campaign with paid elves and no cheats
+PASS escape telemetry separates enemy counts, nominal costs and actual lives at each route exit
+PASS sold towers retain prior damage and later projectile or poison attribution without changing combat
+PASS result performance ranks active facilities and towers by effective damage with stable identities
 
-18 engine tests passed.
+44 engine tests passed.
+
+### camera
+PASS 390px touch coordinates address the same world target at 1x and 2.5x
+PASS zoom keeps the touched map position under the finger away from bounds
+PASS drag movement scales with zoom and map cannot be panned beyond its bounds
+PASS reset returns exact whole-map coordinates even after extreme panning
+4 camera scenarios passed
+
+### picking
+PASS 22px mobile touch tolerance survives 1x, 2x and 3x map zoom
+PASS nearest visible sprite wins regardless of spawn array order
+PASS air target follows visible body rather than ground shadow, and dead targets are excluded
+PASS off-camera enemies and invalid pointer values cannot intercept a target
+4 picking scenarios passed
+
+### checkpoint
+PASS ready saves round-trip every stage/mode with requested rule and geometry profiles
+PASS disabled hero Infinity survives JSON and remains outside the units array
+PASS campaign resumes with identical final result and RNG state without cheats
+PASS in-flight friendly/hostile projectiles, meteor queue, cooldowns and moving hero are preserved
+PASS active enemy status timers, summon provenance and boss phase remain deterministic
+PASS sold tower telemetry and its in-flight projectile remain attributable after resume
+PASS dead targets and removed reinforcement references are valid historical IDs
+PASS repaired elf hall, living elves and non-respawning dead elves retain Infinity correctly
+PASS sunray workers, facility cooldown, damage and hire statistics resume exactly
+PASS Forsaken spawned event-only path, event state and repeated eruption survive restore
+PASS capture, metadata and restore never mutate a caller payload or live world
+PASS combat fingerprint rejects changed tower, wave, geometry or version data
+PASS unknown versions, invalid profiles, impossible IDs and nonfinite values are rejected safely
+PASS oversized arrays, nested payloads, cycles and getters do not enter the engine
+PASS ended worlds cannot overwrite a resumable battle save
+
+15 checkpoint checks passed.
+
+### progress
+PASS legacy v17 progress migrates with known keys and per-mode star limits
+PASS invalid ranks and non-finite settings cannot overspend earned stars
+PASS import merges best achievements while preserving current controls and allocations
+PASS lower-scoring replay cannot overwrite the best profile-specific result
+PASS backup rejects wrong formats, oversized text, malformed JSON and poisoned keys
+PASS record sanitization preserves useful telemetry but excludes cheated runs and unknown IDs
+PASS portable JSON backup restores the exact in-flight battle while retaining current user controls
+7 progression scenarios passed

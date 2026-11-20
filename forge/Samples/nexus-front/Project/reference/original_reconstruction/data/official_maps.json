@@ -1,0 +1,189 @@
+[
+  {
+    "mapId": 1,
+    "mapName": "Summoner's Rift",
+    "notes": "Original Summer variant",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/0",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 2,
+    "mapName": "Summoner's Rift",
+    "notes": "Original Autumn variant",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/1",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 3,
+    "mapName": "The Proving Grounds",
+    "notes": "Tutorial Map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/2",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 4,
+    "mapName": "Twisted Treeline",
+    "notes": "Original Version",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/3",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 8,
+    "mapName": "The Crystal Scar",
+    "notes": "Dominion map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/4",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 10,
+    "mapName": "Twisted Treeline",
+    "notes": "Last TT map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/5",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 11,
+    "mapName": "Summoner's Rift",
+    "notes": "Current Version",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/6",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 12,
+    "mapName": "Howling Abyss",
+    "notes": "ARAM map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/7",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 14,
+    "mapName": "Butcher's Bridge",
+    "notes": "Alternate ARAM map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/8",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 16,
+    "mapName": "Cosmic Ruins",
+    "notes": "Dark Star: Singularity map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/9",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 18,
+    "mapName": "Valoran City Park",
+    "notes": "Star Guardian Invasion map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/10",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 19,
+    "mapName": "Substructure 43",
+    "notes": "PROJECT: Hunters map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/11",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 20,
+    "mapName": "Crash Site",
+    "notes": "Odyssey: Extraction map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/12",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 21,
+    "mapName": "Nexus Blitz",
+    "notes": "Nexus Blitz map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/13",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 22,
+    "mapName": "Convergence",
+    "notes": "Teamfight Tactics map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/14",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 30,
+    "mapName": "Rings of Wrath",
+    "notes": "Arena map",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/15",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "mapId": 35,
+    "mapName": "The Bandlewood",
+    "notes": "Map for Brawl (`BRAWL`). Work together with your team to escort minions into the enemy portal. No roles, no lanes, no pressure. Just a five-on-five brawl.",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/maps.json",
+    "source_json_pointer": "/16",
+    "source_sha256": "1f225c33bf4ed86f546cf30acced752c19a2dfc1dd523b66464ac84da21d6c5a",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  }
+]

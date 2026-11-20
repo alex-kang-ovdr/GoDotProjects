@@ -1,0 +1,32 @@
+[
+  {
+    "gametype": "CUSTOM_GAME",
+    "description": "Custom games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameTypes.json",
+    "source_json_pointer": "/0",
+    "source_sha256": "c599a5dac888a868ba0dfc9c1821f7f07c54db27fbcaa4242b05a2d3ae233577",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gametype": "TUTORIAL_GAME",
+    "description": "Tutorial games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameTypes.json",
+    "source_json_pointer": "/1",
+    "source_sha256": "c599a5dac888a868ba0dfc9c1821f7f07c54db27fbcaa4242b05a2d3ae233577",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gametype": "MATCHED_GAME",
+    "description": "all other games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameTypes.json",
+    "source_json_pointer": "/2",
+    "source_sha256": "c599a5dac888a868ba0dfc9c1821f7f07c54db27fbcaa4242b05a2d3ae233577",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  }
+]

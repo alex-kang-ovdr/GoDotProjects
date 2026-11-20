@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "blocked_no_source_bytes",
+  "layer": "third_party_client_extraction_not_official_data_dragon",
+  "requested_namespace_version": "16.22",
+  "namespace_version_verified": false,
+  "recorded_at_utc": "2026-11-17T11:52:05.441526+00:00",
+  "successfully_acquired_json_count": 0,
+  "sources": [
+    {
+      "champion": "ahri",
+      "source_url": "https://raw.communitydragon.org/16.22/game/data/characters/ahri/ahri.bin.json",
+      "direct_fetch_status": 403,
+      "direct_fetch_error": "HTTP Error 403: Forbidden",
+      "web_read_status": "URL is not accessible via this tool",
+      "source_sha256": null,
+      "selected_json_pointers": [],
+      "damage_calculation_values": null
+    },
+    {
+      "champion": "garen",
+      "source_url": "https://raw.communitydragon.org/16.22/game/data/characters/garen/garen.bin.json",
+      "direct_fetch_status": 403,
+      "direct_fetch_error": "HTTP Error 403: Forbidden",
+      "web_read_status": "URL is not accessible via this tool",
+      "source_sha256": null,
+      "selected_json_pointers": [],
+      "damage_calculation_values": null
+    }
+  ],
+  "reference_pages": [
+    {
+      "url": "https://www.communitydragon.org/",
+      "observed": "Project says Riot Games does not endorse or sponsor it."
+    },
+    {
+      "url": "https://github.com/communitydragon/docs/blob/master/assets.md",
+      "observed": "Project docs describe detailed champion bin files, with no unified format or easy interpretation."
+    }
+  ],
+  "limitations": [
+    "The requested files were not acquired; no claim is made that specific damage nodes exist or are absent.",
+    "The namespace version and equivalence to a Riot live server/client build were not validated.",
+    "No formulas, coefficients, JSON pointers, or source hashes were invented.",
+    "Official data/raw/scripts outputs were not modified."
+  ]
+}

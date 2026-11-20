@@ -1,0 +1,39 @@
+{
+  "chapter": 1,
+  "construction": [
+    "G1 simulation start at default stats",
+    "One grunt killed through G1 damage API; player receives 12 damage",
+    "Clock advanced to 300 and 600 second events with one 60 Hz step at each event",
+    "First boss receives 117 damage and starts mortar; second starts summon and emits a hostile projectile",
+    "The actual unchanged G1 snapshot() result is written with full JSON precision"
+  ],
+  "duration": 900,
+  "elapsed": 600.0066666666667,
+  "engine": "4.6.3-stable (official)",
+  "fixture": "g1_900s_two_midbosses.json",
+  "fixture_sha256": "8424094250a1db236f95163813bfeadbb7227879e4cd8c6b40d8bfb65413abc9",
+  "generator": "generate_g1_multiboss_fixture.gd (scratch, run using the G1 project path)",
+  "limits": "Controlled migration fixture, not a natural gameplay run or recovered original-client data. G1 source files were not modified.",
+  "live_midboss_ids": [
+    11,
+    18
+  ],
+  "runtime_balance_sha256": "e0670d57e01155a8a5488be1185a823811c5b65003812356a55d0571a2d38e7e",
+  "seed": 761930,
+  "source_catalog_sha256": "3b41f99b8d004ac1ef45090392f83ee23b45db6e46937873cfaf82b532d82756",
+  "source_project": "SurvivorArena_Godot (G1)",
+  "source_script_sha256": "6854d2ce253bf08d7cc3b1060ec159d24fba5945b942325bc8930cb449006760",
+  "stats": {
+    "blocked": 0,
+    "boss_patterns": 2,
+    "by_weapon": {
+      "kunai": 152.4
+    },
+    "chests": 0,
+    "damage": 152.4,
+    "evolutions": 0,
+    "kills": 1,
+    "reward": 0,
+    "taken": 12.0
+  }
+}

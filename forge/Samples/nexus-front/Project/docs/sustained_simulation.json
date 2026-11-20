@@ -1,0 +1,443 @@
+[
+  {
+    "damaged_structures": 7,
+    "destroyed_structures": 2,
+    "entities": 49,
+    "finite_state": true,
+    "heroes": [
+      {
+        "casts": 14,
+        "deaths": 2,
+        "gold": 1246,
+        "key": "Lux",
+        "kills": 2,
+        "level": 9,
+        "pos": [
+          832.634582519531,
+          753.093627929688
+        ],
+        "team": 0
+      },
+      {
+        "casts": 21,
+        "deaths": 1,
+        "gold": 317,
+        "key": "Garen",
+        "kills": 1,
+        "level": 8,
+        "pos": [
+          1235.77331542969,
+          357.065551757812
+        ],
+        "team": 0
+      },
+      {
+        "casts": 2,
+        "deaths": 2,
+        "gold": 451,
+        "key": "LeeSin",
+        "kills": 0,
+        "level": 9,
+        "pos": [
+          262.902282714844,
+          955.691467285156
+        ],
+        "team": 0
+      },
+      {
+        "casts": 20,
+        "deaths": 1,
+        "gold": 731,
+        "key": "Ezreal",
+        "kills": 1,
+        "level": 8,
+        "pos": [
+          1427.36413574219,
+          977.163635253906
+        ],
+        "team": 0
+      },
+      {
+        "casts": 24,
+        "deaths": 1,
+        "gold": 714,
+        "key": "Soraka",
+        "kills": 0,
+        "level": 8,
+        "pos": [
+          1425.19567871094,
+          1119.70788574219
+        ],
+        "team": 0
+      },
+      {
+        "casts": 43,
+        "deaths": 0,
+        "gold": 620,
+        "key": "Ahri",
+        "kills": 0,
+        "level": 8,
+        "pos": [
+          1018.02453613281,
+          535.969421386719
+        ],
+        "team": 1
+      },
+      {
+        "casts": 32,
+        "deaths": 2,
+        "gold": 361,
+        "key": "Darius",
+        "kills": 1,
+        "level": 8,
+        "pos": [
+          1289.3447265625,
+          278.784606933594
+        ],
+        "team": 1
+      },
+      {
+        "casts": 13,
+        "deaths": 3,
+        "gold": 187,
+        "key": "LeeSin",
+        "kills": 0,
+        "level": 8,
+        "pos": [
+          1235.77331542969,
+          357.065551757812
+        ],
+        "team": 1
+      },
+      {
+        "casts": 20,
+        "deaths": 0,
+        "gold": 340,
+        "key": "Ashe",
+        "kills": 1,
+        "level": 8,
+        "pos": [
+          1457.05895996094,
+          141.78044128418
+        ],
+        "team": 1
+      },
+      {
+        "casts": 3,
+        "deaths": 1,
+        "gold": 611,
+        "key": "Soraka",
+        "kills": 1,
+        "level": 9,
+        "pos": [
+          1335.38781738281,
+          376.352111816406
+        ],
+        "team": 1
+      }
+    ],
+    "map_scale": 1.0,
+    "team_kills": [
+      6,
+      7
+    ],
+    "time": 179.999999999994,
+    "wall_ms": 18276,
+    "wave": 10,
+    "winner": -1
+  },
+  {
+    "damaged_structures": 4,
+    "destroyed_structures": 3,
+    "entities": 57,
+    "finite_state": true,
+    "heroes": [
+      {
+        "casts": 17,
+        "deaths": 1,
+        "gold": 397,
+        "key": "Lux",
+        "kills": 0,
+        "level": 8,
+        "pos": [
+          889.19921875,
+          1508.37670898438
+        ],
+        "team": 0
+      },
+      {
+        "casts": 9,
+        "deaths": 3,
+        "gold": 176,
+        "key": "Garen",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          247.834106445312,
+          1079.65100097656
+        ],
+        "team": 0
+      },
+      {
+        "casts": 11,
+        "deaths": 2,
+        "gold": 354,
+        "key": "LeeSin",
+        "kills": 0,
+        "level": 7,
+        "pos": [
+          801.923828125,
+          1592.73950195312
+        ],
+        "team": 0
+      },
+      {
+        "casts": 46,
+        "deaths": 0,
+        "gold": 619,
+        "key": "Ezreal",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2152.1337890625,
+          1300.97741699219
+        ],
+        "team": 0
+      },
+      {
+        "casts": 19,
+        "deaths": 1,
+        "gold": 454,
+        "key": "Soraka",
+        "kills": 0,
+        "level": 7,
+        "pos": [
+          2087.21557617188,
+          1388.69616699219
+        ],
+        "team": 0
+      },
+      {
+        "casts": 46,
+        "deaths": 0,
+        "gold": 1048,
+        "key": "Ahri",
+        "kills": 1,
+        "level": 8,
+        "pos": [
+          1140.90942382812,
+          1255.61657714844
+        ],
+        "team": 1
+      },
+      {
+        "casts": 8,
+        "deaths": 3,
+        "gold": 185,
+        "key": "Darius",
+        "kills": 2,
+        "level": 7,
+        "pos": [
+          1313.5556640625,
+          247.468902587891
+        ],
+        "team": 1
+      },
+      {
+        "casts": 17,
+        "deaths": 1,
+        "gold": 569,
+        "key": "LeeSin",
+        "kills": 1,
+        "level": 7,
+        "pos": [
+          913.865539550781,
+          1479.63159179688
+        ],
+        "team": 1
+      },
+      {
+        "casts": 15,
+        "deaths": 0,
+        "gold": 38,
+        "key": "Ashe",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2187.5,
+          212.5
+        ],
+        "team": 1
+      },
+      {
+        "casts": 28,
+        "deaths": 0,
+        "gold": 422,
+        "key": "Soraka",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2152.4619140625,
+          1015.46032714844
+        ],
+        "team": 1
+      }
+    ],
+    "map_scale": 1.5,
+    "team_kills": [
+      4,
+      7
+    ],
+    "time": 179.999999999994,
+    "wall_ms": 19901,
+    "wave": 10,
+    "winner": -1
+  },
+  {
+    "damaged_structures": 5,
+    "destroyed_structures": 2,
+    "entities": 65,
+    "finite_state": true,
+    "heroes": [
+      {
+        "casts": 36,
+        "deaths": 0,
+        "gold": 541,
+        "key": "Lux",
+        "kills": 0,
+        "level": 7,
+        "pos": [
+          1067.8642578125,
+          2132.1357421875
+        ],
+        "team": 0
+      },
+      {
+        "casts": 21,
+        "deaths": 0,
+        "gold": 113,
+        "key": "Garen",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          381.752716064453,
+          626.669494628906
+        ],
+        "team": 0
+      },
+      {
+        "casts": 42,
+        "deaths": 2,
+        "gold": 559,
+        "key": "LeeSin",
+        "kills": 1,
+        "level": 7,
+        "pos": [
+          2070.20581054688,
+          1077.11267089844
+        ],
+        "team": 0
+      },
+      {
+        "casts": 23,
+        "deaths": 1,
+        "gold": 66,
+        "key": "Ezreal",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2392.97387695312,
+          2858.14501953125
+        ],
+        "team": 0
+      },
+      {
+        "casts": 4,
+        "deaths": 1,
+        "gold": 335,
+        "key": "Soraka",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2383.88989257812,
+          2860.56518554688
+        ],
+        "team": 0
+      },
+      {
+        "casts": 11,
+        "deaths": 1,
+        "gold": 347,
+        "key": "Ahri",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          1908.44360351562,
+          1290.93029785156
+        ],
+        "team": 1
+      },
+      {
+        "casts": 23,
+        "deaths": 1,
+        "gold": 555,
+        "key": "Darius",
+        "kills": 0,
+        "level": 5,
+        "pos": [
+          626.129516601562,
+          343.063842773438
+        ],
+        "team": 1
+      },
+      {
+        "casts": 38,
+        "deaths": 1,
+        "gold": 400,
+        "key": "LeeSin",
+        "kills": 0,
+        "level": 7,
+        "pos": [
+          1764.97692871094,
+          1433.9462890625
+        ],
+        "team": 1
+      },
+      {
+        "casts": 17,
+        "deaths": 0,
+        "gold": 876,
+        "key": "Ashe",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2674.06518554688,
+          2842.86791992188
+        ],
+        "team": 1
+      },
+      {
+        "casts": 21,
+        "deaths": 0,
+        "gold": 286,
+        "key": "Soraka",
+        "kills": 0,
+        "level": 6,
+        "pos": [
+          2870.0068359375,
+          1868.49560546875
+        ],
+        "team": 1
+      }
+    ],
+    "map_scale": 2.0,
+    "team_kills": [
+      3,
+      4
+    ],
+    "time": 179.999999999994,
+    "wall_ms": 21935,
+    "wave": 10,
+    "winner": -1
+  }
+]

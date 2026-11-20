@@ -1,0 +1,275 @@
+{
+  "checks": [
+    {
+      "detail": "",
+      "name": "QA mode active",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "initial menu",
+      "passed": true
+    },
+    {
+      "detail": "[P: (28.0, 26.0), S: (510.0, 748.0)]",
+      "name": "desktop main menu stays within viewport",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop primary action always visible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "map selection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "main weapon selection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "duration selection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "difficulty selection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "tech checkbox selection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "sound command wired",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "guide opens",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "guide closes",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "start enters gameplay",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "selected options reach simulation",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "HUD visible in combat",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "desktop HUD controls in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "pause button",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "pause freezes simulation",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "resume button",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "build remains open after root refresh",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "build closes and resumes",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "level-up shows three cards",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "reroll command",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "card click applies upgrade",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "card selection resumes",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "save and lobby command route",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait layout selected",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait logical viewport",
+      "passed": true
+    },
+    {
+      "detail": "[P: (14.0, 14.0), S: (362.0, 816.0)]",
+      "name": "portrait menu stays within viewport",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait primary action always visible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait start gameplay",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait HUD command controls in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait loadout stays in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait pause dialog in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait choice uses one column",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait choice modal in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait third choice works",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "chest reward card displayed",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "chest card command",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "victory results dialog",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "portrait results panel in bounds",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "restart button",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "defeat results dialog",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "results lobby button",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "error message visible",
+      "passed": true
+    }
+  ],
+  "clicked_controls": [
+    "MapChoice1",
+    "Weapon_shotgun",
+    "Duration900",
+    "Difficulty_hard",
+    "Tech_precision",
+    "SoundButton",
+    "GuideButton",
+    "GuideCloseButton",
+    "StartButton",
+    "PauseButton",
+    "ResumeButton",
+    "BuildButton",
+    "BuildCloseButton",
+    "RerollButton",
+    "Choice1",
+    "PauseButton",
+    "SaveQuitButton",
+    "StartButton",
+    "PauseButton",
+    "ResumeButton",
+    "Choice3",
+    "Choice1",
+    "RestartButton",
+    "ResultLobbyButton"
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "limits": [
+    "Headless geometry and input verification; rendered visual QA is separate.",
+    "Save/continue disk correctness is covered by persistence tests, not this UI test.",
+    "Mobile portrait is simulated by window resizing, not a physical mobile device."
+  ],
+  "passed": 45,
+  "qa_mode": true,
+  "runner": "Godot native main scene + Viewport mouse events, headless",
+  "viewports": [
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ]
+}

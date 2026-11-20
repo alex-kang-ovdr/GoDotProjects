@@ -45,5 +45,9 @@
     "totalWaves": 15,
     "fullVictoryVerified": false,
     "note": "Entry-focused ranger/arcane strategy improved the opening but was not a winning full-stage strategy with zero permanent upgrades."
-  }
+  },
+  "validatedBuild": "15.0.0",
+  "validatedGeometry": "authored_v15",
+  "historicalOnly": true,
+  "v16Applicability": "Not rerun against v16 restored geometry or reference rules. Retained as historical evidence only."
 }

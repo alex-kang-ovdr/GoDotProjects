@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "title": "LoL 공개 규칙 복원 출처와 검토 범위",
+  "retrieved_at": "2026-11-17 KST",
+  "baseline": {
+    "target_patch": "26.22",
+    "ddragon_version": "16.22.1",
+    "mode": "summoners_rift_modern",
+    "current_patch_full_certification": false
+  },
+  "review_scope": {
+    "patches_with_selected_sections_reviewed": [
+      "26.1",
+      "26.3",
+      "26.9",
+      "26.11",
+      "26.12",
+      "26.16",
+      "26.19",
+      "26.22"
+    ],
+    "not_a_complete_intermediate_patch_audit": true,
+    "excluded_modes": [
+      "Swiftplay",
+      "ARAM",
+      "Arena",
+      "Classic"
+    ],
+    "explanation_ko": "패치 당시의 확인값과 이후 확인한 변경 이력을 보존한다. 누락 패치에서 변경이 없었다고 주장하지 않는다. prototype 숫자나 커스텀 고저차·건물 기억 규칙은 원작 수치에 섞지 않는다."
+  },
+  "value_statuses": {
+    "official_patch_value": "명시한 패치 당시 공식 값",
+    "official_patch_change": "이전 패치 값을 대체하는 공식 변경",
+    "superseded": "후속 공식 변경으로 대체됨",
+    "official_guide_value": "버전 미명시 공식 안내의 값",
+    "source_conflict": "공식 근거 간 또는 공식 본문 내부 불일치",
+    "derived_from_historical_model": "과거 설계 모델로부터 유도했으며 현행 인증 아님"
+  },
+  "sources": [
+    {
+      "source_id": "R001",
+      "title": "Patch 26.1 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
+      "published_at": "2026-01-07T19:00:00Z",
+      "evidence_patch": "26.1",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Role Quests",
+        "Atakhan, Blood Roses, Feats, and Kills",
+        "Epic Objective Tuning",
+        "Crystalline Overgrowth",
+        "Game Start Time",
+        "Turrets",
+        "Minions"
+      ],
+      "web_reference": "turn106view0",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R002",
+      "title": "2026 Season One Gameplay Preview",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-2026-season-one-gameplay-preview/",
+      "published_at": "2025-12-01T16:00:00Z",
+      "evidence_patch": null,
+      "kind": "historical_preview",
+      "reviewed_sections": [
+        "Introduction",
+        "Pushing",
+        "Objectives"
+      ],
+      "web_reference": "turn121search2",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R003",
+      "title": "League of Legends Patch 26.9 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-9-notes/",
+      "published_at": "2026-04-28T18:00:00Z",
+      "evidence_patch": "26.9",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Role Quests",
+        "Game Systems / Minion Waves"
+      ],
+      "web_reference": "turn116view0",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R004",
+      "title": "League of Legends Patch 26.11 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-11-notes/",
+      "published_at": "2026-05-27T18:00:00Z",
+      "evidence_patch": "26.11",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Role Quest Adjustments / Mid Role Quest",
+        "Support Adjustments"
+      ],
+      "web_reference": "turn108view1",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R005",
+      "title": "Patch 26.12 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
+      "published_at": "2026-06-09T18:00:00Z",
+      "evidence_patch": "26.12",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Systems / Teleport"
+      ],
+      "web_reference": "turn116view2",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R006",
+      "title": "League of Legends Patch 26.16 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+      "published_at": "2026-08-11T18:00:00Z",
+      "evidence_patch": "26.16",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Systems / Jungle Pets",
+        "Systems / Support Role Quest",
+        "Classic mode separation"
+      ],
+      "web_reference": "turn112view1",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R007",
+      "title": "Patch 26.19 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+      "published_at": "2026-09-22T18:00:00Z",
+      "evidence_patch": "26.19",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Systems / Teleport Cooldown",
+        "Classic mode separation"
+      ],
+      "web_reference": "turn112view0",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R008",
+      "title": "Patch 26.3 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-3-notes/",
+      "published_at": "2026-02-03T19:00:00Z",
+      "evidence_patch": "26.3",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Champion Bounties",
+        "Turret Plates",
+        "Support Control Wards"
+      ],
+      "web_reference": "turn116view1",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R009",
+      "title": "League of Legends Patch 26.22 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+      "published_at": "2026-11-03T19:00:00Z",
+      "evidence_patch": "26.22",
+      "kind": "official_patch",
+      "reviewed_sections": [
+        "Champions / Mel",
+        "Items"
+      ],
+      "web_reference": "turn112view2",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R010",
+      "title": "Preseason 2021 Champion Class Item Goals",
+      "url": "https://www.leagueoflegends.com/en-us/news/riot-games/preseason-2021-champion-class-item-goals/",
+      "published_at": "2020-08-07T17:00:00Z",
+      "evidence_patch": null,
+      "kind": "historical_preview",
+      "reviewed_sections": [
+        "Stats and Effects / Cooldown Reduction Rework"
+      ],
+      "web_reference": "turn116view3",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "선택한 절과 명시적 변경값을 확인. 모든 중간 패치와 핫픽스의 무변경 전수 인증은 아님."
+    },
+    {
+      "source_id": "R011",
+      "title": "리그 오브 레전드 게임 방법",
+      "url": "https://www.leagueoflegends.com/ko-kr/how-to-play/",
+      "published_at": null,
+      "evidence_patch": null,
+      "kind": "official_guide",
+      "reviewed_sections": [
+        "공격로 장악하기",
+        "포탑",
+        "억제기"
+      ],
+      "web_reference": "turn121search1",
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "개정일 미표시. 구조와 일반 관계의 근거이며 세부 수치·시각 근거로 확장하지 않음."
+    },
+    {
+      "source_id": "R012",
+      "title": "Data Dragon 16.21.1 champion.json en_US",
+      "url": "https://ddragon.leagueoflegends.com/cdn/16.21.1/data/en_US/champion.json",
+      "published_at": null,
+      "evidence_patch": null,
+      "ddragon_version": "16.21.1",
+      "kind": "official_static_data",
+      "reviewed_sections": [
+        "/data/Mel/stats/hp"
+      ],
+      "local_file": "raw/16.21.1/en_US/champion.json",
+      "web_reference": null,
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "공식 패치 본문의 이전 값과 정적 데이터 이전 버전의 기준 시점이 일치한다고 단정할 수 없음."
+    },
+    {
+      "source_id": "R013",
+      "title": "Data Dragon 16.22.1 champion.json en_US",
+      "url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/en_US/champion.json",
+      "published_at": null,
+      "evidence_patch": null,
+      "ddragon_version": "16.22.1",
+      "kind": "official_static_data",
+      "reviewed_sections": [
+        "/data/Mel/stats/hp"
+      ],
+      "local_file": "raw/16.22.1/en_US/champion.json",
+      "web_reference": null,
+      "retrieved_at": "2026-11-17 KST",
+      "primary_source": true,
+      "limitations": "정적 능력치와 실제 피해·스킬 실행 그래프는 별도 복원 대상."
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "CF01",
+      "field": "structure.nexus.plates_enabled",
+      "sources": [
+        "R001"
+      ],
+      "locations": [
+        "Turrets introduction: excludes Nexus turrets",
+        "Nexus Turrets: adds plate threshold row"
+      ],
+      "resolution": "unresolved",
+      "runtime_value": null
+    },
+    {
+      "id": "CF02",
+      "field": "bounty.devalue.26_1",
+      "sources": [
+        "R001",
+        "R008"
+      ],
+      "locations": [
+        "26.1 Atakhan section: coefficient 0.4 but 300 gold example decreases 75",
+        "26.3 Champion Bounties: explicit new ratio 1/3.5"
+      ],
+      "resolution": "26.1 example remains conflicting; 26.3 explicitly supplies later value",
+      "runtime_value_for_26_1": null
+    },
+    {
+      "id": "CF03",
+      "field": "combat.mel.hp_previous_evidence",
+      "sources": [
+        "R009",
+        "R012",
+        "R013"
+      ],
+      "values": {
+        "patch_26_22_previous": 640,
+        "ddragon_16_21_1": 630,
+        "patch_26_22_current": 590,
+        "ddragon_16_22_1": 590
+      },
+      "resolution": "previous values conflict; current values agree; patch timing versus typo unknown"
+    }
+  ],
+  "parameter_field_semantics": {
+    "current_patch_certified": "true는 목표26.22공식본문에서 해당행의 단일값을 확인했다는 뜻. 전체 시스템·예외·서버실행순서 인증이 아님. false는 당시값이 틀렸다는 뜻이 아니라 최신상태로 승격할 후속 검토가 남았다는 뜻.",
+    "latest_reviewed_patch": "조사의 상한 패치이며 그 이전 모든 패치를 전수 검토했다는 뜻이 아님.",
+    "value_json": "근거가 제공한 수치·배열·조건을 보존. null은 없음을 뜻하지 않고 미확정임."
+  }
+}

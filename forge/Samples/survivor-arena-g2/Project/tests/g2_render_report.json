@@ -1,0 +1,354 @@
+{
+	"checks": [
+		{
+			"detail": "",
+			"name": "lobby preview persists against old run chapter",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "lobby selected weapon is held by hero",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "changing preview rebuilds map and held weapon",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "invalid preview values have safe fallbacks",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "starting a run replaces preview with run map",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "evolution changes held weapon geometry",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "replacing weapon meshes does not accumulate attached nodes",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 0 scenery stays batched and bounded",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 0 ground theme matches selection",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 1 scenery stays batched and bounded",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 1 ground theme matches selection",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 2 scenery stays batched and bounded",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 2 ground theme matches selection",
+			"passed": true
+		},
+		{
+			"detail": "[843, 593, 735]",
+			"name": "chapter props differ in geometry, not only color",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "firing drives visible recoil",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "firing draws muzzle core and projectile trail",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "feedback does not mutate combat or RNG",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "an already-seen shot does not retrigger recoil",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "real damage creates bounded optional camera feedback",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hit shake preserves W screen-up and horizontal alignment",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "pause freezes hit and recoil clocks",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "pause freezes camera feedback",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "camera shake setting takes effect immediately while paused",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "disabled shake remains off for new damage",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "damage numbers enabled",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "damage numbers disabled without stale labels",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "evolution feedback survives damage-number setting",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "kill impacts draw actual block debris",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "low quality reduces cosmetic debris",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "low quality disables shadows and MSAA",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry actors",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry glow",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry orbs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry crystals",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry rings",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry telegraphs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry discs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry shadows",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry trails",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 bounded geometry debris",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 screen-up at 390x844",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 screen-up at 844x390",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "G2 screen-up at 1280x800",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at 0 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at 0 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at 0 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at 45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at 45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at 45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at 60 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at 60 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at 60 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at -45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at -45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at -45 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at 126 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at 126 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at 126 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor endpoints match collision at 180 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor center and width match collision at 180 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge corridor is rectangular at 180 degrees",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 0 endpoints align to source points",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 0 width stays uniform without shear",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 1 endpoints align to source points",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 1 width stays uniform without shear",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 2 endpoints align to source points",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "3D beam 2 width stays uniform without shear",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "rotated actor parts retain local proportions",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "rotated actor offsets match its facing basis",
+			"passed": true
+		}
+	],
+	"engine": "4.6.3-stable (official)",
+	"failed": 0,
+	"mode": "headless geometry and state contracts; no GPU visual verification",
+	"passed": 69,
+	"suite": "g2_render"
+}

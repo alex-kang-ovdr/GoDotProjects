@@ -1,0 +1,21 @@
+{
+  "n": {
+    "item": "16.22.1",
+    "rune": "7.23.1",
+    "mastery": "7.23.1",
+    "summoner": "16.22.1",
+    "champion": "16.22.1",
+    "profileicon": "16.22.1",
+    "map": "16.22.1",
+    "language": "16.22.1",
+    "sticker": "16.22.1"
+  },
+  "v": "16.22.1",
+  "l": "ko_KR",
+  "cdn": "https://ddragon.leagueoflegends.com/cdn",
+  "dd": "16.22.1",
+  "lg": "16.22.1",
+  "css": "16.22.1",
+  "profileiconmax": 28,
+  "store": null
+}

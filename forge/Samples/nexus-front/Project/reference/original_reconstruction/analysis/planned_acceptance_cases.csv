@@ -1,0 +1,25 @@
+﻿case_id,system,title_ko,setup_ko,expected_invariant_ko,ruleset_scope,phase,status,observed_result,evidence_path,reference_doc
+C01,combat,랭크별 비용·쿨다운·피해,"랭크 1과 최대 랭크, 동일 대상",각 수치가 승인된 정의와 일치,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C02,combat,방어·관통·반올림,방어 0/양수/음수와 관통 조합,연산 순서와 최종 HP를 설명 가능,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C03,combat,보호막과 피해 태그,일반/물리/마법 보호막,소모한 보호막과 남은 피해 일관,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C04,combat,공격·시전 취소,"준비 중 취소, 발사 후 이동, 대상 사망",비용·주기·투사체의 승인된 정책 준수,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C05,combat,시야·지정 불가·무적,선택 뒤 대상 상태 변경,타깃 가능·적중·피해 상태를 분리,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C06,combat,관통·왕복·반복 적중,한 대상에 여러 타격 단계,히트별 허용 횟수와 귀속 일치,reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+C07,combat,같은 틱의 사건,치명 피해·회복·보호막·부활 중첩,"결정적 순서, 사망·보상 중복 없음",reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+E01,economy,거래 원자성,"중복 재료, 6슬롯, 골드 부족","성공 시 일괄 변경, 실패 시 상태 보존",reference,P2,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+E02,economy,보상 수령자,막타·주변 경험치·처치 관여·역할 보너스,보상별 귀속과 계산 추적,reference,P3,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+E03,economy,역할 퀘스트 전환,완료 직전/직후와 저장 재개,"보상 1회, 상한과 버프 적용 유지",reference,P3,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+E04,lanes,웨이브 경계 시각,간격 변경 직전/정각/직후,중복 생성 없이 다음 시각 예약,reference,P3,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V01,vision,벽 차단,벽 사이 양측과 우회,논리 시야·미니맵·타깃 후보 일치,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V02,vision,고저차,언덕 위/아래의 양방향 관측,높이와 가림 정책에 따른 독립 판정,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V03,vision,공격 원점 공개,숨은 고지대 공격자 공격 후 이동,"원점 공개 유지, 이동 좌표 자동 추적 없음",custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V04,vision,건물 마지막 상태,80% 관측 후 비관측 상태에서 20%로 감소,기억 HP80%와 관측 시각 유지,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V05,vision,보이지 않는 파괴,기억 건물 파괴 후 슬롯 재관측,재관측 때 파괴 상태로 갱신,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V06,vision,팀별 기억 격리,서로 다른 시점에 같은 건물 관측,"각 팀 스냅샷 독립, 전지 뷰 미유입",custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V07,vision,공개·기억 저장,위치 공개 중 저장·일시정지·재개,남은 시뮬레이션 시간과 과거 기억 유지,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+V08,vision,간접 정보 누출,비관측 적과 모든 정보 소비 UI·AI,승인된 공개 채널 외 실제 좌표 비노출,custom,P4,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+U01,settings,맵 3종,1/1.5/2배 새 경기,좌표·지형·미니맵·저장 범위 일치,custom,P1,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+U02,settings,맵 선택 시점,경기 시작 후 크기 변경 시도,진행 중 크기 불변,custom,P1,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+U03,settings,속도 4종,0.5/0.75/1/1.5배,모든 시뮬레이션 타이머에 한 번만 적용,custom,P1,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+U04,settings,이전 속도 저장,2배 및 잘못된 값,"현재 정규화 정책, 2배 선택지 비노출",custom,P1,planned_not_executed,,,docs/11_qa_and_measurement_plan.md
+U05,settings,중단·재개,일시정지·탭 숨김·이어하기,"중복 발사 없음, 입력 해제, 기억 유지",custom,P1,planned_not_executed,,,docs/11_qa_and_measurement_plan.md

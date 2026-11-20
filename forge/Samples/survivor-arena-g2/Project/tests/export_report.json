@@ -1,0 +1,239 @@
+{
+  "release": "G2",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "source_script_sha256": {
+    "scripts/arena_audio.gd": "208813eea7b8618414a82a147a6a5729a95bb600610c507da6115d51ac0d872b",
+    "scripts/arena_hud.gd": "056bdae989904a81d8332e9008a9b469ffa2ecef458b11fca9a5198ab728b496",
+    "scripts/arena_radar.gd": "26e5b1bd688accc8e49afeed063d03d8619100d1dddc3926f732501eb6340d62",
+    "scripts/arena_sim.gd": "08e9dfbba3d423c1f85729fed18d80fba29d045b41080fa21577b69fe5acb6d2",
+    "scripts/arena_world.gd": "fef4cf05f33acd912d96500de41b47b5dbd6674fe8269582d28ebfd993a7a8ee",
+    "scripts/catalog.gd": "ecbafae6f196d4b5e234a7f8f896e6390d5fe59b6a167f4a2149aee0bb8a4d8c",
+    "scripts/main.gd": "a111a8d7c96b9021ab15d88383e2003765dc00db2c8d91cf0e497ed7e5804ee1",
+    "scripts/save_store.gd": "cfe374af0bba5f825fb18876a28c739c97236eee2430dc5dfe92efd6d74f1c9a",
+    "scripts/skill_icon.gd": "648b5ce2dfe494b3bdc9b855393c871d2a654a59dba3541e4b6f78341bb15895",
+    "scripts/touch_stick.gd": "e76ee489f640e38633540d14be269afdb453286fc3b71e45c33ca98784c784ac"
+  },
+  "source_changed_during_export": [],
+  "exports": [
+    {
+      "platform": "linux",
+      "export_returncode": 0,
+      "errors_warnings": [],
+      "seconds": 4.11,
+      "structure": {
+        "ELF64": true,
+        "embedded_GDPC": true
+      },
+      "runtime": {
+        "returncode": 0,
+        "scope": "Headless embedded release startup outside source tree",
+        "stdout": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\n"
+      },
+      "files": [
+        {
+          "name": "FONT_LICENSE.txt",
+          "size_bytes": 14712,
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "name": "GODOT_LICENSE.txt",
+          "size_bytes": 1149,
+          "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+        },
+        {
+          "name": "GODOT_THIRD_PARTY_NOTICES.txt",
+          "size_bytes": 102220,
+          "sha256": "d64c7acf7a632b421167b3a9ce1e7301a5df06cb8c47959d0bd060f3021f373e"
+        },
+        {
+          "name": "LICENSE",
+          "size_bytes": 1528,
+          "sha256": "f458eccf417f6853ef09d4fb327376bc7b43d9aa2fb6e97bd1464ce98037ab44"
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 883,
+          "sha256": "2019f6acb34df890357c6de2e7e0fb54a22521448c78f9700617374348a2db14"
+        },
+        {
+          "name": "SurvivorArena.x86_64",
+          "size_bytes": 73037928,
+          "sha256": "56a1e9f7617f11650816dfbc549672b1918279c040ba2c1ae9de571f00482983"
+        }
+      ]
+    },
+    {
+      "platform": "windows",
+      "export_returncode": 0,
+      "errors_warnings": [],
+      "seconds": 3.49,
+      "structure": {
+        "MZ": true,
+        "PE": true,
+        "AMD64": true,
+        "embedded_GDPC": true
+      },
+      "runtime_status": "NOT_EXECUTED_ON_WINDOWS",
+      "files": [
+        {
+          "name": "FONT_LICENSE.txt",
+          "size_bytes": 14712,
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "name": "GODOT_LICENSE.txt",
+          "size_bytes": 1149,
+          "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+        },
+        {
+          "name": "GODOT_THIRD_PARTY_NOTICES.txt",
+          "size_bytes": 102220,
+          "sha256": "d64c7acf7a632b421167b3a9ce1e7301a5df06cb8c47959d0bd060f3021f373e"
+        },
+        {
+          "name": "LICENSE",
+          "size_bytes": 1528,
+          "sha256": "f458eccf417f6853ef09d4fb327376bc7b43d9aa2fb6e97bd1464ce98037ab44"
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 705,
+          "sha256": "6f79d3a4a6558eccb44aad7385ba1e8d890380a02aaafcb0f943da5a1b537f2b"
+        },
+        {
+          "name": "SurvivorArena.exe",
+          "size_bytes": 106621528,
+          "sha256": "7014576cf26a5ae63888fb9d00edcb79d9469c92220aa3a22891d03da4ac171a"
+        }
+      ]
+    },
+    {
+      "platform": "web",
+      "export_returncode": 0,
+      "errors_warnings": [],
+      "seconds": 3.24,
+      "structure": {
+        "wasm_magic": true,
+        "html": true,
+        "js": true,
+        "pck": true
+      },
+      "runtime_status": "UNVERIFIED_BROWSER_RUNTIME",
+      "files": [
+        {
+          "name": "FONT_LICENSE.txt",
+          "size_bytes": 14712,
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "name": "GODOT_LICENSE.txt",
+          "size_bytes": 1149,
+          "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+        },
+        {
+          "name": "GODOT_THIRD_PARTY_NOTICES.txt",
+          "size_bytes": 102220,
+          "sha256": "d64c7acf7a632b421167b3a9ce1e7301a5df06cb8c47959d0bd060f3021f373e"
+        },
+        {
+          "name": "LICENSE",
+          "size_bytes": 1528,
+          "sha256": "f458eccf417f6853ef09d4fb327376bc7b43d9aa2fb6e97bd1464ce98037ab44"
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 976,
+          "sha256": "f72b40550e417ecf16e0884135031f65bcf2446e9d9e3f8704b0e4cc370b34b7"
+        },
+        {
+          "name": "index.apple-touch-icon.png",
+          "size_bytes": 8377,
+          "sha256": "beb92a5aa9adbe66dea3f84a774400a22182b7244161682cbffe981e89586c98"
+        },
+        {
+          "name": "index.audio.position.worklet.js",
+          "size_bytes": 2973,
+          "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+        },
+        {
+          "name": "index.audio.worklet.js",
+          "size_bytes": 7298,
+          "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+        },
+        {
+          "name": "index.html",
+          "size_bytes": 5457,
+          "sha256": "340b519322a9829a8bfb9239ceced6bf8edc79516d4c03fbebdc3049c50738a5"
+        },
+        {
+          "name": "index.icon.png",
+          "size_bytes": 7370,
+          "sha256": "62eb3142305e9f2b5505c62ce14823ff924600afd9ccd39e4b694cb5cff96a3d"
+        },
+        {
+          "name": "index.js",
+          "size_bytes": 315759,
+          "sha256": "e3f56ee40e6f84371053db06692cfac15e2c8659547b11c6b2dfa1996dabd981"
+        },
+        {
+          "name": "index.pck",
+          "size_bytes": 1962056,
+          "sha256": "fa82bcc7e93ebc47b0cd75301521170a5bfdcf21aebb0023abf10b5e64571b78"
+        },
+        {
+          "name": "index.png",
+          "size_bytes": 21443,
+          "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+        },
+        {
+          "name": "index.wasm",
+          "size_bytes": 37700666,
+          "sha256": "26b61ce95247012ab3dca3ff51e96d1cdbff44ee91a8c20a83e150afca83f1b6"
+        }
+      ]
+    },
+    {
+      "platform": "pack",
+      "export_returncode": 0,
+      "errors_warnings": [],
+      "seconds": 3.05,
+      "runtime": {
+        "returncode": 0,
+        "scope": "External PCK boots with Godot outside source tree",
+        "stdout": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\n"
+      },
+      "files": [
+        {
+          "name": "FONT_LICENSE.txt",
+          "size_bytes": 14712,
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "name": "GODOT_LICENSE.txt",
+          "size_bytes": 1149,
+          "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+        },
+        {
+          "name": "GODOT_THIRD_PARTY_NOTICES.txt",
+          "size_bytes": 102220,
+          "sha256": "d64c7acf7a632b421167b3a9ce1e7301a5df06cb8c47959d0bd060f3021f373e"
+        },
+        {
+          "name": "LICENSE",
+          "size_bytes": 1528,
+          "sha256": "f458eccf417f6853ef09d4fb327376bc7b43d9aa2fb6e97bd1464ce98037ab44"
+        },
+        {
+          "name": "SurvivorArena.pck",
+          "size_bytes": 1962056,
+          "sha256": "fa82bcc7e93ebc47b0cd75301521170a5bfdcf21aebb0023abf10b5e64571b78"
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "Windows runtime not executed.",
+    "Browser gameplay not executed. Native GL capture is reported separately."
+  ]
+}
