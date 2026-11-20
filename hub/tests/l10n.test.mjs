@@ -5,9 +5,12 @@ import path from 'node:path';
 import { randomBytes, scryptSync } from 'node:crypto';
 import { PassThrough } from 'node:stream';
 import test from 'node:test';
+import vm from 'node:vm';
 import { createApp } from '../server/app.mjs';
 import { inspectDatabase } from '../tools/restore-data.mjs';
 import {
+  LOCALES,
+  TARGET_LOCALES,
   lintTranslation,
   gatherPlatformTexts,
   translateWithAi,
@@ -242,4 +245,45 @@ test('L10N admin API supports strings, gather, glossary, prompts, AI draft gatin
   const inspected = inspectDatabase(path.join(dir, 'backups', bkp.data.backup.filename));
   assert.equal(inspected.integrity, 'ok');
   assert.equal(inspected.foreignKeys, 'ok');
+});
+
+test('l10n-bundle.json and Wave 2 per-game dictionaries provide complete 8-locale coverage without lint blocks', () => {
+  const hubRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/i, '$1')), '..');
+  const repoRoot = path.resolve(hubRoot, '..');
+  const bundle = JSON.parse(fs.readFileSync(path.join(hubRoot, 'shared/locales/l10n-bundle.json'), 'utf8'));
+  const wave2Ids = ['crazy-arcade', 'poly-bridge-2', 'project-zomboid', 'survivor-arena-g2', 'kingdom-rush'];
+
+  for (const [key, row] of Object.entries(bundle.keys)) {
+    for (const loc of LOCALES) {
+      assert.equal(typeof row[loc], 'string', `Missing ${loc} for ${key}`);
+      assert.ok(row[loc].trim().length > 0, `Empty ${loc} for ${key}`);
+    }
+  }
+
+  const sharedLocale = fs.readFileSync(path.join(hubRoot, 'shared/locale.js'), 'utf8').replace(/\r\n/g, '\n');
+  const platDict = {};
+  const platCtx = { PlayHubLocale: { register: e => Object.assign(platDict, e) } };
+  platCtx.globalThis = platCtx;
+  vm.runInNewContext(fs.readFileSync(path.join(hubRoot, 'shared/locales/platform.js'), 'utf8'), platCtx);
+
+  for (const id of wave2Ids) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games', id, 'game.manifest.json'), 'utf8'));
+    const gameLocale = fs.readFileSync(path.join(repoRoot, 'games', id, 'Web/vendor/playhub-locale.js'), 'utf8').replace(/\r\n/g, '\n');
+    assert.equal(gameLocale, sharedLocale, `playhub-locale.js out of sync for ${id}`);
+
+    const gameDict = {};
+    const gameCtx = { PlayHubLocale: { register: e => Object.assign(gameDict, e) } };
+    gameCtx.globalThis = gameCtx;
+    vm.runInNewContext(fs.readFileSync(path.join(hubRoot, 'shared/locales', `${id}.js`), 'utf8'), gameCtx);
+
+    for (const field of ['title', 'summary', 'instructions', 'rules']) {
+      const ko = manifest[field]?.ko;
+      assert.ok(ko, `Missing ${field}.ko in ${id}`);
+      assert.ok(gameDict[ko]?.ko, `Missing ko in ${id}.js for ${id}.${field}`);
+      for (const dict of [platDict, gameDict]) {
+        assert.ok(dict[ko]?.en && dict[ko]?.ja, `Missing en/ja for ${id}.${field}`);
+        assert.equal(dict[ko].en, manifest[field].en, `Manifest EN mismatch for ${id}.${field}`);
+      }
+    }
+  }
 });

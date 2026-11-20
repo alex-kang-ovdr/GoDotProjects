@@ -1,0 +1,16 @@
+(() => {
+  const locales = ['en', 'ja', 'zh-CN', 'fr', 'es', 'pt-BR', 'hi'];
+  const entries = {
+    'Survivor Arena G2 · Godot 3D 서바이벌': ['Survivor Arena G2 · Godot 3D Survival', 'Survivor Arena G2 · Godot 3Dサバイバル', 'Survivor Arena G2 · Godot 3D 生存', 'Survivor Arena G2 · Survie 3D Godot', 'Survivor Arena G2 · Supervivencia 3D Godot', 'Survivor Arena G2 · Sobrevivência 3D Godot', 'Survivor Arena G2 · Godot 3D सर्वाइवल'],
+    'Godot 4.6.3 네이티브 3D로 제작해 WebGL 2.0/WASM으로 내보낸 자동 공격·6+6 빌드·보스전 서바이벌 아레나입니다.': ['A Godot 4.6.3 3D WebGL/WASM survival arena featuring auto-attacks, 6+6 builds, weapon evolutions, and boss battles.', 'Godot 4.6.3ネイティブ3Dで制作しWebGL 2.0/WASMへ書き出した、自動攻撃・6+6ビルド・ボス戦のサバイバルアリーナです。', '使用 Godot 4.6.3 原生 3D 制作并导出为 WebGL 2.0/WASM 的自动攻击、6+6 构筑、Boss 战生存竞技场。', 'Arène de survie 3D Godot 4.6.3 (WebGL 2.0/WASM) avec attaques auto, builds 6+6, évolutions d’armes et combats de boss.', 'Arena de supervivencia 3D Godot 4.6.3 (WebGL 2.0/WASM) con autoataques, builds 6+6, evoluciones y jefes.', 'Arena de sobrevivência 3D Godot 4.6.3 (WebGL 2.0/WASM) com ataques automáticos, builds 6+6, evoluções e chefes.', 'Godot 4.6.3 3D WebGL/WASM सर्वाइवल अरेना जिसमें ऑटो-अटैक, 6+6 बिल्ड, हथियार विकास और बॉस लड़ाइयाँ हैं।'],
+    'WASD/방향키 또는 터치 조이스틱 이동, P/Esc 일시정지, B 빌드, M 효과음, N 레이더, F11 전체 화면. 반드시 HTTP 서버를 통해 실행하세요.': ['Move with WASD/Arrows or touch joystick. P/Esc pause, B build, M audio, N radar, F11 fullscreen. Must be served over HTTP.', 'WASD/矢印キーまたはタッチジョイスティックで移動、P/Escで一時停止、Bでビルド、Mで効果音、Nでレーダー、F11で全画面。必ずHTTPサーバー経由で実行してください。', 'WASD/方向键或触控摇杆移动，P/Esc 暂停，B 构筑，M 音效，N 雷达，F11 全屏。请务必通过 HTTP 服务器运行。', 'Bougez avec WASD/Flèches ou joystick tactile, P/Esc pause, B build, M son, N radar, F11 plein écran. À lancer via serveur HTTP.', 'Muévete con WASD/Flechas o joystick táctil, P/Esc pausa, B build, M sonido, N radar, F11 pantalla completa. Ejecutar por HTTP.', 'Mova com WASD/Setas ou joystick tátil, P/Esc pausa, B build, M som, N radar, F11 tela cheia. Execute via servidor HTTP.', 'WASD/एरो या टच जॉयस्टिक से चलें। P/Esc रोकें, B बिल्ड, M ऑडियो, N रडार, F11 फ़ुलस्क्रीन। HTTP सर्वर से चलाएँ।'],
+    '경험치를 모아 무기와 패시브를 조합·진화시키고 보스를 처치하며 생존하세요. 기존 games/survivor-io(v7.1.0)와는 독립된 Godot 에디션입니다.': ['Collect XP, evolve weapons, and survive boss waves. Independent Godot edition; does not replace games/survivor-io.', '経験値を集めて武器とパッシブを組み合わせ・進化させ、ボスを倒して生き残りましょう。既存の games/survivor-io(v7.1.0) とは独立した Godot 版です。', '收集经验值组合并进化武器与被动技能，击败 Boss 生存下来。本作为独立 Godot 版，不替代 games/survivor-io(v7.1.0)。', 'Collectez de l’XP, faites évoluer armes et passifs et survivez aux boss. Édition Godot indépendante de games/survivor-io.', 'Recoge XP, evoluciona armas y pasivas y sobrevive a los jefes. Edición Godot independiente de games/survivor-io.', 'Colete XP, evolua armas e passivas e sobreviva aos chefes. Edição Godot independente de games/survivor-io.', 'XP इकट्ठा करें, हथियार विकसित करें और बॉस से बचें। यह games/survivor-io से स्वतंत्र Godot संस्करण है।']
+  };
+  const dictionary = {};
+  for (const [source, values] of Object.entries(entries)) {
+    const row = { ko: source };
+    locales.forEach((locale, index) => { if (values[index]) row[locale] = values[index]; });
+    dictionary[source] = row;
+  }
+  if (globalThis.PlayHubLocale) globalThis.PlayHubLocale.register(dictionary);
+})();
