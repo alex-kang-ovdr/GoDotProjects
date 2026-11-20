@@ -7,6 +7,7 @@ import {
   readStrictJson,
   sha256Buffer,
   sha256File,
+  walkWebTree,
 } from './fs-utils.mjs';
 import { GAMERQA_ROOT, resolvePolicyPath, resolveProjectRoot } from './paths.mjs';
 import { runStaticSuite } from '../suites/static/index.mjs';
@@ -155,6 +156,32 @@ export function resolveTargetGames({ projectRoot, games = [], all = false }) {
   return { gameIds: unique, catalog };
 }
 
+function collectWebContext({ projectRoot, gameId, policy, catalog }) {
+  const limits = policy?.limits || {};
+  const gameDir = path.join(projectRoot, 'games', gameId);
+  const webDir = path.join(gameDir, 'Web');
+  const catalogEntry = catalog?.entries?.find((e) => e.id === gameId) || null;
+  let manifest = null;
+  try {
+    const manifestPath = guardRelativePath(gameDir, 'game.manifest.json');
+    manifest = readStrictJson(manifestPath, limits.maxJsonBytes ?? 1048576);
+  } catch {
+    manifest = null;
+  }
+  const walk = walkWebTree(webDir, limits);
+  return {
+    gameDir,
+    webDir,
+    manifest,
+    catalogEntry,
+    files: walk.files,
+    totalBytes: walk.totalBytes,
+    walkIssues: walk.issues,
+    parsedHtmlFiles: [],
+    resolvedAssets: [],
+  };
+}
+
 export async function runQaPipeline({
   projectRoot: explicitRoot,
   games = [],
@@ -202,6 +229,8 @@ export async function runQaPipeline({
       const res = await runStaticSuite({ projectRoot, gameId, policy, catalog });
       checks.push(...res.checks);
       staticContext = res.context;
+    } else if (activeSuites.includes('security') || activeSuites.includes('runtime-web')) {
+      staticContext = collectWebContext({ projectRoot, gameId, policy, catalog });
     }
 
     if (activeSuites.includes('security')) {

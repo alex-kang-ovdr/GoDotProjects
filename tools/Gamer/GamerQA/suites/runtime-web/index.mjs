@@ -34,7 +34,9 @@ function makeCheck(policy, ruleId, status, title, message, details = [], evidenc
   return item;
 }
 
-function isAllowlistedUrl(candidateUrl, allowlist = []) {
+const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
+
+export function isAllowlistedUrl(candidateUrl, allowlist = [], allowedGameOrigin = null) {
   if (!candidateUrl || candidateUrl.startsWith('data:') || candidateUrl.startsWith('blob:') || candidateUrl.startsWith('about:')) {
     return true;
   }
@@ -44,15 +46,56 @@ function isAllowlistedUrl(candidateUrl, allowlist = []) {
   } catch {
     return false;
   }
-  if (['127.0.0.1', 'localhost', '::1'].includes(parsed.hostname)) return true;
+  const proto = parsed.protocol.toLowerCase();
+  if (!['http:', 'https:', 'ws:', 'wss:'].includes(proto)) {
+    return false;
+  }
+  // Loopback is allowed ONLY for the exact static game server origin (scheme + host + port) over HTTP(S).
+  if (allowedGameOrigin) {
+    try {
+      const gameOrigin = new URL(allowedGameOrigin);
+      if ((proto === 'http:' || proto === 'https:') && parsed.origin === gameOrigin.origin && proto === gameOrigin.protocol.toLowerCase()) {
+        return true;
+      }
+    } catch {
+      // ignore invalid allowedGameOrigin
+    }
+  }
   return allowlist.some((entry) => {
     try {
       const allowed = new URL(entry);
-      return parsed.origin === allowed.origin;
+      return parsed.origin === allowed.origin && proto === allowed.protocol.toLowerCase();
     } catch {
-      return parsed.hostname === entry;
+      const host = parsed.hostname.toLowerCase();
+      if (LOOPBACK_HOSTS.has(host)) return false;
+      return host === String(entry).trim().toLowerCase();
     }
   });
+}
+
+export function buildHostResolverRules(allowlist = [], allowedGameOrigin = null) {
+  const excludes = new Set();
+  let gameHost = '127.0.0.1';
+  if (allowedGameOrigin) {
+    try {
+      gameHost = new URL(allowedGameOrigin).hostname || '127.0.0.1';
+    } catch {
+      gameHost = '127.0.0.1';
+    }
+  }
+  excludes.add(gameHost);
+  for (const item of allowlist) {
+    let host = '';
+    try {
+      host = new URL(item).hostname;
+    } catch {
+      host = String(item || '').trim();
+    }
+    if (host && !/[\s,;~*]/.test(host)) {
+      excludes.add(host);
+    }
+  }
+  return `MAP * ~NOTFOUND, ${[...excludes].map((h) => `EXCLUDE ${h}`).join(', ')}`;
 }
 
 export function resolvePlaywrightModule({ projectRoot, playwrightPath } = {}) {
@@ -255,20 +298,25 @@ function collectRuntimeAssetsFromHtml(htmlText, htmlRelPosix, manifest, webDir) 
   return { assets: [...new Set(normalized)].sort(), declaredIcon, refreshTarget };
 }
 
-async function runWithPlaywright({ playwrightModPath, executablePath, url, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
+async function runWithPlaywright({ playwrightModPath, executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
   const pw = await import(pathToFileURL(playwrightModPath).href);
   const chromium = pw.chromium || pw.default?.chromium;
   if (!chromium) throw new Error('Playwright module does not export chromium');
+
+  const gameOrigin = allowedGameOrigin || new URL(url).origin;
+  const resolverRule = buildHostResolverRules(allowlist, gameOrigin);
 
   const launchOpts = {
     headless: true,
     args: [
       '--no-first-run',
       '--disable-background-networking',
+      '--no-proxy-server',
       '--mute-audio',
       '--use-gl=angle',
       '--use-angle=swiftshader',
       '--enable-unsafe-swiftshader',
+      `--host-resolver-rules=${resolverRule}`,
     ],
   };
   if (executablePath) launchOpts.executablePath = executablePath;
@@ -278,20 +326,51 @@ async function runWithPlaywright({ playwrightModPath, executablePath, url, allow
   const consoleErrors = [];
   const failedAssets = [];
   const externalRequests = [];
+  const recordExternalRequest = (reqUrl) => {
+    if (!externalRequests.includes(reqUrl)) externalRequests.push(reqUrl);
+  };
   let implicitFavicon404 = false;
 
   try {
-    const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      serviceWorkers: 'block',
+    });
     const page = await context.newPage();
 
-    await page.route('**/*', async (route) => {
+    const routeTarget = typeof context.route === 'function' ? context : page;
+    await routeTarget.route('**/*', async (route) => {
       const reqUrl = route.request().url();
-      if (!isAllowlistedUrl(reqUrl, allowlist)) {
-        externalRequests.push(reqUrl);
+      if (!isAllowlistedUrl(reqUrl, allowlist, gameOrigin)) {
+        recordExternalRequest(reqUrl);
         await route.abort();
         return;
       }
       await route.continue();
+    });
+
+    const wsRouteTarget = typeof context.routeWebSocket === 'function'
+      ? context
+      : typeof page.routeWebSocket === 'function'
+        ? page
+        : null;
+    if (wsRouteTarget) {
+      await wsRouteTarget.routeWebSocket(/.*/, (wsRoute) => {
+        const wsUrl = wsRoute.url();
+        if (!isAllowlistedUrl(wsUrl, allowlist, gameOrigin)) {
+          recordExternalRequest(wsUrl);
+          wsRoute.close({ code: 1008, reason: 'Blocked by GamerQA outbound isolation' });
+          return;
+        }
+        wsRoute.connectToServer();
+      });
+    }
+
+    page.on('websocket', (wsEvent) => {
+      const wsUrl = typeof wsEvent?.url === 'function' ? wsEvent.url() : '';
+      if (wsUrl && !isAllowlistedUrl(wsUrl, allowlist, gameOrigin)) {
+        recordExternalRequest(wsUrl);
+      }
     });
 
     page.on('pageerror', (err) => pageErrors.push(err?.message || String(err)));
@@ -382,13 +461,10 @@ async function runWithPlaywright({ playwrightModPath, executablePath, url, allow
   }
 }
 
-async function runWithChromeCdp({ executablePath, url, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
+async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'gamerqa-cdp-'));
-  const excludeHosts = ['127.0.0.1', 'localhost', '[::1]'];
-  for (const item of allowlist) {
-    try { excludeHosts.push(new URL(item).hostname); } catch { /* ignore */ }
-  }
-  const resolverRule = `MAP * ~NOTFOUND, ${excludeHosts.map((h) => `EXCLUDE ${h}`).join(', ')}`;
+  const gameOrigin = allowedGameOrigin || new URL(url).origin;
+  const resolverRule = buildHostResolverRules(allowlist, gameOrigin);
   let launchError = null;
   const chrome = spawn(
     executablePath,
@@ -419,6 +495,9 @@ async function runWithChromeCdp({ executablePath, url, allowlist, declaredIcon, 
   const rawBrowserLogErrors = [];
   const failedAssets = [];
   const externalRequests = [];
+  const recordExternalRequest = (reqUrl) => {
+    if (!externalRequests.includes(reqUrl)) externalRequests.push(reqUrl);
+  };
   let implicitFavicon404 = false;
 
   try {
@@ -464,7 +543,19 @@ async function runWithChromeCdp({ executablePath, url, allowlist, declaredIcon, 
         rawBrowserLogErrors.push({ text: msg.params.entry.text, url: msg.params.entry.url || '' });
       } else if (msg.method === 'Network.requestWillBeSent') {
         const reqUrl = msg.params.request.url;
-        if (!isAllowlistedUrl(reqUrl, allowlist)) externalRequests.push(reqUrl);
+        if (!isAllowlistedUrl(reqUrl, allowlist, gameOrigin)) recordExternalRequest(reqUrl);
+      } else if (msg.method === 'Network.webSocketCreated') {
+        const wsUrl = msg.params.url;
+        if (!isAllowlistedUrl(wsUrl, allowlist, gameOrigin)) recordExternalRequest(wsUrl);
+      } else if (msg.method === 'Fetch.requestPaused') {
+        const reqUrl = msg.params.request?.url || '';
+        const requestId = msg.params.requestId;
+        if (!isAllowlistedUrl(reqUrl, allowlist, gameOrigin)) {
+          recordExternalRequest(reqUrl);
+          send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => {});
+        } else {
+          send('Fetch.continueRequest', { requestId }).catch(() => {});
+        }
       } else if (msg.method === 'Network.responseReceived') {
         const status = msg.params.response.status;
         const resUrl = msg.params.response.url;
@@ -494,6 +585,8 @@ async function runWithChromeCdp({ executablePath, url, allowlist, declaredIcon, 
     await send('Runtime.enable');
     await send('Log.enable');
     await send('Network.enable');
+    await send('Network.setBypassServiceWorker', { bypass: true }).catch(() => {});
+    await send('Fetch.enable', { patterns: [{ urlPattern: 'http://*' }, { urlPattern: 'https://*' }] }).catch(() => {});
     await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
     await send('Page.navigate', { url });
 
@@ -733,6 +826,7 @@ export async function runRuntimeWebSuite({
           playwrightModPath: pwModPath,
           executablePath: browserExe,
           url: entryUrl,
+          allowedGameOrigin: baseUrl,
           allowlist,
           declaredIcon,
           timeoutMs: browserTimeoutMs,
@@ -743,6 +837,7 @@ export async function runRuntimeWebSuite({
           runResult = await runWithChromeCdp({
             executablePath: browserExe,
             url: entryUrl,
+            allowedGameOrigin: baseUrl,
             allowlist,
             declaredIcon,
             timeoutMs: browserTimeoutMs,
@@ -757,6 +852,7 @@ export async function runRuntimeWebSuite({
       runResult = await runWithChromeCdp({
         executablePath: browserExe,
         url: entryUrl,
+        allowedGameOrigin: baseUrl,
         allowlist,
         declaredIcon,
         timeoutMs: browserTimeoutMs,
