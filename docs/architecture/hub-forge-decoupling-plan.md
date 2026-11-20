@@ -50,6 +50,7 @@
 
 ### P2. 모듈 경계 확정 (②의 1단계)
 
+- 결정(2026-11-20): `/api/platform/*` 처리 주체는 Forge 하나로 일원화한다. 상세 설계와 근거는 [hub-forge-internal-api-design.md](hub-forge-internal-api-design.md) §8·§9.
 - `forge-account.mjs`가 쓰는 Forge 모듈을 목록화하고 용도별로 나눈다: 프로젝트 저장(`PlatformStore`), 빌드 패키지(`OwnedBuildPackages`), Drive 동기화·제출 아카이브, 배포 ZIP.
 - Forge에 **내부 HTTP API**(`/internal/*`, 서비스 간 인증)를 정의한다: 프로젝트 조회·릴리스 읽기·빌드 등록과 상태·제출 아카이브. Hub는 이 API만 호출한다.
 - 이 단계에서는 Hub가 같은 프로세스 안에서 API 클라이언트를 통해 호출하는 어댑터를 두어 동작을 바꾸지 않는다. `require('../../forge/...')`는 어댑터 한 곳으로 모은다.

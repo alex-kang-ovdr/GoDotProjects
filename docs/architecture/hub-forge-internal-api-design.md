@@ -1,6 +1,6 @@
 # Hub–Forge 내부 API 경계 설계 (결합 ②)
 
-- 상태: 설계 초안 (2026-11-20). 코드 변경 없음
+- 상태: 설계 진행 중 (2026-11-20). S0·S1 완료, 처리 주체 일원화 확정
 - 상위 문서: [hub-forge-decoupling-plan.md](hub-forge-decoupling-plan.md) P2·P3
 - 목표: Hub가 `forge/` 코드를 `require()`하거나 Forge의 디스크를 읽지 않고, Forge 내부 HTTP API만 호출하게 한다. 같은 머신이 아니어도 동작해야 한다.
 
@@ -96,7 +96,7 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 
 ## 8. 열린 결정
 
-1. `/api/platform/*`를 **프록시**(Hub는 인증만, 처리는 Forge)로 할지, Hub에 남길 라우트가 있는지. S0 결과 핵심 라우트는 이미 같은 코드이고, 두 곳에서 처리하는 것 자체가 차이 3~6의 원인이다. 권장은 전부 Forge로 일원화하고 Hub 전용 라우트(builds·deployments·submissions·cloud)도 Forge 내부 API로 옮기는 것이다.
+1. ~~`/api/platform/*` 처리 주체~~ → **확정 (2026-11-20): 전부 Forge로 일원화한다.** Hub는 세션·CSRF 검증과 `accountKey` 결정만 하고 요청을 Forge로 넘긴다. Hub 전용 라우트(builds·deployments·submissions·cloud)도 Forge 내부 API로 옮긴다. 근거는 §9 차이 3~6이다.
 2. 내부 API를 Forge 공개 리스너의 별도 경로로 둘지, 별도 포트 리스너로 둘지. 권장은 별도 리스너(공개 경로와 섞이지 않음).
 3. 서비스 간 인증을 공유 시크릿으로 시작할지, mTLS나 서명 토큰으로 갈지. 권장은 시크릿으로 시작하고 교체 전환 기간을 구현하는 것.
 4. Drive 연동 코드(OAuth 토큰, Drive 스토어)가 Hub와 Forge 중 어디에 속할지. 현재는 Hub가 호출하지만 데이터는 Forge 디스크에 있다. 권장은 Forge로 이전.
