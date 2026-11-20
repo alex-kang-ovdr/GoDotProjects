@@ -310,7 +310,7 @@ class TappyMmoRoom {
   }
 }
 
-function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.now, validateBuild = () => null } = {}) {
+function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.now, validateBuild = () => null, compat = null } = {}) {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 });
   const rooms = new Map();
   const socketsByRoom = new Map();
@@ -334,7 +334,9 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
   };
 
   const upgrade = (req, socket, head) => {
-    if (req.url !== SOCKET_PATH) return;
+    let pathname = '';
+    try { pathname = new URL(req.url || '', 'http://localhost').pathname; } catch { return; }
+    if (pathname !== SOCKET_PATH) return;
     if (!originAllowed(req)) {
       socket.destroy();
       return;
@@ -349,6 +351,7 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
   stateTimer.unref();
 
   wss.on('connection', (ws, req) => {
+    if (compat && !compat.enforceWsConnection(ws, req, sendJson)) return;
     let activeRoom = null;
     let activePlayerId = null;
     let joining = false;
@@ -364,6 +367,10 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
       }
 
       try {
+        if (compat) {
+          const gate = compat.enforceWsMessage(ws, msg, sendJson);
+          if (gate.handled) return;
+        }
         if (msg.type === 'join') {
           if (activeRoom || joining) throw new Error('이미 MMO 월드에 참가 중입니다.');
           let room = null;

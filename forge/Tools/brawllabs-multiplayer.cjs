@@ -135,12 +135,13 @@ class BrawlRoom {
   damage(a,amount,attacker){if(!a.alive)return;a.hp=Math.max(0,a.hp-amount);attacker.superCharge=Math.min(1,attacker.superCharge+.19);if(a.hp===0){a.alive=false;a.respawn=2.8;for(let n=0;n<a.gems;n++)this.game.gems.push({x:a.x+(n%3-1)*12,y:a.y+Math.floor(n/3)*8});a.gems=0;}}
   snapshot(){return {type:'state',roomId:this.id,projectId:this.projectId,...(this.build||{}),phase:this.phase,serverTime:this.now(),countdownEndsAt:this.countdownEndsAt,players:[...this.players.values()].map(({input,seq,...p})=>p),game:this.game,logs:this.logs.slice()};}
 }
-function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>null}={}) {
+function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>null,compat=null}={}) {
   const rooms=new Map(),peers=new Map();const wss=new WebSocketServer({noServer:true,maxPayload:4096});
   const send=(socket,data)=>{if(socket.readyState===WebSocket.OPEN&&socket.bufferedAmount<1000000)socket.send(JSON.stringify(data));};
-  const upgrade=(req,socket,head)=>{if(req.url!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req));};
+  const upgrade=(req,socket,head)=>{let pathname='';try{pathname=new URL(req.url||'','http://localhost').pathname;}catch{return;}if(pathname!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req));};
   server.on('upgrade',upgrade);
   wss.on('connection',(socket,req)=>{
+    if(compat&&!compat.enforceWsConnection(socket,req,send))return;
     const ownerKey=req?.hubAuth?.accountKey||null;
     socket.alive=true;socket.on('pong',()=>socket.alive=true);let rateAt=now(),count=0;
     const timeout=setTimeout(()=>{if(!peers.has(socket))socket.close(1008,'Join required');},5000);timeout.unref();
@@ -149,6 +150,7 @@ function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>nu
       try{
         if(now()-rateAt>1000){rateAt=now();count=0;}if(++count>80)throw Error('요청이 너무 빠릅니다.');
         const m=JSON.parse(raw.toString());if(!m||typeof m!=='object'||Array.isArray(m))throw Error('잘못된 메시지입니다.');
+        if(compat){const gate=compat.enforceWsMessage(socket,m,send);if(gate.handled)return;}
         if(m.type==='join'){
           if(peers.has(socket)||joining)throw Error('이미 참가했습니다.');
           let room;
