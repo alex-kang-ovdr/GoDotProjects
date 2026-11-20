@@ -1,0 +1,229 @@
+name: PlayHub & PlayForge Cloud Run Pipeline
+
+on:
+  push:
+    branches:
+      - PlayHub-Platform
+    paths-ignore:
+      - 'docs/**'
+      - 'references/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: '실행 작업 선택'
+        required: true
+        default: 'deploy-dev'
+        type: choice
+        options:
+          - deploy-dev
+          - promote-qa
+          - promote-live
+          - rollback
+      target:
+        description: '대상 컴포넌트'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - hub
+          - forge
+      image_tag:
+        description: '승격할 불변 이미지 태그 또는 SHA (promote-qa / promote-live 시 지정)'
+        required: false
+        default: ''
+      canary_percent:
+        description: 'Live 카나리 트래픽 비율 (10 / 50 / 100)'
+        required: false
+        default: '100'
+      rollback_revision:
+        description: '롤백 대상 Cloud Run 리비전명 (rollback 시 지정)'
+        required: false
+        default: ''
+      rollback_env:
+        description: '롤백 대상 환경 (dev / live)'
+        required: false
+        default: 'live'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGION: us-west1
+  ARTIFACT_REPO: us-west1-docker.pkg.dev/playhub-dev-2611/playhub-containers
+  DEV_HUB_PROJECT: playhub-dev-2611
+  DEV_FORGE_PROJECT: forge-dev-2611
+  LIVE_HUB_PROJECT: playhub-live-2611
+  LIVE_FORGE_PROJECT: forge-live-2611
+
+jobs:
+  verify:
+    if: github.event_name == 'push' || inputs.action == 'deploy-dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check worktree ownership rules
+        run: node tools/worktree-ownership/check-ownership.mjs
+      - name: Smoke test Cloud Run Hub entrypoint
+        run: node deploy/cloudrun/smoke-test.mjs
+
+  build:
+    needs: verify
+    if: github.event_name == 'push' || inputs.action == 'deploy-dev'
+    runs-on: ubuntu-latest
+    outputs:
+      sha_tag: ${{ steps.meta.outputs.sha_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: meta
+        run: echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
+      - name: Build & push immutable Hub image
+        if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
+        run: |
+          docker build -f deploy/cloudrun/hub/Dockerfile \
+            -t "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}" .
+          docker push "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}"
+      - name: Build & push immutable Forge image
+        if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
+        run: |
+          docker build -f deploy/cloudrun/forge/Dockerfile \
+            -t "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}" .
+          docker push "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}"
+
+  deploy-dev:
+    needs: build
+    if: github.event_name == 'push' || inputs.action == 'deploy-dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Deploy Hub to playhub-dev-2611 (Always Free, zero-downtime)
+        if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
+        run: |
+          gcloud run deploy playhub-hub \
+            --project="${DEV_HUB_PROJECT}" \
+            --region="${REGION}" \
+            --image="${ARTIFACT_REPO}/hub:${{ needs.build.outputs.sha_tag }}" \
+            --allow-unauthenticated \
+            --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 \
+            --set-env-vars="PLAYHUB_ROLE=public,PLAYHUB_SECURE_COOKIES=true" \
+            --quiet
+      - name: Deploy Forge to forge-dev-2611 (Always Free, Hub Auth fail-closed)
+        if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
+        run: |
+          gcloud run deploy playhub-forge \
+            --project="${DEV_FORGE_PROJECT}" \
+            --region="${REGION}" \
+            --image="${ARTIFACT_REPO}/forge:${{ needs.build.outputs.sha_tag }}" \
+            --allow-unauthenticated \
+            --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=3600 \
+            --set-env-vars="PLAYFORGE_BASE_PATH=/forge,PLAYHUB_FORGE_AUTH_MODE=hub" \
+            --quiet
+
+  promote-qa:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'promote-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Deploy QA preview tag (no rebuild, zero impact on dev traffic)
+        run: |
+          TAG="${{ inputs.image_tag }}"
+          test -n "$TAG" || (echo "image_tag required" && exit 1)
+          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
+            gcloud run deploy playhub-hub \
+              --project="${DEV_HUB_PROJECT}" --region="${REGION}" \
+              --image="${ARTIFACT_REPO}/hub:${TAG}" \
+              --no-traffic --tag=qa --quiet
+          fi
+          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "forge" ]; then
+            gcloud run deploy playhub-forge \
+              --project="${DEV_FORGE_PROJECT}" --region="${REGION}" \
+              --image="${ARTIFACT_REPO}/forge:${TAG}" \
+              --no-traffic --tag=qa --quiet
+          fi
+
+  promote-live:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'promote-live'
+    environment: live
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Promote immutable QA-verified image to Live (canary supported)
+        run: |
+          TAG="${{ inputs.image_tag }}"
+          PCT="${{ inputs.canary_percent }}"
+          test -n "$TAG" || (echo "image_tag required" && exit 1)
+          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
+            gcloud run deploy playhub-hub \
+              --project="${LIVE_HUB_PROJECT}" --region="${REGION}" \
+              --image="${ARTIFACT_REPO}/hub:${TAG}" \
+              --no-traffic --tag=candidate --quiet
+            REV=$(gcloud run services describe playhub-hub --project="${LIVE_HUB_PROJECT}" --region="${REGION}" --format='value(status.latestReadyRevisionName)')
+            gcloud run services update-traffic playhub-hub \
+              --project="${LIVE_HUB_PROJECT}" --region="${REGION}" \
+              --to-revisions="${REV}=${PCT}" --quiet
+          fi
+          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "forge" ]; then
+            gcloud run deploy playhub-forge \
+              --project="${LIVE_FORGE_PROJECT}" --region="${REGION}" \
+              --image="${ARTIFACT_REPO}/forge:${TAG}" \
+              --no-traffic --tag=candidate --quiet
+            REV=$(gcloud run services describe playhub-forge --project="${LIVE_FORGE_PROJECT}" --region="${REGION}" --format='value(status.latestReadyRevisionName)')
+            gcloud run services update-traffic playhub-forge \
+              --project="${LIVE_FORGE_PROJECT}" --region="${REGION}" \
+              --to-revisions="${REV}=${PCT}" --quiet
+          fi
+
+  rollback:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'rollback'
+    environment: live
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Instant 1-second traffic rollback to previous revision
+        run: |
+          REV="${{ inputs.rollback_revision }}"
+          test -n "$REV" || (echo "rollback_revision required" && exit 1)
+          if [ "${{ inputs.rollback_env }}" = "dev" ]; then
+            HUB_P="${DEV_HUB_PROJECT}"; FORGE_P="${DEV_FORGE_PROJECT}"
+          else
+            HUB_P="${LIVE_HUB_PROJECT}"; FORGE_P="${LIVE_FORGE_PROJECT}"
+          fi
+          if [ "${{ inputs.target }}" = "hub" ]; then
+            gcloud run services update-traffic playhub-hub --project="${HUB_P}" --region="${REGION}" --to-revisions="${REV}=100" --quiet
+          elif [ "${{ inputs.target }}" = "forge" ]; then
+            gcloud run services update-traffic playhub-forge --project="${FORGE_P}" --region="${REGION}" --to-revisions="${REV}=100" --quiet
+          else
+            echo "rollback requires target=hub or target=forge with exact revision name" && exit 1
+          fi
