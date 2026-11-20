@@ -223,7 +223,10 @@ test('Forge-Publish E2E: preview -> submit -> verify -> approve & publish -> cat
   assert.equal(previewHtml.status, 200);
   assert.match(previewHtml.text, /Cosmic Jumper v1/);
   assert.equal(previewHtml.headers['x-content-type-options'], 'nosniff');
-  assert.equal(previewHtml.headers['content-security-policy'], "frame-ancestors 'self'");
+  assert.match(previewHtml.headers['content-security-policy'], /^sandbox allow-scripts allow-pointer-lock; frame-ancestors 'self'/);
+  assert.equal(previewHtml.headers['content-security-policy'].includes('allow-same-origin'), false);
+  assert.equal(previewHtml.headers['access-control-allow-origin'], '*');
+  assert.equal(previewHtml.headers['access-control-allow-credentials'], undefined);
   assert.equal(previewHtml.headers['set-cookie'], undefined);
 
   const catalogBefore = await invoke(app.publicHandler, { method: 'GET', url: '/api/games' });
@@ -364,7 +367,7 @@ test('Forge-Publish E2E: preview -> submit -> verify -> approve & publish -> cat
   const v2Html = await invoke(app.publicHandler, { method: 'GET', url: pubV2.json.publication.entryUrl });
   assert.match(v2Html.text, /Cosmic Jumper v2/);
 
-  // 1-second CAS rollback to v1
+  // 1-second CAS rollback to v1 restores manifest & blocks inactive v2 URL
   const rollbackRes = await invoke(app.adminHandler, {
     method: 'POST',
     url: '/api/admin/publications/cosmic-jumper/rollback',
@@ -377,9 +380,47 @@ test('Forge-Publish E2E: preview -> submit -> verify -> approve & publish -> cat
   });
   assert.equal(rollbackRes.status, 200);
   assert.equal(rollbackRes.json.publication.activeReleaseId, releaseV1.id);
+  assert.equal(rollbackRes.json.publication.manifest.title.ko, '코스믹 점퍼');
+  assert.equal(rollbackRes.json.publication.artifactSha256, buildV1.artifactSha256);
 
   const rolledBackHtml = await invoke(app.publicHandler, { method: 'GET', url: rollbackRes.json.publication.entryUrl });
   assert.match(rolledBackHtml.text, /Cosmic Jumper v1/);
+
+  // Inactive/rolled-back release (v2) is no longer served publicly -> 404
+  const inactiveV2 = await invoke(app.publicHandler, { method: 'GET', url: pubV2.json.publication.entryUrl });
+  assert.equal(inactiveV2.status, 404);
+  assert.equal(inactiveV2.json.error.code, 'RELEASE_NOT_ACTIVE');
+
+  // Sandbox iframe Origin: null requests to /play-ugc/* succeed with ACAO * (no credentials),
+  // while Origin: null to /api/* is still blocked by cors()
+  const nullOriginAsset = await invoke(app.publicHandler, {
+    method: 'GET',
+    url: `${rollbackRes.json.publication.artifactBaseUrl}playhub-godot-shell.js`,
+    headers: { origin: 'null', cookie: creator.cookie }
+  });
+  assert.equal(nullOriginAsset.status, 200);
+  assert.equal(nullOriginAsset.headers['access-control-allow-origin'], '*');
+  assert.equal(nullOriginAsset.headers['access-control-allow-credentials'], undefined);
+  assert.equal(nullOriginAsset.headers['set-cookie'], undefined);
+  assert.match(nullOriginAsset.headers['content-security-policy'], /^sandbox allow-scripts allow-pointer-lock;/);
+  assert.equal(nullOriginAsset.headers['content-security-policy'].includes('allow-same-origin'), false);
+
+  const nullOriginOptions = await invoke(app.publicHandler, {
+    method: 'OPTIONS',
+    url: `${rollbackRes.json.publication.artifactBaseUrl}playhub-godot-shell.js`,
+    headers: { origin: 'null' }
+  });
+  assert.equal(nullOriginOptions.status, 204);
+  assert.equal(nullOriginOptions.headers['access-control-allow-origin'], '*');
+  assert.equal(nullOriginOptions.headers['access-control-allow-credentials'], undefined);
+
+  const nullOriginApi = await invoke(app.publicHandler, {
+    method: 'GET',
+    url: '/api/games',
+    headers: { origin: 'null' }
+  });
+  assert.equal(nullOriginApi.status, 403);
+  assert.equal(nullOriginApi.json.error.code, 'ORIGIN_DENIED');
 
   // 7. Static catalog ID reservation & foreign slug hijack protection
   const staticFirstId = catalogLive.json.games.find(g => g.source !== 'ugc')?.id;
@@ -458,4 +499,344 @@ test('Remote ForgeGateway getReleasePackage streams verified ZIP + SHA-256 over 
   assert.equal(pkg.sha256, built.artifactSha256);
   assert.equal(pkg.buildId, built.buildId);
   assert.equal(Buffer.compare(pkg.buffer, built.zipBuffer), 0);
+
+  const verified = await gw.verifyReleasePackage(accountKey, project.id, release.id);
+  assert.equal(verified.verified, true);
+  assert.equal(verified.buffer, undefined);
+  assert.equal(verified.sha256, built.artifactSha256);
+  assert.equal(verified.bytes, built.zipBuffer.length);
+});
+
+test('Forge-Publish security hardening: private/orphan 404, slug project_id 409, kill-switch & admin unpublish locks, rollback restriction, immutable storage, PLAYHUB_UGC_ORIGIN', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ugc-security-'));
+  const dataDir = path.join(temp, 'hub-data');
+  const forgeDir = path.join(temp, 'forge-data');
+  const fixtureRoot = path.join(temp, 'hub-root');
+  fs.mkdirSync(dataDir, { recursive: true });
+  fs.mkdirSync(forgeDir, { recursive: true });
+  fs.mkdirSync(path.join(fixtureRoot, 'catalog'), { recursive: true });
+  fs.writeFileSync(path.join(fixtureRoot, 'catalog', 'games.json'), JSON.stringify({ schemaVersion: 1, entries: [] }));
+
+  const app = createApp({
+    dataDir,
+    secureCookies: true,
+    userOrigins: ['https://playhub.local'],
+    adminOrigins: ['https://admin.playhub.local'],
+    userBaseUrl: 'https://playhub.local',
+    forge: { enabled: true, mode: 'local', directory: forgeDir, builds: { enabled: true } }
+  }, {
+    rootDir: fixtureRoot,
+    platformRoot: REPO_ROOT,
+    env: { PLAYHUB_UGC_ORIGIN: 'https://ugc.playhub.local' }
+  });
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  const creator = seedSession(app.db, { kind: 'public', googleSub: 'sec-creator-001', csrf: 'sec-csrf-1' });
+  const admin = seedSession(app.db, { kind: 'admin', adminUsername: 'sec-admin', csrf: 'sec-admin-csrf' });
+  const creatorHeaders = { origin: 'https://playhub.local', cookie: creator.cookie, 'x-csrf-token': creator.csrf };
+  const adminHeaders = { origin: 'https://admin.playhub.local', cookie: admin.cookie, 'x-csrf-token': admin.csrf };
+
+  const store = new PlatformStore(REPO_ROOT, path.join(forgeDir, 'accounts', creator.accountKey));
+  const projA = store.createProject({ name: 'Alpha Game', template: 'blank3d' });
+  const buildA1 = createFakeVerifiedBuild(forgeDir, creator.accountKey, projA, '<h1>Alpha v1</h1>');
+  const relA1 = await store.createRelease(projA.id, { revision: projA.revision, label: 'v1', build: buildA1.job, visibility: 'public' });
+
+  // 1. Orphan directory on disk without publication row -> 404
+  const orphanSlug = 'paaaaaaaaaaaaaaaa';
+  const orphanRel = '0123456789abcdef01234567';
+  app.ugcPublish.storage.putReleaseBundle({
+    hostSlug: orphanSlug,
+    releaseId: orphanRel,
+    zipBuffer: buildA1.zipBuffer,
+    expectedSha256: buildA1.artifactSha256
+  });
+  const orphanRes = await invoke(app.publicHandler, { method: 'GET', url: `/play-ugc/${orphanSlug}/${orphanRel}/index.html` });
+  assert.equal(orphanRes.status, 404);
+  assert.equal(orphanRes.json.error.code, 'GAME_NOT_FOUND');
+
+  // 2. Immutable artifact storage: different SHA for same releaseId -> 409 and original untouched
+  const altZip = zipFiles([['index.html', Buffer.from('<h1>Tampered</h1>', 'utf8')]]);
+  assert.throws(() => {
+    app.ugcPublish.storage.putReleaseBundle({
+      hostSlug: orphanSlug,
+      releaseId: orphanRel,
+      zipBuffer: altZip
+    });
+  }, err => err.status === 409 && err.code === 'RELEASE_IMMUTABLE_CONFLICT');
+  const preservedFile = app.ugcPublish.storage.resolveAssetPath(orphanSlug, orphanRel, 'index.html');
+  assert.match(fs.readFileSync(preservedFile.filePath, 'utf8'), /Alpha v1/);
+
+  // 3. Private preview is blocked from public /play-ugc/ serving (404) and uses PLAYHUB_UGC_ORIGIN
+  const privPreview = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/preview',
+    headers: creatorHeaders,
+    body: { projectId: projA.id, releaseId: relA1.id, visibility: 'private', gameSlug: 'alpha-game', title: 'Alpha v1' }
+  });
+  assert.equal(privPreview.status, 201);
+  assert.match(privPreview.json.previewUrl, /^https:\/\/ugc\.playhub\.local\/play-ugc\/p[a-z2-7]{16}\/[a-f0-9]{24}\/index\.html$/);
+  const privPath = new URL(privPreview.json.previewUrl).pathname;
+  const privAsset = await invoke(app.publicHandler, { method: 'GET', url: privPath });
+  assert.equal(privAsset.status, 404);
+  assert.equal(privAsset.json.error.code, 'GAME_NOT_AVAILABLE');
+
+  // 4. Submit & publish Alpha v1 -> live catalog entryUrl uses PLAYHUB_UGC_ORIGIN
+  const subA1 = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/submissions',
+    headers: creatorHeaders,
+    body: { projectId: projA.id, releaseId: relA1.id, title: 'Alpha v1', description: 'Alpha desc', gameSlug: 'alpha-game', visibility: 'public' }
+  });
+  const subA1Req = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: `/api/creator/submissions/${subA1.json.submission.id}/submit`,
+    headers: creatorHeaders,
+    body: { revision: subA1.json.submission.revision }
+  });
+  const pubA1 = await invoke(app.adminHandler, {
+    method: 'POST',
+    url: `/api/admin/submissions/${subA1.json.submission.id}/publish`,
+    headers: adminHeaders,
+    body: { revision: subA1Req.json.submission.revision, approveIfInReview: true }
+  });
+  assert.equal(pubA1.status, 200);
+  assert.match(pubA1.json.publication.entryUrl, /^https:\/\/ugc\.playhub\.local\/play-ugc\//);
+  const catalogRes = await invoke(app.publicHandler, { method: 'GET', url: '/api/games' });
+  const alphaEntry = catalogRes.json.games.find(g => g.id === 'alpha-game');
+  assert.ok(alphaEntry);
+  assert.equal(alphaEntry.entryUrl, pubA1.json.publication.entryUrl);
+
+  // 5. Same owner, different project trying to use 'alpha-game' slug -> 409 GAME_SLUG_PROJECT_MISMATCH
+  const projB = store.createProject({ name: 'Beta Game', template: 'blank3d' });
+  const buildB1 = createFakeVerifiedBuild(forgeDir, creator.accountKey, projB, '<h1>Beta Malicious</h1>');
+  const relB1 = await store.createRelease(projB.id, { revision: projB.revision, label: 'b1', build: buildB1.job });
+  const hijackSameOwner = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/preview',
+    headers: creatorHeaders,
+    body: { projectId: projB.id, releaseId: relB1.id, visibility: 'unlisted', gameSlug: 'alpha-game' }
+  });
+  assert.equal(hijackSameOwner.status, 409);
+  assert.equal(hijackSameOwner.json.error.code, 'GAME_SLUG_PROJECT_MISMATCH');
+
+  // 6. Stage unapproved preview release v2 on Alpha -> rollback to unapproved preview must fail (409)
+  const projA2 = await store.updateFile(projA.id, { path: 'README.txt', content: 'preview only', baseRevision: projA.revision });
+  const buildA2 = createFakeVerifiedBuild(forgeDir, creator.accountKey, projA2, '<h1>Alpha Unapproved Preview</h1>');
+  const relA2 = await store.createRelease(projA.id, { revision: projA2.revision, label: 'v2-preview', build: buildA2.job });
+  const stagedPreview = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/preview',
+    headers: creatorHeaders,
+    body: { projectId: projA.id, releaseId: relA2.id, visibility: 'unlisted', gameSlug: 'alpha-game' }
+  });
+  assert.equal(stagedPreview.status, 200);
+  assert.equal(stagedPreview.json.liveUnchanged, true);
+  // Staged preview release is not active -> 404 publicly
+  const stagedAsset = await invoke(app.publicHandler, { method: 'GET', url: new URL(stagedPreview.json.previewUrl).pathname });
+  assert.equal(stagedAsset.status, 404);
+  assert.equal(stagedAsset.json.error.code, 'RELEASE_NOT_ACTIVE');
+
+  const badRollback = await invoke(app.adminHandler, {
+    method: 'POST',
+    url: '/api/admin/publications/alpha-game/rollback',
+    headers: adminHeaders,
+    body: { toReleaseId: relA2.id, expectedCasVersion: pubA1.json.publication.casVersion }
+  });
+  assert.equal(badRollback.status, 409);
+  assert.equal(badRollback.json.error.code, 'ROLLBACK_TARGET_NOT_PUBLISHED');
+
+  // 7. Admin unpublishes Alpha -> creator cannot republish or overwrite unpublished_by, and preview cannot overwrite status
+  const adminUnpub = await invoke(app.adminHandler, {
+    method: 'POST',
+    url: '/api/admin/publications/alpha-game/status',
+    headers: adminHeaders,
+    body: { status: 'unpublished', expectedCasVersion: pubA1.json.publication.casVersion, reason: 'review hold' }
+  });
+  assert.equal(adminUnpub.status, 200);
+  assert.equal(adminUnpub.json.publication.status, 'unpublished');
+  assert.equal(adminUnpub.json.publication.unpublishedBy, 'admin');
+
+  const creatorRepubBlocked = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/alpha-game/status',
+    headers: creatorHeaders,
+    body: { status: 'published' }
+  });
+  assert.equal(creatorRepubBlocked.status, 403);
+  assert.equal(creatorRepubBlocked.json.error.code, 'PUBLICATION_UNPUBLISHED_BY_ADMIN');
+
+  const creatorOverwriteUnpub = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/alpha-game/status',
+    headers: creatorHeaders,
+    body: { status: 'unpublished' }
+  });
+  assert.equal(creatorOverwriteUnpub.status, 403);
+  assert.equal(creatorOverwriteUnpub.json.error.code, 'PUBLICATION_UNPUBLISHED_BY_ADMIN');
+
+  // Preview on unpublished publication does NOT flip status back to published
+  const previewWhileUnpub = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/preview',
+    headers: creatorHeaders,
+    body: { projectId: projA.id, releaseId: relA1.id, visibility: 'unlisted', gameSlug: 'alpha-game' }
+  });
+  assert.equal(previewWhileUnpub.status, 200);
+  assert.equal(previewWhileUnpub.json.liveUnchanged, true);
+  assert.equal(previewWhileUnpub.json.publication.status, 'unpublished');
+
+  const unpubAsset = await invoke(app.publicHandler, { method: 'GET', url: new URL(pubA1.json.publication.entryUrl).pathname });
+  assert.equal(unpubAsset.status, 404);
+
+  // Admin republishes -> creator can unpublish and then republish their own game
+  const adminRepub = await invoke(app.adminHandler, {
+    method: 'POST',
+    url: '/api/admin/publications/alpha-game/status',
+    headers: adminHeaders,
+    body: { status: 'published', expectedCasVersion: adminUnpub.json.publication.casVersion }
+  });
+  assert.equal(adminRepub.status, 200);
+  assert.equal(adminRepub.json.publication.unpublishedBy, null);
+
+  const creatorUnpub = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/alpha-game/status',
+    headers: creatorHeaders,
+    body: { status: 'unpublished' }
+  });
+  assert.equal(creatorUnpub.status, 200);
+  assert.equal(creatorUnpub.json.publication.unpublishedBy, 'creator');
+
+  const creatorRepubOwn = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/alpha-game/status',
+    headers: creatorHeaders,
+    body: { status: 'published' }
+  });
+  assert.equal(creatorRepubOwn.status, 200);
+  assert.equal(creatorRepubOwn.json.publication.status, 'published');
+
+  // 8. Admin suspends Alpha (Kill-Switch) -> preview MUST return 403 (no bypass!)
+  const adminSuspend = await invoke(app.adminHandler, {
+    method: 'POST',
+    url: '/api/admin/publications/alpha-game/status',
+    headers: adminHeaders,
+    body: { status: 'suspended', expectedCasVersion: creatorRepubOwn.json.publication.casVersion, reason: 'kill switch' }
+  });
+  assert.equal(adminSuspend.status, 200);
+
+  const previewWhileSuspended = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/publications/preview',
+    headers: creatorHeaders,
+    body: { projectId: projA.id, releaseId: relA1.id, visibility: 'unlisted', gameSlug: 'alpha-game' }
+  });
+  assert.equal(previewWhileSuspended.status, 403);
+  assert.equal(previewWhileSuspended.json.error.code, 'PUBLICATION_SUSPENDED_BY_ADMIN');
+});
+
+test('Remote ForgeGateway & creator-review enforce SHA-256 verification and streaming size limit', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'remote-stream-sec-'));
+  const dataDir = path.join(temp, 'hub-data');
+  const fixtureRoot = path.join(temp, 'hub-root');
+  fs.mkdirSync(dataDir, { recursive: true });
+  fs.mkdirSync(path.join(fixtureRoot, 'catalog'), { recursive: true });
+  fs.writeFileSync(path.join(fixtureRoot, 'catalog', 'games.json'), JSON.stringify({ schemaVersion: 1, entries: [] }));
+  let app = null;
+  let gw = null;
+  let server = null;
+  t.after(async () => {
+    try { await app?.close(); } catch {}
+    try { gw?.close(); } catch {}
+    if (server) {
+      await new Promise(resolve => { server.closeAllConnections?.(); server.close(resolve); });
+    }
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  const secret = 'remote-stream-limit-secret-0123456789abcdef';
+  const accountKey = forgeAccountKey({ iss: 'https://accounts.google.com', sub: 'stream-creator-1' });
+  const projectId = 'a'.repeat(24);
+  const releaseId = 'b'.repeat(24);
+  const goodPayload = Buffer.from('good-zip-bytes');
+  const goodSha = sha256(goodPayload);
+  const wrongSha = sha256(Buffer.from('different-bytes'));
+
+  let mode = 'sha-mismatch';
+  server = http.createServer((req, res) => {
+    if (req.url.endsWith(`/releases/${releaseId}`)) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        ok: true,
+        release: {
+          id: releaseId,
+          revision: 1,
+          label: 'v1',
+          build: { buildId: 'c'.repeat(16), artifactSha256: mode === 'sha-mismatch' ? wrongSha : goodSha }
+        }
+      }));
+      return;
+    }
+    if (req.url.endsWith(`/releases/${releaseId}/package`)) {
+      if (mode === 'oversize-stream') {
+        res.writeHead(200, { 'Content-Type': 'application/zip' });
+        for (let i = 0; i < 8; i++) res.write(Buffer.alloc(1024, 0x41));
+        res.end();
+        return;
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Length': goodPayload.length,
+        'X-Artifact-Sha256': goodSha
+      });
+      res.end(goodPayload);
+      return;
+    }
+    res.writeHead(404).end();
+  });
+  const port = await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => resolve(server.address().port));
+  });
+  gw = createRemoteForgeGateway({
+    config: { enabled: true, baseUrl: `http://127.0.0.1:${port}`, internalSecret: secret }
+  });
+
+  // 1. Release SHA mismatch -> 409 PACKAGE_INTEGRITY_MISMATCH
+  await assert.rejects(
+    () => gw.verifyReleasePackage(accountKey, projectId, releaseId),
+    err => err.status === 409 && err.code === 'PACKAGE_INTEGRITY_MISMATCH'
+  );
+
+  // 2. Streaming chunked body exceeding maxBytes -> 413 PACKAGE_TOO_LARGE
+  mode = 'oversize-stream';
+  await assert.rejects(
+    () => gw.verifyReleasePackage(accountKey, projectId, releaseId, { maxBytes: 2048 }),
+    err => err.status === 413 && err.code === 'PACKAGE_TOO_LARGE'
+  );
+
+  // 3. creator-review records packageValidation='failed' when SHA mismatches
+  mode = 'sha-mismatch';
+  app = createApp({
+    dataDir,
+    secureCookies: true,
+    userOrigins: ['https://playhub.local'],
+    adminOrigins: ['https://admin.playhub.local'],
+    userBaseUrl: 'https://playhub.local',
+    forge: { enabled: true }
+  }, { rootDir: fixtureRoot, platformRoot: REPO_ROOT, forgeGateway: gw });
+
+  const creator = seedSession(app.db, { kind: 'public', googleSub: 'stream-creator-1', csrf: 'stream-csrf' });
+  const subRes = await invoke(app.publicHandler, {
+    method: 'POST',
+    url: '/api/creator/submissions',
+    headers: { origin: 'https://playhub.local', cookie: creator.cookie, 'x-csrf-token': creator.csrf },
+    body: { projectId, releaseId, title: 'Tampered', description: 'Mismatch test' }
+  });
+  assert.equal(subRes.status, 201);
+  assert.equal(subRes.json.submission.packageValidation, 'failed');
+  assert.equal(subRes.json.submission.artifactSha256, null);
 });

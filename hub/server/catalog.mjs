@@ -10,7 +10,7 @@ export function validGameUpdateDate(value) {
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-export function readCatalog(rootDir, db) {
+export function readCatalog(rootDir, db, options = {}) {
   let catalog;
   try { catalog = JSON.parse(readFileSync(resolve(rootDir, 'catalog/games.json'), 'utf8')); }
   catch { throw new ApiError(503, 'CATALOG_UNAVAILABLE', '게임 목록을 읽을 수 없습니다.'); }
@@ -59,7 +59,9 @@ export function readCatalog(rootDir, db) {
     seen.add(row.game_id);
     const override = db.prepare('SELECT enabled FROM game_overrides WHERE game_id=?').get(row.game_id);
     const isPublicActive = row.status === 'published' && row.visibility === 'public';
-    const baseUrl = String(row.artifact_base_url || '').replace(/\/?$/, '/');
+    const rawBaseUrl = String(row.artifact_base_url || '').replace(/\/?$/, '/');
+    const ugcOrigin = typeof options?.ugcOrigin === 'string' && options.ugcOrigin ? options.ugcOrigin.replace(/\/+$/, '') : '';
+    const baseUrl = ugcOrigin && rawBaseUrl.startsWith('/') ? `${ugcOrigin}${rawBaseUrl}` : rawBaseUrl;
     const cover = manifest.media?.cover ? `${baseUrl}${manifest.media.cover}` : '';
     ugcGames.push({
       id: row.game_id,
@@ -91,7 +93,7 @@ export function readCatalog(rootDir, db) {
 
   return [...staticGames, ...ugcGames];
 }
-export function findGame(rootDir, db, id, activeOnly = true) {
-  const game = readCatalog(rootDir, db).find(g => g.id === id && (!activeOnly || g.enabled));
+export function findGame(rootDir, db, id, activeOnly = true, options = {}) {
+  const game = readCatalog(rootDir, db, options).find(g => g.id === id && (!activeOnly || g.enabled));
   if (!game) throw new ApiError(404, 'GAME_NOT_FOUND'); return game;
 }

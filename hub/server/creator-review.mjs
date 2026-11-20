@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
@@ -203,20 +204,51 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
     return release;
   }
 
+  const MAX_PACKAGE_BYTES = 64 * 1024 * 1024;
+  const SHA256_RE = /^[a-f0-9]{64}$/;
+
   async function inspectPackageStatus(ownerKey, projectId, releaseId, release) {
     const gw = forge();
-    if (typeof gw.getReleasePackage !== 'function') {
-      return { packageValidation: 'not_verified', artifactSha256: release?.build?.artifactSha256 || null };
+    const rawExpected = release?.build?.artifactSha256 || release?.releaseManifest?.artifacts?.clientWeb?.sha256 || '';
+    const expectedSha = SHA256_RE.test(String(rawExpected).trim().toLowerCase())
+      ? String(rawExpected).trim().toLowerCase()
+      : null;
+
+    if (typeof gw.verifyReleasePackage !== 'function' && typeof gw.getReleasePackage !== 'function') {
+      return { packageValidation: 'not_verified', artifactSha256: expectedSha };
     }
     try {
-      const pkg = await gw.getReleasePackage(ownerKey, projectId, releaseId);
-      if (pkg?.buffer && pkg?.sha256) {
-        return { packageValidation: 'verified', artifactSha256: pkg.sha256 };
+      const pkg = typeof gw.verifyReleasePackage === 'function'
+        ? await gw.verifyReleasePackage(ownerKey, projectId, releaseId)
+        : await gw.getReleasePackage(ownerKey, projectId, releaseId);
+      const reportedSha = typeof pkg?.sha256 === 'string' && SHA256_RE.test(pkg.sha256.trim().toLowerCase())
+        ? pkg.sha256.trim().toLowerCase()
+        : null;
+      if (!reportedSha) {
+        return { packageValidation: 'not_verified', artifactSha256: null };
       }
-      return { packageValidation: 'not_verified', artifactSha256: null };
+      if (pkg?.buffer !== undefined && pkg?.buffer !== null) {
+        if (!Buffer.isBuffer(pkg.buffer) || pkg.buffer.length > MAX_PACKAGE_BYTES) {
+          return { packageValidation: 'failed', artifactSha256: null };
+        }
+        const computedSha = crypto.createHash('sha256').update(pkg.buffer).digest('hex');
+        if (computedSha !== reportedSha) {
+          return { packageValidation: 'failed', artifactSha256: null };
+        }
+      } else if (Number.isFinite(pkg?.bytes) && pkg.bytes > MAX_PACKAGE_BYTES) {
+        return { packageValidation: 'failed', artifactSha256: null };
+      }
+      if (expectedSha && expectedSha !== reportedSha) {
+        return { packageValidation: 'failed', artifactSha256: null };
+      }
+      return { packageValidation: 'verified', artifactSha256: reportedSha };
     } catch (err) {
-      if (err?.status === 409) return { packageValidation: 'failed', artifactSha256: null };
-      return { packageValidation: 'not_verified', artifactSha256: release?.build?.artifactSha256 || null };
+      if (err?.status === 409 || err?.status === 413
+          || err?.code === 'PACKAGE_INTEGRITY_MISMATCH'
+          || err?.code === 'PACKAGE_TOO_LARGE') {
+        return { packageValidation: 'failed', artifactSha256: null };
+      }
+      return { packageValidation: 'not_verified', artifactSha256: expectedSha };
     }
   }
 
