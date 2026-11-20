@@ -23,25 +23,30 @@ COPY forge/package.json ./forge/package.json
 COPY tools/build-version ./tools/build-version
 ARG PLAYHUB_CHANNEL=dev
 ARG PLAYHUB_BUILD_NUM=0
-ARG PLAYHUB_DAILY_SEQ=0
+ARG PLAYHUB_DAILY_SEQ=
+ARG PLAYHUB_BUILD_CODE=
 ARG PLAYHUB_BUILD_DATE=
 ARG PLAYHUB_BRANCH=playhub-platform
 ARG PLAYHUB_COMMIT=0000000
 ARG PLAYHUB_UPDATE_POLICY=optional
 RUN SEMVER=$(node -p "require('./hub/package.json').version") \
     && DATE_ARG=$([ -n "$PLAYHUB_BUILD_DATE" ] && echo "--date $PLAYHUB_BUILD_DATE" || true) \
+    && SEQ_ARG=$([ -n "$PLAYHUB_DAILY_SEQ" ] && echo "--daily-seq $PLAYHUB_DAILY_SEQ" || true) \
     && node tools/build-version/resolve-build-info.mjs \
       --target hub \
       --semver "$SEMVER" \
       --channel "$PLAYHUB_CHANNEL" \
       --build-num "$PLAYHUB_BUILD_NUM" \
-      --daily-seq "$PLAYHUB_DAILY_SEQ" \
+      $SEQ_ARG \
       --branch "$PLAYHUB_BRANCH" \
       --commit "$PLAYHUB_COMMIT" \
       --update-policy "$PLAYHUB_UPDATE_POLICY" \
       --clean \
       $DATE_ARG \
-      --out-json ./BUILD_INFO.json
+      --out-json ./BUILD_INFO.json \
+    && if [ -n "$PLAYHUB_BUILD_CODE" ]; then \
+      node -e "const b=require('./BUILD_INFO.json'); if(String(b.buildCode)!==String(process.env.PLAYHUB_BUILD_CODE)){console.error('BUILD_CODE mismatch:',b.buildCode,'vs',process.env.PLAYHUB_BUILD_CODE); process.exit(1);}"; \
+    fi
 
 # Cloud Run edge wrapper (keeps local hub/server/* and Run_PlayHub_Portable.cmd untouched)
 COPY deploy/cloudrun/hub/entrypoint.mjs ./deploy/cloudrun/hub/entrypoint.mjs

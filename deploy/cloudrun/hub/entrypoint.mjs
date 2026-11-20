@@ -1,4 +1,5 @@
 import http from 'node:http';
+import https from 'node:https';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -125,31 +126,59 @@ function buildConfig() {
   };
 }
 
-function proxyRequest(req, res, targetBase, stripPrefix = '') {
+export function rewriteProxyLocation(location, stripPrefix = '') {
+  if (!stripPrefix || typeof location !== 'string') return location;
+  if (!location.startsWith('/') || location.startsWith('//') || location.startsWith('/?')) {
+    return location;
+  }
+  if (
+    location === stripPrefix ||
+    location.startsWith(stripPrefix + '/') ||
+    location.startsWith(stripPrefix + '?')
+  ) {
+    return location;
+  }
+  return stripPrefix + location;
+}
+
+export function buildUpstreamRequestOptions(targetBase, req, stripPrefix = '') {
   const targetUrl = new URL(targetBase);
+  const isHttps = targetUrl.protocol === 'https:';
   const rawUrl = req.url || '/';
   const nextUrl = stripPrefix && rawUrl.startsWith(stripPrefix)
     ? (rawUrl.slice(stripPrefix.length) || '/')
     : rawUrl;
 
   const headers = {};
-  for (const [k, v] of Object.entries(req.headers)) {
+  for (const [k, v] of Object.entries(req.headers || {})) {
     const lower = k.toLowerCase();
     if (STRIP_HEADERS.has(lower) || lower.startsWith('x-playhub-')) continue;
     headers[k] = v;
   }
   headers.host = targetUrl.host;
 
-  const upstream = http.request({
-    hostname: targetUrl.hostname,
-    port: targetUrl.port || (targetUrl.protocol === 'https:' ? 443 : 80),
-    path: nextUrl,
-    method: req.method,
-    headers,
-  }, upRes => {
+  return {
+    isHttps,
+    options: {
+      hostname: targetUrl.hostname,
+      port: targetUrl.port || (isHttps ? 443 : 80),
+      path: nextUrl,
+      method: req.method,
+      headers,
+      ...(isHttps ? { servername: targetUrl.hostname } : {}),
+    },
+  };
+}
+
+export function proxyRequest(req, res, targetBase, stripPrefix = '', extraTlsOptions = null) {
+  const { isHttps, options } = buildUpstreamRequestOptions(targetBase, req, stripPrefix);
+  const transport = isHttps ? https : http;
+  const reqOpts = isHttps && extraTlsOptions ? { ...options, ...extraTlsOptions } : options;
+
+  const upstream = transport.request(reqOpts, upRes => {
     const outHeaders = { ...upRes.headers };
-    if (stripPrefix && typeof outHeaders.location === 'string' && outHeaders.location.startsWith('/') && !outHeaders.location.startsWith('/?')) {
-      outHeaders.location = stripPrefix + outHeaders.location;
+    if (typeof outHeaders.location === 'string') {
+      outHeaders.location = rewriteProxyLocation(outHeaders.location, stripPrefix);
     }
     res.writeHead(upRes.statusCode || 502, outHeaders);
     upRes.pipe(res);
@@ -231,99 +260,104 @@ function serveStatic(req, res, staticRoot) {
   else fs.createReadStream(real).pipe(res);
 }
 
-const config = buildConfig();
-const deployed = assertRuntimeOutput(hubRoot, config);
-const app = createApp(config, { rootDir: deployed.user, platformRoot: repoRoot });
-const staticRoot = fs.realpathSync(ROLE === 'admin' ? deployed.admin : deployed.user);
-const apiHandler = ROLE === 'admin' ? app.adminHandler : app.publicHandler;
+const isDirectExecution =
+  Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-function stripSpoofedHeaders(req) {
-  for (const key of Object.keys(req.headers)) {
-    const lower = key.toLowerCase();
-    if (lower === 'x-playhub-internal-secret' && ALLOW_REMOTE_VERIFY) continue;
-    if (STRIP_HEADERS.has(lower) || lower.startsWith('x-playhub-')) {
-      delete req.headers[key];
+if (isDirectExecution) {
+  const config = buildConfig();
+  const deployed = assertRuntimeOutput(hubRoot, config);
+  const app = createApp(config, { rootDir: deployed.user, platformRoot: repoRoot });
+  const staticRoot = fs.realpathSync(ROLE === 'admin' ? deployed.admin : deployed.user);
+  const apiHandler = ROLE === 'admin' ? app.adminHandler : app.publicHandler;
+
+  const stripSpoofedHeaders = req => {
+    for (const key of Object.keys(req.headers)) {
+      const lower = key.toLowerCase();
+      if (lower === 'x-playhub-internal-secret' && ALLOW_REMOTE_VERIFY) continue;
+      if (STRIP_HEADERS.has(lower) || lower.startsWith('x-playhub-')) {
+        delete req.headers[key];
+      }
     }
-  }
-}
+  };
 
-const edge = http.createServer((req, res) => {
-  const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+  const edge = http.createServer((req, res) => {
+    const pathname = new URL(req.url || '/', 'http://localhost').pathname;
 
-  if (pathname === '/_healthz') {
-    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-    res.end(JSON.stringify({ ok: true, role: ROLE, revision: process.env.K_REVISION || 'local' }));
-    return;
-  }
+    if (pathname === '/_healthz') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(JSON.stringify({ ok: true, role: ROLE, revision: process.env.K_REVISION || 'local' }));
+      return;
+    }
 
-  if (ROLE === 'public') {
-    if (ALLOW_REMOTE_VERIFY && pathname === '/internal/session/verify') {
+    if (ROLE === 'public') {
+      if (ALLOW_REMOTE_VERIFY && pathname === '/internal/session/verify') {
+        stripSpoofedHeaders(req);
+        apiHandler(req, res);
+        return;
+      }
+      if (pathname.startsWith('/internal/') || pathname === '/internal' || pathname.startsWith('/api/admin')) {
+        res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: 'NOT_FOUND' }));
+        return;
+      }
+      if (pathname === '/config.js') {
+        res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end('window.PLAYHUB_CONFIG={"apiPort":443,"apiBaseUrl":location.origin,"mode":"cloud-run"};\n');
+        return;
+      }
+      if (pathname === '/forge') {
+        res.writeHead(308, { Location: '/forge/' });
+        res.end();
+        return;
+      }
+      if (pathname.startsWith('/forge/')) {
+        if (!FORGE_UPSTREAM) {
+          res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ error: 'FORGE_UPSTREAM_NOT_CONFIGURED' }));
+          return;
+        }
+        proxyRequest(req, res, FORGE_UPSTREAM, '/forge');
+        return;
+      }
+    } else {
+      if (pathname === '/config.js') {
+        res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end('window.PLAYHUB_ADMIN_CONFIG={"apiPort":443,"apiBaseUrl":location.origin,"mode":"cloud-run-admin"};\n');
+        return;
+      }
+    }
+
+    if (pathname.startsWith('/api/')) {
       stripSpoofedHeaders(req);
       apiHandler(req, res);
       return;
     }
-    if (pathname.startsWith('/internal/') || pathname === '/internal' || pathname.startsWith('/api/admin')) {
-      res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ error: 'NOT_FOUND' }));
-      return;
-    }
-    if (pathname === '/config.js') {
-      res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end('window.PLAYHUB_CONFIG={"apiPort":443,"apiBaseUrl":location.origin,"mode":"cloud-run"};\n');
-      return;
-    }
-    if (pathname === '/forge') {
-      res.writeHead(308, { Location: '/forge/' });
-      res.end();
-      return;
-    }
-    if (pathname.startsWith('/forge/')) {
-      if (!FORGE_UPSTREAM) {
-        res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify({ error: 'FORGE_UPSTREAM_NOT_CONFIGURED' }));
-        return;
-      }
-      proxyRequest(req, res, FORGE_UPSTREAM, '/forge');
-      return;
-    }
-  } else {
-    if (pathname === '/config.js') {
-      res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end('window.PLAYHUB_ADMIN_CONFIG={"apiPort":443,"apiBaseUrl":location.origin,"mode":"cloud-run-admin"};\n');
-      return;
-    }
-  }
 
-  if (pathname.startsWith('/api/')) {
-    stripSpoofedHeaders(req);
-    apiHandler(req, res);
-    return;
-  }
+    serveStatic(req, res, staticRoot);
+  });
 
-  serveStatic(req, res, staticRoot);
-});
+  const EDGE_HOST = process.env.HOST || '0.0.0.0';
+  await new Promise((resolve, reject) => {
+    edge.once('error', reject);
+    edge.listen(EDGE_PORT, EDGE_HOST, resolve);
+  });
 
-const EDGE_HOST = process.env.HOST || '0.0.0.0';
-await new Promise((resolve, reject) => {
-  edge.once('error', reject);
-  edge.listen(EDGE_PORT, EDGE_HOST, resolve);
-});
+  console.log(JSON.stringify({
+    event: 'cloudrun_hub_listening',
+    role: ROLE,
+    port: EDGE_PORT,
+    publicOrigin: config.userBaseUrl,
+    forgeProxyEnabled: Boolean(FORGE_UPSTREAM),
+    remoteVerifyEnabled: ALLOW_REMOTE_VERIFY,
+    revision: process.env.K_REVISION || 'local',
+  }));
 
-console.log(JSON.stringify({
-  event: 'cloudrun_hub_listening',
-  role: ROLE,
-  port: EDGE_PORT,
-  publicOrigin: config.userBaseUrl,
-  forgeProxyEnabled: Boolean(FORGE_UPSTREAM),
-  remoteVerifyEnabled: ALLOW_REMOTE_VERIFY,
-  revision: process.env.K_REVISION || 'local',
-}));
-
-const shutdown = async () => {
-  edge.closeAllConnections?.();
-  edge.close();
-  await app.close();
-  process.exit(0);
-};
-process.once('SIGINT', shutdown);
-process.once('SIGTERM', shutdown);
+  const shutdown = async () => {
+    edge.closeAllConnections?.();
+    edge.close();
+    await app.close();
+    process.exit(0);
+  };
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
+}
