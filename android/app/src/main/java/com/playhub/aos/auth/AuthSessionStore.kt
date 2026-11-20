@@ -2,6 +2,7 @@ package com.playhub.aos.auth
 
 import android.content.Context
 import com.playhub.aos.compliance.AgeTier
+import com.playhub.aos.network.MobileTokens
 import java.util.UUID
 
 data class AuthProfile(
@@ -12,7 +13,9 @@ data class AuthProfile(
     val ageTier: AgeTier,
     val regionCode: String,
     val parentalConsentVerified: Boolean,
-    val coinBalance: Long
+    val coinBalance: Long,
+    val accessToken: String? = null,
+    val refreshToken: String? = null
 )
 
 /**
@@ -36,7 +39,9 @@ class AuthSessionStore(context: Context) {
         val regionCode = prefs.getString("region_code", "KR") ?: "KR"
         val consent = prefs.getBoolean("parental_consent", false)
         val coins = prefs.getLong("coin_balance", 0L)
-        return AuthProfile(principalId, displayName, handle, isGuest, tier, regionCode, consent, coins)
+        val access = prefs.getString("access_token", null)
+        val refresh = prefs.getString("refresh_token", null)
+        return AuthProfile(principalId, displayName, handle, isGuest, tier, regionCode, consent, coins, access, refresh)
     }
 
     fun isAgeGateCompleted(): Boolean = prefs.getBoolean("age_gate_done", false)
@@ -47,6 +52,24 @@ class AuthSessionStore(context: Context) {
             .putBoolean("age_gate_done", true)
             .putString("age_tier", tier.name)
             .putString("region_code", regionCode)
+            .apply()
+    }
+
+    fun saveRemoteTokens(tokens: MobileTokens) {
+        prefs.edit()
+            .putString("principal_id", tokens.principalId)
+            .putString("display_name", tokens.displayName)
+            .putString("handle", tokens.handle)
+            .putBoolean("is_guest", tokens.isGuest)
+            .putString("access_token", tokens.accessToken)
+            .putString("refresh_token", tokens.refreshToken)
+            .apply()
+    }
+
+    fun clearRemoteTokensForFarmSwitch() {
+        prefs.edit()
+            .remove("access_token")
+            .remove("refresh_token")
             .apply()
     }
 }

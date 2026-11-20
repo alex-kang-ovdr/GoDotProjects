@@ -9,6 +9,7 @@ separate_debug_symbols = "no"
 optimize = "size"
 use_lto = "yes"
 deprecated = "no"
+disable_path_overrides = "no"
 minizip = "yes"
 
 # Exclude editor / tools / unused heavy modules (PlayHub is game play runtime only, no Forge)

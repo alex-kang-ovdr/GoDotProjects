@@ -69,37 +69,36 @@ class GodotPlayerActivity : GodotActivity() {
     private var bridgePlugin: PlayHubGodotPlugin? = null
     private var gameId: String = "unknown"
     private var gameTitle: String = "Play Hub Game"
+    private var launchPckPath: String = ""
+    private var launchRenderDriver: String = "opengl3"
+    private var launchDisplayName: String = "게스트"
+    private var launchHandle: String = "@guest"
+    private var launchIsGuest: Boolean = true
+    private var launchAgeTier: String = "UNKNOWN"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Capture all extras BEFORE super.onCreate(), because GodotActivity.sanitizeLaunchIntent() clears intent extras!
         gameId = intent.getStringExtra(EXTRA_GAME_ID) ?: "unknown"
         gameTitle = intent.getStringExtra(EXTRA_GAME_TITLE) ?: gameId
+        launchPckPath = intent.getStringExtra(EXTRA_PCK_PATH).orEmpty()
+        launchRenderDriver = intent.getStringExtra(EXTRA_RENDER_DRIVER) ?: "opengl3"
+        launchDisplayName = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: "게스트"
+        launchHandle = intent.getStringExtra(EXTRA_HANDLE) ?: "@guest"
+        launchIsGuest = intent.getBooleanExtra(EXTRA_IS_GUEST, true)
+        launchAgeTier = intent.getStringExtra(EXTRA_AGE_TIER) ?: "UNKNOWN"
+        // Persist launch pack path to app filesDir (user://) for deterministic bootstrap handoff
+        runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
         super.onCreate(savedInstanceState)
         attachUniversalOverlayButton()
     }
 
     override fun getCommandLine(): MutableList<String> {
         val args = mutableListOf<String>()
-        val pckPath = intent.getStringExtra(EXTRA_PCK_PATH).orEmpty()
-        val renderDriver = intent.getStringExtra(EXTRA_RENDER_DRIVER) ?: "opengl3"
-        val userDataDir = intent.getStringExtra(EXTRA_USER_DATA_DIR).orEmpty()
-        val roomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
-
-        if (pckPath.isNotEmpty() && File(pckPath).isFile) {
-            args += "--main-pack"
-            args += pckPath
-        }
+        // Stock godot-lib.template_release.aar enforces disable_path_overrides=yes,
+        // so we boot the 1.5KB internal assets/bootstrap.tscn and mount the verified .pck
+        // at runtime via ProjectSettings.load_resource_pack(PlayHubBridge.get_launch_pck_path()).
         args += "--rendering-driver"
-        args += renderDriver
-        if (userDataDir.isNotEmpty()) {
-            File(userDataDir).mkdirs()
-            args += "--user-data-dir"
-            args += userDataDir
-        }
-        args += "--playhub-game-id=$gameId"
-        args += "--playhub-locale=${Locale.getDefault().language}"
-        if (roomCode.isNotEmpty()) {
-            args += "--playhub-room=$roomCode"
-        }
+        args += launchRenderDriver
         return args
     }
 
@@ -107,10 +106,11 @@ class GodotPlayerActivity : GodotActivity() {
         val plugin = PlayHubGodotPlugin(
             godot = godot,
             gameId = gameId,
-            displayName = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: "게스트",
-            handle = intent.getStringExtra(EXTRA_HANDLE) ?: "@guest",
-            isGuest = intent.getBooleanExtra(EXTRA_IS_GUEST, true),
-            ageTier = intent.getStringExtra(EXTRA_AGE_TIER) ?: "UNKNOWN",
+            pckPath = launchPckPath,
+            displayName = launchDisplayName,
+            handle = launchHandle,
+            isGuest = launchIsGuest,
+            ageTier = launchAgeTier,
             locale = Locale.getDefault().language,
             onOpenOverlay = { tab -> showUniversalInGameMenu(tab) }
         )
