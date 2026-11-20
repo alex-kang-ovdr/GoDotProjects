@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url';
 import {
   DEFAULT_REPO_ROOT,
   EXPECTED_GODOT_SUBMODULE_PIN,
+  ensureForgeNodeModules,
   ensureHubNodeModules,
   escapeHtml,
   formatDuration,
   formatKstDate,
   formatKstRunId,
   getGitMetadata,
+  hasPythonModule,
   isExistingDir,
   isExistingFile,
   mapSuspectedOwners,
@@ -141,6 +143,7 @@ export async function runDeterministicCi(rawOpts = {}) {
     fs.mkdirSync(reportsDir, { recursive: true });
     fs.mkdirSync(packagesDir, { recursive: true });
     ensureHubNodeModules(repoRoot);
+    ensureForgeNodeModules(repoRoot);
   }
 
   const node24 = resolveNode24(repoRoot);
@@ -212,41 +215,55 @@ export async function runDeterministicCi(rawOpts = {}) {
     });
   }
 
-  // Stage 1a: Hub acceptance (build + verify + HTTP smoke + optional python contracts)
+  // Stage 1a: Hub acceptance (build + verify + HTTP smoke + optional python contracts when jsonschema is installed)
+  const hasJsonSchema = !opts.dryRun && python ? hasPythonModule(python, 'jsonschema') : false;
+  if (!opts.dryRun && !opts.skipStages.has('hub_acceptance')) {
+    // Pre-sync webgames before acceptance so SOURCE_STABILITY compares identical pre/post line endings.
+    await runSubprocess(node24, ['tools/sync-webgames.mjs'], {
+      cwd: path.join(repoRoot, 'hub'),
+      timeoutMs: 120000,
+    });
+  }
   const hubReport = path.join(reportsDir, 'hub-acceptance.json');
   const hubArgs = ['tools/acceptance.mjs', '--report', hubReport];
-  if (python) hubArgs.push('--with-python');
+  if (hasJsonSchema) hubArgs.push('--with-python');
   await execStage({
     id: 'hub_acceptance',
-    title: `Hub 통합 빌드·회귀·HTTP 검증${python ? ' (+ Python 계약)' : ''}`,
+    title: `Hub 통합 빌드·회귀·HTTP 검증${hasJsonSchema ? ' (+ Python 계약)' : ' (Node 코어)'}`,
     executable: node24,
     args: hubArgs,
     cwd: path.join(repoRoot, 'hub'),
     timeoutMs: 420000,
-    env: { ...process.env, ...(python ? { PLAYHUB_PYTHON: python } : {}) },
+    env: { ...process.env, ...(hasJsonSchema ? { PLAYHUB_PYTHON: python } : {}) },
     reportFile: hubReport,
   });
 
-  // Stage 1b: Store contract & API tests
+  // Stage 1b: Store contract & API tests (browser UI test gated by --with-browser)
   const storeTests = listMatchingFiles(path.join(repoRoot, 'store', 'tests'), (n) => n.endsWith('.test.mjs'));
   if (storeTests.length) {
+    const storeArgs = ['--test'];
+    if (!opts.withBrowser) storeArgs.push('--test-skip-pattern=Store web UI connects to live server');
+    storeArgs.push(...storeTests);
     await execStage({
       id: 'store_tests',
-      title: 'PlayForge Store 계약·API 테스트',
+      title: `PlayForge Store 계약·API 테스트${opts.withBrowser ? ' (+ 브라우저 UI)' : ' (Node API)'}`,
       executable: node24,
-      args: ['--test', ...storeTests],
+      args: storeArgs,
     });
   }
 
-  // Stage 1c: CDN & L10N unit tests
+  // Stage 1c: CDN & L10N unit tests (*.browser.test.mjs gated by --with-browser)
   const cdnL10nTests = listMatchingFiles(
     path.join(repoRoot, 'hub', 'tests'),
-    (n) => (n.startsWith('cdn') || n.startsWith('l10n') || n === 'locales-deployment.test.mjs') && n.endsWith('.mjs'),
+    (n) =>
+      (n.startsWith('cdn') || n.startsWith('l10n') || n === 'locales-deployment.test.mjs') &&
+      n.endsWith('.mjs') &&
+      (opts.withBrowser || !n.endsWith('.browser.test.mjs')),
   );
   if (cdnL10nTests.length) {
     await execStage({
       id: 'cdn_l10n_tests',
-      title: 'PlayHub CDN & L10N 단위 회귀 테스트',
+      title: `PlayHub CDN & L10N 단위 회귀 테스트${opts.withBrowser ? ' (+ 브라우저)' : ' (Node 단위)'}`,
       executable: node24,
       args: ['--test', ...cdnL10nTests],
     });

@@ -41,6 +41,42 @@ export function ensureHubNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAULT_
   return { seeded: false, path: null };
 }
 
+export function ensureForgeNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAULT_REPO_ROOT) {
+  const dest = path.join(targetRepoRoot, 'forge', 'node_modules');
+  if (isExistingDir(path.join(dest, 'ws')) && isExistingDir(path.join(dest, 'yjs'))) {
+    return { seeded: false, path: dest };
+  }
+  const candidates = [
+    path.join(fallbackRepoRoot, 'forge', 'node_modules'),
+    path.resolve(fallbackRepoRoot, '..', 'PlayHub-Platform', 'forge', 'node_modules'),
+    path.resolve(targetRepoRoot, '..', 'PlayHub-Platform', 'forge', 'node_modules'),
+  ];
+  for (const src of candidates) {
+    if (
+      isExistingDir(path.join(src, 'ws')) &&
+      isExistingDir(path.join(src, 'yjs')) &&
+      path.resolve(src) !== path.resolve(dest)
+    ) {
+      fs.cpSync(src, dest, { recursive: true });
+      return { seeded: true, from: src, path: dest };
+    }
+  }
+  return { seeded: false, path: null };
+}
+
+export function hasPythonModule(pythonExe, moduleName) {
+  if (!pythonExe || !moduleName || !/^[A-Za-z0-9_]+$/.test(moduleName)) return false;
+  try {
+    execFileSync(pythonExe, ['-c', `import ${moduleName}`], {
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function resolveNode24(repoRoot = DEFAULT_REPO_ROOT) {
   const candidates = [
     process.env.PLAYHUB_NODE_BIN,
