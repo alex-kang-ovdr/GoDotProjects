@@ -7,16 +7,21 @@ const http = require('node:http');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+const { deflateRawSync } = require('node:zlib');
 
 const {
+  ZIP_LIMITS,
   applyInstallPlan,
   buildPackageArtifact,
   checkReleaseUpdate,
   computeDependencyManifestHash,
   createAssetLibraryHandler,
   createStoreBridge,
+  formatDigest,
+  normalizeLoopbackOrigin,
   queryLibraryEntries,
   readProjectInstallations,
+  readZipEntries,
   rejectEditorialInstall,
   reviewInstallPlan,
   saveLibraryEntry,
@@ -606,4 +611,349 @@ test('8. Godot 4.7.2 --headless --editor loads PlayForge Asset Store dock in DOC
   assert.equal(editorResult.status, 0, editorOut);
   assert.doesNotMatch(editorOut, /SCRIPT ERROR:|Parse Error|^ERROR:/m);
   assert.match(editorOut, /PLAYFORGE_ASSET_STORE_EDITOR_OK/);
+});
+
+function buildCustomZip(entries) {
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  for (const item of entries) {
+    const nameBuf = Buffer.from(item.name, 'utf8');
+    const rawBuf = Buffer.isBuffer(item.data) ? item.data : Buffer.from(String(item.data), 'utf8');
+    const method = item.method ?? 8;
+    const payload = method === 8 ? deflateRawSync(rawBuf) : rawBuf;
+    const declaredCompressed = item.declaredCompressedSize ?? payload.length;
+    const declaredUncompressed = item.declaredUncompressedSize ?? rawBuf.length;
+
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0x0800, 6);
+    local.writeUInt16LE(method, 8);
+    local.writeUInt32LE(declaredCompressed, 18);
+    local.writeUInt32LE(declaredUncompressed, 22);
+    local.writeUInt16LE(nameBuf.length, 26);
+    localParts.push(local, nameBuf, payload);
+
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0x0800, 8);
+    central.writeUInt16LE(method, 10);
+    central.writeUInt32LE(declaredCompressed, 20);
+    central.writeUInt32LE(declaredUncompressed, 24);
+    central.writeUInt16LE(nameBuf.length, 28);
+    central.writeUInt32LE(offset, 42);
+    centralParts.push(central, nameBuf);
+
+    offset += local.length + nameBuf.length + payload.length;
+  }
+  const centralDir = Buffer.concat(centralParts);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(centralDir.length, 12);
+  eocd.writeUInt32LE(offset, 16);
+  return Buffer.concat([...localParts, centralDir, eocd]);
+}
+
+test('9. Store HTTP bridge rejects client-supplied entry/artifact/plan/dependencies and requires server catalog + plan_token', async (t) => {
+  const { v1 } = makeSamplePackages();
+  const evil = buildPackageArtifact({
+    entry: {
+      schema_version: 1,
+      asset_id: 'evil-injected-addon',
+      asset_version_id: '1.0.0',
+      release_id: 'rel-evil-injected-100',
+      release_kind: 'package',
+      title: 'Evil Injected Addon',
+      publisher_id: 'pub-attacker',
+      store_state: 'catalog_listed',
+      artifact_id: 'art-evil-injected-100',
+      engine_compatibility: { godot_min: '4.3', godot_tested: '4.7.2', platforms: ['windows'] },
+      license_snapshot_ref: 'lic-fake',
+    },
+    files: {
+      'addons/evil/plugin.gd': '@tool\nextends EditorPlugin\n',
+    },
+  });
+
+  const tmp = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'playforge-store-trust-'));
+  t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
+  const projA = path.join(tmp, 'proj-a');
+  fs.mkdirSync(projA, { recursive: true });
+  fs.writeFileSync(path.join(projA, 'project.godot'), 'config_version=5\n');
+  const before = snapshotTree(projA);
+
+  const bridge = createStoreBridge({
+    catalog: [v1],
+    projects: { 'proj-a': projA },
+    stagingRoot: path.join(tmp, 'staging'),
+    autoSaveAccount: 'default',
+  });
+  const srv = await startHandlerServer(createAssetLibraryHandler(forgeRoot, { storeBridge: bridge }));
+  t.after(srv.close);
+
+  const postJson = (endpoint, payload) => fetch(`${srv.baseUrl}${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  // 1) Forged entry / artifact_base64 on /stage
+  const stageEvilBoth = await postJson('/store/stage', {
+    entry: evil.entry,
+    artifact_base64: evil.archive.toString('base64'),
+  });
+  assert.equal(stageEvilBoth.status, 400);
+  assert.equal((await stageEvilBoth.json()).code, 'CLIENT_ARTIFACT_NOT_ALLOWED');
+
+  const stageEvilEntry = await postJson('/store/stage', { entry: evil.entry });
+  assert.equal(stageEvilEntry.status, 400);
+  assert.equal((await stageEvilEntry.json()).code, 'CLIENT_ENTRY_NOT_ALLOWED');
+
+  const stageValidIdWithArtifact = await postJson('/store/stage', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    artifact_base64: evil.archive.toString('base64'),
+  });
+  assert.equal(stageValidIdWithArtifact.status, 400);
+  assert.equal((await stageValidIdWithArtifact.json()).code, 'CLIENT_ARTIFACT_NOT_ALLOWED');
+
+  const stageUnknown = await postJson('/store/stage', {
+    asset_id: evil.entry.asset_id,
+    release_id: evil.entry.release_id,
+  });
+  assert.equal(stageUnknown.status, 404);
+  assert.equal((await stageUnknown.json()).code, 'RELEASE_NOT_FOUND');
+
+  // 2) Forged entry / dependencies on /plan
+  const planEvilEntry = await postJson('/store/plan', { entry: evil.entry, project_id: 'proj-a' });
+  assert.equal(planEvilEntry.status, 400);
+  assert.equal((await planEvilEntry.json()).code, 'CLIENT_ENTRY_NOT_ALLOWED');
+
+  const planClientDeps = await postJson('/store/plan', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    project_id: 'proj-a',
+    dependencies: [],
+  });
+  assert.equal(planClientDeps.status, 400);
+  assert.equal((await planClientDeps.json()).code, 'CLIENT_DEPENDENCIES_NOT_ALLOWED');
+
+  // 3) Forged entry / plan / guessed plan_token on /apply
+  const forgedPlan = reviewInstallPlan({ entry: v1.entry, projectId: 'proj-a', projectRoot: projA });
+  const applyClientPlan = await postJson('/store/apply', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    project_id: 'proj-a',
+    plan: forgedPlan,
+  });
+  assert.equal(applyClientPlan.status, 400);
+  assert.equal((await applyClientPlan.json()).code, 'CLIENT_PLAN_NOT_ALLOWED');
+
+  const applyGuessedToken = await postJson('/store/apply', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    project_id: 'proj-a',
+    plan_token: `proj-a:${v1.entry.release_id}:${forgedPlan.project_fingerprint}`,
+  });
+  assert.equal(applyGuessedToken.status, 400);
+  assert.equal((await applyGuessedToken.json()).code, 'PLAN_NOT_REVIEWED');
+
+  // 4) Forged entry on /library and forged installation_record on /check-updates
+  const libEvil = await postJson('/store/library', { entry: evil.entry });
+  assert.equal(libEvil.status, 400);
+  assert.equal((await libEvil.json()).code, 'CLIENT_ENTRY_NOT_ALLOWED');
+
+  const checkEvilRec = await postJson('/store/check-updates', {
+    asset_id: v1.entry.asset_id,
+    project_id: 'proj-a',
+    installation_record: { project_id: 'proj-a', status: 'applied' },
+  });
+  assert.equal(checkEvilRec.status, 400);
+  assert.equal((await checkEvilRec.json()).code, 'CLIENT_RECORD_NOT_ALLOWED');
+
+  assert.deepEqual(snapshotTree(projA), before, 'Untrusted client payloads must never touch project files');
+
+  // 5) Server-catalog flow issues unpredictable single-use plan_token
+  const stageOk = await postJson('/store/stage', { asset_id: v1.entry.asset_id, release_id: v1.entry.release_id });
+  assert.equal(stageOk.status, 200);
+  const planOk = await postJson('/store/plan', { asset_id: v1.entry.asset_id, release_id: v1.entry.release_id, project_id: 'proj-a' });
+  assert.equal(planOk.status, 200);
+  const planBody = await planOk.json();
+  assert.match(planBody.plan_token, /^[a-f0-9]{48}$/);
+
+  const applyOk = await postJson('/store/apply', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    project_id: 'proj-a',
+    plan_token: planBody.plan_token,
+  });
+  assert.equal(applyOk.status, 200);
+
+  // Replaying consumed plan_token is rejected
+  const replayRes = await postJson('/store/apply', {
+    asset_id: v1.entry.asset_id,
+    release_id: v1.entry.release_id,
+    project_id: 'proj-a',
+    plan_token: planBody.plan_token,
+  });
+  assert.equal(replayRes.status, 400);
+  assert.equal((await replayRes.json()).code, 'PLAN_NOT_REVIEWED');
+});
+
+test('10. Store HTTP bridge enforces application/json Content-Type and exact loopback Origin allowlist', async (t) => {
+  assert.equal(normalizeLoopbackOrigin('http://127.0.0.1:4173'), 'http://127.0.0.1:4173');
+  assert.equal(normalizeLoopbackOrigin('http://localhost:4173'), 'http://localhost:4173');
+  assert.equal(normalizeLoopbackOrigin('http://[::1]:4173'), 'http://[::1]:4173');
+  assert.equal(normalizeLoopbackOrigin('https://evil.example'), null);
+  assert.equal(normalizeLoopbackOrigin('http://localhost.evil.example'), null);
+  assert.equal(normalizeLoopbackOrigin('http://127.0.0.1.evil.example'), null);
+  assert.equal(normalizeLoopbackOrigin('http://127.0.0.1:4173/'), null);
+  assert.equal(normalizeLoopbackOrigin('http://user@127.0.0.1:4173'), null);
+  assert.equal(normalizeLoopbackOrigin('http://127.1:4173'), null);
+  assert.equal(normalizeLoopbackOrigin('null'), null);
+
+  const { v1 } = makeSamplePackages();
+  const tmp = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'playforge-store-csrf-'));
+  t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
+  const projA = path.join(tmp, 'proj-a');
+  fs.mkdirSync(projA, { recursive: true });
+
+  const bridge = createStoreBridge({
+    catalog: [v1],
+    projects: { 'proj-a': projA },
+    stagingRoot: path.join(tmp, 'staging'),
+    allowedOrigins: ['http://127.0.0.1:4173', 'https://evil.example'],
+  });
+  const srv = await startHandlerServer(createAssetLibraryHandler(forgeRoot, { storeBridge: bridge }));
+  t.after(srv.close);
+  const exactServerOrigin = new URL(srv.baseUrl).origin;
+  const payload = JSON.stringify({ asset_id: v1.entry.asset_id, release_id: v1.entry.release_id, project_id: 'proj-a' });
+
+  // Non-JSON Content-Type rejected (415)
+  for (const contentType of [null, 'text/plain', 'application/x-www-form-urlencoded', 'text/plain; application/json']) {
+    const headers = {};
+    if (contentType !== null) headers['Content-Type'] = contentType;
+    const res = await fetch(`${srv.baseUrl}/store/plan`, { method: 'POST', headers, body: payload });
+    assert.equal(res.status, 415, `Content-Type ${String(contentType)}`);
+    assert.equal((await res.json()).code, 'UNSUPPORTED_MEDIA_TYPE');
+  }
+
+  // application/json with charset parameter accepted
+  const charsetRes = await fetch(`${srv.baseUrl}/store/plan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: payload,
+  });
+  assert.equal(charsetRes.status, 200);
+
+  // Disallowed Origins rejected (403), including non-allowlisted loopback ports and non-loopback in allowedOrigins
+  for (const badOrigin of [
+    'https://evil.example',
+    'http://localhost.evil.example',
+    'http://127.0.0.1.evil.example',
+    'null',
+    'http://127.0.0.1:9999',
+    `${exactServerOrigin}/path`,
+  ]) {
+    const res = await fetch(`${srv.baseUrl}/store/plan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: badOrigin },
+      body: payload,
+    });
+    assert.equal(res.status, 403, `Origin ${badOrigin}`);
+    assert.equal((await res.json()).code, 'ORIGIN_NOT_ALLOWED');
+  }
+
+  // Disallowed Origin on GET also rejected
+  const badGet = await fetch(`${srv.baseUrl}/store/library`, {
+    headers: { Origin: 'https://evil.example' },
+  });
+  assert.equal(badGet.status, 403);
+  assert.equal((await badGet.json()).code, 'ORIGIN_NOT_ALLOWED');
+
+  // Exact server loopback Origin and explicitly allowlisted loopback Origin accepted
+  for (const okOrigin of [exactServerOrigin, 'http://127.0.0.1:4173']) {
+    const res = await fetch(`${srv.baseUrl}/store/plan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: okOrigin },
+      body: payload,
+    });
+    assert.equal(res.status, 200, `Allowed Origin ${okOrigin}`);
+  }
+});
+
+test('11. readZipEntries defends against ZIP bombs via maxOutputLength, maxEntries, maxEntryBytes, and maxTotalBytes', () => {
+  assert.ok(ZIP_LIMITS.maxEntries > 0 && ZIP_LIMITS.maxEntryBytes > 0 && ZIP_LIMITS.maxTotalBytes > 0);
+
+  // Valid deflated ZIP works
+  const okZip = buildCustomZip([{ name: 'assets/a.txt', data: 'hello deflated zip', method: 8 }]);
+  const okEntries = readZipEntries(okZip);
+  assert.equal(okEntries.get('assets/a.txt').toString('utf8'), 'hello deflated zip');
+
+  // ZIP bomb: compressed stream expands to 64 KiB, but header lies uncompressedSize = 32 bytes
+  const bombZip = buildCustomZip([{
+    name: 'assets/bomb.bin',
+    data: Buffer.alloc(64 * 1024, 0x41),
+    method: 8,
+    declaredUncompressedSize: 32,
+  }]);
+  assert.throws(() => readZipEntries(bombZip), /ZIP entry inflate failed/);
+
+  // stageVerifiedArtifact turns ZIP bomb into clean 422 INVALID_ARCHIVE
+  const bombEntry = {
+    schema_version: 1,
+    asset_id: 'zip-bomb-test',
+    asset_version_id: '1.0.0',
+    release_id: 'rel-zip-bomb-100',
+    release_kind: 'package',
+    title: 'Bomb Test',
+    publisher_id: 'pub-test',
+    store_state: 'catalog_listed',
+    artifact_id: 'art-zip-bomb-100',
+    artifact_digest: formatDigest(bombZip),
+    dependency_manifest_hash: computeDependencyManifestHash([]),
+    engine_compatibility: { godot_min: '4.3', godot_tested: '4.7.2', platforms: ['windows'] },
+    file_manifest: [{ path: 'assets/bomb.bin', bytes: 32, sha256: sha256Hex(Buffer.alloc(32, 0x41)), executable_addon: false }],
+    license_snapshot_ref: 'lic-test',
+    installation_record: null,
+  };
+  const stagedBomb = stageVerifiedArtifact({ entry: bombEntry, artifactBytes: bombZip });
+  assert.equal(stagedBomb.ok, false);
+  assert.equal(stagedBomb.status, 422);
+  assert.equal(stagedBomb.code, 'INVALID_ARCHIVE');
+  assert.equal(stagedBomb.project_modified, false);
+
+  // Single entry exceeds maxEntryBytes
+  const bigEntryZip = buildCustomZip([{ name: 'assets/big.bin', data: Buffer.alloc(2048, 0x42), method: 8 }]);
+  assert.throws(() => readZipEntries(bigEntryZip, { maxEntryBytes: 1024 }), /ZIP entry too large/);
+
+  // Total uncompressed size exceeds maxTotalBytes
+  const multiZip = buildCustomZip([
+    { name: 'assets/f1.bin', data: Buffer.alloc(600, 1), method: 8 },
+    { name: 'assets/f2.bin', data: Buffer.alloc(600, 2), method: 8 },
+  ]);
+  assert.throws(() => readZipEntries(multiZip, { maxTotalBytes: 1000 }), /uncompressed size exceeds limit/);
+
+  // Too many entries exceeds maxEntries
+  const manyEntriesZip = buildCustomZip([
+    { name: 'assets/1.txt', data: '1', method: 0 },
+    { name: 'assets/2.txt', data: '2', method: 0 },
+    { name: 'assets/3.txt', data: '3', method: 0 },
+    { name: 'assets/4.txt', data: '4', method: 0 },
+  ]);
+  assert.throws(() => readZipEntries(manyEntriesZip, { maxEntries: 3 }), /too many entries/);
+
+  // Stored entry (method 0) with mismatched compressedSize vs uncompressedSize
+  const badStoredZip = buildCustomZip([{
+    name: 'assets/stored.txt',
+    data: 'abcdef',
+    method: 0,
+    declaredUncompressedSize: 2,
+  }]);
+  assert.throws(() => readZipEntries(badStoredZip), /ZIP entry size mismatch/);
 });
