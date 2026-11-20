@@ -16,7 +16,7 @@
 
 관찰 두 가지:
 
-1. **같은 `/api/platform/*`를 두 곳이 구현한다.** Hub는 `createHubForge`로 프로세스 안에서, Forge는 `hubAuth` 모드의 `getPlatformFor(accountKey).api`로 처리한다. 둘 다 같은 `accounts/<accountKey>` 디렉터리를 쓴다. 두 구현의 라우트 범위가 완전히 같은지는 확인하지 못했다(Hub 쪽에는 builds·deployments·submissions·cloud 라우트가 있고, Forge 쪽은 `BuildQueue`는 있으나 나머지 라우트 유무 미확인). → 단계 S0에서 대조한다.
+1. **같은 `/api/platform/*`를 두 곳이 구현한다.** Hub는 `createHubForge`로 프로세스 안에서, Forge는 `hubAuth` 모드의 `getPlatformFor(accountKey).api`로 처리한다. 둘 다 같은 `accounts/<accountKey>` 디렉터리를 쓴다. 차이는 S0에서 대조했다(§9).
 2. `accountKey()`는 순수 함수이고 Hub에 이미 같은 계산(`forgeAccountKey`, `forge-account.mjs:15`)이 있다. B의 `require`는 불필요한 결합이다.
 
 ## 2. 목표 구조
@@ -70,8 +70,9 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 
 | 단계 | 내용 | 완료 기준 | 위험 |
 |---|---|---|---|
-| S0 | 특성화 테스트: Hub와 Forge의 `/api/platform/*` 응답 대조, `accountKey` 동치 테스트 | 두 구현의 차이 목록이 문서화됨 | 낮음 |
-| S1 | `creator-review.mjs`의 `accountKey` require를 `forgeAccountKey`로 교체 | 해당 require 제거, 기존 테스트 통과 | 낮음 |
+| S0 | 특성화 테스트: Hub와 Forge의 `/api/platform/*` 응답 대조, `accountKey` 동치 테스트 | 두 구현의 차이 목록이 문서화됨 | **완료** (§9) |
+| S1 | `creator-review.mjs`의 `accountKey` require를 `forgeAccountKey`로 교체 | 해당 require 제거, 기존 테스트 통과 | **완료** (`391db6e`) |
+| S1.5 | 빌드 시스템 일원화: Hub `OwnedBuildPackages`와 Forge `BuildQueue` 중 하나로 통일(§9 차이 3) | 릴리스 검증이 한 빌드 저장소만 본다 | 중간 (신규) |
 | S2 | `ForgeGateway` 도입, `local` 구현이 현재 동작을 그대로 감싼다. B·C·A가 Gateway만 쓰게 변경 | `hub/server`에서 `forge/` 직접 참조가 `local` 구현 한 파일뿐 | 중간 |
 | S3 | Forge에 내부 API 서버 구현(위 계약), 계약 테스트 | 내부 API 단위·통합 테스트 통과 | 중간 |
 | S4 | `remote` Gateway 구현과 설정(`forge.mode`, `forge.baseUrl`) | Hub와 Forge가 다른 프로세스·다른 디렉터리에서 통합 테스트 통과 | 중간~높음 |
@@ -95,8 +96,28 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 
 ## 8. 열린 결정
 
-1. `/api/platform/*`를 **프록시**(Hub는 인증만, 처리는 Forge)로 할지, Hub에 남길 라우트가 있는지. 권장은 전부 프록시이고 S0 대조 결과로 확정한다.
+1. `/api/platform/*`를 **프록시**(Hub는 인증만, 처리는 Forge)로 할지, Hub에 남길 라우트가 있는지. S0 결과 핵심 라우트는 이미 같은 코드이고, 두 곳에서 처리하는 것 자체가 차이 3~6의 원인이다. 권장은 전부 Forge로 일원화하고 Hub 전용 라우트(builds·deployments·submissions·cloud)도 Forge 내부 API로 옮기는 것이다.
 2. 내부 API를 Forge 공개 리스너의 별도 경로로 둘지, 별도 포트 리스너로 둘지. 권장은 별도 리스너(공개 경로와 섞이지 않음).
 3. 서비스 간 인증을 공유 시크릿으로 시작할지, mTLS나 서명 토큰으로 갈지. 권장은 시크릿으로 시작하고 교체 전환 기간을 구현하는 것.
 4. Drive 연동 코드(OAuth 토큰, Drive 스토어)가 Hub와 Forge 중 어디에 속할지. 현재는 Hub가 호출하지만 데이터는 Forge 디스크에 있다. 권장은 Forge로 이전.
 5. 저장소를 객체 스토리지로 옮기는 P3와의 순서. 권장은 이 계약을 먼저 만들고, 저장소 교체는 Forge 내부 구현으로 숨긴다.
+
+## 9. S0 대조 결과 (2026-11-20)
+
+근거: 특성화 테스트 [hub-forge-platform-parity.test.mjs](../../tests/deployment/hub-forge-platform-parity.test.mjs)(실제 Forge 서버를 Hub 인증 모드로 띄우고 Hub `createHubForge`와 같은 계정 디렉터리에서 비교, Node 22·24에서 5개 통과)와 코드 읽기. "테스트"로 표시한 항목만 테스트로 고정했고, 나머지는 코드 읽기 결과다.
+
+| # | 차이 | 근거 | 영향 |
+|---|---|---|---|
+| 1 | 핵심 라우트(`templates`, `projects`, `history`, `releases`, `session` 등)는 두 곳 모두 같은 `createPlatformApi`를 쓴다. Hub에서 만든 프로젝트가 Forge에서 그대로 보이고, 없는 프로젝트의 404 응답도 같다. | 테스트 | 일원화해도 사용자 동작이 바뀌지 않는다. |
+| 2 | Hub 전용 라우트: `projects/{id}/builds`, `deployments`, `submissions`, `cloud`. Forge에는 없다. Forge 전용 라우트: `/api/platform-builds/{id}`, `/api/builds/{bid}`, `/api/platform-addon/*`. | 테스트(builds·cloud), 코드 | 일원화 시 Hub 전용 라우트를 Forge 내부 API로 옮겨야 한다. |
+| 3 | **빌드 시스템이 둘이다.** Hub는 `OwnedBuildPackages`(`<forge.directory>/builds/<key>`), Forge는 메모리의 `BuildQueue`(`buildDirectory`)를 쓴다. 릴리스 생성 시 `validateBuild`가 각자 자기 빌드 저장소만 본다. 따라서 Forge 에디터에서 만든 빌드는 Hub 경로의 릴리스 검증을 통과하지 못하고, 반대도 마찬가지다. | 코드 (`forge-account.mjs:30,53`, `forge/server.cjs:82,113-118`) | 사용자에게 보이는 불일치 가능성. S1.5로 일원화 |
+| 4 | **Drive 동기화가 Hub 경로 편집에만 걸린다.** `ProjectDriveSync.attachStore`는 Hub 프로세스의 `PlatformStore.emit`을 감싼다. Forge 에디터에서 저장한 변경은 Drive 동기화를 트리거하지 않는다. | 코드 (`project-drive-sync.cjs:118-130`) | Drive를 켜면 백업 누락 가능성 |
+| 5 | **변경 이벤트가 프로세스를 넘지 않는다.** `PlatformStore` 리스너는 프로세스 안 메모리다. Hub 경로로 저장한 변경은 Forge의 `/events` 구독자에게 전달되지 않는다. | 코드 (`platform-store.cjs:58,224`) | 실시간 반영 누락 |
+| 6 | **프로세스 간 쓰기 잠금이 없다.** `PlatformStore.read`는 매번 디스크를 읽고 `persist`는 임시 파일 후 rename한다. revision 검사와 쓰기 사이에 다른 프로세스가 쓰면 한쪽 변경이 사라질 수 있다. | 코드 (`platform-store.cjs:227-242`) | 동시 편집 시 데이터 유실 가능성(빈도는 낮음, 재현 테스트 없음) |
+| 7 | 인증 실패 응답이 다르다. Hub는 `{ error: 'ACCESS_DENIED' }`, Forge는 자체 로그인 안내 형식이다. CSRF 정책은 같다(쓰기 요청에 `X-CSRF-Token`, Hub 세션 기준). | 테스트, 코드 | 프록시 일원화 시 응답 형식을 하나로 정해야 한다. |
+
+결론:
+
+- 차이 3~6은 "같은 데이터를 두 프로세스가 각자 처리"해서 생긴다. 계약을 나누는 것보다 **처리 주체를 Forge 하나로 모으는 것**이 먼저다. 열린 결정 1의 권장안을 "전부 Forge로 일원화"로 갱신했다.
+- 차이 4~6은 현재도 Hub와 Forge가 모두 켜진 구성(`forge.enabled`와 Forge `hubAuth`)에서 발생할 수 있다. 분리 작업과 별개로 운영 위험으로 기록한다.
+- 차이 3을 다루는 S1.5를 단계에 추가했다.
