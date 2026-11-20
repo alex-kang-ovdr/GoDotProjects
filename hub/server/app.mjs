@@ -13,6 +13,7 @@ import { createGoogle } from './google.mjs';
 import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
+import { createCdn } from './cdn/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -110,6 +111,8 @@ export function createApp(input, dependencies = {}) {
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
+  // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
+  const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -220,6 +223,7 @@ export function createApp(input, dependencies = {}) {
   }
 
   async function publicRoute(req,res,url) {
+    if (await cdn.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     const path = url.pathname;
@@ -502,6 +506,7 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
     }
     const s = requireSession(req,'admin',true);
+    if (await cdn.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
@@ -588,7 +593,7 @@ export function createApp(input, dependencies = {}) {
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,publicHandler,adminHandler,publicServer,adminServer,
+  return { db,cdn,publicHandler,adminHandler,publicServer,adminServer,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
@@ -602,6 +607,7 @@ export function createApp(input, dependencies = {}) {
       localAdminLogin?.clear();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close(); forgeGateway.close();
+      await cdn.close();
       db.close();
     }
   };
