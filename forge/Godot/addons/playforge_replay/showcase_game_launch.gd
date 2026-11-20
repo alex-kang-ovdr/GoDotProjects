@@ -3,7 +3,7 @@ extends RefCounted
 
 const PRIVATE_DIR := "res://.godot"
 const IGNORED_DIRECTORIES := [
-	"addons/playforge_platform", "addons/playforge_replay", "addons/playforge_showcase", "addons/playforge_agent_chat",
+	"addons/playforge_platform", "addons/playforge_replay", "addons/playforge_showcase", "addons/playforge_agent_chat", "addons/playforge_remote_control",
 ]
 
 var error_message := ""

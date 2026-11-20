@@ -15,8 +15,8 @@ const AssetStore := preload("showcase_store.gd")
 const GameLaunch := preload("showcase_game_launch.gd")
 const CURSOR_IDLE_MS := 5000
 const TARGET_LEAD_SECONDS := 0.18
-const START_MENU_ITEM := "PlayForge Showcase 재생"
-const AGENT_MENU_ITEM := "PlayForge Agent Replay 재생"
+const START_MENU_ITEM := "AgentReplay 재생"
+const AGENT_MENU_ITEM := "AgentReplay AI 기록 재생"
 const DEFAULT_REGIONS := {"gui": "inspector", "level": "viewport", "script": "scene", "assets": "filesystem"}
 const FALLBACK_REGIONS := {
 	"scene": Rect2(0.04, 0.12, 0.15, 0.34),
@@ -177,11 +177,11 @@ func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: Str
 	var new_dock := _dock == null
 	if new_dock:
 		_dock = EditorDock.new()
-		_dock.name = "PlayForgeShowcase"
-		_dock.title = "PlayForge Showcase"
-		_dock.layout_key = "playforge_showcase"
-		_dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
-		_dock.available_layouts = EditorDock.DOCK_LAYOUT_HORIZONTAL
+		_dock.name = "AgentReplay"
+		_dock.title = "AgentReplay"
+		_dock.layout_key = "agent_replay"
+		_dock.default_slot = EditorDock.DOCK_SLOT_RIGHT_UR
+		_dock.available_layouts = EditorDock.DOCK_LAYOUT_VERTICAL | EditorDock.DOCK_LAYOUT_HORIZONTAL | EditorDock.DOCK_LAYOUT_FLOATING
 		_dock.icon_name = &"AnimationPlayer"
 		if not OS.has_feature("web") or int(JavaScriptBridge.eval("window.parent === window ? 1 : 0", true)) == 1:
 			_install_cursor_overlay()

@@ -61,6 +61,8 @@ function createServer(options = {}) {
   const configuredOrigin = options.publicOrigin ?? process.env.PUBLIC_ORIGIN;
   const originAllowed = createOriginPolicy(configuredOrigin);
   const basePath = normalizeBasePath(options.basePath ?? process.env.PLAYFORGE_BASE_PATH ?? '');
+  const resolvedBuildMode = String(options.buildMode || process.env.PLAYFORGE_BUILD_MODE || process.env.NODE_ENV || 'debug').trim().toLowerCase();
+  const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
   const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv());
   const hubAccountUrl = validateHubAccountUrl(options.hubAccountUrl || hubAuthConfig?.loginUrl || process.env.PLAYHUB_FORGE_HUB_ACCOUNT_URL || '/?view=account');
   const hubAuth = hubAuthConfig ? createHubSessionAuth({ ...hubAuthConfig, loginUrl: hubAuthConfig.loginUrl || hubAccountUrl }) : null;
@@ -222,6 +224,20 @@ function createServer(options = {}) {
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
       const agentChat = routePath === '/api/platform-addon/agent-chat';
+      const remoteControl = routePath === '/api/platform-addon/remote-control';
+      if (remoteControl && req.method === 'GET') {
+        if (!remoteControlEnabled) {
+          return json(403, { ok: false, error: 'Remote Control add-on is disabled in Live builds (Debug/Test only).' });
+        }
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd', 'remote_reflection.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_remote_control', name), 'utf8')]));
+          return json(200, { ok: true, files: Object.fromEntries(entries) });
+        } catch {
+          return json(503, { ok: false, error: 'Remote Control add-on unavailable' });
+        }
+      }
       if ((showcaseRoute || sharedReplay || agentChat) && req.method === 'GET') {
         try {
           const manifest = showcaseRoute ? getPlatformFor(auth?.accountKey).store.getShowcase(showcaseRoute[1]) : undefined;

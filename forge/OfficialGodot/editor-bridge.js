@@ -294,6 +294,15 @@
   const remoteControlApi = {
     getLogs: (limit = 50) => window.__playforgeGetRecentLogs(limit),
     getState: () => buildSessionEditorState(),
+    listCapabilities: () => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'capabilities.list',
+    }),
+    rpc: payload => executeRemoteCommand(payload && typeof payload === 'object' ? {
+      jsonrpc: '2.0',
+      id: payload.id ?? ('rc-' + Date.now()),
+      ...payload,
+    } : null),
     playShowcase: (scenePath = '') => executeRemoteCommand({
       id: 'rc-' + Date.now(),
       command: 'showcase.play',
@@ -303,6 +312,50 @@
       id: 'rc-' + Date.now(),
       command: 'workspace.apply',
       arguments: { operations: Array.isArray(operations) ? operations : [] },
+    }),
+    describeObject: (objectPath = '.', filter = '') => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.describe',
+      arguments: { objectPath, filter },
+    }),
+    getObjectProperty: (objectPath, propertyName) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.get',
+      arguments: { objectPath, propertyName },
+    }),
+    setObjectProperty: (objectPath, propertyName, value, generateTransaction = true) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.set',
+      arguments: { objectPath, propertyName, value, generateTransaction },
+    }),
+    callObjectMethod: (objectPath, functionName, args = []) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.call',
+      arguments: { objectPath, functionName, arguments: Array.isArray(args) ? args : [] },
+    }),
+    evalScript: (code, objectPath = '.', args = {}) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'script.eval',
+      arguments: { code, objectPath, args },
+    }),
+    undo: (steps = 1) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'editor.undo',
+      arguments: { steps },
+    }),
+    redo: (steps = 1) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'editor.redo',
+      arguments: { steps },
+    }),
+    playGame: (main = false) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'game.play',
+      arguments: { main: Boolean(main) },
+    }),
+    stopGame: () => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'game.stop',
     }),
     runCommand: (command, args = {}) => executeRemoteCommand({
       id: 'rc-' + Date.now(),
@@ -545,7 +598,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -553,7 +606,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|replay|agent_chat)\//.test(file) || file.startsWith('.godot/') ||
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control)\//.test(file) || file.startsWith('.godot/') ||
           file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
@@ -576,6 +629,9 @@
     const originalProjectConfig = projectFile.content;
     const pluginPaths = ['res://addons/playforge_platform/plugin.cfg', 'res://addons/playforge_replay/plugin.cfg',
       'res://addons/playforge_agent_chat/plugin.cfg'];
+    if (remoteControlAllowed && remoteControlFiles) {
+      pluginPaths.push('res://addons/playforge_remote_control/plugin.cfg');
+    }
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
@@ -589,7 +645,11 @@
     if (replay.manifest) {
       projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(replay.manifest) });
     }
-    for (const [directory, files] of [['playforge_replay', replay.files], ['playforge_agent_chat', chatFiles]]) {
+    const mountedAddons = [['playforge_replay', replay.files], ['playforge_agent_chat', chatFiles]];
+    if (remoteControlAllowed && remoteControlFiles) {
+      mountedAddons.push(['playforge_remote_control', remoteControlFiles]);
+    }
+    for (const [directory, files] of mountedAddons) {
       for (const [name, content] of Object.entries(files)) {
         projectFiles.push({ path: `addons/${directory}/${name}`, content });
       }
@@ -756,16 +816,38 @@
     if (template !== null && ![1, 3].includes(data.manifest?.schemaVersion)) throw new Error('Invalid showcase manifest.');
     return data;
   }
+  async function fetchRemoteControlAddon() {
+    if (!remoteControlAllowed) return null;
+    try {
+      const response = await fetch(forgePath('/api/platform-addon/remote-control'), { credentials: 'same-origin', cache: 'no-store' });
+      if (response.status === 403) {
+        disableRemoteControl();
+        return null;
+      }
+      if (!response.ok) return null;
+      const data = await response.json().catch(() => null);
+      const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd', 'remote_reflection.gd'];
+      if (!data || data.ok !== true || !data.files ||
+          Object.keys(data.files).some(name => !names.includes(name)) ||
+          names.some(name => typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
+        return null;
+      }
+      return data.files;
+    } catch {
+      return null;
+    }
+  }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       await ensureCsrfToken();
-      const [project, addonFiles, chat] = await Promise.all([fetchProject(), fetchAddon(),
+      const [project, addonFiles, chat, remoteControlFiles] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
-          ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd'])]);
+          ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd']),
+        fetchRemoteControlAddon()]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');

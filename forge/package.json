@@ -33,7 +33,8 @@
     "test:editor-join-sync": "node --test Tests/playforge_platform/editor-join-sync.test.cjs",
     "test:template-showcase": "node --test Tests/playforge_replay/template-showcase.test.cjs",
     "test:playforge-replay": "node --test Tests/playforge_replay/template-showcase.test.cjs Tests/playforge_replay/showcase-feedback.test.cjs Tests/playforge_replay/showcase-gestures.test.cjs",
-    "test:playforge-agent-chat": "node --test Tests/playforge_agent_chat/agent-chat.test.cjs Tests/playforge_agent_chat/agent-chat-conversation.test.cjs Tests/playforge_agent_chat/agent-provider.test.cjs Tests/playforge_agent_chat/agent-codex-protocol.test.cjs"
+    "test:playforge-agent-chat": "node --test Tests/playforge_agent_chat/agent-chat.test.cjs Tests/playforge_agent_chat/agent-chat-conversation.test.cjs Tests/playforge_agent_chat/agent-provider.test.cjs Tests/playforge_agent_chat/agent-codex-protocol.test.cjs",
+    "test:playforge-remote-control": "node --test Tests/playforge_remote_control/remote-control.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

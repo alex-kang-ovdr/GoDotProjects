@@ -163,7 +163,7 @@ func _verify() -> void:
 			return
 		await tree.process_frame
 	(dock.find_child("ChatApprove", true, false) as Button).pressed.emit()
-	if not await _wait_for_reply(dock, "PlayForge Showcase Replay로 처음부터 제작 과정을 시연합니다."):
+	if not await _wait_for_reply(dock, "AgentReplay로 처음부터 제작 과정을 시연합니다."):
 		_fail("Approved TappyChicken build + replay.play must complete and keep its reply in the transcript.")
 		return
 	if not FileAccess.file_exists("res://Scripts/TappyBuilt.gd") or not FileAccess.file_exists("res://Assets/chicken.svg"):
