@@ -26,7 +26,18 @@
     'connect-dialog', 'provider-list', 'provider-global-status', 'provider-refresh', 'connect-close',
   ].map(id => [id, el(id)]));
 
-  const api = '/api/agent-chat';
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
+  const csrfHeaders = () => {
+    let token = window.__playforgeCsrfToken || '';
+    if (!token && window.parent !== window) {
+      try {
+        if (window.parent.location.origin === location.origin) token = window.parent.__playforgeCsrfToken || '';
+      } catch {}
+    }
+    return token ? { 'X-CSRF-Token': token } : {};
+  };
+  const api = forgePath('/api/agent-chat');
   const storageKey = 'playforge.agent.conversations.v1';
   const embedded = window.parent !== window;
   const preferencesKey = `playforge.agent.preferences.v2.${embedded ? 'editor' : 'standalone'}`;
@@ -1566,7 +1577,7 @@
       cache: 'no-store',
       redirect: 'error',
       signal: AbortSignal.timeout(25000),
-      ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
+      ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json', ...csrfHeaders() }, body: JSON.stringify(body) } : {}),
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Could not reach the AI provider service.');
@@ -1590,7 +1601,7 @@
     let channel;
     try {
       channel = new BroadcastChannel('playforge-chatgpt-login:' + nonce);
-      window.open('/OfficialGodot/chatgpt-login.html#' + nonce, '_blank', 'noopener');
+      window.open(forgePath('/OfficialGodot/chatgpt-login.html#' + nonce), '_blank', 'noopener');
     } catch {
       channel?.close();
       return null;
@@ -1830,7 +1841,7 @@
         method: 'POST',
         redirect: 'error',
         signal,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders() },
         body: JSON.stringify(body),
       });
       const message = response.ok && response.headers.get('content-type')?.startsWith('application/x-ndjson')
@@ -1986,7 +1997,7 @@
         method: 'POST',
         redirect: 'error',
         signal,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders() },
         body: JSON.stringify({
           provider: targetProvider,
           model: selectedModel,

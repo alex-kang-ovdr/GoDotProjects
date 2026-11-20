@@ -48,7 +48,7 @@ func ensure_configuration() -> void:
 func _ready() -> void:
 	name = "ChatProviderSettings"
 	if OS.has_feature("web"):
-		endpoint = str(JavaScriptBridge.eval("['localhost','127.0.0.1','[::1]'].includes(location.hostname) ? location.origin + '/api/agent-chat' : ''", true))
+		endpoint = str(JavaScriptBridge.eval("['localhost','127.0.0.1','[::1]'].includes(location.hostname) ? location.origin + (window.__playforgeBasePath || '') + '/api/agent-chat' : ''", true))
 	else:
 		var local := RegEx.new()
 		local.compile("^https?://(127\\.0\\.0\\.1|localhost|\\[::1\\])(:[0-9]{1,5})?/api/agent-chat$")
@@ -299,7 +299,12 @@ func _request(suffix: String, data := {}) -> void:
 	_busy = true
 	_render()
 	var method := HTTPClient.METHOD_GET if data.is_empty() else HTTPClient.METHOD_POST
-	var err := _http.request(endpoint + "/providers" + suffix, ["Content-Type: application/json"], method, "" if data.is_empty() else JSON.stringify(data))
+	var headers := PackedStringArray(["Content-Type: application/json"])
+	if OS.has_feature("web") and method != HTTPClient.METHOD_GET:
+		var csrf := str(JavaScriptBridge.eval("window.__playforgeCsrfToken || ''", true))
+		if not csrf.is_empty():
+			headers.append("X-CSRF-Token: " + csrf)
+	var err := _http.request(endpoint + "/providers" + suffix, headers, method, "" if data.is_empty() else JSON.stringify(data))
 	if err != OK:
 		_busy = false
 		_close_login_tab("로컬 인증 서비스에 연결하지 못했습니다.")

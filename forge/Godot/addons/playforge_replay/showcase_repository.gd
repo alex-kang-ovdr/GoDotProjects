@@ -10,7 +10,7 @@ var _previous_url: Variant
 
 func _ready() -> void:
 	if OS.has_feature("web"):
-		url = str(JavaScriptBridge.eval("['localhost','127.0.0.1','[::1]'].includes(location.hostname) ? location.origin + '/api/asset-library' : ''", true))
+		url = str(JavaScriptBridge.eval("['localhost','127.0.0.1','[::1]'].includes(location.hostname) ? location.origin + (window.__playforgeBasePath || '') + '/api/asset-library' : ''", true))
 	else:
 		url = OS.get_environment("PLAYFORGE_ASSET_LIBRARY_URL")
 	if url.is_empty():

@@ -57,15 +57,19 @@ function inspectForgeProjects(forgeDir) {
   for (const accountFolder of safeReadDir(accountsDir).slice(0, 50)) {
     const accountRoot = path.join(accountsDir, accountFolder);
     const projectsDir = path.join(accountRoot, 'projects');
-    for (const file of safeReadDir(projectsDir).slice(0, 50)) {
-      if (!file.endsWith('.json')) continue;
-      const data = safeReadJson(path.join(projectsDir, file), 2 * 1024 * 1024);
+    for (const entry of safeReadDir(projectsDir).slice(0, 50)) {
+      const candidatePath = path.join(projectsDir, entry);
+      const jsonPath = entry.endsWith('.json') ? candidatePath : path.join(candidatePath, 'project.json');
+      const data = safeReadJson(jsonPath, 2 * 1024 * 1024);
       if (!data || typeof data !== 'object' || typeof data.id !== 'string') continue;
+      const templateId = typeof data.template === 'string'
+        ? data.template
+        : (typeof data.templateId === 'string' ? data.templateId : null);
       projects.push({
         ownerKeyPrefix: accountFolder.slice(0, 12),
         projectId: data.id,
         name: typeof data.name === 'string' ? data.name : data.id,
-        templateId: typeof data.templateId === 'string' ? data.templateId : null,
+        templateId,
         revision: Number.isSafeInteger(data.revision) ? data.revision : 0,
         releaseCount: Array.isArray(data.releases) ? data.releases.length : 0,
         updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null
@@ -238,7 +242,7 @@ export function createLocalForgeGateway({ config = {}, root, env = process.env, 
     handlePlatform: platformImpl ? platformImpl.handlePlatform : disabled,
     getRelease: platformImpl ? platformImpl.getRelease : disabled,
     adminSnapshot() {
-      const forgeDir = enabled && typeof config.directory === 'string' ? config.directory : null;
+      const forgeDir = typeof config.directory === 'string' && config.directory ? config.directory : null;
       return {
         templates: inspectForgeTemplates(root),
         projects: inspectForgeProjects(forgeDir),

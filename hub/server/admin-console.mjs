@@ -410,7 +410,10 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         forgeDriveEnabled: config.forge?.drive?.enabled === true,
         forgePackagesEnabled: config.forge?.packages?.enabled === true,
         forgeDirectoryOutsideRoot: config.forge?.directory ? isOutside(platformRoot, config.forge.directory) : null,
-        driveCredentialsConfigured: driveCreds
+        driveCredentialsConfigured: driveCreds,
+        cdnEnabled: config.cdn?.enabled === true,
+        cdnProvider: config.cdn?.provider || null,
+        r2CredentialsConfigured: Boolean(env.PLAYHUB_R2_ACCESS_KEY_ID && env.PLAYHUB_R2_SECRET_ACCESS_KEY)
       },
       database: {
         filename: 'platform.sqlite',
@@ -473,7 +476,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         maxZipCompressedMiB: 64,
         maxZipExpandedMiB: 128,
         retentionDefaults: { keepLatest: 20, minAgeDays: 30, dryRunOnly: true },
-        multiplayerServices: ['BrawlLabs 3v3 (/brawllabs)', 'Fortress War (/fortress-war)']
+        multiplayerServices: ['BrawlLabs 3v3 (/brawllabs)', 'Fortress War (/fortress-war)', 'Tappy Chicken MMO (/tappy-chicken-mmo)']
       },
       templates,
       projects,

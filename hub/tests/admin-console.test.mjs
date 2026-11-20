@@ -79,6 +79,19 @@ test('admin 4-tab routing contracts resolve tabs, views, legacy hashes, and qaRu
 test('admin console endpoints cover system, hub, forge, qa, checklist, backup, audit filtering, and never leak secrets', async t => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-admin-console-'));
   const dataDir = path.join(dir, 'data');
+  const forgeDir = path.join(dir, 'forge-private');
+  const seededAccount = 'a'.repeat(64);
+  const seededProjectId = '1234567890abcdef12345678';
+  const seededProjectDir = path.join(forgeDir, 'accounts', seededAccount, 'projects', seededProjectId);
+  fs.mkdirSync(seededProjectDir, { recursive: true });
+  fs.writeFileSync(path.join(seededProjectDir, 'project.json'), JSON.stringify({
+    id: seededProjectId,
+    name: 'Seeded Tappy MMO',
+    template: 'tappy-chicken-mmo',
+    revision: 3,
+    releases: [{ id: 'f'.repeat(24), revision: 2 }],
+    updatedAt: '2026-11-20T10:00:00.000Z'
+  }));
   const creds = makeAdminCreds('AdminPassphrase!2026');
   const secretClient = 'SUPER_SECRET_GOOGLE_CLIENT_SECRET_VALUE';
   const secretDrive = 'SUPER_SECRET_DRIVE_REFRESH_TOKEN_VALUE';
@@ -92,6 +105,7 @@ test('admin console endpoints cover system, hub, forge, qa, checklist, backup, a
     userOrigins: ['http://localhost:8080'],
     adminOrigins: ['http://127.0.0.1:8081'],
     google: { clientId: 'test-client-id', clientSecret: secretClient, redirectUri: 'http://localhost:8090/api/auth/google/callback' },
+    forge: { enabled: false, directory: forgeDir },
     admin: { username: 'admin', passwordHash: creds.passwordHash, salt: creds.salt, localAutoLogin: false }
   }, {
     env: { ...process.env, PLAYHUB_DRIVE_CLIENT_ID: 'drv-id', PLAYHUB_DRIVE_CLIENT_SECRET: 'drv-sec', PLAYHUB_DRIVE_REFRESH_TOKEN: secretDrive }
@@ -180,11 +194,17 @@ test('admin console endpoints cover system, hub, forge, qa, checklist, backup, a
   assert.equal(savedChecklist.data.checklist.items.find(i => i.id === 'content_safety').checked, true);
   assert.equal(savedChecklist.data.checklist.items.find(i => i.id === 'save_runtime').checked, false);
 
-  // 5. Forge overview inspects official templates.
+  // 5. Forge overview inspects official templates and PlatformStore project directories.
   const forgeRes = await callHandler(app.adminHandler, '/api/admin/forge/overview', auth);
   assert.equal(forgeRes.status, 200);
   assert.ok(forgeRes.data.templates.length >= 4);
   assert.ok(forgeRes.data.templates.some(tpl => tpl.id === 'tappy-chicken'));
+  assert.equal(forgeRes.data.projects.length, 1);
+  assert.equal(forgeRes.data.projects[0].projectId, seededProjectId);
+  assert.equal(forgeRes.data.projects[0].name, 'Seeded Tappy MMO');
+  assert.equal(forgeRes.data.projects[0].templateId, 'tappy-chicken-mmo');
+  assert.equal(forgeRes.data.projects[0].revision, 3);
+  assert.equal(forgeRes.data.projects[0].releaseCount, 1);
 
   // 6. QA overview & QA runs recording linked to submission.
   const createdRun = await callHandler(app.adminHandler, '/api/admin/qa/runs', {

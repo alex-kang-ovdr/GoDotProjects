@@ -212,7 +212,7 @@ async function createIntegrationFixture(t) {
       clientSecret: 'test-google-secret',
       redirectUri: 'http://127.0.0.1:8090/api/auth/google/callback',
     },
-    forge: { enabled: false, internalSecret: INTERNAL_SECRET },
+    forge: { enabled: false, internalSecret: INTERNAL_SECRET, previousInternalSecret: 'prev-' + INTERNAL_SECRET },
     admin: { username: 'admin', salt, passwordHash: scryptSync(ADMIN_PASSWORD, salt, 64).toString('hex') },
   }, { rootDir: siteRoot, platformRoot: REPO_ROOT, clock: () => nowMs, fetch: fakeFetch, env: {} });
 
@@ -385,6 +385,15 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       body: JSON.stringify({ cookie: '' }),
     });
     assert.equal(wrongSecret.status, 403);
+
+    // Previous secret is accepted during secret rotation window (returns 401 SESSION_REQUIRED for empty cookie, not 403).
+    const previousSecret = await fetch(f.verifyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-PlayHub-Internal-Secret': 'prev-' + INTERNAL_SECRET },
+      body: JSON.stringify({ cookie: '' }),
+    });
+    assert.equal(previousSecret.status, 401);
+    assert.equal((await previousSecret.json()).error, 'SESSION_REQUIRED');
   });
 
   const alice = f.newBrowser();
@@ -416,6 +425,27 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       assert.equal(page.headers.get('cross-origin-opener-policy'), 'same-origin');
       assert.equal(page.headers.get('cross-origin-embedder-policy'), 'require-corp');
     }
+
+    // Showcase, AgentChat and Replay assets work under /forge/* without hardcoded root-only paths.
+    const showcaseHtml = await alice.site('/forge/OfficialGodot/showcase-game.html');
+    assert.equal(showcaseHtml.status, 200);
+    assert.doesNotMatch(showcaseHtml.text, /src="\/OfficialGodot\//);
+    const showcaseJs = await alice.site('/forge/OfficialGodot/showcase-game.js');
+    assert.equal(showcaseJs.status, 200);
+    assert.match(showcaseJs.text, /forgePath\('\/OfficialGodot\/vendor\/godot\.editor'\)/);
+    const chatLoginHtml = await alice.site('/forge/OfficialGodot/chatgpt-login.html');
+    assert.equal(chatLoginHtml.status, 200);
+    assert.doesNotMatch(chatLoginHtml.text, /src="\/OfficialGodot\//);
+    const agentJs = await alice.site('/forge/OfficialGodot/agent.js');
+    assert.equal(agentJs.status, 200);
+    assert.match(agentJs.text, /forgePath\('\/api\/agent-chat'\)/);
+    const replayAddon = await alice.site('/forge/api/platform-addon/replay');
+    assert.equal(replayAddon.status, 200);
+    assert.match(replayAddon.data.files['showcase_repository.gd'], /__playforgeBasePath/);
+    const agentChatAddon = await alice.site('/forge/api/platform-addon/agent-chat');
+    assert.equal(agentChatAddon.status, 200);
+    assert.match(agentChatAddon.data.files['chat_settings.gd'], /__playforgeBasePath/);
+    assert.match(agentChatAddon.data.files['plugin.gd'], /__playforgeBasePath/);
 
     const session = await alice.site('/forge/api/session');
     assert.equal(session.status, 200);

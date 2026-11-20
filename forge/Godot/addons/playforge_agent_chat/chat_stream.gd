@@ -23,10 +23,11 @@ Object.defineProperty(window, %s, {
 			(async () => {
 				let reader;
 				try {
+					const csrf = window.__playforgeCsrfToken || '';
 					const response = await fetch(endpoint, {
 						method: 'POST', body, signal: controller.signal, redirect: 'error',
 						cache: 'no-store', credentials: 'same-origin',
-						headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
+						headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) },
 					});
 					if (controller.signal.aborted) return;
 					notify('headers', response.status, response.headers.get('Content-Type') || '');

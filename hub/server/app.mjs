@@ -28,10 +28,12 @@ export function createApp(input, dependencies = {}) {
   const env = dependencies.env || process.env;
   const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, env);
   const internalForgeSecret = config.forge?.internalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET || '';
+  const previousInternalForgeSecret = config.forge?.previousInternalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS || '';
   // Opt-in: serve the Forge session verifier on the public listener so a Forge on another host can
   // reach it. Never enabled by default; requires a strong shared secret and is meant to sit behind HTTPS.
   const remoteForgeVerify = config.forge?.remoteVerify === true || env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';
   if (remoteForgeVerify && internalForgeSecret.length < 32) throw new Error('Remote Forge session verification requires PLAYHUB_FORGE_INTERNAL_SECRET of at least 32 characters');
+  if (previousInternalForgeSecret && previousInternalForgeSecret.length < 32) throw new Error('PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS must be at least 32 characters when set');
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -533,21 +535,36 @@ export function createApp(input, dependencies = {}) {
     }
     throw new ApiError(404,'NOT_FOUND');
   }
+  function matchesInternalSecret(provided) {
+    if (!internalForgeSecret) return true;
+    const currentMatch = equal(provided, internalForgeSecret);
+    const previousMatch = Boolean(previousInternalForgeSecret) && equal(provided, previousInternalForgeSecret);
+    return currentMatch || previousMatch;
+  }
   async function verifyInternalSession(req, res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     if (req.method !== 'POST') { json(res, 405, { authenticated: false, error: 'METHOD_NOT_ALLOWED' }); return; }
     const remote = req.socket?.remoteAddress || '';
     if (!remoteForgeVerify && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) { json(res, 403, { authenticated: false, error: 'LOOPBACK_REQUIRED' }); return; }
-    if (remoteForgeVerify) rate(`forgeverify:${remote}`, 1200, 60000);
     if (req.headers.origin !== undefined) { json(res, 403, { authenticated: false, error: 'ORIGIN_NOT_ALLOWED' }); return; }
-    if (internalForgeSecret && !equal(req.headers['x-playhub-internal-secret'], internalForgeSecret)) { json(res, 403, { authenticated: false, error: 'INTERNAL_SECRET_INVALID' }); return; }
+    if (!matchesInternalSecret(req.headers['x-playhub-internal-secret'])) {
+      if (remoteForgeVerify) rate(`forgeverify-denied:${remote}`, 60, 60000);
+      json(res, 403, { authenticated: false, error: 'INTERNAL_SECRET_INVALID' });
+      return;
+    }
     const body = await readJson(req, 8192);
     const rawCookie = typeof body.cookie === 'string' && body.cookie.length <= 8192 ? body.cookie : '';
     const parsed = cookies({ headers: { cookie: rawCookie } });
     const token = parsed[FORGE_COOKIE] || parsed[PUBLIC_COOKIE];
-    if (!token) { json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' }); return; }
-    const s = db.prepare("SELECT * FROM sessions WHERE id_hash=? AND kind='public'").get(digest(token));
+    if (!token) {
+      if (remoteForgeVerify) rate(`forgeverify-anon:${remote}`, 300, 60000);
+      json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' });
+      return;
+    }
+    const tokenHash = digest(token);
+    if (remoteForgeVerify) rate(`forgeverify:${tokenHash}`, 1200, 60000);
+    const s = db.prepare("SELECT * FROM sessions WHERE id_hash=? AND kind='public'").get(tokenHash);
     if (!s || s.expires_at <= now()) { json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' }); return; }
     let identity;
     try { identity = googleIdentityForSession(db, s); }

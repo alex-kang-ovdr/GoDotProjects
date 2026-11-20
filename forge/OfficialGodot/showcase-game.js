@@ -3,6 +3,8 @@
   const run = new URLSearchParams(location.search).get('run');
   const canvas = document.getElementById('showcase-game-canvas');
   const status = document.getElementById('game-status');
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
 
   async function start() {
     const snapshot = window.parent.__playforgeReadShowcaseGame?.(run, window);
@@ -23,7 +25,7 @@
         }
       },
     });
-    await game.init('/OfficialGodot/vendor/godot.editor');
+    await game.init(forgePath('/OfficialGodot/vendor/godot.editor'));
     for (const { path, bytes } of snapshot.files) game.copyToFS(`${directory}/${path}`, bytes);
     await game.start({ canvas, args: ['--path', directory, snapshot.scene] });
     if (document.documentElement.dataset.gameState === 'exited') return;

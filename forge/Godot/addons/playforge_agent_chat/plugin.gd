@@ -249,7 +249,7 @@ func _on_submitted(message: String, history: Array) -> void:
 			if not effort.is_empty():
 				body.reasoning_effort = effort
 	elif web:
-		endpoint = str(JavaScriptBridge.eval("window.location.origin")) + "/api/agent-chat"
+		endpoint = str(JavaScriptBridge.eval("window.location.origin + (window.__playforgeBasePath || '')", true)).trim_suffix("/") + "/api/agent-chat"
 	else:
 		body.merge({"model":model, "stream":false})
 	var streaming: bool = _web_turn.get("streaming", false) == true if embedded else _panel.providers.current_configuration().get("streaming", false)
@@ -258,7 +258,12 @@ func _on_submitted(message: String, history: Array) -> void:
 		if _stream.start(endpoint, body) != OK:
 			_panel.fail_turn("AI 모델 연결을 시작하지 못했습니다.")
 		return
-	if _request.request(endpoint, ["Content-Type: application/json"], HTTPClient.METHOD_POST, JSON.stringify(body)) != OK:
+	var headers := PackedStringArray(["Content-Type: application/json"])
+	if web:
+		var csrf := str(JavaScriptBridge.eval("window.__playforgeCsrfToken || ''", true))
+		if not csrf.is_empty():
+			headers.append("X-CSRF-Token: " + csrf)
+	if _request.request(endpoint, headers, HTTPClient.METHOD_POST, JSON.stringify(body)) != OK:
 		_panel.fail_turn("AI 모델 연결을 시작하지 못했습니다.")
 
 func _stop_turn() -> void:
