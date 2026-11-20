@@ -14,6 +14,9 @@ import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
+import { ensureSsotSchema } from './ssot/schema.mjs';
+import { createSanctions, mergeGuestSanctions } from './ssot/sanctions.mjs';
+import { createLeaderboard, mergeGuestLeaderboard } from './ssot/leaderboard.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -113,6 +116,9 @@ export function createApp(input, dependencies = {}) {
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
+  ensureSsotSchema(db);
+  const sanctions = createSanctions({ db, now, sessionFor, audit });
+  const leaderboard = createLeaderboard({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   function pendingMerge(principal) {
@@ -248,6 +254,8 @@ export function createApp(input, dependencies = {}) {
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
     if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
+    if (path === '/api/me/sanctions' && await sanctions.publicRoute(req,res,url)) return;
+    if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -433,6 +441,8 @@ export function createApp(input, dependencies = {}) {
         }
         db.prepare('INSERT OR IGNORE INTO wishlist_items(principal_id,game_id,added_at) SELECT ?,game_id,added_at FROM wishlist_items WHERE principal_id=?').run(s.principal_id,m.source_user);
         mergeGuestCommunity(db,m.source_user,s.principal_id);
+        mergeGuestLeaderboard(db,m.source_user,s.principal_id,now());
+        mergeGuestSanctions(db,m.source_user,s.principal_id);
         const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
         if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
@@ -513,6 +523,8 @@ export function createApp(input, dependencies = {}) {
     if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
+    if ((path === '/api/admin/sanctions' || path.startsWith('/api/admin/sanctions/')) && await sanctions.adminRoute(req,res,url,s)) return;
+    if (path.includes('/leaderboards') && await leaderboard.adminRoute(req,res,url,s)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
     if (path === '/api/admin/metrics' && req.method === 'GET') {
       const filters=metricsOptions(url),games=readCatalog(rootDir,db);
