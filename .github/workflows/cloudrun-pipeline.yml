@@ -83,8 +83,8 @@ jobs:
           node-version: '24'
       - name: Check worktree ownership rules
         run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
-      - name: Run build-version & compatibility gate tests
-        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs
+      - name: Run build-version, compatibility gate & entrypoint proxy tests
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Smoke test Cloud Run Hub entrypoint
@@ -99,9 +99,12 @@ jobs:
       hub_build_tag: ${{ steps.meta.outputs.hub_build_tag }}
       hub_build_id: ${{ steps.meta.outputs.hub_build_id }}
       hub_build_code: ${{ steps.meta.outputs.hub_build_code }}
+      hub_daily_seq: ${{ steps.meta.outputs.hub_daily_seq }}
       hub_revision: ${{ steps.meta.outputs.hub_revision }}
       forge_build_tag: ${{ steps.meta.outputs.forge_build_tag }}
       forge_build_id: ${{ steps.meta.outputs.forge_build_id }}
+      forge_build_code: ${{ steps.meta.outputs.forge_build_code }}
+      forge_daily_seq: ${{ steps.meta.outputs.forge_daily_seq }}
       forge_revision: ${{ steps.meta.outputs.forge_revision }}
       build_date: ${{ steps.meta.outputs.build_date }}
     steps:
@@ -112,11 +115,18 @@ jobs:
       - name: Build Hub static output for container
         run: node hub/tools/build.mjs
       - id: meta
+        env:
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
         run: |
+          set -euo pipefail
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
           BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           HUB_SEMVER=$(node -p "require('./hub/package.json').version")
           FORGE_SEMVER=$(node -p "require('./forge/package.json').version")
-          POLICY="${{ inputs.update_policy || 'optional' }}"
           echo "build_date=${BUILD_DATE}" >> "$GITHUB_OUTPUT"
           echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
           node tools/build-version/resolve-build-info.mjs \
@@ -140,32 +150,62 @@ jobs:
       - run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
       - name: Build & push immutable Hub image
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
+        env:
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
+          BUILD_DATE: ${{ steps.meta.outputs.build_date }}
+          HUB_BUILD_TAG: ${{ steps.meta.outputs.hub_build_tag }}
+          HUB_SHA_TAG: ${{ steps.meta.outputs.sha_tag }}
+          HUB_DAILY_SEQ: ${{ steps.meta.outputs.hub_daily_seq }}
+          HUB_BUILD_CODE: ${{ steps.meta.outputs.hub_build_code }}
         run: |
+          set -euo pipefail
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
           docker build -f deploy/cloudrun/hub/Dockerfile \
             --build-arg PLAYHUB_CHANNEL=dev \
             --build-arg PLAYHUB_BUILD_NUM="${GITHUB_RUN_NUMBER}" \
-            --build-arg PLAYHUB_BUILD_DATE="${{ steps.meta.outputs.build_date }}" \
+            --build-arg PLAYHUB_DAILY_SEQ="${HUB_DAILY_SEQ}" \
+            --build-arg PLAYHUB_BUILD_CODE="${HUB_BUILD_CODE}" \
+            --build-arg PLAYHUB_BUILD_DATE="${BUILD_DATE}" \
             --build-arg PLAYHUB_BRANCH="${GITHUB_REF_NAME}" \
             --build-arg PLAYHUB_COMMIT="${GITHUB_SHA}" \
-            --build-arg PLAYHUB_UPDATE_POLICY="${{ inputs.update_policy || 'optional' }}" \
-            -t "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.hub_build_tag }}" \
-            -t "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}" .
-          docker push "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.hub_build_tag }}"
-          docker push "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}"
+            --build-arg PLAYHUB_UPDATE_POLICY="${POLICY}" \
+            -t "${ARTIFACT_REPO}/hub:${HUB_BUILD_TAG}" \
+            -t "${ARTIFACT_REPO}/hub:${HUB_SHA_TAG}" .
+          docker push "${ARTIFACT_REPO}/hub:${HUB_BUILD_TAG}"
+          docker push "${ARTIFACT_REPO}/hub:${HUB_SHA_TAG}"
       - name: Build & push immutable Forge image
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
+        env:
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
+          BUILD_DATE: ${{ steps.meta.outputs.build_date }}
+          FORGE_BUILD_TAG: ${{ steps.meta.outputs.forge_build_tag }}
+          FORGE_SHA_TAG: ${{ steps.meta.outputs.sha_tag }}
+          FORGE_DAILY_SEQ: ${{ steps.meta.outputs.forge_daily_seq }}
+          FORGE_BUILD_CODE: ${{ steps.meta.outputs.forge_build_code }}
         run: |
+          set -euo pipefail
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
           docker build -f deploy/cloudrun/forge/Dockerfile \
             --build-arg PLAYFORGE_CHANNEL=dev \
             --build-arg PLAYFORGE_BUILD_NUM="${GITHUB_RUN_NUMBER}" \
-            --build-arg PLAYFORGE_BUILD_DATE="${{ steps.meta.outputs.build_date }}" \
+            --build-arg PLAYFORGE_DAILY_SEQ="${FORGE_DAILY_SEQ}" \
+            --build-arg PLAYFORGE_BUILD_CODE="${FORGE_BUILD_CODE}" \
+            --build-arg PLAYFORGE_BUILD_DATE="${BUILD_DATE}" \
             --build-arg PLAYFORGE_BRANCH="${GITHUB_REF_NAME}" \
             --build-arg PLAYFORGE_COMMIT="${GITHUB_SHA}" \
-            --build-arg PLAYFORGE_UPDATE_POLICY="${{ inputs.update_policy || 'optional' }}" \
-            -t "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.forge_build_tag }}" \
-            -t "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}" .
-          docker push "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.forge_build_tag }}"
-          docker push "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}"
+            --build-arg PLAYFORGE_UPDATE_POLICY="${POLICY}" \
+            -t "${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
+            -t "${ARTIFACT_REPO}/forge:${FORGE_SHA_TAG}" .
+          docker push "${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}"
+          docker push "${ARTIFACT_REPO}/forge:${FORGE_SHA_TAG}"
 
   deploy-dev:
     needs: build
@@ -180,31 +220,64 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
       - name: Deploy Hub to playhub-dev-2611 (Always Free, zero-downtime)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
+        env:
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
+          INPUT_FORCE_TARGETS: ${{ inputs.force_targets || '' }}
+          HUB_BUILD_TAG: ${{ needs.build.outputs.hub_build_tag }}
+          HUB_BUILD_ID: ${{ needs.build.outputs.hub_build_id }}
+          HUB_BUILD_CODE: ${{ needs.build.outputs.hub_build_code }}
         run: |
-          POLICY="${{ inputs.update_policy || 'optional' }}"
-          FORCE_TARGETS="${{ inputs.force_targets }}"
+          set -euo pipefail
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          FORCE_TARGETS="${INPUT_FORCE_TARGETS:-}"
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
+          if [[ -n "${FORCE_TARGETS}" && ! "${FORCE_TARGETS}" =~ ^(all|\*|(aos|ios|forge-desktop|forge-web|forge|hub|godot-server)(,(aos|ios|forge-desktop|forge-web|forge|hub|godot-server))*)$ ]]; then
+            echo "Invalid force_targets: ${FORCE_TARGETS}" >&2
+            exit 1
+          fi
           gcloud run deploy playhub-hub \
             --project="${DEV_HUB_PROJECT}" \
             --region="${REGION}" \
-            --image="${ARTIFACT_REPO}/hub:${{ needs.build.outputs.hub_build_tag }}" \
+            --image="${ARTIFACT_REPO}/hub:${HUB_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 \
-            --set-env-vars="PLAYHUB_ROLE=public,PLAYHUB_SECURE_COOKIES=true,PLAYHUB_CHANNEL=dev,PLAYHUB_BUILD_ID=${{ needs.build.outputs.hub_build_id }},PLAYHUB_BUILD_CODE=${{ needs.build.outputs.hub_build_code }},PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
+            --set-env-vars="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
+            --quiet
+          HUB_URL=$(gcloud run services describe playhub-hub \
+            --project="${DEV_HUB_PROJECT}" \
+            --region="${REGION}" \
+            --format='value(status.url)')
+          if [[ ! "${HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            echo "Failed to resolve valid Cloud Run service URL for playhub-hub: ${HUB_URL}" >&2
+            exit 1
+          fi
+          gcloud run services update playhub-hub \
+            --project="${DEV_HUB_PROJECT}" \
+            --region="${REGION}" \
+            --update-env-vars="^##^PLAYHUB_PUBLIC_ORIGIN=${HUB_URL}" \
             --quiet
       - name: Deploy Forge to forge-dev-2611 (Always Free, Hub Auth fail-closed)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
+        env:
+          FORGE_BUILD_TAG: ${{ needs.build.outputs.forge_build_tag }}
+          FORGE_BUILD_ID: ${{ needs.build.outputs.forge_build_id }}
         run: |
+          set -euo pipefail
           gcloud run deploy playhub-forge \
             --project="${DEV_FORGE_PROJECT}" \
             --region="${REGION}" \
-            --image="${ARTIFACT_REPO}/forge:${{ needs.build.outputs.forge_build_tag }}" \
+            --image="${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=3600 \
-            --set-env-vars="PLAYFORGE_BASE_PATH=/forge,PLAYHUB_FORGE_AUTH_MODE=hub,PLAYFORGE_BUILD_ID=${{ needs.build.outputs.forge_build_id }}" \
+            --set-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}" \
             --quiet
 
   promote-qa:
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'promote-qa'
+    environment: qa
     runs-on: ubuntu-latest
     steps:
       - name: Authenticate to Google Cloud (WIF)
@@ -214,19 +287,41 @@ jobs:
           service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Deploy QA preview tag (no rebuild, zero impact on dev traffic)
+        env:
+          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
+          INPUT_FORCE_TARGETS: ${{ inputs.force_targets || '' }}
         run: |
-          TAG="${{ inputs.image_tag }}"
-          POLICY="${{ inputs.update_policy || 'optional' }}"
-          FORCE_TARGETS="${{ inputs.force_targets }}"
-          test -n "$TAG" || (echo "image_tag required" && exit 1)
-          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
+          set -euo pipefail
+          TAG="${INPUT_IMAGE_TAG:-}"
+          TARGET="${INPUT_TARGET:-both}"
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          FORCE_TARGETS="${INPUT_FORCE_TARGETS:-}"
+          if [[ ! "${TAG}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]; then
+            echo "Invalid or missing image_tag: ${TAG}" >&2
+            exit 1
+          fi
+          if [[ ! "${TARGET}" =~ ^(both|hub|forge)$ ]]; then
+            echo "Invalid target: ${TARGET}" >&2
+            exit 1
+          fi
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
+          if [[ -n "${FORCE_TARGETS}" && ! "${FORCE_TARGETS}" =~ ^(all|\*|(aos|ios|forge-desktop|forge-web|forge|hub|godot-server)(,(aos|ios|forge-desktop|forge-web|forge|hub|godot-server))*)$ ]]; then
+            echo "Invalid force_targets: ${FORCE_TARGETS}" >&2
+            exit 1
+          fi
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "hub" ]; then
             gcloud run deploy playhub-hub \
               --project="${DEV_HUB_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/hub:${TAG}" \
-              --update-env-vars="PLAYHUB_CHANNEL=qa,PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
+              --update-env-vars="^##^PLAYHUB_CHANNEL=qa##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
               --no-traffic --tag=qa --quiet
           fi
-          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "forge" ]; then
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "forge" ]; then
             gcloud run deploy playhub-forge \
               --project="${DEV_FORGE_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/forge:${TAG}" \
@@ -245,24 +340,51 @@ jobs:
           service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Promote immutable QA-verified image to Live (canary supported)
+        env:
+          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+          INPUT_TARGET: ${{ inputs.target }}
+          INPUT_CANARY_PERCENT: ${{ inputs.canary_percent || '100' }}
+          INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
+          INPUT_FORCE_TARGETS: ${{ inputs.force_targets || '' }}
         run: |
-          TAG="${{ inputs.image_tag }}"
-          PCT="${{ inputs.canary_percent }}"
-          POLICY="${{ inputs.update_policy || 'optional' }}"
-          FORCE_TARGETS="${{ inputs.force_targets }}"
-          test -n "$TAG" || (echo "image_tag required" && exit 1)
-          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
+          set -euo pipefail
+          TAG="${INPUT_IMAGE_TAG:-}"
+          TARGET="${INPUT_TARGET:-both}"
+          PCT="${INPUT_CANARY_PERCENT:-100}"
+          POLICY="${INPUT_UPDATE_POLICY:-optional}"
+          FORCE_TARGETS="${INPUT_FORCE_TARGETS:-}"
+          if [[ ! "${TAG}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]; then
+            echo "Invalid or missing image_tag: ${TAG}" >&2
+            exit 1
+          fi
+          if [[ ! "${TARGET}" =~ ^(both|hub|forge)$ ]]; then
+            echo "Invalid target: ${TARGET}" >&2
+            exit 1
+          fi
+          if [[ ! "${PCT}" =~ ^([1-9][0-9]?|100)$ ]]; then
+            echo "Invalid canary_percent (must be integer 1-100): ${PCT}" >&2
+            exit 1
+          fi
+          if [[ ! "${POLICY}" =~ ^(optional|force)$ ]]; then
+            echo "Invalid update_policy: ${POLICY}" >&2
+            exit 1
+          fi
+          if [[ -n "${FORCE_TARGETS}" && ! "${FORCE_TARGETS}" =~ ^(all|\*|(aos|ios|forge-desktop|forge-web|forge|hub|godot-server)(,(aos|ios|forge-desktop|forge-web|forge|hub|godot-server))*)$ ]]; then
+            echo "Invalid force_targets: ${FORCE_TARGETS}" >&2
+            exit 1
+          fi
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "hub" ]; then
             gcloud run deploy playhub-hub \
               --project="${LIVE_HUB_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/hub:${TAG}" \
-              --update-env-vars="PLAYHUB_CHANNEL=live,PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
+              --update-env-vars="^##^PLAYHUB_CHANNEL=live##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
               --no-traffic --tag=candidate --quiet
             REV=$(gcloud run services describe playhub-hub --project="${LIVE_HUB_PROJECT}" --region="${REGION}" --format='value(status.latestReadyRevisionName)')
             gcloud run services update-traffic playhub-hub \
               --project="${LIVE_HUB_PROJECT}" --region="${REGION}" \
               --to-revisions="${REV}=${PCT}" --quiet
           fi
-          if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "forge" ]; then
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "forge" ]; then
             gcloud run deploy playhub-forge \
               --project="${LIVE_FORGE_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/forge:${TAG}" \
@@ -285,18 +407,34 @@ jobs:
           service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Instant 1-second traffic rollback to previous revision
+        env:
+          INPUT_ROLLBACK_REVISION: ${{ inputs.rollback_revision }}
+          INPUT_ROLLBACK_ENV: ${{ inputs.rollback_env || 'live' }}
+          INPUT_TARGET: ${{ inputs.target }}
         run: |
-          REV="${{ inputs.rollback_revision }}"
-          test -n "$REV" || (echo "rollback_revision required" && exit 1)
-          if [ "${{ inputs.rollback_env }}" = "dev" ]; then
+          set -euo pipefail
+          REV="${INPUT_ROLLBACK_REVISION:-}"
+          ROLLBACK_ENV="${INPUT_ROLLBACK_ENV:-live}"
+          TARGET="${INPUT_TARGET:-}"
+          if [[ ! "${REV}" =~ ^[a-z][a-z0-9-]{0,62}$ ]]; then
+            echo "Invalid or missing rollback_revision: ${REV}" >&2
+            exit 1
+          fi
+          if [[ ! "${ROLLBACK_ENV}" =~ ^(dev|live)$ ]]; then
+            echo "Invalid rollback_env: ${ROLLBACK_ENV}" >&2
+            exit 1
+          fi
+          if [[ ! "${TARGET}" =~ ^(hub|forge)$ ]]; then
+            echo "rollback requires target=hub or target=forge with exact revision name" >&2
+            exit 1
+          fi
+          if [ "${ROLLBACK_ENV}" = "dev" ]; then
             HUB_P="${DEV_HUB_PROJECT}"; FORGE_P="${DEV_FORGE_PROJECT}"
           else
             HUB_P="${LIVE_HUB_PROJECT}"; FORGE_P="${LIVE_FORGE_PROJECT}"
           fi
-          if [ "${{ inputs.target }}" = "hub" ]; then
+          if [ "${TARGET}" = "hub" ]; then
             gcloud run services update-traffic playhub-hub --project="${HUB_P}" --region="${REGION}" --to-revisions="${REV}=100" --quiet
-          elif [ "${{ inputs.target }}" = "forge" ]; then
-            gcloud run services update-traffic playhub-forge --project="${FORGE_P}" --region="${REGION}" --to-revisions="${REV}=100" --quiet
           else
-            echo "rollback requires target=hub or target=forge with exact revision name" && exit 1
+            gcloud run services update-traffic playhub-forge --project="${FORGE_P}" --region="${REGION}" --to-revisions="${REV}=100" --quiet
           fi

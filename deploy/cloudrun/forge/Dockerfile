@@ -26,25 +26,30 @@ COPY tools/build-version /app/tools/build-version
 
 ARG PLAYFORGE_CHANNEL=dev
 ARG PLAYFORGE_BUILD_NUM=0
-ARG PLAYFORGE_DAILY_SEQ=0
+ARG PLAYFORGE_DAILY_SEQ=
+ARG PLAYFORGE_BUILD_CODE=
 ARG PLAYFORGE_BUILD_DATE=
 ARG PLAYFORGE_BRANCH=playhub-platform
 ARG PLAYFORGE_COMMIT=0000000
 ARG PLAYFORGE_UPDATE_POLICY=optional
 RUN SEMVER=$(node -p "require('./package.json').version") \
     && DATE_ARG=$([ -n "$PLAYFORGE_BUILD_DATE" ] && echo "--date $PLAYFORGE_BUILD_DATE" || true) \
+    && SEQ_ARG=$([ -n "$PLAYFORGE_DAILY_SEQ" ] && echo "--daily-seq $PLAYFORGE_DAILY_SEQ" || true) \
     && node /app/tools/build-version/resolve-build-info.mjs \
       --target forge-web \
       --semver "$SEMVER" \
       --channel "$PLAYFORGE_CHANNEL" \
       --build-num "$PLAYFORGE_BUILD_NUM" \
-      --daily-seq "$PLAYFORGE_DAILY_SEQ" \
+      $SEQ_ARG \
       --branch "$PLAYFORGE_BRANCH" \
       --commit "$PLAYFORGE_COMMIT" \
       --update-policy "$PLAYFORGE_UPDATE_POLICY" \
       --clean \
       $DATE_ARG \
-      --out-json /app/forge/BUILD_INFO.json
+      --out-json /app/forge/BUILD_INFO.json \
+    && if [ -n "$PLAYFORGE_BUILD_CODE" ]; then \
+      node -e "const b=require('/app/forge/BUILD_INFO.json'); if(String(b.buildCode)!==String(process.env.PLAYFORGE_BUILD_CODE)){console.error('BUILD_CODE mismatch:',b.buildCode,'vs',process.env.PLAYFORGE_BUILD_CODE); process.exit(1);}"; \
+    fi
 
 RUN useradd --system --uid 10001 --home /tmp --shell /usr/sbin/nologin playforge \
     && mkdir -p /tmp/playforge-accounts /tmp/playforge-studios \
