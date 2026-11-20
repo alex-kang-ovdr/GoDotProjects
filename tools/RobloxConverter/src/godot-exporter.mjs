@@ -137,6 +137,8 @@ func _spawn_playable_character() -> void:
 
 const HUMANOID_PROXY_GD = `extends Node
 
+signal died
+
 var walk_speed: float = 16.0
 var health: float = 100.0
 var last_state: String = "Running"
@@ -150,9 +152,14 @@ func set_walk_speed(studs_per_sec: float) -> void:
 \tif ch != null and ch.has_method("set_walk_speed"):
 \t\tch.call("set_walk_speed", studs_per_sec)
 
+func take_damage(amount: float) -> void:
+\tset_health(health - amount)
+
 func set_health(new_health: float) -> void:
 \thealth = new_health
 \tvar ch := _character()
+\tif health <= 0.0:
+\t\tdied.emit()
 \tif ch != null and ch.has_method("set_health"):
 \t\tch.call("set_health", new_health)
 \tif health <= 0.0:

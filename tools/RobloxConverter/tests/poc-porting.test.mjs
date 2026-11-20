@@ -7,7 +7,9 @@ import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { importRbxlxFile } from '../src/rbxlx-importer.mjs';
+import { importRojoProject } from '../src/rojo-importer.mjs';
 import { exportRobloxPlaceToGodot } from '../src/godot-exporter.mjs';
+import { exportRojoProjectToGodot } from '../src/rojo-exporter.mjs';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const CONVERTER_ROOT = path.resolve(__dir, '..');
@@ -15,6 +17,7 @@ const REPO_ROOT = path.resolve(CONVERTER_ROOT, '..', '..');
 const BASEPLATE_RBXLX = path.join(CONVERTER_ROOT, 'fixtures', 'baseplate-413', 'xml.rbxlx');
 const CHAOS_RBXLX = path.join(CONVERTER_ROOT, 'fixtures', 'chaos-obby', 'ChaosObby.rbxlx');
 const VERIFY_GD = path.join(REPO_ROOT, 'forge', 'Tests', 'playforge_roblox_compat', 'verify_chaos_obby.gd');
+const VERIFY_MULTI_GD = path.join(REPO_ROOT, 'forge', 'Tests', 'playforge_roblox_compat', 'verify_multi_games.gd');
 const GODOT_CANDIDATES = [
   process.env.GODOT_BIN,
   path.join(REPO_ROOT, 'artifacts', 'local-runtime', 'godot', 'Godot_v4.7.2-stable_win64_console.exe'),
@@ -147,5 +150,73 @@ script = ExtResource("2")
     assert.equal(summary.pass_rate, 1);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('Rojo Importer parses War Tycoon, Power Punch Simulator, and Lantai Runtuh into Typed IR', () => {
+  const specs = [
+    { dir: 'war-tycoon', minScripts: 11 },
+    { dir: 'power-punch-sim', minScripts: 16 },
+    { dir: 'lantai-runtuh', minScripts: 25 }
+  ];
+  for (const s of specs) {
+    const ir = importRojoProject(path.join(CONVERTER_ROOT, 'fixtures', s.dir, 'default.project.json'));
+    assert.equal(ir.sourceFormat, 'rojo');
+    assert.ok(ir.stats.scriptCount >= s.minScripts, `${s.dir} expected >= ${s.minScripts} scripts, got ${ir.stats.scriptCount}`);
+  }
+});
+
+test('Godot 4.7.2 headless verification for 3 Rojo games: War Tycoon, Power Punch Simulator, Lantai Runtuh (15/15)', (t) => {
+  if (!GODOT_BIN) {
+    t.skip('Godot 4.7.2 console binary not found in environment');
+    return;
+  }
+  const cases = [
+    { id: 'war_tycoon', dir: 'war-tycoon', expectedX: 0 },
+    { id: 'power_punch_sim', dir: 'power-punch-sim', expectedX: 4 },
+    { id: 'lantai_runtuh', dir: 'lantai-runtuh', expectedX: 1 }
+  ];
+
+  for (const c of cases) {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `roblox-poc-${c.id}-`));
+    try {
+      const report = exportRojoProjectToGodot(path.join(CONVERTER_ROOT, 'fixtures', c.dir, 'default.project.json'), tmpDir);
+      assert.equal(report.kpis.unreported_unsupported_count, 0);
+      assert.ok(report.kpis.x_grade_diagnostics >= c.expectedX, `${c.id} expected X-grade diagnostics >= ${c.expectedX}`);
+
+      fs.copyFileSync(VERIFY_MULTI_GD, path.join(tmpDir, 'verify_multi_games.gd'));
+      fs.writeFileSync(
+        path.join(tmpDir, 'verify_harness.tscn'),
+        `[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://main.tscn" id="1"]
+[ext_resource type="Script" path="res://verify_multi_games.gd" id="2"]
+[node name="Harness" type="Node"]
+[node name="Main" parent="." instance=ExtResource("1")]
+[node name="Verifier" type="Node" parent="."]
+script = ExtResource("2")
+game_id = "${c.id}"
+`,
+        'utf8'
+      );
+
+      let stdout = '';
+      try {
+        stdout = execFileSync(GODOT_BIN, ['--headless', '--path', tmpDir, 'res://verify_harness.tscn'], {
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'pipe'],
+          timeout: 25000
+        });
+      } catch (e) {
+        stdout = (e.stdout || '') + '\n' + (e.stderr || '');
+      }
+
+      const match = stdout.match(/BEHAVIOR_SUMMARY_JSON=(\{.*\})/);
+      assert.ok(match, `[${c.id}] Missing BEHAVIOR_SUMMARY_JSON:\n${stdout.slice(0, 1500)}`);
+      const summary = JSON.parse(match[1]);
+      assert.equal(summary.passed, 5, `[${c.id}] Expected 5/5 assertions: ${JSON.stringify(summary, null, 2)}`);
+      assert.equal(summary.total, 5);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   }
 });

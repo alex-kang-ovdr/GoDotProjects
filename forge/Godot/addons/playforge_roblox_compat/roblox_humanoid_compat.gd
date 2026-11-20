@@ -3,6 +3,8 @@ extends CharacterBody3D
 const GRAVITY := 19.6
 const JUMP_VELOCITY := 9.2
 
+signal died
+
 @export var walk_speed: float = 16.0
 @export var health: float = 100.0
 var last_state: String = "Running"
@@ -16,10 +18,14 @@ func _ready() -> void:
 func set_walk_speed(studs_per_sec: float) -> void:
 	walk_speed = studs_per_sec
 
+func take_damage(amount: float) -> void:
+	set_health(health - amount)
+
 func set_health(new_health: float) -> void:
 	health = new_health
 	if health <= 0.0:
 		death_count += 1
+		died.emit()
 		health = 100.0
 		respawn()
 

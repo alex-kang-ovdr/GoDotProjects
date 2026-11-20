@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_REGISTRY_PATH = path.resolve(__dir, '..', 'mappings', 'core-api.v1.json');
+const DEFAULT_REGISTRY_PATH = path.resolve(__dir, '..', 'mappings', 'core-api.v2.json');
 
 const KNOWN_SERVICES = new Set([
   'Workspace',
@@ -11,6 +11,7 @@ const KNOWN_SERVICES = new Set([
   'RunService',
   'Lighting',
   'ReplicatedStorage',
+  'ReplicatedFirst',
   'ServerScriptService',
   'ServerStorage',
   'StarterGui',
@@ -24,7 +25,14 @@ const KNOWN_SERVICES = new Set([
   'MarketplaceService',
   'TeleportService',
   'MemoryStoreService',
-  'MessagingService'
+  'MessagingService',
+  'Debris',
+  'SoundService',
+  'GuiService',
+  'ContextActionService',
+  'TextChatService',
+  'PolicyService',
+  'SocialService'
 ]);
 
 const EXTERNAL_SERVICES = new Set([
@@ -32,7 +40,9 @@ const EXTERNAL_SERVICES = new Set([
   'MarketplaceService',
   'TeleportService',
   'MemoryStoreService',
-  'MessagingService'
+  'MessagingService',
+  'PolicyService',
+  'SocialService'
 ]);
 
 export function loadCapabilityRegistry(registryPath = DEFAULT_REGISTRY_PATH) {
