@@ -159,6 +159,19 @@ flowchart LR
 4. **심사 정책·스케줄·격리 (`?tab=qa&view=policies`)**: 심사 정책 버전(`review-policy`), 수동 체크리스트 기준(`manual-review.v1`), 야간 스케줄 및 Flaky 격리(`quarantine.json`) 현황.
 5. **QA·검증 지표 샌드박스 (`?tab=qa&view=metrics`)**: `dataset=qa` 및 `dataset=demo` 전용 지표·퍼널·리텐션·게임 표(공개 변경 버튼 비활성 유지) 및 `qa_run_id`별 실행 이력 조회.
 
+### 탭 5. L10N (플랫폼 다국어)
+
+- 플랫폼 사이트(`hub/web/user`, `hub/web/admin`, `hub/shared`) 전용 8개 언어 LOCTEXT 스트링 테이블·수집·AI 번역·단어집·이미지·불변 릴리스 관리 ([L10N_ADMIN_PLAN.md](L10N_ADMIN_PLAN.md) 참고).
+
+### 탭 6. Store (PlayForge Store 운영 · 심사)
+
+- 기존 Hub 게임 카탈로그(`games/catalog.json`, `platform.sqlite`)와 분리된 `store-admin.sqlite`(`store_admin_packages`, `store_admin_submissions`)를 통해 Store 운영을 전담한다.
+- 모든 상태 변경 및 심사 판정은 기존 `audit` 테이블(`store_*` 액션 → `domain='store'`)에 기록한다.
+
+1. **Store 대시보드 (`?tab=store&view=overview`)**: 게시/대기/제한(yanked·deprecated·hidden)/설치·신고 요약 지표, 제출 심사 큐(좌우 분할), 패키지 상태·킬스위치 테이블, 최근 Store 감사 로그 통합 뷰.
+2. **제출 심사 큐 (`?tab=store&view=submissions`)**: `approve` / `request_changes` / `reject` 판정. `approve` 시 `package`는 `sha256:<64-hex>` `artifact_digest` 불변 계약 및 `file_manifest` 검증을 강제하고, `editorial`은 패키지 아티팩트(`artifact_id`, `artifact_digest`, `file_manifest`) 포함을 금지한다. 승인만으로 기존 Hub 게임이나 라이브 카탈로그를 자동 게시하지 않는다.
+3. **패키지 · 킬스위치 (`?tab=store&view=packages`)**: Store 패키지/일반 콘텐츠의 `published` / `hidden` / `deprecated` / `yanked`(긴급 킬스위치) 상태 전환 및 사유 기록.
+
 ---
 
 ## 5. 권한 모델(RBAC) 및 API 네임스페이스
@@ -171,10 +184,15 @@ flowchart LR
   - `GET / PUT /api/admin/submissions/:id/checklist`
   - `GET /api/admin/forge/overview`
   - `GET /api/admin/qa/overview`
+  - `GET /api/admin/store/overview`, `GET /api/admin/store/submissions`, `GET /api/admin/store/packages`
+  - `POST /api/admin/store/submissions/:id/decision`, `POST /api/admin/store/packages/:slug/status`
   - `GET /api/admin/audit` (선택 쿼리 `domain`, `action`, `q`, `limit` 추가, 기존 무인자 호출 하위 호환 유지)
 - SQLite 추가 테이블(`hub/tools/restore-data.mjs`의 `OPTIONAL_TABLES`에 등록하여 구/신 스냅샷 복원 호환 유지):
   - `qa_runs`
   - `submission_checklists`
+- Store Admin 격리 SQLite (`store-admin.sqlite`):
+  - `store_admin_packages`
+  - `store_admin_submissions`
 
 ---
 
