@@ -20,3 +20,23 @@ test('owner, revision, immutable artifact integrity and path validation',async t
  fs.writeFileSync(path.join(folder,'output','PlayForge-Web.zip'),Buffer.from('tampered'));assert.throws(()=>service.resolve(a,project.id,release.id),/integrity/);
  fs.writeFileSync(path.join(folder,'output','PlayForge-Web.zip'),bytes);job.sourceHash='0'.repeat(64);fs.writeFileSync(path.join(folder,'result.json'),JSON.stringify(job));assert.throws(()=>service.resolve(a,project.id,release.id),/revision/);
 });
+test('shared queue mode checks ownerKey on the job and reads the package from the queue directory',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'owned-shared-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const a='a'.repeat(64),b='b'.repeat(64),id='d'.repeat(16),other='e'.repeat(16);
+ const stores={[a]:new PlatformStore(root,path.join(root,'accounts',a)),[b]:new PlatformStore(root,path.join(root,'accounts',b))};
+ const project=stores[a].createProject({name:'shared'});
+ const queueDir=path.join(root,'queue');const jobs=new Map();const enqueued=[];
+ const queue={directory:queueDir,get:x=>jobs.get(x)||null,enqueue(s){enqueued.push(s);return {id:other,projectId:s.id,revision:s.revision,status:'queued',target:'web',ownerKey:s.ownerKey};}};
+ const service=new OwnedBuildPackages({root,queue,storeFor:k=>stores[k]});
+ assert.throws(()=>new OwnedBuildPackages({root,queue}),/storeFor/);
+ const queued=service.enqueueJob(a,project.id,1);assert.equal(queued.id,other);assert.equal(enqueued[0].ownerKey,a);
+ const snap=service.snapshot(a,project.id,1);assert.deepEqual(enqueued[0].files,snap.files);
+ const bytes=zipFiles([['index.html',Buffer.from('<html>shared</html>')]]);fs.mkdirSync(path.join(queueDir,id,'output'),{recursive:true});fs.writeFileSync(path.join(queueDir,id,'output','PlayForge-Web.zip'),bytes);
+ jobs.set(id,{id,projectId:project.id,revision:1,target:'web',status:'succeeded',ownerKey:a,sourceHash:hash(JSON.stringify(snap.files)),artifactSha256:hash(bytes)});
+ assert.equal(service.verified(a,project.id,id,1).job.id,id);
+ assert.throws(()=>service.verified(b,project.id,id,1));
+ jobs.set(id,{...jobs.get(id),ownerKey:b});assert.throws(()=>service.verified(a,project.id,id,1),/build_not_found/);
+ jobs.set(id,{...jobs.get(id),ownerKey:a,sourceHash:'0'.repeat(64)});assert.throws(()=>service.verified(a,project.id,id,1),/revision/);
+ jobs.set(id,{...jobs.get(id),sourceHash:hash(JSON.stringify(snap.files))});fs.writeFileSync(path.join(queueDir,id,'output','PlayForge-Web.zip'),Buffer.from('tampered'));assert.throws(()=>service.verified(a,project.id,id,1),/integrity/);
+ service.close();
+});

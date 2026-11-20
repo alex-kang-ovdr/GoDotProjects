@@ -464,15 +464,36 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.match(welcomeAlice.document.source, /# alice-private-marker/);
 
     // Seed a succeeded build owned by Alice so we can verify build isolation without running Godot export.
+    // Release validation checks the canonical source hash and the package hash (OwnedBuildPackages).
     aliceBuildId = 'a1b2c3d4e5f60708';
     const buildOut = path.join(f.buildDir, aliceBuildId, 'output');
     fs.mkdirSync(buildOut, { recursive: true });
     fs.writeFileSync(path.join(buildOut, 'index.html'), '<!doctype html><html><body>Alice Build</body></html>');
+    const packageBytes = Buffer.from('alice-build-package-fixture');
+    fs.writeFileSync(path.join(buildOut, 'PlayForge-Web.zip'), packageBytes);
+    const sourceFiles = Object.entries(accountStore.read(aliceProjectId).history.find(r => r.revision === 1).files)
+      .sort(([a], [b]) => a.localeCompare(b, 'en')).map(([filePath, content]) => ({ path: filePath, content }));
+    const sha256 = data => createHash('sha256').update(data).digest('hex');
     fs.writeFileSync(path.join(f.buildDir, aliceBuildId, 'result.json'), JSON.stringify({
       id: aliceBuildId, projectId: aliceProjectId, revision: 1, ownerKey: aliceAccountKey,
-      target: 'web', status: 'succeeded', files: ['index.html'],
+      target: 'web', status: 'succeeded', files: ['index.html', 'PlayForge-Web.zip'],
+      sourceHash: sha256(JSON.stringify(sourceFiles)), artifactSha256: sha256(packageBytes),
       previewUrl: `/api/builds/${aliceBuildId}/files/index.html`,
     }));
+    // A build whose source hash does not match the revision is rejected for release.
+    const forgedBuildId = 'f0f0f0f0f0f0f0f0';
+    fs.mkdirSync(path.join(f.buildDir, forgedBuildId, 'output'), { recursive: true });
+    fs.writeFileSync(path.join(f.buildDir, forgedBuildId, 'output', 'PlayForge-Web.zip'), packageBytes);
+    fs.writeFileSync(path.join(f.buildDir, forgedBuildId, 'result.json'), JSON.stringify({
+      id: forgedBuildId, projectId: aliceProjectId, revision: 1, ownerKey: aliceAccountKey,
+      target: 'web', status: 'succeeded', files: ['PlayForge-Web.zip'],
+      sourceHash: '0'.repeat(64), artifactSha256: sha256(packageBytes),
+    }));
+    const forgedRelease = await alice.site(`/forge/api/platform/projects/${aliceProjectId}/releases`, {
+      method: 'POST',
+      body: { revision: 1, buildId: forgedBuildId, label: 'forged' },
+    });
+    assert.equal(forgedRelease.status, 409, JSON.stringify(forgedRelease.data));
     const release = await alice.site(`/forge/api/platform/projects/${aliceProjectId}/releases`, {
       method: 'POST',
       body: { revision: 1, buildId: aliceBuildId, label: 'v1' },

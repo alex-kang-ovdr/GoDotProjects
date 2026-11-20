@@ -11,6 +11,7 @@ const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
+const { OwnedBuildPackages } = require('./Tools/owned-build-packages.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./Tools/hub-session-auth.cjs');
@@ -79,6 +80,9 @@ function createServer(options = {}) {
 
   const store = hubAuth ? null : new ProjectStore(root, options.workspace);
   const builds = new BuildQueue(root, options.buildDirectory);
+  // Hub-auth mode: platform builds use the same canonical snapshot and integrity checks as Hub's
+  // OwnedBuildPackages (sourceHash over sorted files, artifactSha256), on this server's queue.
+  const accountBuilds = hubAuth ? new OwnedBuildPackages({ root, queue: builds, storeFor: key => getPlatformFor(key).store }) : null;
   const assetLibrary = createAssetLibraryHandler(root);
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
@@ -112,8 +116,8 @@ function createServer(options = {}) {
       const api = createPlatformApi(accountStore, {
         buildMode: options.buildMode,
         validateBuild: (id, projectId, revision) => {
-          const b = builds.get(id);
-          return b?.status === 'succeeded' && b.ownerKey === accountKey && b.projectId === projectId && b.revision === revision ? b : null;
+          try { return accountBuilds.verified(accountKey, projectId, id, revision).job; }
+          catch { return null; }
         },
       });
       entry = { store: accountStore, api };
@@ -320,7 +324,8 @@ function createServer(options = {}) {
           const activePlatform = getPlatformFor(auth?.accountKey).store;
           const snapshot = activePlatform.getProject(platformBuild[1]);
           if (body.revision !== snapshot.revision) return json(409, { ok: false, error: 'revision_conflict' });
-          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, ...(hubAuth ? { ownerKey: auth.accountKey } : {}), files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
+          if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision) });
+          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
         }
         if (routePath === '/api/editor/source' && req.method === 'PUT') {
           if (typeof body.source !== 'string' || Buffer.byteLength(body.source) > 256000 || !Number.isSafeInteger(body.baseRevision)) return json(400, { ok: false, error: 'Source and baseRevision required' });

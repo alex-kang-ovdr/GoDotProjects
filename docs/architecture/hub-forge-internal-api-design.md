@@ -72,7 +72,7 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 |---|---|---|---|
 | S0 | 특성화 테스트: Hub와 Forge의 `/api/platform/*` 응답 대조, `accountKey` 동치 테스트 | 두 구현의 차이 목록이 문서화됨 | **완료** (§9) |
 | S1 | `creator-review.mjs`의 `accountKey` require를 `forgeAccountKey`로 교체 | 해당 require 제거, 기존 테스트 통과 | **완료** (`391db6e`) |
-| S1.5 | 빌드 시스템 일원화: Hub `OwnedBuildPackages`와 Forge `BuildQueue` 중 하나로 통일(§9 차이 3) | 릴리스 검증이 한 빌드 저장소만 본다 | 중간 (신규) |
+| S1.5 | 빌드 검증 일원화: Forge Hub 인증 모드가 Hub와 같은 `OwnedBuildPackages` 검증(정렬된 스냅샷의 sourceHash, 패키지 artifactSha256)을 Forge 큐 위에서 쓴다(§9 차이 3, §10) | Forge 릴리스 검증이 Hub와 같은 알고리즘을 쓴다 | **완료** (1단계) |
 | S2 | `ForgeGateway` 도입, `local` 구현이 현재 동작을 그대로 감싼다. B·C·A가 Gateway만 쓰게 변경 | `hub/server`에서 `forge/` 직접 참조가 `local` 구현 한 파일뿐 | 중간 |
 | S3 | Forge에 내부 API 서버 구현(위 계약), 계약 테스트 | 내부 API 단위·통합 테스트 통과 | 중간 |
 | S4 | `remote` Gateway 구현과 설정(`forge.mode`, `forge.baseUrl`) | Hub와 Forge가 다른 프로세스·다른 디렉터리에서 통합 테스트 통과 | 중간~높음 |
@@ -121,3 +121,14 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 - 차이 3~6은 "같은 데이터를 두 프로세스가 각자 처리"해서 생긴다. 계약을 나누는 것보다 **처리 주체를 Forge 하나로 모으는 것**이 먼저다. 열린 결정 1의 권장안을 "전부 Forge로 일원화"로 갱신했다.
 - 차이 4~6은 현재도 Hub와 Forge가 모두 켜진 구성(`forge.enabled`와 Forge `hubAuth`)에서 발생할 수 있다. 분리 작업과 별개로 운영 위험으로 기록한다.
 - 차이 3을 다루는 S1.5를 단계에 추가했다.
+
+## 10. S1.5 결과 (2026-11-20)
+
+- 정한 방향: 빌드 저장소의 기준은 **Forge의 `BuildQueue`** 로 둔다. Forge의 미리보기 URL(`/api/builds/{id}`), 멀티플레이 로비, `/play/{id}`가 모두 이 큐의 작업 ID를 쓰므로, 계정별 디렉터리(`OwnedBuildPackages`의 기존 방식)로 옮기면 영향 범위가 너무 크다.
+- `OwnedBuildPackages`에 **공유 큐 모드**를 추가했다. 큐를 주입받으면 계정 디렉터리 대신 작업의 `ownerKey`로 소유권을 확인하고, 패키지를 큐 디렉터리에서 읽는다. 기존 계정별 모드(Hub)는 그대로다.
+- Forge Hub 인증 모드의 변경:
+  - `/api/platform-builds/{id}`가 정렬된 정규 스냅샷으로 큐에 넣는다(이전에는 정렬하지 않은 파일 순서로 해시가 계산되어 Hub 검증과 맞지 않았다). 응답 형식(`build.id`, `previewUrl` 등)은 같다.
+  - 릴리스 생성 시 `validateBuild`가 소유자·프로젝트·revision에 더해 **sourceHash와 패키지 artifactSha256까지 검사**한다. 이전보다 엄격하다.
+- Hub 인증이 꺼진 단독 Forge 모드는 바뀌지 않았다.
+- 남은 일: Hub 프로세스는 아직 자기 계정별 큐(`<forge.directory>/builds/<key>`)를 쓴다. 저장소가 실제로 하나가 되는 것은 Hub의 builds 라우트가 Forge 내부 API로 옮겨질 때(S3·S4)다. 그때 Forge의 공유 큐 모드를 그대로 쓴다.
+- 검증: `owned-build-packages.test.cjs` 2개(공유 큐 모드 추가), `hub-forge-integration` 8개(위조된 sourceHash의 빌드로 릴리스가 409로 거부되는 검사 추가), `hub-forge-platform-parity` 5개가 Node 24에서 통과. Forge 테스트 중 Hub 인증 모드를 쓰는 것은 통합 테스트뿐이다.
