@@ -6,6 +6,20 @@
   const projectLabel = document.getElementById('project');
   const status = document.getElementById('status');
   const notice = document.getElementById('notice');
+  const loadingOverlay = document.getElementById('editor-loading');
+  const loadingTitle = document.getElementById('editor-loading-title');
+  const loadingBar = document.getElementById('editor-loading-bar');
+  const loadingDetail = document.getElementById('editor-loading-detail');
+  function setLoading(title, detail, percent = null) {
+    if (!loadingOverlay) return;
+    loadingOverlay.hidden = false;
+    if (loadingTitle && title !== null) loadingTitle.textContent = title;
+    if (loadingDetail && detail !== null) loadingDetail.textContent = detail;
+    if (loadingBar && Number.isFinite(percent)) loadingBar.style.width = `${Math.max(4, Math.min(100, Math.round(percent)))}%`;
+  }
+  function hideLoading() {
+    if (loadingOverlay) loadingOverlay.hidden = true;
+  }
   const canvas = document.getElementById('editor-canvas');
   let gameCanvas = document.getElementById('game-canvas');
   const gameOverlay = document.getElementById('game-overlay');
@@ -692,6 +706,7 @@
   };
   function fail(error) {
     const message = error instanceof Error ? error.message : String(error);
+    hideLoading();
     status.textContent = 'Could not open editor';
     showNotice(message, 10000);
     notify('loadingerror', { message });
@@ -840,6 +855,7 @@
   async function start() {
     try {
       status.textContent = 'Fetching project files';
+      setLoading('프로젝트 파일 불러오는 중…', '프로젝트와 에디터 애드온을 가져오고 있습니다.', 8);
       await ensureCsrfToken();
       const [project, addonFiles, chat, remoteControlFiles] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
@@ -850,6 +866,7 @@
       const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
+      setLoading('Godot 웹 에디터 다운로드 중…', 'WASM 엔진을 받아오고 있습니다 (최초 1회 이후 브라우저 캐시 적용).', 12);
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');
       const missing = Engine.getMissingFeatures({ threads: true });
       if (missing.length) throw new Error(`Godot Web Editor requirements are unavailable: ${missing.join(', ')}`);
@@ -861,12 +878,25 @@
         unloadAfterInit: false,
         emscriptenPoolSize: concurrency,
         godotPoolSize: Math.floor(concurrency / 3),
+        onProgress: (current, total) => {
+          const mb = bytes => (bytes / (1024 * 1024)).toFixed(1);
+          if (total > 0) {
+            const ratio = Math.min(1, current / total);
+            const pct = Math.round(ratio * 100);
+            status.textContent = `Loading Godot ${pct}%`;
+            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(current)} MB / ${mb(total)} MB (${pct}%)`, 12 + ratio * 76);
+          } else if (current > 0) {
+            status.textContent = `Loading Godot (${mb(current)} MB)`;
+            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(current)} MB 수신 중…`, Math.min(86, 15 + (current / (100 * 1024 * 1024)) * 70));
+          }
+        },
         onPrint: (...args) => appendSessionLog('editor', 'info', ...args),
         onPrintError: (...args) => appendSessionLog('editor', 'error', ...args),
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
       await engine.init(forgePath('/OfficialGodot/vendor/godot.editor'));
+      setLoading('Godot 웹 에디터 초기화 중…', '프로젝트 파일을 가상 파일시스템에 배치하고 있습니다.', 92);
       engine.copyToFS('/home/web_user/keep', new Uint8Array());
       for (const file of files) engine.copyToFS(file.path, file.buffer);
       notify('loading', { projectName: project.project?.name || projectId, revision: project.revision });
@@ -874,8 +904,12 @@
       status.textContent = '';
       canvas.focus();
       window.__playforgeShowcaseAutoStart = Boolean(showcase);
+      setLoading('Godot 에디터 화면 시작 중…', '잠시 후 편집 화면이 표시됩니다.', 96);
       engine.start({ args: ['--editor', '--path', `/home/web_user/projects/${projectId}`, '--single-window'], canvas })
-        .then(() => notify('ready', { revision: project.revision, projectName: project.project?.name || projectId }))
+        .then(() => {
+          hideLoading();
+          notify('ready', { revision: project.revision, projectName: project.project?.name || projectId });
+        })
         .catch(fail);
     } catch (error) {
       fail(error);

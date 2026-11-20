@@ -1,8 +1,11 @@
 'use strict';
 const { EventEmitter } = require('node:events');
+const crypto = require('node:crypto');
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
+const { pipeline } = require('node:stream/promises');
 const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
@@ -31,6 +34,75 @@ const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
   '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
   '.csv': 'text/csv; charset=utf-8', '.lua': 'text/plain; charset=utf-8',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.zip': 'application/zip' };
+const COMPRESSIBLE_EXTS = new Set(['.wasm', '.pck', '.js', '.css', '.html', '.svg', '.json']);
+const compressedCacheDir = path.join(root, 'Saved', 'HttpCache');
+const inflightCompressed = new Map();
+
+async function getCachedCompressed(file, info, encoding) {
+  const ext = encoding === 'br' ? '.br' : '.gz';
+  const key = crypto.createHash('sha256').update(`${file}:${info.size}:${info.mtimeMs}:${encoding}`).digest('hex').slice(0, 24);
+  const cached = path.join(compressedCacheDir, key + ext);
+  try {
+    const stat = await fs.promises.stat(cached);
+    if (stat.isFile() && stat.size > 0) return { path: cached, size: stat.size };
+  } catch {}
+  const lockKey = key + ext;
+  let pending = inflightCompressed.get(lockKey);
+  if (!pending) {
+    pending = (async () => {
+      await fs.promises.mkdir(compressedCacheDir, { recursive: true });
+      const tmp = `${cached}.${process.pid}.${Date.now()}.tmp`;
+      try {
+        const compressor = encoding === 'br'
+          ? zlib.createBrotliCompress({
+            params: {
+              [zlib.constants.BROTLI_PARAM_QUALITY]: 6,
+              [zlib.constants.BROTLI_PARAM_SIZE_HINT]: info.size,
+            },
+          })
+          : zlib.createGzip({ level: 6 });
+        await pipeline(fs.createReadStream(file), compressor, fs.createWriteStream(tmp));
+        try { await fs.promises.rename(tmp, cached); } catch { await fs.promises.rm(tmp, { force: true }).catch(() => {}); }
+        const stat = await fs.promises.stat(cached);
+        return { path: cached, size: stat.size };
+      } catch (error) {
+        await fs.promises.rm(tmp, { force: true }).catch(() => {});
+        throw error;
+      } finally {
+        inflightCompressed.delete(lockKey);
+      }
+    })();
+    inflightCompressed.set(lockKey, pending);
+  }
+  return pending;
+}
+
+async function streamStaticFile(req, res, file, info, baseHeaders) {
+  const ext = path.extname(file).toLowerCase();
+  const acceptEncoding = String(req.headers['accept-encoding'] || '');
+  const encoding = /\bbr\b/i.test(acceptEncoding) ? 'br' : /\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null;
+  if (encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+    try {
+      const compressed = await getCachedCompressed(file, info, encoding);
+      res.writeHead(200, {
+        ...baseHeaders,
+        'Content-Encoding': encoding,
+        'Content-Length': compressed.size,
+        'Vary': 'Accept-Encoding',
+      });
+      if (req.method === 'HEAD') return res.end();
+      const stream = fs.createReadStream(compressed.path);
+      stream.on('error', () => res.destroy());
+      stream.pipe(res);
+      return;
+    } catch {}
+  }
+  res.writeHead(200, { ...baseHeaders, 'Content-Length': info.size });
+  if (req.method === 'HEAD') return res.end();
+  const stream = fs.createReadStream(file);
+  stream.on('error', () => res.destroy());
+  stream.pipe(res);
+}
 
 function insideRoot(file) {
   const relative = path.relative(root, file);
@@ -363,8 +435,14 @@ function createServer(options = {}) {
         if (!buildRoute[2]) return json(200, { ok: true, build });
         const file = builds.file(buildRoute[1], buildRoute[2]);
         if (!file) return json(404, { ok: false, error: 'Build file not found' });
-        res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}) });
-        const stream = fs.createReadStream(file); stream.on('error', () => res.destroy()); stream.pipe(res); return;
+        const buildInfo = await fs.promises.stat(file).catch(() => null);
+        if (!buildInfo?.isFile()) return json(404, { ok: false, error: 'Build file not found' });
+        await streamStaticFile(req, res, file, buildInfo, {
+          'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
+          'Cache-Control': 'private, max-age=3600',
+          ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}),
+        });
+        return;
       }
       if (!['POST', 'PUT'].includes(req.method)) return json(405, { ok: false, error: 'Method not supported' });
       if (!req.headers['content-type']?.startsWith('application/json')) return json(415, { ok: false, error: 'JSON required' });
@@ -483,13 +561,13 @@ function createServer(options = {}) {
       if (!insideRoot(file)) return reply(403, 'Outside project');
       info = await fs.promises.stat(file);
       if (!info.isFile()) return reply(404, 'Not found');
-      res.writeHead(200, { 'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
-        'Content-Length': info.size, 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff',
-        'Referrer-Policy': 'no-referrer' });
-      if (req.method === 'HEAD') return res.end();
-      const stream = fs.createReadStream(file);
-      stream.on('error', () => res.destroy());
-      stream.pipe(res);
+      const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
+      await streamStaticFile(req, res, file, info, {
+        'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
+        'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'no-referrer',
+      });
     } catch (error) {
       if (!res.headersSent) reply(['ENOENT', 'ENOTDIR'].includes(error.code) ? 404 : 500, 'File unavailable');
       else res.destroy();
