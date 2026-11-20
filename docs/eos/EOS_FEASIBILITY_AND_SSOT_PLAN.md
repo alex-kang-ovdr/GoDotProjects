@@ -81,3 +81,15 @@
   - `PUT .../keys/:key`: 활성 락 검증 + `If-Match`/`expectedRevision` 낙관적 CAS + 좀비 서버의 구 `fencingToken` 쓰기 차단(`409 DATASTORE_FENCING_TOKEN_STALE`) + `releaseLock: true` 단일 RTT 저장·해제 지원.
   - `PUT /api/admin/games/:gameId/datastore/quota`, `GET .../datastore/stats`, `POST .../force-unlock`(비상 강제 해제 시 `fencingToken` 강제 증가로 기존 홀더 재쓰기 차단).
 
+---
+
+## 4. 검증 증거 (Verification Evidence)
+
+- **검증 스크린샷**: ![SSOT Phase 1 & 2 Verification Evidence](evidence/ssot-phase1-phase2-verification.png)
+- **실측 요약 JSON**: [verification-summary.json](evidence/verification-summary.json)
+- **검증 결과 (Node v24.22.1)**:
+  - 자동화 테스트: **79 / 79 통과** (실패 0건, Windows symlink 1건 skip, 4.9s)
+  - 실서버 HTTP 프로브: **4 / 4 통과** (리더보드·스냅샷 SHA-256, 제재 차단 `403`·`eosSyncStatus=pending`·철회, 통계 임계치 업적 자동 해금, MMO DataStore 락/CAS/임대 만료 승계·좀비 서버 `409 DATASTORE_FENCING_TOKEN_STALE` 차단)
+  - 소유권 검사(`check-ownership.mjs`): `ok 10 / warn 2 / fail 1`(`owners.json` 단독 커밋 1건만 `PlayHub-Platform` 소유)
+
+
