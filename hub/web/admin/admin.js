@@ -1,5 +1,6 @@
 import { createSubmissionReview } from './submission-review.js';
 import { createL10nController } from './l10n-views.js';
+import { createStoreController } from './store-views.js';
 import {
   renderActionQueue,
   renderGameDetail,
@@ -50,7 +51,7 @@ let badgesCache = null, systemCache = null, forgeCache = null, qaCache = null, u
 let activeRoute = Rules.resolveAdminRoute(location.search, location.hash);
 
 const datasetLabels = { live: '실제 이용 기록', qa: 'QA 실행 기록', demo: '독립 가상 예제' };
-const domainLabels = { system: '시스템', hub: 'Hub', forge: 'Forge', qa: 'QA', l10n: 'L10N' };
+const domainLabels = { system: '시스템', hub: 'Hub', forge: 'Forge', qa: 'QA', l10n: 'L10N', store: 'Store' };
 
 $('boundary-host').textContent = location.host || '127.0.0.1';
 $('env-pill').textContent = config.mode === 'portable-rebex' ? 'Portable' : 'Local Admin';
@@ -118,6 +119,8 @@ function badgeCountForSubView(tabId, viewId) {
   if (tabId === 'qa' && viewId === 'runs' && badgesCache.qa.qaRunsCount > 0) return { count: badgesCache.qa.qaRunsCount, alert: false };
   if (tabId === 'qa' && viewId === 'ai' && badgesCache.qa.aiRunsCount > 0) return { count: badgesCache.qa.aiRunsCount, alert: false };
   if (tabId === 'l10n' && viewId === 'strings' && badgesCache.l10n?.pendingReview > 0) return { count: badgesCache.l10n.pendingReview, alert: badgesCache.l10n.lintBlocks > 0 };
+  if (tabId === 'store' && viewId === 'submissions' && badgesCache.store?.pendingSubmissions > 0) return { count: badgesCache.store.pendingSubmissions, alert: true };
+  if (tabId === 'store' && viewId === 'packages' && badgesCache.store?.restrictedPackages > 0) return { count: badgesCache.store.restrictedPackages, alert: badgesCache.store.yankedPackages > 0 };
   return null;
 }
 
@@ -163,6 +166,7 @@ function paintTabBadges() {
   setBadge('badge-forge', badgesCache.forge.activeBuilds + badgesCache.forge.failedBuilds, badgesCache.forge.failedBuilds > 0);
   setBadge('badge-qa', badgesCache.qa.qaErrors24h || badgesCache.qa.quarantineCount, badgesCache.qa.qaErrors24h > 0);
   setBadge('badge-l10n', badgesCache.l10n?.pendingReview || 0, (badgesCache.l10n?.lintBlocks || 0) > 0);
+  setBadge('badge-store', badgesCache.store?.pendingSubmissions || 0, (badgesCache.store?.pendingSubmissions || 0) > 0 || (badgesCache.store?.yankedPackages || 0) > 0);
   paintNavigation();
   renderActionQueue($('hub-action-queue'), badgesCache, (tab, view, opts) => navigate(tab, view, opts));
 }
@@ -174,7 +178,8 @@ const ALL_PANELS = [
   'system-overview-panel', 'system-config-panel', 'system-access-panel', 'system-backups-panel', 'errors', 'audit',
   'forge-overview-panel', 'forge-projects-panel', 'forge-builds-panel', 'forge-drive-panel', 'forge-sessions-panel', 'forge-settings-panel',
   'qa-overview-panel', 'qa-runs-panel', 'qa-ai-panel', 'qa-policies-panel', 'qa-run-ids-panel',
-  'l10n-overview-panel', 'l10n-strings-panel', 'l10n-gather-panel', 'l10n-ai-panel', 'l10n-glossary-panel', 'l10n-media-panel', 'l10n-releases-panel'
+  'l10n-overview-panel', 'l10n-strings-panel', 'l10n-gather-panel', 'l10n-ai-panel', 'l10n-glossary-panel', 'l10n-media-panel', 'l10n-releases-panel',
+  'store-overview-panel', 'store-submissions-panel', 'store-packages-panel'
 ];
 
 function updatePanelVisibility() {
@@ -210,6 +215,8 @@ function updatePanelVisibility() {
     else if (view === 'metrics') show('metrics-toolbar-wrap', 'qa-dataset-bar', 'overview', 'play-funnel', 'retention', 'games', 'qa-run-ids-panel');
   } else if (tab === 'l10n') {
     show(`l10n-${view}-panel`);
+  } else if (tab === 'store') {
+    show(`store-${view}-panel`);
   }
   updateControls();
 }
@@ -278,6 +285,7 @@ function showSession(session) {
     generation++;
     clearDashboard();
     submissionReview.reset();
+    storeController.reset();
   }
 }
 
@@ -801,6 +809,8 @@ async function refreshActiveView() {
       else await refreshQaViews();
     } else if (tab === 'l10n') {
       await l10nController.loadView(view);
+    } else if (tab === 'store') {
+      await storeController.loadView(view);
     }
   } catch (error) {
     if (!handleAuthError(error)) notice(error.message || '화면을 불러오지 못했습니다.', true);
@@ -1093,6 +1103,12 @@ const submissionReview = createSubmissionReview({
 });
 const l10nController = createL10nController({
   api, apiBase, number, percent, kstStamp, notice,
+  onNavigate: (tab, view) => navigate(tab, view),
+  onBadgesChanged: () => { void refreshBadges(); },
+  onAuthError: handleAuthError
+});
+const storeController = createStoreController({
+  api, number, kstStamp, notice,
   onNavigate: (tab, view) => navigate(tab, view),
   onBadgesChanged: () => { void refreshBadges(); },
   onAuthError: handleAuthError

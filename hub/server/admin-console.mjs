@@ -6,6 +6,7 @@ import { readCatalog } from './catalog.mjs';
 import { ApiError, assertId, json, readJson, uid } from './security.mjs';
 import { assertNoLinks, hashFile, TOOL_VERSION } from '../tools/backup.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
+import { createStoreAdmin } from './store-admin.mjs';
 
 const DAY = 86400000;
 const SUBMISSION_ID = '[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}';
@@ -13,7 +14,7 @@ const CHECKLIST_ROUTE = new RegExp(`^/api/admin/submissions/(${SUBMISSION_ID})/c
 const GAME_DETAIL_ROUTE = /^\/api\/admin\/games\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/;
 const QA_STATUSES = new Set(['pending', 'running', 'passed', 'warned', 'failed', 'error']);
 const QA_TARGET_TYPES = new Set(['catalog', 'game', 'submission', 'forge_template', 'forge_release', 'portable']);
-const AUDIT_DOMAINS = new Set(['all', 'system', 'hub', 'forge', 'qa', 'l10n']);
+const AUDIT_DOMAINS = new Set(['all', 'system', 'hub', 'forge', 'qa', 'l10n', 'store']);
 
 export const MANUAL_CHECKLIST_V1 = Object.freeze({
   version: 'manual-review.v1',
@@ -40,6 +41,7 @@ export function auditDomain(action) {
   if (name.startsWith('forge_')) return 'forge';
   if (name.startsWith('qa_')) return 'qa';
   if (name.startsWith('l10n_')) return 'l10n';
+  if (name.startsWith('store_')) return 'store';
   return 'hub';
 }
 
@@ -290,6 +292,7 @@ async function createOnlineBackup(dataDir, now) {
 export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway }) {
   // Forge templates/projects/builds/Drive state come only from the gateway (admin-only gateway by default).
   const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
+  const storeAdmin = createStoreAdmin({ config, db, now, audit, requireSession });
   db.exec(`
     CREATE TABLE IF NOT EXISTS qa_runs (
       id TEXT PRIMARY KEY,
@@ -591,7 +594,8 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         pendingReview: (() => { try { return db.prepare("SELECT COUNT(*) AS n FROM l10n_translations WHERE status IN ('ai_draft','needs_review','stale')").get().n; } catch { return 0; } })(),
         lintBlocks: (() => { try { return db.prepare("SELECT COUNT(*) AS n FROM l10n_translations WHERE lint_json LIKE '%\"block\"%'").get().n; } catch { return 0; } })(),
         totalKeys: (() => { try { return db.prepare('SELECT COUNT(*) AS n FROM l10n_keys WHERE unused_since IS NULL').get().n; } catch { return 0; } })()
-      }
+      },
+      store: storeAdmin.badges()
     };
   }
 
@@ -655,6 +659,9 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
 
   async function adminRoute(req, res, url, session) {
     const pathname = url.pathname;
+    if (pathname === '/api/admin/store' || pathname.startsWith('/api/admin/store/')) {
+      return await storeAdmin.adminRoute(req, res, url, session);
+    }
     if (pathname === '/api/admin/summary/badges' && req.method === 'GET') {
       json(res, 200, await summaryBadges());
       return true;

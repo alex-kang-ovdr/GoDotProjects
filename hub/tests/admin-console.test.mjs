@@ -60,10 +60,11 @@ async function callHandler(handler, route, { method = 'GET', origin = 'http://12
 
 const plain = value => JSON.parse(JSON.stringify(value));
 
-test('admin 4-tab routing contracts resolve tabs, views, legacy hashes, and qaRunId filters', () => {
-  assert.deepEqual(plain(Contracts.ADMIN_TABS.map(t => t.id)), ['system', 'hub', 'forge', 'qa', 'l10n']);
+test('admin 6-tab routing contracts resolve tabs, views, legacy hashes, and qaRunId filters', () => {
+  assert.deepEqual(plain(Contracts.ADMIN_TABS.map(t => t.id)), ['system', 'hub', 'forge', 'qa', 'l10n', 'store']);
   assert.deepEqual(plain(Contracts.resolveAdminRoute('', '')), { tab: 'hub', view: 'dashboard', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=forge&view=builds', '')), { tab: 'forge', view: 'builds', fromLegacyHash: false });
+  assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=store', '')), { tab: 'store', view: 'overview', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=unknown&view=nope', '')), { tab: 'hub', view: 'dashboard', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=qa&view=invalid', '')), { tab: 'qa', view: 'overview', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('', '#submissions')), { tab: 'hub', view: 'submissions', fromLegacyHash: true });
@@ -238,11 +239,11 @@ test('admin console endpoints cover system, hub, forge, qa, checklist, backup, a
   assert.ok(sysAudit.data.audit.some(a => a.action === 'system_backup_created'));
 });
 
-test('admin HTML preserves bootstrap ordering and exposes all 4 primary tabs', () => {
+test('admin HTML preserves bootstrap ordering and exposes all 6 primary tabs', () => {
   const html = fs.readFileSync(new URL('../web/admin/index.html', import.meta.url), 'utf8');
   assert.ok(html.indexOf('/local-login-bootstrap.js') > 0);
   assert.ok(html.indexOf('/local-login-bootstrap.js') < html.indexOf('/locale.js'));
-  for (const tab of ['system', 'hub', 'forge', 'qa']) {
+  for (const tab of ['system', 'hub', 'forge', 'qa', 'l10n', 'store']) {
     assert.ok(html.includes(`data-testid="admin-tab-${tab}"`), `missing tab ${tab}`);
   }
 });

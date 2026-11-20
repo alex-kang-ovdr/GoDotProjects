@@ -71,6 +71,17 @@
         {id:'media',label:'다국어 이미지',title:'플랫폼 다국어 이미지 관리',kind:'관리'},
         {id:'releases',label:'버전·배포 관리',title:'L10N 릴리스 스냅샷 및 롤백',kind:'운영'}
       ]
+    },
+    {
+      id:'store',
+      label:'Store',
+      eyebrow:'PLAYFORGE STORE OPERATIONS',
+      defaultView:'overview',
+      views:[
+        {id:'overview',label:'Store 대시보드',title:'PlayForge Store 운영 현황',kind:'대시보드'},
+        {id:'submissions',label:'제출 심사 큐',title:'Store 제출 심사 큐',kind:'검수'},
+        {id:'packages',label:'패키지 · 킬스위치',title:'Store 패키지 상태 및 킬스위치',kind:'운영'}
+      ]
     }
   ];
 

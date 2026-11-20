@@ -32,6 +32,7 @@
           <button type="button" role="tab" id="tab-forge" data-tab="forge" data-testid="admin-tab-forge" aria-selected="false"><span data-l10n="admin.tabs.forge" data-l10n-ctx="ui.nav">Forge</span><em class="tab-badge" id="badge-forge" hidden></em></button>
           <button type="button" role="tab" id="tab-qa" data-tab="qa" data-testid="admin-tab-qa" aria-selected="false"><span data-l10n="admin.tabs.qa" data-l10n-ctx="ui.nav">QA</span><em class="tab-badge" id="badge-qa" hidden></em></button>
           <button type="button" role="tab" id="tab-l10n" data-tab="l10n" data-testid="admin-tab-l10n" aria-selected="false"><span data-l10n="admin.tabs.l10n" data-l10n-ctx="ui.nav">L10N</span><em class="tab-badge" id="badge-l10n" hidden></em></button>
+          <button type="button" role="tab" id="tab-store" data-tab="store" data-testid="admin-tab-store" aria-selected="false"><span data-l10n="admin.tabs.store" data-l10n-ctx="ui.nav">Store</span><em class="tab-badge" id="badge-store" hidden></em></button>
         </div>
         <div class="top-actions">
           <span id="env-pill" class="env-pill">Local Admin</span>
@@ -301,6 +302,7 @@
               <option value="forge">Forge</option>
               <option value="qa">QA</option>
               <option value="l10n">L10N</option>
+              <option value="store">Store</option>
             </select>
           </label>
           <label class="game-filter">검색어<input id="audit-search" type="search" placeholder="액션, 대상 ID 또는 상세 내용"></label>
@@ -338,6 +340,11 @@
       <section id="l10n-glossary-panel" class="domain-view" hidden></section>
       <section id="l10n-media-panel" class="domain-view" hidden></section>
       <section id="l10n-releases-panel" class="domain-view" hidden></section>
+
+      <!-- STORE VIEWS -->
+      <section id="store-overview-panel" class="domain-view" hidden></section>
+      <section id="store-submissions-panel" class="domain-view" hidden></section>
+      <section id="store-packages-panel" class="domain-view" hidden></section>
     </div>
 
     <footer>
