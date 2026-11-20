@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "source_version": "roblox-studio-luau-2026-11",
+  "target_version": "4.7.2",
+  "mapping_version": "0.1.0",
+  "unit_policy": {
+    "roblox_unit": "stud",
+    "godot_unit": "meter",
+    "default_meters_per_stud": 0.28,
+    "handedness": "left_y_up_to_right_y_up"
+  },
+  "grade_definitions": {
+    "D": "직접(Direct): 동일 의미에 가까운 네이티브 GDScript/Godot API 변환",
+    "A": "어댑터(Adapter): 좌표계·단위·생명주기 보정 어댑터 경유",
+    "R": "런타임(Runtime): 호환 객체 모델·스케줄러·상태 머신·복제 계층 필요",
+    "X": "외부/수동(External): 플랫폼 서비스(DataStore 등)로 별도 백엔드·정책 필요",
+    "V": "VM 권장(VM): metatable/동적 실행 패턴 등 Luau VM 경로 권장"
+  },
+  "entries": [
+    {
+      "id": "Vector3.new",
+      "grade": "A",
+      "source": { "class": "Vector3", "member": "new", "kind": "constructor", "type": "Vector3" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": false },
+      "target": { "strategy": "adapter", "getter": "RobloxMathCompat.vec3", "setter": null },
+      "transforms": { "coordinate_basis": "roblox_to_godot", "unit_policy": "project_scale" },
+      "validation": { "fixtures": ["moving_platform"], "tolerance_position_m": 0.01 },
+      "fallback": "runtime_warning"
+    },
+    {
+      "id": "Color3.new",
+      "grade": "D",
+      "source": { "class": "Color3", "member": "new", "kind": "constructor", "type": "Color3" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": false },
+      "target": { "strategy": "native", "getter": "Color", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["color_channels"], "tolerance_position_m": 0 },
+      "fallback": "compile_error"
+    },
+    {
+      "id": "math.clamp",
+      "grade": "D",
+      "source": { "class": "math", "member": "clamp", "kind": "function", "type": "number" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": false },
+      "target": { "strategy": "native", "getter": "clamp", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["numeric_bounds"], "tolerance_position_m": 0 },
+      "fallback": "compile_error"
+    },
+    {
+      "id": "BasePart.Position",
+      "grade": "A",
+      "source": { "class": "BasePart", "member": "Position", "kind": "property", "type": "Vector3" },
+      "context": { "requires_parent_type": true, "requires_physics_state": true, "server_client_sensitive": true },
+      "target": { "strategy": "adapter", "getter": "RobloxPartCompat.get_position", "setter": "RobloxPartCompat.set_position" },
+      "transforms": { "coordinate_basis": "roblox_to_godot", "unit_policy": "project_scale" },
+      "validation": { "fixtures": ["anchored_move", "dynamic_body_move", "parent_transform"], "tolerance_position_m": 0.01 },
+      "fallback": "runtime_warning"
+    },
+    {
+      "id": "CFrame.new",
+      "grade": "A",
+      "source": { "class": "CFrame", "member": "new", "kind": "constructor", "type": "CFrame" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": false },
+      "target": { "strategy": "adapter", "getter": "RobloxCFrameCompat.create", "setter": null },
+      "transforms": { "coordinate_basis": "roblox_to_godot_basis", "unit_policy": "project_scale" },
+      "validation": { "fixtures": ["cframe_rotation_parity", "cframe_look_at"], "tolerance_position_m": 0.01 },
+      "fallback": "runtime_warning"
+    },
+    {
+      "id": "Instance.new",
+      "grade": "R",
+      "source": { "class": "Instance", "member": "new", "kind": "factory", "type": "Instance" },
+      "context": { "requires_parent_type": true, "requires_physics_state": false, "server_client_sensitive": true },
+      "target": { "strategy": "runtime", "getter": "RobloxInstanceFactory.create", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["instance_hierarchy", "destroy_lifecycle"], "tolerance_position_m": 0 },
+      "fallback": "unsupported_diagnostic"
+    },
+    {
+      "id": "BasePart.Touched",
+      "grade": "R",
+      "source": { "class": "BasePart", "member": "Touched", "kind": "event", "type": "RBXScriptSignal" },
+      "context": { "requires_parent_type": true, "requires_physics_state": true, "server_client_sensitive": true },
+      "target": { "strategy": "runtime", "getter": "RobloxPartCompat.touched_signal", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["touch_overlap_debounce"], "tolerance_position_m": 0.02 },
+      "fallback": "unsupported_diagnostic"
+    },
+    {
+      "id": "Humanoid.MoveTo",
+      "grade": "R",
+      "source": { "class": "Humanoid", "member": "MoveTo", "kind": "method", "type": "void" },
+      "context": { "requires_parent_type": true, "requires_physics_state": true, "server_client_sensitive": true },
+      "target": { "strategy": "runtime", "getter": "RobloxHumanoidCompat.move_to", "setter": null },
+      "transforms": { "coordinate_basis": "roblox_to_godot", "unit_policy": "project_scale" },
+      "validation": { "fixtures": ["obby_humanoid_navigation"], "tolerance_position_m": 0.05 },
+      "fallback": "unsupported_diagnostic"
+    },
+    {
+      "id": "RemoteEvent.FireServer",
+      "grade": "R",
+      "source": { "class": "RemoteEvent", "member": "FireServer", "kind": "method", "type": "void" },
+      "context": { "requires_parent_type": true, "requires_physics_state": false, "server_client_sensitive": true },
+      "target": { "strategy": "runtime", "getter": "RobloxNetGateway.fire_server", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["tycoon_remote_rpc"], "tolerance_position_m": 0 },
+      "fallback": "unsupported_diagnostic"
+    },
+    {
+      "id": "DataStoreService",
+      "grade": "X",
+      "source": { "class": "DataStoreService", "member": "*", "kind": "service", "type": "Service" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": true },
+      "target": { "strategy": "external", "getter": "ExternalPersistenceStub.datastore", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["tycoon_datastore_stub"], "tolerance_position_m": 0 },
+      "fallback": "unsupported_error"
+    },
+    {
+      "id": "setmetatable",
+      "grade": "V",
+      "source": { "class": "LuauGlobal", "member": "setmetatable", "kind": "builtin", "type": "table" },
+      "context": { "requires_parent_type": false, "requires_physics_state": false, "server_client_sensitive": false },
+      "target": { "strategy": "vm", "getter": "LuauVmBridge.setmetatable", "setter": null },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["dynamic_luau_metatable"], "tolerance_position_m": 0 },
+      "fallback": "route_script_to_vm"
+    }
+  ]
+}
