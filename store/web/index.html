@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PlayForge Store — 독립 웹 · 내 라이브러리 (P0)</title>
+  <link rel="stylesheet" href="./store.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-group">
+      <span class="brand-badge">PlayForge Store</span>
+      <span class="sub-badge">독립 웹 · 패키지 계약 v1</span>
+    </div>
+    <div class="identity-bar">
+      <span class="sso-pill" id="sso-badge">Hub 계정 연결됨 · creator-demo@playhub.local (SSO)</span>
+      <span class="boundary-pill">Admin: Hub ?tab=store 분리</span>
+    </div>
+  </header>
+
+  <nav class="main-nav" aria-label="Store 주요 탭">
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab active" role="tab" data-tab="browse" aria-selected="true">탐색</button>
+      <button type="button" class="tab" role="tab" data-tab="library" aria-selected="false">내 라이브러리 <span class="count-badge" id="library-count">0</span></button>
+      <button type="button" class="tab" role="tab" data-tab="publisher" aria-selected="false">게시자 초안</button>
+    </div>
+    <div class="filters" id="browse-controls">
+      <input id="search-input" type="search" placeholder="에셋 또는 가이드 검색..." aria-label="Store 검색" />
+      <select id="kind-filter" aria-label="콘텐츠 형식 필터">
+        <option value="all">전체 형식</option>
+        <option value="package">패키지 (package)</option>
+        <option value="editorial">일반 콘텐츠 (editorial)</option>
+      </select>
+    </div>
+  </nav>
+
+  <div class="notice-banner" role="status">
+    <strong>비동기 연동 원칙:</strong> 웹에서는 패키지를 <code>StoreLibraryEntry</code>에만 저장합니다. 실제 프로젝트 반영은 <strong>Godot Store 도크에서 새로고침 및 6단계 변경 검토</strong>를 거친 뒤 선택한 프로젝트에만 수행됩니다.
+  </div>
+
+  <main class="workspace">
+    <section class="catalog-pane" aria-label="목록 영역">
+      <div id="catalog-list" class="card-grid"></div>
+      <div id="publisher-panel" class="publisher-list hidden"></div>
+    </section>
+
+    <aside class="detail-pane" id="detail-pane" aria-label="상세 정보 및 불변 계약"></aside>
+  </main>
+
+  <script type="module" src="./store.js"></script>
+</body>
+</html>
