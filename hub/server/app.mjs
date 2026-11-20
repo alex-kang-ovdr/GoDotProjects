@@ -2,7 +2,7 @@ import http from 'node:http';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createAdminConsole } from './admin-console.mjs';
-import { createLocalForgeGateway } from './forge-gateway.mjs';
+import { createForgeGateway } from './forge-gateway.mjs';
 import { createL10n } from './l10n.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -106,8 +106,8 @@ export function createApp(input, dependencies = {}) {
   }
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
-  // One gateway for every Hub module that needs Forge (forge-gateway.mjs); S4 adds a remote implementation.
-  const forgeGateway=dependencies.forgeGateway||createLocalForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
+  // One gateway for every Hub module that needs Forge (forge-gateway.mjs); supports both local and remote modes.
+  const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
   const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit,forgeGateway});
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});

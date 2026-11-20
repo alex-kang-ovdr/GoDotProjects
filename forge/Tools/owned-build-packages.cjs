@@ -11,7 +11,7 @@ const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 class OwnedBuildPackages {
  constructor({root,directory,enabled=false,maxBytes=64*1024*1024,queue=null,storeFor=null}={}){
   this.root=root;this.maxBytes=maxBytes;this.queues=new Map();this.shared=queue||null;this.storeFor=typeof storeFor==='function'?storeFor:null;
-  if(this.shared){if(typeof this.shared.enqueue!=='function'||typeof this.shared.get!=='function'||!this.shared.directory)throw new TypeError('A BuildQueue is required');if(!this.storeFor)throw new TypeError('storeFor is required with a shared queue');this.directory=null;this.enabled=true;}
+  if(this.shared){if(typeof this.shared.enqueue!=='function'||typeof this.shared.get!=='function'||!this.shared.directory)throw new TypeError('A BuildQueue is required');if(!this.storeFor)throw new TypeError('storeFor is required with a shared queue');this.directory=directory?path.resolve(directory):null;this.enabled=true;}
   else{this.directory=path.resolve(directory);this.enabled=enabled===true;}
  }
  keys(key,project,id){if(!/^[a-f0-9]{64}$/.test(key)||!/^[a-f0-9]{24}$/.test(project)||(id!==undefined&&!/^[a-f0-9]{16}$/.test(id)))throw fail('invalid_build_key',404);}
@@ -23,17 +23,34 @@ class OwnedBuildPackages {
  enqueueJob(key,id,revision){if(!this.enabled)throw fail('private_builds_disabled',503);const snapshot=this.snapshot(key,id,revision);return this.queueFor(key).enqueue(this.shared?{...snapshot,ownerKey:key}:snapshot);}
  enqueue(key,id,revision){return this.publicJob(this.enqueueJob(key,id,revision));}
  publicJob(job){return {buildId:job.id,projectId:job.projectId,revision:job.revision,status:job.status,target:job.target};}
+ legacyJob(key,buildId){
+  if(!this.directory)return null;
+  const file=this.safe(['builds',key,buildId,'result.json']);
+  if(!fs.existsSync(file)||fs.statSync(file).size>1024*1024)return null;
+  return JSON.parse(fs.readFileSync(file,'utf8'));
+ }
  job(key,id,buildId){
   this.keys(key,id,buildId);this.store(key).getProject(id);
   let job;
-  if(this.shared){job=this.shared.get(buildId);if(!job||job.ownerKey!==key)throw fail('build_not_found',404);}
-  else{this.safe(['builds',key,buildId,'result.json']);job=this.queues.get(key)?.get(buildId);if(!job){const file=this.safe(['builds',key,buildId,'result.json']);if(!fs.existsSync(file)||fs.statSync(file).size>1024*1024)throw fail('build_not_found',404);job=JSON.parse(fs.readFileSync(file,'utf8'));}}
+  if(this.shared){
+   job=this.shared.get(buildId);
+   if(job){if(job.ownerKey!==key)throw fail('build_not_found',404);}
+   else{job=this.legacyJob(key,buildId);if(!job)throw fail('build_not_found',404);}
+  }else{
+   this.safe(['builds',key,buildId,'result.json']);
+   job=this.queues.get(key)?.get(buildId)||this.legacyJob(key,buildId);
+   if(!job)throw fail('build_not_found',404);
+  }
   if(job.id!==buildId||job.projectId!==id)throw fail('build_not_found',404);return job;
  }
  packageFile(key,buildId){
-  if(!this.shared)return this.safe(['builds',key,buildId,'output','PlayForge-Web.zip']);
-  const file=path.join(this.shared.directory,buildId,'output','PlayForge-Web.zip');
-  if(fs.existsSync(file)&&fs.lstatSync(file).isSymbolicLink())throw fail('unsafe_build_path');return file;
+  if(this.shared){
+   const file=path.join(this.shared.directory,buildId,'output','PlayForge-Web.zip');
+   if(fs.existsSync(file)){if(fs.lstatSync(file).isSymbolicLink())throw fail('unsafe_build_path');return file;}
+   if(this.directory)return this.safe(['builds',key,buildId,'output','PlayForge-Web.zip']);
+   return file;
+  }
+  return this.safe(['builds',key,buildId,'output','PlayForge-Web.zip']);
  }
  verified(key,id,buildId,revision){const job=this.job(key,id,buildId);const snapshot=this.snapshot(key,id,revision);if(job.status!=='succeeded'||job.target!=='web'||job.revision!==revision||job.sourceHash!==hash(JSON.stringify(snapshot.files)))throw fail('build_revision_mismatch');const file=this.packageFile(key,buildId);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size>this.maxBytes)throw fail('build_package_unavailable');const bytes=fs.readFileSync(file);if(bytes.length>this.maxBytes||hash(bytes)!==job.artifactSha256)throw fail('build_package_integrity');return {job,bytes};}
  validate(key,buildId,id,revision){this.verified(key,id,buildId,revision);return {buildId};}

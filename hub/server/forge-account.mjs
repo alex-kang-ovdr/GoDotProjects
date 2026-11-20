@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { createLocalForgeGateway } from './forge-gateway.mjs';
+import { createForgeGateway } from './forge-gateway.mjs';
 const fail=(status,code)=>Object.assign(new Error(code),{status,code});
 const send=(res,status,body)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(body));};
 // Only a verified Hub session and its persisted Google identity can select an owner.
@@ -18,7 +18,7 @@ export function createHubForge({config={},db,requireSession,root,env=process.env
   if(config.enabled!==true)return {async handle(req,res,url){if(!url.pathname.startsWith('/api/platform/'))return false;send(res,503,{error:'FORGE_DISABLED'});return true;},close(){}};
   if(typeof requireSession!=='function')throw fail(503,'FORGE_CONFIGURATION_REQUIRED');
   // All Forge code and storage access goes through the gateway (see forge-gateway.mjs).
-  const forge=gateway||createLocalForgeGateway({config,root,env,fetchImpl});
+  const forge=gateway||createForgeGateway({config,root,env,fetchImpl});
   const ownsGateway=!gateway;
   const identity=req=>googleIdentityForSession(db,requireSession(req,'public'));
   return {async handle(req,res,url){

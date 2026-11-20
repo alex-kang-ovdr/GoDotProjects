@@ -76,9 +76,9 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 | S1 | `creator-review.mjs`의 `accountKey` require를 `forgeAccountKey`로 교체 | 해당 require 제거, 기존 테스트 통과 | **완료** (`391db6e`) |
 | S1.5 | 빌드 검증 일원화: Forge Hub 인증 모드가 Hub와 같은 `OwnedBuildPackages` 검증(정렬된 스냅샷의 sourceHash, 패키지 artifactSha256)을 Forge 큐 위에서 쓴다(§9 차이 3, §10) | Forge 릴리스 검증이 Hub와 같은 알고리즘을 쓴다 | **완료** (1단계) |
 | S2 | `ForgeGateway` 도입, `local` 구현이 현재 동작을 그대로 감싼다. B·C·A가 Gateway만 쓰게 변경 | `hub/server`에서 `forge/` 직접 참조가 `local` 구현 한 파일뿐 | **완료** (§11) |
-| S3 | Forge에 내부 API 서버 구현(위 계약), 계약 테스트 | 내부 API 단위·통합 테스트 통과 | 중간 |
-| S4 | `remote` Gateway 구현과 설정(`forge.mode`, `forge.baseUrl`) | Hub와 Forge가 다른 프로세스·다른 디렉터리에서 통합 테스트 통과 | 중간~높음 |
-| S5 | 관리자 지표를 `adminSnapshot()`으로 전환, 디스크 스캔 제거 | `admin-console.mjs`가 `forge.directory`를 읽지 않음 | 낮음 |
+| S3 | Forge에 내부 API 서버 구현(위 계약), 계약 테스트 | 내부 API 단위·통합 테스트 통과 | **완료** (§12) |
+| S4 | `remote` Gateway 구현과 설정(`forge.mode`, `forge.baseUrl`) | Hub와 Forge가 다른 프로세스·다른 디렉터리에서 통합 테스트 통과 | **완료** (§12) |
+| S5 | 관리자 지표를 `adminSnapshot()`으로 전환, 디스크 스캔 제거 | `admin-console.mjs`가 `forge.directory`를 읽지 않음 | **완료** (§12) |
 | S6 | `local` 구현과 Hub의 Drive 관련 코드 제거, `hub/`에서 `forge/` 참조 금지 검사 추가 | 검사 테스트 통과 | 낮음 |
 
 각 단계는 독립 커밋이며 기본 설정(`mode: local`)에서 동작이 바뀌지 않아야 한다. S4부터 `remote`를 선택해야 새 경로가 쓰인다.
@@ -141,4 +141,14 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 - `forge-account.mjs`(`createHubForge`)는 세션 검증과 `accountKey` 계산만 하고 처리는 Gateway에 넘긴다. `creator-review.mjs`는 `getRelease`, `admin-console.mjs`는 `adminSnapshot`을 쓴다. `app.mjs`는 Gateway 하나를 만들어 세 모듈에 주입한다(`dependencies.forgeGateway`로 교체 가능). 주입이 없을 때 각 모듈은 로컬 Gateway를 만든다(기존 테스트 호환).
 - `hub/tests/forge-boundary.test.mjs`: `hub/server`에서 `forge-gateway.mjs` 외 파일이 Forge 소스 경로를 참조하면 실패한다.
 - 검증(Node 24): Hub 관련 테스트 76개 중 75개와 `hub-forge-integration`·`hub-forge-platform-parity` 13개 통과. 실패 1개는 `creator-review` 테스트 픽스처의 Windows 파일 rename `EPERM`으로 간헐적이며 Gateway 코드 이전 단계에서 발생한다. 전체 `hub/tests`의 나머지 실패(portable·browser 계열)는 깨끗한 워크트리에서 HEAD와 S2 적용본의 실패 목록이 같음을 확인했다.
-- 발견한 기존 버그(이번에 고치지 않음): 관리자 Forge 현황의 프로젝트 목록(`inspectForgeProjects`)은 `accounts/<key>/projects/*.json`을 읽지만 `PlatformStore`는 `projects/<id>/project.json`에 저장한다. 따라서 관리자 화면의 프로젝트 수는 항상 0이다. S5에서 `adminSnapshot`을 Forge 내부 API로 옮길 때 함께 고친다.
+- 발견한 기존 버그: 관리자 Forge 현황의 프로젝트 목록(`inspectForgeProjects`)은 `accounts/<key>/projects/*.json`을 읽지만 `PlatformStore`는 `projects/<id>/project.json`에 저장한다. `146d3bf`에서 수정 완료.
+
+## 12. S3·S4·S5 결과 (2026-11-20)
+
+- **S3 (`forge/Tools/internal-api.cjs`, `forge/server.cjs`)**:
+  - Forge에 `/internal/v1/*` 내부 API(`ANY /internal/v1/accounts/{key}/platform/*`, `GET .../releases/{rid}`, `POST/GET .../builds[/{bid}]`, `POST/GET .../deployments/{rid}`, `POST/GET .../submissions/{rid}`, `GET/POST .../cloud[/history|/retry/{n}]`, `GET /internal/v1/admin/snapshot`)를 구현했다.
+  - 32자 이상 `X-PlayHub-Internal-Secret`(및 무중단 교체용 `previousInternalSecret`) 상수 시간 비교, 미설정 시 fail-closed(`503 INTERNAL_API_DISABLED`), 브라우저 `Origin` 헤더 차단(`403 ORIGIN_NOT_ALLOWED`), `accountKey` 64자 소문자 hex 검증, POST `Idempotency-Key` 재실행·본문 불일치 `409 IDEMPOTENCY_KEY_CONFLICT`를 적용했다.
+  - 공개 경로(`/forge/internal/*`)는 `hub/tools/forge-proxy.mjs`와 `forge/server.cjs` 양쪽에서 `404`로 차단했다.
+- **S4·S5 (`hub/server/forge-gateway.mjs`, `hub/server/creator-review.mjs`, `hub/server/admin-console.mjs`)**:
+  - `createRemoteForgeGateway`와 `createForgeGateway`(`config.forge.mode = 'local' | 'remote'`, 기본 `'local'`)를 구현하고, `creator-review.mjs`의 `getRelease`와 `admin-console.mjs`의 `adminSnapshot`을 비동기 호환으로 전환했다.
+  - `hub/tests/forge-gateway.test.mjs`: `local`과 `remote`(디스크 공유 없는 별도 디렉터리·별도 프로세스) 양쪽에서 동일한 계약 시나리오(프로젝트 생성·수정, 빌드 권한·상태, 릴리스 발행, 제출 심사 고정, 배포 ZIP 아카이브, 관리자 스냅샷)와 Forge 장애 시 fail-closed(`503 SERVICE_UNAVAILABLE`) 격리를 검증했다.

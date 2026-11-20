@@ -1,6 +1,6 @@
 import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
-import { createLocalForgeGateway } from './forge-gateway.mjs';
+import { createForgeGateway } from './forge-gateway.mjs';
 import { ApiError, json, readJson, uid } from './security.mjs';
 
 const CREATOR_PATH = '/api/creator/submissions';
@@ -60,10 +60,10 @@ function checkRevision(row, revision) {
   if (revision !== row.revision) throw new ApiError(409, 'SUBMISSION_REVISION_CONFLICT');
 }
 
-export function createCreatorReview({ config, db, requireSession, root, now, audit, forgeGateway }) {
-  // Forge releases are read only through the gateway; a local one is created on first use when none is injected.
+export function createCreatorReview({ config, db, requireSession, root, now, audit, forgeGateway, env = process.env, fetchImpl = globalThis.fetch }) {
+  // Forge releases are read only through the gateway; a default one is created on first use when none is injected.
   let gateway = forgeGateway || null;
-  const forge = () => gateway || (gateway = createLocalForgeGateway({ config, root }));
+  const forge = () => gateway || (gateway = createForgeGateway({ config, root, env, fetchImpl }));
   db.exec(`
     CREATE TABLE IF NOT EXISTS creator_submissions (
       id TEXT PRIMARY KEY,
@@ -129,17 +129,17 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
     }
   }
 
-  function ownedRelease(key, projectId, releaseId) {
+  async function ownedRelease(key, projectId, releaseId) {
     requireForge();
-    try { return forge().getRelease(key, projectId, releaseId); }
+    try { return await forge().getRelease(key, projectId, releaseId); }
     catch (error) {
-      if (error.status !== 404) throw error;
-      throw new ApiError(404, 'RELEASE_NOT_FOUND');
+      if (error.status === 404) throw new ApiError(404, 'RELEASE_NOT_FOUND');
+      throw new ApiError(503, 'SERVICE_UNAVAILABLE');
     }
   }
 
-  function pinnedRelease(row) {
-    const release = ownedRelease(row.owner_key, row.project_id, row.release_id);
+  async function pinnedRelease(row) {
+    const release = await ownedRelease(row.owner_key, row.project_id, row.release_id);
     if (release.revision !== row.release_revision) throw new ApiError(409, 'SUBMISSION_RELEASE_MISMATCH');
   }
 
@@ -175,7 +175,7 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
       if (pathname === CREATOR_PATH && req.method === 'POST') {
         const draft = metadata(await readJson(req, 16 * 1024));
         recheckCreator(req, owner);
-        const release = ownedRelease(owner.key, draft.projectId, draft.releaseId);
+        const release = await ownedRelease(owner.key, draft.projectId, draft.releaseId);
         const submission = transaction(db, () => {
           const id = uid(), stamp = now();
           insert.run(id, owner.key, owner.id, draft.projectId, draft.releaseId, release.revision, release.label,
@@ -199,18 +199,21 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
       if (!isEdit && !(submissionAction && req.method === 'POST')) throw new ApiError(405, 'METHOD_NOT_ALLOWED');
       const body = await readJson(req, 16 * 1024);
       recheckCreator(req, owner);
+      const precheck = ownerRow(owner, id);
+      checkRevision(precheck, body.revision);
+      if (!EDITABLE.has(precheck.status)) throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
+      const draft = isEdit ? metadata(body) : null;
+      const release = isEdit ? await ownedRelease(owner.key, draft.projectId, draft.releaseId) : null;
+      if (!isEdit) await pinnedRelease(precheck);
       const submission = transaction(db, () => {
         const current = ownerRow(owner, id);
         checkRevision(current, body.revision);
         if (!EDITABLE.has(current.status)) throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
         const stamp = now();
         if (isEdit) {
-          const draft = metadata(body);
-          const release = ownedRelease(owner.key, draft.projectId, draft.releaseId);
           edit.run(draft.projectId, draft.releaseId, release.revision, release.label, draft.title, draft.description,
             stamp, id, owner.key, current.revision);
         } else {
-          pinnedRelease(current);
           submit.run(stamp, stamp, id, owner.key, current.revision);
         }
         const row = ownerRow(owner, id);
@@ -251,11 +254,14 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
           || (decision === 'changes_requested' && !note.trim())) {
         throw new ApiError(400, 'INVALID_SUBMISSION_DECISION');
       }
+      const precheck = adminRow(id);
+      checkRevision(precheck, revision);
+      if (precheck.status !== 'in_review') throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
+      if (decision === 'approved') await pinnedRelease(precheck);
       const submission = transaction(db, () => {
         const current = adminRow(id);
         checkRevision(current, revision);
         if (current.status !== 'in_review') throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
-        if (decision === 'approved') pinnedRelease(current);
         const stamp = now();
         decide.run(decision, note.trim() || null, stamp, stamp, id, current.revision);
         const row = adminRow(id);

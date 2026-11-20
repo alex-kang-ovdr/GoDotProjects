@@ -82,7 +82,11 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
     const pathname = queryIndex >= 0 ? rawUrl.slice(0, queryIndex) : rawUrl;
     const search = queryIndex >= 0 ? rawUrl.slice(queryIndex) : '';
     if (pathname === basePath) return '/' + search;
-    if (pathname.startsWith(prefix)) return pathname.slice(basePath.length) + search;
+    if (pathname.startsWith(prefix)) {
+      const targetPath = pathname.slice(basePath.length);
+      if (targetPath === '/internal' || targetPath.startsWith('/internal/')) return null;
+      return targetPath + search;
+    }
     return null;
   }
 

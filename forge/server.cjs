@@ -20,6 +20,7 @@ const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = re
 const { loadAssetStore, showcaseStagedFiles } = require('./Tools/template-catalog.cjs');
 const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
 const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
+const { createInternalApi } = require('./Tools/internal-api.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -84,7 +85,12 @@ function createServer(options = {}) {
   const builds = new BuildQueue(root, options.buildDirectory);
   // Hub-auth mode: platform builds use the same canonical snapshot and integrity checks as Hub's
   // OwnedBuildPackages (sourceHash over sorted files, artifactSha256), on this server's queue.
-  const accountBuilds = hubAuth ? new OwnedBuildPackages({ root, queue: builds, storeFor: key => getPlatformFor(key).store }) : null;
+  const accountBuilds = hubAuth ? new OwnedBuildPackages({
+    root,
+    queue: builds,
+    directory: options.internalApi?.directory || (accountsDirectory ? path.dirname(accountsDirectory) : null),
+    storeFor: key => getPlatformFor(key).store
+  }) : null;
   // P0: builds and PIE run user content on this host's Godot without isolation; Hub-auth mode only lets
   // allowlisted accounts trigger them (PLAYHUB_FORGE_EXECUTION_ALLOWLIST, fail closed when unset).
   const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? process.env.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
@@ -118,12 +124,14 @@ function createServer(options = {}) {
   };
   const closeRuntime = id => { const closed = runtimes.get(id)?.runtime.close(); runtimes.delete(id); return closed; };
 
+  let internalApi = null;
   const getPlatformFor = accountKey => {
     if (!hubAuth) return { store: platform, api: platformApi };
     let entry = accountPlatforms.get(accountKey);
     if (!entry) {
       if (accountPlatforms.size >= MAX_ACCOUNTS) throw Object.assign(new Error('Account capacity reached'), { status: 503 });
       const accountStore = new PlatformStore(root, path.join(accountsDirectory, accountKey));
+      internalApi?.attachStoreSync?.(accountKey, accountStore);
       const api = createPlatformApi(accountStore, {
         buildMode: options.buildMode,
         validateBuild: (id, projectId, revision) => {
@@ -136,6 +144,23 @@ function createServer(options = {}) {
     }
     return entry;
   };
+  internalApi = (hubAuth || options.internalApi) ? createInternalApi({
+    root,
+    accountsDirectory: accountsDirectory || options.internalApi?.accountsDirectory,
+    directory: options.internalApi?.directory || (accountsDirectory ? path.dirname(accountsDirectory) : null),
+    buildDirectory: builds.directory,
+    internalSecret: options.internalApi?.internalSecret ?? hubAuthConfig?.internalSecret ?? process.env.PLAYHUB_FORGE_INTERNAL_SECRET,
+    previousInternalSecret: options.internalApi?.previousInternalSecret ?? hubAuthConfig?.previousInternalSecret ?? process.env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS,
+    getPlatformFor: hubAuth ? getPlatformFor : undefined,
+    accountBuilds: hubAuth ? accountBuilds : undefined,
+    buildsEnabled: options.internalApi?.builds?.enabled === true || options.buildsEnabled === true,
+    executionAllowed,
+    drive: options.internalApi?.drive,
+    packages: options.internalApi?.packages,
+    env: options.internalApi?.env || process.env,
+    fetchImpl: options.internalApi?.fetchImpl || globalThis.fetch,
+    buildMode: options.buildMode,
+  }) : null;
 
   const getStudioFor = accountKey => {
     if (!hubAuth) return { store, collaboration };
@@ -155,9 +180,6 @@ function createServer(options = {}) {
   let collaboration = hubAuth ? null : attachCollaboration(upgradeBus, store, closeRuntime, originAllowed);
 
   const server = http.createServer(async (req, res) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
     const reply = (status, message, headers = {}) => {
       res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', ...headers });
       res.end(req.method === 'HEAD' ? undefined : message);
@@ -166,6 +188,22 @@ function createServer(options = {}) {
       res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       res.end(JSON.stringify(body));
     };
+
+    let rawParsedUrl;
+    try { rawParsedUrl = new URL(req.url, 'http://localhost'); }
+    catch { return reply(400, 'Invalid URL'); }
+    if (basePath && (rawParsedUrl.pathname === `${basePath}/internal` || rawParsedUrl.pathname.startsWith(`${basePath}/internal/`))) {
+      return reply(404, 'Not found');
+    }
+    if (rawParsedUrl.pathname === '/internal/v1' || rawParsedUrl.pathname.startsWith('/internal/v1/')) {
+      if (!internalApi) return json(503, { ok: false, error: 'INTERNAL_API_DISABLED' });
+      await internalApi.handle(req, res, rawParsedUrl);
+      return;
+    }
+
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
     const requestUrl = stripBasePath(req.url);
     let parsedUrl;
@@ -491,6 +529,7 @@ function createServer(options = {}) {
   });
 
   const closeOwned = () => {
+    internalApi?.close();
     agentChatProvider?.close();
     brawllabs.close();
     fortressWar.close();

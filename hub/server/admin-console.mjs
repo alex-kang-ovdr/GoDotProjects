@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { readCatalog } from './catalog.mjs';
 import { ApiError, assertId, json, readJson, uid } from './security.mjs';
 import { assertNoLinks, hashFile, TOOL_VERSION } from '../tools/backup.mjs';
-import { createLocalForgeGateway } from './forge-gateway.mjs';
+import { createForgeGateway } from './forge-gateway.mjs';
 
 const DAY = 86400000;
 const SUBMISSION_ID = '[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}';
@@ -288,8 +288,8 @@ async function createOnlineBackup(dataDir, now) {
 }
 
 export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway }) {
-  // Forge templates/projects/builds/Drive state come only from the gateway (admin-only local gateway by default).
-  const forge = forgeGateway || createLocalForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
+  // Forge templates/projects/builds/Drive state come only from the gateway (admin-only gateway by default).
+  const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
   db.exec(`
     CREATE TABLE IF NOT EXISTS qa_runs (
       id TEXT PRIMARY KEY,
@@ -444,9 +444,15 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     };
   }
 
-  function forgeOverview() {
+  async function forgeOverview() {
     const forgeConfig = config.forge || {};
-    const { templates, projects, builds, driveSync, serverPresent, officialEditorPresent } = forge.adminSnapshot();
+    let snapshot;
+    try {
+      snapshot = await forge.adminSnapshot();
+    } catch (error) {
+      throw new ApiError(error?.status === 503 ? 503 : 502, 'FORGE_UNAVAILABLE', 'Forge 내부 상태를 조회할 수 없습니다.');
+    }
+    const { templates, projects, builds, driveSync, serverPresent, officialEditorPresent } = snapshot;
     const buildSummary = {
       total: builds.length,
       queued: builds.filter(b => b.status === 'queued').length,
@@ -539,7 +545,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     };
   }
 
-  function summaryBadges() {
+  async function summaryBadges() {
     const since24h = now() - DAY;
     const games = readCatalog(rootDir, db);
     const pendingSubmissions = db.prepare("SELECT COUNT(*) AS n FROM creator_submissions WHERE status='in_review'").get().n;
@@ -548,7 +554,12 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     const liveErrors24h = db.prepare("SELECT COUNT(*) AS n FROM errors WHERE traffic_type='live' AND created_at>=?").get(since24h).n;
     const qaErrors24h = db.prepare("SELECT COUNT(*) AS n FROM errors WHERE traffic_type='qa' AND created_at>=?").get(since24h).n;
     const qaRunsCount = db.prepare('SELECT COUNT(*) AS n FROM qa_runs').get().n;
-    const { builds, templates } = forge.adminSnapshot();
+    let builds = [], templates = [];
+    try {
+      const snap = await forge.adminSnapshot();
+      builds = Array.isArray(snap?.builds) ? snap.builds : [];
+      templates = Array.isArray(snap?.templates) ? snap.templates : [];
+    } catch {}
     const aiQa = inspectAiQa(platformRoot);
     const { quarantine } = inspectQaPolicies(platformRoot);
     return {
@@ -645,7 +656,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
   async function adminRoute(req, res, url, session) {
     const pathname = url.pathname;
     if (pathname === '/api/admin/summary/badges' && req.method === 'GET') {
-      json(res, 200, summaryBadges());
+      json(res, 200, await summaryBadges());
       return true;
     }
     if (pathname === '/api/admin/system/overview' && req.method === 'GET') {
@@ -717,7 +728,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
       }
     }
     if (pathname === '/api/admin/forge/overview' && req.method === 'GET') {
-      json(res, 200, forgeOverview());
+      json(res, 200, await forgeOverview());
       return true;
     }
     if (pathname === '/api/admin/qa/overview' && req.method === 'GET') {
