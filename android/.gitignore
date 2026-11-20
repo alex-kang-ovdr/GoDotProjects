@@ -1,0 +1,19 @@
+# Gradle & Android build outputs
+.gradle/
+build/
+**/build/
+local.properties
+*.iml
+.idea/
+.cxx/
+captures/
+
+# Extracted Godot AAR & Gradle wrapper jar (populated by tools/aos/extract-godot-aar.ps1)
+app/libs/*.aar
+gradle/wrapper/gradle-wrapper.jar
+
+# Secrets & keystores (never commit)
+*.jks
+*.keystore
+keystore.properties
+google-services.json
