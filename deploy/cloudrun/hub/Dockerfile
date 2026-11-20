@@ -19,6 +19,30 @@ COPY hub/tools/restore-data.mjs ./hub/tools/restore-data.mjs
 COPY forge/Tools ./forge/Tools
 COPY forge/package.json ./forge/package.json
 
+# Shared build-version SSOT module & immutable BUILD_INFO.json
+COPY tools/build-version ./tools/build-version
+ARG PLAYHUB_CHANNEL=dev
+ARG PLAYHUB_BUILD_NUM=0
+ARG PLAYHUB_DAILY_SEQ=0
+ARG PLAYHUB_BUILD_DATE=
+ARG PLAYHUB_BRANCH=playhub-platform
+ARG PLAYHUB_COMMIT=0000000
+ARG PLAYHUB_UPDATE_POLICY=optional
+RUN SEMVER=$(node -p "require('./hub/package.json').version") \
+    && DATE_ARG=$([ -n "$PLAYHUB_BUILD_DATE" ] && echo "--date $PLAYHUB_BUILD_DATE" || true) \
+    && node tools/build-version/resolve-build-info.mjs \
+      --target hub \
+      --semver "$SEMVER" \
+      --channel "$PLAYHUB_CHANNEL" \
+      --build-num "$PLAYHUB_BUILD_NUM" \
+      --daily-seq "$PLAYHUB_DAILY_SEQ" \
+      --branch "$PLAYHUB_BRANCH" \
+      --commit "$PLAYHUB_COMMIT" \
+      --update-policy "$PLAYHUB_UPDATE_POLICY" \
+      --clean \
+      $DATE_ARG \
+      --out-json ./BUILD_INFO.json
+
 # Cloud Run edge wrapper (keeps local hub/server/* and Run_PlayHub_Portable.cmd untouched)
 COPY deploy/cloudrun/hub/entrypoint.mjs ./deploy/cloudrun/hub/entrypoint.mjs
 
