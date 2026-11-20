@@ -14,19 +14,54 @@
   ],
   "keys": {
     "admin.tabs.forge": {
-      "ko": "Forge"
+      "ko": "Forge",
+      "en": "Forge",
+      "ja": "Forge",
+      "zh-CN": "Forge",
+      "fr": "Forge",
+      "es": "Forge",
+      "pt-BR": "Forge",
+      "hi": "Forge"
     },
     "admin.tabs.hub": {
-      "ko": "Hub"
+      "ko": "Hub",
+      "en": "Hub",
+      "ja": "Hub",
+      "zh-CN": "Hub",
+      "fr": "Hub",
+      "es": "Hub",
+      "pt-BR": "Hub",
+      "hi": "Hub"
     },
     "admin.tabs.l10n": {
-      "ko": "L10N"
+      "ko": "L10N",
+      "en": "L10N",
+      "ja": "L10N",
+      "zh-CN": "L10N",
+      "fr": "L10N",
+      "es": "L10N",
+      "pt-BR": "L10N",
+      "hi": "L10N"
     },
     "admin.tabs.qa": {
-      "ko": "QA"
+      "ko": "QA",
+      "en": "QA",
+      "ja": "QA",
+      "zh-CN": "QA",
+      "fr": "QA",
+      "es": "QA",
+      "pt-BR": "QA",
+      "hi": "QA"
     },
     "admin.tabs.system": {
-      "ko": "시스템"
+      "ko": "시스템",
+      "en": "System",
+      "ja": "システム",
+      "zh-CN": "系统",
+      "fr": "Système",
+      "es": "Sistema",
+      "pt-BR": "Sistema",
+      "hi": "सिस्टम"
     },
     "portal.account.google_login": {
       "ko": "Google로 로그인",
@@ -39,7 +74,14 @@
       "hi": "Google से साइन इन करें"
     },
     "portal.account.identity_heading": {
-      "ko": "계정과 저장 기록"
+      "ko": "계정과 저장 기록",
+      "en": "Account & Saved Records",
+      "ja": "アカウントと保存記録",
+      "zh-CN": "账号与存档记录",
+      "fr": "Compte et sauvegardes",
+      "es": "Cuenta y partidas guardadas",
+      "pt-BR": "Conta e registros salvos",
+      "hi": "खाता और सहेजे गए रिकॉर्ड"
     },
     "portal.account.language_select": {
       "ko": "언어 선택",
@@ -62,13 +104,34 @@
       "hi": "साइन आउट करें"
     },
     "portal.account.merge_open": {
-      "ko": "게스트 기록 연결"
+      "ko": "게스트 기록 연결",
+      "en": "Link guest records",
+      "ja": "ゲスト記録を連携",
+      "zh-CN": "关联访客记录",
+      "fr": "Associer les données invité",
+      "es": "Vincular datos de invitado",
+      "pt-BR": "Vincular registros de visitante",
+      "hi": "अतिथि रिकॉर्ड लिंक करें"
     },
     "portal.account.preference_heading": {
-      "ko": "언어와 기록 안내"
+      "ko": "언어와 기록 안내",
+      "en": "Language & Record Info",
+      "ja": "言語と記録の案内",
+      "zh-CN": "语言与记录说明",
+      "fr": "Langue et informations sur les données",
+      "es": "Idioma e información de registros",
+      "pt-BR": "Idioma e informações de registros",
+      "hi": "भाषा और रिकॉर्ड जानकारी"
     },
     "portal.account.title": {
-      "ko": "내 계정"
+      "ko": "내 계정",
+      "en": "My Account",
+      "ja": "マイアカウント",
+      "zh-CN": "我的账号",
+      "fr": "Mon compte",
+      "es": "Mi cuenta",
+      "pt-BR": "Minha conta",
+      "hi": "मेरा खाता"
     },
     "portal.browse.loading": {
       "ko": "게임 목록을 불러오고 있습니다",
@@ -91,10 +154,24 @@
       "hi": "मुख्य सामग्री पर जाएँ"
     },
     "portal.creator.dashboard_btn": {
-      "ko": "창작자 대시보드"
+      "ko": "창작자 대시보드",
+      "en": "Creator Dashboard",
+      "ja": "クリエイターダッシュボード",
+      "zh-CN": "创作者控制台",
+      "fr": "Tableau de bord créateur",
+      "es": "Panel de creador",
+      "pt-BR": "Painel do criador",
+      "hi": "क्रिएटर डैशबोर्ड"
     },
     "portal.creator.heading": {
-      "ko": "만들기"
+      "ko": "만들기",
+      "en": "Create",
+      "ja": "つくる",
+      "zh-CN": "创作",
+      "fr": "Créer",
+      "es": "Crear",
+      "pt-BR": "Criar",
+      "hi": "बनाएँ"
     },
     "portal.footer.guest_cookie_notice": {
       "ko": "쿠키를 지우면 게스트 기록을 다시 찾기 어려울 수 있습니다.",
@@ -117,13 +194,34 @@
       "hi": "खाता"
     },
     "portal.nav.browse": {
-      "ko": "게임 찾기"
+      "ko": "게임 찾기",
+      "en": "Browse Games",
+      "ja": "ゲームを探す",
+      "zh-CN": "浏览游戏",
+      "fr": "Parcourir les jeux",
+      "es": "Explorar juegos",
+      "pt-BR": "Explorar jogos",
+      "hi": "गेम खोजें"
     },
     "portal.nav.create": {
-      "ko": "만들기"
+      "ko": "만들기",
+      "en": "Create",
+      "ja": "つくる",
+      "zh-CN": "创作",
+      "fr": "Créer",
+      "es": "Crear",
+      "pt-BR": "Criar",
+      "hi": "बनाएँ"
     },
     "portal.nav.home": {
-      "ko": "홈"
+      "ko": "홈",
+      "en": "Home",
+      "ja": "ホーム",
+      "zh-CN": "首页",
+      "fr": "Accueil",
+      "es": "Inicio",
+      "pt-BR": "Início",
+      "hi": "होम"
     },
     "portal.privacy.open": {
       "ko": "기록과 이용 지표 안내",
@@ -5024,6 +5122,1486 @@
       "es": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
       "pt-BR": "Não foi possível salvar as alterações. Tente novamente.",
       "hi": "बदलाव सहेजे नहीं जा सके। फिर कोशिश करें。"
+    },
+    "platform.legacy.k0417": {
+      "ko": "내 게임",
+      "en": "My Games",
+      "ja": "マイゲーム",
+      "zh-CN": "我的游戏",
+      "fr": "Mes jeux",
+      "es": "Mis juegos",
+      "pt-BR": "Meus jogos",
+      "hi": "मेरे गेम"
+    },
+    "platform.legacy.k0418": {
+      "ko": "주 메뉴",
+      "en": "Main menu",
+      "ja": "メインメニュー",
+      "zh-CN": "主菜单",
+      "fr": "Menu principal",
+      "es": "Menú principal",
+      "pt-BR": "Menu principal",
+      "hi": "मुख्य मेनू"
+    },
+    "platform.legacy.k0419": {
+      "ko": "로그인 전 임시 진행 확인",
+      "en": "Review temporary progress before signing in",
+      "ja": "ログイン前の一時進行状況を確認",
+      "zh-CN": "登录前确认临时进度",
+      "fr": "Vérifier la progression temporaire avant connexion",
+      "es": "Revisar el progreso temporal antes de iniciar sesión",
+      "pt-BR": "Revisar progresso temporário antes de entrar",
+      "hi": "साइन इन से पहले अस्थायी प्रगति जाँचें"
+    },
+    "platform.legacy.k0420": {
+      "ko": "이 탭에만 저장된 진행이 있습니다. 계정 변경 전에 파일로 보관할 수 있습니다.",
+      "en": "This tab has unsaved local progress. You can save it to a file before switching accounts.",
+      "ja": "このタブのみに保存された進行状況があります。アカウントを切り替える前にファイルへ保存できます。",
+      "zh-CN": "此标签页中有仅保存在本地的进度。切换账号前可先导出为文件。",
+      "fr": "Cet onglet contient une progression locale. Vous pouvez l’enregistrer dans un fichier avant de changer de compte.",
+      "es": "Esta pestaña tiene progreso guardado solo aquí. Puedes descargarlo antes de cambiar de cuenta.",
+      "pt-BR": "Esta aba tem progresso salvo apenas aqui. Você pode baixar um arquivo antes de trocar de conta.",
+      "hi": "इस टैब में केवल यहीं सहेजी गई प्रगति है। खाता बदलने से पहले आप इसे फ़ाइल में सहेज सकते हैं।"
+    },
+    "platform.legacy.k0421": {
+      "ko": "Google로 계속",
+      "en": "Continue with Google",
+      "ja": "Googleで続行",
+      "zh-CN": "使用 Google 继续",
+      "fr": "Continuer avec Google",
+      "es": "Continuar con Google",
+      "pt-BR": "Continuar com Google",
+      "hi": "Google के साथ जारी रखें"
+    },
+    "platform.legacy.k0422": {
+      "ko": "서버 연결을 확인한 뒤 계정을 다시 불러올 수 있습니다.",
+      "en": "Check your server connection, then reload your account.",
+      "ja": "サーバー接続を確認してからアカウントを再読み込みできます。",
+      "zh-CN": "请检查服务器连接后再重新加载账号。",
+      "fr": "Vérifiez la connexion au serveur puis rechargez votre compte.",
+      "es": "Comprueba la conexión con el servidor y vuelve a cargar tu cuenta.",
+      "pt-BR": "Verifique a conexão com o servidor para recarregar sua conta.",
+      "hi": "सर्वर कनेक्शन जाँचने के बाद खाता फिर लोड कर सकते हैं।"
+    },
+    "platform.legacy.k0423": {
+      "ko": "서버에 연결되면 로그인할 수 있습니다. 로컬 진행은 이 탭에 보관됩니다.",
+      "en": "You can sign in once connected to the server. Local progress stays in this tab.",
+      "ja": "サーバーに接続されるとログインできます。ローカルの進行状況はこのタブに保持されます。",
+      "zh-CN": "连接到服务器后即可登录。本地进度会保留在此标签页中。",
+      "fr": "Vous pourrez vous connecter une fois le serveur joignable. La progression locale reste dans cet onglet.",
+      "es": "Podrás iniciar sesión cuando haya conexión. El progreso local permanece en esta pestaña.",
+      "pt-BR": "Você poderá entrar assim que conectar ao servidor. O progresso local fica nesta aba.",
+      "hi": "सर्वर से जुड़ने पर आप साइन इन कर पाएँगे। स्थानीय प्रगति इसी टैब में रहेगी।"
+    },
+    "platform.legacy.k0424": {
+      "ko": "이 기기의 게스트 기록을 계정에 연결할 수 있습니다.",
+      "en": "You can link guest records from this device to your account.",
+      "ja": "この端末のゲスト記録をアカウントに連携できます。",
+      "zh-CN": "您可以将此设备上的访客记录关联到账号。",
+      "fr": "Vous pouvez associer les données invité de cet appareil à votre compte.",
+      "es": "Puedes vincular los registros de invitado de este dispositivo a tu cuenta.",
+      "pt-BR": "Você pode vincular os registros de visitante deste dispositivo à sua conta.",
+      "hi": "आप इस डिवाइस के अतिथि रिकॉर्ड अपने खाते से लिंक कर सकते हैं।"
+    },
+    "platform.legacy.k0425": {
+      "ko": "이 계정에 저장된 진행으로 이어할 수 있습니다.",
+      "en": "You can continue from progress saved on this account.",
+      "ja": "このアカウントに保存された進行状況から続けられます。",
+      "zh-CN": "您可以继续此账号上保存的进度。",
+      "fr": "Vous pouvez reprendre la progression enregistrée sur ce compte.",
+      "es": "Puedes continuar con el progreso guardado en esta cuenta.",
+      "pt-BR": "Você pode continuar com o progresso salvo nesta conta.",
+      "hi": "आप इस खाते में सहेजी गई प्रगति से खेल जारी रख सकते हैं।"
+    },
+    "platform.legacy.k0426": {
+      "ko": "Google 계정에 로그인하고 이 기기의 게스트 기록을 연결할 수 있습니다.",
+      "en": "Sign in with Google and link guest records from this device.",
+      "ja": "Googleアカウントでログインし、この端末のゲスト記録を連携できます。",
+      "zh-CN": "使用 Google 账号登录并关联此设备上的访客记录。",
+      "fr": "Connectez-vous avec Google et associez les données invité de cet appareil.",
+      "es": "Inicia sesión con Google y vincula los registros de invitado de este dispositivo.",
+      "pt-BR": "Entre com o Google e vincule os registros de visitante deste dispositivo.",
+      "hi": "Google खाते से साइन इन करें और इस डिवाइस के अतिथि रिकॉर्ड लिंक करें।"
+    },
+    "platform.legacy.k0427": {
+      "ko": "Google 로그인은 HTTPS 연결에서 사용할 수 있습니다.",
+      "en": "Google sign-in is available over HTTPS connections.",
+      "ja": "GoogleログインはHTTPS接続で利用できます。",
+      "zh-CN": "Google 登录仅在 HTTPS 连接下可用。",
+      "fr": "La connexion Google est disponible via HTTPS.",
+      "es": "El inicio de sesión con Google está disponible mediante HTTPS.",
+      "pt-BR": "O login com Google está disponível em conexões HTTPS.",
+      "hi": "Google साइन-इन केवल HTTPS कनेक्शन पर उपलब्ध है।"
+    },
+    "platform.legacy.k0428": {
+      "ko": "현재 Google 로그인을 사용할 수 없습니다. 게스트로 플레이하고 진행을 저장할 수 있습니다.",
+      "en": "Google sign-in is currently unavailable. You can play as a guest and save progress.",
+      "ja": "現在Googleログインは利用できません。ゲストとしてプレイして進行を保存できます。",
+      "zh-CN": "当前无法使用 Google 登录。您仍可以访客身份游玩并保存进度。",
+      "fr": "La connexion Google est indisponible pour le moment. Vous pouvez jouer en tant qu’invité et sauvegarder.",
+      "es": "El inicio de sesión con Google no está disponible ahora. Puedes jugar como invitado y guardar tu progreso.",
+      "pt-BR": "O login com Google está indisponível agora. Você pode jogar como visitante e salvar seu progresso.",
+      "hi": "Google साइन-इन अभी उपलब्ध नहीं है। आप अतिथि के रूप में खेलकर प्रगति सहेज सकते हैं।"
+    },
+    "platform.legacy.k0429": {
+      "ko": "서버 저장 확인 불가",
+      "en": "Unable to check server saves",
+      "ja": "サーバー保存を確認できません",
+      "zh-CN": "无法检查服务器存档",
+      "fr": "Impossible de vérifier la sauvegarde serveur",
+      "es": "No se pueden comprobar las partidas del servidor",
+      "pt-BR": "Não foi possível verificar o salvamento no servidor",
+      "hi": "सर्वर सेव की जाँच नहीं हो सकी"
+    },
+    "platform.legacy.k0430": {
+      "ko": "확인된 저장 없음",
+      "en": "No confirmed save",
+      "ja": "確認されたセーブなし",
+      "zh-CN": "暂无已确认存档",
+      "fr": "Aucune sauvegarde confirmée",
+      "es": "Sin partidas confirmadas",
+      "pt-BR": "Nenhum salvamento confirmado",
+      "hi": "कोई पुष्ट सेव नहीं"
+    },
+    "platform.legacy.k0431": {
+      "ko": "저장 시각 확인 중…",
+      "en": "Checking save time…",
+      "ja": "保存時刻を確認中…",
+      "zh-CN": "正在检查保存时间…",
+      "fr": "Vérification de l’heure de sauvegarde…",
+      "es": "Comprobando fecha de guardado…",
+      "pt-BR": "Verificando horário do salvamento…",
+      "hi": "सेव समय जाँच रहे हैं…"
+    },
+    "platform.legacy.k0432": {
+      "ko": "이어하기 기록 없음",
+      "en": "No resume data",
+      "ja": "再開データなし",
+      "zh-CN": "暂无继续记录",
+      "fr": "Aucune reprise disponible",
+      "es": "Sin datos para continuar",
+      "pt-BR": "Sem registro para continuar",
+      "hi": "जारी रखने का डेटा नहीं"
+    },
+    "platform.legacy.k0433": {
+      "ko": "터치 지원",
+      "en": "Touch supported",
+      "ja": "タッチ対応",
+      "zh-CN": "支持触控",
+      "fr": "Tactile compatible",
+      "es": "Compatible con táctil",
+      "pt-BR": "Suporte a toque",
+      "hi": "टच समर्थित"
+    },
+    "platform.legacy.k0434": {
+      "ko": "터치 미지원",
+      "en": "No touch support",
+      "ja": "タッチ非対応",
+      "zh-CN": "不支持触控",
+      "fr": "Sans support tactile",
+      "es": "Sin soporte táctil",
+      "pt-BR": "Sem suporte a toque",
+      "hi": "टच समर्थित नहीं"
+    },
+    "platform.legacy.k0435": {
+      "ko": "기본순",
+      "en": "Default",
+      "ja": "デフォルト",
+      "zh-CN": "默认排序",
+      "fr": "Par défaut",
+      "es": "Predeterminado",
+      "pt-BR": "Padrão",
+      "hi": "डिफ़ॉल्ट"
+    },
+    "platform.legacy.k0436": {
+      "ko": "최근 업데이트순",
+      "en": "Recently updated",
+      "ja": "更新が新しい順",
+      "zh-CN": "最近更新",
+      "fr": "Mises à jour récentes",
+      "es": "Actualizados recientemente",
+      "pt-BR": "Atualizados recentemente",
+      "hi": "हाल ही में अपडेट"
+    },
+    "platform.legacy.k0437": {
+      "ko": "이름순",
+      "en": "Name (A–Z)",
+      "ja": "名前順",
+      "zh-CN": "按名称",
+      "fr": "Par nom",
+      "es": "Por nombre",
+      "pt-BR": "Por nome",
+      "hi": "नाम के अनुसार"
+    },
+    "platform.legacy.k0438": {
+      "ko": "모바일",
+      "en": "Mobile",
+      "ja": "モバイル",
+      "zh-CN": "移动端",
+      "fr": "Mobile",
+      "es": "Móvil",
+      "pt-BR": "Celular",
+      "hi": "मोबाइल"
+    },
+    "platform.legacy.k0439": {
+      "ko": "조작 방식",
+      "en": "Controls",
+      "ja": "操作方法",
+      "zh-CN": "操控方式",
+      "fr": "Commandes",
+      "es": "Controles",
+      "pt-BR": "Controles",
+      "hi": "नियंत्रण"
+    },
+    "platform.legacy.k0440": {
+      "ko": "정렬",
+      "en": "Sort",
+      "ja": "並び替え",
+      "zh-CN": "排序",
+      "fr": "Trier",
+      "es": "Ordenar",
+      "pt-BR": "Ordenar",
+      "hi": "क्रमबद्ध करें"
+    },
+    "platform.legacy.k0441": {
+      "ko": "필터 초기화",
+      "en": "Reset filters",
+      "ja": "フィルターを初期化",
+      "zh-CN": "重置筛选",
+      "fr": "Réinitialiser les filtres",
+      "es": "Restablecer filtros",
+      "pt-BR": "Limpar filtros",
+      "hi": "फ़िल्टर रीसेट करें"
+    },
+    "platform.legacy.k0442": {
+      "ko": "세부 필터",
+      "en": "Detail filters",
+      "ja": "詳細フィルター",
+      "zh-CN": "详细筛选",
+      "fr": "Filtres détaillés",
+      "es": "Filtros detallados",
+      "pt-BR": "Filtros detalhados",
+      "hi": "विस्तृत फ़िल्टर"
+    },
+    "platform.legacy.k0443": {
+      "ko": "게임 찾기 | PLAY HUB",
+      "en": "Browse Games | PLAY HUB",
+      "ja": "ゲームを探す | PLAY HUB",
+      "zh-CN": "浏览游戏 | PLAY HUB",
+      "fr": "Parcourir les jeux | PLAY HUB",
+      "es": "Explorar juegos | PLAY HUB",
+      "pt-BR": "Explorar jogos | PLAY HUB",
+      "hi": "गेम खोजें | PLAY HUB"
+    },
+    "platform.legacy.k0444": {
+      "ko": "장르, 지원 조작과 모바일 지원 여부로 게임을 찾아보세요.",
+      "en": "Find games by genre, controls, and mobile support.",
+      "ja": "ジャンル、操作方法、モバイル対応でゲームを探せます。",
+      "zh-CN": "按类型、操控方式与移动端支持查找游戏。",
+      "fr": "Trouvez des jeux par genre, commandes et compatibilité mobile.",
+      "es": "Busca juegos por género, controles y compatibilidad móvil.",
+      "pt-BR": "Encontre jogos por gênero, controles e suporte móvel.",
+      "hi": "शैली, नियंत्रण और मोबाइल समर्थन के अनुसार गेम खोजें।"
+    },
+    "platform.legacy.k0445": {
+      "ko": "내 게임 | PLAY HUB",
+      "en": "My Games | PLAY HUB",
+      "ja": "マイゲーム | PLAY HUB",
+      "zh-CN": "我的游戏 | PLAY HUB",
+      "fr": "Mes jeux | PLAY HUB",
+      "es": "Mis juegos | PLAY HUB",
+      "pt-BR": "Meus jogos | PLAY HUB",
+      "hi": "मेरे गेम | PLAY HUB"
+    },
+    "platform.legacy.k0446": {
+      "ko": "최근 플레이한 게임과 찜한 게임을 찾아보세요.",
+      "en": "Find recently played and wishlisted games.",
+      "ja": "最近プレイしたゲームとお気に入りのゲームを確認できます。",
+      "zh-CN": "查看最近游玩和已收藏的游戏。",
+      "fr": "Retrouvez vos jeux récents et vos favoris.",
+      "es": "Encuentra tus juegos recientes y favoritos.",
+      "pt-BR": "Encontre seus jogos recentes e favoritos.",
+      "hi": "हाल ही में खेले गए और पसंदीदा गेम देखें।"
+    },
+    "platform.legacy.k0447": {
+      "ko": "만들기 | PLAY HUB",
+      "en": "Create | PLAY HUB",
+      "ja": "つくる | PLAY HUB",
+      "zh-CN": "创作 | PLAY HUB",
+      "fr": "Créer | PLAY HUB",
+      "es": "Crear | PLAY HUB",
+      "pt-BR": "Criar | PLAY HUB",
+      "hi": "बनाएँ | PLAY HUB"
+    },
+    "platform.legacy.k0448": {
+      "ko": "소유 프로젝트와 릴리스, 제출 상태를 확인하세요.",
+      "en": "Check your projects, releases, and submission status.",
+      "ja": "所有プロジェクト、リリース、提出状況を確認できます。",
+      "zh-CN": "查看您的项目、版本发布与提交审核状态。",
+      "fr": "Consultez vos projets, versions et soumissions.",
+      "es": "Consulta tus proyectos, versiones y envíos.",
+      "pt-BR": "Confira seus projetos, versões e status de envio.",
+      "hi": "अपने प्रोजेक्ट, रिलीज़ और सबमिशन स्थिति देखें।"
+    },
+    "platform.legacy.k0449": {
+      "ko": "내 계정 | PLAY HUB",
+      "en": "My Account | PLAY HUB",
+      "ja": "マイアカウント | PLAY HUB",
+      "zh-CN": "我的账号 | PLAY HUB",
+      "fr": "Mon compte | PLAY HUB",
+      "es": "Mi cuenta | PLAY HUB",
+      "pt-BR": "Minha conta | PLAY HUB",
+      "hi": "मेरा खाता | PLAY HUB"
+    },
+    "platform.legacy.k0450": {
+      "ko": "Google 계정, 게스트 기록, 언어 설정을 관리하세요.",
+      "en": "Manage your Google account, guest records, and language settings.",
+      "ja": "Googleアカウント、ゲスト記録、言語設定を管理します。",
+      "zh-CN": "管理您的 Google 账号、访客记录与语言设置。",
+      "fr": "Gérez votre compte Google, vos données invité et la langue.",
+      "es": "Administra tu cuenta de Google, datos de invitado e idioma.",
+      "pt-BR": "Gerencie sua conta Google, registros de visitante e idioma.",
+      "hi": "अपने Google खाते, अतिथि रिकॉर्ड और भाषा सेटिंग प्रबंधित करें।"
+    },
+    "platform.legacy.k0451": {
+      "ko": "이 게임은 현재 공개 상태가 아닙니다. 다른 게임을 만나보세요.",
+      "en": "This game is currently not public. Try another game.",
+      "ja": "このゲームは現在非公開です。別のゲームをお試しください。",
+      "zh-CN": "该游戏当前未公开，请试试其他游戏。",
+      "fr": "Ce jeu n’est pas public actuellement. Essayez-en un autre.",
+      "es": "Este juego no está público en este momento. Prueba otro.",
+      "pt-BR": "Este jogo não está público no momento. Experimente outro.",
+      "hi": "यह गेम अभी सार्वजनिक नहीं है। कोई दूसरा गेम आज़माएँ।"
+    },
+    "platform.legacy.k0452": {
+      "ko": "터치 화면에서 플레이할 수 있습니다.",
+      "en": "Playable on touch screens.",
+      "ja": "タッチ画面でプレイできます。",
+      "zh-CN": "支持在触屏设备上游玩。",
+      "fr": "Jouable sur écran tactile.",
+      "es": "Se puede jugar en pantalla táctil.",
+      "pt-BR": "Jogável em tela sensível ao toque.",
+      "hi": "टच स्क्रीन पर खेला जा सकता है।"
+    },
+    "platform.legacy.k0453": {
+      "ko": "터치 조작을 지원하지 않습니다. 표시된 조작 기기를 사용해 주세요.",
+      "en": "Touch controls are not supported. Use the listed input devices.",
+      "ja": "タッチ操作には対応していません。表示された操作デバイスをご利用ください。",
+      "zh-CN": "不支持触控操作，请使用显示的操控设备。",
+      "fr": "Le tactile n’est pas pris en charge. Utilisez les périphériques indiqués.",
+      "es": "No admite controles táctiles. Usa los dispositivos indicados.",
+      "pt-BR": "Não suporta toque. Use os controles indicados.",
+      "hi": "टच नियंत्रण समर्थित नहीं है। दिखाए गए इनपुट डिवाइस का उपयोग करें।"
+    },
+    "platform.legacy.k0454": {
+      "ko": "게임 화면에서 지원 조작을 확인해 주세요.",
+      "en": "Check supported controls on the game screen.",
+      "ja": "ゲーム画面で対応操作を確認してください。",
+      "zh-CN": "请在游戏画面查看支持的操控方式。",
+      "fr": "Vérifiez les commandes prises en charge à l’écran.",
+      "es": "Consulta los controles compatibles en la pantalla del juego.",
+      "pt-BR": "Confira os controles suportados na tela do jogo.",
+      "hi": "गेम स्क्रीन पर समर्थित नियंत्रण देखें।"
+    },
+    "platform.legacy.k0455": {
+      "ko": "가로 화면으로 플레이하세요.",
+      "en": "Play in landscape orientation.",
+      "ja": "横画面でプレイしてください。",
+      "zh-CN": "请使用横屏游玩。",
+      "fr": "Jouez en mode paysage.",
+      "es": "Juega en orientación horizontal.",
+      "pt-BR": "Jogue na orientação paisagem.",
+      "hi": "कृपया लैंडस्केप मोड में खेलें।"
+    },
+    "platform.legacy.k0456": {
+      "ko": "세로 화면으로 플레이하세요.",
+      "en": "Play in portrait orientation.",
+      "ja": "縦画面でプレイしてください。",
+      "zh-CN": "请使用竖屏游玩。",
+      "fr": "Jouez en mode portrait.",
+      "es": "Juega en orientación vertical.",
+      "pt-BR": "Jogue na orientação retrato.",
+      "hi": "कृपया पोर्ट्रेट मोड में खेलें।"
+    },
+    "platform.legacy.k0457": {
+      "ko": "소유 프로젝트와 제출 상태를 보려면 PlayHub에서 Google로 로그인하세요.",
+      "en": "Sign in with Google on PlayHub to view your projects and submission status.",
+      "ja": "所有プロジェクトと提出状況を見るには、PlayHubでGoogleにログインしてください。",
+      "zh-CN": "请在 PlayHub 使用 Google 登录，以查看您的项目与提交状态。",
+      "fr": "Connectez-vous avec Google sur PlayHub pour voir vos projets et soumissions.",
+      "es": "Inicia sesión con Google en PlayHub para ver tus proyectos y envíos.",
+      "pt-BR": "Entre com Google no PlayHub para ver seus projetos e envios.",
+      "hi": "अपने प्रोजेक्ट और सबमिशन स्थिति देखने के लिए PlayHub पर Google से साइन इन करें।"
+    },
+    "platform.legacy.k0458": {
+      "ko": "새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.",
+      "en": "Open the PlayForge web editor in a new tab to build games. It links to your Google account signed in on PlayHub.",
+      "ja": "新しいタブでPlayForge Webエディターを開いてゲームを作成できます。PlayHubにログイン中のGoogleアカウントと連携します。",
+      "zh-CN": "可在新标签页打开 PlayForge 网页编辑器制作游戏，并自动关联已登录 PlayHub 的 Google 账号。",
+      "fr": "Ouvrez l’éditeur web PlayForge dans un nouvel onglet pour créer des jeux. Il est lié au compte Google connecté sur PlayHub.",
+      "es": "Abre el editor web PlayForge en una pestaña nueva para crear juegos. Se vincula con tu cuenta Google de PlayHub.",
+      "pt-BR": "Abra o editor web PlayForge em uma nova aba para criar jogos. Ele se conecta à conta Google conectada no PlayHub.",
+      "hi": "गेम बनाने के लिए नए टैब में PlayForge वेब एडिटर खोलें। यह PlayHub में साइन-इन किए गए आपके Google खाते से जुड़ता है।"
+    },
+    "platform.legacy.k0459": {
+      "ko": "PlayForge 열기",
+      "en": "Open PlayForge",
+      "ja": "PlayForgeを開く",
+      "zh-CN": "打开 PlayForge",
+      "fr": "Ouvrir PlayForge",
+      "es": "Abrir PlayForge",
+      "pt-BR": "Abrir PlayForge",
+      "hi": "PlayForge खोलें"
+    },
+    "platform.legacy.k0460": {
+      "ko": "PlayForge 열기 ↗",
+      "en": "Open PlayForge ↗",
+      "ja": "PlayForgeを開く ↗",
+      "zh-CN": "打开 PlayForge ↗",
+      "fr": "Ouvrir PlayForge ↗",
+      "es": "Abrir PlayForge ↗",
+      "pt-BR": "Abrir PlayForge ↗",
+      "hi": "PlayForge खोलें ↗"
+    },
+    "platform.legacy.k0461": {
+      "ko": "계정 상태 확인",
+      "en": "Check account status",
+      "ja": "アカウント状態を確認",
+      "zh-CN": "查看账号状态",
+      "fr": "Vérifier le statut du compte",
+      "es": "Comprobar estado de la cuenta",
+      "pt-BR": "Verificar status da conta",
+      "hi": "खाते की स्थिति जाँचें"
+    },
+    "platform.legacy.k0462": {
+      "ko": "소개",
+      "en": "Overview",
+      "ja": "紹介",
+      "zh-CN": "简介",
+      "fr": "Présentation",
+      "es": "Información",
+      "pt-BR": "Sobre",
+      "hi": "परिचय"
+    },
+    "platform.legacy.k0463": {
+      "ko": "플레이 환경 안내",
+      "en": "Play environment guide",
+      "ja": "プレイ環境のご案内",
+      "zh-CN": "游玩环境说明",
+      "fr": "Guide d’environnement",
+      "es": "Guía de entorno",
+      "pt-BR": "Guia de ambiente",
+      "hi": "खेल वातावरण मार्गदर्शन"
+    },
+    "platform.legacy.k0464": {
+      "ko": "게임 정보",
+      "en": "Game info",
+      "ja": "ゲーム情報",
+      "zh-CN": "游戏信息",
+      "fr": "Infos du jeu",
+      "es": "Información del juego",
+      "pt-BR": "Informações do jogo",
+      "hi": "गेम जानकारी"
+    },
+    "platform.legacy.k0465": {
+      "ko": "Google로 기록 보관",
+      "en": "Back up with Google",
+      "ja": "Googleに記録を保存",
+      "zh-CN": "使用 Google 备份记录",
+      "fr": "Sauvegarder avec Google",
+      "es": "Respaldar con Google",
+      "pt-BR": "Salvar com Google",
+      "hi": "Google से रिकॉर्ड सहेजें"
+    },
+    "platform.legacy.k0466": {
+      "ko": "이 브라우저에서 최근 플레이한 게임이 없습니다.",
+      "en": "No recently played games in this browser.",
+      "ja": "このブラウザーで最近プレイしたゲームはありません。",
+      "zh-CN": "此浏览器中暂无最近游玩的游戏。",
+      "fr": "Aucun jeu joué récemment dans ce navigateur.",
+      "es": "No hay juegos jugados recientemente en este navegador.",
+      "pt-BR": "Nenhum jogo jogado recentemente neste navegador.",
+      "hi": "इस ब्राउज़र में हाल ही में खेला गया कोई गेम नहीं है।"
+    },
+    "platform.legacy.k0467": {
+      "ko": "이 브라우저에서는 전체 화면을 사용할 수 없습니다.",
+      "en": "Fullscreen is unavailable in this browser.",
+      "ja": "このブラウザーでは全画面表示を利用できません。",
+      "zh-CN": "此浏览器不支持全屏模式。",
+      "fr": "Le plein écran n’est pas disponible dans ce navigateur.",
+      "es": "La pantalla completa no está disponible en este navegador.",
+      "pt-BR": "Tela cheia indisponível neste navegador.",
+      "hi": "इस ब्राउज़र में फ़ुल स्क्रीन उपलब्ध नहीं है।"
+    },
+    "platform.legacy.k0468": {
+      "ko": "Google 로그인을 취소했습니다. 현재 게스트 기록을 계속 사용할 수 있습니다.",
+      "en": "Google sign-in was cancelled. You can continue using your guest records.",
+      "ja": "Googleログインをキャンセルしました。現在のゲスト記録を引き続き利用できます。",
+      "zh-CN": "已取消 Google 登录，您可以继续使用当前访客记录。",
+      "fr": "Connexion Google annulée. Vous pouvez continuer avec vos données invité.",
+      "es": "Inicio de sesión con Google cancelado. Puedes seguir usando tu progreso de invitado.",
+      "pt-BR": "Login com Google cancelado. Você pode continuar usando seus dados de visitante.",
+      "hi": "Google साइन-इन रद्द किया गया। आप अपने अतिथि रिकॉर्ड का उपयोग जारी रख सकते हैं।"
+    },
+    "platform.legacy.k0469": {
+      "ko": "Google 계정에 로그인했습니다.",
+      "en": "Signed in with Google.",
+      "ja": "Googleアカウントでログインしました。",
+      "zh-CN": "已使用 Google 账号登录。",
+      "fr": "Connecté avec Google.",
+      "es": "Sesión iniciada con Google.",
+      "pt-BR": "Conectado com Google.",
+      "hi": "Google खाते से साइन इन हो गया।"
+    },
+    "platform.legacy.k0470": {
+      "ko": "Google 로그인을 확인할 수 없습니다. 계정 화면에서 다시 시도해 주세요.",
+      "en": "Could not verify Google sign-in. Please try again from the account screen.",
+      "ja": "Googleログインを確認できませんでした。アカウント画面からもう一度お試しください。",
+      "zh-CN": "无法确认 Google 登录，请在账号页面重试。",
+      "fr": "Impossible de vérifier la connexion Google. Réessayez depuis la page Compte.",
+      "es": "No se pudo verificar el inicio de sesión con Google. Inténtalo desde la pantalla de cuenta.",
+      "pt-BR": "Não foi possível verificar o login com Google. Tente novamente na tela de conta.",
+      "hi": "Google साइन-इन की पुष्टि नहीं हो सकी। कृपया खाता स्क्रीन से फिर प्रयास करें।"
+    },
+    "platform.legacy.k0471": {
+      "ko": "다운로드 요청함",
+      "en": "Download requested",
+      "ja": "ダウンロード要求済み",
+      "zh-CN": "已请求下载",
+      "fr": "Téléchargement demandé",
+      "es": "Descarga solicitada",
+      "pt-BR": "Download solicitado",
+      "hi": "डाउनलोड अनुरोधित"
+    },
+    "platform.legacy.k0472": {
+      "ko": "잘못된 게임 목록",
+      "en": "Invalid game catalog",
+      "ja": "無効なゲーム一覧",
+      "zh-CN": "无效的游戏列表",
+      "fr": "Catalogue de jeux invalide",
+      "es": "Catálogo de juegos inválido",
+      "pt-BR": "Catálogo de jogos inválido",
+      "hi": "अमान्य गेम सूची"
+    },
+    "platform.legacy.k0473": {
+      "ko": "연결한 게스트 기록",
+      "en": "Linked guest record",
+      "ja": "連携したゲスト記録",
+      "zh-CN": "已关联的访客记录",
+      "fr": "Données invité associées",
+      "es": "Registro de invitado vinculado",
+      "pt-BR": "Registro de visitante vinculado",
+      "hi": "लिंक किया गया अतिथि रिकॉर्ड"
+    },
+    "platform.legacy.k0474": {
+      "ko": "별도 보관 ·",
+      "en": "Archived separately ·",
+      "ja": "別途保管 ·",
+      "zh-CN": "单独存档 ·",
+      "fr": "Archivé séparément ·",
+      "es": "Archivado aparte ·",
+      "pt-BR": "Arquivado separadamente ·",
+      "hi": "अलग संग्रहित ·"
+    },
+    "platform.legacy.k0475": {
+      "ko": "제거한 보관 슬롯 ·",
+      "en": "Removed archive slot ·",
+      "ja": "削除した保管スロット ·",
+      "zh-CN": "已移除的存档位 ·",
+      "fr": "Emplacement archivé supprimé ·",
+      "es": "Ranura archivada eliminada ·",
+      "pt-BR": "Espaço arquivado removido ·",
+      "hi": "हटाया गया संग्रह स्लॉट ·"
+    },
+    "platform.legacy.k0476": {
+      "ko": "· 저장 기록",
+      "en": "· Saved records",
+      "ja": "· セーブ記録",
+      "zh-CN": "· 存档记录",
+      "fr": "· Sauvegardes",
+      "es": "· Partidas guardadas",
+      "pt-BR": "· Registros salvos",
+      "hi": "· सहेजे गए रिकॉर्ड"
+    },
+    "platform.legacy.k0477": {
+      "ko": "· 로컬 모드 기록",
+      "en": "· Local mode record",
+      "ja": "· ローカルモード記録",
+      "zh-CN": "· 本地模式记录",
+      "fr": "· Donnée en mode local",
+      "es": "· Registro en modo local",
+      "pt-BR": "· Registro no modo local",
+      "hi": "· स्थानीय मोड रिकॉर्ड"
+    },
+    "platform.legacy.k0478": {
+      "ko": "· 서버 미반영 기록",
+      "en": "· Unsynced local record",
+      "ja": "· サーバー未反映の記録",
+      "zh-CN": "· 未同步到服务器的记录",
+      "fr": "· Donnée locale non synchronisée",
+      "es": "· Registro no sincronizado",
+      "pt-BR": "· Registro não enviado ao servidor",
+      "hi": "· सर्वर से असिंक रिकॉर्ड"
+    },
+    "platform.legacy.k0479": {
+      "ko": "· 백업",
+      "en": "· Backup",
+      "ja": "· バックアップ",
+      "zh-CN": "· 备份",
+      "fr": "· Sauvegarde",
+      "es": "· Copia de seguridad",
+      "pt-BR": "· Backup",
+      "hi": "· बैकअप"
+    },
+    "platform.legacy.k0480": {
+      "ko": "Hub 메뉴",
+      "en": "Hub menu",
+      "ja": "Hubメニュー",
+      "zh-CN": "Hub 菜单",
+      "fr": "Menu Hub",
+      "es": "Menú Hub",
+      "pt-BR": "Menu Hub",
+      "hi": "Hub मेनू"
+    },
+    "platform.legacy.k0481": {
+      "ko": "Hub 서비스 현황",
+      "en": "Hub Service Overview",
+      "ja": "Hubサービス状況",
+      "zh-CN": "Hub 服务概览",
+      "fr": "État du service Hub",
+      "es": "Estado del servicio Hub",
+      "pt-BR": "Status do serviço Hub",
+      "hi": "Hub सेवा स्थिति"
+    },
+    "platform.legacy.k0482": {
+      "ko": "시스템·Hub·Forge·QA 운영 현황과 제출 검수를 관리합니다.",
+      "en": "Manage System, Hub, Forge, QA operations and submission reviews.",
+      "ja": "システム・Hub・Forge・QAの運用状況と提出審査を管理します。",
+      "zh-CN": "管理系统、Hub、Forge、QA 运营状态与提交审核。",
+      "fr": "Gérez l’état de Système, Hub, Forge, QA et les examens de soumission.",
+      "es": "Administra el estado de Sistema, Hub, Forge, QA y revisiones de envío.",
+      "pt-BR": "Gerencie o status de Sistema, Hub, Forge, QA e revisões de envio.",
+      "hi": "सिस्टम, Hub, Forge, QA संचालन और सबमिशन समीक्षा प्रबंधित करें।"
+    },
+    "platform.legacy.k0483": {
+      "ko": "로컬 관리자 바로 로그인 (비밀번호 없음)",
+      "en": "Local Admin Instant Sign-in (No Password)",
+      "ja": "ローカル管理者クイックログイン（パスワード不要）",
+      "zh-CN": "本地管理员免密一键登录",
+      "fr": "Connexion locale rapide (sans mot de passe)",
+      "es": "Inicio local rápido (sin contraseña)",
+      "pt-BR": "Login local direto (sem senha)",
+      "hi": "स्थानीय व्यवस्थापक त्वरित लॉगिन (बिना पासवर्ड)"
+    },
+    "platform.legacy.k0484": {
+      "ko": "실제 이용 기록 (live)",
+      "en": "Live usage data (live)",
+      "ja": "実際の利用記録 (live)",
+      "zh-CN": "实际使用记录 (live)",
+      "fr": "Données réelles (live)",
+      "es": "Datos de uso reales (live)",
+      "pt-BR": "Dados reais (live)",
+      "hi": "वास्तविक उपयोग डेटा (live)"
+    },
+    "platform.legacy.k0485": {
+      "ko": "Hub 운영 지표는 QA·가상 데이터와 분리 집계됩니다.",
+      "en": "Hub metrics are aggregated separately from QA and demo data.",
+      "ja": "Hub運用指標はQA・仮想データと分離して集計されます。",
+      "zh-CN": "Hub 运营指标与 QA、示例数据分开统计。",
+      "fr": "Les indicateurs Hub sont séparés des données QA et démo.",
+      "es": "Las métricas de Hub se separan de los datos QA y demo.",
+      "pt-BR": "As métricas do Hub são agregadas separadamente de QA e demo.",
+      "hi": "Hub मेट्रिक्स की गणना QA और डेमो डेटा से अलग की जाती है।"
+    },
+    "platform.legacy.k0486": {
+      "ko": "QA · 가상 검증 지표 보기 →",
+      "en": "View QA · Demo metrics →",
+      "ja": "QA・仮想検証指標を見る →",
+      "zh-CN": "查看 QA · 模拟验证指标 →",
+      "fr": "Voir les indicateurs QA · Démo →",
+      "es": "Ver métricas QA · Demo →",
+      "pt-BR": "Ver métricas de QA · Demo →",
+      "hi": "QA · डेमो मेट्रिक्स देखें →"
+    },
+    "platform.legacy.k0487": {
+      "ko": "실제 이용 기록 비교",
+      "en": "Compare live usage",
+      "ja": "実際の利用記録を比較",
+      "zh-CN": "对比实际使用记录",
+      "fr": "Comparer les données réelles",
+      "es": "Comparar datos reales",
+      "pt-BR": "Comparar dados reais",
+      "hi": "वास्तविक उपयोग की तुलना करें"
+    },
+    "platform.legacy.k0488": {
+      "ko": "전체 QA 실행",
+      "en": "All QA runs",
+      "ja": "すべてのQA実行",
+      "zh-CN": "全部 QA 运行",
+      "fr": "Toutes les exécutions QA",
+      "es": "Todas las ejecuciones QA",
+      "pt-BR": "Todas as execuções de QA",
+      "hi": "सभी QA रन"
+    },
+    "platform.legacy.k0489": {
+      "ko": "QA로 분류된 별도 세션의 활동만 집계합니다. 공개 상태 변경은 실제 이용 기록에서만 가능합니다.",
+      "en": "Aggregates only sessions tagged as QA. Visibility can only be changed in live usage view.",
+      "ja": "QAとして分類されたセッションの活動のみを集計します。公開状態の変更は実際の利用記録でのみ可能です。",
+      "zh-CN": "仅统计归类为 QA 的会话活动。公开状态只能在真实使用记录中修改。",
+      "fr": "Agrège uniquement les sessions QA. La visibilité ne se modifie que dans les données réelles.",
+      "es": "Agrega solo sesiones clasificadas como QA. La visibilidad solo cambia en datos reales.",
+      "pt-BR": "Agrega apenas sessões classificadas como QA. A visibilidade só muda em dados reais.",
+      "hi": "केवल QA के रूप में चिह्नित सत्रों को गिनता है। दृश्यता केवल वास्तविक उपयोग डेटा में बदली जा सकती है।"
+    },
+    "platform.legacy.k0490": {
+      "ko": "표본이 작은 값(노출 200 미만 · 입장 시도 30 미만)은 흐리게 · 행을 누르면 상세로",
+      "en": "Low-sample values (<200 impressions or <30 launches) are dimmed · Click a row for details",
+      "ja": "サンプル数が少ない値（表示200未満・起動30未満）は薄く表示 · 行をクリックして詳細へ",
+      "zh-CN": "低样本指标（曝光<200 或启动<30）已淡化显示 · 点击行查看详情",
+      "fr": "Valeurs à faible échantillon (<200 impressions ou <30 lancements) estompées · Cliquez une ligne pour les détails",
+      "es": "Valores con muestra baja (<200 impresiones o <30 inicios) atenuados · Haz clic en una fila para ver detalles",
+      "pt-BR": "Valores com amostra baixa (<200 impressões ou <30 inícios) esmaecidos · Clique em uma linha para detalhes",
+      "hi": "कम नमूना मान (<200 इंप्रेशन या <30 लॉन्च) धुंधले · विवरण के लिए पंक्ति पर क्लिक करें"
+    },
+    "platform.legacy.k0491": {
+      "ko": "최소 노출",
+      "en": "Min impressions",
+      "ja": "最小表示数",
+      "zh-CN": "最低曝光",
+      "fr": "Impressions min.",
+      "es": "Impresiones mín.",
+      "pt-BR": "Impressões mín.",
+      "hi": "न्यूनतम इंप्रेशन"
+    },
+    "platform.legacy.k0492": {
+      "ko": "노출",
+      "en": "Impressions",
+      "ja": "表示数",
+      "zh-CN": "曝光",
+      "fr": "Impressions",
+      "es": "Impresiones",
+      "pt-BR": "Impressões",
+      "hi": "इंप्रेशन"
+    },
+    "platform.legacy.k0493": {
+      "ko": "클릭",
+      "en": "Clicks",
+      "ja": "クリック",
+      "zh-CN": "点击",
+      "fr": "Clics",
+      "es": "Clics",
+      "pt-BR": "Cliques",
+      "hi": "क्लिक"
+    },
+    "platform.legacy.k0494": {
+      "ko": "유저 CTR",
+      "en": "User CTR",
+      "ja": "ユーザーCTR",
+      "zh-CN": "用户点击率",
+      "fr": "CTR utilisateur",
+      "es": "CTR de usuario",
+      "pt-BR": "CTR de usuário",
+      "hi": "उपयोगकर्ता CTR"
+    },
+    "platform.legacy.k0495": {
+      "ko": "입장 시도",
+      "en": "Launches",
+      "ja": "起動試行",
+      "zh-CN": "启动尝试",
+      "fr": "Lancements",
+      "es": "Inicios",
+      "pt-BR": "Tentativas",
+      "hi": "लॉन्च"
+    },
+    "platform.legacy.k0496": {
+      "ko": "완료율",
+      "en": "Completion rate",
+      "ja": "完了率",
+      "zh-CN": "完成率",
+      "fr": "Taux d’achèvement",
+      "es": "Tasa de finalización",
+      "pt-BR": "Taxa de conclusão",
+      "hi": "पूर्णता दर"
+    },
+    "platform.legacy.k0497": {
+      "ko": "입장 p50",
+      "en": "Load p50",
+      "ja": "読込p50",
+      "zh-CN": "加载 p50",
+      "fr": "Chargement p50",
+      "es": "Carga p50",
+      "pt-BR": "Carregamento p50",
+      "hi": "लोड p50"
+    },
+    "platform.legacy.k0498": {
+      "ko": "입장 p90",
+      "en": "Load p90",
+      "ja": "読込p90",
+      "zh-CN": "加载 p90",
+      "fr": "Chargement p90",
+      "es": "Carga p90",
+      "pt-BR": "Carregamento p90",
+      "hi": "लोड p90"
+    },
+    "platform.legacy.k0499": {
+      "ko": "유저",
+      "en": "Users",
+      "ja": "ユーザー",
+      "zh-CN": "用户",
+      "fr": "Utilisateurs",
+      "es": "Usuarios",
+      "pt-BR": "Usuários",
+      "hi": "उपयोगकर्ता"
+    },
+    "platform.legacy.k0500": {
+      "ko": "TS 중앙값",
+      "en": "Median TS",
+      "ja": "TS中央値",
+      "zh-CN": "TS 中位数",
+      "fr": "TS médian",
+      "es": "TS mediano",
+      "pt-BR": "TS mediano",
+      "hi": "माध्यिका TS"
+    },
+    "platform.legacy.k0501": {
+      "ko": "신규",
+      "en": "New",
+      "ja": "新規",
+      "zh-CN": "新增",
+      "fr": "Nouveaux",
+      "es": "Nuevos",
+      "pt-BR": "Novos",
+      "hi": "नए"
+    },
+    "platform.legacy.k0502": {
+      "ko": "기존 비율",
+      "en": "Returning ratio",
+      "ja": "既存比率",
+      "zh-CN": "回流占比",
+      "fr": "Taux de retour",
+      "es": "Proporción recurrente",
+      "pt-BR": "Proporção recorrente",
+      "hi": "वापसी अनुपात"
+    },
+    "platform.legacy.k0503": {
+      "ko": "D1 신규",
+      "en": "D1 New",
+      "ja": "D1 新規",
+      "zh-CN": "D1 新增",
+      "fr": "D1 Nouveaux",
+      "es": "D1 Nuevos",
+      "pt-BR": "D1 Novos",
+      "hi": "D1 नए"
+    },
+    "platform.legacy.k0504": {
+      "ko": "D1 기존",
+      "en": "D1 Returning",
+      "ja": "D1 既存",
+      "zh-CN": "D1 回流",
+      "fr": "D1 Récurrents",
+      "es": "D1 Recurrentes",
+      "pt-BR": "D1 Recorrentes",
+      "hi": "D1 पुराने"
+    },
+    "platform.legacy.k0505": {
+      "ko": "찜",
+      "en": "Wishlists",
+      "ja": "お気に入り",
+      "zh-CN": "收藏",
+      "fr": "Favoris",
+      "es": "Favoritos",
+      "pt-BR": "Favoritos",
+      "hi": "पसंदीदा"
+    },
+    "platform.legacy.k0506": {
+      "ko": "유저 CTR은 노출된 고유 유저 대비 클릭한 고유 유저 비율입니다. 입장 p50/p90은 세션 시작~준비 완료(game_ready) 소요 시간(초)의 50·90백분위수이며, TS 중앙값은 유효 플레이어별 활성 시간의 중앙값입니다. 공개 상태 변경은 서비스 목록과 새 실행 요청에 반영됩니다.",
+      "en": "User CTR is clicked unique users divided by impressed unique users. Load p50/p90 are the 50th/90th percentiles of seconds from start to game_ready, and Median TS is the median active time per active player. Visibility changes apply to the catalog and new launches.",
+      "ja": "ユーザーCTRは表示されたユニークユーザーに対するクリックしたユニークユーザーの割合です。読込p50/p90はセッション開始〜準備完了(game_ready)所要時間(秒)の50・90パーセンタイル、TS中央値は有効プレイヤー別アクティブ時間の中央値です。公開状態の変更はサービス一覧と新規起動に反映されます。",
+      "zh-CN": "用户点击率为点击去重用户数除以曝光去重用户数。加载 p50/p90 为会话开始到就绪(game_ready)耗时(秒)的50/90分位数，TS 中位数为有效玩家活跃时间的中位数。公开状态更改会反映到目录与新启动请求。",
+      "fr": "Le CTR utilisateur est le ratio utilisateurs uniques cliquant / exposés. Chargement p50/p90 sont les 50e/90e centiles (s) jusqu’à game_ready et le TS médian la durée active médiane par joueur actif. La visibilité s’applique au catalogue.",
+      "es": "El CTR de usuario es usuarios únicos que hacen clic sobre expuestos. Carga p50/p90 son los percentiles 50/90 (s) hasta game_ready y TS mediano la mediana de tiempo activo. La visibilidad afecta al catálogo y nuevos inicios.",
+      "pt-BR": "O CTR de usuário é usuários únicos que clicam sobre expostos. Carregamento p50/p90 são os percentis 50/90 (s) até game_ready e TS mediano a mediana de tempo ativo. A visibilidade afeta o catálogo.",
+      "hi": "उपयोगकर्ता CTR क्लिक करने वाले अद्वितीय उपयोगकर्ता बटे देखे गए अद्वितीय उपयोगकर्ता है। लोड p50/p90 game_ready तक सेकंड का 50/90वाँ प्रतिशतक है और माध्यिका TS प्रति सक्रिय खिलाड़ी सक्रिय समय की माध्यिका है।"
+    },
+    "platform.legacy.k0507": {
+      "ko": "게임 메타데이터 상세",
+      "en": "Game Metadata Details",
+      "ja": "ゲームメタデータ詳細",
+      "zh-CN": "游戏元数据详情",
+      "fr": "Détails des métadonnées du jeu",
+      "es": "Detalles de metadatos del juego",
+      "pt-BR": "Detalhes de metadados do jogo",
+      "hi": "गेम मेटाडेटा विवरण"
+    },
+    "platform.legacy.k0508": {
+      "ko": "제출 검수 센터",
+      "en": "Submission Review Center",
+      "ja": "提出審査センター",
+      "zh-CN": "提交审核中心",
+      "fr": "Centre d’examen des soumissions",
+      "es": "Centro de revisión de envíos",
+      "pt-BR": "Centro de revisão de envíos",
+      "hi": "सबमिशन समीक्षा केंद्र"
+    },
+    "platform.legacy.k0509": {
+      "ko": "심사 중",
+      "en": "In review",
+      "ja": "審査中",
+      "zh-CN": "审核中",
+      "fr": "En cours d’examen",
+      "es": "En revisión",
+      "pt-BR": "Em revisão",
+      "hi": "समीक्षाधीन"
+    },
+    "platform.legacy.k0510": {
+      "ko": "수정 요청",
+      "en": "Changes requested",
+      "ja": "修正依頼",
+      "zh-CN": "需要修改",
+      "fr": "Modifications demandées",
+      "es": "Cambios solicitados",
+      "pt-BR": "Alterações solicitadas",
+      "hi": "बदलाव अनुरोधित"
+    },
+    "platform.legacy.k0511": {
+      "ko": "메타데이터 승인",
+      "en": "Approve metadata",
+      "ja": "メタデータ承認",
+      "zh-CN": "元数据已批准",
+      "fr": "Métadonnées approuvées",
+      "es": "Metadatos aprobados",
+      "pt-BR": "Metadados aprovados",
+      "hi": "मेटाडेटा स्वीकृत"
+    },
+    "platform.legacy.k0512": {
+      "ko": "제출 메타데이터, 연결된 PlayForge 릴리스, 수동 검수 체크리스트와 QA 기록을 확인합니다. 메타데이터 승인은 카탈로그 공개나 실행 패키지 검증을 의미하지 않습니다.",
+      "en": "Review submission metadata, linked PlayForge releases, manual review checklists, and QA logs. Metadata approval does not imply catalog publication or package verification.",
+      "ja": "提出メタデータ、連携されたPlayForgeリリース、手動審査チェックリスト、QA記録を確認します。メタデータ承認はカタログ公開や実行パッケージ検証を意味しません。",
+      "zh-CN": "查看提交元数据、关联的 PlayForge 版本、人工审核清单与 QA 记录。批准元数据不代表目录公开或运行包已验证。",
+      "fr": "Vérifiez les métadonnées, versions PlayForge liées, listes de contrôle et journaux QA. L’approbation des métadonnées n’équivaut ni à la publication ni à la vérification du paquet.",
+      "es": "Revisa los metadatos, versiones de PlayForge vinculadas, listas manuales y registros QA. Aprobar metadatos no implica publicar ni verificar el paquete.",
+      "pt-BR": "Revise metadados, versões PlayForge vinculadas, listas manuais e logs de QA. Aprovar metadados não implica publicação nem verificação do pacote.",
+      "hi": "सबमिशन मेटाडेटा, लिंक किए गए PlayForge रिलीज़, मैन्युअल समीक्षा चेकलिस्ट और QA रिकॉर्ड देखें। मेटाडेटा स्वीकृति का अर्थ कैटलॉग प्रकाशन या पैकेज सत्यापन नहीं है।"
+    },
+    "platform.legacy.k0513": {
+      "ko": "이전 페이지",
+      "en": "Previous",
+      "ja": "前のページ",
+      "zh-CN": "上一页",
+      "fr": "Page précédente",
+      "es": "Anterior",
+      "pt-BR": "Anterior",
+      "hi": "पिछला पृष्ठ"
+    },
+    "platform.legacy.k0514": {
+      "ko": "다음 페이지",
+      "en": "Next",
+      "ja": "次のページ",
+      "zh-CN": "下一页",
+      "fr": "Page suivante",
+      "es": "Siguiente",
+      "pt-BR": "Próximo",
+      "hi": "अगला पृष्ठ"
+    },
+    "platform.legacy.k0515": {
+      "ko": "왼쪽 대기열에서 심사할 제출을 선택하세요.",
+      "en": "Select a submission from the queue on the left.",
+      "ja": "左のキューから審査する提出を選択してください。",
+      "zh-CN": "请从左侧队列选择要审核的提交。",
+      "fr": "Sélectionnez une soumission dans la file à gauche.",
+      "es": "Selecciona un envío en la cola de la izquierda.",
+      "pt-BR": "Selecione um envio na fila à esquerda.",
+      "hi": "समीक्षा के लिए बाईं कतार से सबमिशन चुनें।"
+    },
+    "platform.legacy.k0516": {
+      "ko": "게임 커뮤니티 및 신고 관리",
+      "en": "Community & Report Moderation",
+      "ja": "ゲームコミュニティ・通報管理",
+      "zh-CN": "游戏社区与举报管理",
+      "fr": "Communauté et signalements",
+      "es": "Comunidad y reportes",
+      "pt-BR": "Comunidade e denúncias",
+      "hi": "गेम समुदाय और रिपोर्ट प्रबंधन"
+    },
+    "platform.legacy.k0517": {
+      "ko": "댓글과 개선 제안, 신고 사유를 확인하고 관리합니다.",
+      "en": "Review and moderate comments, feedback, and reports.",
+      "ja": "コメント・改善提案・通報理由を確認して管理します。",
+      "zh-CN": "查看并管理评论、改进建议及举报原因。",
+      "fr": "Consultez et modérez les commentaires, suggestions et signalements.",
+      "es": "Revisa y gestiona comentarios, sugerencias y motivos de reporte.",
+      "pt-BR": "Gerencie comentários, sugestões e motivos de denúncia.",
+      "hi": "टिप्पणियाँ, सुझाव और रिपोर्ट कारण देखें व प्रबंधित करें।"
+    },
+    "platform.legacy.k0518": {
+      "ko": "신고 필터",
+      "en": "Report filter",
+      "ja": "通報フィルター",
+      "zh-CN": "举报筛选",
+      "fr": "Filtre de signalement",
+      "es": "Filtro de reportes",
+      "pt-BR": "Filtro de denúncias",
+      "hi": "रिपोर्ट फ़िल्टर"
+    },
+    "platform.legacy.k0519": {
+      "ko": "전체 글",
+      "en": "All posts",
+      "ja": "すべての投稿",
+      "zh-CN": "全部帖子",
+      "fr": "Tous les messages",
+      "es": "Todas las publicaciones",
+      "pt-BR": "Todas as postagens",
+      "hi": "सभी पोस्ट"
+    },
+    "platform.legacy.k0520": {
+      "ko": "신고된 글만",
+      "en": "Reported only",
+      "ja": "通報された投稿のみ",
+      "zh-CN": "仅被举报帖子",
+      "fr": "Signalés uniquement",
+      "es": "Solo reportados",
+      "pt-BR": "Apenas denunciados",
+      "hi": "केवल रिपोर्ट किए गए"
+    },
+    "platform.legacy.k0521": {
+      "ko": "통합 실행 오류 모니터링",
+      "en": "Unified Runtime Error Monitor",
+      "ja": "統合実行エラー監視",
+      "zh-CN": "统一运行错误监控",
+      "fr": "Suivi unifié des erreurs",
+      "es": "Monitor unificado de errores",
+      "pt-BR": "Monitor unificado de erros",
+      "hi": "एकीकृत रनटाइम त्रुटि निगरानी"
+    },
+    "platform.legacy.k0522": {
+      "ko": "실제 이용 오류",
+      "en": "Live errors",
+      "ja": "実際の利用エラー",
+      "zh-CN": "真实使用错误",
+      "fr": "Erreurs réelles",
+      "es": "Errores reales",
+      "pt-BR": "Erros reais",
+      "hi": "वास्तविक त्रुटियाँ"
+    },
+    "platform.legacy.k0523": {
+      "ko": "QA 오류",
+      "en": "QA errors",
+      "ja": "QAエラー",
+      "zh-CN": "QA 错误",
+      "fr": "Erreurs QA",
+      "es": "Errores QA",
+      "pt-BR": "Erros de QA",
+      "hi": "QA त्रुटियाँ"
+    },
+    "platform.legacy.k0524": {
+      "ko": "통합 감사 로그",
+      "en": "Unified Audit Log",
+      "ja": "統合監査ログ",
+      "zh-CN": "统一审计日志",
+      "fr": "Journal d’audit unifié",
+      "es": "Registro de auditoría unificado",
+      "pt-BR": "Log de auditoria unificado",
+      "hi": "एकीकृत ऑडिट लॉग"
+    },
+    "platform.legacy.k0525": {
+      "ko": "JSON 내보내기",
+      "en": "Export JSON",
+      "ja": "JSON書き出し",
+      "zh-CN": "导出 JSON",
+      "fr": "Exporter JSON",
+      "es": "Exportar JSON",
+      "pt-BR": "Exportar JSON",
+      "hi": "JSON निर्यात करें"
+    },
+    "platform.legacy.k0526": {
+      "ko": "전체 영역",
+      "en": "All scopes",
+      "ja": "全領域",
+      "zh-CN": "全部范围",
+      "fr": "Tous les domaines",
+      "es": "Todas las áreas",
+      "pt-BR": "Todas as áreas",
+      "hi": "सभी क्षेत्र"
+    },
+    "platform.legacy.k0527": {
+      "ko": "검색어",
+      "en": "Search term",
+      "ja": "検索語",
+      "zh-CN": "搜索词",
+      "fr": "Mot-clé",
+      "es": "Término de búsqueda",
+      "pt-BR": "Termo de busca",
+      "hi": "खोज शब्द"
+    },
+    "platform.legacy.k0528": {
+      "ko": "감사 로그 조회",
+      "en": "Query audit logs",
+      "ja": "監査ログ照会",
+      "zh-CN": "查询审计日志",
+      "fr": "Consulter les journaux",
+      "es": "Consultar auditoría",
+      "pt-BR": "Consultar auditoria",
+      "hi": "ऑडिट लॉग खोजें"
+    },
+    "platform.legacy.k0529": {
+      "ko": "QA 실행 ID별 세션 현황",
+      "en": "Sessions by QA Run ID",
+      "ja": "QA実行ID別セッション状況",
+      "zh-CN": "按 QA 运行 ID 查看会话",
+      "fr": "Sessions par ID QA",
+      "es": "Sesiones por ID de QA",
+      "pt-BR": "Sessões por ID de QA",
+      "hi": "QA रन ID के अनुसार सत्र"
+    },
+    "platform.legacy.k0530": {
+      "ko": "관리 세부 메뉴",
+      "en": "Admin submenu",
+      "ja": "管理サブメニュー",
+      "zh-CN": "管理子菜单",
+      "fr": "Sous-menu d’administration",
+      "es": "Submenú de administración",
+      "pt-BR": "Submenu administrativo",
+      "hi": "व्यवस्थापक उप-मेनू"
+    },
+    "platform.legacy.k0531": {
+      "ko": "주요 관리 영역",
+      "en": "Primary admin sections",
+      "ja": "主要管理領域",
+      "zh-CN": "主要管理区域",
+      "fr": "Sections principales",
+      "es": "Áreas principales",
+      "pt-BR": "Áreas principais",
+      "hi": "मुख्य व्यवस्थापक अनुभाग"
+    },
+    "platform.legacy.k0532": {
+      "ko": "운영 처리 대기",
+      "en": "Pending admin actions",
+      "ja": "運用処理待ち",
+      "zh-CN": "待处理运营事项",
+      "fr": "Actions en attente",
+      "es": "Acciones pendientes",
+      "pt-BR": "Ações pendentes",
+      "hi": "लंबित व्यवस्थापक कार्य"
+    },
+    "platform.legacy.k0533": {
+      "ko": "오류 데이터 구분",
+      "en": "Error dataset",
+      "ja": "エラーデータ区分",
+      "zh-CN": "错误数据分类",
+      "fr": "Type de données d’erreur",
+      "es": "Fuente de errores",
+      "pt-BR": "Origem dos erros",
+      "hi": "त्रुटि डेटा प्रकार"
+    },
+    "platform.legacy.k0534": {
+      "ko": "액션, 대상 ID 또는 상세 내용",
+      "en": "Action, target ID, or details",
+      "ja": "アクション・対象ID・詳細内容",
+      "zh-CN": "操作、目标 ID 或详情",
+      "fr": "Action, ID cible ou détails",
+      "es": "Acción, ID objetivo o detalles",
+      "pt-BR": "Ação, ID alvo ou detalhes",
+      "hi": "क्रिया, लक्ष्य ID या विवरण"
+    },
+    "platform.legacy.k0535": {
+      "ko": "게임 메타데이터를 불러오는 중입니다.",
+      "en": "Loading game metadata.",
+      "ja": "ゲームメタデータを読み込み中です。",
+      "zh-CN": "正在加载游戏元数据。",
+      "fr": "Chargement des métadonnées du jeu.",
+      "es": "Cargando metadatos del juego.",
+      "pt-BR": "Carregando metadados do jogo.",
+      "hi": "गेम मेटाडेटा लोड हो रहा है।"
+    },
+    "platform.legacy.k0536": {
+      "ko": "상세 정보를 불러오지 못했습니다.",
+      "en": "Could not load details.",
+      "ja": "詳細情報を読み込めませんでした。",
+      "zh-CN": "无法加载详细信息。",
+      "fr": "Impossible de charger les détails.",
+      "es": "No se pudieron cargar los detalles.",
+      "pt-BR": "Não foi possível carregar os detalhes.",
+      "hi": "विवरण लोड नहीं हो सके।"
+    },
+    "platform.legacy.k0537": {
+      "ko": "상세",
+      "en": "Details",
+      "ja": "詳細",
+      "zh-CN": "详情",
+      "fr": "Détails",
+      "es": "Detalles",
+      "pt-BR": "Detalhes",
+      "hi": "विवरण"
+    },
+    "platform.legacy.k0538": {
+      "ko": "실제 이용 기록(Hub)에서 공개 상태를 변경할 수 있습니다.",
+      "en": "Visibility can be changed in Live usage data (Hub).",
+      "ja": "公開状態は実際の利用記録(Hub)で変更できます。",
+      "zh-CN": "公开状态可在实际使用记录(Hub)中修改。",
+      "fr": "La visibilité peut être modifiée dans les données réelles (Hub).",
+      "es": "La visibilidad se puede cambiar en Datos reales (Hub).",
+      "pt-BR": "A visibilidade pode ser alterada em Dados reais (Hub).",
+      "hi": "दृश्यता वास्तविक उपयोग डेटा (Hub) में बदली जा सकती है।"
+    },
+    "platform.legacy.k0539": {
+      "ko": "선택한 조건의 실행 오류가 없습니다.",
+      "en": "No runtime errors match the selected filters.",
+      "ja": "選択した条件に一致する実行エラーはありません。",
+      "zh-CN": "所选条件下没有运行错误。",
+      "fr": "Aucune erreur d’exécution pour ces critères.",
+      "es": "No hay errores de ejecución para estos criterios.",
+      "pt-BR": "Nenhum erro de execução para os filtros selecionados.",
+      "hi": "चुने गए फ़िल्टर से कोई रनटाइम त्रुटि मेल नहीं खाती।"
+    },
+    "platform.legacy.k0540": {
+      "ko": "조건에 맞는 운영 변경 기록이 없습니다.",
+      "en": "No admin change logs match the filters.",
+      "ja": "条件に一致する運用変更記録はありません。",
+      "zh-CN": "没有符合条件的管理变更记录。",
+      "fr": "Aucun journal ne correspond aux critères.",
+      "es": "No hay registros de cambios que coincidan.",
+      "pt-BR": "Nenhum registro administrativo corresponde aos filtros.",
+      "hi": "फ़िल्टर से मेल खाने वाला कोई व्यवस्थापक लॉग नहीं है।"
+    },
+    "platform.legacy.k0541": {
+      "ko": "SQLite 온라인 백업을 생성하고 무결성 검증을 마쳤습니다.",
+      "en": "Created SQLite online backup and verified integrity.",
+      "ja": "SQLiteオンラインバックアップを作成し整合性検証を完了しました。",
+      "zh-CN": "已创建 SQLite 在线备份并完成完整性校验。",
+      "fr": "Sauvegarde SQLite en ligne créée et vérifiée.",
+      "es": "Copia de seguridad SQLite en línea creada y verificada.",
+      "pt-BR": "Backup online SQLite criado e verificado.",
+      "hi": "SQLite ऑनलाइन बैकअप बनाया गया और अखंडता सत्यापित हुई।"
+    },
+    "platform.legacy.k0542": {
+      "ko": "화면을 불러오지 못했습니다.",
+      "en": "Failed to load view.",
+      "ja": "画面を読み込めませんでした。",
+      "zh-CN": "无法加载页面。",
+      "fr": "Échec du chargement de la vue.",
+      "es": "No se pudo cargar la vista.",
+      "pt-BR": "Falha ao carregar a tela.",
+      "hi": "दृश्य लोड करने में विफल।"
+    },
+    "platform.legacy.k0543": {
+      "ko": "로컬 자동 로그인에 실패했습니다. 관리자 비밀번호로 로그인하거나 런처를 다시 열어 주세요.",
+      "en": "Local auto-login failed. Sign in with the admin password or reopen the launcher.",
+      "ja": "ローカル自動ログインに失敗しました。管理者パスワードでログインするかランチャーを開き直してください。",
+      "zh-CN": "本地自动登录失败。请使用管理员密码登录或重新打开启动器。",
+      "fr": "Échec de la connexion locale automatique. Connectez-vous avec le mot de passe ou rouvrez le lanceur.",
+      "es": "Falló el inicio local automático. Inicia sesión con contraseña o vuelve a abrir el lanzador.",
+      "pt-BR": "Falha no login automático local. Entre com a senha de administrador ou reabra o inicializador.",
+      "hi": "स्थानीय ऑटो-लॉगिन विफल रहा। व्यवस्थापक पासवर्ड से साइन इन करें या लॉन्चर फिर खोलें।"
+    },
+    "platform.legacy.k0544": {
+      "ko": "관리 API 연결을 확인해 주세요. 서버가 준비되면 관리자 로그인을 다시 누를 수 있습니다.",
+      "en": "Check the Admin API connection. You can click Admin sign in again once the server is ready.",
+      "ja": "管理API接続を確認してください。サーバーの準備ができたら管理者ログインを再度押せます。",
+      "zh-CN": "请检查管理 API 连接。服务器就绪后可再次点击管理员登录。",
+      "fr": "Vérifiez la connexion à l’API admin, puis réessayez une fois le serveur prêt.",
+      "es": "Comprueba la conexión con la API de administración y vuelve a intentarlo.",
+      "pt-BR": "Verifique a conexão com a API admin e tente entrar novamente quando o servidor estiver pronto.",
+      "hi": "व्यवस्थापक API कनेक्शन जाँचें। सर्वर तैयार होने पर आप फिर साइन इन कर सकते हैं।"
+    },
+    "platform.legacy.k0545": {
+      "ko": "Bubble Arena · 크레이지 아케이드 프로토타입",
+      "en": "Bubble Arena · Crazy Arcade Prototype",
+      "ja": "Bubble Arena · クレイジーアーケード試作版",
+      "zh-CN": "Bubble Arena · 泡泡堂原型",
+      "fr": "Bubble Arena · Prototype Crazy Arcade",
+      "es": "Bubble Arena · Prototipo Crazy Arcade",
+      "pt-BR": "Bubble Arena · Protótipo Crazy Arcade",
+      "hi": "Bubble Arena · क्रेज़ी आर्केड प्रोटोटाइप"
+    },
+    "platform.legacy.k0546": {
+      "ko": "물풍선 연쇄 폭발, 파워업, 3인 AI 대전을 지원하는 오프라인 웹 아케이드 프로토타입입니다.",
+      "en": "An offline web arcade prototype featuring water-balloon chain explosions, powerups, and 3 AI opponents.",
+      "ja": "水風船の連鎖爆発、パワーアップ、3人のAI対戦に対応したオフラインWebアーケード試作版です。",
+      "zh-CN": "支持水泡连锁爆炸、强化道具与3名AI对战的离线网页街机原型。",
+      "fr": "Prototype arcade web hors ligne avec explosions en chaîne de bombes à eau, bonus et 3 adversaires IA.",
+      "es": "Prototipo arcade web sin conexión con explosiones en cadena, mejoras y 3 rivales de IA.",
+      "pt-BR": "Protótipo arcade web offline com explosões em cadeia, melhorias e 3 oponentes de IA.",
+      "hi": "वॉटर-बैलून चेन विस्फोट, पावर-अप और 3 AI विरोधियों वाला ऑफ़लाइन वेब आर्केड प्रोटोटाइप।"
+    },
+    "platform.legacy.k0547": {
+      "ko": "방향키/WASD 이동, Space 물풍선 설치, R 재시작. 모바일 터치 패드와 폭탄 버튼을 지원합니다.",
+      "en": "Arrow keys/WASD to move, Space to place water balloon, R to restart. Touch controls supported.",
+      "ja": "矢印キー/WASDで移動、Spaceで水風船設置、Rでリスタート。モバイル用タッチパッドと爆弾ボタンに対応しています。",
+      "zh-CN": "方向键/WASD 移动，Space 放置水泡，R 重新开始。支持移动端触控方向键与炸弹按钮。",
+      "fr": "Flèches/WASD pour bouger, Espace pour poser une bombe à eau, R pour recommencer. Commandes tactiles incluses.",
+      "es": "Flechas/WASD para moverte, Espacio para poner globo de agua, R para reiniciar. Compatible con controles táctiles.",
+      "pt-BR": "Setas/WASD para mover, Espaço para soltar balão de água, R para reiniciar. Controles por toque suportados.",
+      "hi": "चलने के लिए एरो/WASD, वॉटर बैलून के लिए Space, रीस्टार्ट के लिए R। टच नियंत्रण समर्थित है।"
+    },
+    "platform.legacy.k0548": {
+      "ko": "파괴 가능한 블록을 부수고 파워업을 모아 상대 AI 3명을 물방울에 가두고 처치하면 승리합니다.",
+      "en": "Destroy blocks, collect powerups, and trap all 3 AI opponents to win.",
+      "ja": "破壊可能なブロックを壊してパワーアップを集め、3人のAI相手を水泡に閉じ込めて倒すと勝利です。",
+      "zh-CN": "破坏可摧毁方块并收集道具，将3名AI对手困入水泡并淘汰即可获胜。",
+      "fr": "Détruisez les blocs, ramassez les bonus et piégez les 3 adversaires IA dans des bulles pour gagner.",
+      "es": "Destruye bloques, recoge mejoras y atrapa a los 3 rivales de IA en burbujas para ganar.",
+      "pt-BR": "Destrua blocos, colete melhorias e prenda os 3 oponentes de IA em bolhas para vencer.",
+      "hi": "ब्लॉक तोड़ें, पावर-अप इकट्ठा करें और जीतने के लिए सभी 3 AI विरोधियों को बबल में फँसाएँ।"
+    },
+    "platform.legacy.k0549": {
+      "ko": "Bridge Lab · 교량 물리 프로토타입",
+      "en": "Bridge Lab · Poly Bridge 2 Prototype",
+      "ja": "Bridge Lab · 橋梁物理プロトタイプ",
+      "zh-CN": "Bridge Lab · 桥梁物理原型",
+      "fr": "Bridge Lab · Prototype physique de ponts",
+      "es": "Bridge Lab · Prototipo de física de puentes",
+      "pt-BR": "Bridge Lab · Protótipo de física de pontes",
+      "hi": "Bridge Lab · ब्रिज फिज़िक्स प्रोटोटाइप"
+    },
+    "platform.legacy.k0550": {
+      "ko": "유압 부재, 중앙 분리 조인트, 16개 추정 캠페인 맵을 지원하는 오프라인 교량 물리 프로토타입입니다.",
+      "en": "An offline bridge-building physics prototype with hydraulic members, split joint toggle, and 16 campaign maps.",
+      "ja": "油圧部材、中央分離ジョイント、16個の推定キャンペーンマップに対応したオフライン橋梁物理プロトタイプです。",
+      "zh-CN": "支持液压构件、中央分离接头与16个推算战役关卡的离线桥梁物理原型。",
+      "fr": "Prototype hors ligne de construction de ponts avec vérins hydrauliques, joint séparateur et 16 cartes de campagne.",
+      "es": "Prototipo sin conexión de física de puentes con piezas hidráulicas, junta dividida y 16 mapas de campaña.",
+      "pt-BR": "Protótipo offline de física de pontes com peças hidráulicas, junta dividida e 16 mapas de campanha.",
+      "hi": "हाइड्रॉलिक मेंबर्स, स्प्लिट जॉइंट टॉगल और 16 कैंपेन मैप वाला ऑफ़लाइन ब्रिज फिज़िक्स प्रोटोटाइप।"
+    },
+    "platform.legacy.k0551": {
+      "ko": "노드와 자재를 연결해 교량을 설계하고 시뮬레이션을 실행합니다. 0.5x/1x/2x 속도, 유압 타임라인, JSON 설계 저장을 지원합니다.",
+      "en": "Connect nodes and materials to build a bridge and run simulation with 0.5x/1x/2x speed and hydraulic phases.",
+      "ja": "ノードと資材を繋いで橋を設計しシミュレーションを実行します。0.5x/1x/2x速度、油圧タイムライン、JSON保存に対応。",
+      "zh-CN": "连接节点与材料设计桥梁并运行模拟，支持 0.5x/1x/2x 速度、液压阶段与 JSON 存档。",
+      "fr": "Reliez nœuds et matériaux pour concevoir un pont et lancer la simulation (0.5x/1x/2x, phases hydrauliques, JSON).",
+      "es": "Conecta nodos y materiales para diseñar un puente y simular con velocidad 0.5x/1x/2x, fases hidráulicas y JSON.",
+      "pt-BR": "Conecte nós e materiais para construir uma ponte e simular em 0.5x/1x/2x com fases hidráulicas e JSON.",
+      "hi": "पुल बनाने के लिए नोड्स और सामग्री जोड़ें और 0.5x/1x/2x गति, हाइड्रॉलिक चरणों व JSON सेव के साथ सिमुलेशन चलाएँ।"
+    },
+    "platform.legacy.k0552": {
+      "ko": "예산과 응력 한도 안에서 차량이 목표 지점까지 건널 수 있도록 교량을 건설하세요. 근사 Verlet 물리 기반입니다.",
+      "en": "Build a bridge within budget and stress limits so the vehicle crosses safely (approximate Verlet physics).",
+      "ja": "予算と応力の上限内で車両がゴールまで渡れるよう橋を架けましょう。近似Verlet物理ベースです。",
+      "zh-CN": "在预算与应力限制内架设桥梁，让车辆安全通过目标点（基于近似 Verlet 物理）。",
+      "fr": "Construisez un pont dans le budget et les limites de contrainte pour que le véhicule traverse (physique Verlet).",
+      "es": "Construye un puente dentro del presupuesto y límite de tensión para que el vehículo cruce (física Verlet).",
+      "pt-BR": "Construa uma ponte dentro do orçamento e limite de tensão para o veículo atravessar (física Verlet).",
+      "hi": "बजट और तनाव सीमा के भीतर पुल बनाएँ ताकि वाहन सुरक्षित पार हो जाए (अनुमानित Verlet भौतिकी)।"
+    },
+    "platform.legacy.k0553": {
+      "ko": "KNOX · LAST SIGNAL (좀보이드 프로토타입)",
+      "en": "KNOX · LAST SIGNAL (Project Zomboid Prototype)",
+      "ja": "KNOX · LAST SIGNAL（Project Zomboid試作版）",
+      "zh-CN": "KNOX · LAST SIGNAL（僵尸毁灭工程原型）",
+      "fr": "KNOX · LAST SIGNAL (Prototype Project Zomboid)",
+      "es": "KNOX · LAST SIGNAL (Prototipo Project Zomboid)",
+      "pt-BR": "KNOX · LAST SIGNAL (Protótipo Project Zomboid)",
+      "hi": "KNOX · LAST SIGNAL (Project Zomboid प्रोटोटाइप)"
+    },
+    "platform.legacy.k0554": {
+      "ko": "부품을 모아 대피소 무전기를 수리하고 90초간 신호를 송출해 탈출하는 오프라인 생존 웹 프로토타입입니다.",
+      "en": "An offline survival web prototype where you salvage parts, repair the shelter radio, and hold out for 90 seconds.",
+      "ja": "部品を集めて拠点の無線を修理し、90秒間信号を送信して脱出するオフラインサバイバルWeb試作版です。",
+      "zh-CN": "收集零件修理避难所电台并坚持发送信号90秒以逃生的离线生存网页原型。",
+      "fr": "Prototype web de survie hors ligne : récupérez des pièces, réparez la radio du refuge et tenez 90 secondes.",
+      "es": "Prototipo web de supervivencia sin conexión: reúne piezas, repara la radio del refugio y resiste 90 segundos.",
+      "pt-BR": "Protótipo web de sobrevivência offline: colete peças, conserte o rádio do abrigo e resista por 90 segundos.",
+      "hi": "ऑफ़लाइन सर्वाइवल वेब प्रोटोटाइप जहाँ आप पुर्ज़े जुटाकर शेल्टर रेडियो ठीक करते हैं और 90 सेकंड तक सिग्नल भेजकर बचते हैं।"
+    },
+    "platform.legacy.k0555": {
+      "ko": "WASD/방향키 이동, 마우스 조준/공격, Space 밀치기, Shift 달리기, C 은신, E 상호작용, I 가방, B 제작, M 지도, Esc 메뉴. 터치 지원.",
+      "en": "WASD/Arrows move, Mouse aim/attack, Space shove, Shift sprint, C sneak, E interact, I inventory, B craft, M map, Esc menu.",
+      "ja": "WASD/矢印で移動、マウスで照準/攻撃、Spaceで押し返し、Shiftでダッシュ、Cでスニーク、Eで調べる、Iで鞄、Bでクラフト、Mで地図、Escでメニュー。タッチ対応。",
+      "zh-CN": "WASD/方向键移动，鼠标瞄准/攻击，Space 推开，Shift 奔跑，C 潜行，E 交互，I 背包，B 制作，M 地图，Esc 菜单。支持触控。",
+      "fr": "WASD/Flèches bouger, Souris viser/attaquer, Espace repousser, Shift courir, C se faufiler, E interagir, I sac, B fabriquer, M carte, Esc menu. Tactile.",
+      "es": "WASD/Flechas mover, Ratón apuntar/atacar, Espacio empujar, Shift correr, C sigilo, E interactuar, I mochila, B fabricar, M mapa, Esc menú. Táctil.",
+      "pt-BR": "WASD/Setas mover, Mouse mirar/atacar, Espaço empurrar, Shift correr, C esgueirar, E interagir, I bolsa, B criar, M mapa, Esc menu. Toque.",
+      "hi": "WASD/एरो चलें, माउस निशाना/हमला, Space धक्का, Shift दौड़, C झुकना, E क्रिया, I बैग, B क्राफ्ट, M नक्शा, Esc मेनू। टच समर्थित।"
+    },
+    "platform.legacy.k0556": {
+      "ko": "배터리 2, 전자 부품 2, 덕트 테이프 1을 모아 무전기를 수리하고 90초 송출을 완료하면 승리합니다. 단일 슬롯 자동 저장 및 JSON 백업 지원.",
+      "en": "Collect 2 batteries, 2 electronics, and 1 duct tape to repair the radio and transmit for 90s. Supports 1-slot auto-save and JSON export.",
+      "ja": "バッテリー2個、電子部品2個、ダクトテープ1個を集めて無線を修理し、90秒間の送信を完了すると勝利です。単一スロット自動保存とJSONバックアップに対応。",
+      "zh-CN": "收集2个电池、2个电子零件和1个管道胶带修理电台并完成90秒信号发送即可获胜。支持单槽位自动存档与 JSON 备份。",
+      "fr": "Récupérez 2 piles, 2 composants et 1 ruban adhésif pour réparer la radio et émettre 90 s. Sauvegarde auto 1 emplacement et export JSON.",
+      "es": "Reúne 2 baterías, 2 piezas electrónicas y 1 cinta aislante para reparar la radio y transmitir 90 s. Guardado automático y copia JSON.",
+      "pt-BR": "Colete 2 baterias, 2 eletrônicos e 1 fita adesiva para consertar o rádio e transmitir por 90 s. Salvamento automático e exportação JSON.",
+      "hi": "रेडियो ठीक करने के लिए 2 बैटरी, 2 इलेक्ट्रॉनिक्स और 1 डक्ट टेप जुटाएँ और 90 सेकंड ट्रांसमिशन पूरा करें। 1-स्लॉट ऑटो-सेव व JSON निर्यात समर्थित।"
+    },
+    "platform.legacy.k0557": {
+      "ko": "Survivor Arena G2 · Godot 3D 서바이벌",
+      "en": "Survivor Arena G2 · Godot 3D Survival",
+      "ja": "Survivor Arena G2 · Godot 3Dサバイバル",
+      "zh-CN": "Survivor Arena G2 · Godot 3D 生存",
+      "fr": "Survivor Arena G2 · Survie 3D Godot",
+      "es": "Survivor Arena G2 · Supervivencia 3D Godot",
+      "pt-BR": "Survivor Arena G2 · Sobrevivência 3D Godot",
+      "hi": "Survivor Arena G2 · Godot 3D सर्वाइवल"
+    },
+    "platform.legacy.k0558": {
+      "ko": "Godot 4.6.3 네이티브 3D로 제작해 WebGL 2.0/WASM으로 내보낸 자동 공격·6+6 빌드·보스전 서바이벌 아레나입니다.",
+      "en": "A Godot 4.6.3 3D WebGL/WASM survival arena featuring auto-attacks, 6+6 builds, weapon evolutions, and boss battles.",
+      "ja": "Godot 4.6.3ネイティブ3Dで制作しWebGL 2.0/WASMへ書き出した、自動攻撃・6+6ビルド・ボス戦のサバイバルアリーナです。",
+      "zh-CN": "使用 Godot 4.6.3 原生 3D 制作并导出为 WebGL 2.0/WASM 的自动攻击、6+6 构筑、Boss 战生存竞技场。",
+      "fr": "Arène de survie 3D Godot 4.6.3 (WebGL 2.0/WASM) avec attaques auto, builds 6+6, évolutions d’armes et combats de boss.",
+      "es": "Arena de supervivencia 3D Godot 4.6.3 (WebGL 2.0/WASM) con autoataques, builds 6+6, evoluciones y jefes.",
+      "pt-BR": "Arena de sobrevivência 3D Godot 4.6.3 (WebGL 2.0/WASM) com ataques automáticos, builds 6+6, evoluções e chefes.",
+      "hi": "Godot 4.6.3 3D WebGL/WASM सर्वाइवल अरेना जिसमें ऑटो-अटैक, 6+6 बिल्ड, हथियार विकास और बॉस लड़ाइयाँ हैं।"
+    },
+    "platform.legacy.k0559": {
+      "ko": "WASD/방향키 또는 터치 조이스틱 이동, P/Esc 일시정지, B 빌드, M 효과음, N 레이더, F11 전체 화면. 반드시 HTTP 서버를 통해 실행하세요.",
+      "en": "Move with WASD/Arrows or touch joystick. P/Esc pause, B build, M audio, N radar, F11 fullscreen. Must be served over HTTP.",
+      "ja": "WASD/矢印キーまたはタッチジョイスティックで移動、P/Escで一時停止、Bでビルド、Mで効果音、Nでレーダー、F11で全画面。必ずHTTPサーバー経由で実行してください。",
+      "zh-CN": "WASD/方向键或触控摇杆移动，P/Esc 暂停，B 构筑，M 音效，N 雷达，F11 全屏。请务必通过 HTTP 服务器运行。",
+      "fr": "Bougez avec WASD/Flèches ou joystick tactile, P/Esc pause, B build, M son, N radar, F11 plein écran. À lancer via serveur HTTP.",
+      "es": "Muévete con WASD/Flechas o joystick táctil, P/Esc pausa, B build, M sonido, N radar, F11 pantalla completa. Ejecutar por HTTP.",
+      "pt-BR": "Mova com WASD/Setas ou joystick tátil, P/Esc pausa, B build, M som, N radar, F11 tela cheia. Execute via servidor HTTP.",
+      "hi": "WASD/एरो या टच जॉयस्टिक से चलें। P/Esc रोकें, B बिल्ड, M ऑडियो, N रडार, F11 फ़ुलस्क्रीन। HTTP सर्वर से चलाएँ।"
+    },
+    "platform.legacy.k0560": {
+      "ko": "경험치를 모아 무기와 패시브를 조합·진화시키고 보스를 처치하며 생존하세요. 기존 games/survivor-io(v7.1.0)와는 독립된 Godot 에디션입니다.",
+      "en": "Collect XP, evolve weapons, and survive boss waves. Independent Godot edition; does not replace games/survivor-io.",
+      "ja": "経験値を集めて武器とパッシブを組み合わせ・進化させ、ボスを倒して生き残りましょう。既存の games/survivor-io(v7.1.0) とは独立した Godot 版です。",
+      "zh-CN": "收集经验值组合并进化武器与被动技能，击败 Boss 生存下来。本作为独立 Godot 版，不替代 games/survivor-io(v7.1.0)。",
+      "fr": "Collectez de l’XP, faites évoluer armes et passifs et survivez aux boss. Édition Godot indépendante de games/survivor-io.",
+      "es": "Recoge XP, evoluciona armas y pasivas y sobrevive a los jefes. Edición Godot independiente de games/survivor-io.",
+      "pt-BR": "Colete XP, evolua armas e passivas e sobreviva aos chefes. Edição Godot independente de games/survivor-io.",
+      "hi": "XP इकट्ठा करें, हथियार विकसित करें और बॉस से बचें। यह games/survivor-io से स्वतंत्र Godot संस्करण है।"
+    },
+    "platform.legacy.k0561": {
+      "ko": "Kingdom Rush · 비공식 타워 디펜스",
+      "en": "Kingdom Rush · Unofficial Tower Defense",
+      "ja": "Kingdom Rush · 非公式タワーディフェンス",
+      "zh-CN": "Kingdom Rush · 非官方塔防",
+      "fr": "Kingdom Rush · Tower Defense non officiel",
+      "es": "Kingdom Rush · Tower Defense no oficial",
+      "pt-BR": "Kingdom Rush · Tower Defense não oficial",
+      "hi": "Kingdom Rush · अनौपचारिक टॉवर डिफेंस"
+    },
+    "platform.legacy.k0562": {
+      "ko": "타워와 영웅으로 길을 방어하고 진행 중 전투를 저장·이어하는 비공식 한국어 타워 디펜스 프로토타입입니다.",
+      "en": "An unofficial tower-defense prototype with Korean gameplay UI and mid-battle checkpoint resume.",
+      "ja": "タワーとヒーローで道を防衛し、進行中の戦闘を保存・再開できる非公式タワーディフェンス試作版です。",
+      "zh-CN": "使用防御塔与英雄守卫道路，并支持战斗中途保存与继续的非官方塔防原型。",
+      "fr": "Prototype non officiel de tower defense avec sauvegarde et reprise de bataille en cours.",
+      "es": "Prototipo no oficial de tower defense con guardado y reanudación en mitad de la batalla.",
+      "pt-BR": "Protótipo não oficial de tower defense com salvamento e retomada no meio da batalha.",
+      "hi": "टॉवर और हीरो से मार्ग की रक्षा करने वाला अनौपचारिक टॉवर डिफेंस प्रोटोटाइप जिसमें मध्य-युद्ध सेव/रिज़्यूम है।"
+    },
+    "platform.legacy.k0563": {
+      "ko": "건설 터를 선택해 타워를 배치합니다. N: 웨이브, 1/2: 스킬, H: 영웅, Space/P: 일시정지. 전투 이어하기와 JSON 백업을 지원합니다.",
+      "en": "Select a build site. N: wave; 1/2: skills; H: hero; Space/P: pause. Supports mid-battle resume and JSON backup.",
+      "ja": "建設地を選んでタワーを配置します。N: ウェーブ、1/2: スキル、H: ヒーロー、Space/P: 一時停止。戦闘の再開とJSONバックアップに対応。",
+      "zh-CN": "选择建造点放置防御塔。N: 下一波，1/2: 技能，H: 英雄，Space/P: 暂停。支持战斗继续与 JSON 备份。",
+      "fr": "Sélectionnez un emplacement pour bâtir une tour. N : vague, 1/2 : compétences, H : héros, Espace/P : pause. Reprise et JSON.",
+      "es": "Elige un solar para construir torres. N: oleada, 1/2: habilidades, H: héroe, Espacio/P: pausa. Reanudación y respaldo JSON.",
+      "pt-BR": "Escolha um terreno para construir torres. N: onda, 1/2: habilidades, H: herói, Espaço/P: pausa. Retomada e backup JSON.",
+      "hi": "टॉवर बनाने के लिए स्थान चुनें। N: वेव, 1/2: कौशल, H: हीरो, Space/P: रोकें। मध्य-युद्ध रिज़्यूम और JSON बैकअप समर्थित।"
+    },
+    "platform.legacy.k0564": {
+      "ko": "생명을 지키고 12개 전장의 웨이브를 완료하세요. 최고 별·강화·설정과 진행 중 전투 체크포인트가 로컬 저장됩니다.",
+      "en": "Defend lives across 12 stages. Best stars, upgrades, settings and mid-battle checkpoints persist locally.",
+      "ja": "ライフを守り、12の戦場のウェーブをクリアしましょう。最高スター・強化・設定と戦闘中のチェックポイントがローカル保存されます。",
+      "zh-CN": "守护生命并完成12个战场的波次。最高星级、强化、设置与战斗中存档点均保存在本地。",
+      "fr": "Défendez vos vies sur 12 cartes. Étoiles, améliorations, réglages et points de contrôle sont sauvegardés localement.",
+      "es": "Defiende tus vidas en 12 escenarios. Estrellas, mejoras, ajustes y puntos de control se guardan localmente.",
+      "pt-BR": "Defenda suas vidas em 12 fases. Estrelas, melhorias, ajustes e checkpoints de batalha são salvos localmente.",
+      "hi": "12 चरणों में जीवन की रक्षा करें। सितारे, अपग्रेड, सेटिंग और युद्ध चेकपॉइंट स्थानीय रूप से सहेजे जाते हैं।"
     }
   },
   "meta": {
@@ -8139,6 +9717,894 @@
       "codeRefs": []
     },
     "community.legacy.k0070": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0417": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0418": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0419": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0420": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0421": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0422": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0423": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0424": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0425": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0426": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0427": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0428": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0429": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0430": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0431": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0432": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0433": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0434": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0435": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0436": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0437": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0438": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0439": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0440": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0441": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0442": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0443": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0444": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0445": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0446": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0447": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0448": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0449": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0450": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0451": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0452": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0453": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0454": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0455": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0456": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0457": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0458": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0459": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0460": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0461": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0462": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0463": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0464": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0465": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0466": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0467": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0468": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0469": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0470": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0471": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0472": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0473": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0474": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0475": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0476": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0477": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0478": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0479": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0480": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0481": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0482": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0483": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0484": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0485": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0486": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0487": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0488": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0489": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0490": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0491": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0492": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0493": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0494": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0495": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0496": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0497": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0498": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0499": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0500": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0501": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0502": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0503": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0504": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0505": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0506": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0507": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0508": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0509": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0510": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0511": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0512": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0513": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0514": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0515": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0516": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0517": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0518": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0519": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0520": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0521": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0522": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0523": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0524": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0525": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0526": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0527": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0528": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0529": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0530": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0531": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0532": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0533": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0534": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0535": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0536": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0537": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0538": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0539": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0540": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0541": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0542": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0543": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0544": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0545": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0546": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0547": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0548": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0549": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0550": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0551": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0552": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0553": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0554": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0555": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0556": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0557": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0558": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0559": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0560": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0561": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0562": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0563": {
+      "contextId": "general",
+      "description": "",
+      "maxChars": null,
+      "codeRefs": []
+    },
+    "platform.legacy.k0564": {
       "contextId": "general",
       "description": "",
       "maxChars": null,

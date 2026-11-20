@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { createApp } from '../server/app.mjs';
+import { compileL10nBundleJs } from '../server/l10n-engine.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const chromePath = process.env.PLAYHUB_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -160,5 +161,155 @@ test('admin L10N tab renders all 7 sub-views, edits keys, runs gather & AI mock,
     await new Promise(resolve => { chrome.once('exit', resolve); if (chrome.exitCode !== null || !chrome.kill()) resolve(); });
     fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 });
     fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 });
+  }
+});
+
+test('user portal and Wave 2 games switch cleanly between KO, EN, and JA in browser', { skip: !fs.existsSync(chromePath), timeout: 60000 }, async () => {
+  const repoRoot = path.resolve(root, '..');
+  const sharedCore = fs.readFileSync(path.join(root, 'shared/locale.js'), 'utf8');
+  const platformJs = fs.readFileSync(path.join(root, 'shared/locales/platform.js'), 'utf8');
+  const communityJs = fs.readFileSync(path.join(root, 'shared/locales/community.js'), 'utf8');
+  const gamesJs = fs.readFileSync(path.join(root, 'shared/locales/games.js'), 'utf8');
+  const bundle = JSON.parse(fs.readFileSync(path.join(root, 'shared/locales/l10n-bundle.json'), 'utf8'));
+  const bundleJs = compileL10nBundleJs(bundle);
+  const wave2Ids = ['crazy-arcade', 'poly-bridge-2', 'project-zomboid', 'survivor-arena-g2', 'kingdom-rush'];
+
+  const metadata = {};
+  const wave2Manifests = [];
+  const catalog = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games/catalog.json'), 'utf8'));
+  for (const entry of catalog.entries) {
+    const m = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games', entry.id, 'game.manifest.json'), 'utf8'));
+    for (const f of ['title', 'summary', 'instructions', 'rules']) {
+      if (m[f]?.ko && typeof m[f].ko === 'string') metadata[m[f].ko] = m[f];
+    }
+    if (wave2Ids.includes(entry.id)) wave2Manifests.push({ id: entry.id, ...m });
+  }
+  const catalogDict = '\nPlayHubLocale.register(' + JSON.stringify(metadata) + ');\n';
+  const localeData = `${platformJs}\n${communityJs}\n${bundleJs}\n${catalogDict}`;
+  const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml' };
+  const exceptions = [];
+
+  const server = http.createServer((req, res) => {
+    const url = new URL(req.url, 'http://127.0.0.1');
+    const p = url.pathname;
+    if (p === '/config.js') { res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }); res.end("window.PLAYHUB_CONFIG={apiBaseUrl:'',mode:'local-iis-poc'};\n"); return; }
+    if (p === '/locale.js') { res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }); res.end(sharedCore); return; }
+    if (p === '/locale-data.js') { res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }); res.end(localeData); return; }
+    if (p === '/api/session') { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ kind: 'guest', csrfToken: 'test-csrf', googleEnabled: false })); return; }
+    if (p === '/api/wishlist') { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ kind: 'guest', items: [] })); return; }
+    if (p === '/api/preferences') { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ locale: 'ko' })); return; }
+    if (p === '/catalog/games.json') { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ schemaVersion: 1, entries: wave2Ids.map(id => ({ id, path: `games/${id}`, enabled: true })) })); return; }
+    if (p === '/api/games') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ games: wave2Manifests.map(m => ({ id: m.id, enabled: true, title: m.title, description: m.summary, instructions: m.instructions, rules: m.rules, tags: m.tags, controls: m.controls, coverUrl: `/games/${m.id}/${m.media.cover}` })) }));
+      return;
+    }
+    const gmManifest = p.match(/^\/games\/([a-z0-9-]+)\/game\.manifest\.json$/);
+    if (gmManifest) {
+      const f = path.resolve(repoRoot, 'games', gmManifest[1], 'game.manifest.json');
+      if (fs.existsSync(f)) { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(fs.readFileSync(f)); return; }
+    }
+    const gmFile = p.match(/^\/games\/([a-z0-9-]+)\/(.+)$/);
+    if (gmFile) {
+      const id = gmFile[1], rel = gmFile[2];
+      if (rel === 'vendor/playhub-dictionary.js') {
+        const dedFile = path.join(root, 'shared/locales', `${id}.js`);
+        const ded = fs.existsSync(dedFile) ? '\n' + fs.readFileSync(dedFile, 'utf8') : '';
+        res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
+        res.end(gamesJs + catalogDict + ded);
+        return;
+      }
+      if (rel === 'vendor/playhub-locale.js') { res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }); res.end(sharedCore); return; }
+      const target = path.resolve(repoRoot, 'games', id, 'Web', rel);
+      if (target.startsWith(path.resolve(repoRoot, 'games', id, 'Web') + path.sep) && fs.existsSync(target) && fs.statSync(target).isFile()) {
+        res.writeHead(200, { 'Content-Type': mime[path.extname(target)] || 'application/octet-stream' });
+        res.end(fs.readFileSync(target));
+        return;
+      }
+    }
+    const rel = p === '/' ? 'index.html' : p.slice(1);
+    const filename = path.resolve(root, 'web/user', rel);
+    if (!filename.startsWith(path.resolve(root, 'web/user') + path.sep) || !fs.existsSync(filename)) { res.writeHead(404); res.end(); return; }
+    res.writeHead(200, { 'Content-Type': mime[path.extname(filename)] || 'application/octet-stream' });
+    res.end(fs.readFileSync(filename));
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-wave2-l10n-browser-'));
+  const chrome = spawn(chromePath, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], { windowsHide: true, stdio: 'ignore' });
+  let socket;
+  try {
+    const portFile = path.join(profile, 'DevToolsActivePort');
+    let port;
+    for (let i = 0; i < 100; i++) {
+      try {
+        const value = Number(fs.readFileSync(portFile, 'utf8').split('\n')[0]);
+        if (Number.isInteger(value) && value > 0 && value <= 65535) { port = value; break; }
+      } catch (error) {
+        if (!['ENOENT', 'EBUSY', 'EACCES'].includes(error.code)) throw error;
+      }
+      await delay(100);
+    }
+    assert.ok(port, 'Chrome DevTools port was not ready');
+    const page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
+    socket = new WebSocket(page.webSocketDebuggerUrl);
+    await new Promise((resolve, reject) => { socket.addEventListener('open', resolve, { once: true }); socket.addEventListener('error', reject, { once: true }); });
+    let serial = 0; const pending = new Map();
+    socket.addEventListener('message', event => {
+      const m = JSON.parse(event.data);
+      if (m.method === 'Runtime.exceptionThrown') exceptions.push(m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text);
+      if (pending.has(m.id)) { const [resolve, reject] = pending.get(m.id); pending.delete(m.id); m.error ? reject(new Error(m.error.message)) : resolve(m.result); }
+    });
+    const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++serial; pending.set(id, [resolve, reject]); socket.send(JSON.stringify({ id, method, params })); });
+    const evaluate = async expression => {
+      const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+      if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
+      return result.result.value;
+    };
+    const until = async expression => {
+      for (let i = 0; i < 160; i++) { if (await evaluate(expression)) return; await delay(50); }
+      throw new Error('Browser condition timed out: ' + expression);
+    };
+
+    await send('Runtime.enable');
+    await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+
+    for (const [loc, expectedNav, expectedCa, expectedKr] of [
+      ['ko', '게임 찾기', 'Bubble Arena · 크레이지 아케이드 프로토타입', 'Kingdom Rush · 비공식 타워 디펜스'],
+      ['en', 'Browse Games', 'Bubble Arena · Crazy Arcade Prototype', 'Kingdom Rush · Unofficial Tower Defense'],
+      ['ja', 'ゲームを探す', 'Bubble Arena · クレイジーアーケード試作版', 'Kingdom Rush · 非公式タワーディフェンス']
+    ]) {
+      await send('Page.navigate', { url: `${baseUrl}/?lang=${loc}` });
+      await until(`document.readyState === 'complete' && Boolean(document.body) && document.querySelectorAll('.game-card').length === 5 && document.documentElement.lang === '${loc}'`);
+      await delay(100);
+      const bodyText = await evaluate('document.body.innerText');
+      assert.ok(bodyText.includes(expectedNav));
+      assert.ok(bodyText.includes(expectedCa));
+      assert.ok(bodyText.includes(expectedKr));
+    }
+
+    for (const [loc, expectedCa, expectedKr, expectedPz] of [
+      ['ko', '물풍선으로 상대를 가두세요!', '궁수 타워', '새 생존 시작'],
+      ['en', 'Trap opponents in water balloons!', 'Archer Tower', 'Start New Survival'],
+      ['ja', '水風船で相手を閉じ込めよう！', 'アーチャータワー', '新しいサバイバルを開始']
+    ]) {
+      await send('Page.navigate', { url: `${baseUrl}/games/crazy-arcade/index.html?lang=${loc}` });
+      await until(`document.readyState === 'complete' && Boolean(document.body) && document.body.innerText.includes(${JSON.stringify(expectedCa)}) && document.documentElement.lang === '${loc}'`);
+
+      await send('Page.navigate', { url: `${baseUrl}/games/kingdom-rush/index.html?lang=${loc}` });
+      await until(`document.readyState === 'complete' && Boolean(document.body) && document.body.innerText.includes(${JSON.stringify(expectedKr)}) && document.documentElement.lang === '${loc}'`);
+      await evaluate('try { localStorage.clear(); } catch {}');
+
+      await send('Page.navigate', { url: `${baseUrl}/games/project-zomboid/index.html?lang=${loc}` });
+      await until(`document.readyState === 'complete' && Boolean(document.body) && document.body.innerText.includes(${JSON.stringify(expectedPz)}) && document.documentElement.lang === '${loc}'`);
+    }
+
+    assert.deepEqual(exceptions, []);
+  } finally {
+    socket?.close();
+    server.closeAllConnections();
+    await new Promise(resolve => server.close(resolve));
+    await new Promise(resolve => { chrome.once('exit', resolve); if (chrome.exitCode !== null || !chrome.kill()) resolve(); });
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 });
   }
 });

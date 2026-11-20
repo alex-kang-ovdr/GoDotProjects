@@ -35,3 +35,40 @@ test('manual locale preparation includes per-game dictionaries and preserves unr
   assert.ok(admin.indexOf('local-login-bootstrap.js')<admin.indexOf('/locale.js'));
   assert.equal((admin.match(/local-login-bootstrap\.js/g)||[]).length,1);
 });
+
+test('syncLocales deploys Wave 2 catalog metadata and dedicated dictionaries to hub surfaces and games',t=>{
+  const hubRoot=path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/i,'$1')),'..');
+  const repoRoot=path.resolve(hubRoot,'..');
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-wave2-locales-'));
+  t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  const root=path.join(directory,'hub'),webgames=path.join(directory,'games');
+  fs.cpSync(path.join(hubRoot,'shared'),path.join(root,'shared'),{recursive:true});
+  for(const surface of ['user','admin']){
+    fs.mkdirSync(path.join(root,'web',surface),{recursive:true});
+    fs.copyFileSync(path.join(hubRoot,'web',surface,'index.html'),path.join(root,'web',surface,'index.html'));
+  }
+  const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'games/catalog.json'),'utf8'));
+  fs.mkdirSync(webgames,{recursive:true});
+  fs.copyFileSync(path.join(repoRoot,'games/catalog.json'),path.join(webgames,'catalog.json'));
+  for(const entry of catalog.entries){
+    fs.mkdirSync(path.join(webgames,entry.id,'Web'),{recursive:true});
+    fs.copyFileSync(path.join(repoRoot,'games',entry.id,'game.manifest.json'),path.join(webgames,entry.id,'game.manifest.json'));
+    fs.copyFileSync(path.join(repoRoot,'games',entry.id,'Web/index.html'),path.join(webgames,entry.id,'Web/index.html'));
+  }
+  syncLocales({root,webgames});
+
+  const userDict=fs.readFileSync(path.join(root,'web/user/locale-data.js'),'utf8');
+  const adminDict=fs.readFileSync(path.join(root,'web/admin/locale-data.js'),'utf8');
+  assert.equal(userDict,adminDict);
+  const sharedCore=fs.readFileSync(path.join(hubRoot,'shared/locale.js'),'utf8');
+  for(const id of ['crazy-arcade','poly-bridge-2','project-zomboid','survivor-arena-g2','kingdom-rush']){
+    const manifest=JSON.parse(fs.readFileSync(path.join(repoRoot,'games',id,'game.manifest.json'),'utf8'));
+    assert.ok(userDict.includes(JSON.stringify(manifest.title.ko)),`user locale-data missing ${id} title`);
+    assert.ok(userDict.includes(JSON.stringify(manifest.summary.ko)),`user locale-data missing ${id} summary`);
+    assert.equal(fs.readFileSync(path.join(webgames,id,'Web/vendor/playhub-locale.js'),'utf8'),sharedCore);
+    const gameDict=fs.readFileSync(path.join(webgames,id,'Web/vendor/playhub-dictionary.js'),'utf8');
+    assert.ok(gameDict.includes(JSON.stringify(manifest.title.ko)),`game dictionary missing ${id} title`);
+  }
+  assert.match(fs.readFileSync(path.join(webgames,'crazy-arcade/Web/vendor/playhub-dictionary.js'),'utf8'),/Water-balloon|Trap opponents/i);
+  assert.match(fs.readFileSync(path.join(webgames,'kingdom-rush/Web/vendor/playhub-dictionary.js'),'utf8'),/Kingdom Rush · 非公式タワーディフェンス/);
+});
