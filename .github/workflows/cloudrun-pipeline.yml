@@ -45,6 +45,18 @@ on:
         description: '롤백 대상 환경 (dev / live)'
         required: false
         default: 'live'
+      update_policy:
+        description: '업데이트 정책 선택 (optional=선업 / force=강업)'
+        required: false
+        default: 'optional'
+        type: choice
+        options:
+          - optional
+          - force
+      force_targets:
+        description: '강업 대상 타깃 (예: all, hub, forge-web, aos,ios — 비우면 update_policy=force 시 배포 대상 자동 적용)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -71,6 +83,8 @@ jobs:
           node-version: '24'
       - name: Check worktree ownership rules
         run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
+      - name: Run build-version & compatibility gate tests
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Smoke test Cloud Run Hub entrypoint
@@ -82,6 +96,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       sha_tag: ${{ steps.meta.outputs.sha_tag }}
+      hub_build_tag: ${{ steps.meta.outputs.hub_build_tag }}
+      hub_build_id: ${{ steps.meta.outputs.hub_build_id }}
+      hub_build_code: ${{ steps.meta.outputs.hub_build_code }}
+      hub_revision: ${{ steps.meta.outputs.hub_revision }}
+      forge_build_tag: ${{ steps.meta.outputs.forge_build_tag }}
+      forge_build_id: ${{ steps.meta.outputs.forge_build_id }}
+      forge_revision: ${{ steps.meta.outputs.forge_revision }}
+      build_date: ${{ steps.meta.outputs.build_date }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -90,7 +112,25 @@ jobs:
       - name: Build Hub static output for container
         run: node hub/tools/build.mjs
       - id: meta
-        run: echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        run: |
+          BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          HUB_SEMVER=$(node -p "require('./hub/package.json').version")
+          FORGE_SEMVER=$(node -p "require('./forge/package.json').version")
+          POLICY="${{ inputs.update_policy || 'optional' }}"
+          echo "build_date=${BUILD_DATE}" >> "$GITHUB_OUTPUT"
+          echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          node tools/build-version/resolve-build-info.mjs \
+            --target hub --semver "${HUB_SEMVER}" --channel dev \
+            --build-num "${GITHUB_RUN_NUMBER}" --date "${BUILD_DATE}" \
+            --branch "${GITHUB_REF_NAME}" --commit "${GITHUB_SHA}" \
+            --update-policy "${POLICY}" --clean \
+            --output-prefix hub --github-output "$GITHUB_OUTPUT" > /dev/null
+          node tools/build-version/resolve-build-info.mjs \
+            --target forge-web --semver "${FORGE_SEMVER}" --channel dev \
+            --build-num "${GITHUB_RUN_NUMBER}" --date "${BUILD_DATE}" \
+            --branch "${GITHUB_REF_NAME}" --commit "${GITHUB_SHA}" \
+            --update-policy "${POLICY}" --clean \
+            --output-prefix forge --github-output "$GITHUB_OUTPUT" > /dev/null
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
@@ -102,13 +142,29 @@ jobs:
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
         run: |
           docker build -f deploy/cloudrun/hub/Dockerfile \
+            --build-arg PLAYHUB_CHANNEL=dev \
+            --build-arg PLAYHUB_BUILD_NUM="${GITHUB_RUN_NUMBER}" \
+            --build-arg PLAYHUB_BUILD_DATE="${{ steps.meta.outputs.build_date }}" \
+            --build-arg PLAYHUB_BRANCH="${GITHUB_REF_NAME}" \
+            --build-arg PLAYHUB_COMMIT="${GITHUB_SHA}" \
+            --build-arg PLAYHUB_UPDATE_POLICY="${{ inputs.update_policy || 'optional' }}" \
+            -t "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.hub_build_tag }}" \
             -t "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}" .
+          docker push "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.hub_build_tag }}"
           docker push "${ARTIFACT_REPO}/hub:${{ steps.meta.outputs.sha_tag }}"
       - name: Build & push immutable Forge image
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
         run: |
           docker build -f deploy/cloudrun/forge/Dockerfile \
+            --build-arg PLAYFORGE_CHANNEL=dev \
+            --build-arg PLAYFORGE_BUILD_NUM="${GITHUB_RUN_NUMBER}" \
+            --build-arg PLAYFORGE_BUILD_DATE="${{ steps.meta.outputs.build_date }}" \
+            --build-arg PLAYFORGE_BRANCH="${GITHUB_REF_NAME}" \
+            --build-arg PLAYFORGE_COMMIT="${GITHUB_SHA}" \
+            --build-arg PLAYFORGE_UPDATE_POLICY="${{ inputs.update_policy || 'optional' }}" \
+            -t "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.forge_build_tag }}" \
             -t "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}" .
+          docker push "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.forge_build_tag }}"
           docker push "${ARTIFACT_REPO}/forge:${{ steps.meta.outputs.sha_tag }}"
 
   deploy-dev:
@@ -125,13 +181,15 @@ jobs:
       - name: Deploy Hub to playhub-dev-2611 (Always Free, zero-downtime)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
         run: |
+          POLICY="${{ inputs.update_policy || 'optional' }}"
+          FORCE_TARGETS="${{ inputs.force_targets }}"
           gcloud run deploy playhub-hub \
             --project="${DEV_HUB_PROJECT}" \
             --region="${REGION}" \
-            --image="${ARTIFACT_REPO}/hub:${{ needs.build.outputs.sha_tag }}" \
+            --image="${ARTIFACT_REPO}/hub:${{ needs.build.outputs.hub_build_tag }}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 \
-            --set-env-vars="PLAYHUB_ROLE=public,PLAYHUB_SECURE_COOKIES=true" \
+            --set-env-vars="PLAYHUB_ROLE=public,PLAYHUB_SECURE_COOKIES=true,PLAYHUB_CHANNEL=dev,PLAYHUB_BUILD_ID=${{ needs.build.outputs.hub_build_id }},PLAYHUB_BUILD_CODE=${{ needs.build.outputs.hub_build_code }},PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
             --quiet
       - name: Deploy Forge to forge-dev-2611 (Always Free, Hub Auth fail-closed)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
@@ -139,10 +197,10 @@ jobs:
           gcloud run deploy playhub-forge \
             --project="${DEV_FORGE_PROJECT}" \
             --region="${REGION}" \
-            --image="${ARTIFACT_REPO}/forge:${{ needs.build.outputs.sha_tag }}" \
+            --image="${ARTIFACT_REPO}/forge:${{ needs.build.outputs.forge_build_tag }}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=3600 \
-            --set-env-vars="PLAYFORGE_BASE_PATH=/forge,PLAYHUB_FORGE_AUTH_MODE=hub" \
+            --set-env-vars="PLAYFORGE_BASE_PATH=/forge,PLAYHUB_FORGE_AUTH_MODE=hub,PLAYFORGE_BUILD_ID=${{ needs.build.outputs.forge_build_id }}" \
             --quiet
 
   promote-qa:
@@ -158,11 +216,14 @@ jobs:
       - name: Deploy QA preview tag (no rebuild, zero impact on dev traffic)
         run: |
           TAG="${{ inputs.image_tag }}"
+          POLICY="${{ inputs.update_policy || 'optional' }}"
+          FORCE_TARGETS="${{ inputs.force_targets }}"
           test -n "$TAG" || (echo "image_tag required" && exit 1)
           if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
             gcloud run deploy playhub-hub \
               --project="${DEV_HUB_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/hub:${TAG}" \
+              --update-env-vars="PLAYHUB_CHANNEL=qa,PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
               --no-traffic --tag=qa --quiet
           fi
           if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "forge" ]; then
@@ -187,11 +248,14 @@ jobs:
         run: |
           TAG="${{ inputs.image_tag }}"
           PCT="${{ inputs.canary_percent }}"
+          POLICY="${{ inputs.update_policy || 'optional' }}"
+          FORCE_TARGETS="${{ inputs.force_targets }}"
           test -n "$TAG" || (echo "image_tag required" && exit 1)
           if [ "${{ inputs.target }}" = "both" ] || [ "${{ inputs.target }}" = "hub" ]; then
             gcloud run deploy playhub-hub \
               --project="${LIVE_HUB_PROJECT}" --region="${REGION}" \
               --image="${ARTIFACT_REPO}/hub:${TAG}" \
+              --update-env-vars="PLAYHUB_CHANNEL=live,PLAYHUB_UPDATE_POLICY=${POLICY},PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
               --no-traffic --tag=candidate --quiet
             REV=$(gcloud run services describe playhub-hub --project="${LIVE_HUB_PROJECT}" --region="${REGION}" --format='value(status.latestReadyRevisionName)')
             gcloud run services update-traffic playhub-hub \

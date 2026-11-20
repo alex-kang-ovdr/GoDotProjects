@@ -1,16 +1,46 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$GodotSource = 'D:\Github\GoDotProjects',
     [string]$NodeSource = 'C:\Program Files\nodejs\node.exe',
-    [string]$ReleaseDate = '2026-11-17'
+    [string]$ReleaseDate = '',
+    [ValidatePattern('^(\d{4})?$')][string]$BuildTime = '',
+    [string]$Branch = '',
+    [string]$SourceCommit = '',
+    [ValidateRange(0, 999999)][int]$BuildNumber = 0,
+    [ValidateRange(0, 99)][int]$DailySeq = 0,
+    [ValidateSet('local','dev','qa','rc','live')][string]$Channel = 'local',
+    [ValidateSet('optional','force')][string]$UpdatePolicy = 'optional',
+    [ValidateSet('forge-desktop','godot-server')][string]$Target = 'forge-desktop'
 )
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$nowUtc = [DateTime]::UtcNow
+$nowKst = $nowUtc.AddHours(9)
+if (-not $ReleaseDate) { $ReleaseDate = $nowKst.ToString('yyyy-MM-dd') }
+if (-not $BuildTime) { $BuildTime = $nowKst.ToString('HHmm') }
+if (-not $Branch) {
+    try { $Branch = (git -C $root rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch { $Branch = '' }
+    if (-not $Branch -or $Branch -eq 'HEAD') { $Branch = 'detached' }
+}
+if (-not $SourceCommit) {
+    try { $SourceCommit = (git -C $root rev-parse HEAD 2>$null).Trim().ToLowerInvariant() } catch { $SourceCommit = '0000000' }
+}
+$branchSlug = ($Branch.ToLowerInvariant() -replace '[^a-z0-9-]+','-' -replace '-+','-').Trim('-')
+if ($branchSlug.Length -gt 20) { $branchSlug = $branchSlug.Substring(0,20).TrimEnd('-') }
+if (-not $branchSlug) { $branchSlug = 'detached' }
+$sha7 = $SourceCommit.Substring(0, [Math]::Min(7, $SourceCommit.Length)).ToLowerInvariant()
+$dateCompact = $ReleaseDate.Replace('-', '')
+$effectiveSeq = if ($DailySeq -gt 0) { $DailySeq } elseif ($BuildNumber -gt 0) { (($BuildNumber - 1) % 99) + 1 } else { 0 }
+$buildCode = [int64]("$dateCompact" + $effectiveSeq.ToString('00'))
+if ($buildCode -ge 2100000000) { throw "buildCode $buildCode exceeds Google Play Int32 ceiling." }
+$pkgSemver = (Get-Content -Raw -LiteralPath (Join-Path $root 'package.json') | ConvertFrom-Json).version
+$buildId = "$Target-v$pkgSemver-$dateCompact-$BuildTime-$branchSlug-g$sha7-b$BuildNumber"
+$archivePrefix = if ($Target -eq 'godot-server') { 'PlayForge-GodotServer' } else { 'PlayForge-Desktop' }
 $packagingRoot = Join-Path $root 'Saved/Packaging'
 $stage = Join-Path $packagingRoot 'staging/PlayForge'
 $outputDirectory = Join-Path $root 'Launch'
-$archiveName = "PlayForge-Server-Windows-$ReleaseDate.zip"
+$archiveName = "$archivePrefix-v$pkgSemver-$dateCompact-$BuildTime-$branchSlug-g$sha7-b$BuildNumber-win-x64.zip"
 $archivePath = Join-Path $outputDirectory $archiveName
 $godotVersionName = 'Godot_v4.7.2-stable_win64'
 $godotEditor = Join-Path $GodotSource "$godotVersionName.exe"
@@ -124,6 +154,25 @@ foreach ($module in @('ws', 'yjs', 'lib0', 'isomorphic.js')) {
     $moduleVersions[$module] = $metadata.version
 }
 $playforgeVersion = (Get-Content -Raw -LiteralPath (Join-Path $stage 'package.json') | ConvertFrom-Json).version
+$buildInfo = [ordered]@{
+    schemaVersion = 1
+    target = $Target
+    semver = $playforgeVersion
+    channel = $Channel
+    buildId = $buildId
+    buildCode = $buildCode
+    buildNum = $BuildNumber
+    dailySeq = $effectiveSeq
+    builtAtUtc = $nowUtc.ToString('yyyy-MM-ddTHH:mm:ssZ')
+    builtAtKst = $nowKst.ToString('yyyy-MM-ddTHH:mm:ss+09:00')
+    dateKst = $dateCompact
+    timeKst = $BuildTime
+    git = [ordered]@{ branch = $Branch; branchSlug = $branchSlug; commit = $SourceCommit; sha7 = $sha7; dirty = $false }
+    compat = [ordered]@{ engineAbi = 'godot-4.7'; engineApiRev = 1; minEngineApiRev = 1; netProtocol = '1.0'; gameplayHash = 'default' }
+    updatePolicy = $UpdatePolicy
+    minClientBuildCode = $(if ($UpdatePolicy -eq 'force') { $buildCode } else { 0 })
+}
+$buildInfo | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stage 'BUILD_INFO.json') -Encoding utf8
 $fileRecords = @()
 foreach ($file in Get-ChildItem -LiteralPath $stage -File -Recurse -Force | Sort-Object FullName) {
     $relative = [IO.Path]::GetRelativePath($stage, $file.FullName).Replace('\', '/')
@@ -131,9 +180,16 @@ foreach ($file in Get-ChildItem -LiteralPath $stage -File -Recurse -Force | Sort
 }
 $licenses = @($fileRecords | Where-Object { $_.path -match '(^|/)(LICENSE|LICENCE|COPYING|NOTICE|OFL)(\.|$)' -or $_.path -in @('Deploy/Node-LICENSE-22.16.0.txt', 'OfficialGodot/GODOT-LICENSE.txt') } | ForEach-Object { $_.path })
 $manifest = [ordered]@{
-    package = 'PlayForge-Server-Windows'
+    package = $archivePrefix
+    target = $Target
+    buildId = $buildId
+    buildCode = $buildCode
+    updatePolicy = $UpdatePolicy
     releaseDate = $ReleaseDate
-    generatedAtUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
+    buildTimeKst = $BuildTime
+    branch = $Branch
+    sourceCommit = $SourceCommit
+    generatedAtUtc = $nowUtc.ToString('yyyy-MM-ddTHH:mm:ssZ')
     versions = [ordered]@{ PlayForge = $playforgeVersion; Node = $nodeVersion; Godot = $godotVersion; modules = $moduleVersions }
     licenses = $licenses
     files = $fileRecords

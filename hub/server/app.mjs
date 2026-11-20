@@ -14,6 +14,7 @@ import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
+import { createVersionCompat } from './version-compat.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -115,6 +116,8 @@ export function createApp(input, dependencies = {}) {
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
+  // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
+  const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -225,6 +228,7 @@ export function createApp(input, dependencies = {}) {
   }
 
   async function publicRoute(req,res,url) {
+    if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
@@ -508,6 +512,7 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
     }
     const s = requireSession(req,'admin',true);
+    if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
@@ -594,9 +599,11 @@ export function createApp(input, dependencies = {}) {
           await verifyInternalSession(req, res);
           return;
         }
-        if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health')) throw new ApiError(404,'NOT_FOUND');
-        if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,['POST','PUT','PATCH','DELETE'].includes(req.method))) return;
-        if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:'0.3.0'}); return; }
+        if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
+        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check');
+        if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
+        if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
+        if (url.pathname === '/api/version' && req.method === 'GET') { versionCompat.handleVersion(res); return; }
         await (kind === 'public' ? publicRoute : adminRoute)(req,res,url);
       } catch(error) {
         const known = error instanceof ApiError;
