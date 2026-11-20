@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-11-20",
+  "target_engine": "Godot 4.7.2-stable (win64)",
+  "fixtures": [
+    {
+      "id": "chaos-obby",
+      "upstream_repo": "https://github.com/SBdevz/Chaos-Obby",
+      "license": "MIT",
+      "description": "Published Roblox Obby (7 verbatim Luau scripts: Motion, Checkpoints, Disapearing, Lava Obstacles, Teleport, Chaos Features, Timer + reconstructed Roblox XML v4 place ChaosObby.rbxlx)",
+      "instances": 51,
+      "parts": 18,
+      "scripts": 7,
+      "code_lines": 331
+    },
+    {
+      "id": "baseplate-413",
+      "upstream_repo": "https://github.com/Roblox/rbx-test-files",
+      "license": "MIT",
+      "description": "Official Roblox Studio XML v4 place file (places/baseplate-413/xml.rbxlx)",
+      "instances": 41,
+      "parts": 1,
+      "scripts": 0,
+      "code_lines": 0
+    }
+  ],
+  "comparison_chaos_obby": {
+    "before_lab_v01": {
+      "tool": "tools/RobloxConverter/lab/converter.js (v0.1 baseline)",
+      "scene_has_root_node": false,
+      "scene_instantiates_in_godot_472": false,
+      "meshes_generated": 0,
+      "collision_shapes_generated": 0,
+      "touch_areas_generated": 0,
+      "scripts_compiled_in_godot_472": 0,
+      "script_compile_rate": 0.0,
+      "todo_fallback_lines": 151,
+      "todo_fallback_rate": 0.4562,
+      "syntax_error_diagnostics": 41,
+      "behavior_assertions_passed": 0,
+      "behavior_assertions_total": 9,
+      "behavior_pass_rate": 0.0
+    },
+    "after_poc_pipeline": {
+      "tool": "tools/RobloxConverter/src/* + forge/Godot/addons/playforge_roblox_compat",
+      "scene_has_root_node": true,
+      "scene_instantiates_in_godot_472": true,
+      "meshes_generated": 18,
+      "collision_shapes_generated": 18,
+      "touch_areas_generated": 18,
+      "scripts_compiled_in_godot_472": 7,
+      "runtime_scripts_compiled_in_godot_472": 4,
+      "script_compile_rate": 1.0,
+      "todo_fallback_lines": 0,
+      "todo_fallback_rate": 0.0,
+      "observed_distinct_apis": 49,
+      "supported_distinct_apis": 48,
+      "api_coverage": 0.9796,
+      "unreported_unsupported_count": 0,
+      "explicit_diagnostics": [
+        { "script": "ServerScriptService/Checkpoints", "grade": "X", "api": "DataStoreService", "action": "local in-memory stub + runtime warning" },
+        { "script": "ServerScriptService/Teleport", "grade": "X", "api": "DataStoreService", "action": "local in-memory stub + runtime warning" },
+        { "script": "ServerScriptService/ChaosFeatures", "grade": "V", "api": "LuauTable.FunctionKey", "action": "Dictionary[Callable, String] adapter" }
+      ],
+      "behavior_assertions_passed": 9,
+      "behavior_assertions_total": 9,
+      "behavior_pass_rate": 1.0,
+      "measured_behaviors": {
+        "unit_coordinate_error_m": 0.0,
+        "spin_ratio_right480_vs_right60": 8.0,
+        "spin_ratio_cyl30_vs_right60": 0.5,
+        "checkpoint_stage_transition": "Red 0 -> Red 1 (DataStoreStub persisted)",
+        "teleport_target_x_m": 13.44,
+        "hud_live_text": "Next Chaos Event In: 04:00 -> Darkness Event Ends In: 00:42",
+        "disappearing_tile_cycle": "Transparency 0.0 -> 1.0 (CanCollide=false) -> 0.0 (CanCollide=true)",
+        "lava_respawn": "Health=0 -> death_count 0->1 -> respawned at Red 1 (x=13.44m)",
+        "chaos_effects": "WalkSpeed 16->8->64->16, FogEnd 500->20->500"
+      }
+    }
+  },
+  "screenshots": {
+    "before_lab_v01": "screenshots/before_lab_v01_scene.png",
+    "after_chaos_obby_normal": "screenshots/after_chaos_obby_normal.png",
+    "after_chaos_obby_darkness": "screenshots/after_chaos_obby_darkness.png",
+    "after_baseplate_413": "screenshots/after_baseplate_413.png"
+  }
+}
