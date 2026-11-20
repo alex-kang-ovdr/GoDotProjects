@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { readCatalog } from './catalog.mjs';
 import { ApiError, assertId, json, readJson, uid } from './security.mjs';
 import { assertNoLinks, hashFile, TOOL_VERSION } from '../tools/backup.mjs';
+import { createLocalForgeGateway } from './forge-gateway.mjs';
 
 const DAY = 86400000;
 const SUBMISSION_ID = '[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}';
@@ -98,111 +99,6 @@ function listBackups(dataDir) {
   }
   entries.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || b.filename.localeCompare(a.filename));
   return entries.slice(0, 20);
-}
-
-function inspectForgeTemplates(platformRoot) {
-  const templatesDir = path.join(platformRoot, 'forge', 'Templates');
-  const templates = [];
-  for (const folder of safeReadDir(templatesDir).sort()) {
-    const dir = path.join(templatesDir, folder);
-    const meta = safeReadJson(path.join(dir, 'metadata.json'), 131072);
-    if (!meta || typeof meta !== 'object') continue;
-    templates.push({
-      id: typeof meta.id === 'string' ? meta.id : folder,
-      name: typeof meta.name === 'string' ? meta.name : folder,
-      description: typeof meta.description === 'string' ? meta.description : '',
-      dimension: typeof meta.dimension === 'string' ? meta.dimension : 'unknown',
-      assetCount: Array.isArray(meta.assetPaths) ? meta.assetPaths.length : 0,
-      guideSteps: Array.isArray(meta.guideOrder) ? meta.guideOrder.length : 0,
-      hasGuide: Boolean(meta.guide || safeStat(path.join(dir, 'README.md'))),
-      hasShowcase: Boolean(safeStat(path.join(dir, 'showcase.json')))
-    });
-  }
-  return templates;
-}
-
-function inspectForgeProjects(forgeDir) {
-  if (!forgeDir) return [];
-  const accountsDir = path.join(forgeDir, 'accounts');
-  const projects = [];
-  for (const accountFolder of safeReadDir(accountsDir).slice(0, 50)) {
-    const accountRoot = path.join(accountsDir, accountFolder);
-    const projectsDir = path.join(accountRoot, 'projects');
-    for (const file of safeReadDir(projectsDir).slice(0, 50)) {
-      if (!file.endsWith('.json')) continue;
-      const data = safeReadJson(path.join(projectsDir, file), 2 * 1024 * 1024);
-      if (!data || typeof data !== 'object' || typeof data.id !== 'string') continue;
-      projects.push({
-        ownerKeyPrefix: accountFolder.slice(0, 12),
-        projectId: data.id,
-        name: typeof data.name === 'string' ? data.name : data.id,
-        templateId: typeof data.templateId === 'string' ? data.templateId : null,
-        revision: Number.isSafeInteger(data.revision) ? data.revision : 0,
-        releaseCount: Array.isArray(data.releases) ? data.releases.length : 0,
-        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null
-      });
-      if (projects.length >= 100) return projects;
-    }
-  }
-  projects.sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
-  return projects;
-}
-
-function inspectForgeBuilds(forgeDir, platformRoot) {
-  const roots = [];
-  if (forgeDir) roots.push({ source: 'hub-owned', dir: path.join(forgeDir, 'builds') });
-  roots.push({ source: 'local-forge', dir: path.join(platformRoot, 'forge', 'Saved', 'Builds') });
-  const builds = [];
-  for (const { source, dir } of roots) {
-    for (const entry of safeReadDir(dir).slice(0, 50)) {
-      const result = safeReadJson(path.join(dir, entry, 'result.json'), 262144);
-      if (!result || typeof result !== 'object') continue;
-      builds.push({
-        id: typeof result.id === 'string' ? result.id : entry,
-        source,
-        projectId: typeof result.projectId === 'string' ? result.projectId : null,
-        revision: Number.isSafeInteger(result.revision) ? result.revision : null,
-        target: typeof result.target === 'string' ? result.target : 'web',
-        status: typeof result.status === 'string' ? result.status : 'unknown',
-        createdAt: typeof result.createdAt === 'string' ? result.createdAt : null,
-        startedAt: typeof result.startedAt === 'string' ? result.startedAt : null,
-        finishedAt: typeof result.finishedAt === 'string' ? result.finishedAt : null,
-        fileCount: Array.isArray(result.files) ? result.files.length : 0,
-        error: typeof result.error === 'string' ? result.error.slice(0, 240) : null
-      });
-    }
-  }
-  builds.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-  return builds.slice(0, 40);
-}
-
-function inspectDriveManifests(forgeDir) {
-  const summarize = folder => {
-    const summary = { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 };
-    if (!forgeDir) return summary;
-    const dir = path.join(forgeDir, folder);
-    for (const file of safeReadDir(dir).slice(0, 200)) {
-      if (!file.endsWith('.json')) continue;
-      const doc = safeReadJson(path.join(dir, file), 262144);
-      if (!doc || typeof doc !== 'object') continue;
-      const rows = Array.isArray(doc.versions) ? doc.versions : [doc];
-      for (const row of rows) {
-        if (!row || typeof row !== 'object') continue;
-        summary.total++;
-        const state = row.state || row.status;
-        if (state === 'committed' || row.cloudCommitted === true) summary.committed++;
-        if (row.cloudVerified === true) summary.verified++;
-        if (state === 'pending' || state === 'reserved' || state === 'uploading') summary.pending++;
-        if (state === 'failed') summary.failed++;
-      }
-    }
-    return summary;
-  };
-  return {
-    snapshots: summarize('cloud-manifests'),
-    submissions: summarize('submission-manifests'),
-    deployments: summarize('deployment-manifests')
-  };
 }
 
 function inspectReportArtifacts(rootDir, platformRoot) {
@@ -391,7 +287,9 @@ async function createOnlineBackup(dataDir, now) {
   }
 }
 
-export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession }) {
+export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway }) {
+  // Forge templates/projects/builds/Drive state come only from the gateway (admin-only local gateway by default).
+  const forge = forgeGateway || createLocalForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
   db.exec(`
     CREATE TABLE IF NOT EXISTS qa_runs (
       id TEXT PRIMARY KEY,
@@ -545,11 +443,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
 
   function forgeOverview() {
     const forgeConfig = config.forge || {};
-    const forgeDir = forgeConfig.enabled === true && typeof forgeConfig.directory === 'string' ? forgeConfig.directory : null;
-    const templates = inspectForgeTemplates(platformRoot);
-    const projects = inspectForgeProjects(forgeDir);
-    const builds = inspectForgeBuilds(forgeDir, platformRoot);
-    const driveSync = inspectDriveManifests(forgeDir);
+    const { templates, projects, builds, driveSync, serverPresent, officialEditorPresent } = forge.adminSnapshot();
     const buildSummary = {
       total: builds.length,
       queued: builds.filter(b => b.status === 'queued').length,
@@ -569,8 +463,8 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         packageFolderConfigured: Boolean(packageFolderId),
         separateFoldersValid: Boolean(folderId && packageFolderId && folderId !== packageFolderId),
         driveTokenConfigured: Boolean(env.PLAYHUB_DRIVE_CLIENT_ID && env.PLAYHUB_DRIVE_CLIENT_SECRET && env.PLAYHUB_DRIVE_REFRESH_TOKEN),
-        serverPresent: Boolean(safeStat(path.join(platformRoot, 'forge', 'server.cjs'))),
-        officialEditorPresent: Boolean(safeStat(path.join(platformRoot, 'forge', 'OfficialGodot', 'index.html')))
+        serverPresent,
+        officialEditorPresent
       },
       policy: {
         primaryEditorPath: '/OfficialGodot/',
@@ -651,9 +545,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     const liveErrors24h = db.prepare("SELECT COUNT(*) AS n FROM errors WHERE traffic_type='live' AND created_at>=?").get(since24h).n;
     const qaErrors24h = db.prepare("SELECT COUNT(*) AS n FROM errors WHERE traffic_type='qa' AND created_at>=?").get(since24h).n;
     const qaRunsCount = db.prepare('SELECT COUNT(*) AS n FROM qa_runs').get().n;
-    const forgeDir = config.forge?.enabled === true && typeof config.forge?.directory === 'string' ? config.forge.directory : null;
-    const builds = inspectForgeBuilds(forgeDir, platformRoot);
-    const templates = inspectForgeTemplates(platformRoot);
+    const { builds, templates } = forge.adminSnapshot();
     const aiQa = inspectAiQa(platformRoot);
     const { quarantine } = inspectQaPolicies(platformRoot);
     return {

@@ -1,10 +1,8 @@
-import { createRequire } from 'node:module';
-import { resolve } from 'node:path';
 import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
+import { createLocalForgeGateway } from './forge-gateway.mjs';
 import { ApiError, json, readJson, uid } from './security.mjs';
 
-const require = createRequire(import.meta.url);
 const CREATOR_PATH = '/api/creator/submissions';
 const ADMIN_PATH = '/api/admin/submissions';
 const FORGE_ID = /^[0-9a-f]{24}$/;
@@ -62,7 +60,10 @@ function checkRevision(row, revision) {
   if (revision !== row.revision) throw new ApiError(409, 'SUBMISSION_REVISION_CONFLICT');
 }
 
-export function createCreatorReview({ config, db, requireSession, root, now, audit }) {
+export function createCreatorReview({ config, db, requireSession, root, now, audit, forgeGateway }) {
+  // Forge releases are read only through the gateway; a local one is created on first use when none is injected.
+  let gateway = forgeGateway || null;
+  const forge = () => gateway || (gateway = createLocalForgeGateway({ config, root }));
   db.exec(`
     CREATE TABLE IF NOT EXISTS creator_submissions (
       id TEXT PRIMARY KEY,
@@ -130,17 +131,11 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
 
   function ownedRelease(key, projectId, releaseId) {
     requireForge();
-    const { PlatformStore } = require('../../forge/Tools/platform-store.cjs');
-    const store = new PlatformStore(root, resolve(config.directory, 'accounts', key));
-    let project;
-    try { project = store.read(projectId); }
+    try { return forge().getRelease(key, projectId, releaseId); }
     catch (error) {
       if (error.status !== 404) throw error;
       throw new ApiError(404, 'RELEASE_NOT_FOUND');
     }
-    const release = project.releases.find(candidate => candidate.id === releaseId);
-    if (!release) throw new ApiError(404, 'RELEASE_NOT_FOUND');
-    return release;
   }
 
   function pinnedRelease(row) {

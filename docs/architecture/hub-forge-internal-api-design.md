@@ -73,7 +73,7 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 | S0 | 특성화 테스트: Hub와 Forge의 `/api/platform/*` 응답 대조, `accountKey` 동치 테스트 | 두 구현의 차이 목록이 문서화됨 | **완료** (§9) |
 | S1 | `creator-review.mjs`의 `accountKey` require를 `forgeAccountKey`로 교체 | 해당 require 제거, 기존 테스트 통과 | **완료** (`391db6e`) |
 | S1.5 | 빌드 검증 일원화: Forge Hub 인증 모드가 Hub와 같은 `OwnedBuildPackages` 검증(정렬된 스냅샷의 sourceHash, 패키지 artifactSha256)을 Forge 큐 위에서 쓴다(§9 차이 3, §10) | Forge 릴리스 검증이 Hub와 같은 알고리즘을 쓴다 | **완료** (1단계) |
-| S2 | `ForgeGateway` 도입, `local` 구현이 현재 동작을 그대로 감싼다. B·C·A가 Gateway만 쓰게 변경 | `hub/server`에서 `forge/` 직접 참조가 `local` 구현 한 파일뿐 | 중간 |
+| S2 | `ForgeGateway` 도입, `local` 구현이 현재 동작을 그대로 감싼다. B·C·A가 Gateway만 쓰게 변경 | `hub/server`에서 `forge/` 직접 참조가 `local` 구현 한 파일뿐 | **완료** (§11) |
 | S3 | Forge에 내부 API 서버 구현(위 계약), 계약 테스트 | 내부 API 단위·통합 테스트 통과 | 중간 |
 | S4 | `remote` Gateway 구현과 설정(`forge.mode`, `forge.baseUrl`) | Hub와 Forge가 다른 프로세스·다른 디렉터리에서 통합 테스트 통과 | 중간~높음 |
 | S5 | 관리자 지표를 `adminSnapshot()`으로 전환, 디스크 스캔 제거 | `admin-console.mjs`가 `forge.directory`를 읽지 않음 | 낮음 |
@@ -132,3 +132,11 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 - Hub 인증이 꺼진 단독 Forge 모드는 바뀌지 않았다.
 - 남은 일: Hub 프로세스는 아직 자기 계정별 큐(`<forge.directory>/builds/<key>`)를 쓴다. 저장소가 실제로 하나가 되는 것은 Hub의 builds 라우트가 Forge 내부 API로 옮겨질 때(S3·S4)다. 그때 Forge의 공유 큐 모드를 그대로 쓴다.
 - 검증: `owned-build-packages.test.cjs` 2개(공유 큐 모드 추가), `hub-forge-integration` 8개(위조된 sourceHash의 빌드로 릴리스가 409로 거부되는 검사 추가), `hub-forge-platform-parity` 5개가 Node 24에서 통과. Forge 테스트 중 Hub 인증 모드를 쓰는 것은 통합 테스트뿐이다.
+
+## 11. S2 결과 (2026-11-20)
+
+- `hub/server/forge-gateway.mjs`의 `createLocalForgeGateway`가 `handlePlatform`·`getRelease`·`adminSnapshot`·`close`를 제공한다. Forge 모듈 `require()`와 Forge 디스크 스캔은 모두 이 파일로 옮겼고, 동작은 바꾸지 않았다.
+- `forge-account.mjs`(`createHubForge`)는 세션 검증과 `accountKey` 계산만 하고 처리는 Gateway에 넘긴다. `creator-review.mjs`는 `getRelease`, `admin-console.mjs`는 `adminSnapshot`을 쓴다. `app.mjs`는 Gateway 하나를 만들어 세 모듈에 주입한다(`dependencies.forgeGateway`로 교체 가능). 주입이 없을 때 각 모듈은 로컬 Gateway를 만든다(기존 테스트 호환).
+- `hub/tests/forge-boundary.test.mjs`: `hub/server`에서 `forge-gateway.mjs` 외 파일이 Forge 소스 경로를 참조하면 실패한다.
+- 검증(Node 24): Hub 관련 테스트 76개 중 75개와 `hub-forge-integration`·`hub-forge-platform-parity` 13개 통과. 실패 1개는 `creator-review` 테스트 픽스처의 Windows 파일 rename `EPERM`으로 간헐적이며 Gateway 코드 이전 단계에서 발생한다. 전체 `hub/tests`의 나머지 실패(portable·browser 계열)는 깨끗한 워크트리에서 HEAD와 S2 적용본의 실패 목록이 같음을 확인했다.
+- 발견한 기존 버그(이번에 고치지 않음): 관리자 Forge 현황의 프로젝트 목록(`inspectForgeProjects`)은 `accounts/<key>/projects/*.json`을 읽지만 `PlatformStore`는 `projects/<id>/project.json`에 저장한다. 따라서 관리자 화면의 프로젝트 수는 항상 0이다. S5에서 `adminSnapshot`을 Forge 내부 API로 옮길 때 함께 고친다.
