@@ -49,6 +49,11 @@ if /I "%~1"=="preview" (
   "%NODE_BIN%" "%~dp0local-preview.mjs" %1 %2 %3 %4 %5 %6 %7 %8 %9
   exit /b %ERRORLEVEL%
 )
+if /I "%~1"=="report-server" (
+  shift
+  "%NODE_BIN%" "%~dp0serve-report.mjs" %1 %2 %3 %4 %5 %6 %7 %8 %9
+  exit /b %ERRORLEVEL%
+)
 
 :help
 echo PlayHub-DevOps CLI Wrapper
@@ -61,4 +66,5 @@ echo   Run_DevOps.bat archive --build-dir DIR [--dest GDRIVE_DIR]
 echo   Run_DevOps.bat prune [--dry-run]
 echo   Run_DevOps.bat manual-plan --ref ^<branch^|sha^> [--build local^|cloudbuild] [--test local-preview^|dev-tag^|dev-promote]
 echo   Run_DevOps.bat preview ^<start^|status^|stop^|cleanup^> [options]
+echo   Run_DevOps.bat report-server [--port 18350]
 exit /b 0
