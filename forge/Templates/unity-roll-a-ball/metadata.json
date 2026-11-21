@@ -1,0 +1,21 @@
+{
+  "id": "unity-roll-a-ball",
+  "name": "Unity Roll-a-Ball 3D",
+  "description": "Official Unity Roll-a-Ball 3D physics tutorial ported to Godot 4.7.2 with YAML-parsed 12 rotating PickUps, LH-to-RH coordinates, and offset Camera3D.",
+  "dimension": "3d",
+  "assetPaths": [
+    "assets/materials/ball.tres",
+    "assets/materials/ground.tres",
+    "assets/materials/pickup.tres",
+    "assets/materials/wall.tres"
+  ],
+  "guideOrder": [
+    "scripts/rotator.gd",
+    "scripts/camera_controller.gd",
+    "scripts/player_controller.gd",
+    "scripts/mini_game.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}
