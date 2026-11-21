@@ -157,6 +157,19 @@
 |---|---|---|
 | ![Android Cross-Play Banner](verification-m1/22-android-crossplay-banner.png) | ![Android Cross-Play In-Game](verification-m1/23-android-crossplay-ingame.png) | ![PC Web Cross-Play Live](verification-m1/24-pc-web-crossplay-live.png) |
 
+### 3.10 Stitch 아바타 스튜디오 & 프로필/더보기 UI (Android + iOS)
+- **Stitch 디자인 정합성 + 모바일 경량화 (`+0.01 MiB`, 0 Forge)**:
+  - 업로드된 Stitch 목업(`avatar/code.html` · `more/code.html`)의 하이콘트라스트 다크 모던 디자인 시스템(`#111315` Surface / `#00B06F` Play Green / `#00E290` Online Dot)을 Android(`VoxelAvatarView.kt` · `MainActivity.kt`)와 iOS(`AvatarAndProfileViews.swift` · `MainTabView.swift`)에 동일하게 구현.
+  - Stitch 목업 내 1.4 MB base64 JPEG 이미지를 앱에 포함하지 않고 Android Canvas / SwiftUI `Canvas` 기반 프로시저럴 3D 복셀 아바타(`360°` 가로 드래그 회전 · 실시간 코스메틱 착용 반영 · 프로필 원형 포트레이트 모드)로 대체하여 Release APK 증가폭을 `+0.01 MiB`(최종 **`23.69 MiB <= 28 MiB`**)로 억제.
+  - 모바일 Zero-Forge 정책에 따라 `more` 화면의 2×2 퀵 메뉴에서 `크리에이터(BETA)`를 제외하고 **`인벤토리` · `파티 & 친구` · `리더보드` · `Play Pass`** 4종으로 구성. 공식 `#142C25`/`#DEECA6` PlayHub 로고 유지.
+- **라이브 서버 연동 및 실기기 검증 결과 (`30/30` JUnit PASS · `5/5` APK 게이트 PASS · `ZERO_FATAL_CRASHES`)**:
+  - **아바타 스튜디오 (`25` → `26`)**: 기본 2개 착용(`에메랄드 테크 후디` + `사이버 시안 바이저`) 상태에서 `네온 스트릿 캡` 착용 시 3D 복셀 아바타에 즉시 반영되고 `2개 착용 중` → `3개 착용 중` 갱신, `저장` 탭 시 `PUT /api/mobile/social/profile` 라이브 동기화(`✓ 저장됨`) 확인. (초기 검증 중 `paddedBox` 래핑으로 인한 스테이지 높이 축소와 기본 로컬 포트 불일치를 발견해 `VoxelAvatarView.onMeasure` + 명시적 264dp 높이 및 라이브 HTTPS `-HubBaseUrl` 빌드로 즉시 수정·재검증)
+  - **프로필 & 더보기 (`27`)**: 착용한 캡이 반영된 64dp 원형 복셀 아바타 포트레이트 + `#00B06F` 링 + 온라인 도트, 라이브 프로필(`Player / playerfa1b#7893`), `프로필` 편집 다이얼로그(`PUT /api/mobile/social/profile`), 3열 통계(`2 친구 / 3/4 아이템 / 0 코인`), Zero-Forge 2×2 퀵 메뉴, `설정 및 계정` 토글(`친구 게임 합류 허용` → `POST /api/mobile/social/presence` `joinable` 동기화), 개인정보/보안(iOS Apple 5.1.1(v) 계정 삭제·구매 복원 포함), Dev 전용 Farm 선택기, 로그아웃 구현.
+
+| Android 15: Stitch 아바타 스튜디오 (기본 2개 착용) | Android 15: `네온 스트릿 캡` 실시간 착용 · `✓ 저장됨` | Android 15: Stitch 프로필 & 더보기 (Zero-Forge) |
+|---|---|---|
+| ![Stitch Avatar Studio](verification-m1/25-stitch-avatar-studio.png) | ![Stitch Avatar Equipped](verification-m1/26-stitch-avatar-equipped.png) | ![Stitch Profile More](verification-m1/27-stitch-profile-more.png) |
+
 ---
 
 ## 4. 실측 프로세스 격리 · 마운트 · 크래시 검증 로그
