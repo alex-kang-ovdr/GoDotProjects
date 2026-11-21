@@ -5,6 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { readStrictJson } from '../core/fs-utils.mjs';
 import { resolveProjectRoot } from '../core/paths.mjs';
 import { runQaPipeline, verifyInstallation } from '../core/runner.mjs';
+import { runDailyPopularQa } from '../core/daily-runner.mjs';
+import { MAX_POPULAR_GAMES } from '../core/popularity.mjs';
+import { runHubUseCaseSuite } from '../adapters/hub/usecase-runner.mjs';
 import { renderMarkdownReport, writeMarkdownReport } from '../reporters/markdown-reporter.mjs';
 
 const VALID_SUITES = new Set(['static', 'security', 'runtime-web']);
@@ -14,11 +17,19 @@ function printHelp() {
 
 Usage:
   gamerqa run [options]       Run Tier 0 (static, security) and Tier 1 (runtime-web) checks
+  gamerqa daily [options]     Run Top-N (<=20) popular games E2E perf/memory/response profile + daily trend report
+  gamerqa usecases [options]  Run 12 Hub user use-case E2E scenarios (functional/perf/stability/usability audit)
   gamerqa report [options]    Generate Markdown/JSON report from an existing report.json
   gamerqa verify [options]    Verify Node 24+, schemas, policy, catalog, and browser driver
 
-Run options:
+Run / Daily options:
   --game <id[,id...]>         Target game ID(s) (repeatable)
+  --top <N>                   Select top N popular enabled games (1..20, default 20 for daily)
+  --hub-db <path>             Optional Hub platform.sqlite path for live play popularity ranking
+  --daily-dir <dir>           Output dir for daily reports & history.jsonl (default: <projectRoot>/artifacts/gamerqa/daily)
+  --budgets <path>            Override daily performance budget JSON path
+  --perf-sample-ms <ms>       Browser rAF sampling window in ms (default: 900)
+  --retention-days <days>     Daily report/log retention days (default: 30)
   --all                       Run against all games in games/catalog.json
   --project-root <dir>        Override PlayHub repository/worktree root
   --out-dir <dir>             Output directory (default: <projectRoot>/artifacts/gamerqa/<runId>)
@@ -87,6 +98,26 @@ function parseFlags(args) {
       const ms = Number(value);
       if (!Number.isInteger(ms) || ms < 1000 || ms > 180000) throw new Error('--timeout-ms must be 1000..180000');
       opts.timeoutMs = ms;
+    } else if (key === '--top') {
+      const n = Number(value);
+      if (!Number.isInteger(n) || n < 1 || n > MAX_POPULAR_GAMES) {
+        throw new Error(`--top must be an integer between 1 and ${MAX_POPULAR_GAMES}`);
+      }
+      opts.topN = n;
+    } else if (key === '--hub-db') {
+      opts.hubDbPath = value;
+    } else if (key === '--daily-dir') {
+      opts.dailyDir = value;
+    } else if (key === '--budgets') {
+      opts.budgetsPath = value;
+    } else if (key === '--perf-sample-ms') {
+      const ms = Number(value);
+      if (!Number.isInteger(ms) || ms < 250 || ms > 5000) throw new Error('--perf-sample-ms must be 250..5000');
+      opts.perfSampleMs = ms;
+    } else if (key === '--retention-days') {
+      const d = Number(value);
+      if (!Number.isInteger(d) || d < 1 || d > 365) throw new Error('--retention-days must be 1..365');
+      opts.retentionDays = d;
     } else if (key === '--input') {
       opts.input = value;
     } else if (key === '--out') {
@@ -170,12 +201,91 @@ export async function runCli(argv = process.argv.slice(2)) {
     }
   }
 
+  if (command === 'usecases') {
+    try {
+      const res = await runHubUseCaseSuite({
+        projectRoot: opts.projectRoot,
+        outDir: opts.outDir,
+      });
+      if (opts.json) {
+        console.log(JSON.stringify({
+          runId: res.report.runId,
+          summary: res.report.summary,
+          scores: res.report.scores,
+          reportMdPath: res.reportMdPath,
+          reportJsonPath: res.reportJsonPath,
+        }, null, 2));
+      } else {
+        const s = res.report.summary;
+        const sc = res.report.scores;
+        console.log(
+          `GamerQA Hub Use-Cases (${res.report.runId}): passed=${s.passedScenarios}/${s.totalScenarios} warned=${s.warnedScenarios} failed=${s.failedScenarios} | overall=${sc.overall}/100 (기능 ${sc.기능}, 성능 ${sc.성능}, 안정성 ${sc.안정성}, 편의성 ${sc.편의성})`
+        );
+        console.log(`Report: ${res.reportMdPath} | ${res.reportJsonPath}`);
+      }
+      return res.report.summary.failedScenarios > 0 ? 1 : 0;
+    } catch (err) {
+      console.error(`GamerQA usecases error: ${err.message}`);
+      return 2;
+    }
+  }
+
+  if (command === 'daily') {
+    try {
+      const res = await runDailyPopularQa({
+        projectRoot: opts.projectRoot,
+        topN: opts.topN || MAX_POPULAR_GAMES,
+        hubDbPath: opts.hubDbPath,
+        dailyDir: opts.dailyDir,
+        budgetsPath: opts.budgetsPath,
+        suites: opts.suites.length ? [...new Set(opts.suites)] : undefined,
+        policy: opts.policy || 'v1',
+        runId: opts.runId,
+        skipBrowser: Boolean(opts.skipBrowser),
+        browserTimeoutMs: opts.timeoutMs || 25000,
+        perfSampleMs: opts.perfSampleMs || 900,
+        retentionDays: opts.retentionDays || 30,
+      });
+
+      if (opts.json) {
+        console.log(JSON.stringify({
+          runId: res.runId,
+          dateKst: res.snapshot.dateKst,
+          status: res.snapshot.status,
+          passed: res.snapshot.passed,
+          aggregates: res.snapshot.aggregates,
+          regressionCount: res.trend.regressions.length,
+          dailyMdPath: res.dailyMdPath,
+          latestMdPath: res.latestMdPath,
+          latestJsonPath: res.latestJsonPath,
+          historyPath: res.historyPath,
+        }, null, 2));
+      } else {
+        const agg = res.snapshot.aggregates;
+        console.log(
+          `GamerQA daily ${res.runId} (${res.snapshot.dateKst}): status=${res.snapshot.status} passRate=${agg.passRatePct}% (${agg.passedGames}/${agg.totalGames}) avgBoot=${agg.avgBootMs ?? 'n/a'}ms avgHeap=${agg.avgJsHeapMb ?? 'n/a'}MB avgResp=${agg.avgInputResponseMs ?? 'n/a'}ms avgFps=${agg.avgFps ?? 'n/a'} regressions=${res.trend.regressions.length}`
+        );
+        console.log(`Daily Report: ${res.dailyMdPath} | Latest: ${res.latestMdPath} | History: ${res.historyPath}`);
+      }
+
+      if (res.snapshot.status === 'passed' || res.snapshot.status === 'warned') return 0;
+      if (res.snapshot.status === 'partial') return 3;
+      if (res.snapshot.status === 'not_run') return 2;
+      return 1;
+    } catch (err) {
+      console.error(`GamerQA daily error: ${err.message}`);
+      return 2;
+    }
+  }
+
   if (command === 'run') {
     try {
       const { report, outDir, reportJsonPath, reportMdPath } = await runQaPipeline({
         projectRoot: opts.projectRoot,
         games: opts.games,
         all: Boolean(opts.all),
+        topN: opts.topN ?? null,
+        hubDbPath: opts.hubDbPath ?? null,
         suites: opts.suites.length ? [...new Set(opts.suites)] : undefined,
         policy: opts.policy || 'v1',
         runId: opts.runId,
@@ -183,6 +293,7 @@ export async function runCli(argv = process.argv.slice(2)) {
         skipBrowser: Boolean(opts.skipBrowser),
         continueOnBlock: Boolean(opts.continueOnBlock),
         browserTimeoutMs: opts.timeoutMs || 20000,
+        perfSampleMs: opts.perfSampleMs || 900,
       });
 
       if (opts.json) {
