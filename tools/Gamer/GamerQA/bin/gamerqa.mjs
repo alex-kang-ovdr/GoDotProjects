@@ -7,6 +7,7 @@ import { resolveProjectRoot } from '../core/paths.mjs';
 import { runQaPipeline, verifyInstallation } from '../core/runner.mjs';
 import { runDailyPopularQa } from '../core/daily-runner.mjs';
 import { MAX_POPULAR_GAMES } from '../core/popularity.mjs';
+import { runHubUseCaseSuite } from '../adapters/hub/usecase-runner.mjs';
 import { renderMarkdownReport, writeMarkdownReport } from '../reporters/markdown-reporter.mjs';
 
 const VALID_SUITES = new Set(['static', 'security', 'runtime-web']);
@@ -17,6 +18,7 @@ function printHelp() {
 Usage:
   gamerqa run [options]       Run Tier 0 (static, security) and Tier 1 (runtime-web) checks
   gamerqa daily [options]     Run Top-N (<=20) popular games E2E perf/memory/response profile + daily trend report
+  gamerqa usecases [options]  Run 12 Hub user use-case E2E scenarios (functional/perf/stability/usability audit)
   gamerqa report [options]    Generate Markdown/JSON report from an existing report.json
   gamerqa verify [options]    Verify Node 24+, schemas, policy, catalog, and browser driver
 
@@ -195,6 +197,35 @@ export async function runCli(argv = process.argv.slice(2)) {
       return 0;
     } catch (err) {
       console.error(`Report error: ${err.message}`);
+      return 2;
+    }
+  }
+
+  if (command === 'usecases') {
+    try {
+      const res = await runHubUseCaseSuite({
+        projectRoot: opts.projectRoot,
+        outDir: opts.outDir,
+      });
+      if (opts.json) {
+        console.log(JSON.stringify({
+          runId: res.report.runId,
+          summary: res.report.summary,
+          scores: res.report.scores,
+          reportMdPath: res.reportMdPath,
+          reportJsonPath: res.reportJsonPath,
+        }, null, 2));
+      } else {
+        const s = res.report.summary;
+        const sc = res.report.scores;
+        console.log(
+          `GamerQA Hub Use-Cases (${res.report.runId}): passed=${s.passedScenarios}/${s.totalScenarios} warned=${s.warnedScenarios} failed=${s.failedScenarios} | overall=${sc.overall}/100 (기능 ${sc.기능}, 성능 ${sc.성능}, 안정성 ${sc.안정성}, 편의성 ${sc.편의성})`
+        );
+        console.log(`Report: ${res.reportMdPath} | ${res.reportJsonPath}`);
+      }
+      return res.report.summary.failedScenarios > 0 ? 1 : 0;
+    } catch (err) {
+      console.error(`GamerQA usecases error: ${err.message}`);
       return 2;
     }
   }
