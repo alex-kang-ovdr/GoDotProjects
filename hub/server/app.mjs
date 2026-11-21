@@ -142,7 +142,7 @@ export function createApp(input, dependencies = {}) {
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   // Hub-Billing (2-Track PlayCoin +25% & Creator Direct Commerce 0%). Inert unless enabled.
-  const billing = createBilling({ config, db, sessionFor, requireSession, newSession, revokeSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.billingFetch || dependencies.fetch || globalThis.fetch });
+  const billing = createBilling({ config, db, sessionFor, requireSession, newSession, revokeSession, now, audit, rate, rateLimitIp, env: dependencies.env || process.env, fetchImpl: dependencies.billingFetch || dependencies.fetch || globalThis.fetch });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
@@ -614,8 +614,8 @@ export function createApp(input, dependencies = {}) {
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
         }
-        const isWebhook = kind === 'public' && url.pathname.startsWith('/api/billing/webhooks/');
-        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isWebhook;
+        const isBillingS2S = kind === 'public' && billing.enabled && (url.pathname.startsWith('/api/billing/webhooks/') || url.pathname === '/api/billing/usage' || url.pathname.startsWith('/api/billing/usage/holds'));
+        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isBillingS2S;
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
         if (url.pathname === '/api/version' && req.method === 'GET') { versionCompat.handleVersion(res); return; }

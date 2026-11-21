@@ -441,6 +441,138 @@
   line-height: 1.5;
 }
 
+/* Billing Sub-Navigation Tabs */
+.billing-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.billing-subnav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+.billing-subnav a:hover {
+  background: #edf3e1;
+}
+.billing-subnav a[aria-current="page"] {
+  background: var(--evergreen);
+  color: #deeca6;
+}
+
+/* Gift Card Redeem View (M2) */
+.redeem-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.redeem-pin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+.redeem-pin-input {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: #fff;
+  color: var(--evergreen);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.redeem-pin-input:focus {
+  outline: none;
+  border-color: var(--evergreen);
+  box-shadow: 0 0 0 3px rgba(20, 44, 37, 0.14);
+}
+.redeem-preview-box {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f9fcf2 0%, #eff7df 100%);
+  border: 2px solid var(--evergreen);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.redeem-success-box {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #ecfdf5;
+  border: 1.5px solid #16a34a;
+  color: #14532d;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.redeem-error-box {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+}
+.redeem-sandbox-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  font-size: 13px;
+}
+
+/* Usage Metering Grid (M2) */
+.usage-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.usage-metric-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8faf5;
+  border: 1px solid var(--line);
+}
+.usage-metric-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.usage-metric-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--evergreen);
+  margin: 0;
+}
+.usage-metric-cost {
+  font-size: 12px;
+  color: #2c6e3b;
+  font-weight: 700;
+  margin: 3px 0 0;
+}
+
 @media (max-width: 640px) {
   .billing-grid {
     grid-template-columns: 1fr;
@@ -451,5 +583,9 @@
   .billing-row-right {
     width: 100%;
     justify-content: space-between;
+  }
+  .redeem-pin-input {
+    font-size: 16px;
+    letter-spacing: 0.06em;
   }
 }

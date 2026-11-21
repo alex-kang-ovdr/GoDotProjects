@@ -1,8 +1,8 @@
-// HTTP Router for Hub-Billing. Mounted from app.mjs only when billing is enabled.
-// Public routes: /api/billing/* (registered account + CSRF on mutations; signed webhooks exempt from CSRF)
-// Admin routes:  /api/admin/billing/* (loopback admin listener, admin session enforced by app.mjs)
+// HTTP Router for Hub-Billing (M1 + M2). Mounted from app.mjs only when billing is enabled.
+// Public routes: /api/billing/* (registered account + CSRF on mutations; signed webhooks & S2S usage use dedicated secrets)
+// Admin routes:  /api/admin/billing/* (loopback admin listener, authenticated admin session + CSRF enforced by app.mjs)
 
-import { ApiError, json, readJson, assertId, uid } from '../security.mjs';
+import { ApiError, equal, json, readJson, assertId, uid } from '../security.mjs';
 import { createPaymentRouter, DEFAULT_STAGE1_ROUTES } from './router.mjs';
 import { createMockProvider } from './providers/mock.mjs';
 import { createXsollaProvider } from './providers/xsolla.mjs';
@@ -37,6 +37,7 @@ export function createBilling({
   now = Date.now,
   audit = () => {},
   rate = () => {},
+  rateLimitIp = req => req.socket?.remoteAddress || 'unknown',
   env = process.env,
   fetchImpl = globalThis.fetch
 }) {
@@ -46,9 +47,14 @@ export function createBilling({
 
   const allowMockProvider = billingCfg.allowMockProvider === true || env.PLAYHUB_BILLING_ALLOW_MOCK === '1';
   const allowDemoAccount = billingCfg.allowDemoAccount === true || env.PLAYHUB_BILLING_ALLOW_DEMO_ACCOUNT === '1';
+  const giftcardPepper = billingCfg.giftcardPepper || env.PLAYHUB_BILLING_GIFTCARD_PEPPER || '';
+  const internalSecret = billingCfg.internalSecret || env.PLAYHUB_BILLING_INTERNAL_SECRET || '';
 
   if (allowMockProvider && config.secureCookies === true && billingCfg.allowMockWithSecureCookies !== true) {
     throw new Error('billing.allowMockProvider cannot be enabled with secureCookies in production');
+  }
+  if (config.secureCookies === true && giftcardPepper && giftcardPepper.length < 32) {
+    throw new Error('billing.giftcardPepper must be at least 32 characters when configured in production');
   }
 
   const providers = {};
@@ -90,7 +96,7 @@ export function createBilling({
     db,
     providers,
     router,
-    config: { ...billingCfg, allowMockProvider, allowDemoAccount },
+    config: { ...billingCfg, allowMockProvider, allowDemoAccount, giftcardPepper },
     now,
     audit
   });
@@ -103,6 +109,19 @@ export function createBilling({
       throw new ApiError(403, 'REGISTERED_ACCOUNT_REQUIRED', 'Google account login is required');
     }
     return { session: s, user };
+  }
+
+  function requireInternalBillingSecret(req) {
+    if (req.headers.origin !== undefined) {
+      throw new ApiError(403, 'S2S_ORIGIN_FORBIDDEN', 'Internal metering endpoints cannot be called from a browser origin');
+    }
+    if (!internalSecret || internalSecret.length < 16) {
+      throw new ApiError(503, 'INTERNAL_BILLING_SECRET_NOT_CONFIGURED');
+    }
+    const provided = req.headers['x-playhub-billing-secret'];
+    if (!equal(provided, internalSecret)) {
+      throw new ApiError(401, 'INTERNAL_BILLING_AUTH_REQUIRED');
+    }
   }
 
   const idemKey = req => req.headers['idempotency-key'] || null;
@@ -130,7 +149,53 @@ export function createBilling({
       return true;
     }
 
-    // 2. Public catalog (browsable before login)
+    // 2. Server-to-server UsageMetering & Hold/Capture API (PlayForge / Multiplayer / AI workers)
+    if (p === '/api/billing/usage/holds' && req.method === 'POST') {
+      requireInternalBillingSecret(req);
+      const body = await readJson(req, 8192);
+      const result = service.createUsageHold({
+        principalId: body.principalId,
+        amountCoins: body.amountCoins,
+        sinkType: body.sinkType || 'infra_server',
+        sinkRefId: body.sinkRefId,
+        idempotencyKey: idemKey(req) || body.idempotencyKey,
+        expiresAt: body.expiresAt ?? null
+      });
+      json(res, result.duplicate ? 200 : 201, result);
+      return true;
+    }
+
+    const holdReleaseMatch = p.match(/^\/api\/billing\/usage\/holds\/([^/]+)\/release$/);
+    if (holdReleaseMatch && req.method === 'POST') {
+      requireInternalBillingSecret(req);
+      const body = await readJson(req, 4096);
+      const result = service.releaseUsageHold({
+        holdId: assertId(holdReleaseMatch[1]),
+        idempotencyKey: idemKey(req) || body.idempotencyKey || `release:${holdReleaseMatch[1]}`
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    if (p === '/api/billing/usage' && req.method === 'POST') {
+      requireInternalBillingSecret(req);
+      const body = await readJson(req, 8192);
+      const result = service.recordUsage({
+        principalId: body.principalId,
+        metricType: body.metricType,
+        resourceRefId: body.resourceRefId,
+        quantity: body.quantity,
+        billableCoins: body.billableCoins ?? 0,
+        holdId: body.holdId || null,
+        allowBonusForInfra: body.allowBonusForInfra !== false,
+        periodKey: body.periodKey || null,
+        idempotencyKey: idemKey(req) || body.idempotencyKey
+      });
+      json(res, result.replayed ? 200 : 201, result);
+      return true;
+    }
+
+    // 3. Public catalog (browsable before login)
     if (p === '/api/billing/catalog' && req.method === 'GET') {
       const currency = (url.searchParams.get('currency') || 'KRW').toUpperCase();
       const channel = url.searchParams.get('channel') || 'web_browser';
@@ -138,7 +203,7 @@ export function createBilling({
       return true;
     }
 
-    // 3. Opt-in dev/sandbox isolated demo account sign-in (only when allowDemoAccount=true)
+    // 4. Opt-in dev/sandbox isolated demo account sign-in (only when allowDemoAccount=true)
     if (p === '/api/billing/demo-signin' && req.method === 'POST') {
       if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
       const old = requireSession(req, 'public');
@@ -159,7 +224,7 @@ export function createBilling({
       return true;
     }
 
-    // 4. Wallet summary (returns authenticated:false gracefully for guests/anonymous)
+    // 5. Wallet summary (returns authenticated:false gracefully for guests/anonymous)
     if (p === '/api/billing/wallet' && req.method === 'GET') {
       const s = sessionFor(req, 'public');
       const user = s?.principal_id && db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(s.principal_id);
@@ -176,7 +241,31 @@ export function createBilling({
       return true;
     }
 
-    // 5. Ledger history (registered user)
+    // 6. User usage summary & quotas (registered user)
+    if (p === '/api/billing/usage' && req.method === 'GET') {
+      const { user } = requireRegisteredUser(req);
+      const periodKey = url.searchParams.get('period') || null;
+      const limit = url.searchParams.get('limit') || '30';
+      json(res, 200, service.getUsageDetails(user.id, { periodKey, limit }));
+      return true;
+    }
+
+    // Opt-in sandbox demo usage trigger (tests FIFO waterfall + Hold/Capture + Anti-Bonus-Stripping in UI)
+    if (p === '/api/billing/usage/demo-consume' && req.method === 'POST') {
+      if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-demo-usage:${user.id}`, 30, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.runDemoUsageConsume({
+        principalId: user.id,
+        mode: body.mode || 'ai_direct',
+        idempotencyKey: idemKey(req) || `demo-use-${uid()}`
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    // 7. Ledger history (registered user)
     if (p === '/api/billing/ledger' && req.method === 'GET') {
       const { user } = requireRegisteredUser(req);
       const limit = url.searchParams.get('limit') || '30';
@@ -184,7 +273,7 @@ export function createBilling({
       return true;
     }
 
-    // 6. Active entitlements (Track B query)
+    // 8. Active entitlements (Track B query)
     if (p === '/api/billing/entitlements' && req.method === 'GET') {
       const { user } = requireRegisteredUser(req);
       const gameId = url.searchParams.get('gameId') || null;
@@ -193,7 +282,50 @@ export function createBilling({
       return true;
     }
 
-    // 7. Create 1P checkout order
+    // 9. Gift card preview, atomic redemption & opt-in sandbox demo issue (M2)
+    if (p === '/api/billing/giftcards/preview' && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      const clientIp = rateLimitIp(req);
+      rate(`billing-gc-preview:${clientIp}`, 30, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.previewGiftCardPin({
+        principalId: user.id,
+        pin: body.pin,
+        clientIp
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    if (p === '/api/billing/giftcards/redeem' && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      const clientIp = rateLimitIp(req);
+      rate(`billing-gc-redeem:${clientIp}`, 20, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.redeemGiftCardPin({
+        principalId: user.id,
+        pin: body.pin,
+        idempotencyKey: idemKey(req),
+        clientIp
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    if (p === '/api/billing/giftcards/demo-issue' && req.method === 'POST') {
+      if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-gc-demo:${user.id}`, 20, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.issueDemoGiftCard({
+        principalId: user.id,
+        channel: body.channel || 'gift_card_direct'
+      });
+      json(res, 201, result);
+      return true;
+    }
+
+    // 10. Create 1P checkout order
     if (p === '/api/billing/orders' && req.method === 'POST') {
       const { user } = requireRegisteredUser(req);
       rate(`billing-order:${user.id}`, 30, 60000);
@@ -213,7 +345,7 @@ export function createBilling({
       return true;
     }
 
-    // 8. Confirm checkout order
+    // 11. Confirm checkout order
     const confirmMatch = p.match(/^\/api\/billing\/orders\/([^/]+)\/confirm$/);
     if (confirmMatch && req.method === 'POST') {
       const { user } = requireRegisteredUser(req);
@@ -229,7 +361,7 @@ export function createBilling({
       return true;
     }
 
-    // 9. 7-day unused order withdrawal
+    // 12. 7-day unused order withdrawal
     const withdrawMatch = p.match(/^\/api\/billing\/orders\/([^/]+)\/withdraw$/);
     if (withdrawMatch && req.method === 'POST') {
       const { user } = requireRegisteredUser(req);
@@ -245,7 +377,7 @@ export function createBilling({
       return true;
     }
 
-    // 10. Pro subscription (sandbox/mock in M1)
+    // 13. Pro subscription (sandbox/mock)
     if (p === '/api/billing/subscriptions/pro' && req.method === 'POST') {
       const { user } = requireRegisteredUser(req);
       rate(`billing-sub:${user.id}`, 10, 60000);
@@ -269,13 +401,75 @@ export function createBilling({
     throw new ApiError(404, 'NOT_FOUND');
   }
 
-  async function adminRoute(req, res, url) {
+  async function adminRoute(req, res, url, session) {
     const p = url.pathname;
     if (!p.startsWith('/api/admin/billing/')) return false;
+    const actorId = session?.admin_username || 'admin';
+
     if (p === '/api/admin/billing/status' && req.method === 'GET') {
       json(res, 200, service.getAdminStatus());
       return true;
     }
+
+    if (p === '/api/admin/billing/giftcards/batches' && req.method === 'GET') {
+      const limit = url.searchParams.get('limit') || '50';
+      json(res, 200, service.listAdminGiftCardBatches({ limit }));
+      return true;
+    }
+
+    if (p === '/api/admin/billing/giftcards/batches' && req.method === 'POST') {
+      const body = await readJson(req, 16384);
+      const result = service.createAdminGiftCardBatch({
+        channel: body.channel || 'gift_card_direct',
+        partnerName: body.partnerName,
+        currency: body.currency || 'KRW',
+        faceValueMinor: body.faceValueMinor,
+        baseCoins: body.baseCoins,
+        bonusBps: body.bonusBps ?? 2500,
+        quantity: body.quantity ?? 10,
+        expiresAt: body.expiresAt ?? null,
+        activateImmediately: body.activateImmediately === true,
+        actorId
+      });
+      json(res, 201, result);
+      return true;
+    }
+
+    const batchActMatch = p.match(/^\/api\/admin\/billing\/giftcards\/batches\/([^/]+)\/activate$/);
+    if (batchActMatch && req.method === 'POST') {
+      await readJson(req, 4096);
+      const result = service.activateAdminGiftCardBatch({
+        batchId: assertId(batchActMatch[1]),
+        actorId
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    const batchVoidMatch = p.match(/^\/api\/admin\/billing\/giftcards\/batches\/([^/]+)\/void$/);
+    if (batchVoidMatch && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      const result = service.voidAdminGiftCardBatch({
+        batchId: assertId(batchVoidMatch[1]),
+        reason: body.reason || 'admin_void',
+        actorId
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    const cardVoidMatch = p.match(/^\/api\/admin\/billing\/giftcards\/([^/]+)\/void$/);
+    if (cardVoidMatch && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      const result = service.voidAdminGiftCardSerial({
+        serialNo: assertId(cardVoidMatch[1]),
+        reason: body.reason || 'stolen_or_damaged',
+        actorId
+      });
+      json(res, 200, result);
+      return true;
+    }
+
     throw new ApiError(404, 'NOT_FOUND');
   }
 

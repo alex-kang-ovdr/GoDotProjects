@@ -482,7 +482,7 @@
     state.sort=['updated','title'].includes(params.get('sort'))?params.get('sort'):'default';
     const view=params.get('view');
     if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['wishlist','create','account','billing','wallet'].includes(view))state.view=view;
+    else if(['wishlist','create','account','billing','wallet','redeem'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
     $('app').hidden=state.view==='account';
     $('account-panel').hidden=state.view!=='account';
@@ -495,14 +495,17 @@
     else if(state.view==='wishlist')renderWishlist();
     else if(state.view==='library'||state.view==='home')renderBrowse();
     else if(state.view==='create')renderCreator();
-    else if(state.view==='billing'||state.view==='wallet'){
+    else if(state.view==='billing'||state.view==='wallet'||state.view==='redeem'){
       stopImpressions();
       const billingCtx={api,toast,navigate,refreshSession:async()=>{const s=await api('/api/session');setSession(s);}};
       if(state.view==='billing'){
         meta('PlayCoin 상점 · Pro 구독 | PLAY HUB','웹·PC 구매 최대 +25% 추가 PlayCoin 및 창작자 호스팅 플랜','/?view=billing');
         await window.PlayHubBilling?.mountShop($('app'),billingCtx);
+      }else if(state.view==='redeem'){
+        meta('기프트카드 등록 | PLAY HUB','PlayHub 기프트카드 16자리 PIN을 등록하고 최대 +25% 보너스 PlayCoin을 받으세요.','/?view=redeem');
+        await window.PlayHubBilling?.mountRedeem($('app'),billingCtx);
       }else{
-        meta('내 PlayCoin 지갑 | PLAY HUB','PlayCoin 잔액, 7일 청약철회, 구독 및 보유 게임 권한을 관리하세요.','/?view=wallet');
+        meta('내 PlayCoin 지갑 | PLAY HUB','PlayCoin 잔액, 사용량 계측, 7일 청약철회, 구독 및 보유 게임 권한을 관리하세요.','/?view=wallet');
         await window.PlayHubBilling?.mountWallet($('app'),billingCtx);
       }
       updateAccount();

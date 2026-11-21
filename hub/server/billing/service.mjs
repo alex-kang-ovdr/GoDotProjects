@@ -1,5 +1,6 @@
-// PlayHub Billing Orchestration Service (M1: Track A 1P Checkout, Webhooks,
-// 7-day Withdrawal, Subscriptions, Ledger Queries, and Track B Entitlement reads).
+// PlayHub Billing Orchestration Service (M1 + M2: Track A 1P Checkout, Webhooks,
+// 7-day Withdrawal, Subscriptions, Gift Cards + Brute-Force Protection,
+// UsageMetering + Hold/Capture, Ledger Queries, and Track B Entitlement reads).
 
 import { ApiError, digest, safeString, uid } from '../security.mjs';
 import { ensureBillingSchema, BILLING_UNIT } from './schema.mjs';
@@ -14,10 +15,28 @@ import {
   getWallet,
   creditPurchase,
   clawbackOrder,
+  reserveHold,
+  releaseHold,
   verifyLedgerIntegrity
 } from './ledger.mjs';
 import { assertCanPurchase, resolveSpendingPolicy, kstMonthStartMs, kstDayStartMs } from './compliance.mjs';
-import { PLAN_QUOTAS, getSubscription, upsertSubscription, summarizeUsage } from './subscriptions.mjs';
+import {
+  PLAN_QUOTAS,
+  getSubscription,
+  upsertSubscription,
+  recordMeteredUsage,
+  summarizeUsage
+} from './subscriptions.mjs';
+import {
+  createGiftCardBruteForceGuard,
+  issueGiftCardBatch,
+  activateGiftCardBatch,
+  voidGiftCardBatch,
+  voidGiftCardBySerial,
+  listGiftCardBatches,
+  previewGiftCard,
+  redeemGiftCard
+} from './giftcards.mjs';
 import { listActiveEntitlements } from './direct-commerce.mjs';
 
 const SEVEN_DAYS_MS = 7 * 86400000;
@@ -42,6 +61,20 @@ export function createBillingService({
   const allowMockProvider = config.allowMockProvider === true;
   const allowDemoAccount = config.allowDemoAccount === true;
   const defaultProviderMode = allowMockProvider && !providers.xsolla?.configured ? 'mock' : 'xsolla';
+  const giftcardPepper = config.giftcardPepper || (allowMockProvider ? 'dev-playhub-giftcard-pepper-local-only' : '');
+  const bruteForceGuard = createGiftCardBruteForceGuard({
+    maxFailures: config.giftcardMaxFailures || 5,
+    windowMs: config.giftcardWindowMs || 15 * 60_000,
+    lockMs: config.giftcardLockMs || 15 * 60_000,
+    now
+  });
+
+  function requireGiftcardPepper() {
+    if (!safeString(giftcardPepper, 256)) {
+      throw new ApiError(500, 'GIFTCARD_PEPPER_NOT_CONFIGURED', 'Gift card HMAC pepper is not configured');
+    }
+    return giftcardPepper;
+  }
 
   function getProviderAdapter(name) {
     const adapter = providers[name];
@@ -74,6 +107,7 @@ export function createBillingService({
   function formatOrderRow(row, stamp) {
     const withdrawalEligible = Boolean(
       row.state === 'PAID' &&
+      row.provider !== 'giftcard' &&
       row.first_spent_at === null &&
       row.paid_at &&
       (stamp - row.paid_at) <= SEVEN_DAYS_MS
@@ -98,6 +132,61 @@ export function createBillingService({
     };
   }
 
+  function getUsageDetails(principalId, { periodKey = null, limit = 30 } = {}) {
+    const stamp = now();
+    const effectivePeriod = safeString(periodKey, 16) && /^\d{4}-\d{2}$/.test(periodKey)
+      ? periodKey
+      : currentKstPeriodKey(stamp);
+    const safeLimit = Math.min(Math.max(Number(limit) || 30, 1), 100);
+    const subscription = getSubscription(db, principalId, now);
+    const summary = summarizeUsage(db, { principalId, periodKey: effectivePeriod });
+
+    const activeHolds = db.prepare(`
+      SELECT id, amount_coins, settled_coins, sink_type, sink_ref_id, state, expires_at, created_at
+      FROM billing_wallet_holds
+      WHERE principal_id=? AND state='HELD'
+      ORDER BY created_at DESC
+      LIMIT 20
+    `).all(principalId).map(h => ({
+      id: h.id,
+      amountCoins: h.amount_coins,
+      settledCoins: h.settled_coins,
+      sinkType: h.sink_type,
+      sinkRefId: h.sink_ref_id,
+      state: h.state,
+      expiresAt: h.expires_at ? new Date(h.expires_at).toISOString() : null,
+      createdAt: new Date(h.created_at).toISOString()
+    }));
+
+    const records = db.prepare(`
+      SELECT id, metric_type, resource_ref_id, quantity, billable_coins, hold_id, journal_entry_id, period_key, created_at
+      FROM billing_usage_records
+      WHERE principal_id=? AND period_key=?
+      ORDER BY created_at DESC
+      LIMIT ?
+    `).all(principalId, effectivePeriod, safeLimit).map(r => ({
+      id: r.id,
+      metricType: r.metric_type,
+      resourceRefId: r.resource_ref_id,
+      quantity: r.quantity,
+      billableCoins: r.billable_coins,
+      holdId: r.hold_id,
+      journalEntryId: r.journal_entry_id,
+      periodKey: r.period_key,
+      createdAt: new Date(r.created_at).toISOString()
+    }));
+
+    return {
+      unit: BILLING_UNIT,
+      periodKey: effectivePeriod,
+      planTier: subscription.effectivePlan,
+      quotas: subscription.quotas,
+      byMetric: summary.byMetric,
+      activeHolds,
+      records
+    };
+  }
+
   function getAccountSummary(principalId) {
     const stamp = now();
     const wallet = getWallet(db, principalId, now);
@@ -109,13 +198,13 @@ export function createBillingService({
     const monthlyUsedKrw = db.prepare(`
       SELECT COALESCE(SUM(amount_minor), 0) AS total
       FROM billing_orders
-      WHERE principal_id=? AND currency='KRW' AND state IN ('PAID','PENDING') AND created_at >= ?
+      WHERE principal_id=? AND currency='KRW' AND provider != 'giftcard' AND state IN ('PAID','PENDING') AND created_at >= ?
     `).get(principalId, monthStart).total;
 
     const dailyUsedKrw = db.prepare(`
       SELECT COALESCE(SUM(amount_minor), 0) AS total
       FROM billing_orders
-      WHERE principal_id=? AND currency='KRW' AND state IN ('PAID','PENDING') AND created_at >= ?
+      WHERE principal_id=? AND currency='KRW' AND provider != 'giftcard' AND state IN ('PAID','PENDING') AND created_at >= ?
     `).get(principalId, dayStart).total;
 
     const recentOrderRows = db.prepare(`
@@ -132,11 +221,12 @@ export function createBillingService({
       expiresAt: e.expires_at ? new Date(e.expires_at).toISOString() : null
     }));
 
-    const usage = summarizeUsage(db, { principalId, periodKey: currentKstPeriodKey(stamp) });
+    const usage = getUsageDetails(principalId, { limit: 15 });
 
     return {
       unit: BILLING_UNIT,
       billingMode: defaultProviderMode,
+      allowDemoAccount,
       wallet,
       subscription,
       limits: {
@@ -212,11 +302,9 @@ export function createBillingService({
     const providerName = routeDecision.provider;
     const providerAdapter = getProviderAdapter(providerName);
 
-    // Server-authoritative channel & offer calculation (never trust client bonus claims).
     const authoritativeChannel = resolveAuthoritativeChannel({ provider: providerName, clientChannelHint: channelHint });
     const offer = quoteSkuOffer(db, { skuId, currency: curr, channel: authoritativeChannel, now });
 
-    // Create DB order idempotently before calling external PG.
     const created = withIdempotency({
       db,
       scope: 'billing.order.create',
@@ -378,7 +466,6 @@ export function createBillingService({
 
     const evt = adapter.parseWebhookEvent(payload);
 
-    // Xsolla user_validation pre-check before payment execution.
     if (evt.eventType === 'user_validation') {
       const user = evt.principalId && db.prepare('SELECT id, kind FROM users WHERE id=?').get(evt.principalId);
       if (!user || user.kind !== 'registered') {
@@ -460,6 +547,9 @@ export function createBillingService({
     const order = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
     if (!order || order.principal_id !== principalId) {
       throw new ApiError(404, 'ORDER_NOT_FOUND');
+    }
+    if (order.provider === 'giftcard') {
+      throw new ApiError(409, 'GIFTCARD_ORDER_NOT_AUTO_WITHDRAWABLE', 'Redeemed gift card orders cannot use automatic PG withdrawal');
     }
     if (order.state !== 'PAID') {
       throw new ApiError(409, 'ORDER_NOT_REFUNDABLE');
@@ -550,6 +640,248 @@ export function createBillingService({
     return { subscription: sub };
   }
 
+  // --- M2: Gift Card User & Admin Operations ---
+
+  function previewGiftCardPin({ principalId, pin, clientIp = null }) {
+    return previewGiftCard(db, {
+      principalId,
+      pin,
+      pepper: requireGiftcardPepper(),
+      bruteForceGuard,
+      clientIp,
+      now
+    });
+  }
+
+  function redeemGiftCardPin({ principalId, pin, idempotencyKey, clientIp = null }) {
+    const res = redeemGiftCard(db, {
+      principalId,
+      pin,
+      idempotencyKey,
+      pepper: requireGiftcardPepper(),
+      bruteForceGuard,
+      clientIp,
+      now
+    });
+    if (!res.replayed) {
+      audit('billing.giftcard.redeemed', res.giftcard.serialNo, {
+        principalId,
+        orderId: res.orderId,
+        channel: res.giftcard.channel,
+        baseCoins: res.giftcard.baseCoins,
+        bonusCoins: res.giftcard.bonusCoins
+      });
+    }
+    return res;
+  }
+
+  function issueDemoGiftCard({ principalId, channel = 'gift_card_direct' }) {
+    if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
+    const isRetail = channel === 'gift_card_retail';
+    const issued = issueGiftCardBatch(db, {
+      channel: isRetail ? 'gift_card_retail' : 'gift_card_direct',
+      partnerName: isRetail ? 'demo_retail_partner' : 'playhub_direct_demo',
+      currency: 'KRW',
+      faceValueMinor: 14000,
+      baseCoins: 1000,
+      bonusBps: isRetail ? 2000 : 2500,
+      quantity: 1,
+      expiresAt: now() + 365 * 86400000,
+      createdBy: `demo:${principalId}`,
+      activateImmediately: true,
+      pepper: requireGiftcardPepper(),
+      now
+    });
+    audit('billing.giftcard.demo_issued', issued.batch.id, { principalId, channel: issued.batch.channel });
+    return {
+      batchId: issued.batch.id,
+      card: issued.oneTimePins[0],
+      bonusPercent: issued.batch.bonusPercent
+    };
+  }
+
+  function createAdminGiftCardBatch({
+    channel = 'gift_card_direct',
+    partnerName,
+    currency = 'KRW',
+    faceValueMinor,
+    baseCoins,
+    bonusBps = 2500,
+    quantity = 10,
+    expiresAt = null,
+    activateImmediately = false,
+    actorId = 'admin'
+  }) {
+    const issued = issueGiftCardBatch(db, {
+      channel,
+      partnerName,
+      currency,
+      faceValueMinor,
+      baseCoins,
+      bonusBps,
+      quantity,
+      expiresAt,
+      createdBy: actorId,
+      activateImmediately,
+      pepper: requireGiftcardPepper(),
+      now
+    });
+    audit('billing.admin.giftcard_batch_created', issued.batch.id, {
+      actorId,
+      channel,
+      partnerName,
+      quantity,
+      baseCoins,
+      bonusBps,
+      activateImmediately
+    });
+    return issued;
+  }
+
+  function activateAdminGiftCardBatch({ batchId, actorId = 'admin' }) {
+    const res = activateGiftCardBatch(db, { batchId, actorId, now });
+    if (!res.duplicate) {
+      audit('billing.admin.giftcard_batch_activated', batchId, { actorId, activatedCount: res.activatedCount });
+    }
+    return res;
+  }
+
+  function voidAdminGiftCardBatch({ batchId, reason = 'admin_void', actorId = 'admin' }) {
+    const res = voidGiftCardBatch(db, { batchId, reason, actorId, now });
+    audit('billing.admin.giftcard_batch_voided', batchId, { actorId, reason, voidedCount: res.voidedCount });
+    return res;
+  }
+
+  function voidAdminGiftCardSerial({ serialNo, reason = 'stolen_or_damaged', actorId = 'admin' }) {
+    const res = voidGiftCardBySerial(db, { serialNo, reason, actorId, now });
+    if (!res.duplicate) {
+      audit('billing.admin.giftcard_voided', serialNo, { actorId, reason });
+    }
+    return res;
+  }
+
+  function listAdminGiftCardBatches({ limit = 50 } = {}) {
+    return { batches: listGiftCardBatches(db, { limit }) };
+  }
+
+  // --- M2: Track A UsageMetering & Hold/Capture Operations ---
+
+  function createUsageHold({
+    principalId,
+    amountCoins,
+    sinkType = 'infra_server',
+    sinkRefId,
+    idempotencyKey,
+    expiresAt = null
+  }) {
+    const res = reserveHold(db, {
+      principalId,
+      amountCoins,
+      sinkType,
+      sinkRefId,
+      idempotencyKey,
+      expiresAt,
+      now
+    });
+    if (!res.duplicate) {
+      audit('billing.usage.hold_created', res.hold.id, { principalId, amountCoins, sinkType, sinkRefId });
+    }
+    return res;
+  }
+
+  function releaseUsageHold({ holdId, idempotencyKey }) {
+    const res = releaseHold(db, { holdId, idempotencyKey, now });
+    if (!res.duplicate) {
+      audit('billing.usage.hold_released', holdId, { principalId: res.hold.principal_id });
+    }
+    return res;
+  }
+
+  function recordUsage({
+    principalId,
+    metricType,
+    resourceRefId,
+    quantity,
+    billableCoins = 0,
+    holdId = null,
+    allowBonusForInfra = true,
+    periodKey = null,
+    idempotencyKey
+  }) {
+    const effectivePeriod = safeString(periodKey, 16) ? periodKey : currentKstPeriodKey(now());
+    const res = recordMeteredUsage(db, {
+      principalId,
+      metricType,
+      resourceRefId,
+      quantity,
+      billableCoins,
+      holdId,
+      allowBonusForInfra,
+      periodKey: effectivePeriod,
+      idempotencyKey,
+      now
+    });
+    if (!res.replayed) {
+      audit('billing.usage.recorded', res.usageId, {
+        principalId,
+        metricType,
+        quantity,
+        billableCoins,
+        holdId,
+        periodKey: effectivePeriod
+      });
+    }
+    return res;
+  }
+
+  function runDemoUsageConsume({ principalId, mode = 'ai_direct', idempotencyKey }) {
+    if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
+    const periodKey = currentKstPeriodKey(now());
+    if (mode === 'server_hold_capture') {
+      const holdRes = createUsageHold({
+        principalId,
+        amountCoins: 60,
+        sinkType: 'infra_server',
+        sinkRefId: `demo-room-${idempotencyKey}`,
+        idempotencyKey: `demo-hold:${idempotencyKey}`,
+        expiresAt: now() + 3600_000
+      });
+      const usageRes = recordUsage({
+        principalId,
+        metricType: 'server_minutes',
+        resourceRefId: `demo-room-${idempotencyKey}`,
+        quantity: 10,
+        billableCoins: 35,
+        holdId: holdRes.hold.id,
+        periodKey,
+        idempotencyKey: `demo-settle:${idempotencyKey}`
+      });
+      return {
+        mode,
+        reservedCoins: 60,
+        settledCoins: 35,
+        releasedCoins: 25,
+        usage: usageRes,
+        wallet: usageRes.wallet
+      };
+    }
+
+    const usageRes = recordUsage({
+      principalId,
+      metricType: 'ai_units',
+      resourceRefId: `demo-ai-${idempotencyKey}`,
+      quantity: 100,
+      billableCoins: 20,
+      periodKey,
+      idempotencyKey: `demo-ai:${idempotencyKey}`
+    });
+    return {
+      mode: 'ai_direct',
+      usage: usageRes,
+      wallet: usageRes.wallet
+    };
+  }
+
   function getAdminStatus() {
     const integrity = verifyLedgerIntegrity(db);
     const orders = db.prepare(`
@@ -564,6 +896,16 @@ export function createBillingService({
     const activeEntitlementCount = db.prepare(
       "SELECT COUNT(*) AS count FROM billing_entitlements WHERE state='ACTIVE'"
     ).get().count;
+    const giftcardStats = db.prepare(`
+      SELECT state, COUNT(*) AS count
+      FROM billing_giftcards
+      GROUP BY state
+    `).all();
+    const usageTotals = db.prepare(`
+      SELECT metric_type, COALESCE(SUM(quantity), 0) AS total_quantity, COALESCE(SUM(billable_coins), 0) AS total_coins
+      FROM billing_usage_records
+      GROUP BY metric_type
+    `).all();
 
     return {
       ok: integrity.ok,
@@ -573,13 +915,16 @@ export function createBillingService({
       routerHealth: router.healthSnapshot(),
       ordersByState: orders,
       activeProCount,
-      activeEntitlementCount
+      activeEntitlementCount,
+      giftcardsByState: giftcardStats,
+      usageByMetric: usageTotals
     };
   }
 
   return {
     getCatalog,
     getAccountSummary,
+    getUsageDetails,
     getLedgerHistory,
     createCheckoutOrder,
     confirmOrderPayment,
@@ -587,6 +932,21 @@ export function createBillingService({
     withdrawUnusedOrder,
     activateProSubscription,
     cancelProSubscription,
+    // M2 Gift Cards
+    previewGiftCardPin,
+    redeemGiftCardPin,
+    issueDemoGiftCard,
+    createAdminGiftCardBatch,
+    activateAdminGiftCardBatch,
+    voidAdminGiftCardBatch,
+    voidAdminGiftCardSerial,
+    listAdminGiftCardBatches,
+    // M2 UsageMetering & Hold/Capture
+    createUsageHold,
+    releaseUsageHold,
+    recordUsage,
+    runDemoUsageConsume,
+    // Admin status
     getAdminStatus
   };
 }

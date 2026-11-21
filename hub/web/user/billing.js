@@ -1,7 +1,8 @@
-// Hub-Billing Web Portal Controller (M1)
+// Hub-Billing Web Portal Controller (M1 + M2)
 // Views:
 // - /?view=billing : PlayCoin +25% Web/PC Shop, Free vs Pro Subscription, 0% Creator Direct Policy
-// - /?view=wallet  : 3-Bucket PlayCoin Wallet, Usage, 7-day One-Click Withdrawal, Ledger & Entitlements
+// - /?view=redeem  : Gift Card 16-char PIN Preview & Atomic Redemption (+25% Direct / +20% Retail)
+// - /?view=wallet  : 3-Bucket PlayCoin Wallet, UsageMetering & Holds, 7-day Withdrawal, Ledger & Entitlements
 
 (function () {
   'use strict';
@@ -76,6 +77,54 @@
       chargeback_clawback: '차지백 회수',
       expire: '프로모션 만료'
     }[eventType] || eventType;
+  }
+
+  function metricLabel(metricType) {
+    return {
+      storage_bytes: '제작공간 저장량',
+      deploy_bytes: '웹 배포 용량',
+      server_minutes: '멀티플레이 서버',
+      egress_bytes: '전송 트래픽',
+      ai_units: 'AI 어시스턴트'
+    }[metricType] || metricType;
+  }
+
+  function formatMetricQuantity(metricType, quantity) {
+    const num = Number(quantity || 0);
+    if (metricType === 'storage_bytes' || metricType === 'deploy_bytes' || metricType === 'egress_bytes') {
+      if (num >= 1024 * 1024 * 1024) return `${(num / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+      if (num >= 1024 * 1024) return `${(num / (1024 * 1024)).toFixed(1)} MB`;
+      return `${Math.round(num / 1024)} KB`;
+    }
+    if (metricType === 'server_minutes') return `${num.toLocaleString('ko-KR')}분`;
+    if (metricType === 'ai_units') return `${num.toLocaleString('ko-KR')} 유닛`;
+    return num.toLocaleString('ko-KR');
+  }
+
+  function formatPinInput(raw) {
+    const clean = String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+    return clean.replace(/(.{4})(?=.)/g, '$1-');
+  }
+
+  function giftcardErrorText(error) {
+    const code = error?.code || '';
+    if (code === 'GIFTCARD_BRUTEFORCE_LOCKED') {
+      const mins = Math.max(1, Math.ceil(Number(error?.details?.error?.retryAfterSec || 900) / 60));
+      return `잘못된 PIN 입력 횟수를 초과해 보안상 약 ${mins}분간 일시 잠금되었습니다. 잠시 후 다시 시도해 주세요.`;
+    }
+    if (code === 'GIFTCARD_ALREADY_REDEEMED') return '이미 사용(등록)이 완료된 기프트카드입니다.';
+    if (code === 'GIFTCARD_EXPIRED') return '유효기간이 만료된 기프트카드입니다.';
+    if (code === 'GIFTCARD_PIN_INVALID') return '16자리 영문 대문자·숫자 PIN 형식을 확인해 주세요. (예: A7K9-M3P2-X8W4-N6Q5)';
+    if (code === 'GIFTCARD_INVALID_OR_UNAVAILABLE') return '유효하지 않거나 아직 활성화되지 않은 기프트카드 PIN입니다.';
+    return error?.message || '기프트카드 처리 중 오류가 발생했습니다.';
+  }
+
+  function billingSubnavHtml(activeView) {
+    return `<nav class="billing-subnav" aria-label="PlayCoin 과금 메뉴">
+      <a href="/?view=billing" data-route ${activeView === 'billing' ? 'aria-current="page"' : ''}>🪙 PlayCoin 충전 · Pro</a>
+      <a href="/?view=redeem" data-route ${activeView === 'redeem' ? 'aria-current="page"' : ''}>🎁 기프트카드 등록 (+25%)</a>
+      <a href="/?view=wallet" data-route ${activeView === 'wallet' ? 'aria-current="page"' : ''}>💼 내 지갑 · 사용량 · 청약철회</a>
+    </nav>`;
   }
 
   function updateHeaderPill(walletData) {
@@ -278,6 +327,7 @@
       const isMock = catalog.billingMode === 'mock';
 
       root.innerHTML = `<div class="page billing-page">
+        ${billingSubnavHtml('billing')}
         <section class="billing-hero">
           <div class="billing-hero-top">
             <div>
@@ -300,7 +350,7 @@
             <span class="billing-badge">🌐 Xsolla MoR (200+국 VAT)</span>
             <span class="billing-badge">💳 Google Pay Web (글로벌 0% 수수료)</span>
             <span class="billing-badge">🇰🇷 카카오페이 · 네이버페이 · 토스페이 · 국내카드</span>
-            <span class="billing-badge">🎁 기프트카드 최대 +25% (M2)</span>
+            <a class="billing-badge" href="/?view=redeem" data-route style="text-decoration:none;color:inherit;">🎁 기프트카드 PIN 등록 최대 +25% →</a>
             ${isMock ? '<span class="billing-badge sandbox">🧪 샌드박스 Mock PG 활성 (실청구 없음)</span>' : ''}
           </div>
         </section>
@@ -489,10 +539,11 @@
 
       if (!walletData.authenticated) {
         root.innerHTML = `<div class="page billing-page">
+          ${billingSubnavHtml('wallet')}
           <div class="section-heading"><h1>내 PlayCoin 지갑</h1><a class="button secondary small" href="/?view=billing" data-route>← PlayCoin 상점</a></div>
           <section class="surface">
             <h2>로그인이 필요합니다</h2>
-            <p class="muted">PlayCoin 잔액, 구독 현황, 7일 청약철회 및 보유 아이템 권한(Entitlement)을 확인하려면 로그인해 주세요.</p>
+            <p class="muted">PlayCoin 잔액, 구독·사용량 현황, 7일 청약철회 및 보유 아이템 권한(Entitlement)을 확인하려면 로그인해 주세요.</p>
             <div class="save-actions">
               ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="wallet-demo-signin">🧪 데모 계정으로 바로 체험</button>' : ''}
               <a class="button secondary" href="/?view=billing" data-route>상점 둘러보기</a>
@@ -522,12 +573,18 @@
       const w = walletData.wallet;
       const sub = walletData.subscription;
       const lim = walletData.limits;
+      const usage = walletData.usage || { periodKey: '', byMetric: {}, activeHolds: [], records: [] };
       const isPro = sub.effectivePlan === 'pro';
+      const metricOrder = ['storage_bytes', 'deploy_bytes', 'server_minutes', 'egress_bytes', 'ai_units'];
 
       root.innerHTML = `<div class="page billing-page">
+        ${billingSubnavHtml('wallet')}
         <div class="section-heading">
           <h1>내 PlayCoin 지갑</h1>
-          <a class="button primary small" href="/?view=billing" data-route>+ PlayCoin 충전 (최대 +25%)</a>
+          <div class="save-actions">
+            <a class="button secondary small" href="/?view=redeem" data-route>🎁 기프트카드 등록</a>
+            <a class="button primary small" href="/?view=billing" data-route>+ PlayCoin 충전 (최대 +25%)</a>
+          </div>
         </div>
 
         ${w.frozen ? `<section class="surface" style="border-color:#dc2626;background:#fef2f2;"><strong>계정 결제 제한 (${esc(w.frozenReason)})</strong><p class="muted" style="margin:4px 0 0;">미정산 차지백 부채: ${esc(formatCoins(w.debt))}</p></section>` : ''}
@@ -570,6 +627,56 @@
           ${sub.planTier === 'pro' && sub.status === 'ACTIVE'
             ? '<button type="button" class="button secondary small" id="wallet-cancel-pro">Pro 구독 해지 예약</button>'
             : ''}
+        </section>
+
+        <section class="surface" aria-labelledby="wallet-usage-heading">
+          <div class="section-heading">
+            <h2 id="wallet-usage-heading">월간 사용량 계측 · Hold/Capture (${esc(usage.periodKey || '이번 달')})</h2>
+            <span class="muted">PlayHub 1P 인프라·서버·AI 종량 소비 내역</span>
+          </div>
+          <div class="usage-metrics-grid">
+            ${metricOrder.map(m => {
+              const item = usage.byMetric?.[m] || { totalQuantity: 0, totalCoins: 0, recordCount: 0 };
+              return `<div class="usage-metric-card">
+                <p class="usage-metric-label">${esc(metricLabel(m))}</p>
+                <p class="usage-metric-value">${esc(formatMetricQuantity(m, item.totalQuantity))}</p>
+                <p class="usage-metric-cost">${item.totalCoins > 0 ? `-${esc(item.totalCoins.toLocaleString('ko-KR'))} PlayCoin` : '무료 한도 내 (0 PlayCoin)'}</p>
+              </div>`;
+            }).join('')}
+          </div>
+          ${walletData.allowDemoAccount ? `
+            <div class="redeem-sandbox-bar" style="margin-bottom:14px;">
+              <strong>🧪 샌드박스 사용량 시뮬레이터 (FIFO 차감 · Hold/Capture · Anti-Bonus-Stripping 검증):</strong>
+              <button type="button" class="button secondary small" data-demo-usage="ai_direct">🤖 AI 100유닛 사용 (-20 PlayCoin)</button>
+              <button type="button" class="button secondary small" data-demo-usage="server_hold_capture">🖥️ 서버 Hold/Capture (60 예약 → 35 정산)</button>
+            </div>
+          ` : ''}
+          ${usage.activeHolds?.length ? `
+            <div class="billing-list" style="margin-bottom:12px;">
+              ${usage.activeHolds.map(h => `
+                <div class="billing-row">
+                  <div class="billing-row-meta">
+                    <span class="billing-row-title">진행 중 예약 (Hold) · ${esc(h.sinkType)} · ${esc(h.sinkRefId)}</span>
+                    <span class="billing-row-sub">예약 시각 ${esc(formatDate(h.createdAt))}</span>
+                  </div>
+                  <span class="status-chip created">예약 ${esc(h.amountCoins.toLocaleString('ko-KR'))} PlayCoin</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          <div class="billing-list">
+            ${usage.records?.length ? usage.records.map(r => `
+              <div class="billing-row">
+                <div class="billing-row-meta">
+                  <span class="billing-row-title">${esc(metricLabel(r.metricType))} · ${esc(formatMetricQuantity(r.metricType, r.quantity))}</span>
+                  <span class="billing-row-sub">리소스 ${esc(r.resourceRefId)}${r.holdId ? ' · Hold 정산' : ''} · ${esc(formatDate(r.createdAt))}</span>
+                </div>
+                <div class="billing-row-right">
+                  <strong>${r.billableCoins > 0 ? `-${esc(r.billableCoins.toLocaleString('ko-KR'))} PlayCoin` : '무료 (0 PlayCoin)'}</strong>
+                </div>
+              </div>
+            `).join('') : '<p class="muted">이번 달 사용량 계측 기록이 아직 없습니다.</p>'}
+          </div>
         </section>
 
         <section class="surface" aria-labelledby="wallet-orders-heading">
@@ -644,6 +751,30 @@
         };
       }
 
+      root.querySelectorAll('[data-demo-usage]').forEach(btn => {
+        btn.onclick = async () => {
+          const mode = btn.dataset.demoUsage;
+          btn.disabled = true;
+          try {
+            const res = await api('/api/billing/usage/demo-consume', {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `demo-use-${uuid()}` },
+              body: { mode }
+            });
+            if (mode === 'server_hold_capture') {
+              toast(`🖥️ 서버 정산 완료: 60 예약 → 35 PlayCoin 정산 (25 PlayCoin 자동 반환)`);
+            } else {
+              toast(`🤖 AI 100유닛 사용 완료: -20 PlayCoin (보너스/원금 FIFO 차감)`);
+            }
+            if (res.wallet) updateHeaderPill({ authenticated: true, wallet: res.wallet });
+            await loadAndRender();
+          } catch (error) {
+            toast(error.message || '사용량 테스트 처리에 실패했습니다. PlayCoin을 먼저 충전해 주세요.');
+            btn.disabled = false;
+          }
+        };
+      });
+
       root.querySelectorAll('[data-withdraw-order]').forEach(btn => {
         btn.onclick = async () => {
           if (!confirm('이 주문의 유상 원금과 채널 보너스를 모두 회수하고 7일 청약철회(전액 환불)를 진행할까요?')) return;
@@ -669,8 +800,267 @@
     await loadAndRender();
   }
 
+  async function mountRedeem(root, { api, toast, refreshSession }) {
+    root.innerHTML = `<div class="page billing-page"><section class="loading-state" role="status"><div class="loading-dot" aria-hidden="true"></div><h1>기프트카드 등록 화면을 불러오고 있습니다</h1></section></div>`;
+
+    const redeemState = {
+      pin: '',
+      preview: null,
+      redeemed: null,
+      errorMessage: '',
+      issuedDemoInfo: null,
+      busy: false
+    };
+
+    async function loadAndRender() {
+      let walletData;
+      try {
+        walletData = await api('/api/billing/wallet', { timeout: 6000 });
+      } catch (error) {
+        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>기프트카드 기능을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        return;
+      }
+
+      uiState.walletData = walletData;
+      updateHeaderPill(walletData);
+
+      const authed = Boolean(walletData?.authenticated);
+
+      if (!authed) {
+        root.innerHTML = `<div class="page billing-page">
+          ${billingSubnavHtml('redeem')}
+          <section class="billing-hero">
+            <div class="billing-hero-top">
+              <div>
+                <p class="billing-eyebrow">🎁 GIFT CARD REDEMPTION · 최대 +25% 보너스</p>
+                <h1>기프트카드 PIN 등록</h1>
+                <p class="billing-hero-sub">PlayHub 직접 판매 디지털 기프트카드는 <strong>+25%</strong>, 제휴 리테일 카드는 <strong>+20%</strong> 보너스 PlayCoin이 즉시 함께 적립됩니다. 평문 PIN은 서버 DB에 저장되지 않고 HMAC-SHA256으로 보호됩니다.</p>
+              </div>
+            </div>
+          </section>
+          <section class="surface">
+            <h2>로그인이 필요합니다</h2>
+            <p class="muted">기프트카드 PlayCoin을 안전하게 계정에 귀속하려면 먼저 로그인해 주세요.</p>
+            <div class="save-actions">
+              ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="redeem-demo-signin">🧪 데모 계정으로 바로 체험</button>' : ''}
+              <a class="button secondary" href="/?view=billing" data-route>PlayCoin 상점 보기</a>
+            </div>
+          </section>
+        </div>`;
+
+        const demoBtn = root.querySelector('#redeem-demo-signin');
+        if (demoBtn) {
+          demoBtn.onclick = async () => {
+            demoBtn.disabled = true;
+            try {
+              await api('/api/billing/demo-signin', { method: 'POST', body: {} });
+              await refreshSession();
+              toast('🧪 PlayHub 데모 창작자 계정으로 로그인했습니다.');
+              await loadAndRender();
+            } catch (error) {
+              toast(error.message || '데모 로그인 실패');
+              demoBtn.disabled = false;
+            }
+          };
+        }
+        return;
+      }
+
+      const channelLabel = ch => ch === 'gift_card_retail' ? '리테일 제휴 기프트카드 (+20%)' : 'PlayHub 직접 판매 기프트카드 (+25%)';
+
+      root.innerHTML = `<div class="page billing-page">
+        ${billingSubnavHtml('redeem')}
+        <section class="billing-hero">
+          <div class="billing-hero-top">
+            <div>
+              <p class="billing-eyebrow">🎁 GIFT CARD REDEMPTION · HMAC-SHA256 보안</p>
+              <h1>기프트카드 16자리 PIN 등록</h1>
+              <p class="billing-hero-sub">16자리 코드를 입력해 권면액과 추가 보너스 PlayCoin을 먼저 미리보기로 확인한 뒤 지갑에 안전하게 등록하세요. (5회 연속 오입력 시 계정/IP 15분 자동 보호 잠금)</p>
+            </div>
+          </div>
+          <div class="billing-badges">
+            <span class="billing-badge">✨ 직접 판매 기프트카드 최대 +25%</span>
+            <span class="billing-badge">🏪 리테일 유통 기프트카드 최대 +20%</span>
+            <span class="billing-badge">🔒 평문 PIN 미저장 (HMAC-SHA256)</span>
+            <span class="billing-badge">🛡️ 브루트포스 5회 자동 잠금</span>
+          </div>
+        </section>
+
+        <section class="surface redeem-card" aria-labelledby="redeem-form-heading">
+          <div class="section-heading">
+            <h2 id="redeem-form-heading">PIN 번호 입력</h2>
+            <span class="muted">현재 가용 잔액: <strong>🪙 ${esc(formatCoins(walletData.wallet.available))}</strong></span>
+          </div>
+
+          ${walletData.allowDemoAccount ? `
+            <div class="redeem-sandbox-bar">
+              <strong>🧪 샌드박스 테스트용 PIN 즉시 발급:</strong>
+              <button type="button" class="button secondary small" data-demo-gc="gift_card_direct">직접판매 +25% (1,250 PlayCoin)</button>
+              <button type="button" class="button secondary small" data-demo-gc="gift_card_retail">리테일 +20% (1,200 PlayCoin)</button>
+              ${redeemState.issuedDemoInfo ? `<span class="muted">발급 시리얼: <code>${esc(redeemState.issuedDemoInfo.serialNo)}</code></span>` : ''}
+            </div>
+          ` : ''}
+
+          <form class="redeem-pin-form" id="redeem-preview-form" autocomplete="off">
+            <input
+              id="redeem-pin-input"
+              class="redeem-pin-input"
+              type="text"
+              inputmode="text"
+              maxlength="19"
+              spellcheck="false"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              aria-label="기프트카드 16자리 PIN"
+              value="${esc(redeemState.pin)}"
+              required
+            >
+            <button type="submit" class="button primary" id="redeem-preview-btn" ${redeemState.busy ? 'disabled' : ''}>
+              ${redeemState.busy ? '확인 중…' : 'PIN 미리보기 확인'}
+            </button>
+          </form>
+
+          ${redeemState.errorMessage ? `<div class="redeem-error-box" role="alert">${esc(redeemState.errorMessage)}</div>` : ''}
+
+          ${redeemState.preview ? `
+            <div class="redeem-preview-box" aria-live="polite">
+              <div class="section-heading">
+                <strong>🎁 기프트카드 확인 완료 · ${esc(channelLabel(redeemState.preview.channel))}</strong>
+                <span class="status-chip active">+${esc(redeemState.preview.bonusPercent)}% 보너스</span>
+              </div>
+              <div class="checkout-summary" style="margin:0;">
+                <div class="checkout-summary-line"><span>시리얼 번호</span><strong>${esc(redeemState.preview.serialNo)}</strong></div>
+                <div class="checkout-summary-line"><span>발행 파트너</span><strong>${esc(redeemState.preview.partnerName)}</strong></div>
+                <div class="checkout-summary-line"><span>권면 금액</span><strong>${esc(formatMoney(redeemState.preview.faceValueMinor, redeemState.preview.currency))}</strong></div>
+                <div class="checkout-summary-line"><span>기본 PlayCoin (유상 원금)</span><strong>${esc(formatCoins(redeemState.preview.baseCoins))}</strong></div>
+                <div class="checkout-summary-line"><span>채널 보너스 (+${esc(redeemState.preview.bonusPercent)}%)</span><strong style="color:#2c6e3b;">+${esc(formatCoins(redeemState.preview.bonusCoins))}</strong></div>
+                <div class="checkout-summary-line total"><span>최종 적립 합계</span><span>🪙 ${esc(formatCoins(redeemState.preview.totalCoins))}</span></div>
+              </div>
+              ${redeemState.preview.expiresAt ? `<p class="muted" style="margin:0;">유효기간: ${esc(formatDate(redeemState.preview.expiresAt))}</p>` : ''}
+              <div class="save-actions">
+                <button type="button" class="button primary" id="redeem-confirm-btn" ${redeemState.busy ? 'disabled' : ''}>
+                  ${redeemState.busy ? '등록 처리 중…' : `🪙 ${esc(formatCoins(redeemState.preview.totalCoins))} 지갑에 등록하기`}
+                </button>
+                <button type="button" class="button secondary" id="redeem-clear-btn">다른 코드 입력</button>
+              </div>
+            </div>
+          ` : ''}
+
+          ${redeemState.redeemed ? `
+            <div class="redeem-success-box" role="status">
+              <strong>✅ 기프트카드 등록 완료!</strong>
+              <p style="margin:0;">
+                시리얼 <code>${esc(redeemState.redeemed.giftcard.serialNo)}</code>에서
+                <strong>🪙 ${esc(formatCoins(redeemState.redeemed.giftcard.totalCoins))}</strong>
+                (기본 ${esc(redeemState.redeemed.giftcard.baseCoins.toLocaleString())} + 보너스 ${esc(redeemState.redeemed.giftcard.bonusCoins.toLocaleString())})이 적립되었습니다.
+              </p>
+              <div class="save-actions" style="margin-top:6px;">
+                <a class="button primary small" href="/?view=wallet" data-route>내 지갑 · 원장 확인 →</a>
+              </div>
+            </div>
+          ` : ''}
+        </section>
+      </div>`;
+
+      const pinInput = root.querySelector('#redeem-pin-input');
+      if (pinInput) {
+        pinInput.addEventListener('input', () => {
+          const formatted = formatPinInput(pinInput.value);
+          pinInput.value = formatted;
+          redeemState.pin = formatted;
+        });
+      }
+
+      root.querySelectorAll('[data-demo-gc]').forEach(btn => {
+        btn.onclick = async () => {
+          btn.disabled = true;
+          redeemState.errorMessage = '';
+          redeemState.redeemed = null;
+          try {
+            const res = await api('/api/billing/giftcards/demo-issue', {
+              method: 'POST',
+              body: { channel: btn.dataset.demoGc }
+            });
+            redeemState.pin = res.card.pin;
+            redeemState.issuedDemoInfo = res.card;
+            redeemState.preview = null;
+            toast(`🧪 테스트 기프트카드 PIN이 자동 입력되었습니다 (${res.card.serialNo})`);
+            await loadAndRender();
+          } catch (error) {
+            redeemState.errorMessage = error.message || '데모 기프트카드 발급 실패';
+            await loadAndRender();
+          }
+        };
+      });
+
+      const previewForm = root.querySelector('#redeem-preview-form');
+      if (previewForm) {
+        previewForm.onsubmit = async ev => {
+          ev.preventDefault();
+          redeemState.pin = formatPinInput(pinInput.value);
+          redeemState.busy = true;
+          redeemState.errorMessage = '';
+          redeemState.redeemed = null;
+          await loadAndRender();
+          try {
+            const preview = await api('/api/billing/giftcards/preview', {
+              method: 'POST',
+              body: { pin: redeemState.pin }
+            });
+            redeemState.preview = preview;
+            redeemState.busy = false;
+            await loadAndRender();
+          } catch (error) {
+            redeemState.preview = null;
+            redeemState.busy = false;
+            redeemState.errorMessage = giftcardErrorText(error);
+            await loadAndRender();
+          }
+        };
+      }
+
+      const confirmBtn = root.querySelector('#redeem-confirm-btn');
+      if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+          redeemState.busy = true;
+          redeemState.errorMessage = '';
+          await loadAndRender();
+          try {
+            const res = await api('/api/billing/giftcards/redeem', {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `gc-redeem-${uuid()}` },
+              body: { pin: redeemState.pin }
+            });
+            redeemState.redeemed = res;
+            redeemState.preview = null;
+            redeemState.pin = '';
+            redeemState.busy = false;
+            toast(`🎁 ${formatCoins(res.giftcard.totalCoins)} 등록 완료!`);
+            await loadAndRender();
+          } catch (error) {
+            redeemState.busy = false;
+            redeemState.errorMessage = giftcardErrorText(error);
+            await loadAndRender();
+          }
+        };
+      }
+
+      const clearBtn = root.querySelector('#redeem-clear-btn');
+      if (clearBtn) {
+        clearBtn.onclick = () => {
+          redeemState.pin = '';
+          redeemState.preview = null;
+          redeemState.errorMessage = '';
+          void loadAndRender();
+        };
+      }
+    }
+
+    await loadAndRender();
+  }
+
   window.PlayHubBilling = {
     mountShop,
+    mountRedeem,
     mountWallet,
     refreshHeaderBalance
   };
