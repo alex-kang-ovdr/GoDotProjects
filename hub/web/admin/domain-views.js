@@ -902,6 +902,28 @@ export function renderSystemDevops(container, data, { kstStamp, onCreateManualPl
   });
   previewPanel.append(simpleTable(['프리뷰 ID', '브랜치/커밋', '상태', '접속 URL', '시작 시각', '작업'], previewRows, '실행 중인 로컬 프리뷰가 없습니다.'));
 
+  const previewJobs = Array.isArray(data.previewJobs) ? data.previewJobs : [];
+  if (previewJobs.length > 0) {
+    const jobTone = st => st === 'succeeded' ? 'ok' : st === 'running' ? 'info' : 'danger';
+    const jobRows = previewJobs.map(j => {
+      const detailNode = j.preview?.urls?.user
+        ? (() => { const a = el('a', j.preview.urls.user); a.href = j.preview.urls.user; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+        : raw('span', j.error?.message || (j.status === 'running' ? '격리 워크트리 빌드 중...' : '—'));
+      return [
+        raw('strong', j.jobId),
+        raw('span', `${j.ref} (${j.shortCommit})`),
+        pill(String(j.status || 'unknown').toUpperCase(), jobTone(j.status), true),
+        raw('span', String(j.basePort)),
+        detailNode,
+        raw('span', j.startedAt ? kstStamp(j.startedAt) : '—')
+      ];
+    });
+    previewPanel.append(
+      el('h3', '비동기 프리뷰 기동 작업 이력'),
+      simpleTable(['작업 ID', '브랜치/커밋', '상태', '기준 포트', '결과 / 오류', '요청 시각'], jobRows, '비동기 작업 이력이 없습니다.')
+    );
+  }
+
   const buildsPanel = panel('DAILY & MANUAL BUILD HISTORY', '최근 빌드 · 아카이브 이력');
   const buildRows = (data.builds || []).map(row => [
     raw('strong', row.runId),

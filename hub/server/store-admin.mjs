@@ -15,6 +15,13 @@ const GODOT_VER_RE = /^[0-9]+\.[0-9]+(?:\.[0-9]+)?$/;
 const PLATFORMS = new Set(['web', 'windows', 'linux', 'macos']);
 const RELEASE_KINDS = new Set(['package', 'editorial']);
 const PACKAGE_STATUSES = new Set(['published', 'hidden', 'deprecated', 'yanked']);
+const ALLOWED_PACKAGE_TRANSITIONS = Object.freeze({
+  published: new Set(['hidden', 'deprecated', 'yanked']),
+  hidden: new Set(['published', 'deprecated', 'yanked']),
+  deprecated: new Set(['published', 'hidden', 'yanked']),
+  yanked: new Set(['hidden'])
+});
+const OPERATIONAL_CHANNELS = new Set(['dev', 'qa', 'rc', 'live', 'prod', 'production']);
 const SUBMISSION_FILTERS = new Set(['all', 'in_review', 'approved', 'rejected', 'changes_requested']);
 const DECISION_TO_STATUS = Object.freeze({
   approve: 'approved',
@@ -354,6 +361,8 @@ function formatPackageRow(row) {
     license_snapshot_ref: row.license_snapshot_ref || null,
     status: row.status,
     status_reason: row.status_reason || null,
+    revision: Number.isInteger(row.revision) && row.revision > 0 ? row.revision : 1,
+    pending_release: safeJsonParse(row.pending_release_json, null),
     install_count: row.install_count,
     report_count: row.report_count,
     updated_by: row.updated_by || null,
@@ -423,6 +432,8 @@ function initSchemaAndSeed(sdb, now) {
       license_snapshot_ref TEXT NOT NULL DEFAULT '',
       status TEXT NOT NULL CHECK(status IN ('published', 'hidden', 'deprecated', 'yanked')),
       status_reason TEXT,
+      revision INTEGER NOT NULL DEFAULT 1 CHECK(revision > 0),
+      pending_release_json TEXT,
       install_count INTEGER NOT NULL DEFAULT 0,
       report_count INTEGER NOT NULL DEFAULT 0,
       updated_by TEXT,
@@ -459,6 +470,14 @@ function initSchemaAndSeed(sdb, now) {
     );
     CREATE INDEX IF NOT EXISTS store_submissions_status ON store_admin_submissions(status, submitted_at DESC);
   `);
+
+  const packageColumns = new Set(sdb.prepare('PRAGMA table_info(store_admin_packages)').all().map(col => col.name));
+  if (!packageColumns.has('revision')) {
+    sdb.exec('ALTER TABLE store_admin_packages ADD COLUMN revision INTEGER NOT NULL DEFAULT 1');
+  }
+  if (!packageColumns.has('pending_release_json')) {
+    sdb.exec('ALTER TABLE store_admin_packages ADD COLUMN pending_release_json TEXT');
+  }
 
   const seeded = sdb.prepare("SELECT value FROM store_admin_meta WHERE key='seeded_v1'").get();
   if (seeded) return;
@@ -512,8 +531,36 @@ function initSchemaAndSeed(sdb, now) {
  * Creates the Store Admin backend module backed by an isolated `store-admin.sqlite` database
  * while logging every moderation/decision event to the existing platform `audit` log.
  */
-export function createStoreAdmin({ config, db, now = Date.now, audit = () => {}, requireSession, storeDbPath } = {}) {
-  const resolvedPath = storeDbPath || (config?.dataDir ? path.join(config.dataDir, 'store-admin.sqlite') : ':memory:');
+export function createStoreAdmin({
+  config,
+  db,
+  now = Date.now,
+  audit = () => {},
+  requireSession,
+  storeDbPath,
+  env = process.env,
+  allowMemoryFallback = false,
+  warn = console.warn
+} = {}) {
+  const channel = String(env?.PLAYHUB_CHANNEL || '').trim().toLowerCase();
+  const isOperationalMode = Boolean(
+    env?.NODE_ENV === 'production'
+    || env?.K_SERVICE
+    || OPERATIONAL_CHANNELS.has(channel)
+    || config?.secureCookies === true
+  );
+  const configuredDataDir = typeof config?.dataDir === 'string' && config.dataDir.trim() ? config.dataDir.trim() : '';
+  const resolvedPath = storeDbPath || (configuredDataDir ? path.join(configuredDataDir, 'store-admin.sqlite') : ':memory:');
+  if (resolvedPath === ':memory:') {
+    if (isOperationalMode && !allowMemoryFallback) {
+      const error = new Error('Store Admin requires config.dataDir (or persistent storeDbPath) in operational/production mode; refusing :memory: fallback.');
+      error.code = 'STORE_ADMIN_DATA_DIR_REQUIRED';
+      throw error;
+    }
+    if (typeof warn === 'function') {
+      warn('[store-admin] config.dataDir가 설정되지 않아 휘발성 :memory: SQLite 모드로 동작합니다. 운영 환경에서는 dataDir를 반드시 지정하세요.');
+    }
+  }
   let memoryDb = null;
 
   function withStoreDb(fn) {
@@ -538,7 +585,7 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
   withStoreDb(sdb => initSchemaAndSeed(sdb, now));
 
   function computeBadges(sdb) {
-    const pkgRows = sdb.prepare('SELECT status, release_kind, install_count, report_count FROM store_admin_packages').all();
+    const pkgRows = sdb.prepare('SELECT status, release_kind, install_count, report_count, pending_release_json FROM store_admin_packages').all();
     const subRows = sdb.prepare('SELECT status FROM store_admin_submissions').all();
     const summary = {
       totalPackages: pkgRows.length,
@@ -547,6 +594,7 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
       deprecatedPackages: 0,
       yankedPackages: 0,
       restrictedPackages: 0,
+      pendingReleasePackages: 0,
       packageCount: 0,
       editorialCount: 0,
       totalInstalls: 0,
@@ -562,6 +610,7 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
       else if (p.status === 'hidden') summary.hiddenPackages++;
       else if (p.status === 'deprecated') summary.deprecatedPackages++;
       else if (p.status === 'yanked') summary.yankedPackages++;
+      if (p.pending_release_json) summary.pendingReleasePackages++;
       if (p.release_kind === 'package') summary.packageCount++;
       else if (p.release_kind === 'editorial') summary.editorialCount++;
       summary.totalInstalls += p.install_count || 0;
@@ -612,7 +661,8 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
           digestFormat: 'sha256:<64-hex>',
           editorialArtifactForbidden: true,
           hubCatalogIsolated: true,
-          autoPublishOnApprove: false
+          autoPublishOnApprove: false,
+          storageMode: resolvedPath === ':memory:' ? 'memory' : 'file'
         }
       };
     });
@@ -757,22 +807,47 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
       }
 
       let stagedPackage = null;
+      let pendingRelease = null;
       if (decision === 'approve') {
-        const existingPkg = sdb.prepare('SELECT slug FROM store_admin_packages WHERE slug=?').get(row.slug);
+        const existingPkg = sdb.prepare('SELECT slug, revision FROM store_admin_packages WHERE slug=?').get(row.slug);
         if (!existingPkg) {
           sdb.prepare(`
             INSERT INTO store_admin_packages (
               slug, asset_id, title, summary, category, publisher_id, release_kind,
               asset_version_id, release_id, artifact_id, artifact_digest, dependency_manifest_hash,
               engine_compatibility_json, file_manifest_json, license_snapshot_ref,
-              status, status_reason, install_count, report_count, updated_by, created_at, updated_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'hidden',?,0,0,?,?,?)
+              status, status_reason, revision, pending_release_json, install_count, report_count, updated_by, created_at, updated_at
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'hidden',?,1,NULL,0,0,?,?,?)
           `).run(
             row.slug, row.asset_id, row.title, row.summary, row.category, row.publisher_id, row.release_kind,
             row.asset_version_id, row.release_id, row.artifact_id, row.artifact_digest, row.dependency_manifest_hash,
             row.engine_compatibility_json, row.file_manifest_json, row.license_snapshot_ref,
             '심사 승인 완료 · 명시적 공개 전환 대기(자동 게시 안 함)', actor, stamp, stamp
           );
+          stagedPackage = formatPackageRow(sdb.prepare('SELECT * FROM store_admin_packages WHERE slug=?').get(row.slug));
+        } else {
+          pendingRelease = {
+            submission_id: row.id,
+            asset_version_id: row.asset_version_id,
+            release_id: row.release_id,
+            release_kind: row.release_kind,
+            title: row.title,
+            summary: row.summary,
+            category: row.category,
+            artifact_id: row.artifact_id || null,
+            artifact_digest: row.artifact_digest || null,
+            dependency_manifest_hash: row.dependency_manifest_hash || null,
+            engine_compatibility: safeJsonParse(row.engine_compatibility_json, null),
+            file_manifest: safeJsonParse(row.file_manifest_json, null),
+            license_snapshot_ref: row.license_snapshot_ref || null,
+            approved_by: actor,
+            approved_at: new Date(stamp).toISOString()
+          };
+          sdb.prepare(`
+            UPDATE store_admin_packages
+            SET pending_release_json=?, updated_by=?, updated_at=?, revision=revision+1
+            WHERE slug=?
+          `).run(JSON.stringify(pendingRelease), actor, stamp, row.slug);
           stagedPackage = formatPackageRow(sdb.prepare('SELECT * FROM store_admin_packages WHERE slug=?').get(row.slug));
         }
       }
@@ -792,6 +867,8 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
         previousStatus: row.status,
         nextStatus: updated.status,
         artifactDigest: updated.artifact_digest || null,
+        pendingReleaseVersion: pendingRelease?.asset_version_id || null,
+        pendingReleaseId: pendingRelease?.release_id || null,
         note: cleanNote || null,
         admin: actor
       });
@@ -799,7 +876,8 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
       return {
         submission: formatSubmissionRow(updated),
         catalogAutoPublished: false,
-        stagedPackage
+        stagedPackage,
+        pendingRelease
       };
     }));
   }
@@ -817,16 +895,72 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
       throw new ApiError(422, 'INVALID_STATUS_REASON', '상태 변경 사유는 500자 이하 문자열이어야 합니다.');
     }
     const cleanReason = rawReason.trim();
+    const expectedRevision = body.expectedRevision ?? body.expected_revision ?? body.revision;
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 1) {
+      throw new ApiError(400, 'INVALID_PACKAGE_REVISION', '패키지 상태 변경에는 양의 정수 expectedRevision(또는 revision)이 필요합니다.');
+    }
+    const confirmRestoreFromYanked = body.confirmRestoreFromYanked === true || body.confirm_restore_from_yanked === true;
 
     return withStoreDb(sdb => transaction(sdb, () => {
       const existing = sdb.prepare('SELECT * FROM store_admin_packages WHERE slug=?').get(slug);
       if (!existing) throw new ApiError(404, 'STORE_PACKAGE_NOT_FOUND', 'Store 패키지를 찾을 수 없습니다.');
 
+      const currentRevision = Number.isInteger(existing.revision) && existing.revision > 0 ? existing.revision : 1;
+      if (currentRevision !== expectedRevision) {
+        throw new ApiError(
+          409,
+          'STORE_PACKAGE_REVISION_CONFLICT',
+          '다른 운영자가 먼저 패키지 상태를 변경했습니다. 최신 상태를 새로고침한 뒤 다시 시도하세요.',
+          { currentRevision, expectedRevision }
+        );
+      }
+
+      if (existing.status === nextStatus) {
+        throw new ApiError(409, 'STORE_STATUS_UNCHANGED', `패키지가 이미 '${nextStatus}' 상태입니다.`);
+      }
+
+      if (existing.status === 'yanked') {
+        if (nextStatus === 'published') {
+          if (!confirmRestoreFromYanked) {
+            throw new ApiError(
+              409,
+              'STORE_YANKED_RESTORE_CONFIRMATION_REQUIRED',
+              '킬스위치(yanked) 패키지를 published로 직접 복구하려면 별도 확인(confirmRestoreFromYanked: true)이 필요합니다.'
+            );
+          }
+          if (!cleanReason) {
+            throw new ApiError(
+              422,
+              'STORE_YANKED_RESTORE_REASON_REQUIRED',
+              '킬스위치(yanked) 패키지를 published로 복구할 때는 복구 사유를 반드시 입력해야 합니다.'
+            );
+          }
+        } else if (!ALLOWED_PACKAGE_TRANSITIONS.yanked.has(nextStatus)) {
+          throw new ApiError(
+            409,
+            'STORE_INVALID_STATUS_TRANSITION',
+            `킬스위치(yanked) 상태에서는 '${nextStatus}'로 직접 전환할 수 없습니다. hidden으로 전환하거나 별도 확인 후 published로 복구하세요.`
+          );
+        }
+      } else if (!ALLOWED_PACKAGE_TRANSITIONS[existing.status]?.has(nextStatus)) {
+        throw new ApiError(
+          409,
+          'STORE_INVALID_STATUS_TRANSITION',
+          `'${existing.status}' 상태에서 '${nextStatus}' 상태로 전환할 수 없습니다.`
+        );
+      }
+
       const stamp = now();
       const actor = adminUsername || 'admin';
       const nextReason = cleanReason || null;
-      sdb.prepare('UPDATE store_admin_packages SET status=?, status_reason=?, updated_by=?, updated_at=? WHERE slug=?')
-        .run(nextStatus, nextReason, actor, stamp, slug);
+      const updateRes = sdb.prepare(`
+        UPDATE store_admin_packages
+        SET status=?, status_reason=?, updated_by=?, updated_at=?, revision=revision+1
+        WHERE slug=? AND revision=?
+      `).run(nextStatus, nextReason, actor, stamp, slug, currentRevision);
+      if (updateRes.changes !== 1) {
+        throw new ApiError(409, 'STORE_PACKAGE_REVISION_CONFLICT', '다른 운영자가 먼저 패키지 상태를 변경했습니다.');
+      }
 
       const updated = sdb.prepare('SELECT * FROM store_admin_packages WHERE slug=?').get(slug);
       const auditAction = nextStatus === 'yanked' ? 'store_package_yanked' : 'store_package_status_changed';
@@ -837,7 +971,10 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
         releaseKind: updated.release_kind,
         previousStatus: existing.status,
         nextStatus: updated.status,
+        previousRevision: currentRevision,
+        nextRevision: updated.revision,
         killSwitch: updated.status === 'yanked',
+        confirmRestoreFromYanked: existing.status === 'yanked' && nextStatus === 'published',
         reason: updated.status_reason || null,
         admin: actor
       });
@@ -904,6 +1041,7 @@ export function createStoreAdmin({ config, db, now = Date.now, audit = () => {},
     listPackages,
     decideSubmission,
     updatePackageStatus,
-    resolvedPath
+    resolvedPath,
+    storageMode: resolvedPath === ':memory:' ? 'memory' : 'file'
   };
 }

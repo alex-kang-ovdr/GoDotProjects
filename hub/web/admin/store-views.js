@@ -431,7 +431,12 @@ export function createStoreController({ api, number, kstStamp, notice, onNavigat
             body: payload
           });
           const label = decision === 'approve' ? '승인' : decision === 'reject' ? '거절' : '보류(수정 요청)';
-          notice(`Store 제출 '${item.title}'을(를) ${label} 처리했습니다.${res.stagedPackage ? ' (비공개 스테이징 등록됨)' : ''}`);
+          const stagingNote = res.pendingRelease
+            ? ` (대기 릴리스 v${res.pendingRelease.asset_version_id} 기록됨)`
+            : res.stagedPackage
+              ? ' (비공개 스테이징 등록됨)'
+              : '';
+          notice(`Store 제출 '${item.title}'을(를) ${label} 처리했습니다.${stagingNote}`);
           onBadgesChanged();
           await loadView(state.activeView);
         } catch (error) {
@@ -531,7 +536,10 @@ export function createStoreController({ api, number, kstStamp, notice, onNavigat
         tdTitle.append(titleWrap);
 
         const tdPub = document.createElement('td');
-        tdPub.append(raw('strong', pkg.publisher_id), raw('small', `v${pkg.asset_version_id} · ${pkg.license_snapshot_ref || '—'}`));
+        tdPub.append(raw('strong', pkg.publisher_id), raw('small', `v${pkg.asset_version_id} · rev ${pkg.revision ?? 1} · ${pkg.license_snapshot_ref || '—'}`));
+        if (pkg.pending_release) {
+          tdPub.append(pill(`대기 릴리스 v${pkg.pending_release.asset_version_id}`, 'info'));
+        }
 
         const tdDigest = document.createElement('td');
         tdDigest.append(raw('code', shortDigest(pkg.artifact_digest), 'store-mono store-digest-cell'));
@@ -587,12 +595,33 @@ export function createStoreController({ api, number, kstStamp, notice, onNavigat
 
   async function applyPackageStatus(pkg, nextStatus, fallbackReason = '') {
     if (state.busy) return;
-    state.busy = true;
+    if (pkg.status === nextStatus) {
+      notice(`'${pkg.slug}' 패키지는 이미 '${nextStatus}' 상태입니다.`, true);
+      return;
+    }
     const reason = state.statusReasonDraft.trim() || fallbackReason;
+    let confirmRestoreFromYanked = false;
+    if (pkg.status === 'yanked' && nextStatus === 'published') {
+      if (!reason) {
+        notice('킬스위치(yanked) 패키지를 published로 복구하려면 사유를 입력해 주세요.', true);
+        return;
+      }
+      const ok = typeof window.confirm === 'function'
+        ? window.confirm(`킬스위치(yanked) 상태의 '${pkg.slug}' 패키지를 즉시 공개(published)로 복구하시겠습니까?\n보안·계약 재검토가 완료된 경우에만 진행하세요.`)
+        : false;
+      if (!ok) return;
+      confirmRestoreFromYanked = true;
+    }
+    state.busy = true;
     try {
       await api(`/api/admin/store/packages/${encodeURIComponent(pkg.slug)}/status`, {
         method: 'POST',
-        body: { status: nextStatus, reason }
+        body: {
+          status: nextStatus,
+          reason,
+          expectedRevision: pkg.revision ?? 1,
+          ...(confirmRestoreFromYanked ? { confirmRestoreFromYanked: true } : {})
+        }
       });
       state.statusReasonDraft = '';
       notice(`'${pkg.slug}' 상태를 '${nextStatus}'로 전환하고 감사 로그에 기록했습니다.`);
