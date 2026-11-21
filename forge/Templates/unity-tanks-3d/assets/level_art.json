@@ -1,0 +1,3747 @@
+{
+  "unityVersion": "5.2.0f3",
+  "totalBinaryObjects": 636,
+  "externalsCount": 36,
+  "materialColors": {
+    "Blue.mat": [
+      0.0785,
+      0.4907,
+      0.9706,
+      1.0
+    ],
+    "Brown.mat": [
+      0.3162,
+      0.2053,
+      0.1209,
+      1.0
+    ],
+    "BuildingGlass.mat": [
+      0.2139,
+      0.2358,
+      0.3162,
+      1.0
+    ],
+    "BuildingGrey.mat": [
+      0.4338,
+      0.4051,
+      0.4051,
+      1.0
+    ],
+    "BuildingMetal.mat": [
+      0.8088,
+      0.8088,
+      0.8088,
+      1.0
+    ],
+    "BuildingStone.mat": [
+      0.6618,
+      0.619,
+      0.5353,
+      1.0
+    ],
+    "BuildingWhite.mat": [
+      0.8529,
+      0.8529,
+      0.8529,
+      1.0
+    ],
+    "Dust.mat": [
+      1.0,
+      0.7603,
+      0.2794,
+      1.0
+    ],
+    "Explosion.mat": [
+      0.6765,
+      0.6478,
+      0.4875,
+      1.0
+    ],
+    "Gold.mat": [
+      1.0,
+      0.6698,
+      0.0863,
+      1.0
+    ],
+    "Green.mat": [
+      0.3895,
+      0.5882,
+      0.1644,
+      1.0
+    ],
+    "Grey.mat": [
+      0.4191,
+      0.4191,
+      0.4191,
+      1.0
+    ],
+    "OilDrums.mat": [
+      0.3676,
+      0.2893,
+      0.2893,
+      1.0
+    ],
+    "Red.mat": [
+      0.6544,
+      0.0866,
+      0.0866,
+      1.0
+    ],
+    "Smoke.mat": [
+      0.326,
+      0.3547,
+      0.4926,
+      1.0
+    ],
+    "TankColour.mat": [
+      0.4938,
+      0.8088,
+      0.2498,
+      1.0
+    ],
+    "TankGrey.mat": [
+      0.2868,
+      0.2868,
+      0.2868,
+      1.0
+    ],
+    "TankLights.mat": [
+      0.6958,
+      0.7667,
+      0.8088,
+      1.0
+    ],
+    "White.mat": [
+      0.9779,
+      0.9779,
+      0.9779,
+      1.0
+    ],
+    "YellowDark.mat": [
+      0.625,
+      0.4276,
+      0.2416,
+      1.0
+    ],
+    "YellowLight.mat": [
+      1.0,
+      0.7329,
+      0.3015,
+      1.0
+    ]
+  },
+  "meshNodeCount": 103,
+  "colliderNodeCount": 41,
+  "meshNodes": [
+    {
+      "name": "Building01",
+      "model": "Building01.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingGlass.mat",
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        8.1,
+        0.0,
+        -7.4
+      ],
+      "quat": [
+        -0.0,
+        0.64256,
+        0.0,
+        0.76624
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Tree (1)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        -3.07,
+        0.0,
+        12.44
+      ],
+      "quat": [
+        -0.0,
+        0.52547,
+        0.0,
+        0.85081
+      ],
+      "scale": [
+        0.729,
+        0.729,
+        0.729
+      ]
+    },
+    {
+      "name": "Tree (3)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        1.78,
+        0.0,
+        -41.66
+      ],
+      "quat": [
+        -0.0,
+        0.8371,
+        0.0,
+        0.54705
+      ],
+      "scale": [
+        0.908,
+        0.908,
+        0.908
+      ]
+    },
+    {
+      "name": "Tree (2)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        -3.1,
+        0.0,
+        -36.77
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Cow (1)",
+      "model": "Cow.fbx",
+      "materials": [
+        "BuildingWhite.mat"
+      ],
+      "pos": [
+        -2.96,
+        -0.189,
+        16.104
+      ],
+      "quat": [
+        -0.04229,
+        -0.84341,
+        -0.14261,
+        0.51627
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    {
+      "name": "PalmTree (2)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -20.45,
+        0.0,
+        19.21
+      ],
+      "quat": [
+        -0.0,
+        0.63901,
+        0.0,
+        0.7692
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Rocks02 (5)",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        13.76,
+        0.0,
+        -1.82
+      ],
+      "quat": [
+        -0.0,
+        -0.50291,
+        0.0,
+        0.86434
+      ],
+      "scale": [
+        0.682,
+        0.682,
+        0.682
+      ]
+    },
+    {
+      "name": "Rocks03 (7)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        31.797,
+        0.0,
+        -22.55
+      ],
+      "quat": [
+        0.11202,
+        -0.91154,
+        0.08922,
+        -0.38547
+      ],
+      "scale": [
+        0.542,
+        0.542,
+        0.542
+      ]
+    },
+    {
+      "name": "Cactus (1)",
+      "model": "Cactus.fbx",
+      "materials": [
+        "Green.mat"
+      ],
+      "pos": [
+        39.48,
+        0.035,
+        1.66
+      ],
+      "quat": [
+        -0.0,
+        -0.84179,
+        0.0,
+        0.5398
+      ],
+      "scale": [
+        0.66,
+        0.66,
+        0.66
+      ]
+    },
+    {
+      "name": "Crater01 (2)",
+      "model": "Crater01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        25.562,
+        0.001,
+        -23.678
+      ],
+      "quat": [
+        -0.0,
+        -0.04918,
+        0.0,
+        0.99879
+      ],
+      "scale": [
+        0.443,
+        0.443,
+        0.443
+      ]
+    },
+    {
+      "name": "Rocks03",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        40.42,
+        0.0,
+        3.06
+      ],
+      "quat": [
+        -0.0,
+        -0.28726,
+        0.0,
+        0.95785
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Tree (9)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        42.76,
+        0.09,
+        -26.14
+      ],
+      "quat": [
+        -0.0,
+        0.78548,
+        0.0,
+        0.61888
+      ],
+      "scale": [
+        1.054,
+        1.054,
+        1.054
+      ]
+    },
+    {
+      "name": "Tree (7)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        -2.3,
+        0.0,
+        -43.87
+      ],
+      "quat": [
+        0.06607,
+        -0.32129,
+        -0.02248,
+        0.94441
+      ],
+      "scale": [
+        0.793,
+        0.793,
+        0.793
+      ]
+    },
+    {
+      "name": "Rocks01 (4)",
+      "model": "Rocks01.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        12.36,
+        0.0,
+        -4.82
+      ],
+      "quat": [
+        -0.0,
+        -0.92797,
+        0.0,
+        0.37266
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    {
+      "name": "PalmTree (7)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -37.69,
+        -0.092,
+        -25.54
+      ],
+      "quat": [
+        0.01175,
+        -0.40966,
+        -0.10001,
+        0.90666
+      ],
+      "scale": [
+        0.64,
+        0.64,
+        0.64
+      ]
+    },
+    {
+      "name": "Cliff (2)",
+      "model": "Cliff.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Column02 (3)",
+      "model": "Column02.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        23.05,
+        0.05,
+        -40.36
+      ],
+      "quat": [
+        -0.0,
+        -0.97852,
+        0.0,
+        0.20613
+      ],
+      "scale": [
+        0.838,
+        0.838,
+        0.838
+      ]
+    },
+    {
+      "name": "Concrete (1)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        9.2,
+        0.0,
+        -11.3
+      ],
+      "quat": [
+        -0.0,
+        0.98602,
+        0.0,
+        -0.16664
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "OilStorage",
+      "model": "OilStorage.fbx",
+      "materials": [
+        "BuildingGrey.mat",
+        "BuildingMetal.mat"
+      ],
+      "pos": [
+        29.9,
+        0.0,
+        33.4
+      ],
+      "quat": [
+        -0.0,
+        0.99872,
+        0.0,
+        0.05064
+      ],
+      "scale": [
+        1.75,
+        1.75,
+        1.75
+      ]
+    },
+    {
+      "name": "Dunes02 (6)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -11.79,
+        0.0,
+        12.53
+      ],
+      "quat": [
+        -0.0,
+        -0.8766,
+        0.0,
+        0.48122
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "Column01 (2)",
+      "model": "Column01.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        31.89,
+        0.0,
+        -11.05
+      ],
+      "quat": [
+        -0.0,
+        0.05992,
+        0.0,
+        -0.9982
+      ],
+      "scale": [
+        0.857,
+        0.857,
+        0.857
+      ]
+    },
+    {
+      "name": "Cliff (3)",
+      "model": "Cliff.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        0.70711,
+        0.0,
+        -0.70711
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes01 (6)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -30.4,
+        0.0,
+        -17.4
+      ],
+      "quat": [
+        -0.0,
+        -0.96438,
+        0.0,
+        0.26453
+      ],
+      "scale": [
+        0.77,
+        0.32,
+        0.77
+      ]
+    },
+    {
+      "name": "Cow",
+      "model": "Cow.fbx",
+      "materials": [
+        "BuildingWhite.mat"
+      ],
+      "pos": [
+        -26.87,
+        -0.012,
+        -9.203
+      ],
+      "quat": [
+        -0.0,
+        -0.79813,
+        0.0,
+        0.60248
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    {
+      "name": "Building01 (3)",
+      "model": "Building01.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingGlass.mat",
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        -22.53,
+        0.0,
+        25.22
+      ],
+      "quat": [
+        -0.0,
+        -0.52832,
+        0.0,
+        -0.84904
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "BustedTank",
+      "model": "BustedTank.fbx",
+      "materials": [
+        "TankGrey.mat"
+      ],
+      "pos": [
+        26.229,
+        0.0,
+        -21.903
+      ],
+      "quat": [
+        -0.0,
+        -0.96705,
+        0.0,
+        -0.2546
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Cactus (2)",
+      "model": "Cactus.fbx",
+      "materials": [
+        "Green.mat"
+      ],
+      "pos": [
+        20.51,
+        0.035,
+        46.71
+      ],
+      "quat": [
+        -0.0,
+        -0.84773,
+        0.0,
+        -0.53043
+      ],
+      "scale": [
+        0.526,
+        0.526,
+        0.526
+      ]
+    },
+    {
+      "name": "Crater01 (1)",
+      "model": "Crater01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        31.19,
+        0.001,
+        -19.8
+      ],
+      "quat": [
+        -0.0,
+        -0.65055,
+        0.0,
+        0.75946
+      ],
+      "scale": [
+        0.414,
+        0.414,
+        0.414
+      ]
+    },
+    {
+      "name": "Dunes01",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -15.91,
+        0.0,
+        2.97
+      ],
+      "quat": [
+        -0.0,
+        0.65187,
+        0.0,
+        0.75834
+      ],
+      "scale": [
+        0.667,
+        0.414,
+        0.667
+      ]
+    },
+    {
+      "name": "Concrete (2)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        -6.36,
+        0.0,
+        -12.06
+      ],
+      "quat": [
+        -0.0,
+        0.07599,
+        0.0,
+        0.99711
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes02 (5)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -27.1,
+        0.0,
+        5.1
+      ],
+      "quat": [
+        -0.0,
+        0.44578,
+        0.0,
+        0.89514
+      ],
+      "scale": [
+        1.0,
+        0.7,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes02 (4)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -37.0,
+        0.0,
+        -16.0
+      ],
+      "quat": [
+        -0.0,
+        0.88347,
+        0.0,
+        -0.46849
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes01 (4)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        25.584,
+        0.0,
+        -15.324
+      ],
+      "quat": [
+        -0.0,
+        0.61817,
+        0.0,
+        0.78605
+      ],
+      "scale": [
+        0.667,
+        0.214,
+        0.667
+      ]
+    },
+    {
+      "name": "Building01 (1)",
+      "model": "Building01.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingGlass.mat",
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        12.0,
+        0.0,
+        -14.0
+      ],
+      "quat": [
+        -0.0,
+        -0.99699,
+        0.0,
+        -0.07754
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes02",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        17.78,
+        0.0,
+        -28.22
+      ],
+      "quat": [
+        -0.0,
+        0.55183,
+        0.0,
+        0.83395
+      ],
+      "scale": [
+        1.0,
+        0.329,
+        1.0
+      ]
+    },
+    {
+      "name": "Tree (8)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        -11.479,
+        0.09,
+        -30.93
+      ],
+      "quat": [
+        -0.0,
+        0.33298,
+        0.0,
+        0.94293
+      ],
+      "scale": [
+        1.246,
+        1.246,
+        1.246
+      ]
+    },
+    {
+      "name": "Tree",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        -1.74,
+        0.0,
+        17.99
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Column01 (1)",
+      "model": "Column01.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -33.93,
+        0.0,
+        -28.46
+      ],
+      "quat": [
+        -0.0,
+        0.87519,
+        -0.0,
+        -0.48378
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Building02",
+      "model": "Building02.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGlass.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingStone.mat",
+        "OilDrums.mat"
+      ],
+      "pos": [
+        1.34,
+        0.0,
+        -10.16
+      ],
+      "quat": [
+        -0.0,
+        0.7599,
+        0.0,
+        -0.65004
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Refinery",
+      "model": "Refinery.fbx",
+      "materials": [
+        "BuildingGrey.mat",
+        "BuildingWhite.mat",
+        "BuildingGlass.mat",
+        "BuildingMetal.mat"
+      ],
+      "pos": [
+        13.9,
+        0.0,
+        27.0
+      ],
+      "quat": [
+        -0.0,
+        0.67277,
+        0.0,
+        0.73985
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes02 (1)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -21.7,
+        0.0,
+        -18.9
+      ],
+      "quat": [
+        -0.0,
+        0.58134,
+        0.0,
+        0.81366
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "Radar",
+      "model": "Radar.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingMetal.mat"
+      ],
+      "pos": [
+        6.97,
+        0.0,
+        -21.34
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Tree (6)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        14.71,
+        0.0,
+        -4.38
+      ],
+      "quat": [
+        -0.0,
+        0.58592,
+        0.0,
+        0.81037
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "GroundPlane",
+      "model": "Terrain.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ]
+    },
+    {
+      "name": "Cliff",
+      "model": "Cliff.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Cactus (3)",
+      "model": "Cactus.fbx",
+      "materials": [
+        "Green.mat"
+      ],
+      "pos": [
+        40.92,
+        0.035,
+        34.46
+      ],
+      "quat": [
+        -0.0,
+        -0.24932,
+        0.0,
+        -0.96842
+      ],
+      "scale": [
+        0.779,
+        0.779,
+        0.779
+      ]
+    },
+    {
+      "name": "Dunes01 (9)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -7.17,
+        0.0,
+        12.15
+      ],
+      "quat": [
+        -0.0,
+        0.65187,
+        0.0,
+        0.75834
+      ],
+      "scale": [
+        0.667,
+        0.535,
+        0.667
+      ]
+    },
+    {
+      "name": "Concrete (8)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        -24.9,
+        0.0,
+        31.33
+      ],
+      "quat": [
+        -0.0,
+        0.42346,
+        0.0,
+        0.90591
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Crater01",
+      "model": "Crater01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        32.93,
+        0.001,
+        -25.864
+      ],
+      "quat": [
+        -0.0,
+        -0.04362,
+        0.0,
+        0.99905
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Rocks03 (6)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        33.221,
+        0.0,
+        -28.619
+      ],
+      "quat": [
+        0.12327,
+        -0.68489,
+        -0.07289,
+        0.71443
+      ],
+      "scale": [
+        0.542,
+        0.542,
+        0.542
+      ]
+    },
+    {
+      "name": "Rocks02",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -2.01,
+        0.0,
+        15.59
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "PalmTree (3)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -20.69,
+        0.0,
+        20.46
+      ],
+      "quat": [
+        0.08273,
+        0.38207,
+        0.03689,
+        0.91968
+      ],
+      "scale": [
+        0.732,
+        0.732,
+        0.732
+      ]
+    },
+    {
+      "name": "PalmTree",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -8.7,
+        0.0,
+        37.01
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Tree (5)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        11.7,
+        0.09,
+        -37.28
+      ],
+      "quat": [
+        -0.0,
+        0.78548,
+        0.0,
+        0.61888
+      ],
+      "scale": [
+        1.246,
+        1.246,
+        1.246
+      ]
+    },
+    {
+      "name": "Column02",
+      "model": "Column02.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -16.57,
+        0.0,
+        29.33
+      ],
+      "quat": [
+        -0.0,
+        0.07412,
+        0.0,
+        0.99725
+      ],
+      "scale": [
+        0.808,
+        0.808,
+        0.808
+      ]
+    },
+    {
+      "name": "Building01 (2)",
+      "model": "Building01.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingGlass.mat",
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        0.45,
+        0.0,
+        -35.71
+      ],
+      "quat": [
+        -0.0,
+        0.74308,
+        0.0,
+        -0.6692
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes01 (11)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        27.2,
+        0.0,
+        5.61
+      ],
+      "quat": [
+        -0.0,
+        0.95924,
+        0.0,
+        -0.2826
+      ],
+      "scale": [
+        0.667,
+        0.535,
+        0.667
+      ]
+    },
+    {
+      "name": "Cactus",
+      "model": "Cactus.fbx",
+      "materials": [
+        "Green.mat"
+      ],
+      "pos": [
+        33.31,
+        0.035,
+        26.29
+      ],
+      "quat": [
+        -0.0,
+        -0.77094,
+        0.0,
+        0.63691
+      ],
+      "scale": [
+        0.549,
+        0.549,
+        0.549
+      ]
+    },
+    {
+      "name": "Rocks03 (3)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -0.13,
+        0.085,
+        -41.968
+      ],
+      "quat": [
+        0.19596,
+        0.02148,
+        0.9797,
+        -0.03654
+      ],
+      "scale": [
+        0.917,
+        0.917,
+        0.917
+      ]
+    },
+    {
+      "name": "Rocks01 (3)",
+      "model": "Rocks01.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -15.21,
+        0.0,
+        22.2
+      ],
+      "quat": [
+        -0.0,
+        -0.05131,
+        0.0,
+        0.99868
+      ],
+      "scale": [
+        0.431,
+        0.431,
+        0.431
+      ]
+    },
+    {
+      "name": "Dunes02 (7)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -6.8,
+        0.0,
+        29.0
+      ],
+      "quat": [
+        -0.0,
+        0.43972,
+        0.0,
+        0.89814
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "PalmTree (1)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -7.59,
+        0.0,
+        38.74
+      ],
+      "quat": [
+        0.05542,
+        0.4077,
+        0.08705,
+        0.90727
+      ],
+      "scale": [
+        0.708,
+        0.708,
+        0.708
+      ]
+    },
+    {
+      "name": "Dunes01 (7)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        18.73,
+        0.0,
+        -17.67
+      ],
+      "quat": [
+        -0.0,
+        -0.54254,
+        0.0,
+        0.84003
+      ],
+      "scale": [
+        0.77,
+        0.32,
+        0.77
+      ]
+    },
+    {
+      "name": "Rocks03 (2)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -20.07,
+        0.0,
+        19.91
+      ],
+      "quat": [
+        -0.0,
+        0.23378,
+        0.0,
+        0.97229
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Ruins01",
+      "model": "Ruins01.fbx",
+      "materials": [
+        "BuildingWhite.mat"
+      ],
+      "pos": [
+        31.499,
+        0.026,
+        -35.204
+      ],
+      "quat": [
+        -0.0,
+        -0.83282,
+        0.0,
+        0.55355
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "OilStorage (1)",
+      "model": "OilStorage.fbx",
+      "materials": [
+        "BuildingGrey.mat",
+        "BuildingMetal.mat"
+      ],
+      "pos": [
+        35.8,
+        0.0,
+        24.1
+      ],
+      "quat": [
+        -0.0,
+        -0.99386,
+        0.0,
+        -0.11065
+      ],
+      "scale": [
+        1.75,
+        1.75,
+        1.75
+      ]
+    },
+    {
+      "name": "PalmTree (9)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -19.76,
+        0.0,
+        29.22
+      ],
+      "quat": [
+        -0.0,
+        0.96113,
+        0.0,
+        0.2761
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Building02 (2)",
+      "model": "Building02.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGlass.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingStone.mat",
+        "OilDrums.mat"
+      ],
+      "pos": [
+        8.56,
+        0.0,
+        -36.32
+      ],
+      "quat": [
+        -0.0,
+        0.6675,
+        0.0,
+        0.74461
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Concrete",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        7.37,
+        0.0,
+        -22.34
+      ],
+      "quat": [
+        -0.0,
+        0.94819,
+        0.0,
+        0.31772
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Rocks02 (2)",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -18.94,
+        0.0,
+        14.76
+      ],
+      "quat": [
+        -0.0,
+        -0.84362,
+        0.0,
+        0.53695
+      ],
+      "scale": [
+        0.682,
+        0.682,
+        0.682
+      ]
+    },
+    {
+      "name": "PalmTree (4)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -18.08,
+        0.0,
+        13.94
+      ],
+      "quat": [
+        -0.12529,
+        0.38063,
+        -0.0496,
+        0.91486
+      ],
+      "scale": [
+        0.765,
+        0.765,
+        0.765
+      ]
+    },
+    {
+      "name": "Rocks03 (5)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        15.91,
+        -0.007,
+        -4.87
+      ],
+      "quat": [
+        -0.0,
+        -0.97281,
+        0.0,
+        0.23161
+      ],
+      "scale": [
+        0.596,
+        0.596,
+        0.596
+      ]
+    },
+    {
+      "name": "Rocks03 (4)",
+      "model": "Rocks03.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -20.75,
+        -0.03,
+        -40.48
+      ],
+      "quat": [
+        -0.0,
+        -0.97713,
+        0.0,
+        0.21264
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Concrete (4)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        14.9,
+        0.0,
+        22.1
+      ],
+      "quat": [
+        -0.0,
+        0.89909,
+        0.0,
+        0.43777
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Concrete (7)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        -2.07,
+        0.0,
+        -29.86
+      ],
+      "quat": [
+        -0.0,
+        -0.15991,
+        0.0,
+        0.98713
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Tree (4)",
+      "model": "Tree.fbx",
+      "materials": [
+        "Brown.mat"
+      ],
+      "pos": [
+        13.08,
+        0.0,
+        -36.3
+      ],
+      "quat": [
+        0.00085,
+        0.99695,
+        0.07724,
+        0.01094
+      ],
+      "scale": [
+        0.813,
+        0.813,
+        0.813
+      ]
+    },
+    {
+      "name": "Dunes01 (5)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -26.5,
+        0.0,
+        -23.4
+      ],
+      "quat": [
+        -0.0,
+        -0.63769,
+        0.0,
+        -0.77029
+      ],
+      "scale": [
+        0.655,
+        0.48,
+        0.655
+      ]
+    },
+    {
+      "name": "Rocks01 (1)",
+      "model": "Rocks01.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        36.93,
+        0.0,
+        3.7
+      ],
+      "quat": [
+        -0.0,
+        -0.9352,
+        0.0,
+        0.35413
+      ],
+      "scale": [
+        0.739,
+        0.739,
+        0.739
+      ]
+    },
+    {
+      "name": "Column01",
+      "model": "Column01.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        37.74,
+        0.0,
+        37.33
+      ],
+      "quat": [
+        -0.0,
+        -0.32558,
+        0.0,
+        0.94551
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "PalmTree (5)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -12.77,
+        0.0,
+        31.07
+      ],
+      "quat": [
+        0.06831,
+        0.0962,
+        0.05948,
+        0.99123
+      ],
+      "scale": [
+        0.732,
+        0.732,
+        0.732
+      ]
+    },
+    {
+      "name": "Rocks02 (1)",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        35.31,
+        0.0,
+        7.3
+      ],
+      "quat": [
+        -0.0,
+        -0.84908,
+        0.0,
+        0.52827
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Helipad",
+      "model": "Helipad.fbx",
+      "materials": [
+        "BuildingGrey.mat",
+        "BuildingWhite.mat",
+        "OilDrums.mat",
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -27.92,
+        0.0,
+        30.72
+      ],
+      "quat": [
+        -0.0,
+        0.9753,
+        0.0,
+        0.22087
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Concrete (5)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        9.2,
+        0.0,
+        33.3
+      ],
+      "quat": [
+        -0.0,
+        0.40169,
+        0.0,
+        0.91577
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Rocks01",
+      "model": "Rocks01.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -12.39,
+        0.0,
+        -33.76
+      ],
+      "quat": [
+        -0.0,
+        -0.53033,
+        0.0,
+        0.84779
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    {
+      "name": "Dunes01 (8)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        23.2,
+        0.0,
+        -32.7
+      ],
+      "quat": [
+        -0.0,
+        0.79096,
+        0.0,
+        -0.61187
+      ],
+      "scale": [
+        0.655,
+        0.294,
+        0.655
+      ]
+    },
+    {
+      "name": "Dunes01 (10)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -31.4,
+        0.0,
+        16.17
+      ],
+      "quat": [
+        -0.0,
+        0.60332,
+        0.0,
+        -0.7975
+      ],
+      "scale": [
+        0.77,
+        0.32,
+        0.77
+      ]
+    },
+    {
+      "name": "Building02 (1)",
+      "model": "Building02.fbx",
+      "materials": [
+        "BuildingWhite.mat",
+        "BuildingGlass.mat",
+        "BuildingGrey.mat",
+        "BuildingMetal.mat",
+        "BuildingStone.mat",
+        "OilDrums.mat"
+      ],
+      "pos": [
+        -5.66,
+        0.0,
+        -12.26
+      ],
+      "quat": [
+        -0.0,
+        0.65104,
+        0.0,
+        0.75904
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Rocks01 (2)",
+      "model": "Rocks01.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -17.3,
+        0.0,
+        11.91
+      ],
+      "quat": [
+        -0.0,
+        -0.99548,
+        0.0,
+        -0.09501
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    {
+      "name": "Concrete (3)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        35.9,
+        0.0,
+        23.7
+      ],
+      "quat": [
+        -0.0,
+        0.1331,
+        0.0,
+        -0.9911
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "PalmTree (8)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -34.06,
+        -0.092,
+        -24.35
+      ],
+      "quat": [
+        0.16712,
+        0.42477,
+        -0.03943,
+        0.88887
+      ],
+      "scale": [
+        0.519,
+        0.519,
+        0.519
+      ]
+    },
+    {
+      "name": "Dunes02 (2)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -26.15,
+        0.0,
+        11.79
+      ],
+      "quat": [
+        -0.0,
+        -0.8766,
+        0.0,
+        0.48122
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "Rocks02 (3)",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -16.865,
+        0.0,
+        -29.897
+      ],
+      "quat": [
+        -0.0,
+        0.77032,
+        0.0,
+        0.63766
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Cliff (1)",
+      "model": "Cliff.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        0.70711,
+        0.0,
+        0.70711
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "PalmTree (6)",
+      "model": "PalmTree.fbx",
+      "materials": [
+        "Brown.mat",
+        "Green.mat"
+      ],
+      "pos": [
+        -31.02,
+        0.0,
+        -25.28
+      ],
+      "quat": [
+        0.05542,
+        0.4077,
+        0.08705,
+        0.90727
+      ],
+      "scale": [
+        0.789,
+        0.789,
+        0.789
+      ]
+    },
+    {
+      "name": "Dunes01 (1)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -19.6,
+        0.0,
+        -6.9
+      ],
+      "quat": [
+        -0.0,
+        0.83975,
+        0.0,
+        -0.54298
+      ],
+      "scale": [
+        0.77,
+        0.32,
+        0.77
+      ]
+    },
+    {
+      "name": "Dunes01 (3)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -33.78,
+        0.0,
+        -0.82
+      ],
+      "quat": [
+        -0.0,
+        0.42556,
+        0.0,
+        0.90493
+      ],
+      "scale": [
+        0.673,
+        0.41,
+        0.673
+      ]
+    },
+    {
+      "name": "Rocks02 (4)",
+      "model": "Rocks02.fbx",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -5.93,
+        0.0,
+        37.44
+      ],
+      "quat": [
+        -0.0,
+        0.99905,
+        0.0,
+        0.04357
+      ],
+      "scale": [
+        0.843,
+        0.843,
+        0.843
+      ]
+    },
+    {
+      "name": "Dunes02 (3)",
+      "model": "Dunes02.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -37.19,
+        0.0,
+        -5.68
+      ],
+      "quat": [
+        -0.0,
+        0.39079,
+        0.0,
+        0.92048
+      ],
+      "scale": [
+        1.0,
+        0.539,
+        1.0
+      ]
+    },
+    {
+      "name": "Dunes01 (2)",
+      "model": "Dunes01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        -20.2,
+        0.0,
+        -12.5
+      ],
+      "quat": [
+        -0.0,
+        0.74191,
+        0.0,
+        -0.6705
+      ],
+      "scale": [
+        0.655,
+        0.48,
+        0.655
+      ]
+    },
+    {
+      "name": "Concrete (6)",
+      "model": "Concrete.fbx",
+      "materials": [
+        "BuildingStone.mat"
+      ],
+      "pos": [
+        15.7,
+        0.0,
+        35.8
+      ],
+      "quat": [
+        -0.0,
+        0.1331,
+        0.0,
+        -0.9911
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "name": "Ruins01 (1)",
+      "model": "Ruins01.fbx",
+      "materials": [
+        "BuildingWhite.mat"
+      ],
+      "pos": [
+        37.86,
+        0.026,
+        -24.48
+      ],
+      "quat": [
+        -0.0,
+        -0.97674,
+        0.0,
+        -0.21442
+      ],
+      "scale": [
+        1.284,
+        1.284,
+        1.284
+      ]
+    },
+    {
+      "name": "Column02 (2)",
+      "model": "Column02.FBX",
+      "materials": [
+        "YellowDark.mat"
+      ],
+      "pos": [
+        -18.16,
+        -0.7,
+        -37.9
+      ],
+      "quat": [
+        -0.0,
+        -0.19373,
+        0.0,
+        0.98106
+      ],
+      "scale": [
+        0.942,
+        0.942,
+        0.942
+      ]
+    },
+    {
+      "name": "Crater01 (3)",
+      "model": "Crater01.fbx",
+      "materials": [
+        "YellowLight.mat"
+      ],
+      "pos": [
+        33.22,
+        0.001,
+        -34.4
+      ],
+      "quat": [
+        -0.0,
+        -0.26747,
+        0.0,
+        0.96357
+      ],
+      "scale": [
+        0.443,
+        0.443,
+        0.443
+      ]
+    }
+  ],
+  "colliderNodes": [
+    {
+      "name": "Building01",
+      "pos": [
+        8.1,
+        0.0,
+        -7.4
+      ],
+      "quat": [
+        -0.0,
+        0.64256,
+        0.0,
+        0.76624
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        0.967,
+        4.172,
+        1.014
+      ],
+      "center": [
+        0.597,
+        2.008,
+        1.251
+      ]
+    },
+    {
+      "name": "Rocks02 (5)",
+      "pos": [
+        13.76,
+        0.0,
+        -1.82
+      ],
+      "quat": [
+        -0.0,
+        -0.50291,
+        0.0,
+        0.86434
+      ],
+      "scale": [
+        0.682,
+        0.682,
+        0.682
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "Rocks03 (7)",
+      "pos": [
+        31.797,
+        0.0,
+        -22.55
+      ],
+      "quat": [
+        0.11202,
+        -0.91154,
+        0.08922,
+        -0.38547
+      ],
+      "scale": [
+        0.542,
+        0.542,
+        0.542
+      ],
+      "size": [
+        2.657,
+        1.639,
+        2.442
+      ],
+      "center": [
+        0.869,
+        -0.185,
+        2.971
+      ]
+    },
+    {
+      "name": "Rocks03",
+      "pos": [
+        40.42,
+        0.0,
+        3.06
+      ],
+      "quat": [
+        -0.0,
+        -0.28726,
+        0.0,
+        0.95785
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        4.214,
+        1.972,
+        3.929
+      ],
+      "center": [
+        1.415,
+        -0.018,
+        -0.185
+      ]
+    },
+    {
+      "name": "Rocks01 (4)",
+      "pos": [
+        12.36,
+        0.0,
+        -4.82
+      ],
+      "quat": [
+        -0.0,
+        -0.92797,
+        0.0,
+        0.37266
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "size": [
+        5.611,
+        1.397,
+        1.778
+      ],
+      "center": [
+        0.089,
+        0.58,
+        -0.082
+      ]
+    },
+    {
+      "name": "Cliff (2)",
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        102.575,
+        11.897,
+        6.013
+      ],
+      "center": [
+        3.463,
+        4.635,
+        51.752
+      ]
+    },
+    {
+      "name": "Column02 (3)",
+      "pos": [
+        23.05,
+        0.05,
+        -40.36
+      ],
+      "quat": [
+        -0.0,
+        -0.97852,
+        0.0,
+        0.20613
+      ],
+      "scale": [
+        0.838,
+        0.838,
+        0.838
+      ],
+      "size": [
+        4.519,
+        10.581,
+        3.333
+      ],
+      "center": [
+        1.559,
+        4.196,
+        -0.498
+      ]
+    },
+    {
+      "name": "Cliff (3)",
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        0.70711,
+        0.0,
+        -0.70711
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        102.575,
+        11.897,
+        17.694
+      ],
+      "center": [
+        3.463,
+        4.635,
+        45.913
+      ]
+    },
+    {
+      "name": "Cow",
+      "pos": [
+        -26.87,
+        -0.012,
+        -9.203
+      ],
+      "quat": [
+        -0.0,
+        -0.79813,
+        0.0,
+        0.60248
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "size": [
+        0.936,
+        0.44,
+        1.313
+      ],
+      "center": [
+        -0.017,
+        0.123,
+        -0.131
+      ]
+    },
+    {
+      "name": "Building01 (3)",
+      "pos": [
+        -22.53,
+        0.0,
+        25.22
+      ],
+      "quat": [
+        -0.0,
+        -0.52832,
+        0.0,
+        -0.84904
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        3.13,
+        2.938,
+        4.603
+      ],
+      "center": [
+        -0.019,
+        1.39,
+        -0.277
+      ]
+    },
+    {
+      "name": "BustedTank",
+      "pos": [
+        26.229,
+        0.0,
+        -21.903
+      ],
+      "quat": [
+        -0.0,
+        -0.96705,
+        0.0,
+        -0.2546
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        2.756,
+        2.037,
+        2.297
+      ],
+      "center": [
+        -0.377,
+        0.618,
+        -0.024
+      ]
+    },
+    {
+      "name": "Building01 (1)",
+      "pos": [
+        12.0,
+        0.0,
+        -14.0
+      ],
+      "quat": [
+        -0.0,
+        -0.99699,
+        0.0,
+        -0.07754
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        3.13,
+        2.938,
+        4.603
+      ],
+      "center": [
+        -0.019,
+        1.39,
+        -0.277
+      ]
+    },
+    {
+      "name": "Building02",
+      "pos": [
+        1.34,
+        0.0,
+        -10.16
+      ],
+      "quat": [
+        -0.0,
+        0.7599,
+        0.0,
+        -0.65004
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        7.133,
+        2.837,
+        4.146
+      ],
+      "center": [
+        -0.545,
+        1.34,
+        0.54
+      ]
+    },
+    {
+      "name": "Refinery",
+      "pos": [
+        13.9,
+        0.0,
+        27.0
+      ],
+      "quat": [
+        -0.0,
+        0.67277,
+        0.0,
+        0.73985
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        0.207,
+        4.032,
+        5.605
+      ],
+      "center": [
+        7.515,
+        1.941,
+        2.15
+      ]
+    },
+    {
+      "name": "PumpJack (2)",
+      "pos": [
+        22.94,
+        0.0,
+        15.17
+      ],
+      "quat": [
+        -0.0,
+        -0.25882,
+        0.0,
+        0.96593
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        2.034,
+        3.389,
+        1.0
+      ],
+      "center": [
+        -0.58,
+        2.065,
+        -0.0
+      ]
+    },
+    {
+      "name": "Cliff",
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        102.575,
+        11.897,
+        14.55
+      ],
+      "center": [
+        3.463,
+        4.635,
+        47.484
+      ]
+    },
+    {
+      "name": "Rocks03 (6)",
+      "pos": [
+        33.221,
+        0.0,
+        -28.619
+      ],
+      "quat": [
+        0.12327,
+        -0.68489,
+        -0.07289,
+        0.71443
+      ],
+      "scale": [
+        0.542,
+        0.542,
+        0.542
+      ],
+      "size": [
+        2.657,
+        1.639,
+        2.442
+      ],
+      "center": [
+        0.869,
+        -0.185,
+        2.971
+      ]
+    },
+    {
+      "name": "Rocks02",
+      "pos": [
+        -2.01,
+        0.0,
+        15.59
+      ],
+      "quat": [
+        -0.0,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "Column02",
+      "pos": [
+        -16.57,
+        0.0,
+        29.33
+      ],
+      "quat": [
+        -0.0,
+        0.07412,
+        0.0,
+        0.99725
+      ],
+      "scale": [
+        0.808,
+        0.808,
+        0.808
+      ],
+      "size": [
+        4.519,
+        10.581,
+        3.333
+      ],
+      "center": [
+        1.559,
+        4.196,
+        -0.498
+      ]
+    },
+    {
+      "name": "Building01 (2)",
+      "pos": [
+        0.45,
+        0.0,
+        -35.71
+      ],
+      "quat": [
+        -0.0,
+        0.74308,
+        0.0,
+        -0.6692
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        1.2,
+        1.694,
+        2.02
+      ],
+      "center": [
+        2.105,
+        0.769,
+        0.331
+      ]
+    },
+    {
+      "name": "Rocks03 (3)",
+      "pos": [
+        -0.13,
+        0.085,
+        -41.968
+      ],
+      "quat": [
+        0.19596,
+        0.02148,
+        0.9797,
+        -0.03654
+      ],
+      "scale": [
+        0.917,
+        0.917,
+        0.917
+      ],
+      "size": [
+        2.657,
+        1.639,
+        2.442
+      ],
+      "center": [
+        0.869,
+        -0.185,
+        2.971
+      ]
+    },
+    {
+      "name": "Rocks01 (3)",
+      "pos": [
+        -15.21,
+        0.0,
+        22.2
+      ],
+      "quat": [
+        -0.0,
+        -0.05131,
+        0.0,
+        0.99868
+      ],
+      "scale": [
+        0.431,
+        0.431,
+        0.431
+      ],
+      "size": [
+        3.317,
+        1.845,
+        5.609
+      ],
+      "center": [
+        0.948,
+        0.804,
+        0.142
+      ]
+    },
+    {
+      "name": "Rocks03 (2)",
+      "pos": [
+        -20.07,
+        0.0,
+        19.91
+      ],
+      "quat": [
+        -0.0,
+        0.23378,
+        0.0,
+        0.97229
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        4.214,
+        1.972,
+        3.929
+      ],
+      "center": [
+        1.415,
+        -0.018,
+        -0.185
+      ]
+    },
+    {
+      "name": "Ruins01",
+      "pos": [
+        31.499,
+        0.026,
+        -35.204
+      ],
+      "quat": [
+        -0.0,
+        -0.83282,
+        0.0,
+        0.55355
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        0.733,
+        1.635,
+        0.159
+      ],
+      "center": [
+        -1.786,
+        0.77,
+        -2.699
+      ]
+    },
+    {
+      "name": "Building02 (2)",
+      "pos": [
+        8.56,
+        0.0,
+        -36.32
+      ],
+      "quat": [
+        -0.0,
+        0.6675,
+        0.0,
+        0.74461
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        7.162,
+        2.837,
+        4.14
+      ],
+      "center": [
+        -0.577,
+        1.34,
+        0.542
+      ]
+    },
+    {
+      "name": "Rocks02 (2)",
+      "pos": [
+        -18.94,
+        0.0,
+        14.76
+      ],
+      "quat": [
+        -0.0,
+        -0.84362,
+        0.0,
+        0.53695
+      ],
+      "scale": [
+        0.682,
+        0.682,
+        0.682
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "Rocks03 (5)",
+      "pos": [
+        15.91,
+        -0.007,
+        -4.87
+      ],
+      "quat": [
+        -0.0,
+        -0.97281,
+        0.0,
+        0.23161
+      ],
+      "scale": [
+        0.596,
+        0.596,
+        0.596
+      ],
+      "size": [
+        4.214,
+        1.972,
+        3.929
+      ],
+      "center": [
+        1.415,
+        -0.018,
+        -0.185
+      ]
+    },
+    {
+      "name": "Rocks03 (4)",
+      "pos": [
+        -20.75,
+        -0.03,
+        -40.48
+      ],
+      "quat": [
+        -0.0,
+        -0.97713,
+        0.0,
+        0.21264
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        4.214,
+        1.972,
+        3.929
+      ],
+      "center": [
+        1.415,
+        -0.018,
+        -0.185
+      ]
+    },
+    {
+      "name": "Rocks01 (1)",
+      "pos": [
+        36.93,
+        0.0,
+        3.7
+      ],
+      "quat": [
+        -0.0,
+        -0.9352,
+        0.0,
+        0.35413
+      ],
+      "scale": [
+        0.739,
+        0.739,
+        0.739
+      ],
+      "size": [
+        3.317,
+        1.845,
+        5.609
+      ],
+      "center": [
+        0.948,
+        0.804,
+        0.142
+      ]
+    },
+    {
+      "name": "PumpJack (1)",
+      "pos": [
+        28.08,
+        0.0,
+        18.83
+      ],
+      "quat": [
+        -0.0,
+        -0.25882,
+        0.0,
+        0.96593
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        2.034,
+        3.389,
+        1.0
+      ],
+      "center": [
+        -0.58,
+        2.065,
+        -0.0
+      ]
+    },
+    {
+      "name": "Rocks02 (1)",
+      "pos": [
+        35.31,
+        0.0,
+        7.3
+      ],
+      "quat": [
+        -0.0,
+        -0.84908,
+        0.0,
+        0.52827
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "PumpJack",
+      "pos": [
+        29.51,
+        0.0,
+        12.67
+      ],
+      "quat": [
+        -0.0,
+        -0.25882,
+        0.0,
+        0.96593
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        2.034,
+        3.389,
+        1.0
+      ],
+      "center": [
+        -0.58,
+        2.065,
+        -0.0
+      ]
+    },
+    {
+      "name": "Helipad",
+      "pos": [
+        -27.92,
+        0.0,
+        30.72
+      ],
+      "quat": [
+        -0.0,
+        0.9753,
+        0.0,
+        0.22087
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        0.656,
+        1.039,
+        2.201
+      ],
+      "center": [
+        -3.372,
+        0.055,
+        2.979
+      ]
+    },
+    {
+      "name": "Rocks01",
+      "pos": [
+        -12.39,
+        0.0,
+        -33.76
+      ],
+      "quat": [
+        -0.0,
+        -0.53033,
+        0.0,
+        0.84779
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "size": [
+        5.611,
+        1.397,
+        1.778
+      ],
+      "center": [
+        0.089,
+        0.58,
+        -0.082
+      ]
+    },
+    {
+      "name": "Building02 (1)",
+      "pos": [
+        -5.66,
+        0.0,
+        -12.26
+      ],
+      "quat": [
+        -0.0,
+        0.65104,
+        0.0,
+        0.75904
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        7.162,
+        2.837,
+        4.14
+      ],
+      "center": [
+        -0.577,
+        1.34,
+        0.542
+      ]
+    },
+    {
+      "name": "Rocks01 (2)",
+      "pos": [
+        -17.3,
+        0.0,
+        11.91
+      ],
+      "quat": [
+        -0.0,
+        -0.99548,
+        0.0,
+        -0.09501
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "size": [
+        5.611,
+        1.397,
+        1.778
+      ],
+      "center": [
+        0.089,
+        0.58,
+        -0.082
+      ]
+    },
+    {
+      "name": "Rocks02 (3)",
+      "pos": [
+        -16.865,
+        0.0,
+        -29.897
+      ],
+      "quat": [
+        -0.0,
+        0.77032,
+        0.0,
+        0.63766
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "Cliff (1)",
+      "pos": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "quat": [
+        -0.0,
+        0.70711,
+        0.0,
+        0.70711
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "size": [
+        102.575,
+        11.897,
+        6.013
+      ],
+      "center": [
+        3.463,
+        4.635,
+        51.752
+      ]
+    },
+    {
+      "name": "Rocks02 (4)",
+      "pos": [
+        -5.93,
+        0.0,
+        37.44
+      ],
+      "quat": [
+        -0.0,
+        0.99905,
+        0.0,
+        0.04357
+      ],
+      "scale": [
+        0.843,
+        0.843,
+        0.843
+      ],
+      "size": [
+        3.337,
+        0.938,
+        4.737
+      ],
+      "center": [
+        0.16,
+        0.436,
+        0.035
+      ]
+    },
+    {
+      "name": "Ruins01 (1)",
+      "pos": [
+        37.86,
+        0.026,
+        -24.48
+      ],
+      "quat": [
+        -0.0,
+        -0.97674,
+        0.0,
+        -0.21442
+      ],
+      "scale": [
+        1.284,
+        1.284,
+        1.284
+      ],
+      "size": [
+        0.126,
+        0.779,
+        2.357
+      ],
+      "center": [
+        -2.076,
+        0.342,
+        -1.559
+      ]
+    },
+    {
+      "name": "Column02 (2)",
+      "pos": [
+        -18.16,
+        -0.7,
+        -37.9
+      ],
+      "quat": [
+        -0.0,
+        -0.19373,
+        0.0,
+        0.98106
+      ],
+      "scale": [
+        0.942,
+        0.942,
+        0.942
+      ],
+      "size": [
+        4.791,
+        4.744,
+        9.782
+      ],
+      "center": [
+        1.613,
+        1.277,
+        -1.763
+      ]
+    }
+  ]
+}

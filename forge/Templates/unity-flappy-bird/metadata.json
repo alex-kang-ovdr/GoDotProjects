@@ -1,0 +1,29 @@
+{
+  "id": "unity-flappy-bird",
+  "name": "Unity Flappy Bird 2D",
+  "description": "Unity 2D Flappy Bird tutorial ported to Godot 4.7.2 with GLSL UV parallax scrolling, sprite animation, pipe spawner, and Ready/GameOver HUD.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/sprites/Background.tres",
+    "assets/sprites/Bird_01.tres",
+    "assets/sprites/Bird_02.tres",
+    "assets/sprites/Bird_03.tres",
+    "assets/sprites/GameOver.tres",
+    "assets/sprites/GetReady.tres",
+    "assets/sprites/Ground.tres",
+    "assets/sprites/Pipe.tres",
+    "assets/sprites/PlayButton.tres",
+    "shaders/parallax_scroll.gdshader"
+  ],
+  "guideOrder": [
+    "shaders/parallax_scroll.gdshader",
+    "scripts/parallax.gd",
+    "scripts/pipes.gd",
+    "scripts/spawner.gd",
+    "scripts/player.gd",
+    "scripts/game_manager.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

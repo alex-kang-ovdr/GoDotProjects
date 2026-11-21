@@ -1,0 +1,124 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/game_manager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/parallax.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/spawner.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="4"]
+[ext_resource type="Shader" path="res://shaders/parallax_scroll.gdshader" id="5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/Background.tres" id="6"]
+[ext_resource type="Texture2D" path="res://assets/sprites/Ground.tres" id="7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/Bird_01.tres" id="8"]
+[ext_resource type="Texture2D" path="res://assets/sprites/GetReady.tres" id="9"]
+[ext_resource type="Texture2D" path="res://assets/sprites/GameOver.tres" id="10"]
+[ext_resource type="Texture2D" path="res://assets/sprites/PlayButton.tres" id="11"]
+
+[sub_resource type="ShaderMaterial" id="BgMat"]
+shader = ExtResource("5")
+shader_parameter/scroll_offset = 0.0
+
+[sub_resource type="ShaderMaterial" id="GroundMat"]
+shader = ExtResource("5")
+shader_parameter/scroll_offset = 0.0
+
+[sub_resource type="CircleShape2D" id="BirdShape"]
+radius = 16.0
+
+[node name="FlappyBird" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Background" type="TextureRect" parent="."]
+material = SubResource("BgMat")
+offset_right = 432.0
+offset_bottom = 768.0
+texture = ExtResource("6")
+stretch_mode = 0
+script = ExtResource("2")
+animation_speed = 0.05
+
+[node name="Spawner" type="Node2D" parent="."]
+script = ExtResource("3")
+
+[node name="Ground" type="TextureRect" parent="."]
+z_index = 5
+material = SubResource("GroundMat")
+offset_top = 600.0
+offset_right = 432.0
+offset_bottom = 768.0
+texture = ExtResource("7")
+stretch_mode = 0
+script = ExtResource("2")
+animation_speed = 0.37
+
+[node name="Player" type="Area2D" parent="."]
+z_index = 10
+position = Vector2(126, 320)
+script = ExtResource("4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player"]
+scale = Vector2(3, 3)
+texture = ExtResource("8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("BirdShape")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="ScoreText" type="Label" parent="HUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 42.0
+offset_right = 120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 72
+text = "0"
+horizontal_alignment = 1
+
+[node name="GetReady" type="TextureRect" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -138.0
+offset_top = -170.0
+offset_right = 138.0
+offset_bottom = -95.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9")
+
+[node name="GameOver" type="TextureRect" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -144.0
+offset_top = -150.0
+offset_right = 144.0
+offset_bottom = -87.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10")
+
+[node name="PlayButton" type="TextureButton" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = 20.0
+offset_right = 72.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("11")
+stretch_mode = 0
