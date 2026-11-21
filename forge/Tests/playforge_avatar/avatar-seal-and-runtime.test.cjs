@@ -164,7 +164,7 @@ test('Forge Layer 2 seal: server exposes canonical avatar bundle & build injecto
     assert.equal(data.sealed, true);
     assert.ok(data.files['avatar_controller.gd'].includes('PlayForgeAvatarController'));
     assert.ok(data.files['seal_manifest.json'].includes('"sealed": true'));
-    assert.ok(data.assets.length >= 20, 'Expected 5 GLB skins + 15 GLB accessories');
+    assert.ok(data.assets.length >= 30, 'Expected 10 GLB skins + 20 GLB accessories');
 
     // Binary GLB asset endpoint works and rejects traversal
     const glbRes = await fetch(`${baseUrl}/api/platform-addon/avatar/assets/skins/RobotExpressive.glb`);
@@ -197,7 +197,7 @@ test('Forge Layer 2 seal: server exposes canonical avatar bundle & build injecto
 });
 
 test(
-  'Forge Layer 3 runtime: Godot 4.7.2 headless loads all 5 CC0 GLB skins, 4 sockets, TPS/FPS/TopDown locomotion, emotes & 12-bone ragdoll',
+  'Forge Layer 3 runtime: Godot 4.7.2 headless loads all 10 CC0 GLB skins, 4 sockets, TPS/FPS/TopDown locomotion, emotes & 12-bone ragdoll',
   {
     skip: process.platform !== 'win32' || !fs.existsSync(godotConsole) ? 'Windows Godot console unavailable' : false,
     timeout: 90000,
@@ -218,7 +218,7 @@ test(
     assert.equal(report.checksumOk, true);
     assert.equal(report.offlineNullLoadoutWebOk, true);
     assert.equal(report.offlineNullLoadoutHttpOk, true);
-    assert.equal(report.skinsTested.length, 5);
+    assert.equal(report.skinsTested.length, 10);
     for (const s of report.skinsTested) {
       assert.equal(s.ok, true, `skin failed: ${s.skinId}`);
       assert.equal(s.mountedCount, 4, `all 4 attachment sockets must mount on ${s.skinId}`);

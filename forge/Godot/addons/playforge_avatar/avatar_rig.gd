@@ -24,10 +24,19 @@ var _emote_loop := false
 var _emoji_badge: Label3D
 var _emoji_base_height := 2.25
 var _emoji_bob_time := 0.0
+var _cache_hits := 0
+var _network_downloads := 0
+var _local_res_loads := 0
+var _downloaded_bytes := 0
+var _cached_bytes := 0
+var _asset_origin := ""
+var _external_cache_dir := ""
+var _external_assets_dir := ""
 
 
 func _ready() -> void:
 	set_meta("_playforge_avatar_sealed", true)
+	_resolve_asset_transport_config()
 	_model_pivot = Node3D.new()
 	_model_pivot.name = "ModelPivot"
 	_model_pivot.set_meta("_playforge_avatar_sealed", true)
@@ -75,7 +84,7 @@ func apply_sealed_loadout(loadout: Dictionary) -> Dictionary:
 	_rig_profile = _catalog.get_rig_profile(profile_id)
 	var skin_res_path := _catalog.resolve_asset_res_path(skin_id)
 
-	var instance := _load_glb_scene(skin_res_path)
+	var instance := _load_glb_scene(skin_res_path, skin_item)
 	if instance == null:
 		push_error("PlayForgeAvatarRig: failed to load GLB skin '%s' from %s" % [skin_id, skin_res_path])
 		return {"ok": false, "error": "GLB_LOAD_FAILED", "skinId": skin_id}
@@ -226,6 +235,17 @@ func get_rig_summary() -> Dictionary:
 		"emoteWheel": _active_loadout.get("emoteWheel", []).duplicate(),
 		"eyeHeight": get_eye_height(),
 		"firstPersonHeadHidden": _fp_head_hidden,
+		"cacheMetrics": get_cache_metrics(),
+	}
+
+
+func get_cache_metrics() -> Dictionary:
+	return {
+		"cacheHits": _cache_hits,
+		"networkDownloads": _network_downloads,
+		"localResLoads": _local_res_loads,
+		"downloadedBytes": _downloaded_bytes,
+		"cachedBytes": _cached_bytes,
 	}
 
 
@@ -245,7 +265,8 @@ func _mount_attachments(attachments: Variant) -> void:
 		if bone_name.is_empty():
 			continue
 		var asset_path := _catalog.resolve_asset_res_path(item_id)
-		var prop_scene := _load_glb_scene(asset_path)
+		var att_item := _catalog.get_item(item_id)
+		var prop_scene := _load_glb_scene(asset_path, att_item)
 		if prop_scene == null:
 			continue
 		var bone_att := BoneAttachment3D.new()
@@ -267,20 +288,33 @@ func _mount_attachments(attachments: Variant) -> void:
 		_attachments_by_slot[slot] = bone_att
 
 
-func _load_glb_scene(res_path: String) -> Node3D:
+func _resolve_asset_transport_config() -> void:
+	_asset_origin = OS.get_environment("PLAYHUB_AVATAR_ORIGIN").strip_edges().trim_suffix("/")
+	_external_cache_dir = OS.get_environment("PLAYFORGE_AVATAR_CACHE_DIR").strip_edges()
+	_external_assets_dir = OS.get_environment("PLAYFORGE_AVATAR_ASSETS_DIR").strip_edges()
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--playhub-origin="):
+			_asset_origin = arg.substr("--playhub-origin=".length()).strip_edges().trim_suffix("/")
+		elif arg.begins_with("--avatar-cache-dir="):
+			_external_cache_dir = arg.substr("--avatar-cache-dir=".length()).strip_edges()
+		elif arg.begins_with("--avatar-assets-dir="):
+			_external_assets_dir = arg.substr("--avatar-assets-dir=".length()).strip_edges()
+	if _external_cache_dir.is_empty():
+		_external_cache_dir = ProjectSettings.globalize_path("user://avatar_cache")
+
+
+func _load_glb_scene(res_path: String, item: Dictionary = {}) -> Node3D:
 	if res_path.is_empty():
 		return null
-	# Primary: direct GLB binary parse (works identically in Desktop, Headless, Web Export & HTTP bytes without .import cache)
-	if FileAccess.file_exists(res_path):
-		var bytes := FileAccess.get_file_as_bytes(res_path)
-		if not bytes.is_empty():
-			var gltf := GLTFDocument.new()
-			var state := GLTFState.new()
-			var err := gltf.append_from_buffer(bytes, res_path.get_base_dir(), state)
-			if err == OK:
-				var generated := gltf.generate_scene(state)
-				if generated is Node3D:
-					return generated as Node3D
+	var bytes := _resolve_glb_bytes(res_path, item)
+	if not bytes.is_empty():
+		var gltf := GLTFDocument.new()
+		var state := GLTFState.new()
+		var err := gltf.append_from_buffer(bytes, res_path.get_base_dir(), state)
+		if err == OK:
+			var generated := gltf.generate_scene(state)
+			if generated is Node3D:
+				return generated as Node3D
 	# Secondary fallback: Godot imported PackedScene resource
 	if ResourceLoader.exists(res_path):
 		var packed := ResourceLoader.load(res_path) as PackedScene
@@ -289,6 +323,115 @@ func _load_glb_scene(res_path: String) -> Node3D:
 			if inst is Node3D:
 				return inst as Node3D
 	return null
+
+
+func _resolve_glb_bytes(res_path: String, item: Dictionary) -> PackedByteArray:
+	var expected_sha := str(item.get("sha256", ""))
+	var rel_asset := str(item.get("assetPath", ""))
+
+	# Layer 3A: Content-addressed SHA-256 disk cache (0-byte re-download across UGC worlds!)
+	if not expected_sha.is_empty() and not _external_cache_dir.is_empty():
+		var cache_file := _external_cache_dir.path_join(expected_sha + ".glb")
+		if FileAccess.file_exists(cache_file):
+			var cached := FileAccess.get_file_as_bytes(cache_file)
+			if not cached.is_empty() and _sha256_hex(cached) == expected_sha:
+				_cache_hits += 1
+				_cached_bytes += cached.size()
+				return cached
+
+	# Layer 3B: Local res:// bundle (when running unpacked dev workspace)
+	if FileAccess.file_exists(res_path):
+		var local_bytes := FileAccess.get_file_as_bytes(res_path)
+		if not local_bytes.is_empty():
+			_local_res_loads += 1
+			return local_bytes
+
+	# Layer 3C: Shared local assets directory (desktop/mobile shared store)
+	if not _external_assets_dir.is_empty() and not rel_asset.is_empty():
+		var sub := rel_asset.trim_prefix("assets/")
+		var shared_file := _external_assets_dir.path_join(sub)
+		if FileAccess.file_exists(shared_file):
+			var shared_bytes := FileAccess.get_file_as_bytes(shared_file)
+			if not shared_bytes.is_empty():
+				_write_glb_cache(expected_sha, shared_bytes)
+				_cache_hits += 1
+				_cached_bytes += shared_bytes.size()
+				return shared_bytes
+
+	# Layer 3D: On-demand HTTP streaming from PlayHub (/api/avatar/assets/...) with SHA-256 verification + cache write
+	if not _asset_origin.is_empty() and not rel_asset.is_empty():
+		var url_path := "/api/avatar/assets/" + rel_asset.trim_prefix("assets/")
+		var fetched := _http_get_sync(_asset_origin, url_path)
+		if not fetched.is_empty():
+			if expected_sha.is_empty() or _sha256_hex(fetched) == expected_sha:
+				_network_downloads += 1
+				_downloaded_bytes += fetched.size()
+				_write_glb_cache(expected_sha, fetched)
+				return fetched
+			push_error("PlayForgeAvatarRig: SHA-256 mismatch for downloaded GLB %s" % url_path)
+	return PackedByteArray()
+
+
+func _write_glb_cache(sha_hex: String, bytes: PackedByteArray) -> void:
+	if sha_hex.is_empty() or _external_cache_dir.is_empty() or bytes.is_empty():
+		return
+	DirAccess.make_dir_recursive_absolute(_external_cache_dir)
+	var dest := _external_cache_dir.path_join(sha_hex + ".glb")
+	var f := FileAccess.open(dest, FileAccess.WRITE)
+	if f != null:
+		f.store_buffer(bytes)
+		f.close()
+
+
+static func _sha256_hex(bytes: PackedByteArray) -> String:
+	var ctx := HashingContext.new()
+	ctx.start(HashingContext.HASH_SHA256)
+	ctx.update(bytes)
+	return ctx.finish().hex_encode()
+
+
+static func _http_get_sync(origin: String, url_path: String) -> PackedByteArray:
+	var use_tls := origin.begins_with("https://")
+	var authority := origin.trim_prefix("https://").trim_prefix("http://")
+	var host := authority
+	var port := 443 if use_tls else 80
+	var colon := authority.rfind(":")
+	if colon > 0:
+		host = authority.substr(0, colon)
+		port = int(authority.substr(colon + 1))
+	var client := HTTPClient.new()
+	var tls_opts := TLSOptions.client() if use_tls else null
+	if client.connect_to_host(host, port, tls_opts) != OK:
+		return PackedByteArray()
+	var deadline := Time.get_ticks_msec() + 8000
+	while client.get_status() in [HTTPClient.STATUS_CONNECTING, HTTPClient.STATUS_RESOLVING]:
+		client.poll()
+		if Time.get_ticks_msec() > deadline:
+			return PackedByteArray()
+		OS.delay_msec(5)
+	if client.get_status() != HTTPClient.STATUS_CONNECTED:
+		return PackedByteArray()
+	if client.request(HTTPClient.METHOD_GET, url_path, PackedStringArray(["Accept: model/gltf-binary"])) != OK:
+		return PackedByteArray()
+	while client.get_status() == HTTPClient.STATUS_REQUESTING:
+		client.poll()
+		if Time.get_ticks_msec() > deadline:
+			return PackedByteArray()
+		OS.delay_msec(5)
+	if client.get_response_code() < 200 or client.get_response_code() >= 300:
+		return PackedByteArray()
+	var body := PackedByteArray()
+	while client.get_status() == HTTPClient.STATUS_BODY:
+		client.poll()
+		var chunk := client.read_response_body_chunk()
+		if not chunk.is_empty():
+			body.append_array(chunk)
+		elif Time.get_ticks_msec() > deadline:
+			break
+		else:
+			OS.delay_msec(2)
+	client.close()
+	return body
 
 
 func _resolve_animation_clip(state_key: String) -> String:

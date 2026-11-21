@@ -98,14 +98,27 @@ test('Avatar Shop & Locker E2E: catalog, GLB serving, PlayCoin 3-bucket topup/pu
   assert.equal(sess.status, 200);
   assert.ok(client.csrf);
 
-  // 2. Catalog & binary GLB serving
+  // 2. Catalog & binary GLB serving (10 skins + 20 attachments + 8 emotes)
   const cat = await client.call('/api/avatar/catalog');
   assert.equal(cat.status, 200);
   assert.equal(cat.data.ok, true);
   assert.equal(cat.data.currency, 'PlayCoin');
-  assert.equal(cat.data.items.filter((i) => i.category === 'skin').length, 5);
-  assert.equal(cat.data.items.filter((i) => i.category === 'attachment').length, 15);
+  assert.equal(cat.data.items.filter((i) => i.category === 'skin').length, 10);
+  assert.equal(cat.data.items.filter((i) => i.category === 'attachment').length, 20);
   assert.equal(cat.data.items.filter((i) => i.category === 'emote').length, 8);
+
+  // 2b. Layer 2 shared modular runtime manifest & core.pck (must be lightweight with 0 GLB binaries)
+  const runtimeManifest = await client.call('/api/avatar/runtime/manifest');
+  assert.equal(runtimeManifest.status, 200);
+  assert.equal(runtimeManifest.data.ok, true);
+  assert.equal(runtimeManifest.data.packaging, '4-layer-modular');
+  assert.equal(runtimeManifest.data.assetCount, 30);
+  assert.equal(runtimeManifest.data.corePack.containsGlbBinaries, false);
+  assert.ok(runtimeManifest.data.corePack.bytes < 256 * 1024, `core.pck should stay tiny (<256KB), got ${runtimeManifest.data.corePack.bytes}`);
+  const corePck = await client.call('/api/avatar/runtime/core.pck');
+  assert.equal(corePck.status, 200);
+  assert.equal(corePck.bytes.readUInt32LE(0), 0x43504447, 'core.pck must have Godot GDPC magic');
+  assert.match(corePck.headers.get('cache-control') || '', /immutable/);
 
   const skinGlb = await client.call('/api/avatar/assets/skins/Knight.glb');
   assert.equal(skinGlb.status, 200);

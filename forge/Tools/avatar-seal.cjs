@@ -15,6 +15,7 @@ const SEALED_TEXT_FILES = Object.freeze([
   'avatar_ragdoll.gd',
   'avatar_controller.gd',
   'avatar_spawn.gd',
+  'avatar_portrait_ui.gd',
 ]);
 const SAFE_ASSET_KINDS = new Set(['skins', 'accessories']);
 const SAFE_GLB_NAME_RE = /^[A-Za-z0-9_-]{1,80}\.glb$/;

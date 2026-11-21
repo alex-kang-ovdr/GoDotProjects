@@ -24,6 +24,7 @@
   var statusListeners = [];
   var pauseListeners = [];
   var snapshotListeners = [];
+  var platformActionListeners = [];
 
   var connection = new Promise(function (resolve, reject) {
     resolveConnect = resolve;
@@ -101,6 +102,12 @@
           emitStatus(data.payload);
           return;
         }
+        if (data.type === 'platform_action') {
+          for (var k = 0; k < platformActionListeners.length; k++) {
+            try { platformActionListeners[k](data.payload || {}); } catch (_) {}
+          }
+          return;
+        }
         var job = pending.get(data.id);
         if (!job) return;
         pending.delete(data.id);
@@ -161,7 +168,8 @@
     activity: function () { return request('activity', { updating: true }); },
     onStatus: function (fn) { if (typeof fn === 'function') statusListeners.push(fn); },
     onPause: function (fn) { if (typeof fn === 'function') pauseListeners.push(fn); },
-    onSnapshot: function (fn) { if (typeof fn === 'function') snapshotListeners.push(fn); }
+    onSnapshot: function (fn) { if (typeof fn === 'function') snapshotListeners.push(fn); },
+    onPlatformAction: function (fn) { if (typeof fn === 'function') platformActionListeners.push(fn); }
   };
 
   if (!root.GameSDK) root.GameSDK = sdk;

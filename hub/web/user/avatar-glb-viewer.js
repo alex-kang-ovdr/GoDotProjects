@@ -479,6 +479,10 @@
         yaw = 0.0; pitch = 0.05; distance = 1.75; targetY = 1.68; autoSpin = false;
       } else if (preset === 'TopDown') {
         yaw = 0.35; pitch = 0.92; distance = 6.2; targetY = 1.0; autoSpin = true;
+      } else if (preset === 'PortraitUpper') {
+        yaw = 0.22; pitch = 0.06; distance = 2.15; targetY = 1.55; autoSpin = false;
+      } else if (preset === 'PortraitFull') {
+        yaw = 0.26; pitch = 0.10; distance = 4.55; targetY = 1.10; autoSpin = false;
       } else {
         yaw = 0.42; pitch = 0.14; distance = 4.95; targetY = 1.25; autoSpin = true;
       }

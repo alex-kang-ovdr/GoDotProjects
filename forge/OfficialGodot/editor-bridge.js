@@ -872,8 +872,14 @@
       if (!response.ok) return null;
       const data = await response.json().catch(() => null);
       if (!data || data.ok !== true || !data.files || typeof data.files !== 'object') return null;
-      const binaryAssets = [];
-      const wanted = Array.isArray(data.assets) ? data.assets : [];
+      // Layer 3 modularization: mount lightweight sealed scripts + starter preview GLBs only
+      // (with .gdignore so Godot Web Editor does not stall importing 30 GLBs; remaining skins/accessories
+      // stream on-demand via PlayHub /api/avatar/assets/* and GLTFDocument.append_from_buffer).
+      const starterRelPaths = new Set(['assets/skins/Knight.glb', 'assets/accessories/quiver.glb']);
+      const binaryAssets = [
+        { relPath: 'assets/.gdignore', buffer: new TextEncoder().encode('# PlayForge Avatar GLBs load dynamically at runtime via GLTFDocument\n') },
+      ];
+      const wanted = Array.isArray(data.assets) ? data.assets.filter(a => starterRelPaths.has(a?.relPath)) : [];
       await Promise.all(wanted.map(async (asset) => {
         if (!asset?.url || !asset?.relPath) return;
         const res = await fetch(forgePath(asset.url), { credentials: 'same-origin' });

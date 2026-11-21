@@ -193,7 +193,7 @@ func _verify_item_entry_checksum(entry: Dictionary) -> bool:
 
 
 func verify_seal_manifest() -> Dictionary:
-	var report := {"ok": true, "checked": 0, "mismatches": [], "missing": []}
+	var report := {"ok": true, "checked": 0, "onDemand": 0, "mismatches": [], "missing": []}
 	if not FileAccess.file_exists(MANIFEST_PATH):
 		if not OS.is_debug_build():
 			report.ok = false
@@ -206,6 +206,10 @@ func verify_seal_manifest() -> Dictionary:
 			return report
 		for entry in _data.get("items", []):
 			if entry is Dictionary and entry.has("assetPath"):
+				var res_path := resolve_asset_res_path(str(entry.get("id", "")))
+				if not FileAccess.file_exists(res_path):
+					report.onDemand += 1
+					continue
 				report.checked += 1
 				if not _verify_item_entry_checksum(entry):
 					report.ok = false
@@ -228,10 +232,15 @@ func verify_seal_manifest() -> Dictionary:
 		report.mismatches.append(MANIFEST_PATH)
 		return report
 	for rel_path in files_map.keys():
-		var full := ADDON_ROOT + "/" + str(rel_path)
+		var rel_str := str(rel_path)
+		var full := ADDON_ROOT + "/" + rel_str
 		if not FileAccess.file_exists(full):
+			# Layer 3 modular streaming: GLB cosmetics load & SHA-256 verify on-demand when absent locally.
+			if rel_str.begins_with("assets/") and rel_str.ends_with(".glb"):
+				report.onDemand += 1
+				continue
 			report.ok = false
-			report.missing.append(str(rel_path))
+			report.missing.append(rel_str)
 			continue
 		report.checked += 1
 		var bytes := FileAccess.get_file_as_bytes(full)
@@ -240,5 +249,5 @@ func verify_seal_manifest() -> Dictionary:
 		ctx.update(bytes)
 		if ctx.finish().hex_encode() != str(files_map[rel_path]):
 			report.ok = false
-			report.mismatches.append(str(rel_path))
+			report.mismatches.append(rel_str)
 	return report

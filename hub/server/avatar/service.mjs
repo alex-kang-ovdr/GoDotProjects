@@ -1,5 +1,7 @@
 import { createHmac, randomBytes } from 'node:crypto';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { transaction } from '../db.mjs';
 import { ApiError, digest, json, readJson, safeString, uid } from '../security.mjs';
 import {
@@ -232,12 +234,40 @@ export function createAvatarService({
       buildVerifiedLoadout: unavailable,
       purchaseItem: unavailable,
       updateLoadout: unavailable,
+      getCorePack: unavailable,
+      getAssetMetrics: () => ({ totalDownloads: 0, uniqueAssetsDownloaded: 0, perAsset: {} }),
     };
   }
 
+  const forgeRoot = path.resolve(addonDir, '..', '..', '..');
   const wallet = createPlayCoinWalletAdapter({ db, now, topupPacks: catalog.topupPacks });
   const { secret: signingSecret } = resolveSigningSecret(config, env);
   const allowMockTopup = config?.avatar?.allowMockTopup === true;
+  const localRequire = createRequire(import.meta.url);
+  let cachedCorePack = null;
+  const assetDownloadCounts = new Map();
+
+  function getCorePack() {
+    if (!cachedCorePack) {
+      const { buildCorePack } = localRequire(path.join(forgeRoot, 'Tools', 'build-core-pack.cjs'));
+      cachedCorePack = buildCorePack(forgeRoot);
+    }
+    return cachedCorePack;
+  }
+
+  function getAssetMetrics() {
+    let totalDownloads = 0;
+    const perAsset = {};
+    for (const [k, v] of assetDownloadCounts.entries()) {
+      totalDownloads += v;
+      perAsset[k] = v;
+    }
+    return {
+      totalDownloads,
+      uniqueAssetsDownloaded: assetDownloadCounts.size,
+      perAsset,
+    };
+  }
 
   function signLoadout(payload) {
     const canonical = JSON.stringify({
@@ -511,15 +541,60 @@ export function createAvatarService({
       return true;
     }
 
+    if (pathname === '/api/avatar/runtime/manifest' && req.method === 'GET') {
+      const core = getCorePack();
+      const assets = catalog.items
+        .filter((i) => i.assetPath && i.sha256)
+        .map((i) => ({
+          id: i.id,
+          category: i.category,
+          slot: i.slot || null,
+          assetUrl: i.assetUrl,
+          sha256: i.sha256,
+          bytes: i.bytes || 0,
+        }));
+      json(res, 200, {
+        ok: true,
+        packaging: '4-layer-modular',
+        catalogVersion: catalog.catalogVersion,
+        corePack: {
+          url: `/api/avatar/runtime/core.pck?v=${core.sha256.slice(0, 12)}`,
+          sha256: core.sha256,
+          bytes: core.bytes,
+          fileCount: core.fileCount,
+          containsGlbBinaries: false,
+        },
+        assetsBaseUrl: '/api/avatar/assets',
+        assetCount: assets.length,
+        totalAssetBytes: assets.reduce((acc, a) => acc + a.bytes, 0),
+        telemetry: getAssetMetrics(),
+      });
+      return true;
+    }
+
+    if (pathname === '/api/avatar/runtime/core.pck' && req.method === 'GET') {
+      const core = getCorePack();
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Length', String(core.bytes));
+      res.setHeader('ETag', `"${core.sha256}"`);
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.end(core.buffer);
+      return true;
+    }
+
     const assetMatch = pathname.match(/^\/api\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
     if (assetMatch && req.method === 'GET') {
       const file = catalog.resolveAssetFile(assetMatch[1], assetMatch[2]);
       if (!file) throw new ApiError(404, 'AVATAR_ASSET_NOT_FOUND');
+      const assetKey = `${assetMatch[1]}/${assetMatch[2]}`;
+      assetDownloadCounts.set(assetKey, (assetDownloadCounts.get(assetKey) || 0) + 1);
       const bytes = await fs.promises.readFile(file);
       res.statusCode = 200;
       res.setHeader('Content-Type', 'model/gltf-binary');
       res.setHeader('Content-Length', String(bytes.length));
-      res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.end(bytes);
       return true;
@@ -589,5 +664,7 @@ export function createAvatarService({
     purchaseItem,
     updateLoadout,
     wallet,
+    getCorePack,
+    getAssetMetrics,
   };
 }

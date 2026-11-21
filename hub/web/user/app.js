@@ -490,6 +490,51 @@
     try{return await api('/api/avatar/loadout');}
     catch(_){return {ok:false,offline:true,loadout:null};}
   }
+  function buildHostPlatformOverlay(activeRun){
+    const bar=document.createElement('div');
+    bar.className='platform-core-bar';
+    bar.dataset.testid='platform-core-bar';
+    bar.setAttribute('role','toolbar');
+    bar.setAttribute('aria-label','PLAY HUB 플랫폼 바 (제거 불가)');
+    bar.innerHTML=`<button type="button" class="platform-bar-btn platform-bar-brand" data-platform-action="menu" aria-expanded="false">PLAY HUB</button>
+      <button type="button" class="platform-bar-btn" data-platform-action="camera">TPS/FPS</button>
+      <button type="button" class="platform-bar-btn" data-platform-action="emote">이모지</button>
+      <button type="button" class="platform-bar-btn platform-bar-leave" data-platform-action="leave">나가기</button>`;
+    const menu=document.createElement('div');
+    menu.className='platform-core-menu';
+    menu.dataset.testid='platform-core-menu';
+    menu.hidden=true;
+    menu.innerHTML=`<div class="platform-core-menu-head"><strong>PLAY HUB 플랫폼</strong><span>보호된 오버레이</span></div>
+      <div class="platform-core-menu-actions">
+        <button type="button" class="button secondary small" data-platform-action="camera">시점 전환 (TPS / FPS / TopDown)</button>
+        <button type="button" class="button secondary small" data-platform-action="ragdoll">래그돌 전환</button>
+        <a class="button secondary small" href="/?view=avatar" data-route>내 아바타 상점·락커</a>
+        <button type="button" class="button primary small" data-platform-action="leave">게임 나가기</button>
+      </div>`;
+    const handleAction=async action=>{
+      if(state.active!==activeRun)return;
+      if(action==='menu'){
+        menu.hidden=!menu.hidden;
+        bar.querySelector('[data-platform-action="menu"]')?.setAttribute('aria-expanded',String(!menu.hidden));
+      }else if(action==='camera'){
+        activeRun.port?.postMessage({type:'platform_action',payload:{action:'cycle_camera'}});
+      }else if(action==='emote'){
+        activeRun.port?.postMessage({type:'platform_action',payload:{action:'emote',slot:0}});
+      }else if(action==='ragdoll'){
+        activeRun.port?.postMessage({type:'platform_action',payload:{action:'toggle_ragdoll'}});
+      }else if(action==='leave'){
+        await teardown('user_close');
+        await renderRoute();
+      }
+    };
+    const onClick=e=>{
+      const btn=e.target.closest('[data-platform-action]');
+      if(btn){e.preventDefault();void handleAction(btn.dataset.platformAction);}
+    };
+    bar.addEventListener('click',onClick);
+    menu.addEventListener('click',onClick);
+    return {bar,menu};
+  }
   async function renderRoute(){
     cleanupAvatarView();
     const token=++state.route;
@@ -612,7 +657,8 @@
       const sep=rawEntryUrl.includes('?')?'&':'?';
       iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
-      $('player-panel').replaceChildren(iframe);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
+      const overlay=buildHostPlatformOverlay(a);
+      $('player-panel').replaceChildren(iframe,overlay.bar,overlay.menu);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);
       a.timer=setTimeout(()=>{if(!a.ready&&state.active===a){saveStatus('게임 준비가 지연됩니다. 게임을 닫고 다시 시도해 주세요.',true);playEvent(a,'runtime_error',{code:'READY_TIMEOUT',message:'Game ready timeout'});}},14000);
       $('player-panel').scrollIntoView({behavior:'smooth',block:'start'});

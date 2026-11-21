@@ -56,10 +56,12 @@
             </div>
           </div>
           <div class="avatar-stage-controls">
-            <div class="avatar-chip-group" role="group" aria-label="기본 내장 로코모션 카메라 프리뷰">
+            <div class="avatar-chip-group" role="group" aria-label="기본 내장 로코모션 · 3D 초상 카메라 프리뷰">
               <button type="button" class="avatar-chip active" data-cam="TPS">TPS 시점</button>
               <button type="button" class="avatar-chip" data-cam="FPS">FPS 시점</button>
               <button type="button" class="avatar-chip" data-cam="TopDown">TopDown 시점</button>
+              <button type="button" class="avatar-chip" data-cam="PortraitUpper">상반신 초상</button>
+              <button type="button" class="avatar-chip" data-cam="PortraitFull">전신 초상</button>
             </div>
             <span class="muted" id="avatar-stage-hint" style="font-size:0.78rem;">드래그로 회전</span>
           </div>
@@ -94,6 +96,7 @@
             <strong>PlayForge 기본 내장 아바타 규격 (UEFN 호환 모델)</strong>
             <ul>
               <li><strong>기본 내장 로코모션</strong>: TPS(3인칭 숄더/오빗) · FPS(1인칭 헤드 숨김) · TopDown(탑다운 이동/조준) 3종 모드, 점프·달리기·웅크리기 자동 지원</li>
+              <li><strong>게임 모드별 3D 렌더타겟 초상 UI</strong>: 2D·카드·퍼즐·RPG HUD 모드에서 상반신 초상(최소 <code>128×128 px</code>) 또는 전신 초상(최소 <code>160×240 px</code>) 3D <code>SubViewport</code> 초상 표현 지원(엔진 C++ 최소 사이즈·숨김 차단 적용)</li>
               <li><strong>기본 내장 래그돌 물리</strong>: <code>PhysicalBoneSimulator3D</code> 기반 12관절 휴머노이드 래그돌 충격 및 기상 복구 내장</li>
               <li><strong>포지 수정 불가 (3중 봉인)</strong>: <code>addons/playforge_avatar/**</code>는 저장·동기화 차단 및 빌드 시 서버 정규본 강제 주입. 포지 크리에이터는 스폰 위치·카메라 모드·이동 배율·래그돌/이모지 허용 여부만 설정 가능</li>
             </ul>
