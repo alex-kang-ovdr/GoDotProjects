@@ -6,6 +6,11 @@ const SCOPE_RE = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 const ENTRY_KEY_RE = /^[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$/;
 const HOLDER_RE = /^[A-Za-z0-9][A-Za-z0-9:._-]{2,127}$/;
 const MAX_VERSIONS_PER_KEY = 20;
+const TOMBSTONE_ETAG = 'deleted';
+
+function isTombstone(row) {
+  return Boolean(row && row.value_json === '' && row.etag === TOMBSTONE_ETAG);
+}
 
 const DEFAULT_QUOTA = {
   max_keys: 10000,
@@ -125,7 +130,8 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
   }
 
   function assertLockForMutation(current, { holderId, fencingToken }, stamp) {
-    const activeLock = Boolean(current?.lock_holder && current?.lock_expires_at && current.lock_expires_at > stamp);
+    const live = Boolean(current && !isTombstone(current));
+    const activeLock = Boolean(live && current.lock_holder && current.lock_expires_at && current.lock_expires_at > stamp);
     if (activeLock) {
       if (!holderId || holderId !== current.lock_holder) {
         throw new ApiError(423, 'DATASTORE_LOCK_HELD', '다른 서버가 세션 락을 보유하고 있습니다.', {
@@ -133,19 +139,41 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
           lockExpiresAt: new Date(current.lock_expires_at).toISOString(),
         });
       }
-      if (!Number.isSafeInteger(fencingToken) || fencingToken !== current.fencing_token) {
+      if (fencingToken === undefined || fencingToken === null) {
+        throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_REQUIRED');
+      }
+      if (!Number.isSafeInteger(fencingToken) || fencingToken < 1) {
+        throw new ApiError(422, 'DATASTORE_FENCING_TOKEN_INVALID');
+      }
+      if (fencingToken !== current.fencing_token) {
         throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_STALE');
       }
       return;
     }
-    // Even if lock expired, a zombie writer presenting an older fencing token MUST be rejected.
+    // Lock-protected keys (fencing_token > 0) require a valid matching fencingToken even after
+    // lease expiry, unlock, force-unlock, or delete so zombie writers cannot omit it to bypass fencing.
+    if (current && current.fencing_token > 0) {
+      if (fencingToken === undefined || fencingToken === null) {
+        throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_REQUIRED');
+      }
+      if (!Number.isSafeInteger(fencingToken) || fencingToken < 1) {
+        throw new ApiError(422, 'DATASTORE_FENCING_TOKEN_INVALID');
+      }
+      if (fencingToken !== current.fencing_token) {
+        throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_STALE');
+      }
+      if (current.lock_holder && current.lock_expires_at && current.lock_expires_at <= stamp) {
+        throw new ApiError(409, 'DATASTORE_LOCK_EXPIRED');
+      }
+      return;
+    }
+    // Unprotected CAS-only entries (never locked, fencing_token === 0) or missing entries:
+    // fencingToken is optional, but if supplied it cannot match 0/missing.
     if (fencingToken !== undefined && fencingToken !== null) {
       if (!Number.isSafeInteger(fencingToken) || fencingToken < 1) {
         throw new ApiError(422, 'DATASTORE_FENCING_TOKEN_INVALID');
       }
-      if (!current || fencingToken !== current.fencing_token) {
-        throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_STALE');
-      }
+      throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_STALE');
     }
   }
 
@@ -167,8 +195,8 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       const limit = pageNumber(url.searchParams.get('limit'), 50, 1, 200);
       const offset = pageNumber(url.searchParams.get('offset'), 0, 0, 100000);
       const stamp = now();
-      const where = prefix ? 'WHERE game_id=? AND scope=? AND entry_key LIKE ?' : 'WHERE game_id=? AND scope=?';
-      const args = prefix ? [game.id, scope, prefix + '%'] : [game.id, scope];
+      const where = prefix ? 'WHERE game_id=? AND scope=? AND etag!=? AND entry_key LIKE ?' : 'WHERE game_id=? AND scope=? AND etag!=?';
+      const args = prefix ? [game.id, scope, TOMBSTONE_ETAG, prefix + '%'] : [game.id, scope, TOMBSTONE_ETAG];
       const total = db.prepare(`SELECT COUNT(*) AS n FROM datastore_entries ${where}`).get(...args).n;
       const rows = db.prepare(`SELECT * FROM datastore_entries ${where} ORDER BY entry_key ASC LIMIT ? OFFSET ?`).all(...args, limit, offset);
       json(res, 200, {
@@ -198,12 +226,19 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       const entryKey = assertEntryKey(lockMatch[3]);
       const quota = quotaFor(game.id);
       const body = await readJson(req, Math.min(quota.max_value_bytes + 4096, 1024 * 1024));
-      const allowed = new Set(['holderId', 'leaseMs', 'createIfMissing', 'initialValue', 'ownerPrincipalId']);
+      const allowed = new Set(['holderId', 'leaseMs', 'createIfMissing', 'initialValue', 'ownerPrincipalId', 'fencingToken']);
       if (Object.keys(body).some(k => !allowed.has(k))) throw new ApiError(422, 'DATASTORE_LOCK_BODY_INVALID');
       const holderId = assertHolderId(body.holderId);
       const leaseMs = body.leaseMs === undefined ? quota.default_lease_ms : body.leaseMs;
       if (!Number.isSafeInteger(leaseMs) || leaseMs < 1000 || leaseMs > quota.max_lease_ms) {
         throw new ApiError(422, 'DATASTORE_LEASE_INVALID');
+      }
+      let requestedFencingToken = null;
+      if (body.fencingToken !== undefined && body.fencingToken !== null) {
+        if (!Number.isSafeInteger(body.fencingToken) || body.fencingToken < 1) {
+          throw new ApiError(422, 'DATASTORE_FENCING_TOKEN_INVALID');
+        }
+        requestedFencingToken = body.fencingToken;
       }
       const createIfMissing = body.createIfMissing !== false;
       const ownerPrincipalId = assertOwnerExists(body.ownerPrincipalId);
@@ -217,19 +252,31 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       const outcome = transaction(db, () => {
         const current = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
           .get(game.id, scope, entryKey);
-        if (!current) {
+        if (!current || isTombstone(current)) {
           if (!createIfMissing) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
-          const usage = db.prepare('SELECT COUNT(*) AS key_count, COALESCE(SUM(bytes),0) AS total_bytes FROM datastore_entries WHERE game_id=?').get(game.id);
+          const usage = db.prepare('SELECT COUNT(*) AS key_count, COALESCE(SUM(bytes),0) AS total_bytes FROM datastore_entries WHERE game_id=? AND etag!=?').get(game.id, TOMBSTONE_ETAG);
           if (usage.key_count + 1 > quota.max_keys || usage.total_bytes + initialBytes > quota.max_total_bytes) {
             throw new ApiError(413, 'DATASTORE_QUOTA_EXCEEDED');
           }
-          const etag = `"r1"`;
-          db.prepare(`
-            INSERT INTO datastore_entries(
-              game_id, scope, entry_key, owner_principal_id, revision, value_json, bytes, etag,
-              fencing_token, lock_holder, lock_expires_at, updated_by, created_at, updated_at
-            ) VALUES(?,?,?,?,1,?,?,?,1,?,?,?,?,?)
-          `).run(game.id, scope, entryKey, ownerPrincipalId, initialJson, initialBytes, etag, holderId, expiresAt, holderId, stamp, stamp);
+          if (!current) {
+            const etag = `"r1"`;
+            db.prepare(`
+              INSERT INTO datastore_entries(
+                game_id, scope, entry_key, owner_principal_id, revision, value_json, bytes, etag,
+                fencing_token, lock_holder, lock_expires_at, updated_by, created_at, updated_at
+              ) VALUES(?,?,?,?,1,?,?,?,1,?,?,?,?,?)
+            `).run(game.id, scope, entryKey, ownerPrincipalId, initialJson, initialBytes, etag, holderId, expiresAt, holderId, stamp, stamp);
+          } else {
+            const nextRev = current.revision + 1;
+            const nextToken = current.fencing_token + 1;
+            const etag = `"r${nextRev}"`;
+            db.prepare(`
+              UPDATE datastore_entries
+              SET owner_principal_id=?, revision=?, value_json=?, bytes=?, etag=?,
+                  fencing_token=?, lock_holder=?, lock_expires_at=?, updated_by=?, created_at=?, updated_at=?
+              WHERE game_id=? AND scope=? AND entry_key=?
+            `).run(ownerPrincipalId, nextRev, initialJson, initialBytes, etag, nextToken, holderId, expiresAt, holderId, stamp, stamp, game.id, scope, entryKey);
+          }
           const created = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
             .get(game.id, scope, entryKey);
           return { acquired: true, renewed: false, created: true, entry: serializeEntry(created, stamp) };
@@ -242,8 +289,10 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
             lockExpiresAt: new Date(current.lock_expires_at).toISOString(),
           });
         }
-        const renewed = activeLock && current.lock_holder === holderId;
-        const nextToken = renewed ? current.fencing_token : current.fencing_token + 1;
+        const sameActiveHolder = activeLock && current.lock_holder === holderId;
+        const tokenMatched = sameActiveHolder && requestedFencingToken !== null && requestedFencingToken === current.fencing_token;
+        const renewed = tokenMatched;
+        const nextToken = tokenMatched ? current.fencing_token : current.fencing_token + 1;
         db.prepare(`
           UPDATE datastore_entries
           SET fencing_token=?, lock_holder=?, lock_expires_at=?, updated_at=?
@@ -281,16 +330,17 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       const result = transaction(db, () => {
         const current = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
           .get(game.id, scope, entryKey);
-        if (!current) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
+        if (!current || isTombstone(current)) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
         if (current.fencing_token !== body.fencingToken) throw new ApiError(409, 'DATASTORE_FENCING_TOKEN_STALE');
         if (current.lock_holder && current.lock_holder !== holderId && current.lock_expires_at > stamp) {
           throw new ApiError(423, 'DATASTORE_LOCK_HELD');
         }
+        const nextToken = current.fencing_token + 1;
         db.prepare(`
-          UPDATE datastore_entries SET lock_holder=NULL, lock_expires_at=NULL, updated_at=?
+          UPDATE datastore_entries SET fencing_token=?, lock_holder=NULL, lock_expires_at=NULL, updated_at=?
           WHERE game_id=? AND scope=? AND entry_key=?
-        `).run(stamp, game.id, scope, entryKey);
-        return { ok: true, released: true, fencingToken: current.fencing_token };
+        `).run(nextToken, stamp, game.id, scope, entryKey);
+        return { ok: true, released: true, fencingToken: nextToken };
       });
       json(res, 200, result);
       return true;
@@ -308,7 +358,7 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       if (req.method === 'GET') {
         const row = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
           .get(game.id, scope, entryKey);
-        if (!row) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
+        if (!row || isTombstone(row)) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
         res.setHeader('ETag', row.etag);
         json(res, 200, { entry: serializeEntry(row, stamp) });
         return true;
@@ -337,16 +387,17 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
         const saved = transaction(db, () => {
           const current = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
             .get(game.id, scope, entryKey);
+          const live = current && !isTombstone(current) ? current : null;
           assertLockForMutation(current, { holderId, fencingToken: body.fencingToken }, stamp);
-          if (expectedRevision !== null && expectedRevision !== undefined && (current?.revision || 0) !== expectedRevision) {
+          if (expectedRevision !== null && expectedRevision !== undefined && (live?.revision || 0) !== expectedRevision) {
             throw new ApiError(412, 'DATASTORE_REVISION_CONFLICT', '리비전 충돌이 발생했습니다.', {
-              currentRevision: current?.revision || 0,
+              currentRevision: live?.revision || 0,
             });
           }
 
-          const usage = db.prepare('SELECT COUNT(*) AS key_count, COALESCE(SUM(bytes),0) AS total_bytes FROM datastore_entries WHERE game_id=?').get(game.id);
-          const nextKeys = current ? usage.key_count : usage.key_count + 1;
-          const nextTotalBytes = usage.total_bytes - (current?.bytes || 0) + bytes;
+          const usage = db.prepare('SELECT COUNT(*) AS key_count, COALESCE(SUM(bytes),0) AS total_bytes FROM datastore_entries WHERE game_id=? AND etag!=?').get(game.id, TOMBSTONE_ETAG);
+          const nextKeys = live ? usage.key_count : usage.key_count + 1;
+          const nextTotalBytes = usage.total_bytes - (live?.bytes || 0) + bytes;
           if (nextKeys > quota.max_keys || nextTotalBytes > quota.max_total_bytes) {
             throw new ApiError(413, 'DATASTORE_QUOTA_EXCEEDED');
           }
@@ -360,23 +411,34 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
                 fencing_token, lock_holder, lock_expires_at, updated_by, created_at, updated_at
               ) VALUES(?,?,?,?,1,?,?,?,0,NULL,NULL,?,?,?)
             `).run(game.id, scope, entryKey, ownerPrincipalId ?? null, valueJson, bytes, etag, updatedBy, stamp, stamp);
-          } else {
-            archiveVersion(current, reason, updatedBy, stamp);
+          } else if (!live) {
             const nextRev = current.revision + 1;
             const etag = `"r${nextRev}"`;
-            const nextOwner = ownerPrincipalId === undefined ? current.owner_principal_id : ownerPrincipalId;
-            const nextHolder = releaseLock ? null : current.lock_holder;
-            const nextExpiry = releaseLock ? null : current.lock_expires_at;
+            const nextFencingToken = releaseLock ? current.fencing_token + 1 : current.fencing_token;
             db.prepare(`
               UPDATE datastore_entries
               SET owner_principal_id=?, revision=?, value_json=?, bytes=?, etag=?,
-                  lock_holder=?, lock_expires_at=?, updated_by=?, updated_at=?
+                  fencing_token=?, lock_holder=NULL, lock_expires_at=NULL, updated_by=?, created_at=?, updated_at=?
               WHERE game_id=? AND scope=? AND entry_key=?
-            `).run(nextOwner, nextRev, valueJson, bytes, etag, nextHolder, nextExpiry, updatedBy, stamp, game.id, scope, entryKey);
+            `).run(ownerPrincipalId ?? null, nextRev, valueJson, bytes, etag, nextFencingToken, updatedBy, stamp, stamp, game.id, scope, entryKey);
+          } else {
+            archiveVersion(live, reason, updatedBy, stamp);
+            const nextRev = live.revision + 1;
+            const etag = `"r${nextRev}"`;
+            const nextOwner = ownerPrincipalId === undefined ? live.owner_principal_id : ownerPrincipalId;
+            const nextFencingToken = releaseLock ? live.fencing_token + 1 : live.fencing_token;
+            const nextHolder = releaseLock ? null : live.lock_holder;
+            const nextExpiry = releaseLock ? null : live.lock_expires_at;
+            db.prepare(`
+              UPDATE datastore_entries
+              SET owner_principal_id=?, revision=?, value_json=?, bytes=?, etag=?,
+                  fencing_token=?, lock_holder=?, lock_expires_at=?, updated_by=?, updated_at=?
+              WHERE game_id=? AND scope=? AND entry_key=?
+            `).run(nextOwner, nextRev, valueJson, bytes, etag, nextFencingToken, nextHolder, nextExpiry, updatedBy, stamp, game.id, scope, entryKey);
           }
           const fresh = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
             .get(game.id, scope, entryKey);
-          return { created: !current, entry: serializeEntry(fresh, stamp) };
+          return { created: !live, entry: serializeEntry(fresh, stamp) };
         });
 
         res.setHeader('ETag', saved.entry.etag);
@@ -390,19 +452,30 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
         if (req.headers['transfer-encoding'] || Number(req.headers['content-length'])) {
           body = await readJson(req, 4096);
         }
+        const allowed = new Set(['holderId', 'fencingToken', 'expectedRevision']);
+        if (Object.keys(body).some(k => !allowed.has(k))) throw new ApiError(422, 'DATASTORE_DELETE_BODY_INVALID');
         const holderId = body.holderId !== undefined ? assertHolderId(body.holderId) : null;
         const expectedRevision = body.expectedRevision !== undefined ? body.expectedRevision : headerRev;
+        if (expectedRevision !== null && expectedRevision !== undefined && (!Number.isSafeInteger(expectedRevision) || expectedRevision < 1)) {
+          throw new ApiError(422, 'DATASTORE_REVISION_INVALID');
+        }
         const deleted = transaction(db, () => {
           const current = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
             .get(game.id, scope, entryKey);
-          if (!current) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
+          if (!current || isTombstone(current)) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
           assertLockForMutation(current, { holderId, fencingToken: body.fencingToken }, stamp);
           if (expectedRevision !== null && expectedRevision !== undefined && current.revision !== expectedRevision) {
             throw new ApiError(412, 'DATASTORE_REVISION_CONFLICT', '리비전 충돌이 발생했습니다.', { currentRevision: current.revision });
           }
           archiveVersion(current, 'deleted', holderId || 'server', stamp);
-          db.prepare('DELETE FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?').run(game.id, scope, entryKey);
-          return { ok: true, deletedKey: entryKey, archivedRevision: current.revision };
+          const nextFencingToken = current.fencing_token > 0 ? current.fencing_token + 1 : 0;
+          db.prepare(`
+            UPDATE datastore_entries
+            SET owner_principal_id=NULL, value_json='', bytes=0, etag=?,
+                fencing_token=?, lock_holder=NULL, lock_expires_at=NULL, updated_by=?, updated_at=?
+            WHERE game_id=? AND scope=? AND entry_key=?
+          `).run(TOMBSTONE_ETAG, nextFencingToken, holderId || 'server', stamp, game.id, scope, entryKey);
+          return { ok: true, deletedKey: entryKey, archivedRevision: current.revision, fencingToken: nextFencingToken };
         });
         json(res, 200, deleted);
         return true;
@@ -460,8 +533,8 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
         SELECT COUNT(*) AS key_count,
                COALESCE(SUM(bytes), 0) AS total_bytes,
                SUM(CASE WHEN lock_holder IS NOT NULL AND lock_expires_at > ? THEN 1 ELSE 0 END) AS active_locks
-        FROM datastore_entries WHERE game_id=?
-      `).get(stamp, game.id);
+        FROM datastore_entries WHERE game_id=? AND etag!=?
+      `).get(stamp, game.id, TOMBSTONE_ETAG);
       const versionCount = db.prepare('SELECT COUNT(*) AS n FROM datastore_versions WHERE game_id=?').get(game.id).n;
       json(res, 200, {
         gameId: game.id,
@@ -485,7 +558,7 @@ export function createDataStore({ db, rootDir, now, audit, verifyInternalAccess 
       const updated = transaction(db, () => {
         const current = db.prepare('SELECT * FROM datastore_entries WHERE game_id=? AND scope=? AND entry_key=?')
           .get(game.id, scope, entryKey);
-        if (!current) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
+        if (!current || isTombstone(current)) throw new ApiError(404, 'DATASTORE_ENTRY_NOT_FOUND');
         // Bump fencing_token on force-unlock so the previous holder can never write back after an emergency break!
         const nextToken = current.fencing_token + 1;
         db.prepare(`

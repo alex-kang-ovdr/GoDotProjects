@@ -77,12 +77,12 @@ func _on_resource_saved(resource: Resource) -> void:
 	if resource == null:
 		return
 	var path := str(resource.resource_path)
-	if path.begins_with(SEALED_PREFIX):
+	if path.to_lower().begins_with(SEALED_PREFIX):
 		_flag_sealed_violation(path)
 
 
 func _on_scene_saved(scene_path: String) -> void:
-	if scene_path.begins_with(SEALED_PREFIX):
+	if scene_path.to_lower().begins_with(SEALED_PREFIX):
 		_flag_sealed_violation(scene_path)
 
 

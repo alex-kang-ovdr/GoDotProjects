@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import { transaction } from '../db.mjs';
 import { ApiError, digest, json, readJson, safeString, uid } from '../security.mjs';
@@ -19,6 +19,173 @@ function normalizeIdempotencyKey(req, body) {
   return raw.trim();
 }
 
+function resolveTimestampMs(nowIso) {
+  if (typeof nowIso === 'number' && Number.isFinite(nowIso)) return Math.trunc(nowIso);
+  if (typeof nowIso === 'string' && nowIso.trim()) {
+    const parsed = Date.parse(nowIso);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return Date.now();
+}
+
+function runInSavepoint(db, fn) {
+  const sp = `sp_avatar_merge_${uid().replace(/[^A-Za-z0-9_]/g, '')}`;
+  db.exec(`SAVEPOINT ${sp}`);
+  try {
+    const result = fn();
+    db.exec(`RELEASE SAVEPOINT ${sp}`);
+    return result;
+  } catch (err) {
+    try { db.exec(`ROLLBACK TO SAVEPOINT ${sp}`); } catch {}
+    try { db.exec(`RELEASE SAVEPOINT ${sp}`); } catch {}
+    throw err;
+  }
+}
+
+function resolveSigningSecret(config, env = process.env) {
+  const configured =
+    (typeof config?.avatar?.signingSecret === 'string' && config.avatar.signingSecret.trim()) ||
+    (typeof env?.PLAYHUB_AVATAR_SIGNING_SECRET === 'string' && env.PLAYHUB_AVATAR_SIGNING_SECRET.trim()) ||
+    (typeof config?.avatarSigningSecret === 'string' && config.avatarSigningSecret.trim()) ||
+    (typeof config?.sessionSecret === 'string' && config.sessionSecret.trim()) ||
+    '';
+  if (configured) {
+    return { secret: configured, ephemeral: false };
+  }
+  const ephemeral = randomBytes(32).toString('hex');
+  if (config?.secureCookies === true) {
+    console.warn('[avatar] PLAYHUB_AVATAR_SIGNING_SECRET / config.avatar.signingSecret is not configured while secureCookies=true; using ephemeral random HMAC signing key.');
+  }
+  return { secret: ephemeral, ephemeral: true };
+}
+
+/**
+ * Atomically merge a guest principal's avatar wallet (3-bucket balances + ledger transfer),
+ * inventory (union via INSERT OR IGNORE), and loadout (transferred only if target has none),
+ * then clean up source rows. Safe to invoke both standalone and inside an existing SQLite transaction.
+ */
+export function mergeGuestAvatar(db, sourcePrincipalId, targetPrincipalId, nowIso) {
+  if (!sourcePrincipalId || !targetPrincipalId || sourcePrincipalId === targetPrincipalId) {
+    return {
+      merged: false,
+      walletTransferred: false,
+      transferredCoins: { paid: 0, bonus: 0, promo: 0 },
+      inventoryMerged: 0,
+      loadoutTransferred: false,
+    };
+  }
+  const hasAvatarTables = db
+    .prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='avatar_wallets'")
+    .get();
+  if (!hasAvatarTables) {
+    return {
+      merged: false,
+      walletTransferred: false,
+      transferredCoins: { paid: 0, bonus: 0, promo: 0 },
+      inventoryMerged: 0,
+      loadoutTransferred: false,
+    };
+  }
+
+  const ts = resolveTimestampMs(nowIso);
+  return runInSavepoint(db, () => {
+    const sourceWallet = db
+      .prepare('SELECT paid_balance,bonus_balance,promo_balance FROM avatar_wallets WHERE principal_id=?')
+      .get(sourcePrincipalId);
+    const targetWallet = db
+      .prepare('SELECT paid_balance,bonus_balance,promo_balance FROM avatar_wallets WHERE principal_id=?')
+      .get(targetPrincipalId);
+
+    let paid = 0;
+    let bonus = 0;
+    let promo = 0;
+    if (sourceWallet) {
+      paid = sourceWallet.paid_balance || 0;
+      bonus = sourceWallet.bonus_balance || 0;
+      promo = sourceWallet.promo_balance || 0;
+
+      if (targetWallet) {
+        db.prepare(
+          'UPDATE avatar_wallets SET paid_balance=paid_balance+?, bonus_balance=bonus_balance+?, promo_balance=promo_balance+?, updated_at=? WHERE principal_id=?'
+        ).run(paid, bonus, promo, ts, targetPrincipalId);
+      } else {
+        db.prepare(
+          'INSERT INTO avatar_wallets(principal_id,paid_balance,bonus_balance,promo_balance,updated_at) VALUES(?,?,?,?,?)'
+        ).run(targetPrincipalId, paid, bonus, promo, ts);
+      }
+
+      if (paid > 0 || bonus > 0 || promo > 0) {
+        db.prepare(
+          'INSERT OR IGNORE INTO avatar_wallet_ledger(id,principal_id,delta_paid,delta_bonus,delta_promo,kind,ref_id,idempotency_key,created_at) VALUES(?,?,?,?,?,?,?,?,?)'
+        ).run(
+          uid(),
+          sourcePrincipalId,
+          -paid,
+          -bonus,
+          -promo,
+          'guest_merge_out',
+          targetPrincipalId,
+          `merge:out:${sourcePrincipalId}:${targetPrincipalId}`,
+          ts
+        );
+        db.prepare(
+          'INSERT OR IGNORE INTO avatar_wallet_ledger(id,principal_id,delta_paid,delta_bonus,delta_promo,kind,ref_id,idempotency_key,created_at) VALUES(?,?,?,?,?,?,?,?,?)'
+        ).run(
+          uid(),
+          targetPrincipalId,
+          paid,
+          bonus,
+          promo,
+          'guest_merge_in',
+          sourcePrincipalId,
+          `merge:in:${sourcePrincipalId}:${targetPrincipalId}`,
+          ts
+        );
+      }
+
+      db.prepare('DELETE FROM avatar_wallets WHERE principal_id=?').run(sourcePrincipalId);
+    }
+
+    const invInsert = db
+      .prepare(
+        'INSERT OR IGNORE INTO avatar_inventory(principal_id,item_id,category,acquired_via,price_paid,acquired_at) SELECT ?,item_id,category,acquired_via,price_paid,acquired_at FROM avatar_inventory WHERE principal_id=?'
+      )
+      .run(targetPrincipalId, sourcePrincipalId);
+    db.prepare('DELETE FROM avatar_inventory WHERE principal_id=?').run(sourcePrincipalId);
+
+    const targetLoadout = db
+      .prepare('SELECT 1 FROM avatar_loadouts WHERE principal_id=?')
+      .get(targetPrincipalId);
+    const sourceLoadout = db
+      .prepare('SELECT skin_id,attachments_json,emote_wheel_json,revision FROM avatar_loadouts WHERE principal_id=?')
+      .get(sourcePrincipalId);
+    let loadoutTransferred = false;
+    if (!targetLoadout && sourceLoadout) {
+      db.prepare(
+        'INSERT INTO avatar_loadouts(principal_id,skin_id,attachments_json,emote_wheel_json,revision,updated_at) VALUES(?,?,?,?,?,?)'
+      ).run(
+        targetPrincipalId,
+        sourceLoadout.skin_id,
+        sourceLoadout.attachments_json,
+        sourceLoadout.emote_wheel_json,
+        sourceLoadout.revision,
+        ts
+      );
+      loadoutTransferred = true;
+    }
+    db.prepare('DELETE FROM avatar_loadouts WHERE principal_id=?').run(sourcePrincipalId);
+    db.prepare('DELETE FROM avatar_purchase_idempotency WHERE principal_id=?').run(sourcePrincipalId);
+
+    return {
+      merged: true,
+      walletTransferred: Boolean(sourceWallet),
+      transferredCoins: { paid, bonus, promo },
+      inventoryMerged: invInsert.changes || 0,
+      loadoutTransferred,
+    };
+  });
+}
+
 export function createAvatarService({
   config,
   db,
@@ -30,12 +197,47 @@ export function createAvatarService({
   promote,
   rate,
   audit,
+  env = process.env,
 }) {
   ensureAvatarSchema(db);
-  const addonDir = resolveAvatarAddonDir(platformRoot, rootDir);
-  const catalog = loadAvatarCatalog(addonDir);
+  const addonDir = resolveAvatarAddonDir(platformRoot, rootDir, {
+    addonDir: config?.avatar?.addonDir,
+    includeModuleFallback: config?.avatar?.includeModuleFallback !== false,
+  });
+
+  let catalog = null;
+  if (addonDir) {
+    try {
+      catalog = loadAvatarCatalog(addonDir);
+    } catch (err) {
+      console.warn(`[avatar] Failed to load catalog from ${addonDir}; disabling avatar service:`, err?.message || err);
+      catalog = null;
+    }
+  }
+
+  if (!catalog) {
+    console.warn('[avatar] PlayForge Avatar canonical catalog.json not found; running in safe disabled fallback mode.');
+    const unavailable = () => {
+      throw new ApiError(503, 'AVATAR_CATALOG_UNAVAILABLE', '아바타 카탈로그를 사용할 수 없습니다.');
+    };
+    return {
+      disabled: true,
+      catalog: null,
+      wallet: null,
+      async publicRoute(req, res, url) {
+        if (!url.pathname.startsWith('/api/avatar')) return false;
+        unavailable();
+      },
+      getMe: unavailable,
+      buildVerifiedLoadout: unavailable,
+      purchaseItem: unavailable,
+      updateLoadout: unavailable,
+    };
+  }
+
   const wallet = createPlayCoinWalletAdapter({ db, now, topupPacks: catalog.topupPacks });
-  const signingSecret = config?.avatarSigningSecret || config?.sessionSecret || 'playhub-avatar-local-sign-v1';
+  const { secret: signingSecret } = resolveSigningSecret(config, env);
+  const allowMockTopup = config?.avatar?.allowMockTopup === true;
 
   function signLoadout(payload) {
     const canonical = JSON.stringify({
@@ -338,6 +540,9 @@ export function createAvatarService({
     }
 
     if (pathname === '/api/avatar/wallet/topup' && req.method === 'POST') {
+      if (!allowMockTopup) {
+        throw new ApiError(403, 'TOPUP_DISABLED', 'PlayCoin 모의 충전이 비활성화되어 있습니다.');
+      }
       const s = requireSession(req, 'public');
       rate(`avatar-topup:${s.id_hash}`, 30, 60000);
       const body = await readJson(req, 4096);
@@ -376,6 +581,7 @@ export function createAvatarService({
   }
 
   return {
+    disabled: false,
     catalog,
     publicRoute,
     getMe,

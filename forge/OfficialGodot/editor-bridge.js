@@ -620,8 +620,9 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar)\//.test(file) || file.startsWith('.godot/') ||
-          file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
+      const lowerFile = file.replace(/^(\.\/)+/, '').toLowerCase();
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
+          lowerFile.startsWith('.playforge-import/') || lowerFile.startsWith('.playforge-store/') || lowerFile === '.playforge-store.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');

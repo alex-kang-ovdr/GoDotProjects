@@ -50,7 +50,7 @@ class Client {
   }
 }
 
-async function createFixture(t) {
+async function createFixture(t, configOverrides = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-avatar-'));
   const dataDir = path.join(root, 'data');
   const configPath = path.join(root, 'config.json');
@@ -77,6 +77,7 @@ async function createFixture(t) {
     publicBaseUrl: 'http://127.0.0.1:8090',
     secureCookies: false,
     admin: { username: 'admin', salt, passwordHash: scryptSync('test-pass', salt, 64).toString('hex') },
+    ...configOverrides,
   };
   fs.writeFileSync(configPath, JSON.stringify(config));
   const app = createApp(config, { rootDir: root, platformRoot: repoRoot });
@@ -89,7 +90,7 @@ async function createFixture(t) {
 }
 
 test('Avatar Shop & Locker E2E: catalog, GLB serving, PlayCoin 3-bucket topup/purchase, loadout validation, and backup/restore compatibility', async (t) => {
-  const { root, dataDir, configPath, port } = await createFixture(t);
+  const { root, dataDir, configPath, port } = await createFixture(t, { avatar: { allowMockTopup: true } });
   const client = new Client(port, userOrigin);
 
   // 1. Session bootstrap
@@ -248,4 +249,41 @@ test('Avatar Shop & Locker E2E: catalog, GLB serving, PlayCoin 3-bucket topup/pu
   const dbCheck = inspectDatabase(backup.path);
   assert.equal(dbCheck.integrity, 'ok', `restore-data inspectDatabase failed: ${JSON.stringify(dbCheck)}`);
   assert.ok(fs.existsSync(path.join(dataDir, 'platform.sqlite')));
+});
+
+test('POST /api/avatar/wallet/topup is blocked with 403 TOPUP_DISABLED unless config.avatar.allowMockTopup === true', async (t) => {
+  const { port } = await createFixture(t);
+  const client = new Client(port, userOrigin);
+
+  const sess = await client.call('/api/session');
+  assert.equal(sess.status, 200);
+
+  const blocked = await client.call('/api/avatar/wallet/topup', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'topup-blocked-001' },
+    body: { packId: 'pack_500' },
+  });
+  assert.equal(blocked.status, 403);
+  assert.equal(blocked.data.error.code, 'TOPUP_DISABLED');
+
+  const me = await client.call('/api/avatar/me');
+  assert.equal(me.status, 200);
+  assert.equal(me.data.wallet.paid, 0);
+  assert.equal(me.data.wallet.bonus, 0);
+  assert.equal(me.data.wallet.total, 250);
+});
+
+test('Avatar service degrades safely with 503 AVATAR_CATALOG_UNAVAILABLE when catalog.json is missing', async (t) => {
+  const { port } = await createFixture(t, {
+    avatar: { addonDir: path.join(os.tmpdir(), 'playhub-nonexistent-avatar-addon') },
+  });
+  const client = new Client(port, userOrigin);
+
+  // Core Hub endpoints keep working normally
+  const sess = await client.call('/api/session');
+  assert.equal(sess.status, 200);
+
+  const cat = await client.call('/api/avatar/catalog');
+  assert.equal(cat.status, 503);
+  assert.equal(cat.data.error.code, 'AVATAR_CATALOG_UNAVAILABLE');
 });

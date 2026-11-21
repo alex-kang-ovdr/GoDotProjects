@@ -16,6 +16,7 @@ const {
   injectSealedAvatarIntoProjectDir,
   isSealedAvatarPath,
   loadSealedAvatarBundle,
+  stripSealedAvatarEntries,
 } = require('../../Tools/avatar-seal.cjs');
 
 const run = promisify(execFile);
@@ -89,6 +90,66 @@ test('Forge Layer 1 seal: PlatformStore & platform-project block any direct modi
     assert.equal(normalized.length, 1);
     assert.equal(normalized[0].path, 'project.godot');
     assert.equal(isSealedAvatarPath('addons/playforge_avatar/plugin.gd'), true);
+
+    // 4. Case-insensitive Windows/macOS sealed path bypass regression checks
+    const caseVariants = [
+      'Addons/playforge_avatar/avatar_controller.gd',
+      'ADDONS/PlayForge_Avatar/catalog.json',
+      'addons/PLAYFORGE_AVATAR/avatar_bridge.gd',
+      'Addons/PlayForge_Avatar',
+    ];
+    for (const variant of caseVariants) {
+      assert.equal(isSealedAvatarPath(variant), true, `isSealedAvatarPath must block ${variant}`);
+      assert.throws(
+        () =>
+          store.updateFile(project.id, {
+            path: variant,
+            content: '# case-bypass attempt',
+            baseRevision: updated.revision,
+          }),
+        (err) => err.status === 400 && /read-only/i.test(err.message),
+        `PlatformStore.updateFile must reject case variant ${variant}`
+      );
+    }
+    assert.equal(isSealedAvatarPath('Addons\\PlayForge_Avatar\\plugin.gd'), true);
+    assert.equal(isSealedAvatarPath('./Addons/playforge_avatar/plugin.gd'), true);
+    assert.deepEqual(
+      stripSealedAvatarEntries([
+        { path: 'scripts/ok.gd', content: '' },
+        { path: 'Addons/playforge_avatar/avatar_rig.gd', content: '# hacked' },
+        ['ADDONS/PLAYFORGE_AVATAR/catalog.json', '{}'],
+      ]),
+      [{ path: 'scripts/ok.gd', content: '' }]
+    );
+
+    const updatedCase = await store.updateFiles(project.id, {
+      baseRevision: updated.revision,
+      files: [
+        ...Object.entries(updated.files).map(([p, c]) => ({ path: p, content: c })),
+        { path: 'Addons/playforge_avatar/avatar_rig.gd', content: '# hacked mixed case' },
+        { path: 'ADDONS/PlayForge_Avatar/catalog.json', content: '{}' },
+        { path: 'scripts/safe_case_test.gd', content: 'extends Node\n' },
+      ],
+    });
+    assert.equal(updatedCase.files['scripts/safe_case_test.gd'], 'extends Node\n');
+    assert.equal(updatedCase.files['Addons/playforge_avatar/avatar_rig.gd'], undefined);
+    assert.equal(updatedCase.files['ADDONS/PlayForge_Avatar/catalog.json'], undefined);
+
+    const normalizedCase = normalizeFiles([
+      { path: 'project.godot', content: '[application]\n' },
+      { path: 'Addons/playforge_avatar/avatar_spawn.gd', content: '# case bypass' },
+      { path: 'ADDONS/PlayForge_Platform/plugin.gd', content: '# case bypass' },
+    ]);
+    assert.equal(normalizedCase.length, 1);
+    assert.equal(normalizedCase[0].path, 'project.godot');
+
+    // 5. Verify editor-bridge.js uses lowercased case-insensitive sealed path filtering
+    const editorBridgeSrc = fs.readFileSync(path.join(forgeRoot, 'OfficialGodot', 'editor-bridge.js'), 'utf8');
+    assert.ok(
+      editorBridgeSrc.includes('toLowerCase()') &&
+      /addons\\\/playforge_\(platform\|replay\|showcase\|agent_chat\|remote_control\|avatar\)/.test(editorBridgeSrc),
+      'editor-bridge.js must normalize sealed addon paths with toLowerCase()'
+    );
   } finally {
     fs.rmSync(workspace, { recursive: true, force: true });
   }
@@ -153,7 +214,10 @@ test(
     const report = JSON.parse(line.slice('AVATAR_PROBE_JSON='.length));
     assert.deepEqual(report.failures, []);
     assert.equal(report.catalogOk, true);
+    assert.equal(report.sealVerifiedOnLoad, true);
     assert.equal(report.checksumOk, true);
+    assert.equal(report.offlineNullLoadoutWebOk, true);
+    assert.equal(report.offlineNullLoadoutHttpOk, true);
     assert.equal(report.skinsTested.length, 5);
     for (const s of report.skinsTested) {
       assert.equal(s.ok, true, `skin failed: ${s.skinId}`);
@@ -171,5 +235,59 @@ test(
     assert.equal(report.ragdollRecovered, true);
     assert.equal(report.creatorClampOk, true);
     assert.equal(report.creatorHasNoCosmeticSetter, true);
+  }
+);
+
+test(
+  'Forge Layer 3 runtime seal: tampered sealed file causes PlayForgeAvatarCatalog.load_catalog() to fail closed',
+  {
+    skip: process.platform !== 'win32' || !fs.existsSync(godotConsole) ? 'Windows Godot console unavailable' : false,
+    timeout: 60000,
+  },
+  async () => {
+    const tmpProject = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-avatar-tamper-'));
+    try {
+      fs.writeFileSync(
+        path.join(tmpProject, 'project.godot'),
+        'config_version=5\n\n[application]\nconfig/name="AvatarTamperProbe"\n'
+      );
+      injectSealedAvatarIntoProjectDir(forgeRoot, tmpProject, { includeAssets: false });
+      // Tamper with avatar_controller.gd after seal_manifest.json was generated
+      fs.appendFileSync(
+        path.join(tmpProject, 'addons', 'playforge_avatar', 'avatar_controller.gd'),
+        '\n# tampered after seal\n'
+      );
+      const probePath = path.join(tmpProject, 'tamper_probe.gd');
+      fs.writeFileSync(
+        probePath,
+        [
+          'extends SceneTree',
+          'const AvatarCatalogScript = preload("res://addons/playforge_avatar/avatar_catalog.gd")',
+          'func _initialize() -> void:',
+          '\tvar c := AvatarCatalogScript.new()',
+          '\tvar ok := c.load_catalog()',
+          '\tvar report := c.get_seal_report()',
+          '\tprint("TAMPER_PROBE_JSON=" + JSON.stringify({"loadOk": ok, "verified": c.is_seal_verified(), "mismatches": report.get("mismatches", [])}))',
+          '\tquit(0)',
+          '',
+        ].join('\n')
+      );
+      const { stdout } = await run(
+        godotConsole,
+        ['--headless', '--path', tmpProject, '--script', probePath],
+        { timeout: 45000 }
+      );
+      const line = stdout.split(/\r?\n/).find((l) => l.startsWith('TAMPER_PROBE_JSON='));
+      assert.ok(line, `Expected TAMPER_PROBE_JSON in Godot output:\n${stdout}`);
+      const res = JSON.parse(line.slice('TAMPER_PROBE_JSON='.length));
+      assert.equal(res.loadOk, false, 'Tampered addon must fail load_catalog()');
+      assert.equal(res.verified, false, 'is_seal_verified() must be false after tampering');
+      assert.ok(
+        res.mismatches.includes('avatar_controller.gd'),
+        `Expected avatar_controller.gd in mismatches, got ${JSON.stringify(res.mismatches)}`
+      );
+    } finally {
+      fs.rmSync(tmpProject, { recursive: true, force: true });
+    }
   }
 );

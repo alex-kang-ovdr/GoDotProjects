@@ -29,8 +29,13 @@ function addonSourceDir(forgeRoot) {
 
 function isSealedAvatarPath(filePath) {
   if (typeof filePath !== 'string') return false;
-  const normalized = filePath.replaceAll('\\', '/').replace(/^\.\//, '');
-  return normalized === SEALED_AVATAR_DIR || normalized.startsWith(SEALED_AVATAR_DIR + '/');
+  const normalized = filePath
+    .replaceAll('\\', '/')
+    .replace(/^(\.\/)+/, '')
+    .replace(/^\/+/, '')
+    .toLowerCase();
+  const sealed = SEALED_AVATAR_DIR.toLowerCase();
+  return normalized === sealed || normalized.startsWith(sealed + '/');
 }
 
 function stripSealedAvatarEntries(entries) {

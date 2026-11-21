@@ -249,7 +249,7 @@ test('MMO DataStore SSOT: internal auth boundary, CAS revision, fencing-token se
   assert.equal(lockB.status, 200);
   assert.equal(lockB.data.fencingToken, 2);
 
-  // Server B saves new inventory and atomically releases lock in one call -> rev 3
+  // Server B saves new inventory and atomically releases lock in one call -> rev 3, fencingToken bumps to 3
   const writeB = await f.internal.call(keyBase, {
     method: 'PUT',
     headers: secretHeader,
@@ -258,8 +258,9 @@ test('MMO DataStore SSOT: internal auth boundary, CAS revision, fencing-token se
   assert.equal(writeB.status, 200);
   assert.equal(writeB.data.entry.revision, 3);
   assert.equal(writeB.data.entry.locked, false);
+  assert.equal(writeB.data.entry.fencingToken, 3);
 
-  // Zombie Server A wakes up and attempts to overwrite with old fencingToken 1 -> REJECTED 409 (no item dupe!)
+  // Zombie Server A (token 1) and released Server B (stale token 2) cannot overwrite (no item dupe!)
   const zombieWrite = await f.internal.call(keyBase, {
     method: 'PUT',
     headers: secretHeader,
@@ -267,6 +268,13 @@ test('MMO DataStore SSOT: internal auth boundary, CAS revision, fencing-token se
   });
   assert.equal(zombieWrite.status, 409);
   assert.equal(zombieWrite.data.error.code, 'DATASTORE_FENCING_TOKEN_STALE');
+  const staleBWrite = await f.internal.call(keyBase, {
+    method: 'PUT',
+    headers: secretHeader,
+    body: { holderId: 'zone-usw1-b', fencingToken: 2, value: { gold: 999999 } },
+  });
+  assert.equal(staleBWrite.status, 409);
+  assert.equal(staleBWrite.data.error.code, 'DATASTORE_FENCING_TOKEN_STALE');
 
   // Admin tightens per-game quota -> oversized write rejected with 413
   assert.equal((await f.admin.call('/api/admin/games/one/datastore/quota', {
@@ -289,16 +297,16 @@ test('MMO DataStore SSOT: internal auth boundary, CAS revision, fencing-token se
   const lockC = await f.internal.call(`${keyBase}/lock`, {
     method: 'POST', headers: secretHeader, body: { holderId: 'zone-usw1-c', leaseMs: 30000 },
   });
-  assert.equal(lockC.data.fencingToken, 3);
+  assert.equal(lockC.data.fencingToken, 4);
   const forced = await f.admin.call('/api/admin/games/one/datastore/scopes/player/keys/inv_u1/force-unlock', {
     method: 'POST', body: { reason: 'Server C crashed' },
   });
   assert.equal(forced.status, 200);
   assert.equal(forced.data.entry.locked, false);
-  assert.equal(forced.data.entry.fencingToken, 4);
+  assert.equal(forced.data.entry.fencingToken, 5);
 
   const afterForce = await f.internal.call(keyBase, {
-    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-usw1-c', fencingToken: 3, value: { gold: 0 } },
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-usw1-c', fencingToken: 4, value: { gold: 0 } },
   });
   assert.equal(afterForce.status, 409);
 
@@ -308,6 +316,223 @@ test('MMO DataStore SSOT: internal auth boundary, CAS revision, fencing-token se
   assert.equal(listed.data.total, 1);
 
   const backup = await createBackup({ configPath: f.configPath, out: path.join(f.root, 'p2-backup.sqlite') });
+  const inspected = inspectDatabase(backup.path);
+  assert.equal(inspected.integrity, 'ok');
+  assert.equal(inspected.foreignKeys, 'ok');
+});
+
+test('MMO DataStore internal auth is fail-closed when unconfigured and honors dedicated datastore secret over forge fallback', async t => {
+  async function startWith(configOverrides, env = {}) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-ssot-ds-auth-'));
+    const dataDir = path.join(root, 'data');
+    fs.mkdirSync(path.join(root, 'catalog'));
+    fs.writeFileSync(path.join(root, 'catalog/games.json'), JSON.stringify({ schemaVersion: 1, entries: [{ id: 'one', path: 'games/one', enabled: true }] }));
+    fs.mkdirSync(path.join(root, 'games/one'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'games/one/game.manifest.json'), JSON.stringify({ id: 'one', entry: 'index.html', title: { en: 'one' } }));
+    const salt = 'd'.repeat(32);
+    const config = {
+      publicHost: '127.0.0.1', publicPort: 0, adminHost: '127.0.0.1', adminPort: 0,
+      userOrigins: [userOrigin], adminOrigins: [adminOrigin], userBaseUrl: userOrigin, dataDir,
+      admin: { username: 'admin', salt, passwordHash: scryptSync(password, salt, 64).toString('hex') },
+      ...configOverrides,
+    };
+    const app = createApp(config, { rootDir: root, env });
+    t.after(async () => {
+      await app.close();
+      fs.rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    });
+    const { admin } = await app.listen();
+    return new Client(admin.port, null);
+  }
+
+  // 1. No secret configured anywhere -> fail-closed 503
+  const noSecretClient = await startWith({});
+  const unconfigured = await noSecretClient.call('/internal/v1/datastore/games/one/scopes/player/keys');
+  assert.equal(unconfigured.status, 503);
+  assert.equal(unconfigured.data.error.code, 'INTERNAL_SECRET_NOT_CONFIGURED');
+  const unconfiguredWithHeader = await noSecretClient.call('/internal/v1/datastore/games/one/scopes/player/keys', {
+    headers: { 'X-PlayHub-Internal-Secret': 'a'.repeat(40) },
+  });
+  assert.equal(unconfiguredWithHeader.status, 503);
+  assert.equal(unconfiguredWithHeader.data.error.code, 'INTERNAL_SECRET_NOT_CONFIGURED');
+
+  // 2. Dedicated config.datastore.internalSecret takes precedence over forge.internalSecret
+  const dsSecret = 'd'.repeat(40);
+  const fgSecret = 'f'.repeat(40);
+  const dedicatedClient = await startWith({ datastore: { internalSecret: dsSecret }, forge: { internalSecret: fgSecret } });
+  const rejectedForge = await dedicatedClient.call('/internal/v1/datastore/games/one/scopes/player/keys', {
+    headers: { 'X-PlayHub-Internal-Secret': fgSecret },
+  });
+  assert.equal(rejectedForge.status, 403);
+  assert.equal(rejectedForge.data.error.code, 'INTERNAL_SECRET_INVALID');
+  const acceptedDedicated = await dedicatedClient.call('/internal/v1/datastore/games/one/scopes/player/keys', {
+    headers: { 'X-PlayHub-Internal-Secret': dsSecret },
+  });
+  assert.equal(acceptedDedicated.status, 200);
+
+  // 3. Dedicated PLAYHUB_DATASTORE_INTERNAL_SECRET env var works cleanly
+  const envSecret = 'e'.repeat(40);
+  const envClient = await startWith({}, { PLAYHUB_DATASTORE_INTERNAL_SECRET: envSecret });
+  assert.equal((await envClient.call('/internal/v1/datastore/games/one/scopes/player/keys', {
+    headers: { 'X-PlayHub-Internal-Secret': envSecret },
+  })).status, 200);
+});
+
+test('MMO DataStore fencing hardening: unlock bump, same-holder crash separation, DELETE tombstone, and omitted-token rejection', async t => {
+  const f = await fixture(t);
+  await loginAdmin(f.admin);
+  const secretHeader = { 'X-PlayHub-Internal-Secret': internalSecret };
+
+  // A. Unprotected CAS-only key works without fencingToken and keeps monotonic revision across DELETE
+  const casKey = '/internal/v1/datastore/games/one/scopes/world/keys/cas_only';
+  const cas1 = await f.internal.call(casKey, { method: 'PUT', headers: secretHeader, body: { value: { v: 1 } } });
+  assert.equal(cas1.status, 201);
+  assert.equal(cas1.data.entry.revision, 1);
+  assert.equal(cas1.data.entry.fencingToken, 0);
+
+  const cas2 = await f.internal.call(casKey, {
+    method: 'PUT', headers: { ...secretHeader, 'If-Match': '"r1"' }, body: { value: { v: 2 } },
+  });
+  assert.equal(cas2.status, 200);
+  assert.equal(cas2.data.entry.revision, 2);
+
+  const casDel = await f.internal.call(casKey, {
+    method: 'DELETE', headers: { ...secretHeader, 'If-Match': '"r2"' },
+  });
+  assert.equal(casDel.status, 200);
+  assert.equal(casDel.data.archivedRevision, 2);
+  assert.equal((await f.internal.call(casKey, { headers: secretHeader })).status, 404);
+  // Stale If-Match against deleted key fails 412
+  assert.equal((await f.internal.call(casKey, {
+    method: 'PUT', headers: { ...secretHeader, 'If-Match': '"r2"' }, body: { value: { v: 99 } },
+  })).status, 412);
+  // Recreating CAS key advances revision monotonically to 3 (never resets to 1)
+  const cas3 = await f.internal.call(casKey, { method: 'PUT', headers: secretHeader, body: { value: { v: 3 } } });
+  assert.equal(cas3.status, 201);
+  assert.equal(cas3.data.entry.revision, 3);
+  assert.equal(cas3.data.entry.fencingToken, 0);
+
+  // B. Lock-protected key: same-holder renewal vs crash-reboot zombie separation
+  const lockKey = '/internal/v1/datastore/games/one/scopes/player/keys/fenced_u1';
+  const l1 = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-1', leaseMs: 10000, initialValue: { gold: 10 } },
+  });
+  assert.equal(l1.status, 201);
+  assert.equal(l1.data.fencingToken, 1);
+  assert.equal(l1.data.renewed, false);
+
+  // Matching fencingToken from same active holder renews lease without bumping token
+  const renew = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-1', leaseMs: 10000, fencingToken: 1 },
+  });
+  assert.equal(renew.status, 200);
+  assert.equal(renew.data.fencingToken, 1);
+  assert.equal(renew.data.renewed, true);
+
+  // Same holderId without fencingToken (crash & reboot) MUST bump fencing_token -> 2
+  const reboot = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-1', leaseMs: 10000 },
+  });
+  assert.equal(reboot.status, 200);
+  assert.equal(reboot.data.fencingToken, 2);
+  assert.equal(reboot.data.renewed, false);
+
+  // Pre-crash zombie using token 1 is rejected
+  const zombie1 = await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-1', fencingToken: 1, value: { gold: 999 } },
+  });
+  assert.equal(zombie1.status, 409);
+  assert.equal(zombie1.data.error.code, 'DATASTORE_FENCING_TOKEN_STALE');
+
+  // Same holderId with mismatched fencingToken also bumps -> 3
+  const mismatchLock = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-1', leaseMs: 10000, fencingToken: 1 },
+  });
+  assert.equal(mismatchLock.status, 200);
+  assert.equal(mismatchLock.data.fencingToken, 3);
+  assert.equal(mismatchLock.data.renewed, false);
+
+  // C. Explicit unlock bumps fencing_token (3 -> 4) and blocks both stale-token & omitted-token writes
+  const unlocked = await f.internal.call(`${lockKey}/unlock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-1', fencingToken: 3 },
+  });
+  assert.equal(unlocked.status, 200);
+  assert.equal(unlocked.data.fencingToken, 4);
+
+  const staleAfterUnlock = await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-1', fencingToken: 3, value: { gold: 50 } },
+  });
+  assert.equal(staleAfterUnlock.status, 409);
+  assert.equal(staleAfterUnlock.data.error.code, 'DATASTORE_FENCING_TOKEN_STALE');
+
+  const omittedAfterUnlock = await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-1', value: { gold: 50 } },
+  });
+  assert.equal(omittedAfterUnlock.status, 409);
+  assert.equal(omittedAfterUnlock.data.error.code, 'DATASTORE_FENCING_TOKEN_REQUIRED');
+
+  const omittedDel = await f.internal.call(lockKey, { method: 'DELETE', headers: secretHeader });
+  assert.equal(omittedDel.status, 409);
+  assert.equal(omittedDel.data.error.code, 'DATASTORE_FENCING_TOKEN_REQUIRED');
+
+  // D. Expired lease rejects expired holder even before anyone else re-locks
+  const l5 = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-2', leaseMs: 5000 },
+  });
+  assert.equal(l5.data.fencingToken, 5);
+  f.setNow(f.now() + 10000);
+  const expiredWrite = await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-2', fencingToken: 5, value: { gold: 77 } },
+  });
+  assert.equal(expiredWrite.status, 409);
+  assert.equal(expiredWrite.data.error.code, 'DATASTORE_LOCK_EXPIRED');
+
+  // E. DELETE creates tombstone preserving monotonic revision & fencing_token
+  const l6 = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-3', leaseMs: 10000 },
+  });
+  assert.equal(l6.data.fencingToken, 6);
+  const w6 = await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-3', fencingToken: 6, value: { gold: 123 } },
+  });
+  assert.equal(w6.status, 200);
+  assert.equal(w6.data.entry.revision, 2);
+
+  const delLocked = await f.internal.call(lockKey, {
+    method: 'DELETE', headers: secretHeader, body: { holderId: 'zone-3', fencingToken: 6 },
+  });
+  assert.equal(delLocked.status, 200);
+  assert.equal(delLocked.data.archivedRevision, 2);
+  assert.equal(delLocked.data.fencingToken, 7);
+
+  // Deleted key is invisible to GET, list, and stats keyCount
+  assert.equal((await f.internal.call(lockKey, { headers: secretHeader })).status, 404);
+  const listedPlayer = await f.internal.call('/internal/v1/datastore/games/one/scopes/player/keys', { headers: secretHeader });
+  assert.equal(listedPlayer.data.total, 0);
+  const stats = await f.admin.call('/api/admin/games/one/datastore/stats');
+  assert.equal(stats.data.keyCount, 1); // only cas_only is live
+
+  // Zombie cannot resurrect deleted lock-protected key with old token OR without token
+  assert.equal((await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { holderId: 'zone-3', fencingToken: 6, value: { gold: 0 } },
+  })).data.error.code, 'DATASTORE_FENCING_TOKEN_STALE');
+  assert.equal((await f.internal.call(lockKey, {
+    method: 'PUT', headers: secretHeader, body: { value: { gold: 0 } },
+  })).data.error.code, 'DATASTORE_FENCING_TOKEN_REQUIRED');
+
+  // Lock with createIfMissing: false sees 404; createIfMissing: true resurrects with rev 3 & fencingToken 8!
+  assert.equal((await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-4', createIfMissing: false },
+  })).status, 404);
+  const resurrected = await f.internal.call(`${lockKey}/lock`, {
+    method: 'POST', headers: secretHeader, body: { holderId: 'zone-4', leaseMs: 10000, initialValue: { gold: 5 } },
+  });
+  assert.equal(resurrected.status, 201);
+  assert.equal(resurrected.data.entry.revision, 3);
+  assert.equal(resurrected.data.fencingToken, 8);
+
+  // Backup/restore inspection passes cleanly with tombstones & resurrected entries
+  const backup = await createBackup({ configPath: f.configPath, out: path.join(f.root, 'tombstone-backup.sqlite') });
   const inspected = inspectDatabase(backup.path);
   assert.equal(inspected.integrity, 'ok');
   assert.equal(inspected.foreignKeys, 'ok');

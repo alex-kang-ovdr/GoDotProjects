@@ -14,7 +14,10 @@
   }
 
   function mount(root, api, sameSession, options = {}) {
-    const alive = () => root.isConnected && sameSession();
+    let disposed = false;
+    const listenerController = new AbortController();
+    const { signal } = listenerController;
+    const alive = () => !disposed && root.isConnected && sameSession();
     const apiBase = String(options.apiBase || '').replace(/\/$/, '');
     const assetUrl = (p) => (p ? `${apiBase}${p}` : null);
     let catalog = null;
@@ -151,7 +154,7 @@
         badge.textContent = `${item.emoji || '✨'} ${item.name}`;
         badge.hidden = false;
         clearTimeout(emoteFloatTimer);
-        emoteFloatTimer = setTimeout(() => { if (badge) badge.hidden = true; }, (item.durationSec || 2.2) * 1000);
+        emoteFloatTimer = setTimeout(() => { if (alive() && badge) badge.hidden = true; }, (item.durationSec || 2.2) * 1000);
       }
       viewer?.triggerEmotePreview(item.id, item.durationSec || 2.2);
     }
@@ -287,14 +290,22 @@
         <div class="avatar-topup-card">
           <strong>${esc(pack.label)}</strong>
           <span class="muted" style="font-size:0.82rem;">유상 ${pack.paidCoins.toLocaleString()} + 보너스 ${pack.bonusCoins.toLocaleString()} (+${pack.bonusPercent}%)</span>
-          <button type="button" class="button primary small" data-topup-pack="${esc(pack.id)}">${esc(pack.priceDisplay)} · 충전</button>
+          <button type="button" class="button primary small" data-topup-pack="${esc(pack.id)}" ${busy ? 'disabled' : ''}>${esc(pack.priceDisplay)} · 충전</button>
         </div>
       `).join('');
     }
 
-    async function saveLoadout(patch) {
-      busy = true;
+    function syncBusyUI() {
       renderCatalogGrid();
+      renderTopupPacks();
+      const topupOpen = $el('#avatar-topup-open');
+      if (topupOpen) topupOpen.disabled = busy;
+    }
+
+    async function saveLoadout(patch) {
+      if (busy || !alive()) return;
+      busy = true;
+      syncBusyUI();
       try {
         const res = await api('/api/avatar/loadout', { method: 'PUT', body: patch });
         if (!alive()) return;
@@ -308,15 +319,16 @@
         if (alive()) setFeedback(err.message || '로드아웃 저장에 실패했습니다.', true);
       } finally {
         busy = false;
-        if (alive()) renderCatalogGrid();
+        if (alive()) syncBusyUI();
       }
     }
 
     async function buyItem(itemId) {
+      if (busy || !alive()) return;
       const item = itemById(itemId);
       if (!item) return;
       busy = true;
-      renderCatalogGrid();
+      syncBusyUI();
       try {
         const key = randomKey('buy');
         const res = await api('/api/avatar/purchase', {
@@ -338,12 +350,14 @@
         if (alive()) setFeedback(err.message || '구매에 실패했습니다.', true);
       } finally {
         busy = false;
-        if (alive()) renderCatalogGrid();
+        if (alive()) syncBusyUI();
       }
     }
 
     async function topupPack(packId) {
+      if (busy || !alive()) return;
       busy = true;
+      syncBusyUI();
       try {
         const key = randomKey('topup');
         const res = await api('/api/avatar/wallet/topup', {
@@ -360,10 +374,12 @@
         if (alive()) setFeedback(err.message || 'PlayCoin 충전에 실패했습니다.', true);
       } finally {
         busy = false;
+        if (alive()) syncBusyUI();
       }
     }
 
     root.addEventListener('click', (e) => {
+      if (!alive()) return;
       const camBtn = e.target.closest('[data-cam]');
       if (camBtn) {
         cameraPreset = camBtn.dataset.cam;
@@ -443,9 +459,10 @@
         const id = prevEmoteBtn.dataset.previewEmote || prevEmoteBtn.dataset.playEmote;
         if (id) showEmotePreview(itemById(id));
       }
-    });
+    }, { signal });
 
     root.addEventListener('change', (e) => {
+      if (!alive()) return;
       const sel = e.target.closest('.avatar-emote-slot-select');
       if (!sel) return;
       const emoteId = sel.dataset.emoteId;
@@ -456,13 +473,14 @@
       }
       if (slotIdx >= 0 && slotIdx < 4) wheel[slotIdx] = emoteId;
       saveLoadout({ emoteWheel: wheel });
-    });
+    }, { signal });
 
     // Initialize 3D viewer and fetch catalog + user state
     const canvas = $el('#avatar-canvas');
     if (canvas && window.PlayHubAvatarGlbViewer) {
       viewer = window.PlayHubAvatarGlbViewer.create(canvas, {
         onStatus: (msg) => {
+          if (!alive()) return;
           const hint = $el('#avatar-stage-hint');
           if (hint) hint.textContent = msg || '드래그로 회전';
         },
@@ -486,8 +504,12 @@
     })();
 
     return () => {
+      disposed = true;
+      listenerController.abort();
       clearTimeout(emoteFloatTimer);
+      emoteFloatTimer = null;
       viewer?.destroy();
+      viewer = null;
     };
   }
 

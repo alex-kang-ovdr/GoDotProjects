@@ -1,6 +1,7 @@
 import { findGame } from './catalog.mjs';
 import { transaction } from './db.mjs';
 import { ApiError, assertId, json, readJson, uid } from './security.mjs';
+import { hasActiveSanction } from './ssot/sanctions.mjs';
 
 const kinds = new Set(['all', 'comment', 'suggestion']);
 const statuses = new Set(['open', 'planned', 'completed', 'declined']);
@@ -118,13 +119,21 @@ export function createCommunity({ db, rootDir, now, sessionFor, requireSession, 
     return session;
   }
 
+  function assertNotSanctioned(principalId) {
+    if (principalId && hasActiveSanction(db, principalId, ['all', 'community'], now())) {
+      throw new ApiError(403, 'COMMUNITY_SANCTIONED');
+    }
+  }
+
   function writeActor(req, res, session, getTarget, promoteAnonymous) {
     let actor = requireSession(req, 'public');
     if (session.id_hash !== actor.id_hash) throw new ApiError(401, 'SESSION_REQUIRED');
+    assertNotSanctioned(actor.principal_id);
     if (promoteAnonymous && !actor.principal_id) {
       getTarget();
       actor = promote(actor, req, res);
     }
+    assertNotSanctioned(actor.principal_id);
     if (actor.principal_id) rate('community:principal:' + actor.principal_id, 30, minute);
     return actor;
   }
@@ -146,6 +155,7 @@ export function createCommunity({ db, rootDir, now, sessionFor, requireSession, 
       const getGame = () => findGame(rootDir, db, gameId);
       const actor = writeActor(req, res, session, getGame, true);
       const created = transaction(db, () => {
+        assertNotSanctioned(actor.principal_id);
         getGame();
         const id = uid(), stamp = now();
         db.prepare('INSERT INTO community_items VALUES(?,?,?,?,?,?,?,0,?,?)').run(id, gameId, actor.principal_id, input.kind, title, body, 'open', stamp, stamp);
@@ -182,6 +192,7 @@ export function createCommunity({ db, rootDir, now, sessionFor, requireSession, 
     };
     const actor = writeActor(req, res, session, getTarget, isReport || (isVote && method === 'PUT'));
     const result = transaction(db, () => {
+      assertNotSanctioned(actor.principal_id);
       const row = getTarget(actor.principal_id);
       if (isReport) {
         db.prepare('INSERT INTO community_reports VALUES(?,?,?,?) ON CONFLICT(item_id,principal_id) DO NOTHING').run(id, actor.principal_id, reason, now());

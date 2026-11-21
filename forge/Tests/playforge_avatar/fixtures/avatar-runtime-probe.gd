@@ -1,6 +1,7 @@
 extends SceneTree
 
 const AvatarCatalogScript = preload("res://addons/playforge_avatar/avatar_catalog.gd")
+const AvatarBridgeScript = preload("res://addons/playforge_avatar/avatar_bridge.gd")
 const AvatarControllerScript = preload("res://addons/playforge_avatar/avatar_controller.gd")
 const AvatarSpawnScript = preload("res://addons/playforge_avatar/avatar_spawn.gd")
 const AvatarRigScript = preload("res://addons/playforge_avatar/avatar_rig.gd")
@@ -23,6 +24,9 @@ func _run_probe() -> void:
 	var report := {
 		"catalogOk": false,
 		"checksumOk": false,
+		"sealVerifiedOnLoad": false,
+		"offlineNullLoadoutWebOk": false,
+		"offlineNullLoadoutHttpOk": false,
 		"skinsTested": [],
 		"attachmentsTested": {},
 		"cameraModesTested": [],
@@ -40,13 +44,41 @@ func _run_probe() -> void:
 		"failures": [],
 	}
 
-	# 1. Catalog + SHA-256 verification
+	# 1. Catalog + SHA-256 verification (automatically verified during load_catalog)
 	var catalog: AvatarCatalogScript = AvatarCatalogScript.new()
 	report.catalogOk = catalog.load_catalog()
 	_assert(report.catalogOk, "Catalog failed to load")
+	report.sealVerifiedOnLoad = catalog.is_seal_verified()
+	_assert(report.sealVerifiedOnLoad, "Catalog must verify seal manifest during runtime load_catalog()")
 	var verify: Dictionary = catalog.verify_seal_manifest()
 	report.checksumOk = bool(verify.get("ok", false))
 	_assert(report.checksumOk, "Asset SHA-256 verification failed: " + JSON.stringify(verify))
+
+	# 1b. Bridge offline null-loadout regression tests (web callback & HTTP callback)
+	var web_bridge: AvatarBridgeScript = AvatarBridgeScript.new()
+	web_bridge.initialize(catalog)
+	root.add_child(web_bridge)
+	web_bridge._on_web_loadout_callback(['{"ok":false,"offline":true,"loadout":null}'])
+	var web_fallback := web_bridge.get_last_loadout()
+	report.offlineNullLoadoutWebOk = not web_fallback.is_empty() and str(web_fallback.get("skinId", "")) == "skin_knight"
+	_assert(report.offlineNullLoadoutWebOk, "Bridge web callback crashed or failed fallback on loadout:null")
+	root.remove_child(web_bridge)
+	web_bridge.free()
+
+	var http_bridge: AvatarBridgeScript = AvatarBridgeScript.new()
+	http_bridge.initialize(catalog)
+	root.add_child(http_bridge)
+	http_bridge._on_http_completed(
+		HTTPRequest.RESULT_SUCCESS,
+		200,
+		PackedStringArray(),
+		'{"ok":false,"offline":true,"loadout":null}'.to_utf8_buffer()
+	)
+	var http_fallback := http_bridge.get_last_loadout()
+	report.offlineNullLoadoutHttpOk = not http_fallback.is_empty() and str(http_fallback.get("skinId", "")) == "skin_knight"
+	_assert(report.offlineNullLoadoutHttpOk, "Bridge HTTP callback crashed or failed fallback on loadout:null")
+	root.remove_child(http_bridge)
+	http_bridge.free()
 
 	# 2. Build minimal 3D floor + AvatarSpawn
 	var world := Node3D.new()

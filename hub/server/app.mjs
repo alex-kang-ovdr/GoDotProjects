@@ -3,7 +3,7 @@ import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createUgcPublish } from './ugc-publish.mjs';
-import { createAvatarService } from './avatar/service.mjs';
+import { createAvatarService, mergeGuestAvatar } from './avatar/service.mjs';
 import { createAdminConsole } from './admin-console.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createL10n } from './l10n.mjs';
@@ -21,7 +21,7 @@ import { createBilling } from './billing/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
 import { createMobile } from './mobile/routes.mjs';
 import { ensureSsotSchema } from './ssot/schema.mjs';
-import { createSanctions, mergeGuestSanctions } from './ssot/sanctions.mjs';
+import { createSanctions, hasActiveSanction, mergeGuestSanctions } from './ssot/sanctions.mjs';
 import { createLeaderboard, mergeGuestLeaderboard } from './ssot/leaderboard.mjs';
 import { createProgression, mergeGuestProgression } from './ssot/progression.mjs';
 import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
@@ -57,11 +57,17 @@ export function createApp(input, dependencies = {}) {
   const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, env);
   const internalForgeSecret = config.forge?.internalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET || '';
   const previousInternalForgeSecret = config.forge?.previousInternalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS || '';
+  const internalDatastoreSecret = config.datastore?.internalSecret || env.PLAYHUB_DATASTORE_INTERNAL_SECRET || '';
+  const previousInternalDatastoreSecret = config.datastore?.previousInternalSecret || env.PLAYHUB_DATASTORE_INTERNAL_SECRET_PREVIOUS || '';
+  const effectiveDatastoreSecret = internalDatastoreSecret || internalForgeSecret;
+  const effectiveDatastorePreviousSecret = internalDatastoreSecret ? previousInternalDatastoreSecret : previousInternalForgeSecret;
   // Opt-in: serve the Forge session verifier on the public listener so a Forge on another host can
   // reach it. Never enabled by default; requires a strong shared secret and is meant to sit behind HTTPS.
   const remoteForgeVerify = config.forge?.remoteVerify === true || env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';
   if (remoteForgeVerify && internalForgeSecret.length < 32) throw new Error('Remote Forge session verification requires PLAYHUB_FORGE_INTERNAL_SECRET of at least 32 characters');
   if (previousInternalForgeSecret && previousInternalForgeSecret.length < 32) throw new Error('PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS must be at least 32 characters when set');
+  if (internalDatastoreSecret && internalDatastoreSecret.length < 32) throw new Error('PLAYHUB_DATASTORE_INTERNAL_SECRET must be at least 32 characters when set');
+  if (previousInternalDatastoreSecret && previousInternalDatastoreSecret.length < 32) throw new Error('PLAYHUB_DATASTORE_INTERNAL_SECRET_PREVIOUS must be at least 32 characters when set');
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -135,19 +141,41 @@ export function createApp(input, dependencies = {}) {
     setCookie(res,PUBLIC_COOKIE,cookies(req)[PUBLIC_COOKIE],config.secureCookies,90*DAY/1000);
     return { ...current, principal_id: userId,expires_at:expires };
   }
+  ensureSsotSchema(db);
+  function assertNotPlatformSanctioned(principalId) {
+    if (principalId && hasActiveSanction(db, principalId, ['all'], now())) {
+      throw new ApiError(403, 'USER_SANCTIONED');
+    }
+  }
+  const requireUnsanctionedSession = (req, kind, adminRequired = false) => {
+    const s = requireSession(req, kind, adminRequired);
+    if (kind === 'public') assertNotPlatformSanctioned(s.principal_id);
+    return s;
+  };
+  const requireUnsanctionedAvatarSession = (req, kind, adminRequired = false) => {
+    const s = requireSession(req, kind, adminRequired);
+    if (kind === 'public' && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+      assertNotPlatformSanctioned(s.principal_id);
+    }
+    return s;
+  };
+  const promoteUnsanctionedAvatar = (s, req, res) => {
+    const principal = promote(s, req, res);
+    assertNotPlatformSanctioned(principal.principal_id);
+    return principal;
+  };
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
   // One gateway for every Hub module that needs Forge (forge-gateway.mjs); supports both local and remote modes.
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
-  const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
+  const forge=createHubForge({config:config.forge,db,requireSession:requireUnsanctionedSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit,forgeGateway});
   const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null,env});
   const catalogOptions = ugcPublish.ugcOrigin ? { ugcOrigin: ugcPublish.ugcOrigin } : {};
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
-  const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession, promote, rate, audit });
-  ensureSsotSchema(db);
+  const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession: requireUnsanctionedAvatarSession, promote: promoteUnsanctionedAvatar, rate, audit });
   const sanctions = createSanctions({ db, now, sessionFor, audit });
   const leaderboard = createLeaderboard({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
   const progression = createProgression({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
@@ -338,8 +366,10 @@ export function createApp(input, dependencies = {}) {
       json(res,201,profile(next));return;
     }
     if (path === '/api/play-sessions' && req.method === 'POST') {
+      assertNotPlatformSanctioned(s.principal_id);
       rate(`play:${s.id_hash}`,60,60000);
       const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId),true,catalogOptions), principal = promote(s,req,res), id = uid();
+      assertNotPlatformSanctioned(principal.principal_id);
       db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,principal.id_hash,principal.principal_id,principal.analytics_subject,game.id,game.buildId,now(),now()+2*3600000,principal.traffic_type,principal.qa_run_id);
       serverEvent('play_session_created',principal,game.id,id);
       json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
@@ -356,6 +386,7 @@ export function createApp(input, dependencies = {}) {
     if(restorePath && req.method==='POST'){
       const game=findGame(rootDir,db,restorePath[1],false);
       if(!s.principal_id)throw new ApiError(401,'PLAY_FIRST');
+      assertNotPlatformSanctioned(s.principal_id);
       rate(`restore:${s.principal_id}`,20,60000);
       const body=await readJson(req,8192),requestKey=req.headers['idempotency-key'];
       if(Object.keys(body).some(key=>!['sourceSlot','backupId','expectedSourceRevision','expectedMainRevision'].includes(key)) || !Number.isSafeInteger(body.expectedMainRevision) || body.expectedMainRevision<0)throw new ApiError(422,'RESTORE_INPUT_INVALID');
@@ -365,6 +396,7 @@ export function createApp(input, dependencies = {}) {
       if(typeof requestKey!=='string' || !/^[A-Za-z0-9:_-]{8,128}$/.test(requestKey))throw new ApiError(400,'IDEMPOTENCY_KEY_REQUIRED');
       const hash=digest(JSON.stringify({sourceSlot:body.sourceSlot || null,backupId:body.backupId || null,expectedSourceRevision:body.expectedSourceRevision || null,expectedMainRevision:body.expectedMainRevision}));
       const value=transaction(db,()=>{
+        assertNotPlatformSanctioned(s.principal_id);
         const previous=db.prepare('SELECT * FROM save_idempotency WHERE principal_id=? AND game_id=? AND slot=? AND request_key=?').get(s.principal_id,game.id,'@restore',requestKey);
         if(previous){if(previous.request_hash!==hash)throw new ApiError(409,'IDEMPOTENCY_CONFLICT');return JSON.parse(previous.response_json);}
         const current=getSave(s,game.id,'main');
@@ -394,6 +426,7 @@ export function createApp(input, dependencies = {}) {
         if (!existing) throw new ApiError(404,'SAVE_NOT_FOUND');
         res.setHeader('ETag',`"r${existing.revision}"`); json(res,200,saveJson(existing)); return;
       }
+      assertNotPlatformSanctioned(s.principal_id);
       if(req.method==='DELETE'){
         if(slot==='main')throw new ApiError(403,'MAIN_SLOT_DELETE_FORBIDDEN');
         rate(`restore:${s.principal_id}`,20,60000);
@@ -401,6 +434,7 @@ export function createApp(input, dependencies = {}) {
         if(!match)throw new ApiError(428,'SAVE_PRECONDITION_REQUIRED');
         if(req.headers['if-none-match'] || !/^"r\d+"$/.test(match))throw new ApiError(400,'SAVE_PRECONDITION_INVALID');
         const result=transaction(db,()=>{
+          assertNotPlatformSanctioned(s.principal_id);
           const current=getSave(s,game.id,slot);
           if(!current || match!==`"r${current.revision}"`)throw new ApiError(412,'SAVE_REVISION_CONFLICT');
           const backupId=uid();
@@ -426,6 +460,7 @@ export function createApp(input, dependencies = {}) {
       if (requestKey && !/^[A-Za-z0-9:_-]{8,128}$/.test(requestKey)) throw new ApiError(400,'IDEMPOTENCY_KEY_INVALID');
       const hash = digest(JSON.stringify({payload,match,none,schema:game.saveSchemaVersion}));
       const result = transaction(db,() => {
+        assertNotPlatformSanctioned(s.principal_id);
         if (requestKey) {
           const old = db.prepare('SELECT * FROM save_idempotency WHERE principal_id=? AND game_id=? AND slot=? AND request_key=?').get(s.principal_id,game.id,slot,requestKey);
           if (old) { if (old.request_hash !== hash) throw new ApiError(409,'IDEMPOTENCY_CONFLICT'); return JSON.parse(old.response_json); }
@@ -489,6 +524,7 @@ export function createApp(input, dependencies = {}) {
         mergeGuestSanctions(db,m.source_user,s.principal_id);
         mergeGuestProgression(db,m.source_user,s.principal_id,now());
         mergeGuestDataStore(db,m.source_user,s.principal_id);
+        mergeGuestAvatar(db,m.source_user,s.principal_id,now());
         const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
         if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
@@ -523,7 +559,7 @@ export function createApp(input, dependencies = {}) {
       rate(`localadminlogin:${req.socket.remoteAddress}`,8,60000);
       const { token } = await readJson(req,4096);
       if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
-      if (path === '/api/admin/local-login') localAdminLogin.consume(token);
+      localAdminLogin.consume(token);
       const auditAction = path === '/api/admin/local-auto-login' ? 'admin_local_auto_login' : 'admin_local_login';
       const previousCookies = res.getHeader('Set-Cookie');
       let s;
@@ -582,13 +618,20 @@ export function createApp(input, dependencies = {}) {
     const previousMatch = Boolean(previousInternalForgeSecret) && equal(provided, previousInternalForgeSecret);
     return currentMatch || previousMatch;
   }
+  function matchesDatastoreSecret(provided) {
+    if (!effectiveDatastoreSecret) return false;
+    const currentMatch = equal(provided, effectiveDatastoreSecret);
+    const previousMatch = Boolean(effectiveDatastorePreviousSecret) && equal(provided, effectiveDatastorePreviousSecret);
+    return currentMatch || previousMatch;
+  }
   function verifyInternalAccess(req, res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     const remote = req.socket?.remoteAddress || '';
     if (!remoteForgeVerify && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) throw new ApiError(403, 'LOOPBACK_REQUIRED');
     if (req.headers.origin !== undefined) throw new ApiError(403, 'ORIGIN_NOT_ALLOWED');
-    if (!matchesInternalSecret(req.headers['x-playhub-internal-secret'])) {
+    if (!effectiveDatastoreSecret) throw new ApiError(503, 'INTERNAL_SECRET_NOT_CONFIGURED');
+    if (!matchesDatastoreSecret(req.headers['x-playhub-internal-secret'])) {
       if (remoteForgeVerify) rate(`internal-denied:${remote}`, 60, 60000);
       throw new ApiError(403, 'INTERNAL_SECRET_INVALID');
     }
@@ -621,6 +664,10 @@ export function createApp(input, dependencies = {}) {
     let identity;
     try { identity = googleIdentityForSession(db, s); }
     catch { json(res, 401, { authenticated: false, error: 'GOOGLE_LOGIN_REQUIRED' }); return; }
+    if (hasActiveSanction(db, s.principal_id, ['all'], now())) {
+      json(res, 403, { authenticated: false, error: 'USER_SANCTIONED' });
+      return;
+    }
     const method = typeof body.method === 'string' ? body.method.toUpperCase() : 'GET';
     const requireCsrf = typeof body.requireCsrf === 'boolean'
       ? body.requireCsrf

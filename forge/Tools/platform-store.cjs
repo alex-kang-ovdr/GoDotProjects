@@ -41,7 +41,11 @@ function cleanPath(value) {
   return parts.join('/');
 }
 function reservedPath(value) {
-  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_agent_chat', 'addons/playforge_remote_control', 'addons/playforge_avatar', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
+  if (typeof value !== 'string') return false;
+  const normalized = value.replaceAll('\\', '/').replace(/^(\.\/)+/, '').toLowerCase();
+  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_agent_chat', 'addons/playforge_remote_control', 'addons/playforge_avatar', '.godot'].some(
+    folder => normalized === folder || normalized.startsWith(folder + '/')
+  );
 }
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {

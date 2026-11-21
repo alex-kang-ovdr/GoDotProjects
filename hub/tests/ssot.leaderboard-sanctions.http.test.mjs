@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { scryptSync } from 'node:crypto';
 import { createApp } from '../server/app.mjs';
 import { computePeriodKey } from '../server/ssot/leaderboard.mjs';
 import { createBackup } from '../tools/backup.mjs';
 import { inspectDatabase } from '../tools/restore-data.mjs';
 
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const userOrigin = 'http://127.0.0.1:8080';
 const adminOrigin = 'http://127.0.0.1:8081';
 const password = 'isolated-test-password';
@@ -22,11 +24,15 @@ class Client {
   }
 
   headers(method, hasBody, csrf = true, extra = {}) {
-    const headers = { Origin: this.origin, ...extra };
+    const headers = { ...(this.origin ? { Origin: this.origin } : {}), ...extra };
     if (this.jar.size) headers.Cookie = [...this.jar.values()].join('; ');
     if (hasBody) headers['Content-Type'] = 'application/json';
     if (csrf && this.csrf && method !== 'GET') headers['X-CSRF-Token'] = this.csrf;
     return headers;
+  }
+
+  cookieHeader() {
+    return [...this.jar.values()].join('; ');
   }
 
   async call(target, { method = 'GET', body, csrf = true, headers = {} } = {}) {
@@ -45,7 +51,7 @@ class Client {
   }
 }
 
-async function fixture(t, initialTime = Date.UTC(2026, 10, 21, 12, 0, 0)) {
+async function fixture(t, initialTime = Date.UTC(2026, 10, 21, 12, 0, 0), extraConfig = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-ssot-'));
   const dataDir = path.join(root, 'data');
   const configPath = path.join(root, 'config.json');
@@ -61,11 +67,12 @@ async function fixture(t, initialTime = Date.UTC(2026, 10, 21, 12, 0, 0)) {
     publicHost: '127.0.0.1', publicPort: 0, adminHost: '127.0.0.1', adminPort: 0,
     userOrigins: [userOrigin], adminOrigins: [adminOrigin], userBaseUrl: userOrigin, dataDir,
     admin: { username: 'admin', salt, passwordHash: scryptSync(password, salt, 64).toString('hex') },
+    ...extraConfig,
   };
   fs.writeFileSync(configPath, JSON.stringify(config));
   let nowMs = initialTime;
   const clock = () => { nowMs += 10; return nowMs; };
-  const app = createApp(config, { rootDir: root, clock });
+  const app = createApp(config, { rootDir: root, platformRoot: repoRoot, clock });
   t.after(async () => {
     await app.close();
     fs.rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
@@ -73,9 +80,11 @@ async function fixture(t, initialTime = Date.UTC(2026, 10, 21, 12, 0, 0)) {
   const { public: publicServer, admin: adminServer } = await app.listen();
   return {
     root, dataDir, configPath, config, app, db: app.db,
+    now: () => nowMs,
     setNow: ms => { nowMs = ms; },
     visitor: () => new Client(publicServer.port, userOrigin),
     admin: new Client(adminServer.port, adminOrigin),
+    internal: new Client(adminServer.port, null),
   };
 }
 
@@ -361,4 +370,204 @@ test('user sanctions master SSOT blocks/hides leaderboard entries, tracks EOS sy
   assert.equal(restoredBoard.data.total, 2);
   assert.equal(restoredBoard.data.entries[0].displayName, 'MergedPlayer');
   assert.equal(restoredBoard.data.entries[0].score, 9000);
+});
+
+test('sanctions enforcement: community scope blocks all community writes; all scope blocks play, saves, avatar writes, community, and Forge session verify', async t => {
+  const f = await fixture(t, Date.UTC(2026, 10, 21, 12, 0, 0), { avatar: { allowMockTopup: true } });
+  await loginAdmin(f.admin);
+
+  // 1. Community-scoped sanction blocks comment/suggestion/edit/delete/vote/report without blocking play sessions
+  const commUser = f.visitor();
+  await commUser.call('/api/session');
+  const createdSuggestion = await commUser.call('/api/games/one/community', {
+    method: 'POST',
+    body: { kind: 'suggestion', title: 'Idea', body: 'Before mute' },
+  });
+  assert.equal(createdSuggestion.status, 201);
+  const itemId = createdSuggestion.data.item.id;
+  const commUserId = f.db.prepare("SELECT id FROM users WHERE kind='guest'").get().id;
+
+  const commSanction = await f.admin.call('/api/admin/sanctions', {
+    method: 'POST',
+    body: { principalId: commUserId, scope: 'community', action: 'mute', reason: 'Spamming comments' },
+  });
+  assert.equal(commSanction.status, 201);
+
+  for (const [route, opts] of [
+    ['/api/games/one/community', { method: 'POST', body: { kind: 'comment', title: '', body: 'Muted comment' } }],
+    ['/api/games/one/community', { method: 'POST', body: { kind: 'suggestion', title: 'T', body: 'Muted suggestion' } }],
+    [`/api/community/${itemId}`, { method: 'PATCH', body: { body: 'Edited while muted' } }],
+    [`/api/community/${itemId}`, { method: 'DELETE' }],
+    [`/api/community/${itemId}/vote`, { method: 'PUT' }],
+    [`/api/community/${itemId}/vote`, { method: 'DELETE' }],
+    [`/api/community/${itemId}/report`, { method: 'POST', body: { reason: 'Report while muted' } }],
+  ]) {
+    const res = await commUser.call(route, opts);
+    assert.equal(res.status, 403, `${opts.method} ${route}: ${JSON.stringify(res.data)}`);
+    assert.equal(res.data.error.code, 'COMMUNITY_SANCTIONED');
+  }
+
+  // Community read & play session remain allowed under scope='community'
+  assert.equal((await commUser.call('/api/games/one/community')).status, 200);
+  assert.equal((await commUser.call('/api/play-sessions', { method: 'POST', body: { gameId: 'one' } })).status, 201);
+
+  // 2. Platform-wide scope='all' ban blocks play-sessions, cloud saves, avatar writes, community, and Forge session verify
+  const banned = f.visitor();
+  await banned.call('/api/session');
+  const bannedId = 'registered-banned-1';
+  f.db.prepare("INSERT INTO users(id, kind, display_name, created_at) VALUES(?, 'registered', 'BannedUser', ?)").run(bannedId, f.now());
+  f.db.prepare("INSERT INTO identities(provider, subject, user_id) VALUES('google', 'google-sub-banned-1', ?)").run(bannedId);
+  f.db.prepare("UPDATE sessions SET principal_id=? WHERE principal_id IS NULL").run(bannedId);
+
+  // Pre-ban baseline succeeds across all protected paths
+  assert.equal((await banned.call('/api/play-sessions', { method: 'POST', body: { gameId: 'one' } })).status, 201);
+  assert.equal((await banned.call('/api/saves/one', {
+    method: 'PUT', headers: { 'If-None-Match': '*' }, body: { payload: { level: 1 } },
+  })).status, 201);
+  assert.equal((await banned.call('/api/saves/one?slot=slot2', {
+    method: 'PUT', headers: { 'If-None-Match': '*' }, body: { payload: { level: 2 } },
+  })).status, 201);
+  assert.equal((await banned.call('/api/avatar/loadout', {
+    method: 'PUT', body: { skinId: 'skin_knight' },
+  })).status, 200);
+  const preVerify = await f.internal.call('/internal/session/verify', {
+    method: 'POST', body: { cookie: banned.cookieHeader(), method: 'GET' },
+  });
+  assert.equal(preVerify.status, 200);
+  assert.equal(preVerify.data.authenticated, true);
+
+  // Issue scope='all' ban
+  const ban = await f.admin.call('/api/admin/sanctions', {
+    method: 'POST',
+    body: { principalId: bannedId, scope: 'all', action: 'ban', reason: 'Severe platform abuse' },
+  });
+  assert.equal(ban.status, 201);
+
+  // Every write path + Forge session verify is blocked with 403
+  const blockedPlay = await banned.call('/api/play-sessions', { method: 'POST', body: { gameId: 'one' } });
+  assert.equal(blockedPlay.status, 403);
+  assert.equal(blockedPlay.data.error.code, 'USER_SANCTIONED');
+
+  const blockedSavePut = await banned.call('/api/saves/one', {
+    method: 'PUT', headers: { 'If-Match': '"r1"' }, body: { payload: { level: 2 } },
+  });
+  assert.equal(blockedSavePut.status, 403);
+  assert.equal(blockedSavePut.data.error.code, 'USER_SANCTIONED');
+
+  const blockedSaveDel = await banned.call('/api/saves/one?slot=slot2', {
+    method: 'DELETE', headers: { 'If-Match': '"r1"' },
+  });
+  assert.equal(blockedSaveDel.status, 403);
+  assert.equal(blockedSaveDel.data.error.code, 'USER_SANCTIONED');
+
+  const blockedSaveRestore = await banned.call('/api/saves/one/restore', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'restore-banned-001' },
+    body: { sourceSlot: 'slot2', expectedSourceRevision: 1, expectedMainRevision: 1 },
+  });
+  assert.equal(blockedSaveRestore.status, 403);
+  assert.equal(blockedSaveRestore.data.error.code, 'USER_SANCTIONED');
+
+  const blockedAvatarLoadout = await banned.call('/api/avatar/loadout', {
+    method: 'PUT', body: { skinId: 'skin_knight' },
+  });
+  assert.equal(blockedAvatarLoadout.status, 403);
+  assert.equal(blockedAvatarLoadout.data.error.code, 'USER_SANCTIONED');
+
+  const blockedAvatarPurchase = await banned.call('/api/avatar/purchase', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'buy-banned-001' },
+    body: { itemId: 'skin_mage' },
+  });
+  assert.equal(blockedAvatarPurchase.status, 403);
+  assert.equal(blockedAvatarPurchase.data.error.code, 'USER_SANCTIONED');
+
+  const blockedAvatarTopup = await banned.call('/api/avatar/wallet/topup', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'topup-banned-001' },
+    body: { packId: 'pack_500' },
+  });
+  assert.equal(blockedAvatarTopup.status, 403);
+  assert.equal(blockedAvatarTopup.data.error.code, 'USER_SANCTIONED');
+
+  const blockedComm = await banned.call('/api/games/one/community', {
+    method: 'POST', body: { kind: 'comment', title: '', body: 'Banned user post' },
+  });
+  assert.equal(blockedComm.status, 403);
+  assert.equal(blockedComm.data.error.code, 'COMMUNITY_SANCTIONED');
+
+  const blockedForgeVerify = await f.internal.call('/internal/session/verify', {
+    method: 'POST', body: { cookie: banned.cookieHeader(), method: 'GET' },
+  });
+  assert.equal(blockedForgeVerify.status, 403);
+  assert.equal(blockedForgeVerify.data.authenticated, false);
+  assert.equal(blockedForgeVerify.data.error, 'USER_SANCTIONED');
+
+  // Reads remain accessible so user can inspect sanctions/saves/avatar state
+  assert.equal((await banned.call('/api/me/sanctions')).status, 200);
+  assert.equal((await banned.call('/api/saves/one')).status, 200);
+  assert.equal((await banned.call('/api/avatar/me')).status, 200);
+
+  // Revoking ban restores access across all paths
+  assert.equal((await f.admin.call(`/api/admin/sanctions/${ban.data.sanction.id}/revoke`, {
+    method: 'POST', body: { reason: 'Unbanned' },
+  })).status, 200);
+  assert.equal((await banned.call('/api/play-sessions', { method: 'POST', body: { gameId: 'one' } })).status, 201);
+  assert.equal((await banned.call('/api/saves/one', {
+    method: 'PUT', headers: { 'If-Match': '"r1"' }, body: { payload: { level: 3 } },
+  })).status, 200);
+  assert.equal((await banned.call('/api/avatar/loadout', {
+    method: 'PUT', body: { skinId: 'skin_knight' },
+  })).status, 200);
+  const postVerify = await f.internal.call('/internal/session/verify', {
+    method: 'POST', body: { cookie: banned.cookieHeader(), method: 'GET' },
+  });
+  assert.equal(postVerify.status, 200);
+  assert.equal(postVerify.data.authenticated, true);
+});
+
+test('POST /api/auth/merge transfers guest avatar wallet, inventory, and loadout to registered account', async t => {
+  const f = await fixture(t, Date.UTC(2026, 10, 21, 12, 0, 0), { avatar: { allowMockTopup: true } });
+  const guest = f.visitor();
+  await guest.call('/api/session');
+
+  // Guest tops up PlayCoin, buys skin_mage (300 coins), and equips it
+  const topup = await guest.call('/api/avatar/wallet/topup', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'merge-guest-topup-01' },
+    body: { packId: 'pack_500' },
+  });
+  assert.equal(topup.status, 200);
+  const bought = await guest.call('/api/avatar/purchase', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': 'merge-guest-buy-01' },
+    body: { itemId: 'skin_mage' },
+  });
+  assert.equal(bought.status, 200);
+  assert.equal((await guest.call('/api/avatar/loadout', {
+    method: 'PUT', body: { skinId: 'skin_mage' },
+  })).status, 200);
+
+  const guestMe = await guest.call('/api/avatar/me');
+  const guestId = guestMe.data.principal.id;
+  const expectedTotal = guestMe.data.wallet.total;
+
+  // Create registered account with no avatar loadout yet and merge guest into it
+  const account = f.visitor();
+  await account.call('/api/session');
+  const accountId = 'registered-avatar-merge-1';
+  f.db.prepare("INSERT INTO users(id, kind, display_name, created_at) VALUES(?, 'registered', 'MergedHero', ?)").run(accountId, f.now());
+  f.db.prepare("UPDATE sessions SET principal_id=? WHERE principal_id IS NULL").run(accountId);
+  f.db.prepare("INSERT INTO merge_requests VALUES(?,?,?,?,?,?,?,?)").run('merge-avatar-1', guestId, accountId, 'src-av', 'dst-av', 'pending', f.now() + 60000, null);
+
+  const merged = await account.call('/api/auth/merge', {
+    method: 'POST', body: { consent: true, mergeId: 'merge-avatar-1' },
+  });
+  assert.equal(merged.status, 200, JSON.stringify(merged.data));
+
+  const accountMe = await account.call('/api/avatar/me');
+  assert.equal(accountMe.status, 200);
+  assert.equal(accountMe.data.wallet.total, expectedTotal);
+  assert.ok(accountMe.data.inventory.some(item => item.itemId === 'skin_mage'), 'purchased skin must transfer');
+  assert.equal(accountMe.data.loadout.skinId, 'skin_mage');
 });
