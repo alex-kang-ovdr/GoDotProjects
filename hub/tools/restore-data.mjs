@@ -54,7 +54,10 @@ const OPTIONAL_TABLES={
   progression_idempotency:['game_id','principal_id','request_key','request_hash','response_json','created_at'],
   datastore_quotas:['game_id','max_keys','max_value_bytes','max_total_bytes','default_lease_ms','max_lease_ms','enabled','updated_at'],
   datastore_entries:['game_id','scope','entry_key','owner_principal_id','revision','value_json','bytes','etag','fencing_token','lock_holder','lock_expires_at','updated_by','created_at','updated_at'],
-  datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at']
+  datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at'],
+  hub_publications:['game_id','host_slug','owner_key','owner_id','project_id','active_release_id','active_submission_id','visibility','deploy_mode','status','artifact_sha256','artifact_base_url','manifest_json','deploy_profile_json','cas_version','published_at','updated_at'],
+  hub_publication_history:['id','game_id','from_release_id','to_release_id','action','actor_id','reason','cas_version','created_at'],
+  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
