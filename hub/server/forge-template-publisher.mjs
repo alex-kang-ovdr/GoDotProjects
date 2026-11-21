@@ -14,7 +14,7 @@ name="Web"
 platform="Web"
 runnable=true
 export_filter="all_resources"
-include_filter="*.json,*.txt"
+include_filter="*.json,*.txt,*.cfg"
 exclude_filter="addons/*,.playforge_backups/*,tests/*,saved/*"
 export_path=""
 script_export_mode=0
@@ -30,12 +30,39 @@ progressive_web_app/enabled=false
 `;
 
 const LOCALES = ['ko', 'en', 'ja', 'zh-CN', 'fr', 'es', 'pt-BR', 'hi'];
+const SEMVER_RE = /^(\d+)\.(\d+)\.(\d+)$/;
+
+export function bumpMinorVersion(version) {
+  const m = SEMVER_RE.exec(String(version || '').trim());
+  if (!m) return '1.1.0';
+  return `${Number(m[1])}.${Number(m[2]) + 1}.0`;
+}
+
+function readExistingManifest(gameDir) {
+  const manifestFile = path.join(gameDir, 'game.manifest.json');
+  if (!fs.existsSync(manifestFile)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(manifestFile, 'utf8').replace(/^\uFEFF/, ''));
+  } catch {
+    return null;
+  }
+}
 
 const TEMPLATE_PRESETS = Object.freeze({
   'brawllabs': {
     koName: '브롤랩스 (Forge)',
     koSummary: '탑다운 아레나에서 봇과 전투하고 젬을 모아 중앙을 점령하는 Godot 2D 스타터 게임입니다.',
     tags: ['action', 'arcade', 'shooter']
+  },
+  'captain-forever': {
+    koName: '캡틴 포에버 (Forge)',
+    koSummary: '코스모티어 스타일 컷어웨이 함선 조립과 6-DOF 물리 전투·방향성 방어막을 즐기는 Godot 2D 우주선 슈터입니다.',
+    tags: ['action', 'shooter', 'space', 'sandbox']
+  },
+  'captain-forever-mmo': {
+    koName: '캡틴 포에버 MMO (Forge)',
+    koSummary: '실시간 2D AOI 릴레이로 여러 함장이 모듈 우주선을 조립·교전하는 Godot 2D MMO 스타터 게임입니다.',
+    tags: ['action', 'shooter', 'mmo', 'space']
   },
   'fortress-war': {
     koName: '포트리스 워 (Forge)',
@@ -60,7 +87,12 @@ const TEMPLATE_PRESETS = Object.freeze({
   'tappy-chicken-mmo': {
     koName: '태피 치킨 MMO (Forge)',
     koSummary: '멀티플레이 로비와 함께 즐기는 Godot 2D 원버튼 비행 아케이드 스타터 게임입니다.',
-    tags: ['arcade', 'casual']
+    tags: ['arcade', 'casual', 'mmo']
+  },
+  'voxel-frontier': {
+    koName: '복셀 프론티어 (Forge)',
+    koSummary: '3D 청크 기반 복셀 지형을 탐험하고 블록을 채굴·배치하는 Godot 3D 샌드박스 스타터 게임입니다.',
+    tags: ['sandbox', 'adventure', '3d']
   }
 });
 
@@ -135,7 +167,7 @@ function buildCoverSvg(template, gameId) {
 </svg>\n`;
 }
 
-function buildManifest(template, gameId, today) {
+function buildManifest(template, gameId, today, existingManifest = null) {
   const preset = TEMPLATE_PRESETS[template.id] || {};
   const defaults = template.publishDefaults && typeof template.publishDefaults === 'object' ? template.publishDefaults : null;
   const gm = defaults?.gameMetadata && typeof defaults.gameMetadata === 'object' ? defaults.gameMetadata : null;
@@ -158,6 +190,12 @@ function buildManifest(template, gameId, today) {
     orientation: ['landscape', 'portrait', 'any'].includes(vp.orientation) ? vp.orientation : 'landscape',
     resize: 'responsive'
   };
+  const isUpdate = Boolean(existingManifest && typeof existingManifest === 'object');
+  const previousVersion = isUpdate ? (String(existingManifest.version || '').trim() || '1.0.0') : null;
+  const nextVersion = isUpdate ? bumpMinorVersion(previousVersion) : '1.0.0';
+  const publishedOn = (isUpdate && typeof existingManifest.publishedOn === 'string' && existingManifest.publishedOn.trim())
+    ? existingManifest.publishedOn.trim()
+    : today;
   return {
     schemaVersion: 1,
     id: gameId,
@@ -168,8 +206,8 @@ function buildManifest(template, gameId, today) {
     instructions: fillLocales(koInstructions, enInstructions),
     rules: fillLocales(koSummary, enSummary),
     entry: 'index.html',
-    version: '1.0.0',
-    publishedOn: today,
+    version: nextVersion,
+    publishedOn,
     updatedOn: today,
     tags,
     controls,
@@ -261,11 +299,11 @@ export function createForgeTemplatePublisher({
         const distIndex = path.join(hubRoot, 'dist', 'user', 'games', gameId, 'index.html');
         const rootIndex = rootDir ? path.join(rootDir, 'games', gameId, 'index.html') : distIndex;
         const catalogEntry = catalogMap.get(gameId) || null;
-        let updatedOn = null;
-        if (fs.existsSync(manifestFile)) {
-          try { updatedOn = JSON.parse(fs.readFileSync(manifestFile, 'utf8')).updatedOn || null; } catch {}
-        }
-        const filesReady = fs.existsSync(manifestFile) && fs.existsSync(webIndex);
+        const existingManifest = readExistingManifest(path.join(gamesRoot, gameId));
+        const version = existingManifest?.version || null;
+        const publishedOn = existingManifest?.publishedOn || null;
+        const updatedOn = existingManifest?.updatedOn || null;
+        const filesReady = Boolean(existingManifest && fs.existsSync(webIndex));
         return {
           id: t.id,
           gameId,
@@ -278,6 +316,9 @@ export function createForgeTemplatePublisher({
           catalogEnabled: catalogEntry ? catalogEntry.enabled === true : null,
           published: Boolean(filesReady && catalogEntry?.enabled === true),
           inHubDist: fs.existsSync(distIndex) || fs.existsSync(rootIndex),
+          version,
+          nextVersion: existingManifest ? bumpMinorVersion(version) : '1.0.0',
+          publishedOn,
           updatedOn,
           playUrl: `/play/${gameId}/`
         };
@@ -371,19 +412,27 @@ export function createForgeTemplatePublisher({
           }
           safeRmDir(backupWeb);
 
-          const manifest = buildManifest(tpl, item.gameId, today);
+          const existingManifest = readExistingManifest(gameDir);
+          const previousVersion = existingManifest ? (String(existingManifest.version || '').trim() || '1.0.0') : null;
+          const manifest = buildManifest(tpl, item.gameId, today, existingManifest);
           fs.writeFileSync(path.join(gameDir, 'game.manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+          const existingCatalog = readGamesCatalogMap().get(item.gameId);
           upsertCatalogEntry(gamesRoot, {
             id: item.gameId,
             path: item.gameId,
             enabled: enableInCatalog,
-            priority: 70,
+            priority: Number.isSafeInteger(existingCatalog?.priority) ? existingCatalog.priority : 70,
             kind: 'imported',
             displayName: `${tpl.name} (Forge)`
           });
 
+          item.previousVersion = previousVersion;
+          item.version = manifest.version;
+          item.versionAction = previousVersion ? 'bumped' : 'initial';
           item.status = 'published';
-          item.step = '패키지 등록 완료';
+          item.step = previousVersion
+            ? `버전업 완료 (v${previousVersion} → v${manifest.version})`
+            : `신규 배포 완료 (v${manifest.version})`;
           item.durationMs = now() - itemStart;
           succeeded++;
         } catch (error) {
@@ -452,6 +501,15 @@ export function createForgeTemplatePublisher({
           failed,
           buildStatus: job.buildStatus,
           enableInCatalog,
+          versionChanges: job.items
+            .filter(i => i.status === 'published')
+            .map(i => ({
+              templateId: i.templateId,
+              gameId: i.gameId,
+              previousVersion: i.previousVersion,
+              version: i.version,
+              action: i.versionAction
+            })),
           ...(unexpectedError ? { error: unexpectedError?.message || String(unexpectedError) } : {})
         });
       } catch {}
@@ -497,17 +555,24 @@ export function createForgeTemplatePublisher({
       startedAt: new Date(now()).toISOString(),
       finishedAt: null,
       summary: { total: templatesToRun.length, succeeded: 0, failed: 0, pending: templatesToRun.length },
-      items: templatesToRun.map(t => ({
-        templateId: t.id,
-        gameId: gameIdFor(t.id),
-        name: t.name,
-        dimension: t.dimension,
-        status: 'queued',
-        step: '대기 중',
-        durationMs: null,
-        error: null,
-        playUrl: `/play/${gameIdFor(t.id)}/`
-      }))
+      items: templatesToRun.map(t => {
+        const gameId = gameIdFor(t.id);
+        const existing = readExistingManifest(path.join(gamesRoot, gameId));
+        return {
+          templateId: t.id,
+          gameId,
+          name: t.name,
+          dimension: t.dimension,
+          previousVersion: existing ? (String(existing.version || '').trim() || '1.0.0') : null,
+          version: null,
+          versionAction: null,
+          status: 'queued',
+          step: '대기 중',
+          durationMs: null,
+          error: null,
+          playUrl: `/play/${gameId}/`
+        };
+      })
     };
 
     if (jobs.size >= 20) {

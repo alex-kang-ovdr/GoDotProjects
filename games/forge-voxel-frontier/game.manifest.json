@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-voxel-frontier",
+  "slug": "forge-voxel-frontier",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "복셀 프론티어 (Voxel Frontier)",
+    "en": "Voxel Frontier",
+    "ja": "Voxel Frontier",
+    "zh-CN": "Voxel Frontier",
+    "fr": "Voxel Frontier",
+    "es": "Voxel Frontier",
+    "pt-BR": "Voxel Frontier",
+    "hi": "Voxel Frontier"
+  },
+  "summary": {
+    "ko": "16×16×16 청크 채광·제작·던전 탐험 3D 복셀 샌드박스",
+    "en": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "ja": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "zh-CN": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "fr": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "es": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "pt-BR": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "hi": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures."
+  },
+  "instructions": {
+    "ko": "WASD 이동, 마우스 클릭으로 채광/설치, E로 제작 메뉴를 여세요.",
+    "en": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "ja": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "zh-CN": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "fr": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "es": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "pt-BR": "Move with WASD, click to mine/place blocks, and press E to craft.",
+    "hi": "Move with WASD, click to mine/place blocks, and press E to craft."
+  },
+  "rules": {
+    "ko": "16×16×16 청크 채광·제작·던전 탐험 3D 복셀 샌드박스",
+    "en": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "ja": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "zh-CN": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "fr": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "es": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "pt-BR": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures.",
+    "hi": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "sandbox",
+    "3d",
+    "adventure"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (voxel-frontier)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

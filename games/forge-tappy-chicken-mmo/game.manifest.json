@@ -2,54 +2,55 @@
   "schemaVersion": 1,
   "id": "forge-tappy-chicken-mmo",
   "slug": "forge-tappy-chicken-mmo",
+  "deployMode": "mmo",
   "title": {
-    "ko": "태피 치킨 MMO (Forge)",
-    "en": "Tappy Chicken MMO (Forge)",
-    "ja": "Tappy Chicken MMO (Forge)",
-    "zh-CN": "Tappy Chicken MMO (Forge)",
-    "fr": "Tappy Chicken MMO (Forge)",
-    "es": "Tappy Chicken MMO (Forge)",
-    "pt-BR": "Tappy Chicken MMO (Forge)",
-    "hi": "Tappy Chicken MMO (Forge)"
+    "ko": "태피 치킨 MMO",
+    "en": "Tappy Chicken MMO",
+    "ja": "Tappy Chicken MMO",
+    "zh-CN": "Tappy Chicken MMO",
+    "fr": "Tappy Chicken MMO",
+    "es": "Tappy Chicken MMO",
+    "pt-BR": "Tappy Chicken MMO",
+    "hi": "Tappy Chicken MMO"
   },
   "summary": {
-    "ko": "멀티플레이 로비와 함께 즐기는 Godot 2D 원버튼 비행 아케이드 스타터 게임입니다.",
-    "en": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "ja": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "zh-CN": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "fr": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "es": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "pt-BR": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "hi": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity."
+    "ko": "주변 플레이어의 비행이 50% 반투명 고스트로 실시간 중계되는 MMO 태피 치킨",
+    "en": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "ja": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "zh-CN": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "fr": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "es": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "pt-BR": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "hi": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts."
   },
   "instructions": {
-    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
-    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+    "ko": "스페이스바·클릭 또는 화면 탭으로 날갯짓하세요. P로 일시정지, R로 재시작합니다.",
+    "en": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "ja": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "zh-CN": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "fr": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "es": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "pt-BR": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "hi": "Press Space, click, or tap to flap. P to pause, R to restart."
   },
   "rules": {
-    "ko": "멀티플레이 로비와 함께 즐기는 Godot 2D 원버튼 비행 아케이드 스타터 게임입니다.",
-    "en": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "ja": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "zh-CN": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "fr": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "es": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "pt-BR": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity.",
-    "hi": "Drop-in multiplayer Tappy Chicken: your own gameplay stays untouched while nearby players' actions are relayed via server RPC multicast and rendered at 50% opacity."
+    "ko": "주변 플레이어의 비행이 50% 반투명 고스트로 실시간 중계되는 MMO 태피 치킨",
+    "en": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "ja": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "zh-CN": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "fr": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "es": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "pt-BR": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "hi": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts."
   },
   "entry": "index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publishedOn": "2026-11-21",
-  "updatedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
   "tags": [
     "forge",
     "arcade",
-    "casual"
+    "multiplayer"
   ],
   "controls": [
     "keyboard",
@@ -57,9 +58,9 @@
     "touch"
   ],
   "viewport": {
-    "width": 1280,
-    "height": 720,
-    "orientation": "landscape",
+    "width": 480,
+    "height": 640,
+    "orientation": "portrait",
     "resize": "responsive"
   },
   "capabilities": {

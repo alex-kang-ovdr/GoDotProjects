@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-roblox-power-punch-sim",
+  "slug": "forge-roblox-power-punch-sim",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "Power Punch Simulator (Roblox Port) (Forge)",
+    "en": "Power Punch Simulator (Roblox Port) (Forge)",
+    "ja": "Power Punch Simulator (Roblox Port) (Forge)",
+    "zh-CN": "Power Punch Simulator (Roblox Port) (Forge)",
+    "fr": "Power Punch Simulator (Roblox Port) (Forge)",
+    "es": "Power Punch Simulator (Roblox Port) (Forge)",
+    "pt-BR": "Power Punch Simulator (Roblox Port) (Forge)",
+    "hi": "Power Punch Simulator (Roblox Port) (Forge)"
+  },
+  "summary": {
+    "ko": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "en": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "ja": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "zh-CN": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "fr": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "es": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "pt-BR": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "hi": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "en": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "ja": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "zh-CN": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "fr": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "es": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "pt-BR": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+    "hi": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (roblox-power-punch-sim)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

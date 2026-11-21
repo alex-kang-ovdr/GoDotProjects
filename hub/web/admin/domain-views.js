@@ -415,14 +415,18 @@ export function renderForgeProjects(container, data, { number, kstStamp, onPubli
             return a;
           })()
         : raw('span', item.error || '—');
+      const versionLabel = item.version
+        ? (item.previousVersion ? `v${item.previousVersion} → v${item.version}` : `v${item.version} (신규)`)
+        : (item.previousVersion ? `v${item.previousVersion} → 예정` : 'v1.0.0 예정');
       return [
         raw('strong', `${item.name} (${item.gameId})`),
+        raw('span', versionLabel),
         pill(item.step || item.status, toneMap[item.status] || 'muted'),
         raw('span', item.durationMs != null ? `${(item.durationMs / 1000).toFixed(1)}초` : '—'),
         linkCell
       ];
     });
-    box.append(simpleTable(['템플릿 (Hub ID)', '진행 상태', '소요 시간', '결과 / 링크'], jobRows, '항목 없음'));
+    box.append(simpleTable(['템플릿 (Hub ID)', '버전', '진행 상태', '소요 시간', '결과 / 링크'], jobRows, '항목 없음'));
     progressHost.replaceChildren(box);
   }
 
@@ -490,20 +494,21 @@ export function renderForgeProjects(container, data, { number, kstStamp, onPubli
     nameBox.append(raw('strong', `${t.name} (${t.id})`), raw('small', `Hub ID: ${t.gameId}`));
 
     const statusWrap = el('div', '', 'row-actions');
+    const verSuffix = t.version ? ` · v${t.version}` : '';
     if (t.published && t.inHubDist) {
-      statusWrap.append(pill('배포됨 · 플레이 가능', 'ok'));
+      statusWrap.append(pill(`배포됨${verSuffix}`, 'ok'));
       const playLink = el('a', '플레이 ↗', 'toggle');
       playLink.href = `${userBaseUrl}${t.playUrl}`;
       playLink.target = '_blank';
       playLink.rel = 'noopener noreferrer';
       statusWrap.append(playLink);
     } else if (t.published) {
-      statusWrap.append(pill('카탈로그 등록 (빌드 대기)', 'warn'));
+      statusWrap.append(pill(`카탈로그 등록${verSuffix} (빌드 대기)`, 'warn'));
     } else {
       statusWrap.append(pill('미배포', 'muted'));
     }
 
-    const oneBtn = el('button', t.published ? '재퍼블리시' : '퍼블리시', 'toggle');
+    const oneBtn = el('button', t.published ? `버전업 재퍼블리시${t.nextVersion ? ` (v${t.nextVersion})` : ''}` : '퍼블리시 (v1.0.0)', 'toggle');
     oneBtn.type = 'button';
     oneBtn.dataset.testid = `forge-publish-one-${t.id}`;
     oneBtn.addEventListener('click', () => void triggerPublish([t.id]));
@@ -523,7 +528,7 @@ export function renderForgeProjects(container, data, { number, kstStamp, onPubli
   p1.append(
     progressHost,
     simpleTable(['선택', '템플릿 / Hub ID', '차원', '설명', '에셋', 'Hub 퍼블리시 상태', '실행'], tRows, '등록된 공식 템플릿이 없습니다.'),
-    el('p', '선택한 Forge 템플릿을 Godot 헤드리스 Web 빌드로 내보낸 뒤 games/forge-<id> 패키지·카탈로그 등록 및 hub/dist 빌드까지 일괄 반영합니다.', 'panel-foot')
+    el('p', '선택한 Forge 템플릿을 Godot 헤드리스 Web 빌드로 내보낸 뒤 games/forge-<id> 패키지·카탈로그 등록 및 hub/dist 빌드까지 일괄 반영합니다. 이미 배포된 게임은 마이너 버전이 자동 상승(v1.0.0 → v1.1.0)되며 기존 publishedOn은 유지되고 updatedOn만 갱신됩니다.', 'panel-foot')
   );
 
   const initialJob = pub.activeJob || pub.recentJobs?.[0] || null;

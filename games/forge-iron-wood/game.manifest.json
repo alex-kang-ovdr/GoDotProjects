@@ -2,59 +2,60 @@
   "schemaVersion": 1,
   "id": "forge-iron-wood",
   "slug": "forge-iron-wood",
+  "deployMode": "singleplay",
   "title": {
-    "ko": "아이언 우드 (Forge)",
-    "en": "Iron Wood (Forge)",
-    "ja": "Iron Wood (Forge)",
-    "zh-CN": "Iron Wood (Forge)",
-    "fr": "Iron Wood (Forge)",
-    "es": "Iron Wood (Forge)",
-    "pt-BR": "Iron Wood (Forge)",
-    "hi": "Iron Wood (Forge)"
+    "ko": "아이언 우드 (Iron Wood)",
+    "en": "Iron Wood",
+    "ja": "Iron Wood",
+    "zh-CN": "Iron Wood",
+    "fr": "Iron Wood",
+    "es": "Iron Wood",
+    "pt-BR": "Iron Wood",
+    "hi": "Iron Wood"
   },
   "summary": {
-    "ko": "Godot 3D 기반 탐험·액션 스타터 템플릿 게임입니다.",
-    "en": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "ja": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "zh-CN": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "fr": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "es": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "pt-BR": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "hi": "Build a wooden cart, test it on a physics track, then reset and rebuild."
+    "ko": "목재 카트를 조립해 3D 물리 트랙을 주행하는 샌드박스 퍼즐",
+    "en": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "ja": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "zh-CN": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "fr": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "es": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "pt-BR": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "hi": "Build a wooden cart, test it on a 3D physics track, and iterate."
   },
   "instructions": {
-    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
-    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
-    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+    "ko": "블록을 조립한 뒤 주행 테스트를 시작해 트랙 끝까지 완주하세요.",
+    "en": "Assemble cart parts and launch onto the physics track.",
+    "ja": "Assemble cart parts and launch onto the physics track.",
+    "zh-CN": "Assemble cart parts and launch onto the physics track.",
+    "fr": "Assemble cart parts and launch onto the physics track.",
+    "es": "Assemble cart parts and launch onto the physics track.",
+    "pt-BR": "Assemble cart parts and launch onto the physics track.",
+    "hi": "Assemble cart parts and launch onto the physics track."
   },
   "rules": {
-    "ko": "Godot 3D 기반 탐험·액션 스타터 템플릿 게임입니다.",
-    "en": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "ja": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "zh-CN": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "fr": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "es": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "pt-BR": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
-    "hi": "Build a wooden cart, test it on a physics track, then reset and rebuild."
+    "ko": "목재 카트를 조립해 3D 물리 트랙을 주행하는 샌드박스 퍼즐",
+    "en": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "ja": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "zh-CN": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "fr": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "es": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "pt-BR": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "hi": "Build a wooden cart, test it on a 3D physics track, and iterate."
   },
   "entry": "index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publishedOn": "2026-11-21",
-  "updatedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
   "tags": [
     "forge",
-    "action",
-    "adventure"
+    "physics",
+    "sandbox",
+    "3d"
   ],
   "controls": [
     "keyboard",
-    "mouse",
-    "touch"
+    "mouse"
   ],
   "viewport": {
     "width": 1280,
