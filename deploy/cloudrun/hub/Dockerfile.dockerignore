@@ -8,7 +8,8 @@ games
 godot-engine
 references
 tests
-tools
+tools/*
+!tools/build-version
 hub/config/local.json
 hub/data
 hub/node_modules
