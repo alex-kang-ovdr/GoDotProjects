@@ -124,6 +124,7 @@
       <a href="/?view=billing" data-route ${activeView === 'billing' ? 'aria-current="page"' : ''}>🪙 PlayCoin 충전 · Pro</a>
       <a href="/?view=redeem" data-route ${activeView === 'redeem' ? 'aria-current="page"' : ''}>🎁 기프트카드 등록 (+25%)</a>
       <a href="/?view=wallet" data-route ${activeView === 'wallet' ? 'aria-current="page"' : ''}>💼 내 지갑 · 사용량 · 청약철회</a>
+      <a href="/?view=direct" data-route ${activeView === 'direct' ? 'aria-current="page"' : ''}>🏪 창작자 직접판매 (0%)</a>
     </nav>`;
   }
 
@@ -445,6 +446,9 @@
         <section class="zero-fee-banner" aria-labelledby="zero-fee-title">
           <h3 id="zero-fee-title">창작자 UGC 게임·아이템 직접판매 — PlayHub 플랫폼 수수료 0%</h3>
           <p>창작자가 직접 판매자(Stripe Connect Direct Charges 등)로 대금을 수취하며 PlayHub는 판매대금을 보관하거나 정산하지 않습니다. PlayHub는 서버 기반 결제 검증과 게임 내 구매 권한(Entitlement) 발급·회수만 제공합니다. (Android·iOS·TV는 스토어 정책 검증 전까지 무료 플레이 우선)</p>
+          <div style="margin-top:12px;">
+            <a class="button secondary small" href="/?view=direct" data-route>🏪 창작자 직접판매 0% 콘솔 열기 →</a>
+          </div>
         </section>
       </div>`;
 
@@ -1058,10 +1062,359 @@
     await loadAndRender();
   }
 
+  async function mountDirect(root, { api, toast, refreshSession }) {
+    root.innerHTML = `<div class="page billing-page"><section class="loading-state" role="status"><div class="loading-dot" aria-hidden="true"></div><h1>창작자 직접판매 콘솔을 불러오고 있습니다</h1></section></div>`;
+
+    const kindLabel = k => ({
+      game_access: '유료 게임 이용권',
+      durable: '영구 아이템/스킨',
+      consumable: '소모성 아이템',
+      pass: '시즌 패스'
+    }[k] || k);
+
+    async function loadAndRender() {
+      let walletData;
+      try {
+        walletData = await api('/api/billing/wallet', { timeout: 6000 });
+      } catch (error) {
+        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>직접판매 콘솔을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        return;
+      }
+
+      uiState.walletData = walletData;
+      updateHeaderPill(walletData);
+
+      if (!walletData.authenticated) {
+        root.innerHTML = `<div class="page billing-page">
+          ${billingSubnavHtml('direct')}
+          <section class="billing-hero">
+            <div class="billing-hero-top">
+              <div>
+                <p class="billing-eyebrow">🏪 TRACK B · CREATOR DIRECT COMMERCE · 0% PLATFORM FEE</p>
+                <h1>창작자 UGC 직접판매 (PlayHub 수수료 0%)</h1>
+                <p class="billing-hero-sub">창작자가 직접 판매자(Stripe Connect Direct Charges)로 대금을 100% 수취합니다. PlayHub는 판매대금을 보관하거나 정산하지 않고, 개인 결제 비밀키도 절대 수집하지 않으며 서버 검증 기반 <strong>게임 권한(Entitlement)</strong>만 제공합니다.</p>
+              </div>
+            </div>
+          </section>
+          <section class="surface">
+            <h2>창작자 로그인이 필요합니다</h2>
+            <p class="muted">결제 계정 연결, 게임 상품 등록, 웹 직접구매 테스트를 진행하려면 로그인해 주세요.</p>
+            <div class="save-actions">
+              ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="direct-demo-signin">🧪 데모 창작자로 바로 체험</button>' : ''}
+              <a class="button secondary" href="/?view=billing" data-route>PlayCoin 상점 보기</a>
+            </div>
+          </section>
+        </div>`;
+
+        const demoBtn = root.querySelector('#direct-demo-signin');
+        if (demoBtn) {
+          demoBtn.onclick = async () => {
+            demoBtn.disabled = true;
+            try {
+              await api('/api/billing/demo-signin', { method: 'POST', body: {} });
+              await refreshSession();
+              toast('🧪 PlayHub 데모 창작자 계정으로 로그인했습니다.');
+              await loadAndRender();
+            } catch (error) {
+              toast(error.message || '데모 로그인 실패');
+              demoBtn.disabled = false;
+            }
+          };
+        }
+        return;
+      }
+
+      const [connData, prodData, orderData, entData] = await Promise.all([
+        api('/api/billing/creator/connection', { timeout: 6000 }),
+        api('/api/billing/creator/products', { timeout: 6000 }),
+        api('/api/billing/creator/orders?limit=25', { timeout: 6000 }),
+        api('/api/billing/entitlements', { timeout: 6000 })
+      ]);
+
+      const conn = connData.connection;
+      const isMockDirect = connData.directMode === 'mock';
+      const isDemo = Boolean(walletData.allowDemoAccount);
+
+      root.innerHTML = `<div class="page billing-page">
+        ${billingSubnavHtml('direct')}
+        <section class="billing-hero">
+          <div class="billing-hero-top">
+            <div>
+              <p class="billing-eyebrow">🏪 TRACK B · CREATOR DIRECT COMMERCE · 0% PLATFORM FEE</p>
+              <h1>창작자 직접판매 콘솔 · PlayHub 수수료 0%</h1>
+              <p class="billing-hero-sub">판매대금은 창작자 연결 계정(Stripe Connect Direct Charges)으로 <strong>직접 입금</strong>되며 PlayHub <code>PlayCoin</code> 지갑과 완전히 분리됩니다. 환불·차지백 웹훅 수신 시 게임 내 <code>Entitlement</code>가 즉시 <code>REVOKED</code> 처리됩니다.</p>
+            </div>
+          </div>
+          <div class="billing-badges">
+            <span class="billing-badge">💯 플랫폼 수수료 0% (DB CHECK 강제)</span>
+            <span class="billing-badge">🔐 개인 API 비밀키 미수집 (OAuth 전용)</span>
+            <span class="billing-badge">🌐 웹 브라우저 직접판매 활성</span>
+            <span class="billing-badge">📱 Android · iOS · TV 무료 우선 (Fail-Closed)</span>
+            ${isMockDirect ? '<span class="billing-badge sandbox">🧪 샌드박스 Direct Connect 모드</span>' : ''}
+          </div>
+        </section>
+
+        <section class="surface" aria-labelledby="direct-conn-heading">
+          <div class="section-heading">
+            <h2 id="direct-conn-heading">1. 창작자 결제 계정 연결 (CreatorPaymentConnection)</h2>
+            <span class="status-chip ${conn.connected ? 'active' : (conn.onboardingStatus === 'SUSPENDED' ? 'revoked' : 'created')}">
+              ${esc(conn.onboardingStatus)} · 수수료 0%
+            </span>
+          </div>
+          ${conn.connectedAccountId
+            ? `<p class="muted" style="margin:0 0 10px;">
+                연결 제공자: <strong>${esc(conn.provider)}</strong> · 연결 계정 ID: <code>${esc(conn.connectedAccountId)}</code> · 국가: <strong>${esc(conn.countryCode)}</strong> · 결제 승인: <strong>${conn.chargesEnabled ? '활성' : '대기'}</strong> · PlayHub 플랫폼 수수료: <strong>${esc(conn.platformFeePercent)}%</strong>
+              </p>`
+            : `<p class="muted" style="margin:0 0 10px;">아직 결제 계정이 연결되지 않았습니다. PlayHub는 창작자 개인 API 비밀키를 절대 받지 않으며 Stripe Connect OAuth 온보딩만 사용합니다.</p>`
+          }
+          <div class="platform-matrix">
+            <span class="platform-chip allowed">✅ Web 브라우저 유료 판매 허용</span>
+            <span class="platform-chip blocked">🔒 Android / Google TV (P3 전 무료 우선)</span>
+            <span class="platform-chip blocked">🔒 iOS / Apple TV (P3 전 무료 우선)</span>
+            <span class="platform-chip blocked">🔒 Samsung TV (P3 전 무료 우선)</span>
+          </div>
+          <div class="save-actions" style="margin-top:14px;">
+            ${!conn.connected && conn.onboardingStatus !== 'SUSPENDED'
+              ? `<button type="button" class="button primary" id="direct-connect-btn">${isMockDirect ? '🧪 Stripe Connect 테스트 계정 즉시 연결 (0% 수수료)' : 'Stripe Connect 온보딩 시작'}</button>`
+              : ''
+            }
+          </div>
+        </section>
+
+        <section class="surface" aria-labelledby="direct-prod-heading">
+          <div class="section-heading">
+            <h2 id="direct-prod-heading">2. 내 게임 상품 카탈로그 (CreatorProductCatalog)</h2>
+            <span class="muted">웹 플랫폼 상품 등록 · 등록 즉시 0% 직접판매 가능</span>
+          </div>
+          <form id="direct-product-form">
+            <div class="direct-form-grid">
+              <label>게임 ID
+                <input name="gameId" value="match3-garden" maxlength="64" required>
+              </label>
+              <label>상품 키 (productKey)
+                <input name="productKey" placeholder="starter_pack_01" maxlength="64" required>
+              </label>
+              <label>상품명
+                <input name="title" placeholder="골드 스타터 스킨 팩" maxlength="100" required>
+              </label>
+              <label>상품 유형
+                <select name="kind">
+                  <option value="durable">영구 아이템/스킨 (durable)</option>
+                  <option value="consumable">소모성 아이템 (consumable)</option>
+                  <option value="pass">시즌 패스 (pass)</option>
+                  <option value="game_access">유료 게임 이용권 (game_access)</option>
+                </select>
+              </label>
+              <label>통화
+                <select name="currency">
+                  <option value="KRW">KRW (₩)</option>
+                  <option value="USD">USD ($ cents)</option>
+                </select>
+              </label>
+              <label>가격 (KRW 원 / USD 센트)
+                <input name="amountMinor" type="number" min="100" step="100" value="4900" required>
+              </label>
+            </div>
+            <div class="save-actions">
+              <button type="submit" class="button primary small" ${!conn.connected ? 'disabled' : ''}>+ 상품 등록</button>
+              ${!conn.connected ? '<span class="muted">먼저 위에서 Stripe Connect 계정을 연결해 주세요.</span>' : ''}
+            </div>
+          </form>
+
+          <div class="billing-list" style="margin-top:16px;">
+            ${prodData.products.length ? prodData.products.map(p => `
+              <div class="billing-row">
+                <div class="billing-row-meta">
+                  <span class="billing-row-title">${esc(p.title)} <span class="muted">(${esc(p.gameId)} · ${esc(p.productKey)})</span></span>
+                  <span class="billing-row-sub">${esc(kindLabel(p.kind))} · ${esc(formatMoney(p.amountMinor, p.currency))} · PlayHub 수수료 ₩0 · 허용 플랫폼: ${esc(p.allowedPlatforms.join(', '))}</span>
+                </div>
+                <div class="billing-row-right">
+                  <span class="status-chip ${esc(p.status.toLowerCase())}">${esc(p.status)}</span>
+                  ${isMockDirect && p.status === 'ACTIVE' ? `
+                    <button type="button" class="button primary small" data-direct-buy-web="${esc(p.id)}">웹 0% 구매 테스트</button>
+                    <button type="button" class="button secondary small" data-direct-buy-mobile="${esc(p.id)}">모바일 차단 테스트</button>
+                  ` : ''}
+                </div>
+              </div>
+            `).join('') : '<p class="muted">아직 등록된 창작자 상품이 없습니다.</p>'}
+          </div>
+        </section>
+
+        <section class="surface" aria-labelledby="direct-orders-heading">
+          <div class="section-heading">
+            <h2 id="direct-orders-heading">3. 창작자 직접판매 주문 · Entitlement 발급 현황</h2>
+            <span class="muted">판매대금 100% 창작자 직입금 · PlayHub 지갑 잔액 변동 없음</span>
+          </div>
+          <div class="billing-list">
+            ${orderData.orders.length ? orderData.orders.map(o => `
+              <div class="billing-row">
+                <div class="billing-row-meta">
+                  <span class="billing-row-title">${esc(o.productTitle || o.productKey)} · ${esc(formatMoney(o.amountMinor, o.currency))} <span class="muted">(PlayHub 수수료 ${esc(formatMoney(o.platformFeeMinor, o.currency))})</span></span>
+                  <span class="billing-row-sub">게임 ${esc(o.gameId)} · 플랫폼 ${esc(o.platform)} · 수취계정 <code>${esc(o.connectedAccountId)}</code> · 권한 상태: <strong>${esc(o.entitlementState || '—')}</strong></span>
+                </div>
+                <div class="billing-row-right">
+                  <span class="status-chip ${esc(o.state.toLowerCase())}">${esc(o.state)}</span>
+                  ${isDemo && o.state === 'PAID' ? `<button type="button" class="button secondary small" data-direct-sim-refund="${esc(o.id)}">환불→권한 회수 테스트</button>` : ''}
+                </div>
+              </div>
+            `).join('') : '<p class="muted">아직 직접판매 주문 기록이 없습니다.</p>'}
+          </div>
+        </section>
+
+        <section class="surface" aria-labelledby="direct-ent-heading">
+          <div class="section-heading">
+            <h2 id="direct-ent-heading">내 보유 게임 권한 (ACTIVE Entitlements)</h2>
+            <span class="muted">웹 게임 런타임은 <code>GET /api/billing/entitlements?gameId=...</code>로 확인</span>
+          </div>
+          <div class="billing-list">
+            ${entData.entitlements.length ? entData.entitlements.map(e => `
+              <div class="billing-row">
+                <div class="billing-row-meta">
+                  <span class="billing-row-title">${esc(e.game_id)} · ${esc(e.product_key)}</span>
+                  <span class="billing-row-sub">권한 ID <code>${esc(e.id.slice(0, 8))}</code> · 주문 <code>${esc(e.direct_order_id.slice(0, 8))}</code></span>
+                </div>
+                <div class="billing-row-right">
+                  <span class="status-chip active">${esc(e.state)}</span>
+                  <button type="button" class="button secondary small" data-consume-ent="${esc(e.id)}">소모성 사용</button>
+                </div>
+              </div>
+            `).join('') : '<p class="muted">현재 보유 중인 ACTIVE 게임 권한이 없습니다.</p>'}
+          </div>
+        </section>
+      </div>`;
+
+      const connectBtn = root.querySelector('#direct-connect-btn');
+      if (connectBtn) {
+        connectBtn.onclick = async () => {
+          connectBtn.disabled = true;
+          try {
+            const res = await api('/api/billing/creator/connection/start', {
+              method: 'POST',
+              body: { countryCode: 'KR', returnUrl: `${location.origin}/?view=direct`, refreshUrl: `${location.origin}/?view=direct` }
+            });
+            if (res.onboardingUrl) {
+              location.href = res.onboardingUrl;
+              return;
+            }
+            toast(`✅ Stripe Connect 계정 연결 완료 (${res.connection.connectedAccountId} · 플랫폼 수수료 0%)`);
+            await loadAndRender();
+          } catch (error) {
+            toast(error.message || '결제 계정 연결 실패');
+            connectBtn.disabled = false;
+          }
+        };
+      }
+
+      const prodForm = root.querySelector('#direct-product-form');
+      if (prodForm) {
+        prodForm.onsubmit = async ev => {
+          ev.preventDefault();
+          const fd = new FormData(prodForm);
+          try {
+            await api('/api/billing/creator/products', {
+              method: 'POST',
+              body: {
+                gameId: String(fd.get('gameId') || '').trim(),
+                productKey: String(fd.get('productKey') || '').trim(),
+                title: String(fd.get('title') || '').trim(),
+                kind: String(fd.get('kind') || 'durable'),
+                currency: String(fd.get('currency') || 'KRW'),
+                amountMinor: Number(fd.get('amountMinor')),
+                allowedPlatforms: ['web']
+              }
+            });
+            toast('상품이 등록되었습니다! (웹 직접판매 · PlayHub 수수료 0%)');
+            await loadAndRender();
+          } catch (error) {
+            toast(error.message || '상품 등록에 실패했습니다.');
+          }
+        };
+      }
+
+      root.querySelectorAll('[data-direct-buy-web]').forEach(btn => {
+        btn.onclick = async () => {
+          btn.disabled = true;
+          try {
+            const created = await api('/api/billing/direct/orders', {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `dir-ord-${uuid()}` },
+              body: { productId: btn.dataset.directBuyWeb, platform: 'web' }
+            });
+            await api(`/api/billing/direct/orders/${encodeURIComponent(created.order.id)}/confirm`, {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `dir-conf-${uuid()}` },
+              body: { providerChargeId: created.checkout.providerChargeId }
+            });
+            toast('🎉 웹 직접구매 완료! PlayHub 수수료 ₩0 · Entitlement(ACTIVE) 즉시 발급됨');
+            await loadAndRender();
+          } catch (error) {
+            toast(error.message || '직접구매 테스트 실패');
+            btn.disabled = false;
+          }
+        };
+      });
+
+      root.querySelectorAll('[data-direct-buy-mobile]').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            await api('/api/billing/direct/orders', {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `dir-mob-${uuid()}` },
+              body: { productId: btn.dataset.directBuyMobile, platform: 'android' }
+            });
+          } catch (error) {
+            toast(`🛡️ 정책 차단 확인 (${error.code || error.status}): 모바일·TV는 P3 전 무료 플레이 우선(유료 판매 Fail-Closed)`);
+          }
+        };
+      });
+
+      root.querySelectorAll('[data-direct-sim-refund]').forEach(btn => {
+        btn.onclick = async () => {
+          btn.disabled = true;
+          try {
+            await api(`/api/billing/direct/orders/${encodeURIComponent(btn.dataset.directSimRefund)}/simulate-refund`, {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `dir-ref-${uuid()}` },
+              body: { kind: 'REFUNDED' }
+            });
+            toast('🔄 환불 처리 완료: 해당 게임 Entitlement가 즉시 REVOKED 상태로 회수되었습니다.');
+            await loadAndRender();
+          } catch (error) {
+            toast(error.message || '환불 시뮬레이션 실패');
+            btn.disabled = false;
+          }
+        };
+      });
+
+      root.querySelectorAll('[data-consume-ent]').forEach(btn => {
+        btn.onclick = async () => {
+          btn.disabled = true;
+          try {
+            await api(`/api/billing/entitlements/${encodeURIComponent(btn.dataset.consumeEnt)}/consume`, {
+              method: 'POST',
+              headers: { 'Idempotency-Key': `ent-use-${uuid()}` },
+              body: {}
+            });
+            toast('✅ 소모성 아이템 권한이 CONSUMED 처리되었습니다.');
+            await loadAndRender();
+          } catch (error) {
+            toast(error.code === 'ENTITLEMENT_NOT_CONSUMABLE'
+              ? '영구(durable)/패스(pass) 권한은 소모 처리할 수 없으며 계속 유지됩니다.'
+              : (error.message || '권한 사용 실패'));
+            btn.disabled = false;
+          }
+        };
+      });
+    }
+
+    await loadAndRender();
+  }
+
   window.PlayHubBilling = {
     mountShop,
     mountRedeem,
     mountWallet,
+    mountDirect,
     refreshHeaderBalance
   };
 })();

@@ -1,4 +1,4 @@
-// HTTP Router for Hub-Billing (M1 + M2). Mounted from app.mjs only when billing is enabled.
+// HTTP Router for Hub-Billing (M1 + M2 + M3). Mounted from app.mjs only when billing is enabled.
 // Public routes: /api/billing/* (registered account + CSRF on mutations; signed webhooks & S2S usage use dedicated secrets)
 // Admin routes:  /api/admin/billing/* (loopback admin listener, authenticated admin session + CSRF enforced by app.mjs)
 
@@ -6,6 +6,7 @@ import { ApiError, equal, json, readJson, assertId, uid } from '../security.mjs'
 import { createPaymentRouter, DEFAULT_STAGE1_ROUTES } from './router.mjs';
 import { createMockProvider } from './providers/mock.mjs';
 import { createXsollaProvider } from './providers/xsolla.mjs';
+import { createStripeConnectProvider } from './providers/stripe-connect.mjs';
 import { createBillingService } from './service.mjs';
 import { listActiveEntitlements } from './direct-commerce.mjs';
 
@@ -92,9 +93,19 @@ export function createBilling({
     now
   });
 
+  const stripeConnect = createStripeConnectProvider({
+    platformSecretKey: billingCfg.stripeConnect?.secretKey || env.PLAYHUB_BILLING_STRIPE_CONNECT_SECRET_KEY || '',
+    webhookSecret: billingCfg.stripeConnect?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_CONNECT_WEBHOOK_SECRET || '',
+    apiBaseUrl: billingCfg.stripeConnect?.apiBaseUrl || 'https://api.stripe.com',
+    allowMockDirect: allowMockProvider || billingCfg.stripeConnect?.allowMockDirect === true,
+    fetchImpl,
+    now
+  });
+
   const service = createBillingService({
     db,
     providers,
+    stripeConnect,
     router,
     config: { ...billingCfg, allowMockProvider, allowDemoAccount, giftcardPepper },
     now,
@@ -131,6 +142,14 @@ export function createBilling({
     if (!p.startsWith('/api/billing/')) return false;
 
     // 1. Server-to-server signed PG webhooks (CSRF & browser Origin exempt; verified via signature)
+    if (p === '/api/billing/webhooks/stripe-connect' && req.method === 'POST') {
+      if (req.headers.origin !== undefined) throw new ApiError(403, 'WEBHOOK_ORIGIN_FORBIDDEN');
+      const rawBody = await readRawBody(req, 256 * 1024);
+      const outcome = service.handleStripeConnectWebhook({ rawBody, headers: req.headers });
+      json(res, outcome.status, outcome.body);
+      return true;
+    }
+
     const wh = p.match(/^\/api\/billing\/webhooks\/([a-zA-Z0-9_-]+)$/);
     if (wh && req.method === 'POST') {
       if (req.headers.origin !== undefined) throw new ApiError(403, 'WEBHOOK_ORIGIN_FORBIDDEN');
@@ -398,6 +417,132 @@ export function createBilling({
       return true;
     }
 
+    // 14. Track B: Creator Direct Commerce (0% Platform Fee) & Entitlements (M3)
+    if (p === '/api/billing/creator/connection' && req.method === 'GET') {
+      const { user } = requireRegisteredUser(req);
+      json(res, 200, service.getCreatorPaymentConnection(user.id));
+      return true;
+    }
+
+    if (p === '/api/billing/creator/connection/start' && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-conn:${user.id}`, 15, 60000);
+      const body = await readJson(req, 8192);
+      const result = await service.startCreatorDirectOnboarding({
+        principalId: user.id,
+        rawBody: body,
+        countryCode: body.countryCode || 'KR',
+        returnUrl: body.returnUrl || '/?view=direct',
+        refreshUrl: body.refreshUrl || '/?view=direct'
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    if (p === '/api/billing/creator/products' && req.method === 'GET') {
+      const gameId = url.searchParams.get('gameId') || null;
+      const scope = url.searchParams.get('scope') || (gameId ? 'game' : 'mine');
+      if (scope === 'game' && gameId) {
+        json(res, 200, service.getCreatorDirectProducts({ gameId, activeOnly: true }));
+        return true;
+      }
+      const { user } = requireRegisteredUser(req);
+      json(res, 200, service.getCreatorDirectProducts({ creatorId: user.id, gameId }));
+      return true;
+    }
+
+    if (p === '/api/billing/creator/products' && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-prod:${user.id}`, 30, 60000);
+      const body = await readJson(req, 8192);
+      const result = service.createCreatorDirectProduct({ creatorId: user.id, body });
+      json(res, 201, result);
+      return true;
+    }
+
+    const creatorProdMatch = p.match(/^\/api\/billing\/creator\/products\/([^/]+)$/);
+    if (creatorProdMatch && req.method === 'PATCH') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-prod:${user.id}`, 30, 60000);
+      const body = await readJson(req, 8192);
+      const result = service.updateCreatorDirectProduct({
+        creatorId: user.id,
+        productId: assertId(creatorProdMatch[1]),
+        body
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    if (p === '/api/billing/creator/orders' && req.method === 'GET') {
+      const { user } = requireRegisteredUser(req);
+      const limit = url.searchParams.get('limit') || '50';
+      json(res, 200, service.getCreatorDirectOrdersList({ creatorId: user.id, limit }));
+      return true;
+    }
+
+    if (p === '/api/billing/direct/orders' && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-order:${user.id}`, 30, 60000);
+      const body = await readJson(req, 8192);
+      const result = await service.createDirectCheckoutOrder({
+        buyerId: user.id,
+        productId: body.productId,
+        platform: body.platform || 'web',
+        buyerRegion: body.buyerRegion || null,
+        returnUrl: body.returnUrl || '/?view=direct',
+        cancelUrl: body.cancelUrl || '/?view=direct',
+        idempotencyKey: idemKey(req)
+      });
+      json(res, result.replayed ? 200 : 201, result);
+      return true;
+    }
+
+    const directConfirmMatch = p.match(/^\/api\/billing\/direct\/orders\/([^/]+)\/confirm$/);
+    if (directConfirmMatch && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-confirm:${user.id}`, 30, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.confirmMockDirectOrder({
+        buyerId: user.id,
+        directOrderId: assertId(directConfirmMatch[1]),
+        providerChargeId: body.providerChargeId,
+        idempotencyKey: idemKey(req)
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    const directSimRefundMatch = p.match(/^\/api\/billing\/direct\/orders\/([^/]+)\/simulate-refund$/);
+    if (directSimRefundMatch && req.method === 'POST') {
+      if (!allowDemoAccount) throw new ApiError(404, 'NOT_FOUND');
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-direct-sim:${user.id}`, 20, 60000);
+      const body = await readJson(req, 4096);
+      const result = service.simulateDemoDirectRefund({
+        principalId: user.id,
+        directOrderId: assertId(directSimRefundMatch[1]),
+        kind: body.kind || 'REFUNDED',
+        idempotencyKey: idemKey(req)
+      });
+      json(res, 200, result);
+      return true;
+    }
+
+    const consumeEntMatch = p.match(/^\/api\/billing\/entitlements\/([^/]+)\/consume$/);
+    if (consumeEntMatch && req.method === 'POST') {
+      const { user } = requireRegisteredUser(req);
+      rate(`billing-ent-consume:${user.id}`, 30, 60000);
+      await readJson(req, 4096);
+      const result = service.consumePlayerEntitlement({
+        buyerId: user.id,
+        entitlementId: assertId(consumeEntMatch[1]),
+        idempotencyKey: idemKey(req) || `consume:${consumeEntMatch[1]}`
+      });
+      json(res, 200, result);
+      return true;
+    }
+
     throw new ApiError(404, 'NOT_FOUND');
   }
 
@@ -470,8 +615,57 @@ export function createBilling({
       return true;
     }
 
+    // M3: Daily reconciliation, CS Promo Grant, and Track B RiskControls (loopback admin only)
+    if (p === '/api/admin/billing/reconcile' && req.method === 'GET') {
+      json(res, 200, service.getAdminReconciliation());
+      return true;
+    }
+
+    const walletPromoMatch = p.match(/^\/api\/admin\/billing\/wallets\/([^/]+)\/promo$/);
+    if (walletPromoMatch && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      const result = service.adminGrantPromo({
+        principalId: assertId(walletPromoMatch[1]),
+        coins: body.coins,
+        reason: body.reason,
+        expiresAt: body.expiresAt ?? null,
+        idempotencyKey: idemKey(req) || `admin-promo:${walletPromoMatch[1]}:${now()}`,
+        actorId
+      });
+      json(res, result.duplicate ? 200 : 201, result);
+      return true;
+    }
+
+    if (p === '/api/admin/billing/direct/overview' && req.method === 'GET') {
+      const limit = url.searchParams.get('limit') || '50';
+      json(res, 200, service.getAdminDirectOverview({ limit }));
+      return true;
+    }
+
+    const suspProdMatch = p.match(/^\/api\/admin\/billing\/direct\/products\/([^/]+)\/(suspend|restore)$/);
+    if (suspProdMatch && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      const productId = assertId(suspProdMatch[1]);
+      const result = suspProdMatch[2] === 'suspend'
+        ? service.adminSuspendProduct({ productId, reason: body.reason || 'risk_policy', actorId })
+        : service.adminRestoreProduct({ productId, reason: body.reason || 'review_passed', actorId });
+      json(res, 200, result);
+      return true;
+    }
+
+    const suspConnMatch = p.match(/^\/api\/admin\/billing\/direct\/connections\/([^/]+)\/(suspend|restore)$/);
+    if (suspConnMatch && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      const principalId = assertId(suspConnMatch[1]);
+      const result = suspConnMatch[2] === 'suspend'
+        ? service.adminSuspendConnection({ principalId, reason: body.reason || 'risk_policy', actorId })
+        : service.adminRestoreConnection({ principalId, reason: body.reason || 'review_passed', actorId });
+      json(res, 200, result);
+      return true;
+    }
+
     throw new ApiError(404, 'NOT_FOUND');
   }
 
-  return { enabled: true, publicRoute, adminRoute, service, router, providers };
+  return { enabled: true, publicRoute, adminRoute, service, router, providers, stripeConnect };
 }

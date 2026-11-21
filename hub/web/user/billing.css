@@ -573,6 +573,55 @@
   margin: 3px 0 0;
 }
 
+/* Track B Creator Direct Commerce (M3) */
+.direct-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.direct-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--evergreen);
+}
+.direct-form-grid input,
+.direct-form-grid select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+}
+.platform-matrix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.platform-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.platform-chip.allowed {
+  background: #dcfce7;
+  color: #166534;
+}
+.platform-chip.blocked {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px dashed #cbd5e1;
+}
+
 @media (max-width: 640px) {
   .billing-grid {
     grid-template-columns: 1fr;

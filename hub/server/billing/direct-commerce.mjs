@@ -330,3 +330,140 @@ export function suspendCreatorConnection(db, { principalId, now = Date.now }) {
   if (updated.changes !== 1) throw new ApiError(404, 'CREATOR_CONNECTION_NOT_FOUND');
   return db.prepare('SELECT * FROM billing_creator_connections WHERE principal_id=?').get(principalId);
 }
+
+export function restoreCreatorProduct(db, { productId, now = Date.now }) {
+  const updated = db.prepare("UPDATE billing_creator_products SET status='ACTIVE', updated_at=? WHERE id=?").run(now(), productId);
+  if (updated.changes !== 1) throw new ApiError(404, 'PRODUCT_NOT_FOUND');
+  return db.prepare('SELECT * FROM billing_creator_products WHERE id=?').get(productId);
+}
+
+export function restoreCreatorConnection(db, { principalId, chargesEnabled = true, now = Date.now }) {
+  const updated = db.prepare(
+    "UPDATE billing_creator_connections SET onboarding_status='ACTIVE', charges_enabled=?, updated_at=? WHERE principal_id=?"
+  ).run(chargesEnabled ? 1 : 0, now(), principalId);
+  if (updated.changes !== 1) throw new ApiError(404, 'CREATOR_CONNECTION_NOT_FOUND');
+  return db.prepare('SELECT * FROM billing_creator_connections WHERE principal_id=?').get(principalId);
+}
+
+export function getCreatorConnection(db, principalId) {
+  if (!safeString(principalId, 128)) throw new ApiError(400, 'PRINCIPAL_REQUIRED');
+  return db.prepare('SELECT * FROM billing_creator_connections WHERE principal_id=?').get(principalId) || null;
+}
+
+export function updateCreatorProduct(db, {
+  creatorId,
+  productId,
+  title,
+  amountMinor,
+  allowedRegions,
+  allowedPlatforms,
+  ageRating,
+  status,
+  now = Date.now
+}) {
+  const existing = db.prepare('SELECT * FROM billing_creator_products WHERE id=? AND creator_id=?').get(productId, creatorId);
+  if (!existing) throw new ApiError(404, 'PRODUCT_NOT_FOUND');
+  if (existing.status === 'SUSPENDED') {
+    throw new ApiError(403, 'PRODUCT_ADMIN_SUSPENDED', 'Suspended products can only be restored by a PlayHub administrator');
+  }
+
+  const nextTitle = title !== undefined ? title : existing.title;
+  const nextAmount = amountMinor !== undefined ? amountMinor : existing.amount_minor;
+  const nextRegions = allowedRegions !== undefined ? allowedRegions : JSON.parse(existing.allowed_regions_json);
+  const nextPlatforms = allowedPlatforms !== undefined ? allowedPlatforms : JSON.parse(existing.allowed_platforms_json);
+  const nextAge = ageRating !== undefined ? ageRating : existing.age_rating;
+  const nextStatus = status !== undefined ? status : existing.status;
+
+  if (!safeString(nextTitle, 160)) throw new ApiError(422, 'PRODUCT_TITLE_REQUIRED');
+  if (!Number.isSafeInteger(nextAmount) || nextAmount <= 0) throw new ApiError(422, 'PRODUCT_AMOUNT_INVALID');
+  if (!Array.isArray(nextPlatforms) || !nextPlatforms.length || nextPlatforms.some(p => !ALL_PLATFORMS.has(p))) {
+    throw new ApiError(422, 'ALLOWED_PLATFORMS_INVALID');
+  }
+  if (!['ALL', '12+', '15+', '18+'].includes(nextAge)) throw new ApiError(422, 'AGE_RATING_INVALID');
+  if (!['DRAFT', 'ACTIVE', 'ARCHIVED'].includes(nextStatus)) {
+    throw new ApiError(422, 'PRODUCT_STATUS_INVALID');
+  }
+
+  db.prepare(`
+    UPDATE billing_creator_products
+    SET title=?, amount_minor=?, allowed_regions_json=?, allowed_platforms_json=?, age_rating=?, status=?, updated_at=?
+    WHERE id=? AND creator_id=?
+  `).run(
+    nextTitle, nextAmount, JSON.stringify(nextRegions), JSON.stringify(nextPlatforms),
+    nextAge, nextStatus, now(), productId, creatorId
+  );
+  return db.prepare('SELECT * FROM billing_creator_products WHERE id=?').get(productId);
+}
+
+export function listCreatorProducts(db, { creatorId = null, gameId = null, activeOnly = false, limit = 100 } = {}) {
+  const safeLimit = Math.min(Math.max(Number(limit) || 100, 1), 200);
+  const clauses = [];
+  const params = [];
+  if (creatorId) { clauses.push('creator_id=?'); params.push(creatorId); }
+  if (gameId) { clauses.push('game_id=?'); params.push(gameId); }
+  if (activeOnly) { clauses.push("status='ACTIVE'"); }
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  params.push(safeLimit);
+  return db.prepare(`SELECT * FROM billing_creator_products ${where} ORDER BY created_at DESC LIMIT ?`).all(...params);
+}
+
+export function listCreatorDirectOrders(db, { creatorId, limit = 50 } = {}) {
+  const safeLimit = Math.min(Math.max(Number(limit) || 50, 1), 200);
+  return db.prepare(`
+    SELECT o.*, p.title AS product_title, p.product_key, e.id AS entitlement_id, e.state AS entitlement_state
+    FROM billing_direct_orders o
+    JOIN billing_creator_products p ON p.id = o.product_id
+    LEFT JOIN billing_entitlements e ON e.direct_order_id = o.id
+    WHERE o.creator_id = ?
+    ORDER BY o.created_at DESC
+    LIMIT ?
+  `).all(creatorId, safeLimit);
+}
+
+export function consumeEntitlement(db, { buyerId, entitlementId, idempotencyKey, now = Date.now }) {
+  if (!safeString(entitlementId, 128)) throw new ApiError(400, 'ENTITLEMENT_ID_REQUIRED');
+
+  const outcome = withIdempotency({
+    db,
+    scope: 'billing.direct.entitlement.consume',
+    key: idempotencyKey,
+    principalId: buyerId,
+    requestPayload: { entitlementId },
+    now,
+    fn: () => {
+      const ent = db.prepare(`
+        SELECT e.*, p.kind AS product_kind
+        FROM billing_entitlements e
+        JOIN billing_creator_products p ON p.id = e.product_id
+        WHERE e.id=? AND e.buyer_id=?
+      `).get(entitlementId, buyerId);
+      if (!ent) throw new ApiError(404, 'ENTITLEMENT_NOT_FOUND');
+      if (ent.product_kind !== 'consumable') {
+        throw new ApiError(422, 'ENTITLEMENT_NOT_CONSUMABLE', 'Only consumable entitlements can be consumed');
+      }
+      const stamp = now();
+      if (ent.expires_at !== null && ent.expires_at <= stamp) {
+        throw new ApiError(422, 'ENTITLEMENT_EXPIRED');
+      }
+      if (ent.state !== 'ACTIVE') {
+        throw new ApiError(409, 'ENTITLEMENT_NOT_ACTIVE', `Entitlement state is ${ent.state}`);
+      }
+
+      const updated = db.prepare(`
+        UPDATE billing_entitlements
+        SET state='CONSUMED', updated_at=?
+        WHERE id=? AND buyer_id=? AND state='ACTIVE'
+      `).run(stamp, entitlementId, buyerId);
+      if (updated.changes !== 1) throw new ApiError(409, 'ENTITLEMENT_NOT_ACTIVE');
+
+      return {
+        status: 200,
+        body: {
+          entitlement: db.prepare('SELECT * FROM billing_entitlements WHERE id=?').get(entitlementId)
+        }
+      };
+    }
+  });
+
+  return { replayed: outcome.replayed, ...outcome.body };
+}
