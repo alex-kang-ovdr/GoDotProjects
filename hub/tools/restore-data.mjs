@@ -42,7 +42,10 @@ const OPTIONAL_TABLES={
   l10n_prompts:['id','name','context_id','system_prompt','rules_json','disambiguation_json','updated_at'],
   l10n_media_slots:['slot_key','description','alt_text_key','width','height','max_bytes','allowed_formats_json','updated_at'],
   l10n_media_assets:['slot_key','locale','filename','mime_type','bytes','sha256','updated_by','updated_at'],
-  l10n_releases:['version','tag','sha256','key_count','media_count','coverage_json','bundle_json','notes','is_active','created_by','created_at']
+  l10n_releases:['version','tag','sha256','key_count','media_count','coverage_json','bundle_json','notes','is_active','created_by','created_at'],
+  hub_publications:['game_id','host_slug','owner_key','owner_id','project_id','active_release_id','active_submission_id','visibility','deploy_mode','status','artifact_sha256','artifact_base_url','manifest_json','deploy_profile_json','cas_version','published_at','updated_at'],
+  hub_publication_history:['id','game_id','from_release_id','to_release_id','action','actor_id','reason','cas_version','created_at'],
+  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
