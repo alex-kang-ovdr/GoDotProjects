@@ -33,7 +33,8 @@
     "forge/Tools/build-queue.cjs",
     "forge/Tests/game-templates.test.cjs",
     "forge/Tests/game-template-runtime.test.cjs",
-    "tools/qa/fast-gate.json"
+    "tools/qa/fast-gate.json",
+    "godot-sdk/playhub_runtime_sdk.gd"
   ],
   "branches": {
     "PlayHub-Platform": {
@@ -347,6 +348,17 @@
         "hub/server/iap/**",
         "hub/tests/ios-*.mjs",
         "hub/tests/iap-*.mjs"
+      ]
+    },
+    "Hub-Desktop": {
+      "role": "데스크톱 Play Hub (웹 허브 + Rust Bootstrapper + 공용 Godot Player · 계약 · 3개 OS 생명주기 테스트)",
+      "owns": [
+        "native/**",
+        "contracts/desktop/**",
+        "tools/desktop/**",
+        "docs/desktop/**",
+        "hub/tests/desktop*.mjs",
+        "godot-sdk/hosts/desktop_host.gd"
       ]
     },
     "PlayForge-Main": {
