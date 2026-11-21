@@ -33,6 +33,7 @@
     "forge/Tools/build-queue.cjs",
     "forge/Tests/game-templates.test.cjs",
     "forge/Tests/game-template-runtime.test.cjs",
+    "forge/Templates/*/showcase.json",
     "tools/qa/fast-gate.json",
     "godot-sdk/playhub_runtime_sdk.gd"
   ],
@@ -54,9 +55,6 @@
         "forge/Tools/package-windows-server.ps1",
         "forge/Tools/multiplayer-compat.cjs",
         "forge/Tools/multiplayer-server.cjs",
-        "forge/Tools/brawllabs-multiplayer.cjs",
-        "forge/Tools/fortress-multiplayer.cjs",
-        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
         "forge/Tests/multiplayer-compat.test.cjs",
         "tools/qa/**",
         "tools/agent-skills/**",
@@ -150,7 +148,6 @@
       "owns": [
         "forge/Godot/addons/playforge_replay/**",
         "forge/Tests/playforge_replay/**",
-        "forge/Templates/**",
         "forge/Tools/record-agent-mcp.cjs",
         "forge/Tools/template-catalog.cjs",
         "forge/Tools/prepare-template-showcase.cjs",
@@ -201,7 +198,8 @@
       "owns": [
         "tools/RobloxConverter/**",
         "forge/Godot/addons/playforge_roblox_compat/**",
-        "forge/Tests/playforge_roblox_compat/**"
+        "forge/Tests/playforge_roblox_compat/**",
+        "forge/Templates/roblox-*/**"
       ]
     },
     "PlayHub-GameDeploy": {
@@ -228,7 +226,8 @@
       "owns": [
         "tools/UnityConverter/**",
         "forge/Godot/addons/playforge_unity_compat/**",
-        "forge/Tests/playforge_unity_compat/**"
+        "forge/Tests/playforge_unity_compat/**",
+        "forge/Templates/unity-*/**"
       ]
     },
     "PlayHub-DevOps": {
@@ -281,6 +280,16 @@
         "forge/Docs/BLENDER_PIPELINE_DESIGN.md"
       ]
     },
+    "Forge-Games-brawlLabs": {
+      "role": "BrawlLabs 탑다운 아레나 브롤러 템플릿 및 멀티플레이 릴레이",
+      "owns": [
+        "forge/Templates/brawllabs/**",
+        "forge/Tools/brawllabs-multiplayer.cjs",
+        "forge/OfficialGodot/brawllabs-lobby.*",
+        "forge/Tests/brawllabs*.test.cjs",
+        "games/forge-brawllabs/**"
+      ]
+    },
     "Forge-Games-captainForever": {
       "role": "Captain Forever 싱글플레이 템플릿(6-DOF·컷어웨이·배기 간섭 규칙)",
       "owns": [
@@ -295,6 +304,59 @@
         "forge/Tests/captain-forever-mmo.test.cjs",
         "forge/Tools/captain-forever-mmo-multiplayer.cjs",
         "forge/OfficialGodot/captain-forever-mmo-lobby.*"
+      ]
+    },
+    "Forge-Games-fortressWar": {
+      "role": "Fortress War 턴제 지형 파괴 포격 템플릿 및 멀티플레이 엔진",
+      "owns": [
+        "forge/Templates/fortress-war/**",
+        "forge/Tools/fortress-engine.cjs",
+        "forge/Tools/fortress-multiplayer.cjs",
+        "forge/Tools/prepare-fortress-font.py",
+        "forge/OfficialGodot/fortress-war-lobby.*",
+        "forge/Tests/fortress*.test.cjs",
+        "games/forge-fortress-war/**"
+      ]
+    },
+    "Forge-Games-ironWood": {
+      "role": "Iron Wood 물리 기반 구조물·투석 템플릿",
+      "owns": [
+        "forge/Templates/iron-wood/**",
+        "forge/Tests/ironwood*.test.cjs",
+        "games/forge-iron-wood/**"
+      ]
+    },
+    "Forge-Games-survivorIo": {
+      "role": "Survivor.io 뱀서라이크 액션 템플릿",
+      "owns": [
+        "forge/Templates/survivor-io/**",
+        "forge/Tests/survivor-io.test.cjs",
+        "games/forge-survivor-io/**"
+      ]
+    },
+    "Forge-Games-tappyChicken": {
+      "role": "Tappy Chicken 싱글플레이 플랫포머 아케이드 템플릿",
+      "owns": [
+        "forge/Templates/tappy-chicken/**",
+        "forge/Tools/convert-tappy-art.py",
+        "games/forge-tappy-chicken/**"
+      ]
+    },
+    "Forge-Games-tappyChickenMMO": {
+      "role": "Tappy Chicken MMO 템플릿·500동접 서버 최적화",
+      "owns": [
+        "forge/Templates/tappy-chicken-mmo/**",
+        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
+        "forge/OfficialGodot/tappy-chicken-mmo-lobby.*",
+        "forge/Tests/tappy-chicken-mmo*.test.cjs",
+        "games/forge-tappy-chicken-mmo/**"
+      ]
+    },
+    "Forge-Games-voxelFrontier": {
+      "role": "Voxel Frontier 3D 청크 복셀 샌드박스 템플릿",
+      "owns": [
+        "forge/Templates/voxel-frontier/**",
+        "forge/Tests/voxel-frontier.test.cjs"
       ]
     },
     "Forge-ISM-profile": {
@@ -314,15 +376,6 @@
         "hub/tests/ugc-*.mjs",
         "hub/tests/creator-*.mjs",
         "forge/Tests/release-manifest.test.cjs"
-      ]
-    },
-    "Forge-TappyChickenMMO": {
-      "role": "Tappy Chicken MMO 템플릿·500동접 서버 최적화",
-      "owns": [
-        "forge/Templates/tappy-chicken-mmo/**",
-        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
-        "forge/OfficialGodot/tappy-chicken-mmo-lobby.*",
-        "forge/Tests/tappy-chicken-mmo*.test.cjs"
       ]
     },
     "Hub-AOS": {
