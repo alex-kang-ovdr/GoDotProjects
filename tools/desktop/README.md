@@ -21,9 +21,9 @@ node --test hub/tests/desktop-contracts.test.mjs
 # 3. Godot 4.7.2 PlayHubPlayer.exe 준비 및 bootstrap.pck 익스포트
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/desktop/prepare-player.ps1
 
-# 4. 생명주기 테스트 하네스 (L2 · L4-crash · L4-hang · L5) + 용량·지연 실측
+# 4. 생명주기 테스트 하네스 (L2 · L2-hitch · L4-crash · L4-hang · L5) + 용량·지연·셰이더 히치 실측
 node tools/desktop/lifecycle-harness.ts --headless
-# 창 모드 실측 (로컬 GPU 환경)
+# 창 모드 실측 (로컬 GPU 환경: GPU/드라이버·파이프라인 컴파일·프레임 p50/p95/p99 포함)
 node tools/desktop/lifecycle-harness.ts
 ```
 

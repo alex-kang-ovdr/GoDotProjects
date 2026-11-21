@@ -28,6 +28,7 @@ struct LaunchReport {
     exit_code: Option<i32>,
     rejected_connections: u64,
     first_frame_payload: Option<serde_json::Value>,
+    shader_telemetry: Option<serde_json::Value>,
 }
 
 fn main() -> ExitCode {
@@ -284,6 +285,7 @@ fn run_launch(args: &[String]) -> ExitCode {
         exit_code,
         rejected_connections: snap.rejected_connections,
         first_frame_payload: snap.first_frame_payload,
+        shader_telemetry: snap.shader_telemetry,
     };
 
     let json_text = serde_json::to_string_pretty(&report).unwrap();

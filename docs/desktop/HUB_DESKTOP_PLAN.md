@@ -1,7 +1,7 @@
 # Play Hub Desktop — 웹 허브 + Rust Bootstrapper + 공용 Godot Player 구현 계획안
 
 - **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준·통합 트렁크 **`PlayHub-Platform`** `b8efde0`)
-- **문서 상태**: v0.5 (2026-11-22 — 통합 트렁크 `PlayHub-Platform` (`b8efde0`, `AGENTS.md` SSOT 및 `owners.json` 등록 완료) 기준 반영. v0.4: 코드 서명·키 관리·출시 승인 분리·Launch Ticket·네이티브 로그인·노출 정책 확정. v0.3: 아바타 상점 3D 뷰 3단계 구조 추가)
+- **문서 상태**: v0.6 (2026-11-22 — 첫 실행 셰이더 컴파일 히치 지속 모니터링·관리·개선 체계(§6.2) 및 `bridge.v1` `shader_telemetry` 계약 추가. v0.5: 통합 트렁크 `PlayHub-Platform` 기준 반영 및 `owners.json` 등록 완료)
 - **대상 엔진**: `godot-engine` 포크 고정 커밋 `ed1daf0bf001b61586d9930840f2f1394092c079` (**Godot 4.7.2-stable**)
 - **입력 문서**: `PlayHub_Desktop_Performance_Responsiveness_LowFriction.md` (사용자 제공 데스크톱 최적화 설계), 기술 전략 검토 기록(2026-11-21~22)
 
@@ -295,6 +295,37 @@ flowchart TB
 - **로컬 우선**: Bootstrapper는 로컬 매니페스트와 실행 가능 여부를 먼저 확인하고, 원격 확인은 병렬로 진행한다. 오프라인이면 서명된 `Entitlement` 캐시(TTL)로 실행한다.
 - **비동기 처리**: 다운로드·해시·압축 해제는 UI 스레드나 Player 메인 루프를 막지 않는다.
 - **예측적 준비**: 상세 페이지에서는 가벼운 메타데이터와 이미지만 프리패치한다. 대용량 사전 다운로드는 설정과 동의에 따른다.
+
+### 6.2 첫 실행 셰이더 컴파일 히치 모니터링 · 관리 · 개선
+
+M0 실측(`survivor-arena-g2`, Windows x64 `gl_compatibility`)에서 **재실행 첫 프레임은 1,092 ms**인 반면 **첫 실행(셰이더 컴파일 포함)은 6,651 ms**로 약 6배 차이를 확인했다. 초기 진입 이탈과 인게임 프레임 드롭을 막기 위해 셰이더 컴파일 히치를 상시 관리 대상으로 둔다.
+
+#### (1) 지속 모니터링 (`bridge.v1` `shader_telemetry`)
+
+- **단계 분해 계측**: Bootstrapper와 `bootstrap.pck`가 매 실행마다 아래 지표를 수집해 텔레메트리와 야간 리포트에 기록한다.
+  - 기동 분해: `authLatencyMs`(엔진 부팅), `pckMountMs`(`.pck` 마운트), `sceneChangeMs`(메인 씬 로드), `firstFrameLatencyMs`(첫 프레임 완료)
+  - 프레임 히치 분포(첫 프레임 이후 초기 구간): `frameP50Ms`, `frameP95Ms`, `frameP99Ms`, `maxFrameMs`, `hitchCountOver50ms`, `hitchCountOver100ms`
+  - Godot 4.7.2 파이프라인 컴파일 카운터: `RenderingServer.get_rendering_info()`의 `PIPELINE_COMPILATIONS_CANVAS` · `MESH` · `SURFACE` · `DRAW` · `SPECIALIZATION`
+  - 환경 귀속 키: `coldStart`(캐시 유무), `gpuVendor`, `gpuName`, `driverVersion`, `renderer`, `engineVersion`, `gameId`, `gameVersion`
+
+#### (2) 관리 기준 및 회귀 게이트
+
+| 항목 | 관리 기준 | 조치 |
+|---|---|---|
+| **Warm 첫 프레임** | ≤ 2,000 ms (하드 게이트) | 초과 시 야간 GPU 회귀 실패 |
+| **Cold 첫 프레임 (셰이더 포함)** | 게임·GPU·드라이버별 기준선 대비 **+20% 초과 회귀 금지** | 야간 리포트 경고 → 셰이더/머티리얼 변경 커밋 추적 |
+| **초기 인게임 히치 (`> 100 ms`)** | Warm 실행 기준 **0건 목표**, Cold 실행 시 추세 상시 추적 | Store QA·DevOps 데일리 브리핑에 게임별 히치 지표 노출 |
+| **캐시 무효화 키** | `(engineVersion, renderer, gpuVendor, gpuName, driverVersion)` | 드라이버·엔진 업데이트 시 구 캐시 자동 격리·재생성 |
+
+#### (3) 단계별 개선 전략
+
+| 단계 | 시점 | 개선 내용 |
+|---|---|---|
+| **1. 셰이더 캐시 영속·공유** | P0~P1 | Godot `shader_cache` 활성화 검증. 게임별 L2 데이터 격리 환경에서도 **엔진·드라이버 단위 셰이더 캐시**가 게임 패치·재설치로 유실되지 않도록 전용 캐시 경로로 분리 관리 |
+| **2. 로딩 중 셰이더 프리워밍** | P1 | `bootstrap.pck` 로딩 진행률 화면에서 `content-manifest`에 선언된 `warmupShaders`/주요 머티리얼을 사전 컴파일해 인게임 첫 교전 히치를 로딩 단계로 흡수 |
+| **3. 비동기 컴파일 / Ubershader** | P1 | `Forward+`·`Mobile`(Vulkan/D3D12) 게임은 Godot 4.7.2 Ubershader 기반 비동기 파이프라인 컴파일을 기본 활성화(`gl_compatibility`/OpenGL3는 프리워밍 우선) |
+| **4. 공용 아바타 셰이더 프리컴파일** | P1 | 전 게임 공용 `playforge_avatar` 머티리얼은 Player 런타임 최초 설치·업데이트 직후 1회 사전 컴파일 |
+| **5. 사전 빌드 파이프라인 캐시 배포** | P2 (선택) | Vulkan/D3D12 전환 게임 대상으로 인기 GPU·드라이버 조합의 파이프라인 캐시(Fossilize 유사 방식)를 R2 CAS로 배포 |
 
 ---
 

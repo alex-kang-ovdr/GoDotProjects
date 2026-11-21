@@ -23,7 +23,17 @@ var _hang_active: bool = false
 var _first_frame_sent: bool = false
 var _first_frame_acked: bool = false
 var _first_frame_req_id: String = ""
+var _shader_telemetry_req_id: String = ""
 var _pending_requests: Array[Dictionary] = []
+
+# Shader compile & frame-hitch telemetry (HUB_DESKTOP_PLAN §6.2)
+var pck_mount_ms: int = 0
+var scene_change_ms: int = 0
+var _probe_active: bool = false
+var _probe_elapsed_sec: float = 0.0
+var _probe_frame_deltas_ms: Array[float] = []
+const HITCH_PROBE_DURATION_SEC := 1.5
+const HITCH_PROBE_MAX_FRAMES := 90
 
 func _ready() -> void:
 	_parse_cmdline_args()
@@ -70,16 +80,62 @@ func send_request(method: String, args: Dictionary = {}) -> String:
 		_pending_requests.append(frame)
 	return req_id
 
-func notify_first_frame(game_scene: String, mounted_pck: String) -> void:
+func notify_first_frame(game_scene: String, mounted_pck: String, mount_ms: int = 0, scene_ms: int = 0) -> void:
 	if _first_frame_sent:
 		return
 	_first_frame_sent = true
+	pck_mount_ms = mount_ms
+	scene_change_ms = scene_ms
 	_first_frame_req_id = send_request("first_frame", {
 		"scene": game_scene,
 		"pck": mounted_pck,
+		"pckMountMs": pck_mount_ms,
+		"sceneChangeMs": scene_change_ms,
 		"headless": DisplayServer.get_name() == "headless",
 		"renderer": RenderingServer.get_current_rendering_method(),
+		"gpuVendor": RenderingServer.get_video_adapter_vendor(),
+		"gpuName": RenderingServer.get_video_adapter_name(),
+		"driverInfo": OS.get_video_adapter_driver_info(),
 	})
+
+func _collect_shader_telemetry() -> Dictionary:
+	var samples: Array[float] = _probe_frame_deltas_ms.duplicate()
+	samples.sort()
+	var n: int = samples.size()
+	var p50: float = samples[int(n * 0.50)] if n > 0 else 0.0
+	var p95: float = samples[mini(n - 1, int(n * 0.95))] if n > 0 else 0.0
+	var p99: float = samples[mini(n - 1, int(n * 0.99))] if n > 0 else 0.0
+	var max_ms: float = samples[n - 1] if n > 0 else 0.0
+	var hitch_50: int = 0
+	var hitch_100: int = 0
+	for ms: float in samples:
+		if ms >= 50.0:
+			hitch_50 += 1
+		if ms >= 100.0:
+			hitch_100 += 1
+	return {
+		"pckMountMs": pck_mount_ms,
+		"sceneChangeMs": scene_change_ms,
+		"sampledFrames": n,
+		"frameP50Ms": snappedf(p50, 0.01),
+		"frameP95Ms": snappedf(p95, 0.01),
+		"frameP99Ms": snappedf(p99, 0.01),
+		"maxFrameMs": snappedf(max_ms, 0.01),
+		"hitchCountOver50ms": hitch_50,
+		"hitchCountOver100ms": hitch_100,
+		"shaderCacheEnabled": bool(ProjectSettings.get_setting("rendering/shader_compiler/shader_cache/enabled", false)),
+		"gpuVendor": RenderingServer.get_video_adapter_vendor(),
+		"gpuName": RenderingServer.get_video_adapter_name(),
+		"driverInfo": OS.get_video_adapter_driver_info(),
+		"renderer": RenderingServer.get_current_rendering_method(),
+		"pipelineCompilations": {
+			"canvas": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_CANVAS),
+			"mesh": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_MESH),
+			"surface": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SURFACE),
+			"draw": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_DRAW),
+			"specialization": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SPECIALIZATION),
+		},
+	}
 
 func request_leave() -> void:
 	if is_desktop_host():
@@ -119,6 +175,13 @@ func _process(delta: float) -> void:
 				_heartbeat_accum = 0.0
 				send_request("heartbeat", {"uptimeMs": Time.get_ticks_msec()})
 
+		if _probe_active:
+			_probe_elapsed_sec += delta
+			_probe_frame_deltas_ms.append(delta * 1000.0)
+			if _probe_elapsed_sec >= HITCH_PROBE_DURATION_SEC or _probe_frame_deltas_ms.size() >= HITCH_PROBE_MAX_FRAMES:
+				_probe_active = false
+				_shader_telemetry_req_id = send_request("shader_telemetry", _collect_shader_telemetry())
+
 	elif state == WebSocketPeer.STATE_CLOSED and _connected:
 		# Host closed IPC channel
 		_connected = false
@@ -150,6 +213,9 @@ func _handle_message(raw: String) -> void:
 			if req_id == _first_frame_req_id and not _first_frame_acked:
 				_first_frame_acked = true
 				_on_first_frame_acked()
+			elif not _shader_telemetry_req_id.is_empty() and req_id == _shader_telemetry_req_id:
+				if test_mode == "hitch_probe":
+					get_tree().quit(0)
 		"event":
 			var ev := str(msg.get("event", ""))
 			var payload: Dictionary = msg.get("payload", {}) if msg.get("payload") is Dictionary else {}
@@ -161,6 +227,10 @@ func _on_first_frame_acked() -> void:
 	match test_mode:
 		"exit_ok":
 			get_tree().quit(0)
+		"hitch_probe":
+			_probe_active = true
+			_probe_elapsed_sec = 0.0
+			_probe_frame_deltas_ms.clear()
 		"crash":
 			push_error("PlayHubDesktopBridge: simulated crash (test_mode=crash)")
 			get_tree().quit(42)

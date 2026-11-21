@@ -27,6 +27,7 @@ interface BootstrapperReport {
   exitCode: number | null;
   rejectedConnections: number;
   firstFramePayload: Record<string, unknown> | null;
+  shaderTelemetry: Record<string, unknown> | null;
 }
 
 interface ScenarioResult {
@@ -250,9 +251,40 @@ async function runL5OrphanKill(): Promise<ScenarioResult> {
   };
 }
 
+async function runL2HitchProbe(): Promise<ScenarioResult> {
+  const t0 = Date.now();
+  const extra = ['--test-mode', 'hitch_probe'];
+  if (gamePck) extra.push('--game-pck', gamePck);
+  const res = runBootstrapper(extra);
+  const r = res.report;
+  const st = r?.shaderTelemetry ?? null;
+  const sampledFrames = typeof st?.sampledFrames === 'number' ? st.sampledFrames : 0;
+  const passed =
+    res.code === 0 &&
+    r !== null &&
+    r.status === 'ok' &&
+    r.authenticated === true &&
+    st !== null &&
+    sampledFrames > 0 &&
+    !isPidAlive(r.playerPid);
+  return {
+    id: 'L2-hitch',
+    name: 'Shader Compile & Post-Launch Frame Hitch Telemetry',
+    passed,
+    durationMs: Date.now() - t0,
+    detail: {
+      exitCode: res.code,
+      headless,
+      firstFrameLatencyMs: r?.firstFrameLatencyMs ?? null,
+      shaderTelemetry: st,
+    },
+  };
+}
+
 async function main(): Promise<void> {
   const scenarios: ScenarioResult[] = [];
   scenarios.push(await runL2());
+  scenarios.push(await runL2HitchProbe());
   scenarios.push(await runL4Crash());
   scenarios.push(await runL4Hang());
   scenarios.push(await runL5OrphanKill());

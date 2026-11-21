@@ -30,8 +30,8 @@
 | Rust 단위 테스트 | `cargo test --workspace` | **PASS** (6/6 — `contracts` 4건, `ipc` 1건(`Origin`·오류 토큰·2차 연결 거부), `platform` 1건) |
 | 계약 스키마 테스트 | `node24 --test hub/tests/desktop-contracts.test.mjs` | **PASS** (6/6) |
 | 소유권·스킬 게이트 | `check-ownership.mjs --strict` · `sync-skills.mjs --check` | **PASS** (`ok 40 / warn 0 / fail 0`, 동기화 OK) |
-| M0 생명주기 하네스 (Headless) | `node24 tools/desktop/lifecycle-harness.ts --headless` | **PASS** (4/4: L2, L4-crash, L4-hang, L5) |
-| M0 생명주기 하네스 (Windowed GPU) | `node24 tools/desktop/lifecycle-harness.ts` | **PASS** (4/4: L2, L4-crash, L4-hang, L5) |
+| M0 생명주기 하네스 (Headless) | `node24 tools/desktop/lifecycle-harness.ts --headless` | **PASS** (5/5: L2, L2-hitch, L4-crash, L4-hang, L5) |
+| M0 생명주기 하네스 (Windowed GPU) | `node24 tools/desktop/lifecycle-harness.ts` | **PASS** (5/5: L2, L2-hitch, L4-crash, L4-hang, L5) |
 
 ---
 
@@ -53,9 +53,16 @@
 |---|---:|---:|---|
 | Headless (`--headless`) | 345 ms | **346 ms** | CI 기본 검증 |
 | Windowed GPU — 첫 실행 (셰이더 컴파일 포함) | 6,186 ms | **6,651 ms** | 최초 OpenGL/셰이더 초기화 |
-| Windowed GPU — 재실행 (셰이더 캐시 적용) | 1,083 ms | **1,092 ms** | 계획서 목표(≤ 2,000 ms) 충족 |
+| Windowed GPU — 재실행 (셰이더 캐시 적용) | 1,083 ms | **963 ~ 1,092 ms** | 계획서 목표(≤ 2,000 ms) 충족 |
 
-### 3.3 장애 주입 검증 (L4 · L5)
+### 3.3 셰이더 컴파일 · 프레임 히치 실측 (`L2-hitch`, Windowed GPU 재실행)
+
+- **GPU / 드라이버**: `NVIDIA GeForce RTX 4070 Laptop GPU` / `NVIDIA 32.0.16.1060` / `gl_compatibility` / `shaderCacheEnabled: true`
+- **단계 분해**: `.pck` 마운트 **1 ms**, 메인 씬 로드 **130 ms**, 첫 프레임 **963 ms**
+- **초기 90프레임 히치 분포**: `p50` **0.95 ms**, `p95` **1.72 ms**, `p99` **8.68 ms**, `max` **8.68 ms** (`> 50 ms` 0건, `> 100 ms` 0건)
+- **관찰 사항**: `RenderingServer`의 `PIPELINE_COMPILATIONS_*` 카운터는 Vulkan/D3D12(`Forward+`/`Mobile`) 파이프라인 컴파일 전용이라 `gl_compatibility`(OpenGL3)에서는 `0`으로 보고된다. 따라서 OpenGL3 게임은 **Cold vs Warm 첫 프레임 지연**과 **`maxFrameMs`/`hitchCount`**를 주 지표로 함께 모니터링해야 한다.
+
+### 3.4 장애 주입 검증 (L4 · L5)
 
 | 시나리오 | 동작 | 실측 결과 |
 |---|---|---|

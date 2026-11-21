@@ -42,7 +42,9 @@ func _mount_and_launch() -> void:
 			get_tree().quit(21)
 		return
 
+	var t_mount_start := Time.get_ticks_msec()
 	var ok := ProjectSettings.load_resource_pack(pck_path, true)
+	var mount_ms := int(Time.get_ticks_msec() - t_mount_start)
 	if not ok:
 		_label.text = "Play Hub: Failed to mount .pck"
 		push_error("PlayHubDesktopBootstrap: load_resource_pack failed for " + pck_path)
@@ -60,11 +62,11 @@ func _mount_and_launch() -> void:
 		return
 
 	_target_scene = main_scene
-	print("PlayHubDesktopBootstrap: mounted=", pck_path, " main_scene=", main_scene)
+	print("PlayHubDesktopBootstrap: mounted=", pck_path, " main_scene=", main_scene, " mount_ms=", mount_ms)
 
-	# In headless or non-normal test modes, report first_frame right before scene switch
-	# (or after 1 frame if staying in bootstrap), so game scene init is also covered.
+	var t_scene_start := Time.get_ticks_msec()
 	var err := get_tree().change_scene_to_file(main_scene)
+	var scene_ms := int(Time.get_ticks_msec() - t_scene_start)
 	if err != OK:
 		_label.text = "Play Hub: Failed to open scene %s (err=%d)" % [main_scene, err]
 		push_error("PlayHubDesktopBootstrap: change_scene_to_file failed err=" + str(err))
@@ -72,7 +74,7 @@ func _mount_and_launch() -> void:
 			get_tree().quit(24)
 		return
 
-	PlayHubDesktopBridge.notify_first_frame(_target_scene, _mounted_pck)
+	PlayHubDesktopBridge.notify_first_frame(_target_scene, _mounted_pck, mount_ms, scene_ms)
 	_reported = true
 
 func _process(_delta: float) -> void:

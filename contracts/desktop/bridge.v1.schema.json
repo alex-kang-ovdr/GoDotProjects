@@ -20,6 +20,7 @@
         "activity_pulse",
         "first_frame",
         "heartbeat",
+        "shader_telemetry",
         "save_load",
         "save_write",
         "get_profile",
