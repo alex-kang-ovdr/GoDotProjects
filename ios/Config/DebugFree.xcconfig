@@ -1,0 +1,22 @@
+#include "Base.xcconfig"
+
+// Free Apple ID ($0 Personal Team) USB Direct iPhone / Simulator Test Configuration
+// - Omits paid-only entitlements (Sign in with Apple, APNs, Associated Domains, App Attest)
+// - Allows local Wi-Fi networking (NSAllowsLocalNetworking) + Cloudflare HTTPS Tunnel
+// - 7-day automatic personal signing in Xcode (no $99 Apple Developer Program required)
+PLAYHUB_BUILD_STAGE = debug
+PLAYHUB_ALLOW_FARM_SELECTOR = YES
+PLAYHUB_DEFAULT_HUB_URL = http://127.0.0.1:18130
+INFOPLIST_FILE = App/Resources/Info-Free.plist
+CODE_SIGN_ENTITLEMENTS = App/Resources/PlayHub-Free.entitlements
+CODE_SIGN_STYLE = Automatic
+PRODUCT_BUNDLE_IDENTIFIER = com.playhub.hub-ios-free.debug
+INFOPLIST_KEY_CFBundleDisplayName = Play Hub [USB]
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG ALLOW_FARM_SELECTOR PLAYHUB_FREE_USB
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+GCC_OPTIMIZATION_LEVEL = 0
+DEBUG_INFORMATION_FORMAT = dwarf
+COPY_PHASE_STRIP = NO
+
+// Optional gitignored developer-local override (Personal Team ID, unique Bundle ID slug, Cloudflare URL)
+#include? "LocalFree.xcconfig"

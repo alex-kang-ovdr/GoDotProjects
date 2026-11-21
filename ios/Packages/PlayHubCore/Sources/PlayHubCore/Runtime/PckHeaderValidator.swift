@@ -63,7 +63,7 @@ public enum PckPackageManager {
         let minor = readUInt32LE(bytes, offset: 12)
         let patch = readUInt32LE(bytes, offset: 16)
 
-        guard formatVersion == 2 || formatVersion == 3 else {
+        guard (2...4).contains(formatVersion) else {
             throw PckValidationError.unsupportedFormatVersion(formatVersion)
         }
         guard major == requiredEngineMajor && minor <= requiredEngineMinor else {

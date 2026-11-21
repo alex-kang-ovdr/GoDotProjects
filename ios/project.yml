@@ -5,10 +5,11 @@ options:
     iOS: "16.0"
   xcodeVersion: "16.0"
   createIntermediateGroups: true
-  defaultConfig: Debug
+  defaultConfig: DebugFree
 
 configs:
   Debug: debug
+  DebugFree: debug
   Dev: debug
   Test: release
   Release: release
@@ -16,6 +17,7 @@ configs:
 
 configFiles:
   Debug: Config/Debug.xcconfig
+  DebugFree: Config/DebugFree.xcconfig
   Dev: Config/Dev.xcconfig
   Test: Config/Test.xcconfig
   Release: Config/Release.xcconfig
@@ -34,6 +36,8 @@ targets:
       - path: App
         excludes:
           - "Resources/Bootstrap/**"
+          - "Resources/Info*.plist"
+          - "Resources/*.entitlements"
           - "StoreKit/**"
       - path: GodotRuntime
       - path: WebRuntime
@@ -111,6 +115,20 @@ targets:
       - target: PlayHubApp
 
 schemes:
+  PlayHubAppFree:
+    build:
+      targets:
+        PlayHubApp: all
+        PlayHubAppTests: [test]
+    run:
+      config: DebugFree
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+    test:
+      config: DebugFree
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+      targets:
+        - PlayHubAppTests
+
   PlayHubApp:
     build:
       targets:

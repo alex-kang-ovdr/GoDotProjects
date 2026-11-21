@@ -7,6 +7,7 @@ import {
   normalizeIosBranchSegment,
   verifyIpaBuffer
 } from '../../tools/ios/verify-ipa.mjs';
+import { packBootstrapDirectory } from '../../tools/ios/pack-bootstrap.mjs';
 
 const REPO_ROOT = resolve(import.meta.dirname, '..', '..');
 
@@ -138,4 +139,44 @@ test('Locked Godot 4.7.2 iOS XCFramework metadata matches fixed fork and exclude
   assert.ok(lock.excluded.includes('MoltenVK.xcframework'));
   assert.match(lock.slices.iosArm64.sha256, /^[0-9a-f]{64}$/);
   assert.match(lock.slices.iosSimulator.sha256, /^[0-9a-f]{64}$/);
+});
+
+test('Pure-Node bootstrap packer emits valid <=64KiB Godot 4.7.2 GDPC v3 pack', () => {
+  const pck = packBootstrapDirectory(resolve(REPO_ROOT, 'ios/App/Resources/Bootstrap'));
+  assert.ok(pck.length > 128 && pck.length <= 65536, `unexpected bootstrap size: ${pck.length}`);
+  assert.equal(pck.subarray(0, 4).toString('ascii'), 'GDPC');
+  assert.equal(pck.readUInt32LE(4), 3); // PACK_FORMAT_VERSION_V3
+  assert.equal(pck.readUInt32LE(8), 4); // major
+  assert.equal(pck.readUInt32LE(12), 7); // minor
+  assert.equal(pck.readUInt32LE(16), 2); // patch
+  assert.equal(pck.readUInt32LE(20), 2); // PACK_REL_FILEBASE
+  const dirOffset = Number(pck.readBigUInt64LE(32));
+  assert.equal(pck.readUInt32LE(dirOffset), 4); // 4 bootstrap files, 0 starter games
+});
+
+test('Free Apple ID ($0) USB configuration omits all paid-only entitlements', () => {
+  const freeEnt = readFileSync(resolve(REPO_ROOT, 'ios/App/Resources/PlayHub-Free.entitlements'), 'utf8');
+  for (const paidKey of [
+    'com.apple.developer.applesignin',
+    'com.apple.developer.associated-domains',
+    'aps-environment',
+    'appattest'
+  ]) {
+    assert.equal(freeEnt.includes(paidKey), false, `Free entitlements must not contain paid capability: ${paidKey}`);
+  }
+
+  const debugFreeCfg = readFileSync(resolve(REPO_ROOT, 'ios/Config/DebugFree.xcconfig'), 'utf8');
+  assert.match(debugFreeCfg, /CODE_SIGN_ENTITLEMENTS\s*=\s*App\/Resources\/PlayHub-Free\.entitlements/);
+  assert.match(debugFreeCfg, /INFOPLIST_FILE\s*=\s*App\/Resources\/Info-Free\.plist/);
+  assert.match(debugFreeCfg, /PLAYHUB_FREE_USB/);
+  assert.match(debugFreeCfg, /#include\?\s*"LocalFree\.xcconfig"/);
+
+  const infoFree = readFileSync(resolve(REPO_ROOT, 'ios/App/Resources/Info-Free.plist'), 'utf8');
+  assert.match(infoFree, /<key>PlayHubFreeUsbMode<\/key>\s*<true\s*\/>/);
+  assert.match(infoFree, /<key>NSAllowsLocalNetworking<\/key>\s*<true\s*\/>/);
+  assert.equal(infoFree.includes('NSAllowsArbitraryLoads'), false);
+
+  const projectYml = readFileSync(resolve(REPO_ROOT, 'ios/project.yml'), 'utf8');
+  assert.match(projectYml, /DebugFree:\s*Config\/DebugFree\.xcconfig/);
+  assert.match(projectYml, /PlayHubAppFree:/);
 });

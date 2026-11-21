@@ -2,6 +2,10 @@
 PlayHub.xcodeproj/
 *.xcworkspace/
 
+# Local per-developer Free Apple ID signing & generated bootstrap pack
+Config/LocalFree.xcconfig
+App/Resources/Bootstrap/data.pck
+
 # Extracted Godot 4.7.2 XCFramework (generated via tools/ios/extract-godot-xcframework.{ps1,sh})
 Vendor/
 
