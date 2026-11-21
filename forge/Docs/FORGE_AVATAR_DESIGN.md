@@ -97,6 +97,24 @@
 - **`enter_ragdoll(impulse, hit_bone)`**: `CharacterBody3D` 이동·충돌을 일시 정지하고 `AnimationPlayer`를 정지한 뒤 `physical_bones_start_simulation()`을 시작하며 지정 본에 충격량(`apply_central_impulse`)을 전달한다.
 - **`recover_from_ragdoll(duration)`**: 래그돌 `hips`의 지면 위치를 기준으로 루트 `CharacterBody3D`를 정합하고 물리 시뮬레이션을 종료한 뒤 기상/대기 애니메이션으로 복구한다.
 
+### 3.3 게임 모드별 3D 렌더타겟 UI 초상 (`PlayForgeAvatarPortraitUI`) 및 UI 최소 사이즈 제한
+
+2D 게임, 카드/퍼즐/전략, RPG 대화·HUD 등 3D 이동 캐릭터가 필요 없거나 보조 초상이 필요한 게임 모드를 위해, 플레이어의 봉인 아바타를 독립 `World3D` `SubViewport` 렌더타겟 UI 초상으로 표현하는 옵션을 제공한다.
+
+| 표현 모드 (`AvatarPresentationMode`) | 값 | 동작 | 최소 UI 사이즈 (C++ 엔진 강제) |
+|---|---:|---|---|
+| `WORLD_3D` | `0` | 3D 월드 캐릭터(TPS/FPS/TopDown + 래그돌) 기본 스폰 | 해당 없음 |
+| `PORTRAIT_UPPER_BODY` | `1` | 3D 렌더타겟 **상반신 초상 UI** (`SubViewport`, 2D/3D 씬 공통) | **`128 × 128 px`** |
+| `PORTRAIT_FULL_BODY` | `2` | 3D 렌더타겟 **전신 초상 UI** (`SubViewport`, 4소켓 장착물 포함) | **`160 × 240 px`** |
+| `WORLD_3D_WITH_PORTRAIT` | `3` | 3D 월드 캐릭터 + 실시간 3D 초상 HUD 병행 | **`128 × 128 px`** *(전신 전환 시 `160 × 240 px`)* |
+
+- **설정 경로**: `project.godot`(`playforge/avatar/presentation_mode`, `portrait_size`, `portrait_corner`), `PlayForgeAvatarSpawn` 인스펙터 `@export`, 런타임 `PlayForgePlatform.set_avatar_presentation_mode(mode, size, corner)` / `set_portrait_framing(framing, size)`.
+- **크기 정책**: **최소 사이즈 이상(`>= min_size`)만 의무 적용**하며 상한선 제한은 두지 않는다(로비·캐릭터 선택·대화창·전면 초상 UI 등 큰 크기 자유 확장 가능).
+- **C++ 엔진 레벨 최소 사이즈 및 은닉 차단 (`Forge-GodotEngine`)**:
+  - `Control::platform_min_size`를 C++ 코어(`scene/gui/control.{h,cpp}`)에서 강제해 `size` · `custom_minimum_size` · `custom_maximum_size` · 앵커/오프셋 축소 시 최소 사이즈 이하로 줄어들지 않으며 위반 카운트(`Control.min_size_clamped` 등)를 기록한다.
+  - `Control::set_scale(< 1.0)`, `CanvasItem::set_visible(false)`, `CanvasItem::set_modulate(alpha < 0.85)`, `queue_free()` / `free()` / `remove_child()` / `reparent()` / `set_script()` 및 내부 `SealedPortraitStage` / `SubViewport` 트리 탐색을 모두 차단한다.
+  - `PlayForgePortraitLayer`는 `layer=115`로 배치해 사용자 UI(`<= 100`)에 가려지지 않으면서 좌상단 `PlayForgeCoreHUD`(`layer=128`) 아래 안전 영역에 정렬된다.
+
 ---
 
 ## 4. "포지에서 직접 수정 불가" 3중 봉인 정책 (UEFN 모델)
