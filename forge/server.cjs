@@ -266,9 +266,33 @@ async function streamStaticFile(req, res, file, info, baseHeaders, compressionCa
   stream.pipe(res);
 }
 
-function insideRoot(file) {
-  const relative = path.relative(root, file);
+function insideDir(baseDir, file) {
+  const relative = path.relative(baseDir, file);
   return relative !== '..' && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative);
+}
+
+function insideRoot(file) {
+  return insideDir(root, file);
+}
+
+function resolveWebEditorVendorDir(options, serverEnv) {
+  const candidates = [
+    options.webEditorVendorDir,
+    serverEnv.PLAYFORGE_WEB_EDITOR_DIR,
+    path.join(root, 'OfficialGodot', 'vendor'),
+    path.resolve(root, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
+    path.resolve(root, '..', 'artifacts', 'local-runtime', 'godot-web'),
+    path.resolve(root, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web'),
+  ].filter(Boolean);
+  for (const candidate of candidates) {
+    try {
+      const resolved = fs.realpathSync(candidate);
+      if (fs.statSync(resolved).isDirectory() && fs.existsSync(path.join(resolved, 'godot.editor.js'))) {
+        return resolved;
+      }
+    } catch {}
+  }
+  return null;
 }
 
 function normalizeBasePath(raw) {
@@ -302,6 +326,7 @@ function createServer(options = {}) {
   const configuredOrigin = options.publicOrigin ?? serverEnv.PUBLIC_ORIGIN;
   const originAllowed = createOriginPolicy(configuredOrigin);
   const basePath = normalizeBasePath(options.basePath ?? serverEnv.PLAYFORGE_BASE_PATH ?? '');
+  const webEditorVendorDir = resolveWebEditorVendorDir(options, serverEnv);
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
   const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
   const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv(serverEnv));
@@ -717,8 +742,12 @@ function createServer(options = {}) {
     if (segments.some(part => part.startsWith('.') || ['node_modules', 'saved', 'engine', 'tools', 'godot', 'privateaccount'].includes(part.toLowerCase()))) {
       return reply(403, 'Private path');
     }
-    let file = path.resolve(root, '.' + pathname);
-    if (!insideRoot(file)) return reply(403, 'Outside project');
+    const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
+    const allowedRoot = isVendorBinary && webEditorVendorDir ? webEditorVendorDir : root;
+    let file = isVendorBinary && webEditorVendorDir
+      ? path.resolve(webEditorVendorDir, pathname.slice('/OfficialGodot/vendor/'.length))
+      : path.resolve(root, '.' + pathname);
+    if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
     try {
       let info = await fs.promises.stat(file);
       if (info.isDirectory()) {
@@ -729,10 +758,9 @@ function createServer(options = {}) {
         file = path.join(file, 'index.html');
       }
       file = await fs.promises.realpath(file);
-      if (!insideRoot(file)) return reply(403, 'Outside project');
+      if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
       info = await fs.promises.stat(file);
       if (!info.isFile()) return reply(404, 'Not found');
-      const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
       await streamStaticFile(req, res, file, info, {
         'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
         'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
