@@ -93,8 +93,11 @@ class GodotPlayerActivity : GodotActivity() {
         launchAgeTier = intent.getStringExtra(EXTRA_AGE_TIER) ?: "UNKNOWN"
         launchRoomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
         launchMatchRoomId = intent.getStringExtra(EXTRA_MATCH_ROOM_ID).orEmpty()
-        // Persist launch pack path to app filesDir (user://) for deterministic bootstrap handoff
-        runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
+        // Persist launch mode & pack path to app filesDir (user://) for deterministic bootstrap handoff
+        runCatching {
+            File(filesDir, "playhub_launch_mode.txt").writeText("game")
+            File(filesDir, "playhub_launch.txt").writeText(launchPckPath)
+        }
         super.onCreate(savedInstanceState)
         attachUniversalOverlayButton()
     }
