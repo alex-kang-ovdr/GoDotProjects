@@ -5,6 +5,7 @@ import { transaction } from '../db.mjs';
 import { readCatalog, findGame } from '../catalog.mjs';
 import { ApiError, assertId, digest, equal, json, readJson, safeString, secret, uid } from '../security.mjs';
 import { ensureMobileSchema } from './schema.mjs';
+import { createSocial } from '../social/routes.mjs';
 import {
   canPlayAgeRating,
   classifyAgeTier,
@@ -243,10 +244,25 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     };
   }
 
+  const social = createSocial({
+    db,
+    now,
+    rate,
+    audit,
+    bearerPayload,
+    ensureCompliance: getCompliance,
+    rejectBrowserOrigin,
+    config
+  });
+
   async function publicRoute(req, res, url) {
     const path = url.pathname;
     if (!path.startsWith('/api/mobile/')) return false;
     setNativeHeaders(res);
+
+    if (path.startsWith('/api/mobile/social/')) {
+      if (await social.route(req, res, url)) return true;
+    }
 
     // 1. Guest immediate login (no Google required)
     if (path === '/api/mobile/auth/guest' && req.method === 'POST') {

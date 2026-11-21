@@ -18,6 +18,7 @@ import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
 import { createMobile } from './mobile/routes.mjs';
+import { createSocial } from './social/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -144,6 +145,28 @@ export function createApp(input, dependencies = {}) {
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
   const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
+  const webSocial = createSocial({
+    config,
+    db,
+    now,
+    rate,
+    audit,
+    prefix: '/api/social',
+    resolveAuth(req, res, required) {
+      if (!required) {
+        const current = sessionFor(req, 'public');
+        if (!current?.principal_id) return null;
+        const user = db.prepare('SELECT * FROM users WHERE id=?').get(current.principal_id);
+        return user ? { user } : null;
+      }
+      const s = requireSession(req, 'public');
+      const principal = promote(s, req, res);
+      const user = db.prepare('SELECT * FROM users WHERE id=?').get(principal.principal_id);
+      if (!user) throw new ApiError(401, 'SESSION_REQUIRED');
+      return { user };
+    }
+  });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -279,6 +302,7 @@ export function createApp(input, dependencies = {}) {
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
     if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
+    if (path.startsWith('/api/social/') && await webSocial.route(req,res,url)) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {

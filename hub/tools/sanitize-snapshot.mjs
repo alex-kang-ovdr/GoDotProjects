@@ -33,7 +33,7 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   game_overrides: ['game_id', 'enabled', 'updated_at'],
   errors: ['id', 'code', 'message', 'game_id', 'created_at', 'traffic_type', 'qa_run_id'],
   audit: ['id', 'action', 'target', 'detail', 'created_at'],
-  creator_submissions: ['id', 'owner_key', 'owner_id', 'project_id', 'release_id', 'release_revision', 'release_label', 'title', 'description', 'status', 'revision', 'review_note', 'created_at', 'updated_at', 'submitted_at', 'decided_at'],
+  creator_submissions: ['id', 'owner_key', 'owner_id', 'project_id', 'release_id', 'release_revision', 'release_label', 'title', 'description', 'status', 'revision', 'review_note', 'created_at', 'updated_at', 'submitted_at', 'decided_at', 'game_slug', 'visibility', 'deploy_mode', 'artifact_sha256', 'manifest_json', 'package_validation', 'publication_status', 'published_game_id'],
   qa_runs: ['id', 'submission_id', 'target_type', 'target_id', 'release_revision', 'policy_version', 'qa_status', 'score', 'report_path', 'summary_json', 'started_at', 'finished_at'],
   submission_checklists: ['submission_id', 'submission_revision', 'checklist_version', 'items_json', 'updated_by', 'updated_at'],
   l10n_keys: ['key', 'namespace', 'source_text', 'source_hash', 'context_id', 'description', 'max_chars', 'placeholders_json', 'code_refs_json', 'unused_since', 'revision', 'updated_at'],
@@ -56,10 +56,21 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   cdn_uploads: ['id', 'plan_id', 'owner', 'path', 'sha256', 'bytes', 'quarantine_key', 'state', 'reserved_bytes', 'blob_id', 'error_code', 'created_at', 'updated_at'],
   cdn_commits: ['id', 'project_id', 'parent_id', 'manifest_blob_id', 'manifest_sha256', 'file_count', 'total_bytes', 'author', 'message', 'restored_from', 'created_at', 'pruned_at'],
   cdn_pins: ['commit_id', 'owner', 'reason', 'created_at'],
-  cdn_idempotency: ['owner', 'key', 'scope', 'status', 'response_json', 'created_at']
+  cdn_idempotency: ['owner', 'key', 'scope', 'status', 'response_json', 'created_at'],
+  user_profiles: ['principal_id', 'handle', 'avatar_color', 'bio', 'privacy_level', 'updated_at'],
+  social_friendships: ['requester_id', 'addressee_id', 'status', 'created_at', 'updated_at'],
+  social_blocks: ['blocker_id', 'blocked_id', 'created_at'],
+  social_presence: ['principal_id', 'status', 'game_id', 'game_title', 'room_code', 'joinable', 'updated_at'],
+  social_parties: ['id', 'leader_id', 'title', 'target_game_id', 'room_code', 'max_members', 'created_at', 'updated_at'],
+  social_party_members: ['party_id', 'principal_id', 'role', 'ready_state', 'joined_at'],
+  social_messages: ['id', 'channel_type', 'channel_key', 'sender_id', 'body', 'is_quick_message', 'created_at'],
+  social_leaderboards: ['game_id', 'board_id', 'principal_id', 'score', 'period_key', 'updated_at'],
+  social_reports: ['id', 'reporter_id', 'target_type', 'target_id', 'reason', 'created_at'],
+  social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
+  social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at']
 });
 
-// High-risk auth, session, token, and operational log tables wiped unconditionally
+// High-risk auth, session, token, private chat, and moderation log tables wiped unconditionally
 const DROP_TABLES = [
   'sessions',
   'oauth_states',
@@ -68,7 +79,12 @@ const DROP_TABLES = [
   'save_idempotency',
   'hub_publish_idempotency',
   'cdn_idempotency',
-  'merge_requests'
+  'merge_requests',
+  'social_messages',
+  'social_reports',
+  'social_presence',
+  'social_party_launch_acks',
+  'social_party_launches'
 ];
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);
@@ -171,7 +187,8 @@ function preserveLocalAndDevData(destDb, destTables, destColumns, preserveFromPa
         ['wishlist_items', 'principal_id', null],
         ['user_preferences', 'principal_id', null],
         ['user_age_compliance', 'principal_id', 'compliance'],
-        ['parental_consent_logs', 'principal_id', null]
+        ['parental_consent_logs', 'principal_id', null],
+        ['user_profiles', 'principal_id', null]
       ]) {
         const cols = commonCols(tbl);
         if (!cols) continue;
@@ -294,6 +311,17 @@ export async function sanitizeSnapshot({
             const label = `DevUser_${hmacHex(hmacSalt, 'user_display', u.id, 8)}`;
             upd.run(label, u.id);
             stats.pseudonymizedUsers++;
+          }
+        }
+
+        // 2b. Pseudonymize user_profiles.handle and clear free-text bio
+        if (tables.has('user_profiles')) {
+          const profs = db.prepare('SELECT principal_id FROM user_profiles').all();
+          const upd = db.prepare("UPDATE user_profiles SET handle = ?, bio = '' WHERE principal_id = ?");
+          for (const p of profs) {
+            const code = String((parseInt(hmacHex(hmacSalt, 'profile_tag', p.principal_id, 4), 16) % 9000) + 1000);
+            const h = `DevUser_${hmacHex(hmacSalt, 'profile_handle', p.principal_id, 6)}#${code}`;
+            upd.run(h, p.principal_id);
           }
         }
 

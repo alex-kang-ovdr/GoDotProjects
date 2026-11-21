@@ -3,11 +3,16 @@ package com.playhub.aos.ui
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -36,13 +41,23 @@ import com.playhub.aos.auth.AuthProfile
 import com.playhub.aos.auth.AuthSessionStore
 import com.playhub.aos.compliance.AgeGateDialog
 import com.playhub.aos.compliance.AgeGatePolicy
+import com.playhub.aos.compliance.AgeTier
 import com.playhub.aos.compliance.GameAgeRating
 import com.playhub.aos.config.FarmCluster
 import com.playhub.aos.config.FarmHealthChecker
 import com.playhub.aos.config.FarmHealthResult
 import com.playhub.aos.config.FarmHealthStatus
 import com.playhub.aos.config.FarmServerRegistry
+import com.playhub.aos.network.LeaderboardEntryDto
 import com.playhub.aos.network.PlayHubApiClient
+import com.playhub.aos.network.QuickMessageDto
+import com.playhub.aos.network.SocialFriendDto
+import com.playhub.aos.network.SocialMessageDto
+import com.playhub.aos.network.SocialPartyDto
+import com.playhub.aos.network.SocialPartyLaunchDto
+import com.playhub.aos.network.SocialProfileDto
+import com.playhub.aos.network.SocialRequestDto
+import com.playhub.aos.network.SocialSearchUserDto
 import com.playhub.aos.runtime.GodotPlayerActivity
 import com.playhub.aos.runtime.PckPackageManager
 import com.playhub.aos.runtime.VersionCompatibilityChecker
@@ -90,30 +105,22 @@ private data class CatalogGame(
     val tagCode: String = "3D"
 )
 
-private data class FriendPresence(
-    val id: String,
-    val name: String,
-    val initial: String,
-    val avatarColorHex: String,
+private data class ActiveChatTarget(
+    val channelType: String, // "dm" or "party"
+    val targetId: String,    // peerPrincipalId or partyId
+    val title: String,
+    val subtitle: String,
+    val avatarColor: String,
     val online: Boolean,
-    val activity: String,
     val playingGameId: String? = null,
-    val lastMessage: String,
-    val time: String,
-    var unread: Int,
-    val messages: MutableList<ChatMessage>
-)
-
-private data class ChatMessage(
-    val senderMe: Boolean,
-    val text: String,
-    val time: String
+    val roomCode: String? = null
 )
 
 /**
  * Play Hub Android Main Shell — High-Contrast Dark Modern UI (Stitch Design System + Official PlayHub Logo).
- * - Preserves all Play Hub runtime capabilities: Zero Forge, Minimal Footprint, On-Demand Godot 4.7.2 .pck,
- *   Guest + Neutral Age Gate compliance, Pre-Entry Version Compatibility Gate, and 4-level Farm Server Health.
+ * - Full M3 Social Integration: Live Profile/Handle, Friends Search/Request/Accept, Real-Time Presence,
+ *   Party Lobby (Create/Join Room Code/Ready/Leave/Deep Link), Real 1:1 DM & Party Chat,
+ *   Child-Safe Quick Messages, Block/Report Moderation, and Live Leaderboards.
  */
 class MainActivity : Activity() {
 
@@ -135,9 +142,25 @@ class MainActivity : Activity() {
     private var searchQuery: String = ""
     private var selectedCategory: String = "all"
     private var chatFilterOnlineOnly: Boolean = false
-    private var activeChatFriendId: String? = null
+    private var activeChatTarget: ActiveChatTarget? = null
+    private var activeChatMessages: List<SocialMessageDto> = emptyList()
     private var remoteCatalog: List<CatalogGame>? = null
     private var syncStatusText: String = "서버 연결 준비 중..."
+
+    // Live M3 Social State
+    private var remoteSocialProfile: SocialProfileDto? = null
+    private var remoteFriends: List<SocialFriendDto> = emptyList()
+    private var remoteIncomingRequests: List<SocialRequestDto> = emptyList()
+    private var remoteOutgoingRequests: List<SocialRequestDto> = emptyList()
+    private var remoteActiveParty: SocialPartyDto? = null
+    private var safeQuickMessages: List<QuickMessageDto> = listOf(
+        QuickMessageDto("qm_hi", "안녕!"),
+        QuickMessageDto("qm_play", "같이 플레이할래?"),
+        QuickMessageDto("qm_ready", "준비 완료!"),
+        QuickMessageDto("qm_gg", "잘했어!"),
+        QuickMessageDto("qm_wait", "잠시만 기다려줘!")
+    )
+    private var pendingDeepLinkUri: Uri? = null
 
     private lateinit var topBarView: LinearLayout
     private lateinit var headerSearchRow: LinearLayout
@@ -154,88 +177,6 @@ class MainActivity : Activity() {
     private val probeExecutor = Executors.newFixedThreadPool(4)
     private val farmHealthCache = ConcurrentHashMap<String, FarmHealthResult>()
 
-    private val friendsData: MutableList<FriendPresence> by lazy {
-        mutableListOf(
-            FriendPresence(
-                id = "f1",
-                name = "민준",
-                initial = "민",
-                avatarColorHex = "#1E3A5F",
-                online = true,
-                activity = "Survivor Arena G2 중",
-                playingGameId = "survivor-arena-g2",
-                lastMessage = "지금 웨이브 5 보스 앞이야! 같이 들어와",
-                time = "방금",
-                unread = 2,
-                messages = mutableListOf(
-                    ChatMessage(false, "오늘 서바이벌 아레나 같이 할래?", "오후 5:40"),
-                    ChatMessage(true, "좋아! 나 바로 접속할게", "오후 5:42"),
-                    ChatMessage(false, "지금 웨이브 5 보스 앞이야! 같이 들어와", "오후 5:46")
-                )
-            ),
-            FriendPresence(
-                id = "f2",
-                name = "서연",
-                initial = "서",
-                avatarColorHex = "#3B2654",
-                online = true,
-                activity = "Match-3 Garden 중",
-                playingGameId = "match3-garden",
-                lastMessage = "30콤보 달성했어!!",
-                time = "3분 전",
-                unread = 1,
-                messages = mutableListOf(
-                    ChatMessage(false, "30콤보 달성했어!!", "오후 5:43")
-                )
-            ),
-            FriendPresence(
-                id = "f3",
-                name = "지호",
-                initial = "지",
-                avatarColorHex = "#1B4332",
-                online = true,
-                activity = "접속 중",
-                playingGameId = null,
-                lastMessage = "아바타 컬러 새로 바꿨어 어때?",
-                time = "24분 전",
-                unread = 0,
-                messages = mutableListOf(
-                    ChatMessage(false, "아바타 컬러 새로 바꿨어 어때?", "오후 5:20")
-                )
-            ),
-            FriendPresence(
-                id = "f4",
-                name = "하은",
-                initial = "하",
-                avatarColorHex = "#4A2C2A",
-                online = true,
-                activity = "Survivor Arena G2 중",
-                playingGameId = "survivor-arena-g2",
-                lastMessage = "파티 열었어 바로 합류해!",
-                time = "1시간 전",
-                unread = 0,
-                messages = mutableListOf(
-                    ChatMessage(false, "파티 열었어 바로 합류해!", "오후 4:40")
-                )
-            ),
-            FriendPresence(
-                id = "f5",
-                name = "도윤",
-                initial = "도",
-                avatarColorHex = "#2E3338",
-                online = false,
-                activity = "오프라인",
-                playingGameId = null,
-                lastMessage = "내일 저녁에 파티하자",
-                time = "어제",
-                unread = 0,
-                messages = mutableListOf(
-                    ChatMessage(false, "내일 저녁에 파티하자", "어제")
-                )
-            )
-        )
-    }
-
     private val avatarAccentOptions = listOf(
         Pair("#00B06F", "플레이 그린"),
         Pair("#142C25", "에버그린"),
@@ -245,7 +186,9 @@ class MainActivity : Activity() {
     )
 
     private fun savedAvatarColor(): String =
-        getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE).getString("avatar_color", "#00B06F") ?: "#00B06F"
+        remoteSocialProfile?.avatarColor
+            ?: getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE).getString("avatar_color", "#00B06F")
+            ?: "#00B06F"
 
     private fun saveAvatarColor(hex: String) {
         getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE).edit().putString("avatar_color", hex).apply()
@@ -330,7 +273,6 @@ class MainActivity : Activity() {
                 tagCode = "WEB"
             )
         )
-        // Include synthetic 4.8 incompatibility fixture only on non-production builds (debug/dev/test)
         if (FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) {
             list.add(
                 1,
@@ -368,6 +310,7 @@ class MainActivity : Activity() {
             allowFlag = BuildConfig.ALLOW_FARM_SELECTOR,
             defaultBaseUrl = BuildConfig.HUB_BASE_URL
         )
+        pendingDeepLinkUri = intent?.data
         val root = buildRootLayout()
         setContentView(root)
         applySystemBarInsets(root)
@@ -383,6 +326,19 @@ class MainActivity : Activity() {
                 Toast.makeText(this, "연령 확인 완료 (${tier.name}) · Guest로 바로 플레이할 수 있습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.let { uri ->
+            pendingDeepLinkUri = uri
+            processPendingDeepLink()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sendPresenceHeartbeat("online", null, null, remoteActiveParty?.roomCode)
     }
 
     override fun onDestroy() {
@@ -438,6 +394,46 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun isJwtExpired(jwt: String): Boolean {
+        return runCatching {
+            val parts = jwt.split(".")
+            if (parts.size < 2) return true
+            val decoded = android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING)
+            val json = String(decoded, Charsets.UTF_8)
+            val match = Regex("\"exp\"\\s*:\\s*(\\d+)").find(json) ?: return true
+            val expSec = match.groupValues[1].toLong()
+            expSec * 1000L <= System.currentTimeMillis() + 30_000L
+        }.getOrDefault(true)
+    }
+
+    private fun ensureAuthToken(client: PlayHubApiClient): String {
+        val existing = profile.accessToken
+        if (!existing.isNullOrBlank() && !isJwtExpired(existing)) return existing
+        val refresh = profile.refreshToken
+        if (!refresh.isNullOrBlank()) {
+            val refreshed = runCatching { client.refreshSession(refresh) }.getOrNull()
+            if (refreshed != null) {
+                authStore.saveRemoteTokens(refreshed)
+                profile = authStore.loadOrCreateGuest()
+                return refreshed.accessToken
+            }
+        }
+        val issued = client.createGuestSession()
+        authStore.saveRemoteTokens(issued)
+        profile = authStore.loadOrCreateGuest()
+        return issued.accessToken
+    }
+
+    private fun sendPresenceHeartbeat(status: String, gameId: String?, gameTitle: String?, roomCode: String?) {
+        val token = profile.accessToken ?: return
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                PlayHubApiClient(baseUrl).updatePresence(token, status, gameId, gameTitle, roomCode)
+            }
+        }
+    }
+
     private fun syncWithActiveFarm() {
         val farm = activeFarm
         syncStatusText = "서버 연결 중 (${farm.id})..."
@@ -447,14 +443,8 @@ class MainActivity : Activity() {
         ioExecutor.execute {
             val client = PlayHubApiClient(farm.baseUrl)
             runCatching {
-                var token = profile.accessToken
-                if (token.isNullOrBlank()) {
-                    val issued = client.createGuestSession()
-                    authStore.saveRemoteTokens(issued)
-                    profile = authStore.loadOrCreateGuest()
-                    token = issued.accessToken
-                }
-                client.fetchCatalog(token, BuildConfig.GODOT_ENGINE_VERSION, BuildConfig.VERSION_CODE).map { item ->
+                val token = ensureAuthToken(client)
+                val catalog = client.fetchCatalog(token, BuildConfig.GODOT_ENGINE_VERSION, BuildConfig.VERSION_CODE).map { item ->
                     val mb = if (item.pckBytes > 0) String.format("%.1f MB", item.pckBytes / (1024.0 * 1024.0)) else "웹 스트리밍"
                     val st = styleForGame(item.id, item.runtime)
                     CatalogGame(
@@ -477,13 +467,29 @@ class MainActivity : Activity() {
                         tagCode = if (item.runtime == "godot-pck") (item.requiredEngineVersion ?: "3D") else "WEB"
                     )
                 }
-            }.onSuccess { list ->
+                // Sync live M3 Social state in the same connection wave
+                val socProfile = runCatching { client.fetchSocialProfile(token) }.getOrNull()
+                runCatching { client.updatePresence(token, "online") }
+                val friendsPayload = runCatching { client.fetchSocialFriends(token) }.getOrNull()
+                val myParty = runCatching { client.fetchMyParty(token) }.getOrNull()
+                val qms = runCatching { client.fetchQuickMessages() }.getOrNull()
+                Triple(catalog, Triple(socProfile, friendsPayload, myParty), qms)
+            }.onSuccess { (list, socialTriple, qms) ->
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
                     if (activeFarm.baseUrl != farm.baseUrl) return@runOnUiThread
                     remoteCatalog = if (list.isNotEmpty()) list else null
-                    syncStatusText = "온라인 동기화 완료 (${list.size}종 · ${farm.id})"
+                    socialTriple.first?.let { remoteSocialProfile = it }
+                    socialTriple.second?.let { fp ->
+                        remoteFriends = fp.friends
+                        remoteIncomingRequests = fp.incomingRequests
+                        remoteOutgoingRequests = fp.outgoingRequests
+                    }
+                    remoteActiveParty = socialTriple.third
+                    if (!qms.isNullOrEmpty()) safeQuickMessages = qms
+                    syncStatusText = "온라인 동기화 완료 (${list.size}종 · 친구 ${remoteFriends.size}명 · ${farm.id})"
                     renderTab(activeTab)
+                    processPendingDeepLink()
                 }
             }.onFailure {
                 runOnUiThread {
@@ -496,15 +502,58 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun refreshSocialOnly(afterRefresh: (() -> Unit)? = null) {
+        val farm = activeFarm
+        ioExecutor.execute {
+            val client = PlayHubApiClient(farm.baseUrl)
+            runCatching {
+                val token = ensureAuthToken(client)
+                val prof = client.fetchSocialProfile(token)
+                val fp = client.fetchSocialFriends(token)
+                val party = client.fetchMyParty(token)
+                Triple(prof, fp, party)
+            }.onSuccess { (prof, fp, party) ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    remoteSocialProfile = prof
+                    remoteFriends = fp.friends
+                    remoteIncomingRequests = fp.incomingRequests
+                    remoteOutgoingRequests = fp.outgoingRequests
+                    remoteActiveParty = party
+                    afterRefresh?.invoke()
+                    renderTab(activeTab)
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    Toast.makeText(this, "소셜 동기화 실패: ${err.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun processPendingDeepLink() {
+        val uri = pendingDeepLinkUri ?: return
+        pendingDeepLinkUri = null
+        val roomCode = uri.getQueryParameter("room")?.trim()?.uppercase()
+        val gameId = uri.lastPathSegment?.takeIf { it != "join" && it != "lobby" }
+        if (!roomCode.isNullOrBlank()) {
+            joinPartyByCode(roomCode) { party ->
+                val targetId = gameId ?: party.targetGameId
+                val game = targetId?.let { id -> allCatalogGames().find { it.id == id } }
+                if (game != null) openExperienceDetail(game)
+            }
+        } else if (!gameId.isNullOrBlank()) {
+            allCatalogGames().find { it.id == gameId }?.let { openExperienceDetail(it) }
+        }
+    }
+
     private fun syncAgeGateToServer(birthYear: Int, birthMonth: Int, regionCode: String) {
         val farm = activeFarm
         ioExecutor.execute {
             runCatching {
                 val client = PlayHubApiClient(farm.baseUrl)
-                val token = profile.accessToken ?: client.createGuestSession().also {
-                    authStore.saveRemoteTokens(it)
-                    profile = authStore.loadOrCreateGuest()
-                }.accessToken
+                val token = ensureAuthToken(client)
                 client.submitAgeGate(token, birthYear, birthMonth, regionCode)
                 runOnUiThread {
                     if (!isFinishing && !isDestroyed) syncWithActiveFarm()
@@ -547,8 +596,7 @@ class MainActivity : Activity() {
             cornerRadius = dp(radiusDp).toFloat()
         }
 
-    private fun statusDotDrawable(status: FarmHealthStatus): GradientDrawable =
-        ovalBg(status.colorHex)
+    private fun statusDotDrawable(status: FarmHealthStatus): GradientDrawable = ovalBg(status.colorHex)
 
     private fun iconView(resId: Int, sizeDp: Int, tintHex: String? = null): ImageView = ImageView(this).apply {
         setImageResource(resId)
@@ -573,7 +621,7 @@ class MainActivity : Activity() {
         background = roundedBg(bgHex, strokeHex, 999)
     }
 
-    // ---- Root Shell (Stitch Header + Content + 5-Tab Bottom Navigation) ----
+    // ---- Root Shell ----
 
     private fun buildRootLayout(): View {
         val root = LinearLayout(this).apply {
@@ -581,7 +629,6 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.parseColor(StitchColors.SURFACE))
         }
 
-        // 1. Stitch Top Header with Official PlayHub Logo
         topBarView = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.parseColor(StitchColors.SURFACE))
@@ -593,13 +640,12 @@ class MainActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        // Left: Official PlayHub Emblem + PLAYHUB Wordmark
         val brandCluster = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             setOnClickListener {
-                activeChatFriendId = null
+                activeChatTarget = null
                 renderTab(HubTab.HOME)
             }
             addView(ImageView(context).apply {
@@ -621,7 +667,6 @@ class MainActivity : Activity() {
         }
         headerRow.addView(brandCluster)
 
-        // Right Actions: [Optional Farm Status Pill on debug/dev/test] + Search + Bell + Coin Pill
         if (FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) {
             val dot = View(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(7), dp(7)).apply { rightMargin = dp(4) }
@@ -651,7 +696,6 @@ class MainActivity : Activity() {
             headerRow.addView(pill)
         }
 
-        // Circular Search Button
         headerSearchBtnIcon = iconView(R.drawable.ic_search, 18, StitchColors.ON_SURFACE)
         val searchBtn = FrameLayout(this).apply {
             background = ovalBg(StitchColors.SURFACE_CONTAINER)
@@ -674,7 +718,6 @@ class MainActivity : Activity() {
         }
         headerRow.addView(searchBtn)
 
-        // Circular Notifications Button with Play-Green Dot
         val bellBtn = FrameLayout(this).apply {
             background = ovalBg(StitchColors.SURFACE_CONTAINER)
             layoutParams = LinearLayout.LayoutParams(dp(36), dp(36)).apply { rightMargin = dp(6) }
@@ -686,12 +729,15 @@ class MainActivity : Activity() {
                 rightMargin = dp(8)
             })
             setOnClickListener {
-                Toast.makeText(this@MainActivity, "알림: 민준님이 Survivor Arena G2에 초대했습니다.", Toast.LENGTH_SHORT).show()
+                val reqCount = remoteIncomingRequests.size
+                val msg = if (reqCount > 0) "새 친구 요청 ${reqCount}건이 있습니다. 채팅 탭에서 확인하세요."
+                else "현재 활성 파티: ${remoteActiveParty?.roomCode ?: "없음"} · 친구 ${remoteFriends.size}명"
+                Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+                if (reqCount > 0) renderTab(HubTab.CHAT)
             }
         }
         headerRow.addView(bellBtn)
 
-        // Coin Balance Pill (Stitch surface-container-high + coin-gold + tabular mono)
         coinTextView = TextView(this).apply {
             text = formatCoin(profile.coinBalance)
             textSize = 12f
@@ -712,7 +758,6 @@ class MainActivity : Activity() {
         headerRow.addView(coinPill)
         topBarView.addView(headerRow)
 
-        // Expandable Inline Search Bar (Stitch Home Header pattern)
         headerSearchInput = EditText(this).apply {
             hint = "게임, 장르 검색..."
             textSize = 14f
@@ -752,25 +797,21 @@ class MainActivity : Activity() {
         topBarView.addView(headerSearchRow)
         root.addView(topBarView)
 
-        // Hairline 1dp outline-variant divider
         root.addView(View(this).apply {
             setBackgroundColor(Color.parseColor(StitchColors.OUTLINE_VARIANT))
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
         })
 
-        // 2. Main Content Host
         contentContainer = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
         }
         root.addView(contentContainer)
 
-        // Hairline bottom nav divider
         root.addView(View(this).apply {
             setBackgroundColor(Color.parseColor(StitchColors.OUTLINE_VARIANT))
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
         })
 
-        // 3. Stitch 5-Tab Bottom Navigation Bar (#111315 lowest surface)
         bottomBarView = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setBackgroundColor(Color.parseColor(StitchColors.SURFACE_LOWEST))
@@ -797,11 +838,14 @@ class MainActivity : Activity() {
                 addView(icon)
                 addView(label)
                 setOnClickListener {
-                    if (tab != HubTab.CHAT) activeChatFriendId = null
+                    if (tab != HubTab.CHAT) activeChatTarget = null
                     if (tab != HubTab.HOME && searchOpen) {
                         searchOpen = false
                         headerSearchRow.visibility = View.GONE
                         headerSearchBtnIcon.setImageResource(R.drawable.ic_search)
+                    }
+                    if (tab == HubTab.CHAT) {
+                        refreshSocialOnly()
                     }
                     renderTab(tab)
                 }
@@ -845,13 +889,9 @@ class MainActivity : Activity() {
 
         contentContainer.removeAllViews()
 
-        // Chat room renders full-height with sticky composer at bottom
-        if (tab == HubTab.CHAT && activeChatFriendId != null) {
-            val friend = friendsData.find { it.id == activeChatFriendId }
-            if (friend != null) {
-                contentContainer.addView(buildChatRoomView(friend))
-                return
-            }
+        if (tab == HubTab.CHAT && activeChatTarget != null) {
+            contentContainer.addView(buildChatRoomView(activeChatTarget!!))
+            return
         }
 
         val scroll = ScrollView(this).apply { isVerticalScrollBarEnabled = false }
@@ -863,34 +903,33 @@ class MainActivity : Activity() {
             HubTab.HOME -> buildHomeTab(body)
             HubTab.EXPLORE -> buildExploreTab(body)
             HubTab.AVATAR -> buildAvatarTab(body)
-            HubTab.CHAT -> buildChatListTab(body)
+            HubTab.CHAT -> buildSocialHubTab(body)
             HubTab.MORE -> buildMoreTab(body)
         }
         scroll.addView(body)
         contentContainer.addView(scroll)
     }
 
-    // ---- 1. HOME TAB (Stitch Home: Friends Strip + Horizontal Game Carousels) ----
+    // ---- 1. HOME TAB ----
 
     private fun buildHomeTab(body: LinearLayout) {
         val caps = AgeGatePolicy.evaluateCapabilities(profile.ageTier, profile.isGuest, profile.parentalConsentVerified)
+        val onlineCount = remoteFriends.count { it.presence.online }
 
-        // Friends Section
-        val onlineCount = friendsData.count { it.online }
         body.addView(
             sectionHeader(
                 title = "친구",
                 monoAccent = if (caps.requiresParentalConsent) "보호 모드" else "${onlineCount}명 접속 중",
-                actionLabel = "전체 보기"
+                actionLabel = "소셜 · 파티"
             ) {
+                refreshSocialOnly()
                 renderTab(HubTab.CHAT)
             }
         )
-        body.addView(buildFriendsStrip(caps.requiresParentalConsent))
+        body.addView(buildLiveFriendsStrip(caps.requiresParentalConsent))
 
         val games = filteredCatalog(applyCategory = false)
 
-        // Section 1: 추천 게임 (showPlayButton = true)
         body.addView(
             sectionHeader(title = "추천 게임", actionLabel = "더보기") {
                 renderTab(HubTab.EXPLORE)
@@ -902,17 +941,16 @@ class MainActivity : Activity() {
             body.addView(buildGameCarousel(games, showPlayButton = true, showFriendTag = false))
         }
 
-        // Section 2: 친구들이 플레이 중 (showPlayButton = false + friend pill overlay)
+        val playingFriends = remoteFriends.filter { it.presence.status == "in_game" && !it.presence.gameId.isNullOrBlank() }
         if (!caps.requiresParentalConsent && games.isNotEmpty()) {
             body.addView(
-                sectionHeader(title = "친구들이 플레이 중", actionLabel = "더보기") {
-                    renderTab(HubTab.EXPLORE)
+                sectionHeader(title = "친구들이 플레이 중", actionLabel = "파티 합류") {
+                    renderTab(HubTab.CHAT)
                 }
             )
-            body.addView(buildGameCarousel(games, showPlayButton = false, showFriendTag = true))
+            body.addView(buildGameCarousel(games, showPlayButton = false, showFriendTag = true, playingFriends = playingFriends))
         }
 
-        // Section 3: 인기 급상승
         if (games.isNotEmpty()) {
             body.addView(
                 sectionHeader(title = "인기 급상승", actionLabel = "더보기") {
@@ -922,7 +960,8 @@ class MainActivity : Activity() {
             body.addView(buildGameCarousel(games.reversed(), showPlayButton = false, showFriendTag = false))
         }
 
-        // Compact Runtime & Account Status Card
+        val myHandle = remoteSocialProfile?.handle ?: profile.handle
+        val myDisplay = remoteSocialProfile?.displayName ?: profile.displayName
         val statusCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
@@ -931,7 +970,7 @@ class MainActivity : Activity() {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 addView(TextView(context).apply {
-                    text = "${profile.displayName}  ${profile.handle}"
+                    text = "$myDisplay  $myHandle"
                     textSize = 13.5f
                     typeface = Typeface.DEFAULT_BOLD
                     setTextColor(Color.WHITE)
@@ -942,11 +981,13 @@ class MainActivity : Activity() {
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 setPadding(0, dp(8), 0, dp(4))
-                addView(pillChip(if (profile.isGuest) "GUEST" else "GOOGLE", StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE).apply {
-                    (layoutParams as? LinearLayout.LayoutParams)?.rightMargin = dp(6)
-                })
+                addView(pillChip(if (profile.isGuest) "GUEST" else "GOOGLE", StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE))
                 addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
                 addView(pillChip("${profile.ageTier.name} (${profile.regionCode})", StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE_VARIANT))
+                if (remoteActiveParty != null) {
+                    addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
+                    addView(pillChip("파티 ${remoteActiveParty!!.roomCode}", "#005231", "#C0FFD6"))
+                }
             })
             addView(TextView(context).apply {
                 text = syncStatusText
@@ -1007,7 +1048,7 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun buildFriendsStrip(childProtected: Boolean): View {
+    private fun buildLiveFriendsStrip(childProtected: Boolean): View {
         val scroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -1024,7 +1065,7 @@ class MainActivity : Activity() {
                     (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(8)
                 })
                 addView(TextView(context).apply {
-                    text = "아동 보호 모드: 법정대리인 동의 후 친구 기능이 활성화됩니다."
+                    text = "아동 보호 모드: 법정대리인 동의 후 안전 소셜 기능이 활성화됩니다."
                     textSize = 12f
                     setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
                 })
@@ -1033,26 +1074,54 @@ class MainActivity : Activity() {
             return scroll
         }
 
-        for (friend in friendsData) {
-            val item = LinearLayout(this).apply {
+        // First button: Add Friend CTA
+        row.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(dp(68), ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                rightMargin = dp(10)
+            }
+            setOnClickListener { showAddFriendDialog() }
+            addView(FrameLayout(context).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(60), dp(60))
+                background = ovalBg(StitchColors.SURFACE_CONTAINER, StitchColors.PLAY_GREEN, 2)
+                addView(TextView(context).apply {
+                    text = "+"
+                    textSize = 26f
+                    typeface = Typeface.DEFAULT_BOLD
+                    gravity = Gravity.CENTER
+                    setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            })
+            addView(TextView(context).apply {
+                text = "친구 추가"
+                textSize = 11.5f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                setPadding(0, dp(5), 0, 0)
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            })
+        })
+
+        for (friend in remoteFriends) {
+            row.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER_HORIZONTAL
                 layoutParams = LinearLayout.LayoutParams(dp(68), ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                     rightMargin = dp(10)
                 }
                 setOnClickListener {
-                    val game = friend.playingGameId?.let { gid -> allCatalogGames().find { it.id == gid } }
-                    if (game != null) {
+                    val game = friend.presence.gameId?.let { gid -> allCatalogGames().find { it.id == gid } }
+                    if (game != null && friend.presence.status == "in_game") {
                         openExperienceDetail(game)
                     } else {
-                        friend.unread = 0
-                        activeChatFriendId = friend.id
-                        renderTab(HubTab.CHAT)
+                        openDmChat(friend)
                     }
                 }
-                addView(avatarCircle(friend.initial, friend.avatarColorHex, 60, friend.online))
+                addView(avatarCircle(friend.displayName.take(1).ifBlank { "P" }, friend.avatarColor, 60, friend.presence.online))
                 addView(TextView(context).apply {
-                    text = friend.name
+                    text = friend.displayName
                     textSize = 11.5f
                     typeface = Typeface.DEFAULT_BOLD
                     gravity = Gravity.CENTER
@@ -1060,13 +1129,31 @@ class MainActivity : Activity() {
                     maxLines = 1
                     ellipsize = TextUtils.TruncateAt.END
                     setPadding(0, dp(5), 0, 0)
-                    layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 })
-            }
-            row.addView(item)
+            })
+        }
+
+        if (remoteFriends.isEmpty()) {
+            row.addView(LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER_VERTICAL
+                background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+                setPadding(dp(12), dp(10), dp(14), dp(10))
+                setOnClickListener { showAddFriendDialog() }
+                addView(TextView(context).apply {
+                    text = "친구를 찾아 추가해 보세요"
+                    textSize = 12.5f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.WHITE)
+                })
+                addView(TextView(context).apply {
+                    text = "예: minjun#1024 검색 · 파티 코드 PLAY99 합류"
+                    textSize = 11f
+                    setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                    setPadding(0, dp(2), 0, 0)
+                })
+            })
         }
         scroll.addView(row)
         return scroll
@@ -1074,6 +1161,7 @@ class MainActivity : Activity() {
 
     private fun avatarCircle(initial: String, fillHex: String, sizeDp: Int, online: Boolean): FrameLayout {
         val ringHex = if (online) StitchColors.PLAY_GREEN else StitchColors.OUTLINE_VARIANT
+        val safeFill = runCatching { Color.parseColor(fillHex); fillHex }.getOrDefault("#1E3A5F")
         return FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(dp(sizeDp), dp(sizeDp))
             val outer = FrameLayout(context).apply {
@@ -1086,7 +1174,7 @@ class MainActivity : Activity() {
                     gravity = Gravity.CENTER
                     setTextColor(Color.WHITE)
                     alpha = if (online) 1f else 0.55f
-                    background = ovalBg(fillHex)
+                    background = ovalBg(safeFill)
                 }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             }
             addView(outer, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
@@ -1099,20 +1187,20 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun buildGameCarousel(games: List<CatalogGame>, showPlayButton: Boolean, showFriendTag: Boolean): View {
+    private fun buildGameCarousel(
+        games: List<CatalogGame>,
+        showPlayButton: Boolean,
+        showFriendTag: Boolean,
+        playingFriends: List<SocialFriendDto> = emptyList()
+    ): View {
         val scroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setPadding(dp(16), dp(2), dp(16), dp(6))
         }
-        for ((idx, game) in games.withIndex()) {
-            val friendTag = if (showFriendTag) {
-                when (idx % 3) {
-                    0 -> "민준님 외 1명"
-                    1 -> "서연님 플레이 중"
-                    else -> "하은님 플레이 중"
-                }
-            } else null
+        for (game in games) {
+            val friendPlaying = playingFriends.find { it.presence.gameId == game.id }
+            val friendTag = if (showFriendTag && friendPlaying != null) "${friendPlaying.displayName}님 플레이 중" else null
             row.addView(stitchGameCard(game, widthDp = 244, showPlayButton = showPlayButton, friendOverlayText = friendTag))
         }
         scroll.addView(row)
@@ -1129,7 +1217,6 @@ class MainActivity : Activity() {
         background = gradientThumb(game.accentStart, game.accentEnd, 8)
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(heightDp))
 
-        // Subtle geometric highlight orb (clean modern game card artwork without heavy raster bloat)
         addView(View(context).apply {
             background = ovalBg("#22FFFFFF")
         }, FrameLayout.LayoutParams(dp(heightDp), dp(heightDp), Gravity.END or Gravity.BOTTOM).apply {
@@ -1137,7 +1224,6 @@ class MainActivity : Activity() {
             bottomMargin = -dp(heightDp / 3)
         })
 
-        // Center stylized game mark
         val centerCol = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
@@ -1155,7 +1241,6 @@ class MainActivity : Activity() {
         }
         addView(centerCol, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
 
-        // Top-left runtime / cached badge
         val topBadgeText = when {
             !compat.compatible -> "엔진 ${game.requiredEngineVersion} 필요"
             cached -> "캐시됨"
@@ -1180,7 +1265,6 @@ class MainActivity : Activity() {
             }
         )
 
-        // Optional bottom-left Friend Playing overlay pill (Stitch home pattern)
         if (friendOverlayText != null) {
             val friendPill = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -1251,7 +1335,6 @@ class MainActivity : Activity() {
 
             addView(buildGameThumbnail(game, thumbHeight, compat, cached, friendOverlayText))
 
-            // Title & Metadata
             val meta = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(4), dp(8), dp(4), dp(2))
@@ -1352,12 +1435,11 @@ class MainActivity : Activity() {
         }
     }
 
-    // ---- 2. EXPLORE TAB (Stitch Explore: Inline Search + Filter Chips + 2-Column Grid) ----
+    // ---- 2. EXPLORE TAB ----
 
     private fun buildExploreTab(body: LinearLayout) {
         val games = filteredCatalog(applyCategory = true)
 
-        // Title + Result Count
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -1378,7 +1460,6 @@ class MainActivity : Activity() {
         }
         body.addView(header)
 
-        // Inline Search Input Bar (Stitch surface-container-high + rounded-md + clear button)
         val searchBox = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -1431,7 +1512,6 @@ class MainActivity : Activity() {
         }
         body.addView(paddedBox(searchBox, bottomDp = 12))
 
-        // Category Filter Chips (Stitch rounded-full pills)
         val categories = listOf(
             "all" to "전체",
             "godot" to "Godot 3D",
@@ -1470,7 +1550,6 @@ class MainActivity : Activity() {
         chipScroll.addView(chipRow)
         body.addView(chipScroll)
 
-        // 2-Column Grid
         if (games.isEmpty()) {
             body.addView(paddedBox(emptyCatalogCard()))
         } else {
@@ -1534,11 +1613,14 @@ class MainActivity : Activity() {
         })
     }
 
-    // ---- 3. AVATAR TAB (Stitch Dark Styled + Local Accent Customization) ----
+    // ---- 3. AVATAR TAB (Server-Synced Profile & Handle & Theme Color) ----
 
     private fun buildAvatarTab(body: LinearLayout) {
         val accentHex = savedAvatarColor()
-        body.addView(sectionHeader("아바타 꾸미기", monoAccent = profile.handle))
+        val displayName = remoteSocialProfile?.displayName ?: profile.displayName
+        val handle = remoteSocialProfile?.handle ?: profile.handle
+
+        body.addView(sectionHeader("아바타 · 프로필", monoAccent = handle))
 
         val previewCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -1546,23 +1628,23 @@ class MainActivity : Activity() {
             background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 14)
             setPadding(dp(20), dp(22), dp(20), dp(20))
 
-            addView(avatarCircle(profile.displayName.take(1).ifBlank { "P" }, accentHex, 88, online = true))
+            addView(avatarCircle(displayName.take(1).ifBlank { "P" }, accentHex, 88, online = true))
             addView(TextView(context).apply {
-                text = profile.displayName
+                text = displayName
                 textSize = 18f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
                 setPadding(0, dp(12), 0, dp(2))
             })
             addView(TextView(context).apply {
-                text = "${profile.handle} · ${if (profile.isGuest) "Guest" else "Google"} · ${profile.ageTier.name}"
+                text = "$handle · ${if (profile.isGuest) "Guest" else "Google"} · ${profile.ageTier.name}"
                 textSize = 12.5f
                 setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
             })
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER
-                setPadding(0, dp(16), 0, dp(4))
+                setPadding(0, dp(16), 0, dp(6))
                 for ((hex, name) in avatarAccentOptions) {
                     val selected = hex.equals(accentHex, ignoreCase = true)
                     addView(View(context).apply {
@@ -1573,25 +1655,70 @@ class MainActivity : Activity() {
                         }
                         setOnClickListener {
                             saveAvatarColor(hex)
-                            renderTab(HubTab.AVATAR)
-                            Toast.makeText(context, "아바타 테마 적용: $name", Toast.LENGTH_SHORT).show()
+                            syncProfileUpdate(avatarColor = hex, toastMsg = "아바타 테마 서버 동기화: $name")
                         }
                     })
                 }
             })
         }
         body.addView(paddedBox(previewCard, bottomDp = 12))
+        body.addView(paddedBox(secondaryActionButton("표시 이름 변경 ($displayName)") { showEditProfileDialog() }, bottomDp = 10))
         body.addView(paddedBox(primaryActionButton("Play Coin & 코스메틱 스토어 열기") { showCoinStoreDialog() }))
     }
 
-    // ---- 4. CHAT TAB (Stitch Chat List + Interactive Room + Age Gate Compliance) ----
+    private fun syncProfileUpdate(displayName: String? = null, avatarColor: String? = null, toastMsg: String) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.updateSocialProfile(token, displayName = displayName, avatarColor = avatarColor)
+            }.onSuccess { updated ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    remoteSocialProfile = updated
+                    renderTab(activeTab)
+                    Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show()
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    renderTab(activeTab)
+                    Toast.makeText(this, "로컬 저장됨 (서버 동기화 실패: ${err.message})", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
-    private fun buildChatListTab(body: LinearLayout) {
+    private fun showEditProfileDialog() {
+        val input = EditText(this).apply {
+            hint = "새 표시 이름 (2~40자)"
+            setText(remoteSocialProfile?.displayName ?: profile.displayName)
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+        }
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("프로필 표시 이름 변경")
+            .setView(input)
+            .setPositiveButton("저장") { _, _ ->
+                val name = input.text.toString().trim()
+                if (name.length < 2) {
+                    Toast.makeText(this, "표시 이름은 2자 이상이어야 합니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    syncProfileUpdate(displayName = name, toastMsg = "표시 이름 변경 완료: $name")
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    // ---- 4. SOCIAL & CHAT & PARTY HUB TAB (Live M3 Social API) ----
+
+    private fun buildSocialHubTab(body: LinearLayout) {
         val caps = AgeGatePolicy.evaluateCapabilities(profile.ageTier, profile.isGuest, profile.parentalConsentVerified)
-        val onlineFriends = friendsData.filter { it.online }
 
         if (caps.requiresParentalConsent) {
-            body.addView(sectionHeader("채팅 · 소셜 안전"))
+            body.addView(sectionHeader("소셜 · 아동 보호 모드"))
             val safeCard = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
@@ -1603,7 +1730,7 @@ class MainActivity : Activity() {
                     setTextColor(Color.WHITE)
                 })
                 addView(TextView(context).apply {
-                    text = "법정대리인 동의 전에는 자유 채팅 및 임의 친구 요청이 차단됩니다. 게임 플레이는 Guest 상태로 자유롭게 이용할 수 있습니다."
+                    text = "법정대리인 동의 전에는 친구 요청·자유 채팅·파티 참여가 차단됩니다. 동의 완료 후 사전 정의된 안전 퀵메시지 파티 기능이 열립니다."
                     textSize = 13f
                     setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
                     setPadding(0, dp(8), 0, 0)
@@ -1613,11 +1740,80 @@ class MainActivity : Activity() {
             return
         }
 
-        // Top Header: 친구 목록 + N명 접속 중 + 전체 / 접속 중 toggle pills
+        // Top Action Bar: + 친구 추가 | 파티 만들기 | 코드 합류
+        val quickActions = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(16), dp(2), dp(16), dp(10))
+            addView(compactChipButton("+ 친구 추가", primary = true) { showAddFriendDialog() })
+            addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(8), dp(1)) })
+            addView(compactChipButton("파티 만들기", primary = false) { showCreatePartyDialog() })
+            addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(8), dp(1)) })
+            addView(compactChipButton("코드 합류", primary = false) { showJoinPartyCodeDialog() })
+        }
+        body.addView(quickActions)
+
+        // Active Party Lobby Card
+        remoteActiveParty?.let { party ->
+            body.addView(paddedBox(buildPartyLobbyCard(party), bottomDp = 12))
+        }
+
+        // Incoming Friend Requests
+        if (remoteIncomingRequests.isNotEmpty()) {
+            body.addView(sectionHeader("받은 친구 요청", monoAccent = "${remoteIncomingRequests.size}건"))
+            for (req in remoteIncomingRequests) {
+                val reqCard = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.PLAY_GREEN, 12)
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    addView(avatarCircle(req.displayName.take(1).ifBlank { "P" }, req.avatarColor, 42, true))
+                    addView(LinearLayout(context).apply {
+                        orientation = LinearLayout.VERTICAL
+                        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                            leftMargin = dp(10)
+                        }
+                        addView(TextView(context).apply {
+                            text = req.displayName
+                            textSize = 14f
+                            typeface = Typeface.DEFAULT_BOLD
+                            setTextColor(Color.WHITE)
+                        })
+                        addView(TextView(context).apply {
+                            text = req.handle
+                            textSize = 11.5f
+                            typeface = Typeface.MONOSPACE
+                            setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        })
+                    })
+                    addView(TextView(context).apply {
+                        text = "수락"
+                        textSize = 12f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+                        background = roundedBg(StitchColors.PLAY_GREEN, null, 8)
+                        setPadding(dp(12), dp(6), dp(12), dp(6))
+                        setOnClickListener { respondToFriendRequest(req.principalId, accept = true) }
+                    })
+                    addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
+                    addView(TextView(context).apply {
+                        text = "거절"
+                        textSize = 12f
+                        setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 8)
+                        setPadding(dp(10), dp(6), dp(10), dp(6))
+                        setOnClickListener { respondToFriendRequest(req.principalId, accept = false) }
+                    })
+                }
+                body.addView(paddedBox(reqCard, bottomDp = 8))
+            }
+        }
+
+        // Friends Header + Filter
+        val onlineFriends = remoteFriends.filter { it.presence.online }
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(2), dp(16), dp(10))
+            setPadding(dp(16), dp(6), dp(16), dp(10))
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
@@ -1649,119 +1845,327 @@ class MainActivity : Activity() {
         body.addView(topRow)
 
         // Online Quick Strip
-        val quickScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
-        val quickRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(16), dp(2), dp(16), dp(12))
+        if (onlineFriends.isNotEmpty()) {
+            val quickScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
+            val quickRow = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(dp(16), dp(2), dp(16), dp(12))
+            }
+            for (friend in onlineFriends) {
+                quickRow.addView(LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = Gravity.CENTER_HORIZONTAL
+                    layoutParams = LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                        rightMargin = dp(10)
+                    }
+                    setOnClickListener { openDmChat(friend) }
+                    addView(avatarCircle(friend.displayName.take(1).ifBlank { "P" }, friend.avatarColor, 54, true))
+                    addView(TextView(context).apply {
+                        text = friend.displayName
+                        textSize = 11f
+                        typeface = Typeface.DEFAULT_BOLD
+                        gravity = Gravity.CENTER
+                        setTextColor(Color.WHITE)
+                        setPadding(0, dp(4), 0, 0)
+                        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    })
+                })
+            }
+            quickScroll.addView(quickRow)
+            body.addView(quickScroll)
         }
-        for (friend in onlineFriends) {
-            quickRow.addView(LinearLayout(this).apply {
+
+        // Real-Time Chat Threads
+        body.addView(sectionHeader("실시간 채팅", actionLabel = "새로고침") { refreshSocialOnly() })
+        val visible = if (chatFilterOnlineOnly) onlineFriends else remoteFriends
+        if (visible.isEmpty()) {
+            val emptyCard = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER_HORIZONTAL
-                layoutParams = LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    rightMargin = dp(10)
-                }
-                setOnClickListener {
-                    friend.unread = 0
-                    activeChatFriendId = friend.id
-                    renderTab(HubTab.CHAT)
-                }
-                addView(avatarCircle(friend.initial, friend.avatarColorHex, 54, true))
+                background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+                setPadding(dp(18), dp(20), dp(18), dp(20))
                 addView(TextView(context).apply {
-                    text = friend.name
-                    textSize = 11f
+                    text = "아직 대화할 친구가 없습니다"
+                    textSize = 14.5f
                     typeface = Typeface.DEFAULT_BOLD
-                    gravity = Gravity.CENTER
                     setTextColor(Color.WHITE)
-                    setPadding(0, dp(4), 0, 0)
-                    layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
                 })
-            })
-        }
-        quickScroll.addView(quickRow)
-        body.addView(quickScroll)
-
-        // Real-time Chat Threads
-        body.addView(sectionHeader("실시간 채팅"))
-        val visible = if (chatFilterOnlineOnly) onlineFriends else friendsData
-        for (chat in visible) {
-            val rowCard = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                background = roundedBg(StitchColors.SURFACE_CONTAINER, null, 12)
-                setPadding(dp(12), dp(12), dp(12), dp(12))
-                setOnClickListener {
-                    chat.unread = 0
-                    activeChatFriendId = chat.id
-                    renderTab(HubTab.CHAT)
+                addView(TextView(context).apply {
+                    text = "상단 '+ 친구 추가'로 minjun#1024 / seoyeon#2048 을 검색하거나 '코드 합류'에 PLAY99를 입력해 바로 파티에 참여하세요."
+                    textSize = 12f
+                    gravity = Gravity.CENTER
+                    setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                    setPadding(0, dp(6), 0, dp(12))
+                })
+                addView(primaryActionButton("+ 친구 검색하고 추가하기") { showAddFriendDialog() })
+            }
+            body.addView(paddedBox(emptyCard))
+        } else {
+            for (friend in visible) {
+                val activityText = when {
+                    friend.presence.status == "in_game" && !friend.presence.gameTitle.isNullOrBlank() ->
+                        "${friend.presence.gameTitle} 중"
+                    friend.presence.online -> "접속 중"
+                    else -> "오프라인"
                 }
+                val rowCard = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    background = roundedBg(StitchColors.SURFACE_CONTAINER, null, 12)
+                    setPadding(dp(12), dp(12), dp(12), dp(12))
+                    setOnClickListener { openDmChat(friend) }
 
-                addView(avatarCircle(chat.initial, chat.avatarColorHex, 48, chat.online))
+                    addView(avatarCircle(friend.displayName.take(1).ifBlank { "P" }, friend.avatarColor, 48, friend.presence.online))
 
-                val col = LinearLayout(context).apply {
-                    orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                        leftMargin = dp(12)
-                    }
-                    addView(LinearLayout(context).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        gravity = Gravity.CENTER_VERTICAL
-                        addView(TextView(context).apply {
-                            text = chat.name
-                            textSize = 15f
-                            typeface = Typeface.DEFAULT_BOLD
-                            setTextColor(Color.WHITE)
-                        })
-                        if (chat.playingGameId != null) {
+                    val col = LinearLayout(context).apply {
+                        orientation = LinearLayout.VERTICAL
+                        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                            leftMargin = dp(12)
+                        }
+                        addView(LinearLayout(context).apply {
+                            orientation = LinearLayout.HORIZONTAL
+                            gravity = Gravity.CENTER_VERTICAL
                             addView(TextView(context).apply {
-                                text = " · ${chat.activity}"
+                                text = friend.displayName
+                                textSize = 15f
+                                typeface = Typeface.DEFAULT_BOLD
+                                setTextColor(Color.WHITE)
+                            })
+                            addView(TextView(context).apply {
+                                text = " · $activityText"
                                 textSize = 11.5f
                                 typeface = Typeface.DEFAULT_BOLD
-                                setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                                setTextColor(Color.parseColor(if (friend.presence.online) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
                                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                             })
-                        } else {
-                            addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(0, dp(1), 1f) })
-                        }
-                        addView(TextView(context).apply {
-                            text = chat.time
-                            textSize = 11f
-                            setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
                         })
-                    })
-                    addView(LinearLayout(context).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        gravity = Gravity.CENTER_VERTICAL
-                        setPadding(0, dp(4), 0, 0)
                         addView(TextView(context).apply {
-                            text = chat.lastMessage
+                            text = friend.lastMessage ?: "${friend.handle} · 탭해서 1:1 대화 시작"
                             textSize = 13f
                             setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
-                            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                            setPadding(0, dp(4), 0, 0)
                         })
-                        if (chat.unread > 0) {
-                            addView(TextView(context).apply {
-                                text = chat.unread.toString()
-                                textSize = 11f
-                                typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
-                                gravity = Gravity.CENTER
-                                setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
-                                background = ovalBg(StitchColors.PLAY_GREEN)
-                                layoutParams = LinearLayout.LayoutParams(dp(20), dp(20)).apply { leftMargin = dp(8) }
-                            })
+                    }
+                    addView(col)
+                }
+                body.addView(paddedBox(rowCard, bottomDp = 8))
+            }
+        }
+    }
+
+    private fun compactChipButton(label: String, primary: Boolean, onClick: () -> Unit): TextView = TextView(this).apply {
+        text = label
+        textSize = 11.5f
+        maxLines = 1
+        ellipsize = TextUtils.TruncateAt.END
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        setTextColor(Color.parseColor(if (primary) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE))
+        background = roundedBg(
+            fillHex = if (primary) StitchColors.PLAY_GREEN else StitchColors.SURFACE_CONTAINER,
+            strokeHex = if (primary) null else StitchColors.OUTLINE_VARIANT,
+            radiusDp = 10
+        )
+        setPadding(dp(6), dp(10), dp(6), dp(10))
+        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        setOnClickListener { onClick() }
+    }
+
+    private fun buildPartyLobbyCard(party: SocialPartyDto): View {
+        val myPrincipalId = remoteSocialProfile?.principalId ?: profile.principalId
+        val meMember = party.members.find { it.principalId == myPrincipalId }
+        val amReady = meMember?.ready ?: false
+        val targetGame = party.targetGameId?.let { id -> allCatalogGames().find { it.id == id } }
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.PLAY_GREEN, 14)
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+
+            // Title + Room Code Pill (Tap to copy invite link)
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                    addView(TextView(context).apply {
+                        text = party.title
+                        textSize = 15.5f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.WHITE)
+                    })
+                    addView(TextView(context).apply {
+                        text = "게임: ${targetGame?.title ?: (party.targetGameId ?: "미선택")} · ${party.members.size}/${party.maxMembers}명"
+                        textSize = 11.5f
+                        setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        setPadding(0, dp(2), 0, 0)
+                    })
+                })
+                addView(pillChip("코드 ${party.roomCode}", "#005231", "#C0FFD6", StitchColors.PLAY_GREEN).apply {
+                    setOnClickListener {
+                        val cm = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                        cm?.setPrimaryClip(ClipData.newPlainText("PlayHub Party Invite", party.deepLinkUrl))
+                        Toast.makeText(context, "초대 링크 복사됨 (${party.roomCode}): ${party.deepLinkUrl}", Toast.LENGTH_LONG).show()
+                    }
+                })
+            })
+
+            // Member list
+            val memberRow = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(0, dp(10), 0, dp(10))
+            }
+            for (m in party.members) {
+                memberRow.addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    setPadding(0, dp(4), 0, dp(4))
+                    addView(avatarCircle(m.displayName.take(1).ifBlank { "P" }, m.avatarColor, 30, true))
+                    addView(TextView(context).apply {
+                        text = "${m.displayName} (${m.handle})"
+                        textSize = 12.5f
+                        setTextColor(Color.WHITE)
+                        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                            leftMargin = dp(8)
                         }
                     })
-                }
-                addView(col)
+                    val roleTag = if (m.role == "leader") "방장" else if (m.ready) "준비 완료" else "대기 중"
+                    val tagBg = if (m.ready || m.role == "leader") "#005231" else StitchColors.SURFACE_HIGH
+                    val tagFg = if (m.ready || m.role == "leader") "#C0FFD6" else StitchColors.ON_SURFACE_VARIANT
+                    addView(pillChip(roleTag, tagBg, tagFg))
+                })
             }
-            body.addView(paddedBox(rowCard, bottomDp = 8))
+            addView(memberRow)
+
+            // Active Cross-Play Co-Entry Launch Banner
+            val activeLaunch = party.activeLaunch
+            if (activeLaunch != null) {
+                val launchGame = allCatalogGames().find { it.id == activeLaunch.gameId }
+                val rosterText = activeLaunch.participants.joinToString(" · ") { pt ->
+                    val plat = when (pt.platform.lowercase()) {
+                        "android" -> "Android"
+                        "ios" -> "iOS"
+                        else -> "PC 웹"
+                    }
+                    "$plat ${pt.displayName}"
+                }
+                addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    background = roundedBg("#133025", StitchColors.PLAY_GREEN, 12)
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                        bottomMargin = dp(10)
+                    }
+                    addView(TextView(context).apply {
+                        text = "🎮 크로스플레이 함께 입장 중 · ${activeLaunch.matchRoomId}"
+                        textSize = 12.5f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.parseColor("#C0FFD6"))
+                    })
+                    addView(TextView(context).apply {
+                        text = "참여: ${rosterText.ifBlank { "대기 중" }}"
+                        textSize = 11.5f
+                        setTextColor(Color.WHITE)
+                        setPadding(0, dp(3), 0, dp(8))
+                    })
+                    addView(TextView(context).apply {
+                        text = "🚀 지금 함께 입장 (${launchGame?.title ?: activeLaunch.gameId})"
+                        textSize = 12.5f
+                        typeface = Typeface.DEFAULT_BOLD
+                        gravity = Gravity.CENTER
+                        setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+                        background = roundedBg(StitchColors.PLAY_GREEN, null, 10)
+                        setPadding(dp(10), dp(9), dp(10), dp(9))
+                        setOnClickListener {
+                            ackAndJoinLaunch(party, activeLaunch)
+                        }
+                    })
+                })
+            }
+
+            // Action row: Ready toggle | Party Chat | Launch Together | Leave
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(compactChipButton(if (amReady) "준비 취소" else "준비 완료", primary = !amReady) {
+                    togglePartyReady(party.id, !amReady)
+                })
+                addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
+                addView(compactChipButton("파티 채팅", primary = false) {
+                    openPartyChat(party)
+                })
+                addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
+                addView(compactChipButton("함께 입장", primary = true) {
+                    val game = targetGame ?: allCatalogGames().firstOrNull()
+                    if (game != null) launchPartyTogether(party, game)
+                })
+                addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
+                addView(compactChipButton("나가기", primary = false) {
+                    leaveActiveParty(party.id)
+                })
+            })
+        }
+    }
+
+    private fun openDmChat(friend: SocialFriendDto) {
+        val subtitle = when {
+            friend.presence.status == "in_game" && !friend.presence.gameTitle.isNullOrBlank() ->
+                "${friend.presence.gameTitle} 중"
+            friend.presence.online -> "접속 중 · ${friend.handle}"
+            else -> "오프라인 · ${friend.handle}"
+        }
+        val target = ActiveChatTarget(
+            channelType = "dm",
+            targetId = friend.principalId,
+            title = friend.displayName,
+            subtitle = subtitle,
+            avatarColor = friend.avatarColor,
+            online = friend.presence.online,
+            playingGameId = friend.presence.gameId,
+            roomCode = friend.presence.roomCode
+        )
+        activeChatTarget = target
+        activeChatMessages = emptyList()
+        renderTab(HubTab.CHAT)
+        loadChatMessages(target)
+    }
+
+    private fun openPartyChat(party: SocialPartyDto) {
+        val target = ActiveChatTarget(
+            channelType = "party",
+            targetId = party.id,
+            title = party.title,
+            subtitle = "파티 코드 ${party.roomCode} · ${party.members.size}명",
+            avatarColor = "#005231",
+            online = true,
+            playingGameId = party.targetGameId,
+            roomCode = party.roomCode
+        )
+        activeChatTarget = target
+        activeChatMessages = emptyList()
+        renderTab(HubTab.CHAT)
+        loadChatMessages(target)
+    }
+
+    private fun loadChatMessages(target: ActiveChatTarget) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.fetchSocialMessages(token, target.channelType, target.targetId)
+            }.onSuccess { list ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    if (activeChatTarget?.targetId != target.targetId) return@runOnUiThread
+                    activeChatMessages = list
+                    renderTab(HubTab.CHAT)
+                }
+            }
         }
     }
 
@@ -1775,8 +2179,10 @@ class MainActivity : Activity() {
         setOnClickListener { onClick() }
     }
 
-    private fun buildChatRoomView(friend: FriendPresence): View {
-        val playingGame = friend.playingGameId?.let { gid -> allCatalogGames().find { it.id == gid } }
+    private fun buildChatRoomView(target: ActiveChatTarget): View {
+        val playingGame = target.playingGameId?.let { gid -> allCatalogGames().find { it.id == gid } }
+        val isChildQuickOnly = profile.ageTier == AgeTier.CHILD_PROTECTED
+
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -1793,27 +2199,32 @@ class MainActivity : Activity() {
                     layoutParams = LinearLayout.LayoutParams(dp(34), dp(34)).apply { rightMargin = dp(10) }
                     addView(iconView(R.drawable.ic_arrow_back, 18, StitchColors.ON_SURFACE), FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER))
                     setOnClickListener {
-                        activeChatFriendId = null
+                        activeChatTarget = null
+                        refreshSocialOnly()
                         renderTab(HubTab.CHAT)
                     }
                 })
-                addView(avatarCircle(friend.initial, friend.avatarColorHex, 40, friend.online))
+                addView(avatarCircle(target.title.take(1).ifBlank { "P" }, target.avatarColor, 40, target.online))
                 addView(LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
                         leftMargin = dp(10)
                     }
                     addView(TextView(context).apply {
-                        text = friend.name
+                        text = target.title
                         textSize = 15f
                         typeface = Typeface.DEFAULT_BOLD
                         setTextColor(Color.WHITE)
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
                     })
                     addView(TextView(context).apply {
-                        text = friend.activity
+                        text = target.subtitle
                         textSize = 11.5f
                         typeface = Typeface.DEFAULT_BOLD
-                        setTextColor(Color.parseColor(if (friend.online) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+                        setTextColor(Color.parseColor(if (target.online) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
                     })
                 })
                 if (playingGame != null) {
@@ -1821,17 +2232,36 @@ class MainActivity : Activity() {
                         orientation = LinearLayout.HORIZONTAL
                         gravity = Gravity.CENTER
                         background = roundedBg(StitchColors.PLAY_GREEN, null, 8)
-                        setPadding(dp(10), dp(6), dp(12), dp(6))
-                        addView(iconView(R.drawable.ic_play_arrow, 16, StitchColors.ON_PLAY_GREEN).apply {
-                            (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(3)
+                        setPadding(dp(9), dp(6), dp(10), dp(6))
+                        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                            rightMargin = dp(6)
+                        }
+                        addView(iconView(R.drawable.ic_play_arrow, 15, StitchColors.ON_PLAY_GREEN).apply {
+                            (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(2)
                         })
                         addView(TextView(context).apply {
                             text = "합류"
-                            textSize = 12f
+                            textSize = 11.5f
                             typeface = Typeface.DEFAULT_BOLD
                             setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
                         })
-                        setOnClickListener { openExperienceDetail(playingGame) }
+                        setOnClickListener {
+                            if (!target.roomCode.isNullOrBlank() && target.channelType == "dm") {
+                                joinPartyByCode(target.roomCode) { openExperienceDetail(playingGame) }
+                            } else {
+                                openExperienceDetail(playingGame)
+                            }
+                        }
+                    })
+                }
+                if (target.channelType == "dm") {
+                    addView(TextView(context).apply {
+                        text = "관리"
+                        textSize = 11.5f
+                        setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 8)
+                        setPadding(dp(9), dp(6), dp(9), dp(6))
+                        setOnClickListener { showModerationMenu(target) }
                     })
                 }
             }
@@ -1841,7 +2271,7 @@ class MainActivity : Activity() {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
             })
 
-            // Messages List
+            // Live Messages List
             val scroll = ScrollView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
             }
@@ -1872,7 +2302,7 @@ class MainActivity : Activity() {
                         orientation = LinearLayout.VERTICAL
                         layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                         addView(TextView(context).apply {
-                            text = "지금 플레이 중"
+                            text = if (target.roomCode != null) "지금 플레이 중 · 코드 ${target.roomCode}" else "지금 플레이 중"
                             textSize = 11f
                             typeface = Typeface.DEFAULT_BOLD
                             setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
@@ -1887,86 +2317,464 @@ class MainActivity : Activity() {
                 }
                 msgCol.addView(gameStrip)
             }
-            for (msg in friend.messages) {
-                val wrap = LinearLayout(context).apply {
-                    orientation = LinearLayout.VERTICAL
-                    gravity = if (msg.senderMe) Gravity.END else Gravity.START
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                        bottomMargin = dp(10)
+
+            if (activeChatMessages.isEmpty()) {
+                msgCol.addView(TextView(context).apply {
+                    text = "아직 메시지가 없습니다. 첫 인사를 보내 보세요!"
+                    textSize = 13f
+                    gravity = Gravity.CENTER
+                    setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                    setPadding(dp(12), dp(24), dp(12), dp(24))
+                })
+            } else {
+                for (msg in activeChatMessages) {
+                    val wrap = LinearLayout(context).apply {
+                        orientation = LinearLayout.VERTICAL
+                        gravity = if (msg.senderMe) Gravity.END else Gravity.START
+                        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                            bottomMargin = dp(10)
+                        }
+                        if (!msg.senderMe && target.channelType == "party") {
+                            addView(TextView(context).apply {
+                                text = msg.senderName
+                                textSize = 11f
+                                setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                                setPadding(dp(4), 0, dp(4), dp(2))
+                                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                            })
+                        }
+                        addView(TextView(context).apply {
+                            text = msg.body
+                            textSize = 14f
+                            setTextColor(Color.parseColor(if (msg.senderMe) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE))
+                            background = roundedBg(
+                                fillHex = if (msg.senderMe) StitchColors.PLAY_GREEN else StitchColors.SURFACE_HIGH,
+                                strokeHex = if (msg.senderMe) null else StitchColors.OUTLINE_VARIANT,
+                                radiusDp = 12
+                            )
+                            setPadding(dp(12), dp(9), dp(12), dp(9))
+                            maxWidth = dp(280)
+                            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                        })
+                        addView(TextView(context).apply {
+                            val timeLabel = formatChatTimestamp(msg.createdAt)
+                            text = if (msg.isQuickMessage) "안전 퀵메시지 · $timeLabel" else timeLabel
+                            textSize = 10.5f
+                            setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                            setPadding(dp(4), dp(3), dp(4), 0)
+                            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                        })
                     }
-                    addView(TextView(context).apply {
-                        text = msg.text
-                        textSize = 14f
-                        setTextColor(Color.parseColor(if (msg.senderMe) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE))
-                        background = roundedBg(
-                            fillHex = if (msg.senderMe) StitchColors.PLAY_GREEN else StitchColors.SURFACE_HIGH,
-                            strokeHex = if (msg.senderMe) null else StitchColors.OUTLINE_VARIANT,
-                            radiusDp = 12
-                        )
-                        setPadding(dp(12), dp(9), dp(12), dp(9))
-                        maxWidth = dp(280)
-                        layoutParams = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                    })
-                    addView(TextView(context).apply {
-                        text = msg.time
-                        textSize = 10.5f
-                        setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
-                        setPadding(dp(4), dp(3), dp(4), 0)
-                        layoutParams = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                    })
+                    msgCol.addView(wrap)
                 }
-                msgCol.addView(wrap)
             }
             scroll.addView(msgCol)
             addView(scroll)
 
-            // Message Composer (#1F2225 + #2B2E32 pill input + #00B06F send button)
+            // Composer Bar (Safe Quick Messages for CHILD_PROTECTED, Free Text for TEEN/ADULT)
             addView(View(context).apply {
                 setBackgroundColor(Color.parseColor(StitchColors.OUTLINE_VARIANT))
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
             })
-            val composer = LinearLayout(context).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setBackgroundColor(Color.parseColor(StitchColors.SURFACE_LOW))
-                setPadding(dp(12), dp(10), dp(12), dp(10))
-                val input = EditText(context).apply {
-                    hint = "${friend.name}님에게 메시지 보내기..."
-                    textSize = 14f
-                    setTextColor(Color.WHITE)
-                    setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
-                    background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 999)
-                    setPadding(dp(16), dp(9), dp(16), dp(9))
-                    setSingleLine(true)
-                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                        rightMargin = dp(8)
+            if (isChildQuickOnly) {
+                val qScroll = HorizontalScrollView(context).apply {
+                    isHorizontalScrollBarEnabled = false
+                    setBackgroundColor(Color.parseColor(StitchColors.SURFACE_LOW))
+                }
+                val qRow = LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    for (qm in safeQuickMessages) {
+                        addView(TextView(context).apply {
+                            text = qm.text
+                            textSize = 12.5f
+                            typeface = Typeface.DEFAULT_BOLD
+                            setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+                            background = roundedBg(StitchColors.PLAY_GREEN, null, 999)
+                            setPadding(dp(14), dp(8), dp(14), dp(8))
+                            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                                rightMargin = dp(8)
+                            }
+                            setOnClickListener { postSocialMessage(target, bodyText = null, quickMessageId = qm.id) }
+                        })
                     }
                 }
-                val sendBtn = FrameLayout(context).apply {
-                    background = ovalBg(StitchColors.PLAY_GREEN)
-                    layoutParams = LinearLayout.LayoutParams(dp(40), dp(40))
-                    addView(iconView(R.drawable.ic_send, 18, StitchColors.ON_PLAY_GREEN), FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER))
-                    setOnClickListener {
-                        val txt = input.text.toString().trim()
-                        if (txt.isEmpty()) return@setOnClickListener
-                        friend.messages.add(ChatMessage(true, txt, "방금"))
-                        renderTab(HubTab.CHAT)
+                qScroll.addView(qRow)
+                addView(qScroll)
+            } else {
+                val composer = LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    setBackgroundColor(Color.parseColor(StitchColors.SURFACE_LOW))
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    val input = EditText(context).apply {
+                        hint = "${target.title}에 메시지 보내기..."
+                        textSize = 14f
+                        setTextColor(Color.WHITE)
+                        setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 999)
+                        setPadding(dp(16), dp(9), dp(16), dp(9))
+                        setSingleLine(true)
+                        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                            rightMargin = dp(8)
+                        }
                     }
+                    val sendBtn = FrameLayout(context).apply {
+                        background = ovalBg(StitchColors.PLAY_GREEN)
+                        layoutParams = LinearLayout.LayoutParams(dp(40), dp(40))
+                        addView(iconView(R.drawable.ic_send, 18, StitchColors.ON_PLAY_GREEN), FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER))
+                        setOnClickListener {
+                            val txt = input.text.toString().trim()
+                            if (txt.isEmpty()) return@setOnClickListener
+                            input.setText("")
+                            postSocialMessage(target, bodyText = txt, quickMessageId = null)
+                        }
+                    }
+                    addView(input)
+                    addView(sendBtn)
                 }
-                addView(input)
-                addView(sendBtn)
+                addView(composer)
             }
-            addView(composer)
         }
     }
 
-    // ---- 5. MORE TAB (Stitch Dark Cards + Farm Status + Cache & Compliance) ----
+    // ---- Social API Action Handlers ----
+
+    private fun postSocialMessage(target: ActiveChatTarget, bodyText: String?, quickMessageId: String?) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.sendSocialMessage(token, target.channelType, target.targetId, bodyText, quickMessageId)
+                client.fetchSocialMessages(token, target.channelType, target.targetId)
+            }.onSuccess { updated ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    activeChatMessages = updated
+                    renderTab(HubTab.CHAT)
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    Toast.makeText(this, "전송 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun showAddFriendDialog() {
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor(StitchColors.SURFACE))
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+        }
+        val queryInput = EditText(this).apply {
+            hint = "핸들 또는 이름 검색 (예: minjun#1024)"
+            textSize = 14f
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 10)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            setSingleLine(true)
+        }
+        val resultsHost = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(10), 0, 0)
+        }
+        var dialogRef: AlertDialog? = null
+
+        fun renderResults(users: List<SocialSearchUserDto>) {
+            resultsHost.removeAllViews()
+            if (users.isEmpty()) {
+                resultsHost.addView(TextView(this).apply {
+                    text = "검색 결과가 없습니다."
+                    textSize = 12.5f
+                    setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                    setPadding(dp(4), dp(8), dp(4), dp(8))
+                })
+                return
+            }
+            for (u in users) {
+                resultsHost.addView(LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 10)
+                    setPadding(dp(10), dp(9), dp(10), dp(9))
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                        bottomMargin = dp(8)
+                    }
+                    addView(avatarCircle(u.displayName.take(1).ifBlank { "P" }, u.avatarColor, 36, u.presence.online))
+                    addView(LinearLayout(context).apply {
+                        orientation = LinearLayout.VERTICAL
+                        layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                            leftMargin = dp(10)
+                        }
+                        addView(TextView(context).apply {
+                            text = u.displayName
+                            textSize = 13.5f
+                            typeface = Typeface.DEFAULT_BOLD
+                            setTextColor(Color.WHITE)
+                        })
+                        addView(TextView(context).apply {
+                            text = u.handle
+                            textSize = 11f
+                            typeface = Typeface.MONOSPACE
+                            setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        })
+                    })
+                    addView(TextView(context).apply {
+                        text = if (u.isFriend) "친구" else "요청"
+                        textSize = 12f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.parseColor(if (u.isFriend) StitchColors.ON_SURFACE_VARIANT else StitchColors.ON_PLAY_GREEN))
+                        background = roundedBg(if (u.isFriend) StitchColors.SURFACE_HIGH else StitchColors.PLAY_GREEN, null, 8)
+                        setPadding(dp(12), dp(6), dp(12), dp(6))
+                        if (!u.isFriend) {
+                            setOnClickListener {
+                                sendFriendRequestByHandle(u.handle)
+                                dialogRef?.dismiss()
+                            }
+                        }
+                    })
+                })
+            }
+        }
+
+        val searchBtn = primaryActionButton("플레이어 검색") {
+            val q = queryInput.text.toString().trim()
+            if (q.length < 2) {
+                Toast.makeText(this, "2자 이상 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                return@primaryActionButton
+            }
+            val baseUrl = activeFarm.baseUrl
+            ioExecutor.execute {
+                runCatching {
+                    val client = PlayHubApiClient(baseUrl)
+                    val token = ensureAuthToken(client)
+                    client.searchSocialUsers(token, q)
+                }.onSuccess { list ->
+                    runOnUiThread {
+                        if (!isFinishing && !isDestroyed) renderResults(list)
+                    }
+                }.onFailure { err ->
+                    runOnUiThread {
+                        Toast.makeText(this, "검색 실패: ${err.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        (searchBtn.layoutParams as? LinearLayout.LayoutParams)?.topMargin = dp(8)
+
+        box.addView(queryInput)
+        box.addView(View(this).apply { layoutParams = LinearLayout.LayoutParams(dp(1), dp(8)) })
+        box.addView(searchBtn)
+        box.addView(resultsHost)
+
+        val dlg = AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("친구 검색 · 추가")
+            .setView(box)
+            .setPositiveButton("핸들로 바로 요청") { _, _ ->
+                val raw = queryInput.text.toString().trim()
+                if (raw.isNotEmpty()) sendFriendRequestByHandle(raw)
+            }
+            .setNegativeButton("닫기", null)
+            .create()
+        dialogRef = dlg
+        dlg.show()
+    }
+
+    private fun sendFriendRequestByHandle(handle: String) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.sendFriendRequest(token, handle)
+            }.onSuccess { resp ->
+                runOnUiThread {
+                    val st = resp["status"] as? String ?: "pending"
+                    Toast.makeText(this, "친구 요청 완료 ($handle · $st)", Toast.LENGTH_SHORT).show()
+                    refreshSocialOnly()
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    Toast.makeText(this, "친구 요청 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun respondToFriendRequest(requesterId: String, accept: Boolean) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.respondFriendRequest(token, requesterId, accept)
+            }.onSuccess {
+                runOnUiThread {
+                    Toast.makeText(this, if (accept) "친구 요청을 수락했습니다." else "친구 요청을 거절했습니다.", Toast.LENGTH_SHORT).show()
+                    refreshSocialOnly()
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    Toast.makeText(this, "처리 실패: ${err.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showCreatePartyDialog() {
+        val input = EditText(this).apply {
+            hint = "파티 이름 (예: 주말 서바이벌 파티)"
+            setText("${remoteSocialProfile?.displayName ?: profile.displayName}의 파티")
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+        }
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("새 파티 만들기")
+            .setView(input)
+            .setPositiveButton("생성") { _, _ ->
+                val title = input.text.toString().trim().ifEmpty { "PlayHub 파티" }
+                val defaultGameId = allCatalogGames().firstOrNull()?.id
+                val baseUrl = activeFarm.baseUrl
+                ioExecutor.execute {
+                    runCatching {
+                        val client = PlayHubApiClient(baseUrl)
+                        val token = ensureAuthToken(client)
+                        client.createParty(token, title, defaultGameId)
+                    }.onSuccess { party ->
+                        runOnUiThread {
+                            remoteActiveParty = party
+                            renderTab(HubTab.CHAT)
+                            Toast.makeText(this, "파티 생성 완료! 초대 코드: ${party.roomCode}", Toast.LENGTH_LONG).show()
+                        }
+                    }.onFailure { err ->
+                        runOnUiThread {
+                            Toast.makeText(this, "파티 생성 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun showJoinPartyCodeDialog() {
+        val input = EditText(this).apply {
+            hint = "6자리 초대 코드 입력 (예: PLAY99)"
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+        }
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("초대 코드로 파티 합류")
+            .setView(input)
+            .setPositiveButton("합류") { _, _ ->
+                val code = input.text.toString().trim().uppercase()
+                if (code.isNotEmpty()) joinPartyByCode(code)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun joinPartyByCode(roomCode: String, onJoined: ((SocialPartyDto) -> Unit)? = null) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.joinParty(token, roomCode)
+            }.onSuccess { party ->
+                runOnUiThread {
+                    remoteActiveParty = party
+                    renderTab(HubTab.CHAT)
+                    Toast.makeText(this, "파티 합류 완료: ${party.title} (${party.roomCode})", Toast.LENGTH_SHORT).show()
+                    onJoined?.invoke(party)
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    Toast.makeText(this, "파티 합류 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun togglePartyReady(partyId: String, nextReady: Boolean) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.setPartyReady(token, partyId, nextReady)
+            }.onSuccess { party ->
+                runOnUiThread {
+                    remoteActiveParty = party
+                    renderTab(HubTab.CHAT)
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    Toast.makeText(this, "준비 상태 변경 실패: ${err.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun leaveActiveParty(partyId: String) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.leaveParty(token, partyId)
+            }.onSuccess {
+                runOnUiThread {
+                    remoteActiveParty = null
+                    if (activeChatTarget?.channelType == "party") activeChatTarget = null
+                    renderTab(HubTab.CHAT)
+                    Toast.makeText(this, "파티에서 나갔습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showModerationMenu(target: ActiveChatTarget) {
+        val items = arrayOf("신고하기 (Report)", "사용자 차단 (Block · 친구 해제)")
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("${target.title} 안전 관리")
+            .setItems(items) { _, idx ->
+                val baseUrl = activeFarm.baseUrl
+                if (idx == 0) {
+                    ioExecutor.execute {
+                        runCatching {
+                            val client = PlayHubApiClient(baseUrl)
+                            val token = ensureAuthToken(client)
+                            client.reportSocialTarget(token, "user", target.targetId, "사용자 신고 (모바일 앱)")
+                        }.onSuccess {
+                            runOnUiThread { Toast.makeText(this, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show() }
+                        }
+                    }
+                } else {
+                    ioExecutor.execute {
+                        runCatching {
+                            val client = PlayHubApiClient(baseUrl)
+                            val token = ensureAuthToken(client)
+                            client.blockUser(token, target.targetId)
+                        }.onSuccess {
+                            runOnUiThread {
+                                activeChatTarget = null
+                                Toast.makeText(this, "${target.title}님을 차단했습니다.", Toast.LENGTH_SHORT).show()
+                                refreshSocialOnly()
+                            }
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    // ---- 5. MORE TAB ----
 
     private fun buildMoreTab(body: LinearLayout) {
         val cachedMb = String.format("%.2f", PckPackageManager.totalCachedBytes(filesDir) / (1024.0 * 1024.0))
@@ -1989,6 +2797,7 @@ class MainActivity : Activity() {
                 text = "Package ID: ${applicationContext.packageName}\n" +
                     "Build Stage: ${BuildConfig.BUILD_STAGE} · Branch: ${BuildConfig.PLAYHUB_BRANCH}\n" +
                     "Engine: Godot ${BuildConfig.GODOT_ENGINE_VERSION} (template_release 내장)\n" +
+                    "Social Handle: ${remoteSocialProfile?.handle ?: profile.handle}\n" +
                     "Active Farm: ${activeFarm.label}\n" +
                     "Server URL: ${activeFarm.baseUrl}$farmStatusLine\n" +
                     "온디맨드 .pck 캐시: ${cachedMb} MiB (내장 스타터: 0종)"
@@ -2063,7 +2872,7 @@ class MainActivity : Activity() {
         setOnClickListener { onClick() }
     }
 
-    // ---- Stitch Bottom-Sheet Game Launch Modal ----
+    // ---- Stitch Bottom-Sheet Game Launch Modal (with Live Leaderboard!) ----
 
     private fun openExperienceDetail(game: CatalogGame) {
         val compat = VersionCompatibilityChecker.evaluate(
@@ -2078,13 +2887,26 @@ class MainActivity : Activity() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
 
+        val leaderboardHost = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = roundedBg(StitchColors.SURFACE_LOW, StitchColors.OUTLINE_VARIANT, 10)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                bottomMargin = dp(12)
+            }
+            addView(TextView(context).apply {
+                text = "리더보드 불러오는 중..."
+                textSize = 11.5f
+                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            })
+        }
+
         val sheet = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 16)
             setPadding(dp(16), dp(16), dp(16), dp(16))
 
-            // 16:9 Banner + Top-right Close Circle
-            val thumbWrap = buildGameThumbnail(game, 172, compat, cached)
+            val thumbWrap = buildGameThumbnail(game, 164, compat, cached)
             thumbWrap.addView(FrameLayout(context).apply {
                 background = ovalBg("#CC111315")
                 addView(iconView(R.drawable.ic_close, 18, StitchColors.ON_SURFACE), FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER))
@@ -2100,7 +2922,7 @@ class MainActivity : Activity() {
                 textSize = 18f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
-                setPadding(0, dp(14), 0, dp(4))
+                setPadding(0, dp(12), 0, dp(4))
             })
             addView(TextView(context).apply {
                 text = "${game.subtitle} · ${game.categoryLabel}"
@@ -2108,11 +2930,10 @@ class MainActivity : Activity() {
                 setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
             })
 
-            // Monospace Metadata Row
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, dp(10), 0, dp(14))
+                setPadding(0, dp(8), 0, dp(10))
                 addView(iconView(R.drawable.ic_thumb_up, 15, StitchColors.PLAY_GREEN).apply {
                     (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(4)
                 })
@@ -2134,7 +2955,8 @@ class MainActivity : Activity() {
                 })
             })
 
-            // Primary Play CTA Button (#00B06F + #002111)
+            addView(leaderboardHost)
+
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER
@@ -2167,6 +2989,64 @@ class MainActivity : Activity() {
             setGravity(Gravity.BOTTOM)
         }
         dialog.show()
+
+        // Async live leaderboard fetch
+        val baseUrl = activeFarm.baseUrl
+        val token = profile.accessToken
+        ioExecutor.execute {
+            val entries = runCatching {
+                PlayHubApiClient(baseUrl).fetchLeaderboard(token, game.id, "high_score", "global")
+            }.getOrDefault(emptyList())
+            runOnUiThread {
+                if (!dialog.isShowing || isFinishing || isDestroyed) return@runOnUiThread
+                renderLeaderboardInto(leaderboardHost, entries.take(3))
+            }
+        }
+    }
+
+    private fun renderLeaderboardInto(host: LinearLayout, entries: List<LeaderboardEntryDto>) {
+        host.removeAllViews()
+        host.addView(TextView(this).apply {
+            text = "TOP 리더보드 (Global)"
+            textSize = 11.5f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+            setPadding(0, 0, 0, dp(4))
+        })
+        if (entries.isEmpty()) {
+            host.addView(TextView(this).apply {
+                text = "아직 등록된 점수가 없습니다. 첫 기록을 세워 보세요!"
+                textSize = 11.5f
+                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            })
+            return
+        }
+        for (e in entries) {
+            host.addView(LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, dp(2), 0, dp(2))
+                addView(TextView(context).apply {
+                    text = "#${e.rank}"
+                    textSize = 12f
+                    typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+                    setTextColor(Color.parseColor(if (e.rank == 1) StitchColors.COIN_GOLD else StitchColors.ON_SURFACE_VARIANT))
+                    layoutParams = LinearLayout.LayoutParams(dp(28), ViewGroup.LayoutParams.WRAP_CONTENT)
+                })
+                addView(TextView(context).apply {
+                    text = "${e.displayName} (${e.handle})"
+                    textSize = 12f
+                    setTextColor(Color.WHITE)
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                })
+                addView(TextView(context).apply {
+                    text = String.format("%,d", e.score)
+                    textSize = 12f
+                    typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+                    setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                })
+            })
+        }
     }
 
     private fun showIncompatibilityDialog(game: CatalogGame, detail: String) {
@@ -2177,15 +3057,72 @@ class MainActivity : Activity() {
             .show()
     }
 
-    private fun launchGame(game: CatalogGame) {
+    private fun launchPartyTogether(party: SocialPartyDto, game: CatalogGame) {
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.launchParty(token, party.id, game.id, game.title)
+            }.onSuccess { updated ->
+                runOnUiThread {
+                    remoteActiveParty = updated
+                    val launch = updated.activeLaunch
+                    Toast.makeText(
+                        this,
+                        "크로스플레이 함께 입장 시작! (${launch?.matchRoomId ?: party.roomCode})",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    launchGame(game, roomCode = party.roomCode, matchRoomId = launch?.matchRoomId)
+                }
+            }.onFailure { err ->
+                runOnUiThread {
+                    Toast.makeText(this, err.message ?: "함께 입장 시작 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun ackAndJoinLaunch(party: SocialPartyDto, launch: SocialPartyLaunchDto) {
+        val game = allCatalogGames().find { it.id == launch.gameId } ?: allCatalogGames().firstOrNull() ?: return
+        val baseUrl = activeFarm.baseUrl
+        ioExecutor.execute {
+            runCatching {
+                val client = PlayHubApiClient(baseUrl)
+                val token = ensureAuthToken(client)
+                client.ackPartyLaunch(
+                    accessToken = token,
+                    partyId = party.id,
+                    launchId = launch.launchId,
+                    state = "entered",
+                    gameTitle = game.title
+                )
+            }.onSuccess { updated ->
+                runOnUiThread { remoteActiveParty = updated }
+            }
+            runOnUiThread {
+                Toast.makeText(
+                    this,
+                    "크로스플레이 매치룸 합류: ${launch.matchRoomId}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                launchGame(game, roomCode = launch.roomCode, matchRoomId = launch.matchRoomId)
+            }
+        }
+    }
+
+    private fun launchGame(game: CatalogGame, roomCode: String? = null, matchRoomId: String? = null) {
+        val effectiveRoom = roomCode ?: remoteActiveParty?.roomCode
+        val effectiveMatch = matchRoomId ?: remoteActiveParty?.activeLaunch?.matchRoomId
+        sendPresenceHeartbeat("in_game", game.id, game.title, effectiveRoom)
         if (game.runtime == "web") {
-            startActivity(WebGameActivity.createIntent(this, game.id, game.title, game.pckPathOrUrl))
+            startActivity(WebGameActivity.createIntent(this, game.id, game.title, game.pckPathOrUrl, effectiveRoom, effectiveMatch))
             return
         }
 
         val cached = PckPackageManager.cachedPckFile(filesDir, game.id, game.version)
         if (cached.isFile) {
-            startGodotIsolated(game, cached)
+            startGodotIsolated(game, cached, effectiveRoom, effectiveMatch)
             return
         }
 
@@ -2245,7 +3182,12 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun startGodotIsolated(game: CatalogGame, pckFile: File) {
+    private fun startGodotIsolated(
+        game: CatalogGame,
+        pckFile: File,
+        roomCode: String? = remoteActiveParty?.roomCode,
+        matchRoomId: String? = remoteActiveParty?.activeLaunch?.matchRoomId
+    ) {
         val userDataDir = File(File(File(filesDir, "game_userdata"), profile.principalId), game.id)
         val intent = GodotPlayerActivity.createIntent(
             context = this,
@@ -2253,10 +3195,12 @@ class MainActivity : Activity() {
             gameTitle = game.title,
             pckPath = pckFile.absolutePath,
             userDataDir = userDataDir.absolutePath,
-            displayName = profile.displayName,
-            handle = profile.handle,
+            displayName = remoteSocialProfile?.displayName ?: profile.displayName,
+            handle = remoteSocialProfile?.handle ?: profile.handle,
             isGuest = profile.isGuest,
-            ageTier = profile.ageTier.name
+            ageTier = profile.ageTier.name,
+            roomCode = roomCode,
+            matchRoomId = matchRoomId
         )
         startActivity(intent)
     }
@@ -2266,6 +3210,12 @@ class MainActivity : Activity() {
     private fun onFarmChanged(next: FarmCluster) {
         activeFarm = next
         remoteCatalog = null
+        remoteSocialProfile = null
+        remoteFriends = emptyList()
+        remoteIncomingRequests = emptyList()
+        remoteOutgoingRequests = emptyList()
+        remoteActiveParty = null
+        activeChatTarget = null
         authStore.clearRemoteTokensForFarmSwitch()
         profile = authStore.loadOrCreateGuest()
         renderTab(activeTab)
@@ -2478,13 +3428,13 @@ class MainActivity : Activity() {
 
     private fun showCustomFarmInputDialog() {
         val input = EditText(this).apply {
-            hint = "https://your-tunnel.trycloudflare.com"
+            hint = "https://your-dev-tunnel.trycloudflare.com (Live 차단)"
             setText(activeFarm.baseUrl)
             setTextColor(Color.WHITE)
             setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
         }
         AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-            .setTitle("Custom Farm URL 입력")
+            .setTitle("Custom Dev Farm URL 입력")
             .setView(input)
             .setPositiveButton("적용") { _, _ ->
                 runCatching {
@@ -2524,5 +3474,34 @@ class MainActivity : Activity() {
             .setMessage(msg)
             .setPositiveButton("확인", null)
             .show()
+    }
+
+    private fun formatChatTimestamp(raw: String): String {
+        val trimmed = raw.trim()
+        if (trimmed.isEmpty()) return ""
+        val millis = trimmed.toLongOrNull() ?: run {
+            val patterns = arrayOf("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss'Z'")
+            var parsed: Long? = null
+            for (pattern in patterns) {
+                try {
+                    val parser = java.text.SimpleDateFormat(pattern, java.util.Locale.US).apply {
+                        timeZone = java.util.TimeZone.getTimeZone("UTC")
+                    }
+                    parsed = parser.parse(trimmed)?.time
+                    if (parsed != null) break
+                } catch (_: Exception) {
+                }
+            }
+            parsed
+        }
+        if (millis != null) {
+            return java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date(millis))
+        }
+        val tIndex = trimmed.indexOf('T')
+        return if (tIndex >= 0 && trimmed.length >= tIndex + 6) {
+            trimmed.substring(tIndex + 1, tIndex + 6)
+        } else {
+            trimmed.take(5)
+        }
     }
 }

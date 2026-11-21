@@ -56,7 +56,18 @@ const OPTIONAL_TABLES={
   cdn_uploads:['id','plan_id','owner','path','sha256','bytes','quarantine_key','state','reserved_bytes','blob_id','error_code','created_at','updated_at'],
   cdn_commits:['id','project_id','parent_id','manifest_blob_id','manifest_sha256','file_count','total_bytes','author','message','restored_from','created_at','pruned_at'],
   cdn_pins:['commit_id','owner','reason','created_at'],
-  cdn_idempotency:['owner','key','scope','status','response_json','created_at']
+  cdn_idempotency:['owner','key','scope','status','response_json','created_at'],
+  user_profiles:['principal_id','handle','avatar_color','bio','privacy_level','updated_at'],
+  social_friendships:['requester_id','addressee_id','status','created_at','updated_at'],
+  social_blocks:['blocker_id','blocked_id','created_at'],
+  social_presence:['principal_id','status','game_id','game_title','room_code','joinable','updated_at'],
+  social_parties:['id','leader_id','title','target_game_id','room_code','max_members','created_at','updated_at'],
+  social_party_members:['party_id','principal_id','role','ready_state','joined_at'],
+  social_messages:['id','channel_type','channel_key','sender_id','body','is_quick_message','created_at'],
+  social_leaderboards:['game_id','board_id','principal_id','score','period_key','updated_at'],
+  social_reports:['id','reporter_id','target_type','target_id','reason','created_at'],
+  social_party_launches:['launch_id','party_id','game_id','room_code','match_room_id','launched_by','status','created_at'],
+  social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

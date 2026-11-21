@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { DatabaseSync } from 'node:sqlite';
 import { createReadStream, existsSync, statSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
 import { join, resolve, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -158,6 +159,7 @@ function captureLocalHandlerResponse(handler, req) {
 
 export function createAosDevServer({
   port = Number(process.env.PLAYHUB_APK_PORT || 18190),
+  portalPort = Number(process.env.PLAYHUB_PORTAL_PORT || 0),
   dataDir = process.env.PLAYHUB_AOS_DATA_DIR || resolve(repoRoot, 'artifacts/aos-local-data'),
   dataSource = process.env.PLAYHUB_DATA_SOURCE || 'local',
   devUrl = process.env.PLAYHUB_DEV_URL || '',
@@ -198,6 +200,40 @@ export function createAosDevServer({
     },
     { rootDir: workDir }
   );
+
+  // Seed idempotent persistent local social peers + open party room PLAY99 + leaderboards for instant social E2E testing
+  try {
+    const seedDb = new DatabaseSync(join(workDir, 'data/platform.sqlite'), { timeout: 3000 });
+    try {
+      const nowMs = Date.now();
+      const peers = [
+        { id: 'local_minjun', name: '민준', handle: 'minjun#1024', color: '#1E3A5F', status: 'in_game', gameId: 'survivor-arena-g2', gameTitle: 'Survivor Arena G2', roomCode: 'PLAY99', score: 2850 },
+        { id: 'local_seoyeon', name: '서연', handle: 'seoyeon#2048', color: '#3B2654', status: 'in_game', gameId: 'match3-garden', gameTitle: 'Match-3 Garden', roomCode: null, score: 1940 },
+        { id: 'local_jiho', name: '지호', handle: 'jiho#3072', color: '#1B4332', status: 'online', gameId: null, gameTitle: null, roomCode: null, score: 1420 }
+      ];
+      for (const p of peers) {
+        seedDb.prepare("INSERT OR IGNORE INTO users(id,kind,display_name,created_at) VALUES(?,'registered',?,?)").run(p.id, p.name, nowMs);
+        seedDb.prepare("INSERT OR IGNORE INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,updated_at) VALUES(?,'KR','ADULT','not_required',?)").run(p.id, nowMs);
+        seedDb.prepare("INSERT OR IGNORE INTO user_profiles(principal_id,handle,avatar_color,bio,privacy_level,updated_at) VALUES(?,?,?,'PlayHub 소셜 테스트 유저','public',?)").run(p.id, p.handle, p.color, nowMs);
+        seedDb.prepare(
+          `INSERT INTO social_presence(principal_id,status,game_id,game_title,room_code,joinable,updated_at)
+           VALUES(?,?,?,?,?,1,?)
+           ON CONFLICT(principal_id) DO UPDATE SET updated_at=excluded.updated_at`
+        ).run(p.id, p.status, p.gameId, p.gameTitle, p.roomCode, nowMs);
+        seedDb.prepare(
+          "INSERT OR IGNORE INTO social_leaderboards(game_id,board_id,principal_id,score,period_key,updated_at) VALUES('survivor-arena-g2','high_score',?,?,'all',?)"
+        ).run(p.id, p.score, nowMs);
+      }
+      seedDb.prepare(
+        "INSERT OR IGNORE INTO social_parties(id,leader_id,title,target_game_id,room_code,max_members,created_at,updated_at) VALUES('local_party_play99','local_minjun','민준의 서바이벌 파티','survivor-arena-g2','PLAY99',8,?,?)"
+      ).run(nowMs, nowMs);
+      seedDb.prepare(
+        "INSERT OR IGNORE INTO social_party_members(party_id,principal_id,role,ready_state,joined_at) VALUES('local_party_play99','local_minjun','leader',1,?)"
+      ).run(nowMs);
+    } finally {
+      seedDb.close();
+    }
+  } catch {}
 
   function renderIndex() {
     const modeBanner = validated.mode === 'dev'
@@ -424,13 +460,102 @@ export function createAosDevServer({
     res.end('Not Found');
   });
 
+  const portalDir = resolve(repoRoot, 'hub/web/user');
+  const portalServer = portalPort > 0
+    ? http.createServer(async (req, res) => {
+        const urlObj = new URL(req.url || '/', `http://127.0.0.1:${portalPort}`);
+        const pathname = decodeURIComponent(urlObj.pathname);
+
+        // Same-origin /api/* proxy directly into shared hubApp (same SQLite DB as Android & iOS!)
+        if (pathname.startsWith('/api/')) {
+          if (req.headers.origin) {
+            try {
+              const origHost = new URL(req.headers.origin).host;
+              if (origHost && origHost === req.headers.host) {
+                req.headers.origin = `http://127.0.0.1:${port}`;
+              }
+            } catch {}
+          }
+          await hubApp.publicHandler(req, res);
+          return;
+        }
+
+        if (pathname === '/config.js') {
+          const body = 'window.PLAYHUB_CONFIG = { apiBaseUrl: location.origin };\n';
+          res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end(body);
+          return;
+        }
+        if (pathname === '/locale.js' || pathname === '/locale-data.js') {
+          res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end('/* dev locale noop */\n');
+          return;
+        }
+        if (pathname === '/catalog/games.json') {
+          const catPath = resolve(workDir, 'catalog/games.json');
+          if (existsSync(catPath)) {
+            const buf = readFileSync(catPath);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+            res.end(buf);
+            return;
+          }
+        }
+        const gMatch = pathname.match(/^\/games\/([a-zA-Z0-9_-]+)\/(.+)$/);
+        if (gMatch) {
+          const [, gameId, rel] = gMatch;
+          if (!rel.includes('..') && !rel.startsWith('/')) {
+            const cands = [
+              resolve(workDir, 'games', gameId, rel),
+              resolve(repoRoot, 'games', gameId, rel),
+              resolve(repoRoot, 'games', gameId, 'Web', rel)
+            ];
+            for (const c of cands) {
+              if (existsSync(c) && statSync(c).isFile()) {
+                const st = statSync(c);
+                res.writeHead(200, {
+                  'Content-Type': MIME[extname(c).toLowerCase()] || 'application/octet-stream',
+                  'Content-Length': st.size,
+                  'Cache-Control': 'no-store'
+                });
+                createReadStream(c).pipe(res);
+                return;
+              }
+            }
+          }
+        }
+
+        // Serve PC Hub Web Portal static files (SPA routes /play/* and /join/* fall back to index.html)
+        const relStatic = (pathname === '/' || pathname.startsWith('/play/') || pathname.startsWith('/join/'))
+          ? 'index.html'
+          : pathname.replace(/^\/+/, '');
+        const candidate = resolve(portalDir, relStatic);
+        if (candidate.startsWith(portalDir) && existsSync(candidate) && statSync(candidate).isFile()) {
+          const st = statSync(candidate);
+          res.writeHead(200, {
+            'Content-Type': MIME[extname(candidate).toLowerCase()] || 'application/octet-stream',
+            'Content-Length': st.size,
+            'Cache-Control': 'no-store'
+          });
+          createReadStream(candidate).pipe(res);
+          return;
+        }
+
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('Not Found');
+      })
+    : null;
+
   return {
     server,
+    portalServer,
     hubApp,
     workDir,
     mode: validated.mode,
     devUrl: validated.devUrl,
     close: async () => {
+      if (portalServer) {
+        await new Promise(resolveClose => portalServer.close(() => resolveClose()));
+      }
       await new Promise(resolveClose => server.close(() => resolveClose()));
       await hubApp.close();
     }
@@ -443,6 +568,7 @@ function parseArgs(argv) {
     const k = argv[i];
     const v = argv[i + 1];
     if (k === '--port' && v) { opts.port = Number(v); i++; }
+    else if (k === '--portal-port' && v) { opts.portalPort = Number(v); i++; }
     else if (k === '--data-dir' && v) { opts.dataDir = v; i++; }
     else if (k === '--data-source' && v) { opts.dataSource = v; i++; }
     else if (k === '--dev-url' && v) { opts.devUrl = v; i++; }
@@ -453,8 +579,14 @@ function parseArgs(argv) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const opts = parseArgs(process.argv.slice(2));
   const port = opts.port ?? Number(process.env.PLAYHUB_APK_PORT || 18190);
-  const instance = createAosDevServer({ ...opts, port });
+  const portalPort = opts.portalPort ?? Number(process.env.PLAYHUB_PORTAL_PORT || 0);
+  const instance = createAosDevServer({ ...opts, port, portalPort });
   instance.server.listen(port, '127.0.0.1', () => {
     console.log(`APK_AND_HUB_SERVER_READY http://127.0.0.1:${port}/ mode=${instance.mode} dataDir=${instance.workDir}`);
   });
+  if (instance.portalServer && portalPort > 0) {
+    instance.portalServer.listen(portalPort, '127.0.0.1', () => {
+      console.log(`PC_HUB_WEB_PORTAL_READY http://127.0.0.1:${portalPort}/`);
+    });
+  }
 }
