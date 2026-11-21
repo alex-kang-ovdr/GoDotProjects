@@ -1,0 +1,20 @@
+{
+  "id": "roblox-chaos-obby",
+  "name": "Chaos Obby (Roblox Port)",
+  "description": "MIT 오픈소스 Roblox 오비 게임(SBdevz/Chaos-Obby)을 Godot 4.7.2로 자동 포팅한 3D 템플릿: 회전 장애물, 사라지는 발판, 용암, 체크포인트, 카오스 안개/속도 이벤트 및 타이머 HUD 포함.",
+  "dimension": "3d",
+  "assetPaths": [],
+  "guideOrder": [
+    "scripts/ChaosFeatures_6.gd",
+    "scripts/Checkpoints_3.gd",
+    "scripts/Disapearing_1.gd",
+    "scripts/LavaObstacles_4.gd",
+    "scripts/Motion_2.gd",
+    "scripts/Teleport_5.gd",
+    "scripts/Timer_7.gd",
+    "place_bootstrap.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}
