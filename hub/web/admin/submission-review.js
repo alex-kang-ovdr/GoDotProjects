@@ -1,8 +1,14 @@
 const PATH = '/api/admin/submissions';
+const PUB_PATH = '/api/admin/publications';
 const PAGE_SIZE = 25;
 const LABELS = { in_review: '심사 중', changes_requested: '수정 요청', approved: '메타데이터 승인' };
 const PILL_CLASS = { in_review: 'pill warn', changes_requested: 'pill danger', approved: 'pill ok' };
 const QA_PILL = { passed: 'pill ok', warned: 'pill warn', failed: 'pill danger', error: 'pill danger', running: 'pill info', pending: 'pill muted' };
+const PKG_LABEL = { verified: '실행 패키지: 검증 완료', failed: '실행 패키지: 검증 실패', not_verified: '실행 패키지: 미검증' };
+const PKG_PILL = { verified: 'pill ok', failed: 'pill danger', not_verified: 'pill warn' };
+const PUB_LABEL = { published: '카탈로그: 라이브 게시됨', unpublished: '카탈로그: 미공개', rolled_back: '카탈로그: 롤백됨', suspended: '카탈로그: 긴급 차단' };
+const PUB_PILL = { published: 'pill ok', unpublished: 'pill muted', rolled_back: 'pill warn', suspended: 'pill danger' };
+const MODE_LABEL = { singleplay: 'SinglePlay (0 P)', mo: 'MO (룸·매치)', mmo: 'MMO (지속 월드)' };
 
 function element(tag, content, className) {
   const node = document.createElement(tag);
@@ -129,9 +135,13 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
     detailPane.append(header);
 
     const chips = element('div', '', 'chip-row');
+    const pkgKey = item.packageValidation || 'not_verified';
+    const pubKey = item.publicationStatus || 'unpublished';
+    const modeKey = item.deployMode || 'singleplay';
     chips.append(
-      element('span', '실행 패키지: 미검증', 'pill warn'),
-      element('span', '카탈로그: 미공개', 'pill muted')
+      element('span', PKG_LABEL[pkgKey] || `실행 패키지: ${pkgKey}`, PKG_PILL[pkgKey] || 'pill warn'),
+      element('span', PUB_LABEL[pubKey] || `카탈로그: ${pubKey}`, PUB_PILL[pubKey] || 'pill muted'),
+      element('span', `모드: ${MODE_LABEL[modeKey] || modeKey}`, 'pill info')
     );
     detailPane.append(chips);
 
@@ -140,6 +150,9 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
       ['소유자', item.ownerName || item.ownerId],
       ['Forge 프로젝트', item.projectId],
       ['Forge 릴리스', `${item.releaseLabel} · r${item.releaseRevision} · ${item.releaseId}`],
+      ['게임 슬러그', item.publishedGameId || item.gameSlug || '(게시 시 자동 생성)'],
+      ['공개 범위', item.visibility || 'public'],
+      ['아티팩트 SHA-256', item.artifactSha256 ? `${item.artifactSha256.slice(0, 16)}…` : '—'],
       ['심사 요청 시각', item.submittedAt ? kstStamp(item.submittedAt) : '—']
     ];
     if (item.decidedAt) fields.push(['판정 시각', kstStamp(item.decidedAt)]);
@@ -171,10 +184,20 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
 
     if (item.status === 'in_review') detailPane.append(decisionForm(item));
 
+    const publishBox = element('div', '', 'checklist-box');
+    if (item.status === 'approved' || item.publishedGameId) {
+      publishBox.append(element('h3', '라이브 게시 · 롤백 · 차단 제어'), element('p', '게시 상태를 확인하는 중...', 'muted'));
+      detailPane.append(publishBox);
+    }
+
     try {
-      const [qaRes, checklistRes] = await Promise.all([
+      const targetGameId = item.publishedGameId || item.gameSlug || null;
+      const [qaRes, checklistRes, pubRes] = await Promise.all([
         api(`/api/admin/qa/runs?submissionId=${encodeURIComponent(item.id)}`),
-        api(`${PATH}/${item.id}/checklist`)
+        api(`${PATH}/${item.id}/checklist`),
+        (item.status === 'approved' || targetGameId) && targetGameId
+          ? api(`${PUB_PATH}/${encodeURIComponent(targetGameId)}`).catch(() => null)
+          : Promise.resolve(null)
       ]);
       if (reqId !== detailQuery || token !== session) return;
 
@@ -192,11 +215,133 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
       }
 
       paintChecklist(checklistBox, item, checklistRes.checklist);
+      if (item.status === 'approved' || item.publishedGameId) {
+        paintPublishControls(publishBox, item, pubRes);
+      }
     } catch (error) {
       if (reqId !== detailQuery || expired(error)) return;
       qaBox.replaceChildren(element('h3', '연결된 자동 QA 실행'), element('p', 'QA 정보를 불러오지 못했습니다.', 'muted'));
       checklistBox.replaceChildren(element('h3', '수동 검수 체크리스트'), element('p', '체크리스트를 불러오지 못했습니다.', 'muted'));
     }
+  }
+
+  function paintPublishControls(container, item, pubRes) {
+    container.replaceChildren(element('h3', '라이브 게시 · 롤백 · 차단 제어'));
+    const pub = pubRes?.publication || null;
+    const history = pubRes?.history || [];
+    const statusLine = element('p', pub
+      ? `게임 ID: ${pub.gameId} · 상태: ${pub.status} · 활성 릴리스: ${pub.activeReleaseId} · CAS v${pub.casVersion}`
+      : '아직 라이브 카탈로그에 게시되지 않았습니다. 아래 버튼으로 패키지를 검증·전개해 게시할 수 있습니다.', 'muted');
+    container.append(statusLine);
+
+    const actions = element('div', '', 'inline-actions');
+    if (item.status === 'approved') {
+      const publishBtn = element('button', pub ? '이 릴리스로 라이브 업데이트' : '라이브 게시 (Publish)', 'primary');
+      publishBtn.type = 'button';
+      publishBtn.addEventListener('click', async () => {
+        publishBtn.disabled = true;
+        result.textContent = '패키지 검증 및 라이브 게시 중...';
+        try {
+          const res = await api(`${PATH}/${item.id}/publish`, {
+            method: 'POST',
+            body: { expectedCasVersion: pub?.casVersion }
+          });
+          result.textContent = `라이브 게시 완료: ${res.publication.gameId} (CAS v${res.publication.casVersion})`;
+          await load(offset, true);
+          void onDecision();
+        } catch (error) {
+          if (!expired(error)) result.textContent = error.message || '라이브 게시에 실패했습니다.';
+        } finally {
+          publishBtn.disabled = false;
+        }
+      });
+      actions.append(publishBtn);
+    }
+
+    if (pub) {
+      if (pub.entryUrl) {
+        const previewLink = document.createElement('a');
+        previewLink.href = pub.entryUrl;
+        previewLink.target = '_blank';
+        previewLink.rel = 'noopener noreferrer';
+        previewLink.className = 'quiet';
+        previewLink.textContent = '격리 실행 확인 ↗';
+        actions.append(previewLink);
+      }
+      const toggleStatus = pub.status === 'published' ? 'unpublished' : 'published';
+      const toggleBtn = element('button', pub.status === 'published' ? '비공개 전환' : '다시 공개', 'quiet');
+      toggleBtn.type = 'button';
+      toggleBtn.addEventListener('click', async () => {
+        toggleBtn.disabled = true;
+        try {
+          await api(`${PUB_PATH}/${encodeURIComponent(pub.gameId)}/status`, {
+            method: 'POST',
+            body: { status: toggleStatus, expectedCasVersion: pub.casVersion }
+          });
+          result.textContent = toggleStatus === 'unpublished' ? '게임을 비공개로 전환했습니다.' : '게임을 다시 공개했습니다.';
+          await load(offset, true);
+          void onDecision();
+        } catch (error) {
+          if (!expired(error)) result.textContent = error.message || '상태 변경에 실패했습니다.';
+        } finally {
+          toggleBtn.disabled = false;
+        }
+      });
+      actions.append(toggleBtn);
+
+      if (pub.status !== 'suspended') {
+        const killBtn = element('button', '긴급 차단 (Kill-Switch)', 'quiet');
+        killBtn.type = 'button';
+        killBtn.addEventListener('click', async () => {
+          killBtn.disabled = true;
+          try {
+            await api(`${PUB_PATH}/${encodeURIComponent(pub.gameId)}/status`, {
+              method: 'POST',
+              body: { status: 'suspended', expectedCasVersion: pub.casVersion, reason: 'admin_kill_switch' }
+            });
+            result.textContent = `${pub.gameId} 게임을 즉시 차단(Kill-Switch)했습니다.`;
+            await load(offset, true);
+            void onDecision();
+          } catch (error) {
+            if (!expired(error)) result.textContent = error.message || '긴급 차단에 실패했습니다.';
+          } finally {
+            killBtn.disabled = false;
+          }
+        });
+        actions.append(killBtn);
+      }
+
+      const previousReleases = [...new Set(history.map(h => h.toReleaseId).filter(rid => rid && rid !== pub.activeReleaseId))];
+      if (previousReleases.length) {
+        const select = document.createElement('select');
+        for (const rid of previousReleases) {
+          const opt = document.createElement('option');
+          opt.value = rid;
+          opt.textContent = `릴리스 ${rid.slice(0, 10)}…`;
+          select.append(opt);
+        }
+        const rollbackBtn = element('button', '1초 롤백', 'quiet');
+        rollbackBtn.type = 'button';
+        rollbackBtn.addEventListener('click', async () => {
+          rollbackBtn.disabled = true;
+          try {
+            const res = await api(`${PUB_PATH}/${encodeURIComponent(pub.gameId)}/rollback`, {
+              method: 'POST',
+              body: { toReleaseId: select.value, expectedCasVersion: pub.casVersion, reason: 'admin_rollback' }
+            });
+            result.textContent = `릴리스 ${res.publication.activeReleaseId.slice(0, 10)}…로 즉시 롤백했습니다.`;
+            await load(offset, true);
+            void onDecision();
+          } catch (error) {
+            if (!expired(error)) result.textContent = error.message || '롤백에 실패했습니다.';
+          } finally {
+            rollbackBtn.disabled = false;
+          }
+        });
+        actions.append(select, rollbackBtn);
+      }
+    }
+    container.append(actions);
   }
 
   function paintChecklist(container, item, checklist) {
@@ -250,15 +395,17 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
     label.append(note);
     const buttons = element('div', '', 'review-buttons');
     const change = element('button', '수정 요청', 'quiet');
-    const approve = element('button', '메타데이터 승인', 'primary');
-    change.type = approve.type = 'submit';
-    buttons.append(change, approve);
+    const approve = element('button', '메타데이터 승인', 'quiet');
+    const approveAndPublish = element('button', '승인 후 즉시 게시', 'primary');
+    change.type = approve.type = approveAndPublish.type = 'submit';
+    buttons.append(change, approve, approveAndPublish);
     form.append(label, buttons);
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
       if (!active || !event.submitter) return;
-      const decision = event.submitter === approve ? 'approved' : 'changes_requested';
+      const isInstantPublish = event.submitter === approveAndPublish;
+      const decision = event.submitter === change ? 'changes_requested' : 'approved';
       const reason = note.value.trim();
       if (decision === 'changes_requested' && !reason) {
         note.setCustomValidity('수정 요청 사유를 입력해 주세요.');
@@ -268,27 +415,36 @@ export function createSubmissionReview({ api, kstStamp, onSessionExpired, onDeci
       }
       const token = session;
       const request = query;
-      change.disabled = approve.disabled = note.disabled = true;
+      change.disabled = approve.disabled = approveAndPublish.disabled = note.disabled = true;
       result.textContent = '';
       try {
-        await api(`${PATH}/${item.id}/decision`, { method: 'POST', body: { revision: item.revision, decision, note: reason } });
-        if (token !== session) return;
-        result.textContent = decision === 'approved' ? '메타데이터를 승인했습니다. 카탈로그 상태는 미공개입니다.' : '창작자에게 수정 요청을 전달했습니다.';
+        if (isInstantPublish) {
+          const pub = await api(`${PATH}/${item.id}/publish`, {
+            method: 'POST',
+            body: { revision: item.revision, approveIfInReview: true, note: reason }
+          });
+          if (token !== session) return;
+          result.textContent = `승인 및 라이브 게시를 완료했습니다: ${pub.publication.gameId} (CAS v${pub.publication.casVersion})`;
+        } else {
+          await api(`${PATH}/${item.id}/decision`, { method: 'POST', body: { revision: item.revision, decision, note: reason } });
+          if (token !== session) return;
+          result.textContent = decision === 'approved' ? '메타데이터를 승인했습니다. 아래 버튼으로 라이브 게시할 수 있습니다.' : '창작자에게 수정 요청을 전달했습니다.';
+        }
         if (request === query) reload.focus();
-        await load(offset);
+        await load(offset, true);
         if (token === session) void onDecision();
       } catch (error) {
         if (token !== session || expired(error)) return;
         if (error.code === 'SUBMISSION_REVISION_CONFLICT' || error.code === 'INVALID_SUBMISSION_STATE') {
           result.textContent = '다른 변경이 먼저 저장됐습니다. 최신 심사 상태를 확인해 주세요.';
           await load(offset);
-        } else if (error.code === 'RELEASE_NOT_FOUND' || error.code === 'SUBMISSION_RELEASE_MISMATCH' || error.code === 'FORGE_DISABLED') {
-          result.textContent = '연결된 PlayForge 릴리스를 확인할 수 없어 승인하지 못했습니다.';
+        } else if (error.code === 'RELEASE_NOT_FOUND' || error.code === 'SUBMISSION_RELEASE_MISMATCH' || error.code === 'FORGE_DISABLED' || error.code === 'RELEASE_PACKAGE_NOT_FOUND') {
+          result.textContent = '연결된 PlayForge 릴리스 또는 빌드 패키지를 확인할 수 없어 처리하지 못했습니다.';
         } else {
-          result.textContent = '판정을 저장하지 못했습니다. 다시 시도해 주세요.';
+          result.textContent = error.message || '판정을 저장하지 못했습니다. 다시 시도해 주세요.';
         }
       } finally {
-        change.disabled = approve.disabled = note.disabled = false;
+        change.disabled = approve.disabled = approveAndPublish.disabled = note.disabled = false;
       }
     });
     return form;

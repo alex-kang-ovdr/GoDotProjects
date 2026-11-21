@@ -1,6 +1,14 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const {
+  SPEC_TIERS,
+  USD_PER_POINT,
+  KRW_PER_POINT,
+  FREE_MONTHLY_POINT_LIMIT,
+  buildReleaseManifest,
+  validateReleaseManifest
+} = require('./release-manifest.cjs');
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 const MAX_PRESENCE_PER_PROJECT = 64;
 const MAX_ACTIVITY_PER_SECOND = 30;
@@ -119,9 +127,18 @@ function createPlatformApi(store, { validateBuild, buildMode } = {}) {
     const sendProject = project => ({ ok: true, ...projectResponse(project) });
     const templateRoute = pathname.match(/^\/api\/platform\/templates\/([a-z0-9_-]{1,40})$/);
     const projectRoute = pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})(?:\/(history|restore|releases|events|activity|session|logs|remote|releases\/([a-f0-9]{24})\/rollback))?$/);
-    const matched = pathname === '/api/platform/templates' || pathname === '/api/platform/projects' || !!templateRoute || !!projectRoute;
+    const matched = pathname === '/api/platform/templates' || pathname === '/api/platform/projects' || pathname === '/api/platform/publish-config' || !!templateRoute || !!projectRoute;
     if (!matched) return false;
     try {
+      if (pathname === '/api/platform/publish-config' && method === 'GET') {
+        return reply(res, 200, {
+          ok: true,
+          specTiers: SPEC_TIERS,
+          usdPerPoint: USD_PER_POINT,
+          krwPerPoint: KRW_PER_POINT,
+          freeMonthlyPointLimit: FREE_MONTHLY_POINT_LIMIT
+        }), true;
+      }
       if (pathname === '/api/platform/templates' && method === 'GET') return reply(res, 200, { ok: true, templates: store.listTemplates() }), true;
       if (templateRoute && method === 'GET') {
         const template = store.getTemplate(templateRoute[1]);
@@ -222,9 +239,35 @@ function createPlatformApi(store, { validateBuild, buildMode } = {}) {
           buildId: buildInfo.buildId || buildInfo.id || body.buildId,
           ...(typeof buildInfo.previewUrl === 'string' ? { previewUrl: buildInfo.previewUrl } : {}),
           ...(typeof buildInfo.downloadUrl === 'string' ? { downloadUrl: buildInfo.downloadUrl } : {}),
+          ...(typeof buildInfo.artifactSha256 === 'string' ? { artifactSha256: buildInfo.artifactSha256 } : {}),
+          ...(typeof buildInfo.sourceHash === 'string' ? { sourceHash: buildInfo.sourceHash } : {}),
+          ...(Number.isSafeInteger(buildInfo.bytes) ? { bytes: buildInfo.bytes } : {}),
+          ...(Number.isSafeInteger(buildInfo.expandedBytes) ? { expandedBytes: buildInfo.expandedBytes } : {})
         };
-        const release = await store.createRelease(id, { revision, label: body.label, build });
-        return reply(res, 201, { ok: true, release }), true;
+        const manifestDraft = buildReleaseManifest({
+          projectId: id,
+          projectName: project.name,
+          sourceRevision: revision,
+          sourceHash: build.sourceHash || '',
+          build,
+          deployProfile: body.deployProfile,
+          gameMetadata: body.gameMetadata,
+          visibility: body.visibility
+        });
+        const manifestCheck = validateReleaseManifest(manifestDraft);
+        if (!manifestCheck.ok) {
+          return reply(res, 400, { ok: false, error: 'INVALID_RELEASE_MANIFEST', details: manifestCheck.errors }), true;
+        }
+        const release = await store.createRelease(id, {
+          revision,
+          label: body.label,
+          build,
+          visibility: manifestDraft.visibility,
+          deployProfile: manifestDraft.deployProfile,
+          gameMetadata: manifestDraft.gameMetadata,
+          releaseManifest: manifestDraft
+        });
+        return reply(res, 201, { ok: true, release, warnings: manifestCheck.warnings }), true;
       }
       if (rollbackId && method === 'POST') {
         const body = await readBody(req, providedBody);

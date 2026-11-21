@@ -1,6 +1,6 @@
 'use strict';
 
-const { createHash } = require('node:crypto');
+const { createHash, randomBytes } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { inflateRawSync } = require('node:zlib');
@@ -33,6 +33,12 @@ const PLATFORMS = Object.freeze(['web', 'windows', 'linux', 'macos']);
 const INSTALLATION_STATUSES = Object.freeze(['applied', 'superseded', 'removed']);
 const INSTALLATION_RECORD_FILENAME = '.playforge-store-installations.json';
 const MAX_STORE_BODY_BYTES = 1024 * 1024;
+const MAX_REVIEWED_PLANS = 256;
+const ZIP_LIMITS = Object.freeze({
+  maxEntries: 4096,
+  maxEntryBytes: 64 * 1024 * 1024,
+  maxTotalBytes: 256 * 1024 * 1024,
+});
 
 const RE_ASSET_ID = /^[a-z][a-z0-9-]{1,63}$/;
 const RE_VERSION = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9.-]+)?$/;
@@ -251,7 +257,8 @@ function validateStoreContract(entry, { strictAdditionalProperties = false } = {
   return { valid: errors.length === 0, errors };
 }
 
-function readZipEntries(zipBuffer) {
+function readZipEntries(zipBuffer, limits = {}) {
+  const { maxEntries, maxEntryBytes, maxTotalBytes } = { ...ZIP_LIMITS, ...limits };
   const buf = Buffer.isBuffer(zipBuffer) ? zipBuffer : Buffer.from(zipBuffer);
   let eocdOffset = -1;
   const minOffset = Math.max(0, buf.length - 65557);
@@ -264,7 +271,11 @@ function readZipEntries(zipBuffer) {
   if (eocdOffset < 0) throw new Error('Invalid ZIP archive: EOCD not found.');
   const totalEntries = buf.readUInt16LE(eocdOffset + 10);
   const centralOffset = buf.readUInt32LE(eocdOffset + 16);
+  if (totalEntries > maxEntries) {
+    throw new Error(`ZIP archive has too many entries (${totalEntries} > ${maxEntries}).`);
+  }
   const files = new Map();
+  let totalBytes = 0;
   let cursor = centralOffset;
   for (let i = 0; i < totalEntries; i++) {
     if (cursor + 46 > buf.length || buf.readUInt32LE(cursor) !== 0x02014b50) {
@@ -277,6 +288,9 @@ function readZipEntries(zipBuffer) {
     const extraLen = buf.readUInt16LE(cursor + 30);
     const commentLen = buf.readUInt16LE(cursor + 32);
     const localOffset = buf.readUInt32LE(cursor + 42);
+    if (cursor + 46 + nameLen + extraLen + commentLen > buf.length) {
+      throw new Error('Invalid ZIP central directory entry bounds.');
+    }
     const name = buf.toString('utf8', cursor + 46, cursor + 46 + nameLen);
     cursor += 46 + nameLen + extraLen + commentLen;
     if (name.endsWith('/')) continue;
@@ -285,14 +299,39 @@ function readZipEntries(zipBuffer) {
     }
     const localNameLen = buf.readUInt16LE(localOffset + 26);
     const localExtraLen = buf.readUInt16LE(localOffset + 28);
+    if (uncompressedSize > maxEntryBytes) {
+      throw new Error(`ZIP entry too large for ${name} (${uncompressedSize} > ${maxEntryBytes}).`);
+    }
+    if (totalBytes + uncompressedSize > maxTotalBytes) {
+      throw new Error(`ZIP archive uncompressed size exceeds limit (${maxTotalBytes}).`);
+    }
     const dataStart = localOffset + 30 + localNameLen + localExtraLen;
+    if (dataStart + compressedSize > buf.length) {
+      throw new Error(`Invalid ZIP data range for ${name}`);
+    }
     const raw = buf.subarray(dataStart, dataStart + compressedSize);
     let content;
-    if (method === 0) content = Buffer.from(raw);
-    else if (method === 8) content = inflateRawSync(raw);
-    else throw new Error(`Unsupported ZIP compression method ${method} for ${name}`);
+    if (method === 0) {
+      if (compressedSize !== uncompressedSize) {
+        throw new Error(`ZIP entry size mismatch for ${name}`);
+      }
+      content = Buffer.from(raw);
+    } else if (method === 8) {
+      try {
+        // 선언된 해제 크기(및 남은 총량 상한)를 넘는 출력은 즉시 중단해 ZIP 폭탄으로 메모리가 소진되지 않게 한다.
+        const maxAllowed = Math.min(maxEntryBytes, maxTotalBytes - totalBytes);
+        const inflateLimit = Math.max(1, Math.min(maxAllowed, uncompressedSize));
+        content = inflateRawSync(raw, { maxOutputLength: inflateLimit });
+      } catch (error) {
+        throw new Error(`ZIP entry inflate failed for ${name}: ${error.message}`);
+      }
+    } else throw new Error(`Unsupported ZIP compression method ${method} for ${name}`);
     if (content.length !== uncompressedSize) {
       throw new Error(`ZIP entry size mismatch for ${name}`);
+    }
+    totalBytes += content.length;
+    if (totalBytes > maxTotalBytes) {
+      throw new Error(`ZIP archive uncompressed size exceeds limit (${maxTotalBytes}).`);
     }
     files.set(name, content);
   }
@@ -833,6 +872,11 @@ function createStoreBridge(options = {}) {
   const stagingRoot = options.stagingRoot || '';
   const storeWebUrl = options.storeWebUrl || 'http://127.0.0.1:4173/store';
   const grants = options.grants || null;
+  const allowedOrigins = new Set();
+  for (const rawOrigin of options.allowedOrigins || []) {
+    const normalized = normalizeLoopbackOrigin(rawOrigin);
+    if (normalized) allowedOrigins.add(normalized);
+  }
 
   function registerEntry(entry, artifactInfo = null) {
     const validation = validateStoreContract(entry);
@@ -868,15 +912,46 @@ function createStoreBridge(options = {}) {
   }
 
   function findRelease(assetId, releaseId = '') {
-    if (releaseId && artifacts.has(releaseId)) return artifacts.get(releaseId).entry;
-    const list = catalog.get(assetId) || [];
-    if (releaseId) return list.find((item) => item.release_id === releaseId) || null;
+    const normalizedAssetId = String(assetId || '');
+    const normalizedReleaseId = String(releaseId || '');
+    if (normalizedReleaseId && artifacts.has(normalizedReleaseId)) {
+      const candidate = artifacts.get(normalizedReleaseId).entry;
+      if (!normalizedAssetId || candidate.asset_id === normalizedAssetId) return candidate;
+      return null;
+    }
+    if (!normalizedAssetId && normalizedReleaseId) {
+      for (const list of catalog.values()) {
+        const match = list.find((item) => item.release_id === normalizedReleaseId);
+        if (match) return match;
+      }
+      return null;
+    }
+    const list = catalog.get(normalizedAssetId) || [];
+    if (normalizedReleaseId) return list.find((item) => item.release_id === normalizedReleaseId) || null;
     return list[0] || null;
   }
 
-  function resolveEntryFromBody(body) {
-    if (body.entry && typeof body.entry === 'object') return body.entry;
-    return findRelease(String(body.asset_id || ''), String(body.release_id || ''));
+  function resolveCatalogEntry(body) {
+    if (Object.hasOwn(body, 'entry') && body.entry !== undefined) {
+      return {
+        ok: false,
+        status: 400,
+        code: 'CLIENT_ENTRY_NOT_ALLOWED',
+        error: 'Client-supplied entry is not accepted; specify asset_id and release_id from the server catalog.',
+        project_modified: false,
+      };
+    }
+    const entry = findRelease(String(body.asset_id || ''), String(body.release_id || ''));
+    if (!entry) {
+      return {
+        ok: false,
+        status: 404,
+        code: 'RELEASE_NOT_FOUND',
+        error: 'Store release not found in server catalog.',
+        project_modified: false,
+      };
+    }
+    return { ok: true, entry };
   }
 
   function getLibrary(accountId = 'default', projectId = '') {
@@ -889,7 +964,26 @@ function createStoreBridge(options = {}) {
     return queryLibraryEntries({ entries: rawEntries, projectId, projectRoot, catalog: allCatalog });
   }
 
-  async function handleHttp(route, url, request, response) {
+  async function handleHttp(route, url, request, response, context = {}) {
+    const serverOrigin = context.serverOrigin || localOrigin(request);
+    if (request.headers && request.headers.origin !== undefined) {
+      const requestOrigin = normalizeLoopbackOrigin(request.headers.origin);
+      const effectiveAllowed = new Set(allowedOrigins);
+      if (serverOrigin) effectiveAllowed.add(serverOrigin);
+      for (const extra of context.allowedOrigins || []) {
+        const normalizedExtra = normalizeLoopbackOrigin(extra);
+        if (normalizedExtra) effectiveAllowed.add(normalizedExtra);
+      }
+      if (!requestOrigin || !effectiveAllowed.has(requestOrigin)) {
+        json(response, 403, {
+          ok: false,
+          code: 'ORIGIN_NOT_ALLOWED',
+          error: 'Origin is not allowed for Store API.',
+        });
+        return;
+      }
+    }
+
     const method = request.method;
     if (method === 'GET' && route === '/library') {
       const accountId = url.searchParams.get('account_id') || 'default';
@@ -945,21 +1039,33 @@ function createStoreBridge(options = {}) {
     try {
       body = await readJsonBody(request, MAX_STORE_BODY_BYTES);
     } catch (error) {
-      json(response, error.status || 400, { ok: false, error: error.message });
+      json(response, error.status || 400, {
+        ok: false,
+        code: error.code || 'INVALID_REQUEST_BODY',
+        error: error.message,
+      });
       return;
     }
 
     if (route === '/library') {
-      const entry = resolveEntryFromBody(body);
-      const result = saveLibraryEntry({ libraryMap: libraries, accountId: body.account_id || 'default', entry });
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
+      const result = saveLibraryEntry({ libraryMap: libraries, accountId: body.account_id || 'default', entry: resolved.entry });
       json(response, result.ok ? 200 : (result.status || 400), result);
       return;
     }
     if (route === '/license') {
-      const entry = resolveEntryFromBody(body);
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
       const result = verifyUsageLicense({
         accountId: body.account_id || 'default',
-        entry,
+        entry: resolved.entry,
         targetEngineVersion: body.godot_version || '4.7.2',
         targetPlatform: body.platform || 'windows',
         grants,
@@ -968,27 +1074,73 @@ function createStoreBridge(options = {}) {
       return;
     }
     if (route === '/stage') {
-      const entry = resolveEntryFromBody(body);
-      const bundle = entry ? artifacts.get(entry.release_id) : null;
-      const bytes = body.artifact_base64 ? Buffer.from(String(body.artifact_base64), 'base64') : bundle?.archive;
-      const result = stageVerifiedArtifact({ entry, artifactBytes: bytes, stagingRoot });
+      if ((Object.hasOwn(body, 'artifact_base64') && body.artifact_base64 !== undefined)
+        || (Object.hasOwn(body, 'artifact') && body.artifact !== undefined)) {
+        json(response, 400, {
+          ok: false,
+          code: 'CLIENT_ARTIFACT_NOT_ALLOWED',
+          error: 'Client-supplied artifact bytes are not accepted; artifacts are loaded from the server catalog.',
+          project_modified: false,
+        });
+        return;
+      }
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
+      const entry = resolved.entry;
+      const editorialCheck = rejectEditorialInstall(entry);
+      if (editorialCheck.rejected) {
+        json(response, editorialCheck.status || 400, editorialCheck);
+        return;
+      }
+      const bundle = artifacts.get(entry.release_id);
+      if (!bundle || !bundle.archive) {
+        json(response, 404, {
+          ok: false,
+          code: 'ARTIFACT_NOT_FOUND',
+          error: 'Package artifact not found in server catalog.',
+          project_modified: false,
+        });
+        return;
+      }
+      const result = stageVerifiedArtifact({ entry, artifactBytes: bundle.archive, stagingRoot });
       if (result.ok) stagedByRelease.set(entry.release_id, result);
       json(response, result.ok ? 200 : (result.status || 400), result.ok ? { ...result, files: undefined } : result);
       return;
     }
     if (route === '/plan') {
-      const entry = resolveEntryFromBody(body);
+      if (Object.hasOwn(body, 'dependencies') && body.dependencies !== undefined) {
+        json(response, 400, {
+          ok: false,
+          code: 'CLIENT_DEPENDENCIES_NOT_ALLOWED',
+          error: 'Client-supplied dependencies are not accepted; dependencies are resolved from the server catalog.',
+          project_modified: false,
+        });
+        return;
+      }
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
+      const entry = resolved.entry;
       const projectId = String(body.project_id || '');
       const projectRoot = projects.get(projectId) || '';
-      const bundle = entry ? artifacts.get(entry.release_id) : null;
+      const bundle = artifacts.get(entry.release_id);
       const result = reviewInstallPlan({
         entry,
         projectId,
         projectRoot,
-        dependencies: body.dependencies || bundle?.dependencies || [],
+        dependencies: bundle?.dependencies || [],
       });
       if (result.ok) {
-        const planToken = `${projectId}:${entry.release_id}:${result.project_fingerprint}`;
+        const planToken = randomBytes(24).toString('hex');
+        if (reviewedPlans.size >= MAX_REVIEWED_PLANS) {
+          const oldestKey = reviewedPlans.keys().next().value;
+          if (oldestKey !== undefined) reviewedPlans.delete(oldestKey);
+        }
         reviewedPlans.set(planToken, result);
         json(response, 200, { ...result, plan_token: planToken });
       } else {
@@ -997,12 +1149,27 @@ function createStoreBridge(options = {}) {
       return;
     }
     if (route === '/apply') {
-      const entry = resolveEntryFromBody(body);
+      if (Object.hasOwn(body, 'plan') && body.plan !== undefined) {
+        json(response, 400, {
+          ok: false,
+          code: 'CLIENT_PLAN_NOT_ALLOWED',
+          error: 'Client-supplied install plan is not accepted; provide a server-issued plan_token.',
+          project_modified: false,
+        });
+        return;
+      }
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
+      const entry = resolved.entry;
       const projectId = String(body.project_id || '');
       const projectRoot = projects.get(projectId) || '';
-      const plan = body.plan || reviewedPlans.get(String(body.plan_token || ''));
-      const staged = entry ? stagedByRelease.get(entry.release_id) : null;
-      const bundle = entry ? artifacts.get(entry.release_id) : null;
+      const planToken = typeof body.plan_token === 'string' ? body.plan_token : '';
+      const plan = planToken ? reviewedPlans.get(planToken) : null;
+      const staged = stagedByRelease.get(entry.release_id) || null;
+      const bundle = artifacts.get(entry.release_id) || null;
       const result = applyInstallPlan({
         entry,
         plan,
@@ -1012,16 +1179,33 @@ function createStoreBridge(options = {}) {
         projectRoot,
         allowOverwriteConflicts: Boolean(body.allow_overwrite_conflicts),
       });
+      if (result.ok && planToken) {
+        reviewedPlans.delete(planToken);
+      }
       json(response, result.ok ? 200 : (result.status || 400), result);
       return;
     }
     if (route === '/check-updates') {
-      const entry = resolveEntryFromBody(body);
+      if (Object.hasOwn(body, 'installation_record') && body.installation_record !== undefined) {
+        json(response, 400, {
+          ok: false,
+          code: 'CLIENT_RECORD_NOT_ALLOWED',
+          error: 'Client-supplied installation_record is not accepted; records are read from the selected project.',
+          project_modified: false,
+        });
+        return;
+      }
+      const resolved = resolveCatalogEntry(body);
+      if (!resolved.ok) {
+        json(response, resolved.status, resolved);
+        return;
+      }
+      const entry = resolved.entry;
       const projectId = String(body.project_id || '');
       const projectRoot = projects.get(projectId) || '';
       const records = projectRoot ? readProjectInstallations(projectRoot) : {};
-      const record = body.installation_record || (entry ? records[entry.asset_id] : null);
-      const latest = entry ? findRelease(entry.asset_id) : null;
+      const record = records[entry.asset_id] || null;
+      const latest = findRelease(entry.asset_id);
       const result = checkReleaseUpdate({ installationRecord: record, installedEntry: entry, latestEntry: latest });
       json(response, 200, result);
       return;
@@ -1041,7 +1225,20 @@ function createStoreBridge(options = {}) {
   };
 }
 
+function hasJsonContentType(request) {
+  const raw = request.headers?.['content-type'];
+  if (typeof raw !== 'string') return false;
+  const mediaType = raw.split(';', 1)[0].trim().toLowerCase();
+  return mediaType === 'application/json';
+}
+
 function readJsonBody(request, maxBytes) {
+  if (!hasJsonContentType(request)) {
+    return Promise.reject(Object.assign(
+      new Error('Content-Type must be application/json.'),
+      { status: 415, code: 'UNSUPPORTED_MEDIA_TYPE' },
+    ));
+  }
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
@@ -1079,10 +1276,27 @@ function isLoopback(address) {
   return address === '::1' || address === '[::1]' || /^127(?:\.\d{1,3}){3}$/.test(address?.replace(/^::ffff:/, ''));
 }
 
-function localOrigin(request) {
-  if (!isLoopback(request.socket.remoteAddress)) return null;
+function normalizeLoopbackOrigin(rawOrigin) {
+  if (typeof rawOrigin !== 'string') return null;
+  const trimmed = rawOrigin.trim();
+  if (!trimmed || trimmed === 'null') return null;
+  let parsed;
   try {
-    const url = new URL(`http://${request.headers.host}`);
+    parsed = new URL(trimmed);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+  if (parsed.username || parsed.password || parsed.pathname !== '/' || parsed.search || parsed.hash) return null;
+  if (parsed.origin !== trimmed) return null;
+  if (parsed.hostname !== 'localhost' && !isLoopback(parsed.hostname)) return null;
+  return parsed.origin;
+}
+
+function localOrigin(request) {
+  if (!isLoopback(request.socket?.remoteAddress)) return null;
+  try {
+    const url = new URL(`http://${request.headers?.host}`);
     if (url.username || url.password || url.pathname !== '/' || url.search || url.hash) return null;
     return url.hostname === 'localhost' || isLoopback(url.hostname) ? url.origin : null;
   } catch {
@@ -1157,9 +1371,15 @@ function createAssetLibraryHandler(root, options = {}) {
     }
     const route = url.pathname.slice(PREFIX.length).replace(/\/$/, '');
     if (route === STORE_SUBROUTE || route.startsWith(STORE_SUBROUTE + '/')) {
-      storeBridge ||= createStoreBridge(options.storeOptions || {});
+      storeBridge ||= createStoreBridge({
+        ...(options.storeOptions || {}),
+        allowedOrigins: options.allowedOrigins ?? options.storeOptions?.allowedOrigins,
+      });
       const storeRoute = route.slice(STORE_SUBROUTE.length) || '/';
-      storeBridge.handleHttp(storeRoute, url, request, response).catch((error) => {
+      storeBridge.handleHttp(storeRoute, url, request, response, {
+        serverOrigin: origin,
+        allowedOrigins: options.allowedOrigins,
+      }).catch((error) => {
         if (!response.headersSent) {
           json(response, error.status || 500, { ok: false, error: error.message || 'Store handler error.' });
         }
@@ -1229,6 +1449,7 @@ module.exports = {
   PLATFORMS,
   RELEASE_KINDS,
   STORE_STATES,
+  ZIP_LIMITS,
   applyInstallPlan,
   buildPackageArtifact,
   checkReleaseUpdate,
@@ -1241,6 +1462,7 @@ module.exports = {
   inferTargetRoot,
   isEngineCompatible,
   isSafePackageFilePath,
+  normalizeLoopbackOrigin,
   queryLibraryEntries,
   readProjectInstallations,
   readZipEntries,

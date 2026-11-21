@@ -1,0 +1,122 @@
+{
+  "captures": [
+    "01_day1_intro.png",
+    "02_day1_board.png",
+    "03_day1_wall_chop.png",
+    "04_day2_enemy_combat.png",
+    "05_game_over.png"
+  ],
+  "checks": [
+    {
+      "detail": "loaded=12",
+      "name": "sound_clips_loaded_12",
+      "passed": true
+    },
+    {
+      "detail": "text=Day 1",
+      "name": "day1_intro_visible",
+      "passed": true
+    },
+    {
+      "detail": "tiles=100",
+      "name": "board_tiles_10x10",
+      "passed": true
+    },
+    {
+      "detail": "walls=9",
+      "name": "wall_count_in_range",
+      "passed": true
+    },
+    {
+      "detail": "pickups=5",
+      "name": "pickup_count_in_range",
+      "passed": true
+    },
+    {
+      "detail": "enemies=0",
+      "name": "day1_enemy_count_zero",
+      "passed": true
+    },
+    {
+      "detail": "grid=(0, 0) pos=(0.0, 224.0)",
+      "name": "player_start_bottom_left",
+      "passed": true
+    },
+    {
+      "detail": "exit_pos=(224.0, 0.0)",
+      "name": "exit_top_right",
+      "passed": true
+    },
+    {
+      "detail": "visible=false",
+      "name": "day1_overlay_hidden",
+      "passed": true
+    },
+    {
+      "detail": "pos=(0, 0)",
+      "name": "outer_wall_blocks_move",
+      "passed": true
+    },
+    {
+      "detail": "food=99",
+      "name": "move_attempt_consumes_food",
+      "passed": true
+    },
+    {
+      "detail": "grid=(1, 0)",
+      "name": "player_moved_right",
+      "passed": true
+    },
+    {
+      "detail": "hp=3",
+      "name": "wall_damaged_on_chop",
+      "passed": true
+    },
+    {
+      "detail": "anim=chop",
+      "name": "player_chop_anim_triggered",
+      "passed": true
+    },
+    {
+      "detail": "cleared=true",
+      "name": "wall_destroyed_at_hp0",
+      "passed": true
+    },
+    {
+      "detail": "tag=Soda before=94 after=113",
+      "name": "pickup_increases_food",
+      "passed": true
+    },
+    {
+      "detail": "level=2",
+      "name": "day2_level_advanced",
+      "passed": true
+    },
+    {
+      "detail": "enemies=1",
+      "name": "day2_enemy_spawned_1",
+      "passed": true
+    },
+    {
+      "detail": "m1={ \"moved\": false, \"hit\": Wall_2_3:<StaticBody2D#51539609407>, \"skipped\": false } m2={ \"skipped\": true, \"moved\": false, \"hit\": <null> }",
+      "name": "enemy_skip_move_alternates",
+      "passed": true
+    },
+    {
+      "detail": "dmg=20 before=112 after=92",
+      "name": "enemy_attacks_player_and_reduces_food",
+      "passed": true
+    },
+    {
+      "detail": "text=After 2 days, you starved.",
+      "name": "game_over_triggered",
+      "passed": true
+    }
+  ],
+  "elapsedMs": 1283,
+  "engineVersion": "4.7.2-stable (official)",
+  "failedChecks": 0,
+  "passedChecks": 21,
+  "totalChecks": 21,
+  "verifiedAt": "2026-11-20T08:15:56"
+}

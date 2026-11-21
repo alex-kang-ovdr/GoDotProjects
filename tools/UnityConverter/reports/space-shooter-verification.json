@@ -1,0 +1,50 @@
+{
+  "captures": [
+    "01_gameplay_wave.png",
+    "02_laser_hit_explosion.png",
+    "03_gameover.png"
+  ],
+  "checks": [
+    {
+      "detail": "count=3",
+      "name": "fbx_asteroids_loaded_3",
+      "passed": true
+    },
+    {
+      "detail": "loaded=true",
+      "name": "fbx_player_ship_loaded",
+      "passed": true
+    },
+    {
+      "detail": "tex=true",
+      "name": "tiff_to_png_nebula_applied",
+      "passed": true
+    },
+    {
+      "detail": "rot_z=-16.0",
+      "name": "player_tilts_on_horizontal_move",
+      "passed": true
+    },
+    {
+      "detail": "bolts=1",
+      "name": "laser_bolt_spawned",
+      "passed": true
+    },
+    {
+      "detail": "destroyed=1 score=10",
+      "name": "asteroid_destroyed_and_scored",
+      "passed": true
+    },
+    {
+      "detail": "go=Game Over",
+      "name": "player_collision_gameover",
+      "passed": true
+    }
+  ],
+  "elapsedMs": 3113,
+  "engineVersion": "4.7.2-stable (official)",
+  "failedChecks": 0,
+  "game": "Space Shooter",
+  "passedChecks": 7,
+  "totalChecks": 7
+}

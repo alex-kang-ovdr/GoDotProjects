@@ -5,6 +5,24 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { findGodot } = require('./native-runtime.cjs');
 const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
+const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
+
+const PLAYHUB_SHELL_PATH = path.join(__dirname, 'playhub-godot-shell.js');
+const PLAYHUB_SHELL_TAG = '<script src="playhub-godot-shell.js"></script>';
+
+function injectPlayHubShell(outputDir) {
+  const indexPath = path.join(outputDir, 'index.html');
+  if (!fs.existsSync(indexPath) || !fs.existsSync(PLAYHUB_SHELL_PATH)) return false;
+  fs.copyFileSync(PLAYHUB_SHELL_PATH, path.join(outputDir, 'playhub-godot-shell.js'));
+  const html = fs.readFileSync(indexPath, 'utf8');
+  if (html.includes('playhub-godot-shell.js')) return true;
+  let patched;
+  if (/<\/head>/i.test(html)) patched = html.replace(/<\/head>/i, `  ${PLAYHUB_SHELL_TAG}\n</head>`);
+  else if (/<\/body>/i.test(html)) patched = html.replace(/<\/body>/i, `  ${PLAYHUB_SHELL_TAG}\n</body>`);
+  else patched = `${html}\n${PLAYHUB_SHELL_TAG}\n`;
+  fs.writeFileSync(indexPath, patched, 'utf8');
+  return true;
+}
 
 const preset = `[preset.0]
 name="Web"
@@ -95,12 +113,19 @@ class BuildQueue {
     await this.run(job, ['--headless', '--path', project, '--editor', '--import', '--quit']);
     await this.run(job, ['--headless', '--path', project, '--export-release', 'Web', path.join(output, 'index.html')]);
     if (!fs.existsSync(path.join(output, 'index.html')) || !fs.existsSync(path.join(output, 'index.wasm')) || !fs.existsSync(path.join(output, 'index.pck'))) throw new Error('Godot did not produce the required Web files');
-    const names = fs.readdirSync(output).filter(name => fs.statSync(path.join(output, name)).isFile());
-    fs.writeFileSync(path.join(output, 'PlayForge-Web.zip'), zipFiles(names.map(name => [name, fs.readFileSync(path.join(output, name))])));
+    const shellInjected = injectPlayHubShell(output);
+    const names = fs.readdirSync(output).filter(name => fs.statSync(path.join(output, name)).isFile() && name !== 'PlayForge-Web.zip').sort();
+    const zipBuffer = zipFiles(names.map(name => [name, fs.readFileSync(path.join(output, name))]));
+    const zipValidation = validateDeploymentZip(zipBuffer);
+    fs.writeFileSync(path.join(output, 'PlayForge-Web.zip'), zipBuffer);
     job.files = [...names, 'PlayForge-Web.zip'];
     job.downloadUrl = '/api/builds/' + job.id + '/files/PlayForge-Web.zip';
     job.previewUrl = '/api/builds/' + job.id + '/files/index.html';
-    job.artifactSha256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(output, 'PlayForge-Web.zip'))).digest('hex');
+    job.artifactSha256 = zipValidation.sha256;
+    job.bytes = zipValidation.bytes;
+    job.expandedBytes = zipValidation.expandedBytes;
+    job.entryCount = zipValidation.entries;
+    job.sdkBridgeVersion = shellInjected ? 'playhub-godot-shell-v1' : null;
   }
   run(job, args) {
     if (this.closed) return Promise.reject(new Error('Build cancelled'));
@@ -126,4 +151,4 @@ class BuildQueue {
     if (this.child && this.child.exitCode === null) this.child.kill();
   }
 }
-module.exports = { BuildQueue };
+module.exports = { BuildQueue, injectPlayHubShell };

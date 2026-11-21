@@ -327,7 +327,7 @@ if (isDirectExecution) {
       }
     }
 
-    if (pathname.startsWith('/api/')) {
+    if (pathname.startsWith('/api/') || (ROLE === 'public' && pathname.startsWith('/play-ugc/'))) {
       stripSpoofedHeaders(req);
       apiHandler(req, res);
       return;

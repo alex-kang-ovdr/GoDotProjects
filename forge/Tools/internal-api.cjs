@@ -359,7 +359,7 @@ function createInternalApi(options = {}) {
         buildMode: options.buildMode,
         validateBuild: (buildId, projectId, revision) => {
           try {
-            return builds.validate(accountKey, buildId, projectId, revision);
+            return builds.validateDetailed ? builds.validateDetailed(accountKey, buildId, projectId, revision) : builds.validate(accountKey, buildId, projectId, revision);
           } catch {
             return null;
           }
@@ -479,6 +479,31 @@ function createInternalApi(options = {}) {
       const build = resolveTemplateBuild(tplBuildMatch[1], tplBuildMatch[2], tplBuildMatch[3], accountKey);
       if (!build) return sendJson(res, 404, { ok: false, error: 'BUILD_NOT_FOUND' }), true;
       return sendJson(res, 200, { ok: true, build }), true;
+    }
+
+    // 1a. Verified release package binary stream: GET .../projects/{pid}/releases/{rid}/package
+    const releasePkgMatch = subpath.match(/^\/projects\/([a-f0-9]{24})\/releases\/([a-f0-9]{24})\/package$/);
+    if (releasePkgMatch) {
+      if (method !== 'GET') return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' }), true;
+      let resolved;
+      try {
+        resolved = builds.resolveWithMetadata(accountKey, releasePkgMatch[1], releasePkgMatch[2]);
+      } catch (err) {
+        const status = Number.isSafeInteger(err?.status) ? err.status : 404;
+        return sendJson(res, status, { ok: false, error: err?.code || 'RELEASE_PACKAGE_UNAVAILABLE' }), true;
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Length': resolved.bytes.length,
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Artifact-Sha256': resolved.sha256,
+        'X-Release-Id': resolved.release.id,
+        'X-Release-Revision': String(resolved.release.revision),
+        'X-Build-Id': resolved.job.id
+      });
+      res.end(resolved.bytes);
+      return true;
     }
 
     // 1. Direct single-release read: GET .../projects/{pid}/releases/{rid}

@@ -1,0 +1,945 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+  <External>null</External>
+  <External>nil</External>
+  <Item class="Workspace" referent="RBXCHAOS00000001">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <float name="Gravity">196.2</float>
+      <float name="FallenPartsDestroyHeight">-120</float>
+    </Properties>
+    <Item class="Camera" referent="RBXCHAOS00000002">
+      <Properties>
+        <string name="Name">Camera</string>
+        <float name="FieldOfView">65</float>
+      <CoordinateFrame name="CFrame">
+        <X>-36</X><Y>30</Y><Z>54</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+      </Properties>
+    </Item>
+    
+    <Item class="Part" referent="RBXCHAOS00000003">
+      <Properties>
+        <string name="Name">LobbyFloor</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4282929248</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>-24</X><Y>0</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>26</X><Y>2</Y><Z>26</Z></Vector3>
+      </Properties>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000005">
+      <Properties>
+        <string name="Name">Spawnpoints</string>
+      </Properties>
+    <Item class="SpawnLocation" referent="RBXCHAOS00000004">
+      <Properties>
+        <string name="Name">LobbySpawn</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4284134655</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>-26</X><Y>1.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>8</X><Y>1</Y><Z>8</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000008">
+      <Properties>
+        <string name="Name">Teleports</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000007">
+      <Properties>
+        <string name="Name">Lobby</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000006">
+      <Properties>
+        <string name="Name">EnterRedPad</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4278249215</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>-15</X><Y>1.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>6</X><Y>1</Y><Z>8</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000014">
+      <Properties>
+        <string name="Name">Checkpoints</string>
+      </Properties>
+    <Item class="SpawnLocation" referent="RBXCHAOS00000009">
+      <Properties>
+        <string name="Name">Red 0</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4292624705</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>0</X><Y>1.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>2</Y><Z>10</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="Model" referent="RBXCHAOS00000012">
+      <Properties>
+        <string name="Name">Red 1</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000010">
+      <Properties>
+        <string name="Name">CheckpointBase</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4293619260</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>48</X><Y>3.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>2</Y><Z>10</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="SpawnLocation" referent="RBXCHAOS00000011">
+      <Properties>
+        <string name="Name">CheckpointPad</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294958170</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>48</X><Y>4.8</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>6</X><Y>0.6</Y><Z>6</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    <Item class="SpawnLocation" referent="RBXCHAOS00000013">
+      <Properties>
+        <string name="Name">Red 2</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4282182530</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>92</X><Y>6</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>12</X><Y>2</Y><Z>12</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000031">
+      <Properties>
+        <string name="Name">Rotation</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000019">
+      <Properties>
+        <string name="Name">Right</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000016">
+      <Properties>
+        <string name="Name">Right60</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000015">
+      <Properties>
+        <string name="Name">Right60_Beam1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294951730</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>14</X><Y>2.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>14</X><Y>1.2</Y><Z>3.5</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    <Item class="Folder" referent="RBXCHAOS00000018">
+      <Properties>
+        <string name="Name">Right480</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000017">
+      <Properties>
+        <string name="Name">Right480_Blade1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294926235</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>60</X><Y>5.2</Y><Z>-3</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>1</Y><Z>2</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    </Item>
+    <Item class="Folder" referent="RBXCHAOS00000024">
+      <Properties>
+        <string name="Name">Left</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000021">
+      <Properties>
+        <string name="Name">Left60</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000020">
+      <Properties>
+        <string name="Name">Left60_Beam1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4286108415</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>28</X><Y>3</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>14</X><Y>1.2</Y><Z>3.5</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    <Item class="Folder" referent="RBXCHAOS00000023">
+      <Properties>
+        <string name="Name">Left480</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000022">
+      <Properties>
+        <string name="Name">Left480_Blade1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4290996735</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>60</X><Y>5.2</Y><Z>3</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>1</Y><Z>2</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    </Item>
+    <Item class="Folder" referent="RBXCHAOS00000027">
+      <Properties>
+        <string name="Name">CylRight</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000026">
+      <Properties>
+        <string name="Name">CylRight30</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000025">
+      <Properties>
+        <string name="Name">CylRight30_Log1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4284147390</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">2</token>
+      <CoordinateFrame name="CFrame">
+        <X>70</X><Y>5</Y><Z>-4</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>4</Y><Z>4</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    </Item>
+    <Item class="Folder" referent="RBXCHAOS00000030">
+      <Properties>
+        <string name="Name">CylLeft</string>
+      </Properties>
+    <Item class="Folder" referent="RBXCHAOS00000029">
+      <Properties>
+        <string name="Name">CylLeft30</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000028">
+      <Properties>
+        <string name="Name">CylLeft30_Log1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294941520</Color3uint8>
+        <token name="Material">256</token>
+        <float name="Transparency">0</float>
+        <token name="shape">2</token>
+      <CoordinateFrame name="CFrame">
+        <X>70</X><Y>5</Y><Z>4</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>10</X><Y>4</Y><Z>4</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+    </Item>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000036">
+      <Properties>
+        <string name="Name">Disappearing</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000032">
+      <Properties>
+        <string name="Name">FadeTile_1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4289391615</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>36</X><Y>3.2</Y><Z>-4</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>6</X><Y>1.2</Y><Z>6</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXCHAOS00000033">
+      <Properties>
+        <string name="Name">FadeTile_2</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4289391615</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>40</X><Y>3.4</Y><Z>2</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>6</X><Y>1.2</Y><Z>6</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXCHAOS00000034">
+      <Properties>
+        <string name="Name">FadeTile_3</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4289391615</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>80</X><Y>5.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>8</X><Y>1.2</Y><Z>8</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="Script" referent="RBXCHAOS00000035">
+      <Properties>
+        <string name="Name">Disapearing</string>
+        <ProtectedString name="Source"><![CDATA[local folder = script.Parent
+
+local function setupPlatform(platform)
+	-- Make sure the item added is a physical part
+	if not platform:IsA("BasePart") then return end
+
+	platform.Anchored = true
+	local isTouched = false
+
+	local function fade(hit)
+		local character = hit.Parent
+		local humanoid = character:FindFirstChild("Humanoid")
+
+		if humanoid and not isTouched then
+			isTouched = true
+
+			-- 1. Smoothly fade out the platform
+			for count = 1, 10 do
+				platform.Transparency = count / 10
+				task.wait(0.05)
+			end
+
+			-- 2. Turn off collisions and make it invisible
+			platform.CanCollide = false
+			platform.Transparency = 1
+
+			-- 3. Wait for 3 seconds while hidden
+			task.wait(3)
+
+			-- 4. Reset the platform
+			platform.CanCollide = true
+			platform.Transparency = 0
+
+			isTouched = false
+		end
+	end
+
+	platform.Touched:Connect(fade)
+end
+
+-- 1. Set up any parts already inside the folder when the game starts
+for _, child in ipairs(folder:GetChildren()) do
+	task.spawn(function()
+		setupPlatform(child)
+	end)
+end
+
+-- 2. Automatically set up any new parts you drag into the folder later
+folder.ChildAdded:Connect(function(child)
+	task.spawn(function()
+		-- Tiny yield to make sure the part finishes loading into the workspace
+		task.wait(0.1)
+		setupPlatform(child)
+	end)
+end)]]></ProtectedString>
+      </Properties>
+    </Item>
+    </Item>
+    
+    <Item class="Folder" referent="RBXCHAOS00000039">
+      <Properties>
+        <string name="Name">Lava</string>
+      </Properties>
+    <Item class="Part" referent="RBXCHAOS00000037">
+      <Properties>
+        <string name="Name">LavaFloor_1</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294915865</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>26</X><Y>-3.5</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>52</X><Y>1.5</Y><Z>22</Z></Vector3>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXCHAOS00000038">
+      <Properties>
+        <string name="Name">LavaBar_2</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <Color3uint8 name="Color3uint8">4294913300</Color3uint8>
+        <token name="Material">288</token>
+        <float name="Transparency">0</float>
+        <token name="shape">1</token>
+      <CoordinateFrame name="CFrame">
+        <X>60</X><Y>4.3</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+        <Vector3 name="size"><X>20</X><Y>0.9</Y><Z>2.2</Z></Vector3>
+      </Properties>
+    </Item>
+    </Item>
+  </Item>
+  <Item class="Lighting" referent="RBXCHAOS00000040">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <float name="FogStart">100</float>
+      <float name="FogEnd">500</float>
+      <Color3 name="FogColor"><R>0.7843137</R><G>0.7843137</G><B>0.7843137</B></Color3>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="RBXCHAOS00000041">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+  </Item>
+  <Item class="ServerScriptService" referent="RBXCHAOS00000042">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    
+    <Item class="Script" referent="RBXCHAOS00000043">
+      <Properties>
+        <string name="Name">Motion</string>
+        <ProtectedString name="Source"><![CDATA[local RunService = game:GetService("RunService")
+
+local Rotations = game.Workspace:WaitForChild('Rotation')
+
+local Right = Rotations:WaitForChild('Right')
+local Left = Rotations:WaitForChild('Left')
+local CylRight = Rotations:WaitForChild('CylRight')
+local CylLeft = Rotations:WaitForChild('CylLeft')
+
+local Right60 = Right:WaitForChild('Right60')
+local Left60 = Left:WaitForChild('Left60')
+local Right480 = Right:WaitForChild('Right480')
+local Left480 = Left:WaitForChild('Left480')
+local CylRight30 = CylRight:WaitForChild('CylRight30')
+local CylLeft30 = CylLeft:WaitForChild('CylLeft30')
+
+local RotationSpeed = math.rad(60)
+
+RunService.Heartbeat:Connect(function(dt)
+	local AngleChange = RotationSpeed * dt
+	for _, part in Right60:GetChildren() do
+		if part:IsA("BasePart") then
+			part.AssemblyAngularVelocity = Vector3.new(0, RotationSpeed, 0)
+			part.CFrame = part.CFrame * CFrame.Angles(0, AngleChange, 0)
+		end
+	end
+	for _, part in Left60:GetChildren() do
+		if part:IsA("BasePart") then
+			part.AssemblyAngularVelocity = Vector3.new(0, -RotationSpeed, 0)
+			part.CFrame = part.CFrame * CFrame.Angles(0, -AngleChange, 0)
+		end
+	end
+	for _, part in Right480:GetChildren() do
+		if part:IsA("BasePart") then
+			part.AssemblyAngularVelocity = Vector3.new(0, RotationSpeed*8, 0)
+			part.CFrame = part.CFrame * CFrame.Angles(0, AngleChange*8, 0)
+		end
+	end
+	for _, part in Left480:GetChildren() do
+		if part:IsA("BasePart") then
+			part.AssemblyAngularVelocity = Vector3.new(0, -RotationSpeed*8, 0)
+			part.CFrame = part.CFrame * CFrame.Angles(0, -AngleChange*8, 0)
+		end
+	end
+	for _, part in CylRight30:GetChildren() do
+		if part:IsA("BasePart") then
+			part.AssemblyAngularVelocity = part.CFrame:VectorToWorldSpace(Vector3.new(RotationSpeed/2, 0, 0))
+			part.CFrame = part.CFrame * CFrame.Angles(AngleChange/2, 0, 0)
+		end
+	end
+	for _, part in CylLeft30:GetChildren() do
+		if part:IsA("BasePart") then
+		part.AssemblyAngularVelocity = part.CFrame:VectorToWorldSpace(Vector3.new(-RotationSpeed/2, 0, 0))
+			part.CFrame = part.CFrame * CFrame.Angles(-AngleChange/2, 0, 0)
+		end
+	end
+end)]]></ProtectedString>
+      </Properties>
+    </Item>
+    
+    <Item class="Script" referent="RBXCHAOS00000044">
+      <Properties>
+        <string name="Name">Checkpoints</string>
+        <ProtectedString name="Source"><![CDATA[local DataStoreService = game:GetService("DataStoreService")
+local DataStore = DataStoreService:GetDataStore("ProgressPoints")
+
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+
+local checkpointsFolder = Workspace:WaitForChild("Checkpoints")
+local lobbySpawn = Workspace:WaitForChild("Spawnpoints"):WaitForChild("LobbySpawn")
+
+local function findSpawnLocation(checkpointObject)
+	if checkpointObject:IsA("SpawnLocation") then
+		return checkpointObject
+	elseif checkpointObject:IsA("Model") then
+		return checkpointObject:FindFirstChildOfClass("SpawnLocation", true)
+	end
+	return nil
+end
+
+Players.PlayerAdded:Connect(function(player)
+	if lobbySpawn:IsA("SpawnLocation") then
+		player.RespawnLocation = lobbySpawn
+	end
+
+	local stageValue = Instance.new("StringValue")
+	stageValue.Name = "Stage"
+	stageValue.Parent = player
+
+	local key = "Player_" .. player.UserId
+	local success, savedStageName = pcall(function()
+		return DataStore:GetAsync(key)
+	end)
+
+	if success and savedStageName then
+		stageValue.Value = savedStageName
+	else
+		stageValue.Value = "Red 0"
+	end
+end)
+
+local function setupCheckpointTouch(part, checkpointObject)
+	if part:IsA("BasePart") then
+		part.Touched:Connect(function(otherPart)
+			local character = otherPart:FindFirstAncestorOfClass("Model")
+			if not character then return end
+
+			local player = Players:GetPlayerFromCharacter(character)
+			if not player then return end
+
+			local spawnLoc = findSpawnLocation(checkpointObject)
+			if spawnLoc then
+				player.RespawnLocation = spawnLoc
+			end
+
+			local stage = player:FindFirstChild("Stage")
+			if stage and stage.Value ~= checkpointObject.Name then
+				stage.Value = checkpointObject.Name
+
+				local key = "Player_" .. player.UserId
+				pcall(function()
+					DataStore:SetAsync(key, checkpointObject.Name)
+				end)
+			end
+		end)
+	end
+end
+
+local function setupCheckpoint(checkpointObject)
+	if checkpointObject:IsA("BasePart") then
+		setupCheckpointTouch(checkpointObject, checkpointObject)
+	elseif checkpointObject:IsA("Model") then
+		for _, part in ipairs(checkpointObject:GetDescendants()) do
+			setupCheckpointTouch(part, checkpointObject)
+		end
+	end
+end
+
+for _, child in ipairs(checkpointsFolder:GetChildren()) do
+	setupCheckpoint(child)
+end
+
+checkpointsFolder.ChildAdded:Connect(setupCheckpoint)]]></ProtectedString>
+      </Properties>
+    </Item>
+    
+    <Item class="Script" referent="RBXCHAOS00000045">
+      <Properties>
+        <string name="Name">LavaObstacles</string>
+        <ProtectedString name="Source"><![CDATA[local lavas = game.Workspace:WaitForChild('Lava'):GetChildren()
+
+for _, lava in lavas do
+	lava.Touched:Connect(function(object)
+		local Obbyplayer = game.Players:GetPlayerFromCharacter(object.Parent)
+		if Obbyplayer then
+			object.Parent.Humanoid.Health = 0
+		end
+	end)
+end
+]]></ProtectedString>
+      </Properties>
+    </Item>
+    
+    <Item class="Script" referent="RBXCHAOS00000046">
+      <Properties>
+        <string name="Name">Teleport</string>
+        <ProtectedString name="Source"><![CDATA[local DataStoreService = game:GetService("DataStoreService")
+local DataStore = DataStoreService:GetDataStore("ProgressPoints")
+
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+
+local teleportsFolder = Workspace:WaitForChild("Teleports")
+local lobbyFolder = teleportsFolder:WaitForChild("Lobby")
+local checkpointsFolder = Workspace:WaitForChild("Checkpoints")
+
+local debounce = {}
+
+local function teleportPlayerToSavedCheckpoint(player)
+	local character = player.Character
+	if not character then return end
+
+	local rootPart = character.PrimaryPart or character:FindFirstChild("HumanoidRootPart")
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if not rootPart or not humanoid then return end
+
+	local key = "Player_" .. player.UserId
+	local success, savedSpawnName = pcall(function()
+		return DataStore:GetAsync(key)
+	end)
+
+	local targetCheckpointName = "Red 0"
+
+	if success and savedSpawnName then
+		targetCheckpointName = savedSpawnName
+	end
+
+	local targetPart = checkpointsFolder:FindFirstChild(targetCheckpointName)
+
+	if not targetPart then
+		targetPart = checkpointsFolder:FindFirstChild("Red 0")
+	end
+
+	if targetPart then
+		local targetCFrame = targetPart:IsA("Model") and targetPart:GetPivot() or targetPart.CFrame
+
+		rootPart.Anchored = true
+		character:PivotTo(targetCFrame + Vector3.new(0, 4, 0))
+
+		rootPart.AssemblyLinearVelocity = Vector3.zero
+		rootPart.AssemblyAngularVelocity = Vector3.zero
+		humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+
+		task.wait(0.1)
+		rootPart.Anchored = false
+
+		player:SetAttribute("LevelRed", true)
+	else
+		warn("Could not find checkpoint target part: " .. tostring(targetCheckpointName))
+	end
+end
+
+local function setupTeleportPart(part)
+	if part:IsA("BasePart") then
+		part.Touched:Connect(function(otherPart)
+			local character = otherPart:FindFirstAncestorOfClass("Model")
+			if not character then return end
+
+			local player = Players:GetPlayerFromCharacter(character)
+			if player and not debounce[player] then
+				debounce[player] = true
+
+				teleportPlayerToSavedCheckpoint(player)
+
+				task.wait(1)
+				debounce[player] = nil
+			end
+		end)
+	end
+end
+
+for _, part in ipairs(lobbyFolder:GetDescendants()) do
+	setupTeleportPart(part)
+end
+
+lobbyFolder.DescendantAdded:Connect(setupTeleportPart)]]></ProtectedString>
+      </Properties>
+    </Item>
+    
+    <Item class="Script" referent="RBXCHAOS00000047">
+      <Properties>
+        <string name="Name">ChaosFeatures</string>
+        <ProtectedString name="Source"><![CDATA[local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local function normal(character)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = 16
+	end
+	game:GetService("Lighting").FogStart = 100
+	game:GetService("Lighting").FogEnd = 500
+	game:GetService("Lighting").FogColor = Color3.fromRGB(200, 200, 200)  
+	print("normal")
+end
+
+local function low_speed(character)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = 8
+		print("low_speed")
+	end
+end
+
+local function high_speed(character)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = 64
+		print("high_speed")
+	end
+end
+
+local function darkness(character)
+	game:GetService("Lighting").FogStart = 0
+	game:GetService("Lighting").FogEnd = 20
+	game:GetService("Lighting").FogColor = Color3.fromRGB(50, 50, 50)
+	print("darkness")
+end
+
+local chaosNames = {
+	[low_speed] = "Low Speed",
+	[high_speed] = "High Speed",
+	[darkness] = "Darkness"
+}
+
+local currentChaos = normal
+
+local function applyChaos(player, character)
+	if not character then return end
+	if player:GetAttribute("LevelRed") == true then
+		currentChaos(character)
+	else
+		normal(character)
+	end
+end
+
+local function newPlayer(player)
+	player.CharacterAdded:Connect(function(character)
+		task.wait(0.1)
+		applyChaos(player, character)
+	end)
+
+	player:GetAttributeChangedSignal("LevelRed"):Connect(function()
+		if player.Character then
+			applyChaos(player, player.Character)
+		end
+	end)
+
+	if player.Character then
+		applyChaos(player, player.Character)
+	end
+end
+
+local function timer(seconds, status)
+	ReplicatedStorage:SetAttribute("ChaosText", status)
+	for i = seconds, 1, -1 do
+		ReplicatedStorage:SetAttribute("TimeLeft", i)
+		task.wait(1)
+	end
+end
+
+game.Players.PlayerAdded:Connect(newPlayer)
+
+for _, player in ipairs(game.Players:GetPlayers()) do
+	newPlayer(player)
+end
+
+while true do
+	local functionList = {low_speed, high_speed, darkness}
+	local randomGenerator = Random.new()
+	local ChaosFunction = functionList[randomGenerator:NextInteger(1, #functionList)]
+
+	timer(240, "Next Chaos Event In:")
+
+	currentChaos = ChaosFunction
+	for _, player in ipairs(game.Players:GetPlayers()) do
+		local character = player.Character
+		if character then
+			applyChaos(player, character)
+		end
+	end
+
+	local eventName = chaosNames[ChaosFunction] or "Chaos Event"
+	timer(60, eventName .. " Event Ends In:")
+
+	currentChaos = normal
+	for _, player in ipairs(game.Players:GetPlayers()) do
+		local character = player.Character
+		if character then
+			applyChaos(player, character)
+		end
+	end
+end
+
+
+
+]]></ProtectedString>
+      </Properties>
+    </Item>
+  </Item>
+  <Item class="StarterGui" referent="RBXCHAOS00000048">
+    <Properties>
+      <string name="Name">StarterGui</string>
+    </Properties>
+    <Item class="ScreenGui" referent="RBXCHAOS00000049">
+      <Properties>
+        <string name="Name">ChaosHUD</string>
+        <bool name="ResetOnSpawn">false</bool>
+      </Properties>
+      <Item class="TextLabel" referent="RBXCHAOS00000050">
+        <Properties>
+          <string name="Name">TimerLabel</string>
+          <string name="Text">Next Chaos Event In: 04:00</string>
+          <bool name="Visible">false</bool>
+        </Properties>
+        
+    <Item class="LocalScript" referent="RBXCHAOS00000051">
+      <Properties>
+        <string name="Name">Timer</string>
+        <ProtectedString name="Source"><![CDATA[local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local textLabel = script.Parent
+
+local function updateDisplay()
+	local isLevelRed = player:GetAttribute("LevelRed") == true
+	textLabel.Visible = isLevelRed
+
+	if not isLevelRed then return end
+
+	local chaosText = ReplicatedStorage:GetAttribute("ChaosText") or "Next Chaos In:"
+	local timeLeft = ReplicatedStorage:GetAttribute("TimeLeft") or 0
+
+	local minutes = math.floor(timeLeft / 60)
+	local seconds = timeLeft % 60
+
+	textLabel.Text = string.format("%s %02d:%02d", chaosText, minutes, seconds)
+end
+
+ReplicatedStorage:GetAttributeChangedSignal("TimeLeft"):Connect(updateDisplay)
+ReplicatedStorage:GetAttributeChangedSignal("ChaosText"):Connect(updateDisplay)
+player:GetAttributeChangedSignal("LevelRed"):Connect(updateDisplay)
+
+updateDisplay()]]></ProtectedString>
+      </Properties>
+    </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

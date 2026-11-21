@@ -11,19 +11,49 @@ const CREATOR_ITEM = new RegExp(`^${CREATOR_PATH}/(${SUBMISSION_ID})(/submit)?$`
 const ADMIN_ITEM = new RegExp(`^${ADMIN_PATH}/(${SUBMISSION_ID})(/decision)?$`);
 const EDITABLE = new Set(['draft', 'changes_requested']);
 const ADMIN_FILTERS = new Set(['in_review', 'changes_requested', 'approved', 'all']);
+const GAME_SLUG_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const VISIBILITIES = new Set(['private', 'unlisted', 'public']);
+const DEPLOY_MODES = new Set(['singleplay', 'mo', 'mmo']);
 
 function metadata(body) {
-  const { projectId, releaseId, title, description } = body;
+  const { projectId, releaseId, title, description, gameSlug, visibility, deployMode, gameMetadata } = body;
   if (typeof projectId !== 'string' || !FORGE_ID.test(projectId)
       || typeof releaseId !== 'string' || !FORGE_ID.test(releaseId)
       || typeof title !== 'string' || !title.trim() || title.trim().length > 100
       || typeof description !== 'string' || !description.trim() || description.trim().length > 2000) {
     throw new ApiError(400, 'INVALID_SUBMISSION');
   }
-  return { projectId, releaseId, title: title.trim(), description: description.trim() };
+  let cleanSlug = null;
+  if (gameSlug !== undefined && gameSlug !== null && gameSlug !== '') {
+    if (typeof gameSlug !== 'string' || !GAME_SLUG_RE.test(gameSlug.trim()) || gameSlug.trim().length > 48) {
+      throw new ApiError(400, 'INVALID_SUBMISSION');
+    }
+    cleanSlug = gameSlug.trim();
+  }
+  const cleanVisibility = visibility === undefined ? 'public' : (VISIBILITIES.has(visibility) ? visibility : null);
+  if (!cleanVisibility) throw new ApiError(400, 'INVALID_SUBMISSION');
+  const cleanDeployMode = deployMode === undefined ? 'singleplay' : (DEPLOY_MODES.has(deployMode) ? deployMode : null);
+  if (!cleanDeployMode) throw new ApiError(400, 'INVALID_SUBMISSION');
+  const cleanManifestJson = gameMetadata && typeof gameMetadata === 'object' && !Array.isArray(gameMetadata)
+    ? JSON.stringify(gameMetadata).slice(0, 12000)
+    : null;
+  return {
+    projectId,
+    releaseId,
+    title: title.trim(),
+    description: description.trim(),
+    gameSlug: cleanSlug,
+    visibility: cleanVisibility,
+    deployMode: cleanDeployMode,
+    manifestJson: cleanManifestJson
+  };
 }
 
 function toSubmission(row) {
+  let gameMetadata = null;
+  if (row.manifest_json) {
+    try { gameMetadata = JSON.parse(row.manifest_json); } catch {}
+  }
   return {
     id: row.id,
     projectId: row.project_id,
@@ -32,6 +62,12 @@ function toSubmission(row) {
     releaseLabel: row.release_label,
     title: row.title,
     description: row.description,
+    gameSlug: row.game_slug || null,
+    visibility: row.visibility || 'public',
+    deployMode: row.deploy_mode || 'singleplay',
+    artifactSha256: row.artifact_sha256 || null,
+    publishedGameId: row.published_game_id || null,
+    gameMetadata,
     status: row.status,
     revision: row.revision,
     reviewNote: row.review_note,
@@ -39,8 +75,8 @@ function toSubmission(row) {
     updatedAt: new Date(row.updated_at).toISOString(),
     submittedAt: row.submitted_at === null ? null : new Date(row.submitted_at).toISOString(),
     decidedAt: row.decided_at === null ? null : new Date(row.decided_at).toISOString(),
-    publicationStatus: 'unpublished',
-    packageValidation: 'not_verified'
+    publicationStatus: row.publication_status || 'unpublished',
+    packageValidation: row.package_validation || 'not_verified'
   };
 }
 
@@ -87,6 +123,23 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
     CREATE INDEX IF NOT EXISTS creator_submissions_review_date ON creator_submissions(status,submitted_at DESC,id DESC);
   `);
 
+  const existingCols = new Set(db.prepare('PRAGMA table_info(creator_submissions)').all().map(col => col.name));
+  const extraCols = [
+    ['game_slug', 'TEXT'],
+    ['visibility', "TEXT NOT NULL DEFAULT 'public'"],
+    ['deploy_mode', "TEXT NOT NULL DEFAULT 'singleplay'"],
+    ['artifact_sha256', 'TEXT'],
+    ['manifest_json', 'TEXT'],
+    ['package_validation', "TEXT NOT NULL DEFAULT 'not_verified'"],
+    ['publication_status', "TEXT NOT NULL DEFAULT 'unpublished'"],
+    ['published_game_id', 'TEXT']
+  ];
+  for (const [col, def] of extraCols) {
+    if (!existingCols.has(col)) {
+      db.exec(`ALTER TABLE creator_submissions ADD COLUMN ${col} ${def}`);
+    }
+  }
+
   const getOwnerRow = db.prepare('SELECT * FROM creator_submissions WHERE owner_key=? AND id=?');
   const adminRows = `SELECT submission.*, users.display_name AS owner_name FROM creator_submissions AS submission
     JOIN users ON users.id=submission.owner_id`;
@@ -95,12 +148,18 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
   const listAdminRows = db.prepare(`${adminRows} WHERE submission.status<>'draft' AND (?='all' OR submission.status=?)
     ORDER BY submission.submitted_at DESC,submission.id DESC LIMIT ? OFFSET ?`);
   const insert = db.prepare(`INSERT INTO creator_submissions
-    (id,owner_key,owner_id,project_id,release_id,release_revision,release_label,title,description,status,revision,created_at,updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,'draft',1,?,?)`);
-  const edit = db.prepare(`UPDATE creator_submissions SET project_id=?,release_id=?,release_revision=?,release_label=?,title=?,description=?,
-    revision=revision+1,updated_at=? WHERE id=? AND owner_key=? AND revision=?`);
-  const submit = db.prepare(`UPDATE creator_submissions SET status='in_review',revision=revision+1,updated_at=?,submitted_at=?,
-    review_note=NULL,decided_at=NULL WHERE id=? AND owner_key=? AND revision=?`);
+    (id,owner_key,owner_id,project_id,release_id,release_revision,release_label,title,description,
+     game_slug,visibility,deploy_mode,artifact_sha256,manifest_json,package_validation,publication_status,
+     status,revision,created_at,updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'unpublished','draft',1,?,?)`);
+  const edit = db.prepare(`UPDATE creator_submissions
+    SET project_id=?,release_id=?,release_revision=?,release_label=?,title=?,description=?,
+        game_slug=?,visibility=?,deploy_mode=?,artifact_sha256=?,manifest_json=?,package_validation=?,
+        revision=revision+1,updated_at=? WHERE id=? AND owner_key=? AND revision=?`);
+  const submit = db.prepare(`UPDATE creator_submissions
+    SET status='in_review',artifact_sha256=COALESCE(?,artifact_sha256),package_validation=?,
+        revision=revision+1,updated_at=?,submitted_at=?,review_note=NULL,decided_at=NULL
+    WHERE id=? AND owner_key=? AND revision=?`);
   const decide = db.prepare(`UPDATE creator_submissions SET status=?,review_note=?,revision=revision+1,updated_at=?,decided_at=?
     WHERE id=? AND revision=? AND status='in_review'`);
 
@@ -141,6 +200,24 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
   async function pinnedRelease(row) {
     const release = await ownedRelease(row.owner_key, row.project_id, row.release_id);
     if (release.revision !== row.release_revision) throw new ApiError(409, 'SUBMISSION_RELEASE_MISMATCH');
+    return release;
+  }
+
+  async function inspectPackageStatus(ownerKey, projectId, releaseId, release) {
+    const gw = forge();
+    if (typeof gw.getReleasePackage !== 'function') {
+      return { packageValidation: 'not_verified', artifactSha256: release?.build?.artifactSha256 || null };
+    }
+    try {
+      const pkg = await gw.getReleasePackage(ownerKey, projectId, releaseId);
+      if (pkg?.buffer && pkg?.sha256) {
+        return { packageValidation: 'verified', artifactSha256: pkg.sha256 };
+      }
+      return { packageValidation: 'not_verified', artifactSha256: null };
+    } catch (err) {
+      if (err?.status === 409) return { packageValidation: 'failed', artifactSha256: null };
+      return { packageValidation: 'not_verified', artifactSha256: release?.build?.artifactSha256 || null };
+    }
   }
 
   function ownerRow(owner, id) {
@@ -173,15 +250,19 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
         return true;
       }
       if (pathname === CREATOR_PATH && req.method === 'POST') {
-        const draft = metadata(await readJson(req, 16 * 1024));
+        const draft = metadata(await readJson(req, 32 * 1024));
         recheckCreator(req, owner);
         const release = await ownedRelease(owner.key, draft.projectId, draft.releaseId);
+        const pkgState = await inspectPackageStatus(owner.key, draft.projectId, draft.releaseId, release);
+        const effectiveSlug = draft.gameSlug || release?.gameMetadata?.slug || release?.releaseManifest?.gameMetadata?.slug || null;
+        const effectiveMode = release?.deployProfile?.deployMode || release?.releaseManifest?.deployProfile?.deployMode || draft.deployMode;
         const submission = transaction(db, () => {
           const id = uid(), stamp = now();
           insert.run(id, owner.key, owner.id, draft.projectId, draft.releaseId, release.revision, release.label,
-            draft.title, draft.description, stamp, stamp);
+            draft.title, draft.description, effectiveSlug, draft.visibility, effectiveMode,
+            pkgState.artifactSha256, draft.manifestJson, pkgState.packageValidation, stamp, stamp);
           const row = ownerRow(owner, id);
-          writeAudit('creator_submission_created', row, { ownerId: owner.id });
+          writeAudit('creator_submission_created', row, { ownerId: owner.id, packageValidation: pkgState.packageValidation });
           return toSubmission(row);
         });
         json(res, 201, { submission });
@@ -197,27 +278,41 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
       }
       const isEdit = !submissionAction && req.method === 'PATCH';
       if (!isEdit && !(submissionAction && req.method === 'POST')) throw new ApiError(405, 'METHOD_NOT_ALLOWED');
-      const body = await readJson(req, 16 * 1024);
+      const body = await readJson(req, 32 * 1024);
       recheckCreator(req, owner);
       const precheck = ownerRow(owner, id);
       checkRevision(precheck, body.revision);
       if (!EDITABLE.has(precheck.status)) throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
       const draft = isEdit ? metadata(body) : null;
-      const release = isEdit ? await ownedRelease(owner.key, draft.projectId, draft.releaseId) : null;
-      if (!isEdit) await pinnedRelease(precheck);
+      const release = isEdit
+        ? await ownedRelease(owner.key, draft.projectId, draft.releaseId)
+        : await pinnedRelease(precheck);
+      const pkgState = await inspectPackageStatus(
+        owner.key,
+        isEdit ? draft.projectId : precheck.project_id,
+        isEdit ? draft.releaseId : precheck.release_id,
+        release
+      );
       const submission = transaction(db, () => {
         const current = ownerRow(owner, id);
         checkRevision(current, body.revision);
         if (!EDITABLE.has(current.status)) throw new ApiError(409, 'INVALID_SUBMISSION_STATE');
         const stamp = now();
         if (isEdit) {
+          const effectiveSlug = draft.gameSlug || release?.gameMetadata?.slug || current.game_slug || null;
+          const effectiveMode = release?.deployProfile?.deployMode || draft.deployMode || current.deploy_mode;
           edit.run(draft.projectId, draft.releaseId, release.revision, release.label, draft.title, draft.description,
+            effectiveSlug, draft.visibility, effectiveMode, pkgState.artifactSha256,
+            draft.manifestJson ?? current.manifest_json, pkgState.packageValidation,
             stamp, id, owner.key, current.revision);
         } else {
-          submit.run(stamp, stamp, id, owner.key, current.revision);
+          submit.run(pkgState.artifactSha256, pkgState.packageValidation, stamp, stamp, id, owner.key, current.revision);
         }
         const row = ownerRow(owner, id);
-        writeAudit(isEdit ? 'creator_submission_edited' : 'creator_submission_requested', row, { ownerId: owner.id });
+        writeAudit(isEdit ? 'creator_submission_edited' : 'creator_submission_requested', row, {
+          ownerId: owner.id,
+          packageValidation: pkgState.packageValidation
+        });
         return toSubmission(row);
       });
       json(res, 200, { submission });

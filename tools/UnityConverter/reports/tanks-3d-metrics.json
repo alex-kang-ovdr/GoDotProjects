@@ -1,0 +1,31 @@
+{
+  "game": "Tanks! 3D (Unity Official Tutorial)",
+  "sourceRepo": "https://github.com/choubari/3D-Tanks-Game-Unity",
+  "referencePorts": [
+    "https://github.com/Ravbug/TanksUnreal (Unreal Engine 5 C++)",
+    "https://github.com/Arc676/Tanks-Godot (Godot)"
+  ],
+  "before": {
+    "totalSizeMB": 54.49,
+    "csScripts": 8,
+    "csLines": 938,
+    "fbxModels": 26,
+    "binaryLevelObjects": 636,
+    "levelMeshNodes": 103,
+    "levelColliders": 41,
+    "binaryMaterials": 21,
+    "audioFiles": 7,
+    "aiffAudioFiles": 2,
+    "tiffTextures": 1
+  },
+  "after": {
+    "files": 44,
+    "gdScripts": 5,
+    "gdLines": 739,
+    "fbxModelsImported": 26,
+    "levelMeshNodesReconstructed": 103,
+    "collidersReconstructed": 41,
+    "wavAudioFiles": 7,
+    "scenes": 1
+  }
+}

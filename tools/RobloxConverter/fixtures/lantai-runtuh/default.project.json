@@ -1,0 +1,45 @@
+{
+  "name": "LantaiRuntuh",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "Remotes": {
+        "$className": "Folder",
+        "Notice": {
+          "$className": "RemoteEvent"
+        },
+        "Profile": {
+          "$className": "RemoteEvent"
+        },
+        "ShopRequest": {
+          "$className": "RemoteFunction"
+        }
+      },
+      "Round": {
+        "$className": "Configuration"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "ClockTime": 14.5,
+        "Brightness": 2.5,
+        "GlobalShadows": true
+      }
+    }
+  }
+}
