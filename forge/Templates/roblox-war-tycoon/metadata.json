@@ -1,0 +1,16 @@
+{
+  "id": "roblox-war-tycoon",
+  "name": "War Tycoon (Roblox Port)",
+  "description": "MIT 오픈소스 Roblox 타이쿤+전투 게임(ManBoyx/roblox-war-tycoon)을 Godot 4.7.2로 자동 포팅한 3D 템플릿: 4팀 컬러 플롯, 드로퍼·터렛, leaderstats 경제(Economy) 및 처치 보상(Combat·RemoteEvent) 포함.",
+  "dimension": "3d",
+  "assetPaths": [],
+  "guideOrder": [
+    "scripts/ReplicatedStorage__Shared__Config.gd",
+    "scripts/ServerScriptService__Server__Combat.gd",
+    "scripts/ServerScriptService__Server__Economy.gd",
+    "game_controller.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

@@ -6,6 +6,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { importRbxlxFile } from '../src/rbxlx-importer.mjs';
 import { importRojoProject } from '../src/rojo-importer.mjs';
 import { exportRobloxPlaceToGodot } from '../src/godot-exporter.mjs';
@@ -217,6 +218,61 @@ game_id = "${c.id}"
       assert.equal(summary.total, 5);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  }
+});
+
+test('PlayForge Godot Templates include all 4 Roblox-ported games and load cleanly in Godot 4.7.2', (t) => {
+  const require = createRequire(import.meta.url);
+  const { loadGameTemplates } = require(path.join(REPO_ROOT, 'forge', 'Tools', 'template-catalog.cjs'));
+  const loaded = loadGameTemplates(path.join(REPO_ROOT, 'forge'));
+  const expectedIds = ['roblox-chaos-obby', 'roblox-war-tycoon', 'roblox-power-punch-sim', 'roblox-lantai-runtuh'];
+
+  for (const id of expectedIds) {
+    assert.ok(loaded[id], `Missing Godot template: ${id}`);
+    assert.equal(loaded[id].dimension, '3d');
+    assert.ok(loaded[id].files['project.godot'], `${id} missing project.godot`);
+    assert.ok(loaded[id].files['scenes/main.tscn'], `${id} missing scenes/main.tscn`);
+    assert.match(loaded[id].files['project.godot'], /run\/main_scene="res:\/\/scenes\/main\.tscn"/);
+    assert.match(loaded[id].files['project.godot'], /renderer\/rendering_method="gl_compatibility"/);
+  }
+
+  if (!GODOT_BIN) {
+    t.skip('Godot 4.7.2 console binary not found in environment');
+    return;
+  }
+
+  for (const id of expectedIds) {
+    const tplDir = path.join(REPO_ROOT, 'forge', 'Templates', id);
+    const probeTmp = fs.mkdtempSync(path.join(os.tmpdir(), `tpl-godot-${id}-`));
+    try {
+      fs.cpSync(tplDir, probeTmp, { recursive: true });
+      fs.writeFileSync(
+        path.join(probeTmp, 'probe_tpl.gd'),
+        `extends SceneTree
+func _initialize():
+\tvar scn = load("res://scenes/main.tscn")
+\tvar inst = scn.instantiate() if scn != null else null
+\tprint("TEMPLATE_PROBE_OK=", inst != null)
+\tif inst != null:
+\t\tinst.free()
+\tquit(0 if inst != null else 1)
+`,
+        'utf8'
+      );
+      let out = '';
+      try {
+        out = execFileSync(GODOT_BIN, ['--headless', '--path', probeTmp, '--script', 'res://probe_tpl.gd'], {
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'pipe'],
+          timeout: 20000
+        });
+      } catch (e) {
+        out = (e.stdout || '') + '\n' + (e.stderr || '');
+      }
+      assert.match(out, /TEMPLATE_PROBE_OK=true/, `[${id}] scenes/main.tscn failed to instantiate in Godot 4.7.2:\n${out.slice(0, 1200)}`);
+    } finally {
+      fs.rmSync(probeTmp, { recursive: true, force: true });
     }
   }
 });

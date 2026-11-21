@@ -1,0 +1,16 @@
+{
+  "id": "roblox-lantai-runtuh",
+  "name": "Lantai Runtuh (Roblox Port)",
+  "description": "MIT 오픈소스 strict Luau 낙하 타일 파티 게임(lukaririnki26/lantai-runtuh)을 Godot 4.7.2로 자동 포팅한 3D 템플릿: 12×12(144타일) 안전색 패턴 생성(Pattern), 라운드 보상(Rewards) 및 비안전 타일 낙하 시뮬레이션 포함.",
+  "dimension": "3d",
+  "assetPaths": [],
+  "guideOrder": [
+    "scripts/ReplicatedStorage__Shared__Config.gd",
+    "scripts/ReplicatedStorage__Shared__Pattern.gd",
+    "scripts/ReplicatedStorage__Shared__Rewards.gd",
+    "game_controller.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

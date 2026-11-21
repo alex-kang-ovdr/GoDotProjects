@@ -1,0 +1,15 @@
+{
+  "id": "roblox-power-punch-sim",
+  "name": "Power Punch Simulator (Roblox Port)",
+  "description": "MIT 오픈소스 Roblox 클리커 시뮬레이터(LILRINO71/power-punch-simulator)를 Godot 4.7.2로 자동 포팅한 3D 템플릿: 5개 트레이닝 존(Beach·City·Volcano·Space·VIP), Formulas 배율·약어 계산 및 MarketplaceService X등급 스텁 포함.",
+  "dimension": "3d",
+  "assetPaths": [],
+  "guideOrder": [
+    "scripts/ReplicatedStorage__Shared__Config.gd",
+    "scripts/ReplicatedStorage__Shared__Formulas.gd",
+    "game_controller.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}
