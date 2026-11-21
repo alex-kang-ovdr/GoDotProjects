@@ -65,6 +65,17 @@
 	<string>$(PLAYHUB_DEFAULT_HUB_URL)</string>
 	<key>PlayHubEngineVersion</key>
 	<string>$(PLAYHUB_ENGINE_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.playhub.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>playhub</string>
+			</array>
+		</dict>
+	</array>
 	<key>PlayHubForgeSupported</key>
 	<false/>
 </dict>
