@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/release-manifest.v1.schema.json",
+  "title": "PlayHub Desktop Release Manifest v1",
+  "description": "Bootstrapper·Godot Runtime·채널별 롤아웃 및 COMPAT_* 강업/선업/롤백 정책 + TUF 메타데이터 계약.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "channel",
+    "tufVersion",
+    "expiresAt",
+    "rolloutPercent",
+    "bootstrapper",
+    "runtimes",
+    "compatibility"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "channel": { "type": "string", "enum": ["dev", "qa", "rc", "live"] },
+    "tufVersion": { "type": "integer", "minimum": 1, "description": "단조 증가 버전 번호 (롤백 공격 방지)" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "rolloutPercent": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "rollbackToBuildId": { "type": ["string", "null"] },
+    "bootstrapper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildId", "semver", "platforms"],
+      "properties": {
+        "buildId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "semver": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "platforms": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "sha256", "size"],
+            "properties": {
+              "url": { "type": "string", "format": "uri" },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "size": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    },
+    "runtimes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["engineVersion", "buildId", "platforms"],
+        "properties": {
+          "engineVersion": { "type": "string", "pattern": "^4\\.[0-9]+\\.[0-9]+$" },
+          "buildId": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "platforms": { "type": "object" }
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minBootstrapperVersion", "updatePolicy"],
+      "properties": {
+        "minBootstrapperVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "updatePolicy": { "type": "string", "enum": ["none", "optional", "force"] },
+        "compatCode": {
+          "type": "string",
+          "enum": ["COMPAT_OK", "COMPAT_WARN_OPTIONAL", "COMPAT_BLOCK_FORCE", "COMPAT_BLOCK_REVOKED"]
+        }
+      }
+    }
+  }
+}

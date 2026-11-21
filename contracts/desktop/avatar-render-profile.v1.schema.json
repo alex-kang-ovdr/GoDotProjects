@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/avatar-render-profile.v1.schema.json",
+  "title": "PlayHub Avatar Render Profile v1",
+  "description": "아바타 상점 V0(사전 렌더링)·V1(웹 실시간 3D)·V2(Godot 스튜디오)와 인게임의 렌더링 일치를 위한 공통 조명·톤매핑·카메라 프로필.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profileId", "tonemapping", "exposure", "backgroundHex", "lights", "cameras", "budgets"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "profileId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$" },
+    "tonemapping": { "type": "string", "enum": ["aces", "agx", "filmic", "linear"] },
+    "exposure": { "type": "number", "minimum": 0.1, "maximum": 4.0 },
+    "backgroundHex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$" },
+    "lights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "fill", "rim"],
+      "properties": {
+        "key": { "$ref": "#/$defs/directionalLight" },
+        "fill": { "$ref": "#/$defs/directionalLight" },
+        "rim": { "$ref": "#/$defs/directionalLight" }
+      }
+    },
+    "cameras": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["full_body", "bust", "face"],
+      "properties": {
+        "full_body": { "$ref": "#/$defs/cameraPreset" },
+        "bust": { "$ref": "#/$defs/cameraPreset" },
+        "face": { "$ref": "#/$defs/cameraPreset" }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skinMaxTriangles", "skinMaxTexturePx", "skinMaxBones", "attachmentMaxTriangles", "attachmentMaxTexturePx"],
+      "properties": {
+        "skinMaxTriangles": { "type": "integer", "minimum": 1000, "maximum": 100000 },
+        "skinMaxTexturePx": { "type": "integer", "enum": [256, 512, 1024, 2048] },
+        "skinMaxBones": { "type": "integer", "minimum": 1, "maximum": 128 },
+        "attachmentMaxTriangles": { "type": "integer", "minimum": 100, "maximum": 50000 },
+        "attachmentMaxTexturePx": { "type": "integer", "enum": [128, 256, 512, 1024] }
+      }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "directionalLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direction", "colorHex", "intensity"],
+      "properties": {
+        "direction": { "$ref": "#/$defs/vec3" },
+        "colorHex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 10 }
+      }
+    },
+    "cameraPreset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "target", "fovDeg"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vec3" },
+        "target": { "$ref": "#/$defs/vec3" },
+        "fovDeg": { "type": "number", "minimum": 15, "maximum": 90 }
+      }
+    }
+  }
+}

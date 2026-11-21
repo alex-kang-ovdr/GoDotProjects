@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/launch-ticket.v1.schema.json",
+  "title": "PlayHub Launch Ticket v1",
+  "description": "1회용 게임 실행 티켓 발급(Hub 백엔드) 및 검증·교환(Native Player Rust 호스트) 계약. 세션 토큰은 URL에 포함하지 않는다.",
+  "type": "object",
+  "$defs": {
+    "os": {
+      "type": "string",
+      "enum": ["windows", "macos", "linux"]
+    },
+    "arch": {
+      "type": "string",
+      "enum": ["x86_64", "arm64"]
+    },
+    "opaqueTicket": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,128}$",
+      "description": "서버가 생성한 고엔트로피 불투명 티켓 문자열"
+    },
+    "issueRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gameId", "os", "arch"],
+      "properties": {
+        "gameId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.-]+)?$"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["game", "avatar-studio"],
+          "default": "game"
+        },
+        "roomCode": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9_-]{4,32}$"
+        },
+        "os": { "$ref": "#/$defs/os" },
+        "arch": { "$ref": "#/$defs/arch" }
+      }
+    },
+    "issueResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "ticket", "gameId", "expiresAt", "ttlSec", "singleUse", "deepLink"],
+      "properties": {
+        "version": { "const": 1 },
+        "ticket": { "$ref": "#/$defs/opaqueTicket" },
+        "gameId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+        "gameVersion": { "type": ["string", "null"] },
+        "os": { "$ref": "#/$defs/os" },
+        "arch": { "$ref": "#/$defs/arch" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "ttlSec": { "type": "integer", "minimum": 10, "maximum": 60 },
+        "singleUse": { "const": true },
+        "deepLink": {
+          "type": "string",
+          "pattern": "^playhub(-[a-z0-9-]+)?://(launch|join|avatar-studio)\\?ticket=[A-Za-z0-9_-]{32,128}$"
+        }
+      }
+    },
+    "exchangeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "ticket", "gameId", "os", "arch", "bootstrapperVersion"],
+      "properties": {
+        "version": { "const": 1 },
+        "ticket": { "$ref": "#/$defs/opaqueTicket" },
+        "gameId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+        "os": { "$ref": "#/$defs/os" },
+        "arch": { "$ref": "#/$defs/arch" },
+        "bootstrapperVersion": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "exchangeResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sessionToken", "sessionExpiresAt", "gameId", "manifestUrl", "profile"],
+      "properties": {
+        "version": { "const": 1 },
+        "sessionToken": {
+          "type": "string",
+          "minLength": 24,
+          "description": "Rust 호스트(Bootstrapper) 전용 단기 실행 세션 토큰. 게임 프로세스에 전달 금지."
+        },
+        "sessionExpiresAt": { "type": "string", "format": "date-time" },
+        "gameId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+        "manifestUrl": { "type": "string", "format": "uri" },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["displayName", "handle", "isGuest", "ageTier"],
+          "properties": {
+            "displayName": { "type": "string", "minLength": 1, "maxLength": 64 },
+            "handle": { "type": "string", "pattern": "^@[A-Za-z0-9_.-]{1,40}$" },
+            "isGuest": { "type": "boolean" },
+            "ageTier": { "type": "string", "enum": ["UNKNOWN", "CHILD_PROTECTED", "TEEN", "ADULT"] },
+            "locale": { "type": "string", "minLength": 2, "maxLength": 16 }
+          }
+        }
+      }
+    }
+  }
+}
