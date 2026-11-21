@@ -225,10 +225,15 @@ export function createEmailAuth(ctx) {
 
     const nextPassword = validateNewPassword(body.newPassword);
     const { salt, passwordHash } = await hashPassword(nextPassword);
-    db.prepare('UPDATE email_credentials SET password_hash=?,salt=?,failed_attempts=0,locked_until=NULL,updated_at=? WHERE user_id=?')
-      .run(passwordHash, salt, now(), cred.user_id);
-    audit('email_password_changed', cred.user_id, { provider: 'email' });
-    json(res, 200, { ok: true });
+    const revokedOtherSessions = transaction(db, () => {
+      db.prepare('UPDATE email_credentials SET password_hash=?,salt=?,failed_attempts=0,locked_until=NULL,updated_at=? WHERE user_id=?')
+        .run(passwordHash, salt, now(), cred.user_id);
+      const removed = db.prepare("DELETE FROM sessions WHERE principal_id=? AND kind='public' AND id_hash<>?")
+        .run(cred.user_id, session.id_hash);
+      audit('email_password_changed', cred.user_id, { provider: 'email', revokedOtherSessions: removed.changes });
+      return removed.changes;
+    });
+    json(res, 200, { ok: true, revokedOtherSessions });
   }
 
   return { enabled, register, login, changePassword };

@@ -256,6 +256,15 @@
         "hub/tests/billing*.mjs"
       ]
     },
+    "Hub-SSO": {
+      "role": "PlayHub 자체 이메일 인증(scrypt) 및 네이버 OAuth 2.0 로그인",
+      "owns": [
+        "hub/server/sso/**",
+        "hub/web/user/sso.js",
+        "hub/web/user/sso.css",
+        "hub/tests/sso-auth.test.mjs"
+      ]
+    },
     "Forge-Avatar": {
       "role": "UEFN 스타일 불변 아바타 런타임·4계층 모듈 패키징·3D 초상 UI 및 Hub 아바타 상점·락커",
       "owns": [

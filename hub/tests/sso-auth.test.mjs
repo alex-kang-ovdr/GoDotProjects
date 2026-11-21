@@ -229,12 +229,17 @@ test('email register, login, lockout, password change, and guest save merge', as
     assert.equal(loggedIn.data.authProvider, 'email');
     assert.equal(loggedIn.data.displayName, '테스트유저');
 
-    // Change password
+    // Change password (must revoke other active sessions of the same user while keeping current session)
     const pwChange = await other.call('/api/auth/email/password', {
       method: 'POST',
       body: { currentPassword: 'Password123', newPassword: 'NewPassword456' }
     });
     assert.equal(pwChange.status, 200);
+    assert.equal(pwChange.data.revokedOtherSessions, 1);
+    const revokedClientSession = await client.call('/api/session');
+    assert.equal(revokedClientSession.data.kind, 'anonymous');
+    const keptOtherSession = await other.call('/api/session');
+    assert.equal(keptOtherSession.data.kind, 'registered');
 
     // Logout & verify old password fails and new password succeeds
     await other.call('/api/auth/logout', { method: 'POST', body: {} });
