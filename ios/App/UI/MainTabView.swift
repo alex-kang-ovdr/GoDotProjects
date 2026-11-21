@@ -59,6 +59,14 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var leaderboardGame: MobileCatalogGame?
     private var accessTokenCache: String?
 
+    // MARK: Stitch Avatar & Profile Preferences State
+    @Published public var equippedAvatarIds: Set<String>
+    @Published public var avatarAccentHex: String
+    @Published public var pushAlertsEnabled: Bool {
+        didSet { UserDefaults.standard.set(pushAlertsEnabled, forKey: "playhub_pref_push_alerts") }
+    }
+    @Published public var friendJoinAllowed: Bool
+
     public let buildStage: String
     public let allowFarmSelector: Bool
     public let defaultHubUrl: String
@@ -101,6 +109,17 @@ public final class PlayHubShellViewModel: ObservableObject {
             customUrl: savedCustom
         )
         self.catalogGames = Self.fallbackDemoCatalog()
+
+        let savedEquippedRaw = UserDefaults.standard.string(forKey: "playhub_equipped_avatar_ids")
+        if let raw = savedEquippedRaw {
+            let parsed = Set(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty })
+            self.equippedAvatarIds = parsed
+        } else {
+            self.equippedAvatarIds = AvatarCatalog.defaultEquipped
+        }
+        self.avatarAccentHex = UserDefaults.standard.string(forKey: "playhub_avatar_color") ?? "#00B06F"
+        self.pushAlertsEnabled = UserDefaults.standard.object(forKey: "playhub_pref_push_alerts") as? Bool ?? true
+        self.friendJoinAllowed = UserDefaults.standard.object(forKey: "playhub_pref_friend_join") as? Bool ?? true
     }
 
     public func selectableFarms() -> [FarmCluster] {
@@ -268,11 +287,16 @@ public final class PlayHubShellViewModel: ObservableObject {
             async let qmTask = client.fetchQuickMessages()
             let (prof, fr, party, qm) = try await (profTask, friendsTask, partyTask, qmTask)
             socialProfile = prof
+            avatarAccentHex = prof.avatarColor
             socialFriends = fr.friends
             incomingRequests = fr.incomingRequests
             activeParty = party
             quickMessages = qm
-            _ = try? await client.updatePresence(status: showGameModal ? "in_game" : "online", accessToken: token)
+            _ = try? await client.updatePresence(
+                status: showGameModal ? "in_game" : "online",
+                joinable: friendJoinAllowed,
+                accessToken: token
+            )
         } catch {
             // Keep existing local state on transient network failure
         }
@@ -482,6 +506,89 @@ public final class PlayHubShellViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Stitch Avatar Studio & Profile Actions
+
+    public func toggleEquipAvatarItem(_ item: AvatarCosmeticItem) {
+        var next = equippedAvatarIds
+        if next.contains(item.id) {
+            next.remove(item.id)
+        } else {
+            for sameCat in AvatarCatalog.items where sameCat.category == item.category {
+                next.remove(sameCat.id)
+            }
+            next.insert(item.id)
+        }
+        equippedAvatarIds = next
+        UserDefaults.standard.set(next.sorted().joined(separator: ","), forKey: "playhub_equipped_avatar_ids")
+    }
+
+    public func setAvatarAccentColor(_ hex: String) {
+        avatarAccentHex = hex
+        UserDefaults.standard.set(hex, forKey: "playhub_avatar_color")
+        Task {
+            await updateProfile(avatarColor: hex)
+        }
+    }
+
+    public func saveAvatarStyle() async {
+        UserDefaults.standard.set(equippedAvatarIds.sorted().joined(separator: ","), forKey: "playhub_equipped_avatar_ids")
+        UserDefaults.standard.set(avatarAccentHex, forKey: "playhub_avatar_color")
+        await updateProfile(avatarColor: avatarAccentHex)
+    }
+
+    public func updateProfile(displayName: String? = nil, bio: String? = nil, avatarColor: String? = nil) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            let updated = try await makeApiClient().updateSocialProfile(
+                displayName: displayName,
+                avatarColor: avatarColor,
+                bio: bio,
+                accessToken: token
+            )
+            socialProfile = updated
+            avatarAccentHex = updated.avatarColor
+            showSocialToast("프로필이 저장되었습니다.")
+        } catch {
+            showSocialToast("로컬 저장됨 (\(error.localizedDescription))")
+        }
+    }
+
+    public func setFriendJoinAllowed(_ allowed: Bool) {
+        friendJoinAllowed = allowed
+        UserDefaults.standard.set(allowed, forKey: "playhub_pref_friend_join")
+        Task {
+            if let token = await ensureAccessToken() {
+                _ = try? await makeApiClient().updatePresence(
+                    status: showGameModal ? "in_game" : "online",
+                    roomCode: activeParty?.roomCode,
+                    joinable: allowed,
+                    accessToken: token
+                )
+            }
+        }
+    }
+
+    public func signOutAndResetGuest() {
+        KeychainStore.clearAllSessionSecrets()
+        accessTokenCache = nil
+        socialProfile = nil
+        socialFriends = []
+        incomingRequests = []
+        activeParty = nil
+        showSocialToast("로그아웃되었습니다. 새 게스트로 연결합니다.")
+        Task { await syncOnlineCatalog() }
+    }
+
+    public func requestAccountDeletion() async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            try await makeApiClient().deleteAccount(accessToken: token)
+            signOutAndResetGuest()
+        } catch {
+            showSocialToast("계정 삭제 요청 실패: \(error.localizedDescription)")
+        }
+    }
+
     public func compatibilityFor(_ game: MobileCatalogGame) -> VersionCompatibilityResult {
         if let serverCompat = game.compatibility, !serverCompat.compatible {
             let reason = CompatibilityReason(rawValue: serverCompat.reason ?? "") ?? .engineUpdateRequired
@@ -571,12 +678,16 @@ public struct MainTabView: View {
             TabView(selection: $vm.selectedTab) {
                 homeView.tabItem { Label(PlayHubTab.home.title, systemImage: PlayHubTab.home.systemImage) }.tag(PlayHubTab.home)
                 placeholderTab(title: "차트", subtitle: "인기 · 급상승 · 신규 게임 랭킹").tabItem { Label(PlayHubTab.charts.title, systemImage: PlayHubTab.charts.systemImage) }.tag(PlayHubTab.charts)
-                placeholderTab(title: "아바타", subtitle: "코스메틱 꾸미기 · 인벤토리 · 샵").tabItem { Label(PlayHubTab.avatar.title, systemImage: PlayHubTab.avatar.systemImage) }.tag(PlayHubTab.avatar)
+                AvatarStudioView(vm: vm)
+                    .tabItem { Label(PlayHubTab.avatar.title, systemImage: PlayHubTab.avatar.systemImage) }
+                    .tag(PlayHubTab.avatar)
                 SocialHubView(vm: vm)
                     .tabItem { Label(PlayHubTab.party.title, systemImage: PlayHubTab.party.systemImage) }
                     .badge(vm.incomingRequests.count)
                     .tag(PlayHubTab.party)
-                moreView.tabItem { Label(PlayHubTab.more.title, systemImage: PlayHubTab.more.systemImage) }.tag(PlayHubTab.more)
+                ProfileMoreView(vm: vm, store: store)
+                    .tabItem { Label(PlayHubTab.more.title, systemImage: PlayHubTab.more.systemImage) }
+                    .tag(PlayHubTab.more)
             }
             .tint(Color(red: 0.0, green: 0.69, blue: 0.435))
         }
