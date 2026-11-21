@@ -13,6 +13,9 @@ export const DEFAULT_STAGE1_ROUTES = [
 export const STAGE2_HYBRID_ROUTES = [
   { id: 'mobile_aos', match: { channel: 'aos_google_play' }, providers: ['google_play'] },
   { id: 'mobile_ios', match: { channel: 'ios_app_store' }, providers: ['apple_iap'] },
+  { id: 'krw_kakaopay', match: { currency: 'KRW', paymentMethodHint: 'kakaopay' }, providers: ['kakaopay', 'toss', 'xsolla'], requirePrimary: true },
+  { id: 'krw_naverpay', match: { currency: 'KRW', paymentMethodHint: 'naverpay' }, providers: ['naverpay', 'toss', 'xsolla'], requirePrimary: true },
+  { id: 'krw_tosspay', match: { currency: 'KRW', paymentMethodHint: 'tosspay' }, providers: ['tosspay', 'toss', 'xsolla'], requirePrimary: true },
   { id: 'krw_local', match: { currency: 'KRW' }, providers: ['toss', 'xsolla'] },
   { id: 'global_default', match: {}, providers: ['xsolla'] }
 ];
@@ -20,6 +23,9 @@ export const STAGE2_HYBRID_ROUTES = [
 export const STAGE3_MULTI_PSP_ROUTES = [
   { id: 'mobile_aos', match: { channel: 'aos_google_play' }, providers: ['google_play'] },
   { id: 'mobile_ios', match: { channel: 'ios_app_store' }, providers: ['apple_iap'] },
+  { id: 'krw_kakaopay', match: { currency: 'KRW', paymentMethodHint: 'kakaopay' }, providers: ['kakaopay', 'toss', 'xsolla'], requirePrimary: true },
+  { id: 'krw_naverpay', match: { currency: 'KRW', paymentMethodHint: 'naverpay' }, providers: ['naverpay', 'toss', 'xsolla'], requirePrimary: true },
+  { id: 'krw_tosspay', match: { currency: 'KRW', paymentMethodHint: 'tosspay' }, providers: ['tosspay', 'toss', 'xsolla'], requirePrimary: true },
   { id: 'krw_local', match: { currency: 'KRW' }, providers: ['toss', 'xsolla'] },
   { id: 'global_gpay', match: { paymentMethodHint: 'google_pay' }, providers: ['stripe_gpay', 'xsolla'] },
   { id: 'global_major_cards', match: { currencies: ['USD', 'EUR', 'GBP', 'JPY'] }, providers: ['stripe_gpay', 'xsolla'] },
@@ -99,6 +105,9 @@ export function createPaymentRouter({
 
     for (const rule of routes) {
       if (!matchesRule(rule, ctx)) continue;
+      if (rule.requirePrimary && (!rule.providers.length || !enabled.has(rule.providers[0]))) {
+        continue;
+      }
       const candidates = rule.providers.filter(p => enabled.has(p));
       if (!candidates.length) continue;
 
