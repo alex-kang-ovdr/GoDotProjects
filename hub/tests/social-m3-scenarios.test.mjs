@@ -69,6 +69,7 @@ async function createMobileUser(baseUrl, { displayName, handle, birthYear, birth
 
 test('M3 Social User Scenarios 1~7: Friends, Presence, DM, Party Lifecycle, Child Safe Quick-Message, Block/Report, Leaderboards & Sanitizer', async () => {
   const rootDir = makeFixtureRoot();
+  const deliveredConsentCodes = [];
   const app = createApp(
     {
       dataDir: path.join(rootDir, 'data'),
@@ -79,7 +80,11 @@ test('M3 Social User Scenarios 1~7: Friends, Presence, DM, Party Lifecycle, Chil
       userBaseUrl: 'https://dev.playhub.example.com',
       userOrigins: ['https://dev.playhub.example.com', 'http://127.0.0.1'],
       adminOrigins: ['http://127.0.0.1'],
-      mobile: { enabled: true, jwtSecret: 'social-m3-test-secret-32-chars-minimum!' }
+      mobile: {
+        enabled: true,
+        jwtSecret: 'social-m3-test-secret-32-chars-minimum!',
+        onParentalConsentCode: (info) => { deliveredConsentCodes.push(info); }
+      }
     },
     { rootDir }
   );
@@ -248,11 +253,22 @@ test('M3 Social User Scenarios 1~7: Friends, Presence, DM, Party Lifecycle, Chil
     assert.equal(kidJoinBlocked.status, 403);
     assert.equal(kidJoinBlocked.data.error.code, 'PARENTAL_CONSENT_REQUIRED');
 
-    // Verify parental consent for child
-    const consent = await reqJson(baseUrl, '/api/mobile/parental-consent', {
+    // Verify parental consent for child (2-step challenge + verification code)
+    const consentReq = await reqJson(baseUrl, '/api/mobile/parental-consent', {
       method: 'POST',
       token: kid.token,
       body: { guardianContact: 'parent-kr@example.com', method: 'email' }
+    });
+    assert.equal(consentReq.status, 202);
+    assert.equal(deliveredConsentCodes.length, 1);
+
+    const consent = await reqJson(baseUrl, '/api/mobile/parental-consent', {
+      method: 'POST',
+      token: kid.token,
+      body: {
+        challengeId: consentReq.data.challengeId,
+        verificationCode: deliveredConsentCodes[0].verificationCode
+      }
     });
     assert.equal(consent.status, 200);
 
