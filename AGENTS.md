@@ -10,7 +10,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 통합 트렁크 | `PlayHub-Platform` (`origin/main`은 트렁크와 동일 커밋으로 유지) |
+| 통합 트렁크 | `PlayHub-Platform` (사용자가 "메인"이라고 지칭하는 통합 대상도 `PlayHub-Platform`이며, `main` 브랜치는 별도 요청 없이 건드리지 않음) |
 | 런타임 | Node.js **24 이상** (`.nvmrc`). 시스템 Node가 24 미만이면 `artifacts/local-runtime/node24/node.exe` 사용 |
 | 머지 전 필수 게이트 | `npm run gate` (= 소유권 + 스킬 동기화 + Fast QA) |
 | 소유권 확인 | `npm run check:ownership` |
