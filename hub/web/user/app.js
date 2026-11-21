@@ -476,7 +476,22 @@
       window.PlayHubCreator?.mount($('creator'),api,()=>epoch===state.sessionEpoch&&!state.authStale);
     }
   }
+  let avatarCleanup=null;
+  function cleanupAvatarView(){if(typeof avatarCleanup==='function'){try{avatarCleanup();}catch(_){}avatarCleanup=null;}}
+  function renderAvatar(){
+    stopImpressions();
+    cleanupAvatarView();
+    meta('아바타 상점 & 락커 | PLAY HUB','스킨·장착물·이모지를 구매하고 장착해 모든 PlayForge 게임에서 사용하세요.','/?view=avatar');
+    updateAccount();
+    const epoch=state.sessionEpoch;
+    avatarCleanup=window.PlayHubAvatarUI?.mount($('app'),api,()=>epoch===state.sessionEpoch&&!state.authStale,{apiBase:API})||null;
+  }
+  async function loadAvatarLoadout(){
+    try{return await api('/api/avatar/loadout');}
+    catch(_){return {ok:false,offline:true,loadout:null};}
+  }
   async function renderRoute(){
+    cleanupAvatarView();
     const token=++state.route;
     const params=new URLSearchParams(location.search);
     let id=null;
@@ -491,7 +506,7 @@
     state.sort=['updated','title'].includes(params.get('sort'))?params.get('sort'):'default';
     const view=params.get('view');
     if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['wishlist','create','account'].includes(view))state.view=view;
+    else if(['wishlist','create','account','avatar'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
     $('app').hidden=state.view==='account';
     $('account-panel').hidden=state.view!=='account';
@@ -504,6 +519,7 @@
     else if(state.view==='wishlist')renderWishlist();
     else if(state.view==='library'||state.view==='home')renderBrowse();
     else if(state.view==='create')renderCreator();
+    else if(state.view==='avatar')renderAvatar();
     else if(state.view==='account'){
       stopImpressions();
       $('app').replaceChildren();
@@ -596,6 +612,7 @@
         if(data.type==='ready'){if(!a.ready){a.ready=true;clearTimeout(a.timer);playEvent(a,'game_ready',{sdk_version:1});if(a.saveBlocked)saveStatus('서버와 임시 진행이 달라요. 저장 기록에서 선택해 주세요.',true);else if(!a.dirty)saveStatus(a.local?'로컬 모드 · 이 탭에 임시 저장 · 서버 통계 없음':'준비됐어요. 게임 화면에서 시작하세요.',a.local);}}
         else if(data.type==='load')result=await loadSave(a);
         else if(data.type==='save')result=await writeSave(a,data.payload?.value);
+        else if(data.type==='avatar_loadout')result=await loadAvatarLoadout();
         else if(data.type==='activity'){if(data.payload?.updating===true)a.lastPulse=performance.now();}
         else if(data.type==='event'){
           const name=data.payload?.name;if(!allowedGameEvents.has(name))throw new Error('허용되지 않은 게임 이벤트입니다.');const source=data.payload?.properties||{},props={};

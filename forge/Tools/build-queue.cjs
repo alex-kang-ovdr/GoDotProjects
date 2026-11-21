@@ -6,6 +6,7 @@ const { spawn } = require('node:child_process');
 const { findGodot } = require('./native-runtime.cjs');
 const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
 const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
+const { isSealedAvatarPath, injectSealedAvatarIntoProjectDir } = require('./avatar-seal.cjs');
 
 const PLAYHUB_SHELL_PATH = path.join(__dirname, 'playhub-godot-shell.js');
 const PLAYHUB_SHELL_TAG = '<script src="playhub-godot-shell.js"></script>';
@@ -29,8 +30,8 @@ name="Web"
 platform="Web"
 runnable=true
 export_filter="all_resources"
-include_filter="*.json,*.txt"
-exclude_filter="addons/*,.playforge_backups/*"
+include_filter="*.json,*.txt,*.glb"
+exclude_filter="addons/playforge_platform/*,addons/playforge_replay/*,addons/playforge_agent_chat/*,addons/playforge_remote_control/*,addons/playforge_service/*,addons/playforge_asset_store/*,.playforge_backups/*"
 export_path=""
 script_export_mode=0
 [preset.0.options]
@@ -95,7 +96,12 @@ class BuildQueue {
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
     const entries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
     for (const [relative, data] of entries) {
+      if (isSealedAvatarPath(relative)) continue;
       const file = path.join(project, relative); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, data);
+    }
+    const usesAvatar = entries.some(([, data]) => typeof data === 'string' && /playforge_avatar|PlayForgeAvatar/i.test(data));
+    if (usesAvatar) {
+      injectSealedAvatarIntoProjectDir(this.root, project);
     }
     // Raw text files survive Godot's exported resource remapping. The source
     // .gd remains too, so the import phase validates its GDScript syntax.

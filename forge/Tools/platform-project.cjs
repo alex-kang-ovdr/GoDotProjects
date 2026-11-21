@@ -19,7 +19,7 @@ function normalizeFiles(files) {
   return files.map((entry) => {
     if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file');
     const file = entry.path.replaceAll('\\', '/');
-    if (file.startsWith('addons/playforge_platform/')) return null;
+    if (file.startsWith('addons/playforge_platform/') || file.startsWith('addons/playforge_avatar/')) return null;
     if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
         file.split('/').some(part => !part || part === '.' || part === '..') || file === '.playforge-platform.json') {
       throw new Error('Unsafe project file path');
