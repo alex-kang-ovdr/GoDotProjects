@@ -7,6 +7,38 @@ const { findGodot } = require('./native-runtime.cjs');
 const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
 const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
 const { isSealedAvatarPath, injectSealedAvatarIntoProjectDir } = require('./avatar-seal.cjs');
+const { buildCorePack, buildThinUgcPack } = require('./build-core-pack.cjs');
+
+function buildThinUgcArtifact(forgeRoot, snapshot) {
+  const entries = snapshot.files ? snapshot.files.map((file) => [file.path, file.content]) : projectEntries(forgeRoot, snapshot);
+  const core = buildCorePack(forgeRoot);
+  const ugc = buildThinUgcPack(entries, {
+    worldId: snapshot.id || 'ugc-world',
+    worldName: snapshot.name || 'UGC World',
+    mainScene: snapshot.mainScene || 'res://scenes/main.tscn',
+  });
+  const manifest = {
+    schemaVersion: 2,
+    packaging: 'modular-thin-ugc',
+    worldId: snapshot.id || 'ugc-world',
+    revision: snapshot.revision || 1,
+    sharedLayers: {
+      engineRuntime: '/runtime/godot/4.7.2/',
+      corePackUrl: `/api/avatar/runtime/core.pck?v=${core.sha256.slice(0, 12)}`,
+      corePackSha256: core.sha256,
+      corePackBytes: core.bytes,
+      avatarAssetsBaseUrl: '/api/avatar/assets',
+    },
+    ugcPack: {
+      file: 'ugc.pck',
+      sha256: ugc.sha256,
+      bytes: ugc.bytes,
+      fileCount: ugc.fileCount,
+      strippedSealedPaths: ugc.strippedCount,
+    },
+  };
+  return { ugc, core, manifest };
+}
 
 const PLAYHUB_SHELL_PATH = path.join(__dirname, 'playhub-godot-shell.js');
 const PLAYHUB_SHELL_TAG = '<script src="playhub-godot-shell.js"></script>';
@@ -100,8 +132,20 @@ class BuildQueue {
       const file = path.join(project, relative); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, data);
     }
     const usesAvatar = entries.some(([, data]) => typeof data === 'string' && /playforge_avatar|PlayForgeAvatar/i.test(data));
+    if (snapshot.packaging === 'modular-thin-ugc') {
+      const thin = buildThinUgcArtifact(this.root, snapshot);
+      fs.writeFileSync(path.join(output, 'ugc.pck'), thin.ugc.buffer);
+      fs.writeFileSync(path.join(output, 'ugc.manifest.json'), JSON.stringify(thin.manifest, null, 2) + '\n', 'utf8');
+      job.files = ['ugc.pck', 'ugc.manifest.json'];
+      job.packaging = 'modular-thin-ugc';
+      job.artifactSha256 = thin.ugc.sha256;
+      job.bytes = thin.ugc.bytes;
+      job.entryCount = thin.ugc.fileCount;
+      job.sharedCorePackSha256 = thin.core.sha256;
+      return;
+    }
     if (usesAvatar) {
-      injectSealedAvatarIntoProjectDir(this.root, project);
+      injectSealedAvatarIntoProjectDir(this.root, project, { includeAssets: snapshot.modularAssets !== true });
     }
     // Raw text files survive Godot's exported resource remapping. The source
     // .gd remains too, so the import phase validates its GDScript syntax.
@@ -157,4 +201,4 @@ class BuildQueue {
     if (this.child && this.child.exitCode === null) this.child.kill();
   }
 }
-module.exports = { BuildQueue, injectPlayHubShell };
+module.exports = { BuildQueue, injectPlayHubShell, buildThinUgcArtifact };

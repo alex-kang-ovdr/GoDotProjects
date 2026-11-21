@@ -56,7 +56,10 @@ func spawn_avatar() -> AvatarController:
 		parent_node.add_child(controller)
 	else:
 		add_child(controller)
-	controller.global_transform = global_transform
+	if is_inside_tree():
+		controller.global_transform = global_transform
+	else:
+		controller.transform = transform
 	_spawned_avatar = controller
 	avatar_spawned.emit(controller)
 	return controller

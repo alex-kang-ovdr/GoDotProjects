@@ -67,7 +67,11 @@ func _refresh_integrity_status() -> void:
 	var catalog := AvatarCatalog.new()
 	var report := catalog.verify_seal_manifest()
 	if bool(report.get("ok", false)):
-		_integrity_label.text = "무결성 검증 통과 (%d개 파일 SHA-256 일치 · 카탈로그 %s)" % [int(report.get("checked", 0)), catalog.get_catalog_version()]
+		var on_demand := int(report.get("onDemand", 0))
+		if on_demand > 0:
+			_integrity_label.text = "무결성 검증 통과 (%d개 파일 SHA-256 일치 · %d개 GLB 온디맨드 스트리밍 · 카탈로그 %s)" % [int(report.get("checked", 0)), on_demand, catalog.get_catalog_version()]
+		else:
+			_integrity_label.text = "무결성 검증 통과 (%d개 파일 SHA-256 일치 · 카탈로그 %s)" % [int(report.get("checked", 0)), catalog.get_catalog_version()]
 	else:
 		var bad: Array = report.get("mismatches", []) + report.get("missing", [])
 		_integrity_label.text = "경고: 봉인 경로 변조 감지 (%s). 저장·빌드 시 서버 정규본으로 자동 복원됩니다." % ", ".join(bad.slice(0, 3))

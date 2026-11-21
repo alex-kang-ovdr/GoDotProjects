@@ -29,16 +29,20 @@ func request_player_loadout() -> void:
 		if _try_request_web_bridge():
 			return
 
-	# 2. Explicit Hub origin (Desktop PIE or dev harness via env / cmdline)
+	# 2. Explicit sealed CLI/env loadout override (multi-world test / Forge launcher preview)
+	var explicit := _resolve_explicit_loadout()
+	if not explicit.is_empty():
+		_emit_loadout(_catalog.normalize_loadout(explicit))
+		return
+
+	# 3. Explicit Hub origin (Desktop PIE or dev harness via env / cmdline)
 	var hub_origin := _resolve_hub_origin()
 	if not hub_origin.is_empty():
 		_request_http_loadout(hub_origin + "/api/avatar/loadout")
 		return
 
-	# 3. Offline / headless / standalone default (with optional sealed CLI preview args)
-	var fallback := _catalog.get_default_loadout()
-	fallback = _apply_cmdline_preview_if_allowed(fallback)
-	_emit_loadout(fallback)
+	# 4. Offline / headless / standalone default
+	_emit_loadout(_catalog.get_default_loadout())
 
 
 func get_last_loadout() -> Dictionary:
@@ -88,7 +92,11 @@ func _request_http_loadout(url: String) -> void:
 		_http.timeout = 4.0
 		add_child(_http)
 		_http.request_completed.connect(_on_http_completed)
-	var err := _http.request(url)
+	var headers := PackedStringArray(["Accept: application/json"])
+	var cookie := _resolve_avatar_cookie()
+	if not cookie.is_empty():
+		headers.append("Cookie: " + cookie)
+	var err := _http.request(url, headers)
 	if err != OK:
 		_emit_loadout(_catalog.get_default_loadout())
 
@@ -117,23 +125,48 @@ func _resolve_hub_origin() -> String:
 	return ""
 
 
-func _apply_cmdline_preview_if_allowed(loadout: Dictionary) -> Dictionary:
-	# Preview override via engine CLI args (for automated tests / Forge preview launcher only).
-	var updated := loadout.duplicate(true)
+func _resolve_avatar_cookie() -> String:
+	var env_cookie := OS.get_environment("PLAYHUB_AVATAR_COOKIE").strip_edges()
+	if not env_cookie.is_empty():
+		return env_cookie
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--avatar-cookie="):
+			return arg.substr("--avatar-cookie=".length()).strip_edges()
+	return ""
+
+
+func _resolve_explicit_loadout() -> Dictionary:
+	var raw_json := OS.get_environment("PLAYHUB_AVATAR_LOADOUT_JSON").strip_edges()
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--avatar-loadout-json="):
+			raw_json = arg.substr("--avatar-loadout-json=".length()).strip_edges()
+	if not raw_json.is_empty():
+		var parsed: Variant = JSON.parse_string(raw_json)
+		if parsed is Dictionary:
+			return parsed
+	var has_flag := false
+	var updated := _catalog.get_default_loadout()
 	var attachments: Dictionary = updated.get("attachments", {})
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--avatar-skin="):
 			updated["skinId"] = arg.substr("--avatar-skin=".length()).strip_edges()
+			has_flag = true
 		elif arg.begins_with("--avatar-head="):
 			attachments["head"] = arg.substr("--avatar-head=".length()).strip_edges()
+			has_flag = true
 		elif arg.begins_with("--avatar-back="):
 			attachments["back"] = arg.substr("--avatar-back=".length()).strip_edges()
+			has_flag = true
 		elif arg.begins_with("--avatar-hand-r="):
 			attachments["hand_r"] = arg.substr("--avatar-hand-r=".length()).strip_edges()
+			has_flag = true
 		elif arg.begins_with("--avatar-hand-l="):
 			attachments["hand_l"] = arg.substr("--avatar-hand-l=".length()).strip_edges()
+			has_flag = true
+	if not has_flag:
+		return {}
 	updated["attachments"] = attachments
-	return _catalog.normalize_loadout(updated)
+	return updated
 
 
 func _emit_loadout(loadout: Dictionary) -> void:
