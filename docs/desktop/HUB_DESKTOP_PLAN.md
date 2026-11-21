@@ -1,7 +1,7 @@
 # Play Hub Desktop — 웹 허브 + Rust Bootstrapper + 공용 Godot Player 구현 계획안
 
-- **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준 `PlayHub-Platform` `00bd71e`)
-- **문서 상태**: v0.2 (2026-11-22 — 기준 아키텍처를 "웹 허브 + 경량 Native Player"로 전환, 기술 스택 확정, 데스크톱 앱·SteamOS를 P2로 이관)
+- **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준·통합 대상 **`main`** `e3350e9`)
+- **문서 상태**: v0.4 (2026-11-22 — 개발 기준 브랜치 `main` 전환, 코드 서명·키 관리·출시 승인 분리·Launch Ticket·네이티브 로그인·노출 정책 확정. v0.3: 아바타 상점 3D 뷰 3단계 구조 추가. v0.2: 기준 아키텍처를 "웹 허브 + 경량 Native Player"로 전환)
 - **대상 엔진**: `godot-engine` 포크 고정 커밋 `ed1daf0bf001b61586d9930840f2f1394092c079` (**Godot 4.7.2-stable**)
 - **입력 문서**: `PlayHub_Desktop_Performance_Responsiveness_LowFriction.md` (사용자 제공 데스크톱 최적화 설계), 기술 전략 검토 기록(2026-11-21~22)
 
@@ -14,6 +14,13 @@
 | 대상 OS | **Windows · macOS · Linux를 처음부터 같은 테스트 규격으로 검증**. 정식 배포 순서: Windows(`live`) → macOS·Linux(`rc` → `live`) |
 | 배포 채널 | 자체 배포(Bootstrapper 설치 파일 + 자동 업데이트). 결제는 `Hub-Billing` 웹 PG |
 | 기술 스택 | **Rust**(코어·보안·OS 연동) + **TypeScript**(도구·테스트·자동화) + **JSON Schema/OpenAPI**(계약) + **Godot 4.7.2**(Player) |
+| 개발 브랜치 | `Hub-Desktop`은 **`main` 기준**으로 분기하고 `main`으로 통합한다. 공식 `live` 빌드·출시는 `main`에서만 허용 |
+| Windows 코드 서명 | **Azure Trusted Signing 우선**. 자격 요건(조직 검증 등)을 충족하지 못하면 **OV 인증서**(키는 클라우드 HSM에 보관) (§11.4) |
+| 서명 키 관리 | **클라우드 관리형 서명 서비스 또는 HSM만 사용**. 개발자 PC에 서명 키·인증서 저장 금지 (§11.4) |
+| 출시 승인 | **CI 빌드와 프로덕션 서명·출시 승인을 분리**. CI는 서명 권한이 없고, 서명·출시는 보호된 승인 단계에서만 실행 (§11.5) |
+| Launch Ticket | **Hub 백엔드가 발급**, **Native Player(Rust 호스트)가 검증·교환** (§4.5) |
+| 네이티브 로그인 | **Hub 공통 인증 서비스에 구현** (웹·모바일·데스크톱 공용). `Hub-Desktop`은 소비자 역할 (§7) |
+| 데스크톱 게임 노출 | **Store 심사 통과 + 플랫폼 호환 빌드만 공개 노출**. 조건을 하나라도 못 맞추면 목록에서 숨김 (§5.4) |
 | 제외·연기 | **Slint 배제**. Steam형 데스크톱 앱(UI 기술 미정)과 SteamOS 전용 UX는 **P2** |
 
 ### 명시적 제외 (Non-Goals)
@@ -100,14 +107,56 @@ sequenceDiagram
 > [!NOTE]
 > 웹 페이지가 `127.0.0.1`의 Bootstrapper에 직접 접속해 상태를 묻는 방식은 Chrome Private Network Access 제한에 막히고 보안 노출면도 커지므로 **채택하지 않는다**. 웹 → 네이티브 전달은 프로토콜 핸들러 한 방향뿐이다.
 
-### 3.3 3D 아바타
+### 3.3 아바타 상점 3D 뷰
 
-| 환경 | 표시 방식 |
-|---|---|
-| 웹 방문자 / Player 미설치 | 2D 썸네일 기본 + 선택적 웹 3D(기존 `hub/web/user/avatar-glb-viewer.js`) |
-| Player 설치됨 | 인게임 오버레이와 게임 안에서 Godot 런타임으로 렌더링 |
+#### (1) 현황 실측 (2026-11-22, `main` `e3350e9`)
 
-별도 Godot Viewer 설치를 강제하지 않는다. Godot 창을 다른 앱에 임베딩하는 방식은 Wayland·포커스 문제로 P2 데스크톱 앱 단계에서 재검토한다.
+| 자산 | 현황 | 3D 상점 관점의 문제 |
+|---|---|---|
+| 웹 뷰어 [avatar-glb-viewer.js](../../hub/web/user/avatar-glb-viewer.js) | 의존성 없는 WebGL glTF 뷰어(670줄). 스킨 + 소켓 장착물, 드래그 회전, 카메라 프리셋 지원 | **스켈레탈 애니메이션 미지원**(정지 포즈) → 이모트(유료 상품)를 미리 볼 수 없음 |
+| Godot 런타임 `forge/Godot/addons/playforge_avatar/` | `Forge-Avatar` 산출물. rig·컨트롤러·래그돌·초상(render target) UI, `catalog.json`(`rigProfiles` 2종, 상품 38개, 슬롯 4개) | 상점 표시와 같은 렌더링 결과를 보장하는 장치가 없음 |
+| GLB 자산 | 30개, 총 36.6 MiB. **스킨은 개당 3.5~4.7 MiB**(애니메이션 클립 전체 포함), 장착물은 수십 KiB | 웹 상점에서 스킨 하나를 보는 데 수 MiB를 받아야 함 → 상세 진입 200ms 목표와 충돌 |
+| 소켓 변환 계산 | `avatar_rig.gd`(GDScript)와 `avatar-glb-viewer.js`(JS)에 **각각 구현** | 두 구현이 어긋나면 상점과 인게임에서 장착 위치가 달라짐 |
+| 모바일 | AOS `VoxelAvatarView`(Canvas 의사 3D), iOS SwiftUI | 플랫폼마다 표현이 다름 |
+
+#### (2) 원칙
+
+1. **같은 GLB, 같은 렌더 프로필**: 상점(웹·네이티브)과 인게임은 같은 원본 GLB와 같은 조명·톤매핑·카메라 프리셋(`avatar-render-profile.v1`, §4.3)을 쓴다. "상점에서 본 모습 = 게임에서 보이는 모습"을 자동 테스트로 보장한다.
+2. **점진적 향상**: 목록은 가볍게, 상세는 실시간 3D로, 정밀 확인은 네이티브로. 어느 단계가 실패해도 아래 단계로 자동 폴백한다.
+3. **설치를 강제하지 않는다**: 웹만으로도 구매 결정에 충분한 3D 미리보기를 제공한다. 네이티브 경로는 선택 사항이다.
+4. **결제는 웹에서만**: 네이티브 뷰에서 구매 버튼을 누르면 웹 결제로 넘어가고, 완료되면 `iap_updated`로 장착 상태를 갱신한다(§7).
+
+#### (3) 3단계 표시 구조
+
+| 단계 | 위치 | 표시 방식 | 용도 | 폴백 |
+|---|---|---|---|---|
+| **V0 목록** | 웹 상점 그리드·락커 | **사전 렌더링 썸네일**(정면·3/4 각도) + 마우스 오버 시 짧은 턴테이블 루프(animated WebP 또는 WebM) | 수십~수백 개 카드를 WebGL 컨텍스트 없이 빠르게 표시 | 정적 썸네일 → 2D 아이콘 |
+| **V1 상세·피팅룸** | 웹 상품 상세 | **실시간 웹 3D 하나**(내 현재 장착 상태 + 선택 상품 합성), idle·이모트 애니메이션 재생, 회전·확대, 카메라 프리셋(전신·상반신·얼굴) | 구매 결정 | WebGL 미지원·저사양·데이터 절약 모드 → V0 턴테이블 |
+| **V2 네이티브 스튜디오** (선택) | Godot Player | `playhub://avatar-studio?ticket=…`로 런타임 내장 **아바타 스튜디오 씬** 실행. 실제 인게임 렌더러로 TPS/FPS/TopDown 카메라, 이동·이모트, 게임별 조명 미리보기 | "게임에서 입어보기", 정밀 확인 | Player 미설치 시 버튼 숨김(설치 유도 배너만 표시) |
+
+- **V0 사전 렌더링 파이프라인**: CI에서 Godot 헤드리스(`playforge_avatar`의 render target 초상 기능 재사용)로 기본 스킨 착용 썸네일과 턴테이블 프레임을 생성한다. **인게임과 같은 렌더러**로 만들기 때문에 결과가 일치한다. 결과물은 CAS/R2에 불변 키로 게시하고 `catalog.json`의 `previews` 필드로 참조한다.
+- **V1 웹 뷰어 확장**: 기존 무의존성 뷰어에 GPU 스키닝(`JOINTS_0`/`WEIGHTS_0`)과 애니메이션 샘플링을 추가하는 방안과, three.js(+ `GLTFLoader`)로 교체하는 방안을 M0에서 비교한다. 판단 기준은 번들 크기, 압축 확장(meshopt·KTX2) 지원, 유지보수성, 렌더 프로필 재현도다. 렌더 루프는 화면 밖이거나 탭이 숨겨지면 멈추고, DPR 상한(예: 2)과 단일 WebGL 컨텍스트를 강제한다.
+- **V2 스튜디오**: 별도 Viewer 설치 없이 이미 설치된 Player와 런타임 패키지에 스튜디오 씬을 포함한다(또는 CAS 공용 패키지). Launch Ticket·IPC·격리 규칙을 게임과 똑같이 적용한다. Godot 창을 웹이나 다른 앱에 **임베딩하지 않고** 독립 창으로 연다(Wayland·포커스 문제 회피).
+
+#### (4) 아바타 자산 파이프라인 개선
+
+| 항목 | 현재 | 개선안 |
+|---|---|---|
+| 스킨 GLB 구성 | 메시 + 스켈레톤 + 애니메이션 전체가 한 파일(3.5~4.7 MiB) | **메시·스켈레톤 GLB**와 **rig 프로필별 공용 애니메이션 라이브러리 GLB**로 분리. 애니메이션은 rig당 1회만 받아 캐시 |
+| 웹 전송 변형 | 원본 GLB 그대로 | 웹 전용 변형: meshopt 지오메트리 압축 + KTX2(Basis) 텍스처 + 텍스처 해상도 상한. **Godot 런타임 GLTF 로더의 압축 확장 지원 여부는 M0에서 확인**하고, 지원하지 않으면 런타임용과 웹용 변형을 따로 생성 |
+| 예산 (초안, PoC에서 확정) | 없음 | 스킨: 삼각형 ≤ 20k, 텍스처 ≤ 1024², 본 ≤ 64 / 장착물: 삼각형 ≤ 5k, 텍스처 ≤ 512² / 웹 상세 첫 렌더 ≤ 1초(캐시 미적중, 압축 변형 기준) |
+| 공유 캐시 | 게임별로 따로 받음 | Player는 아바타 자산을 **게임 간 공용 CAS 패키지**로 받아, 상점(V2)과 모든 게임이 같은 청크를 재사용 |
+| 검증 | `SAFE_GLB_RE` 파일명 검사 | 제출 단계에서 구조 검증: glTF 확장 허용 목록, 예산 초과 거부, 필수 본·소켓 존재, 텍스처 디코딩 크기 상한. 향후 창작자 UGC 아바타 상품에도 같은 규칙 적용 |
+
+#### (5) 상점–인게임 일치 테스트
+
+- **골든 이미지 비교**: 상품마다 같은 카메라·포즈·렌더 프로필로 ① Godot 헤드리스 렌더와 ② 웹 V1 뷰어 렌더(헤드리스 브라우저)를 만들어 SSIM 임계값으로 비교한다. 소켓 위치·스케일·회전 불일치를 자동으로 잡는다.
+- **소켓 계약 테스트**: `rigProfiles`의 소켓 정의를 기준값으로 두고, GDScript와 JS 구현이 같은 본 월드 행렬에서 같은 결과(허용 오차 이내)를 내는지 검증한다.
+- **예산 게이트**: 카탈로그 빌드 시 삼각형·텍스처·파일 크기 예산을 넘으면 CI를 실패시킨다.
+
+#### (6) 소유권 조율
+
+- `hub/web/user/avatar*.js`, `hub/server/avatar/**`, `forge/Godot/addons/playforge_avatar/**`는 `Forge-Avatar` 작업 결과물이지만 `owners.json`에 등록되어 있지 않다. 웹 뷰어 확장(V1)과 사전 렌더링 파이프라인(V0)은 **`Forge-Avatar`(또는 아바타 담당 브랜치)가 맡고**, `Hub-Desktop`은 V2 스튜디오 진입(딥링크·Player 실행)과 공용 CAS 패키지 연동만 맡는 분담을 제안한다.
 
 ---
 
@@ -153,7 +202,8 @@ flowchart TB
 | `release-manifest.v1` | 런타임·Bootstrapper·게임 릴리스, 채널, 롤아웃 %, 강제/선택 업데이트(`COMPAT_*`), 롤백 지시 | API → Bootstrapper |
 | `content-manifest.v1` | CAS 청크 목록, 필수/선택 패키지, `engineVersion`, 네트워크 허용 목록, Ed25519 서명 | Store 심사 파이프라인 → Bootstrapper |
 | `bridge.v1` | Player ↔ Bootstrapper IPC (AOS §6.2 메서드 1:1 + `get_host_info`) | Player ↔ Bootstrapper |
-| `deeplink.v1` | `playhub://launch` / `join` / `install` | 웹 → Bootstrapper |
+| `deeplink.v1` | `playhub://launch` / `join` / `install` / `avatar-studio` | 웹 → Bootstrapper |
+| `avatar-render-profile.v1` | 아바타 조명·톤매핑·노출·카메라 프리셋(전신/상반신/얼굴)·배경. 사전 렌더링, 웹 V1 뷰어, Godot 스튜디오·초상이 공통으로 사용 | 아바타 카탈로그 → 웹·Player·CI 렌더러 |
 
 - 계약 파일은 `contracts/`에 두고 **Rust 타입과 TS 타입을 자동 생성**한다. 생성 결과가 커밋된 코드와 다르면 CI를 실패시킨다.
 - 기존 [hub/specs/openapi.yaml](../../hub/specs/openapi.yaml)은 `0.1.0-plan` 검토용 계약이라 실제 서버 경로(약 129개)와 맞지 않는다. 데스크톱에 필요한 엔드포인트부터 계약을 먼저 쓰고 구현한다(contract-first).
@@ -176,7 +226,10 @@ flowchart TB
 | **L2 프로세스 격리** | §4.4 OS별 격리. 쓰기는 게임별 데이터 폴더만, 네트워크는 loopback IPC와 매니페스트 허용 목록만 | P1 (P0에서 PoC 실측) |
 | **L3 엔진 하드닝** (`[GD-Core]`) | 커스텀 템플릿에서 `OS.execute/create_process/shell_open` 비활성화, 허용 경로 밖 파일 접근 거부, GDExtension 로드 금지 | P2 (선택) |
 
-- **Launch Ticket**: 서버에 저장되는 불투명 값. 60초 TTL, 1회 사용, `gameId`·`version`·발급 세션에 바인딩한다. URL에는 티켓만 들어가고 세션 토큰은 절대 들어가지 않는다.
+- **Launch Ticket**
+  - **발급**: Hub 백엔드(공통 인증 서비스)가 웹 세션을 확인한 뒤 발급한다. 서버에 저장되는 불투명 값이며 60초 TTL, 1회 사용, `gameId`·`version`·발급 세션·요청 OS/아키텍처에 바인딩한다. URL에는 티켓만 들어가고 세션 토큰은 절대 들어가지 않는다.
+  - **검증·교환**: **Native Player의 Rust 호스트 계층**(Bootstrapper와 같은 서명 패키지)이 형식·만료를 1차 검증하고, 공통 인증 서비스에 교환을 요청해 단기 실행 세션을 받는다. 서버는 원자적으로 1회 사용 처리하고, 바인딩 불일치·재사용·만료 시 거부한다(L9).
+  - **게임 프로세스 비노출**: 교환은 Godot 게임 스크립트가 실행되는 프로세스 **밖**에서 수행한다. 게임에는 실행마다 새로 발급하는 IPC 토큰만 전달한다. UGC 스크립트가 세션을 탈취하지 못하게 하기 위함이다.
 
 ---
 
@@ -209,6 +262,20 @@ flowchart TB
 | `windows_release_arm64.exe` | 87.4 MiB |
 | `linux_release.x86_64` / `.arm64`, `macos.zip` | 보유 (크기 미측정) |
 
+### 5.4 데스크톱 게임 노출 정책 (확정)
+
+**Store 심사를 통과하고, 사용자 플랫폼과 호환되는 빌드만 공개 노출한다.** 판정은 서버(PlayHub API 카탈로그 응답)에서 하고, Native Player가 실행 직전에 한 번 더 검증한다(이중 판정).
+
+| 조건 | 판정 기준 | 실패 시 |
+|---|---|---|
+| 심사 통과 | `PlayHub-Store` 심사 상태 `approved`이고 제재·철회 상태가 아님 | 목록·검색·딥링크 모두에서 숨김 |
+| 플랫폼 호환 | `desktop.platforms`에 사용자 `os`·`arch`가 있음 | 해당 플랫폼 사용자에게 숨김 (다른 플랫폼에는 노출) |
+| 런타임 호환 | `engineVersion`을 지원하는 런타임이 있고, `minAppVersion`을 충족 | 숨김. 앱 업데이트로 해결되면 `COMPAT_*` 업데이트 안내 |
+| 서명 유효 | `content-manifest` 서명·청크 해시 검증 통과, TUF 메타데이터 유효 | 숨김 + 실행 거부(Fail-Closed) + 보안 이벤트 기록 |
+
+- "비활성 버튼으로 표시"하지 않고 **목록에서 제외**한다. 호환되지 않는 빌드로 사용자가 진입하는 것을 막기 위함이다.
+- 창작자 비공개 테스트 배포는 이 정책의 범위 밖이며, 별도로 결정하기 전까지 공개 채널(`live`·`rc`)에서는 제공하지 않는다.
+
 ---
 
 ## 6. 반응성 목표
@@ -233,9 +300,11 @@ flowchart TB
 
 ## 7. 인증 · 결제 · 소셜
 
-- **Native 인증 (P0)**: 웹 세션에서 발급한 **Launch Ticket을 교환**해 단기 실행 세션을 받는다. 네이티브 쪽에서 다시 로그인하지 않는다.
+- **Native 인증 (P0)**: 웹 세션에서 Hub 백엔드가 발급한 **Launch Ticket을 Native Player가 교환**해 단기 실행 세션을 받는다(§4.5). 네이티브 쪽에서 다시 로그인하지 않는다.
 - **장기 세션 (P1)**: 라이브러리 오프라인 실행과 이후 데스크톱 앱을 위해 OAuth 2.1 Authorization Code + PKCE + loopback redirect(RFC 8252)를 지원하고, 리프레시 토큰은 OS 보안 저장소에 둔다.
-  - 현재 PlayHub 서버는 Google의 RP로서 웹 PKCE([hub/server/google.mjs](../../hub/server/google.mjs))와 모바일 토큰 발급(`hub/server/mobile/`)만 제공하며 **OIDC Provider가 아니다**. 네이티브 클라이언트용 인가 엔드포인트를 새로 추가해야 한다(담당 브랜치는 §13).
+- **구현 위치 (확정)**: Launch Ticket 발급·교환과 네이티브 로그인은 **Hub 공통 인증 서비스**에 구현한다. 웹·Android·iOS·Desktop이 같은 서비스를 쓰고, `Hub-Desktop`은 계약(`launch-ticket.v1`, 네이티브 OAuth)의 **소비자**로서 클라이언트 쪽만 구현한다.
+  - 현재 인증 코드는 `hub/server/google.mjs`(Google RP 웹 PKCE)와 `hub/server/mobile/`(모바일 토큰·Apple 로그인)으로 흩어져 있고 **OIDC Provider 기능이 없다**. 공통 인증 서비스 모듈(예: `hub/server/auth/`)로 정리하면서 네이티브 클라이언트 인가 엔드포인트, 티켓 저장소, 토큰 회전·폐기를 추가해야 한다.
+  - 공통 인증 서비스의 소유 브랜치와 일정은 `main` 통합 담당과 합의한다(§14.2).
 - **결제**: [HUB_BILLING_PLAN.md](../billing/HUB_BILLING_PLAN.md) §4의 "PC 직접 배포: Track A `PlayCoin` +25% 허용" 정책을 따른다. 결제는 **웹(시스템 브라우저)**에서만 처리한다. 인게임 오버레이 `Store`는 웹 결제 페이지를 열고, 완료 후 Bootstrapper가 서버 원장을 다시 조회해 `iap_updated`를 게임에 전달한다.
 - **소셜·크로스플레이**: `Hub-AOS` M3의 같이 입장(Co-Entry) 계약을 따른다. 초대 `https://<hub>/join/<roomCode>`는 웹이 받아 Instant 또는 Native 경로(`playhub://join`)로 분기한다.
 
@@ -282,18 +351,19 @@ Hub-Desktop/
 │  └─ ffi/                           # (P2) UniFFI — 모바일 코어 공유
 ├─ tools/desktop/                    # [신규] TypeScript: 생명주기 하네스 · 릴리스/업로드 · 계약 코드 생성
 ├─ godot-sdk/hosts/desktop_host.gd   # [신규] Desktop 호스트 어댑터
-├─ hub/tests/desktop-*.test.mjs      # [신규] Launch Ticket · 매니페스트 서명 · COMPAT 판정
+├─ hub/tests/desktop-*.test.mjs      # [신규] 매니페스트 서명 · COMPAT 판정 · 데스크톱 노출 정책 (Launch Ticket 서버 테스트는 공통 인증 서비스 소유)
 └─ docs/desktop/HUB_DESKTOP_PLAN.md  # 본 계획안
 ```
 
-### 10.2 소유권 등록 제안 (트렁크 `PlayHub-Platform`에 선행 반영)
+### 10.2 소유권 등록 제안 (통합 브랜치 `main`에 선행 반영)
 
 - **단독 소유(`owns`)**: `native/**`, `contracts/desktop/**`, `tools/desktop/**`, `docs/desktop/**`, `hub/tests/desktop*.mjs`, `godot-sdk/hosts/desktop_host.gd`
-- **공유(`shared`, 사전 합의)**: `contracts/**` 루트 규칙, `godot-sdk/playhub_runtime_sdk.gd`(AOS/iOS 공동), `hub/web/user/app.js`(Play 버튼 분기), `hub/server/app.mjs`(Launch Ticket·Release 라우터 연결), `games/*/game.manifest.json`(`playModes`·`desktop` 블록)
-- **트렁크 변경 요청**: `tools/build-version/**`과 [build-version-naming-policy.md](../architecture/build-version-naming-policy.md)에 7번째 타깃 `hub-desktop` 추가
+- **공유(`shared`, 사전 합의)**: `contracts/**` 루트 규칙, `godot-sdk/playhub_runtime_sdk.gd`(AOS/iOS 공동), `hub/web/user/app.js`(Play 버튼 분기), `hub/server/app.mjs`(Release 라우터 연결), `games/*/game.manifest.json`(`playModes`·`desktop` 블록)
+- **타 영역 의존 (소유하지 않음)**: Hub 공통 인증 서비스(Launch Ticket·네이티브 OAuth), `PlayHub-Store` 심사 상태, `PlayHub-CDN` R2 서명 URL
+- **`main` 변경 요청**: `tools/build-version/**`과 [build-version-naming-policy.md](../architecture/build-version-naming-policy.md)에 7번째 타깃 `hub-desktop` 추가
 
 > [!WARNING]
-> 현재 `owners.json`에는 `Hub-AOS`/`Hub-IOS` 항목이 없어 `godot-sdk/**` 소유권이 비어 있다. 착수 전에 트렁크에서 AOS/iOS/Desktop의 SDK 경계를 함께 등록해야 한다.
+> `main`의 `owners.json`은 `baseBranch`가 아직 `PlayHub-Platform`이고 `Hub-AOS`/`Hub-IOS`/`Hub-Desktop` 항목이 없다. `check-ownership.mjs`는 `baseBranch` 기준으로 변경 파일을 계산하므로, 개발 기준이 `main`으로 바뀐 만큼 `baseBranch`를 `main`으로 바꾸고 AOS/iOS/Desktop의 SDK 경계를 함께 등록해야 한다.
 
 ---
 
@@ -308,28 +378,60 @@ Hub-Desktop/
 
 | 구성 | 서명 | Farm 선택 | 업데이트 채널 | 프로토콜 |
 |---|---|---|---|---|
-| `debug` | 미서명 허용 | 허용 | 없음 | `playhub-<branch>-debug://` |
-| `dev` | 테스트 인증서 | 허용 | `dev` | `playhub-<branch>-dev://` |
-| `test` | 테스트 인증서 | 허용 | `qa` | `playhub-<branch>-test://` |
-| `release` | 정식 인증서 | 차단 | `rc` | `playhub-rc://` |
-| `live` | 정식 인증서 | 차단 | `live` | `playhub://` (트렁크 전용) |
+| `debug` | 미서명 허용 (로컬 실행 전용, 배포 금지) | 허용 | 없음 | `playhub-<branch>-debug://` |
+| `dev` | 테스트 서명 (관리형 서비스의 비프로덕션 프로필) | 허용 | `dev` | `playhub-<branch>-dev://` |
+| `test` | 테스트 서명 (관리형 서비스의 비프로덕션 프로필) | 허용 | `qa` | `playhub-<branch>-test://` |
+| `release` | 프로덕션 서명 (승인 필요) | 차단 | `rc` | `playhub-rc://` |
+| `live` | 프로덕션 서명 (승인 필요) | 차단 | `live` | `playhub://` (`main` 전용) |
 
 - 설치 경로·데이터 경로·AppUserModelID(Windows)·Bundle ID(macOS)·`.desktop` ID(Linux)에 `<branch>.<config>`를 넣어 동시에 설치할 수 있게 한다(AOS `com.playhub.<branch>.<config>` 규칙과 대칭).
-- `-dirty` 빌드는 `qa`/`rc`/`live` 채널에 게시할 수 없다.
+- `-dirty` 빌드는 `qa`/`rc`/`live` 채널에 게시할 수 없다. `live`는 `main`에서 만든 빌드만 허용하고, 다른 브랜치에서 `live`를 시도하면 빌드가 실패한다.
 
 ### 11.3 파이프라인
 
 ```mermaid
 flowchart LR
-    C["계약 생성·차이 검사"] --> B["Rust 빌드 + 단위 테스트<br/>3개 OS 매트릭스"]
-    B --> L["생명주기 테스트 L1~L8<br/>3개 OS"]
-    L --> S["OS별 서명·패키징<br/>Win: Authenticode / macOS: Developer ID + notarytool / Linux: AppImage 서명"]
-    S --> G["게이트: Forge 미포함 · 서명 · 용량 · 버전 · cargo-deny/audit"]
-    G --> P["R2 게시 + Release API 채널·롤아웃 등록"]
+    subgraph CI["CI 빌드 (서명 권한 없음)"]
+        C["계약 생성·차이 검사"] --> B["Rust 빌드 + 단위 테스트<br/>3개 OS 매트릭스"]
+        B --> L["생명주기 테스트 L1~L10<br/>3개 OS"]
+        L --> G["게이트: Forge 미포함 · 용량 · 버전 · cargo-deny/audit"]
+        G --> A["미서명 산출물 + 빌드 출처 증명(provenance)<br/>다이제스트 고정 보관"]
+    end
+    subgraph SIGN["프로덕션 서명 (보호 환경, 승인 1)"]
+        V["다이제스트·출처 검증"] --> S["관리형 서명/HSM 호출<br/>Win: Trusted Signing·OV / macOS: Developer ID + 공증 / TUF·매니페스트: KMS"]
+    end
+    subgraph REL["출시 (보호 환경, 승인 2)"]
+        P["R2 게시 + Release API 채널·롤아웃 등록"]
+    end
+    A --> V
+    S --> P
 ```
 
 - CI는 **GitHub Actions 매트릭스**(windows / macos-arm64 / ubuntu)를 쓴다. 현재 `cloudrun-pipeline.yml`과 DevOps의 Google Cloud Build는 Linux 전용이므로, macOS 서명·공증에는 macOS 러너(또는 자체 Mac)와 Apple Developer 계정이 필요하다.
-- 시크릿(서명 인증서, Ed25519/TUF 개인키, Apple 공증 자격)은 저장소에 두지 않고 CI Secret으로만 주입한다.
+
+### 11.4 코드 서명 및 키 관리 (확정)
+
+> [!IMPORTANT]
+> **모든 서명 키는 클라우드 관리형 서명 서비스 또는 HSM에만 존재한다.** 개발자 PC, 저장소, 일반 CI 시크릿 변수, 빌드 산출물에 개인키·`.pfx`·`.p12`를 저장하지 않는다. CI는 장기 비밀값 대신 **OIDC 워크로드 신원 연동**(GitHub Actions → Azure / Google Cloud)으로 짧게 유효한 자격만 받는다.
+
+| 대상 | 1순위 | 대안 / 비고 |
+|---|---|---|
+| **Windows Authenticode** (Bootstrapper·Player·설치 파일) | **Azure Trusted Signing** (관리형, 키를 Microsoft가 HSM에 보관). 조직 신원 검증과 지원 지역 요건 확인이 선행 조건 | 자격 미충족 시 **OV 코드 서명 인증서**. CA/B 포럼 규정상 OV 키도 FIPS 140-2 Level 2 이상 하드웨어에 보관해야 하므로 **클라우드 HSM**(Azure Key Vault Managed HSM, Google Cloud HSM 등)에 생성·보관하고 원격 서명 도구로 서명한다. 모든 서명에 RFC 3161 타임스탬프를 적용한다 |
+| **macOS** Developer ID Application / 공증 | Developer ID 키를 HSM·관리형 서비스에 두고 원격 서명(예: `rcodesign`의 원격·PKCS#11 서명) | Apple 계정·키 보관 방식은 §14.2에서 확정. 공증 자격은 App Store Connect API 키를 보호 환경에서만 사용 |
+| **Linux** AppImage / 런타임 패키지 | TUF 타깃 메타데이터 서명으로 무결성 보장 | 배포판 패키지(GPG) 서명이 필요하면 KMS 보관 키 사용 |
+| **`content-manifest` Ed25519 / TUF** | 클라우드 KMS(Ed25519 서명 지원) | **TUF 루트 키는 오프라인 HSM + 다중 보유자 임계 서명**. 타깃·스냅샷·타임스탬프 키는 온라인 KMS에 두고 역할별로 분리 |
+| 테스트 서명 (`dev`/`test`) | 같은 관리형 서비스의 **비프로덕션 프로필·별도 키** | 프로덕션 키와 신뢰 체인 공유 금지. 테스트 키로 서명한 빌드는 `live`·`rc` 채널이 거부 |
+
+### 11.5 빌드와 서명·출시 승인 분리 (확정)
+
+| 단계 | 실행 주체·환경 | 권한 | 승인 |
+|---|---|---|---|
+| **1. CI 빌드** | 모든 브랜치 PR·푸시 | 서명 키 접근 **없음**. 미서명 산출물과 빌드 출처 증명(SLSA provenance, 산출물 SHA-256)만 생성 | 없음 (자동) |
+| **2. 프로덕션 서명** | `main` 빌드만, 보호된 배포 환경(예: GitHub Environments `production-signing`) | 서명 서비스 호출 권한은 이 환경의 OIDC 신원에만 부여 | **승인 1**: 릴리스 담당자. 서명 전에 CI가 기록한 다이제스트·출처와 실제 파일이 일치하는지 자동 검증하고, 일치하지 않으면 중단 |
+| **3. 출시** | 보호된 배포 환경 `production-release` | R2 게시, Release API 채널·롤아웃 % 변경 권한 | **승인 2**: 서명 승인자와 **다른 사람**(2인 원칙). 단계적 롤아웃(예: 1% → 10% → 100%)과 롤백 권한 포함 |
+
+- 서명·출시 이력(누가, 언제, 어떤 다이제스트를, 어떤 승인으로)을 변경 불가능한 감사 로그로 남긴다.
+- 긴급 롤백은 이미 서명된 이전 릴리스를 다시 가리키는 것이므로 재서명이 필요 없다. 다만 출시 승인 절차는 똑같이 거친다.
 
 ---
 
@@ -348,6 +450,9 @@ flowchart LR
 | L7 | 자체 업데이트 실패 | 새 Bootstrapper 첫 기동 크래시 | 이전 버전으로 자동 롤백 |
 | L8 | 서명 위조 | 서명 불일치 매니페스트, 만료·롤백된 TUF 메타데이터 | 설치·실행 거부 (Fail-Closed) |
 | L9 | 티켓 오용 | 만료·재사용·다른 게임 ID 티켓 | 교환 거부 |
+| L10 | 아바타 스튜디오 | `avatar-studio` 딥링크 실행 → 이모트 재생 → 웹 결제 후 `iap_updated` | 장착 상태 갱신, 스튜디오 종료 후 고아 프로세스 0개 |
+
+- 아바타 상점–인게임 일치 테스트(골든 이미지 SSIM, 소켓 계약, 예산 게이트)는 §3.3 (5)를 따르며 카탈로그 빌드 CI에서 실행한다.
 
 - GPU가 없는 CI 러너에서는 Player를 `--headless` 또는 Mesa llvmpipe(OpenGL3)로 실행한다. 실제 GPU 회귀는 자체 러너에서 야간에 돌린다.
 - 결과는 OS별로 같은 JSON 리포트 형식으로 `artifacts/`에 보관한다(DevOps 아카이브와 연동).
@@ -365,7 +470,8 @@ flowchart LR
 | **P0** | Native 실행: Bootstrapper + 공용 Player + IPC + 오버레이 | Rust + Godot |
 | **P0** | 설치·업데이트·복구·서명 검증 + 3개 OS 생명주기 테스트 | Rust + TS |
 | **P1** | 런타임 버전 공존, CAS 중복 제거·선택 패키지, L2 OS 격리, 장기 세션(OAuth PKCE + 보안 저장소), 오프라인 실행 | Rust + Godot |
-| **P1** | 아바타 상점 (웹 2D/3D + Godot 재사용) | 웹 + Godot |
+| **P1** | 아바타 상점 3D 뷰 V0(사전 렌더링 썸네일·턴테이블) + V1(웹 실시간 3D·이모트 애니메이션), 자산 분리·압축, 상점–인게임 골든 이미지 테스트 (§3.3) | 웹 + Godot 헤드리스 렌더 (`Forge-Avatar`와 분담) |
+| **P1~P2** | 아바타 상점 V2 네이티브 스튜디오(`playhub://avatar-studio`) | Godot Player |
 | **P2** | Steam형 데스크톱 라이브러리 앱 (선택 설치) | Rust 코어 + UI 기술 미정 (§14) |
 | **P2** | SteamOS 컨트롤러 UX, Flatpak, Steam 배포 검토, L3 엔진 하드닝, 모바일 코어 Rust 공유(UniFFI) | — |
 
@@ -373,11 +479,11 @@ flowchart LR
 
 | 마일스톤 | 기간 | 핵심 산출물 | 완료 기준 |
 |---|---|---|---|
-| **M0 기반** | 2~3주 | Rust·Node 툴체인 고정, `contracts/` 초안(launch-ticket, bridge), `native/platform` 3개 OS 프로세스 감시, Player 실행 PoC, 3개 OS CI 매트릭스 + 하네스(L2, L4, L5), 용량·기동 시간 실측, Velopack·격리 PoC | 3개 OS CI에서 Player 실행·크래시 감지·고아 0개 통과, 실측 리포트 |
-| **M1 Native 실행 경로** | 3주 | Launch Ticket API + 웹 Play 분기 + "열리지 않았나요?" 안내, 프로토콜 등록, `bootstrap.pck`(진행률·오버레이·IPC), 세이브 브릿지 | 웹 ▶ → (설치) → 실행 → 세이브 왕복 → `허브로 나가기` E2E, L9 통과 |
+| **M0 기반** | 2~3주 | Rust·Node 툴체인 고정, `contracts/` 초안(launch-ticket, bridge), `native/platform` 3개 OS 프로세스 감시, Player 실행 PoC, 3개 OS CI 매트릭스 + 하네스(L2, L4, L5), 용량·기동 시간 실측, Velopack·격리 PoC, **Azure Trusted Signing 자격 신청 시작** | 3개 OS CI에서 Player 실행·크래시 감지·고아 0개 통과, 실측 리포트 |
+| **M1 Native 실행 경로** | 3주 | 웹 Play 분기 + "열리지 않았나요?" 안내, 프로토콜 등록, Native Player 티켓 검증·교환(공통 인증 서비스 연동, 준비 전에는 계약 목 서버), `bootstrap.pck`(진행률·오버레이·IPC), 세이브 브릿지 | 웹 ▶ → (설치) → 실행 → 세이브 왕복 → `허브로 나가기` E2E, L9 통과 |
 | **M2 CAS·업데이트·복구** | 3주 | `playhub-pack` CLI, FastCDC CAS, 서명 매니페스트 + TUF, 저널 복구, R2 게시 도구, Release API 채널·롤아웃 | L1, L3, L6, L7, L8 통과 (3개 OS) |
 | **M3 격리·런타임 관리** | 2~3주 | L2 OS별 격리, 런타임 버전 공존·GC, 오프라인 Entitlement 캐시, 크래시 수집 | 격리 탈출 테스트 통과, 2개 엔진 버전 공존 실행 |
-| **M4 서명·배포** | 2주 | OS별 서명·공증·패키징 파이프라인, `hub-desktop` 빌드 타깃, 반응성 목표 측정 | Windows `live`, macOS·Linux `rc`. L1~L9 3개 OS 전체 통과 |
+| **M4 서명·배포** | 2주 | OS별 관리형 서명·공증·패키징, 서명·출시 2단계 승인 환경, `hub-desktop` 빌드 타깃, 반응성 목표 측정 | Windows `live`, macOS·Linux `rc`. L1~L10 3개 OS 전체 통과, 승인 없는 서명·출시 시도 차단 확인 |
 
 ---
 
@@ -389,18 +495,35 @@ flowchart LR
 |---|---|---|
 | **UGC `.pck` 악성 동작** (데스크톱에는 기본 샌드박스가 없음) | 사용자 PC 피해, 플랫폼 신뢰 붕괴 | L1 서명 Fail-Closed(P0), L2 OS 격리(P1), L3 엔진 하드닝(P2) |
 | **프로토콜 핸들러 마찰** (브라우저 확인 창, 설치 여부 감지 불가) | 첫 실행 이탈 | 웹의 명확한 안내 흐름, "항상 허용" 유도, 설치 후 자동 재개 |
-| **미서명·미공증 바이너리** | SmartScreen 경고, macOS 실행 차단 | M3 전에 Windows 서명 인증서(OV/EV 또는 Azure Trusted Signing)와 Apple Developer ID 확보 |
+| **미서명·미공증 바이너리** | SmartScreen 경고, macOS 실행 차단 | M3 전에 Azure Trusted Signing 자격 확인을 마치고, 미충족 시 OV 인증서 + 클라우드 HSM으로 전환. Apple Developer ID 확보 |
+| **Trusted Signing 자격 심사 지연·거절** | M4 일정 지연 | M0에 자격 신청을 시작하고, 결과가 나오기 전에 OV 인증서 발급 절차를 병행 준비 |
+| **공통 인증 서비스 일정 의존** | M1 Native 실행 경로 지연 | `launch-ticket.v1` 계약을 M0에 먼저 확정하고, 계약 기반 목(mock) 서버로 Native 쪽 개발·테스트를 병행 |
 | **Godot Web 단일 스레드 성능 한계** | Instant Play 품질 저하 | `playModes`로 Native 전용 게임 분류, 웹 성능 예산 정의 |
 | **엔진 업그레이드 시 비호환** | 구버전 게임 실행 실패 | 런타임 버전 공존 + `COMPAT_*` 강제/선택 업데이트 |
 | **macOS 격리 API 제약** | L2 구현 난이도 | M0 PoC로 방식 확정, 불가하면 서명 신뢰 등급만으로 제한 운영 |
 | **3개 OS CI 비용** | macOS 러너 비용, GPU 부재 | 헤드리스·소프트웨어 렌더러로 기본 검증, GPU 회귀는 야간 자체 러너 |
 
-### 14.2 착수 전 확정 필요 항목 (Open Decisions)
+### 14.2 남은 미확정 항목 (Open Decisions)
 
-1. **macOS 빌드 인프라와 Apple Developer 계정 주체**: GitHub Actions macOS 러너(유료) 또는 자체 Mac
-2. **Windows 코드 서명 방식과 조달 주체**: OV / EV / Azure Trusted Signing
-3. **PlayHub API 네이티브 인가 엔드포인트(Launch Ticket, OAuth PKCE) 담당 브랜치**: `Hub-Desktop`에서 할지, 트렁크·공통 인증 영역에서 할지
-4. **Native 카탈로그 노출 범위**: Store 심사 통과 빌드만(권장) / 개발자 사이드로딩 모드(`debug`·`dev` 전용) 허용 여부
-5. **Ed25519·TUF 키 관리**: 생성·보관 위치(Secret Manager 등)와 Store 심사 파이프라인(`PlayHub-Store`) 연동 주체
-6. **P2 데스크톱 앱 UI 기술**: P2 착수 시점에 결정. 후보는 Tauri 2(TS 화면, 언어 2개) / Flutter(Dart 추가) / egui(WebView 완전 배제). Slint는 배제
-7. **`hub-desktop` 빌드 타깃 추가와 `owners.json` 등록의 트렁크 반영 시점**
+> [!NOTE]
+> 아래 7개 항목은 2026-11-22 기준 **미정**이다. 착수에 영향이 큰 1·2·6번은 M0 시작 전에, 3·4·7번은 M2 전에, 5번은 P2 착수 시점에 결정한다. 결정되기 전에는 계약·목 서버·인터페이스 분리로 구현을 막지 않는 방향으로 진행한다.
+
+1. **macOS 빌드 인프라와 Apple Developer 계정 주체**: GitHub Actions macOS 러너(유료) 또는 자체 Mac. Developer ID 키를 둘 HSM·관리형 서비스와 원격 서명 도구
+2. **Hub 공통 인증 서비스의 소유 브랜치·일정**: 모듈 위치(예: `hub/server/auth/`)와 `launch-ticket.v1`·네이티브 OAuth 구현 담당
+3. **클라우드 제공자 선택**: 서명·KMS·HSM을 Azure(Trusted Signing·Key Vault)로 모을지, Google Cloud(KMS·Cloud HSM)와 나눌지
+4. **창작자 비공개 테스트 배포 경로**: 공개 노출 정책(§5.4) 밖에서 창작자가 자기 빌드를 데스크톱에서 시험하는 방법 제공 여부
+5. **P2 데스크톱 앱 UI 기술**: P2 착수 시점에 결정. 후보는 Tauri 2(TS 화면, 언어 2개) / Flutter(Dart 추가) / egui(WebView 완전 배제). Slint는 배제
+6. **`main`의 `owners.json` 갱신 시점**: `baseBranch`를 `main`으로 변경하고 `Hub-AOS`/`Hub-IOS`/`Hub-Desktop` 등록, `hub-desktop` 빌드 타깃 추가
+7. **아바타 3D 뷰 분담과 웹 뷰어 방식**: V0/V1을 `Forge-Avatar`가 맡을지(권장), 웹 V1을 무의존성 뷰어 확장으로 할지 three.js로 교체할지(M0 비교 후 결정)
+
+### 14.3 확정된 결정 (2026-11-22)
+
+| 항목 | 결정 | 반영 위치 |
+|---|---|---|
+| 개발 브랜치 | `Hub-Desktop`을 `main` 기준으로 재생성, `main`으로 통합. `live`는 `main` 전용 | 머리말, §10.2, §11.2 |
+| Windows 코드 서명 | Azure Trusted Signing 우선, 자격 미충족 시 OV 인증서(클라우드 HSM) | §11.4 |
+| 서명 키 관리 | 클라우드 관리형 서명 서비스 또는 HSM만 사용, 개발자 PC 저장 금지 | §11.4 |
+| 출시 승인 | CI 빌드와 프로덕션 서명·출시 승인 분리(2단계 승인, 2인 원칙) | §11.3, §11.5 |
+| Launch Ticket | Hub 백엔드 발급, Native Player(Rust 호스트) 검증·교환, 게임 프로세스 비노출 | §4.5 |
+| 네이티브 로그인 | Hub 공통 인증 서비스에 구현 | §7 |
+| 데스크톱 게임 노출 | 심사 통과 + 플랫폼 호환 빌드만 공개 노출 | §5.4 |
