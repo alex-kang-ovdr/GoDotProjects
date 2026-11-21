@@ -1,6 +1,9 @@
 import { X509Certificate, createVerify } from 'node:crypto';
 import { transaction } from '../db.mjs';
-import { ApiError, digest, uid } from '../security.mjs';
+import { ApiError, digest, equal, uid } from '../security.mjs';
+
+export const APPLE_STOREKIT_LEAF_OID = '1.2.840.113635.100.6.11.1';
+export const APPLE_WWDR_INTERMEDIATE_OID = '1.2.840.113635.100.6.2.1';
 
 /**
  * Ensures multi-platform IAP + Roblox/UEFN Shared Wallet + Source-Bucket tables exist
@@ -74,10 +77,12 @@ export function ensureAppleIapWalletSchema(db) {
       balance_after INTEGER NOT NULL,
       reason TEXT NOT NULL,
       ref_id TEXT,
-      idempotency_key TEXT UNIQUE,
-      created_at INTEGER NOT NULL
+      idempotency_key TEXT,
+      created_at INTEGER NOT NULL,
+      UNIQUE(principal_id, idempotency_key)
     );
     CREATE INDEX IF NOT EXISTS wallet_ledger_principal ON player_wallet_ledger(principal_id, created_at DESC);
+    CREATE UNIQUE INDEX IF NOT EXISTS wallet_ledger_principal_idem ON player_wallet_ledger(principal_id, idempotency_key);
 
     CREATE TABLE IF NOT EXISTS player_entitlements (
       id TEXT PRIMARY KEY,
@@ -99,14 +104,95 @@ function derBase64ToPem(base64Der) {
   return `-----BEGIN CERTIFICATE-----\n${lines.join('\n')}\n-----END CERTIFICATE-----\n`;
 }
 
+function readAsn1Tlv(buf, offset, end) {
+  if (offset >= end) return null;
+  const tag = buf[offset++];
+  if (offset >= end) return null;
+  let len = buf[offset++];
+  if (len & 0x80) {
+    const numBytes = len & 0x7f;
+    if (numBytes === 0 || numBytes > 4 || offset + numBytes > end) return null;
+    len = 0;
+    for (let i = 0; i < numBytes; i++) {
+      len = (len << 8) | buf[offset++];
+    }
+  }
+  const valStart = offset;
+  const valEnd = valStart + len;
+  if (valEnd > end) return null;
+  return { tag, valStart, valEnd, nextOffset: valEnd };
+}
+
+function decodeDerOid(buf, start, end) {
+  if (start >= end) return null;
+  const firstByte = buf[start];
+  const parts = firstByte >= 80
+    ? [2, firstByte - 80]
+    : [Math.floor(firstByte / 40), firstByte % 40];
+  let value = 0;
+  let inArc = false;
+  for (let i = start + 1; i < end; i++) {
+    const b = buf[i];
+    value = value * 128 + (b & 0x7f);
+    inArc = true;
+    if ((b & 0x80) === 0) {
+      parts.push(value);
+      value = 0;
+      inArc = false;
+    }
+  }
+  if (inArc) return null;
+  return parts.join('.');
+}
+
+function extractX509ExtensionOids(rawDer) {
+  const oids = new Set();
+  if (!Buffer.isBuffer(rawDer) || rawDer.length === 0) return oids;
+  const certSeq = readAsn1Tlv(rawDer, 0, rawDer.length);
+  if (!certSeq || certSeq.tag !== 0x30) return oids;
+  const tbsSeq = readAsn1Tlv(rawDer, certSeq.valStart, certSeq.valEnd);
+  if (!tbsSeq || tbsSeq.tag !== 0x30) return oids;
+
+  let pos = tbsSeq.valStart;
+  while (pos < tbsSeq.valEnd) {
+    const field = readAsn1Tlv(rawDer, pos, tbsSeq.valEnd);
+    if (!field) break;
+    if (field.tag === 0xa3) {
+      const extsSeq = readAsn1Tlv(rawDer, field.valStart, field.valEnd);
+      if (extsSeq && extsSeq.tag === 0x30) {
+        let ePos = extsSeq.valStart;
+        while (ePos < extsSeq.valEnd) {
+          const extSeq = readAsn1Tlv(rawDer, ePos, extsSeq.valEnd);
+          if (!extSeq) break;
+          if (extSeq.tag === 0x30) {
+            const oidTlv = readAsn1Tlv(rawDer, extSeq.valStart, extSeq.valEnd);
+            if (oidTlv && oidTlv.tag === 0x06) {
+              const oid = decodeDerOid(rawDer, oidTlv.valStart, oidTlv.valEnd);
+              if (oid) oids.add(oid);
+            }
+          }
+          ePos = extSeq.nextOffset;
+        }
+      }
+      break;
+    }
+    pos = field.nextOffset;
+  }
+  return oids;
+}
+
 /**
  * Cryptographically verifies an Apple StoreKit 2 / ASSN v2 JWS compact token:
  * 1) Validates header alg === 'ES256' and non-empty x5c chain
- * 2) Verifies X.509 certificate chain signatures (leaf -> intermediate -> root) and validity periods
+ * 2) Verifies X.509 certificate chain signatures (leaf -> intermediate -> root),
+ *    CA BasicConstraints, Issuer/Subject checkIssued, validity periods, and Apple StoreKit OID extensions
  * 3) Pins the chain root SHA-256 fingerprint against trustedRootCertPems (Apple Root CA - G3)
  * 4) Verifies ES256 JWS signature using the leaf certificate's public key
  */
-export function verifyStoreKitJws(jws, { trustedRootCertPems = [], nowMs = Date.now() } = {}) {
+export function verifyStoreKitJws(
+  jws,
+  { trustedRootCertPems = [], nowMs = Date.now(), allowTestChainOidBypass = false } = {}
+) {
   if (typeof jws !== 'string' || jws.length === 0 || jws.length > 65536) {
     throw new ApiError(422, 'APPLE_JWS_REQUIRED');
   }
@@ -126,11 +212,20 @@ export function verifyStoreKitJws(jws, { trustedRootCertPems = [], nowMs = Date.
     throw new ApiError(401, 'APPLE_JWS_MALFORMED');
   }
 
-  if (header.alg !== 'ES256' || !Array.isArray(header.x5c) || header.x5c.length < 2) {
+  if (header.alg !== 'ES256' || !Array.isArray(header.x5c) || header.x5c.length < 2 || header.x5c.length > 8) {
     throw new ApiError(401, 'APPLE_JWS_HEADER_INVALID');
   }
 
-  const certs = header.x5c.map(b64 => new X509Certificate(derBase64ToPem(b64)));
+  let certs;
+  try {
+    certs = header.x5c.map(b64 => {
+      if (typeof b64 !== 'string' || !b64.trim()) throw new Error('Invalid x5c entry');
+      return new X509Certificate(derBase64ToPem(b64));
+    });
+  } catch {
+    throw new ApiError(401, 'APPLE_CERT_MALFORMED');
+  }
+
   for (const cert of certs) {
     const fromMs = Date.parse(cert.validFrom);
     const toMs = Date.parse(cert.validTo);
@@ -139,9 +234,16 @@ export function verifyStoreKitJws(jws, { trustedRootCertPems = [], nowMs = Date.
     }
   }
 
-  // Verify every link in the chain: cert[i] signed by cert[i+1]
+  // Every intermediate and root certificate must carry CA BasicConstraints (ca === true)
+  for (let i = 1; i < certs.length; i++) {
+    if (certs[i].ca !== true) {
+      throw new ApiError(401, 'APPLE_CERT_NOT_CA');
+    }
+  }
+
+  // Verify every link in the chain: cert[i] issued and signed by cert[i+1]
   for (let i = 0; i < certs.length - 1; i++) {
-    if (!certs[i].verify(certs[i + 1].publicKey)) {
+    if (!certs[i].checkIssued(certs[i + 1]) || !certs[i].verify(certs[i + 1].publicKey)) {
       throw new ApiError(401, 'APPLE_CERT_CHAIN_INVALID');
     }
   }
@@ -155,12 +257,32 @@ export function verifyStoreKitJws(jws, { trustedRootCertPems = [], nowMs = Date.
     throw new ApiError(401, 'APPLE_ROOT_UNTRUSTED');
   }
 
+  // Verify Apple StoreKit / WWDR dedicated X.509 extension OIDs (strict by default)
+  if (!allowTestChainOidBypass) {
+    const leafOids = extractX509ExtensionOids(certs[0].raw);
+    if (!leafOids.has(APPLE_STOREKIT_LEAF_OID)) {
+      throw new ApiError(401, 'APPLE_CERT_OID_INVALID');
+    }
+    if (certs.length >= 3) {
+      const interOids = extractX509ExtensionOids(certs[1].raw);
+      if (!interOids.has(APPLE_WWDR_INTERMEDIATE_OID)) {
+        throw new ApiError(401, 'APPLE_CERT_OID_INVALID');
+      }
+    }
+  }
+
   // Verify ES256 JWS signature against leaf public key (IEEE P1363 raw r||s)
-  const verifier = createVerify('SHA256');
-  verifier.update(`${parts[0]}.${parts[1]}`);
-  verifier.end();
-  const sigBuf = Buffer.from(parts[2], 'base64url');
-  if (!verifier.verify({ key: certs[0].publicKey, dsaEncoding: 'ieee-p1363' }, sigBuf)) {
+  let verified = false;
+  try {
+    const verifier = createVerify('SHA256');
+    verifier.update(`${parts[0]}.${parts[1]}`);
+    verifier.end();
+    const sigBuf = Buffer.from(parts[2], 'base64url');
+    verified = verifier.verify({ key: certs[0].publicKey, dsaEncoding: 'ieee-p1363' }, sigBuf);
+  } catch {
+    verified = false;
+  }
+  if (!verified) {
     throw new ApiError(401, 'APPLE_JWS_SIGNATURE_INVALID');
   }
 
@@ -181,23 +303,40 @@ export function verifyAndGrantAppleTransaction({
   signedTransactionInfo,
   principalId,
   expectedBundleId,
-  expectedEnvironment = null,
+  expectedEnvironment = 'Production',
   expectedAppAccountToken = null,
   trustedRootCertPems,
   idempotencyKey = null,
+  allowTestChainOidBypass = false,
   now = () => Date.now()
 }) {
+  if (!principalId || typeof principalId !== 'string') {
+    throw new ApiError(422, 'PRINCIPAL_ID_REQUIRED');
+  }
+  if (!expectedEnvironment || typeof expectedEnvironment !== 'string') {
+    throw new ApiError(500, 'APPLE_EXPECTED_ENVIRONMENT_REQUIRED');
+  }
   const stamp = now();
-  const { payload } = verifyStoreKitJws(signedTransactionInfo, { trustedRootCertPems, nowMs: stamp });
+  const { payload } = verifyStoreKitJws(signedTransactionInfo, {
+    trustedRootCertPems,
+    nowMs: stamp,
+    allowTestChainOidBypass
+  });
 
   if (expectedBundleId && payload.bundleId !== expectedBundleId) {
     throw new ApiError(403, 'APPLE_BUNDLE_ID_MISMATCH');
   }
-  if (expectedEnvironment && payload.environment !== expectedEnvironment) {
+  if (payload.environment !== expectedEnvironment) {
     throw new ApiError(403, 'APPLE_ENVIRONMENT_MISMATCH');
   }
-  if (expectedAppAccountToken && payload.appAccountToken && payload.appAccountToken.toLowerCase() !== expectedAppAccountToken.toLowerCase()) {
-    throw new ApiError(403, 'APPLE_ACCOUNT_TOKEN_MISMATCH');
+  if (expectedAppAccountToken) {
+    if (
+      typeof payload.appAccountToken !== 'string' ||
+      !payload.appAccountToken ||
+      !equal(payload.appAccountToken.toLowerCase(), String(expectedAppAccountToken).toLowerCase())
+    ) {
+      throw new ApiError(403, 'APPLE_ACCOUNT_TOKEN_MISMATCH');
+    }
   }
   if (payload.revocationDate) {
     throw new ApiError(409, 'APPLE_TRANSACTION_REVOKED');
@@ -224,11 +363,20 @@ export function verifyAndGrantAppleTransaction({
       .prepare("SELECT * FROM iap_transactions WHERE platform='apple' AND store_tx_id=?")
       .get(storeTxId);
     if (existing) {
+      if (existing.principal_id !== principalId) {
+        throw new ApiError(403, 'APPLE_TRANSACTION_OWNER_MISMATCH');
+      }
+      if (existing.state === 'VOIDED') {
+        throw new ApiError(409, 'TRANSACTION_VOIDED');
+      }
+      if (existing.state !== 'GRANTED') {
+        throw new ApiError(409, 'TRANSACTION_NOT_GRANTED');
+      }
       return {
         status: 'ALREADY_GRANTED',
         transactionId: existing.id,
         storeTransactionId: storeTxId,
-        ...getWalletBalance(db, existing.principal_id)
+        ...getWalletBalance(db, principalId)
       };
     }
 
@@ -335,10 +483,18 @@ export function spendSharedWalletCoins({
 
   return transaction(db, () => {
     const dup = db
-      .prepare('SELECT balance_after FROM player_wallet_ledger WHERE idempotency_key=?')
-      .get(idempotencyKey);
+      .prepare('SELECT balance_after FROM player_wallet_ledger WHERE principal_id=? AND idempotency_key=?')
+      .get(principalId, idempotencyKey);
     if (dup) {
-      return { status: 'ALREADY_APPLIED', balance: dup.balance_after, allocations: [] };
+      let finalBalance = dup.balance_after;
+      for (let idx = 1; ; idx++) {
+        const nextLeg = db
+          .prepare('SELECT balance_after FROM player_wallet_ledger WHERE principal_id=? AND idempotency_key=?')
+          .get(principalId, `${idempotencyKey}#${idx}`);
+        if (!nextLeg) break;
+        finalBalance = nextLeg.balance_after;
+      }
+      return { status: 'ALREADY_APPLIED', balance: finalBalance, allocations: [] };
     }
 
     const rawBuckets = db
@@ -412,10 +568,15 @@ export function handleAssnV2Notification({
   signedPayload,
   trustedRootCertPems,
   expectedBundleId = null,
+  allowTestChainOidBypass = false,
   now = () => Date.now()
 }) {
   const stamp = now();
-  const { payload: outer } = verifyStoreKitJws(signedPayload, { trustedRootCertPems, nowMs: stamp });
+  const { payload: outer } = verifyStoreKitJws(signedPayload, {
+    trustedRootCertPems,
+    nowMs: stamp,
+    allowTestChainOidBypass
+  });
   const eventUuid = String(outer.notificationUUID || '');
   const notificationType = String(outer.notificationType || '');
   if (!eventUuid || !notificationType) {
@@ -424,7 +585,11 @@ export function handleAssnV2Notification({
 
   let txPayload = null;
   if (outer.data?.signedTransactionInfo) {
-    txPayload = verifyStoreKitJws(outer.data.signedTransactionInfo, { trustedRootCertPems, nowMs: stamp }).payload;
+    txPayload = verifyStoreKitJws(outer.data.signedTransactionInfo, {
+      trustedRootCertPems,
+      nowMs: stamp,
+      allowTestChainOidBypass
+    }).payload;
     if (expectedBundleId && txPayload.bundleId !== expectedBundleId) {
       throw new ApiError(403, 'APPLE_BUNDLE_ID_MISMATCH');
     }
@@ -445,7 +610,19 @@ export function handleAssnV2Notification({
       : null;
 
     if ((notificationType === 'REFUND' || notificationType === 'REVOKE') && txRow) {
-      db.prepare("UPDATE iap_transactions SET state='VOIDED', updated_at=? WHERE id=?").run(stamp, txRow.id);
+      // Strictly-once clawback: only execute when transitioning GRANTED -> VOIDED
+      const voided = db
+        .prepare("UPDATE iap_transactions SET state='VOIDED', updated_at=? WHERE id=? AND state='GRANTED'")
+        .run(stamp, txRow.id);
+      if (voided.changes !== 1) {
+        return {
+          status: 'ALREADY_VOIDED',
+          notificationType,
+          storeTransactionId: storeTxId,
+          clawedBack: 0,
+          deficitAdded: 0
+        };
+      }
       db.prepare('UPDATE player_entitlements SET revoked_at=? WHERE source_tx_id=? AND revoked_at IS NULL').run(stamp, txRow.id);
 
       const bucket = db.prepare('SELECT * FROM player_wallet_buckets WHERE source_tx_id=?').get(txRow.id);
@@ -453,9 +630,31 @@ export function handleAssnV2Notification({
       let deficitAdded = 0;
       if (bucket) {
         const acct = getWalletBalance(db, txRow.principal_id);
-        clawedBack = Math.min(acct.balance, bucket.granted_amount);
+        const allBuckets = db
+          .prepare('SELECT id, remaining_amount FROM player_wallet_buckets WHERE principal_id=? AND remaining_amount > 0 ORDER BY created_at ASC, id ASC')
+          .all(txRow.principal_id);
+        const totalBucketRemaining = allBuckets.reduce((sum, b) => sum + b.remaining_amount, 0);
+        const availableToClaw = Math.min(acct.balance, totalBucketRemaining);
+        clawedBack = Math.min(availableToClaw, bucket.granted_amount);
         deficitAdded = Math.max(0, bucket.granted_amount - clawedBack);
-        db.prepare('UPDATE player_wallet_buckets SET remaining_amount=0 WHERE id=?').run(bucket.id);
+
+        // Drain refunded source bucket first, then other buckets in FIFO order to maintain balance === SUM(remaining_amount)
+        let leftToClaw = clawedBack;
+        const fromSource = Math.min(bucket.remaining_amount, leftToClaw);
+        if (fromSource > 0) {
+          db.prepare('UPDATE player_wallet_buckets SET remaining_amount=remaining_amount-? WHERE id=?').run(fromSource, bucket.id);
+          leftToClaw -= fromSource;
+        }
+        for (const other of allBuckets) {
+          if (leftToClaw <= 0) break;
+          if (other.id === bucket.id) continue;
+          const take = Math.min(other.remaining_amount, leftToClaw);
+          if (take > 0) {
+            db.prepare('UPDATE player_wallet_buckets SET remaining_amount=remaining_amount-? WHERE id=?').run(take, other.id);
+            leftToClaw -= take;
+          }
+        }
+
         db.prepare(
           'UPDATE player_wallet_accounts SET balance=balance-?, clawback_deficit=clawback_deficit+?, updated_at=? WHERE principal_id=?'
         ).run(clawedBack, deficitAdded, stamp, txRow.principal_id);

@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { createReadStream, existsSync, statSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
-import { join, resolve, dirname, extname } from 'node:path';
+import { join, resolve, relative, dirname, extname, sep, isAbsolute, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApp } from '../../hub/server/app.mjs';
 
@@ -59,6 +59,58 @@ export function validateDataSourceOption(dataSource = 'local', devUrl = '') {
     throw err;
   }
   return { mode: 'dev', devUrl: cleanUrl };
+}
+
+export function sanitizeGameRelPath(rawRel) {
+  if (typeof rawRel !== 'string' || !rawRel) return null;
+  let decoded;
+  try {
+    decoded = decodeURIComponent(rawRel);
+  } catch {
+    return null;
+  }
+  if (!decoded || /[\x00-\x1f]/.test(decoded)) return null;
+  if (
+    decoded.startsWith('/') ||
+    decoded.startsWith('\\') ||
+    decoded.includes('\\') ||
+    decoded.includes(':') ||
+    decoded.includes('..')
+  ) {
+    return null;
+  }
+  const rawSegments = decoded.split('/');
+  if (rawSegments.some(seg => !seg || seg === '.' || seg === '..')) return null;
+  const normalized = posix.normalize(decoded);
+  if (
+    !normalized ||
+    normalized === '.' ||
+    normalized === '..' ||
+    normalized.startsWith('/') ||
+    normalized.startsWith('../') ||
+    normalized.includes('..')
+  ) {
+    return null;
+  }
+  return normalized;
+}
+
+export function resolveWithinRoot(allowedRoot, safeRel) {
+  if (!safeRel) return null;
+  const rootAbs = resolve(allowedRoot);
+  const resolved = resolve(rootAbs, safeRel);
+  const rel = relative(rootAbs, resolved);
+  if (
+    !rel ||
+    rel === '.' ||
+    rel === '..' ||
+    rel.startsWith(`..${sep}`) ||
+    rel.startsWith('../') ||
+    isAbsolute(rel)
+  ) {
+    return null;
+  }
+  return resolved;
 }
 
 const MIME = {
@@ -379,44 +431,57 @@ export function createAosDevServer({
     // Serve local game files first (preserving local test games), then read-only Dev overlay + cache
     const gameMatch = urlPath.match(/^\/games\/([a-z0-9-]+)\/(.+)$/);
     if (gameMatch) {
-      const [, gameId, rel] = gameMatch;
-      if (!rel.includes('..')) {
-        const localCandidates = [
-          resolve(workDir, 'games', gameId, 'Web', rel),
-          resolve(repoRoot, 'games', gameId, 'Web', rel),
-          resolve(workDir, 'dev-asset-cache', gameId, rel)
-        ];
-        for (const candidate of localCandidates) {
-          if (existsSync(candidate) && statSync(candidate).isFile()) {
-            const st = statSync(candidate);
-            res.writeHead(200, {
-              'Content-Type': MIME[extname(candidate).toLowerCase()] || 'application/octet-stream',
-              'Content-Length': st.size,
-              'Cache-Control': 'no-store'
-            });
-            createReadStream(candidate).pipe(res);
+      const [, gameId, rawRel] = gameMatch;
+      const safeRel = sanitizeGameRelPath(rawRel);
+      if (!safeRel) {
+        res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('Invalid game asset path');
+        return;
+      }
+      const allowedReadRoots = [
+        resolve(workDir, 'games', gameId, 'Web'),
+        resolve(repoRoot, 'games', gameId, 'Web'),
+        resolve(workDir, 'dev-asset-cache', gameId)
+      ];
+      for (const root of allowedReadRoots) {
+        const candidate = resolveWithinRoot(root, safeRel);
+        if (!candidate) continue;
+        if (existsSync(candidate) && statSync(candidate).isFile()) {
+          const st = statSync(candidate);
+          res.writeHead(200, {
+            'Content-Type': MIME[extname(candidate).toLowerCase()] || 'application/octet-stream',
+            'Content-Length': st.size,
+            'Cache-Control': 'no-store'
+          });
+          createReadStream(candidate).pipe(res);
+          return;
+        }
+      }
+      // Fallback Read-Only fetch from Dev Farm and cache locally
+      if (validated.mode === 'dev' && req.method === 'GET') {
+        try {
+          const cacheRoot = resolve(workDir, 'dev-asset-cache', gameId);
+          const cacheFile = resolveWithinRoot(cacheRoot, safeRel);
+          if (!cacheFile) {
+            res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+            res.end('Invalid game asset path');
             return;
           }
-        }
-        // Fallback Read-Only fetch from Dev Farm and cache locally
-        if (validated.mode === 'dev' && req.method === 'GET') {
-          try {
-            const r = await fetchImpl(`${validated.devUrl}/games/${gameId}/${rel}`, { method: 'GET' });
-            if (r.ok) {
-              const buf = Buffer.from(await r.arrayBuffer());
-              const cacheFile = resolve(workDir, 'dev-asset-cache', gameId, rel);
-              mkdirSync(dirname(cacheFile), { recursive: true });
-              writeFileSync(cacheFile, buf);
-              res.writeHead(200, {
-                'Content-Type': r.headers.get('content-type') || MIME[extname(rel).toLowerCase()] || 'application/octet-stream',
-                'Content-Length': buf.length,
-                'Cache-Control': 'no-store'
-              });
-              res.end(buf);
-              return;
-            }
-          } catch {}
-        }
+          const encodedRel = safeRel.split('/').map(encodeURIComponent).join('/');
+          const r = await fetchImpl(`${validated.devUrl}/games/${gameId}/${encodedRel}`, { method: 'GET' });
+          if (r.ok) {
+            const buf = Buffer.from(await r.arrayBuffer());
+            mkdirSync(dirname(cacheFile), { recursive: true });
+            writeFileSync(cacheFile, buf);
+            res.writeHead(200, {
+              'Content-Type': r.headers.get('content-type') || MIME[extname(cacheFile).toLowerCase()] || 'application/octet-stream',
+              'Content-Length': buf.length,
+              'Cache-Control': 'no-store'
+            });
+            res.end(buf);
+            return;
+          }
+        } catch {}
       }
     }
 

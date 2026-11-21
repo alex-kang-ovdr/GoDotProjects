@@ -2,7 +2,7 @@
 
 PLAYHUB_BUILD_STAGE = dev
 PLAYHUB_ALLOW_FARM_SELECTOR = YES
-PLAYHUB_DEFAULT_HUB_URL = https://dev-farm1.playhub.example.com
+PLAYHUB_DEFAULT_HUB_URL = https:/$()/dev-farm1.playhub.example.com
 PRODUCT_BUNDLE_IDENTIFIER = com.playhub.hub-ios.dev
 INFOPLIST_KEY_CFBundleDisplayName = Play Hub [dev]
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = PLAYHUB_DEV ALLOW_FARM_SELECTOR

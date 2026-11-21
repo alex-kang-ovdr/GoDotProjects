@@ -5,9 +5,12 @@ const APPLE_ISSUER = 'https://appleid.apple.com';
 const APPLE_JWKS_URL = 'https://appleid.apple.com/auth/keys';
 const APPLE_REVOKE_URL = 'https://appleid.apple.com/auth/revoke';
 const JWKS_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const JWKS_FORCE_REFRESH_COOLDOWN_MS = 60 * 1000; // 60 seconds
+const APPLE_FETCH_TIMEOUT_MS = 5000;
 
 let cachedJwks = null;
 let cachedJwksAt = 0;
+let lastForceRefreshAt = 0;
 
 function b64urlJson(segment) {
   try {
@@ -18,7 +21,10 @@ function b64urlJson(segment) {
 }
 
 async function defaultFetchAppleJwks() {
-  const res = await fetch(APPLE_JWKS_URL, { headers: { Accept: 'application/json' } });
+  const res = await fetch(APPLE_JWKS_URL, {
+    headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(APPLE_FETCH_TIMEOUT_MS)
+  });
   if (!res.ok) throw new ApiError(503, 'APPLE_JWKS_UNAVAILABLE');
   return res.json();
 }
@@ -26,6 +32,7 @@ async function defaultFetchAppleJwks() {
 export function clearAppleJwksCache() {
   cachedJwks = null;
   cachedJwksAt = 0;
+  lastForceRefreshAt = 0;
 }
 
 async function resolveAppleJwk(kid, jwksFetcher, nowMs) {
@@ -35,8 +42,9 @@ async function resolveAppleJwk(kid, jwksFetcher, nowMs) {
     cachedJwksAt = nowMs;
   }
   let match = (cachedJwks?.keys || []).find(k => k.kid === kid);
-  if (!match) {
-    // Key rotation fallback: refresh once on kid miss
+  if (!match && (lastForceRefreshAt === 0 || nowMs - lastForceRefreshAt >= JWKS_FORCE_REFRESH_COOLDOWN_MS)) {
+    // Key rotation fallback: rate-limited to at most once per 60 seconds on kid miss
+    lastForceRefreshAt = nowMs;
     cachedJwks = await fetchFn();
     cachedJwksAt = nowMs;
     match = (cachedJwks?.keys || []).find(k => k.kid === kid);
@@ -53,6 +61,12 @@ export async function verifyAppleIdentityToken(
   identityToken,
   { expectedAudiences = [], rawNonce = null, jwksFetcher = null, nowMs = Date.now() } = {}
 ) {
+  const audiences = Array.isArray(expectedAudiences)
+    ? expectedAudiences.filter(a => typeof a === 'string' && a.trim().length > 0)
+    : [];
+  if (audiences.length === 0) {
+    throw new ApiError(500, 'APPLE_AUDIENCE_REQUIRED');
+  }
   if (typeof identityToken !== 'string' || identityToken.length === 0 || identityToken.length > 16384) {
     throw new ApiError(422, 'APPLE_TOKEN_REQUIRED');
   }
@@ -82,7 +96,7 @@ export async function verifyAppleIdentityToken(
   if (!Number.isFinite(claims.exp) || claims.exp <= nowSec) {
     throw new ApiError(401, 'APPLE_TOKEN_EXPIRED');
   }
-  if (expectedAudiences.length > 0 && !expectedAudiences.includes(claims.aud)) {
+  if (!audiences.includes(claims.aud)) {
     throw new ApiError(401, 'APPLE_TOKEN_AUDIENCE_MISMATCH');
   }
   if (typeof claims.sub !== 'string' || !claims.sub) {
@@ -163,7 +177,8 @@ export async function revokeAppleToken({
   const res = await fetchImpl(APPLE_REVOKE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString()
+    body: body.toString(),
+    signal: AbortSignal.timeout(APPLE_FETCH_TIMEOUT_MS)
   });
   if (!res.ok) {
     throw new ApiError(502, 'APPLE_REVOKE_FAILED', `Apple /auth/revoke returned HTTP ${res.status}`);

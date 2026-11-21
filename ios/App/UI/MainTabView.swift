@@ -112,6 +112,8 @@ public final class PlayHubShellViewModel: ObservableObject {
 
     public func selectFarm(_ cluster: FarmCluster) {
         guard allowFarmSelector else { return }
+        KeychainStore.delete(forKey: "access_token")
+        KeychainStore.delete(forKey: "refresh_token")
         activeFarm = cluster
         UserDefaults.standard.set(cluster.id, forKey: "playhub_selected_farm_id")
         if cluster.id == FarmServerRegistry.customFarmId {
@@ -437,11 +439,15 @@ public struct MainTabView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                Button("연령 게이트 다시 테스트") {
-                    vm.ageGateCompleted = false
-                    vm.ageTier = .unknown
-                    UserDefaults.standard.removeObject(forKey: "playhub_age_tier")
+                #if DEBUG
+                if vm.allowFarmSelector {
+                    Button("연령 게이트 다시 테스트") {
+                        vm.ageGateCompleted = false
+                        vm.ageTier = .unknown
+                        UserDefaults.standard.removeObject(forKey: "playhub_age_tier")
+                    }
                 }
+                #endif
                 Button("인앱 계정 삭제 요청", role: .destructive) {}
             }
         }

@@ -6,7 +6,7 @@
 // - 7-day automatic personal signing in Xcode (no $99 Apple Developer Program required)
 PLAYHUB_BUILD_STAGE = debug
 PLAYHUB_ALLOW_FARM_SELECTOR = YES
-PLAYHUB_DEFAULT_HUB_URL = http://127.0.0.1:18130
+PLAYHUB_DEFAULT_HUB_URL = http:/$()/127.0.0.1:18130
 INFOPLIST_FILE = App/Resources/Info-Free.plist
 CODE_SIGN_ENTITLEMENTS = App/Resources/PlayHub-Free.entitlements
 CODE_SIGN_STYLE = Automatic

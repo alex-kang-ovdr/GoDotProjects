@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { transaction } from '../db.mjs';
@@ -14,6 +14,8 @@ import {
 
 const ACCESS_TTL_MS = 15 * 60 * 1000; // 15 minutes
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const PARENTAL_CONSENT_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const PARENTAL_CONSENT_MAX_ATTEMPTS = 5;
 
 function b64url(input) {
   return Buffer.from(input).toString('base64url');
@@ -53,6 +55,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
 
   ensureMobileSchema(db);
   const jwtSecret = mobileConfig.jwtSecret || env.PLAYHUB_MOBILE_JWT_SECRET || secret();
+  const parentalChallenges = new Map();
 
   function setNativeHeaders(res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -71,7 +74,17 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     }
     const match = auth.match(/^Bearer\s+([^\s]+)$/i);
     if (!match) throw new ApiError(401, 'MOBILE_AUTH_REQUIRED');
-    const payload = verifyJwt(match[1], jwtSecret, now());
+    const stamp = now();
+    const payload = verifyJwt(match[1], jwtSecret, stamp);
+    if (typeof payload.fam !== 'string' || !payload.fam) {
+      throw new ApiError(401, 'MOBILE_TOKEN_INVALID');
+    }
+    const activeFamily = db
+      .prepare('SELECT 1 FROM mobile_tokens WHERE principal_id=? AND family_id=? AND revoked_at IS NULL AND expires_at>? LIMIT 1')
+      .get(payload.sub, payload.fam, stamp);
+    if (!activeFamily) {
+      throw new ApiError(401, 'MOBILE_SESSION_REVOKED');
+    }
     const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(payload.sub);
     if (!user) throw new ApiError(401, 'MOBILE_TOKEN_INVALID');
     return { user, familyId: payload.fam };
@@ -331,6 +344,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     // 3. Rotating Refresh Token with reuse detection
     if (path === '/api/mobile/auth/refresh' && req.method === 'POST') {
       rejectBrowserOrigin(req);
+      rate(`mobile:refresh:${req.socket.remoteAddress}`, 30, 60000);
       const body = await readJson(req, 4096);
       if (!safeString(body.refreshToken, 256)) throw new ApiError(400, 'REFRESH_TOKEN_REQUIRED');
       const tokenHash = digest(body.refreshToken);
@@ -404,33 +418,117 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       return true;
     }
 
-    // 7. Parental consent verification (for CHILD_PROTECTED)
+    // 7. Two-step Parental consent verification (for CHILD_PROTECTED)
+    //    Step 1: Issue pending verification challenge + out-of-band short-lived code
+    //    Step 2: Confirm challengeId + verificationCode to transition to 'verified'
     if (path === '/api/mobile/parental-consent' && req.method === 'POST') {
       rejectBrowserOrigin(req);
       const auth = bearerPayload(req, true);
+      rate(`mobile:parental-consent:${auth.user.id}`, 10, 60000);
+      rate(`mobile:parental-consent:ip:${req.socket.remoteAddress}`, 30, 60000);
       const body = await readJson(req, 4096);
-      if (!safeString(body.guardianContact, 200) || !['email', 'kyc_pass'].includes(body.method)) {
-        throw new ApiError(422, 'PARENTAL_CONSENT_INVALID');
-      }
       const existing = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(auth.user.id);
       if (!existing || existing.age_tier !== 'CHILD_PROTECTED') {
         throw new ApiError(409, 'PARENTAL_CONSENT_NOT_REQUIRED');
       }
       const stamp = now();
-      transaction(db, () => {
-        db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
-          uid(),
-          auth.user.id,
-          digest(body.guardianContact.trim().toLowerCase()),
-          body.method,
-          'verified',
-          stamp
-        );
-        db.prepare(
-          "UPDATE user_age_compliance SET parental_consent_status='verified', parental_consent_at=?, updated_at=? WHERE principal_id=?"
-        ).run(stamp, stamp, auth.user.id);
+      const isVerifyStep =
+        body.action === 'verify' ||
+        body.challengeId !== undefined ||
+        body.verificationCode !== undefined;
+
+      if (isVerifyStep) {
+        if (!safeString(body.challengeId, 128) || !safeString(body.verificationCode, 64)) {
+          throw new ApiError(422, 'PARENTAL_CONSENT_CODE_REQUIRED');
+        }
+        const challenge = parentalChallenges.get(body.challengeId);
+        if (!challenge || challenge.principalId !== auth.user.id) {
+          throw new ApiError(403, 'PARENTAL_CONSENT_CHALLENGE_INVALID');
+        }
+        if (challenge.expiresAt <= stamp) {
+          parentalChallenges.delete(body.challengeId);
+          throw new ApiError(410, 'PARENTAL_CONSENT_CHALLENGE_EXPIRED');
+        }
+        challenge.attempts += 1;
+        if (challenge.attempts > PARENTAL_CONSENT_MAX_ATTEMPTS) {
+          parentalChallenges.delete(body.challengeId);
+          throw new ApiError(429, 'PARENTAL_CONSENT_TOO_MANY_ATTEMPTS');
+        }
+        const candidateHash = digest(`${body.challengeId}:${body.verificationCode.trim()}`);
+        if (!equal(candidateHash, challenge.codeHash)) {
+          if (challenge.attempts >= PARENTAL_CONSENT_MAX_ATTEMPTS) {
+            parentalChallenges.delete(body.challengeId);
+          }
+          throw new ApiError(403, 'PARENTAL_CONSENT_CODE_INVALID');
+        }
+        parentalChallenges.delete(body.challengeId);
+        transaction(db, () => {
+          db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
+            uid(),
+            auth.user.id,
+            challenge.guardianContactHash,
+            challenge.method,
+            'verified',
+            stamp
+          );
+          db.prepare(
+            "UPDATE user_age_compliance SET parental_consent_status='verified', parental_consent_at=?, updated_at=? WHERE principal_id=?"
+          ).run(stamp, stamp, auth.user.id);
+        });
+        audit('mobile_parental_consent_verified', auth.user.id, { method: challenge.method, challengeId: body.challengeId });
+        json(res, 200, buildProfileResponse(auth.user));
+        return true;
+      }
+
+      if (!safeString(body.guardianContact, 200) || !['email', 'kyc_pass'].includes(body.method)) {
+        throw new ApiError(422, 'PARENTAL_CONSENT_INVALID');
+      }
+      if (parentalChallenges.size > 1000) {
+        for (const [k, v] of parentalChallenges) {
+          if (v.expiresAt <= stamp) parentalChallenges.delete(k);
+        }
+      }
+      const challengeId = uid();
+      const verificationCode = randomBytes(6).toString('hex');
+      const guardianContactHash = digest(body.guardianContact.trim().toLowerCase());
+      const expiresAt = stamp + PARENTAL_CONSENT_TTL_MS;
+      parentalChallenges.set(challengeId, {
+        principalId: auth.user.id,
+        guardianContactHash,
+        method: body.method,
+        codeHash: digest(`${challengeId}:${verificationCode}`),
+        expiresAt,
+        attempts: 0
       });
-      json(res, 200, buildProfileResponse(auth.user));
+      db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
+        uid(),
+        auth.user.id,
+        guardianContactHash,
+        body.method,
+        'pending',
+        stamp
+      );
+      if (typeof mobileConfig.onParentalConsentCode === 'function') {
+        mobileConfig.onParentalConsentCode({
+          challengeId,
+          verificationCode,
+          guardianContact: body.guardianContact.trim(),
+          method: body.method,
+          principalId: auth.user.id,
+          expiresAt
+        });
+      }
+      audit('mobile_parental_consent_requested', auth.user.id, { method: body.method, challengeId });
+      const canExposeForTest = mobileConfig.exposeVerificationCodeForTest === true && config.secureCookies !== true;
+      json(res, 202, {
+        status: 'pending',
+        verificationRequired: true,
+        challengeId,
+        method: body.method,
+        expiresAt: new Date(expiresAt).toISOString(),
+        profile: buildProfileResponse(auth.user),
+        ...(canExposeForTest ? { verificationCode } : {})
+      });
       return true;
     }
 
@@ -461,7 +559,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       const body = await readJson(req, 4096);
       const game = findGame(rootDir, db, assertId(body.gameId));
       const compliance = getCompliance(auth.user.id);
-      const rating = normalizeAgeRating(body.overrideRating || gameAgeRating(game));
+      const rating = normalizeAgeRating(gameAgeRating(game));
       if (!canPlayAgeRating(compliance.ageTier, rating, compliance.parentalConsentStatus)) {
         throw new ApiError(403, 'AGE_RATING_RESTRICTED', `연령 등급(${rating}) 제한으로 실행할 수 없습니다.`);
       }

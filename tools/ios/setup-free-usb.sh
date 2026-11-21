@@ -22,15 +22,47 @@ SKIP_TESTS="0"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --slug) SLUG="$2"; shift 2 ;;
-    --team) TEAM_ID="$2"; shift 2 ;;
-    --hub-url) HUB_URL="$2"; shift 2 ;;
+    --slug) [[ $# -ge 2 ]] || { echo "ERROR: --slug requires a value" >&2; exit 2; }; SLUG="$2"; shift 2 ;;
+    --team) [[ $# -ge 2 ]] || { echo "ERROR: --team requires a value" >&2; exit 2; }; TEAM_ID="$2"; shift 2 ;;
+    --hub-url) [[ $# -ge 2 ]] || { echo "ERROR: --hub-url requires a value" >&2; exit 2; }; HUB_URL="$2"; shift 2 ;;
     --install) DO_INSTALL="1"; OPEN_XCODE="0"; shift ;;
     --no-open) OPEN_XCODE="0"; shift ;;
     --skip-tests) SKIP_TESTS="1"; shift ;;
     *) echo "Unknown arg: $1" >&2; exit 2 ;;
   esac
 done
+
+if [[ -n "${TEAM_ID}" ]]; then
+  if [[ "${TEAM_ID}" == *$'\n'* || "${TEAM_ID}" == *$'\r'* ]] || ! LC_ALL=C grep -Eq '^[A-Z0-9]{10}$' <<<"${TEAM_ID}"; then
+    echo "ERROR: Invalid --team '${TEAM_ID}': must match ^[A-Z0-9]{10}$" >&2
+    exit 2
+  fi
+  if command -v node >/dev/null 2>&1; then
+    TEAM_ID="$(node -e '
+      const { pathToFileURL } = require("node:url");
+      import(pathToFileURL(process.argv[1]).href).then(m => {
+        console.log(m.validateTeamId(process.argv[2]));
+      }).catch(err => { console.error(err.message); process.exit(1); });
+    ' "${REPO_ROOT}/tools/ios/verify-ipa.mjs" "${TEAM_ID}")" || exit 2
+  fi
+fi
+
+if [[ -n "${HUB_URL}" ]]; then
+  if [[ "${HUB_URL}" == *$'\n'* || "${HUB_URL}" == *$'\r'* ]]; then
+    echo "ERROR: Invalid --hub-url: multiline values are forbidden" >&2
+    exit 2
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    echo "ERROR: Missing required tool 'node' to validate --hub-url." >&2
+    exit 1
+  fi
+  HUB_URL="$(node -e '
+    const { pathToFileURL } = require("node:url");
+    import(pathToFileURL(process.argv[1]).href).then(m => {
+      console.log(m.validateHubUrl(process.argv[2]));
+    }).catch(err => { console.error(err.message); process.exit(1); });
+  ' "${REPO_ROOT}/tools/ios/verify-ipa.mjs" "${HUB_URL}")" || exit 2
+fi
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "ERROR: This script must run on macOS with Xcode installed." >&2
@@ -55,10 +87,11 @@ if [[ -z "${SLUG}" ]]; then
 fi
 
 BUNDLE_ID="$(node -e '
-  import("./tools/ios/verify-ipa.mjs").then(m => {
-    console.log(m.expectedBundleId(process.argv[1], "debug"));
+  const { pathToFileURL } = require("node:url");
+  import(pathToFileURL(process.argv[1]).href).then(m => {
+    console.log(m.expectedBundleId(process.argv[2], "debug"));
   }).catch(err => { console.error(err.message); process.exit(1); });
-' "${SLUG}")"
+' "${REPO_ROOT}/tools/ios/verify-ipa.mjs" "${SLUG}")"
 
 echo "=== Play Hub iOS Free Apple ID ($0) USB Setup ==="
 echo "Bundle ID : ${BUNDLE_ID}"
