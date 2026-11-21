@@ -84,7 +84,10 @@ export function createBillingService({
 
   const allowMockProvider = config.allowMockProvider === true;
   const allowDemoAccount = config.allowDemoAccount === true;
-  const defaultProviderMode = allowMockProvider && !providers.xsolla?.configured ? 'mock' : 'xsolla';
+  const hasRealProvider = Boolean(providers.xsolla?.configured || providers.toss?.configured || providers.stripe_gpay?.configured);
+  const routingStage = config.routingStage || (hasRealProvider ? 'stage1' : 'mock');
+  const enabledProviderNames = Array.isArray(config.enabledProviders) ? config.enabledProviders : Object.keys(providers);
+  const defaultProviderMode = allowMockProvider && !hasRealProvider ? 'mock' : routingStage;
   const enabledDirectPlatforms = Array.isArray(config.enabledDirectPlatforms) && config.enabledDirectPlatforms.length
     ? new Set(config.enabledDirectPlatforms)
     : DEFAULT_ENABLED_DIRECT_PLATFORMS;
@@ -115,6 +118,8 @@ export function createBillingService({
     return {
       ...offers,
       billingMode: defaultProviderMode,
+      routingStage,
+      enabledProviders: enabledProviderNames,
       allowMockProvider,
       allowDemoAccount,
       paymentMethods: {
@@ -320,7 +325,7 @@ export function createBillingService({
       currency: curr,
       channel: channelHint === 'pc_desktop' ? 'pc_desktop' : 'web_browser',
       paymentMethodHint,
-      preferredProvider: preferredProvider || (allowMockProvider && !providers.xsolla?.configured ? 'mock' : null)
+      preferredProvider: preferredProvider || (allowMockProvider && !hasRealProvider ? 'mock' : null)
     });
     const providerName = routeDecision.provider;
     const providerAdapter = getProviderAdapter(providerName);
@@ -363,7 +368,13 @@ export function createBillingService({
         });
         return {
           status: 201,
-          body: { orderId, provider: providerName, routeId: routeDecision.routeId, failoverUsed: routeDecision.failoverUsed }
+          body: {
+            orderId,
+            provider: providerName,
+            routeId: routeDecision.routeId,
+            failoverUsed: routeDecision.failoverUsed,
+            skippedPrimary: routeDecision.skippedPrimary || null
+          }
         };
       }
     });
@@ -388,7 +399,12 @@ export function createBillingService({
       order: formatOrderRow(orderRow, now()),
       offer,
       checkout,
-      route: { provider: providerName, routeId: created.body.routeId, failoverUsed: created.body.failoverUsed }
+      route: {
+        provider: providerName,
+        routeId: created.body.routeId,
+        failoverUsed: created.body.failoverUsed,
+        skippedPrimary: created.body.skippedPrimary || null
+      }
     };
   }
 
@@ -472,7 +488,16 @@ export function createBillingService({
     }
 
     const adapter = getProviderAdapter(order.provider);
-    const verification = await adapter.verifyPayment({ order, providerPaymentId, amountMinor });
+    let verification;
+    try {
+      verification = await adapter.verifyPayment({ order, providerPaymentId, amountMinor });
+      router.recordSuccess(order.provider);
+    } catch (error) {
+      if (!error.status || error.status >= 500) {
+        router.recordFailure(order.provider, error.code || 'CONFIRM_ERROR');
+      }
+      throw error;
+    }
     if (verification.pendingWebhook && !verification.verified) {
       return {
         duplicate: false,

@@ -326,6 +326,12 @@
       const authed = Boolean(walletData?.authenticated);
       const isPro = walletData?.subscription?.effectivePlan === 'pro';
       const isMock = catalog.billingMode === 'mock';
+      const stageBadge = {
+        stage1: 'Stage 1 · Xsolla MoR (글로벌 + 한국 간편결제)',
+        stage2: 'Stage 2 · KRW Toss + 글로벌 Xsolla (자동 폴백)',
+        stage3: 'Stage 3 · Toss + Stripe Google Pay (0%) + Xsolla',
+        mock: '🧪 샌드박스 Mock PG 활성 (실청구 없음)'
+      }[catalog.routingStage || (isMock ? 'mock' : 'stage1')];
 
       root.innerHTML = `<div class="page billing-page">
         ${billingSubnavHtml('billing')}
@@ -352,7 +358,7 @@
             <span class="billing-badge">💳 Google Pay Web (글로벌 0% 수수료)</span>
             <span class="billing-badge">🇰🇷 카카오페이 · 네이버페이 · 토스페이 · 국내카드</span>
             <a class="billing-badge" href="/?view=redeem" data-route style="text-decoration:none;color:inherit;">🎁 기프트카드 PIN 등록 최대 +25% →</a>
-            ${isMock ? '<span class="billing-badge sandbox">🧪 샌드박스 Mock PG 활성 (실청구 없음)</span>' : ''}
+            ${stageBadge ? `<span class="billing-badge${isMock ? ' sandbox' : ''}">${esc(stageBadge)}</span>` : ''}
           </div>
         </section>
 

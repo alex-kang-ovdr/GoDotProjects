@@ -225,6 +225,16 @@
         "hub/tests/ssot*.mjs",
         "docs/eos/**"
       ]
+    },
+    "Hub-Billing": {
+      "role": "2-Track 통합 과금 (PlayCoin 최대 +25% · Pro/사용량 · 기프트카드 · 창작자 직접판매 0% · 멀티 PG)",
+      "owns": [
+        "docs/billing/**",
+        "hub/server/billing/**",
+        "hub/web/user/billing.js",
+        "hub/web/user/billing.css",
+        "hub/tests/billing*.mjs"
+      ]
     }
   }
 }
