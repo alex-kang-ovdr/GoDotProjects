@@ -15,6 +15,9 @@ const templatesToReplay = [
   { id: 'tappy-chicken', name: 'Tappy Chicken', landmark: { id: 'Hud/Score', label: '0' } },
   { id: 'iron-wood', name: 'Iron Wood', landmark: { id: 'Preview/Cart', position: [0, 0.86, 4] } },
   { id: 'brawllabs', name: 'BrawlLabs', landmark: { id: 'Preview/SceneTitle', label: 'BRAWLLABS · GEM GRAB' } },
+  { id: 'fortress-war', name: 'Fortress War', landmark: { id: 'Battlefield' } },
+  { id: 'survivor-io', name: '탕탕특공대 (Survivor.io)', landmark: { id: 'Hud' } },
+  { id: 'tappy-chicken-mmo', name: 'Tappy Chicken MMO', landmark: { id: 'Hud/MmoStatus', label: 'MMO · CONNECTING...' } },
 ];
 const nativeGodot = process.env.GODOT_EDITOR || 'D:\\Github\\GoDotProjects\\Godot_v4.7.2-stable_win64.exe';
 const realWeb = process.env.PLAYFORGE_REAL_SHOWCASE === '1';
@@ -570,7 +573,8 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
       });
       assert.equal(existing.status, 201, 'Preload a library entry so it does not open a blank editor first.');
       await page.goto(base + '/OfficialGodot/', { waitUntil: 'domcontentloaded' });
-      await page.getByRole('button', { name: templateName, exact: false }).click();
+      const exactTitle = new RegExp(`^${templateName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+      await page.locator('#templates button.card', { has: page.locator('strong', { hasText: exactTitle }) }).click();
       await page.getByRole('button', { name: '만드는 과정 보기' }).click();
       await page.waitForFunction(() => new URL(location.href).searchParams.get('project'));
       const id = new URL(page.url()).searchParams.get('project');
