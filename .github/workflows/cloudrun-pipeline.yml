@@ -81,6 +81,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install Hub build dependencies
+        run: npm ci --prefix hub --ignore-scripts
       - name: Check worktree ownership rules
         run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
       - name: Run build-version, compatibility gate & entrypoint proxy tests
@@ -112,6 +114,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install Hub build dependencies
+        run: npm ci --prefix hub --ignore-scripts
       - name: Build Hub static output for container
         run: node hub/tools/build.mjs
       - id: meta
