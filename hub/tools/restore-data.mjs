@@ -62,7 +62,18 @@ const OPTIONAL_TABLES={
   progression_idempotency:['game_id','principal_id','request_key','request_hash','response_json','created_at'],
   datastore_quotas:['game_id','max_keys','max_value_bytes','max_total_bytes','default_lease_ms','max_lease_ms','enabled','updated_at'],
   datastore_entries:['game_id','scope','entry_key','owner_principal_id','revision','value_json','bytes','etag','fencing_token','lock_holder','lock_expires_at','updated_by','created_at','updated_at'],
-  datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at']
+  datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at'],
+  mobile_tokens:['id_hash','principal_id','family_id','rotated_from','revoked_at','expires_at','created_at'],
+  user_age_compliance:['principal_id','region_code','age_tier','parental_consent_status','parental_consent_at','kyc_verified_at','updated_at'],
+  parental_consent_logs:['id','principal_id','guardian_contact_hash','method','status','created_at'],
+  cdn_storage:['owner','plan','used_bytes','reserved_bytes','updated_at'],
+  cdn_projects:['id','owner','host_slug','name','head_commit_id','created_at','updated_at','trashed_at'],
+  cdn_blobs:['id','owner','kind','sha256','bytes','object_key','state','ref_count','lease_until','created_at','state_at'],
+  cdn_save_plans:['id','project_id','owner','base_commit_id','files_json','state','reserved_bytes','expires_at','created_at'],
+  cdn_uploads:['id','plan_id','owner','path','sha256','bytes','quarantine_key','state','reserved_bytes','blob_id','error_code','created_at','updated_at'],
+  cdn_commits:['id','project_id','parent_id','manifest_blob_id','manifest_sha256','file_count','total_bytes','author','message','restored_from','created_at','pruned_at'],
+  cdn_pins:['commit_id','owner','reason','created_at'],
+  cdn_idempotency:['owner','key','scope','status','response_json','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

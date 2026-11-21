@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.PlayHub" parent="android:Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">#0B0F17</item>
-        <item name="android:statusBarColor">#0B0F17</item>
-        <item name="android:navigationBarColor">#111827</item>
+        <item name="android:windowBackground">#191B1D</item>
+        <item name="android:statusBarColor">#191B1D</item>
+        <item name="android:navigationBarColor">#111315</item>
     </style>
 
     <style name="Theme.PlayHub.Game" parent="android:Theme.DeviceDefault.NoActionBar.Fullscreen">
-        <item name="android:windowBackground">#000000</item>
+        <item name="android:windowBackground">#111315</item>
     </style>
 </resources>

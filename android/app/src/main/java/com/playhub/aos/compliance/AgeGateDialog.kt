@@ -44,7 +44,7 @@ object AgeGateDialog {
                     val tv = (convertView as? TextView) ?: TextView(context)
                     tv.text = items[position]
                     tv.textSize = 15f
-                    tv.setTextColor(if (position == 0) Color.parseColor("#94A3B8") else Color.WHITE)
+                    tv.setTextColor(if (position == 0) Color.parseColor("#AAABAD") else Color.WHITE)
                     tv.typeface = if (position == 0) Typeface.DEFAULT else Typeface.DEFAULT_BOLD
                     tv.setPadding(px(14), px(12), px(36), px(12))
                     tv.gravity = Gravity.CENTER_VERTICAL
@@ -55,23 +55,23 @@ object AgeGateDialog {
                     val tv = (convertView as? TextView) ?: TextView(context)
                     tv.text = items[position]
                     tv.textSize = 15f
-                    tv.setTextColor(if (position == 0) Color.parseColor("#94A3B8") else Color.WHITE)
-                    tv.setBackgroundColor(Color.parseColor("#1E293B"))
+                    tv.setTextColor(if (position == 0) Color.parseColor("#AAABAD") else Color.WHITE)
+                    tv.setBackgroundColor(Color.parseColor("#232629"))
                     tv.setPadding(px(16), px(13), px(16), px(13))
                     return tv
                 }
             }
 
         fun spinnerBg() = GradientDrawable().apply {
-            setColor(Color.parseColor("#1E293B"))
-            cornerRadius = px(12).toFloat()
-            setStroke(px(1), Color.parseColor("#334155"))
+            setColor(Color.parseColor("#2B2E32"))
+            cornerRadius = px(10).toFloat()
+            setStroke(px(1), Color.parseColor("#34383C"))
         }
 
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#111827"))
-            setPadding(px(22), px(20), px(22), px(12))
+            setBackgroundColor(Color.parseColor("#232629"))
+            setPadding(px(22), px(20), px(22), px(16))
         }
 
         val title = TextView(context).apply {
@@ -83,7 +83,7 @@ object AgeGateDialog {
         val info = TextView(context).apply {
             text = "안전한 게임 등급과 소셜 보호를 위해 출생연월을 확인합니다.\n확인 후 로그인 없이 Guest로 바로 플레이할 수 있습니다."
             textSize = 13f
-            setTextColor(Color.parseColor("#CBD5E1"))
+            setTextColor(Color.parseColor("#AAABAD"))
             setPadding(0, px(8), 0, px(16))
         }
 
@@ -91,7 +91,7 @@ object AgeGateDialog {
             text = "출생연도"
             textSize = 12f
             typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#94A3B8"))
+            setTextColor(Color.parseColor("#AAABAD"))
             setPadding(0, 0, 0, px(4))
         }
         val yearSpinner = Spinner(context, Spinner.MODE_DIALOG).apply {
@@ -108,7 +108,7 @@ object AgeGateDialog {
             text = "출생월"
             textSize = 12f
             typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#94A3B8"))
+            setTextColor(Color.parseColor("#AAABAD"))
             setPadding(0, 0, 0, px(4))
         }
         val monthSpinner = Spinner(context, Spinner.MODE_DIALOG).apply {
@@ -124,7 +124,7 @@ object AgeGateDialog {
         val errorText = TextView(context).apply {
             text = ""
             textSize = 12f
-            setTextColor(Color.parseColor("#F87171"))
+            setTextColor(Color.parseColor("#FF716C"))
             setPadding(0, px(4), 0, px(8))
         }
 
@@ -133,11 +133,11 @@ object AgeGateDialog {
             textSize = 14f
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
+            setTextColor(Color.parseColor("#002111"))
             setPadding(px(16), px(13), px(16), px(13))
             background = GradientDrawable().apply {
-                setColor(Color.parseColor("#16A34A"))
-                cornerRadius = px(12).toFloat()
+                setColor(Color.parseColor("#00B06F"))
+                cornerRadius = px(10).toFloat()
             }
         }
 
@@ -174,8 +174,9 @@ object AgeGateDialog {
         }
 
         dialog.window?.setBackgroundDrawable(GradientDrawable().apply {
-            setColor(Color.parseColor("#111827"))
+            setColor(Color.parseColor("#232629"))
             cornerRadius = px(16).toFloat()
+            setStroke(px(1), Color.parseColor("#34383C"))
         })
         dialog.show()
     }

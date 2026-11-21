@@ -122,15 +122,15 @@ class GodotPlayerActivity : GodotActivity() {
         val root = findViewById<ViewGroup>(android.R.id.content) ?: return
         val dp = resources.displayMetrics.density
         val button = TextView(this).apply {
-            text = "▶ Hub"
-            textSize = 12f
+            text = "▶ PLAYHUB"
+            textSize = 11.5f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             setPadding((12 * dp).toInt(), (7 * dp).toInt(), (12 * dp).toInt(), (7 * dp).toInt())
             background = GradientDrawable().apply {
-                setColor(Color.argb(190, 17, 24, 39))
+                setColor(Color.argb(215, 25, 27, 29))
                 cornerRadius = 18 * dp
-                setStroke((1 * dp).toInt(), Color.argb(160, 34, 197, 94))
+                setStroke((1 * dp).toInt(), Color.parseColor("#00B06F"))
             }
             setOnClickListener { showUniversalInGameMenu("people") }
         }
