@@ -3,23 +3,40 @@ import {
   PUBLISHER_DRAFTS,
   createStoreApiClient,
   extractCatalogCategories,
+  extractCatalogLicenses,
+  extractCatalogSources,
+  extractTopTags,
   fetchCatalogWithFallback,
   filterCatalogEntries,
   isBackendUnavailableError
 } from './store-catalog.js';
 
 const apiClient = createStoreApiClient();
+const PAGE_SIZE = 24;
 
 const state = {
   tab: 'browse',
   query: '',
   category: 'all',
   kind: 'all',
+  license: 'all',
+  source: 'all',
+  tag: 'all',
   sort: 'default',
+  page: 1,
+  limit: PAGE_SIZE,
+  total: SAMPLE_CATALOG.length,
+  catalogTotal: SAMPLE_CATALOG.length,
+  totalPages: 1,
   mode: 'static',
   catalog: SAMPLE_CATALOG.map((item) => ({ ...item })),
   allCatalog: SAMPLE_CATALOG.map((item) => ({ ...item })),
   categories: extractCatalogCategories(SAMPLE_CATALOG),
+  licenses: extractCatalogLicenses(SAMPLE_CATALOG),
+  sources: extractCatalogSources(SAMPLE_CATALOG),
+  topTags: extractTopTags(SAMPLE_CATALOG, 16),
+  categoryCounts: null,
+  licenseCounts: null,
   drafts: [...PUBLISHER_DRAFTS],
   selectedId: SAMPLE_CATALOG[0]?.asset_id || null,
   selectedDetail: null,
@@ -37,6 +54,7 @@ const state = {
 
 const el = {
   list: document.getElementById('catalog-list'),
+  pagination: document.getElementById('pagination-bar'),
   publisher: document.getElementById('publisher-panel'),
   detail: document.getElementById('detail-pane'),
   libraryCount: document.getElementById('library-count'),
@@ -44,6 +62,9 @@ const el = {
   categoryFilter: document.getElementById('category-filter'),
   categoryPills: document.getElementById('category-pills'),
   kindFilter: document.getElementById('kind-filter'),
+  licenseFilter: document.getElementById('license-filter'),
+  sourceFilter: document.getElementById('source-filter'),
+  tagBar: document.getElementById('tag-bar'),
   sortSelect: document.getElementById('sort-select'),
   resetFiltersBtn: document.getElementById('reset-filters-btn'),
   browseControls: document.getElementById('browse-controls'),
@@ -72,6 +93,10 @@ function hasExecutableAddon(item) {
   return Array.isArray(item?.file_manifest) && item.file_manifest.some((f) => f.executable_addon === true);
 }
 
+function isSafeHttpUrl(url) {
+  return typeof url === 'string' && /^https?:\/\//i.test(url.trim());
+}
+
 function makeThumbDataUri(item) {
   const isEditorial = item.release_kind === 'editorial';
   const isAddon = hasExecutableAddon(item);
@@ -94,20 +119,60 @@ function makeThumbDataUri(item) {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
-function currentFilters() {
-  return {
+function getThumbImageAttrs(item) {
+  const fallback = makeThumbDataUri(item);
+  if (isSafeHttpUrl(item?.thumbnail_url)) {
+    return `src="${esc(item.thumbnail_url.trim())}" data-fallback-src="${fallback}"`;
+  }
+  return `src="${fallback}"`;
+}
+
+// Graceful fallback when an external thumbnail URL fails to load
+document.addEventListener('error', (event) => {
+  const target = event.target;
+  if (target instanceof HTMLImageElement && target.dataset.fallbackSrc && target.src !== target.dataset.fallbackSrc) {
+    target.src = target.dataset.fallbackSrc;
+    delete target.dataset.fallbackSrc;
+  }
+}, true);
+
+function hasActiveFilters() {
+  return Boolean(
+    state.query.trim()
+    || state.category !== 'all'
+    || state.kind !== 'all'
+    || state.license !== 'all'
+    || state.source !== 'all'
+    || state.tag !== 'all'
+  );
+}
+
+function currentFilters({ includePagination = true } = {}) {
+  const filters = {
     category: state.category,
     q: state.query,
-    release_kind: state.kind
+    release_kind: state.kind,
+    license: state.license,
+    source: state.source,
+    tag: state.tag
   };
+  if (includePagination) {
+    filters.page = state.page;
+    filters.limit = state.limit;
+  }
+  return filters;
 }
 
 function renderCategoryOptions() {
   const previous = state.category;
+  const counts = state.categoryCounts || {};
   if (el.categoryFilter) {
     const options = [
-      '<option value="all">전체 카테고리</option>',
-      ...state.categories.map((cat) => `<option value="${esc(cat)}">${esc(cat)}</option>`)
+      `<option value="all">전체 카테고리 (${Number(state.catalogTotal || 0).toLocaleString()})</option>`,
+      ...state.categories.map((cat) => {
+        const cnt = typeof counts[cat] === 'number' ? ` (${counts[cat].toLocaleString()})` : '';
+        return `<option value="${esc(cat)}">${esc(cat)}${cnt}</option>`;
+      })
     ];
     el.categoryFilter.innerHTML = options.join('');
     el.categoryFilter.value = state.categories.includes(previous) ? previous : 'all';
@@ -121,6 +186,54 @@ function renderCategoryOptions() {
       ...state.categories.map((cat) => `<button type="button" class="cat-pill${state.category === cat ? ' active' : ''}" data-cat="${esc(cat)}">${esc(cat)}</button>`)
     ];
     el.categoryPills.innerHTML = pills.join('');
+  }
+}
+
+function renderFacetOptions() {
+  if (el.licenseFilter) {
+    const group = el.licenseFilter.closest('.filter-group');
+    const hasLicenses = state.licenses.length > 0;
+    if (group) group.classList.toggle('hidden', !hasLicenses);
+    if (hasLicenses) {
+      const counts = state.licenseCounts || {};
+      const opts = [
+        '<option value="all">전체 라이선스</option>',
+        ...state.licenses.map((lic) => {
+          const cnt = typeof counts[lic] === 'number' ? ` (${counts[lic].toLocaleString()})` : '';
+          return `<option value="${esc(lic)}">${esc(lic)}${cnt}</option>`;
+        })
+      ];
+      el.licenseFilter.innerHTML = opts.join('');
+      el.licenseFilter.value = state.licenses.includes(state.license) ? state.license : 'all';
+      if (el.licenseFilter.value !== state.license) state.license = 'all';
+    }
+  }
+
+  if (el.sourceFilter) {
+    const group = el.sourceFilter.closest('.filter-group');
+    const hasSources = state.sources.length > 0;
+    if (group) group.classList.toggle('hidden', !hasSources);
+    if (hasSources) {
+      const opts = [
+        '<option value="all">전체 출처</option>',
+        ...state.sources.map((src) => `<option value="${esc(src)}">${esc(src)}</option>`)
+      ];
+      el.sourceFilter.innerHTML = opts.join('');
+      el.sourceFilter.value = state.sources.includes(state.source) ? state.source : 'all';
+      if (el.sourceFilter.value !== state.source) state.source = 'all';
+    }
+  }
+
+  if (el.tagBar) {
+    const group = el.tagBar.closest('.filter-group');
+    const hasTags = state.topTags.length > 0;
+    if (group) group.classList.toggle('hidden', !hasTags);
+    if (hasTags) {
+      el.tagBar.innerHTML = state.topTags.slice(0, 14).map(({ tag }) => {
+        const active = state.tag === tag ? ' active' : '';
+        return `<button type="button" class="tag-chip${active}" data-tag="${esc(tag)}">#${esc(tag)}</button>`;
+      }).join('');
+    }
   }
 }
 
@@ -147,15 +260,51 @@ function sortItems(items) {
   return list;
 }
 
+function resolveLibraryItems() {
+  if (state.mode === 'live' && state.libraryEntries.length > 0) {
+    const merged = state.libraryEntries.map((entry) => {
+      const slug = entry.slug || entry.asset_id;
+      const existing = state.catalog.find((x) => x.asset_id === slug)
+        || state.allCatalog.find((x) => x.asset_id === slug);
+      if (existing) {
+        return { ...existing, saved_in_library: true, store_state: 'saved_to_library', library_entry: entry };
+      }
+      return {
+        asset_id: slug,
+        asset_version_id: entry.asset_version_id || '1.0.0',
+        release_id: entry.release_id || `rel-${slug}`,
+        release_kind: entry.release_kind || 'package',
+        category: entry.category || '라이브러리 에셋',
+        title: entry.title || slug,
+        summary: entry.summary || '내 라이브러리에 저장된 패키지입니다. 클릭하면 상세 계약을 불러옵니다.',
+        publisher_id: entry.publisher_id || 'PlayForge',
+        license: entry.license || '',
+        source_provider: entry.source_provider || '',
+        thumbnail_url: entry.thumbnail_url || '',
+        tags: Array.isArray(entry.tags) ? entry.tags : [],
+        artifact_digest: entry.artifact_digest || '',
+        license_snapshot_ref: entry.license_snapshot_ref || '',
+        engine_compatibility: entry.engine_compatibility || { godot_min: '4.3', godot_tested: '4.7.2', platforms: ['web', 'windows', 'linux', 'macos'] },
+        file_manifest: Array.isArray(entry.file_manifest) ? entry.file_manifest : [],
+        saved_in_library: true,
+        store_state: 'saved_to_library',
+        library_entry: entry
+      };
+    });
+    return sortItems(filterCatalogEntries(merged, currentFilters({ includePagination: false })));
+  }
+  const librarySource = state.allCatalog.filter((item) => state.savedIds.has(item.asset_id));
+  return sortItems(filterCatalogEntries(librarySource, currentFilters({ includePagination: false })));
+}
+
 function visibleCatalog() {
   if (state.tab === 'library') {
-    const librarySource = state.allCatalog.filter((item) => state.savedIds.has(item.asset_id));
-    return sortItems(filterCatalogEntries(librarySource, currentFilters()));
+    return resolveLibraryItems();
   }
   if (state.mode === 'live') {
     return sortItems(state.catalog);
   }
-  return sortItems(filterCatalogEntries(state.allCatalog, currentFilters()));
+  return sortItems(filterCatalogEntries(state.allCatalog, currentFilters({ includePagination: false })));
 }
 
 function findItemById(assetId) {
@@ -165,6 +314,7 @@ function findItemById(assetId) {
   }
   return state.catalog.find((x) => x.asset_id === assetId)
     || state.allCatalog.find((x) => x.asset_id === assetId)
+    || resolveLibraryItems().find((x) => x.asset_id === assetId)
     || null;
 }
 
@@ -206,7 +356,7 @@ async function hydrateDetail(assetId) {
 
 async function refreshCatalog({ refreshFull = false } = {}) {
   const seq = ++state.catalogReqSeq;
-  const filters = currentFilters();
+  const filters = currentFilters({ includePagination: true });
   const result = await fetchCatalogWithFallback({
     apiClient,
     filters,
@@ -216,33 +366,26 @@ async function refreshCatalog({ refreshFull = false } = {}) {
 
   state.mode = result.mode;
   state.catalog = result.items.map((item) => ({ ...item }));
-  state.categories = result.categories;
+  state.categories = result.categories || extractCatalogCategories(result.items);
+  state.licenses = result.licenses || extractCatalogLicenses(result.items);
+  state.sources = result.sources || extractCatalogSources(result.items);
+  state.topTags = result.top_tags || extractTopTags(result.items, 16);
+  state.categoryCounts = result.category_counts || null;
+  state.licenseCounts = result.license_counts || null;
+  state.total = typeof result.total === 'number' ? result.total : result.items.length;
+  state.catalogTotal = typeof result.catalog_total === 'number' ? result.catalog_total : state.total;
+  state.page = typeof result.page === 'number' ? result.page : 1;
+  state.totalPages = typeof result.total_pages === 'number' ? result.total_pages : 1;
   if (result.account) {
     state.account = result.account;
   }
 
-  const hasActiveFilter = Boolean(
-    (filters.category && filters.category !== 'all')
-    || (filters.release_kind && filters.release_kind !== 'all')
-    || filters.q.trim()
-  );
-
-  if (result.mode === 'live' && (!hasActiveFilter || refreshFull)) {
-    if (!hasActiveFilter) {
-      state.allCatalog = result.items.map((item) => ({ ...item }));
-    } else {
-      try {
-        const full = await apiClient.getCatalog({});
-        if (Array.isArray(full?.items)) {
-          state.allCatalog = full.items.map((item) => ({ ...item }));
-        }
-      } catch {
-        // keep existing cache
-      }
-    }
+  if (result.mode === 'live' && (!hasActiveFilters() && state.page === 1 || refreshFull)) {
+    state.allCatalog = result.items.map((item) => ({ ...item }));
   }
 
   renderCategoryOptions();
+  renderFacetOptions();
   render();
 }
 
@@ -330,7 +473,7 @@ function selectItem(assetId, scrollToDetail = false) {
 
 function renderSpotlight() {
   if (!el.spotlight) return;
-  const show = state.tab === 'browse' && !state.query.trim() && state.category === 'all' && state.kind === 'all';
+  const show = state.tab === 'browse' && !hasActiveFilters() && state.page === 1;
   el.spotlight.classList.toggle('hidden', !show);
   if (!show) return;
   const featured = state.allCatalog.find((item) => item.release_kind === 'package') || state.allCatalog[0];
@@ -341,11 +484,13 @@ function renderSpotlight() {
   const isSaved = state.savedIds.has(featured.asset_id);
   const isPending = state.pendingSaves.has(featured.asset_id);
   const tested = featured.engine_compatibility?.godot_tested || '4.7.2';
+  const licBadge = featured.license ? `<span class="license-pill">${esc(featured.license)}</span>` : '';
   el.spotlight.innerHTML = `
     <div class="spotlight-copy">
       <div class="spotlight-badges">
         <span class="badge-tertiary">추천 큐레이션</span>
         <span class="badge-secondary">Godot ${esc(tested)} 검증 완료</span>
+        ${licBadge}
       </div>
       <h1>${esc(featured.title)}</h1>
       <p>${esc(featured.summary)}</p>
@@ -357,16 +502,50 @@ function renderSpotlight() {
       </div>
     </div>
     <div class="spotlight-visual">
-      <img src="${makeThumbDataUri(featured)}" alt="${esc(featured.title)}" />
+      <img ${getThumbImageAttrs(featured)} alt="${esc(featured.title)}" />
     </div>
   `;
 }
 
+function renderPagination() {
+  if (!el.pagination) return;
+  const show = state.tab === 'browse' && state.mode === 'live' && state.totalPages > 1;
+  el.pagination.classList.toggle('hidden', !show);
+  if (!show) {
+    el.pagination.innerHTML = '';
+    return;
+  }
+  const cur = state.page;
+  const max = state.totalPages;
+  const pages = new Set([1, max]);
+  for (let p = Math.max(1, cur - 2); p <= Math.min(max, cur + 2); p += 1) pages.add(p);
+  const sorted = [...pages].sort((a, b) => a - b);
+
+  const buttons = [
+    `<button type="button" class="page-btn" data-page="${Math.max(1, cur - 1)}"${cur <= 1 ? ' disabled' : ''}>이전</button>`
+  ];
+  let prev = 0;
+  for (const p of sorted) {
+    if (prev && p - prev > 1) buttons.push('<span class="page-meta">…</span>');
+    buttons.push(`<button type="button" class="page-btn${p === cur ? ' active' : ''}" data-page="${p}">${p}</button>`);
+    prev = p;
+  }
+  buttons.push(`<button type="button" class="page-btn" data-page="${Math.min(max, cur + 1)}"${cur >= max ? ' disabled' : ''}>다음</button>`);
+  buttons.push(`<span class="page-meta">${cur.toLocaleString()} / ${max.toLocaleString()} 페이지 · 총 ${state.total.toLocaleString()}개</span>`);
+  el.pagination.innerHTML = buttons.join('');
+}
+
 function renderCards(items) {
   if (el.resultsCount) {
-    el.resultsCount.textContent = state.tab === 'library'
-      ? `내 라이브러리 ${items.length}개 에셋`
-      : `총 ${items.length}개 에셋`;
+    if (state.tab === 'library') {
+      el.resultsCount.textContent = `내 라이브러리 ${items.length.toLocaleString()}개 에셋`;
+    } else if (state.mode === 'live') {
+      el.resultsCount.textContent = hasActiveFilters()
+        ? `검색 결과 ${state.total.toLocaleString()}개 / 전체 ${state.catalogTotal.toLocaleString()}개 에셋`
+        : `총 ${state.total.toLocaleString()}개 에셋`;
+    } else {
+      el.resultsCount.textContent = `총 ${items.length.toLocaleString()}개 에셋`;
+    }
   }
 
   if (!items.length) {
@@ -400,21 +579,26 @@ function renderCards(items) {
       : `<span class="state-tag">editorial · 설치 버튼 없음</span>
          <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">읽기</button>`;
     const compatLine = isPackage
-      ? `<span class="mono">Godot ${esc(item.engine_compatibility?.godot_tested || '4.7+')}</span><span>·</span><span class="mono">v${esc(item.asset_version_id)}</span>`
+      ? `<span class="mono">Godot ${esc(item.engine_compatibility?.godot_tested || '4.7+')}</span><span>·</span><span class="mono">v${esc(item.asset_version_id)}</span>${item.license ? `<span>·</span><span class="license-pill">${esc(item.license)}</span>` : ''}`
       : `<span class="mono">v${esc(item.asset_version_id)}</span><span>·</span><span>문서 안내</span>`;
+    const tags = Array.isArray(item.tags) ? item.tags.slice(0, 4) : [];
+    const tagRow = tags.length
+      ? `<div class="card-tags">${tags.map((t) => `<span class="card-tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join('')}</div>`
+      : '';
 
     return `<article class="card${selected}" data-card-id="${esc(item.asset_id)}">
       <div class="card-thumb">
-        <img src="${makeThumbDataUri(item)}" alt="${esc(item.title)}" loading="lazy" />
+        <img ${getThumbImageAttrs(item)} alt="${esc(item.title)}" loading="lazy" />
         ${floatBadge}
       </div>
       <div class="card-body">
         <div class="card-meta">
-          <span class="card-publisher">${esc(item.publisher_id || 'PlayForge')}</span>
+          <span class="card-publisher">${esc(item.author || item.publisher_id || 'PlayForge')}</span>
           <span class="kind-pill ${isPackage ? 'kind-package' : 'kind-editorial'}">${esc(item.release_kind)}</span>
         </div>
         <h3>${esc(item.title)}</h3>
         <p>${esc(item.summary)}</p>
+        ${tagRow}
         <div class="card-compat-row">${compatLine}</div>
         <div class="card-actions">${actionRow}</div>
       </div>
@@ -469,6 +653,9 @@ function renderDetail(items) {
   const manifestChips = (active.file_manifest || [])
     .map((f) => `<span class="manifest-chip">${esc(f.path)} (${Number(f.bytes).toLocaleString()} B)</span>`)
     .join('');
+  const tagChips = (Array.isArray(active.tags) ? active.tags : [])
+    .map((t) => `<button type="button" class="tag-chip${state.tag === t ? ' active' : ''}" data-tag="${esc(t)}">#${esc(t)}</button>`)
+    .join('');
   const artifactUrl = active.artifact_url || apiClient.getArtifactUrl(active.asset_id, active.asset_version_id);
   const artifactAction = state.mode === 'live'
     ? `<a class="btn btn-secondary artifact-link" href="${esc(artifactUrl)}" download="${esc(active.asset_id)}-${esc(active.asset_version_id)}.playforgepkg">.playforgepkg 다운로드 확인</a>`
@@ -479,6 +666,20 @@ function renderDetail(items) {
   const savedAtRow = libraryEntry?.saved_at
     ? `<tr><th>saved_at</th><td><code>${esc(libraryEntry.saved_at)}</code></td></tr>`
     : '';
+  const licenseRow = active.license
+    ? `<tr><th>license</th><td><span class="license-pill">${esc(active.license)}</span></td></tr>`
+    : '';
+  const authorRow = active.author
+    ? `<tr><th>author</th><td>${esc(active.author)}</td></tr>`
+    : '';
+  const sourceRow = active.source_provider
+    ? `<tr><th>source</th><td>${
+      isSafeHttpUrl(active.source_url)
+        ? `<a class="source-link" href="${esc(active.source_url)}" target="_blank" rel="noopener noreferrer">${esc(active.source_provider)} ↗</a>`
+        : esc(active.source_provider)
+    }</td></tr>`
+    : '';
+  const compat = active.engine_compatibility || { godot_min: '4.3', godot_tested: '4.7.2', platforms: ['web', 'windows', 'linux', 'macos'] };
 
   el.detail.innerHTML = `
     <div class="detail-grid">
@@ -486,10 +687,12 @@ function renderDetail(items) {
         <div class="detail-badge-row">
           <span class="badge-secondary">선택된 에셋 상세</span>
           <span class="kind-pill ${isSaved ? 'card-badge-float saved' : 'kind-package'}" style="position:static">${isSaved ? 'saved_to_library' : esc(active.store_state)}</span>
+          ${active.license ? `<span class="license-pill">${esc(active.license)}</span>` : ''}
           ${hasExecutableAddon(active) ? '<span class="badge-tertiary">executable_addon: true</span>' : ''}
         </div>
         <h2>${esc(active.title)}</h2>
         <p class="detail-summary">${esc(active.summary)}</p>
+        ${tagChips ? `<div class="tag-cloud">${tagChips}</div>` : ''}
         <div class="manifest-chips">${manifestChips}</div>
         ${statusBanner}
         <div class="dock-callout">
@@ -505,9 +708,12 @@ function renderDetail(items) {
         <table class="spec-table">
           <tr><th>asset_id</th><td><code>${esc(active.asset_id)}</code></td></tr>
           <tr><th>release_id</th><td><code>${esc(active.release_id)}</code></td></tr>
-          <tr><th>engine_compat</th><td>Godot ${esc(active.engine_compatibility.godot_tested)} (min ${esc(active.engine_compatibility.godot_min)})</td></tr>
-          <tr><th>platforms</th><td>${esc(active.engine_compatibility.platforms.join(', '))}</td></tr>
+          <tr><th>engine_compat</th><td>Godot ${esc(compat.godot_tested)} (min ${esc(compat.godot_min)})</td></tr>
+          <tr><th>platforms</th><td>${esc((compat.platforms || []).join(', '))}</td></tr>
           <tr><th>artifact_digest</th><td><code title="${esc(active.artifact_digest)}">${esc(shortDigest(active.artifact_digest))}</code></td></tr>
+          ${licenseRow}
+          ${authorRow}
+          ${sourceRow}
           <tr><th>license_ref</th><td><code>${esc(active.license_snapshot_ref)}</code></td></tr>
           ${savedAtRow}
         </table>
@@ -542,15 +748,29 @@ function render() {
 
   renderSpotlight();
   const items = visibleCatalog();
-  if (isPublisher) renderPublisher();
-  else renderCards(items);
+  if (isPublisher) {
+    renderPublisher();
+    el.pagination?.classList.add('hidden');
+  } else {
+    renderCards(items);
+    renderPagination();
+  }
   renderDetail(items);
 }
 
 function setCategory(nextCategory) {
   state.category = nextCategory || 'all';
+  state.page = 1;
   if (el.categoryFilter) el.categoryFilter.value = state.category;
   renderCategoryOptions();
+  if (state.mode === 'live') refreshCatalog();
+  else render();
+}
+
+function setTag(nextTag) {
+  state.tag = state.tag === nextTag ? 'all' : (nextTag || 'all');
+  state.page = 1;
+  renderFacetOptions();
   if (state.mode === 'live') refreshCatalog();
   else render();
 }
@@ -568,6 +788,22 @@ document.addEventListener('click', (event) => {
   const catBtn = event.target.closest('.cat-pill');
   if (catBtn) {
     setCategory(catBtn.dataset.cat);
+    return;
+  }
+  const tagBtn = event.target.closest('[data-tag]');
+  if (tagBtn) {
+    event.stopPropagation();
+    setTag(tagBtn.dataset.tag);
+    return;
+  }
+  const pageBtn = event.target.closest('[data-page]');
+  if (pageBtn && !pageBtn.disabled) {
+    const nextPage = Number(pageBtn.dataset.page);
+    if (Number.isInteger(nextPage) && nextPage >= 1 && nextPage !== state.page) {
+      state.page = nextPage;
+      refreshCatalog();
+      el.resultsBar?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     return;
   }
   const actionBtn = event.target.closest('[data-action]');
@@ -588,6 +824,7 @@ document.addEventListener('click', (event) => {
 let searchTimer = null;
 el.search?.addEventListener('input', (event) => {
   state.query = event.target.value;
+  state.page = 1;
   if (state.mode !== 'live') {
     render();
     return;
@@ -604,6 +841,21 @@ el.categoryFilter?.addEventListener('change', (event) => {
 
 el.kindFilter?.addEventListener('change', (event) => {
   state.kind = event.target.value;
+  state.page = 1;
+  if (state.mode === 'live') refreshCatalog();
+  else render();
+});
+
+el.licenseFilter?.addEventListener('change', (event) => {
+  state.license = event.target.value;
+  state.page = 1;
+  if (state.mode === 'live') refreshCatalog();
+  else render();
+});
+
+el.sourceFilter?.addEventListener('change', (event) => {
+  state.source = event.target.value;
+  state.page = 1;
   if (state.mode === 'live') refreshCatalog();
   else render();
 });
@@ -617,18 +869,31 @@ el.resetFiltersBtn?.addEventListener('click', () => {
   state.query = '';
   state.category = 'all';
   state.kind = 'all';
+  state.license = 'all';
+  state.source = 'all';
+  state.tag = 'all';
   state.sort = 'default';
+  state.page = 1;
   if (el.search) el.search.value = '';
   if (el.categoryFilter) el.categoryFilter.value = 'all';
   if (el.kindFilter) el.kindFilter.value = 'all';
+  if (el.licenseFilter) el.licenseFilter.value = 'all';
+  if (el.sourceFilter) el.sourceFilter.value = 'all';
   if (el.sortSelect) el.sortSelect.value = 'default';
   renderCategoryOptions();
+  renderFacetOptions();
   if (state.mode === 'live') refreshCatalog();
   else render();
 });
 
 async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const initialAsset = params.get('asset');
+  if (initialAsset) {
+    state.selectedId = initialAsset;
+  }
   renderCategoryOptions();
+  renderFacetOptions();
   render();
   await refreshCatalog({ refreshFull: true });
   if (state.mode === 'live') {

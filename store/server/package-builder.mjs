@@ -1,4 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_REPO_ROOT = path.resolve(HERE, '..', '..');
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
   let c = n;
@@ -309,50 +315,245 @@ export function buildPlayforgePackage(entry, filesInput) {
   };
 }
 
-export function createCatalogArtifacts(catalog, customArtifacts = null) {
-  const artifacts = new Map();
-  for (const item of catalog) {
-    if (item.release_kind !== 'package') continue;
-    const key = `${item.asset_id}@${item.asset_version_id}`;
-    if (customArtifacts?.has(key)) {
-      const provided = customArtifacts.get(key);
-      const buffer = Buffer.isBuffer(provided) ? provided : Buffer.from(provided);
-      const actualDigest = formatSha256Digest(buffer);
-      if (item.artifact_digest && actualDigest !== item.artifact_digest) {
-        throw new Error(`Artifact digest mismatch for ${key}: expected ${item.artifact_digest}, got ${actualDigest}`);
-      }
-      artifacts.set(key, {
-        buffer,
-        sha256Hex: actualDigest.slice('sha256:'.length),
-        artifactDigest: actualDigest
-      });
-      continue;
-    }
+export const LICENSE_SUMMARY_TEXT = Object.freeze({
+  'CC0-1.0': [
+    'CC0 1.0 Universal (Public Domain Dedication)',
+    'https://creativecommons.org/publicdomain/zero/1.0/',
+    '',
+    'The person who associated a work with this deed has dedicated the work to the public domain',
+    'by waiving all of his or her rights to the work worldwide under copyright law, including all',
+    'related and neighboring rights, to the extent allowed by law.',
+    'You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.'
+  ].join('\n'),
+  MIT: [
+    'MIT License',
+    'https://opensource.org/licenses/MIT',
+    '',
+    'Permission is hereby granted, free of charge, to any person obtaining a copy of this software',
+    'and associated documentation files (the "Software"), to deal in the Software without restriction,',
+    'including without limitation the rights to use, copy, modify, merge, publish, distribute,',
+    'sublicense, and/or sell copies of the Software, subject to preserving this copyright notice and permission notice.'
+  ].join('\n'),
+  Unlicense: [
+    'The Unlicense',
+    'https://unlicense.org/',
+    '',
+    'This is free and unencumbered software released into the public domain.',
+    'Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software for any purpose.'
+  ].join('\n'),
+  'BSD-3-Clause': [
+    'BSD 3-Clause License',
+    'https://opensource.org/licenses/BSD-3-Clause',
+    '',
+    'Redistribution and use in source and binary forms, with or without modification, are permitted',
+    'provided that copyright notices and disclaimers are retained and no endorsement is implied.'
+  ].join('\n'),
+  Zlib: [
+    'zlib License',
+    'https://opensource.org/licenses/Zlib',
+    '',
+    'Permission is granted to anyone to use this software for any purpose, including commercial',
+    'applications, and to alter it and redistribute it freely, subject to standard origin notice.'
+  ].join('\n'),
+  'Apache-2.0': [
+    'Apache License, Version 2.0',
+    'https://www.apache.org/licenses/LICENSE-2.0',
+    '',
+    'Licensed under the Apache License, Version 2.0. You may obtain a copy of the License at the URL above.',
+    'Permits commercial use, modification, distribution, and patent use with notice preservation.'
+  ].join('\n')
+});
 
-    const fixtureFiles = SAMPLE_PACKAGE_FILES[key];
-    if (fixtureFiles) {
-      const built = buildPlayforgePackage(item, fixtureFiles);
-      if (item.artifact_digest && built.artifactDigest !== item.artifact_digest) {
-        throw new Error(
-          `Catalog artifact_digest mismatch for ${key}: catalog has ${item.artifact_digest}, built ${built.artifactDigest}`
-        );
+export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
+  const slug = String(item.asset_id || 'asset');
+  const licenseId = String(item.license || 'CC0-1.0');
+  const licenseBody = LICENSE_SUMMARY_TEXT[licenseId] || LICENSE_SUMMARY_TEXT['CC0-1.0'];
+  const author = String(item.author || item.publisher_id || 'Community');
+  const sourceProvider = String(item.source_provider || 'PlayForge Open Catalog');
+  const sourceUrl = String(item.source_url || '');
+  const downloadUrl = String(item.download_url || sourceUrl);
+  const tags = Array.isArray(item.tags) ? item.tags : [];
+
+  const licenseTxt = [
+    `Asset: ${item.title} (${slug})`,
+    `Author: ${author}`,
+    `Source: ${sourceProvider}${sourceUrl ? ` (${sourceUrl})` : ''}`,
+    `License: ${licenseId}`,
+    `License Snapshot Ref: ${item.license_snapshot_ref || ''}`,
+    '',
+    '---',
+    '',
+    licenseBody,
+    ''
+  ].join('\n');
+
+  const readmeMd = [
+    `# ${item.title}`,
+    '',
+    `- **Asset ID**: \`${slug}\``,
+    `- **카테고리**: ${item.category || '기타'}`,
+    `- **라이선스**: \`${licenseId}\` (상업·비상업 게임 제작 자유 사용 가능)`,
+    `- **저작자 / 출처**: ${author} · ${sourceProvider}`,
+    sourceUrl ? `- **공식 원본 페이지**: ${sourceUrl}` : '',
+    downloadUrl ? `- **공식 다운로드 경로**: ${downloadUrl}` : '',
+    tags.length ? `- **태그**: ${tags.map((t) => `#${t}`).join(' ')}` : '',
+    `- **지원 환경**: Godot ${item.engine_compatibility?.godot_min || '4.3'}+ (검증 ${item.engine_compatibility?.godot_tested || '4.7.2'}) · Forge 전용 (${(item.engine_compatibility?.platforms || ['web', 'windows', 'linux', 'macos']).join(', ')})`,
+    '',
+    '## 설명',
+    item.summary || '',
+    '',
+    '## Godot 4.7.2 프로젝트 적용 안내',
+    '1. PlayForge Store 웹에서 본 패키지를 **내 라이브러리**에 저장합니다.',
+    '2. Godot 에디터(설치형 또는 웹 에디터)의 **PlayForge Store 도크**에서 새로고침 후 6단계 검토를 거쳐 프로젝트에 적용합니다.',
+    '3. 모든 파일은 `assets/' + slug + '/` 하위 격리 경로에 배치되며 라이선스 고지(`LICENSE.txt`)가 함께 포함됩니다.',
+    ''
+  ].filter((line) => line !== null).join('\n');
+
+  const metadataJson = `${JSON.stringify({
+    schema_version: 1,
+    asset_id: slug,
+    asset_version_id: item.asset_version_id,
+    release_id: item.release_id,
+    title: item.title,
+    summary: item.summary || '',
+    category: item.category || '',
+    tags,
+    license: licenseId,
+    license_snapshot_ref: item.license_snapshot_ref || '',
+    author,
+    source_provider: sourceProvider,
+    source_url: sourceUrl,
+    download_url: downloadUrl,
+    thumbnail_url: item.thumbnail_url || '',
+    engine_compatibility: item.engine_compatibility || null
+  }, null, 2)}\n`;
+
+  const files = [
+    { path: `assets/${slug}/ASSET_METADATA.json`, executable_addon: false, content: Buffer.from(metadataJson, 'utf8') },
+    { path: `assets/${slug}/LICENSE.txt`, executable_addon: false, content: Buffer.from(licenseTxt, 'utf8') },
+    { path: `assets/${slug}/README.md`, executable_addon: false, content: Buffer.from(readmeMd, 'utf8') }
+  ];
+
+  if (Array.isArray(item.local_bundle_files) && item.local_bundle_files.length > 0) {
+    for (const ref of item.local_bundle_files) {
+      const absPath = path.resolve(repoRoot, ref.repo_rel_path);
+      if (!absPath.startsWith(path.resolve(repoRoot) + path.sep) || !fs.existsSync(absPath)) {
+        throw new Error(`Missing local bundle file for ${slug}: ${ref.repo_rel_path}`);
       }
-      artifacts.set(key, built);
-    } else if (Array.isArray(item.file_manifest) && item.file_manifest.length > 0) {
-      // Deterministic fallback synthesis only if no fixture files were explicitly registered
-      const syntheticFiles = item.file_manifest.map((f) => ({
-        path: f.path,
-        executable_addon: Boolean(f.executable_addon),
-        content: Buffer.from(`playforgepkg-stub:${key}:${f.path}`, 'utf8')
-      }));
-      const built = buildPlayforgePackage(item, syntheticFiles);
-      if (item.artifact_digest && built.artifactDigest !== item.artifact_digest) {
-        throw new Error(
-          `No matching artifact buffer for ${key}: catalog digest ${item.artifact_digest} !== ${built.artifactDigest}`
-        );
-      }
-      artifacts.set(key, built);
+      files.push({
+        path: ref.path,
+        executable_addon: Boolean(ref.executable_addon),
+        content: fs.readFileSync(absPath)
+      });
     }
   }
-  return artifacts;
+  return files;
+}
+
+export function buildCatalogArtifact(item, { customArtifacts = null, repoRoot = DEFAULT_REPO_ROOT } = {}) {
+  const key = `${item.asset_id}@${item.asset_version_id}`;
+  if (customArtifacts?.has(key)) {
+    const provided = customArtifacts.get(key);
+    const buffer = Buffer.isBuffer(provided) ? provided : Buffer.from(provided);
+    const actualDigest = formatSha256Digest(buffer);
+    if (item.artifact_digest && actualDigest !== item.artifact_digest) {
+      throw new Error(`Artifact digest mismatch for ${key}: expected ${item.artifact_digest}, got ${actualDigest}`);
+    }
+    return {
+      buffer,
+      sha256Hex: actualDigest.slice('sha256:'.length),
+      artifactDigest: actualDigest
+    };
+  }
+
+  const fixtureFiles = SAMPLE_PACKAGE_FILES[key];
+  if (fixtureFiles) {
+    const built = buildPlayforgePackage(item, fixtureFiles);
+    if (item.artifact_digest && built.artifactDigest !== item.artifact_digest) {
+      throw new Error(
+        `Catalog artifact_digest mismatch for ${key}: catalog has ${item.artifact_digest}, built ${built.artifactDigest}`
+      );
+    }
+    return built;
+  }
+
+  if (item.source_provider || Array.isArray(item.local_bundle_files)) {
+    const collectedFiles = buildCollectedPackageFiles(item, repoRoot);
+    const built = buildPlayforgePackage(item, collectedFiles);
+    if (item.artifact_digest && built.artifactDigest !== item.artifact_digest) {
+      throw new Error(
+        `Collected artifact_digest mismatch for ${key}: catalog has ${item.artifact_digest}, built ${built.artifactDigest}`
+      );
+    }
+    return built;
+  }
+
+  if (Array.isArray(item.file_manifest) && item.file_manifest.length > 0) {
+    const syntheticFiles = item.file_manifest.map((f) => ({
+      path: f.path,
+      executable_addon: Boolean(f.executable_addon),
+      content: Buffer.from(`playforgepkg-stub:${key}:${f.path}`, 'utf8')
+    }));
+    const built = buildPlayforgePackage(item, syntheticFiles);
+    if (item.artifact_digest && built.artifactDigest !== item.artifact_digest) {
+      throw new Error(
+        `No matching artifact buffer for ${key}: catalog digest ${item.artifact_digest} !== ${built.artifactDigest}`
+      );
+    }
+    return built;
+  }
+  return null;
+}
+
+export function createCatalogArtifacts(catalog, customArtifacts = null, { repoRoot = DEFAULT_REPO_ROOT, lazyThreshold = 50 } = {}) {
+  const packages = catalog.filter((item) => item.release_kind === 'package');
+  if (packages.length <= lazyThreshold) {
+    const artifacts = new Map();
+    for (const item of packages) {
+      const key = `${item.asset_id}@${item.asset_version_id}`;
+      const built = buildCatalogArtifact(item, { customArtifacts, repoRoot });
+      if (built) artifacts.set(key, built);
+    }
+    return artifacts;
+  }
+
+  // Lazy LRU-cached artifact store for large catalogs (thousands of CC0/MIT packages)
+  const byKey = new Map(packages.map((item) => [`${item.asset_id}@${item.asset_version_id}`, item]));
+  const cache = new Map();
+  const MAX_CACHE = 128;
+
+  // Always eagerly verify the core SAMPLE_PACKAGE_FILES entries at startup
+  for (const [key, item] of byKey.entries()) {
+    if (SAMPLE_PACKAGE_FILES[key] || customArtifacts?.has(key)) {
+      const built = buildCatalogArtifact(item, { customArtifacts, repoRoot });
+      if (built) cache.set(key, built);
+    }
+  }
+
+  return {
+    get size() {
+      return byKey.size;
+    },
+    has(key) {
+      return byKey.has(key);
+    },
+    get(key) {
+      if (cache.has(key)) {
+        const hit = cache.get(key);
+        cache.delete(key);
+        cache.set(key, hit);
+        return hit;
+      }
+      const item = byKey.get(key);
+      if (!item) return undefined;
+      const built = buildCatalogArtifact(item, { customArtifacts, repoRoot });
+      if (!built) return undefined;
+      if (cache.size >= MAX_CACHE) {
+        const oldest = cache.keys().next().value;
+        if (oldest !== undefined) cache.delete(oldest);
+      }
+      cache.set(key, built);
+      return built;
+    }
+  };
 }

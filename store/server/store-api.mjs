@@ -7,6 +7,9 @@ import {
   SAMPLE_CATALOG,
   PUBLISHER_DRAFTS,
   extractCatalogCategories,
+  extractCatalogLicenses,
+  extractCatalogSources,
+  extractTopTags,
   filterCatalogEntries,
   validateReleaseContract
 } from '../web/store-catalog.js';
@@ -494,6 +497,16 @@ export function createStoreApp(options = {}) {
   }
 
   const catalogBySlug = new Map(catalogList.map((item) => [item.asset_id, item]));
+  const catalogCategories = extractCatalogCategories(catalogList);
+  const catalogLicenses = extractCatalogLicenses(catalogList);
+  const catalogSources = extractCatalogSources(catalogList);
+  const catalogTopTags = extractTopTags(catalogList, 24);
+  const categoryCounts = {};
+  const licenseCounts = {};
+  for (const item of catalogList) {
+    if (item.category) categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+    if (item.license) licenseCounts[item.license] = (licenseCounts[item.license] || 0) + 1;
+  }
   const artifacts = createCatalogArtifacts(catalogList, customArtifacts);
   const store = new JsonLibraryStore(dataDir, { clock });
   const webDirReal = serveStatic && webDir && fs.existsSync(webDir) ? fs.realpathSync(webDir) : null;
@@ -507,6 +520,7 @@ export function createStoreApp(options = {}) {
       saved_in_library: isSaved,
       store_state: isSaved ? 'saved_to_library' : item.store_state
     };
+    delete enriched.local_bundle_files;
     if (isPackage) {
       enriched.artifact_url = `/api/store/packages/${encodeURIComponent(item.asset_id)}/releases/${encodeURIComponent(item.asset_version_id)}/artifact`;
     }
@@ -516,10 +530,17 @@ export function createStoreApp(options = {}) {
   function enrichLibraryEntry(entry) {
     const item = catalogBySlug.get(entry.slug);
     return {
+      schema_version: 1,
       ...entry,
       title: item?.title || entry.slug,
       summary: item?.summary || '',
       category: item?.category || '',
+      tags: Array.isArray(item?.tags) ? [...item.tags] : [],
+      license: item?.license || '',
+      author: item?.author || '',
+      source_provider: item?.source_provider || '',
+      source_url: item?.source_url || '',
+      thumbnail_url: item?.thumbnail_url || '',
       publisher_id: item?.publisher_id || '',
       engine_compatibility: item?.engine_compatibility ? structuredClone(item.engine_compatibility) : null,
       file_manifest: item?.file_manifest ? structuredClone(item.file_manifest) : [],
@@ -680,21 +701,51 @@ export function createStoreApp(options = {}) {
         const category = url.searchParams.get('category') || '';
         const q = url.searchParams.get('q') || '';
         const releaseKind = url.searchParams.get('release_kind') || '';
+        const license = url.searchParams.get('license') || '';
+        const source = url.searchParams.get('source') || '';
+        const tag = url.searchParams.get('tag') || '';
+        const rawPage = url.searchParams.get('page');
+        const rawLimit = url.searchParams.get('limit');
         if (!VALID_RELEASE_KINDS.has(releaseKind)) {
           throw new StoreApiError(400, 'INVALID_FILTER', 'release_kind must be package, editorial, or all');
         }
         const account = await resolveAccount(req);
         const savedSet = store.getSavedSet(account.account_key);
-        const filtered = filterCatalogEntries(catalogList, { category, q, release_kind: releaseKind });
-        const items = filtered.map((item) => enrichCatalogItem(item, savedSet));
+        const filtered = filterCatalogEntries(catalogList, {
+          category,
+          q,
+          release_kind: releaseKind,
+          license,
+          source,
+          tag
+        });
+        const total = filtered.length;
+        const paginate = rawPage !== null || rawLimit !== null;
+        const limit = paginate ? Math.max(1, Math.min(200, Number(rawLimit || 24) || 24)) : total;
+        const totalPages = paginate ? Math.max(1, Math.ceil(total / limit)) : 1;
+        const page = paginate ? Math.max(1, Math.min(totalPages, Number(rawPage || 1) || 1)) : 1;
+        const slice = paginate ? filtered.slice((page - 1) * limit, page * limit) : filtered;
+        const items = slice.map((item) => enrichCatalogItem(item, savedSet));
         return sendJson(res, 200, {
           items,
-          total: items.length,
-          categories: extractCatalogCategories(catalogList),
+          total,
+          catalog_total: catalogList.length,
+          page,
+          limit,
+          total_pages: totalPages,
+          categories: catalogCategories,
+          licenses: catalogLicenses,
+          sources: catalogSources,
+          top_tags: catalogTopTags,
+          category_counts: categoryCounts,
+          license_counts: licenseCounts,
           filters: {
             category: category || null,
             q: q || null,
-            release_kind: releaseKind && releaseKind !== 'all' ? releaseKind : null
+            release_kind: releaseKind && releaseKind !== 'all' ? releaseKind : null,
+            license: license || null,
+            source: source || null,
+            tag: tag || null
           },
           account
         });
