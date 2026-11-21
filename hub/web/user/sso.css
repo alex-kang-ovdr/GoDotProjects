@@ -1,0 +1,131 @@
+/* Hub-SSO: Email Auth & Naver OAuth UI */
+.sso-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: rgba(0, 74, 198, 0.1);
+  color: #004ac6;
+}
+.sso-provider-badge[data-provider="naver"] {
+  background: rgba(3, 199, 90, 0.14);
+  color: #028f40;
+}
+.sso-provider-badge[data-provider="email"] {
+  background: rgba(71, 85, 105, 0.12);
+  color: #334155;
+}
+
+.button.naver-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #03c75a;
+  color: #ffffff;
+  border: 1px solid #02b351;
+  font-weight: 700;
+}
+.button.naver-login-btn:hover:not(:disabled) {
+  background: #02b351;
+}
+.button.naver-login-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.naver-n-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #03c75a;
+  font-weight: 900;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.sso-email-box {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+.sso-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.06);
+  margin-bottom: 1rem;
+}
+.sso-tab {
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+.sso-tab[aria-selected="true"] {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.sso-form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+.sso-field {
+  display: grid;
+  gap: 0.3rem;
+}
+.sso-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+.sso-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.95rem;
+  background: #ffffff;
+  color: #0f172a;
+}
+.sso-field input:focus {
+  outline: 2px solid #004ac6;
+  outline-offset: 1px;
+  border-color: #004ac6;
+}
+.sso-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.sso-password-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+.sso-password-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.75rem;
+}

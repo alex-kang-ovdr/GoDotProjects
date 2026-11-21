@@ -116,7 +116,9 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   social_leaderboards: ['game_id', 'board_id', 'principal_id', 'score', 'period_key', 'updated_at'],
   social_reports: ['id', 'reporter_id', 'target_type', 'target_id', 'reason', 'created_at'],
   social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
-  social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at']
+  social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at'],
+  // Hub-SSO email credentials (sensitive: dropped unconditionally)
+  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -166,7 +168,9 @@ export const DROP_TABLES = Object.freeze([
   'social_reports',
   'social_presence',
   'social_party_launch_acks',
-  'social_party_launches'
+  'social_party_launches',
+  // Hub-SSO email credentials (emails + password hashes)
+  'email_credentials'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);

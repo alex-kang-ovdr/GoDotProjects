@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/user.css">
   <link rel="stylesheet" href="/avatar.css">
   <link rel="stylesheet" href="/billing.css">
+  <link rel="stylesheet" href="/sso.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23004AC6'/%3E%3Cpath d='m25 18 24 14-24 14z' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <script src="/config.js" defer></script>
   <script src="/contracts.js" defer></script>
@@ -22,6 +23,7 @@
   <script src="/avatar-glb-viewer.js" defer></script>
   <script src="/avatar.js" defer></script>
   <script src="/billing.js" defer></script>
+  <script src="/sso.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -54,13 +56,72 @@
     <h1 data-l10n="portal.account.title" data-l10n-ctx="ui.nav">내 계정</h1>
     <section class="surface" aria-labelledby="identity-heading">
       <h2 id="identity-heading" data-l10n="portal.account.identity_heading">계정과 저장 기록</h2>
-      <p id="identity">로그인 없이 플레이</p>
+      <p><span id="identity">로그인 없이 플레이</span><span id="identity-provider-badge" class="sso-provider-badge" hidden></span></p>
       <p id="account-help" class="muted"></p>
       <div class="save-actions">
         <button id="google-login" class="button primary" type="button" hidden disabled data-l10n="portal.account.google_login" data-l10n-ctx="ui.button">Google로 로그인</button>
+        <button id="naver-login" class="button naver-login-btn" type="button" hidden disabled><span class="naver-n-mark" aria-hidden="true">N</span>네이버로 로그인</button>
         <button id="logout" class="button secondary" type="button" hidden data-l10n="portal.account.logout" data-l10n-ctx="ui.button">로그아웃</button>
         <button id="merge-open" class="button secondary" type="button" hidden data-l10n="portal.account.merge_open" data-l10n-ctx="ui.button">게스트 기록 연결</button>
       </div>
+      <div id="email-auth-section" class="sso-email-box" hidden>
+        <div class="sso-tabs" role="tablist" aria-label="이메일 인증 방식">
+          <button id="sso-tab-login" class="sso-tab" type="button" role="tab" aria-selected="true" aria-controls="email-login-form">이메일 로그인</button>
+          <button id="sso-tab-register" class="sso-tab" type="button" role="tab" aria-selected="false" aria-controls="email-register-form">이메일 회원가입</button>
+        </div>
+        <div id="email-auth-error" class="inline-error" role="alert" hidden></div>
+        <form id="email-login-form" class="sso-form" novalidate>
+          <div class="sso-field">
+            <label for="email-login-input">이메일</label>
+            <input id="email-login-input" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-login-password">비밀번호</label>
+            <input id="email-login-password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+          </div>
+          <div><button class="button primary" type="submit">이메일로 로그인</button></div>
+        </form>
+        <form id="email-register-form" class="sso-form" hidden novalidate>
+          <div class="sso-field">
+            <label for="email-register-input">이메일</label>
+            <input id="email-register-input" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-register-name">닉네임 (선택)</label>
+            <input id="email-register-name" name="displayName" type="text" autocomplete="nickname" maxlength="100" placeholder="표시할 이름">
+          </div>
+          <div class="sso-field">
+            <label for="email-register-password">비밀번호</label>
+            <input id="email-register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <p class="sso-hint">8자 이상, 영문과 숫자를 모두 포함해 주세요.</p>
+          </div>
+          <div class="sso-field">
+            <label for="email-register-password-confirm">비밀번호 확인</label>
+            <input id="email-register-password-confirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+          </div>
+          <div><button class="button primary" type="submit">이메일로 가입하기</button></div>
+        </form>
+      </div>
+      <details id="email-password-section" class="sso-password-details" hidden>
+        <summary>비밀번호 변경</summary>
+        <div id="email-password-error" class="inline-error" role="alert" hidden></div>
+        <form id="email-password-form" class="sso-form" novalidate>
+          <div class="sso-field">
+            <label for="email-current-password">현재 비밀번호</label>
+            <input id="email-current-password" type="password" autocomplete="current-password" maxlength="128" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-new-password">새 비밀번호</label>
+            <input id="email-new-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <p class="sso-hint">8자 이상, 영문과 숫자를 모두 포함해 주세요.</p>
+          </div>
+          <div class="sso-field">
+            <label for="email-new-password-confirm">새 비밀번호 확인</label>
+            <input id="email-new-password-confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+          </div>
+          <div><button class="button secondary" type="submit">비밀번호 변경</button></div>
+        </form>
+      </details>
     </section>
     <section class="surface" aria-labelledby="preference-heading">
       <h2 id="preference-heading" data-l10n="portal.account.preference_heading">언어와 기록 안내</h2>
