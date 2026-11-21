@@ -318,7 +318,8 @@ aside button {
   font-size: 12px;
   padding: 7px;
 }
-.start-dialog {
+.start-dialog,
+.project-modal {
   border: 1px solid #516782;
   border-radius: 12px;
   padding: 30px;
@@ -326,12 +327,139 @@ aside button {
   background: #202c3e;
   color: white;
 }
-.start-dialog::backdrop {
+.start-dialog::backdrop,
+.project-modal::backdrop {
   background: #0009;
 }
-.start-dialog button {
+.start-dialog button,
+.project-modal button {
   margin: 8px 8px 0 0;
 }
 
 [hidden] { display: none !important; }
 #panel h2 { margin-top: 38px; }
+.template-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  align-items: center;
+  margin: 0 0 18px;
+}
+#templateSearch {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #435068;
+  border-radius: 6px;
+  background: #171e29;
+  color: #edf4ff;
+  font: inherit;
+}
+#templateSearch:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
+}
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filter-tabs button {
+  padding: 6px 11px;
+  font-size: 13px;
+  background: #1a2230;
+  border-color: #344156;
+  color: #b7c6dc;
+}
+.filter-tabs button[aria-pressed="true"] {
+  background: #2f5485;
+  border-color: #6ea8fe;
+  color: #fff;
+  font-weight: 600;
+}
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.card-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #1a2433;
+  color: #9bb4d4;
+  border: 1px solid #354761;
+}
+.card-badge.showcase {
+  background: #16372c;
+  color: #7ee2be;
+  border-color: #2c6d56;
+}
+.project-card-wrap {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #435068;
+  border-radius: 6px;
+  background: linear-gradient(140deg, #28364a, #1b232f);
+  overflow: hidden;
+}
+.project-card-wrap .card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  min-height: 112px;
+  flex: 1;
+}
+.project-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px 12px;
+  border-top: 1px solid #324056;
+  background: #161d28;
+}
+.project-card-actions button {
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #222d3e;
+}
+.project-card-actions button.danger:hover {
+  background: #7f2429;
+  border-color: #d9646b;
+}
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  margin: 14px 0;
+}
+.modal-field input {
+  padding: 10px 12px;
+  border: 1px solid #516782;
+  border-radius: 6px;
+  background: #141c28;
+  color: #fff;
+  font: inherit;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.primary-btn {
+  background: #2f609f;
+  border-color: #6ea8fe;
+  font-weight: 600;
+}
+.empty-hint {
+  grid-column: 1 / -1;
+  padding: 20px;
+  border: 1px dashed #3d4d66;
+  border-radius: 8px;
+  color: #9db0c9;
+  text-align: center;
+}

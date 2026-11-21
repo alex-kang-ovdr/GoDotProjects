@@ -54,7 +54,66 @@ function renderCollaboration() {
   for (const change of recentChanges) {
     const row = document.createElement("p"); row.textContent = change; body.append(row);
   }
-  body.append(button("초대 링크 복사", () => navigator.clipboard.writeText(location.href)));
+  body.append(button("초대 링크 복사", () => copyText(location.href)));
+}
+async function copyText(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      status("링크를 클립보드에 복사했습니다.");
+      return;
+    }
+  } catch {}
+  try {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed;left:-9999px;top:0";
+    document.body.append(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    if (ok) { status("링크를 클립보드에 복사했습니다."); return; }
+  } catch {}
+  status("복사할 주소: " + text);
+}
+function isNativePrompt() {
+  try { return typeof window.prompt === "function" && Function.prototype.toString.call(window.prompt).includes("[native code]"); }
+  catch { return false; }
+}
+function askProjectName(title, defaultValue, hint = "") {
+  if (!isNativePrompt()) return Promise.resolve(window.prompt(title, defaultValue));
+  const dialog = $("createProjectModal");
+  if (!dialog?.showModal) return Promise.resolve(window.prompt(title, defaultValue));
+  return new Promise((resolve) => {
+    const titleEl = $("createModalTitle");
+    const hintEl = $("createModalHint");
+    const inputEl = $("createModalInput");
+    const cancelBtn = $("createModalCancel");
+    const formEl = $("createModalForm");
+    if (titleEl) titleEl.textContent = title;
+    if (hintEl) { hintEl.textContent = hint; hintEl.hidden = !hint; }
+    inputEl.value = defaultValue || "";
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      dialog.removeEventListener("close", onClose);
+      cancelBtn.removeEventListener("click", onCancel);
+      formEl.removeEventListener("submit", onSubmit);
+      if (dialog.open) dialog.close();
+      resolve(value);
+    };
+    const onSubmit = (e) => { e.preventDefault(); finish(inputEl.value); };
+    const onCancel = () => finish(null);
+    const onClose = () => finish(null);
+    formEl.addEventListener("submit", onSubmit);
+    cancelBtn.addEventListener("click", onCancel);
+    dialog.addEventListener("close", onClose);
+    dialog.showModal();
+    inputEl.focus();
+    inputEl.select();
+  });
 }
 async function ensureSession() {
   const response = await fetch(forgePath("/api/session"), { credentials: "same-origin", cache: "no-store" });
@@ -71,10 +130,12 @@ async function ensureSession() {
 }
 async function api(url, body, method = "POST") {
   const headers = {};
-  if (body) headers["Content-Type"] = "application/json";
-  if (body && csrfToken) headers["X-CSRF-Token"] = csrfToken;
-  const init = body
-    ? { method, credentials: "same-origin", cache: "no-store", headers, body: JSON.stringify(body) }
+  const hasBody = body !== undefined && body !== null;
+  const effectiveMethod = hasBody ? method : (method && method !== "POST" ? method : "GET");
+  if (hasBody) headers["Content-Type"] = "application/json";
+  if (effectiveMethod !== "GET" && csrfToken) headers["X-CSRF-Token"] = csrfToken;
+  const init = effectiveMethod !== "GET"
+    ? { method: effectiveMethod, credentials: "same-origin", cache: "no-store", headers, ...(hasBody ? { body: JSON.stringify(body) } : {}) }
     : { credentials: "same-origin", cache: "no-store" };
   const r = await fetch(forgePath(url), init);
   const d = await r.json();
@@ -91,9 +152,20 @@ function button(text, action) {
   b.onclick = () => Promise.resolve(action()).catch((e) => status(e.message));
   return b;
 }
-function card(title, description, action) {
+function card(title, description, action, badges = []) {
   const b = button("", action);
   b.className = "card";
+  if (badges.length) {
+    const wrap = document.createElement("div");
+    wrap.className = "card-badges";
+    for (const badge of badges) {
+      const span = document.createElement("span");
+      span.className = "card-badge" + (badge.kind ? " " + badge.kind : "");
+      span.textContent = badge.label;
+      wrap.append(span);
+    }
+    b.append(wrap);
+  }
   const strong = document.createElement("strong");
   strong.textContent = title;
   const small = document.createElement("small");
@@ -101,13 +173,112 @@ function card(title, description, action) {
   b.append(strong, small);
   return b;
 }
-async function library() {
-  const [t, p] = await Promise.all([api("/api/platform/templates"), api("/api/platform/projects")]);
-  $("templates").replaceChildren(...t.templates.map((x) => card(x.name, (x.assetCount ? `에셋 ${x.assetCount}개 포함 · ` : "") + x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791", () => create(x.id, x.showcase === true))));
-  $("projects").replaceChildren(...p.projects.map((x) => card(x.name, "\uB9AC\uBE44\uC804 " + x.revision, () => openProject(x.id))));
+let cachedTemplates = [];
+let activeTemplateFilter = "all";
+let templateSearchQuery = "";
+let filtersBound = false;
+function templateMatchesFilter(x) {
+  const id = String(x.id || "").toLowerCase();
+  const dim = String(x.dimension || "3d").toLowerCase();
+  if (activeTemplateFilter === "showcase" && x.showcase !== true) return false;
+  if (activeTemplateFilter === "2d" && dim !== "2d") return false;
+  if (activeTemplateFilter === "3d" && dim !== "3d") return false;
+  if (activeTemplateFilter === "multiplayer" && !/(mmo|brawllabs|fortress)/i.test(id + " " + (x.description || ""))) return false;
+  if (activeTemplateFilter === "ported" && !/^(unity|roblox)-/.test(id)) return false;
+  if (templateSearchQuery) {
+    const hay = `${x.id} ${x.name} ${x.description || ""} ${dim}`.toLowerCase();
+    if (!hay.includes(templateSearchQuery)) return false;
+  }
+  return true;
 }
-async function create(template, showcase = false) {
-  const name = prompt("\uD504\uB85C\uC81D\uD2B8 \uC774\uB984", template === "blank3d" ? "\uC0C8\uB85C\uC6B4 \uC138\uACC4" : "\uC608\uC81C \uC138\uACC4");
+function renderTemplates() {
+  const filtered = cachedTemplates.filter(templateMatchesFilter);
+  if (!filtered.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-hint";
+    empty.textContent = "조건에 맞는 템플릿이 없습니다. 검색어나 필터를 초기화해 보세요.";
+    $("templates").replaceChildren(empty);
+    return;
+  }
+  $("templates").replaceChildren(...filtered.map((x) => {
+    const badges = [];
+    if (x.dimension) badges.push({ label: String(x.dimension).toUpperCase() });
+    if (x.showcase === true) badges.push({ label: "제작과정 보기", kind: "showcase" });
+    return card(
+      x.name,
+      (x.assetCount ? `에셋 ${x.assetCount}개 포함 · ` : "") + (x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791"),
+      () => create(x.id, x.showcase === true, x.name),
+      badges
+    );
+  }));
+}
+function bindTemplateToolbar() {
+  if (filtersBound) return;
+  filtersBound = true;
+  const search = $("templateSearch");
+  if (search) {
+    search.addEventListener("input", () => {
+      templateSearchQuery = search.value.trim().toLowerCase();
+      renderTemplates();
+    });
+  }
+  const filters = $("templateFilters");
+  if (filters) {
+    filters.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-filter]");
+      if (!btn) return;
+      activeTemplateFilter = btn.dataset.filter || "all";
+      for (const b of filters.querySelectorAll("button[data-filter]")) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      }
+      renderTemplates();
+    });
+  }
+}
+function projectCard(x) {
+  const wrap = document.createElement("div");
+  wrap.className = "project-card-wrap";
+  const openBtn = card(x.name, "\uB9AC\uBE44\uC804 " + x.revision, () => openProject(x.id));
+  const actions = document.createElement("div");
+  actions.className = "project-card-actions";
+  const renameBtn = button("이름 변경", async () => {
+    const nextName = await askProjectName("프로젝트 이름 변경", x.name, "새 이름을 입력해 주세요 (1~80자).");
+    if (!nextName?.trim() || nextName.trim() === x.name) return;
+    await api("/api/platform/projects/" + x.id, { name: nextName.trim() }, "PATCH");
+    status("프로젝트 이름을 변경했습니다.");
+    await library();
+  });
+  renameBtn.dataset.action = "rename";
+  const delBtn = button("삭제", async () => {
+    const ok = typeof window.confirm === "function" ? window.confirm(`"${x.name}" 프로젝트를 삭제할까요? 이 작업은 되돌릴 수 없습니다.`) : true;
+    if (!ok) return;
+    await api("/api/platform/projects/" + x.id, null, "DELETE");
+    status("프로젝트를 삭제했습니다.");
+    await library();
+  });
+  delBtn.className = "danger";
+  delBtn.dataset.action = "delete";
+  actions.append(renameBtn, delBtn);
+  wrap.append(openBtn, actions);
+  return wrap;
+}
+async function library() {
+  bindTemplateToolbar();
+  const [t, p] = await Promise.all([api("/api/platform/templates"), api("/api/platform/projects")]);
+  cachedTemplates = t.templates || [];
+  renderTemplates();
+  if (!p.projects.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-hint";
+    empty.textContent = "아직 만든 프로젝트가 없습니다. 위 템플릿을 선택해 첫 프로젝트를 시작해 보세요.";
+    $("projects").replaceChildren(empty);
+  } else {
+    $("projects").replaceChildren(...p.projects.map((x) => projectCard(x)));
+  }
+}
+async function create(template, showcase = false, templateName = "") {
+  const defaultName = template === "blank3d" ? "\uC0C8\uB85C\uC6B4 \uC138\uACC4" : (templateName ? `${templateName} 프로젝트` : "\uC608\uC81C \uC138\uACC4");
+  const name = await askProjectName("\uD504\uB85C\uC81D\uD2B8 \uC774\uB984", defaultName, templateName ? `선택한 템플릿: ${templateName}` : "");
   if (!name?.trim()) return;
   const guided = template !== "blank3d" && await PlayForgeGuided.choose({ showcase });
   if (guided === null) return;
@@ -185,7 +356,7 @@ async function refresh() {
     }
     selected = result;
     syncCollaboration();
-    status("");
+    if (/불러오는 중|준비하고 있습니다/.test($("status").textContent || "")) status("");
   } catch (e) {
     status(e.message);
   }
@@ -338,7 +509,7 @@ async function publishProject() {
     a.href = forgePath("/play/" + selected.project.id);
     a.target = "_blank";
     a.textContent = "\uAC8C\uC2DC\uB41C \uAC8C\uC784 \uC5F4\uAE30 \u2197";
-    p.append(a, document.createElement("br"), button("\uBC30\uD3EC \uB9C1\uD06C \uBCF5\uC0AC", () => navigator.clipboard.writeText(location.origin + a.getAttribute("href"))));
+    p.append(a, document.createElement("br"), button("\uBC30\uD3EC \uB9C1\uD06C \uBCF5\uC0AC", () => copyText(location.origin + a.getAttribute("href"))));
     status("\uD604\uC7AC \uC11C\uBC84\uC5D0 \uAC8C\uC2DC\uD588\uC2B5\uB2C8\uB2E4. \uAC19\uC740 \uC8FC\uC18C\uC5D0\uC11C \uD65C\uC131 \uBC84\uC804\uC744 \uC81C\uACF5\uD569\uB2C8\uB2E4.");
   } catch (e) {
     status(e.message);
@@ -352,11 +523,5 @@ async function publishProject() {
   const query = new URLSearchParams(location.search);
   const id = query.get("project");
   if (id) await openProject(id);
-  else {
-    const p = await api("/api/platform/projects");
-    if (!p.projects.length) {
-      const d = await api("/api/platform/projects", { name: "\uB098\uC758 \uCCAB \uBC88\uC9F8 \uC138\uACC4", template: "blank3d" });
-      await openProject(d.project.id);
-    } else status("\uD504\uB85C\uC81D\uD2B8 \uB610\uB294 \uC608\uC81C\uB9F5\uC744 \uC120\uD0DD\uD558\uC138\uC694.");
-  }
+  else status("원하는 템플릿을 선택하거나 새 프로젝트를 만들어 시작하세요.");
 })().catch((e) => status(e.message));
