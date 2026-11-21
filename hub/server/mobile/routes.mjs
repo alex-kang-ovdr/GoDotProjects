@@ -44,7 +44,7 @@ function verifyJwt(token, hmacSecret, nowMs) {
   return payload;
 }
 
-export function createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken, env = process.env }) {
+export function createMobile({ config, db, rootDir, now, rate, audit, google, ugcPublish = null, ugcMultiplayer = null, verifyMobileGoogleToken, env = process.env }) {
   const mobileConfig = config.mobile || {};
   const enabled = mobileConfig.enabled === true;
   if (!enabled) {
@@ -185,7 +185,25 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     return { compatible: true, reason: null, message: null };
   }
 
-  function readGameAndroidMeta(gameId) {
+  function readGameAndroidMeta(gameOrId) {
+    const game = typeof gameOrId === 'object' && gameOrId ? gameOrId : null;
+    const gameId = game ? game.id : String(gameOrId || '');
+    if (game?.source === 'ugc' && game.hostSlug && game.activeReleaseId && ugcPublish?.storage) {
+      const resolvedPck = ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'index.pck');
+      if (resolvedPck?.filePath && existsSync(resolvedPck.filePath)) {
+        const pckBytes = statSync(resolvedPck.filePath).size;
+        const pckUrl = typeof game.entryUrl === 'string' && game.entryUrl.includes('/')
+          ? game.entryUrl.replace(/\/[^/?#]*(?:[?#].*)?$/, '/index.pck')
+          : `/play-ugc/${game.hostSlug}/${game.activeReleaseId}/index.pck`;
+        return {
+          runtime: 'godot-pck',
+          requiredEngineVersion: '4.7.2',
+          minAppVersionCode: 1,
+          pckUrl,
+          pckBytes
+        };
+      }
+    }
     const manifestPath = resolve(rootDir, 'games', gameId, 'game.manifest.json');
     let manifestAndroid = null;
     try {
@@ -208,7 +226,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
 
   function enrichMobileGame(game, compliance, clientVersions = {}) {
     const rating = gameAgeRating(game);
-    const meta = readGameAndroidMeta(game.id);
+    const meta = readGameAndroidMeta(game);
     const compat = checkVersionCompatibility({
       runtime: meta.runtime,
       requiredEngineVersion: meta.requiredEngineVersion,
@@ -216,6 +234,10 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       clientEngineVersion: clientVersions.engineVersion,
       clientAppVersionCode: clientVersions.appVersionCode
     });
+    const deployMode = game.deployMode || 'singleplay';
+    const multiplayer = deployMode === 'mmo'
+      ? { transport: 'ws', wsPath: ugcMultiplayer?.socketPath || '/ws/ugc-mmo', gameId: game.id }
+      : null;
     return {
       id: game.id,
       title: game.title,
@@ -228,6 +250,9 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       entryUrl: game.entryUrl,
       buildId: game.buildId,
       saveSchemaVersion: game.saveSchemaVersion,
+      source: game.source || 'static',
+      deployMode,
+      multiplayer,
       ageRating: rating,
       allowed: canPlayAgeRating(compliance.ageTier, rating, compliance.parentalConsentStatus),
       runtime: meta.runtime,
@@ -465,7 +490,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       if (!canPlayAgeRating(compliance.ageTier, rating, compliance.parentalConsentStatus)) {
         throw new ApiError(403, 'AGE_RATING_RESTRICTED', `연령 등급(${rating}) 제한으로 실행할 수 없습니다.`);
       }
-      const meta = readGameAndroidMeta(game.id);
+      const meta = readGameAndroidMeta(game);
       const compat = checkVersionCompatibility({
         runtime: meta.runtime,
         requiredEngineVersion: meta.requiredEngineVersion,
@@ -484,10 +509,18 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       db.prepare(
         'INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)'
       ).run(id, `mobile:${auth.familyId}`, auth.user.id, `m:${auth.user.id}`, game.id, game.buildId, stamp, stamp + 2 * 3600000, 'live', null);
+      const deployMode = game.deployMode || 'singleplay';
+      const multiplayer = deployMode === 'mmo'
+        ? { transport: 'ws', wsPath: ugcMultiplayer?.socketPath || '/ws/ugc-mmo', gameId: game.id }
+        : null;
       json(res, 201, {
         id,
         gameId: game.id,
         buildId: game.buildId,
+        runtime: meta.runtime,
+        pckUrl: meta.pckUrl,
+        deployMode,
+        multiplayer,
         ageRating: rating,
         compatibility: compat,
         saveSchemaVersion: game.saveSchemaVersion

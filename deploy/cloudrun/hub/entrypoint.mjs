@@ -337,6 +337,13 @@ if (isDirectExecution) {
   });
 
   const EDGE_HOST = process.env.HOST || '0.0.0.0';
+  if (ROLE === 'public' && app.ugcMultiplayer) {
+    edge.on('upgrade', (req, socket, head) => {
+      if (app.ugcMultiplayer.handleUpgrade(req, socket, head)) return;
+      if (!FORGE_UPSTREAM) socket.destroy();
+    });
+  }
+
   await new Promise((resolve, reject) => {
     edge.once('error', reject);
     edge.listen(EDGE_PORT, EDGE_HOST, resolve);

@@ -567,7 +567,16 @@
       const nonce=uuid().replace(/-/g,'');
       const rawEntryUrl=(typeof play.entryUrl==='string'&&play.entryUrl)||(typeof game.entryUrl==='string'&&game.entryUrl)||`/games/${encodeURIComponent(game.id)}/index.html`;
       const sep=rawEntryUrl.includes('?')?'&':'?';
-      iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
+      let mpQuery='';
+      const mpInfo=play.multiplayer||(game.deployMode==='mmo'?{wsPath:'/ws/ugc-mmo',gameId:game.id}:null);
+      if(mpInfo&&mpInfo.wsPath&&!local){
+        const wsProto=location.protocol==='https:'?'wss:':'ws:';
+        const wsUrl=`${wsProto}//${location.host}${mpInfo.wsPath}`;
+        const playerLabel=state.session?.displayName||'WebPlayer';
+        const roomParam=new URLSearchParams(location.search).get('room')||'';
+        mpQuery=`&multiplayer=1&ws=${encodeURIComponent(wsUrl)}&gameId=${encodeURIComponent(mpInfo.gameId||game.id)}&name=${encodeURIComponent(playerLabel)}`+(roomParam?`&room=${encodeURIComponent(roomParam)}`:'');
+      }
+      iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}${mpQuery}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
       $('player-panel').replaceChildren(iframe);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);

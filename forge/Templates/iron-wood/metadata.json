@@ -17,5 +17,22 @@
     "scripts/iron_wood.gd",
     "scenes/main.tscn",
     "project.godot"
-  ]
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "iron-wood",
+      "title": { "ko": "아이언 우드 (Iron Wood)", "en": "Iron Wood" },
+      "summary": { "ko": "목재 카트를 조립해 3D 물리 트랙을 주행하는 샌드박스 퍼즐", "en": "Build a wooden cart, test it on a 3D physics track, and iterate." },
+      "instructions": { "ko": "블록을 조립한 뒤 주행 테스트를 시작해 트랙 끝까지 완주하세요.", "en": "Assemble cart parts and launch onto the physics track." },
+      "tags": ["physics", "sandbox", "3d"],
+      "controls": ["keyboard", "mouse"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
 }

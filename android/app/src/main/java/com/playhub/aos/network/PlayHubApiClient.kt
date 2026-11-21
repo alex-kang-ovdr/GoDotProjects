@@ -30,7 +30,9 @@ data class RemoteGameItem(
     val pckUrl: String?,
     val pckBytes: Long,
     val requiredEngineVersion: String?,
-    val minAppVersionCode: Int
+    val minAppVersionCode: Int,
+    val deployMode: String = "singleplay",
+    val multiplayerWsUrl: String? = null
 )
 
 data class CloudSaveResult(
@@ -79,6 +81,10 @@ class PlayHubApiClient(private val baseUrl: String) {
             val g = entry as? Map<String, Any?> ?: continue
             val id = g["id"] as? String ?: continue
             val androidObj = g["android"] as? Map<String, Any?>
+            val mpObj = g["multiplayer"] as? Map<String, Any?>
+            val deployMode = (g["deployMode"] as? String)?.takeIf { it.isNotBlank() } ?: "singleplay"
+            val rawWsPath = (mpObj?.get("wsPath") as? String)?.takeIf { it.isNotBlank() }
+            val resolvedWsUrl = rawWsPath?.let { resolveWsUrl(it) }
             val rawEntry = g["entryUrl"] as? String ?: ""
             val rawPck = (androidObj?.get("pckUrl") as? String)?.takeIf { it.isNotBlank() }
             items += RemoteGameItem(
@@ -94,7 +100,9 @@ class PlayHubApiClient(private val baseUrl: String) {
                 pckUrl = rawPck?.let { resolveUrl(it) },
                 pckBytes = (androidObj?.get("pckBytes") as? Number)?.toLong() ?: 0L,
                 requiredEngineVersion = androidObj?.get("engineVersion") as? String,
-                minAppVersionCode = (androidObj?.get("minAppVersionCode") as? Number)?.toInt() ?: 1
+                minAppVersionCode = (androidObj?.get("minAppVersionCode") as? Number)?.toInt() ?: 1,
+                deployMode = deployMode,
+                multiplayerWsUrl = resolvedWsUrl
             )
         }
         return items
@@ -137,6 +145,16 @@ class PlayHubApiClient(private val baseUrl: String) {
     private fun resolveUrl(pathOrUrl: String): String {
         if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) return pathOrUrl
         return "$normalizedBase/${pathOrUrl.trimStart('/')}"
+    }
+
+    private fun resolveWsUrl(pathOrUrl: String): String {
+        if (pathOrUrl.startsWith("ws://") || pathOrUrl.startsWith("wss://")) return pathOrUrl
+        val wsBase = when {
+            normalizedBase.startsWith("https://") -> "wss://" + normalizedBase.removePrefix("https://")
+            normalizedBase.startsWith("http://") -> "ws://" + normalizedBase.removePrefix("http://")
+            else -> "ws://$normalizedBase"
+        }
+        return "$wsBase/${pathOrUrl.trimStart('/')}"
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -34,7 +34,7 @@ function resolveProxyClientIp(request,trustProxy){
 }
 
 const compressible=new Set(['.html','.js','.mjs','.css','.json','.svg','.xml','.txt']);
-export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySecret,trustProxy=true}={}){
+export function createStaticServer(directory,{forgeProxy,ugcMultiplayer,apiPort,trustedProxySecret,trustProxy=true}={}){
   const root=fs.realpathSync(directory);
   const gzipCache=new Map();
   const server=http.createServer((request,response)=>{
@@ -102,14 +102,15 @@ export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySec
       if(request.method==='HEAD')response.end();else fs.createReadStream(real).pipe(response);
     }catch{response.writeHead(400);response.end('Invalid request');}
   });
-  if(forgeProxy){
+  if(forgeProxy||ugcMultiplayer){
     server.on('upgrade',(request,socket,head)=>{
       const queryAt=(request.url||'').indexOf('?');
       const rawPath=queryAt>=0?request.url.slice(0,queryAt):(request.url||'');
-      if(forgeProxy.matches(rawPath))forgeProxy.upgrade(request,socket,head);
-      else socket.destroy();
+      if(ugcMultiplayer&&ugcMultiplayer.handleUpgrade(request,socket,head))return;
+      if(forgeProxy&&forgeProxy.matches(rawPath)){forgeProxy.upgrade(request,socket,head);return;}
+      socket.destroy();
     });
-    server.on('close',()=>forgeProxy.close?.());
+    if(forgeProxy)server.on('close',()=>forgeProxy.close?.());
   }
   return server;
 }
@@ -122,7 +123,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const multiplayerUpstream=process.env.PLAYHUB_MULTIPLAYER_UPSTREAM||config.multiplayerUpstream||'';
   const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream,multiplayerUpstream}):null;
   const trustedProxySecret=crypto.randomBytes(32).toString('hex');
-  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..'),trustedProxySecret}),user=createStaticServer(output.user,{forgeProxy,apiPort:config.publicPort||8090,trustedProxySecret,trustProxy:config.trustProxy!==false}),admin=createStaticServer(output.admin);
+  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..'),trustedProxySecret}),user=createStaticServer(output.user,{forgeProxy,ugcMultiplayer:app.ugcMultiplayer,apiPort:config.publicPort||8090,trustedProxySecret,trustProxy:config.trustProxy!==false}),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
     await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');

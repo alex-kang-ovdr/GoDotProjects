@@ -52,7 +52,9 @@ private data class CatalogGame(
     val minAppVersionCode: Int = 1,
     val accentStart: String = "#1D4ED8",
     val accentEnd: String = "#0F172A",
-    val iconEmoji: String = "🎮"
+    val iconEmoji: String = "🎮",
+    val deployMode: String = "singleplay",
+    val multiplayerWsUrl: String? = null
 )
 
 /**
@@ -272,7 +274,9 @@ class MainActivity : Activity() {
                         minAppVersionCode = item.minAppVersionCode,
                         accentStart = c1,
                         accentEnd = c2,
-                        iconEmoji = emoji
+                        iconEmoji = emoji,
+                        deployMode = item.deployMode,
+                        multiplayerWsUrl = item.multiplayerWsUrl
                     )
                 }
             }.onSuccess { list ->
@@ -912,7 +916,8 @@ class MainActivity : Activity() {
             displayName = profile.displayName,
             handle = profile.handle,
             isGuest = profile.isGuest,
-            ageTier = profile.ageTier.name
+            ageTier = profile.ageTier.name,
+            wsUrl = game.multiplayerWsUrl
         )
         startActivity(intent)
     }

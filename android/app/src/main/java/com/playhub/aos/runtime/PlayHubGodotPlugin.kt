@@ -21,6 +21,8 @@ class PlayHubGodotPlugin(
     private val isGuest: Boolean,
     private val ageTier: String,
     private val locale: String,
+    private val wsUrl: String = "",
+    private val roomCode: String = "",
     private val onOpenOverlay: (tab: String) -> Unit
 ) : GodotPlugin(godot) {
 
@@ -47,6 +49,18 @@ class PlayHubGodotPlugin(
 
     @UsedByGodot
     fun get_launch_pck_path(): String = pckPath
+
+    @UsedByGodot
+    fun get_multiplayer_config(): String {
+        if (wsUrl.isBlank()) return ""
+        return JSONObject().apply {
+            put("wsUrl", wsUrl)
+            put("gameId", gameId)
+            put("roomId", roomCode)
+            put("displayName", displayName)
+            put("platform", "android")
+        }.toString()
+    }
 
     @UsedByGodot
     fun get_profile(): String {
