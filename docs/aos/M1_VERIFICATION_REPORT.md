@@ -94,6 +94,19 @@
 |---|---|
 | ![Farm Status Pill](verification-m1/08-farm-home-pill.png) | ![Farm Status Dialog](verification-m1/09-farm-status-dialog.png) |
 
+### 3.6 Google Stitch 디자인 시스템 전면 개편 + PlayHub 공식 로고
+- Stitch 시안(`bloxpulse_design_system.md` · `home` · `explore` · `chat`)의 **High-Contrast Dark Modern** 팔레트(`#191B1D` 캔버스 · `#232629` 카드 · `#2B2E32` 입력/필 · `#111315` 하단바 · `#00B06F`/`#002111` 플레이 버튼 · `#FFD147` 코인)와 **PlayHub 공식 로고**(`#142C25` 에버그린 + `#DEECA6` 라임 플레이 심볼)를 앱 아이콘·상단 헤더·전 탭에 일관 적용.
+- 이모지 대신 17종 경량 VectorDrawable 아이콘 적용(Release APK 크기 `23.66 MiB`, 증가량 `+0.02 MiB`), 홈 가로 슬라이더·탐색 인라인 검색/카테고리 칩/2열 그리드·채팅 목록/실시간 채팅방(`▶ 합류`)·Stitch 바텀시트 게임 런처 모달·아바타 로컬 테마 커스터마이징 반영.
+- `release`·`live` 오프라인 폴백에서는 검증용 4.8 샘플 항목이 노출되지 않도록 제한.
+
+| Stitch 홈 (PlayHub 로고 · 친구 · 추천 슬라이더) | Stitch 탐색 (인라인 검색 · 필터 칩 · 2열 그리드) | Stitch 채팅 목록 (실시간 스레드) |
+|---|---|---|
+| ![Stitch Home](verification-m1/10-stitch-home.png) | ![Stitch Explore](verification-m1/11-stitch-explore.png) | ![Stitch Chat](verification-m1/12-stitch-chat.png) |
+
+| Stitch 채팅방 (`▶ 합류` · 말풍선 · 입력바) | Stitch 바텀시트 게임 런처 모달 | Stitch 더보기 (Farm 상태 배지) |
+|---|---|---|
+| ![Stitch Chatroom](verification-m1/13-stitch-chatroom.png) | ![Stitch Launch Sheet](verification-m1/14-stitch-launch-sheet.png) | ![Stitch More](verification-m1/15-stitch-more.png) |
+
 ---
 
 ## 4. 실측 프로세스 격리 · 마운트 · 크래시 검증 로그
