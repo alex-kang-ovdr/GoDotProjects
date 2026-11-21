@@ -1,7 +1,7 @@
 # Play Hub Desktop — 웹 허브 + Rust Bootstrapper + 공용 Godot Player 구현 계획안
 
-- **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준·통합 대상 **`main`** `e3350e9`)
-- **문서 상태**: v0.4 (2026-11-22 — 개발 기준 브랜치 `main` 전환, 코드 서명·키 관리·출시 승인 분리·Launch Ticket·네이티브 로그인·노출 정책 확정. v0.3: 아바타 상점 3D 뷰 3단계 구조 추가. v0.2: 기준 아키텍처를 "웹 허브 + 경량 Native Player"로 전환)
+- **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준·통합 트렁크 **`PlayHub-Platform`** `b8efde0`)
+- **문서 상태**: v0.5 (2026-11-22 — 통합 트렁크 `PlayHub-Platform` (`b8efde0`, `AGENTS.md` SSOT 및 `owners.json` 등록 완료) 기준 반영. v0.4: 코드 서명·키 관리·출시 승인 분리·Launch Ticket·네이티브 로그인·노출 정책 확정. v0.3: 아바타 상점 3D 뷰 3단계 구조 추가)
 - **대상 엔진**: `godot-engine` 포크 고정 커밋 `ed1daf0bf001b61586d9930840f2f1394092c079` (**Godot 4.7.2-stable**)
 - **입력 문서**: `PlayHub_Desktop_Performance_Responsiveness_LowFriction.md` (사용자 제공 데스크톱 최적화 설계), 기술 전략 검토 기록(2026-11-21~22)
 
@@ -14,7 +14,7 @@
 | 대상 OS | **Windows · macOS · Linux를 처음부터 같은 테스트 규격으로 검증**. 정식 배포 순서: Windows(`live`) → macOS·Linux(`rc` → `live`) |
 | 배포 채널 | 자체 배포(Bootstrapper 설치 파일 + 자동 업데이트). 결제는 `Hub-Billing` 웹 PG |
 | 기술 스택 | **Rust**(코어·보안·OS 연동) + **TypeScript**(도구·테스트·자동화) + **JSON Schema/OpenAPI**(계약) + **Godot 4.7.2**(Player) |
-| 개발 브랜치 | `Hub-Desktop`은 **`main` 기준**으로 분기하고 `main`으로 통합한다. 공식 `live` 빌드·출시는 `main`에서만 허용 |
+| 개발 브랜치 | `Hub-Desktop`은 통합 트렁크 **`PlayHub-Platform` 기준**으로 분기하고 `PlayHub-Platform`으로 통합한다(`AGENTS.md` §0). 공식 `live` 빌드·출시는 `PlayHub-Platform`에서만 허용 |
 | Windows 코드 서명 | **Azure Trusted Signing 우선**. 자격 요건(조직 검증 등)을 충족하지 못하면 **OV 인증서**(키는 클라우드 HSM에 보관) (§11.4) |
 | 서명 키 관리 | **클라우드 관리형 서명 서비스 또는 HSM만 사용**. 개발자 PC에 서명 키·인증서 저장 금지 (§11.4) |
 | 출시 승인 | **CI 빌드와 프로덕션 서명·출시 승인을 분리**. CI는 서명 권한이 없고, 서명·출시는 보호된 승인 단계에서만 실행 (§11.5) |
@@ -109,7 +109,7 @@ sequenceDiagram
 
 ### 3.3 아바타 상점 3D 뷰
 
-#### (1) 현황 실측 (2026-11-22, `main` `e3350e9`)
+#### (1) 현황 실측 (2026-11-22, `PlayHub-Platform` `ccec067`)
 
 | 자산 | 현황 | 3D 상점 관점의 문제 |
 |---|---|---|
@@ -156,7 +156,7 @@ sequenceDiagram
 
 #### (6) 소유권 조율
 
-- `hub/web/user/avatar*.js`, `hub/server/avatar/**`, `forge/Godot/addons/playforge_avatar/**`는 `Forge-Avatar` 작업 결과물이지만 `owners.json`에 등록되어 있지 않다. 웹 뷰어 확장(V1)과 사전 렌더링 파이프라인(V0)은 **`Forge-Avatar`(또는 아바타 담당 브랜치)가 맡고**, `Hub-Desktop`은 V2 스튜디오 진입(딥링크·Player 실행)과 공용 CAS 패키지 연동만 맡는 분담을 제안한다.
+- `hub/web/user/avatar*.js`, `hub/server/avatar/**`, `forge/Godot/addons/playforge_avatar/**`는 `owners.json`에서 **`Forge-Avatar` 단독 소유**로 등록되어 있다. 웹 뷰어 확장(V1)과 사전 렌더링 파이프라인(V0)은 **`Forge-Avatar`가 맡고**, `Hub-Desktop`은 V2 스튜디오 진입(딥링크·Player 실행)과 공용 CAS 패키지 연동만 맡는 분담을 제안한다.
 
 ---
 
@@ -304,7 +304,7 @@ flowchart TB
 - **장기 세션 (P1)**: 라이브러리 오프라인 실행과 이후 데스크톱 앱을 위해 OAuth 2.1 Authorization Code + PKCE + loopback redirect(RFC 8252)를 지원하고, 리프레시 토큰은 OS 보안 저장소에 둔다.
 - **구현 위치 (확정)**: Launch Ticket 발급·교환과 네이티브 로그인은 **Hub 공통 인증 서비스**에 구현한다. 웹·Android·iOS·Desktop이 같은 서비스를 쓰고, `Hub-Desktop`은 계약(`launch-ticket.v1`, 네이티브 OAuth)의 **소비자**로서 클라이언트 쪽만 구현한다.
   - 현재 인증 코드는 `hub/server/google.mjs`(Google RP 웹 PKCE)와 `hub/server/mobile/`(모바일 토큰·Apple 로그인)으로 흩어져 있고 **OIDC Provider 기능이 없다**. 공통 인증 서비스 모듈(예: `hub/server/auth/`)로 정리하면서 네이티브 클라이언트 인가 엔드포인트, 티켓 저장소, 토큰 회전·폐기를 추가해야 한다.
-  - 공통 인증 서비스의 소유 브랜치와 일정은 `main` 통합 담당과 합의한다(§14.2).
+  - 공통 인증 서비스의 소유 브랜치와 일정은 `PlayHub-Platform` 통합 담당과 합의한다(§14.2).
 - **결제**: [HUB_BILLING_PLAN.md](../billing/HUB_BILLING_PLAN.md) §4의 "PC 직접 배포: Track A `PlayCoin` +25% 허용" 정책을 따른다. 결제는 **웹(시스템 브라우저)**에서만 처리한다. 인게임 오버레이 `Store`는 웹 결제 페이지를 열고, 완료 후 Bootstrapper가 서버 원장을 다시 조회해 `iap_updated`를 게임에 전달한다.
 - **소셜·크로스플레이**: `Hub-AOS` M3의 같이 입장(Co-Entry) 계약을 따른다. 초대 `https://<hub>/join/<roomCode>`는 웹이 받아 Instant 또는 Native 경로(`playhub://join`)로 분기한다.
 
@@ -355,15 +355,12 @@ Hub-Desktop/
 └─ docs/desktop/HUB_DESKTOP_PLAN.md  # 본 계획안
 ```
 
-### 10.2 소유권 등록 제안 (통합 브랜치 `main`에 선행 반영)
+### 10.2 소유권 등록 현황 (`PlayHub-Platform` `b8efde0` 반영 완료)
 
-- **단독 소유(`owns`)**: `native/**`, `contracts/desktop/**`, `tools/desktop/**`, `docs/desktop/**`, `hub/tests/desktop*.mjs`, `godot-sdk/hosts/desktop_host.gd`
-- **공유(`shared`, 사전 합의)**: `contracts/**` 루트 규칙, `godot-sdk/playhub_runtime_sdk.gd`(AOS/iOS 공동), `hub/web/user/app.js`(Play 버튼 분기), `hub/server/app.mjs`(Release 라우터 연결), `games/*/game.manifest.json`(`playModes`·`desktop` 블록)
-- **타 영역 의존 (소유하지 않음)**: Hub 공통 인증 서비스(Launch Ticket·네이티브 OAuth), `PlayHub-Store` 심사 상태, `PlayHub-CDN` R2 서명 URL
-- **`main` 변경 요청**: `tools/build-version/**`과 [build-version-naming-policy.md](../architecture/build-version-naming-policy.md)에 7번째 타깃 `hub-desktop` 추가
-
-> [!WARNING]
-> `main`의 `owners.json`은 `baseBranch`가 아직 `PlayHub-Platform`이고 `Hub-AOS`/`Hub-IOS`/`Hub-Desktop` 항목이 없다. `check-ownership.mjs`는 `baseBranch` 기준으로 변경 파일을 계산하므로, 개발 기준이 `main`으로 바뀐 만큼 `baseBranch`를 `main`으로 바꾸고 AOS/iOS/Desktop의 SDK 경계를 함께 등록해야 한다.
+- **단독 소유(`owns`)**: `native/**`, `contracts/desktop/**`, `tools/desktop/**`, `docs/desktop/**`, `hub/tests/desktop*.mjs`, `godot-sdk/hosts/desktop_host.gd` (`owners.json` 등록 완료)
+- **공유(`shared`, 사전 합의)**: `godot-sdk/playhub_runtime_sdk.gd`(등록 완료), `hub/web/user/app.js`(Play 버튼 분기), `hub/server/app.mjs`(Release 라우터 연결), `games/*/game.manifest.json`(`playModes`·`desktop` 블록)
+- **타 영역 의존 (소유하지 않음)**: Hub 공통 인증 서비스(Launch Ticket·네이티브 OAuth), `PlayHub-Store` 심사 상태, `PlayHub-CDN` R2 서명 URL, `Forge-Avatar` 아바타 상점·웹 뷰어
+- **`PlayHub-Platform` 잔여 변경 요청**: `tools/build-version/**`과 [build-version-naming-policy.md](../architecture/build-version-naming-policy.md)에 7번째 타깃 `hub-desktop` 추가
 
 ---
 
@@ -382,10 +379,10 @@ Hub-Desktop/
 | `dev` | 테스트 서명 (관리형 서비스의 비프로덕션 프로필) | 허용 | `dev` | `playhub-<branch>-dev://` |
 | `test` | 테스트 서명 (관리형 서비스의 비프로덕션 프로필) | 허용 | `qa` | `playhub-<branch>-test://` |
 | `release` | 프로덕션 서명 (승인 필요) | 차단 | `rc` | `playhub-rc://` |
-| `live` | 프로덕션 서명 (승인 필요) | 차단 | `live` | `playhub://` (`main` 전용) |
+| `live` | 프로덕션 서명 (승인 필요) | 차단 | `live` | `playhub://` (`PlayHub-Platform` 전용) |
 
 - 설치 경로·데이터 경로·AppUserModelID(Windows)·Bundle ID(macOS)·`.desktop` ID(Linux)에 `<branch>.<config>`를 넣어 동시에 설치할 수 있게 한다(AOS `com.playhub.<branch>.<config>` 규칙과 대칭).
-- `-dirty` 빌드는 `qa`/`rc`/`live` 채널에 게시할 수 없다. `live`는 `main`에서 만든 빌드만 허용하고, 다른 브랜치에서 `live`를 시도하면 빌드가 실패한다.
+- `-dirty` 빌드는 `qa`/`rc`/`live` 채널에 게시할 수 없다. `live`는 `PlayHub-Platform`에서 만든 빌드만 허용하고, 다른 브랜치에서 `live`를 시도하면 빌드가 실패한다.
 
 ### 11.3 파이프라인
 
@@ -427,7 +424,7 @@ flowchart LR
 | 단계 | 실행 주체·환경 | 권한 | 승인 |
 |---|---|---|---|
 | **1. CI 빌드** | 모든 브랜치 PR·푸시 | 서명 키 접근 **없음**. 미서명 산출물과 빌드 출처 증명(SLSA provenance, 산출물 SHA-256)만 생성 | 없음 (자동) |
-| **2. 프로덕션 서명** | `main` 빌드만, 보호된 배포 환경(예: GitHub Environments `production-signing`) | 서명 서비스 호출 권한은 이 환경의 OIDC 신원에만 부여 | **승인 1**: 릴리스 담당자. 서명 전에 CI가 기록한 다이제스트·출처와 실제 파일이 일치하는지 자동 검증하고, 일치하지 않으면 중단 |
+| **2. 프로덕션 서명** | `PlayHub-Platform` 빌드만, 보호된 배포 환경(예: GitHub Environments `production-signing`) | 서명 서비스 호출 권한은 이 환경의 OIDC 신원에만 부여 | **승인 1**: 릴리스 담당자. 서명 전에 CI가 기록한 다이제스트·출처와 실제 파일이 일치하는지 자동 검증하고, 일치하지 않으면 중단 |
 | **3. 출시** | 보호된 배포 환경 `production-release` | R2 게시, Release API 채널·롤아웃 % 변경 권한 | **승인 2**: 서명 승인자와 **다른 사람**(2인 원칙). 단계적 롤아웃(예: 1% → 10% → 100%)과 롤백 권한 포함 |
 
 - 서명·출시 이력(누가, 언제, 어떤 다이제스트를, 어떤 승인으로)을 변경 불가능한 감사 로그로 남긴다.
@@ -513,14 +510,14 @@ flowchart LR
 3. **클라우드 제공자 선택**: 서명·KMS·HSM을 Azure(Trusted Signing·Key Vault)로 모을지, Google Cloud(KMS·Cloud HSM)와 나눌지
 4. **창작자 비공개 테스트 배포 경로**: 공개 노출 정책(§5.4) 밖에서 창작자가 자기 빌드를 데스크톱에서 시험하는 방법 제공 여부
 5. **P2 데스크톱 앱 UI 기술**: P2 착수 시점에 결정. 후보는 Tauri 2(TS 화면, 언어 2개) / Flutter(Dart 추가) / egui(WebView 완전 배제). Slint는 배제
-6. **`main`의 `owners.json` 갱신 시점**: `baseBranch`를 `main`으로 변경하고 `Hub-AOS`/`Hub-IOS`/`Hub-Desktop` 등록, `hub-desktop` 빌드 타깃 추가
+6. **`hub-desktop` 빌드 타깃 추가 시점**: `tools/build-version/**`과 빌드 버전 정책 문서에 7번째 타깃 추가 (`owners.json` 등록은 `b8efde0` 완료)
 7. **아바타 3D 뷰 분담과 웹 뷰어 방식**: V0/V1을 `Forge-Avatar`가 맡을지(권장), 웹 V1을 무의존성 뷰어 확장으로 할지 three.js로 교체할지(M0 비교 후 결정)
 
 ### 14.3 확정된 결정 (2026-11-22)
 
 | 항목 | 결정 | 반영 위치 |
 |---|---|---|
-| 개발 브랜치 | `Hub-Desktop`을 `main` 기준으로 재생성, `main`으로 통합. `live`는 `main` 전용 | 머리말, §10.2, §11.2 |
+| 기준·통합 브랜치 | `PlayHub-Platform` 단독 통합 트렁크(`AGENTS.md` §0). `Hub-Desktop`은 `PlayHub-Platform` 기준 분기·통합, `live`는 `PlayHub-Platform` 전용 | 머리말, §10.2, §11.2 |
 | Windows 코드 서명 | Azure Trusted Signing 우선, 자격 미충족 시 OV 인증서(클라우드 HSM) | §11.4 |
 | 서명 키 관리 | 클라우드 관리형 서명 서비스 또는 HSM만 사용, 개발자 PC 저장 금지 | §11.4 |
 | 출시 승인 | CI 빌드와 프로덕션 서명·출시 승인 분리(2단계 승인, 2인 원칙) | §11.3, §11.5 |
