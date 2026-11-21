@@ -12,6 +12,7 @@ const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
+const { attachCaptainForeverMmo } = require('./Tools/captain-forever-mmo-multiplayer.cjs');
 const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
@@ -635,6 +636,11 @@ function createServer(options = {}) {
         const metadata = tappyChickenMmo.metadata(tappyMmoRoomRoute[1]);
         return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
       }
+      const captainMmoRoomRoute = routePath.match(/^\/api\/captain-forever-mmo\/rooms\/([a-f0-9]{12})$/);
+      if (captainMmoRoomRoute && req.method === 'GET') {
+        const metadata = captainForeverMmo.metadata(captainMmoRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
       if (routePath === '/api/export/godot-project.zip' && req.method === 'GET') {
         const activeStudio = getStudioFor(auth?.accountKey);
         const document = activeStudio.store.snapshot();
@@ -797,6 +803,7 @@ function createServer(options = {}) {
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('brawllabs') });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('fortress-war') });
   const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('tappy-chicken-mmo') });
+  const captainForeverMmo = attachCaptainForeverMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('captain-forever-mmo') });
 
   server.on('upgrade', async (req, socket, head) => {
     req.url = stripBasePath(req.url || '');
@@ -820,7 +827,7 @@ function createServer(options = {}) {
       catch { socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); }
       return;
     }
-    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo') {
+    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo') {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -833,6 +840,7 @@ function createServer(options = {}) {
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();
+    captainForeverMmo.close();
     platformApi?.close?.();
     collaboration?.close?.();
     for (const entry of accountPlatforms.values()) entry.api.close?.();

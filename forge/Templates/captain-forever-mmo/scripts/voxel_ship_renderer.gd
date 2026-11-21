@@ -1,0 +1,147 @@
+class_name VoxelShipRenderer
+extends Node2D
+
+## 2D 물리 선체 위에 올리는 경량 3D 복셀 메시 렌더러.
+## 각 함선은 하나의 SubViewport만 사용하며, 파트는 규격 BoxMesh와 아틀라스 텍스처로 구성한다.
+
+const BalanceData = preload("res://scripts/balance.gd")
+const VisualData = preload("res://scripts/visual_tuning.gd")
+const PartMaskedShader = preload("res://shaders/part_masked_material.gdshader")
+
+var viewport: SubViewport
+var mesh_root: Node3D
+var camera_3d: Camera3D
+var surface: Sprite2D
+var atlas_texture: Texture2D
+
+func rebuild(model: ShipModel) -> void:
+	ensure_nodes()
+	for child in mesh_root.get_children():
+		mesh_root.remove_child(child)
+		child.queue_free()
+	var bounds := model.collision_box_rect()
+	var visual_center := bounds.get_center() / BalanceData.CELL
+	for part in model.parts:
+		for occupied_cell in part.cells():
+			mesh_root.add_child(make_voxel(part, Vector2(occupied_cell) - visual_center))
+	var size_in_cells := maxf(bounds.size.x, bounds.size.y) / BalanceData.CELL
+	camera_3d.size = maxf(4.0, size_in_cells + 1.4)
+	surface.position = bounds.get_center()
+	var world_pixels := camera_3d.size * BalanceData.CELL
+	surface.scale = Vector2.ONE * world_pixels / float(viewport.size.y)
+
+func ensure_nodes() -> void:
+	if viewport != null:
+		return
+	if not VisualData.VOXEL_PART_TEXTURE_ATLAS.is_empty() and ResourceLoader.exists(VisualData.VOXEL_PART_TEXTURE_ATLAS, "Texture2D"):
+		atlas_texture = load(VisualData.VOXEL_PART_TEXTURE_ATLAS) as Texture2D
+	viewport = SubViewport.new()
+	viewport.name = "VoxelPartViewport"
+	viewport.size = Vector2i(512, 512)
+	viewport.transparent_bg = true
+	viewport.own_world_3d = true
+	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	viewport.msaa_3d = Viewport.MSAA_2X
+	add_child(viewport)
+	mesh_root = Node3D.new()
+	viewport.add_child(mesh_root)
+	camera_3d = Camera3D.new()
+	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera_3d.position = Vector3(0.0, 8.0, 0.0)
+	camera_3d.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	viewport.add_child(camera_3d)
+	camera_3d.current = true
+	var light := DirectionalLight3D.new()
+	light.rotation_degrees = Vector3(-55.0, -35.0, 0.0)
+	light.light_energy = 1.2
+	viewport.add_child(light)
+	surface = Sprite2D.new()
+	surface.name = "VoxelPartSurface"
+	surface.texture = viewport.get_texture()
+	surface.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	surface.z_index = -1
+	add_child(surface)
+
+func make_voxel(part: PartData, grid_position: Vector2) -> MeshInstance3D:
+	var mesh_instance := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(1.0, 0.28, 1.0)
+	mesh_instance.mesh = box
+	mesh_instance.position = Vector3(grid_position.x, 0.14, grid_position.y)
+	mesh_instance.set_meta("part_data", part)
+	mesh_instance.material_override = voxel_material(part)
+	return mesh_instance
+
+func refresh_display_mode() -> void:
+	if mesh_root == null: return
+	for child in mesh_root.get_children():
+		if child is MeshInstance3D:
+			child.material_override = voxel_material(child.get_meta("part_data"))
+
+func voxel_material(part: PartData) -> Material:
+	if not VisualData.use_textured_design:
+		var plain := StandardMaterial3D.new()
+		plain.albedo_color = Color(str(part.spec().fill)).lightened(0.3)
+		plain.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		plain.roughness = 1.0
+		return plain
+	var material := ShaderMaterial.new()
+	var spec := part.spec()
+	var theme := str(spec.get("design_theme", "terran_human"))
+	var tier_color := VisualData.grade_color(str(spec.get("grade_color", "gray")))
+	material.shader = PartMaskedShader
+	material.set_shader_parameter("tint_color", VisualData.theme_tint(theme))
+	material.set_shader_parameter("emission_color", tier_color)
+	material.set_shader_parameter("emission_energy", 1.15)
+	material.set_shader_parameter("metallic_value", 0.18)
+	if theme == "zerg_biological":
+		material.set_shader_parameter("metallic_value", 0.02)
+		material.set_shader_parameter("roughness_min", 0.52)
+	elif theme == "protoss_hitec":
+		material.set_shader_parameter("metallic_value", 0.36)
+		material.set_shader_parameter("roughness_min", 0.12)
+		material.set_shader_parameter("roughness_max", 0.68)
+	var albedo_path := VisualData.part_texture_path(part.kind, spec)
+	var mask_path := VisualData.part_texture_path(part.kind, spec, true)
+	var albedo: Texture2D = load(albedo_path) as Texture2D if not albedo_path.is_empty() and ResourceLoader.exists(albedo_path, "Texture2D") else null
+	var masks: Texture2D = load(mask_path) as Texture2D if not mask_path.is_empty() and ResourceLoader.exists(mask_path, "Texture2D") else null
+	if albedo == null and atlas_texture != null:
+		var atlas_region := AtlasTexture.new()
+		atlas_region.atlas = atlas_texture
+		atlas_region.region = texture_region(part)
+		albedo = atlas_region
+	if albedo == null:
+		albedo = _procedural_part_texture(part)
+	if albedo != null:
+		material.set_shader_parameter("albedo_map", albedo)
+	if masks != null:
+		material.set_shader_parameter("mask_map", masks)
+	return material
+
+
+static var _proc_tex_cache: Dictionary = {}
+
+static func _procedural_part_texture(part: PartData) -> ImageTexture:
+	var key := part.kind
+	if _proc_tex_cache.has(key):
+		return _proc_tex_cache[key]
+	var spec := part.spec()
+	var base := Color(str(spec.get("fill", "334661")))
+	var edge := Color(str(spec.get("stroke", "a9bed9")))
+	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	for y in 16:
+		for x in 16:
+			var border := x == 0 or y == 0 or x == 15 or y == 15
+			var bevel := x == 1 or y == 1 or x == 14 or y == 14
+			var c := edge if border else (base.lightened(0.22) if bevel else base)
+			if not border and not bevel and ((x + y) % 5 == 0):
+				c = c.darkened(0.08)
+			img.set_pixel(x, y, c)
+	var tex := ImageTexture.create_from_image(img)
+	_proc_tex_cache[key] = tex
+	return tex
+
+func texture_region(part: PartData) -> Rect2:
+	var tile: Vector2i = VisualData.VOXEL_PART_TEXTURE_TILES.get(part.kind, Vector2i.ZERO)
+	var tile_size := Vector2(atlas_texture.get_size()) / Vector2(VisualData.VOXEL_PART_TEXTURE_GRID)
+	return Rect2(Vector2(tile) * tile_size, tile_size)

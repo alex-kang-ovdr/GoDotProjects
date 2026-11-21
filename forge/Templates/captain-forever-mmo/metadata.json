@@ -1,0 +1,25 @@
+{
+  "id": "captain-forever-mmo",
+  "name": "Captain Forever MMO",
+  "description": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "assets/effects/thruster_flame.svg",
+    "assets/effects/thruster_smoke.svg",
+    "assets/fonts/captain-ui.txt",
+    "data/part_tuning_runtime.txt",
+    "shaders/part_masked_material.gdshader"
+  ],
+  "guideOrder": [
+    "data/part_tuning_runtime.txt",
+    "scripts/balance.gd",
+    "scripts/ship_model.gd",
+    "scripts/ship_body.gd",
+    "scripts/mmo_network.gd",
+    "scripts/remote_ship.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ]
+}

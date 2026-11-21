@@ -37,6 +37,7 @@ const tests = [
   'Tests/brawllabs-multiplayer.test.cjs',
   'Tests/tappy-chicken-mmo.test.cjs',
   'Tests/captain-forever.test.cjs',
+  'Tests/captain-forever-mmo.test.cjs',
   'Tests/survivor-io.test.cjs',
   'Tests/voxel-frontier.test.cjs',
   'Tests/build-queue-reuse.test.cjs',
