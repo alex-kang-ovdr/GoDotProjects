@@ -133,6 +133,8 @@ func _physics_process(delta: float) -> void:
 	if ai_tick_elapsed >= float(BalanceData.NPC_AI.state_tick_seconds):
 		update_ai_state(ai_tick_elapsed)
 		ai_tick_elapsed = 0.0
+	if is_attacking_player():
+		turret_target = target_ship.global_position
 	var thrust_multiplier := float(BalanceData.NPC_AI.thrust_multiplier) * (1.15 if boss else 1.0)
 	apply_player_thrusters(desired_forward * thrust_multiplier, desired_reverse * thrust_multiplier, desired_turn * thrust_multiplier)
 

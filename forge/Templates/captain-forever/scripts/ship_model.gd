@@ -213,6 +213,46 @@ func power_balance() -> float:
 		total += float(part.spec().get("power", 0.0))
 	return total
 
+func power_supply() -> float:
+	var supply := 0.0
+	for part in parts:
+		var p := float(part.spec().get("power", 0.0))
+		if p > 0.0:
+			supply += p
+	return maxf(supply, 4.0)
+
+func power_demand() -> float:
+	var demand := 0.0
+	for part in parts:
+		var p := float(part.spec().get("power", 0.0))
+		if p < 0.0:
+			demand += -p
+	return demand
+
+func power_efficiency() -> float:
+	var dem := power_demand()
+	if dem <= 0.01:
+		return 1.0
+	return clampf(power_supply() / dem, 0.40, 1.25)
+
+func is_exhaust_blocked(part: PartData, map_override: Dictionary = {}) -> bool:
+	var actuator := str(part.spec().get("actuator", ""))
+	if actuator != "forward":
+		return false
+	var occ := occupied() if map_override.is_empty() else map_override
+	var thrust_dir := Vector2.RIGHT.rotated(float(part.quarter_turn) * PI * 0.5)
+	if actuator == "reverse":
+		thrust_dir = -thrust_dir
+	var exhaust_step := Vector2i(roundi(-thrust_dir.x), roundi(-thrust_dir.y))
+	if exhaust_step == Vector2i.ZERO:
+		return false
+	for cell in part.cells():
+		var check_cell: Vector2i = cell + exhaust_step
+		var blocker_uid: int = int(occ.get(check_cell, -1))
+		if blocker_uid != -1 and blocker_uid != part.uid:
+			return true
+	return false
+
 func ammo_total(ammo_type: String) -> int:
 	var total := 0
 	for part in parts:

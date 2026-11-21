@@ -181,8 +181,8 @@ func _draw() -> void:
 		draw_rect(Rect2(hull_bar.position, Vector2(hull_bar.size.x * hull_ratio, hull_bar.size.y)), hull_col, true)
 		draw_rect(hull_bar, Color("7ad7ff", 0.55), false, 1.0)
 
-		# Shield pips
-		draw_string(font, Vector2(324, 55), "SHIELD", HORIZONTAL_ALIGNMENT_LEFT, 60, 12, Color("8eeaff"))
+		# Shield pips (136° Directional Arc)
+		draw_string(font, Vector2(318, 55), "ARC방어", HORIZONTAL_ALIGNMENT_LEFT, 62, 11, Color("8eeaff"))
 		for index in int(BalanceData.SHIELD.max_layers):
 			var p_rect := Rect2(Vector2(376 + index * 18, 44), Vector2(13, 12))
 			draw_rect(p_rect, Color("48ceff") if index < ship.shield_layers else Color("11293d"), true)
@@ -202,8 +202,10 @@ func _draw() -> void:
 		draw_rect(Rect2(od_bar.position, Vector2(od_bar.size.x * od_ratio, od_bar.size.y)), Color("ffd36e") if overdrive_active or od_ratio >= 0.99 else Color("d99b38"), true)
 
 		var threat := "CLEAR" if hostile_count == 0 else "HOSTILE %d" % hostile_count
+		var pwr_pct := roundi(ship.model.power_efficiency() * 100.0)
+		var pwr_col := Color("9be6d8") if pwr_pct >= 95 else Color("ffb86c")
 		draw_string(font, Vector2(28, 102), "회수 %d  ·  격침 %d  ·  관문 %d/6  ·  %s" % [salvage, kills, sector, threat], HORIZONTAL_ALIGNMENT_LEFT, 440, 13, Color("ffe394"))
-		draw_string(font, Vector2(28, 124), "SPD %.0f/%0.f  ·  MASS %.1f  ·  PWR %+.0f  ·  %s" % [ship.linear_velocity.length(), ship.max_linear_speed(), ship.model.total_mass(), ship.model.power_balance(), navigation_label], HORIZONTAL_ALIGNMENT_LEFT, 440, 12, Color("9be6d8"))
+		draw_string(font, Vector2(28, 124), "SPD %.0f/%0.f · MASS %.1f · 전력효율 %d%% (%+.0f) · %s" % [ship.linear_velocity.length(), ship.max_linear_speed(), ship.model.total_mass(), pwr_pct, ship.model.power_balance(), navigation_label], HORIZONTAL_ALIGNMENT_LEFT, 444, 12, pwr_col)
 		draw_string(font, Vector2(28, 145), target_label, HORIZONTAL_ALIGNMENT_LEFT, 440, 12, Color("b9d8ff"))
 
 	# 2. Top-Right Mission Banner + Tactical Radar Minimap

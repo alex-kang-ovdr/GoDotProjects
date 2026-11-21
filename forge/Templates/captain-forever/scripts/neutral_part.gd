@@ -91,9 +91,11 @@ func _draw() -> void:
 	var rect := Rect2(-Vector2.ONE * BalanceData.CELL * (PhysicsData.NEUTRAL_PART_COLLIDER_SCALE * 0.5), Vector2.ONE * BalanceData.CELL * PhysicsData.NEUTRAL_PART_COLLIDER_SCALE)
 	for cell in part.cells():
 		var cell_rect := Rect2(rect.position + Vector2(cell - part.cell) * BalanceData.CELL, rect.size)
-		draw_rect(cell_rect, Color(str(spec.fill)).lightened(0.08), true)
-		draw_rect(cell_rect.grow(-3.5), Color(str(spec.fill)).lightened(0.22), true)
-		draw_rect(cell_rect, grade_col if part.kind != "scrap" else Color(str(spec.stroke)), false, 2.0)
+		draw_rect(Rect2(cell_rect.position + Vector2(2.5, 4.0), cell_rect.size), Color(0.01, 0.02, 0.05, 0.50), true)
+		draw_rect(cell_rect, Color("182433").lerp(Color(str(spec.fill)), 0.42), true)
+		draw_rect(cell_rect.grow(-4.0), Color(str(spec.fill)).lightened(0.18), true)
+		draw_rect(cell_rect, Color("0a111a"), false, 3.0)
+		draw_rect(cell_rect.grow(-1.5), grade_col if part.kind != "scrap" else Color(str(spec.stroke)), false, 1.4)
 
 	draw_set_transform(center, VisualData.module_label_rotation(self))
 	var label := VisualData.module_debug_label(part.kind)

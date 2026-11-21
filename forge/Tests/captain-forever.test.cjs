@@ -127,15 +127,17 @@ test('captain-forever exports to Godot Web and renders upgraded sci-fi visuals &
   await new Promise(r => setTimeout(r, 2000));
   const flightShot = await page.screenshot({ path: path.join(evidence, 'captain-forever-flight.png') });
 
-  // Focus canvas, trigger Quick-Attach (C), Overdrive (B), Thrust (W) + Fire (Space), and click Radar Minimap!
+  // Focus canvas, trigger Quick-Attach (C), Overdrive (B), Thrust (W) + Strafe (E) + Fire (Space), and click Radar Minimap!
   await canvas.click({ position: { x: 640, y: 360 } });
   await page.keyboard.press('KeyC');
   await new Promise(r => setTimeout(r, 300));
   await page.keyboard.press('KeyB');
   await page.keyboard.down('KeyW');
+  await page.keyboard.down('KeyE');
   await page.keyboard.down('Space');
   await new Promise(r => setTimeout(r, 1100));
   await page.keyboard.up('Space');
+  await page.keyboard.up('KeyE');
   await page.keyboard.up('KeyW');
   const combatShot = await page.screenshot({ path: path.join(evidence, 'captain-forever-combat.png') });
 

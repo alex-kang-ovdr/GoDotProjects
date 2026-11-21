@@ -56,8 +56,21 @@ const SHIP_COLLIDER_SIZE := Vector2(260.0, 220.0)
 const NEUTRAL_PART_COLLIDER_SCALE := 0.82
 const ASTEROID_COLLIDER_RADIUS := 23.0
 const DYNAMIC_FRICTION := 0.0
-const SHIP_ASTEROID_BOUNCE := 0.76
-const NEUTRAL_PART_BOUNCE := 0.06
+const SHIP_ASTEROID_BOUNCE := 0.42
+const NEUTRAL_PART_BOUNCE := 0.08
+
+# Cosmoteer 스타일 물리 고도화 상수 (반동·충격량·배기 간섭·방향성 방어막·유폭·충각)
+const WEAPON_RECOIL_IMPULSE := {"laser": 12.0, "machine_gun": 18.0, "railgun": 95.0, "missile": 38.0, "mini_missile": 16.0}
+const PROJECTILE_IMPACT_IMPULSE := {"laser": 24.0, "machine_gun": 28.0, "railgun": 165.0, "missile": 110.0, "mini_missile": 52.0}
+const EXHAUST_BLOCKED_MULTIPLIER := 0.25
+const SHIELD_ARC_HALF_ANGLE := deg_to_rad(68.0) # 136도 전방/방향성 방어막 호
+const SHIELD_ARC_RADIUS_OFFSET := 18.0
+const RAILGUN_MAX_PENETRATIONS := 3
+const VOLATILE_EXPLOSION_DAMAGE := {"ammo_bay": 18.0, "bullet_bay": 14.0, "battery": 16.0}
+const RAM_MIN_SPEED := 115.0
+const RAM_DAMAGE_PER_SPEED := 0.055
+const WEDGE_SELF_DAMAGE_MULT := 0.35
+const WEDGE_RAM_DAMAGE_MULT := 1.85
 
 static func retain_factor(per_second: float, delta: float) -> float:
 	return pow(clampf(per_second, 0.0, 1.0), maxf(delta, 0.0))

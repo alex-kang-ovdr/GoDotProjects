@@ -42,7 +42,7 @@ var selected_target: EnemyShip
 var navigation_target := Vector2.ZERO
 var navigation_active := false
 var tracking_order = TrackingOrderScript.new()
-var message := "WASD: 추력/회전 · SPACE: 주무기 · F: 미사일 · C: 빠른장착 · B: 오버드라이브 · G: 갈고리 · 레이더 클릭: 항법"
+var message := "WASD: 추력/회전 · Q/E: 횡추진 · SPACE: 주무기 · F: 미사일 · C: 빠른장착 · B: 부스트 · 적 드래그: 궤도추적"
 var message_time := 8.0
 var world_layer: Node2D
 var combat_fx: CombatFxLayer
@@ -66,6 +66,7 @@ var developer_mode_active := false
 var developer_overlay
 var player_destroyed := false
 var skip_automation_hook := false
+var ram_cooldowns: Dictionary = {}
 
 func _install_ui_font() -> void:
 	if FileAccess.file_exists("res://assets/fonts/captain-ui.txt"):
@@ -124,7 +125,8 @@ func _ready() -> void:
 	spawn_salvage("bullet_bay", Vector2(820, -180))
 	spawn_asteroid_field()
 	spawn_stations()
-	spawn_enemy(1)
+	narrative_events["first_hostile"] = true
+	spawn_enemy(1, "", "roamer")
 	if developer_mode_active:
 		developer_overlay = DeveloperModeScript.new()
 		add_child(developer_overlay)
@@ -215,7 +217,7 @@ func handle_utility(action: String) -> void:
 			user_paused = not user_paused
 			sync_pause_state()
 		"help":
-			queue_dialogue({"id":"controls", "speaker":"PILOT MANUAL", "icon":"KEYS", "title":"조작 · 자동제동 · 조립 · 전술", "body":"W/S 추력 전후진 · A/D 회전 · 손을 떼면 자동 역추진 제동. SPACE 주무기 / F 미사일 / G 갈고리 / B 오버드라이브 부스트 / C 근처 부품 빠른장착. 적 클릭은 표적, 드래그하면 거리·각도 전술 추적. 우측 상단 전술 레이더 클릭으로 즉시 항법 이동. 중립 부품 클릭 회수·장착, SHIFT+클릭 재배치, Q 회전. E 정거장 수리·강화 / N 다음 관문 / P 일시정지.", "choices":[]})
+			queue_dialogue({"id":"controls", "speaker":"PILOT MANUAL", "icon":"KEYS", "title":"코스모티어 6-DOF 조종 · 전술 · 물리", "body":"W/S 전후진 · A/D 회전 · Q/E 횡추진(스트레이프) · 손을 떼면 자동 역추진 제동. 방어막 생성기는 바라보는 방향으로 136° 아크만 방호하므로 적의 후방 엔진부를 우회 타격할 수 있습니다. 주추진기 배기구가 막히면 추력이 25%로 감소하며, 레일건은 경장갑을 관통하고 탄약고·배터리 파괴 시 내부 유폭이 발생합니다. 적 드래그로 궤도·사선 고정 추적(함선 고스트 미리보기). 부품 회수 중 Q 회전 / 정거장 인접 시 E 도킹 수리.", "choices":[]})
 		"station":
 			if not gameplay_blocked() and not player_destroyed: use_station()
 		"quick_attach":
@@ -243,6 +245,8 @@ func _process(_delta: float) -> void:
 	if hud == null or player == null or developer_mode_active: return
 	if (tracking_order.active or tracking_order.dragging) and not tracking_order.valid():
 		cancel_target_tracking()
+	if not gameplay_blocked() and not player_destroyed:
+		player.turret_target = weapon_aim_point()
 	update_module_inspector(get_global_mouse_position() if touch_index == -1 else pointer_world)
 
 func update_module_inspector(point: Vector2) -> void:
@@ -295,14 +299,15 @@ func spawn_salvage(kind: String, at: Vector2, narrative_tag: String = "") -> voi
 	world_layer.add_child(salvage)
 	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO, 0.0, narrative_tag)
 
-func spawn_enemy(level: int, boss_name: String = "") -> void:
+func spawn_enemy(level: int, boss_name: String = "", forced_archetype: String = "") -> void:
 	var enemy = EnemyShipScript.new()
 	enemy.name = "Enemy_%d" % level
 	enemy.global_position = player.global_position + Vector2(620.0, 0.0).rotated(randf_range(0.0, TAU))
 	enemy.rotation = randf_range(-PI, PI)
 	enemy.is_player = false
 	world_layer.add_child(enemy)
-	enemy.setup(level, boss_name, random_npc_archetype() if boss_name.is_empty() else "boss")
+	var chosen_arch := "boss" if not boss_name.is_empty() else (forced_archetype if not forced_archetype.is_empty() else random_npc_archetype())
+	enemy.setup(level, boss_name, chosen_arch)
 	enemy.target_ship = player
 	enemy.npc_dialogue_requested.connect(queue_npc_dialogue)
 	enemies.append(enemy)
@@ -434,23 +439,27 @@ func _physics_process(delta: float) -> void:
 	var reverse := Input.get_action_strength("thrust_reverse")
 	# 기존 웹 버전과 같이 D=양수(우회전), A=음수(좌회전) RCS 접선 힘을 사용한다.
 	var turn := Input.get_action_strength("turn_right") - Input.get_action_strength("turn_left")
-	if forward > 0.01 or reverse > 0.01 or absf(turn) > 0.01:
+	var has_dock := not nearby_station().is_empty()
+	var strafe_l := Input.get_action_strength("strafe_left") if held_part == null else 0.0
+	var strafe_r := Input.get_action_strength("strafe_right") if not has_dock else 0.0
+	var strafe := strafe_r - strafe_l
+	if forward > 0.01 or reverse > 0.01 or absf(turn) > 0.01 or absf(strafe) > 0.01:
 		navigation_active = false
 		cancel_target_tracking()
-		player.apply_player_thrusters(forward, reverse, turn)
+		player.apply_player_thrusters(forward, reverse, turn, strafe)
 	elif tracking_order.active:
 		apply_target_tracking()
 	elif navigation_active:
 		apply_auto_navigation()
 	else:
-		player.apply_player_thrusters(0.0, 0.0, 0.0)
+		player.apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
 	if Input.is_action_pressed("fire_primary") or hud.primary_held:
 		fire_primary_at(weapon_aim_point())
 	if Input.is_action_just_pressed("fire_missile"):
 		fire_missile_at(weapon_aim_point())
 	if Input.is_action_just_pressed("fire_grapple"):
 		toggle_grapple()
-	if Input.is_action_just_pressed("station"):
+	if has_dock and Input.is_action_just_pressed("station"):
 		use_station()
 	if Input.is_action_just_pressed("overdrive"):
 		activate_overdrive()
@@ -466,6 +475,7 @@ func _physics_process(delta: float) -> void:
 		change_zoom(-1)
 	update_enemy_combat()
 	resolve_projectile_hits(delta)
+	_resolve_ship_ramming(delta)
 	hud.salvage = salvage_count
 	hud.kills = kill_count
 	hud.kill_streak = kill_streak
@@ -880,14 +890,41 @@ func resolve_projectile_hits(delta: float = 0.0) -> void:
 		if part == null or target == null:
 			if node.life <= 0.0: node.queue_free()
 			continue
-		var had_shield: bool = target.shield_layers > 0
-		var detached := target.damage_part(part, node.damage, node.velocity)
+		var impact_world: Vector2 = node.previous_position.lerp(node.global_position, clampf(nearest_hit, 0.0, 1.0))
+		var impulse_mag: float = float(PhysicsData.PROJECTILE_IMPACT_IMPULSE.get(node.kind, clampf(node.damage * 2.8, 12.0, 150.0)))
+		var detached: Array[PartData] = target.damage_part(part, node.damage, node.velocity, impact_world, false, impulse_mag)
+		var shield_blocked: bool = target.last_hit_shield_absorbed
 		if combat_fx != null:
-			combat_fx.spawn_hit(node.global_position, node.velocity, node.tint, had_shield, node.damage)
+			combat_fx.spawn_hit(impact_world, node.velocity, node.tint, shield_blocked, node.damage)
+
+		# Cosmoteer 레일건 장갑 관통(Over-Penetration): 잔여 운동에너지로 내부 모듈 연속 타격
+		if node.kind == "railgun" and not shield_blocked and target.last_damage_leftover >= 2.0:
+			var step_vec: Vector2 = node.velocity.normalized() * (BalanceData.CELL * 0.88)
+			var pen_damage: float = target.last_damage_leftover
+			var prev_pt: Vector2 = impact_world
+			for pen_idx in range(1, PhysicsData.RAILGUN_MAX_PENETRATIONS):
+				var probe_world: Vector2 = impact_world + step_vec * float(pen_idx)
+				var inner_part: PartData = target.model.part_at(target.local_cell_at(probe_world))
+				if inner_part == null:
+					continue
+				var pen_detached: Array[PartData] = target.damage_part(inner_part, pen_damage, node.velocity, probe_world, true, impulse_mag * 0.35)
+				for item in pen_detached:
+					detached.append(item)
+				if combat_fx != null:
+					combat_fx.spawn_railgun_pierce(prev_pt, probe_world)
+					combat_fx.spawn_hit(probe_world, node.velocity, node.tint, false, pen_damage)
+				prev_pt = probe_world
+				pen_damage = target.last_damage_leftover
+				if pen_damage < 2.0:
+					break
+
+		# 휘발성 모듈(탄약고·배터리) 유폭 이펙트 방출
+		for blast in target.pop_volatile_blasts():
+			if combat_fx != null:
+				combat_fx.spawn_volatile_blast(blast.world_pos, str(blast.kind), float(blast.damage))
+
 		if target is EnemyShip and node.team == "player":
 			target.notify_attacked_by_player()
-		# 코어는 0 HP 상태로 남아 연쇄 붕괴를 보여 준다. 따라서 코어 파괴는
-		# 일반 연결부 분리보다 먼저 처리해 전 파트가 한 프레임에 튀어나오지 않는다.
 		var core := target.model.core_part()
 		if core != null and core.hp <= 0.0:
 			node.queue_free()
@@ -900,6 +937,81 @@ func resolve_projectile_hits(delta: float = 0.0) -> void:
 			var loose_position := target.to_global(Vector2(loose.cell) * BalanceData.CELL)
 			spawn_salvage_data(loose, loose_position, "", debris_velocity_from_ship(target, loose_position, node.velocity), target.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS, target.rotation)
 		node.queue_free()
+
+func _closest_hull_part(ship: ShipBody, world_target: Vector2) -> PartData:
+	var best_part: PartData = null
+	var best_d2 := INF
+	for p in ship.model.parts:
+		var wp := ship.to_global(ship.module_local_center(p))
+		var d2 := wp.distance_squared_to(world_target)
+		if d2 < best_d2:
+			best_d2 = d2
+			best_part = p
+	return best_part
+
+func _resolve_ship_ramming(delta: float) -> void:
+	for k in ram_cooldowns.keys():
+		var left: float = float(ram_cooldowns[k]) - delta
+		if left <= 0.0:
+			ram_cooldowns.erase(k)
+		else:
+			ram_cooldowns[k] = left
+	if player == null or player_destroyed or player.is_destroying:
+		return
+	for enemy_var in enemies.duplicate():
+		if not (enemy_var is EnemyShip):
+			continue
+		var enemy: EnemyShip = enemy_var
+		if not is_instance_valid(enemy) or enemy.is_destroying or not enemy.alive():
+			continue
+		var key: int = enemy.get_instance_id()
+		if ram_cooldowns.has(key):
+			continue
+		if not player.is_within_surface_range(enemy, 6.0):
+			continue
+		var p_part: PartData = _closest_hull_part(player, enemy.global_position)
+		var e_part: PartData = _closest_hull_part(enemy, player.global_position)
+		if p_part == null or e_part == null:
+			continue
+		var p_pos: Vector2 = player.to_global(player.module_local_center(p_part))
+		var e_pos: Vector2 = enemy.to_global(enemy.module_local_center(e_part))
+		if p_pos.distance_squared_to(e_pos) > (BalanceData.CELL * 1.18) * (BalanceData.CELL * 1.18):
+			continue
+		var axis: Vector2 = (enemy.global_position - player.global_position).normalized()
+		var closing: float = (player.linear_velocity - enemy.linear_velocity).dot(axis)
+		if closing < PhysicsData.RAM_MIN_SPEED:
+			continue
+		ram_cooldowns[key] = 0.42
+		var mass_factor: float = clampf(sqrt(player.mass * enemy.mass) * 0.22, 0.65, 2.4)
+		var base_dmg: float = (closing - PhysicsData.RAM_MIN_SPEED) * PhysicsData.RAM_DAMAGE_PER_SPEED * mass_factor
+		var p_wedge: bool = p_part.kind in ["wedge", "wedge_long"]
+		var e_wedge: bool = e_part.kind in ["wedge", "wedge_long"]
+		var dmg_to_enemy: float = base_dmg * (PhysicsData.WEDGE_RAM_DAMAGE_MULT if p_wedge else 1.0) * (PhysicsData.WEDGE_SELF_DAMAGE_MULT if e_wedge else 1.0)
+		var dmg_to_player: float = base_dmg * (PhysicsData.WEDGE_SELF_DAMAGE_MULT if p_wedge else 1.0) * (PhysicsData.WEDGE_RAM_DAMAGE_MULT if e_wedge else 1.0)
+		var contact_pt: Vector2 = p_pos.lerp(e_pos, 0.5)
+		var e_detached: Array[PartData] = enemy.damage_part(e_part, dmg_to_enemy, axis * closing, contact_pt, true, closing * 0.35)
+		var p_detached: Array[PartData] = player.damage_part(p_part, dmg_to_player, -axis * closing, contact_pt, true, closing * 0.35)
+		enemy.notify_attacked_by_player()
+		if combat_fx != null:
+			combat_fx.spawn_hit(contact_pt, axis * closing, Color("ffd36e") if p_wedge else Color("ff9e7d"), false, dmg_to_enemy)
+			if p_wedge:
+				combat_fx.spawn_popup(contact_pt + Vector2(0, -22), "쐐기 충각!", Color("ffd36e"))
+		for blast in enemy.pop_volatile_blasts():
+			if combat_fx != null: combat_fx.spawn_volatile_blast(blast.world_pos, str(blast.kind), float(blast.damage))
+		for blast in player.pop_volatile_blasts():
+			if combat_fx != null: combat_fx.spawn_volatile_blast(blast.world_pos, str(blast.kind), float(blast.damage))
+		for loose in e_detached:
+			var lp: Vector2 = enemy.to_global(Vector2(loose.cell) * BalanceData.CELL)
+			spawn_salvage_data(loose, lp, "", debris_velocity_from_ship(enemy, lp, axis * closing), enemy.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS, enemy.rotation)
+		for loose in p_detached:
+			var lp2: Vector2 = player.to_global(Vector2(loose.cell) * BalanceData.CELL)
+			spawn_salvage_data(loose, lp2, "", debris_velocity_from_ship(player, lp2, -axis * closing), player.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS, player.rotation)
+		var e_core: PartData = enemy.model.core_part()
+		if e_core != null and e_core.hp <= 0.0:
+			destroy_enemy(enemy)
+		var p_core: PartData = player.model.core_part()
+		if p_core != null and p_core.hp <= 0.0:
+			destroy_player_ship()
 
 func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	var candidate: EnemyShip = null
@@ -1157,6 +1269,17 @@ func update_route() -> void:
 		spawn_enemy(int(waypoint.tier), str(waypoint.name))
 		active_boss = enemies.back()
 
+func _preview_blocks_exhaust(preview: PartData) -> bool:
+	var occ := player.model.occupied()
+	for c in preview.cells():
+		occ[c] = preview.uid
+	if player.model.is_exhaust_blocked(preview, occ):
+		return true
+	for existing in player.model.parts:
+		if not player.model.is_exhaust_blocked(existing) and player.model.is_exhaust_blocked(existing, occ):
+			return true
+	return false
+
 func _draw() -> void:
 	draw_world_markers()
 	if held_part != null:
@@ -1165,16 +1288,18 @@ func _draw() -> void:
 		var world := pointer_world
 		var target_cell := player.local_cell_at(world)
 		var valid := player.model.can_place(held_part, target_cell)
-		var color := VisualData.SOCKET_VALID_COLOR if valid else Color("ffb38a", 0.8)
 		var preview := held_part.duplicate_part()
 		preview.cell = target_cell
+		var blocks_exhaust := valid and _preview_blocks_exhaust(preview)
+		var color := Color("ffbd59", 0.95) if blocks_exhaust else (VisualData.SOCKET_VALID_COLOR if valid else Color("ffb38a", 0.8))
 		for cell in preview.cells():
-			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * BalanceData.CELL * 0.36, Vector2.ONE * BalanceData.CELL * 0.72)
+			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * BalanceData.CELL * 0.42, Vector2.ONE * BalanceData.CELL * 0.84)
 			draw_set_transform(player.global_position, player.global_rotation)
 			draw_rect(rect, Color(str(held_part.spec().fill), 0.72), true)
-			draw_rect(rect, color, false, 2.0)
+			draw_rect(rect, color, false, 2.2)
 		draw_set_transform(Vector2.ZERO, 0.0)
-		draw_string(ThemeDB.fallback_font, world + Vector2(-34, -28), "ATTACH" if valid else "CLEARANCE", HORIZONTAL_ALIGNMENT_CENTER, 68, 12, color)
+		var tag_text := "배기간섭 -75%" if blocks_exhaust else ("ATTACH" if valid else "CLEARANCE")
+		draw_string(ThemeDB.fallback_font, world + Vector2(-56, -28), tag_text, HORIZONTAL_ALIGNMENT_CENTER, 112, 12, color)
 
 func draw_attachment_candidates(part: PartData) -> void:
 	draw_set_transform(player.global_position, player.global_rotation)
@@ -1226,10 +1351,39 @@ func draw_target_tracking() -> void:
 	draw_line(center, desired_end, TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
 	for step in TrackingVisual.SECTOR_SEGMENTS:
 		draw_line(polygon[step + 1], polygon[step + 2], TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
-	draw_arc(desired_end, 10.0, 0.0, TAU, 20, TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
+
+	# Cosmoteer 표적 상대 위치 함선 홀로그램 고스트 프리뷰 (실제 모듈 실루엣 + 전방 사선/방어막 아크)
+	if player != null:
+		var ghost_rot := (center - desired_end).angle()
+		var occ := player.model.occupied()
+		var half := BalanceData.CELL * 0.5
+		draw_set_transform(desired_end, ghost_rot)
+		for cell_var in occ.keys():
+			var cell: Vector2i = cell_var
+			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * half, Vector2.ONE * BalanceData.CELL)
+			draw_rect(rect, Color(0.28, 0.94, 1.0, 0.14), true)
+			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+				if not occ.has(cell + axis):
+					var a := rect.position
+					var b := rect.position
+					if axis == Vector2i.LEFT: b += Vector2(0, rect.size.y)
+					elif axis == Vector2i.RIGHT: a += Vector2(rect.size.x, 0); b += rect.size
+					elif axis == Vector2i.UP: b += Vector2(rect.size.x, 0)
+					else: a += Vector2(0, rect.size.y); b += rect.size
+					draw_line(a, b, Color(0.45, 0.98, 1.0, 0.72), 1.8, true)
+		if player.shield_max_layers() > 0:
+			var sr := player.hull_bound_radius + PhysicsData.SHIELD_ARC_RADIUS_OFFSET
+			for sg in player.model.parts:
+				if sg.kind == "shield_generator":
+					var ga := float(sg.quarter_turn) * PI * 0.5
+					draw_arc(Vector2.ZERO, sr, ga - PhysicsData.SHIELD_ARC_HALF_ANGLE, ga + PhysicsData.SHIELD_ARC_HALF_ANGLE, 20, Color(0.35, 0.95, 1.0, 0.42), 1.8, true)
+		draw_line(Vector2(player.hull_bound_radius * 0.6, 0.0), Vector2(maxf(radius - 18.0, player.hull_bound_radius), 0.0), Color(1.0, 0.55, 0.72, 0.45), 1.4, true)
+		draw_set_transform(Vector2.ZERO, 0.0)
+
+	draw_arc(desired_end, 8.0, 0.0, TAU, 20, TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
 	# 라벨은 카메라 회전을 상쇄해 항상 읽을 수 있게 유지한다.
 	draw_set_transform(desired_end, camera.global_rotation)
-	draw_string(ThemeDB.fallback_font, Vector2(14, -14), "%.0f px  %+.0f°" % [radius, rad_to_deg(angle)], HORIZONTAL_ALIGNMENT_LEFT, -1, TrackingVisual.FONT_SIZE, TrackingVisual.DESTINATION_COLOR)
+	draw_string(ThemeDB.fallback_font, Vector2(16, -16), "%.0f px  %+.0f°" % [radius, rad_to_deg(angle)], HORIZONTAL_ALIGNMENT_LEFT, -1, TrackingVisual.FONT_SIZE, TrackingVisual.DESTINATION_COLOR)
 	draw_set_transform(Vector2.ZERO, 0.0)
 
 

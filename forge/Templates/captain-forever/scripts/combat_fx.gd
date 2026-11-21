@@ -44,11 +44,55 @@ func spawn_hit(pos: Vector2, normal_vel: Vector2, color: Color, shield_hit: bool
 		"pos": pos,
 		"color": Color("56ecff") if shield_hit else color,
 		"max_r": 32.0 if shield_hit else 22.0,
+		"width": 2.4 if shield_hit else 2.0,
 		"t": 0.0,
 		"dur": 0.26 if shield_hit else 0.18,
 	})
 	if damage >= 1.0:
 		spawn_popup(pos + Vector2(0.0, -14.0), "-%.0f" % damage, Color("7ef9ff") if shield_hit else Color("ff9e7d"))
+
+
+func spawn_volatile_blast(pos: Vector2, kind: String, damage: float) -> void:
+	var blast_col: Color = Color("ff8c42") if kind != "battery" else Color("55f4ff")
+	for i in 14:
+		if sparks.size() >= 160:
+			sparks.pop_front()
+		var ang: float = float(i) * TAU / 14.0 + float(i % 3) * 0.11
+		var spd: float = 120.0 + float((i * 43) % 140)
+		sparks.append({
+			"pos": pos,
+			"vel": Vector2.from_angle(ang) * spd,
+			"color": blast_col.lightened(0.22) if i % 2 == 0 else Color("ffe082"),
+			"t": 0.0,
+			"dur": 0.34 + float(i % 3) * 0.07,
+		})
+	for ring in 2:
+		if ripples.size() >= 32:
+			ripples.pop_front()
+		ripples.append({
+			"pos": pos,
+			"color": blast_col if ring == 0 else Color("ffe394"),
+			"max_r": 58.0 if ring == 0 else 38.0,
+			"width": 3.4 if ring == 0 else 2.0,
+			"t": 0.0,
+			"dur": 0.36 if ring == 0 else 0.24,
+		})
+	spawn_popup(pos + Vector2(0.0, -20.0), "유폭! -%.0f" % damage, Color("ffb347"))
+
+
+func spawn_railgun_pierce(from_pos: Vector2, to_pos: Vector2) -> void:
+	var dir: Vector2 = (to_pos - from_pos).normalized() if to_pos.distance_squared_to(from_pos) > 1.0 else Vector2.RIGHT
+	spawn_muzzle(to_pos, dir, Color("d6b3ff"), 1.25)
+	if ripples.size() >= 32:
+		ripples.pop_front()
+	ripples.append({
+		"pos": to_pos,
+		"color": Color("7ef9ff"),
+		"max_r": 26.0,
+		"width": 2.2,
+		"t": 0.0,
+		"dur": 0.20,
+	})
 
 
 func spawn_popup(pos: Vector2, text: String, color: Color) -> void:
@@ -96,9 +140,10 @@ func _draw() -> void:
 		draw_circle(f.pos, r, Color(f.color, 0.45 * k))
 		draw_line(f.pos, f.pos + d * (r * 1.9), Color.WHITE, 2.4 * k, true)
 	for r in ripples:
-		var p := float(r.t) / float(r.dur)
-		var rad := lerpf(6.0, float(r.max_r), p)
-		draw_arc(r.pos, rad, 0.0, TAU, 24, Color(r.color, (1.0 - p) * 0.75), 2.0, true)
+		var p: float = float(r.t) / float(r.dur)
+		var rad: float = lerpf(6.0, float(r.max_r), p)
+		var w: float = float(r.get("width", 2.0))
+		draw_arc(r.pos, rad, 0.0, TAU, 28, Color(r.color, (1.0 - p) * 0.80), w, true)
 	for s in sparks:
 		var k := 1.0 - float(s.t) / float(s.dur)
 		var tail: Vector2 = s.pos - (s.vel as Vector2) * 0.035
