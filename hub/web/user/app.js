@@ -41,11 +41,16 @@
   function clearPrivateCache(){try{for(const key of Object.keys(sessionStorage))if(/^ph-(save|backup|local-scope)/.test(key))sessionStorage.removeItem(key);}catch(_) {}}
   function setSession(session){const next=storageScope(session.csrfToken||uuid());if(state.cacheScope&&state.cacheScope!==next){clearPrivateCache();resetWishlist();state.sessionEpoch++;state.events=[];state.preparedPlay=null;}state.session=session;state.cacheScope=next;state.authStale=false;updateAccount();}
   function markAuthStale(){if(!state.session||state.authStale)return;state.authStale=true;state.events=[];if(state.active&&!state.active.local){heartbeat(state.active);state.active.authPreviousSaveBlocked=state.active.saveBlocked;state.active.saveBlocked=true;state.active.port?.postMessage({type:'host_pause'});saveStatus('로그인 상태가 바뀌었거나 만료됐어요. 서버 연결을 확인해 주세요.',true);}if(state.view==='create')renderCreator();else updateAccount();banner('로그인 상태를 다시 확인해야 합니다. 이전 기록을 다른 계정에 자동 적용하지 않습니다.');}
+  let ssoController=null;
+  let pendingLoginAction=null;
   function updateAccount(){
     const session=state.session;
     const registered=session?.kind==='registered';
     const loopback=['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname);
-    const canSignIn=Boolean(session?.googleEnabled&&!registered&&!state.limited&&!state.authStale&&(location.protocol==='https:'||loopback));
+    const secureOrigin=location.protocol==='https:'||loopback;
+    const canSignIn=Boolean(session?.googleEnabled&&!registered&&!state.limited&&!state.authStale&&secureOrigin);
+    const canNaver=Boolean(session?.naverEnabled&&!registered&&!state.limited&&!state.authStale&&secureOrigin);
+    const canEmail=Boolean(session?.emailEnabled&&!registered&&!state.limited&&!state.authStale);
     let identity='로그인 없이 플레이';
     if(registered)identity=session.displayName||'연결된 계정';
     else if(session?.kind==='guest')identity='게스트로 플레이 중';
@@ -54,22 +59,31 @@
     $('identity').textContent=identity;
     $('google-login').hidden=!canSignIn;
     $('google-login').disabled=!canSignIn;
+    if($('naver-login')){$('naver-login').hidden=!canNaver;$('naver-login').disabled=!canNaver;}
     $('logout').hidden=!registered;
     $('merge-open').hidden=!session?.pendingMerge;
-    $('account-help').textContent=accountHelp(canSignIn);
+    $('account-help').textContent=accountHelp(canSignIn,canNaver,canEmail);
     for(const button of document.querySelectorAll('[data-google-login]')){
       button.hidden=!canSignIn;
       button.disabled=!canSignIn;
     }
+    for(const button of document.querySelectorAll('[data-naver-login]')){
+      button.hidden=!canNaver;
+      button.disabled=!canNaver;
+    }
+    ssoController?.update();
     updateWishlistControls();
   }
-  function accountHelp(canSignIn){
+  function accountHelp(canSignIn,canNaver=false,canEmail=false){
     if(state.authStale)return '서버 연결을 확인한 뒤 계정을 다시 불러올 수 있습니다.';
     if(state.limited||!state.session)return '서버에 연결되면 로그인할 수 있습니다. 로컬 진행은 이 탭에 보관됩니다.';
     if(state.session.kind==='registered')return state.session.pendingMerge?'이 기기의 게스트 기록을 계정에 연결할 수 있습니다.':'이 계정에 저장된 진행으로 이어할 수 있습니다.';
-    if(canSignIn)return 'Google 계정에 로그인하고 이 기기의 게스트 기록을 연결할 수 있습니다.';
-    if(state.session.googleEnabled)return 'Google 로그인은 HTTPS 연결에서 사용할 수 있습니다.';
-    return '현재 Google 로그인을 사용할 수 없습니다. 게스트로 플레이하고 진행을 저장할 수 있습니다.';
+    if(canSignIn||canNaver||canEmail){
+      const methods=[canEmail?'이메일':null,canNaver?'네이버':null,canSignIn?'Google':null].filter(Boolean);
+      return `${methods.join(' · ')} 계정으로 로그인하고 이 기기의 게스트 기록을 연결할 수 있습니다.`;
+    }
+    if(state.session.googleEnabled||state.session.naverEnabled)return '소셜 로그인은 HTTPS 연결에서 사용할 수 있습니다.';
+    return '현재 로그인을 사용할 수 없습니다. 게스트로 플레이하고 진행을 저장할 수 있습니다.';
   }
   function localeFromUrl(){const value=new URLSearchParams(location.search).get('lang');return supportedLocales.has(value)?value:null;}
   function initialLocale(){
@@ -941,18 +955,20 @@
     const url=new URL(location.href);
     url.searchParams.delete('auth');
     url.searchParams.delete('authError');
+    url.searchParams.delete('authProvider');
     return url;
   }
   function showAuthResult(){
     const params=new URLSearchParams(location.search);
     if(!params.has('auth')&&!params.has('authError'))return;
     history.replaceState(history.state,'',cleanAuthUrl());
+    const provider=params.get('authProvider')==='naver'?'네이버':'Google';
     const notice=$('account-notice');
     const message=document.createElement('span');
-    if(params.get('authError')==='GOOGLE_CANCELLED')message.textContent='Google 로그인을 취소했습니다. 현재 게스트 기록을 계속 사용할 수 있습니다.';
+    if(params.get('authError')==='GOOGLE_CANCELLED'||params.get('authError')==='NAVER_CANCELLED')message.textContent=`${provider} 로그인을 취소했습니다. 현재 게스트 기록을 계속 사용할 수 있습니다.`;
     else if(params.get('auth')==='success'&&!params.has('authError')&&state.session?.kind==='registered'){
-      message.textContent='Google 계정에 로그인했습니다.';
-    }else message.textContent='Google 로그인을 확인할 수 없습니다. 계정 화면에서 다시 시도해 주세요.';
+      message.textContent=`${provider} 계정에 로그인했습니다.`;
+    }else message.textContent=`${provider} 로그인을 확인할 수 없습니다. 계정 화면에서 다시 시도해 주세요.`;
     const dismiss=document.createElement('button');
     dismiss.className='text-button';
     dismiss.type='button';
@@ -961,18 +977,19 @@
     notice.replaceChildren(message,dismiss);
     notice.hidden=false;
   }
-  function goToGoogle(){
-    const start=new URL(API+'/api/auth/google/start');
+  function goToOAuth(provider='google'){
+    const start=new URL(API+(provider==='naver'?'/api/auth/naver/start':'/api/auth/google/start'));
     start.searchParams.set('returnTo',cleanAuthUrl().href);
     location.href=start.href;
   }
-  function loginProgress(){
+  function loginProgress(action,label='로그인 계속'){
     const dialog=$('login-progress-dialog');
     const list=$('login-progress-records');
     const scopes=[...new Set([state.cacheScope,localScope()])].filter(Boolean);
     const ids=new Set([...state.games.map(game=>game.id),...state.allMetadata.keys()]);
     list.replaceChildren();
     const proceed=$('login-continue');
+    proceed.textContent=label;
     let remaining=0;
     for(const id of ids)for(const scope of scopes)for(const backup of [false,true]){
       const record=cacheGet(id,backup,scope);
@@ -1000,12 +1017,14 @@
       list.append(row);
     }
     if(!remaining)return false;
+    pendingLoginAction=action;
     proceed.disabled=true;
     dialog.showModal();
     return true;
   }
-  async function signIn(){
-    if($('google-login').disabled||state.authChanging||$('login-progress-dialog').open)return;
+  async function signIn(provider='google'){
+    const btn=provider==='naver'?$('naver-login'):$('google-login');
+    if(!btn||btn.disabled||state.authChanging||$('login-progress-dialog').open)return;
     state.authChanging=true;
     try{
       const route=state.route;
@@ -1013,15 +1032,41 @@
       await teardown('account_link');
       if(route!==state.route)return;
       if(wasPlaying)await renderRoute();
-      if(!loginProgress())goToGoogle();
+      const label=provider==='naver'?'네이버로 계속':'Google로 계속';
+      if(!loginProgress(()=>goToOAuth(provider),label))goToOAuth(provider);
     }finally{state.authChanging=false;}
   }
-  $('google-login').onclick=signIn;
+  $('google-login').onclick=()=>signIn('google');
+  if($('naver-login'))$('naver-login').onclick=()=>signIn('naver');
   $('login-continue').onclick=()=>{
-    if($('login-continue').disabled||$('google-login').disabled)return;
+    if($('login-continue').disabled)return;
+    const action=pendingLoginAction||(()=>goToOAuth('google'));
+    pendingLoginAction=null;
     $('login-progress-dialog').close();
-    goToGoogle();
+    void action();
   };
+  ssoController=window.PlayHubSso?.init({
+    api,
+    getState:()=>({session:state.session,limited:state.limited,authStale:state.authStale}),
+    beforeAccountChange:async(action,label)=>{
+      if(state.authChanging||$('login-progress-dialog').open)return true;
+      if(state.active){await teardown('account_link');await renderRoute();}
+      return loginProgress(action,label);
+    },
+    onAuthenticated:async(session,message)=>{
+      setSession(session);
+      state.limited=false;
+      banner('');
+      await renderRoute();
+      void refreshWishlist();
+      void loadPreference();
+      void window.PlayHubBilling?.refreshHeaderBalance(api);
+      void window.PlayHubSocial?.refreshBadge(api);
+      toast(message);
+      if(state.session?.pendingMerge)await openMerge();
+    },
+    toast
+  })||null;
   $('logout').onclick=async()=>{if(state.authChanging)return;state.authChanging=true;$('logout').disabled=true;const a=state.active;
     try{await teardown('logout');if(a?.dirty&&!window.confirm('서버에 저장하지 못한 임시 기록이 있습니다. 로그아웃하면 이 탭의 임시 기록도 지워집니다. 계속할까요?')){await renderRoute();return;}
       await api('/api/auth/logout',{method:'POST',body:{}});state.events=[];resetWishlist();state.sessionEpoch++;state.session=null;state.cacheScope='';state.preparedPlay=null;state.authStale=false;state.limited=true;clearPrivateCache();try{localStorage.removeItem('ph-recent');}catch(_){}updateAccount();
@@ -1051,7 +1096,8 @@
       $(state.view==='account'?'account-panel':'app').focus();
       return;
     }
-    if(e.target.closest('[data-google-login]')){void signIn();return;}
+    if(e.target.closest('[data-google-login]')){void signIn('google');return;}
+    if(e.target.closest('[data-naver-login]')){void signIn('naver');return;}
     if(e.target.closest('[data-privacy-open]')){$('privacy-open').click();return;}
     const records=e.target.closest('[data-recent-records]');
     if(records){

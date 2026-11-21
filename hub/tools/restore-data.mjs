@@ -104,7 +104,8 @@ const OPTIONAL_TABLES={
   social_leaderboards:['game_id','board_id','principal_id','score','period_key','updated_at'],
   social_reports:['id','reporter_id','target_type','target_id','reason','created_at'],
   social_party_launches:['launch_id','party_id','game_id','room_code','match_room_id','launched_by','status','created_at'],
-  social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at']
+  social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at'],
+  email_credentials:['user_id','email','password_hash','salt','failed_attempts','locked_until','created_at','updated_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

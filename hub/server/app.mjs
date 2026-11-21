@@ -13,6 +13,7 @@ import { openDatabase, transaction } from './db.mjs';
 import { readCatalog, findGame } from './catalog.mjs';
 import { liveMetrics, demoMetrics } from './metrics.mjs';
 import { createGoogle } from './google.mjs';
+import { createSso, providerForUser } from './sso/index.mjs';
 import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
@@ -167,6 +168,7 @@ export function createApp(input, dependencies = {}) {
     return principal;
   };
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
+  const sso = createSso({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, rate, rateLimitIp, sessionFor, requireSession, newSession, revokeSession, audit, profile: s => profile(s) });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
   // One gateway for every Hub module that needs Forge (forge-gateway.mjs); supports both local and remote modes.
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
@@ -225,7 +227,20 @@ export function createApp(input, dependencies = {}) {
   }
   function profile(s) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
-    return { kind:user?.kind || 'anonymous',csrfToken:s.csrf,displayName:user?.display_name || null,googleEnabled:google.enabled && s.traffic_type!=='qa',pendingMerge:pendingMerge(s.principal_id),trafficType:s.traffic_type,qaRunId:s.qa_run_id || null };
+    const kind = user?.kind || 'anonymous';
+    const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : null;
+    return {
+      kind,
+      csrfToken:s.csrf,
+      displayName:user?.display_name || null,
+      authProvider,
+      googleEnabled:google.enabled && s.traffic_type!=='qa',
+      naverEnabled:sso.naver.enabled && s.traffic_type!=='qa',
+      emailEnabled:sso.email.enabled && s.traffic_type!=='qa',
+      pendingMerge:pendingMerge(s.principal_id),
+      trafficType:s.traffic_type,
+      qaRunId:s.qa_run_id || null
+    };
   }
   const supportedLocales = new Set(['ko','en','ja','zh-CN','fr','es','pt-BR','hi']);
   function wishlist(s) {
@@ -350,6 +365,7 @@ export function createApp(input, dependencies = {}) {
       const s = sessionFor(req,'public') || newSession(res,'public');if(s.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.start(req,res,s,url); return;
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
+    if (await sso.publicRoute(req,res,url)) return;
     if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
     if (path === '/api/me/sanctions' && await sanctions.publicRoute(req,res,url)) return;
     if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
