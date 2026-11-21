@@ -114,6 +114,8 @@ function inferTargetRoot(fileManifest) {
   return `${rootKind}/`;
 }
 
+const UNSUPPORTED_MOBILE_PLATFORMS = Object.freeze(['android', 'ios']);
+
 function isEngineCompatible(compat, targetEngine = '4.7.2', targetPlatform = 'windows') {
   if (!compat || typeof compat !== 'object') {
     return { ok: false, reason: 'Missing engine_compatibility metadata.' };
@@ -124,11 +126,18 @@ function isEngineCompatible(compat, targetEngine = '4.7.2', targetPlatform = 'wi
   if (compareSemver(targetEngine, compat.godot_min) < 0) {
     return { ok: false, reason: `Godot ${targetEngine} is older than required godot_min ${compat.godot_min}.` };
   }
-  const platforms = Array.isArray(compat.platforms) ? compat.platforms : [];
-  if (!platforms.includes(targetPlatform)) {
-    return { ok: false, reason: `Platform '${targetPlatform}' is not supported (${platforms.join(', ')}).` };
+  const normalizedPlatform = String(targetPlatform || '').toLowerCase();
+  if (UNSUPPORTED_MOBILE_PLATFORMS.includes(normalizedPlatform)) {
+    return {
+      ok: false,
+      reason: `Platform '${normalizedPlatform}' is not supported by PlayForge Asset Store (Forge-only: ${PLATFORMS.join(', ')}).`,
+    };
   }
-  return { ok: true, godot_min: compat.godot_min, godot_tested: compat.godot_tested, platform: targetPlatform };
+  const platforms = Array.isArray(compat.platforms) ? compat.platforms : [];
+  if (!platforms.includes(normalizedPlatform)) {
+    return { ok: false, reason: `Platform '${normalizedPlatform}' is not supported (${platforms.join(', ')}).` };
+  }
+  return { ok: true, godot_min: compat.godot_min, godot_tested: compat.godot_tested, platform: normalizedPlatform };
 }
 
 function rejectEditorialInstall(entry) {
@@ -862,20 +871,232 @@ function checkReleaseUpdate({ installationRecord, installedEntry = null, latestE
   };
 }
 
+function normalizeStoreServerUrl(rawUrl) {
+  if (typeof rawUrl !== 'string' || !rawUrl.trim()) return '';
+  try {
+    const parsed = new URL(rawUrl.trim());
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+    if (parsed.username || parsed.password) return '';
+    return parsed.origin + parsed.pathname.replace(/\/+$/, '');
+  } catch {
+    return '';
+  }
+}
+
+function normalizeUpstreamContractEntry(raw, fallbackCatalogItem = null, forceSavedState = false) {
+  const src = fallbackCatalogItem && typeof fallbackCatalogItem === 'object'
+    ? { ...fallbackCatalogItem, ...raw }
+    : { ...raw };
+  const releaseKind = String(src.release_kind || '');
+  const base = {
+    schema_version: Number(src.schema_version || 1),
+    asset_id: String(src.asset_id || src.slug || ''),
+    asset_version_id: String(src.asset_version_id || ''),
+    release_id: String(src.release_id || ''),
+    release_kind: releaseKind,
+    title: String(src.title || src.asset_id || src.slug || ''),
+    publisher_id: String(src.publisher_id || 'pub-playforge-store'),
+    store_state: forceSavedState ? 'saved_to_library' : String(src.store_state || 'catalog_listed'),
+    installation_record: src.installation_record ?? null,
+  };
+  if (typeof src.summary === 'string') {
+    base.summary = src.summary;
+  }
+  if (releaseKind === 'package') {
+    base.artifact_id = String(src.artifact_id || '');
+    base.artifact_digest = String(src.artifact_digest || '');
+    base.dependency_manifest_hash = String(src.dependency_manifest_hash || '');
+    base.engine_compatibility = src.engine_compatibility && typeof src.engine_compatibility === 'object'
+      ? {
+        godot_min: String(src.engine_compatibility.godot_min || ''),
+        godot_tested: String(src.engine_compatibility.godot_tested || ''),
+        platforms: Array.isArray(src.engine_compatibility.platforms) ? [...src.engine_compatibility.platforms] : [],
+      }
+      : null;
+    base.file_manifest = Array.isArray(src.file_manifest)
+      ? src.file_manifest.map((item) => ({
+        path: String(item.path || ''),
+        bytes: Number(item.bytes || 0),
+        sha256: String(item.sha256 || ''),
+        executable_addon: Boolean(item.executable_addon),
+      }))
+      : [];
+    base.license_snapshot_ref = String(src.license_snapshot_ref || '');
+  } else if (releaseKind === 'editorial') {
+    base.license_snapshot_ref = String(src.license_snapshot_ref || 'lic-editorial-v1');
+    base.installation_record = null;
+  }
+  return base;
+}
+
 function createStoreBridge(options = {}) {
   const catalog = new Map();
   const artifacts = new Map();
+  const upstreamArtifactUrls = new Map();
   const libraries = new Map();
   const stagedByRelease = new Map();
   const reviewedPlans = new Map();
   const projects = new Map(Object.entries(options.projects || {}));
   const stagingRoot = options.stagingRoot || '';
-  const storeWebUrl = options.storeWebUrl || 'http://127.0.0.1:4173/store';
+  const storeServerUrl = normalizeStoreServerUrl(options.storeServerUrl || '');
+  const storeWebUrl = options.storeWebUrl || storeServerUrl || 'http://127.0.0.1:4173/store';
+  const storeInternalSecret = typeof options.storeInternalSecret === 'string' ? options.storeInternalSecret.trim() : '';
+  const storeAllowMockUser = Boolean(options.storeAllowMockUser);
+  const storeFetch = typeof options.fetchImpl === 'function' ? options.fetchImpl : globalThis.fetch;
+  const upstreamTimeoutMs = Number(options.upstreamTimeoutMs || 5000);
   const grants = options.grants || null;
   const allowedOrigins = new Set();
   for (const rawOrigin of options.allowedOrigins || []) {
     const normalized = normalizeLoopbackOrigin(rawOrigin);
     if (normalized) allowedOrigins.add(normalized);
+  }
+
+  function buildUpstreamHeaders(accountId = 'default') {
+    const headers = { Accept: 'application/json' };
+    const normalizedAccount = String(accountId || '').trim();
+    if (normalizedAccount && normalizedAccount !== 'default') {
+      if (storeInternalSecret) {
+        headers['X-PlayHub-Internal-Secret'] = storeInternalSecret;
+        headers['X-PlayHub-User'] = normalizedAccount;
+      } else if (storeAllowMockUser) {
+        headers['X-Store-Mock-User'] = normalizedAccount;
+      }
+    }
+    return headers;
+  }
+
+  async function fetchUpstream(urlPath, headers = {}) {
+    if (!storeServerUrl || typeof storeFetch !== 'function') {
+      return { ok: false, status: 503, error: 'Upstream Store server is not configured.' };
+    }
+    const targetUrl = /^https?:\/\//i.test(urlPath)
+      ? urlPath
+      : `${storeServerUrl}${urlPath.startsWith('/') ? '' : '/'}${urlPath}`;
+    const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), upstreamTimeoutMs) : null;
+    try {
+      const response = await storeFetch(targetUrl, {
+        method: 'GET',
+        headers,
+        signal: controller?.signal,
+      });
+      return { ok: true, response };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 503,
+        error: `Store 서버(${storeServerUrl})에 연결할 수 없습니다: ${error?.message || 'network error'}`,
+      };
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
+  async function syncUpstreamLibrary(accountId = 'default') {
+    if (!storeServerUrl) return { ok: true, skipped: true };
+    const headers = buildUpstreamHeaders(accountId);
+    const myAssetsFetch = await fetchUpstream('/api/store/my-assets', headers);
+    if (!myAssetsFetch.ok) return { ok: false, status: 503, code: 'STORE_UPSTREAM_UNAVAILABLE', error: myAssetsFetch.error };
+    if (!myAssetsFetch.response.ok) {
+      return {
+        ok: false,
+        status: 502,
+        code: 'STORE_UPSTREAM_ERROR',
+        error: `Store API 응답 오류 (my-assets=${myAssetsFetch.response.status}).`,
+      };
+    }
+    let myAssetsJson;
+    try {
+      myAssetsJson = await myAssetsFetch.response.json();
+    } catch (error) {
+      return { ok: false, status: 502, code: 'STORE_UPSTREAM_INVALID_JSON', error: error.message };
+    }
+
+    const rawEntries = Array.isArray(myAssetsJson?.entries) ? myAssetsJson.entries : [];
+    const needsCatalogFallback = rawEntries.some((entry) => !entry.engine_compatibility || !Array.isArray(entry.file_manifest) || entry.file_manifest.length === 0);
+    const catalogByAssetId = new Map();
+    if (needsCatalogFallback) {
+      const catalogFetch = await fetchUpstream('/api/store/catalog', headers);
+      if (catalogFetch.ok && catalogFetch.response.ok) {
+        try {
+          const catalogJson = await catalogFetch.response.json();
+          for (const rawItem of Array.isArray(catalogJson?.items) ? catalogJson.items : []) {
+            const normalized = normalizeUpstreamContractEntry(rawItem, null, false);
+            const check = validateStoreContract(normalized, { strictAdditionalProperties: true });
+            if (!check.valid) continue;
+            registerEntry(normalized, null);
+            catalogByAssetId.set(normalized.asset_id, { raw: rawItem, contract: normalized });
+            if (normalized.release_kind === 'package' && typeof rawItem.artifact_url === 'string' && rawItem.artifact_url) {
+              upstreamArtifactUrls.set(normalized.release_id, new URL(rawItem.artifact_url, `${storeServerUrl}/`).toString());
+            }
+          }
+        } catch {
+          // fall through to direct entry enrichment
+        }
+      }
+    }
+
+    const accountKey = String(accountId || 'default');
+    const accountMap = new Map();
+    for (const rawEntry of rawEntries) {
+      const slug = String(rawEntry.slug || rawEntry.asset_id || '');
+      const catalogMatch = catalogByAssetId.get(slug);
+      const normalized = normalizeUpstreamContractEntry(rawEntry, catalogMatch?.raw || null, true);
+      const check = validateStoreContract(normalized, { strictAdditionalProperties: true });
+      if (!check.valid) continue;
+      registerEntry(normalized, null);
+      accountMap.set(normalized.asset_id, normalized);
+      const artifactPath = rawEntry.artifact_url || catalogMatch?.raw?.artifact_url || '';
+      if (normalized.release_kind === 'package' && artifactPath) {
+        upstreamArtifactUrls.set(normalized.release_id, new URL(artifactPath, `${storeServerUrl}/`).toString());
+      }
+    }
+    libraries.set(accountKey, accountMap);
+    return { ok: true, count: accountMap.size, account: myAssetsJson?.account || null };
+  }
+
+  async function ensureUpstreamArtifact(releaseId) {
+    const existing = artifacts.get(releaseId);
+    if (existing) return { ok: true, bundle: existing };
+    const artifactUrl = upstreamArtifactUrls.get(releaseId);
+    const entry = findRelease('', releaseId);
+    if (!storeServerUrl || !artifactUrl || !entry) {
+      return { ok: false, status: 404, code: 'ARTIFACT_NOT_FOUND', error: 'Package artifact not found.' };
+    }
+    const fetched = await fetchUpstream(artifactUrl, { Accept: 'application/octet-stream' });
+    if (!fetched.ok) {
+      return { ok: false, status: 503, code: 'STORE_UPSTREAM_UNAVAILABLE', error: fetched.error };
+    }
+    if (!fetched.response.ok) {
+      return {
+        ok: false,
+        status: fetched.response.status === 404 ? 404 : 502,
+        code: 'ARTIFACT_FETCH_FAILED',
+        error: `Upstream artifact request failed (HTTP ${fetched.response.status}).`,
+      };
+    }
+    const buf = Buffer.from(await fetched.response.arrayBuffer());
+    const actualDigest = formatDigest(buf);
+    if (actualDigest !== entry.artifact_digest) {
+      return {
+        ok: false,
+        status: 422,
+        code: 'ARTIFACT_DIGEST_MISMATCH',
+        expected: entry.artifact_digest,
+        actual: actualDigest,
+        error: `Upstream Store artifact SHA-256 digest mismatch (expected ${entry.artifact_digest}, got ${actualDigest}).`,
+        project_modified: false,
+      };
+    }
+    let filesMap;
+    try {
+      filesMap = readZipEntries(buf);
+    } catch (error) {
+      return { ok: false, status: 422, code: 'INVALID_ARCHIVE', error: error.message, project_modified: false };
+    }
+    const bundle = { entry, archive: buf, filesMap, dependencies: [] };
+    artifacts.set(releaseId, bundle);
+    return { ok: true, bundle };
   }
 
   function registerEntry(entry, artifactInfo = null) {
@@ -988,17 +1209,36 @@ function createStoreBridge(options = {}) {
     if (method === 'GET' && route === '/library') {
       const accountId = url.searchParams.get('account_id') || 'default';
       const projectId = url.searchParams.get('project_id') || '';
+      let upstreamSynced = false;
+      if (storeServerUrl) {
+        const sync = await syncUpstreamLibrary(accountId);
+        if (!sync.ok) {
+          json(response, sync.status || 503, {
+            ok: false,
+            code: sync.code || 'STORE_UPSTREAM_UNAVAILABLE',
+            error: sync.error,
+            store_web_url: storeWebUrl,
+          });
+          return;
+        }
+        upstreamSynced = true;
+      }
       json(response, 200, {
         ok: true,
         account_id: accountId,
         store_web_url: storeWebUrl,
+        upstream_synced: upstreamSynced,
         entries: getLibrary(accountId, projectId),
       });
       return;
     }
     const releaseMatch = /^\/releases\/([a-z0-9-]+)$/.exec(route);
     if (method === 'GET' && releaseMatch) {
-      const entry = findRelease(releaseMatch[1], url.searchParams.get('release_id') || '');
+      let entry = findRelease(releaseMatch[1], url.searchParams.get('release_id') || '');
+      if (!entry && storeServerUrl) {
+        await syncUpstreamLibrary(url.searchParams.get('account_id') || 'default');
+        entry = findRelease(releaseMatch[1], url.searchParams.get('release_id') || '');
+      }
       if (!entry) {
         json(response, 404, { ok: false, error: 'Store release not found.' });
         return;
@@ -1008,7 +1248,15 @@ function createStoreBridge(options = {}) {
     }
     const artifactMatch = /^\/artifacts\/(rel-[a-z0-9-]+)$/.exec(route);
     if (method === 'GET' && artifactMatch) {
-      const bundle = artifacts.get(artifactMatch[1]);
+      let bundle = artifacts.get(artifactMatch[1]);
+      if (!bundle && storeServerUrl) {
+        const fetched = await ensureUpstreamArtifact(artifactMatch[1]);
+        if (!fetched.ok) {
+          json(response, fetched.status || 404, fetched);
+          return;
+        }
+        bundle = fetched.bundle;
+      }
       if (!bundle) {
         json(response, 404, { ok: false, error: 'Package artifact not found.' });
         return;
@@ -1023,6 +1271,13 @@ function createStoreBridge(options = {}) {
     if (method === 'GET' && route === '/updates') {
       const projectId = url.searchParams.get('project_id') || '';
       const accountId = url.searchParams.get('account_id') || 'default';
+      if (storeServerUrl) {
+        const sync = await syncUpstreamLibrary(accountId);
+        if (!sync.ok) {
+          json(response, sync.status || 503, sync);
+          return;
+        }
+      }
       const entries = getLibrary(accountId, projectId);
       const updates = entries
         .filter((item) => item.update_info && item.update_info.update_available)
@@ -1095,7 +1350,15 @@ function createStoreBridge(options = {}) {
         json(response, editorialCheck.status || 400, editorialCheck);
         return;
       }
-      const bundle = artifacts.get(entry.release_id);
+      let bundle = artifacts.get(entry.release_id);
+      if ((!bundle || !bundle.archive) && storeServerUrl) {
+        const fetched = await ensureUpstreamArtifact(entry.release_id);
+        if (!fetched.ok) {
+          json(response, fetched.status || 404, fetched);
+          return;
+        }
+        bundle = fetched.bundle;
+      }
       if (!bundle || !bundle.archive) {
         json(response, 404, {
           ok: false,
@@ -1169,7 +1432,15 @@ function createStoreBridge(options = {}) {
       const planToken = typeof body.plan_token === 'string' ? body.plan_token : '';
       const plan = planToken ? reviewedPlans.get(planToken) : null;
       const staged = stagedByRelease.get(entry.release_id) || null;
-      const bundle = artifacts.get(entry.release_id) || null;
+      let bundle = artifacts.get(entry.release_id) || null;
+      if (!staged && !bundle && storeServerUrl) {
+        const fetched = await ensureUpstreamArtifact(entry.release_id);
+        if (!fetched.ok) {
+          json(response, fetched.status || 404, fetched);
+          return;
+        }
+        bundle = fetched.bundle;
+      }
       const result = applyInstallPlan({
         entry,
         plan,
@@ -1218,10 +1489,14 @@ function createStoreBridge(options = {}) {
     registerProject,
     getLibrary,
     findRelease,
+    syncUpstreamLibrary,
+    ensureUpstreamArtifact,
     handleHttp,
     artifacts,
     catalog,
     libraries,
+    storeServerUrl,
+    storeWebUrl,
   };
 }
 
@@ -1371,9 +1646,15 @@ function createAssetLibraryHandler(root, options = {}) {
     }
     const route = url.pathname.slice(PREFIX.length).replace(/\/$/, '');
     if (route === STORE_SUBROUTE || route.startsWith(STORE_SUBROUTE + '/')) {
+      const env = options.env || process.env;
+      const storeOptions = options.storeOptions || {};
       storeBridge ||= createStoreBridge({
-        ...(options.storeOptions || {}),
-        allowedOrigins: options.allowedOrigins ?? options.storeOptions?.allowedOrigins,
+        storeServerUrl: storeOptions.storeServerUrl ?? env.PLAYFORGE_STORE_SERVER_URL ?? '',
+        storeWebUrl: storeOptions.storeWebUrl ?? env.PLAYFORGE_STORE_WEB_URL ?? storeOptions.storeServerUrl ?? env.PLAYFORGE_STORE_SERVER_URL ?? undefined,
+        storeInternalSecret: storeOptions.storeInternalSecret ?? env.PLAYHUB_STORE_INTERNAL_SECRET ?? '',
+        storeAllowMockUser: storeOptions.storeAllowMockUser ?? (env.PLAYFORGE_STORE_ALLOW_MOCK_SESSION === '1'),
+        ...storeOptions,
+        allowedOrigins: options.allowedOrigins ?? storeOptions.allowedOrigins,
       });
       const storeRoute = route.slice(STORE_SUBROUTE.length) || '/';
       storeBridge.handleHttp(storeRoute, url, request, response, {

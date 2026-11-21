@@ -366,7 +366,16 @@ function createServer(options = {}) {
     console.warn(`[forge] build/PIE refused for account ${accountKey}; add it to PLAYHUB_FORGE_EXECUTION_ALLOWLIST (or Hub config forge.executionAllowlist) to allow.`);
     return false;
   };
-  const assetLibrary = createAssetLibraryHandler(root);
+  const storeServerUrl = options.storeServerUrl ?? serverEnv.PLAYFORGE_STORE_SERVER_URL ?? '';
+  const storeWebUrl = options.storeWebUrl ?? serverEnv.PLAYFORGE_STORE_WEB_URL ?? (storeServerUrl || 'http://127.0.0.1:4180');
+  const assetLibrary = createAssetLibraryHandler(root, {
+    env: serverEnv,
+    storeOptions: {
+      ...(options.storeOptions || {}),
+      storeServerUrl,
+      storeWebUrl,
+    },
+  });
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
   const blenderPipeline = createBlenderPipelineHandler(root, {
     env: serverEnv,
@@ -575,6 +584,7 @@ function createServer(options = {}) {
       const remoteControl = routePath === '/api/platform-addon/remote-control';
       const avatarAddon = routePath === '/api/platform-addon/avatar';
       const blenderAddon = routePath === '/api/platform-addon/blender';
+      const assetStoreAddon = routePath === '/api/platform-addon/asset-store';
       const avatarAssetRoute = routePath.match(/^\/api\/platform-addon\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
       if (blenderAddon && req.method === 'GET') {
         try {
@@ -584,6 +594,23 @@ function createServer(options = {}) {
           return json(200, { ok: true, files: Object.fromEntries(entries) });
         } catch {
           return json(503, { ok: false, error: 'PlayForge Blender add-on unavailable' });
+        }
+      }
+      if (assetStoreAddon && req.method === 'GET') {
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'store_dock.gd', 'package_installer.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_asset_store', name), 'utf8')]));
+          return json(200, {
+            ok: true,
+            files: Object.fromEntries(entries),
+            config: {
+              store_web_url: storeWebUrl,
+              store_api_url: `${basePath}/api/asset-library/store`,
+            },
+          });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Asset Store add-on unavailable' });
         }
       }
       if (avatarAddon && req.method === 'GET') {

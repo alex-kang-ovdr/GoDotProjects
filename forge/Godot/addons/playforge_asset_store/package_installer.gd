@@ -101,10 +101,18 @@ static func current_engine_version() -> String:
 	return "%d.%d.%d" % [int(info.get("major", 4)), int(info.get("minor", 7)), int(info.get("patch", 0))]
 
 
+static func is_supported_forge_platform(platform_name: String) -> bool:
+	return platform_name.to_lower() in PLATFORMS
+
+
 static func current_platform_name() -> String:
 	if OS.has_feature("web"):
 		return "web"
 	var os_name := OS.get_name().to_lower()
+	if OS.has_feature("android") or os_name.contains("android"):
+		return "android"
+	if OS.has_feature("ios") or os_name == "ios":
+		return "ios"
 	if os_name.contains("windows"):
 		return "windows"
 	if os_name.contains("macos") or os_name.contains("osx"):
@@ -347,7 +355,14 @@ func stage_2_verify_license(entry: Dictionary, target_engine: String = "", targe
 	if not usage_grants.is_empty() and not bool(usage_grants.get(asset_id, false)):
 		return {"ok": false, "code": "LICENSE_GRANT_DENIED", "error": "사용 권한(UsageGrant)을 확인할 수 없습니다: " + asset_id, "project_modified": false}
 	var engine_ver := target_engine if not target_engine.is_empty() else current_engine_version()
-	var platform_name := target_platform if not target_platform.is_empty() else current_platform_name()
+	var platform_name := (target_platform if not target_platform.is_empty() else current_platform_name()).to_lower()
+	if not is_supported_forge_platform(platform_name):
+		return {
+			"ok": false,
+			"code": "PLATFORM_INCOMPATIBLE",
+			"error": "PlayForge Asset Store는 Forge 플랫폼(web, windows, linux, macos)만 지원하며 '%s'는 미지원입니다." % platform_name,
+			"project_modified": false,
+		}
 	var compat: Dictionary = entry.get("engine_compatibility", {})
 	var godot_min := str(compat.get("godot_min", "4.3"))
 	if compare_semver(engine_ver, godot_min) < 0:

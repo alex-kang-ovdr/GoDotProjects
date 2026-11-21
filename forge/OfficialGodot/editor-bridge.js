@@ -630,7 +630,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null, blenderFiles = null) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null, blenderFiles = null, assetStoreBundle = null) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -639,8 +639,8 @@
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
       const lowerFile = file.replace(/^(\.\/)+/, '').toLowerCase();
-      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar|blender)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
-          lowerFile.startsWith('.playforge-import/') || lowerFile.startsWith('.playforge-store/') || lowerFile === '.playforge-store.json') return null;
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar|blender|asset_store)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
+          lowerFile.startsWith('.playforge-import/') || lowerFile.startsWith('.playforge-store/') || lowerFile === '.playforge-store.json' || lowerFile === '.playforge-store-config.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -671,9 +671,24 @@
     if (blenderFiles) {
       pluginPaths.push('res://addons/playforge_blender/plugin.cfg');
     }
+    if (assetStoreBundle && assetStoreBundle.files) {
+      pluginPaths.push('res://addons/playforge_asset_store/plugin.cfg');
+    }
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
+    if (assetStoreBundle && assetStoreBundle.config) {
+      const apiPath = typeof assetStoreBundle.config.store_api_url === 'string' && assetStoreBundle.config.store_api_url.startsWith('/')
+        ? `${origin}${assetStoreBundle.config.store_api_url}`
+        : (assetStoreBundle.config.store_api_url || '');
+      const storeConfig = {
+        store_web_url: assetStoreBundle.config.store_web_url || '',
+        store_api_url: apiPath,
+      };
+      window.__playforgeStoreWebUrl = storeConfig.store_web_url;
+      window.__playforgeStoreApiUrl = storeConfig.store_api_url;
+      projectFiles.push({ path: '.playforge-store-config.json', content: JSON.stringify(storeConfig) });
+    }
     for (const [name, content] of Object.entries(addonFiles)) {
       if (typeof content !== 'string' || content.length > 300000) throw new Error('Invalid PlayForge platform add-on.');
       const file = `addons/playforge_platform/${name}`;
@@ -693,6 +708,9 @@
     }
     if (blenderFiles) {
       mountedAddons.push(['playforge_blender', blenderFiles]);
+    }
+    if (assetStoreBundle && assetStoreBundle.files) {
+      mountedAddons.push(['playforge_asset_store', assetStoreBundle.files]);
     }
     for (const [directory, files] of mountedAddons) {
       for (const [name, content] of Object.entries(files)) {
@@ -924,20 +942,37 @@
       return null;
     }
   }
+  async function fetchAssetStoreAddon() {
+    try {
+      const response = await fetch(forgePath('/api/platform-addon/asset-store'), { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) return null;
+      const data = await response.json().catch(() => null);
+      const names = ['plugin.cfg', 'plugin.gd', 'store_dock.gd', 'package_installer.gd'];
+      if (!data || data.ok !== true || !data.files ||
+          Object.keys(data.files).some(name => !names.includes(name)) ||
+          names.some(name => typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
+        return null;
+      }
+      return { files: data.files, config: data.config || null };
+    } catch {
+      return null;
+    }
+  }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       setLoading('프로젝트 파일 불러오는 중…', '프로젝트와 에디터 애드온을 가져오고 있습니다.', 8);
       await ensureCsrfToken();
-      const [project, addonFiles, chat, remoteControlFiles, avatarBundle, blenderFiles] = await Promise.all([fetchProject(), fetchAddon(),
+      const [project, addonFiles, chat, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
           ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd']),
         fetchRemoteControlAddon(),
         fetchAvatarAddon(),
-        fetchBlenderAddon()]);
+        fetchBlenderAddon(),
+        fetchAssetStoreAddon()]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle, blenderFiles);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       setLoading('Godot 웹 에디터 다운로드 중…', 'WASM 엔진을 받아오고 있습니다 (최초 1회 이후 브라우저 캐시 적용).', 12);
