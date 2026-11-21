@@ -15,6 +15,23 @@ const WILDCARD_HOSTS = new Set(['0.0.0.0', '::']);
 
 const REQUIRED_WEB_FILES = ['index.html', 'store.js', 'store-catalog.js', 'store.css'];
 
+export function loadMergedCatalog(storeRoot = STORE_ROOT) {
+  const collectedPath = path.join(storeRoot, 'data', 'collected-catalog.json');
+  const merged = [...SAMPLE_CATALOG];
+  const seen = new Set(merged.map((item) => item.asset_id));
+  if (fs.existsSync(collectedPath)) {
+    const raw = JSON.parse(fs.readFileSync(collectedPath, 'utf8'));
+    const extra = Array.isArray(raw?.items) ? raw.items : [];
+    for (const item of extra) {
+      if (item?.asset_id && !seen.has(item.asset_id)) {
+        seen.add(item.asset_id);
+        merged.push(item);
+      }
+    }
+  }
+  return merged;
+}
+
 export function parseCliArgs(argv = process.argv.slice(2), env = process.env) {
   let check = false;
   let noBrowser = env.PLAYHUB_NO_BROWSER === '1';
@@ -107,16 +124,24 @@ export function checkStorePrerequisites({
     }
   }
 
-  for (const entry of SAMPLE_CATALOG) {
+  let catalog = [...SAMPLE_CATALOG];
+  try {
+    catalog = loadMergedCatalog(storeRoot);
+  } catch (error) {
+    issues.push(`Failed to load collected catalog JSON: ${error.message}`);
+  }
+
+  for (const entry of catalog) {
     const errors = validateReleaseContract(entry);
     if (errors.length > 0) {
       issues.push(`Contract error in ${entry.asset_id}: ${errors.join(', ')}`);
+      if (issues.length > 20) break;
     }
   }
 
   try {
-    const artifacts = createCatalogArtifacts(SAMPLE_CATALOG);
-    const packageCount = SAMPLE_CATALOG.filter((x) => x.release_kind === 'package').length;
+    const artifacts = createCatalogArtifacts(catalog);
+    const packageCount = catalog.filter((x) => x.release_kind === 'package').length;
     if (artifacts.size !== packageCount) {
       issues.push(`Expected ${packageCount} package artifacts, built ${artifacts.size}`);
     }
@@ -140,9 +165,9 @@ export function checkStorePrerequisites({
     ok: issues.length === 0,
     issues,
     nodeVersion,
-    catalogCount: SAMPLE_CATALOG.length,
-    packageCount: SAMPLE_CATALOG.filter((x) => x.release_kind === 'package').length,
-    editorialCount: SAMPLE_CATALOG.filter((x) => x.release_kind === 'editorial').length,
+    catalogCount: catalog.length,
+    packageCount: catalog.filter((x) => x.release_kind === 'package').length,
+    editorialCount: catalog.filter((x) => x.release_kind === 'editorial').length,
     dataDir
   };
 }
@@ -173,10 +198,12 @@ async function main() {
     return;
   }
 
+  const catalog = loadMergedCatalog(STORE_ROOT);
   const app = createStoreApp({
     dataDir: opts.dataDir,
     webDir: path.join(STORE_ROOT, 'web'),
     serveStatic: true,
+    catalog,
     allowMockSession: opts.allowMockSession,
     allowedOrigins: opts.allowedOrigins
   });

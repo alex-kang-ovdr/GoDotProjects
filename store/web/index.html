@@ -96,6 +96,25 @@
           </div>
 
           <div class="filter-group">
+            <label class="filter-label" for="license-filter">라이선스 (상업적 사용 가능)</label>
+            <select id="license-filter" aria-label="라이선스 필터">
+              <option value="all">전체 라이선스 (CC0 · MIT 등)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="source-filter">출처 소스</label>
+            <select id="source-filter" aria-label="출처 필터">
+              <option value="all">전체 출처</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">인기 태그</span>
+            <div class="tag-cloud" id="tag-bar" aria-label="인기 태그 필터"></div>
+          </div>
+
+          <div class="filter-group">
             <span class="filter-label">엔진 호환성</span>
             <div class="filter-check-list">
               <span class="compat-pill active">Godot 4.7.2 검증</span>
@@ -145,6 +164,9 @@
 
           <!-- Asset Card Grid (Browse / My Library) -->
           <div id="catalog-list" class="card-grid"></div>
+
+          <!-- Pagination Bar (Visible when total_pages > 1) -->
+          <nav id="pagination-bar" class="pagination-bar hidden" aria-label="에셋 페이지 이동"></nav>
 
           <!-- Publisher Drafts List -->
           <div id="publisher-panel" class="publisher-list hidden"></div>

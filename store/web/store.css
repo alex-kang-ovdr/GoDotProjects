@@ -766,6 +766,109 @@ button { cursor: pointer; }
   font-weight: 700;
 }
 
+/* ==================== License Badges, Tags & Pagination ==================== */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.tag-chip {
+  appearance: none;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-low);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+}
+.tag-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--secondary-container);
+}
+.tag-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+}
+.license-pill {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--success-container);
+  color: var(--on-success-container);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.card-tag {
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 10.5px;
+  cursor: pointer;
+}
+.card-tag:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.pagination-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0 4px;
+}
+.page-btn {
+  appearance: none;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+}
+.page-btn:hover:not([disabled]) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.page-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+}
+.page-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.page-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 6px;
+}
+.source-link {
+  color: var(--primary);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
 /* ==================== Responsive Mobile (Unity Mobile Flow) ==================== */
 @media (max-width: 1100px) {
   .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
