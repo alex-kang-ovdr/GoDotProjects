@@ -285,7 +285,265 @@ export function renderSystemAccess(container, data, { kstStamp }) {
   container.replaceChildren(p1, p2);
 }
 
-export function renderSystemBackups(container, data, { kstStamp, onCreateBackup }) {
+export function renderSystemBackups(container, data, { number = x => String(x ?? 0), kstStamp, onCreateBackup, onExportSnapshot, onImportSnapshot }) {
+  // ---- Panel 1: Latest-Version Data Snapshot Export / Import (Live <-> Dev Migration) ----
+  const meta = data.snapshotMeta || { environment: { channel: 'dev', isLive: false }, domains: [], excludedSecurityTables: [] };
+  const envInfo = meta.environment || { channel: 'dev', isLive: false };
+  const domains = Array.isArray(meta.domains) ? meta.domains : [];
+
+  const envBadge = pill(
+    `현재 환경: ${String(envInfo.channel || 'dev').toUpperCase()}${envInfo.isLive ? ' (운영)' : ' (개발/로컬)'}`,
+    envInfo.isLive ? 'warn' : 'ok',
+    true
+  );
+  const pSnap = panel('DATA MIGRATION SNAPSHOT', '최신버전 데이터 스냅샷 일괄 내보내기 · 임포트 (Live → Dev 이관)', envBadge);
+  pSnap.append(el(
+    'p',
+    'Live Admin에서 최신버전 데이터 스냅샷(.json)을 일괄 내보낸 뒤 Dev Admin에서 임포트해 데이터를 안전하게 이관합니다. 세션·OAuth·비밀번호·감사/이벤트 로그는 보안상 자동 제외됩니다.',
+    'muted'
+  ));
+
+  const grid = el('div', '', 'two-columns snapshot-grid');
+
+  // Left Box: Export
+  const exportBox = el('div', '', 'snapshot-box');
+  exportBox.append(el('h3', '1. 최신버전 스냅샷 일괄 내보내기 (Export)'));
+  const exportQuickActions = el('div', '', 'inline-actions');
+  const selectAllBtn = el('button', '전체 선택', 'quiet');
+  selectAllBtn.type = 'button';
+  const clearAllBtn = el('button', '전체 해제', 'quiet');
+  clearAllBtn.type = 'button';
+  exportQuickActions.append(selectAllBtn, clearAllBtn);
+  exportBox.append(exportQuickActions);
+
+  const domainChecks = new Map();
+  const domainList = el('div', '', 'snapshot-domain-list');
+  for (const d of domains) {
+    const label = el('label', '', 'checklist-item snapshot-domain-item');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = true;
+    cb.value = d.id;
+    cb.dataset.testid = `snapshot-domain-${d.id}`;
+    domainChecks.set(d.id, cb);
+    const body = el('span', '');
+    body.append(raw('strong', `${d.label} `), pill(`${number(d.totalRows)}행`, d.totalRows > 0 ? 'info' : 'muted', true));
+    body.append(el('small', d.description, 'snapshot-desc'));
+    label.append(cb, body);
+    domainList.append(label);
+  }
+  exportBox.append(domainList);
+
+  selectAllBtn.addEventListener('click', () => { for (const cb of domainChecks.values()) cb.checked = true; });
+  clearAllBtn.addEventListener('click', () => { for (const cb of domainChecks.values()) cb.checked = false; });
+
+  const exportFooter = el('div', '', 'inline-actions snapshot-footer');
+  const exportBtn = el('button', '최신 스냅샷 일괄 내보내기 (.json)', 'primary');
+  exportBtn.type = 'button';
+  exportBtn.dataset.testid = 'snapshot-export-btn';
+  const exportStatus = el('span', '', 'muted');
+  exportStatus.setAttribute('role', 'status');
+  exportFooter.append(exportBtn, exportStatus);
+  exportBox.append(exportFooter);
+
+  exportBtn.addEventListener('click', async () => {
+    const selected = [...domainChecks.entries()].filter(([, cb]) => cb.checked).map(([id]) => id);
+    if (!selected.length) {
+      exportStatus.textContent = '최소 1개 이상의 도메인을 선택하세요.';
+      return;
+    }
+    exportBtn.disabled = true;
+    exportStatus.textContent = '최신버전 스냅샷 생성 및 SHA-256 서명 중...';
+    try {
+      const res = await onExportSnapshot(selected);
+      const blob = new Blob([JSON.stringify(res.snapshot, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.filename || 'playhub-snapshot.json';
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      exportStatus.textContent = `내보내기 완료: ${res.filename} (${number(res.snapshot.summary.totalRows)}행 · SHA-256 ${res.snapshot.sha256.slice(0, 12)}…)`;
+    } catch (error) {
+      exportStatus.textContent = error.message || '스냅샷 내보내기에 실패했습니다.';
+    } finally {
+      exportBtn.disabled = false;
+    }
+  });
+
+  // Right Box: Import
+  const importBox = el('div', '', 'snapshot-box');
+  importBox.append(el('h3', '2. 스냅샷 일괄 임포트 (Live → Dev 이관)'));
+
+  const fileLabel = el('label', '스냅샷 파일 선택 (.json)', 'review-filter');
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.json,application/json';
+  fileInput.dataset.testid = 'snapshot-file-input';
+  fileLabel.append(fileInput);
+  importBox.append(fileLabel);
+
+  const loadedPreview = el('div', '선택된 스냅샷 파일이 없습니다. Live 환경에서 내보낸 JSON 파일을 선택하세요.', 'snapshot-loaded muted');
+  loadedPreview.dataset.testid = 'snapshot-loaded-info';
+  importBox.append(loadedPreview);
+
+  // Duplicate conflict option (Skip vs Overwrite)
+  const conflictGroup = el('fieldset', '', 'snapshot-options');
+  conflictGroup.append(el('legend', '중복 데이터 처리 옵션 (동일 PK 충돌 시)'));
+
+  const skipLabel = el('label', '', 'checklist-item');
+  const skipRadio = document.createElement('input');
+  skipRadio.type = 'radio';
+  skipRadio.name = 'snapshot-conflict-mode';
+  skipRadio.value = 'skip';
+  skipRadio.checked = true;
+  skipRadio.dataset.testid = 'conflict-skip';
+  skipLabel.append(skipRadio, el('span', '중복 건너뛰기 (기본 · 기존 데이터 유지, 신규 레코드만 추가)'));
+
+  const overwriteLabel = el('label', '', 'checklist-item');
+  const overwriteRadio = document.createElement('input');
+  overwriteRadio.type = 'radio';
+  overwriteRadio.name = 'snapshot-conflict-mode';
+  overwriteRadio.value = 'overwrite';
+  overwriteRadio.dataset.testid = 'conflict-overwrite';
+  overwriteLabel.append(overwriteRadio, el('span', '중복 덮어쓰기 (동일 PK 레코드를 스냅샷 최신값으로 덮어씀)'));
+
+  conflictGroup.append(skipLabel, overwriteLabel);
+  importBox.append(conflictGroup);
+
+  const backupBeforeLabel = el('label', '', 'checklist-item');
+  const backupBeforeCb = document.createElement('input');
+  backupBeforeCb.type = 'checkbox';
+  backupBeforeCb.checked = true;
+  backupBeforeCb.dataset.testid = 'snapshot-auto-backup';
+  backupBeforeLabel.append(backupBeforeCb, el('span', '임포트 직전 SQLite 자동 백업 생성 (권장)'));
+  importBox.append(backupBeforeLabel);
+
+  let allowLiveCb = null;
+  if (envInfo.isLive) {
+    const liveWarnLabel = el('label', '', 'checklist-item');
+    allowLiveCb = document.createElement('input');
+    allowLiveCb.type = 'checkbox';
+    allowLiveCb.checked = false;
+    allowLiveCb.dataset.testid = 'snapshot-allow-live';
+    liveWarnLabel.append(allowLiveCb, el('span', '주의: 현재 운영(LIVE) 환경에 스냅샷을 반영하는 것을 확인합니다.'));
+    importBox.append(liveWarnLabel);
+  }
+
+  const importActions = el('div', '', 'inline-actions snapshot-footer');
+  const dryRunBtn = el('button', '사전 영향 분석 (Dry-Run)', 'quiet');
+  dryRunBtn.type = 'button';
+  dryRunBtn.disabled = true;
+  dryRunBtn.dataset.testid = 'snapshot-dryrun-btn';
+  const importBtn = el('button', '스냅샷 일괄 임포트 실행', 'primary');
+  importBtn.type = 'button';
+  importBtn.disabled = true;
+  importBtn.dataset.testid = 'snapshot-import-btn';
+  const importStatus = el('span', '', 'muted');
+  importStatus.setAttribute('role', 'status');
+  importActions.append(dryRunBtn, importBtn, importStatus);
+  importBox.append(importActions);
+
+  const importReportBox = el('div', '', 'snapshot-report');
+  importReportBox.dataset.testid = 'snapshot-import-report';
+  importBox.append(importReportBox);
+
+  let parsedSnapshot = null;
+
+  fileInput.addEventListener('change', async () => {
+    parsedSnapshot = null;
+    dryRunBtn.disabled = true;
+    importBtn.disabled = true;
+    importReportBox.replaceChildren();
+    const file = fileInput.files?.[0];
+    if (!file) {
+      loadedPreview.textContent = '선택된 스냅샷 파일이 없습니다.';
+      return;
+    }
+    try {
+      const text = await file.text();
+      const jsonObj = JSON.parse(text);
+      if (jsonObj?.format !== 'playhub-data-snapshot-v1') {
+        throw new Error('유효한 PlayHub 스냅샷 JSON(playhub-data-snapshot-v1)이 아닙니다.');
+      }
+      parsedSnapshot = jsonObj;
+      const srcCh = String(jsonObj.sourceEnv?.channel || 'unknown').toUpperCase();
+      const dstCh = String(envInfo.channel || 'dev').toUpperCase();
+      loadedPreview.replaceChildren(
+        raw('strong', `${file.name} `),
+        pill(`${srcCh} → ${dstCh}`, srcCh === 'LIVE' && dstCh !== 'LIVE' ? 'ok' : 'info', true),
+        el('div', `생성: ${jsonObj.exportedAt ? kstStamp(jsonObj.exportedAt) : '—'} · 도메인 ${(jsonObj.domains || []).length}개 · 총 ${number(jsonObj.summary?.totalRows || 0)}행 · SHA-256 ${String(jsonObj.sha256 || '').slice(0, 14)}…`)
+      );
+      dryRunBtn.disabled = false;
+      importBtn.disabled = false;
+      importStatus.textContent = '파일 검증 준비 완료. 사전 영향 분석(Dry-Run) 후 임포트를 권장합니다.';
+    } catch (error) {
+      loadedPreview.textContent = `파일 읽기 실패: ${error.message || 'JSON 형식 오류'}`;
+      importStatus.textContent = '';
+    }
+  });
+
+  const renderImportResult = res => {
+    const t = res.totals || {};
+    const header = el('div', '', 'inline-actions');
+    header.append(
+      pill(res.dryRun ? '사전 영향 분석 (Dry-Run · 미반영)' : '임포트 반영 완료', res.dryRun ? 'info' : 'ok'),
+      pill(`중복 처리: ${res.conflictMode === 'overwrite' ? '덮어쓰기' : '건너뛰기'}`, res.conflictMode === 'overwrite' ? 'warn' : 'muted'),
+      raw('span', `신규 ${number(t.inserted)} · ${res.dryRun ? '덮어쓰기 예정' : '덮어씀'} ${number(t.overwritten)} · 건너뜀 ${number(t.skipped)} (총 ${number(t.incoming)}행)`)
+    );
+    const tblRows = (res.tables || [])
+      .filter(r => r.incoming > 0)
+      .map(r => [
+        raw('strong', r.table),
+        raw('span', r.db),
+        number(r.incoming),
+        number(r.inserted),
+        number(r.overwritten),
+        number(r.skipped)
+      ]);
+    importReportBox.replaceChildren(
+      header,
+      simpleTable(['테이블', 'DB', '대상 행', '신규', res.dryRun ? '덮어쓰기 예정' : '덮어씀', '건너뜀'], tblRows, '변경 대상 행이 없습니다.')
+    );
+  };
+
+  const runImport = async isDryRun => {
+    if (!parsedSnapshot || typeof onImportSnapshot !== 'function') return;
+    const conflictMode = overwriteRadio.checked ? 'overwrite' : 'skip';
+    const selected = [...domainChecks.entries()].filter(([, cb]) => cb.checked).map(([id]) => id);
+    dryRunBtn.disabled = true;
+    importBtn.disabled = true;
+    importStatus.textContent = isDryRun ? '영향 분석 중...' : '스냅샷 트랜잭션 임포트 실행 중...';
+    try {
+      const res = await onImportSnapshot({
+        snapshot: parsedSnapshot,
+        domains: selected.length ? selected : parsedSnapshot.domains,
+        conflictMode,
+        dryRun: isDryRun,
+        createBackupBeforeImport: backupBeforeCb.checked,
+        allowLiveImport: Boolean(allowLiveCb?.checked)
+      });
+      renderImportResult(res);
+      importStatus.textContent = isDryRun
+        ? '사전 영향 분석 완료 (DB 변경 없음).'
+        : `임포트 완료: 신규 ${number(res.totals?.inserted)}건, 덮어쓰기 ${number(res.totals?.overwritten)}건, 건너뜀 ${number(res.totals?.skipped)}건`;
+    } catch (error) {
+      importStatus.textContent = error.message || '임포트 처리에 실패했습니다.';
+    } finally {
+      dryRunBtn.disabled = !parsedSnapshot;
+      importBtn.disabled = !parsedSnapshot;
+    }
+  };
+
+  dryRunBtn.addEventListener('click', () => void runImport(true));
+  importBtn.addEventListener('click', () => void runImport(false));
+
+  grid.append(exportBox, importBox);
+  pSnap.append(grid);
+
+  // ---- Panel 2: Existing SQLite Online Backup ----
   const createBtn = el('button', '온라인 백업 지금 생성', 'primary');
   createBtn.type = 'button';
   createBtn.dataset.testid = 'create-backup-btn';
@@ -317,7 +575,7 @@ export function renderSystemBackups(container, data, { kstStamp, onCreateBackup 
   ]);
   p1.append(simpleTable(['파일명', '생성 시각', '크기', 'SHA-256 (앞 16자)', '검증'], rows, '아직 생성된 온라인 백업이 없습니다.'));
   p1.append(el('p', '복원은 서비스 중지 및 유지보수 잠금(maintenance.lock) 절차가 필요하므로 CLI 도구(node hub/tools/restore-data.mjs --verify / --apply)를 통해 수행합니다.', 'panel-foot'));
-  container.replaceChildren(p1);
+  container.replaceChildren(pSnap, p1);
 }
 
 export function renderForgeOverview(container, data, { number, onNavigate }) {

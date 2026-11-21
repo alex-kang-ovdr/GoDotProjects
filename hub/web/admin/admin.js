@@ -769,6 +769,19 @@ async function refreshSystemViews() {
       notice('SQLite 온라인 백업을 생성하고 무결성 검증을 마쳤습니다.');
       await refreshSystemViews();
       void refreshBadges();
+    },
+    onExportSnapshot: async domains => {
+      const res = await api('/api/admin/system/snapshot/export', { method: 'POST', body: { domains } });
+      notice(`최신버전 스냅샷 내보내기 완료: ${res.filename} (${number(res.snapshot?.summary?.totalRows || 0)}행)`);
+      return res;
+    },
+    onImportSnapshot: async payload => {
+      const res = await api('/api/admin/system/snapshot/import', { method: 'POST', body: payload });
+      if (!res.dryRun) {
+        notice(`스냅샷 임포트 완료: 신규 ${number(res.totals?.inserted || 0)}건 · 덮어쓰기 ${number(res.totals?.overwritten || 0)}건 · 건너뜀 ${number(res.totals?.skipped || 0)}건`);
+        void refreshBadges();
+      }
+      return res;
     }
   };
   renderSystemOverview($('system-overview-panel'), systemCache, ctx);

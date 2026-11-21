@@ -1099,6 +1099,7 @@ export function createStoreAdmin({
     listPackages,
     decideSubmission,
     updatePackageStatus,
+    withStoreDb,
     resolvedPath,
     storageMode: resolvedPath === ':memory:' ? 'memory' : 'file'
   };

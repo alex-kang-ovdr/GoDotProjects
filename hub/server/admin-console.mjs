@@ -9,6 +9,7 @@ import { assertNoLinks, hashFile, TOOL_VERSION } from '../tools/backup.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createStoreAdmin } from './store-admin.mjs';
 import { createForgeTemplatePublisher } from './forge-template-publisher.mjs';
+import { createDataSnapshotService, MAX_SNAPSHOT_IMPORT_BYTES } from './data-snapshot.mjs';
 
 const DAY = 86400000;
 const SAFE_GIT_REF = /^[A-Za-z0-9._/-]{1,120}$/;
@@ -305,6 +306,14 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
   const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
   const templatePublisher = injectedPublisher || createForgeTemplatePublisher({ platformRoot, rootDir, config, now, audit });
   const storeAdmin = createStoreAdmin({ config, db, platformRoot, now, audit, requireSession, env });
+  const dataSnapshot = createDataSnapshotService({
+    db,
+    storeAdmin,
+    config,
+    env,
+    now,
+    createBackup: () => createOnlineBackup(config.dataDir, now)
+  });
   const devopsPreviewJobs = new Map();
   const previewStartTimeoutMs = Number.isInteger(config?.devopsPreviewStartTimeoutMs)
     && config.devopsPreviewStartTimeoutMs >= 100
@@ -466,7 +475,8 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         }
       },
       sessions: activeSessions,
-      backups
+      backups,
+      snapshotMeta: dataSnapshot.getMeta()
     };
   }
 
@@ -1148,6 +1158,53 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
       const created = await createOnlineBackup(config.dataDir, now);
       audit('system_backup_created', created.filename, { bytes: created.bytes, sha256Prefix: created.sha256Prefix, admin: active.admin_username });
       json(res, 201, { backup: created });
+      return true;
+    }
+    if (pathname === '/api/admin/system/snapshot/meta' && req.method === 'GET') {
+      json(res, 200, dataSnapshot.getMeta());
+      return true;
+    }
+    if (pathname === '/api/admin/system/snapshot/export' && req.method === 'POST') {
+      if (rate) rate(`adminsnapshot:${req.socket?.remoteAddress || 'local'}`, 12, 60000);
+      const body = await readJson(req, 16384);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const snapshot = dataSnapshot.exportSnapshot({ domains: body?.domains });
+      const stamp = new Date(now()).toISOString().replace(/[-:T]/g, '').slice(0, 15);
+      const envTag = String(snapshot.sourceEnv?.channel || 'dev').replace(/[^a-z0-9_-]/gi, '');
+      const filename = `playhub-snapshot-${envTag}-${stamp}.json`;
+      audit('system_snapshot_exported', filename, {
+        sourceChannel: snapshot.sourceEnv?.channel,
+        domains: snapshot.domains,
+        totalTables: snapshot.summary.totalTables,
+        totalRows: snapshot.summary.totalRows,
+        sha256Prefix: snapshot.sha256.slice(0, 16),
+        admin: active?.admin_username || 'admin'
+      });
+      json(res, 200, { filename, snapshot });
+      return true;
+    }
+    if (pathname === '/api/admin/system/snapshot/import' && req.method === 'POST') {
+      if (rate) rate(`adminsnapshot:${req.socket?.remoteAddress || 'local'}`, 10, 60000);
+      const body = await readJson(req, MAX_SNAPSHOT_IMPORT_BYTES);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const result = await dataSnapshot.importSnapshot({
+        snapshot: body?.snapshot,
+        domains: body?.domains,
+        conflictMode: body?.conflictMode || 'skip',
+        dryRun: body?.dryRun === true,
+        createBackupBeforeImport: body?.createBackupBeforeImport !== false,
+        allowLiveImport: body?.allowLiveImport === true
+      });
+      if (!result.dryRun) {
+        audit('system_snapshot_imported', `${result.sourceEnv?.channel || 'unknown'}->${result.targetEnv?.channel || 'dev'}`, {
+          conflictMode: result.conflictMode,
+          domains: result.domains,
+          totals: result.totals,
+          preImportBackup: result.preImportBackup?.filename || null,
+          admin: active?.admin_username || 'admin'
+        });
+      }
+      json(res, 200, result);
       return true;
     }
     if (pathname === '/api/admin/devops/overview' && req.method === 'GET') {
