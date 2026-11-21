@@ -12,21 +12,21 @@
   justify-content: space-between;
   gap: 14px;
   padding: 18px 22px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #142c25 0%, #1d3f35 100%);
-  color: #f4f7f2;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #003BA0 0%, #004AC6 58%, #2563EB 100%);
+  color: #FFFFFF;
 }
 
 .avatar-topbar h1 {
   margin: 0;
-  font-size: 1.55rem;
+  font-size: 1.5rem;
   letter-spacing: -0.02em;
 }
 
 .avatar-topbar p {
   margin: 4px 0 0;
-  font-size: 0.92rem;
-  color: rgba(244, 247, 242, 0.8);
+  font-size: 0.9rem;
+  color: #DBE1FF;
 }
 
 .avatar-wallet-bar {
@@ -40,19 +40,19 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 14px;
+  padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(222, 236, 166, 0.16);
-  border: 1px solid rgba(222, 236, 166, 0.45);
-  color: #f6fccb;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  color: #78350F;
   font-weight: 700;
-  font-size: 0.96rem;
+  font-size: 0.94rem;
 }
 
 .playcoin-breakdown {
   font-size: 0.78rem;
   font-weight: 500;
-  color: rgba(244, 247, 242, 0.78);
+  color: #DBE1FF;
 }
 
 .avatar-workspace {
@@ -69,9 +69,9 @@
   gap: 14px;
   padding: 18px;
   border-radius: 18px;
-  background: var(--surface, #ffffff);
-  border: 1px solid rgba(20, 44, 37, 0.12);
-  box-shadow: 0 10px 28px rgba(20, 44, 37, 0.06);
+  background: #FFFFFF;
+  border: 1px solid #DFE1F4;
+  box-shadow: 0 10px 28px rgba(0, 74, 198, 0.06);
 }
 
 .avatar-viewport {
@@ -80,7 +80,7 @@
   aspect-ratio: 4 / 4.4;
   border-radius: 14px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 28%, #264d42 0%, #11251f 70%, #0b1814 100%);
+  background: radial-gradient(circle at 50% 28%, #1E2942 0%, #11131B 74%, #0C0E16 100%);
   cursor: grab;
   user-select: none;
 }
@@ -165,9 +165,9 @@
 .avatar-chip {
   padding: 6px 11px;
   border-radius: 999px;
-  border: 1px solid rgba(20, 44, 37, 0.2);
-  background: #f5f7f3;
-  color: #142c25;
+  border: 1px solid #C3C6D7;
+  background: #F3F3FE;
+  color: #191B23;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -175,9 +175,9 @@
 
 .avatar-chip[aria-pressed="true"],
 .avatar-chip.active {
-  background: #142c25;
-  border-color: #142c25;
-  color: #deeca6;
+  background: #004AC6;
+  border-color: #004AC6;
+  color: #FFFFFF;
 }
 
 .avatar-loadout-summary {
@@ -192,18 +192,18 @@
   gap: 2px;
   padding: 8px 10px;
   border-radius: 10px;
-  background: #f4f7f2;
-  border: 1px solid rgba(20, 44, 37, 0.08);
+  background: #F3F3FE;
+  border: 1px solid #DFE1F4;
   font-size: 0.8rem;
 }
 
 .avatar-slot-pill span {
-  color: #556a62;
+  color: #434655;
   font-size: 0.72rem;
 }
 
 .avatar-slot-pill strong {
-  color: #142c25;
+  color: #191B23;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

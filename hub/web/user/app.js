@@ -203,6 +203,7 @@
           ${game.controls.includes('touch')?'<span class="card-control">터치 지원</span>':''}
           ${releaseBadgeMarkup('new',game.publishedOn,badge)}
           ${releaseBadgeMarkup('update',game.updatedOn,badge)}
+          <span class="card-play-cue" aria-hidden="true">플레이</span>
         </div>
       </div>
     </a>${wishlistButton(game)}</div>`;
@@ -296,9 +297,72 @@
     if(sort==='updated')games.sort((a,b)=>(Rules.parseGameUpdateDate(b.updatedOn)?.getTime()||0)-(Rules.parseGameUpdateDate(a.updatedOn)?.getTime()||0));
     if(sort==='title')games.sort((a,b)=>a.title.localeCompare(b.title,state.locale));
     const genreButtons=[['all','전체'],...tagOptions].map(([value,label])=>`<button class="filter${value===genre?' active':''}" type="button" data-genre-filter="${esc(value)}" aria-pressed="${value===genre?'true':'false'}">${esc(label)}</button>`).join('');
-    $('app').innerHTML=`<div class="page">
+    const isHomePortal=state.view==='home'&&!terms.length&&genre==='all'&&device==='all'&&control==='all'&&sort==='default';
+    let homeContinueHtml='';
+    let homeHubsHtml='';
+    let homeTopHtml='';
+    if(isHomePortal&&state.games.length){
+      const byId=new Map(state.games.map(g=>[g.id,g]));
+      const recents=recentGames().map(id=>byId.get(id)).filter(Boolean);
+      const continueList=(recents.length?recents:state.games.slice(0,3)).slice(0,3);
+      const isRecentMode=recents.length>0;
+      const pcts=[72,44,28];
+      homeContinueHtml=`<section class="home-sec-continue" aria-labelledby="continue-title">
+        <div class="section-heading">
+          <div class="section-heading-left">
+            <h2 id="continue-title">${isRecentMode?'이어서 플레이하기':'빠른 즉시 플레이'}</h2>
+            <span class="section-subtitle">${isRecentMode?'게스트 자동 저장 연동':'로그인 없이 클릭 한 번으로 시작'}</span>
+          </div>
+          <a class="text-button" href="${wishlistPath}" data-route>내 게임 전체보기 →</a>
+        </div>
+        <div class="continue-grid">${continueList.map((g,idx)=>`<a class="continue-card" href="/play/${g.id}/" data-game-link="${esc(g.id)}">
+          <div class="continue-cover-wrap"><img src="${esc(g.cover)}" alt="" loading="lazy" decoding="async" width="640" height="360"></div>
+          <div class="continue-progress" aria-hidden="true"><span style="width:${isRecentMode?pcts[idx%pcts.length]:100}%"></span></div>
+          <div class="continue-body">
+            <div class="continue-meta"><strong>${esc(g.title)}</strong><small>${esc(genres[g.tags[0]]||g.tags[0]||'웹 게임')}${g.controls.includes('touch')?' · 터치 지원':''}</small></div>
+            <span class="continue-cta">▶ ${isRecentMode?'이어하기':'플레이'}</span>
+          </div>
+        </a>`).join('')}</div>
+      </section>`;
+
+      const hubDefs=[
+        {tag:'strategy',icon:'🏰',label:'전략 · 대전'},
+        {tag:'action',icon:'⚡',label:'액션 · 난투'},
+        {tag:'arcade',icon:'🕹️',label:'아케이드'},
+        {tag:'puzzle',icon:'🧩',label:'퍼즐 · 두뇌'},
+      ];
+      homeHubsHtml=`<section class="home-sec-hubs" aria-labelledby="hubs-title">
+        <div class="section-heading"><div class="section-heading-left"><h2 id="hubs-title">장르 · 크리에이터 허브</h2></div></div>
+        <div class="hub-tiles">
+          ${hubDefs.map(h=>`<a class="hub-tile" href="/?view=browse&amp;genre=${encodeURIComponent(h.tag)}" data-route><span class="hub-tile-icon" aria-hidden="true">${h.icon}</span><span>${esc(h.label)}</span></a>`).join('')}
+          <a class="hub-tile hub-tile-forge" href="/PlayForge/" target="_blank" rel="noopener"><span class="hub-tile-icon" aria-hidden="true">🛠️</span><span>PlayForge 바로 열기 ↗</span></a>
+        </div>
+      </section>`;
+
+      const topList=state.games.slice(0,4);
+      homeTopHtml=`<section class="home-sec-top" aria-labelledby="top-title">
+        <div class="section-heading">
+          <div class="section-heading-left"><h2 id="top-title">오늘의 PlayHub TOP ${topList.length}</h2><span class="section-subtitle">지금 가장 인기 있는 웹 게임</span></div>
+        </div>
+        <div class="top-rank-grid">${topList.map((g,i)=>`<a class="top-rank-card" href="/play/${g.id}/" data-game-link="${esc(g.id)}">
+          <div class="top-rank-visual">
+            <span class="top-rank-num" aria-hidden="true">${i+1}</span>
+            <img class="top-rank-thumb" src="${esc(g.cover)}" alt="" loading="lazy" decoding="async" width="320" height="200">
+          </div>
+          <div class="top-rank-info"><strong>${esc(g.title)}</strong><small>${esc(genres[g.tags[0]]||g.tags[0]||'게임')}${g.controls.includes('touch')?' · 터치 지원':''}</small></div>
+        </a>`).join('')}</div>
+      </section>`;
+    }
+    const librarySectionHtml=`<section class="home-sec-library" aria-labelledby="library-title">
       <div class="section-heading library-heading">
-        <h1 id="library-title">${terms.length?`“${esc(state.query)}” 검색 결과`:'전체 게임'}</h1>
+        <div class="section-heading-left">
+          <h1 id="library-title">${terms.length?`“${esc(state.query)}” 검색 결과`:isHomePortal?'전체 게임 라이브러리':'전체 게임'}</h1>
+          <div class="home-quick-pills">
+            <a class="quick-pill${device==='all'&&sort==='default'?' active':''}" href="${browsePath}" data-route>전체 (${state.games.length})</a>
+            <a class="quick-pill${device==='touch'?' active':''}" href="/?view=browse&amp;device=touch" data-route>터치 지원</a>
+            <a class="quick-pill${sort==='updated'?' active':''}" href="/?view=browse&amp;sort=updated" data-route>최근 업데이트</a>
+          </div>
+        </div>
         <span class="section-count">${games.length}개 게임</span>
       </div>
       <div class="filters genre-filters" role="group" aria-label="장르 필터">${genreButtons}</div>
@@ -308,7 +372,10 @@
         <label>정렬<select name="sort">${filterOptions([['default','기본순'],['updated','최근 업데이트순'],['title','이름순']],sort)}</select></label>
       </form>
       ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
-    </div>`;
+    </section>`;
+    $('app').innerHTML=isHomePortal
+      ?`<div class="page home-page"><div class="home-sections">${homeContinueHtml}${homeHubsHtml}${librarySectionHtml}${homeTopHtml}</div></div>`
+      :`<div class="page">${librarySectionHtml}</div>`;
     const filterForm=$('browse-filters');
     const applyBrowseFilters=(nextGenre=state.genre)=>{
       const params=new URLSearchParams({view:'browse'});
@@ -416,21 +483,30 @@
           <button id="close-game" class="text-button" type="button" hidden>게임 닫기</button>
         </div>
       </div>
-      <div class="detail-select" role="group" aria-label="게임 정보">
-        <button class="filter active" type="button" data-detail-panel="game-info" aria-pressed="true" aria-controls="game-info">소개</button>
-        <button class="filter" type="button" data-detail-panel="leaderboard" aria-pressed="false" aria-controls="leaderboard" data-testid="detail-leaderboard-tab">리더보드</button>
-        <button class="filter" type="button" data-detail-panel="community" aria-pressed="false" aria-controls="community">커뮤니티</button>
+      <div class="detail-body-grid">
+        <div class="detail-main-col">
+          <div class="detail-select" role="group" aria-label="게임 정보">
+            <button class="filter active" type="button" data-detail-panel="game-info" aria-pressed="true" aria-controls="game-info">소개</button>
+            <button class="filter" type="button" data-detail-panel="leaderboard" aria-pressed="false" aria-controls="leaderboard" data-testid="detail-leaderboard-tab">리더보드</button>
+            <button class="filter" type="button" data-detail-panel="community" aria-pressed="false" aria-controls="community">커뮤니티</button>
+          </div>
+          <div id="game-info" class="detail-info">
+            <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
+            <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
+          </div>
+          <section id="leaderboard" class="surface social-leaderboard-panel" aria-labelledby="leaderboard-title" data-testid="leaderboard" data-game-id="${esc(id)}" hidden></section>
+          <section id="community" class="community" aria-labelledby="community-title" data-testid="community" data-game-id="${esc(id)}" hidden></section>
+        </div>
+        ${related.length?`<aside class="detail-side-col">
+          <section class="related" aria-labelledby="related-title">
+            <div class="section-heading"><h2 id="related-title">다른 게임 추천</h2></div>
+            <div class="related-list">${related.map(rg=>`<a class="related-compact-card" href="/play/${rg.id}/" data-game-link="${esc(rg.id)}" data-impression="${esc(rg.id)}">
+              <img src="${esc(rg.cover)}" alt="" loading="lazy" decoding="async" width="148" height="104">
+              <div class="related-compact-meta"><strong>${esc(rg.title)}</strong><small>${esc(genres[rg.tags[0]]||rg.tags[0]||'게임')}${rg.controls.includes('touch')?' · 터치 지원':''}</small></div>
+            </a>`).join('')}</div>
+          </section>
+        </aside>`:''}
       </div>
-      <div id="game-info" class="detail-info">
-        <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
-        <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
-      </div>
-      <section id="leaderboard" class="surface social-leaderboard-panel" aria-labelledby="leaderboard-title" data-testid="leaderboard" data-game-id="${esc(id)}" hidden></section>
-      <section id="community" class="community" aria-labelledby="community-title" data-testid="community" data-game-id="${esc(id)}" hidden></section>
-      ${related.length?`<section class="related" aria-labelledby="related-title">
-        <div class="section-heading"><h2 id="related-title">다른 게임</h2></div>
-        <div class="game-grid">${related.map(game=>cardMarkup(game)).join('')}</div>
-      </section>`:''}
     </div>`;
     meta(`${game.title} | PLAY HUB 무료 웹 게임`,game.description,`/play/${id}/`);document.documentElement.classList.add('js');watchImpressions();event('game_detail_view',id);
     updateAccount();

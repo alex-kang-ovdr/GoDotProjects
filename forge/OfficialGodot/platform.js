@@ -222,6 +222,12 @@ function bindTemplateToolbar() {
       renderTemplates();
     });
   }
+  const newBtn = $("newBlankProjectBtn");
+  if (newBtn) {
+    newBtn.addEventListener("click", () => {
+      Promise.resolve(create("blank3d", false, "빈 3D 프로젝트")).catch((e) => status(e.message));
+    });
+  }
   const filters = $("templateFilters");
   if (filters) {
     filters.addEventListener("click", (e) => {
@@ -266,6 +272,8 @@ async function library() {
   bindTemplateToolbar();
   const [t, p] = await Promise.all([api("/api/platform/templates"), api("/api/platform/projects")]);
   cachedTemplates = t.templates || [];
+  if ($("kpi-templates")) $("kpi-templates").textContent = `${cachedTemplates.length}종`;
+  if ($("kpi-projects")) $("kpi-projects").textContent = `${(p.projects || []).length}개`;
   renderTemplates();
   if (!p.projects.length) {
     const empty = document.createElement("p");

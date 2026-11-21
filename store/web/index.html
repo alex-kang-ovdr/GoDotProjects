@@ -3,53 +3,158 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PlayForge Store — 독립 웹 · 내 라이브러리 (M1)</title>
+  <meta name="theme-color" content="#FAF8FF" />
+  <title>PlayForge Store — Asset Store · 탐색 · 상세 · 내 라이브러리</title>
   <link rel="stylesheet" href="./store.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-group">
-      <span class="brand-badge">PlayForge Store</span>
-      <span class="sub-badge">독립 웹 · 패키지 계약 v1</span>
-    </div>
-    <div class="identity-bar">
-      <span class="sso-pill" id="sso-badge">Hub 계정 연결됨 · creator-demo@playhub.local (SSO)</span>
-      <span class="sub-badge mode-pill" id="connection-badge" data-mode="static">정적 열람 모드</span>
-      <span class="boundary-pill">Admin: Hub ?tab=store 분리</span>
-    </div>
-  </header>
+  <div class="store-shell">
+    <!-- Sticky Light Header (Unity Asset Store Flow) -->
+    <header class="topbar">
+      <div class="topbar-row1">
+        <a href="#store-top" class="brand-group" id="store-top">
+          <span class="brand-icon" aria-hidden="true">❖</span>
+          <span class="brand-text">
+            <span class="brand-badge">PlayForge Asset Store</span>
+            <span class="brand-sub">패키지 계약 v1 · /api/store</span>
+          </span>
+        </a>
 
-  <nav class="main-nav" aria-label="Store 주요 탭">
-    <div class="tabs" role="tablist">
-      <button type="button" class="tab active" role="tab" data-tab="browse" aria-selected="true">탐색</button>
-      <button type="button" class="tab" role="tab" data-tab="library" aria-selected="false">내 라이브러리 <span class="count-badge" id="library-count">0</span></button>
-      <button type="button" class="tab" role="tab" data-tab="publisher" aria-selected="false">게시자 초안</button>
-    </div>
-    <div class="filters" id="browse-controls">
-      <input id="search-input" type="search" placeholder="에셋 또는 가이드 검색..." aria-label="Store 검색" />
-      <select id="category-filter" aria-label="카테고리 필터">
-        <option value="all">전체 카테고리</option>
-      </select>
-      <select id="kind-filter" aria-label="콘텐츠 형식 필터">
-        <option value="all">전체 형식</option>
-        <option value="package">패키지 (package)</option>
-        <option value="editorial">일반 콘텐츠 (editorial)</option>
-      </select>
-    </div>
-  </nav>
+        <!-- Wide Central Search Bar -->
+        <form class="central-search" role="search" onsubmit="return false;">
+          <span class="search-glyph" aria-hidden="true">⌕</span>
+          <input id="search-input" type="search" placeholder="패키지 명, asset_id, 제작자, 태그 검색..." aria-label="Store 검색" />
+          <span class="engine-chip">Godot 4.7+</span>
+        </form>
 
-  <div class="notice-banner" role="status">
-    <strong>비동기 연동 원칙:</strong> 웹에서는 패키지를 <code>StoreLibraryEntry</code>에만 저장합니다. 실제 프로젝트 반영은 <strong>Godot Store 도크에서 새로고침 및 6단계 변경 검토</strong>를 거친 뒤 선택한 프로젝트에만 수행됩니다.
+        <!-- Primary Tabs + Utility Badges -->
+        <div class="topbar-right">
+          <div class="tabs" role="tablist" aria-label="Store 주요 탭">
+            <button type="button" class="tab active" role="tab" data-tab="browse" aria-selected="true">탐색</button>
+            <button type="button" class="tab" role="tab" data-tab="library" aria-selected="false">내 라이브러리 <span class="count-badge" id="library-count">0</span></button>
+            <button type="button" class="tab" role="tab" data-tab="publisher" aria-selected="false">게시자</button>
+          </div>
+          <span class="topbar-divider" aria-hidden="true"></span>
+          <div class="identity-bar">
+            <span class="sso-pill" id="sso-badge">Hub SSO · creator-demo</span>
+            <span class="mode-pill" id="connection-badge" data-mode="static">정적 열람 모드</span>
+            <a class="hub-link-btn" href="/OfficialGodot/">PlayForge 허브</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Unity-Style Horizontal Category Mega-Nav -->
+      <nav class="category-bar" aria-label="에셋 카테고리">
+        <div class="category-bar-inner">
+          <div class="category-pills" id="category-pills">
+            <button type="button" class="cat-pill active" data-cat="all">전체 에셋</button>
+          </div>
+          <span class="platform-support-note">지원: Web · Win · Linux · macOS (AOS/iOS 미지원)</span>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Async Handoff Principle Strip -->
+    <div class="notice-strip" role="status">
+      <div class="notice-strip-inner">
+        <div class="notice-copy">
+          <span class="notice-icon" aria-hidden="true">ⓘ</span>
+          <p><strong>비동기 연동 원칙:</strong> 웹에서는 패키지를 <code>StoreLibraryEntry</code>에만 저장하며 프로젝트 파일은 변경되지 않습니다. 실제 설치는 <strong>Godot Store 도크 6단계 검증</strong> 후 진행됩니다.</p>
+        </div>
+        <span class="notice-mono-tag">SHA-256 불변 아티팩트</span>
+      </div>
+    </div>
+
+    <!-- Main Store Content -->
+    <main class="store-main">
+      <!-- Featured Spotlight Hero (Visible on Browse tab when unfiltered) -->
+      <section class="spotlight-hero" id="spotlight-hero" aria-label="추천 큐레이션"></section>
+
+      <!-- Unity-Style Split: Left Faceted Filters + Right Catalog & Detail Contract -->
+      <div class="workspace" id="store-workspace">
+        <!-- Left Faceted Filter Sidebar -->
+        <aside class="filter-sidebar" id="browse-controls" aria-label="에셋 필터">
+          <div class="filter-head">
+            <h2>필터</h2>
+            <button type="button" class="text-reset-btn" id="reset-filters-btn">초기화</button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="category-filter">카테고리</label>
+            <select id="category-filter" aria-label="카테고리 필터">
+              <option value="all">전체 카테고리</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="kind-filter">콘텐츠 유형</label>
+            <select id="kind-filter" aria-label="콘텐츠 형식 필터">
+              <option value="all">전체 형식</option>
+              <option value="package">패키지 (.playforgepkg)</option>
+              <option value="editorial">가이드 · 일반 콘텐츠 (editorial)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">엔진 호환성</span>
+            <div class="filter-check-list">
+              <span class="compat-pill active">Godot 4.7.2 검증</span>
+              <span class="compat-pill">Godot 4.3+ 호환</span>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">지원 플랫폼</span>
+            <div class="platform-chip-group">
+              <span class="plat-chip">Web</span>
+              <span class="plat-chip">Windows</span>
+              <span class="plat-chip">Linux</span>
+              <span class="plat-chip">macOS</span>
+            </div>
+            <p class="filter-footnote">모바일 네이티브 앱 미지원</p>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">무결성 검증</span>
+            <div class="verified-box">
+              <span class="verified-check" aria-hidden="true">✓</span>
+              <span>SHA-256 불변 아티팩트 검증</span>
+            </div>
+          </div>
+
+          <div class="filter-boundary-note">Admin 관리: Hub <code>?tab=store</code> 분리</div>
+        </aside>
+
+        <!-- Right Main Catalog + Contract Column -->
+        <section class="catalog-column" aria-label="목록 및 상세 영역">
+          <!-- Results Count & Sort Bar -->
+          <div class="results-bar" id="results-bar">
+            <div class="results-bar-left">
+              <strong id="results-count">총 0개 에셋</strong>
+              <span class="contract-version-pill">패키지 계약 v1</span>
+            </div>
+            <div class="results-bar-right">
+              <label for="sort-select">정렬:</label>
+              <select id="sort-select" aria-label="정렬 기준">
+                <option value="default">인기순</option>
+                <option value="version">최신 릴리스</option>
+                <option value="title">이름순</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Asset Card Grid (Browse / My Library) -->
+          <div id="catalog-list" class="card-grid"></div>
+
+          <!-- Publisher Drafts List -->
+          <div id="publisher-panel" class="publisher-list hidden"></div>
+
+          <!-- Selected Asset Immutable Package Contract Panel (Unity Detail Flow) -->
+          <aside class="detail-pane" id="detail-pane" aria-label="상세 정보 및 불변 계약"></aside>
+        </section>
+      </div>
+    </main>
   </div>
-
-  <main class="workspace">
-    <section class="catalog-pane" aria-label="목록 영역">
-      <div id="catalog-list" class="card-grid"></div>
-      <div id="publisher-panel" class="publisher-list hidden"></div>
-    </section>
-
-    <aside class="detail-pane" id="detail-pane" aria-label="상세 정보 및 불변 계약"></aside>
-  </main>
 
   <script type="module" src="./store.js"></script>
 </body>
