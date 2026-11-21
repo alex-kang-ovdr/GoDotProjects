@@ -19,6 +19,11 @@ import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
 import { createMobile } from './mobile/routes.mjs';
+import { ensureSsotSchema } from './ssot/schema.mjs';
+import { createSanctions, mergeGuestSanctions } from './ssot/sanctions.mjs';
+import { createLeaderboard, mergeGuestLeaderboard } from './ssot/leaderboard.mjs';
+import { createProgression, mergeGuestProgression } from './ssot/progression.mjs';
+import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -141,6 +146,11 @@ export function createApp(input, dependencies = {}) {
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession, promote, rate, audit });
+  ensureSsotSchema(db);
+  const sanctions = createSanctions({ db, now, sessionFor, audit });
+  const leaderboard = createLeaderboard({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
+  const progression = createProgression({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
+  const datastore = createDataStore({ db, rootDir, now, audit, verifyInternalAccess });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
@@ -283,6 +293,9 @@ export function createApp(input, dependencies = {}) {
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
     if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
+    if (path === '/api/me/sanctions' && await sanctions.publicRoute(req,res,url)) return;
+    if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
+    if ((path.endsWith('/progression') || path.endsWith('/stats') || path.includes('/achievements/')) && await progression.publicRoute(req,res,url)) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -468,6 +481,10 @@ export function createApp(input, dependencies = {}) {
         }
         db.prepare('INSERT OR IGNORE INTO wishlist_items(principal_id,game_id,added_at) SELECT ?,game_id,added_at FROM wishlist_items WHERE principal_id=?').run(s.principal_id,m.source_user);
         mergeGuestCommunity(db,m.source_user,s.principal_id);
+        mergeGuestLeaderboard(db,m.source_user,s.principal_id,now());
+        mergeGuestSanctions(db,m.source_user,s.principal_id);
+        mergeGuestProgression(db,m.source_user,s.principal_id,now());
+        mergeGuestDataStore(db,m.source_user,s.principal_id);
         const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
         if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
@@ -528,6 +545,10 @@ export function createApp(input, dependencies = {}) {
     if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
+    if ((path === '/api/admin/sanctions' || path.startsWith('/api/admin/sanctions/')) && await sanctions.adminRoute(req,res,url,s)) return;
+    if (path.includes('/leaderboards') && await leaderboard.adminRoute(req,res,url,s)) return;
+    if ((path.includes('/stats/') || path.includes('/achievements/')) && await progression.adminRoute(req,res,url,s)) return;
+    if (path.includes('/datastore/') && await datastore.adminRoute(req,res,url,s)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
     if (path === '/api/admin/metrics' && req.method === 'GET') {
       const filters=metricsOptions(url),games=readCatalog(rootDir,db);
@@ -555,6 +576,17 @@ export function createApp(input, dependencies = {}) {
     const currentMatch = equal(provided, internalForgeSecret);
     const previousMatch = Boolean(previousInternalForgeSecret) && equal(provided, previousInternalForgeSecret);
     return currentMatch || previousMatch;
+  }
+  function verifyInternalAccess(req, res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    const remote = req.socket?.remoteAddress || '';
+    if (!remoteForgeVerify && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) throw new ApiError(403, 'LOOPBACK_REQUIRED');
+    if (req.headers.origin !== undefined) throw new ApiError(403, 'ORIGIN_NOT_ALLOWED');
+    if (!matchesInternalSecret(req.headers['x-playhub-internal-secret'])) {
+      if (remoteForgeVerify) rate(`internal-denied:${remote}`, 60, 60000);
+      throw new ApiError(403, 'INTERNAL_SECRET_INVALID');
+    }
   }
   async function verifyInternalSession(req, res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -614,6 +646,10 @@ export function createApp(input, dependencies = {}) {
           isUgcAsset = true;
           ugcPublish.serveUgcAsset(req, res, url.pathname);
           return;
+        }
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname.startsWith('/internal/v1/datastore/')) {
+          if (await datastore.internalRoute(req, res, url)) return;
+          throw new ApiError(404, 'NOT_FOUND');
         }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {

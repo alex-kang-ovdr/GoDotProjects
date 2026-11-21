@@ -216,6 +216,14 @@
         "docs/devops/**",
         "artifacts/daily-builds/**"
       ]
+    },
+    "PlayHub-EOS": {
+      "role": "EOS 적용성 검토 및 PlayHub SSOT (리더보드·제재·업적/통계·MMO DataStore)",
+      "owns": [
+        "hub/server/ssot/**",
+        "hub/tests/ssot*.mjs",
+        "docs/eos/**"
+      ]
     }
   }
 }

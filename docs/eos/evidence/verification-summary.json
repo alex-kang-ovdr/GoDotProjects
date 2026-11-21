@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-11-20T23:29:26.691Z",
+  "branch": "PlayHub-EOS",
+  "nodeVersion": "v24.22.1",
+  "commits": [
+    "a2ff7ce [Hub][Admin] feat: PlayHub SSOT Phase 2(업적·통계 및 서버 권위 MMO DataStore 세션 락·CAS) 구현",
+    "e80c318 [Hub][Admin] feat: PlayHub SSOT Phase 1(리더보드 영구저장·사용자 제재 마스터) 구현",
+    "4b12e97 [Tool] chore: PlayHub-EOS 브랜치 소유 경로를 owners.json에 등록",
+    "3ad74a2 [Forge][Game] feat: 탕탕특공대(Survivor.io) 웹게임 구현을 Godot 4.7 템플릿으로 포팅"
+  ],
+  "testSummary": {
+    "passed": 79,
+    "failed": 0,
+    "skipped": 1,
+    "durationMs": 4944
+  },
+  "ownershipCheck": [
+    "브랜치: PlayHub-EOS  기준: PlayHub-Platform  변경 파일: 13",
+    "FAIL  tools/worktree-ownership/owners.json  — PlayHub-Platform 소유 경로",
+    "WARN  hub/server/app.mjs  — 공유 핫스팟: 사전 합의·최신 리베이스 필요",
+    "WARN  hub/tools/restore-data.mjs  — 공유 핫스팟: 사전 합의·최신 리베이스 필요",
+    "ok 10 / warn 2 / fail 1"
+  ],
+  "liveProbes": [
+    {
+      "domain": "Phase 1 · Leaderboard SSOT",
+      "endpoint": "POST /api/games/survivor-arena-g2/leaderboards/default/scores + GET .../snapshot",
+      "status": "201 / 200",
+      "pass": true,
+      "detail": "rank=#1, score=42500, snapshotSha256=b5c274009883db90..."
+    },
+    {
+      "domain": "Phase 1 · Sanctions Master SSOT",
+      "endpoint": "POST /api/admin/sanctions → POST .../scores (blocked) → POST .../revoke",
+      "status": "201 / 403 / 200",
+      "pass": true,
+      "detail": "blockedCode=LEADERBOARD_SANCTIONED, eosSyncStatus=pending, revoked=true"
+    },
+    {
+      "domain": "Phase 2 · Stats & Achievements SSOT",
+      "endpoint": "POST /api/games/survivor-arena-g2/stats (auto threshold unlock)",
+      "status": "201",
+      "pass": true,
+      "detail": "kills=12, autoUnlocked=slayer_10"
+    },
+    {
+      "domain": "Phase 2 · MMO DataStore (Lock/CAS)",
+      "endpoint": "lock → PUT (If-Match) → lease steal + save/unlock → zombie reject",
+      "status": "201 / 200 / 200 / 200 / 409",
+      "pass": true,
+      "detail": "etag=\"r3\", fencingToken=1→2, zombieBlocked=DATASTORE_FENCING_TOKEN_STALE, archivedVersions=2"
+    }
+  ]
+}
