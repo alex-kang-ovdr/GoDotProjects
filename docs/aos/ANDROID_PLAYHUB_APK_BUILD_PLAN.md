@@ -519,6 +519,11 @@ Hub-AOS/
   - **Side-by-Side 동시 설치**: 브랜치명과 빌드 구성이 모두 패키지 ID에 포함되므로, 한 대의 Android 테스트 기기에 `com.playhub.gamedev.live`, `com.playhub.gamedev.dev`, `com.playhub.hub_aos.debug`, `com.playhub.hub_aos.test` 등을 **충돌 없이 동시 설치**해 비교 검증할 수 있다. (앱 라벨에도 `Play Hub [Hub-AOS/debug]` 형태로 자동 표기)
   - **`live` 브랜치 가드**: `live` 빌드 구성은 공식 트렁크/릴리스 브랜치 전용으로 `com.playhub.gamedev.live` 고정이며, 일반 작업 브랜치에서 `live` 빌드 시도 시 Gradle이 즉시 실패한다.
   - **Farm 서버군 선택 규칙 (`ALLOW_FARM_SELECTOR`)**: `release`·`live`가 **아닌** `debug`·`dev`·`test` 빌드에서만 상단 헤더 및 `더보기` 탭에서 Farm 서버군(`local`, `dev-farm-1`, `dev-farm-2`, `qa-farm`, `staging-farm`, Custom Tunnel URL)을 선택·전환할 수 있다. `release`·`live` 빌드는 컴파일 타임(`BuildConfig.ALLOW_FARM_SELECTOR = false`)과 런타임(`FarmServerRegistry` 잠금) 이중 차단으로 지정된 고정 서버만 사용한다.
+  - **Farm 서버군 실시간 상태 표시 (`FarmHealthChecker`)**: `debug`·`dev`·`test` 빌드에서 각 Farm 서버군의 `/api/health` 엔드포인트에 병렬 프로브를 수행하여 상단 Farm 필 및 서버군 선택 팝업에 4단계 색상과 응답속도(ms)를 표시한다.
+    - **GREEN** (`#22C55E`): 정상 접속(HTTP 2xx) 및 응답속도 `< 200ms` (원활)
+    - **YELLOW** (`#EAB308`): 정상 접속(HTTP 2xx) 및 응답속도 `200ms ~ 599ms` (보통)
+    - **ORANGE** (`#F97316`): 정상 접속(HTTP 2xx) 및 응답속도 `>= 600ms` (지연)
+    - **RED** (`#EF4444`): 접속 불가 (타임아웃 · DNS/네트워크 오류 · 비정상 HTTP 응답)
   - **외부 서비스 등록 참고**: Google Play Billing / FCM / Credential Manager OAuth는 등록된 정확한 패키지 ID에 묶이므로, 실결제 IAP·FCM·Google 로그인 통합 검증 시에는 `-PpackageBranch=gamedev`로 공식 고정 ID(`com.playhub.gamedev.dev` / `test` / `release` / `live`)를 지정해 빌드할 수 있다.
 
 | 빌드 구성 (마지막 세그먼트) | 공식 / 트렁크 `applicationId` | 브랜치 빌드 예시 (`Hub-AOS`) | ABI | 최적화 / 서명 | 용도 |

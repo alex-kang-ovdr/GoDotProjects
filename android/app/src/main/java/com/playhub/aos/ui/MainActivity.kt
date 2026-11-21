@@ -26,6 +26,9 @@ import com.playhub.aos.compliance.AgeGateDialog
 import com.playhub.aos.compliance.AgeGatePolicy
 import com.playhub.aos.compliance.GameAgeRating
 import com.playhub.aos.config.FarmCluster
+import com.playhub.aos.config.FarmHealthChecker
+import com.playhub.aos.config.FarmHealthResult
+import com.playhub.aos.config.FarmHealthStatus
 import com.playhub.aos.config.FarmServerRegistry
 import com.playhub.aos.network.PlayHubApiClient
 import com.playhub.aos.runtime.GodotPlayerActivity
@@ -33,6 +36,7 @@ import com.playhub.aos.runtime.PckPackageManager
 import com.playhub.aos.runtime.VersionCompatibilityChecker
 import com.playhub.aos.runtime.WebGameActivity
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 private data class CatalogGame(
@@ -79,11 +83,15 @@ class MainActivity : Activity() {
     private lateinit var topBarView: LinearLayout
     private lateinit var bottomBarView: LinearLayout
     private lateinit var titleView: TextView
-    private var farmPillView: TextView? = null
+    private var farmPillContainer: LinearLayout? = null
+    private var farmPillDotView: View? = null
+    private var farmPillLabelView: TextView? = null
     private lateinit var coinPillView: TextView
     private lateinit var contentContainer: FrameLayout
     private val navButtons = mutableMapOf<HubTab, TextView>()
     private val ioExecutor = Executors.newSingleThreadExecutor()
+    private val probeExecutor = Executors.newFixedThreadPool(4)
+    private val farmHealthCache = ConcurrentHashMap<String, FarmHealthResult>()
 
     private fun currentCatalog(): List<CatalogGame> {
         val source = remoteCatalog ?: fallbackCatalog()
@@ -182,6 +190,7 @@ class MainActivity : Activity() {
     override fun onDestroy() {
         super.onDestroy()
         ioExecutor.shutdownNow()
+        probeExecutor.shutdownNow()
     }
 
     private fun applySystemBarInsets(root: View) {
@@ -205,9 +214,38 @@ class MainActivity : Activity() {
         root.requestApplyInsets()
     }
 
+    private fun currentFarmHealth(farm: FarmCluster = activeFarm): FarmHealthResult {
+        val key = farm.baseUrl.trim().trimEnd('/').lowercase()
+        return farmHealthCache[key] ?: FarmHealthResult(FarmHealthStatus.CHECKING)
+    }
+
+    private fun probeActiveFarmHealth(showCheckingState: Boolean = false) {
+        val farm = activeFarm
+        val key = farm.baseUrl.trim().trimEnd('/').lowercase()
+        if (showCheckingState || !farmHealthCache.containsKey(key)) {
+            farmHealthCache[key] = FarmHealthResult(FarmHealthStatus.CHECKING)
+            updateFarmPillVisual()
+        }
+        probeExecutor.execute {
+            val res = FarmHealthChecker.probe(farm.baseUrl)
+            farmHealthCache[key] = res
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                if (activeFarm.baseUrl.trim().trimEnd('/').lowercase() != key) return@runOnUiThread
+                updateFarmPillVisual()
+                if (activeTab == HubTab.MORE) {
+                    renderTab(HubTab.MORE)
+                }
+            }
+        }
+    }
+
     private fun syncWithActiveFarm() {
         val farm = activeFarm
         syncStatusText = "서버 연결 중 (${farm.id})..."
+        if (FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) {
+            probeActiveFarmHealth()
+        }
         ioExecutor.execute {
             val client = PlayHubApiClient(farm.baseUrl)
             runCatching {
@@ -264,7 +302,9 @@ class MainActivity : Activity() {
                     profile = authStore.loadOrCreateGuest()
                 }.accessToken
                 client.submitAgeGate(token, birthYear, birthMonth, regionCode)
-                syncWithActiveFarm()
+                runOnUiThread {
+                    if (!isFinishing && !isDestroyed) syncWithActiveFarm()
+                }
             }
         }
     }
@@ -326,10 +366,33 @@ class MainActivity : Activity() {
         topBarView.addView(titleView)
 
         if (FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) {
-            farmPillView = utilityPill("🌐 ${activeFarm.id}", "#1E293B", "#3B82F6") {
-                showFarmSelectorDialog()
+            val dot = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(9), dp(9)).apply {
+                    rightMargin = dp(6)
+                }
             }
-            topBarView.addView(farmPillView)
+            val label = TextView(this).apply {
+                textSize = 11.5f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.WHITE)
+            }
+            val pill = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(9), dp(6), dp(9), dp(6))
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { leftMargin = dp(6) }
+                addView(dot)
+                addView(label)
+                setOnClickListener { showFarmSelectorDialog() }
+            }
+            farmPillDotView = dot
+            farmPillLabelView = label
+            farmPillContainer = pill
+            updateFarmPillVisual()
+            topBarView.addView(pill)
         }
         topBarView.addView(utilityPill("🔍") { showSearchDialog() })
         coinPillView = utilityPill("🪙 ${profile.coinBalance}", "#272013", "#D97706") {
@@ -403,10 +466,29 @@ class MainActivity : Activity() {
         setOnClickListener { onClick() }
     }
 
+    private fun statusDotDrawable(status: FarmHealthStatus): GradientDrawable =
+        GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(status.colorHex))
+        }
+
+    private fun updateFarmPillVisual() {
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            val pill = farmPillContainer ?: return@runOnUiThread
+            val dot = farmPillDotView ?: return@runOnUiThread
+            val label = farmPillLabelView ?: return@runOnUiThread
+            val health = currentFarmHealth()
+            dot.background = statusDotDrawable(health.status)
+            label.text = "${activeFarm.id} · ${health.compactPillText()}"
+            pill.background = cardBg("#1E293B", health.status.colorHex, 16)
+        }
+    }
+
     private fun renderTab(tab: HubTab) {
         activeTab = tab
         titleView.text = if (tab == HubTab.HOME) "▶ Play Hub" else tab.label
-        farmPillView?.text = "🌐 ${activeFarm.id}"
+        updateFarmPillVisual()
         coinPillView.text = "🪙 ${profile.coinBalance}"
         for ((t, btn) in navButtons) {
             val selected = t == tab
@@ -556,6 +638,8 @@ class MainActivity : Activity() {
 
     private fun buildMoreTab(body: LinearLayout) {
         val cachedMb = String.format("%.2f", PckPackageManager.totalCachedBytes(filesDir) / (1024.0 * 1024.0))
+        val farmSelectorAllowed = FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)
+        val farmStatusLine = if (farmSelectorAllowed) "\nFarm 상태: ${currentFarmHealth().summaryLine()}" else ""
         body.addView(sectionTitle("더보기 (게임 플레이 런타임 전용 · Forge 제외)"))
         body.addView(
             infoCard(
@@ -564,12 +648,13 @@ class MainActivity : Activity() {
                     "Build Stage: ${BuildConfig.BUILD_STAGE} · Branch: ${BuildConfig.PLAYHUB_BRANCH}\n" +
                     "Engine: Godot ${BuildConfig.GODOT_ENGINE_VERSION} (template_release 내장)\n" +
                     "Active Farm: ${activeFarm.label}\n" +
-                    "Server URL: ${activeFarm.baseUrl}\n" +
+                    "Server URL: ${activeFarm.baseUrl}$farmStatusLine\n" +
                     "온디맨드 .pck 캐시: ${cachedMb} MiB (APK 내장 스타터: 0종)"
             )
         )
-        if (FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) {
-            body.addView(actionButton("🌐 Farm 서버군 선택 (${activeFarm.id})", primary = false) {
+        if (farmSelectorAllowed) {
+            val health = currentFarmHealth()
+            body.addView(actionButton("🌐 Farm 서버군 선택 (${activeFarm.id} · ${health.badgeLabel()})", primary = false) {
                 showFarmSelectorDialog()
             })
         }
@@ -863,24 +948,213 @@ class MainActivity : Activity() {
         syncWithActiveFarm()
     }
 
+    private fun legendItem(status: FarmHealthStatus, caption: String): View = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(0, 0, dp(10), 0)
+        addView(View(context).apply {
+            background = statusDotDrawable(status)
+            layoutParams = LinearLayout.LayoutParams(dp(8), dp(8)).apply { rightMargin = dp(4) }
+        })
+        addView(TextView(context).apply {
+            text = caption
+            textSize = 11f
+            setTextColor(Color.parseColor("#CBD5E1"))
+        })
+    }
+
     private fun showFarmSelectorDialog() {
         if (!FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)) return
-        val presets = FarmServerRegistry.PRESET_FARMS
-        val labels = (presets.map { "${it.label}\n${it.baseUrl}" } + "✏️ 직접 입력 (Custom / Tunnel URL)").toTypedArray()
-        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-            .setTitle("🌐 Farm 서버군 선택 (${BuildConfig.BUILD_STAGE})")
-            .setItems(labels) { _, idx ->
-                if (idx < presets.size) {
-                    val chosen = presets[idx]
-                    FarmServerRegistry.saveSelection(this, BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR, chosen.id)
-                    onFarmChanged(chosen)
-                    Toast.makeText(this, "Farm 전환: ${chosen.label}", Toast.LENGTH_SHORT).show()
-                } else {
-                    showCustomFarmInputDialog()
+
+        val clusters = FarmServerRegistry.selectableClusters(
+            buildStage = BuildConfig.BUILD_STAGE,
+            defaultBaseUrl = BuildConfig.HUB_BASE_URL,
+            activeFarm = activeFarm
+        )
+        val activeUrlKey = activeFarm.baseUrl.trim().trimEnd('/').lowercase()
+
+        var dialogAlive = true
+        var dialogRef: AlertDialog? = null
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor("#0F172A"))
+            setPadding(dp(14), dp(12), dp(14), dp(12))
+        }
+
+        // Legend bar: Green (<200ms) / Yellow (<600ms) / Orange (>=600ms) / Red (Unreachable)
+        val legendRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = cardBg("#131A27", "#23304A", 10)
+            setPadding(dp(10), dp(7), dp(10), dp(7))
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(10) }
+            addView(legendItem(FarmHealthStatus.GREEN, "<200ms"))
+            addView(legendItem(FarmHealthStatus.YELLOW, "<600ms"))
+            addView(legendItem(FarmHealthStatus.ORANGE, "≥600ms"))
+            addView(legendItem(FarmHealthStatus.RED, "접속불가"))
+        }
+        container.addView(legendRow)
+
+        val rowsHost = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
+        data class RowUi(val dot: View, val badge: TextView, val card: LinearLayout, val isActive: Boolean)
+        val rowBindings = mutableMapOf<String, RowUi>()
+
+        fun applyRowHealth(binding: RowUi, res: FarmHealthResult) {
+            binding.dot.background = statusDotDrawable(res.status)
+            binding.badge.text = res.badgeLabel()
+            binding.badge.setTextColor(Color.parseColor(res.status.badgeTextHex))
+            binding.badge.background = GradientDrawable().apply {
+                setColor(Color.parseColor(res.status.badgeBgHex))
+                cornerRadius = dp(10).toFloat()
+                setStroke(dp(1), Color.parseColor(res.status.colorHex))
+            }
+            val borderHex = if (binding.isActive) res.status.colorHex else "#23304A"
+            binding.card.background = cardBg(if (binding.isActive) "#162135" else "#131A27", borderHex, 12)
+        }
+
+        for (cluster in clusters) {
+            val urlKey = cluster.baseUrl.trim().trimEnd('/').lowercase()
+            val isActive = urlKey == activeUrlKey
+            val dot = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(12), dp(12)).apply { rightMargin = dp(10) }
+            }
+            val badge = TextView(this).apply {
+                textSize = 11f
+                typeface = Typeface.DEFAULT_BOLD
+                setPadding(dp(8), dp(4), dp(8), dp(4))
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { leftMargin = dp(8) }
+            }
+            val textCol = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                addView(TextView(context).apply {
+                    text = if (isActive) "${cluster.label} · 현재" else cluster.label
+                    textSize = 13.5f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.WHITE)
+                })
+                addView(TextView(context).apply {
+                    text = cluster.baseUrl
+                    textSize = 11f
+                    setTextColor(Color.parseColor("#94A3B8"))
+                    setPadding(0, dp(2), 0, 0)
+                })
+            }
+            val rowCard = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(12), dp(10), dp(12), dp(10))
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
+                addView(dot)
+                addView(textCol)
+                addView(badge)
+                setOnClickListener {
+                    val customArg = if (cluster.id == FarmServerRegistry.CUSTOM_FARM_ID) cluster.baseUrl else null
+                    FarmServerRegistry.saveSelection(
+                        this@MainActivity,
+                        BuildConfig.BUILD_STAGE,
+                        BuildConfig.ALLOW_FARM_SELECTOR,
+                        cluster.id,
+                        customArg
+                    )
+                    dialogRef?.dismiss()
+                    onFarmChanged(cluster)
+                    Toast.makeText(this@MainActivity, "Farm 전환: ${cluster.label}", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("취소", null)
-            .show()
+            val binding = RowUi(dot, badge, rowCard, isActive)
+            rowBindings[urlKey] = binding
+            applyRowHealth(binding, farmHealthCache[urlKey] ?: FarmHealthResult(FarmHealthStatus.CHECKING))
+            rowsHost.addView(rowCard)
+        }
+
+        val scroll = ScrollView(this).apply {
+            addView(rowsHost)
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+        container.addView(scroll)
+
+        fun probeAllClusters() {
+            for (cluster in clusters) {
+                val urlKey = cluster.baseUrl.trim().trimEnd('/').lowercase()
+                val binding = rowBindings[urlKey] ?: continue
+                applyRowHealth(binding, FarmHealthResult(FarmHealthStatus.CHECKING))
+                probeExecutor.execute {
+                    val res = FarmHealthChecker.probe(cluster.baseUrl)
+                    farmHealthCache[urlKey] = res
+                    runOnUiThread {
+                        if (!dialogAlive || isFinishing || isDestroyed) return@runOnUiThread
+                        applyRowHealth(binding, res)
+                        if (urlKey == activeFarm.baseUrl.trim().trimEnd('/').lowercase()) {
+                            updateFarmPillVisual()
+                        }
+                    }
+                }
+            }
+        }
+
+        val btnRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dp(6), 0, 0)
+            addView(TextView(context).apply {
+                text = "🔄 상태 새로고침"
+                textSize = 12.5f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+                setPadding(dp(10), dp(9), dp(10), dp(9))
+                background = cardBg("#1E293B", "#3B82F6", 10)
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    rightMargin = dp(6)
+                }
+                setOnClickListener { probeAllClusters() }
+            })
+            addView(TextView(context).apply {
+                text = "✏️ 직접 입력"
+                textSize = 12.5f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+                setPadding(dp(10), dp(9), dp(10), dp(9))
+                background = cardBg("#1E293B", "#334155", 10)
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    leftMargin = dp(6)
+                }
+                setOnClickListener {
+                    dialogRef?.dismiss()
+                    showCustomFarmInputDialog()
+                }
+            })
+        }
+        container.addView(btnRow)
+
+        val dlg = AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("🌐 Farm 서버군 상태 (${BuildConfig.BUILD_STAGE})")
+            .setView(container)
+            .setNegativeButton("닫기", null)
+            .create()
+        dlg.setOnDismissListener { dialogAlive = false }
+        dialogRef = dlg
+        dlg.show()
+
+        // Immediately probe all Farm clusters concurrently on open
+        probeAllClusters()
     }
 
     private fun showCustomFarmInputDialog() {
