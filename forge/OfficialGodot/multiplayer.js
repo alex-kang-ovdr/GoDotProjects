@@ -8,8 +8,9 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   const templateId = options.template || query.get('template') || 'brawllabs';
   const fortress = templateId === 'fortress-war';
   const tappyMmo = templateId === 'tappy-chicken-mmo';
-  const lobbyPath = forgePath(tappyMmo ? '/OfficialGodot/tappy-chicken-mmo-lobby.html' : fortress ? '/OfficialGodot/fortress-war-lobby.html' : '/OfficialGodot/brawllabs-lobby.html');
-  const messagePrefix = tappyMmo ? 'playforge-tappy-mmo' : fortress ? 'playforge-fortress' : 'playforge-brawl';
+  const captainMmo = templateId === 'captain-forever-mmo';
+  const lobbyPath = forgePath(captainMmo ? '/OfficialGodot/captain-forever-mmo-lobby.html' : tappyMmo ? '/OfficialGodot/tappy-chicken-mmo-lobby.html' : fortress ? '/OfficialGodot/fortress-war-lobby.html' : '/OfficialGodot/brawllabs-lobby.html');
+  const messagePrefix = captainMmo ? 'playforge-captain-mmo' : tappyMmo ? 'playforge-tappy-mmo' : fortress ? 'playforge-fortress' : 'playforge-brawl';
   const nodes=new Map([...root.querySelectorAll('[id]')].map(node=>[node.id,node]));
   const $=id=>nodes.get(id),tabs=$('viewport-tabs'),serverView=$('server-view'),clientsView=$('clients-view');
   const serverFrame=$('server-game');let serverBuild=null,serverWorld=null,serverReady=false;
@@ -24,6 +25,14 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   function renderInspector(){
     const world=worldForActive(),state=world?.lastState,root=$('inspector');root.replaceChildren();
     if(!state){const empty=document.createElement('span');empty.className='muted';empty.textContent='클라이언트 상태를 기다리는 중입니다.';root.append(empty);return;}
+    if(captainMmo){
+      const stats=state.stats||{};
+      const details=document.createElement('div');details.className='snapshot-summary';details.textContent=`Captain MMO · 섹터 ${world.roomId||'연결 중'} · 온라인 ${state.onlineCount??0}명 · 반경 ${state.proximityRadius??2400}px · RPC 수신 ${stats.eventsReceived??0} · 멀티캐스트 ${stats.multicastsSent??0} · 거리 제외 ${stats.filteredOut??0}`;root.append(details);
+      const players=state.players||[];if(!players.length){const text=document.createElement('p');text.className='muted';text.textContent='아직 출격한 선장이 없습니다.';root.append(text);return;}
+      const table=document.createElement('table');table.className='actor-table';table.innerHTML='<thead><tr><th>선장</th><th>좌표</th><th>파트</th><th>방어막</th><th>코어</th><th>회수</th><th>주변</th></tr></thead>';
+      const body=document.createElement('tbody');for(const p of players){const row=document.createElement('tr');for(const value of [p.name||'—',`${Math.round(p.x||0)}, ${Math.round(p.y||0)}`,p.partCount??15,p.shields??0,`${Math.round((p.hullRatio??1)*100)}%`,p.salvage??0,p.nearbyCount??0]){const cell=document.createElement('td');cell.textContent=String(value);row.append(cell);}body.append(row);}table.append(body);root.append(table);
+      return;
+    }
     if(tappyMmo){
       const stats=state.stats||{};
       const details=document.createElement('div');details.className='snapshot-summary';details.textContent=`난입 MMO · 방 ${world.roomId||'연결 중'} · 온라인 ${state.onlineCount??0}명 · 반경 ${state.proximityRadius??520}px · RPC 수신 ${stats.eventsReceived??0} · 멀티캐스트 ${stats.multicastsSent??0} · 거리 제외 ${stats.filteredOut??0}`;root.append(details);

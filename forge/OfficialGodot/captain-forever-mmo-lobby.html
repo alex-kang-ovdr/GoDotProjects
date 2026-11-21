@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Captain Forever MMO · Drop-In Sector</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="captain-forever-mmo-lobby.css">
+</head>
+<body>
+  <header class="mmo-bar">
+    <strong class="title">Captain Forever MMO</strong>
+    <span id="room-label" class="pill">섹터 연결 대기</span>
+    <span id="presence-label" class="pill muted">주변 0 · 온라인 0</span>
+    <div class="bar-spacer"></div>
+    <button id="invite" type="button" hidden>초대 링크 복사</button>
+    <button id="leave" type="button" hidden>나가기</button>
+  </header>
+
+  <form id="join-form" class="join-panel">
+    <h1>Captain Forever MMO 출격</h1>
+    <p>대기실 없이 바로 우주 섹터로 난입합니다. 반경 2,400px 내 선장들의 모듈 함선 구조·추진·무기 발사·피격 잔해가 실시간 동기화됩니다.</p>
+    <div class="join-row">
+      <input id="name" type="text" maxlength="24" placeholder="선장 콜사인" value="Captain">
+      <button id="join" type="submit">바로 출격하기</button>
+    </div>
+  </form>
+
+  <section id="arena" class="arena" hidden>
+    <iframe id="game" title="Captain Forever MMO" allow="autoplay; cross-origin-isolated; fullscreen; gamepad" allowfullscreen></iframe>
+    <div id="game-loading" class="loading">Captain Forever MMO를 불러오는 중…</div>
+  </section>
+
+  <footer id="status" role="status">같은 초대 링크로 접속하면 언제든 같은 우주 섹터에 즉시 합류할 수 있습니다.</footer>
+  <script src="captain-forever-mmo-lobby.js"></script>
+</body>
+</html>

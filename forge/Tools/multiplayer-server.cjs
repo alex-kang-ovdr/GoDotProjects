@@ -5,13 +5,14 @@ const http = require('node:http');
 const { attachBrawlLabs } = require('./brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./tappy-chicken-mmo-multiplayer.cjs');
+const { attachCaptainForeverMmo } = require('./captain-forever-mmo-multiplayer.cjs');
 const { createOriginPolicy } = require('./origin-policy.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./hub-session-auth.cjs');
 const { createMultiplayerCompat, COMPAT_DECISIONS } = require('./multiplayer-compat.cjs');
 
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
-const MULTIPLAYER_HTTP_RE = /^\/api\/(brawllabs|fortress-war|tappy-chicken-mmo)\/rooms\/([a-f0-9]{12})$/;
-const MULTIPLAYER_WS_RE = /^\/(brawllabs|fortress-war|tappy-chicken-mmo)$/;
+const MULTIPLAYER_HTTP_RE = /^\/api\/(brawllabs|fortress-war|tappy-chicken-mmo|captain-forever-mmo)\/rooms\/([a-f0-9]{12})$/;
+const MULTIPLAYER_WS_RE = /^\/(brawllabs|fortress-war|tappy-chicken-mmo|captain-forever-mmo)$/;
 const ACCOUNT_KEY_RE = /^[a-f0-9]{64}$/;
 const PROJECT_ID_RE = /^[a-f0-9]{24}$/;
 const BUILD_ID_RE = /^[a-f0-9]{16}$/;
@@ -117,10 +118,12 @@ function createMultiplayerServer(options = {}) {
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('brawllabs'), compat });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('fortress-war'), compat });
   const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('tappy-chicken-mmo'), compat });
+  const captainForeverMmo = attachCaptainForeverMmo(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('captain-forever-mmo'), compat });
   const services = {
     brawllabs,
     'fortress-war': fortressWar,
-    'tappy-chicken-mmo': tappyChickenMmo
+    'tappy-chicken-mmo': tappyChickenMmo,
+    'captain-forever-mmo': captainForeverMmo
   };
 
   const server = http.createServer(async (req, res) => {
@@ -154,6 +157,7 @@ function createMultiplayerServer(options = {}) {
         brawllabsMultiplayer: true,
         fortressWarMultiplayer: true,
         tappyChickenMmoMultiplayer: true,
+        captainForeverMmoMultiplayer: true,
         hubAuth: Boolean(hubAuth),
         buildId: compat.serverBuildInfo.buildId,
         buildCode: compat.serverBuildInfo.buildCode,
@@ -256,6 +260,7 @@ function createMultiplayerServer(options = {}) {
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();
+    captainForeverMmo.close();
   };
   server.on('close', closeOwned);
   server.compat = compat;

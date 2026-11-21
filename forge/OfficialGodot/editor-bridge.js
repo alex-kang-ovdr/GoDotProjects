@@ -467,7 +467,7 @@
   async function loadNativeGame(generation) {
     const latest = await fetchProject();
     if (generation !== nativeGameGeneration) return;
-    if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo'].includes(latest.project?.template)) {
+    if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo', 'captain-forever-mmo'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
       await mountMultiplayerWorkspace(latest.project.template);
       return;

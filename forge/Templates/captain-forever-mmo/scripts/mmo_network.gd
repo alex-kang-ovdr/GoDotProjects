@@ -1,0 +1,843 @@
+class_name CaptainMmoNetwork
+extends Node
+
+## 2D Spatial-Interest MMO relay for Captain Forever MMO.
+##
+## Supports dual transport:
+## - Web export (`?multiplayer=1`): postMessage bridge to `captain-forever-mmo-lobby.html` -> WebSocket `/captain-forever-mmo`.
+## - Native Godot (`ENetMultiplayerPeer` + `@rpc`): authoritative 2D AOI host/client with seamless drop-in.
+
+signal welcome_received(info: Dictionary)
+signal peer_event_received(peer_id: String, event: Dictionary)
+signal peer_removed(peer_id: String)
+signal incoming_hit_received(from_peer_id: String, payload: Dictionary)
+signal status_changed(status: Dictionary)
+signal observer_state_received(snapshot: Dictionary)
+
+const DEFAULT_HOST := "127.0.0.1"
+const DEFAULT_PORT := 7789
+const DEFAULT_SECTOR_SEED := 42071
+const DEFAULT_PROXIMITY_RADIUS := 2400.0
+const LEAVE_HYSTERESIS := 240.0
+const DEFAULT_MAX_NEARBY_PEERS := 16
+const ACTIVE_SYNC_INTERVAL := 0.10
+const IDLE_SYNC_INTERVAL := 1.00
+const MAX_CLIENTS := 64
+const MAX_BLUEPRINT_PARTS := 32
+const VALID_EVENTS := ["join", "state", "ship", "fire", "hit", "destroy", "leave"]
+const VALID_PHASES := ["playing", "editing", "destroyed"]
+
+@export var auto_start := true
+@export var proximity_radius := DEFAULT_PROXIMITY_RADIUS
+@export var leave_hysteresis := LEAVE_HYSTERESIS
+@export var max_nearby_peers := DEFAULT_MAX_NEARBY_PEERS
+
+var transport_mode := "offline"
+var role := "offline"
+var connected := false
+var observer_only := false
+var sector_seed := DEFAULT_SECTOR_SEED
+var local_peer_id := ""
+var player_name := ""
+var online_count := 1
+var nearby_count := 0
+
+# Telemetry counters for HUD diagnostics and automated MMO tests
+var events_sent := 0
+var events_received_client := 0
+var server_events_received := 0
+var server_multicasts_sent := 0
+var server_filtered_out := 0
+
+var _enet_peer: ENetMultiplayerPeer
+var _server_also_plays := true
+var _server_peers: Dictionary = {}
+var _client_seq := 0
+var _sync_clock := 0.0
+var _last_snapshot: Dictionary = {}
+var _last_blueprint: Array = []
+var _web_callback: JavaScriptObject
+var _known_nearby: Dictionary = {}
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint() or not auto_start:
+		return
+	start_auto()
+
+
+func _exit_tree() -> void:
+	shutdown()
+
+
+func start_auto() -> void:
+	if OS.has_feature("web"):
+		var is_mp := bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('multiplayer') === '1'", true))
+		if is_mp:
+			start_web_bridge()
+		else:
+			transport_mode = "offline"
+			role = "offline"
+			connected = false
+			_emit_status()
+		return
+
+	var args := OS.get_cmdline_user_args()
+	var port := DEFAULT_PORT
+	var host := DEFAULT_HOST
+	var run_server := false
+	var connect_explicit := false
+	var run_offline := false
+	var seed_override := DEFAULT_SECTOR_SEED
+
+	for raw_arg in args:
+		var arg := str(raw_arg)
+		if arg == "--offline":
+			run_offline = true
+		elif arg == "--server":
+			run_server = true
+		elif arg.begins_with("--port="):
+			port = clampi(int(arg.substr(7)), 1024, 65535)
+		elif arg.begins_with("--seed="):
+			seed_override = clampi(int(arg.substr(7)), 1, 999999)
+		elif arg.begins_with("--proximity="):
+			proximity_radius = clampf(float(arg.substr(12)), 250.0, 20000.0)
+		elif arg.begins_with("--name="):
+			player_name = arg.substr(7).strip_edges().left(24)
+		elif arg.begins_with("--connect="):
+			connect_explicit = true
+			var target := arg.substr(10).strip_edges()
+			if ":" in target:
+				var parts := target.split(":", false, 1)
+				host = parts[0]
+				port = clampi(int(parts[1]), 1024, 65535)
+			elif not target.is_empty():
+				host = target
+
+	if run_offline:
+		transport_mode = "offline"
+		role = "offline"
+		connected = false
+		_emit_status()
+		return
+
+	if run_server:
+		start_enet_server(port, seed_override, false)
+		return
+
+	if connect_explicit:
+		start_enet_client(host, port, player_name)
+		return
+
+	# Standalone desktop default stays offline unless multiplayer flags are supplied
+	# (avoids binding random ports during headless tests or single-player launches).
+	transport_mode = "offline"
+	role = "offline"
+	connected = false
+	_emit_status()
+
+
+func start_enet_server(port: int = DEFAULT_PORT, seed_value: int = DEFAULT_SECTOR_SEED, also_plays: bool = true) -> Error:
+	shutdown()
+	var peer := ENetMultiplayerPeer.new()
+	var err := peer.create_server(port, MAX_CLIENTS)
+	if err != OK:
+		return err
+	_enet_peer = peer
+	multiplayer.multiplayer_peer = peer
+	_connect_multiplayer_signals()
+	transport_mode = "enet"
+	_server_also_plays = also_plays
+	observer_only = not also_plays
+	role = "host" if also_plays else "server"
+	connected = true
+	sector_seed = clampi(seed_value, 1, 999999)
+	local_peer_id = "1"
+	if player_name.is_empty():
+		player_name = "Captain-1" if also_plays else "SectorServer"
+	_server_peers.clear()
+	if also_plays:
+		_server_peers[1] = _make_server_peer(1, player_name)
+	online_count = _server_peers.size()
+	nearby_count = 0
+	welcome_received.emit({
+		"sector_seed": sector_seed,
+		"proximity_radius": proximity_radius,
+		"peer_id": local_peer_id,
+		"role": role,
+		"observer_only": observer_only,
+	})
+	_emit_status()
+	return OK
+
+
+func start_enet_client(host: String = DEFAULT_HOST, port: int = DEFAULT_PORT, nickname: String = "") -> Error:
+	shutdown()
+	var peer := ENetMultiplayerPeer.new()
+	var err := peer.create_client(host, port)
+	if err != OK:
+		transport_mode = "offline"
+		role = "offline"
+		connected = false
+		_emit_status()
+		return err
+	_enet_peer = peer
+	multiplayer.multiplayer_peer = peer
+	_connect_multiplayer_signals()
+	transport_mode = "enet"
+	role = "client"
+	observer_only = false
+	connected = false
+	if not nickname.is_empty():
+		player_name = nickname.strip_edges().left(24)
+	_emit_status()
+	return OK
+
+
+func start_web_bridge() -> void:
+	shutdown()
+	transport_mode = "web_bridge"
+	role = "client"
+	connected = false
+	_web_callback = JavaScriptBridge.create_callback(_on_web_message)
+	JavaScriptBridge.get_interface("window")["__playforgeCaptainMmoCallback"] = _web_callback
+	JavaScriptBridge.eval("""
+		window.__playforgeCaptainMmoListener = event => {
+			if (event.source !== window.parent || event.origin !== location.origin || event.data?.source !== 'playforge-captain-mmo-lobby') return;
+			window.__playforgeCaptainMmoCallback(JSON.stringify(event.data));
+		};
+		window.addEventListener('message', window.__playforgeCaptainMmoListener);
+		window.parent.postMessage({source:'playforge-captain-mmo-game',type:'ready'},location.origin);
+	""", true)
+	_emit_status()
+
+
+func shutdown() -> void:
+	if transport_mode == "web_bridge" and OS.has_feature("web"):
+		JavaScriptBridge.eval("if (window.__playforgeCaptainMmoListener) window.removeEventListener('message', window.__playforgeCaptainMmoListener); window.__playforgeCaptainMmoCallback = null;", true)
+		_web_callback = null
+	_disconnect_multiplayer_signals()
+	if _enet_peer != null:
+		_enet_peer.close()
+		_enet_peer = null
+	if multiplayer != null and multiplayer.multiplayer_peer != null:
+		multiplayer.multiplayer_peer = null
+	_server_peers.clear()
+	_known_nearby.clear()
+	connected = false
+	observer_only = false
+	online_count = 1
+	nearby_count = 0
+	transport_mode = "offline"
+	role = "offline"
+
+
+static func encode_blueprint(model: ShipModel) -> Array:
+	var result: Array = []
+	if model == null:
+		return result
+	for part in model.parts:
+		if result.size() >= MAX_BLUEPRINT_PARTS:
+			break
+		var ratio := clampf(part.hp / maxf(part.max_hp, 1.0), 0.0, 1.0)
+		result.append([
+			part.kind,
+			part.cell.x,
+			part.cell.y,
+			posmod(part.quarter_turn, 4),
+			snappedf(ratio, 0.01),
+		])
+	return result
+
+
+func tick_sync(delta: float, ship_snapshot: Dictionary) -> void:
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only:
+		return
+	var moving: bool = Vector2(float(ship_snapshot.get("vx", 0.0)), float(ship_snapshot.get("vy", 0.0))).length_squared() > 16.0 or absf(float(ship_snapshot.get("vrot", 0.0))) > 0.05 or int(ship_snapshot.get("thrust", 0)) != 0
+	var interval := ACTIVE_SYNC_INTERVAL if moving else IDLE_SYNC_INTERVAL
+	_sync_clock += delta
+	if _sync_clock >= interval:
+		_sync_clock = 0.0
+		publish_local_event("state", ship_snapshot)
+
+
+func publish_ship_blueprint(blueprint: Array, ship_snapshot: Dictionary) -> void:
+	_last_blueprint = blueprint.duplicate(true)
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only:
+		return
+	publish_local_event("ship", ship_snapshot, {"blueprint": _last_blueprint})
+
+
+func publish_fire(shot_info: Dictionary, ship_snapshot: Dictionary) -> void:
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only:
+		return
+	var pos: Vector2 = shot_info.get("position", Vector2.ZERO)
+	var vel: Vector2 = shot_info.get("velocity", Vector2.ZERO)
+	var color: Color = shot_info.get("color", Color("ff92e8"))
+	publish_local_event("fire", ship_snapshot, {
+		"shot": {
+			"x": snappedf(pos.x, 0.5),
+			"y": snappedf(pos.y, 0.5),
+			"vx": snappedf(vel.x, 0.5),
+			"vy": snappedf(vel.y, 0.5),
+			"kind": str(shot_info.get("kind", "laser")).left(20),
+			"damage": snappedf(float(shot_info.get("damage", 7.0)), 0.1),
+			"life": snappedf(float(shot_info.get("life", 2.0)), 0.05),
+			"color": color.to_html(false),
+		}
+	})
+
+
+func publish_hit(target_peer_id: String, damage: float, impact: Vector2, weapon_kind: String, ship_snapshot: Dictionary) -> void:
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only or target_peer_id.is_empty():
+		return
+	publish_local_event("hit", ship_snapshot, {
+		"target_peer_id": target_peer_id,
+		"damage": clampf(damage, 0.5, 120.0),
+		"impact_x": snappedf(impact.x, 0.5),
+		"impact_y": snappedf(impact.y, 0.5),
+		"weapon_kind": weapon_kind.left(20),
+	})
+
+
+func publish_destroy(ship_snapshot: Dictionary, wreck_kinds: Array) -> void:
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only:
+		return
+	publish_local_event("destroy", ship_snapshot, {
+		"wreck": wreck_kinds.slice(0, 8),
+	})
+
+
+func publish_local_event(event_type: String, ship_snapshot: Dictionary, extra: Dictionary = {}) -> void:
+	_last_snapshot = ship_snapshot
+	if not connected or observer_only:
+		return
+	if event_type not in VALID_EVENTS:
+		return
+	_sync_clock = 0.0
+	_client_seq += 1
+	var payload := {
+		"event_type": event_type,
+		"name": player_name if not player_name.is_empty() else ("Cap-" + local_peer_id),
+		"x": snappedf(float(ship_snapshot.get("x", 0.0)), 0.5),
+		"y": snappedf(float(ship_snapshot.get("y", 0.0)), 0.5),
+		"vx": snappedf(float(ship_snapshot.get("vx", 0.0)), 0.5),
+		"vy": snappedf(float(ship_snapshot.get("vy", 0.0)), 0.5),
+		"rot": snappedf(float(ship_snapshot.get("rot", -PI * 0.5)), 0.002),
+		"vrot": snappedf(float(ship_snapshot.get("vrot", 0.0)), 0.002),
+		"thrust": int(ship_snapshot.get("thrust", 0)),
+		"shields": clampi(int(ship_snapshot.get("shields", 0)), 0, 8),
+		"hull_ratio": clampf(float(ship_snapshot.get("hull_ratio", 1.0)), 0.0, 1.0),
+		"part_count": maxi(0, int(ship_snapshot.get("part_count", _last_blueprint.size()))),
+		"salvage": maxi(0, int(ship_snapshot.get("salvage", 0))),
+		"phase": str(ship_snapshot.get("phase", "playing")),
+		"seq": _client_seq,
+	}
+	if event_type == "join" and not _last_blueprint.is_empty():
+		payload["blueprint"] = _last_blueprint
+	for k in extra.keys():
+		payload[k] = extra[k]
+	events_sent += 1
+
+	if transport_mode == "web_bridge":
+		var message := {
+			"source": "playforge-captain-mmo-game",
+			"type": "rpc",
+			"method": "server_player_event",
+			"params": payload,
+		}
+		JavaScriptBridge.eval("window.parent.postMessage(JSON.parse(%s),location.origin);" % JSON.stringify(JSON.stringify(message)), true)
+		return
+
+	if transport_mode == "enet":
+		if multiplayer.is_server():
+			_server_handle_player_event(1, payload)
+		else:
+			rpc_server_player_event.rpc_id(1, payload)
+
+
+func get_nearby_peer_ids() -> Array[String]:
+	var result: Array[String] = []
+	for key in _known_nearby.keys():
+		result.append(str(key))
+	result.sort()
+	return result
+
+
+func get_stats() -> Dictionary:
+	return {
+		"mode": transport_mode,
+		"role": role,
+		"connected": connected,
+		"observer_only": observer_only,
+		"peer_id": local_peer_id,
+		"sector_seed": sector_seed,
+		"proximity_radius": proximity_radius,
+		"online_count": online_count,
+		"nearby_count": nearby_count,
+		"events_sent": events_sent,
+		"events_received_client": events_received_client,
+		"server_events_received": server_events_received,
+		"server_multicasts_sent": server_multicasts_sent,
+		"server_filtered_out": server_filtered_out,
+	}
+
+
+# --- Native Godot @rpc Endpoints ---
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_server_player_event(payload: Dictionary) -> void:
+	if not multiplayer.is_server():
+		return
+	var sender_id := multiplayer.get_remote_sender_id()
+	if sender_id <= 0:
+		return
+	_server_handle_player_event(sender_id, payload)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_client_welcome(info: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_apply_welcome(info)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_client_multicast_event(sender_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_event(str(sender_peer_id), payload)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_client_multicast_state(sender_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_event(str(sender_peer_id), payload)
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_client_peer_removed(sender_peer_id: int) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_removed(str(sender_peer_id))
+
+
+@rpc("authority", "call_remote", "reliable")
+func rpc_client_incoming_hit(from_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	incoming_hit_received.emit(str(from_peer_id), payload)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_client_presence(next_online: int, next_nearby: int) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	online_count = maxi(1, next_online)
+	nearby_count = maxi(0, next_nearby)
+	_emit_status()
+
+
+# --- Native Server 2D Spatial AOI Management ---
+
+func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
+	return {
+		"id": peer_id,
+		"name": nickname if not nickname.is_empty() else ("Captain %d" % peer_id),
+		"x": 0.0,
+		"y": 0.0,
+		"vx": 0.0,
+		"vy": 0.0,
+		"rot": -PI * 0.5,
+		"vrot": 0.0,
+		"thrust": 0,
+		"shields": 0,
+		"hull_ratio": 1.0,
+		"part_count": 15,
+		"salvage": 0,
+		"phase": "playing",
+		"blueprint": [],
+		"seq": 0,
+		"state_at_msec": Time.get_ticks_msec(),
+		"nearby": {},
+	}
+
+
+func _estimate_peer_pos(peer: Dictionary, now_msec: int) -> Vector2:
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 2.0)
+	return Vector2(float(peer["x"]) + float(peer["vx"]) * elapsed, float(peer["y"]) + float(peer["vy"]) * elapsed)
+
+
+func _is_within_proximity(pos_a: Vector2, pos_b: Vector2, was_nearby: bool) -> bool:
+	var limit := proximity_radius + (leave_hysteresis if was_nearby else 0.0)
+	return pos_a.distance_squared_to(pos_b) <= limit * limit
+
+
+func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
+	if not _server_peers.has(sender_id):
+		_server_peers[sender_id] = _make_server_peer(sender_id, str(raw.get("name", "")))
+	var peer: Dictionary = _server_peers[sender_id]
+	var event_type := str(raw.get("event_type", "state"))
+	if event_type not in VALID_EVENTS:
+		return
+	var seq := int(raw.get("seq", 0))
+	if event_type not in ["join", "ship", "hit", "destroy"] and seq > 0 and seq <= int(peer["seq"]):
+		return
+	if seq > 0:
+		peer["seq"] = seq
+
+	var incoming_name := str(raw.get("name", "")).strip_edges().left(24)
+	if not incoming_name.is_empty():
+		peer["name"] = incoming_name
+	var phase := str(raw.get("phase", peer["phase"]))
+	if phase not in VALID_PHASES:
+		phase = "playing"
+	var now_msec := Time.get_ticks_msec()
+	peer["x"] = clampf(float(raw.get("x", peer["x"])), -250000.0, 250000.0)
+	peer["y"] = clampf(float(raw.get("y", peer["y"])), -250000.0, 250000.0)
+	peer["vx"] = clampf(float(raw.get("vx", peer["vx"])), -3000.0, 3000.0)
+	peer["vy"] = clampf(float(raw.get("vy", peer["vy"])), -3000.0, 3000.0)
+	peer["rot"] = clampf(float(raw.get("rot", peer["rot"])), -TAU * 2.0, TAU * 2.0)
+	peer["vrot"] = clampf(float(raw.get("vrot", peer["vrot"])), -20.0, 20.0)
+	peer["thrust"] = int(raw.get("thrust", peer["thrust"])) & 15
+	peer["shields"] = clampi(int(raw.get("shields", peer["shields"])), 0, 8)
+	peer["hull_ratio"] = clampf(float(raw.get("hull_ratio", peer["hull_ratio"])), 0.0, 1.0)
+	peer["part_count"] = clampi(int(raw.get("part_count", peer["part_count"])), 0, MAX_BLUEPRINT_PARTS)
+	peer["salvage"] = maxi(0, int(raw.get("salvage", peer["salvage"])))
+	peer["phase"] = phase
+	peer["state_at_msec"] = now_msec
+	if raw.has("blueprint") and raw["blueprint"] is Array:
+		peer["blueprint"] = (raw["blueprint"] as Array).slice(0, MAX_BLUEPRINT_PARTS)
+		peer["part_count"] = (peer["blueprint"] as Array).size()
+
+	server_events_received += 1
+
+	# Direct hit relay to targeted peer if within proximity.
+	if event_type == "hit":
+		var target_id := int(str(raw.get("target_peer_id", "0")))
+		if target_id > 0 and target_id != sender_id and _server_peers.has(target_id):
+			var target_peer: Dictionary = _server_peers[target_id]
+			var sender_pos := Vector2(float(peer["x"]), float(peer["y"]))
+			if _is_within_proximity(sender_pos, _estimate_peer_pos(target_peer, now_msec), true):
+				var hit_payload := {
+					"from_peer_id": str(sender_id),
+					"from_name": str(peer["name"]),
+					"damage": clampf(float(raw.get("damage", 7.0)), 0.5, 120.0),
+					"impact_x": float(raw.get("impact_x", target_peer["x"])),
+					"impact_y": float(raw.get("impact_y", target_peer["y"])),
+					"weapon_kind": str(raw.get("weapon_kind", "laser")).left(20),
+				}
+				if target_id == 1:
+					if _server_also_plays:
+						incoming_hit_received.emit(str(sender_id), hit_payload)
+				else:
+					rpc_client_incoming_hit.rpc_id(target_id, sender_id, hit_payload)
+				server_multicasts_sent += 1
+		return
+
+	var clean_event := _peer_to_event_payload(peer, event_type, now_msec, event_type in ["join", "ship"])
+	if event_type == "fire" and raw.has("shot") and raw["shot"] is Dictionary:
+		clean_event["shot"] = raw["shot"]
+	elif event_type == "destroy" and raw.has("wreck") and raw["wreck"] is Array:
+		clean_event["wreck"] = (raw["wreck"] as Array).slice(0, 8)
+
+	var sender_nearby: Dictionary = peer["nearby"]
+	var cap := clampi(max_nearby_peers, 1, MAX_CLIENTS - 1)
+	var presence_changed: Dictionary = {}
+	var sender_pos := Vector2(float(peer["x"]), float(peer["y"]))
+
+	for other_id_variant in _server_peers.keys():
+		var other_id := int(other_id_variant)
+		if other_id == sender_id:
+			continue
+		var other: Dictionary = _server_peers[other_id]
+		var other_nearby: Dictionary = other["nearby"]
+		var was_nearby := sender_nearby.has(other_id)
+		var other_pos := _estimate_peer_pos(other, now_msec)
+		var in_range := _is_within_proximity(sender_pos, other_pos, was_nearby)
+		var now_nearby := in_range and (was_nearby or (sender_nearby.size() < cap and other_nearby.size() < cap))
+
+		if now_nearby:
+			var outgoing := clean_event
+			if not was_nearby and not outgoing.has("blueprint") and not (peer["blueprint"] as Array).is_empty():
+				outgoing = clean_event.duplicate()
+				outgoing["blueprint"] = peer["blueprint"]
+			_server_send_event_to(other_id, sender_id, outgoing)
+			server_multicasts_sent += 1
+			if not was_nearby:
+				sender_nearby[other_id] = true
+				other_nearby[sender_id] = true
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
+				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "ship", now_msec, true))
+				server_multicasts_sent += 1
+		else:
+			server_filtered_out += 1
+			if was_nearby:
+				sender_nearby.erase(other_id)
+				other_nearby.erase(sender_id)
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
+				_server_send_removed_to(other_id, sender_id)
+				_server_send_removed_to(sender_id, other_id)
+
+	if event_type == "join":
+		_server_broadcast_presence()
+	elif not presence_changed.is_empty():
+		_server_send_presence_subset(presence_changed)
+
+
+func _peer_to_event_payload(peer: Dictionary, event_type: String, now_msec: int = -1, include_blueprint: bool = false) -> Dictionary:
+	var ts := Time.get_ticks_msec() if now_msec < 0 else now_msec
+	var pos := _estimate_peer_pos(peer, ts)
+	var out := {
+		"event_type": event_type,
+		"name": str(peer["name"]),
+		"x": pos.x,
+		"y": pos.y,
+		"vx": float(peer["vx"]),
+		"vy": float(peer["vy"]),
+		"rot": float(peer["rot"]),
+		"vrot": float(peer["vrot"]),
+		"thrust": int(peer["thrust"]),
+		"shields": int(peer["shields"]),
+		"hull_ratio": float(peer["hull_ratio"]),
+		"part_count": int(peer["part_count"]),
+		"salvage": int(peer["salvage"]),
+		"phase": str(peer["phase"]),
+		"seq": int(peer["seq"]),
+	}
+	if include_blueprint and not (peer["blueprint"] as Array).is_empty():
+		out["blueprint"] = peer["blueprint"]
+	return out
+
+
+func _server_send_event_to(target_id: int, sender_id: int, payload: Dictionary) -> void:
+	if target_id == 1:
+		if _server_also_plays:
+			_deliver_local_peer_event(str(sender_id), payload)
+	elif str(payload.get("event_type", "state")) == "state" and not payload.has("blueprint"):
+		rpc_client_multicast_state.rpc_id(target_id, sender_id, payload)
+	else:
+		rpc_client_multicast_event.rpc_id(target_id, sender_id, payload)
+
+
+func _server_send_removed_to(target_id: int, removed_id: int) -> void:
+	if target_id == 1:
+		if _server_also_plays:
+			_deliver_local_peer_removed(str(removed_id))
+	else:
+		rpc_client_peer_removed.rpc_id(target_id, removed_id)
+
+
+func _server_send_presence_subset(peer_ids: Dictionary) -> void:
+	var total := _server_peers.size()
+	online_count = maxi(1, total)
+	if _server_also_plays and _server_peers.has(1):
+		nearby_count = (_server_peers[1]["nearby"] as Dictionary).size()
+	for peer_id_variant in peer_ids.keys():
+		var peer_id := int(peer_id_variant)
+		if peer_id == 1 or not _server_peers.has(peer_id):
+			continue
+		var peer: Dictionary = _server_peers[peer_id]
+		rpc_client_presence.rpc_id(peer_id, total, (peer["nearby"] as Dictionary).size())
+	_emit_status()
+
+
+func _server_broadcast_presence() -> void:
+	var total := _server_peers.size()
+	online_count = maxi(1, total)
+	if _server_also_plays and _server_peers.has(1):
+		nearby_count = (_server_peers[1]["nearby"] as Dictionary).size()
+	else:
+		nearby_count = 0
+	for peer_id_variant in _server_peers.keys():
+		var peer_id := int(peer_id_variant)
+		if peer_id == 1:
+			continue
+		var peer: Dictionary = _server_peers[peer_id]
+		rpc_client_presence.rpc_id(peer_id, total, (peer["nearby"] as Dictionary).size())
+	_emit_status()
+
+
+# --- Native Multiplayer Signals ---
+
+func _connect_multiplayer_signals() -> void:
+	if multiplayer == null:
+		return
+	if not multiplayer.peer_connected.is_connected(_on_peer_connected):
+		multiplayer.peer_connected.connect(_on_peer_connected)
+	if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
+		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	if not multiplayer.connected_to_server.is_connected(_on_connected_to_server):
+		multiplayer.connected_to_server.connect(_on_connected_to_server)
+	if not multiplayer.connection_failed.is_connected(_on_connection_failed):
+		multiplayer.connection_failed.connect(_on_connection_failed)
+	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
+		multiplayer.server_disconnected.connect(_on_server_disconnected)
+
+
+func _disconnect_multiplayer_signals() -> void:
+	if multiplayer == null:
+		return
+	if multiplayer.peer_connected.is_connected(_on_peer_connected):
+		multiplayer.peer_connected.disconnect(_on_peer_connected)
+	if multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
+		multiplayer.peer_disconnected.disconnect(_on_peer_disconnected)
+	if multiplayer.connected_to_server.is_connected(_on_connected_to_server):
+		multiplayer.connected_to_server.disconnect(_on_connected_to_server)
+	if multiplayer.connection_failed.is_connected(_on_connection_failed):
+		multiplayer.connection_failed.disconnect(_on_connection_failed)
+	if multiplayer.server_disconnected.is_connected(_on_server_disconnected):
+		multiplayer.server_disconnected.disconnect(_on_server_disconnected)
+
+
+func _on_peer_connected(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	_server_peers[peer_id] = _make_server_peer(peer_id, "Captain %d" % peer_id)
+	rpc_client_welcome.rpc_id(peer_id, {
+		"sector_seed": sector_seed,
+		"proximity_radius": proximity_radius,
+		"peer_id": str(peer_id),
+		"role": "client",
+		"observer_only": false,
+		"online_count": _server_peers.size(),
+	})
+	_server_handle_player_event(peer_id, _peer_to_event_payload(_server_peers[peer_id], "join"))
+
+
+func _on_peer_disconnected(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	if not _server_peers.has(peer_id):
+		return
+	var peer: Dictionary = _server_peers[peer_id]
+	var previous_nearby: Dictionary = peer["nearby"]
+	_server_peers.erase(peer_id)
+	for other_id_variant in previous_nearby.keys():
+		var other_id := int(other_id_variant)
+		if _server_peers.has(other_id):
+			(_server_peers[other_id]["nearby"] as Dictionary).erase(peer_id)
+			_server_send_removed_to(other_id, peer_id)
+	_server_broadcast_presence()
+
+
+func _on_connected_to_server() -> void:
+	local_peer_id = str(multiplayer.get_unique_id())
+	if player_name.is_empty():
+		player_name = "Cap-%s" % local_peer_id
+	connected = true
+	_emit_status()
+	if not _last_snapshot.is_empty():
+		publish_local_event("join", _last_snapshot)
+
+
+func _on_connection_failed() -> void:
+	connected = false
+	role = "offline"
+	transport_mode = "offline"
+	_emit_status()
+
+
+func _on_server_disconnected() -> void:
+	connected = false
+	for peer_id in _known_nearby.keys():
+		peer_removed.emit(str(peer_id))
+	_known_nearby.clear()
+	nearby_count = 0
+	online_count = 1
+	_emit_status()
+
+
+# --- Local Client Delivery & Web Bridge ---
+
+func _apply_welcome(info: Dictionary) -> void:
+	sector_seed = clampi(int(info.get("sector_seed", DEFAULT_SECTOR_SEED)), 1, 999999)
+	proximity_radius = clampf(float(info.get("proximity_radius", DEFAULT_PROXIMITY_RADIUS)), 250.0, 20000.0)
+	var incoming_peer := str(info.get("peer_id", local_peer_id))
+	if not incoming_peer.is_empty():
+		local_peer_id = incoming_peer
+	observer_only = bool(info.get("observer_only", false))
+	role = "observer" if observer_only else str(info.get("role", role))
+	online_count = maxi(1, int(info.get("online_count", online_count)))
+	connected = true
+	welcome_received.emit(info)
+	_emit_status()
+	if not observer_only and not _last_snapshot.is_empty():
+		publish_local_event("join", _last_snapshot)
+
+
+func _deliver_local_peer_event(peer_id: String, payload: Dictionary) -> void:
+	if peer_id.is_empty() or peer_id == local_peer_id:
+		return
+	events_received_client += 1
+	_known_nearby[peer_id] = true
+	nearby_count = _known_nearby.size()
+	peer_event_received.emit(peer_id, payload)
+	_emit_status()
+
+
+func _deliver_local_peer_removed(peer_id: String) -> void:
+	if peer_id.is_empty():
+		return
+	_known_nearby.erase(peer_id)
+	nearby_count = _known_nearby.size()
+	peer_removed.emit(peer_id)
+	_emit_status()
+
+
+func _on_web_message(arguments: Array) -> void:
+	if arguments.is_empty() or not arguments[0] is String:
+		return
+	var message = JSON.parse_string(arguments[0])
+	if not message is Dictionary:
+		return
+	var msg_type := str(message.get("type", ""))
+	match msg_type:
+		"welcome":
+			var incoming_name := str(message.get("playerName", "")).strip_edges().left(24)
+			if not incoming_name.is_empty():
+				player_name = incoming_name
+			_apply_welcome({
+				"sector_seed": int(message.get("sectorSeed", DEFAULT_SECTOR_SEED)),
+				"proximity_radius": float(message.get("proximityRadius", DEFAULT_PROXIMITY_RADIUS)),
+				"peer_id": str(message.get("playerId", "")),
+				"role": "observer" if message.get("playerId") == null else "client",
+				"observer_only": message.get("playerId") == null,
+				"online_count": int(message.get("onlineCount", 1)),
+			})
+		"rpc":
+			var method := str(message.get("method", ""))
+			var params = message.get("params", {})
+			if not params is Dictionary:
+				return
+			if method == "client_multicast_event":
+				_deliver_local_peer_event(str(params.get("peerId", "")), params)
+			elif method == "client_peer_removed":
+				_deliver_local_peer_removed(str(params.get("peerId", "")))
+			elif method == "client_incoming_hit":
+				incoming_hit_received.emit(str(params.get("fromPeerId", "")), params)
+			elif method == "client_presence":
+				online_count = maxi(1, int(params.get("onlineCount", online_count)))
+				nearby_count = maxi(0, int(params.get("nearbyCount", _known_nearby.size())))
+				_emit_status()
+		"state":
+			var raw_state = message.get("state")
+			if raw_state is Dictionary and message.get("playerId") == null:
+				observer_only = true
+				role = "observer"
+				connected = true
+				online_count = int(raw_state.get("onlineCount", 0))
+				observer_state_received.emit(raw_state)
+				_emit_status()
+
+
+func _emit_status() -> void:
+	status_changed.emit(get_stats())
