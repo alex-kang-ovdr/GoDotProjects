@@ -67,6 +67,39 @@ object FarmServerRegistry {
         return preset ?: fallback
     }
 
+    /**
+     * Returns all Farm clusters to display in the Farm selector UI:
+     * active/custom cluster and build default cluster (if distinct) followed by presets,
+     * deduplicated by normalized baseUrl.
+     */
+    fun selectableClusters(
+        buildStage: String,
+        defaultBaseUrl: String,
+        activeFarm: FarmCluster
+    ): List<FarmCluster> {
+        val result = mutableListOf<FarmCluster>()
+        val seenUrls = mutableSetOf<String>()
+
+        fun addUnique(cluster: FarmCluster) {
+            val key = cluster.baseUrl.trim().trimEnd('/').lowercase(Locale.ROOT)
+            if (key.isNotEmpty() && seenUrls.add(key)) {
+                result.add(cluster)
+            }
+        }
+
+        addUnique(activeFarm)
+        val defaultCluster = FarmCluster(
+            id = buildStage.trim().lowercase(Locale.ROOT),
+            label = "Default (${buildStage.trim().uppercase(Locale.ROOT)})",
+            baseUrl = defaultBaseUrl.trim().trimEnd('/')
+        )
+        addUnique(defaultCluster)
+        for (preset in PRESET_FARMS) {
+            addUnique(preset)
+        }
+        return result
+    }
+
     fun loadActive(context: Context, buildStage: String, allowFlag: Boolean, defaultBaseUrl: String): FarmCluster {
         if (!isSelectorAllowed(buildStage, allowFlag)) {
             return resolveActiveCluster(buildStage, allowFlag, defaultBaseUrl, null, null)

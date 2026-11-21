@@ -65,4 +65,20 @@ class FarmServerRegistryTest {
     fun rejectsNonHttpCustomUrl() {
         FarmServerRegistry.normalizeCustomUrl("file:///etc/passwd")
     }
+
+    @Test
+    fun listsActiveAndDefaultClustersBeforePresetsWithoutDuplicates() {
+        val active = FarmCluster("custom", "Custom Farm", "https://tunnel.trycloudflare.com")
+        val list = FarmServerRegistry.selectableClusters(
+            buildStage = "debug",
+            defaultBaseUrl = "http://10.0.2.2:18130",
+            activeFarm = active
+        )
+        assertEquals("custom", list.first().id)
+        // defaultBaseUrl matches preset "local", so no duplicate entry for 10.0.2.2:18130
+        val urls = list.map { it.baseUrl.lowercase() }
+        assertEquals(urls.size, urls.toSet().size)
+        assertTrue(urls.contains("https://tunnel.trycloudflare.com"))
+        assertTrue(urls.contains("http://10.0.2.2:18130"))
+    }
 }

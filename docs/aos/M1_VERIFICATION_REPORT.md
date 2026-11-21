@@ -82,6 +82,18 @@
 |---|---|
 | ![Godot Isolated Runtime](verification-m1/06-godot-runtime.png) | ![Universal In-Game Overlay](verification-m1/07-ingame-overlay.png) |
 
+### 3.5 Farm 서버군 실시간 상태 표시 (`RED` / `ORANGE` / `YELLOW` / `GREEN`)
+- `GET /api/health` 병렬 프로브 기반 4단계 상태 판정 (`FarmHealthCheckerTest` 6/6 + `FarmServerRegistryTest` 5/5 PASS):
+  - **GREEN** (`#22C55E`): HTTP 2xx 및 응답속도 `< 200ms`
+  - **YELLOW** (`#EAB308`): HTTP 2xx 및 응답속도 `200ms ~ 599ms`
+  - **ORANGE** (`#F97316`): HTTP 2xx 및 응답속도 `>= 600ms`
+  - **RED** (`#EF4444`): 접속 불가 (타임아웃 · DNS/네트워크 오류 · 비정상 HTTP 상태)
+- 초기 콜드 연결(`1292ms`) 시 상단 Farm 필이 **ORANGE**(`debug · 1292ms`)로 표시되고, 연결 안정화 후 재프로브 시 **GREEN**(`GREEN · 41ms`)으로 갱신되며 미연결 서버군은 **RED**(`RED · 접속 불가`)로 병렬 표시됨 확인. (`release`·`live` 빌드에서는 `ALLOW_FARM_SELECTOR = false`로 완전 차단, Release APK 크기 `23.64 MiB` 변동 없음)
+
+| 상단 Farm 상태 필 (초기 지연 시 ORANGE) | Farm 서버군 상태 팝업 (GREEN 41ms / RED 접속 불가) |
+|---|---|
+| ![Farm Status Pill](verification-m1/08-farm-home-pill.png) | ![Farm Status Dialog](verification-m1/09-farm-status-dialog.png) |
+
 ---
 
 ## 4. 실측 프로세스 격리 · 마운트 · 크래시 검증 로그
