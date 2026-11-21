@@ -86,11 +86,78 @@ function firstHeader(req, names) {
   return '';
 }
 
+function safeDecodePathSegment(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    throw new StoreApiError(400, 'INVALID_PATH', 'Malformed percent-encoding in request path');
+  }
+}
+
+export function parseAllowedOrigins(input) {
+  if (input === undefined || input === null) return null;
+  if (typeof input === 'string' && !input.trim()) return null;
+  const rawList = Array.isArray(input) ? input : String(input).split(',');
+  const origins = [];
+  for (const entry of rawList) {
+    const trimmed = String(entry ?? '').trim();
+    if (!trimmed) {
+      if (!Array.isArray(input)) continue;
+      throw new Error('Allowed origin entry must not be empty');
+    }
+    let parsed;
+    try {
+      parsed = new URL(trimmed);
+    } catch {
+      throw new Error(`Invalid allowed origin: ${trimmed}`);
+    }
+    if (
+      !['http:', 'https:'].includes(parsed.protocol)
+      || parsed.username
+      || parsed.password
+      || parsed.pathname !== '/'
+      || parsed.search
+      || parsed.hash
+    ) {
+      throw new Error(`Allowed origin must be an HTTP(S) origin without path or credentials: ${trimmed}`);
+    }
+    if (!origins.includes(parsed.origin)) {
+      origins.push(parsed.origin);
+    }
+  }
+  if (!Array.isArray(input) && origins.length === 0) {
+    throw new Error('Allowed origins list must contain at least one valid HTTP(S) origin');
+  }
+  return origins;
+}
+
+function parseHostHeaderOrigin(req) {
+  const host = firstHeader(req, ['host']);
+  if (!host || host.includes('/') || host.includes('@') || /\s/.test(host)) {
+    return null;
+  }
+  const protocol = req.socket?.encrypted ? 'https:' : 'http:';
+  try {
+    const parsed = new URL(`${protocol}//${host}`);
+    if (parsed.pathname !== '/' || parsed.search || parsed.hash || parsed.username || parsed.password) {
+      return null;
+    }
+    return parsed.origin;
+  } catch {
+    return null;
+  }
+}
+
+function formatOrigin(protocol, hostname, port) {
+  const hostPart = hostname.includes(':') && !hostname.startsWith('[') ? `[${hostname}]` : hostname;
+  return new URL(`${protocol}//${hostPart}:${port}`).origin;
+}
+
 export async function resolveAccountIdentity(req, options = {}) {
   const {
     sessionVerifier = null,
     internalSecret = '',
-    allowMockSession = true,
+    allowMockSession = false,
     requireAuth = false,
     defaultAccountLabel = DEFAULT_LOCAL_ACCOUNT_LABEL
   } = options;
@@ -117,13 +184,13 @@ export async function resolveAccountIdentity(req, options = {}) {
   const rawKey = firstHeader(req, ['x-playhub-account-key', 'x-hub-account-key']);
   const rawUser = firstHeader(req, ['x-playhub-user', 'x-hub-user', 'x-playhub-sso-user']);
   const rawDisplay = firstHeader(req, ['x-playhub-display-name', 'x-hub-display-name']);
+  const normalizedSecret = typeof internalSecret === 'string' ? internalSecret.trim() : '';
 
-  if (rawKey || rawUser) {
-    if (internalSecret) {
-      const providedSecret = firstHeader(req, ['x-playhub-internal-secret']);
-      if (!constantTimeEquals(providedSecret, internalSecret)) {
-        throw new StoreApiError(403, 'INTERNAL_SECRET_INVALID', 'Invalid internal SSO secret');
-      }
+  // 내부 시크릿이 설정되지 않았으면 SSO 헤더는 신뢰할 수 없으므로 무시한다(헤더만으로 계정 위조 방지).
+  if (normalizedSecret && (rawKey || rawUser)) {
+    const providedSecret = firstHeader(req, ['x-playhub-internal-secret']);
+    if (!constantTimeEquals(providedSecret, normalizedSecret)) {
+      throw new StoreApiError(403, 'INTERNAL_SECRET_INVALID', 'Invalid internal SSO secret');
     }
     if (rawKey) {
       if (!VALID_ACCOUNT_ID.test(rawKey)) {
@@ -149,7 +216,7 @@ export async function resolveAccountIdentity(req, options = {}) {
     };
   }
 
-  if (allowMockSession) {
+  if (allowMockSession === true) {
     const cookies = parseCookies(req);
     const mockUser = firstHeader(req, ['x-store-mock-user']) || String(cookies[MOCK_SESSION_COOKIE] || '').trim();
     if (mockUser) {
@@ -159,7 +226,7 @@ export async function resolveAccountIdentity(req, options = {}) {
       return {
         account_key: sha256Hex(`mock-sso:${mockUser}`),
         account_label: mockUser,
-        display_name: rawDisplay || mockUser,
+        display_name: mockUser,
         auth_mode: 'mock_session'
       };
     }
@@ -408,11 +475,15 @@ export function createStoreApp(options = {}) {
     clock = () => new Date().toISOString(),
     sessionVerifier = null,
     internalSecret = process.env.PLAYHUB_STORE_INTERNAL_SECRET || '',
-    allowMockSession = true,
+    allowMockSession = false,
     requireAuth = false,
     defaultAccountLabel = DEFAULT_LOCAL_ACCOUNT_LABEL,
-    allowedOrigins = null
+    allowedOrigins = process.env.PLAYFORGE_STORE_ALLOWED_ORIGINS || process.env.STORE_ALLOWED_ORIGINS || null
   } = options;
+
+  const mockSessionEnabled = allowMockSession === true;
+  const configuredOrigins = parseAllowedOrigins(allowedOrigins);
+  const configuredOriginSet = configuredOrigins ? new Set(configuredOrigins) : null;
 
   const catalogList = [...catalog].map((item) => structuredClone(item));
   for (const item of catalogList) {
@@ -456,38 +527,78 @@ export function createStoreApp(options = {}) {
     };
   }
 
+  function isOriginAllowed(req, origin) {
+    let parsedOrigin;
+    try {
+      parsedOrigin = new URL(origin);
+    } catch {
+      return false;
+    }
+    if (!['http:', 'https:'].includes(parsedOrigin.protocol) || parsedOrigin.origin !== origin) {
+      return false;
+    }
+
+    if (configuredOriginSet) {
+      return configuredOriginSet.has(origin);
+    }
+
+    const requestOrigin = parseHostHeaderOrigin(req);
+    if (!requestOrigin || origin !== requestOrigin) {
+      return false;
+    }
+
+    const addr = server.address();
+    if (!addr || typeof addr !== 'object') {
+      return true;
+    }
+
+    const protocol = req.socket?.encrypted ? 'https:' : 'http:';
+    const boundHost = addr.address;
+    const boundPort = addr.port;
+    const effectivePort = parsedOrigin.port || (parsedOrigin.protocol === 'https:' ? '443' : '80');
+    if (effectivePort !== String(boundPort)) {
+      return false;
+    }
+
+    if (boundHost === '0.0.0.0' || boundHost === '::') {
+      return true;
+    }
+
+    const selfOrigins = new Set([formatOrigin(protocol, boundHost, boundPort)]);
+    if (boundHost === '127.0.0.1' || boundHost === '::1') {
+      selfOrigins.add(formatOrigin(protocol, 'localhost', boundPort));
+    }
+    return selfOrigins.has(origin);
+  }
+
   function applyCorsHeaders(req, res) {
     const origin = req.headers?.origin;
     if (!origin) return;
-    let allowed = false;
-    if (Array.isArray(allowedOrigins)) {
-      allowed = allowedOrigins.includes(origin);
-    } else {
-      try {
-        const parsed = new URL(origin);
-        allowed = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(parsed.hostname);
-      } catch {
-        allowed = false;
-      }
-    }
-    if (!allowed) {
+    if (!isOriginAllowed(req, origin)) {
       throw new StoreApiError(403, 'ORIGIN_DENIED', 'Origin not allowed');
+    }
+    const allowedHeaders = [
+      'Content-Type',
+      'X-PlayHub-Account-Key',
+      'X-PlayHub-User',
+      'X-PlayHub-Display-Name',
+      'X-PlayHub-Internal-Secret'
+    ];
+    if (mockSessionEnabled) {
+      allowedHeaders.push('X-Store-Mock-User');
     }
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type, X-PlayHub-Account-Key, X-PlayHub-User, X-PlayHub-Display-Name, X-PlayHub-Internal-Secret, X-Store-Mock-User'
-    );
+    res.setHeader('Access-Control-Allow-Headers', allowedHeaders.join(', '));
   }
 
   async function resolveAccount(req) {
     return resolveAccountIdentity(req, {
       sessionVerifier,
       internalSecret,
-      allowMockSession,
+      allowMockSession: mockSessionEnabled,
       requireAuth,
       defaultAccountLabel
     });
@@ -527,12 +638,12 @@ export function createStoreApp(options = {}) {
         return sendJson(res, 200, {
           account,
           hub_sso_connected: true,
-          allow_mock_session: Boolean(allowMockSession)
+          allow_mock_session: mockSessionEnabled
         });
       }
 
       if (pathname === '/api/store/session/mock') {
-        if (!allowMockSession) {
+        if (!mockSessionEnabled) {
           throw new StoreApiError(404, 'NOT_FOUND', 'Mock session endpoint disabled');
         }
         if (req.method !== 'POST') {
@@ -594,8 +705,8 @@ export function createStoreApp(options = {}) {
         if (req.method !== 'GET' && req.method !== 'HEAD') {
           return sendMethodNotAllowed(res, ['GET', 'HEAD']);
         }
-        const slug = decodeURIComponent(artifactMatch[1]);
-        const version = decodeURIComponent(artifactMatch[2]);
+        const slug = safeDecodePathSegment(artifactMatch[1]);
+        const version = safeDecodePathSegment(artifactMatch[2]);
         const item = catalogBySlug.get(slug);
         if (!item) {
           throw new StoreApiError(404, 'PACKAGE_NOT_FOUND', `Package '${slug}' not found`);
@@ -646,7 +757,7 @@ export function createStoreApp(options = {}) {
         if (req.method !== 'GET') {
           return sendMethodNotAllowed(res, ['GET']);
         }
-        const slug = decodeURIComponent(packageMatch[1]);
+        const slug = safeDecodePathSegment(packageMatch[1]);
         const item = catalogBySlug.get(slug);
         if (!item) {
           throw new StoreApiError(404, 'PACKAGE_NOT_FOUND', `Package '${slug}' not found`);
