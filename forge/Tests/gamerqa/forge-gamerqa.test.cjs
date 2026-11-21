@@ -81,7 +81,7 @@ test('project-scanner discovers all Forge Samples (nested Project/) and Template
   const templateIds = discovered.filter(p => p.kind === 'template').map(p => p.id).sort();
 
   assert.deepEqual(sampleIds, ['nexus-front', 'survivor-arena-g2']);
-  assert.deepEqual(templateIds, ['brawllabs', 'fortress-war', 'iron-wood', 'tappy-chicken', 'tappy-chicken-mmo']);
+  assert.deepEqual(templateIds, ['brawllabs', 'fortress-war', 'iron-wood', 'survivor-io', 'tappy-chicken', 'tappy-chicken-mmo', 'voxel-frontier']);
 
   for (const sample of discovered.filter(p => p.kind === 'sample')) {
     assert.equal(path.basename(sample.projectDir), 'Project', `sample ${sample.id} should resolve to Project/`);
@@ -92,8 +92,8 @@ test('project-scanner discovers all Forge Samples (nested Project/) and Template
   assert.equal(report.status, 'pass', JSON.stringify(report.projects.filter(p => p.status !== 'pass'), null, 2));
   assert.equal(report.catalogCheck.checked, true);
   assert.equal(report.catalogCheck.ok, true);
-  assert.equal(report.summary.total, 7);
-  assert.equal(report.summary.passed, 7);
+  assert.equal(report.summary.total, 9);
+  assert.equal(report.summary.passed, 9);
   assert.equal(report.summary.failed, 0);
   assert.equal(report.summary.errored, 0);
 
@@ -209,7 +209,7 @@ test('runtime-godot catches Parse Error, runtime SCRIPT ERROR, Failed loading re
   assert.ok(exitResult.errors.some(e => e.type === 'NON_ZERO_EXIT'));
 });
 
-test('Forge GamerQA suite validates all 2 Samples and 5 Templates with Godot 4.7.2 headless (0 errors, 0 .godot leftovers)', {
+test('Forge GamerQA suite validates all 2 Samples and 7 Templates with Godot 4.7.2 headless (0 errors, 0 .godot leftovers)', {
   timeout: 180000,
 }, async () => {
   const { runForgeSuite } = await importEsm(forgeSuitePath);
@@ -230,11 +230,11 @@ test('Forge GamerQA suite validates all 2 Samples and 5 Templates with Godot 4.7
 
   assert.equal(report.suite, 'forge');
   assert.equal(report.status, 'pass', report.markdown);
-  assert.equal(report.summary.total, 7);
+  assert.equal(report.summary.total, 9);
   assert.equal(report.summary.samplesTotal, 2);
   assert.equal(report.summary.samplesPassed, 2);
-  assert.equal(report.summary.templatesTotal, 5);
-  assert.equal(report.summary.templatesPassed, 5);
+  assert.equal(report.summary.templatesTotal, 7);
+  assert.equal(report.summary.templatesPassed, 7);
   assert.equal(report.summary.failed, 0);
   assert.equal(report.summary.errored, 0);
   assert.equal(report.summary.skipped, 0);
@@ -253,7 +253,7 @@ test('Forge GamerQA suite validates all 2 Samples and 5 Templates with Godot 4.7
   }
 
   assert.match(report.markdown, /# Forge GamerQA Report/);
-  for (const expectedId of ['nexus-front', 'survivor-arena-g2', 'brawllabs', 'fortress-war', 'iron-wood', 'tappy-chicken', 'tappy-chicken-mmo']) {
+  for (const expectedId of ['nexus-front', 'survivor-arena-g2', 'brawllabs', 'fortress-war', 'iron-wood', 'survivor-io', 'tappy-chicken', 'tappy-chicken-mmo', 'voxel-frontier']) {
     assert.ok(report.markdown.includes(expectedId), `Markdown report missing ${expectedId}`);
   }
 
