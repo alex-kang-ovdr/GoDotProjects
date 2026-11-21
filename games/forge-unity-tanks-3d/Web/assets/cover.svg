@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Unity Tanks! 3D">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d2438"/>
+      <stop offset="100%" stop-color="#2d4473"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="520" cy="96" r="120" fill="#8ce0ff" fill-opacity="0.12"/>
+  <circle cx="110" cy="340" r="140" fill="#8ce0ff" fill-opacity="0.08"/>
+  <rect x="44" y="42" width="168" height="32" rx="16" fill="#8ce0ff" fill-opacity="0.18" stroke="#8ce0ff" stroke-opacity="0.45"/>
+  <text x="128" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#8ce0ff">PLAYFORGE · 3D</text>
+  <text x="44" y="218" font-family="system-ui,sans-serif" font-size="44" font-weight="800" fill="#ffffff">Unity Tanks! 3D</text>
+  <text x="44" y="262" font-family="system-ui,sans-serif" font-size="18" fill="#d9e7e1" fill-opacity="0.9">Godot Web Template Game</text>
+  <text x="44" y="346" font-family="ui-monospace,monospace" font-size="15" fill="#8ce0ff" fill-opacity="0.85">forge-unity-tanks-3d</text>
+</svg>

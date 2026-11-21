@@ -387,6 +387,102 @@
       "priority": 70,
       "kind": "imported",
       "displayName": "Tappy Chicken MMO (Forge)"
+    },
+    {
+      "id": "forge-captain-forever",
+      "path": "forge-captain-forever",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Captain Forever (Forge)"
+    },
+    {
+      "id": "forge-captain-forever-mmo",
+      "path": "forge-captain-forever-mmo",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Captain Forever MMO (Forge)"
+    },
+    {
+      "id": "forge-roblox-chaos-obby",
+      "path": "forge-roblox-chaos-obby",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Chaos Obby (Roblox Port) (Forge)"
+    },
+    {
+      "id": "forge-roblox-lantai-runtuh",
+      "path": "forge-roblox-lantai-runtuh",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Lantai Runtuh (Roblox Port) (Forge)"
+    },
+    {
+      "id": "forge-roblox-power-punch-sim",
+      "path": "forge-roblox-power-punch-sim",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Power Punch Simulator (Roblox Port) (Forge)"
+    },
+    {
+      "id": "forge-roblox-war-tycoon",
+      "path": "forge-roblox-war-tycoon",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "War Tycoon (Roblox Port) (Forge)"
+    },
+    {
+      "id": "forge-unity-2d-roguelike",
+      "path": "forge-unity-2d-roguelike",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Unity 2D Roguelike (Scavengers) (Forge)"
+    },
+    {
+      "id": "forge-unity-flappy-bird",
+      "path": "forge-unity-flappy-bird",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Unity Flappy Bird 2D (Forge)"
+    },
+    {
+      "id": "forge-unity-roll-a-ball",
+      "path": "forge-unity-roll-a-ball",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Unity Roll-a-Ball 3D (Forge)"
+    },
+    {
+      "id": "forge-unity-space-shooter",
+      "path": "forge-unity-space-shooter",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Unity Space Shooter 3D (Forge)"
+    },
+    {
+      "id": "forge-unity-tanks-3d",
+      "path": "forge-unity-tanks-3d",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Unity Tanks! 3D (Forge)"
+    },
+    {
+      "id": "forge-voxel-frontier",
+      "path": "forge-voxel-frontier",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Voxel Frontier (Forge)"
     }
   ]
 }

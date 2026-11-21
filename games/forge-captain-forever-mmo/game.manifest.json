@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-captain-forever-mmo",
+  "slug": "forge-captain-forever-mmo",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "캡틴 포에버 MMO (Forge)",
+    "en": "Captain Forever MMO (Forge)",
+    "ja": "Captain Forever MMO (Forge)",
+    "zh-CN": "Captain Forever MMO (Forge)",
+    "fr": "Captain Forever MMO (Forge)",
+    "es": "Captain Forever MMO (Forge)",
+    "pt-BR": "Captain Forever MMO (Forge)",
+    "hi": "Captain Forever MMO (Forge)"
+  },
+  "summary": {
+    "ko": "실시간 2D AOI 릴레이로 여러 함장이 모듈 우주선을 조립·교전하는 Godot 2D MMO 스타터 게임입니다.",
+    "en": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "ja": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "zh-CN": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "fr": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "es": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "pt-BR": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "hi": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "실시간 2D AOI 릴레이로 여러 함장이 모듈 우주선을 조립·교전하는 Godot 2D MMO 스타터 게임입니다.",
+    "en": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "ja": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "zh-CN": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "fr": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "es": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "pt-BR": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in.",
+    "hi": "2D modular spaceship salvage & combat MMO with 2D spatial AOI relay, real-time ship blueprint sync, live PvP/co-op fire, grapple tethers, and seamless drop-in."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action",
+    "shooter",
+    "mmo",
+    "space"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (captain-forever-mmo)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

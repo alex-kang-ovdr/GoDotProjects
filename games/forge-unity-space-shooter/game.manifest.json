@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-unity-space-shooter",
+  "slug": "forge-unity-space-shooter",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "Unity Space Shooter 3D (Forge)",
+    "en": "Unity Space Shooter 3D (Forge)",
+    "ja": "Unity Space Shooter 3D (Forge)",
+    "zh-CN": "Unity Space Shooter 3D (Forge)",
+    "fr": "Unity Space Shooter 3D (Forge)",
+    "es": "Unity Space Shooter 3D (Forge)",
+    "pt-BR": "Unity Space Shooter 3D (Forge)",
+    "hi": "Unity Space Shooter 3D (Forge)"
+  },
+  "summary": {
+    "ko": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "en": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "ja": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "zh-CN": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "fr": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "es": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "pt-BR": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "hi": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "en": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "ja": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "zh-CN": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "fr": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "es": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "pt-BR": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+    "hi": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (unity-space-shooter)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

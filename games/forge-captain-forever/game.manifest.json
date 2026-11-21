@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-captain-forever",
+  "slug": "forge-captain-forever",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "캡틴 포에버 (Forge)",
+    "en": "Captain Forever (Forge)",
+    "ja": "Captain Forever (Forge)",
+    "zh-CN": "Captain Forever (Forge)",
+    "fr": "Captain Forever (Forge)",
+    "es": "Captain Forever (Forge)",
+    "pt-BR": "Captain Forever (Forge)",
+    "hi": "Captain Forever (Forge)"
+  },
+  "summary": {
+    "ko": "코스모티어 스타일 컷어웨이 함선 조립과 6-DOF 물리 전투·방향성 방어막을 즐기는 Godot 2D 우주선 슈터입니다.",
+    "en": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "ja": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "zh-CN": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "fr": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "es": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "pt-BR": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "hi": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "코스모티어 스타일 컷어웨이 함선 조립과 6-DOF 물리 전투·방향성 방어막을 즐기는 Godot 2D 우주선 슈터입니다.",
+    "en": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "ja": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "zh-CN": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "fr": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "es": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "pt-BR": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+    "hi": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action",
+    "shooter",
+    "space",
+    "sandbox"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (captain-forever)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

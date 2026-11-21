@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-unity-2d-roguelike",
+  "slug": "forge-unity-2d-roguelike",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "en": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "ja": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "zh-CN": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "fr": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "es": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "pt-BR": "Unity 2D Roguelike (Scavengers) (Forge)",
+    "hi": "Unity 2D Roguelike (Scavengers) (Forge)"
+  },
+  "summary": {
+    "ko": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "en": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "ja": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "zh-CN": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "fr": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "es": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "pt-BR": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "hi": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "en": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "ja": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "zh-CN": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "fr": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "es": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "pt-BR": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM.",
+    "hi": "Official Unity 2D Roguelike (Scavengers) auto-ported to Godot 4.7.2: 8x8 procedural dungeon, turn-based combat, destructible walls, and 12 converted SFX/BGM."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "arcade"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (unity-2d-roguelike)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

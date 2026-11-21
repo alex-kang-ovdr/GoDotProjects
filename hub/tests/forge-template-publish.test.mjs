@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
-import { createForgeTemplatePublisher } from '../server/forge-template-publisher.mjs';
+import { bumpMinorVersion, createForgeTemplatePublisher } from '../server/forge-template-publisher.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -122,4 +122,97 @@ test('validates template IDs, rejects concurrent jobs, and reports partial failu
   assert.equal(done.buildStatus, 'succeeded');
   assert.match(done.items.find(i => i.templateId === 'brawllabs').error, /Simulated Godot export failure/);
   assert.equal(done.items.find(i => i.templateId === 'tappy-chicken').status, 'published');
+});
+
+test('bumpMinorVersion increments minor version and resets patch to 0', () => {
+  assert.equal(bumpMinorVersion('1.0.0'), '1.1.0');
+  assert.equal(bumpMinorVersion('1.9.0'), '1.10.0');
+  assert.equal(bumpMinorVersion('2.3.4'), '2.4.0');
+  assert.equal(bumpMinorVersion('0.0.1'), '0.1.0');
+  assert.equal(bumpMinorVersion('invalid'), '1.1.0');
+  assert.equal(bumpMinorVersion(''), '1.1.0');
+});
+
+test('auto-bumps minor version on re-publish, preserves publishedOn, updates updatedOn, and handles mixed batches', async t => {
+  const platformRoot = makeTempPlatform(t);
+  const audits = [];
+  // Day 1: 2026-11-21 12:00 KST (03:00 UTC)
+  let currentNow = Date.parse('2026-11-21T03:00:00Z');
+  const publisher = createForgeTemplatePublisher({
+    platformRoot,
+    rootDir: path.join(platformRoot, 'hub', 'dist', 'user'),
+    now: () => currentNow,
+    audit: (action, target, detail) => audits.push({ action, target, detail }),
+    exportTemplate: async (tpl, outDir) => {
+      fs.writeFileSync(path.join(outDir, 'index.html'), `<!doctype html><title>${tpl.name}</title>`, 'utf8');
+      fs.writeFileSync(path.join(outDir, 'index.wasm'), Buffer.from('wasm'));
+      fs.writeFileSync(path.join(outDir, 'index.pck'), Buffer.from('pck'));
+      fs.writeFileSync(path.join(outDir, 'playhub-godot-shell.js'), '// bridge', 'utf8');
+    },
+    syncAndBuild: async () => {}
+  });
+
+  // 1) Initial publish of tappy-chicken only on 2026-11-21
+  const job1 = await waitDone(publisher, publisher.startBatchPublish({ templateIds: ['tappy-chicken'] }).id);
+  assert.equal(job1.status, 'completed');
+  assert.equal(job1.items[0].previousVersion, null);
+  assert.equal(job1.items[0].version, '1.0.0');
+  assert.equal(job1.items[0].versionAction, 'initial');
+
+  const manifest1 = JSON.parse(fs.readFileSync(path.join(platformRoot, 'games', 'forge-tappy-chicken', 'game.manifest.json'), 'utf8'));
+  assert.equal(manifest1.version, '1.0.0');
+  assert.equal(manifest1.publishedOn, '2026-11-21');
+  assert.equal(manifest1.updatedOn, '2026-11-21');
+
+  // Verify listTemplates reflects current version and planned nextVersion
+  const listedMid = publisher.listTemplates();
+  const tappyMid = listedMid.find(item => item.id === 'tappy-chicken');
+  const brawlMid = listedMid.find(item => item.id === 'brawllabs');
+  assert.equal(tappyMid.version, '1.0.0');
+  assert.equal(tappyMid.nextVersion, '1.1.0');
+  assert.equal(brawlMid.version, null);
+  assert.equal(brawlMid.nextVersion, '1.0.0');
+
+  // 2) Day 2 (2026-11-22): mixed batch ['tappy-chicken', 'brawllabs']
+  currentNow = Date.parse('2026-11-22T03:00:00Z');
+  const job2 = await waitDone(publisher, publisher.startBatchPublish({ templateIds: ['tappy-chicken', 'brawllabs'] }).id);
+  assert.equal(job2.status, 'completed');
+
+  const tappyItem2 = job2.items.find(i => i.templateId === 'tappy-chicken');
+  const brawlItem2 = job2.items.find(i => i.templateId === 'brawllabs');
+  assert.equal(tappyItem2.previousVersion, '1.0.0');
+  assert.equal(tappyItem2.version, '1.1.0');
+  assert.equal(tappyItem2.versionAction, 'bumped');
+  assert.equal(brawlItem2.previousVersion, null);
+  assert.equal(brawlItem2.version, '1.0.0');
+  assert.equal(brawlItem2.versionAction, 'initial');
+
+  const tappyManifest2 = JSON.parse(fs.readFileSync(path.join(platformRoot, 'games', 'forge-tappy-chicken', 'game.manifest.json'), 'utf8'));
+  assert.equal(tappyManifest2.version, '1.1.0');
+  assert.equal(tappyManifest2.publishedOn, '2026-11-21');
+  assert.equal(tappyManifest2.updatedOn, '2026-11-22');
+
+  const brawlManifest2 = JSON.parse(fs.readFileSync(path.join(platformRoot, 'games', 'forge-brawllabs', 'game.manifest.json'), 'utf8'));
+  assert.equal(brawlManifest2.version, '1.0.0');
+  assert.equal(brawlManifest2.publishedOn, '2026-11-22');
+  assert.equal(brawlManifest2.updatedOn, '2026-11-22');
+
+  // 3) Re-publish tappy-chicken again -> 1.1.0 -> 1.2.0
+  currentNow = Date.parse('2026-11-23T03:00:00Z');
+  const job3 = await waitDone(publisher, publisher.startBatchPublish({ templateIds: ['tappy-chicken'] }).id);
+  assert.equal(job3.status, 'completed');
+  assert.equal(job3.items[0].previousVersion, '1.1.0');
+  assert.equal(job3.items[0].version, '1.2.0');
+  assert.equal(job3.items[0].versionAction, 'bumped');
+
+  const tappyManifest3 = JSON.parse(fs.readFileSync(path.join(platformRoot, 'games', 'forge-tappy-chicken', 'game.manifest.json'), 'utf8'));
+  assert.equal(tappyManifest3.version, '1.2.0');
+  assert.equal(tappyManifest3.publishedOn, '2026-11-21');
+  assert.equal(tappyManifest3.updatedOn, '2026-11-23');
+
+  assert.equal(audits[1].detail.versionChanges.length, 2);
+  assert.deepEqual(
+    audits[1].detail.versionChanges.find(v => v.templateId === 'tappy-chicken'),
+    { templateId: 'tappy-chicken', gameId: 'forge-tappy-chicken', previousVersion: '1.0.0', version: '1.1.0', action: 'bumped' }
+  );
 });
