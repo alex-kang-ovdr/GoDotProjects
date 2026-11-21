@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-21T00:00:00Z",
+  "description": "PlayHub GamerQA Top-20 Daily E2E performance, memory, response, and loading budgets plus 7-day trend regression thresholds.",
+  "maxPopularGames": 20,
+  "budgets": {
+    "standard": {
+      "totalBootMs": { "warn": 6000, "fail": 15000 },
+      "ttfbMs": { "warn": 300, "fail": 1000 },
+      "jsHeapUsedMb": { "warn": 256, "fail": 512 },
+      "heapGrowthMb": { "warn": 64, "fail": 150 },
+      "inputResponseMs": { "warn": 100, "fail": 300 },
+      "frameTimeP95Ms": { "warn": 50, "fail": 120 },
+      "minAvgFps": { "warn": 24, "fail": 10 }
+    },
+    "wasmOrWebgl": {
+      "totalBootMs": { "warn": 12000, "fail": 25000 },
+      "ttfbMs": { "warn": 400, "fail": 1200 },
+      "jsHeapUsedMb": { "warn": 384, "fail": 768 },
+      "heapGrowthMb": { "warn": 96, "fail": 220 },
+      "inputResponseMs": { "warn": 140, "fail": 400 },
+      "frameTimeP95Ms": { "warn": 80, "fail": 180 },
+      "minAvgFps": { "warn": 15, "fail": 6 }
+    }
+  },
+  "regressionThresholds": {
+    "baselineWindowDays": 7,
+    "minBaselineRuns": 1,
+    "bootIncreasePct": 25,
+    "bootIncreaseMinMs": 500,
+    "heapIncreasePct": 20,
+    "heapIncreaseMinMb": 20,
+    "responseIncreasePct": 30,
+    "responseIncreaseMinMs": 25,
+    "fpsDropPct": 20,
+    "fpsDropMin": 5
+  }
+}

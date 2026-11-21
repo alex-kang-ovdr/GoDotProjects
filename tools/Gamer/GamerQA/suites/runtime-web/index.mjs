@@ -13,6 +13,11 @@ import {
   sha256Buffer,
 } from '../../core/fs-utils.mjs';
 import { GAMERQA_ROOT } from '../../core/paths.mjs';
+import {
+  assemblePerformanceProfile,
+  buildBrowserPerfProbeExpression,
+  normalizeCdpMetrics,
+} from '../../core/perf-profiler.mjs';
 
 function ruleSeverity(policy, ruleId, fallback) {
   return policy?.rules?.find((r) => r.id === ruleId)?.severity || fallback;
@@ -298,7 +303,7 @@ function collectRuntimeAssetsFromHtml(htmlText, htmlRelPosix, manifest, webDir) 
   return { assets: [...new Set(normalized)].sort(), declaredIcon, refreshTarget };
 }
 
-async function runWithPlaywright({ playwrightModPath, executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
+async function runWithPlaywright({ playwrightModPath, executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath, perfSampleMs = 900 }) {
   const pw = await import(pathToFileURL(playwrightModPath).href);
   const chromium = pw.chromium || pw.default?.chromium;
   if (!chromium) throw new Error('Playwright module does not export chromium');
@@ -392,12 +397,15 @@ async function runWithPlaywright({ playwrightModPath, executablePath, url, allow
       }
     });
 
+    const bootStartMs = Date.now();
     await page.goto(url, { waitUntil: 'load', timeout: timeoutMs });
     await page.waitForTimeout(800);
 
     // Handle Godot splash/init status element if present
     const hasGodot = await page.evaluate(() => typeof globalThis.Engine === 'function' || Boolean(document.getElementById('status-progress')));
+    let godotBootMs = null;
     if (hasGodot) {
+      const godotStartMs = Date.now();
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
         const st = await page.evaluate(() => {
@@ -416,8 +424,46 @@ async function runWithPlaywright({ playwrightModPath, executablePath, url, allow
         if (st.done) break;
         await page.waitForTimeout(250);
       }
+      godotBootMs = Date.now() - godotStartMs;
       await page.waitForTimeout(500);
     }
+    const totalBootMs = Date.now() - bootStartMs;
+
+    let cdpSession = null;
+    let cdpBefore = null;
+    let cdpAfter = null;
+    let perfProbe = null;
+    if (typeof context.newCDPSession === 'function') {
+      try {
+        cdpSession = await context.newCDPSession(page);
+        await cdpSession.send('Performance.enable');
+        const mBefore = await cdpSession.send('Performance.getMetrics');
+        cdpBefore = normalizeCdpMetrics(mBefore?.metrics);
+      } catch {
+        cdpSession = null;
+      }
+    }
+    try {
+      const probeCandidate = await page.evaluate(buildBrowserPerfProbeExpression(perfSampleMs));
+      if (probeCandidate && typeof probeCandidate === 'object' && probeCandidate.loading && probeCandidate.responsiveness) {
+        perfProbe = probeCandidate;
+      }
+    } catch {
+      perfProbe = null;
+    }
+    if (cdpSession) {
+      try {
+        const mAfter = await cdpSession.send('Performance.getMetrics');
+        cdpAfter = normalizeCdpMetrics(mAfter?.metrics);
+      } catch {}
+    }
+    const performance = assemblePerformanceProfile({
+      totalBootMs,
+      godotBootMs,
+      probe: perfProbe,
+      cdpBefore,
+      cdpAfter,
+    });
 
     const domState = await page.evaluate(() => {
       const canvases = [...document.querySelectorAll('canvas')].map((c) => {
@@ -455,13 +501,14 @@ async function runWithPlaywright({ playwrightModPath, executablePath, url, allow
       implicitFavicon404,
       screenshotBytes,
       screenshotSha256,
+      performance,
     };
   } finally {
     await browser.close().catch(() => {});
   }
 }
 
-async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath }) {
+async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowlist, declaredIcon, timeoutMs, screenshotPath, perfSampleMs = 900 }) {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'gamerqa-cdp-'));
   const gameOrigin = allowedGameOrigin || new URL(url).origin;
   const resolverRule = buildHostResolverRules(allowlist, gameOrigin);
@@ -585,9 +632,11 @@ async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowl
     await send('Runtime.enable');
     await send('Log.enable');
     await send('Network.enable');
+    await send('Performance.enable').catch(() => {});
     await send('Network.setBypassServiceWorker', { bypass: true }).catch(() => {});
     await send('Fetch.enable', { patterns: [{ urlPattern: 'http://*' }, { urlPattern: 'https://*' }] }).catch(() => {});
     await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+    const bootStartMs = Date.now();
     await send('Page.navigate', { url });
 
     // Wait for page load (and handle meta-refresh redirects cleanly)
@@ -616,7 +665,9 @@ async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowl
       hasGodot = false;
     }
 
+    let godotBootMs = null;
     if (hasGodot) {
+      const godotStartMs = Date.now();
       const godotDeadline = Date.now() + timeoutMs;
       while (Date.now() < godotDeadline) {
         const st = await evaluate(`(() => {
@@ -632,10 +683,39 @@ async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowl
         if (st.done) break;
         await delay(250);
       }
+      godotBootMs = Date.now() - godotStartMs;
       await delay(600);
     } else {
       await delay(800);
     }
+    const totalBootMs = Date.now() - bootStartMs;
+
+    let cdpBefore = null;
+    let cdpAfter = null;
+    let perfProbe = null;
+    try {
+      const mBefore = await send('Performance.getMetrics');
+      cdpBefore = normalizeCdpMetrics(mBefore?.metrics);
+    } catch {}
+    try {
+      const probeCandidate = await evaluate(buildBrowserPerfProbeExpression(perfSampleMs));
+      if (probeCandidate && typeof probeCandidate === 'object' && probeCandidate.loading && probeCandidate.responsiveness) {
+        perfProbe = probeCandidate;
+      }
+    } catch {
+      perfProbe = null;
+    }
+    try {
+      const mAfter = await send('Performance.getMetrics');
+      cdpAfter = normalizeCdpMetrics(mAfter?.metrics);
+    } catch {}
+    const performance = assemblePerformanceProfile({
+      totalBootMs,
+      godotBootMs,
+      probe: perfProbe,
+      cdpBefore,
+      cdpAfter,
+    });
 
     const domState = await evaluate(`(() => {
       const canvases = [...document.querySelectorAll('canvas')].map(c => {
@@ -678,6 +758,7 @@ async function runWithChromeCdp({ executablePath, url, allowedGameOrigin, allowl
       implicitFavicon404,
       screenshotBytes: pngBuffer.length,
       screenshotSha256: sha256Buffer(pngBuffer),
+      performance,
     };
   } finally {
     ws?.close();
@@ -699,6 +780,7 @@ export async function runRuntimeWebSuite({
   skipBrowser = false,
   playwrightPath,
   browserTimeoutMs = 20000,
+  perfSampleMs = 900,
 }) {
   const checks = [];
   const webDir = staticContext.webDir;
@@ -721,6 +803,7 @@ export async function runRuntimeWebSuite({
   let declaredIcon = false;
   const screenshots = [];
   let browserInfo = null;
+  let performance = null;
 
   try {
     const started = await staticHost.listen();
@@ -831,6 +914,7 @@ export async function runRuntimeWebSuite({
           declaredIcon,
           timeoutMs: browserTimeoutMs,
           screenshotPath: screenshotFile,
+          perfSampleMs,
         });
       } catch (pwErr) {
         if (browserExe) {
@@ -842,6 +926,7 @@ export async function runRuntimeWebSuite({
             declaredIcon,
             timeoutMs: browserTimeoutMs,
             screenshotPath: screenshotFile,
+            perfSampleMs,
           });
           runResult.fallbackNote = `Playwright fallback to Chrome CDP (${pwErr.message})`;
         } else {
@@ -857,10 +942,12 @@ export async function runRuntimeWebSuite({
         declaredIcon,
         timeoutMs: browserTimeoutMs,
         screenshotPath: screenshotFile,
+        perfSampleMs,
       });
     }
 
     browserInfo = { driver: runResult.driver, executablePath: runResult.executablePath };
+    performance = runResult.performance || null;
 
     const dom = runResult.domState || {};
     const hasCanvas = Array.isArray(dom.canvases) && dom.canvases.some((c) => c.width > 0 && c.height > 0);
@@ -960,5 +1047,5 @@ export async function runRuntimeWebSuite({
     await staticHost.close();
   }
 
-  return { suite: 'runtime-web', tier: 1, checks, screenshots, browserInfo };
+  return { suite: 'runtime-web', tier: 1, checks, screenshots, browserInfo, performance };
 }
