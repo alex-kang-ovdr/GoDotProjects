@@ -1,0 +1,8 @@
+// Copy to ios/Config/LocalFree.xcconfig (gitignored) or run ./tools/ios/setup-free-usb.sh
+// 1. DEVELOPMENT_TEAM: Your free Apple ID Personal Team ID (or leave blank and pick in Xcode Signing & Capabilities)
+// 2. PRODUCT_BUNDLE_IDENTIFIER: Must be globally unique on Apple Portal (4-segment Apple UTI, no underscore!)
+// 3. PLAYHUB_DEFAULT_HUB_URL: Cloudflare HTTPS tunnel or local LAN Hub URL (escape '//' as '/$()/' in xcconfig!)
+
+// DEVELOPMENT_TEAM = YOUR_PERSONAL_TEAM_ID
+PRODUCT_BUNDLE_IDENTIFIER = com.playhub.hub-ios-myname.debug
+PLAYHUB_DEFAULT_HUB_URL = https:/$()/your-tunnel.trycloudflare.com

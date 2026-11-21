@@ -1,0 +1,15 @@
+#include "Base.xcconfig"
+
+PLAYHUB_BUILD_STAGE = live
+// App Store Production: Official trunk-only bundle ID, Farm selector strictly locked off
+PLAYHUB_ALLOW_FARM_SELECTOR = NO
+PLAYHUB_DEFAULT_HUB_URL = https://playhub.example.com
+PRODUCT_BUNDLE_IDENTIFIER = com.playhub.gamedev.live
+INFOPLIST_KEY_CFBundleDisplayName = Play Hub
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = PLAYHUB_LIVE
+SWIFT_OPTIMIZATION_LEVEL = -Osize
+GCC_OPTIMIZATION_LEVEL = s
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+COPY_PHASE_STRIP = YES
+STRIP_STYLE = all
+VALIDATE_PRODUCT = YES

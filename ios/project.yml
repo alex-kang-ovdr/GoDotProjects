@@ -1,0 +1,147 @@
+name: PlayHub
+options:
+  bundleIdPrefix: com.playhub
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  defaultConfig: DebugFree
+
+configs:
+  Debug: debug
+  DebugFree: debug
+  Dev: debug
+  Test: release
+  Release: release
+  Live: release
+
+configFiles:
+  Debug: Config/Debug.xcconfig
+  DebugFree: Config/DebugFree.xcconfig
+  Dev: Config/Dev.xcconfig
+  Test: Config/Test.xcconfig
+  Release: Config/Release.xcconfig
+  Live: Config/Live.xcconfig
+
+packages:
+  PlayHubCore:
+    path: Packages/PlayHubCore
+
+targets:
+  PlayHubApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: App
+        excludes:
+          - "Resources/Bootstrap/**"
+          - "Resources/Info*.plist"
+          - "Resources/*.entitlements"
+          - "StoreKit/**"
+      - path: GodotRuntime
+      - path: WebRuntime
+      - path: App/Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
+    resources:
+      - path: App/Resources/Bootstrap/data.pck
+        optional: true
+    dependencies:
+      - package: PlayHubCore
+      - framework: Vendor/libgodot.ios.release.xcframework
+        embed: false
+      - sdk: AudioToolbox.framework
+      - sdk: AuthenticationServices.framework
+      - sdk: AVFoundation.framework
+      - sdk: CoreAudio.framework
+      - sdk: CoreGraphics.framework
+      - sdk: CoreHaptics.framework
+      - sdk: CoreMotion.framework
+      - sdk: CoreText.framework
+      - sdk: DeviceCheck.framework
+      - sdk: Foundation.framework
+      - sdk: GameController.framework
+      - sdk: Metal.framework
+      - sdk: MetalFX.framework
+      - sdk: OpenGLES.framework
+      - sdk: QuartzCore.framework
+      - sdk: Security.framework
+      - sdk: StoreKit.framework
+      - sdk: UIKit.framework
+      - sdk: UserNotifications.framework
+      - sdk: WebKit.framework
+    settings:
+      base:
+        SWIFT_OBJC_BRIDGING_HEADER: GodotRuntime/PlayHubGodotBridge-Bridging-Header.h
+        HEADER_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/GodotRuntime"
+    preBuildScripts:
+      - name: PlayHub Build Policy & Live Trunk Guard
+        script: |
+          set -euo pipefail
+          STAGE="${PLAYHUB_BUILD_STAGE:-debug}"
+          BUNDLE_ID="${PRODUCT_BUNDLE_IDENTIFIER:-}"
+          if [[ "${BUNDLE_ID}" == *"_"* ]]; then
+            echo "error: Apple CFBundleIdentifier forbids underscores: ${BUNDLE_ID}" >&2
+            exit 1
+          fi
+          if [[ "${STAGE}" == "live" && "${BUNDLE_ID}" != "com.playhub.gamedev.live" ]]; then
+            echo "error: 'live' stage is reserved for official trunk (com.playhub.gamedev.live), got ${BUNDLE_ID}" >&2
+            exit 1
+          fi
+          if [[ ("${STAGE}" == "release" || "${STAGE}" == "live") && "${PLAYHUB_ALLOW_FARM_SELECTOR:-NO}" == "YES" ]]; then
+            echo "error: Farm selector must be disabled on ${STAGE} builds" >&2
+            exit 1
+          fi
+
+  PlayHubAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Tests/PlayHubAppTests
+    dependencies:
+      - target: PlayHubApp
+      - package: PlayHubCore
+
+  PlayHubAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Tests/PlayHubAppUITests
+    dependencies:
+      - target: PlayHubApp
+
+schemes:
+  PlayHubAppFree:
+    build:
+      targets:
+        PlayHubApp: all
+        PlayHubAppTests: [test]
+    run:
+      config: DebugFree
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+    test:
+      config: DebugFree
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+      targets:
+        - PlayHubAppTests
+
+  PlayHubApp:
+    build:
+      targets:
+        PlayHubApp: all
+        PlayHubAppTests: [test]
+        PlayHubAppUITests: [test]
+    run:
+      config: Debug
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+    test:
+      config: Debug
+      storeKitConfiguration: App/StoreKit/PlayHub.storekit
+      targets:
+        - PlayHubAppTests
+    archive:
+      config: Release
