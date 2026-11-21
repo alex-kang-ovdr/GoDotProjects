@@ -9,8 +9,14 @@ const BUILD_ID = /^[a-f0-9]{16}$/;
 const ROOM_ID = /^[a-f0-9]{12}$/;
 const DEFAULT_PROXIMITY_RADIUS = 520;
 const DEFAULT_LEAVE_HYSTERESIS = 60;
+const DEFAULT_MAX_NEARBY_GHOSTS = 12;
+const DEFAULT_FLUSH_INTERVAL_MS = 50;
+const DEFAULT_STATE_INTERVAL_MS = 1000;
+const DEFAULT_HEARTBEAT_INTERVAL_MS = 10000;
+const DEFAULT_MAX_MISSED_PONGS = 2;
 const MAX_PLAYERS = 64;
 const MAX_ROOMS = 64;
+const MAX_OUTBOUND_QUEUE = 256;
 const VALID_EVENTS = new Set(['join', 'flap', 'phase', 'sync', 'leave']);
 const VALID_PHASES = new Set(['menu', 'ready', 'playing', 'paused', 'crashing', 'over']);
 
@@ -25,6 +31,10 @@ function cleanName(raw, fallback) {
   return text || fallback;
 }
 
+function round3(value) {
+  return Math.round(value * 1000) / 1000;
+}
+
 class TappyMmoRoom {
   constructor(id, projectId, build, options = {}, now = Date.now) {
     this.id = id;
@@ -35,7 +45,10 @@ class TappyMmoRoom {
     this.courseSeed = Math.floor(clamp(options.courseSeed ?? (10000 + (parseInt(id.slice(0, 6), 16) % 900000)), 1, 999999, 42071));
     this.proximityRadius = clamp(options.proximityRadius, 120, 4000, DEFAULT_PROXIMITY_RADIUS);
     this.leaveHysteresis = clamp(options.leaveHysteresis, 0, 500, DEFAULT_LEAVE_HYSTERESIS);
+    this.maxNearbyGhosts = Math.floor(clamp(options.maxNearbyGhosts, 1, MAX_PLAYERS - 1, DEFAULT_MAX_NEARBY_GHOSTS));
+    this.deferPresence = Boolean(options.deferPresence);
     this.players = new Map();
+    this.dirtyPresence = new Set();
     this.nextPlayerNum = 1;
     this.logs = [];
     this.logSeq = 0;
@@ -70,33 +83,64 @@ class TappyMmoRoom {
       peerId: player.id,
       name: player.name,
       eventType,
-      event_type: eventType,
-      runDistance: player.runDistance,
-      run_distance: player.runDistance,
-      y: player.y,
-      vy: player.vy,
-      angle: player.angle,
-      flapTime: player.flapTime,
-      flap_time: player.flapTime,
+      runDistance: Math.round(player.runDistance),
+      y: Math.round(player.y),
+      vy: Math.round(player.vy),
+      angle: round3(player.angle),
+      flapTime: round3(player.flapTime),
       phase: player.phase,
       score: player.score,
       seq: player.seq,
     };
   }
 
-  _sendTo(player, message) {
-    if (typeof player.send === 'function') player.send(message);
+  _sendTo(player, message, preEncoded = null) {
+    if (typeof player.sendRaw === 'function') {
+      player.sendRaw(preEncoded ?? JSON.stringify(message));
+      return;
+    }
+    if (typeof player.send === 'function') {
+      player.send(message);
+    }
   }
 
   _sendPresence(player) {
-    this._sendTo(player, {
+    if (this.deferPresence) {
+      this.dirtyPresence.add(player.id);
+      return;
+    }
+    const payload = {
       type: 'rpc',
       method: 'client_presence',
       params: {
         onlineCount: this.players.size,
         nearbyCount: player.nearby.size,
       },
-    });
+    };
+    this._sendTo(player, payload);
+  }
+
+  flushPresence() {
+    if (this.dirtyPresence.size === 0) return;
+    const onlineCount = this.players.size;
+    for (const playerId of this.dirtyPresence) {
+      const player = this.players.get(playerId);
+      if (!player) continue;
+      const payload = {
+        type: 'rpc',
+        method: 'client_presence',
+        params: {
+          onlineCount,
+          nearbyCount: player.nearby.size,
+        },
+      };
+      if (typeof player.setPresenceRaw === 'function') {
+        player.setPresenceRaw(JSON.stringify(payload));
+      } else {
+        this._sendTo(player, payload);
+      }
+    }
+    this.dirtyPresence.clear();
   }
 
   join(rawName, options = {}) {
@@ -121,6 +165,9 @@ class TappyMmoRoom {
       joinedAt: now,
       lastSeenAt: now,
       send: typeof options.send === 'function' ? options.send : null,
+      sendImmediate: typeof options.sendImmediate === 'function' ? options.sendImmediate : null,
+      sendRaw: typeof options.sendRaw === 'function' ? options.sendRaw : null,
+      setPresenceRaw: typeof options.setPresenceRaw === 'function' ? options.setPresenceRaw : null,
     };
     this.players.set(id, player);
     this.stats.joins += 1;
@@ -137,18 +184,26 @@ class TappyMmoRoom {
       playerName: player.name,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
+      maxNearbyGhosts: this.maxNearbyGhosts,
       onlineCount: this.players.size,
     };
-    this._sendTo(player, welcome);
+    if (player.sendImmediate) {
+      player.sendImmediate(welcome);
+    } else {
+      this._sendTo(player, welcome);
+    }
 
-    // Sync immediately with peers already within proximity radius of the drop-in point.
-    const joinPayload = this._peerEventPayload(player, 'join');
+    // Sync immediately with closest peers already within proximity radius (bounded by maxNearbyGhosts).
+    const joinMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(player, 'join') };
+    let joinEncoded = null;
     for (const other of this.players.values()) {
       if (other.id === player.id) continue;
-      if (this.isWithinProximity(player.runDistance, other.runDistance, false)) {
+      const canPair = player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts;
+      if (canPair && this.isWithinProximity(player.runDistance, other.runDistance, false)) {
         player.nearby.add(other.id);
         other.nearby.add(player.id);
-        this._sendTo(other, { type: 'rpc', method: 'client_multicast_event', params: joinPayload });
+        if (other.sendRaw && joinEncoded === null) joinEncoded = JSON.stringify(joinMessage);
+        this._sendTo(other, joinMessage, joinEncoded);
         this._sendTo(player, { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(other, 'sync') });
         this.stats.multicastsSent += 2;
       } else {
@@ -193,7 +248,9 @@ class TappyMmoRoom {
     player.lastSeenAt = this.now();
 
     this.stats.eventsReceived += 1;
-    const eventPayload = this._peerEventPayload(player, eventType);
+    const eventMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(player, eventType) };
+    let eventEncoded = null;
+    let removedSenderEncoded = null;
     const deliveredTo = [];
     const enteredIds = [];
     const leftIds = [];
@@ -202,10 +259,12 @@ class TappyMmoRoom {
     for (const other of this.players.values()) {
       if (other.id === player.id) continue;
       const wasNearby = player.nearby.has(other.id);
-      const nowNearby = this.isWithinProximity(player.runDistance, other.runDistance, wasNearby);
+      const inRange = this.isWithinProximity(player.runDistance, other.runDistance, wasNearby);
+      const nowNearby = inRange && (wasNearby || (player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts));
 
       if (nowNearby) {
-        this._sendTo(other, { type: 'rpc', method: 'client_multicast_event', params: eventPayload });
+        if (other.sendRaw && eventEncoded === null) eventEncoded = JSON.stringify(eventMessage);
+        this._sendTo(other, eventMessage, eventEncoded);
         this.stats.multicastsSent += 1;
         deliveredTo.push(other.id);
         if (!wasNearby) {
@@ -223,7 +282,9 @@ class TappyMmoRoom {
           player.nearby.delete(other.id);
           other.nearby.delete(player.id);
           leftIds.push(other.id);
-          this._sendTo(other, { type: 'rpc', method: 'client_peer_removed', params: { peerId: player.id } });
+          const removedSenderMsg = { type: 'rpc', method: 'client_peer_removed', params: { peerId: player.id } };
+          if (other.sendRaw && removedSenderEncoded === null) removedSenderEncoded = JSON.stringify(removedSenderMsg);
+          this._sendTo(other, removedSenderMsg, removedSenderEncoded);
           this._sendTo(player, { type: 'rpc', method: 'client_peer_removed', params: { peerId: other.id } });
         }
       }
@@ -231,15 +292,18 @@ class TappyMmoRoom {
 
     if (enteredIds.length > 0 || leftIds.length > 0) {
       this._sendPresence(player);
-      for (const peerId of [...enteredIds, ...leftIds]) {
+      for (const peerId of enteredIds) {
+        const peer = this.players.get(peerId);
+        if (peer) this._sendPresence(peer);
+      }
+      for (const peerId of leftIds) {
         const peer = this.players.get(peerId);
         if (peer) this._sendPresence(peer);
       }
     }
 
     if (eventType === 'flap' && deliveredTo.length > 0) {
-      // Keep event log concise without flooding.
-      if (this.stats.eventsReceived <= 12 || this.stats.eventsReceived % 20 === 0) {
+      if (this.stats.eventsReceived <= 12 || this.stats.eventsReceived % 50 === 0) {
         this.recordLog('rpc', `${player.name} flap RPC -> 주변 ${deliveredTo.length}명 멀티캐스트 (범위 밖 ${filteredIds.length}명 제외)`);
       }
     }
@@ -252,12 +316,16 @@ class TappyMmoRoom {
     if (!player) return [];
     const notified = [];
     this.players.delete(playerId);
+    this.dirtyPresence.delete(playerId);
     this.stats.leaves += 1;
+    const removedMsg = { type: 'rpc', method: 'client_peer_removed', params: { peerId: playerId } };
+    let removedEncoded = null;
     for (const otherId of player.nearby) {
       const other = this.players.get(otherId);
       if (!other) continue;
       other.nearby.delete(playerId);
-      this._sendTo(other, { type: 'rpc', method: 'client_peer_removed', params: { peerId: playerId } });
+      if (other.sendRaw && removedEncoded === null) removedEncoded = JSON.stringify(removedMsg);
+      this._sendTo(other, removedMsg, removedEncoded);
       notified.push(otherId);
     }
     this.recordLog('leave', `${player.name} 이탈 (주변 ${notified.length}명에게 정리 RPC 전송)`);
@@ -276,6 +344,8 @@ class TappyMmoRoom {
       players: this.players.size,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
+      maxNearbyGhosts: this.maxNearbyGhosts,
+      stats: { ...this.stats },
     };
   }
 
@@ -291,6 +361,7 @@ class TappyMmoRoom {
       serverTime: this.now(),
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
+      maxNearbyGhosts: this.maxNearbyGhosts,
       onlineCount: this.players.size,
       stats: { ...this.stats },
       players: [...this.players.values()].map(p => ({
@@ -299,8 +370,8 @@ class TappyMmoRoom {
         runDistance: Math.round(p.runDistance),
         y: Math.round(p.y),
         vy: Math.round(p.vy),
-        angle: Number(p.angle.toFixed(3)),
-        flapTime: Number(p.flapTime.toFixed(3)),
+        angle: round3(p.angle),
+        flapTime: round3(p.flapTime),
         phase: p.phase,
         score: p.score,
         nearbyCount: p.nearby.size,
@@ -318,13 +389,25 @@ function attachTappyChickenMmo(
     validateBuild = () => null,
     compat = null,
     joinTimeoutMs = 5000,
-    heartbeatIntervalMs = 2000,
+    heartbeatIntervalMs = DEFAULT_HEARTBEAT_INTERVAL_MS,
+    maxMissedPongs = DEFAULT_MAX_MISSED_PONGS,
+    flushIntervalMs = DEFAULT_FLUSH_INTERVAL_MS,
+    stateIntervalMs = DEFAULT_STATE_INTERVAL_MS,
+    maxNearbyGhosts = DEFAULT_MAX_NEARBY_GHOSTS,
     maxMessagesPerSec = 80,
   } = {},
 ) {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 });
   const rooms = new Map();
   const socketsByRoom = new Map();
+  const stateSubscribersByRoom = new Map();
+  const pendingStateTimers = new Map();
+
+  const sendRawNow = (ws, encoded) => {
+    if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) {
+      ws.send(encoded);
+    }
+  };
 
   const sendJson = (ws, data) => {
     if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) {
@@ -332,17 +415,74 @@ function attachTappyChickenMmo(
     }
   };
 
-  const broadcastState = room => {
-    const encoded = JSON.stringify(room.snapshot());
-    for (const ws of socketsByRoom.get(room.id) || []) {
-      if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) ws.send(encoded);
+  const enqueueRaw = (ws, encoded) => {
+    if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= 1000000) return;
+    if (ws.outboundQueue.length >= MAX_OUTBOUND_QUEUE) {
+      ws.outboundQueue.shift();
     }
+    ws.outboundQueue.push(encoded);
+  };
+
+  const flushSocket = ws => {
+    if (ws.readyState !== WebSocket.OPEN) {
+      ws.outboundQueue.length = 0;
+      ws.pendingPresenceRaw = null;
+      return;
+    }
+    if (ws.pendingPresenceRaw !== null) {
+      ws.outboundQueue.push(ws.pendingPresenceRaw);
+      ws.pendingPresenceRaw = null;
+    }
+    const count = ws.outboundQueue.length;
+    if (count === 0) return;
+    if (ws.bufferedAmount >= 1000000) {
+      ws.outboundQueue.length = 0;
+      return;
+    }
+    if (count === 1) {
+      ws.send(ws.outboundQueue[0]);
+    } else if (ws.supportsBatch) {
+      ws.send('{"type":"rpc_batch","items":[' + ws.outboundQueue.join(',') + ']}');
+    } else {
+      for (let i = 0; i < count; i += 1) {
+        if (ws.bufferedAmount >= 1000000) break;
+        ws.send(ws.outboundQueue[i]);
+      }
+    }
+    ws.outboundQueue.length = 0;
+  };
+
+  const broadcastState = room => {
+    const subscribers = stateSubscribersByRoom.get(room.id);
+    if (!subscribers || subscribers.size === 0) return;
+    const encoded = JSON.stringify(room.snapshot());
+    for (const ws of subscribers) {
+      sendRawNow(ws, encoded);
+    }
+  };
+
+  const scheduleStateBroadcast = room => {
+    const subscribers = stateSubscribersByRoom.get(room.id);
+    if (!subscribers || subscribers.size === 0) return;
+    if (pendingStateTimers.has(room.id)) return;
+    const timer = setTimeout(() => {
+      pendingStateTimers.delete(room.id);
+      if (rooms.has(room.id)) broadcastState(room);
+    }, 150);
+    timer.unref();
+    pendingStateTimers.set(room.id, timer);
   };
 
   const cleanupRoom = room => {
     if (room.players.size === 0 && (socketsByRoom.get(room.id)?.size || 0) === 0) {
+      const pending = pendingStateTimers.get(room.id);
+      if (pending) {
+        clearTimeout(pending);
+        pendingStateTimers.delete(room.id);
+      }
       rooms.delete(room.id);
       socketsByRoom.delete(room.id);
+      stateSubscribersByRoom.delete(room.id);
     }
   };
 
@@ -358,18 +498,28 @@ function attachTappyChickenMmo(
   };
   server.on('upgrade', upgrade);
 
+  const flushTimer = setInterval(() => {
+    for (const room of rooms.values()) {
+      room.flushPresence();
+      const sockets = socketsByRoom.get(room.id);
+      if (!sockets) continue;
+      for (const ws of sockets) flushSocket(ws);
+    }
+  }, flushIntervalMs);
+  flushTimer.unref();
+
   const stateTimer = setInterval(() => {
     for (const room of rooms.values()) broadcastState(room);
-  }, 500);
+  }, stateIntervalMs);
   stateTimer.unref();
 
   const heartbeat = setInterval(() => {
     for (const socket of wss.clients) {
-      if (!socket.alive) {
+      if (socket.missedPongs >= maxMissedPongs) {
         socket.terminate();
         continue;
       }
-      socket.alive = false;
+      socket.missedPongs += 1;
       socket.ping();
     }
   }, heartbeatIntervalMs);
@@ -377,8 +527,12 @@ function attachTappyChickenMmo(
 
   wss.on('connection', (ws, req) => {
     if (compat && !compat.enforceWsConnection(ws, req, sendJson)) return;
-    ws.alive = true;
-    ws.on('pong', () => { ws.alive = true; });
+    ws.missedPongs = 0;
+    ws.supportsBatch = false;
+    ws.subscribeState = false;
+    ws.outboundQueue = [];
+    ws.pendingPresenceRaw = null;
+    ws.on('pong', () => { ws.missedPongs = 0; });
     let rateAt = now();
     let msgCount = 0;
     let activeRoom = null;
@@ -442,28 +596,44 @@ function attachTappyChickenMmo(
             room = new TappyMmoRoom(id, projectId, build, {
               proximityRadius: msg.proximityRadius,
               courseSeed: msg.courseSeed,
+              maxNearbyGhosts: msg.maxNearbyGhosts ?? maxNearbyGhosts,
+              deferPresence: true,
             }, now);
             rooms.set(id, room);
             socketsByRoom.set(id, new Set());
+            stateSubscribersByRoom.set(id, new Set());
             createdRoom = true;
           }
+          ws.supportsBatch = Boolean(msg.supportsBatch);
+          ws.subscribeState = Boolean(msg.subscribeState);
           let joined;
           try {
-            joined = room.join(msg.name, { send: payload => sendJson(ws, payload) });
+            joined = room.join(msg.name, {
+              sendImmediate: payload => sendJson(ws, payload),
+              sendRaw: encoded => enqueueRaw(ws, encoded),
+              setPresenceRaw: encoded => { ws.pendingPresenceRaw = encoded; },
+            });
           } catch (joinError) {
             if (createdRoom) {
               rooms.delete(room.id);
               socketsByRoom.delete(room.id);
+              stateSubscribersByRoom.delete(room.id);
             }
             activeRoom = null;
             activePlayerId = null;
             throw joinError;
           }
           socketsByRoom.get(room.id).add(ws);
+          if (ws.subscribeState) {
+            stateSubscribersByRoom.get(room.id).add(ws);
+          }
           activeRoom = room;
           activePlayerId = joined.player.id;
           clearTimeout(joinTimeout);
-          broadcastState(room);
+          if (ws.subscribeState) {
+            sendRawNow(ws, JSON.stringify(room.snapshot()));
+          }
+          scheduleStateBroadcast(room);
           return;
         }
 
@@ -484,10 +654,13 @@ function attachTappyChickenMmo(
 
     ws.on('close', () => {
       clearTimeout(joinTimeout);
+      ws.outboundQueue.length = 0;
+      ws.pendingPresenceRaw = null;
       if (!activeRoom) return;
       socketsByRoom.get(activeRoom.id)?.delete(ws);
+      stateSubscribersByRoom.get(activeRoom.id)?.delete(ws);
       if (activePlayerId) activeRoom.leave(activePlayerId);
-      broadcastState(activeRoom);
+      scheduleStateBroadcast(activeRoom);
       cleanupRoom(activeRoom);
       activeRoom = null;
       activePlayerId = null;
@@ -501,15 +674,25 @@ function attachTappyChickenMmo(
       return room ? room.metadata() : null;
     },
     close() {
+      clearInterval(flushTimer);
       clearInterval(stateTimer);
       clearInterval(heartbeat);
+      for (const timer of pendingStateTimers.values()) clearTimeout(timer);
+      pendingStateTimers.clear();
       server.off('upgrade', upgrade);
       for (const client of wss.clients) client.terminate();
       wss.close();
       rooms.clear();
       socketsByRoom.clear();
+      stateSubscribersByRoom.clear();
     },
   };
 }
 
-module.exports = { TappyMmoRoom, attachTappyChickenMmo, DEFAULT_PROXIMITY_RADIUS, DEFAULT_LEAVE_HYSTERESIS };
+module.exports = {
+  TappyMmoRoom,
+  attachTappyChickenMmo,
+  DEFAULT_PROXIMITY_RADIUS,
+  DEFAULT_LEAVE_HYSTERESIS,
+  DEFAULT_MAX_NEARBY_GHOSTS,
+};

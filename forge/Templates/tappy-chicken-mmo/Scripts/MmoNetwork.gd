@@ -16,6 +16,7 @@ const DEFAULT_PORT := 7788
 const DEFAULT_COURSE_SEED := 42071
 const DEFAULT_PROXIMITY_RADIUS := 520.0
 const LEAVE_HYSTERESIS := 60.0
+const DEFAULT_MAX_NEARBY_GHOSTS := 12
 const SYNC_INTERVAL := 0.25
 const MAX_CLIENTS := 64
 const VALID_EVENTS := ["join", "flap", "phase", "sync", "leave"]
@@ -24,6 +25,7 @@ const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
 @export var auto_start := true
 @export var proximity_radius := DEFAULT_PROXIMITY_RADIUS
 @export var leave_hysteresis := LEAVE_HYSTERESIS
+@export var max_nearby_ghosts := DEFAULT_MAX_NEARBY_GHOSTS
 
 var transport_mode := "offline"
 var role := "offline"
@@ -327,6 +329,13 @@ func rpc_client_multicast_event(sender_peer_id: int, payload: Dictionary) -> voi
 	_deliver_local_peer_event(str(sender_peer_id), payload)
 
 
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_client_multicast_sync(sender_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_event(str(sender_peer_id), payload)
+
+
 @rpc("authority", "call_remote", "reliable")
 func rpc_client_peer_removed(sender_peer_id: int) -> void:
 	if multiplayer.get_remote_sender_id() != 1:
@@ -396,6 +405,8 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 	server_events_received += 1
 	var clean_event := _peer_to_event_payload(peer, event_type)
 	var sender_nearby: Dictionary = peer["nearby"]
+	var ghost_cap := clampi(max_nearby_ghosts, 1, MAX_CLIENTS - 1)
+	var presence_changed: Dictionary = {}
 
 	for other_id_variant in _server_peers.keys():
 		var other_id := int(other_id_variant)
@@ -404,7 +415,8 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 		var other: Dictionary = _server_peers[other_id]
 		var other_nearby: Dictionary = other["nearby"]
 		var was_nearby := sender_nearby.has(other_id)
-		var now_nearby := _is_within_proximity(float(peer["run_distance"]), float(other["run_distance"]), was_nearby)
+		var in_range := _is_within_proximity(float(peer["run_distance"]), float(other["run_distance"]), was_nearby)
+		var now_nearby := in_range and (was_nearby or (sender_nearby.size() < ghost_cap and other_nearby.size() < ghost_cap))
 
 		if now_nearby:
 			_server_send_event_to(other_id, sender_id, clean_event)
@@ -412,6 +424,8 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 			if not was_nearby:
 				sender_nearby[other_id] = true
 				other_nearby[sender_id] = true
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
 				# Symmetric AOI entry: also deliver the existing nearby peer's state back to sender.
 				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync"))
 				server_multicasts_sent += 1
@@ -420,10 +434,15 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 			if was_nearby:
 				sender_nearby.erase(other_id)
 				other_nearby.erase(sender_id)
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
 				_server_send_removed_to(other_id, sender_id)
 				_server_send_removed_to(sender_id, other_id)
 
-	_server_broadcast_presence()
+	if event_type == "join":
+		_server_broadcast_presence()
+	elif not presence_changed.is_empty():
+		_server_send_presence_subset(presence_changed)
 
 
 func _peer_to_event_payload(peer: Dictionary, event_type: String) -> Dictionary:
@@ -445,6 +464,8 @@ func _server_send_event_to(target_id: int, sender_id: int, payload: Dictionary) 
 	if target_id == 1:
 		if _server_also_plays:
 			_deliver_local_peer_event(str(sender_id), payload)
+	elif str(payload.get("event_type", "sync")) == "sync":
+		rpc_client_multicast_sync.rpc_id(target_id, sender_id, payload)
 	else:
 		rpc_client_multicast_event.rpc_id(target_id, sender_id, payload)
 
@@ -455,6 +476,20 @@ func _server_send_removed_to(target_id: int, removed_id: int) -> void:
 			_deliver_local_peer_removed(str(removed_id))
 	else:
 		rpc_client_peer_removed.rpc_id(target_id, removed_id)
+
+
+func _server_send_presence_subset(peer_ids: Dictionary) -> void:
+	var total := _server_peers.size()
+	online_count = maxi(1, total)
+	if _server_also_plays and _server_peers.has(1):
+		nearby_count = (_server_peers[1]["nearby"] as Dictionary).size()
+	for peer_id_variant in peer_ids.keys():
+		var peer_id := int(peer_id_variant)
+		if peer_id == 1 or not _server_peers.has(peer_id):
+			continue
+		var peer: Dictionary = _server_peers[peer_id]
+		rpc_client_presence.rpc_id(peer_id, total, (peer["nearby"] as Dictionary).size())
+	_emit_status()
 
 
 func _server_broadcast_presence() -> void:

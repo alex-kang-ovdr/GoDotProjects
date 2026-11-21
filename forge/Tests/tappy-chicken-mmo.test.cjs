@@ -205,6 +205,95 @@ test('PlayForge registers tappy-chicken-mmo template and serves WebSocket spatia
   assert.equal(c3After, c3Before, 'FarBird must NOT receive HostBird flap RPC');
 });
 
+test('TappyMmoRoom caps concurrent nearby ghosts and WebSocket server batches RPCs while isolating observer state', async t => {
+  // 1. Unit check: AOI ghost cap bounds fan-out in crowded hotspots.
+  const room = new TappyMmoRoom('112233445566', '2'.repeat(24), null, { maxNearbyGhosts: 4 });
+  const players = [];
+  for (let i = 0; i < 12; i += 1) {
+    const rec = createRecorder();
+    const { player } = room.join(`Crowded${i}`, { send: rec.send, runDistance: 100 });
+    players.push({ player, rec });
+  }
+  for (const entry of players) {
+    assert.ok(entry.player.nearby.size <= 4, `Expected nearby <= 4, got ${entry.player.nearby.size}`);
+  }
+  const flapRes = room.handleRpc(players[0].player.id, {
+    method: 'server_player_event',
+    params: { eventType: 'flap', runDistance: 100, y: 240, phase: 'playing', score: 1, seq: 1 },
+  });
+  assert.ok(flapRes.deliveredTo.length <= 4);
+  assert.ok(flapRes.filteredIds.length >= 7);
+
+  // 2. Live WebSocket check: supportsBatch merges multi-event ticks & subscribeState isolates snapshots.
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'tappy-mmo-opt-'));
+  const buildId = 'e'.repeat(16);
+  fs.mkdirSync(path.join(temp, 'builds', buildId), { recursive: true });
+  const server = createServer({
+    buildDirectory: path.join(temp, 'builds'),
+    platformWorkspace: path.join(temp, 'platform'),
+    workspace: path.join(temp, 'workspace'),
+  });
+  t.after(async () => {
+    await new Promise(resolve => {
+      if (!server.listening) return resolve();
+      server.once('close', resolve);
+      server.shutdown();
+    });
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+  const port = await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => resolve(server.address().port));
+  });
+  const base = `http://127.0.0.1:${port}`;
+  const project = (await (await fetch(base + '/api/platform/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Tappy Batch Test', template: 'tappy-chicken-mmo', mode: 'ready' }),
+  })).json()).project;
+  fs.writeFileSync(path.join(temp, 'builds', buildId, 'result.json'), JSON.stringify({
+    id: buildId,
+    projectId: project.id,
+    revision: 1,
+    status: 'succeeded',
+    previewUrl: `/api/builds/${buildId}/files/index.html`,
+  }));
+
+  const connect = payload => new Promise((resolve, reject) => {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/tappy-chicken-mmo`);
+    const messages = [];
+    ws.on('error', reject);
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      messages.push(msg);
+      if (msg.type === 'welcome') resolve({ ws, welcome: msg, messages });
+    });
+    ws.on('open', () => ws.send(JSON.stringify(payload)));
+  });
+
+  const observer = await connect({ type: 'join', projectId: project.id, buildId, name: 'Obs', supportsBatch: true, subscribeState: true });
+  t.after(() => observer.ws.close());
+  const roomId = observer.welcome.roomId;
+  const playerA = await connect({ type: 'join', roomId, name: 'PlayerA', supportsBatch: true, subscribeState: false });
+  t.after(() => playerA.ws.close());
+  const playerB = await connect({ type: 'join', roomId, name: 'PlayerB', supportsBatch: true, subscribeState: false });
+  t.after(() => playerB.ws.close());
+
+  // Send 3 rapid events within one 50ms flush window so PlayerB receives a batched frame.
+  for (let seq = 1; seq <= 3; seq += 1) {
+    playerA.ws.send(JSON.stringify({
+      type: 'rpc',
+      method: 'server_player_event',
+      params: { eventType: seq === 2 ? 'flap' : 'sync', runDistance: 100 + seq * 5, y: 250, phase: 'playing', score: seq, seq },
+    }));
+  }
+  await new Promise(r => setTimeout(r, 150));
+
+  assert.ok(observer.messages.some(m => m.type === 'state'), 'Subscribed observer must receive state snapshots');
+  assert.equal(playerA.messages.some(m => m.type === 'state'), false, 'Unsubscribed gameplay client must NOT receive full state snapshots');
+  assert.ok(playerB.messages.some(m => m.type === 'rpc_batch' && Array.isArray(m.items) && m.items.length >= 2), 'Batch-capable client must receive rpc_batch frames');
+});
+
 const engine = NativeRuntime.availability(root);
 test('Godot 4.7 native @rpc spatial multicast, drop-in, and 50% ghost opacity', {
   skip: engine.available ? false : engine.error || 'Godot editor unavailable',

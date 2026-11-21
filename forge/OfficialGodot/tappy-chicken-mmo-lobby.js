@@ -176,12 +176,24 @@
       await prepareGame();
 
       socket = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + forgePath('/tappy-chicken-mmo'));
+      const handleRpcMessage = rpcMsg => {
+        if (!rpcMsg || rpcMsg.type !== 'rpc') return;
+        if (rpcMsg.method === 'client_multicast_event') rpcsReceived += 1;
+        if (rpcMsg.method === 'client_presence' && rpcMsg.params) {
+          onlineCount = Number(rpcMsg.params.onlineCount || onlineCount);
+          nearbyCount = Number(rpcMsg.params.nearbyCount || 0);
+          updatePresenceUi();
+        }
+        postToGame(rpcMsg);
+      };
       socket.onopen = () => sendWs({
         type: 'join',
         roomId: roomId || undefined,
         projectId,
         buildId,
         name: $('name').value,
+        supportsBatch: true,
+        subscribeState: query.has('embedded'),
       });
       socket.onmessage = event => {
         const data = JSON.parse(event.data);
@@ -207,13 +219,9 @@
           if (gameReady) flushToGame();
           relayParent('log', { text: `MMO 월드 ${roomId} 난입 완료 (시드 ${data.courseSeed})` });
         } else if (data.type === 'rpc') {
-          if (data.method === 'client_multicast_event') rpcsReceived += 1;
-          if (data.method === 'client_presence' && data.params) {
-            onlineCount = Number(data.params.onlineCount || onlineCount);
-            nearbyCount = Number(data.params.nearbyCount || 0);
-            updatePresenceUi();
-          }
-          postToGame(data);
+          handleRpcMessage(data);
+        } else if (data.type === 'rpc_batch' && Array.isArray(data.items)) {
+          for (const item of data.items) handleRpcMessage(item);
         } else if (data.type === 'state') {
           state = data;
           onlineCount = Number(data.onlineCount || onlineCount);
