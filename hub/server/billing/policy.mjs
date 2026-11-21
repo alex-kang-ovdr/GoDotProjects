@@ -93,7 +93,7 @@ export function resolveAuthoritativeChannel({ provider, clientChannelHint = 'web
   if (p === 'apple_iap' || p === 'apple_store') return 'ios_app_store';
   if (p === 'giftcard_direct') return 'gift_card_direct';
   if (p === 'giftcard_retail') return 'gift_card_retail';
-  if (['xsolla', 'toss', 'portone', 'stripe', 'stripe_gpay', 'adyen', 'mock'].includes(p)) {
+  if (['xsolla', 'toss', 'kakaopay', 'naverpay', 'tosspay', 'portone', 'stripe', 'stripe_gpay', 'adyen', 'mock'].includes(p)) {
     return clientChannelHint === 'pc_desktop' ? 'pc_desktop' : 'web_browser';
   }
   throw new ApiError(400, 'PROVIDER_UNSUPPORTED');

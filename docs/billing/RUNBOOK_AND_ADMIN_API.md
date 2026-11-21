@@ -33,6 +33,26 @@
       "webhookSecret": "...",
       "sandbox": false
     },
+    "kakaopay": {
+      "secretKey": "<KakaoPay Open API SECRET_KEY (env: PLAYHUB_BILLING_KAKAOPAY_SECRET_KEY)>",
+      "cid": "<가맹점 CID, 테스트 기본값 TC0ONETIME (env: PLAYHUB_BILLING_KAKAOPAY_CID)>",
+      "webhookSecret": "<env: PLAYHUB_BILLING_KAKAOPAY_WEBHOOK_SECRET>",
+      "sandbox": false
+    },
+    "naverpay": {
+      "clientId": "<env: PLAYHUB_BILLING_NAVERPAY_CLIENT_ID>",
+      "clientSecret": "<env: PLAYHUB_BILLING_NAVERPAY_CLIENT_SECRET>",
+      "partnerId": "<env: PLAYHUB_BILLING_NAVERPAY_PARTNER_ID>",
+      "chainId": "<그룹형 가맹점 시 선택 (env: PLAYHUB_BILLING_NAVERPAY_CHAIN_ID)>",
+      "webhookSecret": "<env: PLAYHUB_BILLING_NAVERPAY_WEBHOOK_SECRET>",
+      "sandbox": false
+    },
+    "tosspay": {
+      "apiKey": "<pay.toss.im 직가맹 API Key (env: PLAYHUB_BILLING_TOSSPAY_API_KEY)>",
+      "webhookSecret": "<env: PLAYHUB_BILLING_TOSSPAY_WEBHOOK_SECRET>",
+      "resultCallbackUrl": "https://playhub.example/api/billing/webhooks/tosspay",
+      "sandbox": false
+    },
     "stripeGpay": {
       "publishableKey": "pk_live_...",
       "secretKey": "sk_live_...",
@@ -60,8 +80,19 @@
 | 단계 | 전환 조건 | 라우팅 규칙 (`router.mjs`) | 장애 폴백 |
 |---|---|---|---|
 | **Stage 1 (`stage1`)** | 초기 출시 (P0~P1) | 전 통화 웹·PC → `xsolla` (MoR · Google Pay Instant Flow · 200+국 VAT · 한국 간편결제) | — |
-| **Stage 2 (`stage2`)** | 한국 월 KRW 매출 ≥ ₩3,000만 | `KRW` → `toss` (~3.3%, +5.2%p 절감) / 기타 통화 → `xsolla` | `toss` 연속 3회 5xx 시 60초간 `xsolla` 자동 폴백 |
-| **Stage 3 (`stage3`)** | 해외 월 매출 ≥ USD 100K | `KRW` → `toss` / `google_pay` & USD·EUR·GBP·JPY → `stripe_gpay` (Google 수수료 0%) / 기타 → `xsolla` | `stripe_gpay` 또는 `toss` 서킷 오픈 시 `xsolla` 자동 폴백 |
+| **Stage 2 (`stage2`)** | 한국 월 KRW 매출 ≥ ₩3,000만 | `KRW` 간편결제(`kakaopay`·`naverpay`·`tosspay`) 직가맹 우선 → `toss` Direct → `xsolla` / 기타 통화 → `xsolla` | 직가맹/Toss 연속 3회 5xx 시 60초간 하위 PG 자동 폴백 |
+| **Stage 3 (`stage3`)** | 해외 월 매출 ≥ USD 100K | `KRW` 간편결제 직가맹/`toss` / `google_pay` & USD·EUR·GBP·JPY → `stripe_gpay` (Google 수수료 0%) / 기타 → `xsolla` | `kakaopay`·`naverpay`·`tosspay`·`toss`·`stripe_gpay` 서킷 오픈 시 자동 폴백 |
+
+### 2.1 한국 간편결제 3사 연동 매트릭스 (직가맹 + 토스페이먼츠 v2 Direct)
+
+| 결제 수단 | 직가맹 어댑터 | 공식 API / SDK 규격 | 리다이렉트 콜백 및 웹훅 경로 |
+|---|---|---|---|
+| **카카오페이** | `providers/kakaopay.mjs` | `open-api.kakaopay.com/online/v1/payment/{ready,approve,cancel}` (`Authorization: SECRET_KEY ...`, 서버 `tid` 바인딩) | 콜백: `/?view=wallet&payProvider=kakaopay&payStatus=success&orderId=...&pg_token=...`<br>웹훅: `POST /api/billing/webhooks/kakaopay` |
+| **네이버페이** | `providers/naverpay.mjs` | JS SDK `nsp.pay.naver.com/sdk/js/naverpay.min.js` + `/{partnerId}/naverpay/payments/v2.2/apply/payment`, `v1/cancel` (`form-urlencoded`) | 콜백: `/?view=wallet&payProvider=naverpay&orderId=...&resultCode=Success&paymentId=...`<br>웹훅: `POST /api/billing/webhooks/naverpay` |
+| **토스페이** | `providers/tosspay.mjs` | `pay.toss.im/api/v2/{payments,execute,refunds}` (`autoExecute: false`, 서버 `payToken` 바인딩) | 콜백: `/?view=wallet&payProvider=tosspay&payStatus=success&orderId=...`<br>웹훅: `POST /api/billing/webhooks/tosspay` |
+| **토스페이먼츠 PG 통합 (Direct)** | `providers/toss.mjs` | JS SDK v2 `js.tosspayments.com/v2/standard` (`card: { flowMode: 'DIRECT', easyPay: 'KAKAOPAY'\|'NAVERPAY'\|'TOSSPAY' }`) + `/v1/payments/{confirm,cancel}` | 콜백: `/?view=wallet&payProvider=toss&tossStatus=success&paymentKey=...&orderId=...&amount=...`<br>웹훅: `POST /api/billing/webhooks/toss` |
+
+> **실키 미주입(로컬·샌드박스) 동작**: `allowMockProvider: true`이고 실 PG 키가 하나도 없을 때는 `mock` 샌드박스 시뮬레이터가 카카오페이·네이버페이·토스페이 공식 리다이렉트 콜백 및 서버 승인/취소/7일 청약철회 흐름을 실청구 없이 재현한다. 실키를 하나라도 설정하면 `mock`은 자동으로 비활성화·차단(`403 MOCK_PROVIDER_FORBIDDEN`)된다.
 
 ### 무중단 롤백 방법
 1. `config.billing.routingStage`를 이전 단계(`stage2` 또는 `stage1`)로 되돌리고 프로세스를 재시작한다.

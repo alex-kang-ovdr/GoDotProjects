@@ -12,6 +12,9 @@ import {
 import { createMockProvider } from './providers/mock.mjs';
 import { createXsollaProvider } from './providers/xsolla.mjs';
 import { createTossProvider } from './providers/toss.mjs';
+import { createKakaoPayProvider } from './providers/kakaopay.mjs';
+import { createNaverPayProvider } from './providers/naverpay.mjs';
+import { createTossPayProvider } from './providers/tosspay.mjs';
 import { createStripeGpayProvider } from './providers/stripe-gpay.mjs';
 import { createStripeConnectProvider } from './providers/stripe-connect.mjs';
 import { createBillingService } from './service.mjs';
@@ -108,12 +111,60 @@ export function createBilling({
     webhookSecret: billingCfg.toss?.webhookSecret || env.PLAYHUB_BILLING_TOSS_WEBHOOK_SECRET || '',
     sandbox: billingCfg.toss?.sandbox !== false,
     apiBaseUrl: billingCfg.toss?.apiBaseUrl || 'https://api.tosspayments.com',
+    publicBaseUrl: config.userBaseUrl || '',
     fetchImpl,
     now
   });
   if (toss.configured) {
     providers.toss = toss;
     enabledProviders.push('toss');
+  }
+
+  const kakaopay = createKakaoPayProvider({
+    secretKey: billingCfg.kakaopay?.secretKey || env.PLAYHUB_BILLING_KAKAOPAY_SECRET_KEY || '',
+    cid: billingCfg.kakaopay?.cid || env.PLAYHUB_BILLING_KAKAOPAY_CID || '',
+    webhookSecret: billingCfg.kakaopay?.webhookSecret || env.PLAYHUB_BILLING_KAKAOPAY_WEBHOOK_SECRET || '',
+    sandbox: billingCfg.kakaopay?.sandbox !== false,
+    apiBaseUrl: billingCfg.kakaopay?.apiBaseUrl || 'https://open-api.kakaopay.com',
+    publicBaseUrl: config.userBaseUrl || '',
+    fetchImpl,
+    now
+  });
+  if (kakaopay.configured) {
+    providers.kakaopay = kakaopay;
+    enabledProviders.push('kakaopay');
+  }
+
+  const naverpay = createNaverPayProvider({
+    clientId: billingCfg.naverpay?.clientId || env.PLAYHUB_BILLING_NAVERPAY_CLIENT_ID || '',
+    clientSecret: billingCfg.naverpay?.clientSecret || env.PLAYHUB_BILLING_NAVERPAY_CLIENT_SECRET || '',
+    partnerId: billingCfg.naverpay?.partnerId || env.PLAYHUB_BILLING_NAVERPAY_PARTNER_ID || '',
+    chainId: billingCfg.naverpay?.chainId || env.PLAYHUB_BILLING_NAVERPAY_CHAIN_ID || '',
+    webhookSecret: billingCfg.naverpay?.webhookSecret || env.PLAYHUB_BILLING_NAVERPAY_WEBHOOK_SECRET || '',
+    sandbox: billingCfg.naverpay?.sandbox !== false,
+    apiBaseUrl: billingCfg.naverpay?.apiBaseUrl || '',
+    publicBaseUrl: config.userBaseUrl || '',
+    fetchImpl,
+    now
+  });
+  if (naverpay.configured) {
+    providers.naverpay = naverpay;
+    enabledProviders.push('naverpay');
+  }
+
+  const tosspay = createTossPayProvider({
+    apiKey: billingCfg.tosspay?.apiKey || env.PLAYHUB_BILLING_TOSSPAY_API_KEY || '',
+    webhookSecret: billingCfg.tosspay?.webhookSecret || env.PLAYHUB_BILLING_TOSSPAY_WEBHOOK_SECRET || '',
+    resultCallbackUrl: billingCfg.tosspay?.resultCallbackUrl || env.PLAYHUB_BILLING_TOSSPAY_CALLBACK_URL || '',
+    sandbox: billingCfg.tosspay?.sandbox !== false,
+    apiBaseUrl: billingCfg.tosspay?.apiBaseUrl || 'https://pay.toss.im',
+    publicBaseUrl: config.userBaseUrl || '',
+    fetchImpl,
+    now
+  });
+  if (tosspay.configured) {
+    providers.tosspay = tosspay;
+    enabledProviders.push('tosspay');
   }
 
   const stripeGpay = createStripeGpayProvider({
@@ -131,7 +182,8 @@ export function createBilling({
     enabledProviders.push('stripe_gpay');
   }
 
-  const hasRealProvider = Boolean(xsolla.configured || toss.configured || stripeGpay.configured);
+  const hasKoreaDirectProvider = Boolean(kakaopay.configured || naverpay.configured || tosspay.configured);
+  const hasRealProvider = Boolean(xsolla.configured || toss.configured || stripeGpay.configured || hasKoreaDirectProvider);
   if (allowMockProvider && !hasRealProvider) {
     providers.mock = createMockProvider({
       webhookSecret: mockWebhookSecret || 'dev-mock-webhook-secret',
@@ -142,7 +194,7 @@ export function createBilling({
 
   const resolvedStage = billingCfg.routingStage || (
     enabledProviders.includes('stripe_gpay') ? 'stage3'
-      : enabledProviders.includes('toss') ? 'stage2'
+      : (enabledProviders.includes('toss') || hasKoreaDirectProvider) ? 'stage2'
         : enabledProviders.includes('xsolla') ? 'stage1'
           : 'mock'
   );
@@ -418,6 +470,11 @@ export function createBilling({
       const { user } = requireRegisteredUser(req);
       rate(`billing-order:${user.id}`, 30, 60000);
       const body = await readJson(req, 8192);
+      const rawOrigin = typeof req.headers.origin === 'string' ? req.headers.origin.trim() : '';
+      const allowedOrigins = Array.isArray(config.userOrigins) ? config.userOrigins : [];
+      const requestOrigin = rawOrigin && rawOrigin.startsWith('http') && (!allowedOrigins.length || allowedOrigins.includes(rawOrigin))
+        ? rawOrigin
+        : (config.userBaseUrl || '');
       const result = await service.createCheckoutOrder({
         principalId: user.id,
         skuId: body.skuId,
@@ -427,6 +484,7 @@ export function createBilling({
         preferredProvider: body.provider || null,
         agreedTermsVersion: body.agreedTermsVersion,
         returnUrl: body.returnUrl || '/?view=billing',
+        requestOrigin,
         idempotencyKey: idemKey(req)
       });
       json(res, result.replayed ? 200 : 201, result);
@@ -443,6 +501,7 @@ export function createBilling({
         principalId: user.id,
         orderId: assertId(confirmMatch[1]),
         providerPaymentId: body.providerPaymentId,
+        pgToken: body.pgToken || body.pg_token || null,
         amountMinor: body.amountMinor
       });
       json(res, 200, result);

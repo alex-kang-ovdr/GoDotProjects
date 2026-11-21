@@ -23,13 +23,74 @@ export function createMockProvider({ webhookSecret = 'dev-mock-webhook-secret', 
 
     async createCheckoutSession({ order, returnUrl = '/?view=billing', paymentMethodHint = 'card' }) {
       const providerPaymentId = `mock_pay_${order.id}`;
+      const hint = String(paymentMethodHint || 'card').toLowerCase();
+      const easyPayMap = {
+        kakaopay: {
+          code: 'KAKAOPAY',
+          brand: '카카오페이',
+          protocol: 'KakaoPay Open API v1 (ready -> tid -> pg_token -> approve)',
+          tokenLabel: 'tid',
+          simulatedToken: `T_SANDBOX_${order.id.slice(0, 12).toUpperCase()}`,
+          callbackParams: {
+            payProvider: 'mock',
+            payMethod: 'kakaopay',
+            payStatus: 'success',
+            orderId: order.id,
+            providerPaymentId,
+            pg_token: `mock_pg_${order.id.slice(0, 10)}`
+          }
+        },
+        naverpay: {
+          code: 'NAVERPAY',
+          brand: '네이버페이',
+          protocol: 'NaverPay SDK v1 + 결제형 API v2.2 (oPay.open -> paymentId -> apply/payment)',
+          tokenLabel: 'paymentId',
+          simulatedToken: `NP_SANDBOX_${order.id.slice(0, 12).toUpperCase()}`,
+          callbackParams: {
+            payProvider: 'mock',
+            payMethod: 'naverpay',
+            payStatus: 'success',
+            resultCode: 'Success',
+            orderId: order.id,
+            providerPaymentId
+          }
+        },
+        tosspay: {
+          code: 'TOSSPAY',
+          brand: '토스페이',
+          protocol: 'TossPay API v2 / Toss Payments Direct (payments -> payToken -> execute)',
+          tokenLabel: 'payToken',
+          simulatedToken: `TP_SANDBOX_${order.id.slice(0, 12).toUpperCase()}`,
+          callbackParams: {
+            payProvider: 'mock',
+            payMethod: 'tosspay',
+            payStatus: 'success',
+            orderId: order.id,
+            providerPaymentId
+          }
+        }
+      };
+      const easyPaySpec = easyPayMap[hint] || null;
       const sep = returnUrl.includes('?') ? '&' : '?';
+      const callbackQuery = easyPaySpec
+        ? new URLSearchParams(easyPaySpec.callbackParams).toString()
+        : `payProvider=mock&payMethod=${encodeURIComponent(hint)}&payStatus=success&orderId=${encodeURIComponent(order.id)}&providerPaymentId=${encodeURIComponent(providerPaymentId)}`;
+      const cancelUrl = `${returnUrl}${sep}payProvider=mock&payMethod=${encodeURIComponent(hint)}&payStatus=cancel&orderId=${encodeURIComponent(order.id)}`;
+
       return {
         provider: 'mock',
         mode: 'mock',
+        checkoutType: easyPaySpec ? 'mock_easypay_sheet' : 'mock_confirm',
+        easyPayProvider: easyPaySpec?.code || null,
+        easyPayBrand: easyPaySpec?.brand || null,
+        simulatedProtocol: easyPaySpec?.protocol || 'PlayHub Sandbox Mock PG',
+        simulatedTokenLabel: easyPaySpec?.tokenLabel || 'providerPaymentId',
+        simulatedTokenValue: easyPaySpec?.simulatedToken || providerPaymentId,
         providerPaymentId,
         checkoutUrl: `${returnUrl}${sep}mockOrder=${encodeURIComponent(order.id)}&mockPay=${encodeURIComponent(providerPaymentId)}`,
-        paymentMethodHint,
+        successCallbackUrl: `${returnUrl}${sep}${callbackQuery}`,
+        cancelCallbackUrl: cancelUrl,
+        paymentMethodHint: hint,
         sandboxNote: 'Local Mock PG — no real charge is made'
       };
     },

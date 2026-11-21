@@ -23,13 +23,235 @@
   const uiState = {
     currency: 'KRW',
     channel: 'web_browser',
-    paymentMethod: 'xsolla_auto',
+    paymentMethod: 'kakaopay',
     catalog: null,
     walletData: null,
     ledgerData: null,
     pendingCheckout: null,
+    callbackBanner: null,
     busy: false
   };
+
+  const ALLOWED_SDK_URLS = new Set([
+    'https://js.tosspayments.com/v2/standard',
+    'https://nsp.pay.naver.com/sdk/js/naverpay.min.js'
+  ]);
+  const loadedSdkScripts = new Map();
+  const processedCallbackKeys = new Set();
+
+  function loadExternalSdk(src) {
+    if (!ALLOWED_SDK_URLS.has(src)) {
+      return Promise.reject(new Error('허용되지 않은 외부 결제 SDK 주소입니다.'));
+    }
+    if (loadedSdkScripts.has(src)) return loadedSdkScripts.get(src);
+    const promise = new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing && existing.dataset.loaded === '1') {
+        resolve();
+        return;
+      }
+      const script = existing || document.createElement('script');
+      const timer = setTimeout(() => reject(new Error('결제 SDK 로딩 시간이 초과되었습니다.')), 10000);
+      script.onload = () => {
+        clearTimeout(timer);
+        script.dataset.loaded = '1';
+        resolve();
+      };
+      script.onerror = () => {
+        clearTimeout(timer);
+        loadedSdkScripts.delete(src);
+        reject(new Error('결제 SDK를 불러오지 못했습니다. 네트워크 상태를 확인해 주세요.'));
+      };
+      if (!existing) {
+        script.src = src;
+        script.async = true;
+        document.head.append(script);
+      }
+    });
+    loadedSdkScripts.set(src, promise);
+    return promise;
+  }
+
+  function isMobileViewportOrUa() {
+    return (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches)
+      || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+  }
+
+  function easyPayBrandMeta(methodOrProvider) {
+    const key = String(methodOrProvider || '').toLowerCase();
+    if (key === 'kakaopay') return { key: 'kakaopay', label: '카카오페이', short: 'pay', badgeClass: 'brand-kakaopay' };
+    if (key === 'naverpay') return { key: 'naverpay', label: '네이버페이', short: 'N', badgeClass: 'brand-naverpay' };
+    if (key === 'tosspay') return { key: 'tosspay', label: '토스페이', short: 'toss', badgeClass: 'brand-tosspay' };
+    if (key === 'toss') return { key: 'toss', label: '토스페이먼츠', short: 'toss', badgeClass: 'brand-tosspay' };
+    if (key === 'card_kr') return { key: 'card_kr', label: '국내 신용/체크카드', short: 'CARD', badgeClass: 'brand-card' };
+    if (key === 'google_pay') return { key: 'google_pay', label: 'Google Pay (0% 수수료)', short: 'GPay', badgeClass: 'brand-gpay' };
+    return { key: key || 'card', label: methodOrProvider || '결제', short: 'PAY', badgeClass: 'brand-card' };
+  }
+
+  function integrationBadgeText(meta) {
+    if (!meta) return '연동 준비';
+    if (meta.integrationType === 'direct_api') return meta.mode === 'live' ? '직가맹 라이브' : '직가맹 테스트';
+    if (meta.integrationType === 'toss_v2_direct') return meta.mode === 'live' ? '토스 Direct 라이브' : '토스 Direct 테스트';
+    if (meta.integrationType === 'sandbox_simulation') return '샌드박스 시뮬레이션';
+    if (meta.integrationType === 'pg_hosted') return `${String(meta.provider || 'PG').toUpperCase()} 연동`;
+    return '미설정';
+  }
+
+  async function launchProviderCheckout(checkout) {
+    if (!checkout) return false;
+    if (checkout.checkoutType === 'toss_v2_sdk') {
+      await loadExternalSdk(checkout.sdkUrl || 'https://js.tosspayments.com/v2/standard');
+      if (typeof window.TossPayments !== 'function') {
+        throw new Error('토스페이먼츠 SDK v2 초기화에 실패했습니다.');
+      }
+      const tossPayments = window.TossPayments(checkout.clientKey);
+      const payment = tossPayments.payment({ customerKey: checkout.customerKey });
+      await payment.requestPayment(checkout.sdkRequestParams || {
+        method: checkout.method || 'CARD',
+        amount: { currency: checkout.currency || 'KRW', value: checkout.amount },
+        orderId: checkout.orderId,
+        orderName: checkout.orderName,
+        customerName: checkout.customerName,
+        successUrl: checkout.successUrl,
+        failUrl: checkout.failUrl,
+        ...(checkout.easyPayProvider ? { card: { flowMode: 'DIRECT', easyPay: checkout.easyPayProvider } } : {})
+      });
+      return true;
+    }
+
+    if (checkout.checkoutType === 'naverpay_sdk') {
+      await loadExternalSdk(checkout.sdkUrl || 'https://nsp.pay.naver.com/sdk/js/naverpay.min.js');
+      if (!window.Naver?.Pay?.create) {
+        throw new Error('네이버페이 결제 SDK 초기화에 실패했습니다.');
+      }
+      const oPay = window.Naver.Pay.create({
+        mode: checkout.sdkMode || 'development',
+        clientId: checkout.clientId,
+        ...(checkout.chainId ? { chainId: checkout.chainId } : {})
+      });
+      oPay.open({
+        merchantPayKey: checkout.merchantPayKey,
+        merchantUserKey: checkout.merchantUserKey,
+        productName: checkout.productName,
+        productCount: checkout.productCount || 1,
+        totalPayAmount: checkout.totalPayAmount,
+        taxScopeAmount: checkout.taxScopeAmount,
+        taxExScopeAmount: checkout.taxExScopeAmount ?? 0,
+        returnUrl: checkout.returnUrl,
+        productItems: checkout.productItems
+      });
+      return true;
+    }
+
+    if (checkout.mode !== 'mock' && checkout.checkoutUrl) {
+      const targetRaw = (checkout.provider === 'kakaopay' && isMobileViewportOrUa() && checkout.mobileCheckoutUrl)
+        ? checkout.mobileCheckoutUrl
+        : checkout.checkoutUrl;
+      const targetUrl = new URL(targetRaw, location.href);
+      if (!['http:', 'https:'].includes(targetUrl.protocol)) {
+        throw new Error('유효하지 않은 외부 결제 이동 주소입니다.');
+      }
+      location.href = targetUrl.toString();
+      return true;
+    }
+
+    return false;
+  }
+
+  async function processPaymentReturnCallback({ api, toast, activeView }) {
+    const params = new URLSearchParams(location.search);
+    const tossStatus = params.get('tossStatus');
+    const payProvider = (params.get('payProvider') || (tossStatus ? 'toss' : '')).toLowerCase();
+    if (!payProvider) return null;
+
+    const orderId = params.get('orderId') || '';
+    const payStatus = (params.get('payStatus') || '').toLowerCase();
+    const payMethod = (params.get('payMethod') || payProvider).toLowerCase();
+    const resultCode = params.get('resultCode') || '';
+    const paymentKey = params.get('paymentKey') || '';
+    const paymentId = params.get('paymentId') || '';
+    const pgToken = params.get('pg_token') || '';
+    const providerPaymentId = params.get('providerPaymentId') || paymentKey || paymentId || '';
+    const amountRaw = params.get('amount');
+    const failCode = params.get('code') || '';
+    const failMessage = params.get('message') || params.get('resultMessage') || '';
+
+    const dedupKey = `${payProvider}:${orderId}:${tossStatus || payStatus || resultCode}:${providerPaymentId || pgToken}`;
+    // Scrub callback secrets/tokens from the address bar immediately.
+    try {
+      history.replaceState(null, '', `/?view=${encodeURIComponent(activeView || 'wallet')}`);
+    } catch {}
+
+    if (processedCallbackKeys.has(dedupKey)) return uiState.callbackBanner;
+    processedCallbackKeys.add(dedupKey);
+
+    const brand = easyPayBrandMeta(payMethod).label;
+
+    // 1. Handle user cancellations or PG failures cleanly without crediting coins
+    if (
+      tossStatus === 'fail' ||
+      payStatus === 'cancel' ||
+      payStatus === 'fail' ||
+      (payProvider === 'naverpay' && resultCode && resultCode !== 'Success')
+    ) {
+      const isCancel = payStatus === 'cancel' || resultCode === 'UserCancel' || failCode === 'PAY_PROCESS_CANCELED';
+      const msg = isCancel
+        ? `${brand} 결제가 취소되었습니다. 청구된 금액은 없습니다.`
+        : `${brand} 결제 승인에 실패했습니다.${failMessage ? ` (${failMessage})` : ''}`;
+      uiState.callbackBanner = { kind: isCancel ? 'cancel' : 'error', title: isCancel ? '결제 취소됨' : '결제 실패', message: msg };
+      toast(msg);
+      return uiState.callbackBanner;
+    }
+
+    // 2. Confirm approved callback server-to-server (Zero Client Trust)
+    const isSuccess =
+      (payProvider === 'toss' && tossStatus === 'success' && orderId && paymentKey) ||
+      (payProvider === 'kakaopay' && payStatus === 'success' && orderId && pgToken) ||
+      (payProvider === 'naverpay' && resultCode === 'Success' && orderId && paymentId) ||
+      (payProvider === 'tosspay' && payStatus === 'success' && orderId) ||
+      (payProvider === 'mock' && payStatus === 'success' && orderId && providerPaymentId);
+
+    if (!isSuccess) return null;
+
+    try {
+      const body = {
+        ...(providerPaymentId ? { providerPaymentId } : {}),
+        ...(pgToken ? { pgToken } : {}),
+        ...(amountRaw && Number.isFinite(Number(amountRaw)) ? { amountMinor: Number(amountRaw) } : {})
+      };
+      const confirmed = await api(`/api/billing/orders/${encodeURIComponent(orderId)}/confirm`, {
+        method: 'POST',
+        body,
+        timeout: 12000
+      });
+      const ord = confirmed?.order;
+      const totalCoins = ord ? formatCoins(ord.totalCoins) : 'PlayCoin';
+      const bonusNote = ord?.bonusCoins ? ` (웹·PC 보너스 +${ord.bonusCoins.toLocaleString('ko-KR')})` : '';
+      const msg = confirmed?.pendingWebhook
+        ? `${brand} 결제 확인이 접수되었습니다. PG 웹훅 최종 확정 후 지갑에 자동 반영됩니다.`
+        : `${brand} 결제가 완료되어 🪙 ${totalCoins}${bonusNote}이(가) Zero-Sum 원장에 지급되었습니다!`;
+      uiState.callbackBanner = { kind: 'success', title: `${brand} 결제 승인 완료`, message: msg };
+      toast(msg);
+      return uiState.callbackBanner;
+    } catch (error) {
+      const msg = `${brand} 서버 승인 검증 실패: ${error.message || '결제 상태를 확인해 주세요.'}`;
+      uiState.callbackBanner = { kind: 'error', title: '서버 승인 실패', message: msg };
+      toast(msg);
+      return uiState.callbackBanner;
+    }
+  }
+
+  function callbackBannerHtml() {
+    const b = uiState.callbackBanner;
+    if (!b) return '';
+    return `<section class="easypay-callback-banner ${esc(b.kind)}" role="status">
+      <div>
+        <strong>${esc(b.title)}</strong>
+        <p>${esc(b.message)}</p>
+      </div>
+      <button type="button" class="icon-button" data-dismiss-callback-banner aria-label="알림 닫기">×</button>
+    </section>`;
+  }
 
   function formatMoney(amountMinor, currency) {
     const curr = String(currency || 'KRW').toUpperCase();
@@ -166,15 +388,16 @@
   function openCheckoutDialog({ item, catalog, api, toast, onComplete }) {
     const dialog = ensureCheckoutDialog();
     const isMock = catalog.billingMode === 'mock';
-    let selectedMethod = uiState.currency === 'KRW' ? 'card_kr' : 'google_pay';
+    const koreaEasyPay = catalog.paymentMethods?.koreaEasyPay || {};
+    let selectedMethod = uiState.currency === 'KRW' ? 'kakaopay' : 'google_pay';
     let createdOrder = null;
 
     const methodOptions = uiState.currency === 'KRW'
       ? [
-          { id: 'card_kr', label: '국내 신용/체크카드' },
-          { id: 'kakaopay', label: '카카오페이' },
-          { id: 'naverpay', label: '네이버페이' },
-          { id: 'tosspay', label: '토스페이' }
+          { id: 'kakaopay', label: '카카오페이', meta: koreaEasyPay.kakaopay },
+          { id: 'naverpay', label: '네이버페이', meta: koreaEasyPay.naverpay },
+          { id: 'tosspay', label: '토스페이', meta: koreaEasyPay.tosspay },
+          { id: 'card_kr', label: '국내 신용/체크카드', meta: koreaEasyPay.card_kr }
         ]
       : [
           { id: 'google_pay', label: 'Google Pay (0% 수수료)' },
@@ -184,12 +407,18 @@
         ];
 
     function renderDialog() {
+      const selectedBrand = easyPayBrandMeta(selectedMethod);
+      const selectedMeta = koreaEasyPay[selectedMethod] || null;
+      const submitCtaLabel = isMock
+        ? `${selectedBrand.label} 샌드박스 결제 열기`
+        : `${selectedBrand.label}로 결제 진행`;
+
       dialog.innerHTML = `
         <div class="dialog-heading">
           <h2 id="billing-checkout-title">PlayCoin 구매 확인</h2>
           <button class="icon-button" type="button" data-billing-close aria-label="닫기">×</button>
         </div>
-        ${isMock ? '<p class="billing-badge sandbox" style="margin:6px 0 0;color:#854d0e;background:#fef9c3;border-color:#fde047;">샌드박스 Mock PG 모드 · 실제 결제가 청구되지 않습니다</p>' : ''}
+        ${isMock ? '<p class="billing-badge sandbox" style="margin:6px 0 0;color:#854d0e;background:#fef9c3;border-color:#fde047;">샌드박스 모드 · 카카오페이·네이버페이·토스페이 공식 리다이렉트·승인 흐름 시뮬레이션 (실청구 없음)</p>' : ''}
         <div class="checkout-summary">
           <div class="checkout-summary-line"><span>결제 금액</span><strong>${esc(formatMoney(item.amountMinor, item.currency))}</strong></div>
           <div class="checkout-summary-line"><span>유상 기본 (paid)</span><span>${esc(formatCoins(item.baseCoins))}</span></div>
@@ -197,10 +426,21 @@
           <div class="checkout-summary-line total"><span>총 지급량</span><span>🪙 ${esc(formatCoins(item.totalCoins))}</span></div>
         </div>
         ${!createdOrder ? `
-          <p class="checkout-notice" style="margin-bottom:4px;"><strong>결제 수단 선택</strong> ${uiState.currency === 'KRW' ? '(한국 KRW · 로컬 간편결제/카드)' : '(글로벌 · Google Pay Instant Flow 지원)'}</p>
+          <p class="checkout-notice" style="margin-bottom:4px;"><strong>결제 수단 선택</strong> ${uiState.currency === 'KRW' ? '(한국 KRW · 카카오페이·네이버페이·토스페이 직가맹 / 토스페이먼츠 Direct 자동 라우팅)' : '(글로벌 · Google Pay Instant Flow 지원)'}</p>
           <div class="checkout-methods">
-            ${methodOptions.map(m => `<button type="button" class="checkout-method-btn" data-pay-method="${esc(m.id)}" aria-pressed="${String(selectedMethod === m.id)}">${esc(m.label)}</button>`).join('')}
+            ${methodOptions.map(m => {
+              const b = easyPayBrandMeta(m.id);
+              const routeNote = m.meta ? integrationBadgeText(m.meta) : '';
+              return `<button type="button" class="checkout-method-btn easypay-method-btn ${esc(b.badgeClass)}" data-pay-method="${esc(m.id)}" aria-pressed="${String(selectedMethod === m.id)}">
+                <span class="easypay-method-top">
+                  <span class="easypay-brand-chip ${esc(b.badgeClass)}">${esc(b.short)}</span>
+                  <span class="easypay-method-label">${esc(m.label)}</span>
+                </span>
+                ${routeNote ? `<span class="easypay-method-sub">${esc(routeNote)}</span>` : ''}
+              </button>`;
+            }).join('')}
           </div>
+          ${selectedMeta ? `<p class="checkout-notice" style="margin-top:0;">라우팅 경로: <strong>${esc(integrationBadgeText(selectedMeta))}</strong>${selectedMeta.failoverChain?.length > 1 ? ` · 장애 시 자동 폴백(${esc(selectedMeta.failoverChain.join(' → '))})` : ''}</p>` : ''}
           <label class="check-row" style="font-size:13px;margin:8px 0;">
             <input type="checkbox" id="billing-agree-terms">
             <span>유상 원금(${esc(item.baseCoins)})과 채널 보너스(+${esc(item.bonusCoins)}) 구분을 확인했으며, <strong>결제 후 7일 이내 미사용 시 전액 청약철회 가능(원금 또는 보너스 1 PlayCoin 이상 사용 시 청약철회 제한)</strong> 및 미성년자 법정대리인 동의 안내에 동의합니다.</span>
@@ -208,19 +448,30 @@
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
           <div class="dialog-actions">
             <button type="button" class="button secondary" data-billing-close>취소</button>
-            <button type="button" class="button primary" id="billing-create-order" disabled>${isMock ? '샌드박스 주문 생성' : '결제 진행'}</button>
+            <button type="button" class="button primary" id="billing-create-order" disabled>${esc(submitCtaLabel)}</button>
           </div>
         ` : `
-          <div class="checkout-summary" style="background:#eef7ea;border-color:#b8d7b0;">
-            <div class="checkout-summary-line"><span>주문 번호</span><code>${esc(createdOrder.order.id.slice(0, 12))}…</code></div>
-            <div class="checkout-summary-line"><span>라우팅 PG</span><strong>${esc(createdOrder.route.provider.toUpperCase())} (${esc(createdOrder.checkout.mode)})</strong></div>
-            <div class="checkout-summary-line"><span>상태</span><span>승인 대기</span></div>
+          <div class="easypay-sandbox-sheet ${esc(selectedBrand.badgeClass)}">
+            <div class="easypay-sandbox-header">
+              <span class="easypay-brand-chip ${esc(selectedBrand.badgeClass)}">${esc(selectedBrand.short)}</span>
+              <div>
+                <strong>${esc(createdOrder.checkout.easyPayBrand || selectedBrand.label)} 결제창 시뮬레이션</strong>
+                <p class="muted" style="margin:2px 0 0;font-size:12px;">${esc(createdOrder.checkout.simulatedProtocol || 'Sandbox Checkout')}</p>
+              </div>
+            </div>
+            <div class="checkout-summary" style="margin:10px 0 0;background:#ffffff;">
+              <div class="checkout-summary-line"><span>주문 번호</span><code>${esc(createdOrder.order.id.slice(0, 12))}…</code></div>
+              <div class="checkout-summary-line"><span>라우팅 PG</span><strong>${esc(createdOrder.route.provider.toUpperCase())} (${esc(createdOrder.checkout.mode)})</strong></div>
+              <div class="checkout-summary-line"><span>발급 토큰 (${esc(createdOrder.checkout.simulatedTokenLabel || 'token')})</span><code>${esc(createdOrder.checkout.simulatedTokenValue || createdOrder.checkout.providerPaymentId)}</code></div>
+              <div class="checkout-summary-line"><span>상태</span><span>사용자 인증 대기 (실청구 없음)</span></div>
+            </div>
           </div>
-          <p class="checkout-notice">서버에서 주문 생성 및 연령·월 한도·25% 보너스 검증이 완료되었습니다. 아래 버튼을 누르면 서버 검증 후 Zero-Sum 복식부기 원장에 즉시 반영됩니다.</p>
+          <p class="checkout-notice">실제 가맹점 키 설정 시 위 단계에서 ${esc(selectedBrand.label)} 결제창/SDK가 즉시 열립니다. 샌드박스에서는 콜백 리다이렉트 승인 또는 즉시 원장 반영을 모두 검증할 수 있습니다.</p>
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
-          <div class="dialog-actions">
-            <button type="button" class="button secondary" data-billing-close>닫기</button>
-            <button type="button" class="button primary" id="billing-confirm-mock">테스트 결제 승인 (즉시 지급)</button>
+          <div class="dialog-actions" style="flex-wrap:wrap;">
+            <button type="button" class="button secondary" id="billing-cancel-mock">결제 취소 시뮬레이션</button>
+            <button type="button" class="button secondary" id="billing-confirm-mock">즉시 승인</button>
+            <button type="button" class="button primary" id="billing-redirect-mock">${esc(selectedBrand.label)} 승인 후 콜백 복귀 →</button>
           </div>
         `}
       `;
@@ -234,8 +485,15 @@
         const submitBtn = dialog.querySelector('#billing-create-order');
         dialog.querySelectorAll('[data-pay-method]').forEach(btn => {
           btn.onclick = () => {
+            const wasChecked = agree.checked;
             selectedMethod = btn.dataset.payMethod;
-            dialog.querySelectorAll('[data-pay-method]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.payMethod === selectedMethod)));
+            renderDialog();
+            const nextAgree = dialog.querySelector('#billing-agree-terms');
+            const nextSubmit = dialog.querySelector('#billing-create-order');
+            if (nextAgree && nextSubmit) {
+              nextAgree.checked = wasChecked;
+              nextSubmit.disabled = !wasChecked;
+            }
           };
         });
         agree.onchange = () => { submitBtn.disabled = !agree.checked; };
@@ -243,7 +501,7 @@
           const errEl = dialog.querySelector('#billing-checkout-error');
           errEl.hidden = true;
           submitBtn.disabled = true;
-          submitBtn.textContent = '주문 생성 중…';
+          submitBtn.textContent = '결제 세션 생성 중…';
           try {
             const res = await api('/api/billing/orders', {
               method: 'POST',
@@ -258,8 +516,9 @@
               },
               timeout: 10000
             });
-            if (res.checkout?.mode !== 'mock' && res.checkout?.checkoutUrl) {
-              location.href = res.checkout.checkoutUrl;
+            const launched = await launchProviderCheckout(res.checkout);
+            if (launched) {
+              dialog.close();
               return;
             }
             createdOrder = res;
@@ -268,11 +527,28 @@
             errEl.textContent = error.message || '주문을 생성하지 못했습니다.';
             errEl.hidden = false;
             submitBtn.disabled = !agree.checked;
-            submitBtn.textContent = isMock ? '샌드박스 주문 생성' : '결제 진행';
+            submitBtn.textContent = submitCtaLabel;
           }
         };
       } else {
+        const redirectBtn = dialog.querySelector('#billing-redirect-mock');
+        const cancelBtn = dialog.querySelector('#billing-cancel-mock');
         const confirmBtn = dialog.querySelector('#billing-confirm-mock');
+
+        if (redirectBtn) {
+          redirectBtn.onclick = () => {
+            const target = createdOrder.checkout?.successCallbackUrl || '/?view=wallet';
+            dialog.close();
+            location.href = target;
+          };
+        }
+        if (cancelBtn) {
+          cancelBtn.onclick = () => {
+            const target = createdOrder.checkout?.cancelCallbackUrl || '/?view=wallet&payProvider=mock&payStatus=cancel';
+            dialog.close();
+            location.href = target;
+          };
+        }
         confirmBtn.onclick = async () => {
           const errEl = dialog.querySelector('#billing-checkout-error');
           errEl.hidden = true;
@@ -288,13 +564,13 @@
               timeout: 10000
             });
             dialog.close();
-            toast(`🪙 ${formatCoins(createdOrder.order.totalCoins)} 지급 완료! (보너스 +${createdOrder.order.bonusCoins})`);
+            toast(`🪙 ${formatCoins(createdOrder.order.totalCoins)} 지급 완료! (${selectedBrand.label} · 보너스 +${createdOrder.order.bonusCoins})`);
             await onComplete(confirmed);
           } catch (error) {
             errEl.textContent = error.message || '결제 확인에 실패했습니다.';
             errEl.hidden = false;
             confirmBtn.disabled = false;
-            confirmBtn.textContent = '테스트 결제 승인 (즉시 지급)';
+            confirmBtn.textContent = '즉시 승인';
           }
         };
       }
@@ -306,6 +582,8 @@
 
   async function mountShop(root, { api, toast, navigate, refreshSession }) {
     root.innerHTML = `<div class="page billing-page"><section class="loading-state" role="status"><div class="loading-dot" aria-hidden="true"></div><h1>PlayCoin 상점을 불러오고 있습니다</h1></section></div>`;
+
+    await processPaymentReturnCallback({ api, toast, activeView: 'billing' });
 
     async function loadAndRender() {
       let catalog, walletData;
@@ -335,6 +613,7 @@
 
       root.innerHTML = `<div class="page billing-page">
         ${billingSubnavHtml('billing')}
+        ${callbackBannerHtml()}
         <section class="billing-hero">
           <div class="billing-hero-top">
             <div>
@@ -354,10 +633,11 @@
             </div>
           </div>
           <div class="billing-badges">
-            <span class="billing-badge">🌐 Xsolla MoR (200+국 VAT)</span>
-            <span class="billing-badge">💳 Google Pay Web (글로벌 0% 수수료)</span>
-            <span class="billing-badge">🇰🇷 카카오페이 · 네이버페이 · 토스페이 · 국내카드</span>
-            <a class="billing-badge" href="/?view=redeem" data-route style="text-decoration:none;color:inherit;">🎁 기프트카드 PIN 등록 최대 +25% →</a>
+            <span class="billing-badge easypay-hero-pill brand-kakaopay">카카오페이 · ${esc(integrationBadgeText(catalog.paymentMethods?.koreaEasyPay?.kakaopay))}</span>
+            <span class="billing-badge easypay-hero-pill brand-naverpay">네이버페이 · ${esc(integrationBadgeText(catalog.paymentMethods?.koreaEasyPay?.naverpay))}</span>
+            <span class="billing-badge easypay-hero-pill brand-tosspay">토스페이 · ${esc(integrationBadgeText(catalog.paymentMethods?.koreaEasyPay?.tosspay))}</span>
+            <span class="billing-badge">💳 Google Pay Web (글로벌 0%)</span>
+            <a class="billing-badge" href="/?view=redeem" data-route style="text-decoration:none;color:inherit;">🎁 기프트카드 +25% →</a>
             ${stageBadge ? `<span class="billing-badge${isMock ? ' sandbox' : ''}">${esc(stageBadge)}</span>` : ''}
           </div>
         </section>
@@ -458,6 +738,14 @@
         </section>
       </div>`;
 
+      const dismissShopBanner = root.querySelector('[data-dismiss-callback-banner]');
+      if (dismissShopBanner) {
+        dismissShopBanner.onclick = () => {
+          uiState.callbackBanner = null;
+          dismissShopBanner.closest('.easypay-callback-banner')?.remove();
+        };
+      }
+
       root.querySelectorAll('[data-currency]').forEach(btn => {
         btn.onclick = () => {
           uiState.currency = btn.dataset.currency;
@@ -535,6 +823,8 @@
   async function mountWallet(root, { api, toast, navigate, refreshSession }) {
     root.innerHTML = `<div class="page billing-page"><section class="loading-state" role="status"><div class="loading-dot" aria-hidden="true"></div><h1>내 PlayCoin 지갑을 불러오고 있습니다</h1></section></div>`;
 
+    await processPaymentReturnCallback({ api, toast, activeView: 'wallet' });
+
     async function loadAndRender() {
       let walletData;
       try {
@@ -589,6 +879,7 @@
 
       root.innerHTML = `<div class="page billing-page">
         ${billingSubnavHtml('wallet')}
+        ${callbackBannerHtml()}
         <div class="section-heading">
           <h1>내 PlayCoin 지갑</h1>
           <div class="save-actions">
@@ -784,6 +1075,14 @@
           }
         };
       });
+
+      const dismissBanner = root.querySelector('[data-dismiss-callback-banner]');
+      if (dismissBanner) {
+        dismissBanner.onclick = () => {
+          uiState.callbackBanner = null;
+          dismissBanner.closest('.easypay-callback-banner')?.remove();
+        };
+      }
 
       root.querySelectorAll('[data-withdraw-order]').forEach(btn => {
         btn.onclick = async () => {

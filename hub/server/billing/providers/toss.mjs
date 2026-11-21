@@ -7,7 +7,32 @@ import { createHmac } from 'node:crypto';
 import { ApiError, equal, safeString } from '../../security.mjs';
 
 const TOSS_API_BASE = 'https://api.tosspayments.com';
+const TOSS_V2_SDK_URL = 'https://js.tosspayments.com/v2/standard';
 const WEBHOOK_TOLERANCE_MS = 5 * 60_000;
+const FETCH_TIMEOUT_MS = 12_000;
+
+function buildAbsoluteReturnUrl(returnUrl, baseOrigin, params) {
+  const fallbackOrigin = safeString(baseOrigin, 256) ? baseOrigin : 'http://localhost:8080';
+  let base;
+  try {
+    base = new URL(fallbackOrigin);
+  } catch {
+    base = new URL('http://localhost:8080');
+  }
+  let url;
+  try {
+    url = new URL(returnUrl || '/?view=wallet', base);
+  } catch {
+    url = new URL('/?view=wallet', base);
+  }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.origin !== base.origin) {
+    throw new ApiError(400, 'INVALID_RETURN_URL');
+  }
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  }
+  return url.toString();
+}
 
 export function signTossWebhook({ rawBody, transmissionTime, secret }) {
   const mac = createHmac('sha256', String(secret))
@@ -22,6 +47,8 @@ export function createTossProvider({
   webhookSecret = '',
   sandbox = true,
   apiBaseUrl = TOSS_API_BASE,
+  sdkUrl = TOSS_V2_SDK_URL,
+  publicBaseUrl = '',
   fetchImpl = globalThis.fetch,
   now = Date.now
 } = {}) {
@@ -34,11 +61,11 @@ export function createTossProvider({
 
   function mapPaymentMethod(hint) {
     const h = String(hint || '').toLowerCase();
-    if (h === 'kakaopay') return { method: 'CARD', easyPay: 'KAKAOPAY' };
-    if (h === 'naverpay') return { method: 'CARD', easyPay: 'NAVERPAY' };
-    if (h === 'tosspay') return { method: 'CARD', easyPay: 'TOSSPAY' };
-    if (h === 'bank_transfer') return { method: 'TRANSFER', easyPay: null };
-    return { method: 'CARD', easyPay: null };
+    if (h === 'kakaopay') return { method: 'CARD', easyPay: 'KAKAOPAY', flowMode: 'DIRECT' };
+    if (h === 'naverpay') return { method: 'CARD', easyPay: 'NAVERPAY', flowMode: 'DIRECT' };
+    if (h === 'tosspay') return { method: 'CARD', easyPay: 'TOSSPAY', flowMode: 'DIRECT' };
+    if (h === 'bank_transfer') return { method: 'TRANSFER', easyPay: null, flowMode: 'DEFAULT' };
+    return { method: 'CARD', easyPay: null, flowMode: 'DEFAULT' };
   }
 
   return {
@@ -47,7 +74,7 @@ export function createTossProvider({
     configured,
     supportedCurrencies: ['KRW'],
 
-    async createCheckoutSession({ order, userDisplayName, returnUrl, paymentMethodHint }) {
+    async createCheckoutSession({ order, userDisplayName, returnUrl, paymentMethodHint, requestOrigin }) {
       if (!configured) {
         throw new ApiError(503, 'TOSS_NOT_CONFIGURED', 'Toss Payments clientKey/secretKey are not configured');
       }
@@ -56,23 +83,58 @@ export function createTossProvider({
       }
 
       const methodSpec = mapPaymentMethod(paymentMethodHint);
-      const sep = String(returnUrl || '/?view=billing').includes('?') ? '&' : '?';
-      const baseReturn = returnUrl || '/?view=billing';
+      const origin = requestOrigin || publicBaseUrl || 'http://localhost:8080';
+      // Toss Payments v2 SDK automatically appends paymentKey, orderId, and amount to successUrl.
+      const successUrl = buildAbsoluteReturnUrl(returnUrl || '/?view=wallet', origin, {
+        payProvider: 'toss',
+        tossStatus: 'success'
+      });
+      const failUrl = buildAbsoluteReturnUrl(returnUrl || '/?view=wallet', origin, {
+        payProvider: 'toss',
+        tossStatus: 'fail',
+        orderId: order.id
+      });
+      const orderName = `PlayCoin ${(order.base_coins + order.bonus_coins).toLocaleString('ko-KR')} (${order.base_coins} + ${order.bonus_coins} 보너스)`;
+
+      const sdkRequestParams = {
+        method: methodSpec.method,
+        amount: {
+          currency: 'KRW',
+          value: order.amount_minor
+        },
+        orderId: order.id,
+        orderName,
+        customerName: userDisplayName || 'PlayHub User',
+        successUrl,
+        failUrl,
+        ...(methodSpec.method === 'CARD' && methodSpec.easyPay
+          ? {
+              card: {
+                flowMode: 'DIRECT',
+                easyPay: methodSpec.easyPay
+              }
+            }
+          : {})
+      };
 
       return {
         provider: 'toss',
         mode: sandbox ? 'sandbox' : 'live',
+        checkoutType: 'toss_v2_sdk',
+        sdkUrl,
         clientKey,
         orderId: order.id,
-        orderName: `PlayCoin ${(order.base_coins + order.bonus_coins).toLocaleString('ko-KR')} (${order.base_coins} + ${order.bonus_coins} 보너스)`,
+        orderName,
         amount: order.amount_minor,
         currency: 'KRW',
         customerKey: order.principal_id,
         customerName: userDisplayName || 'PlayHub User',
         method: methodSpec.method,
+        flowMode: methodSpec.flowMode,
         easyPayProvider: methodSpec.easyPay,
-        successUrl: `${baseReturn}${sep}tossStatus=success&orderId=${encodeURIComponent(order.id)}`,
-        failUrl: `${baseReturn}${sep}tossStatus=fail&orderId=${encodeURIComponent(order.id)}`,
+        successUrl,
+        failUrl,
+        sdkRequestParams,
         providerPaymentId: null
       };
     },
@@ -95,6 +157,7 @@ export function createTossProvider({
             'Content-Type': 'application/json',
             'Idempotency-Key': `toss-confirm:${order.id}`
           },
+          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
           body: JSON.stringify({
             paymentKey: providerPaymentId,
             orderId: order.id,
@@ -214,18 +277,24 @@ export function createTossProvider({
         throw new ApiError(409, 'PROVIDER_TRANSACTION_MISSING');
       }
       const endpoint = `${apiBaseUrl.replace(/\/$/, '')}/v1/payments/${encodeURIComponent(order.provider_payment_id)}/cancel`;
-      const response = await fetchImpl(endpoint, {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader(),
-          'Content-Type': 'application/json',
-          'Idempotency-Key': `toss-cancel:${order.id}:${amountMinor}`
-        },
-        body: JSON.stringify({
-          cancelReason: reason || 'customer_7d_withdrawal',
-          cancelAmount: amountMinor
-        })
-      });
+      let response;
+      try {
+        response = await fetchImpl(endpoint, {
+          method: 'POST',
+          headers: {
+            Authorization: authHeader(),
+            'Content-Type': 'application/json',
+            'Idempotency-Key': `toss-cancel:${order.id}:${amountMinor}`
+          },
+          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+          body: JSON.stringify({
+            cancelReason: reason || 'customer_7d_withdrawal',
+            cancelAmount: amountMinor
+          })
+        });
+      } catch (err) {
+        throw new ApiError(502, 'TOSS_NETWORK_ERROR', err.message || 'Failed to reach Toss Payments cancel API');
+      }
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new ApiError(502, data.code || 'TOSS_REFUND_FAILED', data.message || `Toss cancel failed (${response.status})`);

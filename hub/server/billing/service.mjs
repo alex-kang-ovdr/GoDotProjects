@@ -84,7 +84,14 @@ export function createBillingService({
 
   const allowMockProvider = config.allowMockProvider === true;
   const allowDemoAccount = config.allowDemoAccount === true;
-  const hasRealProvider = Boolean(providers.xsolla?.configured || providers.toss?.configured || providers.stripe_gpay?.configured);
+  const hasRealProvider = Boolean(
+    providers.xsolla?.configured ||
+    providers.toss?.configured ||
+    providers.stripe_gpay?.configured ||
+    providers.kakaopay?.configured ||
+    providers.naverpay?.configured ||
+    providers.tosspay?.configured
+  );
   const routingStage = config.routingStage || (hasRealProvider ? 'stage1' : 'mock');
   const enabledProviderNames = Array.isArray(config.enabledProviders) ? config.enabledProviders : Object.keys(providers);
   const defaultProviderMode = allowMockProvider && !hasRealProvider ? 'mock' : routingStage;
@@ -113,6 +120,41 @@ export function createBillingService({
     return adapter;
   }
 
+  function describeEasyPayMethod(methodHint, label) {
+    try {
+      const decision = router.selectProvider({
+        currency: 'KRW',
+        channel: 'web_browser',
+        paymentMethodHint: methodHint,
+        preferredProvider: allowMockProvider && !hasRealProvider ? 'mock' : null
+      });
+      const adapter = providers[decision.provider];
+      const isDirect = decision.provider === methodHint;
+      const isTossDirect = decision.provider === 'toss';
+      return {
+        method: methodHint,
+        label,
+        provider: decision.provider,
+        mode: adapter?.mode || 'mock',
+        integrationType: isDirect ? 'direct_api' : (isTossDirect ? 'toss_v2_direct' : (decision.provider === 'mock' ? 'sandbox_simulation' : 'pg_hosted')),
+        configured: Boolean(adapter?.configured || decision.provider === 'mock'),
+        failoverChain: decision.provider === methodHint
+          ? [methodHint, ...(providers.toss?.configured ? ['toss'] : []), ...(providers.xsolla?.configured ? ['xsolla'] : [])]
+          : [decision.provider]
+      };
+    } catch {
+      return {
+        method: methodHint,
+        label,
+        provider: null,
+        mode: 'unavailable',
+        integrationType: 'unavailable',
+        configured: false,
+        failoverChain: []
+      };
+    }
+  }
+
   function getCatalog({ currency = 'KRW', channel = 'web_browser' } = {}) {
     const offers = listCatalogOffers(db, { currency, channel, now });
     return {
@@ -124,8 +166,14 @@ export function createBillingService({
       allowDemoAccount,
       paymentMethods: {
         koreaLocal: ['card_kr', 'kakaopay', 'naverpay', 'tosspay', 'bank_transfer'],
+        koreaEasyPay: {
+          kakaopay: describeEasyPayMethod('kakaopay', '카카오페이'),
+          naverpay: describeEasyPayMethod('naverpay', '네이버페이'),
+          tosspay: describeEasyPayMethod('tosspay', '토스페이'),
+          card_kr: describeEasyPayMethod('card_kr', '국내 신용/체크카드')
+        },
         global: ['card_global', 'google_pay', 'apple_pay', 'paypal'],
-        googlePayNote: 'Google Pay Web (0% Google fee, up to +25% PlayCoin bonus) supports global cards; KRW domestic checkout uses local easy-pay & cards.'
+        googlePayNote: 'Google Pay Web (0% Google fee, up to +25% PlayCoin bonus) supports global cards; KRW domestic checkout uses KakaoPay/NaverPay/TossPay direct APIs or Toss Payments v2 Direct.'
       },
       plans: PLAN_QUOTAS,
       creatorDirectPolicy: {
@@ -296,6 +344,17 @@ export function createBillingService({
     };
   }
 
+  function sanitizeReturnPath(rawReturnUrl) {
+    if (rawReturnUrl === undefined || rawReturnUrl === null || rawReturnUrl === '') return '/?view=billing';
+    if (!safeString(rawReturnUrl, 512)) {
+      throw new ApiError(400, 'INVALID_RETURN_URL', 'returnUrl must be a valid relative path');
+    }
+    if (!rawReturnUrl.startsWith('/') || rawReturnUrl.startsWith('//') || rawReturnUrl.includes('\\')) {
+      throw new ApiError(400, 'INVALID_RETURN_URL', 'returnUrl must be a same-origin relative path');
+    }
+    return rawReturnUrl;
+  }
+
   async function createCheckoutOrder({
     principalId,
     skuId,
@@ -305,20 +364,22 @@ export function createBillingService({
     preferredProvider = null,
     agreedTermsVersion,
     returnUrl = '/?view=billing',
+    requestOrigin = '',
     idempotencyKey
   }) {
     if (!safeString(agreedTermsVersion, 64)) {
       throw new ApiError(422, 'TERMS_CONSENT_REQUIRED', 'Pre-checkout withdrawal and bonus terms agreement is required');
     }
 
+    const safeReturnUrl = sanitizeReturnPath(returnUrl);
     const curr = String(currency || 'KRW').toUpperCase();
     const userRow = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(principalId);
     if (!userRow || userRow.kind !== 'registered') {
       throw new ApiError(403, 'REGISTERED_ACCOUNT_REQUIRED', 'Google account login is required before purchasing PlayCoin');
     }
 
-    if (preferredProvider === 'mock' && providers.xsolla?.configured) {
-      throw new ApiError(403, 'MOCK_PROVIDER_FORBIDDEN', 'Mock provider cannot be selected when Xsolla is configured');
+    if (preferredProvider === 'mock' && hasRealProvider) {
+      throw new ApiError(403, 'MOCK_PROVIDER_FORBIDDEN', 'Mock provider cannot be selected when a real payment provider is configured');
     }
 
     const routeDecision = router.selectProvider({
@@ -379,19 +440,32 @@ export function createBillingService({
       }
     });
 
-    const orderRow = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(created.body.orderId);
+    let orderRow = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(created.body.orderId);
     let checkout;
     try {
       checkout = await providerAdapter.createCheckoutSession({
         order: orderRow,
         userDisplayName: userRow.display_name,
-        returnUrl,
+        returnUrl: safeReturnUrl,
+        requestOrigin,
         paymentMethodHint
       });
       router.recordSuccess(providerName);
     } catch (error) {
-      router.recordFailure(providerName, error.code || 'CHECKOUT_ERROR');
+      if (!error.status || error.status >= 500) {
+        router.recordFailure(providerName, error.code || 'CHECKOUT_ERROR');
+      }
       throw error;
+    }
+
+    // Persist server-issued provider tokens (KakaoPay tid, TossPay payToken) so /confirm never trusts client-spoofed IDs.
+    if (providerAdapter.persistsTokenAtCheckout && safeString(checkout?.providerPaymentId, 200) && !orderRow.provider_payment_id) {
+      db.prepare(`
+        UPDATE billing_orders
+        SET provider_payment_id=?, updated_at=?
+        WHERE id=? AND provider_payment_id IS NULL
+      `).run(String(checkout.providerPaymentId), now(), orderRow.id);
+      orderRow = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderRow.id);
     }
 
     return {
@@ -478,7 +552,7 @@ export function createBillingService({
     });
   }
 
-  async function confirmOrderPayment({ principalId, orderId, providerPaymentId, amountMinor }) {
+  async function confirmOrderPayment({ principalId, orderId, providerPaymentId, pgToken = null, amountMinor }) {
     const order = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
     if (!order || order.principal_id !== principalId) {
       throw new ApiError(404, 'ORDER_NOT_FOUND');
@@ -490,7 +564,7 @@ export function createBillingService({
     const adapter = getProviderAdapter(order.provider);
     let verification;
     try {
-      verification = await adapter.verifyPayment({ order, providerPaymentId, amountMinor });
+      verification = await adapter.verifyPayment({ order, providerPaymentId, pgToken, amountMinor });
       router.recordSuccess(order.provider);
     } catch (error) {
       if (!error.status || error.status >= 500) {

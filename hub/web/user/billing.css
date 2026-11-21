@@ -422,7 +422,7 @@
 }
 .checkout-methods {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
   gap: 8px;
   margin: 10px 0 14px;
 }
@@ -434,10 +434,142 @@
   text-align: left;
   font-size: 13px;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
 }
 .checkout-method-btn[aria-pressed="true"] {
   border: 2px solid var(--evergreen);
-  background: #f2f8e4;
+  background: #EEF2FF;
+}
+.easypay-method-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.easypay-method-label {
+  font-weight: 750;
+  color: var(--ink);
+}
+.easypay-method-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.easypay-brand-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  flex: none;
+}
+.easypay-brand-chip.brand-kakaopay {
+  background: #FEE500;
+  color: #191919;
+}
+.easypay-brand-chip.brand-naverpay {
+  background: #03C75A;
+  color: #FFFFFF;
+}
+.easypay-brand-chip.brand-tosspay {
+  background: #0064FF;
+  color: #FFFFFF;
+}
+.easypay-brand-chip.brand-card {
+  background: #334155;
+  color: #FFFFFF;
+}
+.easypay-brand-chip.brand-gpay {
+  background: #111827;
+  color: #FFFFFF;
+}
+.easypay-method-btn.brand-kakaopay[aria-pressed="true"] {
+  border-color: #D9A900;
+  background: #FEFCE8;
+}
+.easypay-method-btn.brand-naverpay[aria-pressed="true"] {
+  border-color: #03C75A;
+  background: #ECFDF5;
+}
+.easypay-method-btn.brand-tosspay[aria-pressed="true"] {
+  border-color: #0064FF;
+  background: #EFF6FF;
+}
+.easypay-hero-pill.brand-kakaopay {
+  background: rgba(254, 229, 0, 0.22);
+  border-color: rgba(254, 229, 0, 0.55);
+  color: #FEF9C3;
+}
+.easypay-hero-pill.brand-naverpay {
+  background: rgba(3, 199, 90, 0.22);
+  border-color: rgba(3, 199, 90, 0.55);
+  color: #DCFCE7;
+}
+.easypay-hero-pill.brand-tosspay {
+  background: rgba(96, 165, 250, 0.24);
+  border-color: rgba(147, 197, 253, 0.55);
+  color: #EFF6FF;
+}
+.easypay-sandbox-sheet {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: #F8FAFC;
+  margin-top: 8px;
+}
+.easypay-sandbox-sheet.brand-kakaopay {
+  border-color: #EAB308;
+  background: #FEFCE8;
+}
+.easypay-sandbox-sheet.brand-naverpay {
+  border-color: #10B981;
+  background: #ECFDF5;
+}
+.easypay-sandbox-sheet.brand-tosspay {
+  border-color: #3B82F6;
+  background: #EFF6FF;
+}
+.easypay-sandbox-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.easypay-callback-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+}
+.easypay-callback-banner p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+}
+.easypay-callback-banner.success {
+  border-color: #16A34A;
+  background: #ECFDF5;
+  color: #14532D;
+}
+.easypay-callback-banner.cancel {
+  border-color: #D97706;
+  background: #FFFBEB;
+  color: #78350F;
+}
+.easypay-callback-banner.error {
+  border-color: #DC2626;
+  background: #FEF2F2;
+  color: #991B1B;
 }
 .checkout-notice {
   font-size: 12.5px;
