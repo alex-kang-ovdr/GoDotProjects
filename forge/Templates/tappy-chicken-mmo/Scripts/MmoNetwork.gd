@@ -16,7 +16,9 @@ const DEFAULT_PORT := 7788
 const DEFAULT_COURSE_SEED := 42071
 const DEFAULT_PROXIMITY_RADIUS := 520.0
 const LEAVE_HYSTERESIS := 60.0
-const SYNC_INTERVAL := 0.25
+const DEFAULT_MAX_NEARBY_GHOSTS := 12
+const DEFAULT_PLAYER_SPEED := 170.0
+const SYNC_INTERVAL := 2.0 # Event-driven sync: fallback drift-reconcile only if no flap/phase event for 2s.
 const MAX_CLIENTS := 64
 const VALID_EVENTS := ["join", "flap", "phase", "sync", "leave"]
 const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
@@ -24,6 +26,7 @@ const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
 @export var auto_start := true
 @export var proximity_radius := DEFAULT_PROXIMITY_RADIUS
 @export var leave_hysteresis := LEAVE_HYSTERESIS
+@export var max_nearby_ghosts := DEFAULT_MAX_NEARBY_GHOSTS
 
 var transport_mode := "offline"
 var role := "offline"
@@ -241,16 +244,19 @@ func publish_local_event(event_type: String, game_snapshot: Dictionary) -> void:
 		return
 	if event_type not in VALID_EVENTS:
 		return
+	_sync_clock = 0.0 # Active gameplay events reset idle drift timer (0 Hz redundant sync).
 	_client_seq += 1
 	var bird: Dictionary = game_snapshot.get("bird", {})
+	var settings: Dictionary = game_snapshot.get("settings", {})
 	var payload := {
 		"event_type": event_type,
 		"name": player_name if not player_name.is_empty() else ("P-" + local_peer_id),
 		"run_distance": float(game_snapshot.get("run_distance", 0.0)),
+		"speed": float(settings.get("speed", DEFAULT_PLAYER_SPEED)),
 		"y": float(bird.get("y", 290.0)),
 		"vy": float(bird.get("vy", 0.0)),
 		"angle": float(bird.get("angle", 0.0)),
-		"flap_time": float(game_snapshot.get("flap_time", 0.0)),
+		"flap_time": 0.0 if event_type == "flap" else float(game_snapshot.get("flap_time", 0.0)),
 		"phase": str(game_snapshot.get("state", "menu")),
 		"score": int(game_snapshot.get("score", 0)),
 		"seq": _client_seq,
@@ -327,6 +333,13 @@ func rpc_client_multicast_event(sender_peer_id: int, payload: Dictionary) -> voi
 	_deliver_local_peer_event(str(sender_peer_id), payload)
 
 
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_client_multicast_sync(sender_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_event(str(sender_peer_id), payload)
+
+
 @rpc("authority", "call_remote", "reliable")
 func rpc_client_peer_removed(sender_peer_id: int) -> void:
 	if multiplayer.get_remote_sender_id() != 1:
@@ -350,6 +363,7 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"id": peer_id,
 		"name": nickname if not nickname.is_empty() else ("Player %d" % peer_id),
 		"run_distance": 0.0,
+		"speed": DEFAULT_PLAYER_SPEED,
 		"y": 290.0,
 		"vy": 0.0,
 		"angle": 0.0,
@@ -357,8 +371,23 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"phase": "menu",
 		"score": 0,
 		"seq": 0,
+		"state_at_msec": Time.get_ticks_msec(),
 		"nearby": {},
 	}
+
+
+func _estimate_peer_distance(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["run_distance"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return float(peer["run_distance"]) + float(peer["speed"]) * elapsed
+
+
+func _estimate_peer_flap_time(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["flap_time"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return minf(10.0, float(peer["flap_time"]) + elapsed)
 
 
 func _is_within_proximity(dist_a: float, dist_b: float, was_nearby: bool) -> bool:
@@ -385,17 +414,24 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 	var phase := str(raw.get("phase", peer["phase"]))
 	if phase not in VALID_PHASES:
 		phase = "menu"
+	var now_msec := Time.get_ticks_msec()
 	peer["run_distance"] = clampf(float(raw.get("run_distance", peer["run_distance"])), 0.0, 10000000.0)
+	if raw.has("speed"):
+		peer["speed"] = clampf(float(raw.get("speed", DEFAULT_PLAYER_SPEED)), 60.0, 400.0)
 	peer["y"] = clampf(float(raw.get("y", peer["y"])), 0.0, 640.0)
 	peer["vy"] = clampf(float(raw.get("vy", peer["vy"])), -2000.0, 2000.0)
 	peer["angle"] = clampf(float(raw.get("angle", peer["angle"])), -PI, PI)
-	peer["flap_time"] = clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
+	peer["flap_time"] = 0.0 if event_type == "flap" else clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
 	peer["phase"] = phase
 	peer["score"] = maxi(0, int(raw.get("score", peer["score"])))
+	peer["state_at_msec"] = now_msec
 
 	server_events_received += 1
-	var clean_event := _peer_to_event_payload(peer, event_type)
+	var clean_event := _peer_to_event_payload(peer, event_type, now_msec)
 	var sender_nearby: Dictionary = peer["nearby"]
+	var ghost_cap := clampi(max_nearby_ghosts, 1, MAX_CLIENTS - 1)
+	var presence_changed: Dictionary = {}
+	var sender_dist := float(peer["run_distance"])
 
 	for other_id_variant in _server_peers.keys():
 		var other_id := int(other_id_variant)
@@ -404,7 +440,9 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 		var other: Dictionary = _server_peers[other_id]
 		var other_nearby: Dictionary = other["nearby"]
 		var was_nearby := sender_nearby.has(other_id)
-		var now_nearby := _is_within_proximity(float(peer["run_distance"]), float(other["run_distance"]), was_nearby)
+		var other_dist := _estimate_peer_distance(other, now_msec)
+		var in_range := _is_within_proximity(sender_dist, other_dist, was_nearby)
+		var now_nearby := in_range and (was_nearby or (sender_nearby.size() < ghost_cap and other_nearby.size() < ghost_cap))
 
 		if now_nearby:
 			_server_send_event_to(other_id, sender_id, clean_event)
@@ -412,29 +450,37 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 			if not was_nearby:
 				sender_nearby[other_id] = true
 				other_nearby[sender_id] = true
-				# Symmetric AOI entry: also deliver the existing nearby peer's state back to sender.
-				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync"))
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
+				# Symmetric AOI entry with estimated position & flap_time for smooth drop-in.
+				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync", now_msec))
 				server_multicasts_sent += 1
 		else:
 			server_filtered_out += 1
 			if was_nearby:
 				sender_nearby.erase(other_id)
 				other_nearby.erase(sender_id)
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
 				_server_send_removed_to(other_id, sender_id)
 				_server_send_removed_to(sender_id, other_id)
 
-	_server_broadcast_presence()
+	if event_type == "join":
+		_server_broadcast_presence()
+	elif not presence_changed.is_empty():
+		_server_send_presence_subset(presence_changed)
 
 
-func _peer_to_event_payload(peer: Dictionary, event_type: String) -> Dictionary:
+func _peer_to_event_payload(peer: Dictionary, event_type: String, now_msec: int = -1) -> Dictionary:
+	var ts := Time.get_ticks_msec() if now_msec < 0 else now_msec
 	return {
 		"event_type": event_type,
 		"name": str(peer["name"]),
-		"run_distance": float(peer["run_distance"]),
+		"run_distance": _estimate_peer_distance(peer, ts),
 		"y": float(peer["y"]),
 		"vy": float(peer["vy"]),
 		"angle": float(peer["angle"]),
-		"flap_time": float(peer["flap_time"]),
+		"flap_time": 0.0 if event_type == "flap" else _estimate_peer_flap_time(peer, ts),
 		"phase": str(peer["phase"]),
 		"score": int(peer["score"]),
 		"seq": int(peer["seq"]),
@@ -445,6 +491,8 @@ func _server_send_event_to(target_id: int, sender_id: int, payload: Dictionary) 
 	if target_id == 1:
 		if _server_also_plays:
 			_deliver_local_peer_event(str(sender_id), payload)
+	elif str(payload.get("event_type", "sync")) == "sync":
+		rpc_client_multicast_sync.rpc_id(target_id, sender_id, payload)
 	else:
 		rpc_client_multicast_event.rpc_id(target_id, sender_id, payload)
 
@@ -455,6 +503,20 @@ func _server_send_removed_to(target_id: int, removed_id: int) -> void:
 			_deliver_local_peer_removed(str(removed_id))
 	else:
 		rpc_client_peer_removed.rpc_id(target_id, removed_id)
+
+
+func _server_send_presence_subset(peer_ids: Dictionary) -> void:
+	var total := _server_peers.size()
+	online_count = maxi(1, total)
+	if _server_also_plays and _server_peers.has(1):
+		nearby_count = (_server_peers[1]["nearby"] as Dictionary).size()
+	for peer_id_variant in peer_ids.keys():
+		var peer_id := int(peer_id_variant)
+		if peer_id == 1 or not _server_peers.has(peer_id):
+			continue
+		var peer: Dictionary = _server_peers[peer_id]
+		rpc_client_presence.rpc_id(peer_id, total, (peer["nearby"] as Dictionary).size())
+	_emit_status()
 
 
 func _server_broadcast_presence() -> void:

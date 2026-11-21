@@ -17,6 +17,7 @@ const {
 const { injectPlayHubShell } = require('../Tools/build-queue.cjs');
 const { zipFiles } = require('../Tools/export-godot-project.cjs');
 const { validateDeploymentZip } = require('../Tools/deployment-zip-validator.cjs');
+const { PlatformStore } = require('../Tools/platform-store.cjs');
 
 test('estimateMonthlyHubPoints matches multiplayer-deploy-billing-plan flat-rate pricing', () => {
   const sp = estimateMonthlyHubPoints({ deployMode: 'singleplay', specTier: 'large', activeHoursPerDay: 24, avgCcu: 1000 });
@@ -118,6 +119,52 @@ test('injectPlayHubShell injects bridge script idempotently and passes deploymen
     const validated = validateDeploymentZip(zipBuffer);
     assert.equal(validated.entryPoint, 'index.html');
     assert.equal(validated.entries, 4);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('tappy-chicken-mmo Forge template exposes showcase, publishDefaults (MMO portrait), and valid release manifest', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tappy-mmo-tpl-'));
+  try {
+    const forgeRoot = path.resolve(__dirname, '..');
+    const store = new PlatformStore(forgeRoot, tmp);
+    const tpl = store.getTemplate('tappy-chicken-mmo');
+    assert.equal(tpl.id, 'tappy-chicken-mmo');
+    assert.equal(tpl.dimension, '2d');
+    assert.ok(tpl.publishDefaults);
+    assert.equal(tpl.publishDefaults.deployProfile.deployMode, 'mmo');
+    assert.equal(tpl.publishDefaults.deployProfile.specTier, 'small');
+    assert.equal(tpl.publishDefaults.gameMetadata.slug, 'tappy-chicken-mmo');
+    assert.equal(tpl.publishDefaults.gameMetadata.viewport.width, 480);
+    assert.equal(tpl.publishDefaults.gameMetadata.viewport.height, 640);
+    assert.equal(tpl.publishDefaults.gameMetadata.viewport.orientation, 'portrait');
+
+    const showcase = store.getShowcase('tappy-chicken-mmo');
+    assert.equal(showcase.schemaVersion, 3);
+    assert.ok(showcase.bootstrapFiles.includes('Scripts/MmoNetwork.gd'));
+
+    const createdReady = store.createProject({ name: 'My Tappy MMO', template: 'tappy-chicken-mmo', mode: 'ready' });
+    assert.equal(createdReady.template, 'tappy-chicken-mmo');
+    assert.ok(createdReady.files['Scripts/MmoNetwork.gd']);
+
+    const createdShowcase = store.createProject({ name: 'My Tappy MMO Showcase', template: 'tappy-chicken-mmo', mode: 'showcase' });
+    assert.equal(createdShowcase.mode, 'showcase');
+
+    const manifest = buildReleaseManifest({
+      releaseId: 'e'.repeat(24),
+      projectId: createdReady.id,
+      projectName: createdReady.name,
+      sourceRevision: createdReady.revision,
+      build: { buildId: '1'.repeat(16), artifactSha256: '2'.repeat(64) },
+      visibility: 'public',
+      deployProfile: tpl.publishDefaults.deployProfile,
+      gameMetadata: tpl.publishDefaults.gameMetadata
+    });
+    const check = validateReleaseManifest(manifest);
+    assert.equal(check.ok, true);
+    assert.equal(manifest.deployProfile.deployMode, 'mmo');
+    assert.equal(manifest.gameMetadata.viewport.orientation, 'portrait');
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }

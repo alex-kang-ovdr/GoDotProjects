@@ -23,6 +23,8 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
+const MAX_PACKAGE_BYTES = 64 * 1024 * 1024;
+const SHA256_HEX_RE = /^[a-f0-9]{64}$/;
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
 const ACCOUNT_KEY_RE = /^[a-f0-9]{64}$/;
 const PROJECT_ID_RE = /^[a-f0-9]{24}$/;
@@ -31,6 +33,49 @@ const BUILD_ID_RE = /^[a-f0-9]{16}$/;
 const HUB_SPECIAL_SUBROUTE_RE = /^\/projects\/[a-f0-9]{24}\/(?:builds(?:\/[a-f0-9]{16})?|deployments\/[a-f0-9]{24}|submissions\/[a-f0-9]{24}|cloud(?:\/(?:history|retry\/[1-9][0-9]*))?)$/;
 
 const fail = (status, code) => Object.assign(new Error(code), { status, code });
+function expectedReleaseArtifactSha(release) {
+  const raw = release?.build?.artifactSha256 || release?.releaseManifest?.artifacts?.clientWeb?.sha256 || '';
+  const lower = String(raw).trim().toLowerCase();
+  return SHA256_HEX_RE.test(lower) ? lower : '';
+}
+
+async function readBoundedPackageStream(response, { maxBytes = MAX_PACKAGE_BYTES, retainBuffer = true, controller = null } = {}) {
+  const rawLength = response.headers?.get?.('content-length');
+  if (rawLength !== null && rawLength !== undefined && rawLength !== '') {
+    const declared = Number(rawLength);
+    if (Number.isFinite(declared) && declared > maxBytes) {
+      try { controller?.abort(); } catch {}
+      try { await response.body?.cancel?.(); } catch {}
+      throw fail(413, 'PACKAGE_TOO_LARGE');
+    }
+  }
+  const hasher = crypto.createHash('sha256');
+  let totalBytes = 0;
+  const chunks = [];
+  if (response.body && typeof response.body[Symbol.asyncIterator] === 'function') {
+    for await (const chunk of response.body) {
+      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      totalBytes += buf.length;
+      if (totalBytes > maxBytes) {
+        try { controller?.abort(); } catch {}
+        throw fail(413, 'PACKAGE_TOO_LARGE');
+      }
+      hasher.update(buf);
+      if (retainBuffer) chunks.push(buf);
+    }
+  } else {
+    const buf = Buffer.from(await response.arrayBuffer());
+    totalBytes = buf.length;
+    if (totalBytes > maxBytes) throw fail(413, 'PACKAGE_TOO_LARGE');
+    hasher.update(buf);
+    if (retainBuffer) chunks.push(buf);
+  }
+  return {
+    buffer: retainBuffer ? Buffer.concat(chunks) : null,
+    bytes: totalBytes,
+    sha256: hasher.digest('hex')
+  };
+}
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(body));
@@ -227,11 +272,27 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
 
   function getReleasePackage(key, projectId, releaseId) {
     const resolved = builds.resolveWithMetadata(key, projectId, releaseId);
+    const computedSha = String(resolved.sha256 || '').toLowerCase();
+    const expectedSha = expectedReleaseArtifactSha(resolved.release);
+    if (expectedSha && expectedSha !== computedSha) {
+      throw fail(409, 'PACKAGE_INTEGRITY_MISMATCH');
+    }
     return {
       buffer: resolved.bytes,
-      sha256: resolved.sha256,
+      sha256: computedSha,
       release: resolved.release,
       buildId: resolved.job.id
+    };
+  }
+
+  function verifyReleasePackage(key, projectId, releaseId) {
+    const resolved = getReleasePackage(key, projectId, releaseId);
+    return {
+      verified: true,
+      sha256: resolved.sha256,
+      bytes: resolved.buffer.length,
+      release: resolved.release,
+      buildId: resolved.buildId
     };
   }
 
@@ -239,6 +300,7 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
     handlePlatform,
     getRelease,
     getReleasePackage,
+    verifyReleasePackage,
     enqueueBuild,
     getBuild,
     archiveDeployment,
@@ -264,6 +326,7 @@ export function createLocalForgeGateway({ config = {}, root, env = process.env, 
     handlePlatform: platformImpl ? platformImpl.handlePlatform : disabled,
     getRelease: platformImpl ? platformImpl.getRelease : disabled,
     getReleasePackage: platformImpl ? platformImpl.getReleasePackage : disabled,
+    verifyReleasePackage: platformImpl ? platformImpl.verifyReleasePackage : disabled,
     enqueueBuild: platformImpl ? platformImpl.enqueueBuild : disabled,
     getBuild: platformImpl ? platformImpl.getBuild : disabled,
     archiveDeployment: platformImpl ? platformImpl.archiveDeployment : disabled,
@@ -371,6 +434,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
       handlePlatform: disabled,
       getRelease: disabled,
       getReleasePackage: disabled,
+      verifyReleasePackage: disabled,
       enqueueBuild: disabled,
       getBuild: disabled,
       archiveDeployment: disabled,
@@ -457,7 +521,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     return data.release;
   }
 
-  async function getReleasePackage(accountKey, projectId, releaseId) {
+  async function fetchReleasePackage(accountKey, projectId, releaseId, { retainBuffer = true, maxBytes = MAX_PACKAGE_BYTES } = {}) {
     ensureActive();
     assertAccountKey(accountKey);
     assertProjectId(projectId);
@@ -483,13 +547,15 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
         try { errBody = await response.json(); } catch {}
         throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
       }
-      const buffer = Buffer.from(await response.arrayBuffer());
-      if (buffer.length > 64 * 1024 * 1024) throw fail(413, 'PACKAGE_TOO_LARGE');
-      const computedSha = crypto.createHash('sha256').update(buffer).digest('hex');
+      const streamed = await readBoundedPackageStream(response, { maxBytes, retainBuffer, controller });
+      const computedSha = streamed.sha256;
       const headerSha = String(response.headers.get('x-artifact-sha256') || '').toLowerCase();
       if (headerSha && headerSha !== computedSha) throw fail(502, 'PACKAGE_INTEGRITY_MISMATCH');
+      const expectedSha = expectedReleaseArtifactSha(release);
+      if (expectedSha && expectedSha !== computedSha) throw fail(409, 'PACKAGE_INTEGRITY_MISMATCH');
       return {
-        buffer,
+        ...(retainBuffer ? { buffer: streamed.buffer } : { verified: true }),
+        bytes: streamed.bytes,
         sha256: computedSha,
         release,
         buildId: String(response.headers.get('x-build-id') || release?.build?.buildId || '')
@@ -498,6 +564,14 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
       clearTimeout(timer);
       active.delete(controller);
     }
+  }
+
+  async function getReleasePackage(accountKey, projectId, releaseId, options = {}) {
+    return await fetchReleasePackage(accountKey, projectId, releaseId, { ...options, retainBuffer: true });
+  }
+
+  async function verifyReleasePackage(accountKey, projectId, releaseId, options = {}) {
+    return await fetchReleasePackage(accountKey, projectId, releaseId, { ...options, retainBuffer: false });
   }
 
   async function enqueueBuild(accountKey, projectId, { idempotencyKey } = {}) {
@@ -693,6 +767,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     handlePlatform,
     getRelease,
     getReleasePackage,
+    verifyReleasePackage,
     enqueueBuild,
     getBuild,
     archiveDeployment,

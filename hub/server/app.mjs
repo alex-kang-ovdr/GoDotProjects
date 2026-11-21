@@ -134,7 +134,8 @@ export function createApp(input, dependencies = {}) {
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
   const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit,forgeGateway});
-  const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null});
+  const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null,env});
+  const catalogOptions = ugcPublish.ugcOrigin ? { ugcOrigin: ugcPublish.ugcOrigin } : {};
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
@@ -271,9 +272,9 @@ export function createApp(input, dependencies = {}) {
       const current=sessionFor(req,'public'); const row=current?.principal_id && db.prepare('SELECT locale FROM user_preferences WHERE principal_id=?').get(current.principal_id);
       json(res,200,{locale:row?.locale || null}); return;
     }
-    if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db).filter(g => g.enabled) }); return; }
+    if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db,catalogOptions).filter(g => g.enabled) }); return; }
     const gamePath = path.match(/^\/api\/games\/([a-zA-Z0-9_-]+)$/);
-    if (gamePath && req.method === 'GET') { json(res,200,findGame(rootDir,db,gamePath[1])); return; }
+    if (gamePath && req.method === 'GET') { json(res,200,findGame(rootDir,db,gamePath[1],true,catalogOptions)); return; }
     if (path === '/api/auth/google/start' && req.method === 'GET') {
       const s = sessionFor(req,'public') || newSession(res,'public');if(s.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.start(req,res,s,url); return;
     }
@@ -318,7 +319,7 @@ export function createApp(input, dependencies = {}) {
     }
     if (path === '/api/play-sessions' && req.method === 'POST') {
       rate(`play:${s.id_hash}`,60,60000);
-      const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId)), principal = promote(s,req,res), id = uid();
+      const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId),true,catalogOptions), principal = promote(s,req,res), id = uid();
       db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,principal.id_hash,principal.principal_id,principal.analytics_subject,game.id,game.buildId,now(),now()+2*3600000,principal.traffic_type,principal.qa_run_id);
       serverEvent('play_session_created',principal,game.id,id);
       json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
@@ -599,10 +600,16 @@ export function createApp(input, dependencies = {}) {
   function handler(kind) {
     return async (req,res) => {
       const requestId = uid(); res.setHeader('X-Request-Id',requestId);
+      let isUgcAsset = false;
       try {
         const url = new URL(req.url,'http://internal.invalid');
         if ((kind === 'admin' || remoteForgeVerify) && url.pathname === '/internal/session/verify') {
           await verifyInternalSession(req, res);
+          return;
+        }
+        if (kind === 'public' && (url.pathname === '/play-ugc' || url.pathname.startsWith('/play-ugc/'))) {
+          isUgcAsset = true;
+          ugcPublish.serveUgcAsset(req, res, url.pathname);
           return;
         }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
@@ -616,7 +623,7 @@ export function createApp(input, dependencies = {}) {
         await (kind === 'public' ? publicRoute : adminRoute)(req,res,url);
       } catch(error) {
         const known = error instanceof ApiError;
-        if (!known) { try { const context=sessionFor(req,kind);db.prepare('INSERT INTO errors(id,code,message,game_id,created_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?)').run(uid(),'SERVER_ERROR','서버 요청 처리에 실패했습니다.',null,now(),context?.traffic_type || 'live',context?.qa_run_id || null); } catch {} }
+        if (!known) { try { const context=isUgcAsset?null:sessionFor(req,kind);db.prepare('INSERT INTO errors(id,code,message,game_id,created_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?)').run(uid(),'SERVER_ERROR','서버 요청 처리에 실패했습니다.',null,now(),context?.traffic_type || 'live',context?.qa_run_id || null); } catch {} }
         if (!res.headersSent) json(res,known ? error.status : 500,{error:{code:known ? error.code : 'SERVER_ERROR',message:known ? error.message : '요청 처리에 실패했습니다.',...(known && error.extra ? error.extra : {})},requestId});
         else res.end();
       }

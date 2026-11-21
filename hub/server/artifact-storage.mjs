@@ -220,23 +220,37 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     const metaPath = path.join(hostDir, `${releaseId}.meta.json`);
     const artifactBaseUrl = `${basePrefix}/${hostSlug}/${releaseId}/`;
 
-    // Idempotent: if already extracted with matching sha256, reuse immutable directory.
-    if (fs.existsSync(path.join(targetDir, 'index.html')) && fs.existsSync(metaPath)) {
-      try {
-        const existingMeta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-        if (existingMeta?.sha256 === extracted.sha256) {
-          return {
-            sha256: extracted.sha256,
-            bytes: extracted.bytes,
-            expandedBytes: extracted.expandedBytes,
-            entryCount: extracted.entryCount,
-            artifactBaseUrl
-          };
-        }
-      } catch {}
+    const existingResultIfMatching = () => {
+      if (fs.existsSync(path.join(targetDir, 'index.html')) && fs.existsSync(metaPath)) {
+        try {
+          const existingMeta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+          if (existingMeta?.sha256 === extracted.sha256) {
+            return {
+              sha256: extracted.sha256,
+              bytes: extracted.bytes,
+              expandedBytes: extracted.expandedBytes,
+              entryCount: extracted.entryCount,
+              artifactBaseUrl
+            };
+          }
+        } catch {}
+      }
+      return null;
+    };
+
+    // Immutable releaseId: idempotently reuse only on identical sha256; never overwrite an existing release.
+    if (fs.existsSync(targetDir) || fs.existsSync(metaPath)) {
+      const reused = existingResultIfMatching();
+      if (reused) return reused;
+      throw Object.assign(new Error('RELEASE_IMMUTABLE_CONFLICT'), {
+        code: 'RELEASE_IMMUTABLE_CONFLICT',
+        status: 409
+      });
     }
 
-    const tempDir = path.join(hostDir, `.tmp-${releaseId}-${crypto.randomBytes(6).toString('hex')}`);
+    const nonce = crypto.randomBytes(6).toString('hex');
+    const tempDir = path.join(hostDir, `.tmp-${releaseId}-${nonce}`);
+    const tempMetaPath = path.join(hostDir, `.tmp-${releaseId}-${nonce}.meta.json`);
     fs.mkdirSync(tempDir, { recursive: true });
     try {
       for (const [relativePath, content] of extracted.files.entries()) {
@@ -244,11 +258,7 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(dest, content);
       }
-      if (fs.existsSync(targetDir)) {
-        fs.rmSync(targetDir, { recursive: true, force: true });
-      }
-      fs.renameSync(tempDir, targetDir);
-      fs.writeFileSync(metaPath, JSON.stringify({
+      fs.writeFileSync(tempMetaPath, JSON.stringify({
         hostSlug,
         releaseId,
         sha256: extracted.sha256,
@@ -259,9 +269,26 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
         gameManifest,
         storedAt: new Date().toISOString()
       }, null, 2));
+      try {
+        fs.renameSync(tempDir, targetDir);
+      } catch (renameErr) {
+        if (fs.existsSync(targetDir)) {
+          const reused = existingResultIfMatching();
+          if (reused) return reused;
+          throw Object.assign(new Error('RELEASE_IMMUTABLE_CONFLICT'), {
+            code: 'RELEASE_IMMUTABLE_CONFLICT',
+            status: 409
+          });
+        }
+        throw renameErr;
+      }
+      fs.renameSync(tempMetaPath, metaPath);
     } finally {
       if (fs.existsSync(tempDir)) {
         try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch {}
+      }
+      if (fs.existsSync(tempMetaPath)) {
+        try { fs.rmSync(tempMetaPath, { force: true }); } catch {}
       }
     }
 

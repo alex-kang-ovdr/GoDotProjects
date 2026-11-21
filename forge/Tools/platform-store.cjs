@@ -60,8 +60,9 @@ class PlatformStore {
   }
 
   listTemplates() {
-    return Object.values(templates).map(({ id, name, description, assetPaths, showcase }) => ({
+    return Object.values(templates).map(({ id, name, description, assetPaths, showcase, publishDefaults }) => ({
       id, name, description, assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
+      ...(publishDefaults ? { publishDefaults: clone(publishDefaults) } : {}),
     }));
   }
   getShowcase(id) {
@@ -71,7 +72,12 @@ class PlatformStore {
   getTemplate(id) {
     const template = templates[id];
     if (!template) throw httpError(404, 'Template not found');
-    return { id: template.id, name: template.name, description: template.description, dimension: template.dimension || '3d', assetPaths: clone(template.assetPaths || []), guideOrder: clone(template.guideOrder || []), files: clone(template.files) };
+    return {
+      id: template.id, name: template.name, description: template.description, dimension: template.dimension || '3d',
+      assetPaths: clone(template.assetPaths || []), guideOrder: clone(template.guideOrder || []),
+      ...(template.publishDefaults ? { publishDefaults: clone(template.publishDefaults) } : {}),
+      files: clone(template.files)
+    };
   }
   listProjects() {
     return fs.readdirSync(this.projectsDirectory, { withFileTypes: true }).filter(entry => entry.isDirectory() && validId(entry.name))
