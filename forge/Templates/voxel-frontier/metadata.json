@@ -1,0 +1,21 @@
+{
+  "id": "voxel-frontier",
+  "name": "Voxel Frontier",
+  "description": "3D voxel sandbox with 16x16x16 greedy-meshed chunks, procedural overworld and dungeon generation, mining, crafting, chests, furnaces, and wandering voxel creatures.",
+  "dimension": "3d",
+  "assetPaths": [
+    "scripts/log_material.gdshader"
+  ],
+  "guideOrder": [
+    "scripts/block_registry.gd",
+    "scripts/voxel_chunk_mesher.gd",
+    "scripts/voxel_chunk_renderer.gd",
+    "scripts/voxel_world.gd",
+    "scripts/voxel_player.gd",
+    "scripts/character_asset_catalog.gd",
+    "scripts/mob_director.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ]
+}
