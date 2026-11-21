@@ -49,6 +49,16 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var showGameModal: Bool = false
     @Published public var showUniversalOverlay: Bool = false
 
+    // MARK: M3 Social State
+    @Published public var socialProfile: SocialProfile?
+    @Published public var socialFriends: [SocialFriend] = []
+    @Published public var incomingRequests: [SocialFriendRequest] = []
+    @Published public var activeParty: SocialParty?
+    @Published public var quickMessages: [SocialQuickMessage] = []
+    @Published public var socialToast: String?
+    @Published public var leaderboardGame: MobileCatalogGame?
+    private var accessTokenCache: String?
+
     public let buildStage: String
     public let allowFarmSelector: Bool
     public let defaultHubUrl: String
@@ -149,6 +159,17 @@ public final class PlayHubShellViewModel: ObservableObject {
         ageTier = tier
         ageGateCompleted = tier != .unknown
         UserDefaults.standard.set(tier.rawValue, forKey: "playhub_age_tier")
+        Task {
+            if let token = await ensureAccessToken() {
+                _ = try? await makeApiClient().submitAgeGate(
+                    birthYear: birthYear,
+                    birthMonth: birthMonth,
+                    regionCode: region,
+                    accessToken: token
+                )
+                await syncSocial()
+            }
+        }
     }
 
     public func syncOnlineCatalog() async {
@@ -168,6 +189,7 @@ public final class PlayHubShellViewModel: ObservableObject {
                 try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
                 token = auth.accessToken
             }
+            self.accessTokenCache = token
             let catalog = try await client.fetchCatalog(accessToken: token)
             if !catalog.games.isEmpty {
                 catalogGames = catalog.games
@@ -175,9 +197,288 @@ public final class PlayHubShellViewModel: ObservableObject {
             } else {
                 syncStatusText = "연결됨 · 등록 게임 없음 (\(activeFarm.id))"
             }
+            await syncSocial()
         } catch {
             catalogGames = Self.fallbackDemoCatalog()
             syncStatusText = "오프라인 데모 모드 (\(activeFarm.id) 미연결)"
+        }
+    }
+
+    // MARK: - M3 Social Actions
+
+    private func makeApiClient() -> PlayHubApiClient {
+        PlayHubApiClient(
+            baseUrl: activeFarm.baseUrl,
+            engineVersion: engineVersion,
+            appBuildNumber: appBuildNumber
+        )
+    }
+
+    private func isJwtExpired(_ jwt: String) -> Bool {
+        let parts = jwt.split(separator: ".")
+        guard parts.count >= 2 else { return true }
+        var b64 = String(parts[1]).replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        while b64.count % 4 != 0 { b64 += "=" }
+        guard let data = Data(base64Encoded: b64),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let exp = obj["exp"] as? Double else { return true }
+        return Date(timeIntervalSince1970: exp) <= Date().addingTimeInterval(30)
+    }
+
+    private func ensureAccessToken() async -> String? {
+        if let cached = accessTokenCache ?? KeychainStore.load(forKey: "access_token"),
+           !cached.isEmpty,
+           !isJwtExpired(cached) {
+            accessTokenCache = cached
+            return cached
+        }
+        if let refresh = KeychainStore.load(forKey: "refresh_token"), !refresh.isEmpty,
+           let refreshed = try? await makeApiClient().refreshSession(refreshToken: refresh) {
+            try? KeychainStore.save(refreshed.accessToken, forKey: "access_token")
+            try? KeychainStore.save(refreshed.refreshToken, forKey: "refresh_token")
+            accessTokenCache = refreshed.accessToken
+            return refreshed.accessToken
+        }
+        do {
+            let auth = try await makeApiClient().loginGuest()
+            try? KeychainStore.save(auth.accessToken, forKey: "access_token")
+            try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
+            accessTokenCache = auth.accessToken
+            return auth.accessToken
+        } catch {
+            return nil
+        }
+    }
+
+    public func showSocialToast(_ message: String) {
+        socialToast = message
+        Task {
+            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            if socialToast == message { socialToast = nil }
+        }
+    }
+
+    public func syncSocial() async {
+        guard let token = await ensureAccessToken() else { return }
+        let client = makeApiClient()
+        do {
+            async let profTask = client.fetchSocialProfile(accessToken: token)
+            async let friendsTask = client.fetchSocialFriends(accessToken: token)
+            async let partyTask = client.fetchMyParty(accessToken: token)
+            async let qmTask = client.fetchQuickMessages()
+            let (prof, fr, party, qm) = try await (profTask, friendsTask, partyTask, qmTask)
+            socialProfile = prof
+            socialFriends = fr.friends
+            incomingRequests = fr.incomingRequests
+            activeParty = party
+            quickMessages = qm
+            _ = try? await client.updatePresence(status: showGameModal ? "in_game" : "online", accessToken: token)
+        } catch {
+            // Keep existing local state on transient network failure
+        }
+    }
+
+    public func searchUsers(query: String) async -> [SocialUserHit] {
+        guard let token = await ensureAccessToken() else { return [] }
+        do {
+            return try await makeApiClient().searchSocialUsers(query: query, accessToken: token)
+        } catch {
+            showSocialToast("검색 실패: \(error.localizedDescription)")
+            return []
+        }
+    }
+
+    public func sendFriendRequest(targetPrincipalId: String) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            let res = try await makeApiClient().sendFriendRequest(targetPrincipalId: targetPrincipalId, accessToken: token)
+            showSocialToast(res.status == "accepted" ? "서로 친구가 되었습니다!" : "친구 요청을 보냈습니다.")
+            await syncSocial()
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func respondFriendRequest(requesterId: String, accept: Bool) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            _ = try await makeApiClient().respondFriendRequest(
+                requesterId: requesterId,
+                action: accept ? "accept" : "decline",
+                accessToken: token
+            )
+            showSocialToast(accept ? "친구 요청을 수락했습니다." : "친구 요청을 거절했습니다.")
+            await syncSocial()
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func createParty(title: String?, targetGameId: String?) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            let party = try await makeApiClient().createParty(title: title, targetGameId: targetGameId, accessToken: token)
+            activeParty = party
+            showSocialToast("파티 생성 완료! 코드 \(party.roomCode)")
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func joinParty(roomCode: String) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            let party = try await makeApiClient().joinParty(roomCode: roomCode, accessToken: token)
+            activeParty = party
+            selectedTab = .party
+            showSocialToast("\(party.title)에 합류했습니다!")
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func togglePartyReady(ready: Bool) async {
+        guard let token = await ensureAccessToken(), let partyId = activeParty?.id else { return }
+        do {
+            activeParty = try await makeApiClient().setPartyReady(partyId: partyId, ready: ready, accessToken: token)
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func leaveParty() async {
+        guard let token = await ensureAccessToken(), let partyId = activeParty?.id else { return }
+        do {
+            try await makeApiClient().leaveParty(partyId: partyId, accessToken: token)
+            activeParty = nil
+            showSocialToast("파티에서 나갔습니다.")
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func launchPartyTogether(game: MobileCatalogGame) async {
+        guard let token = await ensureAccessToken(), let partyId = activeParty?.id else {
+            attemptLaunch(game)
+            return
+        }
+        do {
+            let res = try await makeApiClient().launchParty(
+                partyId: partyId,
+                gameId: game.id,
+                gameTitle: game.title,
+                accessToken: token
+            )
+            if let party = res.party { activeParty = party }
+            let roomSuffix = res.launch.map { " · \($0.matchRoomId)" } ?? ""
+            activeGameTitle = "\(game.title)\(roomSuffix)"
+            showGameModal = true
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func ackAndJoinLaunch(_ launch: SocialPartyLaunch) async {
+        guard let token = await ensureAccessToken(), let partyId = activeParty?.id else { return }
+        let game = catalogGames.first(where: { $0.id == launch.gameId }) ?? catalogGames.first
+        do {
+            let res = try await makeApiClient().ackPartyLaunch(
+                partyId: partyId,
+                launchId: launch.launchId,
+                state: "entered",
+                gameTitle: game?.title,
+                accessToken: token
+            )
+            if let party = res.party { activeParty = party }
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+        activeGameTitle = "\(game?.title ?? launch.gameId) · \(launch.matchRoomId)"
+        showGameModal = true
+    }
+
+    public func loadMessages(for target: SocialChatTarget) async -> [SocialMessage] {
+        guard let token = await ensureAccessToken() else { return [] }
+        do {
+            switch target {
+            case let .dm(friend):
+                return try await makeApiClient().fetchSocialMessages(channelType: "dm", peerId: friend.principalId, accessToken: token)
+            case let .party(party):
+                return try await makeApiClient().fetchSocialMessages(channelType: "party", partyId: party.id, accessToken: token)
+            }
+        } catch {
+            showSocialToast(error.localizedDescription)
+            return []
+        }
+    }
+
+    public func sendMessage(target: SocialChatTarget, bodyText: String?, quickMessageId: String?) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            switch target {
+            case let .dm(friend):
+                _ = try await makeApiClient().sendSocialMessage(
+                    channelType: "dm",
+                    peerId: friend.principalId,
+                    bodyText: bodyText,
+                    quickMessageId: quickMessageId,
+                    accessToken: token
+                )
+            case let .party(party):
+                _ = try await makeApiClient().sendSocialMessage(
+                    channelType: "party",
+                    partyId: party.id,
+                    bodyText: bodyText,
+                    quickMessageId: quickMessageId,
+                    accessToken: token
+                )
+            }
+            await syncSocial()
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func reportUser(targetId: String, reason: String) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            _ = try await makeApiClient().reportSocialTarget(targetType: "user", targetId: targetId, reason: reason, accessToken: token)
+            showSocialToast("신고가 접수되었습니다.")
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func blockUser(targetPrincipalId: String) async {
+        guard let token = await ensureAccessToken() else { return }
+        do {
+            try await makeApiClient().blockUser(targetPrincipalId: targetPrincipalId, accessToken: token)
+            showSocialToast("사용자를 차단했습니다.")
+            await syncSocial()
+        } catch {
+            showSocialToast(error.localizedDescription)
+        }
+    }
+
+    public func loadLeaderboard(gameId: String, scope: String = "global") async -> [SocialLeaderboardEntry] {
+        let token = await ensureAccessToken()
+        do {
+            let res = try await makeApiClient().fetchLeaderboard(gameId: gameId, scope: scope, limit: 20, accessToken: token)
+            return res.entries
+        } catch {
+            return []
+        }
+    }
+
+    public func handleDeepLink(_ url: URL) {
+        guard let link = PlayHubJoinDeepLink.parse(url) else { return }
+        Task {
+            if let code = link.roomCode {
+                await joinParty(roomCode: code)
+            }
+            if let gameId = link.gameId, let game = catalogGames.first(where: { $0.id == gameId }) {
+                attemptLaunch(game)
+            }
         }
     }
 
@@ -209,6 +510,17 @@ public final class PlayHubShellViewModel: ObservableObject {
         }
         activeGameTitle = game.title
         showGameModal = true
+        Task {
+            if let token = await ensureAccessToken() {
+                _ = try? await makeApiClient().updatePresence(
+                    status: "in_game",
+                    gameId: game.id,
+                    gameTitle: game.title,
+                    roomCode: activeParty?.roomCode,
+                    accessToken: token
+                )
+            }
+        }
     }
 
     private static func fallbackDemoCatalog() -> [MobileCatalogGame] {
@@ -246,10 +558,12 @@ public final class PlayHubShellViewModel: ObservableObject {
 }
 
 public struct MainTabView: View {
-    @StateObject private var vm = PlayHubShellViewModel()
+    @ObservedObject private var vm: PlayHubShellViewModel
     @StateObject private var store = StoreKit2Manager()
 
-    public init() {}
+    public init(vm: PlayHubShellViewModel = PlayHubShellViewModel()) {
+        self.vm = vm
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -258,14 +572,20 @@ public struct MainTabView: View {
                 homeView.tabItem { Label(PlayHubTab.home.title, systemImage: PlayHubTab.home.systemImage) }.tag(PlayHubTab.home)
                 placeholderTab(title: "차트", subtitle: "인기 · 급상승 · 신규 게임 랭킹").tabItem { Label(PlayHubTab.charts.title, systemImage: PlayHubTab.charts.systemImage) }.tag(PlayHubTab.charts)
                 placeholderTab(title: "아바타", subtitle: "코스메틱 꾸미기 · 인벤토리 · 샵").tabItem { Label(PlayHubTab.avatar.title, systemImage: PlayHubTab.avatar.systemImage) }.tag(PlayHubTab.avatar)
-                placeholderTab(title: "파티", subtitle: "친구 프레즌스 · 함께 플레이 로비").tabItem { Label(PlayHubTab.party.title, systemImage: PlayHubTab.party.systemImage) }.tag(PlayHubTab.party)
+                SocialHubView(vm: vm)
+                    .tabItem { Label(PlayHubTab.party.title, systemImage: PlayHubTab.party.systemImage) }
+                    .badge(vm.incomingRequests.count)
+                    .tag(PlayHubTab.party)
                 moreView.tabItem { Label(PlayHubTab.more.title, systemImage: PlayHubTab.more.systemImage) }.tag(PlayHubTab.more)
             }
-            .tint(Color(red: 0.22, green: 0.74, blue: 0.97))
+            .tint(Color(red: 0.0, green: 0.69, blue: 0.435))
         }
         .preferredColorScheme(.dark)
         .sheet(isPresented: $vm.showFarmSheet) { farmSelectorSheet }
         .sheet(isPresented: $vm.showStoreSheet) { storeSheet }
+        .sheet(item: $vm.leaderboardGame) { game in
+            GameLeaderboardSheet(vm: vm, game: game)
+        }
         .sheet(isPresented: Binding(get: { !vm.ageGateCompleted }, set: { _ in })) {
             NeutralAgeGateSheet(onSubmit: vm.completeAgeGate)
                 .interactiveDismissDisabled(true)
@@ -277,6 +597,7 @@ public struct MainTabView: View {
                 onLeave: {
                     vm.showUniversalOverlay = false
                     vm.showGameModal = false
+                    Task { await vm.syncSocial() }
                 }
             )
         }
@@ -388,14 +709,23 @@ public struct MainTabView: View {
                                 .font(.caption.bold())
                                 .foregroundStyle(.orange)
                         }
-                        Button {
-                            vm.attemptLaunch(game)
-                        } label: {
-                            Label(compat.compatible ? "▶ 플레이" : "버전 안내 보기", systemImage: compat.compatible ? "play.fill" : "exclamationmark.triangle.fill")
-                                .frame(maxWidth: .infinity)
+                        HStack(spacing: 8) {
+                            Button {
+                                vm.attemptLaunch(game)
+                            } label: {
+                                Label(compat.compatible ? "▶ 플레이" : "버전 안내 보기", systemImage: compat.compatible ? "play.fill" : "exclamationmark.triangle.fill")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(compat.compatible ? Color(red: 0.0, green: 0.69, blue: 0.435) : .orange)
+
+                            Button {
+                                vm.leaderboardGame = game
+                            } label: {
+                                Image(systemName: "trophy.fill")
+                            }
+                            .buttonStyle(.bordered)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(compat.compatible ? .cyan : .orange)
                     }
                     .padding(14)
                     .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))

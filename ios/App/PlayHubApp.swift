@@ -4,14 +4,17 @@ import SwiftUI
 /// Owns the root UIWindow / SwiftUI TabView and lazily initializes Godot 4.7.2 on game launch.
 @main
 public struct PlayHubApp: App {
+    @StateObject private var shellViewModel = PlayHubShellViewModel()
+
     public init() {}
 
     public var body: some Scene {
         WindowGroup {
-            MainTabView()
+            MainTabView(vm: shellViewModel)
                 .onOpenURL { url in
-                    // Universal Link handler: https://playhub.<domain>/join/<gameId>?room=<roomCode>
-                    _ = url
+                    // Custom Scheme & Universal Link handler:
+                    // playhub://join/<gameId>?room=<roomCode> or https://playhub.<domain>/join/<gameId>?room=<roomCode>
+                    shellViewModel.handleDeepLink(url)
                 }
         }
     }
