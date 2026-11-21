@@ -17,5 +17,22 @@
     "scripts/main.gd",
     "scenes/main.tscn",
     "project.godot"
-  ]
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "voxel-frontier",
+      "title": { "ko": "복셀 프론티어 (Voxel Frontier)", "en": "Voxel Frontier" },
+      "summary": { "ko": "16×16×16 청크 채광·제작·던전 탐험 3D 복셀 샌드박스", "en": "3D voxel sandbox with procedural chunks, mining, crafting, and creatures." },
+      "instructions": { "ko": "WASD 이동, 마우스 클릭으로 채광/설치, E로 제작 메뉴를 여세요.", "en": "Move with WASD, click to mine/place blocks, and press E to craft." },
+      "tags": ["sandbox", "3d", "adventure"],
+      "controls": ["keyboard", "mouse"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
 }

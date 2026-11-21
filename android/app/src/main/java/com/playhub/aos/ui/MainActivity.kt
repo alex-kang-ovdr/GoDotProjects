@@ -102,7 +102,9 @@ private data class CatalogGame(
     val minAppVersionCode: Int = 1,
     val accentStart: String = "#14532D",
     val accentEnd: String = "#111315",
-    val tagCode: String = "3D"
+    val tagCode: String = "3D",
+    val deployMode: String = "singleplay",
+    val multiplayerWsUrl: String? = null
 )
 
 private data class ActiveChatTarget(
@@ -464,7 +466,9 @@ class MainActivity : Activity() {
                         minAppVersionCode = item.minAppVersionCode,
                         accentStart = st.startHex,
                         accentEnd = st.endHex,
-                        tagCode = if (item.runtime == "godot-pck") (item.requiredEngineVersion ?: "3D") else "WEB"
+                        tagCode = if (item.runtime == "godot-pck") (item.requiredEngineVersion ?: "3D") else "WEB",
+                        deployMode = item.deployMode,
+                        multiplayerWsUrl = item.multiplayerWsUrl
                     )
                 }
                 // Sync live M3 Social state in the same connection wave
@@ -3200,7 +3204,8 @@ class MainActivity : Activity() {
             isGuest = profile.isGuest,
             ageTier = profile.ageTier.name,
             roomCode = roomCode,
-            matchRoomId = matchRoomId
+            matchRoomId = matchRoomId,
+            wsUrl = game.multiplayerWsUrl
         )
         startActivity(intent)
     }

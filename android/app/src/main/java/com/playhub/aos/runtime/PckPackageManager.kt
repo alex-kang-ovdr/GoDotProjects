@@ -36,7 +36,7 @@ object PckPackageManager {
         val major = buf.int
         val minor = buf.int
         val patch = buf.int
-        require(formatVersion in 2..3) { "Unsupported PCK format_version=$formatVersion." }
+        require(formatVersion in 2..4) { "Unsupported PCK format_version=$formatVersion." }
         require(major == REQUIRED_ENGINE_MAJOR && minor <= REQUIRED_ENGINE_MINOR) {
             "Incompatible Godot PCK engine version $major.$minor.$patch (embedded runtime is 4.7.2)."
         }

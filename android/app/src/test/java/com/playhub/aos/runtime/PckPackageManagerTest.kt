@@ -32,6 +32,15 @@ class PckPackageManagerTest {
         }
     }
 
+    @Test
+    fun acceptsGodot47FormatVersion4() {
+        val info = PckPackageManager.verifyHeaderBytes(fakePckBytes(4, 4, 7, 2))
+        assertEquals(4, info.formatVersion)
+        assertEquals(4, info.engineMajor)
+        assertEquals(7, info.engineMinor)
+        assertEquals(2, info.enginePatch)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun rejectsFutureEngineMinorVersion() {
         PckPackageManager.verifyHeaderBytes(fakePckBytes(2, 4, 8, 0))

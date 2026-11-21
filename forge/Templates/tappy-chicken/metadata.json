@@ -40,5 +40,22 @@
     "scenes/main.tscn",
     "project.godot"
   ],
-  "guide": "README.md"
+  "guide": "README.md",
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "tappy-chicken",
+      "title": { "ko": "태피 치킨 (Tappy Chicken)", "en": "Tappy Chicken" },
+      "summary": { "ko": "원버튼 픽셀 아트 플랩 아케이드 — 장애물을 피해 최고 점수에 도전하세요.", "en": "One-button pixel-art flap arcade with parallax scenery and crisp flight curves." },
+      "instructions": { "ko": "Space, 클릭 또는 화면 터치로 날갯짓해 파이프 사이를 통과하세요.", "en": "Press Space, click, or tap to flap through the pipes." },
+      "tags": ["arcade", "casual"],
+      "controls": ["keyboard", "mouse", "touch"],
+      "viewport": { "width": 480, "height": 640, "orientation": "portrait", "resize": "fit" }
+    }
+  }
 }

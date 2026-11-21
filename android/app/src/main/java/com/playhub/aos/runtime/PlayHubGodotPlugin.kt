@@ -23,6 +23,7 @@ class PlayHubGodotPlugin(
     private val locale: String,
     private val roomCode: String = "",
     private val matchRoomId: String = "",
+    private val wsUrl: String = "",
     private val onOpenOverlay: (tab: String) -> Unit
 ) : GodotPlugin(godot) {
 
@@ -55,6 +56,18 @@ class PlayHubGodotPlugin(
 
     @UsedByGodot
     fun get_match_room_id(): String = matchRoomId
+
+    @UsedByGodot
+    fun get_multiplayer_config(): String {
+        if (wsUrl.isBlank()) return ""
+        return JSONObject().apply {
+            put("wsUrl", wsUrl)
+            put("gameId", gameId)
+            put("roomId", roomCode)
+            put("displayName", displayName)
+            put("platform", "android")
+        }.toString()
+    }
 
     @UsedByGodot
     fun get_profile(): String {

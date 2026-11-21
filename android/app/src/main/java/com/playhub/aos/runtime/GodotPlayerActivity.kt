@@ -40,6 +40,7 @@ class GodotPlayerActivity : GodotActivity() {
         const val EXTRA_AGE_TIER = "playhub.age_tier"
         const val EXTRA_ROOM_CODE = "playhub.room_code"
         const val EXTRA_MATCH_ROOM_ID = "playhub.match_room_id"
+        const val EXTRA_WS_URL = "playhub.ws_url"
 
         fun createIntent(
             context: Context,
@@ -53,7 +54,8 @@ class GodotPlayerActivity : GodotActivity() {
             ageTier: String,
             renderDriver: String = "opengl3",
             roomCode: String? = null,
-            matchRoomId: String? = null
+            matchRoomId: String? = null,
+            wsUrl: String? = null
         ): Intent = Intent(context, GodotPlayerActivity::class.java).apply {
             putExtra(EXTRA_GAME_ID, gameId)
             putExtra(EXTRA_GAME_TITLE, gameTitle)
@@ -66,6 +68,7 @@ class GodotPlayerActivity : GodotActivity() {
             putExtra(EXTRA_RENDER_DRIVER, renderDriver)
             if (!roomCode.isNullOrBlank()) putExtra(EXTRA_ROOM_CODE, roomCode)
             if (!matchRoomId.isNullOrBlank()) putExtra(EXTRA_MATCH_ROOM_ID, matchRoomId)
+            if (!wsUrl.isNullOrBlank()) putExtra(EXTRA_WS_URL, wsUrl)
         }
     }
 
@@ -80,6 +83,7 @@ class GodotPlayerActivity : GodotActivity() {
     private var launchAgeTier: String = "UNKNOWN"
     private var launchRoomCode: String = ""
     private var launchMatchRoomId: String = ""
+    private var launchWsUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Capture all extras BEFORE super.onCreate(), because GodotActivity.sanitizeLaunchIntent() clears intent extras!
@@ -93,8 +97,21 @@ class GodotPlayerActivity : GodotActivity() {
         launchAgeTier = intent.getStringExtra(EXTRA_AGE_TIER) ?: "UNKNOWN"
         launchRoomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
         launchMatchRoomId = intent.getStringExtra(EXTRA_MATCH_ROOM_ID).orEmpty()
-        // Persist launch pack path to app filesDir (user://) for deterministic bootstrap handoff
+        launchWsUrl = intent.getStringExtra(EXTRA_WS_URL).orEmpty()
+        // Persist launch pack path & multiplayer config to app filesDir (user://) for deterministic bootstrap handoff
         runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
+        runCatching {
+            val mpFile = File(filesDir, "playhub_mp.json")
+            if (launchWsUrl.isNotBlank()) {
+                val safeName = launchDisplayName.replace("\\", "\\\\").replace("\"", "\\\"")
+                val safeWs = launchWsUrl.replace("\\", "\\\\").replace("\"", "\\\"")
+                val safeGame = gameId.replace("\\", "\\\\").replace("\"", "\\\"")
+                val safeRoom = launchRoomCode.replace("\\", "\\\\").replace("\"", "\\\"")
+                mpFile.writeText("""{"wsUrl":"$safeWs","gameId":"$safeGame","roomId":"$safeRoom","displayName":"$safeName","platform":"android"}""")
+            } else if (mpFile.exists()) {
+                mpFile.delete()
+            }
+        }
         super.onCreate(savedInstanceState)
         attachUniversalOverlayButton()
     }
@@ -121,6 +138,7 @@ class GodotPlayerActivity : GodotActivity() {
             locale = Locale.getDefault().language,
             roomCode = launchRoomCode,
             matchRoomId = launchMatchRoomId,
+            wsUrl = launchWsUrl,
             onOpenOverlay = { tab -> showUniversalInGameMenu(tab) }
         )
         bridgePlugin = plugin

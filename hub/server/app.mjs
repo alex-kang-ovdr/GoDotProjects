@@ -26,6 +26,7 @@ import { createLeaderboard, mergeGuestLeaderboard } from './ssot/leaderboard.mjs
 import { createProgression, mergeGuestProgression } from './ssot/progression.mjs';
 import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
 import { createSocial } from './social/routes.mjs';
+import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -188,7 +189,8 @@ export function createApp(input, dependencies = {}) {
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
-  const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  const ugcMultiplayer = createUgcMultiplayer({ now });
+  const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
@@ -325,6 +327,7 @@ export function createApp(input, dependencies = {}) {
     if (await cdn.publicRoute(req,res,url)) return;
     if (await billing.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
+    if (ugcMultiplayer.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     if (await avatar.publicRoute(req,res,url)) return;
@@ -396,7 +399,10 @@ export function createApp(input, dependencies = {}) {
       assertNotPlatformSanctioned(principal.principal_id);
       db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,principal.id_hash,principal.principal_id,principal.analytics_subject,game.id,game.buildId,now(),now()+2*3600000,principal.traffic_type,principal.qa_run_id);
       serverEvent('play_session_created',principal,game.id,id);
-      json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
+      const mp = game.deployMode === 'mmo'
+        ? { transport: 'ws', wsPath: ugcMultiplayer.socketPath, gameId: game.id }
+        : null;
+      json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,deployMode:game.deployMode || 'singleplay',multiplayer:mp,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
     }
     const slotsPath=path.match(/^\/api\/saves\/([a-zA-Z0-9_-]+)\/slots$/);
     if(slotsPath && req.method==='GET'){
@@ -747,9 +753,10 @@ export function createApp(input, dependencies = {}) {
   }
   const publicHandler = handler('public'), adminHandler = handler('admin');
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
+  publicServer.on('upgrade', (req, socket, head) => { ugcMultiplayer.handleUpgrade(req, socket, head); });
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,billing,ugcPublish,avatar,publicHandler,adminHandler,publicServer,adminServer,
+  return { db,cdn,billing,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
@@ -761,6 +768,7 @@ export function createApp(input, dependencies = {}) {
     async close() {
       if (closed) return; closed=true;
       localAdminLogin?.clear();
+      ugcMultiplayer.close();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close(); forgeGateway.close();
       await cdn.close();
