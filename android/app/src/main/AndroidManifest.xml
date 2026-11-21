@@ -53,6 +53,23 @@
             android:theme="@style/Theme.PlayHub.Game"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Single-Runtime Reused Godot 4.7.2 3D Avatar Studio (shares :godot_runtime & libgodot_android.so) -->
+        <activity
+            android:name=".runtime.GodotAvatarStudioActivity"
+            android:configChanges="layoutDirection|locale|orientation|keyboardHidden|screenSize|smallestScreenSize|density|keyboard|navigation|screenLayout|uiMode"
+            android:exported="false"
+            android:process=":godot_runtime"
+            android:resizeableActivity="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PlayHub"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Single-Runtime Reused Godot 4.7.2 Inline Preview Service (shares :godot_runtime & libgodot_android.so) -->
+        <service
+            android:name=".runtime.PlayHubGodotPreviewService"
+            android:exported="false"
+            android:process=":godot_runtime" />
+
         <!-- Isolated HTML5/JS Legacy Game Runtime Process (:web_runtime) -->
         <activity
             android:name=".runtime.WebGameActivity"

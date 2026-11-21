@@ -58,7 +58,9 @@ import com.playhub.aos.network.SocialPartyLaunchDto
 import com.playhub.aos.network.SocialProfileDto
 import com.playhub.aos.network.SocialRequestDto
 import com.playhub.aos.network.SocialSearchUserDto
+import com.playhub.aos.runtime.GodotAvatarStudioActivity
 import com.playhub.aos.runtime.GodotPlayerActivity
+import com.playhub.aos.runtime.InlineGodotAvatarStage
 import com.playhub.aos.runtime.PckPackageManager
 import com.playhub.aos.runtime.VersionCompatibilityChecker
 import com.playhub.aos.runtime.WebGameActivity
@@ -393,13 +395,50 @@ class MainActivity : Activity() {
         }
     }
 
+    // Inline Single-Runtime Godot 4.7.2 Avatar Preview State (active ONLY while HubTab.AVATAR is open)
+    private var inlineGodotStage: InlineGodotAvatarStage? = null
+    private var avatarSaveButton: TextView? = null
+    private var avatarWardrobeGridHost: LinearLayout? = null
+    private var avatarCategoryChipHost: LinearLayout? = null
+    private val avatarSwatchViews = mutableMapOf<String, View>()
+    private val avatarTryOnIds = linkedSetOf<String>()
+
+    private data class InlineAvatarCardBinding(
+        val item: AvatarCosmeticItem,
+        val container: LinearLayout,
+        val checkBadge: TextView,
+        val statusLabel: TextView?,
+        val priceWrap: View?
+    )
+    private val avatarCardBindings = mutableListOf<InlineAvatarCardBinding>()
+
+    private fun releaseInlineGodotPreview() {
+        inlineGodotStage?.release()
+        inlineGodotStage = null
+        avatarSaveButton = null
+        avatarWardrobeGridHost = null
+        avatarCategoryChipHost = null
+        avatarSwatchViews.clear()
+        avatarCardBindings.clear()
+        avatarTryOnIds.clear()
+    }
+
     override fun onResume() {
         super.onResume()
         sendPresenceHeartbeat("online", null, null, remoteActiveParty?.roomCode)
+        if (activeTab == HubTab.AVATAR && inlineGodotStage == null) {
+            renderTab(HubTab.AVATAR)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        releaseInlineGodotPreview()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        releaseInlineGodotPreview()
         ioExecutor.shutdownNow()
         probeExecutor.shutdownNow()
     }
@@ -947,10 +986,19 @@ class MainActivity : Activity() {
             views.label.typeface = if (active) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
 
+        if (tab != HubTab.AVATAR) {
+            releaseInlineGodotPreview()
+        }
+
         contentContainer.removeAllViews()
 
         if (tab == HubTab.CHAT && activeChatTarget != null) {
             contentContainer.addView(buildChatRoomView(activeChatTarget!!))
+            return
+        }
+
+        if (tab == HubTab.AVATAR) {
+            contentContainer.addView(buildInlineGodotAvatarTab())
             return
         }
 
@@ -1673,20 +1721,52 @@ class MainActivity : Activity() {
         })
     }
 
-    // ---- 3. AVATAR STUDIO TAB (Stitch High-Contrast Dark Modern + Live Profile Sync) ----
+    // ---- 3. AVATAR STUDIO TAB (Inline Single-Runtime Godot 4.7.2 3D Preview + Sticky Wardrobe) ----
 
     private fun buildAvatarTab(body: LinearLayout) {
+        // Handled directly via buildInlineGodotAvatarTab() for non-scrolling sticky Godot SurfaceView harmony.
+    }
+
+    private fun buildInlineGodotAvatarTab(): View {
+        releaseInlineGodotPreview()
         val accentHex = savedAvatarColor()
-        val equipped = equippedAvatarIds()
-        val visibleItems = AvatarCatalog.ITEMS.filter {
-            selectedAvatarCategory == "all" || it.category == selectedAvatarCategory
+        val equipped = equippedAvatarIds().toMutableSet()
+        avatarTryOnIds.clear()
+        avatarTryOnIds.addAll(equipped)
+
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setPadding(0, dp(10), 0, 0)
         }
 
-        // Studio Title + Primary Save Button
+        // 1. Sticky Studio Title + Primary Save Button
+        val saveBtn = TextView(this).apply {
+            text = if (avatarSavedState) "✓ 저장됨" else "저장"
+            textSize = 13.5f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+            background = roundedBg(StitchColors.PLAY_GREEN, null, 8)
+            setPadding(dp(16), dp(7), dp(16), dp(7))
+            setOnClickListener {
+                avatarSavedState = true
+                val ownedIds = AvatarCatalog.ITEMS.filter { it.owned }.map { it.id }.toSet()
+                val persistIds = avatarTryOnIds.filter { ownedIds.contains(it) }.toSet().ifEmpty { setOf("i1", "i2") }
+                saveEquippedAvatarIds(persistIds)
+                saveAvatarColor(savedAvatarColor())
+                text = "✓ 저장됨"
+                syncProfileUpdate(avatarColor = savedAvatarColor(), toastMsg = "아바타 스타일을 저장했습니다.")
+            }
+        }
+        avatarSaveButton = saveBtn
+
         val headerRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(4), dp(16), dp(10))
+            setPadding(dp(16), dp(2), dp(16), dp(10))
             addView(TextView(context).apply {
                 text = "아바타 스튜디오"
                 textSize = 18.5f
@@ -1694,81 +1774,30 @@ class MainActivity : Activity() {
                 setTextColor(Color.WHITE)
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             })
-            addView(TextView(context).apply {
-                text = if (avatarSavedState) "✓ 저장됨" else "저장"
-                textSize = 13.5f
-                typeface = Typeface.DEFAULT_BOLD
-                setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
-                background = roundedBg(StitchColors.PLAY_GREEN, null, 8)
-                setPadding(dp(16), dp(7), dp(16), dp(7))
-                setOnClickListener {
-                    avatarSavedState = true
-                    saveEquippedAvatarIds(equipped)
-                    saveAvatarColor(accentHex)
-                    syncProfileUpdate(avatarColor = accentHex, toastMsg = "아바타 스타일을 저장했습니다.")
-                    renderTab(HubTab.AVATAR)
-                }
-            })
+            addView(saveBtn)
         }
-        body.addView(headerRow)
+        root.addView(headerRow)
 
-        // 4:3 Interactive 3D Voxel Preview Stage
-        val stageFrame = FrameLayout(this).apply {
-            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 16)
-            clipToOutline = true
-            minimumHeight = dp(264)
-            addView(VoxelAvatarView(context, portraitMode = false).apply {
-                this.equippedIds = equipped
-                this.accentColorHex = accentHex
-            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(264)))
+        // 2. Sticky 4:3 Inline Godot 4.7.2 3D Preview Stage (never inside ScrollView -> zero SurfaceView tearing!)
+        val stage = InlineGodotAvatarStage(
+            context = this,
+            initialEquipped = avatarTryOnIds.toSet(),
+            initialAccentHex = accentHex
+        )
+        inlineGodotStage = stage
+        root.addView(paddedBox(stage, bottomDp = 10))
 
-            // Top-left "360° 3D 미리보기" pill
-            addView(LinearLayout(context).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                background = roundedBg("#E6111315", StitchColors.OUTLINE_VARIANT, 999)
-                setPadding(dp(10), dp(5), dp(12), dp(5))
-                addView(TextView(context).apply {
-                    text = "360°"
-                    textSize = 11f
-                    typeface = Typeface.DEFAULT_BOLD
-                    setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
-                })
-                addView(TextView(context).apply {
-                    text = " 3D 미리보기"
-                    textSize = 11f
-                    typeface = Typeface.DEFAULT_BOLD
-                    setTextColor(Color.WHITE)
-                })
-            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.START).apply {
-                topMargin = dp(12)
-                leftMargin = dp(12)
-            })
-
-            // Bottom-right "N개 착용 중" pill
-            addView(LinearLayout(context).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                background = roundedBg("#E6111315", StitchColors.OUTLINE_VARIANT, 999)
-                setPadding(dp(10), dp(5), dp(12), dp(5))
-                addView(View(context).apply {
-                    background = ovalBg(StitchColors.ONLINE_DOT)
-                    layoutParams = LinearLayout.LayoutParams(dp(7), dp(7)).apply { rightMargin = dp(6) }
-                })
-                addView(TextView(context).apply {
-                    text = "${equipped.size}개 착용 중"
-                    textSize = 11.5f
-                    typeface = Typeface.MONOSPACE
-                    setTextColor(Color.WHITE)
-                })
-            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM or Gravity.END).apply {
-                bottomMargin = dp(12)
-                rightMargin = dp(12)
-            })
+        // 3. Independently Scrollable Bottom Wardrobe & Shop Area
+        val scroll = ScrollView(this).apply {
+            isVerticalScrollBarEnabled = false
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
         }
-        body.addView(paddedBox(stageFrame, bottomDp = 12))
+        val scrollBody = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(2), 0, dp(20))
+        }
 
-        // Theme Accent Swatch Row
+        // Theme Accent Swatch Row (in-place updates, zero Godot restart!)
         val swatchCard = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -1782,58 +1811,81 @@ class MainActivity : Activity() {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             })
             for ((hex, name) in avatarAccentOptions) {
-                val selected = hex.equals(accentHex, ignoreCase = true)
-                addView(View(context).apply {
-                    background = ovalBg(hex, if (selected) "#FFFFFF" else StitchColors.OUTLINE_VARIANT, if (selected) 3 else 1)
+                val swatch = View(context).apply {
                     layoutParams = LinearLayout.LayoutParams(dp(26), dp(26)).apply { leftMargin = dp(8) }
                     setOnClickListener {
                         avatarSavedState = false
+                        avatarSaveButton?.text = "저장"
                         saveAvatarColor(hex)
+                        inlineGodotStage?.sendEquip(avatarTryOnIds.toSet(), hex, "accent:$hex")
+                        refreshInlineAvatarVisualsInPlace()
                         syncProfileUpdate(avatarColor = hex, toastMsg = "아바타 테마 적용: $name")
                     }
-                })
+                }
+                avatarSwatchViews[hex] = swatch
+                addView(swatch)
             }
         }
-        body.addView(paddedBox(swatchCard, bottomDp = 12))
+        scrollBody.addView(paddedBox(swatchCard, bottomDp = 10))
 
-        // Category Filter Chips (전체 | 모자 | 얼굴 | 상의 | 등 장식)
+        // Category Filter Chips (rebuilds ONLY wardrobe grid, keeping live Godot 3D preview uninterrupted!)
         val chipScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
         val chipRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(16), dp(2), dp(16), dp(12))
-            for ((catId, label) in AvatarCatalog.CATEGORIES) {
-                val active = selectedAvatarCategory == catId
-                addView(TextView(context).apply {
-                    text = label
-                    textSize = 13.5f
-                    typeface = Typeface.DEFAULT_BOLD
-                    setTextColor(Color.parseColor(if (active) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
-                    background = roundedBg(
-                        fillHex = if (active) StitchColors.PLAY_GREEN else StitchColors.SURFACE_CONTAINER,
-                        strokeHex = if (active) null else StitchColors.OUTLINE_VARIANT,
-                        radiusDp = 999
-                    )
-                    setPadding(dp(16), dp(8), dp(16), dp(8))
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                        rightMargin = dp(8)
-                    }
-                    setOnClickListener {
-                        selectedAvatarCategory = catId
-                        renderTab(HubTab.AVATAR)
-                    }
-                })
-            }
+            setPadding(dp(16), dp(2), dp(16), dp(10))
         }
+        avatarCategoryChipHost = chipRow
         chipScroll.addView(chipRow)
-        body.addView(chipScroll)
+        scrollBody.addView(chipScroll)
 
-        // Wardrobe & Shop Section Header
-        body.addView(sectionHeader("내 옷장 & 상점", monoAccent = "${visibleItems.size}개 아이템"))
-
-        // 2-Column Wardrobe Grid
-        val grid = LinearLayout(this).apply {
+        // Wardrobe & Shop Section Header + 2-Column Grid Host
+        scrollBody.addView(sectionHeader("내 옷장 & 상점", monoAccent = "${AvatarCatalog.ITEMS.size}개 아이템"))
+        val gridHost = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), 0, dp(16), dp(14))
+        }
+        avatarWardrobeGridHost = gridHost
+        scrollBody.addView(gridHost)
+
+        rebuildInlineAvatarChipsAndGrid()
+        scroll.addView(scrollBody)
+        root.addView(scroll)
+        return root
+    }
+
+    private fun rebuildInlineAvatarChipsAndGrid() {
+        val chipRow = avatarCategoryChipHost ?: return
+        val grid = avatarWardrobeGridHost ?: return
+        chipRow.removeAllViews()
+        for ((catId, label) in AvatarCatalog.CATEGORIES) {
+            val active = selectedAvatarCategory == catId
+            chipRow.addView(TextView(this).apply {
+                text = label
+                textSize = 13f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.parseColor(if (active) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+                background = roundedBg(
+                    fillHex = if (active) StitchColors.PLAY_GREEN else StitchColors.SURFACE_CONTAINER,
+                    strokeHex = if (active) null else StitchColors.OUTLINE_VARIANT,
+                    radiusDp = 999
+                )
+                setPadding(dp(15), dp(7), dp(15), dp(7))
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    rightMargin = dp(8)
+                }
+                setOnClickListener {
+                    if (selectedAvatarCategory != catId) {
+                        selectedAvatarCategory = catId
+                        rebuildInlineAvatarChipsAndGrid()
+                    }
+                }
+            })
+        }
+
+        grid.removeAllViews()
+        avatarCardBindings.clear()
+        val visibleItems = AvatarCatalog.ITEMS.filter {
+            selectedAvatarCategory == "all" || it.category == selectedAvatarCategory
         }
         for (i in visibleItems.indices step 2) {
             val row = LinearLayout(this).apply {
@@ -1842,13 +1894,13 @@ class MainActivity : Activity() {
                     bottomMargin = dp(12)
                 }
             }
-            row.addView(buildAvatarItemCard(visibleItems[i], equipped.contains(visibleItems[i].id)).apply {
+            row.addView(buildInlineAvatarItemCard(visibleItems[i]).apply {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
                     rightMargin = dp(6)
                 }
             })
             if (i + 1 < visibleItems.size) {
-                row.addView(buildAvatarItemCard(visibleItems[i + 1], equipped.contains(visibleItems[i + 1].id)).apply {
+                row.addView(buildInlineAvatarItemCard(visibleItems[i + 1]).apply {
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
                         leftMargin = dp(6)
                     }
@@ -1860,50 +1912,104 @@ class MainActivity : Activity() {
             }
             grid.addView(row)
         }
-        body.addView(grid)
+        refreshInlineAvatarVisualsInPlace()
     }
 
-    private fun buildAvatarItemCard(item: AvatarCosmeticItem, isEquipped: Boolean): View {
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = roundedBg(
+    private fun refreshInlineAvatarVisualsInPlace() {
+        val currentAccent = savedAvatarColor()
+        for ((hex, v) in avatarSwatchViews) {
+            val selected = hex.equals(currentAccent, ignoreCase = true)
+            v.background = ovalBg(hex, if (selected) "#FFFFFF" else StitchColors.OUTLINE_VARIANT, if (selected) 3 else 1)
+        }
+        for (b in avatarCardBindings) {
+            val isEquipped = avatarTryOnIds.contains(b.item.id)
+            b.container.background = roundedBg(
                 fillHex = StitchColors.SURFACE_CONTAINER,
                 strokeHex = if (isEquipped) StitchColors.PLAY_GREEN else StitchColors.OUTLINE_VARIANT,
                 radiusDp = 12
             )
-            setPadding(dp(8), dp(8), dp(8), dp(10))
-            setOnClickListener { toggleEquipAvatarItem(item) }
+            b.checkBadge.visibility = if (isEquipped) View.VISIBLE else View.GONE
+            if (b.item.owned || isEquipped) {
+                b.statusLabel?.visibility = View.VISIBLE
+                b.priceWrap?.visibility = View.GONE
+                b.statusLabel?.text = if (isEquipped) (if (b.item.owned) "착용 중" else "3D 시착 중") else "보유 중"
+                b.statusLabel?.setTextColor(Color.parseColor(if (isEquipped) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+            } else {
+                b.statusLabel?.visibility = View.GONE
+                b.priceWrap?.visibility = View.VISIBLE
+            }
+        }
+    }
 
-            // Square thumbnail with top-right check badge
+    private fun buildInlineAvatarItemCard(item: AvatarCosmeticItem): View {
+        val checkBadge = TextView(this).apply {
+            text = "✓"
+            textSize = 12f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+            background = ovalBg(StitchColors.PLAY_GREEN)
+        }
+        val statusLabel = TextView(this).apply {
+            textSize = 11f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        val priceWrap = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(iconView(R.drawable.ic_coin, 13, StitchColors.COIN_GOLD).apply {
+                (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(3)
+            })
+            addView(TextView(context).apply {
+                text = item.price.toString()
+                textSize = 11.5f
+                typeface = Typeface.MONOSPACE
+                setTextColor(Color.parseColor(StitchColors.COIN_GOLD))
+            })
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(8), dp(8), dp(8), dp(10))
+            setOnClickListener {
+                // Single-slot swap per category directly onto inline Godot 3D preview (supports live 3D try-on for shop items!)
+                if (avatarTryOnIds.contains(item.id)) {
+                    avatarTryOnIds.remove(item.id)
+                } else {
+                    AvatarCatalog.ITEMS.filter { it.category == item.category }.forEach { avatarTryOnIds.remove(it.id) }
+                    avatarTryOnIds.add(item.id)
+                }
+                if (item.owned) {
+                    val ownedSet = AvatarCatalog.ITEMS.filter { it.owned }.map { it.id }.toSet()
+                    val persisted = avatarTryOnIds.filter { ownedSet.contains(it) }.toSet()
+                    if (persisted.isNotEmpty()) saveEquippedAvatarIds(persisted)
+                }
+                avatarSavedState = false
+                avatarSaveButton?.text = "저장"
+                inlineGodotStage?.sendEquip(avatarTryOnIds.toSet(), savedAvatarColor(), item.id)
+                refreshInlineAvatarVisualsInPlace()
+            }
+
             val thumbWrap = FrameLayout(context).apply {
                 background = roundedBg(StitchColors.SURFACE_HIGHEST, null, 8)
                 clipToOutline = true
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(136))
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(116))
                 addView(AvatarItemThumbView(context, item), FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-                if (isEquipped) {
-                    addView(TextView(context).apply {
-                        text = "✓"
-                        textSize = 12f
-                        typeface = Typeface.DEFAULT_BOLD
-                        gravity = Gravity.CENTER
-                        setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
-                        background = ovalBg(StitchColors.PLAY_GREEN)
-                    }, FrameLayout.LayoutParams(dp(24), dp(24), Gravity.TOP or Gravity.END).apply {
-                        topMargin = dp(8)
-                        rightMargin = dp(8)
-                    })
-                }
+                addView(checkBadge, FrameLayout.LayoutParams(dp(24), dp(24), Gravity.TOP or Gravity.END).apply {
+                    topMargin = dp(8)
+                    rightMargin = dp(8)
+                })
             }
             addView(thumbWrap)
 
             addView(TextView(context).apply {
                 text = item.name
-                textSize = 13.5f
+                textSize = 13f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
                 maxLines = 1
                 ellipsize = TextUtils.TruncateAt.END
-                setPadding(dp(4), dp(8), dp(4), dp(4))
+                setPadding(dp(4), dp(7), dp(4), dp(3))
             })
 
             addView(LinearLayout(context).apply {
@@ -1916,30 +2022,12 @@ class MainActivity : Activity() {
                     setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                 })
-                if (item.owned || isEquipped) {
-                    addView(TextView(context).apply {
-                        text = if (isEquipped) "착용 중" else "보유 중"
-                        textSize = 11f
-                        typeface = Typeface.DEFAULT_BOLD
-                        setTextColor(Color.parseColor(if (isEquipped) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
-                    })
-                } else {
-                    addView(LinearLayout(context).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        gravity = Gravity.CENTER_VERTICAL
-                        addView(iconView(R.drawable.ic_coin, 13, StitchColors.COIN_GOLD).apply {
-                            (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(3)
-                        })
-                        addView(TextView(context).apply {
-                            text = item.price.toString()
-                            textSize = 11.5f
-                            typeface = Typeface.MONOSPACE
-                            setTextColor(Color.parseColor(StitchColors.COIN_GOLD))
-                        })
-                    })
-                }
+                addView(statusLabel)
+                addView(priceWrap)
             })
         }
+        avatarCardBindings.add(InlineAvatarCardBinding(item, container, checkBadge, statusLabel, priceWrap))
+        return container
     }
 
     private fun syncProfileUpdate(
@@ -1958,13 +2046,21 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
                     remoteSocialProfile = updated
-                    renderTab(activeTab)
+                    if (activeTab == HubTab.AVATAR && inlineGodotStage != null) {
+                        avatarSaveButton?.text = if (avatarSavedState) "✓ 저장됨" else "저장"
+                    } else {
+                        renderTab(activeTab)
+                    }
                     Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show()
                 }
             }.onFailure { err ->
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
-                    renderTab(activeTab)
+                    if (activeTab == HubTab.AVATAR && inlineGodotStage != null) {
+                        avatarSaveButton?.text = if (avatarSavedState) "✓ 저장됨" else "저장"
+                    } else {
+                        renderTab(activeTab)
+                    }
                     Toast.makeText(this, "로컬 저장됨 (서버 동기화 실패: ${err.message})", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -4090,6 +4186,42 @@ class MainActivity : Activity() {
             .setMessage(msg)
             .setPositiveButton("확인", null)
             .show()
+    }
+
+    private fun openGodotAvatarStudio() {
+        val intent = GodotAvatarStudioActivity.createIntent(
+            context = this,
+            equippedIds = equippedAvatarIds(),
+            accentHex = savedAvatarColor(),
+            displayName = remoteSocialProfile?.displayName ?: profile.displayName,
+            handle = remoteSocialProfile?.handle ?: profile.handle
+        )
+        @Suppress("DEPRECATION")
+        startActivityForResult(intent, 4702)
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 4702 && resultCode == Activity.RESULT_OK && data != null) {
+            val csv = data.getStringExtra(GodotAvatarStudioActivity.RESULT_EQUIPPED_CSV).orEmpty()
+            val nextAccent = data.getStringExtra(GodotAvatarStudioActivity.RESULT_ACCENT_HEX).orEmpty()
+            val saved = data.getBooleanExtra(GodotAvatarStudioActivity.RESULT_SAVED, false)
+            if (csv.isNotBlank()) {
+                val parsed = csv.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+                if (parsed.isNotEmpty()) saveEquippedAvatarIds(parsed)
+            }
+            if (nextAccent.startsWith("#") && nextAccent.length == 7) {
+                saveAvatarColor(nextAccent)
+            }
+            if (saved) {
+                avatarSavedState = true
+                syncProfileUpdate(avatarColor = savedAvatarColor(), toastMsg = "Godot 3D 아바타를 서버에 저장했습니다.")
+            }
+            if (activeTab == HubTab.AVATAR || activeTab == HubTab.MORE) {
+                renderTab(activeTab)
+            }
+        }
     }
 
     private fun formatChatTimestamp(raw: String): String {

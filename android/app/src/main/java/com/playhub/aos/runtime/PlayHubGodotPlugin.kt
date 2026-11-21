@@ -24,7 +24,12 @@ class PlayHubGodotPlugin(
     private val roomCode: String = "",
     private val matchRoomId: String = "",
     private val wsUrl: String = "",
-    private val onOpenOverlay: (tab: String) -> Unit
+    private val launchMode: String = "game",
+    private val avatarInitJson: String = "{}",
+    private val onOpenOverlay: (tab: String) -> Unit,
+    private val onStudioReady: ((softwareFallback: Boolean) -> Unit)? = null,
+    private val onEquipApplied: ((seq: Int) -> Unit)? = null,
+    private val onStudioMetrics: ((fps: Float, frameMs: Float) -> Unit)? = null
 ) : GodotPlugin(godot) {
 
     companion object {
@@ -71,6 +76,27 @@ class PlayHubGodotPlugin(
 
     @UsedByGodot
     fun get_launch_pck_path(): String = pckPath
+
+    @UsedByGodot
+    fun get_launch_mode(): String = launchMode
+
+    @UsedByGodot
+    fun get_avatar_init_json(): String = avatarInitJson
+
+    @UsedByGodot
+    fun notify_studio_ready(softwareFallback: Boolean) {
+        onStudioReady?.let { cb -> runOnHostThread { cb(softwareFallback) } }
+    }
+
+    @UsedByGodot
+    fun notify_equip_applied(seq: Int) {
+        onEquipApplied?.let { cb -> runOnHostThread { cb(seq) } }
+    }
+
+    @UsedByGodot
+    fun notify_studio_metrics(fps: Float, frameMs: Float) {
+        onStudioMetrics?.let { cb -> runOnHostThread { cb(fps, frameMs) } }
+    }
 
     @UsedByGodot
     fun get_room_code(): String = roomCode

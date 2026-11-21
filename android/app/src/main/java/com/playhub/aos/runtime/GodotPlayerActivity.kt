@@ -98,8 +98,11 @@ class GodotPlayerActivity : GodotActivity() {
         launchRoomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
         launchMatchRoomId = intent.getStringExtra(EXTRA_MATCH_ROOM_ID).orEmpty()
         launchWsUrl = intent.getStringExtra(EXTRA_WS_URL).orEmpty()
-        // Persist launch pack path & multiplayer config to app filesDir (user://) for deterministic bootstrap handoff
-        runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
+        // Persist launch mode, pack path & multiplayer config to app filesDir (user://) for deterministic bootstrap handoff
+        runCatching {
+            File(filesDir, "playhub_launch_mode.txt").writeText("game")
+            File(filesDir, "playhub_launch.txt").writeText(launchPckPath)
+        }
         runCatching {
             val mpFile = File(filesDir, "playhub_mp.json")
             val mpJson = PlayHubGodotPlugin.buildMultiplayerConfigJson(
