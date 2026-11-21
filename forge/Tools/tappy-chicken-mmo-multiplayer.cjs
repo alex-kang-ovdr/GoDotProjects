@@ -10,6 +10,7 @@ const ROOM_ID = /^[a-f0-9]{12}$/;
 const DEFAULT_PROXIMITY_RADIUS = 520;
 const DEFAULT_LEAVE_HYSTERESIS = 60;
 const DEFAULT_MAX_NEARBY_GHOSTS = 12;
+const DEFAULT_PLAYER_SPEED = 170; // Matches Game.gd DEFAULTS.speed
 const DEFAULT_FLUSH_INTERVAL_MS = 50;
 const DEFAULT_STATE_INTERVAL_MS = 1000;
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 10000;
@@ -19,6 +20,11 @@ const MAX_ROOMS = 64;
 const MAX_OUTBOUND_QUEUE = 256;
 const VALID_EVENTS = new Set(['join', 'flap', 'phase', 'sync', 'leave']);
 const VALID_PHASES = new Set(['menu', 'ready', 'playing', 'paused', 'crashing', 'over']);
+
+const EVENT_TO_CODE = { join: 0, flap: 1, phase: 2, sync: 3, leave: 4 };
+const CODE_TO_EVENT = ['join', 'flap', 'phase', 'sync', 'leave'];
+const PHASE_TO_CODE = { menu: 0, ready: 1, playing: 2, paused: 3, crashing: 4, over: 5 };
+const CODE_TO_PHASE = ['menu', 'ready', 'playing', 'paused', 'crashing', 'over'];
 
 function clamp(value, min, max, fallback) {
   const num = Number(value);
@@ -50,6 +56,7 @@ class TappyMmoRoom {
     this.players = new Map();
     this.dirtyPresence = new Set();
     this.nextPlayerNum = 1;
+    this.nextShortId = 1;
     this.logs = [];
     this.logSeq = 0;
     this.stats = {
@@ -73,25 +80,56 @@ class TappyMmoRoom {
     if (this.logs.length > 120) this.logs.shift();
   }
 
+  estimateDistance(player, nowMs = this.now()) {
+    if (player.phase !== 'playing') return player.runDistance;
+    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
+    return player.runDistance + player.speed * elapsedSec;
+  }
+
+  estimateFlapTime(player, nowMs = this.now()) {
+    if (player.phase !== 'playing') return player.flapTime;
+    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
+    return Math.min(10, player.flapTime + elapsedSec);
+  }
+
   isWithinProximity(distA, distB, wasNearby) {
     const limit = this.proximityRadius + (wasNearby ? this.leaveHysteresis : 0);
     return Math.abs(distA - distB) <= limit;
   }
 
-  _peerEventPayload(player, eventType) {
+  _peerEventPayload(player, eventType, nowMs = this.now()) {
+    const dist = this.estimateDistance(player, nowMs);
+    const flapTime = eventType === 'flap' ? 0 : this.estimateFlapTime(player, nowMs);
     return {
       peerId: player.id,
       name: player.name,
       eventType,
-      runDistance: Math.round(player.runDistance),
+      runDistance: Math.round(dist),
       y: Math.round(player.y),
       vy: Math.round(player.vy),
       angle: round3(player.angle),
-      flapTime: round3(player.flapTime),
+      flapTime: round3(flapTime),
       phase: player.phase,
       score: player.score,
       seq: player.seq,
     };
+  }
+
+  _compactEventTuple(player, eventType, includeIdentity = false, nowMs = this.now()) {
+    const evCode = EVENT_TO_CODE[eventType] ?? 3;
+    const dist = Math.round(this.estimateDistance(player, nowMs));
+    const y = Math.round(player.y);
+    // Ultra-compact 5-element tuple for steady-state flap events (~20 bytes):
+    // [shortId, 1, runDistance, y, score] — flapTime=0, phase='playing', vy/angle are deterministic.
+    if (evCode === 1 && !includeIdentity && player.phase === 'playing') {
+      return [player.shortId, 1, dist, y, player.score];
+    }
+    const phaseCode = PHASE_TO_CODE[player.phase] ?? 0;
+    const flap100 = evCode === 1 ? 0 : Math.round(this.estimateFlapTime(player, nowMs) * 100);
+    if (includeIdentity) {
+      return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100, Math.round(player.vy), player.name];
+    }
+    return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100];
   }
 
   _sendTo(player, message, preEncoded = null) {
@@ -102,6 +140,57 @@ class TappyMmoRoom {
     if (typeof player.send === 'function') {
       player.send(message);
     }
+  }
+
+  _deliverPeerEvent(recipient, sender, eventType, { includeIdentity = false, nowMs, cache = null } = {}) {
+    if (recipient.compact && typeof recipient.sendCompactEvent === 'function') {
+      let encoded;
+      if (cache && !includeIdentity) {
+        if (cache.compactEncoded === null) {
+          cache.compactEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, false, nowMs));
+        }
+        encoded = cache.compactEncoded;
+      } else if (cache && includeIdentity) {
+        if (cache.compactIdentityEncoded === null) {
+          cache.compactIdentityEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, true, nowMs));
+        }
+        encoded = cache.compactIdentityEncoded;
+      } else {
+        encoded = JSON.stringify(this._compactEventTuple(sender, eventType, includeIdentity, nowMs));
+      }
+      recipient.sendCompactEvent(encoded);
+      return;
+    }
+    if (cache) {
+      if (cache.legacyMessage === null) {
+        cache.legacyMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(sender, eventType, nowMs) };
+      }
+      if (recipient.sendRaw && cache.legacyEncoded === null) {
+        cache.legacyEncoded = JSON.stringify(cache.legacyMessage);
+      }
+      this._sendTo(recipient, cache.legacyMessage, cache.legacyEncoded);
+      return;
+    }
+    const msg = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(sender, eventType, nowMs) };
+    this._sendTo(recipient, msg);
+  }
+
+  _deliverPeerRemoved(recipient, removedPlayer, cache = null) {
+    if (recipient.compact && typeof recipient.sendCompactRemoved === 'function') {
+      recipient.sendCompactRemoved(removedPlayer.shortId);
+      return;
+    }
+    if (cache) {
+      if (cache.removedMessage === null) {
+        cache.removedMessage = { type: 'rpc', method: 'client_peer_removed', params: { peerId: removedPlayer.id } };
+      }
+      if (recipient.sendRaw && cache.removedEncoded === null) {
+        cache.removedEncoded = JSON.stringify(cache.removedMessage);
+      }
+      this._sendTo(recipient, cache.removedMessage, cache.removedEncoded);
+      return;
+    }
+    this._sendTo(recipient, { type: 'rpc', method: 'client_peer_removed', params: { peerId: removedPlayer.id } });
   }
 
   _sendPresence(player) {
@@ -126,6 +215,10 @@ class TappyMmoRoom {
     for (const playerId of this.dirtyPresence) {
       const player = this.players.get(playerId);
       if (!player) continue;
+      if (player.compact && typeof player.setCompactPresence === 'function') {
+        player.setCompactPresence(onlineCount, player.nearby.size);
+        continue;
+      }
       const payload = {
         type: 'rpc',
         method: 'client_presence',
@@ -148,12 +241,15 @@ class TappyMmoRoom {
       throw new Error('이 MMO 월드가 가득 찼습니다.');
     }
     const id = 'p-' + randomBytes(6).toString('hex');
+    const shortId = this.nextShortId++;
     const name = cleanName(rawName, `Player ${this.nextPlayerNum++}`);
     const now = this.now();
     const player = {
       id,
+      shortId,
       name,
       runDistance: clamp(options.runDistance, 0, 10000000, 0),
+      speed: clamp(options.speed, 60, 400, DEFAULT_PLAYER_SPEED),
       y: clamp(options.y, 0, 640, 290),
       vy: 0,
       angle: 0,
@@ -164,10 +260,15 @@ class TappyMmoRoom {
       nearby: new Set(),
       joinedAt: now,
       lastSeenAt: now,
+      stateAt: now,
+      compact: Boolean(options.compact),
       send: typeof options.send === 'function' ? options.send : null,
       sendImmediate: typeof options.sendImmediate === 'function' ? options.sendImmediate : null,
       sendRaw: typeof options.sendRaw === 'function' ? options.sendRaw : null,
       setPresenceRaw: typeof options.setPresenceRaw === 'function' ? options.setPresenceRaw : null,
+      sendCompactEvent: typeof options.sendCompactEvent === 'function' ? options.sendCompactEvent : null,
+      sendCompactRemoved: typeof options.sendCompactRemoved === 'function' ? options.sendCompactRemoved : null,
+      setCompactPresence: typeof options.setCompactPresence === 'function' ? options.setCompactPresence : null,
     };
     this.players.set(id, player);
     this.stats.joins += 1;
@@ -181,10 +282,12 @@ class TappyMmoRoom {
       revision: this.build?.revision ?? null,
       previewUrl: this.build?.previewUrl || null,
       playerId: player.id,
+      shortId: player.shortId,
       playerName: player.name,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
       maxNearbyGhosts: this.maxNearbyGhosts,
+      compact: player.compact,
       onlineCount: this.players.size,
     };
     if (player.sendImmediate) {
@@ -193,18 +296,18 @@ class TappyMmoRoom {
       this._sendTo(player, welcome);
     }
 
-    // Sync immediately with closest peers already within proximity radius (bounded by maxNearbyGhosts).
-    const joinMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(player, 'join') };
-    let joinEncoded = null;
+    // Sync immediately with peers within estimated proximity radius (bounded by maxNearbyGhosts).
+    const joinCache = { legacyMessage: null, legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
+    const playerDist = this.estimateDistance(player, now);
     for (const other of this.players.values()) {
       if (other.id === player.id) continue;
       const canPair = player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts;
-      if (canPair && this.isWithinProximity(player.runDistance, other.runDistance, false)) {
+      const otherDist = this.estimateDistance(other, now);
+      if (canPair && this.isWithinProximity(playerDist, otherDist, false)) {
         player.nearby.add(other.id);
         other.nearby.add(player.id);
-        if (other.sendRaw && joinEncoded === null) joinEncoded = JSON.stringify(joinMessage);
-        this._sendTo(other, joinMessage, joinEncoded);
-        this._sendTo(player, { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(other, 'sync') });
+        this._deliverPeerEvent(other, player, 'join', { includeIdentity: true, nowMs: now, cache: joinCache });
+        this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs: now });
         this.stats.multicastsSent += 2;
       } else {
         this.stats.filteredOut += 1;
@@ -237,42 +340,58 @@ class TappyMmoRoom {
     if (typeof params.name === 'string' && params.name.trim()) {
       player.name = cleanName(params.name, player.name);
     }
-    const rawPhase = String(params.phase ?? player.phase);
+    const nowMs = this.now();
+    const rawPhase = String(params.phase ?? (eventType === 'flap' ? 'playing' : player.phase));
     player.phase = VALID_PHASES.has(rawPhase) ? rawPhase : player.phase;
     player.runDistance = clamp(params.runDistance ?? params.run_distance, 0, 10000000, player.runDistance);
+    if (params.speed !== undefined) {
+      player.speed = clamp(params.speed, 60, 400, player.speed);
+    }
     player.y = clamp(params.y, 0, 640, player.y);
-    player.vy = clamp(params.vy, -2000, 2000, player.vy);
-    player.angle = clamp(params.angle, -Math.PI, Math.PI, player.angle);
-    player.flapTime = clamp(params.flapTime ?? params.flap_time, 0, 10, player.flapTime);
+    if (eventType === 'flap') {
+      player.vy = -345;
+      player.angle = -0.785;
+      player.flapTime = 0;
+    } else {
+      player.vy = clamp(params.vy, -2000, 2000, player.vy);
+      player.angle = clamp(params.angle, -Math.PI, Math.PI, player.angle);
+      player.flapTime = clamp(params.flapTime ?? params.flap_time, 0, 10, player.flapTime);
+    }
     player.score = Math.max(0, Math.floor(clamp(params.score, 0, 999999, player.score)));
-    player.lastSeenAt = this.now();
+    player.lastSeenAt = nowMs;
+    player.stateAt = nowMs;
 
     this.stats.eventsReceived += 1;
-    const eventMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(player, eventType) };
-    let eventEncoded = null;
-    let removedSenderEncoded = null;
+    const eventCache = { legacyMessage: null, legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
+    const removedCache = { removedMessage: null, removedEncoded: null };
     const deliveredTo = [];
     const enteredIds = [];
     const leftIds = [];
     const filteredIds = [];
+    const senderDist = player.runDistance;
 
     for (const other of this.players.values()) {
       if (other.id === player.id) continue;
       const wasNearby = player.nearby.has(other.id);
-      const inRange = this.isWithinProximity(player.runDistance, other.runDistance, wasNearby);
+      const otherDist = this.estimateDistance(other, nowMs);
+      const inRange = this.isWithinProximity(senderDist, otherDist, wasNearby);
       const nowNearby = inRange && (wasNearby || (player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts));
 
       if (nowNearby) {
-        if (other.sendRaw && eventEncoded === null) eventEncoded = JSON.stringify(eventMessage);
-        this._sendTo(other, eventMessage, eventEncoded);
+        const entering = !wasNearby;
+        this._deliverPeerEvent(other, player, eventType, {
+          includeIdentity: entering || eventType === 'join',
+          nowMs,
+          cache: eventCache,
+        });
         this.stats.multicastsSent += 1;
         deliveredTo.push(other.id);
-        if (!wasNearby) {
+        if (entering) {
           player.nearby.add(other.id);
           other.nearby.add(player.id);
           enteredIds.push(other.id);
-          // Symmetric AOI entry: also deliver other's current state to sender.
-          this._sendTo(player, { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(other, 'sync') });
+          // Symmetric AOI entry with server-estimated runDistance & flapTime for smooth ghost drop-in.
+          this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs });
           this.stats.multicastsSent += 1;
         }
       } else {
@@ -282,10 +401,8 @@ class TappyMmoRoom {
           player.nearby.delete(other.id);
           other.nearby.delete(player.id);
           leftIds.push(other.id);
-          const removedSenderMsg = { type: 'rpc', method: 'client_peer_removed', params: { peerId: player.id } };
-          if (other.sendRaw && removedSenderEncoded === null) removedSenderEncoded = JSON.stringify(removedSenderMsg);
-          this._sendTo(other, removedSenderMsg, removedSenderEncoded);
-          this._sendTo(player, { type: 'rpc', method: 'client_peer_removed', params: { peerId: other.id } });
+          this._deliverPeerRemoved(other, player, removedCache);
+          this._deliverPeerRemoved(player, other);
         }
       }
     }
@@ -318,14 +435,12 @@ class TappyMmoRoom {
     this.players.delete(playerId);
     this.dirtyPresence.delete(playerId);
     this.stats.leaves += 1;
-    const removedMsg = { type: 'rpc', method: 'client_peer_removed', params: { peerId: playerId } };
-    let removedEncoded = null;
+    const removedCache = { removedMessage: null, removedEncoded: null };
     for (const otherId of player.nearby) {
       const other = this.players.get(otherId);
       if (!other) continue;
       other.nearby.delete(playerId);
-      if (other.sendRaw && removedEncoded === null) removedEncoded = JSON.stringify(removedMsg);
-      this._sendTo(other, removedMsg, removedEncoded);
+      this._deliverPeerRemoved(other, player, removedCache);
       notified.push(otherId);
     }
     this.recordLog('leave', `${player.name} 이탈 (주변 ${notified.length}명에게 정리 RPC 전송)`);
@@ -350,6 +465,7 @@ class TappyMmoRoom {
   }
 
   snapshot() {
+    const nowMs = this.now();
     return {
       type: 'state',
       roomId: this.id,
@@ -358,7 +474,7 @@ class TappyMmoRoom {
       revision: this.build?.revision ?? null,
       previewUrl: this.build?.previewUrl || null,
       phase: this.phase,
-      serverTime: this.now(),
+      serverTime: nowMs,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
       maxNearbyGhosts: this.maxNearbyGhosts,
@@ -366,12 +482,13 @@ class TappyMmoRoom {
       stats: { ...this.stats },
       players: [...this.players.values()].map(p => ({
         id: p.id,
+        shortId: p.shortId,
         name: p.name,
-        runDistance: Math.round(p.runDistance),
+        runDistance: Math.round(this.estimateDistance(p, nowMs)),
         y: Math.round(p.y),
         vy: Math.round(p.vy),
         angle: round3(p.angle),
-        flapTime: round3(p.flapTime),
+        flapTime: round3(this.estimateFlapTime(p, nowMs)),
         phase: p.phase,
         score: p.score,
         nearbyCount: p.nearby.size,
@@ -379,6 +496,26 @@ class TappyMmoRoom {
       logs: this.logs.slice(-40),
     };
   }
+}
+
+function parseCompactClientEvent(arr) {
+  if (!Array.isArray(arr) || arr.length < 3) {
+    throw new Error('압축 이벤트 형식이 올바르지 않습니다.');
+  }
+  const eventType = CODE_TO_EVENT[arr[0]];
+  if (!eventType) throw new Error('지원하지 않는 플레이어 이벤트입니다.');
+  const params = {
+    eventType,
+    runDistance: arr[1],
+    y: arr[2],
+    score: arr[3] ?? 0,
+    phase: arr[4] !== undefined ? (CODE_TO_PHASE[arr[4]] || 'playing') : (eventType === 'flap' ? 'playing' : undefined),
+    seq: arr[5] ?? 0,
+  };
+  if (arr[6] !== undefined) params.flapTime = Number(arr[6]) / 100;
+  if (arr[7] !== undefined) params.vy = arr[7];
+  if (arr[8] !== undefined) params.speed = arr[8];
+  return { method: 'server_player_event', params };
 }
 
 function attachTappyChickenMmo(
@@ -423,12 +560,42 @@ function attachTappyChickenMmo(
     ws.outboundQueue.push(encoded);
   };
 
+  const enqueueCompactEvent = (ws, encodedTuple) => {
+    if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= 1000000) return;
+    if (ws.compactEvents.length >= MAX_OUTBOUND_QUEUE) {
+      ws.compactEvents.shift();
+    }
+    ws.compactEvents.push(encodedTuple);
+  };
+
   const flushSocket = ws => {
     if (ws.readyState !== WebSocket.OPEN) {
       ws.outboundQueue.length = 0;
       ws.pendingPresenceRaw = null;
+      ws.compactEvents.length = 0;
+      ws.compactRemoved.length = 0;
+      ws.compactPresence = null;
       return;
     }
+
+    if (ws.compact) {
+      const hasEvents = ws.compactEvents.length > 0;
+      const hasRemoved = ws.compactRemoved.length > 0;
+      const hasPresence = ws.compactPresence !== null;
+      if (!hasEvents && !hasRemoved && !hasPresence) return;
+      if (ws.bufferedAmount < 1000000) {
+        const parts = [];
+        if (hasEvents) parts.push('"b":[' + ws.compactEvents.join(',') + ']');
+        if (hasRemoved) parts.push('"r":[' + ws.compactRemoved.join(',') + ']');
+        if (hasPresence) parts.push('"p":[' + ws.compactPresence[0] + ',' + ws.compactPresence[1] + ']');
+        ws.send('{' + parts.join(',') + '}');
+      }
+      ws.compactEvents.length = 0;
+      ws.compactRemoved.length = 0;
+      ws.compactPresence = null;
+      return;
+    }
+
     if (ws.pendingPresenceRaw !== null) {
       ws.outboundQueue.push(ws.pendingPresenceRaw);
       ws.pendingPresenceRaw = null;
@@ -529,9 +696,13 @@ function attachTappyChickenMmo(
     if (compat && !compat.enforceWsConnection(ws, req, sendJson)) return;
     ws.missedPongs = 0;
     ws.supportsBatch = false;
+    ws.compact = false;
     ws.subscribeState = false;
     ws.outboundQueue = [];
     ws.pendingPresenceRaw = null;
+    ws.compactEvents = [];
+    ws.compactRemoved = [];
+    ws.compactPresence = null;
     ws.on('pong', () => { ws.missedPongs = 0; });
     let rateAt = now();
     let msgCount = 0;
@@ -605,13 +776,25 @@ function attachTappyChickenMmo(
             createdRoom = true;
           }
           ws.supportsBatch = Boolean(msg.supportsBatch);
+          ws.compact = Boolean(msg.compact);
           ws.subscribeState = Boolean(msg.subscribeState);
           let joined;
           try {
             joined = room.join(msg.name, {
+              compact: ws.compact,
+              speed: msg.speed,
               sendImmediate: payload => sendJson(ws, payload),
               sendRaw: encoded => enqueueRaw(ws, encoded),
               setPresenceRaw: encoded => { ws.pendingPresenceRaw = encoded; },
+              sendCompactEvent: encodedTuple => enqueueCompactEvent(ws, encodedTuple),
+              sendCompactRemoved: shortId => {
+                if (ws.readyState === WebSocket.OPEN && ws.compactRemoved.length < MAX_OUTBOUND_QUEUE) {
+                  ws.compactRemoved.push(shortId);
+                }
+              },
+              setCompactPresence: (onlineCount, nearbyCount) => {
+                ws.compactPresence = [onlineCount, nearbyCount];
+              },
             });
           } catch (joinError) {
             if (createdRoom) {
@@ -641,6 +824,11 @@ function attachTappyChickenMmo(
           throw new Error('먼저 MMO 월드에 참가해야 합니다.');
         }
 
+        if (Array.isArray(msg.e)) {
+          activeRoom.handleRpc(activePlayerId, parseCompactClientEvent(msg.e));
+          return;
+        }
+
         if (msg.type === 'rpc') {
           activeRoom.handleRpc(activePlayerId, msg);
           return;
@@ -656,6 +844,9 @@ function attachTappyChickenMmo(
       clearTimeout(joinTimeout);
       ws.outboundQueue.length = 0;
       ws.pendingPresenceRaw = null;
+      ws.compactEvents.length = 0;
+      ws.compactRemoved.length = 0;
+      ws.compactPresence = null;
       if (!activeRoom) return;
       socketsByRoom.get(activeRoom.id)?.delete(ws);
       stateSubscribersByRoom.get(activeRoom.id)?.delete(ws);
@@ -695,4 +886,9 @@ module.exports = {
   DEFAULT_PROXIMITY_RADIUS,
   DEFAULT_LEAVE_HYSTERESIS,
   DEFAULT_MAX_NEARBY_GHOSTS,
+  DEFAULT_PLAYER_SPEED,
+  EVENT_TO_CODE,
+  CODE_TO_EVENT,
+  PHASE_TO_CODE,
+  CODE_TO_PHASE,
 };

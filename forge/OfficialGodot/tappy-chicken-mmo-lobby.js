@@ -140,6 +140,12 @@
     return buildPromise;
   }
 
+  const EVENT_TO_CODE = { join: 0, flap: 1, phase: 2, sync: 3, leave: 4 };
+  const CODE_TO_EVENT = ['join', 'flap', 'phase', 'sync', 'leave'];
+  const PHASE_TO_CODE = { menu: 0, ready: 1, playing: 2, paused: 3, crashing: 4, over: 5 };
+  const CODE_TO_PHASE = ['menu', 'ready', 'playing', 'paused', 'crashing', 'over'];
+  const compactPeers = new Map();
+
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== frame.contentWindow || event.data?.source !== 'playforge-tappy-mmo-game') return;
     if (event.data.type === 'ready') {
@@ -151,7 +157,29 @@
     }
     if (event.data.type === 'rpc') {
       rpcsSent += 1;
-      sendWs({ type: 'rpc', method: event.data.method, params: event.data.params });
+      const p = event.data.params || {};
+      const evType = p.event_type ?? p.eventType ?? 'sync';
+      const evCode = EVENT_TO_CODE[evType];
+      if (event.data.method === 'server_player_event' && evCode !== undefined) {
+        const dist = Math.round(Number(p.run_distance ?? p.runDistance ?? 0));
+        const y = Math.round(Number(p.y ?? 290));
+        const score = Math.max(0, Math.floor(Number(p.score ?? 0)));
+        const phaseCode = PHASE_TO_CODE[p.phase] ?? 2;
+        const seq = Math.max(0, Math.floor(Number(p.seq ?? 0)));
+        if (evCode === 1 && phaseCode === 2) {
+          sendWs({ e: [1, dist, y, score, 2, seq] });
+        } else {
+          const flap100 = Math.round(Number(p.flap_time ?? p.flapTime ?? 0) * 100);
+          const vy = Math.round(Number(p.vy ?? 0));
+          const speed = p.speed !== undefined ? Math.round(Number(p.speed)) : undefined;
+          const tuple = speed !== undefined
+            ? [evCode, dist, y, score, phaseCode, seq, flap100, vy, speed]
+            : [evCode, dist, y, score, phaseCode, seq, flap100, vy];
+          sendWs({ e: tuple });
+        }
+      } else {
+        sendWs({ type: 'rpc', method: event.data.method, params: event.data.params });
+      }
       return;
     }
     if (event.data.type === 'log' || event.data.type === 'error') {
@@ -193,10 +221,61 @@
         buildId,
         name: $('name').value,
         supportsBatch: true,
+        compact: true,
         subscribeState: query.has('embedded'),
       });
       socket.onmessage = event => {
         const data = JSON.parse(event.data);
+        if (data.b || data.r || data.p) {
+          if (Array.isArray(data.b)) {
+            for (const t of data.b) {
+              if (!Array.isArray(t) || t.length < 5) continue;
+              const shortId = t[0];
+              const evType = CODE_TO_EVENT[t[1]] || 'sync';
+              const peerId = 's-' + shortId;
+              if (typeof t[8] === 'string' && t[8]) compactPeers.set(shortId, t[8]);
+              const isFlap = t[1] === 1;
+              const phase = t[5] !== undefined ? (CODE_TO_PHASE[t[5]] || 'playing') : 'playing';
+              const flapTime = isFlap ? 0 : (t[6] !== undefined ? t[6] / 100 : 0);
+              const vy = isFlap ? -345 : (t[7] ?? 0);
+              const angle = isFlap ? -0.785 : 0;
+              handleRpcMessage({
+                type: 'rpc',
+                method: 'client_multicast_event',
+                params: {
+                  peerId,
+                  name: compactPeers.get(shortId) || ('P-' + shortId),
+                  eventType: evType,
+                  runDistance: t[2],
+                  y: t[3],
+                  score: t[4],
+                  phase,
+                  flapTime,
+                  vy,
+                  angle,
+                },
+              });
+            }
+          }
+          if (Array.isArray(data.r)) {
+            for (const shortId of data.r) {
+              compactPeers.delete(shortId);
+              handleRpcMessage({
+                type: 'rpc',
+                method: 'client_peer_removed',
+                params: { peerId: 's-' + shortId },
+              });
+            }
+          }
+          if (Array.isArray(data.p)) {
+            handleRpcMessage({
+              type: 'rpc',
+              method: 'client_presence',
+              params: { onlineCount: data.p[0], nearbyCount: data.p[1] },
+            });
+          }
+          return;
+        }
         if (data.type === 'welcome') {
           playerId = data.playerId;
           roomId = data.roomId;

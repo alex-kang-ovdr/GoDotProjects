@@ -17,7 +17,8 @@ const DEFAULT_COURSE_SEED := 42071
 const DEFAULT_PROXIMITY_RADIUS := 520.0
 const LEAVE_HYSTERESIS := 60.0
 const DEFAULT_MAX_NEARBY_GHOSTS := 12
-const SYNC_INTERVAL := 0.25
+const DEFAULT_PLAYER_SPEED := 170.0
+const SYNC_INTERVAL := 2.0 # Event-driven sync: fallback drift-reconcile only if no flap/phase event for 2s.
 const MAX_CLIENTS := 64
 const VALID_EVENTS := ["join", "flap", "phase", "sync", "leave"]
 const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
@@ -243,16 +244,19 @@ func publish_local_event(event_type: String, game_snapshot: Dictionary) -> void:
 		return
 	if event_type not in VALID_EVENTS:
 		return
+	_sync_clock = 0.0 # Active gameplay events reset idle drift timer (0 Hz redundant sync).
 	_client_seq += 1
 	var bird: Dictionary = game_snapshot.get("bird", {})
+	var settings: Dictionary = game_snapshot.get("settings", {})
 	var payload := {
 		"event_type": event_type,
 		"name": player_name if not player_name.is_empty() else ("P-" + local_peer_id),
 		"run_distance": float(game_snapshot.get("run_distance", 0.0)),
+		"speed": float(settings.get("speed", DEFAULT_PLAYER_SPEED)),
 		"y": float(bird.get("y", 290.0)),
 		"vy": float(bird.get("vy", 0.0)),
 		"angle": float(bird.get("angle", 0.0)),
-		"flap_time": float(game_snapshot.get("flap_time", 0.0)),
+		"flap_time": 0.0 if event_type == "flap" else float(game_snapshot.get("flap_time", 0.0)),
 		"phase": str(game_snapshot.get("state", "menu")),
 		"score": int(game_snapshot.get("score", 0)),
 		"seq": _client_seq,
@@ -359,6 +363,7 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"id": peer_id,
 		"name": nickname if not nickname.is_empty() else ("Player %d" % peer_id),
 		"run_distance": 0.0,
+		"speed": DEFAULT_PLAYER_SPEED,
 		"y": 290.0,
 		"vy": 0.0,
 		"angle": 0.0,
@@ -366,8 +371,23 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"phase": "menu",
 		"score": 0,
 		"seq": 0,
+		"state_at_msec": Time.get_ticks_msec(),
 		"nearby": {},
 	}
+
+
+func _estimate_peer_distance(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["run_distance"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return float(peer["run_distance"]) + float(peer["speed"]) * elapsed
+
+
+func _estimate_peer_flap_time(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["flap_time"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return minf(10.0, float(peer["flap_time"]) + elapsed)
 
 
 func _is_within_proximity(dist_a: float, dist_b: float, was_nearby: bool) -> bool:
@@ -394,19 +414,24 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 	var phase := str(raw.get("phase", peer["phase"]))
 	if phase not in VALID_PHASES:
 		phase = "menu"
+	var now_msec := Time.get_ticks_msec()
 	peer["run_distance"] = clampf(float(raw.get("run_distance", peer["run_distance"])), 0.0, 10000000.0)
+	if raw.has("speed"):
+		peer["speed"] = clampf(float(raw.get("speed", DEFAULT_PLAYER_SPEED)), 60.0, 400.0)
 	peer["y"] = clampf(float(raw.get("y", peer["y"])), 0.0, 640.0)
 	peer["vy"] = clampf(float(raw.get("vy", peer["vy"])), -2000.0, 2000.0)
 	peer["angle"] = clampf(float(raw.get("angle", peer["angle"])), -PI, PI)
-	peer["flap_time"] = clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
+	peer["flap_time"] = 0.0 if event_type == "flap" else clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
 	peer["phase"] = phase
 	peer["score"] = maxi(0, int(raw.get("score", peer["score"])))
+	peer["state_at_msec"] = now_msec
 
 	server_events_received += 1
-	var clean_event := _peer_to_event_payload(peer, event_type)
+	var clean_event := _peer_to_event_payload(peer, event_type, now_msec)
 	var sender_nearby: Dictionary = peer["nearby"]
 	var ghost_cap := clampi(max_nearby_ghosts, 1, MAX_CLIENTS - 1)
 	var presence_changed: Dictionary = {}
+	var sender_dist := float(peer["run_distance"])
 
 	for other_id_variant in _server_peers.keys():
 		var other_id := int(other_id_variant)
@@ -415,7 +440,8 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 		var other: Dictionary = _server_peers[other_id]
 		var other_nearby: Dictionary = other["nearby"]
 		var was_nearby := sender_nearby.has(other_id)
-		var in_range := _is_within_proximity(float(peer["run_distance"]), float(other["run_distance"]), was_nearby)
+		var other_dist := _estimate_peer_distance(other, now_msec)
+		var in_range := _is_within_proximity(sender_dist, other_dist, was_nearby)
 		var now_nearby := in_range and (was_nearby or (sender_nearby.size() < ghost_cap and other_nearby.size() < ghost_cap))
 
 		if now_nearby:
@@ -426,8 +452,8 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 				other_nearby[sender_id] = true
 				presence_changed[sender_id] = true
 				presence_changed[other_id] = true
-				# Symmetric AOI entry: also deliver the existing nearby peer's state back to sender.
-				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync"))
+				# Symmetric AOI entry with estimated position & flap_time for smooth drop-in.
+				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync", now_msec))
 				server_multicasts_sent += 1
 		else:
 			server_filtered_out += 1
@@ -445,15 +471,16 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 		_server_send_presence_subset(presence_changed)
 
 
-func _peer_to_event_payload(peer: Dictionary, event_type: String) -> Dictionary:
+func _peer_to_event_payload(peer: Dictionary, event_type: String, now_msec: int = -1) -> Dictionary:
+	var ts := Time.get_ticks_msec() if now_msec < 0 else now_msec
 	return {
 		"event_type": event_type,
 		"name": str(peer["name"]),
-		"run_distance": float(peer["run_distance"]),
+		"run_distance": _estimate_peer_distance(peer, ts),
 		"y": float(peer["y"]),
 		"vy": float(peer["vy"]),
 		"angle": float(peer["angle"]),
-		"flap_time": float(peer["flap_time"]),
+		"flap_time": 0.0 if event_type == "flap" else _estimate_peer_flap_time(peer, ts),
 		"phase": str(peer["phase"]),
 		"score": int(peer["score"]),
 		"seq": int(peer["seq"]),
