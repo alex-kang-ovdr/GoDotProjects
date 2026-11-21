@@ -25,6 +25,7 @@ const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
 const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
 const { createInternalApi } = require('./Tools/internal-api.cjs');
 const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avatar-seal.cjs');
+const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -366,6 +367,14 @@ function createServer(options = {}) {
   };
   const assetLibrary = createAssetLibraryHandler(root);
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
+  const blenderPipeline = createBlenderPipelineHandler(root, {
+    env: serverEnv,
+    storageDir: options.blenderStorageDir,
+    registry: options.blenderRegistry,
+    binaryPath: options.blenderBinaryPath,
+    timeoutMs: options.blenderTimeoutMs,
+    agentChatProvider,
+  });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
     buildMode: options.buildMode,
@@ -553,12 +562,29 @@ function createServer(options = {}) {
         return agentChatProvider(req, res, json);
       }
       if (assetLibrary(req, res)) return;
+      if (routePath === '/api/blender' || routePath.startsWith('/api/blender/')) {
+        if (routePath === '/api/blender/jobs' && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
+          return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        }
+        if (await blenderPipeline(req, res, parsedUrl)) return;
+      }
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
       const agentChat = routePath === '/api/platform-addon/agent-chat';
       const remoteControl = routePath === '/api/platform-addon/remote-control';
       const avatarAddon = routePath === '/api/platform-addon/avatar';
+      const blenderAddon = routePath === '/api/platform-addon/blender';
       const avatarAssetRoute = routePath.match(/^\/api\/platform-addon\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
+      if (blenderAddon && req.method === 'GET') {
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'blender_dock.gd', 'glb_importer.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_blender', name), 'utf8')]));
+          return json(200, { ok: true, files: Object.fromEntries(entries) });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Blender add-on unavailable' });
+        }
+      }
       if (avatarAddon && req.method === 'GET') {
         try {
           const bundle = loadSealedAvatarBundle(root);
@@ -830,6 +856,7 @@ function createServer(options = {}) {
   const closeOwned = () => {
     internalApi?.close();
     agentChatProvider?.close();
+    blenderPipeline?.close();
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();

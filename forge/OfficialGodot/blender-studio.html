@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#141821">
+  <title>PlayForge · AI 3D Studio (Blender / Three.js)</title>
+  <link rel="stylesheet" href="blender-studio.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <span class="brand-mark">◆</span>
+      <div>
+        <h1>PlayForge AI 3D Studio</h1>
+        <p class="subtitle">1 컨셉 이미지 → 2 3D 프롬프트 → 3 모델링 계획 · 실행 (Blender / Three.js 교체형)</p>
+      </div>
+    </div>
+    <div class="status-pills" id="engine-pills">
+      <span class="pill pill-muted" id="blender-status-pill">Blender 확인 중…</span>
+      <span class="pill pill-muted" id="threejs-status-pill">Three.js 확인 중…</span>
+      <span class="pill pill-policy" title="Blender 공식 바이너리 무수정 · DLL 무링크 · 독립 프로세스 · JSON/파일 IPC">독립 프로세스 · JSON IPC</span>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn btn-ghost btn-sm" id="back-to-forge" href="/OfficialGodot/">Web Godot 에디터</a>
+      <button type="button" class="btn btn-ghost btn-sm" id="close-drawer-btn" hidden>닫기</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="panel control-panel">
+      <!-- AI Model Selector (Shared across stages 1, 2, 3) -->
+      <div class="model-grid">
+        <label>AI 공급자
+          <select id="ai-provider-select">
+            <option value="auto">자동 (연결된 AI 모델)</option>
+          </select>
+        </label>
+        <label>AI 모델
+          <select id="ai-model-select">
+            <option value="">기본 모델</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="connect-box" id="connect-box" hidden>
+        <div class="connect-box-row">
+          <span id="connect-box-label">선택한 AI 공급자 연결 필요</span>
+          <input type="password" id="connect-api-key" placeholder="API 키 입력" hidden>
+          <button type="button" class="btn btn-secondary btn-sm" id="connect-provider-btn">연결하기</button>
+        </div>
+        <div id="connect-link-wrap" hidden></div>
+      </div>
+
+      <!-- 3-Stage Stepper -->
+      <nav class="stepper" aria-label="3단계 3D 생성 워크플로우">
+        <button type="button" class="step-tab active" data-stage="1">
+          <span class="step-num">1</span> 컨셉 이미지
+        </button>
+        <button type="button" class="step-tab" data-stage="2">
+          <span class="step-num">2</span> 3D 프롬프트
+        </button>
+        <button type="button" class="step-tab" data-stage="3">
+          <span class="step-num">3</span> 계획 · 실행
+        </button>
+      </nav>
+
+      <!-- STAGE 1: Concept Image Generation -->
+      <div class="stage-pane" id="stage-1">
+        <div class="section-head">
+          <h2>1단계 · 컨셉 이미지 생성</h2>
+          <span class="badge" id="concept-var-badge">변형 #1</span>
+        </div>
+        <textarea id="idea-input" rows="2" placeholder="예: 스타워즈 다스베이더&#10;예: 아이언맨 Mark 85 아머 슈트&#10;예: 판타지 파이어 드래곤">스타워즈 다스베이더</textarea>
+
+        <div class="presets" id="preset-chips">
+          <button type="button" class="chip" data-idea="스타워즈 다스베이더">다스베이더</button>
+          <button type="button" class="chip" data-idea="아이언맨 Mark 85 아머 슈트">아이언맨</button>
+          <button type="button" class="chip" data-idea="판타지 파이어 드래곤">드래곤</button>
+          <button type="button" class="chip" data-idea="황금 장식이 달린 판타지 보물상자">보물상자</button>
+          <button type="button" class="chip" data-idea="눈 덮인 소나무 높이 4m">눈 소나무</button>
+          <button type="button" class="chip" data-idea="빛나는 파란 크리스탈 검">크리스탈 검</button>
+          <button type="button" class="chip" data-idea="중세 돌 감시탑 높이 5m">중세 감시탑</button>
+          <button type="button" class="chip" data-idea="네온 시안 사이버 로봇">사이버 로봇</button>
+        </div>
+
+        <div class="inline-row">
+          <label class="grow">스타일
+            <select id="style-select">
+              <option value="stylized">Stylized (게임 스타일)</option>
+              <option value="scifi">Sci-Fi / Cyber</option>
+              <option value="fantasy">Fantasy</option>
+              <option value="lowpoly">Low-Poly</option>
+              <option value="medieval">Medieval</option>
+              <option value="realistic">Realistic PBR</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-primary" id="gen-concept-btn">① 컨셉 생성 (+변형)</button>
+        </div>
+
+        <div class="concept-preview-wrap" id="concept-preview-wrap">
+          <div class="concept-placeholder" id="concept-placeholder">
+            [① 컨셉 생성]을 누르면 컨셉 아트 시트·팔레트·비율이 생성됩니다. 여러 번 눌러 변형을 비교해 보세요.
+          </div>
+          <img id="concept-preview-img" alt="생성된 컨셉 이미지" hidden>
+        </div>
+
+        <div class="concept-strip" id="concept-strip" aria-label="생성된 컨셉 이력"></div>
+
+        <div class="stage-footer">
+          <button type="button" class="btn btn-accent grow" id="goto-stage2-btn">2단계: 3D 프롬프트 생성으로 →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 2: 3D Modeling Prompt Generation -->
+      <div class="stage-pane" id="stage-2" hidden>
+        <div class="section-head">
+          <h2>2단계 · 3D 모델링 프롬프트 생성</h2>
+          <span class="badge" id="stage2-concept-badge">컨셉 미선택</span>
+        </div>
+
+        <div class="inline-row">
+          <button type="button" class="btn btn-primary grow" id="gen-prompt-btn">② 컨셉 기반 3D 프롬프트 생성 / 재생성</button>
+        </div>
+
+        <label class="field-label">생성된 3D 모델링 프롬프트 (직접 수정 가능)
+          <textarea id="modeling-prompt-input" rows="7" placeholder="2단계 버튼을 누르면 컨셉 이미지·비율·PBR 재질이 반영된 상세 3D 모델링 프롬프트가 생성됩니다."></textarea>
+        </label>
+
+        <ul class="checklist" id="prompt-checklist"></ul>
+
+        <div class="stage-footer">
+          <button type="button" class="btn btn-ghost" data-jump="1">← 1단계</button>
+          <button type="button" class="btn btn-accent grow" id="goto-stage3-btn">3단계: 모델링 계획 · 실행으로 →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 3: Modeling Plan & Engine Execution (Blender or Three.js) -->
+      <div class="stage-pane" id="stage-3" hidden>
+        <div class="section-head">
+          <h2>3단계 · 모델링 계획 수립 후 실행</h2>
+          <span class="badge" id="plan-parts-badge">계획 대기</span>
+        </div>
+
+        <div class="engine-selector" role="radiogroup" aria-label="3D 처리 엔진 선택">
+          <label class="engine-card active" data-engine="blender-cli">
+            <input type="radio" name="engineId" value="blender-cli" checked>
+            <div>
+              <strong>Blender 4.3 Headless</strong>
+              <small>무수정 공식 CLI · 베벨/bmesh 정밀 GLB</small>
+            </div>
+          </label>
+          <label class="engine-card" data-engine="threejs-cli">
+            <input type="radio" name="engineId" value="threejs-cli">
+            <div>
+              <strong>Three.js Headless</strong>
+              <small>초고속 (~0.4초) · 경량 독립 워커 GLB</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="coord-grid">
+          <label>배치 X <input type="number" id="pos-x" value="0" step="0.5"></label>
+          <label>배치 Y <input type="number" id="pos-y" value="0" step="0.5"></label>
+          <label>배치 Z <input type="number" id="pos-z" value="0" step="0.5"></label>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="auto-offset-x" checked>
+          <span>반복 생성 시 Godot 배치 좌표 X 자동 이동 (+2m)</span>
+        </label>
+
+        <div class="action-row">
+          <button type="button" class="btn btn-secondary" id="plan-btn">③-1 모델링 계획 수립</button>
+          <button type="button" class="btn btn-primary" id="execute-btn">③-2 3D 모델링 실행</button>
+        </div>
+
+        <div class="plan-summary-box" id="plan-summary-box">
+          [③-1 모델링 계획 수립]으로 파트 구조를 검토한 뒤 [③-2 3D 모델링 실행]을 누르세요. 같은 계획으로 Blender와 Three.js를 번갈아 여러 번 실행할 수 있습니다.
+        </div>
+
+        <div class="stage-footer">
+          <button type="button" class="btn btn-ghost" data-jump="2">← 2단계</button>
+          <button type="button" class="btn btn-ghost" id="cancel-op-btn" hidden>진행 취소</button>
+        </div>
+      </div>
+
+      <div class="status-banner" id="job-status" role="status" aria-live="polite">
+        1단계에서 아이디어를 입력하고 컨셉 이미지를 생성해 보세요. (여러 번 반복 생성 가능)
+      </div>
+    </section>
+
+    <section class="panel viewport-panel">
+      <div class="section-head">
+        <h2 id="viewport-title">3D GLB 프리뷰</h2>
+        <div class="viewport-controls">
+          <button type="button" class="btn btn-ghost btn-sm" id="toggle-spin-btn">회전: ON</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="reset-cam-btn">시점 초기화</button>
+          <button type="button" class="btn btn-accent btn-sm" id="place-in-godot-btn" disabled>Godot 씬에 자동 배치</button>
+          <a class="btn btn-secondary btn-sm" id="download-glb-btn" href="#" download hidden>GLB 다운로드</a>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="glb-canvas"></canvas>
+        <div class="canvas-empty" id="canvas-empty">
+          <div class="empty-icon">◇</div>
+          <p>3단계 실행 후 생성된 3D GLB 모델이 여기에 실시간 렌더링됩니다.</p>
+          <small>드래그: 궤도 회전 · 휠/핀치: 확대/축소</small>
+        </div>
+        <div class="metrics-bar" id="metrics-bar" hidden></div>
+      </div>
+
+      <div class="bottom-tabs-wrap">
+        <div class="inspector-tabs">
+          <button type="button" class="tab active" data-tab="gallery">생성 이력 (<span id="asset-count">0</span>)</button>
+          <button type="button" class="tab" data-tab="plan">모델링 계획 (Recipe)</button>
+          <button type="button" class="tab" data-tab="request">request.json</button>
+          <button type="button" class="tab" data-tab="response">response.json</button>
+          <button type="button" class="btn btn-ghost btn-sm tab-right" id="refresh-assets-btn">새로고침</button>
+        </div>
+
+        <div class="asset-list" id="asset-list">
+          <div class="asset-empty">아직 생성된 3D 에셋이 없습니다.</div>
+        </div>
+        <pre class="code-box" id="inspector-output" hidden></pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="blender-studio.js"></script>
+</body>
+</html>
