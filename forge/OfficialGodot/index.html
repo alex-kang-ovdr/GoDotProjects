@@ -13,6 +13,17 @@
 <h1>PlayForge</h1>
 <p>빈 맵에서 시작하거나 예제를 골라 팀과 함께 만드세요.</p>
 <h2>시작하기</h2>
+<div id="templateToolbar" class="template-toolbar">
+  <input id="templateSearch" type="search" placeholder="템플릿 검색 (이름·설명·태그)…" aria-label="템플릿 검색">
+  <div id="templateFilters" class="filter-tabs" role="group" aria-label="템플릿 카테고리 필터">
+    <button type="button" data-filter="all" aria-pressed="true">전체</button>
+    <button type="button" data-filter="showcase" aria-pressed="false">제작과정 보기</button>
+    <button type="button" data-filter="2d" aria-pressed="false">2D</button>
+    <button type="button" data-filter="3d" aria-pressed="false">3D</button>
+    <button type="button" data-filter="multiplayer" aria-pressed="false">멀티플레이</button>
+    <button type="button" data-filter="ported" aria-pressed="false">포팅(Unity/Roblox)</button>
+  </div>
+</div>
 <div id="templates" class="cards">
 </div>
 <h2>내 프로젝트</h2>
@@ -20,6 +31,19 @@
 </div>
 <p id="status" role="status"></p>
 </section>
+<dialog id="createProjectModal" class="project-modal" aria-labelledby="createModalTitle">
+  <form method="dialog" id="createModalForm">
+    <h3 id="createModalTitle">새 프로젝트 만들기</h3>
+    <p id="createModalHint" class="muted"></p>
+    <label class="modal-field">프로젝트 이름
+      <input id="createModalInput" type="text" maxlength="80" required autocomplete="off">
+    </label>
+    <div class="modal-actions">
+      <button type="submit" value="ok" class="primary-btn">확인</button>
+      <button type="button" id="createModalCancel">취소</button>
+    </div>
+  </form>
+</dialog>
 <section id="workspace" hidden>
 <iframe id="editor" title="PlayForge Godot Editor" allow="cross-origin-isolated; autoplay" >
 </iframe>

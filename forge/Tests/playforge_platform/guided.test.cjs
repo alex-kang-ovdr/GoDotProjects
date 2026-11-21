@@ -82,13 +82,9 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     }); });
 
     await page.goto(origin + '/OfficialGodot/', { waitUntil: 'domcontentloaded' });
-    await page.locator('#workspace').waitFor({ state: 'visible' });
+    await page.locator('#library').waitFor({ state: 'visible' });
     let listing = await fetch(origin + '/api/platform/projects').then(response => response.json());
-    assert.equal(listing.projects.length, 1, 'empty library should create its starter project');
-    assert.equal(listing.projects[0].template, 'blank3d');
-
-    await page.frameLocator('#editor').locator('body').evaluate(() => parent.postMessage({source:'playforge-godot-editor',type:'platform-action',action:'home'}, location.origin));
-    await page.locator('#library').waitFor({state:'visible'});
+    assert.equal(listing.projects.length, 0, 'empty library should display the template gallery without auto-launching blank3d');
     await page.getByRole('button', { name: new RegExp(templateName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).click();
     await page.locator('.start-dialog').waitFor({ state: 'visible' });
     await page.getByRole('button', { name: '완성된 템플릿 열기' }).waitFor({ state: 'visible' });

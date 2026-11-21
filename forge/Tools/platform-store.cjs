@@ -60,8 +60,8 @@ class PlatformStore {
   }
 
   listTemplates() {
-    return Object.values(templates).map(({ id, name, description, assetPaths, showcase }) => ({
-      id, name, description, assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
+    return Object.values(templates).map(({ id, name, description, dimension, assetPaths, showcase }) => ({
+      id, name, description, dimension: dimension || '3d', assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
     }));
   }
   getShowcase(id) {
@@ -106,6 +106,34 @@ class PlatformStore {
   }
 
   getProject(id) { return snapshot(this.read(id)); }
+  renameProject(id, { name } = {}) {
+    if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
+    const cleanName = name.trim();
+    return this.enqueue(id, async () => {
+      const project = this.read(id);
+      const now = new Date().toISOString();
+      const files = { ...project.files };
+      if (typeof files['project.godot'] === 'string') {
+        files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(cleanName));
+      }
+      const next = { ...project, name: cleanName, files, updatedAt: now };
+      this.persist(next);
+      this.emit(id, { type: 'project', project: snapshot(next), message: 'Project renamed' });
+      return snapshot(next);
+    });
+  }
+  deleteProject(id) {
+    return this.enqueue(id, async () => {
+      this.read(id);
+      const dir = path.join(this.projectsDirectory, id);
+      const resolved = path.resolve(dir);
+      if (path.dirname(resolved) !== path.resolve(this.projectsDirectory)) throw httpError(400, 'Invalid project directory');
+      fs.rmSync(resolved, { recursive: true, force: true });
+      this.emit(id, { type: 'deleted', id });
+      this.listeners.delete(id);
+      return { id, deleted: true };
+    });
+  }
   history(id) { return this.read(id).history.map(item => ({ revision: item.revision, createdAt: item.createdAt, clientId: item.clientId, message: item.message, fileCount: Object.keys(item.files).length })); }
   listReleases(id) { return clone(this.read(id).releases).map(({ files, build, ...release }) => ({ ...(build || {}), ...release })); }
 

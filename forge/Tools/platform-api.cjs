@@ -127,9 +127,13 @@ function createPlatformApi(store, { validateBuild, buildMode } = {}) {
     const sendProject = project => ({ ok: true, ...projectResponse(project) });
     const templateRoute = pathname.match(/^\/api\/platform\/templates\/([a-z0-9_-]{1,40})$/);
     const projectRoute = pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})(?:\/(history|restore|releases|events|activity|session|logs|remote|releases\/([a-f0-9]{24})\/rollback))?$/);
-    const matched = pathname === '/api/platform/templates' || pathname === '/api/platform/projects' || pathname === '/api/platform/publish-config' || !!templateRoute || !!projectRoute;
+    const unmatchedProjectPath = !projectRoute && pathname.startsWith('/api/platform/projects/');
+    const matched = pathname === '/api/platform/templates' || pathname === '/api/platform/projects' || pathname === '/api/platform/publish-config' || !!templateRoute || !!projectRoute || unmatchedProjectPath;
     if (!matched) return false;
     try {
+      if (unmatchedProjectPath) {
+        return reply(res, 404, { ok: false, error: 'Project not found' }), true;
+      }
       if (pathname === '/api/platform/publish-config' && method === 'GET') {
         return reply(res, 200, {
           ok: true,
@@ -219,6 +223,22 @@ function createPlatformApi(store, { validateBuild, buildMode } = {}) {
         const body = await readBody(req, providedBody);
         const project = await store.updateFiles(id, body);
         return reply(res, 200, sendProject(project)), true;
+      }
+      if (!action && method === 'PATCH') {
+        const body = await readBody(req, providedBody);
+        const project = await store.renameProject(id, body);
+        return reply(res, 200, sendProject(project)), true;
+      }
+      if (!action && method === 'DELETE') {
+        const deleted = await store.deleteProject(id);
+        const peers = presenceByProject.get(id);
+        if (peers) {
+          for (const peer of [...peers]) {
+            try { peer.res.end(); } catch {}
+            peer.cleanup?.();
+          }
+        }
+        return reply(res, 200, { ok: true, ...deleted }), true;
       }
       if (action === 'history' && method === 'GET') return reply(res, 200, { ok: true, history: store.history(id) }), true;
       if (action === 'restore' && method === 'POST') {
