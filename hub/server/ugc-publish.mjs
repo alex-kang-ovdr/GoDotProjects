@@ -3,13 +3,23 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
 import { createArtifactStorage } from './artifact-storage.mjs';
 import { resolveUgcOrigin } from './runtime-config.mjs';
 import { ApiError, digest, json, readJson, uid } from './security.mjs';
 
-const GAME_ID_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+function loadPublishContract() {
+  const repoShared = path.resolve(__dirname, '../../tools/ugc-shared/publish-contract.cjs');
+  if (fs.existsSync(repoShared)) return require(repoShared);
+  return require(path.resolve(__dirname, 'ugc-shared/publish-contract.cjs'));
+}
+const { GAME_ID_RE, DEPLOY_MODES, VISIBILITIES, cleanText, slugifyGameId } = loadPublishContract();
+
 const FORGE_ID_RE = /^[a-f0-9]{24}$/;
 const SUBMISSION_ID_RE = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
 const HOST_SLUG_RE = /^p[a-z2-7]{16}$/;
@@ -18,8 +28,6 @@ const ADMIN_PUBLISH_SUBMISSION_RE = /^\/api\/admin\/submissions\/([0-9a-f]{8}(?:
 const ADMIN_PUB_ITEM_RE = /^\/api\/admin\/publications\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)(?:\/(rollback|status))?$/;
 const CREATOR_PUB_STATUS_RE = /^\/api\/creator\/publications\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\/status$/;
 const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
-const DEPLOY_MODES = new Set(['singleplay', 'mo', 'mmo']);
-const VISIBILITIES = new Set(['private', 'unlisted', 'public']);
 const PUB_STATUSES = new Set(['published', 'unpublished', 'suspended']);
 
 function generateHostSlug(ownerKey, projectId) {
@@ -29,29 +37,6 @@ function generateHostSlug(ownerKey, projectId) {
     out += BASE32_ALPHABET[hash[i] & 31];
   }
   return out;
-}
-
-function slugifyGameId(raw, fallbackSeed = 'ugc-game') {
-  const base = typeof raw === 'string'
-    ? raw.normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase()
-    : '';
-  let slug = base.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
-  if (!slug || !/^[a-z]/.test(slug)) {
-    const suffix = crypto.createHash('sha256').update(String(raw || fallbackSeed)).digest('hex').slice(0, 8);
-    slug = slug ? `g-${slug}` : `game-${suffix}`;
-  }
-  slug = slug.slice(0, 48).replace(/-+$/g, '');
-  if (!GAME_ID_RE.test(slug)) {
-    const suffix = crypto.createHash('sha256').update(String(fallbackSeed)).digest('hex').slice(0, 8);
-    return `game-${suffix}`;
-  }
-  return slug;
-}
-
-function cleanText(value, maxLen, fallback = '') {
-  if (typeof value !== 'string') return fallback;
-  const trimmed = value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
-  return trimmed ? trimmed.slice(0, maxLen) : fallback;
 }
 
 function localizedPair(value, fallbackKo, fallbackEn, maxLen) {

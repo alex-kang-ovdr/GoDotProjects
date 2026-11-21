@@ -1,451 +1,43 @@
 'use strict';
 
+// PlayForge PIE WebSocket server for Tappy Chicken MMO.
+// Room simulation, compact 5-element tuple codec, and socket flush live in tools/ugc-shared/mmo-room-core.cjs (SSOT).
 const { randomBytes } = require('node:crypto');
 const { WebSocket, WebSocketServer } = require('ws');
+const {
+  DEFAULT_PROXIMITY_RADIUS,
+  DEFAULT_LEAVE_HYSTERESIS,
+  DEFAULT_MAX_NEARBY_GHOSTS,
+  DEFAULT_PLAYER_SPEED,
+  DEFAULT_FLUSH_INTERVAL_MS,
+  DEFAULT_STATE_INTERVAL_MS,
+  DEFAULT_HEARTBEAT_INTERVAL_MS,
+  DEFAULT_MAX_MISSED_PONGS,
+  MAX_OUTBOUND_QUEUE,
+  EVENT_TO_CODE,
+  CODE_TO_EVENT,
+  PHASE_TO_CODE,
+  CODE_TO_PHASE,
+  round3,
+  parseCompactClientEvent,
+  flushSocketQueue,
+  SpatialMmoRoom,
+} = require('../../tools/ugc-shared/mmo-room-core.cjs');
 
 const SOCKET_PATH = '/tappy-chicken-mmo';
 const PROJECT_ID = /^[a-f0-9]{24}$/;
 const BUILD_ID = /^[a-f0-9]{16}$/;
 const ROOM_ID = /^[a-f0-9]{12}$/;
-const DEFAULT_PROXIMITY_RADIUS = 520;
-const DEFAULT_LEAVE_HYSTERESIS = 60;
-const DEFAULT_MAX_NEARBY_GHOSTS = 12;
-const DEFAULT_PLAYER_SPEED = 170; // Matches Game.gd DEFAULTS.speed
-const DEFAULT_FLUSH_INTERVAL_MS = 50;
-const DEFAULT_STATE_INTERVAL_MS = 1000;
-const DEFAULT_HEARTBEAT_INTERVAL_MS = 10000;
-const DEFAULT_MAX_MISSED_PONGS = 2;
-const MAX_PLAYERS = 64;
 const MAX_ROOMS = 64;
-const MAX_OUTBOUND_QUEUE = 256;
-const VALID_EVENTS = new Set(['join', 'flap', 'phase', 'sync', 'leave']);
-const VALID_PHASES = new Set(['menu', 'ready', 'playing', 'paused', 'crashing', 'over']);
 
-const EVENT_TO_CODE = { join: 0, flap: 1, phase: 2, sync: 3, leave: 4 };
-const CODE_TO_EVENT = ['join', 'flap', 'phase', 'sync', 'leave'];
-const PHASE_TO_CODE = { menu: 0, ready: 1, playing: 2, paused: 3, crashing: 4, over: 5 };
-const CODE_TO_PHASE = ['menu', 'ready', 'playing', 'paused', 'crashing', 'over'];
-
-function clamp(value, min, max, fallback) {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return fallback;
-  return Math.min(max, Math.max(min, num));
-}
-
-function cleanName(raw, fallback) {
-  const text = String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 24);
-  return text || fallback;
-}
-
-function round3(value) {
-  return Math.round(value * 1000) / 1000;
-}
-
-class TappyMmoRoom {
+class TappyMmoRoom extends SpatialMmoRoom {
   constructor(id, projectId, build, options = {}, now = Date.now) {
-    this.id = id;
-    this.projectId = projectId;
-    this.build = build || null;
-    this.now = now;
-    this.phase = 'playing'; // Always live: seamless drop-in (난입) without lobby wait.
-    this.courseSeed = Math.floor(clamp(options.courseSeed ?? (10000 + (parseInt(id.slice(0, 6), 16) % 900000)), 1, 999999, 42071));
-    this.proximityRadius = clamp(options.proximityRadius, 120, 4000, DEFAULT_PROXIMITY_RADIUS);
-    this.leaveHysteresis = clamp(options.leaveHysteresis, 0, 500, DEFAULT_LEAVE_HYSTERESIS);
-    this.maxNearbyGhosts = Math.floor(clamp(options.maxNearbyGhosts, 1, MAX_PLAYERS - 1, DEFAULT_MAX_NEARBY_GHOSTS));
-    this.deferPresence = Boolean(options.deferPresence);
-    this.players = new Map();
-    this.dirtyPresence = new Set();
-    this.nextPlayerNum = 1;
-    this.nextShortId = 1;
-    this.logs = [];
-    this.logSeq = 0;
-    this.stats = {
-      eventsReceived: 0,
-      multicastsSent: 0,
-      filteredOut: 0,
-      joins: 0,
-      leaves: 0,
-    };
-  }
-
-  recordLog(event, message) {
-    this.logs.push({
-      seq: ++this.logSeq,
-      at: this.now(),
-      source: 'server',
-      roomId: this.id,
-      event,
-      message: String(message).slice(0, 240),
-    });
-    if (this.logs.length > 120) this.logs.shift();
-  }
-
-  estimateDistance(player, nowMs = this.now()) {
-    if (player.phase !== 'playing') return player.runDistance;
-    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
-    return player.runDistance + player.speed * elapsedSec;
-  }
-
-  estimateFlapTime(player, nowMs = this.now()) {
-    if (player.phase !== 'playing') return player.flapTime;
-    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
-    return Math.min(10, player.flapTime + elapsedSec);
-  }
-
-  isWithinProximity(distA, distB, wasNearby) {
-    const limit = this.proximityRadius + (wasNearby ? this.leaveHysteresis : 0);
-    return Math.abs(distA - distB) <= limit;
-  }
-
-  _peerEventPayload(player, eventType, nowMs = this.now()) {
-    const dist = this.estimateDistance(player, nowMs);
-    const flapTime = eventType === 'flap' ? 0 : this.estimateFlapTime(player, nowMs);
-    return {
-      peerId: player.id,
-      name: player.name,
-      eventType,
-      runDistance: Math.round(dist),
-      y: Math.round(player.y),
-      vy: Math.round(player.vy),
-      angle: round3(player.angle),
-      flapTime: round3(flapTime),
-      phase: player.phase,
-      score: player.score,
-      seq: player.seq,
-    };
-  }
-
-  _compactEventTuple(player, eventType, includeIdentity = false, nowMs = this.now()) {
-    const evCode = EVENT_TO_CODE[eventType] ?? 3;
-    const dist = Math.round(this.estimateDistance(player, nowMs));
-    const y = Math.round(player.y);
-    // Ultra-compact 5-element tuple for steady-state flap events (~20 bytes):
-    // [shortId, 1, runDistance, y, score] — flapTime=0, phase='playing', vy/angle are deterministic.
-    if (evCode === 1 && !includeIdentity && player.phase === 'playing') {
-      return [player.shortId, 1, dist, y, player.score];
-    }
-    const phaseCode = PHASE_TO_CODE[player.phase] ?? 0;
-    const flap100 = evCode === 1 ? 0 : Math.round(this.estimateFlapTime(player, nowMs) * 100);
-    if (includeIdentity) {
-      return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100, Math.round(player.vy), player.name];
-    }
-    return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100];
-  }
-
-  _sendTo(player, message, preEncoded = null) {
-    if (typeof player.sendRaw === 'function') {
-      player.sendRaw(preEncoded ?? JSON.stringify(message));
-      return;
-    }
-    if (typeof player.send === 'function') {
-      player.send(message);
-    }
-  }
-
-  _deliverPeerEvent(recipient, sender, eventType, { includeIdentity = false, nowMs, cache = null } = {}) {
-    if (recipient.compact && typeof recipient.sendCompactEvent === 'function') {
-      let encoded;
-      if (cache && !includeIdentity) {
-        if (cache.compactEncoded === null) {
-          cache.compactEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, false, nowMs));
-        }
-        encoded = cache.compactEncoded;
-      } else if (cache && includeIdentity) {
-        if (cache.compactIdentityEncoded === null) {
-          cache.compactIdentityEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, true, nowMs));
-        }
-        encoded = cache.compactIdentityEncoded;
-      } else {
-        encoded = JSON.stringify(this._compactEventTuple(sender, eventType, includeIdentity, nowMs));
-      }
-      recipient.sendCompactEvent(encoded);
-      return;
-    }
-    if (cache) {
-      if (cache.legacyMessage === null) {
-        cache.legacyMessage = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(sender, eventType, nowMs) };
-      }
-      if (recipient.sendRaw && cache.legacyEncoded === null) {
-        cache.legacyEncoded = JSON.stringify(cache.legacyMessage);
-      }
-      this._sendTo(recipient, cache.legacyMessage, cache.legacyEncoded);
-      return;
-    }
-    const msg = { type: 'rpc', method: 'client_multicast_event', params: this._peerEventPayload(sender, eventType, nowMs) };
-    this._sendTo(recipient, msg);
-  }
-
-  _deliverPeerRemoved(recipient, removedPlayer, cache = null) {
-    if (recipient.compact && typeof recipient.sendCompactRemoved === 'function') {
-      recipient.sendCompactRemoved(removedPlayer.shortId);
-      return;
-    }
-    if (cache) {
-      if (cache.removedMessage === null) {
-        cache.removedMessage = { type: 'rpc', method: 'client_peer_removed', params: { peerId: removedPlayer.id } };
-      }
-      if (recipient.sendRaw && cache.removedEncoded === null) {
-        cache.removedEncoded = JSON.stringify(cache.removedMessage);
-      }
-      this._sendTo(recipient, cache.removedMessage, cache.removedEncoded);
-      return;
-    }
-    this._sendTo(recipient, { type: 'rpc', method: 'client_peer_removed', params: { peerId: removedPlayer.id } });
-  }
-
-  _sendPresence(player) {
-    if (this.deferPresence) {
-      this.dirtyPresence.add(player.id);
-      return;
-    }
-    const payload = {
-      type: 'rpc',
-      method: 'client_presence',
-      params: {
-        onlineCount: this.players.size,
-        nearbyCount: player.nearby.size,
-      },
-    };
-    this._sendTo(player, payload);
-  }
-
-  flushPresence() {
-    if (this.dirtyPresence.size === 0) return;
-    const onlineCount = this.players.size;
-    for (const playerId of this.dirtyPresence) {
-      const player = this.players.get(playerId);
-      if (!player) continue;
-      if (player.compact && typeof player.setCompactPresence === 'function') {
-        player.setCompactPresence(onlineCount, player.nearby.size);
-        continue;
-      }
-      const payload = {
-        type: 'rpc',
-        method: 'client_presence',
-        params: {
-          onlineCount,
-          nearbyCount: player.nearby.size,
-        },
-      };
-      if (typeof player.setPresenceRaw === 'function') {
-        player.setPresenceRaw(JSON.stringify(payload));
-      } else {
-        this._sendTo(player, payload);
-      }
-    }
-    this.dirtyPresence.clear();
-  }
-
-  join(rawName, options = {}) {
-    if (this.players.size >= MAX_PLAYERS) {
-      throw new Error('이 MMO 월드가 가득 찼습니다.');
-    }
-    const id = 'p-' + randomBytes(6).toString('hex');
-    const shortId = this.nextShortId++;
-    const name = cleanName(rawName, `Player ${this.nextPlayerNum++}`);
-    const now = this.now();
-    const player = {
+    super(
       id,
-      shortId,
-      name,
-      runDistance: clamp(options.runDistance, 0, 10000000, 0),
-      speed: clamp(options.speed, 60, 400, DEFAULT_PLAYER_SPEED),
-      y: clamp(options.y, 0, 640, 290),
-      vy: 0,
-      angle: 0,
-      flapTime: 0,
-      phase: VALID_PHASES.has(options.phase) ? options.phase : 'menu',
-      score: 0,
-      seq: 0,
-      nearby: new Set(),
-      joinedAt: now,
-      lastSeenAt: now,
-      stateAt: now,
-      compact: Boolean(options.compact),
-      send: typeof options.send === 'function' ? options.send : null,
-      sendImmediate: typeof options.sendImmediate === 'function' ? options.sendImmediate : null,
-      sendRaw: typeof options.sendRaw === 'function' ? options.sendRaw : null,
-      setPresenceRaw: typeof options.setPresenceRaw === 'function' ? options.setPresenceRaw : null,
-      sendCompactEvent: typeof options.sendCompactEvent === 'function' ? options.sendCompactEvent : null,
-      sendCompactRemoved: typeof options.sendCompactRemoved === 'function' ? options.sendCompactRemoved : null,
-      setCompactPresence: typeof options.setCompactPresence === 'function' ? options.setCompactPresence : null,
-    };
-    this.players.set(id, player);
-    this.stats.joins += 1;
-    this.recordLog('join', `${name} 난입 (온라인 ${this.players.size}명, 시드 ${this.courseSeed})`);
-
-    const welcome = {
-      type: 'welcome',
-      roomId: this.id,
-      projectId: this.projectId,
-      buildId: this.build?.id || null,
-      revision: this.build?.revision ?? null,
-      previewUrl: this.build?.previewUrl || null,
-      playerId: player.id,
-      shortId: player.shortId,
-      playerName: player.name,
-      courseSeed: this.courseSeed,
-      proximityRadius: this.proximityRadius,
-      maxNearbyGhosts: this.maxNearbyGhosts,
-      compact: player.compact,
-      onlineCount: this.players.size,
-    };
-    if (player.sendImmediate) {
-      player.sendImmediate(welcome);
-    } else {
-      this._sendTo(player, welcome);
-    }
-
-    // Sync immediately with peers within estimated proximity radius (bounded by maxNearbyGhosts).
-    const joinCache = { legacyMessage: null, legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
-    const playerDist = this.estimateDistance(player, now);
-    for (const other of this.players.values()) {
-      if (other.id === player.id) continue;
-      const canPair = player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts;
-      const otherDist = this.estimateDistance(other, now);
-      if (canPair && this.isWithinProximity(playerDist, otherDist, false)) {
-        player.nearby.add(other.id);
-        other.nearby.add(player.id);
-        this._deliverPeerEvent(other, player, 'join', { includeIdentity: true, nowMs: now, cache: joinCache });
-        this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs: now });
-        this.stats.multicastsSent += 2;
-      } else {
-        this.stats.filteredOut += 1;
-      }
-    }
-    for (const peer of this.players.values()) this._sendPresence(peer);
-    return { player, welcome };
-  }
-
-  handleRpc(playerId, message) {
-    const player = this.players.get(playerId);
-    if (!player) throw new Error('참가하지 않은 플레이어입니다.');
-    if (!message || typeof message !== 'object' || message.method !== 'server_player_event') {
-      throw new Error('지원하지 않는 RPC 메서드입니다.');
-    }
-    const params = message.params;
-    if (!params || typeof params !== 'object' || Array.isArray(params)) {
-      throw new Error('RPC 인자가 올바르지 않습니다.');
-    }
-    const eventType = String(params.eventType ?? params.event_type ?? 'sync');
-    if (!VALID_EVENTS.has(eventType)) {
-      throw new Error('지원하지 않는 플레이어 이벤트입니다.');
-    }
-    const seq = Number.isSafeInteger(params.seq) ? params.seq : 0;
-    if (eventType !== 'join' && seq > 0 && seq <= player.seq) {
-      return { ignored: true, deliveredTo: [], enteredIds: [], leftIds: [], filteredIds: [] };
-    }
-    if (seq > 0) player.seq = seq;
-
-    if (typeof params.name === 'string' && params.name.trim()) {
-      player.name = cleanName(params.name, player.name);
-    }
-    const nowMs = this.now();
-    const rawPhase = String(params.phase ?? (eventType === 'flap' ? 'playing' : player.phase));
-    player.phase = VALID_PHASES.has(rawPhase) ? rawPhase : player.phase;
-    player.runDistance = clamp(params.runDistance ?? params.run_distance, 0, 10000000, player.runDistance);
-    if (params.speed !== undefined) {
-      player.speed = clamp(params.speed, 60, 400, player.speed);
-    }
-    player.y = clamp(params.y, 0, 640, player.y);
-    if (eventType === 'flap') {
-      player.vy = -345;
-      player.angle = -0.785;
-      player.flapTime = 0;
-    } else {
-      player.vy = clamp(params.vy, -2000, 2000, player.vy);
-      player.angle = clamp(params.angle, -Math.PI, Math.PI, player.angle);
-      player.flapTime = clamp(params.flapTime ?? params.flap_time, 0, 10, player.flapTime);
-    }
-    player.score = Math.max(0, Math.floor(clamp(params.score, 0, 999999, player.score)));
-    player.lastSeenAt = nowMs;
-    player.stateAt = nowMs;
-
-    this.stats.eventsReceived += 1;
-    const eventCache = { legacyMessage: null, legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
-    const removedCache = { removedMessage: null, removedEncoded: null };
-    const deliveredTo = [];
-    const enteredIds = [];
-    const leftIds = [];
-    const filteredIds = [];
-    const senderDist = player.runDistance;
-
-    for (const other of this.players.values()) {
-      if (other.id === player.id) continue;
-      const wasNearby = player.nearby.has(other.id);
-      const otherDist = this.estimateDistance(other, nowMs);
-      const inRange = this.isWithinProximity(senderDist, otherDist, wasNearby);
-      const nowNearby = inRange && (wasNearby || (player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts));
-
-      if (nowNearby) {
-        const entering = !wasNearby;
-        this._deliverPeerEvent(other, player, eventType, {
-          includeIdentity: entering || eventType === 'join',
-          nowMs,
-          cache: eventCache,
-        });
-        this.stats.multicastsSent += 1;
-        deliveredTo.push(other.id);
-        if (entering) {
-          player.nearby.add(other.id);
-          other.nearby.add(player.id);
-          enteredIds.push(other.id);
-          // Symmetric AOI entry with server-estimated runDistance & flapTime for smooth ghost drop-in.
-          this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs });
-          this.stats.multicastsSent += 1;
-        }
-      } else {
-        this.stats.filteredOut += 1;
-        filteredIds.push(other.id);
-        if (wasNearby) {
-          player.nearby.delete(other.id);
-          other.nearby.delete(player.id);
-          leftIds.push(other.id);
-          this._deliverPeerRemoved(other, player, removedCache);
-          this._deliverPeerRemoved(player, other);
-        }
-      }
-    }
-
-    if (enteredIds.length > 0 || leftIds.length > 0) {
-      this._sendPresence(player);
-      for (const peerId of enteredIds) {
-        const peer = this.players.get(peerId);
-        if (peer) this._sendPresence(peer);
-      }
-      for (const peerId of leftIds) {
-        const peer = this.players.get(peerId);
-        if (peer) this._sendPresence(peer);
-      }
-    }
-
-    if (eventType === 'flap' && deliveredTo.length > 0) {
-      if (this.stats.eventsReceived <= 12 || this.stats.eventsReceived % 50 === 0) {
-        this.recordLog('rpc', `${player.name} flap RPC -> 주변 ${deliveredTo.length}명 멀티캐스트 (범위 밖 ${filteredIds.length}명 제외)`);
-      }
-    }
-
-    return { ignored: false, deliveredTo, enteredIds, leftIds, filteredIds };
-  }
-
-  leave(playerId) {
-    const player = this.players.get(playerId);
-    if (!player) return [];
-    const notified = [];
-    this.players.delete(playerId);
-    this.dirtyPresence.delete(playerId);
-    this.stats.leaves += 1;
-    const removedCache = { removedMessage: null, removedEncoded: null };
-    for (const otherId of player.nearby) {
-      const other = this.players.get(otherId);
-      if (!other) continue;
-      other.nearby.delete(playerId);
-      this._deliverPeerRemoved(other, player, removedCache);
-      notified.push(otherId);
-    }
-    this.recordLog('leave', `${player.name} 이탈 (주변 ${notified.length}명에게 정리 RPC 전송)`);
-    for (const peer of this.players.values()) this._sendPresence(peer);
-    return notified;
+      { projectId, build: build || null },
+      { ...options, enableLogs: true, includePlatform: false },
+      now
+    );
   }
 
   metadata() {
@@ -498,26 +90,6 @@ class TappyMmoRoom {
   }
 }
 
-function parseCompactClientEvent(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) {
-    throw new Error('압축 이벤트 형식이 올바르지 않습니다.');
-  }
-  const eventType = CODE_TO_EVENT[arr[0]];
-  if (!eventType) throw new Error('지원하지 않는 플레이어 이벤트입니다.');
-  const params = {
-    eventType,
-    runDistance: arr[1],
-    y: arr[2],
-    score: arr[3] ?? 0,
-    phase: arr[4] !== undefined ? (CODE_TO_PHASE[arr[4]] || 'playing') : (eventType === 'flap' ? 'playing' : undefined),
-    seq: arr[5] ?? 0,
-  };
-  if (arr[6] !== undefined) params.flapTime = Number(arr[6]) / 100;
-  if (arr[7] !== undefined) params.vy = arr[7];
-  if (arr[8] !== undefined) params.speed = arr[8];
-  return { method: 'server_player_event', params };
-}
-
 function attachTappyChickenMmo(
   server,
   {
@@ -540,20 +112,22 @@ function attachTappyChickenMmo(
   const stateSubscribersByRoom = new Map();
   const pendingStateTimers = new Map();
 
+  const isWsOpen = ws => ws.readyState === WebSocket.OPEN;
+
   const sendRawNow = (ws, encoded) => {
-    if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) {
+    if (isWsOpen(ws) && ws.bufferedAmount < 1000000) {
       ws.send(encoded);
     }
   };
 
   const sendJson = (ws, data) => {
-    if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < 1000000) {
+    if (isWsOpen(ws) && ws.bufferedAmount < 1000000) {
       ws.send(JSON.stringify(data));
     }
   };
 
   const enqueueRaw = (ws, encoded) => {
-    if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= 1000000) return;
+    if (!isWsOpen(ws) || ws.bufferedAmount >= 1000000) return;
     if (ws.outboundQueue.length >= MAX_OUTBOUND_QUEUE) {
       ws.outboundQueue.shift();
     }
@@ -561,62 +135,11 @@ function attachTappyChickenMmo(
   };
 
   const enqueueCompactEvent = (ws, encodedTuple) => {
-    if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= 1000000) return;
+    if (!isWsOpen(ws) || ws.bufferedAmount >= 1000000) return;
     if (ws.compactEvents.length >= MAX_OUTBOUND_QUEUE) {
       ws.compactEvents.shift();
     }
     ws.compactEvents.push(encodedTuple);
-  };
-
-  const flushSocket = ws => {
-    if (ws.readyState !== WebSocket.OPEN) {
-      ws.outboundQueue.length = 0;
-      ws.pendingPresenceRaw = null;
-      ws.compactEvents.length = 0;
-      ws.compactRemoved.length = 0;
-      ws.compactPresence = null;
-      return;
-    }
-
-    if (ws.compact) {
-      const hasEvents = ws.compactEvents.length > 0;
-      const hasRemoved = ws.compactRemoved.length > 0;
-      const hasPresence = ws.compactPresence !== null;
-      if (!hasEvents && !hasRemoved && !hasPresence) return;
-      if (ws.bufferedAmount < 1000000) {
-        const parts = [];
-        if (hasEvents) parts.push('"b":[' + ws.compactEvents.join(',') + ']');
-        if (hasRemoved) parts.push('"r":[' + ws.compactRemoved.join(',') + ']');
-        if (hasPresence) parts.push('"p":[' + ws.compactPresence[0] + ',' + ws.compactPresence[1] + ']');
-        ws.send('{' + parts.join(',') + '}');
-      }
-      ws.compactEvents.length = 0;
-      ws.compactRemoved.length = 0;
-      ws.compactPresence = null;
-      return;
-    }
-
-    if (ws.pendingPresenceRaw !== null) {
-      ws.outboundQueue.push(ws.pendingPresenceRaw);
-      ws.pendingPresenceRaw = null;
-    }
-    const count = ws.outboundQueue.length;
-    if (count === 0) return;
-    if (ws.bufferedAmount >= 1000000) {
-      ws.outboundQueue.length = 0;
-      return;
-    }
-    if (count === 1) {
-      ws.send(ws.outboundQueue[0]);
-    } else if (ws.supportsBatch) {
-      ws.send('{"type":"rpc_batch","items":[' + ws.outboundQueue.join(',') + ']}');
-    } else {
-      for (let i = 0; i < count; i += 1) {
-        if (ws.bufferedAmount >= 1000000) break;
-        ws.send(ws.outboundQueue[i]);
-      }
-    }
-    ws.outboundQueue.length = 0;
   };
 
   const broadcastState = room => {
@@ -670,7 +193,7 @@ function attachTappyChickenMmo(
       room.flushPresence();
       const sockets = socketsByRoom.get(room.id);
       if (!sockets) continue;
-      for (const ws of sockets) flushSocket(ws);
+      for (const ws of sockets) flushSocketQueue(ws, isWsOpen);
     }
   }, flushIntervalMs);
   flushTimer.unref();
@@ -760,7 +283,7 @@ function attachTappyChickenMmo(
             } finally {
               joining = false;
             }
-            if (ws.readyState !== WebSocket.OPEN) return;
+            if (!isWsOpen(ws)) return;
             if (!build) throw new Error('성공한 프로젝트 빌드가 아닙니다.');
             if (rooms.size >= MAX_ROOMS) throw new Error('활성 MMO 월드가 너무 많습니다.');
             const id = randomBytes(6).toString('hex');
@@ -788,7 +311,7 @@ function attachTappyChickenMmo(
               setPresenceRaw: encoded => { ws.pendingPresenceRaw = encoded; },
               sendCompactEvent: encodedTuple => enqueueCompactEvent(ws, encodedTuple),
               sendCompactRemoved: shortId => {
-                if (ws.readyState === WebSocket.OPEN && ws.compactRemoved.length < MAX_OUTBOUND_QUEUE) {
+                if (isWsOpen(ws) && ws.compactRemoved.length < MAX_OUTBOUND_QUEUE) {
                   ws.compactRemoved.push(shortId);
                 }
               },
@@ -825,7 +348,7 @@ function attachTappyChickenMmo(
         }
 
         if (Array.isArray(msg.e)) {
-          activeRoom.handleRpc(activePlayerId, parseCompactClientEvent(msg.e));
+          activeRoom.handleEvent(activePlayerId, parseCompactClientEvent(msg.e));
           return;
         }
 

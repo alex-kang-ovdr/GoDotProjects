@@ -137,30 +137,43 @@ function buildCoverSvg(template, gameId) {
 
 function buildManifest(template, gameId, today) {
   const preset = TEMPLATE_PRESETS[template.id] || {};
-  const koTitle = preset.koName || `${template.name} (Forge)`;
-  const enTitle = `${template.name} (Forge)`;
-  const koSummary = preset.koSummary || template.description || `${template.name} PlayForge 스타터 템플릿 게임입니다.`;
-  const enSummary = template.description || `${template.name} PlayForge starter template game.`;
+  const defaults = template.publishDefaults && typeof template.publishDefaults === 'object' ? template.publishDefaults : null;
+  const gm = defaults?.gameMetadata && typeof defaults.gameMetadata === 'object' ? defaults.gameMetadata : null;
+  const dp = defaults?.deployProfile && typeof defaults.deployProfile === 'object' ? defaults.deployProfile : null;
+  const deployMode = ['singleplay', 'mo', 'mmo'].includes(dp?.deployMode) ? dp.deployMode : 'singleplay';
+  const koTitle = gm?.title?.ko || preset.koName || `${template.name} (Forge)`;
+  const enTitle = gm?.title?.en || `${template.name} (Forge)`;
+  const koSummary = gm?.summary?.ko || preset.koSummary || template.description || `${template.name} PlayForge 스타터 템플릿 게임입니다.`;
+  const enSummary = gm?.summary?.en || template.description || `${template.name} PlayForge starter template game.`;
+  const koInstructions = gm?.instructions?.ko || '게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.';
+  const enInstructions = gm?.instructions?.en || 'Check the on-screen controls and play with keyboard, mouse, or touch.';
   const fillLocales = (ko, en) => Object.fromEntries(LOCALES.map(loc => [loc, loc === 'ko' ? ko : en]));
-  const tags = [...new Set(['forge', ...(preset.tags || [template.dimension === '3d' ? 'action' : 'arcade'])])];
+  const baseTags = Array.isArray(gm?.tags) && gm.tags.length ? gm.tags : (preset.tags || [template.dimension === '3d' ? 'action' : 'arcade']);
+  const tags = [...new Set(['forge', ...baseTags])];
+  const controls = Array.isArray(gm?.controls) && gm.controls.length ? gm.controls : ['keyboard', 'mouse', 'touch'];
+  const vp = gm?.viewport && typeof gm.viewport === 'object' ? gm.viewport : {};
+  const viewport = {
+    width: Number.isSafeInteger(vp.width) ? vp.width : 1280,
+    height: Number.isSafeInteger(vp.height) ? vp.height : 720,
+    orientation: ['landscape', 'portrait', 'any'].includes(vp.orientation) ? vp.orientation : 'landscape',
+    resize: 'responsive'
+  };
   return {
     schemaVersion: 1,
     id: gameId,
     slug: gameId,
+    deployMode,
     title: fillLocales(koTitle, enTitle),
     summary: fillLocales(koSummary, enSummary),
-    instructions: fillLocales(
-      '게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.',
-      'Check the on-screen controls and play with keyboard, mouse, or touch.'
-    ),
+    instructions: fillLocales(koInstructions, enInstructions),
     rules: fillLocales(koSummary, enSummary),
     entry: 'index.html',
     version: '1.0.0',
     publishedOn: today,
     updatedOn: today,
     tags,
-    controls: ['keyboard', 'mouse', 'touch'],
-    viewport: { width: 1280, height: 720, orientation: 'landscape', resize: 'responsive' },
+    controls,
+    viewport,
     capabilities: { webgl: true, wasm: true, workers: false, fullscreen: true, pointerLock: false, externalNetwork: [] },
     save: { enabled: true, schemaVersion: 1, maxSlots: 1 },
     media: { cover: 'assets/cover.svg', screenshots: [] },

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { createApp } from '../server/app.mjs';
 import { forgeAccountKey } from '../server/forge-account.mjs';
@@ -260,5 +261,47 @@ test('Published Godot UGC template exposes AOS .pck in /api/mobile/catalog and s
   const webGotAosFlap = await waitFor(() => webClient.messages.find(m => Array.isArray(m.b) && m.b.some(t => t[0] === aosWelcome.shortId && t[1] === 1 && t[2] === 280)));
   assert.ok(webGotAosFlap, 'Web client must receive Android client flap tuple in real time');
 
+  // 5. M3 Social Party Co-Entry roomCode (6-char uppercase code like K7P9M2) routes Web + Android into the SAME isolated party channel!
+  const partyWeb = await connectWs(wsUrl);
+  t.after(() => partyWeb.ws.close());
+  partyWeb.ws.send(JSON.stringify({ type: 'join', gameId: 'tappy-chicken-mmo', roomId: 'K7P9M2', name: 'PartyHostWeb', platform: 'web', compact: true }));
+  const partyWebWelcome = await waitFor(() => partyWeb.messages.find(m => m.type === 'welcome'));
+  assert.ok(partyWebWelcome, 'Party host (web) must create/join Co-Entry room by 6-char roomCode');
+  assert.equal(partyWebWelcome.partyCode, 'K7P9M2');
+  assert.notEqual(partyWebWelcome.roomId, webWelcome.roomId, 'Party Co-Entry room must be isolated from public auto-channel');
+
+  const partyAos = await connectWs(wsUrl);
+  t.after(() => partyAos.ws.close());
+  partyAos.ws.send(JSON.stringify({ type: 'join', gameId: 'tappy-chicken-mmo', roomId: 'k7p9m2', name: 'PartyMemberAOS', platform: 'android', compact: true }));
+  const partyAosWelcome = await waitFor(() => partyAos.messages.find(m => m.type === 'welcome'));
+  assert.ok(partyAosWelcome, 'Party member (android) must join the exact same Co-Entry room regardless of case');
+  assert.equal(partyAosWelcome.roomId, partyWebWelcome.roomId);
+  assert.equal(partyAosWelcome.courseSeed, partyWebWelcome.courseSeed);
+
+  // Unknown 12-hex channel ID still fails closed
+  const badRoom = await connectWs(wsUrl);
+  t.after(() => badRoom.ws.close());
+  badRoom.ws.send(JSON.stringify({ type: 'join', gameId: 'tappy-chicken-mmo', roomId: 'deadbeefcafe', name: 'Ghost', platform: 'web' }));
+  const badRoomErr = await waitFor(() => badRoom.messages.find(m => m.type === 'error'));
+  assert.ok(badRoomErr, 'Non-existent 12-hex roomId must still be rejected');
+
   assert.ok(adminBase.startsWith('http://'));
+});
+
+test('SSOT guard: Hub and Forge share tools/ugc-shared room-core and publish-contract modules without duplicating engines', () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const hubMp = fs.readFileSync(path.join(repoRoot, 'hub/server/ugc-multiplayer.mjs'), 'utf8');
+  const forgeMp = fs.readFileSync(path.join(repoRoot, 'forge/Tools/tappy-chicken-mmo-multiplayer.cjs'), 'utf8');
+  const hubPub = fs.readFileSync(path.join(repoRoot, 'hub/server/ugc-publish.mjs'), 'utf8');
+  const forgeManifest = fs.readFileSync(path.join(repoRoot, 'forge/Tools/release-manifest.cjs'), 'utf8');
+
+  assert.match(hubMp, /mmo-room-core\.cjs/);
+  assert.match(forgeMp, /mmo-room-core\.cjs/);
+  assert.doesNotMatch(hubMp, /_compactEventTuple\s*\(/, 'Hub multiplayer must not duplicate _compactEventTuple');
+  assert.doesNotMatch(forgeMp, /_compactEventTuple\s*\(/, 'Forge multiplayer must not duplicate _compactEventTuple');
+
+  assert.match(hubPub, /publish-contract\.cjs/);
+  assert.match(forgeManifest, /publish-contract\.cjs/);
+  assert.doesNotMatch(hubPub, /function slugifyGameId\s*\(/, 'Hub ugc-publish must not duplicate slugifyGameId');
+  assert.doesNotMatch(forgeManifest, /function slugifyGameId\s*\(/, 'Forge release-manifest must not duplicate slugifyGameId');
 });

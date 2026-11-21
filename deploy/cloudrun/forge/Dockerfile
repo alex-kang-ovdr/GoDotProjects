@@ -23,6 +23,7 @@ COPY forge/Tools ./Tools
 COPY forge/assets ./assets
 COPY forge/Projects ./Projects
 COPY tools/build-version /app/tools/build-version
+COPY tools/ugc-shared /app/tools/ugc-shared
 
 ARG PLAYFORGE_CHANNEL=dev
 ARG PLAYFORGE_BUILD_NUM=0

@@ -1,51 +1,39 @@
 // Zero-dependency RFC 6455 WebSocket cross-play MMO relay for published PlayHub UGC games.
-// Supports Web (WASM), Android (AOS native Godot .pck), and Desktop clients in the same auto-channeled rooms.
+// Supports Web (WASM), Android (AOS native Godot .pck), iOS, and Desktop clients in the same
+// auto-channeled or M3 Social Party Co-Entry rooms. Room engine & codec live in tools/ugc-shared/mmo-room-core.cjs (SSOT).
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { json } from './security.mjs';
+
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+function loadShared(name) {
+  const repoShared = path.resolve(__dirname, '../../tools/ugc-shared', name);
+  if (fs.existsSync(repoShared)) return require(repoShared);
+  return require(path.resolve(__dirname, 'ugc-shared', name));
+}
+
+const {
+  DEFAULT_FLUSH_INTERVAL_MS,
+  DEFAULT_HEARTBEAT_INTERVAL_MS,
+  DEFAULT_MAX_MISSED_PONGS,
+  MAX_PLAYERS,
+  MAX_OUTBOUND_QUEUE,
+  parseCompactClientEvent,
+  flushSocketQueue,
+  SpatialMmoRoom,
+} = loadShared('mmo-room-core.cjs');
+const { GAME_ID_RE } = loadShared('publish-contract.cjs');
 
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const SOCKET_PATH = '/ws/ugc-mmo';
-const GAME_ID_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const ROOM_ID_RE = /^[a-f0-9]{12}$/;
+const PARTY_ROOM_CODE_RE = /^[A-Za-z0-9_-]{4,24}$/;
 const MAX_PAYLOAD = 64 * 1024;
-const MAX_PLAYERS = 64;
 const MAX_ROOMS = 128;
-const DEFAULT_PROXIMITY_RADIUS = 520;
-const DEFAULT_LEAVE_HYSTERESIS = 60;
-const DEFAULT_MAX_NEARBY_GHOSTS = 12;
-const DEFAULT_PLAYER_SPEED = 170;
-const DEFAULT_FLUSH_INTERVAL_MS = 50;
-const DEFAULT_HEARTBEAT_INTERVAL_MS = 10000;
-const DEFAULT_MAX_MISSED_PONGS = 2;
-const MAX_OUTBOUND_QUEUE = 256;
-
-const VALID_EVENTS = new Set(['join', 'flap', 'phase', 'sync', 'leave']);
-const VALID_PHASES = new Set(['menu', 'ready', 'playing', 'paused', 'crashing', 'over']);
-const VALID_PLATFORMS = new Set(['web', 'android', 'ios', 'desktop']);
-const EVENT_TO_CODE = { join: 0, flap: 1, phase: 2, sync: 3, leave: 4 };
-const CODE_TO_EVENT = ['join', 'flap', 'phase', 'sync', 'leave'];
-const PHASE_TO_CODE = { menu: 0, ready: 1, playing: 2, paused: 3, crashing: 4, over: 5 };
-const CODE_TO_PHASE = ['menu', 'ready', 'playing', 'paused', 'crashing', 'over'];
-
-function clamp(value, min, max, fallback) {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return fallback;
-  return Math.min(max, Math.max(min, num));
-}
-
-function cleanName(raw, fallback) {
-  const text = String(raw || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().replace(/\s+/g, ' ').slice(0, 24);
-  return text || fallback;
-}
-
-function cleanPlatform(raw) {
-  const p = String(raw || '').trim().toLowerCase();
-  return VALID_PLATFORMS.has(p) ? p : 'web';
-}
-
-function round3(value) {
-  return Math.round(value * 1000) / 1000;
-}
 
 function encodeWsFrame(opcode, payloadBuf) {
   const len = payloadBuf.length;
@@ -78,6 +66,7 @@ class SimpleWsConnection {
     this.fragBytes = 0;
     this.missedPongs = 0;
     this.compact = false;
+    this.supportsBatch = false;
     this.outboundQueue = [];
     this.pendingPresenceRaw = null;
     this.compactEvents = [];
@@ -120,48 +109,51 @@ class SimpleWsConnection {
   pong(payload = Buffer.alloc(0)) {
     if (!this.open || this.socket.destroyed) return;
     try {
-      this.socket.write(encodeWsFrame(0xA, payload.subarray(0, 125)));
-    } catch {}
+      this.socket.write(encodeWsFrame(0xA, payload));
+    } catch {
+      this.terminate();
+    }
   }
 
   close(code = 1000, reason = '') {
     if (!this.open) return;
     this.open = false;
     try {
-      const reasonBuf = Buffer.from(String(reason).slice(0, 120), 'utf8');
-      const payload = Buffer.allocUnsafe(2 + reasonBuf.length);
-      payload.writeUInt16BE(code, 0);
-      reasonBuf.copy(payload, 2);
-      this.socket.end(encodeWsFrame(0x8, payload));
+      const reasonBuf = Buffer.from(String(reason || ''), 'utf8').subarray(0, 120);
+      const body = Buffer.allocUnsafe(2 + reasonBuf.length);
+      body.writeUInt16BE(code, 0);
+      reasonBuf.copy(body, 2);
+      this.socket.end(encodeWsFrame(0x8, body));
     } catch {
-      this.terminate();
+      this.socket.destroy();
     }
+    this._emitClose();
   }
 
   terminate() {
     this.open = false;
     try { this.socket.destroy(); } catch {}
+    this._emitClose();
   }
 
   _emitClose() {
-    const wasOpen = this.open;
     this.open = false;
-    if (wasOpen || this._onClose) {
-      const fn = this._onClose;
+    if (this._onClose) {
+      const cb = this._onClose;
       this._onClose = null;
-      if (fn) fn();
+      cb();
     }
   }
 
   _onData(chunk) {
     if (!this.open) return;
-    this.buffer = this.buffer.length ? Buffer.concat([this.buffer, chunk]) : chunk;
-    if (this.buffer.length > MAX_PAYLOAD * 2 + 64) {
-      this.close(1009, 'Message too big');
+    if (this.buffer.length + chunk.length > MAX_PAYLOAD * 4) {
+      this.close(1009, 'Frame too large');
       return;
     }
+    this.buffer = this.buffer.length ? Buffer.concat([this.buffer, chunk]) : chunk;
 
-    while (this.buffer.length >= 2) {
+    while (this.open && this.buffer.length >= 2) {
       const b0 = this.buffer[0];
       const b1 = this.buffer[1];
       const fin = (b0 & 0x80) !== 0;
@@ -176,401 +168,85 @@ class SimpleWsConnection {
         offset = 4;
       } else if (payloadLen === 127) {
         if (this.buffer.length < 10) return;
-        const big = this.buffer.readBigUInt64BE(2);
-        if (big > BigInt(MAX_PAYLOAD)) {
-          this.close(1009, 'Message too big');
+        const bigLen = this.buffer.readBigUInt64BE(2);
+        if (bigLen > BigInt(MAX_PAYLOAD)) {
+          this.close(1009, 'Payload too large');
           return;
         }
-        payloadLen = Number(big);
+        payloadLen = Number(bigLen);
         offset = 10;
       }
 
       if (payloadLen > MAX_PAYLOAD) {
-        this.close(1009, 'Message too big');
+        this.close(1009, 'Payload too large');
         return;
       }
-
-      const maskLen = masked ? 4 : 0;
-      const frameEnd = offset + maskLen + payloadLen;
-      if (this.buffer.length < frameEnd) return;
-
-      let payload;
-      if (masked) {
-        const mask = this.buffer.subarray(offset, offset + 4);
-        const raw = this.buffer.subarray(offset + 4, frameEnd);
-        payload = Buffer.allocUnsafe(payloadLen);
-        for (let i = 0; i < payloadLen; i++) {
-          payload[i] = raw[i] ^ mask[i & 3];
-        }
-      } else {
-        payload = Buffer.from(this.buffer.subarray(offset, frameEnd));
+      if (!masked) {
+        this.close(1002, 'Client frames must be masked');
+        return;
       }
+      if (this.buffer.length < offset + 4 + payloadLen) return;
 
-      this.buffer = frameEnd === this.buffer.length ? Buffer.alloc(0) : this.buffer.subarray(frameEnd);
+      const maskKey = this.buffer.subarray(offset, offset + 4);
+      const rawPayload = Buffer.from(this.buffer.subarray(offset + 4, offset + 4 + payloadLen));
+      for (let i = 0; i < payloadLen; i += 1) {
+        rawPayload[i] ^= maskKey[i & 3];
+      }
+      this.buffer = this.buffer.subarray(offset + 4 + payloadLen);
 
       if (opcode === 0x8) {
-        this.close(1000);
+        this.close(1000, 'Normal closure');
         return;
       }
       if (opcode === 0x9) {
-        this.pong(payload);
+        this.pong(rawPayload);
         continue;
       }
       if (opcode === 0xA) {
         this.missedPongs = 0;
         continue;
       }
+
       if (opcode === 0x1 || opcode === 0x2) {
         if (fin) {
-          if (opcode === 0x1 && this._onMessage) this._onMessage(payload.toString('utf8'));
+          if (opcode === 0x1 && this._onMessage) {
+            this._onMessage(rawPayload.toString('utf8'));
+          }
         } else {
           this.fragOpcode = opcode;
-          this.fragChunks = [payload];
-          this.fragBytes = payload.length;
+          this.fragChunks = [rawPayload];
+          this.fragBytes = rawPayload.length;
         }
-        continue;
-      }
-      if (opcode === 0x0 && this.fragOpcode) {
-        this.fragBytes += payload.length;
+      } else if (opcode === 0x0 && this.fragOpcode) {
+        this.fragBytes += rawPayload.length;
         if (this.fragBytes > MAX_PAYLOAD) {
-          this.close(1009, 'Message too big');
+          this.close(1009, 'Fragmented payload too large');
           return;
         }
-        this.fragChunks.push(payload);
+        this.fragChunks.push(rawPayload);
         if (fin) {
           const full = Buffer.concat(this.fragChunks);
-          const op = this.fragOpcode;
+          const origOpcode = this.fragOpcode;
           this.fragOpcode = 0;
           this.fragChunks = [];
           this.fragBytes = 0;
-          if (op === 0x1 && this._onMessage) this._onMessage(full.toString('utf8'));
+          if (origOpcode === 0x1 && this._onMessage) {
+            this._onMessage(full.toString('utf8'));
+          }
         }
       }
     }
   }
 }
 
-class HubMmoRoom {
+class HubMmoRoom extends SpatialMmoRoom {
   constructor(id, gameId, options = {}, now = Date.now) {
-    this.id = id;
-    this.gameId = gameId;
-    this.now = now;
-    this.phase = 'playing';
-    this.courseSeed = Math.floor(clamp(options.courseSeed ?? 42071, 1, 999999, 42071));
-    this.proximityRadius = clamp(options.proximityRadius, 120, 4000, DEFAULT_PROXIMITY_RADIUS);
-    this.leaveHysteresis = clamp(options.leaveHysteresis, 0, 500, DEFAULT_LEAVE_HYSTERESIS);
-    this.maxNearbyGhosts = Math.floor(clamp(options.maxNearbyGhosts, 1, MAX_PLAYERS - 1, DEFAULT_MAX_NEARBY_GHOSTS));
-    this.players = new Map();
-    this.dirtyPresence = new Set();
-    this.nextPlayerNum = 1;
-    this.nextShortId = 1;
-    this.createdAt = now();
-    this.stats = {
-      eventsReceived: 0,
-      multicastsSent: 0,
-      filteredOut: 0,
-      joins: 0,
-      leaves: 0,
-    };
-  }
-
-  estimateDistance(player, nowMs = this.now()) {
-    if (player.phase !== 'playing') return player.runDistance;
-    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
-    return player.runDistance + player.speed * elapsedSec;
-  }
-
-  estimateFlapTime(player, nowMs = this.now()) {
-    if (player.phase !== 'playing') return player.flapTime;
-    const elapsedSec = Math.max(0, Math.min(10, (nowMs - player.stateAt) / 1000));
-    return Math.min(10, player.flapTime + elapsedSec);
-  }
-
-  isWithinProximity(distA, distB, wasNearby) {
-    const limit = this.proximityRadius + (wasNearby ? this.leaveHysteresis : 0);
-    return Math.abs(distA - distB) <= limit;
-  }
-
-  _peerEventPayload(player, eventType, nowMs = this.now()) {
-    return {
-      peerId: player.id,
-      shortId: player.shortId,
-      name: player.name,
-      platform: player.platform,
-      eventType,
-      runDistance: Math.round(this.estimateDistance(player, nowMs)),
-      y: Math.round(player.y),
-      vy: Math.round(player.vy),
-      angle: round3(player.angle),
-      flapTime: round3(eventType === 'flap' ? 0 : this.estimateFlapTime(player, nowMs)),
-      phase: player.phase,
-      score: player.score,
-      seq: player.seq,
-    };
-  }
-
-  _compactEventTuple(player, eventType, includeIdentity = false, nowMs = this.now()) {
-    const evCode = EVENT_TO_CODE[eventType] ?? 3;
-    const dist = Math.round(this.estimateDistance(player, nowMs));
-    const y = Math.round(player.y);
-    if (evCode === 1 && !includeIdentity && player.phase === 'playing') {
-      return [player.shortId, 1, dist, y, player.score];
-    }
-    const phaseCode = PHASE_TO_CODE[player.phase] ?? 0;
-    const flap100 = evCode === 1 ? 0 : Math.round(this.estimateFlapTime(player, nowMs) * 100);
-    if (includeIdentity) {
-      return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100, Math.round(player.vy), player.name];
-    }
-    return [player.shortId, evCode, dist, y, player.score, phaseCode, flap100];
-  }
-
-  _deliverPeerEvent(recipient, sender, eventType, { includeIdentity = false, nowMs, cache = null } = {}) {
-    if (recipient.compact) {
-      let encoded;
-      if (cache && !includeIdentity) {
-        if (cache.compactEncoded === null) {
-          cache.compactEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, false, nowMs));
-        }
-        encoded = cache.compactEncoded;
-      } else if (cache && includeIdentity) {
-        if (cache.compactIdentityEncoded === null) {
-          cache.compactIdentityEncoded = JSON.stringify(this._compactEventTuple(sender, eventType, true, nowMs));
-        }
-        encoded = cache.compactIdentityEncoded;
-      } else {
-        encoded = JSON.stringify(this._compactEventTuple(sender, eventType, includeIdentity, nowMs));
-      }
-      recipient.sendCompactEvent(encoded);
-      return;
-    }
-    let encoded;
-    if (cache) {
-      if (cache.legacyEncoded === null) {
-        cache.legacyEncoded = JSON.stringify({
-          type: 'rpc',
-          method: 'client_multicast_event',
-          params: this._peerEventPayload(sender, eventType, nowMs),
-        });
-      }
-      encoded = cache.legacyEncoded;
-    } else {
-      encoded = JSON.stringify({
-        type: 'rpc',
-        method: 'client_multicast_event',
-        params: this._peerEventPayload(sender, eventType, nowMs),
-      });
-    }
-    recipient.sendRaw(encoded);
-  }
-
-  _deliverPeerRemoved(recipient, removedPlayer, cache = null) {
-    if (recipient.compact) {
-      recipient.sendCompactRemoved(removedPlayer.shortId);
-      return;
-    }
-    if (cache) {
-      if (cache.removedEncoded === null) {
-        cache.removedEncoded = JSON.stringify({
-          type: 'rpc',
-          method: 'client_peer_removed',
-          params: { peerId: removedPlayer.id },
-        });
-      }
-      recipient.sendRaw(cache.removedEncoded);
-      return;
-    }
-    recipient.sendRaw(JSON.stringify({
-      type: 'rpc',
-      method: 'client_peer_removed',
-      params: { peerId: removedPlayer.id },
-    }));
-  }
-
-  flushPresence() {
-    if (this.dirtyPresence.size === 0) return;
-    const onlineCount = this.players.size;
-    for (const playerId of this.dirtyPresence) {
-      const player = this.players.get(playerId);
-      if (!player) continue;
-      if (player.compact) {
-        player.setCompactPresence(onlineCount, player.nearby.size);
-      } else {
-        player.setPresenceRaw(JSON.stringify({
-          type: 'rpc',
-          method: 'client_presence',
-          params: { onlineCount, nearbyCount: player.nearby.size },
-        }));
-      }
-    }
-    this.dirtyPresence.clear();
-  }
-
-  join(rawName, options = {}) {
-    if (this.players.size >= MAX_PLAYERS) {
-      throw new Error('이 MMO 월드가 가득 찼습니다.');
-    }
-    const id = 'p-' + crypto.randomBytes(6).toString('hex');
-    const shortId = this.nextShortId++;
-    const name = cleanName(rawName, `Player ${this.nextPlayerNum++}`);
-    const platform = cleanPlatform(options.platform);
-    const nowMs = this.now();
-    const player = {
+    super(
       id,
-      shortId,
-      name,
-      platform,
-      runDistance: clamp(options.runDistance, 0, 10000000, 0),
-      speed: clamp(options.speed, 60, 400, DEFAULT_PLAYER_SPEED),
-      y: clamp(options.y, 0, 640, 290),
-      vy: 0,
-      angle: 0,
-      flapTime: 0,
-      phase: VALID_PHASES.has(options.phase) ? options.phase : 'menu',
-      score: 0,
-      seq: 0,
-      nearby: new Set(),
-      joinedAt: nowMs,
-      lastSeenAt: nowMs,
-      stateAt: nowMs,
-      compact: Boolean(options.compact),
-      sendImmediate: options.sendImmediate,
-      sendRaw: options.sendRaw,
-      setPresenceRaw: options.setPresenceRaw,
-      sendCompactEvent: options.sendCompactEvent,
-      sendCompactRemoved: options.sendCompactRemoved,
-      setCompactPresence: options.setCompactPresence,
-    };
-    this.players.set(id, player);
-    this.stats.joins += 1;
-
-    const welcome = {
-      type: 'welcome',
-      roomId: this.id,
-      gameId: this.gameId,
-      playerId: player.id,
-      shortId: player.shortId,
-      playerName: player.name,
-      platform: player.platform,
-      courseSeed: this.courseSeed,
-      proximityRadius: this.proximityRadius,
-      maxNearbyGhosts: this.maxNearbyGhosts,
-      compact: player.compact,
-      onlineCount: this.players.size,
-    };
-    player.sendImmediate(welcome);
-
-    const joinCache = { legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
-    const playerDist = this.estimateDistance(player, nowMs);
-    for (const other of this.players.values()) {
-      if (other.id === player.id) continue;
-      const canPair = player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts;
-      const otherDist = this.estimateDistance(other, nowMs);
-      if (canPair && this.isWithinProximity(playerDist, otherDist, false)) {
-        player.nearby.add(other.id);
-        other.nearby.add(player.id);
-        this._deliverPeerEvent(other, player, 'join', { includeIdentity: true, nowMs, cache: joinCache });
-        this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs });
-        this.stats.multicastsSent += 2;
-      } else {
-        this.stats.filteredOut += 1;
-      }
-    }
-    for (const peer of this.players.values()) this.dirtyPresence.add(peer.id);
-    return { player, welcome };
-  }
-
-  handleEvent(playerId, params) {
-    const player = this.players.get(playerId);
-    if (!player) throw new Error('참가하지 않은 플레이어입니다.');
-    if (!params || typeof params !== 'object' || Array.isArray(params)) {
-      throw new Error('RPC 인자가 올바르지 않습니다.');
-    }
-    const eventType = String(params.eventType ?? params.event_type ?? 'sync');
-    if (!VALID_EVENTS.has(eventType)) throw new Error('지원하지 않는 플레이어 이벤트입니다.');
-    const seq = Number.isSafeInteger(params.seq) ? params.seq : 0;
-    if (eventType !== 'join' && seq > 0 && seq <= player.seq) return;
-    if (seq > 0) player.seq = seq;
-
-    if (typeof params.name === 'string' && params.name.trim()) {
-      player.name = cleanName(params.name, player.name);
-    }
-    const nowMs = this.now();
-    const rawPhase = String(params.phase ?? (eventType === 'flap' ? 'playing' : player.phase));
-    player.phase = VALID_PHASES.has(rawPhase) ? rawPhase : player.phase;
-    player.runDistance = clamp(params.runDistance ?? params.run_distance, 0, 10000000, player.runDistance);
-    if (params.speed !== undefined) player.speed = clamp(params.speed, 60, 400, player.speed);
-    player.y = clamp(params.y, 0, 640, player.y);
-    if (eventType === 'flap') {
-      player.vy = -345;
-      player.angle = -0.785;
-      player.flapTime = 0;
-    } else {
-      player.vy = clamp(params.vy, -2000, 2000, player.vy);
-      player.angle = clamp(params.angle, -Math.PI, Math.PI, player.angle);
-      player.flapTime = clamp(params.flapTime ?? params.flap_time, 0, 10, player.flapTime);
-    }
-    player.score = Math.max(0, Math.floor(clamp(params.score, 0, 999999, player.score)));
-    player.lastSeenAt = nowMs;
-    player.stateAt = nowMs;
-
-    this.stats.eventsReceived += 1;
-    const eventCache = { legacyEncoded: null, compactEncoded: null, compactIdentityEncoded: null };
-    const removedCache = { removedEncoded: null };
-    const senderDist = player.runDistance;
-    let presenceChanged = false;
-
-    for (const other of this.players.values()) {
-      if (other.id === player.id) continue;
-      const wasNearby = player.nearby.has(other.id);
-      const otherDist = this.estimateDistance(other, nowMs);
-      const inRange = this.isWithinProximity(senderDist, otherDist, wasNearby);
-      const nowNearby = inRange && (wasNearby || (player.nearby.size < this.maxNearbyGhosts && other.nearby.size < this.maxNearbyGhosts));
-
-      if (nowNearby) {
-        const entering = !wasNearby;
-        this._deliverPeerEvent(other, player, eventType, {
-          includeIdentity: entering || eventType === 'join',
-          nowMs,
-          cache: eventCache,
-        });
-        this.stats.multicastsSent += 1;
-        if (entering) {
-          player.nearby.add(other.id);
-          other.nearby.add(player.id);
-          this._deliverPeerEvent(player, other, 'sync', { includeIdentity: true, nowMs });
-          this.stats.multicastsSent += 1;
-          this.dirtyPresence.add(other.id);
-          presenceChanged = true;
-        }
-      } else {
-        this.stats.filteredOut += 1;
-        if (wasNearby) {
-          player.nearby.delete(other.id);
-          other.nearby.delete(player.id);
-          this._deliverPeerRemoved(other, player, removedCache);
-          this._deliverPeerRemoved(player, other);
-          this.dirtyPresence.add(other.id);
-          presenceChanged = true;
-        }
-      }
-    }
-    if (presenceChanged) this.dirtyPresence.add(player.id);
-  }
-
-  leave(playerId) {
-    const player = this.players.get(playerId);
-    if (!player) return;
-    this.players.delete(playerId);
-    this.dirtyPresence.delete(playerId);
-    this.stats.leaves += 1;
-    const removedCache = { removedEncoded: null };
-    for (const otherId of player.nearby) {
-      const other = this.players.get(otherId);
-      if (!other) continue;
-      other.nearby.delete(playerId);
-      this._deliverPeerRemoved(other, player, removedCache);
-    }
-    for (const peer of this.players.values()) this.dirtyPresence.add(peer.id);
+      { gameId, partyCode: options.partyCode || null, defaultSeed: options.defaultSeed ?? 42071 },
+      { ...options, deferPresence: true, enableLogs: false, includePlatform: true },
+      now
+    );
   }
 
   metadata() {
@@ -593,6 +269,7 @@ class HubMmoRoom {
     return {
       roomId: this.id,
       gameId: this.gameId,
+      ...(this.partyCode ? { partyCode: this.partyCode } : {}),
       phase: this.phase,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
@@ -605,24 +282,9 @@ class HubMmoRoom {
   }
 }
 
-function parseCompactClientEvent(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) {
-    throw new Error('압축 이벤트 형식이 올바르지 않습니다.');
-  }
-  const eventType = CODE_TO_EVENT[arr[0]];
-  if (!eventType) throw new Error('지원하지 않는 플레이어 이벤트입니다.');
-  const params = {
-    eventType,
-    runDistance: arr[1],
-    y: arr[2],
-    score: arr[3] ?? 0,
-    phase: arr[4] !== undefined ? (CODE_TO_PHASE[arr[4]] || 'playing') : (eventType === 'flap' ? 'playing' : undefined),
-    seq: arr[5] ?? 0,
-  };
-  if (arr[6] !== undefined) params.flapTime = Number(arr[6]) / 100;
-  if (arr[7] !== undefined) params.vy = arr[7];
-  if (arr[8] !== undefined) params.speed = arr[8];
-  return params;
+export function buildMultiplayerDescriptor(game, socketPath = SOCKET_PATH) {
+  if (!game || game.deployMode !== 'mmo') return null;
+  return { transport: 'ws', wsPath: socketPath, gameId: game.id };
 }
 
 export function createUgcMultiplayer({
@@ -633,12 +295,13 @@ export function createUgcMultiplayer({
   maxMessagesPerSec = 80,
 } = {}) {
   const rooms = new Map();
+  const partyRooms = new Map(); // `${gameId}:${PARTY_CODE}` -> roomId
   const socketsByRoom = new Map();
   const allSockets = new Set();
 
   function findOrCreateChannel(gameId, options = {}) {
     for (const room of rooms.values()) {
-      if (room.gameId === gameId && room.players.size < MAX_PLAYERS) {
+      if (room.gameId === gameId && !room.partyCode && room.players.size < MAX_PLAYERS) {
         return room;
       }
     }
@@ -652,44 +315,24 @@ export function createUgcMultiplayer({
     return room;
   }
 
-  function flushSocket(ws) {
-    if (!ws.open) {
-      ws.outboundQueue.length = 0;
-      ws.pendingPresenceRaw = null;
-      ws.compactEvents.length = 0;
-      ws.compactRemoved.length = 0;
-      ws.compactPresence = null;
-      return;
+  function findOrCreatePartyChannel(gameId, rawPartyCode, options = {}) {
+    const partyCode = String(rawPartyCode || '').trim().toUpperCase();
+    const key = `${gameId}:${partyCode}`;
+    const existingId = partyRooms.get(key);
+    if (existingId && rooms.has(existingId)) {
+      return rooms.get(existingId);
     }
-    if (ws.compact) {
-      const hasEvents = ws.compactEvents.length > 0;
-      const hasRemoved = ws.compactRemoved.length > 0;
-      const hasPresence = ws.compactPresence !== null;
-      if (!hasEvents && !hasRemoved && !hasPresence) return;
-      if (ws.bufferedAmount < 1000000) {
-        const parts = [];
-        if (hasEvents) parts.push('"b":[' + ws.compactEvents.join(',') + ']');
-        if (hasRemoved) parts.push('"r":[' + ws.compactRemoved.join(',') + ']');
-        if (hasPresence) parts.push('"p":[' + ws.compactPresence[0] + ',' + ws.compactPresence[1] + ']');
-        ws.send('{' + parts.join(',') + '}');
-      }
-      ws.compactEvents.length = 0;
-      ws.compactRemoved.length = 0;
-      ws.compactPresence = null;
-      return;
+    if (rooms.size >= MAX_ROOMS) {
+      throw new Error('활성 멀티플레이 채널이 가득 찼습니다.');
     }
-    if (ws.pendingPresenceRaw !== null) {
-      ws.outboundQueue.push(ws.pendingPresenceRaw);
-      ws.pendingPresenceRaw = null;
-    }
-    if (ws.outboundQueue.length === 0) return;
-    if (ws.bufferedAmount < 1000000) {
-      for (const frame of ws.outboundQueue) {
-        if (ws.bufferedAmount >= 1000000) break;
-        ws.send(frame);
-      }
-    }
-    ws.outboundQueue.length = 0;
+    const id = crypto.randomBytes(6).toString('hex');
+    const seedHash = crypto.createHash('sha256').update(key).digest().readUInt32BE(0);
+    const defaultSeed = 10000 + (seedHash % 900000);
+    const room = new HubMmoRoom(id, gameId, { ...options, partyCode, defaultSeed }, now);
+    rooms.set(id, room);
+    partyRooms.set(key, id);
+    socketsByRoom.set(id, new Set());
+    return room;
   }
 
   const flushTimer = setInterval(() => {
@@ -697,7 +340,7 @@ export function createUgcMultiplayer({
       room.flushPresence();
       const sockets = socketsByRoom.get(room.id);
       if (!sockets) continue;
-      for (const ws of sockets) flushSocket(ws);
+      for (const ws of sockets) flushSocketQueue(ws);
     }
   }, flushIntervalMs);
   flushTimer.unref();
@@ -766,13 +409,24 @@ export function createUgcMultiplayer({
 
         if (msg.type === 'join') {
           if (activeRoom) throw new Error('이미 멀티플레이 채널에 참가 중입니다.');
+          const gameId = String(msg.gameId || 'tappy-chicken-mmo').trim();
+          const requestedRoom = typeof msg.roomId === 'string' ? msg.roomId.trim() : '';
           let room = null;
-          if (typeof msg.roomId === 'string' && msg.roomId) {
-            if (!ROOM_ID_RE.test(msg.roomId)) throw new Error('잘못된 방 ID입니다.');
-            room = rooms.get(msg.roomId);
-            if (!room) throw new Error('해당 멀티플레이 채널을 찾을 수 없습니다.');
+          if (requestedRoom) {
+            if (ROOM_ID_RE.test(requestedRoom)) {
+              room = rooms.get(requestedRoom);
+              if (!room) throw new Error('해당 멀티플레이 채널을 찾을 수 없습니다.');
+            } else if (PARTY_ROOM_CODE_RE.test(requestedRoom)) {
+              if (!GAME_ID_RE.test(gameId)) throw new Error('잘못된 게임 ID입니다.');
+              room = findOrCreatePartyChannel(gameId, requestedRoom, {
+                courseSeed: msg.courseSeed,
+                proximityRadius: msg.proximityRadius,
+                maxNearbyGhosts: msg.maxNearbyGhosts,
+              });
+            } else {
+              throw new Error('잘못된 방 ID입니다.');
+            }
           } else {
-            const gameId = String(msg.gameId || 'tappy-chicken-mmo').trim();
             if (!GAME_ID_RE.test(gameId)) throw new Error('잘못된 게임 ID입니다.');
             room = findOrCreateChannel(gameId, {
               courseSeed: msg.courseSeed,
@@ -782,6 +436,7 @@ export function createUgcMultiplayer({
           }
 
           ws.compact = Boolean(msg.compact);
+          ws.supportsBatch = Boolean(msg.supportsBatch);
           const joined = room.join(msg.name, {
             platform: msg.platform,
             compact: ws.compact,
@@ -840,6 +495,9 @@ export function createUgcMultiplayer({
       if (activeRoom.players.size === 0 && (socketsByRoom.get(activeRoom.id)?.size || 0) === 0) {
         rooms.delete(activeRoom.id);
         socketsByRoom.delete(activeRoom.id);
+        if (activeRoom.partyCode) {
+          partyRooms.delete(`${activeRoom.gameId}:${activeRoom.partyCode}`);
+        }
       }
       activeRoom = null;
       activePlayerId = null;
@@ -872,12 +530,14 @@ export function createUgcMultiplayer({
     for (const ws of allSockets) ws.terminate();
     allSockets.clear();
     rooms.clear();
+    partyRooms.clear();
     socketsByRoom.clear();
   }
 
   return {
     socketPath: SOCKET_PATH,
     rooms,
+    descriptorForGame: game => buildMultiplayerDescriptor(game, SOCKET_PATH),
     handleUpgrade,
     publicRoute,
     close,

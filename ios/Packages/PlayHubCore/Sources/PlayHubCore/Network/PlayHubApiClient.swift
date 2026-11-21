@@ -29,6 +29,18 @@ public struct MobileCatalogGameCompatibility: Codable, Equatable, Sendable {
     public let message: String?
 }
 
+public struct MobileCatalogGameMultiplayer: Codable, Equatable, Sendable {
+    public let transport: String
+    public let wsPath: String
+    public let gameId: String
+
+    public init(transport: String, wsPath: String, gameId: String) {
+        self.transport = transport
+        self.wsPath = wsPath
+        self.gameId = gameId
+    }
+}
+
 public struct MobileCatalogGame: Codable, Equatable, Identifiable, Sendable {
     public let id: String
     public let title: String
@@ -40,6 +52,39 @@ public struct MobileCatalogGame: Codable, Equatable, Identifiable, Sendable {
     public let compatibility: MobileCatalogGameCompatibility?
     public let entryUrl: String?
     public let coverUrl: String?
+    public let source: String?
+    public let deployMode: String?
+    public let multiplayer: MobileCatalogGameMultiplayer?
+
+    public init(
+        id: String,
+        title: String,
+        description: String? = nil,
+        genre: String? = nil,
+        runtime: String,
+        ageRating: String,
+        allowed: Bool,
+        compatibility: MobileCatalogGameCompatibility? = nil,
+        entryUrl: String? = nil,
+        coverUrl: String? = nil,
+        source: String? = nil,
+        deployMode: String? = nil,
+        multiplayer: MobileCatalogGameMultiplayer? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.genre = genre
+        self.runtime = runtime
+        self.ageRating = ageRating
+        self.allowed = allowed
+        self.compatibility = compatibility
+        self.entryUrl = entryUrl
+        self.coverUrl = coverUrl
+        self.source = source
+        self.deployMode = deployMode
+        self.multiplayer = multiplayer
+    }
 }
 
 public struct MobileCatalogResponse: Codable, Equatable, Sendable {

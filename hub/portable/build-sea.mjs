@@ -38,6 +38,13 @@ export function createBundle({root=DEFAULT_ROOT,nodeLicenseText}={}){
  };
  append('package.json',readRegular(path.join(root,'package.json')));
  for(const directory of ['server','web','shared'])walk(directory);
+ const repoUgcShared=path.resolve(root,'..','tools','ugc-shared');
+ if(fs.existsSync(repoUgcShared)&&fs.statSync(repoUgcShared).isDirectory()){
+  for(const name of fs.readdirSync(repoUgcShared).sort()){
+   if(!/\.cjs$/i.test(name))continue;
+   append('server/ugc-shared/'+name,readRegular(path.join(repoUgcShared,name)));
+  }
+ }
  const gameLock=readGameLock(root);
  if(gameLock){
   for(const [relative,expected] of gameLock){

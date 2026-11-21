@@ -102,12 +102,14 @@ class GodotPlayerActivity : GodotActivity() {
         runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
         runCatching {
             val mpFile = File(filesDir, "playhub_mp.json")
-            if (launchWsUrl.isNotBlank()) {
-                val safeName = launchDisplayName.replace("\\", "\\\\").replace("\"", "\\\"")
-                val safeWs = launchWsUrl.replace("\\", "\\\\").replace("\"", "\\\"")
-                val safeGame = gameId.replace("\\", "\\\\").replace("\"", "\\\"")
-                val safeRoom = launchRoomCode.replace("\\", "\\\\").replace("\"", "\\\"")
-                mpFile.writeText("""{"wsUrl":"$safeWs","gameId":"$safeGame","roomId":"$safeRoom","displayName":"$safeName","platform":"android"}""")
+            val mpJson = PlayHubGodotPlugin.buildMultiplayerConfigJson(
+                wsUrl = launchWsUrl,
+                gameId = gameId,
+                roomCode = launchRoomCode,
+                displayName = launchDisplayName
+            )
+            if (mpJson.isNotBlank()) {
+                mpFile.writeText(mpJson)
             } else if (mpFile.exists()) {
                 mpFile.delete()
             }

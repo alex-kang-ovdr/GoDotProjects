@@ -38,7 +38,8 @@ export function readCatalog(rootDir, db, options = {}) {
       instructions: localized(manifest.instructions), saveSchemaVersion: manifest.save?.schemaVersion || 1,
       publishedOn: validGameUpdateDate(manifest.publishedOn) ? manifest.publishedOn : undefined,
       updatedOn: validGameUpdateDate(manifest.updatedOn) ? manifest.updatedOn : undefined,
-      buildId: `${manifest.version || '0.1.0'}-${digest(raw).slice(0, 12)}`
+      buildId: `${manifest.version || '0.1.0'}-${digest(raw).slice(0, 12)}`,
+      deployMode: manifest.deployMode || 'singleplay'
     };
   });
 

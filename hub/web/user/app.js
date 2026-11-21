@@ -713,7 +713,7 @@
       const sep=rawEntryUrl.includes('?')?'&':'?';
       const cpQ=state.crossplay?`&room=${encodeURIComponent(state.crossplay.roomCode||'')}&matchRoom=${encodeURIComponent(state.crossplay.matchRoomId||'')}&platform=web`:'';
       let mpQuery='';
-      const mpInfo=play.multiplayer||(game.deployMode==='mmo'?{wsPath:'/ws/ugc-mmo',gameId:game.id}:null);
+      const mpInfo=play.multiplayer||game.multiplayer||null;
       if(mpInfo&&mpInfo.wsPath&&!local){
         const wsProto=location.protocol==='https:'?'wss:':'ws:';
         const wsUrl=`${wsProto}//${location.host}${mpInfo.wsPath}`;

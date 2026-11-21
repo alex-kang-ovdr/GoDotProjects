@@ -39,6 +39,27 @@ class PlayHubGodotPlugin(
             String::class.java,
             String::class.java
         )
+
+        /**
+         * Single Source of Truth for the multiplayer handoff payload consumed by both
+         * GodotPlayerActivity (user://playhub_mp.json) and PlayHubBridge.get_multiplayer_config().
+         */
+        fun buildMultiplayerConfigJson(
+            wsUrl: String,
+            gameId: String,
+            roomCode: String,
+            displayName: String,
+            platform: String = "android"
+        ): String {
+            if (wsUrl.isBlank()) return ""
+            return JSONObject().apply {
+                put("wsUrl", wsUrl)
+                put("gameId", gameId)
+                put("roomId", roomCode)
+                put("displayName", displayName)
+                put("platform", platform)
+            }.toString()
+        }
     }
 
     override fun getPluginName(): String = "PlayHubBridge"
@@ -58,16 +79,8 @@ class PlayHubGodotPlugin(
     fun get_match_room_id(): String = matchRoomId
 
     @UsedByGodot
-    fun get_multiplayer_config(): String {
-        if (wsUrl.isBlank()) return ""
-        return JSONObject().apply {
-            put("wsUrl", wsUrl)
-            put("gameId", gameId)
-            put("roomId", roomCode)
-            put("displayName", displayName)
-            put("platform", "android")
-        }.toString()
-    }
+    fun get_multiplayer_config(): String =
+        buildMultiplayerConfigJson(wsUrl, gameId, roomCode, displayName, "android")
 
     @UsedByGodot
     fun get_profile(): String {

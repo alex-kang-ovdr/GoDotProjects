@@ -249,9 +249,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ug
       clientAppVersionCode: clientVersions.appVersionCode
     });
     const deployMode = game.deployMode || 'singleplay';
-    const multiplayer = deployMode === 'mmo'
-      ? { transport: 'ws', wsPath: ugcMultiplayer?.socketPath || '/ws/ugc-mmo', gameId: game.id }
-      : null;
+    const multiplayer = ugcMultiplayer?.descriptorForGame ? ugcMultiplayer.descriptorForGame(game) : null;
     return {
       id: game.id,
       title: game.title,
@@ -624,9 +622,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ug
         'INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)'
       ).run(id, `mobile:${auth.familyId}`, auth.user.id, `m:${auth.user.id}`, game.id, game.buildId, stamp, stamp + 2 * 3600000, 'live', null);
       const deployMode = game.deployMode || 'singleplay';
-      const multiplayer = deployMode === 'mmo'
-        ? { transport: 'ws', wsPath: ugcMultiplayer?.socketPath || '/ws/ugc-mmo', gameId: game.id }
-        : null;
+      const multiplayer = ugcMultiplayer?.descriptorForGame ? ugcMultiplayer.descriptorForGame(game) : null;
       json(res, 201, {
         id,
         gameId: game.id,
