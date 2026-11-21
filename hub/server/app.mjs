@@ -16,6 +16,7 @@ import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
+import { createBilling } from './billing/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
 import { createMobile } from './mobile/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
@@ -140,6 +141,8 @@ export function createApp(input, dependencies = {}) {
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
+  // Hub-Billing (2-Track PlayCoin +25% & Creator Direct Commerce 0%). Inert unless enabled.
+  const billing = createBilling({ config, db, sessionFor, requireSession, newSession, revokeSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.billingFetch || dependencies.fetch || globalThis.fetch });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
@@ -256,6 +259,7 @@ export function createApp(input, dependencies = {}) {
   async function publicRoute(req,res,url) {
     if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
+    if (await billing.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
@@ -519,6 +523,7 @@ export function createApp(input, dependencies = {}) {
     const s = requireSession(req,'admin',true);
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
+    if (await billing.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
@@ -609,7 +614,8 @@ export function createApp(input, dependencies = {}) {
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
         }
-        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check');
+        const isWebhook = kind === 'public' && url.pathname.startsWith('/api/billing/webhooks/');
+        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isWebhook;
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
         if (url.pathname === '/api/version' && req.method === 'GET') { versionCompat.handleVersion(res); return; }
@@ -626,7 +632,7 @@ export function createApp(input, dependencies = {}) {
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,ugcPublish,publicHandler,adminHandler,publicServer,adminServer,
+  return { db,cdn,billing,ugcPublish,publicHandler,adminHandler,publicServer,adminServer,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
