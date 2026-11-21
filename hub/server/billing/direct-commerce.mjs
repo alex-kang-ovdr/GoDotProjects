@@ -11,12 +11,139 @@
 // 4. Mobile & TV platforms (android, ios, google_tv, apple_tv, samsung_tv) are
 //    FREE-TO-PLAY FIRST (fail-closed) until P3 store & legal policy approval.
 
+import { createHash } from 'node:crypto';
 import { ApiError, uid, safeString } from '../security.mjs';
 import { runAtomic, withIdempotency } from './idempotency.mjs';
 
 export const DEFAULT_ENABLED_DIRECT_PLATFORMS = new Set(['web']);
 export const ALL_PLATFORMS = new Set(['web', 'windows', 'android', 'ios', 'google_tv', 'apple_tv', 'samsung_tv']);
 export const FORBIDDEN_SECRET_KEYS = ['apiKey', 'api_key', 'secretKey', 'secret_key', 'privateKey', 'private_key', 'accessToken', 'access_token', 'refreshToken', 'refresh_token'];
+
+function tableExists(db, tableName) {
+  return Boolean(db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(tableName));
+}
+
+function ownerKeysForPrincipal(db, principalId) {
+  const keys = new Set();
+  if (!safeString(principalId, 128) || !tableExists(db, 'identities')) return keys;
+  const rows = db.prepare("SELECT subject FROM identities WHERE provider='google' AND user_id=?").all(principalId);
+  for (const row of rows) {
+    if (typeof row.subject === 'string' && row.subject) {
+      keys.add(createHash('sha256').update(`https://accounts.google.com\0${row.subject}`).digest('hex'));
+    }
+  }
+  return keys;
+}
+
+export function resolveVerifiedGameOwner(db, gameId) {
+  if (!safeString(gameId, 128)) return null;
+  if (tableExists(db, 'hub_publications')) {
+    const pub = db.prepare(
+      'SELECT game_id, owner_id, owner_key, status FROM hub_publications WHERE game_id=?'
+    ).get(gameId);
+    if (pub) {
+      return {
+        ownerId: pub.owner_id,
+        ownerKey: pub.owner_key,
+        status: pub.status,
+        source: 'hub_publications'
+      };
+    }
+  }
+  if (tableExists(db, 'creator_submissions')) {
+    const cols = new Set(db.prepare('PRAGMA table_info(creator_submissions)').all().map(c => c.name));
+    let sub = null;
+    if (cols.has('published_game_id')) {
+      sub = db.prepare(`
+        SELECT owner_id, owner_key, status
+        FROM creator_submissions
+        WHERE published_game_id=?
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `).get(gameId);
+    }
+    if (!sub && cols.has('game_slug')) {
+      sub = db.prepare(`
+        SELECT owner_id, owner_key, status
+        FROM creator_submissions
+        WHERE game_slug=? AND status='approved'
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `).get(gameId);
+    }
+    if (sub) {
+      return {
+        ownerId: sub.owner_id,
+        ownerKey: sub.owner_key,
+        status: sub.status,
+        source: 'creator_submissions'
+      };
+    }
+  }
+  return null;
+}
+
+export function isVerifiedGameOwner(db, { creatorId, gameId }) {
+  if (!safeString(creatorId, 128) || !safeString(gameId, 128)) return false;
+  const owner = resolveVerifiedGameOwner(db, gameId);
+  if (!owner) return false;
+  if (owner.ownerId && owner.ownerId === creatorId) return true;
+  if (owner.ownerKey) {
+    const keys = ownerKeysForPrincipal(db, creatorId);
+    if (keys.has(owner.ownerKey)) return true;
+  }
+  return false;
+}
+
+export function assertVerifiedGameOwner(db, { creatorId, gameId }) {
+  const owner = resolveVerifiedGameOwner(db, gameId);
+  if (!owner) {
+    throw new ApiError(
+      403,
+      'GAME_OWNERSHIP_REQUIRED',
+      'Only the verified owner of a published or approved game can register paid products'
+    );
+  }
+  if (!isVerifiedGameOwner(db, { creatorId, gameId })) {
+    throw new ApiError(
+      403,
+      'GAME_OWNERSHIP_FORBIDDEN',
+      'Only the verified owner of this game can manage its direct commerce products'
+    );
+  }
+  return owner;
+}
+
+export function findDirectOrderByStripeIds(db, {
+  directOrderId = null,
+  paymentIntentId = null,
+  chargeId = null,
+  providerChargeId = null
+} = {}) {
+  if (safeString(directOrderId, 128)) {
+    const byId = db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(directOrderId);
+    if (byId) return byId;
+  }
+  if (safeString(paymentIntentId, 160)) {
+    const byPi = db.prepare(
+      'SELECT * FROM billing_direct_orders WHERE payment_intent_id=? OR provider_charge_id=? LIMIT 1'
+    ).get(paymentIntentId, paymentIntentId);
+    if (byPi) return byPi;
+  }
+  if (safeString(chargeId, 160)) {
+    const byCh = db.prepare(
+      'SELECT * FROM billing_direct_orders WHERE charge_id=? OR provider_charge_id=? LIMIT 1'
+    ).get(chargeId, chargeId);
+    if (byCh) return byCh;
+  }
+  if (safeString(providerChargeId, 160)) {
+    const byAny = db.prepare(
+      'SELECT * FROM billing_direct_orders WHERE provider_charge_id=? OR payment_intent_id=? OR charge_id=? LIMIT 1'
+    ).get(providerChargeId, providerChargeId, providerChargeId);
+    if (byAny) return byAny;
+  }
+  return null;
+}
 
 function assertNoSecretFields(payload) {
   if (!payload || typeof payload !== 'object') return;
@@ -103,17 +230,26 @@ export function createCreatorProduct(db, {
   if (!['ALL', '12+', '15+', '18+'].includes(ageRating)) throw new ApiError(422, 'AGE_RATING_INVALID');
   if (!['DRAFT', 'ACTIVE', 'SUSPENDED', 'ARCHIVED'].includes(status)) throw new ApiError(422, 'PRODUCT_STATUS_INVALID');
 
+  assertVerifiedGameOwner(db, { creatorId, gameId });
+
   const id = uid();
   const stamp = now();
-  db.prepare(`
-    INSERT INTO billing_creator_products(
-      id, creator_id, game_id, product_key, kind, title, currency, amount_minor,
-      allowed_regions_json, allowed_platforms_json, age_rating, status, created_at, updated_at
-    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-  `).run(
-    id, creatorId, gameId, productKey, kind, title, String(currency).toUpperCase(), amountMinor,
-    JSON.stringify(allowedRegions), JSON.stringify(allowedPlatforms), ageRating, status, stamp, stamp
-  );
+  try {
+    db.prepare(`
+      INSERT INTO billing_creator_products(
+        id, creator_id, game_id, product_key, kind, title, currency, amount_minor,
+        allowed_regions_json, allowed_platforms_json, age_rating, status, created_at, updated_at
+      ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `).run(
+      id, creatorId, gameId, productKey, kind, title, String(currency).toUpperCase(), amountMinor,
+      JSON.stringify(allowedRegions), JSON.stringify(allowedPlatforms), ageRating, status, stamp, stamp
+    );
+  } catch (err) {
+    if (/UNIQUE constraint failed/i.test(String(err?.message || ''))) {
+      throw new ApiError(409, 'PRODUCT_KEY_ALREADY_EXISTS', `Product key '${productKey}' is already registered for game '${gameId}'`);
+    }
+    throw err;
+  }
   return db.prepare('SELECT * FROM billing_creator_products WHERE id=?').get(id);
 }
 
@@ -149,6 +285,9 @@ export function createDirectOrder(db, {
       if (!product) throw new ApiError(404, 'PRODUCT_NOT_FOUND');
       if (product.status !== 'ACTIVE') {
         throw new ApiError(403, 'PRODUCT_NOT_AVAILABLE', `Product status is ${product.status}`);
+      }
+      if (!isVerifiedGameOwner(db, { creatorId: product.creator_id, gameId: product.game_id })) {
+        throw new ApiError(403, 'GAME_OWNERSHIP_FORBIDDEN', 'Product creator is not the verified owner of this game');
       }
 
       const productPlatforms = JSON.parse(product.allowed_platforms_json);
@@ -201,25 +340,57 @@ export function createDirectOrder(db, {
 // 4. EntitlementService — Grant on verified direct payment (never touches PlayHub wallet!)
 export function confirmDirectOrderPayment(db, {
   directOrderId,
-  providerChargeId,
+  providerChargeId = null,
+  paymentIntentId = null,
+  chargeId = null,
   expiresAt = null,
   idempotencyKey,
   now = Date.now
 }) {
-  if (!safeString(providerChargeId, 160)) throw new ApiError(400, 'PROVIDER_CHARGE_ID_REQUIRED');
+  const resolvedPi = safeString(paymentIntentId, 160)
+    ? String(paymentIntentId).trim()
+    : (typeof providerChargeId === 'string' && providerChargeId.trim().startsWith('pi_') ? providerChargeId.trim() : null);
+  const resolvedCh = safeString(chargeId, 160)
+    ? String(chargeId).trim()
+    : (typeof providerChargeId === 'string' && providerChargeId.trim().startsWith('ch_') ? providerChargeId.trim() : null);
+  const resolvedProviderChargeId = safeString(providerChargeId, 160)
+    ? String(providerChargeId).trim()
+    : (resolvedCh || resolvedPi || null);
+  if (!resolvedProviderChargeId) throw new ApiError(400, 'PROVIDER_CHARGE_ID_REQUIRED');
 
   const outcome = withIdempotency({
     db,
     scope: 'billing.direct.order.confirm',
     key: idempotencyKey,
-    requestPayload: { directOrderId, providerChargeId },
+    requestPayload: {
+      directOrderId,
+      providerChargeId: resolvedProviderChargeId,
+      paymentIntentId: resolvedPi,
+      chargeId: resolvedCh
+    },
     now,
     fn: () => {
       const order = db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(directOrderId);
       if (!order) throw new ApiError(404, 'DIRECT_ORDER_NOT_FOUND');
       if (order.state === 'PAID') {
+        if (resolvedPi && order.payment_intent_id && order.payment_intent_id !== resolvedPi) {
+          throw new ApiError(409, 'DIRECT_ORDER_PAYMENT_MISMATCH', 'Conflicting payment_intent_id for already paid order');
+        }
+        if (resolvedCh && order.charge_id && order.charge_id !== resolvedCh) {
+          throw new ApiError(409, 'DIRECT_ORDER_CHARGE_MISMATCH', 'Conflicting charge_id for already paid order');
+        }
+        if ((resolvedPi && !order.payment_intent_id) || (resolvedCh && !order.charge_id)) {
+          db.prepare(`
+            UPDATE billing_direct_orders
+            SET payment_intent_id = COALESCE(payment_intent_id, ?),
+                charge_id = COALESCE(charge_id, ?),
+                updated_at = ?
+            WHERE id = ? AND state = 'PAID'
+          `).run(resolvedPi, resolvedCh, now(), directOrderId);
+        }
+        const latestOrder = db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(directOrderId);
         const existingEnt = db.prepare('SELECT * FROM billing_entitlements WHERE direct_order_id=?').get(directOrderId);
-        return { status: 200, body: { order, entitlement: existingEnt } };
+        return { status: 200, body: { duplicate: true, order: latestOrder, entitlement: existingEnt } };
       }
       if (order.state !== 'CREATED') {
         throw new ApiError(409, 'DIRECT_ORDER_STATE_INVALID', `Cannot confirm order in state ${order.state}`);
@@ -229,9 +400,14 @@ export function confirmDirectOrderPayment(db, {
       const stamp = now();
       const updated = db.prepare(`
         UPDATE billing_direct_orders
-        SET state='PAID', provider_charge_id=?, paid_at=?, updated_at=?
+        SET state='PAID',
+            provider_charge_id=?,
+            payment_intent_id=COALESCE(payment_intent_id, ?),
+            charge_id=COALESCE(charge_id, ?),
+            paid_at=?,
+            updated_at=?
         WHERE id=? AND state='CREATED'
-      `).run(providerChargeId, stamp, stamp, directOrderId);
+      `).run(resolvedProviderChargeId, resolvedPi, resolvedCh, stamp, stamp, directOrderId);
       if (updated.changes !== 1) throw new ApiError(409, 'DIRECT_ORDER_CONCURRENT_MODIFICATION');
 
       const entId = uid();
@@ -245,6 +421,7 @@ export function confirmDirectOrderPayment(db, {
       return {
         status: 200,
         body: {
+          duplicate: false,
           order: db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(directOrderId),
           entitlement: db.prepare('SELECT * FROM billing_entitlements WHERE id=?').get(entId)
         }
@@ -302,18 +479,18 @@ export function revokeDirectOrderEntitlement(db, {
 
 export function listActiveEntitlements(db, { buyerId, gameId = null, now = Date.now }) {
   const stamp = now();
-  if (gameId) {
-    return db.prepare(`
-      SELECT * FROM billing_entitlements
-      WHERE buyer_id=? AND game_id=? AND state='ACTIVE' AND (expires_at IS NULL OR expires_at > ?)
-      ORDER BY granted_at DESC
-    `).all(buyerId, gameId, stamp);
-  }
-  return db.prepare(`
-    SELECT * FROM billing_entitlements
-    WHERE buyer_id=? AND state='ACTIVE' AND (expires_at IS NULL OR expires_at > ?)
-    ORDER BY granted_at DESC
-  `).all(buyerId, stamp);
+  const rows = gameId
+    ? db.prepare(`
+        SELECT * FROM billing_entitlements
+        WHERE buyer_id=? AND game_id=? AND state='ACTIVE' AND (expires_at IS NULL OR expires_at > ?)
+        ORDER BY granted_at DESC
+      `).all(buyerId, gameId, stamp)
+    : db.prepare(`
+        SELECT * FROM billing_entitlements
+        WHERE buyer_id=? AND state='ACTIVE' AND (expires_at IS NULL OR expires_at > ?)
+        ORDER BY granted_at DESC
+      `).all(buyerId, stamp);
+  return rows.filter(row => isVerifiedGameOwner(db, { creatorId: row.creator_id, gameId: row.game_id }));
 }
 
 // 6. RiskControls — Suspend fraudulent product or creator connection immediately
@@ -363,6 +540,7 @@ export function updateCreatorProduct(db, {
 }) {
   const existing = db.prepare('SELECT * FROM billing_creator_products WHERE id=? AND creator_id=?').get(productId, creatorId);
   if (!existing) throw new ApiError(404, 'PRODUCT_NOT_FOUND');
+  assertVerifiedGameOwner(db, { creatorId, gameId: existing.game_id });
   if (existing.status === 'SUSPENDED') {
     throw new ApiError(403, 'PRODUCT_ADMIN_SUSPENDED', 'Suspended products can only be restored by a PlayHub administrator');
   }
@@ -395,7 +573,13 @@ export function updateCreatorProduct(db, {
   return db.prepare('SELECT * FROM billing_creator_products WHERE id=?').get(productId);
 }
 
-export function listCreatorProducts(db, { creatorId = null, gameId = null, activeOnly = false, limit = 100 } = {}) {
+export function listCreatorProducts(db, {
+  creatorId = null,
+  gameId = null,
+  activeOnly = false,
+  verifiedOwnerOnly = Boolean(gameId && !creatorId),
+  limit = 100
+} = {}) {
   const safeLimit = Math.min(Math.max(Number(limit) || 100, 1), 200);
   const clauses = [];
   const params = [];
@@ -404,7 +588,9 @@ export function listCreatorProducts(db, { creatorId = null, gameId = null, activ
   if (activeOnly) { clauses.push("status='ACTIVE'"); }
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   params.push(safeLimit);
-  return db.prepare(`SELECT * FROM billing_creator_products ${where} ORDER BY created_at DESC LIMIT ?`).all(...params);
+  const rows = db.prepare(`SELECT * FROM billing_creator_products ${where} ORDER BY created_at DESC LIMIT ?`).all(...params);
+  if (!verifiedOwnerOnly) return rows;
+  return rows.filter(row => isVerifiedGameOwner(db, { creatorId: row.creator_id, gameId: row.game_id }));
 }
 
 export function listCreatorDirectOrders(db, { creatorId, limit = 50 } = {}) {

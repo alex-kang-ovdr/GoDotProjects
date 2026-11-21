@@ -7,6 +7,86 @@ import { ensureWallet } from './ledger.mjs';
 
 const DAY_MS = 86400000;
 const KST_OFFSET_MS = 9 * 3600000;
+export const CREATED_ORDER_WINDOW_MS = 30 * 60_000;
+
+const ZERO_DECIMAL_CURRENCIES = new Set(['KRW', 'JPY', 'VND', 'CLP', 'IDR']);
+
+// Conservative server-authoritative reference FX rates (KRW per 1 major currency unit)
+// used to unify all currencies under a single KRW statutory daily/monthly cap.
+export const DEFAULT_KRW_FX_RATES = {
+  KRW: 1,
+  USD: 1450,
+  EUR: 1580,
+  GBP: 1850,
+  JPY: 10,
+  CAD: 1050,
+  AUD: 960,
+  SGD: 1080,
+  HKD: 190,
+  TWD: 46,
+  BRL: 280
+};
+
+export function convertToKrwMinor(amountMinor, currency = 'KRW', fxRates = DEFAULT_KRW_FX_RATES) {
+  if (!Number.isSafeInteger(amountMinor) || amountMinor < 0) {
+    throw new ApiError(422, 'AMOUNT_INVALID');
+  }
+  const curr = String(currency || 'KRW').toUpperCase();
+  const rate = fxRates?.[curr];
+  if (!Number.isFinite(rate) || rate <= 0) {
+    throw new ApiError(422, 'UNSUPPORTED_CURRENCY', `Unsupported currency for spending limit conversion: ${curr}`);
+  }
+  if (curr === 'KRW') return amountMinor;
+  const minorFactor = ZERO_DECIMAL_CURRENCIES.has(curr) ? 1 : 100;
+  return Math.ceil((amountMinor / minorFactor) * rate);
+}
+
+export function computeSpendingUsageKrw(db, {
+  principalId,
+  excludeOrderId = null,
+  includeGiftcards = true,
+  createdWindowMs = CREATED_ORDER_WINDOW_MS,
+  fxRates = DEFAULT_KRW_FX_RATES,
+  now = Date.now
+}) {
+  const stamp = now();
+  const monthStart = kstMonthStartMs(stamp);
+  const dayStart = kstDayStartMs(stamp);
+  const createdCutoff = stamp - Math.max(0, Number(createdWindowMs) || 0);
+
+  const clauses = [
+    'principal_id = ?',
+    'created_at >= ?',
+    "(state IN ('PAID','PENDING','REFUND_PENDING') OR (state = 'CREATED' AND created_at >= ?))"
+  ];
+  const params = [principalId, monthStart, createdCutoff];
+
+  if (!includeGiftcards) {
+    clauses.push("provider != 'giftcard'");
+  }
+  if (excludeOrderId) {
+    clauses.push('id != ?');
+    params.push(excludeOrderId);
+  }
+
+  const rows = db.prepare(`
+    SELECT currency, amount_minor, created_at
+    FROM billing_orders
+    WHERE ${clauses.join(' AND ')}
+  `).all(...params);
+
+  let monthlyUsedKrw = 0;
+  let dailyUsedKrw = 0;
+  for (const row of rows) {
+    const krw = convertToKrwMinor(row.amount_minor, row.currency, fxRates);
+    monthlyUsedKrw += krw;
+    if (row.created_at >= dayStart) {
+      dailyUsedKrw += krw;
+    }
+  }
+
+  return { monthlyUsedKrw, dailyUsedKrw, monthStart, dayStart };
+}
 
 export const DEFAULT_CAPS_KRW = {
   CHILD_PROTECTED: { monthly: 0, guardianMaxMonthly: 70000, daily: 70000 },
@@ -83,10 +163,20 @@ export function resolveSpendingPolicy(db, principalId, now = Date.now) {
   };
 }
 
-export function assertCanPurchase(db, { principalId, amountMinor, currency = 'KRW', now = Date.now }) {
+export function assertCanPurchase(db, {
+  principalId,
+  amountMinor,
+  currency = 'KRW',
+  excludeOrderId = null,
+  includeGiftcards = true,
+  createdWindowMs = CREATED_ORDER_WINDOW_MS,
+  fxRates = DEFAULT_KRW_FX_RATES,
+  now = Date.now
+}) {
   if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0) {
     throw new ApiError(422, 'AMOUNT_INVALID');
   }
+  const requestedKrw = convertToKrwMinor(amountMinor, currency, fxRates);
   const policy = resolveSpendingPolicy(db, principalId, now);
 
   // Guest accounts are never allowed to purchase paid PlayCoin (device/cookie loss risk).
@@ -106,38 +196,32 @@ export function assertCanPurchase(db, { principalId, amountMinor, currency = 'KR
     throw new ApiError(403, 'GUARDIAN_CONSENT_REQUIRED', 'Guardian consent is required for child accounts');
   }
 
-  const stamp = now();
-  const monthStart = kstMonthStartMs(stamp);
-  const dayStart = kstDayStartMs(stamp);
-  const curr = String(currency).toUpperCase();
+  const { monthlyUsedKrw, dailyUsedKrw } = computeSpendingUsageKrw(db, {
+    principalId,
+    excludeOrderId,
+    includeGiftcards,
+    createdWindowMs,
+    fxRates,
+    now
+  });
 
-  const monthlyUsed = db.prepare(`
-    SELECT COALESCE(SUM(amount_minor), 0) AS total
-    FROM billing_orders
-    WHERE principal_id=? AND currency=? AND state IN ('PAID','PENDING') AND created_at >= ?
-  `).get(principalId, curr, monthStart).total;
-
-  const dailyUsed = db.prepare(`
-    SELECT COALESCE(SUM(amount_minor), 0) AS total
-    FROM billing_orders
-    WHERE principal_id=? AND currency=? AND state IN ('PAID','PENDING') AND created_at >= ?
-  `).get(principalId, curr, dayStart).total;
-
-  if (monthlyUsed + amountMinor > policy.monthlyCapMinor) {
+  if (monthlyUsedKrw + requestedKrw > policy.monthlyCapMinor) {
     throw new ApiError(422, 'MONTHLY_SPENDING_LIMIT_EXCEEDED', 'Monthly spending limit exceeded', {
       ageTier: policy.ageTier,
       monthlyCapMinor: policy.monthlyCapMinor,
-      monthlyUsedMinor: monthlyUsed,
-      remainingMinor: Math.max(0, policy.monthlyCapMinor - monthlyUsed)
+      monthlyUsedMinor: monthlyUsedKrw,
+      requestedKrw,
+      remainingMinor: Math.max(0, policy.monthlyCapMinor - monthlyUsedKrw)
     });
   }
 
-  if (dailyUsed + amountMinor > policy.dailyCapMinor) {
+  if (dailyUsedKrw + requestedKrw > policy.dailyCapMinor) {
     throw new ApiError(422, 'DAILY_SPENDING_LIMIT_EXCEEDED', 'Daily spending limit exceeded', {
       ageTier: policy.ageTier,
       dailyCapMinor: policy.dailyCapMinor,
-      dailyUsedMinor: dailyUsed,
-      remainingMinor: Math.max(0, policy.dailyCapMinor - dailyUsed)
+      dailyUsedMinor: dailyUsedKrw,
+      requestedKrw,
+      remainingMinor: Math.max(0, policy.dailyCapMinor - dailyUsedKrw)
     });
   }
 
@@ -145,8 +229,9 @@ export function assertCanPurchase(db, { principalId, amountMinor, currency = 'KR
     allowed: true,
     ageTier: policy.ageTier,
     monthlyCapMinor: policy.monthlyCapMinor,
-    monthlyUsedMinor: monthlyUsed,
+    monthlyUsedMinor: monthlyUsedKrw,
     dailyCapMinor: policy.dailyCapMinor,
-    dailyUsedMinor: dailyUsed
+    dailyUsedMinor: dailyUsedKrw,
+    requestedKrw
   };
 }

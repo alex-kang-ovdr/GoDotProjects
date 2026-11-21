@@ -14,6 +14,7 @@ import {
   getWallet,
   postJournalEntry
 } from './ledger.mjs';
+import { assertCanPurchase } from './compliance.mjs';
 
 const PIN_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 31 unambiguous chars (no 0/O/1/I/L)
 const PIN_LENGTH = 16;
@@ -65,7 +66,10 @@ export function hashGiftCardPin(normalizedPin, pepper) {
     .digest('hex');
 }
 
+const BF_DB_SCOPE = 'billing.giftcard.bf';
+
 export function createGiftCardBruteForceGuard({
+  db = null,
   maxFailures = DEFAULT_MAX_FAILURES,
   windowMs = DEFAULT_WINDOW_MS,
   lockMs = DEFAULT_LOCK_MS,
@@ -87,11 +91,49 @@ export function createGiftCardBruteForceGuard({
     return keys;
   }
 
+  function readBucket(key) {
+    if (db) {
+      const row = db.prepare(
+        'SELECT response_json FROM billing_idempotency WHERE scope=? AND idempotency_key=?'
+      ).get(BF_DB_SCOPE, key);
+      if (!row) return null;
+      try {
+        const parsed = JSON.parse(row.response_json);
+        if (parsed && typeof parsed === 'object') return parsed;
+      } catch {}
+      return null;
+    }
+    return buckets.get(key) || null;
+  }
+
+  function writeBucket(key, entry, stamp) {
+    if (db) {
+      const principalId = key.startsWith('user:') ? key.slice(5) : null;
+      db.prepare(`
+        INSERT INTO billing_idempotency(scope, idempotency_key, principal_id, request_hash, status_code, response_json, created_at)
+        VALUES(?,?,?,'bf',429,?,?)
+        ON CONFLICT(scope, idempotency_key) DO UPDATE SET
+          response_json=excluded.response_json,
+          created_at=excluded.created_at
+      `).run(BF_DB_SCOPE, key, principalId, JSON.stringify(entry), stamp);
+      return;
+    }
+    buckets.set(key, entry);
+  }
+
+  function deleteBucket(key) {
+    if (db) {
+      db.prepare('DELETE FROM billing_idempotency WHERE scope=? AND idempotency_key=?').run(BF_DB_SCOPE, key);
+      return;
+    }
+    buckets.delete(key);
+  }
+
   function assertNotLocked({ principalId, clientIp }) {
     const stamp = now();
     let maxWaitMs = 0;
     for (const key of keysOf(principalId, clientIp)) {
-      const entry = buckets.get(key);
+      const entry = readBucket(key);
       if (entry && entry.lockedUntil > stamp) {
         maxWaitMs = Math.max(maxWaitMs, entry.lockedUntil - stamp);
       }
@@ -113,10 +155,9 @@ export function createGiftCardBruteForceGuard({
     let locked = false;
     let highestFailures = 0;
     for (const key of keysOf(principalId, clientIp)) {
-      let entry = buckets.get(key);
+      let entry = readBucket(key);
       if (!entry || entry.windowEndsAt <= stamp) {
         entry = { failures: 0, windowEndsAt: stamp + windowMs, lockedUntil: 0 };
-        buckets.set(key, entry);
       }
       entry.failures += 1;
       highestFailures = Math.max(highestFailures, entry.failures);
@@ -124,6 +165,7 @@ export function createGiftCardBruteForceGuard({
         entry.lockedUntil = stamp + lockMs;
         locked = true;
       }
+      writeBucket(key, entry, stamp);
     }
     return {
       locked,
@@ -135,7 +177,7 @@ export function createGiftCardBruteForceGuard({
 
   function recordSuccess({ principalId, clientIp }) {
     for (const key of keysOf(principalId, clientIp)) {
-      buckets.delete(key);
+      deleteBucket(key);
     }
   }
 
@@ -523,7 +565,8 @@ export function previewGiftCard(db, {
     throw new ApiError(lookup.status, lookup.code, lookup.message);
   }
 
-  bruteForceGuard?.recordSuccess({ principalId, clientIp });
+  // Never reset brute-force failure counters on non-consuming preview;
+  // otherwise an attacker holding 1 unused PIN can reset counters every 4 guesses.
   const c = lookup.row;
   const bonusCoins = calcBonusCoins(c.base_coins, c.bonus_bps);
 
@@ -588,6 +631,13 @@ export function redeemGiftCard(db, {
         }
 
         const card = lookup.row;
+        assertCanPurchase(db, {
+          principalId,
+          amountMinor: card.face_value_minor,
+          currency: card.currency,
+          includeGiftcards: true,
+          now
+        });
         const bonusCoins = calcBonusCoins(card.base_coins, card.bonus_bps);
         const orderId = uid();
 
@@ -670,6 +720,8 @@ export function redeemGiftCard(db, {
     throw err;
   }
 
-  bruteForceGuard?.recordSuccess({ principalId, clientIp });
+  if (!outcome.replayed) {
+    bruteForceGuard?.recordSuccess({ principalId, clientIp });
+  }
   return { replayed: outcome.replayed, ...outcome.body };
 }

@@ -45,12 +45,46 @@ function createFixture(t) {
   insertUser.run('player-1', 'registered', 'Web Gamer', clock - 30 * DAY_MS);
   insertUser.run('player-guest', 'guest', null, clock - 1 * DAY_MS);
 
+  // Seed hub_publications table (matching restore-data.mjs OPTIONAL_TABLES schema) for Track B game ownership verification
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS hub_publications (
+      game_id TEXT PRIMARY KEY,
+      host_slug TEXT NOT NULL UNIQUE,
+      owner_key TEXT NOT NULL,
+      owner_id TEXT NOT NULL,
+      project_id TEXT NOT NULL,
+      active_release_id TEXT NOT NULL,
+      active_submission_id TEXT,
+      visibility TEXT NOT NULL CHECK(visibility IN ('private','unlisted','public')),
+      deploy_mode TEXT NOT NULL CHECK(deploy_mode IN ('singleplay','mo','mmo')),
+      status TEXT NOT NULL CHECK(status IN ('published','unpublished','suspended')),
+      artifact_sha256 TEXT NOT NULL,
+      artifact_base_url TEXT NOT NULL,
+      manifest_json TEXT NOT NULL,
+      deploy_profile_json TEXT NOT NULL,
+      cas_version INTEGER NOT NULL DEFAULT 1,
+      published_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+  `);
+  const seedGameOwner = (gameId, ownerId = 'creator-1') => {
+    db.prepare(`
+      INSERT OR REPLACE INTO hub_publications(
+        game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
+        visibility, deploy_mode, status, artifact_sha256, artifact_base_url, manifest_json,
+        deploy_profile_json, cas_version, published_at, updated_at
+      ) VALUES(?,?,?,?,?,?,NULL,'public','singleplay','published','deadbeef','/play-ugc/test','{}','{}',1,?,?)
+    `).run(gameId, `slug-${gameId}`, `owner-key-${ownerId}`, ownerId, `proj-${gameId}`, `rel-${gameId}`, clock, clock);
+  };
+  seedGameOwner('survivor-arena-g2', 'creator-1');
+  seedGameOwner('test-game', 'creator-1');
+
   t.after(() => {
     try { db.close(); } catch {}
     fs.rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   });
 
-  return { root, dataDir, db, now, advance };
+  return { root, dataDir, db, now, advance, seedGameOwner };
 }
 
 test('Track A SubscriptionService: Free vs Pro capacity quotas and canceled period-end grace', t => {

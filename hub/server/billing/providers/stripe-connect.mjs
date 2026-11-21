@@ -189,13 +189,18 @@ export function createStripeConnectProvider({
       }
     });
 
+    const sessionPi = typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : (session.payment_intent?.id || null);
+
     return {
       mode: 'live',
       provider: 'stripe_connect',
       connectedAccountId,
       checkoutUrl: session.url,
       providerSessionId: session.id,
-      providerChargeId: session.payment_intent || null,
+      paymentIntentId: sessionPi,
+      providerChargeId: sessionPi,
       applicationFeeAmount: 0
     };
   }
@@ -210,6 +215,12 @@ export function createStripeConnectProvider({
     });
   }
 
+  function extractStripeId(val) {
+    if (typeof val === 'string' && val.trim()) return val.trim();
+    if (val && typeof val === 'object' && typeof val.id === 'string' && val.id.trim()) return val.id.trim();
+    return null;
+  }
+
   function parseWebhookEvent(payload) {
     if (!payload || typeof payload !== 'object' || !safeString(payload.type, 120)) {
       throw new ApiError(400, 'WEBHOOK_PAYLOAD_INVALID');
@@ -219,10 +230,10 @@ export function createStripeConnectProvider({
     if (!externalEventId) throw new ApiError(400, 'WEBHOOK_EVENT_ID_MISSING');
 
     const obj = payload.data?.object || {};
-    const connectedAccountId = payload.account || obj.account || null;
+    const connectedAccountId = extractStripeId(payload.account) || extractStripeId(obj.account) || null;
 
     if (payload.type === 'account.updated') {
-      const acctId = obj.id || connectedAccountId;
+      const acctId = extractStripeId(obj.id) || connectedAccountId;
       const chargesEnabled = obj.charges_enabled === true;
       const payoutsEnabled = obj.payouts_enabled === true;
       const disabledReason = obj.requirements?.disabled_reason || null;
@@ -239,46 +250,109 @@ export function createStripeConnectProvider({
       };
     }
 
-    if (payload.type === 'checkout.session.completed' || payload.type === 'payment_intent.succeeded') {
-      const directOrderId = obj.metadata?.direct_order_id || null;
-      const providerChargeId = obj.payment_intent || obj.latest_charge || obj.id || null;
+    if (
+      payload.type === 'checkout.session.completed' ||
+      payload.type === 'checkout.session.async_payment_succeeded'
+    ) {
+      if (payload.type === 'checkout.session.completed' && obj.payment_status !== 'paid') {
+        return {
+          eventType: 'ignored',
+          rawType: payload.type,
+          reason: 'payment_not_paid',
+          externalEventId,
+          connectedAccountId
+        };
+      }
+      if (
+        payload.type === 'checkout.session.async_payment_succeeded' &&
+        obj.payment_status !== undefined &&
+        obj.payment_status !== 'paid'
+      ) {
+        return {
+          eventType: 'ignored',
+          rawType: payload.type,
+          reason: 'payment_not_paid',
+          externalEventId,
+          connectedAccountId
+        };
+      }
+      const directOrderId = safeString(obj.metadata?.direct_order_id, 128) ? String(obj.metadata.direct_order_id) : null;
+      const paymentIntentId = extractStripeId(obj.payment_intent);
+      const chargeId = extractStripeId(obj.latest_charge) || extractStripeId(obj.charge);
+      const providerChargeId = chargeId || paymentIntentId || extractStripeId(obj.id);
       const amountMinor = Number.isSafeInteger(obj.amount_total)
         ? obj.amount_total
         : (Number.isSafeInteger(obj.amount_received) ? obj.amount_received : (Number.isSafeInteger(obj.amount) ? obj.amount : null));
-      const currency = obj.currency ? String(obj.currency).toUpperCase() : null;
+      const currency = typeof obj.currency === 'string' && obj.currency.trim() ? obj.currency.trim().toUpperCase() : null;
       return {
         eventType: 'direct_payment',
+        rawType: payload.type,
         externalEventId,
         directOrderId,
         connectedAccountId,
-        providerChargeId: providerChargeId ? String(providerChargeId) : null,
+        paymentIntentId,
+        chargeId,
+        providerChargeId,
+        amountMinor,
+        currency
+      };
+    }
+
+    if (payload.type === 'payment_intent.succeeded') {
+      const directOrderId = safeString(obj.metadata?.direct_order_id, 128) ? String(obj.metadata.direct_order_id) : null;
+      const paymentIntentId = extractStripeId(obj.id);
+      const chargeId = extractStripeId(obj.latest_charge) || extractStripeId(obj.charges?.data?.[0]?.id);
+      const providerChargeId = chargeId || paymentIntentId;
+      const amountMinor = Number.isSafeInteger(obj.amount_received)
+        ? obj.amount_received
+        : (Number.isSafeInteger(obj.amount) ? obj.amount : null);
+      const currency = typeof obj.currency === 'string' && obj.currency.trim() ? obj.currency.trim().toUpperCase() : null;
+      return {
+        eventType: 'direct_payment',
+        rawType: payload.type,
+        externalEventId,
+        directOrderId,
+        connectedAccountId,
+        paymentIntentId,
+        chargeId,
+        providerChargeId,
         amountMinor,
         currency
       };
     }
 
     if (payload.type === 'charge.refunded') {
-      const directOrderId = obj.metadata?.direct_order_id || null;
-      const providerChargeId = obj.payment_intent || obj.id || null;
+      const directOrderId = safeString(obj.metadata?.direct_order_id, 128) ? String(obj.metadata.direct_order_id) : null;
+      const chargeId = extractStripeId(obj.id);
+      const paymentIntentId = extractStripeId(obj.payment_intent);
+      const providerChargeId = chargeId || paymentIntentId;
       return {
         eventType: 'direct_refund',
+        rawType: payload.type,
         externalEventId,
         directOrderId,
         connectedAccountId,
-        providerChargeId: providerChargeId ? String(providerChargeId) : null,
+        paymentIntentId,
+        chargeId,
+        providerChargeId,
         reason: obj.refunds?.data?.[0]?.reason || 'stripe_refund'
       };
     }
 
     if (payload.type === 'charge.dispute.created') {
-      const directOrderId = obj.metadata?.direct_order_id || null;
-      const providerChargeId = obj.payment_intent || obj.charge || null;
+      const directOrderId = safeString(obj.metadata?.direct_order_id, 128) ? String(obj.metadata.direct_order_id) : null;
+      const chargeId = extractStripeId(obj.charge);
+      const paymentIntentId = extractStripeId(obj.payment_intent);
+      const providerChargeId = chargeId || paymentIntentId;
       return {
         eventType: 'direct_chargeback',
+        rawType: payload.type,
         externalEventId,
         directOrderId,
         connectedAccountId,
-        providerChargeId: providerChargeId ? String(providerChargeId) : null,
+        paymentIntentId,
+        chargeId,
+        providerChargeId,
         reason: obj.reason || 'stripe_dispute'
       };
     }

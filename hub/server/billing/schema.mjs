@@ -32,7 +32,7 @@ export const BILLING_OPTIONAL_TABLES = {
   // Track B (Creator Direct Commerce — 0% Platform Fee, Entitlement-Only)
   billing_creator_connections: ['principal_id', 'provider', 'connected_account_id', 'onboarding_status', 'charges_enabled', 'payouts_enabled', 'country_code', 'platform_fee_bps', 'updated_at'],
   billing_creator_products: ['id', 'creator_id', 'game_id', 'product_key', 'kind', 'title', 'currency', 'amount_minor', 'allowed_regions_json', 'allowed_platforms_json', 'age_rating', 'status', 'created_at', 'updated_at'],
-  billing_direct_orders: ['id', 'buyer_id', 'creator_id', 'product_id', 'game_id', 'platform', 'provider', 'connected_account_id', 'provider_charge_id', 'currency', 'amount_minor', 'platform_fee_minor', 'state', 'idempotency_key', 'paid_at', 'created_at', 'updated_at'],
+  billing_direct_orders: ['id', 'buyer_id', 'creator_id', 'product_id', 'game_id', 'platform', 'provider', 'connected_account_id', 'provider_charge_id', 'payment_intent_id', 'charge_id', 'currency', 'amount_minor', 'platform_fee_minor', 'state', 'idempotency_key', 'paid_at', 'created_at', 'updated_at'],
   billing_entitlements: ['id', 'buyer_id', 'creator_id', 'game_id', 'product_id', 'product_key', 'direct_order_id', 'state', 'granted_at', 'expires_at', 'revoked_at', 'revoke_reason', 'updated_at']
 };
 
@@ -88,7 +88,7 @@ export function ensureBillingSchema(db) {
       base_coins INTEGER NOT NULL CHECK(base_coins > 0),
       bonus_coins INTEGER NOT NULL DEFAULT 0 CHECK(bonus_coins >= 0),
       bonus_bps INTEGER NOT NULL DEFAULT 0 CHECK(bonus_bps >= 0 AND bonus_bps <= 2500),
-      state TEXT NOT NULL CHECK(state IN ('CREATED','PENDING','PAID','FAILED','CANCELLED','REFUNDED','CHARGEBACK')),
+      state TEXT NOT NULL CHECK(state IN ('CREATED','PENDING','PAID','REFUND_PENDING','FAILED','CANCELLED','REFUNDED','CHARGEBACK')),
       provider_payment_id TEXT UNIQUE,
       idempotency_key TEXT NOT NULL UNIQUE,
       first_spent_at INTEGER,
@@ -302,9 +302,10 @@ export function ensureBillingSchema(db) {
       status TEXT NOT NULL CHECK(status IN ('DRAFT','ACTIVE','SUSPENDED','ARCHIVED')),
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL,
-      UNIQUE(creator_id, game_id, product_key)
+      UNIQUE(game_id, product_key)
     );
     CREATE INDEX IF NOT EXISTS billing_creator_products_game ON billing_creator_products(game_id, status);
+    CREATE UNIQUE INDEX IF NOT EXISTS billing_creator_products_game_key ON billing_creator_products(game_id, product_key);
 
     CREATE TABLE IF NOT EXISTS billing_direct_orders(
       id TEXT PRIMARY KEY,
@@ -316,6 +317,8 @@ export function ensureBillingSchema(db) {
       provider TEXT NOT NULL CHECK(provider IN ('stripe_connect','mor_partner')),
       connected_account_id TEXT NOT NULL,
       provider_charge_id TEXT UNIQUE,
+      payment_intent_id TEXT,
+      charge_id TEXT,
       currency TEXT NOT NULL,
       amount_minor INTEGER NOT NULL CHECK(amount_minor > 0),
       platform_fee_minor INTEGER NOT NULL DEFAULT 0 CHECK(platform_fee_minor = 0),
@@ -344,5 +347,20 @@ export function ensureBillingSchema(db) {
       updated_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS billing_entitlements_buyer_game ON billing_entitlements(buyer_id, game_id, state);
+  `);
+
+  // Backward-compatible additive migrations for existing SQLite databases.
+  const directOrderCols = new Set(db.prepare('PRAGMA table_info(billing_direct_orders)').all().map(c => c.name));
+  if (!directOrderCols.has('payment_intent_id')) {
+    db.exec('ALTER TABLE billing_direct_orders ADD COLUMN payment_intent_id TEXT');
+  }
+  if (!directOrderCols.has('charge_id')) {
+    db.exec('ALTER TABLE billing_direct_orders ADD COLUMN charge_id TEXT');
+  }
+  db.exec(`
+    CREATE UNIQUE INDEX IF NOT EXISTS billing_direct_orders_pi
+      ON billing_direct_orders(payment_intent_id) WHERE payment_intent_id IS NOT NULL;
+    CREATE UNIQUE INDEX IF NOT EXISTS billing_direct_orders_ch
+      ON billing_direct_orders(charge_id) WHERE charge_id IS NOT NULL;
   `);
 }

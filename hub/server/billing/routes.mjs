@@ -50,12 +50,32 @@ export function createBilling({
   const allowDemoAccount = billingCfg.allowDemoAccount === true || env.PLAYHUB_BILLING_ALLOW_DEMO_ACCOUNT === '1';
   const giftcardPepper = billingCfg.giftcardPepper || env.PLAYHUB_BILLING_GIFTCARD_PEPPER || '';
   const internalSecret = billingCfg.internalSecret || env.PLAYHUB_BILLING_INTERNAL_SECRET || '';
+  const mockWebhookSecret = billingCfg.mockWebhookSecret || env.PLAYHUB_BILLING_MOCK_WEBHOOK_SECRET || '';
+  const stripeSecretKey = billingCfg.stripeConnect?.secretKey || env.PLAYHUB_BILLING_STRIPE_CONNECT_SECRET_KEY || '';
+  const stripeWebhookSecret = billingCfg.stripeConnect?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_CONNECT_WEBHOOK_SECRET || '';
+  const explicitAllowMockDirect = billingCfg.stripeConnect?.allowMockDirect !== undefined
+    ? billingCfg.stripeConnect.allowMockDirect === true
+    : (env.PLAYHUB_BILLING_ALLOW_MOCK_DIRECT === '1' ? true : undefined);
+  const allowMockDirect = explicitAllowMockDirect !== undefined
+    ? explicitAllowMockDirect
+    : (allowMockProvider && !stripeSecretKey);
 
-  if (allowMockProvider && config.secureCookies === true && billingCfg.allowMockWithSecureCookies !== true) {
-    throw new Error('billing.allowMockProvider cannot be enabled with secureCookies in production');
-  }
-  if (config.secureCookies === true && giftcardPepper && giftcardPepper.length < 32) {
-    throw new Error('billing.giftcardPepper must be at least 32 characters when configured in production');
+  if (config.secureCookies === true) {
+    if (allowMockProvider) {
+      throw new Error('billing.allowMockProvider cannot be enabled with secureCookies in production');
+    }
+    if (allowDemoAccount) {
+      throw new Error('billing.allowDemoAccount cannot be enabled with secureCookies in production');
+    }
+    if (allowMockDirect) {
+      throw new Error('billing.stripeConnect.allowMockDirect cannot be enabled with secureCookies in production');
+    }
+    if (mockWebhookSecret === 'dev-mock-webhook-secret') {
+      throw new Error('billing.mockWebhookSecret cannot use default dev secret with secureCookies in production');
+    }
+    if (giftcardPepper && giftcardPepper.length < 32) {
+      throw new Error('billing.giftcardPepper must be at least 32 characters when configured in production');
+    }
   }
 
   const providers = {};
@@ -75,9 +95,9 @@ export function createBilling({
     enabledProviders.push('xsolla');
   }
 
-  if (allowMockProvider) {
+  if (allowMockProvider && !xsolla.configured) {
     providers.mock = createMockProvider({
-      webhookSecret: billingCfg.mockWebhookSecret || env.PLAYHUB_BILLING_MOCK_WEBHOOK_SECRET || 'dev-mock-webhook-secret',
+      webhookSecret: mockWebhookSecret || 'dev-mock-webhook-secret',
       now
     });
     enabledProviders.push('mock');
@@ -94,10 +114,10 @@ export function createBilling({
   });
 
   const stripeConnect = createStripeConnectProvider({
-    platformSecretKey: billingCfg.stripeConnect?.secretKey || env.PLAYHUB_BILLING_STRIPE_CONNECT_SECRET_KEY || '',
-    webhookSecret: billingCfg.stripeConnect?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_CONNECT_WEBHOOK_SECRET || '',
+    platformSecretKey: stripeSecretKey,
+    webhookSecret: stripeWebhookSecret,
     apiBaseUrl: billingCfg.stripeConnect?.apiBaseUrl || 'https://api.stripe.com',
-    allowMockDirect: allowMockProvider || billingCfg.stripeConnect?.allowMockDirect === true,
+    allowMockDirect,
     fetchImpl,
     now
   });
@@ -443,11 +463,11 @@ export function createBilling({
       const gameId = url.searchParams.get('gameId') || null;
       const scope = url.searchParams.get('scope') || (gameId ? 'game' : 'mine');
       if (scope === 'game' && gameId) {
-        json(res, 200, service.getCreatorDirectProducts({ gameId, activeOnly: true }));
+        json(res, 200, service.getCreatorDirectProducts({ gameId, activeOnly: true, verifiedOwnerOnly: true }));
         return true;
       }
       const { user } = requireRegisteredUser(req);
-      json(res, 200, service.getCreatorDirectProducts({ creatorId: user.id, gameId }));
+      json(res, 200, service.getCreatorDirectProducts({ creatorId: user.id, gameId, verifiedOwnerOnly: Boolean(gameId) }));
       return true;
     }
 

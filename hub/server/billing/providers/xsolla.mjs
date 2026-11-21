@@ -144,6 +144,11 @@ export function createXsollaProvider({
       const currency = total.currency ? String(total.currency).toUpperCase() : null;
       const amountMinor = total.amount !== undefined && currency ? majorToMinorAmount(total.amount, currency) : null;
 
+      const nonEmptyId = v => (v !== undefined && v !== null && String(v).trim() !== '' ? String(v).trim() : null);
+      const txId = nonEmptyId(tx.id);
+      const orderExtId = nonEmptyId(payload.order?.id);
+      const disputeId = nonEmptyId(payload.dispute?.id);
+
       if (nt === 'user_validation') {
         return {
           externalEventId: `xsolla_uv_${payload.user?.id || 'unknown'}`,
@@ -158,12 +163,16 @@ export function createXsollaProvider({
       }
 
       if (nt === 'payment' || nt === 'order_paid') {
+        const eventTxId = nt === 'payment' ? txId : (txId || orderExtId);
+        if (!eventTxId) {
+          throw new ApiError(400, 'XSOLLA_TRANSACTION_ID_MISSING', 'Xsolla payment webhook requires transaction.id');
+        }
         return {
-          externalEventId: `xsolla_pay_${tx.id || payload.order?.id}`,
+          externalEventId: `xsolla_pay_${eventTxId}`,
           eventType: 'payment',
           orderId: custom.order_id ? String(custom.order_id) : (tx.external_id ? String(tx.external_id) : null),
           principalId: payload.user?.id ? String(payload.user.id) : null,
-          providerPaymentId: tx.id ? `xsolla_${tx.id}` : null,
+          providerPaymentId: txId ? `xsolla_${txId}` : (orderExtId ? `xsolla_ord_${orderExtId}` : null),
           amountMinor,
           currency,
           reason: 'xsolla_payment'
@@ -171,14 +180,18 @@ export function createXsollaProvider({
       }
 
       if (nt === 'refund' || nt === 'order_canceled') {
+        const eventTxId = nt === 'refund' ? txId : (txId || orderExtId);
+        if (!eventTxId) {
+          throw new ApiError(400, 'XSOLLA_TRANSACTION_ID_MISSING', 'Xsolla refund webhook requires transaction.id');
+        }
         const reasonText = String(payload.refund_details?.reason || '').toLowerCase();
         const isDispute = reasonText.includes('chargeback') || reasonText.includes('fraud') || reasonText.includes('dispute');
         return {
-          externalEventId: `xsolla_ref_${tx.id || payload.order?.id}_${nt}`,
+          externalEventId: `xsolla_ref_${eventTxId}_${nt}`,
           eventType: isDispute ? 'chargeback' : 'refund',
           orderId: custom.order_id ? String(custom.order_id) : (tx.external_id ? String(tx.external_id) : null),
           principalId: payload.user?.id ? String(payload.user.id) : null,
-          providerPaymentId: tx.id ? `xsolla_${tx.id}` : null,
+          providerPaymentId: txId ? `xsolla_${txId}` : null,
           amountMinor,
           currency,
           reason: payload.refund_details?.reason || `xsolla_${nt}`
@@ -186,12 +199,16 @@ export function createXsollaProvider({
       }
 
       if (nt === 'dispute') {
+        const eventTxId = txId || disputeId;
+        if (!eventTxId) {
+          throw new ApiError(400, 'XSOLLA_TRANSACTION_ID_MISSING', 'Xsolla dispute webhook requires transaction.id or dispute.id');
+        }
         return {
-          externalEventId: `xsolla_disp_${tx.id || payload.dispute?.id}`,
+          externalEventId: `xsolla_disp_${eventTxId}`,
           eventType: 'chargeback',
           orderId: custom.order_id ? String(custom.order_id) : (tx.external_id ? String(tx.external_id) : null),
           principalId: payload.user?.id ? String(payload.user.id) : null,
-          providerPaymentId: tx.id ? `xsolla_${tx.id}` : null,
+          providerPaymentId: txId ? `xsolla_${txId}` : null,
           amountMinor,
           currency,
           reason: payload.dispute?.reason || 'xsolla_dispute'

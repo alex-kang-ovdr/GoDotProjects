@@ -124,7 +124,18 @@ async function startM3App(t, { stripeSecret = 'sk_test_platform_only', webhookSe
     };
   }
 
-  return { app, pubBase, admBase, origin, adminOrigin, webhookSecret, req, signInUser, signInAdmin, now };
+  function seedGameOwner(gameId, ownerId) {
+    const stamp = now();
+    app.db.prepare(`
+      INSERT OR REPLACE INTO hub_publications(
+        game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
+        visibility, deploy_mode, status, artifact_sha256, artifact_base_url, manifest_json,
+        deploy_profile_json, cas_version, published_at, updated_at
+      ) VALUES(?,?,?,?,?,?,NULL,'public','singleplay','published','deadbeef','/play-ugc/test','{}','{}',1,?,?)
+    `).run(gameId, `p${gameId.replace(/[^a-z0-9]/g, '').slice(0, 10)}${String(stamp).slice(-6)}`, `owner-key-${ownerId}`, ownerId, `proj-${gameId}`, `rel-${gameId}`, stamp, stamp);
+  }
+
+  return { app, pubBase, admBase, origin, adminOrigin, webhookSecret, req, signInUser, signInAdmin, seedGameOwner, now };
 }
 
 test('Track B Stripe Connect Direct Charges (0% fee, zero secret keys, mobile/TV fail-closed, signed webhooks & Entitlement lifecycle)', async t => {
@@ -150,6 +161,7 @@ test('Track B Stripe Connect Direct Charges (0% fee, zero secret keys, mobile/TV
   const ctx = await startM3App(t, { billingFetch: fakeStripeFetch });
   const creator = await ctx.signInUser();
   const buyer = await ctx.signInUser();
+  ctx.seedGameOwner('match3-garden', creator.principalId);
   const nowSec = Math.floor(ctx.now() / 1000);
 
   // 1. Creator private API secret key submission is strictly rejected (400)
@@ -293,6 +305,7 @@ test('Track B Stripe Connect Direct Charges (0% fee, zero secret keys, mobile/TV
     data: {
       object: {
         id: 'cs_live_direct_1',
+        payment_status: 'paid',
         payment_intent: 'pi_live_direct_1',
         amount_total: 4900,
         currency: 'krw',
@@ -405,6 +418,7 @@ test('Admin RiskControls (product/connection suspend & restore), CS Promo Grant,
   const admin = await ctx.signInAdmin();
   const creator = await ctx.signInUser();
   const buyer = await ctx.signInUser();
+  ctx.seedGameOwner('match3-garden', creator.principalId);
   const nowSec = Math.floor(ctx.now() / 1000);
 
   // Setup mock direct connection + product

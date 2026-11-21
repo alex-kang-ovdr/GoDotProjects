@@ -12,6 +12,7 @@ import {
   resolveAuthoritativeChannel
 } from './policy.mjs';
 import {
+  ensureWallet,
   getWallet,
   creditPurchase,
   creditPromo,
@@ -20,7 +21,7 @@ import {
   releaseHold,
   verifyLedgerIntegrity
 } from './ledger.mjs';
-import { assertCanPurchase, resolveSpendingPolicy, kstMonthStartMs, kstDayStartMs } from './compliance.mjs';
+import { assertCanPurchase, computeSpendingUsageKrw, resolveSpendingPolicy } from './compliance.mjs';
 import {
   PLAN_QUOTAS,
   getSubscription,
@@ -41,6 +42,8 @@ import {
 import {
   DEFAULT_ENABLED_DIRECT_PLATFORMS,
   FORBIDDEN_SECRET_KEYS,
+  assertVerifiedGameOwner,
+  findDirectOrderByStripeIds,
   upsertCreatorConnection,
   getCreatorConnection,
   createCreatorProduct,
@@ -87,6 +90,7 @@ export function createBillingService({
     : DEFAULT_ENABLED_DIRECT_PLATFORMS;
   const giftcardPepper = config.giftcardPepper || (allowMockProvider ? 'dev-playhub-giftcard-pepper-local-only' : '');
   const bruteForceGuard = createGiftCardBruteForceGuard({
+    db,
     maxFailures: config.giftcardMaxFailures || 5,
     windowMs: config.giftcardWindowMs || 15 * 60_000,
     lockMs: config.giftcardLockMs || 15 * 60_000,
@@ -216,20 +220,11 @@ export function createBillingService({
     const wallet = getWallet(db, principalId, now);
     const subscription = getSubscription(db, principalId, now);
     const spendingPolicy = resolveSpendingPolicy(db, principalId, now);
-    const monthStart = kstMonthStartMs(stamp);
-    const dayStart = kstDayStartMs(stamp);
-
-    const monthlyUsedKrw = db.prepare(`
-      SELECT COALESCE(SUM(amount_minor), 0) AS total
-      FROM billing_orders
-      WHERE principal_id=? AND currency='KRW' AND provider != 'giftcard' AND state IN ('PAID','PENDING') AND created_at >= ?
-    `).get(principalId, monthStart).total;
-
-    const dailyUsedKrw = db.prepare(`
-      SELECT COALESCE(SUM(amount_minor), 0) AS total
-      FROM billing_orders
-      WHERE principal_id=? AND currency='KRW' AND provider != 'giftcard' AND state IN ('PAID','PENDING') AND created_at >= ?
-    `).get(principalId, dayStart).total;
+    const { monthlyUsedKrw, dailyUsedKrw } = computeSpendingUsageKrw(db, {
+      principalId,
+      includeGiftcards: true,
+      now
+    });
 
     const recentOrderRows = db.prepare(`
       SELECT * FROM billing_orders WHERE principal_id=? ORDER BY created_at DESC LIMIT 20
@@ -315,6 +310,10 @@ export function createBillingService({
     const userRow = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(principalId);
     if (!userRow || userRow.kind !== 'registered') {
       throw new ApiError(403, 'REGISTERED_ACCOUNT_REQUIRED', 'Google account login is required before purchasing PlayCoin');
+    }
+
+    if (preferredProvider === 'mock' && providers.xsolla?.configured) {
+      throw new ApiError(403, 'MOCK_PROVIDER_FORBIDDEN', 'Mock provider cannot be selected when Xsolla is configured');
     }
 
     const routeDecision = router.selectProvider({
@@ -407,6 +406,16 @@ export function createBillingService({
       if (!['CREATED', 'PENDING'].includes(order.state)) {
         throw new ApiError(409, 'ORDER_STATE_NOT_PAYABLE', `Order state is ${order.state}`);
       }
+
+      // Re-validate unified KRW spending limits at settlement time (closes stale CREATED window bypass).
+      assertCanPurchase(db, {
+        principalId: order.principal_id,
+        amountMinor: order.amount_minor,
+        currency: order.currency,
+        excludeOrderId: order.id,
+        includeGiftcards: true,
+        now
+      });
 
       const stamp = now();
       const updated = db.prepare(`
@@ -520,12 +529,18 @@ export function createBillingService({
       if (!order) {
         throw new ApiError(404, 'WEBHOOK_ORDER_NOT_FOUND');
       }
+      if (order.provider !== providerName) {
+        throw new ApiError(403, 'WEBHOOK_PROVIDER_MISMATCH', `Order belongs to provider '${order.provider}', not '${providerName}'`);
+      }
+      if (evt.principalId && evt.principalId !== order.principal_id) {
+        throw new ApiError(403, 'WEBHOOK_PRINCIPAL_MISMATCH', 'Webhook user does not match order owner');
+      }
 
       if (evt.eventType === 'payment') {
-        if (evt.currency && evt.currency !== order.currency) {
+        if (!evt.currency || evt.currency !== order.currency) {
           throw new ApiError(422, 'WEBHOOK_CURRENCY_MISMATCH');
         }
-        if (evt.amountMinor !== null && evt.amountMinor !== order.amount_minor) {
+        if (!Number.isSafeInteger(evt.amountMinor) || evt.amountMinor !== order.amount_minor) {
           throw new ApiError(422, 'WEBHOOK_AMOUNT_MISMATCH');
         }
       }
@@ -568,26 +583,119 @@ export function createBillingService({
   }
 
   async function withdrawUnusedOrder({ principalId, orderId, reason = 'customer_7d_withdrawal', idempotencyKey }) {
-    const order = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
-    if (!order || order.principal_id !== principalId) {
-      throw new ApiError(404, 'ORDER_NOT_FOUND');
-    }
-    if (order.provider === 'giftcard') {
-      throw new ApiError(409, 'GIFTCARD_ORDER_NOT_AUTO_WITHDRAWABLE', 'Redeemed gift card orders cannot use automatic PG withdrawal');
-    }
-    if (order.state !== 'PAID') {
-      throw new ApiError(409, 'ORDER_NOT_REFUNDABLE');
-    }
-    const stamp = now();
-    if (!order.paid_at || (stamp - order.paid_at) > SEVEN_DAYS_MS) {
-      throw new ApiError(422, 'WITHDRAWAL_WINDOW_EXPIRED', '7-day withdrawal period has elapsed');
-    }
-    if (order.first_spent_at !== null) {
-      throw new ApiError(409, 'WITHDRAWAL_ORDER_ALREADY_SPENT', 'Order PlayCoin (paid or bonus) has already been used');
+    const lockResult = runAtomic(db, () => {
+      if (safeString(idempotencyKey, 160)) {
+        const existingEntry = db.prepare(
+          'SELECT id, order_id FROM billing_journal_entries WHERE idempotency_key=?'
+        ).get(idempotencyKey);
+        if (existingEntry) {
+          const existingOrder = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
+          if (!existingOrder || existingOrder.principal_id !== principalId || existingEntry.order_id !== orderId) {
+            throw new ApiError(409, 'IDEMPOTENCY_KEY_CONFLICT');
+          }
+          const existingRefund = db.prepare(
+            'SELECT * FROM billing_refunds WHERE order_id=? ORDER BY created_at DESC LIMIT 1'
+          ).get(orderId);
+          return {
+            alreadyCompleted: true,
+            outcome: {
+              duplicate: true,
+              entryId: existingEntry.id,
+              refund: existingRefund,
+              wallet: getWallet(db, principalId, now)
+            }
+          };
+        }
+      }
+
+      const order = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
+      if (!order || order.principal_id !== principalId) {
+        throw new ApiError(404, 'ORDER_NOT_FOUND');
+      }
+      if (order.provider === 'giftcard') {
+        throw new ApiError(409, 'GIFTCARD_ORDER_NOT_AUTO_WITHDRAWABLE', 'Redeemed gift card orders cannot use automatic PG withdrawal');
+      }
+      if (order.state === 'REFUND_PENDING') {
+        throw new ApiError(409, 'WITHDRAWAL_IN_PROGRESS', 'Withdrawal is already in progress for this order');
+      }
+      if (order.state !== 'PAID') {
+        throw new ApiError(409, 'ORDER_NOT_REFUNDABLE');
+      }
+      const stamp = now();
+      if (!order.paid_at || (stamp - order.paid_at) > SEVEN_DAYS_MS) {
+        throw new ApiError(422, 'WITHDRAWAL_WINDOW_EXPIRED', '7-day withdrawal period has elapsed');
+      }
+      if (order.first_spent_at !== null) {
+        throw new ApiError(409, 'WITHDRAWAL_ORDER_ALREADY_SPENT', 'Order PlayCoin (paid or bonus) has already been used');
+      }
+
+      const orderLots = db.prepare(
+        'SELECT bucket, remaining_coins FROM billing_wallet_lots WHERE parent_order_id=?'
+      ).all(order.id);
+      const remainingPaid = orderLots.filter(l => l.bucket === 'paid').reduce((s, l) => s + l.remaining_coins, 0);
+      const remainingBonus = orderLots.filter(l => l.bucket === 'bonus').reduce((s, l) => s + l.remaining_coins, 0);
+      if (remainingPaid !== order.base_coins || remainingBonus !== order.bonus_coins) {
+        throw new ApiError(409, 'WITHDRAWAL_ORDER_ALREADY_SPENT', 'Order PlayCoin (paid or bonus) has already been used');
+      }
+
+      const wallet = ensureWallet(db, principalId, now);
+      const activeHolds = db.prepare(`
+        SELECT COUNT(*) AS count, COALESCE(SUM(amount_coins), 0) AS total
+        FROM billing_wallet_holds
+        WHERE principal_id=? AND state='HELD'
+      `).get(principalId);
+      const hasActiveHold = wallet.reserved_coins > 0 || activeHolds.count > 0 || activeHolds.total > 0;
+      const remainingGross =
+        (wallet.paid_balance + wallet.bonus_balance + wallet.promo_balance) - (order.base_coins + order.bonus_coins);
+      if (
+        hasActiveHold && (
+          wallet.reserved_coins > 0 ||
+          activeHolds.count > 0 ||
+          remainingGross < wallet.reserved_coins ||
+          remainingGross < activeHolds.total
+        )
+      ) {
+        throw new ApiError(
+          409,
+          'WITHDRAWAL_BLOCKED_BY_ACTIVE_HOLD',
+          'Active coin holds must be settled or released before 7-day withdrawal'
+        );
+      }
+
+      const locked = db.prepare(`
+        UPDATE billing_orders
+        SET state='REFUND_PENDING', updated_at=?
+        WHERE id=? AND state='PAID' AND first_spent_at IS NULL
+      `).run(stamp, order.id);
+      if (locked.changes !== 1) {
+        throw new ApiError(409, 'ORDER_NOT_REFUNDABLE', 'Order could not be locked for withdrawal');
+      }
+
+      return {
+        alreadyCompleted: false,
+        order: db.prepare('SELECT * FROM billing_orders WHERE id=?').get(order.id)
+      };
+    });
+
+    if (lockResult.alreadyCompleted) {
+      return lockResult.outcome;
     }
 
+    const order = lockResult.order;
     const adapter = getProviderAdapter(order.provider);
-    const pgRefund = await adapter.refundPayment({ order, amountMinor: order.amount_minor, reason });
+    let pgRefund;
+    try {
+      pgRefund = await adapter.refundPayment({ order, amountMinor: order.amount_minor, reason });
+    } catch (pgError) {
+      runAtomic(db, () => {
+        db.prepare(`
+          UPDATE billing_orders
+          SET state='PAID', updated_at=?
+          WHERE id=? AND state='REFUND_PENDING'
+        `).run(now(), order.id);
+      });
+      throw pgError;
+    }
 
     const outcome = clawbackOrder(db, {
       orderId: order.id,
@@ -969,6 +1077,8 @@ export function createBillingService({
       provider: row.provider,
       connectedAccountId: row.connected_account_id,
       providerChargeId: row.provider_charge_id,
+      paymentIntentId: row.payment_intent_id || null,
+      chargeId: row.charge_id || null,
       currency: row.currency,
       amountMinor: row.amount_minor,
       platformFeeMinor: row.platform_fee_minor,
@@ -1050,6 +1160,7 @@ export function createBillingService({
     if (conn?.onboarding_status === 'SUSPENDED') {
       throw new ApiError(403, 'CREATOR_CONNECTION_SUSPENDED', 'Suspended creator cannot publish paid products');
     }
+    assertVerifiedGameOwner(db, { creatorId, gameId: body.gameId });
     const row = createCreatorProduct(db, {
       creatorId,
       gameId: body.gameId,
@@ -1084,9 +1195,9 @@ export function createBillingService({
     return { product: formatDirectProduct(row) };
   }
 
-  function getCreatorDirectProducts({ creatorId = null, gameId = null, activeOnly = false } = {}) {
+  function getCreatorDirectProducts({ creatorId = null, gameId = null, activeOnly = false, verifiedOwnerOnly = Boolean(gameId && !creatorId) } = {}) {
     return {
-      products: listCreatorProducts(db, { creatorId, gameId, activeOnly }).map(formatDirectProduct),
+      products: listCreatorProducts(db, { creatorId, gameId, activeOnly, verifiedOwnerOnly }).map(formatDirectProduct),
       enabledPlatforms: [...enabledDirectPlatforms]
     };
   }
@@ -1148,16 +1259,24 @@ export function createBillingService({
   }
 
   function confirmMockDirectOrder({ buyerId, directOrderId, providerChargeId, idempotencyKey }) {
-    if (!allowMockProvider) {
+    if (!stripeConnect || stripeConnect.configured || !stripeConnect.allowMockDirect) {
       throw new ApiError(403, 'MOCK_DIRECT_CONFIRM_DISABLED', 'Live direct orders are settled exclusively via signed Stripe Connect webhooks');
     }
     const order = db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(directOrderId);
     if (!order || order.buyer_id !== buyerId) {
       throw new ApiError(404, 'DIRECT_ORDER_NOT_FOUND');
     }
+    if (!String(order.connected_account_id || '').startsWith('acct_demo_')) {
+      throw new ApiError(403, 'MOCK_DIRECT_CONFIRM_DISABLED', 'Only mock direct orders can be confirmed via mock confirm endpoint');
+    }
+    const expectedMockChargeId = `ch_direct_mock_${directOrderId}`;
+    if (providerChargeId && providerChargeId !== expectedMockChargeId) {
+      throw new ApiError(422, 'PROVIDER_CHARGE_ID_MISMATCH', 'Mock direct charge ID mismatch');
+    }
     const res = confirmDirectOrderPayment(db, {
       directOrderId,
-      providerChargeId: providerChargeId || `ch_direct_mock_${directOrderId}`,
+      providerChargeId: expectedMockChargeId,
+      chargeId: expectedMockChargeId,
       idempotencyKey: idempotencyKey || `direct-confirm:${directOrderId}`,
       now
     });
@@ -1230,6 +1349,9 @@ export function createBillingService({
       }
 
       if (evt.eventType === 'account_updated') {
+        if (!safeString(evt.connectedAccountId, 128)) {
+          throw new ApiError(400, 'WEBHOOK_ACCOUNT_MISSING');
+        }
         const conn = db.prepare('SELECT * FROM billing_creator_connections WHERE connected_account_id=?').get(evt.connectedAccountId);
         if (!conn) {
           throw new ApiError(404, 'CREATOR_CONNECTION_NOT_FOUND');
@@ -1263,23 +1385,23 @@ export function createBillingService({
         };
       }
 
-      let order = evt.directOrderId
-        ? db.prepare('SELECT * FROM billing_direct_orders WHERE id=?').get(evt.directOrderId)
-        : null;
-      if (!order && evt.providerChargeId) {
-        order = db.prepare('SELECT * FROM billing_direct_orders WHERE provider_charge_id=?').get(evt.providerChargeId);
-      }
+      const order = findDirectOrderByStripeIds(db, {
+        directOrderId: evt.directOrderId,
+        paymentIntentId: evt.paymentIntentId,
+        chargeId: evt.chargeId,
+        providerChargeId: evt.providerChargeId
+      });
       if (!order) {
         throw new ApiError(404, 'DIRECT_ORDER_NOT_FOUND');
       }
-      if (evt.connectedAccountId && evt.connectedAccountId !== order.connected_account_id) {
+      if (!evt.connectedAccountId || evt.connectedAccountId !== order.connected_account_id) {
         throw new ApiError(403, 'WEBHOOK_ACCOUNT_MISMATCH');
       }
       if (evt.eventType === 'direct_payment') {
-        if (evt.currency && evt.currency !== order.currency) {
+        if (!evt.currency || evt.currency !== order.currency) {
           throw new ApiError(422, 'WEBHOOK_CURRENCY_MISMATCH');
         }
-        if (evt.amountMinor !== null && evt.amountMinor !== order.amount_minor) {
+        if (!Number.isSafeInteger(evt.amountMinor) || evt.amountMinor !== order.amount_minor) {
           throw new ApiError(422, 'WEBHOOK_AMOUNT_MISMATCH');
         }
       }
@@ -1295,11 +1417,17 @@ export function createBillingService({
       if (evt.eventType === 'direct_payment') {
         result = confirmDirectOrderPayment(db, {
           directOrderId: order.id,
-          providerChargeId: evt.providerChargeId || `sc_${evt.externalEventId}`,
-          idempotencyKey: `sc-paid:${order.id}`,
+          providerChargeId: evt.providerChargeId || evt.chargeId || evt.paymentIntentId || `sc_${evt.externalEventId}`,
+          paymentIntentId: evt.paymentIntentId,
+          chargeId: evt.chargeId,
+          idempotencyKey: `sc-paid:${evt.externalEventId}`,
           now
         });
-        audit('billing.direct.webhook_paid', order.id, { eventId: evt.externalEventId, entitlementId: result.entitlement?.id });
+        audit('billing.direct.webhook_paid', order.id, {
+          eventId: evt.externalEventId,
+          entitlementId: result.entitlement?.id,
+          duplicate: result.duplicate === true
+        });
       } else if (evt.eventType === 'direct_refund' || evt.eventType === 'direct_chargeback') {
         const orderState = evt.eventType === 'direct_chargeback' ? 'CHARGEBACK' : 'REFUNDED';
         result = revokeDirectOrderEntitlement(db, {

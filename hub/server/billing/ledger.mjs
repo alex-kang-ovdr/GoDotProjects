@@ -48,9 +48,23 @@ export function ensureWallet(db, principalId, now = Date.now) {
   return db.prepare('SELECT * FROM billing_wallet_accounts WHERE principal_id=?').get(principalId);
 }
 
+function pendingRefundCoinsForPrincipal(db, principalId, { skipBonus = false } = {}) {
+  const row = db.prepare(`
+    SELECT COALESCE(SUM(l.remaining_coins), 0) AS total
+    FROM billing_wallet_lots l
+    JOIN billing_orders o ON o.id = l.parent_order_id
+    WHERE l.principal_id = ?
+      AND l.remaining_coins > 0
+      AND o.state = 'REFUND_PENDING'
+      AND (? = 0 OR l.bucket != 'bonus')
+  `).get(principalId, skipBonus ? 1 : 0);
+  return row ? row.total : 0;
+}
+
 export function getWallet(db, principalId, now = Date.now) {
   const row = ensureWallet(db, principalId, now);
   const spendableGross = row.paid_balance + row.bonus_balance + row.promo_balance;
+  const pendingRefund = pendingRefundCoinsForPrincipal(db, principalId);
   return {
     unit: BILLING_UNIT,
     principalId: row.principal_id,
@@ -58,7 +72,7 @@ export function getWallet(db, principalId, now = Date.now) {
     bonus: row.bonus_balance,
     promo: row.promo_balance,
     reserved: row.reserved_coins,
-    available: Math.max(0, spendableGross - row.reserved_coins),
+    available: Math.max(0, spendableGross - row.reserved_coins - pendingRefund),
     debt: row.debt_coins,
     frozen: Boolean(row.frozen_reason),
     frozenReason: row.frozen_reason || null,
@@ -204,11 +218,12 @@ export function creditPurchase(db, {
       );
     }
 
-    db.prepare(`
+    const creditUpd = db.prepare(`
       UPDATE billing_wallet_accounts
       SET paid_balance = paid_balance + ?, bonus_balance = bonus_balance + ?, updated_at = ?
       WHERE principal_id = ?
     `).run(baseCoins, bonusCoins, stamp, principalId);
+    if (creditUpd.changes !== 1) throw new ApiError(500, 'WALLET_CREDIT_SYNC_ERROR');
 
     const entryId = postJournalEntry(db, {
       eventType: isGiftCardRedeem ? 'giftcard_redeem' : 'topup',
@@ -264,11 +279,12 @@ export function creditPromo(db, { principalId, coins, expiresAt = null, reason =
       VALUES(?,?,NULL,'promo',?,?,?,?)
     `).run(lotId, principalId, coins, coins, expiresAt, stamp);
 
-    db.prepare(`
+    const promoUpd = db.prepare(`
       UPDATE billing_wallet_accounts
       SET promo_balance = promo_balance + ?, updated_at = ?
       WHERE principal_id = ?
     `).run(coins, stamp, principalId);
+    if (promoUpd.changes !== 1) throw new ApiError(500, 'WALLET_PROMO_CREDIT_SYNC_ERROR');
 
     const entryId = postJournalEntry(db, {
       eventType: 'promo_grant',
@@ -304,11 +320,13 @@ function consumeLotsInTx(db, {
 
   const skipBonus = sinkType === 'infra_server' && allowBonusForInfra === false;
   const buckets = skipBonus ? ['promo', 'paid'] : ['promo', 'bonus', 'paid'];
+  const pendingRefundCoins = pendingRefundCoinsForPrincipal(db, principalId, { skipBonus });
   const effectiveAvailable =
     wallet.promo_balance +
     (skipBonus ? 0 : wallet.bonus_balance) +
     wallet.paid_balance -
-    (wallet.reserved_coins - reservedAlreadyReleased);
+    (wallet.reserved_coins - reservedAlreadyReleased) -
+    pendingRefundCoins;
 
   if (effectiveAvailable < amountCoins) {
     throw new ApiError(422, 'INSUFFICIENT_PLAYCOIN', 'Insufficient PlayCoin balance', {
@@ -326,15 +344,17 @@ function consumeLotsInTx(db, {
   for (const bucket of buckets) {
     if (remaining === 0) break;
     const lots = db.prepare(`
-      SELECT id, parent_order_id, remaining_coins
-      FROM billing_wallet_lots
-      WHERE principal_id=? AND bucket=? AND remaining_coins > 0
-        AND (expires_at IS NULL OR expires_at > ?)
+      SELECT l.id, l.parent_order_id, l.remaining_coins
+      FROM billing_wallet_lots l
+      LEFT JOIN billing_orders o ON o.id = l.parent_order_id
+      WHERE l.principal_id=? AND l.bucket=? AND l.remaining_coins > 0
+        AND (l.expires_at IS NULL OR l.expires_at > ?)
+        AND (o.id IS NULL OR o.state != 'REFUND_PENDING')
       ORDER BY
-        CASE WHEN expires_at IS NULL THEN 1 ELSE 0 END ASC,
-        expires_at ASC,
-        created_at ASC,
-        id ASC
+        CASE WHEN l.expires_at IS NULL THEN 1 ELSE 0 END ASC,
+        l.expires_at ASC,
+        l.created_at ASC,
+        l.id ASC
     `).all(principalId, bucket, stamp);
 
     for (const lot of lots) {
@@ -456,14 +476,15 @@ export function reserveHold(db, {
     if (wallet.debt_coins > 0) throw new ApiError(403, 'BILLING_DEBT_OUTSTANDING');
 
     const stamp = now();
+    const pendingRefund = pendingRefundCoinsForPrincipal(db, principalId);
     const updated = db.prepare(`
       UPDATE billing_wallet_accounts
       SET reserved_coins = reserved_coins + ?, updated_at = ?
       WHERE principal_id = ?
         AND frozen_reason IS NULL
         AND debt_coins = 0
-        AND (paid_balance + bonus_balance + promo_balance - reserved_coins) >= ?
-    `).run(amountCoins, stamp, principalId, amountCoins);
+        AND (paid_balance + bonus_balance + promo_balance - reserved_coins - ?) >= ?
+    `).run(amountCoins, stamp, principalId, pendingRefund, amountCoins);
 
     if (updated.changes !== 1) {
       throw new ApiError(422, 'INSUFFICIENT_PLAYCOIN', 'Insufficient available PlayCoin for reservation');
@@ -508,11 +529,14 @@ export function settleHold(db, {
     if (stateChange.changes !== 1) throw new ApiError(409, 'HOLD_CONCURRENT_MODIFICATION');
 
     if (actualCoins === 0) {
-      db.prepare(`
+      const walletUpd = db.prepare(`
         UPDATE billing_wallet_accounts
         SET reserved_coins = reserved_coins - ?, updated_at = ?
         WHERE principal_id = ? AND reserved_coins >= ?
       `).run(hold.amount_coins, stamp, hold.principal_id, hold.amount_coins);
+      if (walletUpd.changes !== 1) {
+        throw new ApiError(409, 'WALLET_RESERVE_SYNC_ERROR', 'Reserved coin balance mismatch during hold settlement');
+      }
       return {
         duplicate: false,
         entryId: null,
@@ -556,11 +580,14 @@ export function releaseHold(db, { holdId, now = Date.now }) {
     ).run(stamp, holdId);
     if (changed.changes !== 1) throw new ApiError(409, 'HOLD_CONCURRENT_MODIFICATION');
 
-    db.prepare(`
+    const walletUpd = db.prepare(`
       UPDATE billing_wallet_accounts
       SET reserved_coins = reserved_coins - ?, updated_at = ?
       WHERE principal_id = ? AND reserved_coins >= ?
     `).run(hold.amount_coins, stamp, hold.principal_id, hold.amount_coins);
+    if (walletUpd.changes !== 1) {
+      throw new ApiError(409, 'WALLET_RESERVE_SYNC_ERROR', 'Reserved coin balance mismatch during hold release');
+    }
 
     return {
       duplicate: false,
@@ -594,11 +621,12 @@ export function clawbackOrder(db, {
 
     const order = db.prepare('SELECT * FROM billing_orders WHERE id=?').get(orderId);
     if (!order) throw new ApiError(404, 'ORDER_NOT_FOUND');
-    if (order.state !== 'PAID') throw new ApiError(409, 'ORDER_NOT_REFUNDABLE', `Order state is ${order.state}`);
+    const canClawbackState = order.state === 'PAID' || (kind === 'withdrawal_7d' && order.state === 'REFUND_PENDING');
+    if (!canClawbackState) throw new ApiError(409, 'ORDER_NOT_REFUNDABLE', `Order state is ${order.state}`);
 
     const stamp = now();
     const principalId = order.principal_id;
-    ensureWallet(db, principalId, now);
+    const wallet = ensureWallet(db, principalId, now);
 
     if (kind === 'withdrawal_7d') {
       if (!order.paid_at || (stamp - order.paid_at) > SEVEN_DAYS_MS) {
@@ -606,6 +634,28 @@ export function clawbackOrder(db, {
       }
       if (order.first_spent_at !== null) {
         throw new ApiError(409, 'WITHDRAWAL_ORDER_ALREADY_SPENT', 'Order PlayCoin (paid or bonus) has already been used');
+      }
+      const activeHoldStats = db.prepare(`
+        SELECT COUNT(*) AS count, COALESCE(SUM(amount_coins), 0) AS total
+        FROM billing_wallet_holds
+        WHERE principal_id=? AND state='HELD'
+      `).get(principalId);
+      const hasActiveHold = wallet.reserved_coins > 0 || activeHoldStats.count > 0 || activeHoldStats.total > 0;
+      const remainingGrossAfterClawback =
+        (wallet.paid_balance + wallet.bonus_balance + wallet.promo_balance) - (order.base_coins + order.bonus_coins);
+      if (
+        hasActiveHold && (
+          wallet.reserved_coins > 0 ||
+          activeHoldStats.count > 0 ||
+          remainingGrossAfterClawback < wallet.reserved_coins ||
+          remainingGrossAfterClawback < activeHoldStats.total
+        )
+      ) {
+        throw new ApiError(
+          409,
+          'WITHDRAWAL_BLOCKED_BY_ACTIVE_HOLD',
+          'Active coin holds must be settled or released before 7-day withdrawal'
+        );
       }
     }
 
@@ -620,7 +670,10 @@ export function clawbackOrder(db, {
     let clawedBonus = 0;
 
     for (const lot of lots) {
-      db.prepare('UPDATE billing_wallet_lots SET remaining_coins=0 WHERE id=?').run(lot.id);
+      const lotUpd = db.prepare(
+        'UPDATE billing_wallet_lots SET remaining_coins=0 WHERE id=? AND remaining_coins=?'
+      ).run(lot.id, lot.remaining_coins);
+      if (lotUpd.changes !== 1) throw new ApiError(409, 'LOT_CONCURRENT_MODIFICATION');
       if (lot.bucket === 'paid') clawedPaid += lot.remaining_coins;
       else if (lot.bucket === 'bonus') clawedBonus += lot.remaining_coins;
       journalLines.push({
@@ -649,7 +702,10 @@ export function clawbackOrder(db, {
         for (const lot of otherLots) {
           if (need <= 0) break;
           const take = Math.min(need, lot.remaining_coins);
-          db.prepare('UPDATE billing_wallet_lots SET remaining_coins = remaining_coins - ? WHERE id=?').run(take, lot.id);
+          const otherUpd = db.prepare(
+            'UPDATE billing_wallet_lots SET remaining_coins = remaining_coins - ? WHERE id=? AND remaining_coins >= ?'
+          ).run(take, lot.id, take);
+          if (otherUpd.changes !== 1) throw new ApiError(409, 'LOT_CONCURRENT_MODIFICATION');
           need -= take;
           if (bucket === 'paid') { clawedPaid += take; shortfallPaid -= take; }
           else { clawedBonus += take; shortfallBonus -= take; }
@@ -685,21 +741,50 @@ export function clawbackOrder(db, {
     }
 
     const freezeReason = kind === 'chargeback' ? 'CHARGEBACK_DISPUTE' : null;
-    db.prepare(`
-      UPDATE billing_wallet_accounts
-      SET paid_balance = paid_balance - ?,
-          bonus_balance = bonus_balance - ?,
-          debt_coins = debt_coins + ?,
-          frozen_reason = COALESCE(?, frozen_reason),
-          frozen_at = CASE WHEN ? IS NOT NULL THEN COALESCE(frozen_at, ?) ELSE frozen_at END,
-          updated_at = ?
-      WHERE principal_id = ?
-        AND paid_balance >= ?
-        AND bonus_balance >= ?
-    `).run(clawedPaid, clawedBonus, debtAdded, freezeReason, freezeReason, stamp, stamp, principalId, clawedPaid, clawedBonus);
+    const walletUpd = kind === 'withdrawal_7d'
+      ? db.prepare(`
+          UPDATE billing_wallet_accounts
+          SET paid_balance = paid_balance - ?,
+              bonus_balance = bonus_balance - ?,
+              debt_coins = debt_coins + ?,
+              frozen_reason = COALESCE(?, frozen_reason),
+              frozen_at = CASE WHEN ? IS NOT NULL THEN COALESCE(frozen_at, ?) ELSE frozen_at END,
+              updated_at = ?
+          WHERE principal_id = ?
+            AND paid_balance >= ?
+            AND bonus_balance >= ?
+            AND reserved_coins = 0
+            AND (paid_balance - ? + bonus_balance - ? + promo_balance) >= reserved_coins
+        `).run(
+          clawedPaid, clawedBonus, debtAdded, freezeReason, freezeReason, stamp, stamp,
+          principalId, clawedPaid, clawedBonus, clawedPaid, clawedBonus
+        )
+      : db.prepare(`
+          UPDATE billing_wallet_accounts
+          SET paid_balance = paid_balance - ?,
+              bonus_balance = bonus_balance - ?,
+              debt_coins = debt_coins + ?,
+              frozen_reason = COALESCE(?, frozen_reason),
+              frozen_at = CASE WHEN ? IS NOT NULL THEN COALESCE(frozen_at, ?) ELSE frozen_at END,
+              updated_at = ?
+          WHERE principal_id = ?
+            AND paid_balance >= ?
+            AND bonus_balance >= ?
+        `).run(
+          clawedPaid, clawedBonus, debtAdded, freezeReason, freezeReason, stamp, stamp,
+          principalId, clawedPaid, clawedBonus
+        );
+    if (walletUpd.changes !== 1) {
+      throw new ApiError(409, 'WALLET_CLAWBACK_SYNC_ERROR', 'Wallet balance mismatch during order clawback');
+    }
 
     const nextOrderState = kind === 'chargeback' ? 'CHARGEBACK' : 'REFUNDED';
-    db.prepare('UPDATE billing_orders SET state=?, updated_at=? WHERE id=?').run(nextOrderState, stamp, orderId);
+    const orderUpd = db.prepare(
+      "UPDATE billing_orders SET state=?, updated_at=? WHERE id=? AND state IN ('PAID','REFUND_PENDING')"
+    ).run(nextOrderState, stamp, orderId);
+    if (orderUpd.changes !== 1) {
+      throw new ApiError(409, 'ORDER_CONCURRENT_MODIFICATION');
+    }
 
     const entryId = postJournalEntry(db, {
       eventType: kind === 'chargeback' ? 'chargeback_clawback' : 'refund_clawback',
