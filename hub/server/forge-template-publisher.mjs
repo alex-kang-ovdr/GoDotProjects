@@ -307,98 +307,142 @@ export function createForgeTemplatePublisher({
     return job ? structuredClone(job) : null;
   }
 
+  function safeRmDir(targetPath) {
+    try {
+      if (fs.existsSync(targetPath)) {
+        fs.rmSync(targetPath, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+      }
+    } catch {}
+  }
+
   async function runJob(job, templatesToRun, { enableInCatalog, rebuildDist }) {
-    const exporter = exportTemplate || defaultExportTemplate;
-    const builder = syncAndBuild || defaultSyncAndBuild;
-    const today = kstToday(now);
     let succeeded = 0;
     let failed = 0;
-
-    for (let i = 0; i < templatesToRun.length; i++) {
-      const tpl = templatesToRun[i];
-      const item = job.items[i];
-      const itemStart = now();
-      const gameDir = path.join(gamesRoot, item.gameId);
-      const stageWeb = path.join(gameDir, `.Web-stage-${process.pid}-${Date.now()}`);
-      const targetWeb = path.join(gameDir, 'Web');
-      const backupWeb = path.join(gameDir, `.Web-old-${process.pid}-${Date.now()}`);
-      try {
-        item.status = 'exporting';
-        item.step = 'Godot Web 내보내기 중';
-        fs.mkdirSync(stageWeb, { recursive: true });
-        await exporter(tpl, stageWeb);
-
-        item.status = 'packaging';
-        item.step = 'PlayHub 게임 패키지 및 카탈로그 등록 중';
-        const assetsDir = path.join(stageWeb, 'assets');
-        fs.mkdirSync(assetsDir, { recursive: true });
-        if (!fs.existsSync(path.join(assetsDir, 'cover.svg'))) {
-          fs.writeFileSync(path.join(assetsDir, 'cover.svg'), buildCoverSvg(tpl, item.gameId), 'utf8');
-        }
-        if (fs.existsSync(targetWeb)) fs.renameSync(targetWeb, backupWeb);
-        try {
-          fs.renameSync(stageWeb, targetWeb);
-        } catch (err) {
-          if (fs.existsSync(backupWeb)) fs.renameSync(backupWeb, targetWeb);
-          throw err;
-        }
-        if (fs.existsSync(backupWeb)) fs.rmSync(backupWeb, { recursive: true, force: true });
-
-        const manifest = buildManifest(tpl, item.gameId, today);
-        fs.writeFileSync(path.join(gameDir, 'game.manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
-        upsertCatalogEntry(gamesRoot, {
-          id: item.gameId,
-          path: item.gameId,
-          enabled: enableInCatalog,
-          priority: 70,
-          kind: 'imported',
-          displayName: `${tpl.name} (Forge)`
-        });
-
-        item.status = 'published';
-        item.step = '패키지 등록 완료';
-        item.durationMs = now() - itemStart;
-        succeeded++;
-      } catch (error) {
-        if (fs.existsSync(stageWeb)) fs.rmSync(stageWeb, { recursive: true, force: true });
-        item.status = 'failed';
-        item.step = '실패';
-        item.error = error?.message || '알 수 없는 오류';
-        item.durationMs = now() - itemStart;
-        failed++;
-      }
-      job.summary = { total: templatesToRun.length, succeeded, failed, pending: templatesToRun.length - succeeded - failed };
-    }
-
-    if (succeeded > 0 && rebuildDist) {
-      job.buildStatus = 'running';
-      try {
-        await builder({ gamesRoot, hubRoot, config });
-        job.buildStatus = 'succeeded';
-      } catch (error) {
-        job.buildStatus = 'failed';
-        job.buildError = error?.message || 'Hub dist 빌드 실패';
-      }
-    } else {
-      job.buildStatus = succeeded > 0 ? 'skipped' : 'not_run';
-    }
-
-    job.finishedAt = new Date(now()).toISOString();
-    if (job.buildStatus === 'failed') job.status = 'failed';
-    else if (failed === 0 && succeeded > 0) job.status = 'completed';
-    else if (succeeded > 0 && failed > 0) job.status = 'partial';
-    else job.status = 'failed';
-
-    if (activeJobId === job.id) activeJobId = null;
+    let unexpectedError = null;
     try {
-      audit('forge_templates_batch_publish', job.id, {
-        requested: templatesToRun.map(t => t.id),
-        succeeded,
-        failed,
-        buildStatus: job.buildStatus,
-        enableInCatalog
-      });
-    } catch {}
+      const exporter = exportTemplate || defaultExportTemplate;
+      const builder = syncAndBuild || defaultSyncAndBuild;
+      const today = kstToday(now);
+
+      for (let i = 0; i < templatesToRun.length; i++) {
+        const tpl = templatesToRun[i];
+        const item = job.items[i];
+        const itemStart = now();
+        const gameDir = path.join(gamesRoot, item.gameId);
+        const stageWeb = path.join(gameDir, `.Web-stage-${process.pid}-${Date.now()}`);
+        const targetWeb = path.join(gameDir, 'Web');
+        const backupWeb = path.join(gameDir, `.Web-old-${process.pid}-${Date.now()}`);
+        try {
+          item.status = 'exporting';
+          item.step = 'Godot Web 내보내기 중';
+          fs.mkdirSync(stageWeb, { recursive: true });
+          await exporter(tpl, stageWeb);
+
+          item.status = 'packaging';
+          item.step = 'PlayHub 게임 패키지 및 카탈로그 등록 중';
+          const assetsDir = path.join(stageWeb, 'assets');
+          fs.mkdirSync(assetsDir, { recursive: true });
+          if (!fs.existsSync(path.join(assetsDir, 'cover.svg'))) {
+            fs.writeFileSync(path.join(assetsDir, 'cover.svg'), buildCoverSvg(tpl, item.gameId), 'utf8');
+          }
+          if (fs.existsSync(targetWeb)) fs.renameSync(targetWeb, backupWeb);
+          try {
+            fs.renameSync(stageWeb, targetWeb);
+          } catch (err) {
+            if (fs.existsSync(backupWeb)) {
+              try {
+                fs.renameSync(backupWeb, targetWeb);
+              } catch {}
+            }
+            throw err;
+          }
+          safeRmDir(backupWeb);
+
+          const manifest = buildManifest(tpl, item.gameId, today);
+          fs.writeFileSync(path.join(gameDir, 'game.manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+          upsertCatalogEntry(gamesRoot, {
+            id: item.gameId,
+            path: item.gameId,
+            enabled: enableInCatalog,
+            priority: 70,
+            kind: 'imported',
+            displayName: `${tpl.name} (Forge)`
+          });
+
+          item.status = 'published';
+          item.step = '패키지 등록 완료';
+          item.durationMs = now() - itemStart;
+          succeeded++;
+        } catch (error) {
+          safeRmDir(stageWeb);
+          item.status = 'failed';
+          item.step = '실패';
+          item.error = error?.message || '알 수 없는 오류';
+          item.durationMs = now() - itemStart;
+          failed++;
+        }
+        job.summary = { total: templatesToRun.length, succeeded, failed, pending: templatesToRun.length - succeeded - failed };
+      }
+
+      if (succeeded > 0 && rebuildDist) {
+        job.buildStatus = 'running';
+        try {
+          await builder({ gamesRoot, hubRoot, config });
+          job.buildStatus = 'succeeded';
+        } catch (error) {
+          job.buildStatus = 'failed';
+          job.buildError = error?.message || 'Hub dist 빌드 실패';
+        }
+      } else {
+        job.buildStatus = succeeded > 0 ? 'skipped' : 'not_run';
+      }
+
+      job.finishedAt = new Date(now()).toISOString();
+      if (job.buildStatus === 'failed') job.status = 'failed';
+      else if (failed === 0 && succeeded > 0) job.status = 'completed';
+      else if (succeeded > 0 && failed > 0) job.status = 'partial';
+      else job.status = 'failed';
+    } catch (error) {
+      unexpectedError = error;
+      if (!job.buildError && error?.message) {
+        job.buildError = error.message;
+      }
+      for (const item of job.items) {
+        if (item.status === 'queued' || item.status === 'exporting' || item.status === 'packaging') {
+          item.status = 'failed';
+          item.step = '실패';
+          if (!item.error) item.error = error?.message || '예기치 않은 오류';
+        }
+      }
+      succeeded = job.items.filter(i => i.status === 'published').length;
+      failed = job.items.filter(i => i.status === 'failed').length;
+      job.summary = { total: templatesToRun.length, succeeded, failed, pending: Math.max(0, templatesToRun.length - succeeded - failed) };
+    } finally {
+      if (job.status === 'running') {
+        job.status = 'failed';
+      }
+      if (!job.finishedAt) {
+        try {
+          job.finishedAt = new Date(now()).toISOString();
+        } catch {
+          job.finishedAt = new Date().toISOString();
+        }
+      }
+      if (job.buildStatus === 'pending' || job.buildStatus === 'running') {
+        job.buildStatus = 'failed';
+      }
+      if (activeJobId === job.id) activeJobId = null;
+      try {
+        audit('forge_templates_batch_publish', job.id, {
+          requested: templatesToRun.map(t => t.id),
+          succeeded,
+          failed,
+          buildStatus: job.buildStatus,
+          enableInCatalog,
+          ...(unexpectedError ? { error: unexpectedError?.message || String(unexpectedError) } : {})
+        });
+      } catch {}
+    }
   }
 
   function startBatchPublish({ templateIds, enableInCatalog = true, rebuildDist = true } = {}) {

@@ -167,7 +167,7 @@ export function stripJsComments(code, { maskStrings = false } = {}) {
 // whitespace/semicolon tolerant so that both minified release and debug exports match.
 const GODOT_JS_EVAL_BODY_RE = new RegExp(
   [
-    String.raw`function\s+_godot_js_eval\s*\([^)]*\)\s*\{\s*`,
+    String.raw`function\s+_godot_js_eval\s*\(\s*(?!eval\b)[A-Za-z_$][A-Za-z0-9_$]*(?:\s*,\s*(?!eval\b)[A-Za-z_$][A-Za-z0-9_$]*)*\s*\)\s*\{\s*`,
     String.raw`const\s+js_code\s*=\s*GodotRuntime\.parseString\(\s*p_js\s*\)\s*;?\s*`,
     String.raw`let\s+eval_ret\s*=\s*null\s*;?\s*`,
     String.raw`try\s*\{\s*if\s*\(\s*p_use_global_ctx\s*\)\s*\{\s*`,

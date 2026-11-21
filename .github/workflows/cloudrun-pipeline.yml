@@ -17,6 +17,7 @@ on:
         type: choice
         options:
           - deploy-dev
+          - publish-stage
           - promote-qa
           - promote-live
           - rollback
@@ -222,7 +223,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Deploy Hub to playhub-dev-2611 (Always Free, zero-downtime)
+      - name: Deploy Hub to playhub-dev-2611 stage slot (0% traffic, manual zero-downtime publish)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
         env:
           INPUT_UPDATE_POLICY: ${{ inputs.update_policy || 'optional' }}
@@ -242,13 +243,27 @@ jobs:
             echo "Invalid force_targets: ${FORCE_TARGETS}" >&2
             exit 1
           fi
+          TRAFFIC_FLAGS=()
+          EXISTING_HUB_URL=""
+          if gcloud run services describe playhub-hub --project="${DEV_HUB_PROJECT}" --region="${REGION}" >/dev/null 2>&1; then
+            TRAFFIC_FLAGS=(--no-traffic --tag=stage)
+            EXISTING_HUB_URL=$(gcloud run services describe playhub-hub \
+              --project="${DEV_HUB_PROJECT}" \
+              --region="${REGION}" \
+              --format='value(status.url)' || true)
+          fi
+          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
+          if [[ "${EXISTING_HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            ENV_VARS="${ENV_VARS}##PLAYHUB_PUBLIC_ORIGIN=${EXISTING_HUB_URL}"
+          fi
           gcloud run deploy playhub-hub \
             --project="${DEV_HUB_PROJECT}" \
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/hub:${HUB_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 \
-            --set-env-vars="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}" \
+            --update-env-vars="${ENV_VARS}" \
+            ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
           HUB_URL=$(gcloud run services describe playhub-hub \
             --project="${DEV_HUB_PROJECT}" \
@@ -258,26 +273,79 @@ jobs:
             echo "Failed to resolve valid Cloud Run service URL for playhub-hub: ${HUB_URL}" >&2
             exit 1
           fi
-          gcloud run services update playhub-hub \
-            --project="${DEV_HUB_PROJECT}" \
-            --region="${REGION}" \
-            --update-env-vars="^##^PLAYHUB_PUBLIC_ORIGIN=${HUB_URL}" \
-            --quiet
-      - name: Deploy Forge to forge-dev-2611 (Always Free, Hub Auth fail-closed)
+          if [[ "${EXISTING_HUB_URL}" != "${HUB_URL}" ]]; then
+            gcloud run services update playhub-hub \
+              --project="${DEV_HUB_PROJECT}" \
+              --region="${REGION}" \
+              --update-env-vars="^##^PLAYHUB_PUBLIC_ORIGIN=${HUB_URL}" \
+              ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
+              --quiet
+          fi
+      - name: Deploy Forge to forge-dev-2611 stage slot (0% traffic, Hub Auth fail-closed)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
         env:
           FORGE_BUILD_TAG: ${{ needs.build.outputs.forge_build_tag }}
           FORGE_BUILD_ID: ${{ needs.build.outputs.forge_build_id }}
         run: |
           set -euo pipefail
+          HUB_URL=$(gcloud run services describe playhub-hub \
+            --project="${DEV_HUB_PROJECT}" \
+            --region="${REGION}" \
+            --format='value(status.url)')
+          if [[ ! "${HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            echo "Failed to resolve valid Cloud Run service URL for playhub-hub: ${HUB_URL}" >&2
+            exit 1
+          fi
+          TRAFFIC_FLAGS=()
+          if gcloud run services describe playhub-forge --project="${DEV_FORGE_PROJECT}" --region="${REGION}" >/dev/null 2>&1; then
+            TRAFFIC_FLAGS=(--no-traffic --tag=stage)
+          fi
           gcloud run deploy playhub-forge \
             --project="${DEV_FORGE_PROJECT}" \
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=3600 \
-            --set-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}" \
+            --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}" \
+            ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
+
+  publish-stage:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'publish-stage'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Zero-downtime traffic switch from stage tag to Dev primary URL
+        env:
+          INPUT_TARGET: ${{ inputs.target || 'both' }}
+          INPUT_CANARY_PERCENT: ${{ inputs.canary_percent || '100' }}
+        run: |
+          set -euo pipefail
+          TARGET="${INPUT_TARGET:-both}"
+          PCT="${INPUT_CANARY_PERCENT:-100}"
+          if [[ ! "${TARGET}" =~ ^(both|hub|forge)$ ]]; then
+            echo "Invalid target: ${TARGET}" >&2
+            exit 1
+          fi
+          if [[ ! "${PCT}" =~ ^([1-9][0-9]?|100)$ ]]; then
+            echo "Invalid canary_percent (must be integer 1-100): ${PCT}" >&2
+            exit 1
+          fi
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "hub" ]; then
+            gcloud run services update-traffic playhub-hub \
+              --project="${DEV_HUB_PROJECT}" --region="${REGION}" \
+              --to-tags="stage=${PCT}" --quiet
+          fi
+          if [ "${TARGET}" = "both" ] || [ "${TARGET}" = "forge" ]; then
+            gcloud run services update-traffic playhub-forge \
+              --project="${DEV_FORGE_PROJECT}" --region="${REGION}" \
+              --to-tags="stage=${PCT}" --quiet
+          fi
 
   promote-qa:
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'promote-qa'

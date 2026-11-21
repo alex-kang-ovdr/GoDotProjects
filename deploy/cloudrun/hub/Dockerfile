@@ -18,6 +18,7 @@ COPY hub/tools/restore-data.mjs ./hub/tools/restore-data.mjs
 # Forge tools required by Hub ForgeGateway (local mode until S4 remote gateway lands)
 COPY forge/Tools ./forge/Tools
 COPY forge/package.json ./forge/package.json
+COPY forge/Godot/addons/playforge_avatar ./forge/Godot/addons/playforge_avatar
 
 # Shared build-version SSOT module & immutable BUILD_INFO.json
 COPY tools/build-version ./tools/build-version

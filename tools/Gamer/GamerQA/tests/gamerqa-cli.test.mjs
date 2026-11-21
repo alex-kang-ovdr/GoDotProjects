@@ -489,6 +489,74 @@ test('regression: Godot glue detection rejects comment/string spoofing and 80-ch
   assert.equal(isGodotEmscriptenGlue('index.js', fakeCode, fakeWebDir, { capabilities: wasmCaps }), false);
 });
 
+test('regression: _godot_js_eval rejects default-parameter indirect eval injection bypasses while allowing valid Godot signatures', async (t) => {
+  const { policy } = loadReviewPolicy('v1');
+  const bodyTail =
+    '{const js_code=GodotRuntime.parseString(p_js);let eval_ret=null;try{if(p_use_global_ctx){const global_eval=eval;eval_ret=global_eval(js_code)}else{eval_ret=eval(js_code)}}catch(e){}}';
+  const runtimePrefix = 'var GodotRuntime={parseString(p){return p;}}; ';
+
+  const validMultiParam = `${runtimePrefix}function _godot_js_eval(p_js,p_use_global_ctx,p_union_ptr,p_byte_arr,p_byte_arr_write,p_callback)${bodyTail}`;
+  const defaultParamBypass = `${runtimePrefix}function _godot_js_eval(p_js, p_use_global_ctx, _ = globalThis.__e = eval)${bodyTail}`;
+  const arrayDestructBypass = `${runtimePrefix}function _godot_js_eval(p_js, p_use_global_ctx, [_ = eval])${bodyTail}`;
+  const objectDestructBypass = `${runtimePrefix}function _godot_js_eval(p_js, p_use_global_ctx, { a = eval })${bodyTail}`;
+  const evalParamNameBypass = `${runtimePrefix}function _godot_js_eval(p_js, p_use_global_ctx, eval)${bodyTail}`;
+
+  assert.equal(findGodotJsEvalSpans(validMultiParam).length, 1);
+  assert.equal(findGodotJsEvalSpans(defaultParamBypass).length, 0);
+  assert.equal(findGodotJsEvalSpans(arrayDestructBypass).length, 0);
+  assert.equal(findGodotJsEvalSpans(objectDestructBypass).length, 0);
+  assert.equal(findGodotJsEvalSpans(evalParamNameBypass).length, 0);
+
+  const wasmCaps = { webgl: true, wasm: true, workers: true, fullscreen: true, pointerLock: false, externalNetwork: [] };
+  const root = createFixtureRoot(t, [
+    {
+      id: 'godot-valid-6params',
+      manifestOverrides: { capabilities: wasmCaps },
+      html: '<!doctype html><html><body><script src="index.js"></script></body></html>',
+      appJs: null,
+      extraFiles: {
+        'GODOT_LICENSE.txt': 'Godot Engine License',
+        'index.wasm': Buffer.from([0x00, 0x61, 0x73, 0x6d]),
+        'index.js': validMultiParam,
+      },
+    },
+    {
+      id: 'godot-default-param-eval-bypass',
+      manifestOverrides: { capabilities: wasmCaps },
+      html: '<!doctype html><html><body><script src="index.js"></script></body></html>',
+      appJs: null,
+      extraFiles: {
+        'GODOT_LICENSE.txt': 'Godot Engine License',
+        'index.wasm': Buffer.from([0x00, 0x61, 0x73, 0x6d]),
+        'index.js': defaultParamBypass,
+      },
+    },
+    {
+      id: 'godot-destruct-param-eval-bypass',
+      manifestOverrides: { capabilities: wasmCaps },
+      html: '<!doctype html><html><body><script src="index.js"></script></body></html>',
+      appJs: null,
+      extraFiles: {
+        'GODOT_LICENSE.txt': 'Godot Engine License',
+        'index.wasm': Buffer.from([0x00, 0x61, 0x73, 0x6d]),
+        'index.js': arrayDestructBypass,
+      },
+    },
+  ]);
+
+  const stValid = await runStaticSuite({ projectRoot: root, gameId: 'godot-valid-6params', policy });
+  const secValid = await runSecuritySuite({ gameId: 'godot-valid-6params', policy, staticContext: stValid.context });
+  assert.equal(secValid.checks.find((c) => c.ruleId === 'SEC-DANGEROUS-API')?.status, 'warn');
+
+  for (const id of ['godot-default-param-eval-bypass', 'godot-destruct-param-eval-bypass']) {
+    const st = await runStaticSuite({ projectRoot: root, gameId: id, policy });
+    const sec = await runSecuritySuite({ gameId: id, policy, staticContext: st.context });
+    const danger = sec.checks.find((c) => c.ruleId === 'SEC-DANGEROUS-API');
+    assert.equal(danger?.status, 'fail', `${id} must fail SEC-DANGEROUS-API`);
+    assert.equal(danger?.severity, 'block', `${id} must have block severity`);
+  }
+});
+
 test('regression: --tier security without static collects Web tree and rejects empty context', async (t) => {
   const { policy } = loadReviewPolicy('v1');
   const root = createFixtureRoot(t, [
