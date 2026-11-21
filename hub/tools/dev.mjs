@@ -12,7 +12,7 @@ import {assertRuntimeOutput} from './runtime-output.cjs';
 
 const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wasm':'application/wasm','.pck':'application/octet-stream'};
 function openInBrowser(url){
   const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',url],{detached:true,stdio:'ignore',windowsHide:true});
   child.on('error',()=>{});child.unref();
@@ -79,6 +79,7 @@ export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySec
       if(!real.startsWith(root+path.sep)||!types[ext]){response.writeHead(404);response.end();return;}
       const stat=fs.statSync(real),etag=`W/"${stat.size}-${Math.trunc(stat.mtimeMs)}"`;
       response.setHeader('Content-Type',types[ext]);
+      if(rawPath.startsWith('/games/'))response.setHeader('Access-Control-Allow-Origin','*');
       response.setHeader('ETag',etag);
       response.setHeader('Cache-Control','public, max-age=0, must-revalidate');
       if(request.headers['if-none-match']===etag){response.writeHead(304);response.end();return;}

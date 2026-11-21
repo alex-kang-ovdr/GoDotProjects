@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-survivor-io",
+  "slug": "forge-survivor-io",
+  "title": {
+    "ko": "서바이버 템플릿 (Forge)",
+    "en": "탕탕특공대 (Survivor.io) (Forge)",
+    "ja": "탕탕특공대 (Survivor.io) (Forge)",
+    "zh-CN": "탕탕특공대 (Survivor.io) (Forge)",
+    "fr": "탕탕특공대 (Survivor.io) (Forge)",
+    "es": "탕탕특공대 (Survivor.io) (Forge)",
+    "pt-BR": "탕탕특공대 (Survivor.io) (Forge)",
+    "hi": "탕탕특공대 (Survivor.io) (Forge)"
+  },
+  "summary": {
+    "ko": "몰려오는 적을 피하며 성장하는 Godot 2D 서바이벌 스타터 게임입니다.",
+    "en": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "ja": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "zh-CN": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "fr": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "es": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "pt-BR": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "hi": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "몰려오는 적을 피하며 성장하는 Godot 2D 서바이벌 스타터 게임입니다.",
+    "en": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "ja": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "zh-CN": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "fr": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "es": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "pt-BR": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+    "hi": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-21",
+  "updatedOn": "2026-11-21",
+  "tags": [
+    "forge",
+    "action",
+    "survival",
+    "roguelike"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (survivor-io)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

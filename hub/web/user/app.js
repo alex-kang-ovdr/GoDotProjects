@@ -361,12 +361,21 @@
     void refreshRecentSaves();
   }
   function empty(title,message){stopImpressions();$('app').innerHTML=`<section class="empty-state"><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="button primary" href="/" data-home>게임 목록으로</a></section>`;}
-  async function renderDetail(id,route){const game=state.games.find(g=>g.id===id);if(!game){
+  async function ensureManifest(id){
+    if(state.allMetadata.has(id)||!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))return state.allMetadata.get(id)||null;
+    try{const r=await fetch(`/games/${id}/game.manifest.json`);if(!r.ok)return null;const m=await r.json();if(m.id!==id)return null;state.allMetadata.set(id,m);return m;}catch(_){return null;}
+  }
+  async function renderDetail(id,route){let game=state.games.find(g=>g.id===id);if(!game){
+    await ensureManifest(id);
+    if(route!==state.route)return;
     if(state.allMetadata.has(id)&&!state.limited)empty('지금은 쉬고 있는 게임이에요','이 게임은 현재 공개 상태가 아닙니다. 다른 게임을 만나보세요.');
     else empty('게임을 찾을 수 없어요','주소를 확인하거나 지금 이용할 수 있는 다른 게임을 골라보세요.');
     return;}
+    const manifestPromise=ensureManifest(id);
     if(!state.limited){try{await api('/api/games/'+encodeURIComponent(id));}catch(error){if(route!==state.route)return;if(error.status===404){empty('지금은 쉬고 있는 게임이에요','운영자가 이 게임의 공개를 중단했습니다. 다른 게임을 만나보세요.');return;}banner('서버의 최신 게임 상태를 확인하지 못했습니다. 게임 시작 때 다시 확인합니다.');}}
+    await manifestPromise;
     if(route!==state.route)return;
+    if(state.allMetadata.has(id)){const updated=normalizeGame(game);Object.assign(game,updated);}
     const related=state.games.filter(g=>g.id!==id).slice(0,3);
     const deviceHelp=game.controls.includes('touch')?'터치 화면에서 플레이할 수 있습니다.':
       game.controls.length?'터치 조작을 지원하지 않습니다. 표시된 조작 기기를 사용해 주세요.':'게임 화면에서 지원 조작을 확인해 주세요.';
@@ -898,9 +907,9 @@
   async function init(){
     applyLocale(state.locale,{remember:!!localeFromUrl()});
     const sessionAndGames=Promise.allSettled([api('/api/session'),api('/api/games')]);
-    let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-store'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled===true).map(x=>x.id));await Promise.all(localEntries.map(async item=>{try{const r=await fetch('/'+item.path+'/game.manifest.json');if(!r.ok)return;const m=await r.json();if(m.id!==item.id)return;state.allMetadata.set(item.id,m);}catch(_){}}));}catch(_){}
+    let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-cache'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled===true).map(x=>x.id));}catch(_){}
     const sessionResult=await sessionAndGames;if(sessionResult[0].status==='fulfilled')setSession(sessionResult[0].value);
-    let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;records=localEntries.filter(x=>x.enabled===true);banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
+    let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;await Promise.all(localEntries.map(item=>ensureManifest(item.id)));records=localEntries.filter(x=>x.enabled===true);banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
     state.games=records.filter(isPublicGame).map(normalizeGame);
     await renderRoute();
     showAuthResult();

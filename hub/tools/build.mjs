@@ -7,7 +7,7 @@ import {validGameUpdateDate} from '../server/catalog.mjs';
 export const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const escaped=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const identifier=/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
-export const staticExtensions=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt']);
+export const staticExtensions=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt','.wasm','.pck']);
 
 export function renameOutput(from,to){
   // Windows scanners can briefly retain a directory handle after a build closes its files.

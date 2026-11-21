@@ -748,7 +748,22 @@ async function refreshForgeViews() {
   const token = generation;
   forgeCache = await api('/api/admin/forge/overview');
   if (token !== generation || !authenticated) return;
-  const ctx = { number, kstStamp, onNavigate: (tab, view) => navigate(tab, view) };
+  const userBaseUrl = (config.userBaseUrl || `${location.protocol}//${hostname}:${Number(config.userPort) || 18130}`).replace(/\/$/, '');
+  const ctx = {
+    number,
+    kstStamp,
+    userBaseUrl,
+    onNavigate: (tab, view) => navigate(tab, view),
+    onPublishTemplates: async templateIds => (await api('/api/admin/forge/templates/publish', {
+      method: 'POST',
+      body: { templateIds, enableInCatalog: true, rebuildDist: true }
+    })).job,
+    onPollPublishJob: async jobId => (await api('/api/admin/forge/templates/publish/' + encodeURIComponent(jobId))).job,
+    onPublishComplete: async () => {
+      await refreshForgeViews();
+      await refresh();
+    }
+  };
   renderForgeOverview($('forge-overview-panel'), forgeCache, ctx);
   renderForgeProjects($('forge-projects-panel'), forgeCache, ctx);
   renderForgeBuilds($('forge-builds-panel'), forgeCache, ctx);

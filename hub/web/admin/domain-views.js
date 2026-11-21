@@ -348,16 +348,187 @@ export function renderForgeOverview(container, data, { number, onNavigate }) {
   container.replaceChildren(p1);
 }
 
-export function renderForgeProjects(container, data, { number, kstStamp }) {
-  const p1 = panel('OFFICIAL TEMPLATES', '공식 스타터 템플릿 카탈로그');
-  const tRows = (data.templates || []).map(t => [
-    raw('strong', `${t.name} (${t.id})`),
-    pill(t.dimension.toUpperCase(), 'info', true),
-    raw('span', t.description || '—'),
-    number(t.assetCount),
-    t.hasShowcase ? pill('시연 포함', 'ok') : pill('기본', 'muted')
-  ]);
-  p1.append(simpleTable(['템플릿', '차원', '설명', '에셋 수', '제작 시연'], tRows, '등록된 공식 템플릿이 없습니다.'));
+export function renderForgeProjects(container, data, { number, kstStamp, onPublishTemplates, onPollPublishJob, onPublishComplete, userBaseUrl = '' }) {
+  const pub = data.templatePublish || {};
+  const templates = Array.isArray(pub.templates) && pub.templates.length ? pub.templates : (data.templates || []).map(t => ({
+    ...t,
+    gameId: `forge-${t.id}`,
+    published: false,
+    inHubDist: false,
+    playUrl: `/play/forge-${t.id}/`
+  }));
+  const godotOk = pub.godot?.available !== false;
+  const selectedIds = new Set(templates.filter(t => !t.published).map(t => t.id));
+  if (!selectedIds.size) templates.forEach(t => selectedIds.add(t.id));
+
+  const toolbar = el('div', '', 'inline-actions');
+  const godotPill = pill(godotOk ? 'Godot Web 빌드 준비됨' : 'Godot 미감지', godotOk ? 'ok' : 'warn');
+  const toggleAllBtn = el('button', '전체 선택/해제', 'quiet');
+  toggleAllBtn.type = 'button';
+  const batchBtn = el('button', `선택 일괄 퍼블리시 (${selectedIds.size})`, 'primary');
+  batchBtn.type = 'button';
+  batchBtn.dataset.testid = 'forge-batch-publish-btn';
+  const publishAllBtn = el('button', '전체 일괄 퍼블리시', 'quiet');
+  publishAllBtn.type = 'button';
+  publishAllBtn.dataset.testid = 'forge-publish-all-btn';
+  toolbar.append(godotPill, toggleAllBtn, batchBtn, publishAllBtn);
+
+  const p1 = panel('OFFICIAL TEMPLATES · BATCH PUBLISH', '공식 스타터 템플릿 카탈로그 및 일괄 퍼블리시', toolbar);
+  const progressHost = el('div', '', 'forge-publish-progress');
+  progressHost.dataset.testid = 'forge-publish-progress';
+  const checkboxes = new Map();
+  const actionButtons = [];
+
+  function syncButtons(running = false) {
+    batchBtn.textContent = `선택 일괄 퍼블리시 (${selectedIds.size})`;
+    batchBtn.disabled = running || !godotOk || selectedIds.size === 0 || !onPublishTemplates;
+    publishAllBtn.disabled = running || !godotOk || templates.length === 0 || !onPublishTemplates;
+    for (const btn of actionButtons) btn.disabled = running || !godotOk || !onPublishTemplates;
+  }
+
+  let pollTimer = null;
+  function stopPoll() {
+    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+  }
+
+  function renderJob(job) {
+    if (!job) { progressHost.replaceChildren(); return; }
+    const toneMap = { queued: 'muted', exporting: 'info', packaging: 'info', published: 'ok', failed: 'danger', running: 'info', completed: 'ok', partial: 'warn', succeeded: 'ok', pending: 'muted', skipped: 'muted', not_run: 'muted' };
+    const statusLabel = { running: '퍼블리시 진행 중', completed: '일괄 퍼블리시 완료', partial: '일부 완료 (오류 확인)', failed: '퍼블리시 실패' }[job.status] || job.status;
+    const box = el('div', '', 'surface-box');
+    const head = el('div', '', 'section-heading');
+    const left = el('div', '');
+    left.append(
+      pill(statusLabel, toneMap[job.status] || 'muted'),
+      el('span', `  성공 ${number(job.summary?.succeeded || 0)} / ${number(job.summary?.total || 0)} · 실패 ${number(job.summary?.failed || 0)} · Hub 빌드: ${job.buildStatus || 'pending'}`, 'muted')
+    );
+    head.append(left, raw('small', `Job ${String(job.id || '').slice(0, 8)}`));
+    box.append(head);
+    if (job.buildError) box.append(el('p', `Hub 빌드 오류: ${job.buildError}`, 'form-error'));
+    const jobRows = (job.items || []).map(item => {
+      const linkCell = item.status === 'published' && job.buildStatus === 'succeeded'
+        ? (() => {
+            const a = el('a', 'Hub에서 플레이 ↗', 'toggle');
+            a.href = `${userBaseUrl}${item.playUrl}`;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            return a;
+          })()
+        : raw('span', item.error || '—');
+      return [
+        raw('strong', `${item.name} (${item.gameId})`),
+        pill(item.step || item.status, toneMap[item.status] || 'muted'),
+        raw('span', item.durationMs != null ? `${(item.durationMs / 1000).toFixed(1)}초` : '—'),
+        linkCell
+      ];
+    });
+    box.append(simpleTable(['템플릿 (Hub ID)', '진행 상태', '소요 시간', '결과 / 링크'], jobRows, '항목 없음'));
+    progressHost.replaceChildren(box);
+  }
+
+  async function watchJob(initialJob) {
+    stopPoll();
+    renderJob(initialJob);
+    syncButtons(initialJob?.status === 'running');
+    if (!initialJob || initialJob.status !== 'running' || !onPollPublishJob) return;
+    const poll = async () => {
+      if (!container.isConnected) { stopPoll(); return; }
+      try {
+        const latest = await onPollPublishJob(initialJob.id);
+        renderJob(latest);
+        if (latest.status === 'running') {
+          pollTimer = setTimeout(poll, 1200);
+        } else {
+          syncButtons(false);
+          if (onPublishComplete) await onPublishComplete();
+        }
+      } catch {
+        syncButtons(false);
+      }
+    };
+    pollTimer = setTimeout(poll, 1200);
+  }
+
+  async function triggerPublish(ids) {
+    if (!onPublishTemplates) return;
+    syncButtons(true);
+    try {
+      const job = await onPublishTemplates(ids);
+      await watchJob(job);
+    } catch (error) {
+      syncButtons(false);
+      progressHost.replaceChildren(el('p', error?.message || '일괄 퍼블리시 요청에 실패했습니다.', 'form-error'));
+    }
+  }
+
+  toggleAllBtn.addEventListener('click', () => {
+    const selectAll = selectedIds.size < templates.length;
+    selectedIds.clear();
+    for (const [id, cb] of checkboxes) {
+      cb.checked = selectAll;
+      if (selectAll) selectedIds.add(id);
+    }
+    syncButtons(false);
+  });
+  batchBtn.addEventListener('click', () => void triggerPublish([...selectedIds]));
+  publishAllBtn.addEventListener('click', () => void triggerPublish('all'));
+
+  const tRows = templates.map(t => {
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = selectedIds.has(t.id);
+    cb.dataset.templateSelect = t.id;
+    cb.setAttribute('aria-label', `${t.name} 선택`);
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedIds.add(t.id);
+      else selectedIds.delete(t.id);
+      syncButtons(false);
+    });
+    checkboxes.set(t.id, cb);
+
+    const nameBox = el('div', '');
+    nameBox.append(raw('strong', `${t.name} (${t.id})`), raw('small', `Hub ID: ${t.gameId}`));
+
+    const statusWrap = el('div', '', 'row-actions');
+    if (t.published && t.inHubDist) {
+      statusWrap.append(pill('배포됨 · 플레이 가능', 'ok'));
+      const playLink = el('a', '플레이 ↗', 'toggle');
+      playLink.href = `${userBaseUrl}${t.playUrl}`;
+      playLink.target = '_blank';
+      playLink.rel = 'noopener noreferrer';
+      statusWrap.append(playLink);
+    } else if (t.published) {
+      statusWrap.append(pill('카탈로그 등록 (빌드 대기)', 'warn'));
+    } else {
+      statusWrap.append(pill('미배포', 'muted'));
+    }
+
+    const oneBtn = el('button', t.published ? '재퍼블리시' : '퍼블리시', 'toggle');
+    oneBtn.type = 'button';
+    oneBtn.dataset.testid = `forge-publish-one-${t.id}`;
+    oneBtn.addEventListener('click', () => void triggerPublish([t.id]));
+    actionButtons.push(oneBtn);
+
+    return [
+      cb,
+      nameBox,
+      pill(String(t.dimension || '2d').toUpperCase(), 'info', true),
+      raw('span', t.description || '—'),
+      number(t.assetCount || 0),
+      statusWrap,
+      oneBtn
+    ];
+  });
+
+  p1.append(
+    progressHost,
+    simpleTable(['선택', '템플릿 / Hub ID', '차원', '설명', '에셋', 'Hub 퍼블리시 상태', '실행'], tRows, '등록된 공식 템플릿이 없습니다.'),
+    el('p', '선택한 Forge 템플릿을 Godot 헤드리스 Web 빌드로 내보낸 뒤 games/forge-<id> 패키지·카탈로그 등록 및 hub/dist 빌드까지 일괄 반영합니다.', 'panel-foot')
+  );
+
+  const initialJob = pub.activeJob || pub.recentJobs?.[0] || null;
+  if (initialJob) void watchJob(initialJob);
+  else syncButtons(false);
 
   const p2 = panel('CREATOR PROJECTS', '창작자 프로젝트 메타데이터 (읽기 전용)');
   const pRows = (data.projects || []).map(p => [

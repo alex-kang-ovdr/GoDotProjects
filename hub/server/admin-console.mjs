@@ -8,6 +8,7 @@ import { ApiError, assertId, json, readJson, uid } from './security.mjs';
 import { assertNoLinks, hashFile, TOOL_VERSION } from '../tools/backup.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createStoreAdmin } from './store-admin.mjs';
+import { createForgeTemplatePublisher } from './forge-template-publisher.mjs';
 
 const DAY = 86400000;
 const SAFE_GIT_REF = /^[A-Za-z0-9._/-]{1,120}$/;
@@ -293,9 +294,10 @@ async function createOnlineBackup(dataDir, now) {
   }
 }
 
-export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway }) {
+export function createAdminConsole({ config, db, rootDir, platformRoot, now, audit, env = process.env, rate, requireSession, forgeGateway, templatePublisher: injectedPublisher }) {
   // Forge templates/projects/builds/Drive state come only from the gateway (admin-only gateway by default).
   const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
+  const templatePublisher = injectedPublisher || createForgeTemplatePublisher({ platformRoot, rootDir, config, now, audit });
   const storeAdmin = createStoreAdmin({ config, db, now, audit, requireSession });
   db.exec(`
     CREATE TABLE IF NOT EXISTS qa_runs (
@@ -492,6 +494,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         multiplayerServices: ['BrawlLabs 3v3 (/brawllabs)', 'Fortress War (/fortress-war)', 'Tappy Chicken MMO (/tappy-chicken-mmo)']
       },
       templates,
+      templatePublish: templatePublisher.statusSummary(),
       projects,
       buildSummary,
       builds,
@@ -1013,6 +1016,25 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
     }
     if (pathname === '/api/admin/forge/overview' && req.method === 'GET') {
       json(res, 200, await forgeOverview());
+      return true;
+    }
+    if (pathname === '/api/admin/forge/templates' && req.method === 'GET') {
+      json(res, 200, templatePublisher.statusSummary());
+      return true;
+    }
+    if (pathname === '/api/admin/forge/templates/publish' && req.method === 'POST') {
+      const body = await readJson(req, 16384);
+      const job = templatePublisher.startBatchPublish({
+        templateIds: body.templateIds,
+        enableInCatalog: body.enableInCatalog !== false,
+        rebuildDist: body.rebuildDist !== false
+      });
+      json(res, 202, { job });
+      return true;
+    }
+    const publishJobMatch = pathname.match(/^\/api\/admin\/forge\/templates\/publish\/([A-Za-z0-9_-]{8,80})$/);
+    if (publishJobMatch && req.method === 'GET') {
+      json(res, 200, { job: templatePublisher.getJob(publishJobMatch[1]) });
       return true;
     }
     if (pathname === '/api/admin/qa/overview' && req.method === 'GET') {

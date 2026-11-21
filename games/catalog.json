@@ -339,6 +339,54 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Survivor Arena G2 · Godot 3D 서바이벌"
+    },
+    {
+      "id": "forge-brawllabs",
+      "path": "forge-brawllabs",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "BrawlLabs (Forge)"
+    },
+    {
+      "id": "forge-fortress-war",
+      "path": "forge-fortress-war",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Fortress War (Forge)"
+    },
+    {
+      "id": "forge-iron-wood",
+      "path": "forge-iron-wood",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Iron Wood (Forge)"
+    },
+    {
+      "id": "forge-survivor-io",
+      "path": "forge-survivor-io",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "탕탕특공대 (Survivor.io) (Forge)"
+    },
+    {
+      "id": "forge-tappy-chicken",
+      "path": "forge-tappy-chicken",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Tappy Chicken (Forge)"
+    },
+    {
+      "id": "forge-tappy-chicken-mmo",
+      "path": "forge-tappy-chicken-mmo",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Tappy Chicken MMO (Forge)"
     }
   ]
 }

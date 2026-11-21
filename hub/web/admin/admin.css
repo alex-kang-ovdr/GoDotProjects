@@ -524,3 +524,12 @@ footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 2
   footer { display: block; }
   footer span { display: block; margin-top: 4px; }
 }
+
+.forge-publish-progress:not(:empty) { margin: 0 0 14px; }
+.forge-publish-progress .surface-box {
+  padding: 12px 14px;
+  border: 1px solid #c9ddd1;
+  border-radius: 10px;
+  background: #f5faf6;
+}
+.forge-publish-progress .section-heading { margin-bottom: 8px; }

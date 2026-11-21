@@ -498,7 +498,7 @@ export function createApp(input, dependencies = {}) {
       rate(`localadminlogin:${req.socket.remoteAddress}`,8,60000);
       const { token } = await readJson(req,4096);
       if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
-      localAdminLogin.consume(token);
+      if (path === '/api/admin/local-login') localAdminLogin.consume(token);
       const auditAction = path === '/api/admin/local-auto-login' ? 'admin_local_auto_login' : 'admin_local_login';
       const previousCookies = res.getHeader('Set-Cookie');
       let s;
