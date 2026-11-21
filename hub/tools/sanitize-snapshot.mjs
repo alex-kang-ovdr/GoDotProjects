@@ -104,7 +104,19 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   player_wallet_accounts: ['principal_id', 'balance', 'clawback_deficit', 'updated_at'],
   player_wallet_buckets: ['id', 'principal_id', 'source_platform', 'currency_kind', 'wallet_scope', 'source_tx_id', 'granted_amount', 'remaining_amount', 'created_at'],
   player_wallet_ledger: ['id', 'principal_id', 'bucket_id', 'delta', 'balance_after', 'reason', 'ref_id', 'idempotency_key', 'created_at'],
-  player_entitlements: ['id', 'principal_id', 'game_id', 'item_id', 'source_tx_id', 'expires_at', 'revoked_at', 'created_at']
+  player_entitlements: ['id', 'principal_id', 'game_id', 'item_id', 'source_tx_id', 'expires_at', 'revoked_at', 'created_at'],
+  // Social & Cross-play Co-Entry (11 tables)
+  user_profiles: ['principal_id', 'handle', 'avatar_color', 'bio', 'privacy_level', 'updated_at'],
+  social_friendships: ['requester_id', 'addressee_id', 'status', 'created_at', 'updated_at'],
+  social_blocks: ['blocker_id', 'blocked_id', 'created_at'],
+  social_presence: ['principal_id', 'status', 'game_id', 'game_title', 'room_code', 'joinable', 'updated_at'],
+  social_parties: ['id', 'leader_id', 'title', 'target_game_id', 'room_code', 'max_members', 'created_at', 'updated_at'],
+  social_party_members: ['party_id', 'principal_id', 'role', 'ready_state', 'joined_at'],
+  social_messages: ['id', 'channel_type', 'channel_key', 'sender_id', 'body', 'is_quick_message', 'created_at'],
+  social_leaderboards: ['game_id', 'board_id', 'principal_id', 'score', 'period_key', 'updated_at'],
+  social_reports: ['id', 'reporter_id', 'target_type', 'target_id', 'reason', 'created_at'],
+  social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
+  social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -148,7 +160,13 @@ export const DROP_TABLES = Object.freeze([
   'player_wallet_accounts',
   'player_entitlements',
   'iap_transactions',
-  'iap_webhook_events'
+  'iap_webhook_events',
+  // Social private messages, reports, presence & transient co-entry launch tokens
+  'social_messages',
+  'social_reports',
+  'social_presence',
+  'social_party_launch_acks',
+  'social_party_launches'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);
@@ -264,7 +282,8 @@ function preserveLocalAndDevData(destDb, destTables, destColumns, preserveFromPa
         ['wishlist_items', 'principal_id', null],
         ['user_preferences', 'principal_id', null],
         ['user_age_compliance', 'principal_id', 'compliance'],
-        ['parental_consent_logs', 'principal_id', null]
+        ['parental_consent_logs', 'principal_id', null],
+        ['user_profiles', 'principal_id', null]
       ]) {
         const cols = commonCols(tbl);
         if (!cols) continue;
@@ -391,6 +410,17 @@ export async function sanitizeSnapshot({
             const label = `DevUser_${hmacHex(hmacSalt, 'user_display', u.id, 8)}`;
             upd.run(label, u.id);
             stats.pseudonymizedUsers++;
+          }
+        }
+
+        // 2b. Pseudonymize user_profiles.handle and clear free-text bio
+        if (tables.has('user_profiles')) {
+          const profs = db.prepare('SELECT principal_id FROM user_profiles').all();
+          const upd = db.prepare("UPDATE user_profiles SET handle = ?, bio = '' WHERE principal_id = ?");
+          for (const p of profs) {
+            const code = String((parseInt(hmacHex(hmacSalt, 'profile_tag', p.principal_id, 4), 16) % 9000) + 1000);
+            const h = `DevUser_${hmacHex(hmacSalt, 'profile_handle', p.principal_id, 6)}#${code}`;
+            upd.run(h, p.principal_id);
           }
         }
 

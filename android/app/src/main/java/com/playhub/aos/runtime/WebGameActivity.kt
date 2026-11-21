@@ -27,12 +27,23 @@ class WebGameActivity : Activity() {
         const val EXTRA_GAME_ID = "playhub.web.game_id"
         const val EXTRA_GAME_TITLE = "playhub.web.game_title"
         const val EXTRA_GAME_URL = "playhub.web.game_url"
+        const val EXTRA_ROOM_CODE = "playhub.web.room_code"
+        const val EXTRA_MATCH_ROOM_ID = "playhub.web.match_room_id"
 
-        fun createIntent(context: Context, gameId: String, gameTitle: String, url: String): Intent =
+        fun createIntent(
+            context: Context,
+            gameId: String,
+            gameTitle: String,
+            url: String,
+            roomCode: String? = null,
+            matchRoomId: String? = null
+        ): Intent =
             Intent(context, WebGameActivity::class.java).apply {
                 putExtra(EXTRA_GAME_ID, gameId)
                 putExtra(EXTRA_GAME_TITLE, gameTitle)
                 putExtra(EXTRA_GAME_URL, url)
+                if (!roomCode.isNullOrBlank()) putExtra(EXTRA_ROOM_CODE, roomCode)
+                if (!matchRoomId.isNullOrBlank()) putExtra(EXTRA_MATCH_ROOM_ID, matchRoomId)
             }
     }
 
@@ -43,7 +54,13 @@ class WebGameActivity : Activity() {
         super.onCreate(savedInstanceState)
         val gameId = intent.getStringExtra(EXTRA_GAME_ID) ?: "web-game"
         val gameTitle = intent.getStringExtra(EXTRA_GAME_TITLE) ?: gameId
-        val gameUrl = intent.getStringExtra(EXTRA_GAME_URL) ?: "about:blank"
+        val rawGameUrl = intent.getStringExtra(EXTRA_GAME_URL) ?: "about:blank"
+        val roomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
+        val matchRoomId = intent.getStringExtra(EXTRA_MATCH_ROOM_ID).orEmpty()
+        val gameUrl = if (roomCode.isNotBlank() || matchRoomId.isNotBlank()) {
+            val sep = if (rawGameUrl.contains("?")) "&" else "?"
+            "${rawGameUrl}${sep}room=${android.net.Uri.encode(roomCode)}&matchRoom=${android.net.Uri.encode(matchRoomId)}&platform=android"
+        } else rawGameUrl
 
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         webView = WebView(this).apply {
@@ -68,7 +85,7 @@ class WebGameActivity : Activity() {
 
         val dp = resources.displayMetrics.density
         val overlayBtn = TextView(this).apply {
-            text = "▶ Hub"
+            text = if (roomCode.isNotBlank()) "▶ Hub · $roomCode" else "▶ Hub"
             textSize = 12f
             setTextColor(Color.WHITE)
             setPadding((12 * dp).toInt(), (7 * dp).toInt(), (12 * dp).toInt(), (7 * dp).toInt())

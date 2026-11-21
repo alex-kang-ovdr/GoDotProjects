@@ -153,6 +153,6 @@ test('local test data persists across restarts and switching to dev read-only ov
     }
   } finally {
     mockDevServer.close();
-    fs.rmSync(persistentDir, { recursive: true, force: true });
+    try { fs.rmSync(persistentDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); } catch {}
   }
 });

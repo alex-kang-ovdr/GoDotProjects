@@ -93,7 +93,18 @@ const OPTIONAL_TABLES={
   billing_creator_connections:['principal_id','provider','connected_account_id','onboarding_status','charges_enabled','payouts_enabled','country_code','platform_fee_bps','updated_at'],
   billing_creator_products:['id','creator_id','game_id','product_key','kind','title','currency','amount_minor','allowed_regions_json','allowed_platforms_json','age_rating','status','created_at','updated_at'],
   billing_direct_orders:['id','buyer_id','creator_id','product_id','game_id','platform','provider','connected_account_id','provider_charge_id','currency','amount_minor','platform_fee_minor','state','idempotency_key','paid_at','created_at','updated_at'],
-  billing_entitlements:['id','buyer_id','creator_id','game_id','product_id','product_key','direct_order_id','state','granted_at','expires_at','revoked_at','revoke_reason','updated_at']
+  billing_entitlements:['id','buyer_id','creator_id','game_id','product_id','product_key','direct_order_id','state','granted_at','expires_at','revoked_at','revoke_reason','updated_at'],
+  user_profiles:['principal_id','handle','avatar_color','bio','privacy_level','updated_at'],
+  social_friendships:['requester_id','addressee_id','status','created_at','updated_at'],
+  social_blocks:['blocker_id','blocked_id','created_at'],
+  social_presence:['principal_id','status','game_id','game_title','room_code','joinable','updated_at'],
+  social_parties:['id','leader_id','title','target_game_id','room_code','max_members','created_at','updated_at'],
+  social_party_members:['party_id','principal_id','role','ready_state','joined_at'],
+  social_messages:['id','channel_type','channel_key','sender_id','body','is_quick_message','created_at'],
+  social_leaderboards:['game_id','board_id','principal_id','score','period_key','updated_at'],
+  social_reports:['id','reporter_id','target_type','target_id','reason','created_at'],
+  social_party_launches:['launch_id','party_id','game_id','room_code','match_room_id','launched_by','status','created_at'],
+  social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

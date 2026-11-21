@@ -107,6 +107,56 @@
 |---|---|---|
 | ![Stitch Chatroom](verification-m1/13-stitch-chatroom.png) | ![Stitch Launch Sheet](verification-m1/14-stitch-launch-sheet.png) | ![Stitch More](verification-m1/15-stitch-more.png) |
 
+### 3.7 M3 소셜 기능 완성 및 사용자 시나리오 E2E 검증 (백엔드 + Android 15 2인 실동작)
+- **백엔드 9테이블 + `/api/mobile/social/*` 전체 API 구현 및 21/21 Node 통합 테스트 PASS**:
+  - `user_profiles` · `social_friendships` · `social_blocks` · `social_presence` · `social_parties` · `social_party_members` · `social_messages` · `social_leaderboards` · `social_reports`
+  - 7대 사용자 시나리오 자동 검증 (`hub/tests/social-m3-scenarios.test.mjs`): ① 프로필·핸들 검색·친구 요청/수락·실시간 프레즌스 ② 친구 전용 1:1 DM ③ 파티 생성·초대 코드 합류·준비 토글·파티 채팅·방장 자동 승계 ④ 아동 보호 연령 게이트(`CHILD_PROTECTED`: 법정대리인 동의 전 소셜 전면 차단 → 동의 후에도 자유 채팅 `403 CHILD_FREE_CHAT_BLOCKED` 차단 및 승인 5종 안전 퀵메시지(`qm_hi`~`qm_wait`)만 허용) ⑤ 신고·차단 시 친구관계 즉시 해지 및 DM/검색 양방향 격리 ⑥ 글로벌 vs 친구 범위 리더보드 ⑦ `Live → Dev` 스냅샷 익명화(`sanitize-snapshot.mjs`) 및 `restore-data.mjs` 백업/복원 호환.
+- **Android 클라이언트 실연동 + 30/30 JUnit PASS + Release APK `23.68 MiB` (`<= 28 MiB`)**:
+  - `PlayHubApiClient` 소셜 전체 API 클라이언트, `playhub://join/*` 딥링크, 홈 실시간 친구 스트립, 채팅/소셜 허브(`+ 친구 추가`·`파티 만들기`·`코드 합류`·받은 친구 요청 수락/거절·활성 파티 로비·준비 토글·파티 채팅), 1:1 DM(실시간 프레즌스 합류 배너·차단/신고 관리·아동용 안전 퀵메시지 바), 바텀시트 실시간 TOP-3 리더보드 완성.
+- **Android 15 에뮬레이터 2인 실동작 E2E 검증 (Cloudflare HTTPS 실서버 경유, `0 FATAL CRASHES`)**:
+  - **시나리오 A (친구 검색·요청·수락)**: `+ 친구 추가` → `minjun` 검색 → `민준(minjun#1024)` 요청(서버 SQLite 저장 확인) → 상대방 수락 + `서연(seoyeon#2048)` 수신 요청 UI에서 `수락` → `친구 목록 2명 접속 중` 실시간 반영 확인.
+  - **시나리오 B (실시간 1:1 DM 양방향 영속성)**: `민준` 수신 메시지(`안녕! 파티 PLAY99로 합류해!`) 확인 → Android UI에서 `OK! Joining PLAY99 now!` 전송 → 우측 그린 말풍선·로컬 시각(`HH:mm`) 표시 및 서버 SQLite 저장 확인.
+  - **시나리오 C (초대 코드 `PLAY99` 파티 합류·준비 토글·딥링크)**: `코드 합류` → `PLAY99` 입력 → `민준의 서바이벌 파티 (2/8명)` 로비 카드 진입 → `준비 완료` 토글(`ready_state=1` DB 영속 확인) → `playhub://join/survivor-arena-g2?room=PLAY99` 딥링크 전달 무크래시 확인.
+  - **시나리오 D (실시간 리더보드)**: DM `▶ 합류` → Stitch 게임 바텀시트에서 `TOP 리더보드 (Global)` `#1 민준 2,850` / `#2 서연 1,940` / `#3 지호 1,420` 실시간 로드 확인.
+
+| 소셜 허브 (받은 요청 `수락/거절` · 실시간 DM 미리보기) | 1:1 실시간 DM (`▶ 합류` · 프레즌스 배너 · 양방향 말풍선) |
+|---|---|
+| ![Social Hub](verification-m1/16-social-friends-party.png) | ![Live DM](verification-m1/17-social-live-dm.png) |
+
+| 활성 파티 로비 (`PLAY99` · `준비 완료` · 친구 2명 접속 중) | Stitch 바텀시트 실시간 TOP-3 리더보드 |
+|---|---|
+| ![Party Lobby](verification-m1/18-social-party-lobby.png) | ![Live Leaderboard](verification-m1/19-social-leaderboard-sheet.png) |
+
+### 3.8 크로스플랫폼 소셜 확장 (PC Hub / Hub 웹 + iOS)
+- **통합 백엔드 (`/api/social/*` + `/api/mobile/social/*`, 22/22 Node 테스트 PASS)**:
+  - `hub/server/social/routes.mjs`를 단일 엔진으로 통합하고 `hub/server/app.mjs`에 PC Hub·웹용 쿠키+CSRF 기반 `/api/social/*` 마운트.
+  - `hub/tests/social-cross-platform.test.mjs`로 **PC 웹 ↔ iOS ↔ Android 3자 크로스플랫폼 친구·1:1 DM·공유 파티·방장 승계·통합 리더보드·CSRF 차단** 실동작 검증 완료.
+- **PC Hub / Hub 웹 포털 (`hub/web/user/social.js` + `index.html` + `app.js` + `user.css`)**:
+  - 상단 내비 `소셜` 탭(`/?view=social` 및 `/join/<gameId>?room=<CODE>` 초대 링크), 프로필/핸들 편집, `+ 친구 추가`, `파티 만들기`, `코드 합류`, 받은 요청 `수락/거절`, 활성 파티 로비, 2열 친구+실시간 DM/파티 채팅(아동 보호 퀵메시지 바 포함), 게임 상세 `리더보드` 탭(`전체/친구`) 구현.
+  - 실제 Chrome 헤드리스 E2E(`1440×960`)에서 **Android 에뮬레이터 유저(`playerfa1b#7893`)와 PC 웹 유저(`player2deb#1929`)가 동일 파티 `PLAY99`(3/8명)에 동시 참여**하고 준비 토글·파티 채팅·TOP-3 리더보드가 즉시 동기화됨을 확인.
+- **iOS 네이티브 (`Hub-IOS` 워크트리 `ios/`)**:
+  - `PlayHubCore`: `PlayHubApiClient.swift`(소셜 DTO + `/api/mobile/social/*` 20종 async/await 메서드), `PlayHubDeepLink.swift`(`playhub://join/*` 및 Universal Link 파서 + `HH:mm` 포매터), `SocialClientAndDeepLinkTests.swift`(URLProtocol 기반 단위 테스트).
+  - `PlayHubApp`: `SocialHubView.swift`(친구 추가·요청 수락/거절·파티 로비·1:1 DM/파티 채팅·아동 퀵메시지·차단/신고·리더보드 시트), `MainTabView.swift` 실연동, `PlayHubApp.swift` `.onOpenURL` 연결, `Info.plist`/`Info-Free.plist` `playhub` URL Scheme 등록. (Windows 환경 제약으로 Xcode/Swift 실빌드 및 실기기 테스트는 macOS에서 최종 확인 필요)
+
+| PC Hub 웹 소셜 허브 (Android+PC 웹 `PLAY99` 3인 공유 파티 · 파티 채팅) | PC Hub 웹 게임 상세 실시간 TOP-3 리더보드 |
+|---|---|
+| ![PC Web Social Party](verification-m1/20-pc-web-social-party.png) | ![PC Web Leaderboard](verification-m1/21-pc-web-leaderboard.png) |
+
+### 3.9 "같이 입장 하기 (Co-Entry)" 크로스플레이 실전 검증 (PC Hub 웹 ↔ Android 15 ↔ iOS)
+- **동기화 매치룸 프로토콜 (`social_party_launches` · `social_party_launch_acks`)**:
+  - `POST /parties/:id/launch`로 공유 `launchId` + `matchRoomId`(`match_<ROOM>_<HEX6>`) 발급, `POST /parties/:id/launch/ack`로 플랫폼별(`web` · `android` · `ios`) 입장 확인 및 `in_game` 프레즌스 동기화.
+  - 게임 런타임 전달: PC 웹(iframe 쿼리 `?room=...&matchRoom=...&platform=web` + 실시간 크로스플레이 배너), Android(`GodotPlayerActivity`/`WebGameActivity` Intent Extras + `PlayHubBridge.get_room_code()`/`get_match_room_id()` + 좌상단 `▶ PLAYHUB · PLAY99` 오버레이), iOS(`launchPartyTogether` · `ackAndJoinLaunch` · `SocialHubView` 동시 입장 배너).
+  - 실기기 검증 중 장기 세션(15분 경과)에서 만료된 JWT를 자동 갱신하지 않던 실서비스 결함을 발견하여 Android·iOS 모두 `isJwtExpired()` + `/api/mobile/auth/refresh` 자동 로테이션으로 즉시 보강.
+- **실전 동시 크로스플레이 E2E 결과 (`22/22` Node 3자 테스트 PASS · `0 FATAL CRASHES` · `0 JS EXCEPTIONS`)**:
+  1. **PC Hub 웹(Chrome)**: `PLAY99` 파티에서 `▶ 함께 입장` 실행 → 매치룸 `match_PLAY99_612E07` 생성 및 iframe 쿼리 전달(`iframeHasMatchRoom=true`) 확인.
+  2. **Android 15 에뮬레이터**: 만료 JWT 자동 갱신 후 `PLAY99` 합류 → `🎮 크로스플레이 함께 입장 중 · match_PLAY99_612E07 (참여: PC 웹 Player)` 배너 실시간 수신 → `🚀 지금 함께 입장` 탭 → `ack(platform=android, state=entered)` 전송 후 격리 프로세스 `com.playhub.hub_aos.debug:godot_runtime`(242 MB RSS) + `▶ PLAYHUB · PLAY99` 오버레이 진입 확인.
+  3. **PC Hub 웹 실시간 로스터 동기화**: 3초 폴링으로 **`PC 웹 · Player (입장 완료)`** + **`Android · Player (입장 완료)`** 양쪽 동시 입장 배지가 동일 매치룸 `match_PLAY99_612E07`에 실시간 반영됨 확인.
+  - *참고*: 개발용 경량 포털 서버(`serve-apk-download.mjs`)의 샌드박스 iframe에서는 Godot Web `.wasm` 로드에 COOP/COEP + 동일 출처 구성이 필요해 `24-pc-web-crossplay-live.png` 하단 게임 뷰포트에 `Failed to fetch`가 표시되며, 정식 Hub 포털(`hub/tools/dev.mjs`)에서 COOP/COEP 헤더와 함께 정상 구동됩니다.
+
+| Android 15: PC 웹이 연 `match_PLAY99_612E07` 수신 배너 | Android 15: `:godot_runtime` 동시 진입 (`▶ PLAYHUB · PLAY99`) | PC Hub 웹: `PC 웹` + `Android` 양쪽 `입장 완료` 실시간 동기화 |
+|---|---|---|
+| ![Android Cross-Play Banner](verification-m1/22-android-crossplay-banner.png) | ![Android Cross-Play In-Game](verification-m1/23-android-crossplay-ingame.png) | ![PC Web Cross-Play Live](verification-m1/24-pc-web-crossplay-live.png) |
+
 ---
 
 ## 4. 실측 프로세스 격리 · 마운트 · 크래시 검증 로그

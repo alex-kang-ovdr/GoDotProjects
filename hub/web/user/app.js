@@ -395,6 +395,7 @@
         <p>${deviceHelp}${game.orientation==='landscape'?' 가로 화면으로 플레이하세요.':game.orientation==='portrait'?' 세로 화면으로 플레이하세요.':''}</p>
         ${document.fullscreenEnabled?'':'<p>이 브라우저에서는 전체 화면을 사용할 수 없습니다.</p>'}
       </div>
+      <div id="crossplay-banner" class="social-launch-banner" data-testid="crossplay-match-banner" hidden></div>
       <div class="player-panel fullscreen-player" id="player-panel">
         <div class="player-poster">
           <img src="${esc(game.cover)}" alt="" fetchpriority="high" width="640" height="400">
@@ -417,12 +418,14 @@
       </div>
       <div class="detail-select" role="group" aria-label="게임 정보">
         <button class="filter active" type="button" data-detail-panel="game-info" aria-pressed="true" aria-controls="game-info">소개</button>
+        <button class="filter" type="button" data-detail-panel="leaderboard" aria-pressed="false" aria-controls="leaderboard" data-testid="detail-leaderboard-tab">리더보드</button>
         <button class="filter" type="button" data-detail-panel="community" aria-pressed="false" aria-controls="community">커뮤니티</button>
       </div>
       <div id="game-info" class="detail-info">
         <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
         <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
       </div>
+      <section id="leaderboard" class="surface social-leaderboard-panel" aria-labelledby="leaderboard-title" data-testid="leaderboard" data-game-id="${esc(id)}" hidden></section>
       <section id="community" class="community" aria-labelledby="community-title" data-testid="community" data-game-id="${esc(id)}" hidden></section>
       ${related.length?`<section class="related" aria-labelledby="related-title">
         <div class="section-heading"><h2 id="related-title">다른 게임</h2></div>
@@ -440,6 +443,36 @@
     if(location.hash==='#community')selectDetailPanel('community',id);
     $('play-button').onclick=()=>startPlay(game);$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('player-panel').requestFullscreen();}catch(_){toast('이 브라우저에서는 전체 화면을 사용할 수 없어요.');}};
     $('close-game').onclick=async()=>{await teardown('user_close');await renderRoute();};$('backup-download').onclick=()=>downloadBackup(id);$('saves-open').onclick=()=>openSaveManager(game);$('save-retry').onclick=()=>retrySave();
+    const detailParams=new URLSearchParams(location.search);
+    const cpRoom=detailParams.get('room')||'';
+    const cpMatch=detailParams.get('matchRoom')||'';
+    const cpLaunch=detailParams.get('launchId')||'';
+    const cpParty=detailParams.get('partyId')||'';
+    if(cpRoom||cpMatch){
+      state.crossplay={roomCode:cpRoom,matchRoomId:cpMatch,launchId:cpLaunch,partyId:cpParty};
+      const bannerEl=$('crossplay-banner');
+      const paintCrossplay=async()=>{
+        if(!bannerEl||state.route!==route)return;
+        bannerEl.hidden=false;
+        let rosterHtml='';
+        try{
+          const pt=await api('/api/social/parties/me',{timeout:4000});
+          const al=pt?.party?.activeLaunch;
+          if(al&&(!cpLaunch||al.launchId===cpLaunch)){
+            rosterHtml=(al.participants||[]).map(ptItem=>{
+              const pLbl=ptItem.platform==='android'?'Android':ptItem.platform==='ios'?'iOS':'PC 웹';
+              return `<span class="social-platform-chip platform-${esc(ptItem.platform||'web')}">${esc(pLbl)} · ${esc(ptItem.displayName)} (${ptItem.state==='entered'?'입장 완료':'입장 중'})</span>`;
+            }).join('');
+          }
+        }catch(_){}
+        bannerEl.innerHTML=`<div><strong>🎮 크로스플레이 함께 입장 활성</strong><p class="muted">파티 코드 <code>${esc(cpRoom)}</code>${cpMatch?` · 매치룸 <code>${esc(cpMatch)}</code>`:''}</p><div class="social-launch-roster" data-testid="crossplay-live-roster">${rosterHtml||'<span class="social-platform-chip platform-web">PC 웹 · 연결됨</span>'}</div></div><a class="button secondary small" href="/?view=social" data-route>파티 로비</a>`;
+      };
+      void paintCrossplay();
+      const cpTimer=setInterval(()=>{if(state.route!==route||!document.contains(bannerEl)){clearInterval(cpTimer);return;}void paintCrossplay();},3000);
+      if(detailParams.get('autolaunch')==='1')void startPlay(game);
+    }else{
+      state.crossplay=null;
+    }
   }
   function selectDetailPanel(panel,id){
     for(const tab of $('app').querySelectorAll('[data-detail-panel]')){
@@ -450,6 +483,25 @@
     }
     const community=$('community');
     if(panel==='community'&&!community.hasChildNodes())window.PlayHubCommunity?.mount(community,id,api);
+    const lb=$('leaderboard');
+    if(panel==='leaderboard'&&lb&&!lb.hasChildNodes())window.PlayHubSocial?.mountLeaderboard(lb,id,api);
+  }
+  function renderSocial(params){
+    stopImpressions();
+    if(state.limited||!state.session){
+      $('app').innerHTML=`<div class="page social-page"><section class="surface"><h1>소셜</h1><p>서버에 연결되면 친구, 실시간 1:1 채팅, 파티 로비를 이용할 수 있습니다.</p></section></div>`;
+      meta('소셜 | PLAY HUB','친구 목록, 실시간 채팅, 파티 로비를 이용하세요.','/?view=social');
+      return;
+    }
+    meta('소셜 | PLAY HUB','친구 목록, 실시간 1:1 채팅, 파티 로비를 이용하세요.','/?view=social');
+    window.PlayHubSocial?.mount($('app'),{
+      api,
+      games:state.games,
+      navigate,
+      toast,
+      session:state.session,
+      initialRoomCode:(params.get('room')||'').trim().toUpperCase()
+    });
   }
   function renderCreator(){
     stopImpressions();
@@ -550,9 +602,12 @@
     state.control=Object.hasOwn(controlLabels,params.get('control'))?params.get('control'):'all';
     state.sort=['updated','title'].includes(params.get('sort'))?params.get('sort'):'default';
     const view=params.get('view');
-    if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['wishlist','create','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
+    const joinMatch=location.pathname.match(/^\/join\/([^/]+)\/?/);
+    if(joinMatch&&params.get('room')){state.view='social';}
+    else if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
+    else if(['wishlist','social','create','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
+    if(state.view!=='social')window.PlayHubSocial?.unmount();
     $('app').hidden=state.view==='account';
     $('account-panel').hidden=state.view!=='account';
     document.documentElement.classList.add('js');
@@ -562,6 +617,7 @@
     }
     if(state.view==='detail')await renderDetail(id,token);
     else if(state.view==='wishlist')renderWishlist();
+    else if(state.view==='social')renderSocial(params);
     else if(state.view==='library'||state.view==='home')renderBrowse();
     else if(state.view==='create')renderCreator();
     else if(state.view==='avatar')renderAvatar();
@@ -655,10 +711,12 @@
       const nonce=uuid().replace(/-/g,'');
       const rawEntryUrl=(typeof play.entryUrl==='string'&&play.entryUrl)||(typeof game.entryUrl==='string'&&game.entryUrl)||`/games/${encodeURIComponent(game.id)}/index.html`;
       const sep=rawEntryUrl.includes('?')?'&':'?';
-      iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
+      const cpQ=state.crossplay?`&room=${encodeURIComponent(state.crossplay.roomCode||'')}&matchRoom=${encodeURIComponent(state.crossplay.matchRoomId||'')}&platform=web`:'';
+      iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}${cpQ}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
       const overlay=buildHostPlatformOverlay(a);
       $('player-panel').replaceChildren(iframe,overlay.bar,overlay.menu);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
+      if(!local)void window.PlayHubSocial?.reportPresence(api,{status:'in_game',gameId:game.id,gameTitle:game.title,roomCode:state.crossplay?.roomCode||null});
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);
       a.timer=setTimeout(()=>{if(!a.ready&&state.active===a){saveStatus('게임 준비가 지연됩니다. 게임을 닫고 다시 시도해 주세요.',true);playEvent(a,'runtime_error',{code:'READY_TIMEOUT',message:'Game ready timeout'});}},14000);
       $('player-panel').scrollIntoView({behavior:'smooth',block:'start'});
@@ -997,6 +1055,7 @@
     void refreshWishlist();
     void loadPreference();
     void window.PlayHubBilling?.refreshHeaderBalance(api);
+    if(state.session&&!state.limited)void window.PlayHubSocial?.refreshBadge(api);
     if(state.session?.pendingMerge)openMerge();
   }
   setInterval(()=>{if(!document.hidden){refreshGameUpdateBadges();refreshConnection();}},30000);
