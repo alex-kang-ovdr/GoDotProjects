@@ -17,6 +17,7 @@ import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
+import { createMobile } from './mobile/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -141,6 +142,8 @@ export function createApp(input, dependencies = {}) {
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
+  // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
+  const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -603,6 +606,9 @@ export function createApp(input, dependencies = {}) {
           return;
         }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
+        if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
+          if (await mobile.publicRoute(req, res, url)) return;
+        }
         const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check');
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
