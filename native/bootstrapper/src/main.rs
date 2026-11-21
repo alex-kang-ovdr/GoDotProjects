@@ -1,7 +1,8 @@
 use playhub_core::contracts::parse_deeplink;
 use playhub_core::ipc::{generate_ipc_token, LoopbackWsServer};
+use playhub_core::ticket::{exchange_launch_ticket_loopback, LaunchTicketExchangeRequest};
 use playhub_core::{host_arch, host_os};
-use playhub_platform::{default_backend, SpawnConfig};
+use playhub_platform::{default_backend, IsolationMode, SpawnConfig};
 use serde::Serialize;
 use std::env;
 use std::fs;
@@ -17,6 +18,7 @@ struct LaunchReport {
     os: String,
     arch: String,
     platform_backend: String,
+    isolation: String,
     player_pid: u32,
     authenticated: bool,
     engine_version: Option<String>,
@@ -29,12 +31,15 @@ struct LaunchReport {
     rejected_connections: u64,
     first_frame_payload: Option<serde_json::Value>,
     shader_telemetry: Option<serde_json::Value>,
+    isolation_probe: Option<serde_json::Value>,
 }
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
     if args.is_empty() {
-        eprintln!("Usage: playhub-bootstrapper <info|parse-deeplink|launch> [options]");
+        eprintln!(
+            "Usage: playhub-bootstrapper <info|parse-deeplink|register-protocol|exchange-ticket|launch> [options]"
+        );
         return ExitCode::from(2);
     }
 
@@ -67,6 +72,8 @@ fn main() -> ExitCode {
                 }
             }
         }
+        "register-protocol" => run_register_protocol(&args[1..]),
+        "exchange-ticket" => run_exchange_ticket(&args[1..]),
         "launch" => run_launch(&args[1..]),
         other => {
             eprintln!("unknown subcommand: {other}");
@@ -75,10 +82,155 @@ fn main() -> ExitCode {
     }
 }
 
+fn run_register_protocol(args: &[String]) -> ExitCode {
+    let mut scheme = "playhub".to_string();
+    let mut exe_path: Option<PathBuf> = None;
+    let mut unregister = false;
+
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--scheme" => {
+                i += 1;
+                if let Some(v) = args.get(i) {
+                    scheme = v.clone();
+                }
+            }
+            "--exe" => {
+                i += 1;
+                exe_path = args.get(i).map(PathBuf::from);
+            }
+            "--unregister" => {
+                unregister = true;
+            }
+            other => {
+                eprintln!("unknown option: {other}");
+                return ExitCode::from(2);
+            }
+        }
+        i += 1;
+    }
+
+    let valid_scheme = scheme == "playhub"
+        || scheme.strip_prefix("playhub-").is_some_and(|r| {
+            !r.is_empty()
+                && r.len() <= 48
+                && r.bytes()
+                    .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+        });
+    if !valid_scheme {
+        eprintln!("invalid protocol scheme: {scheme}");
+        return ExitCode::from(2);
+    }
+
+    let backend = default_backend();
+    let res = if unregister {
+        backend.unregister_protocol(&scheme)
+    } else {
+        let exe = exe_path.unwrap_or_else(|| env::current_exe().unwrap_or_default());
+        backend.register_protocol(&scheme, &exe)
+    };
+
+    match res {
+        Ok(()) => {
+            println!(
+                "{}",
+                serde_json::json!({
+                    "ok": true,
+                    "scheme": scheme,
+                    "action": if unregister { "unregistered" } else { "registered" }
+                })
+            );
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            eprintln!("protocol registration failed: {e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
+fn run_exchange_ticket(args: &[String]) -> ExitCode {
+    let mut api_base: Option<String> = None;
+    let mut ticket: Option<String> = None;
+    let mut game_id: Option<String> = None;
+    let mut os_override: Option<String> = None;
+    let mut arch_override: Option<String> = None;
+
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--api-base" => {
+                i += 1;
+                api_base = args.get(i).cloned();
+            }
+            "--ticket" => {
+                i += 1;
+                ticket = args.get(i).cloned();
+            }
+            "--game-id" => {
+                i += 1;
+                game_id = args.get(i).cloned();
+            }
+            "--os" => {
+                i += 1;
+                os_override = args.get(i).cloned();
+            }
+            "--arch" => {
+                i += 1;
+                arch_override = args.get(i).cloned();
+            }
+            other => {
+                eprintln!("unknown option: {other}");
+                return ExitCode::from(2);
+            }
+        }
+        i += 1;
+    }
+
+    let (Some(api_base), Some(ticket), Some(game_id)) = (api_base, ticket, game_id) else {
+        eprintln!("--api-base, --ticket, and --game-id are required");
+        return ExitCode::from(2);
+    };
+
+    let req = LaunchTicketExchangeRequest {
+        version: 1,
+        ticket,
+        game_id,
+        os: os_override.unwrap_or_else(|| host_os().to_string()),
+        arch: arch_override.unwrap_or_else(|| host_arch().to_string()),
+        bootstrapper_version: env!("CARGO_PKG_VERSION").to_string(),
+    };
+
+    match exchange_launch_ticket_loopback(&api_base, &req) {
+        Ok(resp) => {
+            // Redact raw sessionToken from stdout logs — token stays strictly inside Rust host memory.
+            let safe = serde_json::json!({
+                "ok": true,
+                "version": resp.version,
+                "gameId": resp.game_id,
+                "manifestUrl": resp.manifest_url,
+                "sessionExpiresAt": resp.session_expires_at,
+                "sessionTokenPresent": !resp.session_token.is_empty(),
+                "profile": resp.profile,
+            });
+            println!("{}", serde_json::to_string_pretty(&safe).unwrap());
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            eprintln!("ticket exchange failed: {e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
 fn run_launch(args: &[String]) -> ExitCode {
     let mut player: Option<PathBuf> = None;
     let mut bootstrap_pck: Option<PathBuf> = None;
     let mut game_pck: Option<PathBuf> = None;
+    let mut game_data_dir: Option<PathBuf> = None;
+    let mut capture_dir: Option<PathBuf> = None;
+    let mut isolation = IsolationMode::None;
     let mut rendering_driver: Option<String> = None;
     let mut test_mode: Option<String> = None;
     let mut report_path: Option<PathBuf> = None;
@@ -101,6 +253,25 @@ fn run_launch(args: &[String]) -> ExitCode {
             "--game-pck" => {
                 i += 1;
                 game_pck = args.get(i).map(PathBuf::from);
+            }
+            "--game-data-dir" => {
+                i += 1;
+                game_data_dir = args.get(i).map(PathBuf::from);
+            }
+            "--capture-dir" => {
+                i += 1;
+                capture_dir = args.get(i).map(PathBuf::from);
+            }
+            "--isolate" => {
+                i += 1;
+                match args.get(i).map(String::as_str) {
+                    Some("none") => isolation = IsolationMode::None,
+                    Some("low-il") => isolation = IsolationMode::LowIntegrity,
+                    other => {
+                        eprintln!("unsupported --isolate value: {other:?} (expected none|low-il)");
+                        return ExitCode::from(2);
+                    }
+                }
             }
             "--rendering-driver" => {
                 i += 1;
@@ -193,6 +364,12 @@ fn run_launch(args: &[String]) -> ExitCode {
     if let Some(gp) = &game_pck {
         player_args.push(format!("--playhub-game={}", gp.to_string_lossy()));
     }
+    if let Some(gd) = &game_data_dir {
+        player_args.push(format!("--playhub-game-data={}", gd.to_string_lossy()));
+    }
+    if let Some(cd) = &capture_dir {
+        player_args.push(format!("--playhub-capture-dir={}", cd.to_string_lossy()));
+    }
     if let Some(tm) = &test_mode {
         player_args.push(format!("--playhub-test-mode={tm}"));
     }
@@ -203,6 +380,8 @@ fn run_launch(args: &[String]) -> ExitCode {
         program: player_exe,
         args: player_args,
         workdir: None,
+        isolation,
+        writable_data_dir: game_data_dir.clone(),
     }) {
         Ok(p) => p,
         Err(e) => {
@@ -270,6 +449,10 @@ fn run_launch(args: &[String]) -> ExitCode {
         os: host_os().into(),
         arch: host_arch().into(),
         platform_backend: backend.name().into(),
+        isolation: match isolation {
+            IsolationMode::None => "none".into(),
+            IsolationMode::LowIntegrity => "low-il".into(),
+        },
         player_pid,
         authenticated: snap.authenticated,
         engine_version: snap.engine_version,
@@ -286,6 +469,7 @@ fn run_launch(args: &[String]) -> ExitCode {
         rejected_connections: snap.rejected_connections,
         first_frame_payload: snap.first_frame_payload,
         shader_telemetry: snap.shader_telemetry,
+        isolation_probe: snap.isolation_probe,
     };
 
     let json_text = serde_json::to_string_pretty(&report).unwrap();

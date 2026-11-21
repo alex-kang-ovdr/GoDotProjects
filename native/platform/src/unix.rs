@@ -1,6 +1,7 @@
 use crate::{ExitOutcome, ManagedProcess, PlatformBackend, SpawnConfig};
 use std::io;
 use std::os::unix::process::CommandExt;
+use std::path::Path;
 use std::process::{Child, Command, Stdio};
 
 pub struct UnixProcessBackend;
@@ -52,6 +53,20 @@ impl PlatformBackend for UnixProcessBackend {
         let child = cmd.spawn()?;
         let pgid = child.id() as i32;
         Ok(Box::new(UnixManagedProcess { child, pgid }))
+    }
+
+    fn register_protocol(&self, _scheme: &str, _exe_path: &Path) -> io::Result<()> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "protocol registration on macOS/Linux is packaged via Info.plist/.desktop in M1",
+        ))
+    }
+
+    fn unregister_protocol(&self, _scheme: &str) -> io::Result<()> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "protocol unregistration on macOS/Linux is handled by bundle removal",
+        ))
     }
 }
 

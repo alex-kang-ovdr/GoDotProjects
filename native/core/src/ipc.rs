@@ -42,6 +42,7 @@ pub struct IpcSnapshot {
     pub first_frame_at: Option<Instant>,
     pub first_frame_payload: Option<Value>,
     pub shader_telemetry: Option<Value>,
+    pub isolation_probe: Option<Value>,
     pub last_heartbeat_at: Option<Instant>,
     pub heartbeat_count: u64,
     pub leave_requested: bool,
@@ -335,6 +336,11 @@ fn handle_request_frame(msg: &Value, state: &Arc<Mutex<IpcSnapshot>>) -> Option<
         "shader_telemetry" => {
             guard.last_heartbeat_at = Some(now);
             guard.shader_telemetry = Some(args);
+            (true, json!({"recorded": true}), Value::Null)
+        }
+        "isolation_probe" => {
+            guard.last_heartbeat_at = Some(now);
+            guard.isolation_probe = Some(args);
             (true, json!({"recorded": true}), Value::Null)
         }
         "ready" => {

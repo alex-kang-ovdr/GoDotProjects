@@ -21,6 +21,7 @@
         "first_frame",
         "heartbeat",
         "shader_telemetry",
+        "isolation_probe",
         "save_load",
         "save_write",
         "get_profile",

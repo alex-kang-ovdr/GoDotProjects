@@ -11,6 +11,8 @@ const HEARTBEAT_INTERVAL_SEC := 0.5
 var ipc_port: int = 0
 var ipc_token: String = ""
 var launch_pck_path: String = ""
+var game_data_dir: String = ""
+var capture_dir: String = ""
 var test_mode: String = "normal"
 
 var _ws := WebSocketPeer.new()
@@ -24,6 +26,7 @@ var _first_frame_sent: bool = false
 var _first_frame_acked: bool = false
 var _first_frame_req_id: String = ""
 var _shader_telemetry_req_id: String = ""
+var _isolation_probe_req_id: String = ""
 var _pending_requests: Array[Dictionary] = []
 
 # Shader compile & frame-hitch telemetry (HUB_DESKTOP_PLAN §6.2)
@@ -52,6 +55,10 @@ func _parse_cmdline_args() -> void:
 			ipc_token = arg.substr("--playhub-token=".length()).strip_edges()
 		elif arg.begins_with("--playhub-game="):
 			launch_pck_path = arg.substr("--playhub-game=".length()).strip_edges()
+		elif arg.begins_with("--playhub-game-data="):
+			game_data_dir = arg.substr("--playhub-game-data=".length()).strip_edges()
+		elif arg.begins_with("--playhub-capture-dir="):
+			capture_dir = arg.substr("--playhub-capture-dir=".length()).strip_edges()
 		elif arg.begins_with("--playhub-test-mode="):
 			test_mode = arg.substr("--playhub-test-mode=".length()).strip_edges()
 
@@ -216,6 +223,9 @@ func _handle_message(raw: String) -> void:
 			elif not _shader_telemetry_req_id.is_empty() and req_id == _shader_telemetry_req_id:
 				if test_mode == "hitch_probe":
 					get_tree().quit(0)
+			elif not _isolation_probe_req_id.is_empty() and req_id == _isolation_probe_req_id:
+				if test_mode == "escape_probe":
+					get_tree().quit(0)
 		"event":
 			var ev := str(msg.get("event", ""))
 			var payload: Dictionary = msg.get("payload", {}) if msg.get("payload") is Dictionary else {}
@@ -231,9 +241,128 @@ func _on_first_frame_acked() -> void:
 			_probe_active = true
 			_probe_elapsed_sec = 0.0
 			_probe_frame_deltas_ms.clear()
+		"escape_probe":
+			_run_isolation_escape_probe()
+		"capture_scenarios":
+			call_deferred("_run_capture_scenarios")
+		"capture_sandbox":
+			call_deferred("_run_capture_sandbox")
 		"crash":
 			push_error("PlayHubDesktopBridge: simulated crash (test_mode=crash)")
 			get_tree().quit(42)
 		"hang":
 			_hang_active = true
 			print("PlayHubDesktopBridge: entering simulated hang (heartbeat suppressed)")
+
+func _run_isolation_escape_probe() -> void:
+	var user_profile: String = OS.get_environment("USERPROFILE")
+	if user_profile.is_empty():
+		user_profile = OS.get_environment("HOME")
+	var escape_path: String = user_profile.path_join(".playhub_l2_escape_probe_%d.tmp" % OS.get_process_id())
+	var f_escape := FileAccess.open(escape_path, FileAccess.WRITE)
+	var user_profile_blocked: bool = (f_escape == null)
+	if f_escape != null:
+		f_escape.store_string("escape")
+		f_escape.close()
+		DirAccess.remove_absolute(escape_path)
+
+	var game_data_allowed: bool = false
+	var allowed_path: String = ""
+	if not game_data_dir.is_empty():
+		allowed_path = game_data_dir.path_join(".playhub_l2_allowed_%d.tmp" % OS.get_process_id())
+		var f_ok := FileAccess.open(allowed_path, FileAccess.WRITE)
+		if f_ok != null:
+			f_ok.store_string("ok")
+			f_ok.close()
+			game_data_allowed = true
+			DirAccess.remove_absolute(allowed_path)
+
+	_isolation_probe_req_id = send_request("isolation_probe", {
+		"userProfilePath": escape_path,
+		"userProfileWriteBlocked": user_profile_blocked,
+		"gameDataDir": game_data_dir,
+		"gameDataWriteAllowed": game_data_allowed,
+	})
+
+func _wait_frames(count: int) -> void:
+	for _i in range(count):
+		await get_tree().process_frame
+
+func _save_viewport_png(file_name: String) -> void:
+	if capture_dir.is_empty():
+		return
+	await RenderingServer.frame_post_draw
+	var img: Image = get_viewport().get_texture().get_image()
+	if img != null:
+		var out_path: String = capture_dir.path_join(file_name)
+		var err := img.save_png(out_path)
+		print("PlayHubCapture: saved=", out_path, " err=", err, " size=", img.get_width(), "x", img.get_height())
+
+func _run_capture_scenarios() -> void:
+	var overlay: Node = get_tree().root.get_node_or_null("PlayHubOverlay")
+	await _wait_frames(25)
+	if overlay != null and overlay.has_method("set_panel_visible"):
+		overlay.call("set_panel_visible", false)
+		overlay.call("set_status_badge", "Native Play · Godot 4.7.2 · IPC 인증 완료 (PID %d)" % OS.get_process_id())
+	await _wait_frames(4)
+	await _save_viewport_png("01-native-game-live.png")
+
+	if overlay != null:
+		overlay.call("set_panel_visible", true)
+		overlay.call("select_tab", "People")
+	await _wait_frames(4)
+	await _save_viewport_png("02-overlay-people.png")
+
+	if overlay != null:
+		overlay.call("select_tab", "Store")
+	await _wait_frames(4)
+	await _save_viewport_png("03-overlay-store.png")
+
+	if overlay != null:
+		overlay.call("select_tab", "Settings")
+	await _wait_frames(4)
+	await _save_viewport_png("04-overlay-settings.png")
+
+	request_leave()
+
+func _run_capture_sandbox() -> void:
+	var user_profile: String = OS.get_environment("USERPROFILE")
+	var escape_path: String = user_profile.path_join(".playhub_l2_escape_probe_%d.tmp" % OS.get_process_id())
+	var f_escape := FileAccess.open(escape_path, FileAccess.WRITE)
+	var user_profile_blocked: bool = (f_escape == null)
+	if f_escape != null:
+		f_escape.close()
+		DirAccess.remove_absolute(escape_path)
+
+	var game_data_allowed: bool = false
+	if not game_data_dir.is_empty():
+		var allowed_path: String = game_data_dir.path_join(".playhub_l2_allowed_%d.tmp" % OS.get_process_id())
+		var f_ok := FileAccess.open(allowed_path, FileAccess.WRITE)
+		if f_ok != null:
+			f_ok.store_string("ok")
+			f_ok.close()
+			game_data_allowed = true
+			DirAccess.remove_absolute(allowed_path)
+
+	var overlay: Node = get_tree().root.get_node_or_null("PlayHubOverlay")
+	await _wait_frames(20)
+	if overlay != null:
+		overlay.call(
+			"set_status_badge",
+			"L-sandbox Low-IL 격리 활성 · USERPROFILE 쓰기: %s · 게임 데이터 폴더 쓰기: %s" % [
+				"차단됨(PASS)" if user_profile_blocked else "허용됨(FAIL)",
+				"허용됨(PASS)" if game_data_allowed else "차단됨(FAIL)",
+			]
+		)
+	await _wait_frames(4)
+	# Note: under Low-IL, capture_dir MUST be inside the Low-IL writable directory (game_data_dir)
+	await _save_viewport_png("05-low-il-sandbox-live.png")
+
+	_isolation_probe_req_id = send_request("isolation_probe", {
+		"userProfilePath": escape_path,
+		"userProfileWriteBlocked": user_profile_blocked,
+		"gameDataDir": game_data_dir,
+		"gameDataWriteAllowed": game_data_allowed,
+	})
+	await _wait_frames(4)
+	request_leave()

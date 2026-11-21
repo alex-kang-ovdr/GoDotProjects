@@ -59,6 +59,8 @@ jobs:
       - name: Rust Release Build
         working-directory: native
         run: cargo build --release --workspace
+      - name: L9 Launch Ticket End-to-End Misuse Tests
+        run: node --test hub/tests/desktop-ticket-l9.test.mjs
       - name: Upload Unsigned M0 Binaries (No Signing Keys in CI)
         uses: actions/upload-artifact@v4
         with:

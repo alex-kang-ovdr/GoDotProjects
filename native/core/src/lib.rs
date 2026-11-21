@@ -1,5 +1,6 @@
 pub mod contracts;
 pub mod ipc;
+pub mod ticket;
 
 pub fn host_os() -> &'static str {
     if cfg!(target_os = "windows") {

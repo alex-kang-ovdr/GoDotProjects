@@ -28,6 +28,7 @@ interface BootstrapperReport {
   rejectedConnections: number;
   firstFramePayload: Record<string, unknown> | null;
   shaderTelemetry: Record<string, unknown> | null;
+  isolationProbe: Record<string, unknown> | null;
 }
 
 interface ScenarioResult {
@@ -281,6 +282,51 @@ async function runL2HitchProbe(): Promise<ScenarioResult> {
   };
 }
 
+async function runLSandbox(): Promise<ScenarioResult> {
+  const t0 = Date.now();
+  if (process.platform !== 'win32') {
+    return {
+      id: 'L-sandbox',
+      name: 'Low-IL Isolation Escape Test (Windows PoC)',
+      passed: true,
+      durationMs: 0,
+      detail: { skipped: true, reason: 'Windows Low-IL PoC only; Linux/macOS L2 planned in M3' },
+    };
+  }
+  // Per-user game data lives under %LOCALAPPDATA%\PlayHub (user owns Full Control -> can apply Low-IL label without admin).
+  const localAppData = process.env.LOCALAPPDATA || os.tmpdir();
+  const gameDataDir = path.join(localAppData, 'PlayHub', 'm0-isolated-game-data');
+  fs.mkdirSync(gameDataDir, { recursive: true });
+  const res = runBootstrapper([
+    '--isolate', 'low-il',
+    '--game-data-dir', gameDataDir,
+    '--test-mode', 'escape_probe',
+  ]);
+  const r = res.report;
+  const probe = r?.isolationProbe ?? null;
+  const passed =
+    res.code === 0 &&
+    r !== null &&
+    r.status === 'ok' &&
+    r.authenticated === true &&
+    probe !== null &&
+    probe.userProfileWriteBlocked === true &&
+    probe.gameDataWriteAllowed === true &&
+    !isPidAlive(r.playerPid);
+  return {
+    id: 'L-sandbox',
+    name: 'Windows Low-IL Restricted Token Escape Test (blocks %USERPROFILE%, allows gameDataDir)',
+    passed,
+    durationMs: Date.now() - t0,
+    detail: {
+      exitCode: res.code,
+      headless,
+      isolationProbe: probe,
+      report: r,
+    },
+  };
+}
+
 async function main(): Promise<void> {
   const scenarios: ScenarioResult[] = [];
   scenarios.push(await runL2());
@@ -288,6 +334,7 @@ async function main(): Promise<void> {
   scenarios.push(await runL4Crash());
   scenarios.push(await runL4Hang());
   scenarios.push(await runL5OrphanKill());
+  scenarios.push(await runLSandbox());
 
   const sizes = {
     bootstrapper: measureGzipSize(bootstrapperExe),

@@ -15,16 +15,23 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo build --release --workspace
 cd ..
 
-# 2. 계약 스키마 테스트 (Node 24)
-node --test hub/tests/desktop-contracts.test.mjs
+# 2. 계약 스키마 및 L9 Launch Ticket 오용 테스트 (Node 24)
+node --test hub/tests/desktop-contracts.test.mjs hub/tests/desktop-ticket-l9.test.mjs
 
 # 3. Godot 4.7.2 PlayHubPlayer.exe 준비 및 bootstrap.pck 익스포트
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/desktop/prepare-player.ps1
 
-# 4. 생명주기 테스트 하네스 (L2 · L2-hitch · L4-crash · L4-hang · L5) + 용량·지연·셰이더 히치 실측
+# 4. 생명주기 테스트 하네스 (L2 · L2-hitch · L4-crash · L4-hang · L5 · L-sandbox) + 용량·지연·셰이더 히치 실측
 node tools/desktop/lifecycle-harness.ts --headless
-# 창 모드 실측 (로컬 GPU 환경: GPU/드라이버·파이프라인 컴파일·프레임 p50/p95/p99 포함)
+# 창 모드 실측 (로컬 GPU 환경: GPU/드라이버·파이프라인 컴파일·프레임 p50/p95/p99·Low-IL 격리 포함)
 node tools/desktop/lifecycle-harness.ts
+
+# 5. Windows 프로토콜 등록·해제 (관리자 권한 불필요, HKCU)
+native\target\release\playhub-bootstrapper.exe register-protocol --scheme playhub-hub-desktop-debug
+native\target\release\playhub-bootstrapper.exe register-protocol --scheme playhub-hub-desktop-debug --unregister
+
+# 6. 사용자 시나리오 전수 시각 검증 증거샷 캡처 (docs/desktop/verification-m0/01~06.png)
+node tools/desktop/capture-scenarios.ts
 ```
 
 ## 산출물

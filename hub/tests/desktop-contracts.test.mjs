@@ -56,7 +56,7 @@ test('bridge.v1 requires 256-bit hex token on auth and includes desktop + AOS §
   assert.equal(tokenRe.test('G'.repeat(64)), false);
 
   const methods = new Set(s.$defs.methodName.enum);
-  for (const required of ['ready', 'first_frame', 'heartbeat', 'shader_telemetry', 'save_load', 'save_write', 'get_profile', 'get_host_info', 'iap_purchase', 'social_open_overlay', 'overlay_leave']) {
+  for (const required of ['ready', 'first_frame', 'heartbeat', 'shader_telemetry', 'isolation_probe', 'save_load', 'save_write', 'get_profile', 'get_host_info', 'iap_purchase', 'social_open_overlay', 'overlay_leave']) {
     assert.ok(methods.has(required), `missing method: ${required}`);
   }
 });
