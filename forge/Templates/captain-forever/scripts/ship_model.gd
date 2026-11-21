@@ -28,13 +28,13 @@ func initialize_player() -> void:
 	add("thruster", Vector2i(-1, -1))
 	add("thruster", Vector2i(-1, 1))
 	add("battery", Vector2i(-1, 0))
-	add("reverse_thruster", Vector2i(1, -1))
-	add("reverse_thruster", Vector2i(1, 1))
+	add("mini_missile_launcher", Vector2i(1, -1))
+	add("mini_missile_launcher", Vector2i(1, 1))
 	add("rcs_thruster", Vector2i(0, -2))
 	add("rcs_thruster", Vector2i(0, 2))
 	add("shield_generator", Vector2i(2, 0))
-	add("mini_missile_launcher", Vector2i(2, -1))
-	add("mini_missile_launcher", Vector2i(2, 1))
+	add("reverse_thruster", Vector2i(2, -1))
+	add("reverse_thruster", Vector2i(2, 1))
 	add("ammo_bay", Vector2i(3, 0))
 
 func occupied(except_uid: int = -1) -> Dictionary:
@@ -48,12 +48,17 @@ func occupied(except_uid: int = -1) -> Dictionary:
 
 func can_place(part: PartData, at: Vector2i, ignored_uid: int = -1) -> bool:
 	var clone := part.duplicate_part()
+	clone.uid = -999999
 	clone.cell = at
 	var map := occupied(ignored_uid)
 	for p in clone.cells():
 		if map.has(p):
 			return false
-	return is_adjacent_to_hull(clone, ignored_uid)
+	if not is_adjacent_to_hull(clone, ignored_uid):
+		return false
+	if would_block_exhaust(clone, at, ignored_uid):
+		return false
+	return true
 
 # 외곽 노출 셀에서 역산한 실제 배치 앵커만 반환한다.
 # 다칸/회전 파트도 모든 점유 셀의 겹침과 인접 연결을 함께 통과해야 한다.
@@ -235,21 +240,58 @@ func power_efficiency() -> float:
 		return 1.0
 	return clampf(power_supply() / dem, 0.40, 1.25)
 
-func is_exhaust_blocked(part: PartData, map_override: Dictionary = {}) -> bool:
+func exhaust_cells_for(part: PartData) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
 	var actuator := str(part.spec().get("actuator", ""))
-	if actuator != "forward":
-		return false
-	var occ := occupied() if map_override.is_empty() else map_override
+	if actuator != "forward" and actuator != "reverse":
+		return result
 	var thrust_dir := Vector2.RIGHT.rotated(float(part.quarter_turn) * PI * 0.5)
 	if actuator == "reverse":
 		thrust_dir = -thrust_dir
 	var exhaust_step := Vector2i(roundi(-thrust_dir.x), roundi(-thrust_dir.y))
 	if exhaust_step == Vector2i.ZERO:
-		return false
-	for cell in part.cells():
+		return result
+	var own := part.cells()
+	for cell in own:
 		var check_cell: Vector2i = cell + exhaust_step
+		if not (check_cell in own) and not (check_cell in result):
+			result.append(check_cell)
+	return result
+
+func is_exhaust_blocked(part: PartData, map_override: Dictionary = {}) -> bool:
+	var actuator := str(part.spec().get("actuator", ""))
+	var occ := occupied() if map_override.is_empty() else map_override
+	if actuator == "turn":
+		# 3방향 RCS는 4면이 모두 선체로 완전히 밀폐되면 분사구가 막힌 것으로 판정
+		for cell in part.cells():
+			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+				var adj_uid: int = int(occ.get(cell + axis, -1))
+				if adj_uid == -1 or adj_uid == part.uid:
+					return false
+		return true
+	if actuator != "forward" and actuator != "reverse":
+		return false
+	for check_cell in exhaust_cells_for(part):
 		var blocker_uid: int = int(occ.get(check_cell, -1))
 		if blocker_uid != -1 and blocker_uid != part.uid:
+			return true
+	return false
+
+func would_block_exhaust(part: PartData, at: Vector2i, ignored_uid: int = -1) -> bool:
+	var clone := part.duplicate_part()
+	clone.uid = -999999
+	clone.cell = at
+	var occ := occupied(ignored_uid)
+	for p in clone.cells():
+		if occ.has(p):
+			return false
+		occ[p] = clone.uid
+	if is_exhaust_blocked(clone, occ):
+		return true
+	for existing in parts:
+		if existing.uid == ignored_uid:
+			continue
+		if is_exhaust_blocked(existing, occ):
 			return true
 	return false
 

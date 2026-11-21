@@ -217,7 +217,7 @@ func handle_utility(action: String) -> void:
 			user_paused = not user_paused
 			sync_pause_state()
 		"help":
-			queue_dialogue({"id":"controls", "speaker":"PILOT MANUAL", "icon":"KEYS", "title":"코스모티어 6-DOF 조종 · 전술 · 물리", "body":"W/S 전후진 · A/D 회전 · Q/E 횡추진(스트레이프) · 손을 떼면 자동 역추진 제동. 방어막 생성기는 바라보는 방향으로 136° 아크만 방호하므로 적의 후방 엔진부를 우회 타격할 수 있습니다. 주추진기 배기구가 막히면 추력이 25%로 감소하며, 레일건은 경장갑을 관통하고 탄약고·배터리 파괴 시 내부 유폭이 발생합니다. 적 드래그로 궤도·사선 고정 추적(함선 고스트 미리보기). 부품 회수 중 Q 회전 / 정거장 인접 시 E 도킹 수리.", "choices":[]})
+			queue_dialogue({"id":"controls", "speaker":"PILOT MANUAL", "icon":"KEYS", "title":"코스모티어 6-DOF 조종 · 전술 · 물리", "body":"W/S 전후진 · A/D 회전 · Q/E 횡추진(스트레이프) · 손을 떼면 자동 역추진 제동. 방어막 생성기는 바라보는 방향으로 136° 아크만 방호하므로 적의 후방 엔진부를 우회 타격할 수 있습니다. 추진기 배기구 앞이나 노즐이 선체에 막히는 방향은 배기 간섭으로 설치가 불가하며, 레일건은 경장갑을 관통하고 탄약고·배터리 파괴 시 내부 유폭이 발생합니다. 적 드래그로 궤도·사선 고정 추적(함선 고스트 미리보기). 부품 회수 중 Q 회전 / 정거장 인접 시 E 도킹 수리.", "choices":[]})
 		"station":
 			if not gameplay_blocked() and not player_destroyed: use_station()
 		"quick_attach":
@@ -628,6 +628,11 @@ func end_left_action(world_point: Vector2) -> void:
 			announce("NPC 회수 의뢰 완료 · 항로 신뢰도 갱신")
 		held_part = null
 		held_tag = ""
+		return
+	if player.model.would_block_exhaust(held_part, cell):
+		if combat_fx != null:
+			combat_fx.spawn_popup(world_point + Vector2(0, -18), "설치불가 · 배기간섭!", Color("ff6b57"))
+		announce("설치 불가 · 추진기 배기 간섭 구역입니다! Q 회전 또는 다른 소켓을 선택하세요.")
 		return
 	announce("장착 불가 · 계속 들고 있습니다. Q 회전 / ESC 취소")
 
@@ -1269,17 +1274,6 @@ func update_route() -> void:
 		spawn_enemy(int(waypoint.tier), str(waypoint.name))
 		active_boss = enemies.back()
 
-func _preview_blocks_exhaust(preview: PartData) -> bool:
-	var occ := player.model.occupied()
-	for c in preview.cells():
-		occ[c] = preview.uid
-	if player.model.is_exhaust_blocked(preview, occ):
-		return true
-	for existing in player.model.parts:
-		if not player.model.is_exhaust_blocked(existing) and player.model.is_exhaust_blocked(existing, occ):
-			return true
-	return false
-
 func _draw() -> void:
 	draw_world_markers()
 	if held_part != null:
@@ -1290,19 +1284,34 @@ func _draw() -> void:
 		var valid := player.model.can_place(held_part, target_cell)
 		var preview := held_part.duplicate_part()
 		preview.cell = target_cell
-		var blocks_exhaust := valid and _preview_blocks_exhaust(preview)
-		var color := Color("ffbd59", 0.95) if blocks_exhaust else (VisualData.SOCKET_VALID_COLOR if valid else Color("ffb38a", 0.8))
+		var blocks_exhaust := (not valid) and player.model.would_block_exhaust(held_part, target_cell)
+		var color := Color("ff5c47", 0.96) if blocks_exhaust else (VisualData.SOCKET_VALID_COLOR if valid else Color("ffb38a", 0.8))
 		for cell in preview.cells():
 			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * BalanceData.CELL * 0.42, Vector2.ONE * BalanceData.CELL * 0.84)
 			draw_set_transform(player.global_position, player.global_rotation)
 			draw_rect(rect, Color(str(held_part.spec().fill), 0.72), true)
 			draw_rect(rect, color, false, 2.2)
+			if blocks_exhaust:
+				draw_line(rect.position + Vector2(5, 5), rect.end - Vector2(5, 5), color, 2.0, true)
+				draw_line(rect.position + Vector2(rect.size.x - 5, 5), rect.position + Vector2(5, rect.size.y - 5), color, 2.0, true)
 		draw_set_transform(Vector2.ZERO, 0.0)
-		var tag_text := "배기간섭 -75%" if blocks_exhaust else ("ATTACH" if valid else "CLEARANCE")
-		draw_string(ThemeDB.fallback_font, world + Vector2(-56, -28), tag_text, HORIZONTAL_ALIGNMENT_CENTER, 112, 12, color)
+		var tag_text := "설치불가 · 배기간섭" if blocks_exhaust else ("ATTACH" if valid else "CLEARANCE")
+		draw_string(ThemeDB.fallback_font, world + Vector2(-64, -28), tag_text, HORIZONTAL_ALIGNMENT_CENTER, 128, 12, color)
 
 func draw_attachment_candidates(part: PartData) -> void:
 	draw_set_transform(player.global_position, player.global_rotation)
+	var occ := player.model.occupied()
+	var exhaust_seen := {}
+	for existing in player.model.parts:
+		for ex_cell in player.model.exhaust_cells_for(existing):
+			if not occ.has(ex_cell) and not exhaust_seen.has(ex_cell):
+				exhaust_seen[ex_cell] = true
+				var ex_center := Vector2(ex_cell) * BalanceData.CELL
+				var ex_half := BalanceData.CELL * 0.25
+				var warn_col := Color("ff6b57", 0.62)
+				draw_rect(Rect2(ex_center - Vector2.ONE * ex_half, Vector2.ONE * ex_half * 2.0), warn_col, false, 1.3)
+				draw_line(ex_center + Vector2(-ex_half, -ex_half), ex_center + Vector2(ex_half, ex_half), warn_col, 1.3)
+				draw_line(ex_center + Vector2(ex_half, -ex_half), ex_center + Vector2(-ex_half, ex_half), warn_col, 1.3)
 	for anchor in player.model.attachment_candidates(part):
 		# 전체 footprint를 후보처럼 칠하면 보조 셀을 클릭할 때 장착이 실패한다.
 		# 앵커만 표기하고 실제 크기는 커서의 전체 ghost로 보여 준다.

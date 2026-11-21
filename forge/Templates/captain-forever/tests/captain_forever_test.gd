@@ -38,13 +38,18 @@ func _run() -> void:
 	assert(rear_thruster.hp < rear_thruster.max_hp, "Rear thruster should take direct hull damage on flank")
 	main.player.repair_all()
 
-	# 2. Cosmoteer Main Thruster Exhaust Clearance Penalty (-75% when blocked)
-	var unblocked_thrust: float = main.player.effective_module_thrust(rear_thruster)
-	var plug: PartData = main.player.model.add("block", Vector2i(-2, -1))
-	assert(main.player.model.is_exhaust_blocked(rear_thruster), "Module behind main thruster nozzle must flag exhaust blocked")
-	assert(is_equal_approx(main.player.effective_module_thrust(rear_thruster), unblocked_thrust * 0.25), "Blocked exhaust must reduce thrust to 25%")
-	main.player.model.remove(plug.uid)
-	main.refresh_player_assembly()
+	# 2. Cosmoteer Exhaust Interference Placement Block (배기간섭 설치 불가)
+	var probe_block: PartData = main.player.model.make_part("block", Vector2i.ZERO)
+	assert(main.player.model.would_block_exhaust(probe_block, Vector2i(-2, -1)), "Cell (-2, -1) behind main thruster must be flagged as exhaust interference")
+	assert(not main.player.model.can_place(probe_block, Vector2i(-2, -1)), "can_place must block placing module in main thruster exhaust")
+	assert(not main.player.model.attach(probe_block, Vector2i(-2, -1)), "attach must reject placement in main thruster exhaust")
+	assert(not (Vector2i(-2, -1) in main.player.model.attachment_candidates(probe_block)), "attachment_candidates must omit exhaust-blocked cells")
+	assert(not main.player.model.can_place(probe_block, Vector2i(3, -1)), "can_place must also block placing module in reverse_thruster exhaust")
+
+	var probe_thruster: PartData = main.player.model.make_part("thruster", Vector2i.ZERO, 3)
+	assert(not main.player.model.can_place(probe_thruster, Vector2i(0, -3)), "Thruster whose own exhaust faces into hull cell (0, -2) must be rejected")
+	probe_thruster.quarter_turn = 0
+	assert(main.player.model.can_place(probe_thruster, Vector2i(0, -3)), "Rotating thruster so exhaust clears hull must allow placement")
 
 	# 3. Cosmoteer 6-DOF Lateral Strafe (RCS opposing vernier allocation)
 	main.player.rotation = 0.0
