@@ -236,6 +236,15 @@
         "forge/Templates/unity-*/**"
       ]
     },
+    "Forge-UnrealPort": {
+      "role": "Unreal Engine → Godot 자동 포팅 (Unified Game IR · Blueprint 변환 · 호환 런타임 · Trace 검증)",
+      "owns": [
+        "tools/UnrealConverter/**",
+        "forge/Godot/addons/playforge_unreal_compat/**",
+        "forge/Tests/playforge_unreal_compat/**",
+        "forge/Templates/unreal-*/**"
+      ]
+    },
     "PlayHub-DevOps": {
       "role": "CI 데일리 빌드(Google Cloud Build) · AI 검증 리포트 · Google Drive 아카이브 · 수동 배포 도구",
       "owns": [

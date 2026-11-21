@@ -1,0 +1,45 @@
+{
+  "engine": "unreal_5.4_reference",
+  "scenario": "p0_third_person_core",
+  "ticks": 180,
+  "jump_apex_m": 1.4286,
+  "final_anim_state": "Idle",
+  "anim_transitions": [
+    { "from": "Idle", "to": "FallLoop", "time_ms": 16.7 },
+    { "from": "FallLoop", "to": "Idle", "time_ms": 50.0 },
+    { "from": "Idle", "to": "Run", "time_ms": 266.7 },
+    { "from": "Run", "to": "JumpStart", "time_ms": 1016.7 },
+    { "from": "JumpStart", "to": "FallLoop", "time_ms": 1416.7 },
+    { "from": "FallLoop", "to": "Land", "time_ms": 1833.3 },
+    { "from": "Land", "to": "Run", "time_ms": 1833.3 },
+    { "from": "Run", "to": "Idle", "time_ms": 2650.0 }
+  ],
+  "gameplay_events": [
+    { "event": "PrintString", "time_ms": 0.0 },
+    { "event": "AnimTransition", "time_ms": 16.7 },
+    { "event": "AnimTransition", "time_ms": 50.0 },
+    { "event": "AnimTransition", "time_ms": 266.7 },
+    { "event": "Jump", "time_ms": 1016.7 },
+    { "event": "AnimTransition", "time_ms": 1016.7 },
+    { "event": "AnimTransition", "time_ms": 1416.7 },
+    { "event": "Land", "time_ms": 1833.3 },
+    { "event": "AnimTransition", "time_ms": 1833.3 },
+    { "event": "AnimTransition", "time_ms": 1833.3 },
+    { "event": "AnimTransition", "time_ms": 2650.0 }
+  ],
+  "samples": [
+    { "tick": 0, "position_m": [0.0, 0.92, 0.0], "yaw_deg": 0.0 },
+    { "tick": 15, "position_m": [0.0, 0.90, 0.0], "yaw_deg": 0.0 },
+    { "tick": 30, "position_m": [0.0, 0.90, -0.68], "yaw_deg": 0.0 },
+    { "tick": 45, "position_m": [0.0, 0.90, -1.93], "yaw_deg": 0.0 },
+    { "tick": 60, "position_m": [0.0, 0.90, -3.18], "yaw_deg": 0.0 },
+    { "tick": 75, "position_m": [0.0, 2.13, -4.43], "yaw_deg": 0.0 },
+    { "tick": 90, "position_m": [0.0, 2.31, -5.68], "yaw_deg": 0.0 },
+    { "tick": 105, "position_m": [0.0, 1.41, -6.93], "yaw_deg": 0.0 },
+    { "tick": 120, "position_m": [0.0, 0.90, -8.18], "yaw_deg": 0.0 },
+    { "tick": 135, "position_m": [0.46, 0.90, -8.92], "yaw_deg": -15.0 },
+    { "tick": 150, "position_m": [1.52, 0.90, -8.64], "yaw_deg": -30.0 },
+    { "tick": 165, "position_m": [1.65, 0.90, -8.46], "yaw_deg": -30.0 },
+    { "tick": 179, "position_m": [1.65, 0.90, -8.46], "yaw_deg": -30.0 }
+  ]
+}

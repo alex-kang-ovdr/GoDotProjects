@@ -1,0 +1,53 @@
+{
+  "version": "0.1.0",
+  "source_engine": "unreal",
+  "target_engine": "godot_4.7",
+  "coordinate_system": {
+    "source": "left_handed_z_up_cm",
+    "target": "right_handed_y_up_m",
+    "cm_to_m": 0.01,
+    "position_formula": "godot = (ue.y * 0.01, ue.z * 0.01, -ue.x * 0.01)"
+  },
+  "actor_mappings": {
+    "AActor": { "godot": "Node3D", "status": "supported" },
+    "ACharacter": { "godot": "CharacterBody3D", "compat_script": "UECharacterMovement", "status": "supported" },
+    "APawn": { "godot": "CharacterBody3D", "status": "supported" },
+    "AStaticMeshActor": { "godot": "StaticBody3D", "status": "supported" },
+    "ADirectionalLight": { "godot": "DirectionalLight3D", "status": "supported" },
+    "APlayerStart": { "godot": "Marker3D", "status": "supported" },
+    "ATriggerBox": { "godot": "Area3D", "status": "supported" },
+    "ACameraActor": { "godot": "Camera3D", "status": "supported" }
+  },
+  "component_mappings": {
+    "UStaticMeshComponent": { "godot": "MeshInstance3D", "status": "supported" },
+    "USkeletalMeshComponent": { "godot": "Skeleton3D+MeshInstance3D", "status": "supported" },
+    "UCameraComponent": { "godot": "Camera3D", "status": "supported" },
+    "USpringArmComponent": { "godot": "SpringArm3D", "status": "supported" },
+    "UCapsuleComponent": { "godot": "CollisionShape3D(CapsuleShape3D)", "status": "supported" },
+    "UBoxComponent": { "godot": "CollisionShape3D(BoxShape3D)", "status": "supported" },
+    "USphereComponent": { "godot": "CollisionShape3D(SphereShape3D)", "status": "supported" },
+    "UCharacterMovementComponent": { "godot": "UECharacterMovement", "status": "compat_runtime" },
+    "UAudioComponent": { "godot": "AudioStreamPlayer3D", "status": "supported" },
+    "UNiagaraComponent": { "godot": "GPUParticles3D", "status": "unsupported_partial", "note": "Requires effect-specific shader/particle reconstruction" },
+    "UAbilitySystemComponent": { "godot": "CustomAbilityRuntime", "status": "unsupported", "note": "GAS requires P2 custom runtime" }
+  },
+  "blueprint_nodes": {
+    "K2Node_Event_BeginPlay": { "status": "supported", "godot_construct": "func _ready()" },
+    "K2Node_Event_Tick": { "status": "supported", "godot_construct": "func _physics_process(delta)" },
+    "K2Node_EnhancedInputAction": { "status": "supported", "godot_construct": "InputMap action handler" },
+    "K2Node_CallFunction_AddMovementInput": { "status": "supported", "godot_construct": "ue_add_movement_input(world_dir, scale)" },
+    "K2Node_CallFunction_AddControllerYawInput": { "status": "supported", "godot_construct": "ue_add_controller_yaw_input(val)" },
+    "K2Node_CallFunction_AddControllerPitchInput": { "status": "supported", "godot_construct": "ue_add_controller_pitch_input(val)" },
+    "K2Node_CallFunction_Jump": { "status": "supported", "godot_construct": "ue_jump()" },
+    "K2Node_CallFunction_StopJumping": { "status": "supported", "godot_construct": "ue_stop_jumping()" },
+    "K2Node_IfThenElse": { "status": "supported", "godot_construct": "if/else" },
+    "K2Node_ExecutionSequence": { "status": "supported", "godot_construct": "sequential statements" },
+    "K2Node_CallFunction_Delay": { "status": "supported", "godot_construct": "await get_tree().create_timer(duration).timeout" },
+    "K2Node_CallFunction_PrintString": { "status": "supported", "godot_construct": "UnrealCompat.print_string(msg)" },
+    "K2Node_CallFunction_LineTraceByChannel": { "status": "supported", "godot_construct": "UnrealCompat.line_trace_by_channel(...)" },
+    "K2Node_CallFunction_SetTimerByFunctionName": { "status": "supported", "godot_construct": "UnrealCompat.set_timer_by_function_name(...)" },
+    "K2Node_CallFunction_SpawnNiagaraSystemAtLocation": { "status": "unsupported", "ai_repair_hint": "Replace with Godot GPUParticles3D burst helper or stub with diagnostic warning" },
+    "K2Node_CallFunction_TryActivateAbilityByClass": { "status": "unsupported", "ai_repair_hint": "GAS is P2 scope; emit stub callback and log diagnostic" },
+    "K2Node_CallFunction_ServerRPC": { "status": "unsupported", "ai_repair_hint": "Map to Godot @rpc('any_peer') after P2 networking redesign" }
+  }
+}

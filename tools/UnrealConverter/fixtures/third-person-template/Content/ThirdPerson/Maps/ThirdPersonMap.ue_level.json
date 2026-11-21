@@ -1,0 +1,99 @@
+{
+  "level_id": "level_third_person_map",
+  "name": "ThirdPersonMap",
+  "source_path": "/Game/ThirdPerson/Maps/ThirdPersonMap",
+  "environment": {
+    "sky_color": [0.46, 0.68, 0.94],
+    "ambient_energy": 0.65,
+    "sun_rotation": { "pitch": -45, "yaw": -35, "roll": 0 }
+  },
+  "actors": [
+    {
+      "id": "floor_arena",
+      "name": "ArenaFloor",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [0, 0, -25], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [2400, 2400, 50], "color": [0.32, 0.35, 0.39], "asset_ref": "asset_grid_mat" },
+        { "type": "UBoxComponent", "size_cm": [2400, 2400, 50] }
+      ]
+    },
+    {
+      "id": "wall_north",
+      "name": "WallNorth",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [1200, 0, 150], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [60, 2400, 300], "color": [0.76, 0.78, 0.82] },
+        { "type": "UBoxComponent", "size_cm": [60, 2400, 300] }
+      ]
+    },
+    {
+      "id": "wall_south",
+      "name": "WallSouth",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [-1200, 0, 150], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [60, 2400, 300], "color": [0.76, 0.78, 0.82] },
+        { "type": "UBoxComponent", "size_cm": [60, 2400, 300] }
+      ]
+    },
+    {
+      "id": "ramp_center",
+      "name": "SlopeRamp",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [600, 350, 65], "rotation": { "pitch": 18, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [420, 260, 24], "color": [0.88, 0.56, 0.24] },
+        { "type": "UBoxComponent", "size_cm": [420, 260, 24] }
+      ]
+    },
+    {
+      "id": "platform_high",
+      "name": "ElevatedPlatform",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [920, 350, 128], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [300, 300, 30], "color": [0.26, 0.62, 0.86] },
+        { "type": "UBoxComponent", "size_cm": [300, 300, 30] }
+      ]
+    },
+    {
+      "id": "cube_obstacle_1",
+      "name": "ObstacleCube01",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [300, -300, 60], "rotation": { "pitch": 0, "yaw": 25, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [120, 120, 120], "color": [0.22, 0.55, 0.88] },
+        { "type": "UBoxComponent", "size_cm": [120, 120, 120] }
+      ]
+    },
+    {
+      "id": "player_01",
+      "name": "BP_ThirdPersonCharacter",
+      "class": "ACharacter",
+      "transform": { "location": [0, 0, 92], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_third_person_character"],
+      "animation_ref": "abp_manny",
+      "components": [
+        { "type": "UCapsuleComponent", "radius_cm": 35, "half_height_cm": 90 },
+        { "type": "USkeletalMeshComponent", "asset_ref": "asset_epic_mannequin_blocked", "fallback_procedural": "capsule_mannequin" },
+        { "type": "USpringArmComponent", "target_arm_length_cm": 400, "socket_offset_cm": [0, 0, 65] },
+        { "type": "UCameraComponent", "fov_deg": 90 },
+        {
+          "type": "UCharacterMovementComponent",
+          "max_walk_speed_cm": 500,
+          "jump_z_velocity_cm": 700,
+          "gravity_scale": 1.75,
+          "max_acceleration_cm": 2048,
+          "braking_deceleration_walking_cm": 2000,
+          "air_control": 0.35,
+          "max_walk_angle_deg": 44.7,
+          "max_step_height_cm": 45,
+          "orient_rotation_to_movement": true,
+          "rotation_rate_yaw_deg": 500
+        }
+      ]
+    }
+  ]
+}

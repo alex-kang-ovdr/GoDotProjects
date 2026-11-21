@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "Samples",
+  "Description": "PlayForge P0 Unreal Engine 5.4 Third Person Template Fixture (Read-Only)",
+  "Plugins": [
+    {
+      "Name": "EnhancedInput",
+      "Enabled": true
+    },
+    {
+      "Name": "ModelingToolsEditorMode",
+      "Enabled": false
+    }
+  ]
+}

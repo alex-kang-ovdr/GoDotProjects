@@ -1,0 +1,20 @@
+{
+  "assets": [
+    {
+      "id": "asset_grid_mat",
+      "kind": "material",
+      "source_path": "/Game/LevelPrototyping/Materials/M_PrototypeGrid",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "asset_epic_mannequin_blocked",
+      "kind": "skeletal_mesh",
+      "source_path": "/Game/Characters/Mannequins/Meshes/SKM_Manny",
+      "license": "Unreal Engine EULA (UE-only)",
+      "license_status": "blocked",
+      "redistributable": false
+    }
+  ]
+}

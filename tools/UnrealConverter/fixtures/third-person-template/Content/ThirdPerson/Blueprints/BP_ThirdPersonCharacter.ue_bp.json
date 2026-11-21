@@ -1,0 +1,121 @@
+{
+  "id": "bp_third_person_character",
+  "name": "BP_ThirdPersonCharacter",
+  "kind": "event_graph",
+  "source_path": "/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter",
+  "target_entity_class": "ACharacter",
+  "variables": [
+    { "name": "look_sensitivity", "type": "float", "default": 0.25 },
+    { "name": "is_sprinting", "type": "bool", "default": false }
+  ],
+  "nodes": [
+    {
+      "id": "n_begin_play",
+      "node_class": "K2Node_Event_BeginPlay",
+      "title": "Event BeginPlay",
+      "params": {}
+    },
+    {
+      "id": "n_print_ready",
+      "node_class": "K2Node_CallFunction_PrintString",
+      "title": "Print String",
+      "params": { "message": "BP_ThirdPersonCharacter Ready" }
+    },
+    {
+      "id": "n_niagara_spawn",
+      "node_class": "K2Node_CallFunction_SpawnNiagaraSystemAtLocation",
+      "title": "Spawn Niagara System at Location",
+      "params": { "system": "/Game/FX/NS_SpawnBurst" }
+    },
+    {
+      "id": "n_input_move",
+      "node_class": "K2Node_EnhancedInputAction",
+      "title": "EnhancedInputAction IA_Move",
+      "params": { "action": "IA_Move", "trigger": "Triggered", "value_type": "axis2d" }
+    },
+    {
+      "id": "n_add_move_fwd",
+      "node_class": "K2Node_CallFunction_AddMovementInput",
+      "title": "Add Movement Input (Forward)",
+      "params": { "direction_expr": "ue_get_control_forward_vector()", "scale_expr": "move_input.y" }
+    },
+    {
+      "id": "n_add_move_right",
+      "node_class": "K2Node_CallFunction_AddMovementInput",
+      "title": "Add Movement Input (Right)",
+      "params": { "direction_expr": "ue_get_control_right_vector()", "scale_expr": "move_input.x" }
+    },
+    {
+      "id": "n_input_look",
+      "node_class": "K2Node_EnhancedInputAction",
+      "title": "EnhancedInputAction IA_Look",
+      "params": { "action": "IA_Look", "trigger": "Triggered", "value_type": "axis2d" }
+    },
+    {
+      "id": "n_add_yaw",
+      "node_class": "K2Node_CallFunction_AddControllerYawInput",
+      "title": "Add Controller Yaw Input",
+      "params": { "value_expr": "look_input.x * look_sensitivity" }
+    },
+    {
+      "id": "n_add_pitch",
+      "node_class": "K2Node_CallFunction_AddControllerPitchInput",
+      "title": "Add Controller Pitch Input",
+      "params": { "value_expr": "look_input.y * look_sensitivity" }
+    },
+    {
+      "id": "n_input_jump_start",
+      "node_class": "K2Node_EnhancedInputAction",
+      "title": "EnhancedInputAction IA_Jump (Started)",
+      "params": { "action": "IA_Jump", "trigger": "Started", "value_type": "bool" }
+    },
+    {
+      "id": "n_jump",
+      "node_class": "K2Node_CallFunction_Jump",
+      "title": "Jump",
+      "params": {}
+    },
+    {
+      "id": "n_input_jump_stop",
+      "node_class": "K2Node_EnhancedInputAction",
+      "title": "EnhancedInputAction IA_Jump (Completed)",
+      "params": { "action": "IA_Jump", "trigger": "Completed", "value_type": "bool" }
+    },
+    {
+      "id": "n_stop_jump",
+      "node_class": "K2Node_CallFunction_StopJumping",
+      "title": "Stop Jumping",
+      "params": {}
+    }
+  ],
+  "edges": [
+    { "kind": "exec", "from_node": "n_begin_play", "from_pin": "then", "to_node": "n_print_ready", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_print_ready", "from_pin": "then", "to_node": "n_niagara_spawn", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_input_move", "from_pin": "Triggered", "to_node": "n_add_move_fwd", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_add_move_fwd", "from_pin": "then", "to_node": "n_add_move_right", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_input_look", "from_pin": "Triggered", "to_node": "n_add_yaw", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_add_yaw", "from_pin": "then", "to_node": "n_add_pitch", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_input_jump_start", "from_pin": "Started", "to_node": "n_jump", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_input_jump_stop", "from_pin": "Completed", "to_node": "n_stop_jump", "to_pin": "execute" }
+  ],
+  "animation_blueprint": {
+    "id": "abp_manny",
+    "name": "ABP_Manny",
+    "default_state": "Idle",
+    "states": [
+      { "name": "Idle", "speed_threshold_cm_s": 0 },
+      { "name": "Run", "speed_threshold_cm_s": 20 },
+      { "name": "JumpStart", "on_jump": true },
+      { "name": "FallLoop", "in_air": true },
+      { "name": "Land", "on_land": true }
+    ],
+    "transitions": [
+      { "from": "Idle", "to": "Run", "condition": "ground_speed > 0.2" },
+      { "from": "Run", "to": "Idle", "condition": "ground_speed <= 0.2" },
+      { "from": "Idle", "to": "JumpStart", "condition": "jump_pressed && is_on_floor" },
+      { "from": "Run", "to": "JumpStart", "condition": "jump_pressed && is_on_floor" },
+      { "from": "JumpStart", "to": "FallLoop", "condition": "!is_on_floor && velocity.y <= 0.5" },
+      { "from": "FallLoop", "to": "Land", "condition": "is_on_floor" }
+    ]
+  }
+}

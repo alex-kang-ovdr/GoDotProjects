@@ -1,0 +1,16 @@
+{
+  "id": "unreal-third-person",
+  "name": "Unreal Third Person 3D (UE Port)",
+  "description": "Unreal Engine 5.4 Third Person Template을 PlayForge Unified Game IR v0.1과 Blueprint→GDScript 컴파일러, UECharacterMovement 호환 런타임으로 자동 포팅한 Godot 4.7.2 3D 템플릿.",
+  "dimension": "3d",
+  "assetPaths": [],
+  "guideOrder": [
+    "addons/playforge_unreal_compat/unreal_compat.gd",
+    "addons/playforge_unreal_compat/ue_character_movement.gd",
+    "scripts/bp_third_person_character.gd",
+    "scripts/hud_overlay.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}
