@@ -304,7 +304,7 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
   // Forge templates/projects/builds/Drive state come only from the gateway (admin-only gateway by default).
   const forge = forgeGateway || createForgeGateway({ config: config.forge || {}, root: platformRoot, env, platform: false });
   const templatePublisher = injectedPublisher || createForgeTemplatePublisher({ platformRoot, rootDir, config, now, audit });
-  const storeAdmin = createStoreAdmin({ config, db, now, audit, requireSession, env });
+  const storeAdmin = createStoreAdmin({ config, db, platformRoot, now, audit, requireSession, env });
   const devopsPreviewJobs = new Map();
   const previewStartTimeoutMs = Number.isInteger(config?.devopsPreviewStartTimeoutMs)
     && config.devopsPreviewStartTimeoutMs >= 100

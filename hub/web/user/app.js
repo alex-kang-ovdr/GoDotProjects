@@ -350,6 +350,7 @@
         <div class="hub-tiles">
           ${hubDefs.map(h=>`<a class="hub-tile" href="/?view=browse&amp;genre=${encodeURIComponent(h.tag)}" data-route><span class="hub-tile-icon" aria-hidden="true">${h.icon}</span><span>${esc(h.label)}</span></a>`).join('')}
           <a class="hub-tile hub-tile-forge" href="/PlayForge/" target="_blank" rel="noopener"><span class="hub-tile-icon" aria-hidden="true">🛠️</span><span>PlayForge 바로 열기 ↗</span></a>
+          <a class="hub-tile hub-tile-store" href="/store/" data-testid="home-store-tile"><span class="hub-tile-icon" aria-hidden="true">🧩</span><span>에셋 스토어</span></a>
         </div>
       </section>`;
 
@@ -602,7 +603,15 @@
       <section class="surface" aria-labelledby="forge-title">
         <h2 id="forge-title">PlayForge</h2>
         <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
-        <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
+        <div class="save-actions">
+          <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
+          <a class="button primary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>
+        </div>
+      </section>
+      <section class="surface" aria-labelledby="asset-store-title">
+        <h2 id="asset-store-title">PlayForge 에셋 스토어</h2>
+        <p>상업적 사용이 가능한 CC0 · MIT 오픈 게임 에셋(3D 모델 · PBR 텍스처 · HDRI · Godot 4 애드온)을 PlayHub 계정으로 라이브러리에 저장하고 Godot 4.7.2 도크에서 6단계 검증 후 프로젝트에 적용할 수 있습니다. (Forge 전용 · Web/Win/Linux/macOS 지원 · AOS/iOS 미지원)</p>
+        <a class="button secondary" href="/store/">에셋 카탈로그 탐색 →</a>
       </section>
       <div id="creator">${available?'':`<section class="surface">
         <h2>창작자 대시보드</h2>

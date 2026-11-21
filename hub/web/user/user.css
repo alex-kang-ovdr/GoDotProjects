@@ -254,6 +254,19 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
   background: var(--primary-hover);
   color: var(--on-primary);
 }
+.site-nav .nav-store {
+  border: 1px solid #B4C5FF;
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-weight: 700;
+}
+.site-nav .nav-store:hover {
+  border-color: var(--primary);
+  background: #CAD6FF;
+  color: var(--primary);
+}
 .site-nav a[data-nav-view="account"] {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-pill);
@@ -541,7 +554,7 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
 /* Genre & Creator Hub Tiles (Disney+ style) */
 .hub-tiles {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 14px;
 }
 .hub-tile {
@@ -588,6 +601,19 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
 .hub-tile.hub-tile-forge:hover {
   background: #CAD6FF;
   border-color: var(--primary);
+}
+.hub-tile.hub-tile-store {
+  background: #ECFDF5;
+  border-color: #86EFAC;
+  color: #065F46;
+}
+.hub-tile.hub-tile-store .hub-tile-icon {
+  background: #059669;
+  color: #FFFFFF;
+}
+.hub-tile.hub-tile-store:hover {
+  background: #D1FAE5;
+  border-color: #059669;
 }
 
 /* Today's PlayHub TOP 4 (Netflix style) */
@@ -1649,7 +1675,6 @@ dialog p, dialog .muted { color: var(--muted); font-size: 13.5px; }
   .continue-grid { grid-template-columns: 1fr; }
   .hub-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .hub-tile { flex-direction: row; justify-content: flex-start; min-height: 54px; padding: 10px 14px; text-align: left; }
-  .hub-tile.hub-tile-forge { grid-column: 1 / -1; justify-content: center; }
   /* Stitch Mobile C + OTT Section Reordering */
   .home-sec-top { order: 1; }
   .home-sec-hubs { order: 2; }

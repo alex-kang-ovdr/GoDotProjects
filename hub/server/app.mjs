@@ -770,7 +770,30 @@ export function createApp(input, dependencies = {}) {
   publicServer.on('upgrade', (req, socket, head) => { ugcMultiplayer.handleUpgrade(req, socket, head); });
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,billing,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,
+  function resolveStoreIdentity(req) {
+    if (closed) return null;
+    try {
+      const s = sessionFor(req, 'public');
+      if (!s || !s.principal_id || s.expires_at <= now()) return null;
+      if (hasActiveSanction(db, s.principal_id, ['all'], now())) return null;
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(s.principal_id);
+      if (!user) return null;
+      const fallbackLabel = `${user.kind === 'registered' ? 'hub' : 'guest'}-${String(user.id).slice(0, 8)}@playhub.local`;
+      const rawLabel = String(user.display_name || '')
+        .replace(/[^a-zA-Z0-9._@+\-\s]/g, '')
+        .trim()
+        .slice(0, 120);
+      return {
+        userId: user.id,
+        kind: user.kind,
+        accountKey: digest(`playhub-store-sso:${user.id}`),
+        accountLabel: rawLabel || fallbackLabel
+      };
+    } catch {
+      return null;
+    }
+  }
+  return { db,cdn,billing,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },

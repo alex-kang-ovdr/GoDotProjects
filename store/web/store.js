@@ -240,7 +240,8 @@ function renderFacetOptions() {
 function renderConnectionBadges() {
   if (el.ssoBadge) {
     const label = state.account?.account_label || 'creator-demo@playhub.local';
-    el.ssoBadge.textContent = `Hub SSO · ${label}`;
+    const prefix = state.account?.auth_mode === 'hub_sso_header' ? 'PlayHub SSO' : 'Hub SSO';
+    el.ssoBadge.textContent = `${prefix} · ${label}`;
   }
   if (el.connectionBadge) {
     el.connectionBadge.dataset.mode = state.mode;
@@ -248,6 +249,11 @@ function renderConnectionBadges() {
       ? '실서버 연동 (/api/store)'
       : '정적 열람 모드';
   }
+  const underHub = window.location.pathname.startsWith('/store/') || window.location.pathname === '/store';
+  const hubLink = document.getElementById('hub-home-link');
+  const forgeLink = document.getElementById('forge-home-link');
+  if (hubLink) hubLink.hidden = !underHub;
+  if (forgeLink) forgeLink.href = underHub ? '/PlayForge/' : '/OfficialGodot/';
 }
 
 function sortItems(items) {

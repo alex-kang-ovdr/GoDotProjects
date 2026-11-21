@@ -534,6 +534,7 @@ function initSchemaAndSeed(sdb, now) {
 export function createStoreAdmin({
   config,
   db,
+  platformRoot = '',
   now = Date.now,
   audit = () => {},
   requireSession,
@@ -646,6 +647,62 @@ export function createStoreAdmin({
     }
   }
 
+  let cachedLiveCatalog = null;
+  let cachedLiveCatalogMtime = 0;
+
+  function readLiveCatalogSummary() {
+    const baseRoot = platformRoot || path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', '..');
+    const catalogPath = path.join(baseRoot, 'store', 'data', 'collected-catalog.json');
+    try {
+      const stat = fs.statSync(catalogPath);
+      if (cachedLiveCatalog && cachedLiveCatalogMtime === stat.mtimeMs) {
+        return cachedLiveCatalog;
+      }
+      const raw = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+      const entries = Array.isArray(raw?.items)
+        ? raw.items
+        : (Array.isArray(raw?.entries) ? raw.entries : (Array.isArray(raw) ? raw : []));
+      const licenses = raw?.stats?.byLicense ? { ...raw.stats.byLicense } : {};
+      const sources = raw?.stats?.bySource ? { ...raw.stats.bySource } : {};
+      const categories = raw?.stats?.byCategory ? { ...raw.stats.byCategory } : {};
+      if (!Object.keys(licenses).length) {
+        for (const entry of entries) {
+          if (entry?.license) licenses[entry.license] = (licenses[entry.license] || 0) + 1;
+          if (entry?.source_provider) sources[entry.source_provider] = (sources[entry.source_provider] || 0) + 1;
+          if (entry?.category) categories[entry.category] = (categories[entry.category] || 0) + 1;
+        }
+      }
+      const coreSampleCount = 4;
+      const corePackageCount = 3;
+      const coreEditorialCount = 1;
+      cachedLiveCatalog = {
+        available: true,
+        totalEntries: entries.length + coreSampleCount,
+        packageCount: entries.length + corePackageCount,
+        editorialCount: coreEditorialCount,
+        collectedCount: entries.length,
+        licenses,
+        sources,
+        categoryCount: Object.keys(categories).length,
+        storeWebUrl: config?.userBaseUrl ? `${String(config.userBaseUrl).replace(/\/$/, '')}/store/` : '/store/'
+      };
+      cachedLiveCatalogMtime = stat.mtimeMs;
+      return cachedLiveCatalog;
+    } catch {
+      return {
+        available: false,
+        totalEntries: 4,
+        packageCount: 3,
+        editorialCount: 1,
+        collectedCount: 0,
+        licenses: {},
+        sources: {},
+        categoryCount: 4,
+        storeWebUrl: config?.userBaseUrl ? `${String(config.userBaseUrl).replace(/\/$/, '')}/store/` : '/store/'
+      };
+    }
+  }
+
   function overview() {
     return withStoreDb(sdb => {
       const summary = computeBadges(sdb);
@@ -653,6 +710,7 @@ export function createStoreAdmin({
       const submissions = sdb.prepare('SELECT * FROM store_admin_submissions ORDER BY CASE WHEN status=\'in_review\' THEN 0 ELSE 1 END, submitted_at DESC, id ASC').all().map(formatSubmissionRow);
       return {
         summary,
+        liveCatalog: readLiveCatalogSummary(),
         packages,
         submissions,
         recentAudit: recentStoreAudit(),

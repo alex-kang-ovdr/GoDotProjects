@@ -166,6 +166,14 @@ export function createStoreController({ api, number, kstStamp, notice, onNavigat
     auditBtn.addEventListener('click', () => onNavigate('system', 'audit'));
     actions.append(auditBtn);
 
+    if (d.liveCatalog?.storeWebUrl) {
+      const openStore = el('a', 'Store 웹 열기 ↗', 'quiet');
+      openStore.href = d.liveCatalog.storeWebUrl;
+      openStore.target = '_blank';
+      openStore.rel = 'noopener';
+      actions.append(openStore);
+    }
+
     const p = panel('PLAYFORGE STORE OPERATIONS', 'Store 요약 지표 및 불변 계약 경계', actions);
 
     const chips = el('div', '', 'chip-row');
@@ -175,15 +183,20 @@ export function createStoreController({ api, number, kstStamp, notice, onNavigat
       pill('editorial 아티팩트 금지 규칙 적용', 'info'),
       pill('승인(Approve) ≠ 자동 게시', 'muted')
     );
+    if (d.liveCatalog?.available) {
+      chips.append(pill(`실시간 오픈 카탈로그 ${number(d.liveCatalog.totalEntries)}종 연동`, 'ok'));
+    }
     p.append(chips);
 
     const kpis = el('div', '', 'metrics four');
     kpis.dataset.testid = 'store-summary-metrics';
+    const live = d.liveCatalog || {};
+    const topLic = Object.entries(live.licenses || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${k} ${number(v)}`).join(' · ');
     const cards = [
-      ['게시 패키지 · 콘텐츠', `${number(s.publishedPackages || 0)} / ${number(s.totalPackages || 0)}`, `package ${number(s.packageCount || 0)} · editorial ${number(s.editorialCount || 0)}`],
+      ['게시 패키지 · 콘텐츠 (심사 DB)', `${number(s.publishedPackages || 0)} / ${number(s.totalPackages || 0)}`, `package ${number(s.packageCount || 0)} · editorial ${number(s.editorialCount || 0)}`],
+      ['실시간 오픈 Store 카탈로그', number(live.totalEntries || 0), topLic || 'CC0 · MIT 검증 카탈로그'],
       ['제출 심사 대기', number(s.pendingSubmissions || 0), `수정 요청 ${number(s.changesRequestedSubmissions || 0)} · 승인 ${number(s.approvedSubmissions || 0)} · 거절 ${number(s.rejectedSubmissions || 0)}`],
-      ['비공개 · 폐기 · 킬스위치', number(s.restrictedPackages || 0), `yanked ${number(s.yankedPackages || 0)} · deprecated ${number(s.deprecatedPackages || 0)} · hidden ${number(s.hiddenPackages || 0)}`],
-      ['누적 설치 · 미처리 신고', `${number(s.totalInstalls || 0)} / ${number(s.openReports || 0)}`, '프로젝트 적용 누적 / 신고 건수']
+      ['비공개 · 폐기 · 킬스위치', number(s.restrictedPackages || 0), `yanked ${number(s.yankedPackages || 0)} · deprecated ${number(s.deprecatedPackages || 0)} · hidden ${number(s.hiddenPackages || 0)}`]
     ];
     for (const [label, value, detail] of cards) {
       const card = el('div', '', 'metric');
