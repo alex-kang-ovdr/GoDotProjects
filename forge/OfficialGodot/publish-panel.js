@@ -140,6 +140,8 @@
       tags: ["arcade"],
       controls: ["keyboard", "mouse"],
       orientation: "landscape",
+      viewportWidth: 1280,
+      viewportHeight: 720,
       building: false,
       build: ctx.lastBuild && ctx.lastBuild.projectId === project.id ? ctx.lastBuild : null,
       buildError: "",
@@ -152,32 +154,44 @@
       config: { specTiers: DEFAULT_TIERS, krwPerPoint: 14, freeMonthlyPointLimit: 100 }
     };
 
+    function applyMetadata(gm, dp) {
+      if (gm) {
+        if (gm.slug) state.slug = gm.slug;
+        if (gm.title?.ko) state.titleKo = gm.title.ko;
+        if (gm.title?.en) state.titleEn = gm.title.en;
+        if (gm.summary?.ko) state.summaryKo = gm.summary.ko;
+        if (gm.summary?.en) state.summaryEn = gm.summary.en;
+        if (gm.instructions?.ko) state.instructionsKo = gm.instructions.ko;
+        if (gm.instructions?.en) state.instructionsEn = gm.instructions.en;
+        if (Array.isArray(gm.tags) && gm.tags.length) state.tags = gm.tags.slice();
+        if (Array.isArray(gm.controls) && gm.controls.length) state.controls = gm.controls.slice();
+        if (gm.viewport?.orientation) state.orientation = gm.viewport.orientation;
+        if (Number.isSafeInteger(gm.viewport?.width)) state.viewportWidth = gm.viewport.width;
+        if (Number.isSafeInteger(gm.viewport?.height)) state.viewportHeight = gm.viewport.height;
+      }
+      if (dp) {
+        if (dp.deployMode) state.deployMode = dp.deployMode;
+        if (dp.serverRuntime) state.serverRuntime = dp.serverRuntime;
+        if (dp.specTier) state.specTier = dp.specTier;
+        if (dp.lobbyMode) state.lobbyMode = dp.lobbyMode;
+        if (Number.isSafeInteger(dp.lifecycle?.idleSleepSec)) state.idleSleepSec = dp.lifecycle.idleSleepSec;
+        if (typeof dp.lifecycle?.alwaysOn === "boolean") state.alwaysOn = dp.lifecycle.alwaysOn;
+      }
+    }
+
     async function loadMeta() {
       try {
-        const [cfg, rel] = await Promise.all([
+        const [cfg, rel, tpl] = await Promise.all([
           ctx.api("/api/platform/publish-config").catch(() => null),
-          ctx.api("/api/platform/projects/" + project.id + "/releases").catch(() => ({ releases: [] }))
+          ctx.api("/api/platform/projects/" + project.id + "/releases").catch(() => ({ releases: [] })),
+          project.template ? ctx.api("/api/platform/templates/" + encodeURIComponent(project.template)).catch(() => null) : Promise.resolve(null)
         ]);
         if (cfg?.specTiers) state.config = cfg;
         state.releases = Array.isArray(rel?.releases) ? rel.releases.slice().reverse() : [];
-        if (state.releases[0]?.gameMetadata) {
-          const gm = state.releases[0].gameMetadata;
-          if (gm.slug) state.slug = gm.slug;
-          if (gm.title?.ko) state.titleKo = gm.title.ko;
-          if (gm.title?.en) state.titleEn = gm.title.en;
-          if (gm.summary?.ko) state.summaryKo = gm.summary.ko;
-          if (gm.summary?.en) state.summaryEn = gm.summary.en;
-          if (gm.instructions?.ko) state.instructionsKo = gm.instructions.ko;
-          if (gm.instructions?.en) state.instructionsEn = gm.instructions.en;
-          if (Array.isArray(gm.tags) && gm.tags.length) state.tags = gm.tags.slice();
-          if (Array.isArray(gm.controls) && gm.controls.length) state.controls = gm.controls.slice();
-          if (gm.viewport?.orientation) state.orientation = gm.viewport.orientation;
-        }
-        if (state.releases[0]?.deployProfile) {
-          const dp = state.releases[0].deployProfile;
-          if (dp.deployMode) state.deployMode = dp.deployMode;
-          if (dp.specTier) state.specTier = dp.specTier;
-          if (dp.lobbyMode) state.lobbyMode = dp.lobbyMode;
+        if (state.releases[0]?.gameMetadata || state.releases[0]?.deployProfile) {
+          applyMetadata(state.releases[0].gameMetadata, state.releases[0].deployProfile);
+        } else if (tpl?.template?.publishDefaults) {
+          applyMetadata(tpl.template.publishDefaults.gameMetadata, tpl.template.publishDefaults.deployProfile);
         }
         if (isHubMode) {
           const subRes = await hubRequest("/api/creator/submissions").catch(() => null);
@@ -255,7 +269,7 @@
           instructions: { ko: state.instructionsKo.trim(), en: state.instructionsEn.trim() || state.instructionsKo.trim() },
           tags: state.tags.length ? state.tags : ["arcade"],
           controls: state.controls.length ? state.controls : ["keyboard", "mouse"],
-          viewport: { width: 1280, height: 720, orientation: state.orientation, resize: "fit" }
+          viewport: { width: state.viewportWidth || 1280, height: state.viewportHeight || 720, orientation: state.orientation, resize: "fit" }
         };
 
         const relRes = await ctx.api("/api/platform/projects/" + latest.project.id + "/releases", {

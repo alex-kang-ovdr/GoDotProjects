@@ -41,5 +41,46 @@
     "scenes/main.tscn",
     "project.godot"
   ],
-  "guide": "README.md"
+  "guide": "README.md",
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "mmo",
+      "serverRuntime": "node-wss-v1",
+      "specTier": "small",
+      "lobbyMode": "stateless_ui",
+      "channelPolicy": {
+        "autoChanneling": true,
+        "softCapPerChannel": 100,
+        "hideChannelUiWhenSingle": true
+      },
+      "lifecycle": {
+        "alwaysOn": false,
+        "idleSleepSec": 600,
+        "afkKickSec": 1200
+      }
+    },
+    "gameMetadata": {
+      "slug": "tappy-chicken-mmo",
+      "title": {
+        "ko": "태피 치킨 MMO",
+        "en": "Tappy Chicken MMO"
+      },
+      "summary": {
+        "ko": "주변 플레이어의 비행이 50% 반투명 고스트로 실시간 중계되는 MMO 태피 치킨",
+        "en": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts."
+      },
+      "instructions": {
+        "ko": "스페이스바·클릭 또는 화면 탭으로 날갯짓하세요. P로 일시정지, R로 재시작합니다.",
+        "en": "Press Space, click, or tap to flap. P to pause, R to restart."
+      },
+      "tags": ["arcade", "multiplayer"],
+      "controls": ["keyboard", "mouse", "touch"],
+      "viewport": {
+        "width": 480,
+        "height": 640,
+        "orientation": "portrait",
+        "resize": "fit"
+      }
+    }
+  }
 }
