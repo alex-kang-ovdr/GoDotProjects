@@ -17,6 +17,11 @@ data class FarmCluster(
  */
 object FarmServerRegistry {
     private val LOCKED_STAGES = setOf("release", "live")
+    private val LIVE_HOST_PATTERNS = listOf(
+        Regex("(^|\\.)live\\.playhub\\..*", RegexOption.IGNORE_CASE),
+        Regex("(^|\\.)playhub-live-[a-z0-9-]+\\..*", RegexOption.IGNORE_CASE),
+        Regex("^playhub\\.example\\.com$", RegexOption.IGNORE_CASE)
+    )
     const val CUSTOM_FARM_ID = "custom"
 
     val PRESET_FARMS: List<FarmCluster> = listOf(
@@ -32,13 +37,21 @@ object FarmServerRegistry {
         return allowFlag && stage !in LOCKED_STAGES
     }
 
+    fun isBlockedLiveHost(host: String): Boolean {
+        val normalized = host.trim().lowercase(Locale.ROOT)
+        if (normalized.isEmpty()) return false
+        return LIVE_HOST_PATTERNS.any { it.matches(normalized) }
+    }
+
     fun normalizeCustomUrl(rawUrl: String): String {
         val trimmed = rawUrl.trim().trimEnd('/')
         require(trimmed.isNotEmpty()) { "서버 URL을 입력해 주세요." }
         val uri = URI(trimmed)
         val scheme = uri.scheme?.lowercase(Locale.ROOT)
         require(scheme == "https" || scheme == "http") { "http:// 또는 https:// 주소만 허용됩니다." }
-        require(!uri.host.isNullOrBlank()) { "올바른 호스트 주소가 필요합니다." }
+        val host = uri.host
+        require(!host.isNullOrBlank()) { "올바른 호스트 주소가 필요합니다." }
+        require(!isBlockedLiveHost(host)) { "개발 빌드에서는 Live 서버에 직접 연결할 수 없습니다. Dev Farm을 선택해 주세요." }
         return trimmed
     }
 

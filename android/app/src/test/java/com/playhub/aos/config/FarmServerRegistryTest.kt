@@ -66,6 +66,21 @@ class FarmServerRegistryTest {
         FarmServerRegistry.normalizeCustomUrl("file:///etc/passwd")
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun rejectsLiveProductionHostInDevSelector() {
+        FarmServerRegistry.normalizeCustomUrl("https://live.playhub.example.com")
+    }
+
+    @Test
+    fun blocksLiveProjectHostsWhileAllowingDevAndTunnelHosts() {
+        assertTrue(FarmServerRegistry.isBlockedLiveHost("live.playhub.example.com"))
+        assertTrue(FarmServerRegistry.isBlockedLiveHost("playhub-live-2611.run.app"))
+        assertTrue(FarmServerRegistry.isBlockedLiveHost("playhub.example.com"))
+        assertFalse(FarmServerRegistry.isBlockedLiveHost("dev-farm1.playhub.example.com"))
+        assertFalse(FarmServerRegistry.isBlockedLiveHost("playhub-dev-2611.run.app"))
+        assertFalse(FarmServerRegistry.isBlockedLiveHost("demo.trycloudflare.com"))
+    }
+
     @Test
     fun listsActiveAndDefaultClustersBeforePresetsWithoutDuplicates() {
         val active = FarmCluster("custom", "Custom Farm", "https://tunnel.trycloudflare.com")
