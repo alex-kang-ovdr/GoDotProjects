@@ -1,0 +1,42 @@
+{
+  "id": "unity-space-shooter",
+  "name": "Unity Space Shooter 3D",
+  "description": "Official Unity 3D Space Shooter tutorial ported to Godot 4.7.2: 3D spaceship & asteroid meshes, nebula backdrop, laser combat, explosion VFX, and waves.",
+  "dimension": "3d",
+  "assetPaths": [
+    "assets/audio/explosion_asteroid.tres",
+    "assets/audio/explosion_enemy.tres",
+    "assets/audio/explosion_player.tres",
+    "assets/audio/music_background.tres",
+    "assets/audio/weapon_enemy.tres",
+    "assets/audio/weapon_player.tres",
+    "assets/models/prop_asteroid_01.tres",
+    "assets/models/prop_asteroid_02.tres",
+    "assets/models/prop_asteroid_03.tres",
+    "assets/models/vehicle_enemyShip.tres",
+    "assets/models/vehicle_playerShip.tres",
+    "assets/models/vehicle_playerShip_collider.tres",
+    "assets/textures/fx_lazer_orange_dff.tres",
+    "assets/textures/part_flash_dff.tres",
+    "assets/textures/part_jet_flare_dff.tres",
+    "assets/textures/part_shockwave_dff.tres",
+    "assets/textures/prop_asteroid_01_dff.tres",
+    "assets/textures/prop_asteroid_01_nrm.tres",
+    "assets/textures/prop_asteroid_02_dff.tres",
+    "assets/textures/prop_asteroid_02_nrm.tres",
+    "assets/textures/prop_asteroid_03_dff.tres",
+    "assets/textures/prop_asteroid_03_nrm.tres",
+    "assets/textures/tile_nebula_green_dff.tres",
+    "assets/textures/vehicle_playerShip_orange_dff.tres",
+    "assets/textures/vehicle_playerShip_orange_nrm.tres"
+  ],
+  "guideOrder": [
+    "scripts/mover.gd",
+    "scripts/explosion_vfx.gd",
+    "scripts/player_controller.gd",
+    "scripts/game_controller.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}
