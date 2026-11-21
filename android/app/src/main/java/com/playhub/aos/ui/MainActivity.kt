@@ -185,13 +185,68 @@ class MainActivity : Activity() {
         Pair("#D97706", "골드 스파크")
     )
 
+    private var selectedAvatarCategory: String = "all"
+    private var avatarSavedState: Boolean = false
+
+    private fun avatarPrefs() = getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE)
+
     private fun savedAvatarColor(): String =
         remoteSocialProfile?.avatarColor
-            ?: getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE).getString("avatar_color", "#00B06F")
+            ?: avatarPrefs().getString("avatar_color", "#00B06F")
             ?: "#00B06F"
 
     private fun saveAvatarColor(hex: String) {
-        getSharedPreferences("playhub_avatar_v1", MODE_PRIVATE).edit().putString("avatar_color", hex).apply()
+        avatarPrefs().edit().putString("avatar_color", hex).apply()
+    }
+
+    private fun equippedAvatarIds(): Set<String> {
+        val raw = avatarPrefs().getString("equipped_ids", null) ?: return AvatarCatalog.DEFAULT_EQUIPPED
+        return raw.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+    }
+
+    private fun saveEquippedAvatarIds(ids: Set<String>) {
+        avatarPrefs().edit().putString("equipped_ids", ids.joinToString(",")).apply()
+    }
+
+    private fun toggleEquipAvatarItem(item: AvatarCosmeticItem) {
+        if (!item.owned) {
+            AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(item.name)
+                .setMessage("${item.categoryLabel} 상점 아이템 (${item.price} Play Coin)\n현재 보유 코인: ${formatCoin(profile.coinBalance)}\n\n스토어에서 Play Coin을 충전하거나 무료 착용 미리보기를 전환할 수 있습니다.")
+                .setPositiveButton("코인 스토어") { _, _ -> showCoinStoreDialog() }
+                .setNeutralButton("미리 착용해 보기") { _, _ ->
+                    applyAvatarEquipToggle(item)
+                }
+                .setNegativeButton("닫기", null)
+                .show()
+            return
+        }
+        applyAvatarEquipToggle(item)
+    }
+
+    private fun applyAvatarEquipToggle(item: AvatarCosmeticItem) {
+        val current = equippedAvatarIds().toMutableSet()
+        if (current.contains(item.id)) {
+            current.remove(item.id)
+        } else {
+            // Single-slot replacement within same category
+            AvatarCatalog.ITEMS.filter { it.category == item.category }.forEach { current.remove(it.id) }
+            current.add(item.id)
+        }
+        avatarSavedState = false
+        saveEquippedAvatarIds(current)
+        renderTab(HubTab.AVATAR)
+    }
+
+    private fun isPushAlertEnabled(): Boolean = avatarPrefs().getBoolean("pref_push_alerts", true)
+    private fun setPushAlertEnabled(enabled: Boolean) {
+        avatarPrefs().edit().putBoolean("pref_push_alerts", enabled).apply()
+    }
+
+    private fun isFriendJoinAllowed(): Boolean = avatarPrefs().getBoolean("pref_friend_join", true)
+    private fun setFriendJoinAllowed(allowed: Boolean) {
+        avatarPrefs().edit().putBoolean("pref_friend_join", allowed).apply()
+        sendPresenceHeartbeat("online", null, null, remoteActiveParty?.roomCode)
     }
 
     private fun allCatalogGames(): List<CatalogGame> = remoteCatalog ?: fallbackCatalog()
@@ -427,9 +482,10 @@ class MainActivity : Activity() {
     private fun sendPresenceHeartbeat(status: String, gameId: String?, gameTitle: String?, roomCode: String?) {
         val token = profile.accessToken ?: return
         val baseUrl = activeFarm.baseUrl
+        val joinable = isFriendJoinAllowed()
         ioExecutor.execute {
             runCatching {
-                PlayHubApiClient(baseUrl).updatePresence(token, status, gameId, gameTitle, roomCode)
+                PlayHubApiClient(baseUrl).updatePresence(token, status, gameId, gameTitle, roomCode, joinable)
             }
         }
     }
@@ -1613,66 +1669,287 @@ class MainActivity : Activity() {
         })
     }
 
-    // ---- 3. AVATAR TAB (Server-Synced Profile & Handle & Theme Color) ----
+    // ---- 3. AVATAR STUDIO TAB (Stitch High-Contrast Dark Modern + Live Profile Sync) ----
 
     private fun buildAvatarTab(body: LinearLayout) {
         val accentHex = savedAvatarColor()
-        val displayName = remoteSocialProfile?.displayName ?: profile.displayName
-        val handle = remoteSocialProfile?.handle ?: profile.handle
+        val equipped = equippedAvatarIds()
+        val visibleItems = AvatarCatalog.ITEMS.filter {
+            selectedAvatarCategory == "all" || it.category == selectedAvatarCategory
+        }
 
-        body.addView(sectionHeader("아바타 · 프로필", monoAccent = handle))
-
-        val previewCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
-            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 14)
-            setPadding(dp(20), dp(22), dp(20), dp(20))
-
-            addView(avatarCircle(displayName.take(1).ifBlank { "P" }, accentHex, 88, online = true))
+        // Studio Title + Primary Save Button
+        val headerRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(16), dp(4), dp(16), dp(10))
             addView(TextView(context).apply {
-                text = displayName
-                textSize = 18f
+                text = "아바타 스튜디오"
+                textSize = 18.5f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
-                setPadding(0, dp(12), 0, dp(2))
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             })
             addView(TextView(context).apply {
-                text = "$handle · ${if (profile.isGuest) "Guest" else "Google"} · ${profile.ageTier.name}"
-                textSize = 12.5f
-                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                text = if (avatarSavedState) "✓ 저장됨" else "저장"
+                textSize = 13.5f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+                background = roundedBg(StitchColors.PLAY_GREEN, null, 8)
+                setPadding(dp(16), dp(7), dp(16), dp(7))
+                setOnClickListener {
+                    avatarSavedState = true
+                    saveEquippedAvatarIds(equipped)
+                    saveAvatarColor(accentHex)
+                    syncProfileUpdate(avatarColor = accentHex, toastMsg = "아바타 스타일을 저장했습니다.")
+                    renderTab(HubTab.AVATAR)
+                }
             })
+        }
+        body.addView(headerRow)
+
+        // 4:3 Interactive 3D Voxel Preview Stage
+        val stageFrame = FrameLayout(this).apply {
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 16)
+            clipToOutline = true
+            minimumHeight = dp(264)
+            addView(VoxelAvatarView(context, portraitMode = false).apply {
+                this.equippedIds = equipped
+                this.accentColorHex = accentHex
+            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(264)))
+
+            // Top-left "360° 3D 미리보기" pill
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER
-                setPadding(0, dp(16), 0, dp(6))
-                for ((hex, name) in avatarAccentOptions) {
-                    val selected = hex.equals(accentHex, ignoreCase = true)
-                    addView(View(context).apply {
-                        background = ovalBg(hex, if (selected) "#FFFFFF" else StitchColors.OUTLINE_VARIANT, if (selected) 3 else 1)
-                        layoutParams = LinearLayout.LayoutParams(dp(34), dp(34)).apply {
-                            leftMargin = dp(6)
-                            rightMargin = dp(6)
-                        }
-                        setOnClickListener {
-                            saveAvatarColor(hex)
-                            syncProfileUpdate(avatarColor = hex, toastMsg = "아바타 테마 서버 동기화: $name")
-                        }
+                gravity = Gravity.CENTER_VERTICAL
+                background = roundedBg("#E6111315", StitchColors.OUTLINE_VARIANT, 999)
+                setPadding(dp(10), dp(5), dp(12), dp(5))
+                addView(TextView(context).apply {
+                    text = "360°"
+                    textSize = 11f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+                })
+                addView(TextView(context).apply {
+                    text = " 3D 미리보기"
+                    textSize = 11f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.WHITE)
+                })
+            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.START).apply {
+                topMargin = dp(12)
+                leftMargin = dp(12)
+            })
+
+            // Bottom-right "N개 착용 중" pill
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                background = roundedBg("#E6111315", StitchColors.OUTLINE_VARIANT, 999)
+                setPadding(dp(10), dp(5), dp(12), dp(5))
+                addView(View(context).apply {
+                    background = ovalBg(StitchColors.ONLINE_DOT)
+                    layoutParams = LinearLayout.LayoutParams(dp(7), dp(7)).apply { rightMargin = dp(6) }
+                })
+                addView(TextView(context).apply {
+                    text = "${equipped.size}개 착용 중"
+                    textSize = 11.5f
+                    typeface = Typeface.MONOSPACE
+                    setTextColor(Color.WHITE)
+                })
+            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM or Gravity.END).apply {
+                bottomMargin = dp(12)
+                rightMargin = dp(12)
+            })
+        }
+        body.addView(paddedBox(stageFrame, bottomDp = 12))
+
+        // Theme Accent Swatch Row
+        val swatchCard = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+            addView(TextView(context).apply {
+                text = "테마 컬러"
+                textSize = 12f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            for ((hex, name) in avatarAccentOptions) {
+                val selected = hex.equals(accentHex, ignoreCase = true)
+                addView(View(context).apply {
+                    background = ovalBg(hex, if (selected) "#FFFFFF" else StitchColors.OUTLINE_VARIANT, if (selected) 3 else 1)
+                    layoutParams = LinearLayout.LayoutParams(dp(26), dp(26)).apply { leftMargin = dp(8) }
+                    setOnClickListener {
+                        avatarSavedState = false
+                        saveAvatarColor(hex)
+                        syncProfileUpdate(avatarColor = hex, toastMsg = "아바타 테마 적용: $name")
+                    }
+                })
+            }
+        }
+        body.addView(paddedBox(swatchCard, bottomDp = 12))
+
+        // Category Filter Chips (전체 | 모자 | 얼굴 | 상의 | 등 장식)
+        val chipScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
+        val chipRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(16), dp(2), dp(16), dp(12))
+            for ((catId, label) in AvatarCatalog.CATEGORIES) {
+                val active = selectedAvatarCategory == catId
+                addView(TextView(context).apply {
+                    text = label
+                    textSize = 13.5f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.parseColor(if (active) StitchColors.ON_PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+                    background = roundedBg(
+                        fillHex = if (active) StitchColors.PLAY_GREEN else StitchColors.SURFACE_CONTAINER,
+                        strokeHex = if (active) null else StitchColors.OUTLINE_VARIANT,
+                        radiusDp = 999
+                    )
+                    setPadding(dp(16), dp(8), dp(16), dp(8))
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                        rightMargin = dp(8)
+                    }
+                    setOnClickListener {
+                        selectedAvatarCategory = catId
+                        renderTab(HubTab.AVATAR)
+                    }
+                })
+            }
+        }
+        chipScroll.addView(chipRow)
+        body.addView(chipScroll)
+
+        // Wardrobe & Shop Section Header
+        body.addView(sectionHeader("내 옷장 & 상점", monoAccent = "${visibleItems.size}개 아이템"))
+
+        // 2-Column Wardrobe Grid
+        val grid = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), 0, dp(16), dp(14))
+        }
+        for (i in visibleItems.indices step 2) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    bottomMargin = dp(12)
+                }
+            }
+            row.addView(buildAvatarItemCard(visibleItems[i], equipped.contains(visibleItems[i].id)).apply {
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    rightMargin = dp(6)
+                }
+            })
+            if (i + 1 < visibleItems.size) {
+                row.addView(buildAvatarItemCard(visibleItems[i + 1], equipped.contains(visibleItems[i + 1].id)).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                        leftMargin = dp(6)
+                    }
+                })
+            } else {
+                row.addView(View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, dp(1), 1f).apply { leftMargin = dp(6) }
+                })
+            }
+            grid.addView(row)
+        }
+        body.addView(grid)
+    }
+
+    private fun buildAvatarItemCard(item: AvatarCosmeticItem, isEquipped: Boolean): View {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = roundedBg(
+                fillHex = StitchColors.SURFACE_CONTAINER,
+                strokeHex = if (isEquipped) StitchColors.PLAY_GREEN else StitchColors.OUTLINE_VARIANT,
+                radiusDp = 12
+            )
+            setPadding(dp(8), dp(8), dp(8), dp(10))
+            setOnClickListener { toggleEquipAvatarItem(item) }
+
+            // Square thumbnail with top-right check badge
+            val thumbWrap = FrameLayout(context).apply {
+                background = roundedBg(StitchColors.SURFACE_HIGHEST, null, 8)
+                clipToOutline = true
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(136))
+                addView(AvatarItemThumbView(context, item), FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                if (isEquipped) {
+                    addView(TextView(context).apply {
+                        text = "✓"
+                        textSize = 12f
+                        typeface = Typeface.DEFAULT_BOLD
+                        gravity = Gravity.CENTER
+                        setTextColor(Color.parseColor(StitchColors.ON_PLAY_GREEN))
+                        background = ovalBg(StitchColors.PLAY_GREEN)
+                    }, FrameLayout.LayoutParams(dp(24), dp(24), Gravity.TOP or Gravity.END).apply {
+                        topMargin = dp(8)
+                        rightMargin = dp(8)
+                    })
+                }
+            }
+            addView(thumbWrap)
+
+            addView(TextView(context).apply {
+                text = item.name
+                textSize = 13.5f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.WHITE)
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(dp(4), dp(8), dp(4), dp(4))
+            })
+
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(4), 0, dp(4), 0)
+                addView(TextView(context).apply {
+                    text = item.categoryLabel
+                    textSize = 11f
+                    setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                })
+                if (item.owned || isEquipped) {
+                    addView(TextView(context).apply {
+                        text = if (isEquipped) "착용 중" else "보유 중"
+                        textSize = 11f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.parseColor(if (isEquipped) StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+                    })
+                } else {
+                    addView(LinearLayout(context).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        gravity = Gravity.CENTER_VERTICAL
+                        addView(iconView(R.drawable.ic_coin, 13, StitchColors.COIN_GOLD).apply {
+                            (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(3)
+                        })
+                        addView(TextView(context).apply {
+                            text = item.price.toString()
+                            textSize = 11.5f
+                            typeface = Typeface.MONOSPACE
+                            setTextColor(Color.parseColor(StitchColors.COIN_GOLD))
+                        })
                     })
                 }
             })
         }
-        body.addView(paddedBox(previewCard, bottomDp = 12))
-        body.addView(paddedBox(secondaryActionButton("표시 이름 변경 ($displayName)") { showEditProfileDialog() }, bottomDp = 10))
-        body.addView(paddedBox(primaryActionButton("Play Coin & 코스메틱 스토어 열기") { showCoinStoreDialog() }))
     }
 
-    private fun syncProfileUpdate(displayName: String? = null, avatarColor: String? = null, toastMsg: String) {
+    private fun syncProfileUpdate(
+        displayName: String? = null,
+        avatarColor: String? = null,
+        bio: String? = null,
+        toastMsg: String
+    ) {
         val baseUrl = activeFarm.baseUrl
         ioExecutor.execute {
             runCatching {
                 val client = PlayHubApiClient(baseUrl)
                 val token = ensureAuthToken(client)
-                client.updateSocialProfile(token, displayName = displayName, avatarColor = avatarColor)
+                client.updateSocialProfile(token, displayName = displayName, avatarColor = avatarColor, bio = bio)
             }.onSuccess { updated ->
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
@@ -1691,22 +1968,60 @@ class MainActivity : Activity() {
     }
 
     private fun showEditProfileDialog() {
-        val input = EditText(this).apply {
-            hint = "새 표시 이름 (2~40자)"
-            setText(remoteSocialProfile?.displayName ?: profile.displayName)
+        val currentName = remoteSocialProfile?.displayName ?: profile.displayName
+        val currentHandle = remoteSocialProfile?.handle ?: profile.handle
+        val currentBio = remoteSocialProfile?.bio.orEmpty()
+
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor(StitchColors.SURFACE))
+            setPadding(dp(18), dp(14), dp(18), dp(10))
+        }
+        val nameInput = EditText(this).apply {
+            hint = "표시 이름 (2~40자)"
+            setText(currentName)
             setTextColor(Color.WHITE)
             setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 10)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            setSingleLine(true)
         }
+        val bioInput = EditText(this).apply {
+            hint = "한 줄 소개 (선택)"
+            setText(currentBio)
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 10)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            setSingleLine(true)
+        }
+        box.addView(TextView(this).apply {
+            text = "내 핸들: $currentHandle"
+            textSize = 12f
+            typeface = Typeface.MONOSPACE
+            setTextColor(Color.parseColor(StitchColors.PLAY_GREEN))
+            setPadding(0, 0, 0, dp(10))
+        })
+        box.addView(nameInput)
+        box.addView(View(this).apply { layoutParams = LinearLayout.LayoutParams(dp(1), dp(8)) })
+        box.addView(bioInput)
+
         AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-            .setTitle("프로필 표시 이름 변경")
-            .setView(input)
+            .setTitle("프로필 편집")
+            .setView(box)
             .setPositiveButton("저장") { _, _ ->
-                val name = input.text.toString().trim()
+                val name = nameInput.text.toString().trim()
+                val bio = bioInput.text.toString().trim()
                 if (name.length < 2) {
                     Toast.makeText(this, "표시 이름은 2자 이상이어야 합니다.", Toast.LENGTH_SHORT).show()
                 } else {
-                    syncProfileUpdate(displayName = name, toastMsg = "표시 이름 변경 완료: $name")
+                    syncProfileUpdate(displayName = name, bio = bio, toastMsg = "프로필이 업데이트되었습니다.")
                 }
+            }
+            .setNeutralButton("핸들 복사") { _, _ ->
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                cm?.setPrimaryClip(ClipData.newPlainText("PlayHub Handle", currentHandle))
+                Toast.makeText(this, "핸들 복사됨: $currentHandle", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("취소", null)
             .show()
@@ -2774,48 +3089,188 @@ class MainActivity : Activity() {
             .show()
     }
 
-    // ---- 5. MORE TAB ----
+    // ---- 5. PROFILE & MORE TAB (Stitch High-Contrast Dark Modern, Zero Forge) ----
 
     private fun buildMoreTab(body: LinearLayout) {
         val cachedMb = String.format("%.2f", PckPackageManager.totalCachedBytes(filesDir) / (1024.0 * 1024.0))
         val farmSelectorAllowed = FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)
-        val farmStatusLine = if (farmSelectorAllowed) "\nFarm 상태: ${currentFarmHealth().summaryLine()}" else ""
+        val displayName = remoteSocialProfile?.displayName ?: profile.displayName
+        val handle = remoteSocialProfile?.handle ?: profile.handle
+        val accentHex = savedAvatarColor()
+        val equipped = equippedAvatarIds()
+        val ownedCount = AvatarCatalog.ITEMS.count { it.owned }
+        val friendCount = remoteFriends.size
 
-        body.addView(sectionHeader("더보기", monoAccent = BuildConfig.BUILD_STAGE.uppercase()))
-
-        val buildInfoCard = LinearLayout(this).apply {
+        // 1. Stitch Profile Summary Card (Avatar Portrait + DisplayName/Handle + 프로필 button + 3-col Stats)
+        val profileCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            addView(TextView(context).apply {
-                text = "앱 & 런타임 정보 (Forge 제외 · 플레이 전용)"
-                textSize = 14.5f
-                typeface = Typeface.DEFAULT_BOLD
-                setTextColor(Color.WHITE)
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 16)
+            setPadding(dp(16), dp(16), dp(16), dp(14))
+
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, 0, 0, dp(14))
+
+                // 64dp circular voxel avatar portrait with Play Green ring + online dot
+                val portraitWrap = FrameLayout(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(dp(64), dp(64))
+                    val ring = FrameLayout(context).apply {
+                        background = ovalBg(StitchColors.SURFACE_HIGH, StitchColors.PLAY_GREEN, 2)
+                        setPadding(dp(3), dp(3), dp(3), dp(3))
+                        val clipCircle = FrameLayout(context).apply {
+                            background = ovalBg(StitchColors.SURFACE_HIGH)
+                            clipToOutline = true
+                            addView(VoxelAvatarView(context, portraitMode = true).apply {
+                                this.equippedIds = equipped
+                                this.accentColorHex = accentHex
+                            }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                        }
+                        addView(clipCircle, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                    }
+                    addView(ring, FrameLayout.LayoutParams(dp(64), dp(64)))
+                    addView(View(context).apply {
+                        background = ovalBg(StitchColors.ONLINE_DOT, StitchColors.SURFACE, 2)
+                    }, FrameLayout.LayoutParams(dp(16), dp(16), Gravity.BOTTOM or Gravity.END))
+                }
+                addView(portraitWrap)
+
+                addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                        leftMargin = dp(12)
+                        rightMargin = dp(8)
+                    }
+                    addView(TextView(context).apply {
+                        text = displayName
+                        textSize = 17.5f
+                        typeface = Typeface.DEFAULT_BOLD
+                        setTextColor(Color.WHITE)
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                    })
+                    addView(TextView(context).apply {
+                        text = handle
+                        textSize = 12f
+                        typeface = Typeface.MONOSPACE
+                        setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                        setPadding(0, dp(2), 0, 0)
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                    })
+                })
+
+                addView(TextView(context).apply {
+                    text = "프로필"
+                    textSize = 12f
+                    typeface = Typeface.DEFAULT_BOLD
+                    setTextColor(Color.WHITE)
+                    background = roundedBg(StitchColors.SURFACE_HIGH, StitchColors.OUTLINE_VARIANT, 8)
+                    setPadding(dp(12), dp(7), dp(12), dp(7))
+                    setOnClickListener { showEditProfileDialog() }
+                })
             })
-            addView(TextView(context).apply {
-                text = "Package ID: ${applicationContext.packageName}\n" +
-                    "Build Stage: ${BuildConfig.BUILD_STAGE} · Branch: ${BuildConfig.PLAYHUB_BRANCH}\n" +
-                    "Engine: Godot ${BuildConfig.GODOT_ENGINE_VERSION} (template_release 내장)\n" +
-                    "Social Handle: ${remoteSocialProfile?.handle ?: profile.handle}\n" +
-                    "Active Farm: ${activeFarm.label}\n" +
-                    "Server URL: ${activeFarm.baseUrl}$farmStatusLine\n" +
-                    "온디맨드 .pck 캐시: ${cachedMb} MiB (내장 스타터: 0종)"
-                textSize = 12f
-                typeface = Typeface.MONOSPACE
-                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
-                setPadding(0, dp(8), 0, 0)
-                setLineSpacing(dp(3).toFloat(), 1f)
+
+            addView(View(context).apply {
+                setBackgroundColor(Color.parseColor(StitchColors.OUTLINE_VARIANT))
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
+            })
+
+            // 3-Column Stats Row: 친구 | 아이템 | 코인
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, dp(12), 0, dp(2))
+                addView(profileStatCell(friendCount.toString(), "친구", "#FFFFFF") { renderTab(HubTab.CHAT) })
+                addView(profileStatCell("${equipped.size}/${ownedCount}", "아이템", "#FFFFFF") { renderTab(HubTab.AVATAR) })
+                addView(profileStatCell(formatCoin(profile.coinBalance), "코인", StitchColors.COIN_GOLD) { showCoinStoreDialog() })
             })
         }
-        body.addView(paddedBox(buildInfoCard, bottomDp = 12))
+        body.addView(paddedBox(profileCard, topDp = 4, bottomDp = 16))
 
+        // 2. Quick Menu 2x2 Grid (Supported PlayHub Features Only — Zero Forge)
+        body.addView(sectionHeader("메뉴"))
+        val menuGrid = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), 0, dp(16), dp(14))
+
+            val row1 = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    bottomMargin = dp(10)
+                }
+                addView(quickMenuTile(R.drawable.ic_nav_avatar, "인벤토리", ownedCount.toString()) {
+                    renderTab(HubTab.AVATAR)
+                }.apply {
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { rightMargin = dp(5) }
+                })
+                addView(quickMenuTile(R.drawable.ic_group, "파티 & 친구", if (remoteActiveParty != null) "LIVE" else friendCount.toString()) {
+                    renderTab(HubTab.CHAT)
+                }.apply {
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { leftMargin = dp(5) }
+                })
+            }
+            val row2 = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(quickMenuTile(R.drawable.ic_nav_explore, "리더보드", "TOP") {
+                    val featured = allCatalogGames().firstOrNull()
+                    if (featured != null) openExperienceDetail(featured)
+                }.apply {
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { rightMargin = dp(5) }
+                })
+                addView(quickMenuTile(R.drawable.ic_coin, "Play Pass", "STORE") {
+                    showCoinStoreDialog()
+                }.apply {
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { leftMargin = dp(5) }
+                })
+            }
+            addView(row1)
+            addView(row2)
+        }
+        body.addView(menuGrid)
+
+        // 3. Settings & Account Card (Stitch divided list with ToggleSwitches)
+        body.addView(sectionHeader("설정 및 계정"))
+        val settingsCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+
+            addView(settingsToggleRow(
+                iconRes = R.drawable.ic_notifications,
+                label = "친구 접속 및 초대 알림",
+                checked = isPushAlertEnabled()
+            ) { next ->
+                setPushAlertEnabled(next)
+                renderTab(HubTab.MORE)
+                Toast.makeText(this@MainActivity, if (next) "친구 알림이 켜졌습니다." else "친구 알림이 꺼졌습니다.", Toast.LENGTH_SHORT).show()
+            })
+            addView(settingsDivider())
+            addView(settingsToggleRow(
+                iconRes = R.drawable.ic_group,
+                label = "친구 게임 합류 허용",
+                checked = isFriendJoinAllowed()
+            ) { next ->
+                setFriendJoinAllowed(next)
+                renderTab(HubTab.MORE)
+                Toast.makeText(this@MainActivity, if (next) "친구의 게임 합류를 허용합니다." else "친구 게임 합류를 비공개로 전환했습니다.", Toast.LENGTH_SHORT).show()
+            })
+            addView(settingsDivider())
+            addView(settingsNavRow(R.drawable.ic_lock, "개인정보 및 계정 보안 (${profile.ageTier.name})") {
+                showPrivacyAndSecurityDialog(cachedMb)
+            })
+            addView(settingsDivider())
+            addView(settingsNavRow(R.drawable.ic_nav_more, "고객 지원 및 런타임 정보") {
+                showRuntimeSupportDialog(cachedMb)
+            })
+        }
+        body.addView(paddedBox(settingsCard, bottomDp = 12))
+
+        // 4. Dev/Debug-Only Farm Cluster Selector (strictly hidden on release/live)
         if (farmSelectorAllowed) {
             val health = currentFarmHealth()
             val farmBtn = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                background = roundedBg(StitchColors.SURFACE_CONTAINER, health.status.colorHex, 10)
+                background = roundedBg(StitchColors.SURFACE_CONTAINER, health.status.colorHex, 12)
                 setPadding(dp(14), dp(13), dp(14), dp(13))
                 setOnClickListener { showFarmSelectorDialog() }
                 addView(View(context).apply {
@@ -2831,18 +3286,174 @@ class MainActivity : Activity() {
                 })
                 addView(pillChip(health.badgeLabel(), health.status.badgeBgHex, health.status.badgeTextHex, health.status.colorHex))
             }
-            body.addView(paddedBox(farmBtn, bottomDp = 10))
+            body.addView(paddedBox(farmBtn, bottomDp = 12))
         }
 
-        body.addView(paddedBox(primaryActionButton("Play Coin & Play Pass 스토어") { showCoinStoreDialog() }, bottomDp = 10))
-        body.addView(paddedBox(secondaryActionButton("온디맨드 .pck 캐시 정리 (${cachedMb} MiB)") {
-            File(filesDir, "games").deleteRecursively()
-            renderTab(HubTab.MORE)
-            Toast.makeText(this, "로컬 .pck 캐시를 정리했습니다.", Toast.LENGTH_SHORT).show()
-        }, bottomDp = 10))
-        body.addView(paddedBox(secondaryActionButton("연령 확인 상태 (${profile.ageTier.name} · ${profile.regionCode})") {
-            Toast.makeText(this, "연령 티어: ${profile.ageTier.name} (${profile.regionCode})", Toast.LENGTH_SHORT).show()
-        }))
+        // 5. Logout / Reset Guest Session Button (Stitch error text button)
+        val logoutBtn = TextView(this).apply {
+            text = "로그아웃"
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setTextColor(Color.parseColor(StitchColors.ERROR))
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+            setPadding(dp(14), dp(13), dp(14), dp(13))
+            setOnClickListener {
+                AlertDialog.Builder(this@MainActivity, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                    .setTitle("로그아웃")
+                    .setMessage("현재 기기의 세션 토큰을 초기화하고 새 게스트로 시작할까요?")
+                    .setPositiveButton("로그아웃") { _, _ ->
+                        authStore.clearRemoteTokensForFarmSwitch()
+                        profile = authStore.loadOrCreateGuest()
+                        remoteSocialProfile = null
+                        remoteFriends = emptyList()
+                        remoteActiveParty = null
+                        Toast.makeText(this@MainActivity, "로그아웃되었습니다.", Toast.LENGTH_SHORT).show()
+                        syncWithActiveFarm()
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            }
+        }
+        body.addView(paddedBox(logoutBtn, bottomDp = 12))
+    }
+
+    private fun profileStatCell(value: String, label: String, valueColorHex: String, onClick: () -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            setOnClickListener { onClick() }
+            addView(TextView(context).apply {
+                text = value
+                textSize = 15.5f
+                typeface = Typeface.MONOSPACE
+                setTextColor(Color.parseColor(valueColorHex))
+                gravity = Gravity.CENTER
+            })
+            addView(TextView(context).apply {
+                text = label
+                textSize = 11f
+                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+                gravity = Gravity.CENTER
+                setPadding(0, dp(2), 0, 0)
+            })
+        }
+
+    private fun quickMenuTile(iconRes: Int, label: String, countText: String, onClick: () -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
+            setPadding(dp(12), dp(13), dp(12), dp(13))
+            setOnClickListener { onClick() }
+            addView(iconView(iconRes, 18, StitchColors.PLAY_GREEN).apply {
+                (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(8)
+            })
+            addView(TextView(context).apply {
+                text = label
+                textSize = 13.5f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.WHITE)
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            addView(TextView(context).apply {
+                text = countText
+                textSize = 11.5f
+                typeface = Typeface.MONOSPACE
+                setTextColor(Color.parseColor(if (countText == "LIVE") StitchColors.PLAY_GREEN else StitchColors.ON_SURFACE_VARIANT))
+            })
+        }
+
+    private fun settingsDivider(): View = View(this).apply {
+        setBackgroundColor(Color.parseColor(StitchColors.OUTLINE_VARIANT))
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1))
+    }
+
+    private fun settingsToggleRow(iconRes: Int, label: String, checked: Boolean, onToggle: (Boolean) -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(14), dp(13), dp(14), dp(13))
+            setOnClickListener { onToggle(!checked) }
+            addView(iconView(iconRes, 18, StitchColors.ON_SURFACE_VARIANT).apply {
+                (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(12)
+            })
+            addView(TextView(context).apply {
+                text = label
+                textSize = 14f
+                setTextColor(Color.WHITE)
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            // Stitch custom pill toggle switch
+            val pill = FrameLayout(context).apply {
+                background = roundedBg(if (checked) StitchColors.PLAY_GREEN else StitchColors.SURFACE_HIGHEST, null, 999)
+                setPadding(dp(2), dp(2), dp(2), dp(2))
+                layoutParams = LinearLayout.LayoutParams(dp(44), dp(24))
+                addView(View(context).apply {
+                    background = ovalBg("#FFFFFF")
+                }, FrameLayout.LayoutParams(dp(20), dp(20), if (checked) Gravity.END or Gravity.CENTER_VERTICAL else Gravity.START or Gravity.CENTER_VERTICAL))
+            }
+            addView(pill)
+        }
+
+    private fun settingsNavRow(iconRes: Int, label: String, onClick: () -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(14), dp(13), dp(14), dp(13))
+            setOnClickListener { onClick() }
+            addView(iconView(iconRes, 18, StitchColors.ON_SURFACE_VARIANT).apply {
+                (layoutParams as LinearLayout.LayoutParams).rightMargin = dp(12)
+            })
+            addView(TextView(context).apply {
+                text = label
+                textSize = 14f
+                setTextColor(Color.WHITE)
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            addView(TextView(context).apply {
+                text = "›"
+                textSize = 18f
+                setTextColor(Color.parseColor(StitchColors.ON_SURFACE_VARIANT))
+            })
+        }
+
+    private fun showPrivacyAndSecurityDialog(cachedMb: String) {
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("개인정보 및 계정 보안")
+            .setMessage(
+                "계정 유형: ${if (profile.isGuest) "Guest (즉시 플레이)" else "Google 연동 계정"}\n" +
+                    "연령 보호 티어: ${profile.ageTier.name} (${profile.regionCode})\n" +
+                    "법정대리인 동의: ${if (profile.parentalConsentVerified) "확인됨" else "해당 없음/미확인"}\n" +
+                    "온디맨드 .pck 캐시: $cachedMb MiB (내장 스타터 0종)"
+            )
+            .setPositiveButton("확인", null)
+            .setNeutralButton(".pck 캐시 정리") { _, _ ->
+                File(filesDir, "games").deleteRecursively()
+                renderTab(HubTab.MORE)
+                Toast.makeText(this, "로컬 .pck 캐시를 정리했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            .show()
+    }
+
+    private fun showRuntimeSupportDialog(cachedMb: String) {
+        val farmSelectorAllowed = FarmServerRegistry.isSelectorAllowed(BuildConfig.BUILD_STAGE, BuildConfig.ALLOW_FARM_SELECTOR)
+        val farmStatusLine = if (farmSelectorAllowed) "\nFarm 상태: ${currentFarmHealth().summaryLine()}" else ""
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("PlayHub 런타임 · 고객 지원")
+            .setMessage(
+                "Package ID: ${applicationContext.packageName}\n" +
+                    "Build Stage: ${BuildConfig.BUILD_STAGE} · Branch: ${BuildConfig.PLAYHUB_BRANCH}\n" +
+                    "Engine: Godot ${BuildConfig.GODOT_ENGINE_VERSION} (Runtime Only · Forge 제외)\n" +
+                    "Social Handle: ${remoteSocialProfile?.handle ?: profile.handle}\n" +
+                    "Server URL: ${activeFarm.baseUrl}$farmStatusLine\n" +
+                    "온디맨드 .pck 캐시: $cachedMb MiB (스타터 0종)"
+            )
+            .setPositiveButton("확인", null)
+            .show()
     }
 
     private fun paddedBox(child: View, topDp: Int = 0, bottomDp: Int = 0): FrameLayout = FrameLayout(this).apply {
