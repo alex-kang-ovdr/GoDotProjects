@@ -570,7 +570,8 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
       });
       assert.equal(existing.status, 201, 'Preload a library entry so it does not open a blank editor first.');
       await page.goto(base + '/OfficialGodot/', { waitUntil: 'domcontentloaded' });
-      await page.getByRole('button', { name: templateName, exact: false }).click();
+      const exactTitle = new RegExp(`^${templateName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+      await page.locator('#templates button.card', { has: page.locator('strong', { hasText: exactTitle }) }).click();
       await page.getByRole('button', { name: '만드는 과정 보기' }).click();
       await page.waitForFunction(() => new URL(location.href).searchParams.get('project'));
       const id = new URL(page.url()).searchParams.get('project');
