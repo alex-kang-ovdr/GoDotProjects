@@ -1,0 +1,24 @@
+# Generated Xcode project (managed declaratively via ios/project.yml + XcodeGen)
+PlayHub.xcodeproj/
+*.xcworkspace/
+
+# Extracted Godot 4.7.2 XCFramework (generated via tools/ios/extract-godot-xcframework.{ps1,sh})
+Vendor/
+
+# Build outputs & SwiftPM artifacts
+build/
+DerivedData/
+.build/
+Packages/PlayHubCore/.build/
+Packages/PlayHubCore/.swiftpm/
+
+# Signed artifacts & secrets (NEVER commit)
+*.ipa
+*.xcarchive
+*.dSYM
+*.p12
+*.cer
+*.mobileprovision
+*.p8
+xcuserdata/
+.DS_Store

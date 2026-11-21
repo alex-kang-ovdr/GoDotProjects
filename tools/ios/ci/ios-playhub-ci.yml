@@ -1,0 +1,41 @@
+# GitHub Actions macOS CI template for PlayHub iOS (Hub-IOS)
+# Install into .github/workflows/ios-playhub-ci.yml upon trunk merge to PlayHub-Platform.
+name: PlayHub iOS CI (PlayHubCore + Simulator Build + 6-Gate Verify)
+
+on:
+  push:
+    branches: ["Hub-IOS"]
+    paths:
+      - "ios/**"
+      - "tools/ios/**"
+      - "hub/server/mobile/apple-*.mjs"
+      - "hub/server/mobile/aasa.mjs"
+      - "hub/server/mobile/apns.mjs"
+      - "hub/server/iap/apple*.mjs"
+      - "hub/tests/ios-*.mjs"
+      - "hub/tests/iap-apple*.mjs"
+  workflow_dispatch:
+
+jobs:
+  backend-and-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Run Apple Backend & IPA 6-Gate Unit Tests
+        run: node --test hub/tests/ios-*.test.mjs hub/tests/iap-apple.test.mjs
+
+  ios-swift-core:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run PlayHubCore Swift Package Unit Tests
+        working-directory: ios/Packages/PlayHubCore
+        run: swift test -v
+      - name: Validate XcodeGen Spec
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
