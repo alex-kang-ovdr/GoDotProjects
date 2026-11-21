@@ -45,7 +45,27 @@ const OPTIONAL_TABLES={
   l10n_releases:['version','tag','sha256','key_count','media_count','coverage_json','bundle_json','notes','is_active','created_by','created_at'],
   hub_publications:['game_id','host_slug','owner_key','owner_id','project_id','active_release_id','active_submission_id','visibility','deploy_mode','status','artifact_sha256','artifact_base_url','manifest_json','deploy_profile_json','cas_version','published_at','updated_at'],
   hub_publication_history:['id','game_id','from_release_id','to_release_id','action','actor_id','reason','cas_version','created_at'],
-  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at']
+  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at'],
+  billing_catalog_skus:['sku_id','currency','title_l10n_key','amount_minor','base_coins','sort_order','active','updated_at'],
+  billing_channel_bonus_rules:['id','channel','sku_id','currency','min_amount_minor','bonus_bps','active','starts_at','ends_at','updated_at'],
+  billing_idempotency:['scope','idempotency_key','principal_id','request_hash','status_code','response_json','created_at'],
+  billing_orders:['id','principal_id','channel','provider','sku_id','currency','amount_minor','base_coins','bonus_coins','bonus_bps','state','provider_payment_id','idempotency_key','first_spent_at','paid_at','created_at','updated_at'],
+  billing_payment_events:['id','provider','external_event_id','order_id','event_type','payload_sha256','status','received_at','processed_at'],
+  billing_wallet_accounts:['principal_id','paid_balance','bonus_balance','promo_balance','reserved_coins','debt_coins','frozen_reason','frozen_at','updated_at'],
+  billing_wallet_lots:['id','principal_id','parent_order_id','bucket','initial_coins','remaining_coins','expires_at','created_at'],
+  billing_wallet_holds:['id','principal_id','amount_coins','settled_coins','sink_type','sink_ref_id','state','idempotency_key','expires_at','created_at','updated_at'],
+  billing_journal_entries:['id','event_type','order_id','sink_type','sink_ref_id','idempotency_key','metadata_json','created_at'],
+  billing_journal_lines:['id','entry_id','account_code','signed_coins','lot_id','created_at'],
+  billing_giftcard_batches:['id','channel','partner_name','currency','face_value_minor','base_coins','bonus_bps','quantity','state','expires_at','created_by','created_at'],
+  billing_giftcards:['id','batch_id','serial_no','pin_hash','pin_hint','currency','face_value_minor','state','activated_at','redeemed_by','redeemed_at','redeemed_order_id','expires_at'],
+  billing_refunds:['id','order_id','principal_id','kind','refund_amount_minor','clawback_paid_coins','clawback_bonus_coins','debt_added_coins','provider_refund_id','status','reason','actor_id','created_at','completed_at'],
+  billing_spending_limits:['principal_id','age_tier','monthly_cap_minor','daily_cap_minor','guardian_approved','updated_by','updated_at'],
+  billing_subscriptions:['id','principal_id','plan_tier','status','provider','provider_subscription_id','current_period_start','current_period_end','cancel_at_period_end','created_at','updated_at'],
+  billing_usage_records:['id','principal_id','metric_type','resource_ref_id','quantity','billable_coins','hold_id','journal_entry_id','period_key','idempotency_key','created_at'],
+  billing_creator_connections:['principal_id','provider','connected_account_id','onboarding_status','charges_enabled','payouts_enabled','country_code','platform_fee_bps','updated_at'],
+  billing_creator_products:['id','creator_id','game_id','product_key','kind','title','currency','amount_minor','allowed_regions_json','allowed_platforms_json','age_rating','status','created_at','updated_at'],
+  billing_direct_orders:['id','buyer_id','creator_id','product_id','game_id','platform','provider','connected_account_id','provider_charge_id','currency','amount_minor','platform_fee_minor','state','idempotency_key','paid_at','created_at','updated_at'],
+  billing_entitlements:['id','buyer_id','creator_id','game_id','product_id','product_key','direct_order_id','state','granted_at','expires_at','revoked_at','revoke_reason','updated_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
