@@ -3,6 +3,7 @@ import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createUgcPublish } from './ugc-publish.mjs';
+import { createAvatarService } from './avatar/service.mjs';
 import { createAdminConsole } from './admin-console.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createL10n } from './l10n.mjs';
@@ -138,6 +139,7 @@ export function createApp(input, dependencies = {}) {
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
+  const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession, promote, rate, audit });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
@@ -259,6 +261,7 @@ export function createApp(input, dependencies = {}) {
     if (await l10n.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
+    if (await avatar.publicRoute(req,res,url)) return;
     const path = url.pathname;
     if(await forge.handle(req,res,url))return;
     if (path === '/api/session' && req.method === 'GET') {
@@ -626,7 +629,7 @@ export function createApp(input, dependencies = {}) {
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,ugcPublish,publicHandler,adminHandler,publicServer,adminServer,
+  return { db,cdn,ugcPublish,avatar,publicHandler,adminHandler,publicServer,adminServer,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },

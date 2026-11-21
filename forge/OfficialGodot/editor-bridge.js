@@ -612,7 +612,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -620,7 +620,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control)\//.test(file) || file.startsWith('.godot/') ||
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar)\//.test(file) || file.startsWith('.godot/') ||
           file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
@@ -646,6 +646,9 @@
     if (remoteControlAllowed && remoteControlFiles) {
       pluginPaths.push('res://addons/playforge_remote_control/plugin.cfg');
     }
+    if (avatarBundle && avatarBundle.files) {
+      pluginPaths.push('res://addons/playforge_avatar/plugin.cfg');
+    }
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
@@ -662,6 +665,9 @@
     const mountedAddons = [['playforge_replay', replay.files], ['playforge_agent_chat', chatFiles]];
     if (remoteControlAllowed && remoteControlFiles) {
       mountedAddons.push(['playforge_remote_control', remoteControlFiles]);
+    }
+    if (avatarBundle && avatarBundle.files) {
+      mountedAddons.push(['playforge_avatar', avatarBundle.files]);
     }
     for (const [directory, files] of mountedAddons) {
       for (const [name, content] of Object.entries(files)) {
@@ -685,6 +691,13 @@
       mounted.push({ path: '/tmp/playforge-store/' + projectId + '/' + file, buffer: new TextEncoder().encode(sources[file]) });
     }
     mounted.push({ path: dir + '/.playforge-store.json', buffer: new TextEncoder().encode(JSON.stringify(catalog)) });
+    if (avatarBundle && Array.isArray(avatarBundle.binaryAssets)) {
+      for (const item of avatarBundle.binaryAssets) {
+        if (item?.relPath && item.buffer instanceof Uint8Array) {
+          mounted.push({ path: `${dir}/addons/playforge_avatar/${item.relPath}`, buffer: item.buffer });
+        }
+      }
+    }
     return mounted;
   }
 
@@ -852,18 +865,39 @@
       return null;
     }
   }
+  async function fetchAvatarAddon() {
+    try {
+      const response = await fetch(forgePath('/api/platform-addon/avatar'), { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) return null;
+      const data = await response.json().catch(() => null);
+      if (!data || data.ok !== true || !data.files || typeof data.files !== 'object') return null;
+      const binaryAssets = [];
+      const wanted = Array.isArray(data.assets) ? data.assets : [];
+      await Promise.all(wanted.map(async (asset) => {
+        if (!asset?.url || !asset?.relPath) return;
+        const res = await fetch(forgePath(asset.url), { credentials: 'same-origin' });
+        if (!res.ok) return;
+        const buf = new Uint8Array(await res.arrayBuffer());
+        binaryAssets.push({ relPath: asset.relPath, buffer: buf });
+      }));
+      return { files: data.files, binaryAssets };
+    } catch {
+      return null;
+    }
+  }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       setLoading('프로젝트 파일 불러오는 중…', '프로젝트와 에디터 애드온을 가져오고 있습니다.', 8);
       await ensureCsrfToken();
-      const [project, addonFiles, chat, remoteControlFiles] = await Promise.all([fetchProject(), fetchAddon(),
+      const [project, addonFiles, chat, remoteControlFiles, avatarBundle] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
           ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd']),
-        fetchRemoteControlAddon()]);
+        fetchRemoteControlAddon(),
+        fetchAvatarAddon()]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       setLoading('Godot 웹 에디터 다운로드 중…', 'WASM 엔진을 받아오고 있습니다 (최초 1회 이후 브라우저 캐시 적용).', 12);

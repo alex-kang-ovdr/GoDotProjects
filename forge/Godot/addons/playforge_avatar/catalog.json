@@ -1,0 +1,815 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "2026.11.21-m1",
+  "currency": "PlayCoin",
+  "defaultLoadout": {
+    "skinId": "skin_knight",
+    "attachments": {
+      "head": null,
+      "back": "acc_quiver",
+      "hand_r": null,
+      "hand_l": null
+    },
+    "emoteWheel": [
+      "emote_cheer",
+      "emote_wave",
+      null,
+      null
+    ]
+  },
+  "attachmentSlots": [
+    {
+      "id": "head",
+      "label": "머리",
+      "labelEn": "Head"
+    },
+    {
+      "id": "back",
+      "label": "등",
+      "labelEn": "Back"
+    },
+    {
+      "id": "hand_r",
+      "label": "오른손",
+      "labelEn": "Right Hand"
+    },
+    {
+      "id": "hand_l",
+      "label": "왼손",
+      "labelEn": "Left Hand"
+    }
+  ],
+  "rigProfiles": {
+    "kaykit_v1": {
+      "modelScale": 0.88,
+      "facingYawDegrees": 180.0,
+      "eyeHeight": 1.62,
+      "capsuleHeight": 1.85,
+      "capsuleRadius": 0.38,
+      "headMeshKeywords": [
+        "head",
+        "helmet",
+        "hat",
+        "hood",
+        "visor"
+      ],
+      "bones": {
+        "hips": "hips",
+        "spine": "spine",
+        "chest": "chest",
+        "head": "head",
+        "upper_arm_l": "upperarm.l",
+        "lower_arm_l": "lowerarm.l",
+        "hand_l": "hand.l",
+        "upper_arm_r": "upperarm.r",
+        "lower_arm_r": "lowerarm.r",
+        "hand_r": "hand.r",
+        "upper_leg_l": "upperleg.l",
+        "lower_leg_l": "lowerleg.l",
+        "foot_l": "foot.l",
+        "upper_leg_r": "upperleg.r",
+        "lower_leg_r": "lowerleg.r",
+        "foot_r": "foot.r"
+      },
+      "sockets": {
+        "head": {
+          "bone": "head",
+          "position": [
+            0.0,
+            0.68,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.95,
+            1.95,
+            1.95
+          ]
+        },
+        "back": {
+          "bone": "chest",
+          "position": [
+            0.0,
+            0.14,
+            -0.32
+          ],
+          "rotationDegrees": [
+            0.0,
+            180.0,
+            0.0
+          ],
+          "scale": [
+            0.85,
+            0.85,
+            0.85
+          ]
+        },
+        "hand_r": {
+          "bone": "handslot.r",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.85,
+            0.85,
+            0.85
+          ]
+        },
+        "hand_l": {
+          "bone": "handslot.l",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.85,
+            0.85,
+            0.85
+          ]
+        }
+      },
+      "animations": {
+        "idle": [
+          "Idle",
+          "Unarmed_Idle"
+        ],
+        "walk": [
+          "Walking_A",
+          "Walking_B"
+        ],
+        "walk_back": [
+          "Walking_Backwards",
+          "Walking_A"
+        ],
+        "run": [
+          "Running_A",
+          "Running_B"
+        ],
+        "strafe_left": [
+          "Running_Strafe_Left",
+          "Walking_A"
+        ],
+        "strafe_right": [
+          "Running_Strafe_Right",
+          "Walking_A"
+        ],
+        "jump_start": [
+          "Jump_Start",
+          "Jump_Full_Short"
+        ],
+        "jump_air": [
+          "Jump_Idle",
+          "Jump_Full_Long"
+        ],
+        "jump_land": [
+          "Jump_Land",
+          "Idle"
+        ],
+        "crouch": [
+          "Sit_Floor_Idle",
+          "Idle"
+        ],
+        "stand_up": [
+          "Lie_StandUp",
+          "Sit_Floor_StandUp",
+          "Idle"
+        ],
+        "emote_cheer": [
+          "Cheer"
+        ],
+        "emote_wave": [
+          "Interact",
+          "Cheer"
+        ],
+        "emote_dance": [
+          "2H_Melee_Attack_Spinning",
+          "Cheer"
+        ],
+        "emote_thumbs_up": [
+          "Use_Item",
+          "Cheer"
+        ],
+        "emote_sit": [
+          "Sit_Floor_Idle",
+          "Sit_Chair_Idle"
+        ],
+        "emote_spell": [
+          "Spellcast_Raise",
+          "Spellcasting"
+        ],
+        "emote_spin": [
+          "2H_Melee_Attack_Spin",
+          "Dodge_Forward"
+        ],
+        "emote_punch": [
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Kick"
+        ]
+      }
+    },
+    "robot_expressive_v1": {
+      "modelScale": 0.44,
+      "facingYawDegrees": 180.0,
+      "eyeHeight": 1.65,
+      "capsuleHeight": 1.85,
+      "capsuleRadius": 0.4,
+      "headMeshKeywords": [
+        "head"
+      ],
+      "bones": {
+        "hips": "Hips",
+        "spine": "Abdomen",
+        "chest": "Torso",
+        "head": "Head",
+        "upper_arm_l": "UpperArm.L",
+        "lower_arm_l": "LowerArm.L",
+        "hand_l": "Palm2.L",
+        "upper_arm_r": "UpperArm.R",
+        "lower_arm_r": "LowerArm.R",
+        "hand_r": "Palm2.R",
+        "upper_leg_l": "UpperLeg.L",
+        "lower_leg_l": "LowerLeg.L",
+        "foot_l": "Foot.L",
+        "upper_leg_r": "UpperLeg.R",
+        "lower_leg_r": "LowerLeg.R",
+        "foot_r": "Foot.R"
+      },
+      "sockets": {
+        "head": {
+          "bone": "Head",
+          "position": [
+            0.0,
+            0.008,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.025,
+            0.025,
+            0.025
+          ]
+        },
+        "back": {
+          "bone": "Torso",
+          "position": [
+            0.0,
+            0.003,
+            -0.007
+          ],
+          "rotationDegrees": [
+            0.0,
+            180.0,
+            0.0
+          ],
+          "scale": [
+            0.018,
+            0.018,
+            0.018
+          ]
+        },
+        "hand_r": {
+          "bone": "Palm2.R",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.016,
+            0.016,
+            0.016
+          ]
+        },
+        "hand_l": {
+          "bone": "Palm2.L",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotationDegrees": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.016,
+            0.016,
+            0.016
+          ]
+        }
+      },
+      "animations": {
+        "idle": [
+          "Idle"
+        ],
+        "walk": [
+          "Walking"
+        ],
+        "walk_back": [
+          "Walking"
+        ],
+        "run": [
+          "Running"
+        ],
+        "strafe_left": [
+          "Walking"
+        ],
+        "strafe_right": [
+          "Walking"
+        ],
+        "jump_start": [
+          "Jump"
+        ],
+        "jump_air": [
+          "Jump"
+        ],
+        "jump_land": [
+          "Idle"
+        ],
+        "crouch": [
+          "Sitting"
+        ],
+        "stand_up": [
+          "Standing",
+          "Idle"
+        ],
+        "emote_cheer": [
+          "Yes",
+          "Wave"
+        ],
+        "emote_wave": [
+          "Wave"
+        ],
+        "emote_dance": [
+          "Dance"
+        ],
+        "emote_thumbs_up": [
+          "ThumbsUp"
+        ],
+        "emote_sit": [
+          "Sitting"
+        ],
+        "emote_spell": [
+          "Dance",
+          "Yes"
+        ],
+        "emote_spin": [
+          "WalkJump",
+          "Dance"
+        ],
+        "emote_punch": [
+          "Punch"
+        ]
+      }
+    }
+  },
+  "items": [
+    {
+      "id": "skin_knight",
+      "category": "skin",
+      "name": "기사 (Knight)",
+      "nameEn": "Knight",
+      "description": "중갑옷과 투구를 갖춘 PlayHub 기본 모험가 기사 아바타입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "rigProfile": "kaykit_v1",
+      "accentColor": "#3b82f6",
+      "assetPath": "assets/skins/Knight.glb",
+      "sha256": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168",
+      "bytes": 3659532
+    },
+    {
+      "id": "skin_robot",
+      "category": "skin",
+      "name": "익스프레시브 봇",
+      "nameEn": "Expressive Bot",
+      "description": "경쾌한 표정과 댄스·웨이브 모션을 지원하는 기본 로봇 아바타입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "rigProfile": "robot_expressive_v1",
+      "accentColor": "#f59e0b",
+      "assetPath": "assets/skins/RobotExpressive.glb",
+      "sha256": "047f5e5fb3bb6d378bd1df16ca6137f2a596c99b3a1b5690b4020c05aaf6f319",
+      "bytes": 463988
+    },
+    {
+      "id": "skin_mage",
+      "category": "skin",
+      "name": "아케인 메이지",
+      "nameEn": "Arcane Mage",
+      "description": "마법 로브와 모자를 걸친 원소 마법사 아바타 스킨입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 300,
+      "starter": false,
+      "rigProfile": "kaykit_v1",
+      "accentColor": "#8b5cf6",
+      "assetPath": "assets/skins/Mage.glb",
+      "sha256": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d",
+      "bytes": 3589240
+    },
+    {
+      "id": "skin_rogue",
+      "category": "skin",
+      "name": "섀도우 로그",
+      "nameEn": "Shadow Rogue",
+      "description": "어둠의 후드와 기민한 실루엣을 가진 정찰자 아바타 스킨입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 350,
+      "starter": false,
+      "rigProfile": "kaykit_v1",
+      "accentColor": "#10b981",
+      "assetPath": "assets/skins/Rogue_Hooded.glb",
+      "sha256": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545",
+      "bytes": 3597652
+    },
+    {
+      "id": "skin_barbarian",
+      "category": "skin",
+      "name": "노르딕 바바리안",
+      "nameEn": "Nordic Barbarian",
+      "description": "강인한 전투 갑주와 뿔 장식을 갖춘 전사 아바타 스킨입니다.",
+      "rarity": "legendary",
+      "pricePlayCoin": 400,
+      "starter": false,
+      "rigProfile": "kaykit_v1",
+      "accentColor": "#ef4444",
+      "assetPath": "assets/skins/Barbarian.glb",
+      "sha256": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6",
+      "bytes": 3613268
+    },
+    {
+      "id": "acc_crown_gold",
+      "category": "attachment",
+      "slot": "head",
+      "name": "황금 왕관",
+      "nameEn": "Golden Crown",
+      "description": "루비 보석이 박힌 빛나는 황금 왕관 머리 장착물입니다.",
+      "rarity": "legendary",
+      "pricePlayCoin": 250,
+      "starter": false,
+      "accentColor": "#eab308",
+      "assetPath": "assets/accessories/crown_gold.glb",
+      "sha256": "d2e34f8e3db392e064fc7d720c4402021e9f98ebd2b5d3d38ca527b8a08ad243",
+      "bytes": 11436
+    },
+    {
+      "id": "acc_visor_cyber",
+      "category": "attachment",
+      "slot": "head",
+      "name": "사이버 바이저",
+      "nameEn": "Cyber Visor",
+      "description": "네온 시안 발광 렌즈가 달린 미래형 바이저입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 180,
+      "starter": false,
+      "accentColor": "#06b6d4",
+      "assetPath": "assets/accessories/visor_cyber.glb",
+      "sha256": "86cf33fd3ae3bb0088f3e03dd35a6f1ae15e4dd38c4dac37a3c51d4416f1ee7c",
+      "bytes": 4260
+    },
+    {
+      "id": "acc_halo_star",
+      "category": "attachment",
+      "slot": "head",
+      "name": "스타 헤일로",
+      "nameEn": "Star Halo",
+      "description": "머리 위에서 은은하게 빛나는 황금빛 링 헤일로입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 220,
+      "starter": false,
+      "accentColor": "#fde047",
+      "assetPath": "assets/accessories/halo_star.glb",
+      "sha256": "574769a45380238ac8053dabfbf16032ee4e6ad718fb2389ca83afb5360f0baf",
+      "bytes": 7436
+    },
+    {
+      "id": "acc_quiver",
+      "category": "attachment",
+      "slot": "back",
+      "name": "모험가 화살통",
+      "nameEn": "Adventurer Quiver",
+      "description": "모든 탐험가에게 기본 지급되는 가죽 화살통 등 장착물입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "accentColor": "#a16207",
+      "assetPath": "assets/accessories/quiver.glb",
+      "sha256": "6819661479027f243ba1d123e019e98742fdba33f2b7e5abf4cb9b7cf10db96d",
+      "bytes": 31956
+    },
+    {
+      "id": "acc_shield_badge",
+      "category": "attachment",
+      "slot": "back",
+      "name": "기사 문장 방패",
+      "nameEn": "Crest Shield",
+      "description": "등에 메는 왕실 문장 장식 방패입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 150,
+      "starter": false,
+      "accentColor": "#2563eb",
+      "assetPath": "assets/accessories/shield_badge_color.glb",
+      "sha256": "d827bca2af142cac71a70a15953e754a385c2043e21930595ac53ab63f46df35",
+      "bytes": 26084
+    },
+    {
+      "id": "acc_shield_round",
+      "category": "attachment",
+      "slot": "back",
+      "name": "원형 룬 방패",
+      "nameEn": "Round Rune Shield",
+      "description": "전통 원형 목재·강철 테두리 등 방패입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 160,
+      "starter": false,
+      "accentColor": "#dc2626",
+      "assetPath": "assets/accessories/shield_round_color.glb",
+      "sha256": "cc383052b9df7a99d2be0c7b06748e39e86aebee079227bc93d7a4d131092363",
+      "bytes": 27340
+    },
+    {
+      "id": "acc_sword_1h",
+      "category": "attachment",
+      "slot": "hand_r",
+      "name": "강철 롱소드",
+      "nameEn": "Steel Longsword",
+      "description": "기본 지급되는 균형 잡힌 한손 롱소드 장착물입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "accentColor": "#94a3b8",
+      "assetPath": "assets/accessories/sword_1handed.glb",
+      "sha256": "f14e75d632c8d1447608745bb427726e41e9dd15a2f51fbc2d1c493f310188e1",
+      "bytes": 28832
+    },
+    {
+      "id": "acc_staff",
+      "category": "attachment",
+      "slot": "hand_r",
+      "name": "아케인 지팡이",
+      "nameEn": "Arcane Staff",
+      "description": "마법 결정이 세공된 긴 아케인 스태프입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 200,
+      "starter": false,
+      "accentColor": "#7c3aed",
+      "assetPath": "assets/accessories/staff.glb",
+      "sha256": "14579eea0e31dd91affa1cd7abe88aac1a4a5cf14c8eba588f63b2cf133744a7",
+      "bytes": 36284
+    },
+    {
+      "id": "acc_axe_1h",
+      "category": "attachment",
+      "slot": "hand_r",
+      "name": "전투 도끼",
+      "nameEn": "Battle Axe",
+      "description": "묵직한 날이 돋보이는 한손 전투 도끼입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 140,
+      "starter": false,
+      "accentColor": "#ea580c",
+      "assetPath": "assets/accessories/axe_1handed.glb",
+      "sha256": "684e7d3bb4e56709880fe8581b03c74069b1154da31d9e29dbb12fdfe8760ab0",
+      "bytes": 29028
+    },
+    {
+      "id": "acc_wand",
+      "category": "attachment",
+      "slot": "hand_r",
+      "name": "별빛 완드",
+      "nameEn": "Starlight Wand",
+      "description": "가볍고 세련된 마법 완드 장착물입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 120,
+      "starter": false,
+      "accentColor": "#ec4899",
+      "assetPath": "assets/accessories/wand.glb",
+      "sha256": "d316a6ae7867d2d97cb824d4f10ba13121459e8b1429a2ea4a170eb1001c6233",
+      "bytes": 23664
+    },
+    {
+      "id": "acc_mug",
+      "category": "attachment",
+      "slot": "hand_r",
+      "name": "축배 머그",
+      "nameEn": "Victory Mug",
+      "description": "승리를 기념하는 거품 가득한 선술집 머그입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 80,
+      "starter": false,
+      "accentColor": "#d97706",
+      "assetPath": "assets/accessories/mug_full.glb",
+      "sha256": "bfa468ba33d8133fee16efb7bcc2a39e074e215956823c67a457a4e660632bbd",
+      "bytes": 32276
+    },
+    {
+      "id": "acc_spellbook",
+      "category": "attachment",
+      "slot": "hand_l",
+      "name": "펼친 마도서",
+      "nameEn": "Open Spellbook",
+      "description": "왼손에 들고 다니는 신비한 마법서입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 190,
+      "starter": false,
+      "accentColor": "#6366f1",
+      "assetPath": "assets/accessories/spellbook_open.glb",
+      "sha256": "2ba51ac2b936114a279e7135f33cf5c04934df0e68a93cedf64e54b8bed7bcdc",
+      "bytes": 32844
+    },
+    {
+      "id": "acc_dagger",
+      "category": "attachment",
+      "slot": "hand_l",
+      "name": "그림자 단검",
+      "nameEn": "Shadow Dagger",
+      "description": "날렵한 보조 무기 단검 장착물입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 110,
+      "starter": false,
+      "accentColor": "#059669",
+      "assetPath": "assets/accessories/dagger.glb",
+      "sha256": "a2cf0b2118c88b47d07261330681433305e2565f3aa0772ce46c0bca990f6691",
+      "bytes": 25728
+    },
+    {
+      "id": "acc_shield_square",
+      "category": "attachment",
+      "slot": "hand_l",
+      "name": "성벽 방패",
+      "nameEn": "Tower Shield",
+      "description": "견고한 직사각 방어 방패입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 150,
+      "starter": false,
+      "accentColor": "#0284c7",
+      "assetPath": "assets/accessories/shield_square_color.glb",
+      "sha256": "c27c690d6bf88f3c242a801006d5abdbe666dd1ade233029f1c0bbc5e6a04156",
+      "bytes": 26308
+    },
+    {
+      "id": "acc_smokebomb",
+      "category": "attachment",
+      "slot": "hand_l",
+      "name": "연막탄",
+      "nameEn": "Smoke Bomb",
+      "description": "로그 스타일의 휴대용 연막 구슬입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 90,
+      "starter": false,
+      "accentColor": "#64748b",
+      "assetPath": "assets/accessories/smokebomb.glb",
+      "sha256": "e1ef94291cbd7f719c5a39c35b63fd2fc30e51554fb9c14b69f41f80036a0fc9",
+      "bytes": 29536
+    },
+    {
+      "id": "emote_cheer",
+      "category": "emote",
+      "name": "환호하기",
+      "nameEn": "Cheer",
+      "emoji": "🎉",
+      "animationKey": "emote_cheer",
+      "durationSec": 2.2,
+      "loop": false,
+      "description": "양팔을 들어 승리를 축하하는 기본 이모지입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "accentColor": "#f59e0b"
+    },
+    {
+      "id": "emote_wave",
+      "category": "emote",
+      "name": "손 흔들기",
+      "nameEn": "Wave",
+      "emoji": "👋",
+      "animationKey": "emote_wave",
+      "durationSec": 2.0,
+      "loop": false,
+      "description": "다른 플레이어에게 반갑게 인사하는 기본 이모지입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 0,
+      "starter": true,
+      "accentColor": "#38bdf8"
+    },
+    {
+      "id": "emote_dance",
+      "category": "emote",
+      "name": "빅토리 댄스",
+      "nameEn": "Victory Dance",
+      "emoji": "💃",
+      "animationKey": "emote_dance",
+      "durationSec": 3.5,
+      "loop": true,
+      "description": "신나게 리듬을 타며 춤추는 인기 이모지입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 200,
+      "starter": false,
+      "accentColor": "#ec4899"
+    },
+    {
+      "id": "emote_thumbs_up",
+      "category": "emote",
+      "name": "최고야!",
+      "nameEn": "Thumbs Up",
+      "emoji": "👍",
+      "animationKey": "emote_thumbs_up",
+      "durationSec": 1.8,
+      "loop": false,
+      "description": "동료에게 칭찬을 전하는 따봉 이모지입니다.",
+      "rarity": "common",
+      "pricePlayCoin": 100,
+      "starter": false,
+      "accentColor": "#22c55e"
+    },
+    {
+      "id": "emote_sit",
+      "category": "emote",
+      "name": "바닥에 앉기",
+      "nameEn": "Chill Sit",
+      "emoji": "🪑",
+      "animationKey": "emote_sit",
+      "durationSec": 4.0,
+      "loop": true,
+      "description": "잠시 바닥에 편하게 앉아 휴식을 취하는 이모지입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 120,
+      "starter": false,
+      "accentColor": "#a855f7"
+    },
+    {
+      "id": "emote_spell",
+      "category": "emote",
+      "name": "아케인 세리머니",
+      "nameEn": "Arcane Burst",
+      "emoji": "✨",
+      "animationKey": "emote_spell",
+      "durationSec": 2.4,
+      "loop": false,
+      "description": "하늘로 마력을 끌어올리는 화려한 세리머니 이모지입니다.",
+      "rarity": "epic",
+      "pricePlayCoin": 180,
+      "starter": false,
+      "accentColor": "#818cf8"
+    },
+    {
+      "id": "emote_spin",
+      "category": "emote",
+      "name": "회오리 스핀",
+      "nameEn": "Whirlwind Spin",
+      "emoji": "🌪️",
+      "animationKey": "emote_spin",
+      "durationSec": 2.0,
+      "loop": false,
+      "description": "역동적인 회전 퍼포먼스 이모지입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 150,
+      "starter": false,
+      "accentColor": "#14b8a6"
+    },
+    {
+      "id": "emote_punch",
+      "category": "emote",
+      "name": "파워 펀치",
+      "nameEn": "Power Punch",
+      "emoji": "💥",
+      "animationKey": "emote_punch",
+      "durationSec": 1.6,
+      "loop": false,
+      "description": "강렬한 섀도우 복싱 펀치 이모지입니다.",
+      "rarity": "rare",
+      "pricePlayCoin": 140,
+      "starter": false,
+      "accentColor": "#f97316"
+    }
+  ]
+}

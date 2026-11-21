@@ -24,6 +24,7 @@ const { loadAssetStore, showcaseStagedFiles } = require('./Tools/template-catalo
 const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
 const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
 const { createInternalApi } = require('./Tools/internal-api.cjs');
+const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avatar-seal.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -531,6 +532,26 @@ function createServer(options = {}) {
       const sharedReplay = routePath === '/api/platform-addon/replay';
       const agentChat = routePath === '/api/platform-addon/agent-chat';
       const remoteControl = routePath === '/api/platform-addon/remote-control';
+      const avatarAddon = routePath === '/api/platform-addon/avatar';
+      const avatarAssetRoute = routePath.match(/^\/api\/platform-addon\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
+      if (avatarAddon && req.method === 'GET') {
+        try {
+          const bundle = loadSealedAvatarBundle(root);
+          return json(200, { ok: true, sealed: true, manifest: bundle.manifest, files: bundle.files, assets: bundle.assets });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Avatar add-on unavailable' });
+        }
+      }
+      if (avatarAssetRoute && req.method === 'GET') {
+        const assetFile = resolveSealedAssetFile(root, avatarAssetRoute[1], avatarAssetRoute[2]);
+        if (!assetFile) return reply(404, 'Avatar asset not found');
+        try {
+          const bytes = await fs.promises.readFile(assetFile);
+          return reply(200, bytes, 'model/gltf-binary', { 'Cache-Control': 'public, max-age=86400, immutable' });
+        } catch {
+          return reply(503, 'Avatar asset unavailable');
+        }
+      }
       if (remoteControl && req.method === 'GET') {
         if (!remoteControlEnabled) {
           return json(403, { ok: false, error: 'Remote Control add-on is disabled in Live builds (Debug/Test only).' });

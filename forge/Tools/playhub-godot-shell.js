@@ -153,6 +153,10 @@
     ready: sendReadyOnce,
     load: function () { return request('load', { slot: 'main', schemaVersion: 1 }); },
     save: function (payload) { return request('save', { slot: 'main', schemaVersion: 1, value: payload }); },
+    getAvatarLoadout: function () {
+      if (!embedded) return Promise.resolve({ offline: true, loadout: null });
+      return request('avatar_loadout', {});
+    },
     event: function (name, properties) { return request('event', { name: name, properties: properties || {} }); },
     activity: function () { return request('activity', { updating: true }); },
     onStatus: function (fn) { if (typeof fn === 'function') statusListeners.push(fn); },
