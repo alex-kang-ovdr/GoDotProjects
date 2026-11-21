@@ -1,0 +1,19 @@
+{
+	"ambient_energy": 0.0,
+	"cpu": "13th Gen Intel(R) Core(TM) i9-13900HX",
+	"driver_version": "12_0",
+	"engine": "Godot 4.7.2-stable (official)",
+	"gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+	"height": 900,
+	"measure_seconds": 5.0,
+	"method": "same-process alternating AB/BA; wall frame times; process memory = working set sampled once at end of each case; GPU time from viewport_get_measured_render_time_gpu",
+	"platform": "Windows",
+	"renderer": "forward_plus",
+	"repeats": 2,
+	"rhi": "d3d12",
+	"sun_energy": 0.9,
+	"tag": "d3d12",
+	"timestamp_utc": "2026-11-20T05:47:37",
+	"warmup_seconds": 3.0,
+	"width": 1440
+}

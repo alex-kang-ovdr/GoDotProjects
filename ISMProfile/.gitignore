@@ -1,0 +1,5 @@
+results/**/*.log
+results/**/*.out
+results/godot/tune/
+results/godot/preview/
+godot/.godot/
