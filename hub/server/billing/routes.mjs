@@ -1,11 +1,18 @@
-// HTTP Router for Hub-Billing (M1 + M2 + M3). Mounted from app.mjs only when billing is enabled.
+// HTTP Router for Hub-Billing (M1 + M2 + M3 + M4). Mounted from app.mjs only when billing is enabled.
 // Public routes: /api/billing/* (registered account + CSRF on mutations; signed webhooks & S2S usage use dedicated secrets)
 // Admin routes:  /api/admin/billing/* (loopback admin listener, authenticated admin session + CSRF enforced by app.mjs)
 
 import { ApiError, equal, json, readJson, assertId, uid } from '../security.mjs';
-import { createPaymentRouter, DEFAULT_STAGE1_ROUTES } from './router.mjs';
+import {
+  createPaymentRouter,
+  DEFAULT_STAGE1_ROUTES,
+  STAGE2_HYBRID_ROUTES,
+  STAGE3_MULTI_PSP_ROUTES
+} from './router.mjs';
 import { createMockProvider } from './providers/mock.mjs';
 import { createXsollaProvider } from './providers/xsolla.mjs';
+import { createTossProvider } from './providers/toss.mjs';
+import { createStripeGpayProvider } from './providers/stripe-gpay.mjs';
 import { createStripeConnectProvider } from './providers/stripe-connect.mjs';
 import { createBillingService } from './service.mjs';
 import { listActiveEntitlements } from './direct-commerce.mjs';
@@ -75,6 +82,35 @@ export function createBilling({
     enabledProviders.push('xsolla');
   }
 
+  const toss = createTossProvider({
+    clientKey: billingCfg.toss?.clientKey || env.PLAYHUB_BILLING_TOSS_CLIENT_KEY || '',
+    secretKey: billingCfg.toss?.secretKey || env.PLAYHUB_BILLING_TOSS_SECRET_KEY || '',
+    webhookSecret: billingCfg.toss?.webhookSecret || env.PLAYHUB_BILLING_TOSS_WEBHOOK_SECRET || '',
+    sandbox: billingCfg.toss?.sandbox !== false,
+    apiBaseUrl: billingCfg.toss?.apiBaseUrl || 'https://api.tosspayments.com',
+    fetchImpl,
+    now
+  });
+  if (toss.configured) {
+    providers.toss = toss;
+    enabledProviders.push('toss');
+  }
+
+  const stripeGpay = createStripeGpayProvider({
+    publishableKey: billingCfg.stripeGpay?.publishableKey || env.PLAYHUB_BILLING_STRIPE_GPAY_PUBLISHABLE_KEY || '',
+    secretKey: billingCfg.stripeGpay?.secretKey || env.PLAYHUB_BILLING_STRIPE_GPAY_SECRET_KEY || '',
+    webhookSecret: billingCfg.stripeGpay?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_GPAY_WEBHOOK_SECRET || '',
+    merchantName: billingCfg.stripeGpay?.merchantName || 'PlayHub',
+    googlePayEnvironment: billingCfg.stripeGpay?.googlePayEnvironment || (billingCfg.stripeGpay?.sandbox === false ? 'PRODUCTION' : 'TEST'),
+    apiBaseUrl: billingCfg.stripeGpay?.apiBaseUrl || 'https://api.stripe.com',
+    fetchImpl,
+    now
+  });
+  if (stripeGpay.configured) {
+    providers.stripe_gpay = stripeGpay;
+    enabledProviders.push('stripe_gpay');
+  }
+
   if (allowMockProvider) {
     providers.mock = createMockProvider({
       webhookSecret: billingCfg.mockWebhookSecret || env.PLAYHUB_BILLING_MOCK_WEBHOOK_SECRET || 'dev-mock-webhook-secret',
@@ -83,13 +119,25 @@ export function createBilling({
     enabledProviders.push('mock');
   }
 
-  const routes = billingCfg.routes || (enabledProviders.includes('xsolla')
-    ? DEFAULT_STAGE1_ROUTES
-    : [{ id: 'mock_default', match: {}, providers: ['mock'] }]);
+  const resolvedStage = billingCfg.routingStage || (
+    enabledProviders.includes('stripe_gpay') ? 'stage3'
+      : enabledProviders.includes('toss') ? 'stage2'
+        : enabledProviders.includes('xsolla') ? 'stage1'
+          : 'mock'
+  );
+  const stageRouteMap = {
+    stage1: DEFAULT_STAGE1_ROUTES,
+    stage2: STAGE2_HYBRID_ROUTES,
+    stage3: STAGE3_MULTI_PSP_ROUTES,
+    mock: [{ id: 'mock_default', match: {}, providers: ['mock'] }]
+  };
+  const routes = billingCfg.routes || stageRouteMap[resolvedStage] || DEFAULT_STAGE1_ROUTES;
 
   const router = createPaymentRouter({
     enabledProviders,
     routes,
+    failureThreshold: billingCfg.circuitBreakerFailureThreshold || 3,
+    cooldownMs: billingCfg.circuitBreakerCooldownMs || 60000,
     now
   });
 
@@ -107,7 +155,7 @@ export function createBilling({
     providers,
     stripeConnect,
     router,
-    config: { ...billingCfg, allowMockProvider, allowDemoAccount, giftcardPepper },
+    config: { ...billingCfg, allowMockProvider, allowDemoAccount, giftcardPepper, routingStage: resolvedStage, enabledProviders },
     now,
     audit
   });
@@ -251,7 +299,7 @@ export function createBilling({
         json(res, 200, {
           authenticated: false,
           kind: user?.kind || 'anonymous',
-          billingMode: allowMockProvider && !xsolla.configured ? 'mock' : 'xsolla',
+          billingMode: resolvedStage,
           allowDemoAccount
         });
         return true;
