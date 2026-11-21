@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/content-manifest.v1.schema.json",
+  "title": "PlayHub Desktop Content Manifest v1",
+  "description": "FastCDC CAS 청크·필수/선택 패키지·플랫폼 호환·Ed25519 서명 계약. 서명 검증 실패 시 Fail-Closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "gameId",
+    "version",
+    "playModes",
+    "reviewStatus",
+    "engineVersion",
+    "minAppVersion",
+    "platforms",
+    "renderer",
+    "packages",
+    "signature"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "gameId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.-]+)?$" },
+    "playModes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["instant", "native"] }
+    },
+    "reviewStatus": {
+      "type": "string",
+      "enum": ["approved", "pending", "rejected", "revoked"]
+    },
+    "engineVersion": { "type": "string", "pattern": "^4\\.[0-9]+\\.[0-9]+$" },
+    "minAppVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["windows-x86_64", "windows-arm64", "macos-arm64", "macos-x86_64", "linux-x86_64", "linux-arm64"]
+      }
+    },
+    "renderer": {
+      "type": "string",
+      "enum": ["forward_plus", "mobile", "gl_compatibility"]
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "packages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "fileName", "totalBytes", "fileSha256", "chunkAlgorithm", "chunks"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+          "role": { "type": "string", "enum": ["required", "optional", "shared_avatar"] },
+          "fileName": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,128}$" },
+          "totalBytes": { "type": "integer", "minimum": 1 },
+          "fileSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "chunkAlgorithm": { "type": "string", "enum": ["fastcdc-v1", "whole-file-m0"] },
+          "chunks": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["hash", "offset", "length"],
+              "properties": {
+                "hash": { "type": "string", "pattern": "^(sha256|blake3):[0-9a-f]{64}$" },
+                "offset": { "type": "integer", "minimum": 0 },
+                "length": { "type": "integer", "minimum": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "keyId", "value"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "keyId": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "value": { "type": "string", "pattern": "^[A-Za-z0-9+/=]{64,128}$" }
+      }
+    }
+  }
+}

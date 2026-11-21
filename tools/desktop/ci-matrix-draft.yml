@@ -1,0 +1,70 @@
+# PlayHub Desktop 3-OS M0 Lifecycle CI Matrix (Draft)
+# NOTE: `.github/workflows/**` is owned by `PlayHub-Platform`.
+# Promote this draft to `.github/workflows/desktop-lifecycle.yml` when integrating M0.
+
+name: Desktop Lifecycle Gate (3-OS)
+
+on:
+  pull_request:
+    paths:
+      - 'native/**'
+      - 'contracts/desktop/**'
+      - 'tools/desktop/**'
+      - 'hub/tests/desktop*.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate Desktop Contracts
+        run: node --test hub/tests/desktop-contracts.test.mjs
+
+  rust-and-lifecycle:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows-x86_64
+          - os: macos-14
+            target: macos-arm64
+          - os: ubuntu-24.04
+            target: linux-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.100.0
+          components: rustfmt, clippy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Rust Format & Clippy
+        working-directory: native
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets -- -D warnings
+      - name: Rust Unit Tests (Core IPC + PlatformBackend)
+        working-directory: native
+        run: cargo test --workspace
+      - name: Rust Release Build
+        working-directory: native
+        run: cargo build --release --workspace
+      - name: L9 Launch Ticket End-to-End Misuse Tests
+        run: node --test hub/tests/desktop-ticket-l9.test.mjs
+      - name: Upload Unsigned M0 Binaries (No Signing Keys in CI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-m0-${{ matrix.target }}
+          path: |
+            native/target/release/playhub-bootstrapper*
+            native/target/release/playhub-pack*

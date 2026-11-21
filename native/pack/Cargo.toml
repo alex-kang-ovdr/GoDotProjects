@@ -1,0 +1,9 @@
+[package]
+name = "playhub-pack"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+playhub-core = { path = "../core" }
+serde_json = "1"

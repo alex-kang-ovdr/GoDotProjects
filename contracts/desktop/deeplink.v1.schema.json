@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/deeplink.v1.schema.json",
+  "title": "PlayHub Desktop Deep Link v1",
+  "description": "PlayHub 웹에서 Rust Bootstrapper로 전달하는 프로토콜 URI 계약. 세션 토큰·비밀값 포함 금지.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "scheme", "action"],
+  "properties": {
+    "version": { "const": 1 },
+    "scheme": {
+      "type": "string",
+      "pattern": "^playhub(-[a-z0-9-]+)?$"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["launch", "join", "install", "avatar-studio"]
+    },
+    "ticket": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9_-]{32,128}$"
+    },
+    "gameId": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+    },
+    "roomCode": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9_-]{4,32}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "action": { "enum": ["launch", "avatar-studio"] } } },
+      "then": { "required": ["ticket"], "properties": { "ticket": { "type": "string" } } }
+    },
+    {
+      "if": { "properties": { "action": { "const": "join" } } },
+      "then": { "required": ["roomCode"], "properties": { "roomCode": { "type": "string" } } }
+    },
+    {
+      "if": { "properties": { "action": { "const": "install" } } },
+      "then": { "required": ["gameId"], "properties": { "gameId": { "type": "string" } } }
+    }
+  ]
+}

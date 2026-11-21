@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.local/contracts/desktop/bridge.v1.schema.json",
+  "title": "PlayHub Desktop Bridge IPC v1",
+  "description": "Godot Player(bootstrap.pck)와 Rust Bootstrapper 간 loopback WebSocket IPC 메시지 계약. 실행당 1회용 256-bit 토큰과 단일 연결만 허용한다.",
+  "oneOf": [
+    { "$ref": "#/$defs/authFrame" },
+    { "$ref": "#/$defs/authAck" },
+    { "$ref": "#/$defs/requestFrame" },
+    { "$ref": "#/$defs/responseFrame" },
+    { "$ref": "#/$defs/eventFrame" }
+  ],
+  "$defs": {
+    "methodName": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "pause",
+        "resume",
+        "activity_pulse",
+        "first_frame",
+        "heartbeat",
+        "shader_telemetry",
+        "isolation_probe",
+        "save_load",
+        "save_write",
+        "get_profile",
+        "get_host_info",
+        "iap_query_products",
+        "iap_purchase",
+        "iap_get_entitlements",
+        "iap_spend_coin",
+        "social_get_friends",
+        "social_get_party",
+        "social_invite_friend",
+        "social_submit_score",
+        "social_get_leaderboard",
+        "social_open_overlay",
+        "social_share_link",
+        "window_set_mode",
+        "overlay_leave"
+      ]
+    },
+    "eventName": {
+      "type": "string",
+      "enum": [
+        "host_pause",
+        "host_resume",
+        "host_snapshot",
+        "iap_updated",
+        "social_invite_received",
+        "download_progress",
+        "host_shutdown"
+      ]
+    },
+    "authFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "type", "token", "pid"],
+      "properties": {
+        "v": { "const": 1 },
+        "type": { "const": "auth" },
+        "token": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "256-bit 1회용 hex 토큰"
+        },
+        "pid": { "type": "integer", "minimum": 1 },
+        "engineVersion": { "type": "string", "minLength": 1, "maxLength": 32 }
+      }
+    },
+    "authAck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "type", "ok"],
+      "properties": {
+        "v": { "const": 1 },
+        "type": { "const": "auth_ack" },
+        "ok": { "type": "boolean" },
+        "error": { "type": ["string", "null"] }
+      }
+    },
+    "requestFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "type", "reqId", "method", "args"],
+      "properties": {
+        "v": { "const": 1 },
+        "type": { "const": "request" },
+        "reqId": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "method": { "$ref": "#/$defs/methodName" },
+        "args": { "type": "object" }
+      }
+    },
+    "responseFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "type", "reqId", "ok", "payload"],
+      "properties": {
+        "v": { "const": 1 },
+        "type": { "const": "response" },
+        "reqId": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "ok": { "type": "boolean" },
+        "payload": { "type": "object" },
+        "error": { "type": ["string", "null"] }
+      }
+    },
+    "eventFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "type", "event", "payload"],
+      "properties": {
+        "v": { "const": 1 },
+        "type": { "const": "event" },
+        "event": { "$ref": "#/$defs/eventName" },
+        "payload": { "type": "object" }
+      }
+    }
+  }
+}
