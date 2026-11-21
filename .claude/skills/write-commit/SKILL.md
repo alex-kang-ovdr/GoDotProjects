@@ -31,6 +31,8 @@ description: PlayHub-Platform 워크트리에서 Git 커밋 메시지를 작성�
 
 본문의 모든 항목을 한글로 작성하되 모델 ID, 파일명, 제품명 등 고유 식별자는 그대로 쓴다. 여러 변경이 있으면 검토자가 동작과 영향을 이해할 수 있는 단위로 나눈다. 검증 결과가 필요하면 변경 내용에 짧게 덧붙이고, 실행한 확인과 생략한 확인을 구분한다. 모델과 시간을 확인할 수 없으면 각각 `모델 ID 확인 불가`, `작업 시간 미측정`이라고 적고 추정치를 사실처럼 쓰지 않는다. 위 예시의 꺾쇠 자리표시자는 실제 메시지에서 제거한다.
 
+AI 에이전트가 커밋하는 경우 본문 마지막에 빈 줄을 두고 `Agent-User-Requests`, `Agent-Elapsed`, `Agent-Permission-Requests`, `Agent-Decision-Requests`, `Agent-Tokens-Total`, `Agent-Tokens-Model` Git trailer를 붙인다. 에이전트가 제공하는 집계 도구의 실측값만 쓰고, 측정할 수 없으면 `N/A`로 적는다. 커밋 전 `npm run gate`(소유권·스킬 동기화·Fast QA) 통과 여부를 변경 내용의 검증 항목에 기록한다.
+
 ## PlayHub-Platform 워크트리 규칙
 
 `PlayHub-Platform`에서 커밋할 때는 제목 맨 앞에 변경 영역 태그를 붙인다. 실제 커밋에 포함된 영역에서 하나 이상을 선택한다.

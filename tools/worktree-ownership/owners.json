@@ -17,7 +17,23 @@
     "games/catalog.json",
     "games/manifest.json",
     "games/CATALOG.md",
-    "games/PLAYABLE_STATUS.md"
+    "games/PLAYABLE_STATUS.md",
+    "AGENTS.md",
+    "GEMINI.md",
+    "package.json",
+    ".nvmrc",
+    ".gitignore",
+    "hub/web/user/app.js",
+    "hub/web/user/index.html",
+    "hub/web/user/user.css",
+    "hub/tools/sanitize-snapshot.mjs",
+    "hub/server/mobile/**",
+    "forge/Tools/platform-store.cjs",
+    "forge/Tools/run-tests.cjs",
+    "forge/Tools/build-queue.cjs",
+    "forge/Tests/game-templates.test.cjs",
+    "forge/Tests/game-template-runtime.test.cjs",
+    "tools/qa/fast-gate.json"
   ],
   "branches": {
     "PlayHub-Platform": {
@@ -40,7 +56,11 @@
         "forge/Tools/brawllabs-multiplayer.cjs",
         "forge/Tools/fortress-multiplayer.cjs",
         "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
-        "forge/Tests/multiplayer-compat.test.cjs"
+        "forge/Tests/multiplayer-compat.test.cjs",
+        "tools/qa/**",
+        "tools/agent-skills/**",
+        ".agents/skills/**",
+        ".claude/skills/**"
       ]
     },
     "PlayHub-Admin": {
@@ -234,6 +254,111 @@
         "hub/web/user/billing.js",
         "hub/web/user/billing.css",
         "hub/tests/billing*.mjs"
+      ]
+    },
+    "Forge-Avatar": {
+      "role": "UEFN 스타일 불변 아바타 런타임·4계층 모듈 패키징·3D 초상 UI 및 Hub 아바타 상점·락커",
+      "owns": [
+        "forge/Godot/addons/playforge_avatar/**",
+        "forge/Tests/playforge_avatar/**",
+        "forge/Tools/avatar-seal.cjs",
+        "forge/Tools/build-core-pack.cjs",
+        "forge/Docs/FORGE_AVATAR_DESIGN.md",
+        "hub/server/avatar/**",
+        "hub/web/user/avatar*.js",
+        "hub/web/user/avatar*.css",
+        "hub/tests/avatar-*.mjs"
+      ]
+    },
+    "Forge-Blender": {
+      "role": "Headless Blender·Three.js AI 3D 파이프라인 및 Blender 스튜디오",
+      "owns": [
+        "forge/Tools/blender-pipeline/**",
+        "forge/Godot/addons/playforge_blender/**",
+        "forge/Tests/playforge_blender/**",
+        "forge/OfficialGodot/blender-studio.*",
+        "forge/Docs/BLENDER_PIPELINE_DESIGN.md"
+      ]
+    },
+    "Forge-Games-captainForever": {
+      "role": "Captain Forever 싱글플레이 템플릿(6-DOF·컷어웨이·배기 간섭 규칙)",
+      "owns": [
+        "forge/Templates/captain-forever/**",
+        "forge/Tests/captain-forever.test.cjs"
+      ]
+    },
+    "Forge-Games-captainMMO": {
+      "role": "Captain Forever 2D 모듈 우주선 MMO 템플릿 및 2D AOI 릴레이",
+      "owns": [
+        "forge/Templates/captain-forever-mmo/**",
+        "forge/Tests/captain-forever-mmo.test.cjs",
+        "forge/Tools/captain-forever-mmo-multiplayer.cjs",
+        "forge/OfficialGodot/captain-forever-mmo-lobby.*"
+      ]
+    },
+    "Forge-ISM-profile": {
+      "role": "Unreal InstancedMesh ↔ Godot MultiMesh/Node3D 성능 비교 벤치마크 (실험)",
+      "owns": [
+        "ISMProfile/**"
+      ]
+    },
+    "Forge-Publish": {
+      "role": "템플릿 배포 기본값·UGC 퍼블리시·Hub 크로스플레이 WS 릴레이",
+      "owns": [
+        "forge/OfficialGodot/publish-panel.js",
+        "hub/server/ugc-publish.mjs",
+        "hub/server/ugc-multiplayer.mjs",
+        "hub/server/artifact-storage.mjs",
+        "hub/server/creator-review.mjs",
+        "hub/tests/ugc-*.mjs",
+        "hub/tests/creator-*.mjs",
+        "forge/Tests/release-manifest.test.cjs"
+      ]
+    },
+    "Forge-TappyChickenMMO": {
+      "role": "Tappy Chicken MMO 템플릿·500동접 서버 최적화",
+      "owns": [
+        "forge/Templates/tappy-chicken-mmo/**",
+        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
+        "forge/OfficialGodot/tappy-chicken-mmo-lobby.*",
+        "forge/Tests/tappy-chicken-mmo*.test.cjs"
+      ]
+    },
+    "Hub-AOS": {
+      "role": "Android Play Hub 앱·모바일 API·소셜/크로스플레이·Dev 오버레이·Live→Dev 비식별화",
+      "owns": [
+        "android/**",
+        "docs/aos/**",
+        "godot-sdk/**",
+        "tools/aos/**",
+        "hub/server/social/**",
+        "hub/tests/social-*.mjs",
+        "hub/tests/mobile-*.mjs",
+        "hub/tests/dev-overlay-mode.test.mjs",
+        "hub/tests/sanitize-snapshot.test.mjs"
+      ]
+    },
+    "Hub-IOS": {
+      "role": "iOS Play Hub 앱·Apple 인증/IAP/APNs·딥링크",
+      "owns": [
+        "ios/**",
+        "docs/ios/**",
+        "tools/ios/**",
+        "hub/server/iap/**",
+        "hub/tests/ios-*.mjs",
+        "hub/tests/iap-*.mjs"
+      ]
+    },
+    "PlayForge-Main": {
+      "role": "PlayForge 런처 UX·프로젝트 관리 API·제작과정 데일리/유스케이스 검증 (Forge 서브 트렁크)",
+      "owns": [
+        "forge/OfficialGodot/index.html",
+        "forge/OfficialGodot/platform.js",
+        "forge/OfficialGodot/platform.css",
+        "forge/Tools/platform-api.cjs",
+        "forge/Tools/showcase-daily-profile.cjs",
+        "forge/Tests/playforge_platform/**",
+        "forge/Tests/forge-user-usecase-suite.cjs"
       ]
     }
   }

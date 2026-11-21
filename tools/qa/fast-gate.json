@@ -1,0 +1,41 @@
+{
+  "comment": "Tier 1 Fast QA 게이트 테스트 목록. 브라우저(Playwright)·Godot 헤드리스·Windows 전용 테스트는 Tier 2로 분리한다. 실패 중인 테스트는 삭제하지 말고 quarantine에 사유·담당과 함께 등록한 뒤 수정 후 제거한다.",
+  "include": [
+    "hub/tests/*.test.mjs",
+    "forge/Tests/account-platform.test.cjs",
+    "forge/Tests/build-queue-reuse.test.cjs",
+    "forge/Tests/cloud-origin.test.cjs",
+    "forge/Tests/collaboration.test.cjs",
+    "forge/Tests/deployment-zip-archive.test.cjs",
+    "forge/Tests/drive-retention-policy.test.cjs",
+    "forge/Tests/drive-snapshot-store.test.cjs",
+    "forge/Tests/execution-allowlist.test.cjs",
+    "forge/Tests/google-id-verifier.test.cjs",
+    "forge/Tests/http-compression-cache.test.cjs",
+    "forge/Tests/hub-session-auth.test.cjs",
+    "forge/Tests/login-sessions.test.cjs",
+    "forge/Tests/multiplayer-compat.test.cjs",
+    "forge/Tests/multiplayer-pending-room.test.cjs",
+    "forge/Tests/multiplayer-server.test.cjs",
+    "forge/Tests/operator-oauth-token.test.cjs",
+    "forge/Tests/owned-build-packages.test.cjs",
+    "forge/Tests/playhub-draft-store.test.cjs",
+    "forge/Tests/private-cloud-sync.test.cjs",
+    "forge/Tests/project-drive-sync.test.cjs",
+    "forge/Tests/release-manifest.test.cjs",
+    "forge/Tests/submission-drive-archive.test.cjs",
+    "tools/build-version/*.test.mjs",
+    "deploy/cloudrun/**/*.test.mjs",
+    "tools/Gamer/GamerQA/tests/*.test.mjs"
+  ],
+  "exclude": [
+    "hub/tests/*.browser.test.mjs",
+    "hub/tests/portable.*.test.mjs"
+  ],
+  "quarantine": {
+    "hub/tests/admin-console-devops.test.mjs": "타이밍 민감(start 응답 386ms > 기준) — 부하 환경에서 간헐 실패. 2026-11-21 등록, 담당: PlayHub-Admin",
+    "hub/tests/preferences.backup.test.mjs": "creator_submissions 스키마(24컬럼)와 테스트 INSERT(16값) 불일치 회귀. 2026-11-21 등록, 담당: PlayHub-Platform",
+    "hub/tests/runtime-output.test.mjs": "prebuilt 출력에 tools/backup.mjs 누락(ERR_MODULE_NOT_FOUND) 회귀. 2026-11-21 등록, 담당: PlayHub-Platform",
+    "forge/Tests/cloud-origin.test.cjs": "direct Wi-Fi HTTPS origin 단언 실패 회귀. 2026-11-21 등록, 담당: PlayForge-Main"
+  }
+}
