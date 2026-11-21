@@ -7,6 +7,7 @@ const { findGodot } = require('./native-runtime.cjs');
 const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
 const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
 const { isSealedAvatarPath, injectSealedAvatarIntoProjectDir } = require('./avatar-seal.cjs');
+const { runCloudRunBuild } = require('./cloudrun-build-backend.cjs');
 
 const PLAYHUB_SHELL_PATH = path.join(__dirname, 'playhub-godot-shell.js');
 const PLAYHUB_SHELL_TAG = '<script src="playhub-godot-shell.js"></script>';
@@ -57,7 +58,7 @@ class BuildQueue {
       for (const job of this.jobs.values()) {
         if (job.projectId === snapshot.id && job.revision === snapshot.revision && job.sourceHash === sourceHash &&
             (job.ownerKey || null) === (snapshot.ownerKey || null) &&
-            (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html'))))) return this.get(job.id);
+            (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && (fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html')) || fs.existsSync(path.join(this.directory, job.id, 'output', 'PlayForge-Web.zip')))))) return this.get(job.id);
       }
     }
     if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
@@ -93,6 +94,10 @@ class BuildQueue {
   }
   async build(job, snapshot) {
     const folder = path.join(this.directory, job.id), project = path.join(folder, 'project'), output = path.join(folder, 'output');
+    if (String(process.env.PLAYFORGE_BUILD_BACKEND || '').trim().toLowerCase() === 'cloudrun-job') {
+      await runCloudRunBuild(job, snapshot, output);
+      return;
+    }
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
     const entries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
     for (const [relative, data] of entries) {
