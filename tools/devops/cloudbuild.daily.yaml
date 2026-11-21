@@ -1,0 +1,105 @@
+# Google Cloud Build — PlayHub Deterministic Daily CI
+# Target project: playhub-dev-2611 (region: us-west1)
+# Triggered autonomously at 03:30 KST via Cloud Scheduler -> Cloud Build Trigger,
+# or manually with a specific branch/commit SHA.
+# Free tier safe: uses default e2-standard-2 pool (2,500 build-min/month free)
+# and CLOUD_LOGGING_ONLY to avoid extra log bucket charges.
+
+timeout: "1800s"
+
+substitutions:
+  _MODE: "cloud"
+  _RUN_ID: "daily-${BUILD_ID}"
+  _ARCHIVE_BUCKET: "playhub-daily-ci-2611"
+  _DEPLOY_DEV_TAG: "false"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: "E2_MEDIUM"
+  dynamicSubstitutions: true
+  substitutionOption: ALLOW_LOOSE
+
+steps:
+  - id: "install-deps-and-deterministic-ci"
+    name: "node:24-bookworm"
+    entrypoint: "bash"
+    args:
+      - "-euo"
+      - "pipefail"
+      - "-c"
+      - |
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 python3-pip git ca-certificates > /dev/null
+        if [ -f hub/automation/requirements.txt ]; then
+          pip3 install --break-system-packages -q -r hub/automation/requirements.txt
+        fi
+        if [ -f hub/package-lock.json ]; then
+          npm --prefix hub ci --no-audit --no-fund
+        fi
+        if [ -f forge/package-lock.json ]; then
+          npm --prefix forge ci --no-audit --no-fund
+        fi
+        OUT_DIR="artifacts/daily-builds/${_RUN_ID}"
+        node tools/devops/run-deterministic-ci.mjs \
+          --mode "${_MODE}" \
+          --run-id "${_RUN_ID}" \
+          --out-dir "$${OUT_DIR}"
+    env:
+      - "BUILD_ID=$BUILD_ID"
+      - "PROJECT_ID=$PROJECT_ID"
+      - "COMMIT_SHA=$COMMIT_SHA"
+      - "SHORT_SHA=$SHORT_SHA"
+      - "BRANCH_NAME=$BRANCH_NAME"
+
+  - id: "write-latest-pointer"
+    name: "node:24-bookworm"
+    entrypoint: "node"
+    args:
+      - "-e"
+      - |
+        const fs = require('node:fs');
+        const runId = process.env._RUN_ID;
+        const manifestPath = `artifacts/daily-builds/$${runId}/deterministic-manifest.json`;
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        const pointer = {
+          runId: manifest.runId,
+          overallStatus: manifest.overallStatus,
+          commit: manifest.git.commit,
+          shortCommit: manifest.git.shortCommit,
+          branch: manifest.git.branch,
+          finishedAt: manifest.finishedAt,
+          cloudBuildId: process.env.BUILD_ID || null,
+          manifestObject: `daily-builds/$${runId}/deterministic-manifest.json`,
+        };
+        fs.writeFileSync('artifacts/daily-builds/latest-cloud.json', JSON.stringify(pointer, null, 2) + '\n');
+    env:
+      - "_RUN_ID=${_RUN_ID}"
+      - "BUILD_ID=$BUILD_ID"
+
+  - id: "upload-reports-to-gcs"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    args:
+      - "-euo"
+      - "pipefail"
+      - "-c"
+      - |
+        DEST="gs://${_ARCHIVE_BUCKET}/daily-builds/${_RUN_ID}"
+        gcloud storage rsync -r "artifacts/daily-builds/${_RUN_ID}" "$${DEST}"
+        gcloud storage cp "artifacts/daily-builds/latest-cloud.json" "gs://${_ARCHIVE_BUCKET}/daily-builds/latest-cloud.json"
+
+  - id: "enforce-ci-status"
+    name: "node:24-bookworm"
+    entrypoint: "node"
+    args:
+      - "-e"
+      - |
+        const fs = require('node:fs');
+        const runId = process.env._RUN_ID;
+        const manifestPath = `artifacts/daily-builds/$${runId}/deterministic-manifest.json`;
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        console.log(`Final CI verdict for $${runId}: $${manifest.overallStatus}`);
+        if (manifest.overallStatus === 'fail') {
+          process.exit(1);
+        }
+    env:
+      - "_RUN_ID=${_RUN_ID}"
