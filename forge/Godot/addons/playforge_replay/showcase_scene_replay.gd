@@ -7,11 +7,11 @@ const SCENE_PATH := "res://scenes/main.tscn"
 const SOURCE_PATH := "res://playforge_replay_source.tscn"
 const ROOT_NAME := &"ForgeReplay"
 const NODE_TYPES := [
-	"Node2D", "Node3D", "CanvasLayer", "ColorRect", "Label", "Polygon2D",
+	"Node", "Node2D", "Node3D", "Control", "CanvasLayer", "ColorRect", "Label", "Polygon2D",
 	"Sprite2D", "MeshInstance3D", "Camera3D", "DirectionalLight3D",
 ]
 const EDITABLE_PROPERTIES := [
-	"position", "rotation", "rotation_degrees", "scale", "transform", "size",
+	"position", "rotation", "rotation_degrees", "scale", "transform", "size", "layer",
 	"offset_left", "offset_top", "offset_right", "offset_bottom",
 	"anchor_left", "anchor_top", "anchor_right", "anchor_bottom",
 	"color", "modulate", "self_modulate", "texture", "mesh", "material_override",
@@ -192,8 +192,8 @@ func _read_original() -> bool:
 		for property_index in range(original.get_node_property_count(index)):
 			var property := original.get_node_property_name(index, property_index)
 			var value: Variant = original.get_node_property_value(index, property_index)
-			if property == &"script" and (id != "." or not value is Script):
-				return _fail("시연 원본에는 루트 스크립트만 연결할 수 있습니다.")
+			if property == &"script" and not value is Script:
+				return _fail("시연 원본의 스크립트 속성이 유효하지 않습니다.")
 			properties[property] = value
 		entries[id] = {
 			"name": original.get_node_name(index), "kind": kind,

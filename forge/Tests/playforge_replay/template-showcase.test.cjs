@@ -15,6 +15,9 @@ const templatesToReplay = [
   { id: 'tappy-chicken', name: 'Tappy Chicken', landmark: { id: 'Hud/Score', label: '0' } },
   { id: 'iron-wood', name: 'Iron Wood', landmark: { id: 'Preview/Cart', position: [0, 0.86, 4] } },
   { id: 'brawllabs', name: 'BrawlLabs', landmark: { id: 'Preview/SceneTitle', label: 'BRAWLLABS · GEM GRAB' } },
+  { id: 'fortress-war', name: 'Fortress War', landmark: { id: 'Battlefield' } },
+  { id: 'survivor-io', name: '탕탕특공대 (Survivor.io)', landmark: { id: 'Hud' } },
+  { id: 'tappy-chicken-mmo', name: 'Tappy Chicken MMO', landmark: { id: 'Hud/MmoStatus', label: 'MMO · CONNECTING...' } },
 ];
 const nativeGodot = process.env.GODOT_EDITOR || 'D:\\Github\\GoDotProjects\\Godot_v4.7.2-stable_win64.exe';
 const realWeb = process.env.PLAYFORGE_REAL_SHOWCASE === '1';

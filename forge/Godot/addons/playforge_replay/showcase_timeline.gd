@@ -116,7 +116,8 @@ func load_data(data: Variant) -> bool:
 		if cue.has("storePack") and (schema_version != 3 or action not in ["point", "import"] or not _has_text(cue.storePack)):
 			return _fail("A store cue must reference an asset pack.")
 		if cue.has("assetNode") or cue.has("assetProperty"):
-			if schema_version != 3 or action != "point" or not _valid_path(cue.get("assetNode")) or not _has_text(cue.get("assetProperty")):
+			var asset_node: Variant = cue.get("assetNode")
+			if schema_version != 3 or action != "point" or (asset_node != "." and not _valid_path(asset_node)) or not _has_text(cue.get("assetProperty")):
 				return _fail("An asset cursor must reference a source node and resource property.")
 		if cue.has("scriptPhase") and (action != "point" or not ["open", "paste"].has(cue.scriptPhase)):
 			return _fail("A script phase must be an open or paste cursor cue.")

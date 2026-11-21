@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 3,
+  "title": "탕탕특공대 (Survivor.io) 제작 시연",
+  "duration": 11,
+  "playOnCompletion": true,
+  "viewport": { "width": 480, "height": 640 },
+  "roles": [
+    {"id": "gui", "label": "GUI", "color": "#dd8ef1", "editorRegion": "inspector", "description": "경험치 바·레벨업 카드·보스 HUD"},
+    {"id": "level", "label": "레벨", "color": "#69dbc0", "editorRegion": "viewport", "description": "무한 2D 아레나와 챕터 웨이브"},
+    {"id": "script", "label": "스크립트", "color": "#f6c970", "editorRegion": "script", "description": "자동 공격·무기 진화·보스전 시뮬레이션"},
+    {"id": "assets", "label": "에셋", "color": "#78b8ff", "editorRegion": "filesystem", "description": "영웅·좀비·보스·쿠나이·보석·상자 SVG 에셋"}
+  ],
+  "cues": [
+    {"at": 0, "role": "gui", "action": "point", "x": 400, "y": 95, "text": "레벨업 스킬 선택 카드와 챕터 타이머 HUD를 준비합니다"},
+    {"at": 0, "role": "level", "action": "point", "x": 260, "y": 160, "text": "빈 2D 씬에서 서바이버 웨이브 아레나를 시작합니다"},
+    {"at": 0, "role": "script", "action": "point", "x": 180, "y": 240, "text": "자동 조준 무기·진화 조합·3종 영웅 특수기 시뮬레이션을 준비합니다"},
+    {"at": 0, "role": "assets", "action": "point", "x": 75, "y": 310, "text": "영웅·좀비·보스·쿠나이·경험치 보석·보물상자 SVG 에셋 6종을 확인합니다"},
+    {"at": 1.6, "role": "level", "action": "add", "object": "Hud", "text": "아레나 최상단에 고정할 CanvasLayer HUD를 추가합니다"},
+    {"at": 2.8, "role": "level", "action": "set", "object": "Hud", "property": "layer", "text": "아레나 이펙트 위에 표시되도록 HUD 레이어를 최상위(10)로 설정합니다"},
+    {"at": 3.6, "role": "gui", "action": "point", "x": 410, "y": 140, "text": "경험치 바와 보스 체력 HUD 레이어 배치를 확인합니다"},
+    {"at": 4.2, "role": "assets", "action": "point", "assetNode": ".", "assetProperty": "script", "x": 90, "y": 350, "text": "Main.gd와 무기 진화 테이블·3개 챕터 보스 구성을 확인합니다"},
+    {"at": 4.8, "role": "level", "action": "point", "x": 290, "y": 320, "text": "2D 아레나 스폰 반경과 웨이브 진행 구역을 확인합니다"},
+    {"at": 5.5, "role": "script", "action": "point", "scriptPhase": "open", "x": 200, "y": 205, "text": "Main.gd 파일을 스크립트 편집기에서 엽니다"},
+    {"at": 7.5, "role": "script", "action": "point", "scriptPhase": "paste", "x": 225, "y": 265, "text": "Main.gd에 서바이버 웨이브·무기 진화·보스전 코드를 적용합니다"},
+    {"at": 9.0, "role": "script", "action": "finish", "text": "SurvivorIO 메인 스크립트를 연결해 자동 공격 서바이버 실행을 준비합니다"}
+  ]
+}
