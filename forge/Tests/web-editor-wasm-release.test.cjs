@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const http = require('node:http');
+const zlib = require('node:zlib');
 const {
   createServer,
   inspectWasmReleaseBinary,
@@ -118,6 +119,64 @@ test('PlayForge server defaults to release WASM on /api/health, /api/session, an
     });
     assert.equal(wasmHead.status, 200);
     assert.equal(wasmHead.headers['x-playforge-web-editor-wasm'], 'release');
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('PlayForge server serves precompressed .br / .gz sidecars even when runtime compression cache is disabled (Cloud Run)', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-sidecar-'));
+  const vendorDir = path.join(tmp, 'vendor-release');
+  fs.mkdirSync(vendorDir, { recursive: true });
+  const rawWasm = Buffer.concat([buildMinimalWasm(null), Buffer.alloc(16384, 0x41)]);
+  const brBuf = zlib.brotliCompressSync(rawWasm, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } });
+  const gzBuf = zlib.gzipSync(rawWasm, { level: 9 });
+  fs.writeFileSync(path.join(vendorDir, 'godot.editor.js'), '// stub');
+  fs.writeFileSync(path.join(vendorDir, 'godot.editor.wasm'), rawWasm);
+  fs.writeFileSync(path.join(vendorDir, 'godot.editor.wasm.br'), brBuf);
+  fs.writeFileSync(path.join(vendorDir, 'godot.editor.wasm.gz'), gzBuf);
+
+  const server = createServer({
+    hubAuth: false,
+    webEditorVendorDir: vendorDir,
+    httpCache: { enabled: false },
+    workspace: path.join(tmp, 'Workspace'),
+    platformWorkspace: path.join(tmp, 'Platform'),
+    buildDirectory: path.join(tmp, 'Builds'),
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address();
+  const base = `http://127.0.0.1:${port}`;
+  try {
+    const reqHead = (acceptEncoding) => new Promise((resolve, reject) => {
+      const req = http.request(
+        `${base}/OfficialGodot/vendor/godot.editor.wasm`,
+        { method: 'HEAD', headers: { 'Accept-Encoding': acceptEncoding } },
+        (res) => { res.resume(); resolve({ status: res.statusCode, headers: res.headers }); }
+      );
+      req.on('error', reject);
+      req.end();
+    });
+    const brHead = await reqHead('br, gzip');
+    assert.equal(brHead.status, 200);
+    assert.equal(brHead.headers['content-encoding'], 'br');
+    assert.equal(Number(brHead.headers['content-length']), brBuf.length);
+    assert.equal(brHead.headers['x-playforge-web-editor-wasm'], 'release');
+
+    const gzHead = await reqHead('gzip');
+    assert.equal(gzHead.status, 200);
+    assert.equal(gzHead.headers['content-encoding'], 'gzip');
+    assert.equal(Number(gzHead.headers['content-length']), gzBuf.length);
+
+    // Desktop downloads API metadata & attachment download endpoint
+    const dlList = await fetch(`${base}/api/desktop-downloads`).then((r) => r.json());
+    assert.equal(dlList.ok, true);
+    assert.equal(dlList.engineVersion, '4.7.2');
+    assert.ok(Array.isArray(dlList.items) && dlList.items.length >= 4);
+    const winEditor = dlList.items.find((x) => x.id === 'windows-editor');
+    assert.ok(winEditor);
+    assert.deepEqual(winEditor.excludedModules, ['openxr', 'webxr', 'mobile_vr', 'camera']);
   } finally {
     await new Promise((resolve) => server.close(resolve));
     fs.rmSync(tmp, { recursive: true, force: true });

@@ -538,11 +538,112 @@ async function publishProject() {
     publishing = false;
   }
 };
+const desktopDownloadBtn = document.getElementById("desktopDownloadBtn");
+const sidebarDesktopDownloadBtn = document.getElementById("sidebarDesktopDownloadBtn");
+const desktopDownloadModal = document.getElementById("desktopDownloadModal");
+const desktopDownloadClose = document.getElementById("desktopDownloadClose");
+const desktopDownloadList = document.getElementById("desktopDownloadList");
+
+function detectClientOs() {
+  const ua = String(navigator.userAgent || "").toLowerCase();
+  if (ua.includes("windows")) return "windows";
+  if (ua.includes("mac os") || ua.includes("macintosh")) return "macos";
+  if (ua.includes("linux")) return "linux";
+  return "windows";
+}
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "";
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${bytes} B`;
+}
+async function openDesktopDownloadModal() {
+  if (!desktopDownloadModal || !desktopDownloadList) return;
+  desktopDownloadList.innerHTML = '<p class="muted">다운로드 목록을 불러오는 중…</p>';
+  if (typeof desktopDownloadModal.showModal === "function" && !desktopDownloadModal.open) {
+    desktopDownloadModal.showModal();
+  }
+  try {
+    const res = await fetch(forgePath("/api/desktop-downloads"), { credentials: "same-origin", cache: "no-store" });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.ok || !Array.isArray(data.items)) {
+      throw new Error(data?.error || "다운로드 정보를 불러오지 못했습니다.");
+    }
+    const clientOs = detectClientOs();
+    desktopDownloadList.textContent = "";
+    const sorted = [...data.items].sort((a, b) => Number(b.os === clientOs) - Number(a.os === clientOs));
+    for (const item of sorted) {
+      const card = document.createElement("div");
+      card.className = "desktop-dl-card" + (item.os === clientOs && item.available ? " is-recommended" : "");
+      const meta = document.createElement("div");
+      meta.className = "desktop-dl-meta";
+      const titleRow = document.createElement("div");
+      titleRow.className = "desktop-dl-title";
+      const titleSpan = document.createElement("span");
+      titleSpan.textContent = item.title;
+      titleRow.append(titleSpan);
+      if (item.os === clientOs && item.available) {
+        const badge = document.createElement("span");
+        badge.className = "desktop-dl-badge";
+        badge.textContent = "권장";
+        titleRow.append(badge);
+      }
+      const sub = document.createElement("div");
+      sub.className = "desktop-dl-sub";
+      sub.textContent = item.subtitle;
+      const size = document.createElement("div");
+      size.className = "desktop-dl-size";
+      size.textContent = item.available
+        ? `${item.filename}${item.sizeBytes ? " · " + formatBytes(item.sizeBytes) : ""}`
+        : `${item.filename} · 배포 준비 중`;
+      meta.append(titleRow, sub, size);
+
+      const action = document.createElement("a");
+      action.className = "forge-btn " + (item.available ? "primary" : "secondary is-disabled") + " desktop-dl-action";
+      if (item.available && item.downloadUrl) {
+        action.href = item.downloadUrl;
+        action.download = item.filename;
+        action.textContent = "다운로드";
+      } else {
+        action.href = "#";
+        action.setAttribute("aria-disabled", "true");
+        action.textContent = "준비 중";
+      }
+      card.append(meta, action);
+      desktopDownloadList.append(card);
+    }
+  } catch (e) {
+    desktopDownloadList.textContent = e?.message || "다운로드 목록을 불러오지 못했습니다.";
+  }
+}
+if (desktopDownloadBtn) desktopDownloadBtn.onclick = () => openDesktopDownloadModal();
+if (sidebarDesktopDownloadBtn) sidebarDesktopDownloadBtn.onclick = () => openDesktopDownloadModal();
+if (desktopDownloadClose && desktopDownloadModal) desktopDownloadClose.onclick = () => desktopDownloadModal.close();
+if (desktopDownloadModal) {
+  desktopDownloadModal.addEventListener("click", (e) => {
+    if (e.target === desktopDownloadModal) desktopDownloadModal.close();
+  });
+}
+
 (async () => {
   await ensureSession();
   await library();
   const query = new URLSearchParams(location.search);
   const id = query.get("project");
   if (id) await openProject(id);
-  else status("원하는 템플릿을 선택하거나 새 프로젝트를 만들어 시작하세요.");
+  else {
+    status("원하는 템플릿을 선택하거나 새 프로젝트를 만들어 시작하세요.");
+    // Warm browser HTTP cache with the release Web Editor WASM while user browses templates (PC desktop, non-saveData only)
+    const conn = navigator.connection;
+    const lowBandwidth = Boolean(conn && (conn.saveData || /(?:2g|slow-2g)/i.test(String(conn.effectiveType || ""))));
+    if (!lowBandwidth && window.innerWidth >= 900) {
+      const warm = () => {
+        for (const asset of ["/OfficialGodot/vendor/godot.editor.js", "/OfficialGodot/vendor/godot.editor.wasm"]) {
+          fetch(forgePath(asset), { credentials: "same-origin", priority: "low" }).then((r) => r.body?.cancel?.()).catch(() => {});
+        }
+      };
+      if (typeof requestIdleCallback === "function") requestIdleCallback(warm, { timeout: 2500 });
+      else setTimeout(warm, 1200);
+    }
+  }
 })().catch((e) => status(e.message));

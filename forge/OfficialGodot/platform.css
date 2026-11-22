@@ -516,6 +516,72 @@ aside.editor-drawer button { margin: 6px 6px 0 0; }
 .guided select { padding: 7px; border-radius: 8px; border: 1px solid var(--line-strong); }
 .guided button { font-size: 12px; padding: 7px 10px; }
 
+/* Desktop Installer Download Modal */
+.forge-nav-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.desktop-download-modal {
+  width: min(560px, calc(100vw - 32px));
+  padding: 24px;
+}
+.desktop-dl-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.desktop-dl-head h3 { margin: 0 0 6px; font-size: 19px; }
+.desktop-dl-head p { margin: 0; font-size: 13px; line-height: 1.5; }
+.desktop-dl-close {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.desktop-dl-list {
+  display: grid;
+  gap: 10px;
+}
+.desktop-dl-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.desktop-dl-card.is-recommended {
+  border-color: var(--primary);
+  background: #F4F8FF;
+}
+.desktop-dl-meta { display: grid; gap: 4px; min-width: 0; }
+.desktop-dl-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 800; font-size: 14.5px; color: var(--ink); }
+.desktop-dl-badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.desktop-dl-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.desktop-dl-size { font-size: 11.5px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+.desktop-dl-action { flex-shrink: 0; text-decoration: none; }
+.desktop-dl-action.is-disabled { opacity: 0.55; pointer-events: none; }
+.desktop-dl-footnote { margin: 14px 0 0; font-size: 11.5px; color: var(--muted); }
+
 /* Dev / Debug / Test Demo UI Settings */
 .forge-dev-demo-pill {
   display: inline-flex;

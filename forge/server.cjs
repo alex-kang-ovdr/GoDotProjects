@@ -245,24 +245,44 @@ async function streamStaticFile(req, res, file, info, baseHeaders, compressionCa
   const ext = path.extname(file).toLowerCase();
   const acceptEncoding = String(req.headers['accept-encoding'] || '');
   const encoding = /\bbr\b/i.test(acceptEncoding) ? 'br' : /\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null;
-  if (compressionCache?.enabled && encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+  if (encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+    // Prefer precompressed sidecar (.br / .gz) — zero runtime CPU, works on Cloud Run too.
+    const sidecarPath = file + (encoding === 'br' ? '.br' : '.gz');
     try {
-      const compressed = await compressionCache.get(file, info, encoding);
-      if (compressed) {
+      const sidecarStat = await fs.promises.stat(sidecarPath);
+      if (sidecarStat.isFile() && sidecarStat.size > 0 && sidecarStat.size < info.size && sidecarStat.mtimeMs >= info.mtimeMs - 1000) {
         res.writeHead(200, {
           ...baseHeaders,
           'Content-Encoding': encoding,
-          'Content-Length': compressed.size,
+          'Content-Length': sidecarStat.size,
           'Vary': 'Accept-Encoding',
         });
-        if (req.method === 'HEAD') { compressed.release(); return res.end(); }
-        const stream = fs.createReadStream(compressed.path);
-        stream.once('close', compressed.release);
-        stream.on('error', () => { compressed.release(); res.destroy(); });
+        if (req.method === 'HEAD') return res.end();
+        const stream = fs.createReadStream(sidecarPath);
+        stream.on('error', () => res.destroy());
         stream.pipe(res);
         return;
       }
     } catch {}
+    if (compressionCache?.enabled) {
+      try {
+        const compressed = await compressionCache.get(file, info, encoding);
+        if (compressed) {
+          res.writeHead(200, {
+            ...baseHeaders,
+            'Content-Encoding': encoding,
+            'Content-Length': compressed.size,
+            'Vary': 'Accept-Encoding',
+          });
+          if (req.method === 'HEAD') { compressed.release(); return res.end(); }
+          const stream = fs.createReadStream(compressed.path);
+          stream.once('close', compressed.release);
+          stream.on('error', () => { compressed.release(); res.destroy(); });
+          stream.pipe(res);
+          return;
+        }
+      } catch {}
+    }
   }
   res.writeHead(200, { ...baseHeaders, 'Content-Length': info.size });
   if (req.method === 'HEAD') return res.end();
@@ -403,6 +423,103 @@ function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot 
     profile,
     wasmInfo: { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false },
   };
+}
+
+function resolveDesktopDownloads(serverEnv = process.env, baseRoot = root) {
+  const repoRoot = path.resolve(baseRoot, '..');
+  const workspaceParent = path.resolve(repoRoot, '..');
+  const findFirstFile = (paths) => {
+    for (const candidate of paths) {
+      if (!candidate) continue;
+      try {
+        const resolved = fs.realpathSync(candidate);
+        const stat = fs.statSync(resolved);
+        if (stat.isFile() && stat.size > 0) return { path: resolved, sizeBytes: stat.size };
+      } catch {}
+    }
+    return null;
+  };
+  const specs = [
+    {
+      id: 'windows-editor',
+      os: 'windows',
+      arch: 'x86_64',
+      title: 'PlayForge Desktop Editor (Windows)',
+      subtitle: '커스텀 Godot 4.7.2 · 네이티브 풀 모듈(Jolt Physics · FBX · Lightmapper · ENet · 로컬 GPU)',
+      defaultFilename: 'PlayForge-Godot-4.7.2-win64.exe',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_WIN_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_WIN_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-win64.zip'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Godot-4.7.2-win64.exe'),
+        path.join(repoRoot, 'artifacts', 'local-runtime', 'godot', 'Godot_v4.7.2-stable_win64.exe'),
+        path.join(workspaceParent, 'GoDotProjects', 'Godot_v4.7.2-stable_win64.exe'),
+        path.resolve(workspaceParent, '..', 'GoDotProjects', 'Godot_v4.7.2-stable_win64.exe'),
+      ],
+    },
+    {
+      id: 'windows-launcher',
+      os: 'windows',
+      arch: 'x86_64',
+      title: 'PlayHub Desktop Bootstrapper (Windows)',
+      subtitle: '초경량 데스크톱 런처 · Low-IL 샌드박스 실행 · playhub:// 프로토콜',
+      defaultFilename: 'PlayHub-Desktop-Bootstrapper-win64.exe',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_BOOTSTRAPPER_WIN_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_BOOTSTRAPPER_WIN_PATH,
+        path.join(repoRoot, 'native', 'target', 'release', 'playhub-bootstrapper.exe'),
+        path.join(workspaceParent, 'Hub-Desktop', 'native', 'target', 'release', 'playhub-bootstrapper.exe'),
+      ],
+    },
+    {
+      id: 'macos-editor',
+      os: 'macos',
+      arch: 'universal',
+      title: 'PlayForge Desktop Editor (macOS)',
+      subtitle: 'Apple Silicon + Intel Universal · Metal 네이티브 풀 모듈',
+      defaultFilename: 'PlayForge-Godot-4.7.2-macos-universal.dmg',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_MAC_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_MAC_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-macos-universal.dmg'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-macos-universal.zip'),
+      ],
+    },
+    {
+      id: 'linux-editor',
+      os: 'linux',
+      arch: 'x86_64',
+      title: 'PlayForge Desktop Editor (Linux)',
+      subtitle: 'x86_64 AppImage / tar.gz · Vulkan/OpenGL 네이티브 풀 모듈',
+      defaultFilename: 'PlayForge-Godot-4.7.2-linux-x86_64.tar.gz',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_LINUX_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_LINUX_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-linux-x86_64.AppImage'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-linux-x86_64.tar.gz'),
+      ],
+    },
+  ];
+  return specs.map((spec) => {
+    const externalUrl = /^https?:\/\//i.test(String(spec.envUrl || '').trim()) ? String(spec.envUrl).trim() : null;
+    const local = externalUrl ? null : findFirstFile(spec.localPaths);
+    const filename = local ? path.basename(local.path) : spec.defaultFilename;
+    return {
+      id: spec.id,
+      os: spec.os,
+      arch: spec.arch,
+      title: spec.title,
+      subtitle: spec.subtitle,
+      filename,
+      available: Boolean(externalUrl || local),
+      sizeBytes: local ? local.sizeBytes : null,
+      externalUrl,
+      localPath: local ? local.path : null,
+      engineVersion: '4.7.2',
+      customAvatarEngine: true,
+      excludedModules: ['openxr', 'webxr', 'mobile_vr', 'camera'],
+    };
+  });
 }
 
 function resolveWebEditorVendorDir(options, serverEnv) {
@@ -657,6 +774,47 @@ function createServer(options = {}) {
         nativeGameIframe: 1,
         hubAuth: Boolean(hubAuth),
       });
+    }
+
+    if (routePath === '/api/desktop-downloads' && req.method === 'GET') {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const items = resolveDesktopDownloads(serverEnv).map(({ localPath, ...pub }) => ({
+        ...pub,
+        downloadUrl: pub.available
+          ? (pub.externalUrl || `${basePath}/api/desktop-downloads/${encodeURIComponent(pub.id)}`)
+          : null,
+      }));
+      return json(200, { ok: true, engineVersion: '4.7.2', items });
+    }
+
+    const desktopDlMatch = routePath.match(/^\/api\/desktop-downloads\/([a-z0-9-]+)$/);
+    if (desktopDlMatch && ['GET', 'HEAD'].includes(req.method)) {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const entry = resolveDesktopDownloads(serverEnv).find((item) => item.id === desktopDlMatch[1]);
+      if (!entry || !entry.available) {
+        return json(404, { ok: false, error: 'Desktop build not available for this target yet.' });
+      }
+      if (entry.externalUrl) {
+        res.writeHead(302, { Location: entry.externalUrl, 'Cache-Control': 'no-store' });
+        return res.end();
+      }
+      try {
+        const stat = await fs.promises.stat(entry.localPath);
+        res.writeHead(200, {
+          'Content-Type': 'application/octet-stream',
+          'Content-Length': stat.size,
+          'Content-Disposition': `attachment; filename="${entry.filename.replace(/["\\\r\n]/g, '')}"`,
+          'Cache-Control': 'public, max-age=3600',
+          'X-Content-Type-Options': 'nosniff',
+        });
+        if (req.method === 'HEAD') return res.end();
+        const stream = fs.createReadStream(entry.localPath);
+        stream.on('error', () => res.destroy());
+        stream.pipe(res);
+        return;
+      } catch {
+        return json(404, { ok: false, error: 'Desktop binary file unavailable.' });
+      }
     }
 
     if (routePath === '/api/session' && req.method === 'GET') {

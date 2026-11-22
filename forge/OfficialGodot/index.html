@@ -31,6 +31,7 @@
       <input id="templateSearch" type="search" placeholder="내 프로젝트, 템플릿, 에셋 검색…" aria-label="템플릿 검색">
     </div>
     <div class="forge-topbar-actions">
+      <button type="button" id="desktopDownloadBtn" class="forge-btn secondary" data-testid="forge-desktop-download-btn">⬇ 설치버전</button>
       <button type="button" id="newBlankProjectBtn" class="forge-btn primary">+ 새 프로젝트</button>
     </div>
   </header>
@@ -44,6 +45,7 @@
       </div>
       <div class="forge-sidebar-group">
         <div class="forge-sidebar-label">도구 및 리소스</div>
+        <button type="button" id="sidebarDesktopDownloadBtn" class="forge-nav-item forge-nav-btn">⬇ 설치버전 다운로드 (PC)</button>
         <a class="forge-nav-item" href="multiplayer.html" data-dev-demo-ui hidden>멀티플레이 테스트 워크스페이스</a>
         <a class="forge-nav-item" href="/?view=create" target="_blank" rel="noopener">창작자 제출 · Drive</a>
         <a class="forge-nav-item" href="/?view=direct" target="_blank" rel="noopener">직접판매 · 수익 안내</a>
@@ -114,6 +116,20 @@
       <button type="submit" value="ok" class="primary-btn">확인</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="desktopDownloadModal" class="project-modal desktop-download-modal" aria-labelledby="desktopDownloadTitle">
+  <div class="desktop-dl-head">
+    <div>
+      <h3 id="desktopDownloadTitle">PlayForge 설치버전 다운로드</h3>
+      <p class="muted">커스텀 Godot 4.7.2(아바타·CoreHUD 포함) 네이티브 데스크톱 에디터 및 런처입니다. 로컬 GPU와 풀 모듈(Jolt Physics · FBX · Lightmapper · ENet)을 사용합니다.</p>
+    </div>
+    <button type="button" id="desktopDownloadClose" class="desktop-dl-close" aria-label="닫기">✕</button>
+  </div>
+  <div id="desktopDownloadList" class="desktop-dl-list" aria-live="polite">
+    <p class="muted">다운로드 목록을 불러오는 중…</p>
+  </div>
+  <p class="desktop-dl-footnote">※ XR/VR(OpenXR·WebXR·MobileVR) 및 웹캠(CameraServer) 모듈은 미포함입니다.</p>
 </dialog>
 
 <section id="workspace" hidden>
