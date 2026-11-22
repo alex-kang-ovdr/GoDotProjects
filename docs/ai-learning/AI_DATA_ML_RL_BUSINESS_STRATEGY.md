@@ -365,6 +365,6 @@ flowchart LR
 
 내부 전체 자산(`store/collected-catalog.json` 11,826종, `Forge-Avatar` 38개, `UnityConverter/orchestrator.mjs` 3-오라클, `RobloxConverter`, `blender-pipeline`, `Desktop shader_telemetry` 6.65s 콜드스타트, MP Hybrid Pool 57.7~62.6% 마진)과 2025~2026 글로벌 벤치마크(GrowthBook/CUPED, Sett.ai, Krafton CPC, Roblox Q3 2026, 2026.01.22 시행 한국 AI 기본법)를 교차 분석해 **8대 신규 AI/ML/RL 사업 아이템(N1~N8)**을 발굴했다. 상세 근거·DDL·API 스펙은 [DEEP_RESEARCH_AND_NEW_ITEMS.md](DEEP_RESEARCH_AND_NEW_ITEMS.md)에 수록했다.
 
-- **플라이휠 1 [즉시 수익·성장]**: Growth Hacker Agent(L0→L3) + **N3 (AI 플레이어블 광고 ≤2MB 자동 증류기)** + **N6 (바이럴 게임플레이 하이라이트 9:16 자동 클리퍼)** + D1 추천/Uplift
-- **플라이휠 2 [창작자 공급 압도]**: **N4 (11,826종 라이선스 안전 오픈 에셋 시맨틱 검색·AI 킷배싱)** + **N1 (RLVR/GRPO 자가진화 Roblox·Unity 포팅 엔진)** + **N2 (VLM 시각비평 3D 프롭 & UGC 아바타 팩토리)**
-- **플라이휠 3 [신뢰·마진 방어]**: Phase 0 법무(PIPA 제37조의2·2026 AI 기본법·DSAR·아동 격리) + **N5 (EAC 대체 통합 안티치트·CPA/결제 리스크 ML)** + D3 (`GamerQA` 밸런싱/MMO 봇) + **N7 (셰이더 프리워밍 & MP Warm Pool 오토스케일러)** + **N8 (윤리적 Flow-State DDA & 소셜 매칭 SDK)**
+- **플라이휠 1 [즉시 수익·성장]**: Growth Hacker Agent(L0→L3) + **N3 (AI 플레이어블 광고 ≤2MB 자동 증류기)** + **N6 (바이럴 게임플레이 하이라이트 9:16 자동 클리퍼)** + D1 추천/Uplift → 상세 블루프린트: [FLYWHEEL_1_GROWTH_REVENUE_DEEP_DIVE.md](FLYWHEEL_1_GROWTH_REVENUE_DEEP_DIVE.md)
+- **플라이휠 2 [창작자 공급 압도]**: **N4 (11,826종 라이선스 안전 오픈 에셋 시맨틱 검색·AI 킷배싱)** + **N1 (RLVR/GRPO 자가진화 Roblox·Unity 포팅 엔진)** + **N2 (VLM 시각비평 3D 프롭 & UGC 아바타 팩토리)** → 상세 블루프린트: [FLYWHEEL_2_CREATOR_SUPPLY_DEEP_DIVE.md](FLYWHEEL_2_CREATOR_SUPPLY_DEEP_DIVE.md)
+- **플라이휠 3 [신뢰·마진 방어]**: Phase 0 법무(PIPA 제37조의2·2026 AI 기본법·DSAR·아동 격리) + **N5 (EAC 대체 통합 안티치트·CPA/결제 리스크 ML)** + D3 (`GamerQA` 밸런싱/MMO 봇) + **N7 (셰이더 프리워밍 & MP Warm Pool 오토스케일러)** + **N8 (윤리적 Flow-State DDA & 소셜 매칭 SDK)** → 상세 블루프린트: [FLYWHEEL_3_TRUST_MARGIN_DEEP_DIVE.md](FLYWHEEL_3_TRUST_MARGIN_DEEP_DIVE.md)
