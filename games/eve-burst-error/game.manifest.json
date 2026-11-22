@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "eve-burst-error",
+  "slug": "eve-burst-error",
+  "title": {
+    "ko": "EVE burst error — 멀티 사이트 프로토타입",
+    "en": "EVE burst error — Multi-Sight Prototype",
+    "ja": "EVE burst error — マルチサイト試作版"
+  },
+  "summary": {
+    "ko": "아마기 코지로와 호죠 마리나 두 주인공의 시점 전환(SIGHT CHANGE), 교차 동기화 장벽(SB_01~SB_08), 정보 비대칭 추리를 체험하는 클래식 커맨드형 서스펜스 ADV.",
+    "en": "Classic command-style dual-protagonist mystery ADV showcasing Multi-Sight perspective switching, cross-causal Sync Barriers (SB_01-SB_08), and information asymmetry between Kojiro Amagi and Marina Hojo."
+  },
+  "genre": "mystery-adv",
+  "tags": [
+    "multi-sight",
+    "information-asymmetry",
+    "mystery",
+    "command-adv",
+    "sync-barrier",
+    "noir"
+  ],
+  "entry": "index.html",
+  "version": "1.0.0",
+  "updatedOn": "2026-11-22",
+  "locales": ["ko", "ja", "en"],
+  "defaultLocale": "ko",
+  "storage": {
+    "adapter": "localStorage",
+    "prefix": "playhub.eve-burst-error.v1"
+  },
+  "media": {
+    "cover": "assets/cover.svg"
+  },
+  "controls": {
+    "commands": ["LOOK", "TALK", "THINK", "MOVE", "ITEM", "SIGHT_CHANGE"],
+    "shortcuts": {
+      "Tab": "SIGHT_CHANGE"
+    }
+  },
+  "sourceBaseline": "PC-98 (1995) / SEGA SATURN (1997) / EVE burst error R (2016)"
+}

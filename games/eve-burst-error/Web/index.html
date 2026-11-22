@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVE burst error — 멀티 사이트 &amp; 정보 비대칭 프로토타입</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-sight="marina">
+  <!-- Dramatic Sight Change Flash Overlay -->
+  <div id="sight-flash" class="sight-flash" aria-hidden="true">
+    <div class="sight-flash-inner">
+      <div class="sight-flash-kicker">MULTI-SIGHT SYSTEM // 視点切替</div>
+      <div id="sight-flash-title" class="sight-flash-title">⇄ SIGHT CHANGE</div>
+      <div id="sight-flash-sub" class="sight-flash-sub"></div>
+    </div>
+  </div>
+
+  <!-- Top Multi-Sight Bar -->
+  <header class="top-bar">
+    <div class="brand-strip">
+      <div class="brand-title">
+        <span class="brand-logo">EVE</span>
+        <span class="brand-sub">burst error</span>
+        <span id="world-clock-pill" class="clock-pill">12-02 · DAY 0</span>
+      </div>
+      <div class="utility-controls">
+        <button id="btn-hint-mode" class="util-btn" type="button" title="동기화 장벽 힌트 표시 전환">힌트: Modern</button>
+        <button id="btn-deduction-mode" class="util-btn" type="button" title="최종 범인 지목 방식 전환">추리: Classic 입력</button>
+        <button id="btn-save-modal" class="util-btn" type="button">💾 저장/불러오기</button>
+        <button id="btn-reset" class="util-btn util-danger" type="button">↺ 초기화</button>
+      </div>
+    </div>
+
+    <div class="dual-hud">
+      <!-- Marina Protagonist Card -->
+      <section id="card-marina" class="protagonist-card protagonist-marina" aria-label="호죠 마리나 상태">
+        <div class="p-card-head">
+          <div class="p-identity">
+            <span class="p-tag p-tag-marina">SIGHT B · JCIA</span>
+            <strong>호죠 마리나</strong>
+            <span class="p-jp">法条まりな</span>
+          </div>
+          <span id="marina-status-badge" class="status-badge">ACTIVE</span>
+        </div>
+        <div class="p-card-meta">
+          <span id="marina-scene-meta" class="p-meta-item">12-02 · M_D0_01</span>
+          <span id="marina-loc-meta" class="p-meta-item">내각조사실 본부 빌딩</span>
+        </div>
+        <div class="p-card-counts">
+          <span id="marina-inv-count">소지품 0</span>
+          <span id="marina-clue-count">단서 0</span>
+          <span id="marina-done-count">완료 0/8</span>
+        </div>
+      </section>
+
+      <!-- Center SIGHT CHANGE Action Core -->
+      <div class="sight-switch-core">
+        <button id="btn-sight-change" class="sight-change-btn" type="button" title="단축키: Tab">
+          <span class="sc-icon">⇄</span>
+          <span class="sc-label">SIGHT CHANGE</span>
+          <span id="sc-sublabel" class="sc-sublabel">DAY 0 고정</span>
+        </button>
+        <div id="barrier-progress-pill" class="barrier-pill">동기화 장벽 0 / 8 해제</div>
+      </div>
+
+      <!-- Kojiro Protagonist Card -->
+      <section id="card-kojiro" class="protagonist-card protagonist-kojiro" aria-label="아마기 코지로 상태">
+        <div class="p-card-head">
+          <div class="p-identity">
+            <span class="p-tag p-tag-kojiro">SIGHT A · NOIR</span>
+            <strong>아마기 코지로</strong>
+            <span class="p-jp">天城小次郎</span>
+          </div>
+          <span id="kojiro-status-badge" class="status-badge">LOCKED</span>
+        </div>
+        <div class="p-card-meta">
+          <span id="kojiro-scene-meta" class="p-meta-item">12-03 · K_D1_01</span>
+          <span id="kojiro-loc-meta" class="p-meta-item">아마기 탐정사무소</span>
+        </div>
+        <div class="p-card-counts">
+          <span id="kojiro-inv-count">소지품 0</span>
+          <span id="kojiro-clue-count">단서 0</span>
+          <span id="kojiro-done-count">완료 0/7</span>
+        </div>
+      </section>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+    <!-- Left Column: Classic Command ADV Stage -->
+    <section class="adv-stage" aria-label="커맨드 어드벤처 스테이지">
+      <!-- Scene Header -->
+      <div class="scene-banner">
+        <div class="scene-banner-text">
+          <div id="scene-date-tag" class="scene-date-tag">12-02 (Day 0) · M_D0_01</div>
+          <h1 id="scene-title-kr" class="scene-title-kr">장면 불러오는 중…</h1>
+          <div id="scene-title-jp" class="scene-title-jp"></div>
+        </div>
+        <div class="scene-banner-actions">
+          <button id="btn-advance-scene" class="advance-btn" type="button">▶ 다음 국면으로 진행</button>
+          <button id="btn-open-deduction" class="deduction-btn hidden" type="button">⚖ 최종 진범 지목</button>
+        </div>
+      </div>
+
+      <!-- Atmospheric SVG Scene Viewport + Present Characters -->
+      <div class="viewport-wrap">
+        <div id="scene-svg-viewport" class="scene-svg-viewport" aria-label="장면 배경 비주얼"></div>
+        <div id="scene-location-overlay" class="location-overlay"></div>
+        <div id="scene-characters-strip" class="characters-strip" aria-label="현재 장면 등장인물"></div>
+      </div>
+
+      <!-- Sync Barrier Alert Banner (Visible when active protagonist is stalled) -->
+      <div id="sync-barrier-banner" class="sync-barrier-banner hidden" role="status">
+        <div class="sbb-text">
+          <strong id="sbb-title">🔒 동기화 장벽 봉쇄</strong>
+          <p id="sbb-desc"></p>
+        </div>
+        <button id="btn-banner-switch" class="sbb-switch-btn" type="button">⇄ 상대 시점으로 전환</button>
+      </div>
+
+      <!-- Crisis Choice Panel (M_D4_02 / K_D4_02) -->
+      <div id="crisis-panel" class="crisis-panel hidden" role="alert">
+        <div class="crisis-head">⚠ CRITICAL CRISIS // 절체절명의 선택</div>
+        <p id="crisis-prompt" class="crisis-prompt"></p>
+        <div id="crisis-buttons" class="crisis-buttons"></div>
+      </div>
+
+      <!-- Scene Objectives Strip -->
+      <div class="objectives-bar">
+        <span class="obj-label">장면 핵심 목표</span>
+        <div id="scene-objectives-list" class="obj-chips"></div>
+      </div>
+
+      <!-- Narrative Dialogue Box & Transcript -->
+      <div class="narrative-box">
+        <div class="latest-dialogue">
+          <div id="latest-speaker" class="speaker-plate">SYSTEM</div>
+          <div id="latest-text" class="latest-text"></div>
+        </div>
+        <details class="transcript-drawer">
+          <summary>대화·수사 백로그 (<span id="log-count">1</span>)</summary>
+          <div id="narrative-log-list" class="log-list"></div>
+        </details>
+      </div>
+
+      <!-- Classic 6-Command Deck + Target Tray -->
+      <div class="command-deck-wrap">
+        <div class="verb-bar" role="tablist" aria-label="6대 커맨드">
+          <button class="verb-btn active" data-verb="LOOK" type="button"><span>LOOK</span><small>조사</small></button>
+          <button class="verb-btn" data-verb="TALK" type="button"><span>TALK</span><small>대화</small></button>
+          <button class="verb-btn" data-verb="THINK" type="button"><span>THINK</span><small>추리</small></button>
+          <button class="verb-btn" data-verb="MOVE" type="button"><span>MOVE</span><small>이동</small></button>
+          <button class="verb-btn" data-verb="ITEM" type="button"><span>ITEM</span><small>소지품</small></button>
+          <button class="verb-btn verb-sight" data-verb="SIGHT_CHANGE" type="button"><span>⇄ SIGHT</span><small>시점 전환</small></button>
+        </div>
+        <div id="target-tray" class="target-tray" aria-label="커맨드 대상 선택"></div>
+      </div>
+    </section>
+
+    <!-- Right Column: Multi-Sight Intelligence Workspace -->
+    <aside class="intel-panel" aria-label="멀티 사이트 정보 분석 패널">
+      <nav class="intel-tabs" role="tablist">
+        <button class="intel-tab active" data-tab="timeline" type="button">🔀 타임라인 &amp; 장벽</button>
+        <button class="intel-tab" data-tab="asymmetry" type="button">🧩 정보 비대칭 보드</button>
+        <button class="intel-tab" data-tab="dossier" type="button">🪪 인물 별칭 (18)</button>
+      </nav>
+
+      <!-- Tab 1: Parallel Timeline & Sync Barrier SVG Visualizer -->
+      <div id="tab-timeline" class="intel-tab-pane active">
+        <div class="panel-intro">
+          <strong>병렬 타임라인 &amp; 교차 동기화 장벽 (SB_01 ~ SB_08)</strong>
+          <p>두 주인공의 독립된 시간선과 교차 인과 화살표를 실시간으로 추적합니다. 노드나 장벽 배지를 클릭해 상세 조건을 확인하세요.</p>
+        </div>
+        <div class="timeline-svg-scroll">
+          <div id="timeline-svg-host" class="timeline-svg-host"></div>
+        </div>
+        <div id="timeline-inspector" class="timeline-inspector">
+          <div class="inspector-title">타임라인 인스펙터</div>
+          <p class="inspector-body">씬 노드 또는 🔒/🔓 장벽을 클릭하면 교차 인과 설명이 표시됩니다.</p>
+        </div>
+        <div class="cross-log-section">
+          <div class="sub-heading">교차 인과 기록 (Cross-Causal Log)</div>
+          <div id="cross-causal-list" class="cross-causal-list"></div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Information Asymmetry Board -->
+      <div id="tab-asymmetry" class="intel-tab-pane">
+        <div class="panel-intro">
+          <strong>주인공 간 정보 비대칭 &amp; 인벤토리 격리 보드</strong>
+          <p>트리스탄호 합류(C_D6_01) 이전까지 코지로와 마리나의 소지품·단서는 완전히 격리되며, 두 시점을 모두 보는 플레이어만 전지적 진실을 조립합니다.</p>
+        </div>
+        <div class="dual-inventory-grid">
+          <div class="inv-box inv-box-kojiro">
+            <div class="inv-box-title">🟠 코지로 소지품 (격리)</div>
+            <ul id="inv-list-kojiro" class="inv-list"></ul>
+          </div>
+          <div class="inv-box inv-box-marina">
+            <div class="inv-box-title">🔵 마리나 소지품 (격리)</div>
+            <ul id="inv-list-marina" class="inv-list"></ul>
+          </div>
+        </div>
+        <div class="sub-heading">발견된 비대칭 단서 매트릭스 (<span id="asymmetry-count">0</span>/12)</div>
+        <div id="asymmetry-list" class="asymmetry-list"></div>
+      </div>
+
+      <!-- Tab 3: 18-Character Alias Dossier -->
+      <div id="tab-dossier" class="intel-tab-pane">
+        <div class="panel-intro">
+          <strong>정규 등장인물 18인 별칭·인지 대조표</strong>
+          <p>동일 인물이 코지로 시점과 마리나 시점에서 전혀 다른 이름·신분으로 인식되는 극적 아이러니를 확인하세요.</p>
+        </div>
+        <div id="dossier-list" class="dossier-list"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Culprit Deduction Modal (C_D6_01) -->
+  <div id="modal-deduction" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="deduction-modal-title">
+    <div class="modal-card modal-deduction-card">
+      <div class="modal-head">
+        <h2 id="deduction-modal-title">⚖ 최종 합류 추리: 진범 '테러'의 이름을 지목하라</h2>
+        <button id="btn-close-deduction" class="modal-close" type="button" aria-label="닫기">✕</button>
+      </div>
+      <p class="modal-lead">
+        트리스탄호 해저 선창에서 코지로와 마리나의 5일간 기록이 하나로 통합되었습니다.<br>
+        니카이도·디브·아쿠아 연쇄 살인을 저지른 <strong>유기 휴머노이드 클론(μ-101) / '테러'</strong>의 진짜 이름은 누구입니까?
+      </p>
+      <div id="deduction-classic-box" class="deduction-input-box">
+        <label for="culprit-input" class="input-label">진범 이름 입력 (한국어 · 日本語 · English 정규화 인식)</label>
+        <div class="input-row">
+          <input id="culprit-input" type="text" placeholder="예: 미도 마야코 / 御堂真弥子 / Mayako Mido" autocomplete="off">
+          <button id="btn-submit-culprit" class="primary-submit-btn" type="button">지목 확정</button>
+        </div>
+      </div>
+      <div id="deduction-streamlined-box" class="deduction-candidates hidden">
+        <div class="input-label">용의자 선택 (PLUS 모드)</div>
+        <div id="culprit-candidate-grid" class="candidate-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ending / Game Over Modal -->
+  <div id="modal-ending" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ending-modal-title">
+    <div class="modal-card modal-ending-card">
+      <div id="ending-badge" class="ending-badge">OUTCOME</div>
+      <h2 id="ending-modal-title" class="ending-title"></h2>
+      <div id="ending-title-jp" class="ending-jp"></div>
+      <p id="ending-summary" class="ending-summary"></p>
+      <div id="ending-notes" class="ending-notes"></div>
+      <div id="ending-stats" class="ending-stats"></div>
+      <div class="modal-actions">
+        <button id="btn-ending-retry" class="util-btn" type="button">↺ 직전 체크포인트에서 재시도</button>
+        <button id="btn-ending-newgame" class="primary-submit-btn" type="button">▶ 처음부터 다시 플레이</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save / Load Modal -->
+  <div id="modal-save" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="save-modal-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="save-modal-title">💾 이중 상태 세이브 슬롯 (Dual-State Save)</h2>
+        <button id="btn-close-save" class="modal-close" type="button" aria-label="닫기">✕</button>
+      </div>
+      <p class="modal-lead">코지로·마리나 양측의 동결 스냅샷, 인벤토리, 동기화 장벽, 공유 세계 플래그를 원자적으로 저장/복원합니다.</p>
+      <div id="save-slots-list" class="save-slots-list"></div>
+    </div>
+  </div>
+
+  <!-- Classic non-module scripts for zero-CORS file:// AND HTTP compatibility -->
+  <script src="data/game-data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
