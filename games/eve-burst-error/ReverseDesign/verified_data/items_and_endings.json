@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "eve-burst-error",
   "items": [
     {
@@ -8,7 +8,7 @@
       "name_jp": "イスラム文様の絵画資料",
       "owner": "kojiro",
       "acquired_scene": "K_D1_01",
-      "used_scene": "K_D2_01",
+      "used_scene": "K_D2_02",
       "asymmetric_significance": "코지로 수사선의 출발점. 겉으로는 분실 미술품 자료지만 실제로는 엘디아 국새 은닉 위치와 직결된다.",
       "verification_status": "확인"
     },
@@ -23,23 +23,33 @@
       "verification_status": "재구성안"
     },
     {
-      "id": "item_purin_pendant",
-      "name_kr": "푸딩의 소지품 (엘디아 왕가 표식)",
-      "name_jp": "プリンの所持品",
-      "owner": "kojiro",
-      "acquired_scene": "K_D1_02",
-      "used_scene": "K_D4_02",
-      "asymmetric_significance": "초기에는 정체불명 소녀의 유류품이나, 12월 6일 프리시아 공주 신원 입증의 열쇠가 된다.",
-      "verification_status": "해석"
-    },
-    {
       "id": "item_stollman_mansion_key",
       "name_kr": "스트르만 저택·서재 열쇠",
       "name_jp": "ストールマン邸の鍵",
       "owner": "kojiro",
       "acquired_scene": "K_D1_01",
+      "used_scene": "K_D1_02",
+      "asymmetric_significance": "저택 내부 조사와 회화 정밀 감정에 사용되는 코지로 전용 열쇠.",
+      "verification_status": "해석"
+    },
+    {
+      "id": "item_nikaido_organizer",
+      "name_kr": "니카이도 스스무의 전자수첩",
+      "name_jp": "二階堂の電子手帳",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_02",
       "used_scene": "K_D2_01",
-      "asymmetric_significance": "저택 내부 조사와 국새 절반 은닉 흔적 확보에 사용되는 코지로 전용 열쇠.",
+      "asymmetric_significance": "스트르만 저택에서 회수해 카츠라기 사무소에서 반환하는 전자수첩. 엘디아 뒷거래 접선 일정의 결정적 단서.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_purin_pendant",
+      "name_kr": "푸딩의 소지품 (엘디아 왕가 표식)",
+      "name_jp": "プリンの所持品",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_03",
+      "used_scene": "K_D4_02",
+      "asymmetric_significance": "초기에는 정체불명 소녀의 유류품이나, 12월 6일 프리시아 공주 신원 입증의 열쇠가 된다.",
       "verification_status": "해석"
     },
     {
@@ -47,9 +57,29 @@
       "name_kr": "국새(国璽) 조각 — 저택·회화 측 단서",
       "name_jp": "国璽の片割れ（邸宅・絵画側）",
       "owner": "kojiro",
-      "acquired_scene": "K_D2_01",
-      "used_scene": "C_D6_01",
-      "asymmetric_significance": "스트르만이 둘로 쪼갠 엘디아 국새의 한쪽 절반. 마리나가 확보한 학교 측 절반과 합쳐져야 진실이 드러난다.",
+      "acquired_scene": "K_D2_02",
+      "used_scene": "K_D5_02",
+      "asymmetric_significance": "스트르만이 둘로 쪼갠 엘디아 국새의 한쪽 절반. 트리스탄호 기관실에서 안경 벗은 마야코에게 몰래 탈취당한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_embassy_wiretap",
+      "name_kr": "초소형 도청기·수신기",
+      "name_jp": "超小型盗聴器・受信機",
+      "owner": "kojiro",
+      "acquired_scene": "K_D3_03",
+      "used_scene": "K_D3_03",
+      "asymmetric_significance": "코지로가 주일 엘디아 대사관 로스=미도 의자 밑에 설치해 마리나와 대사의 대화를 감청하는 장비.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_aqua_floppy_disk",
+      "name_kr": "아쿠아의 암호 플로피 디스크",
+      "name_jp": "アクアの暗号フロッピーディスク",
+      "owner": "kojiro",
+      "acquired_scene": "K_D3_03",
+      "used_scene": "K_D4_01",
+      "asymmetric_significance": "엘디아 구 정보부 기록과 DBMS 접속 인증 키가 담긴 암호화 플로피 디스크.",
       "verification_status": "확인"
     },
     {
@@ -59,7 +89,7 @@
       "owner": "kojiro",
       "acquired_scene": "K_D4_01",
       "used_scene": "K_D4_01",
-      "asymmetric_significance": "코지로가 마리나의 Level-7 해킹 교착(SB_06)을 깨기 위해 동시 정규 접속을 수행하는 결정적 도구.",
+      "asymmetric_significance": "코지로가 마리나의 Level-7 해킹 교착(SB_10)을 깨기 위해 동시 정규 접속을 수행하는 결정적 도구.",
       "verification_status": "확인"
     },
     {
@@ -78,7 +108,7 @@
       "name_jp": "内閣調査室エージェント身分証",
       "owner": "marina",
       "acquired_scene": "M_D0_01",
-      "used_scene": "M_D3_01",
+      "used_scene": "M_D3_02",
       "asymmetric_significance": "코지로는 접근 불가능한 공권력·대사관·본부 빌딩 구역 진입 권한을 부여한다.",
       "verification_status": "확인"
     },
@@ -87,9 +117,19 @@
       "name_kr": "예일 외국인학교 전속 강사 신분증",
       "name_jp": "エール外国人学校専従講師身分証明書",
       "owner": "marina",
-      "acquired_scene": "M_D0_02",
+      "acquired_scene": "M_D0_03",
       "used_scene": "M_D1_01",
       "asymmetric_significance": "12월 2일(Day 0) 프롤로그 완료의 증표이자 마리나 잠입 경호의 기반.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_sun_mansion_fax",
+      "name_kr": "선 맨션 403호 기밀 FAX 보고서",
+      "name_jp": "サン・マンション403号室の機密FAX",
+      "owner": "marina",
+      "acquired_scene": "M_D1_02",
+      "used_scene": "M_D3_01",
+      "asymmetric_significance": "마리나 거점(선 맨션 403호)으로 수신된 엘디아 정세·교내 감시 보고서.",
       "verification_status": "확인"
     },
     {
@@ -97,9 +137,9 @@
       "name_kr": "국새(国璽) 조각 — 예일 학교 디렉터룸 측",
       "name_jp": "国璽の片割れ（エール学校側）",
       "owner": "marina",
-      "acquired_scene": "M_D2_01",
+      "acquired_scene": "M_D2_02",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "예일 외국인학교 디렉터룸에 숨겨진 국새의 나머지 절반.",
+      "asymmetric_significance": "예일 외국인학교 디렉터룸 비밀 금고에 숨겨진 국새의 나머지 절반.",
       "verification_status": "확인"
     },
     {
@@ -109,7 +149,7 @@
       "owner": "marina",
       "acquired_scene": "M_D4_02",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "SB_06 데드락 돌파 후 획득하는 핵심 기밀. 마야코가 유기 휴머노이드 클론임을 증명하는 결정적 증거.",
+      "asymmetric_significance": "SB_10 데드락 돌파 후 획득하는 핵심 기밀. 마야코가 유기 휴머노이드 클론임을 증명하는 결정적 증거.",
       "verification_status": "확인"
     },
     {
@@ -119,7 +159,108 @@
       "owner": "both",
       "acquired_scene": "C_D6_01",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "해저 침몰 후 4인(코지로·마리나·마야코·프리시아)의 극한 서바이벌과 최종 추리의 긴박감을 형성하는 합류 공유 아이템.",
+      "asymmetric_significance": "해저 침몰 후 4인(코지로·마리나·마야코·프리시아)의 극한 서바이벌과 3단계 최종 추리의 긴박감을 형성하는 합류 공유 아이템.",
+      "verification_status": "확인"
+    }
+  ],
+  "finale_deduction_steps": [
+    {
+      "step_index": 0,
+      "id": "DED_STAGE_1_PRINCESS",
+      "stage_label": "STAGE 1 / 3 · 왕위 계승자와 양분된 국새",
+      "question_kr": "코지로가 항구 창고 거리에서 구출하고 마리나가 트리스탄호로 호위한 소녀 '푸딩'의 진짜 정체(또는 이름)는 무엇인가?",
+      "placeholder_kr": "예: 프리시아 / 푸딩 / 엘디아 왕녀 / プリシア",
+      "accepted_inputs": [
+        "프리시아",
+        "프리시아렘크라임",
+        "엘디아왕녀",
+        "엘디아공주",
+        "엘디아여왕",
+        "왕위계승자",
+        "왕녀",
+        "공주",
+        "푸딩",
+        "프린세스",
+        "プリン",
+        "プリシア",
+        "プリシアレムクライム",
+        "エルディア王女",
+        "prisia",
+        "prisiaremcrime",
+        "purin",
+        "pudding",
+        "princess"
+      ],
+      "choices": [
+        { "value": "프리시아", "label": "프리시아 렘 크라임 (엘디아 왕녀 / 푸딩)", "role": "약물로 이중인격을 만든 정통 왕위 계승자" },
+        { "value": "시리아 플랫", "label": "시리아 플랫 (シリア)", "role": "예일 학교 아랍어 강사·이중스파이" },
+        { "value": "아쿠아=스틸=로이드", "label": "아쿠아=스틸=로이드", "role": "엘디아 공화국 수상" },
+        { "value": "마츠노 히로미", "label": "마츠노 히로미 (松乃広美)", "role": "예일 학교 도서관 미술 실습생" }
+      ],
+      "success_narration": "【1단계 진상 입증】 맞다! 항구의 소녀 '푸딩'은 암살을 피하기 위해 스트르만의 약물로 인격을 분리한 정통 왕위 계승자 '프리시아 렘 크라임' 공주다! 저택 회화와 예일 디렉터룸에 양분된 국새 역시 그녀를 지키기 위한 장치였다.",
+      "verification_status": "확인"
+    },
+    {
+      "step_index": 1,
+      "id": "DED_STAGE_2_CLONE",
+      "stage_label": "STAGE 2 / 3 · 극비 파일 'C 프로젝트'의 실체",
+      "question_kr": "마리나가 DBMS Level-7 데드락을 돌파해 확보한 극비 문서 'C 프로젝트(코드명 μ-101)'가 만들어 낸 비밀 존재의 정체는?",
+      "placeholder_kr": "예: 클론 / μ-101 / 복제인간 / 유기 휴머노이드",
+      "accepted_inputs": [
+        "클론",
+        "복제인간",
+        "유기휴머노이드",
+        "휴머노이드",
+        "유기휴머노이드클론",
+        "μ101",
+        "u101",
+        "mu101",
+        "뮤101",
+        "미유101",
+        "c프로젝트",
+        "인격이식",
+        "기억이식",
+        "クローン",
+        "ヒューマノイド",
+        "有機ヒューマノイド",
+        "clone",
+        "humanoid",
+        "organichumanoid"
+      ],
+      "choices": [
+        { "value": "클론", "label": "유기 휴머노이드 클론 (μ-101 / 전 국왕 인격 이식)", "role": "프리시아 유전자로 제작된 복제 인간" },
+        { "value": "핵무기", "label": "엘디아 전술 핵기폭 장치", "role": "국새에 숨겨진 군사 기폭 코드" },
+        { "value": "위조화폐", "label": "엘디아 국채 위조 네트워크", "role": "대사관 외교 자금 세탁 계획" },
+        { "value": "감청위성", "label": "내각조사실 불법 감청 위성", "role": "코노 본부장의 기밀 도청 프로젝트" }
+      ],
+      "success_narration": "【2단계 진상 입증】 정확하다! 'C 프로젝트'는 전 국왕의 부활을 위해 프리시아의 유전자로 제작한 유기 휴머노이드 클론(μ-101)에 전 국왕의 기억과 살인 인격을 이식한 금기의 계획이었다!",
+      "verification_status": "확인"
+    },
+    {
+      "step_index": 2,
+      "id": "DED_STAGE_3_MASTERMIND",
+      "stage_label": "STAGE 3 / 3 · 최종 범인 지목 (犯人入力)",
+      "question_kr": "스트르만은 디브가 살해했지만, 니카이도·디브·아쿠아·로스=미도를 차례로 제거하고 기관실에서 국새를 가져간 연쇄살인범 '테러'(클론 μ-101)의 이름은?",
+      "placeholder_kr": "예: 미도 마야코 / 御堂真弥子 / Mayako Mido",
+      "accepted_inputs": [
+        "미도마야코",
+        "마야코",
+        "御堂真弥子",
+        "みどうまやこ",
+        "真弥子",
+        "まやこ",
+        "mayakomido",
+        "mayako"
+      ],
+      "choices": [
+        { "value": "미도 마야코", "label": "미도 마야코 (御堂真弥子)", "role": "로스=미도 대사의 딸 / 클론 μ-101" },
+        { "value": "로스=미도", "label": "로스=미도 (ロス＝御堂)", "role": "주일 엘디아 대사" },
+        { "value": "디브", "label": "디브 (ディーブ)", "role": "엘디아 정보부 간부 (스트르만 살해범)" },
+        { "value": "카츠라기 겐자부로", "label": "카츠라기 겐자부로 / 스즈키", "role": "전 엘디아 정보국 테러 대장" },
+        { "value": "시리아 플랫", "label": "시리아 플랫 (シリア)", "role": "예일 학교 아랍어 강사" },
+        { "value": "아쿠아=스틸=로이드", "label": "아쿠아=스틸=로이드", "role": "엘디아 공화국 수상" }
+      ],
+      "success_narration": "【최종 진범 특정: 미도 마야코 / 御堂真弥子 (μ-101)】 모든 기억 공백, 기관실의 도난 국새, 연쇄 살인 '테러'의 정체가 하나로 일치했다!",
       "verification_status": "확인"
     }
   ],
@@ -141,20 +282,20 @@
         "mayakomido",
         "mayako"
       ],
-      "edition_notes": "PC-98 / SS / R 판본에서는 범인 이름 직접 입력 성공 시 도달. PS2 PLUS 판본에서는 범인 입력 파트가 생략되어 스토리 진행으로 도달.",
-      "summary": "양측 시점의 모든 단서가 하나로 결합해 연쇄살인범 '테러'의 정체가 전 국왕 인격이 이식된 미도 마야코(μ-101)임을 밝혀내고, 로스=미도의 음모가 좌절되며 생환한다.",
+      "edition_notes": "PC-98 / SS / R 판본에서는 범인 이름 직접 입력(스트르만=디브, 니카이도·디브·아쿠아·로스=마야코) 성공 시 도달. PS2 PLUS 판본에서는 범인 입력 파트가 생략되어 스토리 진행으로 도달.",
+      "summary": "양측 시점의 27개 씬·12개 동기화 장벽·22개 비대칭 단서가 하나로 결합해 연쇄살인범 '테러'의 정체가 전 국왕 인격이 이식된 미도 마야코(μ-101)임을 밝혀내고, 프리시아가 엘디아 여왕으로 즉위하며 생환한다.",
       "verification_status": "확인"
     },
     {
       "id": "END_BAD_WRONG_CULPRIT",
       "outcome_type": "bad_ending",
-      "title_kr": "실패 엔딩: 범인 지목 오답",
+      "title_kr": "실패 엔딩: 최종 추리 오답",
       "title_jp": "バッドエンド：犯人入力ミス",
       "trigger_scene": "C_D6_01",
       "culprit_character_id": "mayako_mido",
       "accepted_culprit_inputs": [],
-      "edition_notes": "PC-98 / SS / R 기준. 범인 이름 입력 시 오답을 입력하면 진엔딩 진입 불가 및 실패 메시지 출력.",
-      "summary": "진범을 특정하지 못해 해저 선창에서 진상 규명에 실패하고 게임오버 처리된다.",
+      "edition_notes": "PC-98 / SS / R 기준. 최종 추리 단계에서 오답을 입력하면 진엔딩 진입 불가 및 실패 메시지 출력.",
+      "summary": "진상과 진범을 특정하지 못해 해저 선창의 산소가 고갈되며 진실 규명에 실패한다.",
       "verification_status": "확인"
     },
     {
@@ -165,7 +306,7 @@
       "trigger_scene": "K_D4_02",
       "culprit_character_id": null,
       "accepted_culprit_inputs": [],
-      "edition_notes": "디브 습격(K_D4_02), 사문 탈출(M_D4_02), 트리스탄호 위기(K_D5_01/C_D6_01) 등에서 오선택 또는 필수 플래그 미비 시 즉각 종료. 전수 세부 분기는 DATA_GAPS.md(GAP-04) 참조.",
+      "edition_notes": "디브 습격(K_D4_02), 사문 탈출(M_D4_02), 트리스탄호 위기(K_D5_03/C_D6_01) 등에서 오선택 또는 필수 플래그 미비 시 즉각 종료. 전수 세부 분기는 DATA_GAPS.md(GAP-04) 참조.",
       "summary": "위험 대치 중 잘못된 커맨드를 선택해 주인공이 사망·체포되어 세이브 복귀를 요구한다.",
       "verification_status": "확인"
     },
@@ -177,7 +318,7 @@
       "trigger_scene": "M_D4_01",
       "culprit_character_id": null,
       "accepted_culprit_inputs": [],
-      "edition_notes": "게임오버가 아니며, SIGHT CHANGE를 통해 상대 주인공의 선행 동기화 장벽(SB_01~SB_08)을 해제하면 즉시 재개된다.",
+      "edition_notes": "게임오버가 아니며, SIGHT CHANGE를 통해 상대 주인공의 선행 동기화 장벽(SB_01~SB_12)을 해제하면 즉시 재개된다.",
       "summary": "한쪽 시점의 커맨드가 고갈되거나 보안 교착(예: DBMS Level-7)에 걸린 정상 대기 상태.",
       "verification_status": "해석"
     }

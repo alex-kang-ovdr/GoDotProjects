@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /**
- * EVE burst error — Verified Data & Multi-Sight Sync Barrier Validator
+ * EVE burst error — Verified Data & Multi-Sight Sync Barrier Validator (Phase 2)
  *
  * Validates:
  * 1. JSON & CSV parsing and bidirectional parity (characters, locations)
  * 2. Provenance tag validity (확인 / 해석 / 재구성안 / 검증 필요)
- * 3. Zero duplicate IDs and zero dangling references across all 6 datasets
- * 4. Cross-protagonist Sync Barrier invariants & directional checks
- * 5. Deadlock-freedom & topological resolvability (Kahn's DAG algorithm + walkthrough simulation from M_D0_01 to C_D6_01)
- * 6. Information asymmetry contract (distinct perceived vs true meanings)
+ * 3. Zero duplicate IDs and zero dangling references across all datasets
+ * 4. Per-scene command_exhaustion metadata (GAP-03)
+ * 5. Cross-protagonist Sync Barrier invariants & directional checks (SB_01 ~ SB_12)
+ * 6. Asymmetric clues & clue_correlations integrity (no self-pairs, valid clue IDs, unique pairs)
+ * 7. Multi-step finale_deduction_steps integrity (GAP-07)
+ * 8. Deadlock-freedom & topological resolvability (Kahn's DAG algorithm + walkthrough simulation from M_D0_01 to C_D6_01)
  */
 
 import fs from 'node:fs';
@@ -114,7 +116,9 @@ const locations = locationsData.locations ?? [];
 const scenes = timelineData.scenes ?? [];
 const barriers = barriersData.sync_barriers ?? [];
 const clues = cluesData.clues ?? [];
+const correlations = cluesData.clue_correlations ?? [];
 const items = itemsEndingsData.items ?? [];
+const deductionSteps = itemsEndingsData.finale_deduction_steps ?? [];
 const endings = itemsEndingsData.endings_and_outcomes ?? [];
 
 // 2. Unique IDs & provenance tags
@@ -123,8 +127,17 @@ const locMap = checkUniqueIds(locations, 'locations.json');
 const sceneMap = checkUniqueIds(scenes, 'timeline_chapters.json');
 const barrierMap = checkUniqueIds(barriers, 'sync_barriers.json');
 const clueMap = checkUniqueIds(clues, 'clues_and_asymmetry.json');
+const corrMap = checkUniqueIds(correlations, 'clues_and_asymmetry.json(correlations)');
 const itemMap = checkUniqueIds(items, 'items_and_endings.json');
+const dedMap = checkUniqueIds(deductionSteps, 'items_and_endings.json(deduction_steps)');
 const endingMap = checkUniqueIds(endings, 'items_and_endings.json(endings)');
+
+// Phase 2 minimum expansion gates
+if (scenes.length < 26) fail(`Phase 2 requires >= 26 scenes, got ${scenes.length}`);
+if (barriers.length !== 12) fail(`Phase 2 requires exactly 12 sync barriers (SB_01~SB_12), got ${barriers.length}`);
+if (clues.length < 20) fail(`Phase 2 requires >= 20 asymmetric clues, got ${clues.length}`);
+if (correlations.length < 6) fail(`Phase 2 requires >= 6 clue correlations, got ${correlations.length}`);
+if (deductionSteps.length !== 3) fail(`Phase 2 requires 3 finale deduction steps, got ${deductionSteps.length}`);
 
 // 3. JSON <-> CSV parity
 if (characters.length !== charactersCsv.length) {
@@ -199,6 +212,9 @@ for (const s of scenes) {
   for (const prevId of s.prev_scene_ids ?? []) {
     if (!sceneMap.has(prevId)) fail(`scenes[${s.id}]: unknown prev_scene_id "${prevId}"`);
   }
+  if (!s.command_exhaustion || s.command_exhaustion.look_depth < 2 || s.command_exhaustion.talk_depth < 2) {
+    fail(`scenes[${s.id}]: missing or invalid command_exhaustion metadata`);
+  }
   for (const evtId of s.emits_event_ids ?? []) {
     if (eventToEmitterScene.has(evtId)) {
       fail(`Duplicate emitted event "${evtId}" in scenes "${eventToEmitterScene.get(evtId)}" and "${s.id}"`);
@@ -235,7 +251,7 @@ for (const b of barriers) {
   }
 }
 
-// 6. Clues & asymmetry integrity
+// 6. Clues, asymmetry, and clue_correlations integrity
 for (const cl of clues) {
   if (!sceneMap.has(cl.acquired_at_scene)) {
     fail(`clue[${cl.id}]: unknown acquired_at_scene "${cl.acquired_at_scene}"`);
@@ -257,11 +273,35 @@ for (const cl of clues) {
   }
 }
 
-// 7. Items & endings integrity
+const seenCorrPairs = new Set();
+for (const corr of correlations) {
+  if (!clueMap.has(corr.clue_a_id)) fail(`correlation[${corr.id}]: unknown clue_a_id "${corr.clue_a_id}"`);
+  if (!clueMap.has(corr.clue_b_id)) fail(`correlation[${corr.id}]: unknown clue_b_id "${corr.clue_b_id}"`);
+  if (corr.clue_a_id === corr.clue_b_id) fail(`correlation[${corr.id}]: self-pair "${corr.clue_a_id}"`);
+  const pairKey = [corr.clue_a_id, corr.clue_b_id].sort().join('::');
+  if (seenCorrPairs.has(pairKey)) {
+    fail(`correlation[${corr.id}]: duplicate clue pair "${pairKey}"`);
+  }
+  seenCorrPairs.add(pairKey);
+  if (!corr.synthesis_kr) fail(`correlation[${corr.id}]: missing synthesis_kr`);
+}
+
+// 7. Items, deduction steps & endings integrity
 for (const it of items) {
   if (!VALID_TRACKS.has(it.owner)) fail(`item[${it.id}]: invalid owner "${it.owner}"`);
   if (!sceneMap.has(it.acquired_scene)) fail(`item[${it.id}]: unknown acquired_scene "${it.acquired_scene}"`);
   if (!sceneMap.has(it.used_scene)) fail(`item[${it.id}]: unknown used_scene "${it.used_scene}"`);
+}
+
+for (let di = 0; di < deductionSteps.length; di++) {
+  const step = deductionSteps[di];
+  if (step.step_index !== di) fail(`deductionStep[${step.id}]: expected step_index ${di}, got ${step.step_index}`);
+  if (!Array.isArray(step.accepted_inputs) || step.accepted_inputs.length === 0) {
+    fail(`deductionStep[${step.id}]: missing accepted_inputs`);
+  }
+  if (!Array.isArray(step.choices) || step.choices.length < 3) {
+    fail(`deductionStep[${step.id}]: missing streamlined choices`);
+  }
 }
 
 for (const end of endings) {
@@ -335,18 +375,15 @@ while (progress && completed.size < scenes.length) {
   for (const s of scenes) {
     if (completed.has(s.id)) continue;
 
-    // Check intra-track predecessors
     const prevOk = (s.prev_scene_ids ?? []).every((pid) => completed.has(pid));
     if (!prevOk) continue;
 
-    // Check all sync barriers blocking this scene
     const sceneBarriers = barriers.filter((b) => b.blocked_scene === s.id);
     const barriersOk = sceneBarriers.every((b) =>
       (b.required_event_ids ?? []).every((evt) => emittedEvents.has(evt))
     );
     if (!barriersOk) continue;
 
-    // Advance scene
     for (const b of sceneBarriers) unlockedBarriers.add(b.id);
     completed.add(s.id);
     for (const evt of s.emits_event_ids ?? []) emittedEvents.add(evt);
@@ -368,15 +405,15 @@ if (unlockedBarriers.size !== barriers.length) {
 }
 
 // Report summary
-console.log('=== EVE burst error Verified Data Validation ===');
-console.log(`Characters : ${characters.length} (CSV parity OK: ${charactersCsv.length})`);
-console.log(`Locations  : ${locations.length} (CSV parity OK: ${locationsCsv.length})`);
-console.log(`Scenes     : ${scenes.length} (Kojiro: ${scenes.filter((s) => s.track === 'kojiro').length}, Marina: ${scenes.filter((s) => s.track === 'marina').length}, Convergence: ${scenes.filter((s) => s.track === 'both').length})`);
-console.log(`SyncBarriers: ${barriers.length} (All unlocked: ${unlockedBarriers.size}/${barriers.length})`);
-console.log(`Clues      : ${clues.length}`);
-console.log(`Items      : ${items.length} | Endings/Outcomes: ${endings.length}`);
-console.log(`DAG Topo   : ${topoOrder.length}/${scenes.length} acyclic & resolvable`);
-console.log(`Walkthrough: ${executionLog.join(' -> ')}`);
+console.log('=== EVE burst error Verified Data Validation (Phase 2) ===');
+console.log(`Characters   : ${characters.length} (CSV parity OK: ${charactersCsv.length})`);
+console.log(`Locations    : ${locations.length} (CSV parity OK: ${locationsCsv.length})`);
+console.log(`Scenes       : ${scenes.length} (Kojiro: ${scenes.filter((s) => s.track === 'kojiro').length}, Marina: ${scenes.filter((s) => s.track === 'marina').length}, Convergence: ${scenes.filter((s) => s.track === 'both').length})`);
+console.log(`SyncBarriers : ${barriers.length} (All unlocked: ${unlockedBarriers.size}/${barriers.length})`);
+console.log(`Clues        : ${clues.length} | Cross-Link Correlations: ${correlations.length}`);
+console.log(`Items        : ${items.length} | Finale Deduction Steps: ${deductionSteps.length} | Endings: ${endings.length}`);
+console.log(`DAG Topo     : ${topoOrder.length}/${scenes.length} acyclic & resolvable`);
+console.log(`Walkthrough  : ${executionLog.join(' -> ')}`);
 
 if (warnings.length > 0) {
   console.log(`\nWarnings (${warnings.length}):`);

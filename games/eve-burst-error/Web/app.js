@@ -1,11 +1,18 @@
-/* EVE burst error — Playable Web UI Controller
+/* EVE burst error — Playable Web UI Controller (Phase 2)
  * Zero external CDNs; works via file:// and HTTP.
  * Connects index.html directly to globalThis.EVE_DATA + globalThis.EveEngine.
+ *
+ * Phase 2 Elevations:
+ * - Custom Neo-Noir SVG Character Portraits (all 18 cast, signature details for 12+ major cast + speaking glow)
+ * - Progressive Command Exhaustion depth badges (LOOK / TALK / THINK 1->2->3)
+ * - Interactive Clue Cross-Link (모순 대조) Workbench (correlateClues -> 8 dramatic-irony truths)
+ * - 27-Scene Parallel Timeline SVG with 12 glowing Sync Barrier arrows (SB_01 ~ SB_12)
+ * - 3-Stage Finale Deduction Modal (submitDeductionStep) with unlocked bonus hints
  */
 (function () {
   'use strict';
 
-  var STORAGE_PREFIX = 'playhub.eve-burst-error.v1.slot.';
+  var STORAGE_PREFIX = 'playhub.eve-burst-error.v2.slot.';
   var MANUAL_SLOTS = [1, 2, 3];
   var AUTO_SLOT = 'auto';
 
@@ -14,25 +21,41 @@
 
   var activeVerb = 'LOOK';
   var activeTab = 'timeline';
+  var activeSpeakerId = null;
   var inspectedTimelineItem = null;
+  var lastCorrelateResult = null;
+  var lastDeductionFeedback = '';
   var flashTimer = null;
 
   var IRONY_LABELS = {
-    alias_mismatch: '별칭 불일치 (ALIAS MISMATCH)',
-    dual_target_mirror: '대칭 보호 대상 (DUAL MIRROR)',
-    split_artifact: '양분된 물증 (SPLIT ARTIFACT)',
-    impostor_trap: '사칭 함정 (IMPOSTOR TRAP)',
-    concurrent_sync: '동시 협공 (CONCURRENT SYNC)',
+    alias_mismatch: '별칭 불일치 (ALIAS)',
+    dual_target_mirror: '대칭 거울상 (MIRROR)',
+    split_artifact: '양분된 물증 (SPLIT)',
+    impostor_trap: '사칭 함정 (TRAP)',
+    concurrent_sync: '동시 협공 (SYNC)',
   };
 
-  var CULPRIT_CANDIDATES = [
-    { id: 'mayako_mido', submitValue: '미도 마야코', label: '미도 마야코 (御堂真弥子)', role: '로스=미도 대사의 딸 / 클론 μ-101' },
-    { id: 'ross_mido', submitValue: '로스=미도', label: '로스=미도 (ロス＝御堂)', role: '주일 엘디아 대사' },
-    { id: 'dib', submitValue: '디브', label: '디브 (ディーブ)', role: '엘디아 정보부 간부' },
-    { id: 'genzaburo_katsuragi', submitValue: '카츠라기 겐자부로', label: '카츠라기 겐자부로 / 스즈키', role: '전 엘디아 정보국 테러 대장' },
-    { id: 'celia_flat', submitValue: '시리아 플랫', label: '시리아 플랫 (シリア)', role: '예일 학교 아랍어 강사' },
-    { id: 'aqua_still_lloyd', submitValue: '아쿠아=스틸=로이드', label: '아쿠아=스틸=로이드', role: '엘디아 공화국 수상' },
-  ];
+  // Neo-Noir SVG Character Portrait Specs (18 cast, bespoke visual signatures)
+  var PORTRAIT_SPECS = {
+    kojiro_amagi: { bg: '#2c150c', rim: '#f59e0b', hair: '#1e1b2e', skin: '#f5cfa8', coat: '#78350f', tie: '#ef4444', style: 'spiky', acc: 'collar' },
+    marina_hojo: { bg: '#091f38', rim: '#38bdf8', hair: '#1d4ed8', skin: '#fce1c4', coat: '#0f172a', tie: '#38bdf8', style: 'long_sleek', acc: 'headband' },
+    mayako_mido: { bg: '#1e132b', rim: '#c084fc', hair: '#3b2c4e', skin: '#fde6d2', coat: '#312e81', tie: '#f472b6', style: 'bob', acc: 'glasses_round' },
+    prisia_rem_crime: { bg: '#261808', rim: '#fbbf24', hair: '#facc15', skin: '#d99b66', coat: '#92400e', tie: '#fef08a', style: 'wavy_long', acc: 'oddeye_pendant' },
+    yayoi_katsuragi: { bg: '#261018', rim: '#fb7185', hair: '#7c2d12', skin: '#fae0c8', coat: '#4c1d95', tie: '#f9a8d4', style: 'shoulder_wave', acc: 'earrings' },
+    kyoko_himuro: { bg: '#141530', rim: '#818cf8', hair: '#312e81', skin: '#f8dfc7', coat: '#1e293b', tie: '#818cf8', style: 'sharp_bob', acc: 'glasses_rect' },
+    aqua_still_lloyd: { bg: '#08262e', rim: '#2dd4bf', hair: '#99f6e4', skin: '#fbe3cd', coat: '#134e4a', tie: '#facc15', style: 'wavy_long', acc: 'tiara_brooch' },
+    akane_shibata: { bg: '#2a130b', rim: '#fb923c', hair: '#9a3412', skin: '#f8d7b8', coat: '#3f3f46', tie: '#fb923c', style: 'short_flip', acc: 'camera' },
+    saburo_kouno: { bg: '#0e1726', rim: '#60a5fa', hair: '#475569', skin: '#e8bf9a', coat: '#1e293b', tie: '#94a3b8', style: 'slick_back', acc: 'mustache' },
+    glen: { bg: '#18100d', rim: '#f97316', hair: '#27272a', skin: '#e5b88f', coat: '#292524', tie: '#f59e0b', style: 'fedora', acc: 'sunglasses' },
+    ross_mido: { bg: '#1b1124', rim: '#e879f9', hair: '#cbd5e1', skin: '#efd2b5', coat: '#3b0764', tie: '#fbbf24', style: 'aristocrat', acc: 'monocle' },
+    genzaburo_katsuragi: { bg: '#171717', rim: '#a3a3a3', hair: '#52525b', skin: '#dfb186', coat: '#44403c', tie: '#d97706', style: 'weathered', acc: 'beard' },
+    celia_flat: { bg: '#1b1328', rim: '#a78bfa', hair: '#4c1d95', skin: '#e9b991', coat: '#1f2937', tie: '#a78bfa', style: 'long_sleek', acc: 'earrings' },
+    dib: { bg: '#260b0b', rim: '#ef4444', hair: '#18181b', skin: '#d8a47c', coat: '#450a0a', tie: '#ef4444', style: 'slick_back', acc: 'scar' },
+    susumu_nikaido: { bg: '#24160b', rim: '#f59e0b', hair: '#292524', skin: '#f0c7a0', coat: '#334155', tie: '#fbbf24', style: 'spiky', acc: 'none' },
+    misumi_kagawa: { bg: '#240c18', rim: '#f43f5e', hair: '#1e1b4b', skin: '#fae0c8', coat: '#3f1d2e', tie: '#f43f5e', style: 'sharp_bob', acc: 'glasses_rect' },
+    stollman_kou: { bg: '#102026', rim: '#22d3ee', hair: '#94a3b8', skin: '#edd0b4', coat: '#1e293b', tie: '#38bdf8', style: 'aristocrat', acc: 'glasses_round' },
+    hiromi_matsuno: { bg: '#0c231c', rim: '#34d399', hair: '#78350f', skin: '#fce3cc', coat: '#065f46', tie: '#fde68a', style: 'shoulder_wave', acc: 'none' },
+  };
 
   // Cached DOM references
   var el = {
@@ -72,6 +95,7 @@
     btnOpenDeduction: document.getElementById('btn-open-deduction'),
     sceneSvgViewport: document.getElementById('scene-svg-viewport'),
     sceneLocationOverlay: document.getElementById('scene-location-overlay'),
+    scenePortraitDock: document.getElementById('scene-portrait-dock'),
     sceneCharactersStrip: document.getElementById('scene-characters-strip'),
 
     syncBarrierBanner: document.getElementById('sync-barrier-banner'),
@@ -97,6 +121,13 @@
     timelineInspector: document.getElementById('timeline-inspector'),
     crossCausalList: document.getElementById('cross-causal-list'),
 
+    corrCountPill: document.getElementById('corr-count-pill'),
+    selectClueKojiro: document.getElementById('select-clue-kojiro'),
+    selectClueMarina: document.getElementById('select-clue-marina'),
+    btnCorrelateClues: document.getElementById('btn-correlate-clues'),
+    correlateFeedback: document.getElementById('correlate-feedback'),
+    discoveredCorrelationsList: document.getElementById('discovered-correlations-list'),
+
     invListKojiro: document.getElementById('inv-list-kojiro'),
     invListMarina: document.getElementById('inv-list-marina'),
     asymmetryCount: document.getElementById('asymmetry-count'),
@@ -105,6 +136,11 @@
 
     modalDeduction: document.getElementById('modal-deduction'),
     btnCloseDeduction: document.getElementById('btn-close-deduction'),
+    deductionStepper: document.getElementById('deduction-stepper'),
+    deductionStageBadge: document.getElementById('deduction-stage-badge'),
+    deductionQuestion: document.getElementById('deduction-question'),
+    deductionBonusHints: document.getElementById('deduction-bonus-hints'),
+    deductionFeedback: document.getElementById('deduction-feedback'),
     deductionClassicBox: document.getElementById('deduction-classic-box'),
     deductionStreamlinedBox: document.getElementById('deduction-streamlined-box'),
     culpritInput: document.getElementById('culprit-input'),
@@ -183,12 +219,127 @@
         payload: engine.serialize(),
       };
       localStorage.setItem(STORAGE_PREFIX + AUTO_SLOT, JSON.stringify(meta));
-    } catch (_) {
-      // Ignore storage quota / private mode restrictions
-    }
+    } catch (_) {}
   }
 
-  // Atmospheric SVG Backdrop per Canonical Location (all 14 locations distinct!)
+  // Custom Neo-Noir SVG Character Portrait Renderer
+  function renderCharacterPortraitSvg(charId, sceneId, isSpeaking) {
+    var sp = PORTRAIT_SPECS[charId] || {
+      bg: '#101828',
+      rim: '#94a3b8',
+      hair: '#334155',
+      skin: '#f0cfa8',
+      coat: '#1e293b',
+      tie: '#38bdf8',
+      style: 'slick_back',
+      acc: 'none',
+    };
+
+    // Authentic detail: Mayako has her glasses OFF in Tristan Engine Room (K_D5_02)!
+    var effectiveAcc = charId === 'mayako_mido' && sceneId === 'K_D5_02' ? 'none' : sp.acc;
+
+    var hairBack = '';
+    var hairFront = '';
+    if (sp.style === 'long_sleek' || sp.style === 'wavy_long') {
+      hairBack = '<path d="M20 42 Q18 86 24 108 L76 108 Q82 86 80 42 Q76 14 50 14 Q24 14 20 42 Z" fill="' + sp.hair + '"/>';
+      hairFront = '<path d="M24 44 Q32 22 50 22 Q68 22 76 44 Q64 31 50 35 Q36 31 24 44 Z" fill="' + sp.hair + '"/>';
+    } else if (sp.style === 'bob' || sp.style === 'sharp_bob' || sp.style === 'shoulder_wave') {
+      hairBack = '<path d="M22 42 Q20 74 28 84 L72 84 Q80 74 78 42 Q74 16 50 16 Q26 16 22 42 Z" fill="' + sp.hair + '"/>';
+      hairFront = '<path d="M24 42 Q34 22 50 23 Q66 22 76 42 Q64 30 50 32 Q36 30 24 42 Z" fill="' + sp.hair + '"/>';
+    } else if (sp.style === 'spiky') {
+      hairFront = '<polygon points="24,44 20,26 34,28 42,12 52,24 64,13 68,28 80,25 76,44 64,32 50,34 36,32" fill="' + sp.hair + '"/>';
+    } else if (sp.style === 'short_flip') {
+      hairBack = '<path d="M24 42 Q20 66 26 70 L74 70 Q80 66 76 42 Q72 18 50 18 Q28 18 24 42 Z" fill="' + sp.hair + '"/>';
+      hairFront = '<path d="M25 41 Q38 20 50 24 Q62 20 75 41 Q60 28 50 33 Q40 28 25 41 Z" fill="' + sp.hair + '"/>';
+    } else if (sp.style === 'fedora') {
+      hairFront =
+        '<path d="M16 34 L84 34 L72 28 L66 14 L34 14 L28 28 Z" fill="#18181b" stroke="' + sp.rim + '" stroke-width="1"/>' +
+        '<rect x="31" y="25" width="38" height="4" fill="' + sp.rim + '"/>';
+    } else {
+      hairFront = '<path d="M26 42 Q28 18 50 18 Q72 18 74 42 Q62 28 50 29 Q38 28 26 42 Z" fill="' + sp.hair + '"/>';
+    }
+
+    // Eyes (special heterochromia odd-eyes for Purin/Prisia!)
+    var leftEyeColor = effectiveAcc === 'oddeye_pendant' ? '#38bdf8' : '#0f172a';
+    var rightEyeColor = effectiveAcc === 'oddeye_pendant' ? '#f59e0b' : '#0f172a';
+    var eyes =
+      '<ellipse cx="40" cy="49" rx="3.4" ry="2.6" fill="#ffffff"/>' +
+      '<ellipse cx="60" cy="49" rx="3.4" ry="2.6" fill="#ffffff"/>' +
+      '<circle cx="40" cy="49" r="2.1" fill="' + leftEyeColor + '"/>' +
+      '<circle cx="60" cy="49" r="2.1" fill="' + rightEyeColor + '"/>';
+
+    // Accessories
+    var accSvg = '';
+    if (effectiveAcc === 'glasses_round') {
+      accSvg =
+        '<circle cx="40" cy="49" r="7" fill="rgba(255,255,255,0.12)" stroke="#e2e8f0" stroke-width="1.4"/>' +
+        '<circle cx="60" cy="49" r="7" fill="rgba(255,255,255,0.12)" stroke="#e2e8f0" stroke-width="1.4"/>' +
+        '<line x1="47" y1="49" x2="53" y2="49" stroke="#e2e8f0" stroke-width="1.4"/>';
+    } else if (effectiveAcc === 'glasses_rect') {
+      accSvg =
+        '<rect x="32" y="45" width="15" height="8" rx="2" fill="rgba(129,140,248,0.16)" stroke="#cbd5e1" stroke-width="1.3"/>' +
+        '<rect x="53" y="45" width="15" height="8" rx="2" fill="rgba(129,140,248,0.16)" stroke="#cbd5e1" stroke-width="1.3"/>' +
+        '<line x1="47" y1="49" x2="53" y2="49" stroke="#cbd5e1" stroke-width="1.3"/>';
+    } else if (effectiveAcc === 'sunglasses') {
+      accSvg =
+        '<rect x="31" y="44" width="16" height="9" rx="2" fill="#09090b" stroke="#f59e0b" stroke-width="1.2"/>' +
+        '<rect x="53" y="44" width="16" height="9" rx="2" fill="#09090b" stroke="#f59e0b" stroke-width="1.2"/>' +
+        '<line x1="47" y1="48" x2="53" y2="48" stroke="#f59e0b" stroke-width="1.2"/>';
+    } else if (effectiveAcc === 'monocle') {
+      accSvg =
+        '<circle cx="60" cy="49" r="7" fill="rgba(251,191,36,0.12)" stroke="#fbbf24" stroke-width="1.4"/>' +
+        '<line x1="67" y1="51" x2="72" y2="78" stroke="#fbbf24" stroke-width="0.9" stroke-dasharray="2 2"/>';
+    } else if (effectiveAcc === 'headband') {
+      accSvg = '<path d="M26 32 Q50 20 74 32" fill="none" stroke="#38bdf8" stroke-width="3"/>';
+    } else if (effectiveAcc === 'oddeye_pendant') {
+      accSvg = '<polygon points="50,82 54,88 50,94 46,88" fill="#fbbf24" stroke="#ffffff" stroke-width="0.8"/>';
+    } else if (effectiveAcc === 'camera') {
+      accSvg =
+        '<line x1="36" y1="76" x2="46" y2="96" stroke="#f59e0b" stroke-width="2"/>' +
+        '<line x1="64" y1="76" x2="54" y2="96" stroke="#f59e0b" stroke-width="2"/>' +
+        '<rect x="42" y="92" width="16" height="11" rx="2" fill="#18181b" stroke="#fb923c" stroke-width="1.2"/>' +
+        '<circle cx="50" cy="97.5" r="3" fill="#38bdf8"/>';
+    } else if (effectiveAcc === 'mustache') {
+      accSvg = '<path d="M41 59 Q50 56 59 59" fill="none" stroke="#334155" stroke-width="2.6" stroke-linecap="round"/>';
+    } else if (effectiveAcc === 'beard') {
+      accSvg = '<path d="M35 61 Q50 74 65 61 Q58 68 50 69 Q42 68 35 61 Z" fill="#52525b" opacity="0.85"/>';
+    } else if (effectiveAcc === 'scar') {
+      accSvg = '<line x1="57" y1="42" x2="64" y2="57" stroke="#b91c1c" stroke-width="1.5"/>';
+    } else if (effectiveAcc === 'tiara_brooch') {
+      accSvg = '<circle cx="50" cy="86" r="4" fill="#2dd4bf" stroke="#fde68a" stroke-width="1.2"/>';
+    } else if (effectiveAcc === 'collar') {
+      accSvg = '<polygon points="28,76 38,88 44,76" fill="#92400e"/><polygon points="72,76 62,88 56,76" fill="#92400e"/>';
+    }
+
+    var mouth = isSpeaking
+      ? '<ellipse cx="50" cy="61" rx="4.2" ry="2.2" fill="#be123c"/>'
+      : '<path d="M44 61 Q50 63 56 61" fill="none" stroke="#7c2d12" stroke-width="1.5" stroke-linecap="round"/>';
+
+    return (
+      '<svg viewBox="0 0 100 116" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="pbg_' + charId + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + sp.bg + '"/><stop offset="100%" stop-color="#050811"/></linearGradient></defs>' +
+      '<rect width="100" height="116" fill="url(#pbg_' + charId + ')"/>' +
+      '<circle cx="50" cy="46" r="36" fill="' + sp.rim + '" opacity="' + (isSpeaking ? '0.26' : '0.12') + '"/>' +
+      hairBack +
+      // Shoulders & Coat
+      '<path d="M12 116 Q16 78 50 76 Q84 78 88 116 Z" fill="' + sp.coat + '" stroke="' + sp.rim + '" stroke-opacity="0.45" stroke-width="1.2"/>' +
+      // Tie / Collar V
+      '<polygon points="44,76 56,76 50,96" fill="' + sp.tie + '" opacity="0.85"/>' +
+      // Neck & Face
+      '<rect x="44" y="65" width="12" height="14" rx="4" fill="' + sp.skin + '"/>' +
+      '<ellipse cx="50" cy="49" rx="19" ry="22" fill="' + sp.skin + '"/>' +
+      // Noir shadow half-tone
+      '<path d="M50 27 A19 22 0 0 1 50 71 Z" fill="#000000" opacity="0.1"/>' +
+      eyes +
+      mouth +
+      hairFront +
+      accSvg +
+      '</svg>'
+    );
+  }
+
+  // Atmospheric SVG Backdrop per Canonical Location (all 16 locations distinct!)
   function renderLocationSvg(locId, sightMode, isBlocked) {
     var palettes = {
       marina: { bg1: '#051226', bg2: '#0f2c4d', accent: '#38bdf8', sub: '#818cf8' },
@@ -199,9 +350,8 @@
     var motif = '';
 
     if (locId === 'loc_jcia_hq') {
-      // DBMS Level-7 Terminal Grid & Security Lock
       motif =
-        '<g stroke="' + pal.accent + '" stroke-opacity="0.24" stroke-width="1">' +
+        '<g stroke="' + pal.accent + '" stroke-opacity="0.28" stroke-width="1">' +
         '<rect x="60" y="34" width="220" height="118" rx="6" fill="rgba(4,12,26,0.75)"/>' +
         '<rect x="310" y="34" width="320" height="118" rx="6" fill="rgba(4,12,26,0.75)"/>' +
         '<line x1="80" y1="62" x2="255" y2="62"/><line x1="80" y1="84" x2="225" y2="84"/><line x1="80" y1="106" x2="245" y2="106"/>' +
@@ -211,9 +361,8 @@
         '<text x="470" y="98" text-anchor="middle" fill="' + (isBlocked ? '#fca5a5' : pal.accent) + '" font-family="monospace" font-size="11" font-weight="700">' +
         (isBlocked ? 'LOCK LV-7' : 'JCIA DBMS') + '</text>';
     } else if (locId === 'loc_tristan_hold') {
-      // Submerged Cargo Hold Bulkhead + Water Level + Oxygen Tanks
       motif =
-        '<rect x="0" y="138" width="700" height="92" fill="rgba(14,116,144,0.34)"/>' +
+        '<rect x="0" y="138" width="700" height="100" fill="rgba(14,116,144,0.34)"/>' +
         '<path d="M0 142 Q90 132 180 142 T360 142 T540 142 T700 142" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>' +
         '<g stroke="#fbbf24" stroke-width="1.5" opacity="0.65" fill="rgba(20,10,28,0.65)">' +
         '<rect x="90" y="42" width="120" height="90" rx="4"/>' +
@@ -221,8 +370,19 @@
         '<rect x="520" y="64" width="28" height="66" rx="10"/><rect x="556" y="64" width="28" height="66" rx="10"/>' +
         '</g>' +
         '<text x="350" y="91" text-anchor="middle" fill="#fde68a" font-family="monospace" font-size="11" font-weight="700">O2 SURVIVAL // CONVERGED</text>';
+    } else if (locId === 'loc_tristan_engine') {
+      // Engine Room Pipes, Boiler Gauges & Amber Steam
+      motif =
+        '<g fill="rgba(22,12,8,0.82)" stroke="#f59e0b" stroke-opacity="0.55" stroke-width="1.8">' +
+        '<rect x="50" y="34" width="120" height="150" rx="6"/>' +
+        '<rect x="210" y="48" width="280" height="118" rx="8"/>' +
+        '<rect x="530" y="34" width="120" height="150" rx="6"/>' +
+        '<circle cx="280" cy="96" r="24" fill="rgba(239,68,68,0.2)"/><circle cx="350" cy="96" r="24" fill="rgba(245,158,11,0.2)"/><circle cx="420" cy="96" r="24" fill="rgba(239,68,68,0.2)"/>' +
+        '<line x1="0" y1="42" x2="700" y2="42" stroke-width="5" stroke-opacity="0.35"/>' +
+        '<line x1="0" y1="168" x2="700" y2="168" stroke-width="4" stroke-opacity="0.35"/>' +
+        '</g>' +
+        '<text x="350" y="148" text-anchor="middle" fill="#fde68a" font-family="monospace" font-size="10" font-weight="700">TRISTAN ENGINE ROOM // SEAL MISSING</text>';
     } else if (locId === 'loc_tristan_deck') {
-      // Luxury Liner Deck at Night
       motif =
         '<path d="M40 150 L660 150 L610 190 L90 190 Z" fill="rgba(15,23,42,0.85)" stroke="' + pal.accent + '" stroke-width="1.5"/>' +
         '<rect x="190" y="75" width="320" height="75" rx="6" fill="rgba(15,23,42,0.72)" stroke="' + pal.accent + '" stroke-opacity="0.5"/>' +
@@ -230,8 +390,17 @@
         '<circle cx="235" cy="112" r="7"/><circle cx="285" cy="112" r="7"/><circle cx="335" cy="112" r="7"/><circle cx="385" cy="112" r="7"/><circle cx="435" cy="112" r="7"/>' +
         '</g>' +
         '<circle cx="590" cy="48" r="22" fill="#fde68a" opacity="0.25"/>';
+    } else if (locId === 'loc_yale_dorm') {
+      // Dormitory Corridor & Night Blackout Windows
+      motif =
+        '<g fill="rgba(6,12,24,0.84)" stroke="' + pal.accent + '" stroke-opacity="0.45" stroke-width="1.5">' +
+        '<rect x="75" y="34" width="120" height="146" rx="4"/>' +
+        '<rect x="290" y="34" width="120" height="146" rx="4"/>' +
+        '<rect x="505" y="34" width="120" height="146" rx="4"/>' +
+        '<rect x="312" y="54" width="76" height="58" fill="rgba(56,189,248,0.16)"/>' +
+        '</g>' +
+        '<circle cx="350" cy="24" r="7" fill="#ef4444" opacity="0.75"/>';
     } else if (locId === 'loc_yale_school_grounds' || locId === 'loc_yale_director_room') {
-      // Foreign School Gothic Arches / Secret Director Vault
       motif =
         '<g fill="rgba(8,14,28,0.72)" stroke="' + pal.accent + '" stroke-opacity="0.5" stroke-width="1.5">' +
         '<polygon points="120,76 350,24 580,76"/>' +
@@ -244,7 +413,6 @@
           ? '<circle cx="350" cy="138" r="18" fill="none" stroke="#fbbf24" stroke-width="2"/><text x="350" y="142" text-anchor="middle" fill="#fde68a" font-family="monospace" font-size="9">SEAL</text>'
           : '');
     } else if (locId === 'loc_amagi_agency' || locId === 'loc_katsuragi_agency') {
-      // Detective Office Venetian Blinds & Desk Lamp
       motif =
         '<g fill="rgba(10,6,5,0.65)" stroke="' + pal.accent + '" stroke-opacity="0.45">' +
         '<rect x="90" y="28" width="230" height="135" rx="4"/>' +
@@ -253,7 +421,6 @@
         '<polygon points="480,58 550,58 595,180 435,180" fill="' + pal.accent + '" opacity="0.16"/>' +
         '<rect x="405" y="155" width="220" height="28" rx="4" fill="rgba(18,10,8,0.85)" stroke="' + pal.accent + '" stroke-opacity="0.5"/>';
     } else if (locId === 'loc_warehouse_district') {
-      // Harbor Cranes & Containers
       motif =
         '<g fill="rgba(12,8,8,0.85)" stroke="' + pal.accent + '" stroke-opacity="0.45">' +
         '<rect x="55" y="112" width="160" height="82"/><polygon points="55,112 135,76 215,112"/>' +
@@ -262,7 +429,6 @@
         '<line x1="580" y1="54" x2="580" y2="135" stroke-dasharray="4 4"/>' +
         '</g>';
     } else if (locId === 'loc_shot_bar') {
-      // Neon Shot Bar Counter & Bottles
       motif =
         '<rect x="80" y="138" width="540" height="44" rx="6" fill="rgba(24,10,12,0.88)" stroke="#f59e0b" stroke-width="1.5"/>' +
         '<g fill="rgba(245,158,11,0.35)" stroke="#fbbf24" stroke-width="1">' +
@@ -271,7 +437,6 @@
         '</g>' +
         '<polygon points="340,95 385,95 362,126" fill="none" stroke="#38bdf8" stroke-width="2"/><line x1="362" y1="126" x2="362" y2="138" stroke="#38bdf8" stroke-width="2"/>';
     } else if (locId === 'loc_stollman_mansion' || locId === 'loc_eldia_embassy') {
-      // Grand Diplomatic / Mansion Columns & Islamic Painting Frame
       motif =
         '<g fill="rgba(10,14,24,0.8)" stroke="' + pal.accent + '" stroke-opacity="0.55" stroke-width="1.5">' +
         '<polygon points="110,66 350,26 590,66"/>' +
@@ -281,7 +446,6 @@
         '<polygon points="350,92 376,119 350,146 324,119" fill="none" stroke="#fbbf24" stroke-width="1.6"/>' +
         '</g>';
     } else {
-      // City Skyline (Central Avenue / Princess Hotel / Sun Mansion)
       motif =
         '<g fill="rgba(8,12,24,0.82)" stroke="' + pal.accent + '" stroke-opacity="0.4">' +
         '<rect x="65" y="68" width="85" height="140"/><rect x="170" y="40" width="110" height="168"/>' +
@@ -292,14 +456,14 @@
     }
 
     return (
-      '<svg viewBox="0 0 700 230" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">' +
+      '<svg viewBox="0 0 700 238" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">' +
       '<defs>' +
       '<linearGradient id="vpBg" x1="0%" y1="0%" x2="100%" y2="100%">' +
       '<stop offset="0%" stop-color="' + pal.bg1 + '"/>' +
       '<stop offset="100%" stop-color="' + pal.bg2 + '"/>' +
       '</linearGradient>' +
       '</defs>' +
-      '<rect width="700" height="230" fill="url(#vpBg)"/>' +
+      '<rect width="700" height="238" fill="url(#vpBg)"/>' +
       '<g stroke="' + pal.accent + '" stroke-opacity="0.08" stroke-width="1">' +
       '<line x1="0" y1="45" x2="700" y2="45"/><line x1="0" y1="90" x2="700" y2="90"/>' +
       '<line x1="0" y1="135" x2="700" y2="135"/><line x1="0" y1="180" x2="700" y2="180"/>' +
@@ -309,32 +473,44 @@
     );
   }
 
-  // Parallel Timeline & Sync Barrier SVG Visualizer (16 scenes + 8 cross-causal barriers)
+  // Parallel Timeline & Sync Barrier SVG Visualizer (27 scenes + 12 glowing cross-causal barriers!)
   function renderTimelineSvg() {
     var graph = engine.getTimelineGraph();
     var nodesById = {};
-    for (var i = 0; i < graph.nodes.length; i++) {
-      nodesById[graph.nodes[i].id] = graph.nodes[i];
-    }
+    var marinaOrder = [];
+    var kojiroOrder = [];
 
-    var marinaOrder = ['M_D0_01', 'M_D0_02', 'M_D1_01', 'M_D2_01', 'M_D3_01', 'M_D4_01', 'M_D4_02', 'M_D5_01'];
-    var kojiroOrder = ['K_D1_01', 'K_D1_02', 'K_D2_01', 'K_D3_01', 'K_D4_01', 'K_D4_02', 'K_D5_01'];
+    for (var i = 0; i < graph.nodes.length; i++) {
+      var nd = graph.nodes[i];
+      nodesById[nd.id] = nd;
+      if (nd.track === 'marina') marinaOrder.push(nd.id);
+      else if (nd.track === 'kojiro') kojiroOrder.push(nd.id);
+    }
 
     var coords = {};
-    var xStart = 64;
-    var step = 76;
+    var xStart = 44;
+    var step = 64;
     for (var m = 0; m < marinaOrder.length; m++) {
-      coords[marinaOrder[m]] = { x: xStart + m * step, y: 58 };
+      coords[marinaOrder[m]] = { x: xStart + m * step, y: 62 };
     }
     for (var k = 0; k < kojiroOrder.length; k++) {
-      coords[kojiroOrder[k]] = { x: xStart + (k + 1) * step, y: 176 };
+      coords[kojiroOrder[k]] = { x: xStart + (k + 1) * step, y: 196 };
     }
-    coords['C_D6_01'] = { x: xStart + 8 * step + 18, y: 117 };
+    var lastX = Math.max(
+      coords[marinaOrder[marinaOrder.length - 1]].x,
+      coords[kojiroOrder[kojiroOrder.length - 1]].x
+    );
+    coords['C_D6_01'] = { x: lastX + 58, y: 129 };
 
+    var svgW = coords['C_D6_01'].x + 42;
     var svgParts = [];
     svgParts.push(
-      '<svg viewBox="0 0 740 236" xmlns="http://www.w3.org/2000/svg">' +
+      '<svg viewBox="0 0 ' + svgW + ' 258" width="' + svgW + '" height="258" xmlns="http://www.w3.org/2000/svg">' +
       '<defs>' +
+      '<filter id="glowBarrier" x="-30%" y="-30%" width="160%" height="160%">' +
+      '<feGaussianBlur stdDeviation="2.5" result="blur"/>' +
+      '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
       '<marker id="arrLocked" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">' +
       '<polygon points="0 0, 7 3.5, 0 7" fill="#ef4444"/></marker>' +
       '<marker id="arrUnlocked" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">' +
@@ -342,13 +518,12 @@
       '</defs>'
     );
 
-    // Track Labels
     svgParts.push(
-      '<text x="12" y="30" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="700">MARINA TRACK (12/2~12/7)</text>' +
-      '<text x="12" y="218" fill="#f59e0b" font-family="monospace" font-size="10" font-weight="700">KOJIRO TRACK (12/3~12/7)</text>'
+      '<text x="12" y="24" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="700">MARINA TRACK (13 SCENES · 12/2~12/7)</text>' +
+      '<text x="12" y="246" fill="#f59e0b" font-family="monospace" font-size="10" font-weight="700">KOJIRO TRACK (13 SCENES · 12/3~12/7)</text>'
     );
 
-    // Intra-track connector lines
+    // Intra-track lines
     for (m = 0; m < marinaOrder.length - 1; m++) {
       var a = coords[marinaOrder[m]];
       var b = coords[marinaOrder[m + 1]];
@@ -359,13 +534,16 @@
       var kb = coords[kojiroOrder[k + 1]];
       svgParts.push('<line x1="' + ka.x + '" y1="' + ka.y + '" x2="' + kb.x + '" y2="' + kb.y + '" stroke="#f59e0b" stroke-opacity="0.32" stroke-width="2"/>');
     }
+
     // Convergence lines
+    var lastM = coords[marinaOrder[marinaOrder.length - 1]];
+    var lastK = coords[kojiroOrder[kojiroOrder.length - 1]];
     svgParts.push(
-      '<line x1="' + coords['M_D5_01'].x + '" y1="' + coords['M_D5_01'].y + '" x2="' + coords['C_D6_01'].x + '" y2="' + coords['C_D6_01'].y + '" stroke="#fbbf24" stroke-opacity="0.45" stroke-width="2"/>' +
-      '<line x1="' + coords['K_D5_01'].x + '" y1="' + coords['K_D5_01'].y + '" x2="' + coords['C_D6_01'].x + '" y2="' + coords['C_D6_01'].y + '" stroke="#fbbf24" stroke-opacity="0.45" stroke-width="2"/>'
+      '<line x1="' + lastM.x + '" y1="' + lastM.y + '" x2="' + coords['C_D6_01'].x + '" y2="' + coords['C_D6_01'].y + '" stroke="#fbbf24" stroke-opacity="0.5" stroke-width="2"/>' +
+      '<line x1="' + lastK.x + '" y1="' + lastK.y + '" x2="' + coords['C_D6_01'].x + '" y2="' + coords['C_D6_01'].y + '" stroke="#fbbf24" stroke-opacity="0.5" stroke-width="2"/>'
     );
 
-    // Cross-Protagonist Sync Barrier Arrows (SB_01 ~ SB_08)
+    // Cross-Protagonist Sync Barrier Arrows (SB_01 ~ SB_12)
     for (var bi = 0; bi < graph.barriers.length; bi++) {
       var bar = graph.barriers[bi];
       var fromP = coords[bar.fromScene];
@@ -376,30 +554,26 @@
       var dash = bar.unlocked ? '' : ' stroke-dasharray="4 3"';
       var marker = bar.unlocked ? 'url(#arrUnlocked)' : 'url(#arrLocked)';
       var midX = (fromP.x + toP.x) / 2;
-      var midY = (fromP.y + toP.y) / 2 + (bi % 2 === 0 ? -8 : 10);
-
-      // Slight offset for SB_05 & SB_06 criss-cross clarity
-      if (bar.id === 'SB_05') {
-        midX -= 12;
-        midY = 104;
-      } else if (bar.id === 'SB_06') {
-        midX += 14;
-        midY = 132;
-      } else if (bar.id === 'SB_08') {
+      var laneOffsets = [104, 152, 118, 140];
+      var midY = laneOffsets[bi % laneOffsets.length];
+      if (bar.id === 'SB_12') {
         midX = coords['C_D6_01'].x - 28;
-        midY = 117;
+        midY = 129;
       }
+
+      var shortNum = bar.id.replace('SB_0', 'B').replace('SB_', 'B');
+      var glowAttr = bar.unlocked || bar.activeBlock ? ' filter="url(#glowBarrier)"' : '';
 
       svgParts.push(
         '<g class="tl-barrier" data-barrier-id="' + bar.id + '" style="cursor:pointer">' +
         '<path d="M ' + fromP.x + ' ' + fromP.y + ' Q ' + midX + ' ' + midY + ' ' + toP.x + ' ' + toP.y + '"' +
-        ' fill="none" stroke="' + stroke + '" stroke-width="' + (bar.activeBlock ? 2.6 : 1.7) + '"' + dash +
-        ' marker-end="' + marker + '" opacity="' + (bar.unlocked || bar.activeBlock ? 0.95 : 0.55) + '"/>' +
-        '<rect x="' + (midX - 20) + '" y="' + (midY - 9) + '" width="40" height="17" rx="4" fill="' +
+        ' fill="none" stroke="' + stroke + '" stroke-width="' + (bar.activeBlock ? 2.6 : 1.7) + '"' + dash + glowAttr +
+        ' marker-end="' + marker + '" opacity="' + (bar.unlocked || bar.activeBlock ? 0.96 : 0.52) + '"/>' +
+        '<rect x="' + (midX - 18) + '" y="' + (midY - 8) + '" width="36" height="16" rx="4" fill="' +
         (bar.unlocked ? '#064e3b' : bar.activeBlock ? '#7f1d1d' : '#1e293b') +
         '" stroke="' + stroke + '" stroke-width="1"/>' +
-        '<text x="' + midX + '" y="' + (midY + 3) + '" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="8.5" font-weight="700">' +
-        (bar.unlocked ? '🔓' : '🔒') + bar.id.replace('SB_0', 'B') + '</text>' +
+        '<text x="' + midX + '" y="' + (midY + 3) + '" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="8" font-weight="700">' +
+        (bar.unlocked ? '🔓' : '🔒') + shortNum + '</text>' +
         '</g>'
       );
     }
@@ -422,25 +596,25 @@
         strokeColor = '#ef4444';
       }
 
-      var r = isConv ? 22 : 16;
+      var r = isConv ? 21 : 14;
       svgParts.push(
         '<g class="tl-node" data-scene-id="' + n.id + '" style="cursor:pointer">' +
         (n.isCurrentFocus
-          ? '<circle cx="' + pos.x + '" cy="' + pos.y + '" r="' + (r + 5) + '" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 2"/>'
+          ? '<circle cx="' + pos.x + '" cy="' + pos.y + '" r="' + (r + 4.5) + '" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 2"/>'
           : '') +
-        '<circle cx="' + pos.x + '" cy="' + pos.y + '" r="' + r + '" fill="' + fill + '" stroke="' + strokeColor + '" stroke-width="' + (n.isCurrentFocus ? 2.5 : 1.6) + '"/>' +
-        '<text x="' + pos.x + '" y="' + (pos.y + 3) + '" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="' + (isConv ? 8.5 : 8) + '" font-weight="700">' +
+        '<circle cx="' + pos.x + '" cy="' + pos.y + '" r="' + r + '" fill="' + fill + '" stroke="' + strokeColor + '" stroke-width="' + (n.isCurrentFocus ? 2.4 : 1.5) + '"/>' +
+        '<text x="' + pos.x + '" y="' + (pos.y + 3) + '" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="' + (isConv ? 8 : 7.2) + '" font-weight="700">' +
         n.id.replace('_0', '.') + '</text>' +
-        '<text x="' + pos.x + '" y="' + (pos.y + (n.track === 'kojiro' ? 28 : -22)) + '" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="8">' +
+        '<text x="' + pos.x + '" y="' + (pos.y + (n.track === 'kojiro' ? 25 : -19)) + '" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="7.5">' +
         n.calendarDate + '</text>' +
         '</g>'
       );
     }
 
     svgParts.push('</svg>');
+    el.timelineSvgHost.style.minWidth = svgW + 'px';
     el.timelineSvgHost.innerHTML = svgParts.join('');
 
-    // Wire SVG click inspectors
     var nodeEls = el.timelineSvgHost.querySelectorAll('.tl-node');
     for (i = 0; i < nodeEls.length; i++) {
       nodeEls[i].addEventListener('click', function () {
@@ -492,6 +666,11 @@
     var currScene = engine.getCurrentScene(who);
     var currLoc = findLocation(activeP.locationId);
 
+    var totalBarriers = data.syncBarriers.length;
+    var totalClues = data.clues.length;
+    var marinaTrackTotal = data.scenes.filter(function (s) { return s.track === 'marina'; }).length;
+    var kojiroTrackTotal = data.scenes.filter(function (s) { return s.track === 'kojiro'; }).length;
+
     // 1. Dynamic Theme Shift on body
     var theme = st.sharedWorld.converged ? 'converged' : who;
     el.body.setAttribute('data-sight', theme);
@@ -512,15 +691,14 @@
     el.marinaLocMeta.textContent = findLocation(mState.locationId).name_kr;
     el.marinaInvCount.textContent = '소지품 ' + mState.inventory.length;
     el.marinaClueCount.textContent = '단서 ' + mState.knownClues.length;
-    el.marinaDoneCount.textContent = '완료 ' + Math.min(mState.completedScenes.length, 8) + '/8';
+    el.marinaDoneCount.textContent = '완료 ' + Math.min(mState.completedScenes.length, marinaTrackTotal) + '/' + marinaTrackTotal;
 
     el.kojiroSceneMeta.textContent = engine.getCurrentScene('kojiro').calendar_date + ' · ' + kState.currentSceneId;
     el.kojiroLocMeta.textContent = findLocation(kState.locationId).name_kr;
     el.kojiroInvCount.textContent = '소지품 ' + kState.inventory.length;
     el.kojiroClueCount.textContent = '단서 ' + kState.knownClues.length;
-    el.kojiroDoneCount.textContent = '완료 ' + Math.min(kState.completedScenes.length, 7) + '/7';
+    el.kojiroDoneCount.textContent = '완료 ' + Math.min(kState.completedScenes.length, kojiroTrackTotal) + '/' + kojiroTrackTotal;
 
-    // Status Badges
     function applyBadge(badgeEl, side, pState) {
       badgeEl.className = 'status-badge';
       if (st.sharedWorld.converged) {
@@ -555,7 +733,8 @@
     } else {
       el.scSublabel.textContent = (who === 'marina' ? '→ 코지로 시점' : '→ 마리나 시점') + ' [Tab]';
     }
-    el.barrierProgressPill.textContent = '동기화 장벽 ' + st.sharedWorld.unlockedBarriers.length + ' / 8 해제';
+    el.barrierProgressPill.textContent =
+      '동기화 장벽 ' + st.sharedWorld.unlockedBarriers.length + ' / ' + totalBarriers + ' 해제';
 
     // 5. Scene Header & Advance / Deduction Buttons
     el.sceneDateTag.textContent =
@@ -568,6 +747,8 @@
       el.btnAdvanceScene.classList.add('hidden');
       el.btnOpenDeduction.classList.remove('hidden');
       el.btnOpenDeduction.disabled = Boolean(st.sharedWorld.endingId);
+      el.btnOpenDeduction.textContent =
+        '⚖ 3단계 최종 추리 (' + Math.min(st.sharedWorld.deductionProgress + 1, 3) + '/3)';
     } else {
       el.btnOpenDeduction.classList.add('hidden');
       el.btnAdvanceScene.classList.remove('hidden');
@@ -584,11 +765,52 @@
       }
     }
 
-    // 6. Viewport SVG + Location Overlay + Present Character Chips
+    // 6. Viewport SVG + Location Overlay + Neo-Noir SVG Portrait Dock + Quick-Talk Strip
     el.sceneSvgViewport.innerHTML = renderLocationSvg(currLoc.id, theme, activeBlocked);
     el.sceneLocationOverlay.textContent = '📍 ' + currLoc.name_kr + ' (' + currLoc.district + ')';
 
     var selfId = who === 'kojiro' ? 'kojiro_amagi' : 'marina_hojo';
+    var portraitChars = [selfId];
+    for (var pc = 0; pc < currScene.character_ids.length; pc++) {
+      var pcid = currScene.character_ids[pc];
+      if (pcid !== selfId && portraitChars.length < 4) {
+        portraitChars.push(pcid);
+      }
+    }
+
+    el.scenePortraitDock.innerHTML = portraitChars
+      .map(function (cid) {
+        var cv = engine.getCharacterView(cid, who);
+        var isSelf = cid === selfId;
+        var isSpeaking = activeSpeakerId === cid;
+        var shortLabel = cv ? cv.displayName : cid;
+        return (
+          '<button type="button" class="portrait-card ' +
+          (isSelf ? 'is-protagonist ' : '') +
+          (isSpeaking ? 'is-speaking' : '') +
+          '" data-portrait-char="' + escapeHtml(cid) + '" title="' +
+          escapeHtml(isSelf ? shortLabel + ' (현재 시점)' : shortLabel + '에게 TALK') + '">' +
+          '<div class="portrait-svg-frame">' + renderCharacterPortraitSvg(cid, currScene.id, isSpeaking) + '</div>' +
+          '<span class="portrait-name-tag">' + escapeHtml(shortLabel) + '</span>' +
+          '</button>'
+        );
+      })
+      .join('');
+
+    var portraitBtns = el.scenePortraitDock.querySelectorAll('.portrait-card');
+    for (var pi = 0; pi < portraitBtns.length; pi++) {
+      portraitBtns[pi].addEventListener('click', function () {
+        var cid = this.getAttribute('data-portrait-char');
+        if (cid === selfId) {
+          activeVerb = 'THINK';
+          runCommand('THINK', 'situation');
+        } else {
+          activeVerb = 'TALK';
+          runCommand('TALK', cid);
+        }
+      });
+    }
+
     var charChipsHtml = [];
     for (var ci = 0; ci < currScene.character_ids.length; ci++) {
       var cid = currScene.character_ids[ci];
@@ -596,7 +818,7 @@
       var cv = engine.getCharacterView(cid, who);
       if (!cv) continue;
       charChipsHtml.push(
-        '<button type="button" class="char-chip" data-talk-char="' + escapeHtml(cid) + '">' +
+        '<button type="button" class="char-chip ' + (activeSpeakerId === cid ? 'is-speaking' : '') + '" data-talk-char="' + escapeHtml(cid) + '">' +
         '<span class="char-dot trust-' + escapeHtml(cv.trustLevel) + '"></span>' +
         '<span><strong>' + escapeHtml(cv.displayName) + '</strong> ' +
         '<span class="char-alias-sub">' + (cv.isRevealed ? '✓ 정체 확인' : escapeHtml(cv.role)) + '</span></span>' +
@@ -648,24 +870,26 @@
       el.crisisPanel.classList.add('hidden');
     }
 
-    // 9. Scene Objective Chips
+    // 9. Scene Objective Chips (with progressive depth progress!)
     var objHtml = [];
-    for (var oi = 0; oi < cmds.progress.requiredSteps.length; oi++) {
-      var stepKey = cmds.progress.requiredSteps[oi];
-      var isDone = cmds.progress.completedSteps.indexOf(stepKey) !== -1;
-      var parts = stepKey.split(':');
-      var stepLabel = parts[0];
-      if (parts[0] === 'TALK') {
-        var tv = engine.getCharacterView(parts[1], who);
-        stepLabel = 'TALK: ' + (tv ? tv.displayName : parts[1]);
-      } else if (parts[0] === 'ITEM') {
-        var itm = findItem(parts[1]);
-        stepLabel = 'ITEM: ' + (itm ? itm.name_kr : parts[1]);
-      } else if (parts[0] === 'LOOK') {
+    var details = cmds.progress.stepDetails || [];
+    for (var oi = 0; oi < details.length; oi++) {
+      var d = details[oi];
+      var stepLabel = d.verb;
+      if (d.verb === 'TALK') {
+        var tv = engine.getCharacterView(d.targetId, who);
+        stepLabel = 'TALK: ' + (tv ? tv.displayName : d.targetId);
+      } else if (d.verb === 'ITEM') {
+        var itm = findItem(d.targetId);
+        stepLabel = 'ITEM: ' + (itm ? itm.name_kr : d.targetId);
+      } else if (d.verb === 'LOOK') {
         stepLabel = 'LOOK: 핵심 현장 조사';
       }
+      if (d.requiredDepth > 1) {
+        stepLabel += ' (' + d.currentDepth + '/' + d.requiredDepth + ')';
+      }
       objHtml.push(
-        '<span class="obj-chip ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓ ' : '○ ') + escapeHtml(stepLabel) + '</span>'
+        '<span class="obj-chip ' + (d.done ? 'done' : '') + '">' + (d.done ? '✓ ' : '○ ') + escapeHtml(stepLabel) + '</span>'
       );
     }
     el.sceneObjectivesList.innerHTML = objHtml.join('');
@@ -689,17 +913,18 @@
       })
       .join('');
 
-    // 11. Command Deck & Target Tray
+    // 11. Command Deck & Target Tray (with exhaustion indicators!)
     for (var vi = 0; vi < el.verbBtns.length; vi++) {
       var vName = el.verbBtns[vi].getAttribute('data-verb');
       el.verbBtns[vi].classList.toggle('active', vName === activeVerb);
     }
     renderTargetTray(cmds);
 
-    // 12. Right Intel Panel: Timeline, Cross-Causal Log, Asymmetry Board, Dossier
+    // 12. Right Intel Panel: Timeline, Cross-Causal Log, Cross-Link Workbench, Asymmetry Board, Dossier
     renderTimelineSvg();
     renderCrossCausalLog(st);
-    renderAsymmetryBoard(st);
+    renderCrossLinkWorkbench(st);
+    renderAsymmetryBoard(st, totalClues);
     renderDossier(st);
 
     // 13. Check Ending Modal
@@ -725,10 +950,18 @@
         var classes = ['target-btn'];
         if (t.isKeyObjective || t.usedHere) classes.push('is-key');
         if (t.isCurrent) classes.push('is-current');
+        if (t.exhausted) classes.push('is-exhausted');
         var badge = t.isKeyObjective || t.usedHere ? '★ ' : t.isCurrent ? '● ' : '';
+        var depthHtml = '';
+        if (typeof t.maxDepth === 'number' && t.maxDepth > 1) {
+          depthHtml =
+            '<span class="depth-pill ' + (t.exhausted ? 'done' : '') + '">' +
+            (t.exhausted ? '✓ ' + t.maxDepth + '/' + t.maxDepth : t.currentDepth + '/' + t.maxDepth) +
+            '</span>';
+        }
         return (
           '<button type="button" class="' + classes.join(' ') + '" data-target-id="' + escapeHtml(t.id) + '">' +
-          badge + escapeHtml(t.label) +
+          '<span>' + badge + escapeHtml(t.label) + '</span>' + depthHtml +
           '</button>'
         );
       })
@@ -746,7 +979,7 @@
     var log = st.sharedWorld.crossCausalLog;
     if (log.length === 0) {
       el.crossCausalList.innerHTML =
-        '<div class="target-empty">아직 해제된 교차 동기화 장벽이 없습니다. 마리나 Day 0 답사를 마치면 SB_01이 열립니다.</div>';
+        '<div class="target-empty">아직 해제된 교차 동기화 장벽이 없습니다. 마리나 Day 0 답사(M_D0_03)를 마치면 SB_01이 열립니다.</div>';
       return;
     }
     el.crossCausalList.innerHTML = log
@@ -763,8 +996,66 @@
       .join('');
   }
 
-  function renderAsymmetryBoard(st) {
-    // Dual Inventories
+  function renderCrossLinkWorkbench(st) {
+    var totalCorrs = (data.clueCorrelations || []).length;
+    var discovered = engine.getDiscoveredCorrelations();
+    el.corrCountPill.textContent = '도출 ' + discovered.length + ' / ' + totalCorrs;
+
+    var prevK = el.selectClueKojiro.value;
+    var prevM = el.selectClueMarina.value;
+
+    var kClues = st.protagonists.kojiro.knownClues;
+    var mClues = st.protagonists.marina.knownClues;
+
+    function buildClueOptions(clueIds, placeholder) {
+      var opts = ['<option value="">' + placeholder + '</option>'];
+      for (var i = 0; i < clueIds.length; i++) {
+        for (var j = 0; j < data.clues.length; j++) {
+          if (data.clues[j].id === clueIds[i]) {
+            opts.push(
+              '<option value="' + escapeHtml(data.clues[j].id) + '">' +
+              escapeHtml(data.clues[j].title_kr) + '</option>'
+            );
+            break;
+          }
+        }
+      }
+      return opts.join('');
+    }
+
+    el.selectClueKojiro.innerHTML = buildClueOptions(kClues, '코지로 단서 선택 (' + kClues.length + '건)…');
+    el.selectClueMarina.innerHTML = buildClueOptions(mClues, '마리나 단서 선택 (' + mClues.length + '건)…');
+
+    if (kClues.indexOf(prevK) !== -1) el.selectClueKojiro.value = prevK;
+    if (mClues.indexOf(prevM) !== -1) el.selectClueMarina.value = prevM;
+
+    if (lastCorrelateResult) {
+      el.correlateFeedback.classList.remove('hidden', 'matched', 'missed');
+      el.correlateFeedback.classList.add(lastCorrelateResult.matched ? 'matched' : 'missed');
+      el.correlateFeedback.textContent = lastCorrelateResult.text;
+    } else {
+      el.correlateFeedback.classList.add('hidden');
+    }
+
+    if (discovered.length === 0) {
+      el.discoveredCorrelationsList.innerHTML = '';
+    } else {
+      el.discoveredCorrelationsList.innerHTML = discovered
+        .slice()
+        .reverse()
+        .map(function (c) {
+          return (
+            '<div class="corr-insight-card">' +
+            '<strong>⚡ ' + escapeHtml(c.id) + ' · ' + escapeHtml(c.title_kr) + ' (최종 추리 ' + (c.unlocks_finale_hint_step + 1) + '단계 힌트)</strong>' +
+            '<div>' + escapeHtml(c.synthesis_kr) + '</div>' +
+            '</div>'
+          );
+        })
+        .join('');
+    }
+  }
+
+  function renderAsymmetryBoard(st, totalClues) {
     function renderInv(listEl, invIds) {
       if (invIds.length === 0) {
         listEl.innerHTML = '<li>(보유 소지품 없음)</li>';
@@ -780,9 +1071,14 @@
     renderInv(el.invListKojiro, st.protagonists.kojiro.inventory);
     renderInv(el.invListMarina, st.protagonists.marina.inventory);
 
-    // Asymmetry Clue Matrix
     var matrix = engine.getAsymmetryMatrix();
     el.asymmetryCount.textContent = String(matrix.length);
+    if (el.asymmetryCount.parentNode) {
+      el.asymmetryCount.parentNode.innerHTML =
+        '발견된 비대칭 단서 매트릭스 (<span id="asymmetry-count">' + matrix.length + '</span>/' + totalClues + ')';
+      el.asymmetryCount = document.getElementById('asymmetry-count');
+    }
+
     if (matrix.length === 0) {
       el.asymmetryList.innerHTML =
         '<div class="target-empty">아직 발견된 비대칭 단서가 없습니다. 두 시점을 오가며 조사하면 양측의 인지 격차가 여기에 드러납니다.</div>';
@@ -846,13 +1142,18 @@
   function runCommand(verb, targetId) {
     var prevConverged = engine.getState().sharedWorld.converged;
     var res = engine.executeCommand(verb, targetId);
-    if (verb === 'SIGHT_CHANGE' && res.ok && res.changed) {
+    if (verb === 'TALK' && res.ok && res.speakerId) {
+      activeSpeakerId = res.speakerId;
+    } else if (verb === 'THINK' && res.ok) {
+      activeSpeakerId = engine.getActiveProtagonist() === 'kojiro' ? 'kojiro_amagi' : 'marina_hojo';
+    } else if (verb === 'SIGHT_CHANGE' && res.ok && res.changed) {
+      activeSpeakerId = res.activeProtagonist === 'kojiro' ? 'kojiro_amagi' : 'marina_hojo';
       var sc = res.scene;
       triggerSightFlash(res.activeProtagonist, sc ? sc.calendar_date + ' · ' + sc.title_kr : '');
       autoSaveSnapshot();
     }
     if (!prevConverged && engine.getState().sharedWorld.converged) {
-      triggerSightFlash('converged', '트리스탄호 해저 선창 — 양측 단서 완전 통합');
+      triggerSightFlash('converged', '트리스탄호 해저 선창 — 양측 22개 단서 완전 통합');
     }
     renderAll();
   }
@@ -864,10 +1165,12 @@
       autoSaveSnapshot();
     }
     if (!prevConverged && res.converged) {
+      activeSpeakerId = null;
       triggerSightFlash('converged', '12-08 트리스탄호 해저 선창 · 단일 시점 수렴');
       autoSaveSnapshot();
+    } else if (res.ok && res.nextSceneId && !res.stalled) {
+      activeSpeakerId = null;
     } else if (!res.ok && res.reason === 'OBJECTIVES_INCOMPLETE') {
-      // Gently switch verb tab to first missing step so the player sees immediately what to do
       if (res.remainingSteps && res.remainingSteps.length > 0) {
         activeVerb = res.remainingSteps[0].split(':')[0];
       }
@@ -875,14 +1178,67 @@
     renderAll();
   }
 
-  function openDeductionModal() {
+  // 3-Stage Finale Deduction Modal Renderer
+  function renderDeductionModalContent() {
     var st = engine.getState();
-    if (!st.sharedWorld.converged) return;
+    var steps = data.finaleDeductionSteps || [];
+    var currentIdx = Math.min(st.sharedWorld.deductionProgress, steps.length - 1);
+    var step = steps[currentIdx];
+    if (!step) return;
+
+    var stepEls = el.deductionStepper.querySelectorAll('.ded-step');
+    for (var i = 0; i < stepEls.length; i++) {
+      stepEls[i].classList.remove('current', 'cleared');
+      if (i < st.sharedWorld.deductionProgress) stepEls[i].classList.add('cleared');
+      else if (i === st.sharedWorld.deductionProgress) stepEls[i].classList.add('current');
+    }
+
+    el.deductionStageBadge.textContent = step.stage_label;
+    el.deductionQuestion.textContent = step.question_kr;
+    el.culpritInput.placeholder = step.placeholder_kr;
+    el.culpritInput.value = '';
+
+    // Show unlocked cross-link bonus hints for this stage!
+    var stageHints = engine.getFinaleHints(currentIdx);
+    if (stageHints.length > 0) {
+      el.deductionBonusHints.classList.remove('hidden');
+      el.deductionBonusHints.innerHTML =
+        '<strong>⚡ 교차 분석 보너스 힌트 해금됨:</strong><br>' +
+        stageHints.map(function (h) { return '• ' + escapeHtml(h.title_kr) + ': ' + escapeHtml(h.synthesis_kr); }).join('<br>');
+    } else {
+      el.deductionBonusHints.classList.add('hidden');
+    }
+
+    if (lastDeductionFeedback) {
+      el.deductionFeedback.classList.remove('hidden');
+      el.deductionFeedback.textContent = lastDeductionFeedback;
+    } else {
+      el.deductionFeedback.classList.add('hidden');
+    }
+
     var isClassic = st.mode.culpritInputMode === 'classic';
     el.deductionClassicBox.classList.toggle('hidden', !isClassic);
     el.deductionStreamlinedBox.classList.toggle('hidden', isClassic);
-    el.culpritInput.value = '';
-    el.modalDeduction.classList.remove('hidden');
+
+    // Populate PLUS choice grid for the current stage
+    el.culpritCandidateGrid.innerHTML = step.choices
+      .map(function (c) {
+        return (
+          '<button type="button" class="candidate-btn" data-candidate-value="' + escapeHtml(c.value) + '">' +
+          '<div>' + escapeHtml(c.label) + '</div>' +
+          '<small style="color:var(--text-muted);font-weight:400">' + escapeHtml(c.role) + '</small>' +
+          '</button>'
+        );
+      })
+      .join('');
+
+    var candBtns = el.culpritCandidateGrid.querySelectorAll('.candidate-btn');
+    for (var ci = 0; ci < candBtns.length; ci++) {
+      candBtns[ci].addEventListener('click', function () {
+        handleSubmitDeduction(this.getAttribute('data-candidate-value'));
+      });
+    }
+
     if (isClassic) {
       setTimeout(function () {
         el.culpritInput.focus();
@@ -890,13 +1246,27 @@
     }
   }
 
+  function openDeductionModal() {
+    var st = engine.getState();
+    if (!st.sharedWorld.converged) return;
+    lastDeductionFeedback = '';
+    renderDeductionModalContent();
+    el.modalDeduction.classList.remove('hidden');
+  }
+
   function closeDeductionModal() {
     el.modalDeduction.classList.add('hidden');
   }
 
-  function handleSubmitCulprit(raw) {
-    var res = engine.submitCulprit(raw);
-    if (res.ok) {
+  function handleSubmitDeduction(raw) {
+    var st = engine.getState();
+    var res = engine.submitDeductionStep(st.sharedWorld.deductionProgress, raw);
+    if (!res.ok) return;
+    if (res.correct && !res.completedAll) {
+      lastDeductionFeedback = res.message;
+      renderDeductionModalContent();
+      renderAll();
+    } else {
       closeDeductionModal();
       renderAll();
     }
@@ -914,8 +1284,9 @@
     el.endingNotes.textContent = '판본 기록: ' + ending.edition_notes;
     el.endingStats.innerHTML =
       '<div class="stat-pill"><strong>' + st.stats.sightChanges + '</strong><span>SIGHT CHANGE</span></div>' +
-      '<div class="stat-pill"><strong>' + st.sharedWorld.unlockedBarriers.length + '/8</strong><span>동기화 장벽 돌파</span></div>' +
-      '<div class="stat-pill"><strong>' + engine.getAsymmetryMatrix().length + '/12</strong><span>비대칭 단서 확보</span></div>';
+      '<div class="stat-pill"><strong>' + st.sharedWorld.unlockedBarriers.length + '/' + data.syncBarriers.length + '</strong><span>동기화 장벽</span></div>' +
+      '<div class="stat-pill"><strong>' + engine.getAsymmetryMatrix().length + '/' + data.clues.length + '</strong><span>비대칭 단서</span></div>' +
+      '<div class="stat-pill"><strong>' + st.sharedWorld.discoveredCorrelations.length + '/' + (data.clueCorrelations || []).length + '</strong><span>교차 진실</span></div>';
     el.btnEndingRetry.classList.toggle('hidden', isTrue);
     el.modalEnding.classList.remove('hidden');
   }
@@ -948,7 +1319,7 @@
         ? meta.savedAt +
           ' · M:' + meta.marinaScene +
           ' / K:' + meta.kojiroScene +
-          ' · 장벽 ' + meta.barriers + '/8'
+          ' · 장벽 ' + meta.barriers + '/' + data.syncBarriers.length
         : '비어 있음';
 
       rows.push(
@@ -1006,24 +1377,6 @@
     }
   }
 
-  // Build Streamlined PLUS Suspect Candidates once
-  el.culpritCandidateGrid.innerHTML = CULPRIT_CANDIDATES.map(function (c) {
-    return (
-      '<button type="button" class="candidate-btn" data-candidate-name="' + escapeHtml(c.submitValue) + '">' +
-      '<div>' + escapeHtml(c.label) + '</div>' +
-      '<small style="color:var(--text-muted);font-weight:400">' + escapeHtml(c.role) + '</small>' +
-      '</button>'
-    );
-  }).join('');
-
-  var candBtns = el.culpritCandidateGrid.querySelectorAll('.candidate-btn');
-  for (var idxC = 0; idxC < candBtns.length; idxC++) {
-    candBtns[idxC].addEventListener('click', function () {
-      var name = this.getAttribute('data-candidate-name');
-      handleSubmitCulprit(name);
-    });
-  }
-
   // Event Listeners
   el.btnSightChange.addEventListener('click', function () {
     runCommand('SIGHT_CHANGE');
@@ -1038,14 +1391,31 @@
   el.btnCloseDeduction.addEventListener('click', closeDeductionModal);
 
   el.btnSubmitCulprit.addEventListener('click', function () {
-    handleSubmitCulprit(el.culpritInput.value);
+    handleSubmitDeduction(el.culpritInput.value);
   });
 
   el.culpritInput.addEventListener('keydown', function (ev) {
     if (ev.key === 'Enter') {
       ev.preventDefault();
-      handleSubmitCulprit(el.culpritInput.value);
+      handleSubmitDeduction(el.culpritInput.value);
     }
+  });
+
+  el.btnCorrelateClues.addEventListener('click', function () {
+    var clueK = el.selectClueKojiro.value;
+    var clueM = el.selectClueMarina.value;
+    var res = engine.correlateClues(clueK, clueM);
+    if (!res.ok) {
+      lastCorrelateResult = { matched: false, text: res.message };
+    } else if (res.matched) {
+      lastCorrelateResult = {
+        matched: true,
+        text: '⚡ [' + res.correlation.title_kr + '] ' + res.correlation.synthesis_kr,
+      };
+    } else {
+      lastCorrelateResult = { matched: false, text: res.message };
+    }
+    renderAll();
   });
 
   el.btnHintMode.addEventListener('click', function () {
@@ -1057,6 +1427,9 @@
   el.btnDeductionMode.addEventListener('click', function () {
     var cur = engine.getState().mode.culpritInputMode;
     engine.setMode({ culpritInputMode: cur === 'classic' ? 'streamlined' : 'classic' });
+    if (!el.modalDeduction.classList.contains('hidden')) {
+      renderDeductionModalContent();
+    }
     renderAll();
   });
 
@@ -1072,7 +1445,10 @@
   el.btnReset.addEventListener('click', function () {
     engine.reset();
     activeVerb = 'LOOK';
+    activeSpeakerId = null;
     inspectedTimelineItem = null;
+    lastCorrelateResult = null;
+    lastDeductionFeedback = '';
     closeEndingModal();
     closeDeductionModal();
     renderAll();
@@ -1089,6 +1465,9 @@
   el.btnEndingNewgame.addEventListener('click', function () {
     engine.reset();
     activeVerb = 'LOOK';
+    activeSpeakerId = null;
+    lastCorrelateResult = null;
+    lastDeductionFeedback = '';
     closeEndingModal();
     renderAll();
   });
@@ -1133,12 +1512,11 @@
     }
   });
 
-  // Expose debug handle on window for automated browser QA if needed
+  // Expose debug handle on window for automated QA
   globalThis.__EVE_APP__ = {
     engine: engine,
     renderAll: renderAll,
   };
 
-  // Initial render
   renderAll();
 })();

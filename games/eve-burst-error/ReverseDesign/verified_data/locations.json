@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "eve-burst-error",
   "locations": [
     {
@@ -21,7 +21,7 @@
       "district": "도심 상업지구",
       "accessible_by": "kojiro",
       "unlock_day": 2,
-      "summary": "카츠라기 야요이가 소장을 맡고 니카이도 스스무가 소속된 대형 탐정사무소. 코지로의 친정.",
+      "summary": "카츠라기 야요이가 소장을 맡고 니카이도 스스무가 소속된 대형 탐정사무소. 전자수첩 반환과 수배 파장이 오가는 코지로의 친정.",
       "verification_status": "확인"
     },
     {
@@ -65,7 +65,7 @@
       "district": "고급 주택가",
       "accessible_by": "kojiro",
       "unlock_day": 1,
-      "summary": "회화 수색 의뢰의 현장. 스트르만이 국새의 절반과 관련된 단서를 은닉했던 저택.",
+      "summary": "회화 수색 의뢰의 현장. 스트르만이 국새의 절반과 관련된 단서를 은닉하고 니카이도의 전자수첩 흔적이 남은 저택.",
       "verification_status": "확인"
     },
     {
@@ -77,6 +77,17 @@
       "accessible_by": "both",
       "unlock_day": 0,
       "summary": "마리나가 전속 강사로 잠입해 마야코를 경호하고, 코지로가 마츠노 히로미·시리아와 접촉하는 핵심 교차 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_yale_dorm",
+      "name_kr": "예일 외국인학교 기숙사·별관",
+      "name_jp": "エール外国人学校 寮・別館",
+      "name_en": "Yale Foreign School Dormitory & Annex",
+      "district": "외국인 거류지",
+      "accessible_by": "marina",
+      "unlock_day": 1,
+      "summary": "마리나가 야간 순찰 중 마야코의 이상 두통과 심야 정전·외출 흔적을 추적하는 기숙사 구역.",
       "verification_status": "확인"
     },
     {
@@ -98,7 +109,7 @@
       "district": "외교 공관가",
       "accessible_by": "both",
       "unlock_day": 0,
-      "summary": "로스=미도 대사가 주재하는 외교 공관. 엄중한 경비 속에 엘디아 왕위 계승 음모가 진행되는 장소.",
+      "summary": "로스=미도 대사가 주재하는 외교 공관. 리셉션·아쿠아 수상 알현·코지로의 도청기 설치가 교차하는 장소.",
       "verification_status": "확인"
     },
     {
@@ -125,13 +136,13 @@
     },
     {
       "id": "loc_sun_mansion",
-      "name_kr": "선 맨션",
-      "name_jp": "サン・マンション",
-      "name_en": "Sun Mansion",
+      "name_kr": "선 맨션 (403호)",
+      "name_jp": "サン・マンション (403号室)",
+      "name_en": "Sun Mansion (Room 403)",
       "district": "주택가",
-      "accessible_by": "kojiro",
-      "unlock_day": 4,
-      "summary": "코지로가 사건 관계자의 행방과 현장 흔적을 추적하기 위해 방문하는 아파트 단지.",
+      "accessible_by": "both",
+      "unlock_day": 0,
+      "summary": "마리나의 거점 아파트(403호, FAX·전화 수신 및 스즈키 접촉)이자 후반 코지로가 히무로와 동시 접속 단서를 추적하는 단지.",
       "verification_status": "확인"
     },
     {
@@ -142,7 +153,18 @@
       "district": "도쿄만 해상",
       "accessible_by": "both",
       "unlock_day": 5,
-      "summary": "12월 7일 코지로와 마리나가 각각 잠입·승선하며 디브 피살과 음모 결전의 막이 오르는 해상 무대.",
+      "summary": "12월 7일 코지로와 마리나가 각각 잠입·승선하며 니카이도·디브·아쿠아 연쇄 피살과 쿠데타 결전이 벌어지는 해상 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_tristan_engine",
+      "name_kr": "트리스탄호 기관실",
+      "name_jp": "トリスタン号 機関室",
+      "name_en": "Tristan Engine Room",
+      "district": "도쿄만 해상",
+      "accessible_by": "kojiro",
+      "unlock_day": 5,
+      "summary": "잠입 중 부상당한 코지로가 은신한 선내 기관실. 안경을 벗은 마야코의 간호와 함께 코지로의 국새 조각이 사라진다.",
       "verification_status": "확인"
     },
     {
@@ -153,7 +175,7 @@
       "district": "해구 해저",
       "accessible_by": "both",
       "unlock_day": 6,
-      "summary": "12월 8일 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 침몰하는 최종 해저 밀실. 산소 서바이벌과 범인 입력이 이루어진다.",
+      "summary": "12월 8일 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 침몰하는 최종 해저 밀실. 산소 서바이벌과 3단계 최종 추리가 이루어진다.",
       "verification_status": "확인"
     }
   ]

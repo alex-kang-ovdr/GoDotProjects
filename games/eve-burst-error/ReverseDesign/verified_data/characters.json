@@ -182,7 +182,7 @@
         "initial_alias": "니카이도 스스무",
         "initial_role": "자신을 라이벌시하는 후배 탐정 → 전국 지명수배자",
         "trust_level": "suspect",
-        "truth_revealed_at_scene": "K_D5_01"
+        "truth_revealed_at_scene": "K_D5_03"
       },
       "known_to_marina": {
         "initial_alias": "니카이도 스스무",
@@ -245,7 +245,7 @@
         "initial_alias": "아쿠아",
         "initial_role": "샷 바에서 우연히 만난 수수께끼의 미녀",
         "trust_level": "neutral",
-        "truth_revealed_at_scene": "K_D5_01"
+        "truth_revealed_at_scene": "K_D5_03"
       },
       "known_to_marina": {
         "initial_alias": "아쿠아 수상",

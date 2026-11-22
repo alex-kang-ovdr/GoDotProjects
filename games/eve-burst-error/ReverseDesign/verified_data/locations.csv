@@ -6,10 +6,12 @@ loc_central_avenue,센트럴 애비뉴,セントラル・アベニュー,Central
 loc_shot_bar,샷 바,ショットバー,Shot Bar,도심 유흥가,kojiro,3,확인
 loc_stollman_mansion,스트르만=코우의 저택,孔の家 (ストールマン邸),Stollman Kou's Residence,고급 주택가,kojiro,1,확인
 loc_yale_school_grounds,예일 외국인학교 (교내·도서관),エール外国人学校 (校内・図書館),Yale Foreign School Grounds & Library,외국인 거류지,both,0,확인
+loc_yale_dorm,예일 외국인학교 기숙사·별관,エール外国人学校 寮・別館,Yale Foreign School Dormitory & Annex,외국인 거류지,marina,1,확인
 loc_yale_director_room,예일 외국인학교 디렉터룸,エール外国人学校 ディレクタールーム,Yale Foreign School Director's Room,외국인 거류지,marina,2,확인
 loc_eldia_embassy,주일 엘디아 대사관,エルディア大使館,Eldia Embassy in Japan,외교 공관가,both,0,확인
 loc_jcia_hq,내각조사실 본부 빌딩,本部ビル (内閣調査室),Cabinet Intelligence HQ Building,관청가,marina,0,확인
 loc_princess_hotel,프린세스 호텔,プリンセス・ホテル,Princess Hotel,도심 중심가,both,4,확인
-loc_sun_mansion,선 맨션,サン・マンション,Sun Mansion,주택가,kojiro,4,확인
+loc_sun_mansion,선 맨션 (403호),サン・マンション (403号室),Sun Mansion (Room 403),주택가,both,0,확인
 loc_tristan_deck,호화 여객선 트리스탄호 (갑판·객실),トリスタン号 (甲板・客室),Luxury Liner Tristan (Deck & Cabins),도쿄만 해상,both,5,확인
+loc_tristan_engine,트리스탄호 기관실,トリスタン号 機関室,Tristan Engine Room,도쿄만 해상,kojiro,5,확인
 loc_tristan_hold,트리스탄호 해저 선창,トリスタン号 船倉 (海底),Tristan Submerged Cargo Hold,해구 해저,both,6,확인

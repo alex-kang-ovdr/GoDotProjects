@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EVE burst error — 멀티 사이트 &amp; 정보 비대칭 프로토타입</title>
+  <title>EVE burst error — 멀티 사이트 &amp; 정보 비대칭 심화판</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-sight="marina">
@@ -26,7 +26,7 @@
       </div>
       <div class="utility-controls">
         <button id="btn-hint-mode" class="util-btn" type="button" title="동기화 장벽 힌트 표시 전환">힌트: Modern</button>
-        <button id="btn-deduction-mode" class="util-btn" type="button" title="최종 범인 지목 방식 전환">추리: Classic 입력</button>
+        <button id="btn-deduction-mode" class="util-btn" type="button" title="최종 추리 입력 방식 전환">추리: Classic 입력</button>
         <button id="btn-save-modal" class="util-btn" type="button">💾 저장/불러오기</button>
         <button id="btn-reset" class="util-btn util-danger" type="button">↺ 초기화</button>
       </div>
@@ -50,7 +50,7 @@
         <div class="p-card-counts">
           <span id="marina-inv-count">소지품 0</span>
           <span id="marina-clue-count">단서 0</span>
-          <span id="marina-done-count">완료 0/8</span>
+          <span id="marina-done-count">완료 0/13</span>
         </div>
       </section>
 
@@ -61,7 +61,7 @@
           <span class="sc-label">SIGHT CHANGE</span>
           <span id="sc-sublabel" class="sc-sublabel">DAY 0 고정</span>
         </button>
-        <div id="barrier-progress-pill" class="barrier-pill">동기화 장벽 0 / 8 해제</div>
+        <div id="barrier-progress-pill" class="barrier-pill">동기화 장벽 0 / 12 해제</div>
       </div>
 
       <!-- Kojiro Protagonist Card -->
@@ -81,7 +81,7 @@
         <div class="p-card-counts">
           <span id="kojiro-inv-count">소지품 0</span>
           <span id="kojiro-clue-count">단서 0</span>
-          <span id="kojiro-done-count">완료 0/7</span>
+          <span id="kojiro-done-count">완료 0/13</span>
         </div>
       </section>
     </div>
@@ -100,16 +100,19 @@
         </div>
         <div class="scene-banner-actions">
           <button id="btn-advance-scene" class="advance-btn" type="button">▶ 다음 국면으로 진행</button>
-          <button id="btn-open-deduction" class="deduction-btn hidden" type="button">⚖ 최종 진범 지목</button>
+          <button id="btn-open-deduction" class="deduction-btn hidden" type="button">⚖ 3단계 최종 추리</button>
         </div>
       </div>
 
-      <!-- Atmospheric SVG Scene Viewport + Present Characters -->
+      <!-- Atmospheric SVG Scene Viewport + Neo-Noir SVG Character Portraits -->
       <div class="viewport-wrap">
         <div id="scene-svg-viewport" class="scene-svg-viewport" aria-label="장면 배경 비주얼"></div>
         <div id="scene-location-overlay" class="location-overlay"></div>
-        <div id="scene-characters-strip" class="characters-strip" aria-label="현재 장면 등장인물"></div>
+        <div id="scene-portrait-dock" class="portrait-dock" aria-label="장면 등장인물 포트레이트"></div>
       </div>
+
+      <!-- Present Character Quick-Talk Strip -->
+      <div id="scene-characters-strip" class="characters-strip" aria-label="현재 장면 등장인물 빠른 대화"></div>
 
       <!-- Sync Barrier Alert Banner (Visible when active protagonist is stalled) -->
       <div id="sync-barrier-banner" class="sync-barrier-banner hidden" role="status">
@@ -145,7 +148,7 @@
         </details>
       </div>
 
-      <!-- Classic 6-Command Deck + Target Tray -->
+      <!-- Classic 6-Command Deck + Progressive Exhaustion Target Tray -->
       <div class="command-deck-wrap">
         <div class="verb-bar" role="tablist" aria-label="6대 커맨드">
           <button class="verb-btn active" data-verb="LOOK" type="button"><span>LOOK</span><small>조사</small></button>
@@ -162,16 +165,16 @@
     <!-- Right Column: Multi-Sight Intelligence Workspace -->
     <aside class="intel-panel" aria-label="멀티 사이트 정보 분석 패널">
       <nav class="intel-tabs" role="tablist">
-        <button class="intel-tab active" data-tab="timeline" type="button">🔀 타임라인 &amp; 장벽</button>
-        <button class="intel-tab" data-tab="asymmetry" type="button">🧩 정보 비대칭 보드</button>
-        <button class="intel-tab" data-tab="dossier" type="button">🪪 인물 별칭 (18)</button>
+        <button class="intel-tab active" data-tab="timeline" type="button">🔀 타임라인 (27)</button>
+        <button class="intel-tab" data-tab="asymmetry" type="button">🧩 비대칭·교차</button>
+        <button class="intel-tab" data-tab="dossier" type="button">🪪 인물 (18)</button>
       </nav>
 
       <!-- Tab 1: Parallel Timeline & Sync Barrier SVG Visualizer -->
       <div id="tab-timeline" class="intel-tab-pane active">
         <div class="panel-intro">
-          <strong>병렬 타임라인 &amp; 교차 동기화 장벽 (SB_01 ~ SB_08)</strong>
-          <p>두 주인공의 독립된 시간선과 교차 인과 화살표를 실시간으로 추적합니다. 노드나 장벽 배지를 클릭해 상세 조건을 확인하세요.</p>
+          <strong>병렬 타임라인 (27씬) &amp; 교차 동기화 장벽 (SB_01 ~ SB_12)</strong>
+          <p>두 주인공의 독립 시간선과 12개 교차 인과 화살표를 실시간으로 추적합니다. 노드·장벽을 클릭하면 상세 조건이 표시됩니다.</p>
         </div>
         <div class="timeline-svg-scroll">
           <div id="timeline-svg-host" class="timeline-svg-host"></div>
@@ -186,12 +189,39 @@
         </div>
       </div>
 
-      <!-- Tab 2: Information Asymmetry Board -->
+      <!-- Tab 2: Information Asymmetry Board + Interactive Cross-Link Workbench -->
       <div id="tab-asymmetry" class="intel-tab-pane">
         <div class="panel-intro">
-          <strong>주인공 간 정보 비대칭 &amp; 인벤토리 격리 보드</strong>
-          <p>트리스탄호 합류(C_D6_01) 이전까지 코지로와 마리나의 소지품·단서는 완전히 격리되며, 두 시점을 모두 보는 플레이어만 전지적 진실을 조립합니다.</p>
+          <strong>정보 비대칭 보드 &amp; 모순 교차 분석 워크벤치</strong>
+          <p>코지로 단서 1개와 마리나 단서 1개를 선택해 교차 분석하면 극적 아이러니 진실과 최종 추리 보너스 힌트가 해금됩니다.</p>
         </div>
+
+        <!-- Interactive Cross-Link Workbench -->
+        <section class="crosslink-workbench" aria-label="비대칭 단서 모순 대조 워크벤치">
+          <div class="workbench-head">
+            <strong>⚡ 모순 대조 (Clue Cross-Link)</strong>
+            <span id="corr-count-pill" class="corr-pill">도출 0 / 8</span>
+          </div>
+          <div class="workbench-pickers">
+            <label class="picker-col">
+              <span class="picker-label picker-k">🟠 코지로 측 단서</span>
+              <select id="select-clue-kojiro" class="clue-select">
+                <option value="">코지로 단서 선택…</option>
+              </select>
+            </label>
+            <label class="picker-col">
+              <span class="picker-label picker-m">🔵 마리나 측 단서</span>
+              <select id="select-clue-marina" class="clue-select">
+                <option value="">마리나 단서 선택…</option>
+              </select>
+            </label>
+          </div>
+          <button id="btn-correlate-clues" class="correlate-btn" type="button">⚡ 비대칭 교차 분석 실행</button>
+          <div id="correlate-feedback" class="correlate-feedback hidden"></div>
+          <div id="discovered-correlations-list" class="corr-results-list"></div>
+        </section>
+
+        <!-- Dual Isolated Inventories -->
         <div class="dual-inventory-grid">
           <div class="inv-box inv-box-kojiro">
             <div class="inv-box-title">🟠 코지로 소지품 (격리)</div>
@@ -202,7 +232,7 @@
             <ul id="inv-list-marina" class="inv-list"></ul>
           </div>
         </div>
-        <div class="sub-heading">발견된 비대칭 단서 매트릭스 (<span id="asymmetry-count">0</span>/12)</div>
+        <div class="sub-heading">발견된 비대칭 단서 매트릭스 (<span id="asymmetry-count">0</span>/22)</div>
         <div id="asymmetry-list" class="asymmetry-list"></div>
       </div>
 
@@ -217,26 +247,31 @@
     </aside>
   </main>
 
-  <!-- Culprit Deduction Modal (C_D6_01) -->
+  <!-- 3-Stage Finale Deduction Modal (C_D6_01) -->
   <div id="modal-deduction" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="deduction-modal-title">
     <div class="modal-card modal-deduction-card">
       <div class="modal-head">
-        <h2 id="deduction-modal-title">⚖ 최종 합류 추리: 진범 '테러'의 이름을 지목하라</h2>
+        <h2 id="deduction-modal-title">⚖ 트리스탄호 해저 선창 — 3단계 최종 추리</h2>
         <button id="btn-close-deduction" class="modal-close" type="button" aria-label="닫기">✕</button>
       </div>
-      <p class="modal-lead">
-        트리스탄호 해저 선창에서 코지로와 마리나의 5일간 기록이 하나로 통합되었습니다.<br>
-        니카이도·디브·아쿠아 연쇄 살인을 저지른 <strong>유기 휴머노이드 클론(μ-101) / '테러'</strong>의 진짜 이름은 누구입니까?
-      </p>
+      <div id="deduction-stepper" class="deduction-stepper">
+        <span class="ded-step" data-step="0">1. 푸딩의 정체</span>
+        <span class="ded-step" data-step="1">2. C 프로젝트</span>
+        <span class="ded-step" data-step="2">3. 진범 '테러'</span>
+      </div>
+      <div id="deduction-stage-badge" class="ded-stage-badge">STAGE 1 / 3</div>
+      <p id="deduction-question" class="modal-lead"></p>
+      <div id="deduction-bonus-hints" class="ded-bonus-hints hidden"></div>
+      <div id="deduction-feedback" class="ded-feedback hidden"></div>
       <div id="deduction-classic-box" class="deduction-input-box">
-        <label for="culprit-input" class="input-label">진범 이름 입력 (한국어 · 日本語 · English 정규화 인식)</label>
+        <label for="culprit-input" class="input-label">정답 입력 (한국어 · 日本語 · English 정규화 인식)</label>
         <div class="input-row">
-          <input id="culprit-input" type="text" placeholder="예: 미도 마야코 / 御堂真弥子 / Mayako Mido" autocomplete="off">
-          <button id="btn-submit-culprit" class="primary-submit-btn" type="button">지목 확정</button>
+          <input id="culprit-input" type="text" placeholder="" autocomplete="off">
+          <button id="btn-submit-culprit" class="primary-submit-btn" type="button">추리 확정</button>
         </div>
       </div>
       <div id="deduction-streamlined-box" class="deduction-candidates hidden">
-        <div class="input-label">용의자 선택 (PLUS 모드)</div>
+        <div class="input-label">정답 선택 (PLUS 선택 모드)</div>
         <div id="culprit-candidate-grid" class="candidate-grid"></div>
       </div>
     </div>
@@ -265,7 +300,7 @@
         <h2 id="save-modal-title">💾 이중 상태 세이브 슬롯 (Dual-State Save)</h2>
         <button id="btn-close-save" class="modal-close" type="button" aria-label="닫기">✕</button>
       </div>
-      <p class="modal-lead">코지로·마리나 양측의 동결 스냅샷, 인벤토리, 동기화 장벽, 공유 세계 플래그를 원자적으로 저장/복원합니다.</p>
+      <p class="modal-lead">코지로·마리나 양측의 동결 스냅샷, 인벤토리, 12개 동기화 장벽, 교차 분석 진실, 3단계 추리 진행도를 원자적으로 저장/복원합니다.</p>
       <div id="save-slots-list" class="save-slots-list"></div>
     </div>
   </div>

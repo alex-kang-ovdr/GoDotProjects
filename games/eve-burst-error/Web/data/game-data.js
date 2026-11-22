@@ -8,13 +8,13 @@
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : this, function () {
   'use strict';
   return {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
   "gameId": "eve-burst-error",
   "sourceBaseline": "PC-98 (1995) / SEGA SATURN (1997) / EVE burst error R (2016)",
   "calendarSpan": {
     "start_date": "12-02",
     "end_date": "12-08",
-    "note": "마리나 편은 12월 2일(Day 0) 선행 개시, 코지로 편은 12월 3일(Day 1) 합류, 12월 8일(Day 6) 트리스탄호 선창에서 단일 시점으로 수렴"
+    "note": "마리나 편은 12월 2일(Day 0) 선행 개시, 코지로 편은 12월 3일(Day 1) 합류, 12월 8일(Day 6) 트리스탄호 선창에서 단일 시점으로 수렴 (Phase 2: 27개 세분화 정규 씬 · 12개 동기화 장벽 복원)"
   },
   "characters": [
     {
@@ -196,7 +196,7 @@
         "initial_alias": "니카이도 스스무",
         "initial_role": "자신을 라이벌시하는 후배 탐정 → 전국 지명수배자",
         "trust_level": "suspect",
-        "truth_revealed_at_scene": "K_D5_01"
+        "truth_revealed_at_scene": "K_D5_03"
       },
       "known_to_marina": {
         "initial_alias": "니카이도 스스무",
@@ -259,7 +259,7 @@
         "initial_alias": "아쿠아",
         "initial_role": "샷 바에서 우연히 만난 수수께끼의 미녀",
         "trust_level": "neutral",
-        "truth_revealed_at_scene": "K_D5_01"
+        "truth_revealed_at_scene": "K_D5_03"
       },
       "known_to_marina": {
         "initial_alias": "아쿠아 수상",
@@ -416,7 +416,7 @@
       "district": "도심 상업지구",
       "accessible_by": "kojiro",
       "unlock_day": 2,
-      "summary": "카츠라기 야요이가 소장을 맡고 니카이도 스스무가 소속된 대형 탐정사무소. 코지로의 친정.",
+      "summary": "카츠라기 야요이가 소장을 맡고 니카이도 스스무가 소속된 대형 탐정사무소. 전자수첩 반환과 수배 파장이 오가는 코지로의 친정.",
       "verification_status": "확인"
     },
     {
@@ -460,7 +460,7 @@
       "district": "고급 주택가",
       "accessible_by": "kojiro",
       "unlock_day": 1,
-      "summary": "회화 수색 의뢰의 현장. 스트르만이 국새의 절반과 관련된 단서를 은닉했던 저택.",
+      "summary": "회화 수색 의뢰의 현장. 스트르만이 국새의 절반과 관련된 단서를 은닉하고 니카이도의 전자수첩 흔적이 남은 저택.",
       "verification_status": "확인"
     },
     {
@@ -472,6 +472,17 @@
       "accessible_by": "both",
       "unlock_day": 0,
       "summary": "마리나가 전속 강사로 잠입해 마야코를 경호하고, 코지로가 마츠노 히로미·시리아와 접촉하는 핵심 교차 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_yale_dorm",
+      "name_kr": "예일 외국인학교 기숙사·별관",
+      "name_jp": "エール外国人学校 寮・別館",
+      "name_en": "Yale Foreign School Dormitory & Annex",
+      "district": "외국인 거류지",
+      "accessible_by": "marina",
+      "unlock_day": 1,
+      "summary": "마리나가 야간 순찰 중 마야코의 이상 두통과 심야 정전·외출 흔적을 추적하는 기숙사 구역.",
       "verification_status": "확인"
     },
     {
@@ -493,7 +504,7 @@
       "district": "외교 공관가",
       "accessible_by": "both",
       "unlock_day": 0,
-      "summary": "로스=미도 대사가 주재하는 외교 공관. 엄중한 경비 속에 엘디아 왕위 계승 음모가 진행되는 장소.",
+      "summary": "로스=미도 대사가 주재하는 외교 공관. 리셉션·아쿠아 수상 알현·코지로의 도청기 설치가 교차하는 장소.",
       "verification_status": "확인"
     },
     {
@@ -520,13 +531,13 @@
     },
     {
       "id": "loc_sun_mansion",
-      "name_kr": "선 맨션",
-      "name_jp": "サン・マンション",
-      "name_en": "Sun Mansion",
+      "name_kr": "선 맨션 (403호)",
+      "name_jp": "サン・マンション (403号室)",
+      "name_en": "Sun Mansion (Room 403)",
       "district": "주택가",
-      "accessible_by": "kojiro",
-      "unlock_day": 4,
-      "summary": "코지로가 사건 관계자의 행방과 현장 흔적을 추적하기 위해 방문하는 아파트 단지.",
+      "accessible_by": "both",
+      "unlock_day": 0,
+      "summary": "마리나의 거점 아파트(403호, FAX·전화 수신 및 스즈키 접촉)이자 후반 코지로가 히무로와 동시 접속 단서를 추적하는 단지.",
       "verification_status": "확인"
     },
     {
@@ -537,7 +548,18 @@
       "district": "도쿄만 해상",
       "accessible_by": "both",
       "unlock_day": 5,
-      "summary": "12월 7일 코지로와 마리나가 각각 잠입·승선하며 디브 피살과 음모 결전의 막이 오르는 해상 무대.",
+      "summary": "12월 7일 코지로와 마리나가 각각 잠입·승선하며 니카이도·디브·아쿠아 연쇄 피살과 쿠데타 결전이 벌어지는 해상 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_tristan_engine",
+      "name_kr": "트리스탄호 기관실",
+      "name_jp": "トリスタン号 機関室",
+      "name_en": "Tristan Engine Room",
+      "district": "도쿄만 해상",
+      "accessible_by": "kojiro",
+      "unlock_day": 5,
+      "summary": "잠입 중 부상당한 코지로가 은신한 선내 기관실. 안경을 벗은 마야코의 간호와 함께 코지로의 국새 조각이 사라진다.",
       "verification_status": "확인"
     },
     {
@@ -548,7 +570,7 @@
       "district": "해구 해저",
       "accessible_by": "both",
       "unlock_day": 6,
-      "summary": "12월 8일 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 침몰하는 최종 해저 밀실. 산소 서바이벌과 범인 입력이 이루어진다.",
+      "summary": "12월 8일 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 침몰하는 최종 해저 밀실. 산소 서바이벌과 3단계 최종 추리가 이루어진다.",
       "verification_status": "확인"
     }
   ],
@@ -559,15 +581,14 @@
       "day_index": 0,
       "calendar_date": "12-02",
       "title_kr": "마리나 0일차 ①: 내각조사실 소환 및 마야코 경호 임무 수령",
-      "title_jp": "まりな編 12月2日①：本部長指令と御堂真弥子護衛任務",
+      "title_jp": "まりな編 12月2日①：本部召喚・甲野本部長指令と護衛任務",
       "location_ids": [
         "loc_jcia_hq",
-        "loc_eldia_embassy"
+        "loc_sun_mansion"
       ],
       "character_ids": [
         "marina_hojo",
         "saburo_kouno",
-        "ross_mido",
         "misumi_kagawa"
       ],
       "prev_scene_ids": [],
@@ -575,7 +596,12 @@
         "evt_marina_mission_briefed"
       ],
       "sight_change_allowed": false,
-      "summary": "미국에서 귀국한 마리나가 코노 본부장으로부터 엘디아 주일 대사 로스=미도의 딸 미도 마야코 경호 임무를 하달받는다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "미국에서 귀국한 마리나가 내각조사실 본부에 소환되어 코노 본부장으로부터 주일 엘디아 대사 딸 미도 마야코 경호 임무와 애총·신분증을 수령한다.",
       "verification_status": "확인"
     },
     {
@@ -583,8 +609,39 @@
       "track": "marina",
       "day_index": 0,
       "calendar_date": "12-02",
-      "title_kr": "마리나 0일차 ②: 예일 외국인학교 사전 답사 및 신분증 확보",
-      "title_jp": "まりな編 12月2日②：エール外国人学校下見と身分証明書取得",
+      "title_kr": "마리나 0일차 ②: 주일 엘디아 대사관 리셉션 및 로스=미도 접견",
+      "title_jp": "まりな編 12月2日②：エルディア大使館レセプションとロス＝御堂面会",
+      "location_ids": [
+        "loc_eldia_embassy",
+        "loc_sun_mansion"
+      ],
+      "character_ids": [
+        "marina_hojo",
+        "ross_mido",
+        "mayako_mido"
+      ],
+      "prev_scene_ids": [
+        "M_D0_01"
+      ],
+      "emits_event_ids": [
+        "evt_marina_embassy_reception"
+      ],
+      "sight_change_allowed": false,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "주일 엘디아 대사관 리셉션에서 로스=미도 대사를 접견하고 외교 특권 뒤에 감춰진 엘디아 정세와 마야코 경호의 민감한 배경을 파악한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "M_D0_03",
+      "track": "marina",
+      "day_index": 0,
+      "calendar_date": "12-02",
+      "title_kr": "마리나 0일차 ③: 예일 외국인학교 사전 답사 및 전속 강사 신분증 확보",
+      "title_jp": "まりな編 12月2日③：エール外国人学校下見と専従講師ID取得",
       "location_ids": [
         "loc_yale_school_grounds"
       ],
@@ -594,13 +651,18 @@
         "hiromi_matsuno"
       ],
       "prev_scene_ids": [
-        "M_D0_01"
+        "M_D0_02"
       ],
       "emits_event_ids": [
         "evt_marina_day0_setup"
       ],
       "sight_change_allowed": false,
-      "summary": "예일 외국인학교를 사전 답사하고 전속 강사 잠입 신분증을 확보하며 12월 2일 프롤로그를 마친다. (SB_01 해제)",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "예일 외국인학교 교정과 도서관을 사전 답사하고 스트르만 교장으로부터 전속 강사 잠입 신분증을 확보하며 Day 0 프롤로그를 마친다. (SB_01 해제)",
       "verification_status": "확인"
     },
     {
@@ -609,25 +671,27 @@
       "day_index": 1,
       "calendar_date": "12-03",
       "title_kr": "코지로 1일차 ①: 시바타 아카네 의뢰 중개 및 가짜 스트르만 면담",
-      "title_jp": "小次郎編 12月3日①：柴田茜の仲介と偽ストールマンの絵画捜索依頼",
+      "title_jp": "小次郎編 12月3日①：柴田茜の絵画依頼仲介と偽ストールマン面談",
       "location_ids": [
         "loc_amagi_agency",
-        "loc_stollman_mansion",
-        "loc_central_avenue"
+        "loc_stollman_mansion"
       ],
       "character_ids": [
         "kojiro_amagi",
         "akane_shibata",
-        "dib",
-        "yayoi_katsuragi",
-        "susumu_nikaido"
+        "dib"
       ],
       "prev_scene_ids": [],
       "emits_event_ids": [
         "evt_kojiro_fake_stollman_commission"
       ],
       "sight_change_allowed": true,
-      "summary": "프리랜서 기자 시바타 아카네가 중개한 '이슬람 문양 회화 수색' 의뢰를 받고 스트르만=코우(실제는 사칭범 디브)의 저택을 방문해 야요이·니카이도와 조우한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "프리랜서 기자 시바타 아카네가 중개한 '이슬람 문양 회화 수색' 의뢰를 받고 스트르만=코우(실제는 사칭범 디브)를 면담한다. (SB_02 해제)",
       "verification_status": "확인"
     },
     {
@@ -635,8 +699,39 @@
       "track": "kojiro",
       "day_index": 1,
       "calendar_date": "12-03",
-      "title_kr": "코지로 1일차 ②: 항구 창고 거리 '푸딩' 구출 및 보호",
-      "title_jp": "小次郎編 12月3日②：倉庫街で謎の少女プリンを保護",
+      "title_kr": "코지로 1일차 ②: 스트르만 저택 회화 감정 및 니카이도 전자수첩 입수",
+      "title_jp": "小次郎編 12月3日②：孔の家・絵画鑑定と二階堂の電子手帳回収",
+      "location_ids": [
+        "loc_stollman_mansion",
+        "loc_central_avenue"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "yayoi_katsuragi",
+        "susumu_nikaido"
+      ],
+      "prev_scene_ids": [
+        "K_D1_01"
+      ],
+      "emits_event_ids": [
+        "evt_kojiro_painting_appraisal"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "스트르만 저택 서재의 액자·창문·수색 흔적을 정밀 감정하던 중 야요이·니카이도와 마주치고 니카이도가 떨어뜨린 전자수첩을 회수한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D1_03",
+      "track": "kojiro",
+      "day_index": 1,
+      "calendar_date": "12-03",
+      "title_kr": "코지로 1일차 ③: 항구 창고 거리 '푸딩' 구출 및 아마기 사무소 보호",
+      "title_jp": "小次郎編 12月3日③：倉庫街で謎の少女プリン救出・事務所保護",
       "location_ids": [
         "loc_warehouse_district",
         "loc_amagi_agency"
@@ -646,13 +741,18 @@
         "prisia_rem_crime"
       ],
       "prev_scene_ids": [
-        "K_D1_01"
+        "K_D1_02"
       ],
       "emits_event_ids": [
         "evt_kojiro_rescues_purin"
       ],
       "sight_change_allowed": true,
-      "summary": "항구 창고 거리에서 위협받던 정체불명의 소녀를 구출해 '푸딩'이라는 애칭을 붙이고 아마기 사무소에 보호한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "항구 창고 거리에서 괴한들에게 쫓기던 오드아이 소녀를 구출해 '푸딩'이라는 애칭을 붙이고 아마기 사무소로 데려와 보호한다.",
       "verification_status": "확인"
     },
     {
@@ -660,8 +760,8 @@
       "track": "marina",
       "day_index": 1,
       "calendar_date": "12-03",
-      "title_kr": "마리나 1일차: 예일 외국인학교 잠입 부임 및 마야코 첫 접촉",
-      "title_jp": "まりな編 12月3日：エール外国人学校潜入と御堂真弥子との初接触",
+      "title_kr": "마리나 1일차 ①: 예일 외국인학교 잠입 부임 및 마야코 첫 접촉",
+      "title_jp": "まりな編 12月3日①：エール外国人学校赴任と御堂真弥子初接触",
       "location_ids": [
         "loc_yale_school_grounds",
         "loc_central_avenue"
@@ -669,43 +769,53 @@
       "character_ids": [
         "marina_hojo",
         "mayako_mido",
-        "celia_flat"
+        "celia_flat",
+        "hiromi_matsuno"
       ],
       "prev_scene_ids": [
-        "M_D0_02"
+        "M_D0_03"
       ],
       "emits_event_ids": [
         "evt_marina_meets_mayako"
       ],
       "sight_change_allowed": true,
-      "summary": "예일 외국인학교에 잠입 부임해 미도 마야코와 첫 대면하지만 마야코는 경호를 완강히 거부한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "예일 외국인학교에 전속 강사로 부임해 마츠노의 안내를 받고 미도 마야코와 첫 대면하지만, 마야코는 경호를 완강히 거부한다.",
       "verification_status": "확인"
     },
     {
-      "id": "M_D2_01",
+      "id": "M_D1_02",
       "track": "marina",
-      "day_index": 2,
-      "calendar_date": "12-04",
-      "title_kr": "마리나 2일차: 스즈키 겐자부로 접촉 및 디렉터룸 은밀 조사",
-      "title_jp": "まりな編 12月4日：鈴木源三郎との接触とディレクタールーム調査",
+      "day_index": 1,
+      "calendar_date": "12-03",
+      "title_kr": "마리나 1일차 ②: 예일 기숙사 야간 순찰·선 맨션 403호 기밀 FAX",
+      "title_jp": "まりな編 12月3日②：学校寮夜間巡回とサン・マンション403号室",
       "location_ids": [
-        "loc_yale_school_grounds",
-        "loc_yale_director_room"
+        "loc_yale_dorm",
+        "loc_sun_mansion"
       ],
       "character_ids": [
         "marina_hojo",
-        "genzaburo_katsuragi",
         "mayako_mido",
-        "kyoko_himuro"
+        "yayoi_katsuragi"
       ],
       "prev_scene_ids": [
         "M_D1_01"
       ],
       "emits_event_ids": [
-        "evt_marina_director_room_seal_clue"
+        "evt_marina_dorm_patrol_alert"
       ],
       "sight_change_allowed": true,
-      "summary": "교내에서 보험 외판원 '스즈키 겐자부로'와 접촉하고 학교 뒤편 디렉터룸을 은밀히 조사해 국새·교내 비리 단서를 포착한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "기숙사 야간 순찰 중 마야코의 이상 두통과 심야 외출 흔적을 포착하고, 선 맨션 403호에서 야요이와 회동하며 긴급 FAX를 수신한다. (SB_03 해제)",
       "verification_status": "확인"
     },
     {
@@ -713,27 +823,122 @@
       "track": "kojiro",
       "day_index": 2,
       "calendar_date": "12-04",
-      "title_kr": "코지로 2일차: 예일 학교 도서관·카츠라기 사무소·시리아 접촉",
-      "title_jp": "小次郎編 12月4日：学校図書館・桂木探偵事務所・シリアとの接触",
+      "title_kr": "코지로 2일차 ①: 카츠라기 사무소 충돌·전자수첩 반환 및 아카네 사진 대조",
+      "title_jp": "小次郎編 12月4日①：桂木探偵事務所の衝突・電子手帳返却と茜の写真",
+      "location_ids": [
+        "loc_katsuragi_agency",
+        "loc_amagi_agency"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "yayoi_katsuragi",
+        "susumu_nikaido",
+        "akane_shibata"
+      ],
+      "prev_scene_ids": [
+        "K_D1_03"
+      ],
+      "emits_event_ids": [
+        "evt_kojiro_katsuragi_clash"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "카츠라기 탐정사무소에서 니카이도와 격돌하며 전자수첩을 반환하고, 시바타 아카네가 찍어 온 잠입 사진에서 회화 뒷면 암호 문양을 확보한다. (SB_04 해제)",
+      "verification_status": "확인"
+    },
+    {
+      "id": "M_D2_01",
+      "track": "marina",
+      "day_index": 2,
+      "calendar_date": "12-04",
+      "title_kr": "마리나 2일차 ①: 스즈키 겐자부로 심문 및 예일 교내 불온 세력 감시",
+      "title_jp": "まりな編 12月4日①：鈴木源三郎との問答と校内不審者監視",
       "location_ids": [
         "loc_yale_school_grounds",
-        "loc_katsuragi_agency"
+        "loc_sun_mansion"
+      ],
+      "character_ids": [
+        "marina_hojo",
+        "genzaburo_katsuragi",
+        "mayako_mido"
+      ],
+      "prev_scene_ids": [
+        "M_D1_02"
+      ],
+      "emits_event_ids": [
+        "evt_marina_suzuki_warning"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "예일 학교와 선 맨션 주변에 출몰하는 보험 외판원 '스즈키 겐자부로'를 추궁해 'C 프로젝트'와 양분된 국새에 대한 경고를 듣는다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "M_D2_02",
+      "track": "marina",
+      "day_index": 2,
+      "calendar_date": "12-04",
+      "title_kr": "마리나 2일차 ②: 예일 외국인학교 디렉터룸 은밀 침입 및 국새 절반 포착",
+      "title_jp": "まりな編 12月4日②：ディレクタールーム潜入調査と国璽の片割れ発見",
+      "location_ids": [
+        "loc_yale_director_room"
+      ],
+      "character_ids": [
+        "marina_hojo",
+        "kyoko_himuro",
+        "genzaburo_katsuragi"
+      ],
+      "prev_scene_ids": [
+        "M_D2_01"
+      ],
+      "emits_event_ids": [
+        "evt_marina_director_room_seal_clue"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "학교 뒤편 디렉터룸 비밀 금고를 정밀 수색해 엘디아 국새의 학교 측 절반을 확보하고 교육감시기구 요원 히무로 쿄코와 첫 조우한다. (SB_05 해제)",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D2_02",
+      "track": "kojiro",
+      "day_index": 2,
+      "calendar_date": "12-04",
+      "title_kr": "코지로 2일차 ②: 예일 학교 도서관 고미술 감정 및 시리아 플랫 접촉",
+      "title_jp": "小次郎編 12月4日②：学校図書館の古美術照合とシリア・フラット接触",
+      "location_ids": [
+        "loc_yale_school_grounds"
       ],
       "character_ids": [
         "kojiro_amagi",
         "hiromi_matsuno",
-        "celia_flat",
-        "yayoi_katsuragi",
-        "susumu_nikaido"
+        "celia_flat"
       ],
       "prev_scene_ids": [
-        "K_D1_02"
+        "K_D2_01"
       ],
       "emits_event_ids": [
         "evt_kojiro_painting_seal_link"
       ],
       "sight_change_allowed": true,
-      "summary": "예일 학교 도서관의 마츠노 히로미와 아랍어 강사 시리아 플랫, 카츠라기 사무소를 오가며 분실 회화와 엘디아 국새의 연관성을 추적한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "예일 학교 도서관의 마츠노 히로미와 아랍어 강사 시리아 플랫을 만나 분실 회화가 저택 측 국새 절반의 위치 암호임을 해독한다.",
       "verification_status": "확인"
     },
     {
@@ -741,28 +946,61 @@
       "track": "kojiro",
       "day_index": 3,
       "calendar_date": "12-05",
-      "title_kr": "코지로 3일차: 진 스트르만 피살·사칭 발각·구렌 정보·아쿠아 조우",
-      "title_jp": "小次郎編 12月5日：ストールマン殺害報道・二階堂手配・グレンとアクア",
+      "title_kr": "코지로 3일차 ①: 진 스트르만 피살 보도·니카이도 수배 및 사칭범 폭로",
+      "title_jp": "小次郎編 12月5日①：ストールマン殺害報道・二階堂手配と偽依頼人発覚",
       "location_ids": [
         "loc_amagi_agency",
-        "loc_shot_bar",
-        "loc_eldia_embassy"
+        "loc_katsuragi_agency"
       ],
       "character_ids": [
         "kojiro_amagi",
         "akane_shibata",
-        "glen",
-        "aqua_still_lloyd",
+        "yayoi_katsuragi",
         "stollman_kou"
       ],
       "prev_scene_ids": [
-        "K_D2_01"
+        "K_D2_02"
       ],
       "emits_event_ids": [
         "evt_kojiro_fake_kou_exposed"
       ],
       "sight_change_allowed": true,
-      "summary": "조간 보도로 예일 교장 스트르만 피살과 니카이도 지명수배를 확인하고 자신이 만난 의뢰인이 사칭범이었음을 자각한다. 구렌에게 암살자 정보를 얻고 샷 바에서 아쿠아와 조우한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "12월 5일 조간 1면으로 스트르만 교장 피살과 니카이도 지명수배를 확인하고 자신이 만난 의뢰인이 가짜였음을 폭로한다. (SB_06 해제)",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D3_02",
+      "track": "kojiro",
+      "day_index": 3,
+      "calendar_date": "12-05",
+      "title_kr": "코지로 3일차 ②: 샷 바 구렌 정보 거래 및 수수께끼 미녀 '아쿠아' 조우",
+      "title_jp": "小次郎編 12月5日②：ショットバー・グレンの暗殺者情報と謎の美女アクア",
+      "location_ids": [
+        "loc_shot_bar"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "glen",
+        "aqua_still_lloyd"
+      ],
+      "prev_scene_ids": [
+        "K_D3_01"
+      ],
+      "emits_event_ids": [
+        "evt_kojiro_aqua_bar_encounter"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "샷 바에서 뒷세계 정보상 구렌으로부터 사칭범 '디브'와 암살자 '테러'의 존재를 전해 듣고, 정체를 숨긴 엘디아 수상 아쿠아와 우연히 술잔을 나눈다.",
       "verification_status": "확인"
     },
     {
@@ -770,27 +1008,92 @@
       "track": "marina",
       "day_index": 3,
       "calendar_date": "12-05",
-      "title_kr": "마리나 3일차: 교장 피살 파장·히무로 쿄코 공조·대사관 이상 포착",
-      "title_jp": "まりな編 12月5日：校長殺害の波紋・氷室恭子との共闘・大使館調査",
+      "title_kr": "마리나 3일차 ①: 교장 피살 파장 및 히무로 쿄코 교육감시기구 공조",
+      "title_jp": "まりな編 12月5日①：校長殺害の衝撃と氷室恭子との正式共闘",
       "location_ids": [
-        "loc_eldia_embassy",
-        "loc_yale_school_grounds"
+        "loc_yale_school_grounds",
+        "loc_yale_dorm"
       ],
       "character_ids": [
         "marina_hojo",
         "kyoko_himuro",
-        "ross_mido",
-        "aqua_still_lloyd",
-        "dib"
+        "celia_flat"
       ],
       "prev_scene_ids": [
-        "M_D2_01"
+        "M_D2_02"
       ],
       "emits_event_ids": [
         "evt_marina_himuro_alliance"
       ],
       "sight_change_allowed": true,
-      "summary": "스트르만 피살 이후 대사관과 학교의 이상 동향을 감지하고, 교육감시기구 요원 히무로 쿄코와 공조해 엘디아 정보부의 음모를 파헤친다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "스트르만 교장 피살 이후 히무로 쿄코와 정식 공조를 맺고 예일 학교 설립 목적과 내각조사실 DBMS 기밀 봉인 사실을 파악한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "M_D3_02",
+      "track": "marina",
+      "day_index": 3,
+      "calendar_date": "12-05",
+      "title_kr": "마리나 3일차 ②: 엘디아 대사관 재방문·아쿠아 수상 알현과 감시 유도",
+      "title_jp": "まりな編 12月5日②：エルディア大使館・アクア首相謁見と警備誘導",
+      "location_ids": [
+        "loc_eldia_embassy"
+      ],
+      "character_ids": [
+        "marina_hojo",
+        "ross_mido",
+        "aqua_still_lloyd",
+        "dib"
+      ],
+      "prev_scene_ids": [
+        "M_D3_01"
+      ],
+      "emits_event_ids": [
+        "evt_marina_embassy_signal"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "대사관에서 방일 중인 아쿠아 수상과 로스=미도, 공작원 디브의 이상 동향을 포착하고 의도적으로 경비 강화를 언급해 외부 수사자에게 신호를 남긴다. (SB_07 해제)",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D3_03",
+      "track": "kojiro",
+      "day_index": 3,
+      "calendar_date": "12-05",
+      "title_kr": "코지로 3일차 ③: 엘디아 대사관 도청기 설치 및 아쿠아 암호 디스크 회수",
+      "title_jp": "小次郎編 12月5日③：エルディア大使館潜入盗聴とアクア端末ディスク回収",
+      "location_ids": [
+        "loc_eldia_embassy",
+        "loc_sun_mansion"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "ross_mido",
+        "kyoko_himuro"
+      ],
+      "prev_scene_ids": [
+        "K_D3_02"
+      ],
+      "emits_event_ids": [
+        "evt_kojiro_embassy_wiretap_disk"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "기자 신분으로 대사관에 잠입해 로스=미도 의자 밑에 초소형 도청기를 설치하고 마리나의 대화를 감청하며, 아쿠아 관련 암호 플로피 디스크를 회수한다. (SB_08 해제)",
       "verification_status": "확인"
     },
     {
@@ -798,23 +1101,30 @@
       "track": "marina",
       "day_index": 4,
       "calendar_date": "12-06",
-      "title_kr": "마리나 4일차 ①: 내각조사실 DBMS Level-7 해킹 시도 및 데드락 봉쇄",
-      "title_jp": "まりな編 12月6日①：内調DBMSレベル7ハッキングとデッドロック",
+      "title_kr": "마리나 4일차 ①: 카가와 내무감사관 사문 및 DBMS Level-7 해킹 교착",
+      "title_jp": "まりな編 12月6日①：香川美純の査問と内調DBMSレベル7デッドロック",
       "location_ids": [
         "loc_jcia_hq"
       ],
       "character_ids": [
         "marina_hojo",
+        "misumi_kagawa",
+        "saburo_kouno",
         "kyoko_himuro"
       ],
       "prev_scene_ids": [
-        "M_D3_01"
+        "M_D3_02"
       ],
       "emits_event_ids": [
         "evt_marina_dbms_lock_triggered"
       ],
       "sight_change_allowed": true,
-      "summary": "마리나가 내각조사실 DBMS에 침입을 시도하지만 Level-7 보안 프로텍트에 막혀 단독 돌파가 불가능한 교착(Deadlock) 상태에 빠진다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "카가와 미스미의 집요한 사문 틈새로 코노 본부장 권한을 이용해 본부 DBMS에 침입하지만 Level-7 보안 프로텍트에 완전히 봉쇄(Deadlock)된다. (SB_09 해제)",
       "verification_status": "확인"
     },
     {
@@ -823,7 +1133,7 @@
       "day_index": 4,
       "calendar_date": "12-06",
       "title_kr": "코지로 4일차 ①: 히무로 협력, 본부 DBMS 동시 정규 접속 (데드락 유도)",
-      "title_jp": "小次郎編 12月6日①：氷室協力による本部DBMS同時正規アクセス",
+      "title_jp": "小次郎編 12月6日①：氷室恭子協力・本部DBMS同時正規アクセス",
       "location_ids": [
         "loc_amagi_agency",
         "loc_sun_mansion"
@@ -833,13 +1143,18 @@
         "kyoko_himuro"
       ],
       "prev_scene_ids": [
-        "K_D3_01"
+        "K_D3_03"
       ],
       "emits_event_ids": [
         "evt_kojiro_dbms_deadlock_sync"
       ],
       "sight_change_allowed": true,
-      "summary": "히무로 쿄코와 협력해 동일 시각 본부 DBMS에 정규 절차로 동시 접속함으로써 시스템 타임래그·데드락 허점을 연다. (SB_06 해제)",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "히무로 쿄코와 협력해 아쿠아의 디스크 키와 정규 단말로 본부 DBMS에 동시 접속함으로써 Level-7 데드락 타임래그 균열을 연다. (SB_10 돌파)",
       "verification_status": "확인"
     },
     {
@@ -847,8 +1162,8 @@
       "track": "marina",
       "day_index": 4,
       "calendar_date": "12-06",
-      "title_kr": "마리나 4일차 ②: DBMS 데드락 돌파·C프로젝트 입수·도청기/사문 탈출",
-      "title_jp": "まりな編 12月6日②：Cプロジェクト機密入手と査問突破",
+      "title_kr": "마리나 4일차 ②: DBMS 데드락 돌파·C프로젝트 탈취 및 본부장 인질 탈출",
+      "title_jp": "まりな編 12月6日②：Cプロジェクト機密奪取と甲野人質・査問突破",
       "location_ids": [
         "loc_jcia_hq",
         "loc_princess_hotel"
@@ -866,7 +1181,12 @@
         "evt_marina_c_project_leaked"
       ],
       "sight_change_allowed": true,
-      "summary": "코지로 측 동시 접속으로 생긴 타임래그를 돌파해 C 프로젝트 기밀을 열람한다. 직후 도청기 발각과 카가와의 사문 위기를 코노 본부장 인질극으로 돌파한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "동시 접속 타임래그로 C 프로젝트(μ-101) 기밀을 탈취한 직후 카가와에게 포위되지만, 내연 관계인 코노 본부장을 인질로 삼아 극적으로 탈출한다. (SB_11 해제)",
       "verification_status": "확인"
     },
     {
@@ -874,8 +1194,8 @@
       "track": "kojiro",
       "day_index": 4,
       "calendar_date": "12-06",
-      "title_kr": "코지로 4일차 ②: 푸딩(프리시아) 재회·정체 판명 및 디브 습격 돌파",
-      "title_jp": "小次郎編 12月6日②：プリン＝プリシア正体判明と偽孔ディーブ襲撃",
+      "title_kr": "코지로 4일차 ②: 푸딩(프리시아) 정체 판명 및 항구 창고 디브 습격 돌파",
+      "title_jp": "小次郎編 12月6日②：プリン＝プリシア二重人格判明と倉庫街ディーブ襲撃",
       "location_ids": [
         "loc_warehouse_district",
         "loc_princess_hotel"
@@ -893,7 +1213,12 @@
         "evt_kojiro_prisia_identity_confirmed"
       ],
       "sight_change_allowed": true,
-      "summary": "행방불명됐던 푸딩과 재회해 그녀가 엘디아 왕위 계승자 프리시아 공주임을 확인하고, 가짜 코우(디브)의 습격을 돌파한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "푸딩이 약물로 인격을 분리한 엘디아 왕녀 프리시아임을 확인하고, 항구 창고에서 디브의 무장 습격을 시리아의 엄호와 함께 돌파한다.",
       "verification_status": "확인"
     },
     {
@@ -901,27 +1226,91 @@
       "track": "kojiro",
       "day_index": 5,
       "calendar_date": "12-07",
-      "title_kr": "코지로 5일차: 연쇄 살인 추적 및 트리스탄호 잠입·선창 고립",
-      "title_jp": "小次郎編 12月7日：連続殺人追跡とトリスタン号潜入・船倉孤立",
+      "title_kr": "코지로 5일차 ①: 부두 출항 추적 및 호화 여객선 트리스탄호 잠입",
+      "title_jp": "小次郎編 12月7日①：埠頭追跡と豪華客船トリスタン号潜入",
       "location_ids": [
-        "loc_tristan_deck",
-        "loc_warehouse_district"
+        "loc_warehouse_district",
+        "loc_tristan_deck"
       ],
       "character_ids": [
         "kojiro_amagi",
-        "susumu_nikaido",
-        "aqua_still_lloyd",
-        "mayako_mido",
-        "dib"
+        "yayoi_katsuragi",
+        "akane_shibata"
       ],
       "prev_scene_ids": [
         "K_D4_02"
       ],
       "emits_event_ids": [
+        "evt_kojiro_tristan_infiltrated"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "즉위식과 쿠데타 음모가 집결하는 호화 여객선 트리스탄호에 야요이·아카네의 지원을 받아 잠입하지만 선내 경비와 충돌해 총상을 입는다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D5_02",
+      "track": "kojiro",
+      "day_index": 5,
+      "calendar_date": "12-07",
+      "title_kr": "코지로 5일차 ②: 트리스탄호 기관실 은신 — 안경 벗은 마야코와 사라진 국새",
+      "title_jp": "小次郎編 12月7日②：トリスタン号機関室・眼鏡を外した真弥子と消えた国璽",
+      "location_ids": [
+        "loc_tristan_engine"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "mayako_mido"
+      ],
+      "prev_scene_ids": [
+        "K_D5_01"
+      ],
+      "emits_event_ids": [
+        "evt_kojiro_engine_room_seal_stolen"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "기관실에서 깨어난 코지로는 안경을 벗은 마야코의 간호를 받지만, 그녀가 떠나자 주머니에 있던 국새(国璽)의 절반이 감쪽같이 사라졌음을 발견한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "K_D5_03",
+      "track": "kojiro",
+      "day_index": 5,
+      "calendar_date": "12-07",
+      "title_kr": "코지로 5일차 ③: 트리스탄호 갑판 연쇄 피살(니카이도·디브·아쿠아) 및 선창 고립",
+      "title_jp": "小次郎編 12月7日③：船内連続殺人(二階堂・ディーブ・アクア)と船倉孤立",
+      "location_ids": [
+        "loc_tristan_deck"
+      ],
+      "character_ids": [
+        "kojiro_amagi",
+        "susumu_nikaido",
+        "aqua_still_lloyd",
+        "dib",
+        "mayako_mido"
+      ],
+      "prev_scene_ids": [
+        "K_D5_02"
+      ],
+      "emits_event_ids": [
         "evt_kojiro_tristan_hold_trapped"
       ],
       "sight_change_allowed": true,
-      "summary": "니카이도·아쿠아 연쇄 피살의 배후를 쫓아 호화 여객선 트리스탄호에 잠입한 코지로는 선내 소란 중 부상을 입고 마야코와 함께 선창에 갇힌다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "갑판과 객실에서 니카이도·디브·아쿠아가 암살자 '테러'에게 잇달아 피살된 현장을 목격한 코지로는 마야코와 함께 선창 격벽 너머에 고립된다. (SB_12 코지로 완료)",
       "verification_status": "확인"
     },
     {
@@ -929,27 +1318,61 @@
       "track": "marina",
       "day_index": 5,
       "calendar_date": "12-07",
-      "title_kr": "마리나 5일차: 프리시아 호위 인계 및 트리스탄호 승선 수색",
-      "title_jp": "まりな編 12月7日：プリシア護衛とトリスタン号乗船捜索",
+      "title_kr": "마리나 5일차 ①: 프리시아 왕녀 호위 인계 및 트리스탄호 강행 승선",
+      "title_jp": "まりな編 12月7日①：プリシア王女護衛引継とトリスタン号強行乗船",
       "location_ids": [
-        "loc_tristan_deck",
-        "loc_eldia_embassy"
+        "loc_eldia_embassy",
+        "loc_tristan_deck"
       ],
       "character_ids": [
         "marina_hojo",
         "prisia_rem_crime",
-        "ross_mido",
-        "genzaburo_katsuragi",
         "kyoko_himuro"
       ],
       "prev_scene_ids": [
         "M_D4_02"
       ],
       "emits_event_ids": [
+        "evt_marina_tristan_embarked"
+      ],
+      "sight_change_allowed": true,
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "정통 왕위 계승자 프리시아 공주를 호위 인계받아 히무로의 통신 지원 속에 출항하는 트리스탄호에 강행 승선한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "M_D5_02",
+      "track": "marina",
+      "day_index": 5,
+      "calendar_date": "12-07",
+      "title_kr": "마리나 5일차 ②: 트리스탄호 갑판 로스=미도 대치 및 선창 합류 돌파",
+      "title_jp": "まりな編 12月7日②：甲板ロス＝御堂対峙・源三郎の導きと船倉突入",
+      "location_ids": [
+        "loc_tristan_deck"
+      ],
+      "character_ids": [
+        "marina_hojo",
+        "prisia_rem_crime",
+        "ross_mido",
+        "genzaburo_katsuragi"
+      ],
+      "prev_scene_ids": [
+        "M_D5_01"
+      ],
+      "emits_event_ids": [
         "evt_marina_tristan_boarding_complete"
       ],
       "sight_change_allowed": true,
-      "summary": "프리시아를 호위하며 엘디아 쿠데타를 저지하기 위해 트리스탄호에 승선한 마리나는 선내 수색 끝에 선창으로 향한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "갑판에서 쿠데타의 주모자 로스=미도와 대치한 뒤 겐자부로의 인도에 따라 프리시아와 함께 폭발 직전의 선창으로 돌입한다. (SB_12 마리나 완료)",
       "verification_status": "확인"
     },
     {
@@ -957,8 +1380,8 @@
       "track": "both",
       "day_index": 6,
       "calendar_date": "12-08",
-      "title_kr": "최종 합류(수렴편): 트리스탄호 해저 선창 밀실 추리 및 범인 이름 입력",
-      "title_jp": "共通収束編 12月8日：トリスタン号海底船倉合流・真相解明・犯人入力",
+      "title_kr": "최종 합류(수렴편): 트리스탄호 해저 선창 밀실 추리 및 3단계 진상 규명",
+      "title_jp": "共通収束編 12月8日：トリスタン号海底船倉合流・3段階真相解明・犯人入力",
       "location_ids": [
         "loc_tristan_hold"
       ],
@@ -973,38 +1396,43 @@
         "yayoi_katsuragi"
       ],
       "prev_scene_ids": [
-        "K_D5_01",
-        "M_D5_01"
+        "K_D5_03",
+        "M_D5_02"
       ],
       "emits_event_ids": [
         "evt_tristan_dual_convergence",
         "evt_true_culprit_identified"
       ],
       "sight_change_allowed": false,
-      "summary": "선창에서 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 선박이 해저로 침몰한다. 산소 서바이벌과 양측 지식 통합 끝에 연쇄살인범 '테러'의 정체(미도 마야코 / μ-101)를 입력해 진엔딩으로 수렴한다.",
+      "command_exhaustion": {
+        "look_depth": 3,
+        "talk_depth": 3,
+        "think_depth": 3
+      },
+      "summary": "선창에서 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 해저 침몰한다. 비상 산소 서바이벌과 양측 지식 완전 통합 끝에 3단계 추리(프리시아 정체 → C 프로젝트 클론 μ-101 → 진범 미도 마야코)로 진엔딩에 도달한다.",
       "verification_status": "확인"
     }
   ],
   "syncBarriers": [
     {
       "id": "SB_01",
-      "name_kr": "Day 0 → Day 1 시차 개방 (마리나 선행 프롤로그 완료)",
+      "name_kr": "Day 0 → Day 1 시차 개방 (마리나 12월 2일 선행 프롤로그 완료)",
       "barrier_type": "temporal_pacing",
       "blocked_protagonist": "kojiro",
       "blocked_scene": "K_D1_01",
       "unlocking_protagonist": "marina",
-      "unlocking_scene": "M_D0_02",
+      "unlocking_scene": "M_D0_03",
       "unlocking_event_id": "evt_marina_day0_setup",
       "required_event_ids": [
         "evt_marina_day0_setup"
       ],
-      "cross_causal_effect": "마리나가 12월 2일 임무 수령과 예일 외국인학교 답사를 완료해 12월 3일 시계에 도달하면서 코지로 시점이 개방된다.",
-      "player_hint_modern": "마리나 편 12월 2일 사전 답사를 마치면 코지로 시점이 열립니다.",
+      "cross_causal_effect": "마리나가 12월 2일 본부 소환·엘디아 대사관 리셉션·예일 학교 사전 답사(전속 강사 ID 확보)를 완료해 12월 3일에 도달하면서 코지로 시점이 개방된다.",
+      "player_hint_modern": "마리나 편 12월 2일 사전 답사(M_D0_03)를 마치면 코지로 시점이 열립니다.",
       "verification_status": "확인"
     },
     {
       "id": "SB_02",
-      "name_kr": "12월 3일 회화 의뢰 개시 동기화",
+      "name_kr": "12월 3일 가짜 스트르만 회화 의뢰 개시 동기화",
       "barrier_type": "temporal_pacing",
       "blocked_protagonist": "marina",
       "blocked_scene": "M_D1_01",
@@ -1014,29 +1442,61 @@
       "required_event_ids": [
         "evt_kojiro_fake_stollman_commission"
       ],
-      "cross_causal_effect": "코지로가 가짜 스트르만(디브)의 회화 의뢰를 수주하고 저택을 방문하면서 엘디아 측 경계 수위가 변동해 마리나의 학교 잠입 국면과 맞물린다.",
-      "player_hint_modern": "코지로 시점으로 전환해 12월 3일 회화 수색 의뢰를 먼저 진행하세요.",
-      "verification_status": "해석"
+      "cross_causal_effect": "코지로가 가짜 스트르만(디브)의 회화 수색 의뢰를 수주하면서 엘디아 측 경계 수위가 변동해 마리나의 예일 학교 잠입 부임 국면과 맞물린다.",
+      "player_hint_modern": "코지로 시점으로 전환해 12월 3일 회화 수색 의뢰(K_D1_01)를 먼저 수주하세요.",
+      "verification_status": "확인"
     },
     {
       "id": "SB_03",
-      "name_kr": "예일 외국인학교 디렉터룸 ↔ 도서관 국새 단서 교차",
+      "name_kr": "예일 기숙사 야간 정전·선 맨션 FAX ↔ 카츠라기 사무소 파장",
       "barrier_type": "world_mutation",
       "blocked_protagonist": "kojiro",
       "blocked_scene": "K_D2_01",
       "unlocking_protagonist": "marina",
-      "unlocking_scene": "M_D2_01",
+      "unlocking_scene": "M_D1_02",
+      "unlocking_event_id": "evt_marina_dorm_patrol_alert",
+      "required_event_ids": [
+        "evt_marina_dorm_patrol_alert"
+      ],
+      "cross_causal_effect": "마리나가 12월 3일 밤 예일 기숙사 이상을 포착하고 선 맨션 403호에서 야요이와 회동한 여파가 다음 날 카츠라기 탐정사무소 충돌과 아카네 사진 대조로 이어진다.",
+      "player_hint_modern": "마리나 시점에서 12월 3일 기숙사 야간 순찰과 선 맨션 회동(M_D1_02)을 완료하세요.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "SB_04",
+      "name_kr": "니카이도 전자수첩 반환·아카네 사진 대조 ↔ 스즈키 겐자부로 출현",
+      "barrier_type": "world_mutation",
+      "blocked_protagonist": "marina",
+      "blocked_scene": "M_D2_01",
+      "unlocking_protagonist": "kojiro",
+      "unlocking_scene": "K_D2_01",
+      "unlocking_event_id": "evt_kojiro_katsuragi_clash",
+      "required_event_ids": [
+        "evt_kojiro_katsuragi_clash"
+      ],
+      "cross_causal_effect": "코지로가 니카이도의 전자수첩과 아카네 사진으로 회화 뒷면 암호를 건드리자, 이를 감지한 스즈키(카츠라기 겐자부로)가 마리나 앞에 모습을 드러내 경고한다.",
+      "player_hint_modern": "코지로 시점에서 카츠라기 사무소 충돌 및 전자수첩·사진 조사(K_D2_01)를 진행하세요.",
+      "verification_status": "해석"
+    },
+    {
+      "id": "SB_05",
+      "name_kr": "예일 디렉터룸 국새 절반 포착 ↔ 학교 도서관 고미술 감정",
+      "barrier_type": "world_mutation",
+      "blocked_protagonist": "kojiro",
+      "blocked_scene": "K_D2_02",
+      "unlocking_protagonist": "marina",
+      "unlocking_scene": "M_D2_02",
       "unlocking_event_id": "evt_marina_director_room_seal_clue",
       "required_event_ids": [
         "evt_marina_director_room_seal_clue"
       ],
-      "cross_causal_effect": "마리나가 학교 디렉터룸 조사 및 스즈키 접촉을 진행한 결과 학교 측 보안·기록 동향이 바뀌어 코지로의 도서관·카츠라기 사무소 수사가 진전된다.",
-      "player_hint_modern": "마리나 시점에서 12월 4일 예일 학교 디렉터룸 조사를 완료하세요.",
-      "verification_status": "해석"
+      "cross_causal_effect": "마리나가 학교 뒤편 디렉터룸 비밀 금고를 수색해 국새 절반을 포착하자 교내 경비가 흔들리며 코지로의 도서관 고미술 감정과 시리아 접촉이 열린다.",
+      "player_hint_modern": "마리나 시점에서 12월 4일 디렉터룸 은밀 침입 조사(M_D2_02)를 완료하세요.",
+      "verification_status": "확인"
     },
     {
-      "id": "SB_04",
-      "name_kr": "진 스트르만 피살·사칭 폭로 ↔ 대사관 경비 이상",
+      "id": "SB_06",
+      "name_kr": "진 스트르만 피살·사칭 폭로 ↔ 히무로 쿄코 교육감시기구 공조",
       "barrier_type": "world_mutation",
       "blocked_protagonist": "marina",
       "blocked_scene": "M_D3_01",
@@ -1046,12 +1506,44 @@
       "required_event_ids": [
         "evt_kojiro_fake_kou_exposed"
       ],
-      "cross_causal_effect": "코지로 측에서 스트르만 교장 피살·니카이도 수배·사칭범 존재가 드러나면서 마리나 측 대사관 경비 변동과 히무로 쿄코 공조가 본격화된다.",
-      "player_hint_modern": "코지로 시점으로 전환해 12월 5일 스트르만 피살 보도와 구렌 정보를 확인하세요.",
-      "verification_status": "해석"
+      "cross_causal_effect": "코지로 측에서 스트르만 교장 피살 보도와 니카이도 수배, 사칭범 존재가 폭로되면서 마리나 측 학교 비상 상황과 히무로 쿄코의 정식 공조가 개시된다.",
+      "player_hint_modern": "코지로 시점으로 전환해 12월 5일 스트르만 피살 보도(K_D3_01)를 확인하세요.",
+      "verification_status": "확인"
     },
     {
-      "id": "SB_05",
+      "id": "SB_07",
+      "name_kr": "마리나 엘디아 대사관 경계 신호 ↔ 코지로 대사관 도청 잠입",
+      "barrier_type": "concurrent_exploit",
+      "blocked_protagonist": "kojiro",
+      "blocked_scene": "K_D3_03",
+      "unlocking_protagonist": "marina",
+      "unlocking_scene": "M_D3_02",
+      "unlocking_event_id": "evt_marina_embassy_signal",
+      "required_event_ids": [
+        "evt_marina_embassy_signal"
+      ],
+      "cross_causal_effect": "마리나가 엘디아 대사관에서 아쿠아 수상과 로스=미도를 대면하며 경비 주의를 분산·유도한 순간, 코지로가 대사관에 잠입해 의자 밑 도청기와 암호 디스크를 회수한다.",
+      "player_hint_modern": "마리나 시점에서 12월 5일 엘디아 대사관 재방문(M_D3_02)을 먼저 진행하세요.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "SB_08",
+      "name_kr": "대사관 도청·아쿠아 디스크 유출 ↔ 카가와 내무감사관 사문 촉발",
+      "barrier_type": "world_mutation",
+      "blocked_protagonist": "marina",
+      "blocked_scene": "M_D4_01",
+      "unlocking_protagonist": "kojiro",
+      "unlocking_scene": "K_D3_03",
+      "unlocking_event_id": "evt_kojiro_embassy_wiretap_disk",
+      "required_event_ids": [
+        "evt_kojiro_embassy_wiretap_disk"
+      ],
+      "cross_causal_effect": "코지로가 대사관 도청과 아쿠아 암호 디스크를 회수하자 외교 보안 경보가 울리며 내각조사실 카가와 감찰관의 마리나 사문 및 DBMS 침입 결심이 촉발된다.",
+      "player_hint_modern": "코지로 시점에서 엘디아 대사관 도청 및 디스크 회수(K_D3_03)를 완료하세요.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "SB_09",
       "name_kr": "내각조사실 DBMS Level-7 보안 장벽 점화",
       "barrier_type": "concurrent_exploit",
       "blocked_protagonist": "kojiro",
@@ -1062,12 +1554,12 @@
       "required_event_ids": [
         "evt_marina_dbms_lock_triggered"
       ],
-      "cross_causal_effect": "마리나가 내각조사실 DBMS 침입 중 Level-7 보안 교착 상태에 도달해야 코지로·히무로 측의 동시 정규 접속 작전이 개시된다.",
-      "player_hint_modern": "마리나 시점에서 12월 6일 내각조사실 DBMS 침입을 먼저 시도하세요.",
+      "cross_causal_effect": "마리나가 사문 중 본부 DBMS 침입을 시도해 Level-7 실시간 보안 교착 상태에 도달해야 코지로·히무로 측의 동시 정규 접속 작전이 개시된다.",
+      "player_hint_modern": "마리나 시점에서 12월 6일 카가와 사문과 DBMS Level-7 침입(M_D4_01)을 먼저 시도하세요.",
       "verification_status": "확인"
     },
     {
-      "id": "SB_06",
+      "id": "SB_10",
       "name_kr": "DBMS 동시 접속 데드락 타임래그 돌파 (시그니처 기믹)",
       "barrier_type": "concurrent_exploit",
       "blocked_protagonist": "marina",
@@ -1078,13 +1570,13 @@
       "required_event_ids": [
         "evt_kojiro_dbms_deadlock_sync"
       ],
-      "cross_causal_effect": "코지로와 히무로가 동일 시각 본부 DBMS에 정규 절차로 동시 접속해 시스템 데드락 타임래그를 유발함으로써, 마리나의 Level-7 프로텍트 돌파와 C 프로젝트 기밀 열람이 가능해진다.",
-      "player_hint_modern": "마리나 단독으로는 돌파할 수 없습니다. 코지로 시점으로 전환해 본부 DBMS에 동시 접속하세요.",
+      "cross_causal_effect": "코지로와 히무로가 동일 시각 본부 DBMS에 정규 절차로 동시 접속해 시스템 데드락 타임래그를 유발함으로써, 마리나의 Level-7 프로텍트 돌파와 C 프로젝트 탈취가 가능해진다.",
+      "player_hint_modern": "마리나 단독으로는 돌파할 수 없습니다. 코지로 시점으로 전환해 본부 DBMS에 동시 접속(K_D4_01)하세요.",
       "verification_status": "확인"
     },
     {
-      "id": "SB_07",
-      "name_kr": "C 프로젝트 기밀 유출 여파 → 푸딩 정체 판명 및 디브 습격",
+      "id": "SB_11",
+      "name_kr": "C 프로젝트 기밀 유출·사문 탈출 → 항구 창고 디브 습격 촉발",
       "barrier_type": "world_mutation",
       "blocked_protagonist": "kojiro",
       "blocked_scene": "K_D4_02",
@@ -1094,50 +1586,70 @@
       "required_event_ids": [
         "evt_marina_c_project_leaked"
       ],
-      "cross_causal_effect": "마리나가 C 프로젝트 기밀을 탈취하고 사문을 돌파한 직후 엘디아 정보부가 긴급 행동에 나서며, 코지로 측 푸딩 재회(프리시아 정체 판명)와 디브 습격이 촉발된다.",
-      "player_hint_modern": "마리나 시점으로 돌아가 DBMS 돌파와 사문 탈출을 완료하세요.",
+      "cross_causal_effect": "마리나가 C 프로젝트 기밀을 탈취하고 코노 본부장 인질극으로 사문을 탈출하자, 엘디아 정보부가 긴급 말살 작전에 돌입해 코지로 측 항구 창고 디브 습격이 촉발된다.",
+      "player_hint_modern": "마리나 시점으로 돌아가 DBMS 돌파와 사문 탈출(M_D4_02)을 완료하세요.",
       "verification_status": "확인"
     },
     {
-      "id": "SB_08",
-      "name_kr": "트리스탄호 최종 합류 이중 관문 (단일 시점 수렴)",
+      "id": "SB_12",
+      "name_kr": "트리스탄호 해저 선창 최종 합류 이중 관문 (단일 시점 수렴)",
       "barrier_type": "final_convergence",
       "blocked_protagonist": "both",
       "blocked_scene": "C_D6_01",
       "unlocking_protagonist": "both",
-      "unlocking_scene": "M_D5_01",
+      "unlocking_scene": "M_D5_02",
       "unlocking_scenes": [
-        "K_D5_01",
-        "M_D5_01"
+        "K_D5_03",
+        "M_D5_02"
       ],
       "unlocking_event_id": "evt_marina_tristan_boarding_complete",
       "required_event_ids": [
         "evt_kojiro_tristan_hold_trapped",
         "evt_marina_tristan_boarding_complete"
       ],
-      "cross_causal_effect": "코지로(+마야코)의 트리스탄호 선창 고립과 마리나(+프리시아)의 승선 수색이 모두 완료되어야 12월 8일 해저 선창 합류 및 단일 수렴편이 개방된다.",
-      "player_hint_modern": "코지로와 마리나 양측 모두 12월 7일 트리스탄호 진입을 완료해야 최종 합류편이 열립니다.",
+      "cross_causal_effect": "코지로(+마야코)의 기관실·갑판 연쇄살인 목격 후 선창 고립(K_D5_03)과 마리나(+프리시아)의 갑판 대치 후 선창 돌입(M_D5_02)이 모두 완료되어야 12월 8일 해저 선창 단일 수렴편이 개방된다.",
+      "player_hint_modern": "코지로(K_D5_03)와 마리나(M_D5_02) 양측 모두 트리스탄호 선창 도달을 완료해야 최종 합류편이 열립니다.",
       "verification_status": "확인"
     }
   ],
   "clues": [
     {
-      "id": "clue_fake_stollman",
-      "title_kr": "회화 수색 의뢰인 '스트르만=코우'의 사칭",
-      "category": "identity",
-      "holder": "kojiro",
-      "acquired_at_scene": "K_D3_01",
+      "id": "clue_embassy_diplomatic_shield",
+      "title_kr": "엘디아 대사관 리셉션과 로스=미도의 외교 특권 장벽",
+      "category": "conspiracy",
+      "holder": "marina",
+      "acquired_at_scene": "M_D0_02",
       "related_character_ids": [
-        "stollman_kou",
-        "dib"
+        "ross_mido",
+        "mayako_mido"
+      ],
+      "related_location_ids": [
+        "loc_eldia_embassy"
+      ],
+      "perceived_meaning_kojiro": "초기에는 대사관 내부 경비나 로스=미도의 공식 경호 요청을 알지 못한다.",
+      "perceived_meaning_marina": "로스=미도 대사는 딸을 걱정하는 온건 외교관처럼 보이지만, 대사관 내부 조사는 외교 특권으로 철저히 차단한다.",
+      "true_meaning": "로스=미도는 엘디아 구 정보부 수장이자 C 프로젝트 주모자로서, 내각조사실의 경호마저 자신의 음모 위장막으로 이용하고 있었다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "impostor_trap",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_nikaido_organizer",
+      "title_kr": "니카이도 스스무의 전자수첩과 엘디아 비밀 접선 기록",
+      "category": "artifact",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D1_02",
+      "related_character_ids": [
+        "susumu_nikaido",
+        "yayoi_katsuragi"
       ],
       "related_location_ids": [
         "loc_stollman_mansion",
-        "loc_amagi_agency"
+        "loc_katsuragi_agency"
       ],
-      "perceived_meaning_kojiro": "12월 3일 만난 의뢰인은 진본 스트르만 교장이 아니라 디브가 사칭한 가짜였다.",
-      "perceived_meaning_marina": "스트르만 교장은 예일 외국인학교 교장으로서 피살되었으며, 민간 탐정이 사칭 의뢰를 받은 사실은 모른다.",
-      "true_meaning": "엘디아 정보부 간부 디브가 진본 스트르만을 고문·살해하고 국새가 숨겨진 회화를 회수하기 위해 코지로를 이용했다.",
+      "perceived_meaning_kojiro": "스트르만 저택에서 회수한 니카이도의 전자수첩에 수상한 외국인 접선 시간과 부두 거래 메모가 남아 있다.",
+      "perceived_meaning_marina": "니카이도는 교장 살해 사건의 단순 지명수배 용의자로만 보고받았으며 전자수첩의 존재를 모른다.",
+      "true_meaning": "니카이도는 회화·국새 뒷거래에 휘말린 이용당한 말단이었으며, 진짜 살해범은 디브와 '테러'였다.",
       "shared_at_scene": "C_D6_01",
       "dramatic_irony_type": "impostor_trap",
       "verification_status": "확인"
@@ -1147,7 +1659,7 @@
       "title_kr": "창고 거리에서 구출한 오드아이 소녀 '푸딩'",
       "category": "identity",
       "holder": "kojiro",
-      "acquired_at_scene": "K_D1_02",
+      "acquired_at_scene": "K_D1_03",
       "related_character_ids": [
         "prisia_rem_crime"
       ],
@@ -1184,11 +1696,94 @@
       "verification_status": "확인"
     },
     {
+      "id": "clue_yale_dorm_blackout",
+      "title_kr": "예일 기숙사 야간 정전과 마야코의 심야 기억 공백",
+      "category": "murder",
+      "holder": "marina",
+      "acquired_at_scene": "M_D1_02",
+      "related_character_ids": [
+        "mayako_mido",
+        "yayoi_katsuragi"
+      ],
+      "related_location_ids": [
+        "loc_yale_dorm",
+        "loc_sun_mansion"
+      ],
+      "perceived_meaning_kojiro": "예일 학교 기숙사에서 야간에 마야코가 의식을 잃고 배회한 사실을 알지 못한다.",
+      "perceived_meaning_marina": "마야코가 극심한 두통과 함께 특정 시간대 기억이 통째로 사라진다고 호소해 단순 스트레스나 약물 테러로 의심한다.",
+      "true_meaning": "마야코의 기억 공백 시간대는 내부에 이식된 '전 국왕 인격(테러)'이 주도권을 장악해 암살을 실행하는 시각과 일치한다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "dual_target_mirror",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_akane_photo_proof",
+      "title_kr": "시바타 아카네의 잠입 사진과 회화 뒷면 암호 문양",
+      "category": "artifact",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D2_01",
+      "related_character_ids": [
+        "akane_shibata",
+        "stollman_kou"
+      ],
+      "related_location_ids": [
+        "loc_katsuragi_agency",
+        "loc_amagi_agency"
+      ],
+      "perceived_meaning_kojiro": "아카네가 확보한 사진 속 회화 뒷면에 엘디아 고대 왕실 좌표와 봉인 인장 흔적이 찍혀 있다.",
+      "perceived_meaning_marina": "프리랜서 기자 시바타 아카네의 존재나 회화 뒷면 사진의 존재를 모른다.",
+      "true_meaning": "회화는 스트르만이 국새 절반의 은닉 위치를 기록해 둔 열쇠였으며, 디브가 회화를 집요하게 찾은 이유다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "split_artifact",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_suzuki_alias",
+      "title_kr": "보험회사 세일즈맨 '스즈키 겐자부로'의 정체",
+      "category": "identity",
+      "holder": "shared_asymmetric",
+      "acquired_at_scene": "M_D2_01",
+      "related_character_ids": [
+        "genzaburo_katsuragi",
+        "yayoi_katsuragi"
+      ],
+      "related_location_ids": [
+        "loc_yale_school_grounds",
+        "loc_sun_mansion"
+      ],
+      "perceived_meaning_kojiro": "카츠라기 겐자부로는 오래전 실종·사망한 자신의 양부이자 초대 소장으로만 알고 있다.",
+      "perceived_meaning_marina": "예일 학교와 선 맨션 주변에 출몰하는 수상하지만 사건 내막을 꿰뚫는 보험 외판원 '스즈키 겐자부로'로 인지한다.",
+      "true_meaning": "두 사람은 동일 인물이며, 과거 엘디아 정보국 '테러' 부대장이자 C 프로젝트의 죄책을 청산하기 위해 잠입한 카츠라기 겐자부로 본인이다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "alias_mismatch",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_director_room_seal_half",
+      "title_kr": "예일 외국인학교 디렉터룸의 은닉 국새 절반",
+      "category": "artifact",
+      "holder": "marina",
+      "acquired_at_scene": "M_D2_02",
+      "related_character_ids": [
+        "stollman_kou",
+        "ross_mido"
+      ],
+      "related_location_ids": [
+        "loc_yale_director_room"
+      ],
+      "perceived_meaning_kojiro": "예일 학교 디렉터룸 내부 조사 내용을 알지 못한다.",
+      "perceived_meaning_marina": "학교 디렉터룸 비밀 금고에 스트르만 교장이 남긴 엘디아 기밀 및 국새 절반의 흔적이 있음을 포착한다.",
+      "true_meaning": "저택 측 단서와 결합해야 비로소 엘디아 국새 전체의 은닉 구조가 완성된다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "split_artifact",
+      "verification_status": "확인"
+    },
+    {
       "id": "clue_painting_seal_half",
       "title_kr": "이슬람 문양 회화와 저택 은닉 국새 절반",
       "category": "artifact",
       "holder": "kojiro",
-      "acquired_at_scene": "K_D2_01",
+      "acquired_at_scene": "K_D2_02",
       "related_character_ids": [
         "stollman_kou",
         "hiromi_matsuno",
@@ -1206,44 +1801,45 @@
       "verification_status": "확인"
     },
     {
-      "id": "clue_director_room_seal_half",
-      "title_kr": "예일 외국인학교 디렉터룸의 은닉 국새 절반",
-      "category": "artifact",
-      "holder": "marina",
-      "acquired_at_scene": "M_D2_01",
-      "related_character_ids": [
-        "stollman_kou",
-        "ross_mido"
-      ],
-      "related_location_ids": [
-        "loc_yale_director_room"
-      ],
-      "perceived_meaning_kojiro": "예일 학교 디렉터룸 내부 조사 내용을 알지 못한다.",
-      "perceived_meaning_marina": "학교 디렉터룸에 스트르만 교장이 남긴 엘디아 기밀 및 국새 절반의 흔적이 있음을 포착한다.",
-      "true_meaning": "저택 측 단서와 결합해야 비로소 엘디아 국새 전체의 은닉 구조가 완성된다.",
-      "shared_at_scene": "C_D6_01",
-      "dramatic_irony_type": "split_artifact",
-      "verification_status": "확인"
-    },
-    {
-      "id": "clue_suzuki_alias",
-      "title_kr": "보험회사 세일즈맨 '스즈키 겐자부로'의 정체",
+      "id": "clue_celia_double_agent",
+      "title_kr": "아랍어 강사 시리아 플랫의 혈연과 이중스파이 신분",
       "category": "identity",
-      "holder": "shared_asymmetric",
-      "acquired_at_scene": "M_D2_01",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D2_02",
       "related_character_ids": [
+        "celia_flat",
         "genzaburo_katsuragi",
         "yayoi_katsuragi"
       ],
       "related_location_ids": [
-        "loc_yale_school_grounds",
-        "loc_katsuragi_agency"
+        "loc_yale_school_grounds"
       ],
-      "perceived_meaning_kojiro": "카츠라기 겐자부로는 오래전 실종·사망한 자신의 양부이자 초대 소장으로만 알고 있다.",
-      "perceived_meaning_marina": "예일 학교 주변에 출몰하는 수상하지만 사건 내막을 꿰뚫는 보험 외판원 '스즈키 겐자부로'로 인지한다.",
-      "true_meaning": "두 사람은 동일 인물이며, 과거 엘디아 정보국 '테러' 부대장이자 C 프로젝트의 죄책을 청산하기 위해 잠입한 카츠라기 겐자부로 본인이다.",
+      "perceived_meaning_kojiro": "엘디아 구 정보부 소속으로 의심되는 아랍어 강사 → 겐자부로의 딸(야요이의 이복자매)이자 이중스파이임을 알게 된다.",
+      "perceived_meaning_marina": "예일 학교에 잠입한 엘디아 관련 요주의 인물로만 경계한다.",
+      "true_meaning": "카츠라기 겐자부로가 엘디아 출국 시 남긴 이중스파이 딸로서, 부친의 의지를 이어 음모를 내부에서 저지하려 했다.",
       "shared_at_scene": "C_D6_01",
       "dramatic_irony_type": "alias_mismatch",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_fake_stollman",
+      "title_kr": "회화 수색 의뢰인 '스트르만=코우'의 사칭",
+      "category": "identity",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D3_01",
+      "related_character_ids": [
+        "stollman_kou",
+        "dib"
+      ],
+      "related_location_ids": [
+        "loc_stollman_mansion",
+        "loc_amagi_agency"
+      ],
+      "perceived_meaning_kojiro": "12월 3일 만난 의뢰인은 진본 스트르만 교장이 아니라 디브가 사칭한 가짜였다.",
+      "perceived_meaning_marina": "스트르만 교장은 예일 외국인학교 교장으로서 피살되었으며, 민간 탐정이 사칭 의뢰를 받은 사실은 모른다.",
+      "true_meaning": "엘디아 정보부 간부 디브가 진본 스트르만을 고문·살해하고 국새가 숨겨진 회화를 회수하기 위해 코지로를 이용했다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "impostor_trap",
       "verification_status": "확인"
     },
     {
@@ -1251,7 +1847,7 @@
       "title_kr": "샷 바의 미녀 '아쿠아' = 엘디아 공화국 수상",
       "category": "identity",
       "holder": "shared_asymmetric",
-      "acquired_at_scene": "K_D3_01",
+      "acquired_at_scene": "K_D3_02",
       "related_character_ids": [
         "aqua_still_lloyd",
         "ross_mido"
@@ -1268,24 +1864,87 @@
       "verification_status": "확인"
     },
     {
-      "id": "clue_celia_double_agent",
-      "title_kr": "아랍어 강사 시리아 플랫의 혈연과 이중스파이 신분",
-      "category": "identity",
-      "holder": "kojiro",
-      "acquired_at_scene": "K_D2_01",
+      "id": "clue_himuro_ministry_intel",
+      "title_kr": "히무로 쿄코의 교육감시기구 기밀 — 예일 학교의 배후 목적",
+      "category": "conspiracy",
+      "holder": "marina",
+      "acquired_at_scene": "M_D3_01",
       "related_character_ids": [
-        "celia_flat",
-        "genzaburo_katsuragi",
-        "yayoi_katsuragi"
+        "kyoko_himuro",
+        "ross_mido",
+        "aqua_still_lloyd"
       ],
       "related_location_ids": [
         "loc_yale_school_grounds"
       ],
-      "perceived_meaning_kojiro": "엘디아 구 정보부 소속으로 의심되는 아랍어 강사 → 겐자부로의 딸(야요이의 이복자매)이자 이중스파이임을 알게 된다.",
-      "perceived_meaning_marina": "예일 학교에 잠입한 엘디아 관련 요주의 인물로만 경계한다.",
-      "true_meaning": "카츠라기 겐자부로가 엘디아 출국 시 남긴 이중스파이 딸로서, 부친의 의지를 이어 음모를 내부에서 저지하려 했다.",
+      "perceived_meaning_kojiro": "히무로가 교육감시기구 소속으로 예일 학교 자금줄을 감시하고 있었다는 전체 보고서를 아직 보지 못했다.",
+      "perceived_meaning_marina": "예일 외국인학교는 엘디아 자금으로 세워진 특수 거점이며, 로스=미도와 아쿠아 수상 라인의 기밀 파일이 내각조사실 DBMS에 봉인되어 있다.",
+      "true_meaning": "예일 학교는 클론 μ-101(마야코)을 육성·관찰하고 스트르만이 연구를 수행하기 위해 로스=미도가 마련한 위장 시설이었다.",
       "shared_at_scene": "C_D6_01",
-      "dramatic_irony_type": "alias_mismatch",
+      "dramatic_irony_type": "concurrent_sync",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_embassy_wiretap_signal",
+      "title_kr": "엘디아 대사관 도청기 녹취와 마리나의 경계 유도 신호",
+      "category": "system_hack",
+      "holder": "shared_asymmetric",
+      "acquired_at_scene": "K_D3_03",
+      "related_character_ids": [
+        "kojiro_amagi",
+        "marina_hojo",
+        "ross_mido"
+      ],
+      "related_location_ids": [
+        "loc_eldia_embassy"
+      ],
+      "perceived_meaning_kojiro": "로스=미도 의자 밑에 설치한 도청기로 정체불명의 여성 정부 요원이 경비 강화를 언급하며 대사를 압박하는 대화를 엿들었다.",
+      "perceived_meaning_marina": "대사관 내부 감시망이 흔들리는 틈을 타 일부러 경비 강화를 거론했으나, 누가 그 대화를 도청했는지는 알지 못한다.",
+      "true_meaning": "두 주인공은 대사관이라는 동일 무대에서 도청기 하나를 사이에 두고 서로의 존재를 모른 채 간접 공조를 펼쳤다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "concurrent_sync",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_aqua_encrypted_disk",
+      "title_kr": "아쿠아의 암호 플로피 디스크와 구 정보부 접속 키",
+      "category": "system_hack",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D3_03",
+      "related_character_ids": [
+        "aqua_still_lloyd",
+        "kyoko_himuro",
+        "ross_mido"
+      ],
+      "related_location_ids": [
+        "loc_eldia_embassy",
+        "loc_sun_mansion"
+      ],
+      "perceived_meaning_kojiro": "회수한 암호 플로피 디스크에 엘디아 구 정보부 요원 명단과 본부 DBMS 조회 인증 키가 들어 있다.",
+      "perceived_meaning_marina": "아쿠아 관련 암호 디스크가 코지로와 히무로 손에 들어가 동시 접속 작전의 열쇠가 될 줄 모른다.",
+      "true_meaning": "디스크 안의 정보는 로스=미도가 엘디아 구 정보부 부장이었음을 입증하며 12월 6일 DBMS 동시 접속 돌파의 기반이 된다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "concurrent_sync",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_kagawa_kouno_leverage",
+      "title_kr": "카가와 미스미의 사문 압박과 코노 본부장 내연 약점",
+      "category": "conspiracy",
+      "holder": "marina",
+      "acquired_at_scene": "M_D4_01",
+      "related_character_ids": [
+        "misumi_kagawa",
+        "saburo_kouno"
+      ],
+      "related_location_ids": [
+        "loc_jcia_hq"
+      ],
+      "perceived_meaning_kojiro": "내각조사실 내부 사문이나 카가와와 코노 본부장의 사적 관계를 전혀 알지 못한다.",
+      "perceived_meaning_marina": "카가와 감찰관의 집요한 적대감 배후에는 코노 본부장과의 내연 관계가 있으며, 위기 시 본부장이 유일한 돌파 방패가 된다.",
+      "true_meaning": "마리나가 코노 본부장을 인질로 삼아 사문실을 탈출할 수 있었던 결정적 심리적 약점이자 본부 돌파의 열쇠다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "impostor_trap",
       "verification_status": "확인"
     },
     {
@@ -1332,11 +1991,53 @@
       "verification_status": "확인"
     },
     {
+      "id": "clue_purin_dual_persona",
+      "title_kr": "스트르만 약물 처치에 의한 '푸딩/프리시아' 이중인격 위장",
+      "category": "identity",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D4_02",
+      "related_character_ids": [
+        "prisia_rem_crime",
+        "stollman_kou",
+        "celia_flat"
+      ],
+      "related_location_ids": [
+        "loc_warehouse_district",
+        "loc_princess_hotel"
+      ],
+      "perceived_meaning_kojiro": "프리시아 공주는 암살을 피하기 위해 스트르만 교장의 약물로 '푸딩'이라는 보호 인격을 만들어 몸을 숨기고 있었다.",
+      "perceived_meaning_marina": "프리시아 공주의 호위를 인계받지만 그녀가 창고 거리에서 '푸딩'으로 지낸 사정은 합류 때까지 알지 못한다.",
+      "true_meaning": "프리시아의 인위적 보호 인격('푸딩')은 마야코에게 강제 이식된 파멸적 인격('전 국왕/테러')과 정반대의 거울 구조를 이룬다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "dual_target_mirror",
+      "verification_status": "확인"
+    },
+    {
+      "id": "clue_engine_room_missing_seal",
+      "title_kr": "트리스탄호 기관실 — 안경 벗은 마야코와 도난당한 국새 조각",
+      "category": "murder",
+      "holder": "kojiro",
+      "acquired_at_scene": "K_D5_02",
+      "related_character_ids": [
+        "mayako_mido",
+        "kojiro_amagi"
+      ],
+      "related_location_ids": [
+        "loc_tristan_engine"
+      ],
+      "perceived_meaning_kojiro": "기관실에서 부상 치료를 받으며 마주한 안경 벗은 마야코가 떠난 직후, 주머니 속 국새의 절반이 사라졌다.",
+      "perceived_meaning_marina": "마야코가 코지로와 기관실에서 조우해 국새 절반을 탈취했다는 결정적 목격 정보를 알지 못한다.",
+      "true_meaning": "평소 마야코가 잠든 틈에 깨어난 '전 국왕 인격(테러)'이 코지로의 국새 조각을 회수해 즉위 쿠데타를 완성하려 했다.",
+      "shared_at_scene": "C_D6_01",
+      "dramatic_irony_type": "impostor_trap",
+      "verification_status": "확인"
+    },
+    {
       "id": "clue_terror_serial_murders",
       "title_kr": "암살자 '테러'의 수법과 연쇄 살인(니카이도·디브·아쿠아)",
       "category": "murder",
       "holder": "kojiro",
-      "acquired_at_scene": "K_D5_01",
+      "acquired_at_scene": "K_D5_03",
       "related_character_ids": [
         "susumu_nikaido",
         "dib",
@@ -1350,7 +2051,7 @@
       ],
       "perceived_meaning_kojiro": "구렌의 정보와 현장 추리로 스트르만 살해범(디브)과 니카이도·디브·아쿠아 연쇄 살해범('테러')이 별개의 존재임을 포착한다.",
       "perceived_meaning_marina": "일련의 살인을 엘디아 테러 조직의 공작으로 파악하며 경호 대상 마야코를 의심하지 못한다.",
-      "true_meaning": "스트르만 살해는 디브의 소행이지만, 니카이도·디브·아쿠아 연쇄 살인은 모두 전 국왕 인격이 각성한 미도 마야코(테러)의 범행이다.",
+      "true_meaning": "스트르만 살해는 디브의 소행이지만, 니카이도·디브·아쿠아·로스=미도 연쇄 살인은 모두 전 국왕 인격이 각성한 미도 마야코(테러)의 범행이다.",
       "shared_at_scene": "C_D6_01",
       "dramatic_irony_type": "impostor_trap",
       "verification_status": "확인"
@@ -1378,6 +2079,88 @@
       "verification_status": "확인"
     }
   ],
+  "clueCorrelations": [
+    {
+      "id": "CORR_01",
+      "title_kr": "양분된 엘디아 국새(国璽)의 완전한 은닉 구조",
+      "clue_a_id": "clue_painting_seal_half",
+      "clue_b_id": "clue_director_room_seal_half",
+      "irony_category": "split_artifact",
+      "unlocks_finale_hint_step": 0,
+      "synthesis_kr": "코지로가 추적한 저택·이슬람 회화의 절반과 마리나가 디렉터룸 금고에서 발견한 절반은 하나의 엘디아 국새(国璽)다! 스트르만 교장은 쿠데타 세력의 손에 왕권이 넘어가지 않도록 국새를 둘로 쪼개 두 시점의 영역에 분산 은닉했다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_02",
+      "title_kr": "거울상 소녀: 항구의 '푸딩' ⇄ 경호 대상 '미도 마야코'",
+      "clue_a_id": "clue_purin_warehouse",
+      "clue_b_id": "clue_mayako_guard",
+      "irony_category": "dual_target_mirror",
+      "unlocks_finale_hint_step": 0,
+      "synthesis_kr": "코지로가 창고 거리에서 구출한 오드아이 소녀 '푸딩'은 엘디아 정통 왕녀 프리시아이며, 마리나가 경호하던 '미도 마야코'는 그녀와 거울처럼 닮은 대칭 표적이다!",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_03",
+      "title_kr": "사라진 양부 카츠라기 겐자부로 = 보험 외판원 스즈키",
+      "clue_a_id": "clue_celia_double_agent",
+      "clue_b_id": "clue_suzuki_alias",
+      "irony_category": "alias_mismatch",
+      "unlocks_finale_hint_step": 1,
+      "synthesis_kr": "마리나 앞에 보험 외판원 '스즈키 겐자부로'로 나타난 중년 남자는 코지로가 죽은 줄 알았던 양부 카츠라기 겐자부로 본인이며, 시리아 플랫의 친아버지이자 전 엘디아 정보국 '테러' 부대장이다!",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_04",
+      "title_kr": "대사관 도청기 너머의 보이지 않는 쌍방 공조",
+      "clue_a_id": "clue_embassy_wiretap_signal",
+      "clue_b_id": "clue_embassy_diplomatic_shield",
+      "irony_category": "concurrent_sync",
+      "unlocks_finale_hint_step": 1,
+      "synthesis_kr": "코지로가 로스=미도의 의자 밑에 설치한 도청기로 들은 정부 요원이 바로 마리나였다! 두 사람은 서로의 얼굴도 모른 채 대사관의 외교 특권 장벽을 양쪽에서 동시에 흔들었다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_05",
+      "title_kr": "샷 바의 미녀 '아쿠아' = 예일 학교 배후의 엘디아 수상",
+      "clue_a_id": "clue_aqua_double_face",
+      "clue_b_id": "clue_himuro_ministry_intel",
+      "irony_category": "alias_mismatch",
+      "unlocks_finale_hint_step": 1,
+      "synthesis_kr": "코지로가 샷 바에서 술잔을 나눈 미녀 '아쿠아'는 히무로의 보고서에 오른 엘디아 공화국 수상 아쿠아=스틸=로이드이며, 로스=미도의 의붓딸로서 예일 학교 음모의 한복판에 있었다!",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_06",
+      "title_kr": "이중인격 위장('푸딩') vs 강제 인격 각성('기억 공백')",
+      "clue_a_id": "clue_purin_dual_persona",
+      "clue_b_id": "clue_yale_dorm_blackout",
+      "irony_category": "dual_target_mirror",
+      "unlocks_finale_hint_step": 1,
+      "synthesis_kr": "프리시아는 생존을 위해 스트르만의 약물로 자발적 보호 인격('푸딩')을 만들었고, 마야코는 심야 기숙사 기억 공백 때마다 강제 이식된 '전 국왕 인격'이 깨어나고 있었다!",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_07",
+      "title_kr": "기관실 도난 국새 + C 프로젝트 μ-101 = 클론 진실",
+      "clue_a_id": "clue_engine_room_missing_seal",
+      "clue_b_id": "clue_c_project_file",
+      "irony_category": "dual_target_mirror",
+      "unlocks_finale_hint_step": 2,
+      "synthesis_kr": "기관실에서 안경을 벗은 마야코가 코지로의 국새 조각을 훔쳐 간 순간과, C 프로젝트 극비 문서(유기 휴머노이드 클론 μ-101 · 전 국왕 기억 이식)가 완벽히 결합한다!",
+      "verification_status": "확인"
+    },
+    {
+      "id": "CORR_08",
+      "title_kr": "디브의 스트르만 살해 vs 테러(마야코)의 연쇄 살인 분리",
+      "clue_a_id": "clue_terror_serial_murders",
+      "clue_b_id": "clue_yale_dorm_blackout",
+      "irony_category": "impostor_trap",
+      "unlocks_finale_hint_step": 2,
+      "synthesis_kr": "스트르만 교장을 죽인 범인은 사칭범 디브지만, 니카이도·디브·아쿠아·로스=미도 연쇄 살인의 시각은 모두 미도 마야코의 기억 공백·인격 전환 시점과 정확히 일치한다!",
+      "verification_status": "확인"
+    }
+  ],
   "items": [
     {
       "id": "item_painting_photo",
@@ -1385,7 +2168,7 @@
       "name_jp": "イスラム文様の絵画資料",
       "owner": "kojiro",
       "acquired_scene": "K_D1_01",
-      "used_scene": "K_D2_01",
+      "used_scene": "K_D2_02",
       "asymmetric_significance": "코지로 수사선의 출발점. 겉으로는 분실 미술품 자료지만 실제로는 엘디아 국새 은닉 위치와 직결된다.",
       "verification_status": "확인"
     },
@@ -1400,23 +2183,33 @@
       "verification_status": "재구성안"
     },
     {
-      "id": "item_purin_pendant",
-      "name_kr": "푸딩의 소지품 (엘디아 왕가 표식)",
-      "name_jp": "プリンの所持品",
-      "owner": "kojiro",
-      "acquired_scene": "K_D1_02",
-      "used_scene": "K_D4_02",
-      "asymmetric_significance": "초기에는 정체불명 소녀의 유류품이나, 12월 6일 프리시아 공주 신원 입증의 열쇠가 된다.",
-      "verification_status": "해석"
-    },
-    {
       "id": "item_stollman_mansion_key",
       "name_kr": "스트르만 저택·서재 열쇠",
       "name_jp": "ストールマン邸の鍵",
       "owner": "kojiro",
       "acquired_scene": "K_D1_01",
+      "used_scene": "K_D1_02",
+      "asymmetric_significance": "저택 내부 조사와 회화 정밀 감정에 사용되는 코지로 전용 열쇠.",
+      "verification_status": "해석"
+    },
+    {
+      "id": "item_nikaido_organizer",
+      "name_kr": "니카이도 스스무의 전자수첩",
+      "name_jp": "二階堂の電子手帳",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_02",
       "used_scene": "K_D2_01",
-      "asymmetric_significance": "저택 내부 조사와 국새 절반 은닉 흔적 확보에 사용되는 코지로 전용 열쇠.",
+      "asymmetric_significance": "스트르만 저택에서 회수해 카츠라기 사무소에서 반환하는 전자수첩. 엘디아 뒷거래 접선 일정의 결정적 단서.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_purin_pendant",
+      "name_kr": "푸딩의 소지품 (엘디아 왕가 표식)",
+      "name_jp": "プリンの所持品",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_03",
+      "used_scene": "K_D4_02",
+      "asymmetric_significance": "초기에는 정체불명 소녀의 유류품이나, 12월 6일 프리시아 공주 신원 입증의 열쇠가 된다.",
       "verification_status": "해석"
     },
     {
@@ -1424,9 +2217,29 @@
       "name_kr": "국새(国璽) 조각 — 저택·회화 측 단서",
       "name_jp": "国璽の片割れ（邸宅・絵画側）",
       "owner": "kojiro",
-      "acquired_scene": "K_D2_01",
-      "used_scene": "C_D6_01",
-      "asymmetric_significance": "스트르만이 둘로 쪼갠 엘디아 국새의 한쪽 절반. 마리나가 확보한 학교 측 절반과 합쳐져야 진실이 드러난다.",
+      "acquired_scene": "K_D2_02",
+      "used_scene": "K_D5_02",
+      "asymmetric_significance": "스트르만이 둘로 쪼갠 엘디아 국새의 한쪽 절반. 트리스탄호 기관실에서 안경 벗은 마야코에게 몰래 탈취당한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_embassy_wiretap",
+      "name_kr": "초소형 도청기·수신기",
+      "name_jp": "超小型盗聴器・受信機",
+      "owner": "kojiro",
+      "acquired_scene": "K_D3_03",
+      "used_scene": "K_D3_03",
+      "asymmetric_significance": "코지로가 주일 엘디아 대사관 로스=미도 의자 밑에 설치해 마리나와 대사의 대화를 감청하는 장비.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_aqua_floppy_disk",
+      "name_kr": "아쿠아의 암호 플로피 디스크",
+      "name_jp": "アクアの暗号フロッピーディスク",
+      "owner": "kojiro",
+      "acquired_scene": "K_D3_03",
+      "used_scene": "K_D4_01",
+      "asymmetric_significance": "엘디아 구 정보부 기록과 DBMS 접속 인증 키가 담긴 암호화 플로피 디스크.",
       "verification_status": "확인"
     },
     {
@@ -1436,7 +2249,7 @@
       "owner": "kojiro",
       "acquired_scene": "K_D4_01",
       "used_scene": "K_D4_01",
-      "asymmetric_significance": "코지로가 마리나의 Level-7 해킹 교착(SB_06)을 깨기 위해 동시 정규 접속을 수행하는 결정적 도구.",
+      "asymmetric_significance": "코지로가 마리나의 Level-7 해킹 교착(SB_10)을 깨기 위해 동시 정규 접속을 수행하는 결정적 도구.",
       "verification_status": "확인"
     },
     {
@@ -1455,7 +2268,7 @@
       "name_jp": "内閣調査室エージェント身分証",
       "owner": "marina",
       "acquired_scene": "M_D0_01",
-      "used_scene": "M_D3_01",
+      "used_scene": "M_D3_02",
       "asymmetric_significance": "코지로는 접근 불가능한 공권력·대사관·본부 빌딩 구역 진입 권한을 부여한다.",
       "verification_status": "확인"
     },
@@ -1464,9 +2277,19 @@
       "name_kr": "예일 외국인학교 전속 강사 신분증",
       "name_jp": "エール外国人学校専従講師身分証明書",
       "owner": "marina",
-      "acquired_scene": "M_D0_02",
+      "acquired_scene": "M_D0_03",
       "used_scene": "M_D1_01",
       "asymmetric_significance": "12월 2일(Day 0) 프롤로그 완료의 증표이자 마리나 잠입 경호의 기반.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_sun_mansion_fax",
+      "name_kr": "선 맨션 403호 기밀 FAX 보고서",
+      "name_jp": "サン・マンション403号室の機密FAX",
+      "owner": "marina",
+      "acquired_scene": "M_D1_02",
+      "used_scene": "M_D3_01",
+      "asymmetric_significance": "마리나 거점(선 맨션 403호)으로 수신된 엘디아 정세·교내 감시 보고서.",
       "verification_status": "확인"
     },
     {
@@ -1474,9 +2297,9 @@
       "name_kr": "국새(国璽) 조각 — 예일 학교 디렉터룸 측",
       "name_jp": "国璽の片割れ（エール学校側）",
       "owner": "marina",
-      "acquired_scene": "M_D2_01",
+      "acquired_scene": "M_D2_02",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "예일 외국인학교 디렉터룸에 숨겨진 국새의 나머지 절반.",
+      "asymmetric_significance": "예일 외국인학교 디렉터룸 비밀 금고에 숨겨진 국새의 나머지 절반.",
       "verification_status": "확인"
     },
     {
@@ -1486,7 +2309,7 @@
       "owner": "marina",
       "acquired_scene": "M_D4_02",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "SB_06 데드락 돌파 후 획득하는 핵심 기밀. 마야코가 유기 휴머노이드 클론임을 증명하는 결정적 증거.",
+      "asymmetric_significance": "SB_10 데드락 돌파 후 획득하는 핵심 기밀. 마야코가 유기 휴머노이드 클론임을 증명하는 결정적 증거.",
       "verification_status": "확인"
     },
     {
@@ -1496,7 +2319,164 @@
       "owner": "both",
       "acquired_scene": "C_D6_01",
       "used_scene": "C_D6_01",
-      "asymmetric_significance": "해저 침몰 후 4인(코지로·마리나·마야코·프리시아)의 극한 서바이벌과 최종 추리의 긴박감을 형성하는 합류 공유 아이템.",
+      "asymmetric_significance": "해저 침몰 후 4인(코지로·마리나·마야코·프리시아)의 극한 서바이벌과 3단계 최종 추리의 긴박감을 형성하는 합류 공유 아이템.",
+      "verification_status": "확인"
+    }
+  ],
+  "finaleDeductionSteps": [
+    {
+      "step_index": 0,
+      "id": "DED_STAGE_1_PRINCESS",
+      "stage_label": "STAGE 1 / 3 · 왕위 계승자와 양분된 국새",
+      "question_kr": "코지로가 항구 창고 거리에서 구출하고 마리나가 트리스탄호로 호위한 소녀 '푸딩'의 진짜 정체(또는 이름)는 무엇인가?",
+      "placeholder_kr": "예: 프리시아 / 푸딩 / 엘디아 왕녀 / プリシア",
+      "accepted_inputs": [
+        "프리시아",
+        "프리시아렘크라임",
+        "엘디아왕녀",
+        "엘디아공주",
+        "엘디아여왕",
+        "왕위계승자",
+        "왕녀",
+        "공주",
+        "푸딩",
+        "프린세스",
+        "プリン",
+        "プリシア",
+        "プリシアレムクライム",
+        "エルディア王女",
+        "prisia",
+        "prisiaremcrime",
+        "purin",
+        "pudding",
+        "princess"
+      ],
+      "choices": [
+        {
+          "value": "프리시아",
+          "label": "프리시아 렘 크라임 (엘디아 왕녀 / 푸딩)",
+          "role": "약물로 이중인격을 만든 정통 왕위 계승자"
+        },
+        {
+          "value": "시리아 플랫",
+          "label": "시리아 플랫 (シリア)",
+          "role": "예일 학교 아랍어 강사·이중스파이"
+        },
+        {
+          "value": "아쿠아=스틸=로이드",
+          "label": "아쿠아=스틸=로이드",
+          "role": "엘디아 공화국 수상"
+        },
+        {
+          "value": "마츠노 히로미",
+          "label": "마츠노 히로미 (松乃広美)",
+          "role": "예일 학교 도서관 미술 실습생"
+        }
+      ],
+      "success_narration": "【1단계 진상 입증】 맞다! 항구의 소녀 '푸딩'은 암살을 피하기 위해 스트르만의 약물로 인격을 분리한 정통 왕위 계승자 '프리시아 렘 크라임' 공주다! 저택 회화와 예일 디렉터룸에 양분된 국새 역시 그녀를 지키기 위한 장치였다.",
+      "verification_status": "확인"
+    },
+    {
+      "step_index": 1,
+      "id": "DED_STAGE_2_CLONE",
+      "stage_label": "STAGE 2 / 3 · 극비 파일 'C 프로젝트'의 실체",
+      "question_kr": "마리나가 DBMS Level-7 데드락을 돌파해 확보한 극비 문서 'C 프로젝트(코드명 μ-101)'가 만들어 낸 비밀 존재의 정체는?",
+      "placeholder_kr": "예: 클론 / μ-101 / 복제인간 / 유기 휴머노이드",
+      "accepted_inputs": [
+        "클론",
+        "복제인간",
+        "유기휴머노이드",
+        "휴머노이드",
+        "유기휴머노이드클론",
+        "μ101",
+        "u101",
+        "mu101",
+        "뮤101",
+        "미유101",
+        "c프로젝트",
+        "인격이식",
+        "기억이식",
+        "クローン",
+        "ヒューマノイド",
+        "有機ヒューマノイド",
+        "clone",
+        "humanoid",
+        "organichumanoid"
+      ],
+      "choices": [
+        {
+          "value": "클론",
+          "label": "유기 휴머노이드 클론 (μ-101 / 전 국왕 인격 이식)",
+          "role": "프리시아 유전자로 제작된 복제 인간"
+        },
+        {
+          "value": "핵무기",
+          "label": "엘디아 전술 핵기폭 장치",
+          "role": "국새에 숨겨진 군사 기폭 코드"
+        },
+        {
+          "value": "위조화폐",
+          "label": "엘디아 국채 위조 네트워크",
+          "role": "대사관 외교 자금 세탁 계획"
+        },
+        {
+          "value": "감청위성",
+          "label": "내각조사실 불법 감청 위성",
+          "role": "코노 본부장의 기밀 도청 프로젝트"
+        }
+      ],
+      "success_narration": "【2단계 진상 입증】 정확하다! 'C 프로젝트'는 전 국왕의 부활을 위해 프리시아의 유전자로 제작한 유기 휴머노이드 클론(μ-101)에 전 국왕의 기억과 살인 인격을 이식한 금기의 계획이었다!",
+      "verification_status": "확인"
+    },
+    {
+      "step_index": 2,
+      "id": "DED_STAGE_3_MASTERMIND",
+      "stage_label": "STAGE 3 / 3 · 최종 범인 지목 (犯人入力)",
+      "question_kr": "스트르만은 디브가 살해했지만, 니카이도·디브·아쿠아·로스=미도를 차례로 제거하고 기관실에서 국새를 가져간 연쇄살인범 '테러'(클론 μ-101)의 이름은?",
+      "placeholder_kr": "예: 미도 마야코 / 御堂真弥子 / Mayako Mido",
+      "accepted_inputs": [
+        "미도마야코",
+        "마야코",
+        "御堂真弥子",
+        "みどうまやこ",
+        "真弥子",
+        "まやこ",
+        "mayakomido",
+        "mayako"
+      ],
+      "choices": [
+        {
+          "value": "미도 마야코",
+          "label": "미도 마야코 (御堂真弥子)",
+          "role": "로스=미도 대사의 딸 / 클론 μ-101"
+        },
+        {
+          "value": "로스=미도",
+          "label": "로스=미도 (ロス＝御堂)",
+          "role": "주일 엘디아 대사"
+        },
+        {
+          "value": "디브",
+          "label": "디브 (ディーブ)",
+          "role": "엘디아 정보부 간부 (스트르만 살해범)"
+        },
+        {
+          "value": "카츠라기 겐자부로",
+          "label": "카츠라기 겐자부로 / 스즈키",
+          "role": "전 엘디아 정보국 테러 대장"
+        },
+        {
+          "value": "시리아 플랫",
+          "label": "시리아 플랫 (シリア)",
+          "role": "예일 학교 아랍어 강사"
+        },
+        {
+          "value": "아쿠아=스틸=로이드",
+          "label": "아쿠아=스틸=로이드",
+          "role": "엘디아 공화국 수상"
+        }
+      ],
+      "success_narration": "【최종 진범 특정: 미도 마야코 / 御堂真弥子 (μ-101)】 모든 기억 공백, 기관실의 도난 국새, 연쇄 살인 '테러'의 정체가 하나로 일치했다!",
       "verification_status": "확인"
     }
   ],
@@ -1518,20 +2498,20 @@
         "mayakomido",
         "mayako"
       ],
-      "edition_notes": "PC-98 / SS / R 판본에서는 범인 이름 직접 입력 성공 시 도달. PS2 PLUS 판본에서는 범인 입력 파트가 생략되어 스토리 진행으로 도달.",
-      "summary": "양측 시점의 모든 단서가 하나로 결합해 연쇄살인범 '테러'의 정체가 전 국왕 인격이 이식된 미도 마야코(μ-101)임을 밝혀내고, 로스=미도의 음모가 좌절되며 생환한다.",
+      "edition_notes": "PC-98 / SS / R 판본에서는 범인 이름 직접 입력(스트르만=디브, 니카이도·디브·아쿠아·로스=마야코) 성공 시 도달. PS2 PLUS 판본에서는 범인 입력 파트가 생략되어 스토리 진행으로 도달.",
+      "summary": "양측 시점의 27개 씬·12개 동기화 장벽·22개 비대칭 단서가 하나로 결합해 연쇄살인범 '테러'의 정체가 전 국왕 인격이 이식된 미도 마야코(μ-101)임을 밝혀내고, 프리시아가 엘디아 여왕으로 즉위하며 생환한다.",
       "verification_status": "확인"
     },
     {
       "id": "END_BAD_WRONG_CULPRIT",
       "outcome_type": "bad_ending",
-      "title_kr": "실패 엔딩: 범인 지목 오답",
+      "title_kr": "실패 엔딩: 최종 추리 오답",
       "title_jp": "バッドエンド：犯人入力ミス",
       "trigger_scene": "C_D6_01",
       "culprit_character_id": "mayako_mido",
       "accepted_culprit_inputs": [],
-      "edition_notes": "PC-98 / SS / R 기준. 범인 이름 입력 시 오답을 입력하면 진엔딩 진입 불가 및 실패 메시지 출력.",
-      "summary": "진범을 특정하지 못해 해저 선창에서 진상 규명에 실패하고 게임오버 처리된다.",
+      "edition_notes": "PC-98 / SS / R 기준. 최종 추리 단계에서 오답을 입력하면 진엔딩 진입 불가 및 실패 메시지 출력.",
+      "summary": "진상과 진범을 특정하지 못해 해저 선창의 산소가 고갈되며 진실 규명에 실패한다.",
       "verification_status": "확인"
     },
     {
@@ -1542,7 +2522,7 @@
       "trigger_scene": "K_D4_02",
       "culprit_character_id": null,
       "accepted_culprit_inputs": [],
-      "edition_notes": "디브 습격(K_D4_02), 사문 탈출(M_D4_02), 트리스탄호 위기(K_D5_01/C_D6_01) 등에서 오선택 또는 필수 플래그 미비 시 즉각 종료. 전수 세부 분기는 DATA_GAPS.md(GAP-04) 참조.",
+      "edition_notes": "디브 습격(K_D4_02), 사문 탈출(M_D4_02), 트리스탄호 위기(K_D5_03/C_D6_01) 등에서 오선택 또는 필수 플래그 미비 시 즉각 종료. 전수 세부 분기는 DATA_GAPS.md(GAP-04) 참조.",
       "summary": "위험 대치 중 잘못된 커맨드를 선택해 주인공이 사망·체포되어 세이브 복귀를 요구한다.",
       "verification_status": "확인"
     },
@@ -1554,7 +2534,7 @@
       "trigger_scene": "M_D4_01",
       "culprit_character_id": null,
       "accepted_culprit_inputs": [],
-      "edition_notes": "게임오버가 아니며, SIGHT CHANGE를 통해 상대 주인공의 선행 동기화 장벽(SB_01~SB_08)을 해제하면 즉시 재개된다.",
+      "edition_notes": "게임오버가 아니며, SIGHT CHANGE를 통해 상대 주인공의 선행 동기화 장벽(SB_01~SB_12)을 해제하면 즉시 재개된다.",
       "summary": "한쪽 시점의 커맨드가 고갈되거나 보안 교착(예: DBMS Level-7)에 걸린 정상 대기 상태.",
       "verification_status": "해석"
     }
