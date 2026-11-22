@@ -28,6 +28,7 @@ const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avat
 const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
 const { createHubAgentBridge } = require('./Tools/hub-agent-bridge.cjs');
 const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler.cjs');
+const { createTripoPipelineHandler } = require('./Tools/tripo-pipeline/tripo-job-manager.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -739,6 +740,16 @@ function createServer(options = {}) {
     env: serverEnv,
     storageDir: options.shortsStorageDir,
   });
+  const tripoPipeline = createTripoPipelineHandler(root, {
+    env: serverEnv,
+    storageDir: options.tripoStorageDir,
+    apiKey: options.tripoApiKey,
+    baseUrl: options.tripoBaseUrl,
+    mode: options.tripoMode,
+    allowLoopbackMock: options.tripoAllowLoopbackMock,
+    pollIntervalLiveMs: options.tripoPollIntervalLiveMs,
+    pollIntervalSimMs: options.tripoPollIntervalSimMs,
+  });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
     buildMode: options.buildMode,
@@ -1012,12 +1023,20 @@ function createServer(options = {}) {
         }
         if (await shortsPipeline(req, res, parsedUrl)) return;
       }
+      if (routePath === '/api/tripo' || routePath.startsWith('/api/tripo/')) {
+        if ((routePath === '/api/tripo/jobs' || /^\/api\/tripo\/assets\/[^/]+\/(rig|retarget|convert)$/.test(routePath))
+            && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
+          return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        }
+        if (await tripoPipeline(req, res, parsedUrl)) return;
+      }
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
       const agentChat = routePath === '/api/platform-addon/agent-chat';
       const remoteControl = routePath === '/api/platform-addon/remote-control';
       const avatarAddon = routePath === '/api/platform-addon/avatar';
       const blenderAddon = routePath === '/api/platform-addon/blender';
+      const tripoAddon = routePath === '/api/platform-addon/tripo';
       const assetStoreAddon = routePath === '/api/platform-addon/asset-store';
       const avatarAssetRoute = routePath.match(/^\/api\/platform-addon\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
       if (blenderAddon && req.method === 'GET') {
@@ -1028,6 +1047,16 @@ function createServer(options = {}) {
           return json(200, { ok: true, files: Object.fromEntries(entries) });
         } catch {
           return json(503, { ok: false, error: 'PlayForge Blender add-on unavailable' });
+        }
+      }
+      if (tripoAddon && req.method === 'GET') {
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'tripo_dock.gd', 'glb_importer.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_tripo', name), 'utf8')]));
+          return json(200, { ok: true, files: Object.fromEntries(entries) });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Tripo add-on unavailable' });
         }
       }
       if (assetStoreAddon && req.method === 'GET') {
@@ -1399,6 +1428,7 @@ function createServer(options = {}) {
     internalApi?.close();
     agentChatProvider?.close();
     blenderPipeline?.close();
+    tripoPipeline?.close();
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();

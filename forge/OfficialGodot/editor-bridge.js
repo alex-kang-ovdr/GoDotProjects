@@ -46,6 +46,7 @@
   }
   const agentFrame = document.getElementById('agent-dock-frame');
   const blenderDrawer = document.getElementById('blender-drawer');
+  const tripoDrawer = document.getElementById('tripo-drawer');
   const portingDrawer = document.getElementById('porting-drawer');
   const shortsDrawer = document.getElementById('shorts-drawer');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
@@ -473,6 +474,7 @@
   function toggleBlenderDrawer(forceOpen = null) {
     if (!blenderDrawer) return;
     const nextOpen = forceOpen === null ? blenderDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && tripoDrawer) tripoDrawer.hidden = true;
     if (nextOpen && portingDrawer) portingDrawer.hidden = true;
     if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
     if (nextOpen && !blenderDrawer.getAttribute('src')) {
@@ -480,10 +482,22 @@
     }
     blenderDrawer.hidden = !nextOpen;
   }
+  function toggleTripoDrawer(forceOpen = null) {
+    if (!tripoDrawer) return;
+    const nextOpen = forceOpen === null ? tripoDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && portingDrawer) portingDrawer.hidden = true;
+    if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
+    if (nextOpen && !tripoDrawer.getAttribute('src')) {
+      tripoDrawer.src = forgePath(`/OfficialGodot/tripo-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
+    }
+    tripoDrawer.hidden = !nextOpen;
+  }
   function togglePortingDrawer(forceOpen = null) {
     if (!portingDrawer) return;
     const nextOpen = forceOpen === null ? portingDrawer.hidden : Boolean(forceOpen);
     if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && tripoDrawer) tripoDrawer.hidden = true;
     if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
     if (nextOpen && !portingDrawer.getAttribute('src')) {
       portingDrawer.src = forgePath(`/OfficialGodot/porting-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
@@ -494,6 +508,7 @@
     if (!shortsDrawer) return;
     const nextOpen = forceOpen === null ? shortsDrawer.hidden : Boolean(forceOpen);
     if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && tripoDrawer) tripoDrawer.hidden = true;
     if (nextOpen && portingDrawer) portingDrawer.hidden = true;
     if (nextOpen && !shortsDrawer.getAttribute('src')) {
       const pname = encodeURIComponent(projectLabel?.textContent || '');
@@ -521,6 +536,11 @@
       blenderDrawer.contentWindow.postMessage({ source: 'playforge-godot-editor', type: 'blender-placed', detail: event.detail || {} }, origin);
     }
   });
+  window.addEventListener('playforge-tripo-placed', event => {
+    if (tripoDrawer?.contentWindow) {
+      tripoDrawer.contentWindow.postMessage({ source: 'playforge-godot-editor', type: 'tripo-placed', detail: event.detail || {} }, origin);
+    }
+  });
   actionButtons.forEach(button => button.addEventListener('click', event => {
     const action = button.dataset.action;
     if (action === 'pie-avatar') {
@@ -529,6 +549,10 @@
     }
     if (action === 'blender') {
       toggleBlenderDrawer();
+      return;
+    }
+    if (action === 'tripo') {
+      toggleTripoDrawer();
       return;
     }
     if (action === 'porting') {
@@ -794,7 +818,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null, blenderFiles = null, assetStoreBundle = null) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null, blenderFiles = null, assetStoreBundle = null, tripoFiles = null) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -803,7 +827,7 @@
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
       const lowerFile = file.replace(/^(\.\/)+/, '').toLowerCase();
-      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar|blender|asset_store)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar|blender|tripo|asset_store)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
           lowerFile.startsWith('.playforge-import/') || lowerFile.startsWith('.playforge-store/') || lowerFile === '.playforge-store.json' || lowerFile === '.playforge-store-config.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
@@ -834,6 +858,9 @@
     }
     if (blenderFiles) {
       pluginPaths.push('res://addons/playforge_blender/plugin.cfg');
+    }
+    if (tripoFiles) {
+      pluginPaths.push('res://addons/playforge_tripo/plugin.cfg');
     }
     if (assetStoreBundle && assetStoreBundle.files) {
       pluginPaths.push('res://addons/playforge_asset_store/plugin.cfg');
@@ -875,6 +902,9 @@
     }
     if (blenderFiles) {
       mountedAddons.push(['playforge_blender', blenderFiles]);
+    }
+    if (tripoFiles) {
+      mountedAddons.push(['playforge_tripo', tripoFiles]);
     }
     if (assetStoreBundle && assetStoreBundle.files) {
       mountedAddons.push(['playforge_asset_store', assetStoreBundle.files]);
@@ -1113,6 +1143,14 @@
       return null;
     }
   }
+  async function fetchTripoAddon() {
+    try {
+      const data = await fetchEditorAddon('tripo', ['plugin.cfg', 'plugin.gd', 'tripo_dock.gd', 'glb_importer.gd']);
+      return data.files;
+    } catch {
+      return null;
+    }
+  }
   async function fetchAssetStoreAddon() {
     try {
       const response = await fetch(forgePath('/api/platform-addon/asset-store'), { credentials: 'same-origin', cache: 'no-store' });
@@ -1134,16 +1172,17 @@
       status.textContent = 'Fetching project files';
       setLoading('프로젝트 파일 불러오는 중…', '프로젝트와 에디터 애드온을 가져오고 있습니다.', 8);
       await ensureCsrfToken();
-      const [project, addonFiles, chat, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle] = await Promise.all([fetchProject(), fetchAddon(),
+      const [project, addonFiles, chat, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle, tripoFiles] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
           ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd']),
         fetchRemoteControlAddon(),
         fetchAvatarAddon(),
         fetchBlenderAddon(),
-        fetchAssetStoreAddon()]);
+        fetchAssetStoreAddon(),
+        fetchTripoAddon()]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle, tripoFiles);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       setLoading('Godot 웹 에디터 다운로드 중…', 'WASM 엔진을 받아오고 있습니다 (최초 1회 이후 브라우저 캐시 적용).', 12);
@@ -1245,6 +1284,35 @@
         if (typeof window.__playforgeBlenderPlaceAsset === 'function') {
           window.__playforgeBlenderPlaceAsset(JSON.stringify(event.data.manifest));
           showNotice(`AI 3D 에셋 '${event.data.manifest.name || 'Prop'}' 임포트 및 씬 배치를 요청했습니다.`);
+        } else {
+          showNotice('Godot 웹 에디터가 완전히 로드된 뒤 배치해 주세요.');
+        }
+        return;
+      }
+    }
+    if (event.origin === origin && event.data?.source === 'playforge-tripo-studio') {
+      if (event.data.type === 'close') {
+        toggleTripoDrawer(false);
+        return;
+      }
+      if (event.data.type === 'capture-frame') {
+        const result = captureEditorCanvasFrame();
+        if (tripoDrawer?.contentWindow) {
+          tripoDrawer.contentWindow.postMessage({
+            source: 'playforge-godot-editor',
+            type: 'captured-frame',
+            ...result,
+            projectId,
+            projectName: projectLabel?.textContent || ''
+          }, origin);
+        }
+        if (result.ok) showNotice(`'${result.sourceLabel}' 캡처를 Tripo 3D 스튜디오로 보냈습니다.`);
+        return;
+      }
+      if (event.data.type === 'place-asset' && event.data.manifest) {
+        if (typeof window.__playforgeTripoPlaceAsset === 'function') {
+          window.__playforgeTripoPlaceAsset(JSON.stringify(event.data.manifest));
+          showNotice(`Tripo 3D 에셋 '${event.data.manifest.name || 'Model'}' 임포트 및 씬 배치를 요청했습니다.`);
         } else {
           showNotice('Godot 웹 에디터가 완전히 로드된 뒤 배치해 주세요.');
         }

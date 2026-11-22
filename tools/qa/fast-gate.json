@@ -34,6 +34,7 @@
     "forge/Tests/regression.multiplayer-hardening.test.cjs",
     "forge/Tests/release-manifest.test.cjs",
     "forge/Tests/submission-drive-archive.test.cjs",
+    "forge/Tests/playforge_tripo/tripo-pipeline.test.cjs",
     "forge/Tests/user-reported-regressions.test.cjs",
     "deploy/cloudrun/**/*.test.mjs",
     "tests/deployment/*.test.mjs",

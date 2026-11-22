@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d111a">
+  <title>PlayForge × Tripo3D Studio (API v3 PoC)</title>
+  <link rel="icon" href="vendor/favicon.png" type="image/png">
+  <link rel="stylesheet" href="tripo-studio.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-group">
+      <a id="back-to-forge" class="pill-btn ghost" href="./">← PlayForge</a>
+      <button id="close-drawer-btn" class="pill-btn ghost" type="button" hidden>✕ 닫기</button>
+      <div class="brand-title">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <strong>Tripo3D Studio</strong>
+        <span class="exp-badge">API v3 PoC · 실험</span>
+      </div>
+    </div>
+    <div class="header-status">
+      <span id="mode-pill" class="status-pill sim" title="현재 실행 모드">SIMULATION</span>
+      <span id="balance-pill" class="status-pill credit" title="Tripo 크레딧 잔액">🪙 -- cr</span>
+      <button id="open-config-btn" class="pill-btn accent" type="button">🔑 API 키 / 모드 설정</button>
+    </div>
+  </header>
+
+  <main class="studio-layout">
+    <!-- Left Panel: Generation Controls -->
+    <section class="panel control-panel" aria-label="Tripo 3D 생성 설정">
+      <div class="tab-bar" role="tablist" aria-label="생성 입력 방식">
+        <button type="button" class="tab-btn active" data-gen-tab="text_to_model" role="tab" aria-selected="true">✨ Text → 3D</button>
+        <button type="button" class="tab-btn" data-gen-tab="image_to_model" role="tab" aria-selected="false">🖼️ Image → 3D</button>
+        <button type="button" class="tab-btn" data-gen-tab="multiview_to_model" role="tab" aria-selected="false">🧊 Multiview</button>
+      </div>
+
+      <!-- Text to Model Tab -->
+      <div id="tab-text_to_model" class="tab-pane active">
+        <label class="field-label" for="prompt-input">3D 모델 프롬프트 (한국어 / English · 최대 1024자)</label>
+        <div id="preset-chips" class="chip-row" aria-label="게임 에셋 프리셋"></div>
+        <textarea id="prompt-input" rows="4" maxlength="1024" placeholder="예: Stylized fantasy paladin knight in blue and gold armor with glowing crest, PBR textures">Stylized fantasy paladin knight in blue and gold armor with glowing crest, game-ready character, clean T-pose, PBR textures</textarea>
+
+        <label class="field-label" for="negative-prompt-input">제외 요소 (Negative Prompt · 선택)</label>
+        <input id="negative-prompt-input" type="text" maxlength="255" placeholder="예: blurry, floating parts, broken limbs" value="blurry, floating parts, broken limbs">
+      </div>
+
+      <!-- Image to Model Tab -->
+      <div id="tab-image_to_model" class="tab-pane" hidden>
+        <label class="field-label">기준 컨셉 이미지 (PNG / JPEG / WebP · 최대 10MB)</label>
+        <div id="single-dropzone" class="dropzone" tabindex="0" role="button" aria-label="이미지 선택 또는 드래그">
+          <input id="single-file-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <img id="single-preview-img" class="drop-preview" alt="업로드 미리보기" hidden>
+          <div id="single-drop-hint" class="drop-hint">
+            <span class="drop-icon">🖼️</span>
+            <strong>이미지를 클릭하거나 끌어다 놓으세요</strong>
+            <small>Tripo <code>POST /v3/files</code> 업로드 후 <code>image-to-model</code> 실행</small>
+          </div>
+        </div>
+        <div class="inline-actions">
+          <button id="capture-godot-btn" class="pill-btn ghost small" type="button" hidden>📷 Godot 뷰포트 캡처</button>
+          <button id="clear-single-img-btn" class="pill-btn ghost small" type="button" hidden>지우기</button>
+          <span id="single-upload-status" class="muted-note"></span>
+        </div>
+        <label class="field-label" for="image-hint-input">모델 이름 / 설명 힌트 (선택)</label>
+        <input id="image-hint-input" type="text" maxlength="120" placeholder="예: CyberDrone_Concept">
+      </div>
+
+      <!-- Multiview to Model Tab -->
+      <div id="tab-multiview_to_model" class="tab-pane" hidden>
+        <label class="field-label">다각도 이미지 업로드 (최소 2장 · 정면/좌/후/우)</label>
+        <div class="multiview-grid">
+          <div class="mv-slot" data-mv-idx="0">
+            <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <img class="mv-img" alt="정면" hidden>
+            <span class="mv-label">정면 (Front)</span>
+          </div>
+          <div class="mv-slot" data-mv-idx="1">
+            <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <img class="mv-img" alt="좌측" hidden>
+            <span class="mv-label">좌측 (Left)</span>
+          </div>
+          <div class="mv-slot" data-mv-idx="2">
+            <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <img class="mv-img" alt="후면" hidden>
+            <span class="mv-label">후면 (Back)</span>
+          </div>
+          <div class="mv-slot" data-mv-idx="3">
+            <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <img class="mv-img" alt="우측" hidden>
+            <span class="mv-label">우측 (Right)</span>
+          </div>
+        </div>
+        <label class="field-label" for="mv-hint-input">모델 이름 힌트 (선택)</label>
+        <input id="mv-hint-input" type="text" maxlength="120" placeholder="예: HeroCharacter_4View">
+      </div>
+
+      <!-- Shared Tripo V3 Options -->
+      <div class="options-card">
+        <div class="options-head">
+          <strong>Tripo v3 모델 · 메시 파라미터</strong>
+          <span id="credit-estimate-badge" class="mini-badge">예상 ~20 cr</span>
+        </div>
+        <div class="form-grid-2">
+          <div>
+            <label class="field-label" for="model-select">Tripo 모델 버전</label>
+            <select id="model-select"></select>
+          </div>
+          <div>
+            <label class="field-label" for="tex-quality-select">텍스처 품질</label>
+            <select id="tex-quality-select">
+              <option value="fast">fast (빠름)</option>
+              <option value="standard" selected>standard (표준)</option>
+              <option value="detailed">detailed (고화질)</option>
+              <option value="extreme">extreme (초고화질)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div>
+            <label class="field-label" for="face-limit-select">폴리곤 상한 (face_limit)</label>
+            <select id="face-limit-select">
+              <option value="">자동 (모델 기본)</option>
+              <option value="5000">5,000 (모바일 최적)</option>
+              <option value="15000">15,000 (웹 게임 권장)</option>
+              <option value="30000">30,000 (데스크톱)</option>
+              <option value="50000">50,000 (고디테일)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="seed-input">시드 (model_seed · 선택)</label>
+            <input id="seed-input" type="number" min="0" max="9999999" placeholder="랜덤">
+          </div>
+        </div>
+        <div class="toggle-row">
+          <label class="check-item"><input id="opt-texture" type="checkbox" checked> 텍스처</label>
+          <label class="check-item"><input id="opt-pbr" type="checkbox" checked> PBR 맵</label>
+          <label class="check-item"><input id="opt-quad" type="checkbox"> Quad 토폴로지</label>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button id="generate-btn" class="primary-btn" type="button">🚀 Tripo 3D 모델 생성</button>
+        <button id="cancel-job-btn" class="pill-btn danger" type="button" hidden>중단</button>
+      </div>
+
+      <div id="progress-wrap" class="progress-wrap" hidden>
+        <div class="progress-meta">
+          <span id="progress-stage">작업 제출 중…</span>
+          <strong id="progress-pct">0%</strong>
+        </div>
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+      </div>
+
+      <div id="status-banner" class="status-banner" role="status" aria-live="polite">
+        준비 완료 · API 키 없이도 시뮬레이션 모드로 전체 생성·리깅·Godot 임포트 흐름을 즉시 검증할 수 있습니다.
+      </div>
+    </section>
+
+    <!-- Right Panel: 3D Viewport, Post-Processing & Gallery/Wire Inspector -->
+    <section class="panel viewport-panel" aria-label="3D 프리뷰 및 후처리 워크벤치">
+      <div class="viewport-header">
+        <div>
+          <h1 id="viewport-title">3D GLB 뷰포트</h1>
+          <div id="metrics-badges" class="metrics-badges"></div>
+        </div>
+        <div class="viewport-tools">
+          <button id="toggle-spin-btn" class="pill-btn ghost small" type="button">회전 ON</button>
+          <button id="toggle-wire-btn" class="pill-btn ghost small" type="button">와이어</button>
+          <button id="reset-cam-btn" class="pill-btn ghost small" type="button">카메라 초기화</button>
+        </div>
+      </div>
+
+      <div class="canvas-stage">
+        <canvas id="glb-canvas"></canvas>
+        <div id="canvas-empty" class="canvas-empty">
+          <span class="empty-cube">🧊</span>
+          <strong>생성된 Tripo 3D 모델이 여기에 실시간 렌더링됩니다</strong>
+          <p>glTF 2.0 (.glb) PBR 머티리얼 · 내장 알베도 텍스처 · 스켈레톤/애니메이션 분석 지원</p>
+        </div>
+      </div>
+
+      <!-- Post-Processing + Godot Placement Controls -->
+      <div class="action-strip">
+        <div class="post-group">
+          <span class="group-tag">Tripo 후처리 파이프라인</span>
+          <div class="post-controls">
+            <select id="rig-type-select" aria-label="리깅 타입">
+              <option value="biped">인간형 (biped)</option>
+              <option value="quadruped">4족 (quadruped)</option>
+              <option value="hexapod">6족 (hexapod)</option>
+              <option value="avian">조류 (avian)</option>
+            </select>
+            <button id="rig-btn" class="pill-btn secondary small" type="button" disabled>🦴 Auto-Rig</button>
+
+            <select id="anim-preset-select" aria-label="애니메이션 프리셋"></select>
+            <button id="retarget-btn" class="pill-btn secondary small" type="button" disabled>🏃 애니 적용</button>
+
+            <select id="opt-face-select" aria-label="최적화 폴리곤">
+              <option value="5000">5K 모바일</option>
+              <option value="10000" selected>10K 웹</option>
+              <option value="20000">20K 데스크톱</option>
+            </select>
+            <button id="convert-btn" class="pill-btn secondary small" type="button" disabled>⚡ 최적화</button>
+          </div>
+        </div>
+
+        <div class="godot-group">
+          <span class="group-tag">Godot 4.7.2 즉시 임포트</span>
+          <div class="godot-controls">
+            <label class="coord-in">X <input id="pos-x" type="number" step="0.5" value="0"></label>
+            <label class="coord-in">Y <input id="pos-y" type="number" step="0.5" value="0"></label>
+            <label class="coord-in">Z <input id="pos-z" type="number" step="0.5" value="0"></label>
+            <button id="place-godot-btn" class="pill-btn primary small" type="button" disabled>🎯 Godot 씬 배치</button>
+            <a id="download-glb-btn" class="pill-btn ghost small disabled-link" href="#" download>⬇️ GLB</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Tabs: Asset Gallery & Wire Inspector -->
+      <div class="bottom-section">
+        <div class="bottom-tabs">
+          <button type="button" class="btab-btn active" data-bottom-tab="gallery">📦 에셋 갤러리 (<span id="asset-count">0</span>)</button>
+          <button type="button" class="btab-btn" data-bottom-tab="inspector">📡 Tripo API v3 Wire Inspector</button>
+          <button id="refresh-all-btn" class="pill-btn ghost small push-right" type="button">↻ 새로고침</button>
+        </div>
+
+        <div id="bottom-gallery" class="bottom-pane active">
+          <div id="asset-list" class="asset-grid"></div>
+        </div>
+
+        <div id="bottom-inspector" class="bottom-pane" hidden>
+          <pre id="inspector-output" class="inspector-pre">Tripo API v3 통신 내역이 여기 기록됩니다.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- API Key & Mode Config Modal -->
+  <div id="config-modal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="config-modal-title">
+      <div class="modal-head">
+        <h2 id="config-modal-title">🔑 Tripo3D API v3 연결 설정</h2>
+        <button id="close-config-btn" class="pill-btn ghost small" type="button">✕</button>
+      </div>
+      <p class="modal-desc">
+        공식 <strong>Tripo3D OpenAPI v3</strong> (<code>https://openapi.tripo3d.ai/v3</code>) 키(<code>tsk_...</code>)를 입력하면 실제 클라우드 3D 모델링이 실행됩니다. 키는 로컬 서버 메모리에만 저장되며 브라우저로 다시 노출되지 않습니다.
+      </p>
+      <div class="modal-field">
+        <label class="field-label" for="cfg-mode">실행 모드</label>
+        <select id="cfg-mode">
+          <option value="simulation">Simulation (시뮬레이션 · 크레딧 0 소모 · 즉시 검증)</option>
+          <option value="live">Live (실제 Tripo3D API v3 호출)</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="field-label" for="cfg-region">리전 엔드포인트</label>
+        <select id="cfg-region">
+          <option value="global">Global (https://openapi.tripo3d.ai/v3)</option>
+          <option value="cn">China Mainland (https://openapi.tripo3d.com/v3)</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="field-label" for="cfg-apikey">Tripo API Key (<code>tsk_...</code>) <span id="cfg-key-masked" class="muted-note"></span></label>
+        <input id="cfg-apikey" type="password" autocomplete="off" placeholder="tsk_... (변경 시에만 입력)">
+      </div>
+      <div id="cfg-feedback" class="cfg-feedback" hidden></div>
+      <div class="modal-actions">
+        <button id="cfg-clear-key-btn" class="pill-btn danger small" type="button">키 삭제</button>
+        <button id="cfg-save-btn" class="pill-btn primary" type="button">저장 및 연결 확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tripo-studio.js"></script>
+</body>
+</html>
