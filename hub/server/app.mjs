@@ -28,6 +28,7 @@ import { createProgression, mergeGuestProgression } from './ssot/progression.mjs
 import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
 import { createSocial } from './social/routes.mjs';
 import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
+import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -193,6 +194,7 @@ export function createApp(input, dependencies = {}) {
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
   const ugcMultiplayer = createUgcMultiplayer({ now });
   const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
@@ -371,6 +373,7 @@ export function createApp(input, dependencies = {}) {
     if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
     if ((path.endsWith('/progression') || path.endsWith('/stats') || path.includes('/achievements/')) && await progression.publicRoute(req,res,url)) return;
     if (path.startsWith('/api/social/') && await webSocial.route(req,res,url)) return;
+    if ((path === '/api/qa/targets' || path === '/api/qa/runs') && req.method === 'GET' && await gamerQaHub.publicRoute(req, res, url, sessionFor(req, 'public'))) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -408,6 +411,7 @@ export function createApp(input, dependencies = {}) {
       const next=newSession(res,'public',null,null,false,{trafficType:'qa',qaRunId:uid()});revokeSession(s);
       json(res,201,profile(next));return;
     }
+    if (path === '/api/qa/runs' && req.method === 'POST' && await gamerQaHub.publicRoute(req, res, url, s)) return;
     if (path === '/api/play-sessions' && req.method === 'POST') {
       assertNotPlatformSanctioned(s.principal_id);
       rate(`play:${s.id_hash}`,60,60000);
