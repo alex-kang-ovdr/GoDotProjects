@@ -28,6 +28,7 @@
   const nativeGameFrame = document.getElementById('native-game-frame');
   const agentFrame = document.getElementById('agent-dock-frame');
   const blenderDrawer = document.getElementById('blender-drawer');
+  const portingDrawer = document.getElementById('porting-drawer');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
@@ -398,10 +399,20 @@
   function toggleBlenderDrawer(forceOpen = null) {
     if (!blenderDrawer) return;
     const nextOpen = forceOpen === null ? blenderDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && portingDrawer) portingDrawer.hidden = true;
     if (nextOpen && !blenderDrawer.getAttribute('src')) {
       blenderDrawer.src = forgePath(`/OfficialGodot/blender-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
     }
     blenderDrawer.hidden = !nextOpen;
+  }
+  function togglePortingDrawer(forceOpen = null) {
+    if (!portingDrawer) return;
+    const nextOpen = forceOpen === null ? portingDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && !portingDrawer.getAttribute('src')) {
+      portingDrawer.src = forgePath(`/OfficialGodot/porting-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
+    }
+    portingDrawer.hidden = !nextOpen;
   }
   window.addEventListener('playforge-blender-placed', event => {
     if (blenderDrawer?.contentWindow) {
@@ -412,6 +423,10 @@
     const action = button.dataset.action;
     if (action === 'blender') {
       toggleBlenderDrawer();
+      return;
+    }
+    if (action === 'porting') {
+      togglePortingDrawer();
       return;
     }
     notify('activity', { kind: 'step', clickLabel: ({home:'내 프로젝트',versions:'버전 기록',publish:'배포',collaboration:'협업 현황'})[action] || button.textContent, x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight });
@@ -1025,6 +1040,16 @@
     }
   }
   window.addEventListener('message', (event) => {
+    if (event.origin === origin && event.data?.source === 'playforge-porting-studio') {
+      if (event.data.type === 'close') {
+        togglePortingDrawer(false);
+        return;
+      }
+      if (event.data.type === 'ported-project' && event.data.projectId) {
+        showNotice(`AI 프로젝트 포팅이 완료되었습니다 (${event.data.projectName || event.data.projectId}).`);
+        return;
+      }
+    }
     if (event.origin === origin && event.data?.source === 'playforge-blender-studio') {
       if (event.data.type === 'close') {
         toggleBlenderDrawer(false);

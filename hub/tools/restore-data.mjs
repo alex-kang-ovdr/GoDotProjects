@@ -105,7 +105,10 @@ const OPTIONAL_TABLES={
   social_reports:['id','reporter_id','target_type','target_id','reason','created_at'],
   social_party_launches:['launch_id','party_id','game_id','room_code','match_room_id','launched_by','status','created_at'],
   social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at'],
-  email_credentials:['user_id','email','password_hash','salt','failed_attempts','locked_until','created_at','updated_at']
+  email_credentials:['user_id','email','password_hash','salt','failed_attempts','locked_until','created_at','updated_at'],
+  hub_agent_settings:['id','default_provider','default_model','tokens_per_coin','input_weight_bps','cached_weight_bps','output_weight_bps','pro_multiplier_bps','min_coins_per_call','free_trial_tokens','pro_weekly_tokens','max_hold_coins','updated_at'],
+  hub_agent_quotas:['principal_id','free_trial_used','pro_week_key','pro_week_used','updated_at'],
+  hub_agent_usage_logs:['id','principal_id','feature','auth_mode','plan_tier','provider','model','input_tokens','cached_tokens','output_tokens','thinking_tokens','total_tokens','weighted_tokens','quota_tokens_used','overage_tokens','charged_coins','hold_id','usage_record_id','journal_entry_id','status','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

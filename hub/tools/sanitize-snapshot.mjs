@@ -118,7 +118,11 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
   social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at'],
   // Hub-SSO email credentials (sensitive: dropped unconditionally)
-  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at']
+  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at'],
+  // Hub-Agent pricing settings & token/PlayCoin usage logs
+  hub_agent_settings: ['id', 'default_provider', 'default_model', 'tokens_per_coin', 'input_weight_bps', 'cached_weight_bps', 'output_weight_bps', 'pro_multiplier_bps', 'min_coins_per_call', 'free_trial_tokens', 'pro_weekly_tokens', 'max_hold_coins', 'updated_at'],
+  hub_agent_quotas: ['principal_id', 'free_trial_used', 'pro_week_key', 'pro_week_used', 'updated_at'],
+  hub_agent_usage_logs: ['id', 'principal_id', 'feature', 'auth_mode', 'plan_tier', 'provider', 'model', 'input_tokens', 'cached_tokens', 'output_tokens', 'thinking_tokens', 'total_tokens', 'weighted_tokens', 'quota_tokens_used', 'overage_tokens', 'charged_coins', 'hold_id', 'usage_record_id', 'journal_entry_id', 'status', 'created_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -132,6 +136,9 @@ export const DROP_TABLES = Object.freeze([
   'hub_publish_idempotency',
   'cdn_idempotency',
   'merge_requests',
+  // Hub-Agent live usage & quota counters
+  'hub_agent_usage_logs',
+  'hub_agent_quotas',
   // Avatar payment ledger & idempotency
   'avatar_wallet_ledger',
   'avatar_purchase_idempotency',
