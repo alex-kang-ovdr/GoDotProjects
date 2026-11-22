@@ -474,6 +474,7 @@ export function createStoreApp(options = {}) {
     webDir = DEFAULT_WEB_DIR,
     serveStatic = true,
     catalog = SAMPLE_CATALOG,
+    ownCatalog = false,
     publisherDrafts = PUBLISHER_DRAFTS,
     customArtifacts = null,
     clock = () => new Date().toISOString(),
@@ -489,7 +490,7 @@ export function createStoreApp(options = {}) {
   const configuredOrigins = parseAllowedOrigins(allowedOrigins);
   const configuredOriginSet = configuredOrigins ? new Set(configuredOrigins) : null;
 
-  const catalogList = [...catalog].map((item) => structuredClone(item));
+  const catalogList = ownCatalog ? [...catalog] : [...catalog].map((item) => structuredClone(item));
   for (const item of catalogList) {
     const errors = validateReleaseContract(item);
     if (errors.length > 0) {

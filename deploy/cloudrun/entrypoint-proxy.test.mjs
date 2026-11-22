@@ -1,12 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import zlib from 'node:zlib';
 import {
   allowCloudRunSameHostOrigin,
   rewriteProxyLocation,
   buildUpstreamRequestOptions,
   proxyRequest,
+  attachEdgeCompressionAndEtag,
 } from './hub/entrypoint.mjs';
+import { loadMergedCatalog } from '../../store/server/index.mjs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { createServer: createForgeServer } = require('../../forge/server.cjs');
 
 test('buildUpstreamRequestOptions uses HTTPS + SNI servername for https upstreams and strips spoofed headers', () => {
   const { isHttps, options } = buildUpstreamRequestOptions(
@@ -117,4 +127,123 @@ test('allowCloudRunSameHostOrigin permits matching *.run.app same-host origin an
     {},
   );
   assert.equal(deniedLocal, false);
+});
+
+test('attachEdgeCompressionAndEtag strips Transfer-Encoding on chunked proxied JSON and serves gzip + 304 ETag', async t => {
+  const payload = JSON.stringify({
+    ok: true,
+    templates: Array.from({ length: 40 }, (_, i) => ({ id: `tpl-${i}`, title: `Template ${i}`, summary: 'Shared runtime template entry' })),
+  });
+  const upstream = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.write(payload.slice(0, 500));
+    res.end(payload.slice(500));
+  });
+  await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
+  const upPort = upstream.address().port;
+
+  const proxy = http.createServer((req, res) => {
+    const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+    attachEdgeCompressionAndEtag(req, res, pathname);
+    proxyRequest(req, res, `http://127.0.0.1:${upPort}`, '/forge');
+  });
+  await new Promise(resolve => proxy.listen(0, '127.0.0.1', resolve));
+  const proxyPort = proxy.address().port;
+
+  t.after(async () => {
+    await new Promise(resolve => proxy.close(resolve));
+    await new Promise(resolve => upstream.close(resolve));
+  });
+
+  const rawGet = (headers = {}) => new Promise((resolve, reject) => {
+    const req = http.request(`http://127.0.0.1:${proxyPort}/forge/api/platform/templates`, { method: 'GET', headers }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+
+  const r1 = await rawGet({ 'Accept-Encoding': 'gzip' });
+  assert.equal(r1.status, 200);
+  assert.equal(r1.headers['content-encoding'], 'gzip');
+  assert.equal(r1.headers['transfer-encoding'], undefined, 'Transfer-Encoding must be stripped when Content-Length is set');
+  assert.equal(Number(r1.headers['content-length']), r1.body.length);
+  assert.ok(r1.body.length < Buffer.byteLength(payload));
+  assert.equal(zlib.gunzipSync(r1.body).toString('utf8'), payload);
+  assert.ok(r1.headers.etag);
+
+  const r2 = await rawGet({ 'Accept-Encoding': 'gzip', 'If-None-Match': r1.headers.etag });
+  assert.equal(r2.status, 304);
+  assert.equal(r2.body.length, 0);
+});
+
+test('loadMergedCatalog reads precompressed collected-catalog.json.gz when uncompressed JSON is absent', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'store-gz-catalog-'));
+  try {
+    fs.mkdirSync(path.join(tmpDir, 'data'), { recursive: true });
+    const gz = zlib.gzipSync(JSON.stringify({ items: [] }));
+    fs.writeFileSync(path.join(tmpDir, 'data', 'collected-catalog.json.gz'), gz);
+    const catalog = loadMergedCatalog(tmpDir);
+    assert.ok(Array.isArray(catalog) && catalog.length > 0);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('forge/server.cjs serves precompressed-only vendor-release (.br/.gz + wasm-meta.json) with identity fallback', async t => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-precomp-'));
+  t.after(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
+
+  const jsRaw = Buffer.from('console.log("godot-editor-release");'.repeat(20), 'utf8');
+  const wasmRaw = Buffer.concat([Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]), Buffer.alloc(2048, 0x42)]);
+  fs.writeFileSync(path.join(tmpDir, 'godot.editor.js.gz'), zlib.gzipSync(jsRaw));
+  fs.writeFileSync(path.join(tmpDir, 'godot.editor.js.br'), zlib.brotliCompressSync(jsRaw));
+  fs.writeFileSync(path.join(tmpDir, 'godot.editor.wasm.gz'), zlib.gzipSync(wasmRaw));
+  fs.writeFileSync(path.join(tmpDir, 'godot.editor.wasm.br'), zlib.brotliCompressSync(wasmRaw));
+  const tag = `${wasmRaw.length}-deadbeef`;
+  fs.writeFileSync(path.join(tmpDir, 'wasm-meta.json'), JSON.stringify({
+    rawBytes: wasmRaw.length,
+    validWasm: true,
+    debugSymbolsStripped: true,
+    contentTag: tag,
+  }));
+
+  const srv = createForgeServer({ webEditorVendorDir: tmpDir, hubAuth: false });
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const port = srv.address().port;
+  t.after(() => new Promise(resolve => srv.close(resolve)));
+
+  const rawGet = (p, hdrs = {}) => new Promise((resolve, reject) => {
+    const req = http.request(`http://127.0.0.1:${port}${p}`, { headers: hdrs }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+
+  const healthRes = await rawGet('/api/health');
+  const health = JSON.parse(healthRes.body.toString('utf8'));
+  assert.equal(health.webEditorWasmRelease, true);
+  assert.equal(health.webEditorWasmBytes, wasmRaw.length);
+  assert.equal(health.webEditorWasmTag, tag);
+
+  const brRes = await rawGet(`/OfficialGodot/vendor/v/${tag}/godot.editor.wasm`, { 'Accept-Encoding': 'br, gzip' });
+  assert.equal(brRes.status, 200);
+  assert.equal(brRes.headers['content-encoding'], 'br');
+  assert.equal(brRes.headers['cache-control'], 'public, max-age=31536000, immutable');
+  assert.ok(zlib.brotliDecompressSync(brRes.body).equals(wasmRaw));
+
+  const gzRes = await rawGet('/OfficialGodot/vendor/godot.editor.js', { 'Accept-Encoding': 'gzip' });
+  assert.equal(gzRes.status, 200);
+  assert.equal(gzRes.headers['content-encoding'], 'gzip');
+  assert.ok(zlib.gunzipSync(gzRes.body).equals(jsRaw));
+
+  const plainRes = await rawGet('/OfficialGodot/vendor/godot.editor.js', { 'Accept-Encoding': 'identity' });
+  assert.equal(plainRes.status, 200);
+  assert.equal(plainRes.headers['content-encoding'], undefined);
+  assert.ok(plainRes.body.equals(jsRaw));
 });

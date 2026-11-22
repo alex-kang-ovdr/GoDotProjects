@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createStoreApp, parseAllowedOrigins } from './store-api.mjs';
@@ -17,10 +18,16 @@ const REQUIRED_WEB_FILES = ['index.html', 'store.js', 'store-catalog.js', 'store
 
 export function loadMergedCatalog(storeRoot = STORE_ROOT) {
   const collectedPath = path.join(storeRoot, 'data', 'collected-catalog.json');
+  const collectedGzPath = `${collectedPath}.gz`;
   const merged = SAMPLE_CATALOG.filter((item) => isCommercialHubDistributable(item));
   const seen = new Set(merged.map((item) => item.asset_id));
+  let raw = null;
   if (fs.existsSync(collectedPath)) {
-    const raw = JSON.parse(fs.readFileSync(collectedPath, 'utf8'));
+    raw = JSON.parse(fs.readFileSync(collectedPath, 'utf8'));
+  } else if (fs.existsSync(collectedGzPath)) {
+    raw = JSON.parse(zlib.gunzipSync(fs.readFileSync(collectedGzPath)).toString('utf8'));
+  }
+  if (raw) {
     const extra = Array.isArray(raw?.items) ? raw.items : [];
     for (const item of extra) {
       if (item?.asset_id && !seen.has(item.asset_id) && isCommercialHubDistributable(item)) {

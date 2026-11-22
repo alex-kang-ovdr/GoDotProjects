@@ -1,4 +1,10 @@
 # syntax=docker/dockerfile:1.7
+FROM node:24-slim AS forge-assets-prep
+WORKDIR /prep
+COPY forge/OfficialGodot ./OfficialGodot
+RUN rm -rf ./OfficialGodot/vendor \
+    && node -e "const fs=require('fs'),c=require('crypto'),p=require('path'),z=require('zlib'); const d='./OfficialGodot/vendor-release'; const w=p.join(d,'godot.editor.wasm'), j=p.join(d,'godot.editor.js'); if(fs.existsSync(w)){ const buf=fs.readFileSync(w); const tag=buf.length+'-'+c.createHash('sha256').update(buf).digest('hex').slice(0,8); if(!fs.existsSync(w+'.gz')) fs.writeFileSync(w+'.gz', z.gzipSync(buf,{level:9})); if(!fs.existsSync(w+'.br')) fs.writeFileSync(w+'.br', z.brotliCompressSync(buf)); fs.writeFileSync(p.join(d,'wasm-meta.json'), JSON.stringify({rawBytes:buf.length,validWasm:true,debugSymbolsStripped:true,contentTag:tag})); fs.unlinkSync(w); } if(fs.existsSync(j)){ const buf=fs.readFileSync(j); if(!fs.existsSync(j+'.gz')) fs.writeFileSync(j+'.gz', z.gzipSync(buf,{level:9})); if(!fs.existsSync(j+'.br')) fs.writeFileSync(j+'.br', z.brotliCompressSync(buf)); fs.unlinkSync(j); }"
+
 FROM node:24-slim
 
 ENV NODE_ENV=production \
@@ -14,7 +20,7 @@ COPY forge/package.json forge/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
 COPY forge/server.cjs forge/index.html forge/projects.json ./
-COPY forge/OfficialGodot ./OfficialGodot
+COPY --from=forge-assets-prep /prep/OfficialGodot ./OfficialGodot
 COPY forge/Studio ./Studio
 COPY forge/StudioGodot ./StudioGodot
 COPY forge/Frontends ./Frontends

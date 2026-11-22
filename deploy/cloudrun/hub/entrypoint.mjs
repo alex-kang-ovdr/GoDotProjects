@@ -187,6 +187,151 @@ export function buildUpstreamRequestOptions(targetBase, req, stripPrefix = '') {
   };
 }
 
+const ETAG_CATALOG_PATHS = new Set([
+  '/api/games',
+  '/api/avatar/catalog',
+  '/api/store/catalog',
+  '/forge/api/platform/templates',
+]);
+const MAX_EDGE_COMPRESS_BYTES = 4 * 1024 * 1024;
+const COMPRESSIBLE_CT_RE = /^(?:application\/json|application\/javascript|text\/javascript|text\/html|text\/css|text\/plain|image\/svg\+xml)/i;
+
+export function attachEdgeCompressionAndEtag(req, res, pathname) {
+  if (req.method !== 'GET') return;
+  if (pathname.endsWith('/events')) return;
+  const acceptGzip = String(req.headers['accept-encoding'] || '').includes('gzip');
+  const allowEtag = ETAG_CATALOG_PATHS.has(pathname);
+  if (!acceptGzip && !allowEtag) return;
+
+  const origWriteHead = res.writeHead.bind(res);
+  const origWrite = res.write.bind(res);
+  const origEnd = res.end.bind(res);
+  let intercepted = false;
+  let passthrough = false;
+  let savedStatus = 200;
+  let savedHeaders = {};
+  const chunks = [];
+  let totalLen = 0;
+
+  const mergeHeaders = (extra) => {
+    const merged = {};
+    for (const [k, v] of Object.entries(res.getHeaders())) merged[k.toLowerCase()] = v;
+    if (extra && typeof extra === 'object') {
+      for (const [k, v] of Object.entries(extra)) {
+        if (v !== undefined) merged[k.toLowerCase()] = v;
+      }
+    }
+    return merged;
+  };
+
+  const restoreMethods = () => {
+    res.writeHead = origWriteHead;
+    res.write = origWrite;
+    res.end = origEnd;
+  };
+
+  const flushPassthrough = () => {
+    passthrough = true;
+    intercepted = false;
+    restoreMethods();
+    origWriteHead(savedStatus, savedHeaders);
+    for (const c of chunks) origWrite(c);
+    chunks.length = 0;
+  };
+
+  const decideIntercept = (statusCode, hdrObj) => {
+    const merged = mergeHeaders(hdrObj);
+    const ct = String(merged['content-type'] || '');
+    const hasCe = Boolean(merged['content-encoding']);
+    const isSse = ct.toLowerCase().includes('text/event-stream');
+    if (statusCode === 200 && !hasCe && !isSse && COMPRESSIBLE_CT_RE.test(ct)) {
+      intercepted = true;
+      savedStatus = statusCode;
+      savedHeaders = merged;
+      return true;
+    }
+    passthrough = true;
+    restoreMethods();
+    return false;
+  };
+
+  res.writeHead = (statusCode, statusMsgOrHeaders, maybeHeaders) => {
+    const hdrObj = typeof statusMsgOrHeaders === 'object' ? statusMsgOrHeaders : maybeHeaders;
+    if (decideIntercept(statusCode, hdrObj)) return res;
+    return origWriteHead(statusCode, statusMsgOrHeaders, maybeHeaders);
+  };
+
+  res.write = (chunk, encoding, cb) => {
+    if (!intercepted && !passthrough) {
+      if (!decideIntercept(res.statusCode || 200, null)) {
+        return origWrite(chunk, encoding, cb);
+      }
+    }
+    if (!intercepted || passthrough) return origWrite(chunk, encoding, cb);
+    const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+    totalLen += buf.length;
+    if (totalLen > MAX_EDGE_COMPRESS_BYTES) {
+      flushPassthrough();
+      return origWrite(buf, cb);
+    }
+    chunks.push(buf);
+    if (typeof encoding === 'function') encoding();
+    else if (typeof cb === 'function') cb();
+    return true;
+  };
+
+  res.end = (chunk, encoding, cb) => {
+    if (!intercepted && !passthrough) {
+      if (!decideIntercept(res.statusCode || 200, null)) {
+        return origEnd(chunk, encoding, cb);
+      }
+    }
+    if (!intercepted || passthrough) return origEnd(chunk, encoding, cb);
+    if (chunk && typeof chunk !== 'function') {
+      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+      totalLen += buf.length;
+      chunks.push(buf);
+    }
+    const doneCb = typeof chunk === 'function' ? chunk : (typeof encoding === 'function' ? encoding : cb);
+    const body = chunks.length === 1 ? chunks[0] : Buffer.concat(chunks);
+    chunks.length = 0;
+    passthrough = true;
+    intercepted = false;
+    restoreMethods();
+
+    for (const name of res.getHeaderNames()) res.removeHeader(name);
+    const outHeaders = { ...savedHeaders };
+    delete outHeaders['content-length'];
+    delete outHeaders['transfer-encoding'];
+    delete outHeaders.connection;
+    delete outHeaders['keep-alive'];
+    delete outHeaders['proxy-connection'];
+    if (allowEtag && !outHeaders['set-cookie']) {
+      const etag = `W/"${crypto.createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
+      outHeaders.etag = etag;
+      outHeaders['cache-control'] = 'no-cache';
+      const inm = String(req.headers['if-none-match'] || '').trim();
+      if (inm === etag) {
+        delete outHeaders['content-type'];
+        origWriteHead(304, outHeaders);
+        return origEnd(doneCb);
+      }
+    }
+    if (acceptGzip && body.length >= 1024) {
+      const gz = zlib.gzipSync(body, { level: 6 });
+      outHeaders['content-encoding'] = 'gzip';
+      if (!outHeaders.vary) outHeaders.vary = 'Accept-Encoding';
+      else if (!/\baccept-encoding\b/i.test(String(outHeaders.vary))) outHeaders.vary = `${outHeaders.vary}, Accept-Encoding`;
+      outHeaders['content-length'] = gz.length;
+      origWriteHead(savedStatus, outHeaders);
+      return origEnd(gz, doneCb);
+    }
+    outHeaders['content-length'] = body.length;
+    origWriteHead(savedStatus, outHeaders);
+    return origEnd(body, doneCb);
+  };
+}
+
 export function proxyRequest(req, res, targetBase, stripPrefix = '', extraTlsOptions = null) {
   const { isHttps, options } = buildUpstreamRequestOptions(targetBase, req, stripPrefix);
   const transport = isHttps ? https : http;
@@ -194,6 +339,9 @@ export function proxyRequest(req, res, targetBase, stripPrefix = '', extraTlsOpt
 
   const upstream = transport.request(reqOpts, upRes => {
     const outHeaders = { ...upRes.headers };
+    delete outHeaders.connection;
+    delete outHeaders['keep-alive'];
+    delete outHeaders['proxy-connection'];
     if (typeof outHeaders.location === 'string') {
       outHeaders.location = rewriteProxyLocation(outHeaders.location, stripPrefix);
     }
@@ -326,6 +474,7 @@ if (isDirectExecution) {
             webDir: path.join(storeRoot, 'web'),
             serveStatic: true,
             catalog: loadMergedCatalog(storeRoot),
+            ownCatalog: true,
             internalSecret: storeInternalSecret,
           });
           const storeAddr = await embeddedStore.listen(0, '127.0.0.1');
@@ -344,146 +493,6 @@ if (isDirectExecution) {
       })();
     }
     return storeInitPromise;
-  }
-
-  const ETAG_CATALOG_PATHS = new Set([
-    '/api/games',
-    '/api/avatar/catalog',
-    '/api/store/catalog',
-    '/forge/api/platform/templates',
-  ]);
-  const MAX_EDGE_COMPRESS_BYTES = 4 * 1024 * 1024;
-  const COMPRESSIBLE_CT_RE = /^(?:application\/json|application\/javascript|text\/javascript|text\/html|text\/css|text\/plain|image\/svg\+xml)/i;
-
-  function attachEdgeCompressionAndEtag(req, res, pathname) {
-    if (req.method !== 'GET') return;
-    if (pathname.endsWith('/events')) return;
-    const acceptGzip = String(req.headers['accept-encoding'] || '').includes('gzip');
-    const allowEtag = ETAG_CATALOG_PATHS.has(pathname);
-    if (!acceptGzip && !allowEtag) return;
-
-    const origWriteHead = res.writeHead.bind(res);
-    const origWrite = res.write.bind(res);
-    const origEnd = res.end.bind(res);
-    let intercepted = false;
-    let passthrough = false;
-    let savedStatus = 200;
-    let savedHeaders = {};
-    const chunks = [];
-    let totalLen = 0;
-
-    const mergeHeaders = (extra) => {
-      const merged = {};
-      for (const [k, v] of Object.entries(res.getHeaders())) merged[k.toLowerCase()] = v;
-      if (extra && typeof extra === 'object') {
-        for (const [k, v] of Object.entries(extra)) {
-          if (v !== undefined) merged[k.toLowerCase()] = v;
-        }
-      }
-      return merged;
-    };
-
-    const restoreMethods = () => {
-      res.writeHead = origWriteHead;
-      res.write = origWrite;
-      res.end = origEnd;
-    };
-
-    const flushPassthrough = () => {
-      passthrough = true;
-      intercepted = false;
-      restoreMethods();
-      origWriteHead(savedStatus, savedHeaders);
-      for (const c of chunks) origWrite(c);
-      chunks.length = 0;
-    };
-
-    const decideIntercept = (statusCode, hdrObj) => {
-      const merged = mergeHeaders(hdrObj);
-      const ct = String(merged['content-type'] || '');
-      const hasCe = Boolean(merged['content-encoding']);
-      const isSse = ct.toLowerCase().includes('text/event-stream');
-      if (statusCode === 200 && !hasCe && !isSse && COMPRESSIBLE_CT_RE.test(ct)) {
-        intercepted = true;
-        savedStatus = statusCode;
-        savedHeaders = merged;
-        return true;
-      }
-      passthrough = true;
-      restoreMethods();
-      return false;
-    };
-
-    res.writeHead = (statusCode, statusMsgOrHeaders, maybeHeaders) => {
-      const hdrObj = typeof statusMsgOrHeaders === 'object' ? statusMsgOrHeaders : maybeHeaders;
-      if (decideIntercept(statusCode, hdrObj)) return res;
-      return origWriteHead(statusCode, statusMsgOrHeaders, maybeHeaders);
-    };
-
-    res.write = (chunk, encoding, cb) => {
-      if (!intercepted && !passthrough) {
-        if (!decideIntercept(res.statusCode || 200, null)) {
-          return origWrite(chunk, encoding, cb);
-        }
-      }
-      if (!intercepted || passthrough) return origWrite(chunk, encoding, cb);
-      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
-      totalLen += buf.length;
-      if (totalLen > MAX_EDGE_COMPRESS_BYTES) {
-        flushPassthrough();
-        return origWrite(buf, cb);
-      }
-      chunks.push(buf);
-      if (typeof encoding === 'function') encoding();
-      else if (typeof cb === 'function') cb();
-      return true;
-    };
-
-    res.end = (chunk, encoding, cb) => {
-      if (!intercepted && !passthrough) {
-        if (!decideIntercept(res.statusCode || 200, null)) {
-          return origEnd(chunk, encoding, cb);
-        }
-      }
-      if (!intercepted || passthrough) return origEnd(chunk, encoding, cb);
-      if (chunk && typeof chunk !== 'function') {
-        const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
-        totalLen += buf.length;
-        chunks.push(buf);
-      }
-      const doneCb = typeof chunk === 'function' ? chunk : (typeof encoding === 'function' ? encoding : cb);
-      const body = chunks.length === 1 ? chunks[0] : Buffer.concat(chunks);
-      chunks.length = 0;
-      passthrough = true;
-      intercepted = false;
-      restoreMethods();
-
-      for (const name of res.getHeaderNames()) res.removeHeader(name);
-      const outHeaders = { ...savedHeaders };
-      delete outHeaders['content-length'];
-      if (allowEtag && !outHeaders['set-cookie']) {
-        const etag = `W/"${crypto.createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
-        outHeaders.etag = etag;
-        outHeaders['cache-control'] = 'no-cache';
-        const inm = String(req.headers['if-none-match'] || '').trim();
-        if (inm === etag) {
-          delete outHeaders['content-type'];
-          origWriteHead(304, outHeaders);
-          return origEnd(doneCb);
-        }
-      }
-      if (acceptGzip && body.length >= 1024) {
-        const gz = zlib.gzipSync(body, { level: 6 });
-        outHeaders['content-encoding'] = 'gzip';
-        outHeaders.vary = outHeaders.vary ? `${outHeaders.vary}, Accept-Encoding` : 'Accept-Encoding';
-        outHeaders['content-length'] = gz.length;
-        origWriteHead(savedStatus, outHeaders);
-        return origEnd(gz, doneCb);
-      }
-      outHeaders['content-length'] = body.length;
-      origWriteHead(savedStatus, outHeaders);
-      return origEnd(body, doneCb);
-    };
   }
 
   const stripSpoofedHeaders = req => {

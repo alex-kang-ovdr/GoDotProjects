@@ -22,6 +22,11 @@ RUN set -eux; \
     gzip -9 "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
     rm -rf /tmp/gd
 
+FROM node:24-slim AS store-data-prep
+WORKDIR /prep
+COPY store/data ./store/data
+RUN node -e "const fs=require('fs'),z=require('zlib'),p='./store/data/collected-catalog.json'; if(fs.existsSync(p)){fs.writeFileSync(p+'.gz',z.gzipSync(fs.readFileSync(p),{level:9})); fs.unlinkSync(p);}"
+
 FROM node:24-slim
 
 ENV NODE_ENV=production \
@@ -39,11 +44,11 @@ COPY hub/tools/backup.mjs ./hub/tools/backup.mjs
 COPY hub/tools/restore-data.mjs ./hub/tools/restore-data.mjs
 COPY hub/tools/store-proxy.mjs ./hub/tools/store-proxy.mjs
 
-# Embedded PlayForge Asset Store runtime & catalog (served via /store/ SSO proxy)
+# Embedded PlayForge Asset Store runtime & precompressed catalog (served via /store/ SSO proxy)
 COPY store/server ./store/server
 COPY store/web ./store/web
 COPY store/schemas ./store/schemas
-COPY store/data ./store/data
+COPY --from=store-data-prep /prep/store/data ./store/data
 
 # Forge tools required by Hub ForgeGateway (local mode until S4 remote gateway lands)
 COPY forge/Tools ./forge/Tools

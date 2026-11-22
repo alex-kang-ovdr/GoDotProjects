@@ -110,6 +110,7 @@ jobs:
       forge_daily_seq: ${{ steps.meta.outputs.forge_daily_seq }}
       forge_revision: ${{ steps.meta.outputs.forge_revision }}
       build_date: ${{ steps.meta.outputs.build_date }}
+      worker_tag: ${{ steps.worker.outputs.worker_tag }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -212,14 +213,26 @@ jobs:
           docker push "${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}"
           docker push "${ARTIFACT_REPO}/forge:${FORGE_SHA_TAG}"
       - name: Build & push P0 isolated build-worker image
+        id: worker
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
-        env:
-          WORKER_SHA_TAG: ${{ steps.meta.outputs.sha_tag }}
         run: |
           set -euo pipefail
-          docker build -f deploy/cloudrun/build-worker/Dockerfile \
-            -t "${ARTIFACT_REPO}/build-worker:${WORKER_SHA_TAG}" .
-          docker push "${ARTIFACT_REPO}/build-worker:${WORKER_SHA_TAG}"
+          WORKER_HASH=$(sha256sum \
+            deploy/cloudrun/build-worker/Dockerfile \
+            deploy/cloudrun/build-worker/worker.mjs \
+            forge/Tools/export-godot-project.cjs \
+            forge/Tools/deployment-zip-validator.cjs \
+            forge/Tools/playhub-godot-shell.js \
+            forge/Tools/avatar-seal.cjs | sha256sum | cut -c1-12)
+          WORKER_TAG="bw-${WORKER_HASH}"
+          echo "worker_tag=${WORKER_TAG}" >> "$GITHUB_OUTPUT"
+          if docker manifest inspect "${ARTIFACT_REPO}/build-worker:${WORKER_TAG}" >/dev/null 2>&1; then
+            echo "Reusing unchanged build-worker image: ${ARTIFACT_REPO}/build-worker:${WORKER_TAG}"
+          else
+            docker build -f deploy/cloudrun/build-worker/Dockerfile \
+              -t "${ARTIFACT_REPO}/build-worker:${WORKER_TAG}" .
+            docker push "${ARTIFACT_REPO}/build-worker:${WORKER_TAG}"
+          fi
 
   deploy-dev:
     needs: build
@@ -314,7 +327,7 @@ jobs:
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
             --allow-unauthenticated \
-            --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=300 \
+            --memory=256Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=300 \
             --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
             ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
@@ -349,13 +362,13 @@ jobs:
       - name: Deploy P0 isolated build-worker Cloud Run Job (forge-dev-2611, zero-IAM SA)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
         env:
-          WORKER_SHA_TAG: ${{ needs.build.outputs.sha_tag }}
+          WORKER_TAG: ${{ needs.build.outputs.worker_tag }}
         run: |
           set -euo pipefail
           gcloud run jobs deploy forge-build-worker \
             --project="${DEV_FORGE_PROJECT}" \
             --region="${REGION}" \
-            --image="${ARTIFACT_REPO}/build-worker:${WORKER_SHA_TAG}" \
+            --image="${ARTIFACT_REPO}/build-worker:${WORKER_TAG}" \
             --service-account="forge-build-worker-sa@${DEV_FORGE_PROJECT}.iam.gserviceaccount.com" \
             --set-env-vars="PLAYFORGE_SHARED_WEB_RUNTIME_BASE=/runtime/godot/4.7.2" \
             --memory=1Gi --cpu=1 --task-timeout=180s --max-retries=0 \

@@ -391,6 +391,29 @@ function computeWasmContentTag(wasmPath, rawBytes) {
   }
 }
 
+function readPrecompressedWasmMeta(dir) {
+  try {
+    const metaPath = path.join(dir, 'wasm-meta.json');
+    if (!fs.existsSync(metaPath)) return null;
+    const raw = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    if (!raw || typeof raw !== 'object') return null;
+    return {
+      exists: true,
+      validWasm: raw.validWasm === true,
+      rawBytes: Number(raw.rawBytes) || 0,
+      debugSections: Array.isArray(raw.debugSections) ? raw.debugSections : [],
+      debugSymbolsStripped: raw.debugSymbolsStripped === true,
+      contentTag: typeof raw.contentTag === 'string' ? raw.contentTag : '',
+    };
+  } catch {
+    return null;
+  }
+}
+
+function hasFileOrCompressedSidecar(filePath) {
+  return fs.existsSync(filePath) || fs.existsSync(filePath + '.br') || fs.existsSync(filePath + '.gz');
+}
+
 function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot = root) {
   const profile = normalizeWebEditorWasmProfile(
     options.webEditorWasmProfile ?? serverEnv.PLAYFORGE_WEB_EDITOR_WASM_PROFILE ?? 'release'
@@ -426,10 +449,13 @@ function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot 
       const resolved = fs.realpathSync(candidate);
       if (seen.has(resolved)) continue;
       seen.add(resolved);
-      if (!fs.statSync(resolved).isDirectory() || !fs.existsSync(path.join(resolved, 'godot.editor.js'))) {
+      if (!fs.statSync(resolved).isDirectory() || !hasFileOrCompressedSidecar(path.join(resolved, 'godot.editor.js'))) {
         continue;
       }
-      const wasmInfo = inspectWasmReleaseBinary(path.join(resolved, 'godot.editor.wasm'));
+      const wasmPath = path.join(resolved, 'godot.editor.wasm');
+      const wasmInfo = fs.existsSync(wasmPath)
+        ? inspectWasmReleaseBinary(wasmPath)
+        : (hasFileOrCompressedSidecar(wasmPath) ? (readPrecompressedWasmMeta(resolved) || { exists: true, validWasm: true, rawBytes: 0, debugSections: [], debugSymbolsStripped: true }) : { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false });
       const entry = { dir: resolved, profile, wasmInfo };
       if (profile === 'release' && wasmInfo.validWasm && !wasmInfo.debugSymbolsStripped) {
         if (!fallbackCandidate) fallbackCandidate = entry;
@@ -582,9 +608,10 @@ function createServer(options = {}) {
   const webEditorWasmProfile = webEditorVendor.profile;
   const webEditorWasmRelease = webEditorVendor.profile === 'release' && webEditorVendor.wasmInfo.debugSymbolsStripped === true;
   const webEditorWasmBytes = webEditorVendor.wasmInfo.rawBytes || 0;
-  const webEditorWasmTag = webEditorVendorDir && webEditorWasmBytes
-    ? computeWasmContentTag(path.join(webEditorVendorDir, 'godot.editor.wasm'), webEditorWasmBytes)
-    : '';
+  const webEditorWasmTag = webEditorVendor.wasmInfo?.contentTag
+    || (webEditorVendorDir && webEditorWasmBytes
+      ? computeWasmContentTag(path.join(webEditorVendorDir, 'godot.editor.wasm'), webEditorWasmBytes)
+      : '');
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
   const devDemoUiIncluded = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
   const remoteControlEnabled = devDemoUiIncluded;
@@ -1227,7 +1254,67 @@ function createServer(options = {}) {
       : path.resolve(root, '.' + pathname);
     if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
     try {
-      let info = await fs.promises.stat(file);
+      let info = null;
+      let precompressedOnly = false;
+      try {
+        info = await fs.promises.stat(file);
+      } catch (statErr) {
+        if (statErr.code === 'ENOENT' && isVendorBinary && (fs.existsSync(file + '.br') || fs.existsSync(file + '.gz'))) {
+          precompressedOnly = true;
+        } else {
+          throw statErr;
+        }
+      }
+      if (precompressedOnly) {
+        const ext = path.extname(file).toLowerCase();
+        const isCurrentVersionedVendor = isVersionedVendor && webEditorWasmTag && versionedVendorMatch[1] === webEditorWasmTag;
+        const staticHeaders = {
+          'Content-Type': mime[ext] || 'application/octet-stream',
+          'Cache-Control': isCurrentVersionedVendor ? 'public, max-age=31536000, immutable' : 'no-cache',
+          'X-Content-Type-Options': 'nosniff',
+          'Referrer-Policy': 'no-referrer',
+          'Vary': 'Accept-Encoding',
+        };
+        if (ext === '.wasm') {
+          staticHeaders['X-PlayForge-Web-Editor-Wasm'] = webEditorWasmRelease ? 'release' : webEditorWasmProfile;
+        }
+        const acceptEncoding = String(req.headers['accept-encoding'] || '');
+        const hasBr = fs.existsSync(file + '.br');
+        const hasGz = fs.existsSync(file + '.gz');
+        if (/\bbr\b/i.test(acceptEncoding) && hasBr) {
+          const brReal = await fs.promises.realpath(file + '.br');
+          if (!insideDir(allowedRoot, brReal)) return reply(403, 'Outside project');
+          const brStat = await fs.promises.stat(brReal);
+          res.writeHead(200, { ...staticHeaders, 'Content-Encoding': 'br', 'Content-Length': brStat.size });
+          if (req.method === 'HEAD') return res.end();
+          const stream = fs.createReadStream(brReal);
+          stream.on('error', () => res.destroy());
+          stream.pipe(res);
+          return;
+        }
+        if (/\bgzip\b/i.test(acceptEncoding) && hasGz) {
+          const gzReal = await fs.promises.realpath(file + '.gz');
+          if (!insideDir(allowedRoot, gzReal)) return reply(403, 'Outside project');
+          const gzStat = await fs.promises.stat(gzReal);
+          res.writeHead(200, { ...staticHeaders, 'Content-Encoding': 'gzip', 'Content-Length': gzStat.size });
+          if (req.method === 'HEAD') return res.end();
+          const stream = fs.createReadStream(gzReal);
+          stream.on('error', () => res.destroy());
+          stream.pipe(res);
+          return;
+        }
+        const fallbackPath = hasGz ? file + '.gz' : file + '.br';
+        const fallbackReal = await fs.promises.realpath(fallbackPath);
+        if (!insideDir(allowedRoot, fallbackReal)) return reply(403, 'Outside project');
+        res.writeHead(200, staticHeaders);
+        if (req.method === 'HEAD') return res.end();
+        const stream = fs.createReadStream(fallbackReal);
+        const decompressor = hasGz ? zlib.createGunzip() : zlib.createBrotliDecompress();
+        stream.on('error', () => res.destroy());
+        decompressor.on('error', () => res.destroy());
+        stream.pipe(decompressor).pipe(res);
+        return;
+      }
       if (info.isDirectory()) {
         if (!pathname.endsWith('/')) {
           res.writeHead(308, { Location: encodeURI(basePath + pathname + '/') });

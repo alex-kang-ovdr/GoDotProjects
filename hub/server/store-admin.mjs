@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { DatabaseSync } from 'node:sqlite';
 import { transaction } from './db.mjs';
 import { ApiError, json, readJson } from './security.mjs';
@@ -652,13 +653,18 @@ export function createStoreAdmin({
 
   function readLiveCatalogSummary() {
     const baseRoot = platformRoot || path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', '..');
-    const catalogPath = path.join(baseRoot, 'store', 'data', 'collected-catalog.json');
+    const jsonPath = path.join(baseRoot, 'store', 'data', 'collected-catalog.json');
+    const gzPath = `${jsonPath}.gz`;
+    const catalogPath = fs.existsSync(jsonPath) ? jsonPath : gzPath;
     try {
       const stat = fs.statSync(catalogPath);
       if (cachedLiveCatalog && cachedLiveCatalogMtime === stat.mtimeMs) {
         return cachedLiveCatalog;
       }
-      const raw = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+      const text = catalogPath.endsWith('.gz')
+        ? zlib.gunzipSync(fs.readFileSync(catalogPath)).toString('utf8')
+        : fs.readFileSync(catalogPath, 'utf8');
+      const raw = JSON.parse(text);
       const entries = Array.isArray(raw?.items)
         ? raw.items
         : (Array.isArray(raw?.entries) ? raw.entries : (Array.isArray(raw) ? raw : []));

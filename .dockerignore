@@ -1,0 +1,23 @@
+# Keep Cloud Run Docker build contexts small and cache-friendly
+.git
+.github
+.claude
+.vscode
+**/node_modules
+**/Saved
+**/*.log
+docs
+references
+artifacts
+hub/games
+hub/reports
+hub/planning
+hub/qa
+hub/tests
+forge/Samples
+forge/Docs
+forge/Tests
+forge/OfficialGodot/vendor
+store/tests
+tools/UnityConverter
+tools/Gamer
