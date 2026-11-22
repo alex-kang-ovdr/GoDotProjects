@@ -504,6 +504,7 @@ public struct ProfileMoreView: View {
     @ObservedObject public var vm: PlayHubShellViewModel
     @ObservedObject public var store: StoreKit2Manager
     @State private var showEditProfile = false
+    @State private var showAuthSheet = false
     @State private var showPrivacySheet = false
     @State private var showRuntimeSheet = false
     @State private var showLogoutConfirm = false
@@ -619,6 +620,27 @@ public struct ProfileMoreView: View {
                         .foregroundStyle(.white)
 
                     VStack(spacing: 0) {
+                        Button {
+                            showAuthSheet = true
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "person.crop.circle.badge.checkmark")
+                                    .foregroundStyle(StitchPalette.playGreen)
+                                    .frame(width: 22)
+                                Text("로그인 · 계정 전환 (\(vm.authProvider.uppercased()))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.white)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(StitchPalette.onSurfaceVariant)
+                            }
+                            .padding(14)
+                        }
+                        .buttonStyle(.plain)
+
+                        Divider().overlay(StitchPalette.outlineVariant)
+
                         HStack(spacing: 12) {
                             Image(systemName: "bell.badge.fill")
                                 .foregroundStyle(StitchPalette.onSurfaceVariant)
@@ -741,6 +763,9 @@ public struct ProfileMoreView: View {
         .background(StitchPalette.surface)
         .sheet(isPresented: $showEditProfile) {
             EditProfileSheet(vm: vm)
+        }
+        .sheet(isPresented: $showAuthSheet) {
+            AuthMethodSheet(vm: vm)
         }
         .sheet(isPresented: $showPrivacySheet) {
             privacyAndSecuritySheet
@@ -909,4 +934,138 @@ private func colorFromHex(_ hex: String) -> Color {
     let g = Double((val >> 8) & 0xFF) / 255.0
     let b = Double(val & 0xFF) / 255.0
     return Color(red: r, green: g, blue: b)
+}
+
+private struct AuthMethodSheet: View {
+    @ObservedObject var vm: PlayHubShellViewModel
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
+
+    @State private var isRegister = false
+    @State private var email = ""
+    @State private var password = ""
+    @State private var displayName = ""
+    @State private var busy = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("소셜 · 게스트 로그인") {
+                    Button {
+                        if let url = vm.oauthStartURL(provider: "google") {
+                            openURL(url)
+                        }
+                    } label: {
+                        HStack {
+                            Label("Google로 로그인", systemImage: "g.circle.fill")
+                            Spacer()
+                            if vm.lastAuthProvider == "google" { recentBadge }
+                        }
+                    }
+
+                    Button {
+                        if let url = vm.oauthStartURL(provider: "naver") {
+                            openURL(url)
+                        }
+                    } label: {
+                        HStack {
+                            Label("네이버로 로그인", systemImage: "n.circle.fill")
+                                .foregroundStyle(Color(red: 0.01, green: 0.78, blue: 0.35))
+                            Spacer()
+                            if vm.lastAuthProvider == "naver" { recentBadge }
+                        }
+                    }
+
+                    Button {
+                        vm.lastAuthProvider = "guest"
+                        UserDefaults.standard.set("guest", forKey: "playhub_last_auth_provider")
+                        vm.signOutAndResetGuest()
+                        dismiss()
+                    } label: {
+                        HStack {
+                            Label("게스트로 계속하기", systemImage: "person.fill")
+                            Spacer()
+                            if vm.lastAuthProvider == "guest" { recentBadge }
+                        }
+                    }
+                }
+
+                Section {
+                    Picker("모드", selection: $isRegister) {
+                        Text("로그인").tag(false)
+                        Text("회원가입").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+
+                    TextField("이메일 (name@example.com)", text: $email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+
+                    if isRegister {
+                        TextField("닉네임 (선택)", text: $displayName)
+                    }
+
+                    SecureField(isRegister ? "비밀번호 (8자 이상, 영문+숫자)" : "비밀번호", text: $password)
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+
+                    Button(busy ? "처리 중…" : (isRegister ? "이메일로 가입하기" : "이메일로 로그인")) {
+                        submitEmail()
+                    }
+                    .disabled(busy || email.trimmingCharacters(in: .whitespaces).isEmpty || password.isEmpty)
+                } header: {
+                    HStack {
+                        Text(isRegister ? "이메일 회원가입" : "이메일 로그인")
+                        Spacer()
+                        if vm.lastAuthProvider == "email" { recentBadge }
+                    }
+                }
+            }
+            .navigationTitle("로그인 방식 선택")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+        }
+    }
+
+    private var recentBadge: some View {
+        Text("최근 사용")
+            .font(.caption2.bold())
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+            .background(Color.blue.opacity(0.18), in: Capsule())
+            .foregroundStyle(.blue)
+    }
+
+    private func submitEmail() {
+        busy = true
+        errorMessage = nil
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        Task {
+            do {
+                if isRegister {
+                    try await vm.registerWithEmail(
+                        email: trimmedEmail,
+                        password: password,
+                        displayName: trimmedName.isEmpty ? nil : trimmedName
+                    )
+                } else {
+                    try await vm.loginWithEmail(email: trimmedEmail, password: password)
+                }
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            busy = false
+        }
+    }
 }

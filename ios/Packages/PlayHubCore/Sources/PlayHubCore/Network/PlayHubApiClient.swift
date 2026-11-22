@@ -14,10 +14,22 @@ public struct MobileAgeCompliance: Codable, Equatable, Sendable {
     public let parentalConsentStatus: String
 }
 
+public struct MobileAuthProviders: Codable, Equatable, Sendable {
+    public let email: Bool
+    public let google: Bool
+    public let naver: Bool
+    public let guest: Bool
+}
+
+public struct MobileAuthProvidersResponse: Codable, Equatable, Sendable {
+    public let providers: MobileAuthProviders
+}
+
 public struct MobileProfile: Codable, Equatable, Sendable {
     public let principalId: String
     public let kind: String
     public let isGuest: Bool
+    public let authProvider: String?
     public let displayName: String
     public let handle: String
     public let ageCompliance: MobileAgeCompliance
@@ -272,8 +284,59 @@ public struct PlayHubApiClient: Sendable {
         self.session = session
     }
 
+    public func fetchAuthProviders() async throws -> MobileAuthProviders {
+        let res: MobileAuthProvidersResponse = try await request(path: "/api/mobile/auth/providers", method: "GET", body: nil)
+        return res.providers
+    }
+
     public func loginGuest() async throws -> MobileAuthResponse {
         try await request(path: "/api/mobile/auth/guest", method: "POST", body: [:])
+    }
+
+    public func registerEmail(
+        email: String,
+        password: String,
+        displayName: String? = nil,
+        accessToken: String? = nil
+    ) async throws -> MobileAuthResponse {
+        var payload: [String: Any] = ["email": email, "password": password]
+        if let displayName, !displayName.isEmpty { payload["displayName"] = displayName }
+        return try await request(path: "/api/mobile/auth/email/register", method: "POST", body: payload, accessToken: accessToken)
+    }
+
+    public func loginEmail(
+        email: String,
+        password: String,
+        accessToken: String? = nil
+    ) async throws -> MobileAuthResponse {
+        try await request(
+            path: "/api/mobile/auth/email/login",
+            method: "POST",
+            body: ["email": email, "password": password],
+            accessToken: accessToken
+        )
+    }
+
+    public func loginGoogle(
+        idToken: String,
+        nonce: String? = nil,
+        accessToken: String? = nil
+    ) async throws -> MobileAuthResponse {
+        var payload: [String: Any] = ["idToken": idToken]
+        if let nonce, !nonce.isEmpty { payload["nonce"] = nonce }
+        return try await request(path: "/api/mobile/auth/google", method: "POST", body: payload, accessToken: accessToken)
+    }
+
+    public func loginNaver(
+        naverAccessToken: String,
+        accessToken: String? = nil
+    ) async throws -> MobileAuthResponse {
+        try await request(
+            path: "/api/mobile/auth/naver",
+            method: "POST",
+            body: ["accessToken": naverAccessToken],
+            accessToken: accessToken
+        )
     }
 
     public func refreshSession(refreshToken: String) async throws -> MobileAuthResponse {
