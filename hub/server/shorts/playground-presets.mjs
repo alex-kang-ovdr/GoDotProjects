@@ -34,6 +34,68 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     hookText: '바다를 읽고, 한 방에 제압하라!',
     highlightText: '항로 설계부터 3연장 포격까지 · 8초 해전 쾌감',
     ctaText: 'PLAY HUB에서 아이언 타이드 즉시 출격 ▶',
+    topHeadline: {
+      line1: '전함 3척에 포위당한 순양함이',
+      line2: '일제사격 한 방으로 역전하는 법'
+    },
+    narration: [
+      { startSec: 0, endSec: 1.5, text: '전함 세 척에 포위당했다?!', emphasize: '포위당했다?!' },
+      { startSec: 1.5, endSec: 3.1, text: '군도 사이로 항로를 꺾고', emphasize: '항로를 꺾고' },
+      { startSec: 3.1, endSec: 4.8, text: '3연장 주포 각도를 맞춘 뒤', emphasize: '3연장 주포' },
+      { startSec: 4.8, endSec: 6.4, text: '일제사격 발사! 함대 격침!', emphasize: '일제사격 발사!' },
+      { startSec: 6.4, endSec: 8.0, text: '지금 아이언 타이드 바로 출격!', emphasize: '바로 출격!' }
+    ],
+    bestComment: {
+      author: '함장김(navy****)',
+      text: 'ㅇㅏ 일제사격 궤적 맞고 터질 때 손맛 진짜 미쳤다ㅋㅋ'
+    },
+    carouselTitle: '순양함 1척으로 전함 3척 잡는 해전 고인물 플레이ㅋㅋ',
+    carouselSlides: [
+      {
+        index: 1,
+        badge: '1/4 · 절체절명',
+        headline: '전함 3척 포위망에 갇힌 순양함 청해',
+        caption: '정면 승부는 불가능... 군도 지형을 읽어야 산다',
+        narration: '북쪽 군도 한복판, 적 전함 세 척에 포위당한 순간!',
+        zoomOrigin: '25% 40%',
+        cropScale: 1.18,
+        filterCss: 'contrast(1.08) saturate(1.15)',
+        accent: '#4285F4'
+      },
+      {
+        index: 2,
+        badge: '2/4 · 항로 설계',
+        headline: '섬 뒤로 선회하며 레이더 각도 확보!',
+        caption: '어뢰 사각지대를 파고드는 전술 기동',
+        narration: '섬 뒤로 급선회하며 포탑 세 개를 한 곳에 조준합니다.',
+        zoomOrigin: '62% 38%',
+        cropScale: 1.28,
+        filterCss: 'contrast(1.12) saturate(1.22)',
+        accent: '#00B8D9'
+      },
+      {
+        index: 3,
+        badge: '3/4 · 일제사격',
+        headline: '3연장 철갑탄 일제사격 명중!!',
+        caption: '황금 탄도 궤적이 적 기함 측면을 그대로 관통',
+        narration: '일제사격 발사! 탄도 세 발이 적 기함에 그대로 꽂힙니다!',
+        zoomOrigin: '50% 58%',
+        cropScale: 1.32,
+        filterCss: 'contrast(1.18) saturate(1.3) brightness(1.05)',
+        accent: '#FBBC04'
+      },
+      {
+        index: 4,
+        badge: '4/4 · 거점 점령',
+        headline: '설치 없이 1초 만에 해상 전술 지휘 ▶',
+        caption: 'IRON TIDE · 브라우저에서 바로 무료 플레이',
+        narration: '지금 플레이허브에서 아이언 타이드 함장이 되어 보세요!',
+        zoomOrigin: '50% 50%',
+        cropScale: 1.0,
+        filterCss: 'contrast(1.06) saturate(1.12)',
+        accent: '#34A853'
+      }
+    ],
     suggestedTitle: '아이언 타이드 · 8초 해상 디오라마 일제사격',
     suggestedCaption: '투명한 북쪽 군도 바다 위, 순양함 청해로 완벽한 항로와 일제사격을 지휘하세요! 설치 없이 브라우저 즉시 플레이.',
     hashtags: ['#아이언타이드', '#해전전술', '#PlayHub', '#PlayForge', '#GoogleFlow', '#게임쇼츠'],
@@ -87,6 +149,68 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     hookText: '직접 조립하고, 탑을 와르르 무너뜨려라!',
     highlightText: '목재 블록·바퀴·대포 조립 → 3D 물리 붕괴 쾌감',
     ctaText: 'PLAY HUB에서 나만의 공성차 만들기 ▶',
+    topHeadline: {
+      line1: '나무 블록 6개로 만든 공성차가',
+      line2: '돌초소 3개를 가루로 만드는 법'
+    },
+    narration: [
+      { startSec: 0, endSec: 1.5, text: '나무 블록에 바퀴만 달았는데?', emphasize: '바퀴만 달았는데?' },
+      { startSec: 1.5, endSec: 3.1, text: '대포 하나 얹고 시뮬레이션 시작!', emphasize: '대포 하나 얹고' },
+      { startSec: 3.1, endSec: 4.8, text: '전속력 돌진 후 정중앙 발사!', emphasize: '정중앙 발사!' },
+      { startSec: 4.8, endSec: 6.4, text: '돌초소 세 채가 도미노처럼 와르르!', emphasize: '와르르 붕괴!' },
+      { startSec: 6.4, endSec: 8.0, text: '비 시즈 공성 공방 지금 조립하기!', emphasize: '지금 조립하기!' }
+    ],
+    bestComment: {
+      author: '공대생(mech****)',
+      text: '대포 반동으로 내 차까지 뒤집히는 물리엔진 개웃기네ㅋㅋ'
+    },
+    carouselTitle: '대포 하나 잘못 달았더니 성채랑 같이 날아감ㅋㅋ',
+    carouselSlides: [
+      {
+        index: 1,
+        badge: '1/4 · 공방 조립',
+        headline: '원목 프레임 + 바퀴 4개 + 대포 1문 완성',
+        caption: '블록이 자석처럼 착착 붙는 샌드박스 설계',
+        narration: '나무 블록과 바퀴 네 개, 그리고 대포 하나를 얹어줍니다.',
+        zoomOrigin: '30% 45%',
+        cropScale: 1.2,
+        filterCss: 'contrast(1.06) saturate(1.16)',
+        accent: '#34A853'
+      },
+      {
+        index: 2,
+        badge: '2/4 · 돌진 개시',
+        headline: '시뮬레이션 ON! 돌초소 향해 풀악셀',
+        caption: '무게중심 아슬아슬하게 버티며 질주 중...',
+        narration: '시뮬레이션 시작! 공성차가 돌초소를 향해 질주합니다!',
+        zoomOrigin: '68% 48%',
+        cropScale: 1.26,
+        filterCss: 'contrast(1.12) saturate(1.2)',
+        accent: '#FBBC04'
+      },
+      {
+        index: 3,
+        badge: '3/4 · 물리 폭발',
+        headline: '포탄 한 발에 돌탑 3개 연쇄 와르르!!',
+        caption: '블록이 사방으로 튀는 초만족 3D 물리 붕괴',
+        narration: '정중앙 명중! 돌탑 세 개가 도미노처럼 와르르 무너집니다!',
+        zoomOrigin: '50% 40%',
+        cropScale: 1.32,
+        filterCss: 'contrast(1.18) saturate(1.28) brightness(1.05)',
+        accent: '#EA4335'
+      },
+      {
+        index: 4,
+        badge: '4/4 · ★★★ 클리어',
+        headline: '나만의 미친 공성 병기 지금 설계 ▶',
+        caption: 'IRONWOOD(비 시즈) · 브라우저 즉시 플레이',
+        narration: '당신만의 기발한 공성차를 지금 플레이허브에서 만들어 보세요!',
+        zoomOrigin: '50% 50%',
+        cropScale: 1.0,
+        filterCss: 'contrast(1.06) saturate(1.12)',
+        accent: '#4285F4'
+      }
+    ],
     suggestedTitle: '비 시즈(아이언우드) · 블록 조립 3초 만에 돌탑 붕괴!',
     suggestedCaption: '원목 블록과 바퀴, 대포를 마음대로 조립하고 시뮬레이션 시작! 물리 엔진으로 목표 탑을 무너뜨리는 공성 공방.',
     hashtags: ['#비시즈', '#아이언우드', '#물리샌드박스', '#PlayHub', '#PlayForge', '#GoogleFlow'],
@@ -140,6 +264,68 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     hookText: '궁극기 화살비로 전선을 뒤집어라!',
     highlightText: '스킬 콤보 · 포탑 돌파 · 넥서스 진격 한타',
     ctaText: 'PLAY HUB에서 넥서스 전선 즉시 참전 ▶',
+    topHeadline: {
+      line1: '체력 10% 남은 원딜이 미드 한타를',
+      line2: '구르기 화살비로 혼자 끝내는 법'
+    },
+    narration: [
+      { startSec: 0, endSec: 1.5, text: '체력 10%?! 적 스킬이 쏟아진다!', emphasize: '스킬이 쏟아진다!' },
+      { startSec: 1.5, endSec: 3.1, text: '바람 구르기로 아슬아슬 회피!', emphasize: '바람 구르기!' },
+      { startSec: 3.1, endSec: 4.8, text: '궁극기 R 화살비 즉시 시전!', emphasize: '궁극기 화살비!' },
+      { startSec: 4.8, endSec: 6.4, text: '적 포탑 붕괴! 넥서스까지 원샷 돌파!', emphasize: '포탑 붕괴!' },
+      { startSec: 6.4, endSec: 8.0, text: '넥서스 전선 지금 설치 없이 참전!', emphasize: '지금 참전!' }
+    ],
+    bestComment: {
+      author: '미드차이(midg****)',
+      text: '웹게임인데 구르기 무빙이랑 궁극기 판정 진짜 쫀득하네'
+    },
+    carouselTitle: '딸피 원딜 잡으러 왔다가 궁극기 맞고 넥서스 밀림ㅋㅋ',
+    carouselSlides: [
+      {
+        index: 1,
+        badge: '1/4 · 미드 위기',
+        headline: '체력 10% 키라 앞에 적 3인 다이브!',
+        caption: '포탑 앞에서 펼쳐진 아슬아슬한 1대3 대치',
+        narration: '미드 레인 포탑 앞, 체력 10% 원딜에게 적 셋이 몰려옵니다!',
+        zoomOrigin: '24% 48%',
+        cropScale: 1.2,
+        filterCss: 'contrast(1.08) saturate(1.18)',
+        accent: '#00B8D9'
+      },
+      {
+        index: 2,
+        badge: '2/4 · 슈퍼 회피',
+        headline: 'E 바람 구르기로 치명타 전부 빗겨냄!',
+        caption: '0.1초 반응속도로 붉은 투사체 완벽 회피',
+        narration: '바람 구르기 한 번으로 적의 결정타를 전부 피해버립니다!',
+        zoomOrigin: '66% 42%',
+        cropScale: 1.28,
+        filterCss: 'contrast(1.14) saturate(1.24)',
+        accent: '#4285F4'
+      },
+      {
+        index: 3,
+        badge: '3/4 · R 화살비',
+        headline: '청록색 수정 화살비 궁극기 폭발!!',
+        caption: '전열 붕괴 + 적 포탑 수정 파편까지 한 번에 정리',
+        narration: '곧바로 궁극기 화살비 작렬! 전선과 포탑을 동시에 밀어버립니다!',
+        zoomOrigin: '50% 52%',
+        cropScale: 1.32,
+        filterCss: 'contrast(1.18) saturate(1.3) brightness(1.06)',
+        accent: '#FBBC04'
+      },
+      {
+        index: 4,
+        badge: '4/4 · 넥서스 진격',
+        headline: '설치 0초 웹 MOBA 지금 한 판 ▶',
+        caption: 'NEXUS FRONT · Q·W·E·R 스킬 콤보 액션',
+        narration: '플레이허브 넥서스 전선에서 지금 바로 승리를 쟁취하세요!',
+        zoomOrigin: '50% 50%',
+        cropScale: 1.0,
+        filterCss: 'contrast(1.06) saturate(1.14)',
+        accent: '#34A853'
+      }
+    ],
     suggestedTitle: '넥서스 전선 · 3초 화살비 궁극기 포탑 돌파!',
     suggestedCaption: 'Q·W·E·R 스킬 콤보와 미니언 웨이브 운영으로 상대 넥서스를 파괴하세요! 가볍고 쾌적한 웹 MOBA 액션.',
     hashtags: ['#넥서스전선', '#MOBA', '#PlayHub', '#PlayForge', '#GoogleFlow', '#게임쇼츠'],
@@ -193,6 +379,68 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     hookText: '카드 한 장으로 전장을 뒤집어라!',
     highlightText: '엘릭서 타이밍 · 2레인 카드 배치 · 왕관 탈환',
     ctaText: 'PLAY HUB에서 크라운폴 아레나 대전 ▶',
+    topHeadline: {
+      line1: '종료 5초 전 엘릭서 3코스트로',
+      line2: '상대 왕관 타워를 뒤집는 카드 콤보'
+    },
+    narration: [
+      { startSec: 0, endSec: 1.5, text: '남은 시간 5초! 타워가 밀린다!', emphasize: '남은 시간 5초!' },
+      { startSec: 1.5, endSec: 3.1, text: '오른쪽 레인 화살비로 싹 정리하고', emphasize: '화살비 정리!' },
+      { startSec: 3.1, endSec: 4.8, text: '왼쪽 다리에 기사+대포 동시 소환!', emphasize: '기사+대포!' },
+      { startSec: 4.8, endSec: 6.4, text: '황금 왕관 탈환! 짜릿한 버저비터!', emphasize: '황금 왕관 탈환!' },
+      { startSec: 6.4, endSec: 8.0, text: '크라운폴 아레나 지금 바로 대전!', emphasize: '지금 대전!' }
+    ],
+    bestComment: {
+      author: '덱장인(crow****)',
+      text: '3코스트 화살비 타이밍 딱 맞을 때 도파민 미쳤음ㅋㅋ'
+    },
+    carouselTitle: '상대 고블린 러시 보고 웃으면서 화살비 꽂아줌ㅋㅋ',
+    carouselSlides: [
+      {
+        index: 1,
+        badge: '1/4 · 더블 엘릭서',
+        headline: '종료 5초 전, 오른쪽 다리 고블린 떼 출현!',
+        caption: '지금 못 막으면 그대로 패배하는 극한 상황',
+        narration: '종료 5초 전! 상대가 오른쪽 레인으로 대군을 쏟아냅니다!',
+        zoomOrigin: '75% 44%',
+        cropScale: 1.2,
+        filterCss: 'contrast(1.08) saturate(1.18)',
+        accent: '#EA4335'
+      },
+      {
+        index: 2,
+        badge: '2/4 · 신의 화살비',
+        headline: '황금 화살비 카드 한 장으로 0.5초 전멸!',
+        caption: '엘릭서 이득 +5 챙기는 교과서 카운터',
+        narration: '바로 화살비 카드 투하! 고블린 부대가 한 방에 정리됩니다!',
+        zoomOrigin: '30% 42%',
+        cropScale: 1.28,
+        filterCss: 'contrast(1.14) saturate(1.24)',
+        accent: '#FBBC04'
+      },
+      {
+        index: 3,
+        badge: '3/4 · 역습 소환',
+        headline: '빈 왼쪽 다리에 기사+대포 팝업 돌격!',
+        caption: '상대 엘릭서 바닥난 틈을 찌르는 완벽한 양면 압박',
+        narration: '엘릭서가 바닥난 왼쪽 다리에 기사 카드를 착! 소환합니다!',
+        zoomOrigin: '50% 56%',
+        cropScale: 1.3,
+        filterCss: 'contrast(1.16) saturate(1.28) brightness(1.05)',
+        accent: '#4285F4'
+      },
+      {
+        index: 4,
+        badge: '4/4 · 왕관 승리',
+        headline: '8장 덱 전략 대전, 지금 무료 플레이 ▶',
+        caption: 'CROWNFALL(클래시 로얄) · 실시간 2레인 카드 전략',
+        narration: '지금 플레이허브 크라운폴 아레나에서 왕관을 차지하세요!',
+        zoomOrigin: '50% 50%',
+        cropScale: 1.0,
+        filterCss: 'contrast(1.06) saturate(1.14)',
+        accent: '#34A853'
+      }
+    ],
     suggestedTitle: '클래시 로얄(크라운폴) · 팝업 카드 한 장으로 왕관 역전!',
     suggestedCaption: '8장의 카드 덱과 엘릭서 타이밍으로 두 개의 레인을 지배하세요! 기사·대포·화살비 실시간 전략 아레나.',
     hashtags: ['#클래시로얄', '#크라운폴', '#카드전략', '#PlayHub', '#PlayForge', '#GoogleFlow'],
@@ -246,6 +494,68 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     hookText: '100마리 포위?! 무기 진화로 싹쓸이!',
     highlightText: '자동 공격 · 회피 대시 · 무기 진화 보스전',
     ctaText: 'PLAY HUB에서 탕탕특공대 5분 생존 도전 ▶',
+    topHeadline: {
+      line1: '몬스터 100마리 포위망에서',
+      line2: '쿠나이 진화로 화면 싹쓸이하는 법'
+    },
+    narration: [
+      { startSec: 0, endSec: 1.5, text: '사방에서 100마리가 몰려온다?!', emphasize: '100마리 포위?!' },
+      { startSec: 1.5, endSec: 3.1, text: '한 끗 차이 대시로 보석 싹쓸이!', emphasize: '보석 싹쓸이!' },
+      { startSec: 3.1, endSec: 4.8, text: '레벨업! 쿠나이 초고속 무기 진화!', emphasize: '무기 진화!' },
+      { startSec: 4.8, endSec: 6.4, text: '360도 연사 폭격으로 화면 초토화!', emphasize: '화면 초토화!' },
+      { startSec: 6.4, endSec: 8.0, text: '탕탕특공대 5분 생존 지금 도전!', emphasize: '지금 도전!' }
+    ],
+    bestComment: {
+      author: '탕탕장인(surv****)',
+      text: '쿠나이 진화 딱 터지고 보석 자석처럼 빨려올 때 쾌감 미쳤다'
+    },
+    carouselTitle: '100마리 포위돼서 끝난 줄 알았는데 쿠나이 진화함ㅋㅋ',
+    carouselSlides: [
+      {
+        index: 1,
+        badge: '1/4 · 100마리 포위',
+        headline: '사방이 몬스터... 피할 틈이 없다?!',
+        caption: '5분 생존 모드 3분 차, 역대급 웨이브 습격',
+        narration: '사방에서 몬스터 백 마리가 빈틈없이 포위해 들어옵니다!',
+        zoomOrigin: '50% 42%',
+        cropScale: 1.2,
+        filterCss: 'contrast(1.08) saturate(1.2)',
+        accent: '#EA4335'
+      },
+      {
+        index: 2,
+        badge: '2/4 · 극한 대시',
+        headline: '바늘구멍 틈새 대시 → 경험치 보석 자석 흡수!',
+        caption: '스치면 끝나는 타이밍에 레벨업 게이지 MAX',
+        narration: '아슬아슬한 대시 한 방으로 초록 보석을 싹 끌어모읍니다!',
+        zoomOrigin: '26% 52%',
+        cropScale: 1.28,
+        filterCss: 'contrast(1.14) saturate(1.26)',
+        accent: '#34A853'
+      },
+      {
+        index: 3,
+        badge: '3/4 · 무기 진화',
+        headline: '쌍쿠나이 + 드론 각성! 360도 화면 삭제!!',
+        caption: '황금 탄막이 100마리를 1초 만에 보석 비로 변환',
+        narration: '무기 진화 발동! 초고속 쿠나이가 화면 전체를 쓸어버립니다!',
+        zoomOrigin: '72% 46%',
+        cropScale: 1.32,
+        filterCss: 'contrast(1.18) saturate(1.32) brightness(1.06)',
+        accent: '#FBBC04'
+      },
+      {
+        index: 4,
+        badge: '4/4 · 보스전 돌입',
+        headline: '5분 생존 & 2페이즈 보스 지금 도전 ▶',
+        caption: '서바이버 아레나(탕탕특공대) · 한 손 조작 뱀서라이크',
+        narration: '플레이허브 탕탕특공대에서 지금 5분 생존에 도전해 보세요!',
+        zoomOrigin: '50% 50%',
+        cropScale: 1.0,
+        filterCss: 'contrast(1.06) saturate(1.16)',
+        accent: '#4285F4'
+      }
+    ],
     suggestedTitle: '탕탕특공대(서바이버 아레나) · 100마리 포위 쿠나이 진화 싹쓸이!',
     suggestedCaption: '몰려오는 적 웨이브를 대시로 피하고 보석을 모아 무기를 진화시키세요! 5분 생존 & 2페이즈 보스전 즉시 플레이.',
     hashtags: ['#탕탕특공대', '#서바이버아레나', '#뱀서라이크', '#PlayHub', '#PlayForge', '#GoogleFlow'],
@@ -285,6 +595,10 @@ export const PLAYGROUND_GAME_PLANS = Object.freeze([
     masterFlowPrompt: 'Vertical 9:16 game trailer short (8s) in Google Playground vibrant 3D toy-arcade diorama style introducing "Survivor Arena" (Survivor.io / 탕탕특공대-inspired). (0-2.2s) Sleek midnight-navy tabletop arena with glowing amber grid lines; a plucky chunky miniature hero in a cobalt scarf is surrounded by dozens of colorful geometric toy monsters closing in, then pulls off a snappy cyan dash through a razor-thin gap while magnetizing sparkling emerald XP gems. (2.2-5.8s) A radiant golden level-up burst evolves the hero’s kunai into twin rapid-fire glowing energy blasters and orbiting blue drones, unleashing a hyper-satisfying 360-degree stream that pops the entire wave into showers of bouncing neon gems and gold coins. (5.8-8s) Energetic hero pose in the foreground as a giant playful crimson-and-gold toy boss drops into the upper background, leaving clean lower framing for CTA. Glossy vinyl toy shaders, crisp studio rim light, zero cluttered UI text, no watermarks. Audio: ascending gem-pickup chimes, punchy level-up chord, rapid arcade pop-synth groove.'
   }
 ]);
+
+export function getPlaygroundPlanByGameId(gameId) {
+  return PLAYGROUND_GAME_PLANS.find(p => p.gameId === gameId) || null;
+}
 
 export function getPlaygroundPlansPayload() {
   return {

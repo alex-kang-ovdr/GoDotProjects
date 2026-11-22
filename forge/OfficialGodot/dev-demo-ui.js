@@ -104,6 +104,23 @@
     }
 
     const sidebar = document.querySelector('.forge-sidebar');
+    if (sidebar && !document.getElementById('forge-nav-shorts-exp')) {
+      const aiLink = sidebar.querySelector('#forge-nav-ai-studio');
+      const mpLink = sidebar.querySelector('a[href="multiplayer.html"]');
+      const targetGroup = aiLink?.parentElement || mpLink?.parentElement || sidebar.querySelectorAll('.forge-sidebar-group')[1] || sidebar;
+      const shortsLink = document.createElement('a');
+      shortsLink.id = 'forge-nav-shorts-exp';
+      shortsLink.className = 'forge-nav-item';
+      shortsLink.href = 'shorts-studio.html';
+      shortsLink.dataset.devDemoUi = '';
+      shortsLink.dataset.testid = 'forge-nav-shorts-exp';
+      shortsLink.hidden = !enabled;
+      shortsLink.textContent = '🧪 AI 쇼츠 생성기 (실험)';
+      const anchor = aiLink || mpLink;
+      if (anchor && anchor.nextSibling) targetGroup.insertBefore(shortsLink, anchor.nextSibling);
+      else targetGroup.append(shortsLink);
+    }
+
     if (sidebar && !document.getElementById('forge-dev-demo-panel')) {
       const panel = document.createElement('div');
       panel.id = 'forge-dev-demo-panel';
@@ -116,9 +133,9 @@
         </div>
         <label class="forge-dev-demo-switch" for="forge-dev-demo-checkbox">
           <input type="checkbox" id="forge-dev-demo-checkbox" data-testid="forge-dev-demo-checkbox">
-          <span>테스트·데모 UI 표시</span>
+          <span>테스트·데모·실험 UI 표시</span>
         </label>
-        <p class="forge-dev-demo-note">Dev · Debug · Test 빌드 전용 (기본 OFF · F5 새로고침 유지)</p>
+        <p class="forge-dev-demo-note">Dev · Debug · Test 빌드 전용 — AI 쇼츠 생성기·멀티플레이 테스트 포함 (기본 OFF · F5 유지)</p>
         <button type="button" class="forge-dev-refresh-btn" id="forge-dev-demo-refresh" data-testid="forge-dev-demo-refresh">F5 새로고침</button>
       `;
       sidebar.append(panel);

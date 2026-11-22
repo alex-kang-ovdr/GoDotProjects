@@ -165,7 +165,8 @@ test('Hub-Shorts: Veo LRO generation, PlayCoin Hold/Capture settlement, fallback
     const cfgRes = await anon.request('/api/shorts/config');
     assert.equal(cfgRes.status, 200);
     assert.equal(cfgRes.data.veoConfigured, true);
-    assert.equal(cfgRes.data.engines.length, 4);
+    assert.equal(cfgRes.data.engines.length, 8);
+    assert.equal(cfgRes.data.formats.length, 3);
 
     const plansRes = await anon.request('/api/shorts/playground-plans');
     assert.equal(plansRes.status, 200);
@@ -176,6 +177,9 @@ test('Hub-Shorts: Veo LRO generation, PlayCoin Hold/Capture settlement, fallback
     );
     for (const plan of plansRes.data.plans) {
       assert.equal(plan.scenes.length, 3);
+      assert.equal(plan.narration.length, 5);
+      assert.equal(plan.carouselSlides.length, 4);
+      assert.ok(plan.topHeadline?.line1 && plan.topHeadline?.line2);
       assert.match(plan.masterFlowPrompt, /Google Playground/);
     }
 
@@ -390,10 +394,62 @@ test('Hub-Shorts: Veo LRO generation, PlayCoin Hold/Capture settlement, fallback
     assert.equal(goodImport.data.short.engineId, 'flow-import');
     assert.equal(goodImport.data.short.chargedCoins, 0);
 
-    // 12. Games summary map reflects registered shorts
+    // 11b. Generate & publish non-video formats: Type 1 motion-graphic (10 PC) & Type 3 youtube-carousel (5 PC)
+    const mgGen = await creatorA.client.request('/api/shorts/generate?sync=1', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'gen-mg-001' },
+      body: { gameId: 'creator-a-rocket', engineId: 'motion-graphic-web', title: '로켓 러시 무영상 모션' }
+    });
+    assert.equal(mgGen.status, 201);
+    assert.equal(mgGen.data.short.renderMode, 'motion-graphic');
+    assert.equal(mgGen.data.short.hasVideoFile, false);
+    assert.equal(mgGen.data.short.videoUrl, null);
+    assert.equal(mgGen.data.short.chargedCoins, 10);
+    assert.ok(mgGen.data.short.narration.length >= 3);
+
+    const carGen = await creatorA.client.request('/api/shorts/generate?sync=1', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'gen-car-001' },
+      body: { gameId: 'creator-a-rocket', engineId: 'youtube-carousel-web', title: '로켓 러시 4컷 가로 카드' }
+    });
+    assert.equal(carGen.status, 201);
+    assert.equal(carGen.data.short.renderMode, 'carousel-images');
+    assert.equal(carGen.data.short.hasVideoFile, false);
+    assert.equal(carGen.data.short.chargedCoins, 5);
+    assert.equal(carGen.data.short.carouselSlides.length, 4);
+    assert.equal(getWallet(app.db, creatorA.userId).available, 105); // 120 - 10 - 5
+
+    const pubMg = await creatorA.client.request(`/api/shorts/${mgGen.data.short.id}/publish`, {
+      method: 'POST',
+      body: { gameId: 'creator-a-rocket', isPrimary: false }
+    });
+    const pubCar = await creatorA.client.request(`/api/shorts/${carGen.data.short.id}/publish`, {
+      method: 'POST',
+      body: { gameId: 'creator-a-rocket', isPrimary: false }
+    });
+    assert.equal(pubMg.status, 200);
+    assert.equal(pubCar.status, 200);
+
+    // Format filters & byFormat on by-game
+    const [feedMg, feedCar, feedVid, byGameAll] = await Promise.all([
+      anon.request('/api/shorts?format=motion-graphic'),
+      anon.request('/api/shorts?format=carousel-images'),
+      anon.request('/api/shorts?format=generative-video'),
+      anon.request('/api/shorts/by-game/creator-a-rocket')
+    ]);
+    assert.equal(feedMg.data.shorts.length, 1);
+    assert.equal(feedCar.data.shorts.length, 1);
+    assert.equal(feedVid.data.shorts.length, 2);
+    assert.equal(byGameAll.data.byFormat['motion-graphic'].id, mgGen.data.short.id);
+    assert.equal(byGameAll.data.byFormat['carousel-images'].id, carGen.data.short.id);
+    assert.equal(byGameAll.data.byFormat['generative-video'].id, shortId2);
+    assert.equal(verifyLedgerIntegrity(app.db).ok, true);
+
+    // 12. Games summary map reflects registered shorts (4 published across all 3 formats)
     const summary = await anon.request('/api/shorts/games-summary');
     assert.equal(summary.status, 200);
-    assert.equal(summary.data.games['creator-a-rocket'].count, 2);
+    assert.equal(summary.data.games['creator-a-rocket'].count, 4);
+    assert.equal(summary.data.games['creator-a-rocket'].formats.length, 3);
 
     // 13. Fail-Closed snapshot sanitizer handles all 4 shorts_* tables cleanly
     const outDb = path.join(tmpDir, 'sanitized.sqlite');
@@ -506,6 +562,258 @@ test('Hub-Shorts: Real FFmpeg 9:16 MP4 render integration (when ffmpeg is instal
     const posterRes = await creator.client.request(`/api/shorts/${gen.data.short.id}/poster`);
     assert.equal(posterRes.status, 200);
     assert.ok(posterRes.data.length > 1000);
+
+    // Direct creator-recorded video -> 9:16 Short-Form (subtitle + Korean TTS, 0 PC)!
+    const recordedRes = await creator.client.request(`/api/shorts/${gen.data.short.id}/video`);
+    assert.equal(recordedRes.status, 200);
+    const sfVid = await creator.client.request('/api/shorts/shortform?sync=1', {
+      method: 'POST',
+      body: {
+        mediaKind: 'video',
+        gameId: 'brick-breaker',
+        title: '직접 촬영 브릭 브레이커 숏폼',
+        headlineLine1: '직접 찍은 실전 플레이에',
+        headlineLine2: '자막 나래이션 입히기',
+        narrationLines: '첫 번째 컷 시작!\n두 번째 콤보 폭발!\n지금 바로 플레이!',
+        framingMode: 'fit-blur',
+        durationSec: 5,
+        includeTts: true,
+        keepOriginalAudio: true,
+        videoBase64: recordedRes.data.toString('base64')
+      }
+    });
+    assert.equal(sfVid.status, 201);
+    assert.equal(sfVid.data.short.status, 'ready');
+    assert.equal(sfVid.data.short.chargedCoins, 0);
+    assert.equal(sfVid.data.short.width, 720);
+    assert.equal(sfVid.data.short.height, 1280);
+    assert.equal(sfVid.data.short.narration.length, 3);
+    assert.equal(sfVid.data.short.topHeadline.line2, '자막 나래이션 입히기');
+    assert.ok(sfVid.data.short.bytes > 20000);
+
+    // Direct creator-uploaded images (2 PNGs) -> YouTube Carousel & Motion Graphic (0 PC) + /slide/:idx serving!
+    const tinyPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    const sfImgs = await creator.client.request('/api/shorts/shortform?sync=1', {
+      method: 'POST',
+      body: {
+        mediaKind: 'images',
+        outputFormat: 'carousel-images',
+        gameId: 'brick-breaker',
+        title: '내 스크린샷 2컷 가로 카드',
+        narrationLines: '스크린샷 1 설명\n스크린샷 2 결말',
+        images: [
+          { dataUrl: tinyPng, badge: '1/2 · 시작', headline: '직접 찍은 1컷' },
+          { dataUrl: tinyPng, badge: '2/2 · 결말', headline: '직접 찍은 2컷' }
+        ]
+      }
+    });
+    assert.equal(sfImgs.status, 201);
+    assert.equal(sfImgs.data.short.chargedCoins, 0);
+    assert.equal(sfImgs.data.short.renderMode, 'carousel-images');
+    assert.equal(sfImgs.data.short.carouselSlides.length, 2);
+    assert.equal(sfImgs.data.short.carouselSlides[0].imageUrl, `/api/shorts/${sfImgs.data.short.id}/slide/0`);
+    const slide0 = await creator.client.request(`/api/shorts/${sfImgs.data.short.id}/slide/0`);
+    assert.equal(slide0.status, 200);
+    assert.equal(slide0.headers.get('content-type'), 'image/png');
+
+    const sfMotion = await creator.client.request('/api/shorts/shortform?sync=1', {
+      method: 'POST',
+      body: {
+        mediaKind: 'images',
+        outputFormat: 'motion-graphic',
+        gameId: 'brick-breaker',
+        title: '내 스크린샷 무영상 모션',
+        narrationLines: '컷 하나!\n컷 둘!',
+        images: [{ dataUrl: tinyPng }, { dataUrl: tinyPng }]
+      }
+    });
+    assert.equal(sfMotion.status, 201);
+    assert.equal(sfMotion.data.short.chargedCoins, 0);
+    assert.equal(sfMotion.data.short.renderMode, 'motion-graphic');
+    assert.equal(sfMotion.data.short.motionSpec.frameUrls.length, 2);
+  } finally {
+    await app.close();
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('Hub-Shorts: Production build disables experimental shorts routes and dev helpers (fail-closed)', async () => {
+  const { app, tmpDir } = makeTempApp({
+    secureCookies: true,
+    userOrigins: ['https://playhub.example'],
+    userBaseUrl: 'https://playhub.example',
+    billing: { enabled: true, allowMockProvider: false, allowDemoAccount: false }
+  });
+  const { public: pubAddr } = await app.listen();
+  const baseUrl = `http://127.0.0.1:${pubAddr.port}`;
+
+  try {
+    const cfgRes = await fetch(`${baseUrl}/api/shorts/config`);
+    assert.equal(cfgRes.status, 200);
+    const cfg = await cfgRes.json();
+    assert.equal(cfg.experimentalEnabled, false);
+    assert.equal(cfg.buildMode, 'live');
+    assert.equal(cfg.allowDevGrant, false);
+    assert.equal(cfg.allowDevCatalogBinding, false);
+
+    // Experimental playground plans endpoint MUST fail closed with 404 in production
+    const plansRes = await fetch(`${baseUrl}/api/shorts/playground-plans`);
+    assert.equal(plansRes.status, 404);
+    const plansBody = await plansRes.json();
+    assert.equal(plansBody.error.code, 'EXPERIMENTAL_DISABLED');
+
+    // Seed registered user session & verify dev-grant also returns 404 in production
+    const nowMs = Date.now();
+    const userId = 'u-prod-exp-1';
+    app.db.prepare('INSERT INTO users(id,kind,display_name,created_at) VALUES(?,?,?,?)')
+      .run(userId, 'registered', 'Prod Creator', nowMs);
+    const { secret, digest } = await import('../server/security.mjs');
+    const tok = secret();
+    const csrf = secret();
+    app.db.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,admin_authenticated,admin_username,created_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)')
+      .run(digest(tok), 'public', userId, 'a:prodexp1', csrf, 0, null, nowMs, nowMs + 3600000, 'live', null);
+
+    const grantRes = await fetch(`${baseUrl}/api/shorts/dev-grant`, {
+      method: 'POST',
+      headers: {
+        Origin: 'https://playhub.example',
+        Cookie: `poc_public_session=${tok}`,
+        'X-CSRF-Token': csrf,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ coins: 300 })
+    });
+    assert.equal(grantRes.status, 404);
+    const grantBody = await grantRes.json();
+    assert.equal(grantBody.error.code, 'NOT_FOUND');
+  } finally {
+    await app.close();
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('Hub-Shorts: Personal subscription AI OAuth (Google PKCE + Gemini Key) masks secrets and charges 0 PC for Veo', async () => {
+  let capturedVeoOverride = null;
+
+  const mockFetch = async (url) => {
+    const u = String(url);
+    if (u.startsWith('https://oauth2.googleapis.com/token')) {
+      return new Response(JSON.stringify({
+        access_token: 'ya29.mock-personal-oauth-access-token-123456',
+        expires_in: 3600,
+        token_type: 'Bearer'
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (u.startsWith('https://www.googleapis.com/oauth2/v2/userinfo')) {
+      return new Response(JSON.stringify({ email: 'creator@gmail.com' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    return new Response('{}', { status: 404 });
+  };
+
+  const { app, tmpDir } = makeTempApp({
+    shorts: {
+      googleOAuthClientId: 'mock-client-id.apps.googleusercontent.com',
+      googleOAuthClientSecret: 'mock-client-secret'
+    }
+  }, {
+    shortsFetch: mockFetch,
+    shortsRenderers: {
+      veo: async ({ outputVideoPath, config: veoCfg }) => {
+        capturedVeoOverride = veoCfg?.shorts || null;
+        fs.writeFileSync(outputVideoPath, SYNTHETIC_MP4);
+        return {
+          videoPath: outputVideoPath,
+          mimeType: 'video/mp4',
+          bytes: SYNTHETIC_MP4.length,
+          durationSec: 8,
+          width: 720,
+          height: 1280,
+          aspectRatio: '9:16',
+          model: 'veo-3.1-personal-oauth'
+        };
+      }
+    }
+  });
+
+  const { public: pubAddr } = await app.listen();
+  const baseUrl = `http://127.0.0.1:${pubAddr.port}`;
+
+  try {
+    const creator = await createTestRegisteredUser(app, baseUrl, 'OAuth 크리에이터');
+    // Seed 50 PC — NOT enough for standard 60 PC Veo, proving personal OAuth charges 0 PC!
+    creditPromo(app.db, {
+      principalId: creator.userId,
+      coins: 50,
+      reason: 'test_seed_oauth',
+      idempotencyKey: 'seed-oauth-50'
+    });
+
+    // 1. Connect personal Gemini API Key -> masked in status, never echoed raw!
+    const rawKey = 'AIzaSyPersonalTestKeySecret987654321';
+    const connGem = await creator.client.request('/api/shorts/ai-auth/google/connect', {
+      method: 'POST',
+      body: { mode: 'gemini-key', geminiApiKey: rawKey }
+    });
+    assert.equal(connGem.status, 200);
+    assert.equal(connGem.data.google.connected, true);
+    assert.equal(connGem.data.google.mode, 'gemini-key');
+    assert.ok(!JSON.stringify(connGem.data).includes(rawKey), 'Raw Gemini API key must NEVER be returned in status JSON');
+    assert.equal(connGem.data.google.maskedSecret, 'AIza…4321');
+
+    const cfgAfterGem = await creator.client.request('/api/shorts/config');
+    assert.equal(cfgAfterGem.data.personalVeoConnected, true);
+    assert.equal(cfgAfterGem.data.veoMode, 'personal-gemini-key');
+
+    // 2. Full Google OAuth 2.0 PKCE start -> callback -> connected Vertex OAuth!
+    const started = await creator.client.request('/api/shorts/ai-auth/google/start', {
+      method: 'POST',
+      body: { vertexProject: 'my-personal-gcp', vertexLocation: 'us-central1' }
+    });
+    assert.equal(started.status, 200);
+    assert.ok(started.data.authUrl.startsWith('https://accounts.google.com/o/oauth2/v2/auth?'));
+    assert.ok(started.data.authUrl.includes('code_challenge_method=S256'));
+
+    const cbRes = await creator.client.request(
+      `/api/shorts/ai-auth/google/callback?code=mock-auth-code&state=${encodeURIComponent(started.data.state)}`
+    );
+    assert.equal(cbRes.status, 200);
+
+    const statusAfterPkce = await creator.client.request('/api/shorts/ai-auth/status');
+    assert.equal(statusAfterPkce.status, 200);
+    assert.equal(statusAfterPkce.data.google.connected, true);
+    assert.equal(statusAfterPkce.data.google.mode, 'vertex-oauth');
+    assert.equal(statusAfterPkce.data.google.source, 'google-oauth-pkce');
+    assert.equal(statusAfterPkce.data.google.email, 'creator@gmail.com');
+    assert.equal(statusAfterPkce.data.google.vertexProject, 'my-personal-gcp');
+    assert.ok(!JSON.stringify(statusAfterPkce.data).includes('ya29.mock-personal-oauth-access-token-123456'));
+
+    // 3. Generate Veo Fast using personal Google OAuth -> succeeds with 0 PC charged (balance stays 50 PC)!
+    const genRes = await creator.client.request('/api/shorts/generate?sync=1', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'gen-personal-oauth-001' },
+      body: {
+        gameId: 'brick-breaker',
+        engineId: 'google-flow-veo-fast',
+        title: '개인 OAuth Veo 3.1 쇼츠'
+      }
+    });
+    assert.equal(genRes.status, 201);
+    assert.equal(genRes.data.short.status, 'ready');
+    assert.equal(genRes.data.short.resolvedEngineId, 'google-flow-veo-fast');
+    assert.equal(genRes.data.short.quotedCoins, 0);
+    assert.equal(genRes.data.short.chargedCoins, 0);
+    assert.equal(getWallet(app.db, creator.userId).available, 50);
+    assert.equal(capturedVeoOverride?.vertexProject, 'my-personal-gcp');
+    assert.equal(capturedVeoOverride?.vertexAccessToken, 'ya29.mock-personal-oauth-access-token-123456');
+
+    // 4. Disconnect clears credentials immediately
+    const disc = await creator.client.request('/api/shorts/ai-auth/disconnect', { method: 'POST', body: {} });
+    assert.equal(disc.status, 200);
+    const cfgAfterDisc = await creator.client.request('/api/shorts/config');
+    assert.equal(cfgAfterDisc.data.personalVeoConnected, false);
   } finally {
     await app.close();
     fs.rmSync(tmpDir, { recursive: true, force: true });

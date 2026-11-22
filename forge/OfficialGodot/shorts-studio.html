@@ -4,285 +4,671 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#FAF8FF">
-  <title>PlayForge Shorts Studio · AI 게임 소개 쇼츠 제작</title>
+  <title>PlayForge · AI 쇼츠 생성기</title>
   <link rel="icon" href="vendor/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/shorts.css">
   <link rel="stylesheet" href="shorts-studio.css">
 </head>
 <body>
-  <header class="ss-header">
-    <div class="ss-brand-wrap">
-      <a class="ss-brand" href="./" id="ss-home-link">
-        <span class="ss-brand-mark" aria-hidden="true">◆</span>
-        <span>PlayForge Shorts Studio</span>
+  <!-- Sticky Top Navigation inside PlayForge (Vibrant Modern Telemetry) -->
+  <header class="pl-header">
+    <div class="pl-header-left">
+      <a class="pl-btn ghost sm" id="pl-back-hub" href="/">▶ PLAY HUB</a>
+      <a class="pl-btn ghost sm" id="pl-back-forge" href="./">← FORGE</a>
+      <a class="pl-brand" href="./">
+        <span class="pl-dots" aria-hidden="true">
+          <i style="background:#4285F4"></i><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#34A853"></i>
+        </span>
+        <strong>PlayForge Shorts</strong>
+        <span class="pl-dev-badge" id="pl-dev-badge" hidden>실험 · DEV</span>
       </a>
-      <span class="ss-badge-pill">9:16 게임 소개 쇼츠 · Google Flow &amp; Veo</span>
-      <span class="ss-mode-pill" id="ss-mode-pill">연결 확인 중…</span>
-    </div>
-    <div class="ss-header-right">
-      <div class="ss-wallet-chip" id="ss-wallet-chip" hidden>
-        <span class="ss-coin-icon" aria-hidden="true">🪙</span>
-        <strong id="ss-wallet-available">0</strong>
-        <span class="ss-coin-unit">PC</span>
-        <span class="ss-wallet-sub" id="ss-wallet-sub"></span>
+      <span class="pl-divider" aria-hidden="true"></span>
+      <div class="pl-game-chip" id="pl-header-game-chip">
+        <span>🎮</span>
+        <strong id="pl-header-game-name">게임 선택</strong>
+        <span class="pl-chip-ok" id="pl-header-owner-badge">소유권 검증됨</span>
       </div>
-      <a class="ss-btn ghost small" id="ss-charge-link" href="/?view=billing" target="_blank" rel="noopener" hidden>+ PlayCoin 충전</a>
-      <button class="ss-btn coin small" id="ss-dev-grant-btn" type="button" hidden>🎁 체험용 +300 PC</button>
-      <a class="ss-btn secondary small" id="ss-poc-link" href="shorts-poc.html">🎯 5대 게임 Playground PoC</a>
-      <a class="ss-btn ghost small" id="ss-hub-shorts-link" href="/?view=shorts" target="_blank" rel="noopener">허브 쇼츠 피드 ↗</a>
-      <button class="ss-btn ghost small" id="ss-close-drawer" type="button" hidden>닫기 ×</button>
+    </div>
+
+    <div class="pl-header-right">
+      <div class="pl-wallet-pill" id="pl-wallet-pill">
+        <span>🪙</span>
+        <strong id="pl-wallet-avail">0 PC</strong>
+        <span class="pl-wallet-sep" aria-hidden="true">|</span>
+        <span class="pl-wallet-hold" id="pl-wallet-hold">예약 0 PC</span>
+        <button type="button" class="pl-wallet-add" id="pl-grant-btn" title="개발용 +300 PC 충전" hidden>+300</button>
+      </div>
+      <button type="button" class="pl-oauth-btn" id="pl-ai-auth-btn" data-testid="btn-open-ai-oauth">
+        <i class="pl-status-dot off" id="pl-ai-auth-dot"></i>
+        <span id="pl-ai-auth-label">AI OAuth 연결</span>
+      </button>
+      <button type="button" class="pl-btn ghost sm" id="pl-demo-login-btn" hidden>데모 로그인</button>
+      <a class="pl-btn ghost sm" id="pl-account-login-link" href="/?view=account" target="_blank" rel="noopener" hidden>계정 로그인 ↗</a>
+      <a class="pl-btn ghost sm" href="/?view=shorts" target="_blank" rel="noopener">허브 피드 ↗</a>
+      <button type="button" class="pl-btn ghost sm" id="pl-close-drawer-btn" hidden>닫기 ×</button>
     </div>
   </header>
 
-  <div id="ss-auth-banner" class="ss-banner" hidden>
-    <div>
-      <strong>PlayHub 계정 로그인이 필요합니다</strong>
-      <p id="ss-auth-banner-desc">PlayCoin으로 AI 게임 소개 쇼츠를 생성하고 허브 내 게임에 등록하려면 PlayHub 계정으로 로그인해 주세요.</p>
+  <div id="pl-toast" class="pl-toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Experimental Feature OFF / Prod Guard Banner (synced with PlayForgeDevDemoUI) -->
+  <section id="pl-exp-gate-banner" class="pl-exp-gate" hidden data-testid="shorts-studio-exp-gate">
+    <div class="pl-exp-gate-card">
+      <span class="pl-dev-badge" id="pl-exp-gate-badge">EXPERIMENTAL</span>
+      <h2 id="pl-exp-gate-title">🧪 AI 쇼츠 생성기는 실험 기능입니다</h2>
+      <p id="pl-exp-gate-desc" class="pl-muted"></p>
+      <div class="pl-inline" style="justify-content:center;margin-top:12px">
+        <button type="button" class="pl-btn primary sm" id="pl-exp-enable-btn" data-testid="shorts-studio-enable-exp" hidden>🧪 실험 기능 ON으로 켜기</button>
+        <a class="pl-btn ghost sm" href="./">← PlayForge로 돌아가기</a>
+      </div>
     </div>
-    <div class="ss-banner-actions">
-      <a class="ss-btn primary small" href="/?view=account" target="_blank" rel="noopener">PlayHub 로그인 ↗</a>
-      <button class="ss-btn coin small" id="ss-demo-signin-btn" type="button" hidden>데모 창작자로 즉시 체험</button>
-      <button class="ss-btn ghost small" id="ss-retry-auth-btn" type="button">로그인 상태 새로고침</button>
-    </div>
-  </div>
+  </section>
 
-  <div id="ss-toast" class="ss-toast" role="status" aria-live="polite" hidden></div>
-
-  <main class="ss-workspace">
-    <!-- Left Column: 3-Step Creator Workflow -->
-    <section class="ss-controls" aria-label="쇼츠 제작 설정">
-      <!-- Step 1: Game & Keyframes -->
-      <article class="ss-card">
-        <div class="ss-card-head">
-          <span class="ss-step-num">1</span>
-          <div>
-            <h2>대상 게임 및 키프레임 준비</h2>
-            <p>소개 쇼츠를 연결할 내 게임과 영상 기준 이미지(최대 3장)를 선택하세요.</p>
-          </div>
-        </div>
-
-        <div class="ss-field">
-          <label for="ss-game-select">허브 내 게임 선택</label>
-          <select id="ss-game-select" data-testid="shorts-game-select">
-            <option value="">게임 목록 불러오는 중…</option>
-          </select>
-          <small class="ss-hint" id="ss-game-ownership-hint"></small>
-        </div>
-
-        <div class="ss-keyframe-bar">
-          <button type="button" class="ss-btn secondary small" id="ss-capture-editor-btn" hidden>📷 현재 게임/에디터 화면 캡처</button>
-          <button type="button" class="ss-btn secondary small" id="ss-pull-cover-btn">🖼️ 게임 커버 자동 가져오기</button>
-          <label class="ss-btn secondary small ss-file-label">
-            ⬆️ 스크린샷 추가
-            <input type="file" id="ss-keyframe-input" accept="image/png,image/jpeg,image/webp" multiple hidden>
-          </label>
-        </div>
-        <div class="ss-keyframes" id="ss-keyframes" aria-label="선택된 키프레임 목록">
-          <div class="ss-kf-empty">키프레임이 없으면 선택한 게임 커버 또는 스타일 모션 배경으로 자동 제작됩니다.</div>
-        </div>
-      </article>
-
-      <!-- Step 2: Storyboard & Google Flow Prompt -->
-      <article class="ss-card">
-        <div class="ss-card-head">
-          <span class="ss-step-num">2</span>
-          <div>
-            <h2>스토리보드 · Google Flow 연출 설정</h2>
-            <p>스타일과 핵심 포인트를 정하면 3단계 9:16 쇼츠 대본과 Google Flow/Veo 프롬프트를 자동 구성합니다.</p>
-          </div>
-        </div>
-
-        <div class="ss-field">
-          <label>영상 비주얼 스타일</label>
-          <div class="ss-chip-group" id="ss-style-chips" role="radiogroup" aria-label="영상 스타일"></div>
-        </div>
-
-        <div class="ss-grid-2">
-          <div class="ss-field">
-            <label for="ss-camera-select">카메라 무빙</label>
-            <select id="ss-camera-select"></select>
-          </div>
-          <div class="ss-field">
-            <label for="ss-duration-select">영상 길이</label>
-            <select id="ss-duration-select">
-              <option value="6">6초 (빠른 훅)</option>
-              <option value="8" selected>8초 (표준 쇼츠 · 추천)</option>
-              <option value="10">10초 (하이라이트 강조)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="ss-field">
-          <label for="ss-prompt-input">크리에이터 연출 디렉션 (선택)</label>
-          <textarea id="ss-prompt-input" rows="2" maxlength="500" placeholder="예: 초반 2초에 보스 폭발 장면으로 시선을 끌고, 모바일 터치 조작의 쾌감을 강조해 주세요."></textarea>
-        </div>
-
-        <div class="ss-grid-2">
-          <div class="ss-field">
-            <label for="ss-hook-input">오프닝 훅 문구 (0–2초)</label>
-            <input id="ss-hook-input" type="text" maxlength="48" placeholder="터치 한 번으로 바로 시작!">
-          </div>
-          <div class="ss-field">
-            <label for="ss-cta-input">엔딩 CTA 문구 (6–8초)</label>
-            <input id="ss-cta-input" type="text" maxlength="48" value="PLAY HUB에서 지금 무료 플레이 ▶">
-          </div>
-        </div>
-
-        <div class="ss-inline-actions">
-          <button type="button" class="ss-btn secondary small" id="ss-compose-btn" data-testid="shorts-compose-btn">✨ 스토리보드 · Flow 프롬프트 자동 작성</button>
-          <a class="ss-btn ghost small" id="ss-open-flow-link" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">Google Flow 열기 ↗</a>
-        </div>
-
-        <details class="ss-flow-details" id="ss-flow-details" open>
-          <summary>Google Flow / Veo 프롬프트 &amp; 3컷 타임라인</summary>
-          <div id="ss-scenes-preview" class="ss-scenes-list"></div>
-          <label class="ss-sublabel" for="ss-flow-prompt">Veo / Google Flow 프롬프트 (편집 가능)</label>
-          <textarea id="ss-flow-prompt" rows="3" maxlength="1200" placeholder="스토리보드 자동 작성을 누르면 최적화된 9:16 Flow/Veo 프롬프트가 채워집니다."></textarea>
-          <div class="ss-inline-actions">
-            <button type="button" class="ss-btn ghost small" id="ss-copy-flow-btn">📋 Flow 프롬프트 복사</button>
-            <button type="button" class="ss-btn ghost small" id="ss-download-flow-pack-btn">📄 Flow 제작 팩(.md) 받기</button>
-          </div>
-        </details>
-      </article>
-
-      <!-- Step 3: Engine & PlayCoin Checkout -->
-      <article class="ss-card">
-        <div class="ss-card-head">
-          <span class="ss-step-num">3</span>
-          <div>
-            <h2>생성 엔진 선택 및 PlayCoin 생성</h2>
-            <p>Google Flow/Veo 또는 PlayForge Motion 엔진으로 생성하거나, Flow 웹 결과물을 무료 등록할 수 있습니다.</p>
-          </div>
-        </div>
-
-        <div class="ss-engines" id="ss-engine-list" role="radiogroup" aria-label="영상 생성 엔진"></div>
-
-        <label class="ss-check" id="ss-fallback-wrap">
-          <input type="checkbox" id="ss-fallback-check" checked>
-          <span>Veo API 키가 미설정·지연 시 PlayForge Motion 엔진으로 자동 전환 (실제 비용 <strong>20 PC</strong>만 정산, 차액 자동 반환)</span>
-        </label>
-
-        <div id="ss-import-box" class="ss-import-box" hidden>
-          <p><strong>Google Flow 웹(labs.google/flow)</strong>에서 만든 MP4/WebM 쇼츠 파일을 선택하면 무료(0 PC)로 PlayHub에 업로드됩니다.</p>
-          <label class="ss-btn secondary">
-            📂 Flow MP4 / WebM 파일 선택 (최대 40MB)
-            <input type="file" id="ss-video-file-input" accept="video/mp4,video/webm" hidden>
-          </label>
-          <span id="ss-video-file-name" class="ss-hint">선택된 파일 없음</span>
-        </div>
-
-        <div class="ss-hold-notice">
-          <strong>안전 Hold/Capture 결제:</strong> 생성 시작 시 PlayCoin이 안전하게 예약(Hold)되고, 영상 완성 시에만 실제 정산됩니다. 실패·취소 시 100% 즉시 자동 반환됩니다.
-        </div>
-
-        <div class="ss-generate-footer">
-          <div class="ss-cost-summary">
-            <span>예상 차감</span>
-            <strong id="ss-cost-display">20 PlayCoin</strong>
-          </div>
-          <button type="button" class="ss-btn primary large" id="ss-generate-btn" data-testid="shorts-generate-btn">
-            🎬 20 PlayCoin으로 쇼츠 생성
+  <main class="pl-main" id="pl-main-app">
+    <!-- Horizontal 4-Step Pipeline Stepper Card -->
+    <nav class="pl-stepper-card" aria-label="4단계 생성 파이프라인">
+      <ol class="pl-stepper" id="pl-stepper">
+        <li>
+          <button type="button" class="pl-step active" data-go-step="1" aria-current="step">
+            <span class="pl-step-ico" data-step-ico="1">1</span>
+            <span class="pl-step-meta">
+              <span class="pl-step-top">STEP 1 <em class="pl-step-tag" data-step-tag="1">진행 중</em></span>
+              <strong>소스 준비 (Source)</strong>
+            </span>
+            <span class="pl-step-sub" id="st-sub-1">게임 커버</span>
           </button>
-        </div>
-      </article>
-    </section>
+        </li>
+        <li>
+          <button type="button" class="pl-step" data-go-step="2">
+            <span class="pl-step-ico" data-step-ico="2">2</span>
+            <span class="pl-step-meta">
+              <span class="pl-step-top">STEP 2 <em class="pl-step-tag" data-step-tag="2">대기</em></span>
+              <strong>대본 &amp; 프롬프트</strong>
+            </span>
+            <span class="pl-step-sub" id="st-sub-2">5-Beat 대본</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="pl-step" data-go-step="3">
+            <span class="pl-step-ico" data-step-ico="3">3</span>
+            <span class="pl-step-meta">
+              <span class="pl-step-top">STEP 3 <em class="pl-step-tag" data-step-tag="3">20 PC</em></span>
+              <strong>엔진 &amp; 결제</strong>
+            </span>
+            <span class="pl-step-sub" id="st-sub-3">9:16 MP4</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="pl-step" data-go-step="4">
+            <span class="pl-step-ico" data-step-ico="4">4</span>
+            <span class="pl-step-meta">
+              <span class="pl-step-top">STEP 4 <em class="pl-step-tag" data-step-tag="4">대기</em></span>
+              <strong>실시간 렌더 &amp; 검증</strong>
+            </span>
+            <span class="pl-step-sub" id="st-sub-4">미실행</span>
+          </button>
+        </li>
+      </ol>
+    </nav>
 
-    <!-- Right Column: 9:16 Phone Preview + Hub My Game Registration + My Shorts Library -->
-    <section class="ss-preview-col" aria-label="쇼츠 미리보기 및 허브 등록">
-      <article class="ss-card ss-stage-card">
-        <div class="ss-stage-top">
-          <div>
-            <h2>9:16 쇼츠 미리보기</h2>
-            <p id="ss-stage-subtitle" class="ss-hint">영상을 생성하거나 아래 라이브러리에서 선택해 미리보세요.</p>
-          </div>
-          <span class="ss-status-badge" id="ss-current-status" hidden></span>
-        </div>
+    <!-- Main 2-Column Responsive Split Workspace -->
+    <div class="pl-workspace">
+      <!-- LEFT COLUMN: Active Step Panels (Step 1 ~ 4) -->
+      <div class="pl-left">
 
-        <div class="ss-stage-grid">
-          <div class="ss-phone-frame">
-            <div class="ss-phone-notch" aria-hidden="true"></div>
-            <div id="ss-phone-empty" class="ss-phone-empty">
-              <div class="ss-phone-icon" aria-hidden="true">🎬</div>
-              <strong>9:16 세로 쇼츠 프리뷰</strong>
-              <p>왼쪽에서 게임과 스타일을 고르고 PlayCoin으로 게임 소개 쇼츠를 생성해 보세요.</p>
-            </div>
-            <div id="ss-phone-progress" class="ss-phone-progress" hidden>
-              <div class="ss-spinner" aria-hidden="true"></div>
-              <strong id="ss-progress-pct">0%</strong>
-              <p id="ss-progress-stage">준비 중…</p>
-              <div class="ss-progress-track"><span id="ss-progress-bar" style="width:5%"></span></div>
-            </div>
-            <video id="ss-preview-video" class="ss-preview-video" controls playsinline loop hidden></video>
-          </div>
-
-          <div class="ss-publish-panel">
-            <h3>허브 내 게임 소개 영상 등록</h3>
-            <p class="ss-hint">완성된 쇼츠를 PlayHub 게임 상세 페이지와 쇼츠 피드에 즉시 게시할 수 있습니다.</p>
-
-            <div class="ss-field">
-              <label for="ss-pub-game">등록 대상 게임</label>
-              <select id="ss-pub-game"></select>
-            </div>
-            <div class="ss-field">
-              <label for="ss-pub-title">쇼츠 제목</label>
-              <input id="ss-pub-title" type="text" maxlength="80" placeholder="게임 소개 쇼츠 제목">
-            </div>
-            <div class="ss-field">
-              <label for="ss-pub-caption">소개 캡션</label>
-              <textarea id="ss-pub-caption" rows="2" maxlength="280" placeholder="플레이어에게 보여줄 한 줄 소개"></textarea>
-            </div>
-            <div class="ss-field">
-              <label for="ss-pub-hashtags">해시태그</label>
-              <input id="ss-pub-hashtags" type="text" maxlength="120" placeholder="#PlayHub #PlayForge #게임쇼츠">
-            </div>
-            <div class="ss-grid-2">
-              <div class="ss-field">
-                <label for="ss-pub-visibility">공개 범위</label>
-                <select id="ss-pub-visibility">
-                  <option value="public" selected>전체 공개 (쇼츠 피드 + 게임 상세)</option>
-                  <option value="unlisted">게임 상세 전용 (피드 미노출)</option>
-                </select>
+        <!-- ==================== STEP 1: SOURCE ==================== -->
+        <section class="pl-panel" id="step-panel-1" data-step-panel="1">
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">01 · TARGET GAME</span>
+                <h2>대상 게임 선택</h2>
               </div>
-              <label class="ss-check ss-primary-toggle">
-                <input type="checkbox" id="ss-pub-primary" checked>
-                <span>대표 소개 영상으로 고정</span>
+              <span class="pl-badge green" id="s1-owner-badge">✓ 소유권 인증됨</span>
+            </div>
+
+            <div class="pl-game-select-row">
+              <img id="s1-game-thumb" class="pl-game-thumb" src="" alt="">
+              <div class="pl-game-select-wrap">
+                <select id="s1-game-select" aria-label="대상 게임 선택"></select>
+                <small id="s1-game-desc" class="pl-muted"></small>
+              </div>
+            </div>
+
+            <!-- Dev-Only 5-Game Quick Presets (Hidden in Production Builds) -->
+            <div class="pl-preset-pills" id="s1-preset-pills" role="group" aria-label="개발용 5대 게임 빠른 선택" hidden></div>
+          </div>
+
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">02 · SOURCE MEDIA</span>
+                <h2>소스 미디어 준비</h2>
+              </div>
+              <div class="pl-inline">
+                <button type="button" class="pl-btn soft sm" id="s1-capture-editor-btn" data-testid="btn-capture-editor" hidden>
+                  📷 에디터 화면 캡처
+                </button>
+                <span class="pl-muted-sm">직접 촬영 소스 편집 시 0 PC 무료</span>
+              </div>
+            </div>
+
+            <div class="pl-seg" role="radiogroup" aria-label="소스 유형">
+              <button type="button" class="pl-seg-btn active" data-src-mode="game-cover" aria-pressed="true">
+                ✨ 게임 커버 · AI 생성
+              </button>
+              <button type="button" class="pl-seg-btn" data-src-mode="upload-video" aria-pressed="false">
+                🎬 직접 촬영 영상 <em class="pl-tag-free">0 PC</em>
+              </button>
+              <button type="button" class="pl-seg-btn" data-src-mode="upload-images" aria-pressed="false">
+                🖼️ 직접 촬영 이미지 (1~6장) <em class="pl-tag-free">0 PC</em>
+              </button>
+            </div>
+
+            <!-- Mode A: Game Cover / Preset -->
+            <div id="s1-box-cover" class="pl-src-box">
+              <div class="pl-frame-grid" id="s1-cover-frames"></div>
+            </div>
+
+            <!-- Mode B: Direct Uploaded Video (MP4/WebM) -->
+            <div id="s1-box-video" class="pl-src-box" hidden>
+              <div class="pl-upload-bar">
+                <label class="pl-btn primary sm">
+                  📂 녹화 영상 선택 (MP4/WebM · 40MB)
+                  <input type="file" id="s1-video-input" accept="video/mp4,video/webm" hidden>
+                </label>
+                <button type="button" class="pl-btn soft sm" id="s1-load-sample-video" data-testid="poc-sf-sample-video" hidden>
+                  🧪 샘플 영상 불러오기
+                </button>
+                <span class="pl-muted-sm" id="s1-video-name">선택된 영상 없음</span>
+              </div>
+            </div>
+
+            <!-- Mode C: Direct Uploaded Images (1..6) -->
+            <div id="s1-box-images" class="pl-src-box" hidden>
+              <div class="pl-upload-bar">
+                <label class="pl-btn primary sm">
+                  🖼️ 스크린샷 추가 (1~6장)
+                  <input type="file" id="s1-images-input" accept="image/png,image/jpeg,image/webp" multiple hidden>
+                </label>
+                <button type="button" class="pl-btn soft sm" id="s1-load-sample-images" data-testid="poc-sf-sample-images" hidden>
+                  🖼️ 4장 샘플 채우기
+                </button>
+                <button type="button" class="pl-btn ghost sm" id="s1-clear-images">비우기</button>
+              </div>
+              <div class="pl-frame-grid" id="s1-images-grid"></div>
+            </div>
+          </div>
+
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">03 · FRAMING &amp; AUDIO</span>
+                <h2>프레이밍 &amp; 오디오 설정</h2>
+              </div>
+            </div>
+
+            <div class="pl-grid-2">
+              <label class="pl-field">
+                <span>9:16 프레이밍 모드</span>
+                <select id="s1-framing">
+                  <option value="fit-blur" selected>9:16 중앙 배치 + 배경 블러 (추천)</option>
+                  <option value="crop-fill">9:16 세로 전체 꽉 채우기</option>
+                </select>
+              </label>
+              <label class="pl-field">
+                <span>쇼츠 길이</span>
+                <select id="s1-duration">
+                  <option value="6">6초 (빠른 훅)</option>
+                  <option value="8" selected>8초 (표준 숏폼 · 추천)</option>
+                  <option value="10">10초</option>
+                  <option value="12">12초</option>
+                </select>
               </label>
             </div>
 
-            <div class="ss-meta-pills" id="ss-current-meta" hidden></div>
+            <label class="pl-check">
+              <input type="checkbox" id="s1-keep-audio" checked>
+              <span><strong>원본 오디오 자동 덕킹 &amp; 한국어 TTS 믹싱</strong> — 나래이션 음성 합성 시 배경음을 자연스럽게 감쇄합니다.</span>
+            </label>
+          </div>
 
-            <div class="ss-publish-actions">
-              <button type="button" class="ss-btn primary" id="ss-publish-btn" data-testid="shorts-publish-btn" disabled>
-                🚀 허브 내 게임에 소개 영상 등록
+          <div class="pl-step-footer">
+            <span class="pl-muted-sm" id="s1-cost-hint">STEP 3에서 최종 포맷·엔진 확정</span>
+            <button type="button" class="pl-btn primary lg" data-go-step="2" data-testid="btn-next-step2">
+              다음: STEP 2 대본·자막 편집 →
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 2: SCRIPT & PROMPT ==================== -->
+        <section class="pl-panel" id="step-panel-2" data-step-panel="2" hidden>
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">01 · TOP 2-LINE HOOK</span>
+                <h2>상단 2줄 훅 헤드라인</h2>
+              </div>
+              <button type="button" class="pl-btn soft sm" id="s2-open-ai-hooks" data-testid="btn-ai-hooks">
+                ✨ AI 훅 추천
               </button>
-              <a class="ss-btn secondary small" id="ss-download-video-btn" download hidden>⬇️ MP4 다운로드</a>
             </div>
 
-            <div id="ss-published-links" class="ss-published-links" hidden>
-              <strong>✅ 허브 내 게임에 소개 영상이 등록되었습니다!</strong>
-              <div class="ss-inline-actions">
-                <a class="ss-btn primary small" id="ss-view-feed-link" href="/?view=shorts" target="_blank" rel="noopener">허브 쇼츠 피드에서 보기 ↗</a>
-                <a class="ss-btn secondary small" id="ss-view-game-link" href="/" target="_blank" rel="noopener">게임 상세 페이지에서 보기 ↗</a>
+            <div class="pl-grid-2">
+              <label class="pl-field">
+                <span>1줄 (화이트 텍스트) <em id="s2-l1-count">0/22</em></span>
+                <input id="s2-hl-line1" type="text" maxlength="22" placeholder="전함 3척에 포위당한 순양함이">
+              </label>
+              <label class="pl-field">
+                <span>2줄 (노랑 강조 #FFE600) <em id="s2-l2-count">0/22</em></span>
+                <input id="s2-hl-line2" type="text" maxlength="22" placeholder="일제사격 한 방으로 역전하는 법">
+              </label>
+            </div>
+
+            <!-- Live Dark 2-Line Safe Area Preview -->
+            <div class="pl-hl-swatch">
+              <div class="pl-hl-swatch-bar">
+                <span>👁️ 9:16 상단 노출 미리보기</span>
+                <span class="pl-live-pill">LIVE</span>
+              </div>
+              <div class="pl-hl-swatch-body">
+                <div class="sw-l1" id="s2-sw-l1"></div>
+                <div class="sw-l2" id="s2-sw-l2"></div>
               </div>
             </div>
           </div>
-        </div>
-      </article>
 
-      <article class="ss-card">
-        <div class="ss-library-head">
-          <div>
-            <h2>내 생성 · 등록 쇼츠</h2>
-            <p class="ss-hint">PlayForge에서 생성하거나 Flow에서 가져온 내 쇼츠 목록입니다.</p>
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">02 · 5-BEAT NARRATION</span>
+                <h2>5-Beat 나래이션 타임라인</h2>
+              </div>
+              <div class="pl-inline">
+                <button type="button" class="pl-btn soft sm" id="s2-tts-preview">🔊 한국어 TTS 미리듣기</button>
+                <button type="button" class="pl-btn ghost sm" id="s2-reset-script">기본 대본 복원</button>
+              </div>
+            </div>
+
+            <div class="pl-beat-list" id="s2-beat-list"></div>
+
+            <label class="pl-check" style="margin-top:10px">
+              <input type="checkbox" id="s2-include-tts" checked>
+              <span><strong>한국어 TTS 음성 나래이션 자동 합성</strong> (MP4는 서버 TTS 합성 / 무영상·4컷은 브라우저 TTS)</span>
+            </label>
           </div>
-          <button type="button" class="ss-btn ghost small" id="ss-refresh-mine-btn">새로고침</button>
+
+          <details class="pl-card pl-code-details">
+            <summary>
+              <span><strong>Google Flow (Veo 3.1)</strong> 자동 프롬프트 명세</span>
+              <span class="pl-inline">
+                <button type="button" class="pl-btn ghost xs" id="s2-copy-flow">📋 복사</button>
+                <button type="button" class="pl-btn ghost xs" id="s2-download-pack">📄 .md</button>
+              </span>
+            </summary>
+            <textarea id="s2-flow-prompt" class="pl-code-area" rows="4" maxlength="1200"></textarea>
+          </details>
+
+          <div class="pl-step-footer">
+            <button type="button" class="pl-btn ghost" data-go-step="1">← STEP 1 소스</button>
+            <button type="button" class="pl-btn primary lg" data-go-step="3" data-testid="btn-next-step3">
+              다음: STEP 3 엔진·결제 선택 →
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 3: ENGINE & SETTLEMENT ==================== -->
+        <section class="pl-panel" id="step-panel-3" data-step-panel="3" hidden>
+          <div class="pl-routing-bar" id="s3-routing-bar">
+            <i class="pl-status-dot" id="s3-routing-dot"></i>
+            <div class="pl-routing-copy">
+              <strong id="s3-routing-title">스마트 라우팅 상태 확인 중…</strong>
+              <span id="s3-routing-desc"></span>
+            </div>
+            <button type="button" class="pl-btn soft xs" id="s3-open-ai-auth">🔐 AI OAuth 설정</button>
+          </div>
+
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">01 · OUTPUT FORMAT &amp; ENGINE</span>
+                <h2>출력 포맷 &amp; 렌더링 엔진</h2>
+              </div>
+              <span class="pl-muted-sm">단일 선택</span>
+            </div>
+
+            <div class="pl-engine-list" id="s3-engine-list" role="radiogroup" aria-label="출력 포맷 및 엔진"></div>
+          </div>
+
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">02 · PLAYCOIN SAFE HOLD LEDGER</span>
+                <h2>PlayCoin 안전 Hold 이중원장</h2>
+              </div>
+              <span class="pl-badge amber" id="s3-hold-badge">안전 Hold 정책</span>
+            </div>
+
+            <div class="pl-ledger-3">
+              <div class="pl-ledger-box">
+                <small>현재 보유 잔액</small>
+                <strong id="s3-bal-now">0 PC</strong>
+              </div>
+              <div class="pl-ledger-box hold">
+                <small>예약 금액 (Hold)</small>
+                <strong id="s3-bal-hold">-20 PC</strong>
+              </div>
+              <div class="pl-ledger-box after">
+                <small>정산 후 예상 잔여</small>
+                <strong id="s3-bal-after">0 PC</strong>
+              </div>
+            </div>
+
+            <p class="pl-ledger-note">
+              렌더 성공 및 미디어 규격 검증 완료 시에만 실제 비용이 정산(Settle)됩니다. 개인 AI OAuth 연결 또는 직접 촬영 소스 편집 시 0 PC로 실행됩니다.
+            </p>
+          </div>
+
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-kicker">03 · POST-RENDER PUBLISH</span>
+                <h2>렌더 완료 후 허브 등록 옵션</h2>
+              </div>
+            </div>
+            <div class="pl-opt-row">
+              <div>
+                <strong>허브 내 게임에 자동 등록</strong>
+                <small class="pl-muted">완료 즉시 게임 상세 및 쇼츠 피드에 노출합니다.</small>
+              </div>
+              <input type="checkbox" id="s3-auto-publish" class="pl-switch" checked>
+            </div>
+            <div class="pl-opt-row">
+              <div>
+                <strong>게임 대표 쇼츠(Primary) 지정</strong>
+                <small class="pl-muted">게임 상세 상단 기본 소개 쇼츠로 우선 표시합니다.</small>
+              </div>
+              <input type="checkbox" id="s3-is-primary" class="pl-switch" checked>
+            </div>
+            <div class="pl-opt-row">
+              <div>
+                <strong>공개 범위</strong>
+                <small class="pl-muted">전체 공개 또는 게임 상세 전용 선택</small>
+              </div>
+              <select id="s3-visibility" style="width:auto;min-width:150px">
+                <option value="public" selected>전체 공개</option>
+                <option value="unlisted">게임 상세 전용</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pl-step-footer">
+            <button type="button" class="pl-btn ghost" data-go-step="2">← STEP 2 대본</button>
+            <div class="pl-inline">
+              <button type="button" class="pl-btn coin" id="s3-run-batch-btn" data-testid="poc-run-all" hidden>
+                🚀 5대 게임 3종 일괄 검증 (DEV)
+              </button>
+              <button type="button" class="pl-btn primary lg" id="s3-execute-btn" data-testid="btn-execute-pipeline">
+                ⚡ 20 PC 예약 및 파이프라인 실행 →
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 4: LIVE RENDER & VERIFY ==================== -->
+        <section class="pl-panel" id="step-panel-4" data-step-panel="4" hidden>
+          <div class="pl-card">
+            <div class="pl-card-head">
+              <div>
+                <span class="pl-job-pill" id="s4-job-pill">READY</span>
+                <h2 style="margin-top:6px">실시간 렌더링 &amp; 무결성 검증 파이프라인</h2>
+              </div>
+              <button type="button" class="pl-btn soft sm" id="s4-new-run-btn">🔄 새 작업 시작</button>
+            </div>
+
+            <div class="pl-progress-box">
+              <div class="pl-progress-top">
+                <strong id="s4-stage-label">STEP 3에서 파이프라인을 실행해 주세요.</strong>
+                <span class="pl-progress-pct" id="s4-progress-pct">0%</span>
+              </div>
+              <div class="pl-progress-track"><span id="s4-progress-bar" style="width:0%"></span></div>
+              <div class="pl-progress-meta">
+                <span id="s4-engine-meta">엔진 대기 중</span>
+                <span id="s4-size-meta">규격 확인 대기</span>
+              </div>
+            </div>
+
+            <div class="pl-sub-label">세부 하위 파이프라인 무결성 검증</div>
+            <ul class="pl-check-steps" id="s4-check-steps">
+              <li data-chk="auth"><span>1. 크리에이터 인증 · 게임 소유권 및 지갑 검증</span><em data-chk-st="auth">대기</em></li>
+              <li data-chk="prep"><span>2. 소스 미디어 · 5-Beat 나래이션 대본 구성</span><em data-chk-st="prep">대기</em></li>
+              <li data-chk="render"><span>3. PlayCoin Hold 예약 · 엔진 렌더 / 한국어 TTS 합성</span><em data-chk-st="render">대기</em></li>
+              <li data-chk="verify"><span>4. 미디어 무결성 (ftyp / Range 206 / 슬라이드) 검증</span><em data-chk-st="verify">대기</em></li>
+              <li data-chk="publish"><span>5. PlayHub 내 게임 등록 &amp; 피드·상세 연동 확인</span><em data-chk-st="publish">대기</em></li>
+            </ul>
+
+            <div id="s4-publish-links" class="pl-done-bar" hidden>
+              <a class="pl-btn primary sm" id="s4-link-feed" href="/?view=shorts" target="_blank" rel="noopener">🎬 허브 쇼츠 피드에서 보기 ↗</a>
+              <a class="pl-btn soft sm" id="s4-link-detail" href="/" target="_blank" rel="noopener">🕹️ 게임 상세에서 보기 ↗</a>
+              <a class="pl-btn ghost sm" id="s4-link-download" download hidden>⬇️ MP4 받기</a>
+            </div>
+          </div>
+
+          <!-- Dev-Only Telemetry Console (Hidden in Production Builds) -->
+          <details class="pl-card pl-console-details" id="s4-console-details" hidden>
+            <summary>
+              <span>📡 실시간 API · PlayCoin 원장 트레이스 (DEV)</span>
+              <button type="button" class="pl-btn ghost xs" id="s4-clear-log">지우기</button>
+            </summary>
+            <div id="pl-log-console" class="pl-log-console" role="log" aria-live="polite"></div>
+          </details>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky Live Preview + Live PlayCoin Ledger Summary -->
+      <aside class="pl-right">
+        <div class="pl-card pl-preview-card">
+          <div class="pl-card-head">
+            <div>
+              <span class="pl-kicker">LIVE PREVIEW</span>
+              <h2>숏폼 실시간 프리뷰</h2>
+            </div>
+            <span class="pl-badge green" id="pr-format-badge">9:16 쇼츠</span>
+          </div>
+
+          <div class="pl-preview-stage" id="pl-preview-slot"></div>
+
+          <div class="pl-preview-foot" id="pl-preview-foot">
+            <span>입력 변경 시 프리뷰가 즉시 반영됩니다.</span>
+          </div>
         </div>
-        <div id="ss-mine-list" class="ss-mine-list">
-          <div class="ss-empty-list">아직 생성된 쇼츠가 없습니다.</div>
+
+        <div class="pl-card">
+          <div class="pl-card-head">
+            <div>
+              <span class="pl-kicker">PLAYCOIN LEDGER</span>
+              <h2>PlayCoin 정산 원장</h2>
+            </div>
+            <span class="pl-badge amber" id="pr-ledger-badge">대기</span>
+          </div>
+          <div class="pl-ledger-3 compact">
+            <div class="pl-ledger-box">
+              <small>기존 잔액</small>
+              <strong id="pr-bal-before">0 PC</strong>
+            </div>
+            <div class="pl-ledger-box hold">
+              <small>예약/정산</small>
+              <strong id="pr-bal-delta">0 PC</strong>
+            </div>
+            <div class="pl-ledger-box after">
+              <small>최종 잔여</small>
+              <strong id="pr-bal-after">0 PC</strong>
+            </div>
+          </div>
         </div>
-      </article>
-    </section>
+      </aside>
+    </div>
   </main>
 
+  <!-- Mobile Bottom 4-Tab Bar -->
+  <nav class="pl-mobile-nav" aria-label="모바일 단계 전환">
+    <button type="button" class="active" data-go-step="1"><span>📁</span><span>소스</span></button>
+    <button type="button" data-go-step="2"><span>✍️</span><span>대본</span></button>
+    <button type="button" data-go-step="3"><span>⚡</span><span>엔진·결제</span></button>
+    <button type="button" data-go-step="4"><span>🎬</span><span>렌더·등록</span></button>
+  </nav>
+
+  <!-- AI Hook Suggestion Modal -->
+  <div id="pl-hook-modal" class="pl-modal-backdrop" hidden>
+    <div class="pl-modal" role="dialog" aria-modal="true" aria-labelledby="pl-hook-modal-title">
+      <div class="pl-modal-head">
+        <h3 id="pl-hook-modal-title">✨ AI 2줄 훅 헤드라인 추천</h3>
+        <button type="button" class="pl-btn ghost xs" id="pl-hook-modal-close">닫기</button>
+      </div>
+      <div id="pl-hook-options" class="pl-hook-options"></div>
+    </div>
+  </div>
+
+  <!-- Personal Subscription AI OAuth Connection Settings Modal -->
+  <div id="pl-ai-auth-modal" class="pl-modal-backdrop" hidden>
+    <div class="pl-modal pl-modal-wide" role="dialog" aria-modal="true" aria-labelledby="pl-ai-auth-title">
+      <div class="pl-modal-head">
+        <div>
+          <span class="pl-kicker">PERSONAL SUBSCRIPTION AI OAUTH</span>
+          <h3 id="pl-ai-auth-title">개인 구독 AI OAuth 연결 설정</h3>
+        </div>
+        <button type="button" class="pl-btn ghost xs" id="pl-ai-auth-close">닫기</button>
+      </div>
+
+      <div class="pl-oauth-stack">
+        <!-- 1. Google Vertex AI / Gemini Veo 3.1 Personal OAuth -->
+        <section class="pl-oauth-card">
+          <div class="pl-oauth-card-head">
+            <div>
+              <strong>Google OAuth 2.0 · Vertex AI / Gemini (Veo 3.1 영상 생성)</strong>
+              <p class="pl-muted">개인 Google 계정 연결 시 Veo 3.1 생성 비용은 <strong>0 PC</strong>(내 계정 직접 과금)로 처리됩니다.</p>
+            </div>
+            <span class="pl-badge" id="ai-google-badge">미연결</span>
+          </div>
+
+          <div id="ai-google-connected-box" class="pl-oauth-connected" hidden>
+            <div>
+              <strong id="ai-google-conn-summary">연결됨</strong>
+              <small id="ai-google-conn-detail" class="pl-muted"></small>
+            </div>
+            <button type="button" class="pl-btn ghost xs" id="ai-google-disconnect-btn" data-testid="btn-google-disconnect">연결 해제</button>
+          </div>
+
+          <div class="pl-inline" style="margin-top:10px">
+            <button type="button" class="pl-btn primary sm" id="ai-google-oauth-btn" data-testid="btn-google-oauth-start">
+              🔐 Google OAuth 2.0 브라우저 로그인
+            </button>
+            <button type="button" class="pl-btn soft sm" id="ai-gcloud-btn" data-testid="btn-gcloud-import" hidden>
+              ⚡ 로컬 gcloud OAuth 가져오기
+            </button>
+            <a class="pl-btn ghost xs" id="ai-google-direct-link" href="#" target="_blank" rel="noopener" hidden>로그인 창 직접 열기 ↗</a>
+          </div>
+          <small class="pl-muted" id="ai-google-oauth-hint" style="margin-top:6px"></small>
+          <div id="ai-webview-warn" class="pl-oauth-warn" hidden>
+            <strong>⚠️ 모바일 인앱 브라우저 감지</strong> — Google 보안 정책상 인앱 브라우저(카카오톡·WebView 등)에서는 Google 로그인이 차단됩니다.
+            <button type="button" class="pl-btn ghost xs" id="ai-copy-current-url" style="margin-left:6px">📋 외부 Chrome/Safari용 주소 복사</button>
+          </div>
+
+          <details class="pl-oauth-manual" id="ai-oauth-client-setup" style="margin-top:10px">
+            <summary>Google OAuth Client ID 직접 입력 (서버 미설정 시 브라우저 로그인 활성화)</summary>
+            <div class="pl-oauth-manual-body pl-oauth-form">
+              <div class="pl-grid-2">
+                <label class="pl-field">
+                  <span>Google OAuth Client ID</span>
+                  <input id="ai-input-oauth-client-id" type="text" placeholder="123456-xxx.apps.googleusercontent.com" autocomplete="off">
+                </label>
+                <label class="pl-field">
+                  <span>Client Secret (웹 클라이언트인 경우)</span>
+                  <input id="ai-input-oauth-client-secret" type="password" placeholder="GOCSPX-… (선택)" autocomplete="off">
+                </label>
+              </div>
+              <div class="pl-inline" style="justify-content:space-between">
+                <small class="pl-muted" id="ai-redirect-uri-text" style="word-break:break-all"></small>
+                <div class="pl-inline">
+                  <button type="button" class="pl-btn ghost xs" id="ai-copy-redirect-uri">📋 Redirect URI 복사</button>
+                  <a class="pl-btn ghost xs" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">GCP 콘솔 ↗</a>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="pl-oauth-manual" id="ai-manual-details" style="margin-top:8px">
+            <summary>빠른 직접 연결 (개인 Gemini API 키 또는 Vertex OAuth 토큰)</summary>
+            <div class="pl-oauth-manual-body">
+              <div class="pl-seg compact" role="radiogroup" aria-label="Google 직접 연결 방식">
+                <button type="button" class="pl-seg-btn active" data-google-mode="gemini-key" aria-pressed="true">Gemini API 키</button>
+                <button type="button" class="pl-seg-btn" data-google-mode="vertex-oauth" aria-pressed="false">Vertex AI OAuth 토큰</button>
+              </div>
+
+              <div id="ai-form-gemini" class="pl-oauth-form">
+                <label class="pl-field">
+                  <span>Google AI Studio Gemini API Key</span>
+                  <input id="ai-input-gemini-key" type="password" placeholder="AIzaSy… (메모리 세션에만 임시 보관)" autocomplete="off">
+                </label>
+                <button type="button" class="pl-btn primary sm" id="ai-save-gemini-btn" data-testid="btn-save-gemini-key">Gemini 키 연결</button>
+              </div>
+
+              <div id="ai-form-vertex" class="pl-oauth-form" hidden>
+                <div class="pl-grid-2">
+                  <label class="pl-field">
+                    <span>GCP 프로젝트 ID</span>
+                    <input id="ai-input-vertex-project" type="text" placeholder="my-gcp-project">
+                  </label>
+                  <label class="pl-field">
+                    <span>리전</span>
+                    <input id="ai-input-vertex-location" type="text" value="us-central1">
+                  </label>
+                </div>
+                <label class="pl-field">
+                  <span>Google Cloud OAuth 2.0 Access Token</span>
+                  <input id="ai-input-vertex-token" type="password" placeholder="ya29.… (gcloud auth print-access-token)" autocomplete="off">
+                </label>
+                <button type="button" class="pl-btn primary sm" id="ai-save-vertex-btn" data-testid="btn-save-vertex-oauth">Vertex OAuth 연결</button>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- 2. PlayForge Personal Subscription AI OAuth (ChatGPT Plus/Pro, Claude Pro/Max, Gemini CLI) -->
+        <section class="pl-oauth-card">
+          <div class="pl-oauth-card-head">
+            <div>
+              <strong>PlayForge 개인 구독 AI OAuth (ChatGPT · Claude · Gemini)</strong>
+              <p class="pl-muted">PlayForge 로컬 에이전트 OAuth 세션과 공유되어 대본·프롬프트 작성에 개인 구독을 그대로 활용합니다.</p>
+            </div>
+            <button type="button" class="pl-btn ghost xs" id="ai-forge-refresh-btn">새로고침</button>
+          </div>
+          <div id="ai-forge-providers" class="pl-forge-providers">
+            <div class="pl-muted-sm">PlayForge OAuth 상태 확인 중…</div>
+          </div>
+        </section>
+
+        <!-- 3. Google Labs Flow Web (Personal AI Pro / Ultra) -->
+        <section class="pl-oauth-card muted">
+          <div class="pl-oauth-card-head">
+            <div>
+              <strong>Google Labs Flow 웹 (Google AI Pro / Ultra 개인 구독)</strong>
+              <p class="pl-muted">Flow 웹은 공식 OAuth API 스코프가 없으며, 인앱 브라우저(WebView)에서는 Google 로그인이 차단됩니다. <strong>외부 Chrome / Safari</strong>에서 Flow 웹에 로그인해 생성한 MP4를 다운받은 뒤 <strong>STEP 1 [직접 촬영 영상 0 PC]</strong>에 업로드해 주세요.</p>
+            </div>
+            <div class="pl-inline">
+              <button type="button" class="pl-btn ghost xs" id="ai-copy-flow-url">📋 주소 복사</button>
+              <a class="pl-btn ghost xs" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">Flow 웹 ↗</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- playforge-dev-demo:start -->
+  <script src="dev-demo-ui.js"></script>
+  <!-- playforge-dev-demo:end -->
+  <script src="/shorts.js"></script>
   <script src="shorts-studio.js"></script>
 </body>
 </html>

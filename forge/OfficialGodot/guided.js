@@ -493,4 +493,67 @@
     },
     getCursorSharing() { return cursorSharing; }
   };
+
+  // Mount PlayForge-internal "AI 스튜디오" menu (moved from PlayHub nav) + fix mobile sidebar pill bar
+  function mountForgeStudioNavAndMobileFix() {
+    if (!document.getElementById("forge-mobile-sidebar-fix")) {
+      const style = document.createElement("style");
+      style.id = "forge-mobile-sidebar-fix";
+      style.textContent = `
+        @media (max-width: 900px) {
+          .forge-sidebar {
+            flex-direction: row !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            scrollbar-width: none;
+            gap: 8px !important;
+            padding: 10px 14px !important;
+            min-height: 0 !important;
+          }
+          .forge-sidebar::-webkit-scrollbar { display: none; }
+          .forge-sidebar-group {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 6px !important;
+            flex: 0 0 auto;
+          }
+          .forge-sidebar .forge-dev-demo-card { display: none !important; }
+          .forge-sidebar .forge-nav-item {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            padding: 7px 12px !important;
+            border-radius: 999px !important;
+            font-size: 13px !important;
+            background: #F3F3FE;
+          }
+          .forge-sidebar .forge-nav-item.active {
+            background: #DBE1FF;
+            color: #003594;
+          }
+        }
+      `;
+      document.head.append(style);
+    }
+
+    const sidebar = document.querySelector(".forge-sidebar");
+    if (sidebar && !document.getElementById("forge-nav-ai-studio")) {
+      const groups = sidebar.querySelectorAll(".forge-sidebar-group");
+      const targetGroup = groups[1] || groups[0] || sidebar;
+      const aiStudioLink = document.createElement("a");
+      aiStudioLink.id = "forge-nav-ai-studio";
+      aiStudioLink.className = "forge-nav-item";
+      aiStudioLink.href = "/?view=agent";
+      aiStudioLink.dataset.testid = "forge-nav-ai-studio";
+      aiStudioLink.textContent = "✨ AI 스튜디오";
+      const label = targetGroup.querySelector(".forge-sidebar-label");
+      if (label && label.nextSibling) targetGroup.insertBefore(aiStudioLink, label.nextSibling);
+      else targetGroup.prepend(aiStudioLink);
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountForgeStudioNavAndMobileFix, { once: true });
+  } else {
+    mountForgeStudioNavAndMobileFix();
+  }
 })();

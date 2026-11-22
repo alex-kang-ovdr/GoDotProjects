@@ -131,6 +131,7 @@ function createShortsPipelineHandler(forgeRoot, options = {}) {
       title: job.title,
       engineId: job.engineId,
       resolvedEngineId: job.resolvedEngineId,
+      renderMode: job.storyboard?.renderMode || 'generative-video',
       engineModel: job.engineModel,
       status: job.status,
       progress: job.progress,
@@ -168,7 +169,26 @@ function createShortsPipelineHandler(forgeRoot, options = {}) {
         ? payload.keyframes.slice(0, 3).filter(k => k && typeof k.dataUrl === 'string' && k.dataUrl.startsWith('data:image/'))
         : [];
       let result;
-      if (requested.provider === 'google-veo') {
+      if (requested.provider === 'motion-graphic' || requested.provider === 'carousel-images') {
+        job.resolvedEngineId = requested.id;
+        job.storyboard.renderMode = requested.renderMode;
+        const svgPath = path.join(dir, 'poster.svg');
+        fs.writeFileSync(svgPath, ffmpeg.buildFallbackPosterSvg({
+          title: job.storyboard.gameTitle,
+          genreLabel: job.storyboard.genreLabel,
+          hookText: job.storyboard.hookText,
+          accent: job.storyboard.accent || '#4285F4'
+        }), 'utf8');
+        result = {
+          videoPath: null,
+          posterPath: svgPath,
+          bytes: Buffer.byteLength(JSON.stringify(job.storyboard)),
+          durationSec: job.storyboard.durationSec || 8,
+          width: requested.width || 720,
+          height: requested.height || 1280,
+          model: requested.model
+        };
+      } else if (requested.provider === 'google-veo') {
         const veoCfg = engines.detectVeoConfig(env, {});
         if (veoCfg.configured) {
           result = await veo.generateShortsWithVeo({

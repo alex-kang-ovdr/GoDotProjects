@@ -25,17 +25,23 @@ import {
   CAMERA_MOTION_MAP,
   buildPublicEngineCatalog,
   detectFfmpegBinary,
-  detectVeoConfig
+  detectVeoConfig,
+  renderModeForEngine,
+  isNonVideoEngine
 } from './engines.mjs';
 import { composeShortsStoryboard, normalizeHashtags } from './storyboard.mjs';
+import { getPlaygroundPlanByGameId } from './playground-presets.mjs';
 import {
   renderMotionShortsWithFfmpeg,
+  renderUploadedVideoToShortform,
+  decodeDataUrlImage,
   validateVideoBuffer,
   extractPosterFromVideo,
   probeVideoFile,
   buildFallbackPosterSvg
 } from './providers/ffmpeg-adapter.mjs';
 import { generateShortsWithVeo } from './providers/veo-adapter.mjs';
+import { createPersonalAiAuthStore } from './ai-auth.mjs';
 
 const SHORT_ID_RE = /^sh_[a-f0-9]{16}$/;
 const GAME_ID_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
@@ -74,6 +80,23 @@ function dayBucketKst(stamp) {
   return new Date(stamp + 9 * 3600000).toISOString().slice(0, 10);
 }
 
+function parseNarrationLines(rawText, durationSec = 8) {
+  const lines = String(rawText ?? '')
+    .split(/\r?\n/)
+    .map(l => l.replace(/\s+/g, ' ').trim().slice(0, 44))
+    .filter(Boolean)
+    .slice(0, 8);
+  if (!lines.length) return null;
+  const dur = Math.max(3, Math.min(15, Number(durationSec) || 8));
+  const step = dur / lines.length;
+  return lines.map((text, idx) => ({
+    startSec: Number((idx * step).toFixed(2)),
+    endSec: Number(((idx + 1) * step).toFixed(2)),
+    text,
+    emphasize: text.slice(0, 14)
+  }));
+}
+
 export function createShortsService({
   db,
   config = {},
@@ -91,8 +114,14 @@ export function createShortsService({
   const mediaRoot = path.resolve(config.dataDir, 'shorts-media');
   fs.mkdirSync(mediaRoot, { recursive: true });
 
-  const allowDevCatalogBinding = config.secureCookies !== true && config.shorts?.allowDevCatalogBinding !== false;
-  const allowDevGrant = config.secureCookies !== true && config.shorts?.allowDevGrant !== false;
+  const envModeRaw = String(env.PLAYHUB_ENV || env.NODE_ENV || '').trim().toLowerCase();
+  const isLiveBuild = config.secureCookies === true || ['live', 'prod', 'production'].includes(envModeRaw);
+  const experimentalEnabled = config.shorts?.experimental !== undefined
+    ? Boolean(config.shorts.experimental)
+    : !isLiveBuild;
+  const allowDevCatalogBinding = experimentalEnabled && config.shorts?.allowDevCatalogBinding !== false;
+  const allowDevGrant = experimentalEnabled && config.shorts?.allowDevGrant !== false;
+  const personalAiAuth = createPersonalAiAuthStore({ env, config, fetchImpl, now });
 
   const activeJobs = new Map(); // shortId -> Promise
   const pendingQueue = [];
@@ -299,6 +328,7 @@ export function createShortsService({
     try { storyboard = JSON.parse(row.storyboard_json || '{}'); } catch {}
     const engineMeta = SHORTS_ENGINE_MAP[row.engine_id] || null;
     const resolvedMeta = SHORTS_ENGINE_MAP[row.resolved_engine_id] || engineMeta;
+    const renderMode = storyboard?.renderMode || renderModeForEngine(row.resolved_engine_id || row.engine_id);
     const hasVideo = Boolean(row.video_rel_path);
     const hasPoster = Boolean(row.poster_rel_path);
 
@@ -316,6 +346,14 @@ export function createShortsService({
       stylePreset: row.style_preset,
       cameraMotion: row.camera_motion,
       storyboard,
+      renderMode,
+      hasVideoFile: hasVideo,
+      topHeadline: storyboard?.topHeadline || null,
+      narration: Array.isArray(storyboard?.narration) ? storyboard.narration : [],
+      bestComment: storyboard?.bestComment || null,
+      carouselTitle: storyboard?.carouselTitle || row.title,
+      carouselSlides: Array.isArray(storyboard?.carouselSlides) ? storyboard.carouselSlides : [],
+      motionSpec: storyboard?.motionSpec || null,
       engineId: row.engine_id,
       engineName: engineMeta?.name || row.engine_id,
       resolvedEngineId: row.resolved_engine_id,
@@ -379,26 +417,57 @@ export function createShortsService({
     return out;
   }
 
-  function getConfig() {
+  function getConfig(viewerPrincipalId = null) {
+    const personal = viewerPrincipalId ? personalAiAuth.getCredentials(viewerPrincipalId) : null;
+    const personalConfigured = Boolean(
+      personal && (personal.geminiApiKey || (personal.vertexProject && personal.vertexAccessToken))
+    );
+    const base = buildPublicEngineCatalog({ env, config });
     return {
-      ...buildPublicEngineCatalog({ env, config }),
+      ...base,
+      veoConfigured: base.veoConfigured || personalConfigured,
+      veoMode: personalConfigured ? `personal-${personal.mode}` : base.veoMode,
+      personalVeoConnected: personalConfigured,
+      experimentalEnabled,
+      buildMode: experimentalEnabled ? 'dev' : 'live',
       allowDevCatalogBinding,
       allowDevGrant,
       maxVideoUploadBytes: MAX_VIDEO_UPLOAD_BYTES
     };
   }
 
-  function composeStoryboardForRequest({ gameId, title, prompt, stylePreset, cameraMotion, hookText, ctaText, durationSec, keyframeCount }) {
+  function composeStoryboardForRequest({
+    gameId,
+    title,
+    prompt,
+    stylePreset,
+    cameraMotion,
+    hookText,
+    ctaText,
+    topHeadline,
+    narration,
+    bestComment,
+    carouselTitle,
+    carouselSlides,
+    durationSec,
+    keyframeCount
+  }) {
     const { byId } = catalogMap();
     const game = gameId && GAME_ID_RE.test(gameId) ? byId.get(gameId) || null : null;
+    const preset = gameId ? getPlaygroundPlanByGameId(gameId) : null;
     return composeShortsStoryboard({
       game,
-      title,
-      prompt,
-      stylePreset,
-      cameraMotion,
-      hookText,
-      ctaText,
+      title: title || preset?.titleKo,
+      prompt: prompt || preset?.playgroundConcept,
+      stylePreset: stylePreset || preset?.stylePreset || 'google-playground',
+      cameraMotion: cameraMotion || preset?.cameraMotion || 'dynamic-zoom',
+      hookText: hookText || preset?.hookText,
+      ctaText: ctaText || preset?.ctaText,
+      topHeadline: topHeadline || preset?.topHeadline || null,
+      narration: narration || preset?.narration || null,
+      bestComment: bestComment || preset?.bestComment || null,
+      carouselTitle: carouselTitle || preset?.carouselTitle || '',
+      carouselSlides: carouselSlides || preset?.carouselSlides || null,
       durationSec,
       keyframeCount
     });
@@ -442,7 +511,60 @@ export function createShortsService({
     try {
       updateJobProgress(shortId, 12, `${requestedEngine.shortName} 파이프라인 초기화 중`, 'rendering');
 
-      if (requestedEngine.provider === 'google-veo') {
+      if (requestedEngine.provider === 'motion-graphic' || requestedEngine.provider === 'carousel-images') {
+        const isCarousel = requestedEngine.provider === 'carousel-images';
+        onProgress(35, isCarousel ? '유튜브형 4컷 가로 이미지 카드 구성 중' : '무영상 웹툰 모션그래픽·나래이션 자막 구성 중');
+
+        // Save crisp poster image from first supplied keyframe/cover (zero video file!)
+        let posterFilename = null;
+        const firstKf = Array.isArray(keyframes) ? keyframes[0] : null;
+        if (firstKf?.filePath && fs.existsSync(firstKf.filePath)) {
+          const ext = path.extname(firstKf.filePath).toLowerCase();
+          if (['.png', '.jpg', '.jpeg', '.webp'].includes(ext)) {
+            posterFilename = `poster${ext === '.jpeg' ? '.jpg' : ext}`;
+            fs.copyFileSync(firstKf.filePath, path.join(shortDir, posterFilename));
+          }
+        } else if (firstKf?.dataUrl) {
+          const decoded = decodeDataUrlImage(firstKf.dataUrl);
+          if (decoded) {
+            posterFilename = `poster${decoded.ext}`;
+            fs.writeFileSync(path.join(shortDir, posterFilename), decoded.buffer);
+          }
+        }
+        if (!posterFilename) {
+          posterFilename = 'poster.svg';
+          fs.writeFileSync(
+            path.join(shortDir, posterFilename),
+            buildFallbackPosterSvg({
+              title: storyboard?.gameTitle,
+              genreLabel: storyboard?.genreLabel,
+              hookText: storyboard?.hookText,
+              accent: storyboard?.accent || '#4285F4'
+            }),
+            'utf8'
+          );
+        }
+
+        const specJson = JSON.stringify(storyboard || {});
+        const specBuf = Buffer.from(specJson, 'utf8');
+        resolvedEngineId = requestedEngine.id;
+        onProgress(85, isCarousel ? '4컷 가로 스크롤 메타데이터 확정 중' : '모션그래픽 타임라인·TTS 대본 확정 중');
+
+        renderResult = {
+          videoPath: null,
+          posterPath: path.join(shortDir, posterFilename),
+          mimeType: isCarousel
+            ? 'application/vnd.playhub.shorts-carousel+json'
+            : 'application/vnd.playhub.shorts-motion+json',
+          bytes: specBuf.length,
+          sha256: crypto.createHash('sha256').update(specBuf).digest('hex'),
+          durationSec: durationSec || 8,
+          width: requestedEngine.width || 720,
+          height: requestedEngine.height || 1280,
+          aspectRatio: requestedEngine.aspectRatio || '9:16',
+          model: requestedEngine.model
+        };
+      } else if (requestedEngine.provider === 'google-veo') {
         const veoRenderer = customRenderers?.veo || generateShortsWithVeo;
         try {
           renderResult = await veoRenderer({
@@ -454,7 +576,7 @@ export function createShortsService({
             outputPosterPath,
             onProgress,
             env,
-            config,
+            config: jobCtx.veoConfigOverride || config,
             fetchImpl
           });
           resolvedEngineId = requestedEngine.id;
@@ -476,7 +598,7 @@ export function createShortsService({
             env
           });
         }
-      } else if (requestedEngine.provider === 'ffmpeg-motion') {
+      } else if (requestedEngine.provider === 'ffmpeg-motion' || requestedEngine.provider === 'image-shortform') {
         const ffRenderer = customRenderers?.ffmpeg || renderMotionShortsWithFfmpeg;
         renderResult = await ffRenderer({
           storyboard,
@@ -489,7 +611,29 @@ export function createShortsService({
           onProgress,
           env
         });
-        resolvedEngineId = 'forge-motion-ffmpeg';
+        resolvedEngineId = requestedEngine.id;
+      } else if (requestedEngine.provider === 'video-shortform') {
+        const vidRenderer = customRenderers?.videoShortform || renderUploadedVideoToShortform;
+        try {
+          renderResult = await vidRenderer({
+            inputVideoPath: jobCtx.sourceVideoPath,
+            storyboard,
+            framingMode: jobCtx.framingMode || 'fit-blur',
+            trimStartSec: jobCtx.trimStartSec || 0,
+            durationSec,
+            includeTts: jobCtx.includeTts !== false,
+            keepOriginalAudio: jobCtx.keepOriginalAudio !== false,
+            outputVideoPath,
+            outputPosterPath,
+            onProgress,
+            env
+          });
+          resolvedEngineId = 'creator-video-shortform';
+        } finally {
+          if (jobCtx.sourceVideoPath) {
+            try { fs.rmSync(jobCtx.sourceVideoPath, { force: true }); } catch {}
+          }
+        }
       } else {
         throw Object.assign(new Error('지원하지 않는 쇼츠 생성 엔진입니다.'), { code: 'ENGINE_UNSUPPORTED' });
       }
@@ -509,9 +653,14 @@ export function createShortsService({
       }
 
       const posterFilename = renderResult.posterPath ? path.basename(renderResult.posterPath) : null;
-      const videoRelPath = `${shortId}/${path.basename(renderResult.videoPath)}`;
+      const videoRelPath = renderResult.videoPath ? `${shortId}/${path.basename(renderResult.videoPath)}` : null;
       const posterRelPath = posterFilename ? `${shortId}/${posterFilename}` : null;
       const stamp = now();
+      const stageDone = resolvedEngine.provider === 'carousel-images'
+        ? '가로 4컷 카드 생성 완료 · 허브 등록 가능'
+        : resolvedEngine.provider === 'motion-graphic'
+          ? '모션그래픽(무영상) 생성 완료 · 허브 등록 가능'
+          : '쇼츠 생성 완료 · 허브 등록 가능';
 
       db.prepare(`
         UPDATE shorts_videos
@@ -519,7 +668,7 @@ export function createShortsService({
             engine_model=?,
             status='ready',
             progress=100,
-            stage_label='쇼츠 생성 완료 · 허브 등록 가능',
+            stage_label=?,
             error_code=NULL,
             error_message=NULL,
             video_rel_path=?,
@@ -538,6 +687,7 @@ export function createShortsService({
       `).run(
         resolvedEngineId,
         renderResult.model || resolvedEngine.model,
+        stageDone,
         videoRelPath,
         posterRelPath,
         renderResult.mimeType || 'video/mp4',
@@ -652,14 +802,20 @@ export function createShortsService({
       if (coverPath) keyframes.push({ filePath: coverPath, label: 'game-cover' });
     }
 
+    const preset = gameId ? getPlaygroundPlanByGameId(gameId) : null;
     const storyboard = composeShortsStoryboard({
       game: boundGame,
-      title: body.title,
-      prompt: body.prompt,
+      title: body.title || preset?.titleKo,
+      prompt: body.prompt || preset?.playgroundConcept,
       stylePreset,
       cameraMotion,
-      hookText: body.hookText,
-      ctaText: body.ctaText,
+      hookText: body.hookText || preset?.hookText,
+      ctaText: body.ctaText || preset?.ctaText,
+      topHeadline: body.topHeadline || preset?.topHeadline || null,
+      narration: body.narration || preset?.narration || null,
+      bestComment: body.bestComment || preset?.bestComment || null,
+      carouselTitle: body.carouselTitle || preset?.carouselTitle || '',
+      carouselSlides: body.carouselSlides || preset?.carouselSlides || null,
       durationSec,
       keyframeCount: keyframes.length
     });
@@ -671,14 +827,32 @@ export function createShortsService({
     const flowPrompt = cleanText(body.flowPrompt, 1200, storyboard.flowPrompt);
     storyboard.flowPrompt = flowPrompt;
 
+    // Check creator's personal OAuth / BYOK Veo credentials first (0 PC when using own subscription/account!)
+    const personalCreds = personalAiAuth.getCredentials(creatorId);
+    const hasPersonalVeo = Boolean(
+      personalCreds && (personalCreds.geminiApiKey || (personalCreds.vertexProject && personalCreds.vertexAccessToken))
+    );
+    const veoConfigOverride = hasPersonalVeo
+      ? {
+          ...config,
+          shorts: {
+            ...(config.shorts || {}),
+            geminiApiKey: personalCreds.geminiApiKey || '',
+            vertexProject: personalCreds.vertexProject || '',
+            vertexLocation: personalCreds.vertexLocation || 'us-central1',
+            vertexAccessToken: personalCreds.vertexAccessToken || ''
+          }
+        }
+      : null;
+
     // Pre-resolve effective quote: if Veo isn't configured & no custom Veo renderer is injected,
     // immediately quote fallback engine (20 PC) when allowFallback=true so creators aren't over-held.
-    const veoCfg = detectVeoConfig(env, config);
+    const veoCfg = detectVeoConfig(env, veoConfigOverride || config);
     const ffmpegCfg = detectFfmpegBinary(env);
     let effectiveEngine = requestedEngine;
     if (requestedEngine.provider === 'google-veo' && !veoCfg.configured && !customRenderers?.veo) {
       if (!allowFallback) {
-        throw new ApiError(503, 'VEO_NOT_CONFIGURED', 'Google Flow / Veo API 키가 설정되지 않았습니다. 자동 폴백을 켜거나 Flow 프롬프트 내보내기를 이용해 주세요.');
+        throw new ApiError(503, 'VEO_NOT_CONFIGURED', 'Google Flow / Veo API 키가 설정되지 않았습니다. 개인 AI OAuth를 연결하거나 자동 폴백을 이용해 주세요.');
       }
       if (!ffmpegCfg.available && !customRenderers?.ffmpeg) {
         throw new ApiError(503, 'SHORTS_ENGINE_UNAVAILABLE', '사용 가능한 영상 렌더링 엔진이 없습니다.');
@@ -688,7 +862,17 @@ export function createShortsService({
       throw new ApiError(503, 'FFMPEG_UNAVAILABLE', '서버에 FFmpeg가 설치되어 있지 않습니다.');
     }
 
-    const quotedCoins = effectiveEngine.costCoins;
+    storyboard.renderMode = effectiveEngine.renderMode || 'generative-video';
+    storyboard.motionSpec = {
+      coverUrl: boundGame?.coverUrl || preset?.coverUrl || (gameId ? `/games/${gameId}/assets/platform-cover.png` : null),
+      accent: storyboard.accent || '#4285F4',
+      cameraMotion,
+      stylePreset,
+      durationSec
+    };
+
+    const usingPersonalVeo = effectiveEngine.provider === 'google-veo' && hasPersonalVeo;
+    const quotedCoins = usingPersonalVeo ? 0 : effectiveEngine.costCoins;
     const idemKey = safeString(idempotencyKey, 128) ? idempotencyKey.trim() : null;
     const idemBodySignature = {
       engineId: requestedEngine.id,
@@ -821,6 +1005,7 @@ export function createShortsService({
       stylePreset,
       cameraMotion,
       durationSec,
+      veoConfigOverride,
       holdId: prep.holdId,
       quotedCoins
     });
@@ -938,13 +1123,373 @@ export function createShortsService({
     return { ok: true, short: formatShort(row, { byId }), wallet: getWallet(db, creatorId, now) };
   }
 
+  /**
+   * Direct Creator Media Short-Form Pipeline (0 PC):
+   * Turns creator-recorded video (MP4/WebM) OR creator-uploaded screenshots (1..6 images)
+   * into a finished 9:16 Short-Form (with 2-line headline, yellow narration subtitles, Korean TTS)
+   * or into a 0MB Motion Graphic / YouTube Horizontal N-Cut Image Carousel.
+   */
+  async function createShortformFromMedia({
+    creatorId,
+    creatorName,
+    body = {},
+    sync = false
+  }) {
+    const mediaKind = body.mediaKind === 'images' ? 'images' : 'video';
+    const gameId = body.gameId ? String(body.gameId).trim() : null;
+    const projectId = body.projectId && PROJECT_ID_RE.test(String(body.projectId).trim())
+      ? String(body.projectId).trim()
+      : null;
+
+    let boundGame = null;
+    if (gameId) {
+      boundGame = assertCanBindGame({ creatorId, gameId }).game;
+    }
+
+    const preset = gameId ? getPlaygroundPlanByGameId(gameId) : null;
+    const stylePreset = STYLE_PRESET_MAP[body.stylePreset] ? body.stylePreset : 'google-playground';
+    const cameraMotion = CAMERA_MOTION_MAP[body.cameraMotion] ? body.cameraMotion : 'dynamic-zoom';
+    const durationSec = Math.max(3, Math.min(15, Math.round(Number(body.durationSec) || 8)));
+    const parsedNarration = Array.isArray(body.narration) && body.narration.length
+      ? body.narration
+      : parseNarrationLines(body.narrationLines, durationSec);
+
+    const topHeadline = (body.topHeadline && (body.topHeadline.line1 || body.topHeadline.line2))
+      ? body.topHeadline
+      : (body.headlineLine1 || body.headlineLine2
+        ? { line1: body.headlineLine1, line2: body.headlineLine2 }
+        : (preset?.topHeadline || null));
+
+    const shortId = newShortId();
+    const shortDir = path.join(mediaRoot, shortId);
+    fs.mkdirSync(shortDir, { recursive: true });
+    const stamp = now();
+
+    if (mediaKind === 'video') {
+      const ffmpegCfg = detectFfmpegBinary(env);
+      if (!ffmpegCfg.available && !customRenderers?.videoShortform) {
+        fs.rmSync(shortDir, { recursive: true, force: true });
+        throw new ApiError(503, 'FFMPEG_UNAVAILABLE', '서버에 FFmpeg가 설치되어 있지 않아 촬영 영상 숏폼화를 실행할 수 없습니다.');
+      }
+
+      const rawB64 = String(body.videoBase64 || '').replace(/^data:video\/[a-z0-9.+-]+;base64,/i, '').replace(/\s+/g, '');
+      if (!rawB64) {
+        fs.rmSync(shortDir, { recursive: true, force: true });
+        throw new ApiError(422, 'VIDEO_REQUIRED', '숏폼화할 MP4 또는 WebM 촬영 영상을 업로드해 주세요.');
+      }
+      const videoBuffer = Buffer.from(rawB64, 'base64');
+      if (videoBuffer.length > MAX_VIDEO_UPLOAD_BYTES) {
+        fs.rmSync(shortDir, { recursive: true, force: true });
+        throw new ApiError(413, 'VIDEO_TOO_LARGE', '촬영 영상은 최대 40MB까지 업로드할 수 있습니다.');
+      }
+      const validation = validateVideoBuffer(videoBuffer);
+      if (!validation.valid) {
+        fs.rmSync(shortDir, { recursive: true, force: true });
+        throw new ApiError(422, validation.reason, '유효한 MP4 또는 WebM 영상 파일만 숏폼화할 수 있습니다.');
+      }
+
+      const sourceVideoPath = path.join(shortDir, `source${validation.ext}`);
+      writeAtomic(sourceVideoPath, videoBuffer);
+
+      const storyboard = composeShortsStoryboard({
+        game: boundGame,
+        title: body.title || preset?.titleKo,
+        prompt: body.prompt || body.caption || preset?.playgroundConcept,
+        stylePreset,
+        cameraMotion,
+        hookText: body.hookText || parsedNarration?.[0]?.text || preset?.hookText,
+        ctaText: body.ctaText || preset?.ctaText,
+        topHeadline,
+        narration: parsedNarration || preset?.narration || null,
+        bestComment: body.bestComment || preset?.bestComment || null,
+        durationSec,
+        keyframeCount: 0
+      });
+      storyboard.renderMode = 'generative-video';
+      storyboard.sourceKind = 'creator-video';
+
+      const title = cleanText(body.title, 80, `${storyboard.gameTitle} · 직접 촬영 숏폼`);
+      const caption = cleanText(body.caption, 280, storyboard.suggestedCaption);
+      const hashtags = normalizeHashtags(body.hashtags, [...storyboard.hashtags, '직접촬영', '숏폼편집']);
+      const framingMode = body.framingMode === 'crop-fill' ? 'crop-fill' : 'fit-blur';
+      const trimStartSec = Math.max(0, Number(body.trimStartSec) || 0);
+      const includeTts = body.includeTts !== false;
+      const keepOriginalAudio = body.keepOriginalAudio !== false;
+
+      db.prepare(`
+        INSERT INTO shorts_videos(
+          id, creator_id, creator_name, game_id, project_id, title, caption, hashtags_json,
+          prompt, flow_prompt, style_preset, camera_motion, storyboard_json,
+          engine_id, resolved_engine_id, engine_model, status, visibility, is_primary,
+          progress, stage_label, quoted_coins, charged_coins,
+          created_at, updated_at
+        ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'creator-video-shortform','creator-video-shortform','ffmpeg-creator-video-shortform-v1','queued','draft',0,10,'촬영 영상 자막·나래이션 합성 대기 중',0,0,?,?)
+      `).run(
+        shortId,
+        creatorId,
+        cleanText(creatorName, 80, 'PlayForge 크리에이터'),
+        gameId,
+        projectId,
+        title,
+        caption,
+        JSON.stringify(hashtags),
+        cleanText(body.prompt, 600, ''),
+        storyboard.flowPrompt,
+        stylePreset,
+        cameraMotion,
+        JSON.stringify(storyboard),
+        stamp,
+        stamp
+      );
+
+      audit('shorts.shortform_video_started', shortId, { creatorId, gameId, framingMode, includeTts, keepOriginalAudio, bytes: validation.bytes });
+
+      const donePromise = enqueueRenderJob({
+        shortId,
+        creatorId,
+        requestedEngine: SHORTS_ENGINE_MAP['creator-video-shortform'],
+        allowFallback: false,
+        storyboard,
+        keyframes: [],
+        sourceVideoPath,
+        framingMode,
+        trimStartSec,
+        includeTts,
+        keepOriginalAudio,
+        stylePreset,
+        cameraMotion,
+        durationSec,
+        holdId: null,
+        quotedCoins: 0
+      });
+
+      if (sync) {
+        await donePromise;
+        const latest = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+        const { byId } = catalogMap();
+        return {
+          statusCode: latest?.status === 'failed' ? 500 : 201,
+          body: { ok: latest?.status !== 'failed', short: formatShort(latest, { byId }), wallet: getWallet(db, creatorId, now) }
+        };
+      }
+      const row = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+      const { byId } = catalogMap();
+      return { statusCode: 202, body: { ok: true, short: formatShort(row, { byId }), wallet: getWallet(db, creatorId, now) } };
+    }
+
+    // mediaKind === 'images': Creator uploads 1..6 screenshots -> MP4 / Motion Graphic / YouTube N-Cut Carousel!
+    const rawImages = Array.isArray(body.images) ? body.images.slice(0, 6) : [];
+    const savedSlides = [];
+    for (let i = 0; i < rawImages.length; i++) {
+      const item = rawImages[i];
+      const dataUrl = typeof item === 'string' ? item : item?.dataUrl;
+      const decoded = decodeDataUrlImage(dataUrl);
+      if (!decoded) continue;
+      const filename = `slide_${savedSlides.length}${decoded.ext}`;
+      const filePath = path.join(shortDir, filename);
+      writeAtomic(filePath, decoded.buffer);
+      savedSlides.push({
+        index: savedSlides.length,
+        filename,
+        filePath,
+        ext: decoded.ext,
+        url: `/api/shorts/${shortId}/slide/${savedSlides.length}`,
+        badge: typeof item === 'object' ? cleanText(item.badge, 24) : '',
+        headline: typeof item === 'object' ? cleanText(item.headline, 44) : '',
+        caption: typeof item === 'object' ? cleanText(item.caption, 64) : '',
+        narration: typeof item === 'object' ? cleanText(item.narration, 60) : ''
+      });
+    }
+    if (!savedSlides.length) {
+      fs.rmSync(shortDir, { recursive: true, force: true });
+      throw new ApiError(422, 'IMAGES_REQUIRED', '숏폼화할 PNG/JPG/WebP 이미지를 1장 이상 업로드해 주세요.');
+    }
+
+    // Copy first image as poster
+    const posterFilename = `poster${savedSlides[0].ext}`;
+    fs.copyFileSync(savedSlides[0].filePath, path.join(shortDir, posterFilename));
+    const posterRelPath = `${shortId}/${posterFilename}`;
+
+    const outputFormat = ['motion-graphic', 'carousel-images', 'generative-video'].includes(body.outputFormat)
+      ? body.outputFormat
+      : 'generative-video';
+
+    const accents = ['#4285F4', '#EA4335', '#FBBC04', '#34A853', '#7C3AED', '#00B8D9'];
+    const customSlides = savedSlides.map((sl, i) => ({
+      index: i + 1,
+      badge: sl.badge || `${i + 1}/${savedSlides.length} · 컷 ${i + 1}`,
+      headline: sl.headline || parsedNarration?.[i]?.text || (i === savedSlides.length - 1 ? (body.ctaText || 'PlayHub에서 바로 플레이 ▶') : `${boundGame ? localizeValue(boundGame.title) : (body.title || '내 게임')} 하이라이트 ${i + 1}`),
+      caption: sl.caption || (body.caption ? cleanText(body.caption, 56) : '직접 촬영한 플레이 스크린샷 숏폼'),
+      narration: sl.narration || parsedNarration?.[i]?.text || sl.headline || `컷 ${i + 1} 장면입니다.`,
+      imageUrl: sl.url,
+      zoomOrigin: '50% 50%',
+      cropScale: 1.0,
+      filterCss: 'contrast(1.04) saturate(1.08)',
+      accent: accents[i % accents.length]
+    }));
+
+    const storyboard = composeShortsStoryboard({
+      game: boundGame,
+      title: body.title || preset?.titleKo,
+      prompt: body.prompt || body.caption || preset?.playgroundConcept,
+      stylePreset,
+      cameraMotion,
+      hookText: body.hookText || parsedNarration?.[0]?.text || customSlides[0]?.headline,
+      ctaText: body.ctaText || preset?.ctaText,
+      topHeadline,
+      narration: parsedNarration || customSlides.map((sl, idx) => ({
+        startSec: Number(((idx * durationSec) / customSlides.length).toFixed(2)),
+        endSec: Number((((idx + 1) * durationSec) / customSlides.length).toFixed(2)),
+        text: sl.narration
+      })),
+      bestComment: body.bestComment || preset?.bestComment || null,
+      carouselTitle: body.carouselTitle || body.title || preset?.carouselTitle || `${boundGame ? localizeValue(boundGame.title) : '내 게임'} ${savedSlides.length}컷 하이라이트`,
+      carouselSlides: customSlides,
+      durationSec,
+      keyframeCount: savedSlides.length
+    });
+    storyboard.renderMode = outputFormat;
+    storyboard.sourceKind = 'creator-images';
+    storyboard.motionSpec = {
+      coverUrl: savedSlides[0].url,
+      frameUrls: savedSlides.map(sl => sl.url),
+      accent: storyboard.accent || '#4285F4',
+      cameraMotion,
+      stylePreset,
+      durationSec
+    };
+
+    const title = cleanText(body.title, 80, outputFormat === 'carousel-images' ? storyboard.carouselTitle : `${storyboard.gameTitle} · 내 이미지 숏폼`);
+    const caption = cleanText(body.caption, 280, storyboard.suggestedCaption);
+    const hashtags = normalizeHashtags(body.hashtags, [...storyboard.hashtags, '내스크린샷', '숏폼편집']);
+
+    // Instant completion for non-video outputs (motion-graphic / carousel-images)
+    if (outputFormat === 'motion-graphic' || outputFormat === 'carousel-images') {
+      const resolvedId = outputFormat === 'carousel-images' ? 'youtube-carousel-web' : 'motion-graphic-web';
+      const resolvedEng = SHORTS_ENGINE_MAP[resolvedId];
+      const specBuf = Buffer.from(JSON.stringify(storyboard), 'utf8');
+      const mime = outputFormat === 'carousel-images'
+        ? 'application/vnd.playhub.shorts-carousel+json'
+        : 'application/vnd.playhub.shorts-motion+json';
+      const stageLabel = outputFormat === 'carousel-images'
+        ? `내 이미지 ${savedSlides.length}컷 가로 스크롤 카드 완성 · 허브 등록 가능`
+        : `내 이미지 ${savedSlides.length}장 무영상 모션그래픽 완성 · 허브 등록 가능`;
+
+      db.prepare(`
+        INSERT INTO shorts_videos(
+          id, creator_id, creator_name, game_id, project_id, title, caption, hashtags_json,
+          prompt, flow_prompt, style_preset, camera_motion, storyboard_json,
+          engine_id, resolved_engine_id, engine_model, status, visibility, is_primary,
+          progress, stage_label, video_rel_path, poster_rel_path, mime_type, bytes, sha256,
+          duration_sec, width, height, aspect_ratio, quoted_coins, charged_coins,
+          created_at, updated_at
+        ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'creator-images-shortform',?,?,'ready','draft',0,100,?,NULL,?,?,?,?,?,?,?,?,0,0,?,?)
+      `).run(
+        shortId,
+        creatorId,
+        cleanText(creatorName, 80, 'PlayForge 크리에이터'),
+        gameId,
+        projectId,
+        title,
+        caption,
+        JSON.stringify(hashtags),
+        cleanText(body.prompt, 600, ''),
+        storyboard.flowPrompt,
+        stylePreset,
+        cameraMotion,
+        JSON.stringify(storyboard),
+        resolvedId,
+        resolvedEng.model,
+        stageLabel,
+        posterRelPath,
+        mime,
+        specBuf.length,
+        crypto.createHash('sha256').update(specBuf).digest('hex'),
+        durationSec,
+        resolvedEng.width,
+        resolvedEng.height,
+        resolvedEng.aspectRatio,
+        stamp,
+        stamp
+      );
+
+      audit('shorts.shortform_images_completed', shortId, { creatorId, gameId, outputFormat, slideCount: savedSlides.length });
+      const row = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+      const { byId } = catalogMap();
+      return { statusCode: 201, body: { ok: true, short: formatShort(row, { byId }), wallet: getWallet(db, creatorId, now) } };
+    }
+
+    // outputFormat === 'generative-video': Render real 9:16 MP4 slideshow + yellow subtitles + Korean TTS!
+    const ffmpegCfg = detectFfmpegBinary(env);
+    if (!ffmpegCfg.available && !customRenderers?.ffmpeg) {
+      fs.rmSync(shortDir, { recursive: true, force: true });
+      throw new ApiError(503, 'FFMPEG_UNAVAILABLE', '서버에 FFmpeg가 설치되어 있지 않아 MP4 합성을 실행할 수 없습니다. 무영상 모션그래픽 또는 가로 4컷을 선택해 주세요.');
+    }
+
+    db.prepare(`
+      INSERT INTO shorts_videos(
+        id, creator_id, creator_name, game_id, project_id, title, caption, hashtags_json,
+        prompt, flow_prompt, style_preset, camera_motion, storyboard_json,
+        engine_id, resolved_engine_id, engine_model, status, visibility, is_primary,
+        progress, stage_label, quoted_coins, charged_coins,
+        created_at, updated_at
+      ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'creator-images-shortform','creator-images-shortform','ffmpeg-creator-images-shortform-v1','queued','draft',0,10,'내 이미지 9:16 MP4 + 나래이션 합성 대기 중',0,0,?,?)
+    `).run(
+      shortId,
+      creatorId,
+      cleanText(creatorName, 80, 'PlayForge 크리에이터'),
+      gameId,
+      projectId,
+      title,
+      caption,
+      JSON.stringify(hashtags),
+      cleanText(body.prompt, 600, ''),
+      storyboard.flowPrompt,
+      stylePreset,
+      cameraMotion,
+      JSON.stringify(storyboard),
+      stamp,
+      stamp
+    );
+
+    audit('shorts.shortform_images_mp4_started', shortId, { creatorId, gameId, slideCount: savedSlides.length });
+
+    const donePromise = enqueueRenderJob({
+      shortId,
+      creatorId,
+      requestedEngine: SHORTS_ENGINE_MAP['creator-images-shortform'],
+      allowFallback: false,
+      storyboard,
+      keyframes: savedSlides.map(sl => ({ filePath: sl.filePath, label: sl.badge })),
+      stylePreset,
+      cameraMotion,
+      durationSec,
+      holdId: null,
+      quotedCoins: 0
+    });
+
+    if (sync) {
+      await donePromise;
+      const latest = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+      const { byId } = catalogMap();
+      return {
+        statusCode: latest?.status === 'failed' ? 500 : 201,
+        body: { ok: latest?.status !== 'failed', short: formatShort(latest, { byId }), wallet: getWallet(db, creatorId, now) }
+      };
+    }
+    const row = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+    const { byId } = catalogMap();
+    return { statusCode: 202, body: { ok: true, short: formatShort(row, { byId }), wallet: getWallet(db, creatorId, now) } };
+  }
+
   function publishShort({ shortId, creatorId, body = {}, isAdmin = false }) {
     if (!SHORT_ID_RE.test(shortId)) throw new ApiError(400, 'SHORT_ID_INVALID');
     const row = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
     if (!row || row.status === 'deleted') throw new ApiError(404, 'SHORT_NOT_FOUND');
     if (!isAdmin && row.creator_id !== creatorId) throw new ApiError(403, 'SHORT_OWNERSHIP_FORBIDDEN');
-    if (!['ready', 'published', 'unpublished'].includes(row.status) || !row.video_rel_path) {
-      throw new ApiError(409, 'SHORT_NOT_READY', '영상 생성이 완료된 뒤 허브에 등록할 수 있습니다.');
+    const playable = Boolean(row.video_rel_path) || isNonVideoEngine(row.resolved_engine_id || row.engine_id);
+    if (!['ready', 'published', 'unpublished'].includes(row.status) || !playable) {
+      throw new ApiError(409, 'SHORT_NOT_READY', '쇼츠 생성이 완료된 뒤 허브에 등록할 수 있습니다.');
     }
 
     const targetGameId = body.gameId ? String(body.gameId).trim() : row.game_id;
@@ -997,8 +1542,9 @@ export function createShortsService({
       nextStatus = 'unpublished';
       nextVisibility = 'draft';
     } else if (body.status === 'published') {
-      if (!row.video_rel_path || !row.game_id) {
-        throw new ApiError(409, 'SHORT_NOT_PUBLISHABLE', '게임과 영상이 준비된 쇼츠만 공개할 수 있습니다.');
+      const playable = Boolean(row.video_rel_path) || isNonVideoEngine(row.resolved_engine_id || row.engine_id);
+      if (!playable || !row.game_id) {
+        throw new ApiError(409, 'SHORT_NOT_PUBLISHABLE', '게임과 쇼츠 데이터가 준비된 항목만 공개할 수 있습니다.');
       }
       assertCanBindGame({ creatorId, gameId: row.game_id, isAdmin });
       nextStatus = 'published';
@@ -1065,18 +1611,29 @@ export function createShortsService({
     return { ok: true, deletedId: shortId };
   }
 
-  function listPublicFeed({ gameId = null, genre = null, creatorId = null, sort = 'latest', limit = 20, offset = 0, viewerPrincipalId = null } = {}) {
+  function listPublicFeed({ gameId = null, genre = null, format = null, creatorId = null, sort = 'latest', limit = 20, offset = 0, viewerPrincipalId = null } = {}) {
     const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 60);
     const safeOffset = Math.max(Number(offset) || 0, 0);
     const orderClause = sort === 'popular'
       ? 'like_count DESC, view_count DESC, published_at DESC, created_at DESC'
       : 'published_at DESC, created_at DESC';
 
-    const where = ["status='published'", "visibility='public'", 'video_rel_path IS NOT NULL'];
+    const where = [
+      "status='published'",
+      "visibility='public'",
+      "(video_rel_path IS NOT NULL OR resolved_engine_id IN ('motion-graphic-web','youtube-carousel-web'))"
+    ];
     const params = [];
     if (gameId && GAME_ID_RE.test(gameId)) {
       where.push('game_id=?');
       params.push(gameId);
+    }
+    if (format === 'motion-graphic') {
+      where.push("resolved_engine_id='motion-graphic-web'");
+    } else if (format === 'carousel-images') {
+      where.push("resolved_engine_id='youtube-carousel-web'");
+    } else if (format === 'generative-video') {
+      where.push("video_rel_path IS NOT NULL AND resolved_engine_id NOT IN ('motion-graphic-web','youtube-carousel-web')");
     }
     if (creatorId) {
       where.push('creator_id=?');
@@ -1112,41 +1669,53 @@ export function createShortsService({
     if (!GAME_ID_RE.test(gameId)) throw new ApiError(400, 'GAME_ID_INVALID');
     const rows = db.prepare(`
       SELECT * FROM shorts_videos
-      WHERE game_id=? AND status='published' AND visibility IN ('public','unlisted') AND video_rel_path IS NOT NULL
+      WHERE game_id=? AND status='published' AND visibility IN ('public','unlisted')
+        AND (video_rel_path IS NOT NULL OR resolved_engine_id IN ('motion-graphic-web','youtube-carousel-web'))
       ORDER BY is_primary DESC, published_at DESC, created_at DESC
-      LIMIT 12
+      LIMIT 18
     `).all(gameId);
     const { byId } = catalogMap();
     const likedSet = likedSetForPrincipal(viewerPrincipalId, rows.map(r => r.id));
     const shorts = rows.map(r => formatShort(r, { byId, likedSet }));
+    const byFormat = {
+      'motion-graphic': shorts.find(s => s.renderMode === 'motion-graphic') || null,
+      'generative-video': shorts.find(s => s.renderMode === 'generative-video') || null,
+      'carousel-images': shorts.find(s => s.renderMode === 'carousel-images') || null
+    };
     return {
       gameId,
       primary: shorts.find(s => s.isPrimary) || shorts[0] || null,
+      byFormat,
       shorts
     };
   }
 
   function getGamesSummary() {
     const rows = db.prepare(`
-      SELECT id, game_id, title, is_primary, poster_rel_path, duration_sec, view_count, like_count, published_at
+      SELECT id, game_id, title, is_primary, video_rel_path, poster_rel_path, resolved_engine_id, duration_sec, view_count, like_count, published_at
       FROM shorts_videos
-      WHERE game_id IS NOT NULL AND status='published' AND visibility='public' AND video_rel_path IS NOT NULL
+      WHERE game_id IS NOT NULL AND status='published' AND visibility='public'
+        AND (video_rel_path IS NOT NULL OR resolved_engine_id IN ('motion-graphic-web','youtube-carousel-web'))
       ORDER BY is_primary DESC, published_at DESC, created_at DESC
     `).all();
     const map = {};
     for (const r of rows) {
+      const fmt = renderModeForEngine(r.resolved_engine_id);
       if (!map[r.game_id]) {
         map[r.game_id] = {
           gameId: r.game_id,
           count: 0,
+          formats: [],
           primaryShortId: r.id,
+          primaryRenderMode: fmt,
           title: r.title,
           posterUrl: r.poster_rel_path ? `/api/shorts/${r.id}/poster` : null,
-          videoUrl: `/api/shorts/${r.id}/video`,
+          videoUrl: r.video_rel_path ? `/api/shorts/${r.id}/video` : null,
           durationSec: r.duration_sec || 0
         };
       }
       map[r.game_id].count++;
+      if (!map[r.game_id].formats.includes(fmt)) map[r.game_id].formats.push(fmt);
     }
     return { games: map };
   }
@@ -1219,6 +1788,26 @@ export function createShortsService({
     };
   }
 
+  function resolveSlideFile(shortId, slideIndex, { viewerPrincipalId = null, isAdmin = false } = {}) {
+    if (!SHORT_ID_RE.test(shortId)) throw new ApiError(400, 'SHORT_ID_INVALID');
+    const idx = Number(slideIndex);
+    if (!Number.isInteger(idx) || idx < 0 || idx > 5) throw new ApiError(400, 'SLIDE_INDEX_INVALID');
+    const row = db.prepare('SELECT * FROM shorts_videos WHERE id=?').get(shortId);
+    if (!row || row.status === 'deleted') throw new ApiError(404, 'SHORT_NOT_FOUND');
+    const isPublic = row.status === 'published' && ['public', 'unlisted'].includes(row.visibility);
+    const isOwner = Boolean(viewerPrincipalId && row.creator_id === viewerPrincipalId);
+    if (!isPublic && !isOwner && !isAdmin) throw new ApiError(404, 'SHORT_NOT_FOUND');
+
+    for (const ext of ['.png', '.jpg', '.webp']) {
+      const fullPath = path.resolve(mediaRoot, shortId, `slide_${idx}${ext}`);
+      if (insideDir(mediaRoot, fullPath) && fs.existsSync(fullPath)) {
+        const contentType = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+        return { filePath: fullPath, contentType, isPublic, sha256: '' };
+      }
+    }
+    throw new ApiError(404, 'SLIDE_NOT_FOUND');
+  }
+
   function toggleLike({ shortId, principalId }) {
     if (!SHORT_ID_RE.test(shortId)) throw new ApiError(400, 'SHORT_ID_INVALID');
     const row = db.prepare("SELECT id, status, visibility, like_count FROM shorts_videos WHERE id=?").get(shortId);
@@ -1289,11 +1878,14 @@ export function createShortsService({
   }
 
   return {
+    experimentalEnabled,
+    personalAiAuth,
     getConfig,
     listCreatorBindableGames,
     composeStoryboardForRequest,
     startGeneration,
     importFlowVideo,
+    createShortformFromMedia,
     publishShort,
     updateShort,
     deleteShort,
@@ -1304,6 +1896,7 @@ export function createShortsService({
     listAllForAdmin,
     getShort,
     resolveMediaFile,
+    resolveSlideFile,
     toggleLike,
     recordView,
     grantDevPlayCoins,

@@ -74,6 +74,21 @@ function streamMediaFile(req, res, { filePath, contentType, isPublic, sha256 }) 
   stream.pipe(res);
 }
 
+function renderOAuthCallbackHtml(payload) {
+  const safeJson = JSON.stringify(payload).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+  const title = payload.ok ? 'Google OAuth 연결 완료' : 'Google OAuth 연결 실패';
+  const desc = payload.ok
+    ? `${payload.email || 'Google 계정'} 연결이 완료되었습니다. 이 창은 자동으로 닫힙니다.`
+    : (payload.message || 'OAuth 인증을 완료하지 못했습니다.');
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${title}</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#faf8ff;color:#1a1b20;font:14px/1.6 system-ui,sans-serif}
+.box{max-width:400px;padding:24px;border-radius:16px;background:#fff;border:1px solid #dfe1f4;text-align:center;box-shadow:0 12px 32px rgba(15,23,42,.08)}
+h1{margin:0 0 8px;font-size:18px}p{margin:0;color:#434654}</style></head>
+<body><div class="box"><h1>${title}</h1><p>${desc.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))}</p></div>
+<script>try{if(window.opener){window.opener.postMessage(${safeJson},window.location.origin);}}catch{}setTimeout(function(){try{window.close();}catch{}},700);</script>
+</body></html>`;
+}
+
 export function createShorts({
   config,
   db,
@@ -125,12 +140,90 @@ export function createShorts({
     const viewerPrincipalId = currentSession?.principal_id || null;
 
     if (p === '/api/shorts/config' && req.method === 'GET') {
-      json(res, 200, service.getConfig());
+      json(res, 200, service.getConfig(viewerPrincipalId));
       return true;
     }
 
     if (p === '/api/shorts/playground-plans' && req.method === 'GET') {
+      if (!service.experimentalEnabled) {
+        throw new ApiError(404, 'EXPERIMENTAL_DISABLED', '실험 기능은 로컬 또는 개발(dev) 빌드에서만 사용할 수 있습니다.');
+      }
       json(res, 200, getPlaygroundPlansPayload());
+      return true;
+    }
+
+    if (p === '/api/shorts/ai-auth/status' && req.method === 'GET') {
+      const { user } = requireRegisteredCreator(req);
+      const status = await service.personalAiAuth.getStatus(user.id, {
+        allowLocalGcloud: service.experimentalEnabled
+      });
+      json(res, 200, status);
+      return true;
+    }
+
+    if (p === '/api/shorts/ai-auth/google/start' && req.method === 'POST') {
+      const { user } = requireRegisteredCreator(req);
+      rate(`shorts-aiauth:${user.id}`, 15, 60000);
+      const body = await readJson(req, 8192);
+      const fwdProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+      const fwdHost = String(req.headers['x-forwarded-host'] || '').split(',')[0].trim();
+      const inferredOrigin = fwdProto && fwdHost ? `${fwdProto}://${fwdHost}` : `${url.protocol}//${url.host}`;
+      const origin = String(req.headers.origin || inferredOrigin || config.userBaseUrl).replace(/\/+$/, '');
+      const redirectUri = `${origin}/api/shorts/ai-auth/google/callback`;
+      const started = service.personalAiAuth.startGoogleOAuth({
+        principalId: user.id,
+        redirectUri,
+        vertexProject: body?.vertexProject || '',
+        vertexLocation: body?.vertexLocation || 'us-central1',
+        clientId: body?.clientId || '',
+        clientSecret: body?.clientSecret || ''
+      });
+      json(res, 200, started);
+      return true;
+    }
+
+    if (p === '/api/shorts/ai-auth/google/callback' && req.method === 'GET') {
+      const result = await service.personalAiAuth.handleGoogleOAuthCallback({
+        code: url.searchParams.get('code') || '',
+        state: url.searchParams.get('state') || '',
+        error: url.searchParams.get('error') || ''
+      });
+      const html = renderOAuthCallbackHtml({
+        source: 'playhub-shorts-oauth',
+        ok: Boolean(result.ok),
+        email: result.email || null,
+        errorCode: result.errorCode || null,
+        message: result.message || null
+      });
+      res.writeHead(result.ok ? 200 : 400, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store'
+      });
+      res.end(html);
+      return true;
+    }
+
+    if (p === '/api/shorts/ai-auth/google/connect' && req.method === 'POST') {
+      const { user } = requireRegisteredCreator(req);
+      rate(`shorts-aiauth:${user.id}`, 20, 60000);
+      const body = await readJson(req, 16384);
+      const status = await service.personalAiAuth.connectManualOrGcloud({
+        principalId: user.id,
+        mode: body?.mode || 'gemini-key',
+        vertexProject: body?.vertexProject || '',
+        vertexLocation: body?.vertexLocation || 'us-central1',
+        accessToken: body?.accessToken || '',
+        geminiApiKey: body?.geminiApiKey || '',
+        allowLocalGcloud: service.experimentalEnabled
+      });
+      json(res, 200, status);
+      return true;
+    }
+
+    if (p === '/api/shorts/ai-auth/disconnect' && req.method === 'POST') {
+      const { user } = requireRegisteredCreator(req);
+      await readJson(req, 4096);
+      json(res, 200, service.personalAiAuth.disconnect(user.id));
       return true;
     }
 
@@ -143,6 +236,7 @@ export function createShorts({
       const result = service.listPublicFeed({
         gameId: url.searchParams.get('gameId') || null,
         genre: url.searchParams.get('genre') || null,
+        format: url.searchParams.get('format') || null,
         creatorId: url.searchParams.get('creatorId') || null,
         sort: url.searchParams.get('sort') || 'latest',
         limit: url.searchParams.get('limit') || '20',
@@ -236,6 +330,28 @@ export function createShorts({
         meta
       });
       json(res, 201, result);
+      return true;
+    }
+
+    if (p === '/api/shorts/shortform' && req.method === 'POST') {
+      const { user } = requireRegisteredCreator(req);
+      rate(`shorts-sf:${user.id}`, 15, 60000);
+      const body = await readJson(req, 56 * 1024 * 1024);
+      const sync = body?.sync === true || url.searchParams.get('sync') === '1';
+      const outcome = await service.createShortformFromMedia({
+        creatorId: user.id,
+        creatorName: user.display_name || 'PlayForge 크리에이터',
+        body,
+        sync
+      });
+      json(res, outcome.statusCode, outcome.body);
+      return true;
+    }
+
+    const slideMatch = p.match(/^\/api\/shorts\/(sh_[a-f0-9]{16})\/slide\/([0-5])$/);
+    if (slideMatch && ['GET', 'HEAD'].includes(req.method)) {
+      const resolved = service.resolveSlideFile(slideMatch[1], Number(slideMatch[2]), { viewerPrincipalId });
+      streamMediaFile(req, res, resolved);
       return true;
     }
 

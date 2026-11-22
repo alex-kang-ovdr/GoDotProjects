@@ -301,6 +301,7 @@
     try{const result=await api('/api/events',{method:'POST',body:{events:batch},keepalive,timeout:5000});const handled=new Set([...(result.accepted||[]),...(result.duplicates||[]),...(result.rejected||[]).map(x=>x.event_id)]);state.events=state.events.filter(x=>!handled.has(x.event_id));}
     catch(_){}finally{state.flushing=false;if(state.flushAgain){state.flushAgain=false;flushEvents();}}
   }
+  function isExperimentalShortsEnabled(){return Boolean(window.PlayHubDevDemoUI?.isEnabled?.());}
   function cardMarkup(game,heading='h3'){
     const badge=Rules.gameReleaseBadge(game.publishedOn,game.updatedOn);
     return `<div class="card-wrap"><a class="game-card" data-testid="game-card" data-game-id="${esc(game.id)}" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}">
@@ -311,7 +312,7 @@
         <div class="card-footer">
           <span class="card-genre">${esc(genres[game.tags[0]]||game.tags[0]||'게임')}</span>
           ${game.controls.includes('touch')?'<span class="card-control">터치 지원</span>':''}
-          ${window.PlayHubShorts?.badgeMarkup(game.id)||''}
+          ${isExperimentalShortsEnabled()?(window.PlayHubShorts?.badgeMarkup(game.id)||''):''}
           ${releaseBadgeMarkup('new',game.publishedOn,badge)}
           ${releaseBadgeMarkup('update',game.updatedOn,badge)}
           <span class="card-play-cue" aria-hidden="true">플레이</span>
@@ -496,11 +497,11 @@
       </form>
       ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
     </section>`;
-    const homeShortsHtml=isHomePortal?'<section id="home-shorts-shelf" class="home-sec-shorts" aria-labelledby="home-shorts-title"></section>':'';
+    const homeShortsHtml=isHomePortal&&isExperimentalShortsEnabled()?'<section id="home-shorts-shelf" class="home-sec-shorts" aria-labelledby="home-shorts-title"></section>':'';
     $('app').innerHTML=isHomePortal
       ?`<div class="page home-page"><div class="home-sections">${homeContinueHtml}${homeHubsHtml}${homeCreatorHubHtml}${homeShortsHtml}${librarySectionHtml}${homeTopHtml}</div></div>`
       :`<div class="page">${librarySectionHtml}</div>`;
-    if(isHomePortal&&!state.limited)void window.PlayHubShorts?.mountHomeShelf($('home-shorts-shelf'),{api,navigate});
+    if(isHomePortal&&!state.limited&&isExperimentalShortsEnabled())void window.PlayHubShorts?.mountHomeShelf($('home-shorts-shelf'),{api,navigate});
     const filterForm=$('browse-filters');
     const applyBrowseFilters=(nextGenre=state.genre)=>{
       const params=new URLSearchParams({view:'browse'});
@@ -552,7 +553,7 @@
     document.documentElement.classList.add('js');
     watchImpressions();
     void refreshRecentSaves();
-    if(!state.limited)void window.PlayHubShorts?.mountCreatorDashboard($('wishlist-shorts-root'),{api,toast,session:state.session,compact:true});
+    if(!state.limited&&isExperimentalShortsEnabled())void window.PlayHubShorts?.mountCreatorDashboard($('wishlist-shorts-root'),{api,toast,session:state.session,compact:true});
   }
   function empty(title,message){stopImpressions();$('app').innerHTML=`<section class="empty-state"><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="button primary" href="/" data-home>게임 목록으로</a></section>`;}
   async function ensureManifest(id){
@@ -638,7 +639,7 @@
     </div>`;
     meta(`${game.title} | PLAY HUB 무료 웹 게임`,game.description,`/play/${id}/`);document.documentElement.classList.add('js');watchImpressions();event('game_detail_view',id);
     updateAccount();
-    if(!state.limited)void window.PlayHubShorts?.mountGameDetailShorts($('detail-shorts-root'),game,{api,session:state.session});
+    if(!state.limited&&isExperimentalShortsEnabled())void window.PlayHubShorts?.mountGameDetailShorts($('detail-shorts-root'),game,{api,session:state.session});
     const playerLanguage=$('language-select').cloneNode(true);
     playerLanguage.id='player-language';
     playerLanguage.value=state.locale;
@@ -722,7 +723,7 @@
         <div class="save-actions">
           <a class="button secondary" href="/forge/OfficialGodot/">PlayForge 열기</a>
           <a class="button secondary" href="/?view=agent" data-route data-testid="creator-agent-link">AI 스튜디오 (채팅·3D·포팅)</a>
-          <a class="button secondary" href="/forge/OfficialGodot/shorts-studio.html" target="_blank" rel="noopener" data-testid="creator-shorts-studio-link">🎬 AI 쇼츠 스튜디오 열기 ↗</a>
+          <a class="button secondary" href="/forge/OfficialGodot/shorts-studio.html" target="_blank" rel="noopener" data-testid="creator-shorts-studio-link" data-dev-demo-ui${isExperimentalShortsEnabled()?'':' hidden'}>🧪 AI 쇼츠 생성기 (실험) ↗</a>
           <a class="button primary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>
         </div>
       </section>
@@ -741,7 +742,7 @@
     </div>`;
     meta('만들기 | PLAY HUB','소유 프로젝트와 릴리스, 제출 상태를 확인하세요.','/?view=create');
     updateAccount();
-    if(!state.limited)void window.PlayHubShorts?.mountCreatorDashboard($('creator-shorts-root'),{api,toast,session:state.session});
+    if(!state.limited&&isExperimentalShortsEnabled())void window.PlayHubShorts?.mountCreatorDashboard($('creator-shorts-root'),{api,toast,session:state.session});
     if(available){
       const epoch=state.sessionEpoch;
       window.PlayHubCreator?.mount($('creator'),api,()=>epoch===state.sessionEpoch&&!state.authStale);
@@ -852,8 +853,21 @@
     if(state.view==='detail')await renderDetail(id,token);
     else if(state.view==='shorts'){
       stopImpressions();
-      meta('게임 쇼츠 | PLAY HUB','Google Flow · PlayForge 크리에이터가 만든 9:16 게임 소개 쇼츠를 보고 바로 플레이하세요.','/?view=shorts');
-      shortsCleanup=await window.PlayHubShorts?.mountFeed($('app'),{api,toast,navigate,session:state.session,initialShortId:params.get('short')||'',initialGameId:params.get('gameId')||''})||null;
+      meta('게임 쇼츠 (실험) | PLAY HUB','Google Flow · PlayForge 크리에이터가 만든 9:16 게임 소개 쇼츠를 보고 바로 플레이하세요.','/?view=shorts');
+      if(!isExperimentalShortsEnabled()){
+        const canEnable=Boolean(window.PlayHubDevDemoUI?.isIncluded?.());
+        $('app').innerHTML=`<div class="page"><section class="surface empty-state" data-testid="shorts-experimental-guard">
+          <h1>🧪 게임 쇼츠는 실험 기능입니다</h1>
+          <p class="muted">${canEnable?'Dev · Debug · Test 빌드에서 실험/데모 UI를 ON으로 켜면 PlayHub 쇼츠 피드와 PlayForge AI 쇼츠 생성기를 바로 사용할 수 있습니다.':'운영(Prod/Release) 빌드에서는 실험 기능이 비활성화되어 있습니다.'}</p>
+          <div class="save-actions" style="justify-content:center">
+            ${canEnable?'<button type="button" class="button primary" id="shorts-enable-exp-btn" data-testid="shorts-enable-exp-btn">🧪 실험 기능 ON으로 켜기</button>':''}
+            <a class="button secondary" href="/" data-home>홈으로 돌아가기</a>
+          </div>
+        </section></div>`;
+        $('shorts-enable-exp-btn')?.addEventListener('click',()=>window.PlayHubDevDemoUI?.setEnabled(true));
+      }else{
+        shortsCleanup=await window.PlayHubShorts?.mountFeed($('app'),{api,toast,navigate,session:state.session,initialShortId:params.get('short')||'',initialGameId:params.get('gameId')||''})||null;
+      }
     }
     else if(state.view==='wishlist')renderWishlist();
     else if(state.view==='social')renderSocial(params);

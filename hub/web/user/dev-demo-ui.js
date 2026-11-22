@@ -107,7 +107,7 @@
           </div>
           <span id="dev-demo-ui-state" class="dev-demo-state-pill" data-state="${enabled ? 'on' : 'off'}"></span>
         </div>
-        <p class="muted">Dev · Debug · Test 빌드에서만 포함됩니다. 기본값은 <strong>OFF</strong>이며, ON으로 변경하면 데모 로그인·샌드박스 결제/시뮬레이터·테스트 PIN 등 테스트/데모 UI가 표시됩니다. 설정은 <strong>F5 새로고침</strong> 후에도 유지됩니다.</p>
+        <p class="muted">Dev · Debug · Test 빌드에서만 포함됩니다. 기본값은 <strong>OFF</strong>이며, ON으로 변경하면 데모 로그인·샌드박스 결제/시뮬레이터·테스트 PIN·<strong>AI 쇼츠(실험)</strong> 등 테스트/실험 UI가 PlayHub와 PlayForge에 함께 표시됩니다. 설정은 <strong>F5 새로고침</strong> 후에도 유지됩니다.</p>
         <div class="dev-demo-settings-controls">
           <label class="dev-demo-switch" for="dev-demo-ui-toggle">
             <input type="checkbox" id="dev-demo-ui-toggle" data-testid="dev-demo-ui-toggle" ${enabled ? 'checked' : ''}>

@@ -39,19 +39,25 @@
 
 ---
 
-## 3. 생성 엔진 및 PlayCoin 과금 정책
+## 3. 3종 쇼츠 포맷 · 생성 엔진 및 PlayCoin 과금 정책
 
-| 엔진 ID | 표시 이름 | 모델 / 기술 | 해상도·비율 | PlayCoin | 비고 |
-|---|---|---|---|---:|---|
-| `google-flow-veo-fast` | Google Flow · Veo Fast | `veo-3.1-fast-generate-001` | 720p · 9:16 · 8초 + 오디오 | **60 PC** | `GEMINI_API_KEY` 또는 Vertex AI 연동, 미설정 시 20 PC Motion 엔진 자동 폴백 가능 |
-| `google-flow-veo-pro` | Google Flow · Veo 3.1 Cinematic | `veo-3.1-generate-001` | 1080p · 9:16 · 8초 + 보간 | **120 PC** | 시작/종료 키프레임 보간 지원 |
-| `forge-motion-ffmpeg` | PlayForge Motion Director | FFmpeg 7.x H.264/AAC | 720×1280 · 9:16 · 30fps | **20 PC** | Ken Burns 모션·3컷 한국어 자막·신스 BGM 즉시 렌더링 |
-| `flow-import` | Google Flow 결과물 가져오기 | 직접 업로드 (최대 40MB) | 원본 유지 | **0 PC** | 자동 생성된 Flow 프롬프트 팩으로 `labs.google/flow` 제작 후 등록 |
+| 포맷 (renderMode) | 엔진 ID | 표시 이름 | 모델 / 기술 | 해상도·규격 | PlayCoin | 비고 |
+|---|---|---|---|---|---:|---|
+| **Type 1 · 모션그래픽 (무영상)** | `motion-graphic-web` | 모션그래픽 쇼츠 (동영상 없음) | DOM/CSS 60fps 모션 + Web Speech `ko-KR` TTS | 9:16 · 0MB · 틱톡/컷츠 UI | **10 PC** | 2줄 화이트/옐로 헤드라인 + 노랑 외곽선 나래이션 자막 + 베스트 댓글 티커 즉시 재생 |
+| **Type 2 · 생성형 영상 (MP4)** | `forge-motion-ffmpeg` | PlayForge Director MP4 | FFmpeg 7.x H.264/AAC + Windows `ko-KR` TTS | 720×1280 · 9:16 · 8초 | **20 PC** | 2줄 헤드라인 · 노랑 자막 · 한국어 음성 나래이션+신스 BGM 합성 MP4 즉시 렌더링 |
+| **Type 2 · 생성형 영상 (Veo)** | `google-flow-veo-fast` | Google Flow · Veo Fast | `veo-3.1-fast-generate-001` | 720p · 9:16 · 8초 + 오디오 | **60 PC** | `GEMINI_API_KEY` 또는 Vertex AI 설정 시 실호출, 미설정 시 20 PC FFmpeg 자동 폴백 |
+| **Type 2 · 생성형 영상 (Veo)** | `google-flow-veo-pro` | Google Flow · Veo 3.1 Pro | `veo-3.1-generate-001` | 1080p · 9:16 · 8초 + 보간 | **120 PC** | 시작/종료 키프레임 보간 지원 |
+| **Type 3 · 가로 스크롤 4컷** | `youtube-carousel-web` | 유튜브 숏츠 가로 스크롤 (4컷) | `scroll-snap-type: x mandatory` 4컷 + 컷별 TTS | 1:1 × 4컷 · 0MB | **5 PC** | `1/4`~`4/4` 배지 · 하단 도트 · 컷별 나래이션 자막/음성 · 플레이 CTA |
+| **직접 촬영 영상 숏폼화** | `creator-video-shortform` | 내 영상 숏폼화 (자막·나래이션 합성) | FFmpeg 9:16 프레이밍 + 노랑 자막 + `ko-KR` TTS | 720×1280 · 9:16 · 3~15초 | **0 PC** | 직접 녹화한 MP4/WebM에 2줄 헤드라인·나래이션 자막·음성 합성 (원본음 자동 덕킹) |
+| **직접 촬영 이미지 숏폼화** | `creator-images-shortform` | 내 이미지 숏폼화 (MP4/모션/N컷) | FFmpeg 슬라이드쇼 / 무영상 모션 / 가로 N컷 | 1~6장 업로드 · 3포맷 선택 | **0 PC** | 직접 찍은 스크린샷 1~6장을 MP4·무영상 모션·가로 스와이프 카드로 즉시 숏폼화 |
+| **Type 2 · Flow 업로드** | `flow-import` | Google Flow 결과물 가져오기 | 직접 업로드 (최대 40MB) | 원본 유지 | **0 PC** | 자동 생성된 Flow 프롬프트 팩으로 `labs.google/flow` 제작 후 등록 |
 
-### Google Flow / Veo 실 API 활성화 환경 변수
-- Gemini API: `PLAYHUB_GEMINI_API_KEY` (또는 `GEMINI_API_KEY`)
-- Vertex AI: `PLAYHUB_VERTEX_PROJECT` + `PLAYHUB_VERTEX_ACCESS_TOKEN` (+ 선택 `PLAYHUB_VERTEX_LOCATION=us-central1`)
-- 모델 오버라이드: `PLAYHUB_VEO_FAST_MODEL`, `PLAYHUB_VEO_PRO_MODEL`
+### Google Flow / Veo 실 API · OAuth 연동 구조 및 활성화 환경 변수
+- **Google Labs Flow 웹(`labs.google/fx/tools/flow`) 자체는 소비자용 구독 웹앱이라 공식 Flow OAuth 스코프나 공개 REST API가 제공되지 않습니다.**
+- 공식 개발자 연동은 핵심 모델인 **Google Veo 3.1 API(`:predictLongRunning`)**로 제공되며, `hub/server/shorts/providers/veo-adapter.mjs`에 아래 두 인증 경로가 모두 구현되어 있습니다:
+  - **Google Cloud Vertex AI OAuth 2.0**: `PLAYHUB_VERTEX_PROJECT` + `PLAYHUB_VERTEX_ACCESS_TOKEN` (+ 선택 `PLAYHUB_VERTEX_LOCATION=us-central1`) — 서비스 계정 또는 `gcloud auth print-access-token` OAuth 2.0 Bearer 토큰 사용
+  - **Google AI Studio / Gemini API Key**: `PLAYHUB_GEMINI_API_KEY` (또는 `GEMINI_API_KEY`)
+  - 모델 오버라이드: `PLAYHUB_VEO_FAST_MODEL`, `PLAYHUB_VEO_PRO_MODEL`
 
 ---
 

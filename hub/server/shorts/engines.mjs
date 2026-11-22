@@ -5,63 +5,150 @@ export const GOOGLE_FLOW_WEB_URL = 'https://labs.google/fx/tools/flow';
 
 export const SHORTS_ENGINES = Object.freeze([
   {
-    id: 'google-flow-veo-fast',
-    name: 'Google Flow · Veo Fast',
-    shortName: 'Flow · Veo Fast',
-    provider: 'google-veo',
-    model: 'veo-3.1-fast-generate-001',
-    costCoins: 60,
-    resolution: '720p',
+    id: 'motion-graphic-web',
+    name: '모션그래픽 쇼츠 (동영상 없음)',
+    shortName: '모션그래픽',
+    renderMode: 'motion-graphic',
+    provider: 'motion-graphic',
+    model: 'playhub-motion-web-v1',
+    costCoins: 10,
+    resolution: '벡터 60fps',
     width: 720,
     height: 1280,
     aspectRatio: '9:16',
     durationSec: 8,
     hasAudio: true,
+    hasVideoFile: false,
+    supportsKeyframes: true,
+    supportsLastFrame: true,
+    badge: '무영상 · 초경량 0MB',
+    description: 'MP4 동영상 파일 없이 키프레임·웹툰형 모션그래픽·노랑 나래이션 자막·한국어 TTS 음성으로 0ms 즉시 재생되는 초경량 쇼츠를 생성합니다.'
+  },
+  {
+    id: 'forge-motion-ffmpeg',
+    name: '생성형 영상 · PlayForge Director MP4',
+    shortName: '생성형 MP4',
+    renderMode: 'generative-video',
+    provider: 'ffmpeg-motion',
+    model: 'ffmpeg-9x16-director-v2',
+    costCoins: 20,
+    resolution: '720p MP4',
+    width: 720,
+    height: 1280,
+    aspectRatio: '9:16',
+    durationSec: 8,
+    hasAudio: true,
+    hasVideoFile: true,
+    supportsKeyframes: true,
+    supportsLastFrame: true,
+    badge: '생성형 영상 · 한국어 나래이션',
+    description: '9:16 H.264 MP4 영상에 틱톡·카카오웹툰형 2줄 헤드라인, 한국어 나래이션 음성·노랑 자막, 신스 BGM을 합성해 즉시 렌더링합니다.'
+  },
+  {
+    id: 'google-flow-veo-fast',
+    name: '생성형 영상 · Google Flow (Veo Fast)',
+    shortName: 'Flow · Veo Fast',
+    renderMode: 'generative-video',
+    provider: 'google-veo',
+    model: 'veo-3.1-fast-generate-001',
+    costCoins: 60,
+    resolution: '720p MP4',
+    width: 720,
+    height: 1280,
+    aspectRatio: '9:16',
+    durationSec: 8,
+    hasAudio: true,
+    hasVideoFile: true,
     supportsKeyframes: true,
     supportsLastFrame: false,
-    badge: 'Google Flow 엔진',
-    description: 'Google Flow의 핵심 Veo Fast 모델로 게임 키프레임과 프롬프트 기반 9:16 8초 사운드 포함 쇼츠를 생성합니다. API 키 미설정 시 PlayForge Motion 엔진으로 자동 폴백(실제 비용 20 PC만 정산)할 수 있습니다.'
+    badge: 'Google Flow Veo API',
+    description: 'Google Flow의 핵심 Veo Fast 모델로 9:16 8초 생성형 영상을 제작합니다. GEMINI_API_KEY 미설정 시 로컬 MP4 엔진(20 PC)으로 자동 폴백하거나 Flow 프롬프트를 내보낼 수 있습니다.'
   },
   {
     id: 'google-flow-veo-pro',
-    name: 'Google Flow · Veo 3.1 Cinematic',
+    name: '생성형 영상 · Google Flow (Veo 3.1 Pro)',
     shortName: 'Flow · Veo 3.1',
+    renderMode: 'generative-video',
     provider: 'google-veo',
     model: 'veo-3.1-generate-001',
     costCoins: 120,
-    resolution: '1080p',
+    resolution: '1080p MP4',
     width: 1080,
     height: 1920,
     aspectRatio: '9:16',
     durationSec: 8,
     hasAudio: true,
+    hasVideoFile: true,
     supportsKeyframes: true,
     supportsLastFrame: true,
     badge: '시네마틱 최고화질',
-    description: '시작·종료 키프레임 보간(First/Last Frame)과 시네마틱 1080p 오디오 생성을 지원하는 Veo 3.1 프로 파이프라인입니다.'
+    description: '시작·종료 키프레임 보간(First/Last Frame)과 시네마틱 1080p 네이티브 오디오를 지원하는 Veo 3.1 프로 파이프라인입니다.'
   },
   {
-    id: 'forge-motion-ffmpeg',
-    name: 'PlayForge Motion Director',
-    shortName: 'Forge Motion',
-    provider: 'ffmpeg-motion',
-    model: 'ffmpeg-9x16-director-v1',
-    costCoins: 20,
-    resolution: '720p',
+    id: 'youtube-carousel-web',
+    name: '유튜브 숏츠 가로 스크롤 이미지 (4컷)',
+    shortName: '가로 4컷 카드',
+    renderMode: 'carousel-images',
+    provider: 'carousel-images',
+    model: 'playhub-carousel-4cut-v1',
+    costCoins: 5,
+    resolution: '4컷 가로 스와이프',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1 × 4',
+    durationSec: 8,
+    hasAudio: true,
+    hasVideoFile: false,
+    supportsKeyframes: true,
+    supportsLastFrame: false,
+    badge: '유튜브형 가로 4컷 · 초경량',
+    description: '유튜브 숏츠/커뮤니티형 4컷 가로 스와이프 이미지 카드(1/4~4/4 배지·도트 인디케이터·컷별 나래이션 자막/TTS)를 0MB 무영상 포맷으로 즉시 생성합니다.'
+  },
+  {
+    id: 'creator-video-shortform',
+    name: '직접 촬영 영상 숏폼화 (자막·나래이션 합성)',
+    shortName: '내 영상 숏폼',
+    renderMode: 'generative-video',
+    provider: 'video-shortform',
+    model: 'ffmpeg-creator-video-shortform-v1',
+    costCoins: 0,
+    resolution: '720p MP4 (9:16)',
     width: 720,
     height: 1280,
     aspectRatio: '9:16',
     durationSec: 8,
     hasAudio: true,
+    hasVideoFile: true,
+    supportsKeyframes: false,
+    supportsLastFrame: false,
+    badge: '직접 촬영 영상 · 무료 0 PC',
+    description: '직접 녹화한 게임 플레이 MP4/WebM에 틱톡·컷츠형 2줄 헤드라인, 노랑 나래이션 자막, 한국어 TTS 음성을 합성해 9:16 숏폼으로 변환합니다.'
+  },
+  {
+    id: 'creator-images-shortform',
+    name: '직접 촬영 이미지 숏폼화 (자막·나래이션 합성)',
+    shortName: '내 이미지 숏폼',
+    renderMode: 'generative-video',
+    provider: 'image-shortform',
+    model: 'ffmpeg-creator-images-shortform-v1',
+    costCoins: 0,
+    resolution: '720p MP4 / 무영상 / 4컷',
+    width: 720,
+    height: 1280,
+    aspectRatio: '9:16',
+    durationSec: 8,
+    hasAudio: true,
+    hasVideoFile: true,
     supportsKeyframes: true,
-    supportsLastFrame: true,
-    badge: '즉시 생성 · 로컬 지원',
-    description: '게임 캡처 키프레임과 커버 아트에 Ken Burns 줌·패닝, 3컷 타이틀 모션, 신스 BGM을 입혀 9:16 H.264 MP4 쇼츠를 즉시 렌더링합니다.'
+    supportsLastFrame: false,
+    badge: '직접 촬영 이미지 · 무료 0 PC',
+    description: '직접 찍은 게임 스크린샷(1~6장)에 2줄 헤드라인·나래이션 자막·한국어 TTS를 넣어 9:16 MP4, 무영상 모션그래픽, 유튜브 가로 4컷 중 원하는 포맷으로 숏폼화합니다.'
   },
   {
     id: 'flow-import',
     name: 'Google Flow 결과물 가져오기',
     shortName: 'Flow Import',
+    renderMode: 'generative-video',
     provider: 'direct-import',
     model: 'google-flow-web-upload',
     costCoins: 0,
@@ -71,6 +158,7 @@ export const SHORTS_ENGINES = Object.freeze([
     aspectRatio: '9:16',
     durationSec: 8,
     hasAudio: true,
+    hasVideoFile: true,
     supportsKeyframes: false,
     supportsLastFrame: false,
     badge: '무료 등록',
@@ -81,6 +169,42 @@ export const SHORTS_ENGINES = Object.freeze([
 export const SHORTS_ENGINE_MAP = Object.freeze(
   Object.fromEntries(SHORTS_ENGINES.map(e => [e.id, e]))
 );
+
+export const SHORTS_FORMATS = Object.freeze([
+  {
+    id: 'motion-graphic',
+    label: '모션그래픽 (무영상)',
+    shortLabel: '✨ 모션그래픽',
+    defaultEngineId: 'motion-graphic-web',
+    costCoins: 10,
+    description: 'MP4 파일 없이 틱톡·카카오웹툰형 2줄 헤드라인 + 모션그래픽 + 노랑 나래이션 자막/한국어 TTS로 즉시 재생'
+  },
+  {
+    id: 'generative-video',
+    label: '생성형 영상 (9:16 MP4)',
+    shortLabel: '🎬 생성형 영상',
+    defaultEngineId: 'forge-motion-ffmpeg',
+    costCoins: 20,
+    description: '9:16 H.264 MP4 영상에 한국어 TTS 나래이션 음성·노랑 자막·신스 BGM을 합성하거나 Google Flow/Veo API로 생성'
+  },
+  {
+    id: 'carousel-images',
+    label: '유튜브 가로 스크롤 (4컷)',
+    shortLabel: '🖼️ 가로 4컷',
+    defaultEngineId: 'youtube-carousel-web',
+    costCoins: 5,
+    description: '유튜브 숏츠 가로 스와이프 이미지 카드(1/4~4/4 카운터·도트·컷별 나래이션)로 한눈에 넘겨보는 4컷 게임 소개'
+  }
+]);
+
+export function renderModeForEngine(engineId) {
+  return SHORTS_ENGINE_MAP[engineId]?.renderMode || 'generative-video';
+}
+
+export function isNonVideoEngine(engineId) {
+  const eng = SHORTS_ENGINE_MAP[engineId];
+  return Boolean(eng && eng.hasVideoFile === false);
+}
 
 export const STYLE_PRESETS = Object.freeze([
   {
@@ -231,9 +355,18 @@ export function buildPublicEngineCatalog({ env = process.env, config = {} } = {}
           : (ffmpeg.available
             ? 'API 키 미설정 · 자동 폴백(20 PC) 또는 Flow Export'
             : 'API 키 필요 · Flow 프롬프트 내보내기 지원');
+      } else if (engine.provider === 'motion-graphic') {
+        available = true;
+        statusLabel = '동영상 없음 · 0ms 즉시 생성 · 나래이션 자막/TTS';
+      } else if (engine.provider === 'carousel-images') {
+        available = true;
+        statusLabel = '동영상 없음 · 가로 4컷 스와이프 · 컷별 나래이션';
       } else if (engine.provider === 'ffmpeg-motion') {
         available = ffmpeg.available;
-        statusLabel = ffmpeg.available ? '즉시 렌더링 준비됨' : 'FFmpeg 미설치';
+        statusLabel = ffmpeg.available ? '즉시 MP4 렌더링 준비됨 (한국어 나래이션 지원)' : 'FFmpeg 미설치';
+      } else if (engine.provider === 'video-shortform' || engine.provider === 'image-shortform') {
+        available = ffmpeg.available;
+        statusLabel = ffmpeg.available ? '무료 0 PC · 내 영상/이미지 자막·TTS 합성 준비됨' : 'FFmpeg 미설치 (무영상/4컷만 가능)';
       } else if (engine.provider === 'direct-import') {
         available = true;
         statusLabel = 'MP4/WebM 무료 등록';
@@ -246,6 +379,7 @@ export function buildPublicEngineCatalog({ env = process.env, config = {} } = {}
         fallbackEngineId
       };
     }),
+    formats: SHORTS_FORMATS,
     styles: STYLE_PRESETS.map(({ id, label, accent }) => ({ id, label, accent })),
     cameras: CAMERA_MOTIONS.map(({ id, label }) => ({ id, label }))
   };
