@@ -13,6 +13,7 @@
     "forge/OfficialGodot/editor.html",
     "forge/Godot/addons/playforge_platform/**",
     "hub/server/app.mjs",
+    "hub/server/runtime-config.mjs",
     "hub/tools/restore-data.mjs",
     "games/catalog.json",
     "games/manifest.json",
@@ -255,6 +256,15 @@
         "hub/web/user/billing.js",
         "hub/web/user/billing.css",
         "hub/tests/billing*.mjs"
+      ]
+    },
+    "Hub-SSO": {
+      "role": "Hub 통합 인증(SSO) — 자체 이메일 로그인·회원가입, 네이버/Google 소셜 로그인, 게스트 4종 선택",
+      "owns": [
+        "hub/server/sso/**",
+        "hub/web/user/sso.js",
+        "hub/web/user/sso.css",
+        "hub/tests/sso-*.mjs"
       ]
     },
     "Hub-SSO": {
