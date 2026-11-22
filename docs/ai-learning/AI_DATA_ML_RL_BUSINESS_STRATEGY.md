@@ -1,7 +1,8 @@
 # PlayHub · PlayForge 사용자 데이터 기반 AI · 머신러닝 · 강화학습(RL) 활용 타당성 검토 및 사업 전략 기획서
 
 > **작성 기준일**: 2026-11-22  
-> **대상 브랜치**: `AI-Learning` (기반 트렁크: `PlayHub-Platform` @ `ac2a5720`)  
+> **대상 브랜치**: `AI-Learning` 및 하위 3개 서브 브랜치(`AI-Learning-Growth`, `AI-Learning-Supply`, `AI-Learning-Trust`) — 기반 트렁크: `PlayHub-Platform`  
+> **브랜치 분류**: **실험 기능 (Experimental · `PlayHub-Platform` 허브 통합 안함 — 독립 R&D 트랙)**  
 > **문서 성격**: 현행 코드베이스 실사 기반 기술·법무 타당성 검토(Feasibility Study) + **Growth Hacker AI 에이전트** 심층 검토 + 사업 전략·수익화 마스터 플랜  
 > **심화 부속 문서**: [DEEP_RESEARCH_AND_NEW_ITEMS.md](DEEP_RESEARCH_AND_NEW_ITEMS.md) (글로벌 벤치마크·2026 AI 기본법·Phase 0 DDL/API 블루프린트·신규 AI/ML/RL 사업 아이템 8선)  
 > **핵심 전제**: 본 문서는 `PlayHub-Platform` 실제 코드·DB 스키마·AI/QA 파이프라인 실사 결과를 근거로 작성되었으며, 확인된 현행 자산(As-Is)과 미구현 갭(Gap)·신규 기획(To-Be)을 명확히 구분한다.

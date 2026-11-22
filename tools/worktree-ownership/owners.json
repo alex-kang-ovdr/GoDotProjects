@@ -460,7 +460,9 @@
       ]
     },
     "AI-Learning": {
-      "role": "플랫폼 사용자 데이터 기반 AI/ML/강화학습 활용 타당성 검토 · Growth Hacker AI 에이전트 · 데이터/사업 전략 기획",
+      "role": "플랫폼 사용자 데이터 기반 AI/ML/강화학습 활용 타당성 검토 · Growth Hacker AI 에이전트 · 데이터/사업 전략 기획 (실험 · 허브 통합 안함)",
+      "status": "experimental",
+      "integrateToHub": false,
       "owns": [
         "docs/ai-learning/**"
       ]
