@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "yu-no",
   "recommended_play_order": [
     "route_prologue",
@@ -26,7 +26,7 @@
       "key_item_outputs": ["item_kodai_letter", "item_kanna_student_id"],
       "prerequisite_routes": [],
       "prerequisite_items": [],
-      "summary_ko": "코다이가 남긴 소포(리플렉터 디바이스·초기 보옥·편지)를 수령하고 사카이마치의 이변과 A.D.M.S. 기본 구조를 익히는 도입부.",
+      "summary_ko": "코다이가 남긴 소포(리플렉터 디바이스·초기 보옥·편지)를 수령하고, 밤 10시 켄노미사키·삼각산 조우를 거쳐 사카이마치 1일차 거점과 A.D.M.S. 기본 구조를 익히는 도입부.",
       "evidence_tag": "[확인]"
     },
     {
@@ -42,7 +42,7 @@
       "key_item_outputs": ["item_rope", "item_silver_medal", "item_gold_key"],
       "prerequisite_routes": ["route_prologue"],
       "prerequisite_items": [],
-      "summary_ko": "미츠키의 전화로 류조지 저택을 방문했다가 토장에 감금되며, 보옥 2와 로프(및 우물의 은 메달)를 확보하는 초반 핵심 루트.",
+      "summary_ko": "미츠키의 전화로 류조지 저택을 방문해 잠입·토장 감금과 순서 함정(로프 선회수)을 돌파하고, 보옥 2와 로프·우물 은 메달을 확보하는 초반 핵심 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -58,7 +58,7 @@
       "key_item_outputs": ["item_magnetic_card", "item_blue_card"],
       "prerequisite_routes": ["route_prologue"],
       "prerequisite_items": [],
-      "summary_ko": "지오테크닉스 해안 공사와 도요토미의 음모를 파헤치며 블루 카드를 획득하고, 여경비원 앞 자기카드 미사용 분기에서 보옥 3을 얻는 루트.",
+      "summary_ko": "여경비원 자기카드 미사용 우회로 삼각산 보옥 3을 획득하고, 아유미 방 책상·금고 조사와 해안 도요토미 대치를 거쳐 블루 카드를 확보하는 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -74,7 +74,7 @@
       "key_item_outputs": ["item_chounenseki", "item_doc_page20"],
       "prerequisite_routes": ["route_ayumi"],
       "prerequisite_items": ["item_blue_card"],
-      "summary_ko": "아유미 루트에서 계승한 블루 카드로 카오리와 지오테크닉스 사옥에 잠입해 코다이 연구실의 초념석과 보옥 4를 확보하는 핵심 중계 루트.",
+      "summary_ko": "20페이지째 서류를 해독하고 아유미 루트에서 계승한 블루 카드로 지오테크닉스 사옥 코다이 연구실에 잠입해 보옥 4와 초념석을 확보하는 중계 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -90,7 +90,7 @@
       "key_item_outputs": ["item_white_medal", "item_black_medal", "item_mio_notebook", "item_wooden_sword"],
       "prerequisite_routes": ["route_mitsuki", "route_kaori"],
       "prerequisite_items": ["item_silver_medal", "item_chounenseki"],
-      "summary_ko": "삼각산과 사당 지하 동굴 유적을 조사하는 루트. 유우키 동행 분기에서 보옥 5를 획득하고 초념석·메달로 유적의 비밀을 해금한다.",
+      "summary_ko": "삼각산과 사당 지하 동굴 유적을 조사하는 루트. 유우키 동행 분기에서 보옥 5와 흰/검은 메달을 획득하고 은 메달·초념석으로 400년 전승을 해독한다.",
       "evidence_tag": "[확인]"
     },
     {
@@ -106,7 +106,7 @@
       "key_item_outputs": [],
       "prerequisite_routes": ["route_mitsuki"],
       "prerequisite_items": [],
-      "summary_ko": "보건교사 다케다 에리코의 정체(차원 감사관 에이릭 쿼드로)와 류조지 배후의 차원 범죄 구조를 드러내는 진상 축 루트.",
+      "summary_ko": "보건실 차원 계측기 조사를 통해 양호교사 다케다 에리코의 정체(차원 감사관 에이릭 쿼드로)와 류조지 배후 차원 범죄 구조를 밝히는 진상 축 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -122,7 +122,7 @@
       "key_item_outputs": ["item_study_key"],
       "prerequisite_routes": ["route_kaori"],
       "prerequisite_items": ["item_kanna_student_id", "item_chounenseki"],
-      "summary_ko": "옥상 학생수첩 반환으로 진입하며, 칸나가 쓰러질 때 카오리 루트에서 가져온 초념석으로 구명해 최종 열쇠인 '아버지 서재의 열쇠'를 획득하는 현세편 클라이맥스 루트.",
+      "summary_ko": "옥상 학생수첩 반환(또는 시가지 취객 충돌 재입수)으로 진입해 칸나의 고독·목걸이 비밀·병원 위기를 거쳐 초념석으로 구명하고 아버지 서재의 열쇠를 얻는 클라이맥스 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -138,7 +138,7 @@
       "key_item_outputs": [],
       "prerequisite_routes": ["route_mitsuki", "route_ayumi", "route_kaori", "route_mio", "route_eriko", "route_kanna"],
       "prerequisite_items": ["item_study_key"],
-      "summary_ko": "서재의 열쇠를 지닌 채 본편 극초반으로 보옥 로드하여 아버지의 서재를 개방하고, 괘종시계(6→3)로 보옥 6을 채워 모든 보옥을 완성한 뒤 삼각산 동굴에서 이세계로 전이한다.",
+      "summary_ko": "서재의 열쇠를 지닌 채 본편 극초반으로 보옥 로드하여 서재를 개방하고, 괘종시계(6→3)로 보옥 6을 채운 뒤 코다이의 수기를 해독해 삼각산 동굴에서 이세계로 전이한다.",
       "evidence_tag": "[확인]"
     },
     {
@@ -154,7 +154,7 @@
       "key_item_outputs": ["item_sacred_stone_dg", "item_entrusted_light"],
       "prerequisite_routes": ["route_convergence"],
       "prerequisite_items": [],
-      "summary_ko": "A.D.M.S. 다분기 탐색에서 커맨드 총공격·선형 모험으로 전환되는 후반부. 세레스·아이리아·유노·아만다·신제(아유미)·류조지와의 결전을 거쳐 세상의 끝(사상의 틈새) 진엔딩에 도달한다.",
+      "summary_ko": "A.D.M.S. 병렬 점프가 봉인되고 선형 모험·사막 횡단·지하도 미궁 탐색으로 전환되는 10장 구성의 후반부. 세레스·아이리아·유노·사라·아만다·신제(아유미)·류조지와의 결전을 거쳐 트루 엔딩에 도달한다.",
       "evidence_tag": "[확인]"
     }
   ],
@@ -214,12 +214,12 @@
       "evidence_tag": "[확인]"
     },
     {
-      "id": "end_dead_kanna_no_stone",
-      "route_id": "route_kanna",
-      "terminal_node_id": "node_kanna_bad_no_stone",
+      "id": "end_dead_ryuzoji_ambush",
+      "route_id": "route_mitsuki",
+      "terminal_node_id": "node_mitsuki_ryuzoji_ambush",
       "type": "whirlpool_bad_end",
-      "title_ko": "배드 엔드(소용돌이) — 초념석 미보유로 인한 칸나 구명 실패",
-      "summary_ko": "카오리 루트에서 초념석을 계승하지 않고 칸나 루트 종반에 도달할 때 발생하는 대표적 막다른 분기(Whirlpool).",
+      "title_ko": "소용돌이 — 류조지 저택 정면 추궁 구속",
+      "summary_ko": "증거 없이 류조지를 면전에서 추궁하다가 저택 경비와 함정에 붙잡혀 소거되는 배드엔드.",
       "evidence_tag": "[확인]"
     },
     {
@@ -227,8 +227,62 @@
       "route_id": "route_mitsuki",
       "terminal_node_id": "node_mitsuki_rope_lockout",
       "type": "whirlpool_bad_end",
-      "title_ko": "진행 막힘(소용돌이) — 토장 로프 미회수 상태",
+      "title_ko": "소용돌이 — 토장 로프 미회수 상태",
       "summary_ko": "류조지 토장에서 로프보다 벽을 먼저 조사해 로프를 영구 미획득할 경우, 우물 은 메달 및 후속 동굴 퍼즐이 막히는 분기 함정.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_ayumi_card_trap",
+      "route_id": "route_ayumi",
+      "terminal_node_id": "node_ayumi_card_trap_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 여경비원 앞 자기카드 성급 사용",
+      "summary_ko": "지오테크닉스 여경비원 앞에서 자기카드를 성급히 제시해 출입이 차단되고 삼각산 보옥 3 우회 분기를 상실하는 함정.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_ayumi_toyotomi",
+      "route_id": "route_ayumi",
+      "terminal_node_id": "node_ayumi_toyotomi_bad",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 도요토미 사보타주 함정",
+      "summary_ko": "해안 공사 현장에서 도요토미의 공작에 휘말려 아유미 구출과 블루 카드 확보에 실패하는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_kaori_alarm",
+      "route_id": "route_kaori",
+      "terminal_node_id": "node_kaori_alarm_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 지오테크닉스 보안 경보 발동",
+      "summary_ko": "아유미 루트의 블루 카드 없이 코다이 연구실 전자 보안문을 강제 돌파하려다 경비대에 체포되는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_mio_cave_collapse",
+      "route_id": "route_mio",
+      "terminal_node_id": "node_mio_cave_collapse_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 사당 지하 동굴 낙반 조난",
+      "summary_ko": "유우키 동행과 흰/검은 메달 없이 지하 동굴 어둠 속 통로를 무리하게 돌파하다 낙반에 고립되는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_eriko_memory_wipe",
+      "route_id": "route_eriko",
+      "terminal_node_id": "node_eriko_dismissed_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 차원 감사 프로토콜 · 기억 간섭",
+      "summary_ko": "에리코의 경고를 무시하고 차원 이상에 무방비로 접근해 시간축 인과에서 배제되는 소용돌이 분기.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_kanna_no_stone",
+      "route_id": "route_kanna",
+      "terminal_node_id": "node_kanna_bad_no_stone",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 초념석 미보유로 인한 칸나 구명 실패",
+      "summary_ko": "카오리 루트에서 초념석을 계승하지 않고 칸나 루트 종반에 도달할 때 발생하는 대표적 막다른 분기(Whirlpool).",
       "evidence_tag": "[확인]"
     },
     {

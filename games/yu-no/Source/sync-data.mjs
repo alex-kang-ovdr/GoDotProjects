@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * YU-NO SSOT Data Bundler (ESM)
+ * YU-NO SSOT Data Bundler (ESM) — Phase 2 (60 A.D.M.S. Nodes + 35 Hotspots + 3 Isekai Puzzles)
  * Bundles ReverseDesign/verified_data/*.json into Web/data/game-data.js
  * Exports globalThis.YUNO_DATA (browser file:// & HTTP) and module.exports (Node UMD).
  */
@@ -23,9 +23,15 @@ const routesData = readJson('routes_and_endings.json');
 const itemsData = readJson('items_and_jewels.json');
 const flagsData = readJson('flags_and_inheritance.json');
 const admsData = readJson('adms_nodes.json');
+const hotspotsData = readJson('scene_hotspots.json');
+const puzzlesData = readJson('isekai_puzzles.json');
+
+const modernNodes = admsData.nodes.filter((n) => n.route_id !== 'route_isekai').length;
+const isekaiNodes = admsData.nodes.filter((n) => n.route_id === 'route_isekai').length;
+const whirlpoolNodes = admsData.nodes.filter((n) => n.node_type === 'whirlpool').length;
 
 const bundle = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '2.0.0',
   gameId: 'yu-no',
   titleKo: charactersData.title_ko,
   titleJp: charactersData.title_jp,
@@ -43,6 +49,11 @@ const bundle = {
     localFlags: flagsData.local_flags.length,
     crossRouteTransfers: flagsData.cross_route_transfers.length,
     admsNodes: admsData.nodes.length,
+    modernNodes,
+    isekaiNodes,
+    whirlpoolNodes,
+    sceneHotspots: hotspotsData.hotspots.length,
+    isekaiPuzzles: puzzlesData.puzzles.length,
   },
   characters: charactersData.characters,
   locations: locationsData.locations,
@@ -59,6 +70,9 @@ const bundle = {
   rootNodeId: admsData.root_node_id,
   nodeTypeLegend: admsData.node_type_legend,
   nodes: admsData.nodes,
+  stageViewport: hotspotsData.stage_viewport,
+  sceneHotspots: hotspotsData.hotspots,
+  isekaiPuzzles: puzzlesData.puzzles,
 };
 
 mkdirSync(dirname(outFile), { recursive: true });
@@ -81,10 +95,13 @@ writeFileSync(outFile, outputSource, 'utf8');
 
 console.log(`Synced YU-NO verified_data -> ${outFile}`);
 console.log(
-  `  Characters: ${bundle.counts.characters} | Locations: ${bundle.counts.locations} | Nodes: ${bundle.counts.admsNodes}`
+  `  Characters: ${bundle.counts.characters} | Locations: ${bundle.counts.locations} | Nodes: ${bundle.counts.admsNodes} (Modern ${bundle.counts.modernNodes} + Isekai ${bundle.counts.isekaiNodes})`
 );
 console.log(
-  `  Routes: ${bundle.counts.routes} | Endings: ${bundle.counts.endings} | Jewels: ${bundle.counts.jewels} | Items: ${bundle.counts.items} (${bundle.counts.carriedItems} carried / ${bundle.counts.localItems} local)`
+  `  Hotspots: ${bundle.counts.sceneHotspots} | Isekai Puzzles: ${bundle.counts.isekaiPuzzles} | Endings: ${bundle.counts.endings} (Whirlpools: ${bundle.counts.whirlpoolNodes})`
+);
+console.log(
+  `  Routes: ${bundle.counts.routes} | Jewels: ${bundle.counts.jewels} | Items: ${bundle.counts.items} (${bundle.counts.carriedItems} carried / ${bundle.counts.localItems} local)`
 );
 console.log(
   `  Flags: ${bundle.counts.globalFlags} global + ${bundle.counts.localFlags} local | Cross-route transfers: ${bundle.counts.crossRouteTransfers}`

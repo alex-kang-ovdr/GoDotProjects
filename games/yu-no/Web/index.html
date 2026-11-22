@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YU-NO — A.D.M.S. 병렬 분기 그래프 &amp; 리플렉터 프로토타입</title>
+  <title>YU-NO — A.D.M.S. 60노드 병렬 분기 그래프 &amp; 데라 그란트 프로토타입</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,8 +13,8 @@
       <div class="brand">
         <span class="brand-gem" aria-hidden="true">◆</span>
         <div class="brand-text">
-          <h1>YU-NO <span class="brand-sub">A.D.M.S. Parallel Branching Prototype</span></h1>
-          <p class="brand-pillar">병렬 분기 그래프 · 플래그 추적 · 루트 간 정보 계승</p>
+          <h1>YU-NO <span class="brand-sub">A.D.M.S. 60-Node Chronicle</span></h1>
+          <p class="brand-pillar">병렬 분기 그래프 · 공간 핫스팟 · 교차 계승 · 데라 그란트 미궁</p>
         </div>
       </div>
 
@@ -22,7 +22,7 @@
         <span class="stat-pill world-pill" id="pill-world">현세편 · 사카이마치</span>
         <span class="stat-pill jewel-pill" id="pill-jewels">광점 보옥 0 / 6</span>
         <span class="stat-pill route-pill" id="pill-routes">현세 루트 0 / 6</span>
-        <span class="stat-pill node-pill" id="pill-nodes">탐색 1 / 35</span>
+        <span class="stat-pill node-pill" id="pill-nodes" title="현세편 50노드 / 이세계편 10노드 분리 집계 (GAP-07 해소)">현세 2% · 이세계 0%</span>
       </div>
 
       <div class="topbar-actions">
@@ -33,7 +33,7 @@
             <option value="remake_10jewels">리메이크 (10슬롯: 초기4+발견6)</option>
           </select>
         </label>
-        <button type="button" class="btn btn-ghost" id="btn-system-save">💾 시스템 세이브</button>
+        <button type="button" class="btn btn-ghost" id="btn-system-save">💾 세이브</button>
         <button type="button" class="btn btn-ghost" id="btn-help">❓ 가이드</button>
         <button type="button" class="btn btn-danger-ghost" id="btn-reset">↺ 초기화</button>
       </div>
@@ -41,14 +41,14 @@
 
     <!-- Main Playable Workspace -->
     <main class="workspace">
-      <!-- Left Column: A.D.M.S. Graph + Reflector Device -->
+      <!-- Left Column: A.D.M.S. 60-Node Graph + Reflector Device -->
       <section class="left-column">
-        <!-- Interactive 35-Node A.D.M.S. Parallel World SVG Graph -->
+        <!-- Interactive 60-Node A.D.M.S. Parallel World SVG Graph -->
         <article class="panel adms-panel">
           <div class="panel-header">
             <div class="panel-title">
-              <h2>A.D.M.S. 병렬세계 분기 그래프 <span class="badge">35 Nodes</span></h2>
-              <span class="panel-hint">금색 보옥 앵커가 설치된 노드를 클릭하면 즉시 리플렉터 점프</span>
+              <h2>A.D.M.S. 병렬세계 분기 그래프 <span class="badge" id="badge-node-count">60 Nodes</span></h2>
+              <span class="panel-hint">금색 보옥 앵커 클릭 시 점프 · 계승 체인 클릭 시 다중 시간축 강조</span>
             </div>
             <div class="graph-controls">
               <label class="toggle-inline">
@@ -67,15 +67,18 @@
 
           <div class="adms-legend" id="adms-legend">
             <span class="legend-item"><i class="dot dot-current"></i>현재 위치</span>
-            <span class="legend-item"><i class="dot dot-jewel"></i>보옥 세이브(클릭 점프)</span>
-            <span class="legend-item"><i class="dot dot-shining"></i>광점(보옥 1~6)</span>
-            <span class="legend-item"><i class="dot dot-gate"></i>교차 계승 관문</span>
-            <span class="legend-item"><i class="dot dot-vortex"></i>소용돌이(함정)</span>
-            <span class="legend-item"><i class="dot dot-end"></i>루트/트루 엔딩</span>
+            <span class="legend-item"><i class="dot dot-jewel"></i>보옥 세이브</span>
+            <span class="legend-item"><i class="dot dot-shining"></i>광점(보옥1~6)</span>
+            <span class="legend-item"><i class="dot dot-gate"></i>교차 관문</span>
+            <span class="legend-item"><i class="dot dot-vortex"></i>소용돌이(8종)</span>
+            <span class="legend-item"><i class="dot dot-end"></i>루트·트루엔딩</span>
           </div>
 
+          <!-- Interactive Cross-Route Chain Quick Highlighter Bar -->
+          <div class="adms-chain-bar" id="adms-chain-bar" aria-label="교차 계승 체인 하이라이터"></div>
+
           <div class="graph-viewport" id="graph-viewport">
-            <svg id="adms-svg" class="adms-svg" viewBox="0 0 1160 660" role="img" aria-label="A.D.M.S. 35노드 병렬 분기 그래프"></svg>
+            <svg id="adms-svg" class="adms-svg" viewBox="0 0 1520 760" role="img" aria-label="A.D.M.S. 60노드 병렬 분기 그래프"></svg>
           </div>
 
           <div class="graph-detail-bar" id="graph-detail-bar">
@@ -116,7 +119,7 @@
 
       <!-- Right Column: ADV Scene Panel + Cross-Route State Inspector -->
       <section class="right-column">
-        <!-- ADV Scene & Command Panel -->
+        <!-- ADV Scene, Clickable SVG Hotspots & Dela Grante Mini-Puzzle Panel -->
         <article class="panel adv-panel">
           <div class="panel-header">
             <div class="panel-title">
@@ -126,11 +129,14 @@
             <span class="scene-node-id" id="scene-node-id">node_prologue_start</span>
           </div>
 
-          <!-- Procedural Atmospheric Location SVG Stage -->
+          <!-- Procedural Atmospheric Location SVG Stage + Clickable Reticle Hotspots -->
           <div class="scene-stage" id="scene-stage">
-            <svg id="location-svg" class="location-svg" viewBox="0 0 560 175" role="img" aria-label="현재 로케이션 배경"></svg>
+            <svg id="location-svg" class="location-svg" viewBox="0 0 560 175" role="img" aria-label="현재 로케이션 배경 및 인터랙티브 핫스팟"></svg>
             <div class="scene-characters" id="scene-characters"></div>
           </div>
+
+          <!-- Accessible Hotspot Chips & Armed Item Banner -->
+          <div class="scene-hotspots-bar" id="scene-hotspots-bar"></div>
 
           <!-- Blinking / Dead-End / Ending Alerts -->
           <div id="scene-alert-banner" class="scene-alert hidden"></div>
@@ -145,6 +151,9 @@
             <div id="feedback-box" class="feedback-box hidden"></div>
           </div>
 
+          <!-- Auto-activating Dela Grante Survival & Underground Maze Panel -->
+          <section id="isekai-puzzle-panel" class="isekai-puzzle-panel hidden" aria-label="데라 그란트 이세계편 생존·미궁 패널"></section>
+
           <!-- Interactive ADV Command Bar -->
           <div class="command-bar">
             <button type="button" class="btn btn-primary" id="btn-cmd-inspect">🔍 현장 조사</button>
@@ -158,7 +167,7 @@
 
           <!-- Branch / Transition Choices -->
           <div class="transitions-section">
-            <h3>이동 / 분기 선택 <span class="hint-inline">(잠긴 관문은 필요 계승 아이템·플래그를 확인하세요)</span></h3>
+            <h3>이동 / 분기 선택 <span class="hint-inline">(잠긴 관문은 필요 계승 아이템·플래그·이세계 미궁 조건을 확인하세요)</span></h3>
             <div id="transitions-list" class="transitions-list"></div>
           </div>
         </article>
@@ -172,7 +181,7 @@
             <div class="inspector-tabs" role="tablist">
               <button type="button" class="tab-btn active" data-tab="partition" role="tab">계승 vs 로컬</button>
               <button type="button" class="tab-btn" data-tab="transfers" role="tab">5대 교차 계승</button>
-              <button type="button" class="tab-btn" data-tab="endings" role="tab">루트·엔딩</button>
+              <button type="button" class="tab-btn" data-tab="endings" role="tab">완료율·엔딩</button>
               <button type="button" class="tab-btn" data-tab="log" role="tab">로그</button>
             </div>
           </div>
@@ -206,20 +215,22 @@
                     <div id="list-local-items" class="chip-list"></div>
                   </div>
                   <div class="partition-sub">
-                    <h4>로컬 시간축 플래그 (<span id="count-lflags">0</span>/12)</h4>
+                    <h4>로컬 시간축 플래그 (<span id="count-lflags">0</span>/26)</h4>
                     <div id="list-local-flags" class="chip-list"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Tab 2: 5 Cross-Route Inheritance Chains -->
+            <!-- Tab 2: 5 Cross-Route Inheritance Chains (Clickable to Highlight on A.D.M.S.) -->
             <div class="tab-pane" id="tab-transfers">
+              <p class="tab-lead">체인을 클릭하면 상단 A.D.M.S. 그래프에 <strong>획득 노드 → 보옥 점프 허브 → 관문 → 해금 노드</strong> 전체 경로가 강조됩니다.</p>
               <div id="transfers-list" class="transfers-list"></div>
             </div>
 
-            <!-- Tab 3: Routes & Endings Progress -->
+            <!-- Tab 3: 100% Map Completion Breakdown (GAP-07) & 15 Endings -->
             <div class="tab-pane" id="tab-endings">
+              <div id="map-breakdown-box" class="map-breakdown-box"></div>
               <div id="endings-list" class="endings-list"></div>
             </div>
 
@@ -273,15 +284,15 @@
   <div id="modal-help" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-help-title">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 id="modal-help-title">🌌 YU-NO A.D.M.S. 플레이 가이드</h3>
+        <h3 id="modal-help-title">🌌 YU-NO A.D.M.S. 60노드 플레이 가이드</h3>
         <button type="button" class="btn btn-xs" data-close-modal="modal-help">✕</button>
       </div>
       <div class="modal-body help-body">
         <ol>
-          <li><strong>1일차 거점(<code>node_day1_hub</code>)에 보옥 세이브 필수!</strong><br>나중에 칸나 루트에서 얻은 <em>아버지 서재의 열쇠</em>를 들고 이 초기 시간대로 돌아와야 괘종시계(6→3)에서 보옥 6을 얻을 수 있습니다.</li>
-          <li><strong>학원 정문(<code>node_school_day1_gate</code>)에도 보옥 세이브 배치!</strong><br>6개 히로인 루트가 갈라지는 허브입니다. 한 루트를 끝내거나 소용돌이(배드엔드)에 빠지면 A.D.M.S. 그래프에서 보옥 노드를 클릭해 점프하세요.</li>
-          <li><strong>비대칭 역계승 (Global vs Local):</strong><br>보옥 점프를 해도 <em>계승 아이템 14종</em>(블루 카드, 은 메달, 초념석, 서재의 열쇠 등), <em>광점 보옥 6개</em>, <em>루트 클리어 플래그</em>는 그대로 들고 이동합니다!</li>
-          <li><strong>추천 공략 순서:</strong><br>미츠키(보옥2·은메달) → 아유미(보옥3·블루카드) → 카오리(블루카드 계승→보옥4·초념석) → 미오(은메달+초념석 계승→보옥5) → 에리코 → 칸나(초념석 계승→서재 열쇠) → 1일차 점프 후 서재(보옥6) → 삼각산 수렴 → 데라 그란트 트루 엔딩!</li>
+          <li><strong>1일차 거점(<code>node_day1_hub</code>)과 학원 정문(<code>node_school_day1_gate</code>)에 보옥 세이브 필수!</strong><br>나중에 칸나 루트에서 얻은 <em>아버지 서재의 열쇠</em>를 들고 1일차 거점으로 돌아와 서재 연결문·괘종시계(6→3)를 열어야 보옥 6을 얻습니다.</li>
+          <li><strong>씬 핫스팟 &amp; 아이템 조합:</strong><br>배경 SVG의 빛나는 조준 마커(또는 하단 핫스팟 칩)를 클릭해 조사하거나, [🎒 아이템 사용]에서 아이템을 장착한 뒤 핫스팟(서재 문, 괘종시계, 우물, 카드 리더, 제단 등)을 클릭해 직접 사용하세요!</li>
+          <li><strong>교차 계승 체인 하이라이터:</strong><br>A.D.M.S. 상단 체인 버튼이나 [5대 교차 계승] 탭 항목을 클릭하면 <em>획득 → 점프 허브 → 관문 → 해금</em> 경로가 시안/골드로 실시간 강조됩니다.</li>
+          <li><strong>이세계편(데라 그란트) 생존 &amp; 지하도 미궁:</strong><br>삼각산 수렴 이후 보옥 점프가 봉인되며, 3장 <em>라파엘로 사막(전진 4 / 유노 대화 3 / 주변 조사 2)</em>, 6장 <em>지하도 1(전진 3 → 막다른 길 → 1칸 후퇴 → 우측 → 전진)</em>, 8장 <em>지하도 2(직진 3)</em>를 돌파해 트루 엔딩에 도달하세요!</li>
         </ol>
       </div>
       <div class="modal-footer">

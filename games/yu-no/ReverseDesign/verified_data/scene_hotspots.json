@@ -1,0 +1,502 @@
+{
+  "schema_version": "2.0.0",
+  "game_id": "yu-no",
+  "stage_viewport": { "width": 560, "height": 175 },
+  "hotspots": [
+    {
+      "id": "hs_room_parcel",
+      "location_id": "loc_arima_room",
+      "label_ko": "코다이의 소포",
+      "x": 165,
+      "y": 118,
+      "inspect_ko": "실종된 아버지 코다이가 남긴 소포 상자. 팔각형 금속 장치 '리플렉터 디바이스'와 '오늘 밤 10시 켄노미사키로 와라'는 편지가 담겨 있었다.",
+      "item_interactions": [
+        {
+          "item_id": "item_kodai_letter",
+          "response_ko": "편지 뒷면의 주석을 다시 읽어 보았다: '서재의 괘종시계는 6에서 3으로, 그리고 서랍 설명서를 무심코 열지 마라.'",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_room_drawer",
+      "location_id": "loc_arima_room",
+      "label_ko": "책상 서랍",
+      "x": 330,
+      "y": 124,
+      "inspect_ko": "타쿠야의 책상 서랍. 설명서가 놓여 있지만 '읽지 않는다'를 선택하고 안쪽을 더듬으면 첫 번째 광점 보옥(보옥 1)이 손끝에 걸린다!",
+      "item_interactions": [],
+      "click_advances_to": "node_jewel1_drawer",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_room_study_door",
+      "location_id": "loc_arima_room",
+      "label_ko": "서재 연결문",
+      "x": 455,
+      "y": 88,
+      "inspect_ko": "복도 끝 잠긴 아버지의 서재 문. 1일차 초기 시간대에는 서재 짐이 온전하다. 미래 시간축에서 '아버지 서재의 열쇠'를 가져오면 개방할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_study_key",
+          "response_ko": "칸나 루트에서 역계승한 '아버지 서재의 열쇠'가 정확히 맞물리며 초기 시점의 서재 문이 열렸다!",
+          "unlocks_node_id": "node_study_unlock",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_living_schedule",
+      "location_id": "loc_arima_living",
+      "label_ko": "아유미의 일정표",
+      "x": 270,
+      "y": 108,
+      "inspect_ko": "거실 테이블 위 지오테크닉스 해안 지질조사 일정표. 도요토미 현장감독의 보고서가 불자연스럽게 수정되어 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_ayumi_desk_safe",
+      "location_id": "loc_arima_ayumi_room",
+      "label_ko": "아유미 책상·금고",
+      "x": 315,
+      "y": 114,
+      "inspect_ko": "아유미의 방 책상 아래 숨겨진 소형 금고. 지오테크닉스 사옥의 보안 등급 문서와 도요토미의 해안 공사 사보타주 정황이 보관되어 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_magnetic_card",
+          "response_ko": "자기카드의 보안 코드를 금고 서류와 대조했다. 이 카드는 여경비원 앞에서 쓰지 말고 삼각산 우회 시 아껴 두는 편이 유리하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_study_clock",
+      "location_id": "loc_arima_study",
+      "label_ko": "괘종시계 (6→3)",
+      "x": 280,
+      "y": 64,
+      "inspect_ko": "코다이 서재의 고풍스러운 괘종시계. 시계 틈새를 살핀 뒤 문자판의 숫자 [6 → 3]을 순서대로 누르면 숨겨진 수납함이 열린다!",
+      "item_interactions": [
+        {
+          "item_id": "item_study_key",
+          "response_ko": "서재의 열쇠로 괘종시계 뚜껑 잠금을 풀고 문자판 [6 → 3]을 조작했다 — 마지막 여섯 번째 광점 보옥이 빛난다!",
+          "unlocks_node_id": "node_study_clock_puzzle",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": "node_study_clock_puzzle",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_study_manuscript",
+      "location_id": "loc_arima_study",
+      "label_ko": "코다이 연구 수기",
+      "x": 152,
+      "y": 122,
+      "inspect_ko": "서재 책상 위에 펼쳐진 아리마 코다이의 병렬세계 연구 수기. 친모 케이코(케이티아)와 켄노미사키 시공 게이트 좌표가 적혀 있다.",
+      "item_interactions": [],
+      "click_advances_to": "node_study_kodai_manuscript",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_gate_student_id",
+      "location_id": "loc_school_gate",
+      "label_ko": "떨어진 학생수첩",
+      "x": 195,
+      "y": 130,
+      "inspect_ko": "전학생 하타노 칸나가 부딪치며 떨어뜨린 학생수첩. 만약 다른 분기에서 소비·분실했다면 시가지 상점가 취객(호죠) 충돌 이벤트로 재입수할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_kanna_student_id",
+          "response_ko": "칸나의 학생수첩을 들고 학원 옥상으로 향하면 칸나 루트가 열린다.",
+          "unlocks_node_id": "node_kanna_rooftop",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_gate_crossroads",
+      "location_id": "loc_school_gate",
+      "label_ko": "학원 정문 교차로",
+      "x": 388,
+      "y": 98,
+      "inspect_ko": "여섯 갈래 평행세계가 분기하는 사카이마치 학원 정문. 리플렉터가 강하게 점멸하므로 반드시 이곳에 보옥 세이브를 고정해 두어야 한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_rooftop_fence",
+      "location_id": "loc_school_rooftop",
+      "label_ko": "옥상 펜스·칸나",
+      "x": 280,
+      "y": 92,
+      "inspect_ko": "바람 부는 학원 옥상. 헤드폰을 쓴 칸나의 목에 걸린 푸른 결정 목걸이가 리플렉터 디바이스에 미세하게 공명하고 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_infirmary_meter",
+      "location_id": "loc_school_infirmary",
+      "label_ko": "은닉 차원 계측기",
+      "x": 350,
+      "y": 102,
+      "inspect_ko": "보건실 캐비닛 안쪽에서 발견한 미지의 초과학 단말. 다케다 에리코가 '차원 감사관 에이릭 쿼드로'임을 입증하는 결정적 물증이다!",
+      "item_interactions": [],
+      "click_advances_to": "node_eriko_infirmary_probe",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_lab_dossier",
+      "location_id": "loc_school_lab",
+      "label_ko": "연구실 기밀 서류",
+      "x": 270,
+      "y": 112,
+      "inspect_ko": "지질조사 보고서와 20페이지째 서류가 놓인 연구 데스크. 코다이 연구실이 지오테크닉스 사옥 최상층 보안 구역에 은폐되어 있음이 드러난다.",
+      "item_interactions": [
+        {
+          "item_id": "item_doc_page20",
+          "response_ko": "20페이지째 서류를 연구실 자료와 대조해 지오테크닉스 사옥 내부 도면과 초념석 보관 구역을 특정했다!",
+          "unlocks_node_id": "node_kaori_gate_blue_card",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_coast_site",
+      "location_id": "loc_coast_construction",
+      "label_ko": "해안 공사 설비",
+      "x": 168,
+      "y": 128,
+      "inspect_ko": "지오테크닉스 해안 굴착 장비. 도요토미 히데오가 공사 일지를 조작해 아유미를 궁지로 몰아넣으려 한 흔적이 남아 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_coast_lightning",
+      "location_id": "loc_coast_construction",
+      "label_ko": "낙뢰 지점",
+      "x": 308,
+      "y": 54,
+      "inspect_ko": "맑은 밤하늘에서 400년 주기로 떨어진다는 켄노미사키의 기이한 낙뢰. 시공 왜곡의 진원지가 삼각산 방면을 가리킨다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mountain_monument",
+      "location_id": "loc_triangle_mountain",
+      "label_ko": "삼각산 고대 석비",
+      "x": 146,
+      "y": 118,
+      "inspect_ko": "400년 전 사카이마치 전승이 새겨진 낡은 석비. 미오의 향토사 노트와 대조하면 지하 유적과 이세계의 문에 대한 경고가 읽힌다.",
+      "item_interactions": [
+        {
+          "item_id": "item_mio_notebook",
+          "response_ko": "미오의 메모장에 적힌 고문서 해독표와 석비가 완벽히 일치한다 — 400년 주기 사상 충돌의 기록이다!",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mountain_boulders",
+      "location_id": "loc_triangle_mountain",
+      "label_ko": "쌍둥이 바위 틈새",
+      "x": 282,
+      "y": 134,
+      "inspect_ko": "거대한 쌍둥이 바위 아래 시공의 빛이 스며드는 틈새. 아유미 루트에서 자기카드를 아껴 우회하면 보옥 3이, 전 보옥 완충 시 이세계 전이문이 열린다!",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_shrine_entrance",
+      "location_id": "loc_shrine",
+      "label_ko": "사당 뒤 동굴 입구",
+      "x": 280,
+      "y": 114,
+      "inspect_ko": "사당 뒤편에 숨겨진 지하 동굴 입구. 유우키 마사카츠를 파트너로 동행해야 어두운 웅덩이 구역의 보옥 5와 흰/검은 메달을 회수할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_mio_notebook",
+          "response_ko": "미오의 메모장에 따르면 동굴 깊은 곳 제단에는 은 메달과 초념석의 이중 공명이 필요하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_cave_puddle",
+      "location_id": "loc_shrine_cave",
+      "label_ko": "격자 앞 웅덩이",
+      "x": 165,
+      "y": 132,
+      "inspect_ko": "사당 지하 동굴 격자 앞 차가운 지하수 웅덩이. 유우키와 함께 수색할 때 물 밑에서 다섯 번째 광점 보옥과 흰·검은 메달이 드러난다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_cave_altar",
+      "location_id": "loc_shrine_cave",
+      "label_ko": "지하 유적 공명 제단",
+      "x": 382,
+      "y": 106,
+      "inspect_ko": "고대 유적 심부의 석조 제단. 미츠키 루트의 '은 메달'과 카오리 루트의 '초념석'을 함께 끼워 넣어야 봉인이 해제된다.",
+      "item_interactions": [
+        {
+          "item_id": "item_silver_medal",
+          "response_ko": "우물에서 건진 은 메달을 제단 홈에 끼웠다! 초념석과 함께 공명하며 고대 유적의 문이 열린다!",
+          "unlocks_node_id": "node_mio_coast_revelation",
+          "grants_local_flag": null
+        },
+        {
+          "item_id": "item_chounenseki",
+          "response_ko": "초념석이 은 메달과 격렬히 공명하며 지하 유적 최심부의 봉인이 해제되었다!",
+          "unlocks_node_id": "node_mio_coast_revelation",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mansion_crest",
+      "location_id": "loc_ryuzoji_mansion",
+      "label_ko": "류조지 저택 문장",
+      "x": 280,
+      "y": 86,
+      "inspect_ko": "고풍스러운 류조지 가문 무가 저택의 현관과 비밀 서재 통로. 황금 열쇠가 있으면 류조지의 감시를 피해 안쪽으로 잠입할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_gold_key",
+          "response_ko": "황금 열쇠로 저택 안쪽 비밀 통로를 열어 류조지의 토장 쪽으로 은밀히 접근했다!",
+          "unlocks_node_id": "node_mitsuki_mansion_sneak",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_rope",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "좌측 벽의 로프",
+      "x": 135,
+      "y": 116,
+      "inspect_ko": "토장 좌측 어둠 속에 걸린 튼튼한 로프! 원작의 악명 높은 순서 함정 — 반드시 벽을 조사하기 전에 로프부터 회수해야 한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_machine",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "토장 안쪽 기계",
+      "x": 292,
+      "y": 104,
+      "inspect_ko": "류조지가 토장 안쪽에 숨겨 둔 수수께끼의 실험 장치. 기계 옆 틈새에서 두 번째 광점 보옥(보옥 2)이 맥동한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_well",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "저택 뒤뜰 우물",
+      "x": 442,
+      "y": 126,
+      "inspect_ko": "류조지 저택 뒤뜰의 깊은 돌우물. 토장에서 챙긴 '로프'를 내려 우물 밑을 건지면 미오 루트의 핵심 열쇠인 '은 메달'을 인양할 수 있다!",
+      "item_interactions": [
+        {
+          "item_id": "item_rope",
+          "response_ko": "로프를 우물 속으로 내려 수면 아래 빛나던 '은 메달'을 무사히 끌어올렸다!",
+          "unlocks_node_id": "node_mitsuki_well_medal",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_geo_card_reader",
+      "location_id": "loc_geo_technics",
+      "label_ko": "보안문 카드 리더",
+      "x": 225,
+      "y": 116,
+      "inspect_ko": "지오테크닉스 사옥 코다이 연구실 앞 전자 보안문. 일반 자기카드는 여경비원 경보 함정이며, 아유미 루트에서 얻은 '블루 카드'만 통과한다!",
+      "item_interactions": [
+        {
+          "item_id": "item_blue_card",
+          "response_ko": "아유미 루트에서 계승한 '블루 카드'를 리더에 스캔하자 녹색 램프와 함께 코다이 연구실 보안문이 열렸다!",
+          "unlocks_node_id": "node_kaori_infiltrate_lab",
+          "grants_local_flag": null
+        },
+        {
+          "item_id": "item_magnetic_card",
+          "response_ko": "경고! 여경비원 앞에서 자기카드를 성급히 쓰면 보옥 3 우회 분기가 닫힌다. 사옥 최상층 보안문에는 '블루 카드'가 필요하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_geo_projector",
+      "location_id": "loc_geo_technics",
+      "label_ko": "연구실 프로젝터 뒤",
+      "x": 348,
+      "y": 92,
+      "inspect_ko": "코다이 연구실 구석에 놓인 슬라이드 프로젝터 뒤편. 네 번째 광점 보옥(보옥 4)과 시공 공명 광석 '초념석'이 숨겨져 있던 장소다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_town_alley",
+      "location_id": "loc_town_street",
+      "label_ko": "상점가 골목 (취객)",
+      "x": 182,
+      "y": 124,
+      "inspect_ko": "사카이마치 상점가 뒷골목. 칸나에게 따라붙던 취객(호죠)과 충돌하는 분기를 통해 분실·소비한 '칸나의 학생수첩'을 재입수할 수 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_town_kanna_collar",
+      "location_id": "loc_town_street",
+      "label_ko": "칸나의 푸른 목걸이",
+      "x": 374,
+      "y": 108,
+      "inspect_ko": "발작을 일으킨 칸나의 가슴 위에서 빛을 잃어 가는 푸른 초념석 목걸이. 카오리 루트의 '초념석'을 가져와 공명시키면 그녀를 구할 수 있다!",
+      "item_interactions": [
+        {
+          "item_id": "item_chounenseki",
+          "response_ko": "초념석이 칸나의 목걸이와 눈부시게 공명했다! 칸나가 의식을 되찾고 '아버지 서재의 열쇠'를 맡긴다!",
+          "unlocks_node_id": "node_kanna_end",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_border_sky",
+      "location_id": "loc_dg_border",
+      "label_ko": "쌍둥이 달과 보더",
+      "x": 425,
+      "y": 54,
+      "inspect_ko": "이세계 데라 그란트의 하늘에 뜬 두 개의 달. 국경 지대 '보더'에 도착한 순간 리플렉터 디바이스의 보옥 점프 기능은 완전히 봉인되었다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_ailia_cradle",
+      "location_id": "loc_dg_ailia_house",
+      "label_ko": "유노와 쿤쿤의 보금자리",
+      "x": 280,
+      "y": 116,
+      "inspect_ko": "변경 여기사 아이리아가 내어 준 따뜻한 집. 세레스와 함께한 나날과 딸 유노의 미소, 충직한 동료 쿤쿤의 기억이 깃들어 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_oasis_spring",
+      "location_id": "loc_dg_desert_oasis",
+      "label_ko": "라파엘로 사막 오아시스",
+      "x": 268,
+      "y": 124,
+      "inspect_ko": "끝없는 라파엘로 사막 한가운데 반짝이는 오아시스. 유노와 대화를 거듭하고 주변을 살피며 행군해야 사라가 머무는 이 샘에 도달한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_quarry_vein",
+      "location_id": "loc_dg_quarry",
+      "label_ko": "성석 채굴 광맥",
+      "x": 292,
+      "y": 118,
+      "inspect_ko": "감독관 바즈의 채찍 아래 채굴하던 거대한 성석 광맥. 현세의 초념석과 같은 기원을 지닌 '데라 그란트 성석'이 푸르게 빛난다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_passage_wall",
+      "location_id": "loc_dg_underground_1",
+      "label_ko": "지하도 석벽 표식",
+      "x": 276,
+      "y": 106,
+      "inspect_ko": "레지스탕스가 제도 지하도 석벽에 남긴 긁힌 화살표: '지하도 1은 끝까지 전진해 막다른 길에서 1칸 후퇴한 뒤 우측으로! 지하도 2는 직진 추적!'",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_capital_spire",
+      "location_id": "loc_dg_imperial_city",
+      "label_ko": "제도 신제궁 첨탑",
+      "x": 280,
+      "y": 76,
+      "inspect_ko": "데라 그란트 제도의 중심에 솟은 신제궁. 아만다의 레지스탕스와 합류하며 신제의 정체가 아리마 아유미임이 밝혀진다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_sanctuary_altar",
+      "location_id": "loc_dg_sanctuary",
+      "label_ko": "성당 제단·발광 위탁물",
+      "x": 280,
+      "y": 106,
+      "inspect_ko": "출구 없는 사상의 틈새 최종방. 어둠 속에서 누군가에게 맡겼던 '빛나는 위탁 물품'을 확인·사용하면 진엔딩으로 통하는 빛이 열린다!",
+      "item_interactions": [
+        {
+          "item_id": "item_entrusted_light",
+          "response_ko": "발광하는 위탁 물품이 사상의 틈새를 가르고 부린더의 나무로 이어지는 최종 문을 열었다!",
+          "unlocks_node_id": "node_true_end",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": "node_true_end",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_brinder_tree",
+      "location_id": "loc_dg_horizon_end",
+      "label_ko": "부린더의 나무",
+      "x": 280,
+      "y": 88,
+      "inspect_ko": "현세와 이세계, 모든 병렬세계의 인과가 모이는 세상의 끝 '부린더의 나무'. 이곳에서 유노의 사랑의 노래가 울려 퍼진다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    }
+  ]
+}

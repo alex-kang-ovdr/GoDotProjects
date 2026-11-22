@@ -1,0 +1,86 @@
+{
+  "schema_version": "2.0.0",
+  "game_id": "yu-no",
+  "puzzles": [
+    {
+      "id": "puzzle_dg_desert_crossing",
+      "type": "desert_crossing",
+      "node_id": "node_dg_desert_trek",
+      "location_id": "loc_dg_desert_oasis",
+      "title_ko": "라파엘로 사막 횡단 (커맨드 총공격 · 생존 리듬)",
+      "title_jp": "ラファエロ砂漠横断（コマンド総当たり）",
+      "grants_local_flag": "flag_local_dg_desert_talk_complete",
+      "hint_ko": "원작 공략 패턴: 물과 식량을 관리하며 '사막 전진(4회)', '유노에게 말 걸기(3회)', '주변 살펴보기(2회)'를 완수하면 오아시스가 드러납니다.",
+      "rules": {
+        "initial_water": 100,
+        "initial_rations": 100,
+        "max_water": 100,
+        "max_rations": 100,
+        "goal_distance": 4,
+        "goal_talk_yuno": 3,
+        "goal_look_around": 2,
+        "actions": {
+          "walk": { "label_ko": "사막 전진", "water_delta": -14, "rations_delta": -12, "distance_delta": 1 },
+          "talk_yuno": { "label_ko": "유노에게 말 걸기", "water_delta": -8, "rations_delta": -4, "talk_delta": 1 },
+          "look_around": { "label_ko": "주변 살펴보기", "water_delta": -6, "rations_delta": -4, "look_delta": 1 },
+          "forage": { "label_ko": "선인장·이슬 채집", "water_delta": 28, "rations_delta": 25 }
+        }
+      },
+      "talk_revelations_ko": [
+        "유노: \"아빠, 손 놓지 마... 엄마(세레스)가 저 너머 제도에서 기다리는 걸까?\"",
+        "유노: \"모래바람 속에서 이상한 노래가 들려. 부린더의 나무가 부르는 소리 같아...\"",
+        "유노: \"아빠! 저기 야자수 그림자가 보여! 오아시스가 바로 코앞이야!\""
+      ],
+      "look_revelations_ko": [
+        "지평선 너머로 아지랑이가 일렁인다. 쿤쿤이 코를 킁킁거리며 남동쪽 바람 냄새를 가리켰다.",
+        "모래 언덕 너머 맑은 수면의 반사가 포착되었다! 사라가 있는 오아시스 방향이 확실해졌다!"
+      ],
+      "canonical_solution": [
+        "walk",
+        "talk_yuno",
+        "look_around",
+        "walk",
+        "talk_yuno",
+        "forage",
+        "walk",
+        "look_around",
+        "talk_yuno",
+        "walk"
+      ],
+      "evidence_tag": "[확인 패턴 / 내부 수치 정규화]"
+    },
+    {
+      "id": "puzzle_dg_underground_1",
+      "type": "underground_maze",
+      "node_id": "node_dg_underground_1",
+      "location_id": "loc_dg_underground_1",
+      "title_ko": "제도 지하도 1 미궁 (거리 → 성)",
+      "title_jp": "帝都地下道1（街から城へ）",
+      "grants_local_flag": "flag_local_dg_underground_1_cleared",
+      "hint_ko": "원작 공략 패턴(eonet.ne.jp 검증): 막다른 길(깊이 3)까지 '전진' → 막다른 길에서 '1칸 후퇴(깊이 2)' → '우측' 비밀 통로 진입 → '전진'으로 제도 돌파!",
+      "rules": {
+        "max_depth": 3,
+        "dead_end_depth": 3,
+        "secret_right_depth": 2,
+        "requires_dead_end_hit": true
+      },
+      "canonical_solution": ["forward", "forward", "forward", "back", "right", "forward"],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "puzzle_dg_underground_2",
+      "type": "underground_maze",
+      "node_id": "node_dg_underground_2",
+      "location_id": "loc_dg_underground_1",
+      "title_ko": "제도 지하도 2 (류조지 직진 추적)",
+      "title_jp": "帝都地下道2（龍蔵寺追跡）",
+      "grants_local_flag": "flag_local_dg_underground_path_cleared",
+      "hint_ko": "원작 공략 패턴(eonet.ne.jp 검증): 샛길에 현혹되지 말고 거리·성당 방면으로 흔들림 없이 '전진(3회)'해 류조지를 추격하라!",
+      "rules": {
+        "goal_depth": 3
+      },
+      "canonical_solution": ["forward", "forward", "forward"],
+      "evidence_tag": "[확인]"
+    }
+  ]
+}

@@ -9,7 +9,7 @@
   }
 }(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this), function () {
   return {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
   "gameId": "yu-no",
   "titleKo": "이 세상 끝에서 사랑을 노래하는 소녀 YU-NO",
   "titleJp": "この世の果てで恋を唄う少女YU-NO",
@@ -18,15 +18,20 @@
     "characters": 20,
     "locations": 27,
     "routes": 9,
-    "endings": 9,
+    "endings": 15,
     "jewels": 10,
     "items": 17,
     "carriedItems": 14,
     "localItems": 3,
     "globalFlags": 11,
-    "localFlags": 12,
+    "localFlags": 26,
     "crossRouteTransfers": 5,
-    "admsNodes": 35
+    "admsNodes": 60,
+    "modernNodes": 50,
+    "isekaiNodes": 10,
+    "whirlpoolNodes": 8,
+    "sceneHotspots": 35,
+    "isekaiPuzzles": 3
   },
   "characters": [
     {
@@ -666,7 +671,7 @@
       ],
       "prerequisite_routes": [],
       "prerequisite_items": [],
-      "summary_ko": "코다이가 남긴 소포(리플렉터 디바이스·초기 보옥·편지)를 수령하고 사카이마치의 이변과 A.D.M.S. 기본 구조를 익히는 도입부.",
+      "summary_ko": "코다이가 남긴 소포(리플렉터 디바이스·초기 보옥·편지)를 수령하고, 밤 10시 켄노미사키·삼각산 조우를 거쳐 사카이마치 1일차 거점과 A.D.M.S. 기본 구조를 익히는 도입부.",
       "evidence_tag": "[확인]"
     },
     {
@@ -690,7 +695,7 @@
         "route_prologue"
       ],
       "prerequisite_items": [],
-      "summary_ko": "미츠키의 전화로 류조지 저택을 방문했다가 토장에 감금되며, 보옥 2와 로프(및 우물의 은 메달)를 확보하는 초반 핵심 루트.",
+      "summary_ko": "미츠키의 전화로 류조지 저택을 방문해 잠입·토장 감금과 순서 함정(로프 선회수)을 돌파하고, 보옥 2와 로프·우물 은 메달을 확보하는 초반 핵심 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -713,7 +718,7 @@
         "route_prologue"
       ],
       "prerequisite_items": [],
-      "summary_ko": "지오테크닉스 해안 공사와 도요토미의 음모를 파헤치며 블루 카드를 획득하고, 여경비원 앞 자기카드 미사용 분기에서 보옥 3을 얻는 루트.",
+      "summary_ko": "여경비원 자기카드 미사용 우회로 삼각산 보옥 3을 획득하고, 아유미 방 책상·금고 조사와 해안 도요토미 대치를 거쳐 블루 카드를 확보하는 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -738,7 +743,7 @@
       "prerequisite_items": [
         "item_blue_card"
       ],
-      "summary_ko": "아유미 루트에서 계승한 블루 카드로 카오리와 지오테크닉스 사옥에 잠입해 코다이 연구실의 초념석과 보옥 4를 확보하는 핵심 중계 루트.",
+      "summary_ko": "20페이지째 서류를 해독하고 아유미 루트에서 계승한 블루 카드로 지오테크닉스 사옥 코다이 연구실에 잠입해 보옥 4와 초념석을 확보하는 중계 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -767,7 +772,7 @@
         "item_silver_medal",
         "item_chounenseki"
       ],
-      "summary_ko": "삼각산과 사당 지하 동굴 유적을 조사하는 루트. 유우키 동행 분기에서 보옥 5를 획득하고 초념석·메달로 유적의 비밀을 해금한다.",
+      "summary_ko": "삼각산과 사당 지하 동굴 유적을 조사하는 루트. 유우키 동행 분기에서 보옥 5와 흰/검은 메달을 획득하고 은 메달·초념석으로 400년 전승을 해독한다.",
       "evidence_tag": "[확인]"
     },
     {
@@ -785,7 +790,7 @@
         "route_mitsuki"
       ],
       "prerequisite_items": [],
-      "summary_ko": "보건교사 다케다 에리코의 정체(차원 감사관 에이릭 쿼드로)와 류조지 배후의 차원 범죄 구조를 드러내는 진상 축 루트.",
+      "summary_ko": "보건실 차원 계측기 조사를 통해 양호교사 다케다 에리코의 정체(차원 감사관 에이릭 쿼드로)와 류조지 배후 차원 범죄 구조를 밝히는 진상 축 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -808,7 +813,7 @@
         "item_kanna_student_id",
         "item_chounenseki"
       ],
-      "summary_ko": "옥상 학생수첩 반환으로 진입하며, 칸나가 쓰러질 때 카오리 루트에서 가져온 초념석으로 구명해 최종 열쇠인 '아버지 서재의 열쇠'를 획득하는 현세편 클라이맥스 루트.",
+      "summary_ko": "옥상 학생수첩 반환(또는 시가지 취객 충돌 재입수)으로 진입해 칸나의 고독·목걸이 비밀·병원 위기를 거쳐 초념석으로 구명하고 아버지 서재의 열쇠를 얻는 클라이맥스 루트.",
       "evidence_tag": "[확인]"
     },
     {
@@ -835,7 +840,7 @@
       "prerequisite_items": [
         "item_study_key"
       ],
-      "summary_ko": "서재의 열쇠를 지닌 채 본편 극초반으로 보옥 로드하여 아버지의 서재를 개방하고, 괘종시계(6→3)로 보옥 6을 채워 모든 보옥을 완성한 뒤 삼각산 동굴에서 이세계로 전이한다.",
+      "summary_ko": "서재의 열쇠를 지닌 채 본편 극초반으로 보옥 로드하여 서재를 개방하고, 괘종시계(6→3)로 보옥 6을 채운 뒤 코다이의 수기를 해독해 삼각산 동굴에서 이세계로 전이한다.",
       "evidence_tag": "[확인]"
     },
     {
@@ -856,7 +861,7 @@
         "route_convergence"
       ],
       "prerequisite_items": [],
-      "summary_ko": "A.D.M.S. 다분기 탐색에서 커맨드 총공격·선형 모험으로 전환되는 후반부. 세레스·아이리아·유노·아만다·신제(아유미)·류조지와의 결전을 거쳐 세상의 끝(사상의 틈새) 진엔딩에 도달한다.",
+      "summary_ko": "A.D.M.S. 병렬 점프가 봉인되고 선형 모험·사막 횡단·지하도 미궁 탐색으로 전환되는 10장 구성의 후반부. 세레스·아이리아·유노·사라·아만다·신제(아유미)·류조지와의 결전을 거쳐 트루 엔딩에 도달한다.",
       "evidence_tag": "[확인]"
     }
   ],
@@ -916,12 +921,12 @@
       "evidence_tag": "[확인]"
     },
     {
-      "id": "end_dead_kanna_no_stone",
-      "route_id": "route_kanna",
-      "terminal_node_id": "node_kanna_bad_no_stone",
+      "id": "end_dead_ryuzoji_ambush",
+      "route_id": "route_mitsuki",
+      "terminal_node_id": "node_mitsuki_ryuzoji_ambush",
       "type": "whirlpool_bad_end",
-      "title_ko": "배드 엔드(소용돌이) — 초념석 미보유로 인한 칸나 구명 실패",
-      "summary_ko": "카오리 루트에서 초념석을 계승하지 않고 칸나 루트 종반에 도달할 때 발생하는 대표적 막다른 분기(Whirlpool).",
+      "title_ko": "소용돌이 — 류조지 저택 정면 추궁 구속",
+      "summary_ko": "증거 없이 류조지를 면전에서 추궁하다가 저택 경비와 함정에 붙잡혀 소거되는 배드엔드.",
       "evidence_tag": "[확인]"
     },
     {
@@ -929,8 +934,62 @@
       "route_id": "route_mitsuki",
       "terminal_node_id": "node_mitsuki_rope_lockout",
       "type": "whirlpool_bad_end",
-      "title_ko": "진행 막힘(소용돌이) — 토장 로프 미회수 상태",
+      "title_ko": "소용돌이 — 토장 로프 미회수 상태",
       "summary_ko": "류조지 토장에서 로프보다 벽을 먼저 조사해 로프를 영구 미획득할 경우, 우물 은 메달 및 후속 동굴 퍼즐이 막히는 분기 함정.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_ayumi_card_trap",
+      "route_id": "route_ayumi",
+      "terminal_node_id": "node_ayumi_card_trap_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 여경비원 앞 자기카드 성급 사용",
+      "summary_ko": "지오테크닉스 여경비원 앞에서 자기카드를 성급히 제시해 출입이 차단되고 삼각산 보옥 3 우회 분기를 상실하는 함정.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_ayumi_toyotomi",
+      "route_id": "route_ayumi",
+      "terminal_node_id": "node_ayumi_toyotomi_bad",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 도요토미 사보타주 함정",
+      "summary_ko": "해안 공사 현장에서 도요토미의 공작에 휘말려 아유미 구출과 블루 카드 확보에 실패하는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_kaori_alarm",
+      "route_id": "route_kaori",
+      "terminal_node_id": "node_kaori_alarm_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 지오테크닉스 보안 경보 발동",
+      "summary_ko": "아유미 루트의 블루 카드 없이 코다이 연구실 전자 보안문을 강제 돌파하려다 경비대에 체포되는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_mio_cave_collapse",
+      "route_id": "route_mio",
+      "terminal_node_id": "node_mio_cave_collapse_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 사당 지하 동굴 낙반 조난",
+      "summary_ko": "유우키 동행과 흰/검은 메달 없이 지하 동굴 어둠 속 통로를 무리하게 돌파하다 낙반에 고립되는 배드엔드.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_eriko_memory_wipe",
+      "route_id": "route_eriko",
+      "terminal_node_id": "node_eriko_dismissed_whirlpool",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 차원 감사 프로토콜 · 기억 간섭",
+      "summary_ko": "에리코의 경고를 무시하고 차원 이상에 무방비로 접근해 시간축 인과에서 배제되는 소용돌이 분기.",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "end_dead_kanna_no_stone",
+      "route_id": "route_kanna",
+      "terminal_node_id": "node_kanna_bad_no_stone",
+      "type": "whirlpool_bad_end",
+      "title_ko": "소용돌이 — 초념석 미보유로 인한 칸나 구명 실패",
+      "summary_ko": "카오리 루트에서 초념석을 계승하지 않고 칸나 루트 종반에 도달할 때 발생하는 대표적 막다른 분기(Whirlpool).",
       "evidence_tag": "[확인]"
     },
     {
@@ -1363,7 +1422,7 @@
   ],
   "statePartitionRules": {
     "global_persists_on_jewel_load": [
-      "inventory_items_state (현재 소지·소비 상태 그대로 유지; 과거 세이브 시점으로 되돌려도 소비된 아이템은 복구되지 않음)",
+      "inventory_items_state (현재 소지·소비 상태 그대로 유지; 과거 세이브 시점으로 되돌려도 소비된 아이템은 복구되지 않음. 단, 칸나의 학생수첩은 시가지 취객 충돌 분기에서 재입수 가능)",
       "collected_jewels_set (누적 획득 보옥 목록; 단, 맵 위 배치된 보옥은 로드 시 리플렉터로 회수됨)",
       "adms_discovered_nodes_and_edges (탐색 완료된 노드·분기선·소용돌이·광점 기록)",
       "global_flags (루트 클리어 배지, 서재 개방 여부, 이세계편 해금 등 메타 플래그)"
@@ -1372,7 +1431,8 @@
       "current_node_id & current_location_id",
       "local_flags (장면별 대화 진행도, 일시적 선택지, 동행 파트너, 퍼즐 단계 등)",
       "character_scene_positions (현재 시간축 내 NPC 배치)",
-      "pickup_already_taken_at_snapshot (세이브 시점에 이미 주웠던 아이템은 맵에서 재생성되지 않음)"
+      "pickup_already_taken_at_snapshot (세이브 시점에 이미 주웠던 아이템은 맵에서 재생성되지 않음)",
+      "hotspot_inspections & isekai_mini_puzzle_state (장면 조사 기록 및 이세계 사막/지하도 진행 상태)"
     ],
     "evidence_tag": "[확인]"
   },
@@ -1468,6 +1528,22 @@
   ],
   "localFlags": [
     {
+      "id": "flag_local_prologue_cape_visited",
+      "scope": "local",
+      "name_ko": "프롤로그 켄노미사키·삼각산 밤 10시 조우",
+      "route_id": "route_prologue",
+      "description_ko": "코다이의 편지대로 밤 10시 삼각산에서 의문의 소녀·류조지·아유미와 충돌하며 리플렉터가 각성함",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_ayumi_briefed",
+      "scope": "local",
+      "name_ko": "1일차 거실 아유미 공사 브리핑 청취",
+      "route_id": "route_prologue",
+      "description_ko": "아리마 저택 거실에서 아유미의 지오테크닉스 해안 공사 일정과 사내 갈등 단서를 확인",
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "flag_local_manual_unread",
       "scope": "local",
       "name_ko": "자실 서랍 설명서 미열람 선택",
@@ -1500,6 +1576,30 @@
       "evidence_tag": "[확인]"
     },
     {
+      "id": "flag_local_guard_card_wasted",
+      "scope": "local",
+      "name_ko": "여경비원 앞 자기카드 성급 사용 함정",
+      "route_id": "route_ayumi",
+      "description_ko": "자기카드를 성급히 제시해 사옥 진입이 저지되고 삼각산 보옥 3 우회 기회를 놓치는 부정 플래그",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_ayumi_sabotage_clue",
+      "scope": "local",
+      "name_ko": "아유미 책상·금고 사보타주 단서 확보",
+      "route_id": "route_ayumi",
+      "description_ko": "아유미의 방 책상과 금고에서 지오테크닉스 내부 방해 공작과 도요토미 연루 기록을 확보",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_kaori_dossier_verified",
+      "scope": "local",
+      "name_ko": "20페이지째 서류 및 사옥 기밀 대조 완료",
+      "route_id": "route_kaori",
+      "description_ko": "카오리와 함께 코다이의 연구 기록 및 지오테크닉스 사옥 보안 구역 좌표를 확인",
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "flag_local_cave_partner_yuki",
       "scope": "local",
       "name_ko": "동굴 탐사 파트너 유우키 선택",
@@ -1508,11 +1608,43 @@
       "evidence_tag": "[확인]"
     },
     {
+      "id": "flag_local_mio_legend_decoded",
+      "scope": "local",
+      "name_ko": "삼각산 400년 전승 및 유적 공명 해독",
+      "route_id": "route_mio",
+      "description_ko": "은 메달과 초념석 공명 후 사카이마치 400년 전승과 시마즈 가문 비화의 실마리를 확인",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_eriko_dimension_truth",
+      "scope": "local",
+      "name_ko": "차원 감사관 에이릭 쿼드로 파일 열람",
+      "route_id": "route_eriko",
+      "description_ko": "보건실 차원 계측기와 류조지 배후 정신 기생체의 차원 범죄 보고서를 확인",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_drunk_id_recovered",
+      "scope": "local",
+      "name_ko": "시가지 취객 충돌 학생수첩 재입수",
+      "route_id": "route_kanna",
+      "description_ko": "시가지에서 취객(호죠)과 충돌하는 분기를 통해 칸나의 학생수첩을 다시 확보함",
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "flag_local_rooftop_id_returned",
       "scope": "local",
       "name_ko": "옥상에서 칸나 학생수첩 반환 완료",
       "route_id": "route_kanna",
       "description_ko": "칸나/카오리 계통 분기 진입을 확정짓는 로컬 플래그",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_kanna_necklace_examined",
+      "scope": "local",
+      "name_ko": "칸나의 푸른 목걸이(초념석 결정) 조사 완료",
+      "route_id": "route_kanna",
+      "description_ko": "칸나의 고독한 생활과 목걸이가 생명 유지·차원 공명과 직결되어 있음을 파악",
       "evidence_tag": "[확인]"
     },
     {
@@ -1540,19 +1672,59 @@
       "evidence_tag": "[확인]"
     },
     {
+      "id": "flag_local_kodai_manuscript_read",
+      "scope": "local",
+      "name_ko": "코다이의 병렬세계 최종 수기 해독",
+      "route_id": "route_convergence",
+      "description_ko": "서재에서 코다이의 연구 수기와 케이티아(친모 케이코)의 진실을 열람해 삼각산 전이 좌표를 확정",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_dg_yuno_bond",
+      "scope": "local",
+      "name_ko": "아이리아의 집 · 유노 탄생 및 유대 형성",
+      "route_id": "route_isekai",
+      "description_ko": "세레스와 변경에서 가정을 이루고 딸 유노와 쿤쿤과의 인연이 깊어진 상태",
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "flag_local_dg_desert_talk_complete",
       "scope": "local",
-      "name_ko": "데라 그란트 사막 유노 대화·주변 조사 완료",
+      "name_ko": "라파엘로 사막 유노 대화·주변 조사 완료",
       "route_id": "route_isekai",
-      "description_ko": "이세계편 사막 커맨드 총공격 구간 돌파 플래그",
+      "description_ko": "이세계편 사막 횡단 중 유노 대화·주변 조사·행군 커맨드 돌파 플래그",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_dg_quarry_escaped",
+      "scope": "local",
+      "name_ko": "바즈의 성석 채굴장 탈출 성공",
+      "route_id": "route_isekai",
+      "description_ko": "강제노동소에서 성석을 확보하고 쿤쿤·레지스탕스 조력으로 탈출 완료",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_dg_underground_1_cleared",
+      "scope": "local",
+      "name_ko": "제도 지하도 1 미궁 돌파 (막다른 길 → 1칸 후퇴 → 우측)",
+      "route_id": "route_isekai",
+      "description_ko": "거리에서 성으로 이어지는 지하도 1의 우측 숨겨진 통로를 찾아 제도로 잠입 완료",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "flag_local_dg_amanda_allied",
+      "scope": "local",
+      "name_ko": "제도 레지스탕스 아만다 합류 · 신제 정체 규명",
+      "route_id": "route_isekai",
+      "description_ko": "아만다(아이리아의 여동생)와 연대하고 신제가 아유미임을 확인",
       "evidence_tag": "[확인]"
     },
     {
       "id": "flag_local_dg_underground_path_cleared",
       "scope": "local",
-      "name_ko": "제도 지하도 1·2 경로 돌파",
+      "name_ko": "제도 지하도 2 류조지 직진 추적 돌파",
       "route_id": "route_isekai",
-      "description_ko": "지하도 1(전진→1칸 후퇴→우측) 및 지하도 2(직진 추적) 통과 플래그",
+      "description_ko": "지하도 2(거리·성당 방면 직진 추적)를 돌파해 성당 의식 제단 진입 확보",
       "evidence_tag": "[확인]"
     },
     {
@@ -1570,7 +1742,10 @@
       "from_route_id": "route_ayumi",
       "to_route_id": "route_kaori",
       "carried_item_id": "item_blue_card",
+      "source_node_id": "node_ayumi_blue_card",
+      "jump_hub_node_id": "node_school_day1_gate",
       "target_gate_node_id": "node_kaori_gate_blue_card",
+      "unlock_node_id": "node_kaori_infiltrate_lab",
       "mechanism_ko": "아유미 루트에서 블루 카드를 입수한 뒤 A.D.M.S. 보옥 로드로 카오리 루트 잠입 직전 분기에 점프하여 사옥 보안문을 연다.",
       "evidence_tag": "[확인]"
     },
@@ -1579,7 +1754,10 @@
       "from_route_id": "route_mitsuki",
       "to_route_id": "route_mio",
       "carried_item_id": "item_silver_medal",
+      "source_node_id": "node_mitsuki_well_medal",
+      "jump_hub_node_id": "node_school_day1_gate",
       "target_gate_node_id": "node_mio_cave_puzzle",
+      "unlock_node_id": "node_mio_coast_revelation",
       "mechanism_ko": "미츠키 루트 토장(로프)→우물(은 메달)에서 얻은 은 메달을 미오 루트 사당 지하 동굴 퍼즐로 계승한다.",
       "evidence_tag": "[확인]"
     },
@@ -1588,7 +1766,10 @@
       "from_route_id": "route_kaori",
       "to_route_id": "route_mio",
       "carried_item_id": "item_chounenseki",
+      "source_node_id": "node_kaori_infiltrate_lab",
+      "jump_hub_node_id": "node_school_day1_gate",
       "target_gate_node_id": "node_mio_cave_puzzle",
+      "unlock_node_id": "node_mio_coast_revelation",
       "mechanism_ko": "카오리 루트 지오테크닉스 연구실에서 확보한 초념석을 미오 루트 동굴 유적에 반입해 공명 이벤트를 발동시킨다.",
       "evidence_tag": "[확인]"
     },
@@ -1597,7 +1778,10 @@
       "from_route_id": "route_kaori",
       "to_route_id": "route_kanna",
       "carried_item_id": "item_chounenseki",
+      "source_node_id": "node_kaori_infiltrate_lab",
+      "jump_hub_node_id": "node_school_day1_gate",
       "target_gate_node_id": "node_kanna_crisis_gate",
+      "unlock_node_id": "node_kanna_end",
       "mechanism_ko": "카오리 루트에서 확보한 초념석을 칸나 루트 종반 붕괴 시점에 반입해 칸나를 구명하고 배드엔드(소용돌이)를 회피한다.",
       "evidence_tag": "[확인]"
     },
@@ -1606,7 +1790,10 @@
       "from_route_id": "route_kanna",
       "to_route_id": "route_convergence",
       "carried_item_id": "item_study_key",
+      "source_node_id": "node_kanna_end",
+      "jump_hub_node_id": "node_day1_hub",
       "target_gate_node_id": "node_study_unlock",
+      "unlock_node_id": "node_study_clock_puzzle",
       "mechanism_ko": "칸나 루트에서 얻은 아버지 서재의 열쇠를 본편 초기 시점(서재 짐이 남아 있는 과거 노드)으로 보옥 로드해 가져와 서재를 개방하고 보옥 6을 획득한다.",
       "evidence_tag": "[확인]"
     }
@@ -1622,7 +1809,7 @@
     "whirlpool": "막다른 길 · 배드엔드 · 순서 함정 (소용돌이 마크)",
     "route_end": "현세편 개별 히로인 루트 엔딩 노드",
     "convergence": "현세편 전 루트·전 보옥 수렴 관문",
-    "isekai_stage": "이세계편(데라 그란트) 선형 진행 스테이지",
+    "isekai_stage": "이세계편(데라 그란트) 선형 진행·미궁 스테이지",
     "true_end": "최종 진엔딩 노드"
   },
   "nodes": [
@@ -1644,8 +1831,71 @@
       "sets_global_flags": [],
       "edges": [
         {
+          "to": "node_prologue_coast_cape",
+          "label_ko": "편지의 지시대로 밤 10시 켄노미사키 해안으로 출발",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
           "to": "node_day1_hub",
-          "label_ko": "리플렉터 가동 및 본편 1일차 개시",
+          "label_ko": "리플렉터 즉시 가동 · 본편 1일차 거점으로 직행",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_prologue_coast_cape",
+      "title_ko": "프롤로그 밤 10시 — 켄노미사키 해안 공사 현장",
+      "title_jp": "プロローグ夜10時・剣ノ岬海岸",
+      "route_id": "route_prologue",
+      "location_id": "loc_coast_construction",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_prologue_cape_visited"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_prologue_triangle_encounter",
+          "label_ko": "낙뢰가 치는 삼각산 쌍둥이 바위로 등반",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_prologue_triangle_encounter",
+      "title_ko": "삼각산 쌍둥이 바위 — 의문의 소녀 조우와 시공 진동",
+      "title_jp": "三角山双子岩・謎の少女と時空振動",
+      "route_id": "route_prologue",
+      "location_id": "loc_triangle_mountain",
+      "node_type": "event",
+      "reflector_blinks": true,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_prologue_cape_visited"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_day1_hub",
+          "label_ko": "섬광 속에서 각성 — 본편 1일차 아리마 저택 기상",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -1682,8 +1932,17 @@
           "forbids_local_flags": []
         },
         {
+          "to": "node_day1_living_ayumi",
+          "label_ko": "거실로 내려가 아유미와 대화 · 지오테크닉스 일정 확인",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
           "to": "node_school_day1_gate",
-          "label_ko": "사카이마치 학원으로 등교",
+          "label_ko": "사카이마치 학원으로 바로 등교",
           "edge_type": "divergence",
           "requires_items": [],
           "requires_global_flags": [],
@@ -1701,6 +1960,33 @@
           "requires_local_flags": [
             "flag_local_study_early_luggage_intact"
           ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_day1_living_ayumi",
+      "title_ko": "아리마 저택 거실 — 아유미의 해안 공사 브리핑",
+      "title_jp": "有馬家リビング・亜由美の工事予定",
+      "route_id": "route_prologue",
+      "location_id": "loc_arima_living",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_ayumi_briefed"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_school_day1_gate",
+          "label_ko": "아유미를 배웅한 뒤 사카이마치 학원으로 등교",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
           "forbids_local_flags": []
         }
       ],
@@ -1805,6 +2091,15 @@
           "requires_global_flags": [],
           "requires_local_flags": [],
           "forbids_local_flags": []
+        },
+        {
+          "to": "node_town_drunk_reacquire",
+          "label_ko": "시가지 골목 수색 — 취객(호죠) 충돌 · 칸나 학생수첩 재입수",
+          "edge_type": "divergence",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
         }
       ],
       "evidence_tag": "[확인]"
@@ -1820,6 +2115,55 @@
       "grants_items": [
         "item_gold_key"
       ],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_mitsuki_mansion_sneak",
+          "label_ko": "황금 열쇠로 류조지 저택 안쪽 서재 은밀 잠입",
+          "edge_type": "divergence",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
+          "to": "node_mitsuki_ryuzoji_ambush",
+          "label_ko": "증거 없이 류조지 코조를 정면 추궁 (구속 함정)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mitsuki_ryuzoji_ambush",
+      "title_ko": "소용돌이 — 류조지 저택 정면 추궁 구속 배드엔드",
+      "title_jp": "うず巻き・龍蔵寺邸拘束バッド",
+      "route_id": "route_mitsuki",
+      "location_id": "loc_ryuzoji_mansion",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mitsuki_mansion_sneak",
+      "title_ko": "류조지 저택 잠입 — 토장 감금 직전 분기",
+      "title_jp": "武家屋敷潜入・土蔵監禁分岐",
+      "route_id": "route_mitsuki",
+      "location_id": "loc_ryuzoji_mansion",
+      "node_type": "divergence",
+      "reflector_blinks": true,
+      "grants_items": [],
       "grants_jewel": null,
       "sets_local_flags": [],
       "sets_global_flags": [],
@@ -1864,30 +2208,58 @@
     },
     {
       "id": "node_mitsuki_storehouse",
-      "title_ko": "광점 — 류조지 토장 보옥 2 · 로프 · 우물 은 메달 확보",
-      "title_jp": "龍蔵寺の土蔵・宝玉2と銀のメダル",
+      "title_ko": "광점 — 류조지 토장 보옥 2 및 로프 확보",
+      "title_jp": "龍蔵寺の土蔵・宝玉2とロープ",
       "route_id": "route_mitsuki",
       "location_id": "loc_ryuzoji_storehouse",
       "node_type": "shining_point",
       "reflector_blinks": false,
       "grants_items": [
-        "item_rope",
-        "item_silver_medal"
+        "item_rope"
       ],
       "grants_jewel": "jewel_found_2",
       "sets_local_flags": [],
       "sets_global_flags": [],
       "edges": [
         {
-          "to": "node_mitsuki_end",
-          "label_ko": "토장 탈출 후 미츠키 루트 결말 도달",
+          "to": "node_mitsuki_well_medal",
+          "label_ko": "토장 탈출 → 뒤뜰 우물에서 로프로 은 메달 인양",
           "edge_type": "normal",
-          "requires_items": [],
+          "requires_items": [
+            "item_rope"
+          ],
           "requires_global_flags": [],
           "requires_local_flags": [],
           "forbids_local_flags": [
             "flag_local_storehouse_wall_first"
           ]
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mitsuki_well_medal",
+      "title_ko": "류조지 저택 우물 — 은 메달 인양 및 미츠키의 고백",
+      "title_jp": "武家屋敷の井戸・銀のメダル引揚げ",
+      "route_id": "route_mitsuki",
+      "location_id": "loc_ryuzoji_storehouse",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [
+        "item_silver_medal"
+      ],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_mitsuki_end",
+          "label_ko": "은 메달 확보 후 미츠키 루트 결말 도달",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
         }
       ],
       "evidence_tag": "[확인]"
@@ -1934,8 +2306,17 @@
           "forbids_local_flags": []
         },
         {
-          "to": "node_ayumi_blue_card",
-          "label_ko": "아유미 위기 추적 및 블루 카드 확보",
+          "to": "node_ayumi_card_trap_whirlpool",
+          "label_ko": "여경비원 앞에서 자기카드를 성급히 제시 (보안 제지 함정)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
+          "to": "node_ayumi_desk_safe",
+          "label_ko": "아유미의 방 책상·금고 조사로 직행",
           "edge_type": "divergence",
           "requires_items": [],
           "requires_global_flags": [],
@@ -1943,6 +2324,23 @@
           "forbids_local_flags": []
         }
       ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_ayumi_card_trap_whirlpool",
+      "title_ko": "소용돌이 — 여경비원 자기카드 성급 사용 (삼각산 분기 상실)",
+      "title_jp": "うず巻き・女守衛磁気カード罠",
+      "route_id": "route_ayumi",
+      "location_id": "loc_geo_technics",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_guard_card_wasted"
+      ],
+      "sets_global_flags": [],
+      "edges": [],
       "evidence_tag": "[확인]"
     },
     {
@@ -1961,8 +2359,8 @@
       "sets_global_flags": [],
       "edges": [
         {
-          "to": "node_ayumi_blue_card",
-          "label_ko": "보옥 3 확보 후 아유미 본선 합류",
+          "to": "node_ayumi_desk_safe",
+          "label_ko": "보옥 3 확보 후 아유미의 방 사보타주 증거 조사로 합류",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -1970,6 +2368,82 @@
           "forbids_local_flags": []
         }
       ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_ayumi_desk_safe",
+      "title_ko": "아유미의 방 — 책상·금고와 지오테크닉스 사보타주 단서",
+      "title_jp": "亜由美の部屋・机と金庫の機密",
+      "route_id": "route_ayumi",
+      "location_id": "loc_arima_ayumi_room",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_ayumi_sabotage_clue"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_ayumi_toyotomi_confront",
+          "label_ko": "켄노미사키 해안 공사 현장으로 출동 · 도요토미 추격",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_ayumi_toyotomi_confront",
+      "title_ko": "해안 공사 현장 — 도요토미 히데오 사보타주 대치",
+      "title_jp": "海岸工事現場・豊富秀夫との対峙",
+      "route_id": "route_ayumi",
+      "location_id": "loc_coast_construction",
+      "node_type": "divergence",
+      "reflector_blinks": true,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_ayumi_blue_card",
+          "label_ko": "도요토미의 매각 공작을 폭로하고 아유미 구출 → 블루 카드 확보",
+          "edge_type": "divergence",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
+          "to": "node_ayumi_toyotomi_bad",
+          "label_ko": "도요토미의 협박·은폐 거래에 휘말림 (함정 배드엔드)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_ayumi_toyotomi_bad",
+      "title_ko": "소용돌이 — 도요토미 사보타주 함정 배드엔드",
+      "title_jp": "うず巻き・豊富の罠バッド",
+      "route_id": "route_ayumi",
+      "location_id": "loc_coast_construction",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [],
       "evidence_tag": "[확인]"
     },
     {
@@ -2032,8 +2506,35 @@
       "sets_global_flags": [],
       "edges": [
         {
+          "to": "node_kaori_dossier_analysis",
+          "label_ko": "보도 자료실·연구실에서 20페이지째 서류와 지오테크닉스 파일 대조",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_kaori_dossier_analysis",
+      "title_ko": "카오리 보도 자료 해독 — 코다이 연구실 위치 특정",
+      "title_jp": "香織ルート・20ページ目の書類解読",
+      "route_id": "route_kaori",
+      "location_id": "loc_school_lab",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_kaori_dossier_verified"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
           "to": "node_kaori_gate_blue_card",
-          "label_ko": "지오테크닉스 사옥 보안문 도달",
+          "label_ko": "야간 지오테크닉스 사옥 보안문 잠입 개시",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2050,7 +2551,7 @@
       "route_id": "route_kaori",
       "location_id": "loc_geo_technics",
       "node_type": "lock_gate",
-      "reflector_blinks": false,
+      "reflector_blinks": true,
       "grants_items": [],
       "grants_jewel": null,
       "sets_local_flags": [],
@@ -2066,8 +2567,32 @@
           "requires_global_flags": [],
           "requires_local_flags": [],
           "forbids_local_flags": []
+        },
+        {
+          "to": "node_kaori_alarm_whirlpool",
+          "label_ko": "블루 카드 없이 보안문 강제 해킹 시도 (경보 발동 함정)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
         }
       ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_kaori_alarm_whirlpool",
+      "title_ko": "소용돌이 — 지오테크닉스 보안 경보 발동 체포",
+      "title_jp": "うず巻き・ジオテクニクス警報発動",
+      "route_id": "route_kaori",
+      "location_id": "loc_geo_technics",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [],
       "evidence_tag": "[확인]"
     },
     {
@@ -2087,7 +2612,7 @@
       "edges": [
         {
           "to": "node_kaori_end",
-          "label_ko": "카오리 루트 결말 도달",
+          "label_ko": "초념석 확보 후 카오리 루트 결말 도달",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2132,7 +2657,7 @@
       "edges": [
         {
           "to": "node_mio_cave_yuki",
-          "label_ko": "동굴 파트너로 '유우키 마사카츠' 선택",
+          "label_ko": "동굴 파트너로 '유우키 마사카츠' 선택 (웅덩이 수색)",
           "edge_type": "divergence",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2140,8 +2665,8 @@
           "forbids_local_flags": []
         },
         {
-          "to": "node_mio_cave_puzzle",
-          "label_ko": "미오 단독 동행으로 유적 심부 직행",
+          "to": "node_mio_cave_solo",
+          "label_ko": "미오 단독 동행으로 어두운 지하 통로 직행",
           "edge_type": "divergence",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2149,6 +2674,55 @@
           "forbids_local_flags": []
         }
       ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mio_cave_solo",
+      "title_ko": "사당 지하 동굴 — 미오 단독 탐사 분기",
+      "title_jp": "社の洞窟・澪単独探索",
+      "route_id": "route_mio",
+      "location_id": "loc_shrine_cave",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_mio_cave_puzzle",
+          "label_ko": "지하 유적 제단 관문으로 신중히 진입",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
+          "to": "node_mio_cave_collapse_whirlpool",
+          "label_ko": "어둠 속 무너진 우측 샛길 강행 돌파 (낙반 함정)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mio_cave_collapse_whirlpool",
+      "title_ko": "소용돌이 — 사당 지하 동굴 낙반 조난",
+      "title_jp": "うず巻き・社の洞窟落盤遭難",
+      "route_id": "route_mio",
+      "location_id": "loc_shrine_cave",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [],
       "evidence_tag": "[확인]"
     },
     {
@@ -2171,7 +2745,7 @@
       "edges": [
         {
           "to": "node_mio_cave_puzzle",
-          "label_ko": "메달 회수 후 지하 유적 관문으로 전진",
+          "label_ko": "메달 회수 후 지하 유적 제단 관문으로 전진",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2195,13 +2769,40 @@
       "sets_global_flags": [],
       "edges": [
         {
-          "to": "node_mio_end",
-          "label_ko": "[교차 계승] 은 메달(미츠키 루트) + 초념석(카오리 루트)으로 유적 해제",
+          "to": "node_mio_coast_revelation",
+          "label_ko": "[교차 계승] 은 메달(미츠키 루트) + 초념석(카오리 루트)으로 유적 공명 해제",
           "edge_type": "cross_timeline_unlock",
           "requires_items": [
             "item_silver_medal",
             "item_chounenseki"
           ],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_mio_coast_revelation",
+      "title_ko": "삼각산 유적·등대 전망 — 400년 전승과 사카이마치 진상",
+      "title_jp": "三角山遺跡展望・400年伝承の真相",
+      "route_id": "route_mio",
+      "location_id": "loc_triangle_mountain",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_mio_legend_decoded"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_mio_end",
+          "label_ko": "미오와 전승의 진실을 확인하고 결말 도달",
+          "edge_type": "normal",
+          "requires_items": [],
           "requires_global_flags": [],
           "requires_local_flags": [],
           "forbids_local_flags": []
@@ -2229,19 +2830,70 @@
     {
       "id": "node_eriko_branch",
       "title_ko": "에리코 루트 — 보건실 차원 이상 추적",
-      "title_jp": "絵里子ルート・次元監査官の真相",
+      "title_jp": "絵里子ルート・保健室次元異常",
       "route_id": "route_eriko",
       "location_id": "loc_school_infirmary",
-      "node_type": "event",
-      "reflector_blinks": false,
+      "node_type": "divergence",
+      "reflector_blinks": true,
       "grants_items": [],
       "grants_jewel": null,
       "sets_local_flags": [],
       "sets_global_flags": [],
       "edges": [
         {
+          "to": "node_eriko_infirmary_probe",
+          "label_ko": "보건실 은닉 차원 계측기를 조사해 에리코의 정체 추궁",
+          "edge_type": "divergence",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        },
+        {
+          "to": "node_eriko_dismissed_whirlpool",
+          "label_ko": "에리코의 경고를 무시하고 차원 왜곡 구역 단독 접근 (소용돌이)",
+          "edge_type": "trap",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_eriko_dismissed_whirlpool",
+      "title_ko": "소용돌이 — 차원 감사 프로토콜 · 기억 간섭",
+      "title_jp": "うず巻き・次元監査記憶干渉",
+      "route_id": "route_eriko",
+      "location_id": "loc_school_infirmary",
+      "node_type": "whirlpool",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_eriko_infirmary_probe",
+      "title_ko": "차원 감사관 에이릭 쿼드로 — 류조지 차원 범죄 파일 열람",
+      "title_jp": "次元監査官エイリック・龍蔵寺調査記録",
+      "route_id": "route_eriko",
+      "location_id": "loc_school_lab",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_eriko_dimension_truth"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
           "to": "node_eriko_end",
-          "label_ko": "에이릭 쿼드로의 정체 및 류조지 차원 범죄 단서 확인",
+          "label_ko": "멀티버스 사상 충돌 경고를 숙지하고 에리코 루트 결말 도달",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2269,6 +2921,37 @@
       "evidence_tag": "[확인]"
     },
     {
+      "id": "node_town_drunk_reacquire",
+      "title_ko": "시가지 취객(호죠) 충돌 — 칸나의 학생수첩 재입수",
+      "title_jp": "商店街酔っ払い遭遇・生徒手帳再入手",
+      "route_id": "route_kanna",
+      "location_id": "loc_town_street",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [
+        "item_kanna_student_id"
+      ],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_drunk_id_recovered"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_kanna_rooftop",
+          "label_ko": "재입수한 칸나의 학생수첩을 들고 학원 옥상으로 이동",
+          "edge_type": "normal",
+          "requires_items": [
+            "item_kanna_student_id"
+          ],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "node_kanna_rooftop",
       "title_ko": "칸나 루트 — 학원 옥상 학생수첩 반환",
       "title_jp": "神奈ルート・屋上生徒手帳返却",
@@ -2286,14 +2969,66 @@
       "sets_global_flags": [],
       "edges": [
         {
-          "to": "node_kanna_crisis_gate",
-          "label_ko": "칸나의 비밀 추적 및 종반 발작 위기 도달",
+          "to": "node_kanna_solitude_home",
+          "label_ko": "칸나의 고독한 거주지 동행 · 푸른 목걸이의 비밀 추적",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
           "requires_local_flags": [
             "flag_local_rooftop_id_returned"
           ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_kanna_solitude_home",
+      "title_ko": "칸나의 거주지 — 푸른 초념석 목걸이와 데라 그란트 혈통",
+      "title_jp": "神奈のマンション・青いネックレスの秘密",
+      "route_id": "route_kanna",
+      "location_id": "loc_town_street",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_kanna_necklace_examined"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_kanna_hospital_crisis",
+          "label_ko": "칸나 급성 쇠약 발생 — 사카이마치 병원 긴급 이송",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_kanna_hospital_crisis",
+      "title_ko": "사카이마치 병원 — 칸나 발작 악화 및 초념석 공명 임박",
+      "title_jp": "境町病院・神奈の発作と共鳴危機",
+      "route_id": "route_kanna",
+      "location_id": "loc_town_street",
+      "node_type": "event",
+      "reflector_blinks": true,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_kanna_crisis_gate",
+          "label_ko": "칸나 생사 붕괴 위기 관문으로 돌입",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
           "forbids_local_flags": []
         }
       ],
@@ -2422,6 +3157,35 @@
       ],
       "edges": [
         {
+          "to": "node_study_kodai_manuscript",
+          "label_ko": "서재 책상 위 코다이의 병렬세계 최종 수기 해독",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [
+            "flag_local_clock_6_3_solved"
+          ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_study_kodai_manuscript",
+      "title_ko": "아버지의 서재 — 코다이 수기와 케이티아(친모)의 진실",
+      "title_jp": "親父の書斎・広大の手記とケイティア",
+      "route_id": "route_convergence",
+      "location_id": "loc_arima_study",
+      "node_type": "event",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_kodai_manuscript_read"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
           "to": "node_convergence_cave",
           "label_ko": "전 보옥 완충 + 전 현세 루트 수렴 후 켄노미사키 삼각산 동굴로 이동",
           "edge_type": "convergence",
@@ -2437,7 +3201,8 @@
             "flag_global_all_jewels_collected"
           ],
           "requires_local_flags": [
-            "flag_local_clock_6_3_solved"
+            "flag_local_clock_6_3_solved",
+            "flag_local_kodai_manuscript_read"
           ],
           "forbids_local_flags": []
         }
@@ -2476,7 +3241,7 @@
     {
       "id": "node_dg_arrival",
       "title_ko": "이세계편 1장 — 국경 보더 도착 · 세레스와 아이리아 조우",
-      "title_jp": "異世界編・国境ボーダーとセーレス",
+      "title_jp": "異世界編1章・国境ボーダーとセーレス",
       "route_id": "route_isekai",
       "location_id": "loc_dg_border",
       "node_type": "isekai_stage",
@@ -2488,7 +3253,7 @@
       "edges": [
         {
           "to": "node_dg_frontier_yuno",
-          "label_ko": "아이리아의 집 정착 · 유노 탄생 및 쿤쿤 합류",
+          "label_ko": "아이리아의 집으로 동행 · 세레스와의 변경 정착",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2500,28 +3265,28 @@
     },
     {
       "id": "node_dg_frontier_yuno",
-      "title_ko": "이세계편 2장 — 변경 생활 · 유노 성장 및 채굴장 사건",
-      "title_jp": "異世界編・アイリアの家〜採掘場",
+      "title_ko": "이세계편 2장 — 아이리아의 집 · 유노 탄생과 쿤쿤 합류",
+      "title_jp": "異世界編2章・アイリアの家とユーノ誕生",
       "route_id": "route_isekai",
-      "location_id": "loc_dg_quarry",
+      "location_id": "loc_dg_ailia_house",
       "node_type": "isekai_stage",
       "reflector_blinks": false,
-      "grants_items": [
-        "item_sacred_stone_dg"
-      ],
+      "grants_items": [],
       "grants_jewel": null,
-      "sets_local_flags": [],
+      "sets_local_flags": [
+        "flag_local_dg_yuno_bond"
+      ],
       "sets_global_flags": [],
       "edges": [
         {
           "to": "node_dg_desert_trek",
-          "label_ko": "바즈의 성석 채굴장 돌파 후 유노와 사막 횡단 개시",
+          "label_ko": "세레스의 유언을 가슴에 품고 유노·쿤쿤과 라파엘로 사막 출발",
           "edge_type": "normal",
-          "requires_items": [
-            "item_sacred_stone_dg"
-          ],
+          "requires_items": [],
           "requires_global_flags": [],
-          "requires_local_flags": [],
+          "requires_local_flags": [
+            "flag_local_dg_yuno_bond"
+          ],
           "forbids_local_flags": []
         }
       ],
@@ -2529,22 +3294,21 @@
     },
     {
       "id": "node_dg_desert_trek",
-      "title_ko": "이세계편 3장 — 사막 횡단 · 오아시스 사라 조우",
-      "title_jp": "異世界編・砂漠横断とオアシス",
+      "title_ko": "이세계편 3장 — 라파엘로 사막 횡단 (유노 대화 · 주변 조사)",
+      "title_jp": "異世界編3章・ラファエロ砂漠横断",
       "route_id": "route_isekai",
       "location_id": "loc_dg_desert_oasis",
       "node_type": "isekai_stage",
+      "puzzle_id": "puzzle_dg_desert_crossing",
       "reflector_blinks": false,
       "grants_items": [],
       "grants_jewel": null,
-      "sets_local_flags": [
-        "flag_local_dg_desert_talk_complete"
-      ],
+      "sets_local_flags": [],
       "sets_global_flags": [],
       "edges": [
         {
-          "to": "node_dg_underground_capital",
-          "label_ko": "유노 대화·주변 조사 반복 완료 후 제도 지하도 잠입",
+          "to": "node_dg_oasis_sarah",
+          "label_ko": "사막 횡단 완료 → 오아시스 진입 및 사라 조우",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2557,9 +3321,95 @@
       "evidence_tag": "[확인]"
     },
     {
+      "id": "node_dg_oasis_sarah",
+      "title_ko": "이세계편 4장 — 사막 오아시스 · 사라 조우와 제도행 경로",
+      "title_jp": "異世界編4章・オアシスとサラ",
+      "route_id": "route_isekai",
+      "location_id": "loc_dg_desert_oasis",
+      "node_type": "isekai_stage",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_dg_quarry_escape",
+          "label_ko": "신전 습격으로 유노와 생이별 → 바즈의 성석 채굴장 수감·탈출전",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_dg_quarry_escape",
+      "title_ko": "이세계편 5장 — 바즈의 성석 채굴장 · 성석 확보 및 탈출",
+      "title_jp": "異世界編5章・聖なる石の採掘場脱出",
+      "route_id": "route_isekai",
+      "location_id": "loc_dg_quarry",
+      "node_type": "isekai_stage",
+      "reflector_blinks": false,
+      "grants_items": [
+        "item_sacred_stone_dg"
+      ],
+      "grants_jewel": null,
+      "sets_local_flags": [
+        "flag_local_dg_quarry_escaped"
+      ],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_dg_underground_1",
+          "label_ko": "성석을 쥐고 채굴장 탈출 → 제도 지하도 1(거리→성) 잠입",
+          "edge_type": "normal",
+          "requires_items": [
+            "item_sacred_stone_dg"
+          ],
+          "requires_global_flags": [],
+          "requires_local_flags": [
+            "flag_local_dg_quarry_escaped"
+          ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_dg_underground_1",
+      "title_ko": "이세계편 6장 — 제도 지하도 1 미궁 (전진 → 막다른 길 → 1칸 후퇴 → 우측)",
+      "title_jp": "異世界編6章・帝都地下道1（街〜城）",
+      "route_id": "route_isekai",
+      "location_id": "loc_dg_underground_1",
+      "node_type": "isekai_stage",
+      "puzzle_id": "puzzle_dg_underground_1",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
+          "to": "node_dg_underground_capital",
+          "label_ko": "지하도 1 비밀 우측 통로 돌파 → 데라 그란트 제도 입성",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [
+            "flag_local_dg_underground_1_cleared"
+          ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
       "id": "node_dg_underground_capital",
-      "title_ko": "이세계편 4장 — 지하도 돌파 · 아만다 합류 · 신제(아유미)의 진실",
-      "title_jp": "異世界編・地下道と帝都",
+      "title_ko": "이세계편 7장 — 데라 그란트 제도 · 아만다 합류 · 신제(아유미)의 진실",
+      "title_jp": "異世界編7章・帝都とアマンダ・神帝の真相",
       "route_id": "route_isekai",
       "location_id": "loc_dg_imperial_city",
       "node_type": "isekai_stage",
@@ -2567,13 +3417,41 @@
       "grants_items": [],
       "grants_jewel": null,
       "sets_local_flags": [
-        "flag_local_dg_underground_path_cleared"
+        "flag_local_dg_amanda_allied"
       ],
       "sets_global_flags": [],
       "edges": [
         {
+          "to": "node_dg_underground_2",
+          "label_ko": "신제궁에서 도주한 류조지를 쫓아 지하도 2로 돌입",
+          "edge_type": "normal",
+          "requires_items": [],
+          "requires_global_flags": [],
+          "requires_local_flags": [
+            "flag_local_dg_amanda_allied"
+          ],
+          "forbids_local_flags": []
+        }
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "node_dg_underground_2",
+      "title_ko": "이세계편 8장 — 제도 지하도 2 (류조지 직진 추적)",
+      "title_jp": "異世界編8章・帝都地下道2（龍蔵寺追跡）",
+      "route_id": "route_isekai",
+      "location_id": "loc_dg_underground_1",
+      "node_type": "isekai_stage",
+      "puzzle_id": "puzzle_dg_underground_2",
+      "reflector_blinks": false,
+      "grants_items": [],
+      "grants_jewel": null,
+      "sets_local_flags": [],
+      "sets_global_flags": [],
+      "edges": [
+        {
           "to": "node_dg_sanctuary_climax",
-          "label_ko": "지하도 1·2 돌파 및 성당 무녀 의식 저지전 돌입",
+          "label_ko": "지하도 2 돌파 → 대성당 무녀 의식 제단 결전 돌입",
           "edge_type": "normal",
           "requires_items": [],
           "requires_global_flags": [],
@@ -2587,8 +3465,8 @@
     },
     {
       "id": "node_dg_sanctuary_climax",
-      "title_ko": "이세계편 5장 — 성당 결전 · 사상 충돌 회피와 사상의 틈새",
-      "title_jp": "異世界編・聖堂決戦と事象の狭間",
+      "title_ko": "이세계편 9장 — 성당 결전 · 사상 충돌 회피와 사상의 틈새 최종방",
+      "title_jp": "異世界編9章・聖堂決戦と事象の狭間",
       "route_id": "route_isekai",
       "location_id": "loc_dg_sanctuary",
       "node_type": "isekai_stage",
@@ -2604,7 +3482,7 @@
       "edges": [
         {
           "to": "node_true_end",
-          "label_ko": "최종방 발광 위탁 물품 확인 → 사상의 틈새 탈출 및 진엔딩",
+          "label_ko": "최종방 발광 위탁 물품 확인 → 부린더의 나무 · 진엔딩 도달",
           "edge_type": "normal",
           "requires_items": [
             "item_entrusted_light"
@@ -2633,6 +3511,619 @@
         "flag_global_true_ending_clear"
       ],
       "edges": [],
+      "evidence_tag": "[확인]"
+    }
+  ],
+  "stageViewport": {
+    "width": 560,
+    "height": 175
+  },
+  "sceneHotspots": [
+    {
+      "id": "hs_room_parcel",
+      "location_id": "loc_arima_room",
+      "label_ko": "코다이의 소포",
+      "x": 165,
+      "y": 118,
+      "inspect_ko": "실종된 아버지 코다이가 남긴 소포 상자. 팔각형 금속 장치 '리플렉터 디바이스'와 '오늘 밤 10시 켄노미사키로 와라'는 편지가 담겨 있었다.",
+      "item_interactions": [
+        {
+          "item_id": "item_kodai_letter",
+          "response_ko": "편지 뒷면의 주석을 다시 읽어 보았다: '서재의 괘종시계는 6에서 3으로, 그리고 서랍 설명서를 무심코 열지 마라.'",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_room_drawer",
+      "location_id": "loc_arima_room",
+      "label_ko": "책상 서랍",
+      "x": 330,
+      "y": 124,
+      "inspect_ko": "타쿠야의 책상 서랍. 설명서가 놓여 있지만 '읽지 않는다'를 선택하고 안쪽을 더듬으면 첫 번째 광점 보옥(보옥 1)이 손끝에 걸린다!",
+      "item_interactions": [],
+      "click_advances_to": "node_jewel1_drawer",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_room_study_door",
+      "location_id": "loc_arima_room",
+      "label_ko": "서재 연결문",
+      "x": 455,
+      "y": 88,
+      "inspect_ko": "복도 끝 잠긴 아버지의 서재 문. 1일차 초기 시간대에는 서재 짐이 온전하다. 미래 시간축에서 '아버지 서재의 열쇠'를 가져오면 개방할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_study_key",
+          "response_ko": "칸나 루트에서 역계승한 '아버지 서재의 열쇠'가 정확히 맞물리며 초기 시점의 서재 문이 열렸다!",
+          "unlocks_node_id": "node_study_unlock",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_living_schedule",
+      "location_id": "loc_arima_living",
+      "label_ko": "아유미의 일정표",
+      "x": 270,
+      "y": 108,
+      "inspect_ko": "거실 테이블 위 지오테크닉스 해안 지질조사 일정표. 도요토미 현장감독의 보고서가 불자연스럽게 수정되어 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_ayumi_desk_safe",
+      "location_id": "loc_arima_ayumi_room",
+      "label_ko": "아유미 책상·금고",
+      "x": 315,
+      "y": 114,
+      "inspect_ko": "아유미의 방 책상 아래 숨겨진 소형 금고. 지오테크닉스 사옥의 보안 등급 문서와 도요토미의 해안 공사 사보타주 정황이 보관되어 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_magnetic_card",
+          "response_ko": "자기카드의 보안 코드를 금고 서류와 대조했다. 이 카드는 여경비원 앞에서 쓰지 말고 삼각산 우회 시 아껴 두는 편이 유리하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_study_clock",
+      "location_id": "loc_arima_study",
+      "label_ko": "괘종시계 (6→3)",
+      "x": 280,
+      "y": 64,
+      "inspect_ko": "코다이 서재의 고풍스러운 괘종시계. 시계 틈새를 살핀 뒤 문자판의 숫자 [6 → 3]을 순서대로 누르면 숨겨진 수납함이 열린다!",
+      "item_interactions": [
+        {
+          "item_id": "item_study_key",
+          "response_ko": "서재의 열쇠로 괘종시계 뚜껑 잠금을 풀고 문자판 [6 → 3]을 조작했다 — 마지막 여섯 번째 광점 보옥이 빛난다!",
+          "unlocks_node_id": "node_study_clock_puzzle",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": "node_study_clock_puzzle",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_study_manuscript",
+      "location_id": "loc_arima_study",
+      "label_ko": "코다이 연구 수기",
+      "x": 152,
+      "y": 122,
+      "inspect_ko": "서재 책상 위에 펼쳐진 아리마 코다이의 병렬세계 연구 수기. 친모 케이코(케이티아)와 켄노미사키 시공 게이트 좌표가 적혀 있다.",
+      "item_interactions": [],
+      "click_advances_to": "node_study_kodai_manuscript",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_gate_student_id",
+      "location_id": "loc_school_gate",
+      "label_ko": "떨어진 학생수첩",
+      "x": 195,
+      "y": 130,
+      "inspect_ko": "전학생 하타노 칸나가 부딪치며 떨어뜨린 학생수첩. 만약 다른 분기에서 소비·분실했다면 시가지 상점가 취객(호죠) 충돌 이벤트로 재입수할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_kanna_student_id",
+          "response_ko": "칸나의 학생수첩을 들고 학원 옥상으로 향하면 칸나 루트가 열린다.",
+          "unlocks_node_id": "node_kanna_rooftop",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_gate_crossroads",
+      "location_id": "loc_school_gate",
+      "label_ko": "학원 정문 교차로",
+      "x": 388,
+      "y": 98,
+      "inspect_ko": "여섯 갈래 평행세계가 분기하는 사카이마치 학원 정문. 리플렉터가 강하게 점멸하므로 반드시 이곳에 보옥 세이브를 고정해 두어야 한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_rooftop_fence",
+      "location_id": "loc_school_rooftop",
+      "label_ko": "옥상 펜스·칸나",
+      "x": 280,
+      "y": 92,
+      "inspect_ko": "바람 부는 학원 옥상. 헤드폰을 쓴 칸나의 목에 걸린 푸른 결정 목걸이가 리플렉터 디바이스에 미세하게 공명하고 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_infirmary_meter",
+      "location_id": "loc_school_infirmary",
+      "label_ko": "은닉 차원 계측기",
+      "x": 350,
+      "y": 102,
+      "inspect_ko": "보건실 캐비닛 안쪽에서 발견한 미지의 초과학 단말. 다케다 에리코가 '차원 감사관 에이릭 쿼드로'임을 입증하는 결정적 물증이다!",
+      "item_interactions": [],
+      "click_advances_to": "node_eriko_infirmary_probe",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_lab_dossier",
+      "location_id": "loc_school_lab",
+      "label_ko": "연구실 기밀 서류",
+      "x": 270,
+      "y": 112,
+      "inspect_ko": "지질조사 보고서와 20페이지째 서류가 놓인 연구 데스크. 코다이 연구실이 지오테크닉스 사옥 최상층 보안 구역에 은폐되어 있음이 드러난다.",
+      "item_interactions": [
+        {
+          "item_id": "item_doc_page20",
+          "response_ko": "20페이지째 서류를 연구실 자료와 대조해 지오테크닉스 사옥 내부 도면과 초념석 보관 구역을 특정했다!",
+          "unlocks_node_id": "node_kaori_gate_blue_card",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_coast_site",
+      "location_id": "loc_coast_construction",
+      "label_ko": "해안 공사 설비",
+      "x": 168,
+      "y": 128,
+      "inspect_ko": "지오테크닉스 해안 굴착 장비. 도요토미 히데오가 공사 일지를 조작해 아유미를 궁지로 몰아넣으려 한 흔적이 남아 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_coast_lightning",
+      "location_id": "loc_coast_construction",
+      "label_ko": "낙뢰 지점",
+      "x": 308,
+      "y": 54,
+      "inspect_ko": "맑은 밤하늘에서 400년 주기로 떨어진다는 켄노미사키의 기이한 낙뢰. 시공 왜곡의 진원지가 삼각산 방면을 가리킨다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mountain_monument",
+      "location_id": "loc_triangle_mountain",
+      "label_ko": "삼각산 고대 석비",
+      "x": 146,
+      "y": 118,
+      "inspect_ko": "400년 전 사카이마치 전승이 새겨진 낡은 석비. 미오의 향토사 노트와 대조하면 지하 유적과 이세계의 문에 대한 경고가 읽힌다.",
+      "item_interactions": [
+        {
+          "item_id": "item_mio_notebook",
+          "response_ko": "미오의 메모장에 적힌 고문서 해독표와 석비가 완벽히 일치한다 — 400년 주기 사상 충돌의 기록이다!",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mountain_boulders",
+      "location_id": "loc_triangle_mountain",
+      "label_ko": "쌍둥이 바위 틈새",
+      "x": 282,
+      "y": 134,
+      "inspect_ko": "거대한 쌍둥이 바위 아래 시공의 빛이 스며드는 틈새. 아유미 루트에서 자기카드를 아껴 우회하면 보옥 3이, 전 보옥 완충 시 이세계 전이문이 열린다!",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_shrine_entrance",
+      "location_id": "loc_shrine",
+      "label_ko": "사당 뒤 동굴 입구",
+      "x": 280,
+      "y": 114,
+      "inspect_ko": "사당 뒤편에 숨겨진 지하 동굴 입구. 유우키 마사카츠를 파트너로 동행해야 어두운 웅덩이 구역의 보옥 5와 흰/검은 메달을 회수할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_mio_notebook",
+          "response_ko": "미오의 메모장에 따르면 동굴 깊은 곳 제단에는 은 메달과 초념석의 이중 공명이 필요하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_cave_puddle",
+      "location_id": "loc_shrine_cave",
+      "label_ko": "격자 앞 웅덩이",
+      "x": 165,
+      "y": 132,
+      "inspect_ko": "사당 지하 동굴 격자 앞 차가운 지하수 웅덩이. 유우키와 함께 수색할 때 물 밑에서 다섯 번째 광점 보옥과 흰·검은 메달이 드러난다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_cave_altar",
+      "location_id": "loc_shrine_cave",
+      "label_ko": "지하 유적 공명 제단",
+      "x": 382,
+      "y": 106,
+      "inspect_ko": "고대 유적 심부의 석조 제단. 미츠키 루트의 '은 메달'과 카오리 루트의 '초념석'을 함께 끼워 넣어야 봉인이 해제된다.",
+      "item_interactions": [
+        {
+          "item_id": "item_silver_medal",
+          "response_ko": "우물에서 건진 은 메달을 제단 홈에 끼웠다! 초념석과 함께 공명하며 고대 유적의 문이 열린다!",
+          "unlocks_node_id": "node_mio_coast_revelation",
+          "grants_local_flag": null
+        },
+        {
+          "item_id": "item_chounenseki",
+          "response_ko": "초념석이 은 메달과 격렬히 공명하며 지하 유적 최심부의 봉인이 해제되었다!",
+          "unlocks_node_id": "node_mio_coast_revelation",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_mansion_crest",
+      "location_id": "loc_ryuzoji_mansion",
+      "label_ko": "류조지 저택 문장",
+      "x": 280,
+      "y": 86,
+      "inspect_ko": "고풍스러운 류조지 가문 무가 저택의 현관과 비밀 서재 통로. 황금 열쇠가 있으면 류조지의 감시를 피해 안쪽으로 잠입할 수 있다.",
+      "item_interactions": [
+        {
+          "item_id": "item_gold_key",
+          "response_ko": "황금 열쇠로 저택 안쪽 비밀 통로를 열어 류조지의 토장 쪽으로 은밀히 접근했다!",
+          "unlocks_node_id": "node_mitsuki_mansion_sneak",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_rope",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "좌측 벽의 로프",
+      "x": 135,
+      "y": 116,
+      "inspect_ko": "토장 좌측 어둠 속에 걸린 튼튼한 로프! 원작의 악명 높은 순서 함정 — 반드시 벽을 조사하기 전에 로프부터 회수해야 한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_machine",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "토장 안쪽 기계",
+      "x": 292,
+      "y": 104,
+      "inspect_ko": "류조지가 토장 안쪽에 숨겨 둔 수수께끼의 실험 장치. 기계 옆 틈새에서 두 번째 광점 보옥(보옥 2)이 맥동한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_storehouse_well",
+      "location_id": "loc_ryuzoji_storehouse",
+      "label_ko": "저택 뒤뜰 우물",
+      "x": 442,
+      "y": 126,
+      "inspect_ko": "류조지 저택 뒤뜰의 깊은 돌우물. 토장에서 챙긴 '로프'를 내려 우물 밑을 건지면 미오 루트의 핵심 열쇠인 '은 메달'을 인양할 수 있다!",
+      "item_interactions": [
+        {
+          "item_id": "item_rope",
+          "response_ko": "로프를 우물 속으로 내려 수면 아래 빛나던 '은 메달'을 무사히 끌어올렸다!",
+          "unlocks_node_id": "node_mitsuki_well_medal",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_geo_card_reader",
+      "location_id": "loc_geo_technics",
+      "label_ko": "보안문 카드 리더",
+      "x": 225,
+      "y": 116,
+      "inspect_ko": "지오테크닉스 사옥 코다이 연구실 앞 전자 보안문. 일반 자기카드는 여경비원 경보 함정이며, 아유미 루트에서 얻은 '블루 카드'만 통과한다!",
+      "item_interactions": [
+        {
+          "item_id": "item_blue_card",
+          "response_ko": "아유미 루트에서 계승한 '블루 카드'를 리더에 스캔하자 녹색 램프와 함께 코다이 연구실 보안문이 열렸다!",
+          "unlocks_node_id": "node_kaori_infiltrate_lab",
+          "grants_local_flag": null
+        },
+        {
+          "item_id": "item_magnetic_card",
+          "response_ko": "경고! 여경비원 앞에서 자기카드를 성급히 쓰면 보옥 3 우회 분기가 닫힌다. 사옥 최상층 보안문에는 '블루 카드'가 필요하다.",
+          "unlocks_node_id": null,
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_geo_projector",
+      "location_id": "loc_geo_technics",
+      "label_ko": "연구실 프로젝터 뒤",
+      "x": 348,
+      "y": 92,
+      "inspect_ko": "코다이 연구실 구석에 놓인 슬라이드 프로젝터 뒤편. 네 번째 광점 보옥(보옥 4)과 시공 공명 광석 '초념석'이 숨겨져 있던 장소다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_town_alley",
+      "location_id": "loc_town_street",
+      "label_ko": "상점가 골목 (취객)",
+      "x": 182,
+      "y": 124,
+      "inspect_ko": "사카이마치 상점가 뒷골목. 칸나에게 따라붙던 취객(호죠)과 충돌하는 분기를 통해 분실·소비한 '칸나의 학생수첩'을 재입수할 수 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_town_kanna_collar",
+      "location_id": "loc_town_street",
+      "label_ko": "칸나의 푸른 목걸이",
+      "x": 374,
+      "y": 108,
+      "inspect_ko": "발작을 일으킨 칸나의 가슴 위에서 빛을 잃어 가는 푸른 초념석 목걸이. 카오리 루트의 '초념석'을 가져와 공명시키면 그녀를 구할 수 있다!",
+      "item_interactions": [
+        {
+          "item_id": "item_chounenseki",
+          "response_ko": "초념석이 칸나의 목걸이와 눈부시게 공명했다! 칸나가 의식을 되찾고 '아버지 서재의 열쇠'를 맡긴다!",
+          "unlocks_node_id": "node_kanna_end",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_border_sky",
+      "location_id": "loc_dg_border",
+      "label_ko": "쌍둥이 달과 보더",
+      "x": 425,
+      "y": 54,
+      "inspect_ko": "이세계 데라 그란트의 하늘에 뜬 두 개의 달. 국경 지대 '보더'에 도착한 순간 리플렉터 디바이스의 보옥 점프 기능은 완전히 봉인되었다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_ailia_cradle",
+      "location_id": "loc_dg_ailia_house",
+      "label_ko": "유노와 쿤쿤의 보금자리",
+      "x": 280,
+      "y": 116,
+      "inspect_ko": "변경 여기사 아이리아가 내어 준 따뜻한 집. 세레스와 함께한 나날과 딸 유노의 미소, 충직한 동료 쿤쿤의 기억이 깃들어 있다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_oasis_spring",
+      "location_id": "loc_dg_desert_oasis",
+      "label_ko": "라파엘로 사막 오아시스",
+      "x": 268,
+      "y": 124,
+      "inspect_ko": "끝없는 라파엘로 사막 한가운데 반짝이는 오아시스. 유노와 대화를 거듭하고 주변을 살피며 행군해야 사라가 머무는 이 샘에 도달한다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_quarry_vein",
+      "location_id": "loc_dg_quarry",
+      "label_ko": "성석 채굴 광맥",
+      "x": 292,
+      "y": 118,
+      "inspect_ko": "감독관 바즈의 채찍 아래 채굴하던 거대한 성석 광맥. 현세의 초념석과 같은 기원을 지닌 '데라 그란트 성석'이 푸르게 빛난다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_passage_wall",
+      "location_id": "loc_dg_underground_1",
+      "label_ko": "지하도 석벽 표식",
+      "x": 276,
+      "y": 106,
+      "inspect_ko": "레지스탕스가 제도 지하도 석벽에 남긴 긁힌 화살표: '지하도 1은 끝까지 전진해 막다른 길에서 1칸 후퇴한 뒤 우측으로! 지하도 2는 직진 추적!'",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_capital_spire",
+      "location_id": "loc_dg_imperial_city",
+      "label_ko": "제도 신제궁 첨탑",
+      "x": 280,
+      "y": 76,
+      "inspect_ko": "데라 그란트 제도의 중심에 솟은 신제궁. 아만다의 레지스탕스와 합류하며 신제의 정체가 아리마 아유미임이 밝혀진다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_sanctuary_altar",
+      "location_id": "loc_dg_sanctuary",
+      "label_ko": "성당 제단·발광 위탁물",
+      "x": 280,
+      "y": 106,
+      "inspect_ko": "출구 없는 사상의 틈새 최종방. 어둠 속에서 누군가에게 맡겼던 '빛나는 위탁 물품'을 확인·사용하면 진엔딩으로 통하는 빛이 열린다!",
+      "item_interactions": [
+        {
+          "item_id": "item_entrusted_light",
+          "response_ko": "발광하는 위탁 물품이 사상의 틈새를 가르고 부린더의 나무로 이어지는 최종 문을 열었다!",
+          "unlocks_node_id": "node_true_end",
+          "grants_local_flag": null
+        }
+      ],
+      "click_advances_to": "node_true_end",
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "hs_dg_brinder_tree",
+      "location_id": "loc_dg_horizon_end",
+      "label_ko": "부린더의 나무",
+      "x": 280,
+      "y": 88,
+      "inspect_ko": "현세와 이세계, 모든 병렬세계의 인과가 모이는 세상의 끝 '부린더의 나무'. 이곳에서 유노의 사랑의 노래가 울려 퍼진다.",
+      "item_interactions": [],
+      "click_advances_to": null,
+      "evidence_tag": "[확인]"
+    }
+  ],
+  "isekaiPuzzles": [
+    {
+      "id": "puzzle_dg_desert_crossing",
+      "type": "desert_crossing",
+      "node_id": "node_dg_desert_trek",
+      "location_id": "loc_dg_desert_oasis",
+      "title_ko": "라파엘로 사막 횡단 (커맨드 총공격 · 생존 리듬)",
+      "title_jp": "ラファエロ砂漠横断（コマンド総当たり）",
+      "grants_local_flag": "flag_local_dg_desert_talk_complete",
+      "hint_ko": "원작 공략 패턴: 물과 식량을 관리하며 '사막 전진(4회)', '유노에게 말 걸기(3회)', '주변 살펴보기(2회)'를 완수하면 오아시스가 드러납니다.",
+      "rules": {
+        "initial_water": 100,
+        "initial_rations": 100,
+        "max_water": 100,
+        "max_rations": 100,
+        "goal_distance": 4,
+        "goal_talk_yuno": 3,
+        "goal_look_around": 2,
+        "actions": {
+          "walk": {
+            "label_ko": "사막 전진",
+            "water_delta": -14,
+            "rations_delta": -12,
+            "distance_delta": 1
+          },
+          "talk_yuno": {
+            "label_ko": "유노에게 말 걸기",
+            "water_delta": -8,
+            "rations_delta": -4,
+            "talk_delta": 1
+          },
+          "look_around": {
+            "label_ko": "주변 살펴보기",
+            "water_delta": -6,
+            "rations_delta": -4,
+            "look_delta": 1
+          },
+          "forage": {
+            "label_ko": "선인장·이슬 채집",
+            "water_delta": 28,
+            "rations_delta": 25
+          }
+        }
+      },
+      "talk_revelations_ko": [
+        "유노: \"아빠, 손 놓지 마... 엄마(세레스)가 저 너머 제도에서 기다리는 걸까?\"",
+        "유노: \"모래바람 속에서 이상한 노래가 들려. 부린더의 나무가 부르는 소리 같아...\"",
+        "유노: \"아빠! 저기 야자수 그림자가 보여! 오아시스가 바로 코앞이야!\""
+      ],
+      "look_revelations_ko": [
+        "지평선 너머로 아지랑이가 일렁인다. 쿤쿤이 코를 킁킁거리며 남동쪽 바람 냄새를 가리켰다.",
+        "모래 언덕 너머 맑은 수면의 반사가 포착되었다! 사라가 있는 오아시스 방향이 확실해졌다!"
+      ],
+      "canonical_solution": [
+        "walk",
+        "talk_yuno",
+        "look_around",
+        "walk",
+        "talk_yuno",
+        "forage",
+        "walk",
+        "look_around",
+        "talk_yuno",
+        "walk"
+      ],
+      "evidence_tag": "[확인 패턴 / 내부 수치 정규화]"
+    },
+    {
+      "id": "puzzle_dg_underground_1",
+      "type": "underground_maze",
+      "node_id": "node_dg_underground_1",
+      "location_id": "loc_dg_underground_1",
+      "title_ko": "제도 지하도 1 미궁 (거리 → 성)",
+      "title_jp": "帝都地下道1（街から城へ）",
+      "grants_local_flag": "flag_local_dg_underground_1_cleared",
+      "hint_ko": "원작 공략 패턴(eonet.ne.jp 검증): 막다른 길(깊이 3)까지 '전진' → 막다른 길에서 '1칸 후퇴(깊이 2)' → '우측' 비밀 통로 진입 → '전진'으로 제도 돌파!",
+      "rules": {
+        "max_depth": 3,
+        "dead_end_depth": 3,
+        "secret_right_depth": 2,
+        "requires_dead_end_hit": true
+      },
+      "canonical_solution": [
+        "forward",
+        "forward",
+        "forward",
+        "back",
+        "right",
+        "forward"
+      ],
+      "evidence_tag": "[확인]"
+    },
+    {
+      "id": "puzzle_dg_underground_2",
+      "type": "underground_maze",
+      "node_id": "node_dg_underground_2",
+      "location_id": "loc_dg_underground_1",
+      "title_ko": "제도 지하도 2 (류조지 직진 추적)",
+      "title_jp": "帝都地下道2（龍蔵寺追跡）",
+      "grants_local_flag": "flag_local_dg_underground_path_cleared",
+      "hint_ko": "원작 공략 패턴(eonet.ne.jp 검증): 샛길에 현혹되지 말고 거리·성당 방면으로 흔들림 없이 '전진(3회)'해 류조지를 추격하라!",
+      "rules": {
+        "goal_depth": 3
+      },
+      "canonical_solution": [
+        "forward",
+        "forward",
+        "forward"
+      ],
       "evidence_tag": "[확인]"
     }
   ]
