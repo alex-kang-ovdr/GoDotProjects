@@ -14,6 +14,9 @@ const DEFAULT_FLUSH_INTERVAL_MS = 50;
 const DEFAULT_STATE_INTERVAL_MS = 1000;
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 10000;
 const DEFAULT_MAX_MISSED_PONGS = 2;
+const DEFAULT_JOIN_TIMEOUT_MS = 5000;
+const DEFAULT_MAX_MESSAGES_PER_SEC = 80;
+const MAX_BUFFERED_BYTES = 1_000_000;
 const MAX_PLAYERS = 64;
 const MAX_ROOMS = 64;
 const MAX_BLUEPRINT_PARTS = 32;
@@ -27,13 +30,22 @@ const VALID_PART_KINDS = new Set([
 ]);
 
 function clamp(value, min, max, fallback) {
+  if (typeof value !== 'number' && typeof value !== 'string') return fallback;
+  if (typeof value === 'string' && value.trim() === '') return fallback;
   const num = Number(value);
   if (!Number.isFinite(num)) return fallback;
   return Math.min(max, Math.max(min, num));
 }
 
+function safeString(raw, fallback = '') {
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'number' || typeof raw === 'boolean') return String(raw);
+  return fallback;
+}
+
 function cleanName(raw, fallback) {
-  const text = String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 24);
+  if (typeof raw !== 'string') return fallback;
+  const text = raw.trim().replace(/\s+/g, ' ').slice(0, 24);
   return text || fallback;
 }
 
@@ -47,7 +59,8 @@ function sanitizeBlueprint(raw) {
   for (const item of raw) {
     if (out.length >= MAX_BLUEPRINT_PARTS) break;
     if (!Array.isArray(item) || item.length < 4) continue;
-    const kind = VALID_PART_KINDS.has(String(item[0])) ? String(item[0]) : 'block';
+    const rawKind = typeof item[0] === 'string' ? item[0] : '';
+    const kind = VALID_PART_KINDS.has(rawKind) ? rawKind : 'block';
     const cx = Math.floor(clamp(item[1], -16, 16, 0));
     const cy = Math.floor(clamp(item[2], -16, 16, 0));
     const turns = ((Math.floor(clamp(item[3], 0, 3, 0)) % 4) + 4) % 4;
@@ -58,16 +71,18 @@ function sanitizeBlueprint(raw) {
 }
 
 function sanitizeShot(raw, fallbackX, fallbackY) {
-  if (!raw || typeof raw !== 'object') return null;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const kind = typeof raw.kind === 'string' && raw.kind ? raw.kind : 'laser';
+  const color = typeof raw.color === 'string' && /^[0-9a-fA-F]{6}$/.test(raw.color) ? raw.color : '4ef5d6';
   return {
     x: round2(clamp(raw.x, -250000, 250000, fallbackX)),
     y: round2(clamp(raw.y, -250000, 250000, fallbackY)),
     vx: round2(clamp(raw.vx, -4000, 4000, 0)),
     vy: round2(clamp(raw.vy, -4000, 4000, 0)),
-    kind: String(raw.kind || 'laser').slice(0, 20),
+    kind: kind.slice(0, 20),
     damage: round2(clamp(raw.damage, 0.5, 120, 7)),
     life: round2(clamp(raw.life, 0.1, 5, 2)),
-    color: /^[0-9a-fA-F]{6}$/.test(String(raw.color || '')) ? String(raw.color) : '4ef5d6',
+    color,
   };
 }
 
@@ -102,8 +117,8 @@ class CaptainMmoRoom {
       at: this.now(),
       source: 'server',
       roomId: this.id,
-      event,
-      message: String(message).slice(0, 240),
+      event: safeString(event).slice(0, 40),
+      message: safeString(message).slice(0, 240),
     });
     if (this.logs.length > 120) this.logs.shift();
   }
@@ -163,7 +178,7 @@ class CaptainMmoRoom {
     if (this.players.size >= MAX_PLAYERS) {
       return { ok: false, error: 'MMO 섹터 정원이 가득 찼습니다.' };
     }
-    const id = options.id || ('p-' + randomBytes(6).toString('hex'));
+    const id = typeof options.id === 'string' && options.id ? options.id : ('p-' + randomBytes(6).toString('hex'));
     const num = this.nextPlayerNum++;
     const name = cleanName(options.name, `선장 ${num}`);
     const player = {
@@ -219,7 +234,9 @@ class CaptainMmoRoom {
   handlePlayerEvent(playerId, raw = {}) {
     const player = this.players.get(playerId);
     if (!player) return { ok: false, error: 'Unknown player' };
-    const eventType = String(raw.event_type ?? raw.eventType ?? 'state');
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, error: 'Invalid event payload' };
+    const rawEventType = raw.event_type ?? raw.eventType;
+    const eventType = typeof rawEventType === 'string' ? rawEventType : (rawEventType === undefined ? 'state' : '');
     if (!VALID_EVENTS.has(eventType)) return { ok: false, error: 'Invalid eventType' };
 
     const seq = Math.floor(clamp(raw.seq, 0, 1e9, 0));
@@ -228,8 +245,8 @@ class CaptainMmoRoom {
     }
     if (seq > 0) player.seq = seq;
 
-    if (raw.name) player.name = cleanName(raw.name, player.name);
-    const phase = String(raw.phase || player.phase);
+    if (typeof raw.name === 'string' && raw.name) player.name = cleanName(raw.name, player.name);
+    const phase = typeof raw.phase === 'string' && raw.phase ? raw.phase : player.phase;
     const nowMs = this.now();
     player.phase = VALID_PHASES.has(phase) ? phase : 'playing';
     player.x = clamp(raw.x, -250000, 250000, player.x);
@@ -255,12 +272,15 @@ class CaptainMmoRoom {
 
     // Direct hit delivery to target captain within AOI
     if (eventType === 'hit') {
-      const targetId = String(raw.target_peer_id ?? raw.targetPeerId ?? '');
+      const rawTargetId = raw.target_peer_id ?? raw.targetPeerId;
+      const targetId = typeof rawTargetId === 'string' ? rawTargetId : '';
       const target = this.players.get(targetId);
       if (target && target.id !== player.id) {
         const senderPos = { x: player.x, y: player.y };
         const targetPos = this.estimatePosition(target, nowMs);
         if (this.isWithinProximity(senderPos, targetPos, true)) {
+          const rawWeaponKind = raw.weapon_kind ?? raw.weaponKind;
+          const weaponKind = typeof rawWeaponKind === 'string' && rawWeaponKind ? rawWeaponKind : 'laser';
           this._send(target, {
             type: 'rpc',
             method: 'client_incoming_hit',
@@ -270,7 +290,7 @@ class CaptainMmoRoom {
               damage: round2(clamp(raw.damage, 0.5, 120, 7)),
               impact_x: round2(clamp(raw.impact_x ?? raw.impactX, -250000, 250000, targetPos.x)),
               impact_y: round2(clamp(raw.impact_y ?? raw.impactY, -250000, 250000, targetPos.y)),
-              weapon_kind: String(raw.weapon_kind ?? raw.weaponKind ?? 'laser').slice(0, 20),
+              weapon_kind: weaponKind.slice(0, 20),
             },
           });
           this.stats.hitsRelayed += 1;
@@ -286,7 +306,7 @@ class CaptainMmoRoom {
       const shot = sanitizeShot(raw.shot, player.x, player.y);
       if (shot) basePayload.shot = shot;
     } else if (eventType === 'destroy' && Array.isArray(raw.wreck)) {
-      basePayload.wreck = raw.wreck.slice(0, 8).map(k => VALID_PART_KINDS.has(String(k)) ? String(k) : 'scrap');
+      basePayload.wreck = raw.wreck.slice(0, 8).map(k => (typeof k === 'string' && VALID_PART_KINDS.has(k)) ? k : 'scrap');
     }
 
     const senderPos = { x: player.x, y: player.y };
@@ -443,11 +463,13 @@ function attachCaptainForeverMmo(server, options = {}) {
   const flushIntervalMs = clamp(options.flushIntervalMs, 10, 500, DEFAULT_FLUSH_INTERVAL_MS);
   const stateIntervalMs = clamp(options.stateIntervalMs, 200, 10000, DEFAULT_STATE_INTERVAL_MS);
   const heartbeatIntervalMs = clamp(options.heartbeatIntervalMs, 1000, 60000, DEFAULT_HEARTBEAT_INTERVAL_MS);
+  const joinTimeoutMs = clamp(options.joinTimeoutMs, 50, 60000, DEFAULT_JOIN_TIMEOUT_MS);
+  const maxMessagesPerSec = Math.floor(clamp(options.maxMessagesPerSec, 1, 1000, DEFAULT_MAX_MESSAGES_PER_SEC));
 
   const rooms = new Map();
   const wss = new WebSocketServer({ noServer: true, maxPayload: 32 * 1024 });
 
-  server.on('upgrade', (request, socket, head) => {
+  const onUpgrade = (request, socket, head) => {
     let pathname = '';
     try {
       pathname = new URL(request.url || '', 'http://localhost').pathname;
@@ -464,19 +486,29 @@ function attachCaptainForeverMmo(server, options = {}) {
       client._ownerKey = request.hubAuth?.accountKey || null;
       wss.emit('connection', client, request);
     });
-  });
+  };
+  server.on('upgrade', onUpgrade);
 
   function sendJson(ws, payload) {
-    if (ws.readyState === WebSocket.OPEN) {
+    if (ws.readyState === WebSocket.OPEN && ws.bufferedAmount < MAX_BUFFERED_BYTES) {
       ws.send(JSON.stringify(payload));
     }
   }
 
-  wss.on('connection', ws => {
+  wss.on('connection', (ws, req) => {
+    ws.on('error', () => {});
     ws.missedPongs = 0;
     ws.on('pong', () => { ws.missedPongs = 0; });
 
-    if (ws._compatResult && ws._compatResult.decision === 'BLOCK_FORCE_UPDATE') {
+    if (compat) {
+      if (typeof compat.enforceWsConnection === 'function') {
+        if (!compat.enforceWsConnection(ws, req, sendJson)) return;
+      } else if (ws._compatResult && ws._compatResult.decision === 'BLOCK_FORCE_UPDATE') {
+        sendJson(ws, { type: 'error', error: ws._compatResult.message || '업데이트가 필요합니다.', compat: ws._compatResult });
+        ws.close(4426, 'Update required');
+        return;
+      }
+    } else if (ws._compatResult && ws._compatResult.decision === 'BLOCK_FORCE_UPDATE') {
       sendJson(ws, { type: 'error', error: ws._compatResult.message || '업데이트가 필요합니다.', compat: ws._compatResult });
       ws.close(4426, 'Update required');
       return;
@@ -484,11 +516,19 @@ function attachCaptainForeverMmo(server, options = {}) {
 
     let joinedRoom = null;
     let joinedPlayerId = null;
+    let joining = false;
     let rpcQueue = [];
     let supportsBatch = false;
+    let rateAt = now();
+    let msgCount = 0;
+
+    const joinTimeout = setTimeout(() => {
+      if (!joinedPlayerId) ws.close(1008, 'Join required');
+    }, joinTimeoutMs);
+    joinTimeout.unref?.();
 
     const flushQueue = () => {
-      if (!rpcQueue.length || ws.readyState !== WebSocket.OPEN) {
+      if (!rpcQueue.length || ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= MAX_BUFFERED_BYTES) {
         rpcQueue = [];
         return;
       }
@@ -501,7 +541,7 @@ function attachCaptainForeverMmo(server, options = {}) {
     };
 
     const queueRpc = message => {
-      if (ws.readyState !== WebSocket.OPEN) return;
+      if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount >= MAX_BUFFERED_BYTES) return;
       rpcQueue.push(message);
       if (rpcQueue.length > 128) rpcQueue.shift();
     };
@@ -509,97 +549,148 @@ function attachCaptainForeverMmo(server, options = {}) {
     ws._flushRpc = flushQueue;
 
     ws.on('message', async raw => {
-      let msg;
       try {
-        msg = JSON.parse(String(raw));
-      } catch {
-        return sendJson(ws, { type: 'error', error: 'Invalid JSON' });
-      }
-      if (!msg || typeof msg !== 'object') return;
-
-      if (msg.type === 'join') {
-        if (joinedRoom) return;
-        if (compat && msg.client) {
-          const check = compat.check(msg.client);
-          if (check.decision === 'BLOCK_FORCE_UPDATE') {
-            sendJson(ws, { type: 'error', error: check.message, compat: check });
-            ws.close(4426, 'Update required');
-            return;
-          }
+        const currentNow = now();
+        if (currentNow - rateAt > 1000) {
+          rateAt = currentNow;
+          msgCount = 0;
         }
-        supportsBatch = Boolean(msg.supportsBatch);
-        const requestedRoomId = typeof msg.roomId === 'string' && ROOM_ID.test(msg.roomId) ? msg.roomId : null;
-        let room = requestedRoomId ? rooms.get(requestedRoomId) : null;
-
-        if (!room) {
-          if (requestedRoomId) {
-            return sendJson(ws, { type: 'error', error: '요청한 MMO 섹터 방을 찾을 수 없습니다.' });
-          }
-          if (rooms.size >= MAX_ROOMS) {
-            return sendJson(ws, { type: 'error', error: '활성 MMO 방 한도에 도달했습니다.' });
-          }
-          const projectId = String(msg.projectId || '');
-          const buildId = String(msg.buildId || '');
-          if (!PROJECT_ID.test(projectId) || !BUILD_ID.test(buildId)) {
-            return sendJson(ws, { type: 'error', error: '유효한 projectId와 buildId가 필요합니다.' });
-          }
-          const build = await Promise.resolve(validateBuild(buildId, projectId, ws._ownerKey));
-          if (!build) {
-            return sendJson(ws, { type: 'error', error: '검증된 Captain Forever MMO 빌드가 아닙니다.' });
-          }
-          const newId = randomBytes(6).toString('hex');
-          room = new CaptainMmoRoom(newId, projectId, build, {
-            sectorSeed: msg.sectorSeed,
-            proximityRadius: msg.proximityRadius,
-          }, now);
-          rooms.set(newId, room);
+        if (++msgCount > maxMessagesPerSec) {
+          return sendJson(ws, { type: 'error', error: '요청이 너무 빠릅니다.' });
         }
 
-        const joined = room.addPlayer({
-          name: msg.name,
-          subscribeState: Boolean(msg.subscribeState),
-          send: payload => sendJson(ws, payload),
-          queueRpc,
-        });
-        if (!joined.ok) {
-          return sendJson(ws, { type: 'error', error: joined.error });
+        let msg;
+        try {
+          const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
+          msg = JSON.parse(text);
+        } catch {
+          return sendJson(ws, { type: 'error', error: 'Invalid JSON' });
+        }
+        if (!msg || typeof msg !== 'object' || Array.isArray(msg)) {
+          return sendJson(ws, { type: 'error', error: 'Invalid message format' });
+        }
+        if (typeof msg.type !== 'string') {
+          return sendJson(ws, { type: 'error', error: 'Invalid message type' });
         }
 
-        joinedRoom = room;
-        joinedPlayerId = joined.player.id;
-        sendJson(ws, {
-          type: 'welcome',
-          roomId: room.id,
-          playerId: joinedPlayerId,
-          playerName: joined.player.name,
-          projectId: room.projectId,
-          buildId: room.build?.id || null,
-          revision: room.build?.revision ?? null,
-          previewUrl: room.build?.previewUrl || null,
-          sectorSeed: room.sectorSeed,
-          proximityRadius: room.proximityRadius,
-          onlineCount: room.players.size,
-        });
-        if (joined.player.subscribeState) {
-          sendJson(ws, room.snapshot());
+        if (compat) {
+          if (typeof compat.enforceWsMessage === 'function') {
+            const compatMsg = (msg.type === 'join' && !msg.compat && msg.client && typeof msg.client === 'object')
+              ? { ...msg, compat: msg.client }
+              : msg;
+            const gate = compat.enforceWsMessage(ws, compatMsg, sendJson);
+            if (gate.handled) return;
+          } else if (msg.type === 'join' && msg.client && typeof msg.client === 'object' && typeof compat.check === 'function') {
+            const check = compat.check(msg.client);
+            if (check.decision === 'BLOCK_FORCE_UPDATE') {
+              sendJson(ws, { type: 'error', error: check.message, compat: check });
+              ws.close(4426, 'Update required');
+              return;
+            }
+          }
         }
-        return;
-      }
 
-      if (!joinedRoom || !joinedPlayerId) {
-        return sendJson(ws, { type: 'error', error: '먼저 join 메시지로 입장하세요.' });
-      }
+        if (msg.type === 'join') {
+          if (joinedRoom || joining) {
+            return sendJson(ws, { type: 'error', error: '이미 MMO 월드에 참가 중입니다.' });
+          }
+          supportsBatch = Boolean(msg.supportsBatch);
+          let room = null;
+          let createdRoom = false;
 
-      if (msg.type === 'rpc' && msg.method === 'server_player_event') {
-        joinedRoom.handlePlayerEvent(joinedPlayerId, msg.params || {});
-        return;
-      }
-      if (msg.type === 'ping') {
-        sendJson(ws, { type: 'pong', at: now() });
+          if (msg.roomId !== undefined && msg.roomId !== null && msg.roomId !== '') {
+            if (typeof msg.roomId !== 'string' || !ROOM_ID.test(msg.roomId)) {
+              return sendJson(ws, { type: 'error', error: '잘못된 방 ID입니다.' });
+            }
+            room = rooms.get(msg.roomId) || null;
+            if (!room) {
+              return sendJson(ws, { type: 'error', error: '요청한 MMO 섹터 방을 찾을 수 없습니다.' });
+            }
+          } else {
+            if (rooms.size >= MAX_ROOMS) {
+              return sendJson(ws, { type: 'error', error: '활성 MMO 방 한도에 도달했습니다.' });
+            }
+            const projectId = typeof msg.projectId === 'string' ? msg.projectId : '';
+            const buildId = typeof msg.buildId === 'string' ? msg.buildId : '';
+            if (!PROJECT_ID.test(projectId) || !BUILD_ID.test(buildId)) {
+              return sendJson(ws, { type: 'error', error: '유효한 projectId와 buildId가 필요합니다.' });
+            }
+            joining = true;
+            let build;
+            try {
+              build = await Promise.resolve(validateBuild(buildId, projectId, ws._ownerKey));
+            } finally {
+              joining = false;
+            }
+            if (ws.readyState !== WebSocket.OPEN) return;
+            if (!build) {
+              return sendJson(ws, { type: 'error', error: '검증된 Captain Forever MMO 빌드가 아닙니다.' });
+            }
+            if (rooms.size >= MAX_ROOMS) {
+              return sendJson(ws, { type: 'error', error: '활성 MMO 방 한도에 도달했습니다.' });
+            }
+            const newId = randomBytes(6).toString('hex');
+            room = new CaptainMmoRoom(newId, projectId, build, {
+              sectorSeed: msg.sectorSeed,
+              proximityRadius: msg.proximityRadius,
+            }, now);
+            createdRoom = true;
+          }
+
+          const joined = room.addPlayer({
+            name: msg.name,
+            subscribeState: Boolean(msg.subscribeState),
+            send: payload => sendJson(ws, payload),
+            queueRpc,
+          });
+          if (!joined.ok) {
+            return sendJson(ws, { type: 'error', error: joined.error });
+          }
+          if (createdRoom) {
+            rooms.set(room.id, room);
+          }
+
+          joinedRoom = room;
+          joinedPlayerId = joined.player.id;
+          clearTimeout(joinTimeout);
+          sendJson(ws, {
+            type: 'welcome',
+            roomId: room.id,
+            playerId: joinedPlayerId,
+            playerName: joined.player.name,
+            projectId: room.projectId,
+            buildId: room.build?.id || null,
+            revision: room.build?.revision ?? null,
+            previewUrl: room.build?.previewUrl || null,
+            sectorSeed: room.sectorSeed,
+            proximityRadius: room.proximityRadius,
+            onlineCount: room.players.size,
+          });
+          if (joined.player.subscribeState) {
+            sendJson(ws, room.snapshot());
+          }
+          return;
+        }
+
+        if (!joinedRoom || !joinedPlayerId) {
+          return sendJson(ws, { type: 'error', error: '먼저 join 메시지로 입장하세요.' });
+        }
+
+        if (msg.type === 'rpc' && msg.method === 'server_player_event') {
+          joinedRoom.handlePlayerEvent(joinedPlayerId, msg.params || {});
+          return;
+        }
+        if (msg.type === 'ping') {
+          sendJson(ws, { type: 'pong', at: now() });
+        }
+      } catch (err) {
+        sendJson(ws, { type: 'error', error: err?.message || 'Internal message error' });
       }
     });
 
     ws.on('close', () => {
+      clearTimeout(joinTimeout);
+      rpcQueue = [];
       if (joinedRoom && joinedPlayerId) {
         joinedRoom.removePlayer(joinedPlayerId);
         if (joinedRoom.players.size === 0) {
@@ -652,6 +743,7 @@ function attachCaptainForeverMmo(server, options = {}) {
       clearInterval(flushTimer);
       clearInterval(stateTimer);
       clearInterval(heartbeatTimer);
+      server.off('upgrade', onUpgrade);
       for (const client of wss.clients) client.terminate();
       wss.close();
       rooms.clear();

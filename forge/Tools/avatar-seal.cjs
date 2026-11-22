@@ -28,15 +28,35 @@ function addonSourceDir(forgeRoot) {
   return path.join(forgeRoot, 'Godot', 'addons', 'playforge_avatar');
 }
 
+function normalizeAvatarCheckPath(filePath) {
+  if (typeof filePath !== 'string') return '';
+  let s = filePath.replaceAll('\\', '/').trim();
+  while (/^res:\/\//i.test(s)) {
+    s = s.replace(/^res:\/\//i, '');
+  }
+  while (s.startsWith('/') || s.startsWith('./')) {
+    if (s.startsWith('/')) s = s.slice(1);
+    else if (s.startsWith('./')) s = s.slice(2);
+  }
+  if (!s) return '';
+  let normalized = path.posix.normalize(s);
+  while (normalized.startsWith('/') || normalized.startsWith('./')) {
+    if (normalized.startsWith('/')) normalized = normalized.slice(1);
+    else if (normalized.startsWith('./')) normalized = normalized.slice(2);
+  }
+  return normalized;
+}
+
 function isSealedAvatarPath(filePath) {
   if (typeof filePath !== 'string') return false;
-  const normalized = filePath
-    .replaceAll('\\', '/')
-    .replace(/^(\.\/)+/, '')
-    .replace(/^\/+/, '')
-    .toLowerCase();
+  if (filePath.includes('\0')) return true;
+  const normalized = normalizeAvatarCheckPath(filePath);
+  if (!normalized) return false;
+  const segments = normalized.split('/');
+  if (segments.includes('..')) return true;
+  const lowered = normalized.toLowerCase();
   const sealed = SEALED_AVATAR_DIR.toLowerCase();
-  return normalized === sealed || normalized.startsWith(sealed + '/');
+  return lowered === sealed || lowered.startsWith(sealed + '/');
 }
 
 function stripSealedAvatarEntries(entries) {

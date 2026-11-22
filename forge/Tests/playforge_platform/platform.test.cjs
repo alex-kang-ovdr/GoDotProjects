@@ -340,3 +340,39 @@ test('Live build mode blocks Remote Control and session log endpoints while keep
   const sessionPost = await request(`/api/platform/projects/${id}/session`, 'POST', { logs: [{ text: 'blocked' }] });
   assert.equal(sessionPost.status, 403);
 });
+
+test('renameProject commits a new revision so subsequent updateFiles saves cleanly without 409 conflict', async t => {
+  const { request } = await setup(t);
+  const created = await request('/api/platform/projects', 'POST', { name: 'Before Rename', template: 'blank3d' });
+  assert.equal(created.status, 201);
+  const id = created.body.project.id;
+  assert.equal(created.body.revision, 1);
+
+  const renamed = await request(`/api/platform/projects/${id}`, 'PATCH', { name: 'After Rename', clientId: 'client_rename' });
+  assert.equal(renamed.status, 200, JSON.stringify(renamed.body));
+  assert.equal(renamed.body.project.name, 'After Rename');
+  assert.equal(renamed.body.revision, 2);
+  const projectGodotAfterRename = renamed.body.files.find(f => f.path === 'project.godot');
+  assert.match(projectGodotAfterRename.content, /config\/name="After Rename"/);
+
+  const history = await request(`/api/platform/projects/${id}/history`);
+  assert.equal(history.status, 200);
+  assert.deepEqual(history.body.history.map(item => item.revision), [1, 2]);
+  assert.equal(history.body.history[1].message, 'Project renamed');
+
+  const updatedFiles = [
+    ...renamed.body.files.map(f => f.path === 'project.godot'
+      ? { ...f, content: f.content + '\n; edited after rename\n' }
+      : f),
+    { path: 'scripts/after_rename.gd', content: 'extends Node\n' },
+  ];
+  const saved = await request(`/api/platform/projects/${id}`, 'PUT', {
+    baseRevision: renamed.body.revision,
+    files: updatedFiles,
+    clientId: 'client_after_rename',
+  });
+  assert.equal(saved.status, 200, JSON.stringify(saved.body));
+  assert.equal(saved.body.revision, 3);
+  assert.equal(saved.body.files.find(f => f.path === 'scripts/after_rename.gd')?.content, 'extends Node\n');
+  assert.match(saved.body.files.find(f => f.path === 'project.godot')?.content || '', /edited after rename/);
+});

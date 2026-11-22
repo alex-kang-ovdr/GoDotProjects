@@ -116,20 +116,16 @@ class PlatformStore {
   }
 
   getProject(id) { return snapshot(this.read(id)); }
-  renameProject(id, { name } = {}) {
+  renameProject(id, { name, clientId = null } = {}) {
     if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
     const cleanName = name.trim();
     return this.enqueue(id, async () => {
       const project = this.read(id);
-      const now = new Date().toISOString();
       const files = { ...project.files };
       if (typeof files['project.godot'] === 'string') {
         files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(cleanName));
       }
-      const next = { ...project, name: cleanName, files, updatedAt: now };
-      this.persist(next);
-      this.emit(id, { type: 'project', project: snapshot(next), message: 'Project renamed' });
-      return snapshot(next);
+      return this.commit({ ...project, name: cleanName }, files, clientId, 'Project renamed');
     });
   }
   deleteProject(id) {

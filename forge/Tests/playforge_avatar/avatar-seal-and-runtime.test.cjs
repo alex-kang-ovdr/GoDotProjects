@@ -113,6 +113,19 @@ test('Forge Layer 1 seal: PlatformStore & platform-project block any direct modi
     }
     assert.equal(isSealedAvatarPath('Addons\\PlayForge_Avatar\\plugin.gd'), true);
     assert.equal(isSealedAvatarPath('./Addons/playforge_avatar/plugin.gd'), true);
+    assert.equal(isSealedAvatarPath('res://addons/playforge_avatar/avatar_rig.gd'), true);
+    assert.equal(isSealedAvatarPath('RES:///./addons/playforge_avatar/plugin.gd'), true);
+    assert.equal(isSealedAvatarPath('foo/../addons/playforge_avatar/avatar_rig.gd'), true);
+    assert.equal(isSealedAvatarPath('../addons/playforge_avatar/avatar_rig.gd'), true);
+    assert.equal(isSealedAvatarPath('scenes/../../addons/playforge_avatar/catalog.json'), true);
+    assert.equal(isSealedAvatarPath('addons//./playforge_avatar//avatar_rig.gd'), true);
+    assert.equal(isSealedAvatarPath('scripts/player.gd'), false);
+
+    // 4b. Verify avatar_rig.gd enforces fail-closed SHA-256 verification and release-mode external dir guard
+    const avatarRigSrc = fs.readFileSync(path.join(forgeRoot, 'Godot', 'addons', 'playforge_avatar', 'avatar_rig.gd'), 'utf8');
+    assert.match(avatarRigSrc, /OS\.is_debug_build\(\)/, 'avatar_rig.gd must gate external assets dir override behind OS.is_debug_build()');
+    assert.match(avatarRigSrc, /_is_valid_sha256_hex\(/, 'avatar_rig.gd must validate 64-hex expected_sha fail-closed');
+    assert.doesNotMatch(avatarRigSrc, /if expected_sha\.is_empty\(\) or _sha256_hex\(fetched\)/, 'Layer 3D must not allow empty expected_sha bypass');
     assert.deepEqual(
       stripSealedAvatarEntries([
         { path: 'scripts/ok.gd', content: '' },
@@ -147,7 +160,7 @@ test('Forge Layer 1 seal: PlatformStore & platform-project block any direct modi
     const editorBridgeSrc = fs.readFileSync(path.join(forgeRoot, 'OfficialGodot', 'editor-bridge.js'), 'utf8');
     assert.ok(
       editorBridgeSrc.includes('toLowerCase()') &&
-      /addons\\\/playforge_\(platform\|replay\|showcase\|agent_chat\|remote_control\|avatar\)/.test(editorBridgeSrc),
+      /addons\\\/playforge_\(platform\|replay\|showcase\|agent_chat\|remote_control\|avatar(?:\|[a-z0-9_|]+)?\)/.test(editorBridgeSrc),
       'editor-bridge.js must normalize sealed addon paths with toLowerCase()'
     );
   } finally {

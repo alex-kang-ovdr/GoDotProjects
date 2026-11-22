@@ -5,11 +5,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const http = require('node:http');
 const { spawnSync } = require('node:child_process');
 const { WebSocket } = require('ws');
 const { chromium } = require('@playwright/test');
 
-const { CaptainMmoRoom } = require('../Tools/captain-forever-mmo-multiplayer.cjs');
+const { CaptainMmoRoom, attachCaptainForeverMmo } = require('../Tools/captain-forever-mmo-multiplayer.cjs');
+const { createMultiplayerCompat } = require('../Tools/multiplayer-compat.cjs');
 const { PlatformStore } = require('../Tools/platform-store.cjs');
 const { NativeRuntime } = require('../Tools/native-runtime.cjs');
 const { createServer } = require('../server.cjs');
@@ -105,6 +107,137 @@ test('PlayForge server serves captain-forever-mmo template, room metadata, and l
   const errMsg = await errP;
   assert.equal(errMsg.type, 'error');
   wsBad.close();
+});
+
+test('attachCaptainForeverMmo resists object-coercion crashes, enforces compat/rate-limit/joinTimeout, and prevents async validateBuild room leaks', async t => {
+  const validProjectId = '0123456789abcdef01234567';
+  const validBuildId = '0123456789abcdef';
+  const poison = { toString: 1, valueOf: 1 };
+
+  let resolvePendingBuild = null;
+  let buildMode = 'ok';
+  const compat = createMultiplayerCompat({
+    env: {
+      PLAYFORGE_UPDATE_POLICY: 'force',
+      PLAYFORGE_MIN_CLIENT_BUILD_CODE: '200',
+      PLAYFORGE_BUILD_NUM: '200',
+    },
+  });
+
+  const httpServer = http.createServer((req, res) => res.writeHead(404).end());
+  const mmo = attachCaptainForeverMmo(httpServer, {
+    compat,
+    joinTimeoutMs: 120,
+    maxMessagesPerSec: 5,
+    validateBuild: async (buildId, projectId) => {
+      if (buildMode === 'pending') {
+        return await new Promise(resolve => { resolvePendingBuild = resolve; });
+      }
+      if (buildMode === 'throw') {
+        throw new Error('simulated validateBuild failure');
+      }
+      return { id: buildId, projectId, revision: 1, previewUrl: '/preview' };
+    },
+  });
+  await new Promise(resolve => httpServer.listen(0, '127.0.0.1', resolve));
+  const wsUrl = `ws://127.0.0.1:${httpServer.address().port}/captain-forever-mmo`;
+  t.after(async () => {
+    mmo.close();
+    await new Promise(resolve => httpServer.close(resolve));
+  });
+
+  // 1. Poison objects ({ toString: 1, valueOf: 1 }) must never crash the server
+  const wsPoison = new WebSocket(wsUrl);
+  await new Promise(r => wsPoison.once('open', r));
+  const p1 = waitForMessage(wsPoison, m => m.type === 'error');
+  wsPoison.send(JSON.stringify({ type: 'join', projectId: poison, buildId: poison, name: poison, sectorSeed: poison }));
+  assert.equal((await p1).type, 'error');
+
+  const p2 = waitForMessage(wsPoison, m => m.type === 'error');
+  wsPoison.send(JSON.stringify({ type: poison }));
+  assert.equal((await p2).type, 'error');
+
+  const p3 = waitForMessage(wsPoison, m => m.type === 'error');
+  wsPoison.send(JSON.stringify({ type: 'join', roomId: poison }));
+  assert.equal((await p3).type, 'error');
+  wsPoison.close();
+
+  // 2. compat_check & msg.compat enforcement via multiplayer-compat.cjs
+  const wsCompat = new WebSocket(wsUrl);
+  await new Promise(r => wsCompat.once('open', r));
+  const compatReplyP = waitForMessage(wsCompat, m => m.type === 'compat');
+  wsCompat.send(JSON.stringify({
+    type: 'compat_check',
+    client: {
+      target: 'web',
+      buildCode: compat.serverBuildInfo.buildCode,
+      engineAbi: compat.serverBuildInfo.compat.engineAbi,
+      engineApiRev: compat.serverBuildInfo.compat.engineApiRev,
+      netProtocol: compat.serverBuildInfo.compat.netProtocol,
+      gameplayHash: compat.serverBuildInfo.compat.gameplayHash,
+    },
+  }));
+  const compatReply = await compatReplyP;
+  assert.equal(compatReply.type, 'compat');
+  assert.equal(compatReply.decision, compat.COMPAT_DECISIONS.ALLOW);
+
+  const blockedP = waitForMessage(wsCompat, m => m.type === 'compat');
+  const closeCodeP = new Promise(resolve => wsCompat.once('close', code => resolve(code)));
+  wsCompat.send(JSON.stringify({
+    type: 'join',
+    projectId: validProjectId,
+    buildId: validBuildId,
+    compat: { target: 'web', buildCode: 10 },
+  }));
+  const blocked = await blockedP;
+  assert.equal(blocked.decision, compat.COMPAT_DECISIONS.BLOCK_FORCE_UPDATE);
+  assert.equal(await closeCodeP, compat.COMPAT_WS_CLOSE_FORCE_UPDATE);
+
+  // 3. Async validateBuild: joining re-entry guard + close-during-await must not leak rooms
+  buildMode = 'pending';
+  const wsRace = new WebSocket(wsUrl);
+  await new Promise(r => wsRace.once('open', r));
+  wsRace.send(JSON.stringify({ type: 'join', projectId: validProjectId, buildId: validBuildId, name: 'Racer' }));
+  // Wait a tick for validateBuild to start
+  await new Promise(r => setTimeout(r, 20));
+  const reentryErrP = waitForMessage(wsRace, m => m.type === 'error');
+  wsRace.send(JSON.stringify({ type: 'join', projectId: validProjectId, buildId: validBuildId, name: 'RacerDup' }));
+  const reentryErr = await reentryErrP;
+  assert.match(reentryErr.error, /이미/);
+  // Close socket while validateBuild is still pending, then resolve build
+  const closedP = new Promise(resolve => wsRace.once('close', resolve));
+  wsRace.close();
+  await closedP;
+  resolvePendingBuild({ id: validBuildId, projectId: validProjectId, revision: 1 });
+  await new Promise(r => setTimeout(r, 30));
+  assert.equal(mmo.rooms.size, 0, 'Closing during async validateBuild must not leak a room');
+  buildMode = 'ok';
+
+  // 4. joinTimeout closes unjoined idle socket with 1008
+  const wsIdle = new WebSocket(wsUrl);
+  await new Promise(r => wsIdle.once('open', r));
+  const idleCloseCode = await new Promise(resolve => wsIdle.once('close', code => resolve(code)));
+  assert.equal(idleCloseCode, 1008);
+
+  // 5. Rate limit (maxMessagesPerSec=5) + poison event payload in handlePlayerEvent
+  const wsRate = new WebSocket(wsUrl);
+  await new Promise(r => wsRate.once('open', r));
+  const welcomeP = waitForMessage(wsRate, m => m.type === 'welcome');
+  wsRate.send(JSON.stringify({ type: 'join', projectId: validProjectId, buildId: validBuildId, name: 'CapRate' }));
+  const welcome = await welcomeP;
+  assert.equal(welcome.type, 'welcome');
+  // Send poison event payload (must not throw) + exceed rate limit
+  const rateErrP = waitForMessage(wsRate, m => m.type === 'error' && /빠릅니다/.test(m.error));
+  for (let i = 0; i < 6; i++) {
+    wsRate.send(JSON.stringify({
+      type: 'rpc',
+      method: 'server_player_event',
+      params: { event_type: i === 0 ? poison : 'state', x: poison, y: poison, phase: poison, name: poison, seq: i + 1 },
+    }));
+  }
+  const rateErr = await rateErrP;
+  assert.match(rateErr.error, /빠릅니다/);
+  wsRate.close();
 });
 
 test('captain-forever-mmo passes Godot 4.7 headless simulation and native @rpc 2D AOI test', {
