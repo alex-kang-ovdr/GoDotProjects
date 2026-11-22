@@ -613,14 +613,21 @@ function createServer(options = {}) {
     directory: internalDirectory,
     storeFor: key => getPlatformFor(key).store
   }) : null;
-  // P0: builds and PIE run user content on this host's Godot without isolation; Hub-auth mode only lets
-  // allowlisted accounts trigger them (PLAYHUB_FORGE_EXECUTION_ALLOWLIST, fail closed when unset).
+  // P0: host PIE/Blender/Shorts/local builds run on this host without isolation and stay fail-closed
+  // behind PLAYHUB_FORGE_EXECUTION_ALLOWLIST. When PLAYFORGE_BUILD_BACKEND=cloudrun-job is active,
+  // web builds execute exclusively inside the zero-IAM ephemeral Cloud Run Job (forge-build-worker),
+  // so authenticated Hub accounts may trigger isolated web builds without opening host PIE.
   const executionPolicy = hubAuth ? createExecutionPolicy(hubAuthConfig.executionAllowlist ?? serverEnv.PLAYHUB_FORGE_EXECUTION_ALLOWLIST) : null;
   const executionAllowed = accountKey => {
     if (!executionPolicy || executionPolicy.allows(accountKey)) return true;
     // The key is the pseudonymous Hub account hash; operators copy it into the allowlist.
     console.warn(`[forge] build/PIE refused for account ${accountKey}; add it to PLAYHUB_FORGE_EXECUTION_ALLOWLIST (or Hub config forge.executionAllowlist) to allow.`);
     return false;
+  };
+  const cloudRunIsolatedBuilds = String(serverEnv.PLAYFORGE_BUILD_BACKEND || '').trim().toLowerCase() === 'cloudrun-job';
+  const buildExecutionAllowed = accountKey => {
+    if (executionAllowed(accountKey)) return true;
+    return cloudRunIsolatedBuilds && typeof accountKey === 'string' && /^[a-f0-9]{64}$/.test(accountKey);
   };
   const storeServerUrl = options.storeServerUrl ?? serverEnv.PLAYFORGE_STORE_SERVER_URL ?? '';
   const storeWebUrl = options.storeWebUrl ?? serverEnv.PLAYFORGE_STORE_WEB_URL ?? (storeServerUrl || 'http://127.0.0.1:4180');
@@ -717,8 +724,8 @@ function createServer(options = {}) {
     getPlatformFor: hubAuth ? getPlatformFor : undefined,
     accountBuilds: hubAuth ? accountBuilds : undefined,
     validateTemplateBuild,
-    buildsEnabled: resolvedInternalBuilds?.enabled === true,
-    executionAllowed,
+    buildsEnabled: resolvedInternalBuilds?.enabled === true || cloudRunIsolatedBuilds,
+    executionAllowed: buildExecutionAllowed,
     drive: resolvedInternalDrive,
     packages: resolvedInternalPackages,
     env: serverEnv,
@@ -784,6 +791,21 @@ function createServer(options = {}) {
     if (routePath === '/api/health' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       const status = NativeRuntime.availability(root);
+      const isCloudRunDev = Boolean(serverEnv.K_SERVICE) && serverEnv.PLAYFORGE_BUILD_PROJECT === 'forge-dev-2611';
+      let serverMetrics;
+      if (isCloudRunDev) {
+        const mem = process.memoryUsage();
+        const toMb = b => Math.round((b / (1024 * 1024)) * 100) / 100;
+        serverMetrics = {
+          rssMb: toMb(mem.rss),
+          heapUsedMb: toMb(mem.heapUsed),
+          heapTotalMb: toMb(mem.heapTotal),
+          externalMb: toMb(mem.external),
+          uptimeSec: Math.round(process.uptime()),
+          revision: serverEnv.K_REVISION || null,
+          buildBackend: cloudRunIsolatedBuilds ? 'cloudrun-job' : 'local',
+        };
+      }
       return json(200, {
         ok: true,
         runtime: status.available,
@@ -798,6 +820,7 @@ function createServer(options = {}) {
         multiplayerTestWorkspace: 1,
         nativeGameIframe: 1,
         hubAuth: Boolean(hubAuth),
+        ...(serverMetrics ? { serverMetrics } : {}),
       });
     }
 
@@ -1107,7 +1130,7 @@ function createServer(options = {}) {
         if (platformBuild && req.method === 'POST') {
           const activePlatform = getPlatformFor(auth?.accountKey).store;
           const snapshot = activePlatform.getProject(platformBuild[1]);
-          if (!executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+          if (!buildExecutionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.revision !== snapshot.revision) return json(409, { ok: false, error: 'revision_conflict' });
           const buildProfile = resolveBuildProfile(body.buildProfile);
           if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision, { buildProfile }) });
@@ -1124,7 +1147,7 @@ function createServer(options = {}) {
           return json(200, { ok: true, document: result.document });
         }
         if (routePath === '/api/builds' && req.method === 'POST') {
-          if (!executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+          if (!buildExecutionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.target !== 'web') return json(400, { ok: false, error: 'This PoC builds the web target only' });
           const activeStudio = getStudioFor(auth?.accountKey);
           const document = activeStudio.store.snapshot();

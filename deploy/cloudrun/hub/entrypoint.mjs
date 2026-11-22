@@ -94,7 +94,9 @@ function buildConfig() {
       }
     : {};
 
-  const forgeEnabled = process.env.PLAYHUB_FORGE_ENABLED === 'true' && isHttps;
+  const forgeInternalSecret = String(process.env.PLAYHUB_FORGE_INTERNAL_SECRET || '');
+  const remoteForgeConfigured = Boolean(FORGE_UPSTREAM) && forgeInternalSecret.length >= 32;
+  const forgeEnabled = (process.env.PLAYHUB_FORGE_ENABLED === 'true' && isHttps) || remoteForgeConfigured;
 
   return {
     publicHost: '127.0.0.1',
@@ -122,8 +124,9 @@ function buildConfig() {
     },
     forge: {
       enabled: forgeEnabled,
+      ...(remoteForgeConfigured ? { mode: 'remote', baseUrl: FORGE_UPSTREAM } : {}),
       directory: FORGE_DIR,
-      internalSecret: process.env.PLAYHUB_FORGE_INTERNAL_SECRET || crypto.randomBytes(32).toString('hex'),
+      internalSecret: forgeInternalSecret || crypto.randomBytes(32).toString('hex'),
     },
   };
 }
@@ -335,12 +338,44 @@ if (isDirectExecution) {
     }
   };
 
+  const isCloudRunDev = Boolean(process.env.K_SERVICE) && String(process.env.PLAYHUB_CHANNEL || '').trim().toLowerCase() === 'dev';
+  let requestsTotal = 0;
+  let bytesOut = 0;
+
   const edge = http.createServer((req, res) => {
+    if (isCloudRunDev) {
+      requestsTotal += 1;
+      const origWrite = res.write.bind(res);
+      const origEnd = res.end.bind(res);
+      res.write = (chunk, encoding, cb) => {
+        if (chunk) bytesOut += Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+        return origWrite(chunk, encoding, cb);
+      };
+      res.end = (chunk, encoding, cb) => {
+        if (chunk && typeof chunk !== 'function') bytesOut += Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+        return origEnd(chunk, encoding, cb);
+      };
+    }
     const pathname = new URL(req.url || '/', 'http://localhost').pathname;
 
     if (pathname === '/_healthz') {
+      const payload = { ok: true, role: ROLE, revision: process.env.K_REVISION || 'local' };
+      if (isCloudRunDev) {
+        const mem = process.memoryUsage();
+        const toMb = b => Math.round((b / (1024 * 1024)) * 100) / 100;
+        payload.serverMetrics = {
+          rssMb: toMb(mem.rss),
+          heapUsedMb: toMb(mem.heapUsed),
+          heapTotalMb: toMb(mem.heapTotal),
+          externalMb: toMb(mem.external),
+          uptimeSec: Math.round(process.uptime()),
+          requestsTotal,
+          bytesOut,
+          forgeGatewayMode: config.forge?.mode || 'local',
+        };
+      }
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end(JSON.stringify({ ok: true, role: ROLE, revision: process.env.K_REVISION || 'local' }));
+      res.end(JSON.stringify(payload));
       return;
     }
 
