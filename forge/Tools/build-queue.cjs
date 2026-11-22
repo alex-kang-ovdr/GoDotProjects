@@ -12,6 +12,7 @@ const {
   injectPlayHubAvatarAutoload,
   sanitizeProjectForStandardGodot,
 } = require('./avatar-seal.cjs');
+const { runCloudRunBuild } = require('./cloudrun-build-backend.cjs');
 const { buildCorePack, buildThinUgcPack } = require('./build-core-pack.cjs');
 
 const VALID_BUILD_PROFILES = new Set(['playhub-publish', 'standard-godot']);
@@ -126,7 +127,7 @@ class BuildQueue {
         if (job.projectId === snapshot.id && job.revision === snapshot.revision && job.sourceHash === sourceHash &&
             (job.buildProfile || 'playhub-publish') === buildProfile &&
             (job.ownerKey || null) === (snapshot.ownerKey || null) &&
-            (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html'))))) return this.get(job.id);
+            (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && (fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html')) || fs.existsSync(path.join(this.directory, job.id, 'output', 'PlayForge-Web.zip')))))) return this.get(job.id);
       }
     }
     if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
@@ -162,6 +163,10 @@ class BuildQueue {
   }
   async build(job, snapshot) {
     const folder = path.join(this.directory, job.id), project = path.join(folder, 'project'), output = path.join(folder, 'output');
+    if (String(process.env.PLAYFORGE_BUILD_BACKEND || '').trim().toLowerCase() === 'cloudrun-job') {
+      await runCloudRunBuild(job, snapshot, output);
+      return;
+    }
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
     const buildProfile = resolveBuildProfile(snapshot.buildProfile);
     const isStandardGodot = buildProfile === 'standard-godot';

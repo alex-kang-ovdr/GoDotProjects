@@ -1,6 +1,22 @@
 extends Control
 
 func _ready() -> void:
+	var launch_mode := "game"
+	if FileAccess.file_exists("user://playhub_launch_mode.txt"):
+		var mf := FileAccess.open("user://playhub_launch_mode.txt", FileAccess.READ)
+		if mf != null:
+			launch_mode = mf.get_as_text().strip_edges()
+			mf.close()
+	if launch_mode.is_empty() and Engine.has_singleton("PlayHubBridge"):
+		var bridge := Engine.get_singleton("PlayHubBridge")
+		if bridge != null:
+			launch_mode = str(bridge.call("get_launch_mode")).strip_edges()
+
+	print("PlayHubBootstrap: launch_mode=", launch_mode)
+	if launch_mode == "avatar_studio":
+		call_deferred("_launch_avatar_studio")
+		return
+
 	var label := Label.new()
 	label.text = "Play Hub · Loading Godot 4.7.2 Game Pack..."
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -9,6 +25,16 @@ func _ready() -> void:
 	add_child(label)
 
 	call_deferred("_mount_and_launch", label)
+
+func _launch_avatar_studio() -> void:
+	var script_res: Resource = ResourceLoader.load("res://avatar_studio.gd")
+	if script_res == null or not (script_res is Script):
+		push_error("PlayHubBootstrap: failed to load res://avatar_studio.gd")
+		return
+	var studio_node: Node = (script_res as Script).new()
+	studio_node.name = "AvatarStudioRoot"
+	get_tree().root.add_child(studio_node)
+	queue_free()
 
 func _mount_and_launch(label: Label) -> void:
 	var pck_path := ""

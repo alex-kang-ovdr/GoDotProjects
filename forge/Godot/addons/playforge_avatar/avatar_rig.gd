@@ -296,16 +296,18 @@ func _mount_attachments(attachments: Variant) -> void:
 
 
 func _resolve_asset_transport_config() -> void:
+	var allow_external_assets_override := OS.is_debug_build()
 	_asset_origin = OS.get_environment("PLAYHUB_AVATAR_ORIGIN").strip_edges().trim_suffix("/")
 	_external_cache_dir = OS.get_environment("PLAYFORGE_AVATAR_CACHE_DIR").strip_edges()
-	_external_assets_dir = OS.get_environment("PLAYFORGE_AVATAR_ASSETS_DIR").strip_edges()
+	_external_assets_dir = OS.get_environment("PLAYFORGE_AVATAR_ASSETS_DIR").strip_edges() if allow_external_assets_override else ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--playhub-origin="):
 			_asset_origin = arg.substr("--playhub-origin=".length()).strip_edges().trim_suffix("/")
 		elif arg.begins_with("--avatar-cache-dir="):
 			_external_cache_dir = arg.substr("--avatar-cache-dir=".length()).strip_edges()
 		elif arg.begins_with("--avatar-assets-dir="):
-			_external_assets_dir = arg.substr("--avatar-assets-dir=".length()).strip_edges()
+			if allow_external_assets_override:
+				_external_assets_dir = arg.substr("--avatar-assets-dir=".length()).strip_edges()
 	if _external_cache_dir.is_empty():
 		_external_cache_dir = ProjectSettings.globalize_path("user://avatar_cache")
 
@@ -333,11 +335,12 @@ func _load_glb_scene(res_path: String, item: Dictionary = {}) -> Node3D:
 
 
 func _resolve_glb_bytes(res_path: String, item: Dictionary) -> PackedByteArray:
-	var expected_sha := str(item.get("sha256", ""))
+	var expected_sha := str(item.get("sha256", "")).strip_edges().to_lower()
+	var has_valid_sha := _is_valid_sha256_hex(expected_sha)
 	var rel_asset := str(item.get("assetPath", ""))
 
 	# Layer 3A: Content-addressed SHA-256 disk cache (0-byte re-download across UGC worlds!)
-	if not expected_sha.is_empty() and not _external_cache_dir.is_empty():
+	if has_valid_sha and not _external_cache_dir.is_empty():
 		var cache_file := _external_cache_dir.path_join(expected_sha + ".glb")
 		if FileAccess.file_exists(cache_file):
 			var cached := FileAccess.get_file_as_bytes(cache_file)
@@ -353,24 +356,32 @@ func _resolve_glb_bytes(res_path: String, item: Dictionary) -> PackedByteArray:
 			_local_res_loads += 1
 			return local_bytes
 
-	# Layer 3C: Shared local assets directory (desktop/mobile shared store)
-	if not _external_assets_dir.is_empty() and not rel_asset.is_empty():
-		var sub := rel_asset.trim_prefix("assets/")
-		var shared_file := _external_assets_dir.path_join(sub)
-		if FileAccess.file_exists(shared_file):
-			var shared_bytes := FileAccess.get_file_as_bytes(shared_file)
-			if not shared_bytes.is_empty():
-				_write_glb_cache(expected_sha, shared_bytes)
-				_cache_hits += 1
-				_cached_bytes += shared_bytes.size()
-				return shared_bytes
+	# Layer 3C: Shared local assets directory (debug builds only; fail-closed SHA-256 verification)
+	if OS.is_debug_build() and not _external_assets_dir.is_empty() and not rel_asset.is_empty():
+		if not has_valid_sha:
+			push_error("PlayForgeAvatarRig: missing or invalid expected SHA-256 for shared GLB %s" % rel_asset)
+		else:
+			var sub := rel_asset.trim_prefix("assets/")
+			var shared_file := _external_assets_dir.path_join(sub)
+			if FileAccess.file_exists(shared_file):
+				var shared_bytes := FileAccess.get_file_as_bytes(shared_file)
+				if not shared_bytes.is_empty():
+					if _sha256_hex(shared_bytes) == expected_sha:
+						_write_glb_cache(expected_sha, shared_bytes)
+						_cache_hits += 1
+						_cached_bytes += shared_bytes.size()
+						return shared_bytes
+					push_error("PlayForgeAvatarRig: SHA-256 mismatch for shared GLB %s" % shared_file)
 
-	# Layer 3D: On-demand HTTP streaming from PlayHub (/api/avatar/assets/...) with SHA-256 verification + cache write
+	# Layer 3D: On-demand HTTP streaming from PlayHub (/api/avatar/assets/...) with fail-closed SHA-256 verification + cache write
 	if not OS.has_feature("web") and not _asset_origin.is_empty() and not rel_asset.is_empty():
+		if not has_valid_sha:
+			push_error("PlayForgeAvatarRig: missing or invalid expected SHA-256 for streamed GLB %s" % rel_asset)
+			return PackedByteArray()
 		var url_path := "/api/avatar/assets/" + rel_asset.trim_prefix("assets/")
 		var fetched := _http_get_sync(_asset_origin, url_path)
 		if not fetched.is_empty():
-			if expected_sha.is_empty() or _sha256_hex(fetched) == expected_sha:
+			if _sha256_hex(fetched) == expected_sha:
 				_network_downloads += 1
 				_downloaded_bytes += fetched.size()
 				_write_glb_cache(expected_sha, fetched)
@@ -380,14 +391,29 @@ func _resolve_glb_bytes(res_path: String, item: Dictionary) -> PackedByteArray:
 
 
 func _write_glb_cache(sha_hex: String, bytes: PackedByteArray) -> void:
-	if sha_hex.is_empty() or _external_cache_dir.is_empty() or bytes.is_empty():
+	var normalized_sha := sha_hex.strip_edges().to_lower()
+	if not _is_valid_sha256_hex(normalized_sha) or _external_cache_dir.is_empty() or bytes.is_empty():
+		return
+	if _sha256_hex(bytes) != normalized_sha:
 		return
 	DirAccess.make_dir_recursive_absolute(_external_cache_dir)
-	var dest := _external_cache_dir.path_join(sha_hex + ".glb")
+	var dest := _external_cache_dir.path_join(normalized_sha + ".glb")
 	var f := FileAccess.open(dest, FileAccess.WRITE)
 	if f != null:
 		f.store_buffer(bytes)
 		f.close()
+
+
+static func _is_valid_sha256_hex(value: String) -> bool:
+	if value.length() != 64:
+		return false
+	for i in range(64):
+		var c := value.unicode_at(i)
+		var is_digit := c >= 48 and c <= 57
+		var is_lower_hex := c >= 97 and c <= 102
+		if not is_digit and not is_lower_hex:
+			return false
+	return true
 
 
 static func _sha256_hex(bytes: PackedByteArray) -> String:

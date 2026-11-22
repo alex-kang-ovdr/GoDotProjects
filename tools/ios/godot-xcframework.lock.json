@@ -1,0 +1,23 @@
+{
+    "godotVersion":  "4.7.2-stable",
+    "forkCommit":  "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "artifact":  "libgodot.ios.release.xcframework",
+    "excluded":  [
+                     "libgodot.ios.debug.xcframework",
+                     "MoltenVK.xcframework",
+                     "libgodot_camera.ios.release.xcframework",
+                     "libgodot_camera.ios.debug.xcframework"
+                 ],
+    "slices":  {
+                   "iosArm64":  {
+                                    "path":  "libgodot.ios.release.xcframework/ios-arm64/libgodot.a",
+                                    "bytes":  188887256,
+                                    "sha256":  "2b4c924b7cdaa34f1bad45b29e1c3590a02b3d6c2d8943ecf0cf166c96905128"
+                                },
+                   "iosSimulator":  {
+                                        "path":  "libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator/libgodot.a",
+                                        "bytes":  174700784,
+                                        "sha256":  "70eb90ffd6dc850d3724a81e73368476cdcf5f8a98735f8306f20dbfd0951b5b"
+                                    }
+               }
+}

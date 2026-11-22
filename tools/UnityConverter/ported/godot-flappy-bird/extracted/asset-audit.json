@@ -1,0 +1,262 @@
+{
+  "sample_id": "flappy-bird",
+  "sample_name": "Flappy Bird (2D UV Parallax)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 19,
+    "ported_full": 14,
+    "ported_partial": 5,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 93.42
+  },
+  "by_category": [
+    {
+      "category": "Font",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Material",
+      "total": 2,
+      "full": 2,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Prefab",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 5,
+      "full": 0,
+      "partial": 5,
+      "failed": 0
+    },
+    {
+      "category": "Texture",
+      "total": 9,
+      "full": 9,
+      "partial": 0,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 1,
+      "entities": 7,
+      "logic_graphs": 5,
+      "assets": 19,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Font",
+      "kind": "font",
+      "source_path": "Assets/Fonts/bit5x3.ttf",
+      "bytes": 10880,
+      "sha256": "4f151ec589dd396f",
+      "status": "full",
+      "note": "Direct FontFile import"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Background.mat",
+      "bytes": 2169,
+      "sha256": "b885f9f07bb8aeec",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Ground.mat",
+      "bytes": 2165,
+      "sha256": "4e2500d683e41ce4",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Pipes.prefab",
+      "bytes": 9370,
+      "sha256": "3692fe02e891b517",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Flappy Bird.unity",
+      "bytes": 31919,
+      "sha256": "7bd6d784dea478af",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0006",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "bytes": 1594,
+      "sha256": "1dd55ff59e13d01e",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0007",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Parallax.cs",
+      "bytes": 391,
+      "sha256": "c4e6147fc044326d",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0008",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Pipes.cs",
+      "bytes": 637,
+      "sha256": "a4c85038ff3b6138",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0009",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "bytes": 1829,
+      "sha256": "b14ca8867c13355d",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0010",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Spawner.cs",
+      "bytes": 675,
+      "sha256": "8106ae24aa696547",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0011",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Background.png",
+      "bytes": 4254,
+      "sha256": "4ff6af075816942c",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0012",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_01.png",
+      "bytes": 364,
+      "sha256": "fe2bfd569ab57407",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0013",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_02.png",
+      "bytes": 347,
+      "sha256": "458b384d8d53fe4a",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0014",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_03.png",
+      "bytes": 356,
+      "sha256": "ca484ac22a2d2979",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0015",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/GameOver.png",
+      "bytes": 1743,
+      "sha256": "88948eff0eb2cc41",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0016",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/GetReady.png",
+      "bytes": 723,
+      "sha256": "dca44bc2159bbdbd",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0017",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Ground.png",
+      "bytes": 353,
+      "sha256": "11d7fbfd86717f29",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0018",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Pipe.png",
+      "bytes": 1852,
+      "sha256": "13b2bfed860e57d7",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0019",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/PlayButton.png",
+      "bytes": 352,
+      "sha256": "b60958fed6ad21b9",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    }
+  ]
+}

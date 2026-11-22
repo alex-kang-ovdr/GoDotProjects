@@ -3,7 +3,7 @@ import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createUgcPublish } from './ugc-publish.mjs';
-import { createAvatarService } from './avatar/service.mjs';
+import { createAvatarService, mergeGuestAvatar } from './avatar/service.mjs';
 import { createAdminConsole } from './admin-console.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createL10n } from './l10n.mjs';
@@ -13,12 +13,25 @@ import { openDatabase, transaction } from './db.mjs';
 import { readCatalog, findGame } from './catalog.mjs';
 import { liveMetrics, demoMetrics } from './metrics.mjs';
 import { createGoogle } from './google.mjs';
+import { createSso, providerForUser } from './sso/index.mjs';
 import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { createCdn } from './cdn/routes.mjs';
+import { createBilling } from './billing/routes.mjs';
 import { createVersionCompat } from './version-compat.mjs';
 import { createMobile } from './mobile/routes.mjs';
+import { ensureSsotSchema } from './ssot/schema.mjs';
+import { createSanctions, hasActiveSanction, mergeGuestSanctions } from './ssot/sanctions.mjs';
+import { createLeaderboard, mergeGuestLeaderboard } from './ssot/leaderboard.mjs';
+import { createProgression, mergeGuestProgression } from './ssot/progression.mjs';
+import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
+import { createSocial } from './social/routes.mjs';
+import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
+import { createGamerQaHub } from './gamerqa-hub.mjs';
+import { createAdGame } from './adgame/routes.mjs';
+import { createHubAgent } from './agent/routes.mjs';
+import { createShorts } from './shorts/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -51,11 +64,17 @@ export function createApp(input, dependencies = {}) {
   const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, env);
   const internalForgeSecret = config.forge?.internalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET || '';
   const previousInternalForgeSecret = config.forge?.previousInternalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS || '';
+  const internalDatastoreSecret = config.datastore?.internalSecret || env.PLAYHUB_DATASTORE_INTERNAL_SECRET || '';
+  const previousInternalDatastoreSecret = config.datastore?.previousInternalSecret || env.PLAYHUB_DATASTORE_INTERNAL_SECRET_PREVIOUS || '';
+  const effectiveDatastoreSecret = internalDatastoreSecret || internalForgeSecret;
+  const effectiveDatastorePreviousSecret = internalDatastoreSecret ? previousInternalDatastoreSecret : previousInternalForgeSecret;
   // Opt-in: serve the Forge session verifier on the public listener so a Forge on another host can
   // reach it. Never enabled by default; requires a strong shared secret and is meant to sit behind HTTPS.
   const remoteForgeVerify = config.forge?.remoteVerify === true || env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';
   if (remoteForgeVerify && internalForgeSecret.length < 32) throw new Error('Remote Forge session verification requires PLAYHUB_FORGE_INTERNAL_SECRET of at least 32 characters');
   if (previousInternalForgeSecret && previousInternalForgeSecret.length < 32) throw new Error('PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS must be at least 32 characters when set');
+  if (internalDatastoreSecret && internalDatastoreSecret.length < 32) throw new Error('PLAYHUB_DATASTORE_INTERNAL_SECRET must be at least 32 characters when set');
+  if (previousInternalDatastoreSecret && previousInternalDatastoreSecret.length < 32) throw new Error('PLAYHUB_DATASTORE_INTERNAL_SECRET_PREVIOUS must be at least 32 characters when set');
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -129,23 +148,105 @@ export function createApp(input, dependencies = {}) {
     setCookie(res,PUBLIC_COOKIE,cookies(req)[PUBLIC_COOKIE],config.secureCookies,90*DAY/1000);
     return { ...current, principal_id: userId,expires_at:expires };
   }
+  ensureSsotSchema(db);
+  function assertNotPlatformSanctioned(principalId) {
+    if (principalId && hasActiveSanction(db, principalId, ['all'], now())) {
+      throw new ApiError(403, 'USER_SANCTIONED');
+    }
+  }
+  const requireUnsanctionedSession = (req, kind, adminRequired = false) => {
+    const s = requireSession(req, kind, adminRequired);
+    if (kind === 'public') assertNotPlatformSanctioned(s.principal_id);
+    return s;
+  };
+  const requireUnsanctionedAvatarSession = (req, kind, adminRequired = false) => {
+    const s = requireSession(req, kind, adminRequired);
+    if (kind === 'public' && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+      assertNotPlatformSanctioned(s.principal_id);
+    }
+    return s;
+  };
+  const promoteUnsanctionedAvatar = (s, req, res) => {
+    const principal = promote(s, req, res);
+    assertNotPlatformSanctioned(principal.principal_id);
+    return principal;
+  };
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
+  const sso = createSso({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, rate, rateLimitIp, sessionFor, requireSession, promote, newSession, revokeSession, audit, profile: s => profile(s) });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
   // One gateway for every Hub module that needs Forge (forge-gateway.mjs); supports both local and remote modes.
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
-  const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
+  const forge=createHubForge({config:config.forge,db,requireSession:requireUnsanctionedSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit,forgeGateway});
-  const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null});
+  const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null,env});
+  const catalogOptions = ugcPublish.ugcOrigin ? { ugcOrigin: ugcPublish.ugcOrigin } : {};
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
-  const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession, promote, rate, audit });
+  const avatar = createAvatarService({ config, db, rootDir, platformRoot, now, sessionFor, requireSession: requireUnsanctionedAvatarSession, promote: promoteUnsanctionedAvatar, rate, audit });
+  const sanctions = createSanctions({ db, now, sessionFor, audit });
+  const leaderboard = createLeaderboard({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
+  const progression = createProgression({ db, rootDir, now, sessionFor, requireSession, rate, audit, serverEvent });
+  const datastore = createDataStore({ db, rootDir, now, audit, verifyInternalAccess });
   // PlayHub-CDN (R2 UGC storage). Inert unless config.cdn.enabled === true.
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
+  // Hub-Billing (2-Track PlayCoin +25% & Creator Direct Commerce 0%). Inert unless enabled.
+  const billing = createBilling({ config, db, sessionFor, requireSession, newSession, revokeSession, now, audit, rate, rateLimitIp, env: dependencies.env || process.env, fetchImpl: dependencies.billingFetch || dependencies.fetch || globalThis.fetch });
+  // Hub-Agent (Built-in Gemini Agent + Free Trial / Pro Weekly Quota + PlayCoin Overage Metering).
+  const hubAgent = createHubAgent({
+    config,
+    db,
+    platformRoot,
+    sessionFor,
+    requireSession: requireUnsanctionedSession,
+    verifyInternalAccess,
+    now,
+    audit,
+    rate,
+    env: dependencies.env || process.env,
+    fetchImpl: dependencies.agentFetch || dependencies.fetch || globalThis.fetch,
+    geminiProvider: dependencies.hubAgentProvider || null
+  });
+  // Hub-Shorts (Game Intro Shorts: Google Flow/Veo · PlayForge Motion · PlayCoin Hold/Capture · Feed & My Game Registration)
+  const shorts = createShorts({ config, db, rootDir, platformRoot, catalogOptions, sessionFor, requireSession, promote, assertNotPlatformSanctioned, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.shortsFetch || dependencies.fetch || globalThis.fetch, customRenderers: dependencies.shortsRenderers || null });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
-  const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  const ugcMultiplayer = createUgcMultiplayer({ now, allowedOrigins: config.userOrigins });
+  const mobileAppConfig = Object.defineProperties({ ...config }, {
+    _rootDir: { value: rootDir, enumerable: false },
+    _catalogOptions: { value: catalogOptions, enumerable: false }
+  });
+  const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, sso, fetchImpl: dependencies.fetch || globalThis.fetch, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, verifyMobileNaverToken: dependencies.verifyMobileNaverToken, env: dependencies.env || process.env });
+  const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
+  const adgame = createAdGame({ config, db, rootDir, now, rate, audit, env: dependencies.env || process.env });
+  // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
+  const webSocial = createSocial({
+    config,
+    db,
+    rootDir,
+    catalogOptions,
+    now,
+    rate,
+    audit,
+    prefix: '/api/social',
+    ...(typeof mobile.getCompliance === 'function' ? { ensureCompliance: mobile.getCompliance } : {}),
+    resolveAuth(req, res, required) {
+      if (!required) {
+        const current = sessionFor(req, 'public');
+        if (!current?.principal_id) return null;
+        if (hasActiveSanction(db, current.principal_id, ['all'], now())) return null;
+        const user = db.prepare('SELECT * FROM users WHERE id=?').get(current.principal_id);
+        return user ? { user } : null;
+      }
+      const s = requireUnsanctionedSession(req, 'public');
+      const principal = promote(s, req, res);
+      assertNotPlatformSanctioned(principal.principal_id);
+      const user = db.prepare('SELECT * FROM users WHERE id=?').get(principal.principal_id);
+      if (!user) throw new ApiError(401, 'SESSION_REQUIRED');
+      return { user };
+    }
+  });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -156,9 +257,60 @@ export function createApp(input, dependencies = {}) {
     });
     return { id:m.id,sourceSaveCount:source.length,conflicts };
   }
-  function profile(s) {
+  const adminAllowedEmails = new Set(
+    [
+      ...(Array.isArray(config.admin?.allowedEmails) ? config.admin.allowedEmails : []),
+      ...String(env.PLAYHUB_ADMIN_EMAILS || '').split(','),
+    ].map(x => String(x || '').trim().toLowerCase()).filter(Boolean)
+  );
+  function hasAdminPrivilege(s, req) {
+    if (req && sessionFor(req, 'admin')?.admin_authenticated) return true;
+    if (!s?.principal_id || s.traffic_type === 'qa' || !adminAllowedEmails.size) return false;
+    const user = db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id);
+    if (user?.kind !== 'registered') return false;
+    const rows = db.prepare('SELECT subject FROM identities WHERE user_id=?').all(s.principal_id);
+    return rows.some(r => adminAllowedEmails.has(String(r.subject || '').trim().toLowerCase()));
+  }
+  function resolveAdminLinkUrl() {
+    const explicit = String(config.admin?.publicUrl || env.PLAYHUB_ADMIN_URL || '').trim();
+    if (explicit) return explicit;
+    if (!config.adminBaseUrl) return null;
+    try {
+      const adminU = new URL(config.adminBaseUrl);
+      const userU = new URL(config.userBaseUrl);
+      const isLoopback = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(adminU.hostname);
+      const userLoopback = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(userU.hostname);
+      if (isLoopback && !userLoopback) return null;
+      return config.adminBaseUrl;
+    } catch {
+      return null;
+    }
+  }
+  function profile(s, req = null) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
-    return { kind:user?.kind || 'anonymous',csrfToken:s.csrf,displayName:user?.display_name || null,googleEnabled:google.enabled && s.traffic_type!=='qa',pendingMerge:pendingMerge(s.principal_id),trafficType:s.traffic_type,qaRunId:s.qa_run_id || null };
+    const kind = user?.kind || 'anonymous';
+    const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : (kind === 'guest' ? 'guest' : null);
+    const isAdmin = hasAdminPrivilege(s, req);
+    const adminUrl = isAdmin ? resolveAdminLinkUrl() : null;
+    const googleEnabled = google.enabled && s.traffic_type !== 'qa';
+    const naverEnabled = sso.naver.enabled && s.traffic_type !== 'qa';
+    const emailEnabled = sso.email.enabled && s.traffic_type !== 'qa';
+    const guestEnabled = s.traffic_type !== 'qa';
+    return {
+      kind,
+      csrfToken:s.csrf,
+      displayName:user?.display_name || null,
+      authProvider,
+      isAdmin,
+      adminUrl,
+      googleEnabled,
+      naverEnabled,
+      emailEnabled,
+      authProviders: { email: emailEnabled, google: googleEnabled, naver: naverEnabled, guest: guestEnabled },
+      pendingMerge:pendingMerge(s.principal_id),
+      trafficType:s.traffic_type,
+      qaRunId:s.qa_run_id || null
+    };
   }
   const supportedLocales = new Set(['ko','en','ja','zh-CN','fr','es','pt-BR','hi']);
   function wishlist(s) {
@@ -258,7 +410,11 @@ export function createApp(input, dependencies = {}) {
   async function publicRoute(req,res,url) {
     if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
+    if (await billing.publicRoute(req,res,url)) return;
+    if (await hubAgent.publicRoute(req,res,url)) return;
+    if (await shorts.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
+    if (ugcMultiplayer.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     if (await avatar.publicRoute(req,res,url)) return;
@@ -267,21 +423,26 @@ export function createApp(input, dependencies = {}) {
     if (path === '/api/session' && req.method === 'GET') {
       let s = renewGuestSession(req,res,sessionFor(req,'public'));
       if (!s) { rate(`session:${rateLimitIp(req)}`,120,60000); s = newSession(res,'public'); }
-      json(res,200,profile(s)); return;
+      json(res,200,profile(s, req)); return;
     }
     if (path === '/api/wishlist' && req.method === 'GET') { json(res,200,wishlist(sessionFor(req,'public'))); return; }
     if (path === '/api/preferences' && req.method === 'GET') {
       const current=sessionFor(req,'public'); const row=current?.principal_id && db.prepare('SELECT locale FROM user_preferences WHERE principal_id=?').get(current.principal_id);
       json(res,200,{locale:row?.locale || null}); return;
     }
-    if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db).filter(g => g.enabled) }); return; }
+    if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db,catalogOptions).filter(g => g.enabled).map(g => ({ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) })) }); return; }
     const gamePath = path.match(/^\/api\/games\/([a-zA-Z0-9_-]+)$/);
-    if (gamePath && req.method === 'GET') { json(res,200,findGame(rootDir,db,gamePath[1])); return; }
+    if (gamePath && req.method === 'GET') { const g = findGame(rootDir,db,gamePath[1],true,catalogOptions); json(res,200,{ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) }); return; }
     if (path === '/api/auth/google/start' && req.method === 'GET') {
       const s = sessionFor(req,'public') || newSession(res,'public');if(s.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.start(req,res,s,url); return;
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
+    if (await sso.publicRoute(req,res,url)) return;
     if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
+    if (path === '/api/me/sanctions' && await sanctions.publicRoute(req,res,url)) return;
+    if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
+    if ((path.endsWith('/progression') || path.endsWith('/stats') || path.includes('/achievements/')) && await progression.publicRoute(req,res,url)) return;
+    if (path.startsWith('/api/social/') && await webSocial.route(req,res,url)) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -320,11 +481,14 @@ export function createApp(input, dependencies = {}) {
       json(res,201,profile(next));return;
     }
     if (path === '/api/play-sessions' && req.method === 'POST') {
+      assertNotPlatformSanctioned(s.principal_id);
       rate(`play:${s.id_hash}`,60,60000);
-      const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId)), principal = promote(s,req,res), id = uid();
+      const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId),true,catalogOptions), principal = promote(s,req,res), id = uid();
+      assertNotPlatformSanctioned(principal.principal_id);
       db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,principal.id_hash,principal.principal_id,principal.analytics_subject,game.id,game.buildId,now(),now()+2*3600000,principal.traffic_type,principal.qa_run_id);
       serverEvent('play_session_created',principal,game.id,id);
-      json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
+      const mp = ugcMultiplayer.descriptorForGame(game);
+      json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,deployMode:game.deployMode || 'singleplay',multiplayer:mp,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
     }
     const slotsPath=path.match(/^\/api\/saves\/([a-zA-Z0-9_-]+)\/slots$/);
     if(slotsPath && req.method==='GET'){
@@ -338,6 +502,7 @@ export function createApp(input, dependencies = {}) {
     if(restorePath && req.method==='POST'){
       const game=findGame(rootDir,db,restorePath[1],false);
       if(!s.principal_id)throw new ApiError(401,'PLAY_FIRST');
+      assertNotPlatformSanctioned(s.principal_id);
       rate(`restore:${s.principal_id}`,20,60000);
       const body=await readJson(req,8192),requestKey=req.headers['idempotency-key'];
       if(Object.keys(body).some(key=>!['sourceSlot','backupId','expectedSourceRevision','expectedMainRevision'].includes(key)) || !Number.isSafeInteger(body.expectedMainRevision) || body.expectedMainRevision<0)throw new ApiError(422,'RESTORE_INPUT_INVALID');
@@ -347,6 +512,7 @@ export function createApp(input, dependencies = {}) {
       if(typeof requestKey!=='string' || !/^[A-Za-z0-9:_-]{8,128}$/.test(requestKey))throw new ApiError(400,'IDEMPOTENCY_KEY_REQUIRED');
       const hash=digest(JSON.stringify({sourceSlot:body.sourceSlot || null,backupId:body.backupId || null,expectedSourceRevision:body.expectedSourceRevision || null,expectedMainRevision:body.expectedMainRevision}));
       const value=transaction(db,()=>{
+        assertNotPlatformSanctioned(s.principal_id);
         const previous=db.prepare('SELECT * FROM save_idempotency WHERE principal_id=? AND game_id=? AND slot=? AND request_key=?').get(s.principal_id,game.id,'@restore',requestKey);
         if(previous){if(previous.request_hash!==hash)throw new ApiError(409,'IDEMPOTENCY_CONFLICT');return JSON.parse(previous.response_json);}
         const current=getSave(s,game.id,'main');
@@ -376,6 +542,7 @@ export function createApp(input, dependencies = {}) {
         if (!existing) throw new ApiError(404,'SAVE_NOT_FOUND');
         res.setHeader('ETag',`"r${existing.revision}"`); json(res,200,saveJson(existing)); return;
       }
+      assertNotPlatformSanctioned(s.principal_id);
       if(req.method==='DELETE'){
         if(slot==='main')throw new ApiError(403,'MAIN_SLOT_DELETE_FORBIDDEN');
         rate(`restore:${s.principal_id}`,20,60000);
@@ -383,6 +550,7 @@ export function createApp(input, dependencies = {}) {
         if(!match)throw new ApiError(428,'SAVE_PRECONDITION_REQUIRED');
         if(req.headers['if-none-match'] || !/^"r\d+"$/.test(match))throw new ApiError(400,'SAVE_PRECONDITION_INVALID');
         const result=transaction(db,()=>{
+          assertNotPlatformSanctioned(s.principal_id);
           const current=getSave(s,game.id,slot);
           if(!current || match!==`"r${current.revision}"`)throw new ApiError(412,'SAVE_REVISION_CONFLICT');
           const backupId=uid();
@@ -408,6 +576,7 @@ export function createApp(input, dependencies = {}) {
       if (requestKey && !/^[A-Za-z0-9:_-]{8,128}$/.test(requestKey)) throw new ApiError(400,'IDEMPOTENCY_KEY_INVALID');
       const hash = digest(JSON.stringify({payload,match,none,schema:game.saveSchemaVersion}));
       const result = transaction(db,() => {
+        assertNotPlatformSanctioned(s.principal_id);
         if (requestKey) {
           const old = db.prepare('SELECT * FROM save_idempotency WHERE principal_id=? AND game_id=? AND slot=? AND request_key=?').get(s.principal_id,game.id,slot,requestKey);
           if (old) { if (old.request_hash !== hash) throw new ApiError(409,'IDEMPOTENCY_CONFLICT'); return JSON.parse(old.response_json); }
@@ -467,6 +636,11 @@ export function createApp(input, dependencies = {}) {
         }
         db.prepare('INSERT OR IGNORE INTO wishlist_items(principal_id,game_id,added_at) SELECT ?,game_id,added_at FROM wishlist_items WHERE principal_id=?').run(s.principal_id,m.source_user);
         mergeGuestCommunity(db,m.source_user,s.principal_id);
+        mergeGuestLeaderboard(db,m.source_user,s.principal_id,now());
+        mergeGuestSanctions(db,m.source_user,s.principal_id);
+        mergeGuestProgression(db,m.source_user,s.principal_id,now());
+        mergeGuestDataStore(db,m.source_user,s.principal_id);
+        mergeGuestAvatar(db,m.source_user,s.principal_id,now());
         const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
         if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
@@ -522,11 +696,19 @@ export function createApp(input, dependencies = {}) {
     const s = requireSession(req,'admin',true);
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
+    if (await billing.adminRoute(req,res,url,s)) return;
+    if (await hubAgent.adminRoute(req,res,url,s)) return;
+    if (await shorts.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
+    if (await gamerQaHub.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
+    if ((path === '/api/admin/sanctions' || path.startsWith('/api/admin/sanctions/')) && await sanctions.adminRoute(req,res,url,s)) return;
+    if (path.includes('/leaderboards') && await leaderboard.adminRoute(req,res,url,s)) return;
+    if ((path.includes('/stats/') || path.includes('/achievements/')) && await progression.adminRoute(req,res,url,s)) return;
+    if (path.includes('/datastore/') && await datastore.adminRoute(req,res,url,s)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
     if (path === '/api/admin/metrics' && req.method === 'GET') {
       const filters=metricsOptions(url),games=readCatalog(rootDir,db);
@@ -554,6 +736,24 @@ export function createApp(input, dependencies = {}) {
     const currentMatch = equal(provided, internalForgeSecret);
     const previousMatch = Boolean(previousInternalForgeSecret) && equal(provided, previousInternalForgeSecret);
     return currentMatch || previousMatch;
+  }
+  function matchesDatastoreSecret(provided) {
+    if (!effectiveDatastoreSecret) return false;
+    const currentMatch = equal(provided, effectiveDatastoreSecret);
+    const previousMatch = Boolean(effectiveDatastorePreviousSecret) && equal(provided, effectiveDatastorePreviousSecret);
+    return currentMatch || previousMatch;
+  }
+  function verifyInternalAccess(req, res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    const remote = req.socket?.remoteAddress || '';
+    if (!remoteForgeVerify && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) throw new ApiError(403, 'LOOPBACK_REQUIRED');
+    if (req.headers.origin !== undefined) throw new ApiError(403, 'ORIGIN_NOT_ALLOWED');
+    if (!effectiveDatastoreSecret) throw new ApiError(503, 'INTERNAL_SECRET_NOT_CONFIGURED');
+    if (!matchesDatastoreSecret(req.headers['x-playhub-internal-secret'])) {
+      if (remoteForgeVerify) rate(`internal-denied:${remote}`, 60, 60000);
+      throw new ApiError(403, 'INTERNAL_SECRET_INVALID');
+    }
   }
   async function verifyInternalSession(req, res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -583,6 +783,10 @@ export function createApp(input, dependencies = {}) {
     let identity;
     try { identity = googleIdentityForSession(db, s); }
     catch { json(res, 401, { authenticated: false, error: 'GOOGLE_LOGIN_REQUIRED' }); return; }
+    if (hasActiveSanction(db, s.principal_id, ['all'], now())) {
+      json(res, 403, { authenticated: false, error: 'USER_SANCTIONED' });
+      return;
+    }
     const method = typeof body.method === 'string' ? body.method.toUpperCase() : 'GET';
     const requireCsrf = typeof body.requireCsrf === 'boolean'
       ? body.requireCsrf
@@ -602,24 +806,55 @@ export function createApp(input, dependencies = {}) {
   function handler(kind) {
     return async (req,res) => {
       const requestId = uid(); res.setHeader('X-Request-Id',requestId);
+      let isUgcAsset = false;
       try {
         const url = new URL(req.url,'http://internal.invalid');
         if ((kind === 'admin' || remoteForgeVerify) && url.pathname === '/internal/session/verify') {
           await verifyInternalSession(req, res);
           return;
         }
+        if (kind === 'public' && (url.pathname === '/play-ugc' || url.pathname.startsWith('/play-ugc/'))) {
+          isUgcAsset = true;
+          ugcPublish.serveUgcAsset(req, res, url.pathname);
+          return;
+        }
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname.startsWith('/internal/v1/datastore/')) {
+          if (await datastore.internalRoute(req, res, url)) return;
+          throw new ApiError(404, 'NOT_FOUND');
+        }
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname.startsWith('/internal/v1/hub-agent/')) {
+          if (await hubAgent.internalRoute(req, res, url)) return;
+          throw new ApiError(404, 'NOT_FOUND');
+        }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
         }
-        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check');
+        if (kind === 'public' && (url.pathname.startsWith('/api/adgame/') || url.pathname.startsWith('/ad/') || url.pathname === '/.well-known/assetlinks.json')) {
+          const reqOrigin = req.headers.origin;
+          if (reqOrigin) {
+            res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+            res.setHeader('Vary', 'Origin');
+            if (config.userOrigins.includes(reqOrigin)) res.setHeader('Access-Control-Allow-Credentials', 'true');
+          }
+          res.setHeader('X-Content-Type-Options', 'nosniff');
+          res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+          if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.statusCode = 204; res.end(); return;
+          }
+          if (await adgame.publicRoute(req, res, url, { getSession: sessionFor, rateLimitIp })) return;
+        }
+        const isBillingS2S = kind === 'public' && billing.enabled && (url.pathname.startsWith('/api/billing/webhooks/') || url.pathname === '/api/billing/usage' || url.pathname.startsWith('/api/billing/usage/holds'));
+        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isBillingS2S;
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
         if (url.pathname === '/api/version' && req.method === 'GET') { versionCompat.handleVersion(res); return; }
         await (kind === 'public' ? publicRoute : adminRoute)(req,res,url);
       } catch(error) {
         const known = error instanceof ApiError;
-        if (!known) { try { const context=sessionFor(req,kind);db.prepare('INSERT INTO errors(id,code,message,game_id,created_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?)').run(uid(),'SERVER_ERROR','서버 요청 처리에 실패했습니다.',null,now(),context?.traffic_type || 'live',context?.qa_run_id || null); } catch {} }
+        if (!known) { try { const context=isUgcAsset?null:sessionFor(req,kind);db.prepare('INSERT INTO errors(id,code,message,game_id,created_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?)').run(uid(),'SERVER_ERROR','서버 요청 처리에 실패했습니다.',null,now(),context?.traffic_type || 'live',context?.qa_run_id || null); } catch {} }
         if (!res.headersSent) json(res,known ? error.status : 500,{error:{code:known ? error.code : 'SERVER_ERROR',message:known ? error.message : '요청 처리에 실패했습니다.',...(known && error.extra ? error.extra : {})},requestId});
         else res.end();
       }
@@ -627,9 +862,35 @@ export function createApp(input, dependencies = {}) {
   }
   const publicHandler = handler('public'), adminHandler = handler('admin');
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
+  publicServer.on('upgrade', (req, socket, head) => {
+    if (!ugcMultiplayer.handleUpgrade(req, socket, head)) socket.destroy();
+  });
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,ugcPublish,avatar,publicHandler,adminHandler,publicServer,adminServer,
+  function resolveStoreIdentity(req) {
+    if (closed) return null;
+    try {
+      const s = sessionFor(req, 'public');
+      if (!s || !s.principal_id || s.expires_at <= now()) return null;
+      if (hasActiveSanction(db, s.principal_id, ['all'], now())) return null;
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(s.principal_id);
+      if (!user) return null;
+      const fallbackLabel = `${user.kind === 'registered' ? 'hub' : 'guest'}-${String(user.id).slice(0, 8)}@playhub.local`;
+      const rawLabel = String(user.display_name || '')
+        .replace(/[^a-zA-Z0-9._@+\-\s]/g, '')
+        .trim()
+        .slice(0, 120);
+      return {
+        userId: user.id,
+        kind: user.kind,
+        accountKey: digest(`playhub-store-sso:${user.id}`),
+        accountLabel: rawLabel || fallbackLabel
+      };
+    } catch {
+      return null;
+    }
+  }
+  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
@@ -641,6 +902,9 @@ export function createApp(input, dependencies = {}) {
     async close() {
       if (closed) return; closed=true;
       localAdminLogin?.clear();
+      shorts.close();
+      ugcMultiplayer.close();
+      hubAgent.close();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close(); forgeGateway.close();
       await cdn.close();

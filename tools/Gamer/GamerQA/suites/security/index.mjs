@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { parseHtmlDocument } from '../../core/fs-utils.mjs';
+import { parseHtmlDocument, sha256File } from '../../core/fs-utils.mjs';
 
 const BENIGN_XML_OR_DOC_URLS = new Set([
   'http://www.w3.org/2000/svg',
@@ -63,13 +63,147 @@ function isExternalHttpOrWs(value) {
   return false;
 }
 
-function isGodotEmscriptenGlue(relPosix, code, webDir, manifest) {
+const REGEX_PRECURSOR_CHARS = new Set([
+  '', '(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '<', '>', '~', '^',
+]);
+const REGEX_PRECURSOR_KEYWORDS = new Set([
+  'return', 'case', 'throw', 'in', 'of', 'typeof', 'void', 'delete', 'new', 'else', 'do', 'yield', 'await', 'instanceof',
+]);
+
+function blankPreservingNewlines(text) {
+  return text.replace(/[^\n]/g, ' ');
+}
+
+/**
+ * Replace JS comments (and optionally string/template literal interiors) with spaces
+ * while preserving exact character offsets and newlines.
+ * Used only for identification/span matching (fail-safe): a mis-tokenized file can at worst
+ * lose its Godot-glue status, which makes eval() checks stricter, never looser.
+ */
+export function stripJsComments(code, { maskStrings = false } = {}) {
+  let out = '';
+  let i = 0;
+  const n = code.length;
+  let lastToken = '';
+  while (i < n) {
+    const ch = code[i];
+    const next = code[i + 1];
+    if (ch === '/' && next === '/') {
+      let end = i + 2;
+      while (end < n && code[end] !== '\n') end++;
+      out += ' '.repeat(end - i);
+      i = end;
+      continue;
+    }
+    if (ch === '/' && next === '*') {
+      const close = code.indexOf('*/', i + 2);
+      const end = close === -1 ? n : close + 2;
+      out += blankPreservingNewlines(code.slice(i, end));
+      i = end;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === '`') {
+      let j = i + 1;
+      while (j < n && code[j] !== ch) {
+        if (code[j] === '\\') {
+          j += 2;
+          continue;
+        }
+        if (ch !== '`' && code[j] === '\n') break;
+        j++;
+      }
+      const end = j < n && code[j] === ch ? j + 1 : Math.min(n, j);
+      const slice = code.slice(i, end);
+      if (maskStrings && slice.length >= 2 && slice[slice.length - 1] === ch) {
+        out += ch + blankPreservingNewlines(slice.slice(1, -1)) + ch;
+      } else if (maskStrings) {
+        out += ch + blankPreservingNewlines(slice.slice(1));
+      } else {
+        out += slice;
+      }
+      i = end;
+      lastToken = ch;
+      continue;
+    }
+    if (ch === '/' && (REGEX_PRECURSOR_CHARS.has(lastToken) || REGEX_PRECURSOR_KEYWORDS.has(lastToken))) {
+      let j = i + 1;
+      let inClass = false;
+      while (j < n && code[j] !== '\n') {
+        if (code[j] === '\\') {
+          j += 2;
+          continue;
+        }
+        if (code[j] === '[') inClass = true;
+        else if (code[j] === ']') inClass = false;
+        else if (code[j] === '/' && !inClass) break;
+        j++;
+      }
+      const end = j < n && code[j] === '/' ? j + 1 : Math.min(n, j);
+      const slice = code.slice(i, end);
+      out += maskStrings && slice.length >= 2 && slice[slice.length - 1] === '/'
+        ? '/' + blankPreservingNewlines(slice.slice(1, -1)) + '/'
+        : slice;
+      i = end;
+      lastToken = '/';
+      continue;
+    }
+    if (/[A-Za-z_$]/.test(ch)) {
+      let j = i + 1;
+      while (j < n && /[A-Za-z0-9_$]/.test(code[j])) j++;
+      const ident = code.slice(i, j);
+      out += ident;
+      lastToken = REGEX_PRECURSOR_KEYWORDS.has(ident) ? ident : 'id';
+      i = j;
+      continue;
+    }
+    out += ch;
+    if (!/\s/.test(ch)) lastToken = /[0-9)\]]/.test(ch) ? 'id' : ch;
+    i++;
+  }
+  return out;
+}
+
+// Exact body of Godot's Emscripten `_godot_js_eval` (platform/web/js/libs/library_godot_javascript_singleton.js),
+// whitespace/semicolon tolerant so that both minified release and debug exports match.
+const GODOT_JS_EVAL_BODY_RE = new RegExp(
+  [
+    String.raw`function\s+_godot_js_eval\s*\(\s*(?!eval\b)[A-Za-z_$][A-Za-z0-9_$]*(?:\s*,\s*(?!eval\b)[A-Za-z_$][A-Za-z0-9_$]*)*\s*\)\s*\{\s*`,
+    String.raw`const\s+js_code\s*=\s*GodotRuntime\.parseString\(\s*p_js\s*\)\s*;?\s*`,
+    String.raw`let\s+eval_ret\s*=\s*null\s*;?\s*`,
+    String.raw`try\s*\{\s*if\s*\(\s*p_use_global_ctx\s*\)\s*\{\s*`,
+    String.raw`const\s+global_eval\s*=\s*eval\s*;?\s*`,
+    String.raw`eval_ret\s*=\s*global_eval\(\s*js_code\s*\)\s*;?\s*\}\s*`,
+    String.raw`else\s*\{\s*eval_ret\s*=\s*eval\(\s*js_code\s*\)\s*;?\s*\}\s*\}`,
+  ].join(''),
+  'g'
+);
+
+export function findGodotJsEvalSpans(code) {
+  const codeOnly = stripJsComments(code, { maskStrings: true });
+  const spans = [];
+  GODOT_JS_EVAL_BODY_RE.lastIndex = 0;
+  let m;
+  while ((m = GODOT_JS_EVAL_BODY_RE.exec(codeOnly)) !== null) {
+    spans.push({ start: m.index, end: m.index + m[0].length });
+  }
+  return spans;
+}
+
+export function isGodotEmscriptenGlue(relPosix, code, webDir, manifest, glueHashAllowlist = [], fileSha256 = null) {
   if (manifest?.capabilities?.wasm !== true) return false;
   const base = path.posix.basename(relPosix);
   if (base !== 'index.js' && !base.endsWith('.engine.js')) return false;
-  const hasLicense = fs.existsSync(path.join(webDir, 'GODOT_LICENSE.txt'));
-  const hasWasm = fs.readdirSync(webDir).some((n) => n.endsWith('.wasm'));
-  return (hasLicense || hasWasm) && /GodotRuntime/.test(code) && /_godot_js_eval/.test(code);
+  // Optional strict mode: when the policy pins official glue hashes, only those files qualify.
+  if (Array.isArray(glueHashAllowlist) && glueHashAllowlist.length) {
+    return Boolean(fileSha256) && glueHashAllowlist.map((h) => String(h).toLowerCase()).includes(String(fileSha256).toLowerCase());
+  }
+  const hasLicense = Boolean(webDir) && fs.existsSync(path.join(webDir, 'GODOT_LICENSE.txt'));
+  const hasWasm = Boolean(webDir) && fs.existsSync(webDir) && fs.readdirSync(webDir).some((n) => n.endsWith('.wasm'));
+  if (!hasLicense && !hasWasm) return false;
+  // Identification runs on comment/string-stripped code so comments or string literals cannot fake glue status.
+  const codeOnly = stripJsComments(code, { maskStrings: true });
+  if (!/\bGodotRuntime\s*=/.test(codeOnly) && !/\bGodotRuntime\s*\.\s*\w+\s*\(/.test(codeOnly)) return false;
+  return findGodotJsEvalSpans(code).length === 1;
 }
 
 function scanScriptForActiveNetwork(code, label, allowlist) {
@@ -117,16 +251,18 @@ function scanScriptForDangerousApis(code, label, { isGodotGlue = false } = {}) {
     warns.push(`${label}: document.cookie access detected`);
   }
 
-  // eval() handling: detect direct & indirect eval, isolating Godot Emscripten _godot_js_eval
+  // eval() handling: detect direct & indirect eval, isolating ONLY exact Godot Emscripten _godot_js_eval spans
   const evalMatches = [...code.matchAll(/\beval\s*\(|(?:=|return|,|\(|\[|\?|:)\s*eval\b/g)];
   if (evalMatches.length > 0) {
     if (isGodotGlue) {
+      const godotSpans = findGodotJsEvalSpans(code);
       const nonGodotEvals = evalMatches.filter((m) => {
-        const snippet = code.slice(Math.max(0, m.index - 80), m.index + 80);
-        return !/global_eval|js_code|_godot_js_eval/.test(snippet);
+        const start = m.index;
+        const end = m.index + m[0].length;
+        return !godotSpans.some((span) => start >= span.start && end <= span.end);
       });
-      if (nonGodotEvals.length) {
-        blocks.push(`${label}: unexpected eval() outside _godot_js_eval (${nonGodotEvals.length} occurrence(s))`);
+      if (!godotSpans.length || nonGodotEvals.length) {
+        blocks.push(`${label}: unexpected eval() outside _godot_js_eval (${nonGodotEvals.length || evalMatches.length} occurrence(s))`);
       } else {
         warns.push(`${label}: Godot Emscripten runtime contains _godot_js_eval (requires 'unsafe-eval'/'wasm-unsafe-eval' CSP)`);
       }
@@ -141,17 +277,35 @@ function scanScriptForDangerousApis(code, label, { isGodotGlue = false } = {}) {
 export async function runSecuritySuite({ gameId, policy, staticContext }) {
   const checks = [];
   const limits = policy?.limits || {};
-  const webDir = staticContext.webDir;
-  const manifest = staticContext.manifest;
-  const files = staticContext.files || [];
+  const maxHtmlBytes = limits.maxHtmlBytes ?? 4 * 1024 * 1024;
+  const maxScriptBytes = limits.maxScriptBytes ?? 8 * 1024 * 1024;
+  const glueHashAllowlist = Array.isArray(policy?.godotGlueSha256Allowlist) ? policy.godotGlueSha256Allowlist : [];
+  const webDir = staticContext?.webDir;
+  const manifest = staticContext?.manifest || null;
+  const files = Array.isArray(staticContext?.files) ? staticContext.files : [];
+  const walkIssues = Array.isArray(staticContext?.walkIssues) ? staticContext.walkIssues : [];
   const allowlist = Array.isArray(manifest?.capabilities?.externalNetwork) ? manifest.capabilities.externalNetwork : [];
 
-  let parsedHtmlFiles = staticContext.parsedHtmlFiles || [];
-  if (!parsedHtmlFiles.length && fs.existsSync(webDir)) {
-    for (const fileInfo of files.filter((f) => f.ext === '.html' || f.ext === '.htm')) {
-      const html = fs.readFileSync(fileInfo.fullPath, 'utf8').replace(/^\uFEFF/, '');
-      parsedHtmlFiles.push({ ...fileInfo, html, parsed: parseHtmlDocument(html) });
-    }
+  if (!webDir || !fs.existsSync(webDir) || files.length === 0) {
+    const reason = !webDir || !fs.existsSync(webDir)
+      ? 'Missing Web/ directory; security suite cannot inspect game bundle'
+      : 'No Web/ files available in staticContext.files; security suite refuses to pass an empty inspection context';
+    return {
+      suite: 'security',
+      tier: 0,
+      checks: [
+        makeCheck(policy, 'SEC-EXTERNAL-URL-ACTIVE', 'error', 'Unallowlisted active external network references', reason),
+        makeCheck(policy, 'SEC-EXTERNAL-URL-PASSIVE', 'error', 'Passive external URLs in metadata/links', reason, [], null, 'info'),
+        makeCheck(policy, 'SEC-DANGEROUS-API', 'error', 'Dangerous dynamic code & injection APIs', reason),
+        makeCheck(policy, 'SEC-CAPABILITY-CONSISTENCY', 'error', 'Manifest capability consistency', reason, [], null, 'major'),
+      ],
+      context: {
+        gameId,
+        allowlist,
+        passiveUrlCount: 0,
+        emptyContext: true,
+      },
+    };
   }
 
   const activeExternalIssues = [];
@@ -160,6 +314,31 @@ export async function runSecuritySuite({ gameId, policy, staticContext }) {
   const dangerousBlocks = [];
   const dangerousWarns = [];
   const capabilityFindings = [];
+  const oversizedScripts = [];
+
+  for (const issue of walkIssues) {
+    if (/File tree entry count exceeds|Total Web bundle size exceeds|Directory depth exceeds|Symlink forbidden/i.test(issue)) {
+      const msg = `Incomplete Web/ tree security scan: ${issue}`;
+      activeExternalIssues.push(msg);
+      dangerousBlocks.push(msg);
+    }
+  }
+
+  let parsedHtmlFiles = Array.isArray(staticContext?.parsedHtmlFiles) ? [...staticContext.parsedHtmlFiles] : [];
+  const parsedHtmlRelSet = new Set(parsedHtmlFiles.map((f) => f.relPosix));
+  for (const fileInfo of files.filter((f) => f.ext === '.html' || f.ext === '.htm')) {
+    if (fileInfo.size > maxHtmlBytes) {
+      const msg = `Web/${fileInfo.relPosix}: HTML exceeds maxHtmlBytes (${fileInfo.size} > ${maxHtmlBytes} bytes); blocked because security scan cannot verify oversized HTML`;
+      activeExternalIssues.push(msg);
+      dangerousBlocks.push(msg);
+      continue;
+    }
+    if (!parsedHtmlRelSet.has(fileInfo.relPosix)) {
+      const html = fs.readFileSync(fileInfo.fullPath, 'utf8').replace(/^\uFEFF/, '');
+      parsedHtmlFiles.push({ ...fileInfo, html, parsed: parseHtmlDocument(html) });
+      parsedHtmlRelSet.add(fileInfo.relPosix);
+    }
+  }
 
   // Inspect HTML tags, inline styles, and inline scripts
   for (const htmlFile of parsedHtmlFiles) {
@@ -249,13 +428,20 @@ export async function runSecuritySuite({ gameId, policy, staticContext }) {
       continue;
     }
 
-    if (fileInfo.ext !== '.js' && fileInfo.ext !== '.mjs') continue;
-    if (fileInfo.size > (limits.maxScriptBytes ?? 8 * 1024 * 1024)) continue;
+    if (fileInfo.ext !== '.js' && fileInfo.ext !== '.mjs' && fileInfo.ext !== '.cjs') continue;
+    if (fileInfo.size > maxScriptBytes) {
+      const msg = `Web/${fileInfo.relPosix}: script exceeds maxScriptBytes (${fileInfo.size} > ${maxScriptBytes} bytes); blocked because security scan cannot verify oversized script`;
+      oversizedScripts.push({ path: `Web/${fileInfo.relPosix}`, bytes: fileInfo.size, limit: maxScriptBytes });
+      activeExternalIssues.push(msg);
+      dangerousBlocks.push(msg);
+      continue;
+    }
     // Skip vendor localization dictionary data from passive URL noise
     const isVendorDict = fileInfo.relPosix === 'vendor/playhub-dictionary.js';
     const js = fs.readFileSync(fileInfo.fullPath, 'utf8');
     const label = `Web/${fileInfo.relPosix}`;
-    const isGodotGlue = isGodotEmscriptenGlue(fileInfo.relPosix, js, webDir, manifest);
+    const fileSha256 = glueHashAllowlist.length ? sha256File(fileInfo.fullPath) : null;
+    const isGodotGlue = isGodotEmscriptenGlue(fileInfo.relPosix, js, webDir, manifest, glueHashAllowlist, fileSha256);
 
     activeExternalIssues.push(...scanScriptForActiveNetwork(js, label, allowlist));
     const d = scanScriptForDangerousApis(js, label, { isGodotGlue });
@@ -336,7 +522,7 @@ export async function runSecuritySuite({ gameId, policy, staticContext }) {
         ? dangerousWarns[0]
         : 'No dangerous dynamic execution or script injection APIs detected',
     [...dangerousBlocks, ...dangerousWarns],
-    null,
+    oversizedScripts.length ? { oversizedScripts } : null,
     dangerSeverity
   );
   dangerCheck.severity = dangerSeverity;

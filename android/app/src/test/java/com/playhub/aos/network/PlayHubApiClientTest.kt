@@ -82,4 +82,71 @@ class PlayHubApiClientTest {
             worker.join(1000)
         }
     }
+
+    @Test
+    fun parsesSocialFriendsPartyMessagesAndLeaderboardOverHttp() {
+        val server = ServerSocket(0, 16, InetAddress.getByName("127.0.0.1"))
+        val worker = thread(isDaemon = true) {
+            while (!server.isClosed) {
+                val sock = runCatching { server.accept() }.getOrNull() ?: break
+                sock.use { s ->
+                    val reader = BufferedReader(InputStreamReader(s.getInputStream(), Charsets.UTF_8))
+                    val reqLine = reader.readLine() ?: return@use
+                    val path = reqLine.split(" ").getOrNull(1).orEmpty()
+                    var contentLength = 0
+                    while (true) {
+                        val line = reader.readLine() ?: break
+                        if (line.isEmpty()) break
+                        if (line.lowercase().startsWith("content-length:")) {
+                            contentLength = line.substringAfter(":").trim().toIntOrNull() ?: 0
+                        }
+                    }
+                    if (contentLength > 0) {
+                        val buf = CharArray(contentLength)
+                        reader.read(buf, 0, contentLength)
+                    }
+                    val body = when {
+                        path.startsWith("/api/mobile/social/friends") ->
+                            """{"friends":[{"principalId":"u-2","displayName":"민준","handle":"minjun#1024","avatarColor":"#2563EB","presence":{"status":"in_game","online":true,"gameId":"survivor-arena-g2","gameTitle":"Survivor Arena G2","roomCode":"PLAY99","joinable":true},"lastMessage":"같이 가자!","lastMessageAt":"2026-11-21T06:00:00Z","lastMessageFromMe":false}],"incomingRequests":[{"principalId":"u-3","displayName":"서연","handle":"seoyeon#2048","avatarColor":"#7C3AED"}],"outgoingRequests":[]}"""
+                        path.startsWith("/api/mobile/social/parties") ->
+                            """{"party":{"id":"p-1","leaderId":"u-1","title":"주말 파티","targetGameId":"survivor-arena-g2","roomCode":"ABCD23","maxMembers":8,"inviteUrl":"https://dev.playhub.example.com/join/survivor-arena-g2?room=ABCD23","deepLinkUrl":"playhub://join/survivor-arena-g2?room=ABCD23","members":[{"principalId":"u-1","displayName":"민지","handle":"minji#1001","avatarColor":"#00B06F","role":"leader","ready":true,"presence":{"status":"online","online":true,"joinable":true}}]}}"""
+                        path.startsWith("/api/mobile/social/messages") ->
+                            """{"messages":[{"id":"m-1","senderId":"u-2","senderName":"민준","senderHandle":"minjun#1024","senderMe":false,"body":"안녕!","isQuickMessage":true,"createdAt":"2026-11-21T06:00:00Z"}]}"""
+                        path.startsWith("/api/mobile/social/leaderboards/") ->
+                            """{"entries":[{"rank":1,"principalId":"u-2","displayName":"민준","handle":"minjun#1024","avatarColor":"#2563EB","score":2850,"isMe":false}]}"""
+                        else -> """{"ok":true}"""
+                    }
+                    val bytes = body.toByteArray(Charsets.UTF_8)
+                    val header = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n"
+                    s.getOutputStream().write(header.toByteArray(Charsets.UTF_8))
+                    s.getOutputStream().write(bytes)
+                    s.getOutputStream().flush()
+                }
+            }
+        }
+        try {
+            val client = PlayHubApiClient("http://127.0.0.1:${server.localPort}")
+            val social = client.fetchSocialFriends("tok-1")
+            assertEquals(1, social.friends.size)
+            assertEquals("minjun#1024", social.friends[0].handle)
+            assertEquals("PLAY99", social.friends[0].presence.roomCode)
+            assertEquals(1, social.incomingRequests.size)
+
+            val party = client.createParty("tok-1", "주말 파티", "survivor-arena-g2")
+            assertEquals("ABCD23", party.roomCode)
+            assertEquals(1, party.members.size)
+            assertTrue(party.members[0].ready)
+
+            val msgs = client.fetchSocialMessages("tok-1", "dm", "u-2")
+            assertEquals(1, msgs.size)
+            assertTrue(msgs[0].isQuickMessage)
+
+            val lb = client.fetchLeaderboard("tok-1", "survivor-arena-g2", "high_score", "global")
+            assertEquals(1, lb.size)
+            assertEquals(2850L, lb[0].score)
+        } finally {
+            server.close()
+            worker.join(1000)
+        }
+    }
 }

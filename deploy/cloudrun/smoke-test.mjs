@@ -68,6 +68,9 @@ child.stdout.on('data', async d => {
     const adm = await fetch(`${base}/api/admin/health`);
     const admPolicy = await fetch(`${base}/api/admin/release-policy`);
     const intl = await fetch(`${base}/internal/session/verify`);
+    const storePage = await fetch(`${base}/store/`);
+    const storeCat = await fetch(`${base}/api/store/catalog?limit=2`).then(r => r.json());
+    const forgeRedir = await fetch(`${base}/PlayForge/`, { redirect: 'manual' });
     const res = {
       hz,
       indexStatus: idx.status,
@@ -82,6 +85,10 @@ child.stdout.on('data', async d => {
       adminBlocked: adm.status,
       adminPolicyBlocked: admPolicy.status,
       internalBlocked: intl.status,
+      storePageStatus: storePage.status,
+      storeCatalogTotal: storeCat.total ?? storeCat.items?.length ?? 0,
+      playForgeRedirectStatus: forgeRedir.status,
+      playForgeRedirectLocation: forgeRedir.headers.get('location'),
     };
     console.log('SMOKE_OK', JSON.stringify(res));
     if (
@@ -97,7 +104,11 @@ child.stdout.on('data', async d => {
       compatBlockBody.decision !== 'COMPAT_BLOCK_FORCE_UPDATE' ||
       adm.status !== 404 ||
       admPolicy.status !== 404 ||
-      intl.status !== 404
+      intl.status !== 404 ||
+      storePage.status !== 200 ||
+      res.storeCatalogTotal < 1 ||
+      forgeRedir.status !== 302 ||
+      res.playForgeRedirectLocation !== '/forge/OfficialGodot/'
     ) {
       throw new Error('Unexpected smoke check result: ' + JSON.stringify(res));
     }

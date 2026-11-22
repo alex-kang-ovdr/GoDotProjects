@@ -482,6 +482,30 @@ test('4-Layer Modular Packaging: Layer 2 core.pck has 0 GLBs (<256KB) and Layer 
   assert.ok(thin.ugc.bytes < 32 * 1024, `Thin ugc.pck must stay tiny (<32KB), got ${thin.ugc.bytes}`);
   assert.equal(thin.manifest.packaging, 'modular-thin-ugc');
   assert.equal(thin.manifest.sharedLayers.corePackSha256, core.sha256);
+
+  // Regression: bypass PoC paths (res://, .., repeated ./, backslashes) must be stripped in buildThinUgcPack
+  const pocPack = buildThinUgcPack([
+    ['project.godot', '[application]\nconfig/name="PoC"\n'],
+    ['res://addons/playforge_avatar/avatar_rig.gd', '# POC_RES_BYPASS'],
+    ['RES:///./addons/playforge_avatar/plugin.gd', '# POC_UPPER_RES_BYPASS'],
+    ['foo/../addons/playforge_avatar/avatar_controller.gd', '# POC_DOTDOT_BYPASS'],
+    ['../addons/playforge_avatar/catalog.json', '# POC_ESCAPE_BYPASS'],
+    ['Addons\\PlayForge_Avatar\\avatar_bridge.gd', '# POC_BSLASH_BYPASS'],
+  ]);
+  assert.equal(pocPack.strippedCount, 5, 'All 5 sealed/traversal bypass variants must be stripped');
+  assert.equal(pocPack.buffer.includes(Buffer.from('POC_RES_BYPASS', 'utf8')), false);
+  assert.equal(pocPack.buffer.includes(Buffer.from('POC_DOTDOT_BYPASS', 'utf8')), false);
+  assert.equal(pocPack.buffer.includes(Buffer.from('addons/playforge_avatar', 'utf8')), false);
+
+  // Regression: writeGodotPck rejects traversal unconditionally and rejects sealed avatar paths when rejectSealedAvatar=true
+  assert.throws(
+    () => writeGodotPck([['../evil.gd', '# escape']]),
+    /traversal/i
+  );
+  assert.throws(
+    () => writeGodotPck([['res://addons/playforge_avatar/avatar_rig.gd', '# hacked']], { rejectSealedAvatar: true }),
+    /Sealed avatar path/i
+  );
 });
 
 test(

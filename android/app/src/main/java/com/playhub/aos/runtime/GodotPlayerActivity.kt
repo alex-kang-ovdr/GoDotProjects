@@ -39,6 +39,8 @@ class GodotPlayerActivity : GodotActivity() {
         const val EXTRA_IS_GUEST = "playhub.is_guest"
         const val EXTRA_AGE_TIER = "playhub.age_tier"
         const val EXTRA_ROOM_CODE = "playhub.room_code"
+        const val EXTRA_MATCH_ROOM_ID = "playhub.match_room_id"
+        const val EXTRA_WS_URL = "playhub.ws_url"
 
         fun createIntent(
             context: Context,
@@ -51,7 +53,9 @@ class GodotPlayerActivity : GodotActivity() {
             isGuest: Boolean,
             ageTier: String,
             renderDriver: String = "opengl3",
-            roomCode: String? = null
+            roomCode: String? = null,
+            matchRoomId: String? = null,
+            wsUrl: String? = null
         ): Intent = Intent(context, GodotPlayerActivity::class.java).apply {
             putExtra(EXTRA_GAME_ID, gameId)
             putExtra(EXTRA_GAME_TITLE, gameTitle)
@@ -63,6 +67,8 @@ class GodotPlayerActivity : GodotActivity() {
             putExtra(EXTRA_AGE_TIER, ageTier)
             putExtra(EXTRA_RENDER_DRIVER, renderDriver)
             if (!roomCode.isNullOrBlank()) putExtra(EXTRA_ROOM_CODE, roomCode)
+            if (!matchRoomId.isNullOrBlank()) putExtra(EXTRA_MATCH_ROOM_ID, matchRoomId)
+            if (!wsUrl.isNullOrBlank()) putExtra(EXTRA_WS_URL, wsUrl)
         }
     }
 
@@ -75,6 +81,9 @@ class GodotPlayerActivity : GodotActivity() {
     private var launchHandle: String = "@guest"
     private var launchIsGuest: Boolean = true
     private var launchAgeTier: String = "UNKNOWN"
+    private var launchRoomCode: String = ""
+    private var launchMatchRoomId: String = ""
+    private var launchWsUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Capture all extras BEFORE super.onCreate(), because GodotActivity.sanitizeLaunchIntent() clears intent extras!
@@ -86,8 +95,28 @@ class GodotPlayerActivity : GodotActivity() {
         launchHandle = intent.getStringExtra(EXTRA_HANDLE) ?: "@guest"
         launchIsGuest = intent.getBooleanExtra(EXTRA_IS_GUEST, true)
         launchAgeTier = intent.getStringExtra(EXTRA_AGE_TIER) ?: "UNKNOWN"
-        // Persist launch pack path to app filesDir (user://) for deterministic bootstrap handoff
-        runCatching { File(filesDir, "playhub_launch.txt").writeText(launchPckPath) }
+        launchRoomCode = intent.getStringExtra(EXTRA_ROOM_CODE).orEmpty()
+        launchMatchRoomId = intent.getStringExtra(EXTRA_MATCH_ROOM_ID).orEmpty()
+        launchWsUrl = intent.getStringExtra(EXTRA_WS_URL).orEmpty()
+        // Persist launch mode, pack path & multiplayer config to app filesDir (user://) for deterministic bootstrap handoff
+        runCatching {
+            File(filesDir, "playhub_launch_mode.txt").writeText("game")
+            File(filesDir, "playhub_launch.txt").writeText(launchPckPath)
+        }
+        runCatching {
+            val mpFile = File(filesDir, "playhub_mp.json")
+            val mpJson = PlayHubGodotPlugin.buildMultiplayerConfigJson(
+                wsUrl = launchWsUrl,
+                gameId = gameId,
+                roomCode = launchRoomCode,
+                displayName = launchDisplayName
+            )
+            if (mpJson.isNotBlank()) {
+                mpFile.writeText(mpJson)
+            } else if (mpFile.exists()) {
+                mpFile.delete()
+            }
+        }
         super.onCreate(savedInstanceState)
         attachUniversalOverlayButton()
     }
@@ -112,6 +141,9 @@ class GodotPlayerActivity : GodotActivity() {
             isGuest = launchIsGuest,
             ageTier = launchAgeTier,
             locale = Locale.getDefault().language,
+            roomCode = launchRoomCode,
+            matchRoomId = launchMatchRoomId,
+            wsUrl = launchWsUrl,
             onOpenOverlay = { tab -> showUniversalInGameMenu(tab) }
         )
         bridgePlugin = plugin
@@ -122,15 +154,15 @@ class GodotPlayerActivity : GodotActivity() {
         val root = findViewById<ViewGroup>(android.R.id.content) ?: return
         val dp = resources.displayMetrics.density
         val button = TextView(this).apply {
-            text = "▶ Hub"
-            textSize = 12f
+            text = if (launchRoomCode.isNotBlank()) "▶ PLAYHUB · $launchRoomCode" else "▶ PLAYHUB"
+            textSize = 11.5f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             setPadding((12 * dp).toInt(), (7 * dp).toInt(), (12 * dp).toInt(), (7 * dp).toInt())
             background = GradientDrawable().apply {
-                setColor(Color.argb(190, 17, 24, 39))
+                setColor(Color.argb(215, 25, 27, 29))
                 cornerRadius = 18 * dp
-                setStroke((1 * dp).toInt(), Color.argb(160, 34, 197, 94))
+                setStroke((1 * dp).toInt(), Color.parseColor("#00B06F"))
             }
             setOnClickListener { showUniversalInGameMenu("people") }
         }

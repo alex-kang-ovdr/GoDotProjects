@@ -433,7 +433,7 @@ function createInternalApi(options = {}) {
   }
 
   function resolveTemplateBuild(template, projectId, buildId, accountKey = null) {
-    if (!['brawllabs', 'fortress-war', 'tappy-chicken-mmo'].includes(template)) return null;
+    if (!['brawllabs', 'fortress-war', 'tappy-chicken-mmo', 'captain-forever-mmo'].includes(template)) return null;
     if (!PROJECT_ID_RE.test(projectId) || !BUILD_ID_RE.test(buildId)) return null;
     if (typeof options.validateTemplateBuild === 'function') {
       const checked = options.validateTemplateBuild(template)(buildId, projectId, accountKey);

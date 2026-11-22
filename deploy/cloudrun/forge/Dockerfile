@@ -5,6 +5,7 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=8080 \
     PLAYFORGE_BASE_PATH=/forge \
+    PLAYFORGE_WEB_EDITOR_WASM_PROFILE=release \
     PLAYHUB_FORGE_AUTH_MODE=hub
 
 WORKDIR /app/forge
@@ -23,6 +24,8 @@ COPY forge/Tools ./Tools
 COPY forge/assets ./assets
 COPY forge/Projects ./Projects
 COPY tools/build-version /app/tools/build-version
+COPY tools/engine /app/tools/engine
+COPY tools/ugc-shared /app/tools/ugc-shared
 
 ARG PLAYFORGE_CHANNEL=dev
 ARG PLAYFORGE_BUILD_NUM=0

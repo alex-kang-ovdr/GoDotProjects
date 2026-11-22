@@ -320,6 +320,12 @@ export async function runStaticSuite({ projectRoot, gameId, policy, catalog: pro
 
   // 4. STATIC-BUDGET
   const budgetIssues = walk.issues.filter((i) => !/symlink|collision|escape/i.test(i));
+  const maxScriptBytes = limits.maxScriptBytes ?? 8 * 1024 * 1024;
+  for (const fileInfo of walk.files) {
+    if ((fileInfo.ext === '.js' || fileInfo.ext === '.mjs' || fileInfo.ext === '.cjs') && fileInfo.size > maxScriptBytes) {
+      budgetIssues.push(`Script file exceeds maxScriptBytes (${maxScriptBytes} bytes): ${fileInfo.relPosix} (${fileInfo.size} bytes)`);
+    }
+  }
   checks.push(
     makeCheck(
       policy,
@@ -330,7 +336,7 @@ export async function runStaticSuite({ projectRoot, gameId, policy, catalog: pro
         ? budgetIssues[0]
         : `${walk.files.length} files, ${(walk.totalBytes / (1024 * 1024)).toFixed(2)} MiB total`,
       budgetIssues,
-      { fileCount: walk.files.length, totalBytes: walk.totalBytes }
+      { fileCount: walk.files.length, totalBytes: walk.totalBytes, maxScriptBytes }
     )
   );
 
@@ -501,6 +507,7 @@ export async function runStaticSuite({ projectRoot, gameId, policy, catalog: pro
       catalogEntry,
       files: walk.files,
       totalBytes: walk.totalBytes,
+      walkIssues: walk.issues,
       parsedHtmlFiles,
       resolvedAssets: [...resolvedAssetSet].sort(),
     },

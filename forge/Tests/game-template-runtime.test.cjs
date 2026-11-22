@@ -10,7 +10,7 @@ const { createServer } = require('../server.cjs');
 const root = path.resolve(__dirname, '..');
 const evidenceDirectory = path.join(root, 'Saved', 'Tests', 'game-templates');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const availableTemplates = ['tappy-chicken', 'tappy-chicken-mmo', 'survivor-io', 'iron-wood', 'voxel-frontier', 'brawllabs', 'fortress-war'];
+const availableTemplates = ['tappy-chicken', 'tappy-chicken-mmo', 'captain-forever', 'captain-forever-mmo', 'survivor-io', 'iron-wood', 'voxel-frontier', 'brawllabs', 'fortress-war'];
 const runtimeTemplates = process.env.PLAYFORGE_RUNTIME_TEMPLATE ? [process.env.PLAYFORGE_RUNTIME_TEMPLATE] : availableTemplates;
 assert.ok(runtimeTemplates.every(id => availableTemplates.includes(id)), 'Unknown runtime template');
 

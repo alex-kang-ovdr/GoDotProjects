@@ -1,0 +1,26 @@
+{
+  "id": "captain-forever",
+  "name": "Captain Forever",
+  "description": "2D modular spaceship salvage & tactical combat showcase with procedural sci-fi ship art, magnetic tractor beam, overdrive boost, tactical radar minimap, diverse raider classes, and 3-boss sector campaign.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "assets/effects/thruster_flame.svg",
+    "assets/effects/thruster_smoke.svg",
+    "assets/fonts/captain-ui.txt",
+    "data/part_tuning_runtime.txt",
+    "shaders/part_masked_material.gdshader"
+  ],
+  "guideOrder": [
+    "data/part_tuning_runtime.txt",
+    "scripts/balance.gd",
+    "scripts/visual_tuning.gd",
+    "scripts/ship_model.gd",
+    "scripts/ship_body.gd",
+    "scripts/enemy_ship.gd",
+    "scripts/hud_overlay.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ]
+}

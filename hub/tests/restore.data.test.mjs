@@ -10,6 +10,8 @@ import {createHash,randomUUID} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {openDatabase} from '../server/db.mjs';
 import {createApp} from '../server/app.mjs';
+import {ensureAppleIapWalletSchema} from '../server/iap/apple.mjs';
+import {ensureBillingSchema} from '../server/billing/schema.mjs';
 import {createBackup,hashFile} from '../tools/backup.mjs';
 import {restoreData} from '../tools/restore-data.mjs';
 
@@ -169,4 +171,43 @@ test('linked or reclassified guest principal in the backup cannot inherit a gues
 test('symlink backup paths are rejected', {skip:process.platform==='win32'?'Windows symlink creation requires additional privileges':false},async t=>{
   const f=await fixture(t);await f.backup();const linked=path.join(f.root,'linked.sqlite');fs.symlinkSync(f.backupPath,linked);fs.symlinkSync(f.backupPath+'.json',linked+'.json');
   assert.equal((await restoreData({configPath:f.configPath,from:linked})).ok,false);
+});
+
+test('Apple IAP + shared wallet 7 tables and billing_direct_orders payment_intent_id/charge_id restore cleanly',async t=>{
+  const f=await fixture(t),now=Date.now();
+  const db=new DatabaseSync(f.database);
+  try{
+    ensureAppleIapWalletSchema(db);
+    ensureBillingSchema(db);
+    db.prepare("INSERT INTO iap_products(sku,platform,store_product_id,kind,game_id,coin_amount,entitlement_key,active) VALUES('coin_100','apple','com.playhub.coin100','consumable',NULL,100,NULL,1)").run();
+    db.prepare("INSERT INTO iap_transactions(id,principal_id,platform,environment,sku,store_tx_id,original_tx_id,state,raw_receipt_hash,created_at,updated_at) VALUES('tx_1','member-existing','apple','Production','coin_100','stx_1','stx_1','GRANTED','hash_1',?,?)").run(now,now);
+    db.prepare("INSERT INTO iap_webhook_events(id,platform,event_uuid,event_type,payload_hash,processed_at) VALUES('wh_1','apple','uuid_1','DID_RENEW','ph_1',?)").run(now);
+    db.prepare("INSERT INTO player_wallet_accounts(principal_id,balance,clawback_deficit,updated_at) VALUES('member-existing',100,0,?)").run(now);
+    db.prepare("INSERT INTO player_wallet_buckets(id,principal_id,source_platform,currency_kind,wallet_scope,source_tx_id,granted_amount,remaining_amount,created_at) VALUES('bkt_1','member-existing','apple','paid','shared','tx_1',100,100,?)").run(now);
+    db.prepare("INSERT INTO player_wallet_ledger(id,principal_id,bucket_id,delta,balance_after,reason,ref_id,idempotency_key,created_at) VALUES('ldg_1','member-existing','bkt_1',100,100,'apple_iap_purchase','tx_1','idem_1',?)").run(now);
+    db.prepare("INSERT INTO player_entitlements(id,principal_id,game_id,item_id,source_tx_id,expires_at,revoked_at,created_at) VALUES('ent_1','member-existing','test-puzzle','vip','tx_1',NULL,NULL,?)").run(now);
+    db.prepare("INSERT INTO billing_creator_products(id,creator_id,game_id,product_key,kind,title,currency,amount_minor,status,created_at,updated_at) VALUES('cp_1','member-existing','test-puzzle','vip','pass','VIP','KRW',5000,'ACTIVE',?,?)").run(now,now);
+    db.prepare("INSERT INTO billing_direct_orders(id,buyer_id,creator_id,product_id,game_id,platform,provider,connected_account_id,provider_charge_id,payment_intent_id,charge_id,currency,amount_minor,platform_fee_minor,state,idempotency_key,created_at,updated_at) VALUES('do_1','member-existing','member-existing','cp_1','test-puzzle','web','stripe_connect','acct_1','ch_1','pi_1','ch_1','KRW',5000,0,'PAID','do_ik_1',?,?)").run(now,now);
+  }finally{db.close();}
+  await f.backup();
+  const report=await restoreData({configPath:f.configPath,from:f.backupPath,apply:true});
+  assert.equal(report.ok,true,JSON.stringify(report));
+  const restored=new DatabaseSync(f.database,{readOnly:true});
+  try{
+    assert.equal(restored.prepare("SELECT balance FROM player_wallet_accounts WHERE principal_id='member-existing'").get().balance,100);
+    assert.equal(restored.prepare("SELECT payment_intent_id FROM billing_direct_orders WHERE id='do_1'").get().payment_intent_id,'pi_1');
+    assert.equal(restored.prepare("SELECT charge_id FROM billing_direct_orders WHERE id='do_1'").get().charge_id,'ch_1');
+  }finally{restored.close();}
+});
+
+test('billing_direct_orders missing payment_intent_id or charge_id is rejected by restore schema check',async t=>{
+  const f=await fixture(t);
+  const db=new DatabaseSync(f.database);
+  try{
+    db.exec('CREATE TABLE billing_direct_orders(id TEXT PRIMARY KEY,buyer_id TEXT,creator_id TEXT,product_id TEXT,game_id TEXT,platform TEXT,provider TEXT,connected_account_id TEXT,provider_charge_id TEXT,currency TEXT,amount_minor INTEGER,platform_fee_minor INTEGER,state TEXT,idempotency_key TEXT,paid_at INTEGER,created_at INTEGER,updated_at INTEGER)');
+  }finally{db.close();}
+  await f.backup();
+  const report=await restoreData({configPath:f.configPath,from:f.backupPath});
+  assert.equal(report.ok,false);
+  assert.ok(report.checks.some(c=>c.id==='RESTORE-SCHEMA-COLUMNS'&&c.status==='fail'),JSON.stringify(report.checks));
 });

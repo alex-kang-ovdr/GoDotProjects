@@ -9,23 +9,40 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PLAY HUB — 브라우저 게임 라이브러리</title>
   <meta name="description" content="전략, 시뮬레이션, 액션부터 가벼운 퍼즐까지. 설치 없이 브라우저에서 게임을 즐기세요.">
-  <meta name="theme-color" content="#142c25">
+  <meta name="theme-color" content="#FAF8FF">
   <link rel="stylesheet" href="/user.css">
   <link rel="stylesheet" href="/avatar.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23142c25'/%3E%3Cpath d='m25 17 24 15-24 15z' fill='%23deeca6'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/billing.css">
+  <link rel="stylesheet" href="/sso.css">
+  <link rel="stylesheet" href="/adgame-handoff.css">
+  <link rel="stylesheet" href="/agent.css">
+  <link rel="stylesheet" href="/shorts.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23004AC6'/%3E%3Cpath d='m25 18 24 14-24 14z' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <script src="/config.js" defer></script>
+  <!-- playhub-dev-demo:start -->
+  <script src="/dev-demo-ui.js" defer></script>
+  <!-- playhub-dev-demo:end -->
   <script src="/contracts.js" defer></script>
   <script src="/community.js" defer></script>
+  <script src="/social.js" defer></script>
   <script src="/creator.js" defer></script>
   <script src="/avatar-glb-viewer.js" defer></script>
   <script src="/avatar.js" defer></script>
+  <script src="/billing.js" defer></script>
+  <script src="/sso.js" defer></script>
+  <script src="/adgame-handoff.js" defer></script>
+  <script src="/agent.js" defer></script>
+  <script src="/shorts.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#app" data-l10n="portal.common.skip_main" data-l10n-ctx="ui.nav">본문으로 이동</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/" aria-label="PLAY HUB 홈"><span class="brand-symbol" aria-hidden="true"></span>PLAY HUB</a>
+      <div class="brand-switcher" role="navigation" aria-label="플랫폼 전환">
+        <a class="brand is-active" href="/" aria-label="PLAY HUB 홈" aria-current="page"><span class="brand-symbol" aria-hidden="true"></span><span>PLAY HUB</span></a>
+        <a class="brand-sibling brand-forge" href="/forge/OfficialGodot/" aria-label="FORGE로 이동" data-testid="brand-switch-forge"><span class="brand-symbol brand-symbol-forge" aria-hidden="true">◆</span><span>FORGE</span></a>
+      </div>
       <form class="header-search" id="search-form" role="search">
         <span class="search-icon" aria-hidden="true"></span>
         <input id="search" name="q" type="search" maxlength="100" placeholder="게임 이름이나 장르 검색" aria-label="게임 검색" data-l10n-placeholder="portal.search.placeholder" data-l10n-aria-label="portal.search.aria">
@@ -34,9 +51,16 @@
       <nav class="site-nav" aria-label="주 메뉴">
         <a class="nav-home" href="/" data-home data-nav-view="home" data-l10n="portal.nav.home" data-l10n-ctx="ui.nav">홈</a>
         <a href="/?view=browse" data-route data-nav-view="library" data-l10n="portal.nav.browse" data-l10n-ctx="ui.nav">게임 찾기</a>
+        <a class="nav-shorts" href="/?view=shorts" data-route data-nav-view="shorts" data-testid="nav-shorts">쇼츠</a>
         <a class="wishlist-link" id="wishlist-link" href="/?view=wishlist" data-route data-nav-view="wishlist">내 게임<span id="wishlist-count" class="wishlist-count" hidden>0</span></a>
         <a href="/?view=avatar" data-route data-nav-view="avatar">아바타</a>
+        <a class="wishlist-link" id="social-link" href="/?view=social" data-route data-nav-view="social" data-testid="nav-social">소셜<span id="social-badge" class="wishlist-count" hidden>0</span></a>
         <a class="nav-create" href="/?view=create" data-route data-nav-view="create" data-l10n="portal.nav.create" data-l10n-ctx="ui.nav">만들기</a>
+        <a class="nav-agent" href="/?view=agent" data-route data-nav-view="agent" data-testid="nav-agent">AI 에이전트</a>
+        <a class="nav-store" href="/store/" data-nav-view="store" data-testid="nav-store">에셋 스토어</a>
+        <a class="nav-billing" href="/?view=billing" data-route data-nav-view="billing">PlayCoin</a>
+        <a id="billing-balance-pill" class="nav-billing-pill" href="/?view=wallet" data-route data-nav-view="wallet" hidden><span aria-hidden="true">🪙</span><span id="billing-balance-value">0</span></a>
+        <a id="nav-admin-link" class="nav-admin" href="#" target="_blank" rel="noopener" data-testid="nav-admin" hidden>관리자</a>
         <a href="/?view=account" data-route data-nav-view="account" data-l10n="portal.nav.account" data-l10n-ctx="ui.nav">계정</a>
       </nav>
     </div>
@@ -48,13 +72,78 @@
     <h1 data-l10n="portal.account.title" data-l10n-ctx="ui.nav">내 계정</h1>
     <section class="surface" aria-labelledby="identity-heading">
       <h2 id="identity-heading" data-l10n="portal.account.identity_heading">계정과 저장 기록</h2>
-      <p id="identity">로그인 없이 플레이</p>
+      <p><span id="identity">로그인 없이 플레이</span><span id="identity-provider-badge" class="sso-provider-badge" hidden></span></p>
       <p id="account-help" class="muted"></p>
       <div class="save-actions">
-        <button id="google-login" class="button primary" type="button" hidden disabled data-l10n="portal.account.google_login" data-l10n-ctx="ui.button">Google로 로그인</button>
         <button id="logout" class="button secondary" type="button" hidden data-l10n="portal.account.logout" data-l10n-ctx="ui.button">로그아웃</button>
         <button id="merge-open" class="button secondary" type="button" hidden data-l10n="portal.account.merge_open" data-l10n-ctx="ui.button">게스트 기록 연결</button>
       </div>
+      <div id="sso-auth-selector" class="sso-selector" hidden>
+        <div class="sso-provider-grid" role="group" aria-label="로그인 방식 선택">
+          <button id="google-login" class="button google-login-btn" type="button" disabled data-l10n="portal.account.google_login" data-l10n-ctx="ui.button"><span class="google-g-mark" aria-hidden="true">G</span><span>Google로 로그인</span><span id="google-login-status" class="sso-btn-status" hidden></span></button>
+          <button id="naver-login" class="button naver-login-btn" type="button" disabled><span class="naver-n-mark" aria-hidden="true">N</span><span>네이버로 로그인</span><span id="naver-login-status" class="sso-btn-status" hidden></span></button>
+          <button id="guest-login" class="button guest-login-btn" type="button"><span class="guest-mark" aria-hidden="true">👤</span><span id="guest-login-label">게스트로 계속하기</span><span id="guest-login-status" class="sso-btn-status" hidden></span></button>
+        </div>
+        <div class="sso-divider"><span>또는 이메일로 로그인 · 회원가입</span><span id="email-login-status" class="sso-btn-status" hidden></span></div>
+        <div id="email-auth-section" class="sso-email-box" hidden>
+        <div class="sso-tabs" role="tablist" aria-label="이메일 인증 방식">
+          <button id="sso-tab-login" class="sso-tab" type="button" role="tab" aria-selected="true" aria-controls="email-login-form">이메일 로그인</button>
+          <button id="sso-tab-register" class="sso-tab" type="button" role="tab" aria-selected="false" aria-controls="email-register-form">이메일 회원가입</button>
+        </div>
+        <div id="email-auth-error" class="inline-error" role="alert" hidden></div>
+        <form id="email-login-form" class="sso-form" novalidate>
+          <div class="sso-field">
+            <label for="email-login-input">이메일</label>
+            <input id="email-login-input" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-login-password">비밀번호</label>
+            <input id="email-login-password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+          </div>
+          <div><button class="button primary" type="submit">이메일로 로그인</button></div>
+        </form>
+        <form id="email-register-form" class="sso-form" hidden novalidate>
+          <div class="sso-field">
+            <label for="email-register-input">이메일</label>
+            <input id="email-register-input" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-register-name">닉네임 (선택)</label>
+            <input id="email-register-name" name="displayName" type="text" autocomplete="nickname" maxlength="100" placeholder="표시할 이름">
+          </div>
+          <div class="sso-field">
+            <label for="email-register-password">비밀번호</label>
+            <input id="email-register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <p class="sso-hint">8자 이상, 영문과 숫자를 모두 포함해 주세요.</p>
+          </div>
+          <div class="sso-field">
+            <label for="email-register-password-confirm">비밀번호 확인</label>
+            <input id="email-register-password-confirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+          </div>
+          <div><button class="button primary" type="submit">이메일로 가입하기</button></div>
+        </form>
+      </div>
+      </div>
+      <details id="email-password-section" class="sso-password-details" hidden>
+        <summary>비밀번호 변경</summary>
+        <div id="email-password-error" class="inline-error" role="alert" hidden></div>
+        <form id="email-password-form" class="sso-form" novalidate>
+          <div class="sso-field">
+            <label for="email-current-password">현재 비밀번호</label>
+            <input id="email-current-password" type="password" autocomplete="current-password" maxlength="128" required>
+          </div>
+          <div class="sso-field">
+            <label for="email-new-password">새 비밀번호</label>
+            <input id="email-new-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <p class="sso-hint">8자 이상, 영문과 숫자를 모두 포함해 주세요.</p>
+          </div>
+          <div class="sso-field">
+            <label for="email-new-password-confirm">새 비밀번호 확인</label>
+            <input id="email-new-password-confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+          </div>
+          <div><button class="button secondary" type="submit">비밀번호 변경</button></div>
+        </form>
+      </details>
     </section>
     <section class="surface" aria-labelledby="preference-heading">
       <h2 id="preference-heading" data-l10n="portal.account.preference_heading">언어와 기록 안내</h2>
@@ -86,6 +175,18 @@
     </div>
   </footer>
   <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="fatal-error-dialog" class="fatal-error-dialog" aria-labelledby="fatal-error-title">
+    <div class="dialog-heading">
+      <h2 id="fatal-error-title">복구할 수 없는 오류가 발생했습니다</h2>
+      <button class="icon-button" data-close="fatal-error-dialog" aria-label="닫기" type="button">×</button>
+    </div>
+    <p id="fatal-error-message"></p>
+    <p id="fatal-error-code" class="muted mono" hidden></p>
+    <div class="dialog-actions">
+      <a class="button secondary" href="/" id="fatal-error-home">홈으로 이동</a>
+      <button class="button primary" type="button" id="fatal-error-reload">페이지 새로고침</button>
+    </div>
+  </dialog>
   <dialog id="login-progress-dialog" aria-labelledby="login-progress-title">
     <div class="dialog-heading"><h2 id="login-progress-title">로그인 전 임시 진행 확인</h2><button class="icon-button" data-close="login-progress-dialog" aria-label="닫기" type="button">×</button></div>
     <p>이 탭에만 저장된 진행이 있습니다. 계정 변경 전에 파일로 보관할 수 있습니다.</p>

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "comment": "PlayForge 커스텀 Godot 엔진 단일 정본(SSOT) 매니페스트. 모든 6대 타깃의 포크 커밋·프로파일·락파일·릴리스 정책을 한곳에서 관리한다.",
+  "forkRepo": "alex-kang-ovdr/godot-engine",
+  "forkUrlPattern": "^(?:git@github\\.com:|https://github\\.com/)alex-kang-ovdr/godot-engine(?:\\.git)?$",
+  "submodulePath": "godot-engine",
+  "upstreamBaseVersion": "4.7.2-stable",
+  "upstreamBaseCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+  "pinnedForkCommit": "ed003ce541967cbf80fa43503d77ccaa2f59625b",
+  "releaseTag": "playforge-4.7.2-ed003ce5",
+  "requiredForkSymbols": [
+    "PlayForgePlatform",
+    "playforge-core-pack"
+  ],
+  "globalProfileInvariants": {
+    "mustEnable": [
+      "module_playforge_core_enabled"
+    ],
+    "mustDisable": [
+      "openxr",
+      "module_openxr_enabled",
+      "module_webxr_enabled",
+      "module_mobile_vr_enabled",
+      "module_camera_enabled"
+    ]
+  },
+  "targets": {
+    "web-editor": {
+      "status": "migrated",
+      "description": "PlayForge 웹 에디터 슬림 릴리즈 WASM (커스텀 playforge_core 포함, -62% br)",
+      "profilePath": "tools/forge/web_editor_release_slim.py",
+      "buildScript": "tools/forge/build-web-editor-release.ps1",
+      "localOutputDir": "forge/OfficialGodot/vendor-release",
+      "expectedForkCommit": "fe0b4fe19e39a270229eef9b85af1d8722af7188",
+      "notes": "ae7c5e7b에서 커스텀 포크 슬림 릴리즈 WASM 전환 완료. 구 vendor/ fallback(install-web-editor.ps1, upstream.json)은 릴리스 아티팩트 배포 후 제거 예정."
+    },
+    "desktop-windows": {
+      "status": "pending_fork_rebuild",
+      "description": "Windows 데스크톱 PlayForge 에디터 및 PlayHub 플레이어 템플릿",
+      "profilePath": "tools/desktop/custom.py",
+      "buildScript": "tools/desktop/prepare-player.ps1",
+      "expectedForkCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+      "notes": "custom.py 프로파일은 준비됨. 포크 태그 릴리스 Windows 에디터/템플릿 아티팩트 배포 후 prepare-player.ps1·package-windows-server.ps1 전환 필요."
+    },
+    "web-template": {
+      "status": "pending_fork_rebuild",
+      "description": "배포 웹 게임 18종(games/forge-*/Web/index.wasm) 웹 익스포트 템플릿",
+      "profilePath": "tools/forge/web_editor_release_slim.py",
+      "expectedForkCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+      "notes": "현재 games/forge-*/Web/index.wasm은 순정 4.7.2-stable 익스포트 템플릿. 포크 web template_release 빌드 후 18종 재익스포트 필요."
+    },
+    "cloudrun-worker": {
+      "status": "pending_fork_rebuild",
+      "description": "Cloud Run Jobs P0 격리 Linux 헤드리스 빌드 워커 + 웹 익스포트 템플릿",
+      "dockerfile": "deploy/cloudrun/build-worker/Dockerfile",
+      "expectedForkCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+      "notes": "현재 godotengine/godot-builds 공식 릴리스 다운로드. 포크 릴리스(alex-kang-ovdr/godot-engine) 아티팩트 + SHA-256 핀닝으로 전환 필요."
+    },
+    "android-aar": {
+      "status": "pending_fork_rebuild",
+      "description": "Android Play Hub 내장 godot-lib.template_release.aar",
+      "lockPath": "tools/aos/godot-aar.lock.json",
+      "expectedForkCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+      "notes": "현재 락파일 forkCommit이 순정 ed1daf0bf00. 포크 Android AAR 빌드 후 lockfile과 libs/ 갱신 필요."
+    },
+    "ios-xcframework": {
+      "status": "pending_fork_rebuild",
+      "description": "iOS Play Hub 내장 libgodot.ios.release.xcframework",
+      "lockPath": "tools/ios/godot-xcframework.lock.json",
+      "expectedForkCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+      "notes": "현재 락파일 forkCommit이 순정 ed1daf0bf00. macOS에서 포크 XCFramework 빌드 후 lockfile 갱신 필요."
+    }
+  },
+  "forbiddenUpstreamPatterns": [
+    "github.com/godotengine/godot-builds",
+    "downloads.godotengine.org"
+  ],
+  "knownStockFallbackPending": [
+    "deploy/cloudrun/build-worker/Dockerfile",
+    "forge/Tools/install-web-editor.ps1",
+    "forge/OfficialGodot/upstream.json"
+  ]
+}

@@ -7,8 +7,10 @@ import {
   readStrictJson,
   sha256Buffer,
   sha256File,
+  walkWebTree,
 } from './fs-utils.mjs';
 import { GAMERQA_ROOT, resolvePolicyPath, resolveProjectRoot } from './paths.mjs';
+import { selectPopularGames } from './popularity.mjs';
 import { runStaticSuite } from '../suites/static/index.mjs';
 import { runSecuritySuite } from '../suites/security/index.mjs';
 import {
@@ -135,30 +137,62 @@ export function computeRunOutcome(gameResults) {
   return { status, passed, score, summary };
 }
 
-export function resolveTargetGames({ projectRoot, games = [], all = false }) {
+export function resolveTargetGames({ projectRoot, games = [], all = false, topN = null, hubDbPath = null }) {
+  if (topN !== null && topN !== undefined) {
+    const selection = selectPopularGames({ projectRoot, topN, hubDbPath });
+    return { gameIds: selection.gameIds, catalog: selection.catalog, selection };
+  }
   const catalogFile = guardRelativePath(projectRoot, 'games/catalog.json');
   const catalog = readStrictJson(catalogFile);
   if (all) {
     const ids = (catalog.entries || []).map((e) => e.id).filter(Boolean);
     if (!ids.length) throw new Error('No games found in games/catalog.json');
-    return { gameIds: ids, catalog };
+    return { gameIds: ids, catalog, selection: null };
   }
   const unique = [...new Set(games.map((g) => g.trim()).filter(Boolean))];
   if (!unique.length) {
-    throw new Error('Specify at least one --game <id> or pass --all');
+    throw new Error('Specify at least one --game <id>, --top <N>, or pass --all');
   }
   for (const id of unique) {
     if (!GAME_ID_RE.test(id)) {
       throw new Error(`Invalid game identifier: ${id}`);
     }
   }
-  return { gameIds: unique, catalog };
+  return { gameIds: unique, catalog, selection: null };
+}
+
+function collectWebContext({ projectRoot, gameId, policy, catalog }) {
+  const limits = policy?.limits || {};
+  const gameDir = path.join(projectRoot, 'games', gameId);
+  const webDir = path.join(gameDir, 'Web');
+  const catalogEntry = catalog?.entries?.find((e) => e.id === gameId) || null;
+  let manifest = null;
+  try {
+    const manifestPath = guardRelativePath(gameDir, 'game.manifest.json');
+    manifest = readStrictJson(manifestPath, limits.maxJsonBytes ?? 1048576);
+  } catch {
+    manifest = null;
+  }
+  const walk = walkWebTree(webDir, limits);
+  return {
+    gameDir,
+    webDir,
+    manifest,
+    catalogEntry,
+    files: walk.files,
+    totalBytes: walk.totalBytes,
+    walkIssues: walk.issues,
+    parsedHtmlFiles: [],
+    resolvedAssets: [],
+  };
 }
 
 export async function runQaPipeline({
   projectRoot: explicitRoot,
   games = [],
   all = false,
+  topN = null,
+  hubDbPath = null,
   suites = ['static', 'security', 'runtime-web'],
   policy: policyOpt = 'v1',
   runId: explicitRunId,
@@ -167,13 +201,15 @@ export async function runQaPipeline({
   continueOnBlock = false,
   playwrightPath,
   browserTimeoutMs = 20000,
+  perfSampleMs = 900,
   writeArtifacts = true,
 } = {}) {
   const startedMs = Date.now();
   const startedAt = new Date(startedMs).toISOString();
   const projectRoot = resolveProjectRoot(explicitRoot);
   const { policy, policyPath, policySha256 } = loadReviewPolicy(policyOpt);
-  const { gameIds, catalog } = resolveTargetGames({ projectRoot, games, all });
+  const { gameIds, catalog, selection } = resolveTargetGames({ projectRoot, games, all, topN, hubDbPath });
+  const rankingByGameId = new Map((selection?.rankings || []).map((r) => [r.gameId, r]));
 
   const runId = explicitRunId || `${startedAt.replace(/[:.]/g, '-')}-${process.pid}`;
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(runId)) {
@@ -196,12 +232,15 @@ export async function runQaPipeline({
     const tiersExecuted = new Set();
     let staticContext = { gameDir, webDir: path.join(gameDir, 'Web'), manifest: null, catalogEntry: null, files: [] };
     let screenshots = [];
+    let performance = null;
 
     if (activeSuites.includes('static')) {
       tiersExecuted.add(0);
       const res = await runStaticSuite({ projectRoot, gameId, policy, catalog });
       checks.push(...res.checks);
       staticContext = res.context;
+    } else if (activeSuites.includes('security') || activeSuites.includes('runtime-web')) {
+      staticContext = collectWebContext({ projectRoot, gameId, policy, catalog });
     }
 
     if (activeSuites.includes('security')) {
@@ -235,9 +274,11 @@ export async function runQaPipeline({
           skipBrowser,
           playwrightPath,
           browserTimeoutMs,
+          perfSampleMs,
         });
         checks.push(...res.checks);
         screenshots = res.screenshots || [];
+        performance = res.performance || null;
         if (res.browserInfo) {
           detectedBrowserDriver = res.browserInfo.driver;
           detectedBrowserExe = res.browserInfo.executablePath;
@@ -265,7 +306,9 @@ export async function runQaPipeline({
       metrics: {
         fileCount: staticContext.files?.length || 0,
         totalBytes: staticContext.totalBytes || 0,
+        ...(performance ? { performance } : {}),
       },
+      ...(rankingByGameId.has(gameId) ? { popularity: rankingByGameId.get(gameId) } : {}),
       screenshots,
       summary: outcome.summary,
       checks,
@@ -342,7 +385,7 @@ export async function runQaPipeline({
     fs.writeFileSync(evidenceManifestPath, JSON.stringify(evidenceDoc, null, 2) + '\n', 'utf8');
   }
 
-  return { report, outDir, reportJsonPath, reportMdPath, evidenceManifestPath };
+  return { report, outDir, reportJsonPath, reportMdPath, evidenceManifestPath, selection };
 }
 
 export function verifyInstallation({ projectRoot: explicitRoot } = {}) {

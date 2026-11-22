@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-unity-tanks-3d",
+  "slug": "forge-unity-tanks-3d",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "Unity Tanks! 3D (Forge)",
+    "en": "Unity Tanks! 3D (Forge)",
+    "ja": "Unity Tanks! 3D (Forge)",
+    "zh-CN": "Unity Tanks! 3D (Forge)",
+    "fr": "Unity Tanks! 3D (Forge)",
+    "es": "Unity Tanks! 3D (Forge)",
+    "pt-BR": "Unity Tanks! 3D (Forge)",
+    "hi": "Unity Tanks! 3D (Forge)"
+  },
+  "summary": {
+    "ko": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "en": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "ja": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "zh-CN": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "fr": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "es": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "pt-BR": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "hi": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 키보드·마우스 또는 터치로 플레이하세요.",
+    "en": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "ja": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "zh-CN": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "fr": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "es": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "pt-BR": "Check the on-screen controls and play with keyboard, mouse, or touch.",
+    "hi": "Check the on-screen controls and play with keyboard, mouse, or touch."
+  },
+  "rules": {
+    "ko": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "en": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "ja": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "zh-CN": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "fr": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "es": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "pt-BR": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera.",
+    "hi": "Official Unity 3D Tanks! tutorial auto-ported to Godot 4.7.2: 26 converted 3D meshes, 103 desert arena objects from binary LevelArt.prefab, 2P local battle, ballistic shells, and dynamic ortho camera."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (unity-tanks-3d)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

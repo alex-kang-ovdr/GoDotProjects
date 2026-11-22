@@ -27,6 +27,9 @@
   const nativeGameOverlay = document.getElementById('native-game-overlay');
   const nativeGameFrame = document.getElementById('native-game-frame');
   const agentFrame = document.getElementById('agent-dock-frame');
+  const blenderDrawer = document.getElementById('blender-drawer');
+  const portingDrawer = document.getElementById('porting-drawer');
+  const shortsDrawer = document.getElementById('shorts-drawer');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const pieAvatarToggleButton = document.getElementById('pie-avatar-toggle');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
@@ -247,7 +250,7 @@
   const processedCommandIds = new Set();
   let sessionSyncTimer = null;
   const buildMode = String(window.__PLAYFORGE_BUILD_MODE__ || query.get('mode') || 'debug').toLowerCase();
-  let remoteControlAllowed = ['debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
+  let remoteControlAllowed = ['dev', 'debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
 
   function disableRemoteControl() {
     remoteControlAllowed = false;
@@ -453,10 +456,73 @@
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(() => { notice.style.display = 'none'; }, duration);
   }
+  function toggleBlenderDrawer(forceOpen = null) {
+    if (!blenderDrawer) return;
+    const nextOpen = forceOpen === null ? blenderDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && portingDrawer) portingDrawer.hidden = true;
+    if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
+    if (nextOpen && !blenderDrawer.getAttribute('src')) {
+      blenderDrawer.src = forgePath(`/OfficialGodot/blender-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
+    }
+    blenderDrawer.hidden = !nextOpen;
+  }
+  function togglePortingDrawer(forceOpen = null) {
+    if (!portingDrawer) return;
+    const nextOpen = forceOpen === null ? portingDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
+    if (nextOpen && !portingDrawer.getAttribute('src')) {
+      portingDrawer.src = forgePath(`/OfficialGodot/porting-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
+    }
+    portingDrawer.hidden = !nextOpen;
+  }
+  function toggleShortsDrawer(forceOpen = null) {
+    if (!shortsDrawer) return;
+    const nextOpen = forceOpen === null ? shortsDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && portingDrawer) portingDrawer.hidden = true;
+    if (nextOpen && !shortsDrawer.getAttribute('src')) {
+      const pname = encodeURIComponent(projectLabel?.textContent || '');
+      shortsDrawer.src = forgePath(`/OfficialGodot/shorts-studio.html?embedded=1&project=${encodeURIComponent(projectId)}&projectName=${pname}`);
+    }
+    shortsDrawer.hidden = !nextOpen;
+  }
+  function captureEditorCanvasFrame() {
+    const activeCanvas = (gameOverlay && gameOverlay.style.display === 'block' && gameCanvas?.width > 0)
+      ? gameCanvas
+      : canvas;
+    if (!activeCanvas || !activeCanvas.width || !activeCanvas.height) {
+      return { ok: false, error: '캡처할 활성 Godot 캔버스가 준비되지 않았습니다.' };
+    }
+    try {
+      const dataUrl = activeCanvas.toDataURL('image/png');
+      const sourceLabel = activeCanvas === gameCanvas ? '실행 중인 게임 화면' : 'Godot 에디터 뷰포트';
+      return { ok: true, dataUrl, sourceLabel, width: activeCanvas.width, height: activeCanvas.height };
+    } catch {
+      return { ok: false, error: 'WebGL 캔버스 캡처에 실패했습니다. 스크린샷 파일 업로드를 이용해 주세요.' };
+    }
+  }
+  window.addEventListener('playforge-blender-placed', event => {
+    if (blenderDrawer?.contentWindow) {
+      blenderDrawer.contentWindow.postMessage({ source: 'playforge-godot-editor', type: 'blender-placed', detail: event.detail || {} }, origin);
+    }
+  });
   actionButtons.forEach(button => button.addEventListener('click', event => {
     const action = button.dataset.action;
     if (action === 'pie-avatar') {
       setPieAvatarEnabled(!pieAvatarEnabled);
+      return;
+    }
+    if (action === 'blender') {
+      toggleBlenderDrawer();
+      return;
+    }
+    if (action === 'porting') {
+      togglePortingDrawer();
+      return;
+    }
+    if (action === 'shorts') {
+      toggleShortsDrawer();
       return;
     }
     notify('activity', { kind: 'step', clickLabel: ({home:'내 프로젝트',versions:'버전 기록',publish:'배포',collaboration:'협업 현황'})[action] || button.textContent, x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight });
@@ -531,7 +597,7 @@
     const latest = await fetchProject();
     if (generation !== nativeGameGeneration) return;
     const requestedProfile = pieBuildProfile();
-    if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo'].includes(latest.project?.template)) {
+    if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo', 'captain-forever-mmo'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
       nativeGameBuildProfile = requestedProfile;
       await mountMultiplayerWorkspace(latest.project.template, requestedProfile);
@@ -697,7 +763,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles, remoteControlFiles = null, avatarBundle = null, blenderFiles = null, assetStoreBundle = null) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -705,8 +771,9 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar)\//.test(file) || file.startsWith('.godot/') ||
-          file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
+      const lowerFile = file.replace(/^(\.\/)+/, '').toLowerCase();
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat|remote_control|avatar|blender|asset_store)(?:\/|$)/.test(lowerFile) || lowerFile.startsWith('.godot/') ||
+          lowerFile.startsWith('.playforge-import/') || lowerFile.startsWith('.playforge-store/') || lowerFile === '.playforge-store.json' || lowerFile === '.playforge-store-config.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -734,12 +801,30 @@
     if (avatarBundle && avatarBundle.files) {
       pluginPaths.push('res://addons/playforge_avatar/plugin.cfg');
     }
+    if (blenderFiles) {
+      pluginPaths.push('res://addons/playforge_blender/plugin.cfg');
+    }
+    if (assetStoreBundle && assetStoreBundle.files) {
+      pluginPaths.push('res://addons/playforge_asset_store/plugin.cfg');
+    }
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     if (avatarBundle && avatarBundle.files && Object.hasOwn(avatarBundle.files, 'avatar_bootstrap.gd')) {
       projectFile.content = enableAvatarRuntimeAutoload(projectFile.content);
     }
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
+    if (assetStoreBundle && assetStoreBundle.config) {
+      const apiPath = typeof assetStoreBundle.config.store_api_url === 'string' && assetStoreBundle.config.store_api_url.startsWith('/')
+        ? `${origin}${assetStoreBundle.config.store_api_url}`
+        : (assetStoreBundle.config.store_api_url || '');
+      const storeConfig = {
+        store_web_url: assetStoreBundle.config.store_web_url || '',
+        store_api_url: apiPath,
+      };
+      window.__playforgeStoreWebUrl = storeConfig.store_web_url;
+      window.__playforgeStoreApiUrl = storeConfig.store_api_url;
+      projectFiles.push({ path: '.playforge-store-config.json', content: JSON.stringify(storeConfig) });
+    }
     for (const [name, content] of Object.entries(addonFiles)) {
       if (typeof content !== 'string' || content.length > 300000) throw new Error('Invalid PlayForge platform add-on.');
       const file = `addons/playforge_platform/${name}`;
@@ -756,6 +841,12 @@
     }
     if (avatarBundle && avatarBundle.files) {
       mountedAddons.push(['playforge_avatar', avatarBundle.files]);
+    }
+    if (blenderFiles) {
+      mountedAddons.push(['playforge_blender', blenderFiles]);
+    }
+    if (assetStoreBundle && assetStoreBundle.files) {
+      mountedAddons.push(['playforge_asset_store', assetStoreBundle.files]);
     }
     for (const [directory, files] of mountedAddons) {
       for (const [name, content] of Object.entries(files)) {
@@ -983,19 +1074,45 @@
       return null;
     }
   }
+  async function fetchBlenderAddon() {
+    try {
+      const data = await fetchEditorAddon('blender', ['plugin.cfg', 'plugin.gd', 'blender_dock.gd', 'glb_importer.gd']);
+      return data.files;
+    } catch {
+      return null;
+    }
+  }
+  async function fetchAssetStoreAddon() {
+    try {
+      const response = await fetch(forgePath('/api/platform-addon/asset-store'), { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) return null;
+      const data = await response.json().catch(() => null);
+      const names = ['plugin.cfg', 'plugin.gd', 'store_dock.gd', 'package_installer.gd'];
+      if (!data || data.ok !== true || !data.files ||
+          Object.keys(data.files).some(name => !names.includes(name)) ||
+          names.some(name => typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
+        return null;
+      }
+      return { files: data.files, config: data.config || null };
+    } catch {
+      return null;
+    }
+  }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       setLoading('프로젝트 파일 불러오는 중…', '프로젝트와 에디터 애드온을 가져오고 있습니다.', 8);
       await ensureCsrfToken();
-      const [project, addonFiles, chat, remoteControlFiles, avatarBundle] = await Promise.all([fetchProject(), fetchAddon(),
+      const [project, addonFiles, chat, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle] = await Promise.all([fetchProject(), fetchAddon(),
         fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
           ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd']),
         fetchRemoteControlAddon(),
-        fetchAvatarAddon()]);
+        fetchAvatarAddon(),
+        fetchBlenderAddon(),
+        fetchAssetStoreAddon()]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files, remoteControlFiles, avatarBundle, blenderFiles, assetStoreBundle);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       setLoading('Godot 웹 에디터 다운로드 중…', 'WASM 엔진을 받아오고 있습니다 (최초 1회 이후 브라우저 캐시 적용).', 12);
@@ -1048,6 +1165,55 @@
     }
   }
   window.addEventListener('message', (event) => {
+    if (event.origin === origin && event.data?.source === 'playforge-porting-studio') {
+      if (event.data.type === 'close') {
+        togglePortingDrawer(false);
+        return;
+      }
+      if (event.data.type === 'ported-project' && event.data.projectId) {
+        showNotice(`AI 프로젝트 포팅이 완료되었습니다 (${event.data.projectName || event.data.projectId}).`);
+        return;
+      }
+    }
+    if (event.origin === origin && event.data?.source === 'playforge-shorts-studio') {
+      if (event.data.type === 'close') {
+        toggleShortsDrawer(false);
+        return;
+      }
+      if (event.data.type === 'capture-frame') {
+        const result = captureEditorCanvasFrame();
+        if (shortsDrawer?.contentWindow) {
+          shortsDrawer.contentWindow.postMessage({
+            source: 'playforge-godot-editor',
+            type: 'captured-frame',
+            ...result,
+            projectId,
+            projectName: projectLabel?.textContent || ''
+          }, origin);
+        }
+        if (result.ok) showNotice(`'${result.sourceLabel}' 키프레임을 쇼츠 스튜디오로 보냈습니다.`);
+        return;
+      }
+      if (event.data.type === 'short-published') {
+        showNotice(`허브 내 게임에 소개 쇼츠 '${event.data.title || ''}'이(가) 등록되었습니다!`);
+        return;
+      }
+    }
+    if (event.origin === origin && event.data?.source === 'playforge-blender-studio') {
+      if (event.data.type === 'close') {
+        toggleBlenderDrawer(false);
+        return;
+      }
+      if (event.data.type === 'place-asset' && event.data.manifest) {
+        if (typeof window.__playforgeBlenderPlaceAsset === 'function') {
+          window.__playforgeBlenderPlaceAsset(JSON.stringify(event.data.manifest));
+          showNotice(`AI 3D 에셋 '${event.data.manifest.name || 'Prop'}' 임포트 및 씬 배치를 요청했습니다.`);
+        } else {
+          showNotice('Godot 웹 에디터가 완전히 로드된 뒤 배치해 주세요.');
+        }
+        return;
+      }
+    }
     if (event.origin !== origin || event.source !== window.parent || !event.data || event.data.source !== 'playforge-platform') return;
     if (event.data.type === 'focus' && started) canvas.focus();
     if (event.data.type === 'show-conflicts' && typeof window.__playforgeShowConflictsCallback === 'function') {

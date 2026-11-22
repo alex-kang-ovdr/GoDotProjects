@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PlayForge · AI 프로젝트 포팅 스튜디오</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:#0f1420;color:#e5e9f5;font:13.5px/1.55 "Plus Jakarta Sans","Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#151b2b;border-bottom:1px solid #27314a}
+    .title-wrap{display:flex;align-items:center;gap:10px}
+    .badge{padding:3px 9px;border-radius:999px;background:#1d356b;color:#93c5fd;font-size:11.5px;font-weight:700}
+    .quota-pill{padding:4px 10px;border-radius:999px;background:#1a2438;border:1px solid #2f3e5e;font-size:12px;color:#cbd5e1}
+    .close-btn{padding:6px 12px;border:1px solid #364366;border-radius:8px;background:#1c2438;color:#e5e9f5;cursor:pointer;font-weight:600}
+    main{padding:16px 18px;display:grid;gap:14px}
+    .card{background:#161d2e;border:1px solid #26324d;border-radius:12px;padding:14px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px}
+    select,input,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2f3d5c;background:#0c111d;color:#f1f5f9;font:13px ui-monospace,Consolas,monospace}
+    textarea{min-height:170px;resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+    .chip{padding:5px 10px;border-radius:999px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;font-size:12px;cursor:pointer}
+    .chip:hover{border-color:#60a5fa;color:#fff}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+    .btn-primary{padding:9px 16px;border-radius:8px;border:0;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .btn-secondary{padding:8px 13px;border-radius:8px;border:1px solid #3b4c70;background:#1e293b;color:#e2e8f0;font-weight:600;cursor:pointer}
+    .status{padding:10px 12px;border-radius:8px;background:#111827;border:1px solid #293548;font-size:12.5px}
+    .status.error{border-color:#dc2626;color:#fca5a5}
+    .status.ok{border-color:#16a34a;color:#86efac}
+    .file-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+    .file-tab{padding:5px 10px;border-radius:6px;border:1px solid #2e3b59;background:#111827;color:#94a3b8;font:12px ui-monospace,Consolas,monospace;cursor:pointer}
+    .file-tab.active{background:#1d4ed8;border-color:#3b82f6;color:#fff}
+    pre{margin:0;padding:12px;border-radius:8px;background:#090d16;border:1px solid #232f49;overflow:auto;max-height:300px;font:12px/1.5 ui-monospace,Consolas,monospace;color:#e2e8f0}
+    details summary{cursor:pointer;color:#93c5fd;font-size:12.5px;font-weight:600}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-wrap">
+      <strong>AI 프로젝트 포팅 스튜디오</strong>
+      <span class="badge">Roblox · Unity · Unreal → Godot 4.7.2</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="quota-pill" class="quota-pill">한도 확인 중…</span>
+      <button id="close-btn" type="button" class="close-btn">닫기 ×</button>
+    </div>
+  </header>
+  <main>
+    <section class="card">
+      <div class="row">
+        <div>
+          <label for="source-engine">원본 엔진</label>
+          <select id="source-engine">
+            <option value="roblox">Roblox (Luau / RBXLX 스크립트)</option>
+            <option value="unity">Unity (C# MonoBehaviour)</option>
+            <option value="unreal">Unreal Engine 5 (Blueprint JSON / C++ Actor)</option>
+          </select>
+        </div>
+        <div>
+          <label for="project-name">타깃 Godot 4.7.2 프로젝트 이름</label>
+          <input id="project-name" type="text" maxlength="80" value="PortedGodotGame">
+        </div>
+      </div>
+      <div class="presets">
+        <button type="button" class="chip" data-sample="roblox">예제: Roblox 코인 점프 액션</button>
+        <button type="button" class="chip" data-sample="unity">예제: Unity C# 탑다운 슈터</button>
+        <button type="button" class="chip" data-sample="unreal">예제: Unreal ACharacter 대시 점프</button>
+      </div>
+      <label for="source-code">원본 스크립트 / 씬 데이터</label>
+      <textarea id="source-code" placeholder="변환할 Luau, Unity C#, 또는 Unreal Blueprint/C++ 코드를 붙여넣으세요."></textarea>
+      <div style="margin-top:8px">
+        <label for="instructions">추가 포팅 지시사항 (선택)</label>
+        <input id="instructions" type="text" maxlength="400" placeholder="예: 모바일 터치 조작도 함께 지원하고 점수 UI Label 포함">
+      </div>
+      <details style="margin-top:10px">
+        <summary>본인 AI API 키 연동 (연동 시 PlayCoin · 기본 한도 차감 0)</summary>
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label for="byok-provider">공급자</label>
+            <select id="byok-provider">
+              <option value="">PlayHub 내장 Gemini 사용 (기본 한도 → PlayCoin)</option>
+              <option value="gemini">본인 Gemini API Key (0 코인)</option>
+              <option value="openai">본인 OpenAI API Key (0 코인)</option>
+              <option value="anthropic">본인 Anthropic API Key (0 코인)</option>
+            </select>
+          </div>
+          <div>
+            <label for="byok-key">본인 API Key (서버 미저장 · 1회성 전송)</label>
+            <input id="byok-key" type="password" placeholder="AIza... / sk-...">
+          </div>
+        </div>
+      </details>
+      <div class="actions">
+        <button id="convert-btn" type="button" class="btn-primary">AI 포팅 변환 실행</button>
+        <label style="display:inline-flex;align-items:center;gap:6px;margin:0;color:#cbd5e1">
+          <input id="save-new-project" type="checkbox" checked style="width:auto"> 새 PlayForge 프로젝트로 바로 저장
+        </label>
+      </div>
+    </section>
+
+    <div id="status-box" class="status">원본 코드를 입력하거나 상단 예제 칩을 눌러 Godot 4.7.2 프로젝트로 변환해 보세요.</div>
+
+    <section id="result-card" class="card" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+        <strong id="result-title">포팅 결과</strong>
+        <div style="display:flex;gap:6px">
+          <a id="open-project-link" class="btn-secondary" style="text-decoration:none;display:none" target="_top">에디터에서 열기 ↗</a>
+          <button id="download-json-btn" type="button" class="btn-secondary">번들 JSON 다운로드</button>
+        </div>
+      </div>
+      <p id="result-summary" style="margin:0 0 10px;color:#cbd5e1;font-size:12.5px"></p>
+      <div id="file-tabs" class="file-tabs"></div>
+      <pre id="file-viewer"></pre>
+    </section>
+  </main>
+  <script src="porting-studio.js"></script>
+</body>
+</html>

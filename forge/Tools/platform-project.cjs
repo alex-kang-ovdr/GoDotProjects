@@ -19,9 +19,13 @@ function normalizeFiles(files) {
   return files.map((entry) => {
     if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file');
     const file = entry.path.replaceAll('\\', '/');
-    if (file.startsWith('addons/playforge_platform/') || file.startsWith('addons/playforge_avatar/')) return null;
+    const lowerFile = file.replace(/^(\.\/)+/, '').toLowerCase();
+    if (
+      lowerFile === 'addons/playforge_platform' || lowerFile.startsWith('addons/playforge_platform/') ||
+      lowerFile === 'addons/playforge_avatar' || lowerFile.startsWith('addons/playforge_avatar/')
+    ) return null;
     if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
-        file.split('/').some(part => !part || part === '.' || part === '..') || file === '.playforge-platform.json') {
+        file.split('/').some(part => !part || part === '.' || part === '..') || lowerFile === '.playforge-platform.json') {
       throw new Error('Unsafe project file path');
     }
     if (seen.has(file)) throw new Error('Duplicate project file path');

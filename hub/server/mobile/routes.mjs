@@ -1,10 +1,23 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { transaction } from '../db.mjs';
 import { readCatalog, findGame } from '../catalog.mjs';
 import { ApiError, assertId, digest, equal, json, readJson, safeString, secret, uid } from '../security.mjs';
 import { ensureMobileSchema } from './schema.mjs';
+import { createSocial } from '../social/routes.mjs';
+import { providerForUser } from '../sso/index.mjs';
+import {
+  DUMMY_HASH,
+  DUMMY_SALT,
+  LOCK_DURATION_MS,
+  MAX_FAILED_ATTEMPTS,
+  hashPassword,
+  normalizeDisplayName,
+  normalizeEmail,
+  validateNewPassword,
+  verifyPassword
+} from '../sso/email.mjs';
 import {
   canPlayAgeRating,
   classifyAgeTier,
@@ -14,6 +27,8 @@ import {
 
 const ACCESS_TTL_MS = 15 * 60 * 1000; // 15 minutes
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const PARENTAL_CONSENT_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const PARENTAL_CONSENT_MAX_ATTEMPTS = 5;
 
 function b64url(input) {
   return Buffer.from(input).toString('base64url');
@@ -44,7 +59,7 @@ function verifyJwt(token, hmacSecret, nowMs) {
   return payload;
 }
 
-export function createMobile({ config, db, rootDir, now, rate, audit, google, verifyMobileGoogleToken, env = process.env }) {
+export function createMobile({ config, db, rootDir, now, rate, audit, google, sso = null, fetchImpl = globalThis.fetch, ugcPublish = null, ugcMultiplayer = null, verifyMobileGoogleToken, verifyMobileNaverToken, env = process.env }) {
   const mobileConfig = config.mobile || {};
   const enabled = mobileConfig.enabled === true;
   if (!enabled) {
@@ -53,6 +68,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
 
   ensureMobileSchema(db);
   const jwtSecret = mobileConfig.jwtSecret || env.PLAYHUB_MOBILE_JWT_SECRET || secret();
+  const parentalChallenges = new Map();
 
   function setNativeHeaders(res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -71,7 +87,17 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     }
     const match = auth.match(/^Bearer\s+([^\s]+)$/i);
     if (!match) throw new ApiError(401, 'MOBILE_AUTH_REQUIRED');
-    const payload = verifyJwt(match[1], jwtSecret, now());
+    const stamp = now();
+    const payload = verifyJwt(match[1], jwtSecret, stamp);
+    if (typeof payload.fam !== 'string' || !payload.fam) {
+      throw new ApiError(401, 'MOBILE_TOKEN_INVALID');
+    }
+    const activeFamily = db
+      .prepare('SELECT 1 FROM mobile_tokens WHERE principal_id=? AND family_id=? AND revoked_at IS NULL AND expires_at>? LIMIT 1')
+      .get(payload.sub, payload.fam, stamp);
+    if (!activeFamily) {
+      throw new ApiError(401, 'MOBILE_SESSION_REVOKED');
+    }
     const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(payload.sub);
     if (!user) throw new ApiError(401, 'MOBILE_TOKEN_INVALID');
     return { user, familyId: payload.fam };
@@ -128,10 +154,12 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     const pendingMerge = db
       .prepare("SELECT id, source_user FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1")
       .get(user.id, now());
+    const authProvider = isGuest ? 'guest' : (providerForUser(db, user.id) || 'registered');
     return {
       principalId: user.id,
       kind: user.kind,
       isGuest,
+      authProvider,
       displayName: user.display_name || (isGuest ? '게스트 플레이어' : 'PlayHub 유저'),
       handle: `@${isGuest ? 'guest' : 'player'}#${user.id.replace(/-/g, '').slice(-4)}`,
       ageCompliance: compliance,
@@ -185,7 +213,25 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     return { compatible: true, reason: null, message: null };
   }
 
-  function readGameAndroidMeta(gameId) {
+  function readGameAndroidMeta(gameOrId) {
+    const game = typeof gameOrId === 'object' && gameOrId ? gameOrId : null;
+    const gameId = game ? game.id : String(gameOrId || '');
+    if (game?.source === 'ugc' && game.hostSlug && game.activeReleaseId && ugcPublish?.storage) {
+      const resolvedPck = ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'index.pck');
+      if (resolvedPck?.filePath && existsSync(resolvedPck.filePath)) {
+        const pckBytes = statSync(resolvedPck.filePath).size;
+        const pckUrl = typeof game.entryUrl === 'string' && game.entryUrl.includes('/')
+          ? game.entryUrl.replace(/\/[^/?#]*(?:[?#].*)?$/, '/index.pck')
+          : `/play-ugc/${game.hostSlug}/${game.activeReleaseId}/index.pck`;
+        return {
+          runtime: 'godot-pck',
+          requiredEngineVersion: '4.7.2',
+          minAppVersionCode: 1,
+          pckUrl,
+          pckBytes
+        };
+      }
+    }
     const manifestPath = resolve(rootDir, 'games', gameId, 'game.manifest.json');
     let manifestAndroid = null;
     try {
@@ -208,7 +254,7 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
 
   function enrichMobileGame(game, compliance, clientVersions = {}) {
     const rating = gameAgeRating(game);
-    const meta = readGameAndroidMeta(game.id);
+    const meta = readGameAndroidMeta(game);
     const compat = checkVersionCompatibility({
       runtime: meta.runtime,
       requiredEngineVersion: meta.requiredEngineVersion,
@@ -216,6 +262,8 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       clientEngineVersion: clientVersions.engineVersion,
       clientAppVersionCode: clientVersions.appVersionCode
     });
+    const deployMode = game.deployMode || 'singleplay';
+    const multiplayer = ugcMultiplayer?.descriptorForGame ? ugcMultiplayer.descriptorForGame(game) : null;
     return {
       id: game.id,
       title: game.title,
@@ -228,6 +276,9 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       entryUrl: game.entryUrl,
       buildId: game.buildId,
       saveSchemaVersion: game.saveSchemaVersion,
+      source: game.source || 'static',
+      deployMode,
+      multiplayer,
       ageRating: rating,
       allowed: canPlayAgeRating(compliance.ageTier, rating, compliance.parentalConsentStatus),
       runtime: meta.runtime,
@@ -243,10 +294,56 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
     };
   }
 
+  const social = createSocial({
+    db,
+    now,
+    rate,
+    audit,
+    bearerPayload,
+    ensureCompliance: getCompliance,
+    rejectBrowserOrigin,
+    config
+  });
+
   async function publicRoute(req, res, url) {
     const path = url.pathname;
     if (!path.startsWith('/api/mobile/')) return false;
     setNativeHeaders(res);
+
+    if (path.startsWith('/api/mobile/social/')) {
+      if (await social.route(req, res, url)) return true;
+    }
+
+    function carryOverGuestUpgrade(existingBearer, userId, stamp) {
+      if (!existingBearer || existingBearer.user.kind !== 'guest' || existingBearer.user.id === userId) return;
+      const guestSaveCount = db.prepare('SELECT COUNT(*) AS n FROM save_slots WHERE principal_id=?').get(existingBearer.user.id).n;
+      if (guestSaveCount > 0) {
+        db.prepare(
+          "INSERT INTO merge_requests(id,source_user,target_user,source_subject,target_subject,status,expires_at,result_json) VALUES(?,?,?,?,?,'pending',?,NULL)"
+        ).run(uid(), existingBearer.user.id, userId, `m:${existingBearer.user.id}`, `m:${userId}`, stamp + 7 * 86400000);
+      }
+      const guestComp = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(existingBearer.user.id);
+      const targetComp = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(userId);
+      if (guestComp && !targetComp) {
+        db.prepare(
+          'INSERT INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,parental_consent_at,kyc_verified_at,updated_at) VALUES(?,?,?,?,?,?,?)'
+        ).run(userId, guestComp.region_code, guestComp.age_tier, guestComp.parental_consent_status, guestComp.parental_consent_at, guestComp.kyc_verified_at, stamp);
+      }
+    }
+
+    // 0. Discover available cross-platform auth providers (Email, Google, Naver, Guest)
+    if (path === '/api/mobile/auth/providers' && req.method === 'GET') {
+      rejectBrowserOrigin(req);
+      json(res, 200, {
+        providers: {
+          email: config.auth?.emailEnabled !== false,
+          google: Boolean(google?.enabled || verifyMobileGoogleToken),
+          naver: Boolean(sso?.naver?.enabled || verifyMobileNaverToken || (config.naver?.clientId && config.naver?.clientSecret)),
+          guest: true
+        }
+      });
+      return true;
+    }
 
     // 1. Guest immediate login (no Google required)
     if (path === '/api/mobile/auth/guest' && req.method === 'POST') {
@@ -328,9 +425,179 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       return true;
     }
 
+    // 2b. Mobile/Native Email Registration + optional Guest merge handoff
+    if (path === '/api/mobile/auth/email/register' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      if (config.auth?.emailEnabled === false) throw new ApiError(503, 'EMAIL_AUTH_DISABLED', '이메일 로그인 기능이 비활성화되어 있습니다.');
+      rate(`mobile:email-register:${req.socket.remoteAddress}`, 10, 60000);
+      const body = await readJson(req, 8192);
+      const email = normalizeEmail(body.email);
+      if (!email) throw new ApiError(422, 'EMAIL_INVALID', '올바른 이메일 주소를 입력해 주세요.');
+      const password = validateNewPassword(body.password);
+      const displayName = normalizeDisplayName(body.displayName, email);
+      const existingBearer = bearerPayload(req, false);
+
+      const duplicate = db.prepare('SELECT user_id FROM email_credentials WHERE email=?').get(email);
+      if (duplicate) throw new ApiError(409, 'EMAIL_ALREADY_REGISTERED', '이미 가입된 이메일 주소입니다.');
+
+      const { salt, passwordHash } = await hashPassword(password);
+      const stamp = now();
+      const userId = uid();
+      let tokens;
+      transaction(db, () => {
+        if (db.prepare('SELECT user_id FROM email_credentials WHERE email=?').get(email)) {
+          throw new ApiError(409, 'EMAIL_ALREADY_REGISTERED', '이미 가입된 이메일 주소입니다.');
+        }
+        db.prepare('INSERT INTO users(id,kind,display_name,created_at) VALUES(?,?,?,?)').run(userId, 'registered', displayName, stamp);
+        db.prepare("INSERT INTO identities(provider,subject,user_id) VALUES('email',?,?)").run(email, userId);
+        db.prepare(
+          'INSERT INTO email_credentials(user_id,email,password_hash,salt,failed_attempts,locked_until,created_at,updated_at) VALUES(?,?,?,?,0,NULL,?,?)'
+        ).run(userId, email, passwordHash, salt, stamp, stamp);
+        carryOverGuestUpgrade(existingBearer, userId, stamp);
+        audit('mobile_email_register', userId, { provider: 'email' });
+        tokens = issueTokenPair(userId);
+      });
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(userId);
+      json(res, 201, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
+    // 2c. Mobile/Native Email Login + optional Guest merge handoff
+    if (path === '/api/mobile/auth/email/login' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      if (config.auth?.emailEnabled === false) throw new ApiError(503, 'EMAIL_AUTH_DISABLED', '이메일 로그인 기능이 비활성화되어 있습니다.');
+      rate(`mobile:email-login:${req.socket.remoteAddress}`, 20, 60000);
+      const body = await readJson(req, 8192);
+      const email = normalizeEmail(body.email);
+      const password = typeof body.password === 'string' ? body.password : '';
+      if (!email || !password || password.length > 1024) {
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      const existingBearer = bearerPayload(req, false);
+      const stamp = now();
+      const cred = db.prepare('SELECT * FROM email_credentials WHERE email=?').get(email);
+      if (!cred) {
+        await verifyPassword(password, DUMMY_SALT, DUMMY_HASH);
+        audit('mobile_email_login_failed', null, { reason: 'not_found' });
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      if (cred.locked_until && cred.locked_until > stamp) {
+        const waitSeconds = Math.ceil((cred.locked_until - stamp) / 1000);
+        throw new ApiError(429, 'EMAIL_ACCOUNT_LOCKED', `로그인 시도가 너무 많습니다. ${waitSeconds}초 후 다시 시도해 주세요.`);
+      }
+      const valid = await verifyPassword(password, cred.salt, cred.password_hash);
+      if (!valid) {
+        const attempts = (cred.failed_attempts || 0) + 1;
+        const lockedUntil = attempts >= MAX_FAILED_ATTEMPTS ? stamp + LOCK_DURATION_MS : null;
+        db.prepare('UPDATE email_credentials SET failed_attempts=?,locked_until=?,updated_at=? WHERE user_id=?')
+          .run(attempts >= MAX_FAILED_ATTEMPTS ? 0 : attempts, lockedUntil, stamp, cred.user_id);
+        audit('mobile_email_login_failed', cred.user_id, { locked: Boolean(lockedUntil) });
+        if (lockedUntil) throw new ApiError(429, 'EMAIL_ACCOUNT_LOCKED', '로그인 실패가 누적되어 5분간 계정이 잠겼습니다.');
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      let tokens;
+      transaction(db, () => {
+        db.prepare('UPDATE email_credentials SET failed_attempts=0,locked_until=NULL,updated_at=? WHERE user_id=?').run(stamp, cred.user_id);
+        carryOverGuestUpgrade(existingBearer, cred.user_id, stamp);
+        audit('mobile_email_login', cred.user_id, { provider: 'email' });
+        tokens = issueTokenPair(cred.user_id);
+      });
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(cred.user_id);
+      json(res, 200, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
+    // 2d. Mobile/Native Naver OAuth Login (SDK accessToken or auth code) + optional Guest merge handoff
+    if (path === '/api/mobile/auth/naver' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      rate(`mobile:naver:${req.socket.remoteAddress}`, 30, 60000);
+      const body = await readJson(req, 16384);
+      const existingBearer = bearerPayload(req, false);
+
+      let profileInfo;
+      if (verifyMobileNaverToken) {
+        if (!safeString(body.accessToken, 4096) && !safeString(body.code, 4096)) {
+          throw new ApiError(422, 'NAVER_TOKEN_REQUIRED');
+        }
+        profileInfo = await verifyMobileNaverToken(body);
+      } else {
+        let accessToken = safeString(body.accessToken, 4096) ? body.accessToken.trim() : '';
+        if (!accessToken && safeString(body.code, 4096)) {
+          const naverCfg = config.naver || {};
+          if (!naverCfg.clientId || !naverCfg.clientSecret) {
+            throw new ApiError(503, 'NAVER_MOBILE_AUTH_UNAVAILABLE');
+          }
+          try {
+            const tokenRes = await fetchImpl('https://nid.naver.com/oauth2.0/token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: naverCfg.clientId,
+                client_secret: naverCfg.clientSecret,
+                code: body.code,
+                state: typeof body.state === 'string' ? body.state : ''
+              }),
+              signal: AbortSignal.timeout(10000)
+            });
+            const tokenJson = tokenRes.ok ? await tokenRes.json() : null;
+            accessToken = typeof tokenJson?.access_token === 'string' ? tokenJson.access_token : '';
+          } catch {
+            throw new ApiError(502, 'NAVER_EXCHANGE_FAILED');
+          }
+          if (!accessToken) throw new ApiError(502, 'NAVER_EXCHANGE_FAILED');
+        }
+        if (!accessToken) throw new ApiError(422, 'NAVER_TOKEN_REQUIRED');
+        let me;
+        try {
+          const meRes = await fetchImpl('https://openapi.naver.com/v1/nid/me', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${accessToken}` },
+            signal: AbortSignal.timeout(10000)
+          });
+          me = meRes.ok ? await meRes.json() : null;
+        } catch {
+          throw new ApiError(502, 'NAVER_PROFILE_FAILED');
+        }
+        if (!me || me.resultcode !== '00' || !me.response || typeof me.response !== 'object') {
+          throw new ApiError(401, 'NAVER_TOKEN_INVALID');
+        }
+        profileInfo = {
+          sub: typeof me.response.id === 'string' ? me.response.id.trim() : '',
+          name: (typeof me.response.nickname === 'string' && me.response.nickname.trim())
+            || (typeof me.response.name === 'string' && me.response.name.trim())
+            || '네이버 사용자'
+        };
+      }
+      if (!profileInfo || typeof profileInfo.sub !== 'string' || !profileInfo.sub || profileInfo.sub.length > 255) {
+        throw new ApiError(401, 'NAVER_TOKEN_INVALID');
+      }
+      const displayName = String(profileInfo.name || '네이버 사용자').replace(/[\x00-\x1f\x7f]/g, '').slice(0, 80) || '네이버 사용자';
+      const stamp = now();
+      let userId;
+      let tokens;
+      transaction(db, () => {
+        const identity = db.prepare("SELECT user_id FROM identities WHERE provider='naver' AND subject=?").get(profileInfo.sub);
+        if (identity) {
+          userId = identity.user_id;
+        } else {
+          userId = uid();
+          db.prepare('INSERT INTO users(id,kind,display_name,created_at) VALUES(?,?,?,?)').run(userId, 'registered', displayName, stamp);
+          db.prepare("INSERT INTO identities(provider,subject,user_id) VALUES('naver',?,?)").run(profileInfo.sub, userId);
+        }
+        carryOverGuestUpgrade(existingBearer, userId, stamp);
+        audit('mobile_naver_login', userId, { provider: 'naver' });
+        tokens = issueTokenPair(userId);
+      });
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(userId);
+      json(res, 200, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
     // 3. Rotating Refresh Token with reuse detection
     if (path === '/api/mobile/auth/refresh' && req.method === 'POST') {
       rejectBrowserOrigin(req);
+      rate(`mobile:refresh:${req.socket.remoteAddress}`, 30, 60000);
       const body = await readJson(req, 4096);
       if (!safeString(body.refreshToken, 256)) throw new ApiError(400, 'REFRESH_TOKEN_REQUIRED');
       const tokenHash = digest(body.refreshToken);
@@ -404,33 +671,117 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       return true;
     }
 
-    // 7. Parental consent verification (for CHILD_PROTECTED)
+    // 7. Two-step Parental consent verification (for CHILD_PROTECTED)
+    //    Step 1: Issue pending verification challenge + out-of-band short-lived code
+    //    Step 2: Confirm challengeId + verificationCode to transition to 'verified'
     if (path === '/api/mobile/parental-consent' && req.method === 'POST') {
       rejectBrowserOrigin(req);
       const auth = bearerPayload(req, true);
+      rate(`mobile:parental-consent:${auth.user.id}`, 10, 60000);
+      rate(`mobile:parental-consent:ip:${req.socket.remoteAddress}`, 30, 60000);
       const body = await readJson(req, 4096);
-      if (!safeString(body.guardianContact, 200) || !['email', 'kyc_pass'].includes(body.method)) {
-        throw new ApiError(422, 'PARENTAL_CONSENT_INVALID');
-      }
       const existing = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(auth.user.id);
       if (!existing || existing.age_tier !== 'CHILD_PROTECTED') {
         throw new ApiError(409, 'PARENTAL_CONSENT_NOT_REQUIRED');
       }
       const stamp = now();
-      transaction(db, () => {
-        db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
-          uid(),
-          auth.user.id,
-          digest(body.guardianContact.trim().toLowerCase()),
-          body.method,
-          'verified',
-          stamp
-        );
-        db.prepare(
-          "UPDATE user_age_compliance SET parental_consent_status='verified', parental_consent_at=?, updated_at=? WHERE principal_id=?"
-        ).run(stamp, stamp, auth.user.id);
+      const isVerifyStep =
+        body.action === 'verify' ||
+        body.challengeId !== undefined ||
+        body.verificationCode !== undefined;
+
+      if (isVerifyStep) {
+        if (!safeString(body.challengeId, 128) || !safeString(body.verificationCode, 64)) {
+          throw new ApiError(422, 'PARENTAL_CONSENT_CODE_REQUIRED');
+        }
+        const challenge = parentalChallenges.get(body.challengeId);
+        if (!challenge || challenge.principalId !== auth.user.id) {
+          throw new ApiError(403, 'PARENTAL_CONSENT_CHALLENGE_INVALID');
+        }
+        if (challenge.expiresAt <= stamp) {
+          parentalChallenges.delete(body.challengeId);
+          throw new ApiError(410, 'PARENTAL_CONSENT_CHALLENGE_EXPIRED');
+        }
+        challenge.attempts += 1;
+        if (challenge.attempts > PARENTAL_CONSENT_MAX_ATTEMPTS) {
+          parentalChallenges.delete(body.challengeId);
+          throw new ApiError(429, 'PARENTAL_CONSENT_TOO_MANY_ATTEMPTS');
+        }
+        const candidateHash = digest(`${body.challengeId}:${body.verificationCode.trim()}`);
+        if (!equal(candidateHash, challenge.codeHash)) {
+          if (challenge.attempts >= PARENTAL_CONSENT_MAX_ATTEMPTS) {
+            parentalChallenges.delete(body.challengeId);
+          }
+          throw new ApiError(403, 'PARENTAL_CONSENT_CODE_INVALID');
+        }
+        parentalChallenges.delete(body.challengeId);
+        transaction(db, () => {
+          db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
+            uid(),
+            auth.user.id,
+            challenge.guardianContactHash,
+            challenge.method,
+            'verified',
+            stamp
+          );
+          db.prepare(
+            "UPDATE user_age_compliance SET parental_consent_status='verified', parental_consent_at=?, updated_at=? WHERE principal_id=?"
+          ).run(stamp, stamp, auth.user.id);
+        });
+        audit('mobile_parental_consent_verified', auth.user.id, { method: challenge.method, challengeId: body.challengeId });
+        json(res, 200, buildProfileResponse(auth.user));
+        return true;
+      }
+
+      if (!safeString(body.guardianContact, 200) || !['email', 'kyc_pass'].includes(body.method)) {
+        throw new ApiError(422, 'PARENTAL_CONSENT_INVALID');
+      }
+      if (parentalChallenges.size > 1000) {
+        for (const [k, v] of parentalChallenges) {
+          if (v.expiresAt <= stamp) parentalChallenges.delete(k);
+        }
+      }
+      const challengeId = uid();
+      const verificationCode = randomBytes(6).toString('hex');
+      const guardianContactHash = digest(body.guardianContact.trim().toLowerCase());
+      const expiresAt = stamp + PARENTAL_CONSENT_TTL_MS;
+      parentalChallenges.set(challengeId, {
+        principalId: auth.user.id,
+        guardianContactHash,
+        method: body.method,
+        codeHash: digest(`${challengeId}:${verificationCode}`),
+        expiresAt,
+        attempts: 0
       });
-      json(res, 200, buildProfileResponse(auth.user));
+      db.prepare('INSERT INTO parental_consent_logs VALUES(?,?,?,?,?,?)').run(
+        uid(),
+        auth.user.id,
+        guardianContactHash,
+        body.method,
+        'pending',
+        stamp
+      );
+      if (typeof mobileConfig.onParentalConsentCode === 'function') {
+        mobileConfig.onParentalConsentCode({
+          challengeId,
+          verificationCode,
+          guardianContact: body.guardianContact.trim(),
+          method: body.method,
+          principalId: auth.user.id,
+          expiresAt
+        });
+      }
+      audit('mobile_parental_consent_requested', auth.user.id, { method: body.method, challengeId });
+      const canExposeForTest = mobileConfig.exposeVerificationCodeForTest === true && config.secureCookies !== true;
+      json(res, 202, {
+        status: 'pending',
+        verificationRequired: true,
+        challengeId,
+        method: body.method,
+        expiresAt: new Date(expiresAt).toISOString(),
+        profile: buildProfileResponse(auth.user),
+        ...(canExposeForTest ? { verificationCode } : {})
+      });
       return true;
     }
 
@@ -461,11 +812,11 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       const body = await readJson(req, 4096);
       const game = findGame(rootDir, db, assertId(body.gameId));
       const compliance = getCompliance(auth.user.id);
-      const rating = normalizeAgeRating(body.overrideRating || gameAgeRating(game));
+      const rating = normalizeAgeRating(gameAgeRating(game));
       if (!canPlayAgeRating(compliance.ageTier, rating, compliance.parentalConsentStatus)) {
         throw new ApiError(403, 'AGE_RATING_RESTRICTED', `연령 등급(${rating}) 제한으로 실행할 수 없습니다.`);
       }
-      const meta = readGameAndroidMeta(game.id);
+      const meta = readGameAndroidMeta(game);
       const compat = checkVersionCompatibility({
         runtime: meta.runtime,
         requiredEngineVersion: meta.requiredEngineVersion,
@@ -484,10 +835,16 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ve
       db.prepare(
         'INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)'
       ).run(id, `mobile:${auth.familyId}`, auth.user.id, `m:${auth.user.id}`, game.id, game.buildId, stamp, stamp + 2 * 3600000, 'live', null);
+      const deployMode = game.deployMode || 'singleplay';
+      const multiplayer = ugcMultiplayer?.descriptorForGame ? ugcMultiplayer.descriptorForGame(game) : null;
       json(res, 201, {
         id,
         gameId: game.id,
         buildId: game.buildId,
+        runtime: meta.runtime,
+        pckUrl: meta.pckUrl,
+        deployMode,
+        multiplayer,
         ageRating: rating,
         compatibility: compat,
         saveSchemaVersion: game.saveSchemaVersion

@@ -10,6 +10,8 @@ references
 tests
 tools/*
 !tools/build-version
+!tools/engine
+!tools/ugc-shared
 hub/config/local.json
 hub/data
 hub/node_modules

@@ -8,6 +8,17 @@ import { fileURLToPath } from 'node:url';
 import { analyzeUnityProject } from '../src/unity-analyzer.mjs';
 import { parseAiffBuffer, convertAiffBufferToWav } from '../src/aiff-to-wav.mjs';
 import { reportsPathsGd } from '../src/godot-harness-paths.mjs';
+import { validateUnifiedIR } from '../common-ir/validators/validate-ir.mjs';
+import {
+  unityPositionToGodot,
+  godotPositionToUnity,
+  unityQuaternionToGodot,
+  godotQuaternionToUnity,
+  unityOrthoSizeToGodot,
+  unitySpriteRectToGodotRegion,
+  unityGammaColorToGodotLinear,
+} from '../src/unity-transform.mjs';
+import { compileUnityResourcesDeterministic } from '../src/deterministic-compilers.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -134,6 +145,38 @@ test('Game #5 large 3D Tanks! port extracts 103 binary prefab meshes, 41 collide
   for (const board of ['compare_game5_tanks_3engine.png', 'compare_game5_tanks_gameplay_and_winner.png']) {
     const bp = path.join(REPORTS_DIR, 'screenshots', board);
     assert.ok(fs.existsSync(bp) && fs.statSync(bp).size > 20000, `Missing Tanks! comparison board: ${board}`);
+  }
+});
+
+test('Game #6 Unity Boss Room (Co-op 3D RPG) converts 28 TGA->PNG + unpacked MSE, 7 FBX/OBJ, 5 WAV, and passes 11/11 Godot 4.7.2 E2E', () => {
+  const bossDir = path.join(ROOT, 'ported', 'godot-boss-room');
+  assert.ok(fs.existsSync(path.join(bossDir, 'project.godot')));
+  assert.ok(fs.existsSync(path.join(bossDir, 'scenes', 'boss_room.tscn')));
+  assert.ok(fs.existsSync(path.join(bossDir, 'scripts', 'network_action_bus.gd')));
+
+  const modelsDir = path.join(bossDir, 'assets', 'models');
+  if (fs.existsSync(modelsDir)) {
+    const models = fs.readdirSync(modelsDir).filter((f) => /\.(fbx|obj)$/i.test(f));
+    assert.equal(models.length, 7);
+    const pngs = fs.readdirSync(path.join(bossDir, 'assets', 'textures')).filter((f) => f.endsWith('.png'));
+    assert.ok(pngs.length >= 38, `Expected >= 38 converted+unpacked PNG textures, got ${pngs.length}`);
+    assert.ok(fs.existsSync(path.join(bossDir, 'assets', 'textures', 'env_deco_boss_arena_MetalSmoothEmissive_emissive.png')));
+    assert.ok(fs.existsSync(path.join(bossDir, 'assets', 'textures', 'env_deco_boss_arena_MetalSmoothEmissive_roughness.png')));
+    const wavs = fs.readdirSync(path.join(bossDir, 'assets', 'audio')).filter((f) => f.endsWith('.wav'));
+    assert.equal(wavs.length, 5);
+  }
+
+  const ver = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'boss-room-verification.json'), 'utf8'));
+  assert.equal(ver.failedChecks, 0);
+  assert.equal(ver.passedChecks, ver.totalChecks);
+  assert.equal(ver.totalChecks, 11);
+  assert.equal(ver.captures.length, 5);
+  assert.ok(ver.rpcDispatches >= 10);
+  assert.ok(ver.bossStuns >= 1);
+
+  for (const board of ['compare_game6_boss_room_before_after.jpg', 'compare_game6_boss_room_full_loop.jpg']) {
+    const bp = path.join(REPORTS_DIR, 'screenshots', board);
+    assert.ok(fs.existsSync(bp) && fs.statSync(bp).size > 20000, `Missing Boss Room board: ${board}`);
   }
 });
 
@@ -294,7 +337,14 @@ test('aiff-to-wav clamps pcmLength when SSND size or soundOffset exceeds buffer 
 test('port scripts, Tanks parser, and committed verify_and_capture.gd contain no hardcoded absolute paths', () => {
   const checkedFiles = [
     path.join(ROOT, 'src', 'godot-harness-paths.mjs'),
+    path.join(ROOT, 'src', 'unity-transform.mjs'),
+    path.join(ROOT, 'src', 'unity-ir-extractor.mjs'),
+    path.join(ROOT, 'src', 'deterministic-compilers.mjs'),
+    path.join(ROOT, 'src', 'orchestrator.mjs'),
+    path.join(ROOT, 'src', 'port-cli.mjs'),
+    path.join(ROOT, 'common-ir', 'validators', 'validate-ir.mjs'),
     path.join(ROOT, 'src', 'port-tanks.mjs'),
+    path.join(ROOT, 'src', 'port-boss-room.mjs'),
     path.join(ROOT, 'src', 'port-flappy-bird.mjs'),
     path.join(ROOT, 'src', 'port-roll-a-ball.mjs'),
     path.join(ROOT, 'src', 'port-space-shooter.mjs'),
@@ -304,6 +354,7 @@ test('port scripts, Tanks parser, and committed verify_and_capture.gd contain no
     path.join(ROOT, 'ported', 'godot-roll-a-ball', 'tests', 'verify_and_capture.gd'),
     path.join(ROOT, 'ported', 'godot-space-shooter', 'tests', 'verify_and_capture.gd'),
     path.join(ROOT, 'ported', 'godot-tanks-3d', 'tests', 'verify_and_capture.gd'),
+    path.join(ROOT, 'ported', 'godot-boss-room', 'tests', 'verify_and_capture.gd'),
   ];
 
   for (const file of checkedFiles) {
@@ -322,6 +373,7 @@ test('port scripts, Tanks parser, and committed verify_and_capture.gd contain no
     ['godot-roll-a-ball', 'roll-a-ball', 'roll-a-ball-verification.json'],
     ['godot-space-shooter', 'space-shooter', 'space-shooter-verification.json'],
     ['godot-tanks-3d', 'tanks-3d', 'tanks-3d-verification.json'],
+    ['godot-boss-room', 'boss-room', 'boss-room-verification.json'],
   ];
   for (const [gameDir, subdir, reportFile] of harnessExpectations) {
     const gd = fs.readFileSync(path.join(ROOT, 'ported', gameDir, 'tests', 'verify_and_capture.gd'), 'utf8')
@@ -352,4 +404,65 @@ test('port scripts, Tanks parser, and committed verify_and_capture.gd contain no
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
+});
+
+test('unity-transform.mjs coordinate, quaternion, ortho, sprite, and Gamma->Linear transforms are exact and bijective', () => {
+  const pos = [3.25, 1.5, -7.75];
+  assert.deepEqual(unityPositionToGodot(pos), [3.25, 1.5, 7.75]);
+  assert.deepEqual(godotPositionToUnity(unityPositionToGodot(pos)), pos);
+
+  const q = [0.1, 0.2, 0.3, 0.927362];
+  assert.deepEqual(unityQuaternionToGodot(q), [-0.1, -0.2, 0.3, 0.927362]);
+  assert.deepEqual(godotQuaternionToUnity(unityQuaternionToGodot(q)), q);
+
+  assert.equal(unityOrthoSizeToGodot(11.5), 23);
+  assert.deepEqual(unitySpriteRectToGodotRegion({ x: 0, y: 192, w: 32, h: 32 }, 224), { x: 0, y: 0, w: 32, h: 32 });
+
+  const lin = unityGammaColorToGodotLinear([1.0, 0.5, 0.0, 1.0]);
+  assert.equal(lin[0], 1);
+  assert.ok(lin[1] > 0.21 && lin[1] < 0.22);
+  assert.equal(lin[2], 0);
+  assert.equal(lin[3], 1);
+});
+
+test('Deterministic Unity pipeline produces valid Unified IR v0.1, idempotent compiles, 100% scorecard, JPG boards, and unity-boss-room PlayForge template', () => {
+  const orchPath = path.join(ROOT, 'audit', 'unity-orchestration-report.json');
+  assert.ok(fs.existsSync(orchPath), 'Missing audit/unity-orchestration-report.json');
+  const orch = JSON.parse(fs.readFileSync(orchPath, 'utf8'));
+  assert.equal(orch.all_gates_passed, true);
+  assert.equal(orch.completeness_scorecard.samples_audited, 6);
+  assert.equal(orch.completeness_scorecard.failed_unsupported, 0);
+  assert.equal(orch.completeness_scorecard.usable_in_godot_pct, 100);
+  assert.equal(orch.default_image_format, 'jpg_progressive_q84_max1400');
+
+  // Verify Unified Game IR v0.1 schema validity & byte-identical idempotency on Boss Room
+  const bossDir = path.join(ROOT, 'ported', 'godot-boss-room');
+  const bossIr = JSON.parse(fs.readFileSync(path.join(bossDir, 'extracted', 'unified-ir.v0.1.json'), 'utf8'));
+  const val = validateUnifiedIR(bossIr);
+  assert.equal(val.valid, true, `Boss Room IR errors: ${val.errors.join(', ')}`);
+  assert.equal(bossIr.source.engine, 'unity');
+  assert.equal(bossIr.units.coordinate_system, 'godot_3d');
+
+  compileUnityResourcesDeterministic(bossDir);
+  const secondPass = compileUnityResourcesDeterministic(bossDir);
+  assert.equal(secondPass.filesWritten, 0, 'Deterministic compiler must be byte-identical idempotent');
+  assert.ok(fs.existsSync(path.join(bossDir, 'assets', 'materials', 'env_deco_boss_arena.tres')));
+  assert.ok(fs.existsSync(path.join(bossDir, 'assets', 'shaders', 'env_deco_boss_arena_rune_pulse.gdshader')));
+
+  // Verify compressed JPG comparison boards exist and stay lightweight (< 600 KB)
+  for (const jpg of ['compare_game6_boss_room_before_after.jpg', 'compare_game6_boss_room_full_loop.jpg']) {
+    const p = path.join(REPORTS_DIR, 'screenshots', jpg);
+    assert.ok(fs.existsSync(p), `Missing compressed JPG board: ${jpg}`);
+    const sz = fs.statSync(p).size;
+    assert.ok(sz > 20000 && sz < 600000, `Unexpected JPG size for ${jpg}: ${sz} bytes`);
+  }
+
+  // Verify PlayForge text-only template forge/Templates/unity-boss-room/
+  const tplDir = path.resolve(ROOT, '..', '..', 'forge', 'Templates', 'unity-boss-room');
+  assert.ok(fs.existsSync(path.join(tplDir, 'metadata.json')));
+  assert.ok(fs.existsSync(path.join(tplDir, 'project.godot')));
+  assert.ok(fs.existsSync(path.join(tplDir, 'scenes', 'main.tscn')));
+  const tplMeta = JSON.parse(fs.readFileSync(path.join(tplDir, 'metadata.json'), 'utf8'));
+  assert.equal(tplMeta.id, 'unity-boss-room');
+  assert.equal(tplMeta.dimension, '3d');
 });

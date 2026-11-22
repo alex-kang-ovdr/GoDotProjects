@@ -8,11 +8,12 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
 import {createApp} from '../server/app.mjs';
 import {createForgeProxy} from './forge-proxy.mjs';
+import {createStoreProxy} from './store-proxy.mjs';
 import {assertRuntimeOutput} from './runtime-output.cjs';
 
 const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wasm':'application/wasm','.pck':'application/octet-stream'};
 function openInBrowser(url){
   const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',url],{detached:true,stdio:'ignore',windowsHide:true});
   child.on('error',()=>{});child.unref();
@@ -34,20 +35,22 @@ function resolveProxyClientIp(request,trustProxy){
 }
 
 const compressible=new Set(['.html','.js','.mjs','.css','.json','.svg','.xml','.txt']);
-export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySecret,trustProxy=true}={}){
+export function createStaticServer(directory,{forgeProxy,storeProxy,ugcMultiplayer,apiPort,trustedProxySecret,trustProxy=true}={}){
   const root=fs.realpathSync(directory);
   const gzipCache=new Map();
   const server=http.createServer((request,response)=>{
     const queryAt=request.url.indexOf('?');
     const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
+    if(rawPath==='/PlayForge'||rawPath==='/PlayForge/'){response.writeHead(302,{Location:'/forge/OfficialGodot/','Cache-Control':'no-store'});response.end();return;}
+    if(storeProxy&&storeProxy.matches(rawPath)){storeProxy.handle(request,response);return;}
     let normalizedProxyPath=null;
-    if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/'))){
+    if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/')||rawPath.startsWith('/ad/')||rawPath==='/.well-known/assetlinks.json')){
       try{
         const decoded=decodeURIComponent(rawPath);
         if(!decoded.includes('\0')&&!decoded.includes('\\'))normalizedProxyPath=path.posix.normalize(decoded);
       }catch{}
     }
-    if(apiPort&&normalizedProxyPath&&((normalizedProxyPath.startsWith('/api/')&&normalizedProxyPath!=='/api/admin'&&!normalizedProxyPath.startsWith('/api/admin/'))||normalizedProxyPath.startsWith('/play-ugc/'))){
+    if(apiPort&&normalizedProxyPath&&((normalizedProxyPath.startsWith('/api/')&&normalizedProxyPath!=='/api/admin'&&!normalizedProxyPath.startsWith('/api/admin/'))||normalizedProxyPath.startsWith('/play-ugc/')||normalizedProxyPath.startsWith('/ad/')||normalizedProxyPath==='/.well-known/assetlinks.json')){
       const headers={...request.headers,host:`127.0.0.1:${apiPort}`};
       delete headers['x-playhub-proxy-secret'];
       delete headers['cf-connecting-ip'];
@@ -79,6 +82,7 @@ export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySec
       if(!real.startsWith(root+path.sep)||!types[ext]){response.writeHead(404);response.end();return;}
       const stat=fs.statSync(real),etag=`W/"${stat.size}-${Math.trunc(stat.mtimeMs)}"`;
       response.setHeader('Content-Type',types[ext]);
+      if(rawPath.startsWith('/games/'))response.setHeader('Access-Control-Allow-Origin','*');
       response.setHeader('ETag',etag);
       response.setHeader('Cache-Control','public, max-age=0, must-revalidate');
       if(request.headers['if-none-match']===etag){response.writeHead(304);response.end();return;}
@@ -102,14 +106,15 @@ export function createStaticServer(directory,{forgeProxy,apiPort,trustedProxySec
       if(request.method==='HEAD')response.end();else fs.createReadStream(real).pipe(response);
     }catch{response.writeHead(400);response.end('Invalid request');}
   });
-  if(forgeProxy){
+  if(forgeProxy||ugcMultiplayer){
     server.on('upgrade',(request,socket,head)=>{
       const queryAt=(request.url||'').indexOf('?');
       const rawPath=queryAt>=0?request.url.slice(0,queryAt):(request.url||'');
-      if(forgeProxy.matches(rawPath))forgeProxy.upgrade(request,socket,head);
-      else socket.destroy();
+      if(ugcMultiplayer&&ugcMultiplayer.handleUpgrade(request,socket,head))return;
+      if(forgeProxy&&forgeProxy.matches(rawPath)){forgeProxy.upgrade(request,socket,head);return;}
+      socket.destroy();
     });
-    server.on('close',()=>forgeProxy.close?.());
+    if(forgeProxy)server.on('close',()=>forgeProxy.close?.());
   }
   return server;
 }
@@ -121,8 +126,12 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const forgeUpstream=process.env.PLAYHUB_FORGE_UPSTREAM||config.forgeUpstream||'';
   const multiplayerUpstream=process.env.PLAYHUB_MULTIPLAYER_UPSTREAM||config.multiplayerUpstream||'';
   const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream,multiplayerUpstream}):null;
+  const storeUpstream=process.env.PLAYHUB_STORE_UPSTREAM||config.storeUpstream||'';
+  const storeInternalSecret=process.env.PLAYHUB_STORE_INTERNAL_SECRET||config.store?.internalSecret||'';
   const trustedProxySecret=crypto.randomBytes(32).toString('hex');
-  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..'),trustedProxySecret}),user=createStaticServer(output.user,{forgeProxy,apiPort:config.publicPort||8090,trustedProxySecret,trustProxy:config.trustProxy!==false}),admin=createStaticServer(output.admin);
+  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..'),trustedProxySecret});
+  const storeProxy=storeUpstream?createStoreProxy({upstream:storeUpstream,allowedOrigins:config.userOrigins||[],resolveSessionIdentity:req=>app.resolveStoreIdentity(req),internalSecret:storeInternalSecret}):null;
+  const user=createStaticServer(output.user,{forgeProxy,storeProxy,ugcMultiplayer:app.ugcMultiplayer,apiPort:config.publicPort||8090,trustedProxySecret,trustProxy:config.trustProxy!==false}),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
     await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');

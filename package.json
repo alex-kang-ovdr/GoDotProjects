@@ -1,0 +1,35 @@
+{
+  "name": "playhub-platform",
+  "version": "0.0.0",
+  "private": true,
+  "description": "PlayHub-Platform monorepo root: agent rules gate, worktree ownership, and Tier 1 Fast QA entrypoints.",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "check:ownership": "node tools/worktree-ownership/check-ownership.mjs",
+    "check:engine-ssot": "node tools/engine/check-engine-ssot.mjs",
+    "check:skills": "node tools/agent-skills/sync-skills.mjs --check",
+    "sync:skills": "node tools/agent-skills/sync-skills.mjs",
+    "test:fast": "node tools/qa/fast-gate.mjs",
+    "test:fast:list": "node tools/qa/fast-gate.mjs --list",
+    "test:quarantine": "node tools/qa/fast-gate.mjs --only-quarantine",
+    "qa:summary": "node tools/qa/run-suite.mjs --summary",
+    "qa:smoke": "node tools/qa/run-suite.mjs --suite smoke",
+    "qa:component": "node tools/qa/run-suite.mjs --suite component",
+    "qa:hub": "node tools/qa/run-suite.mjs --suite hub",
+    "qa:forge": "node tools/qa/run-suite.mjs --suite forge",
+    "qa:system": "node tools/qa/run-suite.mjs --suite system",
+    "qa:regression": "node tools/qa/run-suite.mjs --suite regression",
+    "qa:multiplatform": "node tools/qa/run-suite.mjs --suite multiplatform",
+    "qa:user": "node tools/qa/run-suite.mjs --suite user",
+    "qa:game": "node tools/qa/run-suite.mjs --suite game",
+    "qa:local": "node tools/qa/run-suite.mjs --env local",
+    "qa:dev": "node tools/qa/run-suite.mjs --env dev",
+    "qa:live": "node tools/qa/run-suite.mjs --env live",
+    "qa:changed": "node tools/qa/run-suite.mjs --changed",
+    "worktrees:status": "node tools/worktree-ownership/prune-worktrees.mjs",
+    "gate": "npm run check:ownership && npm run check:skills && npm run test:fast"
+  }
+}

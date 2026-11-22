@@ -16,7 +16,9 @@ const DEFAULT_PORT := 7788
 const DEFAULT_COURSE_SEED := 42071
 const DEFAULT_PROXIMITY_RADIUS := 520.0
 const LEAVE_HYSTERESIS := 60.0
-const SYNC_INTERVAL := 0.25
+const DEFAULT_MAX_NEARBY_GHOSTS := 12
+const DEFAULT_PLAYER_SPEED := 170.0
+const SYNC_INTERVAL := 2.0 # Event-driven sync: fallback drift-reconcile only if no flap/phase event for 2s.
 const MAX_CLIENTS := 64
 const VALID_EVENTS := ["join", "flap", "phase", "sync", "leave"]
 const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
@@ -24,6 +26,7 @@ const VALID_PHASES := ["menu", "ready", "playing", "paused", "crashing", "over"]
 @export var auto_start := true
 @export var proximity_radius := DEFAULT_PROXIMITY_RADIUS
 @export var leave_hysteresis := LEAVE_HYSTERESIS
+@export var max_nearby_ghosts := DEFAULT_MAX_NEARBY_GHOSTS
 
 var transport_mode := "offline"
 var role := "offline"
@@ -43,6 +46,12 @@ var server_multicasts_sent := 0
 var server_filtered_out := 0
 
 var _enet_peer: ENetMultiplayerPeer
+var _ws_peer: WebSocketPeer
+var _ws_join_sent := false
+var _ws_game_id := "tappy-chicken-mmo"
+var _ws_room_id := ""
+var _ws_platform := "desktop"
+var _ws_compact_peers: Dictionary = {}
 var _server_also_plays := true
 var _server_peers: Dictionary = {}
 var _client_seq := 0
@@ -51,8 +60,14 @@ var _last_snapshot: Dictionary = {}
 var _web_callback: JavaScriptObject
 var _known_nearby: Dictionary = {}
 
+const _EVENT_TO_CODE := {"join": 0, "flap": 1, "phase": 2, "sync": 3, "leave": 4}
+const _CODE_TO_EVENT := ["join", "flap", "phase", "sync", "leave"]
+const _PHASE_TO_CODE := {"menu": 0, "ready": 1, "playing": 2, "paused": 3, "crashing": 4, "over": 5}
+const _CODE_TO_PHASE := ["menu", "ready", "playing", "paused", "crashing", "over"]
+
 
 func _ready() -> void:
+	set_process(false)
 	if Engine.is_editor_hint() or not auto_start:
 		return
 	start_auto()
@@ -62,8 +77,53 @@ func _exit_tree() -> void:
 	shutdown()
 
 
+func _process(_delta: float) -> void:
+	if transport_mode != "ws" or _ws_peer == null:
+		return
+	_ws_peer.poll()
+	var ws_state := _ws_peer.get_ready_state()
+	if ws_state == WebSocketPeer.STATE_OPEN:
+		if not _ws_join_sent:
+			_ws_join_sent = true
+			var join_msg := {
+				"type": "join",
+				"gameId": _ws_game_id,
+				"name": player_name if not player_name.is_empty() else ("Player-" + _ws_platform.to_upper()),
+				"platform": _ws_platform,
+				"compact": true,
+			}
+			if not _ws_room_id.is_empty():
+				join_msg["roomId"] = _ws_room_id
+			_ws_peer.send_text(JSON.stringify(join_msg))
+		while _ws_peer.get_available_packet_count() > 0:
+			var pkt := _ws_peer.get_packet()
+			if _ws_peer.was_string_packet():
+				_handle_ws_text(pkt.get_string_from_utf8())
+	elif ws_state == WebSocketPeer.STATE_CLOSED:
+		var was_connected := connected
+		connected = false
+		_ws_peer = null
+		_ws_join_sent = false
+		set_process(false)
+		if was_connected:
+			for peer_id in _known_nearby.keys():
+				peer_removed.emit(str(peer_id))
+			_known_nearby.clear()
+			_ws_compact_peers.clear()
+			nearby_count = 0
+			online_count = 1
+			_emit_status()
+
+
 func start_auto() -> void:
 	if OS.has_feature("web"):
+		var ws_url := str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('ws') || ''", true)).strip_edges()
+		if not ws_url.is_empty():
+			var game_id := str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('gameId') || 'tappy-chicken-mmo'", true)).strip_edges()
+			var room_id := str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('room') || ''", true)).strip_edges()
+			var web_name := str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('name') || 'WebPlayer'", true)).strip_edges()
+			start_ws_client(ws_url, game_id, room_id, web_name, "web")
+			return
 		var is_mp := bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('multiplayer') === '1'", true))
 		if is_mp:
 			start_web_bridge()
@@ -74,6 +134,21 @@ func start_auto() -> void:
 			_emit_status()
 		return
 
+	# Check PlayHub Android/Native Bridge or user://playhub_mp.json for cross-play WebSocket config.
+	var bridge_mp := _read_playhub_multiplayer_config()
+	if not bridge_mp.is_empty():
+		var b_ws := str(bridge_mp.get("wsUrl", "")).strip_edges()
+		if not b_ws.is_empty():
+			var default_plat := "android" if OS.has_feature("android") else "desktop"
+			start_ws_client(
+				b_ws,
+				str(bridge_mp.get("gameId", "tappy-chicken-mmo")),
+				str(bridge_mp.get("roomId", "")),
+				str(bridge_mp.get("displayName", player_name)),
+				str(bridge_mp.get("platform", default_plat))
+			)
+			return
+
 	var args := OS.get_cmdline_user_args()
 	var port := DEFAULT_PORT
 	var host := DEFAULT_HOST
@@ -81,6 +156,10 @@ func start_auto() -> void:
 	var connect_explicit := false
 	var run_offline := false
 	var seed_override := DEFAULT_COURSE_SEED
+	var cli_ws_url := ""
+	var cli_game_id := "tappy-chicken-mmo"
+	var cli_room_id := ""
+	var cli_platform := "android" if OS.has_feature("android") else "desktop"
 
 	for raw_arg in args:
 		var arg := str(raw_arg)
@@ -88,6 +167,14 @@ func start_auto() -> void:
 			run_offline = true
 		elif arg == "--server":
 			run_server = true
+		elif arg.begins_with("--ws="):
+			cli_ws_url = arg.substr(5).strip_edges()
+		elif arg.begins_with("--game-id="):
+			cli_game_id = arg.substr(10).strip_edges()
+		elif arg.begins_with("--room="):
+			cli_room_id = arg.substr(7).strip_edges()
+		elif arg.begins_with("--platform="):
+			cli_platform = arg.substr(11).strip_edges().to_lower()
 		elif arg.begins_with("--port="):
 			port = clampi(int(arg.substr(7)), 1024, 65535)
 		elif arg.begins_with("--seed="):
@@ -113,6 +200,10 @@ func start_auto() -> void:
 		_emit_status()
 		return
 
+	if not cli_ws_url.is_empty():
+		start_ws_client(cli_ws_url, cli_game_id, cli_room_id, player_name, cli_platform)
+		return
+
 	if run_server:
 		start_enet_server(port, seed_override, false)
 		return
@@ -124,6 +215,54 @@ func start_auto() -> void:
 	# Default desktop experience: host if port is free, otherwise drop in immediately as a client.
 	if start_enet_server(port, seed_override, true) != OK:
 		start_enet_client(host, port, player_name)
+
+
+func _read_playhub_multiplayer_config() -> Dictionary:
+	if Engine.has_singleton("PlayHubBridge"):
+		var bridge := Engine.get_singleton("PlayHubBridge")
+		if bridge != null and bridge.has_method("get_multiplayer_config"):
+			var raw := str(bridge.call("get_multiplayer_config")).strip_edges()
+			if not raw.is_empty():
+				var parsed = JSON.parse_string(raw)
+				if parsed is Dictionary and not parsed.is_empty():
+					return parsed
+	if FileAccess.file_exists("user://playhub_mp.json"):
+		var f := FileAccess.open("user://playhub_mp.json", FileAccess.READ)
+		if f != null:
+			var raw := f.get_as_text().strip_edges()
+			f.close()
+			if not raw.is_empty():
+				var parsed = JSON.parse_string(raw)
+				if parsed is Dictionary and not parsed.is_empty():
+					return parsed
+	return {}
+
+
+func start_ws_client(ws_url: String, game_id: String = "tappy-chicken-mmo", room_id: String = "", nickname: String = "", platform_tag: String = "web") -> Error:
+	shutdown()
+	var peer := WebSocketPeer.new()
+	var err := peer.connect_to_url(ws_url)
+	if err != OK:
+		transport_mode = "offline"
+		role = "offline"
+		connected = false
+		_emit_status()
+		return err
+	_ws_peer = peer
+	_ws_join_sent = false
+	_ws_game_id = game_id if not game_id.is_empty() else "tappy-chicken-mmo"
+	_ws_room_id = room_id
+	_ws_platform = platform_tag if not platform_tag.is_empty() else "web"
+	_ws_compact_peers.clear()
+	if not nickname.is_empty():
+		player_name = nickname.strip_edges().left(24)
+	transport_mode = "ws"
+	role = "client"
+	observer_only = false
+	connected = false
+	set_process(true)
+	_emit_status()
+	return OK
 
 
 func start_enet_server(port: int = DEFAULT_PORT, seed_value: int = DEFAULT_COURSE_SEED, also_plays: bool = true) -> Error:
@@ -202,6 +341,12 @@ func start_web_bridge() -> void:
 
 
 func shutdown() -> void:
+	set_process(false)
+	if _ws_peer != null:
+		_ws_peer.close()
+		_ws_peer = null
+	_ws_join_sent = false
+	_ws_compact_peers.clear()
 	if transport_mode == "web_bridge" and OS.has_feature("web"):
 		JavaScriptBridge.eval("if (window.__playforgeTappyMmoListener) window.removeEventListener('message', window.__playforgeTappyMmoListener); window.__playforgeTappyMmoCallback = null;", true)
 		_web_callback = null
@@ -241,21 +386,42 @@ func publish_local_event(event_type: String, game_snapshot: Dictionary) -> void:
 		return
 	if event_type not in VALID_EVENTS:
 		return
+	_sync_clock = 0.0 # Active gameplay events reset idle drift timer (0 Hz redundant sync).
 	_client_seq += 1
 	var bird: Dictionary = game_snapshot.get("bird", {})
+	var settings: Dictionary = game_snapshot.get("settings", {})
 	var payload := {
 		"event_type": event_type,
 		"name": player_name if not player_name.is_empty() else ("P-" + local_peer_id),
 		"run_distance": float(game_snapshot.get("run_distance", 0.0)),
+		"speed": float(settings.get("speed", DEFAULT_PLAYER_SPEED)),
 		"y": float(bird.get("y", 290.0)),
 		"vy": float(bird.get("vy", 0.0)),
 		"angle": float(bird.get("angle", 0.0)),
-		"flap_time": float(game_snapshot.get("flap_time", 0.0)),
+		"flap_time": 0.0 if event_type == "flap" else float(game_snapshot.get("flap_time", 0.0)),
 		"phase": str(game_snapshot.get("state", "menu")),
 		"score": int(game_snapshot.get("score", 0)),
 		"seq": _client_seq,
 	}
 	events_sent += 1
+
+	if transport_mode == "ws":
+		if _ws_peer != null and _ws_peer.get_ready_state() == WebSocketPeer.STATE_OPEN:
+			var ev_code: int = int(_EVENT_TO_CODE.get(event_type, 3))
+			var ph_code: int = int(_PHASE_TO_CODE.get(str(payload["phase"]), 2))
+			var dist_i: int = int(roundf(float(payload["run_distance"])))
+			var y_i: int = int(roundf(float(payload["y"])))
+			var sc_i: int = int(payload["score"])
+			var tuple: Array
+			if ev_code == 1 and ph_code == 2:
+				tuple = [1, dist_i, y_i, sc_i, 2, _client_seq]
+			else:
+				var flap100: int = int(roundf(float(payload["flap_time"]) * 100.0))
+				var vy_i: int = int(roundf(float(payload["vy"])))
+				var spd_i: int = int(roundf(float(payload["speed"])))
+				tuple = [ev_code, dist_i, y_i, sc_i, ph_code, _client_seq, flap100, vy_i, spd_i]
+			_ws_peer.send_text(JSON.stringify({"e": tuple}))
+		return
 
 	if transport_mode == "web_bridge":
 		var message := {
@@ -327,6 +493,13 @@ func rpc_client_multicast_event(sender_peer_id: int, payload: Dictionary) -> voi
 	_deliver_local_peer_event(str(sender_peer_id), payload)
 
 
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_client_multicast_sync(sender_peer_id: int, payload: Dictionary) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	_deliver_local_peer_event(str(sender_peer_id), payload)
+
+
 @rpc("authority", "call_remote", "reliable")
 func rpc_client_peer_removed(sender_peer_id: int) -> void:
 	if multiplayer.get_remote_sender_id() != 1:
@@ -350,6 +523,7 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"id": peer_id,
 		"name": nickname if not nickname.is_empty() else ("Player %d" % peer_id),
 		"run_distance": 0.0,
+		"speed": DEFAULT_PLAYER_SPEED,
 		"y": 290.0,
 		"vy": 0.0,
 		"angle": 0.0,
@@ -357,8 +531,23 @@ func _make_server_peer(peer_id: int, nickname: String) -> Dictionary:
 		"phase": "menu",
 		"score": 0,
 		"seq": 0,
+		"state_at_msec": Time.get_ticks_msec(),
 		"nearby": {},
 	}
+
+
+func _estimate_peer_distance(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["run_distance"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return float(peer["run_distance"]) + float(peer["speed"]) * elapsed
+
+
+func _estimate_peer_flap_time(peer: Dictionary, now_msec: int) -> float:
+	if str(peer["phase"]) != "playing":
+		return float(peer["flap_time"])
+	var elapsed := clampf(float(now_msec - int(peer["state_at_msec"])) / 1000.0, 0.0, 10.0)
+	return minf(10.0, float(peer["flap_time"]) + elapsed)
 
 
 func _is_within_proximity(dist_a: float, dist_b: float, was_nearby: bool) -> bool:
@@ -385,17 +574,24 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 	var phase := str(raw.get("phase", peer["phase"]))
 	if phase not in VALID_PHASES:
 		phase = "menu"
+	var now_msec := Time.get_ticks_msec()
 	peer["run_distance"] = clampf(float(raw.get("run_distance", peer["run_distance"])), 0.0, 10000000.0)
+	if raw.has("speed"):
+		peer["speed"] = clampf(float(raw.get("speed", DEFAULT_PLAYER_SPEED)), 60.0, 400.0)
 	peer["y"] = clampf(float(raw.get("y", peer["y"])), 0.0, 640.0)
 	peer["vy"] = clampf(float(raw.get("vy", peer["vy"])), -2000.0, 2000.0)
 	peer["angle"] = clampf(float(raw.get("angle", peer["angle"])), -PI, PI)
-	peer["flap_time"] = clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
+	peer["flap_time"] = 0.0 if event_type == "flap" else clampf(float(raw.get("flap_time", peer["flap_time"])), 0.0, 10.0)
 	peer["phase"] = phase
 	peer["score"] = maxi(0, int(raw.get("score", peer["score"])))
+	peer["state_at_msec"] = now_msec
 
 	server_events_received += 1
-	var clean_event := _peer_to_event_payload(peer, event_type)
+	var clean_event := _peer_to_event_payload(peer, event_type, now_msec)
 	var sender_nearby: Dictionary = peer["nearby"]
+	var ghost_cap := clampi(max_nearby_ghosts, 1, MAX_CLIENTS - 1)
+	var presence_changed: Dictionary = {}
+	var sender_dist := float(peer["run_distance"])
 
 	for other_id_variant in _server_peers.keys():
 		var other_id := int(other_id_variant)
@@ -404,7 +600,9 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 		var other: Dictionary = _server_peers[other_id]
 		var other_nearby: Dictionary = other["nearby"]
 		var was_nearby := sender_nearby.has(other_id)
-		var now_nearby := _is_within_proximity(float(peer["run_distance"]), float(other["run_distance"]), was_nearby)
+		var other_dist := _estimate_peer_distance(other, now_msec)
+		var in_range := _is_within_proximity(sender_dist, other_dist, was_nearby)
+		var now_nearby := in_range and (was_nearby or (sender_nearby.size() < ghost_cap and other_nearby.size() < ghost_cap))
 
 		if now_nearby:
 			_server_send_event_to(other_id, sender_id, clean_event)
@@ -412,29 +610,37 @@ func _server_handle_player_event(sender_id: int, raw: Dictionary) -> void:
 			if not was_nearby:
 				sender_nearby[other_id] = true
 				other_nearby[sender_id] = true
-				# Symmetric AOI entry: also deliver the existing nearby peer's state back to sender.
-				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync"))
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
+				# Symmetric AOI entry with estimated position & flap_time for smooth drop-in.
+				_server_send_event_to(sender_id, other_id, _peer_to_event_payload(other, "sync", now_msec))
 				server_multicasts_sent += 1
 		else:
 			server_filtered_out += 1
 			if was_nearby:
 				sender_nearby.erase(other_id)
 				other_nearby.erase(sender_id)
+				presence_changed[sender_id] = true
+				presence_changed[other_id] = true
 				_server_send_removed_to(other_id, sender_id)
 				_server_send_removed_to(sender_id, other_id)
 
-	_server_broadcast_presence()
+	if event_type == "join":
+		_server_broadcast_presence()
+	elif not presence_changed.is_empty():
+		_server_send_presence_subset(presence_changed)
 
 
-func _peer_to_event_payload(peer: Dictionary, event_type: String) -> Dictionary:
+func _peer_to_event_payload(peer: Dictionary, event_type: String, now_msec: int = -1) -> Dictionary:
+	var ts := Time.get_ticks_msec() if now_msec < 0 else now_msec
 	return {
 		"event_type": event_type,
 		"name": str(peer["name"]),
-		"run_distance": float(peer["run_distance"]),
+		"run_distance": _estimate_peer_distance(peer, ts),
 		"y": float(peer["y"]),
 		"vy": float(peer["vy"]),
 		"angle": float(peer["angle"]),
-		"flap_time": float(peer["flap_time"]),
+		"flap_time": 0.0 if event_type == "flap" else _estimate_peer_flap_time(peer, ts),
 		"phase": str(peer["phase"]),
 		"score": int(peer["score"]),
 		"seq": int(peer["seq"]),
@@ -445,6 +651,8 @@ func _server_send_event_to(target_id: int, sender_id: int, payload: Dictionary) 
 	if target_id == 1:
 		if _server_also_plays:
 			_deliver_local_peer_event(str(sender_id), payload)
+	elif str(payload.get("event_type", "sync")) == "sync":
+		rpc_client_multicast_sync.rpc_id(target_id, sender_id, payload)
 	else:
 		rpc_client_multicast_event.rpc_id(target_id, sender_id, payload)
 
@@ -455,6 +663,20 @@ func _server_send_removed_to(target_id: int, removed_id: int) -> void:
 			_deliver_local_peer_removed(str(removed_id))
 	else:
 		rpc_client_peer_removed.rpc_id(target_id, removed_id)
+
+
+func _server_send_presence_subset(peer_ids: Dictionary) -> void:
+	var total := _server_peers.size()
+	online_count = maxi(1, total)
+	if _server_also_plays and _server_peers.has(1):
+		nearby_count = (_server_peers[1]["nearby"] as Dictionary).size()
+	for peer_id_variant in peer_ids.keys():
+		var peer_id := int(peer_id_variant)
+		if peer_id == 1 or not _server_peers.has(peer_id):
+			continue
+		var peer: Dictionary = _server_peers[peer_id]
+		rpc_client_presence.rpc_id(peer_id, total, (peer["nearby"] as Dictionary).size())
+	_emit_status()
 
 
 func _server_broadcast_presence() -> void:
@@ -655,6 +877,82 @@ func _on_web_message(arguments: Array) -> void:
 						})
 					observer_state_received.emit(raw_state)
 					_emit_status()
+
+
+func _handle_ws_text(raw_text: String) -> void:
+	var message = JSON.parse_string(raw_text)
+	if not message is Dictionary:
+		return
+	if message.has("b") or message.has("r") or message.has("p"):
+		if message.has("b") and message["b"] is Array:
+			for t in message["b"]:
+				if not t is Array or t.size() < 5:
+					continue
+				var short_id := int(t[0])
+				var ev_idx := int(t[1])
+				var ev_type: String = _CODE_TO_EVENT[ev_idx] if ev_idx >= 0 and ev_idx < _CODE_TO_EVENT.size() else "sync"
+				var peer_id := "s-%d" % short_id
+				if t.size() >= 9 and t[8] is String and not str(t[8]).is_empty():
+					_ws_compact_peers[short_id] = str(t[8])
+				var is_flap := ev_idx == 1
+				var ph_idx := int(t[5]) if t.size() >= 6 else 2
+				var phase_str: String = _CODE_TO_PHASE[ph_idx] if ph_idx >= 0 and ph_idx < _CODE_TO_PHASE.size() else "playing"
+				var flap_val := 0.0 if is_flap else (float(t[6]) / 100.0 if t.size() >= 7 else 0.0)
+				var vy_val := -345.0 if is_flap else (float(t[7]) if t.size() >= 8 else 0.0)
+				var ang_val := -0.785 if is_flap else 0.0
+				_deliver_local_peer_event(peer_id, {
+					"peerId": peer_id,
+					"name": str(_ws_compact_peers.get(short_id, "P-%d" % short_id)),
+					"eventType": ev_type,
+					"event_type": ev_type,
+					"runDistance": float(t[2]),
+					"run_distance": float(t[2]),
+					"y": float(t[3]),
+					"score": int(t[4]),
+					"phase": phase_str,
+					"flapTime": flap_val,
+					"flap_time": flap_val,
+					"vy": vy_val,
+					"angle": ang_val,
+				})
+		if message.has("r") and message["r"] is Array:
+			for sid_var in message["r"]:
+				var sid := int(sid_var)
+				_ws_compact_peers.erase(sid)
+				_deliver_local_peer_removed("s-%d" % sid)
+		if message.has("p") and message["p"] is Array and (message["p"] as Array).size() >= 2:
+			var p_arr: Array = message["p"]
+			online_count = maxi(1, int(p_arr[0]))
+			nearby_count = maxi(0, int(p_arr[1]))
+			_emit_status()
+		return
+
+	var msg_type := str(message.get("type", ""))
+	if msg_type == "welcome":
+		var incoming_name := str(message.get("playerName", "")).strip_edges().left(24)
+		if not incoming_name.is_empty():
+			player_name = incoming_name
+		_apply_welcome({
+			"course_seed": int(message.get("courseSeed", DEFAULT_COURSE_SEED)),
+			"proximity_radius": float(message.get("proximityRadius", DEFAULT_PROXIMITY_RADIUS)),
+			"peer_id": str(message.get("playerId", "")),
+			"role": "client",
+			"observer_only": false,
+			"online_count": int(message.get("onlineCount", 1)),
+		})
+	elif msg_type == "rpc":
+		var method := str(message.get("method", ""))
+		var params = message.get("params", {})
+		if not params is Dictionary:
+			return
+		if method == "client_multicast_event":
+			_deliver_local_peer_event(str(params.get("peerId", "")), params)
+		elif method == "client_peer_removed":
+			_deliver_local_peer_removed(str(params.get("peerId", "")))
+		elif method == "client_presence":
+			online_count = maxi(1, int(params.get("onlineCount", online_count)))
+			nearby_count = maxi(0, int(params.get("nearbyCount", _known_nearby.size())))
+			_emit_status()
 
 
 func _emit_status() -> void:

@@ -15,16 +15,22 @@ export const PLAYCOIN_TOPUP_PACKS = Object.freeze([
   { id: 'pack_2500', label: '최대 +25% · 3,125 PlayCoin', paidCoins: 2500, bonusCoins: 625, bonusPercent: 25, priceDisplay: '₩35,000' },
 ]);
 
-export function resolveAvatarAddonDir(platformRoot, rootDir) {
+export function resolveAvatarAddonDir(platformRoot, rootDir, options = {}) {
+  const { addonDir, includeModuleFallback = true } = options || {};
+  if (addonDir !== undefined) {
+    return typeof addonDir === 'string' && addonDir && fs.existsSync(path.join(addonDir, 'catalog.json'))
+      ? addonDir
+      : null;
+  }
   const candidates = [
     platformRoot && path.join(platformRoot, 'forge', 'Godot', 'addons', 'playforge_avatar'),
     rootDir && path.resolve(rootDir, '..', 'forge', 'Godot', 'addons', 'playforge_avatar'),
-    path.join(moduleRepoRoot, 'forge', 'Godot', 'addons', 'playforge_avatar'),
+    includeModuleFallback ? path.join(moduleRepoRoot, 'forge', 'Godot', 'addons', 'playforge_avatar') : null,
   ].filter(Boolean);
   for (const dir of candidates) {
     if (fs.existsSync(path.join(dir, 'catalog.json'))) return dir;
   }
-  throw new Error('PlayForge Avatar canonical catalog.json not found');
+  return null;
 }
 
 export function loadAvatarCatalog(addonDir) {

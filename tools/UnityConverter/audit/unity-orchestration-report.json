@@ -1,0 +1,944 @@
+{
+  "generated_at": "2026-11-22T04:39:13.715Z",
+  "total_duration_ms": 27333,
+  "architecture": "deterministic_core_with_agent_orchestration",
+  "default_image_format": "jpg_progressive_q84_max1400",
+  "all_gates_passed": true,
+  "completeness_scorecard": {
+    "samples_audited": 6,
+    "total_unity_assets": 328,
+    "ported_full": 249,
+    "ported_partial": 79,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 93.98
+  },
+  "samples": [
+    {
+      "id": "2d-roguelike",
+      "name": "2D Roguelike (Scavengers)",
+      "duration_ms": 5380,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 72,
+        "ported_full": 47,
+        "ported_partial": 25,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 91.32
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 2679,
+        "checked_scripts": 9,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 1794,
+        "script_error_count": 0,
+        "e2e_checks": "21/21",
+        "shots": [
+          {
+            "file": "01_day1_intro.png",
+            "width": 640,
+            "height": 640,
+            "mean_luminance": 0.0021,
+            "non_black_ratio": 0.0021,
+            "overexposed_white_ratio": 0.0021
+          },
+          {
+            "file": "02_day1_board.png",
+            "width": 640,
+            "height": 640,
+            "mean_luminance": 0.3336,
+            "non_black_ratio": 1,
+            "overexposed_white_ratio": 0.0021
+          },
+          {
+            "file": "03_day1_wall_chop.png",
+            "width": 640,
+            "height": 640,
+            "mean_luminance": 0.3334,
+            "non_black_ratio": 1,
+            "overexposed_white_ratio": 0.0018
+          },
+          {
+            "file": "04_day2_enemy_combat.png",
+            "width": 640,
+            "height": 640,
+            "mean_luminance": 0.3354,
+            "non_black_ratio": 1,
+            "overexposed_white_ratio": 0.0027
+          },
+          {
+            "file": "05_game_over.png",
+            "width": 640,
+            "height": 640,
+            "mean_luminance": 0.01,
+            "non_black_ratio": 0.01,
+            "overexposed_white_ratio": 0.01
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_01_gameplay_3way.jpg",
+          "width": 1400,
+          "height": 575,
+          "bytes": 130974
+        },
+        {
+          "file": "compare_02_action_and_mechanics.jpg",
+          "width": 1140,
+          "height": 1180,
+          "bytes": 222189
+        },
+        {
+          "file": "compare_03_gameover_ui.jpg",
+          "width": 1140,
+          "height": 620,
+          "bytes": 46779
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 159,
+          "assets_audited": 72,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 1,
+            "entities": 0,
+            "logic_graphs": 12,
+            "assets": 72,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 121,
+          "compiled_materials": 0,
+          "compiled_shaders": 0,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 2679,
+          "checked_scripts": 9,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 1794,
+          "script_error_count": 0,
+          "e2e_checks": "21/21",
+          "shots": [
+            {
+              "file": "01_day1_intro.png",
+              "width": 640,
+              "height": 640,
+              "mean_luminance": 0.0021,
+              "non_black_ratio": 0.0021,
+              "overexposed_white_ratio": 0.0021
+            },
+            {
+              "file": "02_day1_board.png",
+              "width": 640,
+              "height": 640,
+              "mean_luminance": 0.3336,
+              "non_black_ratio": 1,
+              "overexposed_white_ratio": 0.0021
+            },
+            {
+              "file": "03_day1_wall_chop.png",
+              "width": 640,
+              "height": 640,
+              "mean_luminance": 0.3334,
+              "non_black_ratio": 1,
+              "overexposed_white_ratio": 0.0018
+            },
+            {
+              "file": "04_day2_enemy_combat.png",
+              "width": 640,
+              "height": 640,
+              "mean_luminance": 0.3354,
+              "non_black_ratio": 1,
+              "overexposed_white_ratio": 0.0027
+            },
+            {
+              "file": "05_game_over.png",
+              "width": 640,
+              "height": 640,
+              "mean_luminance": 0.01,
+              "non_black_ratio": 0.01,
+              "overexposed_white_ratio": 0.01
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "roll-a-ball",
+      "name": "Roll-a-Ball (3D Physics)",
+      "duration_ms": 2769,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 5,
+        "ported_full": 2,
+        "ported_partial": 3,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 85
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 947,
+        "checked_scripts": 4,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 1615,
+        "script_error_count": 0,
+        "e2e_checks": "8/8",
+        "shots": [
+          {
+            "file": "01_start.png",
+            "width": 800,
+            "height": 600,
+            "mean_luminance": 0.4625,
+            "non_black_ratio": 0.9999,
+            "overexposed_white_ratio": 0.003
+          },
+          {
+            "file": "02_mid_play.png",
+            "width": 800,
+            "height": 600,
+            "mean_luminance": 0.4257,
+            "non_black_ratio": 0.9999,
+            "overexposed_white_ratio": 0.003
+          },
+          {
+            "file": "03_you_win.png",
+            "width": 800,
+            "height": 600,
+            "mean_luminance": 0.4191,
+            "non_black_ratio": 0.9984,
+            "overexposed_white_ratio": 0.0026
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_game2_roll_a_ball.jpg",
+          "width": 1240,
+          "height": 940,
+          "bytes": 121601
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 16,
+          "assets_audited": 5,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 1,
+            "entities": 25,
+            "logic_graphs": 3,
+            "assets": 5,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 1,
+          "compiled_materials": 0,
+          "compiled_shaders": 0,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 947,
+          "checked_scripts": 4,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 1615,
+          "script_error_count": 0,
+          "e2e_checks": "8/8",
+          "shots": [
+            {
+              "file": "01_start.png",
+              "width": 800,
+              "height": 600,
+              "mean_luminance": 0.4625,
+              "non_black_ratio": 0.9999,
+              "overexposed_white_ratio": 0.003
+            },
+            {
+              "file": "02_mid_play.png",
+              "width": 800,
+              "height": 600,
+              "mean_luminance": 0.4257,
+              "non_black_ratio": 0.9999,
+              "overexposed_white_ratio": 0.003
+            },
+            {
+              "file": "03_you_win.png",
+              "width": 800,
+              "height": 600,
+              "mean_luminance": 0.4191,
+              "non_black_ratio": 0.9984,
+              "overexposed_white_ratio": 0.0026
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flappy-bird",
+      "name": "Flappy Bird (2D UV Parallax)",
+      "duration_ms": 3174,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 19,
+        "ported_full": 14,
+        "ported_partial": 5,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 93.42
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 1374,
+        "checked_scripts": 5,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 1541,
+        "script_error_count": 0,
+        "e2e_checks": "6/6",
+        "shots": [
+          {
+            "file": "01_ready.png",
+            "width": 432,
+            "height": 768,
+            "mean_luminance": 0.7301,
+            "non_black_ratio": 0.9987,
+            "overexposed_white_ratio": 0.0291
+          },
+          {
+            "file": "02_gameplay.png",
+            "width": 432,
+            "height": 768,
+            "mean_luminance": 0.7056,
+            "non_black_ratio": 0.999,
+            "overexposed_white_ratio": 0.0027
+          },
+          {
+            "file": "03_gameover.png",
+            "width": 432,
+            "height": 768,
+            "mean_luminance": 0.713,
+            "non_black_ratio": 0.999,
+            "overexposed_white_ratio": 0.0266
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_game3_flappy_bird.jpg",
+          "width": 1400,
+          "height": 617,
+          "bytes": 115304
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 39,
+          "assets_audited": 19,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 1,
+            "entities": 7,
+            "logic_graphs": 5,
+            "assets": 19,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 10,
+          "compiled_materials": 2,
+          "compiled_shaders": 0,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 1374,
+          "checked_scripts": 5,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 1541,
+          "script_error_count": 0,
+          "e2e_checks": "6/6",
+          "shots": [
+            {
+              "file": "01_ready.png",
+              "width": 432,
+              "height": 768,
+              "mean_luminance": 0.7301,
+              "non_black_ratio": 0.9987,
+              "overexposed_white_ratio": 0.0291
+            },
+            {
+              "file": "02_gameplay.png",
+              "width": 432,
+              "height": 768,
+              "mean_luminance": 0.7056,
+              "non_black_ratio": 0.999,
+              "overexposed_white_ratio": 0.0027
+            },
+            {
+              "file": "03_gameover.png",
+              "width": 432,
+              "height": 768,
+              "mean_luminance": 0.713,
+              "non_black_ratio": 0.999,
+              "overexposed_white_ratio": 0.0266
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-shooter",
+      "name": "Space Shooter (3D FBX + TIFF)",
+      "duration_ms": 4534,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 74,
+        "ported_full": 65,
+        "ported_partial": 9,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 96.96
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 1260,
+        "checked_scripts": 4,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 2761,
+        "script_error_count": 0,
+        "e2e_checks": "7/7",
+        "shots": [
+          {
+            "file": "01_gameplay_wave.png",
+            "width": 600,
+            "height": 900,
+            "mean_luminance": 0.1197,
+            "non_black_ratio": 0.9994,
+            "overexposed_white_ratio": 0.0009
+          },
+          {
+            "file": "02_laser_hit_explosion.png",
+            "width": 600,
+            "height": 900,
+            "mean_luminance": 0.1506,
+            "non_black_ratio": 0.9994,
+            "overexposed_white_ratio": 0.0038
+          },
+          {
+            "file": "03_gameover.png",
+            "width": 600,
+            "height": 900,
+            "mean_luminance": 0.1859,
+            "non_black_ratio": 0.9971,
+            "overexposed_white_ratio": 0.0155
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_game4_space_shooter.jpg",
+          "width": 1400,
+          "height": 633,
+          "bytes": 126022
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 206,
+          "assets_audited": 74,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 1,
+            "entities": 0,
+            "logic_graphs": 7,
+            "assets": 74,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 74,
+          "compiled_materials": 22,
+          "compiled_shaders": 0,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 1260,
+          "checked_scripts": 4,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 2761,
+          "script_error_count": 0,
+          "e2e_checks": "7/7",
+          "shots": [
+            {
+              "file": "01_gameplay_wave.png",
+              "width": 600,
+              "height": 900,
+              "mean_luminance": 0.1197,
+              "non_black_ratio": 0.9994,
+              "overexposed_white_ratio": 0.0009
+            },
+            {
+              "file": "02_laser_hit_explosion.png",
+              "width": 600,
+              "height": 900,
+              "mean_luminance": 0.1506,
+              "non_black_ratio": 0.9994,
+              "overexposed_white_ratio": 0.0038
+            },
+            {
+              "file": "03_gameover.png",
+              "width": 600,
+              "height": 900,
+              "mean_luminance": 0.1859,
+              "non_black_ratio": 0.9971,
+              "overexposed_white_ratio": 0.0155
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tanks-3d",
+      "name": "Tanks! 3D (Binary Prefab + 26 FBX)",
+      "duration_ms": 4178,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 104,
+        "ported_full": 76,
+        "ported_partial": 28,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 93.27
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 1474,
+        "checked_scripts": 5,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 2005,
+        "script_error_count": 0,
+        "e2e_checks": "11/11",
+        "shots": [
+          {
+            "file": "01_round1_start.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.6128,
+            "non_black_ratio": 0.9978,
+            "overexposed_white_ratio": 0.0019
+          },
+          {
+            "file": "02_playing_action.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.6116,
+            "non_black_ratio": 0.9972,
+            "overexposed_white_ratio": 0
+          },
+          {
+            "file": "03_shell_explosion_damage.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.6122,
+            "non_black_ratio": 0.9971,
+            "overexposed_white_ratio": 0
+          },
+          {
+            "file": "04_round_winner.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.6191,
+            "non_black_ratio": 0.9983,
+            "overexposed_white_ratio": 0.0069
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_game5_tanks_3engine.jpg",
+          "width": 1400,
+          "height": 378,
+          "bytes": 91174
+        },
+        {
+          "file": "compare_game5_tanks_gameplay_and_winner.jpg",
+          "width": 1320,
+          "height": 890,
+          "bytes": 175767
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 235,
+          "assets_audited": 104,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 2,
+            "entities": 0,
+            "logic_graphs": 19,
+            "assets": 104,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 58,
+          "compiled_materials": 21,
+          "compiled_shaders": 0,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 1474,
+          "checked_scripts": 5,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 2005,
+          "script_error_count": 0,
+          "e2e_checks": "11/11",
+          "shots": [
+            {
+              "file": "01_round1_start.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.6128,
+              "non_black_ratio": 0.9978,
+              "overexposed_white_ratio": 0.0019
+            },
+            {
+              "file": "02_playing_action.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.6116,
+              "non_black_ratio": 0.9972,
+              "overexposed_white_ratio": 0
+            },
+            {
+              "file": "03_shell_explosion_damage.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.6122,
+              "non_black_ratio": 0.9971,
+              "overexposed_white_ratio": 0
+            },
+            {
+              "file": "04_round_winner.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.6191,
+              "non_black_ratio": 0.9983,
+              "overexposed_white_ratio": 0.0069
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boss-room",
+      "name": "Boss Room (Official Co-op 3D RPG)",
+      "duration_ms": 7293,
+      "ir_valid": true,
+      "idempotent_compile": true,
+      "completeness": {
+        "total_assets_audited": 54,
+        "ported_full": 45,
+        "ported_partial": 9,
+        "failed_unsupported": 0,
+        "usable_in_godot_pct": 100,
+        "weighted_completeness_pct": 95.83
+      },
+      "static_script_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "duration_ms": 1845,
+        "checked_scripts": 6,
+        "errors": []
+      },
+      "runtime_visual_gate": {
+        "passed": true,
+        "skipped": false,
+        "attempt": 0,
+        "exit_code": 0,
+        "duration_ms": 4659,
+        "script_error_count": 0,
+        "e2e_checks": "11/11",
+        "shots": [
+          {
+            "file": "01_entrance_switch_door.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.3439,
+            "non_black_ratio": 0.9232,
+            "overexposed_white_ratio": 0.0062
+          },
+          {
+            "file": "02_boss_arena_combat.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.3708,
+            "non_black_ratio": 0.949,
+            "overexposed_white_ratio": 0.0018
+          },
+          {
+            "file": "03_boss_trample_telegraph.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.3251,
+            "non_black_ratio": 0.9309,
+            "overexposed_white_ratio": 0.0011
+          },
+          {
+            "file": "04_boss_stunned_and_coop_skills.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.3687,
+            "non_black_ratio": 0.9478,
+            "overexposed_white_ratio": 0.0015
+          },
+          {
+            "file": "05_victory_treasure_chest.png",
+            "width": 1280,
+            "height": 720,
+            "mean_luminance": 0.3805,
+            "non_black_ratio": 0.966,
+            "overexposed_white_ratio": 0.0043
+          }
+        ]
+      },
+      "jpg_boards": [
+        {
+          "file": "compare_game6_boss_room_before_after.jpg",
+          "width": 1400,
+          "height": 944,
+          "bytes": 339886
+        },
+        {
+          "file": "compare_game6_boss_room_full_loop.jpg",
+          "width": 1400,
+          "height": 944,
+          "bytes": 428964
+        }
+      ],
+      "repair_history": [],
+      "stages": [
+        {
+          "stage": "1_deterministic_ir_extract",
+          "passed": true,
+          "duration_ms": 248,
+          "assets_audited": 54,
+          "usable_pct": 100,
+          "ir_summary": {
+            "scenes": 1,
+            "entities": 1,
+            "logic_graphs": 9,
+            "assets": 54,
+            "blocked_assets": 0,
+            "diagnostics": 0
+          }
+        },
+        {
+          "stage": "2_deterministic_resource_compile",
+          "passed": true,
+          "duration_ms": 11,
+          "compiled_materials": 2,
+          "compiled_shaders": 1,
+          "idempotent_second_pass_writes": 0
+        },
+        {
+          "stage": "3_static_gdscript_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "duration_ms": 1845,
+          "checked_scripts": 6,
+          "errors": []
+        },
+        {
+          "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
+          "passed": true,
+          "skipped": false,
+          "attempt": 0,
+          "exit_code": 0,
+          "duration_ms": 4659,
+          "script_error_count": 0,
+          "e2e_checks": "11/11",
+          "shots": [
+            {
+              "file": "01_entrance_switch_door.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.3439,
+              "non_black_ratio": 0.9232,
+              "overexposed_white_ratio": 0.0062
+            },
+            {
+              "file": "02_boss_arena_combat.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.3708,
+              "non_black_ratio": 0.949,
+              "overexposed_white_ratio": 0.0018
+            },
+            {
+              "file": "03_boss_trample_telegraph.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.3251,
+              "non_black_ratio": 0.9309,
+              "overexposed_white_ratio": 0.0011
+            },
+            {
+              "file": "04_boss_stunned_and_coop_skills.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.3687,
+              "non_black_ratio": 0.9478,
+              "overexposed_white_ratio": 0.0015
+            },
+            {
+              "file": "05_victory_treasure_chest.png",
+              "width": 1280,
+              "height": 720,
+              "mean_luminance": 0.3805,
+              "non_black_ratio": 0.966,
+              "overexposed_white_ratio": 0.0043
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

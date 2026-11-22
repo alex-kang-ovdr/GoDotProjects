@@ -20,5 +20,22 @@
     "scenes/main.tscn",
     "project.godot"
   ],
-  "guide": "README.md"
+  "guide": "README.md",
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "survivor-io-template",
+      "title": { "ko": "탕탕특공대 (Survivor.io)", "en": "Survivor.io Arcade" },
+      "summary": { "ko": "자동 공격·무기 진화·보스전을 갖춘 2D 생존 로그라이트", "en": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves." },
+      "instructions": { "ko": "WASD 또는 드래그/터치 조이스틱으로 이동하며 적 웨이브를 돌파하세요.", "en": "Move with WASD or touch joystick to dodge waves and evolve weapons." },
+      "tags": ["action", "survival", "roguelite"],
+      "controls": ["keyboard", "mouse", "touch"],
+      "viewport": { "width": 480, "height": 800, "orientation": "portrait", "resize": "fit" }
+    }
+  }
 }

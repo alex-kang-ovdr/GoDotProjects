@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-survivor-io",
+  "slug": "forge-survivor-io",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "탕탕특공대 (Survivor.io)",
+    "en": "Survivor.io Arcade",
+    "ja": "Survivor.io Arcade",
+    "zh-CN": "Survivor.io Arcade",
+    "fr": "Survivor.io Arcade",
+    "es": "Survivor.io Arcade",
+    "pt-BR": "Survivor.io Arcade",
+    "hi": "Survivor.io Arcade"
+  },
+  "summary": {
+    "ko": "자동 공격·무기 진화·보스전을 갖춘 2D 생존 로그라이트",
+    "en": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "ja": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "zh-CN": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "fr": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "es": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "pt-BR": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "hi": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves."
+  },
+  "instructions": {
+    "ko": "WASD 또는 드래그/터치 조이스틱으로 이동하며 적 웨이브를 돌파하세요.",
+    "en": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "ja": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "zh-CN": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "fr": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "es": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "pt-BR": "Move with WASD or touch joystick to dodge waves and evolve weapons.",
+    "hi": "Move with WASD or touch joystick to dodge waves and evolve weapons."
+  },
+  "rules": {
+    "ko": "자동 공격·무기 진화·보스전을 갖춘 2D 생존 로그라이트",
+    "en": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "ja": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "zh-CN": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "fr": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "es": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "pt-BR": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves.",
+    "hi": "2D survival roguelite with auto-fire, weapon evolutions, and boss waves."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "publishedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action",
+    "survival",
+    "roguelite"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 480,
+    "height": 800,
+    "orientation": "portrait",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (survivor-io)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

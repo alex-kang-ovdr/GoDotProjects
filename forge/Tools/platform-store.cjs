@@ -67,7 +67,11 @@ function cleanPath(value) {
   return parts.join('/');
 }
 function reservedPath(value) {
-  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_agent_chat', 'addons/playforge_remote_control', 'addons/playforge_avatar', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
+  if (typeof value !== 'string') return false;
+  const normalized = value.replaceAll('\\', '/').replace(/^(\.\/)+/, '').toLowerCase();
+  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_agent_chat', 'addons/playforge_remote_control', 'addons/playforge_avatar', '.godot'].some(
+    folder => normalized === folder || normalized.startsWith(folder + '/')
+  );
 }
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {
@@ -86,9 +90,10 @@ class PlatformStore {
   }
 
   listTemplates() {
-    return Object.values(templates).map(({ id, name, description, assetPaths, showcase, files }) => ({
-      id, name, description, assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
+    return Object.values(templates).map(({ id, name, description, dimension, assetPaths, showcase, publishDefaults, files }) => ({
+      id, name, description, dimension: dimension || '3d', assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
       avatarPresentation: parseTemplateAvatarPresentation(files?.['project.godot']),
+      ...(publishDefaults ? { publishDefaults: clone(publishDefaults) } : {}),
     }));
   }
   getShowcase(id) {
@@ -98,7 +103,12 @@ class PlatformStore {
   getTemplate(id) {
     const template = templates[id];
     if (!template) throw httpError(404, 'Template not found');
-    return { id: template.id, name: template.name, description: template.description, dimension: template.dimension || '3d', assetPaths: clone(template.assetPaths || []), guideOrder: clone(template.guideOrder || []), files: clone(template.files) };
+    return {
+      id: template.id, name: template.name, description: template.description, dimension: template.dimension || '3d',
+      assetPaths: clone(template.assetPaths || []), guideOrder: clone(template.guideOrder || []),
+      ...(template.publishDefaults ? { publishDefaults: clone(template.publishDefaults) } : {}),
+      files: clone(template.files)
+    };
   }
   listProjects() {
     return fs.readdirSync(this.projectsDirectory, { withFileTypes: true }).filter(entry => entry.isDirectory() && validId(entry.name))
@@ -133,6 +143,30 @@ class PlatformStore {
   }
 
   getProject(id) { return snapshot(this.read(id)); }
+  renameProject(id, { name, clientId = null } = {}) {
+    if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
+    const cleanName = name.trim();
+    return this.enqueue(id, async () => {
+      const project = this.read(id);
+      const files = { ...project.files };
+      if (typeof files['project.godot'] === 'string') {
+        files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(cleanName));
+      }
+      return this.commit({ ...project, name: cleanName }, files, clientId, 'Project renamed');
+    });
+  }
+  deleteProject(id) {
+    return this.enqueue(id, async () => {
+      this.read(id);
+      const dir = path.join(this.projectsDirectory, id);
+      const resolved = path.resolve(dir);
+      if (path.dirname(resolved) !== path.resolve(this.projectsDirectory)) throw httpError(400, 'Invalid project directory');
+      fs.rmSync(resolved, { recursive: true, force: true });
+      this.emit(id, { type: 'deleted', id });
+      this.listeners.delete(id);
+      return { id, deleted: true };
+    });
+  }
   history(id) { return this.read(id).history.map(item => ({ revision: item.revision, createdAt: item.createdAt, clientId: item.clientId, message: item.message, fileCount: Object.keys(item.files).length })); }
   listReleases(id) { return clone(this.read(id).releases).map(({ files, build, ...release }) => ({ ...(build || {}), ...release })); }
 

@@ -3,31 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <meta name="theme-color" content="#202531">
+  <meta name="theme-color" content="#FFFFFF">
   <link rel="icon" href="vendor/favicon.png" type="image/png">
-  <title>PlayForge · Godot Editor</title>
+  <title>PlayForge · Godot 4.7.2 Web Editor</title>
   <style>
-    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#202531;color:#e8edf5;font:14px system-ui,sans-serif;overflow:hidden}
-    #toolbar{height:40px;display:flex;align-items:center;padding:0 12px;gap:12px;background:#181b22;border-bottom:1px solid #343a46}#brand{font-weight:700}#project{color:#abb8ca;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:30vw}#status{margin-left:auto;color:#a9c5e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#actions{display:flex;gap:6px;align-items:center}#actions button{padding:5px 9px;border:1px solid #424b5a;border-radius:4px;background:#252a34;color:#dce5f2;font:500 12px system-ui,sans-serif;cursor:pointer}#actions button:hover{background:#343c49}#actions button#pie-avatar-toggle[data-pie-avatar="on"]{border-color:#68b885;background:#1b3328;color:#d6f5df}#actions button#pie-avatar-toggle[data-pie-avatar="off"]{border-color:#786a4c;background:#2e2a20;color:#e7d7b1}
-    #notice{display:none;position:fixed;z-index:30;left:50%;bottom:16px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:9px 14px;border:1px solid #586a83;border-radius:6px;background:#202531;color:#e8edf5;box-shadow:0 4px 18px #0008;overflow-wrap:anywhere}
-    #editor-canvas{display:block;width:100%;height:calc(100% - 40px);outline:none}#game-overlay{display:none;position:absolute;inset:40px 0 0;background:#000;z-index:2}#game-canvas{display:block;width:100%;height:100%;outline:none}#return-to-editor{position:absolute;z-index:3;top:10px;right:12px;padding:8px 12px;border:1px solid #586a83;border-radius:5px;background:#292f3b;color:#e8edf5;font:600 13px system-ui,sans-serif;cursor:pointer}
-    #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}#native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
-    #agent-dock-frame{position:fixed;z-index:19;border:0;background:#171d28}
-    #editor-loading{position:fixed;inset:40px 0 0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#202531;color:#e8edf5;padding:24px;text-align:center}
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;background:#FAF8FF;color:#191B23;font:13.5px "Plus Jakarta Sans","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;overflow:hidden}
+    #toolbar{height:48px;display:flex;align-items:center;padding:0 14px;gap:10px;background:#FFFFFF;border-bottom:1px solid #DFE1F4}
+    .brand-switcher{display:inline-flex;align-items:center;gap:12px;flex-shrink:0}
+    .brand-hub-link{display:inline-flex;align-items:center;gap:5px;font-weight:800;color:#9AA0B4;text-decoration:none;white-space:nowrap;transition:color 150ms ease}
+    .brand-hub-link:hover,.brand-hub-link:focus-visible{color:#191B23}
+    #brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:#191B23;white-space:nowrap}
+    #brand .brand-mark{color:#004AC6}
+    #project{color:#191B23;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:28vw}
+    #project::after{content:" · Godot 4.7.2";color:#737686;font:500 11.5px ui-monospace,Consolas,monospace}
+    #status{margin-left:auto;color:#495C95;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    #actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    #actions button{padding:6px 12px;border:1px solid #C3C6D7;border-radius:999px;background:#F3F3FE;color:#191B23;font:600 12px "Plus Jakarta Sans","Malgun Gothic",system-ui,sans-serif;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,color 150ms ease}
+    #actions button:hover{border-color:#004AC6;background:#DBE1FF;color:#182D63}
+    #actions button#pie-avatar-toggle[data-pie-avatar="on"]{border-color:#2D8A56;background:#E6F6EC;color:#135431;font-weight:700}
+    #actions button#pie-avatar-toggle[data-pie-avatar="on"]:hover{border-color:#1F6E42;background:#D2F0DE;color:#0E4226}
+    #actions button#pie-avatar-toggle[data-pie-avatar="off"]{border-color:#C28B2C;background:#FEF4DC;color:#734D0A;font-weight:700}
+    #actions button#pie-avatar-toggle[data-pie-avatar="off"]:hover{border-color:#A16F1B;background:#FCE9BE;color:#5B3B06}
+    #actions button[data-action="publish"]{background:#004AC6;border-color:#004AC6;color:#FFFFFF;font-weight:700}
+    #actions button[data-action="publish"]:hover{background:#003BA0;border-color:#003BA0;color:#FFFFFF}
+    #notice{display:none;position:fixed;z-index:30;left:50%;bottom:16px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:10px 16px;border:1px solid #C3C6D7;border-radius:999px;background:#191B23;color:#FAF8FF;box-shadow:0 8px 24px rgba(17,19,27,0.28);overflow-wrap:anywhere}
+    #editor-canvas{display:block;width:100%;height:calc(100% - 48px);outline:none;background:#15191F}
+    #game-overlay{display:none;position:absolute;inset:48px 0 0;background:#11131B;z-index:2}
+    #game-canvas{display:block;width:100%;height:100%;outline:none}
+    #return-to-editor{position:absolute;z-index:3;top:12px;right:14px;padding:7px 14px;border:1px solid #C3C6D7;border-radius:999px;background:#FFFFFF;color:#191B23;font:700 12.5px system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+    #return-to-editor:hover{border-color:#004AC6;color:#004AC6}
+    #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}
+    #native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
+    #agent-dock-frame{position:fixed;z-index:19;border:0;border-left:1px solid #DFE1F4;background:#FFFFFF}
+    #blender-drawer,#porting-drawer{position:fixed;top:48px;right:0;bottom:0;width:min(820px,96vw);z-index:25;border:0;border-left:1px solid #DFE1F4;background:#12161f;box-shadow:-10px 0 30px rgba(17,19,27,0.24)}
+    #blender-drawer[hidden],#porting-drawer[hidden]{display:none}
+    #shorts-drawer{position:fixed;top:48px;right:0;bottom:0;width:min(920px,96vw);z-index:26;border:0;border-left:1px solid #DFE1F4;background:#FAF8FF;box-shadow:-10px 0 30px rgba(17,19,27,0.24)}
+    #shorts-drawer[hidden]{display:none}
+    #editor-loading{position:fixed;inset:48px 0 0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#FAF8FF;color:#191B23;padding:24px;text-align:center}
     #editor-loading[hidden]{display:none}
-    #editor-loading-bar-wrap{width:min(360px,80vw);height:8px;border-radius:999px;background:#141820;border:1px solid #343c4c;overflow:hidden}
-    #editor-loading-bar{width:6%;height:100%;background:linear-gradient(90deg,#4c8df6,#6fd3ff);transition:width .18s ease}
-    #editor-loading-detail{font-size:12px;color:#9fb0c9}
+    #editor-loading-title{font-size:17px;font-weight:700;color:#191B23}
+    #editor-loading-bar-wrap{width:min(360px,80vw);height:8px;border-radius:999px;background:#DFE1F4;overflow:hidden}
+    #editor-loading-bar{width:6%;height:100%;background:linear-gradient(90deg,#004AC6,#2563EB);transition:width .18s ease}
+    #editor-loading-detail{font-size:12.5px;color:#434655}
   </style>
 </head>
 <body>
   <div id="notice" role="alert"></div>
-  <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" id="pie-avatar-toggle" data-action="pie-avatar" data-pie-avatar="on" aria-pressed="true" title="PIE(에디터 실행)에서 PlayHub 배포용 아바타 및 좌상단 허브 플랫폼 바 HUD 적용 여부 선택">PIE 허브(아바타·HUD): ON</button><button type="button" data-action="collaboration">협업</button><button type="button" data-action="home">내 프로젝트</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
+  <div id="toolbar"><span class="brand-switcher" role="navigation" aria-label="플랫폼 전환"><a class="brand-hub-link" href="/" title="PLAY HUB로 이동">▶ PLAY HUB</a><span id="brand" aria-current="page"><span class="brand-mark" aria-hidden="true">◆</span>FORGE</span></span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" id="pie-avatar-toggle" data-action="pie-avatar" data-pie-avatar="on" aria-pressed="true" title="PIE(에디터 실행)에서 PlayHub 배포용 아바타 및 좌상단 허브 플랫폼 바 HUD 적용 여부 선택">PIE 허브(아바타·HUD): ON</button><button type="button" data-action="home">← 내 프로젝트</button><button type="button" data-action="blender">AI 3D</button><button type="button" data-action="porting">AI 포팅</button><button type="button" data-action="shorts">쇼츠 영상</button><button type="button" data-action="collaboration">협업</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
   <canvas id="editor-canvas" tabindex="0"></canvas>
   <div id="editor-loading" role="status" aria-live="polite"><strong id="editor-loading-title">Godot 웹 에디터 준비 중…</strong><div id="editor-loading-bar-wrap"><div id="editor-loading-bar"></div></div><div id="editor-loading-detail">프로젝트 파일을 불러오고 있습니다.</div></div>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
   <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
   <iframe id="agent-dock-frame" title="PlayForge AI Agent" hidden></iframe>
+  <iframe id="blender-drawer" title="PlayForge AI 3D Studio (Headless Blender)" hidden></iframe>
+  <iframe id="porting-drawer" title="PlayForge AI Project Porting" hidden></iframe>
+  <iframe id="shorts-drawer" title="PlayForge AI Shorts Studio (Google Flow / PlayCoin)" hidden></iframe>
+  <!-- playforge-dev-demo:start -->
+  <script src="dev-demo-ui.js"></script>
+  <!-- playforge-dev-demo:end -->
   <script src="vendor/godot.editor.js"></script>
   <script src="editor-bridge.js"></script>
 </body>

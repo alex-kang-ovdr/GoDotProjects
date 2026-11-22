@@ -7,3 +7,10 @@ samples/*/*.sln
 samples/*.zip
 ported/*/.godot/
 **/__pycache__/
+# Heavy Unity Boss Room LFS raw binary assets (fetched on demand via src/fetch_boss_room_assets.py)
+samples/unity-boss-room/Assets/Models/
+samples/unity-boss-room/Assets/Textures/
+samples/unity-boss-room/Assets/Sounds/
+ported/godot-boss-room/assets/models/
+ported/godot-boss-room/assets/textures/
+ported/godot-boss-room/assets/audio/

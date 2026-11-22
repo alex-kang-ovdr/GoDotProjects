@@ -18,5 +18,32 @@
     "assets/gem.svg",
     "project.godot"
   ],
-  "guide": "README.md"
+  "guide": "README.md",
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "mo",
+      "serverRuntime": "node-wss-v1",
+      "specTier": "micro",
+      "lobbyMode": "stateless_ui",
+      "channelPolicy": {
+        "autoChanneling": true,
+        "softCapPerChannel": 12,
+        "hideChannelUiWhenSingle": true
+      },
+      "lifecycle": {
+        "alwaysOn": false,
+        "idleSleepSec": 180,
+        "afkKickSec": 600
+      }
+    },
+    "gameMetadata": {
+      "slug": "brawllabs",
+      "title": { "ko": "브롤랩스 (BrawlLabs)", "en": "BrawlLabs" },
+      "summary": { "ko": "탑다운 아레나 3v3 브롤러: 이동·조준·젬 쟁탈전", "en": "Top-down arena brawler: move, aim, fight bots, and collect gems." },
+      "instructions": { "ko": "WASD 이동, 마우스/터치로 조준 및 공격해 중앙 젬을 확보하세요.", "en": "Move with WASD and aim/attack with mouse or touch to secure gems." },
+      "tags": ["action", "multiplayer", "arena"],
+      "controls": ["keyboard", "mouse", "touch"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
 }

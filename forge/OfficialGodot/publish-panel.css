@@ -1,3 +1,4 @@
+/* PlayForge Publish Drawer — Vibrant Modern Light Mode */
 aside.publish-drawer {
   width: min(500px, 100vw);
   padding: 18px 20px 28px;
@@ -7,26 +8,24 @@ aside.publish-drawer {
   display: flex;
   gap: 6px;
   margin: 10px 0 14px;
-  border-bottom: 1px solid #364459;
+  border-bottom: 1px solid #DFE1F4;
   padding-bottom: 10px;
 }
-
 .pf-pub-tab {
   flex: 1;
   padding: 7px 10px;
   font-size: 12px;
-  border-radius: 6px;
-  background: #1a2330;
-  border: 1px solid #354357;
-  color: #aebed2;
+  border-radius: 999px;
+  background: #F3F3FE;
+  border: 1px solid #DFE1F4;
+  color: #434655;
   margin: 0;
 }
-
 .pf-pub-tab.active {
-  background: #274464;
-  border-color: #63a4ff;
-  color: #fff;
-  font-weight: 600;
+  background: #004AC6;
+  border-color: #004AC6;
+  color: #FFFFFF;
+  font-weight: 700;
 }
 
 .pf-pub-steps {
@@ -35,28 +34,26 @@ aside.publish-drawer {
   gap: 6px;
   margin: 0 0 14px;
 }
-
 .pf-pub-step {
   font-size: 11px;
   padding: 6px 4px;
   text-align: center;
-  border-radius: 6px;
-  background: #17202b;
-  border: 1px solid #2e3b4e;
-  color: #8fa3bc;
+  border-radius: 8px;
+  background: #F3F3FE;
+  border: 1px solid #DFE1F4;
+  color: #434655;
   cursor: pointer;
 }
-
 .pf-pub-step.active {
-  background: #1e3b55;
-  border-color: #6ec4ff;
-  color: #fff;
-  font-weight: 600;
+  background: #DBE1FF;
+  border-color: #004AC6;
+  color: #182D63;
+  font-weight: 700;
 }
-
 .pf-pub-step.done {
-  border-color: #3c8c72;
-  color: #89e5c6;
+  border-color: #15803D;
+  background: #DCFCE7;
+  color: #14532D;
 }
 
 .pf-pub-section {
@@ -64,15 +61,14 @@ aside.publish-drawer {
   flex-direction: column;
   gap: 12px;
 }
-
 .pf-pub-field {
   display: flex;
   flex-direction: column;
   gap: 5px;
   font-size: 12px;
-  color: #c5d3e3;
+  font-weight: 600;
+  color: #434655;
 }
-
 .pf-pub-field input[type="text"],
 .pf-pub-field input[type="email"],
 .pf-pub-field input[type="number"],
@@ -80,14 +76,13 @@ aside.publish-drawer {
 .pf-pub-field textarea {
   width: 100%;
   padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #3e4d64;
-  background: #131a23;
-  color: #edf4ff;
+  border-radius: 10px;
+  border: 1px solid #C3C6D7;
+  background: #FFFFFF;
+  color: #191B23;
   font: inherit;
   font-size: 13px;
 }
-
 .pf-pub-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -99,136 +94,101 @@ aside.publish-drawer {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
-
 .pf-mode-card {
   display: flex;
   flex-direction: column;
   gap: 4px;
   text-align: left;
   padding: 10px;
-  border-radius: 8px;
-  background: #161f2b;
-  border: 1px solid #36455a;
-  color: #d7e3f3;
+  border-radius: 12px;
+  background: #FAF8FF;
+  border: 1px solid #DFE1F4;
+  color: #191B23;
   margin: 0;
 }
-
 .pf-mode-card.selected {
-  background: #1f3954;
-  border-color: #6ec4ff;
-  box-shadow: inset 0 0 0 1px #6ec4ff55;
+  background: #DBE1FF;
+  border-color: #004AC6;
+  box-shadow: inset 0 0 0 1px rgba(0, 74, 198, 0.25);
 }
-
-.pf-mode-card strong {
-  font-size: 13px;
-  color: #fff;
-}
-
-.pf-mode-card small {
-  font-size: 11px;
-  color: #9cb0c7;
-  line-height: 1.35;
-}
+.pf-mode-card strong { font-size: 13px; color: #191B23; }
+.pf-mode-card small { font-size: 11px; color: #434655; line-height: 1.35; }
 
 .pf-pub-box {
-  background: #161f2b;
-  border: 1px solid #334257;
-  border-radius: 8px;
+  background: #F3F3FE;
+  border: 1px solid #DFE1F4;
+  border-radius: 12px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
-.pf-pub-box h4 {
-  margin: 0;
-  font-size: 13px;
-  color: #e7f0fb;
-}
+.pf-pub-box h4 { margin: 0; font-size: 13px; color: #191B23; }
 
 .pf-calc-result {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   padding: 8px 10px;
-  border-radius: 6px;
-  background: #101721;
-  border: 1px solid #2b3a4f;
+  border-radius: 10px;
+  background: #FFFFFF;
+  border: 1px solid #DFE1F4;
 }
-
-.pf-calc-result strong {
-  font-size: 16px;
-  color: #79e5c1;
-}
-
-.pf-calc-result span {
-  font-size: 12px;
-  color: #9eb2ca;
-}
+.pf-calc-result strong { font-size: 16px; color: #004AC6; }
+.pf-calc-result span { font-size: 12px; color: #434655; }
 
 .pf-pub-warn {
   font-size: 12px;
-  color: #ffd37a;
-  background: #3a2e16;
-  border: 1px solid #755b26;
-  border-radius: 6px;
+  color: #78350F;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 10px;
   padding: 8px 10px;
   line-height: 1.45;
 }
-
 .pf-pub-ok {
   font-size: 12px;
-  color: #8bf0cc;
-  background: #14332a;
-  border: 1px solid #2c6e59;
-  border-radius: 6px;
+  color: #14532D;
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  border-radius: 10px;
   padding: 8px 10px;
   line-height: 1.45;
 }
-
 .pf-pub-err {
   font-size: 12px;
-  color: #ff9c9c;
-  background: #3b191d;
-  border: 1px solid #7c333c;
-  border-radius: 6px;
+  color: #93000A;
+  background: #FFDAD6;
+  border: 1px solid #FCA5A5;
+  border-radius: 10px;
   padding: 8px 10px;
   line-height: 1.45;
 }
 
-.pf-chip-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
+.pf-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .pf-chip-toggle {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: #151d28;
-  border: 1px solid #35445a;
-  color: #cbd7e6;
+  background: #FFFFFF;
+  border: 1px solid #C3C6D7;
+  color: #191B23;
   cursor: pointer;
 }
-
-.pf-chip-toggle input {
-  accent-color: #6ee6bf;
-  margin: 0;
-}
+.pf-chip-toggle input { accent-color: #004AC6; margin: 0; }
 
 .pf-pub-log {
   margin: 0;
   padding: 10px;
   max-height: 180px;
   overflow: auto;
-  border-radius: 6px;
-  background: #0d1219;
-  border: 1px solid #2b384c;
-  color: #c3d2e4;
+  border-radius: 10px;
+  background: #11131B;
+  border: 1px solid #282A32;
+  color: #E1E2ED;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 11px;
   white-space: pre-wrap;
@@ -241,61 +201,44 @@ aside.publish-drawer {
   gap: 8px;
   margin-top: 8px;
   padding-top: 10px;
-  border-top: 1px solid #344257;
+  border-top: 1px solid #DFE1F4;
 }
-
 .pf-pub-primary {
-  background: #226650;
-  border-color: #3da382;
-  color: #fff;
-  font-weight: 600;
+  background: #004AC6;
+  border-color: #004AC6;
+  color: #FFFFFF;
+  font-weight: 700;
 }
-
-.pf-pub-primary:hover {
-  background: #2b7d62;
-}
+.pf-pub-primary:hover { background: #003BA0; border-color: #003BA0; color: #FFFFFF; }
 
 .pf-release-item {
-  background: #161f2b;
-  border: 1px solid #324155;
-  border-radius: 8px;
+  background: #F3F3FE;
+  border: 1px solid #DFE1F4;
+  border-radius: 12px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
-.pf-release-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
+.pf-release-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .pf-badge {
   display: inline-block;
-  font-size: 10px;
-  padding: 2px 7px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
   border-radius: 999px;
-  background: #24364d;
-  color: #b7d3f5;
-  border: 1px solid #3e597c;
+  background: #DBE1FF;
+  color: #182D63;
 }
-
-.pf-badge.live {
-  background: #174636;
-  color: #8bf0cc;
-  border-color: #318a6d;
-}
-
+.pf-badge.live { background: #DCFCE7; color: #14532D; }
 .pf-link-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 6px;
-  background: #101721;
-  border: 1px solid #2e4058;
+  border-radius: 10px;
+  background: #FFFFFF;
+  border: 1px solid #DFE1F4;
   word-break: break-all;
 }

@@ -3,12 +3,23 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
 import { createArtifactStorage } from './artifact-storage.mjs';
+import { resolveUgcOrigin } from './runtime-config.mjs';
 import { ApiError, digest, json, readJson, uid } from './security.mjs';
 
-const GAME_ID_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+function loadPublishContract() {
+  const repoShared = path.resolve(__dirname, '../../tools/ugc-shared/publish-contract.cjs');
+  if (fs.existsSync(repoShared)) return require(repoShared);
+  return require(path.resolve(__dirname, 'ugc-shared/publish-contract.cjs'));
+}
+const { GAME_ID_RE, DEPLOY_MODES, VISIBILITIES, cleanText, slugifyGameId } = loadPublishContract();
+
 const FORGE_ID_RE = /^[a-f0-9]{24}$/;
 const SUBMISSION_ID_RE = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
 const HOST_SLUG_RE = /^p[a-z2-7]{16}$/;
@@ -17,8 +28,6 @@ const ADMIN_PUBLISH_SUBMISSION_RE = /^\/api\/admin\/submissions\/([0-9a-f]{8}(?:
 const ADMIN_PUB_ITEM_RE = /^\/api\/admin\/publications\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)(?:\/(rollback|status))?$/;
 const CREATOR_PUB_STATUS_RE = /^\/api\/creator\/publications\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\/status$/;
 const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
-const DEPLOY_MODES = new Set(['singleplay', 'mo', 'mmo']);
-const VISIBILITIES = new Set(['private', 'unlisted', 'public']);
 const PUB_STATUSES = new Set(['published', 'unpublished', 'suspended']);
 
 function generateHostSlug(ownerKey, projectId) {
@@ -28,29 +37,6 @@ function generateHostSlug(ownerKey, projectId) {
     out += BASE32_ALPHABET[hash[i] & 31];
   }
   return out;
-}
-
-function slugifyGameId(raw, fallbackSeed = 'ugc-game') {
-  const base = typeof raw === 'string'
-    ? raw.normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase()
-    : '';
-  let slug = base.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
-  if (!slug || !/^[a-z]/.test(slug)) {
-    const suffix = crypto.createHash('sha256').update(String(raw || fallbackSeed)).digest('hex').slice(0, 8);
-    slug = slug ? `g-${slug}` : `game-${suffix}`;
-  }
-  slug = slug.slice(0, 48).replace(/-+$/g, '');
-  if (!GAME_ID_RE.test(slug)) {
-    const suffix = crypto.createHash('sha256').update(String(fallbackSeed)).digest('hex').slice(0, 8);
-    return `game-${suffix}`;
-  }
-  return slug;
-}
-
-function cleanText(value, maxLen, fallback = '') {
-  if (typeof value !== 'string') return fallback;
-  const trimmed = value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
-  return trimmed ? trimmed.slice(0, maxLen) : fallback;
 }
 
 function localizedPair(value, fallbackKo, fallbackEn, maxLen) {
@@ -153,11 +139,13 @@ function readStaticGameIds(rootDir) {
   return new Set();
 }
 
-function toPublication(row) {
+function toPublication(row, ugcOrigin = null) {
   let manifest = null;
   let deployProfile = null;
   try { manifest = JSON.parse(row.manifest_json); } catch {}
   try { deployProfile = JSON.parse(row.deploy_profile_json); } catch {}
+  const rawBaseUrl = String(row.artifact_base_url || '');
+  const artifactBaseUrl = ugcOrigin && rawBaseUrl.startsWith('/') ? `${ugcOrigin}${rawBaseUrl}` : rawBaseUrl;
   return {
     gameId: row.game_id,
     hostSlug: row.host_slug,
@@ -168,9 +156,10 @@ function toPublication(row) {
     visibility: row.visibility,
     deployMode: row.deploy_mode,
     status: row.status,
+    unpublishedBy: row.unpublished_by || null,
     artifactSha256: row.artifact_sha256,
-    artifactBaseUrl: row.artifact_base_url,
-    entryUrl: `${row.artifact_base_url}index.html`,
+    artifactBaseUrl,
+    entryUrl: `${artifactBaseUrl}index.html`,
     manifest,
     deployProfile,
     casVersion: row.cas_version,
@@ -201,13 +190,23 @@ export function createUgcPublish({
   now = Date.now,
   audit = () => {},
   forgeGateway,
-  artifactStorage = null
+  artifactStorage = null,
+  env = process.env
 }) {
+  const ugcOrigin = resolveUgcOrigin(config.publish?.ugcOrigin !== undefined ? config.publish.ugcOrigin : env?.PLAYHUB_UGC_ORIGIN);
+  const rawBasePrefix = String(config.publish?.publicBasePrefix || '/play-ugc').replace(/\/+$/, '');
+  const publicBasePrefix = ugcOrigin && rawBasePrefix.startsWith('/') ? `${ugcOrigin}${rawBasePrefix}` : rawBasePrefix;
+  const frameAncestors = ["'self'", ...((Array.isArray(config.userOrigins) ? config.userOrigins : [])
+    .filter(o => typeof o === 'string' && /^https?:\/\//i.test(o)))];
+  const ugcCsp = `sandbox allow-scripts allow-pointer-lock; frame-ancestors ${[...new Set(frameAncestors)].join(' ')}`;
+
   const storage = artifactStorage || createArtifactStorage({
     storageMode: config.publish?.storageMode || 'local-fs',
     dataDir: config.dataDir,
-    publicBasePrefix: config.publish?.publicBasePrefix || '/play-ugc'
+    publicBasePrefix
   });
+
+  const formatPublication = row => toPublication(row, ugcOrigin);
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS hub_publications (
@@ -221,6 +220,7 @@ export function createUgcPublish({
       visibility TEXT NOT NULL CHECK(visibility IN ('private','unlisted','public')),
       deploy_mode TEXT NOT NULL CHECK(deploy_mode IN ('singleplay','mo','mmo')),
       status TEXT NOT NULL CHECK(status IN ('published','unpublished','suspended')),
+      unpublished_by TEXT,
       artifact_sha256 TEXT NOT NULL,
       artifact_base_url TEXT NOT NULL,
       manifest_json TEXT NOT NULL,
@@ -242,7 +242,10 @@ export function createUgcPublish({
       actor_id TEXT NOT NULL,
       reason TEXT,
       cas_version INTEGER NOT NULL,
-      created_at INTEGER NOT NULL
+      created_at INTEGER NOT NULL,
+      manifest_json TEXT,
+      deploy_profile_json TEXT,
+      artifact_sha256 TEXT
     );
     CREATE INDEX IF NOT EXISTS hub_publication_history_game ON hub_publication_history(game_id, created_at DESC);
 
@@ -255,15 +258,39 @@ export function createUgcPublish({
     );
   `);
 
+  const pubCols = new Set(db.prepare('PRAGMA table_info(hub_publications)').all().map(c => c.name));
+  if (!pubCols.has('unpublished_by')) {
+    db.exec('ALTER TABLE hub_publications ADD COLUMN unpublished_by TEXT');
+  }
+  const histCols = new Set(db.prepare('PRAGMA table_info(hub_publication_history)').all().map(c => c.name));
+  for (const [col, def] of [['manifest_json', 'TEXT'], ['deploy_profile_json', 'TEXT'], ['artifact_sha256', 'TEXT']]) {
+    if (!histCols.has(col)) {
+      db.exec(`ALTER TABLE hub_publication_history ADD COLUMN ${col} ${def}`);
+    }
+  }
+
   const getPubById = db.prepare('SELECT * FROM hub_publications WHERE game_id=?');
   const getPubByHostSlug = db.prepare('SELECT * FROM hub_publications WHERE host_slug=?');
   const getPubByOwnerProject = db.prepare('SELECT * FROM hub_publications WHERE owner_key=? AND project_id=? LIMIT 1');
   const listAllPubs = db.prepare('SELECT * FROM hub_publications ORDER BY updated_at DESC, game_id ASC');
   const listOwnerPubs = db.prepare('SELECT * FROM hub_publications WHERE owner_key=? ORDER BY updated_at DESC, game_id ASC');
   const listPubHistory = db.prepare('SELECT * FROM hub_publication_history WHERE game_id=? ORDER BY created_at DESC, rowid DESC LIMIT 30');
+  const findPublishedHistoryForRelease = db.prepare(`SELECT * FROM hub_publication_history
+    WHERE game_id=? AND to_release_id=? AND action IN ('publish', 'update')
+    ORDER BY created_at DESC, rowid DESC LIMIT 1`);
+  const findLastUnpublishAction = db.prepare(`SELECT action FROM hub_publication_history
+    WHERE game_id=? AND action IN ('unpublish', 'creator_unpublish')
+    ORDER BY created_at DESC, rowid DESC LIMIT 1`);
   const insertHistory = db.prepare(`INSERT INTO hub_publication_history
-    (id, game_id, from_release_id, to_release_id, action, actor_id, reason, cas_version, created_at)
-    VALUES (?,?,?,?,?,?,?,?,?)`);
+    (id, game_id, from_release_id, to_release_id, action, actor_id, reason, cas_version, created_at, manifest_json, deploy_profile_json, artifact_sha256)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`);
+
+  function recordHistory(gameId, fromReleaseId, toReleaseId, action, actorId, reason, casVersion, createdAt, extra = {}) {
+    insertHistory.run(
+      uid(), gameId, fromReleaseId || null, toReleaseId, action, actorId, reason || null, casVersion, createdAt,
+      extra.manifestJson ?? null, extra.deployProfileJson ?? null, extra.artifactSha256 ?? null
+    );
+  }
 
   function requireForgeEnabled() {
     if (config.forge?.enabled !== true) throw new ApiError(503, 'FORGE_DISABLED');
@@ -321,19 +348,51 @@ export function createUgcPublish({
   }
 
   function serveUgcAsset(req, res, pathname) {
-    const match = pathname.match(PLAY_UGC_RE);
-    if (!match) return false;
+    if (pathname !== '/play-ugc' && !pathname.startsWith('/play-ugc/')) return false;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Content-Security-Policy', ugcCsp);
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Access-Control-Allow-Headers': 'Range, If-None-Match, If-Modified-Since',
+        'Access-Control-Max-Age': '86400',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'no-referrer'
+      });
+      res.end();
+      return true;
+    }
     if (!['GET', 'HEAD'].includes(req.method || 'GET')) {
       throw new ApiError(405, 'METHOD_NOT_ALLOWED');
+    }
+    const match = pathname.match(PLAY_UGC_RE);
+    if (!match) {
+      throw new ApiError(404, 'NOT_FOUND');
     }
     const [, hostSlug, releaseId, restPath] = match;
     if (!HOST_SLUG_RE.test(hostSlug) || !FORGE_ID_RE.test(releaseId)) {
       throw new ApiError(404, 'NOT_FOUND');
     }
     const pub = getPubByHostSlug.get(hostSlug);
-    if (pub) {
-      if (pub.status === 'suspended') throw new ApiError(403, 'GAME_SUSPENDED', '이 게임은 운영 정책에 의해 일시 차단되었습니다.');
-      if (pub.status === 'unpublished') throw new ApiError(404, 'GAME_NOT_AVAILABLE', '비공개 전환된 게임입니다.');
+    if (!pub) {
+      throw new ApiError(404, 'GAME_NOT_FOUND');
+    }
+    if (pub.status === 'suspended') {
+      throw new ApiError(403, 'GAME_SUSPENDED', '이 게임은 운영 정책에 의해 일시 차단되었습니다.');
+    }
+    if (pub.status !== 'published') {
+      throw new ApiError(404, 'GAME_NOT_AVAILABLE', '비공개 전환된 게임입니다.');
+    }
+    if (pub.visibility === 'private') {
+      throw new ApiError(404, 'GAME_NOT_AVAILABLE', '비공개 게임은 공개 경로에서 서빙되지 않습니다.');
+    }
+    if (pub.active_release_id !== releaseId) {
+      throw new ApiError(404, 'RELEASE_NOT_ACTIVE', '활성화된 릴리스만 공개 서빙됩니다.');
     }
     const resolved = storage.resolveAssetPath(hostSlug, releaseId, restPath || 'index.html');
     if (!resolved) throw new ApiError(404, 'ASSET_NOT_FOUND');
@@ -342,9 +401,11 @@ export function createUgcPublish({
     res.writeHead(200, {
       'Content-Type': resolved.contentType,
       'Content-Length': resolved.size,
+      'Access-Control-Allow-Origin': '*',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
-      'Content-Security-Policy': "frame-ancestors 'self'",
+      'Content-Security-Policy': ugcCsp,
       'Cache-Control': isHtml ? 'no-cache' : 'public, max-age=31536000, immutable'
     });
     if (req.method === 'HEAD') {
@@ -359,10 +420,12 @@ export function createUgcPublish({
 
   return {
     storage,
+    ugcOrigin,
+    serveUgcAsset,
 
     async publicRoute(req, res, url) {
       const { pathname } = url;
-      if (pathname.startsWith('/play-ugc/')) {
+      if (pathname === '/play-ugc' || pathname.startsWith('/play-ugc/')) {
         return serveUgcAsset(req, res, pathname);
       }
 
@@ -371,7 +434,7 @@ export function createUgcPublish({
         const rows = listOwnerPubs.all(owner.key);
         json(res, 200, {
           publications: rows.map(row => ({
-            ...toPublication(row),
+            ...formatPublication(row),
             history: listPubHistory.all(row.game_id).map(toHistoryRow)
           }))
         });
@@ -400,6 +463,16 @@ export function createUgcPublish({
         if (existingBySlug && existingBySlug.owner_key !== owner.key) {
           throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
         }
+        if (existingBySlug && existingBySlug.project_id !== projectId) {
+          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
+        }
+        if (existingByProject && existingByProject.game_id !== rawSlug) {
+          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
+        }
+        const existingPub = existingByProject || existingBySlug;
+        if (existingPub && existingPub.status === 'suspended') {
+          throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN', '운영자에 의해 차단된 게임은 미리보기를 생성할 수 없습니다.');
+        }
 
         const hostSlug = existingByProject?.host_slug || existingBySlug?.host_slug || generateHostSlug(owner.key, projectId);
         const deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
@@ -418,6 +491,8 @@ export function createUgcPublish({
           visibility,
           nowMs: stamp
         });
+        const manifestJson = JSON.stringify(gameManifest);
+        const deployProfileJson = JSON.stringify(deployProfile);
 
         let stored;
         try {
@@ -433,54 +508,72 @@ export function createUgcPublish({
           throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP');
         }
 
-        // If a live public publication already exists for this project, keep the live pointer intact and return the isolated preview URL.
-        if (existingByProject && existingByProject.visibility === 'public' && existingByProject.status === 'published') {
-          audit('ugc_preview_staged', existingByProject.game_id, { ownerId: owner.id, releaseId, hostSlug });
-          json(res, 200, {
-            publication: toPublication(existingByProject),
-            previewUrl: `${stored.artifactBaseUrl}index.html`,
-            releaseId,
-            artifactSha256: stored.sha256,
-            liveUnchanged: true
-          });
-          return true;
-        }
-
-        const publication = transaction(db, () => {
+        const previewResult = transaction(db, () => {
           const current = getPubById.get(rawSlug);
+          const currentByProject = getPubByOwnerProject.get(owner.key, projectId);
           if (current && current.owner_key !== owner.key) throw new ApiError(409, 'GAME_SLUG_TAKEN');
+          if (current && current.project_id !== projectId) throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH');
+          if (currentByProject && currentByProject.game_id !== rawSlug) throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH');
+          const existing = current || currentByProject;
+          if (existing?.status === 'suspended') {
+            throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN', '운영자에 의해 차단된 게임은 미리보기를 생성할 수 없습니다.');
+          }
+          // Preserve live public or unpublished state; never allow preview to flip unpublished/suspended back to published.
+          if (current && (current.status === 'unpublished' || (current.visibility === 'public' && current.status === 'published'))) {
+            audit('ugc_preview_staged', current.game_id, { ownerId: owner.id, releaseId, hostSlug, status: current.status });
+            return {
+              status: 200,
+              payload: {
+                publication: formatPublication(current),
+                previewUrl: `${stored.artifactBaseUrl}index.html`,
+                releaseId,
+                artifactSha256: stored.sha256,
+                liveUnchanged: true
+              }
+            };
+          }
+
           const nextCas = current ? current.cas_version + 1 : 1;
           if (!current) {
             db.prepare(`INSERT INTO hub_publications
               (game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
-               visibility, deploy_mode, status, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
+               visibility, deploy_mode, status, unpublished_by, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
                cas_version, published_at, updated_at)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+              VALUES (?,?,?,?,?,?,?,?,?,?,NULL,?,?,?,?,?,?,?)`)
               .run(rawSlug, hostSlug, owner.key, owner.id, projectId, releaseId, null,
                 visibility, deployMode, 'published', stored.sha256, stored.artifactBaseUrl,
-                JSON.stringify(gameManifest), JSON.stringify(deployProfile), nextCas, stamp, stamp);
+                manifestJson, deployProfileJson, nextCas, stamp, stamp);
           } else {
-            db.prepare(`UPDATE hub_publications
-              SET active_release_id=?, visibility=?, deploy_mode=?, status='published',
+            const updated = db.prepare(`UPDATE hub_publications
+              SET active_release_id=?, visibility=?, deploy_mode=?,
                   artifact_sha256=?, artifact_base_url=?, manifest_json=?, deploy_profile_json=?,
                   cas_version=?, updated_at=?
-              WHERE game_id=? AND cas_version=?`)
+              WHERE game_id=? AND cas_version=? AND status='published'`)
               .run(releaseId, visibility, deployMode, stored.sha256, stored.artifactBaseUrl,
-                JSON.stringify(gameManifest), JSON.stringify(deployProfile), nextCas, stamp, rawSlug, current.cas_version);
+                manifestJson, deployProfileJson, nextCas, stamp, rawSlug, current.cas_version);
+            if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
           }
-          insertHistory.run(uid(), rawSlug, current?.active_release_id || null, releaseId,
-            current ? 'preview_update' : 'preview_publish', owner.id, null, nextCas, stamp);
+          recordHistory(rawSlug, current?.active_release_id || null, releaseId,
+            current ? 'preview_update' : 'preview_publish', owner.id, null, nextCas, stamp, {
+              manifestJson,
+              deployProfileJson,
+              artifactSha256: stored.sha256
+            });
           audit('ugc_preview_published', rawSlug, { ownerId: owner.id, releaseId, visibility, casVersion: nextCas });
-          return toPublication(getPubById.get(rawSlug));
+          const publication = formatPublication(getPubById.get(rawSlug));
+          return {
+            status: 201,
+            payload: {
+              publication,
+              previewUrl: publication.entryUrl,
+              releaseId,
+              artifactSha256: stored.sha256,
+              liveUnchanged: false
+            }
+          };
         });
 
-        json(res, 201, {
-          publication,
-          previewUrl: publication.entryUrl,
-          releaseId,
-          artifactSha256: stored.sha256,
-          liveUnchanged: false
-        });
+        json(res, previewResult.status, previewResult.payload);
         return true;
       }
 
@@ -496,14 +589,26 @@ export function createUgcPublish({
           const current = getPubById.get(gameId);
           if (!current || current.owner_key !== owner.key) throw new ApiError(404, 'PUBLICATION_NOT_FOUND');
           if (current.status === 'suspended') throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN');
+          if (current.status === 'unpublished') {
+            let adminUnpublished = current.unpublished_by === 'admin';
+            if (!adminUnpublished && !current.unpublished_by) {
+              const lastUnpub = findLastUnpublishAction.get(gameId);
+              if (lastUnpub?.action === 'unpublish') adminUnpublished = true;
+            }
+            if (adminUnpublished) {
+              throw new ApiError(403, 'PUBLICATION_UNPUBLISHED_BY_ADMIN', '운영자가 비공개 처리한 게임은 제작자가 상태를 변경할 수 없습니다.');
+            }
+          }
           const stamp = now();
           const nextCas = current.cas_version + 1;
-          db.prepare('UPDATE hub_publications SET status=?, cas_version=?, updated_at=? WHERE game_id=? AND cas_version=?')
-            .run(body.status, nextCas, stamp, gameId, current.cas_version);
-          insertHistory.run(uid(), gameId, current.active_release_id, current.active_release_id,
+          const nextUnpublishedBy = body.status === 'unpublished' ? 'creator' : null;
+          const updated = db.prepare('UPDATE hub_publications SET status=?, unpublished_by=?, cas_version=?, updated_at=? WHERE game_id=? AND cas_version=?')
+            .run(body.status, nextUnpublishedBy, nextCas, stamp, gameId, current.cas_version);
+          if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
+          recordHistory(gameId, current.active_release_id, current.active_release_id,
             body.status === 'unpublished' ? 'creator_unpublish' : 'creator_republish', owner.id, null, nextCas, stamp);
           audit('ugc_creator_status_changed', gameId, { ownerId: owner.id, status: body.status, casVersion: nextCas });
-          return toPublication(getPubById.get(gameId));
+          return formatPublication(getPubById.get(gameId));
         });
         json(res, 200, { publication });
         return true;
@@ -519,7 +624,7 @@ export function createUgcPublish({
         const rows = listAllPubs.all();
         json(res, 200, {
           publications: rows.map(row => ({
-            ...toPublication(row),
+            ...formatPublication(row),
             history: listPubHistory.all(row.game_id).map(toHistoryRow)
           }))
         });
@@ -533,7 +638,7 @@ export function createUgcPublish({
           const row = getPubById.get(gameId);
           if (!row) throw new ApiError(404, 'PUBLICATION_NOT_FOUND');
           json(res, 200, {
-            publication: toPublication(row),
+            publication: formatPublication(row),
             history: listPubHistory.all(gameId).map(toHistoryRow)
           });
           return true;
@@ -552,25 +657,46 @@ export function createUgcPublish({
             if (body.expectedCasVersion !== undefined && body.expectedCasVersion !== current.cas_version) {
               throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
             }
+            const publishedHistory = findPublishedHistoryForRelease.get(gameId, toReleaseId);
+            if (!publishedHistory) {
+              throw new ApiError(409, 'ROLLBACK_TARGET_NOT_PUBLISHED', '이전에 관리자가 게시한 릴리스로만 롤백할 수 있습니다.');
+            }
             if (!storage.hasRelease(current.host_slug, toReleaseId)) {
               throw new ApiError(404, 'ROLLBACK_ARTIFACT_NOT_FOUND', '롤백 대상 릴리스 아티팩트가 스토리지에 없습니다.');
             }
             const stamp = now();
             const nextCas = current.cas_version + 1;
             const nextBaseUrl = `${storage.publicBasePrefix}/${current.host_slug}/${toReleaseId}/`;
-            let nextSha = current.artifact_sha256;
+            let nextSha = publishedHistory.artifact_sha256 || current.artifact_sha256;
+            let nextManifestJson = publishedHistory.manifest_json || null;
+            let nextDeployProfileJson = publishedHistory.deploy_profile_json || null;
             const metaPath = path.join(storage.rootDir, current.host_slug, `${toReleaseId}.meta.json`);
             try {
               const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-              if (typeof meta?.sha256 === 'string') nextSha = meta.sha256;
+              if (!publishedHistory.artifact_sha256 && typeof meta?.sha256 === 'string') nextSha = meta.sha256;
+              if (!nextManifestJson && meta?.gameManifest && typeof meta.gameManifest === 'object') {
+                nextManifestJson = JSON.stringify(meta.gameManifest);
+              }
+              if (!nextDeployProfileJson && meta?.releaseManifest?.deployProfile && typeof meta.releaseManifest.deployProfile === 'object') {
+                nextDeployProfileJson = JSON.stringify(meta.releaseManifest.deployProfile);
+              }
             } catch {}
+            if (!nextManifestJson) nextManifestJson = current.manifest_json;
+            if (!nextDeployProfileJson) nextDeployProfileJson = current.deploy_profile_json;
+
             const updated = db.prepare(`UPDATE hub_publications
-              SET active_release_id=?, artifact_sha256=?, artifact_base_url=?, cas_version=?, updated_at=?
+              SET active_release_id=?, artifact_sha256=?, artifact_base_url=?,
+                  manifest_json=?, deploy_profile_json=?, cas_version=?, updated_at=?
               WHERE game_id=? AND cas_version=?`)
-              .run(toReleaseId, nextSha, nextBaseUrl, nextCas, stamp, gameId, current.cas_version);
+              .run(toReleaseId, nextSha, nextBaseUrl, nextManifestJson, nextDeployProfileJson,
+                nextCas, stamp, gameId, current.cas_version);
             if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
-            insertHistory.run(uid(), gameId, current.active_release_id, toReleaseId,
-              'rollback', adminSession.admin_username || 'admin', reason || null, nextCas, stamp);
+            recordHistory(gameId, current.active_release_id, toReleaseId,
+              'rollback', adminSession.admin_username || 'admin', reason || null, nextCas, stamp, {
+                manifestJson: nextManifestJson,
+                deployProfileJson: nextDeployProfileJson,
+                artifactSha256: nextSha
+              });
             if (current.active_submission_id) {
               try {
                 db.prepare("UPDATE creator_submissions SET publication_status='rolled_back', updated_at=? WHERE id=?")
@@ -584,7 +710,7 @@ export function createUgcPublish({
               reason,
               casVersion: nextCas
             });
-            return toPublication(getPubById.get(gameId));
+            return formatPublication(getPubById.get(gameId));
           });
           json(res, 200, { publication, history: listPubHistory.all(gameId).map(toHistoryRow) });
           return true;
@@ -603,11 +729,12 @@ export function createUgcPublish({
             }
             const stamp = now();
             const nextCas = current.cas_version + 1;
-            const updated = db.prepare('UPDATE hub_publications SET status=?, cas_version=?, updated_at=? WHERE game_id=? AND cas_version=?')
-              .run(nextStatus, nextCas, stamp, gameId, current.cas_version);
+            const nextUnpublishedBy = nextStatus === 'unpublished' ? 'admin' : null;
+            const updated = db.prepare('UPDATE hub_publications SET status=?, unpublished_by=?, cas_version=?, updated_at=? WHERE game_id=? AND cas_version=?')
+              .run(nextStatus, nextUnpublishedBy, nextCas, stamp, gameId, current.cas_version);
             if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
             const actionName = nextStatus === 'suspended' ? 'kill_switch' : nextStatus === 'unpublished' ? 'unpublish' : 'republish';
-            insertHistory.run(uid(), gameId, current.active_release_id, current.active_release_id,
+            recordHistory(gameId, current.active_release_id, current.active_release_id,
               actionName, adminSession.admin_username || 'admin', reason || null, nextCas, stamp);
             if (current.active_submission_id) {
               try {
@@ -621,7 +748,7 @@ export function createUgcPublish({
               reason,
               casVersion: nextCas
             });
-            return toPublication(getPubById.get(gameId));
+            return formatPublication(getPubById.get(gameId));
           });
           json(res, 200, { publication, history: listPubHistory.all(gameId).map(toHistoryRow) });
           return true;
@@ -696,6 +823,12 @@ export function createUgcPublish({
         if (existingBySlug && existingBySlug.owner_key !== submission.owner_key) {
           throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
         }
+        if (existingBySlug && existingBySlug.project_id !== submission.project_id) {
+          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
+        }
+        if (existingByProject && existingByProject.game_id !== candidateSlug) {
+          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
+        }
 
         const deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
           deployMode: DEPLOY_MODES.has(submission.deploy_mode) ? submission.deploy_mode : 'singleplay',
@@ -719,6 +852,8 @@ export function createUgcPublish({
           visibility,
           nowMs: stamp
         });
+        const manifestJson = JSON.stringify(gameManifest);
+        const deployProfileJson = JSON.stringify(deployProfile);
 
         let stored;
         try {
@@ -759,8 +894,15 @@ export function createUgcPublish({
           }
 
           const currentPub = getPubById.get(candidateSlug);
+          const currentByProject = getPubByOwnerProject.get(freshSub.owner_key, freshSub.project_id);
           if (currentPub && currentPub.owner_key !== freshSub.owner_key) {
             throw new ApiError(409, 'GAME_SLUG_TAKEN');
+          }
+          if (currentPub && currentPub.project_id !== freshSub.project_id) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH');
+          }
+          if (currentByProject && currentByProject.game_id !== candidateSlug) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH');
           }
           if (body.expectedCasVersion !== undefined && currentPub && body.expectedCasVersion !== currentPub.cas_version) {
             throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
@@ -769,28 +911,32 @@ export function createUgcPublish({
           if (!currentPub) {
             db.prepare(`INSERT INTO hub_publications
               (game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
-               visibility, deploy_mode, status, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
+               visibility, deploy_mode, status, unpublished_by, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
                cas_version, published_at, updated_at)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+              VALUES (?,?,?,?,?,?,?,?,?,?,NULL,?,?,?,?,?,?,?)`)
               .run(candidateSlug, hostSlug, freshSub.owner_key, freshSub.owner_id, freshSub.project_id,
                 freshSub.release_id, submissionId, visibility, deployMode, 'published', stored.sha256,
-                stored.artifactBaseUrl, JSON.stringify(gameManifest), JSON.stringify(deployProfile),
+                stored.artifactBaseUrl, manifestJson, deployProfileJson,
                 nextCas, stamp, stamp);
           } else {
             const updated = db.prepare(`UPDATE hub_publications
               SET active_release_id=?, active_submission_id=?, visibility=?, deploy_mode=?, status='published',
-                  artifact_sha256=?, artifact_base_url=?, manifest_json=?, deploy_profile_json=?,
+                  unpublished_by=NULL, artifact_sha256=?, artifact_base_url=?, manifest_json=?, deploy_profile_json=?,
                   cas_version=?, updated_at=?
               WHERE game_id=? AND cas_version=?`)
               .run(freshSub.release_id, submissionId, visibility, deployMode, stored.sha256,
-                stored.artifactBaseUrl, JSON.stringify(gameManifest), JSON.stringify(deployProfile),
+                stored.artifactBaseUrl, manifestJson, deployProfileJson,
                 nextCas, stamp, candidateSlug, currentPub.cas_version);
             if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
           }
 
-          insertHistory.run(uid(), candidateSlug, currentPub?.active_release_id || null, freshSub.release_id,
+          recordHistory(candidateSlug, currentPub?.active_release_id || null, freshSub.release_id,
             currentPub ? 'update' : 'publish', adminSession.admin_username || 'admin',
-            cleanText(body.note, 500, '') || null, nextCas, stamp);
+            cleanText(body.note, 500, '') || null, nextCas, stamp, {
+              manifestJson,
+              deployProfileJson,
+              artifactSha256: stored.sha256
+            });
 
           db.prepare(`UPDATE creator_submissions
             SET game_slug=?, artifact_sha256=?, package_validation='verified', publication_status='published',
@@ -809,7 +955,7 @@ export function createUgcPublish({
           });
 
           const payload = {
-            publication: toPublication(getPubById.get(candidateSlug)),
+            publication: formatPublication(getPubById.get(candidateSlug)),
             history: listPubHistory.all(candidateSlug).map(toHistoryRow),
             packageValidation: 'verified',
             publicationStatus: 'published'

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-brawllabs",
+  "slug": "forge-brawllabs",
+  "deployMode": "mo",
+  "title": {
+    "ko": "브롤랩스 (BrawlLabs)",
+    "en": "BrawlLabs",
+    "ja": "BrawlLabs",
+    "zh-CN": "BrawlLabs",
+    "fr": "BrawlLabs",
+    "es": "BrawlLabs",
+    "pt-BR": "BrawlLabs",
+    "hi": "BrawlLabs"
+  },
+  "summary": {
+    "ko": "탑다운 아레나 3v3 브롤러: 이동·조준·젬 쟁탈전",
+    "en": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "ja": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "zh-CN": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "fr": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "es": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "pt-BR": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "hi": "Top-down arena brawler: move, aim, fight bots, and collect gems."
+  },
+  "instructions": {
+    "ko": "WASD 이동, 마우스/터치로 조준 및 공격해 중앙 젬을 확보하세요.",
+    "en": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "ja": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "zh-CN": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "fr": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "es": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "pt-BR": "Move with WASD and aim/attack with mouse or touch to secure gems.",
+    "hi": "Move with WASD and aim/attack with mouse or touch to secure gems."
+  },
+  "rules": {
+    "ko": "탑다운 아레나 3v3 브롤러: 이동·조준·젬 쟁탈전",
+    "en": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "ja": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "zh-CN": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "fr": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "es": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "pt-BR": "Top-down arena brawler: move, aim, fight bots, and collect gems.",
+    "hi": "Top-down arena brawler: move, aim, fight bots, and collect gems."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "publishedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "action",
+    "multiplayer",
+    "arena"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (brawllabs)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

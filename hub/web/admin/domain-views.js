@@ -285,7 +285,265 @@ export function renderSystemAccess(container, data, { kstStamp }) {
   container.replaceChildren(p1, p2);
 }
 
-export function renderSystemBackups(container, data, { kstStamp, onCreateBackup }) {
+export function renderSystemBackups(container, data, { number = x => String(x ?? 0), kstStamp, onCreateBackup, onExportSnapshot, onImportSnapshot }) {
+  // ---- Panel 1: Latest-Version Data Snapshot Export / Import (Live <-> Dev Migration) ----
+  const meta = data.snapshotMeta || { environment: { channel: 'dev', isLive: false }, domains: [], excludedSecurityTables: [] };
+  const envInfo = meta.environment || { channel: 'dev', isLive: false };
+  const domains = Array.isArray(meta.domains) ? meta.domains : [];
+
+  const envBadge = pill(
+    `현재 환경: ${String(envInfo.channel || 'dev').toUpperCase()}${envInfo.isLive ? ' (운영)' : ' (개발/로컬)'}`,
+    envInfo.isLive ? 'warn' : 'ok',
+    true
+  );
+  const pSnap = panel('DATA MIGRATION SNAPSHOT', '최신버전 데이터 스냅샷 일괄 내보내기 · 임포트 (Live → Dev 이관)', envBadge);
+  pSnap.append(el(
+    'p',
+    'Live Admin에서 최신버전 데이터 스냅샷(.json)을 일괄 내보낸 뒤 Dev Admin에서 임포트해 데이터를 안전하게 이관합니다. 세션·OAuth·비밀번호·감사/이벤트 로그는 보안상 자동 제외됩니다.',
+    'muted'
+  ));
+
+  const grid = el('div', '', 'two-columns snapshot-grid');
+
+  // Left Box: Export
+  const exportBox = el('div', '', 'snapshot-box');
+  exportBox.append(el('h3', '1. 최신버전 스냅샷 일괄 내보내기 (Export)'));
+  const exportQuickActions = el('div', '', 'inline-actions');
+  const selectAllBtn = el('button', '전체 선택', 'quiet');
+  selectAllBtn.type = 'button';
+  const clearAllBtn = el('button', '전체 해제', 'quiet');
+  clearAllBtn.type = 'button';
+  exportQuickActions.append(selectAllBtn, clearAllBtn);
+  exportBox.append(exportQuickActions);
+
+  const domainChecks = new Map();
+  const domainList = el('div', '', 'snapshot-domain-list');
+  for (const d of domains) {
+    const label = el('label', '', 'checklist-item snapshot-domain-item');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = true;
+    cb.value = d.id;
+    cb.dataset.testid = `snapshot-domain-${d.id}`;
+    domainChecks.set(d.id, cb);
+    const body = el('span', '');
+    body.append(raw('strong', `${d.label} `), pill(`${number(d.totalRows)}행`, d.totalRows > 0 ? 'info' : 'muted', true));
+    body.append(el('small', d.description, 'snapshot-desc'));
+    label.append(cb, body);
+    domainList.append(label);
+  }
+  exportBox.append(domainList);
+
+  selectAllBtn.addEventListener('click', () => { for (const cb of domainChecks.values()) cb.checked = true; });
+  clearAllBtn.addEventListener('click', () => { for (const cb of domainChecks.values()) cb.checked = false; });
+
+  const exportFooter = el('div', '', 'inline-actions snapshot-footer');
+  const exportBtn = el('button', '최신 스냅샷 일괄 내보내기 (.json)', 'primary');
+  exportBtn.type = 'button';
+  exportBtn.dataset.testid = 'snapshot-export-btn';
+  const exportStatus = el('span', '', 'muted');
+  exportStatus.setAttribute('role', 'status');
+  exportFooter.append(exportBtn, exportStatus);
+  exportBox.append(exportFooter);
+
+  exportBtn.addEventListener('click', async () => {
+    const selected = [...domainChecks.entries()].filter(([, cb]) => cb.checked).map(([id]) => id);
+    if (!selected.length) {
+      exportStatus.textContent = '최소 1개 이상의 도메인을 선택하세요.';
+      return;
+    }
+    exportBtn.disabled = true;
+    exportStatus.textContent = '최신버전 스냅샷 생성 및 SHA-256 서명 중...';
+    try {
+      const res = await onExportSnapshot(selected);
+      const blob = new Blob([JSON.stringify(res.snapshot, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.filename || 'playhub-snapshot.json';
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      exportStatus.textContent = `내보내기 완료: ${res.filename} (${number(res.snapshot.summary.totalRows)}행 · SHA-256 ${res.snapshot.sha256.slice(0, 12)}…)`;
+    } catch (error) {
+      exportStatus.textContent = error.message || '스냅샷 내보내기에 실패했습니다.';
+    } finally {
+      exportBtn.disabled = false;
+    }
+  });
+
+  // Right Box: Import
+  const importBox = el('div', '', 'snapshot-box');
+  importBox.append(el('h3', '2. 스냅샷 일괄 임포트 (Live → Dev 이관)'));
+
+  const fileLabel = el('label', '스냅샷 파일 선택 (.json)', 'review-filter');
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.json,application/json';
+  fileInput.dataset.testid = 'snapshot-file-input';
+  fileLabel.append(fileInput);
+  importBox.append(fileLabel);
+
+  const loadedPreview = el('div', '선택된 스냅샷 파일이 없습니다. Live 환경에서 내보낸 JSON 파일을 선택하세요.', 'snapshot-loaded muted');
+  loadedPreview.dataset.testid = 'snapshot-loaded-info';
+  importBox.append(loadedPreview);
+
+  // Duplicate conflict option (Skip vs Overwrite)
+  const conflictGroup = el('fieldset', '', 'snapshot-options');
+  conflictGroup.append(el('legend', '중복 데이터 처리 옵션 (동일 PK 충돌 시)'));
+
+  const skipLabel = el('label', '', 'checklist-item');
+  const skipRadio = document.createElement('input');
+  skipRadio.type = 'radio';
+  skipRadio.name = 'snapshot-conflict-mode';
+  skipRadio.value = 'skip';
+  skipRadio.checked = true;
+  skipRadio.dataset.testid = 'conflict-skip';
+  skipLabel.append(skipRadio, el('span', '중복 건너뛰기 (기본 · 기존 데이터 유지, 신규 레코드만 추가)'));
+
+  const overwriteLabel = el('label', '', 'checklist-item');
+  const overwriteRadio = document.createElement('input');
+  overwriteRadio.type = 'radio';
+  overwriteRadio.name = 'snapshot-conflict-mode';
+  overwriteRadio.value = 'overwrite';
+  overwriteRadio.dataset.testid = 'conflict-overwrite';
+  overwriteLabel.append(overwriteRadio, el('span', '중복 덮어쓰기 (동일 PK 레코드를 스냅샷 최신값으로 덮어씀)'));
+
+  conflictGroup.append(skipLabel, overwriteLabel);
+  importBox.append(conflictGroup);
+
+  const backupBeforeLabel = el('label', '', 'checklist-item');
+  const backupBeforeCb = document.createElement('input');
+  backupBeforeCb.type = 'checkbox';
+  backupBeforeCb.checked = true;
+  backupBeforeCb.dataset.testid = 'snapshot-auto-backup';
+  backupBeforeLabel.append(backupBeforeCb, el('span', '임포트 직전 SQLite 자동 백업 생성 (권장)'));
+  importBox.append(backupBeforeLabel);
+
+  let allowLiveCb = null;
+  if (envInfo.isLive) {
+    const liveWarnLabel = el('label', '', 'checklist-item');
+    allowLiveCb = document.createElement('input');
+    allowLiveCb.type = 'checkbox';
+    allowLiveCb.checked = false;
+    allowLiveCb.dataset.testid = 'snapshot-allow-live';
+    liveWarnLabel.append(allowLiveCb, el('span', '주의: 현재 운영(LIVE) 환경에 스냅샷을 반영하는 것을 확인합니다.'));
+    importBox.append(liveWarnLabel);
+  }
+
+  const importActions = el('div', '', 'inline-actions snapshot-footer');
+  const dryRunBtn = el('button', '사전 영향 분석 (Dry-Run)', 'quiet');
+  dryRunBtn.type = 'button';
+  dryRunBtn.disabled = true;
+  dryRunBtn.dataset.testid = 'snapshot-dryrun-btn';
+  const importBtn = el('button', '스냅샷 일괄 임포트 실행', 'primary');
+  importBtn.type = 'button';
+  importBtn.disabled = true;
+  importBtn.dataset.testid = 'snapshot-import-btn';
+  const importStatus = el('span', '', 'muted');
+  importStatus.setAttribute('role', 'status');
+  importActions.append(dryRunBtn, importBtn, importStatus);
+  importBox.append(importActions);
+
+  const importReportBox = el('div', '', 'snapshot-report');
+  importReportBox.dataset.testid = 'snapshot-import-report';
+  importBox.append(importReportBox);
+
+  let parsedSnapshot = null;
+
+  fileInput.addEventListener('change', async () => {
+    parsedSnapshot = null;
+    dryRunBtn.disabled = true;
+    importBtn.disabled = true;
+    importReportBox.replaceChildren();
+    const file = fileInput.files?.[0];
+    if (!file) {
+      loadedPreview.textContent = '선택된 스냅샷 파일이 없습니다.';
+      return;
+    }
+    try {
+      const text = await file.text();
+      const jsonObj = JSON.parse(text);
+      if (jsonObj?.format !== 'playhub-data-snapshot-v1') {
+        throw new Error('유효한 PlayHub 스냅샷 JSON(playhub-data-snapshot-v1)이 아닙니다.');
+      }
+      parsedSnapshot = jsonObj;
+      const srcCh = String(jsonObj.sourceEnv?.channel || 'unknown').toUpperCase();
+      const dstCh = String(envInfo.channel || 'dev').toUpperCase();
+      loadedPreview.replaceChildren(
+        raw('strong', `${file.name} `),
+        pill(`${srcCh} → ${dstCh}`, srcCh === 'LIVE' && dstCh !== 'LIVE' ? 'ok' : 'info', true),
+        el('div', `생성: ${jsonObj.exportedAt ? kstStamp(jsonObj.exportedAt) : '—'} · 도메인 ${(jsonObj.domains || []).length}개 · 총 ${number(jsonObj.summary?.totalRows || 0)}행 · SHA-256 ${String(jsonObj.sha256 || '').slice(0, 14)}…`)
+      );
+      dryRunBtn.disabled = false;
+      importBtn.disabled = false;
+      importStatus.textContent = '파일 검증 준비 완료. 사전 영향 분석(Dry-Run) 후 임포트를 권장합니다.';
+    } catch (error) {
+      loadedPreview.textContent = `파일 읽기 실패: ${error.message || 'JSON 형식 오류'}`;
+      importStatus.textContent = '';
+    }
+  });
+
+  const renderImportResult = res => {
+    const t = res.totals || {};
+    const header = el('div', '', 'inline-actions');
+    header.append(
+      pill(res.dryRun ? '사전 영향 분석 (Dry-Run · 미반영)' : '임포트 반영 완료', res.dryRun ? 'info' : 'ok'),
+      pill(`중복 처리: ${res.conflictMode === 'overwrite' ? '덮어쓰기' : '건너뛰기'}`, res.conflictMode === 'overwrite' ? 'warn' : 'muted'),
+      raw('span', `신규 ${number(t.inserted)} · ${res.dryRun ? '덮어쓰기 예정' : '덮어씀'} ${number(t.overwritten)} · 건너뜀 ${number(t.skipped)} (총 ${number(t.incoming)}행)`)
+    );
+    const tblRows = (res.tables || [])
+      .filter(r => r.incoming > 0)
+      .map(r => [
+        raw('strong', r.table),
+        raw('span', r.db),
+        number(r.incoming),
+        number(r.inserted),
+        number(r.overwritten),
+        number(r.skipped)
+      ]);
+    importReportBox.replaceChildren(
+      header,
+      simpleTable(['테이블', 'DB', '대상 행', '신규', res.dryRun ? '덮어쓰기 예정' : '덮어씀', '건너뜀'], tblRows, '변경 대상 행이 없습니다.')
+    );
+  };
+
+  const runImport = async isDryRun => {
+    if (!parsedSnapshot || typeof onImportSnapshot !== 'function') return;
+    const conflictMode = overwriteRadio.checked ? 'overwrite' : 'skip';
+    const selected = [...domainChecks.entries()].filter(([, cb]) => cb.checked).map(([id]) => id);
+    dryRunBtn.disabled = true;
+    importBtn.disabled = true;
+    importStatus.textContent = isDryRun ? '영향 분석 중...' : '스냅샷 트랜잭션 임포트 실행 중...';
+    try {
+      const res = await onImportSnapshot({
+        snapshot: parsedSnapshot,
+        domains: selected.length ? selected : parsedSnapshot.domains,
+        conflictMode,
+        dryRun: isDryRun,
+        createBackupBeforeImport: backupBeforeCb.checked,
+        allowLiveImport: Boolean(allowLiveCb?.checked)
+      });
+      renderImportResult(res);
+      importStatus.textContent = isDryRun
+        ? '사전 영향 분석 완료 (DB 변경 없음).'
+        : `임포트 완료: 신규 ${number(res.totals?.inserted)}건, 덮어쓰기 ${number(res.totals?.overwritten)}건, 건너뜀 ${number(res.totals?.skipped)}건`;
+    } catch (error) {
+      importStatus.textContent = error.message || '임포트 처리에 실패했습니다.';
+    } finally {
+      dryRunBtn.disabled = !parsedSnapshot;
+      importBtn.disabled = !parsedSnapshot;
+    }
+  };
+
+  dryRunBtn.addEventListener('click', () => void runImport(true));
+  importBtn.addEventListener('click', () => void runImport(false));
+
+  grid.append(exportBox, importBox);
+  pSnap.append(grid);
+
+  // ---- Panel 2: Existing SQLite Online Backup ----
   const createBtn = el('button', '온라인 백업 지금 생성', 'primary');
   createBtn.type = 'button';
   createBtn.dataset.testid = 'create-backup-btn';
@@ -317,7 +575,7 @@ export function renderSystemBackups(container, data, { kstStamp, onCreateBackup 
   ]);
   p1.append(simpleTable(['파일명', '생성 시각', '크기', 'SHA-256 (앞 16자)', '검증'], rows, '아직 생성된 온라인 백업이 없습니다.'));
   p1.append(el('p', '복원은 서비스 중지 및 유지보수 잠금(maintenance.lock) 절차가 필요하므로 CLI 도구(node hub/tools/restore-data.mjs --verify / --apply)를 통해 수행합니다.', 'panel-foot'));
-  container.replaceChildren(p1);
+  container.replaceChildren(pSnap, p1);
 }
 
 export function renderForgeOverview(container, data, { number, onNavigate }) {
@@ -348,16 +606,192 @@ export function renderForgeOverview(container, data, { number, onNavigate }) {
   container.replaceChildren(p1);
 }
 
-export function renderForgeProjects(container, data, { number, kstStamp }) {
-  const p1 = panel('OFFICIAL TEMPLATES', '공식 스타터 템플릿 카탈로그');
-  const tRows = (data.templates || []).map(t => [
-    raw('strong', `${t.name} (${t.id})`),
-    pill(t.dimension.toUpperCase(), 'info', true),
-    raw('span', t.description || '—'),
-    number(t.assetCount),
-    t.hasShowcase ? pill('시연 포함', 'ok') : pill('기본', 'muted')
-  ]);
-  p1.append(simpleTable(['템플릿', '차원', '설명', '에셋 수', '제작 시연'], tRows, '등록된 공식 템플릿이 없습니다.'));
+export function renderForgeProjects(container, data, { number, kstStamp, onPublishTemplates, onPollPublishJob, onPublishComplete, userBaseUrl = '' }) {
+  const pub = data.templatePublish || {};
+  const templates = Array.isArray(pub.templates) && pub.templates.length ? pub.templates : (data.templates || []).map(t => ({
+    ...t,
+    gameId: `forge-${t.id}`,
+    published: false,
+    inHubDist: false,
+    playUrl: `/play/forge-${t.id}/`
+  }));
+  const godotOk = pub.godot?.available !== false;
+  const selectedIds = new Set(templates.filter(t => !t.published).map(t => t.id));
+  if (!selectedIds.size) templates.forEach(t => selectedIds.add(t.id));
+
+  const toolbar = el('div', '', 'inline-actions');
+  const godotPill = pill(godotOk ? 'Godot Web 빌드 준비됨' : 'Godot 미감지', godotOk ? 'ok' : 'warn');
+  const toggleAllBtn = el('button', '전체 선택/해제', 'quiet');
+  toggleAllBtn.type = 'button';
+  const batchBtn = el('button', `선택 일괄 퍼블리시 (${selectedIds.size})`, 'primary');
+  batchBtn.type = 'button';
+  batchBtn.dataset.testid = 'forge-batch-publish-btn';
+  const publishAllBtn = el('button', '전체 일괄 퍼블리시', 'quiet');
+  publishAllBtn.type = 'button';
+  publishAllBtn.dataset.testid = 'forge-publish-all-btn';
+  toolbar.append(godotPill, toggleAllBtn, batchBtn, publishAllBtn);
+
+  const p1 = panel('OFFICIAL TEMPLATES · BATCH PUBLISH', '공식 스타터 템플릿 카탈로그 및 일괄 퍼블리시', toolbar);
+  const progressHost = el('div', '', 'forge-publish-progress');
+  progressHost.dataset.testid = 'forge-publish-progress';
+  const checkboxes = new Map();
+  const actionButtons = [];
+
+  function syncButtons(running = false) {
+    batchBtn.textContent = `선택 일괄 퍼블리시 (${selectedIds.size})`;
+    batchBtn.disabled = running || !godotOk || selectedIds.size === 0 || !onPublishTemplates;
+    publishAllBtn.disabled = running || !godotOk || templates.length === 0 || !onPublishTemplates;
+    for (const btn of actionButtons) btn.disabled = running || !godotOk || !onPublishTemplates;
+  }
+
+  let pollTimer = null;
+  function stopPoll() {
+    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+  }
+
+  function renderJob(job) {
+    if (!job) { progressHost.replaceChildren(); return; }
+    const toneMap = { queued: 'muted', exporting: 'info', packaging: 'info', published: 'ok', failed: 'danger', running: 'info', completed: 'ok', partial: 'warn', succeeded: 'ok', pending: 'muted', skipped: 'muted', not_run: 'muted' };
+    const statusLabel = { running: '퍼블리시 진행 중', completed: '일괄 퍼블리시 완료', partial: '일부 완료 (오류 확인)', failed: '퍼블리시 실패' }[job.status] || job.status;
+    const box = el('div', '', 'surface-box');
+    const head = el('div', '', 'section-heading');
+    const left = el('div', '');
+    left.append(
+      pill(statusLabel, toneMap[job.status] || 'muted'),
+      el('span', `  성공 ${number(job.summary?.succeeded || 0)} / ${number(job.summary?.total || 0)} · 실패 ${number(job.summary?.failed || 0)} · Hub 빌드: ${job.buildStatus || 'pending'}`, 'muted')
+    );
+    head.append(left, raw('small', `Job ${String(job.id || '').slice(0, 8)}`));
+    box.append(head);
+    if (job.buildError) box.append(el('p', `Hub 빌드 오류: ${job.buildError}`, 'form-error'));
+    const jobRows = (job.items || []).map(item => {
+      const linkCell = item.status === 'published' && job.buildStatus === 'succeeded'
+        ? (() => {
+            const a = el('a', 'Hub에서 플레이 ↗', 'toggle');
+            a.href = `${userBaseUrl}${item.playUrl}`;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            return a;
+          })()
+        : raw('span', item.error || '—');
+      const versionLabel = item.version
+        ? (item.previousVersion ? `v${item.previousVersion} → v${item.version}` : `v${item.version} (신규)`)
+        : (item.previousVersion ? `v${item.previousVersion} → 예정` : 'v1.0.0 예정');
+      return [
+        raw('strong', `${item.name} (${item.gameId})`),
+        raw('span', versionLabel),
+        pill(item.step || item.status, toneMap[item.status] || 'muted'),
+        raw('span', item.durationMs != null ? `${(item.durationMs / 1000).toFixed(1)}초` : '—'),
+        linkCell
+      ];
+    });
+    box.append(simpleTable(['템플릿 (Hub ID)', '버전', '진행 상태', '소요 시간', '결과 / 링크'], jobRows, '항목 없음'));
+    progressHost.replaceChildren(box);
+  }
+
+  async function watchJob(initialJob) {
+    stopPoll();
+    renderJob(initialJob);
+    syncButtons(initialJob?.status === 'running');
+    if (!initialJob || initialJob.status !== 'running' || !onPollPublishJob) return;
+    const poll = async () => {
+      if (!container.isConnected) { stopPoll(); return; }
+      try {
+        const latest = await onPollPublishJob(initialJob.id);
+        renderJob(latest);
+        if (latest.status === 'running') {
+          pollTimer = setTimeout(poll, 1200);
+        } else {
+          syncButtons(false);
+          if (onPublishComplete) await onPublishComplete();
+        }
+      } catch {
+        syncButtons(false);
+      }
+    };
+    pollTimer = setTimeout(poll, 1200);
+  }
+
+  async function triggerPublish(ids) {
+    if (!onPublishTemplates) return;
+    syncButtons(true);
+    try {
+      const job = await onPublishTemplates(ids);
+      await watchJob(job);
+    } catch (error) {
+      syncButtons(false);
+      progressHost.replaceChildren(el('p', error?.message || '일괄 퍼블리시 요청에 실패했습니다.', 'form-error'));
+    }
+  }
+
+  toggleAllBtn.addEventListener('click', () => {
+    const selectAll = selectedIds.size < templates.length;
+    selectedIds.clear();
+    for (const [id, cb] of checkboxes) {
+      cb.checked = selectAll;
+      if (selectAll) selectedIds.add(id);
+    }
+    syncButtons(false);
+  });
+  batchBtn.addEventListener('click', () => void triggerPublish([...selectedIds]));
+  publishAllBtn.addEventListener('click', () => void triggerPublish('all'));
+
+  const tRows = templates.map(t => {
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = selectedIds.has(t.id);
+    cb.dataset.templateSelect = t.id;
+    cb.setAttribute('aria-label', `${t.name} 선택`);
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedIds.add(t.id);
+      else selectedIds.delete(t.id);
+      syncButtons(false);
+    });
+    checkboxes.set(t.id, cb);
+
+    const nameBox = el('div', '');
+    nameBox.append(raw('strong', `${t.name} (${t.id})`), raw('small', `Hub ID: ${t.gameId}`));
+
+    const statusWrap = el('div', '', 'row-actions');
+    const verSuffix = t.version ? ` · v${t.version}` : '';
+    if (t.published && t.inHubDist) {
+      statusWrap.append(pill(`배포됨${verSuffix}`, 'ok'));
+      const playLink = el('a', '플레이 ↗', 'toggle');
+      playLink.href = `${userBaseUrl}${t.playUrl}`;
+      playLink.target = '_blank';
+      playLink.rel = 'noopener noreferrer';
+      statusWrap.append(playLink);
+    } else if (t.published) {
+      statusWrap.append(pill(`카탈로그 등록${verSuffix} (빌드 대기)`, 'warn'));
+    } else {
+      statusWrap.append(pill('미배포', 'muted'));
+    }
+
+    const oneBtn = el('button', t.published ? `버전업 재퍼블리시${t.nextVersion ? ` (v${t.nextVersion})` : ''}` : '퍼블리시 (v1.0.0)', 'toggle');
+    oneBtn.type = 'button';
+    oneBtn.dataset.testid = `forge-publish-one-${t.id}`;
+    oneBtn.addEventListener('click', () => void triggerPublish([t.id]));
+    actionButtons.push(oneBtn);
+
+    return [
+      cb,
+      nameBox,
+      pill(String(t.dimension || '2d').toUpperCase(), 'info', true),
+      raw('span', t.description || '—'),
+      number(t.assetCount || 0),
+      statusWrap,
+      oneBtn
+    ];
+  });
+
+  p1.append(
+    progressHost,
+    simpleTable(['선택', '템플릿 / Hub ID', '차원', '설명', '에셋', 'Hub 퍼블리시 상태', '실행'], tRows, '등록된 공식 템플릿이 없습니다.'),
+    el('p', '선택한 Forge 템플릿을 Godot 헤드리스 Web 빌드로 내보낸 뒤 games/forge-<id> 패키지·카탈로그 등록 및 hub/dist 빌드까지 일괄 반영합니다. 이미 배포된 게임은 마이너 버전이 자동 상승(v1.0.0 → v1.1.0)되며 기존 publishedOn은 유지되고 updatedOn만 갱신됩니다.', 'panel-foot')
+  );
+
+  const initialJob = pub.activeJob || pub.recentJobs?.[0] || null;
+  if (initialJob) void watchJob(initialJob);
+  else syncButtons(false);
 
   const p2 = panel('CREATOR PROJECTS', '창작자 프로젝트 메타데이터 (읽기 전용)');
   const pRows = (data.projects || []).map(p => [
@@ -474,8 +908,46 @@ export function renderQaOverview(container, data, { number, onNavigate }) {
   container.replaceChildren(p1);
 }
 
-export function renderQaRuns(container, data, { kstStamp }) {
+export function renderQaRuns(container, data, { kstStamp, onRunGamerQa }) {
   const statusTone = st => ['passed', 'pass'].includes(st) ? 'ok' : ['warned', 'warn', 'partial'].includes(st) ? 'warn' : ['failed', 'fail', 'error'].includes(st) ? 'danger' : 'muted';
+  const panels = [];
+  const gqTargets = data.gamerqaTargets;
+  const gqRuns = data.gamerqaRuns;
+  if (gqTargets) {
+    const p0 = panel('MULTI-PLATFORM GAMERQA (ADMIN ONLY)', 'Web · Desktop · Android · Godot 템플릿 18종 통합 QA');
+    const s = gqTargets.summary || {};
+    const stats = gqRuns?.byPlatform || {};
+    p0.append(kpiGrid([
+      ['Web 플랫폼', `${s.web || 0}종`, stats.web?.total ? `실행 ${stats.web.total}건 · 합격 ${stats.web.passRate}%` : '미실행'],
+      ['Desktop 플랫폼', `${s.desktop || 0}종`, stats.desktop?.total ? `실행 ${stats.desktop.total}건 · 합격 ${stats.desktop.passRate}%` : '미실행'],
+      ['Android 플랫폼', `${s.android || 0}종`, stats.android?.total ? `실행 ${stats.android.total}건 · 합격 ${stats.android.passRate}%` : '미실행'],
+      ['Godot 템플릿', `${s['godot-templates'] || 0}종`, stats['godot-templates']?.total ? `실행 ${stats['godot-templates'].total}건 · 합격 ${stats['godot-templates'].passRate}%` : '미실행']
+    ], true));
+    if (typeof onRunGamerQa === 'function') {
+      const actions = el('div', '', 'inline-actions');
+      for (const [label, platform] of [['전체 4개 플랫폼 실행', 'all'], ['Web QA', 'web'], ['Desktop QA', 'desktop'], ['Android QA', 'android'], ['Godot 템플릿 18종 QA', 'godot-templates']]) {
+        const btn = el('button', label, platform === 'all' ? 'primary' : 'quiet');
+        btn.type = 'button';
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try { await onRunGamerQa(platform); } finally { btn.disabled = false; }
+        });
+        actions.append(btn);
+      }
+      p0.append(actions);
+    }
+    const gqRows = (gqRuns?.runs || []).slice(0, 30).map(r => [
+      pill(r.platform, 'info', true),
+      raw('strong', r.targetId),
+      pill(r.status, statusTone(r.status), true),
+      `${r.score}/100`,
+      `${r.passedChecks}/${r.totalChecks}`,
+      `${r.latencyMs}ms`,
+      raw('span', kstStamp(r.createdAt))
+    ]);
+    p0.append(simpleTable(['플랫폼', '타겟 ID', '상태', '점수', '체크', '응답시간', '실행 시각'], gqRows, '아직 멀티플랫폼 GamerQA 실행 이력이 없습니다. 위 버튼으로 실행하세요.'));
+    panels.push(p0);
+  }
   const p1 = panel('AUTOMATED QA RUNS', 'SQLite 기록 자동 QA 실행 (qa_runs)');
   const runRows = (data.qaRuns || []).map(r => [
     raw('strong', r.id.slice(0, 12)),
@@ -502,7 +974,7 @@ export function renderQaRuns(container, data, { kstStamp }) {
   });
   p2.append(simpleTable(['리포트 ID', '출처', '대상', '상태', '집계 (skip/not_run 미합산)', '생성 시각'], artRows, '감지된 검증 보고서 JSON이 없습니다.'));
   p2.append(el('p', 'skip, not_run, error 항목은 통과(pass)로 합산하지 않습니다.', 'panel-foot'));
-  container.replaceChildren(p1, p2);
+  container.replaceChildren(...panels, p1, p2);
 }
 
 export function renderQaAi(container, data, { kstStamp }) {
@@ -730,6 +1202,28 @@ export function renderSystemDevops(container, data, { kstStamp, onCreateManualPl
     ];
   });
   previewPanel.append(simpleTable(['프리뷰 ID', '브랜치/커밋', '상태', '접속 URL', '시작 시각', '작업'], previewRows, '실행 중인 로컬 프리뷰가 없습니다.'));
+
+  const previewJobs = Array.isArray(data.previewJobs) ? data.previewJobs : [];
+  if (previewJobs.length > 0) {
+    const jobTone = st => st === 'succeeded' ? 'ok' : st === 'running' ? 'info' : 'danger';
+    const jobRows = previewJobs.map(j => {
+      const detailNode = j.preview?.urls?.user
+        ? (() => { const a = el('a', j.preview.urls.user); a.href = j.preview.urls.user; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+        : raw('span', j.error?.message || (j.status === 'running' ? '격리 워크트리 빌드 중...' : '—'));
+      return [
+        raw('strong', j.jobId),
+        raw('span', `${j.ref} (${j.shortCommit})`),
+        pill(String(j.status || 'unknown').toUpperCase(), jobTone(j.status), true),
+        raw('span', String(j.basePort)),
+        detailNode,
+        raw('span', j.startedAt ? kstStamp(j.startedAt) : '—')
+      ];
+    });
+    previewPanel.append(
+      el('h3', '비동기 프리뷰 기동 작업 이력'),
+      simpleTable(['작업 ID', '브랜치/커밋', '상태', '기준 포트', '결과 / 오류', '요청 시각'], jobRows, '비동기 작업 이력이 없습니다.')
+    );
+  }
 
   const buildsPanel = panel('DAILY & MANUAL BUILD HISTORY', '최근 빌드 · 아카이브 이력');
   const buildRows = (data.builds || []).map(row => [

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { compileL10nBundleJs } from '../server/l10n-engine.mjs';
+import { assembleSurfaceLocaleData } from '../server/l10n-engine.mjs';
 
 const writeChanged = (file, text) => {
   if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return;
@@ -23,35 +23,25 @@ export function syncLocales({ root, webgames }) {
   // Small test fixtures and archives predating localization have no runtime.
   if (!fs.existsSync(runtime)) return;
   const core = fs.readFileSync(runtime, 'utf8');
-  const dictionaries = ['platform', 'games'].map(name => path.join(root, 'shared/locales', name + '.js'));
-  if (dictionaries.some(file => !fs.existsSync(file))) throw new Error('Localization dictionaries are missing.');
-  const [platform, games] = dictionaries.map(file => fs.readFileSync(file, 'utf8'));
-  const communityFile = path.join(root, 'shared/locales/community.js');
-  const community = fs.existsSync(communityFile) ? '\n' + fs.readFileSync(communityFile, 'utf8') : '';
+  const gamesFile = path.join(root, 'shared/locales/games.js');
+  if (!fs.existsSync(gamesFile)) throw new Error('Localization dictionaries are missing.');
+  const games = fs.readFileSync(gamesFile, 'utf8');
+  const { catalogDictionary, surfaceLocaleData } = assembleSurfaceLocaleData({
+    root,
+    webgames,
+    requirePlatform: true,
+    requireCatalog: true
+  });
   const groups = {
     a: ['rimworld', 'samgukji-11', 'league-of-legends', 'clash-royale'],
     b: ['besiege', 'cosmoteer', 'ftl', 'oxygen-not-included'],
     c: ['brawl-stars', 'this-war-of-mine', 'world-of-tanks', 'world-of-warships', 'survivor-io']
   };
   const catalog = JSON.parse(fs.readFileSync(path.join(webgames, 'catalog.json'), 'utf8'));
-  const metadata = {};
-  for (const entry of catalog.entries) {
-    if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(entry.id) || entry.path !== entry.id) throw new Error('Invalid game locale path');
-    const manifest = JSON.parse(fs.readFileSync(path.join(webgames, entry.id, 'game.manifest.json'), 'utf8'));
-    for (const field of ['title', 'summary', 'instructions', 'rules']) {
-      const row = manifest[field];
-      if (row?.ko && typeof row.ko === 'string') metadata[row.ko] = row;
-    }
-  }
-  const bundleFile = path.join(root, 'shared/locales/l10n-bundle.json');
-  const bundleJs = fs.existsSync(bundleFile)
-    ? '\n' + compileL10nBundleJs(JSON.parse(fs.readFileSync(bundleFile, 'utf8')))
-    : '';
-  const catalogDictionary = '\nPlayHubLocale.register(' + JSON.stringify(metadata) + ');\n';
   for (const surface of ['user', 'admin']) {
     const folder = path.join(root, 'web', surface);
     writeChanged(path.join(folder, 'locale.js'), core);
-    writeChanged(path.join(folder, 'locale-data.js'), platform + community + bundleJs + catalogDictionary);
+    writeChanged(path.join(folder, 'locale-data.js'), surfaceLocaleData);
     inject(path.join(folder, 'index.html'), ['/locale.js', '/locale-data.js']);
   }
   for (const entry of catalog.entries) {

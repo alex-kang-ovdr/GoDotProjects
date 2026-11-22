@@ -250,6 +250,12 @@ func set_endpoints(web_url: String, api_url: String) -> void:
 		store_api_url = api_url.trim_suffix("/")
 
 
+func set_account_id(value: String) -> void:
+	var trimmed := value.strip_edges()
+	if not trimmed.is_empty():
+		account_id = trimmed
+
+
 func set_staging_root(path_value: String) -> void:
 	if not path_value.is_empty():
 		staging_root = path_value
@@ -335,7 +341,9 @@ func open_store_web() -> Dictionary:
 		var res: Variant = _shell_open_handler.call(target_url)
 		err = int(res) if res is int else OK
 	elif OS.has_feature("web"):
-		JavaScriptBridge.eval("window.open(%s, '_blank', 'noopener')" % JSON.stringify(target_url), true)
+		var opened: Variant = JavaScriptBridge.eval("Boolean(window.open(%s, '_blank', 'noopener'))" % JSON.stringify(target_url), true)
+		if not bool(opened):
+			err = ERR_CANT_OPEN
 	else:
 		err = OS.shell_open(target_url)
 	if err == OK:
@@ -760,6 +768,7 @@ func _set_status(message: String) -> void:
 func get_diagnostics() -> Dictionary:
 	return {
 		"slot_mode": _slot_mode,
+		"account_id": account_id,
 		"store_web_url": store_web_url,
 		"store_api_url": store_api_url,
 		"selected_project_id": selected_project_id,

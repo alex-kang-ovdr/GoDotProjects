@@ -1,43 +1,153 @@
 <!doctype html>
 <html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PlayForge Creator</title>
+<meta name="theme-color" content="#FAF8FF">
+<title>PlayForge Creator Hub</title>
 <link rel="icon" href="vendor/favicon.png">
 <link rel="stylesheet" href="platform.css">
 <link rel="stylesheet" href="publish-panel.css">
+</head>
 <body>
 
 <main>
-<section id="library">
-<h1>PlayForge</h1>
-<p>빈 맵에서 시작하거나 예제를 골라 팀과 함께 만드세요.</p>
-<h2>시작하기</h2>
-<div id="templates" class="cards">
-</div>
-<h2>내 프로젝트</h2>
-<div id="projects" class="cards">
-</div>
-<p id="status" role="status"></p>
+<section id="library" class="forge-hub-shell">
+  <header class="forge-topbar">
+    <div class="forge-topbar-left">
+      <div class="forge-brand-switcher" role="navigation" aria-label="플랫폼 전환">
+        <a class="forge-brand-sibling forge-brand-hub" href="/" aria-label="PLAY HUB로 이동" data-testid="brand-switch-hub">
+          <span class="forge-hub-symbol" aria-hidden="true"></span>
+          <span>PLAY HUB</span>
+        </a>
+        <a class="forge-brand is-active" href="./" aria-label="FORGE 홈" aria-current="page">
+          <span class="forge-brand-icon" aria-hidden="true">◆</span>
+          <span>FORGE</span>
+        </a>
+      </div>
+      <span class="forge-version-pill">Godot 4.7.2 Web</span>
+    </div>
+    <div id="templateToolbar" class="forge-search-bar">
+      <input id="templateSearch" type="search" placeholder="내 프로젝트, 템플릿, 에셋 검색…" aria-label="템플릿 검색">
+    </div>
+    <div class="forge-topbar-actions">
+      <button type="button" id="desktopDownloadBtn" class="forge-btn secondary" data-testid="forge-desktop-download-btn">⬇ 설치버전</button>
+      <button type="button" id="newBlankProjectBtn" class="forge-btn primary">+ 새 프로젝트</button>
+    </div>
+  </header>
+
+  <div class="forge-hub-layout">
+    <aside class="forge-sidebar" aria-label="크리에이터 메뉴">
+      <div class="forge-sidebar-group">
+        <div class="forge-sidebar-label">대시보드</div>
+        <a class="forge-nav-item active" href="#projects-section">홈 · 내 프로젝트</a>
+        <a class="forge-nav-item" href="#templates-section">템플릿 라이브러리</a>
+      </div>
+      <div class="forge-sidebar-group">
+        <div class="forge-sidebar-label">도구 및 리소스</div>
+        <button type="button" id="sidebarDesktopDownloadBtn" class="forge-nav-item forge-nav-btn">⬇ 설치버전 다운로드 (PC)</button>
+        <a class="forge-nav-item" href="multiplayer.html" data-dev-demo-ui hidden>멀티플레이 테스트 워크스페이스</a>
+        <a class="forge-nav-item" href="/?view=create" target="_blank" rel="noopener">창작자 제출 · Drive</a>
+        <a class="forge-nav-item" href="/?view=direct" target="_blank" rel="noopener">직접판매 · 수익 안내</a>
+      </div>
+      <div class="forge-sidebar-foot">
+        <strong>크리에이터 직판 0%</strong>
+        <p>Drive 아카이브 자동 백업 및 PlayHub 원클릭 웹 배포 지원</p>
+      </div>
+    </aside>
+
+    <div class="forge-main-content">
+      <div class="forge-kpi-grid">
+        <div class="forge-kpi-card">
+          <small>내 프로젝트</small>
+          <strong id="kpi-projects" class="kpi-blue">0개</strong>
+        </div>
+        <div class="forge-kpi-card">
+          <small>공식 템플릿</small>
+          <strong id="kpi-templates">0종</strong>
+        </div>
+        <div class="forge-kpi-card">
+          <small>배포 환경</small>
+          <strong class="kpi-amber">싱글 · MO · MMO</strong>
+        </div>
+      </div>
+
+      <section id="projects-section" class="forge-section">
+        <div class="forge-section-head">
+          <div>
+            <h1>내 프로젝트</h1>
+            <p class="forge-section-sub">웹 에디터에서 바로 수정하거나 PlayHub 공개 상태를 관리하세요.</p>
+          </div>
+          <p id="status" class="forge-status-pill" role="status"></p>
+        </div>
+        <div id="projects" class="cards project-grid"></div>
+      </section>
+
+      <section id="templates-section" class="forge-section">
+        <div class="forge-section-head">
+          <div>
+            <h2>공식 템플릿 라이브러리</h2>
+            <p class="forge-section-sub">제작 과정(Showcase)을 확인하거나 템플릿으로 새 프로젝트를 즉시 생성하세요.</p>
+          </div>
+          <div id="templateFilters" class="filter-tabs" role="group" aria-label="템플릿 카테고리 필터">
+            <button type="button" data-filter="all" aria-pressed="true">전체</button>
+            <button type="button" data-filter="showcase" aria-pressed="false" data-dev-demo-ui hidden>제작과정 보기 (데모)</button>
+            <button type="button" data-filter="2d" aria-pressed="false">2D</button>
+            <button type="button" data-filter="3d" aria-pressed="false">3D</button>
+            <button type="button" data-filter="multiplayer" aria-pressed="false">멀티플레이</button>
+            <button type="button" data-filter="ported" aria-pressed="false">포팅(Unity/Roblox)</button>
+          </div>
+        </div>
+        <div id="templates" class="cards template-grid"></div>
+      </section>
+    </div>
+  </div>
 </section>
+
+<dialog id="createProjectModal" class="project-modal" aria-labelledby="createModalTitle">
+  <form method="dialog" id="createModalForm">
+    <h3 id="createModalTitle">새 프로젝트 만들기</h3>
+    <p id="createModalHint" class="muted"></p>
+    <label class="modal-field">프로젝트 이름
+      <input id="createModalInput" type="text" maxlength="80" required autocomplete="off">
+    </label>
+    <div class="modal-actions">
+      <button type="button" id="createModalCancel">취소</button>
+      <button type="submit" value="ok" class="primary-btn">확인</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="desktopDownloadModal" class="project-modal desktop-download-modal" aria-labelledby="desktopDownloadTitle">
+  <div class="desktop-dl-head">
+    <div>
+      <h3 id="desktopDownloadTitle">PlayForge 설치버전 다운로드</h3>
+      <p class="muted">커스텀 Godot 4.7.2(아바타·CoreHUD 포함) 네이티브 데스크톱 에디터 및 런처입니다. 로컬 GPU와 풀 모듈(Jolt Physics · FBX · Lightmapper · ENet)을 사용합니다.</p>
+    </div>
+    <button type="button" id="desktopDownloadClose" class="desktop-dl-close" aria-label="닫기">✕</button>
+  </div>
+  <div id="desktopDownloadList" class="desktop-dl-list" aria-live="polite">
+    <p class="muted">다운로드 목록을 불러오는 중…</p>
+  </div>
+  <p class="desktop-dl-footnote">※ XR/VR(OpenXR·WebXR·MobileVR) 및 웹캠(CameraServer) 모듈은 미포함입니다.</p>
+</dialog>
+
 <section id="workspace" hidden>
-<iframe id="editor" title="PlayForge Godot Editor" allow="cross-origin-isolated; autoplay" >
-</iframe>
+  <iframe id="editor" title="PlayForge Godot Editor" allow="cross-origin-isolated; autoplay"></iframe>
 </section>
-<aside id="panel" hidden>
-<button id="closePanel">닫기</button>
-<h2 id="panelTitle">
-</h2>
-<div id="panelBody">
-</div>
+
+<aside id="panel" class="editor-drawer" hidden>
+  <button id="closePanel">닫기</button>
+  <h2 id="panelTitle"></h2>
+  <div id="panelBody"></div>
 </aside>
 </main>
 
-<script src="guided.js">
-</script>
-<script src="publish-panel.js">
-</script>
-<script src="platform.js">
-</script>
+<!-- playforge-dev-demo:start -->
+<script src="dev-demo-ui.js"></script>
+<!-- playforge-dev-demo:end -->
+<script src="guided.js"></script>
+<script src="publish-panel.js"></script>
+<script src="platform.js"></script>
 </body>
 </html>

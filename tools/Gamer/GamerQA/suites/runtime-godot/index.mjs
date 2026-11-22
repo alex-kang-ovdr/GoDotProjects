@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveGodotBinary } from '../../../../engine/resolve-godot.mjs';
 
 const COPY_EXCLUDE_DIRS = new Set(['.godot', '.git', 'node_modules', 'Saved']);
 
@@ -99,63 +100,31 @@ function collectSearchDirs(searchFrom) {
 }
 
 /**
- * Locate the Godot 4.x executable (preferring the Windows console launcher for clean stdio).
+ * Locate the Godot 4.x executable via the single SSOT resolver
+ * (preferring custom PlayForge fork builds and Windows console launcher for clean stdio).
  */
 export function findGodotBinary(options = {}) {
-  const explicitCandidates = [
-    options.godotBin,
-    process.env.GODOT_BIN,
-    process.env.GODOT_CONSOLE_BIN,
-    process.env.GODOT_EDITOR,
-  ].filter(Boolean);
-
-  for (const candidate of explicitCandidates) {
-    const resolved = path.resolve(candidate);
-    if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
-      return { found: true, executable: resolved, source: 'explicit' };
-    }
+  const res = resolveGodotBinary({
+    godotBin: options.godotBin,
+    searchFrom: collectSearchDirs(options.searchFrom),
+    preferConsole: true,
+    requireFork: options.requireFork === true,
+    verifySymbols: options.verifySymbols === true,
+  });
+  if (res.found) {
+    const source = res.source === 'fork-discovered' || res.source === 'stock-fallback' ? 'discovered' : res.source;
     return {
-      found: false,
-      executable: null,
-      reason: `Configured Godot executable not found: ${resolved}`,
+      found: true,
+      executable: res.executable,
+      source,
+      resolverSource: res.source,
+      isFork: res.isFork,
     };
   }
-
-  const patterns = process.platform === 'win32'
-    ? [/^Godot_v4\..*_win64_console\.exe$/i, /^Godot_v4\..*_win64\.exe$/i]
-    : [/^Godot_v4\..*linux.*$/i, /^godot4?$/i];
-
-  for (const dir of collectSearchDirs(options.searchFrom)) {
-    if (!fs.existsSync(dir)) continue;
-    let entries;
-    try {
-      entries = fs.readdirSync(dir);
-    } catch {
-      continue;
-    }
-    for (const pattern of patterns) {
-      const match = entries.filter(name => pattern.test(name)).sort().at(-1);
-      if (match) {
-        return { found: true, executable: path.join(dir, match), source: 'discovered' };
-      }
-    }
-  }
-
-  const lookupCmd = process.platform === 'win32' ? 'where.exe' : 'which';
-  for (const binName of ['godot4', 'godot']) {
-    const probe = spawnSync(lookupCmd, [binName], { encoding: 'utf8', windowsHide: true });
-    if (probe.status === 0 && probe.stdout) {
-      const firstLine = probe.stdout.trim().split(/\r?\n/)[0];
-      if (firstLine && fs.existsSync(firstLine)) {
-        return { found: true, executable: firstLine, source: 'path' };
-      }
-    }
-  }
-
   return {
     found: false,
     executable: null,
-    reason: 'Godot 4.7+ executable was not found. Pass godotBin or set GODOT_BIN.',
+    reason: res.reason || 'Godot 4.7+ executable was not found. Pass godotBin or set GODOT_BIN.',
   };
 }
 

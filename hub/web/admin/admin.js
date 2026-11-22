@@ -252,6 +252,7 @@ function navigate(tabId, viewId, options = {}) {
 }
 
 function clearDashboard() {
+  if (devopsPreviewPollTimer) { clearTimeout(devopsPreviewPollTimer); devopsPreviewPollTimer = null; }
   for (const id of ['overview', 'funnel', 'journey-summary', 'trend-period', 'trend-cards', 'trend-body', 'games-body', 'games-result', 'retention-cards', 'cohort-body', 'errors-list', 'errors-summary', 'audit-list', 'updated']) {
     $(id).replaceChildren();
   }
@@ -268,6 +269,7 @@ function clearDashboard() {
 
 const LOCAL_LOGOUT_KEY = 'playhub-admin-local-logout';
 let localAutoLoginEnabled = false;
+let devopsPreviewPollTimer = null;
 
 function showSession(session) {
   csrf = session.csrfToken || '';
@@ -690,6 +692,35 @@ async function refreshSystemViews() {
     return;
   }
   if (activeRoute.view === 'devops') {
+    const pollPreviewJob = (jobId, sessionToken) => {
+      if (devopsPreviewPollTimer) { clearTimeout(devopsPreviewPollTimer); devopsPreviewPollTimer = null; }
+      const tick = async () => {
+        if (!authenticated || sessionToken !== generation) return;
+        try {
+          const statusRes = await api(`/api/admin/devops/preview/jobs/${encodeURIComponent(jobId)}`);
+          if (!authenticated || sessionToken !== generation) return;
+          const job = statusRes.job;
+          if (!job) return;
+          if (job.status === 'running') {
+            devopsPreviewPollTimer = setTimeout(() => { void tick(); }, 2000);
+            return;
+          }
+          devopsPreviewPollTimer = null;
+          if (job.status === 'succeeded') {
+            notice(`로컬 격리 프리뷰 기동 완료 (${job.jobId}): ${job.preview?.urls?.user || job.preview?.runId || 'ready'}`);
+          } else {
+            notice(`로컬 격리 프리뷰 기동 실패 (${job.jobId}): ${job.error?.message || job.status}`, true);
+          }
+          if (activeRoute.tab === 'system' && activeRoute.view === 'devops') {
+            await refreshSystemViews();
+          }
+        } catch (error) {
+          devopsPreviewPollTimer = null;
+          if (!handleAuthError(error)) notice(error.message || '프리뷰 작업 상태 조회에 실패했습니다.', true);
+        }
+      };
+      devopsPreviewPollTimer = setTimeout(() => { void tick(); }, 1500);
+    };
     const devopsData = await api('/api/admin/devops/overview');
     if (token !== generation || !authenticated) return;
     renderSystemDevops($('system-devops-panel'), devopsData, {
@@ -701,8 +732,10 @@ async function refreshSystemViews() {
       },
       onStartPreview: async (payload) => {
         const res = await api('/api/admin/devops/preview/start', { method: 'POST', body: payload });
-        notice(`로컬 격리 프리뷰 기동 완료: ${res.preview.urls.user}`);
+        const jobId = res.jobId || res.job?.jobId;
+        notice(`로컬 격리 프리뷰 기동 작업 시작 (${jobId}) · 비동기 진행 중입니다.`);
         await refreshSystemViews();
+        if (jobId) pollPreviewJob(jobId, token);
       },
       onStopPreview: async (payload) => {
         const res = await api('/api/admin/devops/preview/stop', { method: 'POST', body: payload });
@@ -736,6 +769,19 @@ async function refreshSystemViews() {
       notice('SQLite 온라인 백업을 생성하고 무결성 검증을 마쳤습니다.');
       await refreshSystemViews();
       void refreshBadges();
+    },
+    onExportSnapshot: async domains => {
+      const res = await api('/api/admin/system/snapshot/export', { method: 'POST', body: { domains } });
+      notice(`최신버전 스냅샷 내보내기 완료: ${res.filename} (${number(res.snapshot?.summary?.totalRows || 0)}행)`);
+      return res;
+    },
+    onImportSnapshot: async payload => {
+      const res = await api('/api/admin/system/snapshot/import', { method: 'POST', body: payload });
+      if (!res.dryRun) {
+        notice(`스냅샷 임포트 완료: 신규 ${number(res.totals?.inserted || 0)}건 · 덮어쓰기 ${number(res.totals?.overwritten || 0)}건 · 건너뜀 ${number(res.totals?.skipped || 0)}건`);
+        void refreshBadges();
+      }
+      return res;
     }
   };
   renderSystemOverview($('system-overview-panel'), systemCache, ctx);
@@ -748,7 +794,22 @@ async function refreshForgeViews() {
   const token = generation;
   forgeCache = await api('/api/admin/forge/overview');
   if (token !== generation || !authenticated) return;
-  const ctx = { number, kstStamp, onNavigate: (tab, view) => navigate(tab, view) };
+  const userBaseUrl = (config.userBaseUrl || `${location.protocol}//${hostname}:${Number(config.userPort) || 18130}`).replace(/\/$/, '');
+  const ctx = {
+    number,
+    kstStamp,
+    userBaseUrl,
+    onNavigate: (tab, view) => navigate(tab, view),
+    onPublishTemplates: async templateIds => (await api('/api/admin/forge/templates/publish', {
+      method: 'POST',
+      body: { templateIds, enableInCatalog: true, rebuildDist: true }
+    })).job,
+    onPollPublishJob: async jobId => (await api('/api/admin/forge/templates/publish/' + encodeURIComponent(jobId))).job,
+    onPublishComplete: async () => {
+      await refreshForgeViews();
+      await refresh();
+    }
+  };
   renderForgeOverview($('forge-overview-panel'), forgeCache, ctx);
   renderForgeProjects($('forge-projects-panel'), forgeCache, ctx);
   renderForgeBuilds($('forge-builds-panel'), forgeCache, ctx);
@@ -770,11 +831,23 @@ function populateQaRunSelect(qaRunIds) {
 
 async function refreshQaViews() {
   const token = generation;
-  qaCache = await api('/api/admin/qa/overview');
+  const [overview, gamerqaTargets, gamerqaRuns] = await Promise.all([
+    api('/api/admin/qa/overview'),
+    api('/api/admin/gamerqa/targets').catch(() => null),
+    api('/api/admin/gamerqa/runs?limit=60').catch(() => null),
+  ]);
   if (token !== generation || !authenticated) return;
+  qaCache = { ...overview, gamerqaTargets, gamerqaRuns };
   const ctx = {
     number, kstStamp,
     onNavigate: (tab, view) => navigate(tab, view),
+    onRunGamerQa: async (platform, targetId = null) => {
+      await api('/api/admin/gamerqa/runs', {
+        method: 'POST',
+        body: targetId ? { platform, targetId } : { platform },
+      });
+      await refreshQaViews();
+    },
     onSelectRunId: runId => {
       dataset = 'qa';
       filters.qaRunId = runId;

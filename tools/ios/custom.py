@@ -1,0 +1,50 @@
+# Godot 4.7.2 iOS Minimal Runtime SCons Profile (Stage 2, macOS host required)
+# Usage (inside godot-engine submodule on macOS with Xcode):
+#   scons platform=ios arch=arm64 target=template_release profile=../../tools/ios/custom.py -j8
+#   scons platform=ios arch=arm64 simulator=yes target=template_release profile=../../tools/ios/custom.py -j8
+
+target = "template_release"
+debug_symbols = "no"
+separate_debug_symbols = "no"
+optimize = "size"
+lto = "thin"
+deprecated = "no"
+disable_path_overrides = "no"
+minizip = "yes"
+
+# Exclude editor / tools / Vulkan(MoltenVK) — iOS uses native Metal + OpenGL ES 3 (gl_compatibility)
+tools = "no"
+tests = "no"
+openxr = "no"
+metal = "yes"
+opengl3 = "yes"
+vulkan = "no"
+
+# Strip unused modules for Play Hub minimal IPA target (<= 20 MiB arm64 download)
+module_mono_enabled = "no"
+module_openxr_enabled = "no"
+module_mobile_vr_enabled = "no"
+module_camera_enabled = "no"
+module_dds_enabled = "no"
+module_hdr_enabled = "no"
+module_tga_enabled = "no"
+module_tinyexr_enabled = "no"
+module_bmp_enabled = "no"
+module_svg_enabled = "yes"
+module_webp_enabled = "yes"
+module_gltf_enabled = "yes"
+module_fbx_enabled = "no"
+module_blender_enabled = "no"
+module_csg_enabled = "no"
+module_gridmap_enabled = "no"
+module_vhacd_enabled = "no"
+module_xatlas_unwrap_enabled = "no"
+module_theora_enabled = "no"
+module_upnp_enabled = "no"
+module_webrtc_enabled = "no"
+module_enet_enabled = "yes"
+module_websocket_enabled = "yes"
+module_mbedtls_enabled = "yes"
+module_gdscript_enabled = "yes"
+module_text_server_fb_enabled = "yes"
+module_text_server_adv_enabled = "no"

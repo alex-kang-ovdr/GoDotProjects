@@ -9,7 +9,7 @@ import { PassThrough } from 'node:stream';
 import test from 'node:test';
 import { createApp } from '../server/app.mjs';
 import { auditDomain } from '../server/admin-console.mjs';
-import { validateStoreReleaseContract } from '../server/store-admin.mjs';
+import { createStoreAdmin, validateStoreReleaseContract } from '../server/store-admin.mjs';
 import { inspectDatabase } from '../tools/restore-data.mjs';
 
 function makeAdminCreds(password) {
@@ -278,27 +278,81 @@ test('store admin endpoints enforce auth, contract rules, kill-switch, Hub isola
   assert.equal(brokenReject.status, 200);
   assert.equal(brokenReject.data.submission.status, 'rejected');
 
-  // 6. Package status transitions & kill-switch (published / hidden / deprecated / yanked)
-  for (const nextStatus of ['hidden', 'deprecated', 'yanked', 'published']) {
+  // 6. Package status transitions & kill-switch (published / hidden / deprecated / yanked) with expectedRevision & yanked restore confirmation
+  let fortressRev = 1;
+  for (const nextStatus of ['hidden', 'deprecated', 'yanked']) {
     const res = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
       method: 'POST', ...auth,
-      body: { status: nextStatus, reason: `transition to ${nextStatus}` }
+      body: { status: nextStatus, reason: `transition to ${nextStatus}`, expectedRevision: fortressRev }
     });
     assert.equal(res.status, 200);
     assert.equal(res.data.package.status, nextStatus);
+    assert.equal(res.data.package.revision, fortressRev + 1);
+    fortressRev = res.data.package.revision;
   }
+
+  // yanked -> published without explicit confirmation must be rejected
+  const blockedRestore = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'published', reason: '복구 시도', expectedRevision: fortressRev }
+  });
+  assert.equal(blockedRestore.status, 409);
+  assert.equal(blockedRestore.data.error.code, 'STORE_YANKED_RESTORE_CONFIRMATION_REQUIRED');
+
+  // yanked -> deprecated directly must be rejected
+  const blockedDeprecated = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'deprecated', reason: '직접 deprecated 시도', expectedRevision: fortressRev }
+  });
+  assert.equal(blockedDeprecated.status, 409);
+  assert.equal(blockedDeprecated.data.error.code, 'STORE_INVALID_STATUS_TRANSITION');
+
+  // yanked -> published with confirmation but empty reason must be rejected
+  const noReasonRestore = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'published', reason: '   ', expectedRevision: fortressRev, confirmRestoreFromYanked: true }
+  });
+  assert.equal(noReasonRestore.status, 422);
+  assert.equal(noReasonRestore.data.error.code, 'STORE_YANKED_RESTORE_REASON_REQUIRED');
+
+  // yanked -> published with explicit confirmation + reason + valid expectedRevision succeeds
+  const confirmedRestore = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'published', reason: '보안 패치 재검증 완료', expectedRevision: fortressRev, confirmRestoreFromYanked: true }
+  });
+  assert.equal(confirmedRestore.status, 200);
+  assert.equal(confirmedRestore.data.package.status, 'published');
+  assert.equal(confirmedRestore.data.package.revision, fortressRev + 1);
+
+  // Stale expectedRevision must fail with 409 conflict
+  const staleRev = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'hidden', reason: 'stale write', expectedRevision: fortressRev }
+  });
+  assert.equal(staleRev.status, 409);
+  assert.equal(staleRev.data.error.code, 'STORE_PACKAGE_REVISION_CONFLICT');
+
+  // Missing expectedRevision must fail with 400
+  const missingRev = await callHandler(app.adminHandler, '/api/admin/store/packages/ui-tactical-hud-kit/status', {
+    method: 'POST', ...auth,
+    body: { status: 'yanked', reason: 'revision 누락' }
+  });
+  assert.equal(missingRev.status, 400);
+  assert.equal(missingRev.data.error.code, 'INVALID_PACKAGE_REVISION');
+
   const yankRes = await callHandler(app.adminHandler, '/api/admin/store/packages/ui-tactical-hud-kit/status', {
     method: 'POST', ...auth,
-    body: { status: 'yanked', reason: '긴급 보안 킬스위치 테스트' }
+    body: { status: 'yanked', reason: '긴급 보안 킬스위치 테스트', expectedRevision: 1 }
   });
   assert.equal(yankRes.status, 200);
   assert.equal(yankRes.data.package.status, 'yanked');
+  assert.equal(yankRes.data.package.revision, 2);
 
   assert.equal((await callHandler(app.adminHandler, '/api/admin/store/packages/ui-tactical-hud-kit/status', {
-    method: 'POST', ...auth, body: { status: 'deleted' }
+    method: 'POST', ...auth, body: { status: 'deleted', expectedRevision: 2 }
   })).status, 422);
   assert.equal((await callHandler(app.adminHandler, '/api/admin/store/packages/unknown-slug/status', {
-    method: 'POST', ...auth, body: { status: 'hidden' }
+    method: 'POST', ...auth, body: { status: 'hidden', expectedRevision: 1 }
   })).status, 404);
 
   // 7. Audit domain mapping (`domain=store`) & summary badges
@@ -325,4 +379,151 @@ test('store admin endpoints enforce auth, contract rules, kill-switch, Hub isola
   const inspected = inspectDatabase(path.join(dir, 'backups', backupRes.data.backup.filename));
   assert.equal(inspected.integrity, 'ok');
   assert.equal(inspected.foreignKeys, 'ok');
+});
+
+test('approving an update submission for an existing slug records pending_release without auto-overwriting live release', async t => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-store-pending-rel-'));
+  const dataDir = path.join(dir, 'data');
+  const creds = makeAdminCreds('AdminPassphrase!2026');
+  const app = createApp({
+    dataDir,
+    publicPort: 0,
+    adminPort: 0,
+    userBaseUrl: 'http://localhost:8080',
+    adminBaseUrl: 'http://127.0.0.1:8081',
+    userOrigins: ['http://localhost:8080'],
+    adminOrigins: ['http://127.0.0.1:8081'],
+    admin: { username: 'admin', passwordHash: creds.passwordHash, salt: creds.salt, localAutoLogin: false }
+  });
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  const init = await callHandler(app.adminHandler, '/api/admin/session');
+  const login = await callHandler(app.adminHandler, '/api/admin/login', {
+    method: 'POST', cookie: init.cookie, csrf: init.data.csrfToken,
+    body: { username: 'admin', password: 'AdminPassphrase!2026' }
+  });
+  const auth = { cookie: login.cookie, csrf: login.data.csrfToken };
+
+  // Seed already has published lowpoly-fortress-pack v1.2.0 and in_review submission sub-fortress-130 v1.3.0
+  const approveUpdate = await callHandler(app.adminHandler, '/api/admin/store/submissions/sub-fortress-130/decision', {
+    method: 'POST', ...auth,
+    body: {
+      decision: 'approve',
+      revision: 1,
+      artifact_digest: 'sha256:' + 'e'.repeat(64),
+      note: 'v1.3.0 업데이트 검증 완료'
+    }
+  });
+  assert.equal(approveUpdate.status, 200);
+  assert.equal(approveUpdate.data.catalogAutoPublished, false);
+  assert.ok(approveUpdate.data.pendingRelease, 'existing slug update approval must record pendingRelease');
+  assert.equal(approveUpdate.data.pendingRelease.submission_id, 'sub-fortress-130');
+  assert.equal(approveUpdate.data.pendingRelease.asset_version_id, '1.3.0');
+  assert.equal(approveUpdate.data.pendingRelease.release_id, 'rel-lowpoly-fortress-130');
+  assert.equal(approveUpdate.data.pendingRelease.artifact_digest, 'sha256:' + 'e'.repeat(64));
+  assert.equal(approveUpdate.data.pendingRelease.file_manifest.length, 2);
+  assert.equal(approveUpdate.data.pendingRelease.file_manifest[1].path, 'assets/fortress/gatehouse.tscn');
+
+  // Active live release remains 1.2.0 published while pending_release holds 1.3.0 and revision bumped to 2
+  const pkg = approveUpdate.data.stagedPackage;
+  assert.equal(pkg.slug, 'lowpoly-fortress-pack');
+  assert.equal(pkg.status, 'published');
+  assert.equal(pkg.asset_version_id, '1.2.0');
+  assert.equal(pkg.revision, 2);
+  assert.deepEqual(pkg.pending_release, approveUpdate.data.pendingRelease);
+
+  // Persisted and visible through GET /api/admin/store/packages and overview summary
+  const pkgsRes = await callHandler(app.adminHandler, '/api/admin/store/packages', auth);
+  const fortress = pkgsRes.data.packages.find(p => p.slug === 'lowpoly-fortress-pack');
+  assert.equal(fortress.pending_release.asset_version_id, '1.3.0');
+  assert.equal(fortress.pending_release.artifact_digest, 'sha256:' + 'e'.repeat(64));
+  assert.equal(fortress.pending_release.file_manifest.length, 2);
+
+  const overviewRes = await callHandler(app.adminHandler, '/api/admin/store/overview', auth);
+  assert.equal(overviewRes.data.summary.pendingReleasePackages, 1);
+
+  // yanked -> hidden transition is allowed as safe quarantine transition
+  const toYanked = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'yanked', reason: '긴급 차단', expectedRevision: 2 }
+  });
+  assert.equal(toYanked.status, 200);
+  const toHidden = await callHandler(app.adminHandler, '/api/admin/store/packages/lowpoly-fortress-pack/status', {
+    method: 'POST', ...auth,
+    body: { status: 'hidden', reason: '비공개 재검토 전환', expectedRevision: 3 }
+  });
+  assert.equal(toHidden.status, 200);
+  assert.equal(toHidden.data.package.status, 'hidden');
+  assert.equal(toHidden.data.package.revision, 4);
+});
+
+test('createStoreAdmin rejects missing dataDir in operational mode, warns in dev mode, and migrates legacy sqlite schema', t => {
+  // Operational/production mode must refuse silent :memory: fallback
+  assert.throws(
+    () => createStoreAdmin({ config: {}, env: { NODE_ENV: 'production' } }),
+    err => err.code === 'STORE_ADMIN_DATA_DIR_REQUIRED'
+  );
+  assert.throws(
+    () => createStoreAdmin({ config: {}, env: { PLAYHUB_CHANNEL: 'live' } }),
+    err => err.code === 'STORE_ADMIN_DATA_DIR_REQUIRED'
+  );
+  assert.throws(
+    () => createStoreAdmin({ config: {}, env: { K_SERVICE: 'playhub-hub' } }),
+    err => err.code === 'STORE_ADMIN_DATA_DIR_REQUIRED'
+  );
+  assert.throws(
+    () => createStoreAdmin({ config: { secureCookies: true }, env: {} }),
+    err => err.code === 'STORE_ADMIN_DATA_DIR_REQUIRED'
+  );
+
+  // Local/dev mode emits warning when falling back to :memory:
+  const warnings = [];
+  const memAdmin = createStoreAdmin({
+    config: {},
+    env: { NODE_ENV: 'development' },
+    warn: msg => warnings.push(msg)
+  });
+  assert.equal(memAdmin.storageMode, 'memory');
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /:memory:/);
+
+  // Legacy store-admin.sqlite without revision / pending_release_json columns is migrated cleanly
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-store-migrate-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const dbPath = path.join(dir, 'store-admin.sqlite');
+  const legacyDb = new DatabaseSync(dbPath);
+  legacyDb.exec(`
+    CREATE TABLE store_admin_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+    INSERT INTO store_admin_meta(key, value) VALUES('seeded_v1', '1');
+    CREATE TABLE store_admin_packages (
+      slug TEXT PRIMARY KEY, asset_id TEXT NOT NULL UNIQUE, title TEXT NOT NULL,
+      summary TEXT NOT NULL DEFAULT '', category TEXT NOT NULL DEFAULT '', publisher_id TEXT NOT NULL,
+      release_kind TEXT NOT NULL, asset_version_id TEXT NOT NULL, release_id TEXT NOT NULL,
+      artifact_id TEXT, artifact_digest TEXT, dependency_manifest_hash TEXT,
+      engine_compatibility_json TEXT, file_manifest_json TEXT, license_snapshot_ref TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL, status_reason TEXT, install_count INTEGER NOT NULL DEFAULT 0,
+      report_count INTEGER NOT NULL DEFAULT 0, updated_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+    );
+    INSERT INTO store_admin_packages VALUES (
+      'legacy-pack', 'legacy-pack', 'Legacy Pack', '', '', 'pub-legacy', 'package',
+      '1.0.0', 'rel-legacy-100', 'art-legacy-100', 'sha256:${'a'.repeat(64)}', 'sha256:${'b'.repeat(64)}',
+      NULL, NULL, 'lic-mit-v1', 'published', NULL, 0, 0, 'seed', 1700000000000, 1700000000000
+    );
+  `);
+  legacyDb.close();
+
+  const migratedWarnings = [];
+  const fileAdmin = createStoreAdmin({
+    config: { dataDir: dir },
+    env: { NODE_ENV: 'production' },
+    warn: msg => migratedWarnings.push(msg)
+  });
+  assert.equal(fileAdmin.storageMode, 'file');
+  assert.equal(migratedWarnings.length, 0);
+  const pkg = fileAdmin.overview().packages.find(p => p.slug === 'legacy-pack');
+  assert.equal(pkg.revision, 1);
+  assert.equal(pkg.pending_release, null);
 });

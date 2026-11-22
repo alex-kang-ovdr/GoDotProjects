@@ -12,6 +12,7 @@ const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
+const { attachCaptainForeverMmo } = require('./Tools/captain-forever-mmo-multiplayer.cjs');
 const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject, exportPlatformGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue, resolveBuildProfile } = require('./Tools/build-queue.cjs');
@@ -25,6 +26,9 @@ const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
 const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
 const { createInternalApi } = require('./Tools/internal-api.cjs');
 const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avatar-seal.cjs');
+const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
+const { createHubAgentBridge } = require('./Tools/hub-agent-bridge.cjs');
+const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -241,24 +245,44 @@ async function streamStaticFile(req, res, file, info, baseHeaders, compressionCa
   const ext = path.extname(file).toLowerCase();
   const acceptEncoding = String(req.headers['accept-encoding'] || '');
   const encoding = /\bbr\b/i.test(acceptEncoding) ? 'br' : /\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null;
-  if (compressionCache?.enabled && encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+  if (encoding && COMPRESSIBLE_EXTS.has(ext) && info.size >= 4096) {
+    // Prefer precompressed sidecar (.br / .gz) — zero runtime CPU, works on Cloud Run too.
+    const sidecarPath = file + (encoding === 'br' ? '.br' : '.gz');
     try {
-      const compressed = await compressionCache.get(file, info, encoding);
-      if (compressed) {
+      const sidecarStat = await fs.promises.stat(sidecarPath);
+      if (sidecarStat.isFile() && sidecarStat.size > 0 && sidecarStat.size < info.size && sidecarStat.mtimeMs >= info.mtimeMs - 1000) {
         res.writeHead(200, {
           ...baseHeaders,
           'Content-Encoding': encoding,
-          'Content-Length': compressed.size,
+          'Content-Length': sidecarStat.size,
           'Vary': 'Accept-Encoding',
         });
-        if (req.method === 'HEAD') { compressed.release(); return res.end(); }
-        const stream = fs.createReadStream(compressed.path);
-        stream.once('close', compressed.release);
-        stream.on('error', () => { compressed.release(); res.destroy(); });
+        if (req.method === 'HEAD') return res.end();
+        const stream = fs.createReadStream(sidecarPath);
+        stream.on('error', () => res.destroy());
         stream.pipe(res);
         return;
       }
     } catch {}
+    if (compressionCache?.enabled) {
+      try {
+        const compressed = await compressionCache.get(file, info, encoding);
+        if (compressed) {
+          res.writeHead(200, {
+            ...baseHeaders,
+            'Content-Encoding': encoding,
+            'Content-Length': compressed.size,
+            'Vary': 'Accept-Encoding',
+          });
+          if (req.method === 'HEAD') { compressed.release(); return res.end(); }
+          const stream = fs.createReadStream(compressed.path);
+          stream.once('close', compressed.release);
+          stream.on('error', () => { compressed.release(); res.destroy(); });
+          stream.pipe(res);
+          return;
+        }
+      } catch {}
+    }
   }
   res.writeHead(200, { ...baseHeaders, 'Content-Length': info.size });
   if (req.method === 'HEAD') return res.end();
@@ -267,9 +291,239 @@ async function streamStaticFile(req, res, file, info, baseHeaders, compressionCa
   stream.pipe(res);
 }
 
-function insideRoot(file) {
-  const relative = path.relative(root, file);
+function insideDir(baseDir, file) {
+  const relative = path.relative(baseDir, file);
   return relative !== '..' && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative);
+}
+
+function insideRoot(file) {
+  return insideDir(root, file);
+}
+
+const WASM_DEBUG_SECTION_PATTERN = /^(?:name|\.debug_|sourceMappingURL$|external_debug_info$)/;
+
+function normalizeWebEditorWasmProfile(raw) {
+  const value = String(raw || '').trim().toLowerCase();
+  return value === 'debug' ? 'debug' : 'release';
+}
+
+function inspectWasmReleaseBinary(wasmPath) {
+  try {
+    const stat = fs.statSync(wasmPath);
+    if (!stat.isFile() || stat.size < 8) {
+      return { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false };
+    }
+    const fd = fs.openSync(wasmPath, 'r');
+    try {
+      const magic = Buffer.alloc(8);
+      if (fs.readSync(fd, magic, 0, 8, 0) !== 8 || magic[0] !== 0x00 || magic[1] !== 0x61 || magic[2] !== 0x73 || magic[3] !== 0x6d) {
+        return { exists: true, validWasm: false, rawBytes: stat.size, debugSections: [], debugSymbolsStripped: false };
+      }
+      const scratch = Buffer.alloc(64);
+      const readUleb = (pos) => {
+        const readLen = fs.readSync(fd, scratch, 0, Math.min(10, stat.size - pos), pos);
+        let value = 0;
+        let shift = 0;
+        for (let i = 0; i < readLen; i += 1) {
+          const byte = scratch[i];
+          value += (byte & 0x7f) * (2 ** shift);
+          if ((byte & 0x80) === 0) return { value, nextPos: pos + i + 1 };
+          shift += 7;
+          if (shift > 35) break;
+        }
+        return null;
+      };
+      const debugSections = [];
+      let offset = 8;
+      while (offset < stat.size) {
+        if (fs.readSync(fd, scratch, 0, 1, offset) !== 1) break;
+        const sectionId = scratch[0];
+        offset += 1;
+        const sizeInfo = readUleb(offset);
+        if (!sizeInfo) break;
+        const payloadStart = sizeInfo.nextPos;
+        const payloadEnd = payloadStart + sizeInfo.value;
+        if (payloadEnd > stat.size) break;
+        if (sectionId === 0) {
+          const nameLenInfo = readUleb(payloadStart);
+          if (nameLenInfo && nameLenInfo.nextPos + nameLenInfo.value <= payloadEnd) {
+            const nameLen = Math.min(nameLenInfo.value, 128);
+            const nameBuf = Buffer.alloc(nameLen);
+            fs.readSync(fd, nameBuf, 0, nameLen, nameLenInfo.nextPos);
+            const secName = nameBuf.toString('utf8');
+            if (WASM_DEBUG_SECTION_PATTERN.test(secName)) debugSections.push(secName);
+          }
+        }
+        offset = payloadEnd;
+      }
+      return {
+        exists: true,
+        validWasm: true,
+        rawBytes: stat.size,
+        debugSections,
+        debugSymbolsStripped: debugSections.length === 0,
+      };
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch {
+    return { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false };
+  }
+}
+
+function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot = root) {
+  const profile = normalizeWebEditorWasmProfile(
+    options.webEditorWasmProfile ?? serverEnv.PLAYFORGE_WEB_EDITOR_WASM_PROFILE ?? 'release'
+  );
+  const explicit = [
+    options.webEditorVendorDir,
+    serverEnv.PLAYFORGE_WEB_EDITOR_DIR,
+  ].filter(Boolean);
+  const profileCandidates = profile === 'debug'
+    ? [
+        path.join(baseRoot, 'OfficialGodot', 'vendor-debug'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor-debug'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web-debug'),
+        path.join(baseRoot, 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web'),
+      ]
+    : [
+        path.join(baseRoot, 'OfficialGodot', 'vendor-release'),
+        path.join(baseRoot, 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor-release'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web-release'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web-release'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web'),
+      ];
+  const candidates = [...explicit, ...profileCandidates];
+  const seen = new Set();
+  let fallbackCandidate = null;
+  for (const candidate of candidates) {
+    try {
+      const resolved = fs.realpathSync(candidate);
+      if (seen.has(resolved)) continue;
+      seen.add(resolved);
+      if (!fs.statSync(resolved).isDirectory() || !fs.existsSync(path.join(resolved, 'godot.editor.js'))) {
+        continue;
+      }
+      const wasmInfo = inspectWasmReleaseBinary(path.join(resolved, 'godot.editor.wasm'));
+      const entry = { dir: resolved, profile, wasmInfo };
+      if (profile === 'release' && wasmInfo.validWasm && !wasmInfo.debugSymbolsStripped) {
+        if (!fallbackCandidate) fallbackCandidate = entry;
+        continue;
+      }
+      return entry;
+    } catch {}
+  }
+  return fallbackCandidate || {
+    dir: null,
+    profile,
+    wasmInfo: { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false },
+  };
+}
+
+function resolveDesktopDownloads(serverEnv = process.env, baseRoot = root) {
+  const repoRoot = path.resolve(baseRoot, '..');
+  const workspaceParent = path.resolve(repoRoot, '..');
+  const findFirstFile = (paths) => {
+    for (const candidate of paths) {
+      if (!candidate) continue;
+      try {
+        const resolved = fs.realpathSync(candidate);
+        const stat = fs.statSync(resolved);
+        if (stat.isFile() && stat.size > 0) return { path: resolved, sizeBytes: stat.size };
+      } catch {}
+    }
+    return null;
+  };
+  const specs = [
+    {
+      id: 'windows-editor',
+      os: 'windows',
+      arch: 'x86_64',
+      title: 'PlayForge Desktop Editor (Windows)',
+      subtitle: '커스텀 Godot 4.7.2 · 네이티브 풀 모듈(Jolt Physics · FBX · Lightmapper · ENet · 로컬 GPU)',
+      defaultFilename: 'PlayForge-Godot-4.7.2-win64.exe',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_WIN_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_WIN_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-win64.zip'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Godot-4.7.2-win64.exe'),
+        path.join(repoRoot, 'artifacts', 'local-runtime', 'godot', 'Godot_v4.7.2-stable_win64.exe'),
+        path.join(workspaceParent, 'GoDotProjects', 'Godot_v4.7.2-stable_win64.exe'),
+        path.resolve(workspaceParent, '..', 'GoDotProjects', 'Godot_v4.7.2-stable_win64.exe'),
+      ],
+    },
+    {
+      id: 'windows-launcher',
+      os: 'windows',
+      arch: 'x86_64',
+      title: 'PlayHub Desktop Bootstrapper (Windows)',
+      subtitle: '초경량 데스크톱 런처 · Low-IL 샌드박스 실행 · playhub:// 프로토콜',
+      defaultFilename: 'PlayHub-Desktop-Bootstrapper-win64.exe',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_BOOTSTRAPPER_WIN_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_BOOTSTRAPPER_WIN_PATH,
+        path.join(repoRoot, 'native', 'target', 'release', 'playhub-bootstrapper.exe'),
+        path.join(workspaceParent, 'Hub-Desktop', 'native', 'target', 'release', 'playhub-bootstrapper.exe'),
+      ],
+    },
+    {
+      id: 'macos-editor',
+      os: 'macos',
+      arch: 'universal',
+      title: 'PlayForge Desktop Editor (macOS)',
+      subtitle: 'Apple Silicon + Intel Universal · Metal 네이티브 풀 모듈',
+      defaultFilename: 'PlayForge-Godot-4.7.2-macos-universal.dmg',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_MAC_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_MAC_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-macos-universal.dmg'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-macos-universal.zip'),
+      ],
+    },
+    {
+      id: 'linux-editor',
+      os: 'linux',
+      arch: 'x86_64',
+      title: 'PlayForge Desktop Editor (Linux)',
+      subtitle: 'x86_64 AppImage / tar.gz · Vulkan/OpenGL 네이티브 풀 모듈',
+      defaultFilename: 'PlayForge-Godot-4.7.2-linux-x86_64.tar.gz',
+      envUrl: serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_LINUX_URL || '',
+      localPaths: [
+        serverEnv.PLAYFORGE_DESKTOP_DOWNLOAD_LINUX_PATH,
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-linux-x86_64.AppImage'),
+        path.join(repoRoot, 'artifacts', 'desktop-release', 'PlayForge-Desktop-linux-x86_64.tar.gz'),
+      ],
+    },
+  ];
+  return specs.map((spec) => {
+    const externalUrl = /^https?:\/\//i.test(String(spec.envUrl || '').trim()) ? String(spec.envUrl).trim() : null;
+    const local = externalUrl ? null : findFirstFile(spec.localPaths);
+    const filename = local ? path.basename(local.path) : spec.defaultFilename;
+    return {
+      id: spec.id,
+      os: spec.os,
+      arch: spec.arch,
+      title: spec.title,
+      subtitle: spec.subtitle,
+      filename,
+      available: Boolean(externalUrl || local),
+      sizeBytes: local ? local.sizeBytes : null,
+      externalUrl,
+      localPath: local ? local.path : null,
+      engineVersion: '4.7.2',
+      customAvatarEngine: true,
+      excludedModules: ['openxr', 'webxr', 'mobile_vr', 'camera'],
+    };
+  });
+}
+
+function resolveWebEditorVendorDir(options, serverEnv) {
+  return resolveWebEditorVendor(options, serverEnv).dir;
 }
 
 function normalizeBasePath(raw) {
@@ -287,7 +541,7 @@ function escapeHtml(value) {
 
 function loginGateHtml(loginUrl) {
   const href = escapeHtml(loginUrl);
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayForge 로그인 필요</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#161a22;color:#e8edf5;font:15px/1.6 system-ui,sans-serif}main{max-width:420px;padding:28px;border:1px solid #343d4d;border-radius:12px;background:#1f2531}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 18px;color:#b4c0d2}a{display:inline-block;padding:10px 16px;border-radius:8px;background:#4c8df6;color:#fff;text-decoration:none;font-weight:600}</style></head><body><main><h1>PlayHub Google 로그인이 필요합니다</h1><p>PlayForge 에디터와 개인 프로젝트는 PlayHub Google 계정으로 로그인한 뒤 이용할 수 있습니다.</p><a href="${href}">PlayHub 로그인으로 이동</a></main></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayForge 로그인 필요</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#161a22;color:#e8edf5;font:15px/1.6 system-ui,sans-serif}main{max-width:420px;padding:28px;border:1px solid #343d4d;border-radius:12px;background:#1f2531}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 18px;color:#b4c0d2}a{display:inline-block;padding:10px 16px;border-radius:8px;background:#4c8df6;color:#fff;text-decoration:none;font-weight:600}</style></head><body><main><h1>PlayHub 로그인이 필요합니다</h1><p>PlayForge 에디터와 개인 프로젝트는 PlayHub 계정(이메일·Google·네이버)으로 로그인한 뒤 이용할 수 있습니다.</p><a href="${href}">PlayHub 로그인으로 이동</a></main></body></html>`;
 }
 
 function firstOrigin(configured) {
@@ -303,8 +557,14 @@ function createServer(options = {}) {
   const configuredOrigin = options.publicOrigin ?? serverEnv.PUBLIC_ORIGIN;
   const originAllowed = createOriginPolicy(configuredOrigin);
   const basePath = normalizeBasePath(options.basePath ?? serverEnv.PLAYFORGE_BASE_PATH ?? '');
+  const webEditorVendor = resolveWebEditorVendor(options, serverEnv);
+  const webEditorVendorDir = webEditorVendor.dir;
+  const webEditorWasmProfile = webEditorVendor.profile;
+  const webEditorWasmRelease = webEditorVendor.profile === 'release' && webEditorVendor.wasmInfo.debugSymbolsStripped === true;
+  const webEditorWasmBytes = webEditorVendor.wasmInfo.rawBytes || 0;
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
-  const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
+  const devDemoUiIncluded = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
+  const remoteControlEnabled = devDemoUiIncluded;
   const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv(serverEnv));
   const hubAccountUrl = validateHubAccountUrl(options.hubAccountUrl || hubAuthConfig?.loginUrl || serverEnv.PLAYHUB_FORGE_HUB_ACCOUNT_URL || '/?view=account');
   const hubAuth = hubAuthConfig ? createHubSessionAuth({ ...hubAuthConfig, loginUrl: hubAuthConfig.loginUrl || hubAccountUrl }) : null;
@@ -339,8 +599,34 @@ function createServer(options = {}) {
     console.warn(`[forge] build/PIE refused for account ${accountKey}; add it to PLAYHUB_FORGE_EXECUTION_ALLOWLIST (or Hub config forge.executionAllowlist) to allow.`);
     return false;
   };
-  const assetLibrary = createAssetLibraryHandler(root);
+  const storeServerUrl = options.storeServerUrl ?? serverEnv.PLAYFORGE_STORE_SERVER_URL ?? '';
+  const storeWebUrl = options.storeWebUrl ?? serverEnv.PLAYFORGE_STORE_WEB_URL ?? (storeServerUrl || 'http://127.0.0.1:4180');
+  const assetLibrary = createAssetLibraryHandler(root, {
+    env: serverEnv,
+    storeOptions: {
+      ...(options.storeOptions || {}),
+      storeServerUrl,
+      storeWebUrl,
+    },
+  });
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
+  const hubAgentBridge = hubAuth ? createHubAgentBridge({
+    hubAuthConfig,
+    env: serverEnv,
+    fetchImpl: options.hubAgentFetch || globalThis.fetch
+  }) : null;
+  const blenderPipeline = createBlenderPipelineHandler(root, {
+    env: serverEnv,
+    storageDir: options.blenderStorageDir,
+    registry: options.blenderRegistry,
+    binaryPath: options.blenderBinaryPath,
+    timeoutMs: options.blenderTimeoutMs,
+    agentChatProvider: hubAgentBridge?.enabled() ? hubAgentBridge.internalAgentChatProvider : agentChatProvider,
+  });
+  const shortsPipeline = createShortsPipelineHandler(root, {
+    env: serverEnv,
+    storageDir: options.shortsStorageDir,
+  });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
     buildMode: options.buildMode,
@@ -475,15 +761,69 @@ function createServer(options = {}) {
     if (routePath === '/api/health' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       const status = NativeRuntime.availability(root);
-      return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, fortressWarMultiplayer: true, tappyChickenMmoMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1, hubAuth: Boolean(hubAuth) });
+      return json(200, {
+        ok: true,
+        runtime: status.available,
+        engine: 'Godot',
+        webEditorWasmProfile,
+        webEditorWasmRelease,
+        webEditorWasmBytes,
+        brawllabsMultiplayer: true,
+        fortressWarMultiplayer: true,
+        tappyChickenMmoMultiplayer: true,
+        multiplayerTestWorkspace: 1,
+        nativeGameIframe: 1,
+        hubAuth: Boolean(hubAuth),
+      });
+    }
+
+    if (routePath === '/api/desktop-downloads' && req.method === 'GET') {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const items = resolveDesktopDownloads(serverEnv).map(({ localPath, ...pub }) => ({
+        ...pub,
+        downloadUrl: pub.available
+          ? (pub.externalUrl || `${basePath}/api/desktop-downloads/${encodeURIComponent(pub.id)}`)
+          : null,
+      }));
+      return json(200, { ok: true, engineVersion: '4.7.2', items });
+    }
+
+    const desktopDlMatch = routePath.match(/^\/api\/desktop-downloads\/([a-z0-9-]+)$/);
+    if (desktopDlMatch && ['GET', 'HEAD'].includes(req.method)) {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const entry = resolveDesktopDownloads(serverEnv).find((item) => item.id === desktopDlMatch[1]);
+      if (!entry || !entry.available) {
+        return json(404, { ok: false, error: 'Desktop build not available for this target yet.' });
+      }
+      if (entry.externalUrl) {
+        res.writeHead(302, { Location: entry.externalUrl, 'Cache-Control': 'no-store' });
+        return res.end();
+      }
+      try {
+        const stat = await fs.promises.stat(entry.localPath);
+        res.writeHead(200, {
+          'Content-Type': 'application/octet-stream',
+          'Content-Length': stat.size,
+          'Content-Disposition': `attachment; filename="${entry.filename.replace(/["\\\r\n]/g, '')}"`,
+          'Cache-Control': 'public, max-age=3600',
+          'X-Content-Type-Options': 'nosniff',
+        });
+        if (req.method === 'HEAD') return res.end();
+        const stream = fs.createReadStream(entry.localPath);
+        stream.on('error', () => res.destroy());
+        stream.pipe(res);
+        return;
+      } catch {
+        return json(404, { ok: false, error: 'Desktop binary file unavailable.' });
+      }
     }
 
     if (routePath === '/api/session' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
-      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null });
+      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
       const auth = await hubAuth.verify(req, { requireCsrf: false });
-      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl });
-      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken });
+      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
+      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
     }
 
     let auth = null;
@@ -524,17 +864,72 @@ function createServer(options = {}) {
       req.url = requestUrl;
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       if (isAgentChatRoute(requestUrl)) {
-        // The provider uses this host's CLI/OAuth sessions, so it is never exposed to shared Hub accounts.
+        if (hubAgentBridge?.enabled()) {
+          return await hubAgentBridge.handleAgentChatRoute(req, res, json, auth);
+        }
+        // Without Hub-Agent bridge configured, host CLI/OAuth sessions are never exposed to shared Hub accounts.
         if (!agentChatProvider) return json(404, { ok: false, error: 'Agent chat is unavailable in Hub mode' });
         return agentChatProvider(req, res, json);
       }
       if (assetLibrary(req, res)) return;
+      if (routePath === '/api/porting' || routePath.startsWith('/api/porting/')) {
+        if (hubAgentBridge?.enabled()) {
+          const getPlatformStore = () => (hubAuth ? getPlatformFor(auth?.accountKey)?.store : platform);
+          return await hubAgentBridge.handlePortingRoute(req, res, parsedUrl, auth, { getPlatformStore }, json);
+        }
+        return json(503, { ok: false, error: 'Project porting requires Hub-Agent mode.' });
+      }
+      if (routePath === '/api/blender' || routePath.startsWith('/api/blender/')) {
+        if (routePath === '/api/blender/jobs' && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
+          return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        }
+        if (hubAgentBridge?.enabled()) {
+          if (await hubAgentBridge.handleBlenderWithHubAgent(req, res, parsedUrl, auth, blenderPipeline, json)) return;
+        } else if (await blenderPipeline(req, res, parsedUrl)) {
+          return;
+        }
+      }
+      if (routePath === '/api/shorts' || routePath.startsWith('/api/shorts/')) {
+        if (routePath === '/api/shorts/jobs' && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
+          return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        }
+        if (await shortsPipeline(req, res, parsedUrl)) return;
+      }
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
       const agentChat = routePath === '/api/platform-addon/agent-chat';
       const remoteControl = routePath === '/api/platform-addon/remote-control';
       const avatarAddon = routePath === '/api/platform-addon/avatar';
+      const blenderAddon = routePath === '/api/platform-addon/blender';
+      const assetStoreAddon = routePath === '/api/platform-addon/asset-store';
       const avatarAssetRoute = routePath.match(/^\/api\/platform-addon\/avatar\/assets\/(skins|accessories)\/([A-Za-z0-9_-]{1,80}\.glb)$/);
+      if (blenderAddon && req.method === 'GET') {
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'blender_dock.gd', 'glb_importer.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_blender', name), 'utf8')]));
+          return json(200, { ok: true, files: Object.fromEntries(entries) });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Blender add-on unavailable' });
+        }
+      }
+      if (assetStoreAddon && req.method === 'GET') {
+        try {
+          const names = ['plugin.cfg', 'plugin.gd', 'store_dock.gd', 'package_installer.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_asset_store', name), 'utf8')]));
+          return json(200, {
+            ok: true,
+            files: Object.fromEntries(entries),
+            config: {
+              store_web_url: storeWebUrl,
+              store_api_url: `${basePath}/api/asset-library/store`,
+            },
+          });
+        } catch {
+          return json(503, { ok: false, error: 'PlayForge Asset Store add-on unavailable' });
+        }
+      }
       if (avatarAddon && req.method === 'GET') {
         try {
           const bundle = loadSealedAvatarBundle(root);
@@ -577,8 +972,12 @@ function createServer(options = {}) {
             'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
+          const rawFiles = Object.fromEntries(entries);
+          const finalFiles = (agentChat && hubAgentBridge?.enabled())
+            ? hubAgentBridge.adaptAgentChatAddonFiles(rawFiles)
+            : rawFiles;
           return json(200, { ok: true, manifest, stagedFiles: manifest ? showcaseStagedFiles(manifest) : undefined,
-            files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
+            files: finalFiles, store: agentChat ? undefined : loadAssetStore(root) });
         } catch (error) {
           return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }
@@ -629,6 +1028,11 @@ function createServer(options = {}) {
       const tappyMmoRoomRoute = routePath.match(/^\/api\/tappy-chicken-mmo\/rooms\/([a-f0-9]{12})$/);
       if (tappyMmoRoomRoute && req.method === 'GET') {
         const metadata = tappyChickenMmo.metadata(tappyMmoRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
+      const captainMmoRoomRoute = routePath.match(/^\/api\/captain-forever-mmo\/rooms\/([a-f0-9]{12})$/);
+      if (captainMmoRoomRoute && req.method === 'GET') {
+        const metadata = captainForeverMmo.metadata(captainMmoRoomRoute[1]);
         return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
       }
       if (routePath === '/api/export/godot-project.zip' && req.method === 'GET') {
@@ -761,8 +1165,15 @@ function createServer(options = {}) {
     if (segments.some(part => part.startsWith('.') || ['node_modules', 'saved', 'engine', 'tools', 'godot', 'privateaccount'].includes(part.toLowerCase()))) {
       return reply(403, 'Private path');
     }
-    let file = path.resolve(root, '.' + pathname);
-    if (!insideRoot(file)) return reply(403, 'Outside project');
+    if (!devDemoUiIncluded && /(?:^|\/)dev-demo-ui\.js$/i.test(pathname)) {
+      return reply(404, 'Not found');
+    }
+    const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
+    const allowedRoot = isVendorBinary && webEditorVendorDir ? webEditorVendorDir : root;
+    let file = isVendorBinary && webEditorVendorDir
+      ? path.resolve(webEditorVendorDir, pathname.slice('/OfficialGodot/vendor/'.length))
+      : path.resolve(root, '.' + pathname);
+    if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
     try {
       let info = await fs.promises.stat(file);
       if (info.isDirectory()) {
@@ -773,16 +1184,37 @@ function createServer(options = {}) {
         file = path.join(file, 'index.html');
       }
       file = await fs.promises.realpath(file);
-      if (!insideRoot(file)) return reply(403, 'Outside project');
+      if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
       info = await fs.promises.stat(file);
       if (!info.isFile()) return reply(404, 'Not found');
-      const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
-      await streamStaticFile(req, res, file, info, {
-        'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
+      const ext = path.extname(file).toLowerCase();
+      if (ext === '.html' && !isVendorBinary) {
+        let html = await fs.promises.readFile(file, 'utf8');
+        if (!devDemoUiIncluded) {
+          html = html.replace(/\s*<!--\s*playforge-dev-demo:start\s*-->[\s\S]*?<!--\s*playforge-dev-demo:end\s*-->/gi, '');
+        }
+        const buildScript = `<script>window.__PLAYFORGE_BUILD_MODE__=${JSON.stringify(resolvedBuildMode)};window.__PLAYFORGE_DEV_DEMO_UI_INCLUDED__=${JSON.stringify(devDemoUiIncluded)};</script>`;
+        if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, `${buildScript}\n</head>`);
+        const body = Buffer.from(html, 'utf8');
+        res.writeHead(200, {
+          'Content-Type': mime['.html'],
+          'Content-Length': body.length,
+          'Cache-Control': 'no-cache',
+          'X-Content-Type-Options': 'nosniff',
+          'Referrer-Policy': 'no-referrer',
+        });
+        return res.end(req.method === 'HEAD' ? undefined : body);
+      }
+      const staticHeaders = {
+        'Content-Type': mime[ext] || 'application/octet-stream',
         'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',
-      }, httpCache);
+      };
+      if (isVendorBinary && ext === '.wasm') {
+        staticHeaders['X-PlayForge-Web-Editor-Wasm'] = webEditorWasmRelease ? 'release' : webEditorWasmProfile;
+      }
+      await streamStaticFile(req, res, file, info, staticHeaders, httpCache);
     } catch (error) {
       if (!res.headersSent) reply(['ENOENT', 'ENOTDIR'].includes(error.code) ? 404 : 500, 'File unavailable');
       else res.destroy();
@@ -792,6 +1224,7 @@ function createServer(options = {}) {
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('brawllabs') });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('fortress-war') });
   const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('tappy-chicken-mmo') });
+  const captainForeverMmo = attachCaptainForeverMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('captain-forever-mmo') });
 
   server.on('upgrade', async (req, socket, head) => {
     req.url = stripBasePath(req.url || '');
@@ -815,7 +1248,7 @@ function createServer(options = {}) {
       catch { socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); }
       return;
     }
-    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo') {
+    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo') {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -825,9 +1258,11 @@ function createServer(options = {}) {
   const closeOwned = () => {
     internalApi?.close();
     agentChatProvider?.close();
+    blenderPipeline?.close();
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();
+    captainForeverMmo.close();
     platformApi?.close?.();
     collaboration?.close?.();
     for (const entry of accountPlatforms.values()) entry.api.close?.();
@@ -871,4 +1306,4 @@ if (require.main === module) {
     process.on('SIGTERM', () => server.shutdown());
   }
 }
-module.exports = { createServer, createCompressionCache, internalApiConfigFromEnv };
+module.exports = { createServer, createCompressionCache, internalApiConfigFromEnv, inspectWasmReleaseBinary, resolveWebEditorVendor, normalizeWebEditorWasmProfile };

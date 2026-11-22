@@ -1,0 +1,95 @@
+{
+  "identifier": "D7C4A821-PLAYHUB-IOS-STOREKIT-V1",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "1.99",
+      "familyShareable": false,
+      "internalID": "playhub_coin_tier1",
+      "localizations": [
+        {
+          "description": "Play Coin 100개 (Web·Android·iOS 공용 지갑)",
+          "displayName": "100 Play Coins",
+          "locale": "ko"
+        },
+        {
+          "description": "100 Play Coins (Shared Wallet across Web, Android, and iOS)",
+          "displayName": "100 Play Coins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.playhub.coin.tier1",
+      "referenceName": "Play Coin Tier 1 (100)",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "6.99",
+      "familyShareable": false,
+      "internalID": "playhub_coin_tier2",
+      "localizations": [
+        {
+          "description": "Play Coin 500개 (Web·Android·iOS 공용 지갑)",
+          "displayName": "500 Play Coins",
+          "locale": "ko"
+        },
+        {
+          "description": "500 Play Coins (Shared Wallet across Web, Android, and iOS)",
+          "displayName": "500 Play Coins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.playhub.coin.tier2",
+      "referenceName": "Play Coin Tier 2 (500)",
+      "type": "Consumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "playhub_ios_local",
+    "_askToBuyEnabled": false,
+    "_billingIssuesEnabled": false,
+    "_failTransactionsEnabled": false,
+    "_locale": "ko",
+    "_storefront": "KOR",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "playhub_pass_group",
+      "localizations": [
+        {
+          "description": "Play Pass 멤버십 구독",
+          "displayName": "Play Pass",
+          "locale": "ko"
+        }
+      ],
+      "name": "Play Pass",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "playhub_pass_monthly",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "월간 보너스 코인 · 클라우드 세이브 슬롯 확장 · 프로필 배지",
+              "displayName": "Play Pass Monthly",
+              "locale": "ko"
+            }
+          ],
+          "productID": "com.playhub.pass.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Play Pass Monthly",
+          "subscriptionGroupID": "playhub_pass_group",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

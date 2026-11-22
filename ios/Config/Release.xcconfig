@@ -1,0 +1,15 @@
+#include "Base.xcconfig"
+
+PLAYHUB_BUILD_STAGE = release
+// Production RC: Farm selector strictly locked off at compile-time & runtime
+PLAYHUB_ALLOW_FARM_SELECTOR = NO
+PLAYHUB_DEFAULT_HUB_URL = https:/$()/staging-farm.playhub.example.com
+PRODUCT_BUNDLE_IDENTIFIER = com.playhub.hub-ios.release
+INFOPLIST_KEY_CFBundleDisplayName = Play Hub [RC]
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = PLAYHUB_RELEASE
+SWIFT_OPTIMIZATION_LEVEL = -Osize
+GCC_OPTIMIZATION_LEVEL = s
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+COPY_PHASE_STRIP = YES
+STRIP_STYLE = all
+VALIDATE_PRODUCT = YES

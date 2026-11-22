@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-tappy-chicken-mmo",
+  "slug": "forge-tappy-chicken-mmo",
+  "deployMode": "mmo",
+  "title": {
+    "ko": "태피 치킨 MMO",
+    "en": "Tappy Chicken MMO",
+    "ja": "Tappy Chicken MMO",
+    "zh-CN": "Tappy Chicken MMO",
+    "fr": "Tappy Chicken MMO",
+    "es": "Tappy Chicken MMO",
+    "pt-BR": "Tappy Chicken MMO",
+    "hi": "Tappy Chicken MMO"
+  },
+  "summary": {
+    "ko": "주변 플레이어의 비행이 50% 반투명 고스트로 실시간 중계되는 MMO 태피 치킨",
+    "en": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "ja": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "zh-CN": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "fr": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "es": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "pt-BR": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "hi": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts."
+  },
+  "instructions": {
+    "ko": "스페이스바·클릭 또는 화면 탭으로 날갯짓하세요. P로 일시정지, R로 재시작합니다.",
+    "en": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "ja": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "zh-CN": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "fr": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "es": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "pt-BR": "Press Space, click, or tap to flap. P to pause, R to restart.",
+    "hi": "Press Space, click, or tap to flap. P to pause, R to restart."
+  },
+  "rules": {
+    "ko": "주변 플레이어의 비행이 50% 반투명 고스트로 실시간 중계되는 MMO 태피 치킨",
+    "en": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "ja": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "zh-CN": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "fr": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "es": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "pt-BR": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts.",
+    "hi": "Drop-in multiplayer Tappy Chicken MMO with 50% translucent nearby ghosts."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "publishedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "arcade",
+    "multiplayer"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 480,
+    "height": 640,
+    "orientation": "portrait",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (tappy-chicken-mmo)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

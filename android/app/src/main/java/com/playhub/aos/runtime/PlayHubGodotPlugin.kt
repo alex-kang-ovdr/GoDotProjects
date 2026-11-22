@@ -21,7 +21,15 @@ class PlayHubGodotPlugin(
     private val isGuest: Boolean,
     private val ageTier: String,
     private val locale: String,
-    private val onOpenOverlay: (tab: String) -> Unit
+    private val roomCode: String = "",
+    private val matchRoomId: String = "",
+    private val wsUrl: String = "",
+    private val launchMode: String = "game",
+    private val avatarInitJson: String = "{}",
+    private val onOpenOverlay: (tab: String) -> Unit,
+    private val onStudioReady: ((softwareFallback: Boolean) -> Unit)? = null,
+    private val onEquipApplied: ((seq: Int) -> Unit)? = null,
+    private val onStudioMetrics: ((fps: Float, frameMs: Float) -> Unit)? = null
 ) : GodotPlugin(godot) {
 
     companion object {
@@ -36,6 +44,27 @@ class PlayHubGodotPlugin(
             String::class.java,
             String::class.java
         )
+
+        /**
+         * Single Source of Truth for the multiplayer handoff payload consumed by both
+         * GodotPlayerActivity (user://playhub_mp.json) and PlayHubBridge.get_multiplayer_config().
+         */
+        fun buildMultiplayerConfigJson(
+            wsUrl: String,
+            gameId: String,
+            roomCode: String,
+            displayName: String,
+            platform: String = "android"
+        ): String {
+            if (wsUrl.isBlank()) return ""
+            return JSONObject().apply {
+                put("wsUrl", wsUrl)
+                put("gameId", gameId)
+                put("roomId", roomCode)
+                put("displayName", displayName)
+                put("platform", platform)
+            }.toString()
+        }
     }
 
     override fun getPluginName(): String = "PlayHubBridge"
@@ -49,6 +78,37 @@ class PlayHubGodotPlugin(
     fun get_launch_pck_path(): String = pckPath
 
     @UsedByGodot
+    fun get_launch_mode(): String = launchMode
+
+    @UsedByGodot
+    fun get_avatar_init_json(): String = avatarInitJson
+
+    @UsedByGodot
+    fun notify_studio_ready(softwareFallback: Boolean) {
+        onStudioReady?.let { cb -> runOnHostThread { cb(softwareFallback) } }
+    }
+
+    @UsedByGodot
+    fun notify_equip_applied(seq: Int) {
+        onEquipApplied?.let { cb -> runOnHostThread { cb(seq) } }
+    }
+
+    @UsedByGodot
+    fun notify_studio_metrics(fps: Float, frameMs: Float) {
+        onStudioMetrics?.let { cb -> runOnHostThread { cb(fps, frameMs) } }
+    }
+
+    @UsedByGodot
+    fun get_room_code(): String = roomCode
+
+    @UsedByGodot
+    fun get_match_room_id(): String = matchRoomId
+
+    @UsedByGodot
+    fun get_multiplayer_config(): String =
+        buildMultiplayerConfigJson(wsUrl, gameId, roomCode, displayName, "android")
+
+    @UsedByGodot
     fun get_profile(): String {
         return JSONObject().apply {
             put("gameId", gameId)
@@ -57,6 +117,8 @@ class PlayHubGodotPlugin(
             put("isGuest", isGuest)
             put("ageTier", ageTier)
             put("locale", locale)
+            put("roomCode", roomCode)
+            put("matchRoomId", matchRoomId)
             put("runtime", "android-godot-4.7.2")
         }.toString()
     }

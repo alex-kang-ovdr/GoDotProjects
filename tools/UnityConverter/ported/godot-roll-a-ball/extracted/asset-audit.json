@@ -1,0 +1,101 @@
+{
+  "sample_id": "roll-a-ball",
+  "sample_name": "Roll-a-Ball (3D Physics)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 5,
+    "ported_full": 2,
+    "ported_partial": 3,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 85
+  },
+  "by_category": [
+    {
+      "category": "Prefab",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 3,
+      "full": 0,
+      "partial": 3,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 1,
+      "entities": 25,
+      "logic_graphs": 3,
+      "assets": 5,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/_Scenes/MiniGame.unity",
+      "bytes": 92406,
+      "sha256": "c9c6d5038694e54d",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/PickUp.prefab",
+      "bytes": 3029,
+      "sha256": "901124c50518992f",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/CameraController.cs",
+      "bytes": 303,
+      "sha256": "9e22c043c501773d",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "bytes": 939,
+      "sha256": "3b441fbb4d8ab186",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Rotator.cs",
+      "bytes": 220,
+      "sha256": "b9ba5e6fe24ffc83",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    }
+  ]
+}

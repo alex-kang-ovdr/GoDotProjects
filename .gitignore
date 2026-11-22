@@ -95,4 +95,7 @@ engine/godot/
 
 **/__pycache__/
 *.pyc
-.agents
+.agents/*
+!.agents/skills/
+!.agents/rules/
+!.agents/hooks.json

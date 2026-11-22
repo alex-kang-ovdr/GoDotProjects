@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 3,
+  "title": "Fortress War 제작 시연",
+  "duration": 12,
+  "playOnCompletion": true,
+  "viewport": { "width": 960, "height": 600 },
+  "roles": [
+    {"id": "gui", "label": "GUI", "color": "#dd8ef1", "editorRegion": "inspector", "description": "전투 HUD와 조작 인터페이스"},
+    {"id": "level", "label": "레벨", "color": "#69dbc0", "editorRegion": "viewport", "description": "파괴 가능한 포격 전장 레이어"},
+    {"id": "script", "label": "스크립트", "color": "#f6c970", "editorRegion": "script", "description": "턴제 포격 물리·바람·네트워크 로직"},
+    {"id": "assets", "label": "에셋", "color": "#78b8ff", "editorRegion": "filesystem", "description": "지형 셰이더와 유닛 카탈로그 데이터"}
+  ],
+  "cues": [
+    {"at": 0, "role": "gui", "action": "point", "x": 800, "y": 100, "text": "턴제 포격 HUD와 각도·파워 조작 레이아웃을 준비합니다"},
+    {"at": 0, "role": "level", "action": "point", "x": 520, "y": 160, "text": "빈 2D 씬에서 파괴 가능한 포격 전장을 구성합니다"},
+    {"at": 0, "role": "script", "action": "point", "x": 180, "y": 230, "text": "바람·탄도 물리 엔진과 멀티플레이 동기화 구조를 준비합니다"},
+    {"at": 0, "role": "assets", "action": "point", "assetNode": "Battlefield", "assetProperty": "script", "x": 80, "y": 310, "text": "전장 렌더러 스크립트(battle_view.gd)와 지형 셰이더·카탈로그를 확인합니다"},
+    {"at": 1.2, "role": "level", "action": "add", "object": "Battlefield", "text": "전장 렌더링과 파괴 지형을 담당할 Battlefield 노드를 추가합니다"},
+    {"at": 2.2, "role": "level", "action": "set", "object": "Battlefield", "property": "position", "text": "전장 기준 위치를 HUD 아래 영역으로 배치합니다"},
+    {"at": 3.0, "role": "level", "action": "set", "object": "Battlefield", "property": "scale", "text": "전장 캔버스를 화면 비율에 맞게 스케일링합니다"},
+    {"at": 3.8, "role": "gui", "action": "add", "object": "Hud", "text": "화면 상·하단 전투 정보를 고정할 CanvasLayer HUD를 추가합니다"},
+    {"at": 4.6, "role": "gui", "action": "add", "object": "Hud/Interface", "text": "전체 화면 앵커 기반 전투 UI 컨테이너를 추가합니다"},
+    {"at": 5.4, "role": "gui", "action": "set", "object": "Hud/Interface", "property": "anchor_right", "text": "UI 컨테이너를 화면 가로 전체에 맞춥니다"},
+    {"at": 6.0, "role": "gui", "action": "set", "object": "Hud/Interface", "property": "anchor_bottom", "text": "UI 컨테이너를 화면 세로 전체에 맞춥니다"},
+    {"at": 6.4, "role": "assets", "action": "point", "x": 115, "y": 390, "text": "지형 셰이더와 유닛 카탈로그 리소스 연결을 확인합니다"},
+    {"at": 6.8, "role": "script", "action": "point", "scriptPhase": "open", "x": 210, "y": 195, "text": "main.gd 파일을 스크립트 편집기에서 엽니다"},
+    {"at": 8.6, "role": "script", "action": "point", "scriptPhase": "paste", "x": 240, "y": 255, "text": "턴제 포격 엔진과 AI·온라인 대전 제어 코드를 적용합니다"},
+    {"at": 9.8, "role": "script", "action": "finish", "text": "Fortress War 메인 스크립트를 연결해 포격 전투 실행을 준비합니다"}
+  ]
+}

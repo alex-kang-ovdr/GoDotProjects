@@ -11,13 +11,15 @@ import {
   extractPlaceholders,
   lintTranslation,
   gatherPlatformTexts,
+  validateOpenAiBaseUrl,
   translateWithAi,
   validateMediaUpload,
   parseLegacyPlatformDictionaries,
-  compileL10nBundleJs
+  assembleSurfaceLocaleData
 } from './l10n-engine.mjs';
 
 const VALID_STATUSES = new Set(['untranslated', 'ai_draft', 'needs_review', 'approved', 'stale', 'archived']);
+const VALID_AI_PROVIDERS = ['gemini', 'openai', 'mock'];
 const MEDIA_FILENAME = /^[a-f0-9]{16,64}\.(png|jpg|webp|svg)$/;
 const MIME_BY_EXT = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml' };
 
@@ -204,6 +206,77 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
 
   const mediaDir = path.join(config.dataDir, 'l10n-media');
 
+  function syncBundleFromRepo({ actor = 'repo-sync' } = {}) {
+    const bundleFile = path.join(rootDir, 'shared', 'locales', 'l10n-bundle.json');
+    if (!fs.existsSync(bundleFile)) {
+      return { bundleFound: false, keysAdded: 0, translationsFilled: 0, skippedExisting: 0, totalBundleKeys: 0 };
+    }
+    const bundle = safeJson(fs.readFileSync(bundleFile, 'utf8'), null);
+    if (!bundle || typeof bundle !== 'object' || !bundle.keys || typeof bundle.keys !== 'object') {
+      return { bundleFound: false, keysAdded: 0, translationsFilled: 0, skippedExisting: 0, totalBundleKeys: 0 };
+    }
+    const keys = bundle.keys;
+    const meta = bundle.meta && typeof bundle.meta === 'object' ? bundle.meta : {};
+    const stamp = now();
+    const selKey = db.prepare('SELECT key, source_hash FROM l10n_keys WHERE key=?');
+    const insKey = db.prepare('INSERT OR IGNORE INTO l10n_keys VALUES(?,?,?,?,?,?,?,?,?,?,1,?)');
+    const selTr = db.prepare('SELECT value, status FROM l10n_translations WHERE key=? AND locale=?');
+    const insTr = db.prepare('INSERT OR IGNORE INTO l10n_translations VALUES(?,?,?,?,?,?,?,?,?)');
+    const updTr = db.prepare("UPDATE l10n_translations SET value=?,status='approved',updated_by=?,updated_at=? WHERE key=? AND locale=?");
+
+    let keysAdded = 0;
+    let translationsFilled = 0;
+    let skippedExisting = 0;
+    let totalBundleKeys = 0;
+
+    transaction(db, () => {
+      for (const [key, row] of Object.entries(keys)) {
+        if (!KEY_PATTERN.test(key) || typeof row?.ko !== 'string' || !row.ko.trim()) continue;
+        totalBundleKeys++;
+        const sourceHash = sha256Hex(row.ko);
+        const existingKey = selKey.get(key);
+        if (!existingKey) {
+          const m = meta[key] || {};
+          const ns = key.split('.').slice(0, -1).join('.');
+          insKey.run(
+            key, ns, row.ko, sourceHash,
+            m.contextId || 'general', m.description || '', m.maxChars ?? null,
+            JSON.stringify(extractPlaceholders(row.ko)), JSON.stringify(m.codeRefs || []),
+            null, stamp
+          );
+          keysAdded++;
+          for (const loc of TARGET_LOCALES) {
+            const val = typeof row[loc] === 'string' ? row[loc].trim() : '';
+            insTr.run(key, loc, val, val ? 'approved' : 'untranslated', null, null, '[]', actor, stamp);
+            if (val) translationsFilled++;
+          }
+          continue;
+        }
+
+        if (existingKey.source_hash !== sourceHash) {
+          skippedExisting++;
+          continue;
+        }
+        for (const loc of TARGET_LOCALES) {
+          const val = typeof row[loc] === 'string' ? row[loc].trim() : '';
+          if (!val) continue;
+          const existingTr = selTr.get(key, loc);
+          if (!existingTr) {
+            insTr.run(key, loc, val, 'approved', null, null, '[]', actor, stamp);
+            translationsFilled++;
+          } else if (existingTr.status === 'untranslated' && !String(existingTr.value || '').trim()) {
+            updTr.run(val, actor, stamp, key, loc);
+            translationsFilled++;
+          } else {
+            skippedExisting++;
+          }
+        }
+      }
+    });
+
+    return { bundleFound: true, keysAdded, translationsFilled, skippedExisting, totalBundleKeys };
+  }
+
   function seedIfEmpty() {
     const stamp = now();
     if (db.prepare('SELECT COUNT(*) AS n FROM l10n_glossary').get().n === 0) {
@@ -224,41 +297,26 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
         ins.run(s.slotKey, s.description, s.altTextKey || null, s.width || null, s.height || null, 1024 * 1024, JSON.stringify(['webp', 'png', 'jpg', 'svg']), stamp);
       }
     }
-    if (db.prepare('SELECT COUNT(*) AS n FROM l10n_keys').get().n === 0) {
-      const bundleFile = path.join(rootDir, 'shared', 'locales', 'l10n-bundle.json');
+    const existingCount = db.prepare('SELECT COUNT(*) AS n FROM l10n_keys').get().n;
+    const bundleFile = path.join(rootDir, 'shared', 'locales', 'l10n-bundle.json');
+    if (fs.existsSync(bundleFile)) {
+      syncBundleFromRepo({ actor: existingCount === 0 ? 'seed' : 'repo-sync' });
+    } else if (existingCount === 0) {
       const insKey = db.prepare('INSERT OR IGNORE INTO l10n_keys VALUES(?,?,?,?,?,?,?,?,?,?,1,?)');
       const insTr = db.prepare('INSERT OR IGNORE INTO l10n_translations VALUES(?,?,?,?,?,?,?,?,?)');
-      if (fs.existsSync(bundleFile)) {
-        const bundle = safeJson(fs.readFileSync(bundleFile, 'utf8'), null);
-        const keys = bundle?.keys || {};
-        const meta = bundle?.meta || {};
-        transaction(db, () => {
-          for (const [key, row] of Object.entries(keys)) {
-            if (!KEY_PATTERN.test(key) || typeof row?.ko !== 'string' || !row.ko.trim()) continue;
-            const m = meta[key] || {};
-            const ns = key.split('.').slice(0, -1).join('.');
-            insKey.run(key, ns, row.ko, sha256Hex(row.ko), m.contextId || 'general', m.description || '', m.maxChars ?? null, JSON.stringify(extractPlaceholders(row.ko)), JSON.stringify(m.codeRefs || []), null, stamp);
-            for (const loc of TARGET_LOCALES) {
-              const val = typeof row[loc] === 'string' ? row[loc] : '';
-              insTr.run(key, loc, val, val ? 'approved' : 'untranslated', null, null, '[]', 'seed', stamp);
-            }
+      const legacy = parseLegacyPlatformDictionaries(rootDir);
+      const entries = Object.entries(legacy);
+      transaction(db, () => {
+        entries.forEach(([source, row], idx) => {
+          const key = legacyKeyFor(source, idx, row._file);
+          const ns = key.split('.').slice(0, -1).join('.');
+          insKey.run(key, ns, source, sha256Hex(source), 'general', '', null, JSON.stringify(extractPlaceholders(source)), '[]', null, stamp);
+          for (const loc of TARGET_LOCALES) {
+            const val = typeof row[loc] === 'string' ? row[loc] : '';
+            insTr.run(key, loc, val, val ? 'approved' : 'untranslated', null, null, '[]', 'seed', stamp);
           }
         });
-      } else {
-        const legacy = parseLegacyPlatformDictionaries(rootDir);
-        const entries = Object.entries(legacy);
-        transaction(db, () => {
-          entries.forEach(([source, row], idx) => {
-            const key = legacyKeyFor(source, idx, row._file);
-            const ns = key.split('.').slice(0, -1).join('.');
-            insKey.run(key, ns, source, sha256Hex(source), 'general', '', null, JSON.stringify(extractPlaceholders(source)), '[]', null, stamp);
-            for (const loc of TARGET_LOCALES) {
-              const val = typeof row[loc] === 'string' ? row[loc] : '';
-              insTr.run(key, loc, val, val ? 'approved' : 'untranslated', null, null, '[]', 'seed', stamp);
-            }
-          });
-        });
-      }
+      });
     }
   }
 
@@ -290,10 +348,14 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
     }));
   }
 
+  function configuredOpenAiBaseUrl() {
+    return config?.l10n?.openaiBaseUrl || env.PLAYHUB_L10N_OPENAI_BASE_URL || 'https://api.openai.com/v1';
+  }
+
   function aiProvidersStatus() {
     const geminiKey = Boolean(env.PLAYHUB_L10N_GEMINI_API_KEY || env.GEMINI_API_KEY);
     const openaiKey = Boolean(env.PLAYHUB_L10N_OPENAI_API_KEY || env.OPENAI_API_KEY);
-    const openaiBaseUrl = env.PLAYHUB_L10N_OPENAI_BASE_URL || 'https://api.openai.com/v1';
+    const openaiBaseUrl = configuredOpenAiBaseUrl();
     return {
       providers: [
         { id: 'gemini', label: 'Google Gemini API', configured: geminiKey, defaultModel: env.PLAYHUB_L10N_GEMINI_MODEL || 'gemini-2.5-flash' },
@@ -502,22 +564,87 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
     };
   }
 
+  function writeFilesAtomically(targets) {
+    const snapshots = targets.map(({ filePath }) => {
+      if (!fs.existsSync(filePath)) return { filePath, existed: false, content: null };
+      const stat = fs.lstatSync(filePath);
+      if (stat.isDirectory()) return { filePath, existed: true, isDir: true, content: null };
+      return { filePath, existed: true, isDir: false, content: fs.readFileSync(filePath) };
+    });
+
+    const staged = [];
+    const committed = [];
+    try {
+      for (const { filePath, content } of targets) {
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+        const tmpPath = `${filePath}.tmp.${process.pid}.${uid()}`;
+        fs.writeFileSync(tmpPath, content, 'utf8');
+        staged.push({ filePath, tmpPath });
+      }
+      for (let i = 0; i < staged.length; i++) {
+        const { filePath, tmpPath } = staged[i];
+        fs.renameSync(tmpPath, filePath);
+        staged[i].renamed = true;
+        committed.push(snapshots[i]);
+      }
+    } catch (error) {
+      for (const item of staged) {
+        if (!item.renamed) {
+          try { fs.unlinkSync(item.tmpPath); } catch {}
+        }
+      }
+      for (let i = committed.length - 1; i >= 0; i--) {
+        const snap = committed[i];
+        try {
+          if (snap.existed && !snap.isDir) {
+            const restoreTmp = `${snap.filePath}.restore.${process.pid}.${uid()}`;
+            fs.writeFileSync(restoreTmp, snap.content);
+            fs.renameSync(restoreTmp, snap.filePath);
+          } else if (!snap.existed) {
+            fs.unlinkSync(snap.filePath);
+          }
+        } catch {}
+      }
+      throw error;
+    }
+  }
+
   function exportBundleToRepo(bundle) {
     const bundlePath = path.join(rootDir, 'shared', 'locales', 'l10n-bundle.json');
-    fs.mkdirSync(path.dirname(bundlePath), { recursive: true });
-    fs.writeFileSync(bundlePath, JSON.stringify(bundle, null, 2) + '\n', 'utf8');
-    const js = compileL10nBundleJs(bundle);
+    const { surfaceLocaleData } = assembleSurfaceLocaleData({ root: rootDir, bundle });
+    const targets = [
+      { filePath: bundlePath, content: JSON.stringify(bundle, null, 2) + '\n' }
+    ];
     for (const surface of ['user', 'admin']) {
       const dir = path.join(rootDir, 'web', surface);
       if (fs.existsSync(dir)) {
-        fs.writeFileSync(path.join(dir, 'locale-data.js'), js, 'utf8');
+        targets.push({ filePath: path.join(dir, 'locale-data.js'), content: surfaceLocaleData });
       }
     }
-    return { bundleFile: 'shared/locales/l10n-bundle.json' };
+    writeFilesAtomically(targets);
+    return {
+      bundleFile: 'shared/locales/l10n-bundle.json',
+      files: targets.map(t => path.relative(rootDir, t.filePath).replace(/\\/g, '/'))
+    };
+  }
+
+  function cleanupUnreferencedMediaFile(filename) {
+    if (!filename || !MEDIA_FILENAME.test(filename)) return;
+    const stillUsed = db.prepare('SELECT 1 FROM l10n_media_assets WHERE filename=? LIMIT 1').get(filename);
+    if (stillUsed) return;
+    const full = path.resolve(mediaDir, filename);
+    if (!full.startsWith(path.resolve(mediaDir) + path.sep)) return;
+    try {
+      fs.unlinkSync(full);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
   }
 
   function serveMediaFile(res, filename) {
     if (!MEDIA_FILENAME.test(filename)) throw new ApiError(400, 'INVALID_MEDIA_FILENAME');
+    const registered = db.prepare('SELECT 1 FROM l10n_media_assets WHERE filename=? LIMIT 1').get(filename);
+    if (!registered) throw new ApiError(404, 'MEDIA_NOT_FOUND');
     const full = path.resolve(mediaDir, filename);
     if (!full.startsWith(path.resolve(mediaDir) + path.sep) || !fs.existsSync(full)) throw new ApiError(404, 'MEDIA_NOT_FOUND');
     const stat = fs.lstatSync(full);
@@ -525,6 +652,7 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
     const ext = path.extname(filename).slice(1).toLowerCase();
     res.statusCode = 200;
     res.setHeader('Content-Type', MIME_BY_EXT[ext] || 'application/octet-stream');
+    res.setHeader('Content-Security-Policy', "sandbox; default-src 'none'");
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.end(fs.readFileSync(full));
@@ -741,6 +869,21 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
       return true;
     }
 
+    if (p === '/api/admin/l10n/import-bundle' && req.method === 'POST') {
+      await readJson(req, 4096);
+      const active = requireSession ? requireSession(req, 'admin', true) : session;
+      const result = syncBundleFromRepo({ actor: active.admin_username || 'admin' });
+      if (!result.bundleFound) throw new ApiError(404, 'L10N_BUNDLE_NOT_FOUND');
+      audit('l10n_bundle_imported', 'shared/locales/l10n-bundle.json', {
+        keysAdded: result.keysAdded,
+        translationsFilled: result.translationsFilled,
+        skippedExisting: result.skippedExisting,
+        admin: active.admin_username
+      });
+      json(res, 200, { ok: true, ...result });
+      return true;
+    }
+
     // Glossary CRUD
     if (p === '/api/admin/l10n/glossary' && req.method === 'GET') {
       json(res, 200, { items: allGlossary() });
@@ -813,7 +956,14 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
     if (p === '/api/admin/l10n/ai/translate' && req.method === 'POST') {
       const body = await readJson(req, 32768);
       const active = requireSession ? requireSession(req, 'admin', true) : session;
-      const provider = ['gemini', 'openai', 'mock'].includes(body.provider) ? body.provider : 'mock';
+      const rawProvider = body.provider === undefined ? 'mock' : body.provider;
+      if (typeof rawProvider !== 'string' || !VALID_AI_PROVIDERS.includes(rawProvider)) {
+        throw new ApiError(422, 'INVALID_AI_PROVIDER');
+      }
+      const provider = rawProvider;
+      if (body.baseUrl !== undefined && body.baseUrl !== null && body.baseUrl !== '') {
+        throw new ApiError(422, 'BASE_URL_OVERRIDE_NOT_ALLOWED');
+      }
       const targetLocale = String(body.targetLocale || 'en');
       if (!TARGET_LOCALES.includes(targetLocale)) throw new ApiError(422, 'INVALID_LOCALE');
       const requestedKeys = Array.isArray(body.keys) ? body.keys.filter(k => typeof k === 'string' && KEY_PATTERN.test(k)).slice(0, 50) : [];
@@ -833,7 +983,14 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
         : provider === 'openai'
           ? (env.PLAYHUB_L10N_OPENAI_API_KEY || env.OPENAI_API_KEY || '')
           : '';
-      const baseUrl = body.baseUrl || env.PLAYHUB_L10N_OPENAI_BASE_URL || 'https://api.openai.com/v1';
+      let baseUrl = configuredOpenAiBaseUrl();
+      if (provider === 'openai') {
+        try {
+          baseUrl = validateOpenAiBaseUrl(baseUrl);
+        } catch {
+          throw new ApiError(422, 'INVALID_OPENAI_BASE_URL');
+        }
+      }
 
       let aiResult;
       try {
@@ -907,6 +1064,7 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
       } catch (error) {
         throw new ApiError(422, error.message || 'MEDIA_INVALID', `이미지 검증 실패: ${error.message}`);
       }
+      const prevAsset = db.prepare('SELECT filename FROM l10n_media_assets WHERE slot_key=? AND locale=?').get(slotKey, locale);
       fs.mkdirSync(mediaDir, { recursive: true, mode: 0o700 });
       const filename = `${validated.sha256.slice(0, 24)}.${validated.ext}`;
       fs.writeFileSync(path.join(mediaDir, filename), validated.buffer);
@@ -914,6 +1072,9 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
       db.prepare(`INSERT INTO l10n_media_assets VALUES(?,?,?,?,?,?,?,?)
         ON CONFLICT(slot_key,locale) DO UPDATE SET filename=excluded.filename,mime_type=excluded.mime_type,bytes=excluded.bytes,sha256=excluded.sha256,updated_by=excluded.updated_by,updated_at=excluded.updated_at`)
         .run(slotKey, locale, filename, validated.mimeType, validated.bytes, validated.sha256, active.admin_username || 'admin', stamp);
+      if (prevAsset && prevAsset.filename !== filename) {
+        cleanupUnreferencedMediaFile(prevAsset.filename);
+      }
       audit('l10n_media_uploaded', `${slotKey}:${locale}`, { filename, bytes: validated.bytes, sha256Prefix: validated.sha256.slice(0, 16), admin: active.admin_username });
       json(res, 201, {
         slotKey, locale, filename, mimeType: validated.mimeType, bytes: validated.bytes,
@@ -925,9 +1086,11 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
     const delMediaMatch = p.match(/^\/api\/admin\/l10n\/media\/assets\/(img\.[a-z0-9_.]+)\/([A-Za-z-]+)$/);
     if (delMediaMatch && req.method === 'DELETE') {
       const active = requireSession ? requireSession(req, 'admin', true) : session;
-      const deleted = db.prepare('DELETE FROM l10n_media_assets WHERE slot_key=? AND locale=?').run(delMediaMatch[1], delMediaMatch[2]);
-      if (!deleted.changes) throw new ApiError(404, 'MEDIA_ASSET_NOT_FOUND');
-      audit('l10n_media_deleted', `${delMediaMatch[1]}:${delMediaMatch[2]}`, { admin: active.admin_username });
+      const existing = db.prepare('SELECT filename FROM l10n_media_assets WHERE slot_key=? AND locale=?').get(delMediaMatch[1], delMediaMatch[2]);
+      if (!existing) throw new ApiError(404, 'MEDIA_ASSET_NOT_FOUND');
+      db.prepare('DELETE FROM l10n_media_assets WHERE slot_key=? AND locale=?').run(delMediaMatch[1], delMediaMatch[2]);
+      cleanupUnreferencedMediaFile(existing.filename);
+      audit('l10n_media_deleted', `${delMediaMatch[1]}:${delMediaMatch[2]}`, { filename: existing.filename, admin: active.admin_username });
       json(res, 200, { ok: true });
       return true;
     }
@@ -961,13 +1124,18 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
       const tag = `l10n-v${nextVersion}`;
       const built = buildReleaseBundle(tag);
       const stamp = now();
-      transaction(db, () => {
-        db.prepare('UPDATE l10n_releases SET is_active=0 WHERE is_active=1').run();
-        db.prepare('INSERT INTO l10n_releases VALUES(?,?,?,?,?,?,?,?,1,?,?)')
-          .run(nextVersion, tag, built.sha256, built.keyCount, built.mediaCount, JSON.stringify(built.coverage), built.jsonText, notes, active.admin_username || 'admin', stamp);
-      });
       let exported = null;
-      if (exportToRepo) exported = exportBundleToRepo(built.bundle);
+      try {
+        transaction(db, () => {
+          db.prepare('UPDATE l10n_releases SET is_active=0 WHERE is_active=1').run();
+          db.prepare('INSERT INTO l10n_releases VALUES(?,?,?,?,?,?,?,?,1,?,?)')
+            .run(nextVersion, tag, built.sha256, built.keyCount, built.mediaCount, JSON.stringify(built.coverage), built.jsonText, notes, active.admin_username || 'admin', stamp);
+          if (exportToRepo) exported = exportBundleToRepo(built.bundle);
+        });
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(500, 'L10N_REPO_EXPORT_FAILED', `리포 번들 내보내기 실패로 릴리스 활성화를 롤백했습니다 (${error?.code || 'WRITE_ERROR'}).`);
+      }
       audit('l10n_release_published', tag, { version: nextVersion, keyCount: built.keyCount, mediaCount: built.mediaCount, exportToRepo, admin: active.admin_username });
       json(res, 201, {
         release: { version: nextVersion, tag, sha256Prefix: built.sha256.slice(0, 16), keyCount: built.keyCount, mediaCount: built.mediaCount, coverage: built.coverage, isActive: true, exported }
@@ -981,12 +1149,17 @@ export function createL10n({ config, db, rootDir, now, audit, env = process.env,
       const version = Number(activateMatch[1]);
       const target = db.prepare('SELECT * FROM l10n_releases WHERE version=?').get(version);
       if (!target) throw new ApiError(404, 'RELEASE_NOT_FOUND');
-      transaction(db, () => {
-        db.prepare('UPDATE l10n_releases SET is_active=0 WHERE is_active=1').run();
-        db.prepare('UPDATE l10n_releases SET is_active=1 WHERE version=?').run(version);
-      });
       let exported = null;
-      if (body.exportToRepo === true) exported = exportBundleToRepo(safeJson(target.bundle_json, {}));
+      try {
+        transaction(db, () => {
+          db.prepare('UPDATE l10n_releases SET is_active=0 WHERE is_active=1').run();
+          db.prepare('UPDATE l10n_releases SET is_active=1 WHERE version=?').run(version);
+          if (body.exportToRepo === true) exported = exportBundleToRepo(safeJson(target.bundle_json, {}));
+        });
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(500, 'L10N_REPO_EXPORT_FAILED', `리포 번들 내보내기 실패로 릴리스 활성화를 롤백했습니다 (${error?.code || 'WRITE_ERROR'}).`);
+      }
       audit('l10n_release_activated', target.tag, { version, exportToRepo: Boolean(body.exportToRepo), admin: active.admin_username });
       json(res, 200, { ok: true, version, tag: target.tag, exported });
       return true;

@@ -1,0 +1,53 @@
+name: PR Fast Gate (Tier 1)
+
+on:
+  pull_request:
+    branches:
+      - PlayHub-Platform
+      - main
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'references/**'
+      - '**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fast-gate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Hub dependencies
+        run: npm ci --prefix hub --ignore-scripts
+      - name: Install Forge dependencies
+        run: npm ci --prefix forge --ignore-scripts
+      - name: Sync webgames (hub/games)
+        run: node hub/tools/sync-webgames.mjs
+      - name: Resolve branch under test
+        id: ref
+        run: |
+          set -euo pipefail
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          git fetch --no-tags origin PlayHub-Platform:refs/remotes/origin/PlayHub-Platform || true
+      - name: Worktree ownership (strict for feature branches)
+        run: node tools/worktree-ownership/check-ownership.mjs --branch "${{ steps.ref.outputs.branch }}" --base origin/PlayHub-Platform --strict
+      - name: Agent skills sync (.agents/skills == .claude/skills)
+        run: node tools/agent-skills/sync-skills.mjs --check
+      - name: Tier 1 Fast QA
+        env:
+          FAST_GATE_REPORTER: spec
+        run: node tools/qa/fast-gate.mjs

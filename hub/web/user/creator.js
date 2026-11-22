@@ -304,7 +304,14 @@
         feedback('[data-form-feedback]', '제출 정보를 저장했습니다. 아래 내역에서 심사를 요청할 수 있습니다.');
         await loadSubmissions();
       } catch (error) {
-        if (alive()) feedback('[data-form-feedback]', failure(error, '제출 정보를 저장하지 못했습니다.'), true);
+        if (alive()) {
+          const msg = failure(error, '제출 정보를 저장하지 못했습니다.');
+          if (window.PlayHubErrorUI?.isInputError?.(error)) {
+            feedback('[data-form-feedback]', msg, true);
+          } else {
+            window.PlayHubErrorUI?.report?.(error, { fallback: msg });
+          }
+        }
       } finally {
         saving = false;
         if (alive()) {
@@ -327,7 +334,11 @@
         await loadSubmissions();
         if (alive()) feedback('[data-list-feedback]', '심사를 요청했습니다.');
       } catch (error) {
-        if (alive()) feedback('[data-list-feedback]', failure(error, '심사를 요청하지 못했습니다.'), true);
+        if (alive()) {
+          const msg = failure(error, '심사를 요청하지 못했습니다.');
+          if (window.PlayHubErrorUI?.report) window.PlayHubErrorUI.report(error, { fallback: msg });
+          else feedback('[data-list-feedback]', msg, true);
+        }
       } finally {
         if (button.isConnected) button.disabled = false;
       }

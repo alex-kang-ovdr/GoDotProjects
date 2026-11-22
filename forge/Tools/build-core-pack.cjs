@@ -14,16 +14,44 @@ function alignUp(value, alignment) {
   return rem === 0 ? value : value + (alignment - rem);
 }
 
+function normalizePckEntryPath(rawPath) {
+  let clean = String(rawPath).replaceAll('\\', '/').trim();
+  if (clean.includes('\0')) {
+    throw new Error(`Invalid PCK entry path (null byte): ${rawPath}`);
+  }
+  while (/^res:\/\//i.test(clean)) {
+    clean = clean.replace(/^res:\/\//i, '');
+  }
+  while (clean.startsWith('/') || clean.startsWith('./')) {
+    if (clean.startsWith('/')) clean = clean.slice(1);
+    else if (clean.startsWith('./')) clean = clean.slice(2);
+  }
+  clean = path.posix.normalize(clean);
+  while (clean.startsWith('/') || clean.startsWith('./')) {
+    if (clean.startsWith('/')) clean = clean.slice(1);
+    else if (clean.startsWith('./')) clean = clean.slice(2);
+  }
+  if (!clean || clean === '.' || clean.split('/').includes('..')) {
+    throw new Error(`Invalid PCK entry path (traversal): ${rawPath}`);
+  }
+  return clean;
+}
+
 /**
  * Pure Node.js Godot 4.7.2 PCK v2 writer.
  * Compatible with PackedSourcePCK::try_open_pack (PCK v2, GODOT 4.7.2, rel_filebase).
  * @param {Array<[string, Buffer|string]>} entries  List of [relativePath, content]
+ * @param {{ rejectSealedAvatar?: boolean }} [options]
  * @returns {Buffer}
  */
-function writeGodotPck(entries) {
+function writeGodotPck(entries, options = {}) {
+  const rejectSealedAvatar = Boolean(options && options.rejectSealedAvatar);
   const normalized = entries
     .map(([rawPath, rawContent]) => {
-      const clean = String(rawPath).replaceAll('\\', '/').replace(/^res:\/\//, '').replace(/^\/+/, '');
+      const clean = normalizePckEntryPath(rawPath);
+      if (rejectSealedAvatar && isSealedAvatarPath(clean)) {
+        throw new Error(`Sealed avatar path is forbidden in PCK: ${clean}`);
+      }
       const data = Buffer.isBuffer(rawContent) ? rawContent : Buffer.from(String(rawContent), 'utf8');
       const pathBytes = Buffer.from(clean, 'utf8');
       const paddedLen = alignUp(pathBytes.length, 4);
@@ -111,11 +139,22 @@ function buildThinUgcPack(files, extraManifest = {}) {
   for (const item of files) {
     const filePath = Array.isArray(item) ? item[0] : item.path;
     const content = Array.isArray(item) ? item[1] : item.content;
-    if (isSealedAvatarPath(filePath)) {
+    if (typeof filePath !== 'string' || isSealedAvatarPath(filePath)) {
       strippedCount++;
       continue;
     }
-    entries.push([filePath, content]);
+    let cleanPath;
+    try {
+      cleanPath = normalizePckEntryPath(filePath);
+    } catch {
+      strippedCount++;
+      continue;
+    }
+    if (isSealedAvatarPath(cleanPath)) {
+      strippedCount++;
+      continue;
+    }
+    entries.push([cleanPath, content]);
   }
   const hasManifest = entries.some(([p]) => p === 'ugc.manifest.json');
   if (!hasManifest) {
@@ -129,7 +168,7 @@ function buildThinUgcPack(files, extraManifest = {}) {
     };
     entries.push(['ugc.manifest.json', JSON.stringify(manifest, null, 2) + '\n']);
   }
-  const buffer = writeGodotPck(entries);
+  const buffer = writeGodotPck(entries, { rejectSealedAvatar: true });
   const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
   return {
     buffer,

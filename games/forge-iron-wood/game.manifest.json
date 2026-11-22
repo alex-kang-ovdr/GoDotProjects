@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-iron-wood",
+  "slug": "forge-iron-wood",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "아이언 우드 (Iron Wood)",
+    "en": "Iron Wood",
+    "ja": "Iron Wood",
+    "zh-CN": "Iron Wood",
+    "fr": "Iron Wood",
+    "es": "Iron Wood",
+    "pt-BR": "Iron Wood",
+    "hi": "Iron Wood"
+  },
+  "summary": {
+    "ko": "목재 카트를 조립해 3D 물리 트랙을 주행하는 샌드박스 퍼즐",
+    "en": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "ja": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "zh-CN": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "fr": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "es": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "pt-BR": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "hi": "Build a wooden cart, test it on a 3D physics track, and iterate."
+  },
+  "instructions": {
+    "ko": "블록을 조립한 뒤 주행 테스트를 시작해 트랙 끝까지 완주하세요.",
+    "en": "Assemble cart parts and launch onto the physics track.",
+    "ja": "Assemble cart parts and launch onto the physics track.",
+    "zh-CN": "Assemble cart parts and launch onto the physics track.",
+    "fr": "Assemble cart parts and launch onto the physics track.",
+    "es": "Assemble cart parts and launch onto the physics track.",
+    "pt-BR": "Assemble cart parts and launch onto the physics track.",
+    "hi": "Assemble cart parts and launch onto the physics track."
+  },
+  "rules": {
+    "ko": "목재 카트를 조립해 3D 물리 트랙을 주행하는 샌드박스 퍼즐",
+    "en": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "ja": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "zh-CN": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "fr": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "es": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "pt-BR": "Build a wooden cart, test it on a 3D physics track, and iterate.",
+    "hi": "Build a wooden cart, test it on a 3D physics track, and iterate."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "publishedOn": "2026-11-21",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "forge",
+    "physics",
+    "sandbox",
+    "3d"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (iron-wood)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

@@ -1,0 +1,906 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "Space Shooter (3D FBX + TIFF)",
+    "project_path": "samples/unity-space-shooter",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "Main",
+      "source_path": "Assets/Scenes/Main.unity",
+      "entities": []
+    }
+  ],
+  "entities": [],
+  "logic": [
+    {
+      "id": "logic_1_DestroyByBoundary",
+      "name": "DestroyByBoundary",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByBoundary.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_2_DestroyByContact",
+      "name": "DestroyByContact",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByContact.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_3_DestroyByTime",
+      "name": "DestroyByTime",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByTime.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_4_GameController",
+      "name": "GameController",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameController.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.SceneManagement.SceneManager",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Coroutine",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_5_Mover",
+      "name": "Mover",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Mover.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_6_Boundary",
+      "name": "Boundary",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Input.GetAxis",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_7_RandomRotator",
+      "name": "RandomRotator",
+      "kind": "script",
+      "source_path": "Assets/Scripts/RandomRotator.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_asteroid.wav",
+      "sha256": "56e7a958a74ade4cf1b2d413f1a56cb8ab5a8df165465f19b29b4ece81e613b6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_enemy.wav",
+      "sha256": "470fbe2884c8b8bd6a7a7ec1960b61b75f460d333a66d414655ab49bfe4bbfe4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_player.wav",
+      "sha256": "bc17f6d6ed4908b8806a47212ec765b18727baccb94abca8dd51cd1002ae3aa7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "audio",
+      "source_path": "Assets/Audio/music_background.wav",
+      "sha256": "9879c10c58661fbe5b65758adda4c739aa558276195a59adc120630ca9330679",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "audio",
+      "source_path": "Assets/Audio/weapon_enemy.wav",
+      "sha256": "48738752d53c85bd1f84c310fe03638589a38ffb60ce6dbc1fb8d5b81a2b1a82",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0006",
+      "kind": "audio",
+      "source_path": "Assets/Audio/weapon_player.wav",
+      "sha256": "a16f600e6b5088f1411e4590873c98f27d292da85db7e394c8129f42bbd954f3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0007",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_bolt_orange 1.mat",
+      "sha256": "df67719bb2c2857ee3f2dd316edbc0e5170b792f6ee51b7a6ab12d2bbec17342",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0008",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_bolt_orange.mat",
+      "sha256": "7e21730431c198f5408574d79e2790be8b4e96afd4281d868dd9050d0d3032f6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0009",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_enemyShip_engines_mat.mat",
+      "sha256": "21e6f432c2038d7530bde3d3f067ef05b6c5285d3663d2e8b8936f3b5951ae45",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0010",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_lazer_orange_dff.mat",
+      "sha256": "dda8e78ff7d2953a47b194b5b865896706fdcb321f7d677d98a9463686fe9778",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0011",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_blast_mat.mat",
+      "sha256": "4c9a70459a15d900c78538a25015aca5b81476a54f554cdc7bb794a2a4dd8098",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0012",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_glow_mat.mat",
+      "sha256": "661530c5b25695e60f571987941607c462dbaa532cb0854ff3b644b4901c87a2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0013",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_jet_core_mat.mat",
+      "sha256": "100ec7fd631e169ff5984c92634c150aefd710f1d652c35e138fa08cd7887ebd",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0014",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_jet_flare_mat.mat",
+      "sha256": "6eb733413a7345b300994af7977e27ffca4b05dd39e32cf3b3dd7866553d99da",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0015",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_shockwave_mat.mat",
+      "sha256": "98800de53cdf4035ceef4f8a39654a2375026c46387e8357ae22d8e6fcb6bb5e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0016",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_blue_mat.mat",
+      "sha256": "7255f10e2ab06e844d068422ffeebaad4b9748b806263bc67acc82381792a03d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0017",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_large_mat.mat",
+      "sha256": "58fba63403704688d32eda665b391373030c05b5739b5d3b1029d68f74696b02",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0018",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_white_mat.mat",
+      "sha256": "1c81c2d6a86f78c61c0640d669595145508c4c2df86cf6d8ca67ef6d022d96c7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0019",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_yellow_mat.mat",
+      "sha256": "6d34533a6bec7853a2b230cddc9d77a5be99a31cee699107bece446d769001f1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0020",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_star_mat.mat",
+      "sha256": "2d34b36b719365faefeb5f45e1aa73e1c061502a4406dc10173b221563e063bc",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0021",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_01_mat.mat",
+      "sha256": "f5ef79ac2a87361438f6e8f186327a7eea4181f55b4040d44b3f8fb1632df042",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0022",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_02_mat.mat",
+      "sha256": "776b37924861ec2ec375a4ce574b8e847331781201a4fc2eb82b4cf13c3d172e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0023",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_03_mat.mat",
+      "sha256": "38023b73bd5b5ef8daa9c092fae10063019df9bc0be79255440a0527ebc34417",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0024",
+      "kind": "material",
+      "source_path": "Assets/Materials/tile_nebula_green_dff.mat",
+      "sha256": "bbe84f6db3bac5dc73c42f5a03800ef24e7cd2af55c1403d7b19f8df449e1fc9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0025",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_enemyShip_glow_mat.mat",
+      "sha256": "f9afb2554b36d0fe57d5c869f412f546f978905108d314f35d7c8db332293b2c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0026",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_enemyShip_metal_mat.mat",
+      "sha256": "caec0ac52807bebe20297585272cc6aea5288ead90fda7a8666d767a9dd1c436",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0027",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_playerShip_glass_mat.mat",
+      "sha256": "3a045bf46458e91560e1d39ed8545ceed1882e763aaf18dbf26b6c8f866081ab",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0028",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_playerShip_metal_mat.mat",
+      "sha256": "c524f86734dbf22e11044fcc0573679e7cdc06ca97c9825c078aebf155b1f4b9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0029",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_01.FBX",
+      "sha256": "b640fe70b27213fdb2cb09d9b9398008a3dd6a9c9eee0a91506ab8a6c30a9a17",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0030",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_02.FBX",
+      "sha256": "45b4a361e2439f662d18a9f2410cd4ef3899d622eefd1ed55f4d4490144ab38c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0031",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_03.FBX",
+      "sha256": "080f6f6003aafea17a0f5cfbbba993e4e043b6d8f5e56062d0e0d357e08a6b4f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0032",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_enemyShip.FBX",
+      "sha256": "37e3aa99e252bb99fca8b757fe65878d77cdac7112e970be1b8b336fb6dd14ce",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0033",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_playerShip_collider.FBX",
+      "sha256": "ebb23f9fd2786e3430bcf22650b44b1d783da5fb54fcf9b94a59534bdfa36595",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0034",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_playerShip.FBX",
+      "sha256": "be83d7e693c46608a7c69797e3338fe9856fb174ade82074375c41bbc20c12f2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0035",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Asteroid.prefab",
+      "sha256": "9285485533fb4f3e44f97a3a3de4b535f8c99e4ed63090d0073c4e0745d9cf04",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0036",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Bolt.prefab",
+      "sha256": "45ca39e174f7c4669c2dd36cbdee77970cf1de81a0015f20801c2c1930ecbe77",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0037",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Engines/engines_enemy.prefab",
+      "sha256": "0e823eedce71f17c853b226fc8a417d625d6463e602a554361e9174086649fe6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0038",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Engines/engines_player.prefab",
+      "sha256": "05ece51d461efdea950f5726dc304e2d9e9d3618af03660f1adb47646083f6a4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0039",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_asteroid.prefab",
+      "sha256": "74e54849a4545744208d528a553f89fcf57cf571cbf5e1ed2f45dc1e9b7f2a9b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0040",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_enemy.prefab",
+      "sha256": "8dabedcdfcbeab36125cf856d481f073c16cbb62d9f29d67f9c6095ea144fd18",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0041",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_player.prefab",
+      "sha256": "f50c47a7c991abf6a7bce7f555b927996c8a7fb8bd26827523bef72887bca771",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0042",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Starfield/StarField.prefab",
+      "sha256": "98027eceafd726608f9f7f46a522dc4a1d827cb4593e7fbd9f034936d215fe04",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0043",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "sha256": "6f2727fa1b8afce679d405b54c92e34a253300473305126af7c52f9a1943b804",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0044",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByBoundary.cs",
+      "sha256": "3a58fd55453c5fb0e0d6f4ba565da8651583397da176324036d90c715b9692fc",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0045",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByContact.cs",
+      "sha256": "be75abf00276a80a4d48ccb34dd34f8a91530f09a7d07889ced9166e889af6c3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0046",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByTime.cs",
+      "sha256": "7823f79c08b8514093a95c0472bcb229291ec1fc671c89765b855470271b237c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0047",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameController.cs",
+      "sha256": "b742777a0e014ad2f1902101b4040eaa1c2701efd061c7cb21c3a4e40d76e00c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0048",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Mover.cs",
+      "sha256": "2e4ea6ea81b81680035dd5e338be146c69fb712a031e912d290196ae91657dce",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0049",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "sha256": "f98be52e70fbb14fef03ee307f185d23eddfb0688bcc81d5b2ce20b43d35bce2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0050",
+      "kind": "script",
+      "source_path": "Assets/Scripts/RandomRotator.cs",
+      "sha256": "540c9e058768da348af74cd29ec44c3648842844c7392d323bee35e66042ea6a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0051",
+      "kind": "misc",
+      "source_path": "Assets/Textures/cube_junkyard_sharp.cubemap",
+      "sha256": "11cccb08fdc32da1746e2f1cfc779af91ffb514a3a6c9c2de4ef41af3a1831c6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0052",
+      "kind": "misc",
+      "source_path": "Assets/Textures/cube_junkyard_soft.cubemap",
+      "sha256": "246cc963533fca371990c18431cccd35362b6ac02cc7ea2f5f699fc8b176eef7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0053",
+      "kind": "texture",
+      "source_path": "Assets/Textures/fx_lazer_cyan_dff.tif",
+      "sha256": "775a15aae2f2cf5461cde1e8ca2ca4d241c33a6bc7ca14c1efc676f79436e22a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0054",
+      "kind": "texture",
+      "source_path": "Assets/Textures/fx_lazer_orange_dff.tif",
+      "sha256": "e34875a913ad722654fd3e920dcc4073fe37394e8d1e52edcb224fff9d7e483f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0055",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_enginePulse_dff.tif",
+      "sha256": "9e305e6676a6a595dcb511c757c9edf95be939d50095eac71d98ddaf79524730",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0056",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_flash_dff.tif",
+      "sha256": "6724ba1ce399f65ec2e683f4819151bb0568f2737e3b510cd1030e5ebcff7e87",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0057",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_jet_core_dff.tif",
+      "sha256": "4faf1fb2c42efa4f3f6eaa5a2849786f8947e8ad6ad9f67c1b3b0afc49aa54e4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0058",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_jet_flare_dff.tif",
+      "sha256": "237c217fabcc49798a2b31a7bfec12f2360ea8bb1f52654e9f69da7380dcd8d6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0059",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_shockwave_dff.tif",
+      "sha256": "46cd1b0ce8f587d1105a0b546c13841dfc1b3fee8ac43be965e105989739d527",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0060",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_spark_large_dff.tif",
+      "sha256": "4e2d42b294a8c79ecae2af80a9759b1e80e7507ea8495ff419984f849d963383",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0061",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_spark_small_dff.tif",
+      "sha256": "ca1620cdc830206e9630bc834eaeff2b4ef033566792f4f7bc02ce9c4544bd69",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0062",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_star_dff.tif",
+      "sha256": "b0e717853dd62a45dbbbc0c73694cfb513113c1a07112f176d8f3fe587db91fa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0063",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_01_dff.tif",
+      "sha256": "ee9c9545d2b154a1b804df358c005fbd93df387feb555a15c5c5a480842929ad",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0064",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_01_nrm.tif",
+      "sha256": "62ff0a59f9c9cb3ca2248d44ba4b9ff3b4e467a1e0c35c2b2f5e3027a1b45986",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0065",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_02_dff.tif",
+      "sha256": "d64d1f2a125a609440d1b15dd456a98f2cc8dd7f6b6a1c7c1e3354c40350de29",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0066",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_02_nrm.tif",
+      "sha256": "91205b9eb47c91cb1c7f0a78ed9309f1b14d7f9dc08ae7c4be97822f38df910a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0067",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_03_dff.tif",
+      "sha256": "b7165f2a3710f8d0ebfd80aa773529d5a8c26d6cca84142ed79754c82e98cfaa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0068",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_03_nrm.tif",
+      "sha256": "ca6307f64f72ac226e3c9c953ac6b4158c908838a7ca0a83048626fcdbd07528",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0069",
+      "kind": "texture",
+      "source_path": "Assets/Textures/tile_nebula_green_dff.tif",
+      "sha256": "5815a7efe948b5a96bbaead1a497a09ef4d6c04773c4e70d3cb76e86750d31cf",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0070",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_nrm.tif",
+      "sha256": "4739d64fea7f4d2a4ed00e6a124541bdbabd15dc30029b3159922a118f600a58",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0071",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_purple_dff.tif",
+      "sha256": "84d52c282417b5ea16c6fce5159ec0aefa3b792273327bfb5747773f239dc4fe",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0072",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_red_dff.tif",
+      "sha256": "be2d7dd8438b72493d5b8f7396669b2b73a3e2cb0c84bf793c0be538073aee9e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0073",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_playerShip_orange_dff.tif",
+      "sha256": "625930903492174a4a62c4cc8865a0a6942d86ebc72728d9ad812a0b096559ac",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0074",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_playerShip_orange_nrm.tif",
+      "sha256": "75dcc33630c8b750e124be27ccccd7ef0595144abacc48fb731cac07d73ae91a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/Scripts/DestroyByBoundary.cs",
+      "unity_class": "DestroyByBoundary",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/DestroyByContact.cs",
+      "unity_class": "DestroyByContact",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/DestroyByTime.cs",
+      "unity_class": "DestroyByTime",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/GameController.cs",
+      "unity_class": "GameController",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.SceneManagement.SceneManager[A]",
+        "UnityEngine.Coroutine[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Mover.cs",
+      "unity_class": "Mover",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/PlayerController.cs",
+      "unity_class": "Boundary",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Input.GetAxis[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/RandomRotator.cs",
+      "unity_class": "RandomRotator",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    }
+  ],
+  "diagnostics": []
+}

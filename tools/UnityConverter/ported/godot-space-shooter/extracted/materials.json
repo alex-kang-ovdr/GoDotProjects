@@ -1,0 +1,420 @@
+{
+  "fx_bolt_orange 1": {
+    "name": "fx_bolt_orange 1",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "fx_bolt_orange": {
+    "name": "fx_bolt_orange",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "fx_enemyShip_engines_mat": {
+    "name": "fx_enemyShip_engines_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "fx_lazer_orange_dff": {
+    "name": "fx_lazer_orange_dff",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_blast_mat": {
+    "name": "part_blast_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_glow_mat": {
+    "name": "part_glow_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_jet_core_mat": {
+    "name": "part_jet_core_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_jet_flare_mat": {
+    "name": "part_jet_flare_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_shockwave_mat": {
+    "name": "part_shockwave_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_spark_blue_mat": {
+    "name": "part_spark_blue_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_spark_large_mat": {
+    "name": "part_spark_large_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_spark_white_mat": {
+    "name": "part_spark_white_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_spark_yellow_mat": {
+    "name": "part_spark_yellow_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "part_star_mat": {
+    "name": "part_star_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "prop_asteroid_01_mat": {
+    "name": "prop_asteroid_01_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "prop_asteroid_02_mat": {
+    "name": "prop_asteroid_02_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "prop_asteroid_03_mat": {
+    "name": "prop_asteroid_03_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "tile_nebula_green_dff": {
+    "name": "tile_nebula_green_dff",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "vehicle_enemyShip_glow_mat": {
+    "name": "vehicle_enemyShip_glow_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "vehicle_enemyShip_metal_mat": {
+    "name": "vehicle_enemyShip_metal_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "vehicle_playerShip_glass_mat": {
+    "name": "vehicle_playerShip_glass_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "vehicle_playerShip_metal_mat": {
+    "name": "vehicle_playerShip_metal_mat",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  }
+}

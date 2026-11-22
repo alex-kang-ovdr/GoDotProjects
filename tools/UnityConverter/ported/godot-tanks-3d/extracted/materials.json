@@ -1,0 +1,401 @@
+{
+  "Blue": {
+    "name": "Blue",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Brown": {
+    "name": "Brown",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "BuildingGlass": {
+    "name": "BuildingGlass",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "BuildingGrey": {
+    "name": "BuildingGrey",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "BuildingMetal": {
+    "name": "BuildingMetal",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "BuildingStone": {
+    "name": "BuildingStone",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "BuildingWhite": {
+    "name": "BuildingWhite",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Dust": {
+    "name": "Dust",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Explosion": {
+    "name": "Explosion",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Gold": {
+    "name": "Gold",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Green": {
+    "name": "Green",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Grey": {
+    "name": "Grey",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "OilDrums": {
+    "name": "OilDrums",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Red": {
+    "name": "Red",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "Smoke": {
+    "name": "Smoke",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "TankColour": {
+    "name": "TankColour",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "TankGrey": {
+    "name": "TankGrey",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "TankLights": {
+    "name": "TankLights",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "White": {
+    "name": "White",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "YellowDark": {
+    "name": "YellowDark",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  },
+  "YellowLight": {
+    "name": "YellowLight",
+    "serialization": "binary",
+    "color_srgb": [
+      0.85,
+      0.85,
+      0.85,
+      1
+    ],
+    "color_linear": [
+      0.692071,
+      0.692071,
+      0.692071,
+      1
+    ],
+    "metallic": 0.1,
+    "roughness": 0.65,
+    "emissive": null
+  }
+}

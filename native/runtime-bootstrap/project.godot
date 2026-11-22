@@ -1,0 +1,20 @@
+; Engine configuration file.
+; PlayHub Desktop Runtime Bootstrap (Godot 4.7.2)
+; Runtime-only: zero Forge / editor dependencies.
+
+config_version=5
+
+[application]
+
+config/name="PlayHub Desktop Player Bootstrap"
+run/main_scene="res://bootstrap.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+PlayHubDesktopBridge="*res://playhub_ipc_client.gd"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-21T00:00:00Z",
+  "timezone": "Asia/Seoul",
+  "schedules": [
+    {
+      "id": "daily-top20-e2e-perf",
+      "name": "Hub 인기 상위 20개 게임 E2E 성능·메모리·응답·로딩 데일리 프로파일",
+      "enabled": true,
+      "cron": "0 4 * * *",
+      "cronUtc": "0 19 * * *",
+      "timezone": "Asia/Seoul",
+      "topN": 20,
+      "suites": ["static", "security", "runtime-web"],
+      "command": "node tools/Gamer/GamerQA/bin/gamerqa.mjs daily --top 20",
+      "windowsTaskName": "PlayHub-GamerQA-Daily-Top20-0400KST",
+      "githubWorkflow": ".github/workflows/gamerqa-daily-e2e.yml",
+      "artifactsDir": "artifacts/gamerqa/daily",
+      "retentionDays": 30
+    }
+  ]
+}

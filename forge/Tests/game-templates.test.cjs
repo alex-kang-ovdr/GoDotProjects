@@ -6,7 +6,7 @@ const { spawnSync } = require('node:child_process');
 const root=path.resolve(__dirname,'..');
 test('game templates bundle assets before guided editor startup and preserve ready projects',t=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'playforge-template-'));t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));const store=new PlatformStore(root,tmp);
- for(const id of ['tappy-chicken','tappy-chicken-mmo','survivor-io','iron-wood','voxel-frontier','brawllabs','fortress-war','unity-2d-roguelike','unity-roll-a-ball','unity-flappy-bird','unity-space-shooter','unity-tanks-3d']){
+ for(const id of ['tappy-chicken','tappy-chicken-mmo','captain-forever','captain-forever-mmo','survivor-io','iron-wood','voxel-frontier','brawllabs','fortress-war','unity-2d-roguelike','unity-roll-a-ball','unity-flappy-bird','unity-space-shooter','unity-tanks-3d','unity-boss-room']){
   const template=store.getTemplate(id);assert.ok(template.assetPaths.length>0,id);
   const ready=store.createProject({name:'Prepared '+id,template:id});
   const guided=store.createProject({name:'Build '+id,template:id,mode:'guided'});
@@ -64,6 +64,7 @@ test('Unity-ported Godot templates import and boot main.tscn cleanly in Godot he
     'unity-flappy-bird',
     'unity-space-shooter',
     'unity-tanks-3d',
+    'unity-boss-room',
   ];
   const probeScript = `extends Node
 func _ready() -> void:

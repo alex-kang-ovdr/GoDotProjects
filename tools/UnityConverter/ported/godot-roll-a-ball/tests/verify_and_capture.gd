@@ -68,19 +68,23 @@ func _run() -> void:
 
 	# Collect first 6 pickups and capture mid-game
 	for i in range(6):
+		player.sleeping = false
+		PhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, Transform3D(Basis.IDENTITY, pickups[i].global_position))
+		PhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_LINEAR_VELOCITY, Vector3.ZERO)
 		player.global_position = pickups[i].global_position
-		player.linear_velocity = Vector3.ZERO
-		await get_tree().physics_frame
-		await get_tree().physics_frame
+		for _f in range(4):
+			await get_tree().physics_frame
 	_assert("mid_game_count_6", player.count == 6 and scene.count_label.text == "Count: 6", "count=%d" % player.count)
 	await _save_shot("02_mid_play.png")
 
 	# Collect remaining 6 pickups and verify YOU WIN!
 	for i in range(6, 12):
+		player.sleeping = false
+		PhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, Transform3D(Basis.IDENTITY, pickups[i].global_position))
+		PhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_LINEAR_VELOCITY, Vector3.ZERO)
 		player.global_position = pickups[i].global_position
-		player.linear_velocity = Vector3.ZERO
-		await get_tree().physics_frame
-		await get_tree().physics_frame
+		for _f in range(4):
+			await get_tree().physics_frame
 	_assert("all_12_collected_win", player.count == 12 and scene.win_label.text == "YOU WIN!", "text=%s" % scene.win_label.text)
 	await _save_shot("03_you_win.png")
 
