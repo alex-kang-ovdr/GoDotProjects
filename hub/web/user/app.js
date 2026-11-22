@@ -708,6 +708,7 @@
         <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
         <div class="save-actions">
           <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="/?view=agent" data-route data-testid="creator-agent-link">AI 스튜디오 (채팅·3D·포팅)</a>
           <a class="button primary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>
         </div>
       </section>
@@ -731,7 +732,18 @@
     }
   }
   let avatarCleanup=null;
-  function cleanupAvatarView(){if(typeof avatarCleanup==='function'){try{avatarCleanup();}catch(_){}avatarCleanup=null;}}
+  let agentCleanup=null;
+  function cleanupAvatarView(){
+    if(typeof avatarCleanup==='function'){try{avatarCleanup();}catch(_){}avatarCleanup=null;}
+    if(typeof agentCleanup==='function'){try{agentCleanup();}catch(_){}agentCleanup=null;}
+  }
+  function renderHubAgent(){
+    stopImpressions();
+    cleanupAvatarView();
+    meta('AI 스튜디오 · Hub-Agent | PLAY HUB','내장 Gemini 기반 AI 채팅, 3D 모델링 생성(.glb), 프로젝트 포팅을 이용하세요.','/?view=agent');
+    updateAccount();
+    agentCleanup=window.PlayHubAgentUI?.mount($('app'),{api,toast,navigate,session:state.session})||null;
+  }
   function renderAvatar(){
     stopImpressions();
     cleanupAvatarView();
@@ -807,7 +819,7 @@
     const joinMatch=location.pathname.match(/^\/join\/([^/]+)\/?/);
     if(joinMatch&&params.get('room')){state.view='social';}
     else if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['wishlist','social','create','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
+    else if(['wishlist','social','create','agent','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
     if(state.view!=='social')window.PlayHubSocial?.unmount();
     $('app').hidden=state.view==='account';
@@ -822,6 +834,7 @@
     else if(state.view==='social')renderSocial(params);
     else if(state.view==='library'||state.view==='home')renderBrowse();
     else if(state.view==='create')renderCreator();
+    else if(state.view==='agent')renderHubAgent();
     else if(state.view==='avatar')renderAvatar();
     else if(state.view==='billing'||state.view==='wallet'||state.view==='redeem'||state.view==='direct'){
       stopImpressions();

@@ -35,6 +35,7 @@
     "forge/Tests/game-template-runtime.test.cjs",
     "forge/Templates/*/showcase.json",
     "tools/qa/fast-gate.json",
+    "tools/worktree-ownership/owners.json",
     "godot-sdk/playhub_runtime_sdk.gd"
   ],
   "branches": {
@@ -433,6 +434,19 @@
         "forge/Tools/showcase-daily-profile.cjs",
         "forge/Tests/playforge_platform/**",
         "forge/Tests/forge-user-usecase-suite.cjs"
+      ]
+    },
+    "Hub-Agent": {
+      "role": "PlayHub 내장 Gemini 에이전트 · 토큰 기반 PlayCoin 차감 · AI 3D 모델링/프로젝트 포팅/채팅 게이트웨이",
+      "owns": [
+        "docs/agent/**",
+        "hub/server/agent/**",
+        "hub/web/user/agent.js",
+        "hub/web/user/agent.css",
+        "hub/web/admin/agent-admin.*",
+        "hub/tests/hub-agent*.mjs",
+        "forge/Tools/hub-agent-bridge.cjs",
+        "forge/OfficialGodot/porting-studio.*"
       ]
     }
   }

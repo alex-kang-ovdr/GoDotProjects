@@ -27,6 +27,7 @@ const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-cha
 const { createInternalApi } = require('./Tools/internal-api.cjs');
 const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avatar-seal.cjs');
 const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
+const { createHubAgentBridge } = require('./Tools/hub-agent-bridge.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -378,13 +379,18 @@ function createServer(options = {}) {
     },
   });
   const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
+  const hubAgentBridge = hubAuth ? createHubAgentBridge({
+    hubAuthConfig,
+    env: serverEnv,
+    fetchImpl: options.hubAgentFetch || globalThis.fetch
+  }) : null;
   const blenderPipeline = createBlenderPipelineHandler(root, {
     env: serverEnv,
     storageDir: options.blenderStorageDir,
     registry: options.blenderRegistry,
     binaryPath: options.blenderBinaryPath,
     timeoutMs: options.blenderTimeoutMs,
-    agentChatProvider,
+    agentChatProvider: hubAgentBridge?.enabled() ? hubAgentBridge.internalAgentChatProvider : agentChatProvider,
   });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
@@ -568,16 +574,30 @@ function createServer(options = {}) {
       req.url = requestUrl;
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       if (isAgentChatRoute(requestUrl)) {
-        // The provider uses this host's CLI/OAuth sessions, so it is never exposed to shared Hub accounts.
+        if (hubAgentBridge?.enabled()) {
+          return await hubAgentBridge.handleAgentChatRoute(req, res, json, auth);
+        }
+        // Without Hub-Agent bridge configured, host CLI/OAuth sessions are never exposed to shared Hub accounts.
         if (!agentChatProvider) return json(404, { ok: false, error: 'Agent chat is unavailable in Hub mode' });
         return agentChatProvider(req, res, json);
       }
       if (assetLibrary(req, res)) return;
+      if (routePath === '/api/porting' || routePath.startsWith('/api/porting/')) {
+        if (hubAgentBridge?.enabled()) {
+          const getPlatformStore = () => (hubAuth ? getPlatformFor(auth?.accountKey)?.store : platform);
+          return await hubAgentBridge.handlePortingRoute(req, res, parsedUrl, auth, { getPlatformStore }, json);
+        }
+        return json(503, { ok: false, error: 'Project porting requires Hub-Agent mode.' });
+      }
       if (routePath === '/api/blender' || routePath.startsWith('/api/blender/')) {
         if (routePath === '/api/blender/jobs' && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
           return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
         }
-        if (await blenderPipeline(req, res, parsedUrl)) return;
+        if (hubAgentBridge?.enabled()) {
+          if (await hubAgentBridge.handleBlenderWithHubAgent(req, res, parsedUrl, auth, blenderPipeline, json)) return;
+        } else if (await blenderPipeline(req, res, parsedUrl)) {
+          return;
+        }
       }
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
@@ -656,8 +676,12 @@ function createServer(options = {}) {
             'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
+          const rawFiles = Object.fromEntries(entries);
+          const finalFiles = (agentChat && hubAgentBridge?.enabled())
+            ? hubAgentBridge.adaptAgentChatAddonFiles(rawFiles)
+            : rawFiles;
           return json(200, { ok: true, manifest, stagedFiles: manifest ? showcaseStagedFiles(manifest) : undefined,
-            files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
+            files: finalFiles, store: agentChat ? undefined : loadAssetStore(root) });
         } catch (error) {
           return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }

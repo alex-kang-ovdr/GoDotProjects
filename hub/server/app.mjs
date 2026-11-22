@@ -30,6 +30,7 @@ import { createSocial } from './social/routes.mjs';
 import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
 import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
+import { createHubAgent } from './agent/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -190,6 +191,21 @@ export function createApp(input, dependencies = {}) {
   const cdn = createCdn({ config, db, requireSession, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.cdnFetch || globalThis.fetch });
   // Hub-Billing (2-Track PlayCoin +25% & Creator Direct Commerce 0%). Inert unless enabled.
   const billing = createBilling({ config, db, sessionFor, requireSession, newSession, revokeSession, now, audit, rate, rateLimitIp, env: dependencies.env || process.env, fetchImpl: dependencies.billingFetch || dependencies.fetch || globalThis.fetch });
+  // Hub-Agent (Built-in Gemini Agent + Free Trial / Pro Weekly Quota + PlayCoin Overage Metering).
+  const hubAgent = createHubAgent({
+    config,
+    db,
+    platformRoot,
+    sessionFor,
+    requireSession: requireUnsanctionedSession,
+    verifyInternalAccess,
+    now,
+    audit,
+    rate,
+    env: dependencies.env || process.env,
+    fetchImpl: dependencies.agentFetch || dependencies.fetch || globalThis.fetch,
+    geminiProvider: dependencies.hubAgentProvider || null
+  });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
@@ -354,6 +370,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
     if (await billing.publicRoute(req,res,url)) return;
+    if (await hubAgent.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (ugcMultiplayer.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
@@ -640,6 +657,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await billing.adminRoute(req,res,url,s)) return;
+    if (await hubAgent.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
@@ -762,6 +780,10 @@ export function createApp(input, dependencies = {}) {
           if (await datastore.internalRoute(req, res, url)) return;
           throw new ApiError(404, 'NOT_FOUND');
         }
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname.startsWith('/internal/v1/hub-agent/')) {
+          if (await hubAgent.internalRoute(req, res, url)) return;
+          throw new ApiError(404, 'NOT_FOUND');
+        }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
@@ -826,7 +848,7 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
-  return { db,cdn,billing,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
+  return { db,cdn,billing,hubAgent,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
@@ -839,6 +861,7 @@ export function createApp(input, dependencies = {}) {
       if (closed) return; closed=true;
       localAdminLogin?.clear();
       ugcMultiplayer.close();
+      hubAgent.close();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close(); forgeGateway.close();
       await cdn.close();

@@ -125,7 +125,11 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   ad_demo_sessions: ['id', 'campaign_id', 'partner_id', 'demo_game_id', 'target_game_id', 'region_tag', 'user_agent_family', 'started_at', 'play_ms', 'best_score', 'stage_reached', 'completed_at'],
   ad_handoff_tokens: ['token_hash', 'short_code', 'session_id', 'campaign_id', 'partner_id', 'target_game_id', 'region_tag', 'snapshot_json', 'status', 'claimed_user_id', 'claimed_device_hash', 'expires_at', 'claimed_at', 'created_at'],
   ad_funnel_events: ['id', 'session_id', 'campaign_id', 'partner_id', 'event_type', 'meta_json', 'created_at'],
-  ad_attributions: ['id', 'user_id', 'partner_id', 'campaign_id', 'handoff_token_hash', 'install_channel', 'qualified_at', 'payout_status', 'created_at']
+  ad_attributions: ['id', 'user_id', 'partner_id', 'campaign_id', 'handoff_token_hash', 'install_channel', 'qualified_at', 'payout_status', 'created_at'],
+  // Hub-Agent pricing settings & token/PlayCoin usage logs
+  hub_agent_settings: ['id', 'default_provider', 'default_model', 'tokens_per_coin', 'input_weight_bps', 'cached_weight_bps', 'output_weight_bps', 'pro_multiplier_bps', 'min_coins_per_call', 'free_trial_tokens', 'pro_weekly_tokens', 'max_hold_coins', 'updated_at'],
+  hub_agent_quotas: ['principal_id', 'free_trial_used', 'pro_week_key', 'pro_week_used', 'updated_at'],
+  hub_agent_usage_logs: ['id', 'principal_id', 'feature', 'auth_mode', 'plan_tier', 'provider', 'model', 'input_tokens', 'cached_tokens', 'output_tokens', 'thinking_tokens', 'total_tokens', 'weighted_tokens', 'quota_tokens_used', 'overage_tokens', 'charged_coins', 'hold_id', 'usage_record_id', 'journal_entry_id', 'status', 'created_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -139,6 +143,9 @@ export const DROP_TABLES = Object.freeze([
   'hub_publish_idempotency',
   'cdn_idempotency',
   'merge_requests',
+  // Hub-Agent live usage & quota counters
+  'hub_agent_usage_logs',
+  'hub_agent_quotas',
   // Avatar payment ledger & idempotency
   'avatar_wallet_ledger',
   'avatar_purchase_idempotency',

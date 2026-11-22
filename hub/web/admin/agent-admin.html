@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <script src="/local-login-bootstrap.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>PlayHub Admin · Hub-Agent (내 Gemini 연결 &amp; 토큰 과금 관리)</title>
+  <link rel="stylesheet" href="/agent-admin.css">
+  <script src="/config.js"></script>
+  <script type="module" src="/agent-admin.js"></script>
+</head>
+<body>
+  <header class="adm-header">
+    <div>
+      <span class="eyebrow">LOOPBACK OPERATOR CONSOLE</span>
+      <h1>Hub-Agent · 내 Gemini 연결 및 토큰/PlayCoin 과금 관리</h1>
+    </div>
+    <div class="adm-actions">
+      <a class="btn-outline" href="/">← 기본 Admin 콘솔</a>
+      <button id="refresh-btn" type="button" class="btn-outline">새로고침 ↻</button>
+    </div>
+  </header>
+
+  <main class="adm-main">
+    <div id="banner" class="banner" hidden></div>
+
+    <section id="login-card" class="card" hidden>
+      <h2>로컬 관리자 인증 필요</h2>
+      <p>루프백 전용 관리자 세션을 활성화한 뒤 운영자 Gemini 계정을 연결할 수 있습니다.</p>
+      <form id="admin-login-form" class="grid-2">
+        <label>아이디<input id="adm-user" value="admin" required></label>
+        <label>비밀번호<input id="adm-pass" type="password"></label>
+        <div><button type="submit" class="btn-primary">관리자 로그인</button></div>
+      </form>
+    </section>
+
+    <div id="console-body" hidden>
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>1. 운영자 Gemini 연결 ("내 재미나이 연결")</h2>
+            <p class="muted">PlayHub 내장 에이전트(채팅 · 3D 모델링 · 프로젝트 포팅 · Forge AI Chat 미연동 사용자)가 사용할 운영자 Gemini 자격증명입니다. SQLite 스냅샷 외부 전용 보안 경로에 격리 저장됩니다.</p>
+          </div>
+          <span id="conn-badge" class="status-pill">확인 중</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="subcard">
+            <h3>방식 A — Google 계정 OAuth 로그인 (권장 · 전용 Gemini CLI 프로필)</h3>
+            <p id="oauth-detail" class="muted">상태 확인 중…</p>
+            <div id="oauth-url-box" class="oauth-box" hidden>
+              <p>브라우저에서 아래 공식 Google 로그인 주소를 열어 인증을 완료하세요:</p>
+              <a id="oauth-url-link" href="#" target="_blank" rel="noopener noreferrer">Google 로그인 열기 ↗</a>
+            </div>
+            <div class="btn-row">
+              <button id="oauth-connect-btn" type="button" class="btn-primary">Google 계정으로 내 Gemini 연결</button>
+              <button id="oauth-disconnect-btn" type="button" class="btn-danger">OAuth 연결 해제</button>
+            </div>
+          </div>
+
+          <div class="subcard">
+            <h3>방식 B — Google AI Studio Gemini API Key 연결</h3>
+            <p id="apikey-detail" class="muted">상태 확인 중…</p>
+            <form id="apikey-form">
+              <label>Gemini API Key (`AIza...`)
+                <input id="apikey-input" type="password" placeholder="AIzaSy..." autocomplete="off">
+              </label>
+              <div class="btn-row" style="margin-top:10px">
+                <button type="submit" class="btn-primary">API 키 저장 및 활성화</button>
+                <button id="apikey-disconnect-btn" type="button" class="btn-danger">API 키 삭제</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="subcard" style="margin-top:14px">
+          <h3>실시간 연결 테스트 (운영자 무과금 Smoke Test)</h3>
+          <div class="btn-row">
+            <input id="smoke-prompt" type="text" value="한국어로 한 줄 인사말과 준비 완료 상태를 알려주세요." style="flex:1">
+            <button id="smoke-btn" type="button" class="btn-outline">연결 테스트 실행</button>
+          </div>
+          <pre id="smoke-output" class="code-box" hidden></pre>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Free 체험 · Pro 주간 한도 · PlayCoin 토큰 차감 정책</h2>
+        <p class="muted">본인 계정 연동(BYOK) 사용자는 한도·PlayCoin 차감이 0이며, 미연동 사용자는 플랜 기본 한도 소진 후 초과 가중 토큰에 비례해 PlayCoin이 차감됩니다.</p>
+        <form id="policy-form" class="grid-3">
+          <label>우선 공급자 모드
+            <select id="pol-provider">
+              <option value="gemini-oauth">Google OAuth (전용 Gemini CLI)</option>
+              <option value="gemini-apikey">Gemini API Key (REST)</option>
+            </select>
+          </label>
+          <label>기본 모델 ID
+            <input id="pol-model" type="text" required>
+          </label>
+          <label>1 PlayCoin당 가중 토큰 수
+            <input id="pol-tpc" type="number" min="100" max="1000000" required>
+          </label>
+          <label>Free 최초 체험 한도 (가중 토큰)
+            <input id="pol-free-tokens" type="number" min="0" max="50000000" required>
+          </label>
+          <label>Pro 주간 리셋 한도 (가중 토큰 · 월 00시 KST)
+            <input id="pol-pro-tokens" type="number" min="0" max="500000000" required>
+          </label>
+          <label>호출당 최소 초과 차감 PlayCoin
+            <input id="pol-min-coins" type="number" min="1" max="100" required>
+          </label>
+          <label>입력 토큰 가중치 (bps, 10000=1.0x)
+            <input id="pol-in-bps" type="number" min="100" max="200000" required>
+          </label>
+          <label>캐시 토큰 가중치 (bps, 2500=0.25x)
+            <input id="pol-cache-bps" type="number" min="0" max="200000" required>
+          </label>
+          <label>출력·추론 가중치 (bps, 40000=4.0x)
+            <input id="pol-out-bps" type="number" min="100" max="400000" required>
+          </label>
+          <label>Pro 계열 모델 배수 (bps, 40000=4.0x)
+            <input id="pol-pro-mult" type="number" min="10000" max="200000" required>
+          </label>
+          <label>사전 Hold 최대 예약 PlayCoin
+            <input id="pol-max-hold" type="number" min="1" max="500" required>
+          </label>
+          <div style="display:flex;align-items:flex-end">
+            <button type="submit" class="btn-primary" style="width:100%">과금·한도 정책 저장</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>3. 기능별 AI 토큰 및 PlayCoin 차감 현황</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>기능</th>
+                <th>인증 모드</th>
+                <th>호출 수</th>
+                <th>실측 총 토큰</th>
+                <th>가중 토큰</th>
+                <th>포함 한도 차감</th>
+                <th>초과분 토큰</th>
+                <th>차감된 PlayCoin</th>
+              </tr>
+            </thead>
+            <tbody id="feature-stats-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
