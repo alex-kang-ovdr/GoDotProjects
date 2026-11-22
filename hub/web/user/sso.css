@@ -20,12 +20,73 @@
   background: rgba(71, 85, 105, 0.12);
   color: #334155;
 }
+.sso-provider-badge[data-provider="guest"] {
+  background: rgba(100, 116, 139, 0.14);
+  color: #475569;
+}
 
-.button.naver-login-btn {
+.sso-selector {
+  margin-top: 1rem;
+  max-width: 26rem;
+}
+.sso-provider-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+.sso-btn-status {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.14);
+}
+.sso-btn-status.recent {
+  background: #004ac6;
+  color: #ffffff;
+}
+.button.naver-login-btn .sso-btn-status.recent {
+  background: #ffffff;
+  color: #028f40;
+}
+.sso-divider .sso-btn-status.recent {
+  margin-left: 0;
+}
+.button.google-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid rgba(15, 23, 42, 0.22);
+  font-weight: 700;
+}
+.button.google-login-btn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+.button.google-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.google-g-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 4px;
+  background: #4285f4;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.button.naver-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
   background: #03c75a;
   color: #ffffff;
   border: 1px solid #02b351;
@@ -35,15 +96,15 @@
   background: #02b351;
 }
 .button.naver-login-btn:disabled {
-  opacity: 0.55;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 .naver-n-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.35rem;
+  height: 1.35rem;
   border-radius: 4px;
   background: #ffffff;
   color: #03c75a;
@@ -51,11 +112,47 @@
   font-size: 0.85rem;
   line-height: 1;
 }
+.button.guest-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  font-weight: 600;
+}
+.button.guest-login-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+.guest-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.9rem;
+}
+.sso-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.1rem 0 0.9rem;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+.sso-divider::before,
+.sso-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(15, 23, 42, 0.12);
+}
 
 .sso-email-box {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 .sso-tabs {
   display: inline-flex;

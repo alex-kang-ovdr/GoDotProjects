@@ -147,9 +147,9 @@
     if(!session||state.limited||state.active?.local)identity='로컬 모드';
     if(state.authStale)identity='로그인 상태 확인 필요';
     $('identity').textContent=identity;
-    $('google-login').hidden=!canSignIn;
+    $('google-login').hidden=registered||!session||state.limited||state.authStale;
     $('google-login').disabled=!canSignIn;
-    if($('naver-login')){$('naver-login').hidden=!canNaver;$('naver-login').disabled=!canNaver;}
+    if($('naver-login')){$('naver-login').hidden=registered||!session||state.limited||state.authStale;$('naver-login').disabled=!canNaver;}
     $('logout').hidden=!registered;
     $('merge-open').hidden=!session?.pendingMerge;
     $('account-help').textContent=accountHelp(canSignIn,canNaver,canEmail);
@@ -1209,6 +1209,7 @@
       toast(message);
       if(state.session?.pendingMerge)await openMerge();
     },
+    navigate,
     toast
   })||null;
   $('logout').onclick=async()=>{if(state.authChanging)return;state.authChanging=true;$('logout').disabled=true;const a=state.active;

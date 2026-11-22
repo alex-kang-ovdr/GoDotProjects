@@ -75,12 +75,17 @@
       <p><span id="identity">로그인 없이 플레이</span><span id="identity-provider-badge" class="sso-provider-badge" hidden></span></p>
       <p id="account-help" class="muted"></p>
       <div class="save-actions">
-        <button id="google-login" class="button primary" type="button" hidden disabled data-l10n="portal.account.google_login" data-l10n-ctx="ui.button">Google로 로그인</button>
-        <button id="naver-login" class="button naver-login-btn" type="button" hidden disabled><span class="naver-n-mark" aria-hidden="true">N</span>네이버로 로그인</button>
         <button id="logout" class="button secondary" type="button" hidden data-l10n="portal.account.logout" data-l10n-ctx="ui.button">로그아웃</button>
         <button id="merge-open" class="button secondary" type="button" hidden data-l10n="portal.account.merge_open" data-l10n-ctx="ui.button">게스트 기록 연결</button>
       </div>
-      <div id="email-auth-section" class="sso-email-box" hidden>
+      <div id="sso-auth-selector" class="sso-selector" hidden>
+        <div class="sso-provider-grid" role="group" aria-label="로그인 방식 선택">
+          <button id="google-login" class="button google-login-btn" type="button" disabled data-l10n="portal.account.google_login" data-l10n-ctx="ui.button"><span class="google-g-mark" aria-hidden="true">G</span><span>Google로 로그인</span><span id="google-login-status" class="sso-btn-status" hidden></span></button>
+          <button id="naver-login" class="button naver-login-btn" type="button" disabled><span class="naver-n-mark" aria-hidden="true">N</span><span>네이버로 로그인</span><span id="naver-login-status" class="sso-btn-status" hidden></span></button>
+          <button id="guest-login" class="button guest-login-btn" type="button"><span class="guest-mark" aria-hidden="true">👤</span><span id="guest-login-label">게스트로 계속하기</span><span id="guest-login-status" class="sso-btn-status" hidden></span></button>
+        </div>
+        <div class="sso-divider"><span>또는 이메일로 로그인 · 회원가입</span><span id="email-login-status" class="sso-btn-status" hidden></span></div>
+        <div id="email-auth-section" class="sso-email-box" hidden>
         <div class="sso-tabs" role="tablist" aria-label="이메일 인증 방식">
           <button id="sso-tab-login" class="sso-tab" type="button" role="tab" aria-selected="true" aria-controls="email-login-form">이메일 로그인</button>
           <button id="sso-tab-register" class="sso-tab" type="button" role="tab" aria-selected="false" aria-controls="email-register-form">이메일 회원가입</button>
@@ -117,6 +122,7 @@
           </div>
           <div><button class="button primary" type="submit">이메일로 가입하기</button></div>
         </form>
+      </div>
       </div>
       <details id="email-password-section" class="sso-password-details" hidden>
         <summary>비밀번호 변경</summary>

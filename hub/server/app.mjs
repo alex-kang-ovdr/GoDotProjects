@@ -172,7 +172,7 @@ export function createApp(input, dependencies = {}) {
     return principal;
   };
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
-  const sso = createSso({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, rate, rateLimitIp, sessionFor, requireSession, newSession, revokeSession, audit, profile: s => profile(s) });
+  const sso = createSso({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, rate, rateLimitIp, sessionFor, requireSession, promote, newSession, revokeSession, audit, profile: s => profile(s) });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
   // One gateway for every Hub module that needs Forge (forge-gateway.mjs); supports both local and remote modes.
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
@@ -217,7 +217,7 @@ export function createApp(input, dependencies = {}) {
     _rootDir: { value: rootDir, enumerable: false },
     _catalogOptions: { value: catalogOptions, enumerable: false }
   });
-  const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, sso, fetchImpl: dependencies.fetch || globalThis.fetch, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, verifyMobileNaverToken: dependencies.verifyMobileNaverToken, env: dependencies.env || process.env });
   const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
   const adgame = createAdGame({ config, db, rootDir, now, rate, audit, env: dependencies.env || process.env });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
@@ -260,15 +260,20 @@ export function createApp(input, dependencies = {}) {
   function profile(s) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
     const kind = user?.kind || 'anonymous';
-    const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : null;
+    const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : (kind === 'guest' ? 'guest' : null);
+    const googleEnabled = google.enabled && s.traffic_type !== 'qa';
+    const naverEnabled = sso.naver.enabled && s.traffic_type !== 'qa';
+    const emailEnabled = sso.email.enabled && s.traffic_type !== 'qa';
+    const guestEnabled = s.traffic_type !== 'qa';
     return {
       kind,
       csrfToken:s.csrf,
       displayName:user?.display_name || null,
       authProvider,
-      googleEnabled:google.enabled && s.traffic_type!=='qa',
-      naverEnabled:sso.naver.enabled && s.traffic_type!=='qa',
-      emailEnabled:sso.email.enabled && s.traffic_type!=='qa',
+      googleEnabled,
+      naverEnabled,
+      emailEnabled,
+      authProviders: { email: emailEnabled, google: googleEnabled, naver: naverEnabled, guest: guestEnabled },
       pendingMerge:pendingMerge(s.principal_id),
       trafficType:s.traffic_type,
       qaRunId:s.qa_run_id || null

@@ -5,10 +5,10 @@ import { transaction } from '../db.mjs';
 
 const scrypt = promisify(scryptCallback);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCK_DURATION_MS = 5 * 60 * 1000;
-const DUMMY_SALT = '00000000000000000000000000000000';
-const DUMMY_HASH = '0'.repeat(128);
+export const MAX_FAILED_ATTEMPTS = 5;
+export const LOCK_DURATION_MS = 5 * 60 * 1000;
+export const DUMMY_SALT = '00000000000000000000000000000000';
+export const DUMMY_HASH = '0'.repeat(128);
 
 export function normalizeEmail(raw) {
   if (typeof raw !== 'string') return '';
@@ -44,7 +44,7 @@ export async function verifyPassword(password, salt, passwordHash) {
   return equal(derived.toString('hex'), passwordHash);
 }
 
-function normalizeDisplayName(raw, email) {
+export function normalizeDisplayName(raw, email) {
   if (raw !== undefined && raw !== null && raw !== '') {
     if (typeof raw !== 'string') throw new ApiError(422, 'DISPLAY_NAME_INVALID', '표시 이름이 올바르지 않습니다.');
     const trimmed = raw.trim().replace(/[\x00-\x1f\x7f]/g, '');

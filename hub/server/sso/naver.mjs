@@ -56,7 +56,7 @@ export function createNaverAuth(ctx) {
     enabled,
     async start(req, res, session, url) {
       if (!enabled) {
-        throw new ApiError(503, 'NAVER_DISABLED', '네이버 OAuth 설정이 없습니다. 이메일 로그인 또는 게스트 플레이를 이용할 수 있습니다.');
+        throw new ApiError(503, 'NAVER_DISABLED', '현재 네이버 로그인을 이용할 수 없습니다. 이메일 로그인 또는 게스트 플레이를 이용해 주세요.');
       }
       const returnTo = getReturn(req, url.searchParams.get('returnTo'));
       const state = secret();

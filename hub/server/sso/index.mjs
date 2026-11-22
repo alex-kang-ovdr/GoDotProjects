@@ -1,4 +1,4 @@
-import { ApiError } from '../security.mjs';
+import { ApiError, json, readJson } from '../security.mjs';
 import { ensureSsoSchema } from './schema.mjs';
 import { createEmailAuth } from './email.mjs';
 import { createNaverAuth } from './naver.mjs';
@@ -16,6 +16,15 @@ export function createSso(ctx) {
 
   async function publicRoute(req, res, url) {
     const path = url.pathname;
+    if (path === '/api/auth/guest' && req.method === 'POST') {
+      const s = ctx.requireSession(req, 'public');
+      if (s.traffic_type === 'qa') throw new ApiError(403, 'QA_AUTH_DISABLED');
+      await readJson(req, 4096);
+      const principal = ctx.promote(s, req, res);
+      ctx.audit('guest_login', principal.principal_id, { provider: 'guest' });
+      json(res, 200, ctx.profile(principal));
+      return true;
+    }
     if (path === '/api/auth/naver/start' && req.method === 'GET') {
       const s = ctx.sessionFor(req, 'public') || ctx.newSession(res, 'public');
       if (s.traffic_type === 'qa') throw new ApiError(403, 'QA_NAVER_DISABLED');
