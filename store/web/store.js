@@ -183,9 +183,16 @@ function makeThumbDataUri(item) {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
+function isSafeThumbUrl(url) {
+  if (typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return true;
+  return /^\.\/thumbs\/[A-Za-z0-9_.-]+\.(?:png|jpg|jpeg|webp|svg)$/i.test(trimmed);
+}
+
 function getThumbImageAttrs(item) {
   const fallback = makeThumbDataUri(item);
-  if (isSafeHttpUrl(item?.thumbnail_url)) {
+  if (isSafeThumbUrl(item?.thumbnail_url)) {
     return `src="${esc(item.thumbnail_url.trim())}" data-fallback-src="${fallback}"`;
   }
   return `src="${fallback}"`;

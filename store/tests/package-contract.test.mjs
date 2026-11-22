@@ -65,6 +65,7 @@ test('merged Store catalog contains ONLY commercial Forge game & PlayHub distrib
   assert.ok(catalog.length > 10000, `expected full open catalog, got ${catalog.length}`);
   for (const item of catalog) {
     assert.equal(isCommercialHubDistributable(item), true, `non-distributable item leaked: ${item.asset_id} (${item.license})`);
+    assert.ok(item.thumbnail_url && String(item.thumbnail_url).trim().length > 0, `missing thumbnail_url for ${item.asset_id}`);
     assert.notEqual(item.hosting_policy, 'external_link_only');
     assert.notEqual(item.license_tier, 'tier4_external_only');
     assert.notEqual(item.license, 'Custom-No-Redist');

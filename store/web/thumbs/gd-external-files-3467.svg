@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+    <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#14532D"/><stop offset="100%" stop-color="#1E3A8A"/></linearGradient></defs>
+    <rect width="640" height="360" fill="url(#bg)"/>
+    <!-- Isometric Lowpoly Castle / Block Diorama -->
+    <polygon points="320,254 170,186 320,122 470,186" fill="#22C55E" opacity="0.9"/>
+    <polygon points="170,186 320,254 320,278 170,210" fill="#15803D"/>
+    <polygon points="470,186 320,254 320,278 470,210" fill="#166534"/>
+    <!-- Left Tower -->
+    <polygon points="246,110 286,92 326,110 286,128" fill="#E2E8F0"/>
+    <polygon points="246,110 286,128 286,196 246,178" fill="#CBD5E1"/>
+    <polygon points="326,110 286,128 286,196 326,178" fill="#94A3B8"/>
+    <polygon points="286,58 242,108 330,108" fill="#2563EB"/>
+    <!-- Right Keep -->
+    <polygon points="338,128 386,106 434,128 386,150" fill="#F8FAFC"/>
+    <polygon points="338,128 386,150 386,208 338,186" fill="#CBD5E1"/>
+    <polygon points="434,128 386,150 386,208 434,186" fill="#64748B"/>
+    <rect x="372" y="78" width="28" height="38" fill="#F59E0B" rx="3"/>
+    <text x="36" y="48" font-family="Segoe UI, Noto Sans KR, sans-serif" font-size="13" font-weight="700" fill="#BBF7D0">Godot Asset Library</text>
+    <text x="36" y="324" font-family="Segoe UI, Noto Sans KR, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">External files</text>
+  </svg>

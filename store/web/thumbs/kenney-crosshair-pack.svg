@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+      <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0F172A"/><stop offset="100%" stop-color="#1E293B"/></linearGradient></defs>
+      <rect width="640" height="360" fill="url(#bg)"/>
+      <!-- Top-left HP/MP HUD -->
+      <rect x="36" y="34" width="230" height="72" rx="14" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+      <circle cx="72" cy="70" r="22" fill="#2563EB"/><text x="64" y="76" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#FFF">LV9</text>
+      <rect x="106" y="52" width="140" height="12" rx="6" fill="#334155"/><rect x="106" y="52" width="112" height="12" rx="6" fill="#22C55E"/>
+      <rect x="106" y="72" width="140" height="10" rx="5" fill="#334155"/><rect x="106" y="72" width="88" height="10" rx="5" fill="#38BDF8"/>
+      <!-- Top-right Radar Minimap -->
+      <rect x="466" y="34" width="138" height="138" rx="18" fill="#0B1324" stroke="#475569" stroke-width="2"/>
+      <circle cx="535" cy="103" r="46" fill="none" stroke="#1E3A8A" stroke-width="2"/>
+      <circle cx="535" cy="103" r="24" fill="none" stroke="#1E3A8A" stroke-width="1.5"/>
+      <circle cx="535" cy="103" r="5" fill="#38BDF8"/><circle cx="556" cy="84" r="4" fill="#F97316"/><circle cx="512" cy="122" r="4" fill="#22C55E"/>
+      <!-- Bottom Hotbar -->
+      <rect x="150" y="218" width="340" height="58" rx="14" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+      <rect x="166" y="230" width="46" height="34" rx="8" fill="#2563EB"/><rect x="222" y="230" width="46" height="34" rx="8" fill="#334155"/>
+      <rect x="278" y="230" width="46" height="34" rx="8" fill="#334155"/><rect x="334" y="230" width="46" height="34" rx="8" fill="#334155"/>
+      <rect x="390" y="230" width="46" height="34" rx="8" fill="#EA580C"/><rect x="446" y="230" width="30" height="34" rx="8" fill="#15803D"/>
+      <text x="36" y="322" font-family="Segoe UI, Noto Sans KR, sans-serif" font-size="22" font-weight="800" fill="#F8FAFC">Kenney Crosshair Pack (200+ 레티클 CC</text>
+    </svg>
