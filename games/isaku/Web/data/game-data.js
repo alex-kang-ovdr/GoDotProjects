@@ -8,7 +8,7 @@
   root.ISAKU_DATA = data;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   return {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "gameId": "isaku",
   "generatedFrom": "ReverseDesign/verified_data/*.json",
   "title": {
@@ -331,17 +331,23 @@
         {
           "id": "hs_5f_music_door",
           "labelKo": "음악실 출입문",
-          "actionType": "inspect_or_move"
+          "actionType": "inspect_or_move",
+          "x": 580,
+          "y": 195
         },
         {
           "id": "hs_5f_music_windows",
           "labelKo": "판자로 봉쇄된 창문",
-          "actionType": "inspect"
+          "actionType": "inspect",
+          "x": 140,
+          "y": 145
         },
         {
           "id": "hs_5f_music_group",
           "labelKo": "집결한 일행(편지 대조)",
-          "actionType": "talk"
+          "actionType": "talk",
+          "x": 360,
+          "y": 230
         }
       ],
       "certainty": "확인",
@@ -412,12 +418,16 @@
         {
           "id": "hs_5f_stairs_gate",
           "labelKo": "4층 계단 셔터/잠금 문",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 198
         },
         {
           "id": "hs_5f_clock_access",
           "labelKo": "상층 시계탑 연결 사다리 구역",
-          "actionType": "event_gate"
+          "actionType": "event_gate",
+          "x": 565,
+          "y": 118
         }
       ],
       "certainty": "확인",
@@ -446,7 +456,9 @@
         {
           "id": "hs_5f_3_1_locker",
           "labelKo": "교실 사물함/선반(기계유)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 540,
+          "y": 215
         }
       ],
       "certainty": "확인",
@@ -473,8 +485,10 @@
       "hotspots": [
         {
           "id": "hs_5f_3_2_desk",
-          "labelKo": "책상 위 메모(단서)",
-          "actionType": "pickup"
+          "labelKo": "교단·책상 위 메모(단서)",
+          "actionType": "pickup",
+          "x": 360,
+          "y": 232
         }
       ],
       "certainty": "확인",
@@ -502,17 +516,23 @@
         {
           "id": "hs_5f_science_skeleton",
           "labelKo": "인체 골격 표본(열쇠 단서 메모)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 155,
+          "y": 175
         },
         {
           "id": "hs_5f_science_box",
           "labelKo": "골판지 상자(갈색 표지 책)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 375,
+          "y": 250
         },
         {
           "id": "hs_5f_science_floor",
           "labelKo": "실험대 주변(후반 아케미의 수첩)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 565,
+          "y": 225
         }
       ],
       "certainty": "확인",
@@ -541,12 +561,16 @@
         {
           "id": "hs_5f_restroom_m_safe",
           "labelKo": "비밀번호 금고(3878)",
-          "actionType": "puzzle_code"
+          "actionType": "puzzle_code",
+          "x": 250,
+          "y": 195
         },
         {
           "id": "hs_5f_restroom_m_safe_back",
           "labelKo": "금고 후면 패널(드라이버 사용)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 495,
+          "y": 195
         }
       ],
       "certainty": "확인",
@@ -575,12 +599,16 @@
         {
           "id": "hs_5f_time_recorder",
           "labelKo": "바닥의 타임 레코더(단1 건전지 삽입)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 520,
+          "y": 240
         },
         {
           "id": "hs_5f_restroom_f_entry",
           "labelKo": "화장실 입구 대기 지점(쿠미 선생 호위)",
-          "actionType": "incident_guard"
+          "actionType": "incident_guard",
+          "x": 185,
+          "y": 185
         }
       ],
       "certainty": "확인",
@@ -646,12 +674,16 @@
         {
           "id": "hs_4f_hall_paint",
           "labelKo": "복도 구석 도료 캔(붉은 수성 도료)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 155,
+          "y": 258
         },
         {
           "id": "hs_4f_stairs_gate",
           "labelKo": "3층 계단 잠금 문",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 195
         }
       ],
       "certainty": "확인",
@@ -680,12 +712,16 @@
         {
           "id": "hs_4f_storage_box",
           "labelKo": "창고 골판지 상자(드라이버)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 175,
+          "y": 215
         },
         {
           "id": "hs_4f_mouse_hole",
           "labelKo": "쥐 그림 벽면·쥐구멍(드라이버로 파손)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 535,
+          "y": 252
         }
       ],
       "certainty": "확인",
@@ -714,7 +750,9 @@
         {
           "id": "hs_4f_thinker_statue",
           "labelKo": "'생각하는 사람' 석고상(작은 망치로 파괴)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 185
         }
       ],
       "certainty": "확인",
@@ -743,12 +781,16 @@
         {
           "id": "hs_4f_av_kotomi",
           "labelKo": "코토미 이벤트 지점(붉은 리본 방울 전달)",
-          "actionType": "use_item_or_talk"
+          "actionType": "use_item_or_talk",
+          "x": 215,
+          "y": 220
         },
         {
           "id": "hs_4f_av_vcr",
           "labelKo": "비디오 재생기(사건 발생 시 증거 테이프 재생)",
-          "actionType": "inspect"
+          "actionType": "inspect",
+          "x": 535,
+          "y": 190
         }
       ],
       "certainty": "확인",
@@ -777,7 +819,9 @@
         {
           "id": "hs_4f_2_3_akemi",
           "labelKo": "아케미·일행 합류 및 수첩 반환 지점",
-          "actionType": "talk_or_give"
+          "actionType": "talk_or_give",
+          "x": 360,
+          "y": 220
         }
       ],
       "certainty": "확인",
@@ -805,7 +849,9 @@
         {
           "id": "hs_4f_electrical_panel",
           "labelKo": "노출 배전반(아케미 패닉·인화 위험 지점)",
-          "actionType": "incident_guard"
+          "actionType": "incident_guard",
+          "x": 360,
+          "y": 178
         }
       ],
       "certainty": "해석",
@@ -842,8 +888,26 @@
           "unlockPuzzleId": null
         },
         {
+          "to": "rm_3f_class_2_1",
+          "direction": "enter",
+          "locked": false,
+          "unlockPuzzleId": null
+        },
+        {
+          "to": "rm_3f_class_2_2",
+          "direction": "enter",
+          "locked": false,
+          "unlockPuzzleId": null
+        },
+        {
           "to": "rm_3f_dead_end",
           "direction": "walk",
+          "locked": false,
+          "unlockPuzzleId": null
+        },
+        {
+          "to": "rm_3f_restroom_m",
+          "direction": "enter",
           "locked": false,
           "unlockPuzzleId": null
         },
@@ -864,7 +928,102 @@
         {
           "id": "hs_3f_stairs_gate",
           "labelKo": "2층 계단 잠금 문",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 195
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "rm_3f_class_2_1",
+      "floor": 3,
+      "nameKo": "3F 2-1 교실",
+      "nameJa": "3階 2-1教室",
+      "nameEn": "3F Classroom 2-1",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        {
+          "to": "rm_3f_hall",
+          "direction": "out",
+          "locked": false,
+          "unlockPuzzleId": null
+        }
+      ],
+      "hotspots": [
+        {
+          "id": "hs_3f_2_1_blackboard",
+          "labelKo": "칠판의 분필 메모(난수표 좌표 21·36 단서)",
+          "actionType": "inspect",
+          "x": 360,
+          "y": 138
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "rm_3f_class_2_2",
+      "floor": 3,
+      "nameKo": "3F 2-2 교실",
+      "nameJa": "3階 2-2教室",
+      "nameEn": "3F Classroom 2-2",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        {
+          "to": "rm_3f_hall",
+          "direction": "out",
+          "locked": false,
+          "unlockPuzzleId": null
+        }
+      ],
+      "hotspots": [
+        {
+          "id": "hs_3f_2_2_traces",
+          "labelKo": "수상한 정찰 흔적과 메모 조각(좌표 61)",
+          "actionType": "inspect",
+          "x": 380,
+          "y": 248
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "rm_3f_restroom_m",
+      "floor": 3,
+      "nameKo": "3F 남자 화장실",
+      "nameJa": "3階 男子トイレ",
+      "nameEn": "3F Men's Restroom",
+      "zoneType": "restroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        {
+          "to": "rm_3f_hall",
+          "direction": "out",
+          "locked": false,
+          "unlockPuzzleId": null
+        }
+      ],
+      "hotspots": [
+        {
+          "id": "hs_3f_restroom_m_mirror",
+          "labelKo": "금이 간 거울의 낙서(도서실·천장 좌표 45)",
+          "actionType": "inspect",
+          "x": 535,
+          "y": 152
         }
       ],
       "certainty": "확인",
@@ -899,12 +1058,16 @@
         {
           "id": "hs_3f_bar_lock_door",
           "labelKo": "바 록으로 잠긴 방송실 내문(작은 열쇠로 해제)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 225,
+          "y": 190
         },
         {
           "id": "hs_3f_containment_lock",
           "labelKo": "후반 배신자 격리 잠금 지점(바 록 재사용)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 515,
+          "y": 215
         }
       ],
       "certainty": "확인",
@@ -933,17 +1096,23 @@
         {
           "id": "hs_3f_broadcast_ladder",
           "labelKo": "목제 사다리",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 145,
+          "y": 205
         },
         {
           "id": "hs_3f_broadcast_wall",
-          "labelKo": "우측 벽면 봉투/종이(난수표 및 라이터)",
-          "actionType": "pickup"
+          "labelKo": "우측 벽면 시계·봉투(난수표 및 라이터)",
+          "actionType": "pickup",
+          "x": 565,
+          "y": 155
         },
         {
           "id": "hs_3f_broadcast_soga",
           "labelKo": "단독 행동 후 구속된 소가 발견 지점",
-          "actionType": "incident_rescue"
+          "actionType": "incident_rescue",
+          "x": 360,
+          "y": 245
         }
       ],
       "certainty": "확인",
@@ -972,12 +1141,16 @@
         {
           "id": "hs_3f_library_shelf",
           "labelKo": "이동 가능한 서가(붉은 리본 방울)",
-          "actionType": "puzzle_move"
+          "actionType": "puzzle_move",
+          "x": 195,
+          "y": 185
         },
         {
           "id": "hs_3f_library_talk",
           "labelKo": "미유키·진파치 대화 지점(호감도 분기)",
-          "actionType": "talk"
+          "actionType": "talk",
+          "x": 515,
+          "y": 225
         }
       ],
       "certainty": "확인",
@@ -1006,7 +1179,9 @@
         {
           "id": "hs_3f_ceiling_latch",
           "labelKo": "고양이 울음소리가 들리는 천장 손잡이(사다리+드라이버)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 108
         }
       ],
       "certainty": "확인",
@@ -1035,7 +1210,9 @@
         {
           "id": "hs_3f_stall_2",
           "labelKo": "2번째 칸(사건 발생 시 증거 테이프 발견 지점)",
-          "actionType": "inspect"
+          "actionType": "inspect",
+          "x": 315,
+          "y": 205
         }
       ],
       "certainty": "확인",
@@ -1071,6 +1248,12 @@
           "unlockPuzzleId": null
         },
         {
+          "to": "rm_2f_class_1_3",
+          "direction": "enter",
+          "locked": false,
+          "unlockPuzzleId": null
+        },
+        {
           "to": "rm_2f_restroom_m",
           "direction": "enter",
           "locked": false,
@@ -1093,7 +1276,9 @@
         {
           "id": "hs_2f_stairs_gate",
           "labelKo": "1층 계단 잠금 문",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 195
         }
       ],
       "certainty": "확인",
@@ -1121,7 +1306,9 @@
         {
           "id": "hs_2f_1_1_party",
           "labelKo": "생존자 일행 대화(미유키 동행 개시)",
-          "actionType": "talk"
+          "actionType": "talk",
+          "x": 360,
+          "y": 225
         }
       ],
       "certainty": "확인",
@@ -1149,12 +1336,46 @@
         {
           "id": "hs_2f_1_2_check",
           "labelKo": "교실 내부 및 인원 안전 확인 지점",
-          "actionType": "talk"
+          "actionType": "talk",
+          "x": 360,
+          "y": 220
         }
       ],
       "certainty": "확인",
       "sourceIds": [
         "SRC-04"
+      ]
+    },
+    {
+      "id": "rm_2f_class_1_3",
+      "floor": 2,
+      "nameKo": "2F 1-3 교실",
+      "nameJa": "2階 1-3教室",
+      "nameEn": "2F Classroom 1-3",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        {
+          "to": "rm_2f_hall",
+          "direction": "out",
+          "locked": false,
+          "unlockPuzzleId": null
+        }
+      ],
+      "hotspots": [
+        {
+          "id": "hs_2f_1_3_locker",
+          "labelKo": "교실 뒷편 비상 안내도(1F 보건실·좌표 44 단서)",
+          "actionType": "inspect",
+          "x": 525,
+          "y": 195
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-06"
       ]
     },
     {
@@ -1177,7 +1398,9 @@
         {
           "id": "hs_2f_restroom_left_door",
           "labelKo": "좌측 칸 내부(알코올 병)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 145,
+          "y": 205
         }
       ],
       "certainty": "확인",
@@ -1205,7 +1428,9 @@
         {
           "id": "hs_2f_kitchen_stove",
           "labelKo": "장작 난로(갈색 책+알코올+라이터 -> 은색 열쇠)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 360,
+          "y": 212
         }
       ],
       "certainty": "확인",
@@ -1246,12 +1471,16 @@
         {
           "id": "hs_1f_hall_isaku_body",
           "labelKo": "종반 유작 쓰러진 지점(유작의 나이프 획득)",
-          "actionType": "pickup"
+          "actionType": "pickup",
+          "x": 515,
+          "y": 250
         },
         {
           "id": "hs_1f_hall_survivors",
           "labelKo": "생존자 전원 합류 확인 지점",
-          "actionType": "talk"
+          "actionType": "talk",
+          "x": 210,
+          "y": 220
         }
       ],
       "certainty": "확인",
@@ -1280,7 +1509,9 @@
         {
           "id": "hs_1f_sealed_gate",
           "labelKo": "열쇠가 존재하지 않는 봉쇄 현관문",
-          "actionType": "inspect"
+          "actionType": "inspect",
+          "x": 360,
+          "y": 188
         }
       ],
       "certainty": "확인",
@@ -1315,7 +1546,9 @@
         {
           "id": "hs_1f_infirmary_board",
           "labelKo": "침대 근처 봉쇄 판자(유작의 나이프 사용)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 535,
+          "y": 220
         }
       ],
       "certainty": "확인",
@@ -1344,12 +1577,16 @@
         {
           "id": "hs_clock_tower_ladder",
           "labelKo": "시계탑 사다리(붉은 수성 도료 사용)",
-          "actionType": "use_item"
+          "actionType": "use_item",
+          "x": 525,
+          "y": 195
         },
         {
           "id": "hs_clock_tower_miyuki",
           "labelKo": "미유키 상태 확인 및 최종 대치 분기",
-          "actionType": "incident_rescue"
+          "actionType": "incident_rescue",
+          "x": 220,
+          "y": 225
         }
       ],
       "certainty": "확인",
@@ -1379,7 +1616,9 @@
         {
           "id": "hs_escape_eval",
           "labelKo": "탈출 완료 및 엔딩 판정 트리거",
-          "actionType": "ending_evaluate"
+          "actionType": "ending_evaluate",
+          "x": 360,
+          "y": 235
         }
       ],
       "certainty": "확인",
@@ -1447,7 +1686,7 @@
       ],
       "consumable": false,
       "combineWith": [],
-      "purposeKo": "5층 탐색 및 금고 비밀번호 추론을 보조하는 단서 메모.",
+      "purposeKo": "5층 남자 화장실 금고 전반부 단서(좌표 32 -> 38)와 기계유 선적용 주의를 기록한 추리 메모.",
       "certainty": "확인",
       "sourceIds": [
         "SRC-04"
@@ -1528,11 +1767,12 @@
       "pickupRoomId": "rm_5f_restroom_m",
       "pickupPuzzleId": "puz_5f_safe_code",
       "targetHotspotIds": [
-        "hs_5f_stairs_gate"
+        "hs_5f_stairs_gate",
+        "hs_4f_stairs_gate"
       ],
       "consumable": true,
       "combineWith": [],
-      "purposeKo": "5층 남자 화장실 금고(3878)에서 획득. 기계유 도포 후 4층으로 내려가는 계단 문을 여는 열쇠(윤활 없이 무리하게 사용하면 파손 위험).",
+      "purposeKo": "5층 남자 화장실 금고(3878)에서 획득. 기계유 도포 후 5F->4F 계단 문을 해정한다. 4F->3F 계단에 재사용하면 부러지므로 4F 공작실 구리 열쇠로 대체해야 한다.",
       "certainty": "확인",
       "sourceIds": [
         "SRC-04",
@@ -1749,7 +1989,7 @@
       ],
       "consumable": false,
       "combineWith": [],
-      "purposeKo": "3층 방송실 우측 벽면에서 확인하는 종횡 숫자 조합 단서표.",
+      "purposeKo": "3층 방송실 우측 벽면에서 획득하는 6x6 종횡(행·열) 난수표. 열람 시 난수표 해독기를 열어 메모 좌표를 교차 해독한다.",
       "certainty": "확인",
       "sourceIds": [
         "SRC-04",
@@ -1927,9 +2167,7 @@
         "item_rusted_key"
       ],
       "requiresFlags": [],
-      "consumesItems": [
-        "item_rusted_key"
-      ],
+      "consumesItems": [],
       "grantsItems": [],
       "setsFlags": [
         "flg_4f_unlocked"
@@ -1940,7 +2178,7 @@
           "to": "rm_4f_hall"
         }
       ],
-      "failureRisk": "원작에서는 기계유 없이 녹슨 열쇠를 강행하면 열쇠가 부러져 진행 불능(소프트락) 위험이 존재.",
+      "failureRisk": "원작에서는 기계유 없이 녹슨 열쇠를 강행하면 열쇠가 부러져 진행 불능(소프트락) 위험이 존재. 윤활 해정 후에는 녹슨 열쇠를 회수해 4F로 휴대한다.",
       "softlockPrevention": "재구현 엔진에서는 '먼저 윤활 필요' 경고 또는 기계유 선적용 강제로 영구 소프트락 차단.",
       "certainty": "확인",
       "sourceIds": [
@@ -2101,8 +2339,19 @@
           "to": "rm_3f_hall"
         }
       ],
-      "failureRisk": "기계유 미도포 시 열쇠 파손 위험(원작 하드락 요소).",
-      "softlockPrevention": "기계유는 비소모 다회 사용으로 보장, 미도포 시 경고 후 취소.",
+      "keyBreakBranch": {
+        "attemptedItemId": "item_rusted_key",
+        "outcome": "snaps_safely_and_clears_lock",
+        "setsFlags": [
+          "flg_rusted_key_snapped"
+        ],
+        "consumesAttemptedItem": true,
+        "fallbackPuzzleId": "puz_4f_thinker_statue",
+        "fallbackItemId": "item_copper_key",
+        "noteKo": "4F->3F 계단 문에 5F에서 사용한 녹슨 철제 열쇠를 재사용하면 부러지지만('折れた部分を取る' 원작 분기), 부러진 파편을 빼낸 뒤 4F 공작실 '생각하는 사람' 석고상의 구리 열쇠로 안전하게 대체 해정한다."
+      },
+      "failureRisk": "4F->3F 계단에 녹슨 철제 열쇠를 재사용하면 부러지며, 기계유 미도포 시 구리 열쇠도 파손 위험이 존재.",
+      "softlockPrevention": "녹슨 열쇠 파손 시 파편을 깔끔히 제거하고 구리 열쇠 경로(5F 금고 뒷면->타임 레코더->4F 석고상)를 안내. 기계유는 비소모 다회 사용 보장.",
       "certainty": "확인",
       "sourceIds": [
         "SRC-04",
@@ -2773,6 +3022,909 @@
         "SRC-06"
       ]
     }
-  ]
+  ],
+  "affectionModel": {
+    "heroineId": "char_miyuki",
+    "alternateHeroineId": "char_kotomi",
+    "miyukiHappyThreshold": 3,
+    "kotomiHappyMaxMiyuki": 2,
+    "duplicateFarmingPrevented": true,
+    "noteKo": "전원 생존 탈출 시 미유키 호감도 3 이상이면 미유키 해피 엔딩, 2 이하이면 코토미 해피 엔딩으로 분기한다. 5개 정본 미유키 분기 이벤트는 각 1회만 호감도 증감(+1 / 0 / -1)을 반영한다."
+  },
+  "dialogueBranches": [
+    {
+      "id": "dlg_miyuki_5f_music",
+      "characterId": "char_miyuki",
+      "roomIds": [
+        "rm_5f_music"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f"
+      ],
+      "isAffectionEvent": true,
+      "titleKo": "5F 음악실 — 1년 전 사건과 호출 편지 대조",
+      "promptKo": "미유키: \"이 구교사는 1년 전 내 여동생 사건 이후 폐쇄됐어. 누군가 의도적으로 우리를 부른 거야. 켄타, 넌 어떻게 생각해?\"",
+      "choices": [
+        {
+          "id": "miyuki_5f_trust",
+          "labelKo": "1년 전 사건과 호출 편지의 진상을 끝까지 함께 파헤치자.",
+          "replyKo": "미유키: \"…고마워, 켄타. 네가 감정적으로 흔들리지 않고 진상을 보려 해 줘서 든든해.\"",
+          "miyukiDelta": 1,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": "flg_miyuki_5f_aligned"
+        },
+        {
+          "id": "miyuki_5f_kotomi",
+          "labelKo": "우선 코토미와 모두의 탈출구부터 찾는 게 먼저야.",
+          "replyKo": "미유키: \"맞는 말이야. 탈출로를 확보하면서 단서를 모으는 쪽이 현실적이겠지.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "miyuki_5f_dismiss",
+          "labelKo": "과거 일에 매달리기보다 각자 흩어져 빨리 출구를 찾자.",
+          "replyKo": "미유키: \"…흩어지는 순간 함정에 걸릴 뿐이야. 역시 혼자 판단하는 수밖에 없겠네.\"",
+          "miyukiDelta": -1,
+          "kotomiDelta": 0,
+          "threatDelta": 3,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_miyuki_4f_hall",
+      "characterId": "char_miyuki",
+      "roomIds": [
+        "rm_4f_hall"
+      ],
+      "phases": [
+        "phase_2_4f_exploration"
+      ],
+      "isAffectionEvent": true,
+      "titleKo": "4F 복도 — 구교사 함정 구조와 공작실 추리",
+      "promptKo": "미유키: \"4층 계단 문이 녹슬어 있고 곳곳에 감시 흔적이 있어. 5층 금고 뒷면과 4층 공작실이 서로 연결된 구조 같은데, 내 추리에 동의해?\"",
+      "choices": [
+        {
+          "id": "miyuki_4f_agree",
+          "labelKo": "미유키의 분석이 정확해. 5층 백트래킹과 공작실부터 공략하자.",
+          "replyKo": "미유키: \"역시 켄타는 상황 파악이 빨라. 그럼 아케미 쪽 동향도 놓치지 말자.\"",
+          "miyukiDelta": 1,
+          "kotomiDelta": 0,
+          "threatDelta": -2,
+          "setsFlag": "flg_miyuki_4f_aligned"
+        },
+        {
+          "id": "miyuki_4f_neutral",
+          "labelKo": "추리는 좋지만 먼저 시청각실에 있는 코토미 안부를 보고 와야 해.",
+          "replyKo": "미유키: \"알겠어. 코토미가 불안해하는 건 사실이니까 확인하고 움직이자.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "miyuki_4f_doubt",
+          "labelKo": "너무 의심이 지나친 거 아니야? 단순한 장난일 수도 있잖아.",
+          "replyKo": "미유키: \"장난으로 창문에 못을 박고 배전반에 기름을 뿌리진 않아. 정신 차려.\"",
+          "miyukiDelta": -1,
+          "kotomiDelta": 0,
+          "threatDelta": 4,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_miyuki_3f_library",
+      "characterId": "char_miyuki",
+      "roomIds": [
+        "rm_3f_library"
+      ],
+      "phases": [
+        "phase_3_3f_exploration"
+      ],
+      "isAffectionEvent": true,
+      "titleKo": "3F 도서실 — 서가 조사와 미유키 신뢰 분기",
+      "promptKo": "미유키가 도서실 바닥과 서가 틈을 살피다 고개를 든다. \"켄타, 뭘 그렇게 뚫어져라 보고 있어? 솔직히 말해, 넌 정말 날 믿고 함께 움직이는 거야?\"",
+      "choices": [
+        {
+          "id": "miyuki_3f_honest",
+          "labelKo": "솔직히 미유키를 신경 쓰고 있었어. 네 냉철한 추리를 끝까지 믿는다.",
+          "replyKo": "미유키: \"…숨기지 않고 솔직하게 말해 주는 점은 인정할게. 서가 뒤에 뭔가가 걸려 있는 것 같아.\"",
+          "miyukiDelta": 1,
+          "kotomiDelta": 0,
+          "threatDelta": -2,
+          "setsFlag": "flg_library_talk_done"
+        },
+        {
+          "id": "miyuki_3f_balance",
+          "labelKo": "지금은 감정보다 진파치와 코토미 쪽 정보도 고르게 맞춰 봐야 해.",
+          "replyKo": "미유키: \"냉정하네. 그래, 방송실과 시청각실 단서까지 다 모은 뒤에 판단하자.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": 0,
+          "setsFlag": "flg_library_talk_done"
+        },
+        {
+          "id": "miyuki_3f_evasive",
+          "labelKo": "절대 아무것도 신경 안 썼어! 서가만 확인하고 빨리 나가자.",
+          "replyKo": "미유키: \"…거짓말은 금방 티가 나. 알았어, 더 묻지 않을게.\"",
+          "miyukiDelta": -1,
+          "kotomiDelta": 0,
+          "threatDelta": 2,
+          "setsFlag": "flg_library_talk_done"
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_miyuki_2f_1_1",
+      "characterId": "char_miyuki",
+      "roomIds": [
+        "rm_2f_class_1_1"
+      ],
+      "phases": [
+        "phase_4_2f_exploration"
+      ],
+      "isAffectionEvent": true,
+      "titleKo": "2F 1-1 교실 — 미유키 동행 개시 분기",
+      "promptKo": "미유키: \"드디어 1층이 코앞이야. 하지만 이 시점이 가장 위험해. 켄타, 여기서부턴 나와 둘이 움직이며 아래층과 시계탑을 확인하는 게 안전해.\"",
+      "choices": [
+        {
+          "id": "miyuki_2f_companion",
+          "labelKo": "알겠어. 미유키와 동행해서 급식실과 1층, 시계탑까지 함께 돌파하자.",
+          "replyKo": "미유키: \"결정됐네. 내 뒤를 놓치지 마, 켄타. 반드시 전원 살아서 나가는 거야.\"",
+          "miyukiDelta": 1,
+          "kotomiDelta": 0,
+          "threatDelta": -3,
+          "setsFlag": "flg_miyuki_companion"
+        },
+        {
+          "id": "miyuki_2f_kotomi_stay",
+          "labelKo": "코토미와 일행 곁을 지키는 편이 안심돼. 급식실만 빠르게 다녀올게.",
+          "replyKo": "미유키: \"코토미를 걱정하는 마음은 이해해. 그럼 1-1 교실에서 대기하며 신호를 기다릴게.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "miyuki_2f_solo",
+          "labelKo": "둘이 움직이면 오히려 눈에 띄어. 혼자 다니는 게 더 빨라.",
+          "replyKo": "미유키: \"…지금까지 소가가 혼자 다니다 어떤 꼴을 당했는지 잊었어? 마음대로 해.\"",
+          "miyukiDelta": -1,
+          "kotomiDelta": 0,
+          "threatDelta": 4,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_miyuki_clock_tower",
+      "characterId": "char_miyuki",
+      "roomIds": [
+        "rm_clock_tower"
+      ],
+      "phases": [
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": true,
+      "titleKo": "6F 시계탑 — 최종 대치 직전 미유키 만류 분기",
+      "promptKo": "미유키가 시계탑 난간 너머 어둠을 노려본다. \"여기가 1년 전 사건과 오늘의 종착점이야… 유작을 유인하려면 내가 미끼로 나설게. 켄타는 1층으로 내려가.\"",
+      "choices": [
+        {
+          "id": "miyuki_tower_hold_back",
+          "labelKo": "절대 보내지 않아! 혼자 짊어지지 마, 반드시 여기서 함께 막아내자.",
+          "replyKo": "미유키: \"…바보 같네. 알았어, 네 손을 잡을게. 사다리에 붉은 도료 함정을 완성해서 끝내자!\"",
+          "miyukiDelta": 1,
+          "kotomiDelta": 0,
+          "threatDelta": -4,
+          "setsFlag": "flg_miyuki_held_back"
+        },
+        {
+          "id": "miyuki_tower_regroup",
+          "labelKo": "함정만 마무리하고 서둘러 1층 코토미와 동료들에게 합류하자.",
+          "replyKo": "미유키: \"그래, 모두가 기다리는 1층으로 내려가야 탈출을 완성할 수 있어.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "miyuki_tower_observe",
+          "labelKo": "일단 거리를 두고 유작이 어떻게 움직이는지 지켜만 보자.",
+          "replyKo": "미유키: \"망설이는 사이 기회가 사라져! 붉은 도료로 흔적을 남기지 않으면 끝장이야!\"",
+          "miyukiDelta": -1,
+          "kotomiDelta": 0,
+          "threatDelta": 6,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_kotomi_5f_music",
+      "characterId": "char_kotomi",
+      "roomIds": [
+        "rm_5f_music"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "5F 음악실 — 코토미 안심시키기",
+      "promptKo": "코토미: \"켄타 군… 창문이 전부 판자로 막혀 있어. 정말 여기서 무사히 나갈 수 있을까?\"",
+      "choices": [
+        {
+          "id": "kotomi_5f_promise",
+          "labelKo": "내가 곁에 있을게. 반드시 전원 무사히 데리고 나갈 거야.",
+          "replyKo": "코토미: \"응… 켄타 군이 그렇게 말해 주니까 조금 안심이 돼. 힘내자!\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": -2,
+          "setsFlag": null
+        },
+        {
+          "id": "kotomi_5f_check_letter",
+          "labelKo": "코토미가 받은 편지에도 똑같은 필체였는지 확인해 볼게.",
+          "replyKo": "코토미: \"맞아, 5층 음악실로 와 달라고 적혀 있었어. 소가 군만 편지가 없었다고 하더라…\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_kotomi_4f_av",
+      "characterId": "char_kotomi",
+      "roomIds": [
+        "rm_4f_av"
+      ],
+      "phases": [
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "4F 시청각실 — 코토미의 불안과 신뢰 대화",
+      "promptKo": "코토미: \"가끔 정말 무서워질 때가 있어… 어두운 복도 너머에서 누군가 우리를 지켜보는 것 같아.\"",
+      "choices": [
+        {
+          "id": "kotomi_4f_important",
+          "labelKo": "코토미는 내게 소중한 사람이야. 절대 혼자 두지 않을게.",
+          "replyKo": "코토미: \"켄타 군…! 고마워. 나도 도망치지 않고 끝까지 버틸게. 혹시 붉은 리본 방울을 보면 내게 전해 줘.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 2,
+          "threatDelta": -3,
+          "setsFlag": "flg_kotomi_reassured"
+        },
+        {
+          "id": "kotomi_4f_vcr",
+          "labelKo": "시청각실 비디오 재생기 쪽은 건드리지 말고 문 쪽만 살피자.",
+          "replyKo": "코토미: \"알겠어. 무서운 화면이 나올 것 같아서 나도 가까이 가기 싫었어…\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05",
+        "SRC-08"
+      ]
+    },
+    {
+      "id": "dlg_kotomi_late",
+      "characterId": "char_kotomi",
+      "roomIds": [
+        "rm_2f_class_1_1",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "하층부 합류 — 코토미와의 마지막 약속",
+      "promptKo": "코토미: \"이제 정말 얼마 안 남았지? 1층 정문이 막혀 있다 해도 다른 출구가 분명 있을 거야!\"",
+      "choices": [
+        {
+          "id": "kotomi_late_together",
+          "labelKo": "조금만 더 힘내자. 보건실과 시계탑 단서를 끝까지 확인하고 빠져나가자.",
+          "replyKo": "코토미: \"응! 모두 무사히 밖으로 나가면 그때 다시 제대로 이야기하자, 켄타 군.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 1,
+          "threatDelta": -2,
+          "setsFlag": null
+        },
+        {
+          "id": "kotomi_late_soga",
+          "labelKo": "소가도 진정된 것 같으니 일행이 흩어지지 않게 챙겨 줘.",
+          "replyKo": "코토미: \"알았어, 소가 군이랑 리카 곁은 내가 단단히 지키고 있을게.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "dlg_kumi_general",
+      "characterId": "char_kumi",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_5f_restroom_f",
+        "rm_4f_class_2_3",
+        "rm_2f_class_1_1",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "쿠미 선생 — 인솔 및 단서 확인",
+      "promptKo": "쿠미 선생: \"다들 진정하세요. 구교사 열쇠는 관리인실이나 각 층 보관함에 나뉘어 있을 겁니다. 무리해서 혼자 움직이지 마세요.\"",
+      "choices": [
+        {
+          "id": "kumi_ask_rooms",
+          "labelKo": "5층과 4층에서 열쇠나 공구가 있을 만한 방을 여쭤본다.",
+          "replyKo": "쿠미 선생: \"3-1 교실 사물함에 정비 기름이, 3-2 교실과 이과 실험실에 옛 기록 메모가 남아 있을 거예요. 화장실 쪽도 주의하세요.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "kumi_ask_akemi",
+          "labelKo": "아케미의 표정이 좋지 않은데 무슨 일이 있었는지 여쭤본다.",
+          "replyKo": "쿠미 선생: \"…테니스부 일로 다툼이 조금 있었어요. 아케미가 수첩을 잃어버린 뒤 더 예민해졌으니 찾으면 꼭 돌려주세요.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": -1,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-06"
+      ]
+    },
+    {
+      "id": "dlg_rika_general",
+      "characterId": "char_rika",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_4f_hall",
+        "rm_4f_class_2_3",
+        "rm_2f_class_1_2",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "아카가와 리카 — 공포 진정 및 소리 단서",
+      "promptKo": "리카: \"코, 코구레 군… 복도 저편에서 철문이 긁히는 소리가 들렸어. 너무 무서워…\"",
+      "choices": [
+        {
+          "id": "rika_calm",
+          "labelKo": "괜찮아, 절대 혼자 뛰쳐나가지 말고 본대 옆에 꼭 붙어 있어.",
+          "replyKo": "리카: \"응… 코구레 군이 그렇게 말해 주면 버틸 수 있어. 쿠미 선생님이 무사해야 나도 안심이 돼…\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": -2,
+          "setsFlag": null
+        },
+        {
+          "id": "rika_ask_sound",
+          "labelKo": "혹시 3층이나 계단 쪽에서 들린 특이한 소리가 있었어?",
+          "replyKo": "리카: \"3층 막다른 복도 천장 위에서 고양이 울음소리 같은 게 들렸어… 사다리가 있으면 확인할 수 있을 텐데.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-06"
+      ]
+    },
+    {
+      "id": "dlg_akemi_general",
+      "characterId": "char_akemi",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_4f_class_2_3",
+        "rm_4f_electrical",
+        "rm_2f_class_1_2",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "미키하라 아케미 — 수첩과 배전반 경위",
+      "promptKo": "아케미: \"쳇, 답답해 죽겠네! 불이라도 켜야 숨통이 트일 텐데, 게다가 내 수첩까지 안 보인단 말이야!\"",
+      "choices": [
+        {
+          "id": "akemi_notebook_clue",
+          "labelKo": "수첩을 어디서 마지막으로 봤어? 내가 찾아다 줄게.",
+          "replyKo": "아케미: \"아마 5층 이과 실험실 바닥 근처일 거야… 4층 문을 연 뒤에 다시 가 보면 찾을 수 있을지 몰라. 절대 남한테 보여 주지 마!\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "akemi_warn_panel",
+          "labelKo": "4층 배전반 쪽에 기름 냄새가 나니까 스위치는 절대 만지지 마.",
+          "replyKo": "아케미: \"기름 냄새라고? …알았어, 무턱대고 전원을 올리면 불이 날 수도 있겠네. 조심할게.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": -2,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-06"
+      ]
+    },
+    {
+      "id": "dlg_mio_general",
+      "characterId": "char_mio",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_4f_class_2_3",
+        "rm_3f_hall",
+        "rm_2f_class_1_2",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "세리자와 미오 — 아케미 보호와 3층 탐색 정보",
+      "promptKo": "미오: \"야, 코구레! 아케미가 저렇게 흥분해 있으면 금방 사고 친다고. 나도 옆에서 붙들고 있을 테니 너도 신경 써 줘!\"",
+      "choices": [
+        {
+          "id": "mio_teamwork",
+          "labelKo": "미오가 아케미 곁을 지켜 줘서 다행이야. 층을 내려갈 때도 흩어지지 말자.",
+          "replyKo": "미오: \"맡겨 둬! 참, 3층 방송실 준비실 문에 튼튼한 바 록(빗장)이 걸려 있더라. 작은 열쇠가 필요할 거야.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": -1,
+          "setsFlag": null
+        },
+        {
+          "id": "mio_3f_check",
+          "labelKo": "3층 교실들(2-1, 2-2) 쪽에서 이상한 낌새는 없었어?",
+          "replyKo": "미오: \"2-1 교실 칠판에 이상한 숫자 좌표가 적혀 있었고, 2-2 교실 앞은 왠지 소름이 돋아서 못 들어갔어.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "해석",
+      "sourceIds": [
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "dlg_jinpachi_general",
+      "characterId": "char_jinpachi",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_4f_class_2_3",
+        "rm_3f_library",
+        "rm_2f_class_1_1",
+        "rm_3f_broadcast_prep",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "시마다 진파치 — 신문부 취재 단서와 심리 확인",
+      "promptKo": "진파치: \"어이 켄타, 구교사 특종감이라곤 해도 분위기가 영 심상치 않아. 신문부 카메라로 찍어 둔 구교사 구조가 도움이 될 거야.\"",
+      "choices": [
+        {
+          "id": "jinpachi_clues",
+          "labelKo": "신문부 시절 조사한 구교사 비밀 장치나 열쇠 위치 단서를 알려 줘.",
+          "replyKo": "진파치: \"4층 공작실의 '생각하는 사람' 석고상 속이 비어 있다는 소문이 있었고, 2층 급식실 장작 난로랑 1층 보건실 벽면도 수상해. 1층 현관은 가짜 출구일지도 몰라!\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        },
+        {
+          "id": "jinpachi_check_loyalty",
+          "labelKo": "진파치, 너 아까부터 안색이 창백한데… 혹시 누군가한테 협박당하고 있는 건 아니지?",
+          "replyKo": "진파치: \"으, 무슨 소리야! 그런 거 아니야… 다만 유작 영감은 절대 만만한 상대가 아니니까 방심하지 마, 켄타.\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 2,
+          "setsFlag": "flg_jinpachi_questioned"
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    {
+      "id": "dlg_soga_general",
+      "characterId": "char_soga",
+      "roomIds": [
+        "rm_5f_music",
+        "rm_4f_av",
+        "rm_3f_broadcast",
+        "rm_2f_class_1_2",
+        "rm_1f_hall"
+      ],
+      "phases": [
+        "phase_1_5f_to_4f",
+        "phase_2_4f_exploration",
+        "phase_3_3f_exploration",
+        "phase_4_2f_exploration",
+        "phase_5_climax"
+      ],
+      "isAffectionEvent": false,
+      "titleKo": "소가 무네미츠 — 단독 행동 경고 및 호출 경위",
+      "promptKo": "소가: \"흥, 너희 같은 녀석들이 꾸물거리는 동안 내가 먼저 탈출 열쇠를 찾아내 코토미를 구해 내겠다!\"",
+      "choices": [
+        {
+          "id": "soga_warn",
+          "labelKo": "혼자 앞서가면 3층 방송실 같은 함정에 걸릴 뿐이야. 제발 협력해!",
+          "replyKo": "소가: \"시끄러워! 이 학원은 우리 아버지 소유야. 관리인 따위에게 내가 당할 리 없잖아!\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 2,
+          "setsFlag": null
+        },
+        {
+          "id": "soga_ask_letter",
+          "labelKo": "넌 호출 편지도 못 받았는데 왜 구교사 5층까지 올라온 거야?",
+          "replyKo": "소가: \"코토미가 밤중에 편지를 들고 구교사로 향하는 걸 보고 뒤따라온 것뿐이다! 문제 있나?\"",
+          "miyukiDelta": 0,
+          "kotomiDelta": 0,
+          "threatDelta": 0,
+          "setsFlag": null
+        }
+      ],
+      "certainty": "확인",
+      "sourceIds": [
+        "SRC-02",
+        "SRC-03",
+        "SRC-04"
+      ]
+    }
+  ],
+  "cipherData": {
+    "schemaVersion": "1.1.0",
+    "gameId": "isaku",
+    "certaintyNote": "난수표의 '2자리 숫자 1조(앞자리=세로 행, 뒷자리=가로 열)' 읽기 방식과 3-2 교실 메모·골격 메모·방송실 난수표·금고 번호 3878의 인과 구조는 [확인](SRC-04, SRC-05)되었으며, 개별 셀 문자열과 해독 문구는 저작권 비침해 오리지널 추리 데이터[재구성안]로 구성했다.",
+    "requiredItemId": "item_cipher_table",
+    "gridSpec": {
+      "rows": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "cols": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "readingRuleKo": "2자리 좌표(XY)에서 앞자리 X는 세로(행 1~6), 뒷자리 Y는 가로(열 1~6)를 가리킨다. 단서 메모에서 얻은 두 좌표를 교차 입력해 숨겨진 기믹과 비밀번호를 해독한다."
+    },
+    "grid": [
+      [
+        "14",
+        "열쇠",
+        "기름",
+        "5F",
+        "녹슨",
+        "창고"
+      ],
+      [
+        "시계",
+        "29",
+        "금고",
+        "방송",
+        "석고",
+        "3F"
+      ],
+      [
+        "05",
+        "38",
+        "서가",
+        "망치",
+        "천장",
+        "라이터"
+      ],
+      [
+        "배전",
+        "41",
+        "난로",
+        "도료",
+        "방울",
+        "2F"
+      ],
+      [
+        "구리",
+        "건전",
+        "62",
+        "78",
+        "바록",
+        "1F"
+      ],
+      [
+        "사다리",
+        "판자",
+        "나이프",
+        "보건",
+        "현관X",
+        "83"
+      ]
+    ],
+    "memoSources": [
+      {
+        "id": "memo_3_2_desk",
+        "sourceType": "item",
+        "sourceId": "item_clue_memo_3_2",
+        "coordCode": "32",
+        "labelKo": "5F 3-2 교실 메모",
+        "clueTextKo": "【3-2 교실 메모】 \"구교사 5층 남자 화장실 금고의 전반부 번호는 3-2(세로3·가로2 → 38). 녹슨 자물쇠에는 반드시 3-1 교실의 기계유를 먼저 칠할 것.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04"
+        ]
+      },
+      {
+        "id": "memo_5f_skeleton",
+        "sourceType": "item",
+        "sourceId": "item_skeleton_memo",
+        "coordCode": "54",
+        "labelKo": "5F 이과 실험실 골격 메모",
+        "clueTextKo": "【골격 표본 메모】 \"계단을 여는 열쇠는 이 층 금고 안에 있다. 후반부 번호는 표본 번호 5-4(세로5·가로4 → 78). 합치면 3878. 4층을 연 뒤 금고 뒷면 패널도 잊지 말라.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04"
+        ]
+      },
+      {
+        "id": "memo_3f_2_1_blackboard",
+        "sourceType": "hotspot",
+        "sourceId": "hs_3f_2_1_blackboard",
+        "coordCode": "21",
+        "labelKo": "3F 2-1 교실 칠판 분필 메모",
+        "clueTextKo": "【2-1 교실 칠판】 \"방송실 난수표 첫 번째 좌표 [21] — 우측 벽면과 교차할 좌표 [36]을 대조하라. 불씨는 시계 뒤에 숨어 있다.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "memo_3f_broadcast_wall",
+        "sourceType": "item",
+        "sourceId": "item_cipher_table",
+        "coordCode": "36",
+        "labelKo": "3F 방송실 우측 벽면 난수표 각주",
+        "clueTextKo": "【난수표 각주】 \"좌표 체계: 앞자리=세로(1~6), 뒷자리=가로(1~6). 기준 좌표 [36]·[33]과 각 층 메모 좌표를 교차 해독하라.\"",
+        "certainty": "확인",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "memo_3f_restroom_mirror",
+        "sourceType": "hotspot",
+        "sourceId": "hs_3f_restroom_m_mirror",
+        "coordCode": "45",
+        "labelKo": "3F 남자 화장실 거울 낙서",
+        "clueTextKo": "【거울 낙서】 \"도서실 좌표 [33]과 [45]를 엮으면 코토미를 안심시킬 소리가 나온다. 천장의 고양이 울음소리는 사다리와 드라이버로 확인하라.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "memo_3f_2_2_traces",
+        "sourceType": "hotspot",
+        "sourceId": "hs_3f_2_2_traces",
+        "coordCode": "61",
+        "labelKo": "3F 2-2 교실 정찰 기록 조각",
+        "clueTextKo": "【2-2 교실 정찰 메모】 \"관리인의 종반 동선 좌표 [61]. 1-3 교실 비상 안내도의 좌표 [44]와 대조하면 시계탑 함정 파훼법이 드러난다.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "memo_2f_1_3_map",
+        "sourceType": "hotspot",
+        "sourceId": "hs_2f_1_3_locker",
+        "coordCode": "44",
+        "labelKo": "2F 1-3 교실 비상 안내도",
+        "clueTextKo": "【1-3 교실 비상 안내도】 \"1F 현관 정문은 용접 봉쇄됨(가짜 출구). 좌표 [44]와 [61]을 대조하라 — 시계탑 사다리에 흔적을 남긴 뒤 1F 보건실 침대 옆 판자를 돌파해야 한다.\"",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-02",
+          "SRC-04",
+          "SRC-06"
+        ]
+      }
+    ],
+    "deductions": [
+      {
+        "id": "cipher_safe_3878",
+        "titleKo": "5F 남자 화장실 금고 비밀번호 검증 (3878)",
+        "coordPair": [
+          "32",
+          "54"
+        ],
+        "expectedTokens": [
+          "38",
+          "78"
+        ],
+        "decodedCode": "3878",
+        "setsFlag": "flg_cipher_safe_decoded",
+        "relatedPuzzleId": "puz_5f_safe_code",
+        "summaryKo": "좌표 (3,2)=[38]과 (5,4)=[78]을 결합해 5F 남자 화장실 금고 비밀번호 [3878]을 완전 검증했다!",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04"
+        ]
+      },
+      {
+        "id": "cipher_broadcast_lighter",
+        "titleKo": "3F 방송실 시계·라이터 & 2F 난로 연소 연쇄 단서",
+        "coordPair": [
+          "21",
+          "36"
+        ],
+        "expectedTokens": [
+          "시계",
+          "라이터"
+        ],
+        "decodedCode": "시계+라이터",
+        "setsFlag": "flg_cipher_broadcast_decoded",
+        "relatedPuzzleId": "puz_2f_stove_burn",
+        "summaryKo": "좌표 (2,1)=[시계]와 (3,6)=[라이터]를 교차 해독했다: 방송실 벽면에서 얻은 라이터는 5F 갈색 표지 책·2F 알코올 병과 함께 2F 급식실 장작 난로에 사용한다!",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "cipher_library_bell",
+        "titleKo": "3F 도서실 서가 → 붉은 리본 방울 단서",
+        "coordPair": [
+          "33",
+          "45"
+        ],
+        "expectedTokens": [
+          "서가",
+          "방울"
+        ],
+        "decodedCode": "서가+방울",
+        "setsFlag": "flg_cipher_bell_decoded",
+        "relatedPuzzleId": "puz_3f_library_shelf",
+        "summaryKo": "좌표 (3,3)=[서가]와 (4,5)=[방울]을 교차 해독했다: 3F 도서실의 이동 가능한 서가를 밀어 붉은 리본 방울을 회수한 뒤 4F 시청각실 코토미에게 전달하라!",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      },
+      {
+        "id": "cipher_clock_tower_paint",
+        "titleKo": "6F 시계탑 사다리 도료 함정 & 1F 보건실 탈출 단서",
+        "coordPair": [
+          "61",
+          "44"
+        ],
+        "expectedTokens": [
+          "사다리",
+          "도료"
+        ],
+        "decodedCode": "사다리+도료",
+        "setsFlag": "flg_cipher_climax_decoded",
+        "relatedPuzzleId": "puz_clock_tower_paint_trap",
+        "summaryKo": "좌표 (6,1)=[사다리]와 (4,4)=[도료]를 교차 해독했다: 종반 6F 시계탑 사다리에 4F 복도의 붉은 수성 도료를 칠해 함정을 파훼하고, 3F 방송실 창고 바 록 제압 후 1F 보건실 판자를 돌파하라!",
+        "certainty": "재구성안",
+        "sourceIds": [
+          "SRC-04",
+          "SRC-05"
+        ]
+      }
+    ]
+  }
 };
 });

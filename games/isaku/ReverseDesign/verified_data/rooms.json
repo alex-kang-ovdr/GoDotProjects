@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "gameId": "isaku",
   "startRoomId": "rm_5f_music",
   "goalRoomId": "rm_escape_exit",
@@ -25,9 +25,9 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_music_door", "labelKo": "음악실 출입문", "actionType": "inspect_or_move" },
-        { "id": "hs_5f_music_windows", "labelKo": "판자로 봉쇄된 창문", "actionType": "inspect" },
-        { "id": "hs_5f_music_group", "labelKo": "집결한 일행(편지 대조)", "actionType": "talk" }
+        { "id": "hs_5f_music_door", "labelKo": "음악실 출입문", "actionType": "inspect_or_move", "x": 580, "y": 195 },
+        { "id": "hs_5f_music_windows", "labelKo": "판자로 봉쇄된 창문", "actionType": "inspect", "x": 140, "y": 145 },
+        { "id": "hs_5f_music_group", "labelKo": "집결한 일행(편지 대조)", "actionType": "talk", "x": 360, "y": 230 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-01", "SRC-04"]
@@ -51,8 +51,8 @@
         { "to": "rm_clock_tower", "direction": "climb_up", "locked": true, "unlockPuzzleId": "puz_2f_unlock_1f_stairs" }
       ],
       "hotspots": [
-        { "id": "hs_5f_stairs_gate", "labelKo": "4층 계단 셔터/잠금 문", "actionType": "use_item" },
-        { "id": "hs_5f_clock_access", "labelKo": "상층 시계탑 연결 사다리 구역", "actionType": "event_gate" }
+        { "id": "hs_5f_stairs_gate", "labelKo": "4층 계단 셔터/잠금 문", "actionType": "use_item", "x": 360, "y": 198 },
+        { "id": "hs_5f_clock_access", "labelKo": "상층 시계탑 연결 사다리 구역", "actionType": "event_gate", "x": 565, "y": 118 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -69,7 +69,7 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_3_1_locker", "labelKo": "교실 사물함/선반(기계유)", "actionType": "pickup" }
+        { "id": "hs_5f_3_1_locker", "labelKo": "교실 사물함/선반(기계유)", "actionType": "pickup", "x": 540, "y": 215 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -86,7 +86,7 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_3_2_desk", "labelKo": "책상 위 메모(단서)", "actionType": "pickup" }
+        { "id": "hs_5f_3_2_desk", "labelKo": "교단·책상 위 메모(단서)", "actionType": "pickup", "x": 360, "y": 232 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -103,9 +103,9 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_science_skeleton", "labelKo": "인체 골격 표본(열쇠 단서 메모)", "actionType": "pickup" },
-        { "id": "hs_5f_science_box", "labelKo": "골판지 상자(갈색 표지 책)", "actionType": "pickup" },
-        { "id": "hs_5f_science_floor", "labelKo": "실험대 주변(후반 아케미의 수첩)", "actionType": "pickup" }
+        { "id": "hs_5f_science_skeleton", "labelKo": "인체 골격 표본(열쇠 단서 메모)", "actionType": "pickup", "x": 155, "y": 175 },
+        { "id": "hs_5f_science_box", "labelKo": "골판지 상자(갈색 표지 책)", "actionType": "pickup", "x": 375, "y": 250 },
+        { "id": "hs_5f_science_floor", "labelKo": "실험대 주변(후반 아케미의 수첩)", "actionType": "pickup", "x": 565, "y": 225 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -122,8 +122,8 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_restroom_m_safe", "labelKo": "비밀번호 금고(3878)", "actionType": "puzzle_code" },
-        { "id": "hs_5f_restroom_m_safe_back", "labelKo": "금고 후면 패널(드라이버 사용)", "actionType": "use_item" }
+        { "id": "hs_5f_restroom_m_safe", "labelKo": "비밀번호 금고(3878)", "actionType": "puzzle_code", "x": 250, "y": 195 },
+        { "id": "hs_5f_restroom_m_safe_back", "labelKo": "금고 후면 패널(드라이버 사용)", "actionType": "use_item", "x": 495, "y": 195 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -140,8 +140,8 @@
         { "to": "rm_5f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_5f_time_recorder", "labelKo": "바닥의 타임 레코더(단1 건전지 삽입)", "actionType": "use_item" },
-        { "id": "hs_5f_restroom_f_entry", "labelKo": "화장실 입구 대기 지점(쿠미 선생 호위)", "actionType": "incident_guard" }
+        { "id": "hs_5f_time_recorder", "labelKo": "바닥의 타임 레코더(단1 건전지 삽입)", "actionType": "use_item", "x": 520, "y": 240 },
+        { "id": "hs_5f_restroom_f_entry", "labelKo": "화장실 입구 대기 지점(쿠미 선생 호위)", "actionType": "incident_guard", "x": 185, "y": 185 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05", "SRC-06"]
@@ -164,8 +164,8 @@
         { "to": "rm_3f_hall", "direction": "stairs_down", "locked": true, "unlockPuzzleId": "puz_4f_unlock_3f_stairs" }
       ],
       "hotspots": [
-        { "id": "hs_4f_hall_paint", "labelKo": "복도 구석 도료 캔(붉은 수성 도료)", "actionType": "pickup" },
-        { "id": "hs_4f_stairs_gate", "labelKo": "3층 계단 잠금 문", "actionType": "use_item" }
+        { "id": "hs_4f_hall_paint", "labelKo": "복도 구석 도료 캔(붉은 수성 도료)", "actionType": "pickup", "x": 155, "y": 258 },
+        { "id": "hs_4f_stairs_gate", "labelKo": "3층 계단 잠금 문", "actionType": "use_item", "x": 360, "y": 195 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -182,8 +182,8 @@
         { "to": "rm_4f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_4f_storage_box", "labelKo": "창고 골판지 상자(드라이버)", "actionType": "pickup" },
-        { "id": "hs_4f_mouse_hole", "labelKo": "쥐 그림 벽면·쥐구멍(드라이버로 파손)", "actionType": "use_item" }
+        { "id": "hs_4f_storage_box", "labelKo": "창고 골판지 상자(드라이버)", "actionType": "pickup", "x": 175, "y": 215 },
+        { "id": "hs_4f_mouse_hole", "labelKo": "쥐 그림 벽면·쥐구멍(드라이버로 파손)", "actionType": "use_item", "x": 535, "y": 252 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -200,7 +200,7 @@
         { "to": "rm_4f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_4f_thinker_statue", "labelKo": "'생각하는 사람' 석고상(작은 망치로 파괴)", "actionType": "use_item" }
+        { "id": "hs_4f_thinker_statue", "labelKo": "'생각하는 사람' 석고상(작은 망치로 파괴)", "actionType": "use_item", "x": 360, "y": 185 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -217,8 +217,8 @@
         { "to": "rm_4f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_4f_av_kotomi", "labelKo": "코토미 이벤트 지점(붉은 리본 방울 전달)", "actionType": "use_item_or_talk" },
-        { "id": "hs_4f_av_vcr", "labelKo": "비디오 재생기(사건 발생 시 증거 테이프 재생)", "actionType": "inspect" }
+        { "id": "hs_4f_av_kotomi", "labelKo": "코토미 이벤트 지점(붉은 리본 방울 전달)", "actionType": "use_item_or_talk", "x": 215, "y": 220 },
+        { "id": "hs_4f_av_vcr", "labelKo": "비디오 재생기(사건 발생 시 증거 테이프 재생)", "actionType": "inspect", "x": 535, "y": 190 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -235,7 +235,7 @@
         { "to": "rm_4f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_4f_2_3_akemi", "labelKo": "아케미·일행 합류 및 수첩 반환 지점", "actionType": "talk_or_give" }
+        { "id": "hs_4f_2_3_akemi", "labelKo": "아케미·일행 합류 및 수첩 반환 지점", "actionType": "talk_or_give", "x": 360, "y": 220 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -252,7 +252,7 @@
         { "to": "rm_4f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_4f_electrical_panel", "labelKo": "노출 배전반(아케미 패닉·인화 위험 지점)", "actionType": "incident_guard" }
+        { "id": "hs_4f_electrical_panel", "labelKo": "노출 배전반(아케미 패닉·인화 위험 지점)", "actionType": "incident_guard", "x": 360, "y": 178 }
       ],
       "certainty": "해석",
       "sourceIds": ["SRC-02", "SRC-06"]
@@ -269,12 +269,66 @@
         { "to": "rm_4f_hall", "direction": "stairs_up", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_3f_broadcast_prep", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_3f_library", "direction": "enter", "locked": false, "unlockPuzzleId": null },
+        { "to": "rm_3f_class_2_1", "direction": "enter", "locked": false, "unlockPuzzleId": null },
+        { "to": "rm_3f_class_2_2", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_3f_dead_end", "direction": "walk", "locked": false, "unlockPuzzleId": null },
+        { "to": "rm_3f_restroom_m", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_3f_restroom_f", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_2f_hall", "direction": "stairs_down", "locked": true, "unlockPuzzleId": "puz_3f_unlock_2f_stairs" }
       ],
       "hotspots": [
-        { "id": "hs_3f_stairs_gate", "labelKo": "2층 계단 잠금 문", "actionType": "use_item" }
+        { "id": "hs_3f_stairs_gate", "labelKo": "2층 계단 잠금 문", "actionType": "use_item", "x": 360, "y": 195 }
+      ],
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "rm_3f_class_2_1",
+      "floor": 3,
+      "nameKo": "3F 2-1 교실",
+      "nameJa": "3階 2-1教室",
+      "nameEn": "3F Classroom 2-1",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        { "to": "rm_3f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
+      ],
+      "hotspots": [
+        { "id": "hs_3f_2_1_blackboard", "labelKo": "칠판의 분필 메모(난수표 좌표 21·36 단서)", "actionType": "inspect", "x": 360, "y": 138 }
+      ],
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "rm_3f_class_2_2",
+      "floor": 3,
+      "nameKo": "3F 2-2 교실",
+      "nameJa": "3階 2-2教室",
+      "nameEn": "3F Classroom 2-2",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        { "to": "rm_3f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
+      ],
+      "hotspots": [
+        { "id": "hs_3f_2_2_traces", "labelKo": "수상한 정찰 흔적과 메모 조각(좌표 61)", "actionType": "inspect", "x": 380, "y": 248 }
+      ],
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "rm_3f_restroom_m",
+      "floor": 3,
+      "nameKo": "3F 남자 화장실",
+      "nameJa": "3階 男子トイレ",
+      "nameEn": "3F Men's Restroom",
+      "zoneType": "restroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        { "to": "rm_3f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
+      ],
+      "hotspots": [
+        { "id": "hs_3f_restroom_m_mirror", "labelKo": "금이 간 거울의 낙서(도서실·천장 좌표 45)", "actionType": "inspect", "x": 535, "y": 152 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -292,8 +346,8 @@
         { "to": "rm_3f_broadcast", "direction": "inner_door", "locked": true, "unlockPuzzleId": "puz_3f_broadcast_prep_unlock" }
       ],
       "hotspots": [
-        { "id": "hs_3f_bar_lock_door", "labelKo": "바 록으로 잠긴 방송실 내문(작은 열쇠로 해제)", "actionType": "use_item" },
-        { "id": "hs_3f_containment_lock", "labelKo": "후반 배신자 격리 잠금 지점(바 록 재사용)", "actionType": "use_item" }
+        { "id": "hs_3f_bar_lock_door", "labelKo": "바 록으로 잠긴 방송실 내문(작은 열쇠로 해제)", "actionType": "use_item", "x": 225, "y": 190 },
+        { "id": "hs_3f_containment_lock", "labelKo": "후반 배신자 격리 잠금 지점(바 록 재사용)", "actionType": "use_item", "x": 515, "y": 215 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -310,9 +364,9 @@
         { "to": "rm_3f_broadcast_prep", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_3f_broadcast_ladder", "labelKo": "목제 사다리", "actionType": "pickup" },
-        { "id": "hs_3f_broadcast_wall", "labelKo": "우측 벽면 봉투/종이(난수표 및 라이터)", "actionType": "pickup" },
-        { "id": "hs_3f_broadcast_soga", "labelKo": "단독 행동 후 구속된 소가 발견 지점", "actionType": "incident_rescue" }
+        { "id": "hs_3f_broadcast_ladder", "labelKo": "목제 사다리", "actionType": "pickup", "x": 145, "y": 205 },
+        { "id": "hs_3f_broadcast_wall", "labelKo": "우측 벽면 시계·봉투(난수표 및 라이터)", "actionType": "pickup", "x": 565, "y": 155 },
+        { "id": "hs_3f_broadcast_soga", "labelKo": "단독 행동 후 구속된 소가 발견 지점", "actionType": "incident_rescue", "x": 360, "y": 245 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -329,8 +383,8 @@
         { "to": "rm_3f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_3f_library_shelf", "labelKo": "이동 가능한 서가(붉은 리본 방울)", "actionType": "puzzle_move" },
-        { "id": "hs_3f_library_talk", "labelKo": "미유키·진파치 대화 지점(호감도 분기)", "actionType": "talk" }
+        { "id": "hs_3f_library_shelf", "labelKo": "이동 가능한 서가(붉은 리본 방울)", "actionType": "puzzle_move", "x": 195, "y": 185 },
+        { "id": "hs_3f_library_talk", "labelKo": "미유키·진파치 대화 지점(호감도 분기)", "actionType": "talk", "x": 515, "y": 225 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -347,7 +401,7 @@
         { "to": "rm_3f_hall", "direction": "back", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_3f_ceiling_latch", "labelKo": "고양이 울음소리가 들리는 천장 손잡이(사다리+드라이버)", "actionType": "use_item" }
+        { "id": "hs_3f_ceiling_latch", "labelKo": "고양이 울음소리가 들리는 천장 손잡이(사다리+드라이버)", "actionType": "use_item", "x": 360, "y": 108 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -364,7 +418,7 @@
         { "to": "rm_3f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_3f_stall_2", "labelKo": "2번째 칸(사건 발생 시 증거 테이프 발견 지점)", "actionType": "inspect" }
+        { "id": "hs_3f_stall_2", "labelKo": "2번째 칸(사건 발생 시 증거 테이프 발견 지점)", "actionType": "inspect", "x": 315, "y": 205 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -381,12 +435,13 @@
         { "to": "rm_3f_hall", "direction": "stairs_up", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_2f_class_1_1", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_2f_class_1_2", "direction": "enter", "locked": false, "unlockPuzzleId": null },
+        { "to": "rm_2f_class_1_3", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_2f_restroom_m", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_2f_kitchen", "direction": "enter", "locked": false, "unlockPuzzleId": null },
         { "to": "rm_1f_hall", "direction": "stairs_down", "locked": true, "unlockPuzzleId": "puz_2f_unlock_1f_stairs" }
       ],
       "hotspots": [
-        { "id": "hs_2f_stairs_gate", "labelKo": "1층 계단 잠금 문", "actionType": "use_item" }
+        { "id": "hs_2f_stairs_gate", "labelKo": "1층 계단 잠금 문", "actionType": "use_item", "x": 360, "y": 195 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -403,7 +458,7 @@
         { "to": "rm_2f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_2f_1_1_party", "labelKo": "생존자 일행 대화(미유키 동행 개시)", "actionType": "talk" }
+        { "id": "hs_2f_1_1_party", "labelKo": "생존자 일행 대화(미유키 동행 개시)", "actionType": "talk", "x": 360, "y": 225 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -420,10 +475,27 @@
         { "to": "rm_2f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_2f_1_2_check", "labelKo": "교실 내부 및 인원 안전 확인 지점", "actionType": "talk" }
+        { "id": "hs_2f_1_2_check", "labelKo": "교실 내부 및 인원 안전 확인 지점", "actionType": "talk", "x": 360, "y": 220 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
+    },
+    {
+      "id": "rm_2f_class_1_3",
+      "floor": 2,
+      "nameKo": "2F 1-3 교실",
+      "nameJa": "2階 1-3教室",
+      "nameEn": "2F Classroom 1-3",
+      "zoneType": "classroom",
+      "initialLockState": "unlocked",
+      "exits": [
+        { "to": "rm_2f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
+      ],
+      "hotspots": [
+        { "id": "hs_2f_1_3_locker", "labelKo": "교실 뒷편 비상 안내도(1F 보건실·좌표 44 단서)", "actionType": "inspect", "x": 525, "y": 195 }
+      ],
+      "certainty": "해석",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-06"]
     },
     {
       "id": "rm_2f_restroom_m",
@@ -437,7 +509,7 @@
         { "to": "rm_2f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_2f_restroom_left_door", "labelKo": "좌측 칸 내부(알코올 병)", "actionType": "pickup" }
+        { "id": "hs_2f_restroom_left_door", "labelKo": "좌측 칸 내부(알코올 병)", "actionType": "pickup", "x": 145, "y": 205 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
@@ -454,7 +526,7 @@
         { "to": "rm_2f_hall", "direction": "out", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_2f_kitchen_stove", "labelKo": "장작 난로(갈색 책+알코올+라이터 -> 은색 열쇠)", "actionType": "use_item" }
+        { "id": "hs_2f_kitchen_stove", "labelKo": "장작 난로(갈색 책+알코올+라이터 -> 은색 열쇠)", "actionType": "use_item", "x": 360, "y": 212 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -473,8 +545,8 @@
         { "to": "rm_1f_infirmary", "direction": "enter", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_1f_hall_isaku_body", "labelKo": "종반 유작 쓰러진 지점(유작의 나이프 획득)", "actionType": "pickup" },
-        { "id": "hs_1f_hall_survivors", "labelKo": "생존자 전원 합류 확인 지점", "actionType": "talk" }
+        { "id": "hs_1f_hall_isaku_body", "labelKo": "종반 유작 쓰러진 지점(유작의 나이프 획득)", "actionType": "pickup", "x": 515, "y": 250 },
+        { "id": "hs_1f_hall_survivors", "labelKo": "생존자 전원 합류 확인 지점", "actionType": "talk", "x": 210, "y": 220 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -491,7 +563,7 @@
         { "to": "rm_1f_hall", "direction": "back", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_1f_sealed_gate", "labelKo": "열쇠가 존재하지 않는 봉쇄 현관문", "actionType": "inspect" }
+        { "id": "hs_1f_sealed_gate", "labelKo": "열쇠가 존재하지 않는 봉쇄 현관문", "actionType": "inspect", "x": 360, "y": 188 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-02", "SRC-06"]
@@ -509,7 +581,7 @@
         { "to": "rm_escape_exit", "direction": "secret_passage", "locked": true, "unlockPuzzleId": "puz_1f_infirmary_escape" }
       ],
       "hotspots": [
-        { "id": "hs_1f_infirmary_board", "labelKo": "침대 근처 봉쇄 판자(유작의 나이프 사용)", "actionType": "use_item" }
+        { "id": "hs_1f_infirmary_board", "labelKo": "침대 근처 봉쇄 판자(유작의 나이프 사용)", "actionType": "use_item", "x": 535, "y": 220 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -526,8 +598,8 @@
         { "to": "rm_5f_hall", "direction": "climb_down", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_clock_tower_ladder", "labelKo": "시계탑 사다리(붉은 수성 도료 사용)", "actionType": "use_item" },
-        { "id": "hs_clock_tower_miyuki", "labelKo": "미유키 상태 확인 및 최종 대치 분기", "actionType": "incident_rescue" }
+        { "id": "hs_clock_tower_ladder", "labelKo": "시계탑 사다리(붉은 수성 도료 사용)", "actionType": "use_item", "x": 525, "y": 195 },
+        { "id": "hs_clock_tower_miyuki", "labelKo": "미유키 상태 확인 및 최종 대치 분기", "actionType": "incident_rescue", "x": 220, "y": 225 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05", "SRC-06"]
@@ -544,7 +616,7 @@
         { "to": "rm_1f_infirmary", "direction": "back", "locked": false, "unlockPuzzleId": null }
       ],
       "hotspots": [
-        { "id": "hs_escape_eval", "labelKo": "탈출 완료 및 엔딩 판정 트리거", "actionType": "ending_evaluate" }
+        { "id": "hs_escape_eval", "labelKo": "탈출 완료 및 엔딩 판정 트리거", "actionType": "ending_evaluate", "x": 360, "y": 235 }
       ],
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]

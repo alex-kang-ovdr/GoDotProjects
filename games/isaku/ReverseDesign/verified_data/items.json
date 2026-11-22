@@ -46,7 +46,7 @@
       "targetHotspotIds": ["hs_5f_restroom_m_safe"],
       "consumable": false,
       "combineWith": [],
-      "purposeKo": "5층 탐색 및 금고 비밀번호 추론을 보조하는 단서 메모.",
+      "purposeKo": "5층 남자 화장실 금고 전반부 단서(좌표 32 -> 38)와 기계유 선적용 주의를 기록한 추리 메모.",
       "certainty": "확인",
       "sourceIds": ["SRC-04"]
     },
@@ -107,10 +107,10 @@
       "acquireMethod": "puzzle_reward",
       "pickupRoomId": "rm_5f_restroom_m",
       "pickupPuzzleId": "puz_5f_safe_code",
-      "targetHotspotIds": ["hs_5f_stairs_gate"],
+      "targetHotspotIds": ["hs_5f_stairs_gate", "hs_4f_stairs_gate"],
       "consumable": true,
       "combineWith": [],
-      "purposeKo": "5층 남자 화장실 금고(3878)에서 획득. 기계유 도포 후 4층으로 내려가는 계단 문을 여는 열쇠(윤활 없이 무리하게 사용하면 파손 위험).",
+      "purposeKo": "5층 남자 화장실 금고(3878)에서 획득. 기계유 도포 후 5F->4F 계단 문을 해정한다. 4F->3F 계단에 재사용하면 부러지므로 4F 공작실 구리 열쇠로 대체해야 한다.",
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
     },
@@ -270,7 +270,7 @@
       "targetHotspotIds": ["hs_3f_broadcast_wall"],
       "consumable": false,
       "combineWith": [],
-      "purposeKo": "3층 방송실 우측 벽면에서 확인하는 종횡 숫자 조합 단서표.",
+      "purposeKo": "3층 방송실 우측 벽면에서 획득하는 6x6 종횡(행·열) 난수표. 열람 시 난수표 해독기를 열어 메모 좌표를 교차 해독한다.",
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
     },

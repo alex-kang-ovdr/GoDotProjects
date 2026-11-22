@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /**
- * 유작 (遺作 / Isaku) 원작 복원 데이터 자동 검증기
+ * 유작 (遺作 / Isaku) 원작 복원 데이터 자동 검증기 (Phase 2 확장)
  * - JSON / CSV 정합성 검증
  * - 모든 참조 ID 무결성(Dangling ID 0건) 검증
- * - 방 그래프 양방향/도달성 및 잠금 출구-퍼즐 매칭 검증
- * - 퍼즐 및 아이템 생산-소비 의존성 DAG 비순환(Acyclic) 검증
+ * - 방 그래프 양방향/도달성, 핫스팟 공간 좌표(x,y), 잠금 출구-퍼즐 매칭 검증
+ * - 퍼즐 및 아이템 생산-소비 의존성 DAG 비순환(Acyclic) + keyBreakBranch 검증
+ * - dialogue_branches.json (미유키 호감도 매트릭스 및 전원 다지선다) 검증
+ * - cipher_data.json (6x6 난수표 행·열 매칭 및 메모 단서 무결성) 검증
  * - 시작 방(rm_5f_music) -> 탈출구(rm_escape_exit) 정방향 시뮬레이션 완주 검증
  */
 import { readFileSync } from 'node:fs';
@@ -33,6 +35,8 @@ const roomsData = readJson('rooms.json');
 const itemsData = readJson('items.json');
 const puzzlesData = readJson('puzzles.json');
 const incEndData = readJson('incidents_and_endings.json');
+const dialogueData = readJson('dialogue_branches.json');
+const cipherData = readJson('cipher_data.json');
 
 const charsCsv = readCsv('characters.csv');
 const roomsCsv = readCsv('rooms.csv');
@@ -45,8 +49,9 @@ const itemMap = new Map();
 const puzzleMap = new Map();
 const incidentMap = new Map();
 const endingMap = new Map();
+const dialogueMap = new Map();
 
-// 1. Unique IDs & Certainty tags
+// 1. Unique IDs, Certainty tags & Hotspot Spatial Coordinates
 for (const c of charsData.characters) {
   if (charMap.has(c.id)) err(`Duplicate character id: ${c.id}`);
   charMap.set(c.id, c);
@@ -59,6 +64,9 @@ for (const r of roomsData.rooms) {
   for (const h of r.hotspots) {
     if (hotspotToRoom.has(h.id)) err(`Duplicate hotspot id: ${h.id}`);
     hotspotToRoom.set(h.id, r.id);
+    if (typeof h.x !== 'number' || typeof h.y !== 'number' || h.x < 40 || h.x > 680 || h.y < 60 || h.y > 330) {
+      err(`Hotspot ${h.id} in ${r.id} has invalid spatial coordinates: (${h.x}, ${h.y})`);
+    }
   }
 }
 for (const it of itemsData.items) {
@@ -170,6 +178,12 @@ for (const p of puzzlesData.puzzles) {
       err(`Puzzle ${p.id} unlocksExits has invalid room: ${ue.from} -> ${ue.to}`);
     }
   }
+  if (p.keyBreakBranch) {
+    const kb = p.keyBreakBranch;
+    if (!itemMap.has(kb.attemptedItemId)) err(`Puzzle ${p.id} keyBreakBranch unknown attemptedItemId: ${kb.attemptedItemId}`);
+    if (!puzzleMap.has(kb.fallbackPuzzleId)) err(`Puzzle ${p.id} keyBreakBranch unknown fallbackPuzzleId: ${kb.fallbackPuzzleId}`);
+    if (!itemMap.has(kb.fallbackItemId)) err(`Puzzle ${p.id} keyBreakBranch unknown fallbackItemId: ${kb.fallbackItemId}`);
+  }
 }
 
 for (const inc of incEndData.incidents) {
@@ -186,6 +200,82 @@ for (const inc of incEndData.incidents) {
 for (const end of incEndData.endings) {
   if (end.conditions.reachedRoomId && !roomMap.has(end.conditions.reachedRoomId)) {
     err(`Ending ${end.id} references unknown reachedRoomId: ${end.conditions.reachedRoomId}`);
+  }
+}
+
+// 3b. Dialogue Branches integrity (GAP-04)
+let miyukiAffectionEventCount = 0;
+for (const br of dialogueData.branches) {
+  if (dialogueMap.has(br.id)) err(`Duplicate dialogue branch id: ${br.id}`);
+  dialogueMap.set(br.id, br);
+  if (!VALID_CERTAINTY.has(br.certainty)) err(`Invalid certainty on dialogue ${br.id}: ${br.certainty}`);
+  if (!charMap.has(br.characterId)) err(`Dialogue ${br.id} references unknown characterId: ${br.characterId}`);
+  if (!Array.isArray(br.roomIds) || br.roomIds.length === 0) err(`Dialogue ${br.id} missing roomIds`);
+  for (const rid of br.roomIds || []) {
+    if (!roomMap.has(rid)) err(`Dialogue ${br.id} references unknown roomId: ${rid}`);
+  }
+  if (!Array.isArray(br.choices) || br.choices.length < 2) {
+    err(`Dialogue ${br.id} must define at least 2 choices`);
+  }
+  if (br.isAffectionEvent && br.characterId === 'char_miyuki') {
+    miyukiAffectionEventCount += 1;
+    const deltas = new Set(br.choices.map((c) => c.miyukiDelta));
+    if (!deltas.has(1) || !deltas.has(0) || !deltas.has(-1)) {
+      err(`Miyuki affection event ${br.id} must offer +1, 0, and -1 deltas`);
+    }
+  }
+}
+if (miyukiAffectionEventCount < 5) {
+  err(`Expected at least 5 canonical Miyuki affection events, found ${miyukiAffectionEventCount}`);
+}
+
+// 3c. Cipher Grid & Deductions integrity (GAP-03)
+if (!itemMap.has(cipherData.requiredItemId)) {
+  err(`Cipher requiredItemId unknown: ${cipherData.requiredItemId}`);
+}
+const rowCount = cipherData.gridSpec?.rows?.length || 0;
+const colCount = cipherData.gridSpec?.cols?.length || 0;
+if (!Array.isArray(cipherData.grid) || cipherData.grid.length !== rowCount) {
+  err(`Cipher grid row count mismatch: expected ${rowCount}, got ${cipherData.grid?.length}`);
+} else {
+  cipherData.grid.forEach((row, idx) => {
+    if (!Array.isArray(row) || row.length !== colCount) {
+      err(`Cipher grid row ${idx + 1} col count mismatch: expected ${colCount}`);
+    }
+  });
+}
+const lookupCipherCell = (coord) => {
+  const s = String(coord);
+  if (!/^[1-6][1-6]$/.test(s)) return null;
+  const r = Number(s[0]) - 1;
+  const c = Number(s[1]) - 1;
+  return cipherData.grid[r]?.[c] ?? null;
+};
+for (const ms of cipherData.memoSources || []) {
+  if (!VALID_CERTAINTY.has(ms.certainty)) err(`Invalid certainty on cipher memo ${ms.id}`);
+  if (ms.sourceType === 'item' && !itemMap.has(ms.sourceId)) {
+    err(`Cipher memo ${ms.id} unknown item sourceId: ${ms.sourceId}`);
+  }
+  if (ms.sourceType === 'hotspot' && !hotspotToRoom.has(ms.sourceId)) {
+    err(`Cipher memo ${ms.id} unknown hotspot sourceId: ${ms.sourceId}`);
+  }
+  if (lookupCipherCell(ms.coordCode) === null) {
+    err(`Cipher memo ${ms.id} invalid coordCode: ${ms.coordCode}`);
+  }
+}
+for (const ded of cipherData.deductions || []) {
+  if (!VALID_CERTAINTY.has(ded.certainty)) err(`Invalid certainty on cipher deduction ${ded.id}`);
+  if (!puzzleMap.has(ded.relatedPuzzleId)) {
+    err(`Cipher deduction ${ded.id} unknown relatedPuzzleId: ${ded.relatedPuzzleId}`);
+  }
+  if (!Array.isArray(ded.coordPair) || ded.coordPair.length !== 2) {
+    err(`Cipher deduction ${ded.id} must have coordPair of length 2`);
+  } else {
+    const t0 = lookupCipherCell(ded.coordPair[0]);
+    const t1 = lookupCipherCell(ded.coordPair[1]);
+    if (t0 !== ded.expectedTokens[0] || t1 !== ded.expectedTokens[1]) {
+      err(`Cipher deduction ${ded.id} grid mismatch: got [${t0}, ${t1}] vs expected [${ded.expectedTokens.join(', ')}]`);
+    }
   }
 }
 
@@ -278,7 +368,6 @@ for (const end of incEndData.endings) {
     progress = false;
     const reachable = getReachableRooms();
 
-    // Pick up room_pickup items in reachable rooms
     for (const it of itemsData.items) {
       if (it.acquireMethod === 'room_pickup' && reachable.has(it.pickupRoomId) && !inventory.has(it.id)) {
         inventory.add(it.id);
@@ -286,7 +375,6 @@ for (const end of incEndData.endings) {
       }
     }
 
-    // Solve satisfiable puzzles in reachable rooms
     for (const p of puzzlesData.puzzles) {
       if (solved.has(p.id)) continue;
       if (!reachable.has(p.roomId)) continue;
@@ -321,5 +409,5 @@ if (errors.length) {
 }
 
 console.log(
-  `[isaku:validate] OK — characters=${charsData.characters.length}, rooms=${roomsData.rooms.length}, hotspots=${hotspotToRoom.size}, items=${itemsData.items.length}, puzzles=${puzzlesData.puzzles.length}, incidents=${incEndData.incidents.length}, endings=${incEndData.endings.length}, DAG=acyclic, forwardSim=goal_reached, errors=0`
+  `[isaku:validate] OK — characters=${charsData.characters.length}, rooms=${roomsData.rooms.length}, hotspots=${hotspotToRoom.size}, items=${itemsData.items.length}, puzzles=${puzzlesData.puzzles.length}, incidents=${incEndData.incidents.length}, endings=${incEndData.endings.length}, dialogueBranches=${dialogueData.branches.length}, cipherDeductions=${cipherData.deductions.length}, DAG=acyclic, forwardSim=goal_reached, errors=0`
 );

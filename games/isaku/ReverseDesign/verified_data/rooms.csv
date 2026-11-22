@@ -12,15 +12,19 @@ rm_4f_craft,4,4F 공작실,4階 工作室,4F Craft Room,special_room,unlocked,1,
 rm_4f_av,4,4F 시청각실,4階 視聴覚室,4F Audio-Visual Room,special_room,unlocked,1,2,확인,SRC-04|SRC-05
 rm_4f_class_2_3,4,4F 2-3 교실,4階 2-3教室,4F Classroom 2-3,classroom,unlocked,1,1,확인,SRC-04
 rm_4f_electrical,4,4F 배전반 구역,4階 配電盤区画,4F Electrical Panel Alcove,utility,unlocked,1,1,해석,SRC-02|SRC-06
-rm_3f_hall,3,3F 복도,3階 廊下,3F Hallway,corridor,locked_by_floor,6,1,확인,SRC-04|SRC-05
+rm_3f_hall,3,3F 복도,3階 廊下,3F Hallway,corridor,locked_by_floor,9,1,확인,SRC-04|SRC-05
+rm_3f_class_2_1,3,3F 2-1 교실,3階 2-1教室,3F Classroom 2-1,classroom,unlocked,1,1,확인,SRC-04|SRC-05
+rm_3f_class_2_2,3,3F 2-2 교실,3階 2-2教室,3F Classroom 2-2,classroom,unlocked,1,1,확인,SRC-04|SRC-05
+rm_3f_restroom_m,3,3F 남자 화장실,3階 男子トイレ,3F Men's Restroom,restroom,unlocked,1,1,확인,SRC-04|SRC-05
 rm_3f_broadcast_prep,3,3F 방송실 창고(준비실),3階 放送室倉庫（準備室）,3F Broadcast Prep / Storage Room,special_room,unlocked,2,2,확인,SRC-04|SRC-05
 rm_3f_broadcast,3,3F 방송실,3階 放送室,3F Broadcast Room,special_room,locked,1,3,확인,SRC-04|SRC-05
 rm_3f_library,3,3F 도서실,3階 図書室,3F Library,special_room,unlocked,1,2,확인,SRC-04|SRC-05
 rm_3f_dead_end,3,3F 막다른 복도,3階 廊下突き当たり,3F Dead-End Corridor,corridor,unlocked,1,1,확인,SRC-04|SRC-05
 rm_3f_restroom_f,3,3F 여자 화장실,3階 女子トイレ,3F Women's Restroom,restroom,unlocked,1,1,확인,SRC-04
-rm_2f_hall,2,2F 복도,2階 廊下,2F Hallway,corridor,locked_by_floor,6,1,확인,SRC-04
+rm_2f_hall,2,2F 복도,2階 廊下,2F Hallway,corridor,locked_by_floor,7,1,확인,SRC-04
 rm_2f_class_1_1,2,2F 1-1 교실,2階 1-1教室,2F Classroom 1-1,classroom,unlocked,1,1,확인,SRC-04
 rm_2f_class_1_2,2,2F 1-2 교실,2階 1-2教室,2F Classroom 1-2,classroom,unlocked,1,1,확인,SRC-04
+rm_2f_class_1_3,2,2F 1-3 교실,2階 1-3教室,2F Classroom 1-3,classroom,unlocked,1,1,해석,SRC-02|SRC-04|SRC-06
 rm_2f_restroom_m,2,2F 남자 화장실,2階 男子トイレ,2F Men's Restroom,restroom,unlocked,1,1,확인,SRC-04
 rm_2f_kitchen,2,2F 급식실,2階 給食室,2F Kitchen / Serving Room,special_room,unlocked,1,1,확인,SRC-04|SRC-05
 rm_1f_hall,1,1F 복도,1階 廊下,1F Hallway,corridor,locked_by_floor,3,2,확인,SRC-04|SRC-05

@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.1.0",
+  "gameId": "isaku",
+  "certaintyNote": "난수표의 '2자리 숫자 1조(앞자리=세로 행, 뒷자리=가로 열)' 읽기 방식과 3-2 교실 메모·골격 메모·방송실 난수표·금고 번호 3878의 인과 구조는 [확인](SRC-04, SRC-05)되었으며, 개별 셀 문자열과 해독 문구는 저작권 비침해 오리지널 추리 데이터[재구성안]로 구성했다.",
+  "requiredItemId": "item_cipher_table",
+  "gridSpec": {
+    "rows": ["1", "2", "3", "4", "5", "6"],
+    "cols": ["1", "2", "3", "4", "5", "6"],
+    "readingRuleKo": "2자리 좌표(XY)에서 앞자리 X는 세로(행 1~6), 뒷자리 Y는 가로(열 1~6)를 가리킨다. 단서 메모에서 얻은 두 좌표를 교차 입력해 숨겨진 기믹과 비밀번호를 해독한다."
+  },
+  "grid": [
+    ["14", "열쇠", "기름", "5F", "녹슨", "창고"],
+    ["시계", "29", "금고", "방송", "석고", "3F"],
+    ["05", "38", "서가", "망치", "천장", "라이터"],
+    ["배전", "41", "난로", "도료", "방울", "2F"],
+    ["구리", "건전", "62", "78", "바록", "1F"],
+    ["사다리", "판자", "나이프", "보건", "현관X", "83"]
+  ],
+  "memoSources": [
+    {
+      "id": "memo_3_2_desk",
+      "sourceType": "item",
+      "sourceId": "item_clue_memo_3_2",
+      "coordCode": "32",
+      "labelKo": "5F 3-2 교실 메모",
+      "clueTextKo": "【3-2 교실 메모】 \"구교사 5층 남자 화장실 금고의 전반부 번호는 3-2(세로3·가로2 → 38). 녹슨 자물쇠에는 반드시 3-1 교실의 기계유를 먼저 칠할 것.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04"]
+    },
+    {
+      "id": "memo_5f_skeleton",
+      "sourceType": "item",
+      "sourceId": "item_skeleton_memo",
+      "coordCode": "54",
+      "labelKo": "5F 이과 실험실 골격 메모",
+      "clueTextKo": "【골격 표본 메모】 \"계단을 여는 열쇠는 이 층 금고 안에 있다. 후반부 번호는 표본 번호 5-4(세로5·가로4 → 78). 합치면 3878. 4층을 연 뒤 금고 뒷면 패널도 잊지 말라.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04"]
+    },
+    {
+      "id": "memo_3f_2_1_blackboard",
+      "sourceType": "hotspot",
+      "sourceId": "hs_3f_2_1_blackboard",
+      "coordCode": "21",
+      "labelKo": "3F 2-1 교실 칠판 분필 메모",
+      "clueTextKo": "【2-1 교실 칠판】 \"방송실 난수표 첫 번째 좌표 [21] — 우측 벽면과 교차할 좌표 [36]을 대조하라. 불씨는 시계 뒤에 숨어 있다.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "memo_3f_broadcast_wall",
+      "sourceType": "item",
+      "sourceId": "item_cipher_table",
+      "coordCode": "36",
+      "labelKo": "3F 방송실 우측 벽면 난수표 각주",
+      "clueTextKo": "【난수표 각주】 \"좌표 체계: 앞자리=세로(1~6), 뒷자리=가로(1~6). 기준 좌표 [36]·[33]과 각 층 메모 좌표를 교차 해독하라.\"",
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "memo_3f_restroom_mirror",
+      "sourceType": "hotspot",
+      "sourceId": "hs_3f_restroom_m_mirror",
+      "coordCode": "45",
+      "labelKo": "3F 남자 화장실 거울 낙서",
+      "clueTextKo": "【거울 낙서】 \"도서실 좌표 [33]과 [45]를 엮으면 코토미를 안심시킬 소리가 나온다. 천장의 고양이 울음소리는 사다리와 드라이버로 확인하라.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "memo_3f_2_2_traces",
+      "sourceType": "hotspot",
+      "sourceId": "hs_3f_2_2_traces",
+      "coordCode": "61",
+      "labelKo": "3F 2-2 교실 정찰 기록 조각",
+      "clueTextKo": "【2-2 교실 정찰 메모】 \"관리인의 종반 동선 좌표 [61]. 1-3 교실 비상 안내도의 좌표 [44]와 대조하면 시계탑 함정 파훼법이 드러난다.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "memo_2f_1_3_map",
+      "sourceType": "hotspot",
+      "sourceId": "hs_2f_1_3_locker",
+      "coordCode": "44",
+      "labelKo": "2F 1-3 교실 비상 안내도",
+      "clueTextKo": "【1-3 교실 비상 안내도】 \"1F 현관 정문은 용접 봉쇄됨(가짜 출구). 좌표 [44]와 [61]을 대조하라 — 시계탑 사다리에 흔적을 남긴 뒤 1F 보건실 침대 옆 판자를 돌파해야 한다.\"",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-06"]
+    }
+  ],
+  "deductions": [
+    {
+      "id": "cipher_safe_3878",
+      "titleKo": "5F 남자 화장실 금고 비밀번호 검증 (3878)",
+      "coordPair": ["32", "54"],
+      "expectedTokens": ["38", "78"],
+      "decodedCode": "3878",
+      "setsFlag": "flg_cipher_safe_decoded",
+      "relatedPuzzleId": "puz_5f_safe_code",
+      "summaryKo": "좌표 (3,2)=[38]과 (5,4)=[78]을 결합해 5F 남자 화장실 금고 비밀번호 [3878]을 완전 검증했다!",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04"]
+    },
+    {
+      "id": "cipher_broadcast_lighter",
+      "titleKo": "3F 방송실 시계·라이터 & 2F 난로 연소 연쇄 단서",
+      "coordPair": ["21", "36"],
+      "expectedTokens": ["시계", "라이터"],
+      "decodedCode": "시계+라이터",
+      "setsFlag": "flg_cipher_broadcast_decoded",
+      "relatedPuzzleId": "puz_2f_stove_burn",
+      "summaryKo": "좌표 (2,1)=[시계]와 (3,6)=[라이터]를 교차 해독했다: 방송실 벽면에서 얻은 라이터는 5F 갈색 표지 책·2F 알코올 병과 함께 2F 급식실 장작 난로에 사용한다!",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "cipher_library_bell",
+      "titleKo": "3F 도서실 서가 → 붉은 리본 방울 단서",
+      "coordPair": ["33", "45"],
+      "expectedTokens": ["서가", "방울"],
+      "decodedCode": "서가+방울",
+      "setsFlag": "flg_cipher_bell_decoded",
+      "relatedPuzzleId": "puz_3f_library_shelf",
+      "summaryKo": "좌표 (3,3)=[서가]와 (4,5)=[방울]을 교차 해독했다: 3F 도서실의 이동 가능한 서가를 밀어 붉은 리본 방울을 회수한 뒤 4F 시청각실 코토미에게 전달하라!",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "cipher_clock_tower_paint",
+      "titleKo": "6F 시계탑 사다리 도료 함정 & 1F 보건실 탈출 단서",
+      "coordPair": ["61", "44"],
+      "expectedTokens": ["사다리", "도료"],
+      "decodedCode": "사다리+도료",
+      "setsFlag": "flg_cipher_climax_decoded",
+      "relatedPuzzleId": "puz_clock_tower_paint_trap",
+      "summaryKo": "좌표 (6,1)=[사다리]와 (4,4)=[도료]를 교차 해독했다: 종반 6F 시계탑 사다리에 4F 복도의 붉은 수성 도료를 칠해 함정을 파훼하고, 3F 방송실 창고 바 록 제압 후 1F 보건실 판자를 돌파하라!",
+      "certainty": "재구성안",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    }
+  ]
+}

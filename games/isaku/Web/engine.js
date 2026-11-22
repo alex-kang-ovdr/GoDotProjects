@@ -1,4 +1,6 @@
 // Pure Deterministic Headless Exploration Adventure Engine for 유작 (遺作 / Isaku)
+// Phase 2: Playable Cipher Decoder, Threat/Surveillance Tension, Canonical Miyuki Affection Matrix,
+// 4F->3F Rusted-Key Break Fallback, Evidence Tape Detection, and Detective Memo Assistant.
 // Zero DOM dependencies. UMD export: globalThis.IsakuEngine + module.exports
 (function (root, factory) {
   const api = factory();
@@ -25,7 +27,14 @@
     phase_5_climax: 'Phase 5 · 시계탑 대치 및 1F 보건실 탈출',
   };
 
-  // Canonical hotspot -> room pickup mapping (items are still validated against items.json)
+  const THREAT_BAND_META = {
+    low: { id: 'low', labelKo: '잠복 경계', min: 0, max: 29 },
+    elevated: { id: 'elevated', labelKo: '감시 강화', min: 30, max: 59 },
+    high: { id: 'high', labelKo: '위험 근접', min: 60, max: 84 },
+    critical: { id: 'critical', labelKo: '긴급 경보', min: 85, max: 100 },
+  };
+
+  // Canonical hotspot -> room pickup mapping (items validated against items.json)
   const HOTSPOT_PICKUPS = {
     hs_5f_3_1_locker: ['item_machine_oil'],
     hs_5f_3_2_desk: ['item_clue_memo_3_2'],
@@ -41,20 +50,20 @@
     hs_1f_hall_isaku_body: ['item_isaku_knife'],
   };
 
-  // Clue texts for readable items & non-puzzle hotspots
+  // Clue texts for readable items
   const CLUE_READINGS = {
     item_invitation_letter:
       '【호출 편지】 "여름방학 밤, 구교사 5층 음악실로 와 달라." — 일행 모두 같은 필체의 편지를 받았으나 발신인이 없다.',
     item_clue_memo_3_2:
-      '【3-2 교실 메모】 "5층 남자 화장실 금고의 번호는 학교의 저주받은 4자리… 3 - 8 - 7 - 8. 녹슨 자물쇠에는 반드시 기름을 먼저 칠할 것."',
+      '【3-2 교실 메모】 "5층 남자 화장실 금고의 전반부 번호는 3-2(좌표 32 → 38). 녹슨 자물쇠에는 반드시 3-1 교실의 기계유를 먼저 칠할 것."',
     item_skeleton_memo:
-      '【골격 표본 메모】 "계단 셔터를 열 열쇠는 반드시 이 층 어딘가의 금고 안에 있다. 또한 4층으로 내려간 뒤에도 5층 금고 뒤편을 잊지 말라."',
+      '【골격 표본 메모】 "계단 셔터를 열 열쇠는 반드시 이 층 금고 안에 있다. 후반부 번호는 표본 5-4(좌표 54 → 78). 합치면 3878. 4층을 연 뒤 금고 뒤편도 잊지 말라."',
     item_cipher_table:
-      '【난수표】 종횡 숫자 조합표. 1년 전 신문부가 구교사 출입 기록과 시계탑 동선을 조사하던 흔적이 남아 있다.',
+      '【난수표】 6×6 종횡(행·열) 숫자 조합표. 2자리 좌표에서 앞자리는 세로(행), 뒷자리는 가로(열)다. [난수표 해독기]로 수집한 메모 좌표를 교차 해독할 수 있다.',
     item_akemi_notebook:
-      '【아케미의 수첩】 테니스부 일지와 함께 쿠미 선생에 대한 복잡한 감정, 그리고 구교사 배전반 근처에서 이상한 기름 냄새를 맡았다는 기록이 적혀 있다.',
+      '【아케미의 수첩】 테니스부 일지와 함께 쿠미 선생에 대한 복잡한 감정, 그리고 4층 배전반 근처에서 이상한 기름 냄새를 맡았다는 기록이 적혀 있다.',
     item_evidence_tape:
-      '【증거 비디오테이프】 구교사 내부 감시 기록이 담긴 테이프. 누군가 구출되지 못했다는 불길한 증거다.',
+      '【증거 비디오테이프】 구교사 내부 감시 기록이 담긴 테이프. 동료가 고립되었다는 불길한 증거로, 4F 시청각실 비디오 재생기에서 확인할 수 있다.',
   };
 
   // Incident choice definitions (strictly suspense/mystery-escape safe)
@@ -140,6 +149,17 @@
     return JSON.parse(JSON.stringify(obj));
   }
 
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function getThreatBand(level) {
+    if (level >= 85) return 'critical';
+    if (level >= 60) return 'high';
+    if (level >= 30) return 'elevated';
+    return 'low';
+  }
+
   function resolveDefaultData(passedData) {
     if (passedData) return passedData;
     if (typeof globalThis !== 'undefined' && globalThis.ISAKU_DATA) {
@@ -164,6 +184,9 @@
     const charMap = new Map(data.characters.map((c) => [c.id, c]));
     const incidentMap = new Map(data.incidents.map((inc) => [inc.id, inc]));
     const endingMap = new Map(data.endings.map((e) => [e.id, e]));
+    const dialogueBranches = Array.isArray(data.dialogueBranches) ? data.dialogueBranches : [];
+    const dialogueBranchMap = new Map(dialogueBranches.map((b) => [b.id, b]));
+    const cipherData = data.cipherData || null;
     const hotspotToRoom = new Map();
     const hotspotMap = new Map();
     for (const r of data.rooms) {
@@ -188,8 +211,8 @@
         characterLocations[c.id] = c.initialRoomId;
       }
 
-      const initial = {
-        schemaVersion: 1,
+      return {
+        schemaVersion: 2,
         currentRoomId: data.startRoomId,
         currentFloor: startRoom ? startRoom.floor : 5,
         actionTicks: 0,
@@ -208,6 +231,16 @@
         miyukiAffection: 0,
         kotomiAffection: 0,
         dialogueSeen: {},
+        affectionEventsCompleted: [],
+        dialogueChoiceHistory: [],
+        threatLevel: 12,
+        threatBand: 'low',
+        threatEvents: [],
+        evidenceTapeDetected: false,
+        evidenceTapeEvents: [],
+        collectedMemoCoords: [],
+        decodedCipherCoords: [],
+        decodedCipherClues: [],
         activeIncidents: [],
         resolvedIncidents: [],
         endingId: null,
@@ -220,7 +253,23 @@
           },
         ],
       };
-      return initial;
+    }
+
+    function normalizeState(s) {
+      if (typeof s.threatLevel !== 'number') s.threatLevel = 12;
+      s.threatLevel = clamp(Math.round(s.threatLevel), 0, 100);
+      s.threatBand = getThreatBand(s.threatLevel);
+      if (!Array.isArray(s.threatEvents)) s.threatEvents = [];
+      if (typeof s.evidenceTapeDetected !== 'boolean') {
+        s.evidenceTapeDetected = Boolean(s.flags && s.flags.flg_evidence_tape_spawned);
+      }
+      if (!Array.isArray(s.evidenceTapeEvents)) s.evidenceTapeEvents = [];
+      if (!Array.isArray(s.affectionEventsCompleted)) s.affectionEventsCompleted = [];
+      if (!Array.isArray(s.dialogueChoiceHistory)) s.dialogueChoiceHistory = [];
+      if (!Array.isArray(s.collectedMemoCoords)) s.collectedMemoCoords = [];
+      if (!Array.isArray(s.decodedCipherCoords)) s.decodedCipherCoords = [];
+      if (!Array.isArray(s.decodedCipherClues)) s.decodedCipherClues = [];
+      return s;
     }
 
     function addLog(type, text) {
@@ -229,8 +278,55 @@
         type,
         text,
       });
-      if (state.logs.length > 160) {
-        state.logs = state.logs.slice(-160);
+      if (state.logs.length > 180) {
+        state.logs = state.logs.slice(-180);
+      }
+    }
+
+    function adjustThreat(delta, reason) {
+      if (!delta || state.endingId) return state.threatLevel;
+      const prev = state.threatLevel;
+      state.threatLevel = clamp(Math.round(state.threatLevel + delta), 0, 100);
+      const prevBand = state.threatBand;
+      state.threatBand = getThreatBand(state.threatLevel);
+      if (reason) {
+        state.threatEvents.push({
+          tick: state.actionTicks,
+          delta: state.threatLevel - prev,
+          level: state.threatLevel,
+          reason,
+        });
+        if (state.threatEvents.length > 24) {
+          state.threatEvents = state.threatEvents.slice(-24);
+        }
+      }
+      if (prevBand !== state.threatBand && (state.threatBand === 'high' || state.threatBand === 'critical')) {
+        const bandLabel = THREAT_BAND_META[state.threatBand].labelKo;
+        addLog(
+          'warning',
+          `👁️ 감시 긴장도 상승 (${state.threatLevel}/100 · ${bandLabel}): 구교사 어둠 속 시선이 가까워지고 있다!`
+        );
+      }
+      return state.threatLevel;
+    }
+
+    function recordMemoCoord(coordCode) {
+      if (!coordCode) return;
+      if (!state.collectedMemoCoords.includes(coordCode)) {
+        state.collectedMemoCoords.push(coordCode);
+      }
+    }
+
+    function syncMemoCoordsFromSource(sourceType, sourceId) {
+      if (!cipherData || !Array.isArray(cipherData.memoSources)) return;
+      for (const ms of cipherData.memoSources) {
+        if (ms.sourceType === sourceType && ms.sourceId === sourceId) {
+          recordMemoCoord(ms.coordCode);
+        }
+      }
+      // Acquiring the cipher table also notes baseline coordinate 33 (Library) from the table footnote
+      if (sourceType === 'item' && sourceId === 'item_cipher_table') {
+        recordMemoCoord('33');
       }
     }
 
@@ -294,7 +390,6 @@
         state.characterStates[id] !== 'compromised' &&
         state.characterStates[id] !== 'deceased_backstory';
 
-      // Clear compromised character locations
       for (const c of data.characters) {
         if (state.characterStates[c.id] === 'compromised') {
           state.characterLocations[c.id] = null;
@@ -349,7 +444,6 @@
         if (alive('char_soga')) state.characterLocations.char_soga = 'rm_2f_class_1_2';
         state.characterLocations.char_isaku = 'rm_clock_tower';
       } else {
-        // phase_5_climax
         for (const id of ['char_kotomi', 'char_kumi', 'char_rika', 'char_akemi', 'char_mio', 'char_soga']) {
           if (alive(id)) state.characterLocations[id] = 'rm_1f_hall';
         }
@@ -377,7 +471,6 @@
       if (state.characterStates[def.targetCharacterId] === 'compromised') return null;
 
       let effectiveWindow = def.windowTicks;
-      // Canonical cascade: Kumi compromised accelerates Rika's isolation window
       if (incidentId === 'inc_rika_isolation' && hasFlag('flg_inc_kumi_compromised')) {
         effectiveWindow = Math.max(1, def.windowTicks - 3);
       }
@@ -404,6 +497,7 @@
         'danger',
         `⚠️ 위기 경보: ${charObj ? charObj.nameKo : def.targetCharacterId} — ${roomObj ? roomObj.nameKo : def.triggerRoomId} (${effectiveWindow}틱 이내 대응 필요)${cascadeNote}`
       );
+      adjustThreat(10, `위기 경보 발생(${charObj ? charObj.nameKo : incidentId})`);
       syncCharacterLocations();
       return active;
     }
@@ -429,6 +523,7 @@
         'rescue',
         customNote || `✅ 구출 완료: ${charObj ? charObj.nameKo : def.targetCharacterId}의 안전을 확보했다!`
       );
+      adjustThreat(-14, `동료 구출(${charObj ? charObj.nameKo : incidentId})`);
       syncCharacterLocations();
       return true;
     }
@@ -446,7 +541,8 @@
         tick: state.actionTicks,
       });
       state.characterStates[def.targetCharacterId] = def.failureOutcome.characterStatus || 'compromised';
-      for (const flg of def.failureOutcome.setsFlags || []) {
+      const setFlags = def.failureOutcome.setsFlags || [];
+      for (const flg of setFlags) {
         state.flags[flg] = true;
       }
 
@@ -454,8 +550,24 @@
       addLog(
         'danger',
         reasonText ||
-          `❌ 사건 발생: ${charObj ? charObj.nameKo : def.targetCharacterId} 보호에 실패했다. (${def.failureOutcome.setsFlags.join(', ')})`
+          `❌ 사건 발생: ${charObj ? charObj.nameKo : def.targetCharacterId} 보호에 실패했다. (${setFlags.join(', ')})`
       );
+
+      if (setFlags.includes('flg_evidence_tape_spawned')) {
+        state.evidenceTapeDetected = true;
+        state.evidenceTapeEvents.push({
+          incidentId,
+          targetCharacterId: def.targetCharacterId,
+          spawnRoomId: 'rm_3f_restroom_f',
+          tick: state.actionTicks,
+        });
+        addLog(
+          'danger',
+          '📼 증거 테이프 감지 경보: 구교사 감시 기록 테이프가 3F 여자 화장실 2번째 칸에 출현한 정황이 포착되었다!'
+        );
+      }
+
+      adjustThreat(18, `동료 보호 실패(${charObj ? charObj.nameKo : incidentId})`);
       syncCharacterLocations();
       evaluateEnding();
       return true;
@@ -465,7 +577,13 @@
       if (!cost || cost <= 0 || state.endingId) return;
       state.actionTicks += cost;
 
-      // Update countdowns and expire overdue incidents deterministically
+      // Surveillance tension climbs steadily with lingering ticks & faster during active crises
+      if (!hasFlag('flg_climax_isaku_down')) {
+        const activeMult = state.activeIncidents.length;
+        const delta = cost * (2 + activeMult * 4);
+        adjustThreat(delta, activeMult > 0 ? '위기 중 시간 경과' : '탐색 시간 경과');
+      }
+
       const expired = [];
       for (const inc of state.activeIncidents) {
         inc.remainingTicks = inc.deadlineTick - state.actionTicks;
@@ -487,7 +605,6 @@
     function checkIncidentTriggers() {
       if (state.endingId) return;
 
-      // 1. Kumi restroom crisis (Phase 1)
       if (
         state.currentPhase === 'phase_1_5f_to_4f' &&
         (state.currentRoomId === 'rm_5f_restroom_f' ||
@@ -496,12 +613,10 @@
         startIncident('inc_kumi_restroom');
       }
 
-      // 2. Rika isolation crisis (Phase 2)
       if (hasFlag('flg_4f_unlocked') && state.currentRoomId === 'rm_4f_hall') {
         startIncident('inc_rika_isolation');
       }
 
-      // 3. Akemi electrical panel crisis (Phase 2)
       if (
         hasFlag('flg_4f_unlocked') &&
         !hasFlag('flg_akemi_stabilized') &&
@@ -510,27 +625,22 @@
         startIncident('inc_akemi_panel');
       }
 
-      // 4. Mio separation crisis (Phase 3)
       if (hasFlag('flg_3f_unlocked') && state.currentRoomId === 'rm_3f_hall') {
         startIncident('inc_mio_separation');
       }
 
-      // 5. Soga reckless crisis (Phase 3)
       if (isPuzzleSolved('puz_3f_broadcast_prep_unlock') || state.currentRoomId === 'rm_3f_broadcast') {
         startIncident('inc_soga_reckless');
       }
 
-      // 6. Kotomi trust crisis (Phase 3, once red ribbon bell is found)
       if (hasFlag('flg_3f_library_bell_found') && !hasFlag('flg_kotomi_protected')) {
         startIncident('inc_kotomi_trust');
       }
 
-      // 7. Miyuki clock tower climax crisis (Phase 5)
       if (hasFlag('flg_clock_tower_accessible') && state.currentRoomId === 'rm_clock_tower') {
         startIncident('inc_miyuki_clock_tower');
       }
 
-      // 8. Jinpachi betrayal / containment crisis (Phase 5)
       if (hasFlag('flg_clock_tower_paint_applied') && state.currentRoomId === 'rm_3f_broadcast_prep') {
         startIncident('inc_jinpachi_betrayal');
       }
@@ -550,6 +660,7 @@
       for (const gi of puzzle.grantsItems) {
         if (!state.inventory.includes(gi)) {
           state.inventory.push(gi);
+          syncMemoCoordsFromSource('item', gi);
         }
       }
       for (const sf of puzzle.setsFlags) {
@@ -577,6 +688,17 @@
       if (unlockNames) summary += ` — 통로 개방: [${unlockNames}]`;
       addLog('puzzle', summary);
 
+      // Noise / surveillance tension impact by puzzle type
+      if (puzzle.id === 'puz_4f_thinker_statue') {
+        adjustThreat(10, '4F 공작실 석고상 파쇄 소음');
+      } else if (puzzle.id === 'puz_2f_stove_burn') {
+        adjustThreat(12, '2F 급식실 장작 난로 연소 연기·소음');
+      } else if (puzzle.id === 'puz_3f_barlock_containment') {
+        adjustThreat(10, '3F 방송실 창고 바 록 대치 소음');
+      } else {
+        adjustThreat(-4, `퍼즐 돌파(${puzzle.id})`);
+      }
+
       // Puzzle-linked incident resolutions
       if (puzzle.id === 'puz_clock_tower_paint_trap') {
         if (getActiveIncident('inc_miyuki_clock_tower') || !isIncidentResolved('inc_miyuki_clock_tower')) {
@@ -594,6 +716,7 @@
             '✅ 바 록으로 방송실 창고 대치를 제압하고 진파치의 배신을 저지했다! 1F 복도에서 유작의 나이프를 확보했다!'
           );
         }
+        adjustThreat(-35, '유작 제압 완료');
       }
 
       advanceTicks(1);
@@ -662,7 +785,12 @@
       }
 
       addLog('move', `🚪 이동: ${targetRoom.nameKo} (${targetRoom.floor}F)`);
-      advanceTicks(1);
+      if (roomId === data.goalRoomId) {
+        state.threatLevel = 0;
+        state.threatBand = 'low';
+      } else {
+        advanceTicks(1);
+      }
       syncCharacterLocations();
       checkIncidentTriggers();
       const ending = evaluateEnding();
@@ -688,8 +816,36 @@
         };
       }
       const hs = hotspotMap.get(hotspotId);
-      if (!state.examinedHotspots.includes(hotspotId)) {
+      const firstExam = !state.examinedHotspots.includes(hotspotId);
+      if (firstExam) {
         state.examinedHotspots.push(hotspotId);
+      }
+
+      // 0. Auxiliary Classroom Cipher & Clue Hotspots (GAP-02 / GAP-03)
+      if (cipherData && Array.isArray(cipherData.memoSources)) {
+        const memoSrc = cipherData.memoSources.find(
+          (ms) => ms.sourceType === 'hotspot' && ms.sourceId === hotspotId
+        );
+        if (memoSrc) {
+          recordMemoCoord(memoSrc.coordCode);
+          if (!state.inspectedClues.includes(hotspotId)) {
+            state.inspectedClues.push(hotspotId);
+          }
+          addLog('clue', memoSrc.clueTextKo);
+          if (hotspotId === 'hs_3f_2_2_traces' && firstExam) {
+            state.flags.flg_isaku_patrol_detected = true;
+            adjustThreat(10, '3F 2-2 교실 유작 정찰 흔적 감지');
+          }
+          if (hotspotId === 'hs_2f_1_3_locker') {
+            state.flags.flg_checked_emergency_map = true;
+          }
+          return {
+            ok: true,
+            action: 'inspect_cipher_clue',
+            coordCode: memoSrc.coordCode,
+            message: memoSrc.clueTextKo,
+          };
+        }
       }
 
       // 1. Keypad puzzle prompt (5F Safe 3878)
@@ -739,7 +895,6 @@
       // 3. Pickups mapped to this hotspot
       const pickupIds = HOTSPOT_PICKUPS[hotspotId];
       if (pickupIds && pickupIds.length > 0) {
-        // Dynamic visibility checks from ReverseDesign/02
         if (hotspotId === 'hs_5f_science_floor' && !hasFlag('flg_4f_unlocked')) {
           const msg = '지금은 실험대 주변에 눈에 띄는 것이 없다. 4층을 개방한 뒤 다시 살펴보자.';
           addLog('inspect', msg);
@@ -761,6 +916,7 @@
           if (!hasItem(itemId) && !state.consumedItems.includes(itemId)) {
             state.inventory.push(itemId);
             collected.push(itemId);
+            syncMemoCoordsFromSource('item', itemId);
           }
         }
         if (collected.length > 0) {
@@ -832,7 +988,7 @@
         return talkToCharacter('char_miyuki', 0);
       }
 
-      // 5. Special inspection hotspots (Red Herring, VCR, Escape Eval, Group spots)
+      // 5. Special inspection hotspots
       if (hotspotId === 'hs_1f_sealed_gate') {
         state.flags.flg_checked_fake_entrance = true;
         const msg =
@@ -843,12 +999,16 @@
 
       if (hotspotId === 'hs_4f_av_vcr') {
         if (hasItem('item_evidence_tape')) {
+          state.flags.flg_evidence_tape_played = true;
+          adjustThreat(8, '증거 비디오테이프 재생');
           const msg =
             '📼 비디오 재생기에 증거 테이프를 넣었다. 구교사 감시 기록에 동료가 고립된 정황이 찍혀 있다… 해피 엔딩은 이미 멀어진 것 같다.';
           addLog('danger', msg);
           return { ok: true, action: 'play_tape', message: msg };
         }
-        const msg = '비디오 재생기는 전원이 꺼져 있다. 지금은 재생할 테이프가 없다.';
+        const msg = state.evidenceTapeDetected
+          ? '비디오 재생기 전원이 대기 중이다. 3F 여자 화장실 2번째 칸에 증거 테이프가 남아 있는 듯하다.'
+          : '비디오 재생기는 전원이 꺼져 있다. 지금은 재생할 테이프가 없다.';
         addLog('inspect', msg);
         return { ok: true, action: 'inspect', message: msg };
       }
@@ -885,7 +1045,7 @@
         return { ok: true, action: 'ending', ending, message: ending ? ending.summaryKo : '탈출 지점이다.' };
       }
 
-      // 6. Generic puzzle-hint inspect for item-driven puzzles
+      // 6. Generic puzzle-hint inspect
       if (matchingPuzzle) {
         if (isPuzzleSolved(matchingPuzzle.id)) {
           const msg = `${hs.labelKo}: 이미 해결되었다.`;
@@ -938,9 +1098,155 @@
         };
       }
 
-      const msg = `❌ 비밀번호 [${normalized || '공백'}] 불일치. (힌트: 3-2 교실 메모와 과학실 단서를 확인하자.)`;
+      const msg = `❌ 비밀번호 [${normalized || '공백'}] 불일치. (힌트: 3-2 교실 메모와 과학실 골격 메모 단서를 확인하자.)`;
       addLog('warning', msg);
       return { ok: false, solved: false, reason: 'wrong_code', message: msg };
+    }
+
+    function decodeCipher(coordA, coordB) {
+      if (!cipherData) {
+        return { ok: false, reason: 'cipher_unavailable', message: '난수표 데이터가 없습니다.' };
+      }
+      if (!hasItem(cipherData.requiredItemId)) {
+        const msg = '먼저 3F 방송실 우측 벽면에서 [난수표]를 획득해야 해독기를 사용할 수 있다.';
+        addLog('warning', msg);
+        return { ok: false, reason: 'missing_cipher_table', message: msg };
+      }
+
+      const normA = String(coordA ?? '').replace(/[^0-9]/g, '');
+      const normB = String(coordB ?? '').replace(/[^0-9]/g, '');
+
+      const lookupCell = (r, c) => {
+        if (r < 1 || r > 6 || c < 1 || c > 6) return null;
+        return cipherData.grid[r - 1]?.[c - 1] ?? null;
+      };
+
+      const checkAutoDeductions = () => {
+        const unlocked = [];
+        for (const ded of cipherData.deductions) {
+          if (state.decodedCipherClues.includes(ded.id)) continue;
+          const allReady = ded.coordPair.every((cc) => state.decodedCipherCoords.includes(cc));
+          if (allReady) {
+            state.decodedCipherClues.push(ded.id);
+            if (ded.setsFlag) state.flags[ded.setsFlag] = true;
+            adjustThreat(-3, `난수표 해독(${ded.id})`);
+            addLog('clue', `🔐 난수표 추리 완성 — ${ded.titleKo}: ${ded.summaryKo}`);
+            unlocked.push(ded);
+          }
+        }
+        return unlocked;
+      };
+
+      // Mode 1: Single-cell lookup (row 1..6, col 1..6)
+      if (/^[1-6]$/.test(normA) && /^[1-6]$/.test(normB)) {
+        const row = Number(normA);
+        const col = Number(normB);
+        const coord = `${row}${col}`;
+        const token = lookupCell(row, col);
+        if (!state.decodedCipherCoords.includes(coord)) {
+          state.decodedCipherCoords.push(coord);
+        }
+        const newlyUnlocked = checkAutoDeductions();
+        addLog('clue', `🔢 난수표 좌표 (${row},${col}) 해독 결과: [${token}]`);
+        return {
+          ok: true,
+          mode: 'cell',
+          row,
+          col,
+          coord,
+          token,
+          unlockedDeductions: newlyUnlocked,
+          message: `좌표 (${row}, ${col}) → [${token}]`,
+        };
+      }
+
+      // Mode 2: Two-coordinate cross-index pair (e.g., '32', '54')
+      if (/^[1-6][1-6]$/.test(normA) && /^[1-6][1-6]$/.test(normB)) {
+        const rA = Number(normA[0]);
+        const cA = Number(normA[1]);
+        const rB = Number(normB[0]);
+        const cB = Number(normB[1]);
+        const tokenA = lookupCell(rA, cA);
+        const tokenB = lookupCell(rB, cB);
+
+        if (!state.decodedCipherCoords.includes(normA)) state.decodedCipherCoords.push(normA);
+        if (!state.decodedCipherCoords.includes(normB)) state.decodedCipherCoords.push(normB);
+
+        const sortedPair = [normA, normB].sort().join('+');
+        const matchedDeduction =
+          cipherData.deductions.find((d) => [...d.coordPair].sort().join('+') === sortedPair) || null;
+
+        if (matchedDeduction) {
+          const isNew = !state.decodedCipherClues.includes(matchedDeduction.id);
+          if (isNew) {
+            state.decodedCipherClues.push(matchedDeduction.id);
+            if (matchedDeduction.setsFlag) state.flags[matchedDeduction.setsFlag] = true;
+            adjustThreat(-3, `난수표 해독(${matchedDeduction.id})`);
+          }
+          addLog('clue', `🔐 난수표 교차 해독 성공 [${normA}×${normB}] → ${matchedDeduction.decodedCode}: ${matchedDeduction.summaryKo}`);
+          return {
+            ok: true,
+            mode: 'pair',
+            coordA: normA,
+            coordB: normB,
+            tokenA,
+            tokenB,
+            combined: matchedDeduction.decodedCode,
+            matched: true,
+            newlyUnlocked: isNew,
+            deduction: matchedDeduction,
+            message: matchedDeduction.summaryKo,
+          };
+        }
+
+        const autoUnlocked = checkAutoDeductions();
+        const combined = `${tokenA}+${tokenB}`;
+        const msg = `🔢 난수표 대조 [${normA}=${tokenA}] × [${normB}=${tokenB}] — 일치하는 핵심 암호 조합은 아니다. 수집한 메모 좌표를 다시 확인하자.`;
+        addLog('inspect', msg);
+        return {
+          ok: true,
+          mode: 'pair',
+          coordA: normA,
+          coordB: normB,
+          tokenA,
+          tokenB,
+          combined,
+          matched: false,
+          unlockedDeductions: autoUnlocked,
+          message: msg,
+        };
+      }
+
+      const msg = '❌ 유효하지 않은 난수표 좌표입니다. 1~6 범위의 행·열(예: 3, 2) 또는 2자리 좌표 쌍(예: 32, 54)을 입력하세요.';
+      addLog('warning', msg);
+      return { ok: false, reason: 'invalid_coordinates', message: msg };
+    }
+
+    function getCipherStatus() {
+      if (!cipherData) return null;
+      const memoSourcesWithStatus = (cipherData.memoSources || []).map((ms) => {
+        const discovered =
+          state.collectedMemoCoords.includes(ms.coordCode) ||
+          (ms.sourceType === 'item' && (hasItem(ms.sourceId) || state.consumedItems.includes(ms.sourceId))) ||
+          (ms.sourceType === 'hotspot' && state.examinedHotspots.includes(ms.sourceId));
+        return {
+          ...ms,
+          discovered,
+        };
+      });
+      return {
+        hasCipherTable: hasItem(cipherData.requiredItemId),
+        gridSpec: cipherData.gridSpec,
+        grid: cipherData.grid,
+        collectedMemoCoords: [...state.collectedMemoCoords],
+        decodedCipherCoords: [...state.decodedCipherCoords],
+        decodedCipherClues: [...state.decodedCipherClues],
+        memoSources: memoSourcesWithStatus,
+        deductions: cipherData.deductions.map((d) => ({
+          ...d,
+          unlocked: state.decodedCipherClues.includes(d.id),
+        })),
+      };
     }
 
     function combineItems(itemA, itemB) {
@@ -956,7 +1262,6 @@
 
       const pair = [itemA, itemB].sort().join('+');
 
-      // 1. Machine Oil + Rusted Iron Key
       if (pair === ['item_machine_oil', 'item_rusted_key'].sort().join('+')) {
         state.flags.flg_rusted_key_oiled = true;
         const msg =
@@ -965,7 +1270,6 @@
         return { ok: true, combined: true, flag: 'flg_rusted_key_oiled', message: msg };
       }
 
-      // 2. Machine Oil + Copper Key
       if (pair === ['item_machine_oil', 'item_copper_key'].sort().join('+')) {
         state.flags.flg_copper_key_oiled = true;
         const msg =
@@ -974,7 +1278,6 @@
         return { ok: true, combined: true, flag: 'flg_copper_key_oiled', message: msg };
       }
 
-      // 3. Brown Book + Alcohol Bottle (items.json combineWith)
       if (pair === ['item_alcohol_bottle', 'item_brown_book'].sort().join('+')) {
         state.flags.flg_book_soaked_alcohol = true;
         const msg =
@@ -983,7 +1286,6 @@
         return { ok: true, combined: true, flag: 'flg_book_soaked_alcohol', message: msg };
       }
 
-      // 4. Wooden Ladder + Screwdriver (items.json combineWith)
       if (pair === ['item_screwdriver', 'item_wooden_ladder'].sort().join('+')) {
         state.flags.flg_ceiling_kit_ready = true;
         const msg =
@@ -992,7 +1294,6 @@
         return { ok: true, combined: true, flag: 'flg_ceiling_kit_ready', message: msg };
       }
 
-      // 5. Lighter + (Brown Book or Alcohol Bottle)
       if (
         pair === ['item_brown_book', 'item_lighter'].sort().join('+') ||
         pair === ['item_alcohol_bottle', 'item_lighter'].sort().join('+')
@@ -1091,6 +1392,35 @@
         return { ok: true, alreadySolved: true, message: msg };
       }
 
+      // Canonical 4F->3F Rusted Key Break Branch (GAP-05) — checked BEFORE prereqs so attempting reuse on 4F snaps cleanly!
+      if (puzzle.keyBreakBranch && itemId === puzzle.keyBreakBranch.attemptedItemId) {
+        const kb = puzzle.keyBreakBranch;
+        if (kb.consumesAttemptedItem) {
+          const idx = state.inventory.indexOf(itemId);
+          if (idx !== -1) state.inventory.splice(idx, 1);
+          if (!state.consumedItems.includes(itemId)) state.consumedItems.push(itemId);
+        }
+        for (const sf of kb.setsFlags || []) {
+          state.flags[sf] = true;
+        }
+        adjustThreat(8, '4F→3F 계단 문 녹슨 철제 열쇠 파손 소음');
+        const msg =
+          '💥 4F→3F 계단 자물쇠에서 [녹슨 철제 열쇠]가 뚝 부러졌다! 부러진 파편을 깔끔히 빼내어 자물쇠 막힘을 방지했다. — 5F 금고 뒷면(드라이버)→여자 화장실 타임 레코더(단1 건전지)→4F 공작실 "생각하는 사람" 석고상(작은 망치)에서 [구리 열쇠]를 찾아 대체하자!';
+        addLog('warning', msg);
+        advanceTicks(1);
+        checkIncidentTriggers();
+        evaluateEnding();
+        return {
+          ok: false,
+          reason: 'key_snapped_fallback_needed',
+          keySnapped: true,
+          softlockPrevented: true,
+          fallbackPuzzleId: kb.fallbackPuzzleId,
+          fallbackItemId: kb.fallbackItemId,
+          message: msg,
+        };
+      }
+
       const prereq = checkPuzzlePrereqs(puzzle);
       if (!prereq.ok) {
         addLog('warning', prereq.message);
@@ -1124,7 +1454,6 @@
         if (itemId === keyItem) {
           const oiled = staged.includes('item_machine_oil') || hasFlag(preOiledFlag);
           if (!oiled) {
-            // Softlock prevention rule from ReverseDesign/03!
             const msg = `⚠️ 자물쇠가 심하게 녹슬어 그대로 돌리면 [${itemObj.nameKo}]가 부러질 것 같다! 먼저 [기계유]를 도포하거나 조합하자. (소프트락 방지: 열쇠 보존)`;
             addLog('warning', msg);
             return {
@@ -1262,7 +1591,6 @@
         return { ok: true, alreadyResolved: true, message: '이미 처리된 사건입니다.' };
       }
 
-      // Allow intervention only when player is at the incident room
       if (state.currentRoomId !== def.triggerRoomId) {
         const targetRoom = roomMap.get(def.triggerRoomId);
         const msg = `⚠️ 먼저 [${targetRoom ? targetRoom.nameKo : def.triggerRoomId}]으로 이동해야 대응할 수 있다!`;
@@ -1270,7 +1598,6 @@
         return { ok: false, reason: 'wrong_room_for_incident', message: msg };
       }
 
-      // Ensure incident is started if player proactively acts at the room
       if (!getActiveIncident(incidentId)) {
         startIncident(incidentId);
       }
@@ -1291,7 +1618,6 @@
         };
       }
 
-      // Validate rescue prerequisites where applicable
       if (uiDef.requiresItemForRescue && !hasItem(uiDef.requiresItemForRescue)) {
         const reqItem = itemMap.get(uiDef.requiresItemForRescue);
         const msg = `⚠️ [${reqItem ? reqItem.nameKo : uiDef.requiresItemForRescue}]이(가) 있어야 구출할 수 있다!`;
@@ -1299,7 +1625,6 @@
         return { ok: false, reason: 'missing_rescue_item', message: msg };
       }
       if (uiDef.requiresFlagForRescue && !hasFlag(uiDef.requiresFlagForRescue)) {
-        // For clock tower, if player holds red paint right here, apply it automatically!
         if (incidentId === 'inc_miyuki_clock_tower' && hasItem('item_red_paint')) {
           return useItemOnHotspot('item_red_paint', 'hs_clock_tower_ladder');
         }
@@ -1308,7 +1633,6 @@
         return { ok: false, reason: 'missing_rescue_flag', message: msg };
       }
 
-      // Special side effects when rescuing via interveneIncident
       if (incidentId === 'inc_kotomi_trust' && hasItem('item_red_ribbon_bell')) {
         return useItemOnHotspot('item_red_ribbon_bell', 'hs_4f_av_kotomi');
       }
@@ -1325,125 +1649,105 @@
       };
     }
 
+    function selectDialogueBranchForCharacter(charId) {
+      const candidates = dialogueBranches.filter((b) => b.characterId === charId);
+      if (candidates.length === 0) return null;
+
+      // Priority 1: Exact room + current phase match (preferring affection events)
+      const roomPhase = candidates.filter(
+        (b) => b.roomIds.includes(state.currentRoomId) && b.phases.includes(state.currentPhase)
+      );
+      if (roomPhase.length > 0) {
+        return roomPhase.find((b) => b.isAffectionEvent) || roomPhase[0];
+      }
+
+      // Priority 2: Exact room match regardless of phase (supports backtracking)
+      const roomOnly = candidates.filter((b) => b.roomIds.includes(state.currentRoomId));
+      if (roomOnly.length > 0) {
+        return roomOnly.find((b) => b.isAffectionEvent) || roomOnly[0];
+      }
+
+      // Priority 3: Phase match (e.g., Miyuki companion following player in 2F rooms)
+      const phaseOnly = candidates.filter((b) => b.phases.includes(state.currentPhase));
+      if (phaseOnly.length > 0) {
+        return phaseOnly[0];
+      }
+
+      return candidates[0];
+    }
+
     function getCharacterDialogue(charId) {
       const ch = charMap.get(charId);
       if (!ch) return null;
 
-      // Active incident in current room takes priority!
+      // Active incident in current room takes priority
       const activeInc = state.activeIncidents.find(
         (a) => a.targetCharacterId === charId && a.triggerRoomId === state.currentRoomId
       );
       if (activeInc) {
         const uiDef = INCIDENT_DEFINITIONS[activeInc.id];
         return {
+          branchId: `incident_${activeInc.id}`,
           characterId: charId,
           characterNameKo: ch.nameKo,
+          titleKo: uiDef.titleKo,
           isIncident: true,
+          isAffectionEvent: false,
+          alreadyCompleted: false,
           incidentId: activeInc.id,
           promptKo: uiDef.promptKo,
           choices: uiDef.choices.map((c, idx) => ({
             index: idx,
+            id: c.id,
             actionId: c.id,
             labelKo: c.labelKo,
           })),
         };
       }
 
-      // Miyuki canonical affection dialogues per key room
-      if (charId === 'char_miyuki') {
-        const room = state.currentRoomId;
-        if (room === 'rm_5f_music') {
-          return {
-            characterId: charId,
-            characterNameKo: ch.nameKo,
-            sceneKey: 'miyuki_5f_music',
-            promptKo: '미유키: "이 구교사는 1년 전 내 여동생 사건 이후 폐쇄됐어. 누군가 의도적으로 우리를 부른 거야."',
-            choices: [
-              { index: 0, labelKo: '1년 전 사건과 호출 편지의 진상을 함께 파헤치자 (+미유키 신뢰)', miyukiDelta: 1 },
-              { index: 1, labelKo: '우선 코토미와 모두의 탈출구부터 찾는 게 먼저야 (+코토미 신뢰)', kotomiDelta: 1 },
-            ],
-          };
-        }
-        if (room === 'rm_3f_library') {
-          return {
-            characterId: charId,
-            characterNameKo: ch.nameKo,
-            sceneKey: 'miyuki_3f_library',
-            promptKo: '미유키: "도서실 기록과 진파치의 태도가 신경 쓰여. 켄타, 넌 내 추리를 믿어줄 수 있어?"',
-            choices: [
-              { index: 0, labelKo: '미유키의 냉철한 판단을 믿는다. 끝까지 함께 가자 (+미유키 신뢰)', miyukiDelta: 1 },
-              { index: 1, labelKo: '진파치와 다른 친구들 말도 균형 있게 들어보자 (+코토미 신뢰)', kotomiDelta: 1 },
-            ],
-          };
-        }
-        if (room === 'rm_2f_class_1_1') {
-          return {
-            characterId: charId,
-            characterNameKo: ch.nameKo,
-            sceneKey: 'miyuki_2f_1_1',
-            promptKo: '미유키: "이제 1층이 코앞이야. 켄타, 여기서부턴 나와 둘이 움직이는 편이 안전해."',
-            choices: [
-              { index: 0, labelKo: '알겠어, 미유키와 동행해서 아래층과 시계탑을 살피자 (+미유키 신뢰)', miyukiDelta: 1, setsFlag: 'flg_miyuki_companion' },
-              { index: 1, labelKo: '코토미와 일행 곁을 지키는 편이 안심돼 (+코토미 신뢰)', kotomiDelta: 1 },
-            ],
-          };
-        }
-        if (room === 'rm_clock_tower') {
-          return {
-            characterId: charId,
-            characterNameKo: ch.nameKo,
-            sceneKey: 'miyuki_clock_tower',
-            promptKo: '미유키: "여기가 모든 사건의 종착점이야… 유작의 함정을 끝내야 해."',
-            choices: [
-              { index: 0, labelKo: '혼자 짊어지지 마, 반드시 함께 살아 나가자 (+미유키 신뢰)', miyukiDelta: 1 },
-              { index: 1, labelKo: '서둘러 정리하고 1층 동료들에게 합류하자 (+코토미 신뢰)', kotomiDelta: 1 },
-            ],
-          };
-        }
+      const branch = selectDialogueBranchForCharacter(charId);
+      if (branch) {
+        const alreadyCompleted = branch.isAffectionEvent
+          ? state.affectionEventsCompleted.includes(branch.id)
+          : state.dialogueSeen[branch.id] !== undefined;
         return {
+          branchId: branch.id,
+          sceneKey: branch.id,
           characterId: charId,
           characterNameKo: ch.nameKo,
-          sceneKey: `miyuki_general_${state.currentPhase}`,
-          promptKo: '미유키: "방심하지 마. 유작은 우리가 흩어지는 틈을 노리고 있어."',
-          choices: [
-            { index: 0, labelKo: '단서를 다시 정리해 보자' },
-          ],
+          titleKo: branch.titleKo,
+          isIncident: false,
+          isAffectionEvent: Boolean(branch.isAffectionEvent),
+          alreadyCompleted,
+          promptKo: branch.promptKo,
+          choices: branch.choices.map((c, idx) => ({
+            index: idx,
+            id: c.id,
+            labelKo: c.labelKo,
+            replyKo: c.replyKo,
+            miyukiDelta: c.miyukiDelta || 0,
+            kotomiDelta: c.kotomiDelta || 0,
+            threatDelta: c.threatDelta || 0,
+            setsFlag: c.setsFlag || null,
+          })),
         };
       }
-
-      if (charId === 'char_kotomi') {
-        return {
-          characterId: charId,
-          characterNameKo: ch.nameKo,
-          sceneKey: `kotomi_${state.currentPhase}`,
-          promptKo: '코토미: "켄타 군, 무섭지만 모두와 함께라면 꼭 빠져나갈 수 있을 거야…!"',
-          choices: [
-            { index: 0, labelKo: '반드시 전원 무사히 데리고 나갈게 (+코토미 신뢰)', kotomiDelta: 1 },
-            { index: 1, labelKo: '미유키와 함께 단서를 조사 중이니 조금만 기다려 줘' },
-          ],
-        };
-      }
-
-      // Helpful phase hints for other cast members
-      const hintsByChar = {
-        char_kumi: '쿠미 선생: "침착하세요. 5층 교실들과 이과 실험실을 먼저 꼼꼼히 조사해 봅시다."',
-        char_rika: '리카: "코구레 군… 어두운 복도는 너무 무서워. 혼자 두지 말아 줘…"',
-        char_akemi: '아케미: "내 수첩을 5층 이과 실험실 근처에 떨어뜨린 것 같아. 그리고 4층 배전반 쪽에서 이상한 냄새가 나."',
-        char_mio: '미오: "아케미가 흥분하지 않게 잘 지켜봐야 해. 3층 방송실 문에는 바 록이 걸려 있더라."',
-        char_jinpachi: '진파치: "신문부 카메라로 본 건데, 4층 공작실 석고상과 2층 급식실 난로가 수상해. 그리고 1층 정문은 함정일지 몰라."',
-        char_soga: '소가: "흥, 내가 먼저 열쇠를 찾아내면 코토미도 날 다시 보겠지! 3층 방송실 쪽을 살펴봐야겠어."',
-      };
 
       return {
+        branchId: `fallback_${charId}`,
+        sceneKey: `fallback_${charId}_${state.currentPhase}`,
         characterId: charId,
         characterNameKo: ch.nameKo,
-        sceneKey: `hint_${charId}_${state.currentPhase}`,
-        promptKo: hintsByChar[charId] || `${ch.nameKo}: "조심해서 탐색하자."`,
-        choices: [{ index: 0, labelKo: '알겠어, 주의해서 탐색할게' }],
+        titleKo: `${ch.nameKo}와의 대화`,
+        isIncident: false,
+        isAffectionEvent: false,
+        alreadyCompleted: false,
+        promptKo: `${ch.nameKo}: "조심해서 탐색하자."`,
+        choices: [{ index: 0, id: 'ack', labelKo: '알겠어, 주의해서 탐색할게', replyKo: `${ch.nameKo}: "응, 흩어지지 말자."` }],
       };
     }
 
-    function talkToCharacter(charId, choiceIndex = 0) {
+    function talkToCharacter(charId, choiceIndexOrId = 0) {
       if (state.endingId) {
         return { ok: false, reason: 'game_ended', message: '이미 엔딩에 도달했습니다.' };
       }
@@ -1460,33 +1764,76 @@
         return { ok: false, reason: 'no_dialogue', message: '대화할 수 없습니다.' };
       }
 
+      const chosen =
+        typeof choiceIndexOrId === 'string'
+          ? dialogue.choices.find((c) => c.id === choiceIndexOrId || c.actionId === choiceIndexOrId) || dialogue.choices[0]
+          : dialogue.choices[choiceIndexOrId] || dialogue.choices[0];
+
       if (dialogue.isIncident) {
-        const chosen = dialogue.choices[choiceIndex] || dialogue.choices[0];
         return interveneIncident(dialogue.incidentId, chosen.actionId);
       }
 
-      const chosen = dialogue.choices[choiceIndex] || dialogue.choices[0];
-      const alreadySeen = Boolean(state.dialogueSeen[dialogue.sceneKey]);
+      const branchKey = dialogue.branchId;
+      const alreadySeen = dialogue.isAffectionEvent
+        ? state.affectionEventsCompleted.includes(branchKey)
+        : state.dialogueSeen[branchKey] !== undefined;
+
+      let affectionChanged = false;
       if (!alreadySeen) {
-        state.dialogueSeen[dialogue.sceneKey] = choiceIndex;
-        if (chosen.miyukiDelta) state.miyukiAffection += chosen.miyukiDelta;
-        if (chosen.kotomiDelta) state.kotomiAffection += chosen.kotomiDelta;
-        if (chosen.setsFlag) state.flags[chosen.setsFlag] = true;
+        state.dialogueSeen[branchKey] = chosen.index;
+        if (dialogue.isAffectionEvent) {
+          state.affectionEventsCompleted.push(branchKey);
+        }
+        if (chosen.miyukiDelta) {
+          state.miyukiAffection += chosen.miyukiDelta;
+          affectionChanged = true;
+        }
+        if (chosen.kotomiDelta) {
+          state.kotomiAffection += chosen.kotomiDelta;
+          affectionChanged = true;
+        }
+        if (chosen.threatDelta) {
+          adjustThreat(chosen.threatDelta, `대화 반응(${ch.nameKo})`);
+        }
+        if (chosen.setsFlag) {
+          state.flags[chosen.setsFlag] = true;
+        }
+        state.dialogueChoiceHistory.push({
+          branchId: branchKey,
+          characterId: charId,
+          choiceId: chosen.id,
+          choiceIndex: chosen.index,
+          miyukiDelta: chosen.miyukiDelta || 0,
+          kotomiDelta: chosen.kotomiDelta || 0,
+          tick: state.actionTicks,
+        });
       }
 
       if (charId === 'char_miyuki' && state.currentRoomId === 'rm_3f_library') {
         state.flags.flg_library_talk_done = true;
       }
 
-      addLog('dialogue', `💬 ${ch.nameKo} — "${chosen.labelKo}"`);
+      addLog('dialogue', `💬 켄타 → ${ch.nameKo}: "${chosen.labelKo}"`);
+      if (chosen.replyKo) {
+        addLog('dialogue', `↳ ${chosen.replyKo}`);
+      }
+      if (alreadySeen && dialogue.isAffectionEvent) {
+        addLog('inspect', `ℹ️ [${dialogue.titleKo}] 신뢰도 분기는 이미 반영되어 중복 변동되지 않습니다.`);
+      }
+
       syncCharacterLocations();
       return {
         ok: true,
+        branchId: branchKey,
         characterId: charId,
-        choiceIndex,
+        choiceIndex: chosen.index,
+        choiceId: chosen.id,
+        replyKo: chosen.replyKo || '',
         alreadySeen,
+        affectionChanged,
         miyukiAffection: state.miyukiAffection,
         kotomiAffection: state.kotomiAffection,
+        affectionEventsCompleted: [...state.affectionEventsCompleted],
         message: `${ch.nameKo}와(과) 대화를 나누었다.`,
       };
     }
@@ -1499,9 +1846,301 @@
       if (!state.inspectedClues.includes(itemId)) {
         state.inspectedClues.push(itemId);
       }
+      syncMemoCoordsFromSource('item', itemId);
       const detail = CLUE_READINGS[itemId] || `【${item.nameKo}】 ${item.purposeKo}`;
       addLog('clue', detail);
-      return { ok: true, item, detail };
+
+      if (cipherData && itemId === cipherData.requiredItemId) {
+        return { ok: true, action: 'open_cipher_decoder', item, detail };
+      }
+      return { ok: true, action: 'inspect_item', item, detail };
+    }
+
+    function getNextClueHint() {
+      if (state.endingId) {
+        const end = endingMap.get(state.endingId);
+        return {
+          urgency: 'done',
+          phase: state.currentPhase,
+          titleKo: `결말 도달 — ${end ? end.nameKo : state.endingId}`,
+          hintKo: '이미 엔딩에 도달했습니다. 세이브/로드로 분기 직전에 돌아가 다른 엔딩을 수집해 보세요.',
+          spoilerHintKo: '전원 생존(피해 0명) + 미유키 신뢰 3 이상(미유키 해피) / 2 이하(코토미 해피), 피해 발생 후 탈출(노멀)을 모두 모을 수 있습니다.',
+          targetRoomId: state.currentRoomId,
+          targetFloor: state.currentFloor,
+          targetRoomNameKo: roomMap.get(state.currentRoomId)?.nameKo || '',
+        };
+      }
+
+      // Priority 1: Active crisis countdown!
+      if (state.activeIncidents.length > 0) {
+        const urgent = [...state.activeIncidents].sort((a, b) => a.remainingTicks - b.remainingTicks)[0];
+        const targetRoom = roomMap.get(urgent.triggerRoomId);
+        const charObj = charMap.get(urgent.targetCharacterId);
+        const uiDef = INCIDENT_DEFINITIONS[urgent.id];
+        return {
+          urgency: 'critical',
+          phase: state.currentPhase,
+          titleKo: `긴급 구출 우선 — ${charObj ? charObj.nameKo : urgent.targetCharacterId} (남은 ${urgent.remainingTicks}틱)`,
+          hintKo: `${targetRoom ? targetRoom.nameKo : urgent.triggerRoomId}에서 위기 경보가 발동 중입니다. 제한 틱이 0이 되기 전에 즉시 이동해 대응하세요!`,
+          spoilerHintKo: `${uiDef ? uiDef.promptKo : ''} — ${incidentMap.get(urgent.id)?.rescueAction || ''}`,
+          targetRoomId: urgent.triggerRoomId,
+          targetFloor: targetRoom ? targetRoom.floor : state.currentFloor,
+          targetRoomNameKo: targetRoom ? targetRoom.nameKo : urgent.triggerRoomId,
+        };
+      }
+
+      const makeHint = (urgency, titleKo, hintKo, spoilerHintKo, targetRoomId) => {
+        const rm = roomMap.get(targetRoomId);
+        return {
+          urgency,
+          phase: state.currentPhase,
+          titleKo,
+          hintKo,
+          spoilerHintKo,
+          targetRoomId,
+          targetFloor: rm ? rm.floor : state.currentFloor,
+          targetRoomNameKo: rm ? rm.nameKo : '',
+        };
+      };
+
+      // Phase 1: 5F -> 4F
+      if (!hasFlag('flg_4f_unlocked')) {
+        if (!hasItem('item_machine_oil')) {
+          return makeHint(
+            'normal',
+            '5F 윤활 도구 확보',
+            '5층 교실 중 정비 기름이 보관된 곳을 찾아 두면 녹슨 자물쇠를 안전하게 다룰 수 있습니다.',
+            '5F 3-1 교실 사물함에서 [기계유]를 먼저 챙기세요.',
+            'rm_5f_class_3_1'
+          );
+        }
+        if (!isPuzzleSolved('puz_5f_safe_code')) {
+          const hasBothMemos = hasItem('item_clue_memo_3_2') && hasItem('item_skeleton_memo');
+          return makeHint(
+            'normal',
+            hasBothMemos ? '5F 남자 화장실 금고 해제' : '5F 금고 비밀번호 단서 수집',
+            hasBothMemos
+              ? '3-2 교실 메모와 골격 표본 메모의 4자리 숫자를 조합해 5F 남자 화장실 금고를 열어 보세요.'
+              : '5F 3-2 교실 책상과 5F 이과 실험실 표본·상자에서 금고 단서와 유용한 물건을 챙기세요.',
+            '5F 남자 화장실 비밀번호 금고에 [3878]을 입력하면 [녹슨 철제 열쇠]를 얻습니다. (5F 이과 실험실 상자의 갈색 표지 책도 미리 챙겨 두면 좋습니다.)',
+            hasBothMemos ? 'rm_5f_restroom_m' : 'rm_5f_science'
+          );
+        }
+        return makeHint(
+          'normal',
+          '5F→4F 계단 잠금 문 해정',
+          '녹슨 계단 자물쇠를 무리하게 돌리면 열쇠가 손상됩니다. 윤활 처리 후 열쇠를 사용하세요.',
+          '5F 복도 계단 문에 [기계유]를 바른 뒤 [녹슨 철제 열쇠]를 사용(또는 인벤토리 조합)해 4층을 개방하세요.',
+          'rm_5f_hall'
+        );
+      }
+
+      // Phase 2: 4F & 5F Backtracking -> 3F
+      if (!hasFlag('flg_3f_unlocked')) {
+        if (!hasItem('item_red_paint') && !hasFlag('flg_clock_tower_paint_applied')) {
+          return makeHint(
+            'normal',
+            '4F 복도 단서 물품 회수',
+            '4F 복도 구석에 종반 함정 파훼에 쓰일 도료가 놓여 있습니다.',
+            '4F 복도 구석에서 [붉은 수성 도료]를 챙겨 두세요.',
+            'rm_4f_hall'
+          );
+        }
+        if (!hasItem('item_screwdriver')) {
+          return makeHint(
+            'normal',
+            '4F 창고 다용도 공구 탐색',
+            '4F 소실/창고에 나사를 풀고 벽면을 열어볼 수 있는 공구가 있습니다.',
+            '4F 소실/창고 상자에서 [드라이버]를 줍고, 같은 방 쥐구멍에 사용해 [작은 열쇠]까지 회수하세요.',
+            'rm_4f_storage'
+          );
+        }
+        if (!isPuzzleSolved('puz_4f_mouse_hole')) {
+          return makeHint(
+            'normal',
+            '4F 소실 쥐구멍 조사',
+            '드라이버로 4F 소실의 수상한 벽면을 열어 볼 수 있습니다.',
+            '4F 소실/창고 쥐구멍에 [드라이버]를 사용해 3층용 [작은 열쇠]를 얻으세요.',
+            'rm_4f_storage'
+          );
+        }
+        if (!hasFlag('flg_akemi_stabilized') && !hasFlag('flg_akemi_notebook_returned')) {
+          if (!hasItem('item_akemi_notebook')) {
+            return makeHint(
+              'high',
+              '아케미 안정화 — 5F 수첩 회수',
+              '아케미가 잃어버린 수첩을 찾지 못하면 4F 배전반에서 대형 화재 위험이 커집니다. 5층 실험실을 다시 살펴보세요.',
+              '5F 이과 실험실 바닥에서 [아케미의 수첩]을 주워 4F 2-3 교실의 아케미에게 돌려주세요.',
+              'rm_5f_science'
+            );
+          }
+          return makeHint(
+            'high',
+            '4F 2-3 교실 아케미 수첩 반환',
+            '찾은 수첩을 4F 2-3 교실의 아케미에게 건네 심리적 안정을 확보하세요.',
+            '4F 2-3 교실 핫스팟에 [아케미의 수첩]을 사용하면 배전반 화재 위기를 예방할 수 있습니다.',
+            'rm_4f_class_2_3'
+          );
+        }
+        if (!isPuzzleSolved('puz_5f_safe_back')) {
+          return makeHint(
+            'normal',
+            hasFlag('flg_rusted_key_snapped')
+              ? '구리 열쇠 추적 ① — 5F 금고 후면 패널'
+              : '5F 백트래킹 — 금고 후면 패널 분해',
+            '열어 둔 5F 남자 화장실 금고 뒷면 패널을 드라이버로 열어 볼 수 있습니다.',
+            '5F 남자 화장실 금고 후면 패널에 [드라이버]를 사용해 [단1 건전지]를 꺼내세요.',
+            'rm_5f_restroom_m'
+          );
+        }
+        if (!isPuzzleSolved('puz_5f_time_recorder')) {
+          return makeHint(
+            'normal',
+            '구리 열쇠 추적 ② — 5F 타임 레코더 기동',
+            '5F 여자 화장실 바닥의 타임 레코더에 전원을 넣으면 서랍이 열립니다.',
+            '5F 여자 화장실 타임 레코더에 [단1 건전지]를 넣어 [작은 망치]를 획득하세요.',
+            'rm_5f_restroom_f'
+          );
+        }
+        if (!isPuzzleSolved('puz_4f_thinker_statue')) {
+          return makeHint(
+            'normal',
+            '구리 열쇠 추적 ③ — 4F 공작실 석고상',
+            '4F 공작실 "생각하는 사람" 석고상 속이 비어 있다는 소문이 있습니다.',
+            '4F 공작실 석고상에 [작은 망치]를 사용해 [구리 열쇠]를 회수하세요.',
+            'rm_4f_craft'
+          );
+        }
+        return makeHint(
+          'normal',
+          '4F→3F 계단 잠금 문 해정',
+          '구리 열쇠도 녹슨 자물쇠에는 윤활이 필요합니다. 4F 복도 계단 문을 여세요.',
+          '4F 복도 3층 계단 문에 [기계유]와 [구리 열쇠]를 사용해 3층으로 내려가세요.',
+          'rm_4f_hall'
+        );
+      }
+
+      // Phase 3: 3F -> 2F
+      if (!hasFlag('flg_2f_unlocked')) {
+        if (!isPuzzleSolved('puz_3f_broadcast_prep_unlock')) {
+          return makeHint(
+            'normal',
+            '3F 방송실 창고 바 록 해제',
+            '3F 방송실 준비실 내문에 바 록이 걸려 있습니다. 4층에서 얻은 작은 열쇠를 시험해 보세요.',
+            '3F 방송실 창고 내문에 [작은 열쇠]를 사용해 [바 록]을 분리하고 방송실을 개방하세요.',
+            'rm_3f_broadcast_prep'
+          );
+        }
+        if (!hasItem('item_wooden_ladder') || !hasItem('item_lighter') || !hasItem('item_cipher_table')) {
+          return makeHint(
+            'normal',
+            '3F 방송실 도구·난수표 수거',
+            '방송실 내부에 고소 작업 도구와 벽면 시계·난수표 단서가 있습니다.',
+            '3F 방송실에서 [목제 사다리], [라이터], [난수표]를 모두 회수하고 소가도 구출하세요.',
+            'rm_3f_broadcast'
+          );
+        }
+        if (!isPuzzleSolved('puz_3f_library_shelf')) {
+          return makeHint(
+            'normal',
+            '3F 도서실 서가 및 미유키 대화',
+            '3F 도서실의 이동 가능한 서가와 미유키의 추리 대화를 확인해 보세요.',
+            '3F 도서실에서 서가를 밀어 [붉은 리본 방울]을 회수하고, 4F 시청각실 코토미에게 전달하세요.',
+            'rm_3f_library'
+          );
+        }
+        if (!isPuzzleSolved('puz_3f_ceiling_latch')) {
+          return makeHint(
+            'normal',
+            '3F 막다른 복도 천장 기믹 돌파',
+            '고양이 울음소리가 들리는 높은 천장 손잡이에 닿으려면 발판과 분해 공구가 필요합니다.',
+            '3F 막다른 복도 천장 손잡이에 [목제 사다리]와 [드라이버]를 사용해 [붉은 리본 열쇠]를 얻으세요.',
+            'rm_3f_dead_end'
+          );
+        }
+        return makeHint(
+          'normal',
+          '3F→2F 계단 문 해정',
+          '천장에서 회수한 열쇠로 2층 계단 잠금 문을 열 수 있습니다.',
+          '3F 복도 2층 계단 문에 [붉은 리본 열쇠]를 사용하세요.',
+          'rm_3f_hall'
+        );
+      }
+
+      // Phase 4: 2F -> 1F & Clock Tower
+      if (!hasFlag('flg_1f_unlocked')) {
+        if (!hasItem('item_alcohol_bottle') && !isPuzzleSolved('puz_2f_stove_burn')) {
+          return makeHint(
+            'normal',
+            '2F 착화 촉매 탐색',
+            '2F 급식실 장작 난로를 점화하려면 가연성 액체와 탈 종이, 불씨가 필요합니다.',
+            '2F 남자 화장실 좌측 칸에서 [알코올 병]을 챙기고, 2F 1-1 교실에서 미유키와 대화하세요.',
+            'rm_2f_restroom_m'
+          );
+        }
+        if (!hasItem('item_brown_book') && !isPuzzleSolved('puz_2f_stove_burn')) {
+          return makeHint(
+            'normal',
+            '5F 백트래킹 — 갈색 표지 책 회수',
+            '2F 급식실 난로에 넣을 가연 재료가 부족합니다. 5층 실험실 상자를 확인했는지 되짚어 보세요.',
+            '5F 이과 실험실 골판지 상자에서 [갈색 표지 책]을 챙겨 2F 급식실로 돌아오세요.',
+            'rm_5f_science'
+          );
+        }
+        if (!isPuzzleSolved('puz_2f_stove_burn')) {
+          return makeHint(
+            'normal',
+            '2F 급식실 장작 난로 연소',
+            '갈색 표지 책과 알코올 병, 라이터가 모두 갖춰졌습니다. 난로에서 연소시켜 보세요.',
+            '2F 급식실 장작 난로에 [갈색 표지 책] + [알코올 병] 투입 후 [라이터]로 점화해 [은색 열쇠]를 얻으세요.',
+            'rm_2f_kitchen'
+          );
+        }
+        return makeHint(
+          'normal',
+          '2F→1F 계단 및 시계탑 개방',
+          '은색 열쇠로 1층 계단 문을 열면 최종 탈출과 시계탑 진입 경로가 함께 열립니다.',
+          '2F 복도 1층 계단 문에 [은색 열쇠]를 사용하세요.',
+          'rm_2f_hall'
+        );
+      }
+
+      // Phase 5: Climax -> Escape
+      if (!isPuzzleSolved('puz_clock_tower_paint_trap')) {
+        return makeHint(
+          'high',
+          '종반 ① — 6F 시계탑 함정 파훼',
+          '1F 현관은 용접 봉쇄된 가짜 출구입니다. 5F 복도 상층 연결 해치로 시계탑에 올라가 유작의 함정을 파훼하세요.',
+          '5F 복도 → 6F 시계탑으로 이동해 사다리에 [붉은 수성 도료]를 바르고 미유키와 최종 대화를 나누세요.',
+          'rm_clock_tower'
+        );
+      }
+      if (!isPuzzleSolved('puz_3f_barlock_containment')) {
+        return makeHint(
+          'high',
+          '종반 ② — 3F 방송실 창고 바 록 대치',
+          '시계탑 함정을 파훼했다면 3F 방송실 창고에서 배신 위험과 유작의 공세를 최종 제압해야 합니다.',
+          '3F 방송실 창고(준비실) 격리 잠금 지점에 [바 록]을 사용해 진파치를 설득·제압하고 [유작의 나이프]를 확보하세요.',
+          'rm_3f_broadcast_prep'
+        );
+      }
+      if (!isPuzzleSolved('puz_1f_infirmary_escape')) {
+        return makeHint(
+          'high',
+          '종반 ③ — 1F 보건실 비밀 탈출구 개방',
+          '유작을 제압했습니다! 1F 현관이 아닌 1F 보건실 침대 옆 봉쇄 판자를 돌파해 탈출하세요.',
+          '1F 보건실 침대 근처 판자에 [유작의 나이프]를 사용해 외부 탈출 통로를 여세요.',
+          'rm_1f_infirmary'
+        );
+      }
+
+      return makeHint(
+        'normal',
+        '탈출 통로 개방 완료!',
+        '1F 보건실의 비밀 통로가 열렸습니다. 외부 탈출구로 이동해 결말을 확인하세요!',
+        '1F 보건실에서 [구교사 외부 탈출구] 출구 버튼을 클릭하세요.',
+        'rm_escape_exit'
+      );
     }
 
     function evaluateEnding() {
@@ -1557,7 +2196,7 @@
       if (!parsed || typeof parsed !== 'object' || !roomMap.has(parsed.currentRoomId)) {
         throw new Error('Invalid Isaku save state payload.');
       }
-      state = deepClone(parsed);
+      state = normalizeState(deepClone(parsed));
       return getState();
     }
 
@@ -1602,9 +2241,6 @@
         if (hs.id === 'hs_5f_restroom_m_safe_back' && !hasFlag('flg_5f_safe_opened')) {
           visible = false;
         }
-        if (hs.id === 'hs_3f_stall_2' && !hasFlag('flg_evidence_tape_spawned')) {
-          visible = true; // inspectable, shows empty stall unless evidence tape spawned
-        }
         const hasPendingPickup = pickups.some(
           (id) =>
             !hasItem(id) &&
@@ -1628,6 +2264,9 @@
     function getProgressSummary() {
       const compromisedCount = getCompromisedCount();
       const rescuedCount = state.resolvedIncidents.filter((r) => r.outcome === 'rescued').length;
+      const totalAffectionEvents = dialogueBranches.filter(
+        (b) => b.isAffectionEvent && b.characterId === 'char_miyuki'
+      ).length;
       return {
         currentPhase: state.currentPhase,
         currentPhaseLabelKo: PHASE_LABELS[state.currentPhase] || state.currentPhase,
@@ -1644,6 +2283,14 @@
         compromisedCount,
         miyukiAffection: state.miyukiAffection,
         kotomiAffection: state.kotomiAffection,
+        affectionEventsCompletedCount: state.affectionEventsCompleted.length,
+        totalAffectionEvents,
+        threatLevel: state.threatLevel,
+        threatBand: state.threatBand,
+        threatBandLabelKo: THREAT_BAND_META[state.threatBand]?.labelKo || state.threatBand,
+        evidenceTapeDetected: state.evidenceTapeDetected,
+        decodedCipherCluesCount: state.decodedCipherClues.length,
+        totalCipherDeductions: cipherData ? cipherData.deductions.length : 0,
         endingId: state.endingId,
       };
     }
@@ -1652,6 +2299,7 @@
       data,
       PHASE_ORDER,
       PHASE_LABELS,
+      THREAT_BAND_META,
       INCIDENT_DEFINITIONS,
       getState,
       getRoom: (id) => roomMap.get(id) || null,
@@ -1661,16 +2309,20 @@
       getCharacter: (id) => charMap.get(id) || null,
       getIncident: (id) => incidentMap.get(id) || null,
       getEnding: (id) => endingMap.get(id) || null,
+      getDialogueBranch: (id) => dialogueBranchMap.get(id) || null,
       getFloorRooms: (floor) => data.rooms.filter((r) => r.floor === floor),
       getPresentCharacters,
       getExitsWithState,
       getAvailableHotspots,
       getCharacterDialogue,
+      getCipherStatus,
+      getNextClueHint,
       getProgressSummary,
       isExitUnlocked,
       moveTo,
       inspectHotspot,
       inspectItem,
+      decodeCipher,
       combineItems,
       useItemOnHotspot,
       submitPuzzleCode,
@@ -1687,6 +2339,7 @@
     createEngine,
     PHASE_ORDER,
     PHASE_LABELS,
+    THREAT_BAND_META,
     INCIDENT_DEFINITIONS,
   };
 });

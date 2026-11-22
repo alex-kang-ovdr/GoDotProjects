@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "gameId": "isaku",
   "puzzles": [
     {
@@ -31,11 +31,11 @@
       "requiresPuzzles": ["puz_5f_safe_code"],
       "requiresItems": ["item_machine_oil", "item_rusted_key"],
       "requiresFlags": [],
-      "consumesItems": ["item_rusted_key"],
+      "consumesItems": [],
       "grantsItems": [],
       "setsFlags": ["flg_4f_unlocked"],
       "unlocksExits": [{ "from": "rm_5f_hall", "to": "rm_4f_hall" }],
-      "failureRisk": "원작에서는 기계유 없이 녹슨 열쇠를 강행하면 열쇠가 부러져 진행 불능(소프트락) 위험이 존재.",
+      "failureRisk": "원작에서는 기계유 없이 녹슨 열쇠를 강행하면 열쇠가 부러져 진행 불능(소프트락) 위험이 존재. 윤활 해정 후에는 녹슨 열쇠를 회수해 4F로 휴대한다.",
       "softlockPrevention": "재구현 엔진에서는 '먼저 윤활 필요' 경고 또는 기계유 선적용 강제로 영구 소프트락 차단.",
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
@@ -130,8 +130,17 @@
       "grantsItems": [],
       "setsFlags": ["flg_3f_unlocked"],
       "unlocksExits": [{ "from": "rm_4f_hall", "to": "rm_3f_hall" }],
-      "failureRisk": "기계유 미도포 시 열쇠 파손 위험(원작 하드락 요소).",
-      "softlockPrevention": "기계유는 비소모 다회 사용으로 보장, 미도포 시 경고 후 취소.",
+      "keyBreakBranch": {
+        "attemptedItemId": "item_rusted_key",
+        "outcome": "snaps_safely_and_clears_lock",
+        "setsFlags": ["flg_rusted_key_snapped"],
+        "consumesAttemptedItem": true,
+        "fallbackPuzzleId": "puz_4f_thinker_statue",
+        "fallbackItemId": "item_copper_key",
+        "noteKo": "4F->3F 계단 문에 5F에서 사용한 녹슨 철제 열쇠를 재사용하면 부러지지만('折れた部分を取る' 원작 분기), 부러진 파편을 빼낸 뒤 4F 공작실 '생각하는 사람' 석고상의 구리 열쇠로 안전하게 대체 해정한다."
+      },
+      "failureRisk": "4F->3F 계단에 녹슨 철제 열쇠를 재사용하면 부러지며, 기계유 미도포 시 구리 열쇠도 파손 위험이 존재.",
+      "softlockPrevention": "녹슨 열쇠 파손 시 파편을 깔끔히 제거하고 구리 열쇠 경로(5F 금고 뒷면->타임 레코더->4F 석고상)를 안내. 기계유는 비소모 다회 사용 보장.",
       "certainty": "확인",
       "sourceIds": ["SRC-04", "SRC-05"]
     },

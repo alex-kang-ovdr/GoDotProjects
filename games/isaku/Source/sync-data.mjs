@@ -20,9 +20,11 @@ const roomsDoc = readJson('rooms.json');
 const itemsDoc = readJson('items.json');
 const puzzlesDoc = readJson('puzzles.json');
 const incidentsDoc = readJson('incidents_and_endings.json');
+const dialogueDoc = readJson('dialogue_branches.json');
+const cipherDoc = readJson('cipher_data.json');
 
 const bundle = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   gameId: 'isaku',
   generatedFrom: 'ReverseDesign/verified_data/*.json',
   title: charactersDoc.title,
@@ -38,6 +40,9 @@ const bundle = {
   safetyAbstractionNotice: incidentsDoc.safetyAbstractionNotice,
   incidents: incidentsDoc.incidents,
   endings: incidentsDoc.endings,
+  affectionModel: dialogueDoc.affectionModel,
+  dialogueBranches: dialogueDoc.branches,
+  cipherData: cipherDoc,
 };
 
 const hotspotCount = bundle.rooms.reduce((acc, room) => acc + room.hotspots.length, 0);
@@ -59,5 +64,5 @@ mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, output, 'utf8');
 
 console.log(
-  `[isaku:sync-data] Wrote Web/data/game-data.js — characters=${bundle.characters.length}, rooms=${bundle.rooms.length}, hotspots=${hotspotCount}, items=${bundle.items.length}, puzzles=${bundle.puzzles.length}, incidents=${bundle.incidents.length}, endings=${bundle.endings.length}`
+  `[isaku:sync-data] Wrote Web/data/game-data.js — characters=${bundle.characters.length}, rooms=${bundle.rooms.length}, hotspots=${hotspotCount}, items=${bundle.items.length}, puzzles=${bundle.puzzles.length}, incidents=${bundle.incidents.length}, endings=${bundle.endings.length}, dialogueBranches=${bundle.dialogueBranches.length}, cipherDeductions=${bundle.cipherData.deductions.length}`
 );
