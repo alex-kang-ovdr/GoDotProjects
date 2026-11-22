@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#FAF8FF">
+  <title>PlayHub × Google Playground 쇼츠 PoC · 연동 흐름 검증 사이트</title>
+  <link rel="icon" href="vendor/favicon.png" type="image/png">
+  <link rel="stylesheet" href="shorts-poc.css">
+</head>
+<body>
+  <header class="poc-header">
+    <div class="poc-brand-row">
+      <a class="poc-brand" href="/">
+        <span class="poc-dot-bar" aria-hidden="true">
+          <i style="background:#4285F4"></i><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#34A853"></i>
+        </span>
+        <span>PlayHub × Google Playground Shorts PoC</span>
+      </a>
+      <span class="poc-pill">5대 게임 쇼츠 기획 · Flow 프롬프트 · PlayCoin 연동 검증</span>
+    </div>
+    <nav class="poc-nav">
+      <div class="poc-wallet" id="poc-wallet-pill" hidden>
+        <span aria-hidden="true">🪙</span>
+        <strong id="poc-wallet-val">0</strong><span>PC</span>
+      </div>
+      <button type="button" class="poc-btn coin small" id="poc-grant-btn" hidden>🎁 +300 PC</button>
+      <a class="poc-btn secondary small" href="shorts-studio.html">🛠️ Shorts Studio</a>
+      <a class="poc-btn secondary small" href="/?view=shorts" target="_blank" rel="noopener">🎬 허브 쇼츠 피드 ↗</a>
+      <a class="poc-btn ghost small" href="/" target="_blank" rel="noopener">PlayHub 홈 ↗</a>
+    </nav>
+  </header>
+
+  <div id="poc-toast" class="poc-toast" role="status" aria-live="polite" hidden></div>
+
+  <main class="poc-main">
+    <!-- Hero + Live 6-Stage End-to-End Integration Pipeline -->
+    <section class="poc-hero">
+      <div class="poc-hero-copy">
+        <span class="poc-eyebrow">GOOGLE PLAYGROUND 3D DIORAMA · FLOW VEO 3.1 · PLAYCOIN HOLD/CAPTURE</span>
+        <h1>5대 게임 구글 Playground 쇼츠 기획 &amp; 실시간 연동 검증 PoC</h1>
+        <p>아이언 타이드 · 비 시즈 · 넥서스 전선 · 클래시 로얄 · 탕탕특공대 5종 게임의 <strong>구글 Playground 스타일 쇼츠 기획</strong>, <strong>Google Flow(Veo 3.1) 원샷·씬별 프롬프트</strong>, 그리고 <strong>PlayForge → PlayCoin 예약/정산 → 9:16 MP4 렌더링 → PlayHub 내 게임 등록 → 쇼츠 피드/상세 재생</strong>까지 전체 동작 흐름을 이 페이지에서 실측 검증합니다.</p>
+      </div>
+      <div class="poc-hero-actions">
+        <button type="button" class="poc-btn primary large" id="poc-run-single-e2e" data-testid="poc-run-single">
+          ⚡ 선택한 게임 E2E 연동 검증 실행 (20 PC)
+        </button>
+        <button type="button" class="poc-btn coin large" id="poc-run-all-e2e" data-testid="poc-run-all">
+          🚀 5종 전체 일괄 생성 · 허브 등록 검증
+        </button>
+        <button type="button" class="poc-btn secondary" id="poc-demo-login-btn" hidden>
+          👤 데모 크리에이터 원클릭 로그인
+        </button>
+      </div>
+
+      <ol class="poc-pipeline" id="poc-pipeline" aria-label="6단계 실시간 연동 흐름">
+        <li data-stage="auth"><span class="st-idx">1</span><div><strong>크리에이터 인증 · 지갑</strong><small id="st-auth">대기 중</small></div></li>
+        <li data-stage="plan"><span class="st-idx">2</span><div><strong>Playground 기획 · Flow 프롬프트</strong><small id="st-plan">대기 중</small></div></li>
+        <li data-stage="hold"><span class="st-idx">3</span><div><strong>PlayCoin Hold &amp; 9:16 렌더링</strong><small id="st-hold">대기 중</small></div></li>
+        <li data-stage="publish"><span class="st-idx">4</span><div><strong>허브 내 게임 대표 영상 등록</strong><small id="st-publish">대기 중</small></div></li>
+        <li data-stage="verify"><span class="st-idx">5</span><div><strong>피드·상세·Range 206 검증</strong><small id="st-verify">대기 중</small></div></li>
+        <li data-stage="live"><span class="st-idx">6</span><div><strong>PlayHub 실제 재생 확인</strong><small id="st-live">대기 중</small></div></li>
+      </ol>
+    </section>
+
+    <!-- Style Guide Bar -->
+    <section class="poc-style-bar" aria-labelledby="poc-guide-title">
+      <div class="poc-style-head">
+        <h2 id="poc-guide-title">🎨 구글 Playground 쇼츠 공통 연출 가이드 (9:16 · 8초 · 3-Beat)</h2>
+        <a class="poc-btn ghost small" id="poc-flow-web-link" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">Google Flow 웹 열기 ↗</a>
+      </div>
+      <div id="poc-pillars" class="poc-pillars"></div>
+    </section>
+
+    <!-- 5-Game Selector Strip -->
+    <section class="poc-selector-sec" aria-label="5대 대상 게임 선택">
+      <div class="poc-game-tabs" id="poc-game-tabs" role="tablist"></div>
+    </section>
+
+    <!-- Main 2-Column Workspace: Selected Game Plan & Flow Prompts | Live 9:16 Preview & E2E Telemetry -->
+    <section class="poc-grid">
+      <div class="poc-left">
+        <article class="poc-card" id="poc-plan-card">
+          <div class="poc-plan-header">
+            <img id="poc-game-cover" class="poc-game-cover" src="" alt="">
+            <div class="poc-plan-meta">
+              <div class="poc-plan-badges">
+                <span class="poc-badge blue" id="poc-game-genre">장르</span>
+                <span class="poc-badge amber" id="poc-game-engine">권장 엔진</span>
+                <span class="poc-badge green" id="poc-game-registered-badge" hidden>✅ 허브 등록됨</span>
+              </div>
+              <h2 id="poc-game-title">게임을 불러오는 중…</h2>
+              <p id="poc-game-concept" class="poc-concept"></p>
+              <div class="poc-plan-cta-row">
+                <a class="poc-btn secondary small" id="poc-open-studio-btn" href="shorts-studio.html">🛠️ Shorts Studio에서 편집</a>
+                <a class="poc-btn secondary small" id="poc-open-game-detail-btn" href="/" target="_blank" rel="noopener">🕹️ 허브 게임 상세 ↗</a>
+                <button type="button" class="poc-btn ghost small" id="poc-download-pack-btn">📄 Flow 프롬프트 팩(.md)</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="poc-subhead">⏱️ 8초 3-Beat Google Playground 타임라인</h3>
+          <div id="poc-scenes-grid" class="poc-scenes-grid"></div>
+
+          <div class="poc-prompt-block">
+            <div class="poc-prompt-head">
+              <h3>✨ Google Flow (Veo 3.1) 마스터 원샷 프롬프트</h3>
+              <button type="button" class="poc-btn primary small" id="poc-copy-master-btn">📋 마스터 프롬프트 복사</button>
+            </div>
+            <pre id="poc-master-prompt" class="poc-prompt-pre"></pre>
+          </div>
+
+          <div class="poc-prompt-block">
+            <div class="poc-prompt-head">
+              <h3>🎞️ Google Flow SceneBuilder 씬별 확장 프롬프트 (Extend / Frames-to-Video)</h3>
+            </div>
+            <div id="poc-scene-prompts" class="poc-scene-prompts"></div>
+          </div>
+
+          <div class="poc-grid-2">
+            <div class="poc-mini-box">
+              <strong>🔊 Veo 네이티브 오디오 · SFX 큐</strong>
+              <p id="poc-audio-cue"></p>
+            </div>
+            <div class="poc-mini-box">
+              <strong>🚫 공통 Negative Prompt</strong>
+              <p id="poc-neg-prompt"></p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="poc-right">
+        <article class="poc-card poc-preview-card">
+          <div class="poc-preview-head">
+            <div>
+              <h2>📱 실시간 9:16 쇼츠 프리뷰 &amp; 허브 연동 상태</h2>
+              <p id="poc-preview-sub" class="poc-muted">현재 게임에 등록된 실제 9:16 MP4 쇼츠 영상을 재생합니다.</p>
+            </div>
+            <span class="poc-badge blue" id="poc-video-meta-badge" hidden></span>
+          </div>
+
+          <div class="poc-preview-split">
+            <div class="poc-phone">
+              <div class="poc-phone-notch" aria-hidden="true"></div>
+              <div id="poc-phone-empty" class="poc-phone-empty">
+                <span style="font-size:32px">🎬</span>
+                <strong>미생성 상태</strong>
+                <p>상단 [E2E 연동 검증 실행] 버튼을 누르면 PlayCoin으로 실제 9:16 MP4를 생성하고 허브에 등록합니다.</p>
+              </div>
+              <video id="poc-phone-video" class="poc-phone-video" controls playsinline loop muted hidden></video>
+            </div>
+            <div class="poc-status-list">
+              <h3>실시간 연동 체크리스트</h3>
+              <ul id="poc-check-list" class="poc-checks"></ul>
+              <div id="poc-live-links" class="poc-live-links" hidden>
+                <a class="poc-btn primary small" id="poc-link-feed" href="/?view=shorts" target="_blank" rel="noopener">🎬 허브 쇼츠 피드에서 보기 ↗</a>
+                <a class="poc-btn secondary small" id="poc-link-detail" href="/" target="_blank" rel="noopener">🕹️ 허브 내 게임 상세 보기 ↗</a>
+                <a class="poc-btn ghost small" id="poc-link-mp4" download>⬇️ 생성된 MP4 다운로드</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="poc-card">
+          <div class="poc-log-head">
+            <div>
+              <h2>📡 실시간 API · PlayCoin 원장 연동 트레이스</h2>
+              <p class="poc-muted">각 단계의 실제 HTTP 응답 코드, PlayCoin 예약(Hold)→정산(Settle) 잔액 변화, Range 206 검증 결과입니다.</p>
+            </div>
+            <button type="button" class="poc-btn ghost small" id="poc-clear-log-btn">로그 지우기</button>
+          </div>
+          <div id="poc-log-console" class="poc-log-console" role="log" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="shorts-poc.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#FAF8FF">
+  <title>PlayForge Shorts Studio · AI 게임 소개 쇼츠 제작</title>
+  <link rel="icon" href="vendor/favicon.png" type="image/png">
+  <link rel="stylesheet" href="shorts-studio.css">
+</head>
+<body>
+  <header class="ss-header">
+    <div class="ss-brand-wrap">
+      <a class="ss-brand" href="./" id="ss-home-link">
+        <span class="ss-brand-mark" aria-hidden="true">◆</span>
+        <span>PlayForge Shorts Studio</span>
+      </a>
+      <span class="ss-badge-pill">9:16 게임 소개 쇼츠 · Google Flow &amp; Veo</span>
+      <span class="ss-mode-pill" id="ss-mode-pill">연결 확인 중…</span>
+    </div>
+    <div class="ss-header-right">
+      <div class="ss-wallet-chip" id="ss-wallet-chip" hidden>
+        <span class="ss-coin-icon" aria-hidden="true">🪙</span>
+        <strong id="ss-wallet-available">0</strong>
+        <span class="ss-coin-unit">PC</span>
+        <span class="ss-wallet-sub" id="ss-wallet-sub"></span>
+      </div>
+      <a class="ss-btn ghost small" id="ss-charge-link" href="/?view=billing" target="_blank" rel="noopener" hidden>+ PlayCoin 충전</a>
+      <button class="ss-btn coin small" id="ss-dev-grant-btn" type="button" hidden>🎁 체험용 +300 PC</button>
+      <a class="ss-btn secondary small" id="ss-poc-link" href="shorts-poc.html">🎯 5대 게임 Playground PoC</a>
+      <a class="ss-btn ghost small" id="ss-hub-shorts-link" href="/?view=shorts" target="_blank" rel="noopener">허브 쇼츠 피드 ↗</a>
+      <button class="ss-btn ghost small" id="ss-close-drawer" type="button" hidden>닫기 ×</button>
+    </div>
+  </header>
+
+  <div id="ss-auth-banner" class="ss-banner" hidden>
+    <div>
+      <strong>PlayHub 계정 로그인이 필요합니다</strong>
+      <p id="ss-auth-banner-desc">PlayCoin으로 AI 게임 소개 쇼츠를 생성하고 허브 내 게임에 등록하려면 PlayHub 계정으로 로그인해 주세요.</p>
+    </div>
+    <div class="ss-banner-actions">
+      <a class="ss-btn primary small" href="/?view=account" target="_blank" rel="noopener">PlayHub 로그인 ↗</a>
+      <button class="ss-btn coin small" id="ss-demo-signin-btn" type="button" hidden>데모 창작자로 즉시 체험</button>
+      <button class="ss-btn ghost small" id="ss-retry-auth-btn" type="button">로그인 상태 새로고침</button>
+    </div>
+  </div>
+
+  <div id="ss-toast" class="ss-toast" role="status" aria-live="polite" hidden></div>
+
+  <main class="ss-workspace">
+    <!-- Left Column: 3-Step Creator Workflow -->
+    <section class="ss-controls" aria-label="쇼츠 제작 설정">
+      <!-- Step 1: Game & Keyframes -->
+      <article class="ss-card">
+        <div class="ss-card-head">
+          <span class="ss-step-num">1</span>
+          <div>
+            <h2>대상 게임 및 키프레임 준비</h2>
+            <p>소개 쇼츠를 연결할 내 게임과 영상 기준 이미지(최대 3장)를 선택하세요.</p>
+          </div>
+        </div>
+
+        <div class="ss-field">
+          <label for="ss-game-select">허브 내 게임 선택</label>
+          <select id="ss-game-select" data-testid="shorts-game-select">
+            <option value="">게임 목록 불러오는 중…</option>
+          </select>
+          <small class="ss-hint" id="ss-game-ownership-hint"></small>
+        </div>
+
+        <div class="ss-keyframe-bar">
+          <button type="button" class="ss-btn secondary small" id="ss-capture-editor-btn" hidden>📷 현재 게임/에디터 화면 캡처</button>
+          <button type="button" class="ss-btn secondary small" id="ss-pull-cover-btn">🖼️ 게임 커버 자동 가져오기</button>
+          <label class="ss-btn secondary small ss-file-label">
+            ⬆️ 스크린샷 추가
+            <input type="file" id="ss-keyframe-input" accept="image/png,image/jpeg,image/webp" multiple hidden>
+          </label>
+        </div>
+        <div class="ss-keyframes" id="ss-keyframes" aria-label="선택된 키프레임 목록">
+          <div class="ss-kf-empty">키프레임이 없으면 선택한 게임 커버 또는 스타일 모션 배경으로 자동 제작됩니다.</div>
+        </div>
+      </article>
+
+      <!-- Step 2: Storyboard & Google Flow Prompt -->
+      <article class="ss-card">
+        <div class="ss-card-head">
+          <span class="ss-step-num">2</span>
+          <div>
+            <h2>스토리보드 · Google Flow 연출 설정</h2>
+            <p>스타일과 핵심 포인트를 정하면 3단계 9:16 쇼츠 대본과 Google Flow/Veo 프롬프트를 자동 구성합니다.</p>
+          </div>
+        </div>
+
+        <div class="ss-field">
+          <label>영상 비주얼 스타일</label>
+          <div class="ss-chip-group" id="ss-style-chips" role="radiogroup" aria-label="영상 스타일"></div>
+        </div>
+
+        <div class="ss-grid-2">
+          <div class="ss-field">
+            <label for="ss-camera-select">카메라 무빙</label>
+            <select id="ss-camera-select"></select>
+          </div>
+          <div class="ss-field">
+            <label for="ss-duration-select">영상 길이</label>
+            <select id="ss-duration-select">
+              <option value="6">6초 (빠른 훅)</option>
+              <option value="8" selected>8초 (표준 쇼츠 · 추천)</option>
+              <option value="10">10초 (하이라이트 강조)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ss-field">
+          <label for="ss-prompt-input">크리에이터 연출 디렉션 (선택)</label>
+          <textarea id="ss-prompt-input" rows="2" maxlength="500" placeholder="예: 초반 2초에 보스 폭발 장면으로 시선을 끌고, 모바일 터치 조작의 쾌감을 강조해 주세요."></textarea>
+        </div>
+
+        <div class="ss-grid-2">
+          <div class="ss-field">
+            <label for="ss-hook-input">오프닝 훅 문구 (0–2초)</label>
+            <input id="ss-hook-input" type="text" maxlength="48" placeholder="터치 한 번으로 바로 시작!">
+          </div>
+          <div class="ss-field">
+            <label for="ss-cta-input">엔딩 CTA 문구 (6–8초)</label>
+            <input id="ss-cta-input" type="text" maxlength="48" value="PLAY HUB에서 지금 무료 플레이 ▶">
+          </div>
+        </div>
+
+        <div class="ss-inline-actions">
+          <button type="button" class="ss-btn secondary small" id="ss-compose-btn" data-testid="shorts-compose-btn">✨ 스토리보드 · Flow 프롬프트 자동 작성</button>
+          <a class="ss-btn ghost small" id="ss-open-flow-link" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">Google Flow 열기 ↗</a>
+        </div>
+
+        <details class="ss-flow-details" id="ss-flow-details" open>
+          <summary>Google Flow / Veo 프롬프트 &amp; 3컷 타임라인</summary>
+          <div id="ss-scenes-preview" class="ss-scenes-list"></div>
+          <label class="ss-sublabel" for="ss-flow-prompt">Veo / Google Flow 프롬프트 (편집 가능)</label>
+          <textarea id="ss-flow-prompt" rows="3" maxlength="1200" placeholder="스토리보드 자동 작성을 누르면 최적화된 9:16 Flow/Veo 프롬프트가 채워집니다."></textarea>
+          <div class="ss-inline-actions">
+            <button type="button" class="ss-btn ghost small" id="ss-copy-flow-btn">📋 Flow 프롬프트 복사</button>
+            <button type="button" class="ss-btn ghost small" id="ss-download-flow-pack-btn">📄 Flow 제작 팩(.md) 받기</button>
+          </div>
+        </details>
+      </article>
+
+      <!-- Step 3: Engine & PlayCoin Checkout -->
+      <article class="ss-card">
+        <div class="ss-card-head">
+          <span class="ss-step-num">3</span>
+          <div>
+            <h2>생성 엔진 선택 및 PlayCoin 생성</h2>
+            <p>Google Flow/Veo 또는 PlayForge Motion 엔진으로 생성하거나, Flow 웹 결과물을 무료 등록할 수 있습니다.</p>
+          </div>
+        </div>
+
+        <div class="ss-engines" id="ss-engine-list" role="radiogroup" aria-label="영상 생성 엔진"></div>
+
+        <label class="ss-check" id="ss-fallback-wrap">
+          <input type="checkbox" id="ss-fallback-check" checked>
+          <span>Veo API 키가 미설정·지연 시 PlayForge Motion 엔진으로 자동 전환 (실제 비용 <strong>20 PC</strong>만 정산, 차액 자동 반환)</span>
+        </label>
+
+        <div id="ss-import-box" class="ss-import-box" hidden>
+          <p><strong>Google Flow 웹(labs.google/flow)</strong>에서 만든 MP4/WebM 쇼츠 파일을 선택하면 무료(0 PC)로 PlayHub에 업로드됩니다.</p>
+          <label class="ss-btn secondary">
+            📂 Flow MP4 / WebM 파일 선택 (최대 40MB)
+            <input type="file" id="ss-video-file-input" accept="video/mp4,video/webm" hidden>
+          </label>
+          <span id="ss-video-file-name" class="ss-hint">선택된 파일 없음</span>
+        </div>
+
+        <div class="ss-hold-notice">
+          <strong>안전 Hold/Capture 결제:</strong> 생성 시작 시 PlayCoin이 안전하게 예약(Hold)되고, 영상 완성 시에만 실제 정산됩니다. 실패·취소 시 100% 즉시 자동 반환됩니다.
+        </div>
+
+        <div class="ss-generate-footer">
+          <div class="ss-cost-summary">
+            <span>예상 차감</span>
+            <strong id="ss-cost-display">20 PlayCoin</strong>
+          </div>
+          <button type="button" class="ss-btn primary large" id="ss-generate-btn" data-testid="shorts-generate-btn">
+            🎬 20 PlayCoin으로 쇼츠 생성
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Right Column: 9:16 Phone Preview + Hub My Game Registration + My Shorts Library -->
+    <section class="ss-preview-col" aria-label="쇼츠 미리보기 및 허브 등록">
+      <article class="ss-card ss-stage-card">
+        <div class="ss-stage-top">
+          <div>
+            <h2>9:16 쇼츠 미리보기</h2>
+            <p id="ss-stage-subtitle" class="ss-hint">영상을 생성하거나 아래 라이브러리에서 선택해 미리보세요.</p>
+          </div>
+          <span class="ss-status-badge" id="ss-current-status" hidden></span>
+        </div>
+
+        <div class="ss-stage-grid">
+          <div class="ss-phone-frame">
+            <div class="ss-phone-notch" aria-hidden="true"></div>
+            <div id="ss-phone-empty" class="ss-phone-empty">
+              <div class="ss-phone-icon" aria-hidden="true">🎬</div>
+              <strong>9:16 세로 쇼츠 프리뷰</strong>
+              <p>왼쪽에서 게임과 스타일을 고르고 PlayCoin으로 게임 소개 쇼츠를 생성해 보세요.</p>
+            </div>
+            <div id="ss-phone-progress" class="ss-phone-progress" hidden>
+              <div class="ss-spinner" aria-hidden="true"></div>
+              <strong id="ss-progress-pct">0%</strong>
+              <p id="ss-progress-stage">준비 중…</p>
+              <div class="ss-progress-track"><span id="ss-progress-bar" style="width:5%"></span></div>
+            </div>
+            <video id="ss-preview-video" class="ss-preview-video" controls playsinline loop hidden></video>
+          </div>
+
+          <div class="ss-publish-panel">
+            <h3>허브 내 게임 소개 영상 등록</h3>
+            <p class="ss-hint">완성된 쇼츠를 PlayHub 게임 상세 페이지와 쇼츠 피드에 즉시 게시할 수 있습니다.</p>
+
+            <div class="ss-field">
+              <label for="ss-pub-game">등록 대상 게임</label>
+              <select id="ss-pub-game"></select>
+            </div>
+            <div class="ss-field">
+              <label for="ss-pub-title">쇼츠 제목</label>
+              <input id="ss-pub-title" type="text" maxlength="80" placeholder="게임 소개 쇼츠 제목">
+            </div>
+            <div class="ss-field">
+              <label for="ss-pub-caption">소개 캡션</label>
+              <textarea id="ss-pub-caption" rows="2" maxlength="280" placeholder="플레이어에게 보여줄 한 줄 소개"></textarea>
+            </div>
+            <div class="ss-field">
+              <label for="ss-pub-hashtags">해시태그</label>
+              <input id="ss-pub-hashtags" type="text" maxlength="120" placeholder="#PlayHub #PlayForge #게임쇼츠">
+            </div>
+            <div class="ss-grid-2">
+              <div class="ss-field">
+                <label for="ss-pub-visibility">공개 범위</label>
+                <select id="ss-pub-visibility">
+                  <option value="public" selected>전체 공개 (쇼츠 피드 + 게임 상세)</option>
+                  <option value="unlisted">게임 상세 전용 (피드 미노출)</option>
+                </select>
+              </div>
+              <label class="ss-check ss-primary-toggle">
+                <input type="checkbox" id="ss-pub-primary" checked>
+                <span>대표 소개 영상으로 고정</span>
+              </label>
+            </div>
+
+            <div class="ss-meta-pills" id="ss-current-meta" hidden></div>
+
+            <div class="ss-publish-actions">
+              <button type="button" class="ss-btn primary" id="ss-publish-btn" data-testid="shorts-publish-btn" disabled>
+                🚀 허브 내 게임에 소개 영상 등록
+              </button>
+              <a class="ss-btn secondary small" id="ss-download-video-btn" download hidden>⬇️ MP4 다운로드</a>
+            </div>
+
+            <div id="ss-published-links" class="ss-published-links" hidden>
+              <strong>✅ 허브 내 게임에 소개 영상이 등록되었습니다!</strong>
+              <div class="ss-inline-actions">
+                <a class="ss-btn primary small" id="ss-view-feed-link" href="/?view=shorts" target="_blank" rel="noopener">허브 쇼츠 피드에서 보기 ↗</a>
+                <a class="ss-btn secondary small" id="ss-view-game-link" href="/" target="_blank" rel="noopener">게임 상세 페이지에서 보기 ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="ss-card">
+        <div class="ss-library-head">
+          <div>
+            <h2>내 생성 · 등록 쇼츠</h2>
+            <p class="ss-hint">PlayForge에서 생성하거나 Flow에서 가져온 내 쇼츠 목록입니다.</p>
+          </div>
+          <button type="button" class="ss-btn ghost small" id="ss-refresh-mine-btn">새로고침</button>
+        </div>
+        <div id="ss-mine-list" class="ss-mine-list">
+          <div class="ss-empty-list">아직 생성된 쇼츠가 없습니다.</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="shorts-studio.js"></script>
+</body>
+</html>

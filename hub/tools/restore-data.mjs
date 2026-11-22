@@ -122,7 +122,11 @@ const OPTIONAL_TABLES={
   ad_attributions:['id','user_id','partner_id','campaign_id','handoff_token_hash','install_channel','qualified_at','payout_status','created_at'],
   hub_agent_settings:['id','default_provider','default_model','tokens_per_coin','input_weight_bps','cached_weight_bps','output_weight_bps','pro_multiplier_bps','min_coins_per_call','free_trial_tokens','pro_weekly_tokens','max_hold_coins','updated_at'],
   hub_agent_quotas:['principal_id','free_trial_used','pro_week_key','pro_week_used','updated_at'],
-  hub_agent_usage_logs:['id','principal_id','feature','auth_mode','plan_tier','provider','model','input_tokens','cached_tokens','output_tokens','thinking_tokens','total_tokens','weighted_tokens','quota_tokens_used','overage_tokens','charged_coins','hold_id','usage_record_id','journal_entry_id','status','created_at']
+  hub_agent_usage_logs:['id','principal_id','feature','auth_mode','plan_tier','provider','model','input_tokens','cached_tokens','output_tokens','thinking_tokens','total_tokens','weighted_tokens','quota_tokens_used','overage_tokens','charged_coins','hold_id','usage_record_id','journal_entry_id','status','created_at'],
+  shorts_videos:['id','creator_id','creator_name','game_id','project_id','title','caption','hashtags_json','prompt','flow_prompt','style_preset','camera_motion','storyboard_json','engine_id','resolved_engine_id','engine_model','status','visibility','is_primary','progress','stage_label','error_code','error_message','video_rel_path','poster_rel_path','mime_type','bytes','sha256','duration_sec','width','height','aspect_ratio','quoted_coins','charged_coins','billing_hold_id','billing_journal_entry_id','view_count','like_count','published_at','created_at','updated_at'],
+  shorts_likes:['short_id','principal_id','created_at'],
+  shorts_views:['short_id','viewer_key','day_bucket','created_at'],
+  shorts_idempotency:['scope','idempotency_key','principal_id','request_hash','status_code','response_json','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

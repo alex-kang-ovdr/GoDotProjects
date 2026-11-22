@@ -31,6 +31,7 @@ import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
 import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
 import { createHubAgent } from './agent/routes.mjs';
+import { createShorts } from './shorts/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -206,6 +207,8 @@ export function createApp(input, dependencies = {}) {
     fetchImpl: dependencies.agentFetch || dependencies.fetch || globalThis.fetch,
     geminiProvider: dependencies.hubAgentProvider || null
   });
+  // Hub-Shorts (Game Intro Shorts: Google Flow/Veo · PlayForge Motion · PlayCoin Hold/Capture · Feed & My Game Registration)
+  const shorts = createShorts({ config, db, rootDir, platformRoot, catalogOptions, sessionFor, requireSession, promote, assertNotPlatformSanctioned, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.shortsFetch || dependencies.fetch || globalThis.fetch, customRenderers: dependencies.shortsRenderers || null });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
@@ -371,6 +374,7 @@ export function createApp(input, dependencies = {}) {
     if (await cdn.publicRoute(req,res,url)) return;
     if (await billing.publicRoute(req,res,url)) return;
     if (await hubAgent.publicRoute(req,res,url)) return;
+    if (await shorts.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (ugcMultiplayer.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
@@ -658,6 +662,7 @@ export function createApp(input, dependencies = {}) {
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await billing.adminRoute(req,res,url,s)) return;
     if (await hubAgent.adminRoute(req,res,url,s)) return;
+    if (await shorts.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
@@ -848,7 +853,7 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
-  return { db,cdn,billing,hubAgent,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
+  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
@@ -860,6 +865,7 @@ export function createApp(input, dependencies = {}) {
     async close() {
       if (closed) return; closed=true;
       localAdminLogin?.clear();
+      shorts.close();
       ugcMultiplayer.close();
       hubAgent.close();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));

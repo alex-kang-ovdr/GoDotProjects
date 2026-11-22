@@ -129,7 +129,12 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   // Hub-Agent pricing settings & token/PlayCoin usage logs
   hub_agent_settings: ['id', 'default_provider', 'default_model', 'tokens_per_coin', 'input_weight_bps', 'cached_weight_bps', 'output_weight_bps', 'pro_multiplier_bps', 'min_coins_per_call', 'free_trial_tokens', 'pro_weekly_tokens', 'max_hold_coins', 'updated_at'],
   hub_agent_quotas: ['principal_id', 'free_trial_used', 'pro_week_key', 'pro_week_used', 'updated_at'],
-  hub_agent_usage_logs: ['id', 'principal_id', 'feature', 'auth_mode', 'plan_tier', 'provider', 'model', 'input_tokens', 'cached_tokens', 'output_tokens', 'thinking_tokens', 'total_tokens', 'weighted_tokens', 'quota_tokens_used', 'overage_tokens', 'charged_coins', 'hold_id', 'usage_record_id', 'journal_entry_id', 'status', 'created_at']
+  hub_agent_usage_logs: ['id', 'principal_id', 'feature', 'auth_mode', 'plan_tier', 'provider', 'model', 'input_tokens', 'cached_tokens', 'output_tokens', 'thinking_tokens', 'total_tokens', 'weighted_tokens', 'quota_tokens_used', 'overage_tokens', 'charged_coins', 'hold_id', 'usage_record_id', 'journal_entry_id', 'status', 'created_at'],
+  // Hub-Shorts game intro videos (4 tables)
+  shorts_videos: ['id', 'creator_id', 'creator_name', 'game_id', 'project_id', 'title', 'caption', 'hashtags_json', 'prompt', 'flow_prompt', 'style_preset', 'camera_motion', 'storyboard_json', 'engine_id', 'resolved_engine_id', 'engine_model', 'status', 'visibility', 'is_primary', 'progress', 'stage_label', 'error_code', 'error_message', 'video_rel_path', 'poster_rel_path', 'mime_type', 'bytes', 'sha256', 'duration_sec', 'width', 'height', 'aspect_ratio', 'quoted_coins', 'charged_coins', 'billing_hold_id', 'billing_journal_entry_id', 'view_count', 'like_count', 'published_at', 'created_at', 'updated_at'],
+  shorts_likes: ['short_id', 'principal_id', 'created_at'],
+  shorts_views: ['short_id', 'viewer_key', 'day_bucket', 'created_at'],
+  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -189,7 +194,10 @@ export const DROP_TABLES = Object.freeze([
   'email_credentials',
   // Hub-AdGame one-time handoff tokens & attribution payouts
   'ad_handoff_tokens',
-  'ad_attributions'
+  'ad_attributions',
+  // Hub-Shorts transient idempotency & viewer dedup logs
+  'shorts_idempotency',
+  'shorts_views'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);
@@ -444,6 +452,15 @@ export async function sanitizeSnapshot({
             const code = String((parseInt(hmacHex(hmacSalt, 'profile_tag', p.principal_id, 4), 16) % 9000) + 1000);
             const h = `DevUser_${hmacHex(hmacSalt, 'profile_handle', p.principal_id, 6)}#${code}`;
             upd.run(h, p.principal_id);
+          }
+        }
+
+        // 2c. Pseudonymize shorts_videos.creator_name and clear live billing references
+        if (tables.has('shorts_videos')) {
+          const svRows = db.prepare('SELECT id, creator_id FROM shorts_videos').all();
+          const upd = db.prepare('UPDATE shorts_videos SET creator_name = ?, billing_hold_id = NULL, billing_journal_entry_id = NULL WHERE id = ?');
+          for (const row of svRows) {
+            upd.run(`DevCreator_${hmacHex(hmacSalt, 'shorts_creator', row.creator_id, 6)}`, row.id);
           }
         }
 

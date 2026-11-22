@@ -28,6 +28,7 @@ const { createInternalApi } = require('./Tools/internal-api.cjs');
 const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avatar-seal.cjs');
 const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
 const { createHubAgentBridge } = require('./Tools/hub-agent-bridge.cjs');
+const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -392,6 +393,10 @@ function createServer(options = {}) {
     timeoutMs: options.blenderTimeoutMs,
     agentChatProvider: hubAgentBridge?.enabled() ? hubAgentBridge.internalAgentChatProvider : agentChatProvider,
   });
+  const shortsPipeline = createShortsPipelineHandler(root, {
+    env: serverEnv,
+    storageDir: options.shortsStorageDir,
+  });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
     buildMode: options.buildMode,
@@ -598,6 +603,12 @@ function createServer(options = {}) {
         } else if (await blenderPipeline(req, res, parsedUrl)) {
           return;
         }
+      }
+      if (routePath === '/api/shorts' || routePath.startsWith('/api/shorts/')) {
+        if (routePath === '/api/shorts/jobs' && req.method === 'POST' && !executionAllowed(auth?.accountKey)) {
+          return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        }
+        if (await shortsPipeline(req, res, parsedUrl)) return;
       }
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = routePath === '/api/platform-addon/replay';
