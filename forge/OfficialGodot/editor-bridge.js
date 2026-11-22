@@ -3,6 +3,13 @@
   const query = new URLSearchParams(location.search);
   const projectId = query.get('project') || '';
   const playShowcase = query.get('showcase') === '1';
+  const origin = location.origin;
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
+  window.__playforgeBasePath = forgeBase;
+  const wasmTag = String(window.__PLAYFORGE_WEB_EDITOR_WASM_TAG__ || '').trim();
+  const knownWasmBytes = Number(window.__PLAYFORGE_WEB_EDITOR_WASM_BYTES__) || 0;
+  const vendorEditorBase = forgePath(wasmTag ? `/OfficialGodot/vendor/v/${encodeURIComponent(wasmTag)}/godot.editor` : '/OfficialGodot/vendor/godot.editor');
   const projectLabel = document.getElementById('project');
   const status = document.getElementById('status');
   const notice = document.getElementById('notice');
@@ -90,10 +97,6 @@
   window.__playforgeGetPieAvatarEnabled = () => pieAvatarEnabled;
   window.__playforgeSetPieAvatarEnabled = (enabled) => setPieAvatarEnabled(Boolean(enabled));
   syncPieAvatarToggleUi();
-  const origin = location.origin;
-  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
-  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
-  window.__playforgeBasePath = forgeBase;
   let csrfToken = null;
   async function ensureCsrfToken() {
     if (csrfToken) return csrfToken;
@@ -956,7 +959,7 @@
       },
     });
     const activeGame = game;
-    activeGame.init(forgePath('/OfficialGodot/vendor/godot.editor')).then(() => {
+    activeGame.init(vendorEditorBase).then(() => {
       if (gameExitRequested) {
         activeGame.requestQuit();
         finishGame(project);
@@ -1129,14 +1132,16 @@
         godotPoolSize: Math.floor(concurrency / 3),
         onProgress: (current, total) => {
           const mb = bytes => (bytes / (1024 * 1024)).toFixed(1);
-          if (total > 0) {
-            const ratio = Math.min(1, current / total);
+          const effectiveTotal = Math.max(total || 0, knownWasmBytes || 0);
+          if (effectiveTotal > 0) {
+            const clampedCurrent = Math.min(current, effectiveTotal);
+            const ratio = Math.min(1, clampedCurrent / effectiveTotal);
             const pct = Math.round(ratio * 100);
             status.textContent = `Loading Godot ${pct}%`;
-            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(current)} MB / ${mb(total)} MB (${pct}%)`, 12 + ratio * 76);
+            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(clampedCurrent)} MB / ${mb(effectiveTotal)} MB (${pct}%)`, 12 + ratio * 76);
           } else if (current > 0) {
             status.textContent = `Loading Godot (${mb(current)} MB)`;
-            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(current)} MB 수신 중…`, Math.min(86, 15 + (current / (100 * 1024 * 1024)) * 70));
+            setLoading('Godot 웹 에디터 다운로드 중…', `${mb(current)} MB 수신 중…`, Math.min(86, 15 + (current / (60 * 1024 * 1024)) * 70));
           }
         },
         onPrint: (...args) => appendSessionLog('editor', 'info', ...args),
@@ -1144,7 +1149,7 @@
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
-      await engine.init(forgePath('/OfficialGodot/vendor/godot.editor'));
+      await engine.init(vendorEditorBase);
       setLoading('Godot 웹 에디터 초기화 중…', '프로젝트 파일을 가상 파일시스템에 배치하고 있습니다.', 92);
       engine.copyToFS('/home/web_user/keep', new Uint8Array());
       for (const file of files) engine.copyToFS(file.path, file.buffer);

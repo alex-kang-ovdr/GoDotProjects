@@ -1802,6 +1802,22 @@
       "owner": "Forge-Games-tappyChickenMMO"
     },
     {
+      "path": "forge/Tests/user-reported-regressions.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "regression",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main",
+      "note": "사용자 보고 및 직접 발견 이슈(docs/qa/KNOWN_ISSUES_AND_TC_MATRIX.md) 영구 회귀 TC"
+    },
+    {
       "path": "forge/Tests/voxel-frontier.test.cjs",
       "tier": "integration",
       "suites": [

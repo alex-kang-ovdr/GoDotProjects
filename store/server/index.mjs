@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createStoreApp, parseAllowedOrigins } from './store-api.mjs';
 import { createCatalogArtifacts } from './package-builder.mjs';
-import { SAMPLE_CATALOG, validateReleaseContract } from '../web/store-catalog.js';
+import { SAMPLE_CATALOG, isCommercialHubDistributable, validateReleaseContract } from '../web/store-catalog.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const STORE_ROOT = path.resolve(HERE, '..');
@@ -17,13 +17,13 @@ const REQUIRED_WEB_FILES = ['index.html', 'store.js', 'store-catalog.js', 'store
 
 export function loadMergedCatalog(storeRoot = STORE_ROOT) {
   const collectedPath = path.join(storeRoot, 'data', 'collected-catalog.json');
-  const merged = [...SAMPLE_CATALOG];
+  const merged = SAMPLE_CATALOG.filter((item) => isCommercialHubDistributable(item));
   const seen = new Set(merged.map((item) => item.asset_id));
   if (fs.existsSync(collectedPath)) {
     const raw = JSON.parse(fs.readFileSync(collectedPath, 'utf8'));
     const extra = Array.isArray(raw?.items) ? raw.items : [];
     for (const item of extra) {
-      if (item?.asset_id && !seen.has(item.asset_id)) {
+      if (item?.asset_id && !seen.has(item.asset_id) && isCommercialHubDistributable(item)) {
         seen.add(item.asset_id);
         merged.push(item);
       }

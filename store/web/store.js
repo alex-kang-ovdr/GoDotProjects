@@ -16,11 +16,61 @@ const apiClient = createStoreApiClient();
 const PAGE_SIZE = 24;
 
 const TIER_META = Object.freeze({
-  tier1_cc0: { label: 'Tier 1 · CC0/PD', cls: 'tier1' },
-  tier2_attribution: { label: 'Tier 2 · 표기 의무', cls: 'tier2' },
-  tier2b_ofl_font: { label: 'Tier 2-B · OFL 폰트', cls: 'tier2b' },
-  tier4_external_only: { label: 'Tier 4 · 외부링크 전용', cls: 'tier4' }
+  tier1_cc0: {
+    label: '자유 사용',
+    cls: 'tier1',
+    tooltip: 'CC0 · Unlicense: 출처 표기 없이 포지 상용 게임 제작 및 PlayHub 배포 모두 자유롭습니다.'
+  },
+  tier2_attribution: {
+    label: '출처 표기',
+    cls: 'tier2',
+    tooltip: '포지 상용 게임 제작 및 PlayHub 배포 가능 · 게임 크레딧(자동 포함)에 원작자 출처만 표기하면 됩니다.'
+  },
+  tier2b_ofl_font: {
+    label: '폰트 자유 사용',
+    cls: 'tier2b',
+    tooltip: 'SIL OFL: 포지 상용 게임 내 자유 임베딩 및 PlayHub 배포 가능 (폰트 단독 재판매 제외)'
+  }
 });
+
+function getLicenseTooltip(license) {
+  const lic = String(license || '').trim().toUpperCase();
+  if (!lic) return '';
+  if (lic.includes('CC0') || lic.includes('PUBLIC DOMAIN') || lic === 'PD') {
+    return 'CC0 (저작권 포기): 출처 표기 없이 상업적 게임 제작·수정·배포 가능';
+  }
+  if (lic.includes('MIT')) {
+    return 'MIT: 상업적 사용·수정 자유 (저작권 고지 포함, 설치 시 자동 동봉)';
+  }
+  if (lic.includes('CC-BY-SA')) {
+    return 'CC-BY-SA: 출처 표기 필요, 수정 배포 시 동일 라이선스 유지';
+  }
+  if (lic.includes('CC-BY')) {
+    return 'CC-BY: 상업적 사용·수정 자유 (게임 크레딧에 제작자 출처 표기 필요)';
+  }
+  if (lic.includes('OFL')) {
+    return 'SIL OFL: 게임 내 폰트 자유 임베딩·배포 가능 (폰트 단독 재판매 제외)';
+  }
+  if (lic.includes('APACHE')) {
+    return 'Apache 2.0: 상업적 사용·수정 자유 (라이선스 고지 포함)';
+  }
+  if (lic.includes('BSD') || lic.includes('ZLIB')) {
+    return `${license}: 상업적 사용·수정 자유 (저작권 고지 포함)`;
+  }
+  return `${license}: 상세 사용 조건은 출처 링크에서 확인할 수 있습니다.`;
+}
+
+function renderLicenseBadge(license) {
+  if (!license) return '';
+  const tip = getLicenseTooltip(license);
+  return `<span class="license-pill has-tooltip" tabindex="0" data-tooltip="${esc(tip)}">${esc(license)} <span class="tip-mark" aria-hidden="true">ⓘ</span></span>`;
+}
+
+function renderTierBadge(tierKey) {
+  const info = tierKey ? TIER_META[tierKey] : null;
+  if (!info) return '';
+  return `<span class="tier-pill ${info.cls} has-tooltip" tabindex="0" data-tooltip="${esc(info.tooltip)}">${esc(info.label)}</span>`;
+}
 
 const state = {
   tab: 'browse',
@@ -215,7 +265,7 @@ function renderFacetOptions() {
     if (hasTiers) {
       const counts = state.tierCounts || {};
       const opts = [
-        '<option value="all">전체 등급 (4-Tier)</option>',
+        '<option value="all">전체</option>',
         ...state.tiers.map((tier) => {
           const meta = TIER_META[tier] || { label: tier };
           const cnt = typeof counts[tier] === 'number' ? ` (${counts[tier].toLocaleString()})` : '';
@@ -284,14 +334,13 @@ function renderFacetOptions() {
 function renderConnectionBadges() {
   if (el.ssoBadge) {
     const label = state.account?.account_label || 'creator-demo@playhub.local';
-    const prefix = state.account?.auth_mode === 'hub_sso_header' ? 'PlayHub SSO' : 'Hub SSO';
-    el.ssoBadge.textContent = `${prefix} · ${label}`;
+    el.ssoBadge.textContent = label;
   }
   if (el.connectionBadge) {
     el.connectionBadge.dataset.mode = state.mode;
     el.connectionBadge.textContent = state.mode === 'live'
-      ? '실서버 연동 (/api/store)'
-      : '정적 열람 모드';
+      ? '연결됨'
+      : '오프라인';
   }
   const underHub = window.location.pathname.startsWith('/store/') || window.location.pathname === '/store';
   const hubLink = document.getElementById('hub-home-link');
@@ -536,20 +585,20 @@ function renderSpotlight() {
   const isSaved = state.savedIds.has(featured.asset_id);
   const isPending = state.pendingSaves.has(featured.asset_id);
   const tested = featured.engine_compatibility?.godot_tested || '4.7.2';
-  const licBadge = featured.license ? `<span class="license-pill">${esc(featured.license)}</span>` : '';
+  const licBadge = renderLicenseBadge(featured.license);
   el.spotlight.innerHTML = `
     <div class="spotlight-copy">
       <div class="spotlight-badges">
-        <span class="badge-tertiary">추천 큐레이션</span>
-        <span class="badge-secondary">Godot ${esc(tested)} 검증 완료</span>
+        <span class="badge-tertiary">추천 에셋</span>
+        <span class="badge-secondary">Godot ${esc(tested)} 호환</span>
         ${licBadge}
       </div>
       <h1>${esc(featured.title)}</h1>
       <p>${esc(featured.summary)}</p>
       <div class="spotlight-actions">
-        <button type="button" class="btn btn-primary" data-action="inspect-item" data-id="${esc(featured.asset_id)}">패키지 상세 계약 보기</button>
+        <button type="button" class="btn btn-primary" data-action="inspect-item" data-id="${esc(featured.asset_id)}">상세 보기</button>
         <button type="button" class="btn ${isSaved ? 'btn-saved' : 'btn-secondary'}" data-action="toggle-library" data-id="${esc(featured.asset_id)}"${isPending ? ' disabled' : ''}>${
-          isPending ? '동기화 중…' : (isSaved ? '라이브러리에 저장됨 ✓' : '내 라이브러리에 저장')
+          isPending ? '저장 중…' : (isSaved ? '라이브러리에 저장됨 ✓' : '내 라이브러리에 저장')
         }</button>
       </div>
     </div>
@@ -615,30 +664,29 @@ function renderCards(items) {
     const isAddon = hasExecutableAddon(item);
     const isPending = state.pendingSaves.has(item.asset_id);
     const selected = state.selectedId === item.asset_id ? ' selected' : '';
-    const tierInfo = item.license_tier ? TIER_META[item.license_tier] : null;
     const isNoAi = /no generative ai|no ai/i.test(String(item.ai_disclosure || ''));
     const isExternalOnly = item.hosting_policy === 'external_link_only';
     const floatBadge = !isPackage
-      ? (isExternalOnly ? '<span class="card-badge-float editorial">Tier 4 · 외부 링크 전용</span>' : '<span class="card-badge-float editorial">일반 콘텐츠 · 가이드</span>')
+      ? (isExternalOnly ? '<span class="card-badge-float editorial">외부 다운로드</span>' : '<span class="card-badge-float editorial">가이드</span>')
       : isSaved
         ? '<span class="card-badge-float saved">저장됨 ✓</span>'
         : isAddon
-          ? '<span class="card-badge-float addon">실행 가능 Addon</span>'
+          ? '<span class="card-badge-float addon">에디터 애드온</span>'
           : `<span class="card-badge-float pkg">${esc(item.category)}</span>`;
     const actionLabel = isPending
-      ? '동기화 중…'
-      : (isSaved ? '저장됨 ✓' : '라이브러리에 저장');
+      ? '저장 중…'
+      : (isSaved ? '저장됨 ✓' : '라이브러리 저장');
     const actionRow = isPackage
-      ? `<button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">상세 계약</button>
+      ? `<button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">상세 보기</button>
          <button type="button" class="btn btn-grow ${isSaved ? 'btn-saved' : 'btn-primary'}" data-action="toggle-library" data-id="${esc(item.asset_id)}"${isPending ? ' disabled' : ''}>${esc(actionLabel)}</button>`
       : (isExternalOnly && isSafeHttpUrl(item.source_url)
-        ? `<a class="btn btn-primary btn-grow artifact-link" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">공식 사이트 이동 ↗</a>
+        ? `<a class="btn btn-primary btn-grow artifact-link" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">공식 사이트 ↗</a>
            <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">안내</button>`
-        : `<span class="state-tag">editorial · 설치 버튼 없음</span>
+        : `<span class="state-tag">안내 문서</span>
            <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">읽기</button>`);
     const compatLine = isPackage
-      ? `<span class="mono">Godot ${esc(item.engine_compatibility?.godot_tested || '4.7+')}</span>${item.license ? `<span>·</span><span class="license-pill">${esc(item.license)}</span>` : ''}${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}${isNoAi ? '<span class="ai-pill">No AI</span>' : ''}`
-      : `<span class="mono">v${esc(item.asset_version_id)}</span><span>·</span><span>${isExternalOnly ? '직접 호스팅 금지 · 외부 링크' : '문서 안내'}</span>`;
+      ? `${renderLicenseBadge(item.license)}${renderTierBadge(item.license_tier)}${isNoAi ? '<span class="ai-pill has-tooltip" tabindex="0" data-tooltip="생성형 AI를 사용하지 않은 검증된 에셋입니다.">No AI</span>' : ''}`
+      : `<span>${isExternalOnly ? '공식 사이트에서 다운로드' : '가이드 문서'}</span>`;
     const tags = Array.isArray(item.tags) ? item.tags.slice(0, 4) : [];
     const tagRow = tags.length
       ? `<div class="card-tags">${tags.map((t) => `<span class="card-tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join('')}</div>`
@@ -652,7 +700,6 @@ function renderCards(items) {
       <div class="card-body">
         <div class="card-meta">
           <span class="card-publisher">${esc(item.author || item.publisher_id || 'PlayForge')}</span>
-          <span class="kind-pill ${isPackage ? 'kind-package' : 'kind-editorial'}">${esc(item.release_kind)}</span>
         </div>
         <h3>${esc(item.title)}</h3>
         <p>${esc(item.summary)}</p>
@@ -695,20 +742,17 @@ function renderDetail(items) {
     const lines = Array.isArray(active.article_body) ? active.article_body : [];
     const isExtOnly = active.hosting_policy === 'external_link_only';
     const extBtn = isExtOnly && isSafeHttpUrl(active.source_url)
-      ? `<div style="margin-top:8px"><a class="btn btn-primary artifact-link" href="${esc(active.source_url)}" target="_blank" rel="noopener noreferrer">공식 배포처로 이동하여 다운로드 ↗</a></div>`
+      ? `<div style="margin-top:8px"><a class="btn btn-primary artifact-link" href="${esc(active.source_url)}" target="_blank" rel="noopener noreferrer">공식 사이트에서 다운로드 ↗</a></div>`
       : '';
     el.detail.innerHTML = `
       <div class="detail-left">
         <div class="detail-badge-row">
-          <span class="badge-secondary">선택된 에셋 상세</span>
-          <span class="kind-pill kind-editorial">${isExtOnly ? 'Tier 4 · 외부 링크 전용 (직접 호스팅 금지)' : 'editorial · 일반 콘텐츠 (설치 버튼 없음)'}</span>
+          <span class="badge-secondary">상세 정보</span>
+          <span class="kind-pill kind-editorial has-tooltip" tabindex="0" data-tooltip="${isExtOnly ? '공식 배포처 약관을 존중해 직접 호스팅하지 않고 공식 사이트로 연결합니다.' : '참고용 가이드 문서입니다.'}">${isExtOnly ? '외부 다운로드 ⓘ' : '안내 가이드'}</span>
         </div>
         <h2>${esc(active.title)}</h2>
         <p class="detail-summary">${esc(active.summary)}</p>
-        <div class="dock-callout">${lines.map((line) => `<div>${esc(line)}</div>`).join('')}</div>
-        <div class="dock-callout">${isExtOnly
-          ? '저작권·재배포 금지 약관 준수를 위해 본 리소스는 PlayForge Store 서버에 호스팅하지 않으며 공식 배포처 링크로만 안내합니다.'
-          : '일반 콘텐츠(<code>release_kind = editorial</code>)는 패키지 설치 대상이 아니며 빈 패키지를 생성하지 않습니다.'}</div>
+        ${lines.length ? `<div class="dock-callout">${lines.map((line) => `<div>${esc(line)}</div>`).join('')}</div>` : ''}
         ${extBtn}
       </div>
     `;
@@ -726,32 +770,32 @@ function renderDetail(items) {
     ? active.external_download_url
     : (isSafeHttpUrl(active.source_url) ? active.source_url : '');
   const externalAction = externalUrl
-    ? `<a class="btn btn-secondary artifact-link" href="${esc(externalUrl)}" target="_blank" rel="noopener noreferrer">공식 외부 다운로드 / 원출처 ↗</a>`
+    ? `<a class="btn btn-secondary artifact-link" href="${esc(externalUrl)}" target="_blank" rel="noopener noreferrer">공식 출처 / 다운로드 ↗</a>`
     : '';
   const artifactAction = state.mode === 'live'
-    ? `<a class="btn btn-secondary artifact-link" href="${esc(artifactUrl)}" download="${esc(active.asset_id)}-${esc(active.asset_version_id)}.playforgepkg">.playforgepkg 메타 패키지 확인</a>`
+    ? `<a class="btn btn-secondary artifact-link" href="${esc(artifactUrl)}" download="${esc(active.asset_id)}-${esc(active.asset_version_id)}.playforgepkg">패키지 파일 받기</a>`
     : '';
   const statusBanner = state.statusMessage
     ? `<div class="dock-callout status-callout" role="status">${esc(state.statusMessage)}</div>`
     : '';
   const savedAtRow = libraryEntry?.saved_at
-    ? `<tr><th>saved_at</th><td><code>${esc(libraryEntry.saved_at)}</code></td></tr>`
+    ? `<tr><th>저장 시각</th><td><code>${esc(libraryEntry.saved_at)}</code></td></tr>`
     : '';
-  const tierInfo = active.license_tier ? TIER_META[active.license_tier] : null;
   const licenseRow = active.license
-    ? `<tr><th>license</th><td><span class="license-pill">${esc(active.license)}</span> ${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}</td></tr>`
+    ? `<tr><th>라이선스</th><td>${renderLicenseBadge(active.license)} ${renderTierBadge(active.license_tier)}</td></tr>`
     : '';
+  const isNoAi = /no generative ai|no ai/i.test(String(active.ai_disclosure || ''));
   const aiRow = active.ai_disclosure
-    ? `<tr><th>ai_disclosure</th><td><span class="ai-pill">${esc(active.ai_disclosure)}</span></td></tr>`
+    ? `<tr><th>AI 여부</th><td><span class="ai-pill has-tooltip" tabindex="0" data-tooltip="${esc(isNoAi ? '생성형 AI를 사용하지 않은 검증된 에셋입니다.' : active.ai_disclosure)}">${isNoAi ? 'No AI (AI 미사용) ⓘ' : esc(active.ai_disclosure)}</span></td></tr>`
     : '';
   const formatsRow = Array.isArray(active.formats) && active.formats.length
-    ? `<tr><th>formats</th><td><code>${esc(active.formats.join(', '))}</code></td></tr>`
+    ? `<tr><th>포함 형식</th><td><code>${esc(active.formats.join(', '))}</code></td></tr>`
     : '';
   const authorRow = active.author
-    ? `<tr><th>author</th><td>${esc(active.author)}</td></tr>`
+    ? `<tr><th>제작자</th><td>${esc(active.author)}</td></tr>`
     : '';
   const sourceRow = active.source_provider
-    ? `<tr><th>source</th><td>${
+    ? `<tr><th>출처</th><td>${
       isSafeHttpUrl(active.source_url)
         ? `<a class="source-link" href="${esc(active.source_url)}" target="_blank" rel="noopener noreferrer">${esc(active.source_provider)} ↗</a>`
         : esc(active.source_provider)
@@ -761,8 +805,8 @@ function renderDetail(items) {
   const creditBox = creditText
     ? `<div class="credit-box">
         <div class="credit-box-head">
-          <strong>표준 크레딧 고지 (<code>Third-Party Notices.txt</code> · <code>CREDITS.md</code>)</strong>
-          <button type="button" class="btn btn-secondary" data-action="copy-credit" data-id="${esc(active.asset_id)}">크레딧 복사</button>
+          <strong class="has-tooltip" tabindex="0" data-tooltip="패키지 설치 시 Third-Party Notices.txt에 자동으로 포함됩니다. 게임 크레딧에 붙여넣어 사용하세요.">출처 표기 문구 <span class="tip-mark" aria-hidden="true">ⓘ</span></strong>
+          <button type="button" class="btn btn-secondary" data-action="copy-credit" data-id="${esc(active.asset_id)}">복사</button>
         </div>
         <code>${esc(creditText)}</code>
       </div>`
@@ -773,48 +817,49 @@ function renderDetail(items) {
     <div class="detail-grid">
       <div class="detail-left">
         <div class="detail-badge-row">
-          <span class="badge-secondary">선택된 에셋 상세</span>
-          <span class="kind-pill ${isSaved ? 'card-badge-float saved' : 'kind-package'}" style="position:static">${isSaved ? 'saved_to_library' : esc(active.store_state)}</span>
-          ${active.license ? `<span class="license-pill">${esc(active.license)}</span>` : ''}
-          ${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}
-          ${/no generative ai|no ai/i.test(String(active.ai_disclosure || '')) ? '<span class="ai-pill">No AI</span>' : ''}
-          ${hasExecutableAddon(active) ? '<span class="badge-tertiary">executable_addon: true</span>' : ''}
+          <span class="badge-secondary">상세 정보</span>
+          ${isSaved ? '<span class="kind-pill card-badge-float saved" style="position:static">라이브러리에 저장됨 ✓</span>' : ''}
+          ${renderLicenseBadge(active.license)}
+          ${renderTierBadge(active.license_tier)}
+          ${isNoAi ? '<span class="ai-pill has-tooltip" tabindex="0" data-tooltip="생성형 AI를 사용하지 않은 검증된 에셋입니다.">No AI</span>' : ''}
+          ${hasExecutableAddon(active) ? '<span class="badge-tertiary has-tooltip" tabindex="0" data-tooltip="스크립트가 포함된 Godot 에디터 애드온입니다. 설치 전 프로젝트 확인을 권장합니다.">에디터 애드온 ⓘ</span>' : ''}
         </div>
         <h2>${esc(active.title)}</h2>
         <p class="detail-summary">${esc(active.summary)}</p>
         ${tagChips ? `<div class="tag-cloud">${tagChips}</div>` : ''}
         ${creditBox}
-        <div class="manifest-chips">${manifestChips}</div>
         ${statusBanner}
-        <div class="dock-callout">
-          <strong>다음 단계 (Godot Store 도크 · 외부 연동 우선):</strong> <strong>공식 외부 다운로드</strong>로 원파일을 바로 받거나, <strong>내 라이브러리 저장</strong> 후 Godot 4.7.2 에디터 도크에서 <code>Third-Party Notices.txt</code>와 함께 6단계 검증 후 프로젝트에 적용하세요.
-        </div>
+        <details class="tech-details">
+          <summary>포함 파일 및 기술 정보</summary>
+          <div class="manifest-chips">${manifestChips}</div>
+          <table class="spec-table tech-spec-table">
+            <tr><th>ID</th><td><code>${esc(active.asset_id)}</code></td></tr>
+            <tr><th>릴리스</th><td><code>${esc(active.release_id)}</code></td></tr>
+            <tr><th>SHA-256</th><td><code title="${esc(active.artifact_digest)}">${esc(shortDigest(active.artifact_digest))}</code></td></tr>
+          </table>
+        </details>
       </div>
 
       <div class="detail-contract-box">
         <div class="contract-box-head">
-          <strong>불변 패키지 계약</strong>
-          <span>.playforgepkg</span>
+          <strong>에셋 정보</strong>
+          <span class="has-tooltip" tabindex="0" data-tooltip="PlayForge 에디터에서 무결성 검증 후 프로젝트에 바로 적용할 수 있는 표준 패키지입니다.">PlayForge 패키지 ⓘ</span>
         </div>
         <table class="spec-table">
-          <tr><th>asset_id</th><td><code>${esc(active.asset_id)}</code></td></tr>
-          <tr><th>release_id</th><td><code>${esc(active.release_id)}</code></td></tr>
-          <tr><th>engine_compat</th><td>Godot ${esc(compat.godot_tested)} (min ${esc(compat.godot_min)})</td></tr>
-          <tr><th>platforms</th><td>${esc((compat.platforms || []).join(', '))}</td></tr>
-          <tr><th>artifact_digest</th><td><code title="${esc(active.artifact_digest)}">${esc(shortDigest(active.artifact_digest))}</code></td></tr>
           ${licenseRow}
           ${aiRow}
-          ${formatsRow}
           ${authorRow}
           ${sourceRow}
-          <tr><th>license_ref</th><td><code>${esc(active.license_snapshot_ref)}</code></td></tr>
+          <tr><th>호환 엔진</th><td>Godot ${esc(compat.godot_tested)} (최소 ${esc(compat.godot_min)})</td></tr>
+          <tr><th>지원 환경</th><td>${esc((compat.platforms || []).join(', '))}</td></tr>
+          ${formatsRow}
           ${savedAtRow}
         </table>
         <div class="detail-actions">
           <button type="button" class="btn ${isSaved ? 'btn-saved' : 'btn-primary'}" data-action="toggle-library" data-id="${esc(active.asset_id)}"${isPending ? ' disabled' : ''}>${
             isPending
-              ? '동기화 중…'
-              : (isSaved ? '라이브러리에 저장됨 ✓ (클릭 시 제거)' : '내 라이브러리에 저장')
+              ? '저장 중…'
+              : (isSaved ? '라이브러리에 저장됨 ✓ (제거)' : '내 라이브러리에 저장')
           }</button>
           ${externalAction}
           ${artifactAction}
@@ -870,6 +915,16 @@ function setTag(nextTag) {
 }
 
 document.addEventListener('click', (event) => {
+  const tipEl = event.target.closest('.has-tooltip');
+  if (!tipEl) {
+    document.querySelectorAll('.has-tooltip.tip-open').forEach((node) => node.classList.remove('tip-open'));
+  } else if (tipEl.classList.contains('info-tip') || tipEl.classList.contains('info-tip-chip') || tipEl.classList.contains('license-pill') || tipEl.classList.contains('tier-pill') || tipEl.classList.contains('ai-pill')) {
+    event.stopPropagation();
+    const wasOpen = tipEl.classList.contains('tip-open');
+    document.querySelectorAll('.has-tooltip.tip-open').forEach((node) => node.classList.remove('tip-open'));
+    if (!wasOpen) tipEl.classList.add('tip-open');
+    return;
+  }
   const tabBtn = event.target.closest('.tab');
   if (tabBtn) {
     state.tab = tabBtn.dataset.tab;

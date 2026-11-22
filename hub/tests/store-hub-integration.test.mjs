@@ -337,6 +337,17 @@ test('Real Chrome CDP navigates PlayHub Home -> Create -> /store/ (4,592 assets)
     await evaluate("document.querySelector('[data-action=\"toggle-library\"][data-id=\"lowpoly-fortress-pack\"]').click()");
     await until("document.querySelector('#library-count')?.textContent === '1'");
 
+    // Mobile 390px Store view must have zero horizontal overflow (no right gutter / sideways pan)
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+    await delay(200);
+    const mobileStoreOverflow = await evaluate(`({
+      vw: window.innerWidth,
+      docScrollW: document.documentElement.scrollWidth,
+      bodyScrollW: document.body.scrollWidth
+    })`);
+    assert.equal(mobileStoreOverflow.vw, 390, 'Mobile Store viewport width must remain 390px');
+    assert.ok(mobileStoreOverflow.docScrollW <= 390, `Mobile Store must have zero horizontal overflow, got ${mobileStoreOverflow.docScrollW}px`);
+
     assert.deepEqual(exceptions, []);
   } finally {
     socket?.close();

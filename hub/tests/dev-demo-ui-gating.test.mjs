@@ -306,6 +306,9 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
   assert.equal(prodScriptRes.status, 404, 'Prod PlayForge must NOT serve dev-demo-ui.js');
   const prodHtml = await (await fetch(`${prodForge}/OfficialGodot/`)).text();
   assert.doesNotMatch(prodHtml, /dev-demo-ui\.js/, 'Prod PlayForge HTML must strip dev-demo-ui.js');
+  const prodShowcaseBtn = prodHtml.match(/<button\b[^>]*data-filter="showcase"[^>]*>/i);
+  assert.ok(prodShowcaseBtn, 'Prod PlayForge HTML must keep showcase ("제작과정 보기") as a production user feature');
+  assert.doesNotMatch(prodShowcaseBtn[0], /data-dev-demo-ui|\bhidden\b/i, 'Prod showcase button must NEVER be gated or hidden as dev/demo UI');
   const prodEditorHtml = await (await fetch(`${prodForge}/OfficialGodot/editor.html`)).text();
   assert.doesNotMatch(prodEditorHtml, /dev-demo-ui\.js/, 'Prod PlayForge editor.html must strip dev-demo-ui.js');
 
@@ -323,6 +326,10 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
       htmlHidden: document.documentElement.hidden,
       hasToggle: Boolean(document.getElementById('forge-dev-demo-toggle')),
+      showcaseVisible: (() => {
+        const btn = document.querySelector('button[data-filter="showcase"]');
+        return Boolean(btn && !btn.hidden && !btn.hasAttribute('data-dev-demo-ui'));
+      })(),
       visibleDemoCount: [...document.body.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
       totalDemoCount: document.body.querySelectorAll('[data-dev-demo-ui]').length
     })`);
@@ -330,6 +337,7 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
     assert.equal(before.enabled, false, 'PlayForge test build must default to OFF');
     assert.equal(before.htmlHidden, false, '<html> root must never be hidden when dev-demo UI is OFF');
     assert.equal(before.hasToggle, true);
+    assert.equal(before.showcaseVisible, true, '제작과정 보기(showcase)는 완성된 정식 사용자 기능이므로 dev-demo OFF에서도 항상 표시되어야 합니다');
     assert.ok(before.totalDemoCount >= 2, 'PlayForge should have gated test/demo UI controls');
     assert.equal(before.visibleDemoCount, 0, 'All PlayForge test/demo UI must be hidden when OFF');
 
