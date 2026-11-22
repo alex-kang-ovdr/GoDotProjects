@@ -492,8 +492,10 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
 }
 .home-sec-continue { order: 1; }
 .home-sec-hubs { order: 2; }
-.home-sec-library { order: 3; }
-.home-sec-top { order: 4; }
+.home-sec-creator { order: 3; }
+.home-sec-shorts { order: 4; }
+.home-sec-library { order: 5; }
+.home-sec-top { order: 6; }
 
 /* Continue Playing Row */
 .continue-grid {
@@ -1897,6 +1899,7 @@ dialog p, dialog .muted { color: var(--muted); font-size: 13.5px; }
   .home-sec-continue { order: 3; }
   .home-sec-creator { order: 4; }
   .home-sec-library { order: 5; }
+  .home-sec-shorts { order: 6; }
   .top-rank-grid { grid-template-columns: 1fr; gap: 8px; }
   .top-rank-card { flex-direction: row; align-items: center; padding: 10px 12px; }
   .top-rank-visual { flex: none; gap: 10px; }

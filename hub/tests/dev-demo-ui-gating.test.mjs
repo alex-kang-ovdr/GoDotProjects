@@ -321,12 +321,14 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
     const before = await evalJs(`({
       mode: window.PlayForgeDevDemoUI?.getBuildMode?.(),
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
+      htmlHidden: document.documentElement.hidden,
       hasToggle: Boolean(document.getElementById('forge-dev-demo-toggle')),
-      visibleDemoCount: [...document.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
-      totalDemoCount: document.querySelectorAll('[data-dev-demo-ui]').length
+      visibleDemoCount: [...document.body.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
+      totalDemoCount: document.body.querySelectorAll('[data-dev-demo-ui]').length
     })`);
     assert.equal(before.mode, 'test');
     assert.equal(before.enabled, false, 'PlayForge test build must default to OFF');
+    assert.equal(before.htmlHidden, false, '<html> root must never be hidden when dev-demo UI is OFF');
     assert.equal(before.hasToggle, true);
     assert.ok(before.totalDemoCount >= 2, 'PlayForge should have gated test/demo UI controls');
     assert.equal(before.visibleDemoCount, 0, 'All PlayForge test/demo UI must be hidden when OFF');
@@ -339,7 +341,7 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
 
     const afterF5 = await evalJs(`({
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
-      visibleDemoCount: [...document.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
+      visibleDemoCount: [...document.body.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
       toggleText: document.getElementById('forge-dev-demo-toggle')?.textContent || ''
     })`);
     assert.equal(afterF5.enabled, true, 'PlayForge setting ON must persist across F5 reload');

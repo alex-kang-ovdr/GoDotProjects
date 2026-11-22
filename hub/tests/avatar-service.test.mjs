@@ -381,7 +381,7 @@ test('Item 4: hub/web/user/avatar.js cleans up click/change listeners via AbortC
   }
 
   const sandbox = {
-    window: {},
+    window: { PlayHubDevDemoUI: { isEnabled: () => true } },
     AbortController,
     setTimeout,
     clearTimeout,

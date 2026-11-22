@@ -48,6 +48,7 @@
     document.documentElement.dataset.devDemoUi = enabled ? 'on' : 'off';
 
     for (const el of document.querySelectorAll('[data-dev-demo-ui]')) {
+      if (el === document.documentElement) continue;
       el.hidden = !enabled;
     }
 

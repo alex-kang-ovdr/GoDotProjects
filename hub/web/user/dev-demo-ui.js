@@ -64,6 +64,7 @@
         : '테스트·데모 UI 숨김 (클릭하여 ON, F5 새로고침 시 유지)';
     }
     for (const el of document.querySelectorAll('[data-dev-demo-ui]')) {
+      if (el === document.documentElement) continue;
       el.hidden = !enabled;
     }
   }

@@ -35,6 +35,7 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   audit: ['id', 'action', 'target', 'detail', 'created_at'],
   creator_submissions: ['id', 'owner_key', 'owner_id', 'project_id', 'release_id', 'release_revision', 'release_label', 'title', 'description', 'status', 'revision', 'review_note', 'created_at', 'updated_at', 'submitted_at', 'decided_at', 'game_slug', 'visibility', 'deploy_mode', 'artifact_sha256', 'manifest_json', 'package_validation', 'publication_status', 'published_game_id'],
   qa_runs: ['id', 'submission_id', 'target_type', 'target_id', 'release_revision', 'policy_version', 'qa_status', 'score', 'report_path', 'summary_json', 'started_at', 'finished_at'],
+  gamerqa_hub_runs: ['id', 'platform', 'target_id', 'status', 'score', 'latency_ms', 'passed_checks', 'total_checks', 'checks_json', 'traffic_type', 'qa_run_id', 'created_at'],
   submission_checklists: ['submission_id', 'submission_revision', 'checklist_version', 'items_json', 'updated_by', 'updated_at'],
   l10n_keys: ['key', 'namespace', 'source_text', 'source_hash', 'context_id', 'description', 'max_chars', 'placeholders_json', 'code_refs_json', 'unused_since', 'revision', 'updated_at'],
   l10n_translations: ['key', 'locale', 'value', 'status', 'ai_provider', 'ai_model', 'lint_json', 'updated_by', 'updated_at'],
@@ -197,7 +198,9 @@ export const DROP_TABLES = Object.freeze([
   'ad_attributions',
   // Hub-Shorts transient idempotency & viewer dedup logs
   'shorts_idempotency',
-  'shorts_views'
+  'shorts_views',
+  // GamerQA Hub multi-platform run logs
+  'gamerqa_hub_runs'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);
