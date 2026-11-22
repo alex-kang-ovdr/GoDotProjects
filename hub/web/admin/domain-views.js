@@ -908,8 +908,46 @@ export function renderQaOverview(container, data, { number, onNavigate }) {
   container.replaceChildren(p1);
 }
 
-export function renderQaRuns(container, data, { kstStamp }) {
+export function renderQaRuns(container, data, { kstStamp, onRunGamerQa }) {
   const statusTone = st => ['passed', 'pass'].includes(st) ? 'ok' : ['warned', 'warn', 'partial'].includes(st) ? 'warn' : ['failed', 'fail', 'error'].includes(st) ? 'danger' : 'muted';
+  const panels = [];
+  const gqTargets = data.gamerqaTargets;
+  const gqRuns = data.gamerqaRuns;
+  if (gqTargets) {
+    const p0 = panel('MULTI-PLATFORM GAMERQA (ADMIN ONLY)', 'Web · Desktop · Android · Godot 템플릿 18종 통합 QA');
+    const s = gqTargets.summary || {};
+    const stats = gqRuns?.byPlatform || {};
+    p0.append(kpiGrid([
+      ['Web 플랫폼', `${s.web || 0}종`, stats.web?.total ? `실행 ${stats.web.total}건 · 합격 ${stats.web.passRate}%` : '미실행'],
+      ['Desktop 플랫폼', `${s.desktop || 0}종`, stats.desktop?.total ? `실행 ${stats.desktop.total}건 · 합격 ${stats.desktop.passRate}%` : '미실행'],
+      ['Android 플랫폼', `${s.android || 0}종`, stats.android?.total ? `실행 ${stats.android.total}건 · 합격 ${stats.android.passRate}%` : '미실행'],
+      ['Godot 템플릿', `${s['godot-templates'] || 0}종`, stats['godot-templates']?.total ? `실행 ${stats['godot-templates'].total}건 · 합격 ${stats['godot-templates'].passRate}%` : '미실행']
+    ], true));
+    if (typeof onRunGamerQa === 'function') {
+      const actions = el('div', '', 'inline-actions');
+      for (const [label, platform] of [['전체 4개 플랫폼 실행', 'all'], ['Web QA', 'web'], ['Desktop QA', 'desktop'], ['Android QA', 'android'], ['Godot 템플릿 18종 QA', 'godot-templates']]) {
+        const btn = el('button', label, platform === 'all' ? 'primary' : 'quiet');
+        btn.type = 'button';
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try { await onRunGamerQa(platform); } finally { btn.disabled = false; }
+        });
+        actions.append(btn);
+      }
+      p0.append(actions);
+    }
+    const gqRows = (gqRuns?.runs || []).slice(0, 30).map(r => [
+      pill(r.platform, 'info', true),
+      raw('strong', r.targetId),
+      pill(r.status, statusTone(r.status), true),
+      `${r.score}/100`,
+      `${r.passedChecks}/${r.totalChecks}`,
+      `${r.latencyMs}ms`,
+      raw('span', kstStamp(r.createdAt))
+    ]);
+    p0.append(simpleTable(['플랫폼', '타겟 ID', '상태', '점수', '체크', '응답시간', '실행 시각'], gqRows, '아직 멀티플랫폼 GamerQA 실행 이력이 없습니다. 위 버튼으로 실행하세요.'));
+    panels.push(p0);
+  }
   const p1 = panel('AUTOMATED QA RUNS', 'SQLite 기록 자동 QA 실행 (qa_runs)');
   const runRows = (data.qaRuns || []).map(r => [
     raw('strong', r.id.slice(0, 12)),
@@ -936,7 +974,7 @@ export function renderQaRuns(container, data, { kstStamp }) {
   });
   p2.append(simpleTable(['리포트 ID', '출처', '대상', '상태', '집계 (skip/not_run 미합산)', '생성 시각'], artRows, '감지된 검증 보고서 JSON이 없습니다.'));
   p2.append(el('p', 'skip, not_run, error 항목은 통과(pass)로 합산하지 않습니다.', 'panel-foot'));
-  container.replaceChildren(p1, p2);
+  container.replaceChildren(...panels, p1, p2);
 }
 
 export function renderQaAi(container, data, { kstStamp }) {

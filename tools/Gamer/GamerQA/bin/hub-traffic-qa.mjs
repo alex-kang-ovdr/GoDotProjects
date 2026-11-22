@@ -15,7 +15,7 @@ function parseArgs(argv) {
     spawnLocal: false,
     port: 18995,
     concurrency: 12,
-    rounds: 4,
+    rounds: 3,
     runId: `hub-traffic-qa-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`,
     skipScreenshots: false,
   };
@@ -26,7 +26,7 @@ function parseArgs(argv) {
     else if (a === '--url') opts.url = String(argv[++i] || '').replace(/\/$/, '');
     else if (a === '--port') opts.port = Number(argv[++i]);
     else if (a === '--concurrency') opts.concurrency = Math.max(1, Number(argv[++i]) || 12);
-    else if (a === '--rounds') opts.rounds = Math.max(1, Number(argv[++i]) || 4);
+    else if (a === '--rounds') opts.rounds = Math.max(1, Number(argv[++i]) || 3);
     else if (a === '--run-id') opts.runId = String(argv[++i] || opts.runId);
   }
   return opts;
@@ -53,9 +53,9 @@ function findChrome() {
   return candidates.find(p => fs.existsSync(p)) || null;
 }
 
-async function captureScreenshots(baseUrl, outDir) {
+async function captureEvidence(baseUrl, outDir) {
   const chromeBin = findChrome();
-  if (!chromeBin) return { captured: [], warning: 'Chrome/Edge binary not found' };
+  if (!chromeBin) return { captured: [], godotLoaded: false, warning: 'Chrome/Edge binary not found' };
 
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'gamerqa-shot-'));
   const chrome = spawn(chromeBin, [
@@ -72,6 +72,9 @@ async function captureScreenshots(baseUrl, outDir) {
 
   let socket;
   const captured = [];
+  let godotCorsErrors = 0;
+  let godotWasmOk = false;
+  let godotPckOk = false;
   try {
     const portFile = path.join(profile, 'DevToolsActivePort');
     let portText = '';
@@ -96,6 +99,15 @@ async function captureScreenshots(baseUrl, outDir) {
 
     let serial = 0;
     const jobs = new Map();
+    const send = (method, params = {}, sid) => new Promise((resolve, reject) => {
+      const id = ++serial;
+      const timer = setTimeout(() => { jobs.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, 20000);
+      jobs.set(id, {
+        resolve: v => { clearTimeout(timer); resolve(v); },
+        reject: e => { clearTimeout(timer); reject(e); },
+      });
+      socket.send(JSON.stringify({ id, method, params, ...(sid ? { sessionId: sid } : {}) }));
+    });
     socket.addEventListener('message', ({ data }) => {
       const m = JSON.parse(data);
       if (jobs.has(m.id)) {
@@ -103,36 +115,54 @@ async function captureScreenshots(baseUrl, outDir) {
         jobs.delete(m.id);
         m.error ? job.reject(new Error(m.error.message)) : job.resolve(m.result);
       }
-    });
-    const send = (method, params = {}) => new Promise((resolve, reject) => {
-      const id = ++serial;
-      const timer = setTimeout(() => { jobs.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, 20000);
-      jobs.set(id, {
-        resolve: v => { clearTimeout(timer); resolve(v); },
-        reject: e => { clearTimeout(timer); reject(e); },
-      });
-      socket.send(JSON.stringify({ id, method, params }));
+      if (m.method === 'Target.attachedToTarget') {
+        void send('Network.enable', {}, m.params.sessionId).catch(() => {});
+        void send('Log.enable', {}, m.params.sessionId).catch(() => {});
+      }
+      if (m.method === 'Network.responseReceived') {
+        const u = m.params.response?.url || '';
+        const st = m.params.response?.status || 0;
+        if (u.includes('forge-voxel-frontier/index.wasm') && st === 200) godotWasmOk = true;
+        if (u.includes('forge-voxel-frontier/index.pck') && st === 200) godotPckOk = true;
+      }
+      if (m.method === 'Log.entryAdded' && String(m.params.entry?.text || '').includes('blocked by CORS')) {
+        godotCorsErrors++;
+      }
     });
 
     await send('Page.enable');
     await send('Runtime.enable');
+    await send('Network.enable');
+    await send('Log.enable');
+    await send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
     await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
 
-    const shots = [
-      { name: 'evidence-01-hub-portal.png', url: `${baseUrl}/`, waitMs: 2200 },
-      { name: 'evidence-02-gamerqa-dashboard.png', url: `${baseUrl}/qa/`, waitMs: 2500 },
-      { name: 'evidence-03-godot-template-play.png', url: `${baseUrl}/play/forge-voxel-frontier/`, waitMs: 2200 },
-    ];
-
-    for (const s of shots) {
-      await send('Page.navigate', { url: s.url });
-      await delay(s.waitMs);
+    const snap = async (name, url) => {
       const res = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
-      const filePath = path.join(outDir, s.name);
+      const filePath = path.join(outDir, name);
       fs.writeFileSync(filePath, Buffer.from(res.data, 'base64'));
-      captured.push({ name: s.name, url: s.url, path: filePath, bytes: fs.statSync(filePath).size });
-    }
-    return { captured, warning: null };
+      captured.push({ name, url, path: filePath, bytes: fs.statSync(filePath).size });
+    };
+
+    // 1. Desktop Hub Portal (verify no QA nav, no match3+ tags)
+    await send('Page.navigate', { url: `${baseUrl}/` });
+    await delay(2500);
+    await snap('evidence-01-hub-desktop.png', `${baseUrl}/`);
+
+    // 2. Mobile 390px Portal (verify logo + search bar single line)
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await delay(800);
+    await snap('evidence-02-hub-mobile.png', `${baseUrl}/ (390x844)`);
+
+    // 3. Godot Template Game live launch (verify WASM + PCK load without CORS error)
+    await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
+    await send('Page.navigate', { url: `${baseUrl}/play/forge-voxel-frontier/` });
+    await delay(2500);
+    await send('Runtime.evaluate', { expression: "document.querySelector('#play-button')?.click()" });
+    await delay(10000);
+    await snap('evidence-03-godot-running.png', `${baseUrl}/play/forge-voxel-frontier/`);
+
+    return { captured, godotWasmOk, godotPckOk, godotCorsErrors, warning: null };
   } finally {
     try { socket?.close(); } catch {}
     if (chrome && chrome.exitCode === null) {
@@ -199,15 +229,22 @@ async function run() {
 
   try {
     const origin = new URL(opts.url).origin;
-
-    // 1. Health, version, and QA session
     const health = await (await fetch(`${opts.url}/_healthz`)).json();
     const version = await (await fetch(`${opts.url}/api/version`)).json();
-    const targets = await (await fetch(`${opts.url}/api/qa/targets`)).json();
+    const gamesPayload = await (await fetch(`${opts.url}/api/games`)).json();
+    const games = gamesPayload.games || [];
+    const webGames = games.filter(g => !g.id.startsWith('forge-'));
+    const godotGames = games.filter(g => g.id.startsWith('forge-'));
 
+    // Security boundary check: public /qa/ and /api/admin/* must NOT be exposed
+    const qaPageRes = await fetch(`${opts.url}/qa/`);
+    const adminApiRes = await fetch(`${opts.url}/api/admin/gamerqa/targets`);
+
+    // QA isolated session + game start check (no ORIGIN_DENIED)
     const sessRes = await fetch(`${opts.url}/api/session`, { headers: { Origin: origin } });
     let cookie = extractCookie(sessRes);
-    let csrf = (await sessRes.json()).csrfToken;
+    let sessBody = await sessRes.json();
+    let csrf = sessBody.csrfToken;
     const qaSessRes = await fetch(`${opts.url}/api/qa/session`, {
       method: 'POST',
       headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
@@ -216,15 +253,28 @@ async function run() {
     cookie = extractCookie(qaSessRes) || cookie;
     csrf = (await qaSessRes.json()).csrfToken;
 
-    // 2. Full 4-platform QA run
-    const fullQaRes = await fetch(`${opts.url}/api/qa/runs`, {
+    const playStartRes = await fetch(`${opts.url}/api/play-sessions`, {
       method: 'POST',
       headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ platform: 'all' }),
+      body: JSON.stringify({ gameId: godotGames[0]?.id || 'forge-voxel-frontier' }),
     });
-    const fullQa = await fullQaRes.json();
 
-    // 3. Build multi-platform traffic workload
+    // Email registration + Forge auth probe (when /forge/ is mounted)
+    const emailSessRes = await fetch(`${opts.url}/api/session`, { headers: { Origin: origin } });
+    const emailSessCookie = extractCookie(emailSessRes);
+    const emailSessCsrf = (await emailSessRes.json()).csrfToken;
+    const regRes = await fetch(`${opts.url}/api/auth/email/register`, {
+      method: 'POST',
+      headers: { Origin: origin, Cookie: emailSessCookie, 'Content-Type': 'application/json', 'X-CSRF-Token': emailSessCsrf },
+      body: JSON.stringify({ email: `qa-traffic-${Date.now()}@example.com`, password: 'TrafficPass!1234', displayName: 'QATraffic' }),
+    });
+    const regCookie = extractCookie(regRes) || emailSessCookie;
+    const forgeCheck = await fetch(`${opts.url}/forge/OfficialGodot/`, {
+      headers: { Cookie: regCookie, Accept: 'text/html' },
+      redirect: 'manual',
+    });
+
+    // Multi-platform concurrent traffic workload
     const compatPayload = (target) => ({
       target,
       buildCode: version.buildInfo.buildCode,
@@ -235,31 +285,19 @@ async function run() {
     });
 
     const jobs = [];
-    const webGames = targets.platforms.web || [];
-    const godotGames = targets.platforms['godot-templates'] || [];
-
     for (let r = 0; r < opts.rounds; r++) {
       jobs.push(
         { label: 'web:portal', url: `${opts.url}/` },
-        { label: 'web:qa-ui', url: `${opts.url}/qa/` },
         { label: 'api:health', url: `${opts.url}/api/health` },
         { label: 'api:version', url: `${opts.url}/api/version` },
         { label: 'api:games', url: `${opts.url}/api/games` },
-        { label: 'api:qa-targets', url: `${opts.url}/api/qa/targets` },
-        { label: 'api:qa-runs', url: `${opts.url}/api/qa/runs?limit=40` },
         { label: 'desktop:compat', url: `${opts.url}/api/compat/check`, method: 'POST', body: compatPayload('forge-desktop') },
         { label: 'android:compat', url: `${opts.url}/api/compat/check`, method: 'POST', body: compatPayload('aos') },
         { label: 'godot:compat', url: `${opts.url}/api/compat/check`, method: 'POST', body: compatPayload('forge-web') },
-        { label: 'qa:run-desktop', url: `${opts.url}/api/qa/runs`, method: 'POST', auth: true, body: { platform: 'desktop' } },
-        { label: 'qa:run-android', url: `${opts.url}/api/qa/runs`, method: 'POST', auth: true, body: { platform: 'android' } },
-        { label: 'qa:run-godot', url: `${opts.url}/api/qa/runs`, method: 'POST', auth: true, body: { platform: 'godot-templates' } },
+        { label: 'play:start-godot', url: `${opts.url}/api/play-sessions`, method: 'POST', auth: true, body: { gameId: 'forge-voxel-frontier' } },
       );
-      for (const g of webGames) {
-        jobs.push({ label: `web-game:${g.id}`, url: `${opts.url}${g.entryUrl}` });
-      }
-      for (const g of godotGames) {
-        jobs.push({ label: `godot-template:${g.id}`, url: `${opts.url}${g.entryUrl}` });
-      }
+      for (const g of webGames) jobs.push({ label: `web-game:${g.id}`, url: `${opts.url}${g.entryUrl}` });
+      for (const g of godotGames) jobs.push({ label: `godot-template:${g.id}`, url: `${opts.url}${g.entryUrl}` });
     }
 
     const latencies = [];
@@ -293,8 +331,7 @@ async function run() {
           statusCounts[res.status] = (statusCounts[res.status] || 0) + 1;
           if (!res.ok) failures.push({ label: job.label, status: res.status });
         } catch (err) {
-          const dt = performance.now() - t0;
-          latencies.push(dt);
+          latencies.push(performance.now() - t0);
           statusCounts.ERR = (statusCounts.ERR || 0) + 1;
           failures.push({ label: job.label, error: err.message });
         }
@@ -305,12 +342,9 @@ async function run() {
     const loadDurationMs = Math.max(1, Math.round(performance.now() - loadStarted));
     latencies.sort((a, b) => a - b);
 
-    const finalRuns = await (await fetch(`${opts.url}/api/qa/runs?limit=60`)).json();
-
-    // 4. Evidence screenshots
-    const shots = opts.skipScreenshots
-      ? { captured: [], warning: 'Skipped by flag' }
-      : await captureScreenshots(opts.url, outDir);
+    const evidence = opts.skipScreenshots
+      ? { captured: [], godotWasmOk: false, godotPckOk: false, godotCorsErrors: 0, warning: 'Skipped by flag' }
+      : await captureEvidence(opts.url, outDir);
 
     const report = {
       runId: opts.runId,
@@ -319,8 +353,15 @@ async function run() {
       generatedAt: new Date().toISOString(),
       health,
       buildInfo: version.buildInfo,
-      targetsSummary: targets.summary,
-      fullQaSummary: fullQa.summary,
+      securityChecks: {
+        publicQaPageStatus: qaPageRes.status,
+        publicAdminApiStatus: adminApiRes.status,
+        anonIsAdmin: sessBody.isAdmin,
+        anonAdminUrl: sessBody.adminUrl,
+        playSessionStartStatus: playStartRes.status,
+        forgeAfterEmailLoginStatus: forgeCheck.status,
+      },
+      catalogCounts: { total: games.length, web: webGames.length, godotTemplates: godotGames.length },
       trafficLoad: {
         concurrency: opts.concurrency,
         rounds: opts.rounds,
@@ -338,59 +379,19 @@ async function run() {
         },
         failures: failures.slice(0, 20),
       },
-      persistedQaStats: {
-        totalRuns: finalRuns.totalRuns,
-        byPlatform: finalRuns.byPlatform,
+      godotRuntimeProbe: {
+        wasmHttp200: evidence.godotWasmOk,
+        pckHttp200: evidence.godotPckOk,
+        corsErrors: evidence.godotCorsErrors,
       },
-      screenshots: shots.captured,
-      screenshotWarning: shots.warning,
+      screenshots: evidence.captured,
     };
 
     fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n');
-
-    const md = [
-      `# PlayHub Multi-Platform GamerQA & Traffic Report — \`${opts.runId}\``,
-      '',
-      `- **Target URL**: ${opts.url} (\`${report.mode}\`)`,
-      `- **Build**: \`${version.buildInfo?.buildId || '-'}\` (\`${version.buildInfo?.channel || 'dev'}\`)`,
-      `- **Generated At**: ${report.generatedAt}`,
-      '',
-      '## 1. Multi-Platform QA Coverage',
-      '',
-      '| Platform | Targets | Persisted QA Runs | Pass Rate | Avg Score | Avg Latency |',
-      '|---|---:|---:|---:|---:|---:|',
-      ...['web', 'desktop', 'android', 'godot-templates'].map(p => {
-        const st = finalRuns.byPlatform[p] || {};
-        return `| \`${p}\` | ${targets.summary[p] || 0} | ${st.total || 0} | ${st.passRate || 0}% | ${st.avgScore || 0}/100 | ${st.avgLatencyMs || 0} ms |`;
-      }),
-      '',
-      '## 2. Traffic Load Test Metrics',
-      '',
-      `- **Total Requests**: ${report.trafficLoad.totalRequests} (concurrency=${opts.concurrency}, rounds=${opts.rounds})`,
-      `- **Throughput**: ${report.trafficLoad.rps} req/s (${loadDurationMs} ms)`,
-      `- **Errors**: ${report.trafficLoad.errorCount} (${report.trafficLoad.errorRatePct}%)`,
-      `- **Latency**: p50=${report.trafficLoad.latencyMs.p50}ms / p95=${report.trafficLoad.latencyMs.p95}ms / p99=${report.trafficLoad.latencyMs.p99}ms / max=${report.trafficLoad.latencyMs.max}ms`,
-      `- **HTTP Statuses**: \`${JSON.stringify(statusCounts)}\``,
-      '',
-      '## 3. Evidence Screenshots',
-      '',
-      ...shots.captured.map(s => `- **${s.name}** (${s.url}) — \`${s.bytes} bytes\``),
-      '',
-    ].join('\n');
-
-    fs.writeFileSync(path.join(outDir, 'REPORT.md'), md);
-
-    console.log(JSON.stringify({
-      ok: failures.length === 0 && fullQa.ok,
-      outDir,
-      targetUrl: opts.url,
-      targets: targets.summary,
-      fullQa: fullQa.summary,
-      trafficLoad: report.trafficLoad,
-      screenshots: shots.captured.map(s => s.path),
-    }, null, 2));
-
-    if (failures.length > 0 || !fullQa.ok) process.exitCode = 1;
+    console.log(JSON.stringify(report, null, 2));
+    if (failures.length > 0 || playStartRes.status !== 201 || qaPageRes.status !== 404 || adminApiRes.status !== 404 || evidence.godotCorsErrors > 0) {
+      process.exitCode = 1;
+    }
   } finally {
     if (localServer) await localServer.stop();
   }

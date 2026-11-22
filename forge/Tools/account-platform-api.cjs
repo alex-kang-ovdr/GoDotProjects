@@ -7,12 +7,21 @@ const { createPlatformApi } = require('./platform-api.cjs');
 // verifyIdentity must validate signature, issuer, audience, expiry and the server
 // session. Never implement it using request body, query ownerId, email or headers
 // supplied as a claimed identity. No development identity fallback is provided.
+const ALLOWED_ISSUERS = new Set([
+  'accounts.google.com',
+  'https://accounts.google.com',
+  'https://playhub.local/auth/email',
+  'https://playhub.local/auth/naver',
+]);
 function accountKey(identity) {
-  if (!identity || !['accounts.google.com', 'https://accounts.google.com'].includes(identity.iss) ||
-      typeof identity.sub !== 'string' || !identity.sub || identity.sub.length > 255 || /[\x00-\x20\x7f]/.test(identity.sub)) {
+  const rawIss = identity?.iss;
+  const iss = (rawIss === 'accounts.google.com' || rawIss === 'https://accounts.google.com')
+    ? 'https://accounts.google.com'
+    : (ALLOWED_ISSUERS.has(rawIss) ? rawIss : null);
+  if (!iss || typeof identity?.sub !== 'string' || !identity.sub || identity.sub.length > 255 || /[\x00-\x20\x7f]/.test(identity.sub)) {
     throw Object.assign(new Error('Authentication required'), { status: 401 });
   }
-  return crypto.createHash('sha256').update('https://accounts.google.com\0' + identity.sub).digest('hex');
+  return crypto.createHash('sha256').update(iss + '\0' + identity.sub).digest('hex');
 }
 function createAccountPlatformApi({ root, directory, verifyIdentity, validateBuildForAccount, onStore, maxAccounts = 1024 } = {}) {
   if (typeof verifyIdentity !== 'function') throw new TypeError('A trusted server-side identity verifier is required');
