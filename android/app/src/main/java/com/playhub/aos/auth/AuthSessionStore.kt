@@ -15,7 +15,8 @@ data class AuthProfile(
     val parentalConsentVerified: Boolean,
     val coinBalance: Long,
     val accessToken: String? = null,
-    val refreshToken: String? = null
+    val refreshToken: String? = null,
+    val authProvider: String = if (isGuest) "guest" else "registered"
 )
 
 /**
@@ -41,7 +42,8 @@ class AuthSessionStore(context: Context) {
         val coins = prefs.getLong("coin_balance", 0L)
         val access = prefs.getString("access_token", null)
         val refresh = prefs.getString("refresh_token", null)
-        return AuthProfile(principalId, displayName, handle, isGuest, tier, regionCode, consent, coins, access, refresh)
+        val authProvider = prefs.getString("auth_provider", null) ?: if (isGuest) "guest" else "registered"
+        return AuthProfile(principalId, displayName, handle, isGuest, tier, regionCode, consent, coins, access, refresh, authProvider)
     }
 
     fun isAgeGateCompleted(): Boolean = prefs.getBoolean("age_gate_done", false)
@@ -55,12 +57,16 @@ class AuthSessionStore(context: Context) {
             .apply()
     }
 
+    fun lastAuthProvider(): String? = prefs.getString("last_auth_provider", null)
+
     fun saveRemoteTokens(tokens: MobileTokens) {
         prefs.edit()
             .putString("principal_id", tokens.principalId)
             .putString("display_name", tokens.displayName)
             .putString("handle", tokens.handle)
             .putBoolean("is_guest", tokens.isGuest)
+            .putString("auth_provider", tokens.authProvider)
+            .putString("last_auth_provider", tokens.authProvider)
             .putString("access_token", tokens.accessToken)
             .putString("refresh_token", tokens.refreshToken)
             .apply()

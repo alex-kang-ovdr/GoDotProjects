@@ -16,6 +16,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
@@ -1089,7 +1090,7 @@ class MainActivity : Activity() {
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 setPadding(0, dp(8), 0, dp(4))
-                addView(pillChip(if (profile.isGuest) "GUEST" else "GOOGLE", StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE))
+                addView(pillChip(profile.authProvider.uppercase(), StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE))
                 addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(dp(6), dp(1)) })
                 addView(pillChip("${profile.ageTier.name} (${profile.regionCode})", StitchColors.SURFACE_HIGH, StitchColors.ON_SURFACE_VARIANT))
                 if (remoteActiveParty != null) {
@@ -3334,6 +3335,10 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             background = roundedBg(StitchColors.SURFACE_CONTAINER, StitchColors.OUTLINE_VARIANT, 12)
 
+            addView(settingsNavRow(R.drawable.ic_lock, "로그인 · 계정 전환 (${profile.authProvider.uppercase()})") {
+                showAuthMethodDialog()
+            })
+            addView(settingsDivider())
             addView(settingsToggleRow(
                 iconRes = R.drawable.ic_notifications,
                 label = "친구 접속 및 초대 알림",
@@ -3416,6 +3421,118 @@ class MainActivity : Activity() {
             }
         }
         body.addView(paddedBox(logoutBtn, bottomDp = 12))
+    }
+
+    private fun showAuthMethodDialog() {
+        val last = authStore.lastAuthProvider()
+        fun label(base: String, provider: String) = if (last == provider) "$base · 최근 사용" else base
+        val options = arrayOf(
+            label("이메일 로그인", "email"),
+            "이메일 회원가입",
+            label("Google로 로그인", "google"),
+            label("네이버로 로그인", "naver"),
+            label("게스트로 계속하기", "guest")
+        )
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("로그인 방식 선택")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showEmailAuthDialog(isRegister = false)
+                    1 -> showEmailAuthDialog(isRegister = true)
+                    2 -> openSocialLogin("google")
+                    3 -> openSocialLogin("naver")
+                    4 -> switchToGuestAccount()
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun showEmailAuthDialog(isRegister: Boolean) {
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(12), dp(20), dp(4))
+        }
+        val emailInput = EditText(this).apply {
+            hint = "이메일 (name@example.com)"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        }
+        val nameInput = EditText(this).apply {
+            hint = "닉네임 (선택)"
+            inputType = InputType.TYPE_CLASS_TEXT
+        }
+        val passwordInput = EditText(this).apply {
+            hint = if (isRegister) "비밀번호 (8자 이상, 영문+숫자)" else "비밀번호"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        box.addView(emailInput)
+        if (isRegister) box.addView(nameInput)
+        box.addView(passwordInput)
+
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle(if (isRegister) "이메일 회원가입" else "이메일 로그인")
+            .setView(box)
+            .setPositiveButton(if (isRegister) "가입하기" else "로그인") { _, _ ->
+                val email = emailInput.text.toString().trim()
+                val password = passwordInput.text.toString()
+                val displayName = nameInput.text.toString().trim().ifEmpty { null }
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(this, "이메일과 비밀번호를 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                ioExecutor.execute {
+                    val client = PlayHubApiClient(activeFarm.baseUrl)
+                    val result = runCatching {
+                        if (isRegister) client.registerEmail(email, password, displayName, profile.accessToken)
+                        else client.loginEmail(email, password, profile.accessToken)
+                    }
+                    runOnUiThread {
+                        result.onSuccess { tokens ->
+                            authStore.saveRemoteTokens(tokens)
+                            profile = authStore.loadOrCreateGuest()
+                            Toast.makeText(this, if (isRegister) "이메일 회원가입 완료" else "이메일 로그인 완료", Toast.LENGTH_SHORT).show()
+                            renderTab(HubTab.MORE)
+                            syncWithActiveFarm()
+                        }.onFailure { err ->
+                            Toast.makeText(this, "인증 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun openSocialLogin(provider: String) {
+        val label = if (provider == "naver") "네이버" else "Google"
+        val startUrl = "${activeFarm.baseUrl.trimEnd('/')}/api/auth/$provider/start?returnTo=%2F%3Fview%3Daccount"
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("$label 로그인")
+            .setMessage("브라우저에서 $label 계정으로 안전하게 로그인합니다.")
+            .setPositiveButton("계속하기") { _, _ ->
+                runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(startUrl))) }
+                    .onFailure { Toast.makeText(this, "로그인 화면을 열 수 없습니다.", Toast.LENGTH_SHORT).show() }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun switchToGuestAccount() {
+        ioExecutor.execute {
+            val client = PlayHubApiClient(activeFarm.baseUrl)
+            val res = runCatching { client.createGuestSession() }
+            runOnUiThread {
+                res.onSuccess { tokens ->
+                    authStore.saveRemoteTokens(tokens)
+                    profile = authStore.loadOrCreateGuest()
+                    Toast.makeText(this, "게스트 계정으로 전환했습니다.", Toast.LENGTH_SHORT).show()
+                    renderTab(HubTab.MORE)
+                    syncWithActiveFarm()
+                }.onFailure { err ->
+                    Toast.makeText(this, "게스트 전환 실패: ${err.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun profileStatCell(value: String, label: String, valueColorHex: String, onClick: () -> Unit): LinearLayout =

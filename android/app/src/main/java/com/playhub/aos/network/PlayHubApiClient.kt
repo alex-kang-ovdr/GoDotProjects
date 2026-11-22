@@ -15,7 +15,15 @@ data class MobileTokens(
     val displayName: String,
     val handle: String,
     val isGuest: Boolean,
-    val ageTier: String
+    val ageTier: String,
+    val authProvider: String = if (isGuest) "guest" else "registered"
+)
+
+data class AuthProvidersDto(
+    val email: Boolean,
+    val google: Boolean,
+    val naver: Boolean,
+    val guest: Boolean
 )
 
 data class RemoteGameItem(
@@ -170,8 +178,46 @@ data class QuickMessageDto(
 class PlayHubApiClient(private val baseUrl: String) {
     private val normalizedBase = baseUrl.trimEnd('/')
 
+    @Suppress("UNCHECKED_CAST")
+    fun fetchAuthProviders(): AuthProvidersDto {
+        val resp = request("GET", "/api/mobile/auth/providers")!!
+        val p = resp.body["providers"] as? Map<String, Any?> ?: emptyMap()
+        return AuthProvidersDto(
+            email = p["email"] as? Boolean ?: true,
+            google = p["google"] as? Boolean ?: false,
+            naver = p["naver"] as? Boolean ?: false,
+            guest = p["guest"] as? Boolean ?: true
+        )
+    }
+
     fun createGuestSession(): MobileTokens {
         val resp = request("POST", "/api/mobile/auth/guest", bodyJson = "{}")!!
+        return parseTokenResponse(resp.body)
+    }
+
+    fun registerEmail(email: String, password: String, displayName: String? = null, accessToken: String? = null): MobileTokens {
+        val map = mutableMapOf<String, Any?>("email" to email, "password" to password)
+        if (!displayName.isNullOrBlank()) map["displayName"] = displayName
+        val resp = request("POST", "/api/mobile/auth/email/register", token = accessToken, bodyJson = MiniJson.stringify(map))!!
+        return parseTokenResponse(resp.body)
+    }
+
+    fun loginEmail(email: String, password: String, accessToken: String? = null): MobileTokens {
+        val payload = MiniJson.stringify(mapOf("email" to email, "password" to password))
+        val resp = request("POST", "/api/mobile/auth/email/login", token = accessToken, bodyJson = payload)!!
+        return parseTokenResponse(resp.body)
+    }
+
+    fun loginGoogle(idToken: String, nonce: String? = null, accessToken: String? = null): MobileTokens {
+        val map = mutableMapOf<String, Any?>("idToken" to idToken)
+        if (!nonce.isNullOrBlank()) map["nonce"] = nonce
+        val resp = request("POST", "/api/mobile/auth/google", token = accessToken, bodyJson = MiniJson.stringify(map))!!
+        return parseTokenResponse(resp.body)
+    }
+
+    fun loginNaver(naverAccessToken: String, accessToken: String? = null): MobileTokens {
+        val payload = MiniJson.stringify(mapOf("accessToken" to naverAccessToken))
+        val resp = request("POST", "/api/mobile/auth/naver", token = accessToken, bodyJson = payload)!!
         return parseTokenResponse(resp.body)
     }
 
@@ -637,7 +683,8 @@ class PlayHubApiClient(private val baseUrl: String) {
             displayName = prof["displayName"] as? String ?: "게스트 플레이어",
             handle = prof["handle"] as? String ?: "@guest",
             isGuest = prof["isGuest"] as? Boolean ?: true,
-            ageTier = comp["ageTier"] as? String ?: "UNKNOWN"
+            ageTier = comp["ageTier"] as? String ?: "UNKNOWN",
+            authProvider = prof["authProvider"] as? String ?: if (prof["isGuest"] as? Boolean ?: true) "guest" else "registered"
         )
     }
 
