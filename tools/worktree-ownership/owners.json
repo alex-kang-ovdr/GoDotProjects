@@ -458,6 +458,13 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "AI-Learning-Supply": {
+      "role": "플라이휠 2 창작자 공급 압도 엔진 (N4 11,826종 시맨틱 검색·킷배싱 · N1 RLVR 포팅 검증기 & Roblox X-등급 브리지 · N2 GLB 예산 게이트·소켓 정규화·VLM 비평)",
+      "owns": [
+        "tools/ai-supply/**",
+        "hub/tests/ai-learning-supply*.mjs"
+      ]
     }
   }
 }
