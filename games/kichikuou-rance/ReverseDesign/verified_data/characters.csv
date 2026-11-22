@@ -1,0 +1,34 @@
+id,nameKr,nameJp,nameEn,initialFactionId,unitClassId,homeTerritoryId,isPlayableSubordinate,hasDestinyPair,evidenceLevel
+chr_rance,란스,ランス,Rance,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
+chr_sill,시일 플라인,シィル・プライン,Sill Plain,fac_leazas,cls_clerics_support,ter_volgo_z,true,true,VERIFIED
+chr_lia,리아 파라파라 리자스,リア・パラパラ・リーザス,Lia Parapara Leazas,fac_leazas,cls_royal_guards,ter_leazas_castle,false,true,VERIFIED
+chr_maris,마리스 아마릴리스,マリス・アマリリス,Maris Amaryllis,fac_leazas,cls_mages,ter_leazas_castle,true,true,VERIFIED
+chr_barres,바레스 프로방스,バレス・プロヴァンス,Barres Provence,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
+chr_cordoba,코르도바 번,コルドバ・バーン,Cordoba Burn,fac_leazas,cls_royal_guards,ter_leazas_castle,true,false,VERIFIED
+chr_rick,릭 애디슨,リック・アディスン,Rick Addison,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
+chr_kanami,켄토 카나미,見当かなみ,Kanami Kentou,fac_leazas,cls_ninjas,ter_leazas_castle,true,true,VERIFIED
+chr_leila,레이라 그렉니,レイラ・グレクニー,Leila Grekny,fac_leazas,cls_royal_guards,ter_leazas_castle,true,true,VERIFIED
+chr_ex,엑스 뱅큇,エクス・バンケット,Ex Banquet,fac_ex_rebellion,cls_leazas_knights,ter_leazas_white_fort,true,false,VERIFIED
+chr_maria,마리아 커스터드,マリア・カスタード,Maria Custard,fac_free_cities,cls_artillery_tech,ter_custom,true,true,VERIFIED
+chr_shizuka,마소 시즈카,魔想志津香,Shizuka Masou,fac_free_cities,cls_mages,ter_custom,true,true,VERIFIED
+chr_soul,소울,ソウル,Soul,fac_free_cities,cls_brawlers,ter_volgo_z,true,false,VERIFIED
+chr_miru,미르 요크스,ミル・ヨークス,Miru Yorks,fac_free_cities,cls_kaiju_beasts,ter_custom,true,true,VERIFIED
+chr_kentarou,오가와 켄타로,小川健太郎,Kentarou Ogawa,fac_free_cities,cls_brawlers,ter_ice,true,false,VERIFIED
+chr_miki,쿠루스 미키 (리틀 프린세스),来水美樹（リトルプリンセス）,Miki Kurusu (Little Princess),fac_free_cities,cls_demons,ter_ice,true,true,VERIFIED
+chr_patton,패튼 미스날지,パットン・ミスナルジ,Patton Misnarge,fac_helman,cls_helman_knights,ter_lang_bau,true,false,VERIFIED
+chr_sheila,실라 헬만,シーラ・ヘルマン,Sheila Helman,fac_helman,cls_helman_knights,ter_lang_bau,true,true,VERIFIED
+chr_hunty,헌티 카라,ハンティ・カラー,Hunty Kalar,fac_helman,cls_kalars,ter_lang_bau,true,true,VERIFIED
+chr_freak,프리크 파라핀,フリーク・パラフィン,Freak Paraffin,fac_helman,cls_artillery_tech,ter_helman_central,true,false,VERIFIED
+chr_freya,프레이야 이둔,フレイヤ・イドゥン,Freya Idun,fac_helman,cls_ninjas,ter_helman_central,true,true,VERIFIED
+chr_gandhi,간지 더 간지,ガンジー・ザ・ガンジー,Gandhi the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,false,VERIFIED
+chr_magic,매직 더 간지,マジック・ザ・ガンジー,Magic the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,true,VERIFIED
+chr_nagi,나기 스 라갈,ナギ・ス・ラガール,Nagi Su Lagal,fac_zeth,cls_mages,ter_tape,true,true,VERIFIED
+chr_chizuko,야마다 치즈코,山田千鶴子,Chizuko Yamada,fac_zeth,cls_mages,ter_adam_stronghold,true,true,VERIFIED
+chr_mulala,교황 무라라,教皇ムーララ,Pope Mulala,fac_al_church,cls_clerics_support,ter_al_hq,false,false,INTERPRETED
+chr_isoroku,야마모토 이소로쿠,山本五十六,Isoroku Yamamoto,fac_japan,cls_archers,ter_japan_main,true,true,VERIFIED
+chr_kayblis,케이브리스,ケイブリス,Kayblis,fac_demon_kayblis,cls_demons,ter_sulphur_forest,false,false,VERIFIED
+chr_hornet,호넷,ホーネット,Hornet,fac_demon_hornet,cls_demons,ter_hornet_castle,false,true,VERIFIED
+chr_warg,와그 아카,ワーグ・アーカ,Warg Aka,fac_demon_kayblis,cls_demons,ter_demon_frontier,true,true,VERIFIED
+chr_satella,사테라,サテラ,Satella,fac_demon_hornet,cls_demons,ter_hornet_castle,true,true,VERIFIED
+chr_haniwa_king,하니와 킹,ハニワキング,Haniwa King,fac_independent_ancient,cls_hannies,ter_sasa_lake,true,false,VERIFIED
+chr_rudrasaum,창조신 루드라사움,創造神ルドラサウム,Ludo-Rathowm (Creator),fac_independent_ancient,cls_demons,ter_rudrasaum_ruins,false,false,VERIFIED

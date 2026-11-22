@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "1.0.0",
+  "gameId": "kichikuou-rance",
+  "sourceBasis": "AliceSoft Wiki (Kichikuou Rance:Endings & Kichikuou Rance:Destiny) + JP strategy wikis. 12 main endings fully verified by title and trigger; 2 sub-variant slots of the documented 14-ending catalog marked NEEDS_VERIFICATION and logged in DATA_GAPS.md.",
+  "mainEndingCountDocumented": 14,
+  "characterDestinySystem": {
+    "trackedFemaleCharacters": 66,
+    "outcomesPerCharacter": 2,
+    "totalDestinyEntries": 132,
+    "mutuallyExclusiveConstraint": true,
+    "description": "엔딩 달성 시 주요 여성 캐릭터 66명에 대해 각각 행복(Fortune) 또는 불행(Misfortune) 결말이 별도 집계되며, 단일 회차에서 전원 행복 동시 달성은 시스템상 불가능하다.",
+    "evidenceLevel": "VERIFIED"
+  },
+  "endings": [
+    {
+      "id": "end_bliss",
+      "nameKr": "지복 (진 엔딩)",
+      "nameEn": "Bliss",
+      "category": "TRUE_END",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_volgo_z_sill_deadline", "evt_warg_defection_and_chaos", "evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_sill", "chr_warg", "chr_rudrasaum"],
+      "conditionSummary": "샹그릴라 제외 전 영토 정복 후 케이브리스 격파 → 창조신 페이즈 진입 → 시일 생존/보유 상태에서 마인 와그가 루드라사움을 꿈에 재움.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_world_king",
+      "nameKr": "세계왕",
+      "nameEn": "World King",
+      "category": "CREATOR_GOOD_ALT",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_warg_defection_and_chaos", "evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_warg", "chr_rudrasaum"],
+      "conditionSummary": "창조신 페이즈에서 마인 와그가 루드라사움을 꿈에 재우되, 시일이 로스터/생존 상태에 없음.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_servant",
+      "nameKr": "신의 종",
+      "nameEn": "Servant",
+      "category": "CREATOR_ALT",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_volgo_z_sill_deadline", "evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_sill", "chr_rudrasaum"],
+      "conditionSummary": "창조신 페이즈에서 루드라사움과 대면하여 시일 보유 상태로 세계에 혼돈을 창조하는 데 동의.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_god",
+      "nameKr": "신 (리셋/유폐)",
+      "nameEn": "God",
+      "category": "CREATOR_BAD",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_rudrasaum"],
+      "conditionSummary": "창조신 페이즈에서 루드라사움에게 패배하거나 신의 미궁(God Cave)에 갇힘.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_unification",
+      "nameKr": "대륙 통일",
+      "nameEn": "Unification",
+      "category": "STANDARD_CLEAR",
+      "phase": "MONSTER_REALM",
+      "requiredEventIds": ["evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_kayblis"],
+      "conditionSummary": "샹그릴라 제외 모든 영토를 정복하기 전에 유황의 숲에서 케이브리스 격파.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_to_outer_space",
+      "nameKr": "우주로 (마리아 엔딩)",
+      "nameEn": "To Outer Space",
+      "category": "SPECIAL_CHARACTER_END",
+      "phase": "HUMAN_REALM",
+      "requiredEventIds": ["evt_custom_annexation_bundle", "evt_maria_tulip_100"],
+      "requiredCharacterIds": ["chr_rance", "chr_maria"],
+      "conditionSummary": "마리아 커스터드의 튤립 100호 로켓 개발 프로젝트를 끝까지 완성.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_demon_king_1",
+      "nameKr": "마왕 1 (사테라 루트)",
+      "nameEn": "Demon King (1)",
+      "category": "SPECIAL_DARK_END",
+      "phase": "MONSTER_REALM",
+      "requiredEventIds": ["evt_satella_proposal"],
+      "requiredCharacterIds": ["chr_rance", "chr_satella"],
+      "conditionSummary": "마인 사테라의 제안을 수락해 란스가 마왕으로 변모.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_demon_king_2",
+      "nameKr": "마왕 2 (리틀 프린세스 루트)",
+      "nameEn": "Demon King (2)",
+      "category": "SPECIAL_DARK_END",
+      "phase": "MONSTER_REALM",
+      "requiredEventIds": ["evt_miki_kentarou_demon_king_crisis"],
+      "requiredCharacterIds": ["chr_rance", "chr_miki"],
+      "conditionSummary": "미키(리틀 프린세스)에게 금기 이벤트를 발동시켜 마왕 각성 결말 유발.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_bandit_king",
+      "nameKr": "도적왕",
+      "nameEn": "Bandit King",
+      "category": "EARLY_SPECIAL_END",
+      "phase": "BANDIT_PROLOGUE",
+      "requiredEventIds": ["evt_bandit_prologue_ruberan"],
+      "requiredCharacterIds": ["chr_rance"],
+      "conditionSummary": "프롤로그 도적 페이즈에서 헬만 유적 경비대(루베란) 토벌군을 격파.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_assassinated",
+      "nameKr": "암살",
+      "nameEn": "Assassinated",
+      "category": "HAZARD_BAD_END",
+      "phase": "HUMAN_REALM",
+      "requiredEventIds": ["evt_kanami_shinobu_assassination"],
+      "requiredCharacterIds": ["chr_rance", "chr_kanami"],
+      "conditionSummary": "시노부 암살 이벤트 패배 또는 카나미 지속 혹사 후 코드(Code) 암살 이벤트 발동.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_death",
+      "nameKr": "전사",
+      "nameEn": "Death",
+      "category": "GAME_OVER",
+      "phase": "ANY",
+      "requiredEventIds": [],
+      "requiredCharacterIds": ["chr_rance"],
+      "conditionSummary": "전투 중 지휘관 란스의 HP가 0에 도달해 전사.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_defeat",
+      "nameKr": "패배 (수도 함락)",
+      "nameEn": "Defeat",
+      "category": "GAME_OVER",
+      "phase": "ANY",
+      "requiredEventIds": [],
+      "requiredCharacterIds": ["chr_rance", "chr_lia"],
+      "conditionSummary": "본거지 리자스성이 적 세력에게 함락됨.",
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "end_servant_no_sill_variant",
+      "nameKr": "신의 종 (시일 부재 변형 / 슬롯 13 추정)",
+      "nameEn": "Servant (Variant / Unverified Slot 13)",
+      "category": "CREATOR_ALT",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_rudrasaum"],
+      "conditionSummary": "문헌상 14개 메인 엔딩 목록 중 미확인 슬롯 13. 시일 부재 상태의 창조신 대면/복종 분기 여부 원문 교차검증 필요(DATA_GAPS.md 참조).",
+      "evidenceLevel": "NEEDS_VERIFICATION"
+    },
+    {
+      "id": "end_lia_leazas_branch",
+      "nameKr": "리아/리자스 구속 분기 (슬롯 14 추정)",
+      "nameEn": "Lia / Leazas Special Branch (Unverified Slot 14)",
+      "category": "SPECIAL_CHARACTER_END",
+      "phase": "CREATOR_PHASE",
+      "requiredEventIds": ["evt_creator_phase_unlock"],
+      "requiredCharacterIds": ["chr_rance", "chr_lia"],
+      "conditionSummary": "시일 사망·리아 구속/임신 등 리자스 귀속 엔딩이 14개 목록의 별도 슬롯인지 World King 하위 분기인지 원문 검증 필요(DATA_GAPS.md 참조).",
+      "evidenceLevel": "NEEDS_VERIFICATION"
+    }
+  ]
+}

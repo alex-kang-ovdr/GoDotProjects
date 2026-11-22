@@ -1,0 +1,30 @@
+id,nameKr,nameJp,nameEn,region,initialOwnerFactionId,strategicType,countsForCreatorConquest,adjacentIds,evidenceLevel
+ter_leazas_castle,리자스성,リーザス城,Leazas Castle,LEAZAS,fac_leazas,CAPITAL,true,ter_leazas_white_fort|ter_leazas_south|ter_ice|ter_volgo_z,VERIFIED
+ter_leazas_white_fort,백군 반란 거점,白軍反乱拠点,White Army Rebel Stronghold,LEAZAS,fac_ex_rebellion,FORTRESS,true,ter_leazas_castle|ter_leazas_north|ter_helman_east,VERIFIED
+ter_leazas_north,리자스 북부,リーザス北部,North Leazas,LEAZAS,fac_leazas,FRONTIER_PROVINCE,true,ter_leazas_white_fort|ter_volgo_z|ter_helman_east,RECONSTRUCTED
+ter_leazas_south,리자스 남부,リーザス南部,South Leazas,LEAZAS,fac_leazas,PROVINCE,true,ter_leazas_castle|ter_ice|ter_custom,RECONSTRUCTED
+ter_ice,아이스,アイス,Ice,FREE_CITIES,fac_free_cities,CITY,true,ter_leazas_castle|ter_leazas_south|ter_custom|ter_radil,VERIFIED
+ter_custom,커스텀,カスタム,Custom,FREE_CITIES,fac_free_cities,TECH_CITY,true,ter_leazas_south|ter_ice|ter_radil|ter_al_hq|ter_tape,VERIFIED
+ter_radil,라질,ラジール,Radil,FREE_CITIES,fac_free_cities,CITY,true,ter_ice|ter_custom|ter_sasa_lake|ter_adam_stronghold,VERIFIED
+ter_sasa_lake,사사호 (호저미궁),ササ湖（湖底迷宮）,Lake Sasa & Underwater Dungeon,FREE_CITIES,fac_free_cities,DUNGEON_SITE,true,ter_radil|ter_portugal,VERIFIED
+ter_portugal,포르투갈,ポルトガル,Portugal,FREE_CITIES,fac_free_cities,PORT_CITY,true,ter_sasa_lake|ter_al_hq|ter_japan_main,VERIFIED
+ter_al_hq,AL교 총본산,AL教総本山,AL Church Headquarters,AL_CHURCH,fac_al_church,HOLY_CAPITAL,true,ter_custom|ter_portugal|ter_amber_city,VERIFIED
+ter_japan_main,JAPAN 본토,JAPAN本土,JAPAN Mainland,JAPAN,fac_japan,ISLAND_CAPITAL,true,ter_portugal|ter_japan_kurobe,VERIFIED
+ter_japan_kurobe,JAPAN 외곽(타네가시마·쿠로베),JAPAN外郭（種子島・黒部）,JAPAN Outer Province,JAPAN,fac_japan,PROVINCE,true,ter_japan_main,RECONSTRUCTED
+ter_volgo_z,볼고 Z,ボルゴZ,Volgo Z,HELMAN,fac_helman,PRISON_FORTRESS,true,ter_leazas_castle|ter_leazas_north|ter_helman_east|ter_helman_south,VERIFIED
+ter_helman_east,동부 헬만,東ヘルマン,East Helman,HELMAN,fac_helman,PROVINCE,true,ter_leazas_white_fort|ter_leazas_north|ter_volgo_z|ter_helman_central,VERIFIED
+ter_helman_south,남부 헬만,南ヘルマン,South Helman,HELMAN,fac_helman,PROVINCE,true,ter_volgo_z|ter_helman_central|ter_adam_stronghold,VERIFIED
+ter_helman_central,중부 헬만,中央ヘルマン,Central Helman,HELMAN,fac_helman,PROVINCE,true,ter_helman_east|ter_helman_south|ter_lang_bau|ter_helman_west,VERIFIED
+ter_lang_bau,랑 바우,ラング・バウ,Lang Bau,HELMAN,fac_helman,CAPITAL,true,ter_helman_central|ter_helman_west,VERIFIED
+ter_helman_west,서부 헬만,西ヘルマン,West Helman,HELMAN,fac_helman,FRONTIER_PROVINCE,true,ter_helman_central|ter_lang_bau|ter_maginot_line,VERIFIED
+ter_adam_stronghold,아담 요새,アダム砦,Adam Stronghold,ZETH,fac_zeth,ELEMENTAL_TOWER,true,ter_radil|ter_helman_south|ter_tape|ter_old_zeth,VERIFIED
+ter_tape,테이프,テープ,Tape,ZETH,fac_zeth,ELEMENTAL_TOWER,true,ter_custom|ter_adam_stronghold|ter_amber_city|ter_old_zeth,VERIFIED
+ter_amber_city,앰버 시티,アンバーシティ,Amber City,ZETH,fac_zeth,ELEMENTAL_TOWER,true,ter_al_hq|ter_tape|ter_old_zeth|ter_shangri_la,VERIFIED
+ter_old_zeth,올드 제스,オールドゼス,Old Zeth,ZETH,fac_zeth,CAPITAL,true,ter_adam_stronghold|ter_tape|ter_amber_city|ter_zeth_west,VERIFIED
+ter_zeth_west,제스 서부 (성녀의 미궁),ゼス西部（聖女の迷宮）,West Zeth & Saint Dungeon,ZETH,fac_zeth,DUNGEON_FRONTIER,true,ter_old_zeth|ter_maginot_line,INTERPRETED
+ter_maginot_line,마지노선,マジノライン,Maginot Line,MONSTER_REALM,fac_demon_kayblis,BORDER_BARRIER,true,ter_helman_west|ter_zeth_west|ter_demon_frontier|ter_hornet_castle,VERIFIED
+ter_demon_frontier,마계 전선,魔界前線,Monster Realm Frontier,MONSTER_REALM,fac_demon_kayblis,DEMON_DOMAIN,true,ter_maginot_line|ter_hornet_castle|ter_sulphur_forest,VERIFIED
+ter_hornet_castle,호넷 거점,ホーネット拠点,Hornet Stronghold,MONSTER_REALM,fac_demon_hornet,DEMON_FORTRESS,true,ter_maginot_line|ter_demon_frontier|ter_sulphur_forest,INTERPRETED
+ter_sulphur_forest,유황의 숲 (마왕성),硫黄の森（魔王城）,Sulphur Forest (Demon King Castle),MONSTER_REALM,fac_demon_kayblis,ENDGAME_CAPITAL,true,ter_demon_frontier|ter_hornet_castle|ter_rudrasaum_ruins,VERIFIED
+ter_shangri_la,샹그릴라,シャングリラ,Shangri-La,SPECIAL,fac_independent_ancient,OPTIONAL_MYSTIC_CITY,false,ter_amber_city,VERIFIED
+ter_rudrasaum_ruins,루드라사움 유적 (신의 미궁),ルドラサウム遺跡（神の迷宮）,Rudrasaum Ruins (God Cave),CREATOR_REALM,fac_independent_ancient,CREATOR_ENDGAME,false,ter_sulphur_forest,VERIFIED

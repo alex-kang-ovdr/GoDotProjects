@@ -1,0 +1,11 @@
+id,nameKr,nameJp,nameEn,leaderCharacterId,capitalTerritoryId,diplomaticStance,campaignPhase,evidenceLevel
+fac_leazas,리자스 왕국,リーザス王国,Kingdom of Leazas,chr_rance,ter_leazas_castle,PLAYER,LEAZAS_REBELLION,VERIFIED
+fac_ex_rebellion,리자스 백군 반란군,リーザス白軍反乱軍,Ex Rebellion (White Army),chr_ex,ter_leazas_white_fort,HOSTILE_EARLY,LEAZAS_REBELLION,VERIFIED
+fac_free_cities,자유도시연합,自由都市地帯,Free Cities Alliance,chr_maria,ter_custom,NEUTRAL_EXPANDABLE,HUMAN_REALM,INTERPRETED
+fac_helman,헬만 제국,ヘルマン帝国,Helman Empire,chr_patton,ter_lang_bau,HOSTILE_MAJOR,HUMAN_REALM,VERIFIED
+fac_zeth,제스 왕국,ゼス王国,Magic Kingdom of Zeth,chr_gandhi,ter_old_zeth,HOSTILE_MAJOR,HUMAN_REALM,VERIFIED
+fac_al_church,AL교,AL教,AL Church,chr_mulala,ter_al_hq,NEUTRAL_RELIGIOUS,HUMAN_REALM,VERIFIED
+fac_japan,JAPAN,JAPAN,JAPAN,chr_isoroku,ter_japan_main,NEUTRAL_ISLAND,HUMAN_REALM,VERIFIED
+fac_demon_kayblis,마인군 (케이브리스파),魔人軍（ケイブリス派）,Monster Realm (Kayblis Faction),chr_kayblis,ter_sulphur_forest,CRISIS_ENDGAME,MONSTER_REALM,VERIFIED
+fac_demon_hornet,마인군 (호넷파),魔人軍（ホーネット派）,Monster Realm (Hornet Faction),chr_hornet,ter_hornet_castle,NEUTRAL_FACTIONAL,MONSTER_REALM,VERIFIED
+fac_independent_ancient,독립·고대·신계 세력,独立・迷宮・創造神勢力,Independent Shangri-La & Creator Forces,chr_rudrasaum,ter_rudrasaum_ruins,SPECIAL_ENDGAME,CREATOR_PHASE,RECONSTRUCTED

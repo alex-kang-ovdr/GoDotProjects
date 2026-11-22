@@ -1,0 +1,15 @@
+id,nameKr,nameJp,nameEn,attackType,preferredRow,canAttackFromBack,triggersRetaliation,role,evidenceLevel
+cls_leazas_knights,리자스 기사단,リーザス騎士団,Leazas Knights,DIRECT,FRONT,false,true,BALANCED_VANGUARD,VERIFIED
+cls_helman_knights,헬만 기사단,ヘルマン騎士団,Helman Knights,DIRECT,FRONT,false,true,HEAVY_STRIKER,VERIFIED
+cls_royal_guards,근위대·중장보병,親衛隊・重装歩兵,Royal Guards / Heavy Infantry,DIRECT,FRONT,false,true,TANK_WALL,VERIFIED
+cls_soldiers_militia,일반병·의용병,一般兵・義勇兵,Soldiers / Militia,DIRECT,FRONT,false,true,LOW_COST_INFANTRY,VERIFIED
+cls_brawlers,격투가·전사,格闘家・戦士,Brawlers / Fighters,DIRECT,FRONT,false,true,SKIRMISHER_DUELIST,VERIFIED
+cls_mages,마법사·제스 마도사,魔法使い・ゼス魔導師,Mages / Magic Warriors,MAGIC,BACK,true,false,MAGIC_ARTILLERY,VERIFIED
+cls_archers,궁병·JAPAN 궁수대,弓兵・JAPAN弓部隊,Archers / JAPAN Archers,RANGED_BOW,BACK,true,false,RANGED_DPS,VERIFIED
+cls_ninjas,닌자·첩보대,忍者・諜報部隊,Ninjas / Scouts,SUPPORT_NINJA,BACK,true,false,ESPIONAGE_SUPPORT,VERIFIED
+cls_artillery_tech,전차·포병·기계병,戦車・マリア技術班・フリークロボ,Artillery / Maria's Pupils / Freak Robots,RANGED_SIEGE,BACK,true,false,HEAVY_FIREPOWER,VERIFIED
+cls_clerics_support,승려·신관·지원,僧侶・神官,Clerics / Support,MAGIC_SUPPORT,BACK,true,false,HEALER_SUPPORT,VERIFIED
+cls_kalars,카라 마도전사,カラー,Kalars,MAGIC,BACK,true,false,ELITE_MAGIC_HYBRID,VERIFIED
+cls_hannies,하니와,ハニワ,Hannies,SPECIAL_MAGIC,FRONT,true,false,ANOMALY_ELITE,VERIFIED
+cls_kaiju_beasts,괴수·환수,怪獣・幻獣,Kaiju / Phantom Beasts,DIRECT,FRONT,false,true,MONSTER_JUGGERNAUT,VERIFIED
+cls_demons,마인·마물군,魔人・魔物軍,Demons / Dark Lords,DEMON_HYBRID,FRONT,true,true,ENDGAME_APEX,VERIFIED

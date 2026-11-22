@@ -458,6 +458,12 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "PlayHub-JavaGames-kichikuou-rance": {
+      "role": "귀축왕 란스 (Kichikuou Rance) 역기획서 · 원작 데이터 복원 · 전략 시뮬레이션+캐릭터 시나리오 엔진 설계",
+      "owns": [
+        "games/kichikuou-rance/**"
+      ]
     }
   }
 }

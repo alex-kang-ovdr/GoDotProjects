@@ -1,0 +1,282 @@
+{
+  "schemaVersion": "1.0.0",
+  "gameId": "kichikuou-rance",
+  "calendarSystem": "LP Year/Month/Week (1 turn = 1 week)",
+  "sourceBasis": "Verified scenario chains, conquest-order dependencies, and calendar/week timers from AliceSoft Wiki (Kichikuou Rance:Walkthrough & Endings) and JP strategy wikis.",
+  "events": [
+    {
+      "id": "evt_bandit_prologue_ruberan",
+      "nameKr": "도적 프롤로그: 루베란 토벌대 격파 분기",
+      "category": "PROLOGUE_BRANCH",
+      "phase": "BANDIT_PROLOGUE",
+      "timerSpec": { "type": "PHASE_LOCKED", "deadline": null },
+      "triggerCondition": "phase == 'BANDIT_PROLOGUE' && defeated(ruberan_ruins_guard)",
+      "relatedTerritoryIds": ["ter_helman_east"],
+      "relatedCharacterIds": ["chr_rance", "chr_sill"],
+      "relatedFactionIds": ["fac_helman"],
+      "stateMutations": [
+        "IF player defeats Ruberan -> triggerEnding('end_bandit_king')",
+        "ELSE (normal retreat) -> imprison(chr_sill, chr_soul, 'ter_volgo_z'); setPhase('LEAZAS_REBELLION')"
+      ],
+      "unlockedEndingIds": ["end_bandit_king"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_ex_rebellion_suppression",
+      "nameKr": "리자스 백군 반란 진압 및 자유 확장 개방",
+      "category": "PHASE_GATE",
+      "phase": "LEAZAS_REBELLION",
+      "timerSpec": { "type": "STARTS_COUNTDOWN", "offsetWeeks": "69-73" },
+      "triggerCondition": "owner('ter_leazas_white_fort') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_leazas_castle", "ter_leazas_white_fort"],
+      "relatedCharacterIds": ["chr_rance", "chr_ex", "chr_lia", "chr_barres", "chr_cordoba"],
+      "relatedFactionIds": ["fac_leazas", "fac_ex_rebellion"],
+      "stateMutations": [
+        "setPhase('HUMAN_REALM')",
+        "enableRecruit('chr_ex')",
+        "startGlobalTimer('monster_realm_invasion', weeks=69..73, modifier='ter_shangri_la_status')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_volgo_z_soul_deadline",
+      "nameKr": "볼고 Z 소울 구출 시한",
+      "category": "CHARACTER_DEADLINE",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "ABSOLUTE_CALENDAR", "deadline": "LP 3/08/3" },
+      "triggerCondition": "owner('ter_volgo_z') == 'fac_leazas' && currentDate <= '3/08/3'",
+      "relatedTerritoryIds": ["ter_volgo_z"],
+      "relatedCharacterIds": ["chr_soul"],
+      "relatedFactionIds": ["fac_leazas", "fac_helman"],
+      "stateMutations": [
+        "IF rescued -> recruit('chr_soul'); setFlag('soul_rescued', true); unlockChain('bound_library_recruit')",
+        "ELSE -> markLost('chr_soul'); lockChain('bound_library_recruit')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_volgo_z_sill_deadline",
+      "nameKr": "볼고 Z 시일 구출 시한",
+      "category": "CHARACTER_DEADLINE",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "ABSOLUTE_CALENDAR", "deadline": "LP 4/01/3" },
+      "triggerCondition": "owner('ter_volgo_z') == 'fac_leazas' && currentDate <= '4/01/3'",
+      "relatedTerritoryIds": ["ter_volgo_z"],
+      "relatedCharacterIds": ["chr_sill", "chr_shizuka", "chr_nagi"],
+      "relatedFactionIds": ["fac_leazas", "fac_helman"],
+      "stateMutations": [
+        "IF rescued -> recruit('chr_sill'); setFlag('sill_alive', true); setDestiny('chr_sill', 'FORTUNE_ELIGIBLE')",
+        "ELSE -> setFlag('sill_alive', false); setDestiny('chr_sill', 'MISFORTUNE'); lockEnding('end_bliss')"
+      ],
+      "unlockedEndingIds": ["end_bliss", "end_world_king"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_custom_annexation_bundle",
+      "nameKr": "자유도시 커스텀 병합 및 인재 일괄 합류",
+      "category": "TERRITORY_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "owner('ter_custom') == 'fac_leazas' && flag('custom_annexation_accepted')",
+      "relatedTerritoryIds": ["ter_custom", "ter_leazas_castle"],
+      "relatedCharacterIds": ["chr_maria", "chr_shizuka", "chr_miru"],
+      "relatedFactionIds": ["fac_leazas", "fac_free_cities"],
+      "stateMutations": [
+        "recruitBatch(['chr_maria', 'chr_shizuka', 'chr_miru'])",
+        "unlockBuilding('ter_leazas_castle', 'maria_research_lab')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_maria_tulip_100",
+      "nameKr": "마리아 튤립 100호 로켓 개발 완료",
+      "category": "CHARACTER_SCENARIO_ENDING",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "PROGRESS_COUNTER", "deadline": null },
+      "triggerCondition": "recruited('chr_maria') && buildingExists('maria_research_lab') && progress('tulip_100') >= 100",
+      "relatedTerritoryIds": ["ter_leazas_castle", "ter_custom"],
+      "relatedCharacterIds": ["chr_maria", "chr_rance"],
+      "relatedFactionIds": ["fac_leazas"],
+      "stateMutations": [
+        "IF player lets Tulip 100 complete -> triggerEnding('end_to_outer_space')"
+      ],
+      "unlockedEndingIds": ["end_to_outer_space"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_helman_freya_sabotage",
+      "nameKr": "헬만 개전 후 프레이야 식량 독살·자금 유출 공작",
+      "category": "FACTION_COUNTER_CRISIS",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "RELATIVE_WEEKS", "offsetWeeks": "1-3 after Helman war" },
+      "triggerCondition": "warStarted('fac_helman') && !captured('chr_freya')",
+      "relatedTerritoryIds": ["ter_helman_central", "ter_leazas_castle"],
+      "relatedCharacterIds": ["chr_freya", "chr_rance"],
+      "relatedFactionIds": ["fac_helman", "fac_leazas"],
+      "stateMutations": [
+        "drainGoldPeriodic()",
+        "IF cityActionVisited(targetCity) || itemPurchased('ninja_glue') -> counterSabotage(); enableCapture('chr_freya')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_zeth_shizuka_duel_timer",
+      "nameKr": "제스 개전 5주 후 시즈카 결투·아담/테이프 순서 분기",
+      "category": "CONQUEST_ORDER_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "RELATIVE_WEEKS", "offsetWeeks": "5 weeks after Zeth war" },
+      "triggerCondition": "warStarted('fac_zeth') && weeksSince('zeth_war_start') >= 5",
+      "relatedTerritoryIds": ["ter_adam_stronghold", "ter_tape"],
+      "relatedCharacterIds": ["chr_shizuka", "chr_nagi", "chr_sill"],
+      "relatedFactionIds": ["fac_zeth", "fac_leazas"],
+      "stateMutations": [
+        "IF owner('ter_adam_stronghold') == 'fac_leazas' && conqueredBeforeDuel('ter_tape') -> setDestiny('chr_shizuka', 'MISFORTUNE_RISK')",
+        "IF flag('sill_alive') && ranceActionStateValid -> enableRecruit('chr_nagi'); preserve('chr_shizuka')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_zeth_four_towers_collapse",
+      "nameKr": "제스 사천왕 4탑 붕괴 및 잔여 영토 자동 병합",
+      "category": "FACTION_COLLAPSE_RULE",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "defeatedTowers(['fire', 'ice', 'thunder', 'light']) == 4",
+      "relatedTerritoryIds": ["ter_adam_stronghold", "ter_tape", "ter_amber_city", "ter_old_zeth", "ter_zeth_west"],
+      "relatedCharacterIds": ["chr_gandhi", "chr_magic", "chr_chizuko"],
+      "relatedFactionIds": ["fac_zeth", "fac_leazas"],
+      "stateMutations": [
+        "transferAllRemainingTerritories('fac_zeth', 'fac_leazas')",
+        "resolveZethRoyaltyEvents(['chr_gandhi', 'chr_magic'])"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_lake_sasa_haniwa_king",
+      "nameKr": "사사호 알루미늄 도끼 선택 및 지하 66층 하니와 킹 영입",
+      "category": "SECRET_DUNGEON_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "IRREVERSIBLE_CHOICE", "deadline": null },
+      "triggerCondition": "taxEvent('ter_radil') == 'aluminum_axe' && !recruited('kaiju_prince') && visit('ter_sasa_lake')",
+      "relatedTerritoryIds": ["ter_radil", "ter_sasa_lake"],
+      "relatedCharacterIds": ["chr_haniwa_king"],
+      "relatedFactionIds": ["fac_free_cities", "fac_independent_ancient"],
+      "stateMutations": [
+        "IF choice == 'golden_axe' -> permanentlyLockDungeon('ter_sasa_lake')",
+        "IF choice == 'aluminum_axe' -> openDungeon('ter_sasa_lake', floors=66); IF clearB66F_twice && trade('julia') -> recruit('chr_haniwa_king')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_kanami_shinobu_assassination",
+      "nameKr": "카나미 처우 누적·시노부 암살 위기",
+      "category": "CHARACTER_HAZARD",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "THRESHOLD_COUNTER", "deadline": null },
+      "triggerCondition": "mistreatmentCount('chr_kanami') >= threshold || shinobuAssassinationFailed()",
+      "relatedTerritoryIds": ["ter_leazas_castle"],
+      "relatedCharacterIds": ["chr_kanami", "chr_rance"],
+      "relatedFactionIds": ["fac_leazas"],
+      "stateMutations": [
+        "spawnAssassin('code_or_shinobu')",
+        "triggerEnding('end_assassinated')"
+      ],
+      "unlockedEndingIds": ["end_assassinated"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_miki_kentarou_demon_king_crisis",
+      "nameKr": "미키(리틀 프린세스) 마왕 각성 및 Pi-R 포획 위기",
+      "category": "GLOBAL_CRISIS",
+      "phase": "MONSTER_REALM",
+      "timerSpec": { "type": "STATE_HAZARD", "deadline": null },
+      "triggerCondition": "mikiMistreated() || mikiCapturedByPiR()",
+      "relatedTerritoryIds": ["ter_ice", "ter_sulphur_forest"],
+      "relatedCharacterIds": ["chr_miki", "chr_kentarou", "chr_kayblis", "chr_satella"],
+      "relatedFactionIds": ["fac_free_cities", "fac_demon_kayblis"],
+      "stateMutations": [
+        "IF mikiMistreated() -> triggerEnding('end_demon_king_2')",
+        "IF mikiCapturedByPiR() -> setFlag('kayblis_invincible_demon_king', true)"
+      ],
+      "unlockedEndingIds": ["end_demon_king_2"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_satella_proposal",
+      "nameKr": "마인 사테라 제안 및 미키 호위 합류 분기",
+      "category": "CHARACTER_BRANCH",
+      "phase": "MONSTER_REALM",
+      "timerSpec": { "type": "CHOICE_GATE", "deadline": null },
+      "triggerCondition": "encountered('chr_satella') && flag('miki_active')",
+      "relatedTerritoryIds": ["ter_hornet_castle", "ter_leazas_castle"],
+      "relatedCharacterIds": ["chr_satella", "chr_miki", "chr_rance"],
+      "relatedFactionIds": ["fac_demon_hornet", "fac_leazas"],
+      "stateMutations": [
+        "IF acceptProposal('chr_satella') -> triggerEnding('end_demon_king_1')",
+        "ELSE -> enableAlly('chr_satella', role='miki_protector')"
+      ],
+      "unlockedEndingIds": ["end_demon_king_1"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_kayblis_monster_realm_unification",
+      "nameKr": "케이브리스 마계 통일 및 인간계 대침공",
+      "category": "GLOBAL_CRISIS_TIMER",
+      "phase": "MONSTER_REALM",
+      "timerSpec": { "type": "EARLIEST_DATE_AND_OFFSET", "deadline": "Earliest LP 3/9/4; forced invasion 69-73 weeks after Ex Rebellion" },
+      "triggerCondition": "currentDate >= '3/9/4' && (humanRealmUnified() || timerExpired('monster_realm_invasion'))",
+      "relatedTerritoryIds": ["ter_maginot_line", "ter_helman_west", "ter_demon_frontier", "ter_hornet_castle"],
+      "relatedCharacterIds": ["chr_kayblis", "chr_hornet", "chr_patton"],
+      "relatedFactionIds": ["fac_demon_kayblis", "fac_demon_hornet", "fac_helman"],
+      "stateMutations": [
+        "setPhase('MONSTER_REALM')",
+        "subjugate('fac_demon_hornet', by='fac_demon_kayblis')",
+        "launchDemonOffensive(firstTarget='ter_helman_west')",
+        "enableRule('demon_kill_halves_regional_garrison')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_warg_defection_and_chaos",
+      "nameKr": "마인 와그 전향 및 마검 카오스·신상 수집",
+      "category": "TRUE_END_PREREQUISITE",
+      "phase": "MONSTER_REALM",
+      "timerSpec": { "type": "QUEST_CHAIN", "deadline": null },
+      "triggerCondition": "phase == 'MONSTER_REALM' && recruited('chr_warg') && hasItem('chaos_sword') && collectedAll('god_statues')",
+      "relatedTerritoryIds": ["ter_demon_frontier", "ter_al_hq", "ter_rudrasaum_ruins"],
+      "relatedCharacterIds": ["chr_warg", "chr_rance", "chr_rudrasaum"],
+      "relatedFactionIds": ["fac_demon_kayblis", "fac_leazas", "fac_independent_ancient"],
+      "stateMutations": [
+        "setFlag('warg_sleep_option_unlocked', true)",
+        "setFlag('creator_countermeasure_ready', true)"
+      ],
+      "unlockedEndingIds": ["end_bliss", "end_world_king"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_creator_phase_unlock",
+      "nameKr": "케이브리스 격파 분기 및 창조신 페이즈 해금",
+      "category": "ENDGAME_PHASE_GATE",
+      "phase": "CREATOR_PHASE",
+      "timerSpec": { "type": "CONQUEST_CHECK", "deadline": null },
+      "triggerCondition": "defeated('chr_kayblis') && owner('ter_sulphur_forest') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_sulphur_forest", "ter_shangri_la", "ter_rudrasaum_ruins"],
+      "relatedCharacterIds": ["chr_kayblis", "chr_rudrasaum", "chr_warg", "chr_sill"],
+      "relatedFactionIds": ["fac_demon_kayblis", "fac_independent_ancient", "fac_leazas"],
+      "stateMutations": [
+        "IF allCountedTerritoriesOwnedExcept('ter_shangri_la') -> setPhase('CREATOR_PHASE'); unlockTerritory('ter_rudrasaum_ruins')",
+        "ELSE -> triggerEnding('end_unification')"
+      ],
+      "unlockedEndingIds": ["end_unification", "end_bliss", "end_world_king", "end_servant", "end_god"],
+      "evidenceLevel": "VERIFIED"
+    }
+  ]
+}
