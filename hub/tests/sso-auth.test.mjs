@@ -84,6 +84,8 @@ async function startFixture(options = {}) {
     {
       clock: () => currentTime,
       fetch: options.fetch || globalThis.fetch,
+      verifyMobileGoogleToken: options.verifyMobileGoogleToken,
+      verifyMobileNaverToken: options.verifyMobileNaverToken,
       env: options.env || {}
     }
   );
@@ -365,4 +367,109 @@ test('Naver OAuth start, callback, re-login, cancellation, state replay protecti
 test('email_credentials is allowlisted and dropped in sanitize-snapshot', () => {
   assert.ok(Array.isArray(SCHEMA_ALLOWLIST.email_credentials));
   assert.ok(DROP_TABLES.includes('email_credentials'));
+});
+
+test('web explicit guest login and authProviders metadata', async () => {
+  const f = await startFixture();
+  try {
+    const client = f.newClient();
+    const anon = await client.call('/api/session');
+    assert.equal(anon.data.kind, 'anonymous');
+    assert.deepEqual(anon.data.authProviders, { email: true, google: false, naver: false, guest: true });
+
+    const guest = await client.call('/api/auth/guest', { method: 'POST', body: {} });
+    assert.equal(guest.status, 200);
+    assert.equal(guest.data.kind, 'guest');
+    assert.equal(guest.data.authProvider, 'guest');
+  } finally {
+    await f.close();
+  }
+});
+
+test('mobile/native unified 4-way auth API (providers, guest, email, google, naver)', async () => {
+  const f = await startFixture({
+    config: {
+      mobile: { enabled: true, jwtSecret: 'test-mobile-jwt-secret-32-chars-minimum' }
+    },
+    verifyMobileGoogleToken: async (token) => {
+      if (token === 'google-id-token-ok') return { sub: 'g-mobile-1', name: '구글모바일' };
+      return null;
+    },
+    verifyMobileNaverToken: async (body) => {
+      if (body.accessToken === 'naver-sdk-token-ok') return { sub: 'n-mobile-1', name: '네이버모바일' };
+      return null;
+    }
+  });
+  try {
+    async function mobileReq(pathname, { method = 'GET', body, token } = {}) {
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      const res = await fetch(`${f.baseUrl}${pathname}`, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined
+      });
+      return { status: res.status, data: await res.json() };
+    }
+
+    // 1. Discover providers
+    const providers = await mobileReq('/api/mobile/auth/providers');
+    assert.equal(providers.status, 200);
+    assert.deepEqual(providers.data.providers, { email: true, google: true, naver: true, guest: true });
+
+    // 2. Guest login
+    const guest = await mobileReq('/api/mobile/auth/guest', { method: 'POST', body: {} });
+    assert.equal(guest.status, 201);
+    assert.equal(guest.data.profile.isGuest, true);
+    assert.equal(guest.data.profile.authProvider, 'guest');
+    assert.ok(guest.data.accessToken);
+
+    // 3. Email register (upgrading from guest Bearer)
+    const emailReg = await mobileReq('/api/mobile/auth/email/register', {
+      method: 'POST',
+      token: guest.data.accessToken,
+      body: { email: 'mobile@example.com', password: 'Password123', displayName: '모바일이메일' }
+    });
+    assert.equal(emailReg.status, 201);
+    assert.equal(emailReg.data.profile.isGuest, false);
+    assert.equal(emailReg.data.profile.authProvider, 'email');
+    assert.equal(emailReg.data.profile.displayName, '모바일이메일');
+
+    // 4. Email login
+    const emailLogin = await mobileReq('/api/mobile/auth/email/login', {
+      method: 'POST',
+      body: { email: 'mobile@example.com', password: 'Password123' }
+    });
+    assert.equal(emailLogin.status, 200);
+    assert.equal(emailLogin.data.profile.principalId, emailReg.data.profile.principalId);
+    assert.equal(emailLogin.data.profile.authProvider, 'email');
+
+    // 5. Google login
+    const googleLogin = await mobileReq('/api/mobile/auth/google', {
+      method: 'POST',
+      body: { idToken: 'google-id-token-ok' }
+    });
+    assert.equal(googleLogin.status, 200);
+    assert.equal(googleLogin.data.profile.authProvider, 'google');
+    assert.equal(googleLogin.data.profile.displayName, '구글모바일');
+
+    // 6. Naver login
+    const naverLogin = await mobileReq('/api/mobile/auth/naver', {
+      method: 'POST',
+      body: { accessToken: 'naver-sdk-token-ok' }
+    });
+    assert.equal(naverLogin.status, 200);
+    assert.equal(naverLogin.data.profile.authProvider, 'naver');
+    assert.equal(naverLogin.data.profile.displayName, '네이버모바일');
+
+    // Invalid Naver token rejected
+    const badNaver = await mobileReq('/api/mobile/auth/naver', {
+      method: 'POST',
+      body: { accessToken: 'bad-token' }
+    });
+    assert.equal(badNaver.status, 401);
+  } finally {
+    await f.close();
+  }
 });

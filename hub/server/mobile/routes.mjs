@@ -6,6 +6,18 @@ import { readCatalog, findGame } from '../catalog.mjs';
 import { ApiError, assertId, digest, equal, json, readJson, safeString, secret, uid } from '../security.mjs';
 import { ensureMobileSchema } from './schema.mjs';
 import { createSocial } from '../social/routes.mjs';
+import { providerForUser } from '../sso/index.mjs';
+import {
+  DUMMY_HASH,
+  DUMMY_SALT,
+  LOCK_DURATION_MS,
+  MAX_FAILED_ATTEMPTS,
+  hashPassword,
+  normalizeDisplayName,
+  normalizeEmail,
+  validateNewPassword,
+  verifyPassword
+} from '../sso/email.mjs';
 import {
   canPlayAgeRating,
   classifyAgeTier,
@@ -47,7 +59,7 @@ function verifyJwt(token, hmacSecret, nowMs) {
   return payload;
 }
 
-export function createMobile({ config, db, rootDir, now, rate, audit, google, ugcPublish = null, ugcMultiplayer = null, verifyMobileGoogleToken, env = process.env }) {
+export function createMobile({ config, db, rootDir, now, rate, audit, google, sso = null, fetchImpl = globalThis.fetch, ugcPublish = null, ugcMultiplayer = null, verifyMobileGoogleToken, verifyMobileNaverToken, env = process.env }) {
   const mobileConfig = config.mobile || {};
   const enabled = mobileConfig.enabled === true;
   if (!enabled) {
@@ -142,10 +154,12 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ug
     const pendingMerge = db
       .prepare("SELECT id, source_user FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1")
       .get(user.id, now());
+    const authProvider = isGuest ? 'guest' : (providerForUser(db, user.id) || 'registered');
     return {
       principalId: user.id,
       kind: user.kind,
       isGuest,
+      authProvider,
       displayName: user.display_name || (isGuest ? '게스트 플레이어' : 'PlayHub 유저'),
       handle: `@${isGuest ? 'guest' : 'player'}#${user.id.replace(/-/g, '').slice(-4)}`,
       ageCompliance: compliance,
@@ -300,6 +314,37 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ug
       if (await social.route(req, res, url)) return true;
     }
 
+    function carryOverGuestUpgrade(existingBearer, userId, stamp) {
+      if (!existingBearer || existingBearer.user.kind !== 'guest' || existingBearer.user.id === userId) return;
+      const guestSaveCount = db.prepare('SELECT COUNT(*) AS n FROM save_slots WHERE principal_id=?').get(existingBearer.user.id).n;
+      if (guestSaveCount > 0) {
+        db.prepare(
+          "INSERT INTO merge_requests(id,source_user,target_user,source_subject,target_subject,status,expires_at,result_json) VALUES(?,?,?,?,?,'pending',?,NULL)"
+        ).run(uid(), existingBearer.user.id, userId, `m:${existingBearer.user.id}`, `m:${userId}`, stamp + 7 * 86400000);
+      }
+      const guestComp = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(existingBearer.user.id);
+      const targetComp = db.prepare('SELECT * FROM user_age_compliance WHERE principal_id=?').get(userId);
+      if (guestComp && !targetComp) {
+        db.prepare(
+          'INSERT INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,parental_consent_at,kyc_verified_at,updated_at) VALUES(?,?,?,?,?,?,?)'
+        ).run(userId, guestComp.region_code, guestComp.age_tier, guestComp.parental_consent_status, guestComp.parental_consent_at, guestComp.kyc_verified_at, stamp);
+      }
+    }
+
+    // 0. Discover available cross-platform auth providers (Email, Google, Naver, Guest)
+    if (path === '/api/mobile/auth/providers' && req.method === 'GET') {
+      rejectBrowserOrigin(req);
+      json(res, 200, {
+        providers: {
+          email: config.auth?.emailEnabled !== false,
+          google: Boolean(google?.enabled || verifyMobileGoogleToken),
+          naver: Boolean(sso?.naver?.enabled || verifyMobileNaverToken || (config.naver?.clientId && config.naver?.clientSecret)),
+          guest: true
+        }
+      });
+      return true;
+    }
+
     // 1. Guest immediate login (no Google required)
     if (path === '/api/mobile/auth/guest' && req.method === 'POST') {
       rejectBrowserOrigin(req);
@@ -375,6 +420,175 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ug
         tokens = issueTokenPair(userId);
       });
 
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(userId);
+      json(res, 200, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
+    // 2b. Mobile/Native Email Registration + optional Guest merge handoff
+    if (path === '/api/mobile/auth/email/register' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      if (config.auth?.emailEnabled === false) throw new ApiError(503, 'EMAIL_AUTH_DISABLED', '이메일 로그인 기능이 비활성화되어 있습니다.');
+      rate(`mobile:email-register:${req.socket.remoteAddress}`, 10, 60000);
+      const body = await readJson(req, 8192);
+      const email = normalizeEmail(body.email);
+      if (!email) throw new ApiError(422, 'EMAIL_INVALID', '올바른 이메일 주소를 입력해 주세요.');
+      const password = validateNewPassword(body.password);
+      const displayName = normalizeDisplayName(body.displayName, email);
+      const existingBearer = bearerPayload(req, false);
+
+      const duplicate = db.prepare('SELECT user_id FROM email_credentials WHERE email=?').get(email);
+      if (duplicate) throw new ApiError(409, 'EMAIL_ALREADY_REGISTERED', '이미 가입된 이메일 주소입니다.');
+
+      const { salt, passwordHash } = await hashPassword(password);
+      const stamp = now();
+      const userId = uid();
+      let tokens;
+      transaction(db, () => {
+        if (db.prepare('SELECT user_id FROM email_credentials WHERE email=?').get(email)) {
+          throw new ApiError(409, 'EMAIL_ALREADY_REGISTERED', '이미 가입된 이메일 주소입니다.');
+        }
+        db.prepare('INSERT INTO users(id,kind,display_name,created_at) VALUES(?,?,?,?)').run(userId, 'registered', displayName, stamp);
+        db.prepare("INSERT INTO identities(provider,subject,user_id) VALUES('email',?,?)").run(email, userId);
+        db.prepare(
+          'INSERT INTO email_credentials(user_id,email,password_hash,salt,failed_attempts,locked_until,created_at,updated_at) VALUES(?,?,?,?,0,NULL,?,?)'
+        ).run(userId, email, passwordHash, salt, stamp, stamp);
+        carryOverGuestUpgrade(existingBearer, userId, stamp);
+        audit('mobile_email_register', userId, { provider: 'email' });
+        tokens = issueTokenPair(userId);
+      });
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(userId);
+      json(res, 201, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
+    // 2c. Mobile/Native Email Login + optional Guest merge handoff
+    if (path === '/api/mobile/auth/email/login' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      if (config.auth?.emailEnabled === false) throw new ApiError(503, 'EMAIL_AUTH_DISABLED', '이메일 로그인 기능이 비활성화되어 있습니다.');
+      rate(`mobile:email-login:${req.socket.remoteAddress}`, 20, 60000);
+      const body = await readJson(req, 8192);
+      const email = normalizeEmail(body.email);
+      const password = typeof body.password === 'string' ? body.password : '';
+      if (!email || !password || password.length > 1024) {
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      const existingBearer = bearerPayload(req, false);
+      const stamp = now();
+      const cred = db.prepare('SELECT * FROM email_credentials WHERE email=?').get(email);
+      if (!cred) {
+        await verifyPassword(password, DUMMY_SALT, DUMMY_HASH);
+        audit('mobile_email_login_failed', null, { reason: 'not_found' });
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      if (cred.locked_until && cred.locked_until > stamp) {
+        const waitSeconds = Math.ceil((cred.locked_until - stamp) / 1000);
+        throw new ApiError(429, 'EMAIL_ACCOUNT_LOCKED', `로그인 시도가 너무 많습니다. ${waitSeconds}초 후 다시 시도해 주세요.`);
+      }
+      const valid = await verifyPassword(password, cred.salt, cred.password_hash);
+      if (!valid) {
+        const attempts = (cred.failed_attempts || 0) + 1;
+        const lockedUntil = attempts >= MAX_FAILED_ATTEMPTS ? stamp + LOCK_DURATION_MS : null;
+        db.prepare('UPDATE email_credentials SET failed_attempts=?,locked_until=?,updated_at=? WHERE user_id=?')
+          .run(attempts >= MAX_FAILED_ATTEMPTS ? 0 : attempts, lockedUntil, stamp, cred.user_id);
+        audit('mobile_email_login_failed', cred.user_id, { locked: Boolean(lockedUntil) });
+        if (lockedUntil) throw new ApiError(429, 'EMAIL_ACCOUNT_LOCKED', '로그인 실패가 누적되어 5분간 계정이 잠겼습니다.');
+        throw new ApiError(401, 'EMAIL_CREDENTIALS_INVALID', '이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      let tokens;
+      transaction(db, () => {
+        db.prepare('UPDATE email_credentials SET failed_attempts=0,locked_until=NULL,updated_at=? WHERE user_id=?').run(stamp, cred.user_id);
+        carryOverGuestUpgrade(existingBearer, cred.user_id, stamp);
+        audit('mobile_email_login', cred.user_id, { provider: 'email' });
+        tokens = issueTokenPair(cred.user_id);
+      });
+      const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(cred.user_id);
+      json(res, 200, { ...tokens, profile: buildProfileResponse(user) });
+      return true;
+    }
+
+    // 2d. Mobile/Native Naver OAuth Login (SDK accessToken or auth code) + optional Guest merge handoff
+    if (path === '/api/mobile/auth/naver' && req.method === 'POST') {
+      rejectBrowserOrigin(req);
+      rate(`mobile:naver:${req.socket.remoteAddress}`, 30, 60000);
+      const body = await readJson(req, 16384);
+      const existingBearer = bearerPayload(req, false);
+
+      let profileInfo;
+      if (verifyMobileNaverToken) {
+        if (!safeString(body.accessToken, 4096) && !safeString(body.code, 4096)) {
+          throw new ApiError(422, 'NAVER_TOKEN_REQUIRED');
+        }
+        profileInfo = await verifyMobileNaverToken(body);
+      } else {
+        let accessToken = safeString(body.accessToken, 4096) ? body.accessToken.trim() : '';
+        if (!accessToken && safeString(body.code, 4096)) {
+          const naverCfg = config.naver || {};
+          if (!naverCfg.clientId || !naverCfg.clientSecret) {
+            throw new ApiError(503, 'NAVER_MOBILE_AUTH_UNAVAILABLE');
+          }
+          try {
+            const tokenRes = await fetchImpl('https://nid.naver.com/oauth2.0/token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: naverCfg.clientId,
+                client_secret: naverCfg.clientSecret,
+                code: body.code,
+                state: typeof body.state === 'string' ? body.state : ''
+              }),
+              signal: AbortSignal.timeout(10000)
+            });
+            const tokenJson = tokenRes.ok ? await tokenRes.json() : null;
+            accessToken = typeof tokenJson?.access_token === 'string' ? tokenJson.access_token : '';
+          } catch {
+            throw new ApiError(502, 'NAVER_EXCHANGE_FAILED');
+          }
+          if (!accessToken) throw new ApiError(502, 'NAVER_EXCHANGE_FAILED');
+        }
+        if (!accessToken) throw new ApiError(422, 'NAVER_TOKEN_REQUIRED');
+        let me;
+        try {
+          const meRes = await fetchImpl('https://openapi.naver.com/v1/nid/me', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${accessToken}` },
+            signal: AbortSignal.timeout(10000)
+          });
+          me = meRes.ok ? await meRes.json() : null;
+        } catch {
+          throw new ApiError(502, 'NAVER_PROFILE_FAILED');
+        }
+        if (!me || me.resultcode !== '00' || !me.response || typeof me.response !== 'object') {
+          throw new ApiError(401, 'NAVER_TOKEN_INVALID');
+        }
+        profileInfo = {
+          sub: typeof me.response.id === 'string' ? me.response.id.trim() : '',
+          name: (typeof me.response.nickname === 'string' && me.response.nickname.trim())
+            || (typeof me.response.name === 'string' && me.response.name.trim())
+            || '네이버 사용자'
+        };
+      }
+      if (!profileInfo || typeof profileInfo.sub !== 'string' || !profileInfo.sub || profileInfo.sub.length > 255) {
+        throw new ApiError(401, 'NAVER_TOKEN_INVALID');
+      }
+      const displayName = String(profileInfo.name || '네이버 사용자').replace(/[\x00-\x1f\x7f]/g, '').slice(0, 80) || '네이버 사용자';
+      const stamp = now();
+      let userId;
+      let tokens;
+      transaction(db, () => {
+        const identity = db.prepare("SELECT user_id FROM identities WHERE provider='naver' AND subject=?").get(profileInfo.sub);
+        if (identity) {
+          userId = identity.user_id;
+        } else {
+          userId = uid();
+          db.prepare('INSERT INTO users(id,kind,display_name,created_at) VALUES(?,?,?,?)').run(userId, 'registered', displayName, stamp);
+          db.prepare("INSERT INTO identities(provider,subject,user_id) VALUES('naver',?,?)").run(profileInfo.sub, userId);
+        }
+        carryOverGuestUpgrade(existingBearer, userId, stamp);
+        audit('mobile_naver_login', userId, { provider: 'naver' });
+        tokens = issueTokenPair(userId);
+      });
       const user = db.prepare('SELECT id, kind, display_name FROM users WHERE id=?').get(userId);
       json(res, 200, { ...tokens, profile: buildProfileResponse(user) });
       return true;
