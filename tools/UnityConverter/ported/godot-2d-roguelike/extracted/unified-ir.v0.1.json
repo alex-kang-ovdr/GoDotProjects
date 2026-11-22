@@ -1,0 +1,1010 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "2D Roguelike (Scavengers)",
+    "project_path": "samples/unity-2d-roguelike",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "Main",
+      "source_path": "Assets/Scenes/Main.unity",
+      "entities": []
+    }
+  ],
+  "entities": [],
+  "logic": [
+    {
+      "id": "logic_1_BoardManager",
+      "name": "BoardManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/BoardManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_2_Enemy",
+      "name": "Enemy",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Enemy.cs",
+      "target_entity_class": "MovingObject",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_3_GameManager",
+      "name": "GameManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Coroutine",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_4_Loader",
+      "name": "Loader",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Loader.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_5_MovingObject",
+      "name": "MovingObject",
+      "kind": "script",
+      "source_path": "Assets/Scripts/MovingObject.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Coroutine",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_6_Player",
+      "name": "Player",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "target_entity_class": "MovingObject",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.SceneManagement.SceneManager",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        },
+        {
+          "id": "api_3",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_7_SoundManager",
+      "name": "SoundManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/SoundManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_8_Wall",
+      "name": "Wall",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Wall.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_9_ReadmeEditor",
+      "name": "ReadmeEditor",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "target_entity_class": "Editor",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_10_TutorialInfoEditor",
+      "name": "TutorialInfoEditor",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/TutorialInfoEditor.cs",
+      "target_entity_class": "Editor",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_11_Readme",
+      "name": "Readme",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "target_entity_class": "ScriptableObject",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_12_TutorialInfo",
+      "name": "TutorialInfo",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/TutorialInfo.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "misc",
+      "source_path": "Assets/2D Roguelike Upgrade Guide 5x.pdf",
+      "sha256": "430728a15353ab4034bffbd2d6e76c26b6030cd82f14585c29beaf9a1dc7850c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "animation",
+      "source_path": "Assets/Animations/AnimationControllers/Enemy1.controller",
+      "sha256": "6d18412c73537e4390d44bd21bf71e88f3dfb1c6ca2ade3f4fbe1fc4cca6ec6e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "misc",
+      "source_path": "Assets/Animations/AnimationControllers/Enemy2.overrideController",
+      "sha256": "6fc6d75d277867d79f8eef1e0e80596396d0aa9c50112d560bc9a5d74275456f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "animation",
+      "source_path": "Assets/Animations/AnimationControllers/Player.controller",
+      "sha256": "e24a4acc96613dd4a9b7b0382cab6d2840897ffe55288ad4c911bc76d95d33ff",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy1Attack.anim",
+      "sha256": "3feaa6b24894dc41e84c0ea5fab32913f73840a201b448db426d7b4fa1acc89b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0006",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy1Idle.anim",
+      "sha256": "087c299adfe86df66aa6f6b4b9b768fe48a1a5a1581fac7293b51837315aae13",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0007",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy2Attack.anim",
+      "sha256": "b86d10ff16ca7b6f85192fa7f8294dbd93ec2179a7ddf4ff355e00c47c1bd7d2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0008",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy2Idle.anim",
+      "sha256": "e7c336e16713fe5dd43afff7827a57420709201f2103e69390c8198de5f89d9b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0009",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerChop.anim",
+      "sha256": "d4af8f28a26ccedb15cbb9cded8938c86013eb85d30d14e7444ae783a8ace046",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0010",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerHit.anim",
+      "sha256": "ea8ff612199413723677af6e502307d605e95ff25674977fffc4258968ed5484",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0011",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerIdle.anim",
+      "sha256": "1782392c7ce7a94a7b66b546e9aa8fdb4bace2ffff5fba519f8218b4627ee3ae",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0012",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_chop1.aif",
+      "sha256": "3bed0f8f82ab7f62122e0948306ec76e0a8f7a431ae7229229fd923246937f4f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0013",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_chop2.aif",
+      "sha256": "06c9c69535b7040728c69a24de45d160993463e5abdc4a47c2a69d59e47f0651",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0014",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_die.aif",
+      "sha256": "2533f58e0723b11c69fa436a8baf7a4c5baef02ac7fdb354c9ae17ab4966eb2d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0015",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_enemy1.aif",
+      "sha256": "d9211d71e29d08fc7c9749d4bc7e91c0829bf960475095577e1a3fb2b8d96ef2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0016",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_enemy2.aif",
+      "sha256": "4d32ae04f8b09493bafd21a42dfb8056c514e13762528e2e6f4c2f84b805db30",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0017",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_footstep1.aif",
+      "sha256": "a471330719d6bd74eaee3bb2ce69670744dfafab0b1cb121a2ab2325cbf24f98",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0018",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_footstep2.aif",
+      "sha256": "d6220850448726b338e0966bb0b5d619fa47d8afad8fe5c408f0e50bc2dd24b0",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0019",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_fruit1.aif",
+      "sha256": "718ce638a8bee1bf4e285f00ca738dc773cc63a85909fc4905a1be1952e6fad8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0020",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_fruit2.aif",
+      "sha256": "33cd3df68e9563736a36642f11cf1e9899c3e2e7bf0276911b45370fe2d4cc52",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0021",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_music.aif",
+      "sha256": "1cf12ed63cbaf331f0fffefa5edcfc2eeb0f370a37bb6f277a5d9a86d09114b4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0022",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_soda1.aif",
+      "sha256": "2d75e80e09797d3f40dd54208073b71f2f7fe0fa7b3e6e3e19a28d5eca3d962c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0023",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_soda2.aif",
+      "sha256": "ce0dc9b6a80d32aac810d2de3ad0454e9a2467fca6a16f1e063186ce3734ef18",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0024",
+      "kind": "font",
+      "source_path": "Assets/Fonts/PressStart2P-Regular.ttf",
+      "sha256": "17ec7d250ff590971a6d966b4fdc5aa04d5e39a7694f4a0becb515b6a70a7228",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0025",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Enemy1.prefab",
+      "sha256": "baa2672c59cecd814a47e460ab2b74682b78e5f8afe7083603468c02eca7015b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0026",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Enemy2.prefab",
+      "sha256": "fcd2dd8bb9c6abd908ad0aae70450388bd3997f572014d6acbd12ae6aff95e53",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0027",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Exit.prefab",
+      "sha256": "1a272305102b772557ac69842fa55b2f299b498d049a00c1d3ba4c1858920e1a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0028",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor1.prefab",
+      "sha256": "61f59c0e3725f1b019f70bf0522931003a7d1f07109c4614fc75079b7ccf2f91",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0029",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor2.prefab",
+      "sha256": "a00bbaa1c0ae4ff48aee4862382bd9fc037ff31951e6cb709992779ee8624909",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0030",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor3.prefab",
+      "sha256": "f244867ba208e345c93af469b209da544fd7d88ee7231d426083b0cfc15428af",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0031",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor4.prefab",
+      "sha256": "a871f96e17da038d6790d99b8adc14c927da39cdc99adebba4a1cd28dd7b7d04",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0032",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor5.prefab",
+      "sha256": "a5d1ee5cc9155a8a2582111f6e0ad7c4f225da4ca8123e0f6e9e72900924bdab",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0033",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor6.prefab",
+      "sha256": "3a53bb116ef792122ee8e37070404e7ef7c9d5d3b8b9c36328725e31efff802e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0034",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor7.prefab",
+      "sha256": "a2a16dcd29a6c3ffebabc62725805afd455d9fb8c09da583192ab94ebe13a7b1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0035",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor8.prefab",
+      "sha256": "9b8f8a64cdb9121657f8777ff318cc4f958bf88f0f53fcc69342b8a3ba89cbc2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0036",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Food.prefab",
+      "sha256": "1c082ed86adc40d9bdbf5eea5f52810cc219c523d9adaecdcde1bdf7ea8bf26c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0037",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/GameManager.prefab",
+      "sha256": "6c079b617629d6bba28595d4896393215d3a70979798137eebe6b0a5e022d230",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0038",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall1.prefab",
+      "sha256": "9175c82c3eef596e358f9cd09f9136ee04e9ef1b02819ea0c28d46bfc434228b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0039",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall2.prefab",
+      "sha256": "2ded2865409117973b9f4f722848ba175857cbcf8b9422711a6dafd533ce2465",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0040",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall3.prefab",
+      "sha256": "3412d5ea5c8931715295c456810b8492ab3852842b622e47b828bca0d1f68ca4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0041",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Player.prefab",
+      "sha256": "bae1428c92312254d3c63d8bc4da255ebccdb41f64bb4f1cab2cd8d76bdb8c91",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0042",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Soda.prefab",
+      "sha256": "5df7ae9015c7df89561e89d54aa447827d25dd80018f82215ef7a0fd45f9251d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0043",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall1.prefab",
+      "sha256": "3fef6286aa0e7e8cbaa6dcdb4dbff54d77aa1b4ab74f347025d6c676b63d5c8e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0044",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall2.prefab",
+      "sha256": "5d8409151d550b9ba1feaa230bda37435e968007999db5dc4397abd9bca0eae8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0045",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall3.prefab",
+      "sha256": "14d3a40d2931f74c13b24800654eb81f27bddf0caef3fdfc9399643b18f6cfc5",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0046",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall4.prefab",
+      "sha256": "0d1b4681224769d7aaf945307d74cc643cf1428e3acb28eb92443a76aed2f139",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0047",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall5.prefab",
+      "sha256": "c6f3abac5b4566f6fa9f16dee3c6a07ba23c7d68765ae2790112ca29fd49522c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0048",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall6.prefab",
+      "sha256": "4a22910fe790fc98e4005e89ee732e462d1f5774a6df100774733a04e98f321f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0049",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall7.prefab",
+      "sha256": "b9d0af567d392c4bb59cd35868891f1a97d9dd5b07afd72c49a8da1b760d8f74",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0050",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall8.prefab",
+      "sha256": "4b8edc31ca76b6ace0d3d4c77adfc350a33cf35e4f74bb66f42eec9de3bd6646",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0051",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Readme.asset",
+      "sha256": "d16d80a66d4cbe70fca6e72fc355f247647bd903812b16700c7ef3f361ff2cc4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0052",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "sha256": "a721ff8f36303f38ebc10ad67a2e93859a8c4abfcd0ae7bec9ee845bb8ec719a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0053",
+      "kind": "script",
+      "source_path": "Assets/Scripts/BoardManager.cs",
+      "sha256": "a46b5aea0928d7f81dfad4d2b567f3c5cd13ac99ced3a94f20a2b7146b3327e5",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0054",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Enemy.cs",
+      "sha256": "5de9d3ad96a9cc59f705aa4cd79f3ee5f92dfad6dc311d3ba7fdf94fc269d15c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0055",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "sha256": "ef7420c18f55c29be638a26e9ca70545f8a8f7aafe29ceb0dfbbf4bf51677166",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0056",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Loader.cs",
+      "sha256": "903a6cad955c8fd4faade205aa6374668c7988b8c3ffdf6de80d7a2ac7319447",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0057",
+      "kind": "script",
+      "source_path": "Assets/Scripts/MovingObject.cs",
+      "sha256": "de39276ac7d80fd6ebdee54c198a80c2d99606a7e97f59b5c345fb45b27c972a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0058",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "sha256": "60c6a6099325eea789e5bdb0ddc5dc517ab6b4241e4947a9960edab22984d74c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0059",
+      "kind": "script",
+      "source_path": "Assets/Scripts/SoundManager.cs",
+      "sha256": "ad08955a5324bd880ef2ed31765c8b80d7efe26de28ae58a7c520afc979e489c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0060",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Wall.cs",
+      "sha256": "d847a3053bd92baf7874da486900ad20a18354a119965df1167d253de45477d7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0061",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Scavengers_SpriteSheet.png",
+      "sha256": "e5b9bb966bf58212091623f8a104a5506d93e6b866a000fa677462582bb1541b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0062",
+      "kind": "font",
+      "source_path": "Assets/TutorialInfo/Fonts/Roboto-Thin.ttf",
+      "sha256": "11dbd8bf4f8c61d665f4f3157027b9643db2454d5d84daffbe6385d70e8bf131",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0063",
+      "kind": "font",
+      "source_path": "Assets/TutorialInfo/Fonts/RobotoCondensed-Bold.ttf",
+      "sha256": "0312269650316e083b0c6d006daef09fbb56b6d172e5c65c31e23f1c25dcd28c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0064",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/2DRoguelike.png",
+      "sha256": "0ff0594113d95dd4a6182ddfe1b626bc3532caa4143a37998fc7c32fe55c4472",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0065",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Help_Icon.png",
+      "sha256": "3c18c946842525d4b53a6fc3c9371c8be3ba6a58a1ec28c1ddff2f5c87d5ca57",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0066",
+      "kind": "misc",
+      "source_path": "Assets/TutorialInfo/Layout.wlt",
+      "sha256": "30d232879ca5c0c7377f245c9601feaf77053e5d70c222419ef25782e3272d2c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0067",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "sha256": "a5c33793bf12cdb4b928f4b03437daf14eed6bfc271ab39c11e7d1cf312b8d8c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0068",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/TutorialInfoEditor.cs",
+      "sha256": "5aa01fd60e5050f1217b3f5c584eda44faa89caa02d266c818f8fa0af9985c83",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0069",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "sha256": "63edc46472a354f6f254aedf8c918a4f7ccc83cdbfb0742aa0869d7a21751f45",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0070",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/TutorialInfo.cs",
+      "sha256": "ae44398c6ca39dcc3e3efaf23a46451dbb769048a9271d658072d26a9c681c41",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0071",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Sprites/unity-logo.png",
+      "sha256": "7ed4f399c0dc238c1a77063517999a1279c7f44cfe45a34bff2bbf297006abe9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0072",
+      "kind": "prefab",
+      "source_path": "Assets/TutorialInfo/Tutorial Info.prefab",
+      "sha256": "c250a5072404710f6cc068b1b7ece8b3e09fb27613784c24ab1f8eb302c64311",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/Scripts/BoardManager.cs",
+      "unity_class": "BoardManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Enemy.cs",
+      "unity_class": "Enemy",
+      "base_class": "MovingObject",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]",
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/GameManager.cs",
+      "unity_class": "GameManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Coroutine[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Loader.cs",
+      "unity_class": "Loader",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/MovingObject.cs",
+      "unity_class": "MovingObject",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Coroutine[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Player.cs",
+      "unity_class": "Player",
+      "base_class": "MovingObject",
+      "detected_apis": [
+        "UnityEngine.SceneManagement.SceneManager[A]",
+        "UnityEngine.AudioSource[A]",
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/SoundManager.cs",
+      "unity_class": "SoundManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Wall.cs",
+      "unity_class": "Wall",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "unity_class": "ReadmeEditor",
+      "base_class": "Editor",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/Editor/TutorialInfoEditor.cs",
+      "unity_class": "TutorialInfoEditor",
+      "base_class": "Editor",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "unity_class": "Readme",
+      "base_class": "ScriptableObject",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/TutorialInfo.cs",
+      "unity_class": "TutorialInfo",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    }
+  ],
+  "diagnostics": []
+}

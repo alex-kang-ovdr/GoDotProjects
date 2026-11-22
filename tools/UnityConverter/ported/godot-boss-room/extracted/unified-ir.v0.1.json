@@ -1,0 +1,812 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "Boss Room (Official Co-op 3D RPG)",
+    "project_path": "samples/unity-boss-room",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "DungeonBossRoom",
+      "source_path": "Assets/Scenes/BossRoom/DungeonBossRoom.unity",
+      "entities": [
+        "scene_1_ent_1_1487280424"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "scene_1_ent_1_1487280424",
+      "name": "SubsceneLifetimeScope",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    }
+  ],
+  "logic": [
+    {
+      "id": "logic_1_that",
+      "name": "that",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/Action.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_2_to",
+      "name": "to",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ClientActionPlayer.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_3_ServerActionPlayer",
+      "name": "ServerActionPlayer",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ServerActionPlayer.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_4_AOEAction",
+      "name": "AOEAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/AOEAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Physics.OverlapSphere",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_5_ChargedShieldAction",
+      "name": "ChargedShieldAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ChargedShieldAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_6_DashAttackAction",
+      "name": "DashAttackAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/DashAttackAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_7_MeleeAction",
+      "name": "MeleeAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/MeleeAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_8_ReviveAction",
+      "name": "ReviveAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ReviveAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_9_TrampleAction",
+      "name": "TrampleAction",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/TrampleAction.cs",
+      "target_entity_class": "Action",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Animator",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/chest_ani.FBX",
+      "sha256": "44c709da0c03d13b9ea711837c82da22ffa062d59a18b8258d6388b1856131ed",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/door_boss_ani.FBX",
+      "sha256": "5055291b5238aa32157ccdd0d8b10ca16ecdee9f81cfac922dfc86273e76645f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/door_gears_ani.FBX",
+      "sha256": "029918ba4a9640c23a3cc74b56649e0aa264497b6e9932ebe026986cd4166726",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/floor_switch_ani.FBX",
+      "sha256": "5ab0e50b2c93e5c7ff762530decf1415e31144a1b716d6167768003e3ebb8b38",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "mesh",
+      "source_path": "Assets/Models/CharacterSet.fbx",
+      "sha256": "8a581198ea826f5ccad6a6a04045a5771381855629ef1a006711add744e50278",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0006",
+      "kind": "mesh",
+      "source_path": "Assets/Models/DungeonBorder.obj",
+      "sha256": "799d4c45f2da92572db2f7c1e50738a60a9fe1ca07bf9cfe7d1a0b7d49054461",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0007",
+      "kind": "mesh",
+      "source_path": "Assets/Models/DungeonPieces.FBX",
+      "sha256": "0f296f2a70e195b84ebca698b470031894ecd268c12f0167710960dc5085ff07",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0008",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/BossRoom/DungeonBossRoom.unity",
+      "sha256": "62fb49820dd395603c4ed3c6a3eed0497fafd4e799b58d630eb996c84e9e78e1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0009",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/Action.cs",
+      "sha256": "d95f275200aedd883d3d709642ac7427c3437da0b3eae47407a5e3b40018b20e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0010",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ClientActionPlayer.cs",
+      "sha256": "51a84baa692202b1cd66c6aa4e170e5dead69a947ec9cfb31a50bd0a60d13984",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0011",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ServerActionPlayer.cs",
+      "sha256": "9ae2643f88823c412dc5ce225b85ce8874ceb421d44784dc4e37ea2e8d49b58d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0012",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/AOEAction.cs",
+      "sha256": "03ae75c84c90862725b1e9037a18b44d2bd6aef2829909ea3135ad354ebfc6be",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0013",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ChargedShieldAction.cs",
+      "sha256": "18d4a279e653472258fd1d660c9760af670fc026ae1bcfdd656c9c24553294f3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0014",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/DashAttackAction.cs",
+      "sha256": "c8dbb7026588becb6a9181dee88a6e2ff0f2eb027a5560434d61cf2296b1200e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0015",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/MeleeAction.cs",
+      "sha256": "78337b9e0b03e6f76c447cb36f002d06f0ecdf08a9ee7ddb03866febf1af27d3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0016",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ReviveAction.cs",
+      "sha256": "df972d0d06ce7fc2a9a2857bb11ce222f1ec0d76a80b7a8d98da07dc7c4a8605",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0017",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/TrampleAction.cs",
+      "sha256": "0ac7dee761d3126a6d56559389f8cad394f1ab01735a03338081fe3a472aa5c9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0018",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Archer/archer_attk_a.wav",
+      "sha256": "293057a5cdaf4f0566b78b589670c730025f1e17c4fe08b51a6ac0685d9b029d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0019",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Archer/archer_powershot.wav",
+      "sha256": "45d48b79cdcf1f4029f7e51f856ff353134d439c7ac99e6d2bb2e8afcd5380f7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0020",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/charge_attack_end.wav",
+      "sha256": "38bce816b1f635993b0d3a8e79cfe60fcfd023deee328445c339160917267b4b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0021",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/charge_attack_start.wav",
+      "sha256": "7516cb743e6014dcc13a42f3702f4e67fd389859fdbb2118d3a68913971e37d1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0022",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/defeat_a.wav",
+      "sha256": "aa139689ac7e445720bf651d06bcc1f0fdb17c51d853dd81c3af41fa5721e9a9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0023",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Hair_Boy_CLR.tga",
+      "sha256": "f804afaabc8542afd2c7362c2d1b5775bd61b2b511afc37ae1470db0838bc3e9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0024",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Head_Boy_CLR.tga",
+      "sha256": "e3c0f5b6295bc5183fd8f43ea16d7746e3ce93d0fc2beba34483d3c1ed47ad0e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0025",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Torso_CLR.tga",
+      "sha256": "4f37d46562b8dffc4ef21a78833601e508463a220cea1ee82a12388bf80aafaa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0026",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Weapons_CLR.tga",
+      "sha256": "ffa9ffd8d97d6c924e6a9725b4b5ce693cfd34a5a9f8289706edb91e0964e717",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0027",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Boss_Head_CLR.tga",
+      "sha256": "31863fc760eacb3cba4020e251facd19516d37aaeebbf1de9e99432f7bde2931",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0028",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Boss_Torso_CLR.tga",
+      "sha256": "7a5eee245bc42896d937dc00da2b914220e85e6284f6e4f265a5b4085e5aad66",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0029",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Enemy_Eyes.png",
+      "sha256": "c39d80a00bdad2a79740757cf99cff8f55ed1adad8cc3823c9a8bcfbf9b9a76d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0030",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Enemy_Mouths.png",
+      "sha256": "9876b59019d596d7762a3592091139789369001e83d8ebd80dcf4d9dbd6b2f3e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0031",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Hero_Eyes.png",
+      "sha256": "9643a4689533461481acbf399487bab9b2fa66f7b36925313a168ecf4d78837e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0032",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Hero_Mouths.png",
+      "sha256": "bc9bba3ca6a20816105bc313683c997f94f87e4ae2c45f58413984b6757cb016",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0033",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Head_CLR.tga",
+      "sha256": "3f359c61e8f2fae64eb1cf7b064141e207bc49f6d3d88364a64d84dac0f7d346",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0034",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Helmet_CLR.tga",
+      "sha256": "f6758dcad7e36d73c24486b1f60bb8a6578c89bad15297c6523e11a06320ecd1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0035",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Torso_CLR.tga",
+      "sha256": "d5cab172eb16c9c24d1ef9ffb6c4b3e4123f25db9a4fcb7b652adec7f6248e3c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0036",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Weapons_CLR.tga",
+      "sha256": "f88756db1e4218008537efd88284ad9852a3ed28a6d0fb9fffb5751f6e48905d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0037",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Hair_Girl_CLR.tga",
+      "sha256": "6c3204eeaadaa3876f0c251347da95f433a14909a0f244a8d20ba76945ba5b6e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0038",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Head_Girl_CLR.tga",
+      "sha256": "78e4241355439b0d1ef0b266dd42ac82da44dbfdc9f6463425082f78d1e1cd16",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0039",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Torso_CLR_Girl.tga",
+      "sha256": "7fce724eaedcad1a970cb75583d4aa04418cce02db9ad10e8e8a719f2601c93d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0040",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Weapons_CLR.tga",
+      "sha256": "b2b42757842df9bc0847547b8e089bc39475eb5d14ed58d15be1c9c123ff30a8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0041",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Hair_Boy_CLR.tga",
+      "sha256": "4b21b680d2c273729556f2908e174eee0e22fe3d03efdab0a86b5feebd38bd3a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0042",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Head_Boy_CLR.tga",
+      "sha256": "0101c50ed4322bc1a87b3cb0e6e3bcaa4305606ef57015f76d6bf88f1d6e1010",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0043",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Torso_CLR.tga",
+      "sha256": "dc176f6b65fe4edd35fc05198db8b6bc64d8b855528604f28f783728b4b44e34",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0044",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Weapon_CLR.tga",
+      "sha256": "e2082b09c9c82cde60edfd8e4d55514cfe3c8ab1038aa0914dd5be0846789cb5",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0045",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Hair_Boy_CLR.tga",
+      "sha256": "030f51a93a4be9ddf42985e5e79413ba054ef7f049439117f885f7afc6dd5d3b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0046",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Head_Boy_CLR.tga",
+      "sha256": "d2c155d57ac45375e3338451a90006a12a756da43a8ea5016bbc6be124726aad",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0047",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Torso_CLR.tga",
+      "sha256": "a5194faab3d257464930b3f66c1e69afc83425118bae20275284aaf7df5c9582",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0048",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Weapon_CLR.tga",
+      "sha256": "298ae56060716096745470abb523c8666f00f6496a677cb1df9d97c3fe52efc8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0049",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_BaseColor.tga",
+      "sha256": "7afd10e3ffe047babf1278230e3af876f259ec35792d436ec2cffaf9922d2c33",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0050",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_BaseColor.tga",
+      "sha256": "a961df8e51942cb18c6458724821a0c8863100033ff975f5b92f8741b9952d2a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0051",
+      "kind": "texture_packed_mse",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_MetalSmoothEmissive.tga",
+      "sha256": "8599183c47c563df9abf15a571a31f898e53448b9c6881ef578563aa5730205d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0052",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_Normal.tga",
+      "sha256": "c9086752388717e47459eb7c412a344ac77237dca5db9eac326266eb52779edf",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0053",
+      "kind": "texture_packed_mse",
+      "source_path": "Assets/Textures/Environment/env_deco_MetalSmoothEmissive.tga",
+      "sha256": "c1e08d132978a720a7a3383505adec60c99a1626467366191057e5993414bc09",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0054",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_Normal.tga",
+      "sha256": "afb8e6a4e66816e6cd90a32b12409bcd0f3eb5a9d2e4c41adcc22d1a7250c662",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/Action.cs",
+      "unity_class": "that",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ActionPlayers/ClientActionPlayer.cs",
+      "unity_class": "to",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ActionPlayers/ServerActionPlayer.cs",
+      "unity_class": "ServerActionPlayer",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/AOEAction.cs",
+      "unity_class": "AOEAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Physics.OverlapSphere[A]",
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/ChargedShieldAction.cs",
+      "unity_class": "ChargedShieldAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/DashAttackAction.cs",
+      "unity_class": "DashAttackAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/MeleeAction.cs",
+      "unity_class": "MeleeAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/ReviveAction.cs",
+      "unity_class": "ReviveAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Gameplay/Action/ConcreteActions/TrampleAction.cs",
+      "unity_class": "TrampleAction",
+      "base_class": "Action",
+      "detected_apis": [
+        "UnityEngine.Animator[A]"
+      ]
+    }
+  ],
+  "diagnostics": []
+}

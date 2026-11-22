@@ -1,0 +1,27 @@
+; Engine configuration file.
+; Ported from Unity Official Sample: Boss Room (com.unity.multiplayer.samples.coop)
+; Target: Godot 4.7.2
+
+config_version=5
+
+[application]
+
+config/name="Boss Room 3D Co-op (Unity Port)"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+ActionBus="*res://scripts/network_action_bus.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+lights_and_shadows/directional_shadow/size=4096

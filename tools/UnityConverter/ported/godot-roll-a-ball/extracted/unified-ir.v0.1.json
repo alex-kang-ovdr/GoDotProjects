@@ -1,0 +1,946 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "Roll-a-Ball (3D Physics)",
+    "project_path": "samples/unity-roll-a-ball",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "MiniGame",
+      "source_path": "Assets/_Scenes/MiniGame.unity",
+      "entities": [
+        "scene_1_ent_1_29229600",
+        "scene_1_ent_2_69450765",
+        "scene_1_ent_3_150394209",
+        "scene_1_ent_4_178747620",
+        "scene_1_ent_5_180189443",
+        "scene_1_ent_6_246737732",
+        "scene_1_ent_7_269606183",
+        "scene_1_ent_8_294121306",
+        "scene_1_ent_9_407330775",
+        "scene_1_ent_10_427023231",
+        "scene_1_ent_11_451899234",
+        "scene_1_ent_12_456116742",
+        "scene_1_ent_13_808777974",
+        "scene_1_ent_14_839554390",
+        "scene_1_ent_15_876932816",
+        "scene_1_ent_16_912811675",
+        "scene_1_ent_17_1022323081",
+        "scene_1_ent_18_1030813851",
+        "scene_1_ent_19_1075396624",
+        "scene_1_ent_20_1125734620",
+        "scene_1_ent_21_1203163983",
+        "scene_1_ent_22_1369503392",
+        "scene_1_ent_23_1467871553",
+        "scene_1_ent_24_1806593902",
+        "scene_1_ent_25_2145607003"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "scene_1_ent_1_29229600",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          -5.36,
+          0.5,
+          3.01
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_2_69450765",
+      "name": "South Wall",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          10
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          20.5,
+          2,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_3_150394209",
+      "name": "North Wall",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          -10
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          20.5,
+          2,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_4_178747620",
+      "name": "East Wall",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          10,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          2,
+          20.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_5_180189443",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          -6.02,
+          0.5,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_6_246737732",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          5.89,
+          0.5,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_7_269606183",
+      "name": "Ground",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          2,
+          1,
+          2
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_8_294121306",
+      "name": "Fill light",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          0.99999994,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_9_407330775",
+      "name": "Main light",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_10_427023231",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          5.49,
+          0.5,
+          -2.28
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_11_451899234",
+      "name": "Player",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0.5,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_12_456116742",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          5.42,
+          0.5,
+          3.62
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_13_808777974",
+      "name": "PickUps",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0.5,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_14_839554390",
+      "name": "Lightning",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          10,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_15_876932816",
+      "name": "Walls",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_16_912811675",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          3.41,
+          0.5,
+          5.55
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_17_1022323081",
+      "name": "West Wall",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          -10,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          2,
+          20.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_18_1030813851",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          -2.41,
+          0.5,
+          6.16
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_19_1075396624",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          -4.75,
+          0.5,
+          -4.15
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_20_1125734620",
+      "name": "EventSystem",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_21_1203163983",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0.5,
+          6.36
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_22_1369503392",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0.5,
+          -6.49
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_23_1467871553",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          3.88,
+          0.5,
+          -4.22
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.49999997,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_24_1806593902",
+      "name": "PickUp",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          2.48,
+          0.5,
+          -5.22
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_25_2145607003",
+      "name": "Main Camera",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          10,
+          10
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    }
+  ],
+  "logic": [
+    {
+      "id": "logic_1_CameraController",
+      "name": "CameraController",
+      "kind": "script",
+      "source_path": "Assets/Scripts/CameraController.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_2_PlayerController",
+      "name": "PlayerController",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Rigidbody.AddForce",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Input.GetAxis",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_3_Rotator",
+      "name": "Rotator",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Rotator.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "scene",
+      "source_path": "Assets/_Scenes/MiniGame.unity",
+      "sha256": "c9c6d5038694e54d8516c392994ec8d2eb79ae39f654e173877f583364cdb259",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/PickUp.prefab",
+      "sha256": "901124c50518992f929f5b6c3f50e9b744ad2e3dbea45a4ac8106879df33a3ad",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "script",
+      "source_path": "Assets/Scripts/CameraController.cs",
+      "sha256": "9e22c043c501773d7289d227c34a1de272638f452ff0602cbc7bbf32c51e2eea",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "sha256": "3b441fbb4d8ab186e7d797e0fe964dd7510aab03056485d8ea5614674b87f60a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Rotator.cs",
+      "sha256": "b9ba5e6fe24ffc8351f4dd4a2850d972b2b95bd420324882a5e1ee503fb4a730",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/Scripts/CameraController.cs",
+      "unity_class": "CameraController",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/PlayerController.cs",
+      "unity_class": "PlayerController",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Rigidbody.AddForce[A]",
+        "UnityEngine.Input.GetAxis[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Rotator.cs",
+      "unity_class": "Rotator",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    }
+  ],
+  "diagnostics": []
+}

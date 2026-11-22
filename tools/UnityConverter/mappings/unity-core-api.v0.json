@@ -145,6 +145,38 @@
       "target": { "strategy": "external", "godot_api": "Excluded from runtime port (TutorialInfo/Editor only)" },
       "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
       "validation": { "fixtures": ["2d_roguelike_editor_exclusion"] }
+    },
+    {
+      "id": "Unity.Netcode.NetworkBehaviour_RPC",
+      "grade": "R",
+      "source": { "class": "NetworkBehaviour", "member": "[ServerRpc] / [ClientRpc] / NetworkVariable<T>", "kind": "netcode" },
+      "target": { "strategy": "runtime", "godot_api": "Godot MultiplayerAPI (@rpc('any_peer') / @rpc('authority') + ServerActionPlayer authority bus)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "server_authoritative" },
+      "validation": { "fixtures": ["boss_room_rpc_action_sync"] }
+    },
+    {
+      "id": "UnityEngine.AI.NavMeshAgent",
+      "grade": "A",
+      "source": { "class": "NavMeshAgent", "member": "SetDestination / steeringTarget / velocity", "kind": "navigation" },
+      "target": { "strategy": "adapter", "godot_api": "NavigationAgent3D / arena steering + obstacle avoidance (LH +Z -> RH -Z)" },
+      "transforms": { "coordinate_basis": "unity_3d_lh_to_godot_rh", "unit_policy": "meter" },
+      "validation": { "fixtures": ["boss_room_party_and_boss_ai"] }
+    },
+    {
+      "id": "Unity.URP.ShaderGraph_PackedMSE",
+      "grade": "A",
+      "source": { "class": "URP/Lit", "member": "MetalSmoothEmissive.tga (R=Metallic, G=Smoothness, B=Emissive)", "kind": "material_channel" },
+      "target": { "strategy": "adapter", "godot_api": "StandardMaterial3D (metallic/roughness/emission_texture channel unpack)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "tga_to_png_channel_unpack" },
+      "validation": { "fixtures": ["boss_room_emissive_arena_floor"] }
+    },
+    {
+      "id": "Unity.Services.UGS_LobbyRelay",
+      "grade": "X",
+      "source": { "class": "Unity.Services", "member": "LobbyService / RelayService / AuthenticationService", "kind": "cloud_service" },
+      "target": { "strategy": "external", "godot_api": "PlayForge Multiplayer Room / ENetMultiplayerPeer / Local Co-op AI Host" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "platform_service_swap" },
+      "validation": { "fixtures": ["boss_room_local_coop_and_host"] }
     }
   ]
 }

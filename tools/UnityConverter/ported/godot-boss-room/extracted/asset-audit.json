@@ -1,0 +1,605 @@
+{
+  "sample_id": "boss-room",
+  "sample_name": "Boss Room (Official Co-op 3D RPG)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 54,
+    "ported_full": 45,
+    "ported_partial": 9,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 95.83
+  },
+  "by_category": [
+    {
+      "category": "Audio",
+      "total": 5,
+      "full": 5,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Mesh3D",
+      "total": 7,
+      "full": 7,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 9,
+      "full": 0,
+      "partial": 9,
+      "failed": 0
+    },
+    {
+      "category": "Texture",
+      "total": 32,
+      "full": 32,
+      "partial": 0,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 1,
+      "entities": 1,
+      "logic_graphs": 9,
+      "assets": 54,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/chest_ani.FBX",
+      "bytes": 598736,
+      "sha256": "44c709da0c03d13b",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/door_boss_ani.FBX",
+      "bytes": 374576,
+      "sha256": "5055291b5238aa32",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/door_gears_ani.FBX",
+      "bytes": 220112,
+      "sha256": "029918ba4a9640c2",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Animated/floor_switch_ani.FBX",
+      "bytes": 56352,
+      "sha256": "5ab0e50b2c93e5c7",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/CharacterSet.fbx",
+      "bytes": 8035376,
+      "sha256": "8a581198ea826f5c",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0006",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/DungeonBorder.obj",
+      "bytes": 9900,
+      "sha256": "799d4c45f2da9257",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0007",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/DungeonPieces.FBX",
+      "bytes": 1050944,
+      "sha256": "0f296f2a70e195b8",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0008",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/BossRoom/DungeonBossRoom.unity",
+      "bytes": 340011,
+      "sha256": "62fb49820dd39560",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0009",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/Action.cs",
+      "bytes": 17539,
+      "sha256": "d95f275200aedd88",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0010",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ClientActionPlayer.cs",
+      "bytes": 8918,
+      "sha256": "51a84baa692202b1",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0011",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ActionPlayers/ServerActionPlayer.cs",
+      "bytes": 19769,
+      "sha256": "9ae2643f88823c41",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0012",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/AOEAction.cs",
+      "bytes": 3721,
+      "sha256": "03ae75c84c908627",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0013",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ChargedShieldAction.cs",
+      "bytes": 8304,
+      "sha256": "18d4a279e6534722",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0014",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/DashAttackAction.cs",
+      "bytes": 4757,
+      "sha256": "c8dbb7026588becb",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0015",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/MeleeAction.cs",
+      "bytes": 7801,
+      "sha256": "78337b9e0b03e6f7",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0016",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/ReviveAction.cs",
+      "bytes": 2427,
+      "sha256": "df972d0d06ce7fc2",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0017",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Gameplay/Action/ConcreteActions/TrampleAction.cs",
+      "bytes": 10559,
+      "sha256": "0ac7dee761d3126a",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0018",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Archer/archer_attk_a.wav",
+      "bytes": 42442,
+      "sha256": "293057a5cdaf4f05",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0019",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Archer/archer_powershot.wav",
+      "bytes": 88344,
+      "sha256": "45d48b79cdcf1f40",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0020",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/charge_attack_end.wav",
+      "bytes": 78872,
+      "sha256": "38bce816b1f63599",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0021",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/charge_attack_start.wav",
+      "bytes": 93940,
+      "sha256": "7516cb743e6014dc",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0022",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Sounds/Character/Boss/defeat_a.wav",
+      "bytes": 157966,
+      "sha256": "aa139689ac7e4457",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0023",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Hair_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "f804afaabc8542af",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0024",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Head_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "e3c0f5b6295bc518",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0025",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Torso_CLR.tga",
+      "bytes": 786476,
+      "sha256": "4f37d46562b8dffc",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0026",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Archer_Weapons_CLR.tga",
+      "bytes": 786476,
+      "sha256": "ffa9ffd8d97d6c92",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0027",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Boss_Head_CLR.tga",
+      "bytes": 786476,
+      "sha256": "31863fc760eacb3c",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0028",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Boss_Torso_CLR.tga",
+      "bytes": 3145772,
+      "sha256": "7a5eee245bc42896",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0029",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Enemy_Eyes.png",
+      "bytes": 4482827,
+      "sha256": "c39d80a00bdad2a7",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0030",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Enemy_Mouths.png",
+      "bytes": 4485641,
+      "sha256": "9876b59019d596d7",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0031",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Hero_Eyes.png",
+      "bytes": 4538588,
+      "sha256": "9643a46895334614",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0032",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Hero_Mouths.png",
+      "bytes": 4497365,
+      "sha256": "bc9bba3ca6a20816",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0033",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Head_CLR.tga",
+      "bytes": 786476,
+      "sha256": "3f359c61e8f2fae6",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0034",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Helmet_CLR.tga",
+      "bytes": 3145772,
+      "sha256": "f6758dcad7e36d73",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0035",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Torso_CLR.tga",
+      "bytes": 786476,
+      "sha256": "d5cab172eb16c9c2",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0036",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Imp_Weapons_CLR.tga",
+      "bytes": 786476,
+      "sha256": "f88756db1e421800",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0037",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Hair_Girl_CLR.tga",
+      "bytes": 786476,
+      "sha256": "6c3204eeaadaa387",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0038",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Head_Girl_CLR.tga",
+      "bytes": 786476,
+      "sha256": "78e4241355439b0d",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0039",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Torso_CLR_Girl.tga",
+      "bytes": 786476,
+      "sha256": "7fce724eaedcad1a",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0040",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Mage_Weapons_CLR.tga",
+      "bytes": 786476,
+      "sha256": "b2b42757842df9bc",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0041",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Hair_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "4b21b680d2c27372",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0042",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Head_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "0101c50ed4322bc1",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0043",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Torso_CLR.tga",
+      "bytes": 786476,
+      "sha256": "dc176f6b65fe4edd",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0044",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Rogue_Weapon_CLR.tga",
+      "bytes": 786476,
+      "sha256": "e2082b09c9c82cde",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0045",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Hair_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "030f51a93a4be9dd",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0046",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Head_Boy_CLR.tga",
+      "bytes": 786476,
+      "sha256": "d2c155d57ac45375",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0047",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Torso_CLR.tga",
+      "bytes": 786476,
+      "sha256": "a5194faab3d25746",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0048",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Characters/Tank_Weapon_CLR.tga",
+      "bytes": 786476,
+      "sha256": "298ae56060716096",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0049",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_BaseColor.tga",
+      "bytes": 12582956,
+      "sha256": "7afd10e3ffe047ba",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0050",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_BaseColor.tga",
+      "bytes": 12582956,
+      "sha256": "a961df8e51942cb1",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0051",
+      "category": "Texture",
+      "kind": "texture_packed_mse",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_MetalSmoothEmissive.tga",
+      "bytes": 12582956,
+      "sha256": "8599183c47c563df",
+      "status": "full",
+      "note": "Deterministic TGA->PNG + URP MetalSmoothEmissive 3-channel unpack (R=Metal, 1-G=Rough, B=Emissive)"
+    },
+    {
+      "asset_id": "asset_0052",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_boss_arena_Normal.tga",
+      "bytes": 12582956,
+      "sha256": "c9086752388717e4",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0053",
+      "category": "Texture",
+      "kind": "texture_packed_mse",
+      "source_path": "Assets/Textures/Environment/env_deco_MetalSmoothEmissive.tga",
+      "bytes": 12582956,
+      "sha256": "c1e08d132978a720",
+      "status": "full",
+      "note": "Deterministic TGA->PNG + URP MetalSmoothEmissive 3-channel unpack (R=Metal, 1-G=Rough, B=Emissive)"
+    },
+    {
+      "asset_id": "asset_0054",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/Environment/env_deco_Normal.tga",
+      "bytes": 12582956,
+      "sha256": "afb8e6a4e66816e6",
+      "status": "full",
+      "note": "Deterministic .TGA->PNG conversion"
+    }
+  ]
+}

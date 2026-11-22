@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/textures/env_deco_boss_arena_BaseColor.png" id="1_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_metallic.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_roughness.png" id="3_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/env_deco_boss_arena_Normal.png" id="4_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_emissive.png" id="5_tex"]
+
+[resource]
+resource_name = "env_deco_boss_arena"
+albedo_color = Color(0.748414, 0.767769, 0.868899, 1)
+albedo_texture = ExtResource("1_tex")
+metallic = 0.05
+metallic_texture = ExtResource("2_tex")
+roughness = 0.86
+roughness_texture = ExtResource("3_tex")
+normal_enabled = true
+normal_texture = ExtResource("4_tex")
+normal_scale = 1.1
+emission_enabled = true
+emission_operator = 1
+emission = Color(1, 0.25, 0.08, 1)
+emission_energy_multiplier = 3.4
+emission_texture = ExtResource("5_tex")

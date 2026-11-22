@@ -32,12 +32,12 @@
       "passed": true
     },
     {
-      "detail": "dist=3.68",
+      "detail": "dist=3.86",
       "name": "tank_moves_with_physics",
       "passed": true
     },
     {
-      "detail": "vel=(-21.15425, 5.156683, -10.09488)",
+      "detail": "vel=(-21.176, 5.156683, -10.04916)",
       "name": "ballistic_shell_spawned",
       "passed": true
     },
@@ -62,7 +62,7 @@
       "passed": true
     }
   ],
-  "elapsedMs": 1497,
+  "elapsedMs": 461,
   "engineVersion": "4.7.2-stable (official)",
   "failedChecks": 0,
   "game": "Tanks! 3D",

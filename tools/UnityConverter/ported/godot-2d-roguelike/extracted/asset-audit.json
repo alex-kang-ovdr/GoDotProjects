@@ -1,0 +1,813 @@
+{
+  "sample_id": "2d-roguelike",
+  "sample_name": "2D Roguelike (Scavengers)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 72,
+    "ported_full": 47,
+    "ported_partial": 25,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 91.32
+  },
+  "by_category": [
+    {
+      "category": "Animation",
+      "total": 9,
+      "full": 0,
+      "partial": 9,
+      "failed": 0
+    },
+    {
+      "category": "Audio",
+      "total": 12,
+      "full": 12,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "DataAsset",
+      "total": 1,
+      "full": 0,
+      "partial": 1,
+      "failed": 0
+    },
+    {
+      "category": "Font",
+      "total": 3,
+      "full": 3,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Other",
+      "total": 3,
+      "full": 0,
+      "partial": 3,
+      "failed": 0
+    },
+    {
+      "category": "Prefab",
+      "total": 27,
+      "full": 27,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 12,
+      "full": 0,
+      "partial": 12,
+      "failed": 0
+    },
+    {
+      "category": "Texture",
+      "total": 4,
+      "full": 4,
+      "partial": 0,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 1,
+      "entities": 0,
+      "logic_graphs": 12,
+      "assets": 72,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/2D Roguelike Upgrade Guide 5x.pdf",
+      "bytes": 69467,
+      "sha256": "430728a15353ab40",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.pdf)"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/AnimationControllers/Enemy1.controller",
+      "bytes": 8880,
+      "sha256": "6d18412c73537e43",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/Animations/AnimationControllers/Enemy2.overrideController",
+      "bytes": 4200,
+      "sha256": "6fc6d75d277867d7",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.overridecontroller)"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/AnimationControllers/Player.controller",
+      "bytes": 9368,
+      "sha256": "e24a4acc96613dd4",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy1Attack.anim",
+      "bytes": 10236,
+      "sha256": "3feaa6b24894dc41",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0006",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy1Idle.anim",
+      "bytes": 10348,
+      "sha256": "087c299adfe86df6",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0007",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy2Attack.anim",
+      "bytes": 10236,
+      "sha256": "b86d10ff16ca7b6f",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0008",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/Enemy2Idle.anim",
+      "bytes": 10348,
+      "sha256": "e7c336e16713fe5d",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0009",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerChop.anim",
+      "bytes": 10236,
+      "sha256": "d4af8f28a26ccedb",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0010",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerHit.anim",
+      "bytes": 10236,
+      "sha256": "ea8ff61219941372",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0011",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animations/Animations/PlayerIdle.anim",
+      "bytes": 10348,
+      "sha256": "1782392c7ce7a94a",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0012",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_chop1.aif",
+      "bytes": 310098,
+      "sha256": "3bed0f8f82ab7f62",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0013",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_chop2.aif",
+      "bytes": 293546,
+      "sha256": "06c9c69535b70407",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0014",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_die.aif",
+      "bytes": 193172,
+      "sha256": "2533f58e0723b11c",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0015",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_enemy1.aif",
+      "bytes": 108054,
+      "sha256": "d9211d71e29d08fc",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0016",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_enemy2.aif",
+      "bytes": 172166,
+      "sha256": "4d32ae04f8b09493",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0017",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_footstep1.aif",
+      "bytes": 78948,
+      "sha256": "a471330719d6bd74",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0018",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_footstep2.aif",
+      "bytes": 93346,
+      "sha256": "d6220850448726b3",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0019",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_fruit1.aif",
+      "bytes": 46486,
+      "sha256": "718ce638a8bee1bf",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0020",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_fruit2.aif",
+      "bytes": 58450,
+      "sha256": "33cd3df68e956373",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0021",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_music.aif",
+      "bytes": 13574566,
+      "sha256": "1cf12ed63cbaf331",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0022",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_soda1.aif",
+      "bytes": 221098,
+      "sha256": "2d75e80e09797d3f",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0023",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/scavengers_soda2.aif",
+      "bytes": 260430,
+      "sha256": "ce0dc9b6a80d32aa",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0024",
+      "category": "Font",
+      "kind": "font",
+      "source_path": "Assets/Fonts/PressStart2P-Regular.ttf",
+      "bytes": 69748,
+      "sha256": "17ec7d250ff59097",
+      "status": "full",
+      "note": "Direct FontFile import"
+    },
+    {
+      "asset_id": "asset_0025",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Enemy1.prefab",
+      "bytes": 11012,
+      "sha256": "baa2672c59cecd81",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0026",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Enemy2.prefab",
+      "bytes": 11012,
+      "sha256": "fcd2dd8bb9c6abd9",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0027",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Exit.prefab",
+      "bytes": 7668,
+      "sha256": "1a272305102b7725",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0028",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor1.prefab",
+      "bytes": 6068,
+      "sha256": "61f59c0e3725f1b0",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0029",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor2.prefab",
+      "bytes": 6068,
+      "sha256": "a00bbaa1c0ae4ff4",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0030",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor3.prefab",
+      "bytes": 6068,
+      "sha256": "f244867ba208e345",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0031",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor4.prefab",
+      "bytes": 6068,
+      "sha256": "a871f96e17da038d",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0032",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor5.prefab",
+      "bytes": 6068,
+      "sha256": "a5d1ee5cc9155a8a",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0033",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor6.prefab",
+      "bytes": 6068,
+      "sha256": "3a53bb116ef79212",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0034",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor7.prefab",
+      "bytes": 6068,
+      "sha256": "a2a16dcd29a6c3ff",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0035",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Floor8.prefab",
+      "bytes": 6068,
+      "sha256": "9b8f8a64cdb91216",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0036",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Food.prefab",
+      "bytes": 7668,
+      "sha256": "1c082ed86adc40d9",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0037",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/GameManager.prefab",
+      "bytes": 7352,
+      "sha256": "6c079b617629d6bb",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0038",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall1.prefab",
+      "bytes": 7684,
+      "sha256": "9175c82c3eef596e",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0039",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall2.prefab",
+      "bytes": 7684,
+      "sha256": "2ded286540911797",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0040",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/OuterWall3.prefab",
+      "bytes": 7684,
+      "sha256": "3412d5ea5c893171",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0041",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Player.prefab",
+      "bytes": 11836,
+      "sha256": "bae1428c92312254",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0042",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Soda.prefab",
+      "bytes": 7668,
+      "sha256": "5df7ae9015c7df89",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0043",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall1.prefab",
+      "bytes": 8860,
+      "sha256": "3fef6286aa0e7e8c",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0044",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall2.prefab",
+      "bytes": 8860,
+      "sha256": "5d8409151d550b9b",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0045",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall3.prefab",
+      "bytes": 8860,
+      "sha256": "14d3a40d2931f74c",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0046",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall4.prefab",
+      "bytes": 8860,
+      "sha256": "0d1b4681224769d7",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0047",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall5.prefab",
+      "bytes": 8860,
+      "sha256": "c6f3abac5b4566f6",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0048",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall6.prefab",
+      "bytes": 8860,
+      "sha256": "4a22910fe790fc98",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0049",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall7.prefab",
+      "bytes": 8860,
+      "sha256": "b9d0af567d392c4b",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0050",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Wall8.prefab",
+      "bytes": 8860,
+      "sha256": "4b8edc31ca76b6ac",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0051",
+      "category": "DataAsset",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Readme.asset",
+      "bytes": 4664,
+      "sha256": "d16d80a66d4cbe70",
+      "status": "partial",
+      "note": "ScriptableObject parameters mapped to Godot Resource/const config"
+    },
+    {
+      "asset_id": "asset_0052",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "bytes": 34200,
+      "sha256": "a721ff8f36303f38",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0053",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/BoardManager.cs",
+      "bytes": 3013,
+      "sha256": "a46b5aea0928d7f8",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0054",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Enemy.cs",
+      "bytes": 1472,
+      "sha256": "5de9d3ad96a9cc59",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0055",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "bytes": 2431,
+      "sha256": "ef7420c18f55c29b",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0056",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Loader.cs",
+      "bytes": 447,
+      "sha256": "903a6cad955c8fd4",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0057",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/MovingObject.cs",
+      "bytes": 2060,
+      "sha256": "de39276ac7d80fd6",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0058",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "bytes": 3366,
+      "sha256": "60c6a6099325eea7",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0059",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/SoundManager.cs",
+      "bytes": 1018,
+      "sha256": "ad08955a5324bd88",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0060",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Wall.cs",
+      "bytes": 677,
+      "sha256": "d847a3053bd92baf",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0061",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Scavengers_SpriteSheet.png",
+      "bytes": 47112,
+      "sha256": "e5b9bb966bf58212",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0062",
+      "category": "Font",
+      "kind": "font",
+      "source_path": "Assets/TutorialInfo/Fonts/Roboto-Thin.ttf",
+      "bytes": 130044,
+      "sha256": "11dbd8bf4f8c61d6",
+      "status": "full",
+      "note": "Direct FontFile import"
+    },
+    {
+      "asset_id": "asset_0063",
+      "category": "Font",
+      "kind": "font",
+      "source_path": "Assets/TutorialInfo/Fonts/RobotoCondensed-Bold.ttf",
+      "bytes": 161748,
+      "sha256": "0312269650316e08",
+      "status": "full",
+      "note": "Direct FontFile import"
+    },
+    {
+      "asset_id": "asset_0064",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/2DRoguelike.png",
+      "bytes": 156358,
+      "sha256": "0ff0594113d95dd4",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0065",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Help_Icon.png",
+      "bytes": 18108,
+      "sha256": "3c18c946842525d4",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0066",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/TutorialInfo/Layout.wlt",
+      "bytes": 16133,
+      "sha256": "30d232879ca5c0c7",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.wlt)"
+    },
+    {
+      "asset_id": "asset_0067",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "bytes": 4210,
+      "sha256": "a5c33793bf12cdb4",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0068",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/TutorialInfoEditor.cs",
+      "bytes": 617,
+      "sha256": "5aa01fd60e5050f1",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0069",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "bytes": 286,
+      "sha256": "63edc46472a354f6",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0070",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/TutorialInfo.cs",
+      "bytes": 2634,
+      "sha256": "ae44398c6ca39dcc",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0071",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Sprites/unity-logo.png",
+      "bytes": 9401,
+      "sha256": "7ed4f399c0dc238c",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0072",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/TutorialInfo/Tutorial Info.prefab",
+      "bytes": 32992,
+      "sha256": "c250a5072404710f",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    }
+  ]
+}

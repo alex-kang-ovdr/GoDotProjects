@@ -1,0 +1,826 @@
+{
+  "sample_id": "space-shooter",
+  "sample_name": "Space Shooter (3D FBX + TIFF)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 74,
+    "ported_full": 65,
+    "ported_partial": 9,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 96.96
+  },
+  "by_category": [
+    {
+      "category": "Audio",
+      "total": 6,
+      "full": 6,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Material",
+      "total": 22,
+      "full": 22,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Mesh3D",
+      "total": 6,
+      "full": 6,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Other",
+      "total": 2,
+      "full": 0,
+      "partial": 2,
+      "failed": 0
+    },
+    {
+      "category": "Prefab",
+      "total": 8,
+      "full": 8,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 7,
+      "full": 0,
+      "partial": 7,
+      "failed": 0
+    },
+    {
+      "category": "Texture",
+      "total": 22,
+      "full": 22,
+      "partial": 0,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 1,
+      "entities": 0,
+      "logic_graphs": 7,
+      "assets": 74,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_asteroid.wav",
+      "bytes": 149216,
+      "sha256": "56e7a958a74ade4c",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_enemy.wav",
+      "bytes": 174116,
+      "sha256": "470fbe2884c8b8bd",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/explosion_player.wav",
+      "bytes": 326536,
+      "sha256": "bc17f6d6ed4908b8",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/music_background.wav",
+      "bytes": 2336432,
+      "sha256": "9879c10c58661fbe",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/weapon_enemy.wav",
+      "bytes": 51004,
+      "sha256": "48738752d53c85bd",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0006",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/Audio/weapon_player.wav",
+      "bytes": 65792,
+      "sha256": "a16f600e6b5088f1",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0007",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_bolt_orange 1.mat",
+      "bytes": 4276,
+      "sha256": "df67719bb2c2857e",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0008",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_bolt_orange.mat",
+      "bytes": 4276,
+      "sha256": "7e21730431c198f5",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0009",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_enemyShip_engines_mat.mat",
+      "bytes": 4284,
+      "sha256": "21e6f432c2038d75",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0010",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/fx_lazer_orange_dff.mat",
+      "bytes": 4232,
+      "sha256": "dda8e78ff7d2953a",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0011",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_blast_mat.mat",
+      "bytes": 4404,
+      "sha256": "4c9a70459a15d900",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0012",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_glow_mat.mat",
+      "bytes": 4276,
+      "sha256": "661530c5b25695e6",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0013",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_jet_core_mat.mat",
+      "bytes": 4280,
+      "sha256": "100ec7fd631e169f",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0014",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_jet_flare_mat.mat",
+      "bytes": 4280,
+      "sha256": "6eb733413a7345b3",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0015",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_shockwave_mat.mat",
+      "bytes": 4280,
+      "sha256": "98800de53cdf4035",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0016",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_blue_mat.mat",
+      "bytes": 4356,
+      "sha256": "7255f10e2ab06e84",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0017",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_large_mat.mat",
+      "bytes": 4232,
+      "sha256": "58fba63403704688",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0018",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_white_mat.mat",
+      "bytes": 4320,
+      "sha256": "1c81c2d6a86f78c6",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0019",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_spark_yellow_mat.mat",
+      "bytes": 4324,
+      "sha256": "6d34533a6bec7853",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0020",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/part_star_mat.mat",
+      "bytes": 4228,
+      "sha256": "2d34b36b719365fa",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0021",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_01_mat.mat",
+      "bytes": 4320,
+      "sha256": "f5ef79ac2a873614",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0022",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_02_mat.mat",
+      "bytes": 4320,
+      "sha256": "776b37924861ec2e",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0023",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/prop_asteroid_03_mat.mat",
+      "bytes": 4320,
+      "sha256": "38023b73bd5b5ef8",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0024",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/tile_nebula_green_dff.mat",
+      "bytes": 4236,
+      "sha256": "bbe84f6db3bac5dc",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0025",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_enemyShip_glow_mat.mat",
+      "bytes": 4296,
+      "sha256": "f9afb2554b36d0fe",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0026",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_enemyShip_metal_mat.mat",
+      "bytes": 4400,
+      "sha256": "caec0ac52807bebe",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0027",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_playerShip_glass_mat.mat",
+      "bytes": 4400,
+      "sha256": "3a045bf46458e915",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0028",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/vehicle_playerShip_metal_mat.mat",
+      "bytes": 4400,
+      "sha256": "c524f86734dbf22e",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0029",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_01.FBX",
+      "bytes": 46624,
+      "sha256": "b640fe70b27213fd",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0030",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_02.FBX",
+      "bytes": 41168,
+      "sha256": "45b4a361e2439f66",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0031",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/prop_asteroid_03.FBX",
+      "bytes": 52288,
+      "sha256": "080f6f6003aafea1",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0032",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_enemyShip.FBX",
+      "bytes": 120512,
+      "sha256": "37e3aa99e252bb99",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0033",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_playerShip_collider.FBX",
+      "bytes": 19056,
+      "sha256": "ebb23f9fd2786e34",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0034",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/vehicle_playerShip.FBX",
+      "bytes": 104528,
+      "sha256": "be83d7e693c46608",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0035",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Asteroid.prefab",
+      "bytes": 13088,
+      "sha256": "9285485533fb4f3e",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0036",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Bolt.prefab",
+      "bytes": 10456,
+      "sha256": "45ca39e174f7c466",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0037",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Engines/engines_enemy.prefab",
+      "bytes": 47080,
+      "sha256": "0e823eedce71f17c",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0038",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Engines/engines_player.prefab",
+      "bytes": 50776,
+      "sha256": "05ece51d461efdea",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0039",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_asteroid.prefab",
+      "bytes": 60760,
+      "sha256": "74e54849a4545744",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0040",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_enemy.prefab",
+      "bytes": 67528,
+      "sha256": "8dabedcdfcbeab36",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0041",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Explosions/explosion_player.prefab",
+      "bytes": 71248,
+      "sha256": "f50c47a7c991abf6",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0042",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/VFX/Starfield/StarField.prefab",
+      "bytes": 52456,
+      "sha256": "98027eceafd72660",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0043",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "bytes": 81528,
+      "sha256": "6f2727fa1b8afce6",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0044",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByBoundary.cs",
+      "bytes": 181,
+      "sha256": "3a58fd55453c5fb0",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0045",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByContact.cs",
+      "bytes": 960,
+      "sha256": "be75abf00276a80a",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0046",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/DestroyByTime.cs",
+      "bytes": 187,
+      "sha256": "7823f79c08b85140",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0047",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameController.cs",
+      "bytes": 1587,
+      "sha256": "b742777a0e014ad2",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0048",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Mover.cs",
+      "bytes": 191,
+      "sha256": "2e4ea6ea81b81680",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0049",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/PlayerController.cs",
+      "bytes": 1118,
+      "sha256": "f98be52e70fbb14f",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0050",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/RandomRotator.cs",
+      "bytes": 212,
+      "sha256": "540c9e058768da34",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0051",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/Textures/cube_junkyard_sharp.cubemap",
+      "bytes": 1577116,
+      "sha256": "11cccb08fdc32da1",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.cubemap)"
+    },
+    {
+      "asset_id": "asset_0052",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/Textures/cube_junkyard_soft.cubemap",
+      "bytes": 10396,
+      "sha256": "246cc963533fca37",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.cubemap)"
+    },
+    {
+      "asset_id": "asset_0053",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/fx_lazer_cyan_dff.tif",
+      "bytes": 31592,
+      "sha256": "775a15aae2f2cf54",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0054",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/fx_lazer_orange_dff.tif",
+      "bytes": 31812,
+      "sha256": "e34875a913ad7226",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0055",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_enginePulse_dff.tif",
+      "bytes": 34544,
+      "sha256": "9e305e6676a6a595",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0056",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_flash_dff.tif",
+      "bytes": 41228,
+      "sha256": "6724ba1ce399f65e",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0057",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_jet_core_dff.tif",
+      "bytes": 28084,
+      "sha256": "4faf1fb2c42efa4f",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0058",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_jet_flare_dff.tif",
+      "bytes": 32524,
+      "sha256": "237c217fabcc4979",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0059",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_shockwave_dff.tif",
+      "bytes": 29920,
+      "sha256": "46cd1b0ce8f587d1",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0060",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_spark_large_dff.tif",
+      "bytes": 36684,
+      "sha256": "4e2d42b294a8c79e",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0061",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_spark_small_dff.tif",
+      "bytes": 23444,
+      "sha256": "ca1620cdc830206e",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0062",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/part_star_dff.tif",
+      "bytes": 27984,
+      "sha256": "b0e717853dd62a45",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0063",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_01_dff.tif",
+      "bytes": 214996,
+      "sha256": "ee9c9545d2b154a1",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0064",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_01_nrm.tif",
+      "bytes": 144408,
+      "sha256": "62ff0a59f9c9cb3c",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0065",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_02_dff.tif",
+      "bytes": 212292,
+      "sha256": "d64d1f2a125a6094",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0066",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_02_nrm.tif",
+      "bytes": 131344,
+      "sha256": "91205b9eb47c91cb",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0067",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_03_dff.tif",
+      "bytes": 188368,
+      "sha256": "b7165f2a3710f8d0",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0068",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/prop_asteroid_03_nrm.tif",
+      "bytes": 113880,
+      "sha256": "ca6307f64f72ac22",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0069",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/tile_nebula_green_dff.tif",
+      "bytes": 9705884,
+      "sha256": "5815a7efe948b5a9",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0070",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_nrm.tif",
+      "bytes": 356436,
+      "sha256": "4739d64fea7f4d2a",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0071",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_purple_dff.tif",
+      "bytes": 655464,
+      "sha256": "84d52c282417b5ea",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0072",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_enemyShip_red_dff.tif",
+      "bytes": 721060,
+      "sha256": "be2d7dd8438b7249",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0073",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_playerShip_orange_dff.tif",
+      "bytes": 564764,
+      "sha256": "625930903492174a",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0074",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Textures/vehicle_playerShip_orange_nrm.tif",
+      "bytes": 312180,
+      "sha256": "75dcc33630c8b750",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    }
+  ]
+}

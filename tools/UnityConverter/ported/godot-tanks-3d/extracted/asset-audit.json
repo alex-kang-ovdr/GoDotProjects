@@ -1,0 +1,1147 @@
+{
+  "sample_id": "tanks-3d",
+  "sample_name": "Tanks! 3D (Binary Prefab + 26 FBX)",
+  "architecture": "deterministic_unity_extractor_v1",
+  "totals": {
+    "total_assets_audited": 104,
+    "ported_full": 76,
+    "ported_partial": 28,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 93.27
+  },
+  "by_category": [
+    {
+      "category": "Animation",
+      "total": 2,
+      "full": 0,
+      "partial": 2,
+      "failed": 0
+    },
+    {
+      "category": "Audio",
+      "total": 7,
+      "full": 7,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "DataAsset",
+      "total": 3,
+      "full": 0,
+      "partial": 3,
+      "failed": 0
+    },
+    {
+      "category": "Font",
+      "total": 1,
+      "full": 1,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Material",
+      "total": 21,
+      "full": 21,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Mesh3D",
+      "total": 26,
+      "full": 26,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Other",
+      "total": 4,
+      "full": 0,
+      "partial": 4,
+      "failed": 0
+    },
+    {
+      "category": "Prefab",
+      "total": 14,
+      "full": 14,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Scene",
+      "total": 2,
+      "full": 2,
+      "partial": 0,
+      "failed": 0
+    },
+    {
+      "category": "Script",
+      "total": 19,
+      "full": 0,
+      "partial": 19,
+      "failed": 0
+    },
+    {
+      "category": "Texture",
+      "total": 5,
+      "full": 5,
+      "partial": 0,
+      "failed": 0
+    }
+  ],
+  "ir_validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "scenes": 2,
+      "entities": 0,
+      "logic_graphs": 19,
+      "assets": 104,
+      "blocked_assets": 0,
+      "diagnostics": 0
+    }
+  },
+  "items": [
+    {
+      "asset_id": "asset_0001",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/_Complete-Game.unity",
+      "bytes": 51244,
+      "sha256": "ba576600fff87e03",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0002",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/_Completed-Assets/Animators/CompletePumpjack.controller",
+      "bytes": 7064,
+      "sha256": "8795b3e21dae790d",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0003",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/_Completed-Assets/AudioMixers/CompleteMainMix.mixer",
+      "bytes": 8044,
+      "sha256": "47b20a26cbd55fa5",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.mixer)"
+    },
+    {
+      "asset_id": "asset_0004",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteDustTrail.prefab",
+      "bytes": 32308,
+      "sha256": "8d01122c32876e45",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0005",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteLevelArt.prefab",
+      "bytes": 100548,
+      "sha256": "4ef37228d30f9f2c",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0006",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompletePumpJack.prefab",
+      "bytes": 8352,
+      "sha256": "fd0d6c1fa29909bd",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0007",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteShell.prefab",
+      "bytes": 134116,
+      "sha256": "a8d0b6de1c0d5259",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0008",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteShellExplosion.prefab",
+      "bytes": 123388,
+      "sha256": "45c1cf4606171403",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0009",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteTank.prefab",
+      "bytes": 214708,
+      "sha256": "7e3c0b520d891570",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0010",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteTankExplosion.prefab",
+      "bytes": 42644,
+      "sha256": "e3688907c19fbfde",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0011",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Camera/CameraControl.cs",
+      "bytes": 5187,
+      "sha256": "b2fbd149cd15e0e5",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0012",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/GameManager.cs",
+      "bytes": 10476,
+      "sha256": "5c2620456f483ff8",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0013",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/TankManager.cs",
+      "bytes": 3784,
+      "sha256": "d0fea7a49065474c",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0014",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Shell/ShellExplosion.cs",
+      "bytes": 4196,
+      "sha256": "6f5ee27e072f8f9b",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0015",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankHealth.cs",
+      "bytes": 3790,
+      "sha256": "f523a14b6fc43371",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0016",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankMovement.cs",
+      "bytes": 6131,
+      "sha256": "ad1c4b02889eb53c",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0017",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankShooting.cs",
+      "bytes": 4975,
+      "sha256": "e503a901f3dd843b",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0018",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/UI/UIDirectionControl.cs",
+      "bytes": 758,
+      "sha256": "a8e4faedd4b1bfdd",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0019",
+      "category": "Animation",
+      "kind": "animation",
+      "source_path": "Assets/Animators/Pumpjack.controller",
+      "bytes": 7056,
+      "sha256": "eac30c453346ebc0",
+      "status": "partial",
+      "note": "Mapped to Godot AnimationPlayer / SpriteFrames"
+    },
+    {
+      "asset_id": "asset_0020",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/BackgroundMusic.wav",
+      "bytes": 12700880,
+      "sha256": "51a2920280ebce21",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0021",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/EngineDriving.aif",
+      "bytes": 751752,
+      "sha256": "6b077a802f9ba7f1",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0022",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/EngineIdle.aif",
+      "bytes": 1153278,
+      "sha256": "f38f7bede43d2384",
+      "status": "full",
+      "note": "Deterministic 16/24-bit AIFF->16-bit LE PCM WAV conversion"
+    },
+    {
+      "asset_id": "asset_0023",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShellExplosion.wav",
+      "bytes": 176648,
+      "sha256": "7dedb8ba25e82dc6",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0024",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShotCharging.wav",
+      "bytes": 352880,
+      "sha256": "c68359564f5c766b",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0025",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShotFiring.wav",
+      "bytes": 264680,
+      "sha256": "08ca4a33fc4e2d7a",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0026",
+      "category": "Audio",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/TankExplosion.wav",
+      "bytes": 264680,
+      "sha256": "4b3f0992088ba20d",
+      "status": "full",
+      "note": "Direct PCM WAV import"
+    },
+    {
+      "asset_id": "asset_0027",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/AudioMixers/MainMix.mixer",
+      "bytes": 10344,
+      "sha256": "7be19eed5a918c3b",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.mixer)"
+    },
+    {
+      "asset_id": "asset_0028",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Editor/MoveSceneViewCamera.cs",
+      "bytes": 525,
+      "sha256": "d62b803bac8c49f1",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0029",
+      "category": "Font",
+      "kind": "font",
+      "source_path": "Assets/Fonts/Bowlby_One/BowlbyOne-Regular.ttf",
+      "bytes": 61620,
+      "sha256": "f126ffc989945ec6",
+      "status": "full",
+      "note": "Direct FontFile import"
+    },
+    {
+      "asset_id": "asset_0030",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Blue.mat",
+      "bytes": 4948,
+      "sha256": "125f7be2de67698c",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0031",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Brown.mat",
+      "bytes": 4952,
+      "sha256": "86af788c1681835f",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0032",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingGlass.mat",
+      "bytes": 4900,
+      "sha256": "c87d99a3a1194383",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0033",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingGrey.mat",
+      "bytes": 4896,
+      "sha256": "84b43d900cf8aaeb",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0034",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingMetal.mat",
+      "bytes": 4900,
+      "sha256": "4a4dec4d0203addb",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0035",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingStone.mat",
+      "bytes": 4900,
+      "sha256": "a0f9f74ec2f94202",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0036",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingWhite.mat",
+      "bytes": 4900,
+      "sha256": "6bf0a564658a6e4c",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0037",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Dust.mat",
+      "bytes": 5228,
+      "sha256": "f9823672fec01a4a",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0038",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Explosion.mat",
+      "bytes": 5244,
+      "sha256": "4b8f3754390d7ad4",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0039",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Gold.mat",
+      "bytes": 5096,
+      "sha256": "507c2d7ea44da3ba",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0040",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Green.mat",
+      "bytes": 4952,
+      "sha256": "856d5ff97e236720",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0041",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Grey.mat",
+      "bytes": 4948,
+      "sha256": "be9ab23ffae6e2c5",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0042",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/OilDrums.mat",
+      "bytes": 4892,
+      "sha256": "bf3c375dfc5dceea",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0043",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Red.mat",
+      "bytes": 4948,
+      "sha256": "b1351da02e01e669",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0044",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/Smoke.mat",
+      "bytes": 5232,
+      "sha256": "a760f4d88e51b8c4",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0045",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankColour.mat",
+      "bytes": 4956,
+      "sha256": "0482aa8a8886e539",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0046",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankGrey.mat",
+      "bytes": 4952,
+      "sha256": "ba3cd5712f5227c8",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0047",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankLights.mat",
+      "bytes": 4956,
+      "sha256": "2216f43eb406343c",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0048",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/White.mat",
+      "bytes": 4952,
+      "sha256": "81765d90f1c8c87f",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0049",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/YellowDark.mat",
+      "bytes": 5036,
+      "sha256": "568234580f64f58f",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0050",
+      "category": "Material",
+      "kind": "material",
+      "source_path": "Assets/Materials/YellowLight.mat",
+      "bytes": 4956,
+      "sha256": "1df2f31076990c9d",
+      "status": "full",
+      "note": "Deterministic StandardMaterial3D .tres compiler (Gamma->Linear)"
+    },
+    {
+      "asset_id": "asset_0051",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Building01.fbx",
+      "bytes": 61856,
+      "sha256": "aaa93912a99feb37",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0052",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Building02.fbx",
+      "bytes": 1058126,
+      "sha256": "593a8f0865dfa622",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0053",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/BustedTank.fbx",
+      "bytes": 134416,
+      "sha256": "1da1ad777167f983",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0054",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cactus.fbx",
+      "bytes": 26848,
+      "sha256": "fb8b3a6daf9a0546",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0055",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cliff.fbx",
+      "bytes": 3327815,
+      "sha256": "1153bb6905ce70ed",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0056",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Column01.FBX",
+      "bytes": 60608,
+      "sha256": "f0683251d9387c17",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0057",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Column02.FBX",
+      "bytes": 520089,
+      "sha256": "2b12a55871a7a3d2",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0058",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Concrete.fbx",
+      "bytes": 112752,
+      "sha256": "f55e79af58ce55c0",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0059",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cow.fbx",
+      "bytes": 62704,
+      "sha256": "3d3151793d10b76e",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0060",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Crater01.fbx",
+      "bytes": 23328,
+      "sha256": "19de421fe1d83fe1",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0061",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Dunes01.fbx",
+      "bytes": 23472,
+      "sha256": "3948ea603c7518c1",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0062",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Dunes02.fbx",
+      "bytes": 26208,
+      "sha256": "cb4bee6b2a1e1ef6",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0063",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Helipad.fbx",
+      "bytes": 52608,
+      "sha256": "cd1ddfdb98c815d6",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0064",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/OilStorage.fbx",
+      "bytes": 41056,
+      "sha256": "1d44ea5373fa519b",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0065",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/PalmTree.fbx",
+      "bytes": 38288,
+      "sha256": "afec188b31410f37",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0066",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/PumpJack.fbx",
+      "bytes": 187888,
+      "sha256": "f91ade1ddf65fa11",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0067",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Radar.fbx",
+      "bytes": 31888,
+      "sha256": "52479682de4a8d0f",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0068",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Refinery.fbx",
+      "bytes": 90880,
+      "sha256": "070a89ec2f82888c",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0069",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks01.fbx",
+      "bytes": 26880,
+      "sha256": "7dab0854f3ced78a",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0070",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks02.fbx",
+      "bytes": 24368,
+      "sha256": "d82668ae1f4d392f",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0071",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks03.fbx",
+      "bytes": 42736,
+      "sha256": "138b61598cfec7d1",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0072",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Ruins01.fbx",
+      "bytes": 25296,
+      "sha256": "3fc8008313aaac9b",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0073",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Shell.fbx",
+      "bytes": 21120,
+      "sha256": "bd6a35f9698faf4d",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0074",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Tank.fbx",
+      "bytes": 5291456,
+      "sha256": "b0f9e25d9b9e5f06",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0075",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Terrain.fbx",
+      "bytes": 17136,
+      "sha256": "dc9af6d707c3874e",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0076",
+      "category": "Mesh3D",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Tree.fbx",
+      "bytes": 28864,
+      "sha256": "ae318af026513816",
+      "status": "full",
+      "note": "Godot 4.7.2 ufbx/obj native deterministic import"
+    },
+    {
+      "asset_id": "asset_0077",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/DustTrail.prefab",
+      "bytes": 156492,
+      "sha256": "ee5d59e9ce7e165c",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0078",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/LevelArt.prefab",
+      "bytes": 99144,
+      "sha256": "612ff114beb8b4c1",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0079",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/PumpJack.prefab",
+      "bytes": 8344,
+      "sha256": "f9f6e833c3073f49",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0080",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Shell.prefab",
+      "bytes": 22036,
+      "sha256": "177bb258035e01e5",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0081",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/ShellExplosion.prefab",
+      "bytes": 195604,
+      "sha256": "014a76663db9b37d",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0082",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Tank.prefab",
+      "bytes": 47644,
+      "sha256": "18bfb4e249950a22",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0083",
+      "category": "Prefab",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/TankExplosion.prefab",
+      "bytes": 195740,
+      "sha256": "616d388761c745d4",
+      "status": "full",
+      "note": "Unity prefab extracted (YAML or Binary SerializedFile v15)"
+    },
+    {
+      "asset_id": "asset_0084",
+      "category": "DataAsset",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Profiles/GlobalProfile.asset",
+      "bytes": 26336,
+      "sha256": "8552376451dc2394",
+      "status": "partial",
+      "note": "ScriptableObject parameters mapped to Godot Resource/const config"
+    },
+    {
+      "asset_id": "asset_0085",
+      "category": "DataAsset",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Readme.asset",
+      "bytes": 4648,
+      "sha256": "142b269f594557a6",
+      "status": "partial",
+      "note": "ScriptableObject parameters mapped to Godot Resource/const config"
+    },
+    {
+      "asset_id": "asset_0086",
+      "category": "DataAsset",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Scenes/Main/LightingData.asset",
+      "bytes": 27060860,
+      "sha256": "b02feeeb27867e17",
+      "status": "partial",
+      "note": "ScriptableObject parameters mapped to Godot Resource/const config"
+    },
+    {
+      "asset_id": "asset_0087",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/Scenes/Main/ReflectionProbe-0.exr",
+      "bytes": 131363,
+      "sha256": "019749c4799d931d",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.exr)"
+    },
+    {
+      "asset_id": "asset_0088",
+      "category": "Scene",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "bytes": 43008,
+      "sha256": "07be9540fa14a949",
+      "status": "full",
+      "note": "YAML/Binary Unity scene extracted to Unified IR v0.1"
+    },
+    {
+      "asset_id": "asset_0089",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Camera/CameraControl.cs",
+      "bytes": 2624,
+      "sha256": "2c8ec9ecac94a329",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0090",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/GameManager.cs",
+      "bytes": 9610,
+      "sha256": "04f14e60519ad9e6",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0091",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/TankManager.cs",
+      "bytes": 3514,
+      "sha256": "1ed3bd14bf2f9fbf",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0092",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Shell/ShellExplosion.cs",
+      "bytes": 3857,
+      "sha256": "9cc75f9523ab48fa",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0093",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankHealth.cs",
+      "bytes": 1989,
+      "sha256": "02bf7b4879fd7d8c",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0094",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankMovement.cs",
+      "bytes": 3828,
+      "sha256": "b80620fb43d46c8c",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0095",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankShooting.cs",
+      "bytes": 4630,
+      "sha256": "2b0cc9bdfdb12391",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0096",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/Scripts/UI/UIDirectionControl.cs",
+      "bytes": 420,
+      "sha256": "50121822555eea7a",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0097",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Aim Arrow.png",
+      "bytes": 18253,
+      "sha256": "330fa12ce868431a",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0098",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Health Wheel.png",
+      "bytes": 27985,
+      "sha256": "1a8cd82a7107440e",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0099",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Smoke.tif",
+      "bytes": 26480,
+      "sha256": "869a61cb194ecfdd",
+      "status": "full",
+      "note": "Deterministic .TIF->PNG conversion"
+    },
+    {
+      "asset_id": "asset_0100",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Help_Icon.png",
+      "bytes": 18108,
+      "sha256": "3c18c946842525d4",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0101",
+      "category": "Texture",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Tanks.png",
+      "bytes": 365929,
+      "sha256": "3eb5545e2be14489",
+      "status": "full",
+      "note": "Direct PNG/JPG texture import"
+    },
+    {
+      "asset_id": "asset_0102",
+      "category": "Other",
+      "kind": "misc",
+      "source_path": "Assets/TutorialInfo/Layout.wlt",
+      "bytes": 16133,
+      "sha256": "30d232879ca5c0c7",
+      "status": "partial",
+      "note": "Auxiliary Unity file (.wlt)"
+    },
+    {
+      "asset_id": "asset_0103",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "bytes": 4210,
+      "sha256": "a5c33793bf12cdb4",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    },
+    {
+      "asset_id": "asset_0104",
+      "category": "Script",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "bytes": 286,
+      "sha256": "63edc46472a354f6",
+      "status": "partial",
+      "note": "C# API audited against unity-core-api.v0.json and ported to typed GDScript 2.0"
+    }
+  ]
+}

@@ -98,7 +98,7 @@
       "passed": true
     },
     {
-      "detail": "m1={ \"moved\": false, \"hit\": Wall_2_3:<StaticBody2D#51539609407>, \"skipped\": false } m2={ \"skipped\": true, \"moved\": false, \"hit\": <null> }",
+      "detail": "m1={ \"moved\": false, \"hit\": Wall_2_3:<StaticBody2D#51539609408>, \"skipped\": false } m2={ \"skipped\": true, \"moved\": false, \"hit\": <null> }",
       "name": "enemy_skip_move_alternates",
       "passed": true
     },
@@ -113,10 +113,10 @@
       "passed": true
     }
   ],
-  "elapsedMs": 1283,
+  "elapsedMs": 198,
   "engineVersion": "4.7.2-stable (official)",
   "failedChecks": 0,
   "passedChecks": 21,
   "totalChecks": 21,
-  "verifiedAt": "2026-11-20T08:15:56"
+  "verifiedAt": "2026-11-22T04:38:50"
 }
