@@ -25,7 +25,9 @@
         }
       },
     });
-    await game.init(forgePath('/OfficialGodot/vendor/godot.editor'));
+    const wasmTag = String(window.__PLAYFORGE_WEB_EDITOR_WASM_TAG__ || '').trim();
+    const vendorBase = forgePath(wasmTag ? `/OfficialGodot/vendor/v/${encodeURIComponent(wasmTag)}/godot.editor` : '/OfficialGodot/vendor/godot.editor');
+    await game.init(vendorBase);
     for (const { path, bytes } of snapshot.files) game.copyToFS(`${directory}/${path}`, bytes);
     await game.start({ canvas, args: ['--path', directory, snapshot.scene] });
     if (document.documentElement.dataset.gameState === 'exited') return;

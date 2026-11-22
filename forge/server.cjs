@@ -371,6 +371,26 @@ function inspectWasmReleaseBinary(wasmPath) {
   }
 }
 
+function computeWasmContentTag(wasmPath, rawBytes) {
+  if (!wasmPath || !rawBytes) return '';
+  try {
+    const hash = crypto.createHash('sha256');
+    const fd = fs.openSync(wasmPath, 'r');
+    try {
+      const buf = Buffer.alloc(65536);
+      let readBytes = 0;
+      while ((readBytes = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
+        hash.update(readBytes === buf.length ? buf : buf.subarray(0, readBytes));
+      }
+    } finally {
+      fs.closeSync(fd);
+    }
+    return `${rawBytes}-${hash.digest('hex').slice(0, 8)}`;
+  } catch {
+    return String(rawBytes || '');
+  }
+}
+
 function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot = root) {
   const profile = normalizeWebEditorWasmProfile(
     options.webEditorWasmProfile ?? serverEnv.PLAYFORGE_WEB_EDITOR_WASM_PROFILE ?? 'release'
@@ -562,6 +582,9 @@ function createServer(options = {}) {
   const webEditorWasmProfile = webEditorVendor.profile;
   const webEditorWasmRelease = webEditorVendor.profile === 'release' && webEditorVendor.wasmInfo.debugSymbolsStripped === true;
   const webEditorWasmBytes = webEditorVendor.wasmInfo.rawBytes || 0;
+  const webEditorWasmTag = webEditorVendorDir && webEditorWasmBytes
+    ? computeWasmContentTag(path.join(webEditorVendorDir, 'godot.editor.wasm'), webEditorWasmBytes)
+    : '';
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
   const devDemoUiIncluded = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
   const remoteControlEnabled = devDemoUiIncluded;
@@ -767,6 +790,7 @@ function createServer(options = {}) {
         webEditorWasmProfile,
         webEditorWasmRelease,
         webEditorWasmBytes,
+        webEditorWasmTag,
         brawllabsMultiplayer: true,
         fortressWarMultiplayer: true,
         tappyChickenMmoMultiplayer: true,
@@ -819,10 +843,10 @@ function createServer(options = {}) {
 
     if (routePath === '/api/session' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
-      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
+      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
       const auth = await hubAuth.verify(req, { requireCsrf: false });
-      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
-      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
+      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
+      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
     }
 
     let auth = null;
@@ -1145,10 +1169,15 @@ function createServer(options = {}) {
     if (!devDemoUiIncluded && /(?:^|\/)dev-demo-ui\.js$/i.test(pathname)) {
       return reply(404, 'Not found');
     }
-    const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
+    const versionedVendorMatch = pathname.match(/^\/OfficialGodot\/vendor\/v\/([a-zA-Z0-9._-]+)\/(.+)$/);
+    const isVersionedVendor = Boolean(versionedVendorMatch);
+    const isVendorBinary = isVersionedVendor || pathname.startsWith('/OfficialGodot/vendor/');
+    const vendorRelPath = isVersionedVendor
+      ? versionedVendorMatch[2]
+      : (pathname.startsWith('/OfficialGodot/vendor/') ? pathname.slice('/OfficialGodot/vendor/'.length) : '');
     const allowedRoot = isVendorBinary && webEditorVendorDir ? webEditorVendorDir : root;
     let file = isVendorBinary && webEditorVendorDir
-      ? path.resolve(webEditorVendorDir, pathname.slice('/OfficialGodot/vendor/'.length))
+      ? path.resolve(webEditorVendorDir, vendorRelPath)
       : path.resolve(root, '.' + pathname);
     if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
     try {
@@ -1170,7 +1199,10 @@ function createServer(options = {}) {
         if (!devDemoUiIncluded) {
           html = html.replace(/\s*<!--\s*playforge-dev-demo:start\s*-->[\s\S]*?<!--\s*playforge-dev-demo:end\s*-->/gi, '');
         }
-        const buildScript = `<script>window.__PLAYFORGE_BUILD_MODE__=${JSON.stringify(resolvedBuildMode)};window.__PLAYFORGE_DEV_DEMO_UI_INCLUDED__=${JSON.stringify(devDemoUiIncluded)};</script>`;
+        if (webEditorWasmTag) {
+          html = html.replace(/src="vendor\/godot\.editor\.js"/g, `src="vendor/v/${webEditorWasmTag}/godot.editor.js"`);
+        }
+        const buildScript = `<script>window.__PLAYFORGE_BUILD_MODE__=${JSON.stringify(resolvedBuildMode)};window.__PLAYFORGE_DEV_DEMO_UI_INCLUDED__=${JSON.stringify(devDemoUiIncluded)};window.__PLAYFORGE_WEB_EDITOR_WASM_TAG__=${JSON.stringify(webEditorWasmTag)};window.__PLAYFORGE_WEB_EDITOR_WASM_BYTES__=${JSON.stringify(webEditorWasmBytes)};</script>`;
         if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, `${buildScript}\n</head>`);
         const body = Buffer.from(html, 'utf8');
         res.writeHead(200, {
@@ -1182,9 +1214,13 @@ function createServer(options = {}) {
         });
         return res.end(req.method === 'HEAD' ? undefined : body);
       }
+      const isCurrentVersionedVendor = isVersionedVendor && webEditorWasmTag && versionedVendorMatch[1] === webEditorWasmTag;
+      const cacheControl = isCurrentVersionedVendor
+        ? 'public, max-age=31536000, immutable'
+        : 'no-cache';
       const staticHeaders = {
         'Content-Type': mime[ext] || 'application/octet-stream',
-        'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
+        'Cache-Control': cacheControl,
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',
       };

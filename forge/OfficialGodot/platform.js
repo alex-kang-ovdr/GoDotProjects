@@ -240,19 +240,6 @@ function bindTemplateToolbar() {
       renderTemplates();
     });
   }
-  window.addEventListener("playforge:dev-demo-ui-change", (e) => {
-    const enabled = Boolean(e?.detail?.enabled);
-    if (!enabled && activeTemplateFilter === "showcase") {
-      activeTemplateFilter = "all";
-      const filtersEl = $("templateFilters");
-      if (filtersEl) {
-        for (const b of filtersEl.querySelectorAll("button[data-filter]")) {
-          b.setAttribute("aria-pressed", String(b.dataset.filter === "all"));
-        }
-      }
-      renderTemplates();
-    }
-  });
 }
 function projectCard(x) {
   const wrap = document.createElement("div");
@@ -638,7 +625,9 @@ if (desktopDownloadModal) {
     const lowBandwidth = Boolean(conn && (conn.saveData || /(?:2g|slow-2g)/i.test(String(conn.effectiveType || ""))));
     if (!lowBandwidth && window.innerWidth >= 900) {
       const warm = () => {
-        for (const asset of ["/OfficialGodot/vendor/godot.editor.js", "/OfficialGodot/vendor/godot.editor.wasm"]) {
+        const wasmTag = String(window.__PLAYFORGE_WEB_EDITOR_WASM_TAG__ || "").trim();
+        const prefix = wasmTag ? `/OfficialGodot/vendor/v/${encodeURIComponent(wasmTag)}` : "/OfficialGodot/vendor";
+        for (const asset of [`${prefix}/godot.editor.js`, `${prefix}/godot.editor.wasm`]) {
           fetch(forgePath(asset), { credentials: "same-origin", priority: "low" }).then((r) => r.body?.cancel?.()).catch(() => {});
         }
       };
