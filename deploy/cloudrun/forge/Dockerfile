@@ -5,6 +5,7 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=8080 \
     PLAYFORGE_BASE_PATH=/forge \
+    PLAYFORGE_WEB_EDITOR_WASM_PROFILE=release \
     PLAYHUB_FORGE_AUTH_MODE=hub
 
 WORKDIR /app/forge

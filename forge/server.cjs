@@ -280,24 +280,133 @@ function insideRoot(file) {
   return insideDir(root, file);
 }
 
-function resolveWebEditorVendorDir(options, serverEnv) {
-  const candidates = [
+const WASM_DEBUG_SECTION_PATTERN = /^(?:name|\.debug_|sourceMappingURL$|external_debug_info$)/;
+
+function normalizeWebEditorWasmProfile(raw) {
+  const value = String(raw || '').trim().toLowerCase();
+  return value === 'debug' ? 'debug' : 'release';
+}
+
+function inspectWasmReleaseBinary(wasmPath) {
+  try {
+    const stat = fs.statSync(wasmPath);
+    if (!stat.isFile() || stat.size < 8) {
+      return { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false };
+    }
+    const fd = fs.openSync(wasmPath, 'r');
+    try {
+      const magic = Buffer.alloc(8);
+      if (fs.readSync(fd, magic, 0, 8, 0) !== 8 || magic[0] !== 0x00 || magic[1] !== 0x61 || magic[2] !== 0x73 || magic[3] !== 0x6d) {
+        return { exists: true, validWasm: false, rawBytes: stat.size, debugSections: [], debugSymbolsStripped: false };
+      }
+      const scratch = Buffer.alloc(64);
+      const readUleb = (pos) => {
+        const readLen = fs.readSync(fd, scratch, 0, Math.min(10, stat.size - pos), pos);
+        let value = 0;
+        let shift = 0;
+        for (let i = 0; i < readLen; i += 1) {
+          const byte = scratch[i];
+          value += (byte & 0x7f) * (2 ** shift);
+          if ((byte & 0x80) === 0) return { value, nextPos: pos + i + 1 };
+          shift += 7;
+          if (shift > 35) break;
+        }
+        return null;
+      };
+      const debugSections = [];
+      let offset = 8;
+      while (offset < stat.size) {
+        if (fs.readSync(fd, scratch, 0, 1, offset) !== 1) break;
+        const sectionId = scratch[0];
+        offset += 1;
+        const sizeInfo = readUleb(offset);
+        if (!sizeInfo) break;
+        const payloadStart = sizeInfo.nextPos;
+        const payloadEnd = payloadStart + sizeInfo.value;
+        if (payloadEnd > stat.size) break;
+        if (sectionId === 0) {
+          const nameLenInfo = readUleb(payloadStart);
+          if (nameLenInfo && nameLenInfo.nextPos + nameLenInfo.value <= payloadEnd) {
+            const nameLen = Math.min(nameLenInfo.value, 128);
+            const nameBuf = Buffer.alloc(nameLen);
+            fs.readSync(fd, nameBuf, 0, nameLen, nameLenInfo.nextPos);
+            const secName = nameBuf.toString('utf8');
+            if (WASM_DEBUG_SECTION_PATTERN.test(secName)) debugSections.push(secName);
+          }
+        }
+        offset = payloadEnd;
+      }
+      return {
+        exists: true,
+        validWasm: true,
+        rawBytes: stat.size,
+        debugSections,
+        debugSymbolsStripped: debugSections.length === 0,
+      };
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch {
+    return { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false };
+  }
+}
+
+function resolveWebEditorVendor(options = {}, serverEnv = process.env, baseRoot = root) {
+  const profile = normalizeWebEditorWasmProfile(
+    options.webEditorWasmProfile ?? serverEnv.PLAYFORGE_WEB_EDITOR_WASM_PROFILE ?? 'release'
+  );
+  const explicit = [
     options.webEditorVendorDir,
     serverEnv.PLAYFORGE_WEB_EDITOR_DIR,
-    path.join(root, 'OfficialGodot', 'vendor'),
-    path.resolve(root, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
-    path.resolve(root, '..', 'artifacts', 'local-runtime', 'godot-web'),
-    path.resolve(root, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web'),
   ].filter(Boolean);
+  const profileCandidates = profile === 'debug'
+    ? [
+        path.join(baseRoot, 'OfficialGodot', 'vendor-debug'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor-debug'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web-debug'),
+        path.join(baseRoot, 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web'),
+      ]
+    : [
+        path.join(baseRoot, 'OfficialGodot', 'vendor-release'),
+        path.join(baseRoot, 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor-release'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'forge', 'OfficialGodot', 'vendor'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web-release'),
+        path.resolve(baseRoot, '..', 'artifacts', 'local-runtime', 'godot-web'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web-release'),
+        path.resolve(baseRoot, '..', '..', 'PlayHub-Platform', 'artifacts', 'local-runtime', 'godot-web'),
+      ];
+  const candidates = [...explicit, ...profileCandidates];
+  const seen = new Set();
+  let fallbackCandidate = null;
   for (const candidate of candidates) {
     try {
       const resolved = fs.realpathSync(candidate);
-      if (fs.statSync(resolved).isDirectory() && fs.existsSync(path.join(resolved, 'godot.editor.js'))) {
-        return resolved;
+      if (seen.has(resolved)) continue;
+      seen.add(resolved);
+      if (!fs.statSync(resolved).isDirectory() || !fs.existsSync(path.join(resolved, 'godot.editor.js'))) {
+        continue;
       }
+      const wasmInfo = inspectWasmReleaseBinary(path.join(resolved, 'godot.editor.wasm'));
+      const entry = { dir: resolved, profile, wasmInfo };
+      if (profile === 'release' && wasmInfo.validWasm && !wasmInfo.debugSymbolsStripped) {
+        if (!fallbackCandidate) fallbackCandidate = entry;
+        continue;
+      }
+      return entry;
     } catch {}
   }
-  return null;
+  return fallbackCandidate || {
+    dir: null,
+    profile,
+    wasmInfo: { exists: false, validWasm: false, rawBytes: 0, debugSections: [], debugSymbolsStripped: false },
+  };
+}
+
+function resolveWebEditorVendorDir(options, serverEnv) {
+  return resolveWebEditorVendor(options, serverEnv).dir;
 }
 
 function normalizeBasePath(raw) {
@@ -331,7 +440,11 @@ function createServer(options = {}) {
   const configuredOrigin = options.publicOrigin ?? serverEnv.PUBLIC_ORIGIN;
   const originAllowed = createOriginPolicy(configuredOrigin);
   const basePath = normalizeBasePath(options.basePath ?? serverEnv.PLAYFORGE_BASE_PATH ?? '');
-  const webEditorVendorDir = resolveWebEditorVendorDir(options, serverEnv);
+  const webEditorVendor = resolveWebEditorVendor(options, serverEnv);
+  const webEditorVendorDir = webEditorVendor.dir;
+  const webEditorWasmProfile = webEditorVendor.profile;
+  const webEditorWasmRelease = webEditorVendor.profile === 'release' && webEditorVendor.wasmInfo.debugSymbolsStripped === true;
+  const webEditorWasmBytes = webEditorVendor.wasmInfo.rawBytes || 0;
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
   const devDemoUiIncluded = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
   const remoteControlEnabled = devDemoUiIncluded;
@@ -530,15 +643,28 @@ function createServer(options = {}) {
     if (routePath === '/api/health' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       const status = NativeRuntime.availability(root);
-      return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, fortressWarMultiplayer: true, tappyChickenMmoMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1, hubAuth: Boolean(hubAuth) });
+      return json(200, {
+        ok: true,
+        runtime: status.available,
+        engine: 'Godot',
+        webEditorWasmProfile,
+        webEditorWasmRelease,
+        webEditorWasmBytes,
+        brawllabsMultiplayer: true,
+        fortressWarMultiplayer: true,
+        tappyChickenMmoMultiplayer: true,
+        multiplayerTestWorkspace: 1,
+        nativeGameIframe: 1,
+        hubAuth: Boolean(hubAuth),
+      });
     }
 
     if (routePath === '/api/session' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
-      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded });
+      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
       const auth = await hubAuth.verify(req, { requireCsrf: false });
-      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded });
-      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded });
+      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
+      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease });
     }
 
     let auth = null;
@@ -898,12 +1024,16 @@ function createServer(options = {}) {
         });
         return res.end(req.method === 'HEAD' ? undefined : body);
       }
-      await streamStaticFile(req, res, file, info, {
+      const staticHeaders = {
         'Content-Type': mime[ext] || 'application/octet-stream',
         'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',
-      }, httpCache);
+      };
+      if (isVendorBinary && ext === '.wasm') {
+        staticHeaders['X-PlayForge-Web-Editor-Wasm'] = webEditorWasmRelease ? 'release' : webEditorWasmProfile;
+      }
+      await streamStaticFile(req, res, file, info, staticHeaders, httpCache);
     } catch (error) {
       if (!res.headersSent) reply(['ENOENT', 'ENOTDIR'].includes(error.code) ? 404 : 500, 'File unavailable');
       else res.destroy();
@@ -995,4 +1125,4 @@ if (require.main === module) {
     process.on('SIGTERM', () => server.shutdown());
   }
 }
-module.exports = { createServer, createCompressionCache, internalApiConfigFromEnv };
+module.exports = { createServer, createCompressionCache, internalApiConfigFromEnv, inspectWasmReleaseBinary, resolveWebEditorVendor, normalizeWebEditorWasmProfile };
