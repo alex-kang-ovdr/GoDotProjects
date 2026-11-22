@@ -118,7 +118,12 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
   social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at'],
   // Hub-SSO email credentials (sensitive: dropped unconditionally)
-  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at']
+  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at'],
+  // Hub-Shorts game intro videos (4 tables)
+  shorts_videos: ['id', 'creator_id', 'creator_name', 'game_id', 'project_id', 'title', 'caption', 'hashtags_json', 'prompt', 'flow_prompt', 'style_preset', 'camera_motion', 'storyboard_json', 'engine_id', 'resolved_engine_id', 'engine_model', 'status', 'visibility', 'is_primary', 'progress', 'stage_label', 'error_code', 'error_message', 'video_rel_path', 'poster_rel_path', 'mime_type', 'bytes', 'sha256', 'duration_sec', 'width', 'height', 'aspect_ratio', 'quoted_coins', 'charged_coins', 'billing_hold_id', 'billing_journal_entry_id', 'view_count', 'like_count', 'published_at', 'created_at', 'updated_at'],
+  shorts_likes: ['short_id', 'principal_id', 'created_at'],
+  shorts_views: ['short_id', 'viewer_key', 'day_bucket', 'created_at'],
+  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -170,7 +175,10 @@ export const DROP_TABLES = Object.freeze([
   'social_party_launch_acks',
   'social_party_launches',
   // Hub-SSO email credentials (emails + password hashes)
-  'email_credentials'
+  'email_credentials',
+  // Hub-Shorts transient idempotency & viewer dedup logs
+  'shorts_idempotency',
+  'shorts_views'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);
@@ -425,6 +433,15 @@ export async function sanitizeSnapshot({
             const code = String((parseInt(hmacHex(hmacSalt, 'profile_tag', p.principal_id, 4), 16) % 9000) + 1000);
             const h = `DevUser_${hmacHex(hmacSalt, 'profile_handle', p.principal_id, 6)}#${code}`;
             upd.run(h, p.principal_id);
+          }
+        }
+
+        // 2c. Pseudonymize shorts_videos.creator_name and clear live billing references
+        if (tables.has('shorts_videos')) {
+          const svRows = db.prepare('SELECT id, creator_id FROM shorts_videos').all();
+          const upd = db.prepare('UPDATE shorts_videos SET creator_name = ?, billing_hold_id = NULL, billing_journal_entry_id = NULL WHERE id = ?');
+          for (const row of svRows) {
+            upd.run(`DevCreator_${hmacHex(hmacSalt, 'shorts_creator', row.creator_id, 6)}`, row.id);
           }
         }
 

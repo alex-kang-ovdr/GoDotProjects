@@ -28,6 +28,7 @@
   const nativeGameFrame = document.getElementById('native-game-frame');
   const agentFrame = document.getElementById('agent-dock-frame');
   const blenderDrawer = document.getElementById('blender-drawer');
+  const shortsDrawer = document.getElementById('shorts-drawer');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
@@ -398,10 +399,36 @@
   function toggleBlenderDrawer(forceOpen = null) {
     if (!blenderDrawer) return;
     const nextOpen = forceOpen === null ? blenderDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && shortsDrawer) shortsDrawer.hidden = true;
     if (nextOpen && !blenderDrawer.getAttribute('src')) {
       blenderDrawer.src = forgePath(`/OfficialGodot/blender-studio.html?embedded=1&project=${encodeURIComponent(projectId)}`);
     }
     blenderDrawer.hidden = !nextOpen;
+  }
+  function toggleShortsDrawer(forceOpen = null) {
+    if (!shortsDrawer) return;
+    const nextOpen = forceOpen === null ? shortsDrawer.hidden : Boolean(forceOpen);
+    if (nextOpen && blenderDrawer) blenderDrawer.hidden = true;
+    if (nextOpen && !shortsDrawer.getAttribute('src')) {
+      const pname = encodeURIComponent(projectLabel?.textContent || '');
+      shortsDrawer.src = forgePath(`/OfficialGodot/shorts-studio.html?embedded=1&project=${encodeURIComponent(projectId)}&projectName=${pname}`);
+    }
+    shortsDrawer.hidden = !nextOpen;
+  }
+  function captureEditorCanvasFrame() {
+    const activeCanvas = (gameOverlay && gameOverlay.style.display === 'block' && gameCanvas?.width > 0)
+      ? gameCanvas
+      : canvas;
+    if (!activeCanvas || !activeCanvas.width || !activeCanvas.height) {
+      return { ok: false, error: '캡처할 활성 Godot 캔버스가 준비되지 않았습니다.' };
+    }
+    try {
+      const dataUrl = activeCanvas.toDataURL('image/png');
+      const sourceLabel = activeCanvas === gameCanvas ? '실행 중인 게임 화면' : 'Godot 에디터 뷰포트';
+      return { ok: true, dataUrl, sourceLabel, width: activeCanvas.width, height: activeCanvas.height };
+    } catch {
+      return { ok: false, error: 'WebGL 캔버스 캡처에 실패했습니다. 스크린샷 파일 업로드를 이용해 주세요.' };
+    }
   }
   window.addEventListener('playforge-blender-placed', event => {
     if (blenderDrawer?.contentWindow) {
@@ -412,6 +439,10 @@
     const action = button.dataset.action;
     if (action === 'blender') {
       toggleBlenderDrawer();
+      return;
+    }
+    if (action === 'shorts') {
+      toggleShortsDrawer();
       return;
     }
     notify('activity', { kind: 'step', clickLabel: ({home:'내 프로젝트',versions:'버전 기록',publish:'배포',collaboration:'협업 현황'})[action] || button.textContent, x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight });
@@ -1025,6 +1056,30 @@
     }
   }
   window.addEventListener('message', (event) => {
+    if (event.origin === origin && event.data?.source === 'playforge-shorts-studio') {
+      if (event.data.type === 'close') {
+        toggleShortsDrawer(false);
+        return;
+      }
+      if (event.data.type === 'capture-frame') {
+        const result = captureEditorCanvasFrame();
+        if (shortsDrawer?.contentWindow) {
+          shortsDrawer.contentWindow.postMessage({
+            source: 'playforge-godot-editor',
+            type: 'captured-frame',
+            ...result,
+            projectId,
+            projectName: projectLabel?.textContent || ''
+          }, origin);
+        }
+        if (result.ok) showNotice(`'${result.sourceLabel}' 키프레임을 쇼츠 스튜디오로 보냈습니다.`);
+        return;
+      }
+      if (event.data.type === 'short-published') {
+        showNotice(`허브 내 게임에 소개 쇼츠 '${event.data.title || ''}'이(가) 등록되었습니다!`);
+        return;
+      }
+    }
     if (event.origin === origin && event.data?.source === 'playforge-blender-studio') {
       if (event.data.type === 'close') {
         toggleBlenderDrawer(false);

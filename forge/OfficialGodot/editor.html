@@ -30,6 +30,8 @@
     #agent-dock-frame{position:fixed;z-index:19;border:0;border-left:1px solid #DFE1F4;background:#FFFFFF}
     #blender-drawer{position:fixed;top:48px;right:0;bottom:0;width:min(820px,96vw);z-index:25;border:0;border-left:1px solid #DFE1F4;background:#12161f;box-shadow:-10px 0 30px rgba(17,19,27,0.24)}
     #blender-drawer[hidden]{display:none}
+    #shorts-drawer{position:fixed;top:48px;right:0;bottom:0;width:min(920px,96vw);z-index:26;border:0;border-left:1px solid #DFE1F4;background:#FAF8FF;box-shadow:-10px 0 30px rgba(17,19,27,0.24)}
+    #shorts-drawer[hidden]{display:none}
     #editor-loading{position:fixed;inset:48px 0 0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#FAF8FF;color:#191B23;padding:24px;text-align:center}
     #editor-loading[hidden]{display:none}
     #editor-loading-title{font-size:17px;font-weight:700;color:#191B23}
@@ -40,13 +42,14 @@
 </head>
 <body>
   <div id="notice" role="alert"></div>
-  <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" data-action="home">← 내 프로젝트</button><button type="button" data-action="blender">AI 3D</button><button type="button" data-action="collaboration">협업</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
+  <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" data-action="home">← 내 프로젝트</button><button type="button" data-action="blender">AI 3D</button><button type="button" data-action="shorts">쇼츠 영상</button><button type="button" data-action="collaboration">협업</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
   <canvas id="editor-canvas" tabindex="0"></canvas>
   <div id="editor-loading" role="status" aria-live="polite"><strong id="editor-loading-title">Godot 웹 에디터 준비 중…</strong><div id="editor-loading-bar-wrap"><div id="editor-loading-bar"></div></div><div id="editor-loading-detail">프로젝트 파일을 불러오고 있습니다.</div></div>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
   <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
   <iframe id="agent-dock-frame" title="PlayForge AI Agent" hidden></iframe>
   <iframe id="blender-drawer" title="PlayForge AI 3D Studio (Headless Blender)" hidden></iframe>
+  <iframe id="shorts-drawer" title="PlayForge AI Shorts Studio (Google Flow / PlayCoin)" hidden></iframe>
   <script src="vendor/godot.editor.js"></script>
   <script src="editor-bridge.js"></script>
 </body>

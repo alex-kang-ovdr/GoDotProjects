@@ -105,7 +105,11 @@ const OPTIONAL_TABLES={
   social_reports:['id','reporter_id','target_type','target_id','reason','created_at'],
   social_party_launches:['launch_id','party_id','game_id','room_code','match_room_id','launched_by','status','created_at'],
   social_party_launch_acks:['launch_id','principal_id','platform','state','updated_at'],
-  email_credentials:['user_id','email','password_hash','salt','failed_attempts','locked_until','created_at','updated_at']
+  email_credentials:['user_id','email','password_hash','salt','failed_attempts','locked_until','created_at','updated_at'],
+  shorts_videos:['id','creator_id','creator_name','game_id','project_id','title','caption','hashtags_json','prompt','flow_prompt','style_preset','camera_motion','storyboard_json','engine_id','resolved_engine_id','engine_model','status','visibility','is_primary','progress','stage_label','error_code','error_message','video_rel_path','poster_rel_path','mime_type','bytes','sha256','duration_sec','width','height','aspect_ratio','quoted_coins','charged_coins','billing_hold_id','billing_journal_entry_id','view_count','like_count','published_at','created_at','updated_at'],
+  shorts_likes:['short_id','principal_id','created_at'],
+  shorts_views:['short_id','viewer_key','day_bucket','created_at'],
+  shorts_idempotency:['scope','idempotency_key','principal_id','request_hash','status_code','response_json','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

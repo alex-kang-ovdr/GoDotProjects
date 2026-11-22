@@ -215,6 +215,7 @@
         <div class="card-footer">
           <span class="card-genre">${esc(genres[game.tags[0]]||game.tags[0]||'게임')}</span>
           ${game.controls.includes('touch')?'<span class="card-control">터치 지원</span>':''}
+          ${window.PlayHubShorts?.badgeMarkup(game.id)||''}
           ${releaseBadgeMarkup('new',game.publishedOn,badge)}
           ${releaseBadgeMarkup('update',game.updatedOn,badge)}
           <span class="card-play-cue" aria-hidden="true">플레이</span>
@@ -388,9 +389,11 @@
       </form>
       ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
     </section>`;
+    const homeShortsHtml=isHomePortal?'<section id="home-shorts-shelf" class="home-sec-shorts" aria-labelledby="home-shorts-title"></section>':'';
     $('app').innerHTML=isHomePortal
-      ?`<div class="page home-page"><div class="home-sections">${homeContinueHtml}${homeHubsHtml}${librarySectionHtml}${homeTopHtml}</div></div>`
+      ?`<div class="page home-page"><div class="home-sections">${homeContinueHtml}${homeHubsHtml}${homeShortsHtml}${librarySectionHtml}${homeTopHtml}</div></div>`
       :`<div class="page">${librarySectionHtml}</div>`;
+    if(isHomePortal&&!state.limited)void window.PlayHubShorts?.mountHomeShelf($('home-shorts-shelf'),{api,navigate});
     const filterForm=$('browse-filters');
     const applyBrowseFilters=(nextGenre=state.genre)=>{
       const params=new URLSearchParams({view:'browse'});
@@ -428,6 +431,7 @@
     const recent=recentGames().map(id=>byId.get(id));
     $('app').innerHTML=`<div class="page wishlist-page">
       <div class="section-heading"><h1 id="wishlist-title" tabindex="-1">내 게임</h1></div>
+      <div id="wishlist-shorts-root"></div>
       ${recentSection(recent)||'<p class="no-results">이 브라우저에서 최근 플레이한 게임이 없습니다.</p>'}
       <section class="wishlist-section" aria-labelledby="wishlist-section-title">
         <div class="section-heading"><h2 id="wishlist-section-title">찜한 게임</h2>${ready?`<span class="section-count">${items.length}개 게임</span>`:''}</div>
@@ -441,6 +445,7 @@
     document.documentElement.classList.add('js');
     watchImpressions();
     void refreshRecentSaves();
+    if(!state.limited)void window.PlayHubShorts?.mountCreatorDashboard($('wishlist-shorts-root'),{api,toast,session:state.session,compact:true});
   }
   function empty(title,message){stopImpressions();$('app').innerHTML=`<section class="empty-state"><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="button primary" href="/" data-home>게임 목록으로</a></section>`;}
   async function ensureManifest(id){
@@ -506,6 +511,7 @@
             <button class="filter" type="button" data-detail-panel="community" aria-pressed="false" aria-controls="community">커뮤니티</button>
           </div>
           <div id="game-info" class="detail-info">
+            <div id="detail-shorts-root"></div>
             <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
             <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
           </div>
@@ -525,6 +531,7 @@
     </div>`;
     meta(`${game.title} | PLAY HUB 무료 웹 게임`,game.description,`/play/${id}/`);document.documentElement.classList.add('js');watchImpressions();event('game_detail_view',id);
     updateAccount();
+    if(!state.limited)void window.PlayHubShorts?.mountGameDetailShorts($('detail-shorts-root'),game,{api,session:state.session});
     const playerLanguage=$('language-select').cloneNode(true);
     playerLanguage.id='player-language';
     playerLanguage.value=state.locale;
@@ -605,9 +612,11 @@
         <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
         <div class="save-actions">
           <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
-          <a class="button primary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>
+          <a class="button primary" href="/forge/OfficialGodot/shorts-studio.html" target="_blank" rel="noopener" data-testid="creator-shorts-studio-link">🎬 AI 쇼츠 스튜디오 열기 ↗</a>
+          <a class="button secondary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>
         </div>
       </section>
+      <div id="creator-shorts-root"></div>
       <section class="surface" aria-labelledby="asset-store-title">
         <h2 id="asset-store-title">PlayForge 에셋 스토어</h2>
         <p>상업적 사용이 가능한 CC0 · MIT 오픈 게임 에셋(3D 모델 · PBR 텍스처 · HDRI · Godot 4 애드온)을 PlayHub 계정으로 라이브러리에 저장하고 Godot 4.7.2 도크에서 6단계 검증 후 프로젝트에 적용할 수 있습니다. (Forge 전용 · Web/Win/Linux/macOS 지원 · AOS/iOS 미지원)</p>
@@ -622,13 +631,16 @@
     </div>`;
     meta('만들기 | PLAY HUB','소유 프로젝트와 릴리스, 제출 상태를 확인하세요.','/?view=create');
     updateAccount();
+    if(!state.limited)void window.PlayHubShorts?.mountCreatorDashboard($('creator-shorts-root'),{api,toast,session:state.session});
     if(available){
       const epoch=state.sessionEpoch;
       window.PlayHubCreator?.mount($('creator'),api,()=>epoch===state.sessionEpoch&&!state.authStale);
     }
   }
   let avatarCleanup=null;
+  let shortsCleanup=null;
   function cleanupAvatarView(){if(typeof avatarCleanup==='function'){try{avatarCleanup();}catch(_){}avatarCleanup=null;}}
+  function cleanupShortsView(){if(typeof shortsCleanup==='function'){try{shortsCleanup();}catch(_){}shortsCleanup=null;}}
   function renderAvatar(){
     stopImpressions();
     cleanupAvatarView();
@@ -688,6 +700,7 @@
   }
   async function renderRoute(){
     cleanupAvatarView();
+    cleanupShortsView();
     const token=++state.route;
     const params=new URLSearchParams(location.search);
     let id=null;
@@ -704,7 +717,7 @@
     const joinMatch=location.pathname.match(/^\/join\/([^/]+)\/?/);
     if(joinMatch&&params.get('room')){state.view='social';}
     else if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['wishlist','social','create','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
+    else if(['shorts','wishlist','social','create','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
     if(state.view!=='social')window.PlayHubSocial?.unmount();
     $('app').hidden=state.view==='account';
@@ -715,6 +728,11 @@
       else link.removeAttribute('aria-current');
     }
     if(state.view==='detail')await renderDetail(id,token);
+    else if(state.view==='shorts'){
+      stopImpressions();
+      meta('게임 쇼츠 | PLAY HUB','Google Flow · PlayForge 크리에이터가 만든 9:16 게임 소개 쇼츠를 보고 바로 플레이하세요.','/?view=shorts');
+      shortsCleanup=await window.PlayHubShorts?.mountFeed($('app'),{api,toast,navigate,session:state.session,initialShortId:params.get('short')||'',initialGameId:params.get('gameId')||''})||null;
+    }
     else if(state.view==='wishlist')renderWishlist();
     else if(state.view==='social')renderSocial(params);
     else if(state.view==='library'||state.view==='home')renderBrowse();
@@ -1190,6 +1208,7 @@
     const sessionResult=await sessionAndGames;if(sessionResult[0].status==='fulfilled')setSession(sessionResult[0].value);
     let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;await Promise.all(localEntries.map(item=>ensureManifest(item.id)));records=localEntries.filter(x=>x.enabled===true);banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
     state.games=records.filter(isPublicGame).map(normalizeGame);
+    if(!state.limited)await window.PlayHubShorts?.loadGamesSummary(api);
     await renderRoute();
     showAuthResult();
     void refreshWishlist();
