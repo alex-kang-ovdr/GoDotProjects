@@ -117,3 +117,69 @@ test('runCloudRunBuild uploads snapshot, triggers Cloud Run Job with 3 Signed UR
     fs.rmSync(outDir, { recursive: true, force: true });
   }
 });
+
+test('runCloudRunBuild fails closed when workerResult.artifactSha256 is missing or mismatched', async () => {
+  const validZip = zipFiles([
+    ['index.html', Buffer.from('<!doctype html><html><body>ok</body></html>')],
+    ['index.wasm', Buffer.from([0x00, 0x61, 0x73, 0x6d])],
+    ['index.pck', Buffer.from('GDPC')],
+  ]);
+
+  async function runWithWorkerResult(workerResultObj) {
+    const gcsStore = new Map();
+    const mockFetch = async (url, opts = {}) => {
+      if (url.includes('storage.googleapis.com/upload/storage/v1/b/')) {
+        const u = new URL(url);
+        gcsStore.set(u.searchParams.get('name'), Buffer.from(opts.body));
+        return { ok: true, json: async () => ({}) };
+      }
+      if (url.includes(':signBlob')) {
+        return { ok: true, json: async () => ({ signedBlob: Buffer.from('sig').toString('base64') }) };
+      }
+      if (url.endsWith('/jobs/forge-build-worker:run')) {
+        gcsStore.set('builds/badhash012345678/output/PlayForge-Web.zip', validZip);
+        gcsStore.set('builds/badhash012345678/output/result.json', Buffer.from(JSON.stringify(workerResultObj)));
+        return { ok: true, json: async () => ({ name: 'projects/forge-dev-2611/locations/us-west1/operations/op-2', done: true }) };
+      }
+      if (url.includes('storage.googleapis.com/storage/v1/b/')) {
+        const m = url.match(/\/o\/([^?]+)\?alt=media/);
+        const obj = decodeURIComponent(m[1]);
+        const data = gcsStore.get(obj);
+        return data
+          ? { ok: true, arrayBuffer: async () => data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) }
+          : { ok: false, status: 404 };
+      }
+      throw new Error('Unexpected fetch: ' + url);
+    };
+
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cr-backend-fail-'));
+    try {
+      const job = { id: 'badhash012345678', target: 'web', revision: 1, log: '', files: [] };
+      await assert.rejects(
+        () => runCloudRunBuild(
+          job,
+          { id: '0123456789abcdef01234567', revision: 1, files: [{ path: 'project.godot', content: 'config_version=5\n' }] },
+          outDir,
+          {
+            env: { PLAYFORGE_BUILD_PROJECT: 'forge-dev-2611', PLAYFORGE_BUILD_BUCKET: 'playhub-dev-deploy-2611', PLAYFORGE_BUILD_POLL_MS: '1' },
+            accessToken: 'tok',
+            signerEmail: '946917288000-compute@developer.gserviceaccount.com',
+            fetchImpl: mockFetch,
+            sleep: async () => {},
+          }
+        ),
+        /Isolated build ZIP integrity mismatch/
+      );
+      assert.equal(fs.existsSync(path.join(outDir, 'PlayForge-Web.zip')), false);
+    } finally {
+      fs.rmSync(outDir, { recursive: true, force: true });
+    }
+  }
+
+  // Missing artifactSha256 (Fail-Closed, must not skip check)
+  await runWithWorkerResult({ status: 'succeeded', log: 'no hash' });
+  // Empty string artifactSha256
+  await runWithWorkerResult({ status: 'succeeded', artifactSha256: '' });
+  // Mismatched artifactSha256
+  await runWithWorkerResult({ status: 'succeeded', artifactSha256: '0'.repeat(64) });
+});

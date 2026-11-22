@@ -23,7 +23,7 @@ function createOriginPolicy(configured) {
   return request => {
     if (!request.headers.origin) return true;
     if (allowedOrigins) return allowedOrigins.has(request.headers.origin);
-    return request.headers.origin === 'http://' + request.headers.host;
+    return request.headers.origin === requestOrigin(request);
   };
 }
 

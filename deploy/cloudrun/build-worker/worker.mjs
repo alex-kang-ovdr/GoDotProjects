@@ -196,15 +196,29 @@ export async function executeIsolatedBuild(snapshot, options = {}) {
     );
     result.log = (importLog + '\n' + exportLog).slice(-12000);
 
+    for (const name of fs.readdirSync(outputDir)) {
+      if (fs.lstatSync(path.join(outputDir, name)).isSymbolicLink()) {
+        throw new Error(`Symbolic link rejected in build output: ${name}`);
+      }
+    }
+
     for (const reqFile of ['index.html', 'index.wasm', 'index.pck']) {
-      if (!fs.existsSync(path.join(outputDir, reqFile))) {
+      const reqPath = path.join(outputDir, reqFile);
+      if (!fs.existsSync(reqPath) || !fs.lstatSync(reqPath).isFile()) {
         throw new Error(`Godot did not produce required Web file: ${reqFile}`);
       }
     }
 
     const shellInjected = injectPlayHubShell(outputDir);
     const names = fs.readdirSync(outputDir)
-      .filter(name => fs.statSync(path.join(outputDir, name)).isFile() && name !== 'PlayForge-Web.zip')
+      .filter(name => {
+        if (name === 'PlayForge-Web.zip') return false;
+        const st = fs.lstatSync(path.join(outputDir, name));
+        if (st.isSymbolicLink()) {
+          throw new Error(`Symbolic link rejected in build output: ${name}`);
+        }
+        return st.isFile();
+      })
       .sort();
     const zipBuffer = zipFiles(names.map(name => [name, fs.readFileSync(path.join(outputDir, name))]));
     const validation = validateDeploymentZip(zipBuffer);

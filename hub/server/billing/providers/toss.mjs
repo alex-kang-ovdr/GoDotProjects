@@ -174,9 +174,12 @@ export function createTossProvider({
         throw new ApiError(status, data.code || 'TOSS_CONFIRM_FAILED', data.message || `Toss confirm failed (${response.status})`);
       }
 
-      // Zero Client Trust: strictly verify server response matches orderId, KRW amount, and DONE status.
+      // Zero Client Trust: strictly verify server response matches orderId, KRW currency, amount, and DONE status.
       if (data.orderId !== order.id) {
         throw new ApiError(422, 'TOSS_ORDER_ID_MISMATCH');
+      }
+      if (data.currency !== undefined && data.currency !== null && String(data.currency).toUpperCase() !== 'KRW') {
+        throw new ApiError(422, 'TOSS_CURRENCY_MISMATCH');
       }
       if (Number(data.totalAmount) !== order.amount_minor) {
         throw new ApiError(422, 'TOSS_AMOUNT_MISMATCH');
@@ -201,8 +204,7 @@ export function createTossProvider({
     },
 
     verifyWebhookSignature({ rawBody, headers }) {
-      const secret = webhookSecret || secretKey;
-      if (!safeString(secret, 256)) {
+      if (!safeString(webhookSecret, 256)) {
         throw new ApiError(503, 'TOSS_WEBHOOK_SECRET_MISSING');
       }
       const sigHeader = headers['tosspayments-webhook-signature'];
@@ -216,7 +218,7 @@ export function createTossProvider({
         throw new ApiError(401, 'WEBHOOK_TIMESTAMP_OUT_OF_RANGE');
       }
 
-      const expected = signTossWebhook({ rawBody, transmissionTime, secret });
+      const expected = signTossWebhook({ rawBody, transmissionTime, secret: webhookSecret });
       const candidates = sigHeader.split(/[\s,]+/).map(s => s.trim()).filter(Boolean);
       const matched = candidates.some(candidate => equal(candidate, expected));
       if (!matched) {
@@ -231,15 +233,21 @@ export function createTossProvider({
       }
       const eventTypeRaw = String(payload.eventType || '');
       const data = payload.data || {};
-      const paymentKey = data.paymentKey ? String(data.paymentKey) : null;
+      const paymentKey = safeString(data.paymentKey, 200) ? String(data.paymentKey) : null;
       const orderId = data.orderId ? String(data.orderId) : null;
       const status = String(data.status || '').toUpperCase();
       const amountMinor = Number.isSafeInteger(data.totalAmount) ? data.totalAmount : null;
+      if (data.currency !== undefined && data.currency !== null && String(data.currency).toUpperCase() !== 'KRW') {
+        throw new ApiError(422, 'TOSS_CURRENCY_MISMATCH');
+      }
       const externalEventId = payload.transmissionId
         ? `toss_${payload.transmissionId}`
         : `toss_${paymentKey || orderId}_${status}`;
 
       if (eventTypeRaw === 'PAYMENT_STATUS_CHANGED' && status === 'DONE') {
+        if (!paymentKey) {
+          throw new ApiError(400, 'TOSS_PAYMENT_KEY_MISSING');
+        }
         return {
           externalEventId,
           eventType: 'payment',

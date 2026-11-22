@@ -9,6 +9,8 @@ import { createBillingService } from '../server/billing/service.mjs';
 import { createPaymentRouter, DEFAULT_STAGE1_ROUTES } from '../server/billing/router.mjs';
 import { createMockProvider, signMockWebhook } from '../server/billing/providers/mock.mjs';
 import { createXsollaProvider, signXsollaSha1 } from '../server/billing/providers/xsolla.mjs';
+import { createTossProvider, signTossWebhook } from '../server/billing/providers/toss.mjs';
+import { createStripeGpayProvider } from '../server/billing/providers/stripe-gpay.mjs';
 import { createStripeConnectProvider, signStripeWebhook } from '../server/billing/providers/stripe-connect.mjs';
 import {
   creditPurchase,
@@ -1048,7 +1050,7 @@ test('[High 8] Track A webhooks: rejects cross-provider (403), wrong principal (
     { notification_type: 'dispute', user: { id: 'buyer-1' }, custom_parameters: { order_id: xOrder.order.id } }
   ]) {
     const rawBody = JSON.stringify(badPayload);
-    assert.throws(
+      assert.throws(
       () => service.handleWebhook({
         providerName: 'xsolla',
         rawBody,
@@ -1057,4 +1059,553 @@ test('[High 8] Track A webhooks: rejects cross-provider (403), wrong principal (
       e => e.status === 400 && e.code === 'XSOLLA_TRANSACTION_ID_MISSING'
     );
   }
+});
+
+// 9. [High 4d25d04] Stripe GPay pre-binding, verifyPayment Fail-Closed, and webhook strict validation
+test('[High 9] Stripe GPay: pre-binds provider_payment_id at checkout, verifyPayment Fail-Closed (pi/order_id/principal_id), webhook status/amount_received/id/principal_id', async t => {
+  const { db, now } = makeFixture(t);
+  const webhookSecret = 'whsec_stripe_gpay_reg9';
+  let piSeq = 0;
+  let getCalls = 0;
+  let nextGetResponse = null;
+
+  const stripeGpay = createStripeGpayProvider({
+    publishableKey: 'pk_test_reg9',
+    secretKey: 'sk_test_reg9',
+    webhookSecret,
+    googlePayEnvironment: 'TEST',
+    fetchImpl: async (url, init = {}) => {
+      if ((init.method || 'GET') === 'POST' && url.endsWith('/v1/payment_intents')) {
+        piSeq += 1;
+        return new Response(JSON.stringify({
+          id: `pi_bound_${piSeq}`,
+          client_secret: `pi_bound_${piSeq}_secret`,
+          status: 'requires_payment_method'
+        }), { status: 200 });
+      }
+      if ((init.method || 'GET') === 'GET' && url.includes('/v1/payment_intents/')) {
+        getCalls += 1;
+        return new Response(JSON.stringify(nextGetResponse), { status: 200 });
+      }
+      return new Response('{}', { status: 404 });
+    },
+    now
+  });
+
+  const router = createPaymentRouter({
+    enabledProviders: ['stripe_gpay'],
+    routes: [{ id: 'gpay_only', match: {}, providers: ['stripe_gpay'] }],
+    now
+  });
+
+  const service = createBillingService({
+    db,
+    providers: { stripe_gpay: stripeGpay },
+    router,
+    config: { allowMockProvider: false, allowDemoAccount: false },
+    now
+  });
+
+  // 1) createCheckoutOrder MUST immediately persist checkout.providerPaymentId to billing_orders.provider_payment_id
+  const ord1 = await service.createCheckoutOrder({
+    principalId: 'buyer-1',
+    skuId: 'playhub.coin.t4',
+    currency: 'USD',
+    paymentMethodHint: 'google_pay',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'sgpay-reg9-ord1'
+  });
+  const stored1 = db.prepare('SELECT provider_payment_id FROM billing_orders WHERE id=?').get(ord1.order.id);
+  assert.equal(stored1.provider_payment_id, 'pi_bound_1');
+
+  // 2) Swapping providerPaymentId on /confirm MUST fail-closed BEFORE even calling Stripe GET
+  await assert.rejects(
+    () => service.confirmOrderPayment({
+      principalId: 'buyer-1',
+      orderId: ord1.order.id,
+      providerPaymentId: 'pi_attacker_other'
+    }),
+    e => e.status === 422 && e.code === 'STRIPE_PAYMENT_INTENT_MISMATCH'
+  );
+  assert.equal(getCalls, 0);
+
+  // 3) verifyPayment MUST fail-closed when metadata.order_id is missing or mismatched
+  nextGetResponse = {
+    id: 'pi_bound_1',
+    status: 'succeeded',
+    currency: 'usd',
+    amount_received: 999,
+    metadata: { principal_id: 'buyer-1' }
+  };
+  await assert.rejects(
+    () => service.confirmOrderPayment({ principalId: 'buyer-1', orderId: ord1.order.id, providerPaymentId: 'pi_bound_1' }),
+    e => e.status === 422 && e.code === 'STRIPE_ORDER_ID_MISMATCH'
+  );
+
+  nextGetResponse = {
+    id: 'pi_bound_1',
+    status: 'succeeded',
+    currency: 'usd',
+    amount_received: 999,
+    metadata: { order_id: 'wrong-order-id', principal_id: 'buyer-1' }
+  };
+  await assert.rejects(
+    () => service.confirmOrderPayment({ principalId: 'buyer-1', orderId: ord1.order.id, providerPaymentId: 'pi_bound_1' }),
+    e => e.status === 422 && e.code === 'STRIPE_ORDER_ID_MISMATCH'
+  );
+
+  // 4) verifyPayment MUST fail-closed when metadata.principal_id is missing or mismatched
+  nextGetResponse = {
+    id: 'pi_bound_1',
+    status: 'succeeded',
+    currency: 'usd',
+    amount_received: 999,
+    metadata: { order_id: ord1.order.id }
+  };
+  await assert.rejects(
+    () => service.confirmOrderPayment({ principalId: 'buyer-1', orderId: ord1.order.id, providerPaymentId: 'pi_bound_1' }),
+    e => e.status === 403 && e.code === 'STRIPE_PRINCIPAL_MISMATCH'
+  );
+
+  nextGetResponse = {
+    id: 'pi_bound_1',
+    status: 'succeeded',
+    currency: 'usd',
+    amount_received: 999,
+    metadata: { order_id: ord1.order.id, principal_id: 'attacker-b' }
+  };
+  await assert.rejects(
+    () => service.confirmOrderPayment({ principalId: 'buyer-1', orderId: ord1.order.id, providerPaymentId: 'pi_bound_1' }),
+    e => e.status === 403 && e.code === 'STRIPE_PRINCIPAL_MISMATCH'
+  );
+
+  // 5) Valid matching PI settles order cleanly
+  nextGetResponse = {
+    id: 'pi_bound_1',
+    status: 'succeeded',
+    currency: 'usd',
+    amount_received: 999,
+    metadata: { order_id: ord1.order.id, principal_id: 'buyer-1' }
+  };
+  const confirmed = await service.confirmOrderPayment({
+    principalId: 'buyer-1',
+    orderId: ord1.order.id,
+    providerPaymentId: 'pi_bound_1'
+  });
+  assert.equal(confirmed.wallet.available, 1250);
+
+  // 6) Webhook payment_intent.succeeded strict validation
+  const ord2 = await service.createCheckoutOrder({
+    principalId: 'buyer-1',
+    skuId: 'playhub.coin.t4',
+    currency: 'USD',
+    paymentMethodHint: 'google_pay',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'sgpay-reg9-ord2'
+  });
+
+  const sendWh = payload => {
+    const rawBody = JSON.stringify(payload);
+    const sig = signStripeWebhook({ rawBody, timestampSec: Math.floor(now() / 1000), secret: webhookSecret });
+    return service.handleWebhook({ providerName: 'stripe_gpay', rawBody, headers: { 'stripe-signature': sig } });
+  };
+
+  // Missing obj.id -> 400
+  assert.throws(
+    () => sendWh({
+      id: 'evt_no_id',
+      type: 'payment_intent.succeeded',
+      data: { object: { status: 'succeeded', amount_received: 999, currency: 'usd', metadata: { order_id: ord2.order.id, principal_id: 'buyer-1' } } }
+    }),
+    e => e.status === 400 && e.code === 'STRIPE_PAYMENT_INTENT_ID_MISSING'
+  );
+
+  // status !== 'succeeded' -> 422
+  assert.throws(
+    () => sendWh({
+      id: 'evt_bad_status',
+      type: 'payment_intent.succeeded',
+      data: { object: { id: 'pi_bound_2', status: 'processing', amount_received: 999, currency: 'usd', metadata: { order_id: ord2.order.id, principal_id: 'buyer-1' } } }
+    }),
+    e => e.status === 422 && e.code === 'STRIPE_PAYMENT_NOT_SUCCEEDED'
+  );
+
+  // Missing amount_received (even when amount is set) -> 422
+  assert.throws(
+    () => sendWh({
+      id: 'evt_no_amt_recv',
+      type: 'payment_intent.succeeded',
+      data: { object: { id: 'pi_bound_2', status: 'succeeded', amount: 999, currency: 'usd', metadata: { order_id: ord2.order.id, principal_id: 'buyer-1' } } }
+    }),
+    e => e.status === 422 && e.code === 'STRIPE_AMOUNT_RECEIVED_INVALID'
+  );
+
+  // Mismatched metadata.principal_id -> 403 WEBHOOK_PRINCIPAL_MISMATCH
+  assert.throws(
+    () => sendWh({
+      id: 'evt_bad_principal',
+      type: 'payment_intent.succeeded',
+      data: { object: { id: 'pi_bound_2', status: 'succeeded', amount_received: 999, currency: 'usd', metadata: { order_id: ord2.order.id, principal_id: 'attacker-b' } } }
+    }),
+    e => e.status === 403 && e.code === 'WEBHOOK_PRINCIPAL_MISMATCH'
+  );
+
+  // Valid payment_intent.succeeded settles order 2
+  const okWh = sendWh({
+    id: 'evt_valid_2',
+    type: 'payment_intent.succeeded',
+    data: { object: { id: 'pi_bound_2', status: 'succeeded', amount_received: 999, currency: 'usd', metadata: { order_id: ord2.order.id, principal_id: 'buyer-1' } } }
+  });
+  assert.equal(okWh.status, 200);
+  assert.equal(okWh.body.result.wallet.available, 2500);
+});
+
+// 10. [High 4d25d04] Toss confirm pre-validation (state + assertCanPurchase before capture) & currency/paymentKey Fail-Closed
+test('[High 10] Toss confirm: pre-validates order state & spending cap before calling /v1/payments/confirm; rejects non-KRW currency & missing DONE paymentKey', async t => {
+  const { db, now, advance } = makeFixture(t);
+  const tossWebhookSecret = 'toss_wh_reg10';
+  let confirmCalls = 0;
+  let tossConfirmCurrency = 'KRW';
+
+  const toss = createTossProvider({
+    clientKey: 'test_ck_reg10',
+    secretKey: 'test_sk_reg10',
+    webhookSecret: tossWebhookSecret,
+    sandbox: true,
+    fetchImpl: async (url, init = {}) => {
+      if (url.includes('/v1/payments/confirm')) {
+        confirmCalls += 1;
+        const body = JSON.parse(init.body);
+        return new Response(JSON.stringify({
+          paymentKey: body.paymentKey,
+          orderId: body.orderId,
+          status: 'DONE',
+          currency: tossConfirmCurrency,
+          totalAmount: body.amount
+        }), { status: 200 });
+      }
+      return new Response('{}', { status: 404 });
+    },
+    now
+  });
+
+  const router = createPaymentRouter({
+    enabledProviders: ['toss'],
+    routes: [{ id: 'toss_only', match: {}, providers: ['toss'] }],
+    now
+  });
+  const service = createBillingService({
+    db,
+    providers: { toss },
+    router,
+    config: { allowMockProvider: false, allowDemoAccount: false },
+    now
+  });
+
+  setSpendingLimit(db, {
+    principalId: 'teen-1',
+    ageTier: 'TEEN_MINOR',
+    monthlyCapMinor: 70000,
+    dailyCapMinor: 70000,
+    guardianApproved: true,
+    now
+  });
+
+  // 1) Non-payable order state (e.g. CANCELED/FAILED) MUST be rejected BEFORE calling Toss /v1/payments/confirm
+  const ordCanceled = await service.createCheckoutOrder({
+    principalId: 'teen-1',
+    skuId: 'playhub.coin.t4', // ₩14,000
+    currency: 'KRW',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'toss-reg10-canceled'
+  });
+  db.prepare("UPDATE billing_orders SET state='FAILED' WHERE id=?").run(ordCanceled.order.id);
+  await assert.rejects(
+    () => service.confirmOrderPayment({
+      principalId: 'teen-1',
+      orderId: ordCanceled.order.id,
+      providerPaymentId: 'pk_canceled_1'
+    }),
+    e => e.status === 409 && e.code === 'ORDER_STATE_NOT_PAYABLE'
+  );
+  assert.equal(confirmCalls, 0, 'Toss confirm API must NOT be called for non-payable order state');
+
+  // 2) Spending cap exceeded MUST be rejected BEFORE calling Toss /v1/payments/confirm
+  const staleLarge = await service.createCheckoutOrder({
+    principalId: 'teen-1',
+    skuId: 'playhub.coin.t6', // ₩70,000
+    currency: 'KRW',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'toss-reg10-large'
+  });
+  advance(CREATED_ORDER_WINDOW_MS + 60_000);
+  const smallPaid = await service.createCheckoutOrder({
+    principalId: 'teen-1',
+    skuId: 'playhub.coin.t4', // ₩14,000
+    currency: 'KRW',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'toss-reg10-small'
+  });
+  await service.confirmOrderPayment({
+    principalId: 'teen-1',
+    orderId: smallPaid.order.id,
+    providerPaymentId: 'pk_small_ok'
+  });
+  assert.equal(confirmCalls, 1);
+
+  await assert.rejects(
+    () => service.confirmOrderPayment({
+      principalId: 'teen-1',
+      orderId: staleLarge.order.id,
+      providerPaymentId: 'pk_large_should_not_capture'
+    }),
+    e => e.status === 422 && e.code === 'MONTHLY_SPENDING_LIMIT_EXCEEDED'
+  );
+  assert.equal(confirmCalls, 1, 'Toss confirm API must NOT be called when assertCanPurchase fails');
+
+  // 3) Toss verifyPayment rejects non-KRW currency in API response
+  const ordCurr = await service.createCheckoutOrder({
+    principalId: 'buyer-1',
+    skuId: 'playhub.coin.t4',
+    currency: 'KRW',
+    agreedTermsVersion: 'v2.0',
+    idempotencyKey: 'toss-reg10-curr'
+  });
+  tossConfirmCurrency = 'USD';
+  await assert.rejects(
+    () => service.confirmOrderPayment({
+      principalId: 'buyer-1',
+      orderId: ordCurr.order.id,
+      providerPaymentId: 'pk_usd_bad'
+    }),
+    e => e.status === 422 && e.code === 'TOSS_CURRENCY_MISMATCH'
+  );
+
+  // 4) Toss webhook rejects non-KRW currency (422) and DONE webhook missing paymentKey (400)
+  const sendTossWh = payload => {
+    const rawBody = JSON.stringify(payload);
+    const txTime = new Date(now()).toISOString();
+    return service.handleWebhook({
+      providerName: 'toss',
+      rawBody,
+      headers: {
+        'tosspayments-webhook-transmission-time': txTime,
+        'tosspayments-webhook-signature': signTossWebhook({ rawBody, transmissionTime: txTime, secret: tossWebhookSecret })
+      }
+    });
+  };
+
+  assert.throws(
+    () => sendTossWh({
+      eventType: 'PAYMENT_STATUS_CHANGED',
+      transmissionId: 'tx_bad_curr',
+      data: { paymentKey: 'pk_wh_1', orderId: ordCurr.order.id, status: 'DONE', totalAmount: 14000, currency: 'USD' }
+    }),
+    e => e.status === 422 && e.code === 'TOSS_CURRENCY_MISMATCH'
+  );
+
+  assert.throws(
+    () => sendTossWh({
+      eventType: 'PAYMENT_STATUS_CHANGED',
+      transmissionId: 'tx_no_pk',
+      data: { orderId: ordCurr.order.id, status: 'DONE', totalAmount: 14000, currency: 'KRW' }
+    }),
+    e => e.status === 400 && e.code === 'TOSS_PAYMENT_KEY_MISSING'
+  );
+});
+
+// 11. [High 4d25d04] Production guards (secureCookies=true) & Toss webhook secretKey fallback removal
+test('[High 11] Production guards: blocks sandbox/non-PRODUCTION/test keys/missing or shared webhookSecret, and removes Toss secretKey webhook fallback', t => {
+  const { db, now } = makeFixture(t);
+  const dummyDeps = {
+    db,
+    sessionFor: () => null,
+    requireSession: () => { throw new Error('unauth'); },
+    newSession: () => {},
+    revokeSession: () => {},
+    now,
+    env: {}
+  };
+
+  // 1) Toss provider MUST NOT fall back to secretKey for webhook signature verification
+  const tossNoWh = createTossProvider({
+    clientKey: 'live_ck_abc',
+    secretKey: 'live_sk_secret_only',
+    webhookSecret: '',
+    sandbox: false,
+    now
+  });
+  const txTime = new Date(now()).toISOString();
+  const sampleBody = JSON.stringify({ eventType: 'PAYMENT_STATUS_CHANGED', data: { status: 'DONE' } });
+  assert.throws(
+    () => tossNoWh.verifyWebhookSignature({
+      rawBody: sampleBody,
+      headers: {
+        'tosspayments-webhook-transmission-time': txTime,
+        'tosspayments-webhook-signature': signTossWebhook({ rawBody: sampleBody, transmissionTime: txTime, secret: 'live_sk_secret_only' })
+      }
+    }),
+    e => e.status === 503 && e.code === 'TOSS_WEBHOOK_SECRET_MISSING'
+  );
+
+  // 2) secureCookies=true blocks sandbox=true (including default omitted sandbox) on all active PGs
+  assert.throws(
+    () => createBilling({
+      ...dummyDeps,
+      config: {
+        secureCookies: true,
+        billing: {
+          enabled: true,
+          xsolla: { merchantId: '1', projectId: '2', apiKey: 'live_xsolla', webhookSecret: 'wh_xsolla' }
+        }
+      }
+    }),
+    /xsolla\.sandbox/
+  );
+  assert.throws(
+    () => createBilling({
+      ...dummyDeps,
+      config: {
+        secureCookies: true,
+        billing: {
+          enabled: true,
+          toss: { clientKey: 'live_ck_1', secretKey: 'live_sk_1', webhookSecret: 'wh_toss_1' }
+        }
+      }
+    }),
+    /toss\.sandbox/
+  );
+  assert.throws(
+    () => createBilling({
+      ...dummyDeps,
+      config: {
+        secureCookies: true,
+        billing: {
+          enabled: true,
+          stripeGpay: { publishableKey: 'pk_live_1', secretKey: 'sk_live_1', webhookSecret: 'whsec_gpay_1', googlePayEnvironment: 'TEST' }
+        }
+      }
+    }),
+    /stripe_gpay\.sandbox|googlePayEnvironment/
+  );
+
+  // 3) secureCookies=true blocks test key prefixes (test_ck_, test_sk_, pk_test_, sk_test_, rk_test_)
+  for (const [label, billing] of [
+    ['toss test_ck_', { toss: { clientKey: 'test_ck_123', secretKey: 'live_sk_123', webhookSecret: 'wh_toss_1', sandbox: false } }],
+    ['toss test_sk_', { toss: { clientKey: 'live_ck_123', secretKey: 'test_sk_123', webhookSecret: 'wh_toss_1', sandbox: false } }],
+    ['stripeGpay pk_test_', { stripeGpay: { publishableKey: 'pk_test_123', secretKey: 'sk_live_123', webhookSecret: 'whsec_gpay_1', googlePayEnvironment: 'PRODUCTION' } }],
+    ['stripeGpay sk_test_', { stripeGpay: { publishableKey: 'pk_live_123', secretKey: 'sk_test_123', webhookSecret: 'whsec_gpay_1', googlePayEnvironment: 'PRODUCTION' } }],
+    ['stripeGpay rk_test_', { stripeGpay: { publishableKey: 'pk_live_123', secretKey: 'rk_test_123', webhookSecret: 'whsec_gpay_1', googlePayEnvironment: 'PRODUCTION' } }],
+    ['stripeConnect sk_test_', { stripeConnect: { secretKey: 'sk_test_conn', webhookSecret: 'whsec_conn_1' } }],
+    ['stripeConnect rk_test_', { stripeConnect: { secretKey: 'rk_test_conn', webhookSecret: 'whsec_conn_1' } }]
+  ]) {
+    assert.throws(
+      () => createBilling({ ...dummyDeps, config: { secureCookies: true, billing: { enabled: true, ...billing } } }),
+      /test keys/,
+      `Expected secureCookies guard to block ${label}`
+    );
+  }
+
+  // 4) secureCookies=true enforces independent webhookSecret on toss, stripeGpay, stripeConnect
+  for (const [label, billing] of [
+    ['toss missing wh', { toss: { clientKey: 'live_ck_1', secretKey: 'live_sk_1', webhookSecret: '', sandbox: false } }],
+    ['toss wh===sk', { toss: { clientKey: 'live_ck_1', secretKey: 'live_sk_1', webhookSecret: 'live_sk_1', sandbox: false } }],
+    ['stripeGpay missing wh', { stripeGpay: { publishableKey: 'pk_live_1', secretKey: 'sk_live_1', webhookSecret: '', googlePayEnvironment: 'PRODUCTION' } }],
+    ['stripeGpay wh===sk', { stripeGpay: { publishableKey: 'pk_live_1', secretKey: 'sk_live_1', webhookSecret: 'sk_live_1', googlePayEnvironment: 'PRODUCTION' } }],
+    ['stripeConnect missing wh', { stripeConnect: { secretKey: 'sk_live_conn', webhookSecret: '' } }],
+    ['stripeConnect wh===sk', { stripeConnect: { secretKey: 'sk_live_conn', webhookSecret: 'sk_live_conn' } }],
+    ['shared gpay & connect wh', {
+      stripeGpay: { publishableKey: 'pk_live_1', secretKey: 'sk_live_1', webhookSecret: 'whsec_same', googlePayEnvironment: 'PRODUCTION' },
+      stripeConnect: { secretKey: 'sk_live_conn', webhookSecret: 'whsec_same' }
+    }]
+  ]) {
+    assert.throws(
+      () => createBilling({ ...dummyDeps, config: { secureCookies: true, billing: { enabled: true, ...billing } } }),
+      /webhookSecret/,
+      `Expected secureCookies guard to block ${label}`
+    );
+  }
+
+  // 5) Properly configured production live credentials succeed cleanly
+  const prodBilling = createBilling({
+    ...dummyDeps,
+    config: {
+      secureCookies: true,
+      billing: {
+        enabled: true,
+        xsolla: { merchantId: '100', projectId: '200', apiKey: 'live_xsolla_key', webhookSecret: 'wh_xsolla_live', sandbox: false },
+        toss: { clientKey: 'live_ck_prod', secretKey: 'live_sk_prod', webhookSecret: 'wh_toss_prod', sandbox: false },
+        stripeGpay: { publishableKey: 'pk_live_prod', secretKey: 'sk_live_prod', webhookSecret: 'whsec_gpay_prod', googlePayEnvironment: 'PRODUCTION' },
+        stripeConnect: { secretKey: 'sk_live_conn_prod', webhookSecret: 'whsec_conn_prod' }
+      }
+    }
+  });
+  assert.equal(prodBilling.enabled, true);
+});
+
+// 12. [High 4d25d04] Circuit breaker ignores 4xx client errors in createCheckoutOrder/confirmOrderPayment (prevents DoS)
+test('[High 12] Circuit breaker: 4xx errors in createCheckoutOrder & confirmOrderPayment do not trip breaker, 5xx errors do', async t => {
+  const { db, now } = makeFixture(t);
+  let stripeHttpStatus = 400;
+
+  const stripeGpay = createStripeGpayProvider({
+    publishableKey: 'pk_test_cb',
+    secretKey: 'sk_test_cb',
+    webhookSecret: 'whsec_cb',
+    googlePayEnvironment: 'TEST',
+    fetchImpl: async () => new Response(JSON.stringify({
+      error: { code: stripeHttpStatus >= 500 ? 'api_error' : 'invalid_request_error', message: 'simulated error' }
+    }), { status: stripeHttpStatus }),
+    now
+  });
+
+  const router = createPaymentRouter({
+    enabledProviders: ['stripe_gpay'],
+    routes: [{ id: 'gpay_only', match: {}, providers: ['stripe_gpay'] }],
+    failureThreshold: 2,
+    cooldownMs: 60_000,
+    now
+  });
+  const service = createBillingService({
+    db,
+    providers: { stripe_gpay: stripeGpay },
+    router,
+    config: { allowMockProvider: false, allowDemoAccount: false },
+    now
+  });
+
+  // 4 consecutive 4xx errors (Stripe 400 -> ApiError 422) MUST NOT trip the circuit breaker!
+  for (let i = 0; i < 4; i++) {
+    await assert.rejects(
+      () => service.createCheckoutOrder({
+        principalId: 'buyer-1',
+        skuId: 'playhub.coin.t1',
+        currency: 'USD',
+        paymentMethodHint: 'google_pay',
+        agreedTermsVersion: 'v2.0',
+        idempotencyKey: `cb-4xx-${i}`
+      }),
+      e => e.status === 422
+    );
+  }
+  assert.equal(router.healthSnapshot().stripe_gpay.healthy, true);
+  assert.equal(router.healthSnapshot().stripe_gpay.consecutiveFailures, 0);
+
+  // 2 consecutive 5xx errors (Stripe 503 -> ApiError 502) MUST trip the circuit breaker!
+  stripeHttpStatus = 503;
+  for (let i = 0; i < 2; i++) {
+    await assert.rejects(
+      () => service.createCheckoutOrder({
+        principalId: 'buyer-1',
+        skuId: 'playhub.coin.t1',
+        currency: 'USD',
+        paymentMethodHint: 'google_pay',
+        agreedTermsVersion: 'v2.0',
+        idempotencyKey: `cb-5xx-${i}`
+      }),
+      e => e.status === 502
+    );
+  }
+  assert.equal(router.healthSnapshot().stripe_gpay.healthy, false);
+  assert.equal(router.healthSnapshot().stripe_gpay.consecutiveFailures, 2);
 });

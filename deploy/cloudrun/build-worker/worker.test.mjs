@@ -97,3 +97,54 @@ process.exit(1);
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 });
+
+test('executeIsolatedBuild rejects symbolic links created in build output directory', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'p0-symlink-godot-'));
+  const secretDir = path.join(tmp, 'secret-dir');
+  const secretFile = path.join(secretDir, 'secret.txt');
+  fs.mkdirSync(secretDir, { recursive: true });
+  fs.writeFileSync(secretFile, 'TOP_SECRET_VALUE', 'utf8');
+  const mockScript = path.join(tmp, 'mock-godot-symlink.mjs');
+
+  fs.writeFileSync(mockScript, `
+import fs from 'node:fs';
+import path from 'node:path';
+const args = process.argv.slice(2);
+if (args.includes('--import')) process.exit(0);
+const exportIdx = args.indexOf('--export-release');
+if (exportIdx >= 0) {
+  const outHtml = args[exportIdx + 2];
+  const outDir = path.dirname(outHtml);
+  fs.writeFileSync(outHtml, '<!doctype html><html><head><title>Test</title></head><body>ok</body></html>');
+  fs.writeFileSync(path.join(outDir, 'index.wasm'), Buffer.from([0x00, 0x61, 0x73, 0x6d]));
+  fs.writeFileSync(path.join(outDir, 'index.pck'), Buffer.from('GDPC'));
+  try {
+    fs.symlinkSync(${JSON.stringify(secretFile)}, path.join(outDir, 'leak.txt'));
+  } catch (err) {
+    if (process.platform === 'win32' && err && err.code === 'EPERM') {
+      fs.symlinkSync(${JSON.stringify(secretDir)}, path.join(outDir, 'leak.txt'), 'junction');
+    } else {
+      throw err;
+    }
+  }
+  process.exit(0);
+}
+process.exit(1);
+`, 'utf8');
+
+  try {
+    const { result, zipBuffer } = await executeIsolatedBuild(
+      {
+        id: '0123456789abcdef01234567',
+        revision: 1,
+        files: [{ path: 'project.godot', content: 'config_version=5\n' }],
+      },
+      { godotBin: process.execPath, godotPrefixArgs: [mockScript] }
+    );
+    assert.equal(result.status, 'failed');
+    assert.equal(zipBuffer, null);
+    assert.match(result.error, /Symbolic link rejected/);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});

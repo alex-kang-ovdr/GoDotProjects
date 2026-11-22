@@ -101,7 +101,9 @@ export function createStripeGpayProvider({
   return {
     name: 'stripe_gpay',
     mode: googlePayEnvironment === 'PRODUCTION' ? 'live' : 'sandbox',
+    googlePayEnvironment,
     configured,
+    persistsTokenAtCheckout: true,
     supportsGooglePayWeb: true,
 
     async createCheckoutSession({ order, returnUrl, paymentMethodHint }) {
@@ -132,14 +134,23 @@ export function createStripeGpayProvider({
     },
 
     async verifyPayment({ order, providerPaymentId }) {
-      const piId = providerPaymentId || order.provider_payment_id;
+      if (order.provider_payment_id && providerPaymentId && providerPaymentId !== order.provider_payment_id) {
+        throw new ApiError(422, 'STRIPE_PAYMENT_INTENT_MISMATCH', 'PaymentIntent does not match order');
+      }
+      const piId = order.provider_payment_id || providerPaymentId;
       if (!safeString(piId, 200)) {
         throw new ApiError(422, 'STRIPE_PAYMENT_INTENT_REQUIRED');
       }
 
       const pi = await stripeRequest(`/v1/payment_intents/${encodeURIComponent(piId)}`, { method: 'GET' });
-      if (pi.metadata?.order_id && pi.metadata.order_id !== order.id) {
+      if (order.provider_payment_id && pi.id !== order.provider_payment_id) {
+        throw new ApiError(422, 'STRIPE_PAYMENT_INTENT_MISMATCH');
+      }
+      if (!pi.metadata?.order_id || pi.metadata.order_id !== order.id) {
         throw new ApiError(422, 'STRIPE_ORDER_ID_MISMATCH');
+      }
+      if (!pi.metadata?.principal_id || pi.metadata.principal_id !== order.principal_id) {
+        throw new ApiError(403, 'STRIPE_PRINCIPAL_MISMATCH');
       }
       if (String(pi.currency || '').toUpperCase() !== String(order.currency).toUpperCase()) {
         throw new ApiError(422, 'STRIPE_CURRENCY_MISMATCH');
@@ -167,6 +178,9 @@ export function createStripeGpayProvider({
     },
 
     verifyWebhookSignature({ rawBody, headers }) {
+      if (!safeString(webhookSecret, 256)) {
+        throw new ApiError(503, 'STRIPE_GPAY_WEBHOOK_SECRET_NOT_CONFIGURED');
+      }
       const signatureHeader = headers['stripe-signature'] || headers['Stripe-Signature'] || '';
       verifyStripeWebhookSignature({
         rawBody,
@@ -183,15 +197,26 @@ export function createStripeGpayProvider({
       }
       const obj = payload.data?.object || {};
       const orderId = obj.metadata?.order_id ? String(obj.metadata.order_id) : null;
+      const principalId = obj.metadata?.principal_id ? String(obj.metadata.principal_id) : null;
       const currency = obj.currency ? String(obj.currency).toUpperCase() : null;
 
       if (payload.type === 'payment_intent.succeeded') {
+        if (!safeString(obj.id, 200)) {
+          throw new ApiError(400, 'STRIPE_PAYMENT_INTENT_ID_MISSING');
+        }
+        if (obj.status !== 'succeeded') {
+          throw new ApiError(422, 'STRIPE_PAYMENT_NOT_SUCCEEDED');
+        }
+        if (!Number.isSafeInteger(obj.amount_received)) {
+          throw new ApiError(422, 'STRIPE_AMOUNT_RECEIVED_INVALID');
+        }
         return {
           externalEventId: `stripe_${payload.id}`,
           eventType: 'payment',
           orderId,
-          providerPaymentId: obj.id ? String(obj.id) : null,
-          amountMinor: Number.isSafeInteger(obj.amount_received) ? obj.amount_received : (Number.isSafeInteger(obj.amount) ? obj.amount : null),
+          principalId,
+          providerPaymentId: String(obj.id),
+          amountMinor: obj.amount_received,
           currency,
           reason: 'stripe_payment_succeeded'
         };
@@ -202,6 +227,7 @@ export function createStripeGpayProvider({
           externalEventId: `stripe_${payload.id}`,
           eventType: 'refund',
           orderId,
+          principalId,
           providerPaymentId: obj.payment_intent ? String(obj.payment_intent) : (obj.id ? String(obj.id) : null),
           amountMinor: Number.isSafeInteger(obj.amount_refunded) ? obj.amount_refunded : null,
           currency,
@@ -214,6 +240,7 @@ export function createStripeGpayProvider({
           externalEventId: `stripe_${payload.id}`,
           eventType: 'chargeback',
           orderId,
+          principalId,
           providerPaymentId: obj.payment_intent ? String(obj.payment_intent) : null,
           amountMinor: Number.isSafeInteger(obj.amount) ? obj.amount : null,
           currency,

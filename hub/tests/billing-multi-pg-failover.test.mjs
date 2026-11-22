@@ -270,15 +270,18 @@ test('Stage 3 Multi-PSP Routing (Stripe + Google Pay Web 0% fee) & Circuit-Break
   const stripeWhSecret = 'whsec_stage3_stripe_gpay';
   let stripeOutage = false;
   let tossOutage = false;
+  let stripePiSeq = 0;
 
   const fakeFetch = async (url, init) => {
     if (url.includes('api.stripe.com/v1/payment_intents')) {
       if (stripeOutage) {
         return new Response(JSON.stringify({ error: { code: 'api_error', message: 'Stripe temporarily down' } }), { status: 503 });
       }
+      stripePiSeq += 1;
+      const piId = `pi_stage3_gpay_${stripePiSeq}`;
       return new Response(JSON.stringify({
-        id: 'pi_stage3_gpay_1',
-        client_secret: 'pi_stage3_gpay_1_secret_abc',
+        id: piId,
+        client_secret: `${piId}_secret_abc`,
         status: 'requires_payment_method'
       }), { status: 200 });
     }
@@ -362,9 +365,10 @@ test('Stage 3 Multi-PSP Routing (Stripe + Google Pay Web 0% fee) & Circuit-Break
     data: {
       object: {
         id: 'pi_stage3_gpay_1',
+        status: 'succeeded',
         amount_received: 999,
         currency: 'usd',
-        metadata: { order_id: gpayOrd.body.order.id }
+        metadata: { order_id: gpayOrd.body.order.id, principal_id: user.principalId }
       }
     }
   });

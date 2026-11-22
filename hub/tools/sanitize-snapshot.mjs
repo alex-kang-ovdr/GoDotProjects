@@ -163,12 +163,14 @@ export const DROP_TABLES = Object.freeze([
   'player_entitlements',
   'iap_transactions',
   'iap_webhook_events',
-  // Social private messages, reports, presence & transient co-entry launch tokens
+  // Social private messages, reports, presence, transient parties & co-entry launch tokens
   'social_messages',
   'social_reports',
   'social_presence',
   'social_party_launch_acks',
   'social_party_launches',
+  'social_party_members',
+  'social_parties',
   // Hub-SSO email credentials (emails + password hashes)
   'email_credentials'
 ]);

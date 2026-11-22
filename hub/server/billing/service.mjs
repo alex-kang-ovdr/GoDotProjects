@@ -458,8 +458,9 @@ export function createBillingService({
       throw error;
     }
 
-    // Persist server-issued provider tokens (KakaoPay tid, TossPay payToken) so /confirm never trusts client-spoofed IDs.
-    if (providerAdapter.persistsTokenAtCheckout && safeString(checkout?.providerPaymentId, 200) && !orderRow.provider_payment_id) {
+    // Persist server-issued provider tokens (Stripe PaymentIntent ID, KakaoPay tid, TossPay payToken, etc.)
+    // immediately so /confirm never trusts client-spoofed IDs.
+    if (safeString(checkout?.providerPaymentId, 200) && !orderRow.provider_payment_id) {
       db.prepare(`
         UPDATE billing_orders
         SET provider_payment_id=?, updated_at=?
@@ -560,6 +561,20 @@ export function createBillingService({
     if (order.state === 'PAID') {
       return { duplicate: true, order: formatOrderRow(order, now()), wallet: getWallet(db, principalId, now) };
     }
+    if (!['CREATED', 'PENDING'].includes(order.state)) {
+      throw new ApiError(409, 'ORDER_STATE_NOT_PAYABLE', `Order state is ${order.state}`);
+    }
+
+    // Pre-validate spending limits/compliance BEFORE triggering real PG capture (e.g. Toss /v1/payments/confirm)
+    // so an un-settleable order never charges the customer's card.
+    assertCanPurchase(db, {
+      principalId: order.principal_id,
+      amountMinor: order.amount_minor,
+      currency: order.currency,
+      excludeOrderId: order.id,
+      includeGiftcards: true,
+      now
+    });
 
     const adapter = getProviderAdapter(order.provider);
     let verification;

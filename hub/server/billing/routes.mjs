@@ -20,6 +20,12 @@ import { createStripeConnectProvider } from './providers/stripe-connect.mjs';
 import { createBillingService } from './service.mjs';
 import { listActiveEntitlements } from './direct-commerce.mjs';
 
+const TEST_KEY_PREFIXES = ['test_ck_', 'test_sk_', 'pk_test_', 'sk_test_', 'rk_test_'];
+
+function hasTestKeyPrefix(value) {
+  return typeof value === 'string' && value.length > 0 && TEST_KEY_PREFIXES.some(prefix => value.startsWith(prefix));
+}
+
 const disabled = {
   enabled: false,
   publicRoute: async () => false,
@@ -91,12 +97,15 @@ export function createBilling({
   const providers = {};
   const enabledProviders = [];
 
+  const xsollaApiKey = billingCfg.xsolla?.apiKey || env.PLAYHUB_BILLING_XSOLLA_API_KEY || '';
+  const xsollaWebhookSecret = billingCfg.xsolla?.webhookSecret || env.PLAYHUB_BILLING_XSOLLA_WEBHOOK_SECRET || '';
+  const xsollaSandbox = billingCfg.xsolla?.sandbox !== false;
   const xsolla = createXsollaProvider({
     merchantId: billingCfg.xsolla?.merchantId || env.PLAYHUB_BILLING_XSOLLA_MERCHANT_ID || '',
     projectId: billingCfg.xsolla?.projectId || env.PLAYHUB_BILLING_XSOLLA_PROJECT_ID || '',
-    apiKey: billingCfg.xsolla?.apiKey || env.PLAYHUB_BILLING_XSOLLA_API_KEY || '',
-    webhookSecret: billingCfg.xsolla?.webhookSecret || env.PLAYHUB_BILLING_XSOLLA_WEBHOOK_SECRET || '',
-    sandbox: billingCfg.xsolla?.sandbox !== false,
+    apiKey: xsollaApiKey,
+    webhookSecret: xsollaWebhookSecret,
+    sandbox: xsollaSandbox,
     apiBaseUrl: billingCfg.xsolla?.apiBaseUrl || 'https://api.xsolla.com',
     fetchImpl
   });
@@ -105,11 +114,15 @@ export function createBilling({
     enabledProviders.push('xsolla');
   }
 
+  const tossClientKey = billingCfg.toss?.clientKey || env.PLAYHUB_BILLING_TOSS_CLIENT_KEY || '';
+  const tossSecretKey = billingCfg.toss?.secretKey || env.PLAYHUB_BILLING_TOSS_SECRET_KEY || '';
+  const tossWebhookSecret = billingCfg.toss?.webhookSecret || env.PLAYHUB_BILLING_TOSS_WEBHOOK_SECRET || '';
+  const tossSandbox = billingCfg.toss?.sandbox !== false;
   const toss = createTossProvider({
-    clientKey: billingCfg.toss?.clientKey || env.PLAYHUB_BILLING_TOSS_CLIENT_KEY || '',
-    secretKey: billingCfg.toss?.secretKey || env.PLAYHUB_BILLING_TOSS_SECRET_KEY || '',
-    webhookSecret: billingCfg.toss?.webhookSecret || env.PLAYHUB_BILLING_TOSS_WEBHOOK_SECRET || '',
-    sandbox: billingCfg.toss?.sandbox !== false,
+    clientKey: tossClientKey,
+    secretKey: tossSecretKey,
+    webhookSecret: tossWebhookSecret,
+    sandbox: tossSandbox,
     apiBaseUrl: billingCfg.toss?.apiBaseUrl || 'https://api.tosspayments.com',
     publicBaseUrl: config.userBaseUrl || '',
     fetchImpl,
@@ -120,11 +133,13 @@ export function createBilling({
     enabledProviders.push('toss');
   }
 
+  const kakaopaySecretKey = billingCfg.kakaopay?.secretKey || env.PLAYHUB_BILLING_KAKAOPAY_SECRET_KEY || '';
+  const kakaopaySandbox = billingCfg.kakaopay?.sandbox !== false;
   const kakaopay = createKakaoPayProvider({
-    secretKey: billingCfg.kakaopay?.secretKey || env.PLAYHUB_BILLING_KAKAOPAY_SECRET_KEY || '',
+    secretKey: kakaopaySecretKey,
     cid: billingCfg.kakaopay?.cid || env.PLAYHUB_BILLING_KAKAOPAY_CID || '',
     webhookSecret: billingCfg.kakaopay?.webhookSecret || env.PLAYHUB_BILLING_KAKAOPAY_WEBHOOK_SECRET || '',
-    sandbox: billingCfg.kakaopay?.sandbox !== false,
+    sandbox: kakaopaySandbox,
     apiBaseUrl: billingCfg.kakaopay?.apiBaseUrl || 'https://open-api.kakaopay.com',
     publicBaseUrl: config.userBaseUrl || '',
     fetchImpl,
@@ -135,13 +150,15 @@ export function createBilling({
     enabledProviders.push('kakaopay');
   }
 
+  const naverpayClientSecret = billingCfg.naverpay?.clientSecret || env.PLAYHUB_BILLING_NAVERPAY_CLIENT_SECRET || '';
+  const naverpaySandbox = billingCfg.naverpay?.sandbox !== false;
   const naverpay = createNaverPayProvider({
     clientId: billingCfg.naverpay?.clientId || env.PLAYHUB_BILLING_NAVERPAY_CLIENT_ID || '',
-    clientSecret: billingCfg.naverpay?.clientSecret || env.PLAYHUB_BILLING_NAVERPAY_CLIENT_SECRET || '',
+    clientSecret: naverpayClientSecret,
     partnerId: billingCfg.naverpay?.partnerId || env.PLAYHUB_BILLING_NAVERPAY_PARTNER_ID || '',
     chainId: billingCfg.naverpay?.chainId || env.PLAYHUB_BILLING_NAVERPAY_CHAIN_ID || '',
     webhookSecret: billingCfg.naverpay?.webhookSecret || env.PLAYHUB_BILLING_NAVERPAY_WEBHOOK_SECRET || '',
-    sandbox: billingCfg.naverpay?.sandbox !== false,
+    sandbox: naverpaySandbox,
     apiBaseUrl: billingCfg.naverpay?.apiBaseUrl || '',
     publicBaseUrl: config.userBaseUrl || '',
     fetchImpl,
@@ -152,11 +169,13 @@ export function createBilling({
     enabledProviders.push('naverpay');
   }
 
+  const tosspayApiKey = billingCfg.tosspay?.apiKey || env.PLAYHUB_BILLING_TOSSPAY_API_KEY || '';
+  const tosspaySandbox = billingCfg.tosspay?.sandbox !== false;
   const tosspay = createTossPayProvider({
-    apiKey: billingCfg.tosspay?.apiKey || env.PLAYHUB_BILLING_TOSSPAY_API_KEY || '',
+    apiKey: tosspayApiKey,
     webhookSecret: billingCfg.tosspay?.webhookSecret || env.PLAYHUB_BILLING_TOSSPAY_WEBHOOK_SECRET || '',
     resultCallbackUrl: billingCfg.tosspay?.resultCallbackUrl || env.PLAYHUB_BILLING_TOSSPAY_CALLBACK_URL || '',
-    sandbox: billingCfg.tosspay?.sandbox !== false,
+    sandbox: tosspaySandbox,
     apiBaseUrl: billingCfg.tosspay?.apiBaseUrl || 'https://pay.toss.im',
     publicBaseUrl: config.userBaseUrl || '',
     fetchImpl,
@@ -167,12 +186,16 @@ export function createBilling({
     enabledProviders.push('tosspay');
   }
 
+  const stripeGpayPublishableKey = billingCfg.stripeGpay?.publishableKey || env.PLAYHUB_BILLING_STRIPE_GPAY_PUBLISHABLE_KEY || '';
+  const stripeGpaySecretKey = billingCfg.stripeGpay?.secretKey || env.PLAYHUB_BILLING_STRIPE_GPAY_SECRET_KEY || '';
+  const stripeGpayWebhookSecret = billingCfg.stripeGpay?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_GPAY_WEBHOOK_SECRET || '';
+  const stripeGpayEnv = billingCfg.stripeGpay?.googlePayEnvironment || (billingCfg.stripeGpay?.sandbox === false ? 'PRODUCTION' : 'TEST');
   const stripeGpay = createStripeGpayProvider({
-    publishableKey: billingCfg.stripeGpay?.publishableKey || env.PLAYHUB_BILLING_STRIPE_GPAY_PUBLISHABLE_KEY || '',
-    secretKey: billingCfg.stripeGpay?.secretKey || env.PLAYHUB_BILLING_STRIPE_GPAY_SECRET_KEY || '',
-    webhookSecret: billingCfg.stripeGpay?.webhookSecret || env.PLAYHUB_BILLING_STRIPE_GPAY_WEBHOOK_SECRET || '',
+    publishableKey: stripeGpayPublishableKey,
+    secretKey: stripeGpaySecretKey,
+    webhookSecret: stripeGpayWebhookSecret,
     merchantName: billingCfg.stripeGpay?.merchantName || 'PlayHub',
-    googlePayEnvironment: billingCfg.stripeGpay?.googlePayEnvironment || (billingCfg.stripeGpay?.sandbox === false ? 'PRODUCTION' : 'TEST'),
+    googlePayEnvironment: stripeGpayEnv,
     apiBaseUrl: billingCfg.stripeGpay?.apiBaseUrl || 'https://api.stripe.com',
     fetchImpl,
     now
@@ -180,6 +203,56 @@ export function createBilling({
   if (stripeGpay.configured) {
     providers.stripe_gpay = stripeGpay;
     enabledProviders.push('stripe_gpay');
+  }
+
+  if (config.secureCookies === true) {
+    for (const [name, adapter] of Object.entries(providers)) {
+      if (adapter.mode === 'sandbox') {
+        throw new Error(`billing.${name}.sandbox cannot be enabled with secureCookies in production`);
+      }
+    }
+    if (xsolla.configured && hasTestKeyPrefix(xsollaApiKey)) {
+      throw new Error('billing.xsolla cannot use test keys with secureCookies in production');
+    }
+    if (toss.configured) {
+      if (hasTestKeyPrefix(tossClientKey) || hasTestKeyPrefix(tossSecretKey)) {
+        throw new Error('billing.toss cannot use test keys (test_ck_/test_sk_) with secureCookies in production');
+      }
+      if (!tossWebhookSecret || tossWebhookSecret === tossSecretKey) {
+        throw new Error('billing.toss.webhookSecret must be configured independently from secretKey with secureCookies in production');
+      }
+    }
+    if (kakaopay.configured && hasTestKeyPrefix(kakaopaySecretKey)) {
+      throw new Error('billing.kakaopay cannot use test keys with secureCookies in production');
+    }
+    if (naverpay.configured && hasTestKeyPrefix(naverpayClientSecret)) {
+      throw new Error('billing.naverpay cannot use test keys with secureCookies in production');
+    }
+    if (tosspay.configured && hasTestKeyPrefix(tosspayApiKey)) {
+      throw new Error('billing.tosspay cannot use test keys with secureCookies in production');
+    }
+    if (stripeGpay.configured) {
+      if (stripeGpayEnv !== 'PRODUCTION' || billingCfg.stripeGpay?.sandbox === true) {
+        throw new Error('billing.stripeGpay must set googlePayEnvironment=PRODUCTION (sandbox=false) with secureCookies in production');
+      }
+      if (hasTestKeyPrefix(stripeGpayPublishableKey) || hasTestKeyPrefix(stripeGpaySecretKey)) {
+        throw new Error('billing.stripeGpay cannot use test keys (pk_test_/sk_test_/rk_test_) with secureCookies in production');
+      }
+      if (!stripeGpayWebhookSecret || stripeGpayWebhookSecret === stripeGpaySecretKey) {
+        throw new Error('billing.stripeGpay.webhookSecret must be configured independently from secretKey with secureCookies in production');
+      }
+    }
+    if (stripeSecretKey) {
+      if (hasTestKeyPrefix(stripeSecretKey)) {
+        throw new Error('billing.stripeConnect cannot use test keys (sk_test_/rk_test_) with secureCookies in production');
+      }
+      if (!stripeWebhookSecret || stripeWebhookSecret === stripeSecretKey) {
+        throw new Error('billing.stripeConnect.webhookSecret must be configured independently from secretKey with secureCookies in production');
+      }
+      if (stripeGpay.configured && stripeGpayWebhookSecret === stripeWebhookSecret) {
+        throw new Error('billing.stripeGpay.webhookSecret and billing.stripeConnect.webhookSecret must be distinct with secureCookies in production');
+      }
+    }
   }
 
   const hasKoreaDirectProvider = Boolean(kakaopay.configured || naverpay.configured || tosspay.configured);

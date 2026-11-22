@@ -288,6 +288,12 @@ test('sanitizeSnapshot handles full integrated createApp() DB (avatar, EOS SSOT,
     db.prepare("INSERT INTO billing_direct_orders(id, buyer_id, creator_id, product_id, game_id, platform, provider, connected_account_id, provider_charge_id, payment_intent_id, charge_id, currency, amount_minor, platform_fee_minor, state, idempotency_key, created_at, updated_at) VALUES('do1', 'u_real_1', 'u_real_1', 'cp1', 'g1', 'web', 'stripe_connect', 'acct_live_secret_123', 'ch_live_1', 'pi_live_1', 'ch_live_1', 'KRW', 5000, 0, 'PAID', 'do-ik-1', ?, ?)").run(nowMs, nowMs);
     db.prepare("INSERT INTO billing_entitlements(id, buyer_id, creator_id, game_id, product_id, product_key, direct_order_id, state, granted_at, updated_at) VALUES('be1', 'u_real_1', 'u_real_1', 'g1', 'cp1', 'vip', 'do1', 'ACTIVE', ?, ?)").run(nowMs, nowMs);
     db.prepare("INSERT INTO billing_spending_limits(principal_id, age_tier, monthly_cap_minor, daily_cap_minor, guardian_approved, updated_by, updated_at) VALUES('u_real_1', 'ADULT', 1000000, 500000, 0, 'admin_compliance', ?)").run(nowMs);
+
+    // Seed Social party tables (must be wiped so live user party titles & room_codes never leak to dev)
+    db.prepare("INSERT INTO social_parties(id, leader_id, title, target_game_id, room_code, max_members, created_at, updated_at) VALUES('pty_1', 'u_real_1', '홍길동 010-1234-5678 비밀방', 'g1', 'LIVE-ROOM-999', 4, ?, ?)").run(nowMs, nowMs);
+    db.prepare("INSERT INTO social_party_members(party_id, principal_id, role, ready_state, joined_at) VALUES('pty_1', 'u_real_1', 'leader', 1, ?)").run(nowMs);
+    db.prepare("INSERT INTO social_party_launches(launch_id, party_id, game_id, room_code, match_room_id, launched_by, status, created_at) VALUES('ln_1', 'pty_1', 'g1', 'LIVE-ROOM-999', 'mr_1', 'u_real_1', 'active', ?)").run(nowMs);
+    db.prepare("INSERT INTO social_party_launch_acks(launch_id, principal_id, platform, state, updated_at) VALUES('ln_1', 'u_real_1', 'web', 'entered', ?)").run(nowMs);
   } finally {
     db.close();
   }
@@ -314,12 +320,14 @@ test('sanitizeSnapshot handles full integrated createApp() DB (avatar, EOS SSOT,
 
     const checkDb = new DatabaseSync(out1, { readOnly: true });
     try {
-      // Sensitive billing, avatar ledger, sanctions, submissions wiped
+      // Sensitive billing, avatar ledger, sanctions, submissions, social parties wiped
       for (const tbl of [
         'billing_orders', 'billing_giftcards', 'billing_giftcard_batches',
         'billing_creator_connections', 'billing_direct_orders', 'billing_entitlements',
         'avatar_wallet_ledger', 'avatar_purchase_idempotency',
-        'user_sanctions', 'leaderboard_submissions', 'progression_idempotency'
+        'user_sanctions', 'leaderboard_submissions', 'progression_idempotency',
+        'social_party_launch_acks', 'social_party_launches',
+        'social_party_members', 'social_parties'
       ]) {
         assert.equal(checkDb.prepare(`SELECT count(*) n FROM ${tbl}`).get().n, 0, `${tbl} must be wiped`);
       }
@@ -397,6 +405,10 @@ test('sanitizeSnapshot handles full integrated createApp() DB (avatar, EOS SSOT,
     assert.equal(report2.ok, true);
     assert.equal(report2.integrity, 'ok');
     assert.equal(report2.foreignKeys, 'ok');
+
+    const inspected2 = inspectDatabase(out2);
+    assert.equal(inspected2.integrity, 'ok');
+    assert.equal(inspected2.foreignKeys, 'ok');
 
     const checkIapDb = new DatabaseSync(out2, { readOnly: true });
     try {

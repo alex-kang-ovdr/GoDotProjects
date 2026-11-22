@@ -249,7 +249,10 @@ async function runCloudRunBuild(job, snapshot, outputDir, deps = {}) {
 
   const zipBuffer = await downloadGcsObject({ bucket: cfg.bucket, objectName: zipObject, accessToken, fetchImpl });
   const zipValidation = validateDeploymentZip(zipBuffer);
-  if (workerResult.artifactSha256 && workerResult.artifactSha256 !== zipValidation.sha256) {
+  const expectedSha256 = typeof workerResult.artifactSha256 === 'string'
+    ? workerResult.artifactSha256.trim().toLowerCase()
+    : '';
+  if (!/^[a-f0-9]{64}$/.test(expectedSha256) || expectedSha256 !== zipValidation.sha256) {
     throw new Error('Isolated build ZIP integrity mismatch');
   }
 

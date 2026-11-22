@@ -32,6 +32,10 @@ jobs:
           node-version-file: '.nvmrc'
       - name: Install Hub dependencies
         run: npm ci --prefix hub --ignore-scripts
+      - name: Install Forge dependencies
+        run: npm ci --prefix forge --ignore-scripts
+      - name: Sync webgames (hub/games)
+        run: node hub/tools/sync-webgames.mjs
       - name: Resolve branch under test
         id: ref
         run: |
