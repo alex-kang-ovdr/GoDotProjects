@@ -1,6 +1,10 @@
-/* 귀축왕 란스 — Interactive Web UI Controller
- * Binds RANCE_DATA + KichikuouRanceEngine to the Continent SVG Map,
- * Weekly Slot Bar, 4v4 Battle Arena, Scenario/Crisis Panel, Roster & 14-Ending Codex.
+/* 귀축왕 란스 — Interactive Web UI Controller (Phase 2)
+ * Binds RANCE_DATA + KichikuouRanceEngine to:
+ * - Continent SVG Map (29 territories, 10 factions, 4 dungeons)
+ * - 4v4 Battle Arena w/ Operation Tactic Selector & Combat Zone (戦闘域) Gauge
+ * - Post-Battle Enemy Commander Capture & Recruitment Modal
+ * - Multi-Floor Dungeon Expedition Modal (Sasa B66F, Rudrasaum, Custom, Zeth Tower)
+ * - Diplomacy Panel & Live 28-Character Destiny Board + 14 Verified Endings Codex
  */
 (function () {
   "use strict";
@@ -29,19 +33,21 @@
   let selectedTerritoryId = "ter_leazas_white_fort";
   let activeTab = "territory";
   let commanderFilter = "recruited";
+  let destinyFilter = "all";
   let deployTargetId = null;
   let deploySelection = [];
   let selectedBattleTargetKey = null;
   let lastShownEndingId = null;
+  let captureModalDismissedForKey = null;
 
-  // Lookup maps
   const factionById = Object.fromEntries(DATA.factions.map((f) => [f.id, f]));
   const territoryDefById = Object.fromEntries(DATA.territories.map((t) => [t.id, t]));
   const classById = Object.fromEntries(DATA.unitClasses.map((c) => [c.id, c]));
   const eventDefById = Object.fromEntries(DATA.scenarioEvents.map((e) => [e.id, e]));
   const endingDefById = Object.fromEntries(DATA.endings.map((e) => [e.id, e]));
+  const dungeonByTerritory = Object.fromEntries((DATA.dungeons || []).map((d) => [d.territoryId, d]));
 
-  // ==================== META PROFILE (14 ENDINGS) ====================
+  // ==================== META PROFILE ====================
 
   function loadMeta() {
     try {
@@ -66,7 +72,7 @@
     }
   }
 
-  // ==================== TOAST ====================
+  // ==================== TOAST & MODALS ====================
 
   function showToast(msg, isError) {
     const container = document.getElementById("toast-container");
@@ -76,7 +82,7 @@
     container.appendChild(el);
     setTimeout(() => {
       el.remove();
-    }, 3200);
+    }, 3400);
   }
 
   function openModal(id) {
@@ -92,6 +98,7 @@
   function startNewCampaign(startPhase) {
     state = Engine.createInitialState(DATA, { startPhase: startPhase || "LEAZAS_REBELLION" });
     lastShownEndingId = null;
+    captureModalDismissedForKey = null;
     selectedTerritoryId = startPhase === "BANDIT_PROLOGUE" ? "ter_helman_east" : "ter_leazas_white_fort";
     if (startPhase === "BANDIT_PROLOGUE") {
       activeTab = "scenarios";
@@ -99,6 +106,8 @@
     closeModal("modal-newgame");
     closeModal("modal-ending");
     closeModal("modal-battle");
+    closeModal("modal-capture");
+    closeModal("modal-dungeon");
     renderAll();
     showToast("새 캠페인이 시작되었습니다!");
   }
@@ -114,6 +123,8 @@
     renderTerritoryTab();
     renderScenariosTab();
     renderCommandersTab();
+    renderDiplomacyTab();
+    renderDestinyTab();
     renderChronicleTab();
 
     if (state.activeBattle) {
@@ -121,6 +132,20 @@
       renderBattleModal();
     } else {
       closeModal("modal-battle");
+    }
+
+    if (state.activeDungeon) {
+      openModal("modal-dungeon");
+      renderDungeonModal();
+    }
+
+    // Show post-battle capture modal automatically if new POWs captured!
+    const capKey = (state.pendingCaptures || []).join(",");
+    if (!state.activeBattle && !state.endingId && state.pendingCaptures.length > 0 && capKey !== captureModalDismissedForKey) {
+      renderCaptureModal();
+      openModal("modal-capture");
+    } else if (state.pendingCaptures.length === 0) {
+      closeModal("modal-capture");
     }
 
     if (state.endingId && state.endingId !== lastShownEndingId) {
@@ -145,7 +170,11 @@
     document.getElementById("badge-commanders").textContent = `${recruitedCount}/${DATA.characters.length}`;
     document.getElementById("badge-scenarios").textContent = String(state.activeScenarios.length);
 
-    document.getElementById("btn-end-turn").disabled = Boolean(state.activeBattle || state.endingId);
+    const destinies = Engine.evaluateDestinies(state, DATA);
+    const happyCount = destinies.filter((d) => d.status === "HAPPY").length;
+    document.getElementById("badge-destiny").textContent = `${happyCount}/${destinies.length}`;
+
+    document.getElementById("btn-end-turn").disabled = Boolean(state.activeBattle || state.activeDungeon || state.endingId);
   }
 
   function renderWeeklySlots() {
@@ -157,7 +186,7 @@
       { label: "부하대화", cur: s.talk, max: 1 },
       { label: "증원/보충", cur: s.reinforceOrDraft, max: 1 },
       { label: "건설", cur: s.build, max: 1 },
-      { label: "탐색", cur: s.explore, max: 1 },
+      { label: "탐색/던전", cur: s.explore, max: 1 },
       { label: "닌자", cur: s.ninja, max: maxNinja },
       { label: "침공", cur: s.invasion, max: 1 }
     ];
@@ -178,7 +207,6 @@
     const svg = document.getElementById("continent-map-svg");
     const parts = [];
 
-    // Background Continent Parchment Silhouette
     parts.push(`
       <defs>
         <linearGradient id="mapLandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -198,7 +226,6 @@
       <text x="985" y="362" class="map-region-label">JAPAN</text>
     `);
 
-    // Adjacency Edges (deduplicated undirected)
     const drawnEdges = new Set();
     for (const def of DATA.territories) {
       const tA = state.territories[def.id];
@@ -218,7 +245,6 @@
       }
     }
 
-    // Territory Nodes
     for (const def of DATA.territories) {
       const t = state.territories[def.id];
       const fac = factionById[t.owner];
@@ -229,48 +255,29 @@
       const isCapital = ["CAPITAL", "ENDGAME_CAPITAL", "HOLY_CAPITAL", "ISLAND_CAPITAL"].includes(t.strategicType);
       const r = isCapital ? 20 : 16;
 
-      // Crisis badge check
       let hasCrisisPin = false;
-      if (def.id === "ter_volgo_z" && (state.timers.volgoZSoul.status === "ACTIVE" || state.timers.volgoZSill.status === "ACTIVE")) {
-        hasCrisisPin = true;
-      }
-      if (def.id === "ter_sasa_lake" && state.flags.aluminumAxeOwned && !state.commanders.chr_haniwa_king.recruited && !state.flags.sasaDungeonLocked) {
-        hasCrisisPin = true;
-      }
-      if (def.id === "ter_rudrasaum_ruins" && state.campaignPhase === "CREATOR_PHASE") {
-        hasCrisisPin = true;
-      }
-      if (def.id === "ter_leazas_white_fort" && state.campaignPhase === "LEAZAS_REBELLION") {
-        hasCrisisPin = true;
-      }
+      if (def.id === "ter_volgo_z" && (state.timers.volgoZSoul.status === "ACTIVE" || state.timers.volgoZSill.status === "ACTIVE")) hasCrisisPin = true;
+      if (def.id === "ter_sasa_lake" && state.flags.aluminumAxeOwned && !state.commanders.chr_haniwa_king.recruited && !state.flags.sasaDungeonLocked) hasCrisisPin = true;
+      if (def.id === "ter_rudrasaum_ruins" && state.campaignPhase === "CREATOR_PHASE") hasCrisisPin = true;
+      if (def.id === "ter_leazas_white_fort" && state.campaignPhase === "LEAZAS_REBELLION") hasCrisisPin = true;
 
+      const hasDungeon = Boolean(dungeonByTerritory[def.id]);
       const facIcons = t.facilities
         .map((fid) => ({ hospital: "H", magic_lab: "M", maria_lab: "R", library: "L" }[fid] || "*"))
         .join("");
-
       const shortName = def.nameKr.split(" (")[0];
 
       parts.push(`<g class="map-node" data-territory-id="${def.id}" tabindex="0" role="button" aria-label="${def.nameKr}">`);
-      if (invCheck.ok) {
-        parts.push(`<circle class="node-attackable-ring" cx="${x}" cy="${y}" r="${r + 5}" />`);
-      }
-      if (isSelected) {
-        parts.push(`<circle class="node-selected-ring" cx="${x}" cy="${y}" r="${r + 8}" />`);
-      }
+      if (invCheck.ok) parts.push(`<circle class="node-attackable-ring" cx="${x}" cy="${y}" r="${r + 5}" />`);
+      if (isSelected) parts.push(`<circle class="node-selected-ring" cx="${x}" cy="${y}" r="${r + 8}" />`);
       parts.push(
         `<circle class="node-circle" cx="${x}" cy="${y}" r="${r}" fill="${t.locked ? "#2a2833" : color.fill}" stroke="${color.stroke}" stroke-width="${isCapital ? 3 : 2}" opacity="${t.locked ? 0.55 : 1}" />`
       );
-      parts.push(
-        `<text class="node-troop-badge" x="${x}" y="${y + 4}">${t.locked ? "🔒" : t.garrisonTroops}</text>`
-      );
-      parts.push(`<text class="node-label" x="${x}" y="${y + r + 14}">${shortName}</text>`);
+      parts.push(`<text class="node-troop-badge" x="${x}" y="${y + 4}">${t.locked ? "🔒" : t.garrisonTroops}</text>`);
+      parts.push(`<text class="node-label" x="${x}" y="${y + r + 14}">${hasDungeon ? "🏰" : ""}${shortName}</text>`);
       if (facIcons) {
-        parts.push(
-          `<rect x="${x - 16}" y="${y - r - 14}" width="32" height="13" rx="6" fill="#120e18" stroke="#e6b852" stroke-width="1" />`
-        );
-        parts.push(
-          `<text x="${x}" y="${y - r - 4}" text-anchor="middle" font-size="9" font-weight="700" fill="#f5d88e">${facIcons}</text>`
-        );
+        parts.push(`<rect x="${x - 16}" y="${y - r - 14}" width="32" height="13" rx="6" fill="#120e18" stroke="#e6b852" stroke-width="1" />`);
+        parts.push(`<text x="${x}" y="${y - r - 4}" text-anchor="middle" font-size="9" font-weight="700" fill="#f5d88e">${facIcons}</text>`);
       }
       if (hasCrisisPin) {
         parts.push(`<circle cx="${x + r - 2}" cy="${y - r + 2}" r="7.5" fill="#e83e54" stroke="#fff" stroke-width="1.3" />`);
@@ -280,8 +287,6 @@
     }
 
     svg.innerHTML = parts.join("");
-
-    // Bind click handlers
     svg.querySelectorAll(".map-node").forEach((node) => {
       node.addEventListener("click", () => {
         selectedTerritoryId = node.getAttribute("data-territory-id");
@@ -297,10 +302,11 @@
       .map((f) => {
         const count = Object.values(state.territories).filter((t) => t.owner === f.id).length;
         const facState = state.factions[f.id];
+        const relTag = facState?.diplomaticRelation === "ALLIANCE" ? "🤝" : facState?.diplomaticRelation === "TRUCE" ? "🕊" : "";
         return `
           <span class="faction-chip ${count === 0 || facState?.defeated ? "defeated" : ""}">
             <span class="faction-dot" style="background:${f.color.fill};border:1px solid ${f.color.stroke};"></span>
-            ${f.color.label} (${count})
+            ${relTag}${f.color.label} (${count})
           </span>`;
       })
       .join("");
@@ -331,6 +337,7 @@
     const fac = factionById[t.owner];
     const isPlayer = t.owner === "fac_leazas";
     const invCheck = Engine.canInvade(state, t.id);
+    const localDungeon = dungeonByTerritory[t.id];
 
     const adjLinks = t.adjacentIds
       .map((aid) => {
@@ -338,6 +345,14 @@
         return `<button class="kr-btn small ghost" data-select-ter="${aid}" type="button">${at.nameKr.split(" (")[0]}</button>`;
       })
       .join("");
+
+    const pendingCapBanner =
+      state.pendingCaptures.length > 0
+        ? `<div class="kr-card highlight" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+             <span>⛓ 미처분 포로 ${state.pendingCaptures.length}명 대기 중</span>
+             <button class="kr-btn small gold" id="btn-reopen-captures" type="button">포로 처분 열기</button>
+           </div>`
+        : "";
 
     let actionHtml = "";
     if (isPlayer) {
@@ -357,16 +372,23 @@
         ? `<button class="kr-btn small danger" id="btn-counter-freya" ${state.weeklySlots.city <= 0 ? "disabled" : ""} type="button">🕵️ 프레이야 공작 저지·포획 (도시 슬롯)</button>`
         : "";
 
+      const dungeonBtn = localDungeon
+        ? `<button class="kr-btn gold" id="btn-launch-local-dungeon" data-dungeon-id="${localDungeon.id}" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">
+             🏰 ${localDungeon.nameKr} 다층 원정 개시
+           </button>`
+        : "";
+
       actionHtml = `
         <div class="action-stack">
           <div class="action-row">
             <button class="kr-btn primary" id="btn-city-tax" ${state.weeklySlots.city <= 0 ? "disabled" : ""} type="button">
               💰 무패널티 징세 (+${t.taxIncome.toLocaleString()}G)
             </button>
-            <button class="kr-btn gold" id="btn-explore-ter" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">
-              🧭 미궁 탐색 원정
+            <button class="kr-btn ghost" id="btn-explore-ter" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">
+              🧭 일반 탐색
             </button>
           </div>
+          ${dungeonBtn}
           ${freyaCounterBtn}
           <div class="kr-card" style="margin-top:4px;">
             <h4>국가 시설 건설 (건설 슬롯 ${state.weeklySlots.build}/1)</h4>
@@ -379,45 +401,62 @@
         <div class="action-stack">
           ${
             canExploreCreator
-              ? `<button class="kr-btn gold" id="btn-explore-ter" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">✨ 루드라사움 유적 진입 (창조신 대면)</button>`
+              ? `<button class="kr-btn gold" id="btn-launch-local-dungeon" data-dungeon-id="dng_rudrasaum_ruins" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">🏰 루드라사움 유적 다층 던전 돌입</button>
+                 <button class="kr-btn ghost" id="btn-explore-ter" ${state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">✨ 창조신 대면 직행</button>`
               : `<button class="kr-btn danger" id="btn-open-deploy" ${!invCheck.ok ? "disabled" : ""} type="button">
                    ⚔ 4부대 침공 편성 ${invCheck.ok ? "" : `(${invCheck.error})`}
                  </button>`
           }
           <div class="action-row">
             <button class="kr-btn small ghost" id="btn-ninja-scout" ${state.weeklySlots.ninja <= 0 ? "disabled" : ""} type="button">
-              👁 닌자 정찰 (슬롯 ${state.weeklySlots.ninja})
+              👁 닌자 정찰 (${state.weeklySlots.ninja})
             </button>
             <button class="kr-btn small ghost" id="btn-ninja-sabotage" ${state.weeklySlots.ninja <= 0 ? "disabled" : ""} type="button">
-              💣 닌자 파괴공작 (50% 성공)
+              💣 파괴공작 (50%)
             </button>
           </div>
         </div>`;
     }
 
+    const relicsHtml =
+      state.relics.length > 0
+        ? `<div class="kr-card">
+             <h4>✨ 보유 전설 유물 (${state.relics.length})</h4>
+             <div style="display:flex;flex-wrap:wrap;gap:5px;">
+               ${state.relics.map((r) => `<span class="badge fortune" title="${r.effectKr}">🏺 ${r.nameKr}</span>`).join("")}
+             </div>
+           </div>`
+        : "";
+
     pane.innerHTML = `
+      ${pendingCapBanner}
       <div class="kr-card highlight">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
           <h3>${def.nameKr}</h3>
           <span class="badge" style="background:${fac.color.fill};border:1px solid ${fac.color.stroke};">${fac.nameKr}</span>
         </div>
         <p class="muted" style="margin:4px 0 8px;">${def.keyFeature}</p>
         <div class="kv-grid">
           <div class="kv-item"><span>전투역 (Field Size)</span><strong>${t.fieldSize}명</strong></div>
-          <div class="kv-item"><span>주둔 병력</span><strong>${t.scouted || isPlayer ? `${t.garrisonTroops}명` : "미정찰 (약 " + t.garrisonTroops + ")"}</strong></div>
+          <div class="kv-item"><span>주둔 병력</span><strong>${t.scouted || isPlayer ? `${t.garrisonTroops}명` : "미정찰 (~" + t.garrisonTroops + ")"}</strong></div>
           <div class="kv-item"><span>징세 경제력</span><strong>${t.taxIncome.toLocaleString()}G</strong></div>
           <div class="kv-item"><span>창조신 정복 판정</span><strong>${t.countsForCreatorConquest ? "필수 영토" : "제외 특수지"}</strong></div>
         </div>
         ${actionHtml}
       </div>
-
+      ${relicsHtml}
       <div class="kr-card">
         <h4>인접 연결 영토 (${t.adjacentIds.length}개)</h4>
         <div class="action-row">${adjLinks}</div>
       </div>
     `;
 
-    // Bind buttons
+    pane.querySelector("#btn-reopen-captures")?.addEventListener("click", () => {
+      captureModalDismissedForKey = null;
+      renderCaptureModal();
+      openModal("modal-capture");
+    });
+
     pane.querySelectorAll("[data-select-ter]").forEach((btn) => {
       btn.addEventListener("click", () => {
         selectedTerritoryId = btn.dataset.selectTer;
@@ -443,6 +482,18 @@
       renderAll();
     });
 
+    pane.querySelector("#btn-launch-local-dungeon")?.addEventListener("click", (e) => {
+      const did = e.currentTarget.dataset.dungeonId;
+      const res = Engine.startDungeon(state, DATA, did);
+      if (!res.ok) {
+        showToast(res.error, true);
+      } else {
+        renderDungeonModal();
+        openModal("modal-dungeon");
+      }
+      renderAll();
+    });
+
     pane.querySelectorAll("[data-build-fac]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const res = Engine.runBuildFacility(state, DATA, t.id, btn.dataset.buildFac);
@@ -463,17 +514,14 @@
       renderAll();
     });
 
-    pane.querySelector("#btn-open-deploy")?.addEventListener("click", () => {
-      openDeployModal(t.id);
-    });
+    pane.querySelector("#btn-open-deploy")?.addEventListener("click", () => openDeployModal(t.id));
   }
 
-  // ==================== SCENARIOS & CRISIS TIMERS TAB ====================
+  // ==================== SCENARIOS & TIMERS TAB (28 CANONICAL) ====================
 
   function renderScenariosTab() {
     const pane = document.getElementById("tab-scenarios");
 
-    // Active global crisis timers
     const timersHtml = `
       <div class="kr-card crisis">
         <h4>⏳ 전역 위기 타이머 &amp; 시나리오 조건</h4>
@@ -506,16 +554,15 @@
           }</strong>
         </div>
         <div class="timer-row">
-          <span>제스 4탑 붕괴 / 튤립 100호 / 신상·카오스</span>
+          <span>제스 4탑 / 튤립 100호 / 신상·카오스</span>
           <strong>탑 ${state.flags.zethTowersDefeated}/4 · 로켓 ${state.flags.tulipProgress}% · 신상 ${state.flags.godStatuesCount}/3 ${state.flags.chaosSwordOwned ? "· ⚔카오스" : ""}</strong>
         </div>
       </div>
     `;
 
-    // Active scenario decision cards
     let activeCards = "";
     if (state.activeScenarios.length === 0) {
-      activeCards = `<div class="kr-card"><p class="muted">현재 대기 중인 캐릭터 시나리오 이벤트가 없습니다. 영토 정복·징세·탐색·부하 대화로 새 시나리오가 해금됩니다.</p></div>`;
+      activeCards = `<div class="kr-card"><p class="muted">현재 대기 중인 시나리오 이벤트가 없습니다. 영토 정복·외교 동맹·던전 탐사로 새 시나리오가 해금됩니다.</p></div>`;
     } else {
       activeCards = state.activeScenarios
         .map((eid) => {
@@ -532,7 +579,7 @@
             .join("");
           return `
             <div class="kr-card highlight">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
                 <h4>★ ${def.nameKr}</h4>
                 <span class="badge pending">${def.category}</span>
               </div>
@@ -543,17 +590,16 @@
         .join("");
     }
 
-    // Completed / Catalog summary of all 16 verified scenarios
     const catalogHtml = `
       <div class="kr-card">
-        <h4>📜 16대 정사 시나리오·타이머 트래커 (${state.completedScenarios.length}/${DATA.scenarioEvents.length})</h4>
+        <h4>📜 ${DATA.scenarioEvents.length}대 정사 시나리오·던전 체인 (${state.completedScenarios.length}/${DATA.scenarioEvents.length})</h4>
         <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">
           ${DATA.scenarioEvents
             .map((e) => {
               const done = state.completedScenarios.includes(e.id);
               const active = state.activeScenarios.includes(e.id);
               return `
-                <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,0.22);">
+                <div style="display:flex;justify-content:space-between;gap:6px;font-size:11.5px;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,0.22);">
                   <span>${done ? "✅" : active ? "⚡" : "○"} ${e.nameKr}</span>
                   <span class="muted">${e.phase}</span>
                 </div>`;
@@ -576,37 +622,41 @@
     });
   }
 
-  // ==================== COMMANDERS ROSTER TAB (33 CANONICAL) ====================
+  // ==================== COMMANDERS ROSTER TAB (69 CANONICAL UNITS) ====================
 
   function renderCommandersTab() {
     const pane = document.getElementById("tab-commanders");
     const all = Object.values(state.commanders);
     const filtered = all.filter((c) => {
       if (commanderFilter === "recruited") return c.recruited && c.alive;
-      if (commanderFilter === "unrecruited") return !c.recruited || !c.alive;
+      if (commanderFilter === "playable") return c.isPlayableSubordinate;
+      if (commanderFilter === "bosses") return !c.isPlayableSubordinate;
       return true;
     });
 
+    const playableCount = all.filter((c) => c.isPlayableSubordinate).length;
     const filterBar = `
       <div class="cmd-filter-bar">
         <button class="kr-btn small ${commanderFilter === "recruited" ? "primary" : "ghost"}" data-cmd-filter="recruited" type="button">아군 합류</button>
-        <button class="kr-btn small ${commanderFilter === "all" ? "primary" : "ghost"}" data-cmd-filter="all" type="button">전체 33인</button>
-        <button class="kr-btn small ${commanderFilter === "unrecruited" ? "primary" : "ghost"}" data-cmd-filter="unrecruited" type="button">미합류/수감</button>
+        <button class="kr-btn small ${commanderFilter === "playable" ? "primary" : "ghost"}" data-cmd-filter="playable" type="button">부하 ${playableCount}인</button>
+        <button class="kr-btn small ${commanderFilter === "bosses" ? "primary" : "ghost"}" data-cmd-filter="bosses" type="button">보스/군주</button>
+        <button class="kr-btn small ${commanderFilter === "all" ? "primary" : "ghost"}" data-cmd-filter="all" type="button">전체 ${all.length}</button>
       </div>
     `;
 
     const listHtml = filtered
       .map((c) => {
         const cls = classById[c.classId];
-        const destinyBadge = c.hasDestinyPair
-          ? `<span class="badge ${c.destinyFlag.toLowerCase()}">${c.destinyFlag}</span>`
-          : "";
         const statusTag = !c.alive
           ? `<span class="badge misfortune">전사/소실</span>`
+          : c.captured
+          ? `<span class="badge pending">포로 생포</span>`
           : c.imprisoned
           ? `<span class="badge misfortune">볼고Z 수감</span>`
           : c.recruited
           ? `<span class="badge fortune">합류</span>`
+          : !c.isPlayableSubordinate
+          ? `<span class="badge demon">보스/군주</span>`
           : `<span class="badge">${factionById[c.initialFactionId]?.color.label || "타세력"}</span>`;
 
         const canAct = (c.recruited || c.id === "chr_lia") && c.alive;
@@ -618,7 +668,7 @@
                 c.isPlayableSubordinate && c.recruited
                   ? `
                 <button class="kr-btn small ghost" data-cmd-reinforce="${c.id}" ${state.weeklySlots.reinforceOrDraft <= 0 || (c.troops >= c.maxTroops && c.commanderHp >= c.maxCommanderHp) ? "disabled" : ""} type="button">🛡 보충</button>
-                <button class="kr-btn small ghost" data-cmd-draft="${c.id}" ${state.weeklySlots.reinforceOrDraft <= 0 ? "disabled" : ""} type="button">⬆ 증원(+150)</button>
+                <button class="kr-btn small ghost" data-cmd-draft="${c.id}" ${state.weeklySlots.reinforceOrDraft <= 0 ? "disabled" : ""} type="button">⬆ 증원</button>
                 <button class="kr-btn small ghost" data-cmd-row="${c.id}" type="button">열:${c.row === "FRONT" ? "전열" : "후열"}</button>`
                   : ""
               }
@@ -629,14 +679,14 @@
           <div class="cmd-card ${c.recruited ? "recruited" : ""}">
             <div class="cmd-head">
               <span class="cmd-name">${c.nameKr} <span class="muted">${cls ? cls.nameKr : ""}</span></span>
-              <div>${statusTag} ${destinyBadge}</div>
+              <div>${statusTag}</div>
             </div>
             <div class="cmd-stats">
               <span>HP ${c.commanderHp}/${c.maxCommanderHp}</span>
               <span>병력 ${c.troops}/${c.maxTroops}</span>
               <span>ATK ${c.atk} · DEF ${c.def} · MAG ${c.mag}</span>
               <span>타격 ${c.strikes}${c.hasSnipe ? " · 🎯Snipe" : ""}</span>
-              <span>신뢰 ${c.trust}</span>
+              <span>LV ${c.battleLv} · 신뢰 ${c.trust}</span>
             </div>
             <div class="muted" style="font-size:11px;">${c.signatureSkill}</div>
             ${actions}
@@ -688,6 +738,117 @@
     });
   }
 
+  // ==================== DIPLOMACY PANEL TAB ====================
+
+  function renderDiplomacyTab() {
+    const pane = document.getElementById("tab-diplomacy");
+    const others = DATA.factions.filter((f) => f.id !== "fac_leazas");
+
+    const relLabel = {
+      WAR: { text: "전쟁 중", cls: "war" },
+      TRUCE: { text: "휴전 협정", cls: "truce" },
+      ALLIANCE: { text: "군사 동맹", cls: "alliance" },
+      NEUTRAL: { text: "중립", cls: "neutral" }
+    };
+
+    pane.innerHTML = `
+      <div class="kr-card highlight">
+        <h4>🤝 대륙 외교 국정원</h4>
+        <p class="muted" style="margin:0;">휴전(3,500G · 4주간 AI 반격·증원 중단), 동맹(5,000G · 매 턴 +600G 및 특수 영입 시나리오 해금), 선전포고로 전선을 조율하라.</p>
+      </div>
+      ${others
+        .map((def) => {
+          const f = state.factions[def.id];
+          const terrCount = Object.values(state.territories).filter((t) => t.owner === def.id).length;
+          const rel = relLabel[f.diplomaticRelation] || relLabel.NEUTRAL;
+          const lockedPeace = ["fac_ex_rebellion", "fac_demon_kayblis"].includes(def.id);
+          return `
+            <div class="kr-card">
+              <div class="cmd-head">
+                <span class="cmd-name">
+                  <span class="faction-dot" style="display:inline-block;background:${def.color.fill};border:1px solid ${def.color.stroke};margin-right:5px;"></span>
+                  ${def.nameKr}
+                </span>
+                <div>
+                  <span class="badge ${f.defeated ? "misfortune" : rel.cls}">
+                    ${f.defeated ? "멸망" : `${rel.text}${f.truceTurns > 0 ? ` (${f.truceTurns}주)` : ""}`}
+                  </span>
+                  <span class="badge">${terrCount}영토</span>
+                </div>
+              </div>
+              <p class="muted" style="margin:5px 0 7px;font-size:11.5px;">${def.notes}</p>
+              <div class="action-row">
+                <button class="kr-btn small ghost" data-dip-fac="${def.id}" data-dip-act="truce" ${f.defeated || lockedPeace || f.diplomaticRelation === "TRUCE" ? "disabled" : ""} type="button">🕊 휴전 (3,500G)</button>
+                <button class="kr-btn small emerald" data-dip-fac="${def.id}" data-dip-act="alliance" ${f.defeated || lockedPeace || f.diplomaticRelation === "ALLIANCE" ? "disabled" : ""} type="button">🤝 동맹 (${state.morale >= 85 ? "2,500G" : "5,000G"})</button>
+                <button class="kr-btn small danger" data-dip-fac="${def.id}" data-dip-act="declare_war" ${f.defeated || f.diplomaticRelation === "WAR" ? "disabled" : ""} type="button">⚔ 선전포고</button>
+              </div>
+            </div>`;
+        })
+        .join("")}
+    `;
+
+    pane.querySelectorAll("[data-dip-fac]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const res = Engine.negotiateFaction(state, DATA, btn.dataset.dipFac, btn.dataset.dipAct);
+        showToast(res.ok ? res.summary : res.error, !res.ok);
+        renderAll();
+      });
+    });
+  }
+
+  // ==================== LIVE 28-CHARACTER DESTINY BOARD TAB ====================
+
+  function renderDestinyTab() {
+    const pane = document.getElementById("tab-destiny");
+    const list = Engine.evaluateDestinies(state, DATA);
+    const happyN = list.filter((d) => d.status === "HAPPY").length;
+    const neutralN = list.filter((d) => d.status === "NEUTRAL").length;
+    const unhappyN = list.filter((d) => d.status === "UNHAPPY").length;
+
+    const shown = list.filter((d) => destinyFilter === "all" || d.status === destinyFilter);
+
+    pane.innerHTML = `
+      <div class="kr-card highlight">
+        <h4>✨ 캐릭터 운명(Destiny) 실시간 보드 (${list.length}인)</h4>
+        <div class="action-row" style="margin:6px 0;">
+          <span class="badge happy">HAPPY ${happyN}</span>
+          <span class="badge neutral">NEUTRAL ${neutralN}</span>
+          <span class="badge unhappy">UNHAPPY ${unhappyN}</span>
+        </div>
+        <div class="cmd-filter-bar">
+          <button class="kr-btn small ${destinyFilter === "all" ? "primary" : "ghost"}" data-dst-filter="all" type="button">전체 (${list.length})</button>
+          <button class="kr-btn small ${destinyFilter === "HAPPY" ? "emerald" : "ghost"}" data-dst-filter="HAPPY" type="button">HAPPY</button>
+          <button class="kr-btn small ${destinyFilter === "NEUTRAL" ? "gold" : "ghost"}" data-dst-filter="NEUTRAL" type="button">NEUTRAL</button>
+          <button class="kr-btn small ${destinyFilter === "UNHAPPY" ? "danger" : "ghost"}" data-dst-filter="UNHAPPY" type="button">UNHAPPY</button>
+        </div>
+      </div>
+      ${shown
+        .map(
+          (d) => `
+        <div class="destiny-card ${d.status.toLowerCase()}">
+          <div class="cmd-head">
+            <span class="cmd-name">${d.nameKr} <span class="muted">${d.nameEn}</span></span>
+            <span class="badge ${d.status.toLowerCase()}">${d.status} (${d.progressPct}%)</span>
+          </div>
+          <div class="destiny-progress-bar">
+            <div class="destiny-progress-fill" style="width:${d.progressPct}%"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--gold-soft);margin-bottom:3px;">현재 판정: ${d.reasonKr}</div>
+          <div class="muted" style="font-size:11px;">🟢 행복: ${d.happySummaryKr}</div>
+          <div class="muted" style="font-size:11px;">🔴 불행: ${d.unhappySummaryKr}</div>
+        </div>`
+        )
+        .join("")}
+    `;
+
+    pane.querySelectorAll("[data-dst-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        destinyFilter = btn.dataset.dstFilter;
+        renderDestinyTab();
+      });
+    });
+  }
+
   // ==================== CHRONICLE TAB ====================
 
   function renderChronicleTab() {
@@ -710,13 +871,10 @@
     const available = Object.values(state.commanders).filter(
       (c) => c.recruited && c.alive && c.isPlayableSubordinate
     );
-    // Default pick: balanced 2 FRONT + 2 BACK (starting with Rance)
     const fronts = available.filter((c) => c.row === "FRONT");
     const backs = available.filter((c) => c.row !== "FRONT");
     const defaults = [];
-    if (state.commanders.chr_rance.recruited && state.commanders.chr_rance.alive) {
-      defaults.push("chr_rance");
-    }
+    if (state.commanders.chr_rance.recruited && state.commanders.chr_rance.alive) defaults.push("chr_rance");
     for (const c of fronts) {
       if (defaults.length >= 2) break;
       if (!defaults.includes(c.id)) defaults.push(c.id);
@@ -752,7 +910,7 @@
             const cls = classById[c.classId];
             return `
               <button class="deploy-unit-btn ${selected ? "selected" : ""}" data-toggle-deploy="${c.id}" type="button">
-                <div style="display:flex;justify-content:space-between;">
+                <div style="display:flex;justify-content:space-between;gap:4px;">
                   <strong>${c.nameKr}</strong>
                   <span class="badge ${c.row === "FRONT" ? "front" : "back"}">${c.row === "FRONT" ? "전열" : "후열"}</span>
                 </div>
@@ -785,11 +943,46 @@
     const battle = state.activeBattle;
     if (!battle) return;
 
+    const zoneInfo = Engine.getCombatZoneInfo(battle.combatZone);
+
     document.getElementById("battle-title").textContent = `⚔ ${battle.targetNameKr} 공략전 (4v4 군단전)`;
     document.getElementById("battle-meta").textContent =
-      `제 ${battle.round} 라운드 · 전투역 ${battle.fieldSize}명 · 첩보 보정 ${Math.round((battle.intelBonus - 1) * 100)}% · 최소 병수 우선 행동`;
+      `제 ${battle.round} 라운드 · 전투역 ${battle.fieldSize}명 · 첩보 +${Math.round((battle.intelBonus - 1) * 100)}% · 최소 병수 우선`;
 
-    // Turn Queue (Smallest-Troop-First)
+    // Operation Tactic Selector Bar
+    const tacticBar = document.getElementById("battle-tactic-bar");
+    tacticBar.innerHTML = Object.values(Engine.BATTLE_TACTICS)
+      .map(
+        (tac) => `
+        <button class="tactic-btn ${battle.tacticId === tac.id ? "active" : ""}" data-set-tactic="${tac.id}" type="button">
+          <strong>⚔ ${tac.nameKr}</strong>
+          <span>${tac.shortKr === "총공격" ? "ATK+30% / DEF-20%" : tac.shortKr === "철벽방어" ? "DEF+35% / ATK-15%" : tac.shortKr === "집중타격" ? "저격+2 / 치명+30%" : "공방 균형 유지"}</span>
+        </button>`
+      )
+      .join("");
+
+    tacticBar.querySelectorAll("[data-set-tactic]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const res = Engine.setBattleTactic(state, DATA, btn.dataset.setTactic);
+        if (!res.ok) showToast(res.error, true);
+        renderBattleModal();
+      });
+    });
+
+    // Combat Zone (戦闘域) Gauge Bar
+    const zoneBar = document.getElementById("battle-zone-bar");
+    zoneBar.innerHTML = `
+      <div class="zone-header">
+        <strong>🔥 전투역(戦闘域) 주도권: 리자스 ${zoneInfo.value}% vs 적군 ${100 - zoneInfo.value}%</strong>
+        <span class="badge ${zoneInfo.state === "PLAYER_ADVANTAGE" ? "fortune" : zoneInfo.state === "ENEMY_ADVANTAGE" ? "misfortune" : "pending"}">${zoneInfo.labelKr}</span>
+      </div>
+      <div class="zone-gauge-track">
+        <div class="zone-gauge-player" style="width:${zoneInfo.value}%"></div>
+        <div class="zone-gauge-mid"></div>
+      </div>
+    `;
+
+    // Turn Queue
     const queue = Engine.getBattleTurnQueue(battle);
     document.getElementById("battle-turn-queue").innerHTML = queue
       .map(
@@ -800,7 +993,6 @@
       )
       .join("");
 
-    // Ensure valid selected target for player
     const activeActor = battle.units.find((u) => u.unitKey === battle.activeUnitKey);
     const aliveEnemies = battle.units.filter((u) => u.side === "ENEMY" && u.commanderHp > 0);
     if (!aliveEnemies.some((e) => e.unitKey === selectedBattleTargetKey)) {
@@ -816,7 +1008,7 @@
       const tags = [];
       if (u.isWaitingForSpecial) tags.push(`<span class="badge pending">⚡필살준비</span>`);
       if (u.isDefending) tags.push(`<span class="badge fortune">🛡방어중</span>`);
-      if (u.classId === "cls_demons") tags.push(`<span class="badge demon">마인(닌자면역)</span>`);
+      if (u.classId === "cls_demons") tags.push(`<span class="badge demon">마인</span>`);
 
       return `
         <div class="squad-card ${u.side === "PLAYER" ? "player" : "enemy"} ${isCurrent ? "active-actor" : ""} ${isTarget ? "selected-target" : ""} ${u.commanderHp <= 0 ? "defeated" : ""}"
@@ -842,20 +1034,20 @@
     grid.innerHTML = `
       <div class="battle-col">
         <div class="battle-col-title">아군 후열 (원거리/마법)</div>
-        ${pBack.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:24px 0;">비어 있음</div>`}
+        ${pBack.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:18px 0;">비어 있음</div>`}
       </div>
       <div class="battle-col">
         <div class="battle-col-title">아군 전열 (직접/방벽)</div>
-        ${pFront.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:24px 0;">비어 있음</div>`}
+        ${pFront.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:18px 0;">비어 있음</div>`}
       </div>
       <div class="battle-divider">VS</div>
       <div class="battle-col">
         <div class="battle-col-title">적군 전열</div>
-        ${eFront.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:24px 0;">격파됨</div>`}
+        ${eFront.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:18px 0;">격파됨</div>`}
       </div>
       <div class="battle-col">
         <div class="battle-col-title">적군 후열</div>
-        ${eBack.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:24px 0;">비어 있음</div>`}
+        ${eBack.map(renderSquadCard).join("") || `<div class="muted" style="text-align:center;padding:18px 0;">비어 있음</div>`}
       </div>
     `;
 
@@ -866,24 +1058,23 @@
       });
     });
 
-    // Actor Command Controls
     const infoEl = document.getElementById("battle-actor-info");
     const btnsEl = document.getElementById("battle-action-buttons");
 
     if (activeActor && activeActor.side === "PLAYER") {
-      infoEl.innerHTML = `<strong>현재 행동: ${activeActor.nameKr}</strong> <span class="muted">(${activeActor.row === "FRONT" ? "전열" : "후열"} · 병력 ${activeActor.troops}) — 적 카드를 클릭해 목표 지정</span>`;
+      infoEl.innerHTML = `<strong>현재 행동: ${activeActor.nameKr}</strong> <span class="muted">(${activeActor.row === "FRONT" ? "전열" : "후열"} · 병력 ${activeActor.troops}) — 적 카드 클릭으로 목표 지정</span>`;
       const canDirect = activeActor.row === "FRONT";
       const canRanged = activeActor.canAttackFromBack;
       const canMagic = ["MAGIC", "MAGIC_SUPPORT", "SPECIAL_MAGIC", "DEMON_HYBRID"].includes(activeActor.attackType);
       const canSnipe = activeActor.isWaitingForSpecial;
 
       btnsEl.innerHTML = `
-        <button class="kr-btn primary" data-battle-act="attack" ${!canDirect ? "disabled" : ""} type="button">⚔ 직접공격</button>
-        <button class="kr-btn gold" data-battle-act="ranged" ${!canRanged ? "disabled" : ""} type="button">🏹 원거리</button>
-        <button class="kr-btn gold" data-battle-act="magic" ${!canMagic ? "disabled" : ""} type="button">✨ 마법</button>
-        <button class="kr-btn danger" data-battle-act="snipe" ${!canSnipe ? "disabled" : ""} type="button">🎯 필살저격(Snipe)</button>
-        <button class="kr-btn ghost" data-battle-act="defend" type="button">🛡 방어</button>
-        <button class="kr-btn ghost" data-battle-act="wait" type="button">⚡ 대기(필살준비)</button>
+        <button class="kr-btn primary small" data-battle-act="attack" ${!canDirect ? "disabled" : ""} type="button">⚔ 직접공격</button>
+        <button class="kr-btn gold small" data-battle-act="ranged" ${!canRanged ? "disabled" : ""} type="button">🏹 원거리</button>
+        <button class="kr-btn gold small" data-battle-act="magic" ${!canMagic ? "disabled" : ""} type="button">✨ 마법</button>
+        <button class="kr-btn danger small" data-battle-act="snipe" ${!canSnipe ? "disabled" : ""} type="button">🎯 필살저격</button>
+        <button class="kr-btn ghost small" data-battle-act="defend" type="button">🛡 방어</button>
+        <button class="kr-btn ghost small" data-battle-act="wait" type="button">⚡ 대기</button>
       `;
 
       btnsEl.querySelectorAll("[data-battle-act]").forEach((btn) => {
@@ -895,7 +1086,6 @@
           if (!res.ok) {
             showToast(res.error, true);
           } else {
-            // Auto-advance consecutive enemy turns for snappy pacing!
             stepEnemyTurnsAutomatically();
           }
           renderAll();
@@ -903,14 +1093,13 @@
       });
     } else if (activeActor && activeActor.side === "ENEMY") {
       infoEl.innerHTML = `<strong>적군 차례: ${activeActor.nameKr}</strong>`;
-      btnsEl.innerHTML = `<button class="kr-btn danger" id="btn-step-enemy" type="button">적군 행동 진행 ▶</button>`;
+      btnsEl.innerHTML = `<button class="kr-btn danger small" id="btn-step-enemy" type="button">적군 행동 진행 ▶</button>`;
       btnsEl.querySelector("#btn-step-enemy")?.addEventListener("click", () => {
         stepEnemyTurnsAutomatically();
         renderAll();
       });
     }
 
-    // Battle Log
     const logBox = document.getElementById("battle-log-box");
     logBox.innerHTML = battle.log
       .slice(-14)
@@ -927,6 +1116,168 @@
       Engine.stepBattleAiTurn(state, DATA);
       guard += 1;
     }
+  }
+
+  // ==================== POST-BATTLE CAPTURE & RECRUITMENT MODAL ====================
+
+  function renderCaptureModal() {
+    const body = document.getElementById("capture-body");
+    if (!state.pendingCaptures || state.pendingCaptures.length === 0) {
+      body.innerHTML = `<p class="muted">처분 대기 중인 포로 지휘관이 없습니다.</p>`;
+      return;
+    }
+    body.innerHTML = `
+      <p class="muted" style="margin-top:0;">점령전 승리로 생포한 적 지휘관들입니다. 리자스 군단으로 등용하거나 석방·몸값 협상을 선택하세요.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${state.pendingCaptures
+          .map((cid) => {
+            const c = state.commanders[cid];
+            if (!c) return "";
+            const cls = classById[c.classId];
+            const ransomVal = 2000 + (c.battleLv || 8) * 250;
+            return `
+              <div class="kr-card highlight">
+                <div class="cmd-head">
+                  <span class="cmd-name">⛓ ${c.nameKr} <span class="muted">${cls ? cls.nameKr : ""}</span></span>
+                  <span class="badge">${factionById[c.initialFactionId]?.nameKr || c.initialFactionId}</span>
+                </div>
+                <div class="cmd-stats">
+                  <span>HP ${c.maxCommanderHp}</span>
+                  <span>최대병력 ${c.maxTroops}</span>
+                  <span>ATK ${c.atk} · DEF ${c.def} · MAG ${c.mag}</span>
+                  <span>타격 ${c.strikes}${c.hasSnipe ? " · 🎯Snipe" : ""}</span>
+                </div>
+                <div class="muted" style="font-size:11.5px;margin-bottom:8px;">${c.signatureSkill}</div>
+                <div class="action-row">
+                  <button class="kr-btn small primary" data-cap-id="${c.id}" data-cap-act="recruit" type="button">👑 아군 등용</button>
+                  <button class="kr-btn small emerald" data-cap-id="${c.id}" data-cap-act="release" type="button">🕊 명예 석방 (사기+4)</button>
+                  <button class="kr-btn small gold" data-cap-id="${c.id}" data-cap-act="ransom" type="button">💰 몸값 (+${ransomVal.toLocaleString()}G)</button>
+                </div>
+              </div>`;
+          })
+          .join("")}
+      </div>
+    `;
+
+    body.querySelectorAll("[data-cap-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const res = Engine.resolveCapture(state, DATA, btn.dataset.capId, btn.dataset.capAct);
+        showToast(res.ok ? res.summary : res.error, !res.ok);
+        renderAll();
+      });
+    });
+  }
+
+  // ==================== MULTI-FLOOR DUNGEON EXPEDITION MODAL ====================
+
+  function renderDungeonModal() {
+    const body = document.getElementById("dungeon-body");
+    const title = document.getElementById("dungeon-modal-title");
+    const ad = state.activeDungeon;
+
+    if (!ad) {
+      title.textContent = "🏰 대륙 4대 미궁 · 다층 던전 원정";
+      body.innerHTML = `
+        <p class="muted" style="margin-top:0;">점령한 미궁 거점에서 다층 던전 원정을 개시해 전설 유물·비밀 장수(하니와 킹, 리즈나)·창조신 결전 분기를 해금하라. (탐색 슬롯: ${state.weeklySlots.explore}/1)</p>
+        <div class="codex-grid">
+          ${(DATA.dungeons || [])
+            .map((d) => {
+              const ter = state.territories[d.territoryId];
+              const cleared = state.clearedDungeons.includes(d.id);
+              const unlocked = d.id === "dng_rudrasaum_ruins"
+                ? state.campaignPhase === "CREATOR_PHASE" || !ter.locked
+                : ter?.owner === "fac_leazas";
+              return `
+                <div class="kr-card ${cleared ? "highlight" : ""}">
+                  <div class="cmd-head">
+                    <strong>🏰 ${d.nameKr}</strong>
+                    <span class="badge ${cleared ? "fortune" : unlocked ? "pending" : "misfortune"}">${cleared ? "제패완료" : unlocked ? "진입가능" : "미점령"}</span>
+                  </div>
+                  <div class="muted" style="font-size:11px;margin:4px 0;">위치: ${ter ? ter.nameKr : d.territoryId} · 총 ${d.floors.length}구간 · 보스: ${d.boss.nameKr}</div>
+                  <div style="font-size:11.5px;color:var(--gold-soft);margin-bottom:8px;">🏺 유물 보상: ${d.relic.nameKr} (${d.relic.effectKr})</div>
+                  <button class="kr-btn small gold full" data-start-dng="${d.id}" ${!unlocked || state.weeklySlots.explore <= 0 ? "disabled" : ""} type="button">
+                    ⚔ 원정대 출격 (탐색 슬롯 1)
+                  </button>
+                </div>`;
+            })
+            .join("")}
+        </div>
+      `;
+
+      body.querySelectorAll("[data-start-dng]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const res = Engine.startDungeon(state, DATA, btn.dataset.startDng);
+          if (!res.ok) showToast(res.error, true);
+          renderDungeonModal();
+          renderAll();
+        });
+      });
+      return;
+    }
+
+    title.textContent = `🏰 던전 원정 중: ${ad.nameKr}`;
+    const hpPct = Math.round((ad.partyHp / Math.max(1, ad.maxPartyHp)) * 100);
+    const partyNames = ad.partyIds.map((id) => state.commanders[id]?.nameKr || id).join(", ");
+
+    body.innerHTML = `
+      <div class="kr-card highlight">
+        <div class="kv-grid">
+          <div class="kv-item"><span>원정대 편성</span><strong>${partyNames}</strong></div>
+          <div class="kv-item"><span>원정 전투력 / 획득 자금</span><strong>${ad.partyPower} · +${ad.lootGold.toLocaleString()}G</strong></div>
+        </div>
+        <div style="font-size:11.5px;margin-top:4px;">원정대 내구 HP: ${ad.partyHp} / ${ad.maxPartyHp}</div>
+        <div class="bar-wrap"><div class="bar-fill hp" style="width:${hpPct}%"></div></div>
+        <div class="muted" style="font-size:11.5px;">목표 유물: 🏺 ${ad.relic.nameKr} — ${ad.relic.effectKr}</div>
+      </div>
+
+      <div class="dungeon-floor-track">
+        ${ad.floors
+          .map((fl, idx) => {
+            const cls = idx < ad.currentFloorIndex ? "done" : idx === ad.currentFloorIndex ? "current" : "";
+            const isBoss = idx === ad.totalFloors - 1 ? "boss" : "";
+            return `
+              <div class="floor-step ${cls} ${isBoss}">
+                <div>${idx < ad.currentFloorIndex ? "✅" : idx === ad.currentFloorIndex ? "🧭" : "🔒"} ${fl.label}</div>
+                <div class="muted" style="font-size:10.5px;">위협 ${fl.threat} · ~${fl.rewardGold}G</div>
+              </div>`;
+          })
+          .join("")}
+      </div>
+
+      <div class="action-row" style="margin:8px 0;">
+        ${
+          !ad.readyForBoss
+            ? `<button class="kr-btn primary" id="btn-dng-advance" type="button">🧭 다음 계층 돌파 ▶</button>`
+            : `<button class="kr-btn danger" id="btn-dng-boss" type="button">⚔ 보스 결전: ${ad.boss.nameKr} (전투력 ${ad.boss.power})</button>`
+        }
+        <button class="kr-btn ghost" id="btn-dng-exit" type="button">안전 철수 (전리품 50% 회수)</button>
+      </div>
+
+      <div class="battle-log-box" style="border-radius:8px;max-height:170px;">
+        ${ad.log.slice(-12).reverse().map((line) => `<div class="battle-log-line">${line}</div>`).join("")}
+      </div>
+    `;
+
+    body.querySelector("#btn-dng-advance")?.addEventListener("click", () => {
+      const res = Engine.advanceDungeonFloor(state, DATA);
+      if (!res.ok) showToast(res.error, true);
+      renderDungeonModal();
+      renderAll();
+    });
+
+    body.querySelector("#btn-dng-boss")?.addEventListener("click", () => {
+      const res = Engine.fightDungeonBoss(state, DATA);
+      showToast(res.ok ? res.summary : res.error, !res.ok || !res.victory);
+      closeModal("modal-dungeon");
+      renderAll();
+    });
+
+    body.querySelector("#btn-dng-exit")?.addEventListener("click", () => {
+      const res = Engine.exitDungeon(state, DATA);
+      showToast(res.ok ? res.summary : res.error, !res.ok);
+      closeModal("modal-dungeon");
+      renderAll();
+    });
   }
 
   // ==================== SAVE / LOAD MODAL ====================
@@ -949,7 +1300,7 @@
       }
       return `
         <div class="kr-card" style="margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
             <div>
               <strong>슬롯 ${slot}</strong>
               <div class="muted" style="font-size:12px;">${summary}</div>
@@ -969,7 +1320,7 @@
           localStorage.setItem(STORAGE_PREFIX + slot, Engine.serialize(state));
           showToast(`슬롯 ${slot}에 현재 캠페인을 저장했습니다.`);
           renderSaveModal();
-        } catch (err) {
+        } catch {
           showToast("로컬 저장에 실패했습니다.", true);
         }
       });
@@ -993,34 +1344,41 @@
     });
   }
 
-  // ==================== 14 ENDINGS & DESTINY CODEX ====================
+  // ==================== 14 VERIFIED ENDINGS & 28 DESTINIES CODEX ====================
 
   function renderCodexModal() {
     const meta = loadMeta();
-    const destinyTracked = Object.values(state.commanders).filter((c) => c.hasDestinyPair);
-    const fortunes = destinyTracked.filter((c) => c.destinyFlag === "FORTUNE").length;
-    const misfortunes = destinyTracked.filter((c) => c.destinyFlag === "MISFORTUNE").length;
+    const destinies = Engine.evaluateDestinies(state, DATA);
+    const happyN = destinies.filter((d) => d.status === "HAPPY").length;
+    const unhappyN = destinies.filter((d) => d.status === "UNHAPPY").length;
 
     const body = document.getElementById("codex-body");
     body.innerHTML = `
       <div class="kr-card highlight" style="margin-bottom:10px;">
-        <h4>달성 현황: 메인 엔딩 ${meta.unlockedEndings.length} / ${DATA.endings.length} · 현재 회차 운명(행복 ${fortunes} / 불행 ${misfortunes})</h4>
+        <h4>달성 현황: 정사 14 엔딩 ${meta.unlockedEndings.length} / ${DATA.endings.length} · 실시간 운명(HAPPY ${happyN} / UNHAPPY ${unhappyN} / 총 ${destinies.length}인)</h4>
         <p class="muted" style="margin:4px 0 0;">${DATA.characterDestinySystem.description}</p>
       </div>
+      <h4 style="margin:6px 0;color:var(--gold-soft);">🏆 14개 정사 메인 스토리 엔딩 (100% 원작 교차 검증)</h4>
       <div class="codex-grid">
         ${DATA.endings
           .map((e) => {
             const unlocked = meta.unlockedEndings.includes(e.id) || state.endingId === e.id;
             return `
               <div class="codex-item ${unlocked ? "unlocked" : ""}">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
                   <strong>${unlocked ? "🏆 " : "🔒 "}${e.nameKr}</strong>
-                  <span class="badge">${e.category}</span>
+                  <span class="badge ${e.cgModeUnlocked ? "fortune" : ""}">${e.cgModeUnlocked ? "CG등록" : e.category}</span>
                 </div>
-                <div class="muted" style="font-size:11px;margin:2px 0 5px;">${e.nameEn} · ${e.phase}</div>
-                <div style="font-size:12px;">${e.conditionSummary}</div>
+                <div class="muted" style="font-size:11px;margin:2px 0 5px;">${e.nameJp || ""} · ${e.nameEn}</div>
+                <div style="font-size:11.5px;">${e.conditionSummary}</div>
               </div>`;
           })
+          .join("")}
+      </div>
+      <h4 style="margin:14px 0 6px;color:var(--gold-soft);">✨ 28인 캐릭터 운명(Destiny) 실시간 요약</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        ${destinies
+          .map((d) => `<span class="badge ${d.status.toLowerCase()}" title="${d.reasonKr}">${d.nameKr}: ${d.status}</span>`)
           .join("")}
       </div>
     `;
@@ -1029,24 +1387,24 @@
   function renderEndingModal() {
     const e = endingDefById[state.endingId];
     document.getElementById("ending-modal-title").textContent = `🏆 엔딩 달성: ${e ? e.nameKr : state.endingId}`;
-    const destinies = Object.values(state.commanders)
-      .filter((c) => c.hasDestinyPair)
+    const destinies = Engine.evaluateDestinies(state, DATA)
       .map(
-        (c) => `<span class="badge ${c.destinyFlag.toLowerCase()}" style="margin:2px;">${c.nameKr}: ${c.destinyFlag}</span>`
+        (d) => `<span class="badge ${d.status.toLowerCase()}" style="margin:2px;">${d.nameKr}: ${d.status}</span>`
       )
       .join("");
 
     document.getElementById("ending-modal-body").innerHTML = `
       <div class="kr-card highlight">
         <h4>${e ? `${e.nameKr} (${e.nameEn})` : state.endingId}</h4>
+        <div class="muted" style="margin-bottom:6px;">${e?.nameJp || ""}</div>
         <p>${state.endingReason}</p>
         <div class="kv-grid">
           <div class="kv-item"><span>도달 달력</span><strong>${Engine.formatCalendar(state.calendar)} (턴 ${state.turn})</strong></div>
-          <div class="kv-item"><span>최종 국고</span><strong>${state.gold.toLocaleString()}G</strong></div>
+          <div class="kv-item"><span>최종 국고 / 유물</span><strong>${state.gold.toLocaleString()}G · 유물 ${state.relics.length}개</strong></div>
         </div>
       </div>
       <div class="kr-card" style="margin-top:10px;">
-        <h4>주요 캐릭터 운명 결산 (Fortune / Misfortune)</h4>
+        <h4>28인 캐릭터 운명 최종 결산 (HAPPY / NEUTRAL / UNHAPPY)</h4>
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${destinies}</div>
       </div>
     `;
@@ -1063,7 +1421,13 @@
     });
 
     document.querySelectorAll("[data-close-modal]").forEach((btn) => {
-      btn.addEventListener("click", () => closeModal(btn.dataset.closeModal));
+      btn.addEventListener("click", () => {
+        const mid = btn.dataset.closeModal;
+        if (mid === "modal-capture") {
+          captureModalDismissedForKey = (state.pendingCaptures || []).join(",");
+        }
+        closeModal(mid);
+      });
     });
 
     document.getElementById("btn-end-turn").addEventListener("click", () => {
@@ -1074,6 +1438,11 @@
         showToast(`${Engine.formatCalendar(state.calendar)} 개시 (+${res.passiveIncome.toLocaleString()}G)`);
       }
       renderAll();
+    });
+
+    document.getElementById("btn-open-dungeon").addEventListener("click", () => {
+      renderDungeonModal();
+      openModal("modal-dungeon");
     });
 
     document.getElementById("btn-open-save").addEventListener("click", () => {

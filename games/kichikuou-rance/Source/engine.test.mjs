@@ -7,18 +7,30 @@ await import("../Web/engine.js");
 const RANCE_DATA = globalThis.RANCE_DATA;
 const Engine = globalThis.KichikuouRanceEngine;
 
-test("1. Bundled RANCE_DATA matches all canonical verified_data counts", () => {
+test("1. Bundled RANCE_DATA matches all Phase 2 canonical verified_data counts (52+ playable, 14 verified endings, 28 destinies, 28 scenarios)", () => {
   assert.equal(RANCE_DATA.factions.length, 10);
   assert.equal(RANCE_DATA.territories.length, 29);
   assert.equal(RANCE_DATA.unitClasses.length, 14);
-  assert.equal(RANCE_DATA.characters.length, 33);
-  assert.equal(RANCE_DATA.scenarioEvents.length, 16);
+  assert.equal(RANCE_DATA.characters.length, 69);
+  const playable = RANCE_DATA.characters.filter((c) => c.isPlayableSubordinate);
+  assert.ok(playable.length >= 52, `Expected >=52 playable commanders, got ${playable.length}`);
+  assert.equal(playable.length, 59);
+  assert.ok(RANCE_DATA.scenarioEvents.length >= 26);
+  assert.equal(RANCE_DATA.scenarioEvents.length, 28);
   assert.equal(RANCE_DATA.endings.length, 14);
+  assert.equal(
+    RANCE_DATA.endings.filter((e) => e.evidenceLevel === "VERIFIED").length,
+    14,
+    "All 14 canonical main story endings must be VERIFIED"
+  );
+  assert.ok(RANCE_DATA.destinies.length >= 24);
+  assert.equal(RANCE_DATA.destinies.length, 28);
+  assert.equal(RANCE_DATA.dungeons.length, 4);
 
   const state = Engine.createInitialState(RANCE_DATA, { seed: 42 });
   assert.equal(Object.keys(state.territories).length, 29);
   assert.equal(Object.keys(state.factions).length, 10);
-  assert.equal(Object.keys(state.commanders).length, 33);
+  assert.equal(Object.keys(state.commanders).length, 69);
   assert.equal(state.commanders.chr_cordoba.troops, 1000);
   assert.equal(state.weeklySlots.ninja, 5); // Kanami starts recruited (1 ninja * 5)
 });
@@ -91,12 +103,9 @@ test("2. Weekly typed action slots enforce strict per-turn limits & reset on end
 test("3. Adjacent territory invasion succeeds; non-adjacent & phase-locked invasions are rejected", () => {
   const state = Engine.createInitialState(RANCE_DATA, { seed: 777 });
 
-  // During LEAZAS_REBELLION, invading Helman (even adjacent Volgo Z) is blocked
   assert.equal(Engine.canInvade(state, "ter_volgo_z").ok, false);
-  // White Fort is adjacent & allowed
   assert.equal(Engine.canInvade(state, "ter_leazas_white_fort").ok, true);
 
-  // Invade and win White Fort to enter HUMAN_REALM
   const startRes = Engine.startInvasion(state, RANCE_DATA, "ter_leazas_white_fort", [
     "chr_rance",
     "chr_rick",
@@ -111,17 +120,15 @@ test("3. Adjacent territory invasion succeeds; non-adjacent & phase-locked invas
   assert.equal(state.commanders.chr_ex.recruited, true);
   assert.equal(state.weeklySlots.invasion, 0);
 
-  // Next turn: verify adjacency rules in HUMAN_REALM
   Engine.endTurn(state, RANCE_DATA);
-  assert.equal(Engine.canInvade(state, "ter_volgo_z").ok, true); // adjacent to Leazas Castle & North
-  assert.equal(Engine.canInvade(state, "ter_ice").ok, true); // adjacent to Leazas Castle & South
-  assert.equal(Engine.canInvade(state, "ter_lang_bau").ok, false); // non-adjacent!
-  assert.equal(Engine.canInvade(state, "ter_japan_main").ok, false); // non-adjacent!
-  assert.equal(Engine.canInvade(state, "ter_sulphur_forest").ok, false); // Monster Realm locked & non-adjacent!
+  assert.equal(Engine.canInvade(state, "ter_volgo_z").ok, true);
+  assert.equal(Engine.canInvade(state, "ter_ice").ok, true);
+  assert.equal(Engine.canInvade(state, "ter_lang_bau").ok, false);
+  assert.equal(Engine.canInvade(state, "ter_japan_main").ok, false);
+  assert.equal(Engine.canInvade(state, "ter_sulphur_forest").ok, false);
 });
 
 test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting, Snipe formula & ninja demon immunity", () => {
-  // 4a. Exact lowest-troop-first + tie-breaking (PLAYER before ENEMY, slot 0..3)
   const mockUnits = [
     { unitKey: "P1", side: "PLAYER", slotIndex: 0, troops: 500, commanderHp: 20 },
     { unitKey: "E1", side: "ENEMY", slotIndex: 0, troops: 300, commanderHp: 20 },
@@ -137,10 +144,8 @@ test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting
     order.push(next.unitKey);
     acted.add(next.unitKey);
   }
-  // 200 PLAYER (P3) -> 200 ENEMY (E2) -> 300 PLAYER (P2) -> 300 ENEMY (E1) -> 500 PLAYER (P1)
   assert.deepEqual(order, ["P3", "E2", "P2", "E1", "P1"]);
 
-  // 4b. Snipe damage formula range check: 0..min(6, floor(strikes/5))
   for (let i = 0; i < 50; i++) {
     const r = i / 50;
     const d15 = Engine.resolveSnipeDamage({ strikes: 15 }, () => r, 6);
@@ -149,10 +154,9 @@ test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting
     assert.ok(d40 >= 0 && d40 <= 6);
   }
 
-  // 4c. Live battle checks: back row cannot melee, wait -> snipe hits enemy back row directly
   const state = Engine.createInitialState(RANCE_DATA, { seed: 2026 });
-  state.commanders.chr_maris.troops = 50; // lowest troops so Maris (BACK) acts first!
-  state.commanders.chr_rance.troops = 60; // second lowest
+  state.commanders.chr_maris.troops = 50;
+  state.commanders.chr_rance.troops = 60;
   const inv = Engine.startInvasion(state, RANCE_DATA, "ter_leazas_white_fort", [
     "chr_rance",
     "chr_cordoba",
@@ -162,21 +166,16 @@ test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting
   assert.equal(inv.ok, true);
   assert.equal(state.activeBattle.activeUnitKey, "PLAYER_chr_maris");
 
-  // Back-row Maris cannot direct attack
   const badMelee = Engine.executeBattleAction(state, RANCE_DATA, { type: "attack" });
   assert.equal(badMelee.ok, false);
 
-  // Back-row Maris CAN cast magic with zero retaliation
   const goodMagic = Engine.executeBattleAction(state, RANCE_DATA, { type: "magic" });
   assert.equal(goodMagic.ok, true);
   assert.equal(goodMagic.retaliation, null);
 
-  // Next actor should be Rance (troops 60)
   assert.equal(state.activeBattle.activeUnitKey, "PLAYER_chr_rance");
-  // Rance waits to unlock Snipe
   assert.equal(Engine.executeBattleAction(state, RANCE_DATA, { type: "wait" }).ok, true);
 
-  // Finish round 1 so Rance can fire Snipe in round 2
   while (state.activeBattle && state.activeBattle.activeUnitKey !== "PLAYER_chr_rance") {
     Engine.stepBattleAiTurn(state, RANCE_DATA);
   }
@@ -190,14 +189,13 @@ test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting
     targetUnitKey: backEnemy.unitKey
   });
   assert.equal(snipeRes.ok, true);
-  assert.equal(backEnemy.troops, troopsBefore); // Snipe ignores troops completely!
+  assert.equal(backEnemy.troops, troopsBefore);
 
-  // 4d. Ninja +1 follow-up immunity against Demons (cls_demons)
   const demonState = Engine.createInitialState(RANCE_DATA, { seed: 3 });
   demonState.campaignPhase = "MONSTER_REALM";
   demonState.flags.monsterRealmOpen = true;
   demonState.territories.ter_helman_west.owner = "fac_leazas";
-  demonState.commanders.chr_rance.troops = 50; // acts first
+  demonState.commanders.chr_rance.troops = 50;
   const dInv = Engine.startInvasion(demonState, RANCE_DATA, "ter_maginot_line", ["chr_rance", "chr_rick"]);
   assert.equal(dInv.ok, true);
   const demonTarget = demonState.activeBattle.units.find((u) => u.side === "ENEMY" && u.classId === "cls_demons");
@@ -207,7 +205,7 @@ test("4. 4v4 tactical combat: lowest-troop-first order, front/back row targeting
     targetUnitKey: demonTarget.unitKey
   });
   assert.equal(dAtk.ok, true);
-  assert.equal(dAtk.result.ninjaProc, false); // Demon is strictly immune to Ninja +1!
+  assert.equal(dAtk.result.ninjaProc, false);
 });
 
 test("5. Rance defeat (commanderHp == 0) immediately triggers end_death Game Over", () => {
@@ -217,7 +215,6 @@ test("5. Rance defeat (commanderHp == 0) immediately triggers end_death Game Ove
   const inv = Engine.startInvasion(state, RANCE_DATA, "ter_leazas_white_fort", ["chr_rance"]);
   assert.equal(inv.ok, true);
 
-  // Force Rance to attack and take lethal retaliation or enemy turn
   Engine.autoResolveBattle(state, RANCE_DATA, 20);
   assert.equal(state.endingId, "end_death");
   assert.equal(state.commanders.chr_rance.alive, false);
@@ -225,15 +222,12 @@ test("5. Rance defeat (commanderHp == 0) immediately triggers end_death Game Ove
 
 test("6. Character scenarios, crisis timers & conquest triggers (Volgo Z, Zeth 4 Towers, Shizuka 5w, Haniwa King)", () => {
   const state = Engine.createInitialState(RANCE_DATA, { seed: 555 });
-  // Suppress White Fort first with balanced 2-front + 2-back formation
   Engine.startInvasion(state, RANCE_DATA, "ter_leazas_white_fort", ["chr_rance", "chr_rick", "chr_maris", "chr_kanami"]);
   Engine.autoResolveBattle(state, RANCE_DATA);
   assert.equal(state.timers.monsterRealmInvasion.active, true);
   assert.equal(state.timers.monsterRealmInvasion.remainingWeeks, 73);
 
-  // Next turn: conquer Volgo Z well before LP 3/08/3 -> rescues BOTH Soul & Sill!
   Engine.endTurn(state, RANCE_DATA);
-  // Buff troops for guaranteed quick win
   state.commanders.chr_rance.atk = 35;
   state.commanders.chr_rick.atk = 35;
   Engine.startInvasion(state, RANCE_DATA, "ter_volgo_z", ["chr_rance", "chr_rick", "chr_cordoba", "chr_barres"]);
@@ -243,19 +237,17 @@ test("6. Character scenarios, crisis timers & conquest triggers (Volgo Z, Zeth 4
   assert.equal(state.flags.sillRescued, true);
   assert.equal(state.commanders.chr_soul.recruited, true);
   assert.equal(state.commanders.chr_sill.recruited, true);
-  assert.equal(state.timers.freyaSabotage.active, true); // Helman war triggered Freya!
+  assert.equal(state.timers.freyaSabotage.active, true);
 
-  // Counter Freya via city action -> recruits Freya and grants +5 ninja slots (10 total next turn)
   const freyaRes = Engine.runCityAction(state, RANCE_DATA, "ter_leazas_castle", "counter_freya");
   assert.equal(freyaRes.ok, true);
   assert.equal(state.commanders.chr_freya.recruited, true);
   assert.equal(Engine.countAliveRecruitedNinjas(state), 2);
 
-  // Lake Sasa Haniwa King secret chain: Radil tax -> Aluminum Axe -> Aluminum choice -> 2x explore!
   state.territories.ter_radil.owner = "fac_leazas";
   state.territories.ter_sasa_lake.owner = "fac_leazas";
   Engine.endTurn(state, RANCE_DATA);
-  assert.equal(state.weeklySlots.ninja, 10); // Kanami + Freya!
+  assert.equal(state.weeklySlots.ninja, 10);
   Engine.runCityAction(state, RANCE_DATA, "ter_radil", "tax");
   assert.equal(state.flags.aluminumAxeOwned, true);
   Engine.runScenarioEvent(state, RANCE_DATA, "evt_lake_sasa_haniwa_king", 0);
@@ -265,17 +257,14 @@ test("6. Character scenarios, crisis timers & conquest triggers (Volgo Z, Zeth 4
   Engine.runExplore(state, RANCE_DATA, "ter_sasa_lake");
   assert.equal(state.commanders.chr_haniwa_king.recruited, true);
 
-  // Reinforce Rance before Zeth campaign
   Engine.runReinforce(state, RANCE_DATA, "chr_rance");
 
-  // Zeth war starts 5-week Shizuka duel timer
   state.territories.ter_custom.owner = "fac_leazas";
   const tapeStart = Engine.startInvasion(state, RANCE_DATA, "ter_tape", ["chr_rance", "chr_rick", "chr_haniwa_king", "chr_maris"]);
   assert.equal(tapeStart.ok, true);
   assert.equal(state.timers.zethShizukaDuel.active, true);
   Engine.autoResolveBattle(state, RANCE_DATA);
   assert.equal(state.territories.ter_tape.owner, "fac_leazas");
-  // Advance 5 weeks -> evt_zeth_shizuka_duel_timer fires on schedule!
   let shizukaFired = false;
   for (let w = 0; w < 5; w++) {
     const tRes = Engine.endTurn(state, RANCE_DATA);
@@ -285,7 +274,6 @@ test("6. Character scenarios, crisis timers & conquest triggers (Volgo Z, Zeth 4
   assert.equal(shizukaFired, true);
   assert.ok(state.activeScenarios.includes("evt_zeth_shizuka_duel_timer"));
 
-  // Conquer remaining 3 Zeth Towers -> Zeth 4 Towers collapse automatically transfers ter_zeth_west!
   Engine.runReinforce(state, RANCE_DATA, "chr_rance");
   state.territories.ter_adam_stronghold.owner = "fac_leazas";
   state.territories.ter_amber_city.owner = "fac_leazas";
@@ -299,12 +287,10 @@ test("6. Character scenarios, crisis timers & conquest triggers (Volgo Z, Zeth 4
 });
 
 test("7. Multiple endings reachable: Unification, True Ending (Bliss), World King, Bandit King, Outer Space", () => {
-  // 7a. Bandit King (Prologue)
   const sBandit = Engine.createInitialState(RANCE_DATA, { startPhase: "BANDIT_PROLOGUE", seed: 10 });
   Engine.runScenarioEvent(sBandit, RANCE_DATA, "evt_bandit_prologue_ruberan", 0);
   assert.equal(sBandit.endingId, "end_bandit_king");
 
-  // 7b. Maria To Outer Space (Tulip 100)
   const sSpace = Engine.createInitialState(RANCE_DATA, { seed: 20 });
   sSpace.commanders.chr_maria.recruited = true;
   sSpace.gold = 30000;
@@ -313,7 +299,6 @@ test("7. Multiple endings reachable: Unification, True Ending (Bliss), World Kin
   Engine.runScenarioEvent(sSpace, RANCE_DATA, "evt_maria_tulip_100", 0);
   assert.equal(sSpace.endingId, "end_to_outer_space");
 
-  // 7c. Unification Ending (Kayblis defeated while some counted territories remain unconquered)
   const sUni = Engine.createInitialState(RANCE_DATA, { seed: 30 });
   sUni.campaignPhase = "MONSTER_REALM";
   sUni.flags.monsterRealmOpen = true;
@@ -322,11 +307,11 @@ test("7. Multiple endings reachable: Unification, True Ending (Bliss), World Kin
   sUni.commanders.chr_rance.atk = 50;
   sUni.commanders.chr_rick.atk = 50;
   sUni.commanders.chr_kayblis.commanderHp = 5;
+  sUni.commanders.chr_xavier.commanderHp = 5;
   Engine.startInvasion(sUni, RANCE_DATA, "ter_sulphur_forest", ["chr_rance", "chr_rick", "chr_cordoba", "chr_barres"]);
   Engine.autoResolveBattle(sUni, RANCE_DATA);
   assert.equal(sUni.endingId, "end_unification");
 
-  // 7d. True Ending (Bliss): All counted territories (except Shangri-La) conquered -> Kayblis -> CREATOR_PHASE -> Warg + Sill alive!
   const sBliss = Engine.createInitialState(RANCE_DATA, { seed: 40 });
   sBliss.campaignPhase = "MONSTER_REALM";
   sBliss.flags.monsterRealmOpen = true;
@@ -341,11 +326,11 @@ test("7. Multiple endings reachable: Unification, True Ending (Bliss), World Kin
       t.owner = "fac_leazas";
     }
   }
-  // Leave ter_shangri_la UNCONQUERED to prove countsForCreatorConquest exclusion works!
   assert.notEqual(sBliss.territories.ter_shangri_la.owner, "fac_leazas");
   sBliss.commanders.chr_rance.atk = 55;
   sBliss.commanders.chr_rick.atk = 55;
   sBliss.commanders.chr_kayblis.commanderHp = 5;
+  sBliss.commanders.chr_xavier.commanderHp = 5;
 
   Engine.startInvasion(sBliss, RANCE_DATA, "ter_sulphur_forest", ["chr_rance", "chr_rick", "chr_cordoba", "chr_barres"]);
   Engine.autoResolveBattle(sBliss, RANCE_DATA);
@@ -356,7 +341,6 @@ test("7. Multiple endings reachable: Unification, True Ending (Bliss), World Kin
   Engine.runScenarioEvent(sBliss, RANCE_DATA, "evt_creator_phase_unlock", 0);
   assert.equal(sBliss.endingId, "end_bliss");
 
-  // 7e. Volgo Z deadline expiration -> Sill dies -> Bliss locked -> World King instead!
   const sExpired = Engine.createInitialState(RANCE_DATA, { seed: 50 });
   for (let i = 0; i < 40; i++) {
     Engine.endTurn(sExpired, RANCE_DATA);
@@ -381,7 +365,6 @@ test("8. Deterministic RNG & serialize/deserialize round-trip produce identical 
   assert.equal(s1.rngSeed, s2.rngSeed);
   assert.equal(s1.rngCallCount, s2.rngCallCount);
 
-  // Serialize s1, deserialize into s3, run identical ninja sabotage + battle and assert exact equality
   const snapshot = Engine.serialize(s1);
   const s3 = Engine.deserialize(snapshot, RANCE_DATA);
   assert.deepEqual(s3, s1);
@@ -402,11 +385,22 @@ test("8. Deterministic RNG & serialize/deserialize round-trip produce identical 
   assert.equal(s1.commanders.chr_rance.commanderHp, s3.commanders.chr_rance.commanderHp);
 });
 
-test("9. Hazard & dark endings reachable: end_assassinated, end_demon_king_1, end_demon_king_2, end_defeat", () => {
-  // Kanami overwork -> end_assassinated
-  const sAssn = Engine.createInitialState(RANCE_DATA, { seed: 61 });
-  Engine.runScenarioEvent(sAssn, RANCE_DATA, "evt_kanami_shinobu_assassination", 1);
-  assert.equal(sAssn.endingId, "end_assassinated");
+test("9. All remaining canonical endings reachable: end_assassinated, end_assassinated_2, end_poisoned, end_demon_king_1, end_demon_king_2, end_servant, end_god, end_defeat", () => {
+  // Shinobu Assassination (1)
+  const sAssn1 = Engine.createInitialState(RANCE_DATA, { seed: 61 });
+  Engine.runScenarioEvent(sAssn1, RANCE_DATA, "evt_kanami_shinobu_assassination", 1);
+  assert.equal(sAssn1.endingId, "end_assassinated");
+
+  // Kanami / Code Assassination (2) — newly verified canonical slot!
+  const sAssn2 = Engine.createInitialState(RANCE_DATA, { seed: 611 });
+  Engine.runScenarioEvent(sAssn2, RANCE_DATA, "evt_kanami_shinobu_assassination", 2);
+  assert.equal(sAssn2.endingId, "end_assassinated_2");
+
+  // Saulnia Court Poison Trap without Sill -> end_poisoned (newly verified canonical slot!)
+  const sPoison = Engine.createInitialState(RANCE_DATA, { seed: 612 });
+  sPoison.flags.sillAlive = false;
+  Engine.runScenarioEvent(sPoison, RANCE_DATA, "evt_saulnia_poison_trap_crisis", 1);
+  assert.equal(sPoison.endingId, "end_poisoned");
 
   // Satella proposal -> end_demon_king_1
   const sDk1 = Engine.createInitialState(RANCE_DATA, { seed: 62 });
@@ -418,6 +412,15 @@ test("9. Hazard & dark endings reachable: end_assassinated, end_demon_king_1, en
   Engine.runScenarioEvent(sDk2, RANCE_DATA, "evt_miki_kentarou_demon_king_crisis", 1);
   assert.equal(sDk2.endingId, "end_demon_king_2");
 
+  // Servant & God endings
+  const sServant = Engine.createInitialState(RANCE_DATA, { seed: 65 });
+  Engine.runScenarioEvent(sServant, RANCE_DATA, "evt_creator_phase_unlock", 1);
+  assert.equal(sServant.endingId, "end_servant");
+
+  const sGod = Engine.createInitialState(RANCE_DATA, { seed: 66 });
+  Engine.runScenarioEvent(sGod, RANCE_DATA, "evt_creator_phase_unlock", 2);
+  assert.equal(sGod.endingId, "end_god");
+
   // Leazas Castle lost -> end_defeat
   const sDefeat = Engine.createInitialState(RANCE_DATA, { seed: 64 });
   sDefeat.territories.ter_leazas_castle.owner = "fac_demon_kayblis";
@@ -425,3 +428,227 @@ test("9. Hazard & dark endings reachable: end_assassinated, end_demon_king_1, en
   assert.equal(sDefeat.endingId, "end_defeat");
 });
 
+test("10. Phase 2 Battle Tactic Selector (setBattleTactic) & Dynamic Combat Zone Gauge (combatZone)", () => {
+  const sStd = Engine.createInitialState(RANCE_DATA, { seed: 303 });
+  const sAtk = Engine.createInitialState(RANCE_DATA, { seed: 303 });
+
+  sStd.commanders.chr_rance.troops = 100;
+  sAtk.commanders.chr_rance.troops = 100;
+
+  Engine.startInvasion(sStd, RANCE_DATA, "ter_leazas_white_fort", ["chr_rance", "chr_rick", "chr_cordoba"]);
+  Engine.startInvasion(sAtk, RANCE_DATA, "ter_leazas_white_fort", ["chr_rance", "chr_rick", "chr_cordoba"]);
+
+  assert.equal(sStd.activeBattle.tacticId, "standard");
+  const initialZone = sAtk.activeBattle.combatZone;
+  assert.ok(initialZone >= 20 && initialZone <= 80);
+
+  // Switch tactic to all_out_assault (+30% ATK, -20% DEF)
+  const tacRes = Engine.setBattleTactic(sAtk, RANCE_DATA, "all_out_assault");
+  assert.equal(tacRes.ok, true);
+  assert.equal(sAtk.activeBattle.tacticId, "all_out_assault");
+  assert.equal(Engine.setBattleTactic(sAtk, RANCE_DATA, "invalid_tactic").ok, false);
+
+  const resStd = Engine.executeBattleAction(sStd, RANCE_DATA, { type: "attack" });
+  const resAtk = Engine.executeBattleAction(sAtk, RANCE_DATA, { type: "attack" });
+  assert.equal(resStd.ok, true);
+  assert.equal(resAtk.ok, true);
+  assert.ok(
+    resAtk.result.troopLoss > resStd.result.troopLoss,
+    `all_out_assault (${resAtk.result.troopLoss}) should deal strictly more troop damage than standard (${resStd.result.troopLoss})`
+  );
+  assert.notEqual(sAtk.activeBattle.combatZone, initialZone, "combatZone gauge must shift dynamically after battle clash");
+
+  // Test fortify & focused_strike tactics also switch cleanly
+  assert.equal(Engine.setBattleTactic(sAtk, RANCE_DATA, "fortify").ok, true);
+  assert.equal(Engine.setBattleTactic(sAtk, RANCE_DATA, "focused_strike").ok, true);
+});
+
+test("11. Phase 2 Post-Battle Enemy Commander Capture & Recruitment (recruit / release / ransom)", () => {
+  const state = Engine.createInitialState(RANCE_DATA, { seed: 404 });
+  state.commanders.chr_rance.atk = 32;
+  state.commanders.chr_rick.atk = 32;
+
+  // Conquer White Fort -> Ex auto-recruits, while Haurein & Melfeis are captured as POWs!
+  Engine.startInvasion(state, RANCE_DATA, "ter_leazas_white_fort", ["chr_rance", "chr_rick", "chr_cordoba", "chr_maris"]);
+  Engine.autoResolveBattle(state, RANCE_DATA);
+
+  assert.equal(state.territories.ter_leazas_white_fort.owner, "fac_leazas");
+  assert.ok(state.pendingCaptures.length >= 2, `Expected captured enemy commanders, got ${state.pendingCaptures}`);
+  assert.ok(state.pendingCaptures.includes("chr_haurein"));
+  assert.ok(state.pendingCaptures.includes("chr_melfeis"));
+
+  // Recruit Haurein
+  const rec = Engine.resolveCapture(state, RANCE_DATA, "chr_haurein", "recruit");
+  assert.equal(rec.ok, true);
+  assert.equal(state.commanders.chr_haurein.recruited, true);
+  assert.equal(state.commanders.chr_haurein.captured, false);
+  assert.ok(!state.pendingCaptures.includes("chr_haurein"));
+
+  // Ransom Melfeis -> adds gold and removes from pendingCaptures
+  const goldBefore = state.gold;
+  const ran = Engine.resolveCapture(state, RANCE_DATA, "chr_melfeis", "ransom");
+  assert.equal(ran.ok, true);
+  assert.ok(state.gold > goldBefore);
+  assert.equal(state.commanders.chr_melfeis.captured, false);
+
+  // Conquer Helman East -> capture Hubert & Cream -> test release morale boost!
+  Engine.endTurn(state, RANCE_DATA);
+  Engine.startInvasion(state, RANCE_DATA, "ter_helman_east", ["chr_rance", "chr_rick", "chr_cordoba", "chr_barres"]);
+  Engine.autoResolveBattle(state, RANCE_DATA);
+  assert.ok(state.pendingCaptures.includes("chr_hubert"));
+  state.morale = 70;
+  const rel = Engine.resolveCapture(state, RANCE_DATA, "chr_hubert", "release");
+  assert.equal(rel.ok, true);
+  assert.equal(state.morale, 74);
+});
+
+test("12. Phase 2 Multi-Floor Dungeon Expedition (B66F Haniwa King, Zeth Magic Tower, Custom Labyrinth & Rudrasaum Ruins)", () => {
+  const state = Engine.createInitialState(RANCE_DATA, { seed: 808 });
+  // Unlock Lake Sasa B66F via Radil tax Aluminum Axe
+  state.territories.ter_radil.owner = "fac_leazas";
+  state.territories.ter_sasa_lake.owner = "fac_leazas";
+  state.territories.ter_custom.owner = "fac_leazas";
+  state.territories.ter_zeth_west.owner = "fac_leazas";
+  Engine.runCityAction(state, RANCE_DATA, "ter_radil", "tax");
+  assert.equal(state.flags.aluminumAxeOwned, true);
+
+  // Start B66F Haniwa King multi-floor dungeon!
+  const startSasa = Engine.startDungeon(state, RANCE_DATA, "dng_sasa_b66", ["chr_rance", "chr_rick", "chr_cordoba", "chr_barres"]);
+  assert.equal(startSasa.ok, true);
+  assert.equal(state.activeDungeon.totalFloors, 5);
+  assert.equal(state.activeDungeon.readyForBoss, false);
+
+  // Advance floor-by-floor until B66F boss room
+  while (!state.activeDungeon.readyForBoss) {
+    const adv = Engine.advanceDungeonFloor(state, RANCE_DATA);
+    assert.equal(adv.ok, true);
+  }
+  assert.equal(state.activeDungeon.currentFloorIndex, 4);
+  assert.equal(state.activeDungeon.readyForBoss, true);
+
+  // Fight Haniwa King boss -> awards relic_haniwa_crown & recruits chr_haniwa_king!
+  const bossRes = Engine.fightDungeonBoss(state, RANCE_DATA);
+  assert.equal(bossRes.ok, true);
+  assert.equal(bossRes.victory, true);
+  assert.equal(state.activeDungeon, null);
+  assert.equal(state.commanders.chr_haniwa_king.recruited, true);
+  assert.ok(state.relics.some((r) => r.id === "relic_haniwa_crown"));
+
+  // Next turn: delve Zeth Magic Tower -> recruits Rizna & grants Archmage Staff + Chaos Sword!
+  Engine.endTurn(state, RANCE_DATA);
+  assert.equal(Engine.startDungeon(state, RANCE_DATA, "dng_zeth_magic_tower").ok, true);
+  while (!state.activeDungeon.readyForBoss) Engine.advanceDungeonFloor(state, RANCE_DATA);
+  const zethBoss = Engine.fightDungeonBoss(state, RANCE_DATA);
+  assert.equal(zethBoss.victory, true);
+  assert.equal(state.commanders.chr_rizna.recruited, true);
+  assert.equal(state.flags.chaosSwordOwned, true);
+  assert.ok(state.relics.some((r) => r.id === "relic_archmage_staff"));
+
+  // Next turn: delve Rudrasaum Ruins in Creator Phase -> queues evt_creator_phase_unlock!
+  Engine.endTurn(state, RANCE_DATA);
+  state.campaignPhase = "CREATOR_PHASE";
+  state.territories.ter_rudrasaum_ruins.locked = false;
+  assert.equal(Engine.startDungeon(state, RANCE_DATA, "dng_rudrasaum_ruins").ok, true);
+  while (!state.activeDungeon.readyForBoss) Engine.advanceDungeonFloor(state, RANCE_DATA);
+  const creatorBoss = Engine.fightDungeonBoss(state, RANCE_DATA);
+  assert.equal(creatorBoss.victory, true);
+  assert.ok(state.relics.some((r) => r.id === "relic_creator_seal"));
+  assert.ok(state.activeScenarios.includes("evt_creator_phase_unlock"));
+});
+
+test("13. Phase 2 Diplomacy Actions (truce / alliance / declare_war) control AI behavior & scenario unlocks", () => {
+  const state = Engine.createInitialState(RANCE_DATA, { seed: 909 });
+  state.campaignPhase = "HUMAN_REALM";
+  state.gold = 30000;
+
+  // Cannot negotiate truce with Ex Rebellion or Demon Kayblis
+  assert.equal(Engine.negotiateFaction(state, RANCE_DATA, "fac_ex_rebellion", "truce").ok, false);
+  assert.equal(Engine.negotiateFaction(state, RANCE_DATA, "fac_demon_kayblis", "truce").ok, false);
+
+  // Negotiate 4-turn Truce with Helman -> blocks invasion of Volgo Z & freezes Helman war reinforcement
+  const truceRes = Engine.negotiateFaction(state, RANCE_DATA, "fac_helman", "truce");
+  assert.equal(truceRes.ok, true);
+  assert.equal(state.factions.fac_helman.diplomaticRelation, "TRUCE");
+  assert.equal(state.factions.fac_helman.truceTurns, 4);
+  assert.equal(Engine.canInvade(state, "ter_volgo_z").ok, false);
+
+  // Negotiate Alliance with AL Church -> unlocks Gawain/Cafe scenario + +600G/turn passive trade!
+  const allyRes = Engine.negotiateFaction(state, RANCE_DATA, "fac_al_church", "alliance");
+  assert.equal(allyRes.ok, true);
+  assert.equal(state.factions.fac_al_church.diplomaticRelation, "ALLIANCE");
+  assert.ok(state.activeScenarios.includes("evt_al_church_gawain_cafe_relics"));
+
+  // Advance 1 turn -> truce ticks down to 3
+  Engine.endTurn(state, RANCE_DATA);
+  assert.equal(state.factions.fac_helman.truceTurns, 3);
+
+  // Declare War on Helman -> breaks truce immediately, triggers Freya sabotage & re-enables Volgo Z invasion!
+  const warRes = Engine.negotiateFaction(state, RANCE_DATA, "fac_helman", "declare_war");
+  assert.equal(warRes.ok, true);
+  assert.equal(state.factions.fac_helman.diplomaticRelation, "WAR");
+  assert.equal(state.factions.fac_helman.truceTurns, 0);
+  assert.equal(state.timers.freyaSabotage.active, true);
+  assert.equal(Engine.canInvade(state, "ter_volgo_z").ok, true);
+});
+
+test("14. Phase 2 Live Character Destiny Evaluator tracks 28 characters across HAPPY / NEUTRAL / UNHAPPY transitions", () => {
+  const state = Engine.createInitialState(RANCE_DATA, { seed: 1212 });
+  const initial = Engine.evaluateDestinies(state, RANCE_DATA);
+  assert.equal(initial.length, 28);
+
+  const byId = (list, cid) => list.find((d) => d.characterId === cid);
+  assert.equal(byId(initial, "chr_sill").status, "NEUTRAL");
+  assert.equal(byId(initial, "chr_kanami").status, "NEUTRAL");
+
+  // Complete Kanami reward scenario -> Kanami flips HAPPY!
+  Engine.runScenarioEvent(state, RANCE_DATA, "evt_kanami_shinobu_assassination", 0);
+  // Build Hospital + recruit Maria & Mill + build Maria Lab -> Maria & Mill flip HAPPY!
+  state.gold = 40000;
+  Engine.runBuildFacility(state, RANCE_DATA, "ter_leazas_castle", "hospital");
+  state.commanders.chr_maria.recruited = true;
+  state.commanders.chr_mill.recruited = true;
+  state.weeklySlots.build = 1;
+  Engine.runBuildFacility(state, RANCE_DATA, "ter_leazas_castle", "maria_lab");
+
+  // Somita recruited with 2 battles -> HAPPY; with 5 battles -> UNHAPPY!
+  state.commanders.chr_somita.recruited = true;
+  state.commanders.chr_somita.battlesFought = 2;
+
+  // Sill rescued -> HAPPY!
+  state.flags.sillRescued = true;
+  state.flags.sillAlive = true;
+  state.commanders.chr_sill.recruited = true;
+  state.commanders.chr_sill.imprisoned = false;
+
+  const mid = Engine.evaluateDestinies(state, RANCE_DATA);
+  assert.equal(byId(mid, "chr_kanami").status, "HAPPY");
+  assert.equal(byId(mid, "chr_maria").status, "HAPPY");
+  assert.equal(byId(mid, "chr_mill").status, "HAPPY");
+  assert.equal(byId(mid, "chr_somita").status, "HAPPY");
+  assert.equal(byId(mid, "chr_sill").status, "HAPPY");
+
+  // Trigger Somita over-deployment & Sill death -> flip to UNHAPPY!
+  state.commanders.chr_somita.battlesFought = 6;
+  state.flags.sillAlive = false;
+  state.commanders.chr_sill.alive = false;
+
+  const late = Engine.evaluateDestinies(state, RANCE_DATA);
+  assert.equal(byId(late, "chr_somita").status, "UNHAPPY");
+  assert.equal(byId(late, "chr_sill").status, "UNHAPPY");
+});
+
+test("15. All 59 playable commanders have complete stat profiles & explicit verified/reconstructed tags", () => {
+  const state = Engine.createInitialState(RANCE_DATA, { seed: 2027 });
+  const playables = Object.values(state.commanders).filter((c) => c.isPlayableSubordinate);
+  assert.equal(playables.length, 59);
+  for (const c of playables) {
+    assert.ok(c.maxCommanderHp >= 10, `${c.id} missing valid HP`);
+    assert.ok(c.maxTroops >= 200, `${c.id} missing valid maxTroops`);
+    assert.ok(c.atk >= 4 && c.def >= 4 && c.mag >= 3, `${c.id} missing valid combat stats`);
+    assert.ok(["FRONT", "BACK"].includes(c.row), `${c.id} invalid row`);
+    assert.ok(
+      ["VERIFIED_PUBLIC_PROFILE", "BALANCED_RECONSTRUCTION"].includes(c.statsBasis),
+      `${c.id} missing statsBasis tag`
+    );
+  }
+});

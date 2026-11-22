@@ -1,34 +1,70 @@
-id,nameKr,nameJp,nameEn,initialFactionId,unitClassId,homeTerritoryId,isPlayableSubordinate,hasDestinyPair,evidenceLevel
-chr_rance,란스,ランス,Rance,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
-chr_sill,시일 플라인,シィル・プライン,Sill Plain,fac_leazas,cls_clerics_support,ter_volgo_z,true,true,VERIFIED
-chr_lia,리아 파라파라 리자스,リア・パラパラ・リーザス,Lia Parapara Leazas,fac_leazas,cls_royal_guards,ter_leazas_castle,false,true,VERIFIED
-chr_maris,마리스 아마릴리스,マリス・アマリリス,Maris Amaryllis,fac_leazas,cls_mages,ter_leazas_castle,true,true,VERIFIED
-chr_barres,바레스 프로방스,バレス・プロヴァンス,Barres Provence,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
-chr_cordoba,코르도바 번,コルドバ・バーン,Cordoba Burn,fac_leazas,cls_royal_guards,ter_leazas_castle,true,false,VERIFIED
-chr_rick,릭 애디슨,リック・アディスン,Rick Addison,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,VERIFIED
-chr_kanami,켄토 카나미,見当かなみ,Kanami Kentou,fac_leazas,cls_ninjas,ter_leazas_castle,true,true,VERIFIED
-chr_leila,레이라 그렉니,レイラ・グレクニー,Leila Grekny,fac_leazas,cls_royal_guards,ter_leazas_castle,true,true,VERIFIED
-chr_ex,엑스 뱅큇,エクス・バンケット,Ex Banquet,fac_ex_rebellion,cls_leazas_knights,ter_leazas_white_fort,true,false,VERIFIED
-chr_maria,마리아 커스터드,マリア・カスタード,Maria Custard,fac_free_cities,cls_artillery_tech,ter_custom,true,true,VERIFIED
-chr_shizuka,마소 시즈카,魔想志津香,Shizuka Masou,fac_free_cities,cls_mages,ter_custom,true,true,VERIFIED
-chr_soul,소울,ソウル,Soul,fac_free_cities,cls_brawlers,ter_volgo_z,true,false,VERIFIED
-chr_miru,미르 요크스,ミル・ヨークス,Miru Yorks,fac_free_cities,cls_kaiju_beasts,ter_custom,true,true,VERIFIED
-chr_kentarou,오가와 켄타로,小川健太郎,Kentarou Ogawa,fac_free_cities,cls_brawlers,ter_ice,true,false,VERIFIED
-chr_miki,쿠루스 미키 (리틀 프린세스),来水美樹（リトルプリンセス）,Miki Kurusu (Little Princess),fac_free_cities,cls_demons,ter_ice,true,true,VERIFIED
-chr_patton,패튼 미스날지,パットン・ミスナルジ,Patton Misnarge,fac_helman,cls_helman_knights,ter_lang_bau,true,false,VERIFIED
-chr_sheila,실라 헬만,シーラ・ヘルマン,Sheila Helman,fac_helman,cls_helman_knights,ter_lang_bau,true,true,VERIFIED
-chr_hunty,헌티 카라,ハンティ・カラー,Hunty Kalar,fac_helman,cls_kalars,ter_lang_bau,true,true,VERIFIED
-chr_freak,프리크 파라핀,フリーク・パラフィン,Freak Paraffin,fac_helman,cls_artillery_tech,ter_helman_central,true,false,VERIFIED
-chr_freya,프레이야 이둔,フレイヤ・イドゥン,Freya Idun,fac_helman,cls_ninjas,ter_helman_central,true,true,VERIFIED
-chr_gandhi,간지 더 간지,ガンジー・ザ・ガンジー,Gandhi the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,false,VERIFIED
-chr_magic,매직 더 간지,マジック・ザ・ガンジー,Magic the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,true,VERIFIED
-chr_nagi,나기 스 라갈,ナギ・ス・ラガール,Nagi Su Lagal,fac_zeth,cls_mages,ter_tape,true,true,VERIFIED
-chr_chizuko,야마다 치즈코,山田千鶴子,Chizuko Yamada,fac_zeth,cls_mages,ter_adam_stronghold,true,true,VERIFIED
-chr_mulala,교황 무라라,教皇ムーララ,Pope Mulala,fac_al_church,cls_clerics_support,ter_al_hq,false,false,INTERPRETED
-chr_isoroku,야마모토 이소로쿠,山本五十六,Isoroku Yamamoto,fac_japan,cls_archers,ter_japan_main,true,true,VERIFIED
-chr_kayblis,케이브리스,ケイブリス,Kayblis,fac_demon_kayblis,cls_demons,ter_sulphur_forest,false,false,VERIFIED
-chr_hornet,호넷,ホーネット,Hornet,fac_demon_hornet,cls_demons,ter_hornet_castle,false,true,VERIFIED
-chr_warg,와그 아카,ワーグ・アーカ,Warg Aka,fac_demon_kayblis,cls_demons,ter_demon_frontier,true,true,VERIFIED
-chr_satella,사테라,サテラ,Satella,fac_demon_hornet,cls_demons,ter_hornet_castle,true,true,VERIFIED
-chr_haniwa_king,하니와 킹,ハニワキング,Haniwa King,fac_independent_ancient,cls_hannies,ter_sasa_lake,true,false,VERIFIED
-chr_rudrasaum,창조신 루드라사움,創造神ルドラサウム,Ludo-Rathowm (Creator),fac_independent_ancient,cls_demons,ter_rudrasaum_ruins,false,false,VERIFIED
+id,nameKr,nameJp,nameEn,initialFactionId,unitClassId,homeTerritoryId,isPlayableSubordinate,hasDestinyPair,recruitmentMethod,hp,troops,maxTroops,atk,def,mag,strikes,preferredRow,statsBasis,evidenceLevel
+chr_rance,란스,ランス,Rance,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,START_ROSTER,22,420,600,18,13,4,28,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_sill,시일 플라인,シィル・プライン,Sill Plain,fac_leazas,cls_clerics_support,ter_volgo_z,true,true,TERRITORY_RESCUE_DEADLINE,14,280,450,6,9,16,10,BACK,BALANCED_RECONSTRUCTION,VERIFIED
+chr_lia,리아 파라파라 리자스,リア・パラパラ・リーザス,Lia Parapara Leazas,fac_leazas,cls_royal_guards,ter_leazas_castle,false,true,COURT_RULER,12,0,0,4,8,10,5,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_maris,마리스 아마릴리스,マリス・アマリリス,Maris Amaryllis,fac_leazas,cls_mages,ter_leazas_castle,true,true,START_ROSTER,15,340,520,7,10,16,12,BACK,BALANCED_RECONSTRUCTION,VERIFIED
+chr_barres,바레스 프로방스,バレス・プロヴァンス,Barres Provence,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,START_ROSTER,20,620,800,15,17,4,20,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_cordoba,코르도바 번,コルドバ・バーン,Cordoba Burn,fac_leazas,cls_royal_guards,ter_leazas_castle,true,false,START_ROSTER,22,1000,1000,12,21,5,16,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_rick,릭 애디슨,リック・アディスン,Rick Addison,fac_leazas,cls_leazas_knights,ter_leazas_castle,true,false,START_ROSTER,21,380,650,20,14,4,30,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kanami,켄토 카나미,見当かなみ,Kanami Kentou,fac_leazas,cls_ninjas,ter_leazas_castle,true,true,START_ROSTER,14,240,360,11,9,7,18,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_leila,레이라 그렉니,レイラ・グレクニー,Leila Grekny,fac_leazas,cls_royal_guards,ter_leazas_castle,true,true,START_ROSTER,19,520,700,14,16,6,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kinkaid,킨케이드 브람블라,キンケード・ブランブラ,Kinkaid Brambla,fac_leazas,cls_soldiers_militia,ter_leazas_north,true,false,START_ROSTER,17,640,850,11,13,3,14,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_menad,메나드 시세이,メナド・シセイ,Menad Shisei,fac_leazas,cls_soldiers_militia,ter_leazas_south,true,true,START_ROSTER,16,520,760,13,12,5,17,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_asuka,아스카 카드뮴,アスカ・カドミュウム,Asuka Cadmium,fac_leazas,cls_mages,ter_leazas_white_fort,true,false,TERRITORY_CONQUEST,14,320,520,6,9,18,15,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_ex,엑스 뱅큇,エクス・バンケット,Ex Banquet,fac_ex_rebellion,cls_leazas_knights,ter_leazas_white_fort,true,true,TERRITORY_CONQUEST,15,460,680,13,12,6,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_haurein,하우레인 프로방스,ハウレーン・プロヴァンス,Haurein Provence,fac_ex_rebellion,cls_leazas_knights,ter_leazas_white_fort,true,true,CAPTURE_OR_CONQUEST,17,420,640,14,13,5,19,FRONT,BALANCED_RECONSTRUCTION,VERIFIED
+chr_melfeis,멜페이스 프롬나드,メルフェイス・プロムナード,Melfeis Promenade,fac_ex_rebellion,cls_mages,ter_leazas_white_fort,true,true,CAPTURE_OR_CONQUEST,15,300,500,7,9,17,14,BACK,BALANCED_RECONSTRUCTION,VERIFIED
+chr_julia,줄리아 린덤,ジュリア・リンダム,Julia Lindum,fac_leazas,cls_soldiers_militia,ter_leazas_castle,true,true,SCENARIO_CHAIN,16,300,650,13,13,6,16,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_rafalia,라팔리아 무스카,ラファリア・ムスカ,Rafalia Musca,fac_leazas,cls_soldiers_militia,ter_leazas_castle,true,false,FACILITY_ACADEMY,16,400,620,13,14,5,16,FRONT,BALANCED_RECONSTRUCTION,VERIFIED
+chr_arlcoate,아르코트 마리우스,アールコート・マリウス,Arlcoate Marius,fac_leazas,cls_soldiers_militia,ter_leazas_castle,true,false,FACILITY_ACADEMY,17,440,680,15,14,6,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_aviator,아비아토르 스캇,アビァトール・スカット,Aviator Sukatto,fac_leazas,cls_soldiers_militia,ter_leazas_south,true,false,SCENARIO_CHAIN,16,420,620,14,12,5,17,FRONT,BALANCED_RECONSTRUCTION,VERIFIED
+chr_cream,크림 가노블레이드,クリーム・ガノブレード,Cream Ganoblade,fac_helman,cls_soldiers_militia,ter_helman_east,true,false,CAPTURE_OR_CONQUEST,16,400,640,13,13,7,17,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_maria,마리아 커스터드,マリア・カスタード,Maria Custard,fac_free_cities,cls_artillery_tech,ter_custom,true,true,TERRITORY_CONQUEST,15,320,500,19,10,8,20,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_shizuka,마소 시즈카,魔想志津香,Shizuka Masou,fac_free_cities,cls_mages,ter_custom,true,true,TERRITORY_CONQUEST,16,300,520,7,9,21,15,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_soul,소울 레스,ソウル・レス,Soul Less,fac_free_cities,cls_brawlers,ter_volgo_z,true,false,TERRITORY_RESCUE_DEADLINE,19,440,600,17,13,3,24,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_bound,바운드 레스,バウンド・レス,Bound Less,fac_free_cities,cls_brawlers,ter_leazas_castle,true,false,SCENARIO_CHAIN,18,460,720,16,14,4,23,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_miru,미르 요크스,ミル・ヨークス,Miru Yorks,fac_free_cities,cls_kaiju_beasts,ter_custom,true,true,TERRITORY_CONQUEST,20,500,700,15,18,6,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_mill,미리 요크스,ミリ・ヨークス,Mill Yorks,fac_free_cities,cls_archers,ter_custom,true,true,TERRITORY_CONQUEST,16,360,560,16,11,12,20,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_eleanor,엘레노아 란,エレノア・ラン,Eleanor Lan,fac_free_cities,cls_mages,ter_custom,true,true,TERRITORY_CONQUEST,15,340,520,8,10,18,15,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kentarou,오가와 켄타로,小川健太郎,Kentarou Ogawa,fac_free_cities,cls_brawlers,ter_ice,true,false,SCENARIO_CHAIN,20,380,560,19,14,5,26,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_miki,쿠루스 미키 (리틀 프린세스),来水美樹（リトルプリンセス）,Miki Kurusu (Little Princess),fac_free_cities,cls_demons,ter_ice,true,true,SCENARIO_CHAIN,18,260,400,14,14,20,20,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_gengorou,시노다 겐고로,篠田源五郎,Gengorou Shinoda,fac_free_cities,cls_soldiers_militia,ter_radil,true,false,CAPTURE_OR_ALLIANCE,16,400,620,13,15,9,16,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_mars,화성대왕,火星大王,Great King Mars,fac_free_cities,cls_soldiers_militia,ter_portugal,true,false,CAPTURE_OR_CONQUEST,19,480,700,15,14,6,18,FRONT,BALANCED_RECONSTRUCTION,VERIFIED
+chr_louis,루이스 키트왁,ルイス・キートワック,Louis Quitowack,fac_free_cities,cls_soldiers_militia,ter_ice,true,false,CAPTURE_OR_CONQUEST,17,420,640,14,12,7,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_cecil,세실 카나,セシル・カーナ,Cecil Carna,fac_free_cities,cls_soldiers_militia,ter_radil,true,false,CAPTURE_OR_CONQUEST,16,380,600,14,13,6,17,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_sel,셀 카치골프,セル・カーチゴルフ,Sel Kachigolf,fac_free_cities,cls_clerics_support,ter_portugal,true,true,SCENARIO_CHAIN,15,320,500,7,11,17,12,BACK,BALANCED_RECONSTRUCTION,VERIFIED
+chr_patton,패튼 미스날지,パットン・ミスナルジ,Patton Misnarge,fac_helman,cls_helman_knights,ter_lang_bau,true,false,CAPTURE_OR_ALLIANCE,23,720,900,20,17,6,25,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_sheila,실라 헬만,シーラ・ヘルマン,Sheila Helman,fac_helman,cls_helman_knights,ter_lang_bau,true,true,TERRITORY_CONQUEST,18,580,750,16,15,7,20,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_hunty,헌티 카라,ハンティ・カラー,Hunty Kalar,fac_helman,cls_kalars,ter_lang_bau,true,true,CAPTURE_OR_ALLIANCE,17,340,520,9,11,22,16,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_freak,프리크 파라핀,フリーク・パラフィン,Freak Paraffin,fac_helman,cls_artillery_tech,ter_helman_central,true,false,CAPTURE_OR_ALLIANCE,17,460,650,19,15,8,18,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_freya,프레이야 이둔,フレイヤ・イドゥン,Freya Idun,fac_helman,cls_ninjas,ter_helman_central,true,true,SCENARIO_CHAIN,16,280,420,14,11,9,22,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_hubert,휴버트 립튼,ヒューバート・リプトン,Hubert Lipton,fac_helman,cls_helman_knights,ter_helman_east,true,false,CAPTURE_OR_ALLIANCE,20,540,760,18,16,5,23,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_lelyukov,레류코프 베르코프,レリューコフ・バーコフ,Lelyukov Berkov,fac_helman,cls_helman_knights,ter_helman_west,true,false,CAPTURE_OR_ALLIANCE,24,480,660,22,20,6,26,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_aristoles,아리스토레스 캄,アリストレス・カーム,Aristoles Calm,fac_helman,cls_helman_knights,ter_helman_south,true,false,CAPTURE_OR_ALLIANCE,22,800,950,19,19,8,22,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_rolex,롤렉스 가드라스,ロレックス・ガドラス,Rolex Gadras,fac_helman,cls_helman_knights,ter_helman_central,true,false,CAPTURE_OR_ALLIANCE,23,680,880,21,18,5,25,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_gandhi,간지 더 간지,ガンジー・ザ・ガンジー,Gandhi the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,false,TERRITORY_CONQUEST,19,480,680,10,13,22,18,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_magic,매직 더 간지,マジック・ザ・ガンジー,Magic the Gandhi,fac_zeth,cls_mages,ter_old_zeth,true,true,TERRITORY_CONQUEST,16,360,540,8,10,21,16,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_nagi,나기 스 라갈,ナギ・ス・ラガール,Nagi Su Lagal,fac_zeth,cls_mages,ter_tape,true,true,SCENARIO_OR_CAPTURE,16,320,500,8,10,20,16,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_chizuko,야마다 치즈코,山田千鶴子,Chizuko Yamada,fac_zeth,cls_mages,ter_adam_stronghold,true,false,TERRITORY_CONQUEST,17,400,580,9,11,19,16,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_rizna,리즈나 란프리트,リズナ・ランフリート,Rizna Lanfbit,fac_zeth,cls_mages,ter_zeth_west,true,true,DUNGEON_REWARD,15,320,520,7,10,20,15,BACK,BALANCED_RECONSTRUCTION,INTERPRETED
+chr_somita,소미타 카라,ソミータ・カラー,Somita Kalar,fac_zeth,cls_kalars,ter_amber_city,true,true,CAPTURE_OR_CONQUEST,16,320,500,9,11,19,15,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_mulala,교황 무라라,教皇ムーララ,Pope Mulala,fac_al_church,cls_clerics_support,ter_al_hq,false,false,COURT_RULER,14,300,450,6,11,15,10,BACK,BALANCED_RECONSTRUCTION,INTERPRETED
+chr_gawain,가웨인 트로프,ガーウィン・トローフ,Gawain Trough,fac_al_church,cls_royal_guards,ter_al_hq,true,false,SCENARIO_OR_ALLIANCE,22,620,850,15,22,9,18,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_cafe,카페 아트풀,カフェ・アートフル,Cafe Artful,fac_al_church,cls_clerics_support,ter_al_hq,true,false,SCENARIO_CHAIN,17,360,540,8,14,22,14,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_calphenight,칼페나이트,カルフェナイト,Calphenight (Malonine Salad),fac_al_church,cls_brawlers,ter_al_hq,true,false,CAPTURE_OR_CONQUEST,18,420,620,17,13,6,21,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_isoroku,야마모토 이소로쿠,山本五十六,Isoroku Yamamoto,fac_japan,cls_archers,ter_japan_main,true,true,TERRITORY_CONQUEST,18,360,560,19,12,8,28,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kenshin,우에스기 켄신,上杉謙信,Uesugi Kenshin,fac_japan,cls_brawlers,ter_japan_kurobe,true,true,CAPTURE_OR_SCENARIO,23,560,780,22,17,8,30,FRONT,BALANCED_RECONSTRUCTION,INTERPRETED
+chr_nobunaga_demon,마인 노부나가,魔人信長,Demon Oda Nobunaga,fac_japan,cls_demons,ter_japan_kurobe,false,false,BOSS_ONLY,24,680,850,22,18,17,26,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kayblis,케이브리스,ケイブリス,Kayblis,fac_demon_kayblis,cls_demons,ter_sulphur_forest,false,false,BOSS_ONLY,28,900,1100,24,20,22,30,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_hornet,호넷,ホーネット,Hornet,fac_demon_hornet,cls_demons,ter_hornet_castle,false,true,BOSS_OR_SCENARIO,24,720,900,20,18,21,25,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_warg,와그 아카,ワーグ・アーカ,Warg Aka,fac_demon_kayblis,cls_demons,ter_demon_frontier,true,false,SCENARIO_CHAIN,21,520,700,16,15,23,22,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_satella,사테라,サテラ,Satella,fac_demon_hornet,cls_demons,ter_hornet_castle,true,true,SCENARIO_CHAIN,22,540,740,20,17,18,24,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_galtia,마인 가르티아,魔人ガルティア,Apostle Galtia,fac_demon_kayblis,cls_demons,ter_demon_frontier,true,false,SCENARIO_CHAIN,26,200,250,23,22,18,26,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_saizel,사이젤 자매,サイゼル姉妹,Saizel Sisters,fac_demon_hornet,cls_demons,ter_hornet_castle,true,false,CAPTURE_OR_SCENARIO,21,480,680,18,16,22,24,BACK,BALANCED_RECONSTRUCTION,VERIFIED
+chr_kesselring,마인 케셀링크,魔人ケッセルリンク,Apostle Kesselring,fac_demon_kayblis,cls_demons,ter_demon_frontier,false,false,BOSS_ONLY,26,760,920,22,19,21,26,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_camilla,마인 카밀라,魔人カミラ,Apostle Camilla,fac_demon_kayblis,cls_demons,ter_maginot_line,false,false,BOSS_ONLY,24,700,860,20,18,22,24,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_xavier,마인 자비엘,魔人ザビエル,Apostle Xavier,fac_demon_kayblis,cls_demons,ter_sulphur_forest,false,false,BOSS_ONLY,27,820,980,23,19,23,28,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_silky,마인 실키,魔人シルキィ,Apostle Silky Littleraisin,fac_demon_hornet,cls_demons,ter_hornet_castle,false,false,BOSS_ONLY,22,640,820,18,17,22,22,BACK,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_haniwa_king,하니와 킹,ハニワキング,Haniwa King,fac_independent_ancient,cls_hannies,ter_sasa_lake,true,false,DUNGEON_REWARD,26,300,450,22,23,24,30,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_kaiju_prince,괴수왕자,怪獣王子,Kaiju Prince,fac_independent_ancient,cls_kaiju_beasts,ter_shangri_la,true,false,CAPTURE_OR_SCENARIO,25,560,780,22,22,12,25,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED
+chr_rudrasaum,창조신 루드라사움,創造神ルドラサウム,Ludo-Rathowm (Creator),fac_independent_ancient,cls_demons,ter_rudrasaum_ruins,false,false,BOSS_ONLY,99,1200,1200,35,35,35,30,FRONT,VERIFIED_PUBLIC_PROFILE,VERIFIED

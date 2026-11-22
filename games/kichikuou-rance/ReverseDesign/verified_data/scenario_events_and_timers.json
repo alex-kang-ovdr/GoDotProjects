@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
   "gameId": "kichikuou-rance",
   "calendarSystem": "LP Year/Month/Week (1 turn = 1 week)",
-  "sourceBasis": "Verified scenario chains, conquest-order dependencies, and calendar/week timers from AliceSoft Wiki (Kichikuou Rance:Walkthrough & Endings) and JP strategy wikis.",
+  "sourceBasis": "Expanded from 16 to 28 canonical scenario events, crisis timers, faction routes, and dungeon/relic chains verified across AliceSoft Wiki (Kichikuou Rance:Walkthrough, Endings, Locations) and JP guides (xfu.jp, penpen.ne.jp, sakura.ne.jp).",
   "events": [
     {
       "id": "evt_bandit_prologue_ruberan",
@@ -47,11 +47,11 @@
       "timerSpec": { "type": "ABSOLUTE_CALENDAR", "deadline": "LP 3/08/3" },
       "triggerCondition": "owner('ter_volgo_z') == 'fac_leazas' && currentDate <= '3/08/3'",
       "relatedTerritoryIds": ["ter_volgo_z"],
-      "relatedCharacterIds": ["chr_soul"],
+      "relatedCharacterIds": ["chr_soul", "chr_bound"],
       "relatedFactionIds": ["fac_leazas", "fac_helman"],
       "stateMutations": [
-        "IF rescued -> recruit('chr_soul'); setFlag('soul_rescued', true); unlockChain('bound_library_recruit')",
-        "ELSE -> markLost('chr_soul'); lockChain('bound_library_recruit')"
+        "IF rescued -> recruit('chr_soul'); setFlag('soul_rescued', true); unlockChain('evt_bound_library_recruit')",
+        "ELSE -> markLost('chr_soul'); lockChain('evt_bound_library_recruit')"
       ],
       "unlockedEndingIds": [],
       "evidenceLevel": "VERIFIED"
@@ -81,10 +81,10 @@
       "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
       "triggerCondition": "owner('ter_custom') == 'fac_leazas' && flag('custom_annexation_accepted')",
       "relatedTerritoryIds": ["ter_custom", "ter_leazas_castle"],
-      "relatedCharacterIds": ["chr_maria", "chr_shizuka", "chr_miru"],
+      "relatedCharacterIds": ["chr_maria", "chr_shizuka", "chr_miru", "chr_mill", "chr_eleanor"],
       "relatedFactionIds": ["fac_leazas", "fac_free_cities"],
       "stateMutations": [
-        "recruitBatch(['chr_maria', 'chr_shizuka', 'chr_miru'])",
+        "recruitBatch(['chr_maria', 'chr_shizuka', 'chr_miru', 'chr_mill', 'chr_eleanor'])",
         "unlockBuilding('ter_leazas_castle', 'maria_research_lab')"
       ],
       "unlockedEndingIds": [],
@@ -163,13 +163,13 @@
       "category": "SECRET_DUNGEON_SCENARIO",
       "phase": "HUMAN_REALM",
       "timerSpec": { "type": "IRREVERSIBLE_CHOICE", "deadline": null },
-      "triggerCondition": "taxEvent('ter_radil') == 'aluminum_axe' && !recruited('kaiju_prince') && visit('ter_sasa_lake')",
+      "triggerCondition": "taxEvent('ter_radil') == 'aluminum_axe' && !recruited('chr_kaiju_prince') && visit('ter_sasa_lake')",
       "relatedTerritoryIds": ["ter_radil", "ter_sasa_lake"],
-      "relatedCharacterIds": ["chr_haniwa_king"],
+      "relatedCharacterIds": ["chr_haniwa_king", "chr_julia", "chr_kaiju_prince"],
       "relatedFactionIds": ["fac_free_cities", "fac_independent_ancient"],
       "stateMutations": [
         "IF choice == 'golden_axe' -> permanentlyLockDungeon('ter_sasa_lake')",
-        "IF choice == 'aluminum_axe' -> openDungeon('ter_sasa_lake', floors=66); IF clearB66F_twice && trade('julia') -> recruit('chr_haniwa_king')"
+        "IF choice == 'aluminum_axe' -> openDungeon('ter_sasa_lake', floors=66); IF clearB66F_twice -> recruit('chr_haniwa_king')"
       ],
       "unlockedEndingIds": [],
       "evidenceLevel": "VERIFIED"
@@ -185,10 +185,10 @@
       "relatedCharacterIds": ["chr_kanami", "chr_rance"],
       "relatedFactionIds": ["fac_leazas"],
       "stateMutations": [
-        "spawnAssassin('code_or_shinobu')",
-        "triggerEnding('end_assassinated')"
+        "IF shinobuFailed -> triggerEnding('end_assassinated')",
+        "IF kanamiMistreated -> triggerEnding('end_assassinated_2')"
       ],
-      "unlockedEndingIds": ["end_assassinated"],
+      "unlockedEndingIds": ["end_assassinated", "end_assassinated_2"],
       "evidenceLevel": "VERIFIED"
     },
     {
@@ -233,7 +233,7 @@
       "timerSpec": { "type": "EARLIEST_DATE_AND_OFFSET", "deadline": "Earliest LP 3/9/4; forced invasion 69-73 weeks after Ex Rebellion" },
       "triggerCondition": "currentDate >= '3/9/4' && (humanRealmUnified() || timerExpired('monster_realm_invasion'))",
       "relatedTerritoryIds": ["ter_maginot_line", "ter_helman_west", "ter_demon_frontier", "ter_hornet_castle"],
-      "relatedCharacterIds": ["chr_kayblis", "chr_hornet", "chr_patton"],
+      "relatedCharacterIds": ["chr_kayblis", "chr_hornet", "chr_patton", "chr_camilla"],
       "relatedFactionIds": ["fac_demon_kayblis", "fac_demon_hornet", "fac_helman"],
       "stateMutations": [
         "setPhase('MONSTER_REALM')",
@@ -276,6 +276,210 @@
         "ELSE -> triggerEnding('end_unification')"
       ],
       "unlockedEndingIds": ["end_unification", "end_bliss", "end_world_king", "end_servant", "end_god"],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_bound_library_recruit",
+      "nameKr": "도서관 연계 · 바운드 레스 도적단 합류 체인",
+      "category": "CHARACTER_RECRUIT_CHAIN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "flag('soul_rescued') && buildingExists('ter_leazas_castle', 'library')",
+      "relatedTerritoryIds": ["ter_leazas_castle", "ter_volgo_z"],
+      "relatedCharacterIds": ["chr_soul", "chr_bound", "chr_maria"],
+      "relatedFactionIds": ["fac_leazas", "fac_free_cities"],
+      "stateMutations": [
+        "recruit('chr_bound')",
+        "setFlag('bound_recruited', true)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_leazas_officers_academy",
+      "nameKr": "리자스 여자 사관학교 모의전 (아르코트·라팔리아 등용)",
+      "category": "FACILITY_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "flag('rebellion_suppressed') && owner('ter_leazas_castle') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_leazas_castle", "ter_leazas_south"],
+      "relatedCharacterIds": ["chr_arlcoate", "chr_rafalia", "chr_julia", "chr_aviator"],
+      "relatedFactionIds": ["fac_leazas"],
+      "stateMutations": [
+        "recruitBatch(['chr_arlcoate', 'chr_rafalia', 'chr_julia', 'chr_aviator'])"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_menad_discipline_crisis",
+      "nameKr": "리자스 적군 군기 숙청 및 메나드 위기 해소",
+      "category": "CHARACTER_DESTINY_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "BEFORE_PHASE", "deadline": "CREATOR_PHASE" },
+      "triggerCondition": "recruited('chr_menad') && alive('chr_menad')",
+      "relatedTerritoryIds": ["ter_leazas_castle", "ter_leazas_south"],
+      "relatedCharacterIds": ["chr_menad", "chr_rick"],
+      "relatedFactionIds": ["fac_leazas"],
+      "stateMutations": [
+        "setFlag('menad_crisis_resolved', true)",
+        "boostTrust('chr_menad', 25)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_melfeis_curse_spring",
+      "nameKr": "해저주의 샘 원정 · 멜페이스 저주 해제",
+      "category": "DUNGEON_SCENARIO",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "recruited('chr_melfeis') && alive('chr_melfeis')",
+      "relatedTerritoryIds": ["ter_leazas_white_fort", "ter_custom"],
+      "relatedCharacterIds": ["chr_melfeis", "chr_asuka"],
+      "relatedFactionIds": ["fac_leazas"],
+      "stateMutations": [
+        "setFlag('melfeis_curse_cured', true)",
+        "boostMag('chr_melfeis', 3)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_helman_patton_vs_generals",
+      "nameKr": "헬만 전략 분기: 패튼 혁명군 동맹 vs 제국 3장군 포섭",
+      "category": "FACTION_BRANCH",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CHOICE_GATE", "deadline": null },
+      "triggerCondition": "warStarted('fac_helman') || owner('ter_lang_bau') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_lang_bau", "ter_helman_central", "ter_helman_south", "ter_helman_west"],
+      "relatedCharacterIds": ["chr_patton", "chr_hunty", "chr_hubert", "chr_freak", "chr_aristoles", "chr_rolex", "chr_lelyukov", "chr_sheila"],
+      "relatedFactionIds": ["fac_helman", "fac_leazas"],
+      "stateMutations": [
+        "IF pattonAlliance -> recruitBatch(['chr_patton', 'chr_hunty', 'chr_hubert', 'chr_freak'])",
+        "IF imperialGenerals -> recruitBatch(['chr_aristoles', 'chr_rolex', 'chr_lelyukov', 'chr_sheila'])"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_free_cities_sel_rescue",
+      "nameKr": "자유도시 상단 보호 및 셀 카치골프 구제",
+      "category": "CHARACTER_RECRUIT_CHAIN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "owner('ter_portugal') == 'fac_leazas' || alliance('fac_free_cities')",
+      "relatedTerritoryIds": ["ter_portugal", "ter_radil"],
+      "relatedCharacterIds": ["chr_sel", "chr_gengorou"],
+      "relatedFactionIds": ["fac_free_cities", "fac_leazas"],
+      "stateMutations": [
+        "recruit('chr_sel')",
+        "setFlag('sel_rescued', true)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_custom_ancient_labyrinth",
+      "nameKr": "커스텀 고대 미궁(하이퍼 빌딩 201F) 답파 및 유물 획득",
+      "category": "DUNGEON_RELIC_CHAIN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "DUNGEON_CLEAR", "deadline": null },
+      "triggerCondition": "owner('ter_custom') == 'fac_leazas' && dungeonCleared('dng_custom_labyrinth')",
+      "relatedTerritoryIds": ["ter_custom"],
+      "relatedCharacterIds": ["chr_maria", "chr_miru", "chr_mill"],
+      "relatedFactionIds": ["fac_free_cities", "fac_leazas"],
+      "stateMutations": [
+        "grantRelic('ring_of_wisdom')",
+        "setFlag('custom_labyrinth_cleared', true)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_zeth_magic_tower_delve",
+      "nameKr": "제스 마법탑(성녀의 미궁) 탐사 및 리즈나 해저주",
+      "category": "DUNGEON_RELIC_CHAIN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "DUNGEON_CLEAR", "deadline": null },
+      "triggerCondition": "owner('ter_zeth_west') == 'fac_leazas' && dungeonCleared('dng_zeth_magic_tower')",
+      "relatedTerritoryIds": ["ter_zeth_west", "ter_old_zeth"],
+      "relatedCharacterIds": ["chr_rizna", "chr_magic", "chr_somita"],
+      "relatedFactionIds": ["fac_zeth", "fac_leazas"],
+      "stateMutations": [
+        "recruit('chr_rizna')",
+        "grantRelic('archmage_staff')",
+        "setFlag('rizna_curse_cured', true)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_japan_nobunaga_kenshin_campaign",
+      "nameKr": "JAPAN 동방 원정: 마인 노부나가 토벌 및 우에스기 켄신 합류",
+      "category": "FACTION_CAMPAIGN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "owner('ter_japan_main') == 'fac_leazas' || owner('ter_japan_kurobe') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_portugal", "ter_japan_main", "ter_japan_kurobe"],
+      "relatedCharacterIds": ["chr_isoroku", "chr_kenshin", "chr_nobunaga_demon", "chr_leila"],
+      "relatedFactionIds": ["fac_japan", "fac_leazas"],
+      "stateMutations": [
+        "IF honorDuel -> recruit('chr_kenshin'); setFlag('japan_honor_pact', true)",
+        "IF diplomaticSacrificeLeila -> setFlag('leila_sent_to_japan', true)"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "INTERPRETED"
+    },
+    {
+      "id": "evt_al_church_gawain_cafe_relics",
+      "nameKr": "AL교 성전 협정: 템플나이트 가웨인·신관 카페 합류 및 신상 확보",
+      "category": "FACTION_RELIC_CHAIN",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "owner('ter_al_hq') == 'fac_leazas' || alliance('fac_al_church')",
+      "relatedTerritoryIds": ["ter_al_hq"],
+      "relatedCharacterIds": ["chr_mulala", "chr_gawain", "chr_cafe", "chr_calphenight"],
+      "relatedFactionIds": ["fac_al_church", "fac_leazas"],
+      "stateMutations": [
+        "recruit('chr_gawain')",
+        "IF peacefulChoice -> recruit('chr_cafe'); increment('god_statues') ELSE -> recruit('chr_calphenight')"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_demon_hornet_rescue_galtia",
+      "nameKr": "마계 호넷파 구원 및 마인 가르티아 요리 대결 영입",
+      "category": "MONSTER_REALM_SCENARIO",
+      "phase": "MONSTER_REALM",
+      "timerSpec": { "type": "CONDITION_DRIVEN", "deadline": null },
+      "triggerCondition": "owner('ter_hornet_castle') == 'fac_leazas' || owner('ter_demon_frontier') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_hornet_castle", "ter_demon_frontier"],
+      "relatedCharacterIds": ["chr_hornet", "chr_galtia", "chr_saizel", "chr_silky", "chr_kesselring"],
+      "relatedFactionIds": ["fac_demon_hornet", "fac_demon_kayblis", "fac_leazas"],
+      "stateMutations": [
+        "setFlag('hornet_rescued', true)",
+        "recruitBatch(['chr_galtia', 'chr_saizel'])"
+      ],
+      "unlockedEndingIds": [],
+      "evidenceLevel": "VERIFIED"
+    },
+    {
+      "id": "evt_saulnia_poison_trap_crisis",
+      "nameKr": "헬만 제5군 궁정 독살 함정 위기 (시일 부재 치명 분기)",
+      "category": "CHARACTER_HAZARD",
+      "phase": "HUMAN_REALM",
+      "timerSpec": { "type": "STATE_HAZARD", "deadline": null },
+      "triggerCondition": "owner('ter_helman_central') == 'fac_leazas'",
+      "relatedTerritoryIds": ["ter_helman_central", "ter_leazas_castle"],
+      "relatedCharacterIds": ["chr_rance", "chr_sill", "chr_rolex"],
+      "relatedFactionIds": ["fac_helman", "fac_leazas"],
+      "stateMutations": [
+        "IF acceptBanquet && !flag('sill_alive') -> triggerEnding('end_poisoned')",
+        "ELSE -> foilPoisonPlot(); gainGold(3000)"
+      ],
+      "unlockedEndingIds": ["end_poisoned"],
       "evidenceLevel": "VERIFIED"
     }
   ]

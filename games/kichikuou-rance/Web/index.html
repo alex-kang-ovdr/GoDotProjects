@@ -38,9 +38,10 @@
       </div>
 
       <div class="kr-top-actions">
-        <button id="btn-open-codex" class="kr-btn ghost" type="button">14 엔딩 도감</button>
-        <button id="btn-open-save" class="kr-btn ghost" type="button">저장 / 불러오기</button>
-        <button id="btn-new-game" class="kr-btn ghost" type="button">새 캠페인</button>
+        <button id="btn-open-dungeon" class="kr-btn gold small" type="button">🏰 던전 원정</button>
+        <button id="btn-open-codex" class="kr-btn ghost small" type="button">🏆 14엔딩·운명</button>
+        <button id="btn-open-save" class="kr-btn ghost small" type="button">💾 저장/로드</button>
+        <button id="btn-new-game" class="kr-btn ghost small" type="button">새 캠페인</button>
       </div>
     </header>
 
@@ -62,11 +63,11 @@
       <section class="kr-map-panel">
         <div class="kr-map-header">
           <div class="kr-map-title">
-            <h2>루드라사움 대륙 전략 맵 <span class="muted">(29개 연결 거점 · 10대 세력)</span></h2>
+            <h2>루드라사움 대륙 전략 맵 <span class="muted">(29개 거점 · 10대 세력 · 4대 던전)</span></h2>
           </div>
           <div class="kr-map-legend-toggle">
-            <span class="legend-pill frontier">황금 테두리: 침공 가능 전선</span>
-            <span class="legend-pill crisis">! 표시: 기한·위기 시나리오</span>
+            <span class="legend-pill frontier">황금 테두리: 침공 가능</span>
+            <span class="legend-pill crisis">! 표시: 기한·위기</span>
           </div>
         </div>
 
@@ -79,15 +80,19 @@
         </div>
       </section>
 
-      <!-- Right: Strategic Command, Scenarios/Timers, 33 Commanders, Chronicle -->
+      <!-- Right: Strategic Command, Scenarios, 69 Units, Diplomacy, 28 Destinies, Chronicle -->
       <aside class="kr-dock">
         <nav class="kr-tabs" role="tablist">
-          <button class="kr-tab active" data-tab="territory" role="tab" type="button">영토 명령</button>
+          <button class="kr-tab active" data-tab="territory" role="tab" type="button">영토</button>
           <button class="kr-tab" data-tab="scenarios" role="tab" type="button">
-            시나리오·위기 <span class="tab-badge" id="badge-scenarios">0</span>
+            시나리오 <span class="tab-badge" id="badge-scenarios">0</span>
           </button>
           <button class="kr-tab" data-tab="commanders" role="tab" type="button">
-            지휘관 <span class="tab-badge neutral" id="badge-commanders">8/33</span>
+            지휘관 <span class="tab-badge neutral" id="badge-commanders">10/69</span>
+          </button>
+          <button class="kr-tab" data-tab="diplomacy" role="tab" type="button">🤝 외교</button>
+          <button class="kr-tab" data-tab="destiny" role="tab" type="button">
+            ✨ 운명 <span class="tab-badge happy-pill" id="badge-destiny">0/28</span>
           </button>
           <button class="kr-tab" data-tab="chronicle" role="tab" type="button">연대기</button>
         </nav>
@@ -96,6 +101,8 @@
           <div id="tab-territory" class="kr-tab-pane active"></div>
           <div id="tab-scenarios" class="kr-tab-pane"></div>
           <div id="tab-commanders" class="kr-tab-pane"></div>
+          <div id="tab-diplomacy" class="kr-tab-pane"></div>
+          <div id="tab-destiny" class="kr-tab-pane"></div>
           <div id="tab-chronicle" class="kr-tab-pane"></div>
         </div>
       </aside>
@@ -119,7 +126,7 @@
       </div>
     </div>
 
-    <!-- Modal: 4v4 Front/Back Row Battle Arena -->
+    <!-- Modal: 4v4 Front/Back Row Battle Arena with Tactic Selector & Combat Zone Gauge -->
     <div id="modal-battle" class="kr-modal hidden" role="dialog" aria-modal="true">
       <div class="kr-modal-card battle-card">
         <div class="kr-modal-header battle-header">
@@ -134,14 +141,18 @@
           </div>
         </div>
 
+        <!-- Operation Tactic Selector + Combat Zone (戦闘域) Gauge -->
+        <div class="battle-tactical-strip">
+          <div class="battle-tactic-bar" id="battle-tactic-bar"></div>
+          <div class="battle-zone-strip" id="battle-zone-bar"></div>
+        </div>
+
         <div class="battle-queue-strip">
           <span class="queue-label">최소 병수 행동순 큐 ▶</span>
           <div id="battle-turn-queue" class="queue-items"></div>
         </div>
 
-        <div class="battle-arena-grid" id="battle-arena-grid">
-          <!-- Player Back / Player Front  VS  Enemy Front / Enemy Back -->
-        </div>
+        <div class="battle-arena-grid" id="battle-arena-grid"></div>
 
         <div class="battle-controls-panel">
           <div class="battle-actor-info" id="battle-actor-info"></div>
@@ -149,6 +160,31 @@
         </div>
 
         <div class="battle-log-box" id="battle-log-box"></div>
+      </div>
+    </div>
+
+    <!-- Modal: Post-Battle Enemy Commander Capture & Recruitment -->
+    <div id="modal-capture" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card">
+        <div class="kr-modal-header">
+          <h3>⚔ 전승 포로 처분 · 적 지휘관 등용</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-capture" type="button">✕</button>
+        </div>
+        <div id="capture-body" class="kr-modal-body"></div>
+        <div class="kr-modal-footer">
+          <button class="kr-btn ghost" data-close-modal="modal-capture" type="button">나중에 처리</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Multi-Floor Dungeon Expedition -->
+    <div id="modal-dungeon" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card wide-card">
+        <div class="kr-modal-header">
+          <h3 id="dungeon-modal-title">🏰 대륙 4대 미궁 · 다층 던전 원정</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-dungeon" type="button">✕</button>
+        </div>
+        <div id="dungeon-body" class="kr-modal-body"></div>
       </div>
     </div>
 
@@ -163,11 +199,11 @@
       </div>
     </div>
 
-    <!-- Modal: 14 Endings & Destiny Codex -->
+    <!-- Modal: 14 Verified Endings & 28 Character Destinies Codex -->
     <div id="modal-codex" class="kr-modal hidden" role="dialog" aria-modal="true">
       <div class="kr-modal-card wide-card">
         <div class="kr-modal-header">
-          <h3>14개 메인 엔딩 &amp; 캐릭터 운명(Destiny) 도감</h3>
+          <h3>🏆 14개 정사 엔딩 &amp; 28인 캐릭터 운명(Destiny) 도감</h3>
           <button class="kr-icon-btn" data-close-modal="modal-codex" type="button">✕</button>
         </div>
         <div id="codex-body" class="kr-modal-body"></div>
@@ -182,7 +218,7 @@
           <button class="kr-icon-btn" data-close-modal="modal-newgame" type="button">✕</button>
         </div>
         <div class="kr-modal-body">
-          <p class="muted">시작 페이즈를 선택하세요. 모든 시나리오·타이머·4v4 전투는 검증 데이터 기반으로 결정론적 실행됩니다.</p>
+          <p class="muted">시작 페이즈를 선택하세요. 69인 유닛·14 정사 엔딩·28 운명·4대 던전이 검증 데이터 기반으로 결정론적 실행됩니다.</p>
           <div class="newgame-choices">
             <button id="btn-start-rebellion" class="kr-btn primary full" type="button">
               👑 본편 시작 — 리자스 내란 진압 (권장)

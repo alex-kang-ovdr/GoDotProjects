@@ -20,10 +20,9 @@ const unitClassesRaw = readJson("unit_classes.json");
 const charactersRaw = readJson("characters.json");
 const eventsRaw = readJson("scenario_events_and_timers.json");
 const endingsRaw = readJson("endings.json");
+const destiniesRaw = readJson("destinies.json");
 
 // Canonical continent geography coordinates (SVG viewBox: 1080 x 640)
-// Layout reflects The Continent: Monster Realm (West), Helman (North-Center),
-// Zeth (South-Center), Leazas (Northeast), Free Cities & AL Church (Southeast), JAPAN (Far East Island).
 const MAP_COORDS = {
   // Monster Realm & Creator Realm (West)
   ter_rudrasaum_ruins: { x: 64, y: 120 },
@@ -79,8 +78,111 @@ const FACTION_COLORS = {
   fac_independent_ancient: { fill: "#2b7a8a", stroke: "#88e6f7", badge: "#3a9cb0", label: "고대/신계" }
 };
 
+// Canonical Multi-Floor Playable Dungeons
+const DUNGEONS = [
+  {
+    id: "dng_sasa_b66",
+    nameKr: "사사호 호저미궁 (지하 66층)",
+    nameEn: "Lake Sasa Underwater Dungeon (B66F)",
+    territoryId: "ter_sasa_lake",
+    floors: [
+      { label: "B10F 침수 회랑", threat: 14, rewardGold: 1200, encounter: "하니와 정찰병 무리가 수중 통로를 봉쇄하고 있다." },
+      { label: "B25F 고대 수문실", threat: 18, rewardGold: 1600, encounter: "고대 수문 함정과 하니와 중장병이 원정대를 가로막는다." },
+      { label: "B42F 도기 회랑", threat: 22, rewardGold: 2200, encounter: "마법 면역 하니와 수호대가 전열을 압박한다." },
+      { label: "B58F 왕실 전초", threat: 26, rewardGold: 2800, encounter: "하니와 친위대와 고대 보물고가 발견되었다!" },
+      { label: "B66F 하니와 신전 최심부", threat: 30, rewardGold: 4500, encounter: "전설의 존재 '하니와 킹'이 옥좌에서 원정대를 맞이한다!" }
+    ],
+    boss: {
+      nameKr: "하니와 킹 (B66F 수호왕)",
+      power: 46,
+      hp: 34,
+      recruitCharacterId: "chr_haniwa_king"
+    },
+    relic: {
+      id: "relic_haniwa_crown",
+      nameKr: "하니와 왕관",
+      effectKr: "아군 전 지휘관 DEF +2 · 사사호 B66F 제패 증표"
+    },
+    linkedEventId: "evt_lake_sasa_haniwa_king"
+  },
+  {
+    id: "dng_rudrasaum_ruins",
+    nameKr: "루드라사움 유적 (신의 미궁)",
+    nameEn: "Rudrasaum Ruins (God Cave)",
+    territoryId: "ter_rudrasaum_ruins",
+    floors: [
+      { label: "1F 천상계 봉인문", threat: 20, rewardGold: 1500, encounter: "1,000층 유적의 1층 비밀 입구 — 고대 봉인 의식을 돌파한다." },
+      { label: "300F 천사기사 회랑", threat: 28, rewardGold: 2600, encounter: "천사기사 정예 분대가 창조신의 영역을 수호하고 있다." },
+      { label: "777F 심판의 계단", threat: 34, rewardGold: 3500, encounter: "세계 리셋의 기록석이 빛나며 최상위 천사대가 출격한다." },
+      { label: "1000F 창조의 옥좌", threat: 40, rewardGold: 5000, encounter: "창조신 루드라사움의 영역 최심부에 도달했다!" }
+    ],
+    boss: {
+      nameKr: "천사기사 총사령 (창조의 수문장)",
+      power: 54,
+      hp: 40,
+      recruitCharacterId: null
+    },
+    relic: {
+      id: "relic_creator_seal",
+      nameKr: "창조의 인장",
+      effectKr: "아군 전 지휘관 ATK +2, MAG +2 · 창조신 대면 엔딩 시나리오 해금"
+    },
+    linkedEventId: "evt_creator_phase_unlock"
+  },
+  {
+    id: "dng_custom_labyrinth",
+    nameKr: "커스텀 고대 미궁 (하이퍼 빌딩 201F)",
+    nameEn: "Custom Ancient Labyrinth (Hyper Building 201F)",
+    territoryId: "ter_custom",
+    floors: [
+      { label: "1F 고대 기계 로비", threat: 12, rewardGold: 1100, encounter: "고대 문명의 경비 자동인형이 작동을 재개했다." },
+      { label: "50F 중앙 동력실", threat: 16, rewardGold: 1800, encounter: "마리아의 도면과 일치하는 마도 에너지 코어를 발견했다." },
+      { label: "120F 환수 격납고", threat: 20, rewardGold: 2400, encounter: "폭주한 환수들이 미궁 상층 통로를 점거하고 있다." },
+      { label: "201F 최상층 유물고", threat: 25, rewardGold: 3800, encounter: "최상층 수호 투신과 전설의 '지혜의 반지'가 모습을 드러냈다!" }
+    ],
+    boss: {
+      nameKr: "고대 투신 가디언",
+      power: 38,
+      hp: 28,
+      recruitCharacterId: null
+    },
+    relic: {
+      id: "relic_ring_of_wisdom",
+      nameKr: "지혜의 반지",
+      effectKr: "란스 ATK +3, MAG +3 · 마리아 튤립 개발 +25% · 국고 +5,000G"
+    },
+    linkedEventId: "evt_custom_ancient_labyrinth"
+  },
+  {
+    id: "dng_zeth_magic_tower",
+    nameKr: "제스 마법탑 (성녀의 미궁)",
+    nameEn: "Zeth Magic Tower (Saint Dungeon)",
+    territoryId: "ter_zeth_west",
+    floors: [
+      { label: "1층 화염 결계실", threat: 16, rewardGold: 1400, encounter: "제스 화염 마법 트랩이 전열의 진격을 시험한다." },
+      { label: "2층 빙결 회랑", threat: 20, rewardGold: 1900, encounter: "빙결 골렘 군단과 마력 증폭 수정이 배치되어 있다." },
+      { label: "3층 뇌전 서고", threat: 24, rewardGold: 2500, encounter: "고대 해저주 비전서와 마검 카오스의 단서를 입수했다!" },
+      { label: "최상층 대마도실", threat: 28, rewardGold: 3600, encounter: "봉인된 마도사 리즈나를 지키는 수호 마도사가 나타난다." }
+    ],
+    boss: {
+      nameKr: "자카리테 수호마도사",
+      power: 42,
+      hp: 30,
+      recruitCharacterId: "chr_rizna"
+    },
+    relic: {
+      id: "relic_archmage_staff",
+      nameKr: "대마도사의 지팡이",
+      effectKr: "전군 마법/카라 지휘관 MAG +3 · 리즈나 해저주 & 합류 · 마검 카오스 획득"
+    },
+    linkedEventId: "evt_zeth_magic_tower_delve"
+  }
+];
+
+const playableCommandersCount = charactersRaw.characters.filter((c) => c.isPlayableSubordinate).length;
+
 const bundled = {
-  schemaVersion: "1.0.0",
+  schemaVersion: "2.0.0",
   gameId: "kichikuou-rance",
   generatedAt: "2026-11-22",
   counts: {
@@ -88,8 +190,11 @@ const bundled = {
     territories: territoriesRaw.territories.length,
     unitClasses: unitClassesRaw.unitClasses.length,
     characters: charactersRaw.characters.length,
+    playableCommanders: playableCommandersCount,
     scenarioEvents: eventsRaw.events.length,
-    endings: endingsRaw.endings.length
+    endings: endingsRaw.endings.length,
+    destinies: destiniesRaw.destinies.length,
+    dungeons: DUNGEONS.length
   },
   factions: factionsRaw.factions.map((f) => ({
     ...f,
@@ -103,6 +208,8 @@ const bundled = {
   characters: charactersRaw.characters,
   scenarioEvents: eventsRaw.events,
   endings: endingsRaw.endings,
+  destinies: destiniesRaw.destinies,
+  dungeons: DUNGEONS,
   characterDestinySystem: endingsRaw.characterDestinySystem
 };
 

@@ -93,6 +93,11 @@ const VALID_EVIDENCE = new Set([
   "NEEDS_VERIFICATION",
 ]);
 
+const VALID_STATS_BASIS = new Set([
+  "VERIFIED_PUBLIC_PROFILE",
+  "BALANCED_RECONSTRUCTION",
+]);
+
 function checkEvidence(items, label) {
   for (const item of items) {
     if (!VALID_EVIDENCE.has(item.evidenceLevel)) {
@@ -110,6 +115,7 @@ const classesData = readJson("unit_classes.json");
 const charactersData = readJson("characters.json");
 const eventsData = readJson("scenario_events_and_timers.json");
 const endingsData = readJson("endings.json");
+const destiniesData = readJson("destinies.json");
 
 const factionsCsv = readCsv("factions.csv");
 const territoriesCsv = readCsv("territories.csv");
@@ -122,7 +128,8 @@ if (
   !classesData ||
   !charactersData ||
   !eventsData ||
-  !endingsData
+  !endingsData ||
+  !destiniesData
 ) {
   console.error("Fatal: one or more JSON files failed to load.", errors);
   process.exit(1);
@@ -134,6 +141,7 @@ const unitClasses = classesData.unitClasses ?? [];
 const characters = charactersData.characters ?? [];
 const events = eventsData.events ?? [];
 const endings = endingsData.endings ?? [];
+const destinies = destiniesData.destinies ?? [];
 
 // 2. Uniqueness & Evidence Tags
 const factionIds = assertUniqueIds(factions, "factions");
@@ -142,6 +150,7 @@ const classIds = assertUniqueIds(unitClasses, "unit_classes");
 const characterIds = assertUniqueIds(characters, "characters");
 const eventIds = assertUniqueIds(events, "scenario_events_and_timers");
 const endingIds = assertUniqueIds(endings, "endings");
+const destinyIds = assertUniqueIds(destinies, "destinies");
 
 checkEvidence(factions, "factions");
 checkEvidence(territories, "territories");
@@ -149,6 +158,33 @@ checkEvidence(unitClasses, "unit_classes");
 checkEvidence(characters, "characters");
 checkEvidence(events, "events");
 checkEvidence(endings, "endings");
+checkEvidence(destinies, "destinies");
+
+// 2b. Phase 2 Coverage Assertions
+const playableCommanders = characters.filter((c) => c.isPlayableSubordinate);
+if (playableCommanders.length < 52) {
+  errors.push(`characters: expected >= 52 playable commanders, got ${playableCommanders.length}`);
+}
+if (characters.length < 58) {
+  errors.push(`characters: expected >= 58 total units, got ${characters.length}`);
+}
+if (endings.length !== 14) {
+  errors.push(`endings: expected exactly 14 canonical main endings, got ${endings.length}`);
+}
+for (const end of endings) {
+  if (end.evidenceLevel === "NEEDS_VERIFICATION") {
+    errors.push(`ending '${end.id}': Phase 2 requires all 14 endings verified (found NEEDS_VERIFICATION)`);
+  }
+  if (!end.nameJp || !end.nameKr || !end.nameEn) {
+    errors.push(`ending '${end.id}': missing nameKr/nameJp/nameEn`);
+  }
+}
+if (events.length < 26) {
+  errors.push(`scenario_events_and_timers: expected >= 26 canonical events, got ${events.length}`);
+}
+if (destinies.length < 24) {
+  errors.push(`destinies: expected >= 24 canonical character destiny pairs, got ${destinies.length}`);
+}
 
 // 3. CSV ↔ JSON parity
 assertCsvMatchesJsonIds(factionsCsv, factionIds, "factions");
@@ -231,7 +267,7 @@ if (territoryIds.has("ter_leazas_castle")) {
   errors.push("Missing starting capital 'ter_leazas_castle'");
 }
 
-// 6. Characters referential integrity
+// 6. Characters referential integrity & stat profiles
 for (const chr of characters) {
   if (!factionIds.has(chr.initialFactionId)) {
     errors.push(
@@ -247,6 +283,12 @@ for (const chr of characters) {
     errors.push(
       `character '${chr.id}': dangling homeTerritoryId '${chr.homeTerritoryId}'`
     );
+  }
+  const s = chr.initialStats;
+  if (!s || typeof s.hp !== "number" || typeof s.maxTroops !== "number" || typeof s.atk !== "number" || typeof s.def !== "number" || typeof s.mag !== "number" || typeof s.strikes !== "number") {
+    errors.push(`character '${chr.id}': missing numeric initialStats fields`);
+  } else if (!VALID_STATS_BASIS.has(s.statsBasis)) {
+    errors.push(`character '${chr.id}': invalid statsBasis '${s.statsBasis}'`);
   }
 }
 
@@ -288,14 +330,37 @@ for (const end of endings) {
   }
 }
 
+// 9. Destinies referential integrity
+const destinyCharIds = new Set();
+for (const dst of destinies) {
+  if (!characterIds.has(dst.characterId)) {
+    errors.push(`destiny '${dst.id}': dangling characterId '${dst.characterId}'`);
+  }
+  if (destinyCharIds.has(dst.characterId)) {
+    errors.push(`destiny '${dst.id}': duplicate characterId '${dst.characterId}'`);
+  }
+  destinyCharIds.add(dst.characterId);
+  if (!dst.happySummaryKr || !dst.unhappySummaryKr || !dst.evaluationKey) {
+    errors.push(`destiny '${dst.id}': missing happySummaryKr, unhappySummaryKr, or evaluationKey`);
+  }
+  for (const mxId of dst.mutuallyExclusiveWith ?? []) {
+    if (!characterIds.has(mxId)) {
+      errors.push(`destiny '${dst.id}': dangling mutuallyExclusiveWith '${mxId}'`);
+    }
+  }
+}
+
 // Summary Output
 const summary = {
   factions: factions.length,
   territories: territories.length,
   unitClasses: unitClasses.length,
   characters: characters.length,
+  playableCommanders: playableCommanders.length,
   scenarioEventsAndTimers: events.length,
   endings: endings.length,
+  verifiedEndings: endings.filter((e) => e.evidenceLevel === "VERIFIED").length,
+  destinies: destinies.length,
   errors: errors.length,
   warnings: warnings.length,
 };
@@ -311,4 +376,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log("\nValidation PASSED: 0 errors, 100% referential integrity, symmetric connected continent graph.");
+console.log("\nValidation PASSED: 0 errors, 0 warnings, 100% referential integrity, symmetric connected continent graph.");

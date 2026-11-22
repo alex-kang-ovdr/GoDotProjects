@@ -1,11 +1,14 @@
-/* Kichikuou Rance — Pure Deterministic Headless Hybrid SLG + Character Scenario Engine
+/* Kichikuou Rance — Pure Deterministic Headless Hybrid SLG + Character Scenario Engine (Phase 2)
  * Zero DOM dependencies. Data-driven directly from verified_data/*.json via RANCE_DATA.
+ * Features: 69 Canonical Units (59 Playable), 14 Verified Endings, 28 Character Destinies,
+ * 28 Scenario Chains, 4v4 Combat w/ Tactics & Combat Zone Gauge, Post-Battle Capture/Recruitment,
+ * 4 Multi-Floor Dungeons w/ Bosses & Relics, and Faction Diplomacy.
  * UMD Export: globalThis.KichikuouRanceEngine & module.exports
  */
 (function (root) {
   "use strict";
 
-  const SAVE_VERSION = "1.0.0";
+  const SAVE_VERSION = "2.0.0";
 
   // Canonical facility definitions
   const FACILITIES = {
@@ -14,14 +17,14 @@
       nameKr: "병원",
       nameEn: "Hospital",
       cost: 4000,
-      description: "매 턴 아군 지휘관 HP(+2)·병력(+40) 회복 및 전장 생존 지원"
+      description: "매 턴 아군 지휘관 HP(+2)·병력(+40) 회복, 마리아·미리 운명 보호"
     },
     magic_lab: {
       id: "magic_lab",
       nameKr: "마법연구소",
       nameEn: "Magic Lab",
       cost: 5000,
-      description: "모든 마법/카라/지원 부대장 MAG +4 영구 강화"
+      description: "모든 마법/카라/지원 부대장 MAG +4 영구 강화 (매직 운명 연동)"
     },
     maria_lab: {
       id: "maria_lab",
@@ -36,45 +39,56 @@
       nameKr: "도서관",
       nameEn: "Library",
       cost: 4500,
-      description: "국가 세수 +15% 및 소울 구출 시 바운드 영입 체인 완료"
+      description: "국가 세수 +15%, 마리스 운명 및 소울 구출 시 바운드 영입 체인 완료"
     }
   };
 
-  // Canonical commander baseline profiles (all 33 characters in verified_data/characters.json)
-  const COMMANDER_PROFILES = {
-    chr_rance:       { hp: 22, troops: 420, maxTroops: 600, atk: 18, def: 13, mag: 4,  spd: 14, strikes: 28, lv: 10, snipe: true,  startRecruited: true },
-    chr_sill:        { hp: 14, troops: 280, maxTroops: 450, atk: 6,  def: 9,  mag: 16, spd: 12, strikes: 10, lv: 7,  snipe: false, imprisonedAt: "ter_volgo_z" },
-    chr_lia:         { hp: 12, troops: 0,   maxTroops: 0,   atk: 4,  def: 8,  mag: 10, spd: 10, strikes: 5,  lv: 5,  snipe: false, courtOnly: true },
-    chr_maris:       { hp: 15, troops: 340, maxTroops: 520, atk: 7,  def: 10, mag: 16, spd: 12, strikes: 12, lv: 8,  snipe: false, startRecruited: true },
-    chr_barres:      { hp: 20, troops: 620, maxTroops: 800, atk: 15, def: 17, mag: 4,  spd: 11, strikes: 20, lv: 9,  snipe: false, startRecruited: true },
-    chr_cordoba:     { hp: 22, troops: 1000, maxTroops: 1000, atk: 12, def: 21, mag: 5, spd: 8, strikes: 16, lv: 9,  snipe: false, startRecruited: true },
-    chr_rick:        { hp: 21, troops: 380, maxTroops: 650, atk: 20, def: 14, mag: 4,  spd: 16, strikes: 30, lv: 11, snipe: true,  startRecruited: true },
-    chr_kanami:      { hp: 14, troops: 240, maxTroops: 360, atk: 11, def: 9,  mag: 7,  spd: 19, strikes: 18, lv: 7,  snipe: false, startRecruited: true },
-    chr_leila:       { hp: 19, troops: 520, maxTroops: 700, atk: 14, def: 16, mag: 6,  spd: 12, strikes: 18, lv: 8,  snipe: false, startRecruited: true },
-    chr_ex:          { hp: 15, troops: 460, maxTroops: 680, atk: 13, def: 12, mag: 6,  spd: 13, strikes: 18, lv: 8,  snipe: false },
-    chr_maria:       { hp: 15, troops: 320, maxTroops: 500, atk: 19, def: 10, mag: 8,  spd: 9,  strikes: 20, lv: 8,  snipe: false },
-    chr_shizuka:     { hp: 16, troops: 300, maxTroops: 520, atk: 7,  def: 9,  mag: 21, spd: 13, strikes: 15, lv: 9,  snipe: false },
-    chr_soul:        { hp: 19, troops: 440, maxTroops: 600, atk: 17, def: 13, mag: 3,  spd: 14, strikes: 24, lv: 8,  snipe: true,  imprisonedAt: "ter_volgo_z" },
-    chr_miru:        { hp: 20, troops: 500, maxTroops: 700, atk: 15, def: 18, mag: 6,  spd: 10, strikes: 18, lv: 8,  snipe: false },
-    chr_kentarou:    { hp: 20, troops: 380, maxTroops: 560, atk: 19, def: 14, mag: 5,  spd: 15, strikes: 26, lv: 9,  snipe: true  },
-    chr_miki:        { hp: 18, troops: 260, maxTroops: 400, atk: 14, def: 14, mag: 20, spd: 14, strikes: 20, lv: 9,  snipe: false },
-    chr_patton:      { hp: 23, troops: 720, maxTroops: 900, atk: 20, def: 17, mag: 6,  spd: 13, strikes: 25, lv: 11, snipe: true  },
-    chr_sheila:      { hp: 18, troops: 580, maxTroops: 750, atk: 16, def: 15, mag: 7,  spd: 12, strikes: 20, lv: 9,  snipe: false },
-    chr_hunty:       { hp: 17, troops: 340, maxTroops: 520, atk: 9,  def: 11, mag: 22, spd: 13, strikes: 16, lv: 11, snipe: false },
-    chr_freak:       { hp: 17, troops: 460, maxTroops: 650, atk: 19, def: 15, mag: 8,  spd: 8,  strikes: 18, lv: 9,  snipe: false },
-    chr_freya:       { hp: 16, troops: 280, maxTroops: 420, atk: 14, def: 11, mag: 9,  spd: 20, strikes: 22, lv: 9,  snipe: false },
-    chr_gandhi:      { hp: 19, troops: 480, maxTroops: 680, atk: 10, def: 13, mag: 22, spd: 11, strikes: 18, lv: 11, snipe: false },
-    chr_magic:       { hp: 16, troops: 360, maxTroops: 540, atk: 8,  def: 10, mag: 21, spd: 13, strikes: 16, lv: 10, snipe: false },
-    chr_nagi:        { hp: 16, troops: 320, maxTroops: 500, atk: 8,  def: 10, mag: 20, spd: 14, strikes: 16, lv: 9,  snipe: false },
-    chr_chizuko:     { hp: 17, troops: 400, maxTroops: 580, atk: 9,  def: 11, mag: 19, spd: 12, strikes: 16, lv: 9,  snipe: false },
-    chr_mulala:      { hp: 14, troops: 300, maxTroops: 450, atk: 6,  def: 11, mag: 15, spd: 9,  strikes: 10, lv: 7,  snipe: false, courtOnly: true },
-    chr_isoroku:     { hp: 18, troops: 360, maxTroops: 560, atk: 19, def: 12, mag: 8,  spd: 16, strikes: 28, lv: 10, snipe: true  },
-    chr_kayblis:     { hp: 28, troops: 900, maxTroops: 1100, atk: 24, def: 20, mag: 22, spd: 15, strikes: 30, lv: 15, snipe: false },
-    chr_hornet:      { hp: 24, troops: 720, maxTroops: 900, atk: 20, def: 18, mag: 21, spd: 14, strikes: 25, lv: 13, snipe: false },
-    chr_warg:        { hp: 21, troops: 520, maxTroops: 700, atk: 16, def: 15, mag: 23, spd: 15, strikes: 22, lv: 12, snipe: false },
-    chr_satella:     { hp: 22, troops: 540, maxTroops: 740, atk: 20, def: 17, mag: 18, spd: 14, strikes: 24, lv: 12, snipe: false },
-    chr_haniwa_king: { hp: 26, troops: 300, maxTroops: 450, atk: 22, def: 23, mag: 24, spd: 15, strikes: 30, lv: 15, snipe: true  },
-    chr_rudrasaum:   { hp: 99, troops: 1200, maxTroops: 1200, atk: 35, def: 35, mag: 35, spd: 20, strikes: 30, lv: 30, snipe: false }
+  // Canonical Operation Tactics (작전 선택 보정)
+  const BATTLE_TACTICS = {
+    standard: {
+      id: "standard",
+      nameKr: "표준 진형",
+      shortKr: "표준",
+      atkMult: 1.0,
+      defMult: 1.0,
+      snipeBonus: 0,
+      critChance: 0.08,
+      zoneShift: 0,
+      description: "공방 균형을 유지하는 기본 군단 지휘 작전"
+    },
+    all_out_assault: {
+      id: "all_out_assault",
+      nameKr: "총공격 돌격",
+      shortKr: "총공격",
+      atkMult: 1.3,
+      defMult: 0.8,
+      snipeBonus: 0,
+      critChance: 0.16,
+      zoneShift: 4,
+      description: "화력 +30% · 전투역 압박 강화 / 대신 아군 방어 -20%"
+    },
+    fortify: {
+      id: "fortify",
+      nameKr: "철벽 방어",
+      shortKr: "철벽방어",
+      atkMult: 0.85,
+      defMult: 1.35,
+      snipeBonus: 0,
+      critChance: 0.05,
+      zoneShift: 1,
+      description: "아군 방어 +35% · 손실 최소화 / 대신 공격 -15%"
+    },
+    focused_strike: {
+      id: "focused_strike",
+      nameKr: "지휘관 집중타격",
+      shortKr: "집중타격",
+      atkMult: 1.05,
+      defMult: 0.92,
+      snipeBonus: 2,
+      critChance: 0.3,
+      zoneShift: 2,
+      description: "필살 저격 피해 +2 · 치명타 +30% / 방어 -8%"
+    }
   };
 
   // Territory strategic defaults by strategicType
@@ -107,7 +121,7 @@
     "ter_old_zeth"
   ];
 
-  // Scenario choice metadata (strategic, lore-focused, strictly safe)
+  // Scenario choice metadata for all 28 canonical scenarios (strictly strategy/diplomacy/lore-safe)
   const SCENARIO_CHOICES = {
     evt_bandit_prologue_ruberan: {
       summary: "북동부 헬만 국경 유적에서 루베란 토벌대와 조우했다. 정면 돌파로 도적왕의 길을 택할 것인가, 전략적 퇴각 후 리자스 왕권을 장악할 것인가?",
@@ -135,16 +149,16 @@
       ]
     },
     evt_custom_annexation_bundle: {
-      summary: "자유도시 커스텀을 제압·병합했다. 마리아 커스터드, 마소 시즈카, 미르 요크스가 리자스 군단에 합류를 제안한다.",
+      summary: "자유도시 커스텀을 제압·병합했다. 마리아·시즈카·미르·미리·엘레노아가 리자스 군단에 합류를 제안한다.",
       choices: [
-        { label: "커스텀 인재 일괄 합류 및 기술 협정 체결", hint: "마리아·시즈카·미르 합류 + 마리아 연구소 해금" }
+        { label: "커스텀 인재 일괄 합류 및 기술 협정 체결", hint: "5인 합류 + 마리아 연구소 & 커스텀 고대 미궁 해금" }
       ]
     },
     evt_maria_tulip_100: {
       summary: "마리아 연구소의 궁극 로켓 프로젝트 '튤립 100호'가 완성되었다! 대륙 정복을 뒤로하고 우주로 출항할 것인가?",
       choices: [
         { label: "튤립 100호 발사! 우주로 떠난다", hint: "특수 엔딩 end_to_outer_space 달성" },
-        { label: "발사를 보류하고 대륙 제패를 계속한다", hint: "마리아 사기 +15, 캠페인 지속" }
+        { label: "발사를 보류하고 대륙 제패를 계속한다", hint: "마리아 신뢰 +15, 캠페인 지속" }
       ]
     },
     evt_helman_freya_sabotage: {
@@ -164,21 +178,22 @@
     evt_zeth_four_towers_collapse: {
       summary: "제스 사천왕의 4대 원소 탑이 모두 붕괴했다! 제스 왕국의 잔여 영토가 리자스 왕국에 자동 편입된다.",
       choices: [
-        { label: "제스 잔여 영토 병합 및 왕가 마도사 영입", hint: "제스 전 영토 편입 + 매직·간지 합류" }
+        { label: "제스 잔여 영토 병합 및 왕가 마도사 영입", hint: "제스 전 영토 편입 + 매직·간지·치즈코 합류" }
       ]
     },
     evt_lake_sasa_haniwa_king: {
       summary: "사사호의 정령이 라질에서 얻은 '알루미늄 도끼'와 '황금 도끼'를 꺼내 들었다. 어느 쪽을 선택할 것인가?",
       choices: [
-        { label: "정직하게 알루미늄 도끼를 선택한다", hint: "호저미궁 지하 66층 개방 (탐색 2회로 하니와 킹 영입)" },
+        { label: "정직하게 알루미늄 도끼를 선택한다", hint: "호저미궁 지하 66층 개방 (던전 답파로 하니와 킹 합류)" },
         { label: "황금 도끼와 보물(8,000G)을 챙긴다", hint: "+8,000G 획득, 단 호저미궁 영구 폐쇄" }
       ]
     },
     evt_kanami_shinobu_assassination: {
-      summary: "리자스 첩보대장 카나미의 누적 피로와 시노부 암살 첩보가 보고되었다. 닌자 군단의 처우를 결정하라.",
+      summary: "리자스 첩보대장 카나미의 피로 누적과 동방 암살자 시노부의 침투 첩보가 보고되었다. 대응을 결정하라.",
       choices: [
-        { label: "카나미에게 휴식과 포상을 내려 암살 음모를 차단한다", hint: "카나미 신뢰 상승 · 행복 운명 확보" },
-        { label: "가혹한 강행군을 강요한다 (암살 위험 경고!)", hint: "누적 시 코드/시노부 출현 → end_assassinated" }
+        { label: "카나미에게 휴식과 포상을 내려 암살 음모를 차단한다", hint: "카나미 신뢰 +25 · 암살 1/2 위기 모두 해소" },
+        { label: "동방 시노부 암살 첩보를 무시한다 (위험: 암살 1)", hint: "시노부 침투 → end_assassinated 발동" },
+        { label: "카나미에게 극한 강행군을 강요한다 (위험: 암살 2)", hint: "코드(Code) 개입 → end_assassinated_2 발동" }
       ]
     },
     evt_miki_kentarou_demon_king_crisis: {
@@ -213,8 +228,85 @@
       choices: [
         { label: "와그의 몽환 최면으로 창조신을 잠재운다 (와그 합류 필수)", hint: "시일 생존 시 진 엔딩(Bliss) / 부재 시 세계왕(World King)" },
         { label: "창조신의 혼돈 창조 제안에 동의한다", hint: "신의 종(Servant) 엔딩" },
-        { label: "최면 없이 창조신에게 정면 도전한다", hint: "신(God) 유폐 엔딩" },
-        { label: "리아 여왕과 리자스 왕권 수호 서약을 택한다 (시일 부재 분기)", hint: "리아/리자스 특수 분기 엔딩" }
+        { label: "최면 없이 창조신에게 정면 도전한다", hint: "신(God: 파괴, 그리고 창조) 엔딩" }
+      ]
+    },
+    evt_bound_library_recruit: {
+      summary: "수도 도서관 완공과 소울의 정보망이 맞물려 옛 도적단 동료 바운드 레스의 행방이 확인되었다!",
+      choices: [
+        { label: "바운드 레스를 리자스 유격 지휘관으로 영입한다", hint: "chr_bound 합류 + 사기 +6" }
+      ]
+    },
+    evt_leazas_officers_academy: {
+      summary: "리자스 여자 사관학교 모의 전술 대회가 열렸다! 신진 여성 사관들을 리자스 정규군에 편입하라.",
+      choices: [
+        { label: "아르코트·라팔리아·줄리아·아비아토르를 정규 임관한다", hint: "리자스 사관 4인 일괄 합류!" }
+      ]
+    },
+    evt_menad_discipline_crisis: {
+      summary: "리자스 적군 부장 메나드 휘하에서 군자금 횡령 및 배신 음모가 포착되었다. 단호히 숙청할 것인가?",
+      choices: [
+        { label: "배신 세력을 즉시 숙청하고 메나드의 지휘권을 확립한다", hint: "메나드 신뢰 +25 · 행복 운명 조건 달성" },
+        { label: "보고를 묵인하고 전선 진격을 우선한다", hint: "메나드 위기 미해결 상태 유지" }
+      ]
+    },
+    evt_melfeis_curse_spring: {
+      summary: "리자스 마법군 부장 멜페이스의 금단 비약 부작용을 치유할 '해저주의 샘' 좌표가 확보되었다.",
+      choices: [
+        { label: "해저주의 샘으로 호위대를 파견해 저주를 정화한다", hint: "멜페이스 MAG +3 · 행복 운명 조건 달성" }
+      ]
+    },
+    evt_helman_patton_vs_generals: {
+      summary: "헬만 제국 내전 분기! 추방 황자 패튼 혁명군과 동맹을 맺을 것인가, 제국 정규 3장군을 회유·포섭할 것인가?",
+      choices: [
+        { label: "패튼 혁명군과 연합한다 (패튼·헌티·휴버트·프리크)", hint: "혁명군 4인 합류 + 헌티/호넷 운명 호조" },
+        { label: "제국 정규군 3장군을 회유한다 (아리스토레스·롤렉스·레류코프·실라)", hint: "제국 정예 4인 합류 + 실라 운명 호조" }
+      ]
+    },
+    evt_free_cities_sel_rescue: {
+      summary: "자유도시 상단 소속 신관 셀 카치골프가 악덕 채권단에게 압박받고 있다. 리자스 국고로 구제할 것인가?",
+      choices: [
+        { label: "리자스 국고(2,000G)로 채무를 변제하고 셀을 영입한다", hint: "chr_sel 합류 + 행복 운명 조건 달성" },
+        { label: "개입하지 않고 상단 자치에 맡긴다", hint: "셀 미합류" }
+      ]
+    },
+    evt_custom_ancient_labyrinth: {
+      summary: "커스텀 고대 미궁(하이퍼 빌딩 201F)에서 고대 유물 '지혜의 반지'와 마도 코어를 회수했다!",
+      choices: [
+        { label: "유물을 회수해 리자스 군단과 마리아 연구소에 배치한다", hint: "란스 ATK/MAG +3 · 튤립 진척도 +25%" }
+      ]
+    },
+    evt_zeth_magic_tower_delve: {
+      summary: "제스 마법탑(성녀의 미궁) 최상층에서 고대 봉인 저주에 갇힌 마법사 리즈나 란프리트를 발견했다!",
+      choices: [
+        { label: "대마도사의 지팡이로 봉인을 해제하고 리즈나를 영입한다", hint: "chr_rizna 합류 · 마검 카오스 확보 · 행복 운명" }
+      ]
+    },
+    evt_japan_nobunaga_kenshin_campaign: {
+      summary: "동방 섬나라 JAPAN에서 마인 노부나가 토벌과 군신 우에스기 켄신과의 명예 결전 분기가 열렸다!",
+      choices: [
+        { label: "정정당당한 명예 결전으로 켄신의 신뢰를 얻어 영입한다", hint: "chr_kenshin 합류 · 레이라 보호" },
+        { label: "JAPAN과 정략 타협을 시도한다 (위험: 레이라 불행)", hint: "자금 +6,000G 대신 레이라 불행 분기" }
+      ]
+    },
+    evt_al_church_gawain_cafe_relics: {
+      summary: "AL교 총본산과 레디 상단에서 템플나이트 단장 가웨인과 1500년 신관 카페가 회담을 요청했다!",
+      choices: [
+        { label: "평화 성전 협정을 체결한다 (가웨인·카페 합류 + 고대 신상 +1)", hint: "강력 방벽 가웨인 & 대신관 카페 합류" },
+        { label: "상단을 무력 접수한다 (가웨인·칼페나이트 합류 + 4,000G)", hint: "검사 칼페나이트 합류 + 자금 확보" }
+      ]
+    },
+    evt_demon_hornet_rescue_galtia: {
+      summary: "마계 온건파 수장 호넷의 구원 작전 및 식도락 마인 가르티아의 요리 승부 초청이 도착했다!",
+      choices: [
+        { label: "호넷파를 구원하고 요리 승부로 가르티아·사이젤 자매를 영입한다", hint: "chr_galtia·chr_saizel 합류 + 호넷 행복 운명" }
+      ]
+    },
+    evt_saulnia_poison_trap_crisis: {
+      summary: "헬만 제5군 출신 포로(카츄샤·소르니아)가 화친 연회를 명목으로 독살 함정을 꾸몄다! 시일이 부재하면 치명적이다.",
+      choices: [
+        { label: "철저히 독검사를 실시하고 음모를 역제압한다", hint: "함정 무력화 + 압수 군자금 +3,000G" },
+        { label: "경계 없이 연회에 참석한다 (시일 부재 시 독살 엔딩!)", hint: "시일 부재 시 즉시 end_poisoned 발동" }
       ]
     }
   };
@@ -278,7 +370,7 @@
       type,
       text
     });
-    if (state.log.length > 80) state.log.length = 80;
+    if (state.log.length > 100) state.log.length = 100;
   }
 
   function countAliveRecruitedNinjas(state) {
@@ -351,6 +443,17 @@
     return allRequiredOwned ? "CREATOR_PHASE" : "END_UNIFICATION";
   }
 
+  function getCombatZoneInfo(combatZone) {
+    const z = Math.max(0, Math.min(100, Math.round(combatZone ?? 50)));
+    if (z >= 65) {
+      return { value: z, state: "PLAYER_ADVANTAGE", labelKr: "아군 전선 우세 (+12% 화력)", playerMult: 1.12, enemyMult: 0.94 };
+    }
+    if (z <= 35) {
+      return { value: z, state: "ENEMY_ADVANTAGE", labelKr: "적군 전선 압박 (-10% 화력)", playerMult: 0.9, enemyMult: 1.1 };
+    }
+    return { value: z, state: "CONTESTED", labelKr: "전투역 호각", playerMult: 1.0, enemyMult: 1.0 };
+  }
+
   function getOwnersMap(state) {
     const map = {};
     for (const [id, t] of Object.entries(state.territories)) {
@@ -363,14 +466,6 @@
     const map = {};
     for (const cls of data.unitClasses) {
       map[cls.id] = cls;
-    }
-    return map;
-  }
-
-  function getTerritoryDefMap(data) {
-    const map = {};
-    for (const t of data.territories) {
-      map[t.id] = t;
     }
     return map;
   }
@@ -388,12 +483,25 @@
     }
   }
 
+  function grantRelic(state, relicObj) {
+    if (!relicObj || !relicObj.id) return false;
+    if (!Array.isArray(state.relics)) state.relics = [];
+    if (state.relics.some((r) => r.id === relicObj.id)) return false;
+    state.relics.push({
+      id: relicObj.id,
+      nameKr: relicObj.nameKr,
+      effectKr: relicObj.effectKr
+    });
+    if (!state.items.includes(relicObj.id)) state.items.push(relicObj.id);
+    return true;
+  }
+
   function setEnding(state, data, endingId, reason) {
     if (state.endingId) return;
     const endingDef = data.endings.find((e) => e.id === endingId);
     state.endingId = endingId;
     state.endingReason = reason || (endingDef ? endingDef.conditionSummary : endingId);
-    finalizeCharacterDestinies(state);
+    finalizeCharacterDestinies(state, data);
     addLog(
       state,
       "ending",
@@ -401,24 +509,351 @@
     );
   }
 
-  function finalizeCharacterDestinies(state) {
-    for (const c of Object.values(state.commanders)) {
-      if (!c.hasDestinyPair) continue;
-      if (c.destinyFlag === "PENDING") {
-        if (!c.alive || c.imprisoned || c.mistreatmentCount >= 2) {
-          c.destinyFlag = "MISFORTUNE";
-        } else if (c.recruited && c.trust >= 50) {
-          c.destinyFlag = "FORTUNE";
-        } else if (state.endingId === "end_bliss" && c.recruited) {
-          c.destinyFlag = "FORTUNE";
+  // ==================== LIVE 28-CHARACTER DESTINY EVALUATOR ====================
+
+  function evaluateSingleDestiny(state, dst) {
+    const c = state.commanders[dst.characterId];
+    if (!c) {
+      return {
+        ...dst,
+        status: "NEUTRAL",
+        progressPct: 0,
+        reasonKr: "캐릭터 데이터 미확인"
+      };
+    }
+
+    const hasHospital = state.territories.ter_leazas_castle.facilities.includes("hospital");
+    const hasMagicLab = state.territories.ter_leazas_castle.facilities.includes("magic_lab");
+    const hasMariaLab = state.territories.ter_leazas_castle.facilities.includes("maria_lab");
+    const hasLibrary = state.territories.ter_leazas_castle.facilities.includes("library");
+    const key = dst.evaluationKey;
+
+    let status = "NEUTRAL";
+    let progressPct = c.recruited ? 50 : 15;
+    let reasonKr = c.recruited ? "합류 완료 · 추가 시나리오/신뢰 조건 진행 중" : "미합류 · 해당 세력 정복 또는 이벤트 필요";
+
+    // Explicit failure / death check first (except non-combat Hornet handled specifically)
+    if (!c.alive && dst.characterId !== "chr_hornet") {
+      return { ...dst, status: "UNHAPPY", progressPct: 0, reasonKr: "전투 중 전사 또는 기한 만료로 상실됨" };
+    }
+
+    switch (key) {
+      case "sill":
+        if (!state.flags.sillAlive || state.timers.volgoZSill.status === "EXPIRED") {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "볼고 Z 구출 실패 또는 시일 상실";
+        } else if (state.flags.sillRescued && c.recruited && c.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "볼고 Z 기한 내 구출 및 생존 유지 (진 엔딩 Bliss 가능)";
         } else {
-          c.destinyFlag = c.recruited ? "FORTUNE" : "MISFORTUNE";
+          status = "NEUTRAL"; progressPct = 35; reasonKr = "볼고 Z 수감 중 — LP 4/01/3 이전 구출 필요";
         }
-      }
+        break;
+
+      case "lia":
+        if (state.territories.ter_leazas_castle.owner !== "fac_leazas" || state.endingId === "end_bliss") {
+          status = "UNHAPPY"; progressPct = 10; reasonKr = state.endingId === "end_bliss" ? "란스가 시일과 모험을 떠나 이별함 (상호 배타)" : "리자스성 함락";
+        } else if (state.endingId === "end_world_king" || (!state.flags.sillAlive && c.trust >= 70) || c.trust >= 80) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "리자스 왕권 수호 및 높은 왕실 신뢰 달성";
+        } else {
+          status = "NEUTRAL"; progressPct = Math.min(85, Math.round((c.trust / 80) * 100)); reasonKr = `리자스성 수호 중 (신뢰 ${c.trust}/80)`;
+        }
+        break;
+
+      case "maris":
+        if (state.endingId === "end_bliss" || state.territories.ter_leazas_castle.owner !== "fac_leazas") {
+          status = "UNHAPPY"; progressPct = 10; reasonKr = "리아 여왕 불행 분기와 연동됨";
+        } else if (c.recruited && hasLibrary && c.trust >= 70) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "도서관 완공 및 재상 신뢰 70+ 달성";
+        } else {
+          progressPct = (hasLibrary ? 50 : 20) + Math.min(40, Math.round((c.trust / 70) * 40));
+          reasonKr = `${hasLibrary ? "도서관 보유" : "수도 도서관 건설 필요"} · 신뢰 ${c.trust}/70`;
+        }
+        break;
+
+      case "kanami":
+        if (c.mistreatmentCount >= 2 || state.endingId === "end_assassinated_2") {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = `누적 혹사(${c.mistreatmentCount})로 암살 위기 폭발`;
+        } else if (c.recruited && c.mistreatmentCount === 0 && (state.completedScenarios.includes("evt_kanami_shinobu_assassination") || c.trust >= 75)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "첩보대 포상 및 신뢰 회복 완료";
+        } else {
+          progressPct = c.mistreatmentCount === 0 ? 55 : 25;
+          reasonKr = `카나미 포상 시나리오 완료 또는 신뢰 75+ 필요 (현재 ${c.trust}, 피로 ${c.mistreatmentCount})`;
+        }
+        break;
+
+      case "leila":
+        if (state.flags.leilaSentToJapan) {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "JAPAN 정략 양도로 이별";
+        } else if (c.recruited && state.commanders.chr_rick.alive && c.trust >= 75) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "릭과 함께 생존하며 신뢰 75+ 달성";
+        } else {
+          progressPct = Math.min(90, Math.round((c.trust / 75) * 90));
+          reasonKr = `친위대장 생존 유지 & 신뢰 ${c.trust}/75 필요`;
+        }
+        break;
+
+      case "ex":
+        if (c.recruited && c.trust >= 70) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "백군 반란 화해 및 참모 복권 달성";
+        } else {
+          progressPct = c.recruited ? Math.min(90, Math.round((c.trust / 70) * 90)) : 20;
+          reasonKr = c.recruited ? `신뢰 ${c.trust}/70 필요` : "백군 반란 거점 진압 후 등용 필요";
+        }
+        break;
+
+      case "maria":
+        if (c.recruited && hasMariaLab && hasHospital) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "마리아 연구소 + 수도 병원 안전망 완비";
+        } else if (c.recruited && hasMariaLab && !hasHospital && state.flags.tulipProgress >= 70) {
+          status = "UNHAPPY"; progressPct = 20; reasonKr = "병원 미건설 상태 — 연구소 사고 위험!";
+        } else {
+          progressPct = (c.recruited ? 35 : 0) + (hasMariaLab ? 35 : 0) + (hasHospital ? 25 : 0);
+          reasonKr = "커스텀 합류 + 마리아 연구소 + 수도 병원 건설 필요";
+        }
+        break;
+
+      case "shizuka":
+        if (c.destinyFlag === "MISFORTUNE") {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "아담 요새 선점령 여파로 결투 위기 악화";
+        } else if (c.recruited && state.commanders.chr_maria.alive && (state.flags.shizukaDuelResolved || c.trust >= 75)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "제스 결투 극복 및 마리아와 생존 유지";
+        } else {
+          progressPct = c.recruited ? 55 : 15;
+          reasonKr = "커스텀 합류 후 제스 5주 결투 시나리오 해결 필요";
+        }
+        break;
+
+      case "nagi":
+        if (c.recruited && c.trust >= 65) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "리자스 마도사로 합류 및 신뢰 안착";
+        } else {
+          progressPct = c.recruited ? 70 : 15;
+          reasonKr = c.recruited ? `신뢰 ${c.trust}/65 필요` : "제스 결투 설득 또는 테이프 포로 등용 필요";
+        }
+        break;
+
+      case "magic":
+        if (c.recruited && hasMagicLab) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "제스 해방 + 마법연구소 지원 확보";
+        } else {
+          progressPct = (c.recruited ? 55 : 15) + (hasMagicLab ? 35 : 0);
+          reasonKr = "제스 4탑 해방 합류 + 수도 마법연구소 건설 필요";
+        }
+        break;
+
+      case "rizna":
+        if (c.recruited && (state.flags.riznaCurseCured || state.clearedDungeons.includes("dng_zeth_magic_tower"))) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "제스 마법탑 던전 답파 및 해저주 완료";
+        } else {
+          progressPct = c.recruited ? 60 : 15;
+          reasonKr = "제스 마법탑(성녀의 미궁) 던전 보스 격파 필요";
+        }
+        break;
+
+      case "miki":
+        if (state.flags.kayblisInvincible || state.endingId === "end_demon_king_2" || !state.commanders.chr_kentarou.alive) {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "켄타로 상실, Pi-R 포획 또는 마왕 각성 발동";
+        } else if (c.recruited && state.commanders.chr_kentarou.recruited && state.commanders.chr_kentarou.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "켄타로와 함께 Pi-R 격퇴 및 안전 확보";
+        } else {
+          progressPct = state.flags.mikiActive ? 45 : 15;
+          reasonKr = "자유도시 아이스 점령 후 Pi-R 격퇴 시나리오 완료 필요";
+        }
+        break;
+
+      case "mill":
+        if (c.recruited && hasHospital) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "수도 병원 치료로 지병 극복 및 건재";
+        } else if (c.recruited && !hasHospital && state.turn >= 20) {
+          status = "UNHAPPY"; progressPct = 20; reasonKr = "장기전 중 병원 미보유로 병세 악화 위험";
+        } else {
+          progressPct = (c.recruited ? 45 : 15) + (hasHospital ? 45 : 0);
+          reasonKr = "커스텀 합류 + 수도 병원 건설 필요";
+        }
+        break;
+
+      case "miru":
+        if (!state.commanders.chr_mill.alive) {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "미리 요크스 상실";
+        } else if (c.recruited && (state.clearedDungeons.includes("dng_custom_labyrinth") || c.trust >= 70)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "커스텀 미궁 답파 및 괴수 부대장 성장";
+        } else {
+          progressPct = c.recruited ? 55 : 15;
+          reasonKr = "커스텀 합류 + 고대 미궁 답파 또는 신뢰 70+ 필요";
+        }
+        break;
+
+      case "eleanor":
+        if (c.mistreatmentCount > 0) {
+          status = "UNHAPPY"; progressPct = 10; reasonKr = "과도한 압박으로 사기 붕괴";
+        } else if (c.recruited && c.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "절제된 예우와 안정적 합류 유지";
+        } else {
+          progressPct = 20; reasonKr = "커스텀 병합 시 합류";
+        }
+        break;
+
+      case "sel":
+        if (c.recruited && state.flags.selRescued) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "채무 구제 시나리오 완료 및 합류";
+        } else {
+          progressPct = c.recruited ? 60 : 15;
+          reasonKr = "포르투갈 점령 또는 자유도시 동맹 후 셀 구제 시나리오 필요";
+        }
+        break;
+
+      case "kenshin":
+        if (c.recruited && (state.flags.japanHonorPact || c.trust >= 70)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "JAPAN 명예 결전 등용 및 신뢰 확립";
+        } else {
+          progressPct = c.recruited ? 65 : 15;
+          reasonKr = "JAPAN 원정에서 켄신 명예 등용 + 신뢰 70+ 필요";
+        }
+        break;
+
+      case "isoroku":
+        if (c.recruited && (c.maxTroops >= 560 || c.trust >= 70)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "JAPAN 본토 합류 및 정예 궁수대 재흥";
+        } else {
+          progressPct = c.recruited ? 65 : 15;
+          reasonKr = "JAPAN 본토 점령 후 합류 필요";
+        }
+        break;
+
+      case "hornet":
+        if (state.flags.hornetRescued && state.commanders.chr_patton.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "호넷 거점 해방 및 마계 온건파 구원 완료";
+        } else if (state.flags.demonInvasionTriggered && !state.flags.hornetRescued) {
+          status = "UNHAPPY"; progressPct = 25; reasonKr = "케이브리스에게 흡수·유폐 중 — 호넷 거점 해방 필요";
+        } else {
+          progressPct = 20; reasonKr = "마계 페이즈에서 호넷 거점 해방·구원 필요";
+        }
+        break;
+
+      case "freya":
+        if (c.recruited && state.flags.freyaCountered && c.trust >= 60) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "공작 저지·전향 합류 및 첩보 신뢰 확보";
+        } else {
+          progressPct = c.recruited ? 65 : 20;
+          reasonKr = "헬만 개전 후 프레이야 공작 저지·등용 및 신뢰 60+ 필요";
+        }
+        break;
+
+      case "sheila":
+        if (c.recruited && (state.commanders.chr_aristoles.recruited || state.commanders.chr_patton.recruited) && c.trust >= 60) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "헬만 충신진의 수호 속에 제국 황녀 평안 유지";
+        } else {
+          progressPct = c.recruited ? 60 : 15;
+          reasonKr = "랑 바우 정복 합류 + 아리스토레스/패튼 합류 + 신뢰 60+";
+        }
+        break;
+
+      case "hunty":
+        if (!state.commanders.chr_patton.alive) {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "패튼 전사로 헌티 실종 분기";
+        } else if (c.recruited && state.commanders.chr_patton.recruited && state.commanders.chr_patton.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "패튼과 함께 리자스군에 합류·생존";
+        } else {
+          progressPct = c.recruited ? 55 : 15;
+          reasonKr = "패튼과 동반 합류 및 생존 유지 필요";
+        }
+        break;
+
+      case "menad":
+        if (state.campaignPhase === "CREATOR_PHASE" && !state.flags.menadCrisisResolved) {
+          status = "UNHAPPY"; progressPct = 15; reasonKr = "창조신 페이즈까지 군기 숙청 미해결";
+        } else if (c.recruited && state.flags.menadCrisisResolved && c.trust >= 70) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "적군 군기 숙청 완료 및 신뢰 70+";
+        } else {
+          progressPct = (state.flags.menadCrisisResolved ? 60 : 25) + Math.min(35, Math.round((c.trust / 70) * 35));
+          reasonKr = "메나드 군기 숙청 시나리오 + 신뢰 70+ 필요";
+        }
+        break;
+
+      case "haurein":
+        if (!state.commanders.chr_barres.alive) {
+          status = "UNHAPPY"; progressPct = 0; reasonKr = "부친 바레스 전사";
+        } else if (c.recruited && c.battleLv >= 10 && state.commanders.chr_barres.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "전투 LV 10+ 달성 및 바레스와 건재";
+        } else {
+          progressPct = c.recruited ? Math.min(90, Math.round((c.battleLv / 10) * 90)) : 20;
+          reasonKr = c.recruited ? `전투 LV ${c.battleLv}/10 달성 필요` : "백군 반란 거점 포로 등용 필요";
+        }
+        break;
+
+      case "melfeis":
+        if (c.recruited && state.flags.melfeisCurseCured) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "해저주의 샘 시나리오로 저주 정화 완료";
+        } else {
+          progressPct = c.recruited ? 50 : 20;
+          reasonKr = c.recruited ? "해저주의 샘 시나리오 해결 필요" : "백군 반란 거점 포로 등용 필요";
+        }
+        break;
+
+      case "julia":
+        if (c.recruited && (c.maxTroops >= 600 || state.flags.sasaB66Clears >= 1)) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "슈퍼 줄리아 훈련(병력 600+ 또는 B66F 수련) 달성";
+        } else {
+          progressPct = c.recruited ? 55 : 20;
+          reasonKr = "사관학교 임관 후 증원(600+) 또는 사사호 B66F 수련 필요";
+        }
+        break;
+
+      case "somita":
+        if (c.recruited && c.battlesFought >= 5) {
+          status = "UNHAPPY"; progressPct = 10; reasonKr = `과도한 전장 출격(${c.battlesFought}회) — 타락 분기`;
+        } else if (c.recruited && c.battlesFought <= 4) {
+          status = "HAPPY"; progressPct = 100; reasonKr = `출격 ${c.battlesFought}/4 이하 유지 — 천사 각성 조건 충족`;
+        } else {
+          progressPct = 20; reasonKr = "제스 앰버 시티 점령·포로 등용 후 출격 4회 이하 유지";
+        }
+        break;
+
+      case "satella":
+        if (state.flags.kayblisInvincible || state.endingId === "end_demon_king_1") {
+          status = "UNHAPPY"; progressPct = 10; reasonKr = "마왕화 폭주 또는 케이브리스 무적화";
+        } else if (c.recruited && c.alive && state.commanders.chr_miki.alive) {
+          status = "HAPPY"; progressPct = 100; reasonKr = "미키 호위 동맹 합류 및 생존 유지";
+        } else {
+          progressPct = 20; reasonKr = "호넷 거점 점령 후 마왕 제안 거절·동맹 영입 필요";
+        }
+        break;
+
+      default:
+        if (c.destinyFlag === "FORTUNE") {
+          status = "HAPPY"; progressPct = 100;
+        } else if (c.destinyFlag === "MISFORTUNE") {
+          status = "UNHAPPY"; progressPct = 0;
+        }
+        break;
+    }
+
+    return {
+      ...dst,
+      status,
+      progressPct,
+      reasonKr
+    };
+  }
+
+  function evaluateDestinies(state, rawData) {
+    const data = resolveData(rawData);
+    const list = data.destinies || [];
+    return list.map((dst) => evaluateSingleDestiny(state, dst));
+  }
+
+  function finalizeCharacterDestinies(state, data) {
+    const evaluated = evaluateDestinies(state, data);
+    for (const item of evaluated) {
+      const c = state.commanders[item.characterId];
+      if (!c) continue;
+      if (item.status === "HAPPY") c.destinyFlag = "FORTUNE";
+      else if (item.status === "UNHAPPY") c.destinyFlag = "MISFORTUNE";
+      else c.destinyFlag = c.recruited && c.alive ? "FORTUNE" : "MISFORTUNE";
     }
   }
 
-  // Create Initial Deterministic WorldState
+  // ==================== CREATE INITIAL STATE ====================
+
   function createInitialState(rawData, options) {
     const data = resolveData(rawData);
     const opts = options || {};
@@ -459,6 +894,8 @@
         capitalTerritoryId: f.capitalTerritoryId,
         leaderCharacterId: f.leaderCharacterId,
         diplomaticStance: f.diplomaticStance,
+        diplomaticRelation: f.id === "fac_leazas" ? "PLAYER" : f.id === "fac_ex_rebellion" ? "WAR" : "NEUTRAL",
+        truceTurns: 0,
         atWarWithPlayer: f.id === "fac_ex_rebellion",
         warStartTurn: f.id === "fac_ex_rebellion" ? 1 : null,
         defeated: false
@@ -467,41 +904,46 @@
 
     const commanders = {};
     for (const ch of data.characters) {
-      const prof = COMMANDER_PROFILES[ch.id] || {
-        hp: 16, troops: 350, maxTroops: 500, atk: 12, def: 12, mag: 10, spd: 12, strikes: 15, lv: 7, snipe: false
+      const s = ch.initialStats || {
+        hp: 16, troops: 350, maxTroops: 500, atk: 12, def: 12, mag: 10, spd: 12, strikes: 15, battleLv: 7, hasSnipe: false
       };
       const cls = classMap[ch.unitClassId] || { preferredRow: "FRONT" };
-      const recruited = Boolean(prof.startRecruited);
-      const imprisoned = Boolean(prof.imprisonedAt);
+      const recruited = Boolean(s.startRecruited);
+      const imprisoned = Boolean(s.imprisonedAt);
+      const preferredRow = s.preferredRow || cls.preferredRow || "FRONT";
       commanders[ch.id] = {
         id: ch.id,
         nameKr: ch.nameKr,
+        nameJp: ch.nameJp,
         nameEn: ch.nameEn,
         initialFactionId: ch.initialFactionId,
         classId: ch.unitClassId,
         homeTerritoryId: ch.homeTerritoryId,
         isPlayableSubordinate: Boolean(ch.isPlayableSubordinate),
         hasDestinyPair: Boolean(ch.hasDestinyPair),
+        recruitmentMethod: ch.recruitmentMethod || "SCENARIO_CHAIN",
+        statsBasis: s.statsBasis || "BALANCED_RECONSTRUCTION",
         signatureSkill: ch.signatureSkill,
         recruitmentAndScenarioRole: ch.recruitmentAndScenarioRole,
-        commanderHp: prof.hp,
-        maxCommanderHp: prof.hp,
-        troops: prof.troops,
-        maxTroops: prof.maxTroops,
-        atk: prof.atk,
-        def: prof.def,
-        mag: prof.mag,
-        spd: prof.spd,
-        strikes: prof.strikes,
-        battleLv: prof.lv,
-        hasSnipe: Boolean(prof.snipe),
-        row: cls.preferredRow === "BACK" ? "BACK" : "FRONT",
+        commanderHp: s.hp,
+        maxCommanderHp: s.hp,
+        troops: s.troops,
+        maxTroops: s.maxTroops,
+        atk: s.atk,
+        def: s.def,
+        mag: s.mag,
+        spd: s.spd || 12,
+        strikes: s.strikes,
+        battleLv: s.battleLv || 8,
+        hasSnipe: Boolean(s.hasSnipe),
+        row: preferredRow === "BACK" ? "BACK" : "FRONT",
         alive: true,
         recruited,
         captured: false,
         imprisoned,
         trust: recruited ? 55 : 20,
         mistreatmentCount: 0,
+        battlesFought: 0,
         destinyFlag: "PENDING"
       };
     }
@@ -515,6 +957,7 @@
       gold: 18000,
       morale: 75,
       items: [],
+      relics: [],
       territories,
       factions,
       commanders,
@@ -553,11 +996,21 @@
         wargSleepUnlocked: false,
         creatorPhaseUnlocked: false,
         defeatedDemonsCount: 0,
-        boundRecruited: false
+        boundRecruited: false,
+        menadCrisisResolved: false,
+        melfeisCurseCured: false,
+        selRescued: false,
+        riznaCurseCured: false,
+        japanHonorPact: false,
+        leilaSentToJapan: false,
+        hornetRescued: false
       },
       activeScenarios: [],
       completedScenarios: [],
+      pendingCaptures: [],
       activeBattle: null,
+      activeDungeon: null,
+      clearedDungeons: [],
       endingId: null,
       endingReason: null,
       rngSeed: seed,
@@ -572,6 +1025,7 @@
       addLog(state, "scenario", "프롤로그 개시: 북동부 헬만 유적에서 루베란 토벌대와 대치 중이다.");
     } else {
       queueScenario(state, "evt_kanami_shinobu_assassination");
+      queueScenario(state, "evt_menad_discipline_crisis");
       addLog(
         state,
         "system",
@@ -582,7 +1036,8 @@
     return state;
   }
 
-  // Helper: Check if a territory is adjacent to player-owned territory
+  // ==================== ADJACENCY & INVASION ====================
+
   function isAdjacentToPlayer(state, territoryId) {
     const t = state.territories[territoryId];
     if (!t) return false;
@@ -595,6 +1050,7 @@
   function canInvade(state, targetTerritoryId) {
     if (state.endingId) return { ok: false, error: "이미 엔딩이 달성되었습니다." };
     if (state.activeBattle) return { ok: false, error: "현재 진행 중인 전투를 먼저 종료해야 합니다." };
+    if (state.activeDungeon) return { ok: false, error: "진행 중인 던전 원정을 먼저 종료해야 합니다." };
     if (state.weeklySlots.invasion <= 0) {
       return { ok: false, error: "이번 주 침공 슬롯을 이미 사용했습니다. 턴을 종료하세요." };
     }
@@ -602,6 +1058,14 @@
     if (!t) return { ok: false, error: "존재하지 않는 영토입니다." };
     if (t.owner === "fac_leazas") return { ok: false, error: "이미 리자스 왕국이 지배 중인 영토입니다." };
     if (t.locked) return { ok: false, error: "현재 페이즈에서는 진입이 잠긴 영토입니다." };
+
+    const ownerFac = state.factions[t.owner];
+    if (ownerFac && ownerFac.diplomaticRelation === "TRUCE" && ownerFac.truceTurns > 0) {
+      return { ok: false, error: `${ownerFac.nameKr}과(와) 휴전 중입니다 (외교 탭에서 선전포고 필요).` };
+    }
+    if (ownerFac && ownerFac.diplomaticRelation === "ALLIANCE") {
+      return { ok: false, error: `${ownerFac.nameKr}은(는) 동맹국입니다 (선전포고 후 침공 가능).` };
+    }
 
     if (state.campaignPhase === "BANDIT_PROLOGUE") {
       return { ok: false, error: "프롤로그 이벤트를 먼저 해결해야 본편 침공이 가능합니다." };
@@ -618,28 +1082,27 @@
     return { ok: true };
   }
 
-  // Build enemy garrison squad for target territory
   function buildEnemySquads(state, data, targetTerritoryId) {
     const ter = state.territories[targetTerritoryId];
     const classMap = getClassMap(data);
     const baseTroops = Math.max(80, Math.round(ter.garrisonTroops * (ter.sabotaged ? 0.7 : 1)));
 
-    // Find canonical commanders residing in this territory who are not recruited by player and alive
     const residents = Object.values(state.commanders).filter(
       (c) =>
         c.homeTerritoryId === targetTerritoryId &&
+        c.initialFactionId !== "fac_leazas" &&
         !c.recruited &&
         !c.imprisoned &&
+        !c.captured &&
         c.alive &&
-        c.isPlayableSubordinate !== undefined &&
         c.id !== "chr_lia" &&
         c.id !== "chr_mulala"
     );
 
     const units = [];
-    const maxSlots = Math.min(4, Math.max(2, residents.length + 1));
+    const maxSlots = Math.min(4, Math.max(2, residents.length + (residents.length < 3 ? 1 : 0)));
+    const earlyScale = ter.owner === "fac_ex_rebellion" ? 0.72 : 1.0;
 
-    // Place canonical residents first
     for (const c of residents) {
       if (units.length >= 4) break;
       const cls = classMap[c.classId] || { preferredRow: "FRONT", attackType: "DIRECT" };
@@ -648,18 +1111,19 @@
         characterId: c.id,
         nameKr: c.nameKr,
         side: "ENEMY",
+        isCanonicalCommander: true,
         classId: c.classId,
         attackType: cls.attackType,
         canAttackFromBack: Boolean(cls.canAttackFromBack),
         triggersRetaliation: Boolean(cls.triggersRetaliation),
         preferredRow: cls.preferredRow,
-        commanderHp: c.commanderHp,
-        maxCommanderHp: c.maxCommanderHp,
-        troops: Math.max(100, Math.round(c.troops * (ter.sabotaged ? 0.72 : 1))),
+        commanderHp: Math.max(8, Math.round(c.commanderHp * earlyScale)),
+        maxCommanderHp: Math.max(8, Math.round(c.maxCommanderHp * earlyScale)),
+        troops: Math.max(100, Math.round(c.troops * earlyScale * (ter.sabotaged ? 0.72 : 1))),
         maxTroops: c.maxTroops,
-        atk: c.atk,
-        def: c.def,
-        mag: c.mag,
+        atk: Math.max(8, Math.round(c.atk * earlyScale)),
+        def: Math.max(8, Math.round(c.def * earlyScale)),
+        mag: Math.max(6, Math.round(c.mag * earlyScale)),
         strikes: c.strikes,
         battleLv: c.battleLv,
         hasSnipe: Boolean(c.hasSnipe),
@@ -668,7 +1132,6 @@
       });
     }
 
-    // Fill with garrison squads up to maxSlots (at least 2 squads)
     const garrisonClassByOwner = {
       fac_ex_rebellion: "cls_leazas_knights",
       fac_free_cities: "cls_soldiers_militia",
@@ -695,6 +1158,7 @@
         characterId: `gar_${targetTerritoryId}_${idx}`,
         nameKr: `${ter.nameKr} 수비대 ${idx}`,
         side: "ENEMY",
+        isCanonicalCommander: false,
         classId: cls.id,
         attackType: cls.attackType,
         canAttackFromBack: Boolean(cls.canAttackFromBack),
@@ -716,7 +1180,6 @@
       idx += 1;
     }
 
-    // Assign slots 0,1 = FRONT, 2,3 = BACK (put FRONT-preferred in front)
     units.sort((a, b) => (a.preferredRow === "FRONT" ? -1 : 1) - (b.preferredRow === "FRONT" ? -1 : 1));
     units.forEach((u, i) => {
       u.slotIndex = i;
@@ -725,7 +1188,7 @@
     return units;
   }
 
-  function startInvasion(state, rawData, targetTerritoryId, playerSquadIds) {
+  function startInvasion(state, rawData, targetTerritoryId, playerSquadIds, tacticId) {
     const data = resolveData(rawData);
     const check = canInvade(state, targetTerritoryId);
     if (!check.ok) return { ok: false, error: check.error, state };
@@ -754,6 +1217,7 @@
         characterId: c.id,
         nameKr: c.nameKr,
         side: "PLAYER",
+        isCanonicalCommander: true,
         classId: c.classId,
         attackType: cls.attackType,
         canAttackFromBack: Boolean(cls.canAttackFromBack),
@@ -778,17 +1242,10 @@
       return { ok: false, error: "유효한 아군 지휘관이 없습니다.", state };
     }
 
-    // Assign slots: FRONT (0, 1) and BACK (2, 3)
     const fronts = playerUnits.filter((u) => u.preferredRow === "FRONT");
     const backs = playerUnits.filter((u) => u.preferredRow !== "FRONT");
-    const orderedPlayer = [];
-    // Ensure at least 1 front-line unit if player has units
-    while (fronts.length < 2 && backs.length > 0 && orderedPlayer.length < 2) {
-      if (fronts.length === 0) {
-        fronts.push(backs.shift());
-      } else {
-        break;
-      }
+    if (fronts.length === 0 && backs.length > 0) {
+      fronts.push(backs.shift());
     }
     const slotAssigned = [];
     fronts.slice(0, 2).forEach((u, i) => {
@@ -803,7 +1260,6 @@
       u.row = slotIndex < 2 ? "FRONT" : "BACK";
       slotAssigned.push(u);
     });
-    // Ensure unique slot indices 0..3
     const usedSlots = new Set();
     for (const u of slotAssigned) {
       if (usedSlots.has(u.slotIndex)) {
@@ -825,9 +1281,19 @@
     const defenderFaction = state.factions[ter.owner];
     if (defenderFaction && !defenderFaction.atWarWithPlayer) {
       defenderFaction.atWarWithPlayer = true;
+      defenderFaction.diplomaticRelation = "WAR";
+      defenderFaction.truceTurns = 0;
       defenderFaction.warStartTurn = state.turn;
       onWarDeclared(state, ter.owner);
     }
+
+    const pTroopsTotal = slotAssigned.reduce((acc, u) => acc + u.troops, 0);
+    const eTroopsTotal = enemyUnits.reduce((acc, u) => acc + u.troops, 0);
+    const ratioShift = Math.round(((pTroopsTotal - eTroopsTotal) / Math.max(400, pTroopsTotal + eTroopsTotal)) * 22);
+    const moraleShift = Math.round((state.morale - 70) / 3);
+    const intelShift = ter.scouted ? 6 : 0;
+    const initialZone = Math.max(20, Math.min(80, 50 + ratioShift + moraleShift + intelShift));
+    const chosenTactic = BATTLE_TACTICS[tacticId] ? tacticId : "standard";
 
     const units = slotAssigned.concat(enemyUnits);
     const battle = {
@@ -836,13 +1302,15 @@
       previousOwner: ter.owner,
       fieldSize: ter.fieldSize,
       intelBonus: ter.scouted ? 1.15 : 1.0,
+      tacticId: chosenTactic,
+      combatZone: initialZone,
       round: 1,
       units,
       actedThisRound: [],
       activeUnitKey: null,
       result: null,
       log: [
-        `${ter.nameKr} 공략전 개시! (전투역: ${ter.fieldSize}명${ter.scouted ? " · 첩보 보너스 +15%" : ""})`
+        `${ter.nameKr} 공략전 개시! (전투역: ${ter.fieldSize}명 · 초기 전선 ${initialZone}% · 작전: ${BATTLE_TACTICS[chosenTactic].nameKr}${ter.scouted ? " · 첩보 +15%" : ""})`
       ]
     };
 
@@ -854,11 +1322,39 @@
     return { ok: true, state, battle };
   }
 
+  function setBattleTactic(state, rawData, tacticId) {
+    resolveData(rawData);
+    const battle = state.activeBattle;
+    if (!battle || battle.result) {
+      return { ok: false, error: "전투 중에만 작전을 변경할 수 있습니다.", state };
+    }
+    const tac = BATTLE_TACTICS[tacticId];
+    if (!tac) {
+      return { ok: false, error: `알 수 없는 작전 ID입니다: ${tacticId}`, state };
+    }
+    battle.tacticId = tacticId;
+    battle.log.push(`[작전 변경] '${tac.nameKr}' 발령! (${tac.description})`);
+    return { ok: true, state, tactic: tac };
+  }
+
+  function updateCombatZone(state, battle, actorSide, impactDelta) {
+    const tac = BATTLE_TACTICS[battle.tacticId] || BATTLE_TACTICS.standard;
+    const pTroops = battle.units.filter((u) => u.side === "PLAYER" && u.commanderHp > 0).reduce((s, u) => s + u.troops, 0);
+    const eTroops = battle.units.filter((u) => u.side === "ENEMY" && u.commanderHp > 0).reduce((s, u) => s + u.troops, 0);
+    const troopPull = Math.round(((pTroops - eTroops) / Math.max(500, pTroops + eTroops)) * 5);
+    const moralePull = state.morale >= 80 ? 1 : state.morale <= 40 ? -1 : 0;
+    const sign = actorSide === "PLAYER" ? 1 : -1;
+    const tacticBonus = actorSide === "PLAYER" ? Math.round((tac.zoneShift || 0) * 0.5) : 0;
+    const delta = sign * Math.max(1, Math.min(8, Math.round(impactDelta))) + troopPull + moralePull + tacticBonus;
+    battle.combatZone = Math.max(0, Math.min(100, (battle.combatZone ?? 50) + delta));
+  }
+
   function onWarDeclared(state, factionId) {
     if (factionId === "fac_helman" && !state.flags.freyaCountered) {
       state.timers.freyaSabotage.active = true;
       queueScenario(state, "evt_helman_freya_sabotage");
-      addLog(state, "crisis", "[위기 발동] 헬만 제국 개전! 흑익 수장 프레이야의 자금 유출·공작이 시작되었다.");
+      queueScenario(state, "evt_helman_patton_vs_generals");
+      addLog(state, "crisis", "[위기 발동] 헬만 제국 개전! 흑익 수장 프레이야의 자금 유출·공작 및 헬만 내전 분기가 시작되었다.");
     }
     if (factionId === "fac_zeth" && !state.timers.zethShizukaDuel.active && !state.flags.shizukaDuelResolved) {
       state.timers.zethShizukaDuel.active = true;
@@ -868,7 +1364,6 @@
     }
   }
 
-  // Get valid enemy targets for a given battle action
   function getValidTargets(battle, actor, actionType) {
     const enemies = battle.units.filter((u) => u.side !== actor.side && u.commanderHp > 0);
     if (enemies.length === 0) return [];
@@ -876,7 +1371,6 @@
     if (actionType === "attack") {
       return frontEnemies.length > 0 ? frontEnemies : enemies;
     }
-    // ranged, magic, snipe can target ANY row (front or back!)
     return enemies;
   }
 
@@ -886,49 +1380,69 @@
     let hpLoss = 0;
     const notes = [];
 
-    // Kayblis invincible guard if Pi-R captured Miki
     if (target.characterId === "chr_kayblis" && state.flags.kayblisInvincible) {
-      return { troopLoss: 0, hpLoss: 0, ninjaProc: false, notes: ["무적 마왕 결계로 피해 무효!"] };
+      return { troopLoss: 0, hpLoss: 0, ninjaProc: false, crit: false, notes: ["무적 마왕 결계로 피해 무효!"] };
     }
+
+    const tactic = BATTLE_TACTICS[battle.tacticId] || BATTLE_TACTICS.standard;
+    const zoneInfo = getCombatZoneInfo(battle.combatZone);
+
+    const tacticAtkMult = attacker.side === "PLAYER" ? tactic.atkMult : 1.0;
+    const tacticDefMult = target.side === "PLAYER" ? tactic.defMult : 1.0;
+    const zoneMult = attacker.side === "PLAYER" ? zoneInfo.playerMult : zoneInfo.enemyMult;
 
     const fieldRatio = Math.min(1, Math.max(0.25, Math.min(Math.max(120, attacker.troops), battle.fieldSize) / 500));
     const defendMult = target.isDefending ? 0.5 : 1.0;
     const intelMult = attacker.side === "PLAYER" ? (battle.intelBonus || 1.0) : 1.0;
     const moraleMult = attacker.side === "PLAYER" ? 0.9 + (state.morale / 500) : 1.0;
+
     let demonBarrierMult = 1.0;
     if (isDemonTarget && attacker.side === "PLAYER") {
       const hasAntiDemon =
         state.flags.chaosSwordOwned ||
         attacker.characterId === "chr_kentarou" ||
         attacker.characterId === "chr_haniwa_king" ||
+        attacker.classId === "cls_demons" ||
         mode === "snipe";
       demonBarrierMult = hasAntiDemon ? 1.0 : 0.45;
       if (!hasAntiDemon) notes.push("마인 결계 저항");
     }
 
-    if (mode === "snipe") {
-      // Exact canonical Snipe formula: ignores troops & fieldSize, hits commander HP directly!
-      const roll = resolveSnipeDamage(attacker, () => nextRngFloat(state), 6);
-      hpLoss = Math.max(1, Math.round(roll * (target.isDefending ? 0.7 : 1.0)));
-      if (roll === 0) hpLoss = 0;
-      troopLoss = 0;
-      notes.push(`저격 직격(Strikes ${attacker.strikes}, 롤 ${roll})`);
-    } else if (mode === "magic") {
-      const raw = Math.max(4, attacker.mag * 1.3 - (target.mag * 0.5 + target.def * 0.25) + attacker.battleLv * 0.5);
-      troopLoss = Math.round(raw * 9.0 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult);
-      hpLoss = Math.max(1, Math.round((raw / 5.2) * defendMult * demonBarrierMult));
-    } else if (mode === "ranged") {
-      const raw = Math.max(4, attacker.atk * 1.25 - target.def * 0.5 + attacker.battleLv * 0.5);
-      troopLoss = Math.round(raw * 8.5 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult);
-      hpLoss = Math.max(1, Math.round((raw / 4.6) * defendMult * demonBarrierMult));
-    } else {
-      // Direct melee attack
-      const raw = Math.max(5, attacker.atk * 1.4 - target.def * 0.65 + attacker.battleLv * 0.65);
-      troopLoss = Math.round(raw * 10.5 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult);
-      hpLoss = Math.max(1, Math.round((raw / 4.0) * defendMult * demonBarrierMult));
+    // Critical hit roll (influenced by focused_strike / all_out_assault tactic)
+    let crit = false;
+    let critMult = 1.0;
+    if (mode !== "snipe" && attacker.side === "PLAYER") {
+      const critRoll = nextRngFloat(state);
+      if (critRoll < tactic.critChance) {
+        crit = true;
+        critMult = 1.25;
+        notes.push("치명타!");
+      }
     }
 
-    // Troops shield commander HP while standing (except Snipe, which bypasses troops!)
+    const effectiveTargetDef = target.def * tacticDefMult;
+
+    if (mode === "snipe") {
+      const roll = resolveSnipeDamage(attacker, () => nextRngFloat(state), 6);
+      const bonus = attacker.side === "PLAYER" ? (tactic.snipeBonus || 0) : 0;
+      const totalRoll = roll > 0 || bonus > 0 ? roll + bonus : 0;
+      hpLoss = totalRoll === 0 ? 0 : Math.max(1, Math.round(totalRoll * (target.isDefending ? 0.7 : 1.0)));
+      troopLoss = 0;
+      notes.push(`저격 직격(Strikes ${attacker.strikes}, 롤 ${roll}${bonus ? `+작전${bonus}` : ""})`);
+    } else if (mode === "magic") {
+      const raw = Math.max(4, attacker.mag * 1.3 * tacticAtkMult - (target.mag * 0.5 + effectiveTargetDef * 0.25) + attacker.battleLv * 0.5);
+      troopLoss = Math.round(raw * 9.0 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult * zoneMult * critMult);
+      hpLoss = Math.max(1, Math.round((raw / 5.2) * defendMult * demonBarrierMult * critMult));
+    } else if (mode === "ranged") {
+      const raw = Math.max(4, attacker.atk * 1.25 * tacticAtkMult - effectiveTargetDef * 0.5 + attacker.battleLv * 0.5);
+      troopLoss = Math.round(raw * 8.5 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult * zoneMult * critMult);
+      hpLoss = Math.max(1, Math.round((raw / 4.6) * defendMult * demonBarrierMult * critMult));
+    } else {
+      const raw = Math.max(5, attacker.atk * 1.4 * tacticAtkMult - effectiveTargetDef * 0.65 + attacker.battleLv * 0.65);
+      troopLoss = Math.round(raw * 10.5 * fieldRatio * defendMult * intelMult * moraleMult * demonBarrierMult * zoneMult * critMult);
+      hpLoss = Math.max(1, Math.round((raw / 4.0) * defendMult * demonBarrierMult * critMult));
+    }
+
     if (mode !== "snipe" && target.troops > 0) {
       const actualTroopLoss = Math.min(target.troops, troopLoss);
       target.troops = Math.max(0, target.troops - actualTroopLoss);
@@ -962,14 +1476,17 @@
       }
     }
 
-    return { troopLoss, hpLoss, ninjaProc, notes };
+    // Shift combatZone gauge dynamically
+    const impact = Math.max(1, Math.round(troopLoss / 45 + hpLoss * 1.1));
+    updateCombatZone(state, battle, attacker.side, impact);
+
+    return { troopLoss, hpLoss, ninjaProc, crit, notes };
   }
 
   function advanceBattleTurn(state, data) {
     const battle = state.activeBattle;
     if (!battle) return;
 
-    // Check Rance death -> immediate end_death!
     const ranceUnit = battle.units.find((u) => u.side === "PLAYER" && u.characterId === "chr_rance");
     if (ranceUnit && ranceUnit.commanderHp <= 0) {
       battle.result = "DEFEAT";
@@ -995,13 +1512,12 @@
 
     let next = selectNextActor(battle.units, battle.actedThisRound);
     if (!next) {
-      // Start new round
       battle.round += 1;
       battle.actedThisRound = [];
       for (const u of battle.units) {
         u.isDefending = false;
       }
-      battle.log.push(`--- 제 ${battle.round} 라운드 개시 ---`);
+      battle.log.push(`--- 제 ${battle.round} 라운드 개시 (전투역 ${battle.combatZone}%) ---`);
       next = selectNextActor(battle.units, battle.actedThisRound);
     }
     battle.activeUnitKey = next ? next.unitKey : null;
@@ -1014,6 +1530,7 @@
       if (!c) continue;
       c.commanderHp = u.commanderHp;
       c.troops = u.troops;
+      c.battlesFought = (c.battlesFought || 0) + 1;
       if (u.commanderHp <= 0) {
         c.alive = false;
         c.recruited = false;
@@ -1038,10 +1555,8 @@
     ter.scouted = true;
     ter.sabotaged = false;
 
-    // Canonical rule: winning an invasion consumes the turn's invasion slot
     state.weeklySlots.invasion = 0;
 
-    // Spoils of war
     const spoils = Math.round(ter.taxIncome * 0.75);
     state.gold += spoils;
     state.morale = Math.min(100, state.morale + 4);
@@ -1049,7 +1564,6 @@
     battle.log.push(`[승리] ${ter.nameKr} 점령 완료! 전리품 +${spoils.toLocaleString()}G`);
     addLog(state, "conquest", `${ter.nameKr} 점령 성공! (이전 세력: ${state.factions[prevOwner]?.nameKr || prevOwner}, +${spoils}G)`);
 
-    // Check if any demon commander was defeated -> Demon kill halves remaining demon garrisons
     const killedDemons = battle.units.filter((u) => u.side === "ENEMY" && u.classId === "cls_demons" && u.commanderHp <= 0);
     if (killedDemons.length > 0) {
       state.flags.defeatedDemonsCount += killedDemons.length;
@@ -1063,6 +1577,24 @@
     }
 
     onTerritoryConquered(state, data, tid, prevOwner);
+
+    // Post-Battle Enemy Commander Capture! Any defeated canonical playable enemy commander
+    // not already auto-recruited is captured for Recruit / Release / Ransom decision!
+    const newlyCaptured = [];
+    for (const eu of battle.units) {
+      if (eu.side !== "ENEMY" || !eu.isCanonicalCommander) continue;
+      const c = state.commanders[eu.characterId];
+      if (!c || !c.isPlayableSubordinate || c.recruited || c.captured || c.imprisoned || !c.alive) continue;
+      c.captured = true;
+      if (!state.pendingCaptures.includes(c.id)) {
+        state.pendingCaptures.push(c.id);
+        newlyCaptured.push(c.nameKr);
+      }
+    }
+    if (newlyCaptured.length > 0) {
+      addLog(state, "scenario", `[포로 포획!] 적 지휘관 ${newlyCaptured.join(", ")}을(를) 생포했다! (등용 / 석방 / 몸값 결정 가능)`);
+    }
+
     state.activeBattle = null;
   }
 
@@ -1075,6 +1607,53 @@
     addLog(state, "battle", `${battle.targetNameKr} 침공전 패배. 부대가 철수했다.`);
     state.activeBattle = null;
     evaluateEndings(state, data);
+  }
+
+  // ==================== POST-BATTLE CAPTURE & RECRUITMENT ====================
+
+  function resolveCapture(state, rawData, commanderId, action) {
+    resolveData(rawData);
+    if (state.endingId) return { ok: false, error: "이미 엔딩이 완료되었습니다.", state };
+    const c = state.commanders[commanderId];
+    if (!c || !c.captured || !state.pendingCaptures.includes(commanderId)) {
+      return { ok: false, error: `포로 목록에 없는 지휘관입니다: ${commanderId}`, state };
+    }
+    const act = action || "recruit";
+    if (!["recruit", "release", "ransom"].includes(act)) {
+      return { ok: false, error: `알 수 없는 포로 처리 방식입니다: ${act}`, state };
+    }
+
+    state.pendingCaptures = state.pendingCaptures.filter((id) => id !== commanderId);
+    c.captured = false;
+
+    let summary = "";
+    if (act === "recruit") {
+      c.recruited = true;
+      c.alive = true;
+      c.commanderHp = c.maxCommanderHp;
+      c.troops = Math.max(180, Math.round(c.maxTroops * 0.6));
+      c.trust = Math.max(c.trust, 50);
+      if (c.classId === "cls_ninjas") {
+        state.weeklySlots.ninja += 5;
+      }
+      if (c.id === "chr_melfeis") {
+        queueScenario(state, "evt_melfeis_curse_spring");
+      }
+      summary = `${c.nameKr}을(를) 리자스 정규 지휘관으로 등용했다!`;
+      addLog(state, "scenario", `[포로 등용] ${summary}`);
+    } else if (act === "release") {
+      state.morale = Math.min(100, state.morale + 4);
+      c.trust = Math.min(100, c.trust + 15);
+      summary = `${c.nameKr}을(를) 명예 석방했다 (군단 사기 +4, 신뢰 +15).`;
+      addLog(state, "scenario", `[포로 석방] ${summary}`);
+    } else {
+      const ransomGold = 2000 + (c.battleLv || 8) * 250;
+      state.gold += ransomGold;
+      summary = `${c.nameKr} 몸값 협상 타결! 국고 +${ransomGold.toLocaleString()}G 획득.`;
+      addLog(state, "city", `[포로 몸값] ${summary}`);
+    }
+
+    return { ok: true, state, commanderId, action: act, summary };
   }
 
   function executeBattleAction(state, rawData, action) {
@@ -1117,7 +1696,6 @@
       return { ok: true, state, actorKey: actor.unitKey, action: "wait" };
     }
 
-    // Validate row / class rules
     if (type === "attack" && actor.row === "BACK") {
       return { ok: false, error: "후열 부대는 직접 공격을 할 수 없습니다. 원거리/마법/대기를 사용하세요.", state };
     }
@@ -1151,7 +1729,6 @@
       `${actor.nameKr} → ${target.nameKr} ${labelMap[type] || type}: 병력 -${res.troopLoss}, HP -${res.hpLoss}${extra}`
     );
 
-    // Magic AoE splash to other enemy squads (small tactical bonus)
     if (type === "magic") {
       const others = validTargets.filter((t) => t.unitKey !== target.unitKey && t.commanderHp > 0);
       for (const o of others) {
@@ -1163,10 +1740,11 @@
       }
     }
 
-    // Direct melee triggers retaliation if target survives!
     let retaliation = null;
     if (type === "attack" && actor.triggersRetaliation && target.commanderHp > 0 && target.row === "FRONT") {
-      const retDmg = Math.max(3, target.atk * 0.85 - actor.def * 0.55);
+      const tactic = BATTLE_TACTICS[battle.tacticId] || BATTLE_TACTICS.standard;
+      const actorDefMult = actor.side === "PLAYER" ? tactic.defMult : 1.0;
+      const retDmg = Math.max(3, target.atk * 0.85 - actor.def * actorDefMult * 0.55);
       const retTroop = Math.min(actor.troops, Math.round(retDmg * 5.2 * (actor.isDefending ? 0.5 : 1)));
       const retHp = Math.max(1, Math.round((retDmg / 6.2) * (actor.isDefending ? 0.5 : 1)));
       actor.troops = Math.max(0, actor.troops - retTroop);
@@ -1180,12 +1758,10 @@
     return { ok: true, state, actorKey: actor.unitKey, targetKey: target.unitKey, result: res, retaliation };
   }
 
-  // Deterministic AI decision for an enemy or auto-battle unit
   function chooseAiBattleAction(battle, actor) {
     const pickTarget = (targets) => {
       if (!targets || targets.length === 0) return undefined;
       if (actor.side === "PLAYER") return targets[0].unitKey;
-      // Enemy spreads pressure across front/valid defenders deterministically
       return targets[(battle.round + actor.slotIndex) % targets.length].unitKey;
     };
     if (actor.isWaitingForSpecial && actor.hasSnipe) {
@@ -1207,7 +1783,6 @@
       }
       return { type: "defend" };
     }
-    // Front row
     if (actor.classId === "cls_royal_guards" && actor.commanderHp < actor.maxCommanderHp * 0.45) {
       return { type: "defend" };
     }
@@ -1232,7 +1807,7 @@
   function autoResolveBattle(state, rawData, maxSteps) {
     const data = resolveData(rawData);
     let steps = 0;
-    const limit = maxSteps || 120;
+    const limit = maxSteps || 140;
     while (state.activeBattle && !state.endingId && steps < limit) {
       stepBattleAiTurn(state, data);
       steps += 1;
@@ -1240,7 +1815,312 @@
     return { ok: true, state, steps };
   }
 
-  // Hook: Territory conquered -> triggers character scenarios, recruitments, faction collapses!
+  // ==================== MULTI-FLOOR DUNGEON EXPEDITION MODE ====================
+
+  function startDungeon(state, rawData, dungeonId, partyIds) {
+    const data = resolveData(rawData);
+    if (state.endingId) return { ok: false, error: "이미 엔딩이 완료되었습니다.", state };
+    if (state.activeBattle) return { ok: false, error: "진행 중인 전투를 먼저 완료하세요.", state };
+    if (state.activeDungeon) return { ok: false, error: "이미 진행 중인 던전 원정이 있습니다.", state };
+    if (state.weeklySlots.explore <= 0) {
+      return { ok: false, error: "이번 주 탐색 슬롯을 이미 사용했습니다.", state };
+    }
+
+    const dng = (data.dungeons || []).find((d) => d.id === dungeonId);
+    if (!dng) return { ok: false, error: `알 수 없는 던전 ID입니다: ${dungeonId}`, state };
+
+    const ter = state.territories[dng.territoryId];
+    const isCreatorDungeon = dng.id === "dng_rudrasaum_ruins";
+    if (isCreatorDungeon) {
+      if (state.campaignPhase !== "CREATOR_PHASE" && ter.locked) {
+        return { ok: false, error: "루드라사움 유적은 창조신 페이즈 해금 후 진입할 수 있습니다.", state };
+      }
+    } else if (!ter || ter.owner !== "fac_leazas") {
+      return { ok: false, error: `${dng.nameKr} 진입을 위해 먼저 ${ter ? ter.nameKr : dng.territoryId}을(를) 점령해야 합니다.`, state };
+    }
+
+    if (dng.id === "dng_sasa_b66") {
+      if (state.flags.sasaDungeonLocked) {
+        return { ok: false, error: "황금 도끼 선택으로 사사호 호저미궁이 영구 폐쇄되었습니다.", state };
+      }
+      if (!state.flags.sasaDungeonOpen && !state.flags.aluminumAxeOwned) {
+        return { ok: false, error: "라질 징세에서 '알루미늄 도끼'를 획득한 뒤 진입할 수 있습니다.", state };
+      }
+      state.flags.sasaDungeonOpen = true;
+    }
+
+    const available = Object.values(state.commanders).filter((c) => c.recruited && c.alive && c.isPlayableSubordinate);
+    let chosenIds = Array.isArray(partyIds) && partyIds.length > 0
+      ? partyIds.filter((id) => state.commanders[id]?.recruited && state.commanders[id]?.alive).slice(0, 4)
+      : available.sort((a, b) => (b.atk + b.mag + b.def) - (a.atk + a.mag + a.def)).slice(0, 4).map((c) => c.id);
+
+    if (chosenIds.length === 0) {
+      return { ok: false, error: "원정에 참여할 아군 지휘관이 없습니다.", state };
+    }
+
+    const partyPower = chosenIds.reduce((sum, cid) => {
+      const c = state.commanders[cid];
+      return sum + Math.round((c.atk + c.def + c.mag) * 0.55 + c.battleLv * 0.6);
+    }, 0);
+    const maxPartyHp = chosenIds.reduce((sum, cid) => sum + state.commanders[cid].maxCommanderHp, 0);
+
+    state.weeklySlots.explore -= 1;
+    const firstFloor = dng.floors[0];
+
+    state.activeDungeon = {
+      dungeonId: dng.id,
+      nameKr: dng.nameKr,
+      nameEn: dng.nameEn,
+      territoryId: dng.territoryId,
+      currentFloorIndex: 0,
+      totalFloors: dng.floors.length,
+      floors: deepClone(dng.floors),
+      boss: deepClone(dng.boss),
+      relic: deepClone(dng.relic),
+      partyIds: chosenIds,
+      partyPower,
+      partyHp: maxPartyHp,
+      maxPartyHp,
+      lootGold: 0,
+      readyForBoss: dng.floors.length <= 1,
+      log: [`[던전 진입] ${dng.nameKr} 원정 개시! (${chosenIds.length}인 원정대 · 전투력 ${partyPower})`, `[${firstFloor.label}] ${firstFloor.encounter}`]
+    };
+
+    addLog(state, "explore", `[던전 원정] ${dng.nameKr} 탐사 개시!`);
+    return { ok: true, state, dungeon: state.activeDungeon };
+  }
+
+  function advanceDungeonFloor(state, rawData) {
+    resolveData(rawData);
+    const ad = state.activeDungeon;
+    if (!ad) return { ok: false, error: "진행 중인 던전 원정이 없습니다.", state };
+    if (ad.readyForBoss) {
+      return { ok: false, error: "이미 최심부 보스 층에 도달했습니다! 보스 결전을 진행하세요.", state };
+    }
+
+    const curFloor = ad.floors[ad.currentFloorIndex];
+    const roll = nextRngFloat(state);
+    const powerEdge = Math.max(0.5, Math.min(2.0, ad.partyPower / Math.max(10, curFloor.threat * 2.2)));
+    const hpWear = Math.max(2, Math.round((curFloor.threat * 0.42) / powerEdge));
+    const bonusGold = Math.round(curFloor.rewardGold * (0.85 + roll * 0.35));
+
+    ad.partyHp = Math.max(1, ad.partyHp - hpWear);
+    ad.lootGold += bonusGold;
+
+    let encounterText = `[${curFloor.label} 돌파] 전리품 +${bonusGold.toLocaleString()}G (원정대 피해 -${hpWear} HP)`;
+    if (roll > 0.72) {
+      const extra = 650;
+      ad.lootGold += extra;
+      encounterText += ` · 숨겨진 보물상자 발견 (+${extra}G)!`;
+    } else if (roll < 0.25) {
+      const heal = Math.min(ad.maxPartyHp - ad.partyHp, 8);
+      ad.partyHp += heal;
+      encounterText += ` · 회복의 샘 발견 (+${heal} HP)!`;
+    }
+    ad.log.push(encounterText);
+
+    if (ad.currentFloorIndex + 1 < ad.totalFloors) {
+      ad.currentFloorIndex += 1;
+      const nextFloor = ad.floors[ad.currentFloorIndex];
+      ad.log.push(`[${nextFloor.label}] ${nextFloor.encounter}`);
+      if (ad.currentFloorIndex === ad.totalFloors - 1) {
+        ad.readyForBoss = true;
+        ad.log.push(`⚡ 최심부 도달! [${ad.boss.nameKr}]과(와)의 보스 결전이 가능하다!`);
+      }
+    } else {
+      ad.readyForBoss = true;
+    }
+
+    return { ok: true, state, dungeon: ad, floorGold: bonusGold, hpWear };
+  }
+
+  function fightDungeonBoss(state, rawData) {
+    const data = resolveData(rawData);
+    const ad = state.activeDungeon;
+    if (!ad) return { ok: false, error: "진행 중인 던전 원정이 없습니다.", state };
+    if (!ad.readyForBoss) {
+      return { ok: false, error: "먼저 최심부 층까지 돌파해야 보스와 대결할 수 있습니다.", state };
+    }
+
+    const moraleBonus = Math.round(state.morale * 0.25);
+    const relicBonus = (state.relics || []).length * 4;
+    const totalPower = ad.partyPower + moraleBonus + relicBonus;
+    const bossPower = ad.boss.power;
+    const bossDamage = Math.max(4, Math.round(bossPower * 0.32 - totalPower * 0.08));
+    const victory = totalPower >= bossPower * 0.72 && ad.partyHp > 1;
+
+    if (!victory) {
+      const kept = Math.round(ad.lootGold * 0.4);
+      state.gold += kept;
+      state.morale = Math.max(20, state.morale - 4);
+      addLog(state, "explore", `[던전 후퇴] ${ad.nameKr} 보스 '${ad.boss.nameKr}'에게 밀려 철수 (회수 자금 +${kept.toLocaleString()}G).`);
+      state.activeDungeon = null;
+      return { ok: true, victory: false, state, summary: `보스 ${ad.boss.nameKr} 공략 실패 — 부대 철수 (+${kept.toLocaleString()}G)` };
+    }
+
+    ad.partyHp = Math.max(1, ad.partyHp - bossDamage);
+    const bossGold = 3500;
+    const totalGold = ad.lootGold + bossGold;
+    state.gold += totalGold;
+    state.morale = Math.min(100, state.morale + 6);
+    if (!state.clearedDungeons.includes(ad.dungeonId)) {
+      state.clearedDungeons.push(ad.dungeonId);
+    }
+    const ter = state.territories[ad.territoryId];
+    if (ter) ter.dungeonCleared += 1;
+
+    // Grant Legendary Relic & Apply Permanent Relic Buffs
+    const relicAdded = grantRelic(state, ad.relic);
+    const rewards = [`+${totalGold.toLocaleString()}G`];
+    if (relicAdded) {
+      rewards.push(`전설 유물 [${ad.relic.nameKr}]`);
+      if (ad.relic.id === "relic_haniwa_crown") {
+        for (const c of Object.values(state.commanders)) {
+          if (c.isPlayableSubordinate) c.def += 2;
+        }
+      } else if (ad.relic.id === "relic_creator_seal") {
+        for (const c of Object.values(state.commanders)) {
+          if (c.isPlayableSubordinate) { c.atk += 2; c.mag += 2; }
+        }
+      } else if (ad.relic.id === "relic_ring_of_wisdom") {
+        state.commanders.chr_rance.atk += 3;
+        state.commanders.chr_rance.mag += 3;
+        state.gold += 5000;
+        state.flags.tulipProgress = Math.min(100, state.flags.tulipProgress + 25);
+        completeScenario(state, "evt_custom_ancient_labyrinth");
+      } else if (ad.relic.id === "relic_archmage_staff") {
+        for (const c of Object.values(state.commanders)) {
+          if (["cls_mages", "cls_kalars", "cls_clerics_support"].includes(c.classId)) c.mag += 3;
+        }
+        state.flags.chaosSwordOwned = true;
+        if (!state.items.includes("chaos_sword")) state.items.push("chaos_sword");
+        state.flags.riznaCurseCured = true;
+        completeScenario(state, "evt_zeth_magic_tower_delve");
+      }
+    }
+
+    // Specific dungeon completions
+    if (ad.dungeonId === "dng_sasa_b66") {
+      state.flags.sasaB66Clears += 1;
+      if (!state.commanders.chr_kaiju_prince.recruited && !state.commanders.chr_haniwa_king.recruited) {
+        state.commanders.chr_haniwa_king.recruited = true;
+        state.commanders.chr_haniwa_king.alive = true;
+        completeScenario(state, "evt_lake_sasa_haniwa_king");
+        rewards.push("비밀 장수 [하니와 킹] 영입!");
+      }
+    } else if (ad.dungeonId === "dng_zeth_magic_tower") {
+      state.commanders.chr_rizna.recruited = true;
+      state.commanders.chr_rizna.alive = true;
+      rewards.push("마도사 [리즈나 란프리트] 영입!");
+    } else if (ad.dungeonId === "dng_rudrasaum_ruins") {
+      queueScenario(state, "evt_creator_phase_unlock");
+      rewards.push("창조신 대면 최종 분기 활성화!");
+    }
+
+    // Grant Battle LV to party members
+    for (const cid of ad.partyIds) {
+      const c = state.commanders[cid];
+      if (c && c.alive) c.battleLv = Math.min(30, c.battleLv + 1);
+    }
+
+    const summary = `${ad.nameKr} 제패 완료! (${rewards.join(" · ")})`;
+    addLog(state, "scenario", `[던전 제패] ${summary}`);
+    state.activeDungeon = null;
+    return { ok: true, victory: true, state, summary, relic: ad.relic, totalGold };
+  }
+
+  function exitDungeon(state, rawData) {
+    resolveData(rawData);
+    const ad = state.activeDungeon;
+    if (!ad) return { ok: false, error: "진행 중인 던전 원정이 없습니다.", state };
+    const kept = Math.round(ad.lootGold * 0.5);
+    state.gold += kept;
+    const summary = `${ad.nameKr}에서 안전 철수했다 (전리품 +${kept.toLocaleString()}G).`;
+    addLog(state, "explore", `[던전 철수] ${summary}`);
+    state.activeDungeon = null;
+    return { ok: true, state, goldGained: kept, summary };
+  }
+
+  // ==================== FACTION DIPLOMACY ====================
+
+  function negotiateFaction(state, rawData, factionId, action) {
+    resolveData(rawData);
+    if (state.endingId) return { ok: false, error: "이미 엔딩이 완료되었습니다.", state };
+    if (state.activeBattle) return { ok: false, error: "전투 중에는 외교 협상을 수행할 수 없습니다.", state };
+
+    const fac = state.factions[factionId];
+    if (!fac || factionId === "fac_leazas") {
+      return { ok: false, error: "유효한 외교 대상 세력이 아닙니다.", state };
+    }
+    if (fac.defeated) {
+      return { ok: false, error: `${fac.nameKr}은(는) 이미 멸망한 세력입니다.`, state };
+    }
+
+    if (action === "declare_war") {
+      fac.diplomaticRelation = "WAR";
+      fac.atWarWithPlayer = true;
+      fac.truceTurns = 0;
+      fac.warStartTurn = state.turn;
+      onWarDeclared(state, factionId);
+      const summary = `${fac.nameKr}에 선전포고했다! 즉각 전면전 체제 돌입.`;
+      addLog(state, "crisis", `[외교 · 선전포고] ${summary}`);
+      return { ok: true, state, summary };
+    }
+
+    if (["fac_ex_rebellion", "fac_demon_kayblis"].includes(factionId)) {
+      return { ok: false, error: `${fac.nameKr}은(는) 화친·동맹 협상에 응하지 않는 적대 세력입니다.`, state };
+    }
+
+    if (action === "truce") {
+      const cost = 3500;
+      if (state.gold < cost) {
+        return { ok: false, error: `휴전 협정 비용(${cost.toLocaleString()}G)이 부족합니다.`, state };
+      }
+      state.gold -= cost;
+      fac.diplomaticRelation = "TRUCE";
+      fac.atWarWithPlayer = false;
+      fac.truceTurns = 4;
+      const summary = `${fac.nameKr}과(와) 4주간 휴전 협정 체결 (-3,500G). 해당 세력의 반격·증원이 중단된다.`;
+      addLog(state, "scenario", `[외교 · 휴전] ${summary}`);
+      return { ok: true, state, summary };
+    }
+
+    if (action === "alliance") {
+      const cost = state.morale >= 85 ? 2500 : 5000;
+      if (state.gold < cost) {
+        return { ok: false, error: `군사 동맹 체결 비용(${cost.toLocaleString()}G)이 부족합니다.`, state };
+      }
+      state.gold -= cost;
+      fac.diplomaticRelation = "ALLIANCE";
+      fac.atWarWithPlayer = false;
+      fac.truceTurns = 0;
+      state.morale = Math.min(100, state.morale + 5);
+
+      let extra = "";
+      if (factionId === "fac_al_church") {
+        queueScenario(state, "evt_al_church_gawain_cafe_relics");
+        extra = " · AL교 성전 협정 시나리오 해금!";
+      } else if (factionId === "fac_free_cities") {
+        queueScenario(state, "evt_free_cities_sel_rescue");
+        extra = " · 자유도시 셀 구제 시나리오 해금!";
+      } else if (factionId === "fac_helman") {
+        queueScenario(state, "evt_helman_patton_vs_generals");
+        extra = " · 헬만 패튼 혁명군 협력 분기 해금!";
+      } else if (factionId === "fac_demon_hornet") {
+        queueScenario(state, "evt_demon_hornet_rescue_galtia");
+        extra = " · 호넷파 구원 시나리오 해금!";
+      }
+
+      const summary = `${fac.nameKr}과(와) 군사 동맹 체결 (-${cost.toLocaleString()}G, 매 턴 무역 +600G, 사기 +5)${extra}`;
+      addLog(state, "scenario", `[외교 · 동맹] ${summary}`);
+      return { ok: true, state, summary };
+    }
+
+    return { ok: false, error: `알 수 없는 외교 명령입니다: ${action}`, state };
+  }
+
+  // ==================== TERRITORY CONQUEST HOOKS ====================
+
   function onTerritoryConquered(state, data, territoryId, previousOwner) {
     // 1. Ex Rebellion suppression
     if (territoryId === "ter_leazas_white_fort" && !state.flags.rebellionSuppressed) {
@@ -1250,8 +2130,9 @@
       state.commanders.chr_ex.recruited = true;
       state.commanders.chr_ex.alive = true;
       state.commanders.chr_ex.commanderHp = state.commanders.chr_ex.maxCommanderHp;
+      state.commanders.chr_asuka.recruited = true;
+      state.commanders.chr_asuka.alive = true;
 
-      // Start Demon Invasion timer: 69 weeks if Shangri-La conquered, 73 weeks otherwise
       const shangriOwned = state.territories.ter_shangri_la.owner === "fac_leazas";
       state.timers.monsterRealmInvasion = {
         active: true,
@@ -1259,10 +2140,11 @@
         startedTurn: state.turn
       };
       completeScenario(state, "evt_ex_rebellion_suppression");
+      queueScenario(state, "evt_leazas_officers_academy");
       addLog(
         state,
         "scenario",
-        `[페이즈 전환] 백군 반란 진압 완료! 엑스 합류 · 인간계 자유 정복 개방 · 마인 침공 카운트다운(${state.timers.monsterRealmInvasion.remainingWeeks}주) 가동!`
+        `[페이즈 전환] 백군 반란 진압 완료! 엑스·아스카 합류 · 사관학교 시나리오 해금 · 마인 침공 카운트다운(${state.timers.monsterRealmInvasion.remainingWeeks}주) 가동!`
       );
     }
 
@@ -1275,6 +2157,9 @@
         state.commanders.chr_soul.recruited = true;
         state.commanders.chr_soul.alive = true;
         completeScenario(state, "evt_volgo_z_soul_deadline");
+        if (state.territories.ter_leazas_castle.facilities.includes("library")) {
+          queueScenario(state, "evt_bound_library_recruit");
+        }
         addLog(state, "scenario", "[구출 성공] 볼고 Z에서 소울을 기한 내 구출! 도서관 건설 시 바운드 영입 가능.");
       }
       if (state.timers.volgoZSill.status === "ACTIVE" && compareCalendar(state.calendar, state.timers.volgoZSill.deadline) <= 0) {
@@ -1292,17 +2177,15 @@
 
     // 3. Free City Custom annexation bundle
     if (territoryId === "ter_custom" && !state.flags.customAnnexed) {
-      queueScenario(state, "evt_custom_annexation_bundle");
-      // Also recruit immediately if auto-bundle or let player resolve; let's auto-recruit core bundle AND mark scenario!
       state.flags.customAnnexed = true;
       state.flags.mariaLabUnlocked = true;
-      for (const cid of ["chr_maria", "chr_shizuka", "chr_miru"]) {
+      for (const cid of ["chr_maria", "chr_shizuka", "chr_miru", "chr_mill", "chr_eleanor"]) {
         if (state.commanders[cid] && state.commanders[cid].alive) {
           state.commanders[cid].recruited = true;
         }
       }
       completeScenario(state, "evt_custom_annexation_bundle");
-      addLog(state, "scenario", "[커스텀 병합] 마리아·시즈카·미르가 리자스군에 일괄 합류! 수도에 '마리아 연구소' 건설 해금.");
+      addLog(state, "scenario", "[커스텀 병합] 마리아·시즈카·미르·미리·엘레노아 5인 일괄 합류! 수도에 '마리아 연구소' 및 고대 미궁 해금.");
     }
 
     // 4. Ice -> Kentarou & Miki event trigger
@@ -1312,19 +2195,32 @@
       addLog(state, "scenario", "[자유도시 아이스] 켄타로와 미키(리틀 프린세스) 시나리오가 활성화되었다.");
     }
 
-    // 5. Helman capital Lang Bau -> recruit Sheila, Hunty, Patton, Freak
-    if (territoryId === "ter_lang_bau") {
-      for (const cid of ["chr_sheila", "chr_hunty", "chr_patton", "chr_freak"]) {
-        const c = state.commanders[cid];
-        if (c && c.alive && !c.recruited) {
-          c.recruited = true;
-          c.commanderHp = c.maxCommanderHp;
-        }
-      }
-      addLog(state, "scenario", "[헬만 제도 함락] 실라·헌티·패튼·프리크가 리자스군 휘하로 편입되었다!");
+    // 5. Portugal -> Sel rescue scenario
+    if (territoryId === "ter_portugal" && !state.flags.selRescued) {
+      queueScenario(state, "evt_free_cities_sel_rescue");
     }
 
-    // 6. JAPAN mainland -> recruit Isoroku
+    // 6. AL Church HQ -> Gawain & Cafe scenario
+    if (territoryId === "ter_al_hq") {
+      queueScenario(state, "evt_al_church_gawain_cafe_relics");
+    }
+
+    // 7. Helman Central -> Saulnia poison trap hazard
+    if (territoryId === "ter_helman_central") {
+      queueScenario(state, "evt_saulnia_poison_trap_crisis");
+    }
+
+    // 8. Helman capital Lang Bau -> Patton vs Imperial Generals branch + Sheila
+    if (territoryId === "ter_lang_bau") {
+      if (state.commanders.chr_sheila.alive && !state.commanders.chr_sheila.recruited) {
+        state.commanders.chr_sheila.recruited = true;
+        state.commanders.chr_sheila.commanderHp = state.commanders.chr_sheila.maxCommanderHp;
+      }
+      queueScenario(state, "evt_helman_patton_vs_generals");
+      addLog(state, "scenario", "[헬만 제도 함락] 실라 합류 및 패튼 혁명군 vs 제국 3장군 전략 분기 활성화!");
+    }
+
+    // 9. JAPAN mainland / Kurobe -> Isoroku + Kenshin campaign
     if (territoryId === "ter_japan_main") {
       const iso = state.commanders.chr_isoroku;
       if (iso && iso.alive && !iso.recruited) {
@@ -1332,9 +2228,13 @@
         iso.commanderHp = iso.maxCommanderHp;
         addLog(state, "scenario", "[JAPAN 합류] 명궁 야마모토 이소로쿠가 리자스 원거리 부대로 합류했다!");
       }
+      queueScenario(state, "evt_japan_nobunaga_kenshin_campaign");
+    }
+    if (territoryId === "ter_japan_kurobe") {
+      queueScenario(state, "evt_japan_nobunaga_kenshin_campaign");
     }
 
-    // 7. Zeth conquest order & 4 Towers collapse
+    // 10. Zeth conquest order & 4 Towers collapse
     if (territoryId === "ter_adam_stronghold" && state.territories.ter_tape.owner !== "fac_leazas") {
       state.flags.adamConqueredBeforeTape = true;
     }
@@ -1342,7 +2242,6 @@
       const ownedTowers = ZETH_TOWER_IDS.filter((id) => state.territories[id].owner === "fac_leazas").length;
       state.flags.zethTowersDefeated = ownedTowers;
       if (ownedTowers === 4 && !state.completedScenarios.includes("evt_zeth_four_towers_collapse")) {
-        // Automatic Zeth collapse: all remaining fac_zeth territories transfer!
         for (const t of Object.values(state.territories)) {
           if (t.owner === "fac_zeth") {
             t.owner = "fac_leazas";
@@ -1358,21 +2257,23 @@
           }
         }
         completeScenario(state, "evt_zeth_four_towers_collapse");
-        addLog(state, "scenario", "[제스 4탑 붕괴] 사천왕 4탑 함락으로 제스 왕국 잔여 영토가 자동 병합되었다! (매직·간지·치즈코 합류)");
+        addLog(state, "scenario", "[제스 4탑 붕괴] 사천왕 4탑 함락으로 제스 잔여 영토 자동 병합! (매직·간지·치즈코 합류 · 제스 마법탑 던전 개방)");
       }
     }
 
-    // 8. Demon Frontier / Hornet Castle -> unlock Warg & Satella branches
+    // 11. Demon Frontier / Hornet Castle -> Warg, Satella, Hornet & Galtia branches
     if (territoryId === "ter_demon_frontier") {
       queueScenario(state, "evt_warg_defection_and_chaos");
-      addLog(state, "scenario", "[마계 전선 돌파] 마인 와그 아카 전향 시나리오가 열렸다!");
+      queueScenario(state, "evt_demon_hornet_rescue_galtia");
+      addLog(state, "scenario", "[마계 전선 돌파] 마인 와그 전향 및 가르티아 요리 승부 시나리오 해금!");
     }
     if (territoryId === "ter_hornet_castle") {
       queueScenario(state, "evt_satella_proposal");
-      addLog(state, "scenario", "[호넷 거점 제압] 마인 사테라의 제안 시나리오가 활성화되었다.");
+      queueScenario(state, "evt_demon_hornet_rescue_galtia");
+      addLog(state, "scenario", "[호넷 거점 제압] 사테라 제안 및 호넷파 구원 시나리오가 활성화되었다.");
     }
 
-    // 9. Check if Human Realm unified -> open Monster Realm
+    // 12. Check if Human Realm unified -> open Monster Realm
     const humanRemaining = Object.values(state.territories).filter(
       (t) => !["MONSTER_REALM", "CREATOR_REALM", "SPECIAL"].includes(t.region) && t.owner !== "fac_leazas"
     ).length;
@@ -1380,7 +2281,7 @@
       triggerMonsterRealmPhase(state, "인간계 대륙 통일 완료! 마지노선 너머 마계 원정이 개방되었다.");
     }
 
-    // 10. Sulphur Forest (Kayblis defeated!) -> Creator Phase vs Unification Ending!
+    // 13. Sulphur Forest (Kayblis defeated!) -> Creator Phase vs Unification Ending!
     if (territoryId === "ter_sulphur_forest") {
       state.flags.kayblisDefeated = true;
       state.factions.fac_demon_kayblis.defeated = true;
@@ -1393,7 +2294,7 @@
         addLog(
           state,
           "scenario",
-          "[창조신 페이즈 해금!] 전 대륙(샹그릴라 제외) 정복 후 케이브리스 격파! 루드라사움 유적이 개방되었다."
+          "[창조신 페이즈 해금!] 전 대륙(샹그릴라 제외) 정복 후 케이브리스 격파! 루드라사움 유적(신의 미궁)이 개방되었다."
         );
       } else {
         completeScenario(state, "evt_creator_phase_unlock");
@@ -1406,7 +2307,6 @@
       }
     }
 
-    // Check if previousOwner lost all territories
     if (previousOwner && state.factions[previousOwner]) {
       const stillOwned = Object.values(state.territories).some((t) => t.owner === previousOwner);
       if (!stillOwned) {
@@ -1423,13 +2323,12 @@
       state.campaignPhase = "MONSTER_REALM";
     }
     state.factions.fac_demon_kayblis.atWarWithPlayer = true;
+    state.factions.fac_demon_kayblis.diplomaticRelation = "WAR";
     state.factions.fac_demon_kayblis.warStartTurn = state.turn;
-    // Kayblis subjugates Hornet faction
     if (state.territories.ter_hornet_castle.owner === "fac_demon_hornet") {
       state.territories.ter_hornet_castle.owner = "fac_demon_kayblis";
     }
     state.factions.fac_demon_hornet.defeated = true;
-    // If West Helman still owned by Helman (not player), Demon Army takes it first!
     if (state.territories.ter_helman_west.owner === "fac_helman") {
       state.territories.ter_helman_west.owner = "fac_demon_kayblis";
       state.territories.ter_helman_west.garrisonTroops = 640;
@@ -1487,7 +2386,6 @@
       return { ok: true, state, summary: "프레이야 공작 저지 및 합류!" };
     }
 
-    // Default: Zero-penalty taxation!
     const hasLibrary = state.territories.ter_leazas_castle.facilities.includes("library");
     const mult = hasLibrary ? 1.15 : 1.0;
     const collected = Math.round(ter.taxIncome * mult);
@@ -1542,8 +2440,11 @@
       bonusMsg = " (마법·지원 계열 지휘관 MAG +4)";
     } else if (facilityType === "library" && state.flags.soulRescued && !state.flags.boundRecruited) {
       state.flags.boundRecruited = true;
+      state.commanders.chr_bound.recruited = true;
+      state.commanders.chr_bound.alive = true;
+      completeScenario(state, "evt_bound_library_recruit");
       state.morale = Math.min(100, state.morale + 8);
-      bonusMsg = " (소울 구출 연계: 바운드 영입 체인 달성! 사기 +8)";
+      bonusMsg = " (소울 구출 연계: 바운드 레스 합류! 사기 +8)";
     } else if (facilityType === "maria_lab") {
       state.flags.tulipProgress = Math.min(100, state.flags.tulipProgress + 30);
       bonusMsg = ` (튤립 100호 개발 착수: ${state.flags.tulipProgress}%)`;
@@ -1594,7 +2495,8 @@
       return { ok: false, error: "증원할 수 없는 지휘관입니다.", state };
     }
     const eliteClasses = ["cls_leazas_knights", "cls_helman_knights", "cls_artillery_tech", "cls_demons"];
-    const cost = eliteClasses.includes(c.classId) ? 4500 : 2800;
+    const lowCostThieves = ["chr_soul", "chr_bound"];
+    const cost = lowCostThieves.includes(c.id) ? 1400 : eliteClasses.includes(c.classId) ? 4500 : 2800;
     if (state.gold < cost) {
       return { ok: false, error: `자금이 부족합니다. (필요: ${cost.toLocaleString()}G)`, state };
     }
@@ -1626,11 +2528,15 @@
     let extra = "";
     if (c.hasDestinyPair && c.trust >= 70 && c.destinyFlag === "PENDING") {
       c.destinyFlag = "FORTUNE";
-      extra += ` · [${c.nameKr}] 행복 운명(FORTUNE) 플래그 달성!`;
+      extra += ` · [${c.nameKr}] 운명 호조!`;
     }
     if (c.id === "chr_kanami") {
       c.mistreatmentCount = Math.max(0, c.mistreatmentCount - 1);
       extra += " · 암살 위기 경감";
+    }
+    if (c.id === "chr_arlcoate") {
+      c.atk += 1;
+      extra += " · 사관 성장 ATK +1";
     }
     if (c.id === "chr_maria" && state.territories.ter_leazas_castle.facilities.includes("maria_lab")) {
       state.flags.tulipProgress = Math.min(100, state.flags.tulipProgress + 35);
@@ -1650,7 +2556,7 @@
   }
 
   function runExplore(state, rawData, territoryId) {
-    const data = resolveData(rawData);
+    resolveData(rawData);
     if (state.endingId) return { ok: false, error: "이미 엔딩이 완료되었습니다.", state };
     if (state.activeBattle) return { ok: false, error: "전투 중에는 탐색할 수 없습니다.", state };
     if (state.weeklySlots.explore <= 0) return { ok: false, error: "이번 주 탐색 슬롯을 이미 사용했습니다.", state };
@@ -1665,14 +2571,12 @@
     state.weeklySlots.explore -= 1;
     ter.dungeonCleared += 1;
 
-    // Creator Ruins final confrontation!
     if (canVisitCreator) {
       queueScenario(state, "evt_creator_phase_unlock");
       addLog(state, "scenario", "[루드라사움 유적] 신의 미궁 최심부 도달! 창조신 대면 시나리오가 활성화되었다.");
       return { ok: true, state, summary: "창조신 루드라사움 대면 시나리오 활성화!" };
     }
 
-    // Lake Sasa B66F Haniwa King chain!
     if (territoryId === "ter_sasa_lake") {
       if (state.flags.sasaDungeonLocked) {
         addLog(state, "explore", "사사호 호저미궁은 황금 도끼 선택으로 영구 폐쇄되어 있다.");
@@ -1685,19 +2589,18 @@
       }
       if (state.flags.sasaDungeonOpen) {
         state.flags.sasaB66Clears += 1;
-        if (state.flags.sasaB66Clears >= 2 && !state.commanders.chr_haniwa_king.recruited) {
+        if (state.flags.sasaB66Clears >= 2 && !state.commanders.chr_haniwa_king.recruited && !state.commanders.chr_kaiju_prince.recruited) {
           state.commanders.chr_haniwa_king.recruited = true;
           state.commanders.chr_haniwa_king.alive = true;
           completeScenario(state, "evt_lake_sasa_haniwa_king");
           addLog(state, "scenario", "[비밀 유닛 합류!] 호저미궁 지하 66층 2회 답파로 '하니와 킹'이 합류했다!");
           return { ok: true, state, summary: "비밀 지휘관 [하니와 킹] 영입 완료!" };
         }
-        addLog(state, "explore", `사사호 호저미궁 지하 66층 1차 답파 완료 (${state.flags.sasaB66Clears}/2). 1회 더 탐색하면 하니와 킹 합류!`);
+        addLog(state, "explore", `사사호 호저미궁 지하 66층 1차 답파 완료 (${state.flags.sasaB66Clears}/2). 1회 더 탐색 또는 던전 보스 격파로 하니와 킹 합류!`);
         return { ok: true, state, summary: `지하 66층 답파 (${state.flags.sasaB66Clears}/2)` };
       }
     }
 
-    // Chaos Sword & God Statues discovery in key dungeon/holy territories
     if (!state.flags.chaosSwordOwned && ["ter_zeth_west", "ter_demon_frontier", "ter_helman_central"].includes(territoryId)) {
       state.flags.chaosSwordOwned = true;
       if (!state.items.includes("chaos_sword")) state.items.push("chaos_sword");
@@ -1715,7 +2618,6 @@
       return { ok: true, state, summary: `고대 신상 확보 (${state.flags.godStatuesCount}/3)` };
     }
 
-    // General dungeon expedition reward
     const rewardGold = nextRngInt(state, 2400, 4200);
     state.gold += rewardGold;
     state.commanders.chr_rance.battleLv = Math.min(30, state.commanders.chr_rance.battleLv + 1);
@@ -1740,7 +2642,6 @@
     const roll = nextRngFloat(state);
 
     if (op === "scout") {
-      // Canonical: Scouting has near-zero fail rate
       if (roll < 0.96) {
         ter.scouted = true;
         addLog(state, "ninja", `[닌자 정찰 성공] ${ter.nameKr} 수비 병력(${ter.garrisonTroops}) 파악! 침공 시 +15% 첩보 보정.`);
@@ -1750,14 +2651,12 @@
       return { ok: true, state, success: false, mode: "scout", summary: "정찰 실패" };
     }
 
-    // Sabotage: canonical ~50% success, failure risks ninja strain!
     if (roll < 0.5) {
       ter.sabotaged = true;
       ter.garrisonTroops = Math.max(120, Math.round(ter.garrisonTroops * 0.72));
       addLog(state, "ninja", `[파괴 공작 성공!] ${ter.nameKr} 보급고 파괴로 수비 병력이 ${ter.garrisonTroops}명으로 감소했다.`);
       return { ok: true, state, success: true, mode: "sabotage", summary: `${ter.nameKr} 병력 약화 성공!` };
     } else {
-      // Failed sabotage risks mistreatment/strain on Kanami
       if (state.commanders.chr_kanami && state.commanders.chr_kanami.recruited) {
         state.commanders.chr_kanami.mistreatmentCount += 1;
       }
@@ -1776,12 +2675,12 @@
 
     const choice = typeof choiceIndex === "number" ? choiceIndex : 0;
 
-    // Elective court character scenarios consume weeklySlots.characterEvent if available & not urgent phase gate
     const isUrgent = [
       "evt_bandit_prologue_ruberan",
       "evt_creator_phase_unlock",
       "evt_zeth_shizuka_duel_timer",
-      "evt_helman_freya_sabotage"
+      "evt_helman_freya_sabotage",
+      "evt_saulnia_poison_trap_crisis"
     ].includes(eventId);
     if (!isUrgent && state.weeklySlots.characterEvent <= 0) {
       return { ok: false, error: "이번 주 캐릭터 시나리오 슬롯을 이미 사용했습니다.", state };
@@ -1809,10 +2708,10 @@
         completeScenario(state, eventId);
         state.flags.customAnnexed = true;
         state.flags.mariaLabUnlocked = true;
-        for (const cid of ["chr_maria", "chr_shizuka", "chr_miru"]) {
+        for (const cid of ["chr_maria", "chr_shizuka", "chr_miru", "chr_mill", "chr_eleanor"]) {
           state.commanders[cid].recruited = true;
         }
-        summary = "마리아·시즈카·미르 합류 및 마리아 연구소 해금!";
+        summary = "마리아·시즈카·미르·미리·엘레노아 합류 및 마리아 연구소 해금!";
         break;
 
       case "evt_maria_tulip_100":
@@ -1823,7 +2722,7 @@
         } else {
           completeScenario(state, eventId);
           state.morale = Math.min(100, state.morale + 12);
-          state.commanders.chr_maria.destinyFlag = "FORTUNE";
+          state.commanders.chr_maria.trust = Math.min(100, state.commanders.chr_maria.trust + 15);
           summary = "로켓 발사를 보류하고 대륙 정복을 계속한다.";
         }
         break;
@@ -1834,7 +2733,7 @@
           state.flags.freyaCountered = true;
           state.commanders.chr_freya.recruited = true;
           state.commanders.chr_freya.alive = true;
-          state.commanders.chr_freya.destinyFlag = "FORTUNE";
+          state.commanders.chr_freya.trust = Math.max(state.commanders.chr_freya.trust, 65);
           state.weeklySlots.ninja += 5;
           completeScenario(state, eventId);
           summary = "프레이야 역매복 성공! 아군 닌자로 합류 (+5 닌자 슬롯).";
@@ -1851,7 +2750,7 @@
           state.commanders.chr_shizuka.destinyFlag = "FORTUNE";
           state.commanders.chr_nagi.recruited = true;
           state.commanders.chr_nagi.alive = true;
-          state.commanders.chr_nagi.destinyFlag = "FORTUNE";
+          state.commanders.chr_nagi.trust = Math.max(state.commanders.chr_nagi.trust, 70);
           summary = "시일의 지원으로 시즈카를 보호하고 나기 스 라갈을 영입했다!";
         } else {
           if (state.flags.adamConqueredBeforeTape) {
@@ -1867,7 +2766,7 @@
         if (choice === 0) {
           state.flags.sasaDungeonOpen = true;
           state.activeScenarios = state.activeScenarios.filter((id) => id !== eventId);
-          summary = "알루미늄 도끼 선택! 사사호 호저미궁 지하 66층이 개방되었다 (탐색 2회로 하니와 킹 합류).";
+          summary = "알루미늄 도끼 선택! 사사호 호저미궁 지하 66층이 개방되었다 (던전 답파로 하니와 킹 합류).";
         } else {
           state.flags.sasaDungeonLocked = true;
           state.gold += 8000;
@@ -1882,16 +2781,29 @@
           state.commanders.chr_kanami.trust = Math.min(100, state.commanders.chr_kanami.trust + 25);
           state.commanders.chr_kanami.destinyFlag = "FORTUNE";
           completeScenario(state, eventId);
-          summary = "카나미와 첩보대에 포상을 내려 암살 위기를 원천 차단했다.";
+          summary = "카나미와 첩보대에 포상을 내려 시노부·코드 암살 위기를 원천 차단했다.";
+        } else if (choice === 1) {
+          completeScenario(state, eventId);
+          setEnding(state, data, "end_assassinated", "동방 시노부 암살 첩보 대응 실패로 암살당했다 (暗殺：最後が子供なんて).");
+          summary = "위기 엔딩 [암살 1: 최후가 어린아이라니] 발동!";
         } else {
           state.commanders.chr_kanami.mistreatmentCount += 2;
-          if (state.commanders.chr_kanami.mistreatmentCount >= 2) {
-            completeScenario(state, eventId);
-            setEnding(state, data, "end_assassinated", "카나미 혹사 누적 및 시노부 암살 저지 실패로 코드(Code)에게 암살당했다.");
-            summary = "위기 엔딩 [암살] 발동!";
-          } else {
-            summary = "카나미의 불만이 누적되었다!";
-          }
+          completeScenario(state, eventId);
+          setEnding(state, data, "end_assassinated_2", "카나미에 대한 극한 혹사 누적으로 제스 첩보원 코드가 개입해 암살당했다 (暗殺：ひどいよかなみちゃん).");
+          summary = "위기 엔딩 [암살 2: 너무해 카나미쨩] 발동!";
+        }
+        break;
+
+      case "evt_saulnia_poison_trap_crisis":
+        completeScenario(state, eventId);
+        if (choice === 1 && (!state.flags.sillAlive || !state.commanders.chr_sill.recruited)) {
+          setEnding(state, data, "end_poisoned", "시일 부재 상태에서 헬만 제5군 포로(카츄샤·소르니아)의 궁정 독살 함정에 걸려 중독 사망했다 (薬殺：きれいな花にはトゲがある).");
+          summary = "위기 엔딩 [독살: 아름다운 꽃에는 가시가 있다] 발동!";
+        } else {
+          state.gold += 3000;
+          summary = state.flags.sillAlive && state.commanders.chr_sill.recruited
+            ? "시일의 궁정 독검사로 독살 함정을 사전에 간파하고 군자금 +3,000G를 압수했다!"
+            : "경계 태세로 독살 음모를 역제압하고 군자금 +3,000G를 압수했다!";
         }
         break;
 
@@ -1929,7 +2841,6 @@
         completeScenario(state, eventId);
         state.commanders.chr_warg.recruited = true;
         state.commanders.chr_warg.alive = true;
-        state.commanders.chr_warg.destinyFlag = "FORTUNE";
         state.flags.wargSleepUnlocked = true;
         summary = "마인 와그 아카 전향 합류! 창조신 루드라사움 몽환 최면 전략이 해금되었다.";
         break;
@@ -1938,30 +2849,138 @@
         completeScenario(state, eventId);
         if (choice === 0) {
           if (!state.flags.wargSleepUnlocked && !state.commanders.chr_warg.recruited) {
-            // Without Warg, falls into God ending
             setEnding(state, data, "end_god", "와그의 최면 없이 루드라사움과 대면하여 신의 미궁에 유폐되었다.");
-            summary = "엔딩 [신] 발동 (와그 미합류)";
+            summary = "엔딩 [신: 파괴, 그리고 창조] 발동 (와그 미합류)";
           } else if (state.flags.sillAlive && state.commanders.chr_sill.recruited && state.commanders.chr_sill.alive) {
             setEnding(state, data, "end_bliss", "시일이 생존한 상태에서 와그가 창조신 루드라사움을 잠재워 진 엔딩 [지복(Bliss)]에 도달했다!");
-            summary = "진 엔딩 [지복 (Bliss)] 달성!";
+            summary = "진 엔딩 [지복: 란스, 다시 모험으로] 달성!";
           } else {
             setEnding(state, data, "end_world_king", "와그가 창조신을 잠재웠으나 시일이 부재하여 [세계왕(World King)] 엔딩에 도달했다.");
-            summary = "엔딩 [세계왕 (World King)] 달성!";
+            summary = "엔딩 [세계왕: 멋져요 달링 최고!!] 달성!";
           }
         } else if (choice === 1) {
-          if (state.flags.sillAlive && state.commanders.chr_sill.recruited) {
-            setEnding(state, data, "end_servant", "시일 보유 상태에서 루드라사움의 혼돈 창조에 동의하여 [신의 종]이 되었다.");
-          } else {
-            setEnding(state, data, "end_servant_no_sill_variant", "시일 부재 상태에서 창조신에게 복종하는 변형 엔딩에 도달했다.");
-          }
-          summary = "엔딩 [신의 종] 달성!";
-        } else if (choice === 3 && !state.flags.sillAlive) {
-          setEnding(state, data, "end_lia_leazas_branch", "시일 부재 분기에서 여왕 리아와 리자스 왕국에 귀속되는 결말을 맞았다.");
-          summary = "엔딩 [리아/리자스 특수 분기] 달성!";
+          setEnding(state, data, "end_servant", "루드라사움의 혼돈 창조 요구에 동의하여 [신의 종(Servant)]이 되었다.");
+          summary = "엔딩 [신의 종: 루드라사움의 시키는 대로] 달성!";
         } else {
-          setEnding(state, data, "end_god", "창조신 루드라사움에게 정면 도전했다가 패배해 신의 미궁에 유폐되었다.");
-          summary = "엔딩 [신 (유폐)] 발동!";
+          setEnding(state, data, "end_god", "창조신 루드라사움에게 정면 도전했다가 패배해 세계가 리셋되었다.");
+          summary = "엔딩 [신: 파괴, 그리고 창조] 발동!";
         }
+        break;
+
+      case "evt_bound_library_recruit":
+        completeScenario(state, eventId);
+        state.flags.boundRecruited = true;
+        state.commanders.chr_bound.recruited = true;
+        state.commanders.chr_bound.alive = true;
+        state.morale = Math.min(100, state.morale + 6);
+        summary = "바운드 레스가 리자스 유격대로 합류했다! (사기 +6)";
+        break;
+
+      case "evt_leazas_officers_academy":
+        completeScenario(state, eventId);
+        for (const cid of ["chr_arlcoate", "chr_rafalia", "chr_julia", "chr_aviator"]) {
+          if (state.commanders[cid] && state.commanders[cid].alive) {
+            state.commanders[cid].recruited = true;
+          }
+        }
+        summary = "여자 사관학교 모의전 완료! 아르코트·라팔리아·줄리아·아비아토르 4인 정규 임관!";
+        break;
+
+      case "evt_menad_discipline_crisis":
+        completeScenario(state, eventId);
+        if (choice === 0) {
+          state.flags.menadCrisisResolved = true;
+          state.commanders.chr_menad.trust = Math.min(100, state.commanders.chr_menad.trust + 25);
+          summary = "리자스 적군 배신자 숙청 완료! 메나드 신뢰 +25 (행복 운명 충족).";
+        } else {
+          summary = "군기 숙청을 보류했다.";
+        }
+        break;
+
+      case "evt_melfeis_curse_spring":
+        completeScenario(state, eventId);
+        state.flags.melfeisCurseCured = true;
+        state.commanders.chr_melfeis.mag += 3;
+        state.commanders.chr_melfeis.trust = Math.min(100, state.commanders.chr_melfeis.trust + 20);
+        summary = "해저주의 샘으로 멜페이스의 비약 저주를 정화했다! (MAG +3)";
+        break;
+
+      case "evt_helman_patton_vs_generals":
+        completeScenario(state, eventId);
+        if (choice === 0) {
+          for (const cid of ["chr_patton", "chr_hunty", "chr_hubert", "chr_freak"]) {
+            if (state.commanders[cid] && state.commanders[cid].alive) {
+              state.commanders[cid].recruited = true;
+              state.commanders[cid].captured = false;
+            }
+          }
+          summary = "패튼 혁명군 동맹 성사! 패튼·헌티·휴버트·프리크 4인 합류!";
+        } else {
+          for (const cid of ["chr_aristoles", "chr_rolex", "chr_lelyukov", "chr_sheila"]) {
+            if (state.commanders[cid] && state.commanders[cid].alive) {
+              state.commanders[cid].recruited = true;
+              state.commanders[cid].captured = false;
+            }
+          }
+          summary = "헬만 제국 정예 3장군 회유 성공! 아리스토레스·롤렉스·레류코프·실라 합류!";
+        }
+        break;
+
+      case "evt_free_cities_sel_rescue":
+        completeScenario(state, eventId);
+        if (choice === 0 && state.gold >= 2000) {
+          state.gold -= 2000;
+          state.flags.selRescued = true;
+          state.commanders.chr_sel.recruited = true;
+          state.commanders.chr_sel.alive = true;
+          summary = "셀 카치골프 채무 구제 성공 (-2,000G)! 리자스 지원 신관으로 합류.";
+        } else if (choice === 0) {
+          return { ok: false, error: "셀 구제 비용 2,000G가 부족합니다.", state };
+        } else {
+          summary = "셀 구제에 개입하지 않았다.";
+        }
+        break;
+
+      case "evt_japan_nobunaga_kenshin_campaign":
+        completeScenario(state, eventId);
+        if (choice === 0) {
+          state.flags.japanHonorPact = true;
+          state.commanders.chr_kenshin.recruited = true;
+          state.commanders.chr_kenshin.alive = true;
+          state.commanders.chr_kenshin.trust = Math.max(state.commanders.chr_kenshin.trust, 75);
+          summary = "명예 결전으로 군신 우에스기 켄신을 리자스군에 영입했다!";
+        } else {
+          state.flags.leilaSentToJapan = true;
+          state.gold += 6000;
+          summary = "JAPAN 정략 협정으로 +6,000G 확보 (레이라 불행 분기 발생).";
+        }
+        break;
+
+      case "evt_al_church_gawain_cafe_relics":
+        completeScenario(state, eventId);
+        state.commanders.chr_gawain.recruited = true;
+        state.commanders.chr_gawain.alive = true;
+        if (choice === 0) {
+          state.commanders.chr_cafe.recruited = true;
+          state.commanders.chr_cafe.alive = true;
+          state.flags.godStatuesCount = Math.min(3, state.flags.godStatuesCount + 1);
+          summary = "AL교 평화 성전 협정 완료! 템플나이트 가웨인 & 대신관 카페 합류 + 고대 신상 +1.";
+        } else {
+          state.commanders.chr_calphenight.recruited = true;
+          state.commanders.chr_calphenight.alive = true;
+          state.gold += 4000;
+          summary = "상단 무력 접수 완료! 가웨인·칼페나이트 합류 + 4,000G.";
+        }
+        break;
+
+      case "evt_demon_hornet_rescue_galtia":
+        completeScenario(state, eventId);
+        state.flags.hornetRescued = true;
+        state.commanders.chr_galtia.recruited = true;
+        state.commanders.chr_galtia.alive = true;
+        state.commanders.chr_saizel.recruited = true;
+        state.commanders.chr_saizel.alive = true;
+        summary = "호넷파 구원 & 요리 승부 승리! 마인 가르티아·사이젤 자매 합류!";
         break;
 
       default:
@@ -1973,7 +2992,7 @@
     return { ok: true, state, summary };
   }
 
-  // ==================== TURN END, TIMERS & LIGHTWEIGHT AI ====================
+  // ==================== TURN END, TIMERS & DIPLOMACY-AWARE AI ====================
 
   function evaluateEndings(state, data) {
     if (state.endingId) return state.endingId;
@@ -1992,13 +3011,19 @@
     const data = resolveData(rawData);
     if (state.endingId) return { ok: false, error: "이미 엔딩이 달성되었습니다.", state };
     if (state.activeBattle) return { ok: false, error: "진행 중인 전투를 먼저 종료하세요.", state };
+    if (state.activeDungeon) return { ok: false, error: "진행 중인 던전 원정을 먼저 종료하세요.", state };
 
-    // 1. Passive territory income
+    // 1. Passive territory income + alliance trade tribute
     let passiveIncome = 0;
     const hasLibrary = state.territories.ter_leazas_castle.facilities.includes("library");
     for (const t of Object.values(state.territories)) {
       if (t.owner === "fac_leazas") {
         passiveIncome += Math.round(t.taxIncome * 0.25 * (hasLibrary ? 1.15 : 1));
+      }
+    }
+    for (const f of Object.values(state.factions)) {
+      if (f.diplomaticRelation === "ALLIANCE" && !f.defeated) {
+        passiveIncome += 600;
       }
     }
     state.gold += passiveIncome;
@@ -2033,7 +3058,7 @@
       addLog(state, "crisis", `[프레이야 공작] 흑익의 보급 방해로 군자금 -${drain.toLocaleString()}G 유출!`);
     }
 
-    // 5. Lightweight AI faction counter-pressure
+    // 5. Diplomacy-aware AI faction counter-pressure & truce countdown
     runAiFactionTurn(state, data);
 
     // 6. Advance Calendar & Turn
@@ -2044,7 +3069,6 @@
     // 7. Evaluate Absolute Calendar Deadlines & Relative Crisis Timers
     const dueEvents = [];
 
-    // Volgo Z Soul Deadline (LP 3/08/3)
     if (
       state.timers.volgoZSoul.status === "ACTIVE" &&
       compareCalendar(state.calendar, state.timers.volgoZSoul.deadline) > 0
@@ -2056,7 +3080,6 @@
       addLog(state, "crisis", "[기한 만료] LP 3/08/3 경과 — 볼고 Z의 소울 구출에 실패하여 바운드 영입 체인이 봉인되었다.");
     }
 
-    // Volgo Z Sill Deadline (LP 4/01/3)
     if (
       state.timers.volgoZSill.status === "ACTIVE" &&
       compareCalendar(state.calendar, state.timers.volgoZSill.deadline) > 0
@@ -2070,7 +3093,6 @@
       addLog(state, "crisis", "[기한 만료] LP 4/01/3 경과 — 볼고 Z의 시일 구출 실패! 진 엔딩(Bliss)이 영구 잠금되었다.");
     }
 
-    // Zeth 5-week Shizuka Duel Timer
     if (state.timers.zethShizukaDuel.active) {
       state.timers.zethShizukaDuel.remainingWeeks -= 1;
       if (state.timers.zethShizukaDuel.remainingWeeks <= 0) {
@@ -2081,14 +3103,12 @@
       }
     }
 
-    // Earliest Monster Realm Open (LP 3/9/4)
     const earliestDemonDate = { year: 3, month: 9, week: 4 };
     if (!state.flags.monsterRealmOpen && compareCalendar(state.calendar, earliestDemonDate) >= 0) {
       state.flags.monsterRealmOpen = true;
       addLog(state, "crisis", "[마계 정세] LP 3/09/4 도달 — 케이브리스의 마계 통일이 임박하며 마지노선 진격이 개방되었다.");
     }
 
-    // Demon Invasion Countdown (69~73 weeks after Ex Rebellion)
     if (state.timers.monsterRealmInvasion.active && !state.flags.demonInvasionTriggered) {
       state.timers.monsterRealmInvasion.remainingWeeks -= 1;
       if (state.timers.monsterRealmInvasion.remainingWeeks <= 0) {
@@ -2109,9 +3129,20 @@
   }
 
   function runAiFactionTurn(state, data) {
-    // At-war factions reinforce frontier garrisons slightly each turn
     for (const f of Object.values(state.factions)) {
-      if (!f.atWarWithPlayer || f.defeated || f.id === "fac_leazas") continue;
+      if (f.defeated || f.id === "fac_leazas") continue;
+
+      if (f.diplomaticRelation === "TRUCE" && f.truceTurns > 0) {
+        f.truceTurns -= 1;
+        if (f.truceTurns <= 0) {
+          f.diplomaticRelation = "NEUTRAL";
+          addLog(state, "system", `[휴전 만료] ${f.nameKr}과(와)의 휴전 협정이 종료되었다.`);
+        }
+        continue;
+      }
+
+      if (f.diplomaticRelation === "ALLIANCE" || !f.atWarWithPlayer) continue;
+
       const owned = Object.values(state.territories).filter((t) => t.owner === f.id);
       if (owned.length === 0) {
         f.defeated = true;
@@ -2123,7 +3154,6 @@
         }
       }
 
-      // Demon Army counter-offensive pressure every 6 turns once active
       if (f.id === "fac_demon_kayblis" && state.flags.demonInvasionTriggered && state.turn % 6 === 0) {
         const frontierTargets = Object.values(state.territories).filter(
           (t) =>
@@ -2159,6 +3189,11 @@
     if (!parsed || parsed.gameId !== "kichikuou-rance" || !parsed.territories || !parsed.commanders) {
       throw new Error("Invalid Kichikuou Rance save snapshot.");
     }
+    // Backfill Phase 2 fields if loading a legacy save
+    parsed.relics = parsed.relics || [];
+    parsed.pendingCaptures = parsed.pendingCaptures || [];
+    parsed.clearedDungeons = parsed.clearedDungeons || [];
+    parsed.activeDungeon = parsed.activeDungeon || null;
     return parsed;
   }
 
@@ -2167,6 +3202,7 @@
   const Engine = {
     SAVE_VERSION,
     FACILITIES,
+    BATTLE_TACTICS,
     SCENARIO_CHOICES,
     ZETH_TOWER_IDS,
     createInitialState,
@@ -2182,11 +3218,20 @@
     getBattleTurnQueue,
     resolveSnipeDamage,
     checkCreatorPhaseUnlock,
+    getCombatZoneInfo,
     startInvasion,
+    setBattleTactic,
     getValidTargets,
     executeBattleAction,
     stepBattleAiTurn,
     autoResolveBattle,
+    resolveCapture,
+    startDungeon,
+    advanceDungeonFloor,
+    fightDungeonBoss,
+    exitDungeon,
+    evaluateDestinies,
+    negotiateFaction,
     runCityAction,
     runBuildFacility,
     runReinforce,
