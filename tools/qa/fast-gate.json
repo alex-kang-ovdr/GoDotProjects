@@ -42,6 +42,7 @@
     "tools/devops/tests/devops.test.mjs",
     "tools/ios/verify-ipa.test.mjs",
     "tools/local-games/modes.test.cjs",
+    "tools/qa/contract.engine-ssot.test.mjs",
     "tools/qa/contract.gate-hygiene.test.mjs",
     "tools/RobloxConverter/tests/converter-lab.test.mjs",
     "tools/RobloxConverter/tests/review-fixes.test.mjs",

@@ -27,8 +27,9 @@ COPY forge/Tools ./forge/Tools
 COPY forge/package.json ./forge/package.json
 COPY forge/Godot/addons/playforge_avatar ./forge/Godot/addons/playforge_avatar
 
-# Shared build-version & UGC contract/MMO SSOT modules
+# Shared build-version, engine SSOT & UGC contract/MMO SSOT modules
 COPY tools/build-version ./tools/build-version
+COPY tools/engine ./tools/engine
 COPY tools/ugc-shared ./tools/ugc-shared
 ARG PLAYHUB_CHANNEL=dev
 ARG PLAYHUB_BUILD_NUM=0

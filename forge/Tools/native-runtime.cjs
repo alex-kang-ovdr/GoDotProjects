@@ -4,14 +4,29 @@ const fs = require('node:fs');
 const net = require('node:net');
 const crypto = require('node:crypto');
 const { spawn, spawnSync } = require('node:child_process');
+let engineResolver = null;
+try {
+  engineResolver = require('../../tools/engine/resolve-godot.cjs');
+} catch (err) {
+  if (!err || err.code !== 'MODULE_NOT_FOUND') throw err;
+}
 
 function engineExecutable(executable) {
   // The Windows console executable is a launcher. Own the real engine process
   // so a blocked GDScript is terminated, rather than only its console wrapper.
+  if (engineResolver) return engineResolver.realEngineExecutable(executable);
   const direct = executable.replace(/_console\.exe$/i, '.exe');
   return direct !== executable && fs.existsSync(direct) ? direct : executable;
 }
 function findGodot(root) {
+  if (engineResolver) {
+    const res = engineResolver.resolveGodotBinary({
+      searchFrom: [root, path.resolve(root, '..'), path.resolve(root, '../../..', 'GoDotProjects')],
+      preferConsole: false,
+    });
+    if (res.found && res.executable) return engineExecutable(res.executable);
+    throw new Error(res.reason || 'Godot 4.7+ was not found. Set GODOT_BIN to its executable.');
+  }
   if (process.env.GODOT_BIN) return engineExecutable(process.env.GODOT_BIN);
   const folders = [path.resolve(root, '..'), path.resolve(root, '../../..', 'GoDotProjects')];
   for (const folder of folders) {

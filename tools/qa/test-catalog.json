@@ -124,6 +124,21 @@
   "quarantine": {},
   "changedRules": [
     {
+      "match": "^(?:godot-engine$|tools/engine/|tools/forge/web_editor_release_slim\\.py$|tools/desktop/custom\\.py$|tools/(?:aos|ios)/godot-.*\\.lock\\.json$|deploy/cloudrun/build-worker/Dockerfile$)",
+      "suites": [
+        "smoke",
+        "system",
+        "forge",
+        "multiplatform",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
       "match": "^hub/server/billing/",
       "suites": [
         "hub",
@@ -6071,6 +6086,23 @@
       ],
       "owner": "PlayHub-Platform",
       "note": "Playwright chromium.launch 브라우저 검증"
+    },
+    {
+      "path": "tools/qa/contract.engine-ssot.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "system",
+        "forge",
+        "multiplatform",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
     },
     {
       "path": "tools/qa/contract.gate-hygiene.test.mjs",

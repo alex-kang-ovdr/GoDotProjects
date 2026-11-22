@@ -9,6 +9,7 @@
   },
   "scripts": {
     "check:ownership": "node tools/worktree-ownership/check-ownership.mjs",
+    "check:engine-ssot": "node tools/engine/check-engine-ssot.mjs",
     "check:skills": "node tools/agent-skills/sync-skills.mjs --check",
     "sync:skills": "node tools/agent-skills/sync-skills.mjs",
     "test:fast": "node tools/qa/fast-gate.mjs",

@@ -51,6 +51,7 @@
         "tools/start-platform.ps1",
         "tools/worktree-ownership/**",
         "tools/build-version/**",
+        "tools/engine/**",
         "tools/ugc-shared/**",
         "hub/server/version-compat.mjs",
         "hub/tests/compat-version.test.mjs",
