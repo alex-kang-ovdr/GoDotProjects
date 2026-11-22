@@ -457,7 +457,7 @@
           <div class="section-heading-left"><h2 id="creator-hub-title">크리에이터 허브</h2><span class="section-subtitle">게임 제작 · 오픈 에셋</span></div>
         </div>
         <div class="creator-hub-tiles">
-          <a class="hub-tile hub-tile-forge" href="/PlayForge/" target="_blank" rel="noopener" data-testid="home-forge-tile"><span class="hub-tile-icon" aria-hidden="true">🛠️</span><span class="hub-tile-copy"><strong>PlayForge 바로 열기 ↗</strong><small>웹 Godot 4.7.2 에디터</small></span></a>
+          <a class="hub-tile hub-tile-forge" href="/forge/OfficialGodot/" data-testid="home-forge-tile"><span class="hub-tile-icon" aria-hidden="true">🛠️</span><span class="hub-tile-copy"><strong>PlayForge 바로 열기</strong><small>웹 Godot 4.7.2 에디터</small></span></a>
           <a class="hub-tile hub-tile-store" href="/store/" data-testid="home-store-tile"><span class="hub-tile-icon" aria-hidden="true">🧩</span><span class="hub-tile-copy"><strong>에셋 스토어</strong><small>CC0 · MIT 11,830+ 에셋</small></span></a>
         </div>
       </section>`;
@@ -720,7 +720,7 @@
         <h2 id="forge-title">PlayForge</h2>
         <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
         <div class="save-actions">
-          <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="/forge/OfficialGodot/">PlayForge 열기</a>
           <a class="button secondary" href="/?view=agent" data-route data-testid="creator-agent-link">AI 스튜디오 (채팅·3D·포팅)</a>
           <a class="button secondary" href="/forge/OfficialGodot/shorts-studio.html" target="_blank" rel="noopener" data-testid="creator-shorts-studio-link">🎬 AI 쇼츠 스튜디오 열기 ↗</a>
           <a class="button primary" href="/store/" data-testid="creator-store-link">PlayForge 에셋 스토어 열기</a>

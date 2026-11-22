@@ -7,6 +7,7 @@ import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { createApp } from '../../../hub/server/app.mjs';
 import { assertRuntimeOutput } from '../../../hub/tools/runtime-output.cjs';
+import { createStoreProxy } from '../../../hub/tools/store-proxy.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -32,6 +33,7 @@ const DIST_PUBLIC_PORT = Number(process.env.PLAYHUB_DIST_PUBLIC_PORT || readDist
 const DIST_ADMIN_PORT = Number(process.env.PLAYHUB_DIST_ADMIN_PORT || readDistApiPort('admin', 'PLAYHUB_ADMIN_CONFIG', 8091));
 const PUBLIC_ORIGIN = (process.env.PLAYHUB_PUBLIC_ORIGIN || '').trim().replace(/\/$/, '');
 const FORGE_UPSTREAM = (process.env.PLAYHUB_FORGE_UPSTREAM || '').trim().replace(/\/$/, '');
+const STORE_UPSTREAM_ENV = (process.env.PLAYHUB_STORE_UPSTREAM || '').trim().replace(/\/$/, '');
 const ALLOW_REMOTE_VERIFY = process.env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';
 const DATA_DIR = path.resolve(process.env.PLAYHUB_DATA_DIR || '/tmp/playhub-data');
 const FORGE_DIR = path.resolve(process.env.PLAYHUB_FORGE_DIR || '/tmp/playhub-forge');
@@ -286,6 +288,43 @@ if (isDirectExecution) {
   const staticRoot = fs.realpathSync(ROLE === 'admin' ? deployed.admin : deployed.user);
   const apiHandler = ROLE === 'admin' ? app.adminHandler : app.publicHandler;
 
+  let embeddedStore = null;
+  let storeProxy = null;
+  if (ROLE === 'public') {
+    const storeInternalSecret = process.env.PLAYHUB_STORE_INTERNAL_SECRET || crypto.randomBytes(32).toString('hex');
+    let storeUpstream = STORE_UPSTREAM_ENV;
+    if (!storeUpstream && fs.existsSync(path.join(repoRoot, 'store', 'server', 'store-api.mjs'))) {
+      try {
+        const [{ createStoreApp }, { loadMergedCatalog }] = await Promise.all([
+          import('../../../store/server/store-api.mjs'),
+          import('../../../store/server/index.mjs'),
+        ]);
+        const storeRoot = path.join(repoRoot, 'store');
+        const storeDataDir = path.join(DATA_DIR, 'store');
+        fs.mkdirSync(storeDataDir, { recursive: true, mode: 0o700 });
+        embeddedStore = createStoreApp({
+          dataDir: storeDataDir,
+          webDir: path.join(storeRoot, 'web'),
+          serveStatic: true,
+          catalog: loadMergedCatalog(storeRoot),
+          internalSecret: storeInternalSecret,
+        });
+        const storeAddr = await embeddedStore.listen(0, '127.0.0.1');
+        storeUpstream = `http://127.0.0.1:${storeAddr.port}`;
+      } catch (err) {
+        console.error('[cloudrun_hub] embedded store startup failed:', err?.message || err);
+      }
+    }
+    if (storeUpstream) {
+      storeProxy = createStoreProxy({
+        upstream: storeUpstream,
+        allowedOrigins: config.userOrigins,
+        resolveSessionIdentity: req => app.resolveStoreIdentity(req),
+        internalSecret: storeInternalSecret,
+      });
+    }
+  }
+
   const stripSpoofedHeaders = req => {
     for (const key of Object.keys(req.headers)) {
       const lower = key.toLowerCase();
@@ -319,6 +358,15 @@ if (isDirectExecution) {
       if (pathname === '/config.js') {
         res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
         res.end('window.PLAYHUB_CONFIG={"apiPort":443,"apiBaseUrl":location.origin,"mode":"cloud-run"};\n');
+        return;
+      }
+      if (pathname === '/PlayForge' || pathname === '/PlayForge/') {
+        res.writeHead(302, { Location: '/forge/OfficialGodot/', 'Cache-Control': 'no-store' });
+        res.end();
+        return;
+      }
+      if (storeProxy && storeProxy.matches(pathname)) {
+        storeProxy.handle(req, res);
         return;
       }
       if (pathname === '/forge') {
@@ -372,6 +420,7 @@ if (isDirectExecution) {
     port: EDGE_PORT,
     publicOrigin: config.userBaseUrl,
     forgeProxyEnabled: Boolean(FORGE_UPSTREAM),
+    storeProxyEnabled: Boolean(storeProxy),
     remoteVerifyEnabled: ALLOW_REMOTE_VERIFY,
     revision: process.env.K_REVISION || 'local',
   }));
@@ -379,6 +428,7 @@ if (isDirectExecution) {
   const shutdown = async () => {
     edge.closeAllConnections?.();
     edge.close();
+    await embeddedStore?.close?.();
     await app.close();
     process.exit(0);
   };

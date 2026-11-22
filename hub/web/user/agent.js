@@ -310,7 +310,7 @@ public class ArenaMover : MonoBehaviour {
             </label>
             <div class="save-actions">
               <button type="submit" class="button primary" id="agent-port-btn">Godot 4.7.2 포팅 실행</button>
-              <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 에디터에서 포팅 스튜디오 열기 ↗</a>
+              <a class="button secondary" href="/forge/OfficialGodot/">PlayForge 에디터에서 포팅 스튜디오 열기</a>
             </div>
           </form>
           ${latestPortResult ? `<div style="margin-top:14px">

@@ -41,6 +41,7 @@ export function createStaticServer(directory,{forgeProxy,storeProxy,ugcMultiplay
   const server=http.createServer((request,response)=>{
     const queryAt=request.url.indexOf('?');
     const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
+    if(rawPath==='/PlayForge'||rawPath==='/PlayForge/'){response.writeHead(302,{Location:'/forge/OfficialGodot/','Cache-Control':'no-store'});response.end();return;}
     if(storeProxy&&storeProxy.matches(rawPath)){storeProxy.handle(request,response);return;}
     let normalizedProxyPath=null;
     if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/')||rawPath.startsWith('/ad/')||rawPath==='/.well-known/assetlinks.json')){

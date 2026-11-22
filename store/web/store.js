@@ -297,7 +297,7 @@ function renderConnectionBadges() {
   const hubLink = document.getElementById('hub-home-link');
   const forgeLink = document.getElementById('forge-home-link');
   if (hubLink) hubLink.hidden = !underHub;
-  if (forgeLink) forgeLink.href = underHub ? '/PlayForge/' : '/OfficialGodot/';
+  if (forgeLink) forgeLink.href = underHub ? '/forge/OfficialGodot/' : '/OfficialGodot/';
 }
 
 function sortItems(items) {
