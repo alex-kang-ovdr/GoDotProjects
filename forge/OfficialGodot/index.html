@@ -15,17 +15,22 @@
 <section id="library" class="forge-hub-shell">
   <header class="forge-topbar">
     <div class="forge-topbar-left">
-      <a class="forge-brand" href="./">
-        <span class="forge-brand-icon" aria-hidden="true">◆</span>
-        <span>PlayForge Creator Hub</span>
-      </a>
+      <div class="forge-brand-switcher" role="navigation" aria-label="플랫폼 전환">
+        <a class="forge-brand-sibling forge-brand-hub" href="/" aria-label="PLAY HUB로 이동" data-testid="brand-switch-hub">
+          <span class="forge-hub-symbol" aria-hidden="true"></span>
+          <span>PLAY HUB</span>
+        </a>
+        <a class="forge-brand is-active" href="./" aria-label="FORGE 홈" aria-current="page">
+          <span class="forge-brand-icon" aria-hidden="true">◆</span>
+          <span>FORGE</span>
+        </a>
+      </div>
       <span class="forge-version-pill">Godot 4.7.2 Web</span>
     </div>
     <div id="templateToolbar" class="forge-search-bar">
       <input id="templateSearch" type="search" placeholder="내 프로젝트, 템플릿, 에셋 검색…" aria-label="템플릿 검색">
     </div>
     <div class="forge-topbar-actions">
-      <a class="forge-btn secondary" href="/">PlayHub 포털</a>
       <button type="button" id="newBlankProjectBtn" class="forge-btn primary">+ 새 프로젝트</button>
     </div>
   </header>

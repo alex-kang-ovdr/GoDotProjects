@@ -30,7 +30,10 @@
   <a class="skip-link" href="#app" data-l10n="portal.common.skip_main" data-l10n-ctx="ui.nav">본문으로 이동</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/" aria-label="PLAY HUB 홈"><span class="brand-symbol" aria-hidden="true"></span>PLAY HUB</a>
+      <div class="brand-switcher" role="navigation" aria-label="플랫폼 전환">
+        <a class="brand is-active" href="/" aria-label="PLAY HUB 홈" aria-current="page"><span class="brand-symbol" aria-hidden="true"></span><span>PLAY HUB</span></a>
+        <a class="brand-sibling brand-forge" href="/PlayForge/" aria-label="FORGE로 이동" data-testid="brand-switch-forge"><span class="brand-symbol brand-symbol-forge" aria-hidden="true">◆</span><span>FORGE</span></a>
+      </div>
       <form class="header-search" id="search-form" role="search">
         <span class="search-icon" aria-hidden="true"></span>
         <input id="search" name="q" type="search" maxlength="100" placeholder="게임 이름이나 장르 검색" aria-label="게임 검색" data-l10n-placeholder="portal.search.placeholder" data-l10n-aria-label="portal.search.aria">

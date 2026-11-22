@@ -110,34 +110,53 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
 .site-header :focus-visible { outline-color: var(--primary); }
 .header-inner {
   display: grid;
-  grid-template-columns: auto minmax(180px, 340px) auto;
+  grid-template-columns: max-content minmax(120px, 1fr) max-content;
   align-items: center;
-  gap: clamp(10px, 1.8vw, 22px);
+  gap: clamp(10px, 1.2vw, 16px);
   min-height: 64px;
-  max-width: var(--page-width);
+  max-width: 1360px;
   margin-inline: auto;
   padding: 8px var(--gutter);
 }
-.brand {
+.brand-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: max-content;
+  flex-shrink: 0;
+}
+.brand,
+.brand-sibling {
   display: inline-flex;
   min-height: 40px;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--ink);
   white-space: nowrap;
+  transition: color 150ms ease-out, opacity 150ms ease-out;
+}
+.brand {
+  color: var(--ink);
+}
+.brand-sibling {
+  color: #9AA0B4;
+}
+.brand-sibling:hover,
+.brand-sibling:focus-visible {
+  color: var(--ink);
 }
 .brand-symbol {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   background: var(--primary);
   box-shadow: 0 2px 8px rgba(0, 74, 198, 0.24);
+  transition: background 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
 }
 .brand-symbol::before, .play-symbol {
   display: inline-block;
@@ -147,6 +166,23 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
   border-left: 9.5px solid currentColor;
 }
 .brand-symbol::before { content: ""; margin-left: 2px; color: #FFFFFF; }
+.brand-symbol-forge {
+  background: #ECEEF7;
+  color: #8C92A8;
+  box-shadow: none;
+  font-size: 14px;
+  line-height: 1;
+}
+.brand-symbol-forge::before {
+  display: none;
+  content: none;
+}
+.brand-sibling:hover .brand-symbol-forge,
+.brand-sibling:focus-visible .brand-symbol-forge {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 74, 198, 0.24);
+}
 
 .header-search {
   display: flex;
@@ -216,18 +252,18 @@ p { overflow-wrap: anywhere; word-break: keep-all; }
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 2px;
 }
 .site-nav a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   min-height: 36px;
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-radius: var(--radius-md);
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   white-space: nowrap;
   transition: background 150ms ease-out, color 150ms ease-out;
@@ -1739,16 +1775,23 @@ dialog p, dialog .muted { color: var(--muted); font-size: 13.5px; }
 .social-platform-chip.platform-web { background: var(--primary); color: #FFFFFF; }
 
 /* ==================== Responsive Breakpoints ==================== */
+@media (max-width: 1200px) {
+  .brand-switcher { gap: 9px; }
+  .brand, .brand-sibling { font-size: 15.5px; gap: 5px; }
+  .brand-symbol { width: 24px; height: 24px; border-radius: 7px; }
+  .site-nav a { padding: 5px 6px; font-size: 12px; }
+}
+
 @media (max-width: 1080px) {
   .game-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .top-rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .header-inner { grid-template-columns: auto minmax(150px, 1fr) auto; gap: 12px; }
+  .header-inner { grid-template-columns: max-content minmax(100px, 1fr) max-content; gap: 8px; }
   .detail-body-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 790px) {
   .header-inner { grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; }
-  .header-inner > .brand { align-self: center; }
+  .header-inner > .brand-switcher { align-self: center; }
   .header-search { grid-column: 1 / -1; grid-row: 2; }
   .site-nav { grid-column: 2; grid-row: 1; justify-content: flex-end; flex-wrap: wrap; }
   .game-grid, .related .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1780,8 +1823,9 @@ dialog p, dialog .muted { color: var(--muted); font-size: 13.5px; }
 @media (max-width: 570px) {
   .js body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
   .page { padding-top: 16px; padding-bottom: 36px; }
-  .brand { gap: 7px; font-size: 17px; }
-  .brand-symbol { width: 28px; height: 28px; border-radius: 8px; }
+  .brand-switcher { gap: 14px; }
+  .brand, .brand-sibling { gap: 6px; font-size: 16.5px; }
+  .brand-symbol { width: 26px; height: 26px; border-radius: 8px; }
   .header-search input, .header-search button { font-size: 15px; }
   .site-nav {
     position: fixed;

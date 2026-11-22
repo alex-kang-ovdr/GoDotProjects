@@ -72,18 +72,61 @@ button:disabled { opacity: .45; cursor: wait; }
 .forge-topbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-shrink: 0;
 }
-.forge-brand {
+.forge-brand-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+.forge-brand,
+.forge-brand-sibling {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 40px;
   font-family: var(--font-display);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  transition: color 150ms ease-out;
+}
+.forge-brand {
   color: var(--ink);
-  letter-spacing: -0.02em;
+}
+.forge-brand-sibling {
+  color: #9AA0B4;
+}
+.forge-brand-sibling:hover,
+.forge-brand-sibling:focus-visible {
+  color: var(--ink);
+}
+.forge-hub-symbol {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #ECEEF7;
+  color: #8C92A8;
+  transition: background 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.forge-hub-symbol::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-block: 5.5px solid transparent;
+  border-left: 9.5px solid currentColor;
+}
+.forge-brand-sibling:hover .forge-hub-symbol,
+.forge-brand-sibling:focus-visible .forge-hub-symbol {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 74, 198, 0.24);
 }
 .forge-brand-icon {
   display: grid;
@@ -92,8 +135,9 @@ button:disabled { opacity: .45; cursor: wait; }
   height: 30px;
   border-radius: 9px;
   background: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 74, 198, 0.24);
   color: #FFFFFF;
-  font-size: 15px;
+  font-size: 14px;
 }
 .forge-version-pill {
   padding: 3px 10px;
@@ -488,6 +532,9 @@ aside.editor-drawer button { margin: 6px 6px 0 0; }
   aside.editor-drawer { width: min(390px, 100vw); }
 }
 @media (max-width: 570px) {
+  .forge-brand-switcher { gap: 12px; }
+  .forge-brand, .forge-brand-sibling { font-size: 16px; gap: 6px; }
+  .forge-brand-icon, .forge-hub-symbol { width: 26px; height: 26px; border-radius: 8px; }
   .forge-version-pill { display: none; }
   .forge-kpi-grid { grid-template-columns: 1fr; }
 }
