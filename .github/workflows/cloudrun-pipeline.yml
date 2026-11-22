@@ -318,6 +318,34 @@ jobs:
             --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
             ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
+          FORGE_URL=$(gcloud run services describe playhub-forge \
+            --project="${DEV_FORGE_PROJECT}" \
+            --region="${REGION}" \
+            --format='value(status.url)')
+          if [[ "${FORGE_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
+            gcloud run services update playhub-hub \
+              --project="${DEV_HUB_PROJECT}" \
+              --region="${REGION}" \
+              --update-env-vars="^##^PLAYHUB_FORGE_UPSTREAM=${FORGE_URL}" \
+              --quiet
+          fi
+      - name: Route Dev primary traffic (100%) to latest verified Hub & Forge revisions
+        if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub' || inputs.target == 'forge'
+        env:
+          INPUT_TARGET: ${{ inputs.target || 'both' }}
+        run: |
+          set -euo pipefail
+          TARGET="${INPUT_TARGET:-both}"
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] || [ "${TARGET}" = "both" ] || [ "${TARGET}" = "forge" ]; then
+            gcloud run services update-traffic playhub-forge \
+              --project="${DEV_FORGE_PROJECT}" --region="${REGION}" \
+              --update-tags="stage=LATEST" --to-latest --quiet
+          fi
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] || [ "${TARGET}" = "both" ] || [ "${TARGET}" = "hub" ]; then
+            gcloud run services update-traffic playhub-hub \
+              --project="${DEV_HUB_PROJECT}" --region="${REGION}" \
+              --update-tags="stage=LATEST" --to-latest --quiet
+          fi
       - name: Deploy P0 isolated build-worker Cloud Run Job (forge-dev-2611, zero-IAM SA)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'forge'
         env:
