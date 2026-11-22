@@ -521,6 +521,29 @@
       "owns": [
         "games/yu-no/**"
       ]
+    },
+    "Forge-Tripo": {
+      "role": "Tripo3D API v3 모델링 생성·자동 리깅·애니메이션·Godot GLB 즉시 임포트 PoC (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "forge/Tools/tripo-pipeline/**",
+        "forge/Godot/addons/playforge_tripo/**",
+        "forge/Tests/playforge_tripo/**",
+        "forge/OfficialGodot/tripo-studio.*",
+        "forge/Docs/TRIPO_PIPELINE_POC.md"
+      ]
+    },
+    "Forge-UnrealPort": {
+      "role": "Unreal Engine → Godot 자동 포팅 (Unified Game IR · Blueprint 변환 · 호환 런타임 · Trace 검증) (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "tools/UnrealConverter/**",
+        "forge/Godot/addons/playforge_unreal_compat/**",
+        "forge/Tests/playforge_unreal_compat/**",
+        "forge/Templates/unreal-*/**"
+      ]
     }
   }
 }
