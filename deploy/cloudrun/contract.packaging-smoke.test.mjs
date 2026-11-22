@@ -5,8 +5,13 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build as buildHubDist } from '../../hub/tools/build.mjs';
+import { TOOLS as PORTABLE_SEA_TOOLS, createBundle as createPortableSeaBundle } from '../../hub/portable/build-sea.mjs';
+
+const require = createRequire(import.meta.url);
+const portableLauncher = require('../../hub/portable/launcher.cjs');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
@@ -194,12 +199,12 @@ function stripJsComments(code) {
   return out;
 }
 
-function extractRelativeSpecifiers(filePath) {
+function extractRelativeSpecifiers(filePath, { includeDynamic = true } = {}) {
   const cleaned = stripJsComments(fs.readFileSync(filePath, 'utf8'));
   const specs = new Set();
   const patterns = [
     /\b(?:import|export)\s+(?:type\s+)?(?:[\s\S]*?\s+from\s+)?['"]([^'"]+)['"]/g,
-    /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
+    ...(includeDynamic ? [/\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g] : []),
     /\b(?:require|localRequire|createRequire)\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
   ];
   for (const re of patterns) {
@@ -692,4 +697,154 @@ test('TC-2.3: Staged Dockerfile COPY isolation boot smoke test with PLAYHUB_SECU
   assert.equal(evilOriginMutation.status, 403);
   const evilBody = await evilOriginMutation.json();
   assert.equal(evilBody.error?.code, 'ORIGIN_DENIED');
+});
+
+test('TC-2.4: Portable SEA bundle (TOOLS + createBundle) packages all hub/tools and hub/server internal tool imports without missing modules', async t => {
+  const hubRoot = path.join(repoRoot, 'hub');
+
+  // 1. Validate exported TOOLS list integrity
+  assert.ok(Array.isArray(PORTABLE_SEA_TOOLS) && PORTABLE_SEA_TOOLS.length > 0, 'Expected non-empty TOOLS array from hub/portable/build-sea.mjs');
+  const toolSet = new Set(PORTABLE_SEA_TOOLS);
+  assert.equal(toolSet.size, PORTABLE_SEA_TOOLS.length, 'TOOLS array in build-sea.mjs must not contain duplicates');
+  for (const requiredTool of ['build.mjs', 'dev.mjs', 'forge-proxy.mjs', 'store-proxy.mjs', 'backup.mjs', 'runtime-output.cjs', 'setup.mjs', 'smoke.mjs', 'check-stack.mjs', 'restore-data.mjs', 'preview-ports.ps1']) {
+    assert.ok(toolSet.has(requiredTool), `Expected "${requiredTool}" in hub/portable/build-sea.mjs TOOLS`);
+  }
+  for (const tool of PORTABLE_SEA_TOOLS) {
+    const absTool = path.join(hubRoot, 'tools', tool);
+    assert.ok(fs.existsSync(absTool) && fs.statSync(absTool).isFile(), `TOOLS entry "${tool}" does not exist at ${absTool}`);
+  }
+
+  // 2. Stage a real portable hub tree (real server/web/shared/portable/tools/config + lightweight fixture game, no forge/ directory)
+  const stagingBase = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-sea-contract-'));
+  t.after(() => fs.rmSync(stagingBase, { recursive: true, force: true, maxRetries: 6, retryDelay: 150 }));
+
+  const stagedHub = path.join(stagingBase, 'hub');
+  fs.mkdirSync(path.join(stagedHub, 'config'), { recursive: true });
+  fs.mkdirSync(path.join(stagedHub, 'games', 'fixture-game'), { recursive: true });
+  fs.mkdirSync(path.join(stagedHub, 'catalog'), { recursive: true });
+  fs.copyFileSync(path.join(hubRoot, 'package.json'), path.join(stagedHub, 'package.json'));
+  fs.copyFileSync(path.join(hubRoot, 'config', 'example.json'), path.join(stagedHub, 'config', 'example.json'));
+  for (const dir of ['server', 'web', 'shared', 'portable', 'tools']) {
+    fs.cpSync(path.join(hubRoot, dir), path.join(stagedHub, dir), {
+      recursive: true,
+      filter(candidate) {
+        const base = path.basename(candidate);
+        return !base.startsWith('.') && base !== 'node_modules' && !/\.exe$/i.test(base);
+      },
+    });
+  }
+  const repoUgcShared = path.join(repoRoot, 'tools', 'ugc-shared');
+  if (fs.existsSync(repoUgcShared)) {
+    fs.cpSync(repoUgcShared, path.join(stagingBase, 'tools', 'ugc-shared'), { recursive: true });
+  }
+  fs.writeFileSync(path.join(stagedHub, 'games', 'fixture-game', 'index.html'), '<!doctype html><title>Fixture</title>');
+  fs.writeFileSync(path.join(stagedHub, 'catalog', 'games.json'), JSON.stringify({ schemaVersion: 1, entries: [] }));
+
+  // 3. Build real SEA bundle via createBundle() and collect every bundled path
+  const bundle = createPortableSeaBundle({ root: stagedHub, nodeLicenseText: 'PlayHub SEA contract test Node license' });
+  const bundledPaths = new Set(bundle.manifest.files.map(f => f.path));
+
+  for (const tool of PORTABLE_SEA_TOOLS) {
+    assert.ok(bundledPaths.has(`tools/${tool}`), `createBundle() did not package TOOLS entry "tools/${tool}"`);
+  }
+
+  // 4. Exhaustive static import/require scan across hub/server/**, hub/portable/* (runtime), and bundled hub/tools/*
+  const portableRuntimeFiles = fs.readdirSync(path.join(hubRoot, 'portable'))
+    .filter(name => /\.mjs$/.test(name) && name !== 'build-sea.mjs')
+    .map(name => path.join(hubRoot, 'portable', name));
+  const bundledToolJsFiles = PORTABLE_SEA_TOOLS
+    .filter(name => /\.(?:mjs|cjs|js)$/.test(name))
+    .map(name => path.join(hubRoot, 'tools', name));
+  const scannedHubFiles = [
+    ...walkJsFiles(path.join(hubRoot, 'server')),
+    ...portableRuntimeFiles,
+    ...bundledToolJsFiles,
+  ];
+  assert.ok(scannedHubFiles.length >= 60, `Expected >=60 portable runtime JS files to scan, got ${scannedHubFiles.length}`);
+
+  const toolEdges = [];
+  for (const filePath of scannedHubFiles) {
+    const fromHubRel = toPosix(path.relative(hubRoot, filePath));
+    assert.ok(bundledPaths.has(fromHubRel), `Scanned runtime file "${fromHubRel}" is missing from createBundle() manifest`);
+
+    for (const spec of extractRelativeSpecifiers(filePath, { includeDynamic: false })) {
+      const resolvedAbs = resolveModuleFile(filePath, spec);
+      const targetHubRel = toPosix(path.relative(hubRoot, resolvedAbs));
+      // Relative imports that escape hub/ (e.g. ../../forge/Tools/*) are optional or verified in TC-2.2.
+      if (targetHubRel.startsWith('../') || targetHubRel === '..' || path.isAbsolute(targetHubRel)) continue;
+
+      assert.ok(
+        fs.existsSync(resolvedAbs),
+        `Broken static import in hub/${fromHubRel}: "${spec}" -> "hub/${targetHubRel}" does not exist`
+      );
+      assert.ok(
+        bundledPaths.has(targetHubRel),
+        `Portable SEA bundle is missing "${targetHubRel}" (statically imported by hub/${fromHubRel} via "${spec}")`
+      );
+      if (targetHubRel.startsWith('tools/')) {
+        const toolName = targetHubRel.slice('tools/'.length);
+        assert.ok(
+          toolSet.has(toolName),
+          `hub/${fromHubRel} imports "tools/${toolName}" (via "${spec}"), which is missing from hub/portable/build-sea.mjs TOOLS`
+        );
+        toolEdges.push({ from: fromHubRel, target: targetHubRel });
+      }
+    }
+  }
+
+  // Also verify runtime dynamic tools/* path references in hub/portable/*.mjs (e.g. tools/dev.mjs, tools/setup.mjs, tools/smoke.mjs, tools/preview-ports.ps1)
+  for (const filePath of portableRuntimeFiles) {
+    const fromHubRel = toPosix(path.relative(hubRoot, filePath));
+    const cleaned = stripJsComments(fs.readFileSync(filePath, 'utf8'));
+    const refRe = /['"]tools\/([A-Za-z0-9._-]+)['"]/g;
+    let m;
+    while ((m = refRe.exec(cleaned)) !== null) {
+      const toolName = m[1];
+      assert.ok(
+        toolSet.has(toolName) && bundledPaths.has(`tools/${toolName}`),
+        `Portable runtime file hub/${fromHubRel} references "tools/${toolName}", which is not in build-sea.mjs TOOLS / bundle`
+      );
+    }
+  }
+
+  // Sanity assertions ensuring static scanner actually observed all known critical tool boundaries
+  for (const [from, target] of [
+    ['tools/dev.mjs', 'tools/forge-proxy.mjs'],
+    ['tools/dev.mjs', 'tools/store-proxy.mjs'],
+    ['tools/dev.mjs', 'tools/runtime-output.cjs'],
+    ['server/admin-console.mjs', 'tools/backup.mjs'],
+    ['server/index.mjs', 'tools/runtime-output.cjs'],
+    ['portable/prepare.mjs', 'tools/build.mjs'],
+  ]) {
+    assert.ok(
+      toolEdges.some(edge => edge.from === from && edge.target === target),
+      `Expected portable static scanner to detect ${from} -> ${target}`
+    );
+  }
+
+  // 5. Extract bundle into a standalone instance (no forge/ or repo tools/build-version/) and verify ESM imports + ForgeGateway fallback
+  const instanceRoot = path.join(stagingBase, 'standalone-instance');
+  const extracted = portableLauncher.extractBundle(bundle.buffer, instanceRoot);
+  for (const entry of ['tools/dev.mjs', 'tools/build.mjs', 'portable/launch.mjs', 'portable/prepare.mjs', 'portable/workers.mjs']) {
+    const mod = await import(pathToFileURL(path.join(extracted.appRoot, entry)).href);
+    assert.ok(mod && typeof mod === 'object', `Expected extracted standalone module "${entry}" to import cleanly`);
+  }
+  const gwMod = await import(pathToFileURL(path.join(extracted.appRoot, 'server/forge-gateway.mjs')).href);
+  const gw = gwMod.createLocalForgeGateway({ config: { enabled: false }, root: path.dirname(extracted.appRoot) });
+  try {
+    assert.deepEqual(gw.adminSnapshot(), {
+      templates: [],
+      projects: [],
+      builds: [],
+      driveSync: {
+        snapshots: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+        submissions: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+        deployments: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+      },
+      serverPresent: false,
+      officialEditorPresent: false,
+    });
+  } finally {
+    gw.close();
+  }
 });

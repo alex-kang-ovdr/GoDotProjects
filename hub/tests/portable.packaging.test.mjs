@@ -8,7 +8,7 @@ import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {createBundle,stripPeSignature,PIN} from '../portable/build-sea.mjs';
+import {createBundle,stripPeSignature,PIN,TOOLS} from '../portable/build-sea.mjs';
 const require=createRequire(import.meta.url),launcher=require('../portable/launcher.cjs');
 const project=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const digest=b=>createHash('sha256').update(b).digest('hex');
@@ -18,7 +18,7 @@ function packed(records=[]){return gzipSync(Buffer.from(JSON.stringify({format:1
 function sourceFixture(t){
  const root=temp(t);for(const dir of ['server','web/user','web/admin','shared','games/test-game','catalog','config','portable','tools','scripts','tests','reports','data'])fs.mkdirSync(path.join(root,dir),{recursive:true});
  const files={'package.json':'{"name":"packaging-test-fixture","version":"0.3.0","type":"module"}','server/app.mjs':'export const fixture=true;','server/db.mjs':'export const fixture=true;','web/user/index.html':'<!doctype html><title>User test fixture</title>','web/admin/index.html':'<!doctype html><title>Admin test fixture</title>','shared/sdk.js':'/* fixture */','games/test-game/index.html':'<!doctype html><title>Fixture only</title>','catalog/games.json':'{"schemaVersion":1,"entries":[]}','config/example.json':'{}','config/local.json':'{"clientSecret":"must-not-ship"}','portable/launch.mjs':'export async function run(){}','portable/workers.mjs':'export async function runWorker(){}','portable/NativeDialog.ps1':'# fixture only','portable/build-sea.mjs':'/* build tool not shipped */','portable/RebexTinyWebServer.exe':'fixture not a real binary','scripts/Install-IIS.ps1':'# must not ship','tests/never.mjs':'/* must not ship */','reports/never.json':'{}','data/platform.sqlite':'fixture not a database'};
- for(const name of ['build.mjs','setup.mjs','backup.mjs','restore-data.mjs','dev.mjs','smoke.mjs','check-stack.mjs'])files['tools/'+name]='export const fixture=true;';
+ for(const name of ['build.mjs','setup.mjs','backup.mjs','restore-data.mjs','dev.mjs','forge-proxy.mjs','store-proxy.mjs','smoke.mjs','check-stack.mjs'])files['tools/'+name]='export const fixture=true;';
  files['tools/runtime-output.cjs']='module.exports = { assertRuntimeOutput() {} };';
  files['tools/preview-ports.ps1']='# fixture only';
  for(const [name,value] of Object.entries(files))fs.writeFileSync(path.join(root,name),value);
@@ -29,7 +29,8 @@ test('portable bundle deterministically selects runtime sources, embeds notices,
  const root=sourceFixture(t),first=createBundle({root,nodeLicenseText:'Node license test fixture'}),second=createBundle({root,nodeLicenseText:'Node license test fixture'});
  assert.equal(first.buffer.equals(second.buffer),true);const parsed=launcher.parseBundle(first.buffer),names=parsed.files.map(f=>f.path);
  assert.ok(names.includes('tools/check-stack.mjs'));assert.ok(names.includes('tools/smoke.mjs'));assert.ok(names.includes('tools/preview-ports.ps1'));assert.ok(names.includes('portable/NativeDialog.ps1'));assert.ok(names.includes('licenses/Node-LICENSE.txt'));
- assert.ok(names.includes('tools/runtime-output.cjs'));
+ assert.ok(names.includes('tools/runtime-output.cjs'));assert.ok(names.includes('tools/forge-proxy.mjs'));assert.ok(names.includes('tools/store-proxy.mjs'));
+ for(const tool of TOOLS)assert.ok(names.includes('tools/'+tool),'missing bundled tool '+tool);
  for(const forbidden of ['config/local.json','portable/RebexTinyWebServer.exe','portable/build-sea.mjs','scripts/Install-IIS.ps1','tests/never.mjs','reports/never.json','data/platform.sqlite'])assert.equal(names.includes(forbidden),false,forbidden);
  assert.equal(parsed.files.some(f=>f.bytes.includes(Buffer.from('must-not-ship'))),false);assert.equal(first.manifest.payloadSha256,digest(first.buffer));
 });

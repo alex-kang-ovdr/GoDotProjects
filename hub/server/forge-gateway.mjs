@@ -90,16 +90,35 @@ function safeStat(filename) {
   }
 }
 
-function emptyAdminSnapshot() {
+function emptyDriveSyncSummary() {
   const zero = () => ({ total: 0, committed: 0, verified: 0, pending: 0, failed: 0 });
+  return { snapshots: zero(), submissions: zero(), deployments: zero() };
+}
+
+function emptyAdminSnapshot() {
   return {
     templates: [],
     projects: [],
     builds: [],
-    driveSync: { snapshots: zero(), submissions: zero(), deployments: zero() },
+    driveSync: emptyDriveSyncSummary(),
     serverPresent: false,
     officialEditorPresent: false
   };
+}
+
+function emptyForgeInspectors() {
+  return {
+    inspectForgeTemplates: () => [],
+    inspectForgeProjects: () => [],
+    inspectForgeBuilds: () => [],
+    inspectDriveManifests: () => emptyDriveSyncSummary()
+  };
+}
+
+function isMissingInternalApiError(err) {
+  if (!err || err.code !== 'MODULE_NOT_FOUND') return false;
+  if (Array.isArray(err.requireStack) && err.requireStack.length > 1) return false;
+  return true;
 }
 
 // ---- local platform (S2) ----
@@ -316,9 +335,25 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
 
 // platform:false builds an admin-only gateway (no private storage validation), used when the
 // caller only needs adminSnapshot (e.g. the admin console without an injected gateway).
-export function createLocalForgeGateway({ config = {}, root, env = process.env, fetchImpl = globalThis.fetch, platform = true } = {}) {
-  const { inspectForgeTemplates, inspectForgeProjects, inspectForgeBuilds, inspectDriveManifests } = require('../../forge/Tools/internal-api.cjs');
+export function createLocalForgeGateway({ config = {}, root, env = process.env, fetchImpl = globalThis.fetch, platform = true, requireImpl = require } = {}) {
   const enabled = config.enabled === true;
+  const localRequire = typeof requireImpl === 'function' ? requireImpl : require;
+  let internalApi;
+  try {
+    internalApi = localRequire('../../forge/Tools/internal-api.cjs');
+  } catch (err) {
+    if (isMissingInternalApiError(err)) {
+      if (enabled) {
+        const missingErr = fail(503, 'FORGE_INTERNAL_API_UNAVAILABLE');
+        missingErr.cause = err;
+        throw missingErr;
+      }
+      internalApi = emptyForgeInspectors();
+    } else {
+      throw err;
+    }
+  }
+  const { inspectForgeTemplates, inspectForgeProjects, inspectForgeBuilds, inspectDriveManifests } = internalApi;
   const platformImpl = enabled && platform ? createLocalPlatform({ config, root, env, fetchImpl }) : null;
   const disabled = () => { throw fail(503, 'FORGE_DISABLED'); };
   return {
@@ -338,13 +373,14 @@ export function createLocalForgeGateway({ config = {}, root, env = process.env, 
     cloudRetry: platformImpl ? platformImpl.cloudRetry : disabled,
     adminSnapshot() {
       const forgeDir = typeof config.directory === 'string' && config.directory ? config.directory : null;
+      const hasRoot = typeof root === 'string' && root.length > 0;
       return {
         templates: inspectForgeTemplates(root),
         projects: inspectForgeProjects(forgeDir),
         builds: inspectForgeBuilds(forgeDir, root),
         driveSync: inspectDriveManifests(forgeDir),
-        serverPresent: Boolean(safeStat(path.join(root, 'forge', 'server.cjs'))),
-        officialEditorPresent: Boolean(safeStat(path.join(root, 'forge', 'OfficialGodot', 'index.html')))
+        serverPresent: hasRoot && Boolean(safeStat(path.join(root, 'forge', 'server.cjs'))),
+        officialEditorPresent: hasRoot && Boolean(safeStat(path.join(root, 'forge', 'OfficialGodot', 'index.html')))
       };
     },
     close() { platformImpl?.close(); }

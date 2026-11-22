@@ -74,6 +74,60 @@ final class SocialClientAndDeepLinkTests: XCTestCase {
             XCTAssertEqual(req.value(forHTTPHeaderField: "X-PlayHub-Platform"), "ios")
             let body: String
             switch path {
+            case "/api/mobile/social/profile":
+                if req.httpMethod == "PUT" {
+                    body = """
+                    {
+                      "principalId": "local_me",
+                      "displayName": "나플레이어",
+                      "handle": "me#0001",
+                      "avatarColor": "#00B06F",
+                      "bio": "반가워요",
+                      "privacyLevel": "public"
+                    }
+                    """
+                } else {
+                    body = """
+                    {
+                      "principalId": "local_me",
+                      "displayName": "나플레이어",
+                      "handle": "me#0001",
+                      "avatarColor": "#00B06F",
+                      "bio": "",
+                      "privacyLevel": "public",
+                      "ageTier": "CHILD_PROTECTED",
+                      "parentalConsentStatus": "verified",
+                      "presence": {
+                        "status": "online",
+                        "online": true,
+                        "gameId": null,
+                        "gameTitle": null,
+                        "roomCode": null,
+                        "joinable": true
+                      }
+                    }
+                    """
+                }
+            case "/api/mobile/social/users/search":
+                body = """
+                {
+                  "users": [{
+                    "principalId": "local_minjun",
+                    "displayName": "민준",
+                    "handle": "minjun#1024",
+                    "avatarColor": "#2563EB",
+                    "isFriend": true,
+                    "presence": {
+                      "status": "in_game",
+                      "online": true,
+                      "gameId": "survivor-arena-g2",
+                      "gameTitle": "Survivor Arena G2",
+                      "roomCode": "PLAY99",
+                      "joinable": true
+                    }
+                  }]
+                }
+                """
             case "/api/mobile/social/friends":
                 body = """
                 {
@@ -90,16 +144,47 @@ final class SocialClientAndDeepLinkTests: XCTestCase {
                       "roomCode": "PLAY99",
                       "joinable": true
                     },
-                    "lastMessage": {
-                      "body": "안녕! 파티 PLAY99로 합류해!",
-                      "senderId": "local_minjun",
-                      "createdAt": "2026-11-21T06:55:00.000Z"
-                    }
+                    "lastMessage": "안녕! 파티 PLAY99로 합류해!",
+                    "lastMessageAt": "2026-11-21T06:55:00.000Z",
+                    "lastMessageFromMe": false
                   }],
                   "incomingRequests": [],
-                  "outgoingRequests": []
+                  "outgoingRequests": [],
+                  "blocked": []
                 }
                 """
+            case "/api/mobile/social/messages":
+                if req.httpMethod == "POST" {
+                    body = """
+                    {
+                      "id": "msg_2",
+                      "channelType": "dm",
+                      "channelKey": "local_me:local_minjun",
+                      "senderId": "local_me",
+                      "senderMe": true,
+                      "body": "준비 완료!",
+                      "isQuickMessage": true,
+                      "createdAt": "2026-11-21T06:56:00.000Z"
+                    }
+                    """
+                } else {
+                    body = """
+                    {
+                      "channelType": "dm",
+                      "channelKey": "local_me:local_minjun",
+                      "messages": [{
+                        "id": "msg_1",
+                        "senderId": "local_minjun",
+                        "senderName": "민준",
+                        "senderHandle": "minjun#1024",
+                        "senderMe": false,
+                        "body": "안녕! 파티 PLAY99로 합류해!",
+                        "isQuickMessage": false,
+                        "createdAt": "2026-11-21T06:55:00.000Z"
+                      }]
+                    }
+                    """
+                }
             case "/api/mobile/social/parties/join":
                 body = """
                 {
@@ -150,10 +235,37 @@ final class SocialClientAndDeepLinkTests: XCTestCase {
         }
 
         let client = makeClient()
+        let profile = try await client.fetchSocialProfile(accessToken: "tok")
+        XCTAssertEqual(profile.ageTier, "CHILD_PROTECTED")
+        XCTAssertEqual(profile.parentalConsentStatus, "verified")
+        XCTAssertEqual(profile.presence?.online, true)
+
+        let updatedProfile = try await client.updateSocialProfile(bio: "반가워요", accessToken: "tok")
+        XCTAssertEqual(updatedProfile.bio, "반가워요")
+        XCTAssertNil(updatedProfile.ageTier)
+
+        let hits = try await client.searchSocialUsers(query: "minjun", accessToken: "tok")
+        XCTAssertEqual(hits.count, 1)
+        XCTAssertEqual(hits.first?.isFriend, true)
+        XCTAssertEqual(hits.first?.presence?.roomCode, "PLAY99")
+
         let friends = try await client.fetchSocialFriends(accessToken: "tok")
         XCTAssertEqual(friends.friends.count, 1)
         XCTAssertEqual(friends.friends.first?.handle, "minjun#1024")
         XCTAssertEqual(friends.friends.first?.presence.roomCode, "PLAY99")
+        XCTAssertEqual(friends.friends.first?.lastMessage, "안녕! 파티 PLAY99로 합류해!")
+        XCTAssertEqual(friends.friends.first?.lastMessageAt, "2026-11-21T06:55:00.000Z")
+        XCTAssertEqual(friends.friends.first?.lastMessageFromMe, false)
+
+        let messages = try await client.fetchSocialMessages(channelType: "dm", peerId: "local_minjun", accessToken: "tok")
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertEqual(messages.first?.senderName, "민준")
+        XCTAssertEqual(messages.first?.body, "안녕! 파티 PLAY99로 합류해!")
+
+        let sent = try await client.sendSocialMessage(channelType: "dm", peerId: "local_minjun", quickMessageId: "qm_ready", accessToken: "tok")
+        XCTAssertEqual(sent.id, "msg_2")
+        XCTAssertEqual(sent.isQuickMessage, true)
+        XCTAssertEqual(sent.senderMe, true)
 
         let party = try await client.joinParty(roomCode: "play99", accessToken: "tok")
         XCTAssertEqual(party.roomCode, "PLAY99")

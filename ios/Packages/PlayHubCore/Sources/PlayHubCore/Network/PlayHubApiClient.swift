@@ -123,8 +123,31 @@ public struct SocialProfile: Codable, Equatable, Sendable {
     public let avatarColor: String
     public let bio: String
     public let privacyLevel: String
+    public let ageTier: String?
+    public let parentalConsentStatus: String?
     public let presence: SocialPresence?
-    public let ageCompliance: MobileAgeCompliance?
+
+    public init(
+        principalId: String,
+        displayName: String,
+        handle: String,
+        avatarColor: String,
+        bio: String,
+        privacyLevel: String,
+        ageTier: String? = nil,
+        parentalConsentStatus: String? = nil,
+        presence: SocialPresence? = nil
+    ) {
+        self.principalId = principalId
+        self.displayName = displayName
+        self.handle = handle
+        self.avatarColor = avatarColor
+        self.bio = bio
+        self.privacyLevel = privacyLevel
+        self.ageTier = ageTier
+        self.parentalConsentStatus = parentalConsentStatus
+        self.presence = presence
+    }
 }
 
 public struct SocialUserHit: Codable, Equatable, Identifiable, Sendable {
@@ -132,18 +155,13 @@ public struct SocialUserHit: Codable, Equatable, Identifiable, Sendable {
     public let displayName: String
     public let handle: String
     public let avatarColor: String
-    public let relation: String
+    public let isFriend: Bool
+    public let presence: SocialPresence?
     public var id: String { principalId }
 }
 
 public struct SocialSearchResponse: Codable, Equatable, Sendable {
     public let users: [SocialUserHit]
-}
-
-public struct SocialLastMessage: Codable, Equatable, Sendable {
-    public let body: String
-    public let senderId: String
-    public let createdAt: String
 }
 
 public struct SocialFriend: Codable, Equatable, Identifiable, Sendable {
@@ -152,7 +170,9 @@ public struct SocialFriend: Codable, Equatable, Identifiable, Sendable {
     public let handle: String
     public let avatarColor: String
     public let presence: SocialPresence
-    public let lastMessage: SocialLastMessage?
+    public let lastMessage: String?
+    public let lastMessageAt: String?
+    public let lastMessageFromMe: Bool?
     public var id: String { principalId }
 }
 
@@ -236,19 +256,54 @@ public struct SocialPartyResponse: Codable, Equatable, Sendable {
 
 public struct SocialMessage: Codable, Equatable, Identifiable, Sendable {
     public let id: String
-    public let channelType: String
     public let senderId: String
     public let senderName: String
     public let senderHandle: String?
-    public let senderAvatarColor: String?
     public let senderMe: Bool
     public let body: String
     public let isQuickMessage: Bool
     public let createdAt: String
+
+    public init(
+        id: String,
+        senderId: String,
+        senderName: String,
+        senderHandle: String? = nil,
+        senderMe: Bool,
+        body: String,
+        isQuickMessage: Bool,
+        createdAt: String
+    ) {
+        self.id = id
+        self.senderId = senderId
+        self.senderName = senderName
+        self.senderHandle = senderHandle
+        self.senderMe = senderMe
+        self.body = body
+        self.isQuickMessage = isQuickMessage
+        self.createdAt = createdAt
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, senderId, senderName, senderHandle, senderMe, body, isQuickMessage, createdAt
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try c.decode(String.self, forKey: .id)
+        self.senderId = try c.decode(String.self, forKey: .senderId)
+        self.senderName = try c.decodeIfPresent(String.self, forKey: .senderName) ?? "나"
+        self.senderHandle = try c.decodeIfPresent(String.self, forKey: .senderHandle)
+        self.senderMe = try c.decode(Bool.self, forKey: .senderMe)
+        self.body = try c.decode(String.self, forKey: .body)
+        self.isQuickMessage = try c.decode(Bool.self, forKey: .isQuickMessage)
+        self.createdAt = try c.decode(String.self, forKey: .createdAt)
+    }
 }
 
 public struct SocialMessagesResponse: Codable, Equatable, Sendable {
     public let channelType: String
+    public let channelKey: String?
     public let messages: [SocialMessage]
 }
 

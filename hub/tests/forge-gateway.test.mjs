@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { PassThrough } from 'node:stream';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createApp } from '../server/app.mjs';
 import { createCreatorReview } from '../server/creator-review.mjs';
 import { openDatabase } from '../server/db.mjs';
@@ -18,7 +18,13 @@ import { createForgeProxy } from '../tools/forge-proxy.mjs';
 
 const require = createRequire(import.meta.url);
 const { createServer: createForgeServer, internalApiConfigFromEnv } = require('../../forge/server.cjs');
-const { createInternalApi } = require('../../forge/Tools/internal-api.cjs');
+const {
+  createInternalApi,
+  inspectForgeTemplates,
+  inspectForgeProjects,
+  inspectForgeBuilds,
+  inspectDriveManifests,
+} = require('../../forge/Tools/internal-api.cjs');
 const { createPlatformApi } = require('../../forge/Tools/platform-api.cjs');
 const { PlatformStore } = require('../../forge/Tools/platform-store.cjs');
 const { zipFiles } = require('../../forge/Tools/export-godot-project.cjs');
@@ -848,4 +854,107 @@ test('forge/server.cjs wires internalApi builds/drive/packages options from envi
   });
   assert.equal(deployStatus.status, 404);
   assert.notEqual((await deployStatus.json()).error, 'DEPLOYMENT_ARCHIVE_DISABLED');
+});
+
+test('standalone local ForgeGateway without forge/Tools/internal-api.cjs falls back cleanly when enabled:false and fails closed when enabled:true', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-gw-standalone-'));
+  t.after(() => fs.rmSync(temp, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }));
+
+  // Build expected empty snapshot directly from real forge/Tools/internal-api.cjs on an empty root.
+  const emptyRoot = path.join(temp, 'empty-root');
+  fs.mkdirSync(emptyRoot, { recursive: true });
+  const expectedEmptySnapshot = {
+    templates: inspectForgeTemplates(emptyRoot),
+    projects: inspectForgeProjects(null),
+    builds: inspectForgeBuilds(null, emptyRoot),
+    driveSync: inspectDriveManifests(null),
+    serverPresent: false,
+    officialEditorPresent: false,
+  };
+  assert.deepEqual(expectedEmptySnapshot, {
+    templates: [],
+    projects: [],
+    builds: [],
+    driveSync: {
+      snapshots: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+      submissions: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+      deployments: { total: 0, committed: 0, verified: 0, pending: 0, failed: 0 },
+    },
+    serverPresent: false,
+    officialEditorPresent: false,
+  });
+
+  // 1. Real isolated filesystem without forge/ directory at all (simulates standalone portable SEA).
+  const isolatedRoot = path.join(temp, 'standalone-sea');
+  const isolatedServerDir = path.join(isolatedRoot, 'hub', 'server');
+  fs.mkdirSync(isolatedServerDir, { recursive: true });
+  const isolatedGatewayPath = path.join(isolatedServerDir, 'forge-gateway.mjs');
+  fs.copyFileSync(path.join(REPO_ROOT, 'hub', 'server', 'forge-gateway.mjs'), isolatedGatewayPath);
+  const isolatedMod = await import(pathToFileURL(isolatedGatewayPath).href);
+
+  const isolatedDisabled = isolatedMod.createLocalForgeGateway({
+    config: { enabled: false },
+    root: isolatedRoot,
+  });
+  assert.equal(isolatedDisabled.mode, 'local');
+  const snap1 = isolatedDisabled.adminSnapshot();
+  assert.deepEqual(snap1, expectedEmptySnapshot);
+  // Mutating a returned snapshot must not leak into subsequent calls.
+  snap1.templates.push({ id: 'mutated' });
+  snap1.driveSync.snapshots.total = 99;
+  assert.deepEqual(isolatedDisabled.adminSnapshot(), expectedEmptySnapshot);
+  assert.throws(() => isolatedDisabled.getRelease('0'.repeat(64), 'a'.repeat(24), 'b'.repeat(24)), err => err.status === 503 && err.code === 'FORGE_DISABLED');
+  isolatedDisabled.close();
+
+  // Default disabled config & missing root must also succeed without crashing.
+  const isolatedDefault = isolatedMod.createForgeGateway({ config: {}, env: {} });
+  assert.deepEqual(isolatedDefault.adminSnapshot(), expectedEmptySnapshot);
+  isolatedDefault.close();
+
+  // Fail-closed when enabled:true in standalone environment without forge/Tools/internal-api.cjs.
+  const privateDir = path.join(temp, 'external-forge-storage');
+  assert.throws(
+    () => isolatedMod.createLocalForgeGateway({ config: { enabled: true, directory: privateDir }, root: isolatedRoot }),
+    err => err.status === 503 && err.code === 'FORGE_INTERNAL_API_UNAVAILABLE' && err.cause?.code === 'MODULE_NOT_FOUND'
+  );
+  assert.throws(
+    () => isolatedMod.createLocalForgeGateway({ config: { enabled: true }, root: isolatedRoot, platform: false }),
+    err => err.status === 503 && err.code === 'FORGE_INTERNAL_API_UNAVAILABLE' && err.cause?.code === 'MODULE_NOT_FOUND'
+  );
+
+  // 2. Direct load-failure injection on createLocalForgeGateway.
+  const missingRequire = specifier => {
+    const err = new Error(`Cannot find module '${specifier}'`);
+    err.code = 'MODULE_NOT_FOUND';
+    throw err;
+  };
+  const injectedDisabled = createLocalForgeGateway({
+    config: { enabled: false },
+    root: emptyRoot,
+    requireImpl: missingRequire,
+  });
+  assert.deepEqual(injectedDisabled.adminSnapshot(), expectedEmptySnapshot);
+  injectedDisabled.close();
+
+  assert.throws(
+    () => createLocalForgeGateway({ config: { enabled: true, directory: privateDir }, root: emptyRoot, requireImpl: missingRequire }),
+    err => err.status === 503 && err.code === 'FORGE_INTERNAL_API_UNAVAILABLE' && err.cause?.code === 'MODULE_NOT_FOUND'
+  );
+
+  // Non-MODULE_NOT_FOUND errors (e.g. SyntaxError / EACCES / transitive dep failure) must never be silently swallowed.
+  const syntaxRequire = () => { throw new SyntaxError('Corrupted internal-api.cjs'); };
+  assert.throws(
+    () => createLocalForgeGateway({ config: { enabled: false }, root: emptyRoot, requireImpl: syntaxRequire }),
+    err => err instanceof SyntaxError && err.message.includes('Corrupted internal-api.cjs')
+  );
+  const nestedMissingRequire = () => {
+    const err = new Error("Cannot find module './missing-transitive-dep.cjs'");
+    err.code = 'MODULE_NOT_FOUND';
+    err.requireStack = ['/repo/forge/Tools/internal-api.cjs', '/repo/hub/server/forge-gateway.mjs'];
+    throw err;
+  };
+  assert.throws(
+    () => createLocalForgeGateway({ config: { enabled: false }, root: emptyRoot, requireImpl: nestedMissingRequire }),
+    err => err.code === 'MODULE_NOT_FOUND' && err.message.includes('missing-transitive-dep.cjs')
+  );
 });

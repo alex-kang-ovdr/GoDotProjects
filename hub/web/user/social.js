@@ -234,7 +234,25 @@
     }
 
     function isChildQuickOnly() {
-      return model.profile?.ageCompliance?.ageTier === 'CHILD_PROTECTED';
+      return model.profile?.ageTier === 'CHILD_PROTECTED';
+    }
+
+    function isParentalConsentPending() {
+      return model.profile?.ageTier === 'CHILD_PROTECTED' && model.profile?.parentalConsentStatus !== 'verified';
+    }
+
+    function searchUserRelation(u) {
+      if (u.isFriend || model.friends.some(f => f.principalId === u.principalId)) return 'accepted';
+      if (model.outgoing.some(r => r.principalId === u.principalId)) return 'pending_out';
+      if (model.incoming.some(r => r.principalId === u.principalId)) return 'pending_in';
+      return 'none';
+    }
+
+    function formatLastMessagePreview(f) {
+      if (!f.lastMessage) return `${f.handle} · 클릭해 1:1 대화 시작`;
+      const prefix = f.lastMessageFromMe ? '나: ' : '';
+      const time = formatTime(f.lastMessageAt);
+      return time ? `${prefix}${f.lastMessage} · ${time}` : `${prefix}${f.lastMessage}`;
     }
 
     function filteredFriends() {
@@ -273,7 +291,7 @@
               <div class="social-me-title">
                 <h1>${esc(p.displayName || 'Player')}</h1>
                 <span class="social-online-pill">온라인</span>
-                ${isChildQuickOnly() ? '<span class="social-child-pill">아동 보호 모드 (안전 퀵메시지)</span>' : ''}
+                ${isChildQuickOnly() ? `<span class="social-child-pill">${isParentalConsentPending() ? '아동 보호 모드 (보호자 동의 대기)' : '아동 보호 모드 (안전 퀵메시지)'}</span>` : ''}
               </div>
               <div class="social-handle-row">
                 <code class="social-handle" data-testid="my-social-handle">${esc(p.handle || '')}</code>
@@ -314,21 +332,26 @@
               <button type="button" class="button secondary" data-toggle-panel="none">닫기</button>
             </form>
             <div class="social-search-results" data-testid="social-search-results">
-              ${model.searchResults.length ? model.searchResults.map(u => `
+              ${model.searchResults.length ? model.searchResults.map(u => {
+                const rel = searchUserRelation(u);
+                return `
                 <div class="social-user-row">
                   <span class="social-avatar-sm" style="background:${esc(u.avatarColor || '#00B06F')}">${esc(initialChar(u.displayName))}</span>
                   <div class="social-user-meta">
                     <strong>${esc(u.displayName)}</strong>
                     <span class="muted">${esc(u.handle)}</span>
                   </div>
-                  ${u.relation === 'accepted'
+                  ${rel === 'accepted'
                     ? '<span class="social-status-tag">이미 친구</span>'
-                    : u.relation === 'pending_out'
+                    : rel === 'pending_out'
                       ? '<span class="social-status-tag">요청 보냄</span>'
-                      : `<button type="button" class="button primary small" data-send-friend-req="${esc(u.principalId)}" data-testid="send-req-${esc(u.handle)}">친구 요청</button>`
+                      : rel === 'pending_in'
+                        ? `<button type="button" class="button primary small" data-respond-req="${esc(u.principalId)}" data-action="accept" data-testid="send-req-${esc(u.handle)}">요청 수락</button>`
+                        : `<button type="button" class="button primary small" data-send-friend-req="${esc(u.principalId)}" data-testid="send-req-${esc(u.handle)}">친구 요청</button>`
                   }
                 </div>
-              `).join('') : (model.searchQuery ? '<p class="muted">일치하는 플레이어를 찾지 못했습니다.</p>' : '')}
+              `;
+              }).join('') : (model.searchQuery ? '<p class="muted">일치하는 플레이어를 찾지 못했습니다.</p>' : '')}
             </div>
           </section>
         ` : ''}
@@ -451,7 +474,7 @@
                         <strong>${esc(f.displayName)}</strong>
                         <span class="social-presence-text${f.presence?.online ? ' online' : ''}">${esc(presenceLabel(f.presence))}</span>
                       </div>
-                      <p class="social-preview">${esc(f.lastMessage?.body || `${f.handle} · 클릭해 1:1 대화 시작`)}</p>
+                      <p class="social-preview">${esc(formatLastMessagePreview(f))}</p>
                     </div>
                     ${f.presence?.roomCode ? `<button type="button" class="button primary small" data-quick-join-code="${esc(f.presence.roomCode)}">합류</button>` : ''}
                   </div>`;
@@ -519,6 +542,7 @@
         </div>
         ${isChildQuickOnly() ? `
           <div class="social-quick-bar" aria-label="안전 퀵메시지">
+            ${isParentalConsentPending() ? '<span class="muted">보호자 동의 완료 후 안전 퀵메시지를 보낼 수 있습니다.</span>' : ''}
             ${model.quickMessages.map(q => `<button type="button" class="button secondary small" data-send-quick="${esc(q.id)}">${esc(q.text)}</button>`).join('')}
           </div>
         ` : `
@@ -584,7 +608,17 @@
             });
             toast(res.status === 'accepted' ? '서로 친구가 되었습니다!' : '친구 요청을 보냈습니다.');
             const hit = model.searchResults.find(u => u.principalId === b.dataset.sendFriendReq);
-            if (hit) hit.relation = res.status === 'accepted' ? 'accepted' : 'pending_out';
+            if (res.status === 'accepted') {
+              if (hit) hit.isFriend = true;
+            } else if (res.status === 'pending' && !model.outgoing.some(r => r.principalId === b.dataset.sendFriendReq)) {
+              model.outgoing.push({
+                principalId: b.dataset.sendFriendReq,
+                displayName: hit?.displayName || res.targetDisplayName || 'Player',
+                handle: hit?.handle || res.targetHandle || '',
+                avatarColor: hit?.avatarColor || '#00B06F',
+                createdAt: new Date().toISOString()
+              });
+            }
             await syncAll({ silent: true });
           } catch (err) {
             reportSocialError(err);

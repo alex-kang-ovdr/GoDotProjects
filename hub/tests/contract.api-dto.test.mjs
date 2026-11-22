@@ -20,67 +20,10 @@ const ANDROID_API_CLIENT_PATH = path.join(ANDROID_ROOT_DIR, 'network/PlayHubApiC
 /**
  * Documented client-vs-server DTO drifts currently present in client code.
  * - Any NEW drift NOT listed here will FAIL the contract test immediately.
- * - When a drift is fixed in client code, this test will flag the stale entry so
- *   it can be removed from KNOWN_CLIENT_DRIFT and promoted to a strict assertion.
+ * - All 8 prior Web + iOS drifts have been resolved and promoted to strict
+ *   0-drift contract assertions across Web, iOS, and Android.
  */
-export const KNOWN_CLIENT_DRIFT = Object.freeze({
-  'web:social.js:/api/social/profile:ageCompliance': {
-    clientFile: 'hub/web/user/social.js',
-    endpoint: 'GET /api/social/profile',
-    expectedByClient: 'profile.ageCompliance.ageTier (nested object)',
-    actualFromServer: 'flat ageTier + parentalConsentStatus strings (no ageCompliance object)',
-    severity: 'medium',
-  },
-  'web:social.js:/api/social/users/search:relation': {
-    clientFile: 'hub/web/user/social.js',
-    endpoint: 'GET /api/social/users/search',
-    expectedByClient: 'user.relation ("accepted" | "pending_out")',
-    actualFromServer: 'user.isFriend (boolean) + presence (no relation field)',
-    severity: 'medium',
-  },
-  'web:social.js:/api/social/friends:lastMessage.body': {
-    clientFile: 'hub/web/user/social.js',
-    endpoint: 'GET /api/social/friends',
-    expectedByClient: 'friend.lastMessage?.body (object with .body)',
-    actualFromServer: 'friend.lastMessage (string | null) + lastMessageAt + lastMessageFromMe',
-    severity: 'medium',
-  },
-  'ios:PlayHubApiClient.swift:SocialProfile.ageCompliance': {
-    clientFile: 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift',
-    endpoint: 'GET /api/mobile/social/profile',
-    expectedByClient: 'ageCompliance: MobileAgeCompliance? (optional nested struct, omits flat ageTier/parentalConsentStatus)',
-    actualFromServer: 'flat ageTier + parentalConsentStatus strings (no ageCompliance object)',
-    severity: 'medium',
-  },
-  'ios:PlayHubApiClient.swift:SocialUserHit.relation': {
-    clientFile: 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift',
-    endpoint: 'GET /api/mobile/social/users/search',
-    expectedByClient: 'relation: String (non-optional Codable property, omits isFriend: Bool)',
-    actualFromServer: 'isFriend: boolean + presence (no relation field -> Swift Codable decode fails on non-empty search)',
-    severity: 'high',
-  },
-  'ios:PlayHubApiClient.swift:SocialFriend.lastMessage': {
-    clientFile: 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift',
-    endpoint: 'GET /api/mobile/social/friends',
-    expectedByClient: 'lastMessage: SocialLastMessage? (object struct { body, senderId, createdAt })',
-    actualFromServer: 'lastMessage: string | null (+ lastMessageAt, lastMessageFromMe -> Swift Codable decode fails when DM exists)',
-    severity: 'high',
-  },
-  'ios:PlayHubApiClient.swift:SocialMessage.channelType': {
-    clientFile: 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift',
-    endpoint: 'GET /api/mobile/social/messages',
-    expectedByClient: 'channelType: String (non-optional property inside each messages[] item)',
-    actualFromServer: 'channelType is on envelope only, omitted from GET messages[] items (Swift Codable decode fails on non-empty history)',
-    severity: 'high',
-  },
-  'ios:PlayHubApiClient.swift:SocialMessage.senderAvatarColor': {
-    clientFile: 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift',
-    endpoint: 'GET /api/mobile/social/messages',
-    expectedByClient: 'senderAvatarColor: String? (optional property not emitted by server)',
-    actualFromServer: 'omitted from messages[] items (safe because Optional)',
-    severity: 'low',
-  },
-});
+export const KNOWN_CLIENT_DRIFT = Object.freeze({});
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
 const HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
@@ -858,6 +801,7 @@ test('TC-4.3: Static field reference parsing (Web / iOS / Android) vs live serve
     ['SocialPartyMember', snap.mobilePartyMe.data.party.members[0]],
     ['SocialPartyLaunch', snap.mobilePartyMe.data.party.activeLaunch],
     ['SocialLaunchParticipant', snap.mobilePartyMe.data.party.activeLaunch.participants[0]],
+    ['SocialMessagesResponse', snap.socialMessages.data],
     ['SocialMessage', snap.socialMessages.data.messages[0]],
   ];
 
@@ -987,6 +931,19 @@ test('TC-4.3: Static field reference parsing (Web / iOS / Android) vs live serve
     assert.ok(webSrc.includes(`p.${field}`), `Web social.js should reference profile.${field}`);
     assert.ok(Object.hasOwn(snap.socialProfile.data, field), `Live /api/social/profile missing ${field}`);
   }
+  for (const field of ['ageTier', 'parentalConsentStatus']) {
+    assert.ok(
+      webSrc.includes(`model.profile?.${field}`),
+      `Web social.js should reference flat model.profile?.${field}`
+    );
+    assert.ok(Object.hasOwn(snap.socialProfile.data, field), `Live /api/social/profile missing ${field}`);
+  }
+  assert.ok(/\bu\.isFriend\b/.test(webSrc), 'Web social.js should reference u.isFriend on search results');
+  assert.ok(Object.hasOwn(snap.socialSearch.data.users[0], 'isFriend'), 'Live /api/social/users/search missing isFriend');
+  for (const field of ['lastMessage', 'lastMessageAt', 'lastMessageFromMe']) {
+    assert.ok(webSrc.includes(`f.${field}`), `Web social.js should reference friend.${field}`);
+    assert.ok(Object.hasOwn(snap.socialFriends.data.friends[0], field), `Live /api/social/friends missing ${field}`);
+  }
   for (const field of ['friends', 'incomingRequests', 'outgoingRequests']) {
     assert.ok(webSrc.includes(`fr.${field}`), `Web social.js should reference friends.${field}`);
     assert.ok(Object.hasOwn(snap.socialFriends.data, field), `Live /api/social/friends missing ${field}`);
@@ -1027,6 +984,11 @@ test('TC-4.3: Static field reference parsing (Web / iOS / Android) vs live serve
   }
 
   // --- Final Assertions ---
+  assert.equal(
+    Object.keys(KNOWN_CLIENT_DRIFT).length,
+    0,
+    'KNOWN_CLIENT_DRIFT must remain empty (0-drift strict contract across Web, iOS, and Android)'
+  );
   assert.deepEqual(
     unexpectedDrifts,
     [],

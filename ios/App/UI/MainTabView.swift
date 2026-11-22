@@ -53,6 +53,7 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var socialProfile: SocialProfile?
     @Published public var socialFriends: [SocialFriend] = []
     @Published public var incomingRequests: [SocialFriendRequest] = []
+    @Published public var outgoingRequests: [SocialFriendRequest] = []
     @Published public var activeParty: SocialParty?
     @Published public var quickMessages: [SocialQuickMessage] = []
     @Published public var socialToast: String?
@@ -156,6 +157,7 @@ public final class PlayHubShellViewModel: ObservableObject {
         socialProfile = nil
         socialFriends = []
         incomingRequests = []
+        outgoingRequests = []
         activeParty = nil
         quickMessages = []
         activeFarm = cluster
@@ -267,6 +269,7 @@ public final class PlayHubShellViewModel: ObservableObject {
         socialProfile = nil
         socialFriends = []
         incomingRequests = []
+        outgoingRequests = []
         activeParty = nil
         sessionExpired = true
         showSessionExpiredAlert = true
@@ -372,6 +375,7 @@ public final class PlayHubShellViewModel: ObservableObject {
             avatarAccentHex = prof.avatarColor
             socialFriends = fr.friends
             incomingRequests = fr.incomingRequests
+            outgoingRequests = fr.outgoingRequests
             activeParty = party
             quickMessages = qm
             _ = try? await client.updatePresence(
@@ -627,7 +631,18 @@ public final class PlayHubShellViewModel: ObservableObject {
                 bio: bio,
                 accessToken: token
             )
-            socialProfile = updated
+            let prev = socialProfile
+            socialProfile = SocialProfile(
+                principalId: updated.principalId,
+                displayName: updated.displayName,
+                handle: updated.handle,
+                avatarColor: updated.avatarColor,
+                bio: updated.bio,
+                privacyLevel: updated.privacyLevel,
+                ageTier: updated.ageTier ?? prev?.ageTier,
+                parentalConsentStatus: updated.parentalConsentStatus ?? prev?.parentalConsentStatus,
+                presence: updated.presence ?? prev?.presence
+            )
             avatarAccentHex = updated.avatarColor
             showSocialToast("프로필이 저장되었습니다.")
         } catch {
@@ -667,6 +682,7 @@ public final class PlayHubShellViewModel: ObservableObject {
             socialProfile = nil
             socialFriends = []
             incomingRequests = []
+            outgoingRequests = []
             activeParty = nil
             showSocialToast("로그아웃되었습니다. 새 게스트로 연결합니다.")
             await syncOnlineCatalog()

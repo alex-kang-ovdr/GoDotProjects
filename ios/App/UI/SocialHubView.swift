@@ -52,6 +52,20 @@ public struct SocialHubView: View {
         friendFilter == 1 ? vm.socialFriends.filter { $0.presence.online } : vm.socialFriends
     }
 
+    private func friendPreviewText(_ friend: SocialFriend) -> String {
+        guard let msg = friend.lastMessage, !msg.isEmpty else {
+            return "\(friend.handle) · 탭해서 1:1 대화 시작"
+        }
+        let prefix = friend.lastMessageFromMe == true ? "나: " : ""
+        if let at = friend.lastMessageAt {
+            let hhmm = SocialTimeFormatter.formatHHmm(at)
+            if !hhmm.isEmpty {
+                return "\(prefix)\(msg) · \(hhmm)"
+            }
+        }
+        return "\(prefix)\(msg)"
+    }
+
     public var body: some View {
         NavigationStack {
             ScrollView {
@@ -73,6 +87,11 @@ public struct SocialHubView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(profile.displayName).font(.headline)
                                 Text(profile.handle).font(.caption.monospaced()).foregroundStyle(.secondary)
+                                if profile.ageTier == "CHILD_PROTECTED" {
+                                    Text(profile.parentalConsentStatus == "verified" ? "아동 보호 모드 (안전 퀵메시지)" : "아동 보호 모드 (보호자 동의 대기)")
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(playGreen)
+                                }
                             }
                             Spacer()
                             Button("복사") {
@@ -208,7 +227,7 @@ public struct SocialHubView: View {
                                                     Text("오프라인").font(.caption2).foregroundStyle(.secondary)
                                                 }
                                             }
-                                            Text(friend.lastMessage?.body ?? "\(friend.handle) · 탭해서 1:1 대화 시작")
+                                            Text(friendPreviewText(friend))
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
                                                 .lineLimit(1)
@@ -391,17 +410,29 @@ public struct AddFriendSheet: View {
                 if !results.isEmpty {
                     Section("검색 결과") {
                         ForEach(results) { user in
+                            let isFriend = user.isFriend || vm.socialFriends.contains(where: { $0.principalId == user.principalId })
+                            let isPendingOut = vm.outgoingRequests.contains(where: { $0.principalId == user.principalId })
+                            let isPendingIn = vm.incomingRequests.contains(where: { $0.principalId == user.principalId })
                             HStack {
-                                avatarCircle(name: user.displayName, hex: user.avatarColor, size: 34, online: false)
+                                avatarCircle(name: user.displayName, hex: user.avatarColor, size: 34, online: user.presence?.online ?? false)
                                 VStack(alignment: .leading) {
                                     Text(user.displayName).font(.subheadline.bold())
                                     Text(user.handle).font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                if user.relation == "accepted" {
+                                if isFriend {
                                     Text("친구").font(.caption).foregroundStyle(.secondary)
-                                } else if user.relation == "pending_out" {
+                                } else if isPendingOut {
                                     Text("요청됨").font(.caption).foregroundStyle(.secondary)
+                                } else if isPendingIn {
+                                    Button("수락") {
+                                        Task {
+                                            await vm.respondFriendRequest(requesterId: user.principalId, accept: true)
+                                            await runSearch()
+                                        }
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .controlSize(.small)
                                 } else {
                                     Button("요청") {
                                         Task {
@@ -510,7 +541,7 @@ public struct SocialChatRoomSheet: View {
     private let playGreen = Color(red: 0.0, green: 0.69, blue: 0.435)
 
     private var isChildQuickOnly: Bool {
-        vm.ageTier == .childProtected || vm.socialProfile?.ageCompliance?.ageTier == "CHILD_PROTECTED"
+        vm.ageTier == .childProtected || vm.socialProfile?.ageTier == "CHILD_PROTECTED"
     }
 
     public var body: some View {
