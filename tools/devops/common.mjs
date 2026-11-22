@@ -6,7 +6,17 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = path.resolve(HERE, '..', '..');
-export const EXPECTED_GODOT_SUBMODULE_PIN = 'ed1daf0bf001b61586d9930840f2f1394092c079';
+function readEngineSsotPinnedCommit(repoRoot) {
+  try {
+    const raw = fs.readFileSync(path.join(repoRoot, 'tools', 'engine', 'engine-ssot.json'), 'utf8');
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.pinnedForkCommit === 'string' && /^[0-9a-f]{40}$/i.test(parsed.pinnedForkCommit)) {
+      return parsed.pinnedForkCommit;
+    }
+  } catch {}
+  return 'ed003ce541967cbf80fa43503d77ccaa2f59625b';
+}
+export const EXPECTED_GODOT_SUBMODULE_PIN = readEngineSsotPinnedCommit(DEFAULT_REPO_ROOT);
 
 export function isExistingFile(filePath) {
   try {
