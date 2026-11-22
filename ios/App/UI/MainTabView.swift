@@ -61,6 +61,8 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var showSessionExpiredAlert: Bool = false
     private var accessTokenCache: String?
     private var inFlightTokenTask: Task<String?, Never>?
+    @Published public var authProvider: String = "guest"
+    @Published public var lastAuthProvider: String? = UserDefaults.standard.string(forKey: "playhub_last_auth_provider")
 
     // MARK: Stitch Avatar & Profile Preferences State
     @Published public var equippedAvatarIds: Set<String>
@@ -659,6 +661,7 @@ public final class PlayHubShellViewModel: ObservableObject {
             }
             KeychainStore.clearAllSessionSecrets()
             accessTokenCache = nil
+            authProvider = "guest"
             sessionExpired = false
             showSessionExpiredAlert = false
             socialProfile = nil
@@ -668,6 +671,43 @@ public final class PlayHubShellViewModel: ObservableObject {
             showSocialToast("로그아웃되었습니다. 새 게스트로 연결합니다.")
             await syncOnlineCatalog()
         }
+    }
+
+    private func applyAuthResponse(_ auth: MobileAuthResponse, toastMessage: String) async {
+        try? KeychainStore.save(auth.accessToken, forKey: "access_token")
+        try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
+        accessTokenCache = auth.accessToken
+        let resolvedProvider = auth.profile.authProvider ?? (auth.profile.isGuest ? "guest" : "registered")
+        authProvider = resolvedProvider
+        lastAuthProvider = resolvedProvider
+        UserDefaults.standard.set(resolvedProvider, forKey: "playhub_last_auth_provider")
+        showSocialToast(toastMessage)
+        await syncOnlineCatalog()
+    }
+
+    public func loginWithEmail(email: String, password: String) async throws {
+        let auth = try await makeApiClient().loginEmail(email: email, password: password, accessToken: accessTokenCache)
+        await applyAuthResponse(auth, toastMessage: "이메일 로그인 완료")
+    }
+
+    public func registerWithEmail(email: String, password: String, displayName: String?) async throws {
+        let auth = try await makeApiClient().registerEmail(email: email, password: password, displayName: displayName, accessToken: accessTokenCache)
+        await applyAuthResponse(auth, toastMessage: "이메일 회원가입 완료")
+    }
+
+    public func loginWithGoogle(idToken: String) async throws {
+        let auth = try await makeApiClient().loginGoogle(idToken: idToken, accessToken: accessTokenCache)
+        await applyAuthResponse(auth, toastMessage: "Google 로그인 완료")
+    }
+
+    public func loginWithNaver(naverAccessToken: String) async throws {
+        let auth = try await makeApiClient().loginNaver(naverAccessToken: naverAccessToken, accessToken: accessTokenCache)
+        await applyAuthResponse(auth, toastMessage: "네이버 로그인 완료")
+    }
+
+    public func oauthStartURL(provider: String) -> URL? {
+        let base = selectedFarm.baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        return URL(string: "\(base)/api/auth/\(provider)/start?returnTo=%2F%3Fview%3Daccount")
     }
 
     public func requestAccountDeletion() async {
