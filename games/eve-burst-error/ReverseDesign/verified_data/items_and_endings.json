@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "eve-burst-error",
+  "items": [
+    {
+      "id": "item_painting_photo",
+      "name_kr": "이슬람 문양 회화 사진·의뢰 자료",
+      "name_jp": "イスラム文様の絵画資料",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_01",
+      "used_scene": "K_D2_01",
+      "asymmetric_significance": "코지로 수사선의 출발점. 겉으로는 분실 미술품 자료지만 실제로는 엘디아 국새 은닉 위치와 직결된다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_amagi_memo",
+      "name_kr": "코지로의 탐정 수첩·현장 사진",
+      "name_jp": "小次郎の調査メモ・現場写真",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_01",
+      "used_scene": "C_D6_01",
+      "asymmetric_significance": "코지로 시점 전용 단서 기록. 사칭범 디브와 니카이도·아쿠아 살해 현장 증거가 누적된다.",
+      "verification_status": "재구성안"
+    },
+    {
+      "id": "item_purin_pendant",
+      "name_kr": "푸딩의 소지품 (엘디아 왕가 표식)",
+      "name_jp": "プリンの所持品",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_02",
+      "used_scene": "K_D4_02",
+      "asymmetric_significance": "초기에는 정체불명 소녀의 유류품이나, 12월 6일 프리시아 공주 신원 입증의 열쇠가 된다.",
+      "verification_status": "해석"
+    },
+    {
+      "id": "item_stollman_mansion_key",
+      "name_kr": "스트르만 저택·서재 열쇠",
+      "name_jp": "ストールマン邸の鍵",
+      "owner": "kojiro",
+      "acquired_scene": "K_D1_01",
+      "used_scene": "K_D2_01",
+      "asymmetric_significance": "저택 내부 조사와 국새 절반 은닉 흔적 확보에 사용되는 코지로 전용 열쇠.",
+      "verification_status": "해석"
+    },
+    {
+      "id": "item_national_seal_half_kojiro",
+      "name_kr": "국새(国璽) 조각 — 저택·회화 측 단서",
+      "name_jp": "国璽の片割れ（邸宅・絵画側）",
+      "owner": "kojiro",
+      "acquired_scene": "K_D2_01",
+      "used_scene": "C_D6_01",
+      "asymmetric_significance": "스트르만이 둘로 쪼갠 엘디아 국새의 한쪽 절반. 마리나가 확보한 학교 측 절반과 합쳐져야 진실이 드러난다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_dbms_access_credential",
+      "name_kr": "히무로 제공 DBMS 정규 접속 단말·계정",
+      "name_jp": "本部DBMS正規アクセス端末",
+      "owner": "kojiro",
+      "acquired_scene": "K_D4_01",
+      "used_scene": "K_D4_01",
+      "asymmetric_significance": "코지로가 마리나의 Level-7 해킹 교착(SB_06)을 깨기 위해 동시 정규 접속을 수행하는 결정적 도구.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_ikuiku_handgun",
+      "name_kr": "마리나의 애총 '이쿠이쿠' (권총)",
+      "name_jp": "まりなの愛銃『イクイク』",
+      "owner": "marina",
+      "acquired_scene": "M_D0_01",
+      "used_scene": "M_D4_02",
+      "asymmetric_significance": "내각조사실 에이전트 마리나의 상징 무장(판본별 명칭·묘사 세부 차이 있음). 사문 위기 돌파 및 선상 전투에 사용.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_jcia_badge",
+      "name_kr": "내각조사실 1급 수사원 신분증",
+      "name_jp": "内閣調査室エージェント身分証",
+      "owner": "marina",
+      "acquired_scene": "M_D0_01",
+      "used_scene": "M_D3_01",
+      "asymmetric_significance": "코지로는 접근 불가능한 공권력·대사관·본부 빌딩 구역 진입 권한을 부여한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_yale_faculty_id",
+      "name_kr": "예일 외국인학교 전속 강사 신분증",
+      "name_jp": "エール外国人学校専従講師身分証明書",
+      "owner": "marina",
+      "acquired_scene": "M_D0_02",
+      "used_scene": "M_D1_01",
+      "asymmetric_significance": "12월 2일(Day 0) 프롤로그 완료의 증표이자 마리나 잠입 경호의 기반.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_national_seal_half_marina",
+      "name_kr": "국새(国璽) 조각 — 예일 학교 디렉터룸 측",
+      "name_jp": "国璽の片割れ（エール学校側）",
+      "owner": "marina",
+      "acquired_scene": "M_D2_01",
+      "used_scene": "C_D6_01",
+      "asymmetric_significance": "예일 외국인학교 디렉터룸에 숨겨진 국새의 나머지 절반.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_c_project_dossier",
+      "name_kr": "C 프로젝트 기밀 데이터 (μ-101 기록)",
+      "name_jp": "Cプロジェクト機密データ（μ-101記録）",
+      "owner": "marina",
+      "acquired_scene": "M_D4_02",
+      "used_scene": "C_D6_01",
+      "asymmetric_significance": "SB_06 데드락 돌파 후 획득하는 핵심 기밀. 마야코가 유기 휴머노이드 클론임을 증명하는 결정적 증거.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "item_oxygen_cylinders",
+      "name_kr": "트리스탄호 선창 비상 산소통",
+      "name_jp": "トリスタン号船倉の酸素ボンベ",
+      "owner": "both",
+      "acquired_scene": "C_D6_01",
+      "used_scene": "C_D6_01",
+      "asymmetric_significance": "해저 침몰 후 4인(코지로·마리나·마야코·프리시아)의 극한 서바이벌과 최종 추리의 긴박감을 형성하는 합류 공유 아이템.",
+      "verification_status": "확인"
+    }
+  ],
+  "endings_and_outcomes": [
+    {
+      "id": "END_TRUE_RESCUE",
+      "outcome_type": "true_ending",
+      "title_kr": "진엔딩: 진범 규명 및 트리스탄호 생환",
+      "title_jp": "トゥルーエンド：真相解明・生還",
+      "trigger_scene": "C_D6_01",
+      "culprit_character_id": "mayako_mido",
+      "accepted_culprit_inputs": [
+        "미도마야코",
+        "마야코",
+        "御堂真弥子",
+        "みどうまやこ",
+        "真弥子",
+        "まやこ",
+        "mayakomido",
+        "mayako"
+      ],
+      "edition_notes": "PC-98 / SS / R 판본에서는 범인 이름 직접 입력 성공 시 도달. PS2 PLUS 판본에서는 범인 입력 파트가 생략되어 스토리 진행으로 도달.",
+      "summary": "양측 시점의 모든 단서가 하나로 결합해 연쇄살인범 '테러'의 정체가 전 국왕 인격이 이식된 미도 마야코(μ-101)임을 밝혀내고, 로스=미도의 음모가 좌절되며 생환한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "END_BAD_WRONG_CULPRIT",
+      "outcome_type": "bad_ending",
+      "title_kr": "실패 엔딩: 범인 지목 오답",
+      "title_jp": "バッドエンド：犯人入力ミス",
+      "trigger_scene": "C_D6_01",
+      "culprit_character_id": "mayako_mido",
+      "accepted_culprit_inputs": [],
+      "edition_notes": "PC-98 / SS / R 기준. 범인 이름 입력 시 오답을 입력하면 진엔딩 진입 불가 및 실패 메시지 출력.",
+      "summary": "진범을 특정하지 못해 해저 선창에서 진상 규명에 실패하고 게임오버 처리된다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "END_GAMEOVER_FATAL_CHOICE",
+      "outcome_type": "game_over",
+      "title_kr": "즉사 게임오버: 수사/위기 구간 치명적 오선택",
+      "title_jp": "ゲームオーバー：致命的コマンド誤選択",
+      "trigger_scene": "K_D4_02",
+      "culprit_character_id": null,
+      "accepted_culprit_inputs": [],
+      "edition_notes": "디브 습격(K_D4_02), 사문 탈출(M_D4_02), 트리스탄호 위기(K_D5_01/C_D6_01) 등에서 오선택 또는 필수 플래그 미비 시 즉각 종료. 전수 세부 분기는 DATA_GAPS.md(GAP-04) 참조.",
+      "summary": "위험 대치 중 잘못된 커맨드를 선택해 주인공이 사망·체포되어 세이브 복귀를 요구한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "STATE_SYNC_STALL",
+      "outcome_type": "sync_wait_not_gameover",
+      "title_kr": "정상 멀티 사이트 대기: 상대 주인공 플래그 미충족",
+      "title_jp": "サイトチェンジ待ち状態（正常停止）",
+      "trigger_scene": "M_D4_01",
+      "culprit_character_id": null,
+      "accepted_culprit_inputs": [],
+      "edition_notes": "게임오버가 아니며, SIGHT CHANGE를 통해 상대 주인공의 선행 동기화 장벽(SB_01~SB_08)을 해제하면 즉시 재개된다.",
+      "summary": "한쪽 시점의 커맨드가 고갈되거나 보안 교착(예: DBMS Level-7)에 걸린 정상 대기 상태.",
+      "verification_status": "해석"
+    }
+  ]
+}

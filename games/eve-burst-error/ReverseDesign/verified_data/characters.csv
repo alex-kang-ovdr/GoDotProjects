@@ -1,0 +1,19 @@
+id,name_kr,name_jp,name_en,faction,kojiro_initial_alias,marina_initial_alias,verification_status
+kojiro_amagi,아마기 코지로,天城小次郎,Kojiro Amagi,private_investigator,아마기 코지로,미인지 민간 탐정,확인
+marina_hojo,호죠 마리나,法条まりな,Marina Hojo,japanese_intelligence,미인지 정부 요원,호죠 마리나,확인
+mayako_mido,미도 마야코,御堂真弥子,Mayako Mido,eldia_conspiracy,미도 마야코,미도 마야코,확인
+prisia_rem_crime,푸딩 (프리시아 렘 크라임),プリン (プリシア・レム・クライム),Purin / Prisia Rem Crime,eldia_legitimist,푸딩,프리시아,확인
+yayoi_katsuragi,카츠라기 야요이,桂木弥生,Yayoi Katsuragi,private_investigator,카츠라기 야요이,카츠라기 소장,확인
+kyoko_himuro,히무로 쿄코,氷室恭子,Kyoko Himuro,japanese_intelligence,히무로 쿄코,히무로 쿄코,확인
+saburo_kouno,코노 사부로,甲野三郎,Saburo Kouno,japanese_intelligence,코노 본부장,코노 본부장,확인
+akane_shibata,시바타 아카네,柴田茜,Akane Shibata,private_investigator,시바타 아카네,미접촉,확인
+susumu_nikaido,니카이도 스스무,二階堂進,Susumu Nikaido,private_investigator,니카이도 스스무,니카이도 스스무,확인
+genzaburo_katsuragi,카츠라기 겐자부로 (스즈키 겐자부로),桂木源三郎 (鈴木源三郎),Genzaburo Katsuragi / Genzaburo Suzuki,eldia_legitimist,카츠라기 겐자부로,스즈키 겐자부로,확인
+ross_mido,로스=미도,ロス＝御堂,Ross Mido,eldia_conspiracy,로스=미도 대사,로스=미도 대사,확인
+aqua_still_lloyd,아쿠아=스틸=로이드,アクア＝スティル＝ロイド,Aqua Still Lloyd,eldia_conspiracy,아쿠아,아쿠아 수상,확인
+celia_flat,시리아 플랫,シリア・フラット,Celia Flat,eldia_legitimist,시리아 플랫,시리아 강사,확인
+stollman_kou,스트르만=코우,ストールマン・孔,Stollman Kou,eldia_legitimist,스트르만=코우 (사칭 피해),스트르만 교장,확인
+dib,디브,ディーブ,Dib,eldia_conspiracy,스트르만=코우 (위장),디브,확인
+glen,구렌,グレン,Glen,private_investigator,구렌,미접촉,확인
+misumi_kagawa,카가와 미스미,香川美純,Misumi Kagawa,japanese_intelligence,미접촉,카가와 미스미,확인
+hiromi_matsuno,마츠노 히로미,松乃広美,Hiromi Matsuno,yale_school,마츠노 히로미,마츠노 실습생,확인

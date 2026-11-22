@@ -1,0 +1,385 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "eve-burst-error",
+  "source_baseline": "PC-98 (1995) / SEGA SATURN (1997) / EVE burst error R (2016)",
+  "characters": [
+    {
+      "id": "kojiro_amagi",
+      "name_kr": "아마기 코지로",
+      "name_jp": "天城小次郎",
+      "name_en": "Kojiro Amagi",
+      "faction": "private_investigator",
+      "true_identity": "아마기 탐정사무소 소장 (전 카츠라기 탐정사무소원, 카츠라기 겐자부로의 양자)",
+      "known_to_kojiro": {
+        "initial_alias": "아마기 코지로",
+        "initial_role": "본인 (사립탐정)",
+        "trust_level": "self",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "미인지 민간 탐정",
+        "initial_role": "사건에 연루된 사립탐정",
+        "trust_level": "unknown",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "marina_hojo",
+      "name_kr": "호죠 마리나",
+      "name_jp": "法条まりな",
+      "name_en": "Marina Hojo",
+      "faction": "japanese_intelligence",
+      "true_identity": "내각조사실 1급 수사원 (전 경시청 공안 제6과, 임무 달성률 99%)",
+      "known_to_kojiro": {
+        "initial_alias": "미인지 정부 요원",
+        "initial_role": "예일 학교·대사관 주변의 정체불명 여성 요원",
+        "trust_level": "unknown",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "호죠 마리나",
+        "initial_role": "본인 (내각조사실 에이전트)",
+        "trust_level": "self",
+        "truth_revealed_at_scene": null
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "mayako_mido",
+      "name_kr": "미도 마야코",
+      "name_jp": "御堂真弥子",
+      "name_en": "Mayako Mido",
+      "faction": "eldia_conspiracy",
+      "true_identity": "프리시아 유전자 기반 유기 휴머노이드 클론(μ-101) / 전 국왕 인격 이식체 / 연쇄살인범 '테러'",
+      "known_to_kojiro": {
+        "initial_alias": "미도 마야코",
+        "initial_role": "주일 엘디아 대사의 딸",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "미도 마야코",
+        "initial_role": "경호 대상 (순진한 대사의 딸)",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "prisia_rem_crime",
+      "name_kr": "푸딩 (프리시아 렘 크라임)",
+      "name_jp": "プリン (プリシア・レム・クライム)",
+      "name_en": "Purin / Prisia Rem Crime",
+      "faction": "eldia_legitimist",
+      "true_identity": "엘디아 공화국 정통 왕위 계승자 공주 프리시아 렘 크라임",
+      "known_to_kojiro": {
+        "initial_alias": "푸딩",
+        "initial_role": "항구 창고 거리에서 구한 정체불명의 소녀",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "K_D4_02"
+      },
+      "known_to_marina": {
+        "initial_alias": "프리시아",
+        "initial_role": "엘디아 왕위 계승자 (호위 인계 대상)",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "M_D5_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "yayoi_katsuragi",
+      "name_kr": "카츠라기 야요이",
+      "name_jp": "桂木弥生",
+      "name_en": "Yayoi Katsuragi",
+      "faction": "private_investigator",
+      "true_identity": "카츠라기 탐정사무소 소장, 카츠라기 겐자부로의 친딸, 코지로의 전 연인·의매",
+      "known_to_kojiro": {
+        "initial_alias": "카츠라기 야요이",
+        "initial_role": "전 연인이자 카츠라기 탐정사무소 소장",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "카츠라기 소장",
+        "initial_role": "민간 탐정사무소 관계자",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "kyoko_himuro",
+      "name_kr": "히무로 쿄코",
+      "name_jp": "氷室恭子",
+      "name_en": "Kyoko Himuro",
+      "faction": "japanese_intelligence",
+      "true_identity": "교육감시기구 요원 (예일 외국인학교 잠입 수사관 및 해킹 전문가)",
+      "known_to_kojiro": {
+        "initial_alias": "히무로 쿄코",
+        "initial_role": "컴퓨터·해킹에 능통한 수상한 협력자",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "K_D4_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "히무로 쿄코",
+        "initial_role": "교육감시기구 잠입 요원 (공조 파트너)",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "M_D3_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "saburo_kouno",
+      "name_kr": "코노 사부로",
+      "name_jp": "甲野三郎",
+      "name_en": "Saburo Kouno",
+      "faction": "japanese_intelligence",
+      "true_identity": "내각조사실 본부장 (마리나의 직속 상관, 카가와 미스미와 내연)",
+      "known_to_kojiro": {
+        "initial_alias": "코노 본부장",
+        "initial_role": "정부 공안기관 고위 간부",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "코노 본부장",
+        "initial_role": "직속 상관 (경호 임무 하달자)",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "M_D4_02"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "akane_shibata",
+      "name_kr": "시바타 아카네",
+      "name_jp": "柴田茜",
+      "name_en": "Akane Shibata",
+      "faction": "private_investigator",
+      "true_identity": "자칭 23세 프리랜서 르포라이터·카메라맨 (코지로에게 회화 수색 의뢰 중개)",
+      "known_to_kojiro": {
+        "initial_alias": "시바타 아카네",
+        "initial_role": "구면의 프리랜서 기자·트러블메이커",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "미접촉",
+        "initial_role": "미인지 인물",
+        "trust_level": "unknown",
+        "truth_revealed_at_scene": null
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "susumu_nikaido",
+      "name_kr": "니카이도 스스무",
+      "name_jp": "二階堂進",
+      "name_en": "Susumu Nikaido",
+      "faction": "private_investigator",
+      "true_identity": "카츠라기 탐정사무소 소원 (회화·국새 뒷거래에 연루되어 테러에게 피살)",
+      "known_to_kojiro": {
+        "initial_alias": "니카이도 스스무",
+        "initial_role": "자신을 라이벌시하는 후배 탐정 → 전국 지명수배자",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "K_D5_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "니카이도 스스무",
+        "initial_role": "교장 살해 사건 지명수배 용의자",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "genzaburo_katsuragi",
+      "name_kr": "카츠라기 겐자부로 (스즈키 겐자부로)",
+      "name_jp": "桂木源三郎 (鈴木源三郎)",
+      "name_en": "Genzaburo Katsuragi / Genzaburo Suzuki",
+      "faction": "eldia_legitimist",
+      "true_identity": "카츠라기 탐정사무소 초대 소장·야요이/시리아의 부친·전 엘디아 정보국 '테러' 대장",
+      "known_to_kojiro": {
+        "initial_alias": "카츠라기 겐자부로",
+        "initial_role": "행방불명·사망한 양부이자 스승",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "스즈키 겐자부로",
+        "initial_role": "보험회사 세일즈맨을 자칭하는 정체불명의 남자",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "ross_mido",
+      "name_kr": "로스=미도",
+      "name_jp": "ロス＝御堂",
+      "name_en": "Ross Mido",
+      "faction": "eldia_conspiracy",
+      "true_identity": "주일 엘디아 대사, 예일 학교 명예이사장, 전 국왕 측근이자 C 프로젝트 음모의 핵심 주모자",
+      "known_to_kojiro": {
+        "initial_alias": "로스=미도 대사",
+        "initial_role": "엘디아 대사 (음모 배후 의심 인물)",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "로스=미도 대사",
+        "initial_role": "온건한 외교관·마야코의 부친(경호 의뢰인)",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "aqua_still_lloyd",
+      "name_kr": "아쿠아=스틸=로이드",
+      "name_jp": "アクア＝スティル＝ロイド",
+      "name_en": "Aqua Still Lloyd",
+      "faction": "eldia_conspiracy",
+      "true_identity": "엘디아 공화국 수상, 전 국왕의 서녀이자 로스=미도의 의붓딸 (후반 테러에게 피살)",
+      "known_to_kojiro": {
+        "initial_alias": "아쿠아",
+        "initial_role": "샷 바에서 우연히 만난 수수께끼의 미녀",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "K_D5_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "아쿠아 수상",
+        "initial_role": "민주화를 추진하는 엘디아 공화국의 젊은 수상",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "celia_flat",
+      "name_kr": "시리아 플랫",
+      "name_jp": "シリア・フラット",
+      "name_en": "Celia Flat",
+      "faction": "eldia_legitimist",
+      "true_identity": "엘디아 구 정보부 이중스파이, 카츠라기 겐자부로의 딸(야요이의 이복자매), 예일 학교 아랍어 강사 위장",
+      "known_to_kojiro": {
+        "initial_alias": "시리아 플랫",
+        "initial_role": "예일 학교 아랍어 강사·수수께끼의 미녀",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "K_D4_02"
+      },
+      "known_to_marina": {
+        "initial_alias": "시리아 강사",
+        "initial_role": "예일 외국인학교 아랍어 강사",
+        "trust_level": "suspect",
+        "truth_revealed_at_scene": "C_D6_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "stollman_kou",
+      "name_kr": "스트르만=코우",
+      "name_jp": "ストールマン・孔",
+      "name_en": "Stollman Kou",
+      "faction": "eldia_legitimist",
+      "true_identity": "예일 외국인학교 교장·엘디아 천재 과학자, 국새를 양분 은닉 후 디브에게 피살",
+      "known_to_kojiro": {
+        "initial_alias": "스트르만=코우 (사칭 피해)",
+        "initial_role": "회화 수색 의뢰인으로 착각 → 12/5 진본 피살 확인",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "K_D3_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "스트르만 교장",
+        "initial_role": "예일 외국인학교 교장 (살해 사건 피해자)",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": "M_D3_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "dib",
+      "name_kr": "디브",
+      "name_jp": "ディーブ",
+      "name_en": "Dib",
+      "faction": "eldia_conspiracy",
+      "true_identity": "엘디아 정보부 간부, 스트르만=코우 사칭 및 고문 살해범 (트리스탄호에서 테러에게 피살)",
+      "known_to_kojiro": {
+        "initial_alias": "스트르만=코우 (위장)",
+        "initial_role": "회화 수색 의뢰인 → 정체 발각 후 적대 습격자",
+        "trust_level": "hostile",
+        "truth_revealed_at_scene": "K_D3_01"
+      },
+      "known_to_marina": {
+        "initial_alias": "디브",
+        "initial_role": "엘디아 정보부 위험 공작원",
+        "trust_level": "hostile",
+        "truth_revealed_at_scene": "M_D3_01"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "glen",
+      "name_kr": "구렌",
+      "name_jp": "グレン",
+      "name_en": "Glen",
+      "faction": "private_investigator",
+      "true_identity": "뒷세계 정보상 (엘디아·암살자·현상수배 정보 제공자)",
+      "known_to_kojiro": {
+        "initial_alias": "구렌",
+        "initial_role": "뒷세계 정보 제공 협력자",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "미접촉",
+        "initial_role": "미인지 인물",
+        "trust_level": "unknown",
+        "truth_revealed_at_scene": null
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "misumi_kagawa",
+      "name_kr": "카가와 미스미",
+      "name_jp": "香川美純",
+      "name_en": "Misumi Kagawa",
+      "faction": "japanese_intelligence",
+      "true_identity": "공안 내무감사관 (마리나 감찰 담당·앙숙, 코노 본부장과 내연 관계)",
+      "known_to_kojiro": {
+        "initial_alias": "미접촉",
+        "initial_role": "미인지 인물",
+        "trust_level": "unknown",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "카가와 미스미",
+        "initial_role": "내무감사관 (적대적 감찰 담당)",
+        "trust_level": "hostile",
+        "truth_revealed_at_scene": "M_D4_02"
+      },
+      "verification_status": "확인"
+    },
+    {
+      "id": "hiromi_matsuno",
+      "name_kr": "마츠노 히로미",
+      "name_jp": "松乃広美",
+      "name_en": "Hiromi Matsuno",
+      "faction": "yale_school",
+      "true_identity": "예일 외국인학교 도서관 근무·미술 교육실습생 (고미술사 전공 대학원생)",
+      "known_to_kojiro": {
+        "initial_alias": "마츠노 히로미",
+        "initial_role": "예일 학교 도서관 고미술 조사 협력자",
+        "trust_level": "ally",
+        "truth_revealed_at_scene": null
+      },
+      "known_to_marina": {
+        "initial_alias": "마츠노 실습생",
+        "initial_role": "예일 외국인학교 미술 실습생",
+        "trust_level": "neutral",
+        "truth_revealed_at_scene": null
+      },
+      "verification_status": "확인"
+    }
+  ]
+}

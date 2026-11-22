@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "eve-burst-error",
+  "locations": [
+    {
+      "id": "loc_amagi_agency",
+      "name_kr": "아마기 탐정사무소",
+      "name_jp": "あまぎ探偵事務所",
+      "name_en": "Amagi Detective Agency",
+      "district": "항구 창고 거리",
+      "accessible_by": "kojiro",
+      "unlock_day": 1,
+      "summary": "아마기 코지로가 운영하는 영세 사립 탐정사무소. 회화 수색 의뢰 수주, 푸딩 보호, DBMS 원격 접속의 거점.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_katsuragi_agency",
+      "name_kr": "카츠라기 탐정사무소",
+      "name_jp": "桂木探偵事務所",
+      "name_en": "Katsuragi Detective Agency",
+      "district": "도심 상업지구",
+      "accessible_by": "kojiro",
+      "unlock_day": 2,
+      "summary": "카츠라기 야요이가 소장을 맡고 니카이도 스스무가 소속된 대형 탐정사무소. 코지로의 친정.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_warehouse_district",
+      "name_kr": "항구 창고 거리",
+      "name_jp": "倉庫街",
+      "name_en": "Harbor Warehouse District",
+      "district": "항만 구역",
+      "accessible_by": "both",
+      "unlock_day": 1,
+      "summary": "코지로가 불량배에게 쫓기던 푸딩을 구출한 현장이며 후반 디브 습격과 트리스탄호 출항로가 연결되는 구역.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_central_avenue",
+      "name_kr": "센트럴 애비뉴",
+      "name_jp": "セントラル・アベニュー",
+      "name_en": "Central Avenue",
+      "district": "도심 중심가",
+      "accessible_by": "both",
+      "unlock_day": 1,
+      "summary": "두 주인공이 조사 이동 중 경유하는 중심가. 정보 수집과 미행·접촉이 이루어지는 공용 거리.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_shot_bar",
+      "name_kr": "샷 바",
+      "name_jp": "ショットバー",
+      "name_en": "Shot Bar",
+      "district": "도심 유흥가",
+      "accessible_by": "kojiro",
+      "unlock_day": 3,
+      "summary": "코지로가 뒷세계 정보상 구렌을 만나고, 정체를 숨긴 엘디아 수상 아쿠아와 우연히 조우하는 바.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_stollman_mansion",
+      "name_kr": "스트르만=코우의 저택",
+      "name_jp": "孔の家 (ストールマン邸)",
+      "name_en": "Stollman Kou's Residence",
+      "district": "고급 주택가",
+      "accessible_by": "kojiro",
+      "unlock_day": 1,
+      "summary": "회화 수색 의뢰의 현장. 스트르만이 국새의 절반과 관련된 단서를 은닉했던 저택.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_yale_school_grounds",
+      "name_kr": "예일 외국인학교 (교내·도서관)",
+      "name_jp": "エール外国人学校 (校内・図書館)",
+      "name_en": "Yale Foreign School Grounds & Library",
+      "district": "외국인 거류지",
+      "accessible_by": "both",
+      "unlock_day": 0,
+      "summary": "마리나가 전속 강사로 잠입해 마야코를 경호하고, 코지로가 마츠노 히로미·시리아와 접촉하는 핵심 교차 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_yale_director_room",
+      "name_kr": "예일 외국인학교 디렉터룸",
+      "name_jp": "エール外国人学校 ディレクタールーム",
+      "name_en": "Yale Foreign School Director's Room",
+      "district": "외국인 거류지",
+      "accessible_by": "marina",
+      "unlock_day": 2,
+      "summary": "학교 뒤편의 교장·이사장 구역. 마리나가 은밀 조사 중 국새의 나머지 절반 및 학교 기밀 단서를 포착한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_eldia_embassy",
+      "name_kr": "주일 엘디아 대사관",
+      "name_jp": "エルディア大使館",
+      "name_en": "Eldia Embassy in Japan",
+      "district": "외교 공관가",
+      "accessible_by": "both",
+      "unlock_day": 0,
+      "summary": "로스=미도 대사가 주재하는 외교 공관. 엄중한 경비 속에 엘디아 왕위 계승 음모가 진행되는 장소.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_jcia_hq",
+      "name_kr": "내각조사실 본부 빌딩",
+      "name_jp": "本部ビル (内閣調査室)",
+      "name_en": "Cabinet Intelligence HQ Building",
+      "district": "관청가",
+      "accessible_by": "marina",
+      "unlock_day": 0,
+      "summary": "코노 본부장과 마리나, 감찰관 카가와가 활동하는 본부. 12월 6일 Level-7 DBMS 해킹 데드락과 사문 위기가 발생한다.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_princess_hotel",
+      "name_kr": "프린세스 호텔",
+      "name_jp": "プリンセス・ホテル",
+      "name_en": "Princess Hotel",
+      "district": "도심 중심가",
+      "accessible_by": "both",
+      "unlock_day": 4,
+      "summary": "로비와 객실에서 주요 인물 간 밀회, 습격, 수사 교차가 벌어지는 고급 호텔.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_sun_mansion",
+      "name_kr": "선 맨션",
+      "name_jp": "サン・マンション",
+      "name_en": "Sun Mansion",
+      "district": "주택가",
+      "accessible_by": "kojiro",
+      "unlock_day": 4,
+      "summary": "코지로가 사건 관계자의 행방과 현장 흔적을 추적하기 위해 방문하는 아파트 단지.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_tristan_deck",
+      "name_kr": "호화 여객선 트리스탄호 (갑판·객실)",
+      "name_jp": "トリスタン号 (甲板・客室)",
+      "name_en": "Luxury Liner Tristan (Deck & Cabins)",
+      "district": "도쿄만 해상",
+      "accessible_by": "both",
+      "unlock_day": 5,
+      "summary": "12월 7일 코지로와 마리나가 각각 잠입·승선하며 디브 피살과 음모 결전의 막이 오르는 해상 무대.",
+      "verification_status": "확인"
+    },
+    {
+      "id": "loc_tristan_hold",
+      "name_kr": "트리스탄호 해저 선창",
+      "name_jp": "トリスタン号 船倉 (海底)",
+      "name_en": "Tristan Submerged Cargo Hold",
+      "district": "해구 해저",
+      "accessible_by": "both",
+      "unlock_day": 6,
+      "summary": "12월 8일 코지로+마야코와 마리나+프리시아가 합류한 직후 폭발로 침몰하는 최종 해저 밀실. 산소 서바이벌과 범인 입력이 이루어진다.",
+      "verification_status": "확인"
+    }
+  ]
+}
