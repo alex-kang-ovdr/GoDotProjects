@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="동급생 2 겨울방학 커버 아트워크">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#070d1f"/>
+      <stop offset="48%" stop-color="#142347"/>
+      <stop offset="82%" stop-color="#293d6e"/>
+      <stop offset="100%" stop-color="#53496b"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="78%" cy="22%" r="28%">
+      <stop offset="0%" stop-color="#fff4cc" stop-opacity="0.65"/>
+      <stop offset="35%" stop-color="#a8c6ff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0b132b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffcf75" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#f6a64b" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f6a64b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="snowGround" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dce7f7"/>
+      <stop offset="100%" stop-color="#a5badb"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8e3"/>
+      <stop offset="50%" stop-color="#ffd58c"/>
+      <stop offset="100%" stop-color="#f2a2b8"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Night Twilight Winter Sky -->
+  <rect width="1200" height="675" fill="url(#sky)"/>
+  <rect width="1200" height="675" fill="url(#moonGlow)"/>
+
+  <!-- Stars -->
+  <g fill="#e6f0ff" opacity="0.75">
+    <circle cx="95" cy="72" r="1.8"/>
+    <circle cx="180" cy="118" r="1.3"/>
+    <circle cx="290" cy="60" r="2.1"/>
+    <circle cx="420" cy="95" r="1.4"/>
+    <circle cx="545" cy="54" r="1.9"/>
+    <circle cx="670" cy="110" r="1.5"/>
+    <circle cx="815" cy="76" r="1.8"/>
+    <circle cx="1040" cy="84" r="2.2"/>
+    <circle cx="1120" cy="140" r="1.5"/>
+    <circle cx="610" cy="165" r="1.2"/>
+  </g>
+
+  <!-- Crescent Moon -->
+  <g transform="translate(930 148)">
+    <circle cx="0" cy="0" r="46" fill="#fff3cc" filter="url(#softGlow)"/>
+    <circle cx="18" cy="-12" r="40" fill="#132144"/>
+  </g>
+
+  <!-- Distant Winter Hills & Onsen Mountains -->
+  <path d="M0 470 Q180 390 360 445 T760 420 T1200 455 L1200 675 L0 675 Z" fill="#182747"/>
+  <path d="M0 505 Q250 455 520 485 T1020 465 L1200 485 L1200 675 L0 675 Z" fill="#101b33"/>
+
+  <!-- Elevated Train Overpass (Yasohachi <-> Kisaragi Line) -->
+  <g fill="#0c1528" opacity="0.92">
+    <rect x="0" y="452" width="1200" height="12"/>
+    <rect x="110" y="464" width="14" height="75"/>
+    <rect x="290" y="464" width="14" height="75"/>
+    <rect x="470" y="464" width="14" height="75"/>
+    <rect x="650" y="464" width="14" height="75"/>
+    <rect x="830" y="464" width="14" height="75"/>
+    <rect x="1010" y="464" width="14" height="75"/>
+  </g>
+  <!-- Lit Commuter Train Silhouette -->
+  <g transform="translate(740 424)">
+    <rect x="0" y="0" width="235" height="28" rx="6" fill="#1a2847"/>
+    <g fill="#ffd788">
+      <rect x="14" y="7" width="22" height="11" rx="2"/>
+      <rect x="44" y="7" width="22" height="11" rx="2"/>
+      <rect x="74" y="7" width="22" height="11" rx="2"/>
+      <rect x="112" y="7" width="22" height="11" rx="2"/>
+      <rect x="142" y="7" width="22" height="11" rx="2"/>
+      <rect x="172" y="7" width="22" height="11" rx="2"/>
+      <rect x="202" y="7" width="18" height="11" rx="2"/>
+    </g>
+  </g>
+
+  <!-- Yaohachi Town & School Silhouette -->
+  <g fill="#0b1326">
+    <!-- School Main Building + Clock Tower -->
+    <rect x="625" y="370" width="165" height="170"/>
+    <rect x="688" y="318" width="40" height="58"/>
+    <polygon points="682,318 708,292 734,318"/>
+    <!-- Town Houses & Cafe -->
+    <polygon points="55,540 55,445 115,405 175,445 175,540"/>
+    <polygon points="185,540 185,435 250,395 315,435 315,540"/>
+    <rect x="335" y="425" width="95" height="115"/>
+    <polygon points="445,540 445,455 510,418 575,455 575,540"/>
+    <!-- Hospital Wing Right -->
+    <rect x="835" y="395" width="145" height="145"/>
+    <polygon points="1005,540 1005,442 1085,398 1165,442 1165,540"/>
+  </g>
+
+  <!-- Snow-dusted Roofs -->
+  <g fill="#dce8f8" opacity="0.88">
+    <polygon points="52,447 115,402 178,447 170,452 115,412 60,452"/>
+    <polygon points="182,437 250,392 318,437 310,443 250,402 190,443"/>
+    <polygon points="442,457 510,415 578,457 570,462 510,425 450,462"/>
+    <polygon points="680,320 708,290 736,320 728,323 708,299 688,323"/>
+    <polygon points="1002,444 1085,395 1168,444 1160,450 1085,406 1010,450"/>
+  </g>
+
+  <!-- Warm Glowing Town Windows -->
+  <g fill="#ffcf78" opacity="0.9">
+    <!-- School Clock Dial -->
+    <circle cx="708" cy="346" r="12" fill="#fff3d4"/>
+    <line x1="708" y1="346" x2="708" y2="338" stroke="#182544" stroke-width="2"/>
+    <line x1="708" y1="346" x2="715" y2="346" stroke="#182544" stroke-width="2"/>
+    <!-- Cafe Windows -->
+    <rect x="210" y="476" width="32" height="28" rx="3"/>
+    <rect x="256" y="476" width="32" height="28" rx="3"/>
+    <rect x="234" y="438" width="28" height="22" rx="2" fill="#ffe7ad"/>
+    <!-- Neighbor Houses -->
+    <rect x="88" y="468" width="22" height="24" rx="2"/>
+    <rect x="122" y="468" width="22" height="24" rx="2"/>
+    <rect x="492" y="472" width="28" height="26" rx="2"/>
+    <!-- Hospital Window (Sakurako's Warm Light) -->
+    <rect x="862" y="425" width="24" height="20" rx="2" fill="#ffdce8"/>
+    <rect x="898" y="425" width="24" height="20" rx="2" fill="#ffcf78"/>
+    <rect x="934" y="425" width="24" height="20" rx="2" opacity="0.45"/>
+    <rect x="862" y="462" width="24" height="20" rx="2" opacity="0.5"/>
+    <rect x="898" y="462" width="24" height="20" rx="2"/>
+    <!-- Right House -->
+    <rect x="1064" y="465" width="36" height="26" rx="3"/>
+  </g>
+
+  <!-- Snowy Street & Reflections -->
+  <path d="M0 536 Q350 518 680 536 T1200 528 L1200 675 L0 675 Z" fill="url(#snowGround)"/>
+  <path d="M0 595 Q420 562 820 592 T1200 582 L1200 675 L0 675 Z" fill="#101a32" opacity="0.88"/>
+
+  <!-- Warm Streetlights -->
+  <g>
+    <circle cx="378" cy="466" r="56" fill="url(#lampGlow)"/>
+    <rect x="376" y="466" width="4" height="82" fill="#1c2947"/>
+    <circle cx="378" cy="466" r="7" fill="#fff6d6"/>
+
+    <circle cx="792" cy="472" r="52" fill="url(#lampGlow)"/>
+    <rect x="790" y="472" width="4" height="78" fill="#1c2947"/>
+    <circle cx="792" cy="472" r="7" fill="#fff6d6"/>
+  </g>
+
+  <!-- Stylized Brass Pocket Watch / 5-Min Schedule Dial Motif -->
+  <g transform="translate(1035 168)" opacity="0.92">
+    <circle cx="0" cy="0" r="76" fill="#0d1730" fill-opacity="0.72" stroke="#f5c978" stroke-width="3"/>
+    <circle cx="0" cy="0" r="65" fill="none" stroke="#f5c978" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <!-- 12 Clock Ticks -->
+    <g stroke="#ffe2a8" stroke-width="2">
+      <line x1="0" y1="-58" x2="0" y2="-48"/>
+      <line x1="58" y1="0" x2="48" y2="0"/>
+      <line x1="0" y1="58" x2="0" y2="48"/>
+      <line x1="-58" y1="0" x2="-48" y2="0"/>
+    </g>
+    <line x1="0" y1="0" x2="-22" y2="-30" stroke="#fff3d4" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="36" y2="-8" stroke="#f2849e" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="4.5" fill="#ffd58c"/>
+    <text x="0" y="34" text-anchor="middle" fill="#cfe2ff" font-size="13" font-family="sans-serif" letter-spacing="1">12/22 — 01/07</text>
+  </g>
+
+  <!-- Falling Snowflakes -->
+  <g fill="#ffffff">
+    <circle cx="130" cy="195" r="3" opacity="0.8"/>
+    <circle cx="265" cy="145" r="2.2" opacity="0.65"/>
+    <circle cx="340" cy="285" r="3.5" opacity="0.7"/>
+    <circle cx="485" cy="210" r="2.4" opacity="0.75"/>
+    <circle cx="595" cy="300" r="2.8" opacity="0.6"/>
+    <circle cx="760" cy="235" r="3.2" opacity="0.8"/>
+    <circle cx="880" cy="315" r="2.5" opacity="0.7"/>
+    <circle cx="1065" cy="305" r="3" opacity="0.75"/>
+    <circle cx="215" cy="355" r="2.2" opacity="0.7"/>
+    <circle cx="945" cy="380" r="2.4" opacity="0.65"/>
+    <circle cx="430" cy="370" r="2" opacity="0.55"/>
+    <circle cx="660" cy="195" r="2.6" opacity="0.7"/>
+  </g>
+
+  <!-- Title Typography Plate (Left-Top Focal Area) -->
+  <g transform="translate(82 118)">
+    <rect x="0" y="0" width="224" height="32" rx="16" fill="#f2849e" fill-opacity="0.22" stroke="#f2849e" stroke-opacity="0.6"/>
+    <text x="112" y="21" text-anchor="middle" fill="#ffd9e3" font-size="14" font-weight="600" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" letter-spacing="1.5">WINTER BREAK · 17 DAYS</text>
+
+    <text x="2" y="106" fill="url(#goldText)" font-size="84" font-weight="800" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" letter-spacing="-2" filter="url(#softGlow)">동급생 2</text>
+    <text x="6" y="144" fill="#d3e3ff" font-size="24" font-weight="500" font-family="'Yu Gothic', 'Meiryo', sans-serif" letter-spacing="6" opacity="0.9">同級生 2 · DOUKYUUSEI 2</text>
+
+    <line x1="6" y1="166" x2="430" y2="166" stroke="#f6b868" stroke-opacity="0.65" stroke-width="2"/>
+    <text x="6" y="198" fill="#eef4ff" font-size="20" font-weight="500" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif">NPC 일정·동선 · 5분 양자 시계 · 관계 이벤트 DAG</text>
+    <text x="6" y="226" fill="#a8c2eb" font-size="15" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif">4개 존 41장소 · 15인 히로인 · 12/28 동지온천 마크로 분기 · 19종 엔딩</text>
+  </g>
+
+  <!-- Bottom Caption Bar -->
+  <g transform="translate(82 638)">
+    <text x="0" y="0" fill="#b7ccf0" font-size="15" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif">PlayHub Data-Driven Visual Novel &amp; Schedule Simulation · Classic (1995) &amp; Easy Radar (2024)</text>
+  </g>
+</svg>

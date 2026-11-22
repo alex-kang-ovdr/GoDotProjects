@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>동급생 2 — 겨울방학 일정·동선·관계 시뮬레이션</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="snow-layer" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- Top HUD -->
+    <header class="hud-bar">
+      <div class="hud-brand">
+        <div class="brand-badge">同級生 2</div>
+        <div class="brand-text">
+          <h1>동급생 2</h1>
+          <span class="brand-sub">데이터 기반 NPC 일정·동선·관계 엔진</span>
+        </div>
+      </div>
+
+      <div class="hud-clock-cluster">
+        <div class="hud-pill hud-date">
+          <span class="pill-label">겨울방학</span>
+          <strong id="hud-date-text">12월 22일 (금)</strong>
+          <span id="hud-dday-badge" class="tag tag-accent">D-16</span>
+        </div>
+        <div class="hud-pill hud-time">
+          <span class="pill-label">5분 시계</span>
+          <strong id="hud-clock-text" class="digital-clock">08:00</strong>
+          <span id="hud-timeslot-badge" class="tag tag-sky">오전</span>
+        </div>
+        <div class="hud-pill hud-loc">
+          <span class="pill-label" id="hud-zone-text">야소하치 마을</span>
+          <strong id="hud-loc-text">주인공 방</strong>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <div class="mode-toggle" role="group" aria-label="가시성 모드 전환">
+          <button id="btn-mode-classic" class="mode-btn" type="button" title="1995 원작 준거: 맵 핀 숨김">클래식</button>
+          <button id="btn-mode-easy" class="mode-btn active" type="button" title="2024 리메이크 준거: 실시간 NPC 레이더 & 이벤트 ! 표시">이지 레이더</button>
+        </div>
+        <button id="btn-save-load" class="btn btn-ghost" type="button">세이브/로드</button>
+        <button id="btn-endings" class="btn btn-ghost" type="button">엔딩 도감</button>
+        <button id="btn-new-game" class="btn btn-outline" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <!-- Special Day / Warning Banner -->
+    <div id="status-banner" class="status-banner" role="status">
+      <span id="banner-day-note"></span>
+      <span id="banner-warning" class="banner-warning hidden"></span>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="workspace-grid">
+      <!-- Center Interactive Column -->
+      <section class="center-column">
+        <!-- 4-Zone Interactive Town Map -->
+        <article class="panel map-panel">
+          <div class="panel-header">
+            <div class="zone-tabs" id="zone-tabs" role="tablist" aria-label="4개 존 선택"></div>
+            <div class="map-legend">
+              <span class="legend-item"><i class="dot dot-player"></i>현재 위치</span>
+              <span class="legend-item"><i class="dot dot-npc"></i>NPC 출현</span>
+              <span class="legend-item"><i class="dot dot-event"></i>이벤트 !</span>
+            </div>
+          </div>
+
+          <div class="map-canvas-wrap">
+            <svg id="town-map-svg" viewBox="0 0 820 420" class="town-map-svg" role="img" aria-label="4존 인터랙티브 마을 지도"></svg>
+          </div>
+
+          <div class="map-footer" id="map-hover-info">
+            지도의 장소를 클릭하면 최단 경로(다익스트라)와 이동 시간을 계산해 이동합니다.
+          </div>
+        </article>
+
+        <!-- Scene Stage & Action Deck -->
+        <article class="panel stage-panel">
+          <div class="stage-backdrop-wrap">
+            <svg id="scene-backdrop-svg" viewBox="0 0 820 210" class="scene-backdrop-svg" aria-hidden="true"></svg>
+            <div class="stage-overlay-top">
+              <div>
+                <span id="stage-zone-pill" class="tag tag-dark">야소하치 마을</span>
+                <h2 id="stage-loc-title">주인공 방</h2>
+                <p id="stage-loc-meta" class="stage-meta">실내 · 00:00~24:00 개방</p>
+              </div>
+              <div id="stage-quick-events" class="stage-quick-events"></div>
+            </div>
+
+            <!-- Present NPC Portrait Cards -->
+            <div id="stage-npc-strip" class="stage-npc-strip"></div>
+          </div>
+
+          <!-- Inline Visual Novel Dialogue Box -->
+          <div id="dialogue-box" class="dialogue-box">
+            <div class="dialogue-head">
+              <span id="dialogue-speaker" class="speaker-plate">안내</span>
+              <span id="dialogue-meta" class="dialogue-meta">12/22 08:00</span>
+            </div>
+            <p id="dialogue-text" class="dialogue-text">
+              겨울방학 첫날 아침입니다. 상단 4존 지도에서 장소를 클릭해 이동하거나, 이지 레이더로 현재 출현 중인 히로인을 확인해 보세요.
+            </p>
+            <div id="dialogue-choices" class="dialogue-choices hidden"></div>
+          </div>
+
+          <!-- Time & Day Control Deck -->
+          <div class="action-deck">
+            <div class="wait-controls">
+              <span class="deck-label">시간 진행</span>
+              <button class="btn btn-sm btn-ghost" data-wait="15" type="button">+15분</button>
+              <button class="btn btn-sm btn-ghost" data-wait="30" type="button">+30분</button>
+              <button class="btn btn-sm btn-ghost" data-wait="60" type="button">+60분</button>
+              <button id="btn-wait-next" class="btn btn-sm btn-sky" type="button">다음 일정 시각까지</button>
+            </div>
+            <div class="sleep-controls">
+              <button id="btn-sleep-day" class="btn btn-amber" type="button">귀가 후 취침 (다음 날)</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Right Data-Driven Inspector Sidebar -->
+      <aside class="sidebar-column panel">
+        <div class="sidebar-tabs" role="tablist">
+          <button class="sidebar-tab active" data-tab="notebook" type="button">NPC 스케줄 수첩</button>
+          <button class="sidebar-tab" data-tab="flags" type="button">플래그·이벤트</button>
+          <button class="sidebar-tab" data-tab="log" type="button">행동 로그</button>
+        </div>
+
+        <!-- Tab 1: Heroine Schedule Notebook -->
+        <div id="tab-notebook" class="tab-pane active">
+          <div class="notebook-filters">
+            <button class="filter-chip active" data-filter="all" type="button">전체 15인</button>
+            <button class="filter-chip" data-filter="active" type="button">현재 출현</button>
+            <button class="filter-chip" data-filter="progress" type="button">진행 중</button>
+          </div>
+          <div id="notebook-list" class="notebook-list"></div>
+        </div>
+
+        <!-- Tab 2: Flags, Events & Mutual Exclusions -->
+        <div id="tab-flags" class="tab-pane">
+          <div class="stats-row" id="flag-stats-row"></div>
+          <h3 class="sub-heading">3대 상호 배타 규칙 (Mutual Exclusions)</h3>
+          <div id="mx-list" class="mx-list"></div>
+          <h3 class="sub-heading">특수 함정·우선권 감시</h3>
+          <div id="special-rules-list" class="mx-list"></div>
+          <h3 class="sub-heading">활성 플래그</h3>
+          <div id="active-flags-chips" class="chip-cloud"></div>
+          <h3 class="sub-heading">완료된 이벤트</h3>
+          <div id="completed-events-list" class="completed-events-list"></div>
+        </div>
+
+        <!-- Tab 3: History Log -->
+        <div id="tab-log" class="tab-pane">
+          <div id="history-log-list" class="history-log-list"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Event Choice / Scene Modal -->
+  <div id="event-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
+    <div class="modal-card event-modal-card">
+      <div class="modal-header">
+        <div>
+          <span id="event-modal-tag" class="tag tag-amber">관계 이벤트</span>
+          <h2 id="event-modal-title">이벤트 제목</h2>
+        </div>
+        <button id="btn-close-event-modal" class="icon-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <div class="event-modal-body">
+        <div id="event-modal-portrait" class="event-modal-portrait"></div>
+        <div class="event-modal-script">
+          <p id="event-modal-narration" class="event-narration"></p>
+          <div id="event-modal-lines" class="event-lines"></div>
+          <div id="event-modal-choices" class="event-choices"></div>
+        </div>
+      </div>
+      <div class="modal-footer" id="event-modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- Save / Load Modal -->
+  <div id="save-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="save-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="save-modal-title">세이브 / 로드 (3슬롯)</h2>
+        <button id="btn-close-save-modal" class="icon-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <p class="modal-desc">12/27~28 온천 분기 직전이나 12/31 연말 직전에 슬롯을 나누어 저장해 두면 다양한 히로인 루트를 편리하게 공략할 수 있습니다.</p>
+      <div id="save-slots-list" class="save-slots-list"></div>
+    </div>
+  </div>
+
+  <!-- Ending Epilogue & Gallery Modal -->
+  <div id="ending-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ending-modal-title">
+    <div class="modal-card ending-modal-card">
+      <div class="modal-header">
+        <div>
+          <span id="ending-modal-tag" class="tag tag-rose">1월 7일 3학기 시업식</span>
+          <h2 id="ending-modal-title">엔딩 도감 (19종)</h2>
+        </div>
+        <button id="btn-close-ending-modal" class="icon-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <div id="ending-featured" class="ending-featured hidden"></div>
+      <div id="ending-gallery-grid" class="ending-gallery-grid"></div>
+      <div class="modal-footer">
+        <button id="btn-ending-new-game" class="btn btn-amber" type="button">새 회차 시작 (12/22)</button>
+        <button id="btn-ending-close" class="btn btn-ghost" type="button">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data/game-data.js"></script>
+  <script src="./engine.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

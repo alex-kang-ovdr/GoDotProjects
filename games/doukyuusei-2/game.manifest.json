@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "doukyuusei-2",
+  "slug": "doukyuusei-2",
+  "title": "동급생 2",
+  "subtitle": "겨울방학 일정·동선·관계 시뮬레이션",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "publishedOn": "2026-11-22",
+  "updatedOn": "2026-11-22",
+  "genre": "simulation",
+  "tags": [
+    "visual-novel",
+    "schedule-simulation",
+    "town-navigation",
+    "data-driven",
+    "winter-break"
+  ],
+  "defaultLocale": "ko",
+  "supportedLocales": [
+    "ko"
+  ],
+  "storage": {
+    "namespace": "doukyuusei-2",
+    "slots": 3,
+    "autoSave": true
+  },
+  "media": {
+    "cover": "assets/cover.svg"
+  },
+  "description": "12월 22일부터 1월 7일까지 17일간의 겨울방학 동안 4개 존 41개 장소를 오가며 15인 히로인의 데이터 기반 일정·동선과 51개 관계 이벤트 DAG, 12/28 동지온천 마크로 분기, 19종 엔딩을 경험하는 시간 관리 어드벤처 시뮬레이션입니다."
+}
