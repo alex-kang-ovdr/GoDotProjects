@@ -76,6 +76,22 @@ const DEFAULT_PARTNERS = [
     ctaMode: 'partner_contained',
     revshareBps: 5000,
     cpaKrw: 0
+  },
+  {
+    id: 'kakao',
+    name: '카카오톡 (더보기 AD · 허브 연계 배너형)',
+    adapterType: 'kakao',
+    ctaMode: 'install_direct',
+    revshareBps: 1200,
+    cpaKrw: 1500
+  },
+  {
+    id: 'kakao-content',
+    name: '카카오톡 게임탭 (순수 컨텐츠 제공형)',
+    adapterType: 'kakao',
+    ctaMode: 'content_only',
+    revshareBps: 5000,
+    cpaKrw: 0
   }
 ];
 

@@ -819,6 +819,258 @@ body.is-portrait-preset .ins-mobile-close {
 .toss-start-btn:hover { background: #3b82f6; color: #fff; }
 .toss-rank-row.is-ref { opacity: 0.55; }
 
+/* SCREENS 5 & 6: KakaoTalk 더보기 홈 / 게임 탭 (Screenshots) */
+.kakao-screen { background: #000000; }
+.kakao-header { background: #000000; padding-bottom: 6px; }
+.kakao-pill-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 12px;
+  background: #000000;
+  flex-shrink: 0;
+}
+.kakao-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: #232426;
+  color: #b8bcc4;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.kakao-pill.is-active {
+  background: #ffffff;
+  color: #111111;
+}
+.kakao-n-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.kakao-body { padding: 0 14px 20px; background: #000000; }
+.kakao-pay-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: #fee500;
+  color: #191919;
+  margin-bottom: 12px;
+}
+.kakao-pay-left { display: flex; align-items: center; gap: 6px; font-size: 14.5px; }
+.kakao-pay-logo { font-weight: 900; letter-spacing: -0.02em; }
+.kakao-pay-links { display: flex; gap: 12px; font-size: 13px; font-weight: 700; }
+
+.kakao-service-card {
+  background: #1c1d1f;
+  border-radius: 16px;
+  padding: 16px 10px 12px;
+  margin-bottom: 12px;
+}
+.kakao-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 4px;
+  text-align: center;
+}
+.kakao-service-grid div { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.kakao-service-grid span { font-size: 18px; line-height: 1; color: #e5e7eb; }
+.kakao-service-grid small { font-size: 11px; color: #cbd5e1; white-space: nowrap; }
+
+.kakao-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+}
+.kakao-dots i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #4b5563;
+}
+.kakao-dots i.is-active { width: 12px; background: #ffffff; }
+
+/* Large AD playable banner (Lineage M slot) */
+.kakao-ad-banner {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #181a1f;
+  border: 1px solid #2a2d34;
+  margin-bottom: 16px;
+}
+.kakao-ad-art {
+  position: relative;
+  height: 158px;
+  cursor: pointer;
+}
+.kakao-ad-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kakao-ad-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.78) 100%);
+}
+.kakao-ad-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(0,0,0,0.68);
+  color: #e5e7eb;
+  font-size: 10px;
+  font-weight: 800;
+}
+.kakao-ad-overlay {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  z-index: 2;
+}
+.kakao-ad-overlay strong { display: block; font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+.kakao-ad-overlay small { display: block; font-size: 12px; color: #fde68a; margin-top: 2px; font-weight: 700; }
+
+.kakao-ad-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px;
+  background: #1b1d22;
+}
+.kakao-ad-footer span { font-size: 13.5px; font-weight: 700; color: #f3f4f6; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kakao-ad-cta {
+  flex-shrink: 0;
+  border: 1px solid #4b5563;
+  background: #262932;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.kakao-ad-cta:hover { background: #fee500; color: #191919; border-color: #fee500; }
+
+.kakao-now-section { margin-bottom: 10px; }
+.kakao-now-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.kakao-now-head h2 { margin: 0; font-size: 16px; font-weight: 800; color: #fff; }
+.kakao-now-track { padding: 0; }
+.kakao-mode-chip {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(254, 229, 0, 0.16);
+  color: #fee500;
+}
+
+/* Screen 6: Kakao Games Tab (Tall Portrait Carousel + Instant List) */
+.kakao-games-body { padding: 4px 0 20px; background: #000000; }
+.kakao-tall-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 14px;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+.kakao-tall-carousel::-webkit-scrollbar { display: none; }
+
+.kakao-tall-card {
+  position: relative;
+  flex: 0 0 78%;
+  height: 318px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #1c1f26;
+  scroll-snap-align: center;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.kakao-tall-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kakao-tall-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 40px 14px 14px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.82) 48%, rgba(0,0,0,0.95) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.kakao-tall-info { min-width: 0; flex: 1; }
+.kakao-tall-title { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.kakao-tall-mini-icon { width: 22px; height: 22px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+.kakao-tall-desc { margin: 0; font-size: 12px; color: #d1d5db; line-height: 1.35; }
+.kakao-tall-play-btn {
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+.kakao-tall-dots { margin: 10px 0 18px; }
+
+.kakao-instant-section { padding: 0 14px; }
+.kakao-genre-chips { padding: 0 0 12px; }
+.kakao-game-list { display: grid; gap: 10px; }
+.kakao-list-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  border-radius: 13px;
+  background: #16181d;
+  border: 1px solid #23262f;
+}
+.kakao-list-row[hidden] { display: none; }
+.kakao-list-icon { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; background: #23262e; }
+.kakao-list-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kakao-list-meta { min-width: 0; }
+.kakao-list-meta strong { display: block; font-size: 14px; font-weight: 800; color: #fff; }
+.kakao-list-meta small { display: block; font-size: 11.5px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.kakao-list-play {
+  border: 0;
+  border-radius: 9px;
+  padding: 8px 12px;
+  background: #fee500;
+  color: #191919;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.kakao-bottom-nav { background: #0c0d0f; border-top-color: #1e2024; }
+.kakao-bottom-nav .k-bnav-item.has-badge em { background: #ef4444; right: 12px; }
+
 /* OVERLAY 1: True Fullscreen Zero-Install Demo WebView Player */
 .webview-overlay {
   position: fixed;

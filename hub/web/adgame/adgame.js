@@ -83,7 +83,9 @@
   const PRESETS = {
     'karrot-banner': { screen: 'feed', partnerId: 'karrot', label: '당근 · 배너삽입형' },
     'karrot-content': { screen: 'hub', partnerId: 'karrot-content', label: '당근 · 컨텐츠제공형' },
-    'toss-content': { screen: 'toss', partnerId: 'toss', label: '토스 · 컨텐츠제공형' }
+    'toss-content': { screen: 'toss', partnerId: 'toss', label: '토스 · 컨텐츠제공형' },
+    'kakao-banner': { screen: 'kakao-home', partnerId: 'kakao', label: '카카오 · 배너삽입형' },
+    'kakao-content': { screen: 'kakao-games', partnerId: 'kakao-content', label: '카카오 · 컨텐츠제공형' }
   };
 
   function isContentOnly() {
@@ -93,9 +95,14 @@
   function applyPartnerModeUi() {
     const pureContent = isContentOnly();
     const isToss = state.partnerId.startsWith('toss');
+    const isKakao = state.partnerId.startsWith('kakao');
     const policyPill = document.querySelector('.toss-policy-pill');
     if (policyPill) {
       policyPill.textContent = pureContent ? '순수 컨텐츠 제공 · IAA/IAP' : 'PlayHub 연계 배너 · 기록 저장';
+    }
+    const kakaoChip = $('kakao-mode-chip');
+    if (kakaoChip) {
+      kakaoChip.textContent = pureContent ? '카카오 게임탭 완결' : 'PlayHub 본편 연동';
     }
     const hubBadge = document.querySelector('.k-partner-chip');
     if (hubBadge) {
@@ -106,7 +113,7 @@
       subPill.textContent = pureContent ? '신규 게임 5종' : 'PlayHub 제휴 확장';
     }
     const wvClose = $('btn-demo-close');
-    if (wvClose) wvClose.textContent = isToss ? '← 토스' : '← 당근';
+    if (wvClose) wvClose.textContent = isToss ? '← 토스' : (isKakao ? '← 카카오' : '← 당근');
     const wvCta = $('btn-demo-finish-now');
     if (wvCta) {
       wvCta.textContent = pureContent ? '결과 보기' : '본편 이어하기 ↗';
@@ -116,9 +123,9 @@
     if (wvBanner) {
       wvBanner.hidden = pureContent || state.partner?.ctaMode === 'partner_contained';
       if (!wvBanner.hidden) {
-        $('wv-hb-title').textContent = isToss
-          ? 'PLAY HUB 클라우드 저장 · 본편 이어하기'
-          : 'PLAY HUB 앱에서 기록·보상 그대로 이어하기';
+        $('wv-hb-title').textContent = isKakao
+          ? 'PLAY HUB 본편에서 기록·보상 그대로 이어하기'
+          : (isToss ? 'PLAY HUB 클라우드 저장 · 본편 이어하기' : 'PLAY HUB 앱에서 기록·보상 그대로 이어하기');
         $('wv-hb-sub').textContent = state.activeCampaign?.reward?.label
           ? `🎁 ${state.activeCampaign.reward.label}`
           : '데모 점수·스타터 보상 자동 승계';
@@ -228,6 +235,73 @@
             <span class="toss-rank-sub">${esc(r.sub)}</span>
           </div>
           <button type="button" class="toss-start-btn" disabled>참고</button>
+        </div>
+      `).join('');
+    }
+
+    // 6) KakaoTalk 더보기 > 홈 AD banner + 카카오 나우 strip
+    const kakaoAd = $('kakao-ad-banner');
+    if (kakaoAd) {
+      const adGame = list.find(c => c.demoGameId === 'world-of-warships') || list[0];
+      kakaoAd.innerHTML = `
+        <div class="kakao-ad-art" data-launch-campaign="${esc(adGame.id)}">
+          <img src="${esc(adGame.coverUrl)}" alt="${esc(adGame.titleKo)}">
+          <span class="kakao-ad-pill">AD · 무설치 체험</span>
+          <div class="kakao-ad-overlay">
+            <strong>${esc(adGame.titleKo)} — 1초 즉시 출격</strong>
+            <small>${pureContent ? '설치 없이 카카오톡에서 바로 한 판' : '데모 체험 후 PlayHub 본편 보상 즉시 지급'}</small>
+          </div>
+        </div>
+        <div class="kakao-ad-footer">
+          <span>${esc(adGame.titleKo)} · ${esc(adGame.subtitleKo)}</span>
+          <button type="button" class="kakao-ad-cta" data-launch-campaign="${esc(adGame.id)}" data-testid="btn-kakao-ad-play">바로 플레이</button>
+        </div>
+      `;
+    }
+    const kakaoNow = $('kakao-now-track');
+    if (kakaoNow) {
+      kakaoNow.innerHTML = list.map((c, idx) => `
+        <button type="button" class="k-demo-card" data-launch-campaign="${esc(c.id)}">
+          <div class="k-demo-thumb">
+            <img src="${esc(c.coverUrl)}" alt="${esc(c.titleKo)}" loading="lazy">
+            <span class="k-demo-badge ${idx === 0 || idx === 4 ? 'is-hot' : ''}">${pureContent ? '즉시 실행' : 'AD · 1초 시작'}</span>
+          </div>
+          <span class="k-demo-sub">${esc(c.genreKo)}</span>
+          <strong class="k-demo-title">${esc(c.titleKo)}</strong>
+          <span class="k-demo-meta">${pureContent ? '설치 없이 바로 한 판' : '체험 후 본편 연동'}</span>
+        </button>
+      `).join('');
+    }
+
+    // 7) KakaoTalk 더보기 > 게임 탭 tall carousel + filterable list
+    const kakaoTall = $('kakao-tall-carousel');
+    if (kakaoTall) {
+      kakaoTall.innerHTML = list.map(c => `
+        <article class="kakao-tall-card" data-launch-campaign="${esc(c.id)}" data-testid="kakao-tall-${esc(c.demoGameId)}">
+          <img src="${esc(c.coverUrl)}" alt="${esc(c.titleKo)}" loading="lazy">
+          <div class="kakao-tall-overlay">
+            <div class="kakao-tall-info">
+              <div class="kakao-tall-title">
+                <img class="kakao-tall-mini-icon" src="${esc(c.coverUrl)}" alt="">
+                <span>${esc(c.titleKo)}</span>
+              </div>
+              <p class="kakao-tall-desc">${esc(c.subtitleKo)}</p>
+            </div>
+            <button type="button" class="kakao-tall-play-btn" data-launch-campaign="${esc(c.id)}">플레이</button>
+          </div>
+        </article>
+      `).join('');
+    }
+    const kakaoList = $('kakao-game-list');
+    if (kakaoList) {
+      kakaoList.innerHTML = list.map(c => `
+        <div class="kakao-list-row" data-kgenre-item="${esc(c.genreKo)}">
+          <span class="kakao-list-icon"><img src="${esc(c.coverUrl)}" alt="${esc(c.titleKo)}" loading="lazy"></span>
+          <div class="kakao-list-meta">
+            <strong>${esc(c.titleKo)}</strong>
+            <small>${esc(c.genreKo)} · ${esc(c.subtitleKo)}</small>
+          </div>
+          <button type="button" class="kakao-list-play" data-launch-campaign="${esc(c.id)}" data-testid="kakao-play-${esc(c.demoGameId)}">플레이</button>
         </div>
       `).join('');
     }
@@ -419,7 +493,10 @@
       if (rewardBox) rewardBox.hidden = true;
       toggleWrap.hidden = true;
       const isToss = state.partnerId.startsWith('toss');
-      $('ho-kicker').textContent = isToss ? '🎮 토스 게임 · 라운드 결과' : `🥕 ${snap.regionTag || state.region} 커뮤니티 게임 결과`;
+      const isKakao = state.partnerId.startsWith('kakao');
+      $('ho-kicker').textContent = isToss
+        ? '🎮 토스 게임 · 라운드 결과'
+        : (isKakao ? '💬 카카오 게임 · 라운드 결과' : `🥕 ${snap.regionTag || state.region} 커뮤니티 게임 결과`);
       $('ho-title').textContent = `${snap.titleKo || campaign?.titleKo} 플레이 완료!`;
       $('ho-sub').textContent = '순수 컨텐츠 제공 모드: 외부 허브 배너 없이 플랫폼 내에서 완결 플레이 및 랭킹을 기록합니다.';
       policyNote.textContent = '📦 순수 컨텐츠 제공형(content_only): 허브 연계 배너·외부 이동 링크 0%.';
@@ -607,10 +684,23 @@
         state.partnerId = 'toss';
         $('ctl-partner').value = 'toss';
         void loadCampaigns();
-      } else if (targetScreen !== 'toss' && state.partnerId.startsWith('toss')) {
+      } else if (targetScreen.startsWith('kakao') && !state.partnerId.startsWith('kakao')) {
+        state.partnerId = targetScreen === 'kakao-games' ? 'kakao-content' : 'kakao';
+        $('ctl-partner').value = state.partnerId;
+        void loadCampaigns();
+      } else if (!targetScreen.startsWith('kakao') && targetScreen !== 'toss' && (state.partnerId.startsWith('toss') || state.partnerId.startsWith('kakao'))) {
         state.partnerId = 'karrot';
         $('ctl-partner').value = 'karrot';
         void loadCampaigns();
+      }
+      return;
+    }
+    const kgenreBtn = ev.target.closest('[data-kgenre]');
+    if (kgenreBtn) {
+      const g = kgenreBtn.dataset.kgenre;
+      for (const b of document.querySelectorAll('[data-kgenre]')) b.classList.toggle('is-active', b === kgenreBtn);
+      for (const row of document.querySelectorAll('[data-kgenre-item]')) {
+        row.hidden = g !== 'all' && row.dataset.kgenreItem !== g;
       }
       return;
     }
@@ -726,7 +816,7 @@
     document.title = `${p.label} — Hub-AdGame PoC`;
   }
   const explicitScreen = urlParams.get('screen');
-  if (explicitScreen && ['feed', 'menu', 'hub', 'toss'].includes(explicitScreen)) {
+  if (explicitScreen && ['feed', 'menu', 'hub', 'toss', 'kakao-home', 'kakao-games'].includes(explicitScreen)) {
     state.screen = explicitScreen;
   }
   const explicitPartner = urlParams.get('partner');
