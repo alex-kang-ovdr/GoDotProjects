@@ -164,6 +164,18 @@
       if (!embedded) return Promise.resolve({ offline: true, loadout: null });
       return request('avatar_loadout', {});
     },
+    requestTemporaryHudHide: function (durationSec) {
+      if (!embedded) return Promise.resolve({ offline: true, ok: false });
+      return request('hud_hide_request', { durationSec: Number(durationSec) });
+    },
+    endTemporaryHudHide: function () {
+      if (!embedded) return Promise.resolve({ offline: true, ok: true });
+      return request('hud_hide_end', {});
+    },
+    getHudHideState: function () {
+      if (!embedded) return Promise.resolve({ offline: true });
+      return request('hud_hide_state', {});
+    },
     event: function (name, properties) { return request('event', { name: name, properties: properties || {} }); },
     activity: function () { return request('activity', { updating: true }); },
     onStatus: function (fn) { if (typeof fn === 'function') statusListeners.push(fn); },

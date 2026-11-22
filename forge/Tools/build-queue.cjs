@@ -6,8 +6,23 @@ const { spawn } = require('node:child_process');
 const { findGodot } = require('./native-runtime.cjs');
 const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
 const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
-const { isSealedAvatarPath, injectSealedAvatarIntoProjectDir } = require('./avatar-seal.cjs');
+const {
+  isSealedAvatarPath,
+  injectSealedAvatarIntoProjectDir,
+  injectPlayHubAvatarAutoload,
+  sanitizeProjectForStandardGodot,
+} = require('./avatar-seal.cjs');
 const { buildCorePack, buildThinUgcPack } = require('./build-core-pack.cjs');
+
+const VALID_BUILD_PROFILES = new Set(['playhub-publish', 'standard-godot']);
+function resolveBuildProfile(raw) {
+  if (raw === undefined || raw === null || raw === '') return 'playhub-publish';
+  const normalized = String(raw).trim().toLowerCase();
+  if (!VALID_BUILD_PROFILES.has(normalized)) {
+    throw Object.assign(new Error('Unsupported buildProfile (expected playhub-publish or standard-godot)'), { status: 400 });
+  }
+  return normalized;
+}
 
 function buildThinUgcArtifact(forgeRoot, snapshot) {
   const entries = snapshot.files ? snapshot.files.map((file) => [file.path, file.content]) : projectEntries(forgeRoot, snapshot);
@@ -77,6 +92,26 @@ html/focus_canvas_on_start=true
 progressive_web_app/enabled=false
 `;
 
+const standardGodotPreset = `[preset.0]
+name="Web"
+platform="Web"
+runnable=true
+export_filter="all_resources"
+include_filter="*.json,*.txt"
+exclude_filter="addons/playforge_avatar/*,addons/playforge_platform/*,addons/playforge_replay/*,addons/playforge_agent_chat/*,addons/playforge_remote_control/*,addons/playforge_service/*,addons/playforge_asset_store/*,.playforge_backups/*"
+export_path=""
+script_export_mode=0
+[preset.0.options]
+variant/extensions_support=false
+variant/thread_support=false
+vram_texture_compression/for_desktop=true
+vram_texture_compression/for_mobile=false
+html/export_icon=true
+html/canvas_resize_policy=2
+html/focus_canvas_on_start=true
+progressive_web_app/enabled=false
+`;
+
 class BuildQueue {
   constructor(root, directory) {
     this.root = root; this.directory = directory || path.join(root, 'Saved/Builds');
@@ -84,10 +119,12 @@ class BuildQueue {
   }
   enqueue(snapshot) {
     if (this.closed) throw new Error('Build queue is closed');
+    const buildProfile = resolveBuildProfile(snapshot.buildProfile);
     const sourceHash = crypto.createHash('sha256').update(snapshot.source || JSON.stringify(snapshot.files)).digest('hex');
     if (snapshot.id) {
       for (const job of this.jobs.values()) {
         if (job.projectId === snapshot.id && job.revision === snapshot.revision && job.sourceHash === sourceHash &&
+            (job.buildProfile || 'playhub-publish') === buildProfile &&
             (job.ownerKey || null) === (snapshot.ownerKey || null) &&
             (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html'))))) return this.get(job.id);
       }
@@ -95,9 +132,9 @@ class BuildQueue {
     if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
     if (this.jobs.size >= 20) { for (const [key,value] of this.jobs) { if (['succeeded','failed'].includes(value.status)) { this.jobs.delete(key); break; } } }
     const id = crypto.randomBytes(8).toString('hex');
-    const job = { id, target: 'web', revision: snapshot.revision, sourceHash,
+    const job = { id, target: 'web', buildProfile, avatarIncluded: buildProfile === 'playhub-publish', revision: snapshot.revision, sourceHash,
       projectId: snapshot.id || null, ...(snapshot.ownerKey ? { ownerKey: snapshot.ownerKey } : {}), status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
-    this.jobs.set(id, job); this.pending.push({ job, snapshot: structuredClone(snapshot) });
+    this.jobs.set(id, job); this.pending.push({ job, snapshot: { ...structuredClone(snapshot), buildProfile } });
     setImmediate(() => this.pump());
     return this.get(id);
   }
@@ -126,26 +163,44 @@ class BuildQueue {
   async build(job, snapshot) {
     const folder = path.join(this.directory, job.id), project = path.join(folder, 'project'), output = path.join(folder, 'output');
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
-    const entries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
-    for (const [relative, data] of entries) {
-      if (isSealedAvatarPath(relative)) continue;
-      const file = path.join(project, relative); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, data);
-    }
-    const usesAvatar = entries.some(([, data]) => typeof data === 'string' && /playforge_avatar|PlayForgeAvatar/i.test(data));
+    const buildProfile = resolveBuildProfile(snapshot.buildProfile);
+    const isStandardGodot = buildProfile === 'standard-godot';
+    const rawEntries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
+
     if (snapshot.packaging === 'modular-thin-ugc') {
+      if (isStandardGodot) throw new Error('modular-thin-ugc packaging is only supported for playhub-publish builds');
       const thin = buildThinUgcArtifact(this.root, snapshot);
       fs.writeFileSync(path.join(output, 'ugc.pck'), thin.ugc.buffer);
       fs.writeFileSync(path.join(output, 'ugc.manifest.json'), JSON.stringify(thin.manifest, null, 2) + '\n', 'utf8');
       job.files = ['ugc.pck', 'ugc.manifest.json'];
       job.packaging = 'modular-thin-ugc';
+      job.buildProfile = buildProfile;
+      job.avatarIncluded = true;
       job.artifactSha256 = thin.ugc.sha256;
       job.bytes = thin.ugc.bytes;
       job.entryCount = thin.ugc.fileCount;
       job.sharedCorePackSha256 = thin.core.sha256;
       return;
     }
-    if (usesAvatar) {
-      injectSealedAvatarIntoProjectDir(this.root, project, { includeAssets: snapshot.modularAssets !== true });
+
+    const entries = isStandardGodot ? sanitizeProjectForStandardGodot(rawEntries).entries : rawEntries;
+    for (const [relative, data] of entries) {
+      if (isSealedAvatarPath(relative)) continue;
+      let fileData = data;
+      if (!isStandardGodot && relative === 'project.godot' && snapshot.files) {
+        const text = Buffer.isBuffer(data) ? data.toString('utf8') : String(data);
+        fileData = injectPlayHubAvatarAutoload(text);
+      }
+      const file = path.join(project, relative);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, fileData);
+    }
+
+    if (!isStandardGodot && snapshot.files) {
+      const includeAssets = snapshot.modularAssets === true
+        ? false
+        : (snapshot.includeAllAvatarAssets === true ? 'all' : 'starter');
+      injectSealedAvatarIntoProjectDir(this.root, project, { includeAssets });
     }
     // Raw text files survive Godot's exported resource remapping. The source
     // .gd remains too, so the import phase validates its GDScript syntax.
@@ -159,17 +214,20 @@ class BuildQueue {
     }
     fs.writeFileSync(path.join(game, 'project.json'), JSON.stringify(manifest, null, 2));
     }
-    fs.writeFileSync(path.join(project, 'export_presets.cfg'), preset);
+    fs.writeFileSync(path.join(project, 'export_presets.cfg'), isStandardGodot ? standardGodotPreset : preset);
     await this.run(job, ['--headless', '--path', project, '--editor', '--import', '--quit']);
     await this.run(job, ['--headless', '--path', project, '--export-release', 'Web', path.join(output, 'index.html')]);
     if (!fs.existsSync(path.join(output, 'index.html')) || !fs.existsSync(path.join(output, 'index.wasm')) || !fs.existsSync(path.join(output, 'index.pck'))) throw new Error('Godot did not produce the required Web files');
-    const shellInjected = injectPlayHubShell(output);
-    const names = fs.readdirSync(output).filter(name => fs.statSync(path.join(output, name)).isFile() && name !== 'PlayForge-Web.zip').sort();
+    const shellInjected = isStandardGodot ? false : injectPlayHubShell(output);
+    const zipFilename = isStandardGodot ? 'StandardGodot-Web.zip' : 'PlayForge-Web.zip';
+    const names = fs.readdirSync(output).filter(name => fs.statSync(path.join(output, name)).isFile() && name !== zipFilename).sort();
     const zipBuffer = zipFiles(names.map(name => [name, fs.readFileSync(path.join(output, name))]));
     const zipValidation = validateDeploymentZip(zipBuffer);
-    fs.writeFileSync(path.join(output, 'PlayForge-Web.zip'), zipBuffer);
-    job.files = [...names, 'PlayForge-Web.zip'];
-    job.downloadUrl = '/api/builds/' + job.id + '/files/PlayForge-Web.zip';
+    fs.writeFileSync(path.join(output, zipFilename), zipBuffer);
+    job.buildProfile = buildProfile;
+    job.avatarIncluded = !isStandardGodot && Boolean(snapshot.files);
+    job.files = [...names, zipFilename];
+    job.downloadUrl = '/api/builds/' + job.id + '/files/' + zipFilename;
     job.previewUrl = '/api/builds/' + job.id + '/files/index.html';
     job.artifactSha256 = zipValidation.sha256;
     job.bytes = zipValidation.bytes;
@@ -201,4 +259,4 @@ class BuildQueue {
     if (this.child && this.child.exitCode === null) this.child.kill();
   }
 }
-module.exports = { BuildQueue, injectPlayHubShell, buildThinUgcArtifact };
+module.exports = { BuildQueue, injectPlayHubShell, buildThinUgcArtifact, resolveBuildProfile, VALID_BUILD_PROFILES };

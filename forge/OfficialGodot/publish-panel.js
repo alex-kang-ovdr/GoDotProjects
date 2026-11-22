@@ -144,6 +144,9 @@
       build: ctx.lastBuild && ctx.lastBuild.projectId === project.id ? ctx.lastBuild : null,
       buildError: "",
       showBuildLog: false,
+      standardBuilding: false,
+      standardBuild: null,
+      standardBuildError: "",
       publishing: false,
       publishError: "",
       publishResult: null,
@@ -220,6 +223,39 @@
         state.showBuildLog = true;
       } finally {
         state.building = false;
+        render();
+      }
+    }
+
+    async function runStandardGodotWebBuild() {
+      if (state.standardBuilding) return;
+      state.standardBuilding = true;
+      state.standardBuildError = "";
+      render();
+      try {
+        await ctx.refresh();
+        const latest = ctx.getSelected ? ctx.getSelected() : ctx.selected;
+        const start = await ctx.api("/api/platform-builds/" + latest.project.id, {
+          revision: latest.revision,
+          buildProfile: "standard-godot"
+        });
+        let job = start.build;
+        state.standardBuild = job;
+        render();
+        const deadline = Date.now() + 180000;
+        while (["queued", "running"].includes(job.status) && Date.now() < deadline) {
+          await new Promise(r => setTimeout(r, 1000));
+          job = (await ctx.api("/api/builds/" + job.id)).build;
+          state.standardBuild = job;
+          render();
+        }
+        if (job.status !== "succeeded") {
+          state.standardBuildError = job.error || "표준 Godot 웹 빌드 시간이 초과되었습니다.";
+        }
+      } catch (err) {
+        state.standardBuildError = err.message || "표준 Godot 웹 빌드에 실패했습니다.";
+      } finally {
+        state.standardBuilding = false;
         render();
       }
     }
@@ -538,15 +574,15 @@
       const isUpToDate = b && b.status === "succeeded" && b.revision === latestRev;
 
       const box = el("div", { className: "pf-pub-box" },
-        el("h4", { text: `Web Export 빌드 · 현재 리비전 r${latestRev}` }),
+        el("h4", { text: `PlayHub 퍼블리시 Web 빌드 · 현재 리비전 r${latestRev}` }),
         el("div", { style: "font-size:12px;color:#aebed2;" },
           b
-            ? `상태: ${b.status} · 빌드 ID: ${b.id} · 리비전 r${b.revision}`
-            : "아직 빌드된 Web 패키지가 없습니다. 아래 버튼으로 Godot 4.7.2 Web 빌드를 시작하세요."
+            ? `상태: ${b.status} · 빌드 ID: ${b.id} · 리비전 r${b.revision} · 필수 PlayHub 아바타 포함`
+            : "PlayHub 배포용 빌드에는 게임 모드에 맞는 필수 PlayHub 아바타 런타임과 SDK 브리지가 자동 포함됩니다."
         ),
         b && b.status === "succeeded"
           ? el("div", { className: "pf-pub-ok" },
-              `ZIP 검증 통과 · 크기 ${formatBytes(b.bytes)} (전개 ${formatBytes(b.expandedBytes)}) · PlayHub SDK 브리지(${b.sdkBridgeVersion || "web"}) · SHA-256 ${String(b.artifactSha256 || "").slice(0, 14)}…`
+              `ZIP 검증 통과 · 크기 ${formatBytes(b.bytes)} (전개 ${formatBytes(b.expandedBytes)}) · PlayHub 아바타 포함 · SDK 브리지(${b.sdkBridgeVersion || "web"}) · SHA-256 ${String(b.artifactSha256 || "").slice(0, 14)}…`
             )
           : null,
         state.buildError ? el("div", { className: "pf-pub-err", text: state.buildError }) : null,
@@ -555,7 +591,7 @@
             type: "button",
             className: "pf-pub-primary",
             disabled: state.building,
-            text: state.building ? "빌드 실행 중…" : (isUpToDate ? "다시 빌드" : "Web 빌드 및 검증 시작"),
+            text: state.building ? "빌드 실행 중…" : (isUpToDate ? "다시 빌드" : "PlayHub Web 빌드 및 검증 시작"),
             onClick: runBuild
           }),
           b && b.status === "succeeded" && b.downloadUrl
@@ -576,6 +612,42 @@
         state.showBuildLog && b?.log ? el("pre", { className: "pf-pub-log", text: b.log }) : null
       );
       sec.append(box);
+
+      const sb = state.standardBuild;
+      const latestProjectId = (ctx.getSelected ? ctx.getSelected() : ctx.selected).project.id;
+      const standardBox = el("div", { className: "pf-pub-box" },
+        el("h4", { text: "일반 표준 Godot 내보내기 (PlayHub 아바타 미포함)" }),
+        el("div", { style: "font-size:12px;color:#aebed2;" },
+          "허브 퍼블리시 빌드가 아닌 독립 실행용 표준 Godot 내보내기입니다. PlayHub 아바타 런타임·에셋·SDK 브리지·플랫폼 설정이 완전히 제외됩니다."
+        ),
+        sb && sb.status === "succeeded"
+          ? el("div", { className: "pf-pub-ok" },
+              `표준 Godot 웹 빌드 완료 · 아바타 제외(avatarIncluded: false) · 크기 ${formatBytes(sb.bytes)}`
+            )
+          : null,
+        state.standardBuildError ? el("div", { className: "pf-pub-err", text: state.standardBuildError }) : null,
+        el("div", { className: "pf-chip-list" },
+          el("a", {
+            href: ctx.forgePath(`/api/platform/projects/${encodeURIComponent(latestProjectId)}/export/godot-project.zip`),
+            download: `${state.slug || "project"}-StandardGodot-r${latestRev}.zip`,
+            style: "align-self:center;padding:6px 10px;border:1px solid #3c506c;border-radius:6px;text-decoration:none;"
+          }, "표준 Godot 프로젝트 ZIP 내보내기 (아바타 제외)"),
+          el("button", {
+            type: "button",
+            disabled: state.standardBuilding,
+            text: state.standardBuilding ? "표준 웹 빌드 중…" : "표준 Godot 웹 빌드 (아바타 제외)",
+            onClick: runStandardGodotWebBuild
+          }),
+          sb && sb.status === "succeeded" && sb.downloadUrl
+            ? el("a", {
+                href: ctx.forgePath(sb.downloadUrl),
+                download: `StandardGodot-Web-${sb.id}.zip`,
+                style: "align-self:center;padding:6px 10px;border:1px solid #3c506c;border-radius:6px;text-decoration:none;"
+              }, "StandardGodot-Web.zip 다운로드")
+            : null
+        )
+      );
+      sec.append(standardBox);
       return sec;
     }
 

@@ -55,3 +55,8 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+
+[playforge]
+avatar/presentation_mode=1
+avatar/portrait_size=Vector2(128, 128)
+avatar/portrait_corner=1

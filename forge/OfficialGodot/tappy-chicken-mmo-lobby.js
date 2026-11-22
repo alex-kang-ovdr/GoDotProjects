@@ -113,7 +113,8 @@
         const requested = buildId ? await api('/api/builds/' + encodeURIComponent(buildId)) : null;
         let build = requested?.build;
         if (!build) {
-          build = (await api('/api/platform-builds/' + encodeURIComponent(projectId), { revision: project.revision })).build;
+          const buildProfile = query.get('buildProfile') === 'standard-godot' ? 'standard-godot' : 'playhub-publish';
+          build = (await api('/api/platform-builds/' + encodeURIComponent(projectId), { revision: project.revision, buildProfile })).build;
         }
         const deadline = Date.now() + 240000;
         while (['queued', 'running'].includes(build.status)) {

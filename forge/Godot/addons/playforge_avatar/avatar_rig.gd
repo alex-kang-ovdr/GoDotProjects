@@ -85,6 +85,13 @@ func apply_sealed_loadout(loadout: Dictionary) -> Dictionary:
 	var skin_res_path := _catalog.resolve_asset_res_path(skin_id)
 
 	var instance := _load_glb_scene(skin_res_path, skin_item)
+	if instance == null and skin_id != "skin_knight":
+		# Graceful fallback when running a lightweight Web starter bundle without all 10 skins packed locally.
+		var fallback_item := _catalog.get_item("skin_knight")
+		var fallback_path := _catalog.resolve_asset_res_path("skin_knight")
+		instance = _load_glb_scene(fallback_path, fallback_item)
+		if instance != null:
+			_rig_profile = _catalog.get_rig_profile(str(fallback_item.get("rigProfile", "kaykit_v1")))
 	if instance == null:
 		push_error("PlayForgeAvatarRig: failed to load GLB skin '%s' from %s" % [skin_id, skin_res_path])
 		return {"ok": false, "error": "GLB_LOAD_FAILED", "skinId": skin_id}
@@ -359,7 +366,7 @@ func _resolve_glb_bytes(res_path: String, item: Dictionary) -> PackedByteArray:
 				return shared_bytes
 
 	# Layer 3D: On-demand HTTP streaming from PlayHub (/api/avatar/assets/...) with SHA-256 verification + cache write
-	if not _asset_origin.is_empty() and not rel_asset.is_empty():
+	if not OS.has_feature("web") and not _asset_origin.is_empty() and not rel_asset.is_empty():
 		var url_path := "/api/avatar/assets/" + rel_asset.trim_prefix("assets/")
 		var fetched := _http_get_sync(_asset_origin, url_path)
 		if not fetched.is_empty():

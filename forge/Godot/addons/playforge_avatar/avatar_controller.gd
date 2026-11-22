@@ -89,6 +89,7 @@ var _virtual_move_input := Vector2.ZERO
 var _virtual_sprint := false
 var _virtual_crouch := false
 var _virtual_jump := false
+var _authorized_hidden := false
 var _orbit_dragging := false
 
 
@@ -288,6 +289,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not visible and not _authorized_hidden:
+		visible = true
 	_update_camera_transform(delta)
 	if is_ragdoll_active():
 		return
@@ -507,6 +510,37 @@ func _set_locomotion_state(next_state: String) -> void:
 	if _locomotion_state != next_state:
 		_locomotion_state = next_state
 		locomotion_state_changed.emit(next_state)
+
+
+func set_authorized_hidden(hidden: bool) -> void:
+	_authorized_hidden = hidden
+
+
+func request_temporary_hide(duration_sec: float = 30.0) -> bool:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return bool(Engine.get_singleton("PlayForgePlatform").call("request_temporary_avatar_hide", duration_sec))
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("request_temporary_avatar_hide"):
+		return bool(rt.call("request_temporary_avatar_hide", duration_sec))
+	return false
+
+
+func end_temporary_hide() -> void:
+	if Engine.has_singleton("PlayForgePlatform"):
+		Engine.get_singleton("PlayForgePlatform").call("end_temporary_avatar_hide")
+		return
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("end_temporary_avatar_hide"):
+		rt.call("end_temporary_avatar_hide")
+
+
+func get_temporary_hide_state() -> Dictionary:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return Engine.get_singleton("PlayForgePlatform").call("get_avatar_hide_state")
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("get_avatar_hide_state"):
+		return rt.call("get_avatar_hide_state")
+	return {}
 
 
 func _read_move_input() -> Vector2:

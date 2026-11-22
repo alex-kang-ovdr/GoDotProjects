@@ -19,3 +19,8 @@ window/stretch/mode="canvas_items"
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[playforge]
+avatar/presentation_mode=1
+avatar/portrait_size=Vector2(140, 140)
+avatar/portrait_corner=1

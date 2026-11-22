@@ -22,3 +22,8 @@ window/stretch/aspect="keep"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 lights_and_shadows/directional_shadow/size=4096
+
+[playforge]
+avatar/presentation_mode=1
+avatar/portrait_size=Vector2(160, 160)
+avatar/portrait_corner=1

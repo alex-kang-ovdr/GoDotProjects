@@ -129,3 +129,57 @@ func spawn_portrait_ui() -> AvatarPortraitUI:
 
 func get_portrait_ui() -> AvatarPortraitUI:
 	return _spawned_portrait
+
+
+func request_temporary_avatar_hide(duration_sec: float = 30.0) -> bool:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return bool(Engine.get_singleton("PlayForgePlatform").call("request_temporary_avatar_hide", duration_sec))
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("request_temporary_avatar_hide"):
+		return bool(rt.call("request_temporary_avatar_hide", duration_sec))
+	return false
+
+
+func end_temporary_avatar_hide() -> void:
+	if Engine.has_singleton("PlayForgePlatform"):
+		Engine.get_singleton("PlayForgePlatform").call("end_temporary_avatar_hide")
+		return
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("end_temporary_avatar_hide"):
+		rt.call("end_temporary_avatar_hide")
+
+
+func get_avatar_hide_state() -> Dictionary:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return Engine.get_singleton("PlayForgePlatform").call("get_avatar_hide_state")
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("get_avatar_hide_state"):
+		return rt.call("get_avatar_hide_state")
+	return {}
+
+
+func request_temporary_hud_hide(duration_sec: float = 30.0) -> bool:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return bool(Engine.get_singleton("PlayForgePlatform").call("request_temporary_hud_hide", duration_sec))
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("request_temporary_hud_hide"):
+		return bool(rt.call("request_temporary_hud_hide", duration_sec))
+	return false
+
+
+func end_temporary_hud_hide() -> void:
+	if Engine.has_singleton("PlayForgePlatform"):
+		Engine.get_singleton("PlayForgePlatform").call("end_temporary_hud_hide")
+		return
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("end_temporary_hud_hide"):
+		rt.call("end_temporary_hud_hide")
+
+
+func get_hud_hide_state() -> Dictionary:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return Engine.get_singleton("PlayForgePlatform").call("get_hud_hide_state")
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("get_hud_hide_state"):
+		return rt.call("get_hud_hide_state")
+	return {}

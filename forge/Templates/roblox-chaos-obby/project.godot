@@ -26,3 +26,9 @@ enabled=PackedStringArray("res://addons/playforge_roblox_compat/plugin.cfg")
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[playforge]
+avatar/presentation_mode=3
+avatar/world_binding="attach_player_character"
+avatar/portrait_size=Vector2(144, 144)
+avatar/portrait_corner=0

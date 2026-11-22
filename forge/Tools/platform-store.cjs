@@ -17,19 +17,45 @@ const templates = Object.freeze({
   blank3d: Object.freeze({
     id: 'blank3d', name: 'Blank 3D', description: 'A clean Godot 3D project with an empty scene.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n\n[playforge]\navatar/presentation_mode=0\navatar/camera_mode=0\navatar/world_binding="standalone"\navatar/spawn_position=Vector3(0, 0.2, 0)\n`,
       'scenes/main.tscn': `[gd_scene load_steps=1 format=3]\n\n[node name="Main" type="Node3D"]\n`,
     }),
   }),
   playground3d: Object.freeze({
     id: 'playground3d', name: '3D Playground', description: 'A small 3D scene with a camera, light, and floor.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n\n[playforge]\navatar/presentation_mode=0\navatar/camera_mode=0\navatar/world_binding="standalone"\navatar/spawn_position=Vector3(0, 0.2, 3.8)\n`,
       'scenes/main.tscn': `[gd_scene load_steps=4 format=3]\n\n[ext_resource type="Script" path="res://scripts/spin.gd" id="1_spin"]\n\n[sub_resource type="BoxMesh" id="FloorMesh"]\nsize = Vector3(12, 0.2, 12)\n\n[sub_resource type="BoxMesh" id="CubeMesh"]\n\n[node name="Main" type="Node3D"]\n\n[node name="Floor" type="MeshInstance3D" parent="."]\nposition = Vector3(0, -0.1, 0)\nmesh = SubResource("FloorMesh")\n\n[node name="Camera3D" type="Camera3D" parent="."]\nposition = Vector3(0, 5, 9)\nrotation_degrees = Vector3(-25, 0, 0)\ncurrent = true\n\n[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]\nrotation_degrees = Vector3(-45, -30, 0)\n\n[node name="Cube" type="MeshInstance3D" parent="."]\nposition = Vector3(0, 0.5, 0)\nmesh = SubResource("CubeMesh")\nscript = ExtResource("1_spin")\n`,
       'scripts/spin.gd': `extends MeshInstance3D\n\n@export var degrees_per_second := 45.0\n\nfunc _process(delta: float) -> void:\n\trotate_y(deg_to_rad(degrees_per_second) * delta)\n`,
     }),
   }),
 });
+
+function parseTemplateAvatarPresentation(projectGodot) {
+  if (typeof projectGodot !== 'string') return null;
+  const headerMatch = /^\[playforge\][ \t]*\r?$/m.exec(projectGodot);
+  if (!headerMatch) return null;
+  const remainder = projectGodot.slice(headerMatch.index + headerMatch[0].length);
+  const nextSection = /^\r?\n\[[^\r\n]+\][ \t]*\r?$/m.exec(remainder);
+  const body = nextSection ? remainder.slice(0, nextSection.index) : remainder;
+  const modeMatch = /^avatar\/presentation_mode=(\d+)/m.exec(body);
+  const cornerMatch = /^avatar\/portrait_corner=(\d+)/m.exec(body);
+  const sizeMatch = /^avatar\/portrait_size=Vector2\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\)/m.exec(body);
+  const customMatch = /^avatar\/portrait_custom_position=Vector2\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\)/m.exec(body);
+  const spawnMatch = /^avatar\/spawn_position=Vector3\(\s*([0-9.-]+)\s*,\s*([0-9.-]+)\s*,\s*([0-9.-]+)\s*\)/m.exec(body);
+  const bindingMatch = /^avatar\/world_binding="([^"]+)"/m.exec(body);
+  const mode = modeMatch ? Number(modeMatch[1]) : 0;
+  const modeNames = ['WORLD_3D', 'PORTRAIT_UPPER_BODY', 'PORTRAIT_FULL_BODY', 'WORLD_3D_WITH_PORTRAIT'];
+  return {
+    mode,
+    modeName: modeNames[mode] || 'WORLD_3D',
+    ...(bindingMatch ? { worldBinding: bindingMatch[1] } : {}),
+    ...(spawnMatch ? { spawnPosition: [Number(spawnMatch[1]), Number(spawnMatch[2]), Number(spawnMatch[3])] } : {}),
+    ...(cornerMatch ? { portraitCorner: Number(cornerMatch[1]) } : {}),
+    ...(sizeMatch ? { portraitSize: [Number(sizeMatch[1]), Number(sizeMatch[2])] } : {}),
+    ...(customMatch ? { portraitCustomPosition: [Number(customMatch[1]), Number(customMatch[2])] } : {}),
+  };
+}
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function validId(id) { return typeof id === 'string' && /^[a-f0-9]{24}$/.test(id); }
@@ -60,8 +86,9 @@ class PlatformStore {
   }
 
   listTemplates() {
-    return Object.values(templates).map(({ id, name, description, assetPaths, showcase }) => ({
+    return Object.values(templates).map(({ id, name, description, assetPaths, showcase, files }) => ({
       id, name, description, assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
+      avatarPresentation: parseTemplateAvatarPresentation(files?.['project.godot']),
     }));
   }
   getShowcase(id) {

@@ -28,7 +28,65 @@
   const nativeGameFrame = document.getElementById('native-game-frame');
   const agentFrame = document.getElementById('agent-dock-frame');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
+  const pieAvatarToggleButton = document.getElementById('pie-avatar-toggle');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
+  const pieAvatarStorageKey = `playforge:pie-avatar:${projectId || 'default'}`;
+  let pieAvatarEnabled = (() => {
+    const q = String(query.get('pieAvatar') || '').trim().toLowerCase();
+    if (q === 'off' || q === '0' || q === 'false' || q === 'standard-godot') return false;
+    if (q === 'on' || q === '1' || q === 'true' || q === 'playhub-publish') return true;
+    try {
+      const saved = sessionStorage.getItem(pieAvatarStorageKey);
+      if (saved === 'off') return false;
+      if (saved === 'on') return true;
+    } catch {}
+    return true;
+  })();
+  const pieBuildProfile = () => (pieAvatarEnabled ? 'playhub-publish' : 'standard-godot');
+  function syncPieAvatarToggleUi() {
+    if (!pieAvatarToggleButton) return;
+    pieAvatarToggleButton.dataset.pieAvatar = pieAvatarEnabled ? 'on' : 'off';
+    pieAvatarToggleButton.setAttribute('aria-pressed', pieAvatarEnabled ? 'true' : 'false');
+    pieAvatarToggleButton.textContent = pieAvatarEnabled ? 'PIE 허브(아바타·HUD): ON' : 'PIE 허브(아바타·HUD): OFF';
+  }
+  function setPieAvatarEnabled(enabled, { notifyUser = true } = {}) {
+    const next = Boolean(enabled);
+    if (pieAvatarEnabled === next) {
+      syncPieAvatarToggleUi();
+      return pieAvatarEnabled;
+    }
+    pieAvatarEnabled = next;
+    try { sessionStorage.setItem(pieAvatarStorageKey, pieAvatarEnabled ? 'on' : 'off'); } catch {}
+    syncPieAvatarToggleUi();
+    nativeGameBuildProfile = '';
+    nativeGameRevision = -1;
+    if (multiplayerHost) {
+      multiplayerHost.remove();
+      multiplayerHost = null;
+      multiplayerApi = null;
+      multiplayerMount = null;
+    }
+    if (notifyUser) {
+      showNotice(pieAvatarEnabled
+        ? 'PIE 허브 ON (PlayHub 배포용): 에디터 게임 실행 시 필수 아바타와 좌상단 허브 플랫폼 바 HUD가 적용됩니다.'
+        : 'PIE 허브 OFF (미배포용 · 표준 Godot): 에디터 게임 실행 시 아바타와 좌상단 허브 플랫폼 바 HUD가 적용되지 않습니다.', 4500);
+    }
+    if (nativeGameVisible && !showcaseGame) {
+      nativeGameGeneration += 1;
+      const generation = nativeGameGeneration;
+      nativeGameFrame.removeAttribute('src');
+      const load = loadNativeGame(generation).catch(error => {
+        if (generation !== nativeGameGeneration) return;
+        showNotice(`Game workspace failed: ${error.message}`);
+        console.error(error);
+      }).finally(() => { if (nativeGameLoad === load) nativeGameLoad = null; });
+      nativeGameLoad = load;
+    }
+    return pieAvatarEnabled;
+  }
+  window.__playforgeGetPieAvatarEnabled = () => pieAvatarEnabled;
+  window.__playforgeSetPieAvatarEnabled = (enabled) => setPieAvatarEnabled(Boolean(enabled));
+  syncPieAvatarToggleUi();
   const origin = location.origin;
   const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
   const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
@@ -178,6 +236,7 @@
   let nativeGameRect = null;
   let nativeGameLoad = null;
   let nativeGameRevision = -1;
+  let nativeGameBuildProfile = '';
   let nativeGameGeneration = 0;
   let showcaseGame = null;
   let showcaseRun = 0;
@@ -396,6 +455,10 @@
   }
   actionButtons.forEach(button => button.addEventListener('click', event => {
     const action = button.dataset.action;
+    if (action === 'pie-avatar') {
+      setPieAvatarEnabled(!pieAvatarEnabled);
+      return;
+    }
     notify('activity', { kind: 'step', clickLabel: ({home:'내 프로젝트',versions:'버전 기록',publish:'배포',collaboration:'협업 현황'})[action] || button.textContent, x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight });
     if (['home', 'versions', 'publish', 'collaboration'].includes(action)) notify('platform-action', { action });
   }));
@@ -431,7 +494,7 @@
   });
 
   let multiplayerHost=null,multiplayerApi=null,multiplayerMount=null;
-  async function mountMultiplayerWorkspace(template = 'brawllabs'){
+  async function mountMultiplayerWorkspace(template = 'brawllabs', buildProfile = pieBuildProfile()){
     if(multiplayerApi){
       multiplayerHost.style.display='';
       nativeGameFrame.style.display='none';
@@ -446,7 +509,7 @@
       for(const element of [...parsed.body.children])if(element.tagName!=='SCRIPT')shadow.append(element);
       nativeGameFrame.style.display='none';nativeGameOverlay.append(multiplayerHost);
       if(!window.mountPlayForgeMultiplayer)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=forgePath('/OfficialGodot/multiplayer.js');script.onload=resolve;script.onerror=reject;document.body.append(script);});
-      multiplayerApi=window.mountPlayForgeMultiplayer(shadow,{template});return multiplayerApi;
+      multiplayerApi=window.mountPlayForgeMultiplayer(shadow,{template,buildProfile});return multiplayerApi;
     })().catch(error=>{multiplayerHost?.remove();multiplayerHost=null;multiplayerMount=null;throw error;});
     return multiplayerMount;
   }
@@ -467,17 +530,21 @@
   async function loadNativeGame(generation) {
     const latest = await fetchProject();
     if (generation !== nativeGameGeneration) return;
+    const requestedProfile = pieBuildProfile();
     if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
-      await mountMultiplayerWorkspace(latest.project.template);
+      nativeGameBuildProfile = requestedProfile;
+      await mountMultiplayerWorkspace(latest.project.template, requestedProfile);
       return;
     }
-    if (nativeGameRevision === latest.revision && nativeGameFrame.getAttribute('src')) return;
-    status.textContent = 'Building game for the native Game workspace…';
+    if (nativeGameRevision === latest.revision && nativeGameBuildProfile === requestedProfile && nativeGameFrame.getAttribute('src')) return;
+    status.textContent = requestedProfile === 'playhub-publish'
+      ? 'PIE 빌드 중 (PlayHub 배포용 · 아바타 ON)…'
+      : 'PIE 빌드 중 (표준 Godot 미배포용 · 아바타 OFF)…';
     const token = await ensureCsrfToken();
     const response = await fetch(forgePath(`/api/platform-builds/${encodeURIComponent(projectId)}`), {
       method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-CSRF-Token': token } : {}) },
-      body: JSON.stringify({ revision: latest.revision }),
+      body: JSON.stringify({ revision: latest.revision, buildProfile: requestedProfile }),
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok || !payload?.build?.id) throw new Error(payload?.error || `Game build request failed (${response.status}).`);
@@ -496,6 +563,7 @@
     }
     if (generation === nativeGameGeneration) {
       nativeGameRevision = build.revision;
+      nativeGameBuildProfile = requestedProfile;
       nativeGameFrame.src = forgePath(build.previewUrl);
     }
   }
@@ -587,6 +655,23 @@
     canvas.focus();
   };
 
+  function enableAvatarRuntimeAutoload(config) {
+    const entryLine = 'PlayForgeAvatarRuntime="*res://addons/playforge_avatar/avatar_bootstrap.gd"';
+    if (/^[ \t]*PlayForgeAvatarRuntime[ \t]*=/m.test(config)) return config;
+    const newline = config.includes('\r\n') ? '\r\n' : '\n';
+    const section = /^\[autoload\][ \t]*(?=\r?$)/m.exec(config);
+    if (!section) {
+      return config.replace(/(?:\r?\n)*$/, '') + newline + newline + '[autoload]' + newline + entryLine + newline;
+    }
+    const start = section.index + section[0].length;
+    const remainder = config.slice(start);
+    const nextSection = /^\[[^\r\n]+\][ \t]*\r?$/m.exec(remainder);
+    const end = nextSection ? nextSection.index : remainder.length;
+    const body = remainder.slice(0, end).replace(/(?:\r?\n)*$/, '');
+    const updated = body + newline + entryLine + newline + (nextSection ? newline : '');
+    return config.slice(0, start) + updated + remainder.slice(end);
+  }
+
   function enableEditorAddons(config, pluginPaths) {
     const section = /^\[editor_plugins\][ \t]*(?=\r?$)/m.exec(config);
     const newline = config.includes('\r\n') ? '\r\n' : '\n';
@@ -650,6 +735,9 @@
       pluginPaths.push('res://addons/playforge_avatar/plugin.cfg');
     }
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
+    if (avatarBundle && avatarBundle.files && Object.hasOwn(avatarBundle.files, 'avatar_bootstrap.gd')) {
+      projectFile.content = enableAvatarRuntimeAutoload(projectFile.content);
+    }
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
     for (const [name, content] of Object.entries(addonFiles)) {
@@ -784,7 +872,11 @@
         return;
       }
       gameStarting = true;
-      return activeGame.start({ args, canvas: gameCanvas });
+      const launchArgs = Array.isArray(args) ? [...args] : [];
+      const pieFlag = `--playforge-pie-avatar=${pieAvatarEnabled ? 'on' : 'off'}`;
+      if (launchArgs.includes('--')) launchArgs.push(pieFlag);
+      else launchArgs.push('--', pieFlag);
+      return activeGame.start({ args: launchArgs, canvas: gameCanvas });
     }).catch(fail);
     gameCanvas.focus();
   }

@@ -18,3 +18,8 @@ window/stretch/mode="canvas_items"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/default_filters/use_nearest_mipmap_filter=false
+
+[playforge]
+avatar/presentation_mode=2
+avatar/portrait_size=Vector2(168, 252)
+avatar/portrait_corner=2

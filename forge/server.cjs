@@ -13,8 +13,8 @@ const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
 const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
-const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
-const { BuildQueue } = require('./Tools/build-queue.cjs');
+const { exportGodotProject, exportPlatformGodotProject } = require('./Tools/export-godot-project.cjs');
+const { BuildQueue, resolveBuildProfile } = require('./Tools/build-queue.cjs');
 const { OwnedBuildPackages } = require('./Tools/owned-build-packages.cjs');
 const { createExecutionPolicy, EXECUTION_NOT_ALLOWED } = require('./Tools/execution-allowlist.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
@@ -346,7 +346,8 @@ function createServer(options = {}) {
     buildMode: options.buildMode,
     validateBuild: (id, projectId, revision) => {
       const b = builds.get(id);
-      return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null;
+      return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision
+        && b.buildProfile !== 'standard-godot' && b.avatarIncluded !== false ? b : null;
     },
   });
   const accountPlatforms = new Map();
@@ -587,6 +588,26 @@ function createServer(options = {}) {
         try { return reply(200, await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_platform', addonFile[1]), 'utf8')); }
         catch { return reply(404, 'Plugin unavailable'); }
       }
+      const platformExportRoute = routePath.match(/^\/api\/platform\/projects\/([a-f0-9]{24})\/export\/godot-project\.zip$/);
+      if (platformExportRoute && req.method === 'GET') {
+        try {
+          const activePlatform = getPlatformFor(auth?.accountKey).store;
+          const snapshot = activePlatform.getProject(platformExportRoute[1]);
+          const archive = exportPlatformGodotProject(snapshot);
+          const safeSlug = String(snapshot.name || snapshot.id).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || snapshot.id.slice(0, 12);
+          res.writeHead(200, {
+            'Content-Type': 'application/zip',
+            'Content-Disposition': `attachment; filename="${safeSlug}-StandardGodot-r${snapshot.revision}.zip"`,
+            'Content-Length': archive.length,
+            'Cache-Control': 'no-store',
+            'X-PlayForge-Export-Profile': 'standard-godot',
+            'X-PlayForge-Avatar-Included': 'false',
+          });
+          return res.end(archive);
+        } catch (error) {
+          return json(error.status || 404, { ok: false, error: error.message });
+        }
+      }
       if (routePath.startsWith('/api/platform/')) {
         try {
           const activeApi = getPlatformFor(auth?.accountKey).api;
@@ -629,10 +650,11 @@ function createServer(options = {}) {
         if (!file) return json(404, { ok: false, error: 'Build file not found' });
         const buildInfo = await fs.promises.stat(file).catch(() => null);
         if (!buildInfo?.isFile()) return json(404, { ok: false, error: 'Build file not found' });
+        const zipDownloadName = path.basename(file).replace(/\.zip$/i, '') + '-' + build.id + '.zip';
         await streamStaticFile(req, res, file, buildInfo, {
           'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
           'Cache-Control': 'private, max-age=3600',
-          ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}),
+          ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="' + zipDownloadName + '"' } : {}),
         }, httpCache);
         return;
       }
@@ -659,8 +681,9 @@ function createServer(options = {}) {
           const snapshot = activePlatform.getProject(platformBuild[1]);
           if (!executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.revision !== snapshot.revision) return json(409, { ok: false, error: 'revision_conflict' });
-          if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision) });
-          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
+          const buildProfile = resolveBuildProfile(body.buildProfile);
+          if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision, { buildProfile }) });
+          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, buildProfile, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
         }
         if (routePath === '/api/editor/source' && req.method === 'PUT') {
           if (typeof body.source !== 'string' || Buffer.byteLength(body.source) > 256000 || !Number.isSafeInteger(body.baseRevision)) return json(400, { ok: false, error: 'Source and baseRevision required' });

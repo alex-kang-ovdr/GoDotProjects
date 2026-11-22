@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
+const { sanitizeProjectForStandardGodot } = require('./avatar-seal.cjs');
 
 // Small dependency-free ZIP writer (stored entries, UTF-8 names). Only the
 // explicitly listed project files are exported; no workspace/log credentials.
@@ -65,7 +66,38 @@ function projectEntries(root, snapshot, serviceOrigin = '') {
   return entries;
 }
 function exportGodotProject(root, snapshot, serviceOrigin = '') { return zipFiles(projectEntries(root, snapshot, serviceOrigin)); }
-module.exports = { exportGodotProject, projectEntries, zipFiles };
+
+function platformProjectEntries(project) {
+  if (!project || typeof project !== 'object' || !project.files) {
+    throw new Error('Platform project snapshot is required');
+  }
+  const rawEntries = Array.isArray(project.files)
+    ? project.files.map((file) => [file.path, file.content])
+    : Object.entries(project.files);
+  const { entries, strippedFiles, strippedSceneNodes } = sanitizeProjectForStandardGodot(rawEntries);
+  const hasReadme = entries.some(([name]) => name.toLowerCase() === 'readme.txt');
+  if (!hasReadme) {
+    entries.push([
+      'README.txt',
+      [
+        `Standard Godot 4.7.2 Project Export: ${project.name || project.id || 'PlayForge Project'}`,
+        `Source revision: r${project.revision || 1}`,
+        'Export profile: standard-godot (non-PlayHub standalone export).',
+        'PlayHub Avatar runtime, assets, and platform plugins are intentionally excluded.',
+        'Open project.godot in standard Godot 4.7.2 or import this ZIP in Godot Web Editor.',
+        '',
+      ].join('\n'),
+    ]);
+  }
+  return { entries, strippedFiles, strippedSceneNodes };
+}
+
+function exportPlatformGodotProject(project) {
+  const { entries } = platformProjectEntries(project);
+  return zipFiles(entries);
+}
+
+module.exports = { exportGodotProject, projectEntries, platformProjectEntries, exportPlatformGodotProject, zipFiles };
 
 if (require.main === module) {
   const { ProjectStore } = require('./project-store.cjs');

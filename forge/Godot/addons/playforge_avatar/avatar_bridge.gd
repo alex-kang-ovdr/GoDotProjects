@@ -56,23 +56,25 @@ func _try_request_web_bridge() -> bool:
 	))
 	if not has_bridge:
 		return false
+	var cb_name := "__playforgeAvatarLoadoutCb_%d" % get_instance_id()
 	_js_callback = JavaScriptBridge.create_callback(_on_web_loadout_callback)
-	JavaScriptBridge.get_interface("window")["__playforgeAvatarLoadoutCb"] = _js_callback
+	JavaScriptBridge.get_interface("window")[cb_name] = _js_callback
 	JavaScriptBridge.eval("""
 		(() => {
+			const cbKey = %s;
 			Promise.resolve(window.PlayHubBridge.getAvatarLoadout())
 				.then((res) => {
-					if (window.__playforgeAvatarLoadoutCb) {
-						window.__playforgeAvatarLoadoutCb(JSON.stringify(res || {}));
+					if (window[cbKey]) {
+						window[cbKey](JSON.stringify(res || {}));
 					}
 				})
 				.catch(() => {
-					if (window.__playforgeAvatarLoadoutCb) {
-						window.__playforgeAvatarLoadoutCb('{}');
+					if (window[cbKey]) {
+						window[cbKey]('{}');
 					}
 				});
 		})();
-	""", true)
+	""" % JSON.stringify(cb_name), true)
 	return true
 
 

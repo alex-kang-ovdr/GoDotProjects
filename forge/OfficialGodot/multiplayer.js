@@ -6,6 +6,7 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
   const query=new URLSearchParams(location.search),projectId=query.get('project')||'',projectName=query.get('name')||'멀티플레이 테스트 워크스페이스';
   const templateId = options.template || query.get('template') || 'brawllabs';
+  const buildProfile = options.buildProfile || query.get('buildProfile') || 'playhub-publish';
   const fortress = templateId === 'fortress-war';
   const tappyMmo = templateId === 'tappy-chicken-mmo';
   const lobbyPath = forgePath(tappyMmo ? '/OfficialGodot/tappy-chicken-mmo-lobby.html' : fortress ? '/OfficialGodot/fortress-war-lobby.html' : '/OfficialGodot/brawllabs-lobby.html');
@@ -56,7 +57,7 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   }
   function updateActions(){const world=worldForActive(),available=!!world?.roomId;$('add-client').disabled=!available;$('separate-client').disabled=!available;}
   function makeWorld(id,roomId=null,buildId=null){const world={id,roomId,buildId,projectId,clients:new Set(),logs:[],logKeys:new Set(),lastState:null};worlds.set(id,world);return world;}
-  function clientUrl(world,label,join=true,embedded=true){const url=new URL(lobbyPath,location.origin);if(embedded)url.searchParams.set('embedded','1');url.searchParams.set('project',world.projectId||projectId);url.searchParams.set('name',label);if(world.buildId)url.searchParams.set('build',world.buildId);if(join&&world.roomId)url.searchParams.set('room',world.roomId);return url;}
+  function clientUrl(world,label,join=true,embedded=true){const url=new URL(lobbyPath,location.origin);if(embedded)url.searchParams.set('embedded','1');url.searchParams.set('project',world.projectId||projectId);url.searchParams.set('name',label);if(buildProfile&&buildProfile!=='playhub-publish')url.searchParams.set('buildProfile',buildProfile);if(world.buildId)url.searchParams.set('build',world.buildId);if(join&&world.roomId)url.searchParams.set('room',world.roomId);return url;}
   function addClient(world,joiningRoom=true){
     const id='client-'+nextClient,number=nextClient++,label='클라이언트 '+number;world.clients.add(id);activeWorldId=world.id;
     const tab=document.createElement('button');tab.type='button';tab.className='tab closeable';tab.dataset.view=id;tab.dataset.clientId=id;tab.setAttribute('aria-label',label);tab.textContent=label;

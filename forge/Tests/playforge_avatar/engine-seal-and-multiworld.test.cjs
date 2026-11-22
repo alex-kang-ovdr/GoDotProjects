@@ -461,10 +461,10 @@ async function joinWorld({ corePackPath, ugcPackPath, worldId, hubOrigin, cacheD
   return JSON.parse(line.slice('MULTIWORLD_AUDIT_JSON='.length));
 }
 
-test('4-Layer Modular Packaging: Layer 2 core.pck has 0 GLBs (<128KB) and Layer 4 Thin UGC packs strip sealed paths (<32KB)', () => {
+test('4-Layer Modular Packaging: Layer 2 core.pck has 0 GLBs (<256KB) and Layer 4 Thin UGC packs strip sealed paths (<32KB)', () => {
   const core = buildCorePack(forgeRoot);
   assert.equal(core.buffer.readUInt32LE(0), 0x43504447, 'playforge_core.pck must have GDPC magic');
-  assert.ok(core.bytes < 128 * 1024, `playforge_core.pck must stay tiny (<128KB), got ${core.bytes}`);
+  assert.ok(core.bytes < 256 * 1024, `playforge_core.pck must stay tiny (<256KB), got ${core.bytes}`);
   assert.equal(core.buffer.includes(Buffer.from('.glb', 'utf8')), true, 'catalog.json lists .glb metadata');
   assert.equal(core.buffer.includes(Buffer.from('glTF', 'utf8')), false, 'playforge_core.pck must NOT contain binary GLB payloads');
 

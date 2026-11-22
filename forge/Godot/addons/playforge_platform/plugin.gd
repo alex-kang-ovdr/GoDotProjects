@@ -952,6 +952,13 @@ func _normalize_project_config(source: String) -> String:
 		if plugins.strip_edges() == "[editor_plugins]":
 			plugins = ""
 		normalized = source.left(section.get_start()) + plugins + source.substr(section.get_end())
+	if not _base_project_config.contains("PlayForgeAvatarRuntime="):
+		var autoload_line := RegEx.new()
+		autoload_line.compile("(?m)^[ \\t]*PlayForgeAvatarRuntime[ \\t]*=[^\\r\\n]*\\r?\\n?")
+		normalized = autoload_line.sub(normalized, "", true)
+		var empty_autoload := RegEx.new()
+		empty_autoload.compile("(?m)^\\[autoload\\][ \\t]*\\r?\\n(?:[ \\t]*\\r?\\n)*(?=\\[|\\z)")
+		normalized = empty_autoload.sub(normalized, "", true)
 	if _matches_project_settings(normalized):
 		return _base_project_config
 	return normalized

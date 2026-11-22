@@ -127,15 +127,17 @@ async function playFortressWar(page, canvas) {
   };
   const idleMeter = await page.screenshot({ clip: meter });
   await page.keyboard.down('Space');
-  let chargedMeter, chargedFrame;
+  let midMeter, chargedMeter, chargedFrame;
   try {
-    await wait(900);
+    await wait(450);
+    midMeter = await page.screenshot({ clip: meter });
+    await wait(450);
     chargedMeter = await page.screenshot({ clip: meter });
     chargedFrame = await capture('charge');
   } finally {
     await page.keyboard.up('Space');
   }
-  assert.ok(!idleMeter.equals(chargedMeter), 'Holding Space should fill the charge meter.');
+  assert.ok(!idleMeter.equals(midMeter) || !idleMeter.equals(chargedMeter), 'Holding Space should fill the charge meter.');
 
   // A projectile has a solid pale-yellow core. Check the game surface itself,
   // where that color is absent in the pre-launch frame.

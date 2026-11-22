@@ -19,3 +19,8 @@ common/enable_pause_aware_picking=true
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/default_filters/use_nearest_mipmap_filter=false
+
+[playforge]
+avatar/presentation_mode=1
+avatar/portrait_size=Vector2(160, 160)
+avatar/portrait_corner=2

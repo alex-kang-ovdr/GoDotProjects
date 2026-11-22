@@ -21,3 +21,8 @@ window/stretch/aspect="keep"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.01, 0.02, 0.04, 1)
+
+[playforge]
+avatar/presentation_mode=1
+avatar/portrait_size=Vector2(144, 144)
+avatar/portrait_corner=0

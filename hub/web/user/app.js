@@ -524,6 +524,42 @@
     };
     bar.addEventListener('click',onClick);
     menu.addEventListener('click',onClick);
+    const MAX_HIDE=30.0,RECHARGE=0.2,MIN_START=0.1;
+    const hudHide={hidden:false,budget:MAX_HIDE,remaining:0.0,lastMs:performance.now(),timer:null};
+    const applyHudVis=vis=>{bar.hidden=!vis;if(!vis){menu.hidden=true;bar.querySelector('[data-platform-action="menu"]')?.setAttribute('aria-expanded','false');}};
+    const tickHudHide=()=>{
+      const now=performance.now(),dt=Math.max(0,(now-hudHide.lastMs)/1000);hudHide.lastMs=now;
+      if(hudHide.hidden){
+        hudHide.budget=Math.max(0,hudHide.budget-dt);
+        hudHide.remaining=Math.max(0,hudHide.remaining-dt);
+        if(hudHide.remaining<=0||hudHide.budget<=0){hudHide.hidden=false;hudHide.remaining=0;applyHudVis(true);}
+        else applyHudVis(false);
+      }else{
+        hudHide.budget=Math.min(MAX_HIDE,hudHide.budget+dt*RECHARGE);
+        hudHide.remaining=0;
+        applyHudVis(true);
+      }
+    };
+    hudHide.timer=setInterval(tickHudHide,100);
+    activeRun.hudHide={
+      request(dur){
+        tickHudHide();
+        const d=Number(dur);if(!Number.isFinite(d)||d<=0)return {ok:false,...this.state()};
+        const clamped=Math.min(MAX_HIDE,Math.max(0,d));
+        if(!hudHide.hidden){
+          if(hudHide.budget<MIN_START){applyHudVis(true);return {ok:false,...this.state()};}
+          hudHide.hidden=true;hudHide.remaining=Math.min(clamped,hudHide.budget);applyHudVis(false);
+          return {ok:true,...this.state()};
+        }
+        const nextRem=Math.min(clamped,hudHide.budget);
+        if(nextRem<=0){hudHide.hidden=false;hudHide.remaining=0;applyHudVis(true);return {ok:false,...this.state()};}
+        hudHide.remaining=nextRem;applyHudVis(false);
+        return {ok:true,...this.state()};
+      },
+      end(){tickHudHide();hudHide.hidden=false;hudHide.remaining=0;applyHudVis(true);return {ok:true,...this.state()};},
+      state(){tickHudHide();return {hidden:hudHide.hidden,remainingSeconds:hudHide.remaining,budgetSeconds:hudHide.budget,maxBudgetSeconds:MAX_HIDE,rechargeRatePerSecond:RECHARGE,minStartBudgetSeconds:MIN_START};},
+      dispose(){if(hudHide.timer){clearInterval(hudHide.timer);hudHide.timer=null;}}
+    };
     return {bar,menu};
   }
   async function renderRoute(){
@@ -650,6 +686,9 @@
         else if(data.type==='load')result=await loadSave(a);
         else if(data.type==='save')result=await writeSave(a,data.payload?.value);
         else if(data.type==='avatar_loadout')result=await loadAvatarLoadout();
+        else if(data.type==='hud_hide_request')result=a.hudHide?a.hudHide.request(data.payload?.durationSec??30):{ok:false};
+        else if(data.type==='hud_hide_end')result=a.hudHide?a.hudHide.end():{ok:true};
+        else if(data.type==='hud_hide_state')result=a.hudHide?a.hudHide.state():{hidden:false,budgetSeconds:30,maxBudgetSeconds:30,rechargeRatePerSecond:0.2};
         else if(data.type==='activity'){if(data.payload?.updating===true)a.lastPulse=performance.now();}
         else if(data.type==='event'){
           const name=data.payload?.name;if(!allowedGameEvents.has(name))throw new Error('허용되지 않은 게임 이벤트입니다.');const source=data.payload?.properties||{},props={};
@@ -664,7 +703,7 @@
   });
   function requestSnapshot(a){if(!a?.port)return Promise.resolve(null);return new Promise(resolve=>{const id='host-'+uuid();const timer=setTimeout(()=>{a.hostPending.delete(id);resolve(null);},800);a.hostPending.set(id,{resolve,timer});a.port.postMessage({type:'host_snapshot',id});});}
   async function teardown(reason,{persist=true,sendEvents=true}={}){if(state.closing)return state.closing;const a=state.active;if(!a)return;
-    state.closing=(async()=>{if(persist)saveStatus('마지막 진행을 저장하고 있어요…');if(sendEvents)heartbeat(a);a.paused=true;try{if(persist){const snapshot=await requestSnapshot(a);if(snapshot)await writeSave(a,snapshot);else await a.saveChain;}else await a.saveChain;}catch(_){}if(sendEvents){playEvent(a,'game_end',{reason});flushEvents();}a.closed=true;clearTimeout(a.timer);a.observer?.disconnect();a.port?.close();for(const p of a.hostPending.values()){clearTimeout(p.timer);p.resolve(null);}a.iframe.remove();if(state.active===a)state.active=null;})().finally(()=>state.closing=null);return state.closing;
+    state.closing=(async()=>{if(persist)saveStatus('마지막 진행을 저장하고 있어요…');if(sendEvents)heartbeat(a);a.paused=true;try{if(persist){const snapshot=await requestSnapshot(a);if(snapshot)await writeSave(a,snapshot);else await a.saveChain;}else await a.saveChain;}catch(_){}if(sendEvents){playEvent(a,'game_end',{reason});flushEvents();}a.closed=true;clearTimeout(a.timer);a.hudHide?.dispose();a.observer?.disconnect();a.port?.close();for(const p of a.hostPending.values()){clearTimeout(p.timer);p.resolve(null);}a.iframe.remove();if(state.active===a)state.active=null;})().finally(()=>state.closing=null);return state.closing;
   }
   function tabCandidate(gameId){
     const scopes=[...new Set([state.active?.game.id===gameId?state.active.cacheScope:null,state.cacheScope,localScope()].filter(Boolean))];

@@ -68,6 +68,7 @@ var _portrait_camera: Camera3D
 var _badge_label: Label
 var _sway_time := 0.0
 var _display_name := "Player"
+var _authorized_hidden := false
 
 
 static func get_min_size_for_framing(target_framing: int) -> Vector2:
@@ -88,6 +89,7 @@ static func clamp_portrait_size(target_framing: int, requested: Vector2) -> Vect
 func _ready() -> void:
 	set_meta("_playforge_avatar_sealed", true)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	focus_mode = Control.FOCUS_NONE
 	_apply_frame_style()
 	_build_render_target_stage()
 
@@ -126,9 +128,11 @@ func _notification(what: int) -> void:
 
 # --- Public Creator-Safe API ---
 
-func configure_portrait(target_framing: int, target_size := Vector2.ZERO, target_corner := PortraitCorner.BOTTOM_LEFT) -> void:
+func configure_portrait(target_framing: int, target_size := Vector2.ZERO, target_corner := PortraitCorner.BOTTOM_LEFT, target_custom_pos := Vector2(-1.0, -1.0)) -> void:
 	framing = clampi(target_framing, PortraitFraming.UPPER_BODY, PortraitFraming.FULL_BODY) as PortraitFraming
 	corner = clampi(target_corner, PortraitCorner.BOTTOM_LEFT, PortraitCorner.CUSTOM) as PortraitCorner
+	if target_custom_pos.x >= 0.0 and target_custom_pos.y >= 0.0:
+		_custom_pos = target_custom_pos
 	_requested_size = clamp_portrait_size(int(framing), target_size)
 	_apply_size_constraints(_requested_size)
 	_apply_camera_framing()
@@ -182,6 +186,37 @@ func play_emote_slot(slot_index: int) -> bool:
 	if not emote_id is String or emote_id.is_empty():
 		return false
 	return _rig.play_emote(emote_id)
+
+
+func set_authorized_hidden(hidden: bool) -> void:
+	_authorized_hidden = hidden
+
+
+func request_temporary_hide(duration_sec: float = 30.0) -> bool:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return bool(Engine.get_singleton("PlayForgePlatform").call("request_temporary_avatar_hide", duration_sec))
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("request_temporary_avatar_hide"):
+		return bool(rt.call("request_temporary_avatar_hide", duration_sec))
+	return false
+
+
+func end_temporary_hide() -> void:
+	if Engine.has_singleton("PlayForgePlatform"):
+		Engine.get_singleton("PlayForgePlatform").call("end_temporary_avatar_hide")
+		return
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("end_temporary_avatar_hide"):
+		rt.call("end_temporary_avatar_hide")
+
+
+func get_temporary_hide_state() -> Dictionary:
+	if Engine.has_singleton("PlayForgePlatform"):
+		return Engine.get_singleton("PlayForgePlatform").call("get_avatar_hide_state")
+	var rt := get_tree().root.get_node_or_null("PlayForgeAvatarRuntime") if is_inside_tree() else null
+	if rt != null and rt.has_method("get_avatar_hide_state"):
+		return rt.call("get_avatar_hide_state")
+	return {}
 
 
 func stop_emote() -> void:
@@ -240,6 +275,7 @@ func _build_render_target_stage() -> void:
 	holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.focus_mode = Control.FOCUS_NONE
 	holder.clip_contents = true
 	holder.set_meta("_playforge_avatar_sealed", true)
 	add_child(holder)
@@ -249,6 +285,7 @@ func _build_render_target_stage() -> void:
 	_viewport_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_viewport_container.stretch = true
 	_viewport_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_viewport_container.focus_mode = Control.FOCUS_NONE
 	_viewport_container.set_meta("_playforge_avatar_sealed", true)
 	holder.add_child(_viewport_container)
 
@@ -258,7 +295,7 @@ func _build_render_target_stage() -> void:
 	_sub_viewport.transparent_bg = true
 	_sub_viewport.handle_input_locally = false
 	_sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-	_sub_viewport.msaa_3d = Viewport.MSAA_2X
+	_sub_viewport.msaa_3d = Viewport.MSAA_DISABLED if OS.has_feature("web") else Viewport.MSAA_2X
 	_sub_viewport.size = Vector2i(int(DEFAULT_SIZE_UPPER_BODY.x), int(DEFAULT_SIZE_UPPER_BODY.y))
 	_sub_viewport.set_meta("_playforge_avatar_sealed", true)
 	_viewport_container.add_child(_sub_viewport)
@@ -390,6 +427,8 @@ func _sync_subviewport_size() -> void:
 
 
 func _enforce_runtime_guard() -> void:
+	if not visible and not _authorized_hidden:
+		visible = true
 	var min_sz := get_min_portrait_size()
 	if custom_minimum_size.x < min_sz.x or custom_minimum_size.y < min_sz.y:
 		custom_minimum_size = Vector2(maxf(custom_minimum_size.x, min_sz.x), maxf(custom_minimum_size.y, min_sz.y))
@@ -409,25 +448,25 @@ func _reposition_in_viewport() -> void:
 	if vp_size.x <= 1.0 or vp_size.y <= 1.0:
 		vp_size = Vector2(1280.0, 720.0)
 	var cur_size := Vector2(maxf(size.x, get_min_portrait_size().x), maxf(size.y, get_min_portrait_size().y))
-	var top_clearance := TOP_HUD_CLEARANCE_Y
+	var top_clearance := TOP_HUD_CLEARANCE_Y if Engine.has_singleton("PlayForgePlatform") else SAFE_MARGIN
 	if Engine.has_singleton("PlayForgePlatform"):
 		var inset: Rect2 = Engine.get_singleton("PlayForgePlatform").call("get_topbar_safe_inset")
 		top_clearance = maxf(top_clearance, inset.position.y + inset.size.y + 12.0)
 
 	match corner:
 		PortraitCorner.BOTTOM_LEFT:
-			position = Vector2(SAFE_MARGIN, maxf(top_clearance, vp_size.y - cur_size.y - SAFE_MARGIN))
+			position = Vector2(SAFE_MARGIN, maxf(SAFE_MARGIN, vp_size.y - cur_size.y - SAFE_MARGIN))
 		PortraitCorner.TOP_RIGHT:
 			position = Vector2(maxf(SAFE_MARGIN, vp_size.x - cur_size.x - SAFE_MARGIN), SAFE_MARGIN)
 		PortraitCorner.BOTTOM_RIGHT:
-			position = Vector2(maxf(SAFE_MARGIN, vp_size.x - cur_size.x - SAFE_MARGIN), maxf(top_clearance, vp_size.y - cur_size.y - SAFE_MARGIN))
+			position = Vector2(maxf(SAFE_MARGIN, vp_size.x - cur_size.x - SAFE_MARGIN), maxf(SAFE_MARGIN, vp_size.y - cur_size.y - SAFE_MARGIN))
 		PortraitCorner.TOP_LEFT_BELOW_HUD:
-			position = Vector2(SAFE_MARGIN, top_clearance)
+			position = Vector2(SAFE_MARGIN, maxf(TOP_HUD_CLEARANCE_Y, top_clearance))
 		PortraitCorner.CUSTOM:
 			var clamped_x := clampf(_custom_pos.x, SAFE_MARGIN, maxf(SAFE_MARGIN, vp_size.x - cur_size.x - SAFE_MARGIN))
 			var clamped_y := clampf(_custom_pos.y, SAFE_MARGIN, maxf(SAFE_MARGIN, vp_size.y - cur_size.y - SAFE_MARGIN))
-			# Prevent overlapping the top-left CoreHUD bar
-			if clamped_x < 248.0 and clamped_y < top_clearance:
+			# Prevent overlapping the top-left CoreHUD bar when native engine CoreHUD is active
+			if Engine.has_singleton("PlayForgePlatform") and clamped_x < 248.0 and clamped_y < top_clearance:
 				clamped_y = top_clearance
 			position = Vector2(clamped_x, clamped_y)
 
@@ -435,6 +474,6 @@ func _reposition_in_viewport() -> void:
 func _update_badge_text() -> void:
 	if _badge_label == null:
 		return
-	var tag := "전신 초상" if framing == PortraitFraming.FULL_BODY else "상반신 초상"
-	_badge_label.text = "%s · %s" % [_display_name, tag]
+	var tag := "FULL" if framing == PortraitFraming.FULL_BODY else "BUST"
+	_badge_label.text = "%s | %s" % [_display_name, tag]
 	_badge_label.visible = show_framing_badge
