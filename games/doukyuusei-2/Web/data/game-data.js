@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   const DATA = {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "doukyuusei-2",
   "title_ja": "同級生2",
   "title_ko": "동급생 2",
@@ -1765,7 +1765,64 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 10,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_dec22_morning_evt",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 1,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [
+        "flg_yui_morning_greet"
+      ],
+      "event_id": "evt_yui_dec22_morning",
+      "priority": 75,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_town_afternoon_roam",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_home_evening_routine",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1080,
+      "end_minute": 1320,
+      "location_id": "loc_home_yui_room",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_yui_eve_coat",
@@ -1784,7 +1841,47 @@
       ],
       "event_id": "evt_yui_eve_coat",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_xmas_cake",
+      "character_id": "chr_yui",
+      "day_start": 4,
+      "day_end": 4,
+      "start_minute": 1080,
+      "end_minute": 1260,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [
+        "flg_yui_xmas_cake"
+      ],
+      "event_id": "evt_yui_xmas_cake",
+      "priority": 85,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_onsen_partner_ryokan",
+      "character_id": "chr_yui",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1260,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_onsen_trip_joined",
+        "flg_onsen_partner_yui"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_yui_jan1_shrine",
@@ -1803,7 +1900,68 @@
       ],
       "event_id": "evt_yui_jan1_shrine",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan2_witness",
+      "character_id": "chr_yui",
+      "day_start": 12,
+      "day_end": 12,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_shirahegaike_park",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_yui_shrine_jan1"
+      ],
+      "blocked_by_flags": [
+        "flg_yui_jan2_witness"
+      ],
+      "event_id": "evt_yui_jan2_witness",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan3_hotel_call",
+      "character_id": "chr_yui",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_yui_shrine_jan1"
+      ],
+      "blocked_by_flags": [
+        "flg_yui_jan3_hotel_call"
+      ],
+      "event_id": "evt_yui_jan3_hotel_call",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan3_park_rescue",
+      "character_id": "chr_yui",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1320,
+      "end_minute": 1430,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_yui_jan3_hotel_call"
+      ],
+      "blocked_by_flags": [
+        "flg_yui_jan3_park_rescue"
+      ],
+      "event_id": "evt_yui_jan3_park_rescue",
+      "priority": 96,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_yui_jan6_climax",
@@ -1822,7 +1980,44 @@
       ],
       "event_id": "evt_yui_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan7_ceremony",
+      "character_id": "chr_yui",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_living_morning",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 480,
+      "end_minute": 570,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_cafe_daily",
@@ -1839,7 +2034,46 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 10,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_living_evening",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1140,
+      "end_minute": 1350,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_cafe_help",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 2,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [
+        "flg_misako_cafe_help"
+      ],
+      "event_id": "evt_misako_cafe_help",
+      "priority": 80,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_cafe_frog",
@@ -1858,7 +2092,8 @@
       ],
       "event_id": "evt_misako_cafe_frog",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_eve_living",
@@ -1877,7 +2112,8 @@
       ],
       "event_id": "evt_misako_eve_living",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_jan1_bath",
@@ -1897,7 +2133,28 @@
       ],
       "event_id": "evt_misako_jan1_bath",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_jan4_talk",
+      "character_id": "chr_misako",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 1020,
+      "end_minute": 1200,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_misako_eve_living"
+      ],
+      "blocked_by_flags": [
+        "flg_misako_jan4_talk"
+      ],
+      "event_id": "evt_misako_jan4_talk",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_jan6_climax",
@@ -1916,7 +2173,62 @@
       ],
       "event_id": "evt_misako_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_jan7_cafe",
+      "character_id": "chr_misako",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_tomomi_house_morning",
+      "character_id": "chr_tomomi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 510,
+      "end_minute": 660,
+      "location_id": "loc_tomomi_house",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_tomomi_school_roam",
+      "character_id": "chr_tomomi",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 720,
+      "end_minute": 960,
+      "location_id": "loc_school_3b",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_tomomi_house_intro",
@@ -1935,7 +2247,85 @@
       ],
       "event_id": "evt_tomomi_blackmail_intro",
       "priority": 80,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_dec27_phone",
+      "character_id": "chr_tomomi",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 1080,
+      "end_minute": 1290,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_tomomi_blackmail_seen"
+      ],
+      "blocked_by_flags": [
+        "flg_tomomi_dec27_phone"
+      ],
+      "event_id": "evt_tomomi_dec27_phone",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_onsen_partner",
+      "character_id": "chr_tomomi",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1260,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_onsen_trip_joined",
+        "flg_onsen_partner_tomomi"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan1_kimono",
+      "character_id": "chr_tomomi",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 480,
+      "end_minute": 660,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_tomomi_blackmail_seen"
+      ],
+      "blocked_by_flags": [
+        "flg_tomomi_jan1_kimono"
+      ],
+      "event_id": "evt_tomomi_jan1_kimono",
+      "priority": 86,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan2_3_roam",
+      "character_id": "chr_tomomi",
+      "day_start": 12,
+      "day_end": 13,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 22,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_tomomi_photo_resolve",
@@ -1954,7 +2344,28 @@
       ],
       "event_id": "evt_tomomi_photo_club_resolve",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan5_phone",
+      "character_id": "chr_tomomi",
+      "day_start": 14,
+      "day_end": 15,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_tomomi_photo_evidence"
+      ],
+      "blocked_by_flags": [
+        "flg_tomomi_jan5_phone"
+      ],
+      "event_id": "evt_tomomi_jan5_phone",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_tomomi_climax",
@@ -1973,7 +2384,26 @@
       ],
       "event_id": "evt_tomomi_climax",
       "priority": 95,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_tomomi_jan7_ceremony",
+      "character_id": "chr_tomomi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_izumi_parfait",
@@ -1992,10 +2422,11 @@
       ],
       "event_id": "evt_izumi_parfait_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
-      "id": "sch_izumi_kyudo_daily",
+      "id": "sch_izumi_kyudo_practice_evt",
       "character_id": "chr_izumi",
       "day_start": 2,
       "day_end": 6,
@@ -2006,10 +2437,69 @@
       "required_flags": [
         "flg_izumi_parfait_intro"
       ],
+      "blocked_by_flags": [
+        "flg_izumi_kyudo_visit"
+      ],
+      "event_id": "evt_izumi_kyudo_practice",
+      "priority": 82,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_kyudo_daily",
+      "character_id": "chr_izumi",
+      "day_start": 2,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 960,
+      "location_id": "loc_school_kyudo",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 20,
-      "evidence_level": "[해석]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_house_evening",
+      "character_id": "chr_izumi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "location_id": "loc_izumi_house",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_izumi_xmas_phone",
+      "character_id": "chr_izumi",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 1260,
+      "end_minute": 1410,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_izumi_parfait_intro"
+      ],
+      "blocked_by_flags": [
+        "flg_izumi_xmas_phone"
+      ],
+      "event_id": "evt_izumi_xmas_phone",
+      "priority": 86,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_izumi_dec28_date",
@@ -2028,7 +2518,27 @@
       ],
       "event_id": "evt_izumi_pre_onsen_date",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_onsen_daytime",
+      "character_id": "chr_izumi",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 900,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_onsen_trip_joined",
+        "flg_onsen_partner_izumi"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_izumi_onsen_climax",
@@ -2049,7 +2559,26 @@
       ],
       "event_id": "evt_izumi_onsen_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_jan7_ceremony",
+      "character_id": "chr_izumi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_dec22_house",
@@ -2068,24 +2597,62 @@
       ],
       "event_id": "evt_karen_house_intro",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_house_morning",
+      "character_id": "chr_karen",
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 750,
+      "location_id": "loc_karen_house",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_prod_work",
       "character_id": "chr_karen",
-      "day_start": 2,
-      "day_end": 4,
-      "start_minute": 660,
-      "end_minute": 1080,
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 780,
+      "end_minute": 930,
       "location_id": "loc_talent_prod",
       "spawn_pattern": "fixed",
       "required_flags": [
-        "flg_karen_house_intro"
+        "flg_prologue_done"
       ],
       "blocked_by_flags": [],
       "event_id": null,
-      "priority": 30,
-      "evidence_level": "[확인]"
+      "priority": 28,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_tv_evening",
+      "character_id": "chr_karen",
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 960,
+      "end_minute": 1140,
+      "location_id": "loc_tv_station",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 26,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_dec26_classroom",
@@ -2104,7 +2671,28 @@
       ],
       "event_id": "evt_karen_uniform_cover",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_dec27_tv_rec",
+      "character_id": "chr_karen",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 900,
+      "end_minute": 1080,
+      "location_id": "loc_tv_station",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_karen_uniform_cover"
+      ],
+      "blocked_by_flags": [
+        "flg_karen_tv_recording"
+      ],
+      "event_id": "evt_karen_tv_recording",
+      "priority": 93,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_dec26_negative",
@@ -2123,7 +2711,49 @@
       ],
       "event_id": "evt_karen_negative_seize",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_dec29_coast",
+      "character_id": "chr_karen",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 780,
+      "end_minute": 960,
+      "location_id": "loc_yasohachi_coast",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_karen_negative_seized"
+      ],
+      "blocked_by_flags": [
+        "flg_karen_coast_shoot",
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": "evt_karen_coast_shoot",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_jan4_souvenir",
+      "character_id": "chr_karen",
+      "day_start": 14,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 900,
+      "location_id": "loc_karen_house",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_karen_negative_seized"
+      ],
+      "blocked_by_flags": [
+        "flg_karen_hawaii_souvenir"
+      ],
+      "event_id": "evt_karen_hawaii_souvenir",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_climax",
@@ -2142,7 +2772,26 @@
       ],
       "event_id": "evt_karen_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_karen_jan7_ceremony",
+      "character_id": "chr_karen",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_dec22_window",
@@ -2161,7 +2810,26 @@
       ],
       "event_id": "evt_sakurako_window_intro",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sakurako_hospital_morning",
+      "character_id": "chr_sakurako",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 600,
+      "end_minute": 780,
+      "location_id": "loc_city_hospital",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_sakurako_window_met"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_sakurako_eve",
@@ -2180,7 +2848,28 @@
       ],
       "event_id": "evt_sakurako_eve_answer",
       "priority": 92,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sakurako_mid_promise",
+      "character_id": "chr_sakurako",
+      "day_start": 5,
+      "day_end": 9,
+      "start_minute": 840,
+      "end_minute": 1020,
+      "location_id": "loc_city_hospital",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_sakurako_eve_single"
+      ],
+      "blocked_by_flags": [
+        "flg_sakurako_mid_promise"
+      ],
+      "event_id": "evt_sakurako_hospital_visit_mid",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_hospital_loop",
@@ -2197,7 +2886,8 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 25,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_nye_date",
@@ -2216,7 +2906,8 @@
       ],
       "event_id": "evt_sakurako_nye_date",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_jan1",
@@ -2235,7 +2926,8 @@
       ],
       "event_id": "evt_sakurako_jan1_misunderstanding",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_jan6_climax",
@@ -2254,7 +2946,26 @@
       ],
       "event_id": "evt_sakurako_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sakurako_jan7_ceremony",
+      "character_id": "chr_sakurako",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_sakurako_route_complete"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kozue_library",
@@ -2273,7 +2984,26 @@
       ],
       "event_id": "evt_kozue_library_bump",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_tennis_routine",
+      "character_id": "chr_kozue",
+      "day_start": 1,
+      "day_end": 6,
+      "start_minute": 600,
+      "end_minute": 960,
+      "location_id": "loc_school_tennis",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kozue_xmas_tennis",
@@ -2292,7 +3022,82 @@
       ],
       "event_id": "evt_kozue_xmas_date",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_dec27_date",
+      "character_id": "chr_kozue",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_kozue_xmas_date"
+      ],
+      "blocked_by_flags": [
+        "flg_kozue_dec27_date"
+      ],
+      "event_id": "evt_kozue_dec27_date",
+      "priority": 93,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_library_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 14,
+      "start_minute": 540,
+      "end_minute": 720,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_kozue_xmas_date"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_park_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 14,
+      "start_minute": 750,
+      "end_minute": 900,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_kozue_xmas_date"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_ataru_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 15,
+      "start_minute": 930,
+      "end_minute": 1140,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_kozue_xmas_date"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kozue_late_climax",
@@ -2311,7 +3116,26 @@
       ],
       "event_id": "evt_kozue_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_jan7_ceremony",
+      "character_id": "chr_kozue",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "hybrid",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_mirei_staffroom",
@@ -2331,7 +3155,47 @@
       ],
       "event_id": "evt_mirei_staffroom_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_staffroom_routine",
+      "character_id": "chr_mirei",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 960,
+      "location_id": "loc_school_staffroom",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_dec29_hotel_sight",
+      "character_id": "chr_mirei",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 540,
+      "end_minute": 660,
+      "location_id": "loc_station_hotel",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_mirei_staffroom_intro"
+      ],
+      "blocked_by_flags": [
+        "flg_mirei_dec29_sight",
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": "evt_mirei_dec29_hotel_sight",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_mirei_nye_hotel",
@@ -2351,7 +3215,28 @@
       ],
       "event_id": "evt_mirei_nye_hotel",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_jan2_library_care",
+      "character_id": "chr_mirei",
+      "day_start": 12,
+      "day_end": 15,
+      "start_minute": 780,
+      "end_minute": 990,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_mirei_nye_hotel"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": null,
+      "priority": 28,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_mirei_climax",
@@ -2371,7 +3256,26 @@
       ],
       "event_id": "evt_mirei_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_mirei_jan7_ceremony",
+      "character_id": "chr_mirei",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_minori_vase",
@@ -2390,7 +3294,26 @@
       ],
       "event_id": "evt_minori_vase_broken",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_library_midday",
+      "character_id": "chr_minori",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 660,
+      "end_minute": 900,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_minori_sevenmart_shift",
@@ -2407,7 +3330,29 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 20,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_dec29_yard",
+      "character_id": "chr_minori",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 600,
+      "end_minute": 750,
+      "location_id": "loc_school_yard",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_minori_vase_broken"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined",
+        "flg_misa_tennis_match"
+      ],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_minori_dec29_park",
@@ -2428,7 +3373,51 @@
       ],
       "event_id": "evt_minori_dec29_rescue",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan1_sevenmart",
+      "character_id": "chr_minori",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 600,
+      "end_minute": 1080,
+      "location_id": "loc_sevenmart",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_minori_park_rescue"
+      ],
+      "blocked_by_flags": [
+        "flg_minori_jan1_shift",
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": "evt_minori_jan1_sevenmart",
+      "priority": 90,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan4_movie_trap",
+      "character_id": "chr_minori",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_minori_park_rescue"
+      ],
+      "blocked_by_flags": [
+        "flg_minori_jan4_declined_ok",
+        "flg_minori_jan4_movie_trap_hit",
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": "evt_minori_jan4_movie_trap",
+      "priority": 95,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_minori_jan5_station",
@@ -2444,11 +3433,49 @@
       ],
       "blocked_by_flags": [
         "flg_minori_route_complete",
-        "flg_onsen_trip_joined"
+        "flg_onsen_trip_joined",
+        "flg_minori_jan4_movie_trap_hit"
       ],
       "event_id": "evt_minori_jan5_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan7_ceremony",
+      "character_id": "chr_minori",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_motors_morning",
+      "character_id": "chr_youko",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 720,
+      "location_id": "loc_youko_house",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_youko_arcade",
@@ -2467,7 +3494,66 @@
       ],
       "event_id": "evt_youko_arcade_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_arcade_evening_roam",
+      "character_id": "chr_youko",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "location_id": "loc_game_center",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_youko_dec27_akira_ask",
+      "character_id": "chr_youko",
+      "day_start": 6,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_akira_house",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_youko_arcade_bike"
+      ],
+      "blocked_by_flags": [
+        "flg_youko_secret_kept"
+      ],
+      "event_id": "evt_youko_dec27_akira_ask",
+      "priority": 89,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_jan1_sunrise",
+      "character_id": "chr_youko",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 360,
+      "end_minute": 540,
+      "location_id": "loc_yasohachi_coast",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_youko_arcade_bike"
+      ],
+      "blocked_by_flags": [
+        "flg_youko_jan1_sunrise"
+      ],
+      "event_id": "evt_youko_jan1_sunrise",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_youko_climax",
@@ -2487,7 +3573,26 @@
       ],
       "event_id": "evt_youko_climax",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_jan7_ceremony",
+      "character_id": "chr_youko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_azumi_nursery_intro",
@@ -2506,7 +3611,47 @@
       ],
       "event_id": "evt_azumi_nursery_intro",
       "priority": 88,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_azumi_nursery_routine",
+      "character_id": "chr_azumi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 1020,
+      "location_id": "loc_hanazono_nursery",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_azumi_dec28_consult",
+      "character_id": "chr_azumi",
+      "day_start": 7,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_azumi_nursery_help"
+      ],
+      "blocked_by_flags": [
+        "flg_azumi_dec28_consult",
+        "flg_azumi_tendo_lost"
+      ],
+      "event_id": "evt_azumi_dec28_consult",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_azumi_tendo_duel",
@@ -2526,7 +3671,8 @@
       ],
       "event_id": "evt_azumi_tendo_duel",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_azumi_climax",
@@ -2546,7 +3692,26 @@
       ],
       "event_id": "evt_azumi_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_azumi_jan7_nursery",
+      "character_id": "chr_azumi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_hanazono_nursery",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_misato_travel_intro",
@@ -2565,7 +3730,26 @@
       ],
       "event_id": "evt_misato_travel_intro",
       "priority": 88,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_travel_daily",
+      "character_id": "chr_misato",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 1080,
+      "location_id": "loc_nyubai_travel",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misato_onsen",
@@ -2586,7 +3770,26 @@
       ],
       "event_id": "evt_misato_onsen_bus",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_onsen_routine",
+      "character_id": "chr_misato",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1140,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misato_climax",
@@ -2606,7 +3809,44 @@
       ],
       "event_id": "evt_misato_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_jan7_travel",
+      "character_id": "chr_misato",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_nyubai_travel",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_sachiko_ryokan_morning",
+      "character_id": "chr_sachiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 480,
+      "end_minute": 900,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sachiko_ryokan",
@@ -2626,7 +3866,47 @@
       ],
       "event_id": "evt_sachiko_ryokan_met",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sachiko_open_bath_night",
+      "character_id": "chr_sachiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 1200,
+      "end_minute": 1380,
+      "location_id": "loc_onsen_open_bath",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_sachiko_ryokan_met"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sachiko_jan3_phone",
+      "character_id": "chr_sachiko",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1320,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_sachiko_ryokan_met"
+      ],
+      "blocked_by_flags": [
+        "flg_sachiko_jan3_phone",
+        "flg_onsen_jan6_home_broken"
+      ],
+      "event_id": "evt_sachiko_jan3_phone",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sachiko_climax",
@@ -2646,7 +3926,44 @@
       ],
       "event_id": "evt_sachiko_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_sachiko_jan7_station",
+      "character_id": "chr_sachiko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_sachiko_route_complete"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
+    },
+    {
+      "id": "sch_kumiko_onsen_ski",
+      "character_id": "chr_kumiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 750,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kumiko_ryokan",
@@ -2666,7 +3983,29 @@
       ],
       "event_id": "evt_kumiko_ryokan_met",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kumiko_jan1_arrival",
+      "character_id": "chr_kumiko",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 960,
+      "end_minute": 1200,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_kumiko_ryokan_met"
+      ],
+      "blocked_by_flags": [
+        "flg_kumiko_jan1_arrival",
+        "flg_onsen_jan6_home_broken"
+      ],
+      "event_id": "evt_kumiko_jan1_arrival",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kumiko_tokyo_visit",
@@ -2686,7 +4025,28 @@
       ],
       "event_id": "evt_kumiko_tokyo_visit",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kumiko_town_roam_jan3",
+      "character_id": "chr_kumiko",
+      "day_start": 13,
+      "day_end": 15,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_kumiko_tokyo_visit"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_jan6_home_broken"
+      ],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_kumiko_climax",
@@ -2706,7 +4066,26 @@
       ],
       "event_id": "evt_kumiko_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kumiko_jan7_station",
+      "character_id": "chr_kumiko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": [
+        "flg_kumiko_route_complete"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
     },
     {
       "id": "sch_misa_station",
@@ -2725,7 +4104,26 @@
       ],
       "event_id": "evt_misa_station_bump",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_cafe_afternoon",
+      "character_id": "chr_misa",
+      "day_start": 4,
+      "day_end": 7,
+      "start_minute": 780,
+      "end_minute": 1080,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_misa_station_bump"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 22,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_misa_tennis",
@@ -2746,7 +4144,28 @@
       ],
       "event_id": "evt_misa_tennis_match",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_post_tennis_cafe",
+      "character_id": "chr_misa",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 720,
+      "end_minute": 960,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_misa_tennis_match"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misa_date",
@@ -2766,7 +4185,28 @@
       ],
       "event_id": "evt_misa_kisaragi_date",
       "priority": 97,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_newyear_roam",
+      "character_id": "chr_misa",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 720,
+      "end_minute": 1080,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_misa_kisaragi_date"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "event_id": null,
+      "priority": 28,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_misa_climax",
@@ -2786,7 +4226,26 @@
       ],
       "event_id": "evt_misa_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_misa_jan7_station",
+      "character_id": "chr_misa",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "fixed",
+      "required_flags": [
+        "flg_misa_route_complete"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
     },
     {
       "id": "sch_akira_pre_onsen",
@@ -2805,7 +4264,26 @@
       ],
       "event_id": "evt_onsen_pre_akira_youko",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_house_routine",
+      "character_id": "chr_akira",
+      "day_start": 3,
+      "day_end": 16,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_akira_house",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_akira_phone_dec28",
@@ -2824,7 +4302,100 @@
       ],
       "event_id": "evt_onsen_phone_invite",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_onsen_ski",
+      "character_id": "chr_akira",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 600,
+      "end_minute": 960,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_ski_memories"
+      ],
+      "event_id": "evt_onsen_ski_memories",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_jan7_ceremony",
+      "character_id": "chr_akira",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yoshiki_photo_club",
+      "character_id": "chr_yoshiki",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_school_photo_club",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yoshiki_jan7_ceremony",
+      "character_id": "chr_yoshiki",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_aritomo_mansion_routine",
+      "character_id": "chr_aritomo",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_saionji_mansion",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_aritomo_nye_tip",
@@ -2843,7 +4414,100 @@
       ],
       "event_id": null,
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_aritomo_jan7_ceremony",
+      "character_id": "chr_aritomo",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tendo_yard_patrol",
+      "character_id": "chr_tendo",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 840,
+      "location_id": "loc_school_yard",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tendo_jan7_ceremony",
+      "character_id": "chr_tendo",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kaeru_ojisan_cafe",
+      "character_id": "chr_kaeru_ojisan",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 840,
+      "end_minute": 960,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [
+        "flg_misako_cafe_frog"
+      ],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_quiz_king_night",
+      "character_id": "chr_quiz_king",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1140,
+      "end_minute": 1380,
+      "location_id": "loc_kisaragi_station",
+      "spawn_pattern": "scripted",
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[검증 필요]",
+      "evidence_tier": "NEEDS_VERIFICATION"
     }
   ],
   "flags": [
@@ -2896,10 +4560,29 @@
       "description": "온천 파트너로 시노하라 이즈미 선택"
     },
     {
+      "id": "flg_onsen_ski_memories",
+      "scope": "global",
+      "type": "boolean",
+      "description": "12/29~30 동지온천 스키 슬로프 추억 이벤트 완료"
+    },
+    {
       "id": "flg_onsen_jan6_home_broken",
       "scope": "fail",
       "type": "boolean",
       "description": "1/6 자택 귀가 금지 제약 위반으로 온천 연계 플래그 파손"
+    },
+    {
+      "id": "flg_opening_ceremony_reached",
+      "scope": "global",
+      "type": "boolean",
+      "description": "1/7 3학기 시업식 도착"
+    },
+    {
+      "id": "flg_yui_morning_greet",
+      "scope": "heroine",
+      "character_id": "chr_yui",
+      "type": "boolean",
+      "description": "12/22 아침 유이와 겨울방학 첫 인사"
     },
     {
       "id": "flg_yui_coat_eve",
@@ -2909,6 +4592,13 @@
       "description": "12/24 거실 잠든 유이에게 외투 덮어주기 완료"
     },
     {
+      "id": "flg_yui_xmas_cake",
+      "scope": "heroine",
+      "character_id": "chr_yui",
+      "type": "boolean",
+      "description": "12/25 자택 크리스마스 케이크 파티 완료"
+    },
+    {
       "id": "flg_yui_shrine_jan1",
       "scope": "heroine",
       "character_id": "chr_yui",
@@ -2916,11 +4606,39 @@
       "description": "1/1 유이와 키사라기 신사 첫참배 완료"
     },
     {
+      "id": "flg_yui_jan2_witness",
+      "scope": "heroine",
+      "character_id": "chr_yui",
+      "type": "boolean",
+      "description": "1/2 시라헤가이케 공원 사이온지·요시키 대화 목격"
+    },
+    {
+      "id": "flg_yui_jan3_hotel_call",
+      "scope": "heroine",
+      "character_id": "chr_yui",
+      "type": "boolean",
+      "description": "1/3 저녁 호출 전화 수신 및 스테이션 호텔 대기 완료"
+    },
+    {
+      "id": "flg_yui_jan3_park_rescue",
+      "scope": "heroine",
+      "character_id": "chr_yui",
+      "type": "boolean",
+      "description": "1/3 심야 야소하치 공원 유이 구출 완료"
+    },
+    {
       "id": "flg_yui_route_complete",
       "scope": "heroine",
       "character_id": "chr_yui",
       "type": "boolean",
       "description": "나루사와 유이 엔딩 조건 달성"
+    },
+    {
+      "id": "flg_misako_cafe_help",
+      "scope": "heroine",
+      "character_id": "chr_misako",
+      "type": "boolean",
+      "description": "12/22~23 1층 찻집 미사코 일손 돕기 완료"
     },
     {
       "id": "flg_misako_cafe_frog",
@@ -2944,6 +4662,13 @@
       "description": "1/1 심야 욕실 미사코 이벤트 완료"
     },
     {
+      "id": "flg_misako_jan4_talk",
+      "scope": "heroine",
+      "character_id": "chr_misako",
+      "type": "boolean",
+      "description": "1/4 저녁 거실 미사코와 졸업 후 진로 대화"
+    },
+    {
       "id": "flg_misako_route_complete",
       "scope": "heroine",
       "character_id": "chr_misako",
@@ -2958,11 +4683,32 @@
       "description": "토모미에 대한 요시키의 방해/오해 사건 인지"
     },
     {
+      "id": "flg_tomomi_dec27_phone",
+      "scope": "heroine",
+      "character_id": "chr_tomomi",
+      "type": "boolean",
+      "description": "12/27 밤 자실 토모미 안부 전화 수신"
+    },
+    {
+      "id": "flg_tomomi_jan1_kimono",
+      "scope": "heroine",
+      "character_id": "chr_tomomi",
+      "type": "boolean",
+      "description": "1/1 아침 자택 앞 기모노 차림 토모미 조우"
+    },
+    {
       "id": "flg_tomomi_photo_evidence",
       "scope": "heroine",
       "character_id": "chr_tomomi",
       "type": "boolean",
       "description": "사진부실 증거 확보 및 오해 해소(1/4 이후)"
+    },
+    {
+      "id": "flg_tomomi_jan5_phone",
+      "scope": "heroine",
+      "character_id": "chr_tomomi",
+      "type": "boolean",
+      "description": "1/4~5 오해 해소 후 토모미의 감사 전화 수신"
     },
     {
       "id": "flg_tomomi_route_complete",
@@ -2977,6 +4723,20 @@
       "character_id": "chr_izumi",
       "type": "boolean",
       "description": "12/22 자택 앞→찻집 이즈미 파르페 첫 이벤트 완료"
+    },
+    {
+      "id": "flg_izumi_kyudo_visit",
+      "scope": "heroine",
+      "character_id": "chr_izumi",
+      "type": "boolean",
+      "description": "12/23~27 궁도장 이즈미 연습 참관 완료"
+    },
+    {
+      "id": "flg_izumi_xmas_phone",
+      "scope": "heroine",
+      "character_id": "chr_izumi",
+      "type": "boolean",
+      "description": "12/24~25 심야 이즈미 크리스마스 안부 전화 수신"
     },
     {
       "id": "flg_izumi_pre_onsen_date",
@@ -2997,7 +4757,14 @@
       "scope": "heroine",
       "character_id": "chr_karen",
       "type": "boolean",
-      "description": "12/22 카렌 자택 방문('만나러 왔을 뿐' 선택)"
+      "description": "12/22 카렌 자택 방문 완료"
+    },
+    {
+      "id": "flg_karen_mood_positive",
+      "scope": "heroine",
+      "character_id": "chr_karen",
+      "type": "boolean",
+      "description": "12/22 카렌 자택에서 '만나러 왔을 뿐' 선택(기분치 상승)"
     },
     {
       "id": "flg_karen_uniform_cover",
@@ -3007,11 +4774,32 @@
       "description": "12/26 3-B 교실 교복 덮어주기 완료"
     },
     {
+      "id": "flg_karen_tv_recording",
+      "scope": "heroine",
+      "character_id": "chr_karen",
+      "type": "boolean",
+      "description": "12/27 방송국 카렌 공개 녹화 참관 완료"
+    },
+    {
       "id": "flg_karen_negative_seized",
       "scope": "heroine",
       "character_id": "chr_karen",
       "type": "boolean",
       "description": "12/26~28 자택 앞 요시키 사진 거절 및 네거티브 압수"
+    },
+    {
+      "id": "flg_karen_coast_shoot",
+      "scope": "heroine",
+      "character_id": "chr_karen",
+      "type": "boolean",
+      "description": "12/29 야소하치 해안 촬영 휴식 동행 완료"
+    },
+    {
+      "id": "flg_karen_hawaii_souvenir",
+      "scope": "heroine",
+      "character_id": "chr_karen",
+      "type": "boolean",
+      "description": "1/4~6 하와이 귀국 선물 수령"
     },
     {
       "id": "flg_karen_route_complete",
@@ -3033,6 +4821,13 @@
       "character_id": "chr_sakurako",
       "type": "boolean",
       "description": "12/24 시민병원 '여자친구 없다' 선택"
+    },
+    {
+      "id": "flg_sakurako_mid_promise",
+      "scope": "heroine",
+      "character_id": "chr_sakurako",
+      "type": "boolean",
+      "description": "12/26~30 시민병원 벚꽃 약속 대화 완료"
     },
     {
       "id": "flg_sakurako_nye_date",
@@ -3070,6 +4865,13 @@
       "description": "12/25 코즈에 데이트 완료 및 후반 순회 패턴 전환"
     },
     {
+      "id": "flg_kozue_dec27_date",
+      "scope": "heroine",
+      "character_id": "chr_kozue",
+      "type": "boolean",
+      "description": "12/27 스튜디오 ATARU 코즈에 연말 영화 데이트 완료"
+    },
+    {
       "id": "flg_kozue_route_complete",
       "scope": "heroine",
       "character_id": "chr_kozue",
@@ -3082,6 +4884,13 @@
       "character_id": "chr_mirei",
       "type": "boolean",
       "description": "야소하치 학원 교무실 미레이 초기 플래그 확보"
+    },
+    {
+      "id": "flg_mirei_dec29_sight",
+      "scope": "heroine",
+      "character_id": "chr_mirei",
+      "type": "boolean",
+      "description": "12/29 스테이션 호텔 로비 미레이 갈등 전조 목격"
     },
     {
       "id": "flg_mirei_nye_hotel",
@@ -3112,6 +4921,27 @@
       "description": "12/29 교정 고백 목격 및 시라헤가이케 공원 요시키 협박 구출"
     },
     {
+      "id": "flg_minori_jan1_shift",
+      "scope": "heroine",
+      "character_id": "chr_minori",
+      "type": "boolean",
+      "description": "1/1~3 세븐마트 신년 알바 대화(히로코 태도 변화)"
+    },
+    {
+      "id": "flg_minori_jan4_declined_ok",
+      "scope": "heroine",
+      "character_id": "chr_minori",
+      "type": "boolean",
+      "description": "1/4 히로코 영화 권유 정중 거절(미노리 약속 사수)"
+    },
+    {
+      "id": "flg_minori_jan4_movie_trap_hit",
+      "scope": "fail",
+      "character_id": "chr_minori",
+      "type": "boolean",
+      "description": "1/4 히로코 영화 권유 승낙으로 신뢰 하락"
+    },
+    {
       "id": "flg_minori_route_complete",
       "scope": "heroine",
       "character_id": "chr_minori",
@@ -3124,6 +4954,20 @@
       "character_id": "chr_youko",
       "type": "boolean",
       "description": "요코 자택·게임센터 순회 이벤트 진행"
+    },
+    {
+      "id": "flg_youko_secret_kept",
+      "scope": "heroine",
+      "character_id": "chr_youko",
+      "type": "boolean",
+      "description": "12/27~28 아키라 질문에 침묵('알려 주지 않는다' 선택)"
+    },
+    {
+      "id": "flg_youko_jan1_sunrise",
+      "scope": "heroine",
+      "character_id": "chr_youko",
+      "type": "boolean",
+      "description": "1/1 야소하치 해안 요코와 바이크 첫 해돋이 감상"
     },
     {
       "id": "flg_youko_ending_override_active",
@@ -3152,6 +4996,13 @@
       "character_id": "chr_azumi",
       "type": "boolean",
       "description": "하나조노 보육원 아이 도움 및 아즈미 초기 친밀도 확보"
+    },
+    {
+      "id": "flg_azumi_dec28_consult",
+      "scope": "heroine",
+      "character_id": "chr_azumi",
+      "type": "boolean",
+      "description": "12/28 자택 앞 아즈미 선생님의 텐도 고민 상담"
     },
     {
       "id": "flg_azumi_tendo_defeated",
@@ -3203,6 +5054,13 @@
       "description": "12/29~30 나가시마 료칸 사치코 필수 플래그 확보"
     },
     {
+      "id": "flg_sachiko_jan3_phone",
+      "scope": "heroine",
+      "character_id": "chr_sachiko",
+      "type": "boolean",
+      "description": "1/3 저녁 사치코의 스테이션 호텔 초대 전화 수신"
+    },
+    {
       "id": "flg_sachiko_route_complete",
       "scope": "heroine",
       "character_id": "chr_sachiko",
@@ -3215,6 +5073,13 @@
       "character_id": "chr_kumiko",
       "type": "boolean",
       "description": "12/29~30 나가시마 료칸 쿠미코 첫 만남 및 플래그 확보"
+    },
+    {
+      "id": "flg_kumiko_jan1_arrival",
+      "scope": "heroine",
+      "character_id": "chr_kumiko",
+      "type": "boolean",
+      "description": "1/1 저녁 자택 앞 쿠미코 상경 첫 맞이 완료"
     },
     {
       "id": "flg_kumiko_tokyo_visit",
@@ -3243,6 +5108,13 @@
       "character_id": "chr_misa",
       "type": "boolean",
       "description": "12/29 09:00 테니스 승부 및 찻집 대화 완료"
+    },
+    {
+      "id": "flg_misa_tennis_won",
+      "scope": "heroine",
+      "character_id": "chr_misa",
+      "type": "boolean",
+      "description": "12/29 테니스 미니게임 랠리 대결 승리(보너스 대사·친밀도)"
     },
     {
       "id": "flg_misa_kisaragi_date",
@@ -3289,6 +5161,83 @@
       "evidence_level": "[확인]"
     }
   ],
+  "mood_affection_rules": {
+    "description": "원작의 숨겨진 기분치(機嫌値)·호감도 분기 사실(GAP-03)과 테니스 미니게임 판정 사양(GAP-09)을 정직하게 분리 모델링한다.",
+    "provenance_note": "카렌 자택 '만나러 왔을 뿐' vs '사인 받으러 왔다' 기분치 가감, 미노리 1/4 영화 거절 분기, 요코 12/27 아키라 질문 침묵 분기, 미사 12/29 테니스 승패 무관 찻집 진행은 원작 공략 교차 검증 [확인]. 0~100 정수 스케일·초기 기분 50·선택지별 정수 가감치는 웹 엔진 시뮬레이션용 [재구성안].",
+    "base_mood": 50,
+    "min_mood": 0,
+    "max_mood": 100,
+    "base_affection": 0,
+    "min_affection": 0,
+    "max_affection": 100,
+    "daily_talk_affection_delta": 5,
+    "daily_talk_mood_delta": 5,
+    "daily_phone_affection_delta": 3,
+    "daily_phone_mood_delta": 5,
+    "mood_tiers": [
+      {
+        "id": "ecstatic",
+        "min": 80,
+        "label_ko": "최상",
+        "icon": "✨"
+      },
+      {
+        "id": "happy",
+        "min": 60,
+        "label_ko": "좋음",
+        "icon": "😊"
+      },
+      {
+        "id": "neutral",
+        "min": 40,
+        "label_ko": "보통",
+        "icon": "🙂"
+      },
+      {
+        "id": "gloomy",
+        "min": 20,
+        "label_ko": "흐림",
+        "icon": "😐"
+      },
+      {
+        "id": "upset",
+        "min": 0,
+        "label_ko": "삐짐",
+        "icon": "😣"
+      }
+    ],
+    "verified_mood_branches": [
+      {
+        "event_id": "evt_karen_house_intro",
+        "character_id": "chr_karen",
+        "original_fact": "12/22 카렌 자택 첫 방문에서 '만나러 왔을 뿐'은 기분치 상승, '사인 받으러 왔다'는 기분치 하락(후반 해안 이벤트 영향).",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_minori_jan4_movie_trap",
+        "character_id": "chr_minori",
+        "original_fact": "1/4 자택 앞 히로코 영화 권유에서 '약속이 있어 거절한다'가 정답이며, 승낙 시 신뢰 하락/루트 파탄.",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_youko_dec27_akira_ask",
+        "character_id": "chr_youko",
+        "original_fact": "12/27~28 아키라가 요코의 기분 나쁜 이유를 물을 때 '알려 주지 않는다'를 선택해야 요코 신뢰 유지.",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_misa_tennis_match",
+        "character_id": "chr_misa",
+        "original_fact": "12/29 테니스 승부는 원작 3세트 매치이며 승패 무관하게 1층 찻집→12/30 키사라기 데이트로 진행됨(웹 5포인트 랠리 승리 시 보너스 호감도·기분치 지급).",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      }
+    ],
+    "evidence_level": "[재구성안]"
+  },
   "events": [
     {
       "id": "evt_prologue_start",
@@ -3354,38 +5303,151 @@
       ],
       "branch_flag_options": [
         {
-          "choice_ko": "여행 참가 + 유이",
+          "choice_ko": "여행 참가 + 유이 (사치코·쿠미코·미사토 해금)",
           "sets_flags": [
             "flg_onsen_trip_joined",
             "flg_onsen_partner_yui"
-          ]
+          ],
+          "mood_delta": 10,
+          "affection_delta": 10
         },
         {
           "choice_ko": "여행 참가 + 토모미",
           "sets_flags": [
             "flg_onsen_trip_joined",
             "flg_onsen_partner_tomomi"
-          ]
+          ],
+          "mood_delta": 10,
+          "affection_delta": 10
         },
         {
-          "choice_ko": "여행 참가 + 이즈미(당일 데이트 완료 시)",
+          "choice_ko": "여행 참가 + 이즈미 (당일 데이트 완료 시)",
           "requires_flags": [
             "flg_izumi_pre_onsen_date"
           ],
           "sets_flags": [
             "flg_onsen_trip_joined",
             "flg_onsen_partner_izumi"
-          ]
+          ],
+          "mood_delta": 15,
+          "affection_delta": 15
         },
         {
-          "choice_ko": "여행 불참(마을 잔류)",
+          "choice_ko": "여행 불참 (12/29~30 마을 잔류: 미레이·미노리·미사)",
           "sets_flags": [
             "flg_onsen_trip_declined"
-          ]
+          ],
+          "mood_delta": 0,
+          "affection_delta": 0
         }
       ],
       "time_cost_minutes": 15,
       "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_onsen_ski_memories",
+      "title_ko": "12/29~30 동지온천 스키 슬로프 설원 대결",
+      "character_id": "chr_akira",
+      "location_id": "loc_onsen_ski_slope",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 600,
+      "end_minute": 960,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_onsen_phone_invite"
+      ],
+      "required_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_onsen_ski_memories"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "파트너와 나란히 완만한 코스를 활강한다",
+          "sets_flags": [
+            "flg_onsen_ski_memories"
+          ],
+          "mood_delta": 12,
+          "affection_delta": 10
+        },
+        {
+          "choice_ko": "아키라와 상급 코스 스피드 대결을 펼친다",
+          "sets_flags": [
+            "flg_onsen_ski_memories"
+          ],
+          "mood_delta": 5,
+          "affection_delta": 5
+        }
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_opening_ceremony_jan7",
+      "title_ko": "1/7 3학기 시업식 및 겨울방학 결산",
+      "character_id": "chr_ryunosuke",
+      "location_id": "loc_school_gate",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 540,
+      "scene_type": "story_scripted",
+      "prerequisite_events": [
+        "evt_prologue_start"
+      ],
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_opening_ceremony_reached"
+      ],
+      "time_cost_minutes": 0,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_dec22_morning",
+      "title_ko": "12/22 아침 거실 유이의 겨울방학 계획",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_living",
+      "day_start": 1,
+      "day_end": 1,
+      "start_minute": 480,
+      "end_minute": 600,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_prologue_start"
+      ],
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_yui_morning_greet"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "방학 동안 유이랑 자주 같이 보내자고 약속한다",
+          "sets_flags": [
+            "flg_yui_morning_greet"
+          ],
+          "mood_delta": 12,
+          "affection_delta": 10
+        },
+        {
+          "choice_ko": "오늘은 마을 곳곳을 먼저 둘러보겠다고 말한다",
+          "sets_flags": [
+            "flg_yui_morning_greet"
+          ],
+          "mood_delta": 3,
+          "affection_delta": 5
+        }
+      ],
+      "time_cost_minutes": 15,
+      "evidence_level": "[해석]"
     },
     {
       "id": "evt_yui_eve_coat",
@@ -3411,6 +5473,47 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_yui_xmas_cake",
+      "title_ko": "12/25 자택 크리스마스 케이크 파티",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_living",
+      "day_start": 4,
+      "day_end": 4,
+      "start_minute": 1080,
+      "end_minute": 1260,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_prologue_start"
+      ],
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_yui_xmas_cake"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "유이가 고른 딸기 케이크를 칭찬한다",
+          "sets_flags": [
+            "flg_yui_xmas_cake"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 12
+        },
+        {
+          "choice_ko": "조용히 따뜻한 홍차와 함께 즐긴다",
+          "sets_flags": [
+            "flg_yui_xmas_cake"
+          ],
+          "mood_delta": 8,
+          "affection_delta": 8
+        }
+      ],
+      "time_cost_minutes": 45,
+      "evidence_level": "[해석]"
+    },
+    {
       "id": "evt_yui_jan1_shrine",
       "title_ko": "설날 아침 유이와 키사라기 신사 첫참배",
       "character_id": "chr_yui",
@@ -3419,7 +5522,7 @@
       "day_end": 11,
       "start_minute": 480,
       "end_minute": 600,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_yui_eve_coat"
       ],
@@ -3430,7 +5533,112 @@
       "sets_flags": [
         "flg_yui_shrine_jan1"
       ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"기모노 정말 잘 어울려!\" — 유이와 신사 첫참배를 떠난다",
+          "sets_flags": [
+            "flg_yui_shrine_jan1"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "\"추우니까 머플러 챙겨\" — 다정하게 챙겨 주며 동행한다",
+          "sets_flags": [
+            "flg_yui_shrine_jan1"
+          ],
+          "mood_delta": 10,
+          "affection_delta": 12
+        }
+      ],
       "time_cost_minutes": 90,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan2_witness",
+      "title_ko": "1/2 시라헤가이케 공원 사이온지·요시키 밀담 목격",
+      "character_id": "chr_yui",
+      "location_id": "loc_shirahegaike_park",
+      "day_start": 12,
+      "day_end": 12,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "scene_type": "story_branch",
+      "prerequisite_events": [
+        "evt_yui_jan1_shrine"
+      ],
+      "required_flags": [
+        "flg_yui_shrine_jan1"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_yui_jan2_witness"
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan3_hotel_call",
+      "title_ko": "1/3 저녁 호출 전화와 스테이션 호텔 대기",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_room",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "scene_type": "phone_event",
+      "prerequisite_events": [
+        "evt_yui_jan1_shrine"
+      ],
+      "required_flags": [
+        "flg_yui_shrine_jan1"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_yui_jan3_hotel_call"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "스테이션 호텔 로비에서 유이가 나올 때까지 끝까지 기다린다",
+          "sets_flags": [
+            "flg_yui_jan3_hotel_call"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "상황만 확인하고 발길을 돌린다",
+          "sets_flags": [
+            "flg_yui_jan3_hotel_call"
+          ],
+          "mood_delta": -10,
+          "affection_delta": 0
+        }
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan3_park_rescue",
+      "title_ko": "1/3 심야 야소하치 공원 유이 구출",
+      "character_id": "chr_yui",
+      "location_id": "loc_yasohachi_park",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1320,
+      "end_minute": 1430,
+      "scene_type": "story_branch",
+      "prerequisite_events": [
+        "evt_yui_jan3_hotel_call"
+      ],
+      "required_flags": [
+        "flg_yui_jan3_hotel_call"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_yui_jan3_park_rescue"
+      ],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -3454,6 +5662,47 @@
         "flg_yui_route_complete"
       ],
       "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_misako_cafe_help",
+      "title_ko": "12/22~23 자택 1층 찻집 미사코 일손 돕기",
+      "character_id": "chr_misako",
+      "location_id": "loc_home_cafe",
+      "day_start": 1,
+      "day_end": 2,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_prologue_start"
+      ],
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_misako_cafe_help"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "커피 원두 정리와 테이블 세팅을 적극 돕는다",
+          "sets_flags": [
+            "flg_misako_cafe_help"
+          ],
+          "mood_delta": 12,
+          "affection_delta": 12
+        },
+        {
+          "choice_ko": "카운터에 앉아 따뜻한 커피 한 잔을 얻어 마신다",
+          "sets_flags": [
+            "flg_misako_cafe_help"
+          ],
+          "mood_delta": 6,
+          "affection_delta": 6
+        }
+      ],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -3488,7 +5737,7 @@
       "day_end": 3,
       "start_minute": 1380,
       "end_minute": 1440,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_misako_cafe_frog"
       ],
@@ -3523,6 +5772,29 @@
       "blocked_by_flags": [],
       "sets_flags": [
         "flg_misako_bath_jan1"
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_misako_jan4_talk",
+      "title_ko": "1/4 저녁 거실 미사코와의 진솔한 진로 대화",
+      "character_id": "chr_misako",
+      "location_id": "loc_home_living",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 1020,
+      "end_minute": 1200,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_misako_eve_living"
+      ],
+      "required_flags": [
+        "flg_misako_eve_living"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_misako_jan4_talk"
       ],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
@@ -3574,6 +5846,70 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_tomomi_dec27_phone",
+      "title_ko": "12/27 밤 자실 토모미의 고민 상담 전화",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_room",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 1080,
+      "end_minute": 1290,
+      "scene_type": "phone_event",
+      "prerequisite_events": [
+        "evt_tomomi_blackmail_intro"
+      ],
+      "required_flags": [
+        "flg_tomomi_blackmail_seen"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_tomomi_dec27_phone"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"끝까지 네 편이니까 걱정 마\" — 든든하게 응원한다",
+          "sets_flags": [
+            "flg_tomomi_dec27_phone"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "\"무슨 일인지 자세히 말해 줘\" — 차분히 경청한다",
+          "sets_flags": [
+            "flg_tomomi_dec27_phone"
+          ],
+          "mood_delta": 10,
+          "affection_delta": 10
+        }
+      ],
+      "time_cost_minutes": 15,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_tomomi_jan1_kimono",
+      "title_ko": "1/1 아침 자택 앞 기모노 차림의 토모미",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_front",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 480,
+      "end_minute": 660,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_tomomi_blackmail_intro"
+      ],
+      "required_flags": [
+        "flg_tomomi_blackmail_seen"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_tomomi_jan1_kimono"
+      ],
+      "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_tomomi_photo_club_resolve",
       "title_ko": "1/4 이후 사진부실 증거 확보 및 토모미 오해 해소",
       "character_id": "chr_tomomi",
@@ -3594,6 +5930,29 @@
         "flg_tomomi_photo_evidence"
       ],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_tomomi_jan5_phone",
+      "title_ko": "1/4~5 자실 토모미의 오해 해소 감사 전화",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_room",
+      "day_start": 14,
+      "day_end": 15,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "scene_type": "phone_event",
+      "prerequisite_events": [
+        "evt_tomomi_photo_club_resolve"
+      ],
+      "required_flags": [
+        "flg_tomomi_photo_evidence"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_tomomi_jan5_phone"
+      ],
+      "time_cost_minutes": 15,
       "evidence_level": "[확인]"
     },
     {
@@ -3640,6 +5999,88 @@
         "flg_izumi_parfait_intro"
       ],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_izumi_kyudo_practice",
+      "title_ko": "12/23~27 궁도장 이즈미 연습 참관",
+      "character_id": "chr_izumi",
+      "location_id": "loc_school_kyudo",
+      "day_start": 2,
+      "day_end": 6,
+      "start_minute": 600,
+      "end_minute": 900,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_izumi_parfait_intro"
+      ],
+      "required_flags": [
+        "flg_izumi_parfait_intro"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_izumi_kyudo_visit"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "집중해서 활 쏘는 모습이 멋지다고 진심으로 칭찬한다",
+          "sets_flags": [
+            "flg_izumi_kyudo_visit"
+          ],
+          "mood_delta": 14,
+          "affection_delta": 12
+        },
+        {
+          "choice_ko": "궁도 동작을 흉내 내며 분위기를 띄운다",
+          "sets_flags": [
+            "flg_izumi_kyudo_visit"
+          ],
+          "mood_delta": 6,
+          "affection_delta": 8
+        }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_izumi_xmas_phone",
+      "title_ko": "12/24~25 심야 이즈미의 서툰 크리스마스 안부 전화",
+      "character_id": "chr_izumi",
+      "location_id": "loc_home_room",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 1260,
+      "end_minute": 1410,
+      "scene_type": "phone_event",
+      "prerequisite_events": [
+        "evt_izumi_parfait_intro"
+      ],
+      "required_flags": [
+        "flg_izumi_parfait_intro"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_izumi_xmas_phone"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"메리 크리스마스! 12/28 영화 데이트 기대할게\"",
+          "sets_flags": [
+            "flg_izumi_xmas_phone"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 12
+        },
+        {
+          "choice_ko": "\"목소리 들으니까 반갑네, 감기 조심해\"",
+          "sets_flags": [
+            "flg_izumi_xmas_phone"
+          ],
+          "mood_delta": 10,
+          "affection_delta": 8
+        }
+      ],
+      "time_cost_minutes": 15,
       "evidence_level": "[확인]"
     },
     {
@@ -3694,7 +6135,7 @@
     },
     {
       "id": "evt_karen_house_intro",
-      "title_ko": "12/22 카렌 자택 첫 방문('만나러 왔을 뿐')",
+      "title_ko": "12/22 카렌 자택 첫 방문('만나러 왔을 뿐' vs '사인')",
       "character_id": "chr_karen",
       "location_id": "loc_karen_house",
       "day_start": 1,
@@ -3711,6 +6152,25 @@
       "blocked_by_flags": [],
       "sets_flags": [
         "flg_karen_house_intro"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"그냥 네가 보고 싶어서 왔어\" (만나러 왔을 뿐 · 기분치 ↑)",
+          "sets_flags": [
+            "flg_karen_house_intro",
+            "flg_karen_mood_positive"
+          ],
+          "mood_delta": 18,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "\"사인 한 장 받으러 왔어\" (아이돌 취급 · 기분치 ↓)",
+          "sets_flags": [
+            "flg_karen_house_intro"
+          ],
+          "mood_delta": -20,
+          "affection_delta": -5
+        }
       ],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
@@ -3739,6 +6199,29 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_karen_tv_recording",
+      "title_ko": "12/27 방송국 카렌 공개 녹화 초대권 참관",
+      "character_id": "chr_karen",
+      "location_id": "loc_tv_station",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 900,
+      "end_minute": 1080,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_karen_uniform_cover"
+      ],
+      "required_flags": [
+        "flg_karen_uniform_cover"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_karen_tv_recording"
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_karen_negative_seize",
       "title_ko": "12/26~28 자택 앞 요시키 사진 거래 거절 및 네거티브 압수",
       "character_id": "chr_karen",
@@ -3759,6 +6242,54 @@
         "flg_karen_negative_seized"
       ],
       "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_karen_coast_shoot",
+      "title_ko": "12/29 야소하치 해안 촬영장 카렌 휴식 동행",
+      "character_id": "chr_karen",
+      "location_id": "loc_yasohachi_coast",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 780,
+      "end_minute": 960,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_karen_negative_seize"
+      ],
+      "required_flags": [
+        "flg_karen_negative_seized"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "sets_flags": [
+        "flg_karen_coast_shoot"
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_karen_hawaii_souvenir",
+      "title_ko": "1/4~6 카렌 자택 하와이 촬영 귀국 선물",
+      "character_id": "chr_karen",
+      "location_id": "loc_karen_house",
+      "day_start": 14,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 900,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_karen_negative_seize"
+      ],
+      "required_flags": [
+        "flg_karen_negative_seized"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_karen_hawaii_souvenir"
+      ],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -3816,7 +6347,7 @@
       "day_end": 3,
       "start_minute": 840,
       "end_minute": 1020,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_sakurako_window_intro"
       ],
@@ -3826,6 +6357,47 @@
       "blocked_by_flags": [],
       "sets_flags": [
         "flg_sakurako_eve_single"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"당연히 여자친구는 없어\" — 진심을 담아 답한다",
+          "sets_flags": [
+            "flg_sakurako_eve_single"
+          ],
+          "mood_delta": 18,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "\"글쎄, 비밀이야\" — 장난스레 넘긴다",
+          "sets_flags": [
+            "flg_sakurako_eve_single"
+          ],
+          "mood_delta": -5,
+          "affection_delta": 5
+        }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_sakurako_hospital_visit_mid",
+      "title_ko": "12/26~30 시민병원 사쿠라코와의 봄 벚꽃 약속",
+      "character_id": "chr_sakurako",
+      "location_id": "loc_city_hospital",
+      "day_start": 5,
+      "day_end": 9,
+      "start_minute": 840,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_sakurako_eve_answer"
+      ],
+      "required_flags": [
+        "flg_sakurako_eve_single"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_sakurako_mid_promise"
       ],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
@@ -3839,7 +6411,7 @@
       "day_end": 10,
       "start_minute": 1320,
       "end_minute": 1410,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_sakurako_eve_answer"
       ],
@@ -3931,7 +6503,7 @@
       "day_end": 4,
       "start_minute": 600,
       "end_minute": 840,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_kozue_library_bump"
       ],
@@ -3941,6 +6513,47 @@
       "blocked_by_flags": [],
       "sets_flags": [
         "flg_kozue_xmas_date"
+      ],
+      "time_cost_minutes": 90,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_kozue_dec27_date",
+      "title_ko": "12/27 스튜디오 ATARU 코즈에 연말 영화·전망대 데이트",
+      "character_id": "chr_kozue",
+      "location_id": "loc_studio_ataru",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_kozue_xmas_date"
+      ],
+      "required_flags": [
+        "flg_kozue_xmas_date"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_kozue_dec27_date"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "코즈에가 보고 싶어 한 로맨스 영화를 선택한다",
+          "sets_flags": [
+            "flg_kozue_dec27_date"
+          ],
+          "mood_delta": 15,
+          "affection_delta": 14
+        },
+        {
+          "choice_ko": "유쾌한 코미디 영화로 분위기를 띄운다",
+          "sets_flags": [
+            "flg_kozue_dec27_date"
+          ],
+          "mood_delta": 10,
+          "affection_delta": 10
+        }
       ],
       "time_cost_minutes": 90,
       "evidence_level": "[확인]"
@@ -3994,6 +6607,31 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_mirei_dec29_hotel_sight",
+      "title_ko": "12/29 오전 스테이션 호텔 미레이 선생님의 복잡한 대화 목격",
+      "character_id": "chr_mirei",
+      "location_id": "loc_station_hotel",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 540,
+      "end_minute": 660,
+      "scene_type": "story_branch",
+      "prerequisite_events": [
+        "evt_mirei_staffroom_intro"
+      ],
+      "required_flags": [
+        "flg_mirei_staffroom_intro"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "sets_flags": [
+        "flg_mirei_dec29_sight"
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_mirei_nye_hotel",
       "title_ko": "12/31 17:00 스테이션 호텔 로비 미레이 위로 이벤트",
       "character_id": "chr_mirei",
@@ -4002,7 +6640,7 @@
       "day_end": 10,
       "start_minute": 1020,
       "end_minute": 1320,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": [
         "evt_mirei_staffroom_intro"
       ],
@@ -4014,6 +6652,24 @@
       ],
       "sets_flags": [
         "flg_mirei_nye_hotel"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "따뜻한 차를 건네며 묵묵히 곁에서 위로한다",
+          "sets_flags": [
+            "flg_mirei_nye_hotel"
+          ],
+          "mood_delta": 20,
+          "affection_delta": 18
+        },
+        {
+          "choice_ko": "새해엔 분명 좋은 일이 있을 거라며 격려한다",
+          "sets_flags": [
+            "flg_mirei_nye_hotel"
+          ],
+          "mood_delta": 12,
+          "affection_delta": 12
+        }
       ],
       "time_cost_minutes": 60,
       "evidence_level": "[확인]"
@@ -4093,6 +6749,74 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_minori_jan1_sevenmart",
+      "title_ko": "1/1~3 세븐마트 신년 알바(히로코의 달라진 미소)",
+      "character_id": "chr_minori",
+      "location_id": "loc_sevenmart",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 600,
+      "end_minute": 1080,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_minori_dec29_rescue"
+      ],
+      "required_flags": [
+        "flg_minori_park_rescue"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "sets_flags": [
+        "flg_minori_jan1_shift"
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_minori_jan4_movie_trap",
+      "title_ko": "1/4 자택 앞 히로코의 영화 권유 시험 분기",
+      "character_id": "chr_minori",
+      "location_id": "loc_home_front",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "scene_type": "story_branch",
+      "prerequisite_events": [
+        "evt_minori_dec29_rescue"
+      ],
+      "required_flags": [
+        "flg_minori_park_rescue"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_trip_joined"
+      ],
+      "sets_flags": [
+        "flg_minori_jan4_declined_ok"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"미안, 미노리와 약속이 있어서 못 가\" (정답 · 신뢰 ↑)",
+          "sets_flags": [
+            "flg_minori_jan4_declined_ok"
+          ],
+          "mood_delta": 18,
+          "affection_delta": 15
+        },
+        {
+          "choice_ko": "\"좋아, 같이 영화 보러 가자!\" (함정 · 기분치 ↓↓)",
+          "sets_flags": [
+            "flg_minori_jan4_movie_trap_hit"
+          ],
+          "mood_delta": -25,
+          "affection_delta": -15
+        }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_minori_jan5_climax",
       "title_ko": "1/4~5 키사라기역 미노리 데이트 및 최종 마일스톤",
       "character_id": "chr_minori",
@@ -4109,7 +6833,8 @@
         "flg_minori_park_rescue"
       ],
       "blocked_by_flags": [
-        "flg_onsen_trip_joined"
+        "flg_onsen_trip_joined",
+        "flg_minori_jan4_movie_trap_hit"
       ],
       "sets_flags": [
         "flg_minori_route_complete"
@@ -4141,8 +6866,72 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_youko_dec27_akira_ask",
+      "title_ko": "12/27~28 아키라의 질문: 요코 기분 나쁜 이유",
+      "character_id": "chr_youko",
+      "location_id": "loc_akira_house",
+      "day_start": 6,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "scene_type": "story_branch",
+      "prerequisite_events": [
+        "evt_youko_arcade_intro"
+      ],
+      "required_flags": [
+        "flg_youko_arcade_bike"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_youko_secret_kept"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"알려 주지 않는다\" — 요코의 비밀을 지킨다 (기분치 ↑)",
+          "sets_flags": [
+            "flg_youko_secret_kept"
+          ],
+          "mood_delta": 16,
+          "affection_delta": 12
+        },
+        {
+          "choice_ko": "\"사실대로 다 말해 준다\" (기분치 ↓)",
+          "sets_flags": [
+            "flg_youko_secret_kept"
+          ],
+          "mood_delta": -15,
+          "affection_delta": -5
+        }
+      ],
+      "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_youko_jan1_sunrise",
+      "title_ko": "1/1 이른 아침 야소하치 해안 요코와 바이크 첫 해돋이",
+      "character_id": "chr_youko",
+      "location_id": "loc_yasohachi_coast",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 360,
+      "end_minute": 540,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_youko_arcade_intro"
+      ],
+      "required_flags": [
+        "flg_youko_arcade_bike"
+      ],
+      "blocked_by_flags": [],
+      "sets_flags": [
+        "flg_youko_jan1_sunrise"
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_youko_climax",
-      "title_ko": "요코 최종 관계 확정 마일스톤(엔딩 우선권 트랩 활성화)",
+      "title_ko": "요코 최종 관계 확정 마일스톤(엔딩 우선권 트랩 / 후일담 분기)",
       "character_id": "chr_youko",
       "location_id": "loc_youko_house",
       "day_start": 13,
@@ -4162,6 +6951,26 @@
       "sets_flags": [
         "flg_youko_route_complete",
         "flg_youko_ending_override_active"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "\"네 바이크 뒷자리는 내 거야!\" (엔딩 1: 우선권 1000 발동)",
+          "sets_flags": [
+            "flg_youko_route_complete",
+            "flg_youko_ending_override_active"
+          ],
+          "mood_delta": 20,
+          "affection_delta": 35
+        },
+        {
+          "choice_ko": "\"정비소에서 함께 천천히 꿈을 키우자\" (엔딩 2: 후일담 분기)",
+          "sets_flags": [
+            "flg_youko_route_complete",
+            "flg_youko_route_alt_variant"
+          ],
+          "mood_delta": 18,
+          "affection_delta": 35
+        }
       ],
       "time_cost_minutes": 60,
       "evidence_level": "[확인]"
@@ -4190,6 +6999,31 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_azumi_dec28_consult",
+      "title_ko": "12/28 자택 앞 아즈미 선생님의 텐도 고민 상담",
+      "character_id": "chr_azumi",
+      "location_id": "loc_home_front",
+      "day_start": 7,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": [
+        "evt_azumi_nursery_intro"
+      ],
+      "required_flags": [
+        "flg_azumi_nursery_help"
+      ],
+      "blocked_by_flags": [
+        "flg_azumi_tendo_lost"
+      ],
+      "sets_flags": [
+        "flg_azumi_dec28_consult"
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_azumi_tendo_duel",
       "title_ko": "12/26~29 보육원 텐도 연적 분기(성공/패배)",
       "character_id": "chr_azumi",
@@ -4211,16 +7045,20 @@
       ],
       "branch_flag_options": [
         {
-          "choice_ko": "올바른 대응/아이템 선택(텐도 격퇴)",
+          "choice_ko": "아즈미 선생님의 진심을 지지하며 당당히 텐도를 격퇴한다",
           "sets_flags": [
             "flg_azumi_tendo_defeated"
-          ]
+          ],
+          "mood_delta": 20,
+          "affection_delta": 25
         },
         {
-          "choice_ko": "선택 실패(텐도에게 패배·루트 단절)",
+          "choice_ko": "기세에 밀려 물러선다 (텐도에게 패배·루트 단절)",
           "sets_flags": [
             "flg_azumi_tendo_lost"
-          ]
+          ],
+          "mood_delta": -30,
+          "affection_delta": -15
         }
       ],
       "time_cost_minutes": 45,
@@ -4350,6 +7188,31 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_sachiko_jan3_phone",
+      "title_ko": "1/3 저녁 자실 나가시마 사치코의 상경 초대 전화",
+      "character_id": "chr_sachiko",
+      "location_id": "loc_home_room",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1320,
+      "scene_type": "phone_event",
+      "prerequisite_events": [
+        "evt_sachiko_ryokan_met"
+      ],
+      "required_flags": [
+        "flg_sachiko_ryokan_met"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_jan6_home_broken"
+      ],
+      "sets_flags": [
+        "flg_sachiko_jan3_phone"
+      ],
+      "time_cost_minutes": 15,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_sachiko_climax",
       "title_ko": "사치코 후반 최종 관계 확정 마일스톤",
       "character_id": "chr_sachiko",
@@ -4396,6 +7259,31 @@
         "flg_kumiko_ryokan_met"
       ],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_kumiko_jan1_arrival",
+      "title_ko": "1/1 저녁 자택 앞 설날 상경한 쿠미코 맞이",
+      "character_id": "chr_kumiko",
+      "location_id": "loc_home_front",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 960,
+      "end_minute": 1200,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": [
+        "evt_kumiko_ryokan_met"
+      ],
+      "required_flags": [
+        "flg_kumiko_ryokan_met"
+      ],
+      "blocked_by_flags": [
+        "flg_onsen_jan6_home_broken"
+      ],
+      "sets_flags": [
+        "flg_kumiko_jan1_arrival"
+      ],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -4494,6 +7382,24 @@
       "sets_flags": [
         "flg_misa_tennis_match"
       ],
+      "minigame_spec": {
+        "type": "tennis_rally",
+        "opponent_id": "chr_misa",
+        "points_to_win": 5,
+        "shot_types": [
+          "power",
+          "lob",
+          "drop"
+        ],
+        "win_flag": "flg_misa_tennis_won",
+        "win_bonus_affection": 15,
+        "win_bonus_mood": 20,
+        "loss_bonus_affection": 5,
+        "loss_bonus_mood": 5,
+        "advances_on_loss": true,
+        "original_rule_note": "원작 3세트 매치는 승패 무관하게 찻집 대화 및 12/30 키사라기 데이트 약속으로 진행됨 [확인]. 웹 버전 5포인트 랠리 대결로 구현 [재구성안].",
+        "evidence_level": "[재구성안]"
+      },
       "time_cost_minutes": 90,
       "evidence_level": "[확인]"
     },
@@ -4518,6 +7424,24 @@
       ],
       "sets_flags": [
         "flg_misa_kisaragi_date"
+      ],
+      "branch_flag_options": [
+        {
+          "choice_ko": "관람차와 상성 점괘를 즐기며 솔직한 마음을 나눈다",
+          "sets_flags": [
+            "flg_misa_kisaragi_date"
+          ],
+          "mood_delta": 18,
+          "affection_delta": 20
+        },
+        {
+          "choice_ko": "짜릿한 롤러코스터로 승부욕을 불태운다",
+          "sets_flags": [
+            "flg_misa_kisaragi_date"
+          ],
+          "mood_delta": 12,
+          "affection_delta": 15
+        }
       ],
       "time_cost_minutes": 150,
       "evidence_level": "[확인]"
@@ -4546,6 +7470,541 @@
       ],
       "time_cost_minutes": 60,
       "evidence_level": "[해석]"
+    }
+  ],
+  "call_time_cost_minutes": 5,
+  "callable_locations": [
+    {
+      "location_id": "loc_home_room",
+      "phone_type": "home_phone",
+      "label_ko": "주인공 방 전화기",
+      "evidence_level": "[확인]"
+    },
+    {
+      "location_id": "loc_home_living",
+      "phone_type": "home_phone",
+      "label_ko": "자택 거실 전화기",
+      "evidence_level": "[확인]"
+    },
+    {
+      "location_id": "loc_home_cafe",
+      "phone_type": "home_phone",
+      "label_ko": "1층 찻집 카운터 전화기",
+      "evidence_level": "[해석]"
+    },
+    {
+      "location_id": "loc_home_front",
+      "phone_type": "payphone",
+      "label_ko": "주택가 모퉁이 공중전화",
+      "evidence_level": "[재구성안]"
+    },
+    {
+      "location_id": "loc_yasohachi_station",
+      "phone_type": "payphone",
+      "label_ko": "야소하치역 개찰구 공중전화",
+      "evidence_level": "[재구성안]"
+    },
+    {
+      "location_id": "loc_kisaragi_station",
+      "phone_type": "payphone",
+      "label_ko": "키사라기역 광장 공중전화",
+      "evidence_level": "[재구성안]"
+    },
+    {
+      "location_id": "loc_sevenmart",
+      "phone_type": "payphone",
+      "label_ko": "세븐마트 입구 공중전화",
+      "evidence_level": "[재구성안]"
+    },
+    {
+      "location_id": "loc_school_gate",
+      "phone_type": "payphone",
+      "label_ko": "야소하치 학원 교문 앞 공중전화",
+      "evidence_level": "[재구성안]"
+    },
+    {
+      "location_id": "loc_nagashima_ryokan",
+      "phone_type": "home_phone",
+      "label_ko": "나가시마 료칸 로비 전화기",
+      "evidence_level": "[해석]"
+    }
+  ],
+  "phone_directory": [
+    {
+      "character_id": "chr_akira",
+      "phone_label_ko": "카와지리 아키라 자택",
+      "home_location_id": "loc_akira_house",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1350
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "여보세요, 류노스케냐! 오늘 어디 돌아다닐 건데? 12/28엔 꼭 전화 확인해 둬!",
+      "away_message_ko": "지금 아키라는 유도부 훈련이나 외출 중인 듯 신호음만 울린다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_yui",
+      "phone_label_ko": "나루사와 유이 (자택 내선)",
+      "home_location_id": "loc_home_yui_room",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1380
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "응, 오빠? 집 안에서 전화까지 하다니 장난꾸러기네. 오늘 일정 있으면 알려 줘!",
+      "away_message_ko": "유이는 방에 없는 것 같다. 공원이나 거실 쪽을 둘러보면 만날 수 있을지도 모른다.",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_misako",
+      "phone_label_ko": "나루사와 미사코 (1층 찻집)",
+      "home_location_id": "loc_home_cafe",
+      "call_hours": {
+        "start_minute": 540,
+        "end_minute": 1380
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "네, 1층 찻집이에요. 어머, 류노스케구나? 시간 되면 따뜻한 커피 마시러 내려오렴.",
+      "away_message_ko": "찻집이 잠시 바쁜지 수화기가 연결되지 않는다.",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_tomomi",
+      "phone_label_ko": "미즈노 토모미 자택",
+      "home_location_id": "loc_tomomi_house",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1320
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "family_relay",
+      "default_greeting_ko": "여보세요, 류노스케? 전화 고마워. 방학인데도 반장 일이랑 이것저것 신경 쓰여서 조금 바쁘네.",
+      "away_message_ko": "토모미의 어머니가 전화를 받았다. '토모미는 방금 학교나 역 쪽으로 나갔단다.'",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_izumi",
+      "phone_label_ko": "시노하라 이즈미 자택",
+      "home_location_id": "loc_izumi_house",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1350
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "family_relay",
+      "default_greeting_ko": "응? 류노스케냐! 별일 없는데 왜 전화를… 아, 아니, 궁도장 연습 끝나면 시간 괜찮아.",
+      "away_message_ko": "시노하라 저택 집사가 응대했다. '아가씨께서는 학교 궁도장 연습에 나가 계십니다.'",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_karen",
+      "phone_label_ko": "마이지마 카렌 자택 / 매니저 연락처",
+      "home_location_id": "loc_karen_house",
+      "call_hours": {
+        "start_minute": 540,
+        "end_minute": 1260
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "unavailable_reason_ko": "12/31~1/3 기간에는 하와이 해외 촬영 일정으로 일본을 비워 통화가 불가능합니다. (1/4 귀국 예정)",
+      "home_answer_style": "answering_machine",
+      "default_greeting_ko": "여보세요… 류노스케? 잠깐 숨 돌리던 참이었어. 스케줄 틈틈이 얼굴 보여 주면 반가울 것 같아.",
+      "away_message_ko": "자동응답기가 연결되었다. '카렌은 현재 프로덕션 VIP나 방송국 녹화 일정 중입니다.'",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_sakurako",
+      "phone_label_ko": "시민병원 병동 호출 전화",
+      "home_location_id": "loc_city_hospital",
+      "call_hours": {
+        "start_minute": 540,
+        "end_minute": 1260
+      },
+      "required_flags": [
+        "flg_sakurako_window_met"
+      ],
+      "unavailable_days": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "unavailable_reason_ko": "1/1 이후 퇴원 및 요양 절차로 병동 내선이 연결되지 않습니다. (1/6 야소하치역 단서 주의)",
+      "home_answer_style": "workplace_desk",
+      "default_greeting_ko": "여보세요? 후후, 류노스케 목소리다! 오후 2시~5시 사이 창가에서 기다리고 있을게.",
+      "away_message_ko": "간호 스테이션 안내: '스기모토 양은 현재 검진 및 휴식 시간입니다. 오후 면회 시간에 방문해 주세요.'",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_kozue",
+      "phone_label_ko": "츠즈키 코즈에 자택",
+      "home_location_id": "loc_school_tennis",
+      "call_hours": {
+        "start_minute": 510,
+        "end_minute": 1260
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "어, 선배님?! 전화해 주셨군요! 저 요즘 도서실이랑 테니스 코트, 키사라기 쪽에 자주 가요!",
+      "away_message_ko": "코즈에는 지금 외출 중인 것 같다. 테니스 코트나 도서실, 스튜디오 ATARU 부근에 있을지도 모른다.",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_mirei",
+      "phone_label_ko": "야소하치 학원 교무실 직통",
+      "home_location_id": "loc_school_staffroom",
+      "call_hours": {
+        "start_minute": 510,
+        "end_minute": 1140
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "workplace_desk",
+      "default_greeting_ko": "네, 야소하치 학원 교무실 카타기리입니다. 어머, 류노스케니? 방학 중에도 궁금한 게 있으면 들르렴.",
+      "away_message_ko": "교무실 당직 교사가 받았다. '카타기리 선생님은 지금 자리를 비우셨네. 키사라기 쪽 볼일이 있으시다더군.'",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_minori",
+      "phone_label_ko": "편의점 세븐마트 (스즈키 히로코)",
+      "home_location_id": "loc_sevenmart",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1350
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "workplace_desk",
+      "default_greeting_ko": "네, 세븐마트입니다! 어… 류노스케 군? 교대 시간 맞춰서 들러 주시면 반가울 거예요.",
+      "away_message_ko": "세븐마트 점장: '스즈키 양은 저녁 5시 이후 시프트로 출근한다네.'",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_youko",
+      "phone_label_ko": "미나미카와 모터스",
+      "home_location_id": "loc_youko_house",
+      "call_hours": {
+        "start_minute": 540,
+        "end_minute": 1320
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "어이, 류노스케! 웬일로 전화질이야? 심심하면 게임센터나 우리 모터스로 놀러 오라고!",
+      "away_message_ko": "모터스 사장님: '요코 녀석은 또 바이크 몰고 키사라기 게임센터 쪽으로 나간 모양이네.'",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_azumi",
+      "phone_label_ko": "성 하나조노 보육원 사무실",
+      "home_location_id": "loc_hanazono_nursery",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1080
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "workplace_desk",
+      "default_greeting_ko": "네, 성 하나조노 보육원 야스다 아즈미입니다! 류노스케 군, 아이들이 또 언제 오냐고 묻고 있어요.",
+      "away_message_ko": "보육원 업무 시간이 끝났거나 야외 활동 중인 듯 응답이 없다.",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_misato",
+      "phone_label_ko": "뉴바이 흥업 여행사 안내 데스크",
+      "home_location_id": "loc_nyubai_travel",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1140
+      },
+      "required_flags": [
+        "flg_prologue_done"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "",
+      "home_answer_style": "workplace_desk",
+      "default_greeting_ko": "안녕하세요, 뉴바이 흥업 노노무라 미사토입니다! 류노스케 군, 동지온천 투어 상품 궁금한 거 있니?",
+      "away_message_ko": "여행사 영업시간 외이거나 투어 버스 안내 출장 중이다.",
+      "evidence_level": "[해석]"
+    },
+    {
+      "character_id": "chr_sachiko",
+      "phone_label_ko": "동지온천 나가시마 료칸 프런트",
+      "home_location_id": "loc_nagashima_ryokan",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1350
+      },
+      "required_flags": [
+        "flg_sachiko_ryokan_met"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "동지온천 나가시마 료칸에서 사치코 여주인과 인연을 맺기 전에는 개인 연락처를 알지 못합니다.",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "어머, 류노스케 씨? 먼 곳까지 안부 전화 주셨군요. 1월 3일 저녁엔 제가 직접 연락드릴지도 몰라요.",
+      "away_message_ko": "료칸 손님 응대 중인지 프런트가 잠시 통화 중이다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_kumiko",
+      "phone_label_ko": "나가시마 쿠미코 (료칸 내선)",
+      "home_location_id": "loc_nagashima_ryokan",
+      "call_hours": {
+        "start_minute": 480,
+        "end_minute": 1320
+      },
+      "required_flags": [
+        "flg_kumiko_ryokan_met"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "동지온천에서 쿠미코와 친해진 이후에 연락할 수 있습니다.",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "여보세요, 오빠?! 나 새해 되면 꼭 야소하치 마을 놀러 갈 거니까 마중 나와야 해!",
+      "away_message_ko": "쿠미코는 지금 료칸 심부름이나 마을 구경에 나선 모양이다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "character_id": "chr_misa",
+      "phone_label_ko": "타나카 미사 (체대 기숙사 메모)",
+      "home_location_id": "loc_yasohachi_station",
+      "call_hours": {
+        "start_minute": 510,
+        "end_minute": 1260
+      },
+      "required_flags": [
+        "flg_misa_station_bump"
+      ],
+      "unavailable_days": [],
+      "unavailable_reason_ko": "12/25~28 야소하치역에서 미사와 부딪혀 연락처를 교환하기 전에는 걸 수 없습니다.",
+      "home_answer_style": "direct",
+      "default_greeting_ko": "오, 류노스케! 테니스 라켓은 잘 챙겨 뒀지? 12/29 아침 9시 승부랑 12/30 데이트 잊지 마!",
+      "away_message_ko": "미사는 조깅이나 외출 중인지 전화가 연결되지 않는다.",
+      "evidence_level": "[해석]"
+    }
+  ],
+  "phone_events": [
+    {
+      "id": "phn_izumi_xmas_call",
+      "event_id": "evt_izumi_xmas_phone",
+      "character_id": "chr_izumi",
+      "direction": "incoming",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 1260,
+      "end_minute": 1410,
+      "summary_ko": "12/24~25 심야 이즈미의 크리스마스 안부 전화",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "phn_tomomi_dec27_call",
+      "event_id": "evt_tomomi_dec27_phone",
+      "character_id": "chr_tomomi",
+      "direction": "incoming",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 1080,
+      "end_minute": 1290,
+      "summary_ko": "12/27 밤 토모미의 고민 상담 전화",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "phn_akira_onsen_dec28",
+      "event_id": "evt_onsen_phone_invite",
+      "character_id": "chr_akira",
+      "direction": "incoming",
+      "day_start": 7,
+      "day_end": 7,
+      "start_minute": 600,
+      "end_minute": 1260,
+      "summary_ko": "12/28 아키라의 동지온천 당첨 전화 (최대 마크로 분기!)",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "phn_yui_jan3_hotel",
+      "event_id": "evt_yui_jan3_hotel_call",
+      "character_id": "chr_yui",
+      "direction": "incoming",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "summary_ko": "1/3 저녁 스테이션 호텔 호출 전화",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "phn_sachiko_jan3_hotel",
+      "event_id": "evt_sachiko_jan3_phone",
+      "character_id": "chr_sachiko",
+      "direction": "incoming",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1320,
+      "summary_ko": "1/3 저녁 사치코 여주인의 상경 초대 전화",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "phn_tomomi_jan5_call",
+      "event_id": "evt_tomomi_jan5_phone",
+      "character_id": "chr_tomomi",
+      "direction": "incoming",
+      "day_start": 14,
+      "day_end": 15,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "summary_ko": "1/4~5 오해 해소 후 토모미의 감사 전화",
+      "evidence_level": "[확인]"
+    }
+  ],
+  "daily_rumor_hints": [
+    {
+      "day_index": 1,
+      "date": "12-22",
+      "hint_ko": "체육관 뒤에서 아키라와 요코가 다투는 중! 온천 여행을 노린다면 12/22~23에 중재해 두자. 오전엔 3-B 화병·여행사·카렌 자택도 핵심.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 2,
+      "date": "12-23",
+      "hint_ko": "아키라·요코 중재 마지막 날! 오후엔 시민병원 창가(사쿠라코)와 게임센터(요코), 토모미 집을 챙겨 보자.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 3,
+      "date": "12-24",
+      "hint_ko": "크리스마스 이브: 14시 찻집(개구리 아저씨) & 시민병원(사쿠라코), 20시 거실(유이 외투), 23시 거실(미사코)까지 빈틈없이 움직이자!",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 4,
+      "date": "12-25",
+      "hint_ko": "크리스마스: 10시 테니스코트(코즈에), 야소하치역(타나카 미사 첫 조우), 저녁 18시 자택 케이크 파티가 기다린다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 5,
+      "date": "12-26",
+      "hint_ko": "오후 3-B 교실(카렌 교복 덮어주기) 이후 자택 앞 요시키 거래 거절로 이어진다. 보육원 텐도 연적 대결도 시작!",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 6,
+      "date": "12-27",
+      "hint_ko": "온천 분기 전야! 세이브 슬롯 분리를 권장한다. 스튜디오 ATARU(코즈에), 방송국(카렌), 밤 자실 토모미 전화도 확인하자.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 7,
+      "date": "12-28",
+      "hint_ko": "최대 분기일! 이즈미 파트너를 원한다면 먼저 스튜디오 ATARU 데이트를 마친 뒤, 10~21시 전화(☎)로 아키라의 온천 초대에 답하자.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 8,
+      "date": "12-29",
+      "hint_ko": "온천 참가 시 나가시마 료칸·노천온천·슬로프 집중 공략! 마을 잔류 시 09:00 미사 테니스 승부 vs 13:00 미노리 공원 구출이 상호 배타.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 9,
+      "date": "12-30",
+      "hint_ko": "온천 2일차 막바지 플래그를 놓치지 말자. 마을 잔류 시 12:45 키사라기역 미사 데이트가 열린다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 10,
+      "date": "12-31",
+      "hint_ko": "섣달그믐: 15시 야소하치역 사이온지 정보 → 17시 스테이션 호텔 미레이 위로 → 22시 시민병원 사쿠라코 야간 산책! (카렌은 하와이 출국)",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 11,
+      "date": "01-01",
+      "hint_ko": "설날: 이른 아침 해안(요코 해돋이), 08시 거실(유이 신사) & 자택 앞(토모미 기모노), 14시 시민병원(사쿠라코), 저녁 쿠미코, 심야 욕실(미사코).",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 12,
+      "date": "01-02",
+      "hint_ko": "신년 둘째 날: 야소하치역 쿠미코 합류, 시라헤가이케 공원(유이 루트 단서), 보육원·세븐마트·순회 히로인을 점검하자.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 13,
+      "date": "01-03",
+      "hint_ko": "전화(☎) 주의보! 저녁 17시 이후 유이 호텔 호출 전화 & 사치코 상경 초대 전화가 걸려 온다. 밤 22시 야소하치 공원 유이 구출도 체크!",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 14,
+      "date": "01-04",
+      "hint_ko": "카렌 하와이 귀국! 사진부실 조사(토모미 오해 해소), 자택 앞 히로코 영화 거절 분기(미노리), 저녁 거실 미사코 대화가 열린다.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 15,
+      "date": "01-05",
+      "hint_ko": "최종 직전! 키사라기역(미노리/쿠미코), 토모미 집·스테이션 호텔·카렌 집 등 막바지 클라이맥스 시간창을 노리자.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 16,
+      "date": "01-06",
+      "hint_ko": "자유행동 최종일! 새벽 2시 미사코, 오후 야소하치역 사쿠라코, 밤 유이 방. ※ 온천 연계 루트 중 외출 후 자택 귀가 절대 주의!",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 17,
+      "date": "01-07",
+      "hint_ko": "3학기 시업식 아침. 겨울방학 동안 쌓은 플래그와 우선순위 규칙에 따라 운명의 엔딩이 결정된다.",
+      "evidence_level": "[확인]"
     }
   ],
   "ending_resolution_day": 17,

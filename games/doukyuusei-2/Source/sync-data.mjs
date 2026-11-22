@@ -21,10 +21,11 @@ const locationsJson = readJson('locations.json');
 const calendarJson = readJson('calendar_days.json');
 const schedulesJson = readJson('npc_schedules.json');
 const eventsJson = readJson('events_and_flags.json');
+const phoneJson = readJson('phone_and_hints.json');
 const endingsJson = readJson('endings.json');
 
 const bundle = {
-  schema_version: '1.0.0',
+  schema_version: '2.0.0',
   game_id: charactersJson.game_id || 'doukyuusei-2',
   title_ja: charactersJson.title_ja,
   title_ko: charactersJson.title_ko,
@@ -40,7 +41,13 @@ const bundle = {
   schedules: schedulesJson.schedules,
   flags: eventsJson.flags,
   mutually_exclusive_groups: eventsJson.mutually_exclusive_groups,
+  mood_affection_rules: eventsJson.mood_affection_rules,
   events: eventsJson.events,
+  call_time_cost_minutes: phoneJson.call_time_cost_minutes,
+  callable_locations: phoneJson.callable_locations,
+  phone_directory: phoneJson.directory,
+  phone_events: phoneJson.phone_events,
+  daily_rumor_hints: phoneJson.daily_rumor_hints,
   ending_resolution_day: endingsJson.resolution_day,
   ending_resolution_rule: endingsJson.resolution_rule,
   endings: endingsJson.endings
@@ -65,5 +72,7 @@ console.log(
   `Synced verified_data -> Web/data/game-data.js (` +
     `${bundle.characters.length} chars, ${bundle.zones.length} zones, ${bundle.locations.length} locs, ` +
     `${bundle.days.length} days, ${bundle.schedules.length} schedules, ` +
-    `${bundle.flags.length} flags, ${bundle.events.length} events, ${bundle.endings.length} endings)`
+    `${bundle.flags.length} flags, ${bundle.events.length} events, ` +
+    `${bundle.phone_directory.length} phone entries, ${bundle.phone_events.length} phone events, ` +
+    `${bundle.endings.length} endings)`
 );

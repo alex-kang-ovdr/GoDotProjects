@@ -1,7 +1,65 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "doukyuusei-2",
   "content_policy_note": "성인용 이벤트는 원작 묘사를 일절 배제하고 순수 관계 단계/분기 식별자(milestone_abstracted) 및 상태 플래그 전이로만 추상화한다.",
+  "evidence_tier_mapping": {
+    "[확인]": "VERIFIED_PUBLIC",
+    "[해석]": "INFERRED",
+    "[재구성안]": "RECONSTRUCTED",
+    "[검증 필요]": "NEEDS_VERIFICATION"
+  },
+  "mood_affection_rules": {
+    "description": "원작의 숨겨진 기분치(機嫌値)·호감도 분기 사실(GAP-03)과 테니스 미니게임 판정 사양(GAP-09)을 정직하게 분리 모델링한다.",
+    "provenance_note": "카렌 자택 '만나러 왔을 뿐' vs '사인 받으러 왔다' 기분치 가감, 미노리 1/4 영화 거절 분기, 요코 12/27 아키라 질문 침묵 분기, 미사 12/29 테니스 승패 무관 찻집 진행은 원작 공략 교차 검증 [확인]. 0~100 정수 스케일·초기 기분 50·선택지별 정수 가감치는 웹 엔진 시뮬레이션용 [재구성안].",
+    "base_mood": 50,
+    "min_mood": 0,
+    "max_mood": 100,
+    "base_affection": 0,
+    "min_affection": 0,
+    "max_affection": 100,
+    "daily_talk_affection_delta": 5,
+    "daily_talk_mood_delta": 5,
+    "daily_phone_affection_delta": 3,
+    "daily_phone_mood_delta": 5,
+    "mood_tiers": [
+      { "id": "ecstatic", "min": 80, "label_ko": "최상", "icon": "✨" },
+      { "id": "happy", "min": 60, "label_ko": "좋음", "icon": "😊" },
+      { "id": "neutral", "min": 40, "label_ko": "보통", "icon": "🙂" },
+      { "id": "gloomy", "min": 20, "label_ko": "흐림", "icon": "😐" },
+      { "id": "upset", "min": 0, "label_ko": "삐짐", "icon": "😣" }
+    ],
+    "verified_mood_branches": [
+      {
+        "event_id": "evt_karen_house_intro",
+        "character_id": "chr_karen",
+        "original_fact": "12/22 카렌 자택 첫 방문에서 '만나러 왔을 뿐'은 기분치 상승, '사인 받으러 왔다'는 기분치 하락(후반 해안 이벤트 영향).",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_minori_jan4_movie_trap",
+        "character_id": "chr_minori",
+        "original_fact": "1/4 자택 앞 히로코 영화 권유에서 '약속이 있어 거절한다'가 정답이며, 승낙 시 신뢰 하락/루트 파탄.",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_youko_dec27_akira_ask",
+        "character_id": "chr_youko",
+        "original_fact": "12/27~28 아키라가 요코의 기분 나쁜 이유를 물을 때 '알려 주지 않는다'를 선택해야 요코 신뢰 유지.",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      },
+      {
+        "event_id": "evt_misa_tennis_match",
+        "character_id": "chr_misa",
+        "original_fact": "12/29 테니스 승부는 원작 3세트 매치이며 승패 무관하게 1층 찻집→12/30 키사라기 데이트로 진행됨(웹 5포인트 랠리 승리 시 보너스 호감도·기분치 지급).",
+        "evidence_level": "[확인]",
+        "numeric_model_evidence": "[재구성안]"
+      }
+    ],
+    "evidence_level": "[재구성안]"
+  },
   "flags": [
     { "id": "flg_prologue_done", "scope": "global", "type": "boolean", "description": "종업식 프롤로그 완료 및 12/22 자유행동 개시" },
     { "id": "flg_onsen_pre_akira_youko", "scope": "global", "type": "boolean", "description": "12/22~23 아키라·요코 중재 사전 플래그 완료" },
@@ -11,54 +69,81 @@
     { "id": "flg_onsen_partner_yui", "scope": "route_lock", "type": "boolean", "description": "온천 파트너로 나루사와 유이 선택" },
     { "id": "flg_onsen_partner_tomomi", "scope": "route_lock", "type": "boolean", "description": "온천 파트너로 미즈노 토모미 선택" },
     { "id": "flg_onsen_partner_izumi", "scope": "route_lock", "type": "boolean", "description": "온천 파트너로 시노하라 이즈미 선택" },
+    { "id": "flg_onsen_ski_memories", "scope": "global", "type": "boolean", "description": "12/29~30 동지온천 스키 슬로프 추억 이벤트 완료" },
     { "id": "flg_onsen_jan6_home_broken", "scope": "fail", "type": "boolean", "description": "1/6 자택 귀가 금지 제약 위반으로 온천 연계 플래그 파손" },
+    { "id": "flg_opening_ceremony_reached", "scope": "global", "type": "boolean", "description": "1/7 3학기 시업식 도착" },
 
+    { "id": "flg_yui_morning_greet", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "12/22 아침 유이와 겨울방학 첫 인사" },
     { "id": "flg_yui_coat_eve", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "12/24 거실 잠든 유이에게 외투 덮어주기 완료" },
+    { "id": "flg_yui_xmas_cake", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "12/25 자택 크리스마스 케이크 파티 완료" },
     { "id": "flg_yui_shrine_jan1", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "1/1 유이와 키사라기 신사 첫참배 완료" },
+    { "id": "flg_yui_jan2_witness", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "1/2 시라헤가이케 공원 사이온지·요시키 대화 목격" },
+    { "id": "flg_yui_jan3_hotel_call", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "1/3 저녁 호출 전화 수신 및 스테이션 호텔 대기 완료" },
+    { "id": "flg_yui_jan3_park_rescue", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "1/3 심야 야소하치 공원 유이 구출 완료" },
     { "id": "flg_yui_route_complete", "scope": "heroine", "character_id": "chr_yui", "type": "boolean", "description": "나루사와 유이 엔딩 조건 달성" },
 
+    { "id": "flg_misako_cafe_help", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "12/22~23 1층 찻집 미사코 일손 돕기 완료" },
     { "id": "flg_misako_cafe_frog", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "12/24~25 찻집 개구리 아저씨 목격 및 미사코 이벤트 진행" },
     { "id": "flg_misako_eve_living", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "12/24 23:00 거실 미사코 심야 대화 완료" },
     { "id": "flg_misako_bath_jan1", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "1/1 심야 욕실 미사코 이벤트 완료" },
+    { "id": "flg_misako_jan4_talk", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "1/4 저녁 거실 미사코와 졸업 후 진로 대화" },
     { "id": "flg_misako_route_complete", "scope": "heroine", "character_id": "chr_misako", "type": "boolean", "description": "나루사와 미사코 1/6 02:00 고백 및 엔딩 조건 달성" },
 
     { "id": "flg_tomomi_blackmail_seen", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "토모미에 대한 요시키의 방해/오해 사건 인지" },
+    { "id": "flg_tomomi_dec27_phone", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "12/27 밤 자실 토모미 안부 전화 수신" },
+    { "id": "flg_tomomi_jan1_kimono", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "1/1 아침 자택 앞 기모노 차림 토모미 조우" },
     { "id": "flg_tomomi_photo_evidence", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "사진부실 증거 확보 및 오해 해소(1/4 이후)" },
+    { "id": "flg_tomomi_jan5_phone", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "1/4~5 오해 해소 후 토모미의 감사 전화 수신" },
     { "id": "flg_tomomi_route_complete", "scope": "heroine", "character_id": "chr_tomomi", "type": "boolean", "description": "미즈노 토모미 엔딩 조건 달성" },
 
     { "id": "flg_izumi_parfait_intro", "scope": "heroine", "character_id": "chr_izumi", "type": "boolean", "description": "12/22 자택 앞→찻집 이즈미 파르페 첫 이벤트 완료" },
+    { "id": "flg_izumi_kyudo_visit", "scope": "heroine", "character_id": "chr_izumi", "type": "boolean", "description": "12/23~27 궁도장 이즈미 연습 참관 완료" },
+    { "id": "flg_izumi_xmas_phone", "scope": "heroine", "character_id": "chr_izumi", "type": "boolean", "description": "12/24~25 심야 이즈미 크리스마스 안부 전화 수신" },
     { "id": "flg_izumi_pre_onsen_date", "scope": "heroine", "character_id": "chr_izumi", "type": "boolean", "description": "12/28 전화 전 이즈미 영화/데이트 완료(온천 파트너 해금 조건)" },
     { "id": "flg_izumi_route_complete", "scope": "heroine", "character_id": "chr_izumi", "type": "boolean", "description": "시노하라 이즈미 온천 동행 및 엔딩 조건 달성" },
 
-    { "id": "flg_karen_house_intro", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/22 카렌 자택 방문('만나러 왔을 뿐' 선택)" },
+    { "id": "flg_karen_house_intro", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/22 카렌 자택 방문 완료" },
+    { "id": "flg_karen_mood_positive", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/22 카렌 자택에서 '만나러 왔을 뿐' 선택(기분치 상승)" },
     { "id": "flg_karen_uniform_cover", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/26 3-B 교실 교복 덮어주기 완료" },
+    { "id": "flg_karen_tv_recording", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/27 방송국 카렌 공개 녹화 참관 완료" },
     { "id": "flg_karen_negative_seized", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/26~28 자택 앞 요시키 사진 거절 및 네거티브 압수" },
+    { "id": "flg_karen_coast_shoot", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "12/29 야소하치 해안 촬영 휴식 동행 완료" },
+    { "id": "flg_karen_hawaii_souvenir", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "1/4~6 하와이 귀국 선물 수령" },
     { "id": "flg_karen_route_complete", "scope": "heroine", "character_id": "chr_karen", "type": "boolean", "description": "마이지마 카렌 엔딩 조건 달성" },
 
     { "id": "flg_sakurako_window_met", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "12/22 시민병원 창가 확인 및 나무 타기 첫 대면" },
     { "id": "flg_sakurako_eve_single", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "12/24 시민병원 '여자친구 없다' 선택" },
+    { "id": "flg_sakurako_mid_promise", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "12/26~30 시민병원 벚꽃 약속 대화 완료" },
     { "id": "flg_sakurako_nye_date", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "12/31 22:00 시민병원 야간 데이트 완료" },
     { "id": "flg_sakurako_jan1_misunderstanding", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "1/1 시민병원 사망 오인 이벤트 경유" },
     { "id": "flg_sakurako_route_complete", "scope": "heroine", "character_id": "chr_sakurako", "type": "boolean", "description": "스기모토 사쿠라코 1/6 야소하치역→해안 및 엔딩 조건 달성" },
 
     { "id": "flg_kozue_library_bump", "scope": "heroine", "character_id": "chr_kozue", "type": "boolean", "description": "12/22 도서실 충돌 후 12/25 테니스코트 약속 성립" },
     { "id": "flg_kozue_xmas_date", "scope": "heroine", "character_id": "chr_kozue", "type": "boolean", "description": "12/25 코즈에 데이트 완료 및 후반 순회 패턴 전환" },
+    { "id": "flg_kozue_dec27_date", "scope": "heroine", "character_id": "chr_kozue", "type": "boolean", "description": "12/27 스튜디오 ATARU 코즈에 연말 영화 데이트 완료" },
     { "id": "flg_kozue_route_complete", "scope": "heroine", "character_id": "chr_kozue", "type": "boolean", "description": "츠즈키 코즈에 엔딩 조건 달성" },
 
     { "id": "flg_mirei_staffroom_intro", "scope": "heroine", "character_id": "chr_mirei", "type": "boolean", "description": "야소하치 학원 교무실 미레이 초기 플래그 확보" },
+    { "id": "flg_mirei_dec29_sight", "scope": "heroine", "character_id": "chr_mirei", "type": "boolean", "description": "12/29 스테이션 호텔 로비 미레이 갈등 전조 목격" },
     { "id": "flg_mirei_nye_hotel", "scope": "heroine", "character_id": "chr_mirei", "type": "boolean", "description": "12/31 사이온지 정보 경유 후 스테이션 호텔 로비 미레이 위로 완료" },
     { "id": "flg_mirei_route_complete", "scope": "heroine", "character_id": "chr_mirei", "type": "boolean", "description": "카타기리 미레이 엔딩 조건 달성" },
 
     { "id": "flg_minori_vase_broken", "scope": "heroine", "character_id": "chr_minori", "type": "boolean", "description": "12/22~27 3-B 교실 화병 파손 및 교체 목격" },
     { "id": "flg_minori_park_rescue", "scope": "heroine", "character_id": "chr_minori", "type": "boolean", "description": "12/29 교정 고백 목격 및 시라헤가이케 공원 요시키 협박 구출" },
+    { "id": "flg_minori_jan1_shift", "scope": "heroine", "character_id": "chr_minori", "type": "boolean", "description": "1/1~3 세븐마트 신년 알바 대화(히로코 태도 변화)" },
+    { "id": "flg_minori_jan4_declined_ok", "scope": "heroine", "character_id": "chr_minori", "type": "boolean", "description": "1/4 히로코 영화 권유 정중 거절(미노리 약속 사수)" },
+    { "id": "flg_minori_jan4_movie_trap_hit", "scope": "fail", "character_id": "chr_minori", "type": "boolean", "description": "1/4 히로코 영화 권유 승낙으로 신뢰 하락" },
     { "id": "flg_minori_route_complete", "scope": "heroine", "character_id": "chr_minori", "type": "boolean", "description": "카토 미노리 1/4~5 키사라기역 데이트 및 엔딩 조건 달성" },
 
     { "id": "flg_youko_arcade_bike", "scope": "heroine", "character_id": "chr_youko", "type": "boolean", "description": "요코 자택·게임센터 순회 이벤트 진행" },
+    { "id": "flg_youko_secret_kept", "scope": "heroine", "character_id": "chr_youko", "type": "boolean", "description": "12/27~28 아키라 질문에 침묵('알려 주지 않는다' 선택)" },
+    { "id": "flg_youko_jan1_sunrise", "scope": "heroine", "character_id": "chr_youko", "type": "boolean", "description": "1/1 야소하치 해안 요코와 바이크 첫 해돋이 감상" },
     { "id": "flg_youko_ending_override_active", "scope": "trap", "character_id": "chr_youko", "type": "boolean", "description": "요코 고우선순위 엔딩 덮어쓰기(폭탄) 상태 활성화" },
     { "id": "flg_youko_route_alt_variant", "scope": "heroine", "character_id": "chr_youko", "type": "boolean", "description": "요코 멀티엔딩 2번 분기 조건 달성" },
     { "id": "flg_youko_route_complete", "scope": "heroine", "character_id": "chr_youko", "type": "boolean", "description": "미나미카와 요코 엔딩 조건 달성" },
 
     { "id": "flg_azumi_nursery_help", "scope": "heroine", "character_id": "chr_azumi", "type": "boolean", "description": "하나조노 보육원 아이 도움 및 아즈미 초기 친밀도 확보" },
+    { "id": "flg_azumi_dec28_consult", "scope": "heroine", "character_id": "chr_azumi", "type": "boolean", "description": "12/28 자택 앞 아즈미 선생님의 텐도 고민 상담" },
     { "id": "flg_azumi_tendo_defeated", "scope": "heroine", "character_id": "chr_azumi", "type": "boolean", "description": "12/26~29 텐도 연적 분기 승리" },
     { "id": "flg_azumi_tendo_lost", "scope": "fail", "character_id": "chr_azumi", "type": "boolean", "description": "아즈미 루트 선택 실패로 텐도에게 패배(루트 단절)" },
     { "id": "flg_azumi_route_complete", "scope": "heroine", "character_id": "chr_azumi", "type": "boolean", "description": "야스다 아즈미 엔딩 조건 달성" },
@@ -68,14 +153,17 @@
     { "id": "flg_misato_route_complete", "scope": "heroine", "character_id": "chr_misato", "type": "boolean", "description": "노노무라 미사토 엔딩 조건 달성" },
 
     { "id": "flg_sachiko_ryokan_met", "scope": "heroine", "character_id": "chr_sachiko", "type": "boolean", "description": "12/29~30 나가시마 료칸 사치코 필수 플래그 확보" },
+    { "id": "flg_sachiko_jan3_phone", "scope": "heroine", "character_id": "chr_sachiko", "type": "boolean", "description": "1/3 저녁 사치코의 스테이션 호텔 초대 전화 수신" },
     { "id": "flg_sachiko_route_complete", "scope": "heroine", "character_id": "chr_sachiko", "type": "boolean", "description": "나가시마 사치코 엔딩 조건 달성" },
 
     { "id": "flg_kumiko_ryokan_met", "scope": "heroine", "character_id": "chr_kumiko", "type": "boolean", "description": "12/29~30 나가시마 료칸 쿠미코 첫 만남 및 플래그 확보" },
+    { "id": "flg_kumiko_jan1_arrival", "scope": "heroine", "character_id": "chr_kumiko", "type": "boolean", "description": "1/1 저녁 자택 앞 쿠미코 상경 첫 맞이 완료" },
     { "id": "flg_kumiko_tokyo_visit", "scope": "heroine", "character_id": "chr_kumiko", "type": "boolean", "description": "신년 쿠미코 상경 이벤트 및 마을 합류" },
     { "id": "flg_kumiko_route_complete", "scope": "heroine", "character_id": "chr_kumiko", "type": "boolean", "description": "나가시마 쿠미코 엔딩 조건 달성" },
 
     { "id": "flg_misa_station_bump", "scope": "heroine", "character_id": "chr_misa", "type": "boolean", "description": "12/25~28 야소하치역 미사 2회 충돌 및 12/29 테니스 승부 약속" },
     { "id": "flg_misa_tennis_match", "scope": "heroine", "character_id": "chr_misa", "type": "boolean", "description": "12/29 09:00 테니스 승부 및 찻집 대화 완료" },
+    { "id": "flg_misa_tennis_won", "scope": "heroine", "character_id": "chr_misa", "type": "boolean", "description": "12/29 테니스 미니게임 랠리 대결 승리(보너스 대사·친밀도)" },
     { "id": "flg_misa_kisaragi_date", "scope": "heroine", "character_id": "chr_misa", "type": "boolean", "description": "12/30 키사라기역→유원지→스테이션 호텔 데이트 완료" },
     { "id": "flg_misa_route_complete", "scope": "heroine", "character_id": "chr_misa", "type": "boolean", "description": "타나카 미사 엔딩 조건 달성" }
   ],
@@ -149,13 +237,72 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_onsen_phone_received"],
       "branch_flag_options": [
-        { "choice_ko": "여행 참가 + 유이", "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_yui"] },
-        { "choice_ko": "여행 참가 + 토모미", "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_tomomi"] },
-        { "choice_ko": "여행 참가 + 이즈미(당일 데이트 완료 시)", "requires_flags": ["flg_izumi_pre_onsen_date"], "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_izumi"] },
-        { "choice_ko": "여행 불참(마을 잔류)", "sets_flags": ["flg_onsen_trip_declined"] }
+        { "choice_ko": "여행 참가 + 유이 (사치코·쿠미코·미사토 해금)", "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_yui"], "mood_delta": 10, "affection_delta": 10 },
+        { "choice_ko": "여행 참가 + 토모미", "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_tomomi"], "mood_delta": 10, "affection_delta": 10 },
+        { "choice_ko": "여행 참가 + 이즈미 (당일 데이트 완료 시)", "requires_flags": ["flg_izumi_pre_onsen_date"], "sets_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_izumi"], "mood_delta": 15, "affection_delta": 15 },
+        { "choice_ko": "여행 불참 (12/29~30 마을 잔류: 미레이·미노리·미사)", "sets_flags": ["flg_onsen_trip_declined"], "mood_delta": 0, "affection_delta": 0 }
       ],
       "time_cost_minutes": 15,
       "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_onsen_ski_memories",
+      "title_ko": "12/29~30 동지온천 스키 슬로프 설원 대결",
+      "character_id": "chr_akira",
+      "location_id": "loc_onsen_ski_slope",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 600,
+      "end_minute": 960,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_onsen_phone_invite"],
+      "required_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_onsen_ski_memories"],
+      "branch_flag_options": [
+        { "choice_ko": "파트너와 나란히 완만한 코스를 활강한다", "sets_flags": ["flg_onsen_ski_memories"], "mood_delta": 12, "affection_delta": 10 },
+        { "choice_ko": "아키라와 상급 코스 스피드 대결을 펼친다", "sets_flags": ["flg_onsen_ski_memories"], "mood_delta": 5, "affection_delta": 5 }
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_opening_ceremony_jan7",
+      "title_ko": "1/7 3학기 시업식 및 겨울방학 결산",
+      "character_id": "chr_ryunosuke",
+      "location_id": "loc_school_gate",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 540,
+      "scene_type": "story_scripted",
+      "prerequisite_events": ["evt_prologue_start"],
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_opening_ceremony_reached"],
+      "time_cost_minutes": 0,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_dec22_morning",
+      "title_ko": "12/22 아침 거실 유이의 겨울방학 계획",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_living",
+      "day_start": 1,
+      "day_end": 1,
+      "start_minute": 480,
+      "end_minute": 600,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_prologue_start"],
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_yui_morning_greet"],
+      "branch_flag_options": [
+        { "choice_ko": "방학 동안 유이랑 자주 같이 보내자고 약속한다", "sets_flags": ["flg_yui_morning_greet"], "mood_delta": 12, "affection_delta": 10 },
+        { "choice_ko": "오늘은 마을 곳곳을 먼저 둘러보겠다고 말한다", "sets_flags": ["flg_yui_morning_greet"], "mood_delta": 3, "affection_delta": 5 }
+      ],
+      "time_cost_minutes": 15,
+      "evidence_level": "[해석]"
     },
     {
       "id": "evt_yui_eve_coat",
@@ -175,6 +322,27 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_yui_xmas_cake",
+      "title_ko": "12/25 자택 크리스마스 케이크 파티",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_living",
+      "day_start": 4,
+      "day_end": 4,
+      "start_minute": 1080,
+      "end_minute": 1260,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_prologue_start"],
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_yui_xmas_cake"],
+      "branch_flag_options": [
+        { "choice_ko": "유이가 고른 딸기 케이크를 칭찬한다", "sets_flags": ["flg_yui_xmas_cake"], "mood_delta": 15, "affection_delta": 12 },
+        { "choice_ko": "조용히 따뜻한 홍차와 함께 즐긴다", "sets_flags": ["flg_yui_xmas_cake"], "mood_delta": 8, "affection_delta": 8 }
+      ],
+      "time_cost_minutes": 45,
+      "evidence_level": "[해석]"
+    },
+    {
       "id": "evt_yui_jan1_shrine",
       "title_ko": "설날 아침 유이와 키사라기 신사 첫참배",
       "character_id": "chr_yui",
@@ -183,12 +351,71 @@
       "day_end": 11,
       "start_minute": 480,
       "end_minute": 600,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_yui_eve_coat"],
       "required_flags": ["flg_yui_coat_eve"],
       "blocked_by_flags": [],
       "sets_flags": ["flg_yui_shrine_jan1"],
+      "branch_flag_options": [
+        { "choice_ko": "\"기모노 정말 잘 어울려!\" — 유이와 신사 첫참배를 떠난다", "sets_flags": ["flg_yui_shrine_jan1"], "mood_delta": 15, "affection_delta": 15 },
+        { "choice_ko": "\"추우니까 머플러 챙겨\" — 다정하게 챙겨 주며 동행한다", "sets_flags": ["flg_yui_shrine_jan1"], "mood_delta": 10, "affection_delta": 12 }
+      ],
       "time_cost_minutes": 90,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan2_witness",
+      "title_ko": "1/2 시라헤가이케 공원 사이온지·요시키 밀담 목격",
+      "character_id": "chr_yui",
+      "location_id": "loc_shirahegaike_park",
+      "day_start": 12,
+      "day_end": 12,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "scene_type": "story_branch",
+      "prerequisite_events": ["evt_yui_jan1_shrine"],
+      "required_flags": ["flg_yui_shrine_jan1"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_yui_jan2_witness"],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan3_hotel_call",
+      "title_ko": "1/3 저녁 호출 전화와 스테이션 호텔 대기",
+      "character_id": "chr_yui",
+      "location_id": "loc_home_room",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "scene_type": "phone_event",
+      "prerequisite_events": ["evt_yui_jan1_shrine"],
+      "required_flags": ["flg_yui_shrine_jan1"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_yui_jan3_hotel_call"],
+      "branch_flag_options": [
+        { "choice_ko": "스테이션 호텔 로비에서 유이가 나올 때까지 끝까지 기다린다", "sets_flags": ["flg_yui_jan3_hotel_call"], "mood_delta": 15, "affection_delta": 15 },
+        { "choice_ko": "상황만 확인하고 발길을 돌린다", "sets_flags": ["flg_yui_jan3_hotel_call"], "mood_delta": -10, "affection_delta": 0 }
+      ],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_yui_jan3_park_rescue",
+      "title_ko": "1/3 심야 야소하치 공원 유이 구출",
+      "character_id": "chr_yui",
+      "location_id": "loc_yasohachi_park",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1320,
+      "end_minute": 1430,
+      "scene_type": "story_branch",
+      "prerequisite_events": ["evt_yui_jan3_hotel_call"],
+      "required_flags": ["flg_yui_jan3_hotel_call"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_yui_jan3_park_rescue"],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -206,6 +433,27 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_yui_route_complete"],
       "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_misako_cafe_help",
+      "title_ko": "12/22~23 자택 1층 찻집 미사코 일손 돕기",
+      "character_id": "chr_misako",
+      "location_id": "loc_home_cafe",
+      "day_start": 1,
+      "day_end": 2,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_prologue_start"],
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_misako_cafe_help"],
+      "branch_flag_options": [
+        { "choice_ko": "커피 원두 정리와 테이블 세팅을 적극 돕는다", "sets_flags": ["flg_misako_cafe_help"], "mood_delta": 12, "affection_delta": 12 },
+        { "choice_ko": "카운터에 앉아 따뜻한 커피 한 잔을 얻어 마신다", "sets_flags": ["flg_misako_cafe_help"], "mood_delta": 6, "affection_delta": 6 }
+      ],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -234,7 +482,7 @@
       "day_end": 3,
       "start_minute": 1380,
       "end_minute": 1440,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_misako_cafe_frog"],
       "required_flags": ["flg_misako_cafe_frog"],
       "blocked_by_flags": [],
@@ -256,6 +504,23 @@
       "required_flags": ["flg_misako_eve_living", "flg_sakurako_jan1_misunderstanding"],
       "blocked_by_flags": [],
       "sets_flags": ["flg_misako_bath_jan1"],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_misako_jan4_talk",
+      "title_ko": "1/4 저녁 거실 미사코와의 진솔한 진로 대화",
+      "character_id": "chr_misako",
+      "location_id": "loc_home_living",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 1020,
+      "end_minute": 1200,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_misako_eve_living"],
+      "required_flags": ["flg_misako_eve_living"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_misako_jan4_talk"],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
@@ -294,6 +559,44 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_tomomi_dec27_phone",
+      "title_ko": "12/27 밤 자실 토모미의 고민 상담 전화",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_room",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 1080,
+      "end_minute": 1290,
+      "scene_type": "phone_event",
+      "prerequisite_events": ["evt_tomomi_blackmail_intro"],
+      "required_flags": ["flg_tomomi_blackmail_seen"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_tomomi_dec27_phone"],
+      "branch_flag_options": [
+        { "choice_ko": "\"끝까지 네 편이니까 걱정 마\" — 든든하게 응원한다", "sets_flags": ["flg_tomomi_dec27_phone"], "mood_delta": 15, "affection_delta": 15 },
+        { "choice_ko": "\"무슨 일인지 자세히 말해 줘\" — 차분히 경청한다", "sets_flags": ["flg_tomomi_dec27_phone"], "mood_delta": 10, "affection_delta": 10 }
+      ],
+      "time_cost_minutes": 15,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_tomomi_jan1_kimono",
+      "title_ko": "1/1 아침 자택 앞 기모노 차림의 토모미",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_front",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 480,
+      "end_minute": 660,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_tomomi_blackmail_intro"],
+      "required_flags": ["flg_tomomi_blackmail_seen"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_tomomi_jan1_kimono"],
+      "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_tomomi_photo_club_resolve",
       "title_ko": "1/4 이후 사진부실 증거 확보 및 토모미 오해 해소",
       "character_id": "chr_tomomi",
@@ -308,6 +611,23 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_tomomi_photo_evidence"],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_tomomi_jan5_phone",
+      "title_ko": "1/4~5 자실 토모미의 오해 해소 감사 전화",
+      "character_id": "chr_tomomi",
+      "location_id": "loc_home_room",
+      "day_start": 14,
+      "day_end": 15,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "scene_type": "phone_event",
+      "prerequisite_events": ["evt_tomomi_photo_club_resolve"],
+      "required_flags": ["flg_tomomi_photo_evidence"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_tomomi_jan5_phone"],
+      "time_cost_minutes": 15,
       "evidence_level": "[확인]"
     },
     {
@@ -342,6 +662,48 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_izumi_parfait_intro"],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_izumi_kyudo_practice",
+      "title_ko": "12/23~27 궁도장 이즈미 연습 참관",
+      "character_id": "chr_izumi",
+      "location_id": "loc_school_kyudo",
+      "day_start": 2,
+      "day_end": 6,
+      "start_minute": 600,
+      "end_minute": 900,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_izumi_parfait_intro"],
+      "required_flags": ["flg_izumi_parfait_intro"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_izumi_kyudo_visit"],
+      "branch_flag_options": [
+        { "choice_ko": "집중해서 활 쏘는 모습이 멋지다고 진심으로 칭찬한다", "sets_flags": ["flg_izumi_kyudo_visit"], "mood_delta": 14, "affection_delta": 12 },
+        { "choice_ko": "궁도 동작을 흉내 내며 분위기를 띄운다", "sets_flags": ["flg_izumi_kyudo_visit"], "mood_delta": 6, "affection_delta": 8 }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_izumi_xmas_phone",
+      "title_ko": "12/24~25 심야 이즈미의 서툰 크리스마스 안부 전화",
+      "character_id": "chr_izumi",
+      "location_id": "loc_home_room",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 1260,
+      "end_minute": 1410,
+      "scene_type": "phone_event",
+      "prerequisite_events": ["evt_izumi_parfait_intro"],
+      "required_flags": ["flg_izumi_parfait_intro"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_izumi_xmas_phone"],
+      "branch_flag_options": [
+        { "choice_ko": "\"메리 크리스마스! 12/28 영화 데이트 기대할게\"", "sets_flags": ["flg_izumi_xmas_phone"], "mood_delta": 15, "affection_delta": 12 },
+        { "choice_ko": "\"목소리 들으니까 반갑네, 감기 조심해\"", "sets_flags": ["flg_izumi_xmas_phone"], "mood_delta": 10, "affection_delta": 8 }
+      ],
+      "time_cost_minutes": 15,
       "evidence_level": "[확인]"
     },
     {
@@ -380,7 +742,7 @@
     },
     {
       "id": "evt_karen_house_intro",
-      "title_ko": "12/22 카렌 자택 첫 방문('만나러 왔을 뿐')",
+      "title_ko": "12/22 카렌 자택 첫 방문('만나러 왔을 뿐' vs '사인')",
       "character_id": "chr_karen",
       "location_id": "loc_karen_house",
       "day_start": 1,
@@ -392,6 +754,10 @@
       "required_flags": ["flg_prologue_done"],
       "blocked_by_flags": [],
       "sets_flags": ["flg_karen_house_intro"],
+      "branch_flag_options": [
+        { "choice_ko": "\"그냥 네가 보고 싶어서 왔어\" (만나러 왔을 뿐 · 기분치 ↑)", "sets_flags": ["flg_karen_house_intro", "flg_karen_mood_positive"], "mood_delta": 18, "affection_delta": 15 },
+        { "choice_ko": "\"사인 한 장 받으러 왔어\" (아이돌 취급 · 기분치 ↓)", "sets_flags": ["flg_karen_house_intro"], "mood_delta": -20, "affection_delta": -5 }
+      ],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
@@ -413,6 +779,23 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_karen_tv_recording",
+      "title_ko": "12/27 방송국 카렌 공개 녹화 초대권 참관",
+      "character_id": "chr_karen",
+      "location_id": "loc_tv_station",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 900,
+      "end_minute": 1080,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_karen_uniform_cover"],
+      "required_flags": ["flg_karen_uniform_cover"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_karen_tv_recording"],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_karen_negative_seize",
       "title_ko": "12/26~28 자택 앞 요시키 사진 거래 거절 및 네거티브 압수",
       "character_id": "chr_karen",
@@ -427,6 +810,40 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_karen_negative_seized"],
       "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_karen_coast_shoot",
+      "title_ko": "12/29 야소하치 해안 촬영장 카렌 휴식 동행",
+      "character_id": "chr_karen",
+      "location_id": "loc_yasohachi_coast",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 780,
+      "end_minute": 960,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_karen_negative_seize"],
+      "required_flags": ["flg_karen_negative_seized"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "sets_flags": ["flg_karen_coast_shoot"],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_karen_hawaii_souvenir",
+      "title_ko": "1/4~6 카렌 자택 하와이 촬영 귀국 선물",
+      "character_id": "chr_karen",
+      "location_id": "loc_karen_house",
+      "day_start": 14,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 900,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_karen_negative_seize"],
+      "required_flags": ["flg_karen_negative_seized"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_karen_hawaii_souvenir"],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -472,11 +889,32 @@
       "day_end": 3,
       "start_minute": 840,
       "end_minute": 1020,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_sakurako_window_intro"],
       "required_flags": ["flg_sakurako_window_met"],
       "blocked_by_flags": [],
       "sets_flags": ["flg_sakurako_eve_single"],
+      "branch_flag_options": [
+        { "choice_ko": "\"당연히 여자친구는 없어\" — 진심을 담아 답한다", "sets_flags": ["flg_sakurako_eve_single"], "mood_delta": 18, "affection_delta": 15 },
+        { "choice_ko": "\"글쎄, 비밀이야\" — 장난스레 넘긴다", "sets_flags": ["flg_sakurako_eve_single"], "mood_delta": -5, "affection_delta": 5 }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_sakurako_hospital_visit_mid",
+      "title_ko": "12/26~30 시민병원 사쿠라코와의 봄 벚꽃 약속",
+      "character_id": "chr_sakurako",
+      "location_id": "loc_city_hospital",
+      "day_start": 5,
+      "day_end": 9,
+      "start_minute": 840,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_sakurako_eve_answer"],
+      "required_flags": ["flg_sakurako_eve_single"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_sakurako_mid_promise"],
       "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
@@ -489,7 +927,7 @@
       "day_end": 10,
       "start_minute": 1320,
       "end_minute": 1410,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_sakurako_eve_answer"],
       "required_flags": ["flg_sakurako_eve_single"],
       "blocked_by_flags": [],
@@ -557,11 +995,32 @@
       "day_end": 4,
       "start_minute": 600,
       "end_minute": 840,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_kozue_library_bump"],
       "required_flags": ["flg_kozue_library_bump"],
       "blocked_by_flags": [],
       "sets_flags": ["flg_kozue_xmas_date"],
+      "time_cost_minutes": 90,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_kozue_dec27_date",
+      "title_ko": "12/27 스튜디오 ATARU 코즈에 연말 영화·전망대 데이트",
+      "character_id": "chr_kozue",
+      "location_id": "loc_studio_ataru",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_kozue_xmas_date"],
+      "required_flags": ["flg_kozue_xmas_date"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_kozue_dec27_date"],
+      "branch_flag_options": [
+        { "choice_ko": "코즈에가 보고 싶어 한 로맨스 영화를 선택한다", "sets_flags": ["flg_kozue_dec27_date"], "mood_delta": 15, "affection_delta": 14 },
+        { "choice_ko": "유쾌한 코미디 영화로 분위기를 띄운다", "sets_flags": ["flg_kozue_dec27_date"], "mood_delta": 10, "affection_delta": 10 }
+      ],
       "time_cost_minutes": 90,
       "evidence_level": "[확인]"
     },
@@ -600,6 +1059,23 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_mirei_dec29_hotel_sight",
+      "title_ko": "12/29 오전 스테이션 호텔 미레이 선생님의 복잡한 대화 목격",
+      "character_id": "chr_mirei",
+      "location_id": "loc_station_hotel",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 540,
+      "end_minute": 660,
+      "scene_type": "story_branch",
+      "prerequisite_events": ["evt_mirei_staffroom_intro"],
+      "required_flags": ["flg_mirei_staffroom_intro"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "sets_flags": ["flg_mirei_dec29_sight"],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_mirei_nye_hotel",
       "title_ko": "12/31 17:00 스테이션 호텔 로비 미레이 위로 이벤트",
       "character_id": "chr_mirei",
@@ -608,11 +1084,15 @@
       "day_end": 10,
       "start_minute": 1020,
       "end_minute": 1320,
-      "scene_type": "relationship_beat",
+      "scene_type": "seasonal_event",
       "prerequisite_events": ["evt_mirei_staffroom_intro"],
       "required_flags": ["flg_mirei_staffroom_intro"],
       "blocked_by_flags": ["flg_onsen_trip_joined"],
       "sets_flags": ["flg_mirei_nye_hotel"],
+      "branch_flag_options": [
+        { "choice_ko": "따뜻한 차를 건네며 묵묵히 곁에서 위로한다", "sets_flags": ["flg_mirei_nye_hotel"], "mood_delta": 20, "affection_delta": 18 },
+        { "choice_ko": "새해엔 분명 좋은 일이 있을 거라며 격려한다", "sets_flags": ["flg_mirei_nye_hotel"], "mood_delta": 12, "affection_delta": 12 }
+      ],
       "time_cost_minutes": 60,
       "evidence_level": "[확인]"
     },
@@ -668,6 +1148,44 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_minori_jan1_sevenmart",
+      "title_ko": "1/1~3 세븐마트 신년 알바(히로코의 달라진 미소)",
+      "character_id": "chr_minori",
+      "location_id": "loc_sevenmart",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 600,
+      "end_minute": 1080,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_minori_dec29_rescue"],
+      "required_flags": ["flg_minori_park_rescue"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "sets_flags": ["flg_minori_jan1_shift"],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_minori_jan4_movie_trap",
+      "title_ko": "1/4 자택 앞 히로코의 영화 권유 시험 분기",
+      "character_id": "chr_minori",
+      "location_id": "loc_home_front",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "scene_type": "story_branch",
+      "prerequisite_events": ["evt_minori_dec29_rescue"],
+      "required_flags": ["flg_minori_park_rescue"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "sets_flags": ["flg_minori_jan4_declined_ok"],
+      "branch_flag_options": [
+        { "choice_ko": "\"미안, 미노리와 약속이 있어서 못 가\" (정답 · 신뢰 ↑)", "sets_flags": ["flg_minori_jan4_declined_ok"], "mood_delta": 18, "affection_delta": 15 },
+        { "choice_ko": "\"좋아, 같이 영화 보러 가자!\" (함정 · 기분치 ↓↓)", "sets_flags": ["flg_minori_jan4_movie_trap_hit"], "mood_delta": -25, "affection_delta": -15 }
+      ],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_minori_jan5_climax",
       "title_ko": "1/4~5 키사라기역 미노리 데이트 및 최종 마일스톤",
       "character_id": "chr_minori",
@@ -679,7 +1197,7 @@
       "scene_type": "milestone_abstracted",
       "prerequisite_events": ["evt_minori_dec29_rescue"],
       "required_flags": ["flg_minori_park_rescue"],
-      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": ["flg_onsen_trip_joined", "flg_minori_jan4_movie_trap_hit"],
       "sets_flags": ["flg_minori_route_complete"],
       "time_cost_minutes": 90,
       "evidence_level": "[확인]"
@@ -702,8 +1220,46 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_youko_dec27_akira_ask",
+      "title_ko": "12/27~28 아키라의 질문: 요코 기분 나쁜 이유",
+      "character_id": "chr_youko",
+      "location_id": "loc_akira_house",
+      "day_start": 6,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "scene_type": "story_branch",
+      "prerequisite_events": ["evt_youko_arcade_intro"],
+      "required_flags": ["flg_youko_arcade_bike"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_youko_secret_kept"],
+      "branch_flag_options": [
+        { "choice_ko": "\"알려 주지 않는다\" — 요코의 비밀을 지킨다 (기분치 ↑)", "sets_flags": ["flg_youko_secret_kept"], "mood_delta": 16, "affection_delta": 12 },
+        { "choice_ko": "\"사실대로 다 말해 준다\" (기분치 ↓)", "sets_flags": ["flg_youko_secret_kept"], "mood_delta": -15, "affection_delta": -5 }
+      ],
+      "time_cost_minutes": 20,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_youko_jan1_sunrise",
+      "title_ko": "1/1 이른 아침 야소하치 해안 요코와 바이크 첫 해돋이",
+      "character_id": "chr_youko",
+      "location_id": "loc_yasohachi_coast",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 360,
+      "end_minute": 540,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_youko_arcade_intro"],
+      "required_flags": ["flg_youko_arcade_bike"],
+      "blocked_by_flags": [],
+      "sets_flags": ["flg_youko_jan1_sunrise"],
+      "time_cost_minutes": 60,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_youko_climax",
-      "title_ko": "요코 최종 관계 확정 마일스톤(엔딩 우선권 트랩 활성화)",
+      "title_ko": "요코 최종 관계 확정 마일스톤(엔딩 우선권 트랩 / 후일담 분기)",
       "character_id": "chr_youko",
       "location_id": "loc_youko_house",
       "day_start": 13,
@@ -715,6 +1271,10 @@
       "required_flags": ["flg_youko_arcade_bike"],
       "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
       "sets_flags": ["flg_youko_route_complete", "flg_youko_ending_override_active"],
+      "branch_flag_options": [
+        { "choice_ko": "\"네 바이크 뒷자리는 내 거야!\" (엔딩 1: 우선권 1000 발동)", "sets_flags": ["flg_youko_route_complete", "flg_youko_ending_override_active"], "mood_delta": 20, "affection_delta": 35 },
+        { "choice_ko": "\"정비소에서 함께 천천히 꿈을 키우자\" (엔딩 2: 후일담 분기)", "sets_flags": ["flg_youko_route_complete", "flg_youko_route_alt_variant"], "mood_delta": 18, "affection_delta": 35 }
+      ],
       "time_cost_minutes": 60,
       "evidence_level": "[확인]"
     },
@@ -736,6 +1296,23 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_azumi_dec28_consult",
+      "title_ko": "12/28 자택 앞 아즈미 선생님의 텐도 고민 상담",
+      "character_id": "chr_azumi",
+      "location_id": "loc_home_front",
+      "day_start": 7,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "scene_type": "relationship_beat",
+      "prerequisite_events": ["evt_azumi_nursery_intro"],
+      "required_flags": ["flg_azumi_nursery_help"],
+      "blocked_by_flags": ["flg_azumi_tendo_lost"],
+      "sets_flags": ["flg_azumi_dec28_consult"],
+      "time_cost_minutes": 30,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_azumi_tendo_duel",
       "title_ko": "12/26~29 보육원 텐도 연적 분기(성공/패배)",
       "character_id": "chr_azumi",
@@ -750,8 +1327,8 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_azumi_tendo_defeated"],
       "branch_flag_options": [
-        { "choice_ko": "올바른 대응/아이템 선택(텐도 격퇴)", "sets_flags": ["flg_azumi_tendo_defeated"] },
-        { "choice_ko": "선택 실패(텐도에게 패배·루트 단절)", "sets_flags": ["flg_azumi_tendo_lost"] }
+        { "choice_ko": "아즈미 선생님의 진심을 지지하며 당당히 텐도를 격퇴한다", "sets_flags": ["flg_azumi_tendo_defeated"], "mood_delta": 20, "affection_delta": 25 },
+        { "choice_ko": "기세에 밀려 물러선다 (텐도에게 패배·루트 단절)", "sets_flags": ["flg_azumi_tendo_lost"], "mood_delta": -30, "affection_delta": -15 }
       ],
       "time_cost_minutes": 45,
       "evidence_level": "[확인]"
@@ -842,6 +1419,23 @@
       "evidence_level": "[확인]"
     },
     {
+      "id": "evt_sachiko_jan3_phone",
+      "title_ko": "1/3 저녁 자실 나가시마 사치코의 상경 초대 전화",
+      "character_id": "chr_sachiko",
+      "location_id": "loc_home_room",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1320,
+      "scene_type": "phone_event",
+      "prerequisite_events": ["evt_sachiko_ryokan_met"],
+      "required_flags": ["flg_sachiko_ryokan_met"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "sets_flags": ["flg_sachiko_jan3_phone"],
+      "time_cost_minutes": 15,
+      "evidence_level": "[확인]"
+    },
+    {
       "id": "evt_sachiko_climax",
       "title_ko": "사치코 후반 최종 관계 확정 마일스톤",
       "character_id": "chr_sachiko",
@@ -873,6 +1467,23 @@
       "blocked_by_flags": [],
       "sets_flags": ["flg_kumiko_ryokan_met"],
       "time_cost_minutes": 45,
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "evt_kumiko_jan1_arrival",
+      "title_ko": "1/1 저녁 자택 앞 설날 상경한 쿠미코 맞이",
+      "character_id": "chr_kumiko",
+      "location_id": "loc_home_front",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 960,
+      "end_minute": 1200,
+      "scene_type": "seasonal_event",
+      "prerequisite_events": ["evt_kumiko_ryokan_met"],
+      "required_flags": ["flg_kumiko_ryokan_met"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "sets_flags": ["flg_kumiko_jan1_arrival"],
+      "time_cost_minutes": 30,
       "evidence_level": "[확인]"
     },
     {
@@ -940,6 +1551,20 @@
       "required_flags": ["flg_misa_station_bump"],
       "blocked_by_flags": ["flg_onsen_trip_joined", "flg_minori_park_rescue"],
       "sets_flags": ["flg_misa_tennis_match"],
+      "minigame_spec": {
+        "type": "tennis_rally",
+        "opponent_id": "chr_misa",
+        "points_to_win": 5,
+        "shot_types": ["power", "lob", "drop"],
+        "win_flag": "flg_misa_tennis_won",
+        "win_bonus_affection": 15,
+        "win_bonus_mood": 20,
+        "loss_bonus_affection": 5,
+        "loss_bonus_mood": 5,
+        "advances_on_loss": true,
+        "original_rule_note": "원작 3세트 매치는 승패 무관하게 찻집 대화 및 12/30 키사라기 데이트 약속으로 진행됨 [확인]. 웹 버전 5포인트 랠리 대결로 구현 [재구성안].",
+        "evidence_level": "[재구성안]"
+      },
       "time_cost_minutes": 90,
       "evidence_level": "[확인]"
     },
@@ -957,6 +1582,10 @@
       "required_flags": ["flg_misa_tennis_match"],
       "blocked_by_flags": ["flg_onsen_trip_joined"],
       "sets_flags": ["flg_misa_kisaragi_date"],
+      "branch_flag_options": [
+        { "choice_ko": "관람차와 상성 점괘를 즐기며 솔직한 마음을 나눈다", "sets_flags": ["flg_misa_kisaragi_date"], "mood_delta": 18, "affection_delta": 20 },
+        { "choice_ko": "짜릿한 롤러코스터로 승부욕을 불태운다", "sets_flags": ["flg_misa_kisaragi_date"], "mood_delta": 12, "affection_delta": 15 }
+      ],
       "time_cost_minutes": 150,
       "evidence_level": "[확인]"
     },

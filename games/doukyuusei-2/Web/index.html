@@ -16,7 +16,7 @@
         <div class="brand-badge">同級生 2</div>
         <div class="brand-text">
           <h1>동급생 2</h1>
-          <span class="brand-sub">데이터 기반 NPC 일정·동선·관계 엔진</span>
+          <span class="brand-sub">원작 데이터 복원 · 일정·전화·관계 엔진</span>
         </div>
       </div>
 
@@ -42,6 +42,9 @@
           <button id="btn-mode-classic" class="mode-btn" type="button" title="1995 원작 준거: 맵 핀 숨김">클래식</button>
           <button id="btn-mode-easy" class="mode-btn active" type="button" title="2024 리메이크 준거: 실시간 NPC 레이더 & 이벤트 ! 표시">이지 레이더</button>
         </div>
+        <button id="btn-open-phone" class="btn btn-sky btn-phone-hud" type="button">
+          📞 전화 <span id="phone-ring-badge" class="ring-badge hidden">☎</span>
+        </button>
         <button id="btn-save-load" class="btn btn-ghost" type="button">세이브/로드</button>
         <button id="btn-endings" class="btn btn-ghost" type="button">엔딩 도감</button>
         <button id="btn-new-game" class="btn btn-outline" type="button">새 게임</button>
@@ -53,6 +56,9 @@
       <span id="banner-day-note"></span>
       <span id="banner-warning" class="banner-warning hidden"></span>
     </div>
+
+    <!-- Quick Route Guide / Daily Hint Banner -->
+    <div id="quick-route-bar" class="quick-route-bar" aria-label="추천 동선 및 단서 안내"></div>
 
     <!-- Main Workspace -->
     <main class="workspace-grid">
@@ -76,6 +82,15 @@
           <div class="map-footer" id="map-hover-info">
             지도의 장소를 클릭하면 최단 경로(다익스트라)와 이동 시간을 계산해 이동합니다.
           </div>
+
+          <!-- Interactive 24h NPC Timeline Strip inside Map Panel -->
+          <div class="map-timeline-panel" id="map-timeline-panel">
+            <div class="timeline-head">
+              <span class="timeline-title">🕒 오늘의 동선 타임라인</span>
+              <select id="timeline-heroine-select" class="timeline-select" aria-label="타임라인 히로인 선택"></select>
+            </div>
+            <div id="map-timeline-body" class="timeline-body"></div>
+          </div>
         </article>
 
         <!-- Scene Stage & Action Deck -->
@@ -98,23 +113,27 @@
           <!-- Inline Visual Novel Dialogue Box -->
           <div id="dialogue-box" class="dialogue-box">
             <div class="dialogue-head">
-              <span id="dialogue-speaker" class="speaker-plate">안내</span>
+              <div class="dialogue-head-left">
+                <span id="dialogue-speaker" class="speaker-plate">안내</span>
+                <span id="impact-toast" class="impact-toast hidden"></span>
+              </div>
               <span id="dialogue-meta" class="dialogue-meta">12/22 08:00</span>
             </div>
             <p id="dialogue-text" class="dialogue-text">
-              겨울방학 첫날 아침입니다. 상단 4존 지도에서 장소를 클릭해 이동하거나, 이지 레이더로 현재 출현 중인 히로인을 확인해 보세요.
+              겨울방학 첫날 아침입니다. 상단 4존 지도에서 장소를 클릭해 이동하거나, 이지 레이더·전화번호부로 히로인의 동선을 추적해 보세요.
             </p>
             <div id="dialogue-choices" class="dialogue-choices hidden"></div>
           </div>
 
-          <!-- Time & Day Control Deck -->
+          <!-- Time, Phone & Day Control Deck -->
           <div class="action-deck">
             <div class="wait-controls">
-              <span class="deck-label">시간 진행</span>
+              <span class="deck-label">시간·행동</span>
               <button class="btn btn-sm btn-ghost" data-wait="15" type="button">+15분</button>
               <button class="btn btn-sm btn-ghost" data-wait="30" type="button">+30분</button>
               <button class="btn btn-sm btn-ghost" data-wait="60" type="button">+60분</button>
               <button id="btn-wait-next" class="btn btn-sm btn-sky" type="button">다음 일정 시각까지</button>
+              <button id="btn-deck-phone" class="btn btn-sm btn-ghost" type="button">📞 전화 (-5분)</button>
             </div>
             <div class="sleep-controls">
               <button id="btn-sleep-day" class="btn btn-amber" type="button">귀가 후 취침 (다음 날)</button>
@@ -162,7 +181,26 @@
     </main>
   </div>
 
-  <!-- Event Choice / Scene Modal -->
+  <!-- Phone Directory Modal -->
+  <div id="phone-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="phone-modal-title">
+    <div class="modal-card phone-modal-card">
+      <div class="modal-header">
+        <div>
+          <span id="phone-modal-status-tag" class="tag tag-sky">주인공 방 전화기</span>
+          <h2 id="phone-modal-title">📞 전화번호부 · 소재지 탐문 (-5분)</h2>
+        </div>
+        <button id="btn-close-phone-modal" class="icon-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <div id="phone-location-notice" class="phone-notice hidden"></div>
+      <div id="phone-call-result" class="phone-call-result hidden"></div>
+      <div id="phone-directory-list" class="phone-directory-list"></div>
+      <div class="modal-footer">
+        <button id="btn-phone-close" class="btn btn-ghost" type="button">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Choice / Scene / Tennis Minigame Modal -->
   <div id="event-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
     <div class="modal-card event-modal-card">
       <div class="modal-header">
@@ -177,6 +215,7 @@
         <div class="event-modal-script">
           <p id="event-modal-narration" class="event-narration"></p>
           <div id="event-modal-lines" class="event-lines"></div>
+          <div id="event-modal-minigame" class="tennis-widget hidden"></div>
           <div id="event-modal-choices" class="event-choices"></div>
         </div>
       </div>

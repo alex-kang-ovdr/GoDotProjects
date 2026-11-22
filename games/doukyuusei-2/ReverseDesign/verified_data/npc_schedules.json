@@ -1,6 +1,12 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "game_id": "doukyuusei-2",
+  "evidence_tier_mapping": {
+    "[확인]": "VERIFIED_PUBLIC",
+    "[해석]": "INFERRED",
+    "[재구성안]": "RECONSTRUCTED",
+    "[검증 필요]": "NEEDS_VERIFICATION"
+  },
   "resolution_algorithm": "주어진 (day_index, current_minute, active_flags) 상태에서 캐릭터별 후보 슬롯을 필터링한 뒤 priority 내림차순으로 1순위 위치/이벤트를 결정한다. 동일 우선순위 충돌 시 event_id가 non-null인 슬롯이 기본 일상 루틴보다 우선한다.",
   "schedules": [
     {
@@ -16,7 +22,56 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 10,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_dec22_morning_evt",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 1,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": ["flg_yui_morning_greet"],
+      "event_id": "evt_yui_dec22_morning",
+      "priority": 75,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_town_afternoon_roam",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_home_evening_routine",
+      "character_id": "chr_yui",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1080,
+      "end_minute": 1320,
+      "location_id": "loc_home_yui_room",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_yui_eve_coat",
@@ -31,7 +86,40 @@
       "blocked_by_flags": ["flg_yui_coat_eve"],
       "event_id": "evt_yui_eve_coat",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_xmas_cake",
+      "character_id": "chr_yui",
+      "day_start": 4,
+      "day_end": 4,
+      "start_minute": 1080,
+      "end_minute": 1260,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": ["flg_yui_xmas_cake"],
+      "event_id": "evt_yui_xmas_cake",
+      "priority": 85,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_yui_onsen_partner_ryokan",
+      "character_id": "chr_yui",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1260,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_yui"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_yui_jan1_shrine",
@@ -46,7 +134,56 @@
       "blocked_by_flags": ["flg_yui_shrine_jan1"],
       "event_id": "evt_yui_jan1_shrine",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan2_witness",
+      "character_id": "chr_yui",
+      "day_start": 12,
+      "day_end": 12,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_shirahegaike_park",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_yui_shrine_jan1"],
+      "blocked_by_flags": ["flg_yui_jan2_witness"],
+      "event_id": "evt_yui_jan2_witness",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan3_hotel_call",
+      "character_id": "chr_yui",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_yui_shrine_jan1"],
+      "blocked_by_flags": ["flg_yui_jan3_hotel_call"],
+      "event_id": "evt_yui_jan3_hotel_call",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan3_park_rescue",
+      "character_id": "chr_yui",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1320,
+      "end_minute": 1430,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_yui_jan3_hotel_call"],
+      "blocked_by_flags": ["flg_yui_jan3_park_rescue"],
+      "event_id": "evt_yui_jan3_park_rescue",
+      "priority": 96,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_yui_jan6_climax",
@@ -61,7 +198,41 @@
       "blocked_by_flags": ["flg_yui_route_complete"],
       "event_id": "evt_yui_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yui_jan7_ceremony",
+      "character_id": "chr_yui",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_misako_living_morning",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 480,
+      "end_minute": 570,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_cafe_daily",
@@ -76,7 +247,40 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 10,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_living_evening",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1140,
+      "end_minute": 1350,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_cafe_help",
+      "character_id": "chr_misako",
+      "day_start": 1,
+      "day_end": 2,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": ["flg_misako_cafe_help"],
+      "event_id": "evt_misako_cafe_help",
+      "priority": 80,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_cafe_frog",
@@ -91,7 +295,8 @@
       "blocked_by_flags": ["flg_misako_cafe_frog"],
       "event_id": "evt_misako_cafe_frog",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_eve_living",
@@ -106,7 +311,8 @@
       "blocked_by_flags": ["flg_misako_eve_living"],
       "event_id": "evt_misako_eve_living",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_jan1_bath",
@@ -121,7 +327,24 @@
       "blocked_by_flags": ["flg_misako_bath_jan1"],
       "event_id": "evt_misako_jan1_bath",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_jan4_talk",
+      "character_id": "chr_misako",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 1020,
+      "end_minute": 1200,
+      "location_id": "loc_home_living",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_misako_eve_living"],
+      "blocked_by_flags": ["flg_misako_jan4_talk"],
+      "event_id": "evt_misako_jan4_talk",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misako_jan6_climax",
@@ -136,7 +359,57 @@
       "blocked_by_flags": ["flg_misako_route_complete"],
       "event_id": "evt_misako_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misako_jan7_cafe",
+      "character_id": "chr_misako",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+
+    {
+      "id": "sch_tomomi_house_morning",
+      "character_id": "chr_tomomi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 510,
+      "end_minute": 660,
+      "location_id": "loc_tomomi_house",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_tomomi_school_roam",
+      "character_id": "chr_tomomi",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 720,
+      "end_minute": 960,
+      "location_id": "loc_school_3b",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_tomomi_house_intro",
@@ -151,7 +424,72 @@
       "blocked_by_flags": ["flg_tomomi_blackmail_seen"],
       "event_id": "evt_tomomi_blackmail_intro",
       "priority": 80,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_dec27_phone",
+      "character_id": "chr_tomomi",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 1080,
+      "end_minute": 1290,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_tomomi_blackmail_seen"],
+      "blocked_by_flags": ["flg_tomomi_dec27_phone"],
+      "event_id": "evt_tomomi_dec27_phone",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_onsen_partner",
+      "character_id": "chr_tomomi",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1260,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_tomomi"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan1_kimono",
+      "character_id": "chr_tomomi",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 480,
+      "end_minute": 660,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_tomomi_blackmail_seen"],
+      "blocked_by_flags": ["flg_tomomi_jan1_kimono"],
+      "event_id": "evt_tomomi_jan1_kimono",
+      "priority": 86,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan2_3_roam",
+      "character_id": "chr_tomomi",
+      "day_start": 12,
+      "day_end": 13,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 22,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_tomomi_photo_resolve",
@@ -166,7 +504,24 @@
       "blocked_by_flags": ["flg_tomomi_photo_evidence"],
       "event_id": "evt_tomomi_photo_club_resolve",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tomomi_jan5_phone",
+      "character_id": "chr_tomomi",
+      "day_start": 14,
+      "day_end": 15,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_tomomi_photo_evidence"],
+      "blocked_by_flags": ["flg_tomomi_jan5_phone"],
+      "event_id": "evt_tomomi_jan5_phone",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_tomomi_climax",
@@ -181,8 +536,26 @@
       "blocked_by_flags": ["flg_tomomi_route_complete"],
       "event_id": "evt_tomomi_climax",
       "priority": 95,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
+    {
+      "id": "sch_tomomi_jan7_ceremony",
+      "character_id": "chr_tomomi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_izumi_parfait",
       "character_id": "chr_izumi",
@@ -196,10 +569,11 @@
       "blocked_by_flags": ["flg_izumi_parfait_intro"],
       "event_id": "evt_izumi_parfait_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
-      "id": "sch_izumi_kyudo_daily",
+      "id": "sch_izumi_kyudo_practice_evt",
       "character_id": "chr_izumi",
       "day_start": 2,
       "day_end": 6,
@@ -208,10 +582,59 @@
       "location_id": "loc_school_kyudo",
       "spawn_pattern": "hybrid",
       "required_flags": ["flg_izumi_parfait_intro"],
+      "blocked_by_flags": ["flg_izumi_kyudo_visit"],
+      "event_id": "evt_izumi_kyudo_practice",
+      "priority": 82,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_kyudo_daily",
+      "character_id": "chr_izumi",
+      "day_start": 2,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 960,
+      "location_id": "loc_school_kyudo",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_prologue_done"],
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 20,
-      "evidence_level": "[해석]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_house_evening",
+      "character_id": "chr_izumi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1020,
+      "end_minute": 1260,
+      "location_id": "loc_izumi_house",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_izumi_xmas_phone",
+      "character_id": "chr_izumi",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 1260,
+      "end_minute": 1410,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_izumi_parfait_intro"],
+      "blocked_by_flags": ["flg_izumi_xmas_phone"],
+      "event_id": "evt_izumi_xmas_phone",
+      "priority": 86,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_izumi_dec28_date",
@@ -226,7 +649,24 @@
       "blocked_by_flags": ["flg_izumi_pre_onsen_date"],
       "event_id": "evt_izumi_pre_onsen_date",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_izumi_onsen_daytime",
+      "character_id": "chr_izumi",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 900,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_onsen_trip_joined", "flg_onsen_partner_izumi"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_izumi_onsen_climax",
@@ -241,8 +681,26 @@
       "blocked_by_flags": ["flg_izumi_route_complete", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_izumi_onsen_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_izumi_jan7_ceremony",
+      "character_id": "chr_izumi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_karen_dec22_house",
       "character_id": "chr_karen",
@@ -256,22 +714,56 @@
       "blocked_by_flags": ["flg_karen_house_intro"],
       "event_id": "evt_karen_house_intro",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_house_morning",
+      "character_id": "chr_karen",
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 750,
+      "location_id": "loc_karen_house",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_prod_work",
       "character_id": "chr_karen",
-      "day_start": 2,
-      "day_end": 4,
-      "start_minute": 660,
-      "end_minute": 1080,
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 780,
+      "end_minute": 930,
       "location_id": "loc_talent_prod",
       "spawn_pattern": "fixed",
-      "required_flags": ["flg_karen_house_intro"],
+      "required_flags": ["flg_prologue_done"],
       "blocked_by_flags": [],
       "event_id": null,
-      "priority": 30,
-      "evidence_level": "[확인]"
+      "priority": 28,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_tv_evening",
+      "character_id": "chr_karen",
+      "day_start": 1,
+      "day_end": 9,
+      "start_minute": 960,
+      "end_minute": 1140,
+      "location_id": "loc_tv_station",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 26,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_dec26_classroom",
@@ -286,7 +778,24 @@
       "blocked_by_flags": ["flg_karen_uniform_cover"],
       "event_id": "evt_karen_uniform_cover",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_dec27_tv_rec",
+      "character_id": "chr_karen",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 900,
+      "end_minute": 1080,
+      "location_id": "loc_tv_station",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_karen_uniform_cover"],
+      "blocked_by_flags": ["flg_karen_tv_recording"],
+      "event_id": "evt_karen_tv_recording",
+      "priority": 93,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_dec26_negative",
@@ -301,7 +810,40 @@
       "blocked_by_flags": ["flg_karen_negative_seized"],
       "event_id": "evt_karen_negative_seize",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_dec29_coast",
+      "character_id": "chr_karen",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 780,
+      "end_minute": 960,
+      "location_id": "loc_yasohachi_coast",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_karen_negative_seized"],
+      "blocked_by_flags": ["flg_karen_coast_shoot", "flg_onsen_trip_joined"],
+      "event_id": "evt_karen_coast_shoot",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_karen_jan4_souvenir",
+      "character_id": "chr_karen",
+      "day_start": 14,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 900,
+      "location_id": "loc_karen_house",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_karen_negative_seized"],
+      "blocked_by_flags": ["flg_karen_hawaii_souvenir"],
+      "event_id": "evt_karen_hawaii_souvenir",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_karen_climax",
@@ -316,8 +858,26 @@
       "blocked_by_flags": ["flg_karen_route_complete"],
       "event_id": "evt_karen_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
+    {
+      "id": "sch_karen_jan7_ceremony",
+      "character_id": "chr_karen",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_sakurako_dec22_window",
       "character_id": "chr_sakurako",
@@ -331,7 +891,24 @@
       "blocked_by_flags": ["flg_sakurako_window_met"],
       "event_id": "evt_sakurako_window_intro",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sakurako_hospital_morning",
+      "character_id": "chr_sakurako",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 600,
+      "end_minute": 780,
+      "location_id": "loc_city_hospital",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_sakurako_window_met"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_sakurako_eve",
@@ -346,7 +923,24 @@
       "blocked_by_flags": ["flg_sakurako_eve_single"],
       "event_id": "evt_sakurako_eve_answer",
       "priority": 92,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sakurako_mid_promise",
+      "character_id": "chr_sakurako",
+      "day_start": 5,
+      "day_end": 9,
+      "start_minute": 840,
+      "end_minute": 1020,
+      "location_id": "loc_city_hospital",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_sakurako_eve_single"],
+      "blocked_by_flags": ["flg_sakurako_mid_promise"],
+      "event_id": "evt_sakurako_hospital_visit_mid",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_hospital_loop",
@@ -361,7 +955,8 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 25,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_nye_date",
@@ -376,7 +971,8 @@
       "blocked_by_flags": ["flg_sakurako_nye_date"],
       "event_id": "evt_sakurako_nye_date",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_jan1",
@@ -391,7 +987,8 @@
       "blocked_by_flags": ["flg_sakurako_jan1_misunderstanding"],
       "event_id": "evt_sakurako_jan1_misunderstanding",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sakurako_jan6_climax",
@@ -406,8 +1003,26 @@
       "blocked_by_flags": ["flg_sakurako_route_complete"],
       "event_id": "evt_sakurako_jan6_climax",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_sakurako_jan7_ceremony",
+      "character_id": "chr_sakurako",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_sakurako_route_complete"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_kozue_library",
       "character_id": "chr_kozue",
@@ -421,7 +1036,24 @@
       "blocked_by_flags": ["flg_kozue_library_bump"],
       "event_id": "evt_kozue_library_bump",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_tennis_routine",
+      "character_id": "chr_kozue",
+      "day_start": 1,
+      "day_end": 6,
+      "start_minute": 600,
+      "end_minute": 960,
+      "location_id": "loc_school_tennis",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kozue_xmas_tennis",
@@ -436,7 +1068,72 @@
       "blocked_by_flags": ["flg_kozue_xmas_date"],
       "event_id": "evt_kozue_xmas_date",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_dec27_date",
+      "character_id": "chr_kozue",
+      "day_start": 6,
+      "day_end": 6,
+      "start_minute": 780,
+      "end_minute": 1020,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_kozue_xmas_date"],
+      "blocked_by_flags": ["flg_kozue_dec27_date"],
+      "event_id": "evt_kozue_dec27_date",
+      "priority": 93,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_library_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 14,
+      "start_minute": 540,
+      "end_minute": 720,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_kozue_xmas_date"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_park_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 14,
+      "start_minute": 750,
+      "end_minute": 900,
+      "location_id": "loc_yasohachi_park",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_kozue_xmas_date"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kozue_roam_ataru_late",
+      "character_id": "chr_kozue",
+      "day_start": 8,
+      "day_end": 15,
+      "start_minute": 930,
+      "end_minute": 1140,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_kozue_xmas_date"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 24,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kozue_late_climax",
@@ -451,8 +1148,26 @@
       "blocked_by_flags": ["flg_kozue_route_complete"],
       "event_id": "evt_kozue_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_kozue_jan7_ceremony",
+      "character_id": "chr_kozue",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "hybrid",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_mirei_staffroom",
       "character_id": "chr_mirei",
@@ -466,7 +1181,40 @@
       "blocked_by_flags": ["flg_mirei_staffroom_intro", "flg_onsen_trip_joined"],
       "event_id": "evt_mirei_staffroom_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_staffroom_routine",
+      "character_id": "chr_mirei",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 960,
+      "location_id": "loc_school_staffroom",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_dec29_hotel_sight",
+      "character_id": "chr_mirei",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 540,
+      "end_minute": 660,
+      "location_id": "loc_station_hotel",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_mirei_staffroom_intro"],
+      "blocked_by_flags": ["flg_mirei_dec29_sight", "flg_onsen_trip_joined"],
+      "event_id": "evt_mirei_dec29_hotel_sight",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_mirei_nye_hotel",
@@ -481,7 +1229,24 @@
       "blocked_by_flags": ["flg_mirei_nye_hotel", "flg_onsen_trip_joined"],
       "event_id": "evt_mirei_nye_hotel",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_mirei_jan2_library_care",
+      "character_id": "chr_mirei",
+      "day_start": 12,
+      "day_end": 15,
+      "start_minute": 780,
+      "end_minute": 990,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_mirei_nye_hotel"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "event_id": null,
+      "priority": 28,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_mirei_climax",
@@ -496,8 +1261,26 @@
       "blocked_by_flags": ["flg_mirei_route_complete", "flg_onsen_trip_joined"],
       "event_id": "evt_mirei_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
+    {
+      "id": "sch_mirei_jan7_ceremony",
+      "character_id": "chr_mirei",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_minori_vase",
       "character_id": "chr_minori",
@@ -511,7 +1294,24 @@
       "blocked_by_flags": ["flg_minori_vase_broken"],
       "event_id": "evt_minori_vase_broken",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_library_midday",
+      "character_id": "chr_minori",
+      "day_start": 1,
+      "day_end": 10,
+      "start_minute": 660,
+      "end_minute": 900,
+      "location_id": "loc_school_library",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_minori_sevenmart_shift",
@@ -526,7 +1326,24 @@
       "blocked_by_flags": [],
       "event_id": null,
       "priority": 20,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_dec29_yard",
+      "character_id": "chr_minori",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 600,
+      "end_minute": 750,
+      "location_id": "loc_school_yard",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_minori_vase_broken"],
+      "blocked_by_flags": ["flg_onsen_trip_joined", "flg_misa_tennis_match"],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_minori_dec29_park",
@@ -541,7 +1358,40 @@
       "blocked_by_flags": ["flg_minori_park_rescue", "flg_onsen_trip_joined", "flg_misa_tennis_match"],
       "event_id": "evt_minori_dec29_rescue",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan1_sevenmart",
+      "character_id": "chr_minori",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 600,
+      "end_minute": 1080,
+      "location_id": "loc_sevenmart",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_minori_park_rescue"],
+      "blocked_by_flags": ["flg_minori_jan1_shift", "flg_onsen_trip_joined"],
+      "event_id": "evt_minori_jan1_sevenmart",
+      "priority": 90,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan4_movie_trap",
+      "character_id": "chr_minori",
+      "day_start": 14,
+      "day_end": 14,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_minori_park_rescue"],
+      "blocked_by_flags": ["flg_minori_jan4_declined_ok", "flg_minori_jan4_movie_trap_hit", "flg_onsen_trip_joined"],
+      "event_id": "evt_minori_jan4_movie_trap",
+      "priority": 95,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_minori_jan5_station",
@@ -553,10 +1403,44 @@
       "location_id": "loc_kisaragi_station",
       "spawn_pattern": "fixed",
       "required_flags": ["flg_minori_park_rescue"],
-      "blocked_by_flags": ["flg_minori_route_complete", "flg_onsen_trip_joined"],
+      "blocked_by_flags": ["flg_minori_route_complete", "flg_onsen_trip_joined", "flg_minori_jan4_movie_trap_hit"],
       "event_id": "evt_minori_jan5_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_minori_jan7_ceremony",
+      "character_id": "chr_minori",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_youko_motors_morning",
+      "character_id": "chr_youko",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 720,
+      "location_id": "loc_youko_house",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_youko_arcade",
@@ -571,7 +1455,56 @@
       "blocked_by_flags": ["flg_youko_arcade_bike"],
       "event_id": "evt_youko_arcade_intro",
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_arcade_evening_roam",
+      "character_id": "chr_youko",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 840,
+      "end_minute": 1140,
+      "location_id": "loc_game_center",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 16,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_youko_dec27_akira_ask",
+      "character_id": "chr_youko",
+      "day_start": 6,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_akira_house",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_youko_arcade_bike"],
+      "blocked_by_flags": ["flg_youko_secret_kept"],
+      "event_id": "evt_youko_dec27_akira_ask",
+      "priority": 89,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_youko_jan1_sunrise",
+      "character_id": "chr_youko",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 360,
+      "end_minute": 540,
+      "location_id": "loc_yasohachi_coast",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_youko_arcade_bike"],
+      "blocked_by_flags": ["flg_youko_jan1_sunrise"],
+      "event_id": "evt_youko_jan1_sunrise",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_youko_climax",
@@ -586,8 +1519,26 @@
       "blocked_by_flags": ["flg_youko_route_complete", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_youko_climax",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_youko_jan7_ceremony",
+      "character_id": "chr_youko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 50,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
     {
       "id": "sch_azumi_nursery_intro",
       "character_id": "chr_azumi",
@@ -601,7 +1552,40 @@
       "blocked_by_flags": ["flg_azumi_nursery_help"],
       "event_id": "evt_azumi_nursery_intro",
       "priority": 88,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_azumi_nursery_routine",
+      "character_id": "chr_azumi",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 1020,
+      "location_id": "loc_hanazono_nursery",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_azumi_dec28_consult",
+      "character_id": "chr_azumi",
+      "day_start": 7,
+      "day_end": 7,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_azumi_nursery_help"],
+      "blocked_by_flags": ["flg_azumi_dec28_consult", "flg_azumi_tendo_lost"],
+      "event_id": "evt_azumi_dec28_consult",
+      "priority": 92,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_azumi_tendo_duel",
@@ -616,7 +1600,8 @@
       "blocked_by_flags": ["flg_azumi_tendo_defeated", "flg_azumi_tendo_lost"],
       "event_id": "evt_azumi_tendo_duel",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_azumi_climax",
@@ -631,8 +1616,26 @@
       "blocked_by_flags": ["flg_azumi_route_complete", "flg_azumi_tendo_lost"],
       "event_id": "evt_azumi_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_azumi_jan7_nursery",
+      "character_id": "chr_azumi",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_hanazono_nursery",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+
     {
       "id": "sch_misato_travel_intro",
       "character_id": "chr_misato",
@@ -646,7 +1649,24 @@
       "blocked_by_flags": ["flg_misato_travel_intro"],
       "event_id": "evt_misato_travel_intro",
       "priority": 88,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_travel_daily",
+      "character_id": "chr_misato",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 1080,
+      "location_id": "loc_nyubai_travel",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 18,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misato_onsen",
@@ -661,7 +1681,24 @@
       "blocked_by_flags": ["flg_misato_onsen_bus"],
       "event_id": "evt_misato_onsen_bus",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_onsen_routine",
+      "character_id": "chr_misato",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 1140,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misato_climax",
@@ -676,7 +1713,41 @@
       "blocked_by_flags": ["flg_misato_route_complete", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_misato_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misato_jan7_travel",
+      "character_id": "chr_misato",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_nyubai_travel",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+
+    {
+      "id": "sch_sachiko_ryokan_morning",
+      "character_id": "chr_sachiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 480,
+      "end_minute": 900,
+      "location_id": "loc_nagashima_ryokan",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sachiko_ryokan",
@@ -691,7 +1762,40 @@
       "blocked_by_flags": ["flg_sachiko_ryokan_met"],
       "event_id": "evt_sachiko_ryokan_met",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sachiko_open_bath_night",
+      "character_id": "chr_sachiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 1200,
+      "end_minute": 1380,
+      "location_id": "loc_onsen_open_bath",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_sachiko_ryokan_met"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_sachiko_jan3_phone",
+      "character_id": "chr_sachiko",
+      "day_start": 13,
+      "day_end": 13,
+      "start_minute": 1020,
+      "end_minute": 1320,
+      "location_id": "loc_home_room",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_sachiko_ryokan_met"],
+      "blocked_by_flags": ["flg_sachiko_jan3_phone", "flg_onsen_jan6_home_broken"],
+      "event_id": "evt_sachiko_jan3_phone",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_sachiko_climax",
@@ -706,7 +1810,41 @@
       "blocked_by_flags": ["flg_sachiko_route_complete", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_sachiko_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+    {
+      "id": "sch_sachiko_jan7_station",
+      "character_id": "chr_sachiko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_sachiko_route_complete"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
+    },
+
+    {
+      "id": "sch_kumiko_onsen_ski",
+      "character_id": "chr_kumiko",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 540,
+      "end_minute": 750,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kumiko_ryokan",
@@ -721,7 +1859,24 @@
       "blocked_by_flags": ["flg_kumiko_ryokan_met"],
       "event_id": "evt_kumiko_ryokan_met",
       "priority": 95,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kumiko_jan1_arrival",
+      "character_id": "chr_kumiko",
+      "day_start": 11,
+      "day_end": 11,
+      "start_minute": 960,
+      "end_minute": 1200,
+      "location_id": "loc_home_front",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_kumiko_ryokan_met"],
+      "blocked_by_flags": ["flg_kumiko_jan1_arrival", "flg_onsen_jan6_home_broken"],
+      "event_id": "evt_kumiko_jan1_arrival",
+      "priority": 94,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_kumiko_tokyo_visit",
@@ -736,7 +1891,24 @@
       "blocked_by_flags": ["flg_kumiko_tokyo_visit", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_kumiko_tokyo_visit",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_kumiko_town_roam_jan3",
+      "character_id": "chr_kumiko",
+      "day_start": 13,
+      "day_end": 15,
+      "start_minute": 660,
+      "end_minute": 960,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_kumiko_tokyo_visit"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_kumiko_climax",
@@ -751,8 +1923,26 @@
       "blocked_by_flags": ["flg_kumiko_route_complete", "flg_onsen_jan6_home_broken"],
       "event_id": "evt_kumiko_climax",
       "priority": 98,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
+    {
+      "id": "sch_kumiko_jan7_station",
+      "character_id": "chr_kumiko",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "roaming",
+      "required_flags": ["flg_kumiko_route_complete"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
+    },
+
     {
       "id": "sch_misa_station",
       "character_id": "chr_misa",
@@ -766,7 +1956,24 @@
       "blocked_by_flags": ["flg_misa_station_bump"],
       "event_id": "evt_misa_station_bump",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_cafe_afternoon",
+      "character_id": "chr_misa",
+      "day_start": 4,
+      "day_end": 7,
+      "start_minute": 780,
+      "end_minute": 1080,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_misa_station_bump"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 22,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_misa_tennis",
@@ -781,7 +1988,24 @@
       "blocked_by_flags": ["flg_misa_tennis_match", "flg_onsen_trip_joined", "flg_minori_park_rescue"],
       "event_id": "evt_misa_tennis_match",
       "priority": 96,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_post_tennis_cafe",
+      "character_id": "chr_misa",
+      "day_start": 8,
+      "day_end": 8,
+      "start_minute": 720,
+      "end_minute": 960,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_misa_tennis_match"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "event_id": null,
+      "priority": 35,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_misa_date",
@@ -796,7 +2020,24 @@
       "blocked_by_flags": ["flg_misa_kisaragi_date", "flg_onsen_trip_joined"],
       "event_id": "evt_misa_kisaragi_date",
       "priority": 97,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_misa_newyear_roam",
+      "character_id": "chr_misa",
+      "day_start": 11,
+      "day_end": 13,
+      "start_minute": 720,
+      "end_minute": 1080,
+      "location_id": "loc_studio_ataru",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_misa_kisaragi_date"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "event_id": null,
+      "priority": 28,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_misa_climax",
@@ -811,8 +2052,26 @@
       "blocked_by_flags": ["flg_misa_route_complete", "flg_onsen_trip_joined"],
       "event_id": "evt_misa_climax",
       "priority": 98,
-      "evidence_level": "[해석]"
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
+    {
+      "id": "sch_misa_jan7_station",
+      "character_id": "chr_misa",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_yasohachi_station",
+      "spawn_pattern": "fixed",
+      "required_flags": ["flg_misa_route_complete"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[재구성안]",
+      "evidence_tier": "RECONSTRUCTED"
+    },
+
     {
       "id": "sch_akira_pre_onsen",
       "character_id": "chr_akira",
@@ -826,7 +2085,24 @@
       "blocked_by_flags": ["flg_onsen_pre_akira_youko"],
       "event_id": "evt_onsen_pre_akira_youko",
       "priority": 90,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_house_routine",
+      "character_id": "chr_akira",
+      "day_start": 3,
+      "day_end": 16,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_akira_house",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
     },
     {
       "id": "sch_akira_phone_dec28",
@@ -841,7 +2117,90 @@
       "blocked_by_flags": ["flg_onsen_phone_received"],
       "event_id": "evt_onsen_phone_invite",
       "priority": 100,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_onsen_ski",
+      "character_id": "chr_akira",
+      "day_start": 8,
+      "day_end": 9,
+      "start_minute": 600,
+      "end_minute": 960,
+      "location_id": "loc_onsen_ski_slope",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_onsen_trip_joined"],
+      "blocked_by_flags": ["flg_onsen_ski_memories"],
+      "event_id": "evt_onsen_ski_memories",
+      "priority": 88,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_akira_jan7_ceremony",
+      "character_id": "chr_akira",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_yoshiki_photo_club",
+      "character_id": "chr_yoshiki",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 660,
+      "end_minute": 1020,
+      "location_id": "loc_school_photo_club",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_yoshiki_jan7_ceremony",
+      "character_id": "chr_yoshiki",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[해석]",
+      "evidence_tier": "INFERRED"
+    },
+
+    {
+      "id": "sch_aritomo_mansion_routine",
+      "character_id": "chr_aritomo",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 600,
+      "end_minute": 1020,
+      "location_id": "loc_saionji_mansion",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 12,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
     },
     {
       "id": "sch_aritomo_nye_tip",
@@ -856,7 +2215,91 @@
       "blocked_by_flags": ["flg_onsen_trip_joined"],
       "event_id": null,
       "priority": 85,
-      "evidence_level": "[확인]"
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_aritomo_jan7_ceremony",
+      "character_id": "chr_aritomo",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 40,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_tendo_yard_patrol",
+      "character_id": "chr_tendo",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 540,
+      "end_minute": 840,
+      "location_id": "loc_school_yard",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 14,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+    {
+      "id": "sch_tendo_jan7_ceremony",
+      "character_id": "chr_tendo",
+      "day_start": 17,
+      "day_end": 17,
+      "start_minute": 480,
+      "end_minute": 600,
+      "location_id": "loc_school_gate",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 45,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_kaeru_ojisan_cafe",
+      "character_id": "chr_kaeru_ojisan",
+      "day_start": 3,
+      "day_end": 4,
+      "start_minute": 840,
+      "end_minute": 960,
+      "location_id": "loc_home_cafe",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": ["flg_misako_cafe_frog"],
+      "event_id": null,
+      "priority": 30,
+      "evidence_level": "[확인]",
+      "evidence_tier": "VERIFIED_PUBLIC"
+    },
+
+    {
+      "id": "sch_quiz_king_night",
+      "character_id": "chr_quiz_king",
+      "day_start": 1,
+      "day_end": 16,
+      "start_minute": 1140,
+      "end_minute": 1380,
+      "location_id": "loc_kisaragi_station",
+      "spawn_pattern": "scripted",
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "event_id": null,
+      "priority": 15,
+      "evidence_level": "[검증 필요]",
+      "evidence_tier": "NEEDS_VERIFICATION"
     }
   ]
 }

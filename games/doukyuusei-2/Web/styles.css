@@ -28,6 +28,8 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   background: radial-gradient(circle at 18% 12%, #1d2f5a 0%, #0d162c 48%, #070d1b 100%);
   color: var(--text-main);
   font-family: 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
@@ -60,12 +62,14 @@ html, body {
 .app-shell {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 1460px;
   margin: 0 auto;
   padding: 12px 16px 22px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 }
 
 /* Top HUD */
@@ -259,6 +263,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .panel {
@@ -267,6 +272,8 @@ html, body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .panel-header {
@@ -1121,6 +1128,542 @@ html, body {
   display: none !important;
 }
 
+/* ===== Phase 2 Elevation: Phone HUD, Quick Route Guide, 24h Timeline, Mood Meter, Tennis Widget ===== */
+
+.btn-phone-hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-phone-hud.ringing {
+  background: linear-gradient(135deg, rgba(246, 184, 104, 0.34), rgba(242, 132, 158, 0.32));
+  border-color: var(--amber);
+  color: #fff6de;
+  animation: phonePulse 1.6s ease-in-out infinite;
+}
+
+.ring-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #161322;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+@keyframes phonePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(246, 184, 104, 0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(246, 184, 104, 0); }
+}
+
+/* Quick Route Guide / Daily Hint Banner */
+.quick-route-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(22, 38, 72, 0.85), rgba(14, 24, 48, 0.88));
+  border: 1px solid rgba(103, 213, 247, 0.28);
+  font-size: 12px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.route-guide-label {
+  font-weight: 800;
+  color: var(--amber-bright);
+  white-space: nowrap;
+}
+
+.route-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.route-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: rgba(11, 20, 40, 0.78);
+  border: 1px solid rgba(174, 204, 255, 0.22);
+  flex: 1 1 250px;
+  min-width: 0;
+}
+
+.route-card.urgent {
+  border-color: rgba(246, 184, 104, 0.65);
+  background: rgba(246, 184, 104, 0.1);
+}
+
+.route-card-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #e2ecff;
+}
+
+.route-card-text strong {
+  color: var(--amber-bright);
+}
+
+.route-card-meta {
+  color: var(--sky);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.route-rumor {
+  color: #d6e4ff;
+  font-size: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 24h NPC Timeline Strip (Map Panel & Notebook) */
+.map-timeline-panel {
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(10, 17, 34, 0.72);
+}
+
+.timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.timeline-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--amber-bright);
+}
+
+.timeline-select {
+  background: rgba(16, 27, 50, 0.95);
+  color: var(--text-main);
+  border: 1px solid rgba(174, 204, 255, 0.35);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  max-width: 100%;
+}
+
+.timeline-track-wrap {
+  position: relative;
+  padding-top: 2px;
+}
+
+.timeline-track {
+  position: relative;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+
+.timeline-seg {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 6px;
+  border: 1px solid rgba(103, 213, 247, 0.45);
+  background: rgba(103, 213, 247, 0.24);
+  color: #eef9ff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: filter 0.14s ease;
+}
+
+.timeline-seg:hover {
+  filter: brightness(1.18);
+  z-index: 3;
+}
+
+.timeline-seg.is-event {
+  background: linear-gradient(135deg, rgba(246, 184, 104, 0.78), rgba(230, 147, 72, 0.88));
+  border-color: #ffd996;
+  color: #15121d;
+  z-index: 2;
+}
+
+.timeline-seg.active-now {
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.timeline-needle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--rose);
+  box-shadow: 0 0 6px var(--rose);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.timeline-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.timeline-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.timeline-chip.is-event {
+  border-color: rgba(246, 184, 104, 0.55);
+  color: var(--amber-bright);
+  background: rgba(246, 184, 104, 0.12);
+}
+
+.timeline-chip:hover {
+  background: rgba(103, 213, 247, 0.18);
+  color: #fff;
+}
+
+.mini-timeline-wrap {
+  margin: 4px 0 6px;
+}
+
+.mini-timeline-wrap .timeline-track {
+  height: 18px;
+}
+
+/* Dialogue Impact Toast & Mood Meter */
+.dialogue-head-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.impact-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(110, 231, 183, 0.16);
+  border: 1px solid rgba(110, 231, 183, 0.45);
+  color: var(--emerald);
+}
+
+.impact-toast.negative {
+  background: rgba(251, 113, 133, 0.18);
+  border-color: rgba(251, 113, 133, 0.5);
+  color: #fecdd3;
+}
+
+.dual-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.mood-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sky), var(--emerald));
+  border-radius: 999px;
+}
+
+.mood-fill.low {
+  background: linear-gradient(90deg, var(--danger), var(--amber));
+}
+
+.mood-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(103, 213, 247, 0.14);
+  border: 1px solid rgba(103, 213, 247, 0.3);
+  color: #d6f5ff;
+}
+
+/* Phone Directory Modal */
+.phone-modal-card {
+  max-width: 720px;
+}
+
+.phone-notice {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(251, 113, 133, 0.14);
+  border: 1px solid rgba(251, 113, 133, 0.45);
+  color: #fecdd3;
+  font-size: 12.5px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.phone-call-result {
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(103, 213, 247, 0.14), rgba(246, 184, 104, 0.12));
+  border: 1px solid rgba(103, 213, 247, 0.48);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.phone-call-result-body {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+}
+
+.phone-call-result-body strong {
+  color: var(--amber-bright);
+}
+
+.phone-whereabouts {
+  margin-top: 6px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: rgba(9, 15, 30, 0.65);
+  color: var(--sky);
+  font-size: 12px;
+}
+
+.phone-directory-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.phone-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  min-width: 0;
+}
+
+.phone-card.incoming {
+  border-color: var(--amber);
+  background: rgba(246, 184, 104, 0.14);
+  box-shadow: 0 0 14px rgba(246, 184, 104, 0.22);
+}
+
+.phone-card.locked {
+  opacity: 0.62;
+}
+
+.phone-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-card-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.phone-card-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+/* Tennis Minigame Interactive Widget */
+.tennis-widget {
+  margin: 10px 0 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(16, 44, 52, 0.85), rgba(14, 24, 48, 0.92));
+  border: 1px solid rgba(110, 231, 183, 0.45);
+}
+
+.tennis-scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(8, 15, 29, 0.78);
+  border: 1px solid rgba(174, 204, 255, 0.2);
+}
+
+.tennis-score-num {
+  font-size: 20px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--amber-bright);
+}
+
+.tennis-court-svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.tennis-stance-box {
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: rgba(246, 184, 104, 0.14);
+  border: 1px solid rgba(246, 184, 104, 0.48);
+  font-size: 12.5px;
+  color: #fff3d6;
+  margin-bottom: 10px;
+}
+
+.tennis-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tennis-shot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px;
+  border-radius: 11px;
+  background: rgba(103, 213, 247, 0.15);
+  border: 1px solid rgba(103, 213, 247, 0.45);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12.5px;
+  text-align: center;
+  transition: transform 0.12s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.tennis-shot-btn:hover:not(:disabled) {
+  background: rgba(103, 213, 247, 0.28);
+  border-color: var(--amber);
+  transform: translateY(-1px);
+}
+
+.tennis-shot-btn span {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.tennis-rally-log {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11.5px;
+}
+
+.tennis-rally-item {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(11, 20, 38, 0.72);
+  border-left: 3px solid var(--sky);
+}
+
+.tennis-rally-item.win {
+  border-left-color: var(--emerald);
+  color: #d1fae5;
+}
+
+.tennis-rally-item.lose {
+  border-left-color: var(--rose);
+  color: #ffe4e6;
+}
+
+.tennis-result-banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tennis-result-banner.win {
+  background: rgba(110, 231, 183, 0.18);
+  border: 1px solid rgba(110, 231, 183, 0.55);
+  color: #d1fae5;
+}
+
+.tennis-result-banner.lose {
+  background: rgba(246, 184, 104, 0.16);
+  border: 1px solid rgba(246, 184, 104, 0.5);
+  color: var(--amber-bright);
+}
+
+.log-item.type-phone {
+  border-left-color: #c084fc;
+  background: rgba(192, 132, 252, 0.1);
+}
+
+/* Responsive & Strict 390x844 Mobile QA (0px horizontal overflow) */
 @media (max-width: 1024px) {
   .workspace-grid {
     grid-template-columns: 1fr;
@@ -1134,11 +1677,110 @@ html, body {
 @media (max-width: 640px) {
   .app-shell {
     padding: 8px 10px 16px;
+    gap: 8px;
   }
-  .event-modal-body, .ending-featured {
-    flex-direction: column;
+  .hud-bar {
+    padding: 10px;
+    gap: 8px;
+  }
+  .hud-clock-cluster {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .hud-pill {
+    padding: 6px 8px;
+    gap: 5px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .hud-pill.hud-loc {
+    grid-column: 1 / -1;
+  }
+  .hud-actions {
+    width: 100%;
+    gap: 6px;
+  }
+  .hud-actions .btn,
+  .hud-actions .mode-btn,
+  .action-deck .btn {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .zone-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .zone-tab {
+    flex-shrink: 0;
+    min-height: 34px;
+  }
+  .map-legend {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .stage-overlay-top h2 {
+    font-size: 17px;
   }
   .npc-stage-card {
-    min-width: 100%;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .action-deck {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sleep-controls .btn {
+    width: 100%;
+  }
+  .event-modal-body,
+  .ending-featured,
+  .phone-call-result {
+    flex-direction: column;
+  }
+  .phone-directory-list {
+    grid-template-columns: 1fr;
+  }
+  .ending-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+  .tennis-shot-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .modal-card {
+    padding: 12px;
+    max-height: 92vh;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand-text h1 {
+    font-size: 16px;
+  }
+  .digital-clock {
+    font-size: 16px;
+  }
+  .sidebar-tab {
+    font-size: 11.5px;
+    padding: 10px 4px;
+  }
+  .notebook-filters {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .filter-chip {
+    flex-shrink: 0;
+  }
+  .route-card {
+    flex-basis: 100%;
   }
 }

@@ -1,13 +1,18 @@
 /**
- * Doukyuusei 2 (동급생 2) PlayHub Web UI Adapter
- * Connects Doukyuusei2Engine & DOUKYUUSEI2_DATA to the interactive 4-zone SVG map,
- * visual-novel stage, custom SVG portraits, schedule notebook, flag graph, and 3-slot save store.
+ * Doukyuusei 2 (동급생 2) PlayHub Web UI Adapter (Phase 2)
+ * Connects Doukyuusei2Engine & DOUKYUUSEI2_DATA to:
+ * - 4-Zone interactive SVG map + Quick Route Guide
+ * - Interactive 24h NPC Timeline bar (Map & Notebook)
+ * - Telephone Directory Modal (Home Phone & Payphone calls + Incoming Phone Events)
+ * - Playable 12/29 Misa Tennis Rally Minigame Widget
+ * - Visual-novel stage with Affection & Mood meters + Impact Toast
+ * - 3-slot Save Store & 19-Ending Gallery
  */
 (function () {
   'use strict';
 
   const DATA = globalThis.DOUKYUUSEI2_DATA;
-  const { Doukyuusei2Engine, formatMinutes, formatDateLabel } = globalThis.Doukyuusei2Engine;
+  const { Doukyuusei2Engine, formatMinutes, formatDateLabel, TENNIS_SHOTS } = globalThis.Doukyuusei2Engine;
 
   const STORAGE_PREFIX = 'doukyuusei-2:v1:';
   const SAVE_SLOTS = [1, 2, 3];
@@ -99,7 +104,6 @@
     player: '주인공'
   };
 
-  // Safe localStorage wrapper
   function readStorage(key) {
     try {
       return globalThis.localStorage ? globalThis.localStorage.getItem(key) : null;
@@ -172,16 +176,12 @@
       <rect width="80" height="80" fill="url(#bg_${charId})"/>
       <circle cx="40" cy="40" r="34" fill="${st.accent}" opacity="0.14"/>
       ${hairBack}
-      <!-- Outfit / Shoulders -->
       <path d="M14 80 Q20 58 40 58 Q60 58 66 80 Z" fill="${st.outfit}"/>
       <path d="M32 58 L40 68 L48 58 Z" fill="#f8fafc" opacity="0.9"/>
       <path d="M36 62 L40 69 L44 62 Z" fill="${st.accent}"/>
-      <!-- Neck & Face -->
       <rect x="35" y="49" width="10" height="11" rx="4" fill="${skin}"/>
       <ellipse cx="40" cy="38" rx="${isMale ? 15 : 14.5}" ry="16" fill="${skin}"/>
-      <!-- Front Hair Bangs -->
       <path d="M23 36 Q24 18 40 18 Q56 18 57 36 Q51 27 44 31 Q39 25 33 31 Q27 27 23 36 Z" fill="${st.hair}"/>
-      <!-- Eyes & Expression -->
       <ellipse cx="33" cy="39.5" rx="2.3" ry="2.7" fill="#182238"/>
       <ellipse cx="47" cy="39.5" rx="2.3" ry="2.7" fill="#182238"/>
       <circle cx="33.8" cy="38.6" r="0.9" fill="#fff"/>
@@ -285,17 +285,63 @@
       ${scenery}`;
   }
 
+  function renderTennisCourtSvg(match) {
+    const misaPos =
+      match.misaStance.id === 'net_rush'
+        ? { x: 205, y: 74 }
+        : match.misaStance.id === 'baseline'
+          ? { x: 292, y: 74 }
+          : { x: 325, y: 74 };
+
+    const last = match.lastRally;
+    let ballPath = '';
+    if (last) {
+      const won = last.outcome === 'player_point';
+      const stroke = won ? '#6ee7b7' : '#fb7185';
+      const endX = won ? (last.shotType === 'drop' ? 202 : 332) : 45;
+      const endY = won ? (last.shotType === 'power' ? 32 : 112) : 65;
+      const ctrlY = last.shotType === 'lob' ? 8 : 74;
+      ballPath = `
+        <path d="M 65 74 Q 185 ${ctrlY} ${endX} ${endY}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-dasharray="5 3"/>
+        <circle cx="${endX}" cy="${endY}" r="5.5" fill="#fde047" stroke="#111827" stroke-width="1.2"/>`;
+    }
+
+    return `<svg class="tennis-court-svg" viewBox="0 0 360 150" role="img" aria-label="테니스 코트 전술도">
+      <rect width="360" height="150" rx="10" fill="#1b5e4c"/>
+      <rect x="20" y="18" width="320" height="114" fill="#22735d" stroke="#e2f7ef" stroke-width="2"/>
+      <line x1="20" y1="34" x2="340" y2="34" stroke="#e2f7ef" stroke-opacity="0.6" stroke-width="1.2"/>
+      <line x1="20" y1="116" x2="340" y2="116" stroke="#e2f7ef" stroke-opacity="0.6" stroke-width="1.2"/>
+      <line x1="100" y1="34" x2="100" y2="116" stroke="#e2f7ef" stroke-opacity="0.65" stroke-width="1.2"/>
+      <line x1="260" y1="34" x2="260" y2="116" stroke="#e2f7ef" stroke-opacity="0.65" stroke-width="1.2"/>
+      <line x1="100" y1="75" x2="260" y2="75" stroke="#e2f7ef" stroke-opacity="0.65" stroke-width="1.2"/>
+      <!-- Net -->
+      <line x1="180" y1="12" x2="180" y2="138" stroke="#f8fafc" stroke-width="3.2" stroke-dasharray="3 2"/>
+      <text x="180" y="147" text-anchor="middle" fill="#a7f3d0" font-size="9" font-weight="700">NET</text>
+      <!-- Player -->
+      <circle cx="58" cy="75" r="12" fill="#38bdf8" stroke="#0b1529" stroke-width="2"/>
+      <text x="58" y="79" text-anchor="middle" fill="#0b1529" font-size="9.5" font-weight="900">나</text>
+      <!-- Misa -->
+      <circle cx="${misaPos.x}" cy="${misaPos.y}" r="13" fill="#f59e0b" stroke="#0b1529" stroke-width="2"/>
+      <text x="${misaPos.x}" y="${misaPos.y + 3.5}" text-anchor="middle" fill="#0b1529" font-size="9" font-weight="900">미사</text>
+      ${ballPath}
+    </svg>`;
+  }
+
   // Application Controller
   const engine = new Doukyuusei2Engine(DATA, { mode: 'easy_remake' });
   const uiState = {
     selectedZoneId: engine.state.zoneId,
+    selectedTimelineCharId: 'chr_yui',
     activeSidebarTab: 'notebook',
     notebookFilter: 'all',
     expandedHeroines: new Set(),
     activeModalEvent: null,
+    activeModalViaPhone: false,
+    lastPhoneResult: null,
+    tennisEventResult: null,
     dialogue: {
       speaker: '안내',
-      text: '겨울방학 첫날 아침입니다. 4존 지도에서 이동할 장소를 클릭하거나, 이지 레이더로 현재 출현 중인 히로인을 추적해 보세요.',
+      text: '겨울방학 첫날 아침입니다. 4존 지도에서 이동할 장소를 클릭하거나, 추천 동선·전화번호부로 히로인을 추적해 보세요.',
       meta: '12/22 08:00'
     }
   };
@@ -336,14 +382,19 @@
     locText: document.getElementById('hud-loc-text'),
     btnModeClassic: document.getElementById('btn-mode-classic'),
     btnModeEasy: document.getElementById('btn-mode-easy'),
+    btnOpenPhone: document.getElementById('btn-open-phone'),
+    phoneRingBadge: document.getElementById('phone-ring-badge'),
     btnSaveLoad: document.getElementById('btn-save-load'),
     btnEndings: document.getElementById('btn-endings'),
     btnNewGame: document.getElementById('btn-new-game'),
     bannerDayNote: document.getElementById('banner-day-note'),
     bannerWarning: document.getElementById('banner-warning'),
+    quickRouteBar: document.getElementById('quick-route-bar'),
     zoneTabs: document.getElementById('zone-tabs'),
     townMapSvg: document.getElementById('town-map-svg'),
     mapHoverInfo: document.getElementById('map-hover-info'),
+    timelineHeroineSelect: document.getElementById('timeline-heroine-select'),
+    mapTimelineBody: document.getElementById('map-timeline-body'),
     sceneBackdropSvg: document.getElementById('scene-backdrop-svg'),
     stageZonePill: document.getElementById('stage-zone-pill'),
     stageLocTitle: document.getElementById('stage-loc-title'),
@@ -351,9 +402,11 @@
     stageQuickEvents: document.getElementById('stage-quick-events'),
     stageNpcStrip: document.getElementById('stage-npc-strip'),
     dialogueSpeaker: document.getElementById('dialogue-speaker'),
+    impactToast: document.getElementById('impact-toast'),
     dialogueMeta: document.getElementById('dialogue-meta'),
     dialogueText: document.getElementById('dialogue-text'),
     btnWaitNext: document.getElementById('btn-wait-next'),
+    btnDeckPhone: document.getElementById('btn-deck-phone'),
     btnSleepDay: document.getElementById('btn-sleep-day'),
     notebookList: document.getElementById('notebook-list'),
     flagStatsRow: document.getElementById('flag-stats-row'),
@@ -362,12 +415,20 @@
     activeFlagsChips: document.getElementById('active-flags-chips'),
     completedEventsList: document.getElementById('completed-events-list'),
     historyLogList: document.getElementById('history-log-list'),
+    phoneModal: document.getElementById('phone-modal'),
+    phoneModalStatusTag: document.getElementById('phone-modal-status-tag'),
+    phoneLocationNotice: document.getElementById('phone-location-notice'),
+    phoneCallResult: document.getElementById('phone-call-result'),
+    phoneDirectoryList: document.getElementById('phone-directory-list'),
+    btnClosePhoneModal: document.getElementById('btn-close-phone-modal'),
+    btnPhoneClose: document.getElementById('btn-phone-close'),
     eventModal: document.getElementById('event-modal'),
     eventModalTag: document.getElementById('event-modal-tag'),
     eventModalTitle: document.getElementById('event-modal-title'),
     eventModalPortrait: document.getElementById('event-modal-portrait'),
     eventModalNarration: document.getElementById('event-modal-narration'),
     eventModalLines: document.getElementById('event-modal-lines'),
+    eventModalMinigame: document.getElementById('event-modal-minigame'),
     eventModalChoices: document.getElementById('event-modal-choices'),
     eventModalFooter: document.getElementById('event-modal-footer'),
     btnCloseEventModal: document.getElementById('btn-close-event-modal'),
@@ -391,8 +452,10 @@
     }
 
     renderHud();
+    renderQuickRouteBar();
     renderZoneTabs();
     renderTownMap();
+    renderMapTimeline();
     renderSceneStage();
     renderDialogue();
     renderSidebar();
@@ -404,6 +467,8 @@
     const curLoc = engine.locMap.get(engine.state.locationId);
     const curZone = engine.zoneMap.get(engine.state.zoneId);
     const daysLeft = Math.max(0, DATA.days.length - 1 - engine.state.dayIndex);
+    const phoneStatus = engine.canUsePhone();
+    const incomingCalls = engine.getActiveIncomingPhoneEvents();
 
     el.dateText.textContent = formatDateLabel(dayMeta, engine.state.dayIndex);
     el.ddayBadge.textContent = daysLeft === 0 ? '시업식' : `D-${daysLeft}`;
@@ -415,12 +480,26 @@
     el.btnModeClassic.classList.toggle('active', engine.state.mode === 'classic');
     el.btnModeEasy.classList.toggle('active', engine.state.mode === 'easy_remake');
 
+    // Phone ring indicator on HUD & deck
+    const hasIncoming = incomingCalls.length > 0 && !engine.state.ended;
+    el.btnOpenPhone.classList.toggle('ringing', hasIncoming);
+    el.phoneRingBadge.classList.toggle('hidden', !hasIncoming);
+    if (hasIncoming) {
+      el.phoneRingBadge.textContent = `☎ ${incomingCalls.length}`;
+    }
+
+    el.btnDeckPhone.disabled = engine.state.ended;
+    el.btnDeckPhone.textContent = phoneStatus.canCall
+      ? `📞 ${phoneStatus.phoneType === 'payphone' ? '공중전화' : '자택 전화'} (-5분)`
+      : '📞 전화번호부';
+    el.btnDeckPhone.classList.toggle('btn-amber', hasIncoming && phoneStatus.canCall);
+    el.btnDeckPhone.classList.toggle('btn-ghost', !(hasIncoming && phoneStatus.canCall));
+
     el.bannerDayNote.textContent = `${dayMeta.label_ko} — ${dayMeta.special_notes}`;
 
-    // Warnings (12/28 Onsen phone, 1/6 Home return guard, Youko override)
     const warnings = [];
-    if (engine.state.dayIndex === 6 && engine.hasFlag('flg_onsen_pre_akira_youko') && !engine.hasFlag('flg_onsen_phone_received')) {
-      warnings.push('☎ 10:00~21:00 주인공 방에서 아키라 온천 전화 수신 가능');
+    if (incomingCalls.length > 0) {
+      warnings.push(`☎ 수신 대기 전화 ${incomingCalls.length}건 (${incomingCalls.map((c) => c.character.name_ko).join(', ')})`);
     }
     if (engine.isOnsenHomeReturnWarningActive()) {
       warnings.push('⚠ 1/6 온천 연계 루트 활성: 외출 후 자택(거실·방) 귀가 시 플래그 파손 주의!');
@@ -436,7 +515,6 @@
       el.bannerWarning.classList.add('hidden');
     }
 
-    // Sleep button label adapts for 01/06 home-return safety
     if (engine.state.ended) {
       el.btnSleepDay.textContent = '엔딩 결과 보기';
     } else if (engine.state.dayIndex === 15 && engine.isOnsenHomeReturnWarningActive()) {
@@ -450,6 +528,127 @@
     const nextMin = engine.getNextScheduledMinuteToday();
     el.btnWaitNext.disabled = engine.state.ended || nextMin === null;
     el.btnWaitNext.textContent = nextMin !== null ? `다음 일정 (${formatMinutes(nextMin)})까지` : '오늘 남은 일정 없음';
+  }
+
+  function renderQuickRouteBar() {
+    if (engine.state.ended) {
+      el.quickRouteBar.innerHTML = `<span class="route-guide-label">🎓 시업식 완료</span><span class="route-rumor">엔딩 도감에서 19종 엔딩 조건과 해금 현황을 확인해 보세요.</span>`;
+      return;
+    }
+
+    const isEasy = engine.state.mode === 'easy_remake';
+    const rumor = engine.getDailyRumorHint();
+
+    if (!isEasy) {
+      el.quickRouteBar.innerHTML = `<span class="route-guide-label">💬 오늘의 소문</span>
+        <span class="route-rumor">${escapeHtml(rumor ? rumor.hint_ko : '자택이나 공중전화에서 히로인에게 전화를 걸어 단서를 모아 보세요.')}</span>`;
+      return;
+    }
+
+    const recs = engine.getQuickRouteRecommendations(2);
+    if (recs.length === 0) {
+      el.quickRouteBar.innerHTML = `<span class="route-guide-label">🧭 추천 동선</span>
+        <span class="route-rumor">${escapeHtml(rumor ? rumor.hint_ko : '오늘 남은 핵심 이벤트 창이 없습니다. 시간을 보내거나 다음 날로 넘겨 보세요.')}</span>`;
+      return;
+    }
+
+    const cardsHtml = recs
+      .map((rec) => {
+        const etaStr =
+          rec.travelMinutes === 0
+            ? '현재 위치'
+            : `+${rec.travelMinutes}분 → ${formatMinutes(rec.arrivalMinute)}`;
+        const statusTag = rec.activeNow
+          ? `<span class="tag tag-amber">진행 가능</span>`
+          : `<span class="tag tag-sky">${rec.minutesUntilStart}분 뒤 시작</span>`;
+
+        const actionBtn =
+          rec.isPhoneEvent && rec.activeNow
+            ? `<button class="btn btn-sm btn-amber" type="button" data-open-phone-for="${rec.characterId}">☎ 전화 받기</button>`
+            : rec.travelMinutes === 0 && rec.activeNow
+              ? `<button class="btn btn-sm btn-amber" type="button" data-trigger-event="${rec.eventId}">★ 바로 진행</button>`
+              : `<button class="btn btn-sm btn-sky" type="button" data-quick-travel="${rec.locationId}">바로 이동</button>`;
+
+        return `<div class="route-card ${rec.activeNow ? 'urgent' : ''}">
+          ${statusTag}
+          <div class="route-card-text">
+            <strong>${escapeHtml(rec.locationName)}</strong> · ${escapeHtml(rec.title_ko)}
+            <span class="route-card-meta">(${rec.windowLabel} · ${etaStr})</span>
+          </div>
+          ${actionBtn}
+        </div>`;
+      })
+      .join('');
+
+    el.quickRouteBar.innerHTML = `<span class="route-guide-label">🧭 추천 동선</span><div class="route-cards-row">${cardsHtml}</div>`;
+  }
+
+  function renderTimelineTrackHtml(timeline, compact = false) {
+    if (!timeline.visibleInCurrentMode) {
+      return `<div class="empty-stage-note" style="padding:7px 10px;font-size:11.5px;">클래식 모드: 대화하거나 전화(📞)를 걸어 ${escapeHtml(timeline.character.name_ko)}의 동선 타임라인을 해금하세요.</div>`;
+    }
+
+    if (timeline.segments.length === 0) {
+      return `<div class="empty-stage-note" style="padding:7px 10px;font-size:11.5px;">오늘(${escapeHtml(timeline.date)}) 확인된 출현 동선이 없습니다. (하와이 해외 일정 또는 온천/잔류 분기 확인)</div>`;
+    }
+
+    const hasEarly = timeline.segments.some((s) => s.startMinute < 360);
+    const minStart = hasEarly ? 0 : 360;
+    const span = 1440 - minStart;
+
+    const segsHtml = timeline.segments
+      .map((seg) => {
+        const leftPct = Math.max(0, ((seg.startMinute - minStart) / span) * 100);
+        const widthPct = Math.max(2.5, ((seg.endMinute - seg.startMinute) / span) * 100);
+        const label = seg.hasEvent ? `★ ${seg.locationName}` : seg.locationName;
+        const title = `${seg.startLabel}~${seg.endLabel} ${seg.locationName}${seg.eventTitle ? ` — ★ ${seg.eventTitle}` : ''}`;
+        return `<button type="button" class="timeline-seg ${seg.hasEvent ? 'is-event' : ''} ${seg.activeNow ? 'active-now' : ''}"
+          style="left:${leftPct.toFixed(2)}%;width:${widthPct.toFixed(2)}%"
+          title="${escapeHtml(title)}" data-quick-travel="${seg.locationId}">
+          ${compact ? '' : escapeHtml(label)}
+        </button>`;
+      })
+      .join('');
+
+    let needleHtml = '';
+    if (timeline.currentMinute !== null && timeline.currentMinute >= minStart) {
+      const needlePct = Math.min(100, Math.max(0, ((timeline.currentMinute - minStart) / span) * 100));
+      needleHtml = `<div class="timeline-needle" style="left:${needlePct.toFixed(2)}%" title="현재 시각 ${formatMinutes(timeline.currentMinute)}"></div>`;
+    }
+
+    const ticks = hasEarly
+      ? ['00:00', '06:00', '12:00', '18:00', '24:00']
+      : ['06:00', '10:00', '14:00', '18:00', '22:00', '24:00'];
+
+    const chipsHtml = compact
+      ? ''
+      : `<div class="timeline-chips">${timeline.segments
+          .map(
+            (seg) => `<button type="button" class="timeline-chip ${seg.hasEvent ? 'is-event' : ''}" data-quick-travel="${seg.locationId}">
+              ${seg.hasEvent ? '★' : '•'} ${seg.startLabel}~${seg.endLabel} ${escapeHtml(seg.locationName)}
+            </button>`
+          )
+          .join('')}</div>`;
+
+    return `<div class="timeline-track-wrap ${compact ? 'mini-timeline-wrap' : ''}">
+      <div class="timeline-track">${segsHtml}${needleHtml}</div>
+      <div class="timeline-ticks">${ticks.map((t) => `<span>${t}</span>`).join('')}</div>
+      ${chipsHtml}
+    </div>`;
+  }
+
+  function renderMapTimeline() {
+    // Populate heroine select once
+    if (el.timelineHeroineSelect.options.length === 0) {
+      const allOptions = [...engine.heroines, engine.charMap.get('chr_akira')].filter(Boolean);
+      el.timelineHeroineSelect.innerHTML = allOptions
+        .map((c) => `<option value="${c.id}">${escapeHtml(c.name_ko)} (${SPAWN_LABELS[c.spawn_pattern] || c.spawn_pattern})</option>`)
+        .join('');
+    }
+    el.timelineHeroineSelect.value = uiState.selectedTimelineCharId;
+
+    const timeline = engine.getDayTimelineForHeroine(uiState.selectedTimelineCharId, engine.state.dayIndex);
+    el.mapTimelineBody.innerHTML = renderTimelineTrackHtml(timeline, false);
   }
 
   function renderZoneTabs() {
@@ -489,7 +688,6 @@
     const isEasy = engine.state.mode === 'easy_remake';
     const showJan6Warn = engine.isOnsenHomeReturnWarningActive() && engine.state.leftHomeOnJan6;
 
-    // Build edges within this zone + cross-zone transit indicator
     const drawnEdges = new Set();
     let edgesSvg = '';
     let crossZoneIndicators = '';
@@ -513,7 +711,6 @@
           const dash = edge.mode === 'town_map' ? 'stroke-dasharray="4 4"' : '';
           edgesSvg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${stroke}" stroke-width="${edge.mode === 'town_map' ? 1.5 : 2.2}" stroke-opacity="0.58" ${dash}/>`;
         } else {
-          // Cross-zone portal pill
           const target = engine.locMap.get(edge.target_id);
           if (!target) continue;
           const targetZone = engine.zoneMap.get(target.zone_id);
@@ -527,7 +724,6 @@
       }
     }
 
-    // Build clickable location nodes
     let nodesSvg = '';
     for (const loc of zoneLocs) {
       const pt = coords[loc.id];
@@ -539,6 +735,7 @@
       const showPins = isEasy || isCurrent;
       const hasEvent = showPins && npcsHere.some((n) => n.hasEvent);
       const isJan6Trap = showJan6Warn && (loc.id === 'loc_home_living' || loc.id === 'loc_home_room');
+      const hasPhone = engine.canUsePhone(loc.id).canCall;
 
       const fill = isCurrent
         ? '#1d4e78'
@@ -555,12 +752,11 @@
             ? '#fb7185'
             : 'rgba(174,204,255,0.45)';
 
-      const boxW = Math.max(92, pt.short.length * 10.5 + 22);
+      const boxW = Math.max(92, pt.short.length * 10.5 + 24);
       const boxH = 30;
       const rx = pt.x - boxW / 2;
       const ry = pt.y - boxH / 2;
 
-      // NPC colored dots on bottom-left of node
       let npcDotsSvg = '';
       if (showPins && npcsHere.length > 0) {
         npcsHere.slice(0, 4).forEach((n, idx) => {
@@ -569,7 +765,6 @@
         });
       }
 
-      // Event ! badge on top-right
       let eventBadgeSvg = '';
       if (hasEvent) {
         eventBadgeSvg = `<g transform="translate(${rx + boxW - 2}, ${ry + 1})">
@@ -578,7 +773,6 @@
         </g>`;
       }
 
-      // Travel cost mini badge (Easy mode or adjacent)
       let costBadgeSvg = '';
       if (!isCurrent && route.reachable && isEasy) {
         const badgeTxt = isClosed ? '마감' : `+${route.travelMinutes}m`;
@@ -590,7 +784,10 @@
         </g>`;
       }
 
-      // Current player pulse ring
+      const phoneMark = hasPhone
+        ? `<text x="${rx + boxW - 11}" y="${ry + boxH - 4}" text-anchor="middle" fill="#7dd3fc" font-size="9" opacity="0.85">☎</text>`
+        : '';
+
       const currentRing = isCurrent
         ? `<rect x="${rx - 4}" y="${ry - 4}" width="${boxW + 8}" height="${boxH + 8}" rx="12" fill="none" stroke="#67d5f7" stroke-opacity="0.45" stroke-width="2"/>`
         : '';
@@ -599,6 +796,7 @@
         ${currentRing}
         <rect class="node-body" x="${rx}" y="${ry}" width="${boxW}" height="${boxH}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="${isCurrent || hasEvent ? 2.2 : 1.3}"/>
         <text x="${pt.x}" y="${pt.y + 4}" text-anchor="middle" fill="${isClosed ? '#8aa0c4' : '#f1f5ff'}" font-size="11.5" font-weight="${isCurrent ? 800 : 600}">${escapeHtml(pt.short)}</text>
+        ${phoneMark}
         ${npcDotsSvg}
         ${costBadgeSvg}
         ${eventBadgeSvg}
@@ -617,18 +815,18 @@
     const timeSlot = engine.getTimeSlotMeta();
     const present = engine.getPresentNpcs(engine.state.dayIndex, engine.state.minuteOfDay, engine.state.locationId);
     const availableEvents = engine.getAvailableEvents(engine.state.locationId);
+    const phoneStatus = engine.canUsePhone(engine.state.locationId);
 
     el.sceneBackdropSvg.innerHTML = renderLocationBackdropSvg(loc, timeSlot);
     el.stageZonePill.textContent = `${zone.name_ko} (${zone.name_ja})`;
     el.stageLocTitle.textContent = `${loc.name_ko} · ${loc.name_ja}`;
-    el.stageLocMeta.textContent = `${loc.indoor ? '실내' : '실외'} · 개방 ${formatMinutes(loc.open_minute)}~${formatMinutes(loc.close_minute)}`;
+    el.stageLocMeta.textContent = `${loc.indoor ? '실내' : '실외'} · 개방 ${formatMinutes(loc.open_minute)}~${formatMinutes(loc.close_minute)}${phoneStatus.canCall ? ` · ☎ ${phoneStatus.label_ko}` : ''}`;
 
-    // Quick Event CTA buttons (includes phone calls where character isn't physically standing nearby or scripted events)
     if (availableEvents.length > 0) {
       el.stageQuickEvents.innerHTML = availableEvents
         .map(
           (ev) => `<button class="btn btn-amber btn-sm" type="button" data-trigger-event="${ev.id}">
-            ★ ${escapeHtml(ev.title_ko)} (+${ev.time_cost_minutes}분)
+            ${ev.scene_type === 'minigame_event' ? '🎾' : '★'} ${escapeHtml(ev.title_ko)} (+${ev.time_cost_minutes}분)
           </button>`
         )
         .join('');
@@ -636,14 +834,15 @@
       el.stageQuickEvents.innerHTML = '';
     }
 
-    // Present NPC Cards
     if (present.length === 0) {
-      el.stageNpcStrip.innerHTML = `<div class="empty-stage-note">현재 이 장소에 머물고 있는 인물이 없습니다. 시간을 보내거나 다른 장소로 이동해 보세요.</div>`;
+      el.stageNpcStrip.innerHTML = `<div class="empty-stage-note">현재 이 장소에 머물고 있는 인물이 없습니다. 시간을 보내거나 전화(📞)로 소재지를 확인해 보세요.</div>`;
     } else {
       el.stageNpcStrip.innerHTML = present
         .map((p) => {
           const ch = p.character;
-          const aff = ch.romanceable ? engine.state.affection[ch.id] || 0 : null;
+          const aff = ch.romanceable ? engine.state.affection[ch.id] ?? 0 : null;
+          const moodVal = ch.romanceable ? engine.state.mood[ch.id] ?? 50 : null;
+          const moodMeta = moodVal !== null ? engine.getMoodMeta(moodVal) : null;
           const evMatch = availableEvents.find((e) => e.character_id === ch.id);
           return `<div class="npc-stage-card ${evMatch ? 'has-event' : ''}">
             <div class="npc-avatar-box">${renderCharacterAvatarSvg(ch.id, 54)}</div>
@@ -651,13 +850,15 @@
               <div class="npc-card-name">
                 <span>${escapeHtml(ch.name_ko)}</span>
                 <span class="tag tag-sky">${SPAWN_LABELS[ch.spawn_pattern] || ch.spawn_pattern}</span>
+                ${moodMeta ? `<span class="mood-pill" title="기분 ${moodVal}/100">${moodMeta.icon} ${moodMeta.label_ko}</span>` : ''}
               </div>
-              <div class="npc-card-sub">${escapeHtml(ch.occupation_ko)}${aff !== null ? ` · 친밀도 ${aff}` : ''}</div>
+              <div class="npc-card-sub">${escapeHtml(ch.occupation_ko)}${aff !== null ? ` · ♥${aff}` : ''}</div>
               <div class="npc-card-actions">
                 <button class="btn btn-sm btn-ghost" type="button" data-talk-npc="${ch.id}">대화 (0분)</button>
+                <button class="btn btn-sm btn-ghost" type="button" data-focus-timeline="${ch.id}">🕒 동선</button>
                 ${
                   evMatch
-                    ? `<button class="btn btn-sm btn-amber" type="button" data-trigger-event="${evMatch.id}">★ 이벤트 진행</button>`
+                    ? `<button class="btn btn-sm btn-amber" type="button" data-trigger-event="${evMatch.id}">${evMatch.scene_type === 'minigame_event' ? '🎾 테니스 승부' : '★ 이벤트'}</button>`
                     : ''
                 }
               </div>
@@ -672,6 +873,18 @@
     el.dialogueSpeaker.textContent = uiState.dialogue.speaker;
     el.dialogueMeta.textContent = uiState.dialogue.meta;
     el.dialogueText.textContent = uiState.dialogue.text;
+
+    const imp = engine.state.lastImpact;
+    if (imp) {
+      const parts = [];
+      if (imp.affectionDelta !== 0) parts.push(`♥${imp.affectionDelta > 0 ? '+' : ''}${imp.affectionDelta}`);
+      if (imp.moodDelta !== 0) parts.push(`기분${imp.moodDelta > 0 ? '+' : ''}${imp.moodDelta}`);
+      el.impactToast.textContent = `${imp.characterName} · ${parts.join(' / ')}`;
+      el.impactToast.classList.toggle('negative', imp.moodDelta < 0 || imp.affectionDelta < 0);
+      el.impactToast.classList.remove('hidden');
+    } else {
+      el.impactToast.classList.add('hidden');
+    }
   }
 
   function renderSidebar() {
@@ -714,7 +927,12 @@
 
         const detailsHtml = expanded
           ? `<div class="heroine-details">
-              <div><strong>소속:</strong> ${escapeHtml(h.affiliation)} · <strong>유형:</strong> ${SPAWN_LABELS[h.spawn_pattern]}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+                <span><strong>소속:</strong> ${escapeHtml(h.affiliation)} · <strong>기분:</strong> ${item.moodMeta.icon} ${item.moodMeta.label_ko} (${item.mood})</span>
+                <button class="btn btn-sm btn-sky" type="button" data-open-phone-for="${h.id}">📞 전화</button>
+              </div>
+              <div style="margin-top:2px"><strong>오늘의 동선 (${escapeHtml(item.timeline.date)}):</strong></div>
+              ${renderTimelineTrackHtml(item.timeline, true)}
               ${item.events
                 .map((ev) => {
                   const sDay = DATA.days[ev.day_start - 1].date;
@@ -735,12 +953,18 @@
             <div class="mini-avatar">${renderCharacterAvatarSvg(h.id, 40)}</div>
             <div class="heroine-meta">
               <div class="heroine-name-row">
-                <span class="heroine-name">${escapeHtml(h.name_ko)}</span>
+                <span class="heroine-name">${escapeHtml(h.name_ko)} <span class="mood-pill">${item.moodMeta.icon} ${item.mood}</span></span>
                 ${statusBadge}
               </div>
-              <div class="meter-wrap">
-                <div class="meter-bar"><div class="meter-fill" style="width:${item.affection}%"></div></div>
-                <span class="meter-val">${item.completedMilestones}/${item.totalMilestones} · ♥${item.affection}</span>
+              <div class="dual-meters">
+                <div class="meter-wrap">
+                  <div class="meter-bar" title="친밀도 ${item.affection}/100"><div class="meter-fill" style="width:${item.affection}%"></div></div>
+                  <span class="meter-val">${item.completedMilestones}/${item.totalMilestones} · ♥${item.affection}</span>
+                </div>
+                <div class="meter-wrap" style="margin-top:0">
+                  <div class="meter-bar" style="height:4px" title="기분 ${item.mood}/100"><div class="mood-fill ${item.mood < 40 ? 'low' : ''}" style="width:${item.mood}%"></div></div>
+                  <span class="meter-val" style="font-size:10px">기분 ${item.moodMeta.label_ko}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -825,21 +1049,278 @@
       .join('');
   }
 
-  // Event Scene & Choice Modal
-  function openEventModal(eventObj) {
+  // ===== Phone Directory Modal =====
+  function findNearestPhoneLocation() {
+    const activeZones = new Set(engine.getActiveZones());
+    let best = null;
+    for (const cl of DATA.callable_locations || []) {
+      const loc = engine.locMap.get(cl.location_id);
+      if (!loc || !activeZones.has(loc.zone_id)) continue;
+      const route = engine.computeShortestTravel(engine.state.locationId, cl.location_id);
+      if (!route.reachable || !route.openOk) continue;
+      if (!best || route.travelMinutes < best.travelMinutes) {
+        best = { ...cl, location: loc, travelMinutes: route.travelMinutes };
+      }
+    }
+    return best;
+  }
+
+  function openPhoneModal(focusCharId = null) {
+    renderPhoneModal(focusCharId);
+    el.phoneModal.classList.remove('hidden');
+  }
+
+  function closePhoneModal() {
+    el.phoneModal.classList.add('hidden');
+  }
+
+  function renderPhoneModal(focusCharId = null) {
+    const phoneStatus = engine.canUsePhone();
+    el.phoneModalStatusTag.textContent = phoneStatus.canCall
+      ? `${phoneStatus.phoneType === 'payphone' ? '☎️ 공중전화' : '🏠 자택 전화'} · ${phoneStatus.label_ko}`
+      : '⚠ 전화기 없는 장소';
+    el.phoneModalStatusTag.className = `tag ${phoneStatus.canCall ? 'tag-sky' : 'tag-danger'}`;
+
+    if (!phoneStatus.canCall) {
+      const nearest = findNearestPhoneLocation();
+      el.phoneLocationNotice.innerHTML = `
+        <span>현재 위치(${escapeHtml(phoneStatus.locationName)})에는 전화기가 없습니다. 자택·역·세븐마트·교문 앞 공중전화에서 걸 수 있습니다.</span>
+        ${nearest ? `<button class="btn btn-sm btn-amber" type="button" data-quick-travel-phone="${nearest.location_id}">${escapeHtml(nearest.location.name_ko)} 이동 (+${nearest.travelMinutes}분)</button>` : ''}
+      `;
+      el.phoneLocationNotice.classList.remove('hidden');
+    } else {
+      el.phoneLocationNotice.classList.add('hidden');
+    }
+
+    if (uiState.lastPhoneResult) {
+      const r = uiState.lastPhoneResult;
+      const travelTarget = r.currentSegment || r.upcomingSegment;
+      const statBadge =
+        r.affectionDelta || r.moodDelta
+          ? `<span class="tag tag-emerald">♥+${r.affectionDelta} · 기분+${r.moodDelta}</span>`
+          : '';
+      el.phoneCallResult.innerHTML = `
+        <div class="mini-avatar" style="width:52px;height:52px">${renderCharacterAvatarSvg(r.character.id, 52)}</div>
+        <div class="phone-call-result-body">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+            <strong>${escapeHtml(r.character.name_ko)}</strong>
+            <span class="tag tag-dark">${escapeHtml(r.phoneLabel)}</span>
+            ${statBadge}
+          </div>
+          <div>"${escapeHtml(r.responseLine)}"</div>
+          <div class="phone-whereabouts">
+            📍 ${escapeHtml(r.whereaboutsHint)}
+            ${r.nextEventHint ? `<div style="margin-top:3px;color:#ffd996">★ ${escapeHtml(r.nextEventHint)}</div>` : ''}
+          </div>
+          ${
+            travelTarget
+              ? `<div style="margin-top:7px"><button class="btn btn-sm btn-sky" type="button" data-quick-travel-from-phone="${travelTarget.locationId}">${escapeHtml(travelTarget.locationName)}(으)로 바로 이동</button></div>`
+              : ''
+          }
+        </div>
+      `;
+      el.phoneCallResult.classList.remove('hidden');
+    } else {
+      el.phoneCallResult.classList.add('hidden');
+    }
+
+    const contacts = engine.getCallableHeroines();
+    // Put incoming phone events first, then focused contact, then rest
+    contacts.sort((a, b) => {
+      if ((b.hasIncomingPhoneEvent ? 1 : 0) !== (a.hasIncomingPhoneEvent ? 1 : 0)) {
+        return (b.hasIncomingPhoneEvent ? 1 : 0) - (a.hasIncomingPhoneEvent ? 1 : 0);
+      }
+      if (focusCharId) {
+        if (a.characterId === focusCharId) return -1;
+        if (b.characterId === focusCharId) return 1;
+      }
+      return 0;
+    });
+
+    el.phoneDirectoryList.innerHTML = contacts
+      .map((c) => {
+        const ch = c.character;
+        const hoursStr = `${formatMinutes(c.call_hours.start_minute)}~${formatMinutes(c.call_hours.end_minute)}`;
+        const statusTag = c.hasIncomingPhoneEvent
+          ? `<span class="tag tag-amber">☎ 특별 전화!</span>`
+          : !c.hasRequiredFlags
+            ? `<span class="tag tag-dark">연락처 미교환</span>`
+            : c.isUnavailableDay
+              ? `<span class="tag tag-danger">부재중</span>`
+              : c.moodMeta
+                ? `<span class="mood-pill">${c.moodMeta.icon} ${c.moodMeta.label_ko} · ♥${c.affection}</span>`
+                : `<span class="tag tag-sky">통화 가능</span>`;
+
+        const btnLabel = c.hasIncomingPhoneEvent
+          ? '☎ 받기'
+          : '전화 (-5분)';
+        const disabled = !phoneStatus.canCall || (!c.hasRequiredFlags && !c.hasIncomingPhoneEvent) || engine.state.ended;
+
+        return `<div class="phone-card ${c.hasIncomingPhoneEvent ? 'incoming' : ''} ${!c.hasRequiredFlags ? 'locked' : ''}">
+          <div class="mini-avatar">${renderCharacterAvatarSvg(ch.id, 40)}</div>
+          <div class="phone-card-info">
+            <div class="phone-card-name">
+              <span>${escapeHtml(ch.name_ko)}</span>
+              ${statusTag}
+            </div>
+            <div class="phone-card-sub">${escapeHtml(c.phone_label_ko)} (${hoursStr})</div>
+            ${c.unavailableReason ? `<div class="phone-card-sub" style="color:#fda4af">${escapeHtml(c.unavailableReason)}</div>` : ''}
+          </div>
+          <button class="btn btn-sm ${c.hasIncomingPhoneEvent ? 'btn-amber' : 'btn-sky'}" type="button" data-call-char="${ch.id}" ${disabled ? 'disabled' : ''}>${btnLabel}</button>
+        </div>`;
+      })
+      .join('');
+  }
+
+  function handlePlacePhoneCall(charId) {
+    const res = engine.callHeroine(charId);
+    if (!res.ok) {
+      setDialogue('전화 불가', res.message);
+      renderAll();
+      renderPhoneModal(charId);
+      return;
+    }
+
+    if (res.status === 'INCOMING_EVENT' && res.triggeredPhoneEvent) {
+      uiState.lastPhoneResult = null;
+      closePhoneModal();
+      renderAll();
+      openEventModal(res.triggeredPhoneEvent, { viaPhone: true });
+      return;
+    }
+
+    uiState.lastPhoneResult = res;
+    if (res.character.romanceable) {
+      uiState.selectedTimelineCharId = res.character.id;
+    }
+    setDialogue(res.character.name_ko, `☎ "${res.responseLine}" (${res.whereaboutsHint})`);
+
+    if (res.rolledOver && res.rolloverResult && res.rolloverResult.ended) {
+      closePhoneModal();
+      recordUnlockedEnding(res.rolloverResult.ending.id);
+      renderAll();
+      openEndingModal(res.rolloverResult.ending);
+      return;
+    }
+
+    renderAll();
+    renderPhoneModal(charId);
+  }
+
+  // ===== Event Scene & Interactive Misa Tennis Minigame Modal =====
+  function renderTennisMinigameWidget() {
+    const match = engine.state.activeTennisMatch;
+    if (!match) return;
+
+    const shots = Object.values(TENNIS_SHOTS);
+    const courtSvg = renderTennisCourtSvg(match);
+    const logHtml = match.turnHistory
+      .slice(-3)
+      .reverse()
+      .map(
+        (r) => `<div class="tennis-rally-item ${r.outcome === 'player_point' ? 'win' : 'lose'}">
+          <strong>랠리 #${r.rallyNumber}</strong> [${escapeHtml(r.shotLabel)} vs ${escapeHtml(r.misaStanceLabel)}] — ${escapeHtml(r.commentary)} (${r.playerScore}:${r.misaScore})
+        </div>`
+      )
+      .join('');
+
+    if (match.finished) {
+      const won = match.winner === 'player';
+      const evRes = uiState.tennisEventResult;
+      const postLine =
+        evRes && evRes.script && evRes.script.lines && evRes.script.lines[0]
+          ? evRes.script.lines[0].text
+          : won
+            ? '대단한데, 류노스케! 졌으니까 1층 찻집 커피는 내가 쏠게. 내일 12시 45분 키사라기역 데이트 잊지 마!'
+            : '하하, 아직 내 실력을 따라오려면 멀었지! 그래도 재밌었어. 1층 찻집에서 한 잔 하면서 내일 데이트 계획 세우자!';
+      const statSummary = evRes
+        ? `♥+${evRes.affectionDelta} · 기분+${evRes.moodDelta} · 플래그: ${evRes.flagsSet.join(', ')}`
+        : '';
+
+      el.eventModalMinigame.innerHTML = `
+        <div class="tennis-scoreboard">
+          <span>🎾 12/29 테니스 승부 종료</span>
+          <span class="tennis-score-num">나 ${match.playerScore} : ${match.misaScore} 미사</span>
+        </div>
+        ${courtSvg}
+        <div class="tennis-result-banner ${won ? 'win' : 'lose'}">
+          ${won ? '🏆 승리! 체육대생 미사를 꺾고 보너스 친밀도·기분치를 획득했습니다!' : '☕ 아쉽지만 패배 — 원작 규칙대로 승패 무관하게 1층 찻집 & 12/30 데이트로 이어집니다!'}
+          <div style="font-size:11.5px;font-weight:500;margin-top:4px">${escapeHtml(statSummary)}</div>
+        </div>
+        <div class="event-line" style="margin-bottom:8px">
+          <strong>타나카 미사</strong>
+          <span>${escapeHtml(postLine)}</span>
+        </div>
+        <div class="tennis-rally-log">${logHtml}</div>
+      `;
+
+      el.eventModalFooter.innerHTML = `<button class="btn btn-amber" type="button" id="btn-finish-tennis-modal">1층 찻집으로 이동 (완료)</button>`;
+      return;
+    }
+
+    el.eventModalMinigame.innerHTML = `
+      <div class="tennis-scoreboard">
+        <span>🎾 5포인트 선승 랠리 · 제 ${match.rallyNumber} 랠리</span>
+        <span class="tennis-score-num">나 ${match.playerScore} : ${match.misaScore} 미사</span>
+      </div>
+      ${courtSvg}
+      <div class="tennis-stance-box">
+        <strong>🎯 미사 자세 포착 [${escapeHtml(match.misaStance.label_ko)}]:</strong> ${escapeHtml(match.misaStance.hint_ko)}
+      </div>
+      <div class="tennis-shot-grid">
+        ${shots
+          .map(
+            (s) => `<button class="tennis-shot-btn" type="button" data-tennis-shot="${s.id}">
+              <div>${s.icon} ${escapeHtml(s.label_ko)}</div>
+              <span>${escapeHtml(s.desc_ko)}</span>
+            </button>`
+          )
+          .join('')}
+      </div>
+      <div class="tennis-rally-log">
+        ${logHtml || '<div class="tennis-rally-item">미사의 움직임을 읽고 반격 구질을 선택하세요! (승패 무관하게 1층 찻집으로 진행됩니다)</div>'}
+      </div>
+    `;
+
+    el.eventModalFooter.innerHTML = `<button class="btn btn-ghost" type="button" id="btn-cancel-event">나중에 승부</button>`;
+  }
+
+  function openEventModal(eventObj, opts = {}) {
     uiState.activeModalEvent = eventObj;
-    const ch = eventObj.character;
+    uiState.activeModalViaPhone = Boolean(opts.viaPhone);
+    uiState.tennisEventResult = null;
     const script = eventObj.script;
 
     el.eventModalTag.textContent =
       eventObj.scene_type === 'phone_macro_branch'
         ? '☎ 마크로 분기 전화'
-        : eventObj.scene_type === 'milestone_abstracted'
-          ? '★ 관계 확정 마일스톤'
-          : '관계 이벤트';
+        : eventObj.scene_type === 'phone_event'
+          ? '☎ 전화 이벤트'
+          : eventObj.scene_type === 'minigame_event'
+            ? '🎾 테니스 미니게임 승부'
+            : eventObj.scene_type === 'seasonal_event'
+              ? '❄️ 시즌 특별 이벤트'
+              : eventObj.scene_type === 'milestone_abstracted'
+                ? '★ 관계 확정 마일스톤'
+                : '관계 이벤트';
+
     el.eventModalTitle.textContent = eventObj.title_ko;
     el.eventModalPortrait.innerHTML = renderCharacterAvatarSvg(eventObj.character_id, 112);
     el.eventModalNarration.textContent = script.narration;
+
+    // Special interactive Misa Tennis Rally Minigame inside Event Modal!
+    if (eventObj.id === 'evt_misa_tennis_match') {
+      el.eventModalLines.innerHTML = '';
+      el.eventModalChoices.innerHTML = '';
+      el.eventModalMinigame.classList.remove('hidden');
+      engine.startTennisMinigame();
+      renderTennisMinigameWidget();
+      el.eventModal.classList.remove('hidden');
+      return;
+    }
+
+    el.eventModalMinigame.classList.add('hidden');
+    el.eventModalMinigame.innerHTML = '';
     el.eventModalLines.innerHTML = (script.lines || [])
       .map(
         (l) => `<div class="event-line"><strong>${escapeHtml(l.speaker)}</strong><span>${escapeHtml(l.text)}</span></div>`
@@ -849,11 +1330,19 @@
     if (eventObj.options && eventObj.options.length > 0) {
       el.eventModalChoices.innerHTML = eventObj.options
         .map((opt) => {
+          const deltaHint = [];
+          if (opt.affection_delta !== null && opt.affection_delta !== 0) {
+            deltaHint.push(`♥${opt.affection_delta > 0 ? '+' : ''}${opt.affection_delta}`);
+          }
+          if (opt.mood_delta !== null && opt.mood_delta !== 0) {
+            deltaHint.push(`기분${opt.mood_delta > 0 ? '+' : ''}${opt.mood_delta}`);
+          }
+          const deltaStr = engine.state.mode === 'easy_remake' && deltaHint.length > 0 ? ` · ${deltaHint.join(' / ')}` : '';
           const lockNote = !opt.available
             ? opt.blockedByMutualExclusion
               ? `상호 배타 충돌 (${opt.blockedByMutualExclusion.id})`
               : `선행 조건 필요: ${opt.missingFlags.join(', ')}`
-            : `설정 플래그: ${opt.sets_flags.join(', ')}`;
+            : `설정 플래그: ${opt.sets_flags.join(', ')}${deltaStr}`;
           return `<button class="choice-btn" type="button" data-event-choice="${opt.index}" ${opt.available ? '' : 'disabled'}>
             ${escapeHtml(opt.choice_ko)}
             <span class="choice-sub">${escapeHtml(lockNote)}</span>
@@ -874,13 +1363,16 @@
 
   function closeEventModal() {
     uiState.activeModalEvent = null;
+    uiState.activeModalViaPhone = false;
+    uiState.tennisEventResult = null;
     el.eventModal.classList.add('hidden');
   }
 
   function executeEventChoice(choiceIndex) {
     if (!uiState.activeModalEvent) return;
     const evId = uiState.activeModalEvent.id;
-    const res = engine.triggerEvent(evId, choiceIndex);
+    const viaPhone = uiState.activeModalViaPhone;
+    const res = engine.triggerEvent(evId, choiceIndex, { viaPhone });
     closeEventModal();
 
     if (!res.ok) {
@@ -890,9 +1382,13 @@
     }
 
     const lastLine = res.script.lines[res.script.lines.length - 1];
+    const statTag =
+      res.affectionDelta || res.moodDelta
+        ? ` | ♥${res.affectionDelta >= 0 ? '+' : ''}${res.affectionDelta}, 기분${res.moodDelta >= 0 ? '+' : ''}${res.moodDelta}`
+        : '';
     setDialogue(
       lastLine ? lastLine.speaker : res.character.name_ko,
-      `${lastLine ? lastLine.text : res.event.title_ko} (플래그 기록: ${res.flagsSet.join(', ')})`
+      `${lastLine ? lastLine.text : res.event.title_ko} (플래그: ${res.flagsSet.join(', ')}${statTag})`
     );
 
     if (res.rolledOver && res.rolloverResult && res.rolloverResult.ended) {
@@ -906,7 +1402,7 @@
     renderAll();
   }
 
-  // Save / Load Modal
+  // ===== Save / Load Modal =====
   function openSaveModal() {
     renderSaveSlots();
     el.saveModal.classList.remove('hidden');
@@ -946,7 +1442,7 @@
     }).join('');
   }
 
-  // Ending Epilogue & Gallery Modal
+  // ===== Ending Gallery Modal =====
   function openEndingModal(achievedEnding = null) {
     const unlocked = getUnlockedEndings();
     if (achievedEnding) {
@@ -991,78 +1487,13 @@
     el.endingModal.classList.add('hidden');
   }
 
-  // Wire Event Listeners
-  el.btnModeClassic.addEventListener('click', () => {
-    engine.setMode('classic');
-    setDialogue('시스템', '클래식 모드(1995 원작 준거): 맵 NPC 핀과 이벤트 힌트를 숨기고 직접 탐색합니다.');
-    renderAll();
-  });
-
-  el.btnModeEasy.addEventListener('click', () => {
-    engine.setMode('easy_remake');
-    setDialogue('시스템', '이지 레이더 모드(2024 리메이크 준거): 현재 시각의 NPC 위치 핀, 이벤트(!), 다익스트라 이동 시간을 표시합니다.');
-    renderAll();
-  });
-
-  el.btnSaveLoad.addEventListener('click', openSaveModal);
-  el.btnCloseSaveModal.addEventListener('click', closeSaveModal);
-  el.btnEndings.addEventListener('click', () => {
-    const achieved = engine.state.ended ? engine.evaluateEnding() : null;
-    openEndingModal(achieved);
-  });
-  el.btnCloseEndingModal.addEventListener('click', closeEndingModal);
-  el.btnEndingClose.addEventListener('click', closeEndingModal);
-  el.btnCloseEventModal.addEventListener('click', closeEventModal);
-
-  function startNewGame() {
-    engine.reset({ mode: engine.state.mode });
-    uiState.selectedZoneId = engine.state.zoneId;
-    setDialogue('안내', '12월 22일 08:00 — 새 겨울방학을 시작했습니다! 4존 지도를 클릭해 야소하치 마을을 탐색해 보세요.');
-    closeEndingModal();
-    closeEventModal();
-    renderAll();
-  }
-
-  el.btnNewGame.addEventListener('click', startNewGame);
-  el.btnEndingNewGame.addEventListener('click', startNewGame);
-
-  // Zone tab click
-  el.zoneTabs.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-zone]');
-    if (!btn) return;
-    const zId = btn.dataset.zone;
-    if (!engine.getActiveZones().includes(zId)) {
-      setDialogue('이동 안내', `${engine.zoneMap.get(zId).name_ko} 지역은 현재 날짜·분기에서는 입장할 수 없습니다.`);
-      renderDialogue();
-      return;
-    }
-    uiState.selectedZoneId = zId;
-    renderZoneTabs();
-    renderTownMap();
-  });
-
-  // Map SVG click & hover
-  el.townMapSvg.addEventListener('click', (e) => {
-    const portal = e.target.closest('[data-portal-zone]');
-    if (portal) {
-      const zId = portal.dataset.portalZone;
-      if (engine.getActiveZones().includes(zId)) {
-        uiState.selectedZoneId = zId;
-        renderZoneTabs();
-        renderTownMap();
-      }
-      return;
-    }
-
-    const node = e.target.closest('[data-loc-id]');
-    if (!node) return;
-    const locId = node.dataset.locId;
+  // ===== Shared Travel Helper =====
+  function handleTravelTo(locId) {
     const res = engine.travelTo(locId);
-
     if (!res.ok) {
       setDialogue('이동 불가', res.message);
       renderAll();
-      return;
+      return false;
     }
 
     if (res.travelMinutes === 0) {
@@ -1083,16 +1514,95 @@
       recordUnlockedEnding(res.rolloverResult.ending.id);
       renderAll();
       openEndingModal(res.rolloverResult.ending);
-      return;
+      return true;
     }
 
     uiState.selectedZoneId = engine.state.zoneId;
     renderAll();
 
-    // Auto-open incoming phone macro-branch event on arrival
     if (res.promptEvent && res.promptEvent.scene_type === 'phone_macro_branch') {
       openEventModal(res.promptEvent);
     }
+    return true;
+  }
+
+  // ===== Wire Event Listeners =====
+  el.btnModeClassic.addEventListener('click', () => {
+    engine.setMode('classic');
+    setDialogue('시스템', '클래식 모드(1995 원작 준거): 맵 NPC 핀과 추천 동선을 숨깁니다. 전화(📞)와 대화로 직접 단서를 모아 보세요!');
+    renderAll();
+  });
+
+  el.btnModeEasy.addEventListener('click', () => {
+    engine.setMode('easy_remake');
+    setDialogue('시스템', '이지 레이더 모드(2024 리메이크 준거): 실시간 NPC 핀, 이벤트(!), 24시간 동선 타임라인, 추천 동선 ETA를 표시합니다.');
+    renderAll();
+  });
+
+  el.btnOpenPhone.addEventListener('click', () => openPhoneModal());
+  el.btnDeckPhone.addEventListener('click', () => openPhoneModal());
+  el.btnClosePhoneModal.addEventListener('click', closePhoneModal);
+  el.btnPhoneClose.addEventListener('click', closePhoneModal);
+
+  el.btnSaveLoad.addEventListener('click', openSaveModal);
+  el.btnCloseSaveModal.addEventListener('click', closeSaveModal);
+  el.btnEndings.addEventListener('click', () => {
+    const achieved = engine.state.ended ? engine.evaluateEnding() : null;
+    openEndingModal(achieved);
+  });
+  el.btnCloseEndingModal.addEventListener('click', closeEndingModal);
+  el.btnEndingClose.addEventListener('click', closeEndingModal);
+  el.btnCloseEventModal.addEventListener('click', closeEventModal);
+
+  el.timelineHeroineSelect.addEventListener('change', () => {
+    uiState.selectedTimelineCharId = el.timelineHeroineSelect.value;
+    renderMapTimeline();
+  });
+
+  function startNewGame() {
+    engine.reset({ mode: engine.state.mode });
+    uiState.selectedZoneId = engine.state.zoneId;
+    uiState.lastPhoneResult = null;
+    uiState.tennisEventResult = null;
+    setDialogue('안내', '12월 22일 08:00 — 새 겨울방학을 시작했습니다! 4존 지도를 클릭하거나 전화번호부로 히로인을 찾아보세요.');
+    closeEndingModal();
+    closeEventModal();
+    closePhoneModal();
+    renderAll();
+  }
+
+  el.btnNewGame.addEventListener('click', startNewGame);
+  el.btnEndingNewGame.addEventListener('click', startNewGame);
+
+  el.zoneTabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-zone]');
+    if (!btn) return;
+    const zId = btn.dataset.zone;
+    if (!engine.getActiveZones().includes(zId)) {
+      setDialogue('이동 안내', `${engine.zoneMap.get(zId).name_ko} 지역은 현재 날짜·분기에서는 입장할 수 없습니다.`);
+      renderDialogue();
+      return;
+    }
+    uiState.selectedZoneId = zId;
+    renderZoneTabs();
+    renderTownMap();
+  });
+
+  el.townMapSvg.addEventListener('click', (e) => {
+    const portal = e.target.closest('[data-portal-zone]');
+    if (portal) {
+      const zId = portal.dataset.portalZone;
+      if (engine.getActiveZones().includes(zId)) {
+        uiState.selectedZoneId = zId;
+        renderZoneTabs();
+        renderTownMap();
+      }
+      return;
+    }
+
+    const node = e.target.closest('[data-loc-id]');
+    if (!node) return;
+    handleTravelTo(node.dataset.locId);
   });
 
   el.townMapSvg.addEventListener('mouseover', (e) => {
@@ -1112,15 +1622,79 @@
     const pathNames = route.path.map((id) => engine.locMap.get(id).name_ko).join(' → ');
     const npcs = isEasy ? (radar.byLocation[locId] || []).map((n) => `${n.hasEvent ? '!' : ''}${n.character.name_ko}`) : [];
     const npcStr = npcs.length > 0 ? ` | 출현: ${npcs.join(', ')}` : '';
+    const phoneTag = engine.canUsePhone(locId).canCall ? ' · ☎전화' : '';
     const statusStr = route.openOk
       ? `도착 ${formatMinutes(route.arrivalMinute)} (+${route.travelMinutes}분)`
       : `이동 불가 (${route.message})`;
 
-    el.mapHoverInfo.textContent = `${loc.name_ko} [${formatMinutes(loc.open_minute)}~${formatMinutes(loc.close_minute)}] · ${statusStr} · 경로: ${pathNames}${npcStr}`;
+    el.mapHoverInfo.textContent = `${loc.name_ko}${phoneTag} [${formatMinutes(loc.open_minute)}~${formatMinutes(loc.close_minute)}] · ${statusStr} · 경로: ${pathNames}${npcStr}`;
   });
 
-  // Stage NPC Talk & Event Trigger clicks
+  // Delegated clicks across modals, stage, timeline, route guide, notebook
   document.addEventListener('click', (e) => {
+    const quickTravel = e.target.closest('[data-quick-travel]');
+    if (quickTravel) {
+      handleTravelTo(quickTravel.dataset.quickTravel);
+      return;
+    }
+
+    const quickTravelPhone = e.target.closest('[data-quick-travel-phone]');
+    if (quickTravelPhone) {
+      handleTravelTo(quickTravelPhone.dataset.quickTravelPhone);
+      renderPhoneModal();
+      return;
+    }
+
+    const quickTravelFromPhone = e.target.closest('[data-quick-travel-from-phone]');
+    if (quickTravelFromPhone) {
+      closePhoneModal();
+      handleTravelTo(quickTravelFromPhone.dataset.quickTravelFromPhone);
+      return;
+    }
+
+    const openPhoneFor = e.target.closest('[data-open-phone-for]');
+    if (openPhoneFor) {
+      openPhoneModal(openPhoneFor.dataset.openPhoneFor);
+      return;
+    }
+
+    const callCharBtn = e.target.closest('[data-call-char]');
+    if (callCharBtn) {
+      handlePlacePhoneCall(callCharBtn.dataset.callChar);
+      return;
+    }
+
+    const focusTlBtn = e.target.closest('[data-focus-timeline]');
+    if (focusTlBtn) {
+      uiState.selectedTimelineCharId = focusTlBtn.dataset.focusTimeline;
+      renderMapTimeline();
+      return;
+    }
+
+    const tennisShotBtn = e.target.closest('[data-tennis-shot]');
+    if (tennisShotBtn) {
+      const res = engine.playTennisTurn(tennisShotBtn.dataset.tennisShot);
+      if (res.ok) {
+        if (res.eventResult) {
+          uiState.tennisEventResult = res.eventResult;
+          const lastLine = res.eventResult.script.lines[0];
+          setDialogue(
+            lastLine ? lastLine.speaker : '타나카 미사',
+            `${lastLine ? lastLine.text : '테니스 승부 완료!'} (♥+${res.eventResult.affectionDelta} / 기분+${res.eventResult.moodDelta})`
+          );
+          renderAll();
+        }
+        renderTennisMinigameWidget();
+      }
+      return;
+    }
+
+    if (e.target.id === 'btn-finish-tennis-modal') {
+      closeEventModal();
+      renderAll();
+      return;
+    }
+
     const talkBtn = e.target.closest('[data-talk-npc]');
     if (talkBtn) {
       const res = engine.talkToNpc(talkBtn.dataset.talkNpc);
@@ -1152,7 +1726,6 @@
       return;
     }
 
-    // Save / Load / Delete slot actions
     const saveSlot = e.target.closest('[data-save-slot]');
     if (saveSlot) {
       const num = saveSlot.dataset.saveSlot;
@@ -1171,6 +1744,7 @@
         try {
           engine.deserialize(raw);
           uiState.selectedZoneId = engine.state.zoneId;
+          uiState.lastPhoneResult = null;
           closeSaveModal();
           setDialogue('불러오기 완료', `슬롯 ${num}의 저장 데이터를 불러왔습니다.`);
           renderAll();
@@ -1189,12 +1763,13 @@
       return;
     }
 
-    // Heroine expand toggle
     const toggleH = e.target.closest('[data-toggle-heroine]');
     if (toggleH) {
       const id = toggleH.dataset.toggleHeroine;
       if (uiState.expandedHeroines.has(id)) uiState.expandedHeroines.delete(id);
       else uiState.expandedHeroines.add(id);
+      uiState.selectedTimelineCharId = id;
+      renderMapTimeline();
       renderNotebookTab();
     }
   });
@@ -1251,6 +1826,7 @@
       return;
     }
     uiState.selectedZoneId = engine.state.zoneId;
+    uiState.lastPhoneResult = null;
     const dayMeta = engine.getCurrentDayMeta();
     setDialogue('새로운 아침', `${formatDateLabel(dayMeta, engine.state.dayIndex)} ${formatMinutes(engine.state.minuteOfDay)} — ${dayMeta.special_notes}`);
     renderAll();
