@@ -10,7 +10,9 @@ const HEARTBEAT_INTERVAL_SEC := 0.5
 
 var ipc_port: int = 0
 var ipc_token: String = ""
+var launch_mode: String = "game"
 var launch_pck_path: String = ""
+var core_pack_path: String = ""
 var game_data_dir: String = ""
 var capture_dir: String = ""
 var test_mode: String = "normal"
@@ -53,8 +55,12 @@ func _parse_cmdline_args() -> void:
 			ipc_port = int(arg.substr("--playhub-ipc=".length()))
 		elif arg.begins_with("--playhub-token="):
 			ipc_token = arg.substr("--playhub-token=".length()).strip_edges()
+		elif arg.begins_with("--playhub-mode="):
+			launch_mode = arg.substr("--playhub-mode=".length()).strip_edges().to_lower()
 		elif arg.begins_with("--playhub-game="):
 			launch_pck_path = arg.substr("--playhub-game=".length()).strip_edges()
+		elif arg.begins_with("--playhub-core-pack="):
+			core_pack_path = arg.substr("--playhub-core-pack=".length()).strip_edges()
 		elif arg.begins_with("--playhub-game-data="):
 			game_data_dir = arg.substr("--playhub-game-data=".length()).strip_edges()
 		elif arg.begins_with("--playhub-capture-dir="):
@@ -68,8 +74,14 @@ func is_desktop_host() -> bool:
 func is_authenticated() -> bool:
 	return _authenticated
 
+func get_launch_mode() -> String:
+	return launch_mode
+
 func get_launch_pck_path() -> String:
 	return launch_pck_path
+
+func get_core_pack_path() -> String:
+	return core_pack_path
 
 func send_request(method: String, args: Dictionary = {}) -> String:
 	_req_seq += 1

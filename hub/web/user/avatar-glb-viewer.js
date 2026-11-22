@@ -1,9 +1,11 @@
 (function () {
   'use strict';
 
-  // Zero-dependency WebGL glTF 2.0 (.glb) 3D Avatar Viewer for PlayHub Avatar Shop & Locker.
-  // Supports binary GLB chunks, node transforms, embedded PNG textures, PBR baseColor,
-  // multi-mesh skins + socket-mounted GLB attachments, drag orbit, and camera presets.
+  // Zero-dependency WebGL glTF 2.0 (.glb) 3D Avatar Viewer for PlayHub Web Avatar Shop & Locker.
+  // Supports binary GLB chunks, skeletal skinning (JOINTS_0/WEIGHTS_0 + inverseBindMatrices),
+  // real glTF keyframe animations (Idle + Emotes), live bone-socket attachments,
+  // avatar-render-profile.v1 3-point studio lighting + ACES filmic tone mapping,
+  // drag orbit, and camera presets.
 
   const GL_FLOAT = 5126;
   const GL_UNSIGNED_SHORT = 5123;
@@ -11,36 +13,63 @@
   const GL_UNSIGNED_BYTE = 5121;
   const TYPE_COUNT = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4, MAT4: 16 };
 
+  const DEFAULT_RENDER_PROFILE = {
+    profileId: 'playhub_studio_v1',
+    tonemapping: 'aces',
+    exposure: 1.05,
+    backgroundHex: '#10231e',
+    lights: {
+      key: { direction: [-0.55, -0.82, -0.62], colorHex: '#fff8ec', intensity: 1.25 },
+      fill: { direction: [0.65, -0.25, -0.55], colorHex: '#bfe3ff', intensity: 0.55 },
+      rim: { direction: [0.45, -0.35, 0.82], colorHex: '#deeca6', intensity: 0.85 },
+    },
+  };
+
+  function hexToRgb(hex, fallback = [1, 1, 1]) {
+    if (typeof hex !== 'string') return fallback;
+    const m = hex.trim().match(/^#?([0-9a-f]{6})/i);
+    if (!m) return fallback;
+    const n = parseInt(m[1], 16);
+    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  }
+
+  function normVec3(v) {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1;
+    return [v[0] / l, v[1] / l, v[2] / l];
+  }
+
   function mat4Identity() {
     return new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   }
-  function mat4Mul(a, b) {
-    const out = new Float32Array(16);
+  function mat4MulInto(out, a, b) {
     for (let c = 0; c < 4; c++) {
-      for (let r = 0; r < 4; r++) {
-        out[c * 4 + r] =
-          a[r] * b[c * 4] +
-          a[4 + r] * b[c * 4 + 1] +
-          a[8 + r] * b[c * 4 + 2] +
-          a[12 + r] * b[c * 4 + 3];
-      }
+      const b0 = b[c * 4], b1 = b[c * 4 + 1], b2 = b[c * 4 + 2], b3 = b[c * 4 + 3];
+      out[c * 4]     = a[0] * b0 + a[4] * b1 + a[8] * b2 + a[12] * b3;
+      out[c * 4 + 1] = a[1] * b0 + a[5] * b1 + a[9] * b2 + a[13] * b3;
+      out[c * 4 + 2] = a[2] * b0 + a[6] * b1 + a[10] * b2 + a[14] * b3;
+      out[c * 4 + 3] = a[3] * b0 + a[7] * b1 + a[11] * b2 + a[15] * b3;
     }
     return out;
   }
-  function mat4FromTRS(t, q, s) {
-    const [tx, ty, tz] = t || [0, 0, 0];
-    const [x, y, z, w] = q || [0, 0, 0, 1];
-    const [sx, sy, sz] = s || [1, 1, 1];
+  function mat4Mul(a, b) {
+    return mat4MulInto(new Float32Array(16), a, b);
+  }
+  function mat4FromTRSInto(out, t, q, s) {
+    const tx = t ? t[0] : 0, ty = t ? t[1] : 0, tz = t ? t[2] : 0;
+    const x = q ? q[0] : 0, y = q ? q[1] : 0, z = q ? q[2] : 0, w = q ? q[3] : 1;
+    const sx = s ? s[0] : 1, sy = s ? s[1] : 1, sz = s ? s[2] : 1;
     const x2 = x + x, y2 = y + y, z2 = z + z;
     const xx = x * x2, xy = x * y2, xz = x * z2;
     const yy = y * y2, yz = y * z2, zz = z * z2;
     const wx = w * x2, wy = w * y2, wz = w * z2;
-    return new Float32Array([
-      (1 - (yy + zz)) * sx, (xy + wz) * sx, (xz - wy) * sx, 0,
-      (xy - wz) * sy, (1 - (xx + zz)) * sy, (yz + wx) * sy, 0,
-      (xz + wy) * sz, (yz - wx) * sz, (1 - (xx + yy)) * sz, 0,
-      tx, ty, tz, 1,
-    ]);
+    out[0] = (1 - (yy + zz)) * sx; out[1] = (xy + wz) * sx; out[2] = (xz - wy) * sx; out[3] = 0;
+    out[4] = (xy - wz) * sy; out[5] = (1 - (xx + zz)) * sy; out[6] = (yz + wx) * sy; out[7] = 0;
+    out[8] = (xz + wy) * sz; out[9] = (yz - wx) * sz; out[10] = (1 - (xx + yy)) * sz; out[11] = 0;
+    out[12] = tx; out[13] = ty; out[14] = tz; out[15] = 1;
+    return out;
+  }
+  function mat4FromTRS(t, q, s) {
+    return mat4FromTRSInto(new Float32Array(16), t, q, s);
   }
   function mat4FromEulerDeg(rx, ry, rz) {
     const d = Math.PI / 180;
@@ -91,8 +120,28 @@
       m[2] * x + m[6] * y + m[10] * z + m[14],
     ];
   }
+  function quatSlerpInto(out, ax, ay, az, aw, bx, by, bz, bw, t) {
+    let dot = ax * bx + ay * by + az * bz + aw * bw;
+    if (dot < 0) { dot = -dot; bx = -bx; by = -by; bz = -bz; bw = -bw; }
+    let s0, s1;
+    if (1 - dot > 1e-4) {
+      const omega = Math.acos(Math.min(1, dot));
+      const sinO = Math.sin(omega);
+      s0 = Math.sin((1 - t) * omega) / sinO;
+      s1 = Math.sin(t * omega) / sinO;
+    } else {
+      s0 = 1 - t;
+      s1 = t;
+    }
+    const rx = s0 * ax + s1 * bx;
+    const ry = s0 * ay + s1 * by;
+    const rz = s0 * az + s1 * bz;
+    const rw = s0 * aw + s1 * bw;
+    const inv = 1 / (Math.hypot(rx, ry, rz, rw) || 1);
+    out[0] = rx * inv; out[1] = ry * inv; out[2] = rz * inv; out[3] = rw * inv;
+  }
 
-  function readAccessor(doc, binBytes, accIndex) {
+  function readAccessor(doc, binBytes, accIndex, { forceFloatNormalized = false } = {}) {
     const acc = doc.accessors[accIndex];
     const bv = doc.bufferViews[acc.bufferView];
     const count = acc.count;
@@ -112,11 +161,12 @@
       return out;
     }
     if (acc.componentType === GL_UNSIGNED_SHORT) {
-      const out = new Uint16Array(count * comps);
+      const out = forceFloatNormalized || acc.normalized ? new Float32Array(count * comps) : new Uint16Array(count * comps);
+      const scale = (forceFloatNormalized || acc.normalized) ? (1 / 65535) : 1;
       const step = stride || comps * 2;
       for (let i = 0; i < count; i++) {
         for (let c = 0; c < comps; c++) {
-          out[i * comps + c] = view.getUint16(offset + i * step + c * 2, true);
+          out[i * comps + c] = view.getUint16(offset + i * step + c * 2, true) * scale;
         }
       }
       return out;
@@ -132,11 +182,12 @@
       return out;
     }
     if (acc.componentType === GL_UNSIGNED_BYTE) {
-      const out = new Uint16Array(count * comps);
+      const out = forceFloatNormalized || acc.normalized ? new Float32Array(count * comps) : new Uint16Array(count * comps);
+      const scale = (forceFloatNormalized || acc.normalized) ? (1 / 255) : 1;
       const step = stride || comps;
       for (let i = 0; i < count; i++) {
         for (let c = 0; c < comps; c++) {
-          out[i * comps + c] = view.getUint8(offset + i * step + c);
+          out[i * comps + c] = view.getUint8(offset + i * step + c) * scale;
         }
       }
       return out;
@@ -185,26 +236,82 @@
     if (!doc) throw new Error('GLB missing JSON chunk');
 
     const nodes = doc.nodes || [];
-    const worldMatrices = new Array(nodes.length);
+    const scene = (doc.scenes || [])[doc.scene || 0] || { nodes: [] };
+    const rootNodes = [...(scene.nodes || [])];
+    const nodeDefs = nodes.map((n) => ({
+      name: n.name || '',
+      children: [...(n.children || [])],
+      hasMatrix: Array.isArray(n.matrix) && n.matrix.length === 16,
+      matrix: Array.isArray(n.matrix) && n.matrix.length === 16 ? new Float32Array(n.matrix) : null,
+      t: n.translation ? [n.translation[0], n.translation[1], n.translation[2]] : [0, 0, 0],
+      q: n.rotation ? [n.rotation[0], n.rotation[1], n.rotation[2], n.rotation[3]] : [0, 0, 0, 1],
+      s: n.scale ? [n.scale[0], n.scale[1], n.scale[2]] : [1, 1, 1],
+    }));
+
+    const worldMatrices = nodes.map(() => mat4Identity());
+    const nodeIndexByName = new Map();
     const nodesByName = new Map();
 
-    function localMat(node) {
-      if (Array.isArray(node.matrix) && node.matrix.length === 16) return new Float32Array(node.matrix);
-      return mat4FromTRS(node.translation, node.rotation, node.scale);
-    }
-    function visit(idx, parentMat) {
-      const node = nodes[idx];
-      if (!node) return;
-      const world = mat4Mul(parentMat, localMat(node));
-      worldMatrices[idx] = world;
-      if (node.name) {
-        nodesByName.set(node.name, world);
-        nodesByName.set(node.name.toLowerCase(), world);
+    function visitBind(idx, parentMat) {
+      const def = nodeDefs[idx];
+      if (!def) return;
+      const local = def.hasMatrix ? def.matrix : mat4FromTRS(def.t, def.q, def.s);
+      mat4MulInto(worldMatrices[idx], parentMat, local);
+      if (def.name) {
+        nodeIndexByName.set(def.name, idx);
+        nodeIndexByName.set(def.name.toLowerCase(), idx);
+        nodesByName.set(def.name, worldMatrices[idx]);
+        nodesByName.set(def.name.toLowerCase(), worldMatrices[idx]);
       }
-      for (const child of node.children || []) visit(child, world);
+      for (const child of def.children) visitBind(child, worldMatrices[idx]);
     }
-    const scene = (doc.scenes || [])[doc.scene || 0] || { nodes: [] };
-    for (const rootIdx of scene.nodes || []) visit(rootIdx, mat4Identity());
+    const idMat = mat4Identity();
+    for (const rootIdx of rootNodes) visitBind(rootIdx, idMat);
+
+    // Parse skins (joints + inverseBindMatrices)
+    const skins = (doc.skins || []).map((sk) => {
+      const joints = [...(sk.joints || [])];
+      const ibmFlat = sk.inverseBindMatrices !== undefined
+        ? readAccessor(doc, binBytes, sk.inverseBindMatrices)
+        : null;
+      const ibms = joints.map((_, j) => {
+        if (ibmFlat && (j + 1) * 16 <= ibmFlat.length) {
+          return ibmFlat.subarray(j * 16, (j + 1) * 16);
+        }
+        return mat4Identity();
+      });
+      return { joints, ibms };
+    });
+
+    // Parse keyframe animations
+    const animations = new Map();
+    for (const anim of doc.animations || []) {
+      const name = anim.name || `anim_${animations.size}`;
+      const channels = [];
+      let duration = 0;
+      for (const ch of anim.channels || []) {
+        const nodeIdx = ch.target?.node;
+        const pathName = ch.target?.path;
+        if (nodeIdx === undefined || !['translation', 'rotation', 'scale'].includes(pathName)) continue;
+        const sampler = anim.samplers?.[ch.sampler];
+        if (!sampler || sampler.input === undefined || sampler.output === undefined) continue;
+        const times = readAccessor(doc, binBytes, sampler.input);
+        const values = readAccessor(doc, binBytes, sampler.output);
+        if (!times.length || !values.length) continue;
+        const lastT = times[times.length - 1];
+        if (lastT > duration) duration = lastT;
+        channels.push({
+          node: nodeIdx,
+          path: pathName,
+          times,
+          values,
+          interpolation: sampler.interpolation || 'LINEAR',
+        });
+      }
+      if (channels.length > 0) {
+        animations.set(name, { name, duration: Math.max(0.05, duration), channels });
+      }
+    }
 
     const images = (doc.images || []).map((img) => {
       if (img.bufferView === undefined) return null;
@@ -226,6 +333,7 @@
       const parentName = parentNames[i] || '';
       const mesh = doc.meshes[node.mesh];
       const world = worldMatrices[i] || mat4Identity();
+      const skinIndex = node.skin !== undefined && skins[node.skin] ? node.skin : -1;
       const isBundledHandProp = parentName === 'handslot.l' || parentName === 'handslot.r';
       const isRemovableHeadgear = parentName === 'head' && /(helmet|hat)/i.test(node.name || '');
       for (const prim of mesh.primitives || []) {
@@ -238,6 +346,12 @@
         const uv = prim.attributes.TEXCOORD_0 !== undefined
           ? readAccessor(doc, binBytes, prim.attributes.TEXCOORD_0)
           : new Float32Array((pos.length / 3) * 2);
+        let joints0 = null;
+        let weights0 = null;
+        if (skinIndex >= 0 && prim.attributes.JOINTS_0 !== undefined && prim.attributes.WEIGHTS_0 !== undefined) {
+          joints0 = readAccessor(doc, binBytes, prim.attributes.JOINTS_0);
+          weights0 = readAccessor(doc, binBytes, prim.attributes.WEIGHTS_0, { forceFloatNormalized: true });
+        }
         const matDef = prim.material !== undefined ? doc.materials?.[prim.material] : null;
         const pbr = matDef?.pbrMetallicRoughness || {};
         const color = pbr.baseColorFactor || [0.85, 0.87, 0.9, 1.0];
@@ -258,14 +372,18 @@
           }
         }
         drawables.push({
+          nodeIndex: i,
           nodeName: node.name || '',
           parentName,
+          skinIndex,
           isBundledHandProp,
           isRemovableHeadgear,
           world,
           positions: pos,
           normals: norm,
           uvs: uv,
+          joints0,
+          weights0,
           indices,
           color,
           emissive,
@@ -274,7 +392,56 @@
       }
     }
     if (!Number.isFinite(minY)) { minY = 0; maxY = 2; }
-    return { drawables, images, nodesByName, bounds: { minY, maxY, height: Math.max(0.1, maxY - minY), maxRadius } };
+    return {
+      drawables,
+      images,
+      nodeDefs,
+      rootNodes,
+      nodeIndexByName,
+      nodesByName,
+      skins,
+      animations,
+      bounds: { minY, maxY, height: Math.max(0.1, maxY - minY), maxRadius },
+    };
+  }
+
+  function sampleChannel(ch, timeSec, outArr) {
+    const times = ch.times;
+    const n = times.length;
+    const stride = ch.path === 'rotation' ? 4 : 3;
+    const vals = ch.values;
+    const isCubic = ch.interpolation === 'CUBICSPLINE';
+    const keyStride = isCubic ? stride * 3 : stride;
+    const valOffset = isCubic ? stride : 0;
+
+    if (n === 1 || timeSec <= times[0]) {
+      for (let c = 0; c < stride; c++) outArr[c] = vals[valOffset + c];
+      return;
+    }
+    if (timeSec >= times[n - 1]) {
+      const base = (n - 1) * keyStride + valOffset;
+      for (let c = 0; c < stride; c++) outArr[c] = vals[base + c];
+      return;
+    }
+    // Binary search keyframe interval
+    let lo = 0, hi = n - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (times[mid] <= timeSec) lo = mid; else hi = mid;
+    }
+    const t0 = times[lo], t1 = times[hi];
+    const alpha = t1 > t0 ? (timeSec - t0) / (t1 - t0) : 0;
+    const b0 = lo * keyStride + valOffset;
+    if (ch.interpolation === 'STEP') {
+      for (let c = 0; c < stride; c++) outArr[c] = vals[b0 + c];
+      return;
+    }
+    const b1 = hi * keyStride + valOffset;
+    if (ch.path === 'rotation') {
+      quatSlerpInto(outArr, vals[b0], vals[b0 + 1], vals[b0 + 2], vals[b0 + 3], vals[b1], vals[b1 + 1], vals[b1 + 2], vals[b1 + 3], alpha);
+    } else {
+      for (let c = 0; c < 3; c++) outArr[c] = vals[b0 + c] + (vals[b1 + c] - vals[b0 + c]) * alpha;
+    }
   }
 
   const VS_SRC = `
@@ -293,6 +460,8 @@
       gl_Position = uProj * uView * wp;
     }
   `;
+
+  // ACES Filmic tone mapping + 3-point avatar-render-profile.v1 studio lighting
   const FS_SRC = `
     precision mediump float;
     varying vec3 vNorm;
@@ -301,18 +470,36 @@
     uniform vec3 uEmissive;
     uniform float uHasTex;
     uniform sampler2D uTex;
+    uniform vec3 uKeyDir;
+    uniform vec3 uKeyCol;
+    uniform vec3 uFillDir;
+    uniform vec3 uFillCol;
+    uniform vec3 uRimDir;
+    uniform vec3 uRimCol;
+    uniform float uExposure;
+
+    vec3 acesToneMap(vec3 x) {
+      float a = 2.51;
+      float b = 0.03;
+      float c = 2.43;
+      float d = 0.59;
+      float e = 0.14;
+      return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+    }
+
     void main() {
       vec4 base = uColor;
       if (uHasTex > 0.5) base *= texture2D(uTex, vUv);
+      vec3 albedo = pow(max(base.rgb, vec3(0.0)), vec3(2.2));
       vec3 n = normalize(vNorm);
-      vec3 keyDir = normalize(vec3(0.55, 0.85, 0.65));
-      vec3 rimDir = normalize(vec3(-0.6, 0.35, -0.75));
-      float keyDiff = max(dot(n, keyDir), 0.0);
-      float rimDiff = max(dot(n, rimDir), 0.0) * 0.32;
+      float keyDiff = max(dot(n, uKeyDir), 0.0);
+      float fillDiff = max(dot(n, uFillDir), 0.0);
+      float rimDiff = max(dot(n, uRimDir), 0.0);
       float hemi = n.y * 0.5 + 0.5;
-      vec3 ambient = mix(vec3(0.18, 0.24, 0.28), vec3(0.42, 0.48, 0.52), hemi);
-      vec3 lit = base.rgb * (ambient + keyDiff * 0.78 + rimDiff) + uEmissive;
-      gl_FragColor = vec4(lit, base.a);
+      vec3 ambient = mix(vec3(0.22, 0.28, 0.30), vec3(0.42, 0.48, 0.52), hemi);
+      vec3 linearLit = albedo * (ambient + keyDiff * uKeyCol + fillDiff * uFillCol + rimDiff * uRimCol * 0.55) + uEmissive;
+      vec3 mapped = acesToneMap(linearLit * uExposure);
+      gl_FragColor = vec4(pow(max(mapped, vec3(0.0)), vec3(1.0 / 2.2)), base.a);
     }
   `;
 
@@ -329,9 +516,12 @@
     if (!gl) {
       return {
         supported: false,
+        renderer: 'web-js',
+        setRenderProfile: () => {},
         setLoadout: async () => {},
         setCameraPreset: () => {},
         triggerEmotePreview: () => {},
+        getDiagnostics: () => ({ renderer: 'web-js', supported: false }),
         destroy: () => {},
       };
     }
@@ -354,6 +544,13 @@
       uEmissive: gl.getUniformLocation(prog, 'uEmissive'),
       uHasTex: gl.getUniformLocation(prog, 'uHasTex'),
       uTex: gl.getUniformLocation(prog, 'uTex'),
+      uKeyDir: gl.getUniformLocation(prog, 'uKeyDir'),
+      uKeyCol: gl.getUniformLocation(prog, 'uKeyCol'),
+      uFillDir: gl.getUniformLocation(prog, 'uFillDir'),
+      uFillCol: gl.getUniformLocation(prog, 'uFillCol'),
+      uRimDir: gl.getUniformLocation(prog, 'uRimDir'),
+      uRimCol: gl.getUniformLocation(prog, 'uRimCol'),
+      uExposure: gl.getUniformLocation(prog, 'uExposure'),
     };
 
     const whiteTex = gl.createTexture();
@@ -402,12 +599,14 @@
         }
       }
       const meshes = parsed.drawables.map((d) => {
+        const isSkinned = d.skinIndex >= 0 && d.joints0 && d.weights0;
+        const usage = isSkinned ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
         const posBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, d.positions, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, d.positions, usage);
         const normBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, normBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, d.normals, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, d.normals, usage);
         const uvBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, uvBuf);
         gl.bufferData(gl.ARRAY_BUFFER, d.uvs, gl.STATIC_DRAW);
@@ -422,7 +621,16 @@
           count = arr.length;
         }
         return {
+          nodeIndex: d.nodeIndex,
           nodeName: d.nodeName,
+          skinIndex: d.skinIndex,
+          isSkinned,
+          basePositions: isSkinned ? d.positions : null,
+          baseNormals: isSkinned ? d.normals : null,
+          skinnedPositions: isSkinned ? new Float32Array(d.positions.length) : null,
+          skinnedNormals: isSkinned ? new Float32Array(d.normals.length) : null,
+          joints0: d.joints0,
+          weights0: d.weights0,
           isBundledHandProp: d.isBundledHandProp,
           isRemovableHeadgear: d.isRemovableHeadgear,
           world: d.world,
@@ -437,14 +645,36 @@
           tex: d.imageIndex >= 0 ? textures[d.imageIndex] : null,
         };
       });
-      const entry = { meshes, nodesByName: parsed.nodesByName, bounds: parsed.bounds };
+
+      // Preallocate runtime animation pose state per GLB asset
+      const nodeCount = parsed.nodeDefs.length;
+      const animState = {
+        localsT: parsed.nodeDefs.map((d) => [d.t[0], d.t[1], d.t[2]]),
+        localsQ: parsed.nodeDefs.map((d) => [d.q[0], d.q[1], d.q[2], d.q[3]]),
+        localsS: parsed.nodeDefs.map((d) => [d.s[0], d.s[1], d.s[2]]),
+        localMats: new Array(nodeCount).fill(null).map(() => mat4Identity()),
+        worldMats: new Array(nodeCount).fill(null).map(() => mat4Identity()),
+        skinJointMats: parsed.skins.map((sk) => sk.joints.map(() => mat4Identity())),
+      };
+
+      const entry = {
+        meshes,
+        nodeDefs: parsed.nodeDefs,
+        rootNodes: parsed.rootNodes,
+        nodeIndexByName: parsed.nodeIndexByName,
+        nodesByName: parsed.nodesByName,
+        skins: parsed.skins,
+        animations: parsed.animations,
+        animState,
+        bounds: parsed.bounds,
+      };
       gpuCache.set(url, entry);
       return entry;
     }
 
-    // Pedestal ring mesh
+    // Studio floor pedestal
     const pedPos = [], pedNorm = [], pedUv = [];
-    const segs = 36;
+    const segs = 40;
     for (let i = 0; i < segs; i++) {
       const a0 = (i / segs) * Math.PI * 2;
       const a1 = ((i + 1) / segs) * Math.PI * 2;
@@ -456,51 +686,216 @@
     const pedNormBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, pedNormBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pedNorm), gl.STATIC_DRAW);
     const pedUvBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, pedUvBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pedUv), gl.STATIC_DRAW);
 
+    let renderProfile = options.renderProfile || DEFAULT_RENDER_PROFILE;
     let skinGpu = null;
     let skinMeta = null;
     let attachmentGpus = [];
     let yaw = 0.42;
     let pitch = 0.14;
-    let distance = 4.95;
-    let targetY = 1.25;
+    let distance = 4.45;
+    let targetY = 1.15;
+    let fovDeg = 42;
     let cameraPreset = 'TPS';
     let dragging = false;
+    let dragMoved = false;
+    let activePointerId = null;
     let lastX = 0, lastY = 0;
     let autoSpin = true;
-    let emoteAnimTime = 0;
+    let animClockSec = 0;
+    let frameCount = 0;
+    let activeClipName = '';
+    let emoteAnimRemaining = 0;
+    let emoteClipName = '';
     let emoteAnimKind = '';
     let destroyed = false;
     let rafId = 0;
     let loadSerial = 0;
+    const listenerCtrl = new AbortController();
+    const { signal } = listenerCtrl;
 
     function applyCameraPreset(preset) {
-      cameraPreset = preset;
-      if (preset === 'FPS') {
-        yaw = 0.0; pitch = 0.05; distance = 1.75; targetY = 1.68; autoSpin = false;
-      } else if (preset === 'TopDown') {
-        yaw = 0.35; pitch = 0.92; distance = 6.2; targetY = 1.0; autoSpin = true;
-      } else if (preset === 'PortraitUpper') {
-        yaw = 0.22; pitch = 0.06; distance = 2.15; targetY = 1.55; autoSpin = false;
-      } else if (preset === 'PortraitFull') {
-        yaw = 0.26; pitch = 0.10; distance = 4.55; targetY = 1.10; autoSpin = false;
+      cameraPreset = preset || 'TPS';
+      if (cameraPreset === 'FPS' || cameraPreset === 'face') {
+        yaw = 0.08; pitch = 0.04; distance = 1.65; targetY = 1.60; fovDeg = 42; autoSpin = false;
+      } else if (cameraPreset === 'TopDown') {
+        yaw = 0.35; pitch = 0.88; distance = 5.6; targetY = 1.00; fovDeg = 42; autoSpin = true;
+      } else if (cameraPreset === 'PortraitUpper' || cameraPreset === 'bust') {
+        yaw = 0.22; pitch = 0.06; distance = 2.05; targetY = 1.48; fovDeg = 36; autoSpin = false;
+      } else if (cameraPreset === 'PortraitFull' || cameraPreset === 'full_body') {
+        yaw = 0.26; pitch = 0.10; distance = 4.25; targetY = 1.05; fovDeg = 38; autoSpin = false;
       } else {
-        yaw = 0.42; pitch = 0.14; distance = 4.95; targetY = 1.25; autoSpin = true;
+        yaw = 0.42; pitch = 0.14; distance = 4.45; targetY = 1.15; fovDeg = 42; autoSpin = true;
       }
     }
 
-    canvas.addEventListener('pointerdown', (e) => {
-      dragging = true; autoSpin = false; lastX = e.clientX; lastY = e.clientY;
-      canvas.setPointerCapture?.(e.pointerId);
-    });
-    canvas.addEventListener('pointermove', (e) => {
+    function resolveClipForKey(stateKey) {
+      if (!skinGpu || !skinGpu.animations || skinGpu.animations.size === 0) return '';
+      const candidates = skinMeta?.rigProfile?.animations?.[stateKey] || [];
+      for (const name of candidates) {
+        if (skinGpu.animations.has(name)) return name;
+      }
+      if (skinGpu.animations.has(stateKey)) return stateKey;
+      if (stateKey === 'idle') {
+        for (const fallback of ['Idle', 'Unarmed_Idle', '2H_Melee_Idle']) {
+          if (skinGpu.animations.has(fallback)) return fallback;
+        }
+        return skinGpu.animations.keys().next().value || '';
+      }
+      return '';
+    }
+
+    function evaluateSkinPose(entry, clipName, timeSec) {
+      const st = entry.animState;
+      const defs = entry.nodeDefs;
+      for (let i = 0; i < defs.length; i++) {
+        const d = defs[i];
+        st.localsT[i][0] = d.t[0]; st.localsT[i][1] = d.t[1]; st.localsT[i][2] = d.t[2];
+        st.localsQ[i][0] = d.q[0]; st.localsQ[i][1] = d.q[1]; st.localsQ[i][2] = d.q[2]; st.localsQ[i][3] = d.q[3];
+        st.localsS[i][0] = d.s[0]; st.localsS[i][1] = d.s[1]; st.localsS[i][2] = d.s[2];
+      }
+      const clip = clipName ? entry.animations.get(clipName) : null;
+      if (clip) {
+        const t = clip.duration > 0 ? (timeSec % clip.duration) : 0;
+        for (const ch of clip.channels) {
+          if (ch.path === 'translation') sampleChannel(ch, t, st.localsT[ch.node]);
+          else if (ch.path === 'rotation') sampleChannel(ch, t, st.localsQ[ch.node]);
+          else if (ch.path === 'scale') sampleChannel(ch, t, st.localsS[ch.node]);
+        }
+      }
+      const visitAnim = (idx, parentMat) => {
+        const d = defs[idx];
+        if (!d) return;
+        const local = d.hasMatrix ? d.matrix : mat4FromTRSInto(st.localMats[idx], st.localsT[idx], st.localsQ[idx], st.localsS[idx]);
+        mat4MulInto(st.worldMats[idx], parentMat, local);
+        for (const child of d.children) visitAnim(child, st.worldMats[idx]);
+      };
+      const id = mat4Identity();
+      for (const r of entry.rootNodes) visitAnim(r, id);
+
+      for (let sIdx = 0; sIdx < entry.skins.length; sIdx++) {
+        const sk = entry.skins[sIdx];
+        const jMats = st.skinJointMats[sIdx];
+        for (let j = 0; j < sk.joints.length; j++) {
+          mat4MulInto(jMats[j], st.worldMats[sk.joints[j]], sk.ibms[j]);
+        }
+      }
+
+      // Skin vertices & upload dynamic vertex buffers
+      for (const m of entry.meshes) {
+        if (!m.isSkinned || m.isBundledHandProp) continue;
+        const jMats = st.skinJointMats[m.skinIndex];
+        const bp = m.basePositions;
+        const bn = m.baseNormals;
+        const sp = m.skinnedPositions;
+        const sn = m.skinnedNormals;
+        const j0 = m.joints0;
+        const w0 = m.weights0;
+        const vCount = bp.length / 3;
+        for (let v = 0; v < vCount; v++) {
+          const v3 = v * 3;
+          const v4 = v * 4;
+          const px = bp[v3], py = bp[v3 + 1], pz = bp[v3 + 2];
+          const nx = bn[v3], ny = bn[v3 + 1], nz = bn[v3 + 2];
+          let ox = 0, oy = 0, oz = 0, onx = 0, ony = 0, onz = 0;
+          for (let k = 0; k < 4; k++) {
+            const w = w0[v4 + k];
+            if (w === 0) continue;
+            const jm = jMats[j0[v4 + k]];
+            if (!jm) continue;
+            ox  += (jm[0] * px + jm[4] * py + jm[8] * pz + jm[12]) * w;
+            oy  += (jm[1] * px + jm[5] * py + jm[9] * pz + jm[13]) * w;
+            oz  += (jm[2] * px + jm[6] * py + jm[10] * pz + jm[14]) * w;
+            onx += (jm[0] * nx + jm[4] * ny + jm[8] * nz) * w;
+            ony += (jm[1] * nx + jm[5] * ny + jm[9] * nz) * w;
+            onz += (jm[2] * nx + jm[6] * ny + jm[10] * nz) * w;
+          }
+          sp[v3] = ox; sp[v3 + 1] = oy; sp[v3 + 2] = oz;
+          const nl = Math.hypot(onx, ony, onz) || 1;
+          sn[v3] = onx / nl; sn[v3 + 1] = ony / nl; sn[v3 + 2] = onz / nl;
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, m.posBuf);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, sp);
+        gl.bindBuffer(gl.ARRAY_BUFFER, m.normBuf);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, sn);
+      }
+    }
+
+    const interactionEl = canvas.parentElement || canvas;
+    if (canvas.style) canvas.style.touchAction = 'none';
+    if (interactionEl && interactionEl !== canvas && interactionEl.style) interactionEl.style.touchAction = 'none';
+
+    interactionEl.addEventListener('pointerdown', (e) => {
+      if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+      if (e.target && typeof e.target.closest === 'function' && e.target.closest('button, a, select, input')) return;
+      e.preventDefault();
+      dragging = true;
+      dragMoved = false;
+      activePointerId = e.pointerId ?? null;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      try { interactionEl.setPointerCapture?.(e.pointerId); } catch {}
+    }, { signal });
+
+    interactionEl.addEventListener('touchmove', (e) => {
+      if (dragging) e.preventDefault();
+    }, { signal, passive: false });
+
+    window.addEventListener('pointermove', (e) => {
       if (!dragging) return;
-      yaw -= (e.clientX - lastX) * 0.012;
-      pitch = Math.max(-0.4, Math.min(1.2, pitch + (e.clientY - lastY) * 0.008));
-      lastX = e.clientX; lastY = e.clientY;
-    });
-    const endDrag = () => { dragging = false; };
-    canvas.addEventListener('pointerup', endDrag);
-    canvas.addEventListener('pointercancel', endDrag);
+      if (activePointerId !== null && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      if (!dragMoved && Math.hypot(dx, dy) >= 2) {
+        dragMoved = true;
+        autoSpin = false;
+      }
+      if (dragMoved) {
+        e.preventDefault();
+        yaw -= dx * 0.012;
+        pitch = Math.max(-0.4, Math.min(1.2, pitch + dy * 0.008));
+      }
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }, { signal, passive: false });
+
+    const endDrag = (e) => {
+      if (!dragging) return;
+      if (e && activePointerId !== null && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+      const pid = activePointerId;
+      dragging = false;
+      activePointerId = null;
+      if (pid !== null) {
+        try { interactionEl.releasePointerCapture?.(pid); } catch {}
+      }
+    };
+    window.addEventListener('pointerup', endDrag, { signal });
+    window.addEventListener('pointercancel', endDrag, { signal });
+    window.addEventListener('blur', () => { dragging = false; activePointerId = null; }, { signal });
+    interactionEl.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
+    interactionEl.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      distance = Math.max(1.3, Math.min(7.5, distance + Math.sign(e.deltaY) * 0.25));
+    }, { signal, passive: false });
+
+    function applyLightUniforms() {
+      const rp = renderProfile || DEFAULT_RENDER_PROFILE;
+      const key = rp.lights?.key || DEFAULT_RENDER_PROFILE.lights.key;
+      const fill = rp.lights?.fill || DEFAULT_RENDER_PROFILE.lights.fill;
+      const rim = rp.lights?.rim || DEFAULT_RENDER_PROFILE.lights.rim;
+      const kDir = normVec3([-key.direction[0], -key.direction[1], -key.direction[2]]);
+      const fDir = normVec3([-fill.direction[0], -fill.direction[1], -fill.direction[2]]);
+      const rDir = normVec3([-rim.direction[0], -rim.direction[1], -rim.direction[2]]);
+      const kRgb = hexToRgb(key.colorHex, [1, 0.97, 0.92]);
+      const fRgb = hexToRgb(fill.colorHex, [0.75, 0.89, 1]);
+      const rRgb = hexToRgb(rim.colorHex, [0.87, 0.93, 0.65]);
+      gl.uniform3fv(loc.uKeyDir, kDir);
+      gl.uniform3f(loc.uKeyCol, kRgb[0] * key.intensity * 0.72, kRgb[1] * key.intensity * 0.72, kRgb[2] * key.intensity * 0.72);
+      gl.uniform3fv(loc.uFillDir, fDir);
+      gl.uniform3f(loc.uFillCol, fRgb[0] * fill.intensity * 0.65, fRgb[1] * fill.intensity * 0.65, fRgb[2] * fill.intensity * 0.65);
+      gl.uniform3fv(loc.uRimDir, rDir);
+      gl.uniform3f(loc.uRimCol, rRgb[0] * rim.intensity * 0.75, rRgb[1] * rim.intensity * 0.75, rRgb[2] * rim.intensity * 0.75);
+      gl.uniform1f(loc.uExposure, Number(rp.exposure) || 1.05);
+    }
 
     function drawMesh(m, modelMat) {
       gl.uniformMatrix4fv(loc.uModel, false, modelMat);
@@ -531,32 +926,27 @@
       }
     }
 
-    function computeRootTransform(tSec) {
+    function computeRootTransform() {
       const scale = skinMeta?.modelScale || 0.88;
-      let bobY = Math.sin(tSec * 2.1) * 0.025;
       let extraYaw = 0;
-      if (emoteAnimTime > 0) {
+      if (emoteAnimRemaining > 0 && !emoteClipName) {
         if (emoteAnimKind === 'emote_spin' || emoteAnimKind === 'emote_dance') {
-          extraYaw = emoteAnimTime * 5.2;
-          bobY += Math.abs(Math.sin(emoteAnimTime * 8.0)) * 0.14;
-        } else if (emoteAnimKind === 'emote_sit') {
-          bobY -= 0.32;
-        } else {
-          bobY += Math.abs(Math.sin(emoteAnimTime * 7.5)) * 0.18;
+          extraYaw = emoteAnimRemaining * 5.2;
         }
       }
-      const minY = skinGpu?.bounds?.minY ?? 0;
-      const offsetY = Math.max(0, -minY * scale) + bobY;
       const rot = mat4FromEulerDeg(0, extraYaw * (180 / Math.PI), 0);
-      const trs = mat4FromTRS([0, offsetY, 0], [0, 0, 0, 1], [scale, scale, scale]);
+      const trs = mat4FromTRS([0, 0, 0], [0, 0, 0, 1], [scale, scale, scale]);
       return mat4Mul(rot, trs);
     }
 
-    function resolveSocketMatrix(slot, rigProfile) {
+    function resolveAnimatedSocketMatrix(slot, rigProfile) {
       const sock = rigProfile?.sockets?.[slot];
       if (!sock || !skinGpu) return mat4Identity();
       const boneName = sock.bone || '';
-      const boneWorld = skinGpu.nodesByName.get(boneName) || skinGpu.nodesByName.get(boneName.toLowerCase());
+      const nodeIdx = skinGpu.nodeIndexByName.get(boneName) ?? skinGpu.nodeIndexByName.get(boneName.toLowerCase());
+      const boneWorld = nodeIdx !== undefined
+        ? skinGpu.animState.worldMats[nodeIdx]
+        : (skinGpu.nodesByName.get(boneName) || skinGpu.nodesByName.get(boneName.toLowerCase()));
       const p = sock.position || [0, 0, 0];
       const r = sock.rotationDegrees || [0, 0, 0];
       const s = sock.scale || [1, 1, 1];
@@ -565,7 +955,6 @@
         mat4FromTRS([0, 0, 0], [0, 0, 0, 1], s)
       );
       if (boneWorld) return mat4Mul(boneWorld, localOffset);
-      // Fallback approximate body socket if bone isn't a mesh parent
       const fallbackPos = { head: [0, 1.85, 0], back: [0, 1.25, -0.35], hand_r: [-0.65, 1.05, 0.15], hand_l: [0.65, 1.05, 0.15] }[slot] || [0, 1, 0];
       return mat4FromTRS(fallbackPos, [0, 0, 0, 1], [0.85, 0.85, 0.85]);
     }
@@ -574,10 +963,22 @@
     function frame(nowMs) {
       if (destroyed) return;
       rafId = requestAnimationFrame(frame);
-      const dt = Math.min(0.05, (nowMs - prevNow) / 1000);
+      if (typeof document !== 'undefined' && document.hidden) {
+        prevNow = nowMs;
+        return;
+      }
+      const dt = Math.min(0.05, Math.max(0, (nowMs - prevNow) / 1000));
       prevNow = nowMs;
+      frameCount += 1;
+      animClockSec += dt;
       if (autoSpin && !dragging) yaw += dt * 0.42;
-      if (emoteAnimTime > 0) emoteAnimTime = Math.max(0, emoteAnimTime - dt);
+      if (emoteAnimRemaining > 0) {
+        emoteAnimRemaining = Math.max(0, emoteAnimRemaining - dt);
+        if (emoteAnimRemaining === 0) {
+          emoteClipName = '';
+          emoteAnimKind = '';
+        }
+      }
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = Math.max(200, Math.floor(canvas.clientWidth * dpr));
@@ -588,11 +989,13 @@
       }
 
       gl.viewport(0, 0, w, h);
-      gl.clearColor(0, 0, 0, 0);
+      const bg = hexToRgb((renderProfile || DEFAULT_RENDER_PROFILE).backgroundHex, [0.063, 0.137, 0.118]);
+      gl.clearColor(bg[0], bg[1], bg[2], 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.enable(gl.DEPTH_TEST);
 
-      const proj = mat4Perspective((cameraPreset === 'FPS' ? 62 : 42) * Math.PI / 180, w / h, 0.05, 60);
+      applyLightUniforms();
+      const proj = mat4Perspective(fovDeg * Math.PI / 180, w / h, 0.05, 60);
       const eye = [
         Math.sin(yaw) * Math.cos(pitch) * distance,
         targetY + Math.sin(pitch) * distance,
@@ -605,19 +1008,24 @@
       // Floor pedestal
       drawMesh({
         posBuf: pedPosBuf, normBuf: pedNormBuf, uvBuf: pedUvBuf, idxBuf: null,
-        count: segs * 3, color: [0.13, 0.27, 0.23, 0.72], emissive: [0.02, 0.06, 0.05], tex: null,
+        count: segs * 3, color: [0.11, 0.25, 0.21, 1.0], emissive: [0.03, 0.08, 0.07], tex: null,
       }, mat4Identity());
 
       if (skinGpu) {
-        const rootMat = computeRootTransform(nowMs / 1000);
+        const wantClip = emoteAnimRemaining > 0 && emoteClipName ? emoteClipName : resolveClipForKey('idle');
+        activeClipName = wantClip;
+        evaluateSkinPose(skinGpu, wantClip, animClockSec);
+
+        const rootMat = computeRootTransform();
         const hasCustomHead = attachmentGpus.some((a) => a.slot === 'head');
         for (const m of skinGpu.meshes) {
           if (m.isBundledHandProp) continue;
           if (hasCustomHead && m.isRemovableHeadgear) continue;
-          drawMesh(m, mat4Mul(rootMat, m.world));
+          const drawMat = m.isSkinned ? rootMat : mat4Mul(rootMat, skinGpu.animState.worldMats[m.nodeIndex] || m.world);
+          drawMesh(m, drawMat);
         }
         for (const att of attachmentGpus) {
-          const sockMat = mat4Mul(rootMat, resolveSocketMatrix(att.slot, skinMeta?.rigProfile));
+          const sockMat = mat4Mul(rootMat, resolveAnimatedSocketMatrix(att.slot, skinMeta?.rigProfile));
           for (const m of att.gpu.meshes) {
             drawMesh(m, mat4Mul(sockMat, m.world));
           }
@@ -628,8 +1036,13 @@
 
     return {
       supported: true,
-      async setLoadout({ skinUrl, rigProfile, attachments = [] }) {
+      renderer: 'web-js',
+      setRenderProfile(profile) {
+        if (profile && typeof profile === 'object') renderProfile = profile;
+      },
+      async setLoadout({ skinUrl, rigProfile, attachments = [], renderProfile: nextProfile }) {
         const serial = ++loadSerial;
+        if (nextProfile) renderProfile = nextProfile;
         skinMeta = {
           modelScale: rigProfile?.modelScale || 0.88,
           rigProfile,
@@ -648,7 +1061,7 @@
           skinGpu = loadedSkin;
           attachmentGpus = loadedAttachments;
           options.onStatus?.('');
-        } catch (err) {
+        } catch {
           if (serial === loadSerial) options.onStatus?.('3D 모델을 불러오지 못했습니다.');
         }
       },
@@ -657,10 +1070,33 @@
       },
       triggerEmotePreview(emoteId, durationSec = 2.2) {
         emoteAnimKind = emoteId || '';
-        emoteAnimTime = Math.max(1.2, Number(durationSec) || 2.2);
+        emoteClipName = resolveClipForKey(emoteAnimKind);
+        animClockSec = 0;
+        emoteAnimRemaining = Math.max(1.2, Number(durationSec) || 2.2);
+      },
+      getDiagnostics() {
+        return {
+          renderer: 'web-js',
+          supported: true,
+          skinned: Boolean(skinGpu?.skins?.length),
+          jointCount: skinGpu?.skins?.[0]?.joints?.length || 0,
+          animationCount: skinGpu?.animations?.size || 0,
+          activeClip: activeClipName,
+          cameraPreset,
+          yaw: Number(yaw.toFixed(4)),
+          pitch: Number(pitch.toFixed(4)),
+          distance: Number(distance.toFixed(4)),
+          dragging,
+          autoSpin,
+          frameCount,
+          renderProfileId: (renderProfile || DEFAULT_RENDER_PROFILE).profileId,
+        };
       },
       destroy() {
         destroyed = true;
+        dragging = false;
+        activePointerId = null;
+        listenerCtrl.abort();
         cancelAnimationFrame(rafId);
       },
     };

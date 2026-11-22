@@ -50,6 +50,9 @@
         "iap_updated",
         "social_invite_received",
         "download_progress",
+        "avatar_set_loadout",
+        "avatar_set_camera",
+        "avatar_play_emote",
         "host_shutdown"
       ]
     },

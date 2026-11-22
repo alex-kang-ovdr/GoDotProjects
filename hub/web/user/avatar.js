@@ -9,6 +9,332 @@
   const CATEGORY_LABELS = { all: '전체', skin: '스킨', attachment: '장착물', emote: '이모지' };
   const RARITY_LABELS = { common: '일반', rare: '희귀', epic: '영웅', legendary: '전설' };
 
+  const CAMERA_PRESET_DEFAULTS = {
+    TPS: { yaw: 0.42, pitch: 0.14, distance: 4.45 },
+    FPS: { yaw: 0.08, pitch: 0.04, distance: 1.65 },
+    TopDown: { yaw: 0.35, pitch: 0.88, distance: 5.6 },
+    PortraitUpper: { yaw: 0.22, pitch: 0.06, distance: 2.05 },
+    PortraitFull: { yaw: 0.26, pitch: 0.10, distance: 4.25 },
+  };
+
+  function resolvePreviewRuntime(options = {}) {
+    const explicit = String(options.runtime || '').trim().toLowerCase();
+    if (explicit === 'desktop' || explicit === 'godot' || explicit === 'godot-desktop' || explicit === 'godot-runtime') {
+      return 'godot-desktop';
+    }
+    if (explicit === 'web' || explicit === 'web-js' || explicit === 'js') {
+      return 'web-js';
+    }
+    try {
+      const params = new URLSearchParams(window.location.search || '');
+      const q = String(params.get('runtime') || params.get('avatarRuntime') || '').trim().toLowerCase();
+      if (q === 'desktop' || q === 'godot' || q === 'godot-desktop' || q === 'godot-runtime') {
+        return 'godot-desktop';
+      }
+      if (q === 'web' || q === 'web-js' || q === 'js') {
+        return 'web-js';
+      }
+    } catch {}
+    if (
+      window.PlayHubDesktopHost ||
+      window.__PLAYHUB_DESKTOP__ === true ||
+      window.PLAYHUB_CONFIG?.runtime === 'desktop' ||
+      (typeof navigator !== 'undefined' && /PlayHubDesktop/i.test(navigator.userAgent || ''))
+    ) {
+      return 'godot-desktop';
+    }
+    return 'web-js';
+  }
+
+  function createDesktopGodotPreview(imgEl, viewportEl, options = {}) {
+    const apiBase = String(options.apiBase || '').replace(/\/$/, '');
+    const listenerCtrl = new AbortController();
+    const { signal } = listenerCtrl;
+    let destroyed = false;
+    let cameraPreset = 'TPS';
+    let yaw = CAMERA_PRESET_DEFAULTS.TPS.yaw;
+    let pitch = CAMERA_PRESET_DEFAULTS.TPS.pitch;
+    let distance = CAMERA_PRESET_DEFAULTS.TPS.distance;
+    let currentLoadout = null;
+    let activeEmoteId = '';
+    let animTimeSec = 0;
+    let inFlight = false;
+    let pendingRender = false;
+    let renderSerial = 0;
+    let renderCount = 0;
+    let currentObjectUrl = null;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let dragDebounceTimer = null;
+    let emoteTimers = [];
+    let lastMeta = {
+      renderer: 'godot-runtime',
+      engineVersion: '4.7.2',
+      renderProfileId: 'playhub_studio_v1',
+      renderMs: 0,
+      skinId: '',
+      boneCount: 0,
+      animationCount: 0,
+      lastError: '',
+    };
+
+    function clearEmoteTimers() {
+      for (const t of emoteTimers) clearTimeout(t);
+      emoteTimers = [];
+    }
+
+    function applyPresetState(preset) {
+      cameraPreset = CAMERA_PRESET_DEFAULTS[preset] ? preset : 'TPS';
+      const def = CAMERA_PRESET_DEFAULTS[cameraPreset];
+      yaw = def.yaw;
+      pitch = def.pitch;
+      distance = def.distance;
+    }
+
+    function computeSize() {
+      const rect = viewportEl?.getBoundingClientRect?.();
+      const w = Math.max(320, Math.min(720, Math.round(rect?.width || 440)));
+      const h = Math.max(340, Math.min(780, Math.round(rect?.height || 484)));
+      return { width: w, height: h };
+    }
+
+    function swapImageBlob(blob) {
+      const nextUrl = URL.createObjectURL(blob);
+      const prevUrl = currentObjectUrl;
+      currentObjectUrl = nextUrl;
+      imgEl.onload = () => {
+        if (prevUrl && prevUrl !== currentObjectUrl) {
+          try { URL.revokeObjectURL(prevUrl); } catch {}
+        }
+      };
+      imgEl.src = nextUrl;
+    }
+
+    async function executeRender() {
+      if (destroyed || !currentLoadout) return;
+      if (inFlight) {
+        pendingRender = true;
+        return;
+      }
+      inFlight = true;
+      pendingRender = false;
+      const serial = ++renderSerial;
+      options.onLoading?.(renderCount === 0);
+      const { width, height } = computeSize();
+      const payload = {
+        loadout: currentLoadout,
+        camera: cameraPreset,
+        yaw: Number(yaw.toFixed(4)),
+        pitch: Number(pitch.toFixed(4)),
+        distance: Number(distance.toFixed(4)),
+        emoteId: activeEmoteId,
+        animTimeSec: Number(animTimeSec.toFixed(3)),
+        width,
+        height,
+      };
+      try {
+        const hostBridge = window.PlayHubDesktopHost?.avatarPreview;
+        if (hostBridge && typeof hostBridge.render === 'function') {
+          const result = await hostBridge.render(payload);
+          if (destroyed || serial !== renderSerial) return;
+          if (result?.blob instanceof Blob) {
+            swapImageBlob(result.blob);
+          } else if (typeof result?.dataUrl === 'string') {
+            imgEl.src = result.dataUrl;
+          } else if (result?.bytes) {
+            swapImageBlob(new Blob([result.bytes], { type: 'image/png' }));
+          }
+          renderCount += 1;
+          lastMeta = {
+            renderer: String(result?.renderer || 'godot-runtime'),
+            engineVersion: String(result?.engineVersion || '4.7.2'),
+            renderProfileId: String(result?.renderProfileId || 'playhub_studio_v1'),
+            renderMs: Number(result?.renderMs || 0),
+            skinId: String(result?.skinId || currentLoadout.skinId || ''),
+            boneCount: Number(result?.boneCount || 0),
+            animationCount: Number(result?.animationCount || 0),
+            lastError: '',
+          };
+          options.onStatus?.(`Godot ${lastMeta.engineVersion} 런타임 · 드래그로 회전`);
+        } else {
+          const res = await fetch(`${apiBase}/api/avatar/desktop-preview/render`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            let errMsg = `Godot 런타임 프리뷰 실패 (${res.status})`;
+            try {
+              const errJson = await res.json();
+              const msg = errJson?.error?.message || errJson?.message;
+              if (msg) errMsg = msg;
+            } catch {}
+            throw new Error(errMsg);
+          }
+          const blob = await res.blob();
+          if (destroyed) return;
+          swapImageBlob(blob);
+          renderCount += 1;
+          lastMeta = {
+            renderer: String(res.headers.get('X-PlayHub-Avatar-Renderer') || 'godot-runtime'),
+            engineVersion: String(res.headers.get('X-PlayHub-Engine-Version') || '4.7.2'),
+            renderProfileId: String(res.headers.get('X-PlayHub-Render-Profile') || 'playhub_studio_v1'),
+            renderMs: Number(res.headers.get('X-PlayHub-Render-Ms') || 0),
+            skinId: String(res.headers.get('X-PlayHub-Skin-Id') || currentLoadout.skinId || ''),
+            boneCount: Number(res.headers.get('X-PlayHub-Bone-Count') || 0),
+            animationCount: Number(res.headers.get('X-PlayHub-Animation-Count') || 0),
+            lastError: '',
+          };
+          options.onStatus?.(`Godot ${lastMeta.engineVersion} 런타임 (${lastMeta.renderMs}ms) · 드래그로 회전`);
+        }
+      } catch (err) {
+        if (!destroyed) {
+          lastMeta.lastError = err?.message || 'Godot 런타임 프리뷰 오류';
+          options.onStatus?.(lastMeta.lastError);
+        }
+      } finally {
+        inFlight = false;
+        if (!destroyed) options.onLoading?.(false);
+        if (!destroyed && pendingRender) {
+          pendingRender = false;
+          void executeRender();
+        }
+      }
+    }
+
+    function scheduleDragRender() {
+      if (dragDebounceTimer) clearTimeout(dragDebounceTimer);
+      dragDebounceTimer = setTimeout(() => {
+        dragDebounceTimer = null;
+        void executeRender();
+      }, 85);
+    }
+
+    if (viewportEl) {
+      let activePointerId = null;
+      if (viewportEl.style) viewportEl.style.touchAction = 'none';
+      viewportEl.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
+        if (e.target && typeof e.target.closest === 'function' && e.target.closest('button, a, select, input')) return;
+        e.preventDefault();
+        dragging = true;
+        activePointerId = e.pointerId ?? null;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        try { viewportEl.setPointerCapture?.(e.pointerId); } catch {}
+      }, { signal });
+      viewportEl.addEventListener('touchmove', (e) => {
+        if (dragging) e.preventDefault();
+      }, { signal, passive: false });
+      viewportEl.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
+      window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        if (activePointerId !== null && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+        e.preventDefault();
+        yaw -= (e.clientX - lastX) * 0.012;
+        pitch = Math.max(-0.35, Math.min(1.15, pitch + (e.clientY - lastY) * 0.008));
+        lastX = e.clientX;
+        lastY = e.clientY;
+        scheduleDragRender();
+      }, { signal, passive: false });
+      const stopDrag = (e) => {
+        if (!dragging) return;
+        if (e && activePointerId !== null && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+        const pid = activePointerId;
+        dragging = false;
+        activePointerId = null;
+        if (pid !== null) {
+          try { viewportEl.releasePointerCapture?.(pid); } catch {}
+        }
+        if (dragDebounceTimer) {
+          clearTimeout(dragDebounceTimer);
+          dragDebounceTimer = null;
+        }
+        void executeRender();
+      };
+      window.addEventListener('pointerup', stopDrag, { signal });
+      window.addEventListener('pointercancel', stopDrag, { signal });
+      window.addEventListener('blur', () => { dragging = false; activePointerId = null; }, { signal });
+      viewportEl.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        distance = Math.max(1.3, Math.min(7.5, distance + Math.sign(e.deltaY) * 0.28));
+        scheduleDragRender();
+      }, { signal, passive: false });
+    }
+
+    return {
+      supported: true,
+      renderer: 'godot-runtime',
+      setRenderProfile(profile) {
+        if (profile?.profileId) lastMeta.renderProfileId = profile.profileId;
+      },
+      async setLoadout({ loadout }) {
+        if (!loadout) return;
+        currentLoadout = {
+          skinId: loadout.skinId,
+          attachments: { ...(loadout.attachments || {}) },
+          emoteWheel: [...(loadout.emoteWheel || [])],
+        };
+        await executeRender();
+      },
+      setCameraPreset(preset) {
+        applyPresetState(preset);
+        void executeRender();
+      },
+      triggerEmotePreview(emoteId, durationSec = 2.2) {
+        clearEmoteTimers();
+        activeEmoteId = emoteId || '';
+        animTimeSec = 0.0;
+        void executeRender();
+        const totalMs = Math.max(1200, Math.round((Number(durationSec) || 2.2) * 1000));
+        const sampleTimes = [0.35, 0.75, 1.15, 1.55];
+        sampleTimes.forEach((tSec, idx) => {
+          const delayMs = Math.round(((idx + 1) / (sampleTimes.length + 1)) * totalMs);
+          emoteTimers.push(setTimeout(() => {
+            if (destroyed || activeEmoteId !== emoteId) return;
+            animTimeSec = tSec;
+            void executeRender();
+          }, delayMs));
+        });
+        emoteTimers.push(setTimeout(() => {
+          if (destroyed || activeEmoteId !== emoteId) return;
+          activeEmoteId = '';
+          animTimeSec = 0.0;
+          void executeRender();
+        }, totalMs));
+      },
+      getDiagnostics() {
+        return {
+          renderer: lastMeta.renderer,
+          supported: true,
+          engineVersion: lastMeta.engineVersion,
+          renderProfileId: lastMeta.renderProfileId,
+          renderMs: lastMeta.renderMs,
+          renderCount,
+          skinId: lastMeta.skinId,
+          boneCount: lastMeta.boneCount,
+          animationCount: lastMeta.animationCount,
+          cameraPreset,
+          naturalWidth: imgEl?.naturalWidth || 0,
+          naturalHeight: imgEl?.naturalHeight || 0,
+          lastError: lastMeta.lastError,
+        };
+      },
+      destroy() {
+        destroyed = true;
+        listenerCtrl.abort();
+        clearEmoteTimers();
+        if (dragDebounceTimer) clearTimeout(dragDebounceTimer);
+        if (currentObjectUrl) {
+          try { URL.revokeObjectURL(currentObjectUrl); } catch {}
+          currentObjectUrl = null;
+        }
+      },
+    };
+  }
+
   function randomKey(prefix) {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
@@ -23,6 +349,8 @@
       ? options.toast
       : (typeof window.PlayHubToast === 'function' ? window.PlayHubToast : null);
     const assetUrl = (p) => (p ? `${apiBase}${p}` : null);
+    let previewRuntime = resolvePreviewRuntime(options); // 'godot-desktop' | 'web-js'
+    let jsWebglViewerCreated = false;
     let catalog = null;
     let me = null;
     let viewer = null;
@@ -35,11 +363,11 @@
     let feedback = { text: '', error: false };
     let emoteFloatTimer = null;
 
-    root.innerHTML = `<section class="page avatar-page">
+    root.innerHTML = `<section class="page avatar-page" data-preview-runtime="${esc(previewRuntime)}">
       <div class="avatar-topbar">
         <div>
           <h1>내 아바타 상점 &amp; 락커</h1>
-          <p>UEFN 방식 단일 아바타 · 스킨·장착물·이모지는 PlayHub에서 구매·장착하며 모든 Forge 3D 게임에 자동 적용됩니다.</p>
+          <p>UEFN 방식 단일 아바타 · 웹은 JavaScript 3D 프리뷰, 데스크톱 앱은 Godot 4.7.2 런타임 프리뷰로 동일 아바타를 실시간 확인합니다.</p>
         </div>
         <div class="avatar-wallet-bar">
           <div class="playcoin-pill" id="avatar-wallet-pill">🪙 불러오는 중…</div>
@@ -49,9 +377,16 @@
       <div id="avatar-feedback" class="avatar-feedback" role="status" hidden></div>
       <div class="avatar-workspace">
         <aside class="avatar-stage-card">
-          <div class="avatar-viewport" id="avatar-viewport">
-            <canvas id="avatar-canvas" aria-label="3D 아바타 미리보기"></canvas>
-            <span class="avatar-seal-badge">🔒 포지 직접 수정 불가 · 봉인 런타임</span>
+          <div class="avatar-viewport" id="avatar-viewport" data-preview-runtime="${esc(previewRuntime)}">
+            <canvas id="avatar-canvas" aria-label="웹 3D 아바타 미리보기" ${previewRuntime === 'godot-desktop' ? 'hidden' : ''}></canvas>
+            <img id="avatar-godot-frame" class="avatar-godot-frame" alt="Godot 런타임 아바타 미리보기" draggable="false" ${previewRuntime === 'godot-desktop' ? '' : 'hidden'} />
+            <div class="avatar-viewport-badges">
+              <span class="avatar-seal-badge">🔒 포지 직접 수정 불가 · 봉인 런타임</span>
+              <span id="avatar-runtime-badge" class="avatar-runtime-badge ${esc(previewRuntime)}" data-preview-runtime="${esc(previewRuntime)}">
+                ${previewRuntime === 'godot-desktop' ? '🎮 데스크톱 · Godot' : '🌐 웹 3D · JS WebGL'}
+              </span>
+            </div>
+            <div id="avatar-godot-loading" class="avatar-godot-loading" hidden>Godot 4.7.2 런타임 준비 중…</div>
             <div id="avatar-emote-float" class="avatar-emote-float" hidden></div>
             <div id="avatar-tryon-banner" class="avatar-tryon-banner" hidden>
               <span id="avatar-tryon-text">미리보기 중</span>
@@ -67,6 +402,15 @@
               <button type="button" class="avatar-chip" data-cam="PortraitFull">전신 초상</button>
             </div>
             <span class="muted" id="avatar-stage-hint" style="font-size:0.78rem;">드래그로 회전</span>
+          </div>
+          <div class="avatar-runtime-bar" id="avatar-runtime-bar">
+            <div class="avatar-chip-group" id="avatar-runtime-switcher" role="group" aria-label="아바타 프리뷰 런타임" hidden>
+              <button type="button" class="avatar-chip${previewRuntime === 'web-js' ? ' active' : ''}" data-preview-runtime-switch="web-js">🌐 웹 JS 3D</button>
+              <button type="button" class="avatar-chip${previewRuntime === 'godot-desktop' ? ' active' : ''}" data-preview-runtime-switch="godot-desktop">🎮 데스크톱 Godot</button>
+            </div>
+            <button type="button" class="button secondary small" id="avatar-open-desktop-studio">
+              ${previewRuntime === 'godot-desktop' ? '🖥️ Godot 스튜디오 창으로 열기' : '🖥️ 데스크톱(Godot)에서 열기'}
+            </button>
           </div>
           <div class="avatar-loadout-summary" id="avatar-loadout-summary"></div>
           <div>
@@ -98,6 +442,7 @@
           <section class="avatar-runtime-spec">
             <strong>PlayForge 기본 내장 아바타 규격 (UEFN 호환 모델)</strong>
             <ul>
+              <li><strong>웹 / 데스크톱 듀얼 프리뷰</strong>: 웹 브라우저는 무설치 JavaScript WebGL 스켈레탈 3D 프리뷰(<code>avatar-glb-viewer.js</code>), 데스크톱 앱은 실제 Godot 4.7.2 런타임 프리뷰(<code>PlayForgeAvatarRig</code> · <code>avatar-render-profile.v1</code>)를 사용합니다</li>
               <li><strong>기본 내장 로코모션</strong>: TPS(3인칭 숄더/오빗) · FPS(1인칭 헤드 숨김) · TopDown(탑다운 이동/조준) 3종 모드, 점프·달리기·웅크리기 자동 지원</li>
               <li><strong>게임 모드별 3D 렌더타겟 초상 UI</strong>: 2D·카드·퍼즐·RPG HUD 모드에서 상반신 초상(최소 <code>128×128 px</code>) 또는 전신 초상(최소 <code>160×240 px</code>) 3D <code>SubViewport</code> 초상 표현 지원(엔진 C++ 최소 사이즈·숨김 차단 적용)</li>
               <li><strong>기본 내장 래그돌 물리</strong>: <code>PhysicalBoneSimulator3D</code> 기반 12관절 휴머노이드 래그돌 충격 및 기상 복구 내장</li>
@@ -192,12 +537,154 @@
         const att = id ? itemById(id) : null;
         if (att?.assetUrl) attachments.push({ slot, url: assetUrl(att.assetUrl) });
       }
-      viewer.setLoadout({ skinUrl: assetUrl(skin.assetUrl), rigProfile, attachments });
+      if (catalog.renderProfile) {
+        viewer.setRenderProfile?.(catalog.renderProfile);
+      }
+      viewer.setLoadout({
+        loadout: eff,
+        skinUrl: assetUrl(skin.assetUrl),
+        rigProfile,
+        attachments,
+        renderProfile: catalog.renderProfile,
+      });
 
       const banner = $el('#avatar-tryon-banner');
       if (banner) {
         banner.hidden = !tryOn;
         if (tryOn) $el('#avatar-tryon-text').textContent = `미리보기: ${tryOn.item.name}`;
+      }
+    }
+
+    function syncRuntimeChrome() {
+      const pageEl = $el('.avatar-page');
+      const vpEl = $el('#avatar-viewport');
+      const badgeEl = $el('#avatar-runtime-badge');
+      const canvasEl = $el('#avatar-canvas');
+      const godotImgEl = $el('#avatar-godot-frame');
+      const openBtn = $el('#avatar-open-desktop-studio');
+      const switcherEl = $el('#avatar-runtime-switcher');
+
+      if (pageEl?.dataset) pageEl.dataset.previewRuntime = previewRuntime;
+      if (vpEl?.dataset) vpEl.dataset.previewRuntime = previewRuntime;
+      if (badgeEl) {
+        if (badgeEl.dataset) badgeEl.dataset.previewRuntime = previewRuntime;
+        badgeEl.className = `avatar-runtime-badge ${previewRuntime}`;
+        badgeEl.textContent = previewRuntime === 'godot-desktop'
+          ? '🎮 데스크톱 · Godot'
+          : '🌐 웹 3D · JS WebGL';
+      }
+      if (canvasEl) canvasEl.hidden = previewRuntime === 'godot-desktop';
+      if (godotImgEl) godotImgEl.hidden = previewRuntime !== 'godot-desktop';
+      if (openBtn) {
+        openBtn.textContent = previewRuntime === 'godot-desktop'
+          ? '🖥️ Godot 스튜디오 창으로 열기'
+          : '🖥️ 데스크톱(Godot)에서 열기';
+      }
+      if (switcherEl) {
+        const canSwitch = catalog?.previewModes?.desktopGodotAvailable === true || previewRuntime === 'godot-desktop';
+        switcherEl.hidden = !canSwitch;
+        if (typeof switcherEl.querySelectorAll === 'function') {
+          for (const btn of switcherEl.querySelectorAll('[data-preview-runtime-switch]')) {
+            btn.classList?.toggle?.('active', btn.dataset?.previewRuntimeSwitch === previewRuntime);
+          }
+        }
+      }
+    }
+
+    function initPreviewViewer(nextRuntime) {
+      previewRuntime = nextRuntime === 'godot-desktop' ? 'godot-desktop' : 'web-js';
+      if (viewer) {
+        viewer.destroy();
+        viewer = null;
+      }
+      const loadingEl = $el('#avatar-godot-loading');
+      if (loadingEl) loadingEl.hidden = true;
+      syncRuntimeChrome();
+
+      const hintEl = $el('#avatar-stage-hint');
+      if (previewRuntime === 'godot-desktop') {
+        const godotImg = $el('#avatar-godot-frame');
+        const viewportEl = $el('#avatar-viewport');
+        if (godotImg) {
+          viewer = createDesktopGodotPreview(godotImg, viewportEl, {
+            apiBase,
+            onLoading: (isLoading) => {
+              if (!alive()) return;
+              const el = $el('#avatar-godot-loading');
+              if (el) el.hidden = !isLoading;
+            },
+            onStatus: (msg) => {
+              if (!alive()) return;
+              const hint = $el('#avatar-stage-hint');
+              if (hint) hint.textContent = msg || 'Godot 런타임 · 드래그로 회전';
+            },
+          });
+        }
+        if (hintEl) hintEl.textContent = 'Godot 4.7.2 런타임 연결 중…';
+      } else {
+        const canvas = $el('#avatar-canvas');
+        if (canvas && window.PlayHubAvatarGlbViewer) {
+          jsWebglViewerCreated = true;
+          viewer = window.PlayHubAvatarGlbViewer.create(canvas, {
+            renderProfile: catalog?.renderProfile,
+            onStatus: (msg) => {
+              if (!alive()) return;
+              const hint = $el('#avatar-stage-hint');
+              if (hint) hint.textContent = msg || '드래그로 회전';
+            },
+          });
+        }
+        if (hintEl) hintEl.textContent = '드래그로 회전';
+      }
+      viewer?.setCameraPreset?.(cameraPreset);
+      if (catalog) refreshViewer();
+    }
+
+    async function openDesktopStudio() {
+      const eff = effectiveLoadout();
+      if (previewRuntime === 'godot-desktop') {
+        if (window.PlayHubDesktopHost?.openAvatarStudio) {
+          try {
+            await window.PlayHubDesktopHost.openAvatarStudio({ loadout: eff, camera: cameraPreset });
+            if (alive()) setFeedback('Godot 4.7.2 아바타 스튜디오 창을 열었습니다.');
+          } catch (err) {
+            if (alive()) setFeedback(err?.message || 'Godot 스튜디오 창 실행에 실패했습니다.', true);
+          }
+          return;
+        }
+        try {
+          const res = await api('/api/avatar/desktop-preview/open-window', {
+            method: 'POST',
+            body: { loadout: eff, camera: cameraPreset },
+          });
+          if (!alive()) return;
+          if (res?.launched) {
+            setFeedback(`Godot 4.7.2 아바타 스튜디오 창을 열었습니다. (PID ${res.pid || '-'})`);
+          }
+        } catch (err) {
+          if (alive()) setFeedback(err?.message || 'Godot 스튜디오 창 실행에 실패했습니다.', true);
+        }
+        return;
+      }
+
+      // Web browser mode: issue L9 single-use launch ticket and invoke playhub://avatar-studio deeplink
+      try {
+        const res = await api('/api/avatar/studio/ticket', {
+          method: 'POST',
+          body: { loadout: eff, camera: cameraPreset },
+        });
+        if (!alive()) return;
+        const deeplink = res?.deepLink || res?.deeplink;
+        if (deeplink && /^playhub:\/\/avatar-studio\?ticket=/.test(deeplink)) {
+          setFeedback('데스크톱 PlayHub 앱(Godot 4.7.2 런타임) 실행 링크를 호출했습니다. 앱이 설치되어 있지 않다면 웹 3D 프리뷰를 계속 이용하세요.');
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = deeplink;
+          document.body.appendChild(iframe);
+          setTimeout(() => iframe.remove(), 2500);
+        }
+      } catch (err) {
+        if (alive()) setFeedback(err?.message || '데스크톱 스튜디오 실행 티켓 발급에 실패했습니다.', true);
       }
     }
 
@@ -413,6 +900,18 @@
 
     root.addEventListener('click', (e) => {
       if (!alive()) return;
+      const runtimeSwitchBtn = e.target.closest('[data-preview-runtime-switch]');
+      if (runtimeSwitchBtn) {
+        const nextRuntime = runtimeSwitchBtn.dataset.previewRuntimeSwitch;
+        if (nextRuntime && nextRuntime !== previewRuntime) {
+          initPreviewViewer(nextRuntime);
+        }
+        return;
+      }
+      if (e.target.closest('#avatar-open-desktop-studio')) {
+        void openDesktopStudio();
+        return;
+      }
       const camBtn = e.target.closest('[data-cam]');
       if (camBtn) {
         cameraPreset = camBtn.dataset.cam;
@@ -527,17 +1026,19 @@
       saveLoadout({ emoteWheel: wheel });
     }, { signal });
 
-    // Initialize 3D viewer and fetch catalog + user state
-    const canvas = $el('#avatar-canvas');
-    if (canvas && window.PlayHubAvatarGlbViewer) {
-      viewer = window.PlayHubAvatarGlbViewer.create(canvas, {
-        onStatus: (msg) => {
-          if (!alive()) return;
-          const hint = $el('#avatar-stage-hint');
-          if (hint) hint.textContent = msg || '드래그로 회전';
-        },
-      });
-    }
+    // Initialize runtime-specific preview viewer:
+    // - Web browser (`web-js`): JavaScript WebGL 3D skeletal viewer (zero Godot runtime dependency)
+    // - Desktop App (`godot-desktop`): Godot 4.7.2 Runtime preview (zero JS WebGL viewer created)
+    initPreviewViewer(previewRuntime);
+
+    const diagnosticsFn = () => ({
+      previewRuntime,
+      jsWebglViewerCreated,
+      viewer: viewer?.getDiagnostics?.() || null,
+      catalogPreviewModes: catalog?.previewModes || null,
+      renderProfileId: catalog?.renderProfile?.profileId || null,
+    });
+    window.__playhubAvatarPreviewDiagnostics = diagnosticsFn;
 
     (async () => {
       try {
@@ -545,6 +1046,7 @@
         if (!alive()) return;
         catalog = catRes;
         me = meRes;
+        syncRuntimeChrome();
         renderWallet();
         renderTopupPacks();
         renderStageSummary();
@@ -562,8 +1064,11 @@
       emoteFloatTimer = null;
       viewer?.destroy();
       viewer = null;
+      if (window.__playhubAvatarPreviewDiagnostics === diagnosticsFn) {
+        delete window.__playhubAvatarPreviewDiagnostics;
+      }
     };
   }
 
-  window.PlayHubAvatarUI = { mount };
+  window.PlayHubAvatarUI = { mount, resolvePreviewRuntime };
 })();

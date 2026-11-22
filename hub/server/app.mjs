@@ -905,6 +905,7 @@ export function createApp(input, dependencies = {}) {
       shorts.close();
       ugcMultiplayer.close();
       hubAgent.close();
+      await avatar?.dispose?.();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close(); forgeGateway.close();
       await cdn.close();

@@ -15,6 +15,32 @@ export const PLAYCOIN_TOPUP_PACKS = Object.freeze([
   { id: 'pack_2500', label: '최대 +25% · 3,125 PlayCoin', paidCoins: 2500, bonusCoins: 625, bonusPercent: 25, priceDisplay: '₩35,000' },
 ]);
 
+// Canonical avatar-render-profile.v1 shared across Web JS 3D Preview and Desktop Godot Runtime Studio
+export const AVATAR_RENDER_PROFILE_V1 = Object.freeze({
+  schemaVersion: 1,
+  profileId: 'playhub_studio_v1',
+  tonemapping: 'aces',
+  exposure: 1.05,
+  backgroundHex: '#10231e',
+  lights: Object.freeze({
+    key: Object.freeze({ direction: Object.freeze([-0.55, -0.82, -0.62]), colorHex: '#fff8ec', intensity: 1.25 }),
+    fill: Object.freeze({ direction: Object.freeze([0.65, -0.25, -0.55]), colorHex: '#bfe3ff', intensity: 0.55 }),
+    rim: Object.freeze({ direction: Object.freeze([0.45, -0.35, 0.82]), colorHex: '#deeca6', intensity: 0.85 }),
+  }),
+  cameras: Object.freeze({
+    full_body: Object.freeze({ position: Object.freeze([1.09, 1.48, 4.08]), target: Object.freeze([0, 1.05, 0]), fovDeg: 38 }),
+    bust: Object.freeze({ position: Object.freeze([0.45, 1.60, 2.00]), target: Object.freeze([0, 1.48, 0]), fovDeg: 36 }),
+    face: Object.freeze({ position: Object.freeze([0.13, 1.67, 1.64]), target: Object.freeze([0, 1.60, 0]), fovDeg: 42 }),
+  }),
+  budgets: Object.freeze({
+    skinMaxTriangles: 20000,
+    skinMaxTexturePx: 1024,
+    skinMaxBones: 64,
+    attachmentMaxTriangles: 5000,
+    attachmentMaxTexturePx: 512,
+  }),
+});
+
 export function resolveAvatarAddonDir(platformRoot, rootDir, options = {}) {
   const { addonDir, includeModuleFallback = true } = options || {};
   if (addonDir !== undefined) {
@@ -62,6 +88,7 @@ export function loadAvatarCatalog(addonDir) {
     defaultLoadout: raw.defaultLoadout,
     attachmentSlots: raw.attachmentSlots,
     rigProfiles: raw.rigProfiles,
+    renderProfile: AVATAR_RENDER_PROFILE_V1,
     items: publicItems,
     itemsById,
     starterIds,

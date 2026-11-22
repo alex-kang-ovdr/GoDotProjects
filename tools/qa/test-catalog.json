@@ -4648,6 +4648,21 @@
       "owner": "PlayHub-Admin"
     },
     {
+      "path": "hub/tests/avatar-dual-runtime-preview.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
       "path": "hub/tests/avatar-service.test.mjs",
       "tier": "fast",
       "suites": [

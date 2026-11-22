@@ -228,6 +228,11 @@ fn run_launch(args: &[String]) -> ExitCode {
     let mut player: Option<PathBuf> = None;
     let mut bootstrap_pck: Option<PathBuf> = None;
     let mut game_pck: Option<PathBuf> = None;
+    let mut core_pack: Option<PathBuf> = None;
+    let mut launch_mode: Option<String> = None;
+    let mut avatar_loadout_json: Option<String> = None;
+    let mut avatar_assets_dir: Option<PathBuf> = None;
+    let mut avatar_camera: Option<String> = None;
     let mut game_data_dir: Option<PathBuf> = None;
     let mut capture_dir: Option<PathBuf> = None;
     let mut isolation = IsolationMode::None;
@@ -253,6 +258,26 @@ fn run_launch(args: &[String]) -> ExitCode {
             "--game-pck" => {
                 i += 1;
                 game_pck = args.get(i).map(PathBuf::from);
+            }
+            "--core-pack" => {
+                i += 1;
+                core_pack = args.get(i).map(PathBuf::from);
+            }
+            "--mode" => {
+                i += 1;
+                launch_mode = args.get(i).cloned();
+            }
+            "--avatar-loadout-json" => {
+                i += 1;
+                avatar_loadout_json = args.get(i).cloned();
+            }
+            "--avatar-assets-dir" => {
+                i += 1;
+                avatar_assets_dir = args.get(i).map(PathBuf::from);
+            }
+            "--avatar-camera" => {
+                i += 1;
+                avatar_camera = args.get(i).cloned();
             }
             "--game-data-dir" => {
                 i += 1;
@@ -361,8 +386,23 @@ fn run_launch(args: &[String]) -> ExitCode {
     player_args.push("--".into());
     player_args.push(format!("--playhub-ipc={}", ipc.port()));
     player_args.push(format!("--playhub-token={}", ipc.token()));
+    if let Some(mode) = &launch_mode {
+        player_args.push(format!("--playhub-mode={mode}"));
+    }
     if let Some(gp) = &game_pck {
         player_args.push(format!("--playhub-game={}", gp.to_string_lossy()));
+    }
+    if let Some(cp) = &core_pack {
+        player_args.push(format!("--playhub-core-pack={}", cp.to_string_lossy()));
+    }
+    if let Some(loadout) = &avatar_loadout_json {
+        player_args.push(format!("--avatar-loadout-json={loadout}"));
+    }
+    if let Some(assets) = &avatar_assets_dir {
+        player_args.push(format!("--avatar-assets-dir={}", assets.to_string_lossy()));
+    }
+    if let Some(cam) = &avatar_camera {
+        player_args.push(format!("--playhub-avatar-camera={cam}"));
     }
     if let Some(gd) = &game_data_dir {
         player_args.push(format!("--playhub-game-data={}", gd.to_string_lossy()));

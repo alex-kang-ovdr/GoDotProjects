@@ -28,6 +28,9 @@ func _ready() -> void:
 	call_deferred("_mount_and_launch")
 
 func _mount_and_launch() -> void:
+	if PlayHubDesktopBridge.get_launch_mode() == "avatar-studio":
+		_mount_and_launch_avatar_studio()
+		return
 	var pck_path := PlayHubDesktopBridge.get_launch_pck_path()
 	if pck_path.is_empty():
 		# No game pck passed: stay in bootstrap scene and report first_frame (used for runtime PoC / test modes)
@@ -72,6 +75,49 @@ func _mount_and_launch() -> void:
 		push_error("PlayHubDesktopBootstrap: change_scene_to_file failed err=" + str(err))
 		if PlayHubDesktopBridge.test_mode != "normal":
 			get_tree().quit(24)
+		return
+
+	PlayHubDesktopBridge.notify_first_frame(_target_scene, _mounted_pck, mount_ms, scene_ms)
+	_reported = true
+
+func _mount_and_launch_avatar_studio() -> void:
+	var core_pck := PlayHubDesktopBridge.get_core_pack_path()
+	var mount_ms := 0
+	if not core_pck.is_empty():
+		if not FileAccess.file_exists(core_pck):
+			_label.text = "Play Hub: Avatar Core Pack not found (%s)" % core_pck
+			push_error("PlayHubDesktopBootstrap: missing core_pack=" + core_pck)
+			if PlayHubDesktopBridge.test_mode != "normal":
+				get_tree().quit(25)
+			return
+		var t_mount := Time.get_ticks_msec()
+		var ok := ProjectSettings.load_resource_pack(core_pck, true)
+		mount_ms = int(Time.get_ticks_msec() - t_mount)
+		if not ok:
+			_label.text = "Play Hub: Failed to mount Avatar Core Pack"
+			push_error("PlayHubDesktopBootstrap: load_resource_pack failed for " + core_pck)
+			if PlayHubDesktopBridge.test_mode != "normal":
+				get_tree().quit(26)
+			return
+		_mounted_pck = core_pck
+
+	var studio_scene := "res://addons/playforge_avatar/avatar_studio.tscn"
+	if not ResourceLoader.exists(studio_scene):
+		_label.text = "Play Hub: Avatar Studio scene unavailable"
+		push_error("PlayHubDesktopBootstrap: missing " + studio_scene)
+		if PlayHubDesktopBridge.test_mode != "normal":
+			get_tree().quit(27)
+		return
+
+	_target_scene = studio_scene
+	var t_scene := Time.get_ticks_msec()
+	var err := get_tree().change_scene_to_file(studio_scene)
+	var scene_ms := int(Time.get_ticks_msec() - t_scene)
+	if err != OK:
+		_label.text = "Play Hub: Failed to open Avatar Studio (err=%d)" % err
+		push_error("PlayHubDesktopBootstrap: change_scene_to_file(avatar_studio) failed err=" + str(err))
+		if PlayHubDesktopBridge.test_mode != "normal":
+			get_tree().quit(28)
 		return
 
 	PlayHubDesktopBridge.notify_first_frame(_target_scene, _mounted_pck, mount_ms, scene_ms)

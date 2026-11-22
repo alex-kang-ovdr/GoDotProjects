@@ -6,10 +6,12 @@ import { transaction } from '../db.mjs';
 import { ApiError, digest, json, readJson, safeString, uid } from '../security.mjs';
 import {
   ATTACHMENT_SLOTS,
+  AVATAR_RENDER_PROFILE_V1,
   EMOTE_WHEEL_SIZE,
   loadAvatarCatalog,
   resolveAvatarAddonDir,
 } from './catalog.mjs';
+import { createDesktopGodotPreviewService } from './desktop-godot-preview.mjs';
 import { ensureAvatarSchema } from './schema.mjs';
 import { createPlayCoinWalletAdapter } from './wallet-adapter.mjs';
 
@@ -243,9 +245,115 @@ export function createAvatarService({
   const wallet = createPlayCoinWalletAdapter({ db, now, topupPacks: catalog.topupPacks });
   const { secret: signingSecret } = resolveSigningSecret(config, env);
   const allowMockTopup = config?.avatar?.allowMockTopup === true;
+  const allowDesktopGodotPreview = config?.avatar?.allowDesktopGodotPreview !== undefined
+    ? config.avatar.allowDesktopGodotPreview === true
+    : (String(env?.PLAYHUB_DESKTOP_GODOT_PREVIEW || '').trim() === '0' ? false : config?.secureCookies !== true);
+  const desktopPreview = createDesktopGodotPreviewService({ forgeRoot, env });
+  const studioTickets = new Map();
+  const VALID_STUDIO_OS = new Set(['windows', 'macos', 'linux']);
+  const VALID_STUDIO_ARCH = new Set(['x86_64', 'arm64']);
+  const VALID_PREVIEW_CAMERAS = new Set(['TPS', 'FPS', 'TopDown', 'PortraitUpper', 'PortraitFull', 'full_body', 'bust', 'face']);
   const localRequire = createRequire(import.meta.url);
   let cachedCorePack = null;
   const assetDownloadCounts = new Map();
+
+  function normalizePreviewLoadout(raw) {
+    const base = catalog.defaultLoadout;
+    const src = raw && typeof raw === 'object' ? raw : {};
+    const skinCand = typeof src.skinId === 'string' && catalog.itemsById.get(src.skinId)?.category === 'skin'
+      ? src.skinId
+      : base.skinId;
+    const rawAtt = src.attachments && typeof src.attachments === 'object' ? src.attachments : {};
+    const attachments = {};
+    for (const slot of ATTACHMENT_SLOTS) {
+      const id = rawAtt[slot];
+      const item = typeof id === 'string' ? catalog.itemsById.get(id) : null;
+      attachments[slot] = item && item.category === 'attachment' && item.slot === slot ? item.id : null;
+    }
+    return { skinId: skinCand, attachments };
+  }
+
+  function pruneStudioTickets() {
+    const currentMs = now();
+    for (const [k, rec] of studioTickets.entries()) {
+      if (rec.expiresAtMs + 60_000 < currentMs) studioTickets.delete(k);
+    }
+  }
+
+  function issueStudioTicket({ principalId, displayName, osName = 'windows', arch = 'x86_64', ttlSec = 60, previewLoadout = null, camera = 'TPS' }) {
+    pruneStudioTickets();
+    const normOs = VALID_STUDIO_OS.has(osName) ? osName : 'windows';
+    const normArch = VALID_STUDIO_ARCH.has(arch) ? arch : 'x86_64';
+    const clampedTtl = Math.max(5, Math.min(60, Math.round(Number(ttlSec) || 60)));
+    const currentMs = now();
+    const expiresAtMs = currentMs + clampedTtl * 1000;
+    const ticket = randomBytes(24).toString('base64url');
+    const verifiedLoadout = buildVerifiedLoadout(principalId, displayName);
+    const effective = previewLoadout ? normalizePreviewLoadout(previewLoadout) : {
+      skinId: verifiedLoadout.skinId,
+      attachments: verifiedLoadout.attachments,
+    };
+    const normCam = VALID_PREVIEW_CAMERAS.has(camera) ? camera : 'TPS';
+    studioTickets.set(ticket, {
+      ticket,
+      gameId: 'avatar-studio',
+      principalId: principalId || null,
+      displayName: displayName || 'Player',
+      os: normOs,
+      arch: normArch,
+      loadout: effective,
+      camera: normCam,
+      expiresAtMs,
+      used: false,
+    });
+    return {
+      ok: true,
+      version: 1,
+      ticket,
+      gameId: 'avatar-studio',
+      os: normOs,
+      arch: normArch,
+      expiresAt: new Date(expiresAtMs).toISOString(),
+      ttlSec: clampedTtl,
+      singleUse: true,
+      deepLink: `playhub://avatar-studio?ticket=${ticket}`,
+      renderProfile: AVATAR_RENDER_PROFILE_V1,
+      loadout: effective,
+      camera: normCam,
+    };
+  }
+
+  function exchangeStudioTicket({ ticket, gameId = 'avatar-studio', osName, arch }) {
+    pruneStudioTickets();
+    if (typeof ticket !== 'string' || !/^[A-Za-z0-9_-]{32,128}$/.test(ticket)) {
+      throw new ApiError(401, 'TICKET_UNKNOWN', '유효하지 않은 아바타 스튜디오 티켓입니다.');
+    }
+    const rec = studioTickets.get(ticket);
+    if (!rec) throw new ApiError(401, 'TICKET_UNKNOWN', '알 수 없는 아바타 스튜디오 티켓입니다.');
+    if (rec.used) throw new ApiError(409, 'TICKET_REPLAY', '이미 사용된 아바타 스튜디오 티켓입니다.');
+    if (now() > rec.expiresAtMs) throw new ApiError(410, 'TICKET_EXPIRED', '만료된 아바타 스튜디오 티켓입니다.');
+    if (gameId !== rec.gameId || osName !== rec.os || arch !== rec.arch) {
+      throw new ApiError(403, 'TICKET_BINDING_MISMATCH', '티켓 바인딩(gameId/os/arch)이 일치하지 않습니다.');
+    }
+    rec.used = true;
+    const core = getCorePack();
+    return {
+      ok: true,
+      version: 1,
+      gameId: rec.gameId,
+      sessionToken: randomBytes(32).toString('base64url'),
+      sessionExpiresAt: new Date(now() + 15 * 60_000).toISOString(),
+      loadout: rec.loadout,
+      camera: rec.camera,
+      renderProfile: AVATAR_RENDER_PROFILE_V1,
+      corePackUrl: `/api/avatar/runtime/core.pck?v=${core.sha256.slice(0, 12)}`,
+      assetsBaseUrl: '/api/avatar/assets',
+      profile: {
+        displayName: rec.displayName,
+        isGuest: !rec.principalId,
+      },
+    };
+  }
 
   function getCorePack() {
     if (!cachedCorePack) {
@@ -534,10 +642,128 @@ export function createAvatarService({
         currency: catalog.currency,
         attachmentSlots: catalog.attachmentSlots,
         rigProfiles: catalog.rigProfiles,
+        renderProfile: catalog.renderProfile,
+        previewModes: {
+          web: 'web-js',
+          desktop: 'godot-runtime',
+          desktopGodotAvailable: allowDesktopGodotPreview && desktopPreview.getStatus().available,
+        },
         defaultLoadout: catalog.defaultLoadout,
         topupPacks: catalog.topupPacks,
         items: catalog.items,
       });
+      return true;
+    }
+
+    if (pathname === '/api/avatar/render-profile' && req.method === 'GET') {
+      json(res, 200, {
+        ok: true,
+        renderProfile: catalog.renderProfile,
+        previewModes: {
+          web: 'web-js',
+          desktop: 'godot-runtime',
+          desktopGodotAvailable: allowDesktopGodotPreview && desktopPreview.getStatus().available,
+        },
+      });
+      return true;
+    }
+
+    if (pathname === '/api/avatar/studio/ticket' && req.method === 'POST') {
+      const s = sessionFor(req, 'public');
+      rate(`avatar-studio-ticket:${s?.id_hash || 'anon'}`, 30, 60000);
+      const body = await readJson(req, 4096);
+      const principalId = s?.principal_id || null;
+      const user = principalId ? db.prepare('SELECT display_name FROM users WHERE id=?').get(principalId) : null;
+      const issued = issueStudioTicket({
+        principalId,
+        displayName: user?.display_name || 'Player',
+        osName: typeof body.os === 'string' ? body.os : 'windows',
+        arch: typeof body.arch === 'string' ? body.arch : 'x86_64',
+        ttlSec: body.ttlSec,
+        previewLoadout: body.loadout || null,
+        camera: typeof body.camera === 'string' ? body.camera : 'TPS',
+      });
+      json(res, 200, issued);
+      return true;
+    }
+
+    if (pathname === '/api/avatar/studio/exchange' && req.method === 'POST') {
+      rate('avatar-studio-exchange', 60, 60000);
+      const body = await readJson(req, 4096);
+      const exchanged = exchangeStudioTicket({
+        ticket: body.ticket,
+        gameId: typeof body.gameId === 'string' ? body.gameId : 'avatar-studio',
+        osName: typeof body.os === 'string' ? body.os : '',
+        arch: typeof body.arch === 'string' ? body.arch : '',
+      });
+      json(res, 200, exchanged);
+      return true;
+    }
+
+    if (pathname === '/api/avatar/desktop-preview/status' && req.method === 'GET') {
+      const st = desktopPreview.getStatus();
+      json(res, 200, {
+        ok: true,
+        desktopPreviewEnabled: allowDesktopGodotPreview,
+        ...st,
+        available: allowDesktopGodotPreview && st.available,
+      });
+      return true;
+    }
+
+    if (pathname === '/api/avatar/desktop-preview/render' && req.method === 'POST') {
+      if (!allowDesktopGodotPreview) {
+        throw new ApiError(403, 'DESKTOP_PREVIEW_DISABLED', 'Godot 런타임 아바타 프리뷰는 데스크톱 앱 환경에서만 활성화됩니다.');
+      }
+      rate('avatar-desktop-render', 180, 60000);
+      const body = await readJson(req, 8192);
+      const loadout = normalizePreviewLoadout(body.loadout || body);
+      const camera = VALID_PREVIEW_CAMERAS.has(body.camera) ? body.camera : 'TPS';
+      const emoteItem = typeof body.emoteId === 'string' ? catalog.itemsById.get(body.emoteId) : null;
+      const emoteId = emoteItem && emoteItem.category === 'emote' ? emoteItem.id : '';
+      const width = Math.max(200, Math.min(960, Math.round(Number(body.width) || 480)));
+      const height = Math.max(200, Math.min(960, Math.round(Number(body.height) || 540)));
+      const yaw = Number.isFinite(Number(body.yaw)) ? Number(body.yaw) : null;
+      const pitch = Number.isFinite(Number(body.pitch)) ? Math.max(-0.45, Math.min(1.25, Number(body.pitch))) : null;
+      const distance = Number.isFinite(Number(body.distance)) ? Math.max(1.2, Math.min(8.0, Number(body.distance))) : null;
+      const animTimeSec = Number.isFinite(Number(body.animTimeSec)) ? Math.max(0, Number(body.animTimeSec)) : 0;
+
+      const rendered = await desktopPreview.renderFrame({
+        loadout,
+        camera,
+        yaw,
+        pitch,
+        distance,
+        emoteId,
+        animTimeSec,
+        width,
+        height,
+      });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Length', String(rendered.png.length));
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('X-PlayHub-Avatar-Renderer', rendered.renderer);
+      res.setHeader('X-PlayHub-Engine-Version', rendered.engineVersion);
+      res.setHeader('X-PlayHub-Render-Profile', rendered.renderProfileId);
+      res.setHeader('X-PlayHub-Render-Ms', String(rendered.renderMs));
+      res.setHeader('X-PlayHub-Skin-Id', rendered.skinId);
+      res.setHeader('X-PlayHub-Bone-Count', String(rendered.boneCount));
+      res.setHeader('X-PlayHub-Animation-Count', String(rendered.animationCount));
+      res.end(rendered.png);
+      return true;
+    }
+
+    if (pathname === '/api/avatar/desktop-preview/open-window' && req.method === 'POST') {
+      if (!allowDesktopGodotPreview) {
+        throw new ApiError(403, 'DESKTOP_PREVIEW_DISABLED', 'Godot 스튜디오 창 실행은 데스크톱 앱 환경에서만 지원됩니다.');
+      }
+      rate('avatar-desktop-window', 10, 60000);
+      const body = await readJson(req, 4096);
+      const loadout = normalizePreviewLoadout(body.loadout || body);
+      const camera = VALID_PREVIEW_CAMERAS.has(body.camera) ? body.camera : 'TPS';
+      const launched = desktopPreview.launchStudioWindow({ loadout, camera });
+      json(res, 200, launched);
       return true;
     }
 
@@ -666,5 +892,7 @@ export function createAvatarService({
     wallet,
     getCorePack,
     getAssetMetrics,
+    desktopPreview,
+    dispose: () => desktopPreview.dispose(),
   };
 }
