@@ -4,11 +4,13 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { extractUnrealProjectToIR } from "./ue-extractor.mjs";
+import { extractBinaryUeProjectToIR } from "./ue-binary-bridge.mjs";
 import { validateUnifiedIR } from "../common-ir/validators/validate-ir.mjs";
 import { generateGodotProjectFromIR } from "./godot-generator.mjs";
 import { compareTraces } from "./trace-comparator.mjs";
 import { runRepairLoop } from "./ai-repair.mjs";
 import { exportPortedToForgeTemplate } from "./export-forge-template.mjs";
+import { runOrchestratedPortingPipeline } from "./orchestrator.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONVERTER_ROOT = path.resolve(__dirname, "..");
@@ -43,18 +45,49 @@ export function runGodotHeadlessVerify(portedDir, traceOutPath, godotBin = DEFAU
   };
 }
 
+export const SAMPLE_PRESETS = {
+  "third-person": {
+    fixtureDir: path.join(CONVERTER_ROOT, "fixtures/third-person-template"),
+    portedDir: path.join(CONVERTER_ROOT, "ported/godot-third-person"),
+    reportDir: path.join(CONVERTER_ROOT, "reports"),
+    templateDir: path.join(REPO_ROOT, "forge/Templates/unreal-third-person"),
+    templateId: "unreal-third-person"
+  },
+  "stack-o-bot": {
+    fixtureDir: path.join(CONVERTER_ROOT, "fixtures/stack-o-bot"),
+    portedDir: path.join(CONVERTER_ROOT, "ported/godot-stack-o-bot"),
+    reportDir: path.join(CONVERTER_ROOT, "reports/stack-o-bot"),
+    templateDir: path.join(REPO_ROOT, "forge/Templates/unreal-stack-o-bot"),
+    templateId: "unreal-stack-o-bot"
+  },
+  "binary-umap": {
+    fixtureDir: path.join(CONVERTER_ROOT, "fixtures/binary-stack-o-bot-umap"),
+    assetFallbackDir: path.join(CONVERTER_ROOT, "fixtures/stack-o-bot"),
+    portedDir: path.join(CONVERTER_ROOT, "ported/godot-binary-umap"),
+    reportDir: path.join(CONVERTER_ROOT, "reports/binary-umap"),
+    templateDir: path.join(REPO_ROOT, "forge/Templates/unreal-binary-stack-o-bot"),
+    templateId: "unreal-binary-stack-o-bot",
+    binaryMode: true
+  }
+};
+
 export function runFullUnrealPortPipeline({
-  fixtureDir = path.join(CONVERTER_ROOT, "fixtures/third-person-template"),
-  portedDir = path.join(CONVERTER_ROOT, "ported/godot-third-person"),
-  reportDir = path.join(CONVERTER_ROOT, "reports"),
-  templateDir = path.join(REPO_ROOT, "forge/Templates/unreal-third-person"),
+  fixtureDir = SAMPLE_PRESETS["third-person"].fixtureDir,
+  assetFallbackDir = null,
+  portedDir = SAMPLE_PRESETS["third-person"].portedDir,
+  reportDir = SAMPLE_PRESETS["third-person"].reportDir,
+  templateDir = SAMPLE_PRESETS["third-person"].templateDir,
+  templateId = "unreal-third-person",
+  binaryMode = false,
   godotBin = process.env.GODOT_BIN || DEFAULT_GODOT_BIN,
   exportTemplate = true
 } = {}) {
   fs.mkdirSync(reportDir, { recursive: true });
 
-  // Stage 1: Extract UE Project -> Unified Game IR v0.1
-  const ir = extractUnrealProjectToIR(fixtureDir);
+  // Stage 1: Extract UE Project (Binary .umap/.uasset OR JSON fixture) -> Unified Game IR v0.1
+  const ir = binaryMode
+    ? extractBinaryUeProjectToIR(fixtureDir, { assetFallbackDir })
+    : extractUnrealProjectToIR(fixtureDir);
   const irValidation = validateUnifiedIR(ir);
   if (!irValidation.valid) {
     throw new Error(`Unified IR validation failed: ${irValidation.errors.join("; ")}`);
@@ -108,7 +141,7 @@ export function runFullUnrealPortPipeline({
     templateExport = exportPortedToForgeTemplate({
       portedDir,
       templateDir,
-      templateId: "unreal-third-person"
+      templateId
     });
   }
 
@@ -170,6 +203,22 @@ function formatMarkdownReport(r) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const report = runFullUnrealPortPipeline();
-  console.log(JSON.stringify(report, null, 2));
+  const sampleIdx = process.argv.indexOf("--sample");
+  const sampleArg = sampleIdx >= 0 ? process.argv[sampleIdx + 1] : "all";
+  if (sampleArg === "all") {
+    const reports = {};
+    for (const [key, preset] of Object.entries(SAMPLE_PRESETS)) {
+      reports[key] = runFullUnrealPortPipeline(preset);
+    }
+    console.log(JSON.stringify(reports, null, 2));
+  } else if (sampleArg === "real-stack-o-bot") {
+    const report = runOrchestratedPortingPipeline();
+    console.log(JSON.stringify(report, null, 2));
+  } else if (SAMPLE_PRESETS[sampleArg]) {
+    const report = runFullUnrealPortPipeline(SAMPLE_PRESETS[sampleArg]);
+    console.log(JSON.stringify(report, null, 2));
+  } else {
+    console.error(`Unknown --sample '${sampleArg}'. Available: ${Object.keys(SAMPLE_PRESETS).join(", ")}, all`);
+    process.exit(1);
+  }
 }

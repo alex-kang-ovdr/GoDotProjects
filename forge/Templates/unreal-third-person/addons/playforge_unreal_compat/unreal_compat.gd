@@ -9,6 +9,10 @@ var gameplay_events: Array[Dictionary] = []
 var printed_messages: Array[String] = []
 var elapsed_time_ms: float = 0.0
 var _timers: Dictionary = {}
+var _actors: Dictionary = {}
+var _spawned_bots: Array[Node3D] = []
+var orbs_collected: int = 0
+var level_completed: bool = false
 
 
 func _physics_process(delta: float) -> void:
@@ -35,6 +39,93 @@ func reset_trace_state() -> void:
 	printed_messages.clear()
 	elapsed_time_ms = 0.0
 	_timers.clear()
+	_actors.clear()
+	_spawned_bots.clear()
+	orbs_collected = 0
+	level_completed = false
+
+
+func register_actor(actor_id: String, node: Node) -> void:
+	_actors[actor_id] = node
+
+
+func find_actor(actor_id: String) -> Node:
+	var n: Variant = _actors.get(actor_id, null)
+	if n != null and is_instance_valid(n):
+		return n as Node
+	return null
+
+
+func call_interface(target: Object, method_name: String, args: Array = []) -> Variant:
+	if target == null or not is_instance_valid(target):
+		return null
+	if target.has_method(method_name):
+		return target.callv(method_name, args)
+	return null
+
+
+func spawn_inactive_bot(parent_node: Node, world_pos: Vector3, max_bots: int = 3, spawner: Node3D = null) -> Node3D:
+	if parent_node == null:
+		return null
+	while _spawned_bots.size() >= max_bots:
+		var oldest: Node3D = _spawned_bots.pop_front()
+		if is_instance_valid(oldest):
+			oldest.queue_free()
+	var spawn_pos := Vector3(world_pos.x, 0.88, world_pos.z)
+	var bot := CharacterBody3D.new()
+	bot.name = "InactiveBot_%d" % (_spawned_bots.size() + 1)
+	bot.add_to_group("ue_bot_body")
+	bot.position = spawn_pos
+	var col := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(0.65, 1.5, 0.65)
+	col.shape = shape
+	bot.add_child(col)
+	var rig_script := load("res://addons/playforge_unreal_compat/ue_skeleton_rig.gd") as Script
+	if rig_script != null:
+		var rig := Node3D.new()
+		rig.name = "OfflineRiggedSkeleton"
+		rig.set_script(rig_script)
+		rig.set("character_style", "bot")
+		rig.set("is_offline", true)
+		bot.add_child(rig)
+	else:
+		var mesh_inst := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		box.size = Vector3(0.65, 0.9, 0.65)
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.92, 0.48, 0.14, 1.0)
+		box.material = mat
+		mesh_inst.mesh = box
+		bot.add_child(mesh_inst)
+	parent_node.add_child(bot)
+	_spawned_bots.append(bot)
+	if spawner != null and is_instance_valid(spawner):
+		var fwd := Vector3(0.0, 0.0, -1.0)
+		if spawner.has_method("ue_get_control_forward_vector"):
+			fwd = spawner.call("ue_get_control_forward_vector")
+		spawner.global_position = Vector3(world_pos.x, maxf(world_pos.y, 0.92), world_pos.z) + fwd * 0.95
+	record_event("SpawnInactiveBot", {
+		"count": _spawned_bots.size(),
+		"pos_m": [snappedf(spawn_pos.x, 0.01), snappedf(spawn_pos.y, 0.01), snappedf(spawn_pos.z, 0.01)]
+	})
+	return bot
+
+
+func get_spawned_bot_count() -> int:
+	return _spawned_bots.size()
+
+
+func collect_orb(orb_id: String) -> void:
+	orbs_collected += 1
+	record_event("OrbCollected", {"orb_id": orb_id, "total": orbs_collected})
+
+
+func complete_level(goal_id: String) -> void:
+	if level_completed:
+		return
+	level_completed = true
+	record_event("LevelCompleted", {"goal_id": goal_id, "orbs": orbs_collected})
 
 
 func record_event(event_name: String, payload: Dictionary = {}) -> void:

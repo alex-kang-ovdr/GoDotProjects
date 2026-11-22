@@ -1,0 +1,38 @@
+{
+  "id": "bp_pressure_plate",
+  "name": "BP_PressurePlate",
+  "kind": "event_graph",
+  "source_path": "/Game/StackOBot/Blueprints/Interactions/BP_PressurePlate",
+  "target_entity_class": "ATriggerBox",
+  "default_actor_id": "plate_01",
+  "signals": [
+    { "name": "on_plate_state_changed", "params": [{ "name": "is_pressed", "type": "bool" }] }
+  ],
+  "variables": [
+    { "name": "target_door_id", "type": "string", "default": "door_main" },
+    { "name": "press_count", "type": "int", "default": 0 }
+  ],
+  "functions": [
+    { "name": "get_press_count", "params": [], "return_type": "int", "return_expr": "press_count" }
+  ],
+  "nodes": [
+    { "id": "n_ov_begin", "node_class": "K2Node_Event_ActorBeginOverlap", "title": "Event ActorBeginOverlap", "params": {} },
+    { "id": "n_get_cnt", "node_class": "K2Node_VariableGet", "title": "Get press_count", "params": { "variable_name": "press_count" } },
+    { "id": "n_add_one", "node_class": "K2Node_MathExpression", "title": "press_count + 1", "params": { "operator": "+", "b_default": 1 } },
+    { "id": "n_set_cnt", "node_class": "K2Node_VariableSet", "title": "Set press_count", "params": { "variable_name": "press_count" } },
+    { "id": "n_emit_on", "node_class": "K2Node_CallDelegate", "title": "Call OnPlateStateChanged", "params": { "signal_name": "on_plate_state_changed", "args": ["is_pressed"] } },
+    { "id": "n_bpi_on", "node_class": "K2Node_CallInterfaceFunction", "title": "BPI_Interactable::OnInteract", "params": { "target_actor_var": "target_door_id", "method_name": "bpi_on_interact", "args": ["is_pressed"] } },
+    { "id": "n_ov_end", "node_class": "K2Node_Event_ActorEndOverlap", "title": "Event ActorEndOverlap", "params": {} },
+    { "id": "n_emit_off", "node_class": "K2Node_CallDelegate", "title": "Call OnPlateStateChanged", "params": { "signal_name": "on_plate_state_changed", "args": ["is_pressed"] } },
+    { "id": "n_bpi_off", "node_class": "K2Node_CallInterfaceFunction", "title": "BPI_Interactable::OnInteract", "params": { "target_actor_var": "target_door_id", "method_name": "bpi_on_interact", "args": ["is_pressed"] } }
+  ],
+  "edges": [
+    { "kind": "data", "from_node": "n_get_cnt", "from_pin": "Value", "to_node": "n_add_one", "to_pin": "A" },
+    { "kind": "data", "from_node": "n_add_one", "from_pin": "ReturnValue", "to_node": "n_set_cnt", "to_pin": "Value" },
+    { "kind": "exec", "from_node": "n_ov_begin", "from_pin": "then", "to_node": "n_set_cnt", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_set_cnt", "from_pin": "then", "to_node": "n_emit_on", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_emit_on", "from_pin": "then", "to_node": "n_bpi_on", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_ov_end", "from_pin": "then", "to_node": "n_emit_off", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_emit_off", "from_pin": "then", "to_node": "n_bpi_off", "to_pin": "execute" }
+  ]
+}

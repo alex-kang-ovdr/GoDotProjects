@@ -1,9 +1,47 @@
 {
   "assets": [
     {
+      "id": "tex_prototype_grid",
+      "kind": "texture",
+      "source_path": "/Game/LevelPrototyping/Textures/T_PrototypeGrid",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "texture_spec": { "width": 64, "height": 64, "pattern": "grid", "primary": [82, 92, 106], "secondary": [104, 116, 132] }
+    },
+    {
       "id": "asset_grid_mat",
       "kind": "material",
       "source_path": "/Game/LevelPrototyping/Materials/M_PrototypeGrid",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [1, 1, 1], "albedo_texture_ref": "tex_prototype_grid", "roughness": 0.72, "uv_triplanar": true, "uv_scale": [0.5, 0.5, 0.5] }
+    },
+    {
+      "id": "mat_crate",
+      "kind": "material",
+      "source_path": "/Game/LevelPrototyping/Materials/M_Crate",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [0.24, 0.58, 0.92], "albedo_texture_ref": "tex_prototype_grid", "roughness": 0.52, "metallic": 0.15 }
+    },
+    {
+      "id": "mesh_crate",
+      "kind": "static_mesh",
+      "source_path": "/Game/LevelPrototyping/Meshes/SM_Crate",
+      "file_path": "Content/ThirdPerson/Assets/SM_Crate.obj",
+      "material_ref": "mat_crate",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "sfx_jump",
+      "kind": "audio",
+      "source_path": "/Game/ThirdPerson/Audio/SFX_Jump",
+      "file_path": "Content/ThirdPerson/Assets/SFX_Jump.wav",
       "license": "MIT-Procedural",
       "license_status": "allowed",
       "redistributable": true
@@ -12,8 +50,10 @@
       "id": "asset_epic_mannequin_blocked",
       "kind": "skeletal_mesh",
       "source_path": "/Game/Characters/Mannequins/Meshes/SKM_Manny",
-      "license": "Unreal Engine EULA (UE-only)",
-      "license_status": "blocked",
+      "file_path": "Content/ThirdPerson/Assets/SKM_Manny.obj",
+      "material_ref": "mat_crate",
+      "license": "Unreal Engine EULA (Internal Research Only)",
+      "license_status": "internal_only",
       "redistributable": false
     }
   ]

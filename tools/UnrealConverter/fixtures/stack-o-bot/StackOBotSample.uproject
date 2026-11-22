@@ -1,0 +1,9 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "Samples",
+  "Description": "PlayForge P1 Unreal Engine 5.4 Stack O Bot Fixture (Read-Only)",
+  "Plugins": [
+    { "Name": "EnhancedInput", "Enabled": true }
+  ]
+}

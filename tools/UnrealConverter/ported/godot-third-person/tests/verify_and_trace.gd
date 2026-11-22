@@ -9,9 +9,24 @@ var _main_instance: Node3D = null
 var _player: CharacterBody3D = null
 var _frame: int = 0
 var _samples: Array[Dictionary] = []
+var _capture_dir: String = ""
+
+
+func _capture_screenshot(filename: String) -> void:
+	if _capture_dir.is_empty():
+		return
+	var tex := get_viewport().get_texture()
+	if tex == null:
+		return
+	var img := tex.get_image()
+	if img != null:
+		img.save_png(_capture_dir.path_join(filename))
 
 
 func _ready() -> void:
+	_capture_dir = OS.get_environment("PLAYFORGE_CAPTURE_DIR")
+	if not _capture_dir.is_empty():
+		DirAccess.make_dir_recursive_absolute(_capture_dir)
 	var compat := get_node_or_null("/root/UnrealCompat")
 	if compat != null and compat.has_method("reset_trace_state"):
 		compat.call("reset_trace_state")
@@ -57,6 +72,13 @@ func _physics_process(_delta: float) -> void:
 		move_vec = Vector2.ZERO
 
 	_player.call("set_scripted_inputs", move_vec, look_vec, jump_press)
+
+	if _frame == 10:
+		_capture_screenshot("01_start_arena.png")
+	elif _frame == 78:
+		_capture_screenshot("02_jump_arc.png")
+	elif _frame == 160:
+		_capture_screenshot("03_camera_yaw_turn.png")
 
 	if _frame % 15 == 0 or _frame == 179:
 		var p := _player.global_position

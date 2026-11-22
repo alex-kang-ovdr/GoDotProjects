@@ -1,0 +1,547 @@
+{
+  "id": "skm_stackobot",
+  "name": "SKM_StackOBot",
+  "source_file": "Content\\Characters\\SKM_StackOBot.uasset",
+  "bones": [
+    {
+      "name": "root",
+      "parent_index": -1,
+      "position_m": [
+        0,
+        -0.9,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "pelvis",
+      "parent_index": 0,
+      "position_m": [
+        0,
+        0.68,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "spine",
+      "parent_index": 1,
+      "position_m": [
+        0,
+        0.2,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "chest",
+      "parent_index": 2,
+      "position_m": [
+        0,
+        0.22,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "head",
+      "parent_index": 3,
+      "position_m": [
+        0,
+        0.3,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "upperarm_l",
+      "parent_index": 3,
+      "position_m": [
+        -0.34,
+        0.06,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "forearm_l",
+      "parent_index": 5,
+      "position_m": [
+        0,
+        -0.26,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "upperarm_r",
+      "parent_index": 3,
+      "position_m": [
+        0.34,
+        0.06,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "forearm_r",
+      "parent_index": 7,
+      "position_m": [
+        0,
+        -0.26,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "thigh_l",
+      "parent_index": 1,
+      "position_m": [
+        -0.15,
+        -0.1,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "calf_l",
+      "parent_index": 9,
+      "position_m": [
+        0,
+        -0.28,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "thigh_r",
+      "parent_index": 1,
+      "position_m": [
+        0.15,
+        -0.1,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "calf_r",
+      "parent_index": 11,
+      "position_m": [
+        0,
+        -0.28,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "Run",
+      "duration_sec": 0.6000000238418579,
+      "loop": true,
+      "tracks": [
+        {
+          "bone": "chest",
+          "time_sec": 0,
+          "rotation_deg": [
+            -14,
+            6,
+            0
+          ]
+        },
+        {
+          "bone": "chest",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            -14,
+            -6,
+            0
+          ]
+        },
+        {
+          "bone": "chest",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            -14,
+            6,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            44,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_l",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            -38,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_l",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            44,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            -16,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_l",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            -54,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_l",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            -16,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            -38,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_r",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            44,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_r",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            -38,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            -54,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_r",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            -16,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_r",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            -54,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "upperarm_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            -36,
+            0,
+            -10
+          ]
+        },
+        {
+          "bone": "upperarm_l",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            40,
+            0,
+            -10
+          ]
+        },
+        {
+          "bone": "upperarm_l",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            -36,
+            0,
+            -10
+          ]
+        },
+        {
+          "bone": "forearm_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            48,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "forearm_l",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            24,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "forearm_l",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            48,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "upperarm_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            40,
+            0,
+            10
+          ]
+        },
+        {
+          "bone": "upperarm_r",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            -36,
+            0,
+            10
+          ]
+        },
+        {
+          "bone": "upperarm_r",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            40,
+            0,
+            10
+          ]
+        },
+        {
+          "bone": "forearm_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            24,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "forearm_r",
+          "time_sec": 0.30000001192092896,
+          "rotation_deg": [
+            48,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "forearm_r",
+          "time_sec": 0.6000000238418579,
+          "rotation_deg": [
+            24,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "JetpackHover",
+      "duration_sec": 0.6000000238418579,
+      "loop": true,
+      "tracks": [
+        {
+          "bone": "chest",
+          "time_sec": 0,
+          "rotation_deg": [
+            -24,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "chest",
+          "time_sec": 0.25,
+          "rotation_deg": [
+            -28,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "chest",
+          "time_sec": 0.5,
+          "rotation_deg": [
+            -24,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "upperarm_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            -30,
+            0,
+            -36
+          ]
+        },
+        {
+          "bone": "upperarm_l",
+          "time_sec": 0.5,
+          "rotation_deg": [
+            -30,
+            0,
+            -36
+          ]
+        },
+        {
+          "bone": "upperarm_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            -30,
+            0,
+            36
+          ]
+        },
+        {
+          "bone": "upperarm_r",
+          "time_sec": 0.5,
+          "rotation_deg": [
+            -30,
+            0,
+            36
+          ]
+        },
+        {
+          "bone": "thigh_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            -20,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_l",
+          "time_sec": 0,
+          "rotation_deg": [
+            -42,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "thigh_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            -14,
+            0,
+            0
+          ]
+        },
+        {
+          "bone": "calf_r",
+          "time_sec": 0,
+          "rotation_deg": [
+            -32,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

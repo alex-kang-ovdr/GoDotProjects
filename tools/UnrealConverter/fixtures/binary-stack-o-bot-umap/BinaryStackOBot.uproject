@@ -1,0 +1,12 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "BinaryReverseEngineering",
+  "Description": "Real 0x9E2A83C1 Binary .umap/.uasset UE5 Stack O Bot Fixture",
+  "Plugins": [
+    {
+      "Name": "EnhancedInput",
+      "Enabled": true
+    }
+  ]
+}

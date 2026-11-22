@@ -1,0 +1,46 @@
+{
+  "id": "bp_bot",
+  "name": "BP_Bot",
+  "kind": "event_graph",
+  "source_path": "/Game/StackOBot/Characters/Bot/BP_Bot",
+  "target_entity_class": "ACharacter",
+  "default_actor_id": "player_bot",
+  "variables": [
+    { "name": "look_sensitivity", "type": "float", "default": 0.25 },
+    { "name": "max_inactive_bots", "type": "int", "default": 3 }
+  ],
+  "nodes": [
+    { "id": "n_begin", "node_class": "K2Node_Event_BeginPlay", "title": "Event BeginPlay", "params": {} },
+    { "id": "n_print", "node_class": "K2Node_CallFunction_PrintString", "title": "Print String", "params": { "message": "BP_Bot Ready" } },
+    { "id": "n_niagara_jet", "node_class": "K2Node_CallFunction_SpawnNiagaraSystemAtLocation", "title": "Spawn Niagara Jetpack FX", "params": { "system": "/Game/StackOBot/FX/NS_Jetpack" } },
+    { "id": "n_in_move", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Move", "params": { "action": "IA_Move", "trigger": "Triggered", "value_type": "axis2d" } },
+    { "id": "n_move_fwd", "node_class": "K2Node_CallFunction_AddMovementInput", "title": "Add Movement Forward", "params": { "direction_expr": "ue_get_control_forward_vector()", "scale_expr": "move_input.y" } },
+    { "id": "n_move_right", "node_class": "K2Node_CallFunction_AddMovementInput", "title": "Add Movement Right", "params": { "direction_expr": "ue_get_control_right_vector()", "scale_expr": "move_input.x" } },
+    { "id": "n_in_look", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Look", "params": { "action": "IA_Look", "trigger": "Triggered", "value_type": "axis2d" } },
+    { "id": "n_yaw", "node_class": "K2Node_CallFunction_AddControllerYawInput", "title": "Add Yaw", "params": { "value_expr": "look_input.x * look_sensitivity" } },
+    { "id": "n_pitch", "node_class": "K2Node_CallFunction_AddControllerPitchInput", "title": "Add Pitch", "params": { "value_expr": "look_input.y * look_sensitivity" } },
+    { "id": "n_in_jump_s", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Jump Started", "params": { "action": "IA_Jump", "trigger": "Started", "value_type": "bool" } },
+    { "id": "n_jump", "node_class": "K2Node_CallFunction_Jump", "title": "Jump", "params": {} },
+    { "id": "n_in_jump_c", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Jump Completed", "params": { "action": "IA_Jump", "trigger": "Completed", "value_type": "bool" } },
+    { "id": "n_stop_jump", "node_class": "K2Node_CallFunction_StopJumping", "title": "Stop Jumping", "params": {} },
+    { "id": "n_in_jet_s", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Jetpack Started", "params": { "action": "IA_Jetpack", "trigger": "Started", "value_type": "bool" } },
+    { "id": "n_jet_on", "node_class": "K2Node_CallFunction_SetJetpackActive", "title": "Jetpack On", "params": { "active_expr": "true" } },
+    { "id": "n_in_jet_c", "node_class": "K2Node_EnhancedInputAction", "title": "IA_Jetpack Completed", "params": { "action": "IA_Jetpack", "trigger": "Completed", "value_type": "bool" } },
+    { "id": "n_jet_off", "node_class": "K2Node_CallFunction_SetJetpackActive", "title": "Jetpack Off", "params": { "active_expr": "false" } },
+    { "id": "n_in_spawn", "node_class": "K2Node_EnhancedInputAction", "title": "IA_SpawnBot", "params": { "action": "IA_SpawnBot", "trigger": "Started", "value_type": "bool" } },
+    { "id": "n_spawn_bot", "node_class": "K2Node_SpawnActorFromClass", "title": "Spawn BP_InactiveBot", "params": { "actor_class": "BP_InactiveBot", "max_bots_expr": "max_inactive_bots" } }
+  ],
+  "edges": [
+    { "kind": "exec", "from_node": "n_begin", "from_pin": "then", "to_node": "n_print", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_print", "from_pin": "then", "to_node": "n_niagara_jet", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_move", "from_pin": "Triggered", "to_node": "n_move_fwd", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_move_fwd", "from_pin": "then", "to_node": "n_move_right", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_look", "from_pin": "Triggered", "to_node": "n_yaw", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_yaw", "from_pin": "then", "to_node": "n_pitch", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_jump_s", "from_pin": "Started", "to_node": "n_jump", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_jump_c", "from_pin": "Completed", "to_node": "n_stop_jump", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_jet_s", "from_pin": "Started", "to_node": "n_jet_on", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_jet_c", "from_pin": "Completed", "to_node": "n_jet_off", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_in_spawn", "from_pin": "Started", "to_node": "n_spawn_bot", "to_pin": "execute" }
+  ]
+}

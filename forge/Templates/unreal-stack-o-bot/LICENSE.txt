@@ -1,0 +1,2 @@
+PlayForge Internal Template — Procedural Geometry & PlayForge UnrealCompat Runtime.
+No proprietary Epic Games / Unreal Engine binary assets are bundled in this template.

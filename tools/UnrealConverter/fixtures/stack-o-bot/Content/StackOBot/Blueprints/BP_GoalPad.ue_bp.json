@@ -1,0 +1,16 @@
+{
+  "id": "bp_goal_pad",
+  "name": "BP_GoalPad",
+  "kind": "event_graph",
+  "source_path": "/Game/StackOBot/Blueprints/Interactions/BP_GoalPad",
+  "target_entity_class": "ATriggerBox",
+  "default_actor_id": "goal_pad",
+  "variables": [],
+  "nodes": [
+    { "id": "n_goal_begin", "node_class": "K2Node_Event_ActorBeginOverlap", "title": "Event ActorBeginOverlap", "params": {} },
+    { "id": "n_complete", "node_class": "K2Node_CallFunction_CompleteLevel", "title": "Complete Level", "params": {} }
+  ],
+  "edges": [
+    { "kind": "exec", "from_node": "n_goal_begin", "from_pin": "then", "to_node": "n_complete", "to_pin": "execute" }
+  ]
+}

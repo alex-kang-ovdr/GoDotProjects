@@ -64,7 +64,7 @@
       "class": "AStaticMeshActor",
       "transform": { "location": [300, -300, 60], "rotation": { "pitch": 0, "yaw": 25, "roll": 0 }, "scale": [1, 1, 1] },
       "components": [
-        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [120, 120, 120], "color": [0.22, 0.55, 0.88] },
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [120, 120, 120], "color": [0.22, 0.55, 0.88], "mesh_ref": "mesh_crate" },
         { "type": "UBoxComponent", "size_cm": [120, 120, 120] }
       ]
     },

@@ -1,0 +1,16 @@
+{
+  "id": "bp_energy_orb",
+  "name": "BP_EnergyOrb",
+  "kind": "event_graph",
+  "source_path": "/Game/StackOBot/Blueprints/Collectibles/BP_EnergyOrb",
+  "target_entity_class": "ATriggerBox",
+  "default_actor_id": "orb_01",
+  "variables": [],
+  "nodes": [
+    { "id": "n_orb_begin", "node_class": "K2Node_Event_ActorBeginOverlap", "title": "Event ActorBeginOverlap", "params": {} },
+    { "id": "n_collect", "node_class": "K2Node_CallFunction_CollectOrb", "title": "Collect Orb", "params": {} }
+  ],
+  "edges": [
+    { "kind": "exec", "from_node": "n_orb_begin", "from_pin": "then", "to_node": "n_collect", "to_pin": "execute" }
+  ]
+}

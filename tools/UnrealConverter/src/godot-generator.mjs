@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { compileBlueprintToGDScript } from "./blueprint-compiler.mjs";
+import { portAssetsForIR } from "./asset-pipeline.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const COMPAT_ADDON_SRC = path.resolve(__dirname, "../../../forge/Godot/addons/playforge_unreal_compat");
@@ -11,6 +12,8 @@ const KEYCODE_MAP = {
   A: 65,
   S: 83,
   D: 68,
+  E: 69,
+  Q: 81,
   SpaceBar: 32,
   LeftShift: 4194325,
   Escape: 4194305
@@ -21,27 +24,30 @@ function degToRad(d) {
 }
 
 /**
- * Compute Godot Transform3D string from position [x,y,z] and Euler XYZ rotation in degrees.
+ * Compute Godot Transform3D string from position [x,y,z], Euler YXZ rotation in degrees, and non-uniform scale [sx,sy,sz].
  */
-function formatTransform3D(pos = [0, 0, 0], rotDeg = [0, 0, 0]) {
+function formatTransform3D(pos = [0, 0, 0], rotDeg = [0, 0, 0], scale = [1, 1, 1]) {
   const rx = degToRad(rotDeg[0] || 0);
   const ry = degToRad(rotDeg[1] || 0);
   const rz = degToRad(rotDeg[2] || 0);
+  const sxv = scale[0] ?? 1;
+  const syv = scale[1] ?? 1;
+  const szv = scale[2] ?? 1;
 
   const cx = Math.cos(rx), sx = Math.sin(rx);
   const cy = Math.cos(ry), sy = Math.sin(ry);
   const cz = Math.cos(rz), sz = Math.sin(rz);
 
-  // Godot YXZ Euler order
-  const m00 = cy * cz + sy * sx * sz;
-  const m01 = cz * sy * sx - cy * sz;
-  const m02 = cx * sy;
-  const m10 = cx * sz;
-  const m11 = cx * cz;
-  const m12 = -sx;
-  const m20 = cy * sx * sz - cz * sy;
-  const m21 = cy * cz * sx + sy * sz;
-  const m22 = cx * cy;
+  // Godot YXZ Euler order * column scale
+  const m00 = (cy * cz + sy * sx * sz) * sxv;
+  const m01 = (cz * sy * sx - cy * sz) * syv;
+  const m02 = (cx * sy) * szv;
+  const m10 = (cx * sz) * sxv;
+  const m11 = (cx * cz) * syv;
+  const m12 = (-sx) * szv;
+  const m20 = (cy * sx * sz - cz * sy) * sxv;
+  const m21 = (cy * cz * sx + sy * sz) * syv;
+  const m22 = (cx * cy) * szv;
 
   const f = (n) => (Math.abs(n) < 1e-6 ? "0" : Number(n.toFixed(5)).toString());
   return `Transform3D(${f(m00)}, ${f(m01)}, ${f(m02)}, ${f(m10)}, ${f(m11)}, ${f(m12)}, ${f(m20)}, ${f(m21)}, ${f(m22)}, ${f(pos[0])}, ${f(pos[1])}, ${f(pos[2])})`;
@@ -50,7 +56,7 @@ function formatTransform3D(pos = [0, 0, 0], rotDeg = [0, 0, 0]) {
 function copyCompatAddon(outDir) {
   const dstDir = path.join(outDir, "addons", "playforge_unreal_compat");
   fs.mkdirSync(dstDir, { recursive: true });
-  for (const file of ["plugin.cfg", "plugin.gd", "unreal_compat.gd", "ue_character_movement.gd"]) {
+  for (const file of ["plugin.cfg", "plugin.gd", "unreal_compat.gd", "ue_character_movement.gd", "ue_skeleton_rig.gd"]) {
     fs.copyFileSync(path.join(COMPAT_ADDON_SRC, file), path.join(dstDir, file));
   }
 }
@@ -110,7 +116,7 @@ function generateProjectGodot(ir) {
   return lines.join("\n") + "\n";
 }
 
-function generateMainTscn(ir, compiledScripts) {
+function generateMainTscn(ir, compiledScripts, assetMap = new Map()) {
   const scene = ir.scenes[0];
   const entityMap = new Map(ir.entities.map((e) => [e.id, e]));
   const sceneEntities = (scene.entities || []).map((id) => entityMap.get(id)).filter(Boolean);
@@ -121,6 +127,19 @@ function generateMainTscn(ir, compiledScripts) {
 
   let extId = 1;
   let subId = 1;
+
+  // Helper to register ported asset ExtResources on demand
+  const extAssetIds = new Map();
+  const ensureExtAsset = (assetId, godotType) => {
+    const entry = assetMap.get(assetId);
+    if (!entry) return null;
+    if (!extAssetIds.has(assetId)) {
+      const id = `ext_${extId++}`;
+      extAssetIds.set(assetId, id);
+      extResources.push(`[ext_resource type="${godotType}" path="${entry.resPath}" id="${id}"]`);
+    }
+    return extAssetIds.get(assetId);
+  };
 
   // Player script ext_resource
   const scriptIdMap = new Map();
@@ -141,11 +160,15 @@ function generateMainTscn(ir, compiledScripts) {
   const envId = `SubResource_env_${subId++}`;
 
   subResources.push(
-    `[sub_resource type="ProceduralSkyMaterial" id="${skyMatId}"]\nsky_top_color = Color(${skyColor[0]}, ${skyColor[1]}, ${skyColor[2]}, 1)\nsky_horizon_color = Color(0.75, 0.84, 0.94, 1)`
+    `[sub_resource type="ProceduralSkyMaterial" id="${skyMatId}"]\nsky_top_color = Color(${skyColor[0]}, ${skyColor[1]}, ${skyColor[2]}, 1)\nsky_horizon_color = Color(0.75, 0.86, 0.96, 1)\nground_bottom_color = Color(0.14, 0.34, 0.58, 1)\nground_horizon_color = Color(0.56, 0.76, 0.92, 1)`
   );
   subResources.push(`[sub_resource type="Sky" id="${skyId}"]\nsky_material = SubResource("${skyMatId}")`);
+  const fog = scene.environment?.fog;
+  const fogLines = fog && fog.enabled
+    ? `\nfog_enabled = true\nfog_light_color = Color(${fog.color[0]}, ${fog.color[1]}, ${fog.color[2]}, 1)\nfog_density = ${fog.density ?? 0.012}`
+    : "";
   subResources.push(
-    `[sub_resource type="Environment" id="${envId}"]\nbackground_mode = 2\nsky = SubResource("${skyId}")\nambient_light_source = 2\nambient_light_energy = ${scene.environment?.ambient_energy ?? 0.65}`
+    `[sub_resource type="Environment" id="${envId}"]\nbackground_mode = 2\nsky = SubResource("${skyId}")\nambient_light_source = 2\nambient_light_energy = ${scene.environment?.ambient_energy ?? 0.65}${fogLines}`
   );
 
   // Root node
@@ -155,31 +178,128 @@ function generateMainTscn(ir, compiledScripts) {
     `[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]\ntransform = ${formatTransform3D([0, 12, 0], [-45, 35, 0])}\nshadow_enabled = true`
   );
 
-  for (const entity of sceneEntities) {
+  // Topological sort by parent_id so parents are always emitted before children
+  const orderedEntities = [];
+  const emittedIds = new Set();
+  const resolveNodePath = (entity) => {
+    const chain = [];
+    let cur = entity;
+    while (cur) {
+      chain.unshift(cur.name);
+      cur = cur.parent_id ? entityMap.get(cur.parent_id) : null;
+    }
+    return chain.join("/");
+  };
+  let remaining = [...sceneEntities];
+  let guard = 0;
+  while (remaining.length > 0 && guard++ < 16) {
+    const nextRem = [];
+    for (const e of remaining) {
+      if (!e.parent_id || emittedIds.has(e.parent_id) || !entityMap.has(e.parent_id)) {
+        orderedEntities.push(e);
+        emittedIds.add(e.id);
+      } else {
+        nextRem.push(e);
+      }
+    }
+    remaining = nextRem;
+  }
+  for (const e of remaining) orderedEntities.push(e);
+
+  for (const entity of orderedEntities) {
     const pos = entity.transform?.position || [0, 0, 0];
     const rot = entity.transform?.rotation_deg || [0, 0, 0];
+    const scl = entity.transform?.scale || [1, 1, 1];
+    const parentEntity = entity.parent_id ? entityMap.get(entity.parent_id) : null;
+    const parentAttr = parentEntity ? resolveNodePath(parentEntity) : ".";
+    const selfPath = parentEntity ? `${parentAttr}/${entity.name}` : entity.name;
 
-    if (entity.godot_class === "StaticBody3D") {
+    if (entity.godot_class === "OmniLight3D" || entity.godot_class === "SpotLight3D") {
+      const lcomp = entity.components.find((c) => c.type === "UPointLightComponent" || c.type === "USpotLightComponent") || {};
+      const lc = lcomp.light_color || [1, 0.95, 0.85];
+      const lightLines = [
+        `[node name="${entity.name}" type="${entity.godot_class}" parent="${parentAttr}"]`,
+        `transform = ${formatTransform3D(pos, rot, scl)}`,
+        `light_color = Color(${lc[0]}, ${lc[1]}, ${lc[2]}, 1)`,
+        `light_energy = ${lcomp.energy ?? 2.0}`
+      ];
+      if (entity.godot_class === "OmniLight3D") {
+        lightLines.push(`omni_range = ${lcomp.range_m ?? 8.0}`);
+      } else {
+        lightLines.push(`spot_range = ${lcomp.range_m ?? 10.0}`);
+        lightLines.push(`spot_angle = ${lcomp.spot_angle_deg ?? 40.0}`);
+      }
+      nodes.push(lightLines.join("\n"));
+      continue;
+    }
+
+    if (entity.godot_class === "Marker3D") {
       nodes.push(
-        `[node name="${entity.name}" type="StaticBody3D" parent="."]\ntransform = ${formatTransform3D(pos, rot)}`
+        `[node name="${entity.name}" type="Marker3D" parent="${parentAttr}"]\ntransform = ${formatTransform3D(pos, rot, scl)}`
       );
+      continue;
+    }
+
+    if (entity.godot_class === "StaticBody3D" || entity.godot_class === "Area3D" || entity.godot_class === "Node3D") {
+      const logicRef = (entity.logic_refs || [])[0];
+      const scriptExt = logicRef ? scriptIdMap.get(logicRef) : null;
+      const nodeType = entity.godot_class === "Node3D" && scriptExt ? "Node3D" : entity.godot_class;
+      const nodeLines = [
+        `[node name="${entity.name}" type="${nodeType}" parent="${parentAttr}"]`,
+        `transform = ${formatTransform3D(pos, rot, scl)}`
+      ];
+      if (scriptExt) nodeLines.push(`script = ExtResource("${scriptExt}")`);
+      if (scriptExt) nodeLines.push(`actor_id = ${JSON.stringify(entity.id)}`);
+      for (const [k, v] of Object.entries(entity.properties || {})) {
+        nodeLines.push(`${k} = ${typeof v === "string" ? JSON.stringify(v) : v}`);
+      }
+      nodes.push(nodeLines.join("\n"));
+
       const meshComp = entity.components.find((c) => c.type === "UStaticMeshComponent");
       const boxComp = entity.components.find((c) => c.type === "UBoxComponent");
+      const sphereComp = entity.components.find((c) => c.type === "USphereComponent");
 
-      if (meshComp && meshComp.size_m) {
-        const [sx, sy, sz] = meshComp.size_m;
-        const [cr, cg, cb] = meshComp.color || [0.6, 0.6, 0.6];
-        const matId = `SubResource_mat_${subId++}`;
-        const meshId = `SubResource_mesh_${subId++}`;
-        subResources.push(
-          `[sub_resource type="StandardMaterial3D" id="${matId}"]\nalbedo_color = Color(${cr}, ${cg}, ${cb}, 1)\nroughness = 0.72`
-        );
-        subResources.push(
-          `[sub_resource type="BoxMesh" id="${meshId}"]\nmaterial = SubResource("${matId}")\nsize = Vector3(${sx}, ${sy}, ${sz})`
-        );
-        nodes.push(
-          `[node name="MeshInstance3D" type="MeshInstance3D" parent="${entity.name}"]\nmesh = SubResource("${meshId}")`
-        );
+      const parentPath = nodeType === "Node3D" && boxComp ? `${selfPath}/Body` : selfPath;
+      if (nodeType === "Node3D" && boxComp) {
+        nodes.push(`[node name="Body" type="StaticBody3D" parent="${selfPath}"]`);
+      }
+
+      if (meshComp && (meshComp.mesh_ref || meshComp.size_m || meshComp.radius_m)) {
+        const portedMeshExt = meshComp.mesh_ref ? ensureExtAsset(meshComp.mesh_ref, "ArrayMesh") : null;
+        if (portedMeshExt) {
+          nodes.push(
+            `[node name="MeshInstance3D" type="MeshInstance3D" parent="${parentPath}"]\nmesh = ExtResource("${portedMeshExt}")`
+          );
+        } else {
+          const matRefId = meshComp.material_ref || (meshComp.asset_ref && !meshComp.asset_excluded ? meshComp.asset_ref : null);
+          const portedMatExt = matRefId ? ensureExtAsset(matRefId, "Material") : null;
+          let matExpr = "";
+          if (portedMatExt) {
+            matExpr = `ExtResource("${portedMatExt}")`;
+          } else {
+            const [cr, cg, cb] = meshComp.color || [0.6, 0.6, 0.6];
+            const matId = `SubResource_mat_${subId++}`;
+            subResources.push(
+              `[sub_resource type="StandardMaterial3D" id="${matId}"]\nalbedo_color = Color(${cr}, ${cg}, ${cb}, 1)\nroughness = 0.65`
+            );
+            matExpr = `SubResource("${matId}")`;
+          }
+          const meshId = `SubResource_mesh_${subId++}`;
+          if (meshComp.shape === "sphere") {
+            const r = meshComp.radius_m || 0.35;
+            subResources.push(
+              `[sub_resource type="SphereMesh" id="${meshId}"]\nmaterial = ${matExpr}\nradius = ${r}\nheight = ${r * 2}`
+            );
+          } else {
+            const [sx, sy, sz] = meshComp.size_m;
+            subResources.push(
+              `[sub_resource type="BoxMesh" id="${meshId}"]\nmaterial = ${matExpr}\nsize = Vector3(${sx}, ${sy}, ${sz})`
+            );
+          }
+          nodes.push(
+            `[node name="MeshInstance3D" type="MeshInstance3D" parent="${parentPath}"]\nmesh = SubResource("${meshId}")`
+          );
+        }
       }
 
       if (boxComp && boxComp.size_m) {
@@ -187,7 +307,13 @@ function generateMainTscn(ir, compiledScripts) {
         const colId = `SubResource_col_${subId++}`;
         subResources.push(`[sub_resource type="BoxShape3D" id="${colId}"]\nsize = Vector3(${sx}, ${sy}, ${sz})`);
         nodes.push(
-          `[node name="CollisionShape3D" type="CollisionShape3D" parent="${entity.name}"]\nshape = SubResource("${colId}")`
+          `[node name="CollisionShape3D" type="CollisionShape3D" parent="${parentPath}"]\nshape = SubResource("${colId}")`
+        );
+      } else if (sphereComp && sphereComp.radius_m) {
+        const colId = `SubResource_col_${subId++}`;
+        subResources.push(`[sub_resource type="SphereShape3D" id="${colId}"]\nradius = ${sphereComp.radius_m}`);
+        nodes.push(
+          `[node name="CollisionShape3D" type="CollisionShape3D" parent="${parentPath}"]\nshape = SubResource("${colId}")`
         );
       }
     } else if (entity.godot_class === "CharacterBody3D") {
@@ -211,6 +337,13 @@ function generateMainTscn(ir, compiledScripts) {
       if (moveComp.air_control !== undefined) charLines.push(`air_control = ${moveComp.air_control}`);
       if (moveComp.max_walk_angle_deg !== undefined) charLines.push(`max_walk_angle_deg = ${moveComp.max_walk_angle_deg}`);
       if (moveComp.max_step_height_cm !== undefined) charLines.push(`max_step_height_cm = ${moveComp.max_step_height_cm}`);
+      if (moveComp.jetpack_enabled) {
+        charLines.push(`jetpack_enabled = true`);
+        charLines.push(`jetpack_max_fuel = ${moveComp.jetpack_max_fuel}`);
+        charLines.push(`jetpack_burn_rate = ${moveComp.jetpack_burn_rate}`);
+        charLines.push(`jetpack_regen_rate = ${moveComp.jetpack_regen_rate}`);
+        charLines.push(`jetpack_hover_velocity_cm = ${moveComp.jetpack_hover_velocity_cm}`);
+      }
       nodes.push(charLines.join("\n"));
 
       const radius = capComp?.radius_m || 0.35;
@@ -221,16 +354,27 @@ function generateMainTscn(ir, compiledScripts) {
       const visorMeshId = `SubResource_visor_mesh_${subId++}`;
       const visorMatId = `SubResource_visor_mat_${subId++}`;
 
+      const rigScriptId = `ext_${extId++}`;
+      extResources.push(`[ext_resource type="Script" path="res://addons/playforge_unreal_compat/ue_skeleton_rig.gd" id="${rigScriptId}"]`);
+
       subResources.push(`[sub_resource type="CapsuleShape3D" id="${capColId}"]\nradius = ${radius}\nheight = ${height}`);
-      subResources.push(`[sub_resource type="StandardMaterial3D" id="${charMatId}"]\nalbedo_color = Color(0.16, 0.56, 0.92, 1)\nroughness = 0.45`);
-      subResources.push(`[sub_resource type="CapsuleMesh" id="${capMeshId}"]\nmaterial = SubResource("${charMatId}")\nradius = ${radius}\nheight = ${height}`);
-      subResources.push(`[sub_resource type="StandardMaterial3D" id="${visorMatId}"]\nalbedo_color = Color(0.95, 0.85, 0.25, 1)`);
-      subResources.push(`[sub_resource type="BoxMesh" id="${visorMeshId}"]\nmaterial = SubResource("${visorMatId}")\nsize = Vector3(0.36, 0.14, 0.18)`);
 
       nodes.push(`[node name="CollisionShape3D" type="CollisionShape3D" parent="${entity.name}"]\nshape = SubResource("${capColId}")`);
       nodes.push(`[node name="CharacterMesh" type="Node3D" parent="${entity.name}"]`);
-      nodes.push(`[node name="BodyMesh" type="MeshInstance3D" parent="${entity.name}/CharacterMesh"]\nmesh = SubResource("${capMeshId}")`);
-      nodes.push(`[node name="ForwardVisor" type="MeshInstance3D" parent="${entity.name}/CharacterMesh"]\ntransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, -0.32)\nmesh = SubResource("${visorMeshId}")`);
+      const charStyle = moveComp.jetpack_enabled ? "bot" : "manny";
+      const skelComp = entity.components.find((c) => c.type === "USkeletalMeshComponent");
+      const skelDataRes = skelComp?.skeleton_ref && assetMap.has(`skel_${skelComp.skeleton_ref}`)
+        ? assetMap.get(`skel_${skelComp.skeleton_ref}`).resPath
+        : null;
+      const rigLines = [
+        `[node name="RiggedSkeleton" type="Node3D" parent="${entity.name}/CharacterMesh"]`,
+        `script = ExtResource("${rigScriptId}")`,
+        `character_style = "${charStyle}"`
+      ];
+      if (skelDataRes) {
+        rigLines.push(`skeleton_data_path = "${skelDataRes}"`);
+      }
+      nodes.push(rigLines.join("\n"));
 
       const armLen = springComp?.spring_length_m || 4.0;
       const armOffset = springComp?.socket_offset_m || [0, 0.65, 0];
@@ -244,24 +388,69 @@ function generateMainTscn(ir, compiledScripts) {
     }
   }
 
-  // HUD
+  // Ported AudioStreamPlayer nodes
+  const audioAssets = Array.from(assetMap.entries()).filter(([, entry]) => entry.kind === "audio");
+  if (audioAssets.length > 0) {
+    nodes.push(`[node name="AudioBank" type="Node" parent="."]`);
+    for (const [assetId] of audioAssets) {
+      const audioExt = ensureExtAsset(assetId, "AudioStream");
+      if (audioExt) {
+        nodes.push(`[node name="${assetId}" type="AudioStreamPlayer" parent="AudioBank"]\nstream = ExtResource("${audioExt}")`);
+      }
+    }
+  }
+
+  // HUD with high-contrast dark backdrop
   nodes.push(`[node name="HUD" type="CanvasLayer" parent="."]\nscript = ExtResource("${hudScriptId}")`);
   nodes.push(
-    `[node name="StatusLabel" type="Label" parent="HUD"]\noffset_left = 16.0\noffset_top = 12.0\noffset_right = 520.0\noffset_bottom = 96.0\ntext = "Unreal -> Godot Third Person PoC | WASD Move | Space Jump"`
+    `[node name="Backdrop" type="ColorRect" parent="HUD"]\noffset_left = 10.0\noffset_top = 8.0\noffset_right = 1040.0\noffset_bottom = 44.0\ncolor = Color(0.05, 0.08, 0.14, 0.80)`
+  );
+  nodes.push(
+    `[node name="StatusLabel" type="Label" parent="HUD"]\noffset_left = 20.0\noffset_top = 14.0\noffset_right = 1030.0\noffset_bottom = 42.0\ntext = "Unreal -> Godot PoC | WASD Move | Space Jump"`
   );
 
   const header = `[gd_scene load_steps=${extResources.length + subResources.length + 1} format=3]\n`;
   return [header, ...extResources, "", ...subResources, "", ...nodes, ""].join("\n");
 }
 
-function generateHudScript() {
+function generateHudScript(ir) {
+  const isStackOBot = (ir.entities || []).some((e) => e.name === "BP_Bot");
+  const isBinaryUmap = ir.source?.extractor === "binary_umap_uasset_re";
+  const playerName = isStackOBot ? "BP_Bot" : "BP_ThirdPersonCharacter";
+  const titlePrefix = isBinaryUmap
+    ? "BINARY .UMAP 0x9E2A83C1 (13-Bone Rig + Kismet BC)"
+    : "Stack O Bot (UE->Godot)";
+  if (isStackOBot) {
+    return `extends CanvasLayer
+
+@onready var status_label: Label = $StatusLabel
+
+
+func _process(_delta: float) -> void:
+\tvar player := get_parent().get_node_or_null("${playerName}")
+\tif player == null:
+\t\treturn
+\tvar pos: Vector3 = player.global_position
+\tvar anim_val: Variant = player.get("anim_state")
+\tvar fuel_val: Variant = player.get("jetpack_fuel")
+\tvar anim: String = str(anim_val) if anim_val != null else "Unknown"
+\tvar fuel: float = float(fuel_val) if fuel_val != null else 0.0
+\tvar compat := get_node_or_null("/root/UnrealCompat")
+\tvar bots: int = int(compat.call("get_spawned_bot_count")) if compat != null else 0
+\tvar orbs: int = int(compat.get("orbs_collected")) if compat != null else 0
+\tvar done: bool = bool(compat.get("level_completed")) if compat != null else false
+\tstatus_label.text = "${titlePrefix} | Pos:(%.1f,%.1f,%.1f)m | Anim:%s | Fuel:%.0f%% | Bots:%d | Orbs:%d | Goal:%s" % [
+\t\tpos.x, pos.y, pos.z, anim, fuel * 100.0, bots, orbs, "CLEAR" if done else "..."
+\t]
+`;
+  }
   return `extends CanvasLayer
 
 @onready var status_label: Label = $StatusLabel
 
 
 func _process(_delta: float) -> void:
-\tvar player := get_parent().get_node_or_null("BP_ThirdPersonCharacter")
+\tvar player := get_parent().get_node_or_null("${playerName}")
 \tif player == null:
 \t\treturn
 \tvar pos: Vector3 = player.global_position
@@ -272,6 +461,144 @@ func _process(_delta: float) -> void:
 \tstatus_label.text = "UE->Godot Third Person PoC | Pos: (%.2f, %.2f, %.2f)m | Yaw: %.1f deg | Anim: %s" % [
 \t\tpos.x, pos.y, pos.z, yaw, anim
 \t]
+`;
+}
+
+function generateStackOBotVerifyScript() {
+  return `extends Node
+## Automated Godot 4.7.2 Headless Runtime Verification & Trace Recorder — P1 Stack O Bot
+## Exercises: Move -> Jump + Jetpack Hover -> Walk to Pressure Plate -> Spawn Inactive Bot (E)
+## -> Plate fires Delegate + BPI_Interactable -> Door opens via Timeline -> Walk through Door
+## -> Collect Energy Orb -> Reach Goal Pad (LevelCompleted).
+
+const MAIN_SCENE_PATH := "res://scenes/main.tscn"
+
+var _main_instance: Node3D = null
+var _player: CharacterBody3D = null
+var _frame: int = 0
+var _samples: Array[Dictionary] = []
+var _capture_dir: String = ""
+
+
+func _capture_screenshot(filename: String) -> void:
+\tif _capture_dir.is_empty():
+\t\treturn
+\tvar tex := get_viewport().get_texture()
+\tif tex == null:
+\t\treturn
+\tvar img := tex.get_image()
+\tif img != null:
+\t\timg.save_png(_capture_dir.path_join(filename))
+
+
+func _ready() -> void:
+\t_capture_dir = OS.get_environment("PLAYFORGE_CAPTURE_DIR")
+\tif not _capture_dir.is_empty():
+\t\tDirAccess.make_dir_recursive_absolute(_capture_dir)
+\tvar compat := get_node_or_null("/root/UnrealCompat")
+\tif compat != null and compat.has_method("reset_trace_state"):
+\t\tcompat.call("reset_trace_state")
+\tvar packed := load(MAIN_SCENE_PATH) as PackedScene
+\tif packed == null:
+\t\tpush_error("VERIFY_FAIL: Could not load main scene: " + MAIN_SCENE_PATH)
+\t\tget_tree().quit(2)
+\t\treturn
+\t_main_instance = packed.instantiate() as Node3D
+\tadd_child(_main_instance)
+\t_player = _main_instance.get_node_or_null("BP_Bot") as CharacterBody3D
+\tif _player == null:
+\t\tpush_error("VERIFY_FAIL: BP_Bot not found in main scene")
+\t\tget_tree().quit(3)
+\t\treturn
+
+
+func _physics_process(_delta: float) -> void:
+\tif _player == null:
+\t\treturn
+\t# Deterministic P1 Stack O Bot Scenario (60 Hz, 300 ticks = 5.0s):
+\t#   0..14   : Idle settle at (0, 0.9, 0)
+\t#  15..44   : Jump + Jetpack hover while moving forward toward Pressure Plate at (0, 0, -4m)
+\t#  45..84   : Land & reach Pressure Plate at z = -4.0m
+\t#  85       : Press IA_SpawnBot (E) to leave InactiveBot on Pressure Plate!
+\t#  86..125  : Wait/pause briefly while Door at z = -7.0m opens via Timeline (0.5s)
+\t# 126..265  : Walk forward through opened Door, collect Energy Orb at z = -9.5m, reach Goal Pad at z = -12.0m
+\t# 266..299  : Stop and settle on Goal Pad
+\tvar move_vec := Vector2.ZERO
+\tvar jump_press := false
+\tvar jetpack := false
+\tvar spawn_bot := false
+
+\tif _frame == 15:
+\t\tmove_vec = Vector2(0.0, 1.0)
+\t\tjump_press = true
+\telif _frame >= 22 and _frame < 38:
+\t\tmove_vec = Vector2(0.0, 0.7)
+\t\tjetpack = true
+\telif _frame >= 38 and _frame < 84:
+\t\tif _player.global_position.z > -3.85:
+\t\t\tmove_vec = Vector2(0.0, 1.0)
+\t\telif _player.global_position.z < -4.15:
+\t\t\tmove_vec = Vector2(0.0, -1.0)
+\telif _frame == 85:
+\t\tspawn_bot = true
+\telif _frame >= 126 and _frame < 265:
+\t\tif _player.global_position.z > -12.0:
+\t\t\tmove_vec = Vector2(0.0, 1.0)
+
+\t_player.call("set_scripted_inputs", move_vec, Vector2.ZERO, jump_press, jetpack, spawn_bot)
+
+\tif _frame == 10:
+\t\t_capture_screenshot("01_start_idle.png")
+\telif _frame == 32:
+\t\t_capture_screenshot("02_jetpack_hover.png")
+\telif _frame == 128:
+\t\t_capture_screenshot("03_inactive_bot_and_door_open.png")
+\telif _frame == 250:
+\t\t_capture_screenshot("04_goal_clear.png")
+
+\tif _frame % 30 == 0 or _frame == 299:
+\t\tvar p := _player.global_position
+\t\tvar v := _player.velocity
+\t\t_samples.append({
+\t\t\t"tick": _frame,
+\t\t\t"position_m": [snappedf(p.x, 0.0001), snappedf(p.y, 0.0001), snappedf(p.z, 0.0001)],
+\t\t\t"velocity_m_s": [snappedf(v.x, 0.0001), snappedf(v.y, 0.0001), snappedf(v.z, 0.0001)],
+\t\t\t"yaw_deg": snappedf(float(_player.get("controller_yaw_deg")), 0.01),
+\t\t\t"on_floor": _player.is_on_floor(),
+\t\t\t"anim_state": str(_player.get("anim_state")),
+\t\t\t"jetpack_fuel": snappedf(float(_player.get("jetpack_fuel")), 0.01)
+\t\t})
+
+\t_frame += 1
+\tif _frame >= 300:
+\t\t_finish_and_write_trace()
+
+
+func _finish_and_write_trace() -> void:
+\tvar compat := get_node_or_null("/root/UnrealCompat")
+\tvar events: Array = compat.get("gameplay_events") if compat != null else []
+\tvar trace := {
+\t\t"engine": "godot_4.7",
+\t\t"scenario": "p1_stack_o_bot_puzzle",
+\t\t"ticks": _frame,
+\t\t"jump_apex_m": snappedf(float(_player.get("max_jump_apex_m")), 0.0001),
+\t\t"spawned_bots": int(compat.call("get_spawned_bot_count")) if compat != null else 0,
+\t\t"orbs_collected": int(compat.get("orbs_collected")) if compat != null else 0,
+\t\t"level_completed": bool(compat.get("level_completed")) if compat != null else false,
+\t\t"final_anim_state": str(_player.get("anim_state")),
+\t\t"anim_transitions": _player.get("anim_transitions"),
+\t\t"gameplay_events": events,
+\t\t"samples": _samples
+\t}
+\tvar out_path := OS.get_environment("PLAYFORGE_TRACE_OUT")
+\tif out_path.is_empty():
+\t\tout_path = ProjectSettings.globalize_path("res://godot_runtime_trace.json")
+\tvar f := FileAccess.open(out_path, FileAccess.WRITE)
+\tif f != null:
+\t\tf.store_string(JSON.stringify(trace, "  "))
+\t\tf.close()
+\tprint("PLAYFORGE_UNREAL_TRACE_OK:" + out_path)
+\tget_tree().quit(0)
 `;
 }
 
@@ -287,9 +614,24 @@ var _main_instance: Node3D = null
 var _player: CharacterBody3D = null
 var _frame: int = 0
 var _samples: Array[Dictionary] = []
+var _capture_dir: String = ""
+
+
+func _capture_screenshot(filename: String) -> void:
+\tif _capture_dir.is_empty():
+\t\treturn
+\tvar tex := get_viewport().get_texture()
+\tif tex == null:
+\t\treturn
+\tvar img := tex.get_image()
+\tif img != null:
+\t\timg.save_png(_capture_dir.path_join(filename))
 
 
 func _ready() -> void:
+\t_capture_dir = OS.get_environment("PLAYFORGE_CAPTURE_DIR")
+\tif not _capture_dir.is_empty():
+\t\tDirAccess.make_dir_recursive_absolute(_capture_dir)
 \tvar compat := get_node_or_null("/root/UnrealCompat")
 \tif compat != null and compat.has_method("reset_trace_state"):
 \t\tcompat.call("reset_trace_state")
@@ -335,6 +677,13 @@ func _physics_process(_delta: float) -> void:
 \t\tmove_vec = Vector2.ZERO
 
 \t_player.call("set_scripted_inputs", move_vec, look_vec, jump_press)
+
+\tif _frame == 10:
+\t\t_capture_screenshot("01_start_arena.png")
+\telif _frame == 78:
+\t\t_capture_screenshot("02_jump_arc.png")
+\telif _frame == 160:
+\t\t_capture_screenshot("03_camera_yaw_turn.png")
 
 \tif _frame % 15 == 0 or _frame == 179:
 \t\tvar p := _player.global_position
@@ -399,6 +748,20 @@ export function generateGodotProjectFromIR(ir, outDir, options = {}) {
 
   copyCompatAddon(absOut);
 
+  const { portedAssets, assetMap } = portAssetsForIR(ir, ir.source.project_path, absOut);
+
+  // Emit binary-extracted Skeleton + AnimSequence JSON bundles into assets/skeletons/
+  for (const skel of ir.skeletons || []) {
+    const relPath = `assets/skeletons/${skel.id}.json`;
+    const fullPath = path.join(absOut, relPath);
+    fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+    const jsonText = JSON.stringify(skel, null, 2) + "\n";
+    fs.writeFileSync(fullPath, jsonText, "utf8");
+    const entry = { kind: "skeleton", relPath, resPath: `res://${relPath}`, bytes: Buffer.byteLength(jsonText) };
+    assetMap.set(`skel_${skel.id}`, entry);
+    portedAssets.push(entry);
+  }
+
   const compiledScripts = {};
   const allSourceMaps = [];
   const compileDiagnostics = [];
@@ -411,19 +774,26 @@ export function generateGodotProjectFromIR(ir, outDir, options = {}) {
     compileDiagnostics.push(...compiled.diagnostics);
   }
 
-  fs.writeFileSync(path.join(absOut, "scripts", "hud_overlay.gd"), generateHudScript(), "utf8");
+  const isStackOBot = (ir.entities || []).some((e) => e.name === "BP_Bot");
+  fs.writeFileSync(path.join(absOut, "scripts", "hud_overlay.gd"), generateHudScript(ir), "utf8");
   fs.writeFileSync(path.join(absOut, "project.godot"), generateProjectGodot(ir), "utf8");
-  fs.writeFileSync(path.join(absOut, "scenes", "main.tscn"), generateMainTscn(ir, compiledScripts), "utf8");
-  fs.writeFileSync(path.join(absOut, "tests", "verify_and_trace.gd"), generateVerifyAndTraceScript(), "utf8");
+  fs.writeFileSync(path.join(absOut, "scenes", "main.tscn"), generateMainTscn(ir, compiledScripts, assetMap), "utf8");
+  fs.writeFileSync(
+    path.join(absOut, "tests", "verify_and_trace.gd"),
+    isStackOBot ? generateStackOBotVerifyScript() : generateVerifyAndTraceScript(),
+    "utf8"
+  );
   fs.writeFileSync(path.join(absOut, "tests", "verify_and_trace.tscn"), generateVerifyTscn(), "utf8");
 
   return {
     outputDir: absOut,
+    portedAssets,
     generatedFiles: [
       "project.godot",
       "scenes/main.tscn",
       "scripts/hud_overlay.gd",
       ...Object.values(compiledScripts).map((c) => `scripts/${c.scriptName}`),
+      ...portedAssets.map((a) => a.relPath),
       "addons/playforge_unreal_compat/plugin.cfg",
       "addons/playforge_unreal_compat/plugin.gd",
       "addons/playforge_unreal_compat/unreal_compat.gd",

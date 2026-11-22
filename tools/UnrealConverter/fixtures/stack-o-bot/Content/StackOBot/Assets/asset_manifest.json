@@ -1,0 +1,185 @@
+{
+  "assets": [
+    {
+      "id": "tex_island_grass",
+      "kind": "texture",
+      "source_path": "/Game/StackOBot/Textures/T_IslandGrass",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "texture_spec": { "width": 64, "height": 64, "pattern": "grass", "primary": [68, 126, 82], "secondary": [88, 152, 98] }
+    },
+    {
+      "id": "tex_tech_metal",
+      "kind": "texture",
+      "source_path": "/Game/StackOBot/Textures/T_TechMetal",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "texture_spec": { "width": 64, "height": 64, "pattern": "metal", "primary": [132, 146, 164], "secondary": [156, 170, 188] }
+    },
+    {
+      "id": "tex_warning_stripes",
+      "kind": "texture",
+      "source_path": "/Game/StackOBot/Textures/T_WarningStripes",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "texture_spec": { "width": 64, "height": 64, "pattern": "stripes", "primary": [228, 74, 48], "secondary": [242, 198, 54] }
+    },
+    {
+      "id": "tex_tech_metal_normal",
+      "kind": "texture",
+      "source_path": "/Game/StackOBot/Textures/T_TechMetal_N",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "texture_spec": { "width": 64, "height": 64, "pattern": "normal_bevel" }
+    },
+    {
+      "id": "mat_island_grass",
+      "kind": "material",
+      "source_path": "/Game/StackOBot/Materials/M_IslandGrass",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [1, 1, 1], "albedo_texture_ref": "tex_island_grass", "roughness": 0.88, "uv_triplanar": true, "uv_scale": [0.18, 0.18, 0.18] }
+    },
+    {
+      "id": "mat_tech_metal",
+      "kind": "material",
+      "source_path": "/Game/StackOBot/Materials/M_TechMetal",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [0.9, 0.94, 1.0], "albedo_texture_ref": "tex_tech_metal", "normal_texture_ref": "tex_tech_metal_normal", "normal_scale": 1.2, "metallic": 0.35, "roughness": 0.42, "uv_triplanar": true, "uv_scale": [0.5, 0.5, 0.5] }
+    },
+    {
+      "id": "mi_door_metal",
+      "kind": "material_instance",
+      "parent_material_ref": "mat_tech_metal",
+      "source_path": "/Game/StackOBot/Materials/MI_DoorMetal",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [0.35, 0.62, 0.98], "metallic": 0.55, "roughness": 0.3 }
+    },
+    {
+      "id": "mat_warning_plate",
+      "kind": "material",
+      "source_path": "/Game/StackOBot/Materials/M_PressurePlate",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [1, 1, 1], "albedo_texture_ref": "tex_warning_stripes", "roughness": 0.5, "uv_triplanar": true, "uv_scale": [0.8, 0.8, 0.8] }
+    },
+    {
+      "id": "mat_bot_chassis",
+      "kind": "material",
+      "source_path": "/Game/StackOBot/Materials/M_BotChassis",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_spec": { "albedo_color": [0.18, 0.62, 0.96], "metallic": 0.4, "roughness": 0.32 }
+    },
+    {
+      "id": "mat_energy_orb",
+      "kind": "shader_material",
+      "source_path": "/Game/StackOBot/Materials/M_EnergyOrb_Graph",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_graph": {
+        "name": "M_EnergyOrb_Graph",
+        "base_color": [1.0, 0.88, 0.22],
+        "emissive_color": [1.0, 0.78, 0.12],
+        "roughness": 0.18,
+        "metallic": 0.2,
+        "use_fresnel": true,
+        "use_pulse": true,
+        "use_panner": true,
+        "pulse_speed": 4.2,
+        "fresnel_power": 2.2,
+        "pan_speed": [0.4, 0.25]
+      }
+    },
+    {
+      "id": "mat_goal_hologram",
+      "kind": "shader_material",
+      "source_path": "/Game/StackOBot/Materials/M_GoalPad_Graph",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true,
+      "material_graph": {
+        "name": "M_GoalPad_Graph",
+        "base_color": [0.14, 0.78, 0.38],
+        "emissive_color": [0.22, 0.98, 0.52],
+        "roughness": 0.3,
+        "metallic": 0.1,
+        "use_fresnel": true,
+        "use_pulse": true,
+        "use_panner": true,
+        "pulse_speed": 2.5,
+        "fresnel_power": 1.8,
+        "pan_speed": [0.3, 0.0]
+      }
+    },
+    {
+      "id": "mesh_bot_chassis",
+      "kind": "static_mesh",
+      "source_path": "/Game/StackOBot/Meshes/SM_BotChassis",
+      "file_path": "Content/StackOBot/Assets/SM_BotChassis.obj",
+      "material_ref": "mat_bot_chassis",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "mesh_energy_orb",
+      "kind": "static_mesh",
+      "source_path": "/Game/StackOBot/Meshes/SM_EnergyOrb",
+      "file_path": "Content/StackOBot/Assets/SM_EnergyOrb.obj",
+      "material_ref": "mat_energy_orb",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "sfx_jump",
+      "kind": "audio",
+      "source_path": "/Game/StackOBot/Audio/SFX_Jump",
+      "file_path": "Content/StackOBot/Assets/SFX_Jump.wav",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "sfx_orb_collect",
+      "kind": "audio",
+      "source_path": "/Game/StackOBot/Audio/SFX_OrbCollect",
+      "file_path": "Content/StackOBot/Assets/SFX_OrbCollect.wav",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "sfx_door_open",
+      "kind": "audio",
+      "source_path": "/Game/StackOBot/Audio/SFX_DoorOpen",
+      "file_path": "Content/StackOBot/Assets/SFX_DoorOpen.wav",
+      "license": "MIT-Procedural",
+      "license_status": "allowed",
+      "redistributable": true
+    },
+    {
+      "id": "asset_epic_stackobot_skm_blocked",
+      "kind": "skeletal_mesh",
+      "source_path": "/Game/StackOBot/Characters/Bot/Mesh/SKM_Bot",
+      "file_path": "Content/StackOBot/Assets/SKM_Bot.obj",
+      "material_ref": "mat_bot_chassis",
+      "license": "Unreal Engine EULA (Internal Research Only)",
+      "license_status": "internal_only",
+      "redistributable": false
+    }
+  ]
+}

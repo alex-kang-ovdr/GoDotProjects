@@ -17,6 +17,13 @@ extends CharacterBody3D
 @export var orient_rotation_to_movement: bool = true
 @export var rotation_rate_yaw_deg: float = 500.0
 
+@export_group("UE Jetpack (Stack O Bot)")
+@export var jetpack_enabled: bool = false
+@export var jetpack_max_fuel: float = 1.0
+@export var jetpack_burn_rate: float = 0.65
+@export var jetpack_regen_rate: float = 0.85
+@export var jetpack_hover_velocity_cm: float = 180.0
+
 @export_group("Controller Camera")
 @export var camera_boom_path: NodePath = NodePath("CameraBoom")
 @export var mesh_root_path: NodePath = NodePath("CharacterMesh")
@@ -27,6 +34,9 @@ var controller_yaw_deg: float = 0.0
 var controller_pitch_deg: float = -18.0
 var pending_move_input: Vector3 = Vector3.ZERO
 var _jump_requested: bool = false
+var _jetpack_requested: bool = false
+var jetpack_fuel: float = 1.0
+var is_jetpack_hovering: bool = false
 var _was_on_floor: bool = true
 var anim_state: String = "Idle"
 var anim_transitions: Array[Dictionary] = []
@@ -36,15 +46,20 @@ var _in_jump: bool = false
 
 var _camera_boom: Node3D = null
 var _mesh_root: Node3D = null
+var _skeleton_rig: Node3D = null
+var _run_bob_phase: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group("ue_bot_body")
+	jetpack_fuel = jetpack_max_fuel
 	floor_max_angle = deg_to_rad(max_walk_angle_deg)
 	floor_snap_length = max_step_height_cm * 0.01 * 0.5
 	if has_node(camera_boom_path):
 		_camera_boom = get_node(camera_boom_path) as Node3D
 	if has_node(mesh_root_path):
 		_mesh_root = get_node(mesh_root_path) as Node3D
+		_skeleton_rig = _mesh_root.get_node_or_null("RiggedSkeleton") as Node3D
 	_apply_camera_rotation()
 
 
@@ -83,6 +98,10 @@ func ue_stop_jumping() -> void:
 	_jump_requested = false
 
 
+func ue_set_jetpack_active(active: bool) -> void:
+	_jetpack_requested = active
+
+
 func step_ue_movement(delta: float) -> void:
 	var max_speed_m := max_walk_speed_cm * 0.01
 	var accel_m := max_acceleration_cm * 0.01
@@ -110,6 +129,9 @@ func step_ue_movement(delta: float) -> void:
 	velocity.z = horiz_vel.z
 
 	if on_floor_now:
+		is_jetpack_hovering = false
+		if jetpack_enabled:
+			jetpack_fuel = minf(jetpack_max_fuel, jetpack_fuel + jetpack_regen_rate * delta)
 		if _jump_requested:
 			velocity.y = jump_vel_m
 			_jump_requested = false
@@ -121,7 +143,17 @@ func step_ue_movement(delta: float) -> void:
 		elif velocity.y < 0.0:
 			velocity.y = 0.0
 	else:
-		velocity.y -= gravity_m * delta
+		if jetpack_enabled and _jetpack_requested and jetpack_fuel > 0.0:
+			var was_hovering := is_jetpack_hovering
+			is_jetpack_hovering = true
+			jetpack_fuel = maxf(0.0, jetpack_fuel - jetpack_burn_rate * delta)
+			var hover_vel_m := jetpack_hover_velocity_cm * 0.01
+			velocity.y = maxf(velocity.y - gravity_m * 0.25 * delta, hover_vel_m)
+			if not was_hovering:
+				_emit_compat_event("JetpackStart", {"fuel": snappedf(jetpack_fuel, 0.01)})
+		else:
+			is_jetpack_hovering = false
+			velocity.y -= gravity_m * delta
 		_jump_requested = false
 
 	move_and_slide()
@@ -145,11 +177,30 @@ func step_ue_movement(delta: float) -> void:
 		_mesh_root.rotation.y = _move_angle_toward(_mesh_root.rotation.y, target_yaw, max_step)
 
 	_update_anim_state(on_floor_after, horiz_vel.length())
+	_update_visual_pose(delta, horiz_vel.length())
 	_was_on_floor = on_floor_after
+
+
+func _update_visual_pose(delta: float, _horiz_speed: float) -> void:
+	if _skeleton_rig == null:
+		return
+	if _skeleton_rig.has_method("play_state"):
+		_skeleton_rig.call("play_state", anim_state)
+	if is_jetpack_hovering:
+		_run_bob_phase += delta * 28.0
+		var pulse := 0.9 + 0.25 * sin(_run_bob_phase)
+		if _skeleton_rig.has_method("set_thruster_active"):
+			_skeleton_rig.call("set_thruster_active", true, pulse)
+	else:
+		if _skeleton_rig.has_method("set_thruster_active"):
+			_skeleton_rig.call("set_thruster_active", false, 1.0)
 
 
 func _update_anim_state(on_floor_after: bool, horiz_speed: float) -> void:
 	if not on_floor_after:
+		if is_jetpack_hovering:
+			_set_anim_state("JetpackHover")
+			return
 		if velocity.y > 0.5 and anim_state == "JumpStart":
 			return
 		_set_anim_state("FallLoop")

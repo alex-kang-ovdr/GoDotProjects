@@ -2,15 +2,18 @@ extends "res://addons/playforge_unreal_compat/ue_character_movement.gd"
 ## Auto-generated from Unreal Blueprint: /Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter
 ## Graph: bp_third_person_character (event_graph)
 
+@export var actor_id: String = "bp_third_person_character"
 @export var look_sensitivity: float = 0.25
 @export var is_sprinting: bool = false
 
 var _scripted_move_input: Vector2 = Vector2.ZERO
 var _scripted_look_input: Vector2 = Vector2.ZERO
+var _scripted_jetpack: bool = false
 var _scripted_mode: bool = false
 
 func _ready() -> void:
 	super._ready()
+	UnrealCompat.register_actor(actor_id, self)
 	UnrealCompat.print_string("BP_ThirdPersonCharacter Ready")
 	# [AI-Repair Applied] Replaced UE SpawnNiagaraSystemAtLocation with lightweight Godot GPUParticles3D-compatible spawn marker
 	UnrealCompat.record_event("VFXFallbackBurst", {"source": "NiagaraFallback"})
@@ -53,7 +56,7 @@ func _physics_process(delta: float) -> void:
 		_scripted_look_input = Vector2.ZERO
 	step_ue_movement(delta)
 
-func set_scripted_inputs(move_vec: Vector2, look_delta: Vector2 = Vector2.ZERO, jump_pressed: bool = false) -> void:
+func set_scripted_inputs(move_vec: Vector2, look_delta: Vector2 = Vector2.ZERO, jump_pressed: bool = false, jetpack_active: bool = false, spawn_bot_pressed: bool = false) -> void:
 	_scripted_mode = true
 	_scripted_move_input = move_vec
 	_scripted_look_input = look_delta

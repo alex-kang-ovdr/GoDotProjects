@@ -1,2 +1,7 @@
+# Build artifacts for .NET UAssetBridge
+unreal-extractor/UAssetBridge/bin/
+unreal-extractor/UAssetBridge/obj/
+
+# Generated full binary/FBX/PNG ported Godot projects (keep audit/ and src/ tracked)
+ported/godot-real-stack-o-bot/
 ported/**/.godot/
-*.tmp

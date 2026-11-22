@@ -1,0 +1,145 @@
+{
+  "level_id": "level_stack_o_bot_main",
+  "name": "StackOBotMain",
+  "source_path": "/Game/StackOBot/Maps/MainLevel",
+  "environment": {
+    "sky_color": [0.35, 0.62, 0.92],
+    "ambient_energy": 0.7,
+    "fog": { "enabled": true, "color": [0.68, 0.8, 0.94], "density": 0.008 }
+  },
+  "actors": [
+    {
+      "id": "player_start_01",
+      "name": "PlayerStart_01",
+      "class": "APlayerStart",
+      "transform": { "location": [0, 0, 92], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": []
+    },
+    {
+      "id": "floor_island",
+      "name": "IslandFloor",
+      "class": "AStaticMeshActor",
+      "transform": { "location": [600, 0, -25], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [2800, 1400, 50], "color": [0.29, 0.48, 0.34], "material_ref": "mat_island_grass" },
+        { "type": "UBoxComponent", "size_cm": [2800, 1400, 50] }
+      ]
+    },
+    {
+      "id": "gate_root",
+      "name": "GateAssembly",
+      "class": "AActor",
+      "transform": { "location": [700, 0, 0], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": []
+    },
+    {
+      "id": "wall_left",
+      "name": "GateWallLeft",
+      "class": "AStaticMeshActor",
+      "parent_id": "gate_root",
+      "transform": { "location": [0, -340, 160], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [60, 360, 320], "color": [0.58, 0.62, 0.68], "material_ref": "mat_tech_metal" },
+        { "type": "UBoxComponent", "size_cm": [60, 360, 320] }
+      ]
+    },
+    {
+      "id": "wall_right",
+      "name": "GateWallRight",
+      "class": "AStaticMeshActor",
+      "parent_id": "gate_root",
+      "transform": { "location": [0, 340, 160], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [60, 360, 320], "color": [0.58, 0.62, 0.68], "material_ref": "mat_tech_metal" },
+        { "type": "UBoxComponent", "size_cm": [60, 360, 320] }
+      ]
+    },
+    {
+      "id": "gate_beacon_light",
+      "name": "GateBeaconLight",
+      "class": "APointLight",
+      "parent_id": "gate_root",
+      "transform": { "location": [-80, 0, 340], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "components": [
+        { "type": "UPointLightComponent", "color": [0.45, 0.82, 1.0], "intensity": 3.5, "attenuation_radius_cm": 900 }
+      ]
+    },
+    {
+      "id": "plate_01",
+      "name": "BP_PressurePlate",
+      "class": "ATriggerBox",
+      "transform": { "location": [400, 0, 15], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_pressure_plate"],
+      "properties": { "target_door_id": "door_main" },
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [160, 160, 16], "color": [0.92, 0.28, 0.22], "material_ref": "mat_warning_plate" },
+        { "type": "UBoxComponent", "size_cm": [160, 160, 120] }
+      ]
+    },
+    {
+      "id": "door_main",
+      "name": "BP_Door",
+      "class": "AActor",
+      "transform": { "location": [700, 0, 160], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_door"],
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [40, 320, 320], "color": [0.24, 0.46, 0.78], "material_ref": "mi_door_metal" },
+        { "type": "UBoxComponent", "size_cm": [40, 320, 320] }
+      ]
+    },
+    {
+      "id": "orb_01",
+      "name": "BP_EnergyOrb",
+      "class": "ATriggerBox",
+      "transform": { "location": [950, 0, 80], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_energy_orb"],
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "sphere", "radius_cm": 35, "color": [0.98, 0.84, 0.16], "mesh_ref": "mesh_energy_orb" },
+        { "type": "USphereComponent", "radius_cm": 55 }
+      ]
+    },
+    {
+      "id": "goal_pad",
+      "name": "BP_GoalPad",
+      "class": "ATriggerBox",
+      "transform": { "location": [1200, 0, 20], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_goal_pad"],
+      "components": [
+        { "type": "UStaticMeshComponent", "shape": "box", "size_cm": [180, 180, 18], "color": [0.18, 0.84, 0.42], "material_ref": "mat_goal_hologram" },
+        { "type": "UBoxComponent", "size_cm": [180, 180, 140] }
+      ]
+    },
+    {
+      "id": "player_bot",
+      "name": "BP_Bot",
+      "class": "ACharacter",
+      "transform": { "location": [0, 0, 92], "rotation": { "pitch": 0, "yaw": 0, "roll": 0 }, "scale": [1, 1, 1] },
+      "logic_refs": ["bp_bot"],
+      "animation_ref": "abp_bot",
+      "components": [
+        { "type": "UCapsuleComponent", "radius_cm": 34, "half_height_cm": 90 },
+        { "type": "USkeletalMeshComponent", "asset_ref": "asset_epic_stackobot_skm_blocked", "mesh_ref": "mesh_bot_chassis", "fallback_procedural": "capsule_bot" },
+        { "type": "USpringArmComponent", "target_arm_length_cm": 450, "socket_offset_cm": [0, 0, 80] },
+        { "type": "UCameraComponent", "fov_deg": 85 },
+        {
+          "type": "UCharacterMovementComponent",
+          "max_walk_speed_cm": 520,
+          "jump_z_velocity_cm": 680,
+          "gravity_scale": 1.65,
+          "max_acceleration_cm": 2200,
+          "braking_deceleration_walking_cm": 2100,
+          "air_control": 0.45,
+          "max_walk_angle_deg": 45.0,
+          "max_step_height_cm": 45,
+          "orient_rotation_to_movement": true,
+          "rotation_rate_yaw_deg": 540,
+          "jetpack_enabled": true,
+          "jetpack_max_fuel": 1.0,
+          "jetpack_burn_rate": 0.65,
+          "jetpack_regen_rate": 0.85,
+          "jetpack_hover_velocity_cm": 180
+        }
+      ]
+    }
+  ]
+}

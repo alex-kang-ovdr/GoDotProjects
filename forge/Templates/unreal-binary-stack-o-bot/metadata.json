@@ -1,0 +1,41 @@
+{
+  "id": "unreal-binary-stack-o-bot",
+  "name": "Unreal Binary .umap Stack O Bot 3D (RE Port)",
+  "description": "Unreal Engine 5.4 Stack O Bot 샘플(제트팩 호버, 비활성 봇 스폰·압력판 퍼즐, Blueprint Interface/Delegate/Timeline 문 개폐, 에너지 오브·목표 패드, 포팅 메시/텍스처/머티리얼/오디오 에셋)을 Godot 4.7.2로 자동 포팅한 3D 템플릿.",
+  "dimension": "3d",
+  "assetPaths": [
+    "assets/audio/sfx_door_open.tres",
+    "assets/audio/sfx_jump.tres",
+    "assets/audio/sfx_orb_collect.tres",
+    "assets/materials/mat_bot_chassis.tres",
+    "assets/materials/mat_energy_orb.tres",
+    "assets/materials/mat_goal_hologram.tres",
+    "assets/materials/mat_island_grass.tres",
+    "assets/materials/mat_tech_metal.tres",
+    "assets/materials/mat_warning_plate.tres",
+    "assets/materials/mi_door_metal.tres",
+    "assets/meshes/asset_epic_stackobot_skm_blocked.tres",
+    "assets/meshes/mesh_bot_chassis.tres",
+    "assets/meshes/mesh_energy_orb.tres",
+    "assets/shaders/mat_energy_orb.gdshader",
+    "assets/shaders/mat_goal_hologram.gdshader",
+    "assets/skeletons/skm_stackobot.json",
+    "assets/textures/tex_island_grass.tres",
+    "assets/textures/tex_tech_metal.tres",
+    "assets/textures/tex_tech_metal_normal.tres",
+    "assets/textures/tex_warning_stripes.tres"
+  ],
+  "guideOrder": [
+    "addons/playforge_unreal_compat/unreal_compat.gd",
+    "addons/playforge_unreal_compat/ue_character_movement.gd",
+    "scripts/bp_bot.gd",
+    "scripts/bp_door.gd",
+    "scripts/bp_energy_orb.gd",
+    "scripts/bp_goal_pad.gd",
+    "scripts/bp_pressure_plate.gd",
+    "scripts/hud_overlay.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

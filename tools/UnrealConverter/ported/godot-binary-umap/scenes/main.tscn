@@ -1,0 +1,215 @@
+[gd_scene load_steps=38 format=3]
+
+[ext_resource type="Script" path="res://scripts/bp_bot.gd" id="ext_1"]
+[ext_resource type="Script" path="res://scripts/bp_door.gd" id="ext_2"]
+[ext_resource type="Script" path="res://scripts/bp_energy_orb.gd" id="ext_3"]
+[ext_resource type="Script" path="res://scripts/bp_goal_pad.gd" id="ext_4"]
+[ext_resource type="Script" path="res://scripts/bp_pressure_plate.gd" id="ext_5"]
+[ext_resource type="Script" path="res://scripts/hud_overlay.gd" id="ext_6"]
+[ext_resource type="Material" path="res://assets/materials/mat_island_grass.tres" id="ext_7"]
+[ext_resource type="Material" path="res://assets/materials/mat_tech_metal.tres" id="ext_8"]
+[ext_resource type="Material" path="res://assets/materials/mi_door_metal.tres" id="ext_9"]
+[ext_resource type="Material" path="res://assets/materials/mat_warning_plate.tres" id="ext_10"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/mesh_energy_orb.tres" id="ext_11"]
+[ext_resource type="Material" path="res://assets/materials/mat_goal_hologram.tres" id="ext_12"]
+[ext_resource type="Script" path="res://addons/playforge_unreal_compat/ue_skeleton_rig.gd" id="ext_13"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx_jump.tres" id="ext_14"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx_orb_collect.tres" id="ext_15"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx_door_open.tres" id="ext_16"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SubResource_sky_mat_1"]
+sky_top_color = Color(0.32, 0.58, 0.9, 1)
+sky_horizon_color = Color(0.75, 0.86, 0.96, 1)
+ground_bottom_color = Color(0.14, 0.34, 0.58, 1)
+ground_horizon_color = Color(0.56, 0.76, 0.92, 1)
+[sub_resource type="Sky" id="SubResource_sky_2"]
+sky_material = SubResource("SubResource_sky_mat_1")
+[sub_resource type="Environment" id="SubResource_env_3"]
+background_mode = 2
+sky = SubResource("SubResource_sky_2")
+ambient_light_source = 2
+ambient_light_energy = 0.72
+fog_enabled = true
+fog_light_color = Color(0.64, 0.78, 0.94, 1)
+fog_density = 0.007
+[sub_resource type="BoxMesh" id="SubResource_mesh_4"]
+material = ExtResource("ext_7")
+size = Vector3(14, 0.5, 28)
+[sub_resource type="BoxShape3D" id="SubResource_col_5"]
+size = Vector3(14, 0.5, 28)
+[sub_resource type="BoxMesh" id="SubResource_mesh_6"]
+material = ExtResource("ext_8")
+size = Vector3(3.6, 3.2, 0.6)
+[sub_resource type="BoxShape3D" id="SubResource_col_7"]
+size = Vector3(3.6, 3.2, 0.6)
+[sub_resource type="BoxMesh" id="SubResource_mesh_8"]
+material = ExtResource("ext_8")
+size = Vector3(3.6, 3.2, 0.6)
+[sub_resource type="BoxShape3D" id="SubResource_col_9"]
+size = Vector3(3.6, 3.2, 0.6)
+[sub_resource type="BoxMesh" id="SubResource_mesh_10"]
+material = ExtResource("ext_9")
+size = Vector3(0.7, 2.4, 0.7)
+[sub_resource type="BoxShape3D" id="SubResource_col_11"]
+size = Vector3(0.7, 2.4, 0.7)
+[sub_resource type="BoxMesh" id="SubResource_mesh_12"]
+material = ExtResource("ext_9")
+size = Vector3(0.7, 2.4, 0.7)
+[sub_resource type="BoxShape3D" id="SubResource_col_13"]
+size = Vector3(0.7, 2.4, 0.7)
+[sub_resource type="BoxMesh" id="SubResource_mesh_14"]
+material = ExtResource("ext_10")
+size = Vector3(1.6, 0.16, 1.6)
+[sub_resource type="BoxShape3D" id="SubResource_col_15"]
+size = Vector3(1.6, 1.2, 1.6)
+[sub_resource type="BoxMesh" id="SubResource_mesh_16"]
+material = ExtResource("ext_9")
+size = Vector3(3.2, 3.2, 0.4)
+[sub_resource type="BoxShape3D" id="SubResource_col_17"]
+size = Vector3(3.2, 3.2, 0.4)
+[sub_resource type="SphereShape3D" id="SubResource_col_18"]
+radius = 0.55
+[sub_resource type="BoxMesh" id="SubResource_mesh_19"]
+material = ExtResource("ext_12")
+size = Vector3(1.8, 0.18, 1.8)
+[sub_resource type="BoxShape3D" id="SubResource_col_20"]
+size = Vector3(1.8, 1.4, 1.8)
+[sub_resource type="CapsuleShape3D" id="SubResource_cap_col_21"]
+radius = 0.34
+height = 1.8
+
+[node name="BinaryMainLevel" type="Node3D"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("SubResource_env_3")
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915, -0.40558, 0.40558, 0, 0.70711, 0.70711, -0.57358, -0.57923, 0.57923, 0, 12, 0)
+shadow_enabled = true
+[node name="PlayerStart_01" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92, 0)
+[node name="IslandFloor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -6)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="IslandFloor"]
+mesh = SubResource("SubResource_mesh_4")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="IslandFloor"]
+shape = SubResource("SubResource_col_5")
+[node name="GateAssembly" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
+[node name="GateWallLeft" type="StaticBody3D" parent="GateAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 1.6, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GateAssembly/GateWallLeft"]
+mesh = SubResource("SubResource_mesh_6")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GateAssembly/GateWallLeft"]
+shape = SubResource("SubResource_col_7")
+[node name="GateWallRight" type="StaticBody3D" parent="GateAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.6, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GateAssembly/GateWallRight"]
+mesh = SubResource("SubResource_mesh_8")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GateAssembly/GateWallRight"]
+shape = SubResource("SubResource_col_9")
+[node name="TechPillarLeft" type="StaticBody3D" parent="GateAssembly"]
+transform = Transform3D(1.2, 0, 0, 0, 1.5, 0, 0, 0, 1, -2.4, 1.8, 1.2)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GateAssembly/TechPillarLeft"]
+mesh = SubResource("SubResource_mesh_10")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GateAssembly/TechPillarLeft"]
+shape = SubResource("SubResource_col_11")
+[node name="TechPillarRight" type="StaticBody3D" parent="GateAssembly"]
+transform = Transform3D(1.2, 0, 0, 0, 1.5, 0, 0, 0, 1, 2.4, 1.8, 1.2)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GateAssembly/TechPillarRight"]
+mesh = SubResource("SubResource_mesh_12")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GateAssembly/TechPillarRight"]
+shape = SubResource("SubResource_col_13")
+[node name="GateBeaconLight" type="OmniLight3D" parent="GateAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0.9)
+light_color = Color(0.35, 0.85, 1, 1)
+light_energy = 4
+omni_range = 10
+[node name="GoalSpotLight" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 4.2, -12)
+light_color = Color(0.25, 1, 0.55, 1)
+light_energy = 5
+spot_range = 11
+spot_angle = 42
+[node name="BP_PressurePlate" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -4)
+script = ExtResource("ext_5")
+actor_id = "bp_pressureplate"
+target_door_id = "bp_door"
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BP_PressurePlate"]
+mesh = SubResource("SubResource_mesh_14")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BP_PressurePlate"]
+shape = SubResource("SubResource_col_15")
+[node name="BP_Door" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -7)
+script = ExtResource("ext_2")
+actor_id = "bp_door"
+[node name="Body" type="StaticBody3D" parent="BP_Door"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BP_Door/Body"]
+mesh = SubResource("SubResource_mesh_16")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BP_Door/Body"]
+shape = SubResource("SubResource_col_17")
+[node name="BP_EnergyOrb" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -9.5)
+script = ExtResource("ext_3")
+actor_id = "bp_energyorb"
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BP_EnergyOrb"]
+mesh = ExtResource("ext_11")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BP_EnergyOrb"]
+shape = SubResource("SubResource_col_18")
+[node name="BP_GoalPad" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -12)
+script = ExtResource("ext_4")
+actor_id = "bp_goalpad"
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BP_GoalPad"]
+mesh = SubResource("SubResource_mesh_19")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BP_GoalPad"]
+shape = SubResource("SubResource_col_20")
+[node name="BP_Bot" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92, 0)
+script = ExtResource("ext_1")
+max_walk_speed_cm = 520
+jump_z_velocity_cm = 680
+gravity_scale = 1.65
+max_acceleration_cm = 2200
+braking_deceleration_walking_cm = 2100
+air_control = 0.45
+max_walk_angle_deg = 45
+max_step_height_cm = 45
+jetpack_enabled = true
+jetpack_max_fuel = 1
+jetpack_burn_rate = 0.65
+jetpack_regen_rate = 0.85
+jetpack_hover_velocity_cm = 180
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BP_Bot"]
+shape = SubResource("SubResource_cap_col_21")
+[node name="CharacterMesh" type="Node3D" parent="BP_Bot"]
+[node name="RiggedSkeleton" type="Node3D" parent="BP_Bot/CharacterMesh"]
+script = ExtResource("ext_13")
+character_style = "bot"
+skeleton_data_path = "res://assets/skeletons/skm_stackobot.json"
+[node name="CameraBoom" type="SpringArm3D" parent="BP_Bot"]
+transform = Transform3D(1, 0, 0, 0, 0.95106, 0.30902, 0, -0.30902, 0.95106, 0, 0.8, 0)
+spring_length = 4.5
+[node name="FollowCamera" type="Camera3D" parent="BP_Bot/CameraBoom"]
+fov = 85
+current = true
+[node name="AudioBank" type="Node" parent="."]
+[node name="sfx_jump" type="AudioStreamPlayer" parent="AudioBank"]
+stream = ExtResource("ext_14")
+[node name="sfx_orb_collect" type="AudioStreamPlayer" parent="AudioBank"]
+stream = ExtResource("ext_15")
+[node name="sfx_door_open" type="AudioStreamPlayer" parent="AudioBank"]
+stream = ExtResource("ext_16")
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("ext_6")
+[node name="Backdrop" type="ColorRect" parent="HUD"]
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 1040.0
+offset_bottom = 44.0
+color = Color(0.05, 0.08, 0.14, 0.80)
+[node name="StatusLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 14.0
+offset_right = 1030.0
+offset_bottom = 42.0
+text = "Unreal -> Godot PoC | WASD Move | Space Jump"

@@ -19,18 +19,26 @@ Godot 4.7.2 Generator (src/blueprint-compiler.mjs + src/godot-generator.mjs)
 Godot 4.7.2 Headless Verification -> Trace Comparison (§7) -> AI Repair Loop -> PlayForge Template
 ```
 
-## PoC 대상 샘플 (P0)
-- **Third Person Template** (`fixtures/third-person-template/`)
-  - `UECharacterMovement` 호환 런타임 (`max_walk_speed_cm=500`, `jump_z_velocity_cm=700`, `gravity_scale=1.75`, `air_control=0.35`, 경사각 `44.7°`, 스텝 높이 `45cm`)
-  - Blueprint `BP_ThirdPersonCharacter` → GDScript 컴파일 + Source Map + 미지원 노드(`SpawnNiagaraSystemAtLocation`) 탐지 및 AI 보정 루프 검증
-  - PlayForge 템플릿 출력: `forge/Templates/unreal-third-person/`
+## 지원 완료 샘플 (P0 + P1)
+1. **P0 Third Person Template** (`fixtures/third-person-template/`)
+   - `UECharacterMovement` 호환 런타임 (`max_walk_speed_cm=500`, `jump_z_velocity_cm=700`, `gravity_scale=1.75`, `air_control=0.35`, 경사각 `44.7°`, 스텝 높이 `45cm`)
+   - Blueprint `BP_ThirdPersonCharacter` → GDScript 컴파일 + Source Map + 미지원 노드(`SpawnNiagaraSystemAtLocation`) 탐지 및 AI 보정 루프 검증
+   - PlayForge 템플릿 출력: `forge/Templates/unreal-third-person/`
+2. **P1 Stack O Bot** (`fixtures/stack-o-bot/`)
+   - 제트팩 호버(`IA_Jetpack`, 연료 소모/회복, `JetpackHover` 애니메이션 상태)
+   - 비활성 봇 스폰(`IA_SpawnBot` → `K2Node_SpawnActorFromClass` → `InactiveBot` `CharacterBody3D`)으로 압력판 유지
+   - 복합 Blueprint 변환: `BP_PressurePlate` Event Dispatcher(`on_plate_state_changed` Delegate) + `BPI_Interactable.bpi_on_interact`(Interface) → `BP_Door` Timeline 개폐 → `BP_EnergyOrb` 수집 → `BP_GoalPad` 클리어
+   - PlayForge 템플릿 출력: `forge/Templates/unreal-stack-o-bot/`
 
 ## 실행 방법
 
 ```powershell
-# 1. 전체 파이프라인 실행 (추출 -> IR 검증 -> Godot 생성 -> 4.7.2 헤드리스 Trace 검증 -> AI 보정 -> 템플릿 내보내기)
-node tools/UnrealConverter/src/port-cli.mjs
+# 1. 전체 샘플(Third Person + Stack O Bot) 자동 포팅·헤드리스 Trace 검증·AI 보정·템플릿 내보내기
+node tools/UnrealConverter/src/port-cli.mjs --sample all
 
-# 2. 단위·통합 회귀 테스트 (6/6 PASS)
+# 단일 샘플만 실행
+node tools/UnrealConverter/src/port-cli.mjs --sample stack-o-bot
+
+# 2. 단위·통합 회귀 테스트 (8/8 PASS)
 node --test tools/UnrealConverter/tests/unreal-converter.test.mjs
 ```

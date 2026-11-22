@@ -66,7 +66,7 @@ function parseDefaultInputIni(iniText) {
   return Array.from(actions.values());
 }
 
-function normalizeComponent(comp, blockedAssetIds, diagnostics, entityId) {
+function normalizeComponent(comp, nonRedistAssetIds, diagnostics, entityId, licenseMode) {
   const out = { type: comp.type };
   if (comp.shape) out.shape = comp.shape;
   if (Array.isArray(comp.size_cm)) {
@@ -78,6 +78,8 @@ function normalizeComponent(comp, blockedAssetIds, diagnostics, entityId) {
     ];
   }
   if (comp.color) out.color = comp.color;
+  if (comp.material_ref) out.material_ref = comp.material_ref;
+  if (comp.mesh_ref) out.mesh_ref = comp.mesh_ref;
   if (comp.radius_cm !== undefined) out.radius_m = ueCmToGodotM(comp.radius_cm);
   if (comp.half_height_cm !== undefined) out.height_m = ueCmToGodotM(comp.half_height_cm * 2);
   if (comp.target_arm_length_cm !== undefined) out.spring_length_m = ueCmToGodotM(comp.target_arm_length_cm);
@@ -89,6 +91,12 @@ function normalizeComponent(comp, blockedAssetIds, diagnostics, entityId) {
     ];
   }
   if (comp.fov_deg !== undefined) out.fov_deg = comp.fov_deg;
+  if (comp.type === "UPointLightComponent" || comp.type === "USpotLightComponent") {
+    out.light_color = comp.color || [1, 1, 1];
+    out.energy = comp.intensity ?? 2.0;
+    out.range_m = ueCmToGodotM(comp.attenuation_radius_cm ?? 800);
+    if (comp.outer_cone_angle_deg !== undefined) out.spot_angle_deg = comp.outer_cone_angle_deg;
+  }
   if (comp.type === "UCharacterMovementComponent") {
     out.movement = {
       max_walk_speed_cm: comp.max_walk_speed_cm ?? 500,
@@ -100,22 +108,39 @@ function normalizeComponent(comp, blockedAssetIds, diagnostics, entityId) {
       max_walk_angle_deg: comp.max_walk_angle_deg ?? 44.7,
       max_step_height_cm: comp.max_step_height_cm ?? 45,
       orient_rotation_to_movement: comp.orient_rotation_to_movement ?? true,
-      rotation_rate_yaw_deg: comp.rotation_rate_yaw_deg ?? 500
+      rotation_rate_yaw_deg: comp.rotation_rate_yaw_deg ?? 500,
+      jetpack_enabled: comp.jetpack_enabled ?? false,
+      jetpack_max_fuel: comp.jetpack_max_fuel ?? 1.0,
+      jetpack_burn_rate: comp.jetpack_burn_rate ?? 0.65,
+      jetpack_regen_rate: comp.jetpack_regen_rate ?? 0.85,
+      jetpack_hover_velocity_cm: comp.jetpack_hover_velocity_cm ?? 180
     };
   }
   if (comp.asset_ref) {
     out.asset_ref = comp.asset_ref;
-    if (blockedAssetIds.has(comp.asset_ref)) {
-      out.asset_excluded = true;
-      out.fallback_procedural = comp.fallback_procedural || "box_placeholder";
-      diagnostics.push({
-        code: "LICENSE_ASSET_EXCLUDED",
-        severity: "warning",
-        stage: "extract",
-        source_ref: `${entityId}.${comp.type}`,
-        message: `Asset '${comp.asset_ref}' is blocked by Unreal Engine EULA redistribution policy and excluded from Godot export.`,
-        suggestion: `Substituted with procedural fallback '${out.fallback_procedural}'. Replace with a permissively licensed glTF asset before external release.`
-      });
+    if (nonRedistAssetIds.has(comp.asset_ref)) {
+      if (licenseMode === "redistributable_only") {
+        out.asset_excluded = true;
+        out.fallback_procedural = comp.fallback_procedural || "box_placeholder";
+        diagnostics.push({
+          code: "LICENSE_ASSET_EXCLUDED",
+          severity: "warning",
+          stage: "extract",
+          source_ref: `${entityId}.${comp.type}`,
+          message: `Asset '${comp.asset_ref}' is excluded in redistributable_only mode.`,
+          suggestion: `Substituted with procedural fallback '${out.fallback_procedural}'.`
+        });
+      } else {
+        out.asset_excluded = false;
+        diagnostics.push({
+          code: "INTERNAL_RESEARCH_ASSET_PORTED",
+          severity: "info",
+          stage: "extract",
+          source_ref: `${entityId}.${comp.type}`,
+          message: `Asset '${comp.asset_ref}' ported under internal_research mode (non-redistributable; do not ship externally).`,
+          suggestion: "Keep within internal research environment or swap before public release."
+        });
+      }
     }
   }
   return out;
@@ -123,8 +148,11 @@ function normalizeComponent(comp, blockedAssetIds, diagnostics, entityId) {
 
 /**
  * Extract a read-only Unreal Engine project directory into Unified Game IR v0.1.
+ * @param {string} projectDir
+ * @param {{ licenseMode?: "internal_research" | "redistributable_only" }} [options]
  */
-export function extractUnrealProjectToIR(projectDir) {
+export function extractUnrealProjectToIR(projectDir, options = {}) {
+  const licenseMode = options.licenseMode || "internal_research";
   const absDir = path.resolve(projectDir);
   if (!fs.existsSync(absDir)) {
     throw new Error(`Unreal project directory not found: ${absDir}`);
@@ -157,6 +185,7 @@ export function extractUnrealProjectToIR(projectDir) {
     for (const item of manifest.assets || []) {
       const sha = crypto.createHash("sha256").update(item.source_path || item.id).digest("hex").slice(0, 16);
       const redistributable = Boolean(item.redistributable && item.license_status === "allowed");
+      const canPort = licenseMode === "internal_research" || redistributable;
       if (!redistributable) {
         blockedAssetIds.add(item.id);
       }
@@ -164,11 +193,18 @@ export function extractUnrealProjectToIR(projectDir) {
         id: item.id,
         kind: item.kind,
         source_path: item.source_path,
+        file_path: item.file_path || null,
+        material_ref: item.material_ref || null,
+        parent_material_ref: item.parent_material_ref || null,
+        texture_spec: item.texture_spec || null,
+        material_spec: item.material_spec || null,
+        material_graph: item.material_graph || null,
+        shader_params: item.shader_params || null,
         sha256: sha,
         license: item.license || "Unknown",
         license_status: item.license_status || "unknown",
         redistributable,
-        godot_path: redistributable ? `res://assets/${item.id}.tres` : null
+        godot_path: canPort ? `res://assets/${item.id}.tres` : null
       });
     }
   }
@@ -200,10 +236,11 @@ export function extractUnrealProjectToIR(projectDir) {
         parent_id: actor.parent_id || null,
         transform: ueTransformToGodot(actor.transform),
         components: (actor.components || []).map((c) =>
-          normalizeComponent(c, blockedAssetIds, diagnostics, actor.id)
+          normalizeComponent(c, blockedAssetIds, diagnostics, actor.id, licenseMode)
         ),
         logic_refs: actor.logic_refs || [],
-        animation_ref: actor.animation_ref || null
+        animation_ref: actor.animation_ref || null,
+        properties: actor.properties || {}
       });
     }
     scenes.push({
@@ -226,6 +263,10 @@ export function extractUnrealProjectToIR(projectDir) {
       kind: bp.kind || "event_graph",
       source_path: bp.source_path || path.relative(absDir, bpPath),
       target_entity_class: bp.target_entity_class || "AActor",
+      default_actor_id: bp.default_actor_id || bp.id,
+      signals: bp.signals || [],
+      interfaces: bp.interfaces || [],
+      functions: bp.functions || [],
       variables: bp.variables || [],
       nodes: bp.nodes || [],
       edges: bp.edges || []
@@ -242,6 +283,7 @@ export function extractUnrealProjectToIR(projectDir) {
       version: engineVersion,
       project: projectName,
       project_path: absDir,
+      license_mode: licenseMode,
       extracted_at: new Date().toISOString()
     },
     units: {

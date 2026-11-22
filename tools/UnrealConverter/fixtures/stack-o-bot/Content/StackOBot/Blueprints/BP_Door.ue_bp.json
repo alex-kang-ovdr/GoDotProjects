@@ -1,0 +1,28 @@
+{
+  "id": "bp_door",
+  "name": "BP_Door",
+  "kind": "event_graph",
+  "source_path": "/Game/StackOBot/Blueprints/Interactions/BP_Door",
+  "target_entity_class": "AActor",
+  "default_actor_id": "door_main",
+  "interfaces": [
+    {
+      "interface_name": "BPI_Interactable",
+      "method_name": "bpi_on_interact",
+      "params": [{ "name": "is_active", "type": "bool" }],
+      "entry_node_id": "n_bpi_entry"
+    }
+  ],
+  "variables": [],
+  "nodes": [
+    { "id": "n_bpi_entry", "node_class": "K2Node_Event_Interface", "title": "Event BPI_OnInteract", "params": {} },
+    { "id": "n_branch", "node_class": "K2Node_IfThenElse", "title": "Branch (is_active)", "params": { "condition_expr": "is_active" } },
+    { "id": "n_tl_open", "node_class": "K2Node_Timeline", "title": "DoorTimeline Play", "params": { "target_expr": "1.0", "duration_sec": 0.5, "open_offset_m": [0, 3.4, 0] } },
+    { "id": "n_tl_close", "node_class": "K2Node_Timeline", "title": "DoorTimeline Reverse", "params": { "target_expr": "0.0", "duration_sec": 0.5, "open_offset_m": [0, 3.4, 0] } }
+  ],
+  "edges": [
+    { "kind": "exec", "from_node": "n_bpi_entry", "from_pin": "then", "to_node": "n_branch", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_branch", "from_pin": "True", "to_node": "n_tl_open", "to_pin": "execute" },
+    { "kind": "exec", "from_node": "n_branch", "from_pin": "False", "to_node": "n_tl_close", "to_pin": "execute" }
+  ]
+}
