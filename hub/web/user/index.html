@@ -154,6 +154,18 @@
     </div>
   </footer>
   <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="fatal-error-dialog" class="fatal-error-dialog" aria-labelledby="fatal-error-title">
+    <div class="dialog-heading">
+      <h2 id="fatal-error-title">복구할 수 없는 오류가 발생했습니다</h2>
+      <button class="icon-button" data-close="fatal-error-dialog" aria-label="닫기" type="button">×</button>
+    </div>
+    <p id="fatal-error-message"></p>
+    <p id="fatal-error-code" class="muted mono" hidden></p>
+    <div class="dialog-actions">
+      <a class="button secondary" href="/" id="fatal-error-home">홈으로 이동</a>
+      <button class="button primary" type="button" id="fatal-error-reload">페이지 새로고침</button>
+    </div>
+  </dialog>
   <dialog id="login-progress-dialog" aria-labelledby="login-progress-title">
     <div class="dialog-heading"><h2 id="login-progress-title">로그인 전 임시 진행 확인</h2><button class="icon-button" data-close="login-progress-dialog" aria-label="닫기" type="button">×</button></div>
     <p>이 탭에만 저장된 진행이 있습니다. 계정 변경 전에 파일로 보관할 수 있습니다.</p>

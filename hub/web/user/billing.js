@@ -77,6 +77,20 @@
       || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
   }
 
+  function dispatchBillingError(error, { toast, inlineEl = null, fatalRoot = null, fallback = '요청 처리 중 오류가 발생했습니다.', fatalTitle = '결제 서비스를 계속할 수 없습니다' } = {}) {
+    if (window.PlayHubErrorUI?.report) {
+      return window.PlayHubErrorUI.report(error, { inlineEl, fatalRoot, fallback, fatalTitle });
+    }
+    const msg = error?.message || fallback;
+    if (inlineEl && (error?.status === 400 || error?.status === 422)) {
+      inlineEl.textContent = msg;
+      inlineEl.hidden = false;
+      return 'inline';
+    }
+    toast?.(msg, { type: 'error' });
+    return 'toast';
+  }
+
   function easyPayBrandMeta(methodOrProvider) {
     const key = String(methodOrProvider || '').toLowerCase();
     if (key === 'kakaopay') return { key: 'kakaopay', label: '카카오페이', short: 'pay', badgeClass: 'brand-kakaopay' };
@@ -385,10 +399,11 @@
     return dialog;
   }
 
-  function openCheckoutDialog({ item, catalog, api, toast, onComplete }) {
+  function openCheckoutDialog({ item, catalog, api, toast, authed: initialAuthed = true, refreshSession, onComplete }) {
     const dialog = ensureCheckoutDialog();
     const isMock = catalog.billingMode === 'mock';
     const koreaEasyPay = catalog.paymentMethods?.koreaEasyPay || {};
+    let isAuthed = Boolean(initialAuthed);
     let selectedMethod = uiState.currency === 'KRW' ? 'kakaopay' : 'google_pay';
     let createdOrder = null;
 
@@ -415,7 +430,7 @@
 
       dialog.innerHTML = `
         <div class="dialog-heading">
-          <h2 id="billing-checkout-title">PlayCoin 구매 확인</h2>
+          <h2 id="billing-checkout-title">PlayCoin 충전 확인</h2>
           <button class="icon-button" type="button" data-billing-close aria-label="닫기">×</button>
         </div>
         ${isMock ? '<p class="billing-badge sandbox" style="margin:6px 0 0;color:#854d0e;background:#fef9c3;border-color:#fde047;">샌드박스 모드 · 카카오페이·네이버페이·토스페이 공식 리다이렉트·승인 흐름 시뮬레이션 (실청구 없음)</p>' : ''}
@@ -425,7 +440,15 @@
           <div class="checkout-summary-line"><span>웹·PC 보너스 (+${esc(item.bonusPercent)}%, bonus)</span><strong style="color:#2c6e3b;">+${esc(formatCoins(item.bonusCoins))}</strong></div>
           <div class="checkout-summary-line total"><span>총 지급량</span><span>🪙 ${esc(formatCoins(item.totalCoins))}</span></div>
         </div>
-        ${!createdOrder ? `
+        ${!isAuthed ? `
+          <p class="checkout-notice"><strong>로그인이 필요합니다</strong> — PlayCoin은 등록 계정에 안전하게 보호됩니다. 로그인 후 바로 결제를 계속할 수 있습니다.</p>
+          <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
+          <div class="dialog-actions" style="flex-wrap:wrap;">
+            <button type="button" class="button secondary" data-billing-close>취소</button>
+            <a class="button secondary" href="/?view=account" data-billing-close>계정 로그인 화면</a>
+            ${catalog.allowDemoAccount ? '<button type="button" class="button primary" id="billing-dialog-demo-signin">🧪 데모 계정으로 로그인 후 충전 계속</button>' : ''}
+          </div>
+        ` : !createdOrder ? `
           <p class="checkout-notice" style="margin-bottom:4px;"><strong>결제 수단 선택</strong> ${uiState.currency === 'KRW' ? '(한국 KRW · 카카오페이·네이버페이·토스페이 직가맹 / 토스페이먼츠 Direct 자동 라우팅)' : '(글로벌 · Google Pay Instant Flow 지원)'}</p>
           <div class="checkout-methods">
             ${methodOptions.map(m => {
@@ -480,6 +503,32 @@
         btn.onclick = () => dialog.close();
       });
 
+      if (!isAuthed) {
+        const demoSignBtn = dialog.querySelector('#billing-dialog-demo-signin');
+        if (demoSignBtn) {
+          demoSignBtn.onclick = async () => {
+            const errEl = dialog.querySelector('#billing-checkout-error');
+            if (errEl) errEl.hidden = true;
+            demoSignBtn.disabled = true;
+            demoSignBtn.textContent = '데모 계정 연결 중…';
+            try {
+              await api('/api/billing/demo-signin', { method: 'POST', body: {} });
+              if (typeof refreshSession === 'function') await refreshSession();
+              isAuthed = true;
+              toast('🧪 PlayHub 데모 계정으로 로그인했습니다. 결제 수단을 선택하세요.');
+              renderDialog();
+            } catch (error) {
+              const msg = error.message || '데모 로그인에 실패했습니다.';
+              toast(msg, { type: 'error' });
+              if (errEl) { errEl.textContent = msg; errEl.hidden = false; }
+              demoSignBtn.disabled = false;
+              demoSignBtn.textContent = '🧪 데모 계정으로 로그인 후 충전 계속';
+            }
+          };
+        }
+        return;
+      }
+
       if (!createdOrder) {
         const agree = dialog.querySelector('#billing-agree-terms');
         const submitBtn = dialog.querySelector('#billing-create-order');
@@ -524,8 +573,7 @@
             createdOrder = res;
             renderDialog();
           } catch (error) {
-            errEl.textContent = error.message || '주문을 생성하지 못했습니다.';
-            errEl.hidden = false;
+            dispatchBillingError(error, { toast, inlineEl: errEl, fallback: '주문을 생성하지 못했습니다.' });
             submitBtn.disabled = !agree.checked;
             submitBtn.textContent = submitCtaLabel;
           }
@@ -567,8 +615,7 @@
             toast(`🪙 ${formatCoins(createdOrder.order.totalCoins)} 지급 완료! (${selectedBrand.label} · 보너스 +${createdOrder.order.bonusCoins})`);
             await onComplete(confirmed);
           } catch (error) {
-            errEl.textContent = error.message || '결제 확인에 실패했습니다.';
-            errEl.hidden = false;
+            dispatchBillingError(error, { toast, inlineEl: errEl, fallback: '결제 확인에 실패했습니다.' });
             confirmBtn.disabled = false;
             confirmBtn.textContent = '즉시 승인';
           }
@@ -593,7 +640,11 @@
           api('/api/billing/wallet', { timeout: 6000 })
         ]);
       } catch (error) {
-        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>PlayCoin 과금 기능을 사용할 수 없습니다</h1><p class="muted">${esc(error.message || '서버에서 과금 모듈이 비활성 상태입니다.')}</p></section></div>`;
+        const msg = error.message || '서버에서 과금 모듈이 비활성 상태입니다.';
+        toast(msg, { type: 'error' });
+        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>PlayCoin 충전 기능을 불러오지 못했습니다</h1><p class="muted">${esc(msg)}</p><div class="save-actions"><button type="button" class="button primary small" id="billing-retry-load">다시 시도</button><a class="button secondary small" href="/" data-route>홈으로</a></div></section></div>`;
+        const retryBtn = root.querySelector('#billing-retry-load');
+        if (retryBtn) retryBtn.onclick = () => void loadAndRender();
         return;
       }
 
@@ -770,7 +821,7 @@
             toast('🧪 PlayHub 데모 창작자 계정으로 로그인했습니다.');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '데모 로그인에 실패했습니다.');
+            dispatchBillingError(error, { toast, fallback: '데모 로그인에 실패했습니다.' });
             demoBtn.disabled = false;
             demoBtn.textContent = '🧪 데모 계정으로 바로 체험';
           }
@@ -779,10 +830,6 @@
 
       root.querySelectorAll('[data-buy-sku]').forEach(btn => {
         btn.onclick = () => {
-          if (!authed) {
-            toast('PlayCoin 구매는 로그인된 계정에서만 가능합니다. 상단 데모 로그인 또는 Google 로그인을 이용해 주세요.');
-            return;
-          }
           const item = catalog.items.find(i => i.skuId === btn.dataset.buySku);
           if (!item) return;
           openCheckoutDialog({
@@ -790,6 +837,8 @@
             catalog,
             api,
             toast,
+            authed,
+            refreshSession,
             onComplete: async () => {
               await loadAndRender();
             }
@@ -810,7 +859,7 @@
             toast('Pro 구독이 활성화되었습니다! (제작공간 1 GB · 프로젝트 무제한)');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || 'Pro 구독 활성화에 실패했습니다.');
+            dispatchBillingError(error, { toast, fallback: 'Pro 구독 활성화에 실패했습니다.' });
             proBtn.disabled = false;
           }
         };
@@ -830,6 +879,7 @@
       try {
         walletData = await api('/api/billing/wallet', { timeout: 6000 });
       } catch (error) {
+        dispatchBillingError(error, { toast, fallback: '지갑을 불러오지 못했습니다.' });
         root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>지갑을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
         return;
       }
@@ -859,7 +909,7 @@
               await refreshSession();
               await loadAndRender();
             } catch (error) {
-              toast(error.message || '데모 로그인 실패');
+              dispatchBillingError(error, { toast, fallback: '데모 로그인에 실패했습니다.' });
               demoBtn.disabled = false;
             }
           };
@@ -1046,7 +1096,7 @@
             toast('Pro 구독 해지가 예약되었습니다.');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '구독 해지에 실패했습니다.');
+            dispatchBillingError(error, { toast, fallback: '구독 해지에 실패했습니다.' });
             cancelProBtn.disabled = false;
           }
         };
@@ -1070,7 +1120,7 @@
             if (res.wallet) updateHeaderPill({ authenticated: true, wallet: res.wallet });
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '사용량 테스트 처리에 실패했습니다. PlayCoin을 먼저 충전해 주세요.');
+            dispatchBillingError(error, { toast, fallback: '사용량 테스트 처리에 실패했습니다. PlayCoin을 먼저 충전해 주세요.' });
             btn.disabled = false;
           }
         };
@@ -1098,7 +1148,7 @@
             toast('7일 청약철회가 완료되었습니다. 원금과 보너스 PlayCoin이 회수되었습니다.');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '청약철회를 처리하지 못했습니다.');
+            dispatchBillingError(error, { toast, fallback: '청약철회를 처리하지 못했습니다.' });
             btn.disabled = false;
             btn.textContent = '7일 청약철회';
           }
@@ -1126,7 +1176,10 @@
       try {
         walletData = await api('/api/billing/wallet', { timeout: 6000 });
       } catch (error) {
-        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>기프트카드 기능을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        const mode = dispatchBillingError(error, { toast, fatalRoot: root, fallback: '기프트카드 기능을 불러오지 못했습니다.' });
+        if (mode !== 'page') {
+          root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>기프트카드 기능을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        }
         return;
       }
 
@@ -1167,7 +1220,7 @@
               toast('🧪 PlayHub 데모 창작자 계정으로 로그인했습니다.');
               await loadAndRender();
             } catch (error) {
-              toast(error.message || '데모 로그인 실패');
+              dispatchBillingError(error, { toast, fallback: '데모 로그인에 실패했습니다.' });
               demoBtn.disabled = false;
             }
           };
@@ -1295,8 +1348,8 @@
             toast(`🧪 테스트 기프트카드 PIN이 자동 입력되었습니다 (${res.card.serialNo})`);
             await loadAndRender();
           } catch (error) {
-            redeemState.errorMessage = error.message || '데모 기프트카드 발급 실패';
-            await loadAndRender();
+            dispatchBillingError(error, { toast, fallback: '데모 기프트카드 발급에 실패했습니다.' });
+            btn.disabled = false;
           }
         };
       });
@@ -1321,7 +1374,13 @@
           } catch (error) {
             redeemState.preview = null;
             redeemState.busy = false;
-            redeemState.errorMessage = giftcardErrorText(error);
+            if (window.PlayHubErrorUI?.isFatalError?.(error)) {
+              dispatchBillingError(error, { toast, fallback: giftcardErrorText(error) });
+            } else if (!error.status || error.status >= 500) {
+              dispatchBillingError(error, { toast, fallback: giftcardErrorText(error) });
+            } else {
+              redeemState.errorMessage = giftcardErrorText(error);
+            }
             await loadAndRender();
           }
         };
@@ -1347,7 +1406,11 @@
             await loadAndRender();
           } catch (error) {
             redeemState.busy = false;
-            redeemState.errorMessage = giftcardErrorText(error);
+            if (window.PlayHubErrorUI?.isFatalError?.(error) || !error.status || error.status >= 500) {
+              dispatchBillingError(error, { toast, fallback: giftcardErrorText(error) });
+            } else {
+              redeemState.errorMessage = giftcardErrorText(error);
+            }
             await loadAndRender();
           }
         };
@@ -1382,7 +1445,10 @@
       try {
         walletData = await api('/api/billing/wallet', { timeout: 6000 });
       } catch (error) {
-        root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>직접판매 콘솔을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        const mode = dispatchBillingError(error, { toast, fatalRoot: root, fallback: '직접판매 콘솔을 불러오지 못했습니다.' });
+        if (mode !== 'page') {
+          root.innerHTML = `<div class="page billing-page"><section class="surface"><h1>직접판매 콘솔을 불러오지 못했습니다</h1><p class="muted">${esc(error.message)}</p></section></div>`;
+        }
         return;
       }
 
@@ -1421,7 +1487,7 @@
               toast('🧪 PlayHub 데모 창작자 계정으로 로그인했습니다.');
               await loadAndRender();
             } catch (error) {
-              toast(error.message || '데모 로그인 실패');
+              dispatchBillingError(error, { toast, fallback: '데모 로그인에 실패했습니다.' });
               demoBtn.disabled = false;
             }
           };
@@ -1524,6 +1590,7 @@
               <button type="submit" class="button primary small" ${!conn.connected ? 'disabled' : ''}>+ 상품 등록</button>
               ${!conn.connected ? '<span class="muted">먼저 위에서 Stripe Connect 계정을 연결해 주세요.</span>' : ''}
             </div>
+            <p id="direct-product-error" class="inline-error" role="alert" hidden></p>
           </form>
 
           <div class="billing-list" style="margin-top:16px;">
@@ -1604,7 +1671,7 @@
             toast(`✅ Stripe Connect 계정 연결 완료 (${res.connection.connectedAccountId} · 플랫폼 수수료 0%)`);
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '결제 계정 연결 실패');
+            dispatchBillingError(error, { toast, fallback: '결제 계정 연결에 실패했습니다.' });
             connectBtn.disabled = false;
           }
         };
@@ -1612,8 +1679,10 @@
 
       const prodForm = root.querySelector('#direct-product-form');
       if (prodForm) {
+        const prodErrEl = root.querySelector('#direct-product-error');
         prodForm.onsubmit = async ev => {
           ev.preventDefault();
+          if (prodErrEl) { prodErrEl.textContent = ''; prodErrEl.hidden = true; }
           const fd = new FormData(prodForm);
           try {
             await api('/api/billing/creator/products', {
@@ -1631,7 +1700,7 @@
             toast('상품이 등록되었습니다! (웹 직접판매 · PlayHub 수수료 0%)');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '상품 등록에 실패했습니다.');
+            dispatchBillingError(error, { toast, inlineEl: prodErrEl, fallback: '상품 등록에 실패했습니다.' });
           }
         };
       }
@@ -1653,7 +1722,7 @@
             toast('🎉 웹 직접구매 완료! PlayHub 수수료 ₩0 · Entitlement(ACTIVE) 즉시 발급됨');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '직접구매 테스트 실패');
+            dispatchBillingError(error, { toast, fallback: '직접구매 테스트에 실패했습니다.' });
             btn.disabled = false;
           }
         };
@@ -1668,7 +1737,7 @@
               body: { productId: btn.dataset.directBuyMobile, platform: 'android' }
             });
           } catch (error) {
-            toast(`🛡️ 정책 차단 확인 (${error.code || error.status}): 모바일·TV는 P3 전 무료 플레이 우선(유료 판매 Fail-Closed)`);
+            toast(`🛡️ 정책 차단 확인 (${error.code || error.status}): 모바일·TV는 P3 전 무료 플레이 우선(유료 판매 Fail-Closed)`, { type: 'warn' });
           }
         };
       });
@@ -1685,7 +1754,7 @@
             toast('🔄 환불 처리 완료: 해당 게임 Entitlement가 즉시 REVOKED 상태로 회수되었습니다.');
             await loadAndRender();
           } catch (error) {
-            toast(error.message || '환불 시뮬레이션 실패');
+            dispatchBillingError(error, { toast, fallback: '환불 시뮬레이션에 실패했습니다.' });
             btn.disabled = false;
           }
         };
@@ -1703,9 +1772,12 @@
             toast('✅ 소모성 아이템 권한이 CONSUMED 처리되었습니다.');
             await loadAndRender();
           } catch (error) {
-            toast(error.code === 'ENTITLEMENT_NOT_CONSUMABLE'
-              ? '영구(durable)/패스(pass) 권한은 소모 처리할 수 없으며 계속 유지됩니다.'
-              : (error.message || '권한 사용 실패'));
+            dispatchBillingError(error, {
+              toast,
+              fallback: error.code === 'ENTITLEMENT_NOT_CONSUMABLE'
+                ? '영구(durable)/패스(pass) 권한은 소모 처리할 수 없으며 계속 유지됩니다.'
+                : '권한 사용에 실패했습니다.'
+            });
             btn.disabled = false;
           }
         };

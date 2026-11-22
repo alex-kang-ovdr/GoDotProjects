@@ -157,6 +157,14 @@
       badge.hidden = model.incoming.length === 0;
     }
 
+    function reportSocialError(err, fallback = '요청을 처리하지 못했습니다.') {
+      if (window.PlayHubErrorUI?.report) {
+        return window.PlayHubErrorUI.report(err, { fallback });
+      }
+      toast(err?.message || fallback, { type: 'error' });
+      return 'toast';
+    }
+
     async function loadMessages() {
       if (!model.chatMode) { model.messages = []; return; }
       try {
@@ -169,7 +177,7 @@
         }
       } catch (err) {
         if (!disposed && err.status === 403) {
-          toast(err.message);
+          reportSocialError(err);
         }
       }
     }
@@ -208,6 +216,11 @@
         if (disposed) return;
         model.loading = false;
         model.error = err.message || '소셜 정보를 불러오지 못했습니다.';
+        if (window.PlayHubErrorUI?.isFatalError?.(err)) {
+          window.PlayHubErrorUI.report(err, { fatalRoot: container, fatalTitle: '소셜 서비스를 이용할 수 없습니다' });
+          return;
+        }
+        reportSocialError(err, '소셜 정보를 불러오지 못했습니다.');
         render();
       }
     }
@@ -548,7 +561,7 @@
           model.activePanel = null;
           toast('프로필을 저장했습니다.');
           render();
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelector('#social-search-form')?.addEventListener('submit', async e => {
         e.preventDefault();
@@ -559,7 +572,7 @@
           const res = await api(`/api/social/users/search?q=${encodeURIComponent(q)}`);
           model.searchResults = res.users || [];
           render();
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelectorAll('[data-send-friend-req]').forEach(b => {
         b.onclick = async () => {
@@ -574,7 +587,7 @@
             if (hit) hit.relation = res.status === 'accepted' ? 'accepted' : 'pending_out';
             await syncAll({ silent: true });
           } catch (err) {
-            toast(err.message);
+            reportSocialError(err);
             b.disabled = false;
           }
         };
@@ -589,7 +602,7 @@
             });
             toast(b.dataset.action === 'accept' ? '친구 요청을 수락했습니다.' : '친구 요청을 거절했습니다.');
             await syncAll({ silent: true });
-          } catch (err) { toast(err.message); b.disabled = false; }
+          } catch (err) { reportSocialError(err); b.disabled = false; }
         };
       });
       container.querySelector('#social-create-party-form')?.addEventListener('submit', async e => {
@@ -607,7 +620,7 @@
           model.activePanel = null;
           toast(`파티 생성 완료! 초대 코드: ${res.party.roomCode}`);
           render();
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelector('#social-join-party-form')?.addEventListener('submit', async e => {
         e.preventDefault();
@@ -638,7 +651,7 @@
           });
           model.party = res.party;
           render();
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelector('[data-open-party-chat]')?.addEventListener('click', async () => {
         if (!model.party) return;
@@ -654,7 +667,7 @@
           if (model.chatMode?.type === 'party') model.chatMode = null;
           toast('파티에서 나갔습니다.');
           render();
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelectorAll('[data-launch-game]').forEach(b => {
         b.onclick = () => navigate(`/play/${encodeURIComponent(b.dataset.launchGame)}/`);
@@ -674,7 +687,7 @@
           toast(`함께 입장 시작! 매치룸 ${l.matchRoomId}`);
           navigate(`/play/${encodeURIComponent(l.gameId)}/?partyId=${encodeURIComponent(model.party.id)}&room=${encodeURIComponent(l.roomCode)}&launchId=${encodeURIComponent(l.launchId)}&matchRoom=${encodeURIComponent(l.matchRoomId)}&autolaunch=1`);
         } catch (err) {
-          toast(err.message);
+          reportSocialError(err);
           btn.disabled = false;
         }
       });
@@ -690,7 +703,7 @@
           });
           navigate(`/play/${encodeURIComponent(l.gameId)}/?partyId=${encodeURIComponent(model.party.id)}&room=${encodeURIComponent(l.roomCode)}&launchId=${encodeURIComponent(l.launchId)}&matchRoom=${encodeURIComponent(l.matchRoomId)}&autolaunch=1`);
         } catch (err) {
-          toast(err.message);
+          reportSocialError(err);
           btn.disabled = false;
         }
       });
@@ -720,7 +733,7 @@
           input.value = '';
           await syncAll({ silent: true });
         } catch (err) {
-          toast(err.message);
+          reportSocialError(err);
           input.disabled = false;
         }
       });
@@ -733,7 +746,7 @@
               : { channelType: 'party', partyId: model.party.id, quickMessageId: b.dataset.sendQuick };
             await api('/api/social/messages', { method: 'POST', body: payload });
             await syncAll({ silent: true });
-          } catch (err) { toast(err.message); }
+          } catch (err) { reportSocialError(err); }
         };
       });
       container.querySelector('[data-report-user]')?.addEventListener('click', async e => {
@@ -743,7 +756,7 @@
         try {
           await api('/api/social/reports', { method: 'POST', body: { targetType: 'user', targetId, reason: reason.trim() } });
           toast('신고가 접수되었습니다.');
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
       container.querySelector('[data-block-user]')?.addEventListener('click', async e => {
         const targetId = e.currentTarget.dataset.blockUser;
@@ -753,7 +766,7 @@
           model.chatMode = null;
           toast('사용자를 차단했습니다.');
           await syncAll({ silent: true });
-        } catch (err) { toast(err.message); }
+        } catch (err) { reportSocialError(err); }
       });
     }
 
@@ -765,7 +778,7 @@
         model.activePanel = null;
         toast(`${res.party.title}에 합류했습니다!`);
         render();
-      } catch (err) { toast(err.message); }
+      } catch (err) { reportSocialError(err); }
     }
 
     void (async () => {

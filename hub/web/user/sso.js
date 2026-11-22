@@ -64,7 +64,11 @@
           registerForm?.reset();
           await onAuthenticated(session, successMessage);
         } catch (error) {
-          showError(errorBox, error.message || '요청을 처리하지 못했습니다.');
+          if (window.PlayHubErrorUI?.isFatalError?.(error) || !error.status || error.status >= 500) {
+            window.PlayHubErrorUI?.report?.(error, { fallback: '요청을 처리하지 못했습니다.' });
+          } else {
+            showError(errorBox, error.message || '요청을 처리하지 못했습니다.');
+          }
         } finally {
           setBusy(false);
         }
@@ -134,7 +138,11 @@
           if (pwDetails) pwDetails.open = false;
           toast('비밀번호를 변경했습니다.');
         } catch (error) {
-          showError(pwError, error.message || '비밀번호를 변경하지 못했습니다.');
+          if (window.PlayHubErrorUI?.isFatalError?.(error) || !error.status || error.status >= 500) {
+            window.PlayHubErrorUI?.report?.(error, { fallback: '비밀번호를 변경하지 못했습니다.' });
+          } else {
+            showError(pwError, error.message || '비밀번호를 변경하지 못했습니다.');
+          }
         } finally {
           setBusy(false);
         }

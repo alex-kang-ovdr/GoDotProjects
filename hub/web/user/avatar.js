@@ -19,6 +19,9 @@
     const { signal } = listenerController;
     const alive = () => !disposed && root.isConnected && sameSession();
     const apiBase = String(options.apiBase || '').replace(/\/$/, '');
+    const toastFn = typeof options.toast === 'function'
+      ? options.toast
+      : (typeof window.PlayHubToast === 'function' ? window.PlayHubToast : null);
     const assetUrl = (p) => (p ? `${apiBase}${p}` : null);
     let catalog = null;
     let me = null;
@@ -110,15 +113,30 @@
         </div>
         <p class="muted">Track A PlayCoin 3-Bucket(유상 · 보너스 · 프로모) 원장에 적립됩니다. (로컬/개발 테스트 즉시 충전)</p>
         <div class="avatar-topup-grid" id="avatar-topup-packs"></div>
+        <div class="dialog-actions" style="justify-content:space-between;margin-top:12px;">
+          <a class="button secondary small" href="/?view=billing" data-route>PlayCoin 상점 (+25% 간편결제) →</a>
+          <button type="button" class="button secondary small" id="avatar-topup-close-foot">닫기</button>
+        </div>
       </dialog>
     </section>`;
 
     const $el = (sel) => root.querySelector(sel);
 
-    function setFeedback(text, error = false) {
+    function setFeedback(text, error = false, errorObj = null) {
       feedback = { text, error };
+      if (error && text) {
+        if (window.PlayHubErrorUI?.report) {
+          window.PlayHubErrorUI.report(errorObj || new Error(text), { fallback: text });
+        } else if (toastFn) {
+          toastFn(text, { type: 'error' });
+        }
+      }
       const box = $el('#avatar-feedback');
       if (!box) return;
+      if (error && (window.PlayHubErrorUI?.report || toastFn)) {
+        box.hidden = true;
+        return;
+      }
       box.hidden = !text;
       box.textContent = text;
       box.classList.toggle('error', Boolean(error));
@@ -418,10 +436,29 @@
         return;
       }
       if (e.target.closest('#avatar-topup-open')) {
-        $el('#avatar-topup-dialog')?.showModal();
+        const dlg = $el('#avatar-topup-dialog');
+        if (!dlg) return;
+        const openDialog = () => {
+          renderTopupPacks();
+          const box = $el('#avatar-topup-packs');
+          if (box && !box.children.length) {
+            box.innerHTML = '<p class="muted">충전 패키지를 불러오는 중이거나 사용할 수 없습니다. PlayCoin 상점에서 충전을 진행해 주세요.</p>';
+          }
+          if (!dlg.open) {
+            try { dlg.showModal(); } catch { dlg.setAttribute('open', ''); }
+          }
+        };
+        if (!catalog) {
+          openDialog();
+          api('/api/avatar/catalog')
+            .then((catRes) => { if (!alive()) return; catalog = catRes; renderTopupPacks(); })
+            .catch((err) => { if (alive()) setFeedback(err.message || '충전 패키지를 불러오지 못했습니다.', true); });
+        } else {
+          openDialog();
+        }
         return;
       }
-      if (e.target.closest('#avatar-topup-close')) {
+      if (e.target.closest('#avatar-topup-close') || e.target.closest('#avatar-topup-close-foot')) {
         $el('#avatar-topup-dialog')?.close();
         return;
       }

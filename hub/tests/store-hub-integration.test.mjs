@@ -286,9 +286,40 @@ test('Real Chrome CDP navigates PlayHub Home -> Create -> /store/ (4,592 assets)
     await send('Runtime.enable');
     await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 960, deviceScaleFactor: 1, mobile: false });
 
-    // 1. Open PlayHub Home and confirm Asset Store nav & tile exist
+    // 1. Open PlayHub Home on Desktop and confirm separated Genre Hub & Creator Hub above Library
     await send('Page.navigate', { url: `${userBaseUrl}/` });
-    await until("!!document.querySelector('[data-testid=\"nav-store\"]') && !!document.querySelector('[data-testid=\"home-store-tile\"]')");
+    await until("!!document.querySelector('[data-testid=\"nav-store\"]') && !!document.querySelector('[data-testid=\"creator-hub-section\"]') && !!document.querySelector('[data-testid=\"home-store-tile\"]')");
+
+    // 1b. Switch to Mobile viewport (390x844) and verify Creator Hub is separated from Genre Hub and sits directly above Full Game Library
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+    await delay(150);
+    const mobileOrder = await evaluate(`(() => {
+      const top = document.querySelector('.home-sec-top')?.getBoundingClientRect();
+      const genre = document.querySelector('.home-sec-hubs')?.getBoundingClientRect();
+      const cont = document.querySelector('.home-sec-continue')?.getBoundingClientRect();
+      const creator = document.querySelector('.home-sec-creator')?.getBoundingClientRect();
+      const lib = document.querySelector('.home-sec-library')?.getBoundingClientRect();
+      return {
+        topY: top?.top ?? -1,
+        genreY: genre?.top ?? -1,
+        continueY: cont?.top ?? -1,
+        creatorY: creator?.top ?? -1,
+        creatorBottom: creator?.bottom ?? -1,
+        libraryY: lib?.top ?? -1,
+        genreContainsStore: !!document.querySelector('.home-sec-hubs [data-testid="home-store-tile"]'),
+        creatorContainsStore: !!document.querySelector('.home-sec-creator [data-testid="home-store-tile"]'),
+        creatorContainsForge: !!document.querySelector('.home-sec-creator [data-testid="home-forge-tile"]')
+      };
+    })()`);
+    assert.equal(mobileOrder.genreContainsStore, false, 'Genre Hub must NOT contain Creator Hub tiles');
+    assert.equal(mobileOrder.creatorContainsStore, true, 'Creator Hub must contain Asset Store tile');
+    assert.equal(mobileOrder.creatorContainsForge, true, 'Creator Hub must contain PlayForge tile');
+    assert.ok(mobileOrder.topY < mobileOrder.genreY, 'TOP 4 must be above Genre Hub on mobile');
+    assert.ok(mobileOrder.genreY < mobileOrder.continueY, 'Genre Hub must be above Continue on mobile');
+    assert.ok(mobileOrder.continueY < mobileOrder.creatorY, 'Continue must be above Creator Hub on mobile');
+    assert.ok(mobileOrder.creatorBottom <= mobileOrder.libraryY + 1, 'Creator Hub must sit directly above Full Game Library on mobile');
+
+    await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 960, deviceScaleFactor: 1, mobile: false });
 
     // 2. Navigate to Create view and confirm Asset Store card
     await send('Page.navigate', { url: `${userBaseUrl}/?view=create` });
