@@ -1,5 +1,9 @@
 # PlayHub · PlayForge 게임 소개 쇼츠 (Hub-shorts) 설계 및 운영 가이드
 
+> **브랜치 분류**: `실험 기능 (Experimental)` · **`PlayHub-Platform` 허브 트렁크 미통합** (`owners.json`: `experimental: true`, `integrateToTrunk: false`)
+> - 이 브랜치(`Hub-shorts`)는 독립 실험 브랜치로 유지하며 `PlayHub-Platform`에 병합/통합하지 않습니다.
+> - 실행 시에도 Dev · Debug · Test 빌드의 `dev-demo-ui` 토글 ON 상태에서만 노출되며 운영(Prod/Release) 빌드에서는 차단됩니다.
+
 ## 1. 개요
 
 크리에이터가 **PlayForge**에서 **Google Flow / Veo** 또는 내장 **PlayForge Motion Director(FFmpeg 9:16)** 엔진을 활용해 **PlayCoin**으로 9:16 게임 소개 쇼츠 영상을 생성하고, **PlayHub 내 게임**의 대표 소개 영상 및 **PlayHub 쇼츠 피드(`/?view=shorts`)**에 즉시 등록·공개할 수 있는 통합 파이프라인입니다.
