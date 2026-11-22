@@ -86,8 +86,8 @@ jobs:
         run: npm ci --prefix hub --ignore-scripts
       - name: Check worktree ownership rules
         run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
-      - name: Run build-version, compatibility gate, entrypoint proxy & P0 build worker tests
-        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs
+      - name: Run build-version, compatibility gate, entrypoint proxy, packaging/SSOT contract & P0 build worker tests
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Smoke test Cloud Run Hub entrypoint

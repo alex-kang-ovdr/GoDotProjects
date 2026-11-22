@@ -15,7 +15,7 @@
 | 머지 전 필수 게이트 | `npm run gate` (= 소유권 + 스킬 동기화 + Fast QA) |
 | 소유권 확인 | `npm run check:ownership` |
 | 스킬 정본 | `.agents/skills/` (`.claude/skills/`는 동기화 사본, `npm run sync:skills`) |
-| Fast QA 목록 | `tools/qa/fast-gate.json` (테스트 추가·제외는 이 파일에서만) |
+| QA 테스트 카탈로그 (SSOT) | `tools/qa/test-catalog.json` (신규 테스트 추가·분류·격리는 이 파일에 등록, 실행은 `npm run qa:*` / `node tools/qa/run-suite.mjs`) |
 
 주요 디렉터리:
 
@@ -83,10 +83,12 @@
 
 | 계층 | 명령 | 범위 | 실행 시점 |
 |---|---|---|---|
-| Tier 1 Fast | `npm run gate` | 소유권·스킬 동기화·`tools/qa/fast-gate.json` 단위/HTTP 테스트 (브라우저·Godot·Windows 전용 제외) | 모든 커밋/PR, 트렁크 머지 전 (CI `pr-fast-gate.yml`) |
-| Tier 2 Integration | `npm --prefix forge test`, 영역별 `node --test <파일>` | Godot 4.7.2 헤드리스, Playwright 브라우저, 템플릿 런타임 | 해당 영역 변경 시·릴리스 전 |
-| Tier 3 Nightly | `npm --prefix tools/Gamer/GamerQA run qa`, `tools/devops/` | GamerQA AI 플레이·데일리 프로파일러·모바일 실기 | 스케줄·라이브 승격 전 |
+| Tier 1 Fast | `npm run gate` / `npm run test:fast` | 소유권·스킬 동기화·`tools/qa/test-catalog.json`의 `tier: "fast"` 순수 Node 테스트 (무브라우저·무Godot·무Windows 전용) | 모든 커밋/PR, 트렁크 머지 전 (CI `pr-fast-gate.yml`) |
+| 선택 스위트 / 변경분 | `npm run qa:changed`, `npm run qa:<스위트\|환경>`, `node tools/qa/run-suite.mjs --suite <...> --env <...>` | `smoke`·`component`·`regression`·`hub`·`forge`·`system`·`multiplatform`·`user`·`game` 등 12개 스위트 × `local`/`dev`/`live` 환경 필터 (한글 별칭 지원) | 작업 중 빠른 피드백·특정 영역/환경 검증 시 |
+| Tier 2 Integration | `node tools/qa/run-suite.mjs --tier integration` (또는 `--suite browser`/`godot`/`portable`) | Chrome CDP/Playwright 브라우저, Godot 4.7.2 헤드리스, Windows Portable, 개별 게임 시뮬레이션·템플릿 런타임 | 해당 영역 변경 시·릴리스 전 |
+| Tier 3 Nightly | `node tools/qa/run-suite.mjs --tier nightly`, `npm --prefix tools/Gamer/GamerQA run qa` | GamerQA AI 플레이·데일리 프로파일러·라이브 서버·아카이브 버전 검증 | 스케줄·라이브 승격 전 |
 
+- **신규 TC 네이밍 및 등록 의무**: 저장소 내 모든 `*.test.{mjs,cjs,js}`는 `tools/qa/test-catalog.json`에 100% 등록해야 하며(`tools/qa/contract.gate-hygiene.test.mjs`가 사각지대·유령 항목·Fast 게이트 내 브라우저 직접 기동·7일 초과 quarantine을 차단), 파일명은 역할 접두/접미 규약(`smoke.*.test.*`, `contract.*.test.*`, `regression.*.test.*`, `*.browser.test.*`, `*.godot.test.*`, `*.portable.test.*`)을 따른다. 상세 분류표·CLI 사용법은 [docs/qa/TC_TAXONOMY_AND_NAMING.md](docs/qa/TC_TAXONOMY_AND_NAMING.md)를 참조한다.
 - 화면 배치·렌더링 등 자동화 증거만으로 판단하기 어려운 항목에 한해 화면 제어를 보완적으로 사용한다.
 
 ---

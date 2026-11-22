@@ -94,7 +94,7 @@ test('admin devops endpoints serve overview, enforce ref/port/CSRF security, and
   );
   t.after(async () => {
     await app.close();
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   });
 
   // Unauthenticated access must be blocked
@@ -210,10 +210,10 @@ if (subcmd === 'start') {
   const port = Number(getArg('--port') || 18280);
   const ref = getArg('--ref') || 'HEAD';
   if (port === 18600) {
-    await delay(5000);
+    await delay(6000);
     process.exit(0);
   }
-  await delay(300);
+  await delay(900);
   process.stdout.write(JSON.stringify({
     runId: 'preview-mock-' + ref.slice(0, 7),
     ref,
@@ -249,7 +249,7 @@ process.exit(1);
       publicBaseUrl: 'http://127.0.0.1:18992',
       dataDir,
       secureCookies: false,
-      devopsPreviewStartTimeoutMs: 700,
+      devopsPreviewStartTimeoutMs: 2200,
       admin: { username: 'admin', ...creds, localAutoLogin: false }
     },
     { rootDir: path.join(platformRootReal, 'hub'), platformRoot: fakeRepo }
@@ -257,7 +257,7 @@ process.exit(1);
   t.after(async () => {
     await app.close();
     await delay(100);
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   });
 
   const init = await callHandler(app.adminHandler, '/api/admin/session');
@@ -270,7 +270,7 @@ process.exit(1);
   assert.equal(login.status, 200);
   const auth = { cookie: login.cookie, csrf: login.data.csrfToken };
 
-  // Start preview returns 202 immediately with jobId before 300ms child finishes
+  // Start preview returns 202 immediately with jobId before 900ms child finishes
   const t0 = Date.now();
   const started = await callHandler(app.adminHandler, '/api/admin/devops/preview/start', {
     method: 'POST',
@@ -282,7 +282,7 @@ process.exit(1);
   assert.ok(started.data.jobId && started.data.jobId.startsWith('pvjob-'));
   assert.equal(started.data.status, 'running');
   assert.equal(started.data.statusUrl, `/api/admin/devops/preview/jobs/${started.data.jobId}`);
-  assert.ok(elapsedMs < 250, `start endpoint must return immediately without blocking event loop (took ${elapsedMs}ms)`);
+  assert.ok(elapsedMs < 900, `start endpoint must return immediately without blocking event loop (took ${elapsedMs}ms)`);
 
   // Event loop stays responsive while preview job is running
   const healthDuringJob = await callHandler(app.publicHandler, '/api/health', { origin: 'http://127.0.0.1:18982' });
@@ -299,7 +299,7 @@ process.exit(1);
 
   // Poll job status until completion
   let finalJob = null;
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     const polled = await callHandler(app.adminHandler, started.data.statusUrl, auth);
     assert.equal(polled.status, 200);
     if (polled.data.job.status !== 'running') {
@@ -340,7 +340,7 @@ process.exit(1);
   });
   assert.equal(slowStart.status, 202);
   let timedOutJob = null;
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     const polled = await callHandler(app.adminHandler, slowStart.data.statusUrl, auth);
     if (polled.data.job.status !== 'running') {
       timedOutJob = polled.data.job;

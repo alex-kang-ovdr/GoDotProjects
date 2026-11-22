@@ -335,7 +335,7 @@ class FortressRoom {
   }
 }
 
-function attachFortressWar(server, { originAllowed, validateBuild, now = Date.now, compat = null }) {
+function attachFortressWar(server, { originAllowed = () => true, validateBuild = () => null, now = Date.now, compat = null, joinTimeoutMs = 5000 } = {}) {
   const rooms = new Map();
   const sessions = new Map();
   const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
@@ -343,8 +343,12 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
 
   function send(socket, message) {
     if (socket.readyState !== WebSocket.OPEN || socket.bufferedAmount >= 1_000_000) return false;
-    socket.send(typeof message === 'string' ? message : JSON.stringify(message));
-    return true;
+    try {
+      socket.send(typeof message === 'string' ? message : JSON.stringify(message));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function sendState(socket, session, state, terrain) {
@@ -392,35 +396,39 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
   server.on('upgrade', upgrade);
 
   wss.on('connection', (socket, request) => {
+    socket.on('error', () => socket.terminate());
     if (compat && !compat.enforceWsConnection(socket, request, send)) return;
     const ownerKey = request?.hubAuth?.accountKey || null;
     socket.alive = true;
     socket.on('pong', () => { socket.alive = true; });
-    socket.on('error', () => socket.terminate());
     let rateStart = now();
     let messages = 0;
     const joinTimer = setTimeout(() => {
       if (!sessions.has(socket)) socket.close(1008, 'Join required');
-    }, 5000);
+    }, joinTimeoutMs);
     joinTimer.unref();
 
     let joining = false;
     socket.on('message', async raw => {
-      const receivedAt = now();
-      if (receivedAt - rateStart >= 1000) {
-        rateStart = receivedAt;
-        messages = 0;
-      }
-      if (++messages > 80) {
-        socket.close(1008, 'Too many messages');
-        return;
-      }
-
       let message;
       try {
-        try { message = JSON.parse(raw.toString()); }
-        catch { throw new RequestError('invalid_message', '잘못된 메시지입니다.'); }
-        if (!isRecord(message)) throw new RequestError('invalid_message', '잘못된 메시지입니다.');
+        const receivedAt = now();
+        if (receivedAt - rateStart >= 1000) {
+          rateStart = receivedAt;
+          messages = 0;
+        }
+        if (++messages > 80) {
+          if (socket.readyState === WebSocket.OPEN) socket.close(1008, 'Too many messages');
+          return;
+        }
+
+        try {
+          const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString('utf8') : Array.isArray(raw) ? Buffer.concat(raw).toString('utf8') : Buffer.from(raw).toString('utf8');
+          message = JSON.parse(text);
+        } catch {
+          throw new RequestError('invalid_message', '잘못된 메시지입니다.');
+        }
+        if (!isRecord(message) || typeof message.type !== 'string') throw new RequestError('invalid_message', '잘못된 메시지입니다.');
         if (compat) {
           const gate = compat.enforceWsMessage(socket, message, send);
           if (gate.handled) return;
@@ -496,12 +504,17 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
         continue;
       }
       socket.alive = false;
-      if (socket.readyState === WebSocket.OPEN) socket.ping();
+      try {
+        if (socket.readyState === WebSocket.OPEN) socket.ping();
+      } catch {
+        socket.terminate();
+      }
     }
   }, 2000);
   heartbeat.unref();
 
   return {
+    rooms,
     metadata: id => rooms.get(id)?.metadata() ?? null,
     close() {
       if (closed) return;

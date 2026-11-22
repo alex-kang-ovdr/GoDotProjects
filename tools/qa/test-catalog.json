@@ -1,0 +1,6091 @@
+{
+  "schemaVersion": 1,
+  "description": "PlayHub-Platform 전체 자동화 테스트 단일 정본 카탈로그 (Tier / Suite / Env 분류, quarantine 정책, --changed 매핑 규칙).",
+  "tiers": [
+    "fast",
+    "integration",
+    "nightly"
+  ],
+  "suites": [
+    "smoke",
+    "component",
+    "regression",
+    "hub",
+    "forge",
+    "system",
+    "multiplatform",
+    "user",
+    "game",
+    "browser",
+    "godot",
+    "portable"
+  ],
+  "envs": [
+    "local",
+    "dev",
+    "live"
+  ],
+  "aliases": {
+    "스모크": {
+      "type": "suite",
+      "value": "smoke"
+    },
+    "컴포넌트": {
+      "type": "suite",
+      "value": "component"
+    },
+    "허브": {
+      "type": "suite",
+      "value": "hub"
+    },
+    "포지": {
+      "type": "suite",
+      "value": "forge"
+    },
+    "시스템": {
+      "type": "suite",
+      "value": "system"
+    },
+    "변경회귀": {
+      "type": "suite",
+      "value": "regression"
+    },
+    "회귀": {
+      "type": "suite",
+      "value": "regression"
+    },
+    "멀티플랫폼": {
+      "type": "suite",
+      "value": "multiplatform"
+    },
+    "유저": {
+      "type": "suite",
+      "value": "user"
+    },
+    "게임": {
+      "type": "suite",
+      "value": "game"
+    },
+    "브라우저": {
+      "type": "suite",
+      "value": "browser"
+    },
+    "고도": {
+      "type": "suite",
+      "value": "godot"
+    },
+    "포터블": {
+      "type": "suite",
+      "value": "portable"
+    },
+    "로컬": {
+      "type": "env",
+      "value": "local"
+    },
+    "Dev": {
+      "type": "env",
+      "value": "dev"
+    },
+    "dev": {
+      "type": "env",
+      "value": "dev"
+    },
+    "개발": {
+      "type": "env",
+      "value": "dev"
+    },
+    "Live": {
+      "type": "env",
+      "value": "live"
+    },
+    "live": {
+      "type": "env",
+      "value": "live"
+    },
+    "라이브": {
+      "type": "env",
+      "value": "live"
+    }
+  },
+  "excludeDirs": [
+    "node_modules",
+    "fixtures",
+    "ported",
+    "references",
+    "Saved",
+    "dist",
+    ".git",
+    "artifacts",
+    ".venv",
+    ".venv-inference",
+    ".godot",
+    ".local-build"
+  ],
+  "quarantine": {},
+  "changedRules": [
+    {
+      "match": "^hub/server/billing/",
+      "suites": [
+        "hub",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/server/sso/",
+      "suites": [
+        "hub",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/server/cdn/",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/server/(mobile|social|iap)/",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/server/ssot/",
+      "suites": [
+        "hub",
+        "game",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/server/",
+      "suites": [
+        "hub",
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/web/user/",
+      "suites": [
+        "hub",
+        "user",
+        "browser"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/web/admin/",
+      "suites": [
+        "hub",
+        "system",
+        "browser"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ]
+    },
+    {
+      "match": "^hub/shared/",
+      "suites": [
+        "hub",
+        "component",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/tools/",
+      "suites": [
+        "hub",
+        "system",
+        "portable"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^hub/tests/",
+      "suites": [
+        "hub"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^forge/Tools/.*multiplayer",
+      "suites": [
+        "forge",
+        "game",
+        "multiplatform",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^forge/Templates/",
+      "suites": [
+        "forge",
+        "game",
+        "godot"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ]
+    },
+    {
+      "match": "^forge/Godot/",
+      "suites": [
+        "forge",
+        "godot"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ]
+    },
+    {
+      "match": "^forge/",
+      "suites": [
+        "forge",
+        "component",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^store/",
+      "suites": [
+        "hub",
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^games/",
+      "suites": [
+        "game",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^(android|tools/aos)/",
+      "suites": [
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^(ios|tools/ios)/",
+      "suites": [
+        "multiplatform",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^(native|contracts/desktop|tools/desktop)/",
+      "suites": [
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^godot-sdk/",
+      "suites": [
+        "multiplatform",
+        "game",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^(deploy|\\.github)/",
+      "suites": [
+        "smoke",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^(tools/qa|tools/worktree-ownership|package\\.json$)",
+      "suites": [
+        "smoke",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^tools/(build-version|devops)/",
+      "suites": [
+        "system",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    },
+    {
+      "match": "^tools/Gamer/",
+      "suites": [
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ]
+    },
+    {
+      "match": "^tools/(RobloxConverter|UnityConverter)/",
+      "suites": [
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ]
+    },
+    {
+      "match": "^tools/local-games/",
+      "suites": [
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local"
+      ]
+    },
+    {
+      "match": "^tests/deployment/",
+      "suites": [
+        "system",
+        "hub",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "path": "deploy/cloudrun/build-worker/cloudrun-backend.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/cloudrun/build-worker/worker.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/cloudrun/contract.packaging-smoke.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/cloudrun/entrypoint-proxy.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "hub",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "forge/Tests/account-platform.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/brawllabs-browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-brawlLabs"
+    },
+    {
+      "path": "forge/Tests/brawllabs-multiplayer.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Games-brawlLabs"
+    },
+    {
+      "path": "forge/Tests/brawllabs-runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-brawlLabs"
+    },
+    {
+      "path": "forge/Tests/build-queue-reuse.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/captain-forever-mmo.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-captainMMO"
+    },
+    {
+      "path": "forge/Tests/captain-forever.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-captainForever"
+    },
+    {
+      "path": "forge/Tests/cloud-origin.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/collaboration.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/deployment-zip-archive.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/drive-retention-policy.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/drive-snapshot-store.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/execution-allowlist.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/fortress-multiplayer-browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-fortressWar"
+    },
+    {
+      "path": "forge/Tests/fortress-multiplayer.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Games-fortressWar"
+    },
+    {
+      "path": "forge/Tests/fortress-war-parity.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-fortressWar"
+    },
+    {
+      "path": "forge/Tests/fortress-war.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-fortressWar"
+    },
+    {
+      "path": "forge/Tests/fortress-workspace.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-fortressWar"
+    },
+    {
+      "path": "forge/Tests/game-template-runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/game-templates.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/gamerqa/forge-gamerqa.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-GamerQA"
+    },
+    {
+      "path": "forge/Tests/godot-parity.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/godot-runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/google-id-verifier.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/http-compression-cache.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/https-multiplayer-live-server.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/hub-session-auth.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "hub",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/integration.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "forge"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/ironwood-physics.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-ironWood"
+    },
+    {
+      "path": "forge/Tests/login-sessions.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/multiplayer-compat.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "multiplatform",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "forge/Tests/multiplayer-live-server.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/multiplayer-pending-room.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main",
+      "note": "Playwright chromium.launch 브라우저 검증"
+    },
+    {
+      "path": "forge/Tests/multiplayer-server.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "forge/Tests/multiplayer-workspace-browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/native-runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/operator-oauth-token.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/owned-build-packages.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-conversation.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-sessions.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-settings.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-store.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-stream.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-web.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat-workspace.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-chat.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-codex-protocol.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-iframe.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/agent-provider.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-AgentChat"
+    },
+    {
+      "path": "forge/Tests/playforge_agent_chat/record-agent-mcp.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentReplay"
+    },
+    {
+      "path": "forge/Tests/playforge_asset_store/asset-store-dock.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AssetStore"
+    },
+    {
+      "path": "forge/Tests/playforge_asset_store/cross-platform-scenarios.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AssetStore"
+    },
+    {
+      "path": "forge/Tests/playforge_avatar/avatar-seal-and-runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
+      "path": "forge/Tests/playforge_avatar/engine-seal-and-multiworld.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
+      "path": "forge/Tests/playforge_avatar/portrait-rendertarget-ui.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
+      "path": "forge/Tests/playforge_blender/blender-godot-import.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Blender"
+    },
+    {
+      "path": "forge/Tests/playforge_blender/blender-pipeline.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Blender",
+      "note": "Headless Blender 파이프라인 (>15s)"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/editor-game-embedding.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/editor-join-sync.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/editor-multiplayer-toolbar.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/editor-native-viewports.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/guided.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/platform-service.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main",
+      "note": "Godot 빌드 + Playwright 브라우저 통합"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/platform.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/playforge-guide-bridge.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_platform/self-cursor.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_remote_control/remote-control.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-RemoteControl"
+    },
+    {
+      "path": "forge/Tests/playforge_replay/asset-library-editor.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentReplay"
+    },
+    {
+      "path": "forge/Tests/playforge_replay/showcase-feedback.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentReplay"
+    },
+    {
+      "path": "forge/Tests/playforge_replay/showcase-gestures.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentReplay"
+    },
+    {
+      "path": "forge/Tests/playforge_replay/template-showcase.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-AgentReplay"
+    },
+    {
+      "path": "forge/Tests/playforge_service/export-godot.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_service/plugin-service.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/playforge_shorts/shorts-pipeline.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Hub-shorts"
+    },
+    {
+      "path": "forge/Tests/playhub-draft-store.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "hub"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/private-account-ui.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/private-cloud-sync.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/private-platform-server.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/project-drive-sync.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/public-native-same-room.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/regression.multiplayer-hardening.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "game",
+        "multiplatform",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "forge/Tests/release-manifest.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "forge/Tests/submission-drive-archive.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/survivor-io.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-survivorIo"
+    },
+    {
+      "path": "forge/Tests/tappy-chicken-mmo-browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-tappyChickenMMO"
+    },
+    {
+      "path": "forge/Tests/tappy-chicken-mmo.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-tappyChickenMMO"
+    },
+    {
+      "path": "forge/Tests/voxel-frontier.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-voxelFrontier"
+    },
+    {
+      "path": "forge/Tests/web-editor-wasm-release.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main",
+      "note": "로컬/컨테이너 프로비저닝된 OfficialGodot/vendor/godot.editor.wasm 바이너리 필요"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/campaign.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/designs.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/editor.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/input.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/parts.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/physics.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/physics_v2.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/physics_v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/physics_v4.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/besiege/Source/Project/tests/report.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "besiege"
+    },
+    {
+      "path": "games/brawl-stars/Source/Project/game/tests/app.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "brawl-stars"
+    },
+    {
+      "path": "games/brawl-stars/Source/Project/game/tests/engine-v2.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "brawl-stars"
+    },
+    {
+      "path": "games/brawl-stars/Source/Project/game/tests/engine-v3.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "brawl-stars"
+    },
+    {
+      "path": "games/brawl-stars/Source/Project/game/tests/engine-v4.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "brawl-stars"
+    },
+    {
+      "path": "games/brawl-stars/Source/Project/game/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "brawl-stars"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/ai_v2.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/ai_v3.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/campaign.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/combat_v2.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/combat_v3.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/core_stress.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/debug.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/developer.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/developer_ai.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/developer_renderer.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/developer_ui.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/engine.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/gameplay_v4.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/history.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/phalanx.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/renderer3d.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/renderer_layout.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/renderer_v2.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/renderer_v3.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/renderer_v4.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/session.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/session_v3.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/training.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Archive/Source/v4.1.0/tests/view.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/ReverseDesign/Revisions/2026-11-18/tests/contracts.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/ReverseDesign/Revisions/2026-11-18/tests/core.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/ReverseDesign/Revisions/2026-11-18/tests/economy.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/ReverseDesign/Revisions/2026-11-18/tests/ui-harness.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/ai_v2.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/ai_v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/campaign.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/combat_v2.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/combat_v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/core_stress.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/debug.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/developer.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/developer_ai.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/developer_renderer.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/developer_ui.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/gameplay_v4.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/history.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/legacy_reconstruction.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/phalanx.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction_combat.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction_renderer.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction_session.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction_tools.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/reconstruction_ui.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/renderer3d.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/renderer_layout.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/renderer_v2.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/renderer_v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/renderer_v4.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/session.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/session_v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/training.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/clash-royale/Source/Project/tests/view.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "clash-royale"
+    },
+    {
+      "path": "games/cosmoteer/Archive/Source/v3.0.0/source/tests/editor.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Archive/Source/v3.0.0/source/tests/service.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Archive/Source/v3.0.0/source/tests/sim.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/data.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/editor.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/industry.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/render.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/service.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/cosmoteer/Source/Project/tests/sim.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "cosmoteer"
+    },
+    {
+      "path": "games/duck-extraction/Source/Validation-v1/runtime.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "duck-extraction"
+    },
+    {
+      "path": "games/first-queen-iv/Archive/Source/v14.1.0/tests/engine.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/command.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/input.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/integration.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/recovery.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/render.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/tactics.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/first-queen-iv/Source/Project/tests/ui.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "first-queen-iv"
+    },
+    {
+      "path": "games/fortress-blue/Source/Project/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "fortress-blue"
+    },
+    {
+      "path": "games/fortress-blue/Source/Validation-v1.4/browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "fortress-blue"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/campaignv6.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev2.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev3.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev4.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev5.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev6.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/corev7.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/render3d.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/ftl/Source/Project/STARWARD_Source/tests/savev7.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "ftl"
+    },
+    {
+      "path": "games/hades/tests/integration.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "hades"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/gameplay_rules.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/logic.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/mission_v4.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/motion.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/perception.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/harbor-run/Source/Project/tests/polish.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "harbor-run"
+    },
+    {
+      "path": "games/into-the-breach/Source/Project/tests/app.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "into-the-breach"
+    },
+    {
+      "path": "games/into-the-breach/Source/Project/tests/campaign.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "into-the-breach"
+    },
+    {
+      "path": "games/into-the-breach/Source/Project/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "into-the-breach"
+    },
+    {
+      "path": "games/into-the-breach/Source/Project/tests/v2.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "into-the-breach"
+    },
+    {
+      "path": "games/kingdom-rush/Source/Project/tests/camera.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/kingdom-rush/Source/Project/tests/checkpoint.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/kingdom-rush/Source/Project/tests/engine.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/kingdom-rush/Source/Project/tests/picking.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/kingdom-rush/Source/Project/tests/progress.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/kingdom-rush/tests/integration.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "kingdom-rush"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/app-controls.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/checkpoint-engine.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/checkpoint-store.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/checkpoint-v5.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/checkpoint-v6.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/coach.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/combat-v5.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/combat-v6.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/controls.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/core-v2.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/core-v3.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/engine.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/history.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/navigation.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/renderer-v6.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/v7-app-settings.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/v7-map.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/v7-persistence.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Archive/Source/v6.1.0/tests/v7-renderer.test.cjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/app-controls.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/checkpoint-engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/checkpoint-store.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/checkpoint-v5.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/checkpoint-v6.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/coach.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/combat-v5.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/combat-v6.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/controls.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/core-v2.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/core-v3.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/history.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/navigation.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/renderer-v6.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/restored-app.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/restored-combat.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/restored-data.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/restored-persistence.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/restored-renderer.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v7-app-settings.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v7-map.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v7-persistence.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v7-renderer.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v9-app-observation.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v9-coach-tactics.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v9-combat.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v9-renderer.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/league-of-legends/Source/Project/tests/v9-vision.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "league-of-legends"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/v2-engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/v3-engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/v4-engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/v4-equipment.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/care.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/crisis-scenario.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/economy-scenario.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/entry.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/equipment.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/hazards.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/industry.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/life.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/migration-v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/migration-v4.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/progression.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/systems.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/trade.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/rimworld/Source/Project/tests/ui.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "rimworld"
+    },
+    {
+      "path": "games/samgukji-11/Source/Project/tests/engine.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "samgukji-11"
+    },
+    {
+      "path": "games/samgukji-11/Source/Project/tests/expanded.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "samgukji-11"
+    },
+    {
+      "path": "games/samgukji-11/Source/Project/tests/server.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "samgukji-11"
+    },
+    {
+      "path": "games/samgukji-11/Source/Project/tests/view-math.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "samgukji-11"
+    },
+    {
+      "path": "games/settlers-7/Source/Project/tests/engine.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "settlers-7"
+    },
+    {
+      "path": "games/settlers-7/Source/Project/tests/v25.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "settlers-7"
+    },
+    {
+      "path": "games/settlers-7/Source/Project/tests/v26.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "settlers-7"
+    },
+    {
+      "path": "games/settlers-7/Source/Project/tests/v27.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "settlers-7"
+    },
+    {
+      "path": "games/settlers-7/Source/Project/tests/v27_templates.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "settlers-7"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/campaign.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/engine.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/expedition.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/progression.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/saves.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/scene.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/this-war-of-mine/Source/Project/tests/ui.test.js",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "this-war-of-mine"
+    },
+    {
+      "path": "games/world-of-tanks/Source/Project/tests/career.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-tanks"
+    },
+    {
+      "path": "games/world-of-tanks/Source/Project/tests/engine-v2.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-tanks"
+    },
+    {
+      "path": "games/world-of-tanks/Source/Project/tests/engine-v3.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-tanks"
+    },
+    {
+      "path": "games/world-of-tanks/Source/Project/tests/engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-tanks"
+    },
+    {
+      "path": "games/world-of-warships/Source/Project/tests/interaction.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-warships"
+    },
+    {
+      "path": "games/world-of-warships/Source/Project/tests/operations.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-warships"
+    },
+    {
+      "path": "games/world-of-warships/Source/Project/tests/simulation.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-warships"
+    },
+    {
+      "path": "games/world-of-warships/Source/Project/tests/training.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "world-of-warships"
+    },
+    {
+      "path": "hub/tests/adgame-poc.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Hub-AdGame"
+    },
+    {
+      "path": "hub/tests/admin-console-devops.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/admin-console-release-policy.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/admin-console.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/admin-console.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/admin.metrics.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/avatar-service.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
+      "path": "hub/tests/avatar-shop.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Avatar"
+    },
+    {
+      "path": "hub/tests/backend.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "hub",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/billing-2track.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-checkout.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-direct-commerce.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-giftcards-usage.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-korea-easypay.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-multi-pg-failover.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-policy-ledger.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/billing-security-regressions.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Billing"
+    },
+    {
+      "path": "hub/tests/build-command.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/cdn-flow.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-CDN"
+    },
+    {
+      "path": "hub/tests/cdn-m2-trash-quota.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-CDN"
+    },
+    {
+      "path": "hub/tests/cdn-quota.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-CDN"
+    },
+    {
+      "path": "hub/tests/cdn-sigv4.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-CDN"
+    },
+    {
+      "path": "hub/tests/community.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/compat-version.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "multiplatform",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/contract.api-dto.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "multiplatform",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/contract.schema-ssot.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/creator-integration.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/creator-review.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/data-snapshot.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/data-snapshot.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/deployment-archive.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/desktop-contracts.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Desktop"
+    },
+    {
+      "path": "hub/tests/desktop-ticket-l9.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Desktop"
+    },
+    {
+      "path": "hub/tests/dev-demo-ui-gating.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform",
+      "note": "Chrome CDP(--remote-debugging-port) 필수"
+    },
+    {
+      "path": "hub/tests/dev-overlay-mode.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/dev-proxy.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/dungeons-and-dragons.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/forge-account.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/forge-boundary.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/forge-gateway.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/forge-template-publish.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/forge-template-publisher.regression.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "game",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/gamerqa-hub.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "hub/tests/games.portal-contract.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/games.portal-save-flow.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/games.rules.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/harbor-run.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/hub-agent.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-Agent"
+    },
+    {
+      "path": "hub/tests/iap-apple.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-IOS"
+    },
+    {
+      "path": "hub/tests/ios-aasa-apns.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-IOS"
+    },
+    {
+      "path": "hub/tests/ios-apple-auth.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-IOS"
+    },
+    {
+      "path": "hub/tests/ios-ipa-gates.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "multiplatform",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-IOS"
+    },
+    {
+      "path": "hub/tests/l10n.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-L10N"
+    },
+    {
+      "path": "hub/tests/l10n.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-L10N"
+    },
+    {
+      "path": "hub/tests/local-admin-login.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/locales-deployment.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-L10N"
+    },
+    {
+      "path": "hub/tests/localization.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-L10N"
+    },
+    {
+      "path": "hub/tests/mobile-m1.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/portable.acl.windows.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "portable",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/portable.packaging.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "portable",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/portable.rebex.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "portable",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/portable.runtime.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "portable",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/preferences.backup.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/regression.security-invariants.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/restore.data.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/restore.operations.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/runtime-config.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "component",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/runtime-output.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/sanitize-snapshot.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/shorts-service.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Hub-shorts"
+    },
+    {
+      "path": "hub/tests/site.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/smoke.assets.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "hub",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/social-cross-platform.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/social-m3-scenarios.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "multiplatform",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/sso-auth.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-SSO"
+    },
+    {
+      "path": "hub/tests/ssot.leaderboard-sanctions.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-EOS"
+    },
+    {
+      "path": "hub/tests/ssot.phase2.progression-datastore.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "user",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-EOS"
+    },
+    {
+      "path": "hub/tests/store-admin.browser.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/store-admin.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Admin"
+    },
+    {
+      "path": "hub/tests/store-hub-integration.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Store",
+      "note": "Chrome CDP(--remote-debugging-port) UI 내비게이션 검증 포함"
+    },
+    {
+      "path": "hub/tests/ugc-crossplay.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "game",
+        "multiplatform"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/ugc-publish.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Publish"
+    },
+    {
+      "path": "hub/tests/user-ux-polish.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform",
+      "note": "Chrome CDP(--remote-debugging-port) 필수"
+    },
+    {
+      "path": "hub/tests/verify-output.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "hub",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/webgames.import.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "hub/tests/wishlist.http.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "store/tests/package-contract.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Store"
+    },
+    {
+      "path": "store/tests/store-api.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "hub",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Store",
+      "note": "Chrome CDP(--remote-debugging-port) UI 검증 포함으로 Tier 2 integration 분류"
+    },
+    {
+      "path": "tests/deployment/hub-forge-integration.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tests/deployment/hub-forge-platform-parity.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "forge",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tests/deployment/preflight.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tools/Gamer/GamerQA/tests/daily-perf-trend.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-GamerQA",
+      "note": "데일리 성능 프로파일러(브라우저 실측 포함, >10s)"
+    },
+    {
+      "path": "tools/Gamer/GamerQA/tests/gamerqa-cli.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "game",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "tools/Gamer/GamerQA/tests/hub-usecases.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "tools/Gamer/besiege_planner.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "tools/Gamer/fortress_planner.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "tools/Gamer/playhub_model_qa.test.mjs",
+      "tier": "nightly",
+      "suites": [
+        "game",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GamerQA"
+    },
+    {
+      "path": "tools/RobloxConverter/tests/converter-lab.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-RobloxPort"
+    },
+    {
+      "path": "tools/RobloxConverter/tests/poc-porting.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "forge",
+        "godot"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-RobloxPort"
+    },
+    {
+      "path": "tools/RobloxConverter/tests/review-fixes.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-RobloxPort"
+    },
+    {
+      "path": "tools/UnityConverter/tests/unity-converter.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-UnityPort"
+    },
+    {
+      "path": "tools/aos/serve-apk-download.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "multiplatform",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Hub-AOS"
+    },
+    {
+      "path": "tools/build-version/build-version.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tools/devops/tests/devops.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-DevOps"
+    },
+    {
+      "path": "tools/ios/verify-ipa.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "multiplatform",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "dev",
+        "live"
+      ],
+      "owner": "Hub-IOS"
+    },
+    {
+      "path": "tools/local-games/modes.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tools/local-games/player-locale.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform",
+      "note": "Playwright chromium.launch 브라우저 검증"
+    },
+    {
+      "path": "tools/local-games/sdk-host.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "game",
+        "user"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "PlayHub-Platform",
+      "note": "Playwright chromium.launch 브라우저 검증"
+    },
+    {
+      "path": "tools/qa/contract.gate-hygiene.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "smoke",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 {
-  "comment": "Tier 1 Fast QA 게이트 테스트 목록. 브라우저(Playwright)·Godot 헤드리스·Windows 전용 테스트는 Tier 2로 분리한다. 실패 중인 테스트는 삭제하지 말고 quarantine에 사유·담당과 함께 등록한 뒤 수정 후 제거한다.",
+  "comment": "단일 정본 카탈로그는 tools/qa/test-catalog.json(tier === 'fast')이며, fast-gate.mjs는 test-catalog.json을 우선 읽는다. 이 파일은 레거시 도구 하위 호환을 위해 Tier 1 Fast 범위와 동기화 유지한다. 실패 중인 테스트는 삭제하지 말고 test-catalog.json의 quarantine({ reason, owner, expiresAt })에 최대 7일 기한으로 등록 후 수정·해제한다.",
+  "catalog": "tools/qa/test-catalog.json",
   "include": [
     "hub/tests/*.test.mjs",
     "store/tests/package-contract.test.mjs",
     "forge/Tests/account-platform.test.cjs",
+    "forge/Tests/brawllabs-multiplayer.test.cjs",
     "forge/Tests/build-queue-reuse.test.cjs",
     "forge/Tests/cloud-origin.test.cjs",
     "forge/Tests/collaboration.test.cjs",
@@ -11,34 +13,48 @@
     "forge/Tests/drive-retention-policy.test.cjs",
     "forge/Tests/drive-snapshot-store.test.cjs",
     "forge/Tests/execution-allowlist.test.cjs",
+    "forge/Tests/fortress-multiplayer.test.cjs",
     "forge/Tests/google-id-verifier.test.cjs",
     "forge/Tests/http-compression-cache.test.cjs",
     "forge/Tests/hub-session-auth.test.cjs",
     "forge/Tests/login-sessions.test.cjs",
     "forge/Tests/multiplayer-compat.test.cjs",
-    "forge/Tests/multiplayer-pending-room.test.cjs",
     "forge/Tests/multiplayer-server.test.cjs",
     "forge/Tests/operator-oauth-token.test.cjs",
     "forge/Tests/owned-build-packages.test.cjs",
+    "forge/Tests/playforge_agent_chat/agent-codex-protocol.test.cjs",
+    "forge/Tests/playforge_agent_chat/record-agent-mcp.test.cjs",
+    "forge/Tests/playforge_service/export-godot.test.cjs",
+    "forge/Tests/playforge_shorts/shorts-pipeline.test.cjs",
     "forge/Tests/playhub-draft-store.test.cjs",
+    "forge/Tests/private-account-ui.test.cjs",
     "forge/Tests/private-cloud-sync.test.cjs",
+    "forge/Tests/private-platform-server.test.cjs",
     "forge/Tests/project-drive-sync.test.cjs",
+    "forge/Tests/regression.multiplayer-hardening.test.cjs",
     "forge/Tests/release-manifest.test.cjs",
     "forge/Tests/submission-drive-archive.test.cjs",
-    "forge/Tests/web-editor-wasm-release.test.cjs",
-    "forge/Tests/playforge_shorts/shorts-pipeline.test.cjs",
-    "tools/build-version/*.test.mjs",
     "deploy/cloudrun/**/*.test.mjs",
-    "tools/Gamer/GamerQA/tests/*.test.mjs"
+    "tests/deployment/*.test.mjs",
+    "tests/deployment/*.test.cjs",
+    "tools/aos/serve-apk-download.test.mjs",
+    "tools/build-version/*.test.mjs",
+    "tools/devops/tests/devops.test.mjs",
+    "tools/ios/verify-ipa.test.mjs",
+    "tools/local-games/modes.test.cjs",
+    "tools/qa/contract.gate-hygiene.test.mjs",
+    "tools/RobloxConverter/tests/converter-lab.test.mjs",
+    "tools/RobloxConverter/tests/review-fixes.test.mjs",
+    "tools/UnityConverter/tests/unity-converter.test.mjs",
+    "tools/Gamer/GamerQA/tests/gamerqa-cli.test.mjs",
+    "tools/Gamer/GamerQA/tests/hub-usecases.test.mjs"
   ],
   "exclude": [
     "hub/tests/*.browser.test.mjs",
-    "hub/tests/portable.*.test.mjs"
+    "hub/tests/portable.*.test.mjs",
+    "hub/tests/dev-demo-ui-gating.test.mjs",
+    "hub/tests/store-hub-integration.test.mjs",
+    "hub/tests/user-ux-polish.test.mjs"
   ],
-  "quarantine": {
-    "hub/tests/admin-console-devops.test.mjs": "타이밍 민감(start 응답 386ms > 기준) — 부하 환경에서 간헐 실패. 2026-11-21 등록, 담당: PlayHub-Admin",
-    "hub/tests/preferences.backup.test.mjs": "creator_submissions 스키마(24컬럼)와 테스트 INSERT(16값) 불일치 회귀. 2026-11-21 등록, 담당: PlayHub-Platform",
-    "hub/tests/runtime-output.test.mjs": "prebuilt 출력에 tools/backup.mjs 누락(ERR_MODULE_NOT_FOUND) 회귀. 2026-11-21 등록, 담당: PlayHub-Platform",
-    "forge/Tests/cloud-origin.test.cjs": "direct Wi-Fi HTTPS origin 단언 실패 회귀. 2026-11-21 등록, 담당: PlayForge-Main"
-  }
+  "quarantine": {}
 }

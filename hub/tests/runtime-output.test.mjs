@@ -46,9 +46,20 @@ async function freePorts(){
   await Promise.all(holders.map(server=>new Promise(resolve=>server.close(resolve))));return ports;
 }
 test('two real starts serve identical deployed files with no build tools or source tree',async t=>{
-  const root=fixture(t);
+  const workspace=fixture(t);
+  const root=path.join(workspace,'hub');
+  const repoRoot=path.resolve(project,'..');
   for(const name of ['server','shared'])fs.cpSync(path.join(project,name),path.join(root,name),{recursive:true});
-  for(const name of ['dev.mjs','runtime-output.cjs'])write(root,'tools/'+name,fs.readFileSync(path.join(project,'tools',name),'utf8'));
+  const repoUgcShared=path.join(repoRoot,'tools','ugc-shared');
+  if(fs.existsSync(repoUgcShared))fs.cpSync(repoUgcShared,path.join(workspace,'tools','ugc-shared'),{recursive:true});
+  // forge-gateway.mjs unconditionally requires ../../forge/Tools/internal-api.cjs in default local mode.
+  const forgeToolsSrc=path.join(repoRoot,'forge','Tools');
+  const forgeToolsDest=path.join(workspace,'forge','Tools');
+  fs.mkdirSync(forgeToolsDest,{recursive:true});
+  for(const entry of fs.readdirSync(forgeToolsSrc,{withFileTypes:true})){
+    if(entry.isFile()&&entry.name.endsWith('.cjs'))fs.copyFileSync(path.join(forgeToolsSrc,entry.name),path.join(forgeToolsDest,entry.name));
+  }
+  for(const name of ['dev.mjs','runtime-output.cjs','backup.mjs','forge-proxy.mjs','store-proxy.mjs'])write(root,'tools/'+name,fs.readFileSync(path.join(project,'tools',name),'utf8'));
   write(root,'catalog/games.json',JSON.stringify({schemaVersion:1,entries:[]}));
   for(const name of requiredOutput)write(root,'dist/'+name,name.endsWith('.json')?'{"schemaVersion":1,"entries":[]}':'deployed-marker');
   // An unpublished source edit must not leak into the API when a server starts.
@@ -76,5 +87,5 @@ test('two real starts serve identical deployed files with no build tools or sour
     }finally{if(child.exitCode===null)child.kill();await exited;}
   }
   assert.deepEqual(watched.map(file=>({text:fs.readFileSync(file,'utf8'),mtime:fs.statSync(file).mtimeMs})),before);
-  for(const name of ['web','games','.dist-previous'])assert.equal(fs.existsSync(path.join(root,name)),false);
+  for(const name of ['web','games','.dist-previous','tools/build.mjs','tools/sync-locales.mjs','tools/sync-webgames.mjs'])assert.equal(fs.existsSync(path.join(root,name)),false);
 });

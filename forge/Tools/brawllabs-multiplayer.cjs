@@ -26,13 +26,14 @@ function moveActor(a,dx,dy) {
 }
 class BrawlRoom {
   constructor(id, projectId, now=Date.now, build=null) { this.id=id;this.projectId=projectId;this.now=now;this.build=build;this.phase='lobby';this.players=new Map();this.countdownEndsAt=null;this.game=null;this.lastStep=now();this.eventSeq=0;this.logs=[]; }
-  log(event,message) { this.logs.push({seq:++this.eventSeq,tick:this.game?.tick||0,source:'server',roomId:this.id,event,message:String(message).slice(0,160)});if(this.logs.length>100)this.logs.shift(); }
+  log(event,message) { const text=typeof message==='string'?message:'';this.logs.push({seq:++this.eventSeq,tick:this.game?.tick||0,source:'server',roomId:this.id,event,message:text.slice(0,160)});if(this.logs.length>100)this.logs.shift(); }
   join(name, team) {
     if(this.players.size>=18)throw Error('로비가 가득 찼습니다.');
     const occupied=t=>[...this.players.values()].filter(p=>!p.spectator&&p.team===t).length;
     if(![0,1].includes(team))team=occupied(0)<=occupied(1)?0:1;
     const spectator=['playing','finished'].includes(this.phase)||occupied(team)>=3;
-    const p={id:crypto.randomBytes(10).toString('hex'),name:String(name||'Player').trim().slice(0,24)||'Player',team,ready:false,spectator,waitingSince:this.now(),seq:-1,input:null};
+    const safeName=typeof name==='string'?name.trim().slice(0,24):'';
+    const p={id:crypto.randomBytes(10).toString('hex'),name:safeName||'Player',team,ready:false,spectator,waitingSince:this.now(),seq:-1,input:null};
     this.players.set(p.id,p);this.log('join',`${p.name} joined${p.spectator?' as spectator':''}`);this.reconsider();return p;
   }
   command(id, m) {
@@ -135,29 +136,35 @@ class BrawlRoom {
   damage(a,amount,attacker){if(!a.alive)return;a.hp=Math.max(0,a.hp-amount);attacker.superCharge=Math.min(1,attacker.superCharge+.19);if(a.hp===0){a.alive=false;a.respawn=2.8;for(let n=0;n<a.gems;n++)this.game.gems.push({x:a.x+(n%3-1)*12,y:a.y+Math.floor(n/3)*8});a.gems=0;}}
   snapshot(){return {type:'state',roomId:this.id,projectId:this.projectId,...(this.build||{}),phase:this.phase,serverTime:this.now(),countdownEndsAt:this.countdownEndsAt,players:[...this.players.values()].map(({input,seq,...p})=>p),game:this.game,logs:this.logs.slice()};}
 }
-function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>null,compat=null}={}) {
+function attachBrawlLabs(server,{originAllowed=()=>true,now=Date.now,validateBuild=()=>null,compat=null,joinTimeoutMs=5000}={}) {
   const rooms=new Map(),peers=new Map();const wss=new WebSocketServer({noServer:true,maxPayload:4096});
-  const send=(socket,data)=>{if(socket.readyState===WebSocket.OPEN&&socket.bufferedAmount<1000000)socket.send(JSON.stringify(data));};
+  const send=(socket,data)=>{if(socket.readyState===WebSocket.OPEN&&socket.bufferedAmount<1000000){try{socket.send(JSON.stringify(data));}catch{}}};
   const upgrade=(req,socket,head)=>{let pathname='';try{pathname=new URL(req.url||'','http://localhost').pathname;}catch{return;}if(pathname!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req));};
   server.on('upgrade',upgrade);
   wss.on('connection',(socket,req)=>{
+    socket.on('error',()=>{});
     if(compat&&!compat.enforceWsConnection(socket,req,send))return;
     const ownerKey=req?.hubAuth?.accountKey||null;
     socket.alive=true;socket.on('pong',()=>socket.alive=true);let rateAt=now(),count=0;
-    const timeout=setTimeout(()=>{if(!peers.has(socket))socket.close(1008,'Join required');},5000);timeout.unref();
+    const timeout=setTimeout(()=>{if(!peers.has(socket))socket.close(1008,'Join required');},joinTimeoutMs);timeout.unref();
     let joining=false;
     socket.on('message',async raw=>{
       try{
         if(now()-rateAt>1000){rateAt=now();count=0;}if(++count>80)throw Error('요청이 너무 빠릅니다.');
-        const m=JSON.parse(raw.toString());if(!m||typeof m!=='object'||Array.isArray(m))throw Error('잘못된 메시지입니다.');
+        const text=typeof raw==='string'?raw:Buffer.isBuffer(raw)?raw.toString('utf8'):Array.isArray(raw)?Buffer.concat(raw).toString('utf8'):Buffer.from(raw).toString('utf8');
+        const m=JSON.parse(text);if(!m||typeof m!=='object'||Array.isArray(m)||typeof m.type!=='string')throw Error('잘못된 메시지입니다.');
         if(compat){const gate=compat.enforceWsMessage(socket,m,send);if(gate.handled)return;}
         if(m.type==='join'){
           if(peers.has(socket)||joining)throw Error('이미 참가했습니다.');
-          let room;
-          if(m.roomId){room=rooms.get(m.roomId);if(!room)throw Error('로비를 찾을 수 없습니다.');if(m.projectId!==room.projectId||m.buildId!==room.build?.buildId)throw Error('로비에서 사용하는 빌드 정보가 다릅니다.');}
+          let room,createdRoom=false;
+          if(m.roomId!==undefined&&m.roomId!==null&&m.roomId!==''){
+            if(typeof m.roomId!=='string')throw Error('로비를 찾을 수 없습니다.');
+            room=rooms.get(m.roomId);if(!room)throw Error('로비를 찾을 수 없습니다.');if(m.projectId!==room.projectId||m.buildId!==room.build?.buildId)throw Error('로비에서 사용하는 빌드 정보가 다릅니다.');
+          }
           else{
             if(rooms.size>=64)throw Error('현재 로비가 가득 찼습니다.');
-            if(!/^[a-f0-9]{24}$/.test(m.projectId||''))throw Error('프로젝트를 선택하세요.');
+            if(typeof m.projectId!=='string'||!/^[a-f0-9]{24}$/.test(m.projectId))throw Error('프로젝트를 선택하세요.');
+            if(m.buildId!==undefined&&typeof m.buildId!=='string')throw Error('성공한 프로젝트 빌드를 선택하세요.');
             joining=true;
             let build;
             try{
@@ -169,16 +176,16 @@ function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>nu
             if(!build||!Number.isSafeInteger(build.revision)||typeof build.previewUrl!=='string')throw Error('성공한 프로젝트 빌드를 선택하세요.');
             const id=crypto.randomBytes(6).toString('hex');
             room=new BrawlRoom(id,m.projectId,now,{buildId:build.id,revision:build.revision,previewUrl:build.previewUrl});
-            rooms.set(id,room);
+            createdRoom=true;
           }
-          const player=room.join(m.name,m.team);peers.set(socket,{room,player});clearTimeout(timeout);send(socket,{type:'welcome',roomId:room.id,playerId:player.id,projectId:room.projectId,...(room.build||{})});send(socket,room.snapshot());
+          const player=room.join(m.name,m.team);if(createdRoom)rooms.set(room.id,room);peers.set(socket,{room,player});clearTimeout(timeout);send(socket,{type:'welcome',roomId:room.id,playerId:player.id,projectId:room.projectId,...(room.build||{})});send(socket,room.snapshot());
         }else{const peer=peers.get(socket);if(!peer)throw Error('먼저 참가하세요.');peer.room.command(peer.player.id,m);}
-      }catch(error){send(socket,{type:'error',error:error.message});}
+      }catch(error){send(socket,{type:'error',error:error?.message||'잘못된 요청입니다.'});}
     });
     socket.on('close',()=>{clearTimeout(timeout);const p=peers.get(socket);if(p){p.room.leave(p.player.id);peers.delete(socket);if(p.room.players.size===0)rooms.delete(p.room.id);}});
   });
   const timer=setInterval(()=>{for(const room of rooms.values())room.tick();for(const [socket,{room}] of peers)send(socket,room.snapshot());},50);timer.unref();
-  const heartbeat=setInterval(()=>{for(const socket of wss.clients){if(!socket.alive){socket.terminate();continue;}socket.alive=false;socket.ping();}},2000);heartbeat.unref();
+  const heartbeat=setInterval(()=>{for(const socket of wss.clients){if(!socket.alive){socket.terminate();continue;}socket.alive=false;try{if(socket.readyState===WebSocket.OPEN)socket.ping();}catch{socket.terminate();}}},2000);heartbeat.unref();
   return {rooms,metadata(id){const room=rooms.get(id);return room?{roomId:room.id,projectId:room.projectId,...(room.build||{}),phase:room.phase,players:room.players.size}:null;},close(){clearInterval(timer);clearInterval(heartbeat);server.off('upgrade',upgrade);for(const s of wss.clients)s.terminate();wss.close();rooms.clear();}};
 }
 module.exports={BrawlRoom,attachBrawlLabs};

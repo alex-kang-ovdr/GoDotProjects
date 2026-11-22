@@ -216,6 +216,7 @@ function attachTappyChickenMmo(
   heartbeat.unref();
 
   wss.on('connection', (ws, req) => {
+    ws.on('error', () => {});
     if (compat && !compat.enforceWsConnection(ws, req, sendJson)) return;
     ws.missedPongs = 0;
     ws.supportsBatch = false;

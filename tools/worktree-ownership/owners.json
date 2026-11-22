@@ -36,6 +36,7 @@
     "forge/Tests/game-template-runtime.test.cjs",
     "forge/Templates/*/showcase.json",
     "tools/qa/fast-gate.json",
+    "tools/qa/test-catalog.json",
     "tools/worktree-ownership/owners.json",
     "godot-sdk/playhub_runtime_sdk.gd"
   ],
@@ -44,6 +45,8 @@
       "role": "통합 코디네이터 (Trunk)",
       "owns": [
         "docs/architecture/**",
+        "docs/qa/**",
+        "package.json",
         "Run_PlayHub_Portable.cmd",
         "tools/start-platform.ps1",
         "tools/worktree-ownership/**",
