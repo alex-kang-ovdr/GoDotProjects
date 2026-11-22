@@ -199,9 +199,12 @@ const COMPRESSIBLE_CT_RE = /^(?:application\/json|application\/javascript|text\/
 export function attachEdgeCompressionAndEtag(req, res, pathname) {
   if (req.method !== 'GET') return;
   if (pathname.endsWith('/events')) return;
-  const acceptGzip = String(req.headers['accept-encoding'] || '').includes('gzip');
+  const acceptEncoding = String(req.headers['accept-encoding'] || '');
+  const preferredEnc = /\bbr\b/i.test(acceptEncoding)
+    ? 'br'
+    : (/\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null);
   const allowEtag = ETAG_CATALOG_PATHS.has(pathname);
-  if (!acceptGzip && !allowEtag) return;
+  if (!preferredEnc && !allowEtag) return;
 
   const origWriteHead = res.writeHead.bind(res);
   const origWrite = res.write.bind(res);
@@ -317,14 +320,21 @@ export function attachEdgeCompressionAndEtag(req, res, pathname) {
         return origEnd(doneCb);
       }
     }
-    if (acceptGzip && body.length >= 1024) {
-      const gz = zlib.gzipSync(body, { level: 6 });
-      outHeaders['content-encoding'] = 'gzip';
+    if (preferredEnc && body.length >= 1024) {
+      const compressed = preferredEnc === 'br'
+        ? zlib.brotliCompressSync(body, {
+            params: {
+              [zlib.constants.BROTLI_PARAM_QUALITY]: 4,
+              [zlib.constants.BROTLI_PARAM_SIZE_HINT]: body.length,
+            },
+          })
+        : zlib.gzipSync(body, { level: 6 });
+      outHeaders['content-encoding'] = preferredEnc;
       if (!outHeaders.vary) outHeaders.vary = 'Accept-Encoding';
       else if (!/\baccept-encoding\b/i.test(String(outHeaders.vary))) outHeaders.vary = `${outHeaders.vary}, Accept-Encoding`;
-      outHeaders['content-length'] = gz.length;
+      outHeaders['content-length'] = compressed.length;
       origWriteHead(savedStatus, outHeaders);
-      return origEnd(gz, doneCb);
+      return origEnd(compressed, doneCb);
     }
     outHeaders['content-length'] = body.length;
     origWriteHead(savedStatus, outHeaders);
@@ -360,7 +370,44 @@ export function proxyRequest(req, res, targetBase, stripPrefix = '', extraTlsOpt
   req.pipe(upstream);
 }
 
-function serveStatic(req, res, staticRoot) {
+const STATIC_COMPRESS_CACHE = new Map();
+const STATIC_COMPRESS_MAX_FILE_BYTES = 1536 * 1024;
+const STATIC_COMPRESS_MAX_TOTAL_BYTES = 8 * 1024 * 1024;
+let staticCompressCacheBytes = 0;
+
+function getCachedCompressedStatic(realPath, stat, encoding) {
+  if (stat.size < 1024 || stat.size > STATIC_COMPRESS_MAX_FILE_BYTES) return null;
+  const key = `${realPath}:${stat.size}:${Math.trunc(stat.mtimeMs)}:${encoding}`;
+  const hit = STATIC_COMPRESS_CACHE.get(key);
+  if (hit) {
+    STATIC_COMPRESS_CACHE.delete(key);
+    STATIC_COMPRESS_CACHE.set(key, hit);
+    return hit;
+  }
+  const raw = fs.readFileSync(realPath);
+  const compressed = encoding === 'br'
+    ? zlib.brotliCompressSync(raw, {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 5,
+          [zlib.constants.BROTLI_PARAM_SIZE_HINT]: raw.length,
+        },
+      })
+    : zlib.gzipSync(raw, { level: 6 });
+  if (compressed.length >= raw.length) return null;
+  while (staticCompressCacheBytes + compressed.length > STATIC_COMPRESS_MAX_TOTAL_BYTES && STATIC_COMPRESS_CACHE.size > 0) {
+    const oldestKey = STATIC_COMPRESS_CACHE.keys().next().value;
+    const oldestVal = STATIC_COMPRESS_CACHE.get(oldestKey);
+    STATIC_COMPRESS_CACHE.delete(oldestKey);
+    if (oldestVal) staticCompressCacheBytes -= oldestVal.length;
+  }
+  if (compressed.length <= STATIC_COMPRESS_MAX_TOTAL_BYTES) {
+    STATIC_COMPRESS_CACHE.set(key, compressed);
+    staticCompressCacheBytes += compressed.length;
+  }
+  return compressed;
+}
+
+export function serveStatic(req, res, staticRoot) {
   if (!['GET', 'HEAD'].includes(req.method || '')) {
     res.writeHead(405);
     res.end();
@@ -403,27 +450,53 @@ function serveStatic(req, res, staticRoot) {
     return;
   }
 
+  const stat = fs.statSync(real);
+  const etag = `W/"${stat.size.toString(16)}-${Math.trunc(stat.mtimeMs).toString(16)}"`;
   const headers = {
     'Content-Type': mime,
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300',
+    'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400',
+    'ETag': etag,
   };
   if (pathname.startsWith('/games/')) {
     headers['Access-Control-Allow-Origin'] = '*';
     headers['Cross-Origin-Resource-Policy'] = 'cross-origin';
   }
-
-  const acceptEncoding = String(req.headers['accept-encoding'] || '');
-  if (req.method !== 'HEAD' && COMPRESSIBLE.has(ext) && acceptEncoding.includes('gzip')) {
-    headers['Content-Encoding'] = 'gzip';
-    headers.Vary = 'Accept-Encoding';
-    res.writeHead(200, headers);
-    fs.createReadStream(real).pipe(zlib.createGzip()).pipe(res);
+  const inm = String(req.headers['if-none-match'] || '').trim();
+  if (inm === etag) {
+    delete headers['Content-Type'];
+    res.writeHead(304, headers);
+    res.end();
     return;
   }
 
-  headers['Content-Length'] = fs.statSync(real).size;
+  const acceptEncoding = String(req.headers['accept-encoding'] || '');
+  const encoding = COMPRESSIBLE.has(ext)
+    ? (/\bbr\b/i.test(acceptEncoding) ? 'br' : (/\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null))
+    : null;
+  if (encoding) {
+    headers.Vary = 'Accept-Encoding';
+    const cached = getCachedCompressedStatic(real, stat, encoding);
+    if (cached) {
+      headers['Content-Encoding'] = encoding;
+      headers['Content-Length'] = cached.length;
+      res.writeHead(200, headers);
+      res.end(req.method === 'HEAD' ? undefined : cached);
+      return;
+    }
+    if (req.method !== 'HEAD') {
+      headers['Content-Encoding'] = encoding;
+      res.writeHead(200, headers);
+      const compressor = encoding === 'br'
+        ? zlib.createBrotliCompress({ params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 } })
+        : zlib.createGzip({ level: 6 });
+      fs.createReadStream(real).pipe(compressor).pipe(res);
+      return;
+    }
+  }
+
+  headers['Content-Length'] = stat.size;
   res.writeHead(200, headers);
   if (req.method === 'HEAD') res.end();
   else fs.createReadStream(real).pipe(res);

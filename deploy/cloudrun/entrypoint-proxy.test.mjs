@@ -11,6 +11,7 @@ import {
   buildUpstreamRequestOptions,
   proxyRequest,
   attachEdgeCompressionAndEtag,
+  serveStatic,
 } from './hub/entrypoint.mjs';
 import { loadMergedCatalog } from '../../store/server/index.mjs';
 import { createRequire } from 'node:module';
@@ -177,6 +178,50 @@ test('attachEdgeCompressionAndEtag strips Transfer-Encoding on chunked proxied J
   const r2 = await rawGet({ 'Accept-Encoding': 'gzip', 'If-None-Match': r1.headers.etag });
   assert.equal(r2.status, 304);
   assert.equal(r2.body.length, 0);
+
+  const r3 = await rawGet({ 'Accept-Encoding': 'br, gzip' });
+  assert.equal(r3.status, 200);
+  assert.equal(r3.headers['content-encoding'], 'br');
+  assert.equal(r3.headers['transfer-encoding'], undefined);
+  assert.equal(zlib.brotliDecompressSync(r3.body).toString('utf8'), payload);
+});
+
+test('serveStatic supports cached Brotli/Gzip and ETag 304 Not Modified', async t => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-static-br-'));
+  t.after(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
+  const content = 'window.LOCALE_DATA=' + JSON.stringify(Object.fromEntries(Array.from({ length: 120 }, (_, i) => [`k${i}`, `Translated text string number ${i}`]))) + ';\n';
+  fs.writeFileSync(path.join(tmpDir, 'locale-data.js'), content, 'utf8');
+
+  const srv = http.createServer((req, res) => serveStatic(req, res, tmpDir));
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const port = srv.address().port;
+  t.after(() => new Promise(resolve => srv.close(resolve)));
+
+  const rawGet = (hdrs = {}) => new Promise((resolve, reject) => {
+    const req = http.request(`http://127.0.0.1:${port}/locale-data.js`, { headers: hdrs }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+
+  const br1 = await rawGet({ 'Accept-Encoding': 'br, gzip' });
+  assert.equal(br1.status, 200);
+  assert.equal(br1.headers['content-encoding'], 'br');
+  assert.ok(br1.headers.etag);
+  assert.ok(br1.body.length < Buffer.byteLength(content) * 0.5);
+  assert.equal(zlib.brotliDecompressSync(br1.body).toString('utf8'), content);
+
+  const cond = await rawGet({ 'Accept-Encoding': 'br, gzip', 'If-None-Match': br1.headers.etag });
+  assert.equal(cond.status, 304);
+  assert.equal(cond.body.length, 0);
+
+  const gz = await rawGet({ 'Accept-Encoding': 'gzip' });
+  assert.equal(gz.status, 200);
+  assert.equal(gz.headers['content-encoding'], 'gzip');
+  assert.equal(zlib.gunzipSync(gz.body).toString('utf8'), content);
 });
 
 test('loadMergedCatalog reads precompressed collected-catalog.json.gz when uncompressed JSON is absent', () => {
