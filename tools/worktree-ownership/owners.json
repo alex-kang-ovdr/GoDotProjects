@@ -259,15 +259,6 @@
       ]
     },
     "Hub-SSO": {
-      "role": "Hub 통합 인증(SSO) — 자체 이메일 로그인·회원가입, 네이버/Google 소셜 로그인, 게스트 4종 선택",
-      "owns": [
-        "hub/server/sso/**",
-        "hub/web/user/sso.js",
-        "hub/web/user/sso.css",
-        "hub/tests/sso-*.mjs"
-      ]
-    },
-    "Hub-SSO": {
       "role": "PlayHub 자체 이메일 인증(scrypt) 및 네이버 OAuth 2.0 로그인",
       "owns": [
         "hub/server/sso/**",
@@ -457,6 +448,35 @@
         "hub/tests/hub-agent*.mjs",
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
+      ]
+    },
+    "Hub-AdGame": {
+      "role": "외부 모바일 플랫폼(당근·카카오·토스) 무설치 데모 게임 제휴 PoC 및 본편 핸드오프 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "docs/adgame/**",
+        "hub/server/adgame/**",
+        "hub/web/adgame/**",
+        "hub/web/user/adgame-handoff.js",
+        "hub/web/user/adgame-handoff.css",
+        "hub/tests/adgame*.mjs",
+        "tools/adgame/**"
+      ]
+    },
+    "Hub-shorts": {
+      "role": "AI 게임 소개 쇼츠 3종 포맷 · PlayForge 쇼츠 생성기 · 개인 AI OAuth (실험 · 허브 트렁크 미통합)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "docs/shorts/**",
+        "hub/server/shorts/**",
+        "hub/web/user/shorts.js",
+        "hub/web/user/shorts.css",
+        "hub/tests/shorts*.mjs",
+        "forge/Tools/shorts-pipeline/**",
+        "forge/OfficialGodot/shorts-*",
+        "forge/Tests/playforge_shorts/**"
       ]
     }
   }
