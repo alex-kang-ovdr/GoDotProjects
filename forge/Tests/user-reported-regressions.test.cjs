@@ -219,7 +219,7 @@ test('TC-REG-004 (ISS-007): content-tagged vendor URLs prevent stale 91.9MB cach
   assert.ok(showcaseGameJs.includes('/OfficialGodot/vendor/v/'), 'showcase-game.js must load versioned vendor URL');
 });
 
-test('TC-REG-005 (ISS-008): Showcase ("제작과정 보기") filter is always visible and showcase project creation works', async (t) => {
+test('TC-REG-005 (ISS-008): Showcase ("제작과정 보기") is a production user feature (always visible in prod & dev-demo OFF)', async (t) => {
   const indexHtml = fs.readFileSync(path.join(OFFICIAL_GODOT_DIR, 'index.html'), 'utf8');
   const showcaseBtnMatch = indexHtml.match(/<button\b[^>]*data-filter="showcase"[^>]*>/i);
   assert.ok(showcaseBtnMatch, 'index.html must contain button[data-filter="showcase"]');
@@ -232,13 +232,22 @@ test('TC-REG-005 (ISS-008): Showcase ("제작과정 보기") filter is always vi
   assert.ok(!/playforge:dev-demo-ui-change[\s\S]{0,200}showcase/.test(platformJs),
     'platform.js must NOT reset activeTemplateFilter away from "showcase" on playforge:dev-demo-ui-change');
 
-  const { port } = await startTempServer(t);
+  // Verify explicitly under buildMode: "prod" (dev-demo UI stripped) that showcase works end-to-end.
+  const { port } = await startTempServer(t, { buildMode: 'prod' });
+  const prodHtmlRes = await rawRequest(port, '/OfficialGodot/index.html');
+  assert.equal(prodHtmlRes.status, 200);
+  const prodHtml = prodHtmlRes.body.toString('utf8');
+  assert.ok(!prodHtml.includes('dev-demo-ui.js'), 'prod build must strip dev-demo-ui.js');
+  const prodBtnMatch = prodHtml.match(/<button\b[^>]*data-filter="showcase"[^>]*>/i);
+  assert.ok(prodBtnMatch && !/data-dev-demo-ui|\bhidden\b/i.test(prodBtnMatch[0]),
+    'prod build HTML must expose button[data-filter="showcase"] as a visible user feature');
+
   const tplRes = await rawRequest(port, '/api/platform/templates');
   assert.equal(tplRes.status, 200);
   const tplBody = JSON.parse(tplRes.body.toString('utf8'));
   const showcaseIds = new Set((tplBody.templates || []).filter((x) => x.showcase === true).map((x) => x.id));
   for (const expectedId of ['brawllabs', 'fortress-war', 'iron-wood', 'survivor-io', 'tappy-chicken', 'tappy-chicken-mmo']) {
-    assert.ok(showcaseIds.has(expectedId), `Expected showcase template "${expectedId}" to have showcase: true`);
+    assert.ok(showcaseIds.has(expectedId), `Expected showcase template "${expectedId}" to have showcase: true in prod`);
   }
 
   const createRes = await rawRequest(port, '/api/platform/projects', {
@@ -246,7 +255,7 @@ test('TC-REG-005 (ISS-008): Showcase ("제작과정 보기") filter is always vi
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: 'BrawlLabs Showcase QA', template: 'brawllabs', mode: 'showcase' }),
   });
-  assert.equal(createRes.status, 201, `Showcase project creation must return 201, got ${createRes.status}: ${createRes.body.toString('utf8')}`);
+  assert.equal(createRes.status, 201, `Showcase project creation in prod must return 201, got ${createRes.status}: ${createRes.body.toString('utf8')}`);
   const created = JSON.parse(createRes.body.toString('utf8'));
   assert.equal(created.project?.mode, 'showcase');
   assert.ok(typeof created.project?.id === 'string' && created.project.id.length > 0);

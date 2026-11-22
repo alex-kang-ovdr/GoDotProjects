@@ -40,10 +40,11 @@
   - `/OfficialGodot/index.html`, `/OfficialGodot/editor.html`, `/OfficialGodot/showcase-game.html`이 `__PLAYFORGE_WEB_EDITOR_WASM_TAG__`, `__PLAYFORGE_WEB_EDITOR_WASM_BYTES__`를 주입하고 `vendor/v/<tag>/godot.editor.js`로 스크립트 경로를 재작성하는지 검증한다.
   - 현재 태그 `/OfficialGodot/vendor/v/<tag>/godot.editor.wasm`은 `Cache-Control: public, max-age=31536000, immutable` + `X-PlayForge-Web-Editor-Wasm: release`를 반환하고, 무버전 `/OfficialGodot/vendor/godot.editor.wasm` 및 구 태그 `/OfficialGodot/vendor/v/stale-tag/godot.editor.wasm`은 `Cache-Control: no-cache`를 반환해 24시간 스테일 캐시 재발을 원천 차단하는지 검증한다.
   - `editor-bridge.js`와 `showcase-game.js`, `platform.js`가 버전 URL(`/OfficialGodot/vendor/v/`)을 참조하고 `editor-bridge.js`가 `knownWasmBytes` 기반 총량 보정을 유지하는지 검증한다.
-- **`TC-REG-005` (ISS-008 · 제작과정 보기(Showcase) 상시 노출 및 프로젝트 생성 E2E 계약)**
-  - `forge/OfficialGodot/index.html`의 `button[data-filter="showcase"]`에 `data-dev-demo-ui` 또는 `hidden` 속성이 없음을 검증한다.
+- **`TC-REG-005` (ISS-008 · 제작과정 보기(Showcase) 정식 사용자 기능 보호 계약 — `prod` · `dev-demo OFF` 공통)**
+  - **기능 분류 원칙**: `제작과정 보기`(Showcase / Guided Replay)는 개발/데모 전용 도구가 아닌 **완성된 정식 사용자 기능**이며, `prod`/`release` 빌드 및 `DEBUG · 데모 OFF` 상태에서 절대로 숨기거나 `data-dev-demo-ui`로 게이팅해서는 안 된다.
+  - `forge/OfficialGodot/index.html` 및 `buildMode: "prod"` HTML 응답의 `button[data-filter="showcase"]`에 `data-dev-demo-ui` 또는 `hidden` 속성이 없음을 검증한다.
   - `forge/OfficialGodot/platform.js`가 `playforge:dev-demo-ui-change` 수신 시 `showcase` 필터를 강제 초기화하지 않음을 검증한다.
-  - `/api/platform/templates`에서 6개 쇼케이스 템플릿(`brawllabs`, `fortress-war`, `iron-wood`, `survivor-io`, `tappy-chicken`, `tappy-chicken-mmo`)이 `showcase: true`로 노출되고 `mode: "showcase"` 프로젝트 생성이 성공(`201`)함을 검증한다.
+  - `buildMode: "prod"` 환경에서도 `/api/platform/templates`의 6개 쇼케이스 템플릿(`brawllabs`, `fortress-war`, `iron-wood`, `survivor-io`, `tappy-chicken`, `tappy-chicken-mmo`)이 `showcase: true`로 노출되고 `mode: "showcase"` 프로젝트 생성이 성공(`201`)함을 검증하며, `hub/tests/dev-demo-ui-gating.test.mjs`에서도 `prod`·`test(OFF)` 양쪽에서 상시 노출을 이중 검증한다.
 - **`TC-REG-006` (ISS-009 · PlayForge 설치용 Desktop 다운로드 API 및 UI 계약)**
   - `GET /api/desktop-downloads`가 4개 데스크톱 타겟(`windows-editor`, `windows-launcher`, `macos-editor`, `linux-editor`)과 `excludedModules` (`openxr`, `webxr`, `mobile_vr`, `camera`)를 반환하고, `forge/OfficialGodot/index.html`에 `#desktopDownloadBtn` 및 `#desktopDownloadModal`이 존재함을 검증한다.
 
