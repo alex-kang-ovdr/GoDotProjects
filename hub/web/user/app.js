@@ -390,7 +390,9 @@
   }
   function renderBrowse(){
     const terms=searchTerms();
-    const tagOptions=[...new Set(state.games.flatMap(game=>game.tags))].map(tag=>[tag,genres[tag]||tag]);
+    const rawTagOptions=[...new Set(state.games.flatMap(game=>game.tags))].map(tag=>[tag,genres[tag]||tag]);
+    const match3Idx=rawTagOptions.findIndex(([tag])=>tag==='match3');
+    const tagOptions=match3Idx>=0?rawTagOptions.slice(0,match3Idx):rawTagOptions;
     const {genre,device,control,sort}=state;
     const games=state.games.filter(game=>{
       const touch=game.controls.includes('touch');
