@@ -1,5 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { transaction } from '../db.mjs';
+import { findGame } from '../catalog.mjs';
+import { canPlayAgeRating, normalizeAgeRating } from '../mobile/age-gate.mjs';
+import { hasActiveSanction } from '../ssot/sanctions.mjs';
 import { ApiError, json, readJson, uid } from '../security.mjs';
 import { ensureSocialSchema } from './schema.mjs';
 
@@ -19,8 +22,18 @@ export const SAFE_QUICK_MESSAGES = Object.freeze([
 const QUICK_MESSAGE_MAP = new Map(SAFE_QUICK_MESSAGES.map(q => [q.id, q.text]));
 const HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
 const HANDLE_RE = /^[A-Za-z0-9가-힣_.-]{2,20}#[0-9]{4}$/;
+const GAME_ID_RE = /^[a-zA-Z0-9_-]+$/;
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const PRESENCE_STALE_MS = 5 * 60 * 1000;
+
+function gameAgeRating(game) {
+  if (!game) return 'ALL';
+  if (game.ageRating) return normalizeAgeRating(game.ageRating);
+  if ((game.tags || []).includes('18+')) return '18+';
+  if ((game.tags || []).includes('15+')) return '15+';
+  if ((game.tags || []).includes('12+')) return '12+';
+  return 'ALL';
+}
 
 function generateRoomCode() {
   const bytes = randomBytes(6);
@@ -45,23 +58,28 @@ function sanitizeHandleBase(displayName, principalId) {
 
 function defaultEnsureCompliance(db, principalId) {
   try {
-    const row = db.prepare('SELECT region_code, age_tier, parental_consent_status, birth_year FROM user_age_compliance WHERE principal_id=?').get(principalId);
+    const row = principalId
+      ? db.prepare('SELECT region_code, age_tier, parental_consent_status FROM user_age_compliance WHERE principal_id=?').get(principalId)
+      : null;
     if (row) {
+      const ageTier = row.age_tier || 'UNKNOWN';
       return {
-        completed: Boolean(row.birth_year),
+        completed: ageTier !== 'UNKNOWN',
         regionCode: row.region_code || 'KR',
-        ageTier: row.age_tier || 'ADULT',
+        ageTier,
         parentalConsentStatus: row.parental_consent_status || 'not_required'
       };
     }
   } catch {
-    // user_age_compliance table may not be initialized when mobile routes are disabled
+    // Fail-Closed: return UNKNOWN instead of ADULT when compliance lookup fails
   }
-  return { completed: true, regionCode: 'KR', ageTier: 'ADULT', parentalConsentStatus: 'not_required' };
+  return { completed: false, regionCode: 'KR', ageTier: 'UNKNOWN', parentalConsentStatus: 'not_required' };
 }
 
 export function createSocial({
   db,
+  rootDir = null,
+  catalogOptions = {},
   now,
   rate,
   audit,
@@ -73,6 +91,10 @@ export function createSocial({
   prefix = '/api/mobile/social'
 }) {
   ensureSocialSchema(db);
+  const effectiveRootDir = rootDir || config?._rootDir || null;
+  const effectiveCatalogOptions = Object.keys(catalogOptions || {}).length
+    ? catalogOptions
+    : (config?._catalogOptions || {});
   const complianceLookup = ensureCompliance || (userId => defaultEnsureCompliance(db, userId));
   const authUser = (req, res, required = true) =>
     resolveAuth ? resolveAuth(req, res, required) : bearerPayload(req, required);
@@ -80,6 +102,36 @@ export function createSocial({
     if (rejectBrowserOrigin) rejectBrowserOrigin(req);
   };
   const prefixSlash = prefix.endsWith('/') ? prefix : `${prefix}/`;
+
+  function assertNotSanctioned(principalId, scopes = []) {
+    if (!principalId) return;
+    const checkScopes = ['all', ...scopes];
+    try {
+      if (hasActiveSanction(db, principalId, checkScopes, now())) {
+        throw new ApiError(403, 'USER_SANCTIONED', '제재가 적용되어 해당 기능을 이용할 수 없습니다.');
+      }
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+      if (!String(err?.message || '').includes('no such table')) throw err;
+    }
+  }
+
+  function validateCatalogGame(gameId, comp = null) {
+    if (!GAME_ID_RE.test(gameId)) {
+      throw new ApiError(400, 'INVALID_GAME_ID', '올바른 게임 ID 형식이 아닙니다.');
+    }
+    let game = null;
+    if (effectiveRootDir) {
+      game = findGame(effectiveRootDir, db, gameId, true, effectiveCatalogOptions);
+    }
+    if (comp && game) {
+      const rating = gameAgeRating(game);
+      if (!canPlayAgeRating(comp.ageTier, rating, comp.parentalConsentStatus)) {
+        throw new ApiError(403, 'AGE_RATING_RESTRICTED', `연령 등급(${rating}) 제한으로 실행할 수 없습니다.`);
+      }
+    }
+    return game;
+  }
 
   function ensureProfile(user) {
     const existing = db.prepare('SELECT * FROM user_profiles WHERE principal_id=?').get(user.id);
@@ -120,22 +172,30 @@ export function createSocial({
     );
   }
 
-  function formatPresence(row, nowMs) {
+  function formatPresence(row, nowMs, { hideRoomCode = false } = {}) {
     if (!row || row.status === 'offline' || nowMs - row.updated_at > PRESENCE_STALE_MS) {
       return { status: 'offline', online: false, gameId: null, gameTitle: null, roomCode: null, joinable: false };
     }
+    const joinable = Boolean(row.joinable);
     return {
       status: row.status,
       online: true,
       gameId: row.game_id || null,
       gameTitle: row.game_title || null,
-      roomCode: row.room_code || null,
-      joinable: Boolean(row.joinable)
+      roomCode: (joinable && !hideRoomCode) ? (row.room_code || null) : null,
+      joinable
     };
   }
 
   function assertSocialAllowed(user, { allowChildWithConsent = false } = {}) {
     const comp = complianceLookup(user.id);
+    if (!comp || !comp.ageTier || comp.ageTier === 'UNKNOWN') {
+      throw new ApiError(
+        403,
+        'AGE_GATE_REQUIRED',
+        '연령 확인을 완료한 후 소셜 기능을 이용할 수 있습니다.'
+      );
+    }
     if (comp.ageTier === 'CHILD_PROTECTED') {
       if (comp.parentalConsentStatus !== 'verified') {
         throw new ApiError(
@@ -190,7 +250,8 @@ export function createSocial({
     }));
     const leader = members.find(m => m.principalId === party.leader_id);
     const baseUrl = (config?.userBaseUrl || 'https://playhub.example.com').replace(/\/$/, '');
-    const gameSlug = party.target_game_id || 'lobby';
+    const gameSlug = encodeURIComponent(party.target_game_id || 'lobby');
+    const roomParam = encodeURIComponent(party.room_code);
     const inviterParam = encodeURIComponent(leader?.handle || 'leader');
     const launchRow = db.prepare(
       "SELECT * FROM social_party_launches WHERE party_id=? AND status='active' ORDER BY created_at DESC LIMIT 1"
@@ -231,8 +292,8 @@ export function createSocial({
       targetGameId: party.target_game_id || null,
       roomCode: party.room_code,
       maxMembers: party.max_members,
-      inviteUrl: `${baseUrl}/join/${gameSlug}?room=${party.room_code}&inviter=${inviterParam}`,
-      deepLinkUrl: `playhub://join/${gameSlug}?room=${party.room_code}&inviter=${inviterParam}`,
+      inviteUrl: `${baseUrl}/join/${gameSlug}?room=${roomParam}&inviter=${inviterParam}`,
+      deepLinkUrl: `playhub://join/${gameSlug}?room=${roomParam}&inviter=${inviterParam}`,
       members,
       activeLaunch,
       createdAt: new Date(party.created_at).toISOString(),
@@ -282,6 +343,7 @@ export function createSocial({
     // 2. Own Social Profile (GET / PUT)
     if (path === '/profile' && req.method === 'GET') {
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const prof = ensureProfile(auth.user);
       const comp = complianceLookup(auth.user.id);
       const presence = formatPresence(
@@ -305,6 +367,7 @@ export function createSocial({
     if (path === '/profile' && req.method === 'PUT') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['community']);
       rate(`social-profile:${auth.user.id}`, 30, 60000);
       const body = await readJson(req, 8192);
       const prof = ensureProfile(auth.user);
@@ -365,6 +428,8 @@ export function createSocial({
     // 3. Search Players by Handle or Display Name
     if (path === '/users/search' && req.method === 'GET') {
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['community']);
+      rate(`social-search:${auth.user.id}`, 60, 60000);
       ensureProfile(auth.user);
       const q = cleanText(url.searchParams.get('q') || '', 40);
       if (q.length < 2) {
@@ -381,7 +446,7 @@ export function createSocial({
          LEFT JOIN social_presence pr ON pr.principal_id = u.id
          LEFT JOIN user_age_compliance c ON c.principal_id = u.id
          WHERE u.id <> ?
-           AND p.privacy_level <> 'private'
+           AND p.privacy_level = 'public'
            AND COALESCE(c.age_tier, 'ADULT') <> 'CHILD_PROTECTED'
            AND (LOWER(p.handle) LIKE ? OR LOWER(COALESCE(u.display_name,'')) LIKE ?)
            AND NOT EXISTS (
@@ -393,24 +458,28 @@ export function createSocial({
       ).all(auth.user.id, pattern, pattern, auth.user.id, auth.user.id);
 
       json(res, 200, {
-        users: rows.map(r => ({
-          principalId: r.id,
-          displayName: r.display_name || 'Player',
-          handle: r.handle,
-          avatarColor: r.avatar_color || '#00B06F',
-          isFriend: areFriends(auth.user.id, r.id),
-          presence: formatPresence(
-            r.presence_status ? {
-              status: r.presence_status,
-              game_id: r.game_id,
-              game_title: r.game_title,
-              room_code: r.room_code,
-              joinable: r.joinable,
-              updated_at: r.pr_updated
-            } : null,
-            nowMs
-          )
-        }))
+        users: rows.map(r => {
+          const isFriend = areFriends(auth.user.id, r.id);
+          return {
+            principalId: r.id,
+            displayName: r.display_name || 'Player',
+            handle: r.handle,
+            avatarColor: r.avatar_color || '#00B06F',
+            isFriend,
+            presence: formatPresence(
+              r.presence_status ? {
+                status: r.presence_status,
+                game_id: r.game_id,
+                game_title: r.game_title,
+                room_code: r.room_code,
+                joinable: r.joinable,
+                updated_at: r.pr_updated
+              } : null,
+              nowMs,
+              { hideRoomCode: !isFriend }
+            )
+          };
+        })
       });
       return true;
     }
@@ -418,6 +487,7 @@ export function createSocial({
     // 4. Friends List + Live Presence + Last DM Preview + Pending Requests + Blocked Users
     if (path === '/friends' && req.method === 'GET') {
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       ensureProfile(auth.user);
       const nowMs = now();
 
@@ -503,6 +573,7 @@ export function createSocial({
     if (path === '/friends/request' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['community']);
       rate(`social-freq:${auth.user.id}`, 30, 60000);
       assertSocialAllowed(auth.user, { allowChildWithConsent: false });
       ensureProfile(auth.user);
@@ -559,6 +630,7 @@ export function createSocial({
     if (path === '/friends/respond' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['community']);
       assertSocialAllowed(auth.user, { allowChildWithConsent: false });
       const body = await readJson(req, 4096);
       const requesterId = String(body.requesterId || '');
@@ -585,6 +657,7 @@ export function createSocial({
     if (unfriendMatch && req.method === 'DELETE') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const targetId = decodeURIComponent(unfriendMatch[1]);
       db.prepare(
         'DELETE FROM social_friendships WHERE (requester_id=? AND addressee_id=?) OR (requester_id=? AND addressee_id=?)'
@@ -597,6 +670,7 @@ export function createSocial({
     if (path === '/blocks' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const body = await readJson(req, 4096);
       const targetId = String(body.targetPrincipalId || '');
       if (!targetId || targetId === auth.user.id) throw new ApiError(400, 'INVALID_BLOCK_TARGET');
@@ -625,6 +699,7 @@ export function createSocial({
     if (unblockMatch && req.method === 'DELETE') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const targetId = decodeURIComponent(unblockMatch[1]);
       db.prepare('DELETE FROM social_blocks WHERE blocker_id=? AND blocked_id=?').run(auth.user.id, targetId);
       json(res, 200, { unblocked: true, targetPrincipalId: targetId });
@@ -635,6 +710,7 @@ export function createSocial({
     if (path === '/presence' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       ensureProfile(auth.user);
       const body = await readJson(req, 4096);
       const status = String(body.status || 'online');
@@ -658,7 +734,7 @@ export function createSocial({
         online: status !== 'offline',
         gameId,
         gameTitle,
-        roomCode,
+        roomCode: joinable ? roomCode : null,
         joinable: Boolean(joinable),
         updatedAt: new Date(stamp).toISOString()
       });
@@ -668,6 +744,7 @@ export function createSocial({
     // 10. Real-Time Messages (DM & Party Chat + Safe Quick-Message Gate for Children)
     if (path === '/messages' && req.method === 'GET') {
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const channelType = url.searchParams.get('channelType') || 'dm';
       if (!['dm', 'party'].includes(channelType)) throw new ApiError(400, 'INVALID_CHANNEL_TYPE');
 
@@ -716,11 +793,13 @@ export function createSocial({
     if (path === '/messages' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['community']);
       rate(`social-msg:${auth.user.id}`, 60, 60000);
       const comp = assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       const body = await readJson(req, 4096);
       const channelType = String(body.channelType || 'dm');
       if (!['dm', 'party'].includes(channelType)) throw new ApiError(400, 'INVALID_CHANNEL_TYPE');
+      if (channelType === 'party') assertNotSanctioned(auth.user.id, ['multiplayer']);
 
       let text = '';
       let isQuick = 0;
@@ -783,6 +862,7 @@ export function createSocial({
     // 11. Party Lobby (Get Current / Create / Join by Room Code / Ready / Set Game / Leave)
     if (path === '/parties/me' && req.method === 'GET') {
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       ensureProfile(auth.user);
       const partyId = findActivePartyId(auth.user.id);
       json(res, 200, { party: partyId ? buildPartyDto(partyId) : null });
@@ -792,11 +872,14 @@ export function createSocial({
     if (path === '/parties' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
-      assertSocialAllowed(auth.user, { allowChildWithConsent: true });
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
+      rate(`social-party-create:${auth.user.id}`, 20, 60000);
+      const comp = assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       ensureProfile(auth.user);
       const body = await readJson(req, 4096);
       const title = cleanText(body.title || `${auth.user.display_name || 'Player'}의 파티`, 60);
       const targetGameId = body.targetGameId ? cleanText(body.targetGameId, 64) : null;
+      if (targetGameId) validateCatalogGame(targetGameId, comp);
       const maxMembers = Math.min(Math.max(Number(body.maxMembers || 8), 2), 8);
 
       leaveCurrentParty(auth.user.id);
@@ -821,6 +904,8 @@ export function createSocial({
     if (path === '/parties/join' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
+      rate(`social-party-join:${auth.user.id}`, 20, 60000);
       assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       ensureProfile(auth.user);
       const body = await readJson(req, 4096);
@@ -851,6 +936,7 @@ export function createSocial({
     if (partyReadyMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
       const partyId = decodeURIComponent(partyReadyMatch[1]);
       const member = db.prepare('SELECT 1 FROM social_party_members WHERE party_id=? AND principal_id=?').get(partyId, auth.user.id);
       if (!member) throw new ApiError(403, 'NOT_PARTY_MEMBER');
@@ -866,12 +952,15 @@ export function createSocial({
     if (partyGameMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
       const partyId = decodeURIComponent(partyGameMatch[1]);
       const party = db.prepare('SELECT * FROM social_parties WHERE id=?').get(partyId);
       if (!party) throw new ApiError(404, 'PARTY_NOT_FOUND');
       if (party.leader_id !== auth.user.id) throw new ApiError(403, 'LEADER_ONLY', '파티장만 게임을 변경할 수 있습니다.');
+      const comp = assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       const body = await readJson(req, 2048);
       const targetGameId = body.targetGameId ? cleanText(body.targetGameId, 64) : null;
+      if (targetGameId) validateCatalogGame(targetGameId, comp);
       db.prepare('UPDATE social_parties SET target_game_id=?, updated_at=? WHERE id=?').run(targetGameId, now(), partyId);
       json(res, 200, { party: buildPartyDto(partyId) });
       return true;
@@ -881,6 +970,7 @@ export function createSocial({
     if (partyLeaveMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       const partyId = decodeURIComponent(partyLeaveMatch[1]);
       const activeId = findActivePartyId(auth.user.id);
       if (activeId !== partyId) throw new ApiError(404, 'NOT_IN_PARTY');
@@ -894,19 +984,22 @@ export function createSocial({
     if (partyLaunchMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
+      rate(`social-party-launch:${auth.user.id}`, 20, 60000);
+      const comp = assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       ensureProfile(auth.user);
       const partyId = decodeURIComponent(partyLaunchMatch[1]);
       const party = db.prepare('SELECT * FROM social_parties WHERE id=?').get(partyId);
       if (!party) throw new ApiError(404, 'PARTY_NOT_FOUND');
       const isMember = db.prepare('SELECT 1 FROM social_party_members WHERE party_id=? AND principal_id=?').get(partyId, auth.user.id);
       if (!isMember) throw new ApiError(403, 'NOT_PARTY_MEMBER');
-      const isSeededLeader = String(party.leader_id || '').startsWith('local_');
-      if (party.leader_id !== auth.user.id && !isSeededLeader) {
+      if (party.leader_id !== auth.user.id) {
         throw new ApiError(403, 'LEADER_ONLY', '파티장만 함께 입장을 시작할 수 있습니다.');
       }
       const body = await readJson(req, 4096);
       const gameId = cleanText(body.gameId || party.target_game_id || '', 64);
       if (!gameId) throw new ApiError(400, 'TARGET_GAME_REQUIRED', '함께 입장할 게임을 먼저 선택해 주세요.');
+      validateCatalogGame(gameId, comp);
       const headerPlatform = cleanText(String(req.headers['x-playhub-platform'] || body.platform || 'web'), 24).toLowerCase() || 'web';
       const platform = ['web', 'pc', 'android', 'ios'].includes(headerPlatform) ? headerPlatform : 'web';
       const stamp = now();
@@ -941,6 +1034,8 @@ export function createSocial({
     if (partyLaunchAckMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['multiplayer']);
+      const comp = assertSocialAllowed(auth.user, { allowChildWithConsent: true });
       ensureProfile(auth.user);
       const partyId = decodeURIComponent(partyLaunchAckMatch[1]);
       const isMember = db.prepare('SELECT 1 FROM social_party_members WHERE party_id=? AND principal_id=?').get(partyId, auth.user.id);
@@ -952,6 +1047,7 @@ export function createSocial({
         ? db.prepare('SELECT * FROM social_party_launches WHERE launch_id=? AND party_id=?').get(String(body.launchId), partyId)
         : db.prepare("SELECT * FROM social_party_launches WHERE party_id=? AND status='active' ORDER BY created_at DESC LIMIT 1").get(partyId);
       if (!launch) throw new ApiError(404, 'ACTIVE_LAUNCH_NOT_FOUND');
+      validateCatalogGame(launch.game_id, comp);
       const headerPlatform = cleanText(String(req.headers['x-playhub-platform'] || body.platform || 'web'), 24).toLowerCase() || 'web';
       const platform = ['web', 'pc', 'android', 'ios'].includes(headerPlatform) ? headerPlatform : 'web';
       const stamp = now();
@@ -977,6 +1073,8 @@ export function createSocial({
     if (lbScoreMatch && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id, ['leaderboard']);
+      rate(`social-lb-score:${auth.user.id}`, 30, 60000);
       ensureProfile(auth.user);
       const [, gameId, boardId] = lbScoreMatch;
       const body = await readJson(req, 4096);
@@ -1042,6 +1140,7 @@ export function createSocial({
     if (path === '/reports' && req.method === 'POST') {
       guardMutation(req);
       const auth = authUser(req, res, true);
+      assertNotSanctioned(auth.user.id);
       rate(`social-report:${auth.user.id}`, 10, 60000);
       const body = await readJson(req, 4096);
       const targetType = String(body.targetType || '');

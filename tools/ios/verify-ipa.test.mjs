@@ -532,3 +532,91 @@ test('MainTabView.swift restricts age-gate retest button to DEBUG+allowFarmSelec
     'Age-gate retest button must be restricted inside #if DEBUG and if vm.allowFarmSelector'
   );
 });
+
+test('MainTabView.swift and PlayHubApiClient.swift enforce single-flight JWT refresh, 401 retry, safe expiry, farm cache reset, and server logout', () => {
+  const mainTab = readFileSync(resolve(REPO_ROOT, 'ios/App/UI/MainTabView.swift'), 'utf8');
+  const apiClient = readFileSync(resolve(REPO_ROOT, 'ios/Packages/PlayHubCore/Sources/PlayHubCore/Network/PlayHubApiClient.swift'), 'utf8');
+
+  // 1. Single-flight inFlightTokenTask in PlayHubShellViewModel
+  assert.match(
+    mainTab,
+    /private var inFlightTokenTask:\s*Task<String\?,\s*Never>\?/,
+    'MainTabView.swift must declare single-flight inFlightTokenTask: Task<String?, Never>?'
+  );
+
+  const ensureMatch = mainTab.match(/private func ensureAccessToken\([\s\S]*?\n    \}/);
+  assert.ok(ensureMatch, 'ensureAccessToken function must exist');
+  const ensureBody = ensureMatch[0];
+  assert.ok(ensureBody.includes('if let existingTask = inFlightTokenTask'), 'ensureAccessToken must join existing inFlightTokenTask');
+  assert.ok(ensureBody.includes('return await existingTask.value'), 'ensureAccessToken must await existingTask.value');
+  assert.ok(ensureBody.includes('defer { self.inFlightTokenTask = nil }'), 'ensureAccessToken must clear inFlightTokenTask on completion');
+  assert.ok(ensureBody.includes('statusCode == 401'), 'ensureAccessToken must explicitly handle 401 refresh failure');
+  assert.ok(ensureBody.includes('self.handleSessionExpired()'), 'ensureAccessToken must transition to session-expired state on refresh 401');
+  assert.ok(ensureBody.includes('if self.sessionExpired'), 'ensureAccessToken must not implicitly loginGuest while sessionExpired is true');
+
+  // 2. syncOnlineCatalog routes through ensureAccessToken and makeApiClient
+  const syncCatalogMatch = mainTab.match(/public func syncOnlineCatalog\([\s\S]*?\n    \}/);
+  assert.ok(syncCatalogMatch, 'syncOnlineCatalog function must exist');
+  const syncCatalogBody = syncCatalogMatch[0];
+  assert.ok(syncCatalogBody.includes('await ensureAccessToken()'), 'syncOnlineCatalog must acquire token via ensureAccessToken()');
+  assert.ok(syncCatalogBody.includes('makeApiClient()'), 'syncOnlineCatalog must use makeApiClient() with 401 retry hook');
+  assert.equal(syncCatalogBody.includes('loginGuest()'), false, 'syncOnlineCatalog must not bypass ensureAccessToken with direct loginGuest()');
+
+  // 3. PlayHubApiClient 401 single-refresh + 1-retry and logout endpoint
+  assert.match(
+    apiClient,
+    /public typealias AccessTokenRefresher\s*=/,
+    'PlayHubApiClient must define AccessTokenRefresher'
+  );
+  assert.ok(apiClient.includes('http.statusCode == 401'), 'PlayHubApiClient.request must detect HTTP 401');
+  assert.ok(apiClient.includes('allowAuthRetry'), 'PlayHubApiClient.request must guard single retry with allowAuthRetry');
+  assert.ok(apiClient.includes('allowAuthRetry: false'), 'PlayHubApiClient must retry at most once (allowAuthRetry: false)');
+  assert.match(
+    apiClient,
+    /public func logout\(accessToken:\s*String\)\s*async throws[\s\S]*?path:\s*"\/api\/mobile\/auth\/logout"[\s\S]*?method:\s*"POST"/,
+    'PlayHubApiClient must implement POST /api/mobile/auth/logout'
+  );
+
+  // 4. selectFarm clears in-memory accessTokenCache and social state immediately
+  const selectFarmMatch = mainTab.match(/public func selectFarm\([\s\S]*?\n    \}/);
+  assert.ok(selectFarmMatch, 'selectFarm function must exist');
+  const selectFarmBody = selectFarmMatch[0];
+  assert.ok(selectFarmBody.includes('accessTokenCache = nil'), 'selectFarm must clear in-memory accessTokenCache');
+  assert.ok(selectFarmBody.includes('inFlightTokenTask?.cancel()'), 'selectFarm must cancel in-flight token task');
+  assert.ok(selectFarmBody.includes('socialProfile = nil'), 'selectFarm must clear socialProfile');
+  assert.ok(selectFarmBody.includes('socialFriends = []'), 'selectFarm must clear socialFriends');
+  assert.ok(selectFarmBody.includes('incomingRequests = []'), 'selectFarm must clear incomingRequests');
+  assert.ok(selectFarmBody.includes('activeParty = nil'), 'selectFarm must clear activeParty');
+
+  // 5. signOutAndResetGuest revokes server token family via logout BEFORE clearing local secrets
+  const signOutMatch = mainTab.match(/public func signOutAndResetGuest\([\s\S]*?\n    \}/);
+  assert.ok(signOutMatch, 'signOutAndResetGuest function must exist');
+  const signOutBody = signOutMatch[0];
+  const logoutIdx = signOutBody.indexOf('client.logout(accessToken:');
+  const clearIdx = signOutBody.indexOf('KeychainStore.clearAllSessionSecrets()');
+  assert.ok(logoutIdx >= 0, 'signOutAndResetGuest must call client.logout(accessToken:)');
+  assert.ok(clearIdx > logoutIdx, 'signOutAndResetGuest must call server logout BEFORE clearing Keychain secrets');
+});
+
+test('AvatarAndProfileViews.swift guards age-gate retest with DEBUG+allowFarmSelector and confirms account deletion via .alert', () => {
+  const avatarViews = readFileSync(resolve(REPO_ROOT, 'ios/App/UI/AvatarAndProfileViews.swift'), 'utf8');
+
+  // 1. Age-gate retest button must be double-guarded inside #if DEBUG and if vm.allowFarmSelector
+  assert.match(
+    avatarViews,
+    /#if DEBUG\s+if vm\.allowFarmSelector\s*\{\s*Button\("연령 게이트 다시 테스트"\)[\s\S]*?\}\s*#endif/,
+    'AvatarAndProfileViews.swift age-gate retest button must be restricted inside #if DEBUG and if vm.allowFarmSelector'
+  );
+
+  // 2. Account deletion button triggers two-step .alert confirmation rather than immediate deletion
+  assert.match(
+    avatarViews,
+    /Button\("인앱 계정 삭제 요청",\s*role:\s*\.destructive\)\s*\{\s*showDeleteAccountConfirm\s*=\s*true\s*\}/,
+    'Account deletion button must trigger showDeleteAccountConfirm instead of deleting immediately'
+  );
+  assert.match(
+    avatarViews,
+    /\.alert\("계정 삭제 확인",\s*isPresented:\s*\$showDeleteAccountConfirm\)[\s\S]*?vm\.requestAccountDeletion\(\)/,
+    'ProfileMoreView must show a .alert confirmation dialog before calling vm.requestAccountDeletion()'
+  );
+});

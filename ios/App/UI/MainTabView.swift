@@ -57,7 +57,10 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var quickMessages: [SocialQuickMessage] = []
     @Published public var socialToast: String?
     @Published public var leaderboardGame: MobileCatalogGame?
+    @Published public var sessionExpired: Bool = false
+    @Published public var showSessionExpiredAlert: Bool = false
     private var accessTokenCache: String?
+    private var inFlightTokenTask: Task<String?, Never>?
 
     // MARK: Stitch Avatar & Profile Preferences State
     @Published public var equippedAvatarIds: Set<String>
@@ -141,8 +144,18 @@ public final class PlayHubShellViewModel: ObservableObject {
 
     public func selectFarm(_ cluster: FarmCluster) {
         guard allowFarmSelector else { return }
+        inFlightTokenTask?.cancel()
+        inFlightTokenTask = nil
         KeychainStore.delete(forKey: "access_token")
         KeychainStore.delete(forKey: "refresh_token")
+        accessTokenCache = nil
+        sessionExpired = false
+        showSessionExpiredAlert = false
+        socialProfile = nil
+        socialFriends = []
+        incomingRequests = []
+        activeParty = nil
+        quickMessages = []
         activeFarm = cluster
         UserDefaults.standard.set(cluster.id, forKey: "playhub_selected_farm_id")
         if cluster.id == FarmServerRegistry.customFarmId {
@@ -195,22 +208,15 @@ public final class PlayHubShellViewModel: ObservableObject {
 
     public func syncOnlineCatalog() async {
         syncStatusText = "서버 동기화 중 (\(activeFarm.id))..."
-        let client = PlayHubApiClient(
-            baseUrl: activeFarm.baseUrl,
-            engineVersion: engineVersion,
-            appBuildNumber: appBuildNumber
-        )
+        let client = makeApiClient()
         do {
-            let token: String?
-            if let existing = KeychainStore.load(forKey: "access_token") {
-                token = existing
-            } else {
-                let auth = try await client.loginGuest()
-                try? KeychainStore.save(auth.accessToken, forKey: "access_token")
-                try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
-                token = auth.accessToken
+            guard let token = await ensureAccessToken() else {
+                if !sessionExpired {
+                    catalogGames = Self.fallbackDemoCatalog()
+                    syncStatusText = "오프라인 데모 모드 (\(activeFarm.id) 미연결)"
+                }
+                return
             }
-            self.accessTokenCache = token
             let catalog = try await client.fetchCatalog(accessToken: token)
             if !catalog.games.isEmpty {
                 catalogGames = catalog.games
@@ -220,18 +226,24 @@ public final class PlayHubShellViewModel: ObservableObject {
             }
             await syncSocial()
         } catch {
-            catalogGames = Self.fallbackDemoCatalog()
-            syncStatusText = "오프라인 데모 모드 (\(activeFarm.id) 미연결)"
+            if !sessionExpired {
+                catalogGames = Self.fallbackDemoCatalog()
+                syncStatusText = "오프라인 데모 모드 (\(activeFarm.id) 미연결)"
+            }
         }
     }
 
     // MARK: - M3 Social Actions
 
-    private func makeApiClient() -> PlayHubApiClient {
+    private func makeApiClient(enableAuthRetry: Bool = true) -> PlayHubApiClient {
         PlayHubApiClient(
             baseUrl: activeFarm.baseUrl,
             engineVersion: engineVersion,
-            appBuildNumber: appBuildNumber
+            appBuildNumber: appBuildNumber,
+            onUnauthorizedRefresh: enableAuthRetry ? { [weak self] failedToken in
+                guard let self else { return nil }
+                return await self.ensureAccessToken(forceRefresh: true, failedToken: failedToken)
+            } : nil
         )
     }
 
@@ -246,29 +258,95 @@ public final class PlayHubShellViewModel: ObservableObject {
         return Date(timeIntervalSince1970: exp) <= Date().addingTimeInterval(30)
     }
 
-    private func ensureAccessToken() async -> String? {
-        if let cached = accessTokenCache ?? KeychainStore.load(forKey: "access_token"),
+    private func handleSessionExpired() {
+        KeychainStore.delete(forKey: "access_token")
+        KeychainStore.delete(forKey: "refresh_token")
+        accessTokenCache = nil
+        socialProfile = nil
+        socialFriends = []
+        incomingRequests = []
+        activeParty = nil
+        sessionExpired = true
+        showSessionExpiredAlert = true
+        syncStatusText = "세션이 만료되었습니다. 다시 로그인해 주세요."
+        showSocialToast("세션이 만료되었습니다. 다시 로그인해 주세요.")
+    }
+
+    public func restartGuestSessionAfterExpiry() {
+        sessionExpired = false
+        showSessionExpiredAlert = false
+        inFlightTokenTask?.cancel()
+        inFlightTokenTask = nil
+        KeychainStore.clearAllSessionSecrets()
+        accessTokenCache = nil
+        Task { await syncOnlineCatalog() }
+    }
+
+    private func ensureAccessToken(forceRefresh: Bool = false, failedToken: String? = nil) async -> String? {
+        if !forceRefresh,
+           let cached = accessTokenCache ?? KeychainStore.load(forKey: "access_token"),
            !cached.isEmpty,
            !isJwtExpired(cached) {
             accessTokenCache = cached
+            sessionExpired = false
             return cached
         }
-        if let refresh = KeychainStore.load(forKey: "refresh_token"), !refresh.isEmpty,
-           let refreshed = try? await makeApiClient().refreshSession(refreshToken: refresh) {
-            try? KeychainStore.save(refreshed.accessToken, forKey: "access_token")
-            try? KeychainStore.save(refreshed.refreshToken, forKey: "refresh_token")
-            accessTokenCache = refreshed.accessToken
-            return refreshed.accessToken
+        if forceRefresh {
+            if let failedToken,
+               let cached = accessTokenCache,
+               !cached.isEmpty,
+               cached != failedToken,
+               !isJwtExpired(cached) {
+                return cached
+            }
+            if failedToken == nil || accessTokenCache == failedToken {
+                accessTokenCache = nil
+            }
         }
-        do {
-            let auth = try await makeApiClient().loginGuest()
-            try? KeychainStore.save(auth.accessToken, forKey: "access_token")
-            try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
-            accessTokenCache = auth.accessToken
-            return auth.accessToken
-        } catch {
-            return nil
+        if let existingTask = inFlightTokenTask {
+            return await existingTask.value
         }
+
+        let task = Task<String?, Never> { [weak self] in
+            guard let self else { return nil }
+            defer { self.inFlightTokenTask = nil }
+
+            if let refresh = KeychainStore.load(forKey: "refresh_token"), !refresh.isEmpty {
+                do {
+                    let refreshed = try await self.makeApiClient(enableAuthRetry: false).refreshSession(refreshToken: refresh)
+                    try? KeychainStore.save(refreshed.accessToken, forKey: "access_token")
+                    try? KeychainStore.save(refreshed.refreshToken, forKey: "refresh_token")
+                    self.accessTokenCache = refreshed.accessToken
+                    self.sessionExpired = false
+                    self.showSessionExpiredAlert = false
+                    return refreshed.accessToken
+                } catch let PlayHubApiError.httpError(statusCode, _) where statusCode == 401 || statusCode == 403 {
+                    // Do not implicitly overwrite an authenticated session with loginGuest().
+                    self.handleSessionExpired()
+                    return nil
+                } catch {
+                    return nil
+                }
+            }
+
+            if self.sessionExpired {
+                return nil
+            }
+
+            do {
+                let auth = try await self.makeApiClient(enableAuthRetry: false).loginGuest()
+                try? KeychainStore.save(auth.accessToken, forKey: "access_token")
+                try? KeychainStore.save(auth.refreshToken, forKey: "refresh_token")
+                self.accessTokenCache = auth.accessToken
+                self.sessionExpired = false
+                self.showSessionExpiredAlert = false
+                return auth.accessToken
+            } catch {
+                return nil
+            }
+        }
+        inFlightTokenTask = task
+        return await task.value
     }
 
     public func showSocialToast(_ message: String) {
@@ -571,14 +649,25 @@ public final class PlayHubShellViewModel: ObservableObject {
     }
 
     public func signOutAndResetGuest() {
-        KeychainStore.clearAllSessionSecrets()
-        accessTokenCache = nil
-        socialProfile = nil
-        socialFriends = []
-        incomingRequests = []
-        activeParty = nil
-        showSocialToast("로그아웃되었습니다. 새 게스트로 연결합니다.")
-        Task { await syncOnlineCatalog() }
+        let tokenToRevoke = accessTokenCache ?? KeychainStore.load(forKey: "access_token")
+        let client = makeApiClient(enableAuthRetry: false)
+        inFlightTokenTask?.cancel()
+        inFlightTokenTask = nil
+        Task {
+            if let token = tokenToRevoke, !token.isEmpty {
+                try? await client.logout(accessToken: token)
+            }
+            KeychainStore.clearAllSessionSecrets()
+            accessTokenCache = nil
+            sessionExpired = false
+            showSessionExpiredAlert = false
+            socialProfile = nil
+            socialFriends = []
+            incomingRequests = []
+            activeParty = nil
+            showSocialToast("로그아웃되었습니다. 새 게스트로 연결합니다.")
+            await syncOnlineCatalog()
+        }
     }
 
     public func requestAccountDeletion() async {
@@ -725,6 +814,14 @@ public struct MainTabView: View {
             Button("확인", role: .cancel) { vm.incompatibilityAlert = nil }
         } message: { info in
             Text(info.detailMessage ?? "앱 또는 엔진 업데이트가 필요합니다.")
+        }
+        .alert("세션 만료", isPresented: $vm.showSessionExpiredAlert) {
+            Button("새 게스트 세션으로 계속") {
+                vm.restartGuestSessionAfterExpiry()
+            }
+            Button("닫기", role: .cancel) {}
+        } message: {
+            Text("보안을 위해 현재 로그인 세션이 만료되었습니다. 다시 로그인하거나 새 게스트 세션으로 계속해 주세요.")
         }
         .task {
             await vm.refreshFarmHealth()

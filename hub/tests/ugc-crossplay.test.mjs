@@ -305,3 +305,188 @@ test('SSOT guard: Hub and Forge share tools/ugc-shared room-core and publish-con
   assert.doesNotMatch(hubPub, /function slugifyGameId\s*\(/, 'Hub ugc-publish must not duplicate slugifyGameId');
   assert.doesNotMatch(forgeManifest, /function slugifyGameId\s*\(/, 'Forge release-manifest must not duplicate slugifyGameId');
 });
+
+test('UGC Multiplayer WS security hardening: CSWSH Origin check, party privacy, room.gameId check, RFC 6455 DoS limits & unknown upgrade cleanup', async t => {
+  const net = await import('node:net');
+  const crypto = await import('node:crypto');
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-ws-sec-'));
+  const dataDir = path.join(temp, 'hub-data');
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  const app = createApp({
+    dataDir,
+    dbPath: path.join(dataDir, 'hub.sqlite'),
+    publicHost: '127.0.0.1',
+    publicPort: 0,
+    adminHost: '127.0.0.1',
+    adminPort: 0,
+    secureCookies: false,
+    userBaseUrl: 'http://127.0.0.1',
+    userOrigins: ['http://127.0.0.1'],
+    adminOrigins: ['http://127.0.0.1'],
+    mobile: { enabled: false },
+    forge: { enabled: false },
+  }, {
+    rootDir: HUB_ROOT,
+    platformRoot: path.resolve(HUB_ROOT, '..'),
+  });
+  const addrs = await app.listen();
+  const port = addrs.public.port;
+  const pubBase = `http://127.0.0.1:${port}`;
+  const wsUrl = `ws://127.0.0.1:${port}/ws/ugc-mmo`;
+
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  // 1. Disallowed browser Origin is rejected (CSWSH protection)
+  await assert.rejects(
+    () => new Promise((resolve, reject) => {
+      const ws = new WebSocket(wsUrl, { headers: { Origin: 'https://evil.example.com' } });
+      ws.on('open', () => { ws.close(); resolve(); });
+      ws.on('unexpected-response', (_req, res) => reject(new Error(`HTTP_${res.statusCode}`)));
+      ws.on('error', reject);
+    }),
+    /HTTP_403|403/
+  );
+
+  // Allowed Origin succeeds
+  const allowedWs = await new Promise((resolve, reject) => {
+    const ws = new WebSocket(wsUrl, { headers: { Origin: 'http://127.0.0.1' } });
+    ws.on('open', () => resolve(ws));
+    ws.on('error', reject);
+  });
+  t.after(() => allowedWs.close());
+
+  // 2. Unknown upgrade path destroys socket cleanly (does not hang)
+  const unknownClosed = await new Promise(resolve => {
+    const sock = net.connect(port, '127.0.0.1', () => {
+      sock.write(
+        'GET /ws/unknown-path HTTP/1.1\r\n' +
+        `Host: 127.0.0.1:${port}\r\n` +
+        'Upgrade: websocket\r\n' +
+        'Connection: Upgrade\r\n' +
+        'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n' +
+        'Sec-WebSocket-Version: 13\r\n\r\n'
+      );
+    });
+    sock.on('close', () => resolve(true));
+    sock.on('error', () => resolve(true));
+    setTimeout(() => { sock.destroy(); resolve(false); }, 2000);
+  });
+  assert.equal(unknownClosed, true, 'Unhandled upgrade socket must be destroyed immediately');
+
+  // 3. Party room hides partyCode, roomId, and players in /api/ugc-multiplayer/:gameId/rooms
+  const partyClient = await connectWs(wsUrl);
+  t.after(() => partyClient.ws.close());
+  partyClient.ws.send(JSON.stringify({ type: 'join', gameId: 'tappy-chicken-mmo', roomId: 'SECRET99', name: 'SecretHost', platform: 'web' }));
+  const partyWelcome = await waitFor(() => partyClient.messages.find(m => m.type === 'welcome'));
+  assert.ok(partyWelcome);
+
+  const roomsRes = await (await fetch(`${pubBase}/api/ugc-multiplayer/tappy-chicken-mmo/rooms`)).json();
+  assert.equal(roomsRes.rooms.length, 1);
+  assert.equal(roomsRes.rooms[0].isParty, true);
+  assert.equal(roomsRes.rooms[0].partyCode, undefined, 'partyCode must not be leaked');
+  assert.equal(roomsRes.rooms[0].roomId, undefined, 'party roomId must not be leaked');
+  assert.equal(roomsRes.rooms[0].players, undefined, 'party players list must not be leaked');
+
+  // 4. 12-hex roomId join rejects mismatched gameId
+  const wrongGameClient = await connectWs(wsUrl);
+  t.after(() => wrongGameClient.ws.close());
+  wrongGameClient.ws.send(JSON.stringify({ type: 'join', gameId: 'other-game-id', roomId: partyWelcome.roomId, name: 'CrossGame', platform: 'web' }));
+  const wrongGameErr = await waitFor(() => wrongGameClient.messages.find(m => m.type === 'error'));
+  assert.ok(wrongGameErr, '12-hex roomId join with mismatched gameId must be rejected');
+
+  // Helper to open raw RFC 6455 socket for frame-level DoS tests
+  function buildMaskedFrame(fin, opcode, payloadBuf) {
+    const mask = crypto.randomBytes(4);
+    const len = payloadBuf.length;
+    let header;
+    if (len < 126) {
+      header = Buffer.alloc(2);
+      header[0] = (fin ? 0x80 : 0) | opcode;
+      header[1] = 0x80 | len;
+    } else {
+      header = Buffer.alloc(4);
+      header[0] = (fin ? 0x80 : 0) | opcode;
+      header[1] = 0x80 | 126;
+      header.writeUInt16BE(len, 2);
+    }
+    const masked = Buffer.from(payloadBuf);
+    for (let i = 0; i < masked.length; i++) masked[i] ^= mask[i & 3];
+    return Buffer.concat([header, mask, masked]);
+  }
+
+  function openRawWs() {
+    return new Promise((resolve, reject) => {
+      const sock = net.connect(port, '127.0.0.1', () => {
+        sock.write(
+          'GET /ws/ugc-mmo HTTP/1.1\r\n' +
+          `Host: 127.0.0.1:${port}\r\n` +
+          'Upgrade: websocket\r\n' +
+          'Connection: Upgrade\r\n' +
+          'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n' +
+          'Sec-WebSocket-Version: 13\r\n\r\n'
+        );
+      });
+      let acc = Buffer.alloc(0);
+      const onData = chunk => {
+        acc = Buffer.concat([acc, chunk]);
+        const idx = acc.indexOf('\r\n\r\n');
+        if (idx !== -1) {
+          sock.off('data', onData);
+          resolve(sock);
+        }
+      };
+      sock.on('data', onData);
+      sock.on('error', reject);
+    });
+  }
+
+  function waitCloseCode(sock) {
+    return new Promise(resolve => {
+      const chunks = [];
+      sock.on('data', c => chunks.push(c));
+      sock.on('close', () => {
+        const buf = Buffer.concat(chunks);
+        // Look for close frame 0x88
+        for (let i = 0; i + 3 < buf.length; i++) {
+          if (buf[i] === 0x88 && buf[i + 1] >= 2) {
+            resolve(buf.readUInt16BE(i + 2));
+            return;
+          }
+        }
+        resolve(null);
+      });
+    });
+  }
+
+  // 5a. Control frame (Ping 0x9) with payload > 125 bytes closes with 1002
+  const pingSock = await openRawWs();
+  const pingCodePromise = waitCloseCode(pingSock);
+  pingSock.write(buildMaskedFrame(true, 0x9, Buffer.alloc(200, 0x41)));
+  assert.equal(await pingCodePromise, 1002, 'Oversized Ping control frame must close with 1002');
+
+  // 5b. Continuation frame count > 32 closes with 1009
+  const fragSock = await openRawWs();
+  const fragCodePromise = waitCloseCode(fragSock);
+  fragSock.write(buildMaskedFrame(false, 0x1, Buffer.alloc(0)));
+  for (let i = 0; i < 35; i++) {
+    fragSock.write(buildMaskedFrame(false, 0x0, Buffer.alloc(0)));
+  }
+  assert.equal(await fragCodePromise, 1009, 'Excessive 0-byte continuation frames must close with 1009');
+
+  // 5c. Sustained rate limit overflow closes with 1008 instead of echoing errors
+  const floodCloseCode = await new Promise((resolve, reject) => {
+    const ws = new WebSocket(wsUrl);
+    ws.on('error', reject);
+    ws.on('close', code => resolve(code));
+    ws.on('open', () => {
+      for (let i = 0; i < 95; i++) {
+        ws.send('{"type":"noop"}');
+      }
+    });
+  });
+  assert.equal(floodCloseCode, 1008, 'Sustained rate limit violation must close with 1008');
+});

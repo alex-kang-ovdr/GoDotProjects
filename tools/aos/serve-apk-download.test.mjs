@@ -134,3 +134,55 @@ test('/games/:gameId/:rel enforces root boundary on both local reads and dev-ass
     fs.rmSync(workDir, { recursive: true, force: true });
   }
 });
+
+test('portalServer blocks malformed percent-encoding, Windows drive/backslash traversal on /games/* and static routes', async () => {
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-portal-traversal-'));
+  const outsideFile = path.join(workDir, 'portal-secret.txt');
+  fs.writeFileSync(outsideFile, 'PORTAL-TOP-SECRET');
+
+  const aosServer = createAosDevServer({
+    port: 0,
+    portalPort: 1,
+    dataDir: workDir,
+    dataSource: 'local'
+  });
+  const portalPort = await listen(aosServer.portalServer);
+
+  try {
+    const posixOutside = outsideFile.replace(/\\/g, '/');
+    const badPaths = [
+      '/%E0%A4%A',
+      '/games/survivor-arena-g2/%E0%A4%A',
+      `/games/survivor-arena-g2/${posixOutside}`,
+      `/games/survivor-arena-g2/C:/Windows/win.ini`,
+      `/games/survivor-arena-g2/C%3A/Windows/win.ini`,
+      `/games/survivor-arena-g2/%5c..%5c..%5cportal-secret.txt`,
+      `/games/survivor-arena-g2/%2fetc%2fpasswd`,
+      `/C:/Windows/win.ini`,
+      `/C%3A/Windows/win.ini`,
+      `/%5c..%5c..%5cpackage.json`,
+      `/%2e%2e/%2e%2e/package.json`
+    ];
+    for (const p of badPaths) {
+      const res = await rawGet(portalPort, p);
+      assert.ok(res.status === 400 || res.status === 404, `Portal attack path '${p}' must return 400/404, got ${res.status}`);
+      assert.ok(!res.body.includes('PORTAL-TOP-SECRET'), `Secret leaked on portal path '${p}'`);
+    }
+    const malformed = await rawGet(portalPort, '/%E0%A4%A');
+    assert.equal(malformed.status, 400);
+    const driveGame = await rawGet(portalPort, '/games/survivor-arena-g2/C%3A/Windows/win.ini');
+    assert.equal(driveGame.status, 400);
+
+    // Legitimate portal static & game manifest paths still work
+    const rootRes = await rawGet(portalPort, '/');
+    assert.equal(rootRes.status, 200);
+    const manifestRes = await rawGet(portalPort, '/games/survivor-arena-g2/game.manifest.json');
+    assert.equal(manifestRes.status, 200);
+    assert.ok(manifestRes.body.includes('survivor-arena-g2'));
+  } finally {
+    aosServer.portalServer?.closeAllConnections?.();
+    aosServer.server.closeAllConnections?.();
+    await aosServer.close();
+    fs.rmSync(workDir, { recursive: true, force: true });
+  }
+});

@@ -137,6 +137,19 @@ test('Cross-Platform Social: PC Hub Web (/api/social/*) <-> iOS <-> Android full
   assert.equal(pcProf.status, 200);
   assert.equal(pcProf.data.handle, 'pcweb#1001');
 
+  // Fail-Closed: PC Web user without completed age-gate (UNKNOWN) must be blocked from social mutations
+  const blockedUnknown = await pcWeb.req('/api/social/friends/request', {
+    method: 'POST',
+    body: { targetPrincipalId: ios.principalId }
+  });
+  assert.equal(blockedUnknown.status, 403);
+  assert.equal(blockedUnknown.data.error?.code, 'AGE_GATE_REQUIRED');
+
+  // Complete adult compliance for PC Web principal
+  app2.db.prepare(
+    "INSERT OR REPLACE INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,updated_at) VALUES(?,'KR','ADULT','not_required',?)"
+  ).run(pcProf.data.principalId, Date.now());
+
   const iosProf = await ios.req('/social/profile', {
     method: 'PUT',
     body: { displayName: '아이폰유저', handle: 'iospro#2002', avatarColor: '#2563EB' }
@@ -215,7 +228,7 @@ test('Cross-Platform Social: PC Hub Web (/api/social/*) <-> iOS <-> Android full
   // 5. 3-Platform Shared Party (PC Web Leader + iOS + Android) + Leader Transfer
   const partyCreate = await pcWeb.req('/api/social/parties', {
     method: 'POST',
-    body: { title: '크로스플랫폼 3인 파티', targetGameId: 'survivor-arena-g2' }
+    body: { title: '크로스플랫폼 3인 파티', targetGameId: 'match3-garden' }
   });
   assert.equal(partyCreate.status, 201);
   const roomCode = partyCreate.data.party.roomCode;
@@ -244,7 +257,7 @@ test('Cross-Platform Social: PC Hub Web (/api/social/*) <-> iOS <-> Android full
   // 5b. Synchronized Co-Entry Cross-Play Launch (PC Web Leader launches -> iOS & Android join EXACT same matchRoomId!)
   const launchRes = await pcWeb.req(`/api/social/parties/${partyId}/launch`, {
     method: 'POST',
-    body: { gameId: 'survivor-arena-g2', gameTitle: 'Survivor Arena G2', platform: 'web' }
+    body: { gameId: 'match3-garden', gameTitle: 'Match-3 Garden', platform: 'web' }
   });
   assert.equal(launchRes.status, 201);
   const { launchId, matchRoomId } = launchRes.data.launch;
@@ -262,12 +275,12 @@ test('Cross-Platform Social: PC Hub Web (/api/social/*) <-> iOS <-> Android full
   // iOS and Android acknowledge entry into the SAME matchRoomId
   const iosAck = await ios.req(`/social/parties/${partyId}/launch/ack`, {
     method: 'POST',
-    body: { launchId, state: 'entered', gameTitle: 'Survivor Arena G2' }
+    body: { launchId, state: 'entered', gameTitle: 'Match-3 Garden' }
   });
   assert.equal(iosAck.status, 200);
   const aosAck = await android.req(`/social/parties/${partyId}/launch/ack`, {
     method: 'POST',
-    body: { launchId, state: 'entered', gameTitle: 'Survivor Arena G2' }
+    body: { launchId, state: 'entered', gameTitle: 'Match-3 Garden' }
   });
   assert.equal(aosAck.status, 200);
 
@@ -310,4 +323,119 @@ test('Cross-Platform Social: PC Hub Web (/api/social/*) <-> iOS <-> Android full
   const qmWeb = await pcWeb.req('/api/social/quick-messages');
   assert.equal(qmWeb.status, 200);
   assert.equal(qmWeb.data.quickMessages.length, 5);
+});
+
+test('Web Social enforces CHILD_PROTECTED Fail-Closed compliance and scoped user_sanctions (all/community/multiplayer/leaderboard)', async t => {
+  const dir = makeTempDir();
+  const dataDir = path.join(dir, 'data');
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  const app2 = createApp({
+    publicHost: '127.0.0.1',
+    publicPort: 0,
+    adminHost: '127.0.0.1',
+    adminPort: 0,
+    dataDir,
+    userBaseUrl: 'http://127.0.0.1',
+    userOrigins: ['http://127.0.0.1'],
+    adminOrigins: ['http://127.0.0.1'],
+    mobile: { enabled: true, jwtSecret: 'xplat-sanction-secret-0123456789abc' }
+  });
+  const addrs = await app2.listen();
+  const url = `http://127.0.0.1:${addrs.public.port}`;
+  t.after(async () => {
+    await app2.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  // Override Origin helper to match configured userOrigins
+  const makeWeb = async () => {
+    let cookieJar = new Map();
+    let csrf = '';
+    const absorb = res => {
+      for (const c of (res.headers.getSetCookie ? res.headers.getSetCookie() : [])) {
+        const [pair] = c.split(';');
+        const eq = pair.indexOf('=');
+        if (eq > 0) cookieJar.set(pair.slice(0, eq).trim(), pair.slice(eq + 1).trim());
+      }
+    };
+    const cookieStr = () => [...cookieJar.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
+    const sRes = await fetch(`${url}/api/session`, { headers: { Origin: 'http://127.0.0.1' } });
+    absorb(sRes);
+    csrf = (await sRes.json()).csrfToken;
+    return async (apiPath, { method = 'GET', body } = {}) => {
+      const headers = { Origin: 'http://127.0.0.1', Cookie: cookieStr() };
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      if (method !== 'GET' && method !== 'HEAD') headers['X-CSRF-Token'] = csrf;
+      const res = await fetch(`${url}${apiPath}`, {
+        method,
+        headers,
+        body: body === undefined ? undefined : JSON.stringify(body)
+      });
+      absorb(res);
+      return { status: res.status, data: await res.json().catch(() => ({})) };
+    };
+  };
+
+  const webChild = await makeWeb();
+  const webUser = await makeWeb();
+  const childProf = await webChild('/api/social/profile', { method: 'PUT', body: { displayName: '어린이웹', handle: 'webkid#1111' } });
+  const userProf = await webUser('/api/social/profile', { method: 'PUT', body: { displayName: '성인웹', handle: 'webadult#2222' } });
+  assert.equal(childProf.status, 200);
+  assert.equal(userProf.status, 200);
+
+  const nowMs = Date.now();
+  app2.db.prepare(
+    "INSERT OR REPLACE INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,updated_at) VALUES(?,'KR','CHILD_PROTECTED','pending',?)"
+  ).run(childProf.data.principalId, nowMs);
+  app2.db.prepare(
+    "INSERT OR REPLACE INTO user_age_compliance(principal_id,region_code,age_tier,parental_consent_status,updated_at) VALUES(?,'KR','ADULT','not_required',?)"
+  ).run(userProf.data.principalId, nowMs);
+
+  // 1. CHILD_PROTECTED on Web Social MUST NOT fail-open to ADULT
+  const childProfileGet = await webChild('/api/social/profile');
+  assert.equal(childProfileGet.status, 200);
+  assert.equal(childProfileGet.data.ageTier, 'CHILD_PROTECTED');
+
+  const childPartyBlocked = await webChild('/api/social/parties', { method: 'POST', body: { title: 'Child Party' } });
+  assert.equal(childPartyBlocked.status, 403);
+  assert.equal(childPartyBlocked.data.error?.code, 'PARENTAL_CONSENT_REQUIRED');
+
+  // 2. Scoped Sanctions Enforcement: community, multiplayer, leaderboard, all
+  const insertSanction = (id, principalId, scope) => {
+    app2.db.prepare(
+      `INSERT INTO user_sanctions(id,principal_id,scope,action,reason,evidence_json,active,expires_at,created_by,created_at,revoked_at,revoked_by,eos_target_puid,eos_sync_status,eos_synced_at)
+       VALUES(?,?,?,'mute','test','{}',1,NULL,'admin',?,NULL,NULL,NULL,'not_applicable',NULL)`
+    ).run(id, principalId, scope, nowMs);
+  };
+  const revokeSanction = id => {
+    app2.db.prepare('UPDATE user_sanctions SET active=0 WHERE id=?').run(id);
+  };
+
+  // community sanction blocks profile edit & friend request, but allows party creation
+  insertSanction('sanc-comm', userProf.data.principalId, 'community');
+  assert.equal((await webUser('/api/social/profile', { method: 'PUT', body: { displayName: '차단됨' } })).status, 403);
+  assert.equal((await webUser('/api/social/friends/request', { method: 'POST', body: { targetPrincipalId: childProf.data.principalId } })).status, 403);
+  assert.equal((await webUser('/api/social/parties', { method: 'POST', body: { title: 'OK Party', targetGameId: 'match3-garden' } })).status, 201);
+  revokeSanction('sanc-comm');
+
+  // multiplayer sanction blocks party create / join / launch
+  insertSanction('sanc-mp', userProf.data.principalId, 'multiplayer');
+  const mpBlocked = await webUser('/api/social/parties', { method: 'POST', body: { title: 'Blocked Party' } });
+  assert.equal(mpBlocked.status, 403);
+  assert.equal(mpBlocked.data.error?.code, 'USER_SANCTIONED');
+  revokeSanction('sanc-mp');
+
+  // leaderboard sanction blocks score submission
+  insertSanction('sanc-lb', userProf.data.principalId, 'leaderboard');
+  const lbBlocked = await webUser('/api/social/leaderboards/match3-garden/high_score/scores', { method: 'POST', body: { score: 500 } });
+  assert.equal(lbBlocked.status, 403);
+  assert.equal(lbBlocked.data.error?.code, 'USER_SANCTIONED');
+  revokeSanction('sanc-lb');
+
+  // all sanction blocks even GET /api/social/profile via requireUnsanctionedSession
+  insertSanction('sanc-all', userProf.data.principalId, 'all');
+  const allBlocked = await webUser('/api/social/profile');
+  assert.equal(allBlocked.status, 403);
+  assert.equal(allBlocked.data.error?.code, 'USER_SANCTIONED');
 });

@@ -33,7 +33,10 @@ const SOCKET_PATH = '/ws/ugc-mmo';
 const ROOM_ID_RE = /^[a-f0-9]{12}$/;
 const PARTY_ROOM_CODE_RE = /^[A-Za-z0-9_-]{4,24}$/;
 const MAX_PAYLOAD = 64 * 1024;
+const MAX_FRAG_CHUNKS = 32;
 const MAX_ROOMS = 128;
+const DEFAULT_MAX_TOTAL_SOCKETS = 512;
+const DEFAULT_MAX_SOCKETS_PER_IP = 32;
 
 function encodeWsFrame(opcode, payloadBuf) {
   const len = payloadBuf.length;
@@ -177,6 +180,15 @@ class SimpleWsConnection {
         offset = 10;
       }
 
+      const isControl = (opcode & 0x08) !== 0;
+      if (![0x0, 0x1, 0x2, 0x8, 0x9, 0xA].includes(opcode)) {
+        this.close(1002, 'Unsupported opcode');
+        return;
+      }
+      if (isControl && (!fin || payloadLen > 125)) {
+        this.close(1002, 'Invalid control frame');
+        return;
+      }
       if (payloadLen > MAX_PAYLOAD) {
         this.close(1009, 'Payload too large');
         return;
@@ -208,6 +220,10 @@ class SimpleWsConnection {
       }
 
       if (opcode === 0x1 || opcode === 0x2) {
+        if (this.fragOpcode) {
+          this.close(1002, 'Unexpected data frame');
+          return;
+        }
         if (fin) {
           if (opcode === 0x1 && this._onMessage) {
             this._onMessage(rawPayload.toString('utf8'));
@@ -217,7 +233,15 @@ class SimpleWsConnection {
           this.fragChunks = [rawPayload];
           this.fragBytes = rawPayload.length;
         }
-      } else if (opcode === 0x0 && this.fragOpcode) {
+      } else if (opcode === 0x0) {
+        if (!this.fragOpcode) {
+          this.close(1002, 'Unexpected continuation frame');
+          return;
+        }
+        if (this.fragChunks.length >= MAX_FRAG_CHUNKS) {
+          this.close(1009, 'Too many fragmented frames');
+          return;
+        }
         this.fragBytes += rawPayload.length;
         if (this.fragBytes > MAX_PAYLOAD) {
           this.close(1009, 'Fragmented payload too large');
@@ -249,27 +273,38 @@ class HubMmoRoom extends SpatialMmoRoom {
     );
   }
 
-  metadata() {
+  metadata({ publicView = false } = {}) {
     const platforms = {};
     const players = [];
     const nowMs = this.now();
     for (const p of this.players.values()) {
       platforms[p.platform] = (platforms[p.platform] || 0) + 1;
-      players.push({
-        id: p.id,
-        shortId: p.shortId,
-        name: p.name,
-        platform: p.platform,
-        runDistance: Math.round(this.estimateDistance(p, nowMs)),
-        phase: p.phase,
-        score: p.score,
-        nearbyCount: p.nearby.size,
-      });
+      if (!publicView || !this.partyCode) {
+        players.push({
+          id: p.id,
+          shortId: p.shortId,
+          name: p.name,
+          platform: p.platform,
+          runDistance: Math.round(this.estimateDistance(p, nowMs)),
+          phase: p.phase,
+          score: p.score,
+          nearbyCount: p.nearby.size,
+        });
+      }
+    }
+    if (publicView && this.partyCode) {
+      return {
+        gameId: this.gameId,
+        isParty: true,
+        phase: this.phase,
+        onlineCount: this.players.size,
+        platforms,
+      };
     }
     return {
       roomId: this.id,
       gameId: this.gameId,
-      ...(this.partyCode ? { partyCode: this.partyCode } : {}),
+      ...(!publicView && this.partyCode ? { partyCode: this.partyCode } : {}),
       phase: this.phase,
       courseSeed: this.courseSeed,
       proximityRadius: this.proximityRadius,
@@ -289,15 +324,22 @@ export function buildMultiplayerDescriptor(game, socketPath = SOCKET_PATH) {
 
 export function createUgcMultiplayer({
   now = Date.now,
+  allowedOrigins = null,
   flushIntervalMs = DEFAULT_FLUSH_INTERVAL_MS,
   heartbeatIntervalMs = DEFAULT_HEARTBEAT_INTERVAL_MS,
   maxMissedPongs = DEFAULT_MAX_MISSED_PONGS,
   maxMessagesPerSec = 80,
+  maxTotalSockets = DEFAULT_MAX_TOTAL_SOCKETS,
+  maxSocketsPerIp = DEFAULT_MAX_SOCKETS_PER_IP,
 } = {}) {
   const rooms = new Map();
   const partyRooms = new Map(); // `${gameId}:${PARTY_CODE}` -> roomId
   const socketsByRoom = new Map();
   const allSockets = new Set();
+  const socketsByIp = new Map();
+  const allowedOriginSet = Array.isArray(allowedOrigins) && allowedOrigins.length
+    ? new Set(allowedOrigins.map(o => String(o).trim().replace(/\/$/, '')))
+    : null;
 
   function findOrCreateChannel(gameId, options = {}) {
     for (const room of rooms.values()) {
@@ -362,10 +404,26 @@ export function createUgcMultiplayer({
     try { pathname = new URL(req.url || '/', 'http://localhost').pathname; } catch { return false; }
     if (pathname !== SOCKET_PATH) return false;
 
+    const rawOrigin = req.headers.origin;
+    if (rawOrigin !== undefined && rawOrigin !== '') {
+      const normalizedOrigin = String(rawOrigin).trim().replace(/\/$/, '');
+      if (allowedOriginSet && !allowedOriginSet.has(normalizedOrigin)) {
+        socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
+        return true;
+      }
+    }
+
     const key = req.headers['sec-websocket-key'];
     const upgradeHdr = String(req.headers.upgrade || '').toLowerCase();
     if (!key || upgradeHdr !== 'websocket') {
       socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n');
+      return true;
+    }
+
+    const clientIp = req.socket?.remoteAddress || 'unknown';
+    const ipCount = socketsByIp.get(clientIp) || 0;
+    if (allSockets.size >= maxTotalSockets || ipCount >= maxSocketsPerIp) {
+      socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n');
       return true;
     }
 
@@ -379,8 +437,10 @@ export function createUgcMultiplayer({
 
     const ws = new SimpleWsConnection(socket);
     allSockets.add(ws);
+    socketsByIp.set(clientIp, ipCount + 1);
     let rateAt = now();
     let msgCount = 0;
+    let rateViolations = 0;
     let activeRoom = null;
     let activePlayerId = null;
 
@@ -396,7 +456,15 @@ export function createUgcMultiplayer({
           rateAt = currentNow;
           msgCount = 0;
         }
-        if (++msgCount > maxMessagesPerSec) throw new Error('요청이 너무 빠릅니다.');
+        if (++msgCount > maxMessagesPerSec) {
+          rateViolations += 1;
+          if (rateViolations >= 3) {
+            ws.close(1008, 'Rate limit exceeded');
+            return;
+          }
+          ws.send(JSON.stringify({ type: 'error', error: '요청이 너무 빠릅니다.' }));
+          return;
+        }
 
         let msg;
         try {
@@ -414,8 +482,9 @@ export function createUgcMultiplayer({
           let room = null;
           if (requestedRoom) {
             if (ROOM_ID_RE.test(requestedRoom)) {
+              if (!GAME_ID_RE.test(gameId)) throw new Error('잘못된 게임 ID입니다.');
               room = rooms.get(requestedRoom);
-              if (!room) throw new Error('해당 멀티플레이 채널을 찾을 수 없습니다.');
+              if (!room || room.gameId !== gameId) throw new Error('해당 멀티플레이 채널을 찾을 수 없습니다.');
             } else if (PARTY_ROOM_CODE_RE.test(requestedRoom)) {
               if (!GAME_ID_RE.test(gameId)) throw new Error('잘못된 게임 ID입니다.');
               room = findOrCreatePartyChannel(gameId, requestedRoom, {
@@ -485,7 +554,11 @@ export function createUgcMultiplayer({
 
     ws.onClose(() => {
       clearTimeout(joinTimeout);
-      allSockets.delete(ws);
+      if (allSockets.delete(ws)) {
+        const remaining = (socketsByIp.get(clientIp) || 1) - 1;
+        if (remaining <= 0) socketsByIp.delete(clientIp);
+        else socketsByIp.set(clientIp, remaining);
+      }
       ws.outboundQueue.length = 0;
       ws.compactEvents.length = 0;
       ws.compactRemoved.length = 0;
@@ -511,7 +584,7 @@ export function createUgcMultiplayer({
     const match = url.pathname.match(/^\/api\/ugc-multiplayer\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\/rooms$/);
     if (match && req.method === 'GET') {
       const gameId = match[1];
-      const list = [...rooms.values()].filter(r => r.gameId === gameId).map(r => r.metadata());
+      const list = [...rooms.values()].filter(r => r.gameId === gameId).map(r => r.metadata({ publicView: true }));
       const totalOnline = list.reduce((acc, r) => acc + r.onlineCount, 0);
       json(res, 200, {
         gameId,
@@ -529,6 +602,7 @@ export function createUgcMultiplayer({
     clearInterval(heartbeatTimer);
     for (const ws of allSockets) ws.terminate();
     allSockets.clear();
+    socketsByIp.clear();
     rooms.clear();
     partyRooms.clear();
     socketsByRoom.clear();

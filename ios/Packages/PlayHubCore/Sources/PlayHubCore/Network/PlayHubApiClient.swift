@@ -298,16 +298,20 @@ public enum PlayHubApiError: Error, LocalizedError {
 
 /// Zero-dependency URLSession client for PlayHub Mobile API (/api/mobile/*, /api/iap/apple/*).
 public struct PlayHubApiClient: Sendable {
+    public typealias AccessTokenRefresher = @Sendable (_ failedToken: String) async -> String?
+
     public let baseUrl: String
     public let engineVersion: String
     public let appBuildNumber: Int
     private let session: URLSession
+    private let onUnauthorizedRefresh: AccessTokenRefresher?
 
     public init(
         baseUrl: String,
         engineVersion: String = "4.7.2",
         appBuildNumber: Int = 1,
-        session: URLSession = .shared
+        session: URLSession = .shared,
+        onUnauthorizedRefresh: AccessTokenRefresher? = nil
     ) {
         var clean = baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
         while clean.hasSuffix("/") { clean.removeLast() }
@@ -315,14 +319,26 @@ public struct PlayHubApiClient: Sendable {
         self.engineVersion = engineVersion
         self.appBuildNumber = appBuildNumber
         self.session = session
+        self.onUnauthorizedRefresh = onUnauthorizedRefresh
     }
 
     public func loginGuest() async throws -> MobileAuthResponse {
-        try await request(path: "/api/mobile/auth/guest", method: "POST", body: [:])
+        try await request(path: "/api/mobile/auth/guest", method: "POST", body: [:], allowAuthRetry: false)
     }
 
     public func refreshSession(refreshToken: String) async throws -> MobileAuthResponse {
-        try await request(path: "/api/mobile/auth/refresh", method: "POST", body: ["refreshToken": refreshToken])
+        try await request(path: "/api/mobile/auth/refresh", method: "POST", body: ["refreshToken": refreshToken], allowAuthRetry: false)
+    }
+
+    public func logout(accessToken: String) async throws {
+        struct Ack: Codable { let ok: Bool }
+        let _: Ack = try await request(
+            path: "/api/mobile/auth/logout",
+            method: "POST",
+            body: [:],
+            accessToken: accessToken,
+            allowAuthRetry: false
+        )
     }
 
     public func loginApple(
@@ -340,7 +356,7 @@ public struct PlayHubApiClient: Sendable {
         if let displayName, !displayName.isEmpty {
             payload["displayName"] = displayName
         }
-        return try await request(path: "/api/mobile/auth/apple", method: "POST", body: payload, accessToken: accessToken)
+        return try await request(path: "/api/mobile/auth/apple", method: "POST", body: payload, accessToken: accessToken, allowAuthRetry: false)
     }
 
     public func submitAgeGate(
@@ -693,7 +709,8 @@ public struct PlayHubApiClient: Sendable {
         path: String,
         method: String,
         body: [String: Any]?,
-        accessToken: String? = nil
+        accessToken: String? = nil,
+        allowAuthRetry: Bool = true
     ) async throws -> T {
         guard let url = URL(string: "\(baseUrl)\(path)") else {
             throw PlayHubApiError.invalidBaseUrl(baseUrl)
@@ -714,6 +731,22 @@ public struct PlayHubApiClient: Sendable {
         let (data, response) = try await session.data(for: req)
         guard let http = response as? HTTPURLResponse else {
             throw PlayHubApiError.httpError(statusCode: 0, body: "Non-HTTP response")
+        }
+        if http.statusCode == 401,
+           allowAuthRetry,
+           let failedToken = accessToken,
+           !failedToken.isEmpty,
+           let onUnauthorizedRefresh {
+            if let refreshedToken = await onUnauthorizedRefresh(failedToken),
+               !refreshedToken.isEmpty {
+                return try await request(
+                    path: path,
+                    method: method,
+                    body: body,
+                    accessToken: refreshedToken,
+                    allowAuthRetry: false
+                )
+            }
         }
         guard (200...299).contains(http.statusCode) else {
             let text = String(data: data, encoding: .utf8) ?? ""

@@ -191,25 +191,34 @@ export function createApp(input, dependencies = {}) {
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
-  const ugcMultiplayer = createUgcMultiplayer({ now });
-  const mobile = createMobile({ config, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
+  const ugcMultiplayer = createUgcMultiplayer({ now, allowedOrigins: config.userOrigins });
+  const mobileAppConfig = Object.defineProperties({ ...config }, {
+    _rootDir: { value: rootDir, enumerable: false },
+    _catalogOptions: { value: catalogOptions, enumerable: false }
+  });
+  const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
     db,
+    rootDir,
+    catalogOptions,
     now,
     rate,
     audit,
     prefix: '/api/social',
+    ...(typeof mobile.getCompliance === 'function' ? { ensureCompliance: mobile.getCompliance } : {}),
     resolveAuth(req, res, required) {
       if (!required) {
         const current = sessionFor(req, 'public');
         if (!current?.principal_id) return null;
+        if (hasActiveSanction(db, current.principal_id, ['all'], now())) return null;
         const user = db.prepare('SELECT * FROM users WHERE id=?').get(current.principal_id);
         return user ? { user } : null;
       }
-      const s = requireSession(req, 'public');
+      const s = requireUnsanctionedSession(req, 'public');
       const principal = promote(s, req, res);
+      assertNotPlatformSanctioned(principal.principal_id);
       const user = db.prepare('SELECT * FROM users WHERE id=?').get(principal.principal_id);
       if (!user) throw new ApiError(401, 'SESSION_REQUIRED');
       return { user };
@@ -767,7 +776,9 @@ export function createApp(input, dependencies = {}) {
   }
   const publicHandler = handler('public'), adminHandler = handler('admin');
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
-  publicServer.on('upgrade', (req, socket, head) => { ugcMultiplayer.handleUpgrade(req, socket, head); });
+  publicServer.on('upgrade', (req, socket, head) => {
+    if (!ugcMultiplayer.handleUpgrade(req, socket, head)) socket.destroy();
+  });
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
   function resolveStoreIdentity(req) {

@@ -366,3 +366,171 @@ test('M3 Social User Scenarios 1~7: Friends, Presence, DM, Party Lifecycle, Chil
     fs.rmSync(rootDir, { recursive: true, force: true });
   }
 });
+
+test('M3 Social Security Hardening: Presence roomCode masking, search privacy, local_ leader bypass removal, catalog & ageRating launch enforcement', async () => {
+  const rootDir = makeFixtureRoot();
+  // Add an 18+ game to fixture catalog to verify ageRating enforcement on party launch & ack
+  fs.mkdirSync(path.join(rootDir, 'games/adult-shooter/Web'), { recursive: true });
+  fs.writeFileSync(
+    path.join(rootDir, 'catalog/games.json'),
+    JSON.stringify({
+      schemaVersion: 1,
+      entries: [
+        { id: 'survivor-arena-g2', path: 'games/survivor-arena-g2', enabled: true },
+        { id: 'adult-shooter', path: 'games/adult-shooter', enabled: true }
+      ]
+    })
+  );
+  fs.writeFileSync(
+    path.join(rootDir, 'games/adult-shooter/game.manifest.json'),
+    JSON.stringify({
+      id: 'adult-shooter',
+      entry: 'index.html',
+      title: 'Adult Shooter',
+      summary: '18+ test game',
+      tags: ['action', '18+']
+    })
+  );
+
+  const deliveredConsentCodes = [];
+  const app = createApp(
+    {
+      dataDir: path.join(rootDir, 'data'),
+      publicHost: '127.0.0.1',
+      publicPort: 0,
+      adminHost: '127.0.0.1',
+      adminPort: 0,
+      userBaseUrl: 'https://dev.playhub.example.com',
+      userOrigins: ['https://dev.playhub.example.com', 'http://127.0.0.1'],
+      adminOrigins: ['http://127.0.0.1'],
+      mobile: {
+        enabled: true,
+        jwtSecret: 'social-m3-sec-secret-32-chars-minimum!!',
+        onParentalConsentCode: (info) => { deliveredConsentCodes.push(info); }
+      }
+    },
+    { rootDir }
+  );
+
+  const server = http.createServer((req, res) => app.publicHandler(req, res));
+  const port = await new Promise(r => server.listen(0, '127.0.0.1', () => r(server.address().port)));
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  try {
+    const alice = await createMobileUser(baseUrl, { displayName: '알리스', handle: 'alice#1001', birthYear: 1995, birthMonth: 4 });
+    const bob = await createMobileUser(baseUrl, { displayName: '밥플레이어', handle: 'bobp#2002', birthYear: 1996, birthMonth: 6 });
+    const friendsOnlyUser = await createMobileUser(baseUrl, { displayName: '프렌즈온리', handle: 'fonly#3003', birthYear: 1997, birthMonth: 7 });
+    const kid = await createMobileUser(baseUrl, { displayName: '키드유저', handle: 'kiduser#4004', birthYear: 2016, birthMonth: 2 });
+
+    // Set friendsOnlyUser privacy to 'friends' -> must NOT appear in /users/search (public only)
+    const setPrivacy = await reqJson(baseUrl, '/api/mobile/social/profile', {
+      method: 'PUT',
+      token: friendsOnlyUser.token,
+      body: { privacyLevel: 'friends' }
+    });
+    assert.equal(setPrivacy.status, 200);
+    const searchFriendsOnly = await reqJson(baseUrl, '/api/mobile/social/users/search?q=fonly', { token: alice.token });
+    assert.equal(searchFriendsOnly.status, 200);
+    assert.equal(searchFriendsOnly.data.users.length, 0, 'privacy_level=friends must not appear in public search');
+
+    // Bob sets joinable=false presence with roomCode -> roomCode MUST be masked as null
+    const privPres = await reqJson(baseUrl, '/api/mobile/social/presence', {
+      method: 'POST',
+      token: bob.token,
+      body: { status: 'in_game', gameId: 'survivor-arena-g2', roomCode: 'SECRET1', joinable: false }
+    });
+    assert.equal(privPres.status, 200);
+    assert.equal(privPres.data.roomCode, null);
+
+    // Bob sets joinable=true presence -> non-friend Alice searching Bob must still NOT see roomCode
+    await reqJson(baseUrl, '/api/mobile/social/presence', {
+      method: 'POST',
+      token: bob.token,
+      body: { status: 'in_game', gameId: 'survivor-arena-g2', roomCode: 'OPEN99', joinable: true }
+    });
+    const searchStranger = await reqJson(baseUrl, '/api/mobile/social/users/search?q=bobp', { token: alice.token });
+    assert.equal(searchStranger.data.users.length, 1);
+    assert.equal(searchStranger.data.users[0].isFriend, false);
+    assert.equal(searchStranger.data.users[0].presence.roomCode, null, 'Non-friends must not receive roomCode in search');
+
+    // Seed a party led by local_minjun and have Bob join -> Bob (non-leader) MUST NOT be able to launch!
+    const nowMs = Date.now();
+    app.db.prepare("INSERT OR IGNORE INTO users(id,kind,display_name,created_at) VALUES('local_minjun','registered','민준',?)").run(nowMs);
+    app.db.prepare("INSERT OR IGNORE INTO social_parties(id,leader_id,title,target_game_id,room_code,max_members,created_at,updated_at) VALUES('local_party_1','local_minjun','로컬파티','survivor-arena-g2','LOC999',8,?,?)").run(nowMs, nowMs);
+    app.db.prepare("INSERT OR IGNORE INTO social_party_members(party_id,principal_id,role,ready_state,joined_at) VALUES('local_party_1','local_minjun','leader',1,?)").run(nowMs);
+
+    const bobJoinLocal = await reqJson(baseUrl, '/api/mobile/social/parties/join', {
+      method: 'POST',
+      token: bob.token,
+      body: { roomCode: 'LOC999' }
+    });
+    assert.equal(bobJoinLocal.status, 200);
+    const hijackLaunch = await reqJson(baseUrl, '/api/mobile/social/parties/local_party_1/launch', {
+      method: 'POST',
+      token: bob.token,
+      body: { gameId: 'survivor-arena-g2' }
+    });
+    assert.equal(hijackLaunch.status, 403);
+    assert.equal(hijackLaunch.data.error.code, 'LEADER_ONLY');
+
+    // Catalog & format validation on party create / launch
+    const badFormatParty = await reqJson(baseUrl, '/api/mobile/social/parties', {
+      method: 'POST',
+      token: alice.token,
+      body: { title: 'Bad Game', targetGameId: 'foo?evil=1' }
+    });
+    assert.equal(badFormatParty.status, 400);
+    assert.equal(badFormatParty.data.error.code, 'INVALID_GAME_ID');
+
+    const unknownGameParty = await reqJson(baseUrl, '/api/mobile/social/parties', {
+      method: 'POST',
+      token: alice.token,
+      body: { title: 'Unknown Game', targetGameId: 'nonexistent-game-999' }
+    });
+    assert.equal(unknownGameParty.status, 404);
+    assert.equal(unknownGameParty.data.error.code, 'GAME_NOT_FOUND');
+
+    // Age rating enforcement on launch/ack: Adult launches 18+ game, verified child in party is blocked on ack!
+    const consentReq = await reqJson(baseUrl, '/api/mobile/parental-consent', {
+      method: 'POST',
+      token: kid.token,
+      body: { guardianContact: 'parent@example.com', method: 'email' }
+    });
+    await reqJson(baseUrl, '/api/mobile/parental-consent', {
+      method: 'POST',
+      token: kid.token,
+      body: { challengeId: consentReq.data.challengeId, verificationCode: deliveredConsentCodes[0].verificationCode }
+    });
+
+    const adultParty = await reqJson(baseUrl, '/api/mobile/social/parties', {
+      method: 'POST',
+      token: alice.token,
+      body: { title: '성인 게임 파티', targetGameId: 'adult-shooter' }
+    });
+    assert.equal(adultParty.status, 201);
+    const adultPartyId = adultParty.data.party.id;
+    await reqJson(baseUrl, '/api/mobile/social/parties/join', {
+      method: 'POST',
+      token: kid.token,
+      body: { roomCode: adultParty.data.party.roomCode }
+    });
+    const adultLaunch = await reqJson(baseUrl, `/api/mobile/social/parties/${adultPartyId}/launch`, {
+      method: 'POST',
+      token: alice.token,
+      body: { gameId: 'adult-shooter' }
+    });
+    assert.equal(adultLaunch.status, 201);
+
+    const kidAckBlocked = await reqJson(baseUrl, `/api/mobile/social/parties/${adultPartyId}/launch/ack`, {
+      method: 'POST',
+      token: kid.token,
+      body: { launchId: adultLaunch.data.launch.launchId, state: 'entered' }
+    });
+    assert.equal(kidAckBlocked.status, 403);
+    assert.equal(kidAckBlocked.data.error.code, 'AGE_RATING_RESTRICTED');
+  } finally {
+    await new Promise(r => server.close(r));
+    await app.close();
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
+});

@@ -529,7 +529,14 @@ export function createAosDevServer({
   const portalServer = portalPort > 0
     ? http.createServer(async (req, res) => {
         const urlObj = new URL(req.url || '/', `http://127.0.0.1:${portalPort}`);
-        const pathname = decodeURIComponent(urlObj.pathname);
+        let pathname;
+        try {
+          pathname = decodeURIComponent(urlObj.pathname);
+        } catch {
+          res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('Invalid URL encoding');
+          return;
+        }
 
         // Same-origin /api/* proxy directly into shared hubApp (same SQLite DB as Android & iOS!)
         if (pathname.startsWith('/api/')) {
@@ -565,36 +572,48 @@ export function createAosDevServer({
             return;
           }
         }
-        const gMatch = pathname.match(/^\/games\/([a-zA-Z0-9_-]+)\/(.+)$/);
+        const gMatch = urlObj.pathname.match(/^\/games\/([a-zA-Z0-9_-]+)\/(.+)$/);
         if (gMatch) {
-          const [, gameId, rel] = gMatch;
-          if (!rel.includes('..') && !rel.startsWith('/')) {
-            const cands = [
-              resolve(workDir, 'games', gameId, rel),
-              resolve(repoRoot, 'games', gameId, rel),
-              resolve(repoRoot, 'games', gameId, 'Web', rel)
-            ];
-            for (const c of cands) {
-              if (existsSync(c) && statSync(c).isFile()) {
-                const st = statSync(c);
-                res.writeHead(200, {
-                  'Content-Type': MIME[extname(c).toLowerCase()] || 'application/octet-stream',
-                  'Content-Length': st.size,
-                  'Cache-Control': 'no-store'
-                });
-                createReadStream(c).pipe(res);
-                return;
-              }
+          const [, gameId, rawRel] = gMatch;
+          const safeRel = sanitizeGameRelPath(rawRel);
+          if (!safeRel) {
+            res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+            res.end('Invalid game asset path');
+            return;
+          }
+          const allowedRoots = [
+            resolve(workDir, 'games', gameId),
+            resolve(repoRoot, 'games', gameId),
+            resolve(repoRoot, 'games', gameId, 'Web')
+          ];
+          for (const root of allowedRoots) {
+            const c = resolveWithinRoot(root, safeRel);
+            if (!c) continue;
+            if (existsSync(c) && statSync(c).isFile()) {
+              const st = statSync(c);
+              res.writeHead(200, {
+                'Content-Type': MIME[extname(c).toLowerCase()] || 'application/octet-stream',
+                'Content-Length': st.size,
+                'Cache-Control': 'no-store'
+              });
+              createReadStream(c).pipe(res);
+              return;
             }
           }
         }
 
         // Serve PC Hub Web Portal static files (SPA routes /play/* and /join/* fall back to index.html)
-        const relStatic = (pathname === '/' || pathname.startsWith('/play/') || pathname.startsWith('/join/'))
+        const rawStaticRel = (pathname === '/' || pathname.startsWith('/play/') || pathname.startsWith('/join/'))
           ? 'index.html'
-          : pathname.replace(/^\/+/, '');
-        const candidate = resolve(portalDir, relStatic);
-        if (candidate.startsWith(portalDir) && existsSync(candidate) && statSync(candidate).isFile()) {
+          : urlObj.pathname.replace(/^\/+/, '');
+        const safeStaticRel = sanitizeGameRelPath(rawStaticRel);
+        if (!safeStaticRel) {
+          res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('Invalid static asset path');
+          return;
+        }
+        const candidate = resolveWithinRoot(portalDir, safeStaticRel);
+        if (candidate && existsSync(candidate) && statSync(candidate).isFile()) {
           const st = statSync(candidate);
           res.writeHead(200, {
             'Content-Type': MIME[extname(candidate).toLowerCase()] || 'application/octet-stream',

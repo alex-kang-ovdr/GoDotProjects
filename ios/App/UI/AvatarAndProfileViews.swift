@@ -507,6 +507,7 @@ public struct ProfileMoreView: View {
     @State private var showPrivacySheet = false
     @State private var showRuntimeSheet = false
     @State private var showLogoutConfirm = false
+    @State private var showDeleteAccountConfirm = false
 
     public init(vm: PlayHubShellViewModel, store: StoreKit2Manager) {
         self.vm = vm
@@ -801,12 +802,16 @@ public struct ProfileMoreView: View {
                 Section("연령 보호 · 컴플라이언스") {
                     LabeledContent("연령 티어", value: vm.ageTier.rawValue)
                     LabeledContent("지역", value: vm.regionCode)
-                    Button("연령 게이트 다시 테스트") {
-                        vm.ageGateCompleted = false
-                        vm.ageTier = .unknown
-                        UserDefaults.standard.removeObject(forKey: "playhub_age_tier")
-                        showPrivacySheet = false
+                    #if DEBUG
+                    if vm.allowFarmSelector {
+                        Button("연령 게이트 다시 테스트") {
+                            vm.ageGateCompleted = false
+                            vm.ageTier = .unknown
+                            UserDefaults.standard.removeObject(forKey: "playhub_age_tier")
+                            showPrivacySheet = false
+                        }
                     }
+                    #endif
                 }
                 Section("결제 복원 · 계정 삭제 (Apple 5.1.1(v))") {
                     Button("구매 복원 (Restore Purchases)") {
@@ -818,13 +823,22 @@ public struct ProfileMoreView: View {
                             .foregroundStyle(.secondary)
                     }
                     Button("인앱 계정 삭제 요청", role: .destructive) {
-                        Task { await vm.requestAccountDeletion() }
+                        showDeleteAccountConfirm = true
                     }
                 }
             }
             .navigationTitle("개인정보 및 계정 보안")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("닫기") { showPrivacySheet = false } }
+            }
+            .alert("계정 삭제 확인", isPresented: $showDeleteAccountConfirm) {
+                Button("영구 삭제", role: .destructive) {
+                    showPrivacySheet = false
+                    Task { await vm.requestAccountDeletion() }
+                }
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("계정과 연동된 프로필·소셜 데이터 삭제를 요청합니다. 이 작업은 되돌릴 수 없습니다.")
             }
         }
     }
