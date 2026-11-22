@@ -458,6 +458,12 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "PlayHub-JavaGames-yuno": {
+      "role": "YU-NO (이 세상 끝에서 사랑을 노래하는 소녀 YU-NO) 역기획서 · 원작 데이터 복원 및 PlayHub 구현",
+      "owns": [
+        "games/yu-no/**"
+      ]
     }
   }
 }
