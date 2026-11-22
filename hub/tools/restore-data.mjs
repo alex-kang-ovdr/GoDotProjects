@@ -126,7 +126,11 @@ const OPTIONAL_TABLES={
   shorts_videos:['id','creator_id','creator_name','game_id','project_id','title','caption','hashtags_json','prompt','flow_prompt','style_preset','camera_motion','storyboard_json','engine_id','resolved_engine_id','engine_model','status','visibility','is_primary','progress','stage_label','error_code','error_message','video_rel_path','poster_rel_path','mime_type','bytes','sha256','duration_sec','width','height','aspect_ratio','quoted_coins','charged_coins','billing_hold_id','billing_journal_entry_id','view_count','like_count','published_at','created_at','updated_at'],
   shorts_likes:['short_id','principal_id','created_at'],
   shorts_views:['short_id','viewer_key','day_bucket','created_at'],
-  shorts_idempotency:['scope','idempotency_key','principal_id','request_hash','status_code','response_json','created_at']
+  shorts_idempotency:['scope','idempotency_key','principal_id','request_hash','status_code','response_json','created_at'],
+  growth_experiments:['id','name','hypothesis','placement_id','status','variants_json','weights_json','metric_primary','guardrails_json','created_by','started_at','ended_at','created_at','updated_at'],
+  growth_experiment_assignments:['experiment_id','subject_id','variant_id','bucket','context_hash','assigned_at'],
+  growth_agent_runs:['id','level','trigger_source','status','summary_json','hypotheses_json','actions_json','created_by','created_at'],
+  rec_serve_log:['id','subject_id','principal_id','placement_id','mode','experiment_id','variant_id','game_id','slot_index','score','propensity','reward','impression_id','served_at','rewarded_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

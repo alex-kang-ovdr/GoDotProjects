@@ -2,6 +2,7 @@
   "comment": "Tier 1 Fast QA 게이트 테스트 목록. 브라우저(Playwright)·Godot 헤드리스·Windows 전용 테스트는 Tier 2로 분리한다. 실패 중인 테스트는 삭제하지 말고 quarantine에 사유·담당과 함께 등록한 뒤 수정 후 제거한다.",
   "include": [
     "hub/tests/*.test.mjs",
+    "hub/tests/ai-learning-growth.test.mjs",
     "store/tests/package-contract.test.mjs",
     "forge/Tests/account-platform.test.cjs",
     "forge/Tests/build-queue-reuse.test.cjs",

@@ -32,6 +32,9 @@ import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
 import { createHubAgent } from './agent/routes.mjs';
 import { createShorts } from './shorts/routes.mjs';
+import { ensureGrowthSchema } from './growth/schema.mjs';
+import { createGrowth } from './growth/routes.mjs';
+import { rankCatalogGames } from './recs/ranker.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -149,6 +152,7 @@ export function createApp(input, dependencies = {}) {
     return { ...current, principal_id: userId,expires_at:expires };
   }
   ensureSsotSchema(db);
+  ensureGrowthSchema(db);
   function assertNotPlatformSanctioned(principalId) {
     if (principalId && hasActiveSanction(db, principalId, ['all'], now())) {
       throw new ApiError(403, 'USER_SANCTIONED');
@@ -220,6 +224,7 @@ export function createApp(input, dependencies = {}) {
   const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, sso, fetchImpl: dependencies.fetch || globalThis.fetch, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, verifyMobileNaverToken: dependencies.verifyMobileNaverToken, env: dependencies.env || process.env });
   const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
   const adgame = createAdGame({ config, db, rootDir, now, rate, audit, env: dependencies.env || process.env });
+  const growth = createGrowth({ db, rootDir, catalogOptions, now, audit, rate, sessionFor, adgame });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
@@ -403,6 +408,9 @@ export function createApp(input, dependencies = {}) {
       props = { code:String(p.code || 'GAME_RUNTIME_ERROR').replace(/[^A-Z0-9_]/gi,'').slice(0,64) };
       db.prepare('INSERT INTO errors(id,code,message,game_id,created_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?)').run(uid(),props.code,'게임 실행 오류가 보고되었습니다.',gameId,stamp,s.traffic_type,s.qa_run_id);
     }
+    if (safeString(event.placement_id, 128)) props._placement_id = event.placement_id;
+    if (safeString(event.creative_id, 128)) props._creative_id = event.creative_id;
+    if (Number.isInteger(event.slot_index) && event.slot_index >= 0 && event.slot_index <= 10000) props._slot_index = event.slot_index;
     db.prepare('INSERT INTO events(id,fingerprint,name,subject_id,visit_id,play_session_id,game_id,impression_id,occurred_at,received_at,properties,source,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(event.event_id,fingerprint,event.event_name,s.analytics_subject,s.id_hash,play?.id || null,gameId,event.impression_id || null,occurred,stamp,JSON.stringify(props),play ? 'sdk' : 'portal',s.traffic_type,s.qa_run_id);
     return 'accepted';
   }
@@ -413,6 +421,7 @@ export function createApp(input, dependencies = {}) {
     if (await billing.publicRoute(req,res,url)) return;
     if (await hubAgent.publicRoute(req,res,url)) return;
     if (await shorts.publicRoute(req,res,url)) return;
+    if (await growth.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (ugcMultiplayer.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
@@ -430,7 +439,22 @@ export function createApp(input, dependencies = {}) {
       const current=sessionFor(req,'public'); const row=current?.principal_id && db.prepare('SELECT locale FROM user_preferences WHERE principal_id=?').get(current.principal_id);
       json(res,200,{locale:row?.locale || null}); return;
     }
-    if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db,catalogOptions).filter(g => g.enabled).map(g => ({ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) })) }); return; }
+    if (path === '/api/games' && req.method === 'GET') {
+      const baseGames = readCatalog(rootDir,db,catalogOptions).filter(g => g.enabled).map(g => ({ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) }));
+      const placement = url.searchParams.get('placement');
+      if (placement && /^[a-zA-Z0-9_-]{1,64}$/.test(placement)) {
+        const currentSession = sessionFor(req,'public');
+        const subjectId = currentSession?.analytics_subject || url.searchParams.get('subjectId') || `anon:${rateLimitIp(req)}`;
+        const ranked = rankCatalogGames(db, baseGames, {
+          subjectId,
+          principalId: currentSession?.principal_id || null,
+          placementId: placement,
+          now
+        });
+        json(res,200,{ games: ranked.games, ranking: ranked.ranking }); return;
+      }
+      json(res,200,{ games: baseGames }); return;
+    }
     const gamePath = path.match(/^\/api\/games\/([a-zA-Z0-9_-]+)$/);
     if (gamePath && req.method === 'GET') { const g = findGame(rootDir,db,gamePath[1],true,catalogOptions); json(res,200,{ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) }); return; }
     if (path === '/api/auth/google/start' && req.method === 'GET') {
@@ -699,6 +723,7 @@ export function createApp(input, dependencies = {}) {
     if (await billing.adminRoute(req,res,url,s)) return;
     if (await hubAgent.adminRoute(req,res,url,s)) return;
     if (await shorts.adminRoute(req,res,url,s)) return;
+    if (await growth.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
@@ -890,7 +915,7 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
-  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
+  return { db,cdn,billing,hubAgent,shorts,growth,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },

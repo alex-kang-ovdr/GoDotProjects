@@ -135,7 +135,12 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   shorts_videos: ['id', 'creator_id', 'creator_name', 'game_id', 'project_id', 'title', 'caption', 'hashtags_json', 'prompt', 'flow_prompt', 'style_preset', 'camera_motion', 'storyboard_json', 'engine_id', 'resolved_engine_id', 'engine_model', 'status', 'visibility', 'is_primary', 'progress', 'stage_label', 'error_code', 'error_message', 'video_rel_path', 'poster_rel_path', 'mime_type', 'bytes', 'sha256', 'duration_sec', 'width', 'height', 'aspect_ratio', 'quoted_coins', 'charged_coins', 'billing_hold_id', 'billing_journal_entry_id', 'view_count', 'like_count', 'published_at', 'created_at', 'updated_at'],
   shorts_likes: ['short_id', 'principal_id', 'created_at'],
   shorts_views: ['short_id', 'viewer_key', 'day_bucket', 'created_at'],
-  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at']
+  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at'],
+  // Flywheel 1 Growth & Recs (4 tables)
+  growth_experiments: ['id', 'name', 'hypothesis', 'placement_id', 'status', 'variants_json', 'weights_json', 'metric_primary', 'guardrails_json', 'created_by', 'started_at', 'ended_at', 'created_at', 'updated_at'],
+  growth_experiment_assignments: ['experiment_id', 'subject_id', 'variant_id', 'bucket', 'context_hash', 'assigned_at'],
+  growth_agent_runs: ['id', 'level', 'trigger_source', 'status', 'summary_json', 'hypotheses_json', 'actions_json', 'created_by', 'created_at'],
+  rec_serve_log: ['id', 'subject_id', 'principal_id', 'placement_id', 'mode', 'experiment_id', 'variant_id', 'game_id', 'slot_index', 'score', 'propensity', 'reward', 'impression_id', 'served_at', 'rewarded_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -200,7 +205,11 @@ export const DROP_TABLES = Object.freeze([
   'shorts_idempotency',
   'shorts_views',
   // GamerQA Hub multi-platform run logs
-  'gamerqa_hub_runs'
+  'gamerqa_hub_runs',
+  // Flywheel 1 Growth & Recs subject-level assignments, serve logs & agent run logs
+  'growth_experiment_assignments',
+  'rec_serve_log',
+  'growth_agent_runs'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);

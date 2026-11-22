@@ -301,9 +301,25 @@
     try{const result=await api('/api/events',{method:'POST',body:{events:batch},keepalive,timeout:5000});const handled=new Set([...(result.accepted||[]),...(result.duplicates||[]),...(result.rejected||[]).map(x=>x.event_id)]);state.events=state.events.filter(x=>!handled.has(x.event_id));}
     catch(_){}finally{state.flushing=false;if(state.flushAgain){state.flushAgain=false;flushEvents();}}
   }
-  function cardMarkup(game,heading='h3'){
+  function cardTrackingExtra(el){
+    if(!el?.dataset)return {};
+    const extra={};
+    const pid=el.dataset.placementId||el.dataset.placement;
+    if(pid)extra.placement_id=pid;
+    if(el.dataset.creativeId)extra.creative_id=el.dataset.creativeId;
+    if(el.dataset.slotIndex!==undefined&&el.dataset.slotIndex!==''){
+      const slot=Number(el.dataset.slotIndex);
+      if(Number.isInteger(slot)&&slot>=0)extra.slot_index=slot;
+    }
+    return extra;
+  }
+  function cardMarkup(game,heading='h3',slotIndex=null){
     const badge=Rules.gameReleaseBadge(game.publishedOn,game.updatedOn);
-    return `<div class="card-wrap"><a class="game-card" data-testid="game-card" data-game-id="${esc(game.id)}" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}">
+    const placementAttr=game.placementId?` data-placement-id="${esc(game.placementId)}"`:'';
+    const slotVal=Number.isInteger(game.slotIndex)?game.slotIndex:(Number.isInteger(slotIndex)?slotIndex:null);
+    const slotAttr=slotVal!==null?` data-slot-index="${slotVal}"`:'';
+    const creativeAttr=game.creativeId?` data-creative-id="${esc(game.creativeId)}"`:'';
+    return `<div class="card-wrap"><a class="game-card" data-testid="game-card" data-game-id="${esc(game.id)}" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}"${placementAttr}${slotAttr}${creativeAttr}>
       <img class="game-cover" src="${esc(game.cover)}" alt="" loading="lazy" decoding="async" width="640" height="400">
       <div class="card-copy">
         <div class="card-topline"><${heading} class="card-title">${esc(game.title)}</${heading}><span class="card-arrow" aria-hidden="true">↗</span></div>
@@ -376,7 +392,7 @@
     </section>`:'';
   }
   function stopImpressions(){state.observer?.disconnect();for(const item of state.impressions)clearTimeout(item.timer);state.impressions=[];}
-  function checkImpression(item){clearTimeout(item.timer);if(item.recorded||document.hidden||item.ratio<.5){item.started=0;return;}item.started=performance.now();item.timer=setTimeout(()=>{if(Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;event('game_impression',item.gameId,{visible_fraction:Math.min(1,item.ratio),visible_duration_ms:1000,document_visible:true},{impression_id:item.id});}},1000);}
+  function checkImpression(item){clearTimeout(item.timer);if(item.recorded||document.hidden||item.ratio<.5){item.started=0;return;}item.started=performance.now();item.timer=setTimeout(()=>{if(Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;event('game_impression',item.gameId,{visible_fraction:Math.min(1,item.ratio),visible_duration_ms:1000,document_visible:true},{impression_id:item.id,...cardTrackingExtra(item.element)});}},1000);}
   function watchImpressions(){stopImpressions();if(!('IntersectionObserver'in window))return;state.observer=new IntersectionObserver(entries=>{for(const e of entries){const item=state.impressions.find(i=>i.element===e.target);if(!item)continue;const before=item.ratio;item.ratio=e.intersectionRatio;if(before<.5||item.ratio<.5)checkImpression(item);}},{threshold:[0,.5,1]});
     for(const element of $('app').querySelectorAll('[data-impression]')){const item={element,gameId:element.dataset.impression,id:uuid(),ratio:0,started:0,timer:0,recorded:false};state.impressions.push(item);state.observer.observe(element);}
   }
@@ -494,7 +510,7 @@
         <label>조작 방식<select name="control">${filterOptions([['all','전체'],...Object.entries(controlLabels)],control)}</select></label>
         <label>정렬<select name="sort">${filterOptions([['default','기본순'],['updated','최근 업데이트순'],['title','이름순']],sort)}</select></label>
       </form>
-      ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
+      ${games.length?`<div class="game-grid">${games.map((game,idx)=>cardMarkup(game,'h2',idx)).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
     </section>`;
     const homeShortsHtml=isHomePortal?'<section id="home-shorts-shelf" class="home-sec-shorts" aria-labelledby="home-shorts-title"></section>':'';
     $('app').innerHTML=isHomePortal
@@ -1260,7 +1276,7 @@
     const retry=e.target.closest('[data-wishlist-retry]');if(retry){retry.disabled=true;refreshWishlist().finally(()=>retry.disabled=false);return;}
     const routeLink=e.target.closest('[data-route],[data-wishlist-link],[data-home],a.brand,a.footer-brand');
     if(routeLink&&e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate(routeLink.getAttribute('href'));return;}
-    const link=e.target.closest('[data-game-link]');if(link){const item=state.impressions.find(x=>x.element===link.closest('[data-impression]'));if(item&&Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;clearTimeout(item.timer);event('game_impression',item.gameId,{visible_fraction:item.ratio,visible_duration_ms:1000,document_visible:true},{impression_id:item.id});}event('game_card_click',link.dataset.gameLink,{viewability_met:!!item?.recorded},{impression_id:item?.id||uuid()});if(e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate(link.getAttribute('href'));}return;}
+    const link=e.target.closest('[data-game-link]');if(link){const trackEl=link.closest('[data-impression]')||link;const tracking=cardTrackingExtra(trackEl);const item=state.impressions.find(x=>x.element===link.closest('[data-impression]'));if(item&&Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;clearTimeout(item.timer);event('game_impression',item.gameId,{visible_fraction:item.ratio,visible_duration_ms:1000,document_visible:true},{impression_id:item.id,...tracking});}event('game_card_click',link.dataset.gameLink,{viewability_met:!!item?.recorded},{impression_id:item?.id||uuid(),...tracking});if(e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate(link.getAttribute('href'));}return;}
   });
   window.addEventListener('popstate',async()=>{await teardown('navigation');await renderRoute();});
   document.addEventListener('visibilitychange',()=>{for(const item of state.impressions)checkImpression(item);const a=state.active;if(document.hidden){if(a){heartbeat(a);a.port?.postMessage({type:'host_pause'});}flushEvents(true);}});

@@ -458,6 +458,15 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "AI-Learning-Growth": {
+      "role": "Flywheel 1 [Growth & Revenue Engine] — N3 AdGame 증류기 · D1 Bandit 개인화 랭킹 · Growth 실험/CUPED/SRM/L0 분석가 · 예산 가드레일",
+      "owns": [
+        "hub/server/growth/**",
+        "hub/server/recs/**",
+        "tools/adgame/**",
+        "hub/tests/ai-learning-growth*.mjs"
+      ]
     }
   }
 }
