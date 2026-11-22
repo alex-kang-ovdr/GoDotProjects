@@ -1,0 +1,12 @@
+id,nameKo,nameJa,nameEn,role,affiliation,initialRoomId,initialStatus,playable,canBeCompromised,hasDedicatedEnding,affectionTracked,certainty,sourceIds
+char_kenta,코구레 켄타,小暮 健太,Kenta Kogure,protagonist,오우란 학원 3학년,rm_5f_music,safe,true,true,false,false,확인,SRC-01|SRC-02|SRC-04
+char_isaku,이토 유작,伊頭 遺作,Isaku Itou,antagonist,오우란 학원 관리인(用務員),rm_clock_tower,hostile,false,false,false,false,확인,SRC-01|SRC-02|SRC-03
+char_kotomi,아사카와 코토미,浅川 琴未,Kotomi Asakawa,main_heroine,오우란 학원 3학년,rm_5f_music,safe,false,true,true,true,확인,SRC-01|SRC-02|SRC-04|SRC-05
+char_miyuki,사카키 미유키,榊 美由紀,Miyuki Sakaki,main_heroine,오우란 학원 3학년,rm_5f_music,safe,false,true,true,true,확인,SRC-01|SRC-02|SRC-04|SRC-05
+char_kumi,타카시마 쿠미,高島 久美,Kumi Takashima,supporting_faculty,오우란 학원 3학년 담임교사(쿠미 선생),rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-04|SRC-06
+char_rika,아카가와 리카,赤川 里香,Rika Akagawa,supporting_student,오우란 학원 3학년,rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-04|SRC-06
+char_akemi,미키하라 아케미,幹原 明美,Akemi Mikihara,supporting_student,오우란 학원 3학년 / 테니스부 부장,rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-04|SRC-05
+char_mio,세리자와 미오,芹沢 美緒,Mio Serizawa,supporting_student,오우란 학원 3학년,rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-04
+char_jinpachi,시마다 진파치,島田 陣八,Jinpachi Shimada,supporting_ally_or_risk,오우란 학원 3학년 / 신문부 카메라맨,rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-04|SRC-05
+char_soga,소가 무네미츠,蘇我 宗光,Munemitsu Soga,supporting_troublemaker,오우란 학원 3학년 / 이사장 아들,rm_5f_music,safe,false,true,false,false,확인,SRC-01|SRC-02|SRC-03|SRC-04
+char_miyuki_sister,사카키 미유키의 여동생,榊美由紀の妹,Miyuki's Younger Sister,backstory_victim,오우란 학원 신문부 후배 (1년 전),,deceased_backstory,false,false,false,false,확인,SRC-02|SRC-06

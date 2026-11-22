@@ -458,6 +458,12 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "PlayHub-JavaGames-isaku": {
+      "role": "유작 (遺作 / Isaku) 역기획서·원작 데이터 복원 및 탐색 어드벤처 엔진 설계",
+      "owns": [
+        "games/isaku/**"
+      ]
     }
   }
 }

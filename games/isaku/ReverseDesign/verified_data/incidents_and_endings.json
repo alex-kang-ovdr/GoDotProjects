@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "1.0.0",
+  "gameId": "isaku",
+  "safetyAbstractionNotice": "모든 사건 데이터는 원작의 성인향·폭력적 묘사를 배제하고, 탐색 어드벤처 상태 머신의 위험 윈도우(at_risk)·구출(rescued)·피해(compromised) 플래그로만 모델링합니다.",
+  "clockModel": {
+    "unit": "action_ticks",
+    "note": "원작의 정확한 내부 행동 틱 상수는 공개 역공학 자료가 부재하여 [재구성안] 수치로 모델링하되, 층별·이벤트별 선후관계와 연쇄 조건은 [확인]된 원작 공략 사실을 따릅니다.",
+    "certainty": "재구성안"
+  },
+  "incidents": [
+    {
+      "id": "inc_kumi_restroom",
+      "targetCharacterId": "char_kumi",
+      "phase": "phase_1_5f_to_4f",
+      "triggerRoomId": "rm_5f_restroom_f",
+      "triggerCondition": "5F 탐색 중 쿠미 선생이 화장실 이동을 요청할 때 발생",
+      "windowTicks": 6,
+      "rescueAction": "화장실 입구(hs_5f_restroom_f_entry)에서 대기·동행 선택",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_kumi_compromised", "flg_evidence_tape_spawned"],
+        "cascadeToIncidentIds": ["inc_rika_isolation"]
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_kumi_protected"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-06"]
+    },
+    {
+      "id": "inc_rika_isolation",
+      "targetCharacterId": "char_rika",
+      "phase": "phase_2_4f_exploration",
+      "triggerRoomId": "rm_4f_hall",
+      "triggerCondition": "4F 탐색 중 리카가 불안 상태에서 단독 행동을 시도할 때 발생(쿠미 선생이 이미 compromised면 연쇄 위험 급증)",
+      "windowTicks": 5,
+      "rescueAction": "즉시 진정시키고 동행 합류 유지",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_rika_compromised", "flg_evidence_tape_spawned"],
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_rika_protected"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-06"]
+    },
+    {
+      "id": "inc_akemi_panel",
+      "targetCharacterId": "char_akemi",
+      "phase": "phase_2_4f_exploration",
+      "triggerRoomId": "rm_4f_electrical",
+      "triggerCondition": "아케미 수첩 미반환 또는 스트레스 누적 상태에서 4F 배전반 구역에 진입 시 패닉 발생",
+      "windowTicks": 4,
+      "rescueAction": "5F 이과 실험실에서 아케미의 수첩 회수 후 4F 2-3 교실에서 반환하고, 배전반 패닉 시 즉각 제지 선택",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_akemi_fire_trigger"],
+        "immediateEndingId": "end_bad_akemi_fire",
+        "cascadeToIncidentIds": ["inc_mio_separation"]
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_akemi_stabilized"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-06"]
+    },
+    {
+      "id": "inc_mio_separation",
+      "targetCharacterId": "char_mio",
+      "phase": "phase_3_3f_exploration",
+      "triggerRoomId": "rm_3f_hall",
+      "triggerCondition": "아케미 행방을 찾거나 4F->3F 이동 과정에서 미오가 본대와 떨어질 때 발생",
+      "windowTicks": 5,
+      "rescueAction": "아케미 안정 상태 유지 및 3F 복도 합류 플래그 회수",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_mio_compromised", "flg_evidence_tape_spawned"],
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_mio_protected"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-01", "SRC-04", "SRC-06"]
+    },
+    {
+      "id": "inc_soga_reckless",
+      "targetCharacterId": "char_soga",
+      "phase": "phase_3_3f_exploration",
+      "triggerRoomId": "rm_3f_broadcast",
+      "triggerCondition": "소가 무네미츠가 열쇠를 독점하려 단독 이탈하여 3F 방송실 구역에 접근 시 구속 상태 발생",
+      "windowTicks": 6,
+      "rescueAction": "3F 방송실 바 록 해제(puz_3f_broadcast_prep_unlock) 후 소가 발견·구출",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_soga_compromised"],
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_soga_rescued"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-03", "SRC-04"]
+    },
+    {
+      "id": "inc_kotomi_trust",
+      "targetCharacterId": "char_kotomi",
+      "phase": "phase_3_3f_exploration",
+      "triggerRoomId": "rm_4f_av",
+      "triggerCondition": "3F 도서실에서 붉은 리본 방울을 회수한 뒤 4F 시청각실 코토미 보호·신뢰 분기",
+      "windowTicks": 6,
+      "rescueAction": "4F 시청각실에서 코토미에게 붉은 리본 방울을 전달하고 동행 유지",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_kotomi_compromised", "flg_evidence_tape_spawned"],
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_kotomi_protected"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05"]
+    },
+    {
+      "id": "inc_miyuki_clock_tower",
+      "targetCharacterId": "char_miyuki",
+      "phase": "phase_5_climax",
+      "triggerRoomId": "rm_clock_tower",
+      "triggerCondition": "2F 1-1 교실 이후 미유키 동행 및 종반 시계탑 도달 시 대치 분기",
+      "windowTicks": 4,
+      "rescueAction": "시계탑에서 미유키 상태를 확인하고 사다리에 붉은 수성 도료를 도포(puz_clock_tower_paint_trap)",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_miyuki_compromised"],
+        "immediateEndingId": "end_bad_isaku_total_loss",
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_miyuki_protected"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-04", "SRC-05", "SRC-06"]
+    },
+    {
+      "id": "inc_jinpachi_betrayal",
+      "targetCharacterId": "char_jinpachi",
+      "phase": "phase_5_climax",
+      "triggerRoomId": "rm_3f_broadcast_prep",
+      "triggerCondition": "중후반 진파치를 감시 없이 유작 측 동선에 방치하거나 방송실 창고 대치에서 오판 시 배신 분기 발생",
+      "windowTicks": 4,
+      "rescueAction": "3F 도서실 대화 확보 후 종반 방송실 창고에서 바 록 격리·대화 절차 완료(puz_3f_barlock_containment)",
+      "failureOutcome": {
+        "characterStatus": "compromised",
+        "setsFlags": ["flg_inc_jinpachi_betrayed"],
+        "immediateEndingId": "end_bad_isaku_total_loss",
+        "cascadeToIncidentIds": []
+      },
+      "successOutcome": {
+        "characterStatus": "rescued",
+        "setsFlags": ["flg_jinpachi_aligned"]
+      },
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-04", "SRC-05"]
+    }
+  ],
+  "endings": [
+    {
+      "id": "end_happy_miyuki",
+      "nameKo": "해피 엔딩 A — 사카키 미유키 루트",
+      "nameJa": "ハッピーエンド（榊美由紀）",
+      "tier": "happy",
+      "priority": 1,
+      "conditions": {
+        "reachedRoomId": "rm_escape_exit",
+        "requiredFlags": ["flg_escape_route_open", "flg_climax_isaku_down"],
+        "maxCompromisedCount": 0,
+        "minMiyukiAffinity": 3
+      },
+      "summaryKo": "단 한 명의 피해자도 없이 유작을 제압하고 1층 보건실 비밀 통로로 전원 생환. 1년 전 사건이 매듭지어지며 이후 미유키와 이어지는 진 해피 엔딩.",
+      "certainty": "확인",
+      "sourceIds": ["SRC-01", "SRC-02", "SRC-05"]
+    },
+    {
+      "id": "end_happy_kotomi",
+      "nameKo": "해피 엔딩 B — 아사카와 코토미 루트",
+      "nameJa": "ハッピーエンド（浅川琴未）",
+      "tier": "happy",
+      "priority": 2,
+      "conditions": {
+        "reachedRoomId": "rm_escape_exit",
+        "requiredFlags": ["flg_escape_route_open", "flg_climax_isaku_down"],
+        "maxCompromisedCount": 0,
+        "maxMiyukiAffinity": 2
+      },
+      "summaryKo": "전원 무사 생환 후 미유키 호감도가 기준치(3) 미만일 때 도달. 탈출 이후 코토미와 이어지는 해피 엔딩.",
+      "certainty": "확인",
+      "sourceIds": ["SRC-01", "SRC-02", "SRC-05"]
+    },
+    {
+      "id": "end_normal_survivor_escape",
+      "nameKo": "노멀 엔딩 — 일부 피해 발생 후 탈출",
+      "nameJa": "ノーマルエンド（犠牲発生・脱出）",
+      "tier": "normal",
+      "priority": 3,
+      "conditions": {
+        "reachedRoomId": "rm_escape_exit",
+        "requiredFlags": ["flg_escape_route_open", "flg_climax_isaku_down"],
+        "minCompromisedCount": 1
+      },
+      "summaryKo": "1명 이상의 동료가 사건 피해(compromised) 상태가 되었으나 남은 일행이 유작을 제압하고 탈출. 후일 불온한 편지가 다시 도착하는 여운으로 종결.",
+      "certainty": "확인",
+      "sourceIds": ["SRC-01", "SRC-02", "SRC-05"]
+    },
+    {
+      "id": "end_bad_akemi_fire",
+      "nameKo": "배드 엔딩 A — 배전반 인화 화재",
+      "nameJa": "バッドエンド（明美の暴走・火災）",
+      "tier": "bad",
+      "priority": 4,
+      "conditions": {
+        "reachedRoomId": null,
+        "requiredFlags": ["flg_inc_akemi_fire_trigger"],
+        "minCompromisedCount": 1
+      },
+      "summaryKo": "패닉 상태의 아케미를 제지하지 못해 배전반 스파크가 유작이 뿌린 기름에 인화되며 구교사 화재로 전원 조난.",
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-06"]
+    },
+    {
+      "id": "end_bad_isaku_total_loss",
+      "nameKo": "배드 엔딩 B — 유작 방화 및 전멸",
+      "nameJa": "バッドエンド（伊作の放火・全滅）",
+      "tier": "bad",
+      "priority": 5,
+      "conditions": {
+        "reachedRoomId": null,
+        "requiredAnyFlags": ["flg_inc_miyuki_compromised", "flg_inc_jinpachi_betrayed"],
+        "minCompromisedCount": 1
+      },
+      "summaryKo": "종반 시계탑 함정 파훼 또는 진파치 배신 차단에 실패하여 유작이 증거 인멸을 위해 구교사에 방화하고 비밀 통로로 도주하는 최악의 결말.",
+      "certainty": "확인",
+      "sourceIds": ["SRC-02", "SRC-05", "SRC-06"]
+    }
+  ]
+}

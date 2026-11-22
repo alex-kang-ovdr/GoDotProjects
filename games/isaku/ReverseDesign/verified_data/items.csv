@@ -1,0 +1,24 @@
+id,nameKo,nameJa,nameEn,category,acquireMethod,pickupRoomId,pickupPuzzleId,consumable,certainty,sourceIds
+item_invitation_letter,호출 편지(러브레터),呼び出しの手紙,Summons Letter,clue,starting_inventory,rm_5f_music,,false,확인,SRC-01|SRC-04
+item_machine_oil,기계유,機械油,Machine Oil,tool,room_pickup,rm_5f_class_3_1,,false,확인,SRC-04|SRC-05
+item_clue_memo_3_2,3-2 교실 메모,3-2教室のメモ,Classroom 3-2 Memo,clue,room_pickup,rm_5f_class_3_2,,false,확인,SRC-04
+item_skeleton_memo,골격 표본 메모,人体模型のメモ,Skeleton Clue Memo,clue,room_pickup,rm_5f_science,,false,확인,SRC-04
+item_brown_book,갈색 표지 책,茶色い表紙の本,Brown-Covered Book,puzzle_material,room_pickup,rm_5f_science,,true,확인,SRC-04|SRC-05
+item_akemi_notebook,아케미의 수첩,明美の手帳,Akemi's Notebook,character_key_item,room_pickup,rm_5f_science,,true,확인,SRC-04|SRC-06
+item_rusted_key,녹슨 철제 열쇠,錆びた鉄製の鍵,Rusted Iron Key,key,puzzle_reward,rm_5f_restroom_m,puz_5f_safe_code,true,확인,SRC-04|SRC-05
+item_red_paint,붉은 수성 도료,赤い水性塗料,Red Water-Based Paint,tool,room_pickup,rm_4f_hall,,true,확인,SRC-04|SRC-05
+item_screwdriver,드라이버,ドライバー,Screwdriver,tool,room_pickup,rm_4f_storage,,false,확인,SRC-04|SRC-05
+item_small_key,작은 열쇠,小さな鍵,Small Key,key,puzzle_reward,rm_4f_storage,puz_4f_mouse_hole,true,확인,SRC-04|SRC-05
+item_d_battery,단1 건전지,単一乾電池,D-Cell Battery,puzzle_material,puzzle_reward,rm_5f_restroom_m,puz_5f_safe_back,true,확인,SRC-04|SRC-05
+item_small_hammer,작은 망치,小さなハンマー,Small Hammer,tool,puzzle_reward,rm_5f_restroom_f,puz_5f_time_recorder,false,확인,SRC-04|SRC-05
+item_copper_key,구리 열쇠,銅の鍵,Copper Key,key,puzzle_reward,rm_4f_craft,puz_4f_thinker_statue,true,확인,SRC-04|SRC-05
+item_bar_lock,바 록(빗장 자물쇠),バーロック,Bar Lock,tool,puzzle_reward,rm_3f_broadcast_prep,puz_3f_broadcast_prep_unlock,false,확인,SRC-04|SRC-05
+item_wooden_ladder,목제 사다리,木製のはしご,Wooden Ladder,tool,room_pickup,rm_3f_broadcast,,false,확인,SRC-04|SRC-05
+item_lighter,라이터,ライター,Lighter,tool,room_pickup,rm_3f_broadcast,,false,확인,SRC-04|SRC-05
+item_cipher_table,난수표,乱数表,Random Number Cipher Table,clue,room_pickup,rm_3f_broadcast,,false,확인,SRC-04|SRC-05
+item_red_ribbon_bell,붉은 리본 방울,赤いリボンの鈴,Bell with Red Ribbon,character_key_item,puzzle_reward,rm_3f_library,puz_3f_library_shelf,true,확인,SRC-04|SRC-05
+item_red_ribbon_key,붉은 리본 열쇠,赤いリボンの鍵,Red Ribbon Key,key,puzzle_reward,rm_3f_dead_end,puz_3f_ceiling_latch,true,확인,SRC-04|SRC-05
+item_alcohol_bottle,알코올 병,アルコールの瓶,Alcohol Bottle,puzzle_material,room_pickup,rm_2f_restroom_m,,true,확인,SRC-04
+item_silver_key,은색 열쇠,銀色の鍵,Silver Key,key,puzzle_reward,rm_2f_kitchen,puz_2f_stove_burn,true,확인,SRC-04|SRC-05
+item_isaku_knife,유작의 나이프,遺作のナイフ,Isaku's Knife,tool,event_pickup,rm_1f_hall,puz_3f_barlock_containment,false,확인,SRC-04|SRC-05
+item_evidence_tape,증거 비디오테이프,証拠ビデオテープ,Incident Evidence Videotape,incident_artifact,conditional_incident_drop,rm_3f_restroom_f,,false,확인,SRC-01|SRC-02|SRC-04
