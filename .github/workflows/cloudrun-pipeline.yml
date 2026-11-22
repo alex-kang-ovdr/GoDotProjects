@@ -82,8 +82,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Install Hub build dependencies
-        run: npm ci --prefix hub --ignore-scripts
+      - name: Install Hub & Forge runtime dependencies
+        run: |
+          npm ci --prefix hub --ignore-scripts
+          npm ci --prefix forge --omit=dev --ignore-scripts
       - name: Check worktree ownership rules
         run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
       - name: Build Hub static output
