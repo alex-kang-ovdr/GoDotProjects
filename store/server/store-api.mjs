@@ -8,6 +8,7 @@ import {
   PUBLISHER_DRAFTS,
   extractCatalogCategories,
   extractCatalogLicenses,
+  extractCatalogTiers,
   extractCatalogSources,
   extractTopTags,
   filterCatalogEntries,
@@ -499,13 +500,16 @@ export function createStoreApp(options = {}) {
   const catalogBySlug = new Map(catalogList.map((item) => [item.asset_id, item]));
   const catalogCategories = extractCatalogCategories(catalogList);
   const catalogLicenses = extractCatalogLicenses(catalogList);
+  const catalogTiers = extractCatalogTiers(catalogList);
   const catalogSources = extractCatalogSources(catalogList);
   const catalogTopTags = extractTopTags(catalogList, 24);
   const categoryCounts = {};
   const licenseCounts = {};
+  const tierCounts = {};
   for (const item of catalogList) {
     if (item.category) categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
     if (item.license) licenseCounts[item.license] = (licenseCounts[item.license] || 0) + 1;
+    if (item.license_tier) tierCounts[item.license_tier] = (tierCounts[item.license_tier] || 0) + 1;
   }
   const artifacts = createCatalogArtifacts(catalogList, customArtifacts);
   const store = new JsonLibraryStore(dataDir, { clock });
@@ -702,6 +706,8 @@ export function createStoreApp(options = {}) {
         const q = url.searchParams.get('q') || '';
         const releaseKind = url.searchParams.get('release_kind') || '';
         const license = url.searchParams.get('license') || '';
+        const tier = url.searchParams.get('tier') || '';
+        const ai = url.searchParams.get('ai') || '';
         const source = url.searchParams.get('source') || '';
         const tag = url.searchParams.get('tag') || '';
         const rawPage = url.searchParams.get('page');
@@ -716,6 +722,8 @@ export function createStoreApp(options = {}) {
           q,
           release_kind: releaseKind,
           license,
+          tier,
+          ai,
           source,
           tag
         });
@@ -735,15 +743,19 @@ export function createStoreApp(options = {}) {
           total_pages: totalPages,
           categories: catalogCategories,
           licenses: catalogLicenses,
+          tiers: catalogTiers,
           sources: catalogSources,
           top_tags: catalogTopTags,
           category_counts: categoryCounts,
           license_counts: licenseCounts,
+          tier_counts: tierCounts,
           filters: {
             category: category || null,
             q: q || null,
             release_kind: releaseKind && releaseKind !== 'all' ? releaseKind : null,
             license: license || null,
+            tier: tier || null,
+            ai: ai || null,
             source: source || null,
             tag: tag || null
           },

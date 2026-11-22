@@ -227,6 +227,16 @@ export function extractCatalogSources(entries = SAMPLE_CATALOG) {
   return sources;
 }
 
+export function extractCatalogTiers(entries = SAMPLE_CATALOG) {
+  const order = ['tier1_cc0', 'tier2_attribution', 'tier2b_ofl_font', 'tier4_external_only'];
+  const present = new Set();
+  for (const item of entries || []) {
+    const tier = String(item?.license_tier || '').trim();
+    if (tier) present.add(tier);
+  }
+  return order.filter((t) => present.has(t));
+}
+
 export function extractTopTags(entries = SAMPLE_CATALOG, limit = 24) {
   const counts = new Map();
   for (const item of entries || []) {
@@ -246,6 +256,8 @@ export function filterCatalogEntries(entries = SAMPLE_CATALOG, filters = {}) {
   const releaseKind = String(filters.release_kind ?? '').trim();
   const category = String(filters.category ?? '').trim().toLowerCase();
   const license = String(filters.license ?? '').trim().toLowerCase();
+  const tier = String(filters.tier ?? '').trim().toLowerCase();
+  const ai = String(filters.ai ?? '').trim().toLowerCase();
   const source = String(filters.source ?? '').trim().toLowerCase();
   const tag = String(filters.tag ?? '').trim().toLowerCase();
   const q = String(filters.q ?? '').trim().toLowerCase();
@@ -263,6 +275,18 @@ export function filterCatalogEntries(entries = SAMPLE_CATALOG, filters = {}) {
     if (license && license !== 'all') {
       const itemLic = String(item.license || '').toLowerCase();
       if (itemLic !== license) {
+        return false;
+      }
+    }
+    if (tier && tier !== 'all') {
+      const itemTier = String(item.license_tier || '').toLowerCase();
+      if (itemTier !== tier) {
+        return false;
+      }
+    }
+    if (ai && ai !== 'all') {
+      const itemAi = String(item.ai_disclosure || '').toLowerCase();
+      if (ai === 'no-ai' && !itemAi.includes('no generative ai') && !itemAi.includes('no ai')) {
         return false;
       }
     }
@@ -305,6 +329,8 @@ export function buildCatalogQueryString(filters = {}) {
   const q = String(filters.q ?? '').trim();
   const releaseKind = String(filters.release_kind ?? '').trim();
   const license = String(filters.license ?? '').trim();
+  const tier = String(filters.tier ?? '').trim();
+  const ai = String(filters.ai ?? '').trim();
   const source = String(filters.source ?? '').trim();
   const tag = String(filters.tag ?? '').trim();
   const page = Number(filters.page || 0);
@@ -314,6 +340,8 @@ export function buildCatalogQueryString(filters = {}) {
   if (q) params.set('q', q);
   if (releaseKind && releaseKind !== 'all') params.set('release_kind', releaseKind);
   if (license && license !== 'all') params.set('license', license);
+  if (tier && tier !== 'all') params.set('tier', tier);
+  if (ai && ai !== 'all') params.set('ai', ai);
   if (source && source !== 'all') params.set('source', source);
   if (tag && tag !== 'all') params.set('tag', tag);
   if (Number.isInteger(page) && page >= 1) params.set('page', String(page));
@@ -427,10 +455,12 @@ export async function fetchCatalogWithFallback({
       items: data.items,
       categories: Array.isArray(data.categories) ? data.categories : extractCatalogCategories(fallbackCatalog),
       licenses: Array.isArray(data.licenses) ? data.licenses : extractCatalogLicenses(fallbackCatalog),
+      tiers: Array.isArray(data.tiers) ? data.tiers : extractCatalogTiers(fallbackCatalog),
       sources: Array.isArray(data.sources) ? data.sources : extractCatalogSources(fallbackCatalog),
       top_tags: Array.isArray(data.top_tags) ? data.top_tags : extractTopTags(fallbackCatalog),
       category_counts: data.category_counts || null,
       license_counts: data.license_counts || null,
+      tier_counts: data.tier_counts || null,
       account: data.account || null,
       total: typeof data.total === 'number' ? data.total : data.items.length,
       catalog_total: typeof data.catalog_total === 'number' ? data.catalog_total : (typeof data.total === 'number' ? data.total : data.items.length),

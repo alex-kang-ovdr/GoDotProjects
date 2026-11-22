@@ -4,6 +4,7 @@ import {
   createStoreApiClient,
   extractCatalogCategories,
   extractCatalogLicenses,
+  extractCatalogTiers,
   extractCatalogSources,
   extractTopTags,
   fetchCatalogWithFallback,
@@ -14,12 +15,21 @@ import {
 const apiClient = createStoreApiClient();
 const PAGE_SIZE = 24;
 
+const TIER_META = Object.freeze({
+  tier1_cc0: { label: 'Tier 1 · CC0/PD', cls: 'tier1' },
+  tier2_attribution: { label: 'Tier 2 · 표기 의무', cls: 'tier2' },
+  tier2b_ofl_font: { label: 'Tier 2-B · OFL 폰트', cls: 'tier2b' },
+  tier4_external_only: { label: 'Tier 4 · 외부링크 전용', cls: 'tier4' }
+});
+
 const state = {
   tab: 'browse',
   query: '',
   category: 'all',
   kind: 'all',
   license: 'all',
+  tier: 'all',
+  ai: 'all',
   source: 'all',
   tag: 'all',
   sort: 'default',
@@ -33,10 +43,12 @@ const state = {
   allCatalog: SAMPLE_CATALOG.map((item) => ({ ...item })),
   categories: extractCatalogCategories(SAMPLE_CATALOG),
   licenses: extractCatalogLicenses(SAMPLE_CATALOG),
+  tiers: extractCatalogTiers(SAMPLE_CATALOG),
   sources: extractCatalogSources(SAMPLE_CATALOG),
   topTags: extractTopTags(SAMPLE_CATALOG, 16),
   categoryCounts: null,
   licenseCounts: null,
+  tierCounts: null,
   drafts: [...PUBLISHER_DRAFTS],
   selectedId: SAMPLE_CATALOG[0]?.asset_id || null,
   selectedDetail: null,
@@ -62,7 +74,9 @@ const el = {
   categoryFilter: document.getElementById('category-filter'),
   categoryPills: document.getElementById('category-pills'),
   kindFilter: document.getElementById('kind-filter'),
+  tierFilter: document.getElementById('tier-filter'),
   licenseFilter: document.getElementById('license-filter'),
+  aiFilter: document.getElementById('ai-filter'),
   sourceFilter: document.getElementById('source-filter'),
   tagBar: document.getElementById('tag-bar'),
   sortSelect: document.getElementById('sort-select'),
@@ -142,6 +156,8 @@ function hasActiveFilters() {
     || state.category !== 'all'
     || state.kind !== 'all'
     || state.license !== 'all'
+    || state.tier !== 'all'
+    || state.ai !== 'all'
     || state.source !== 'all'
     || state.tag !== 'all'
   );
@@ -153,6 +169,8 @@ function currentFilters({ includePagination = true } = {}) {
     q: state.query,
     release_kind: state.kind,
     license: state.license,
+    tier: state.tier,
+    ai: state.ai,
     source: state.source,
     tag: state.tag
   };
@@ -190,6 +208,32 @@ function renderCategoryOptions() {
 }
 
 function renderFacetOptions() {
+  if (el.tierFilter) {
+    const group = el.tierFilter.closest('.filter-group');
+    const hasTiers = state.tiers.length > 0;
+    if (group) group.classList.toggle('hidden', !hasTiers);
+    if (hasTiers) {
+      const counts = state.tierCounts || {};
+      const opts = [
+        '<option value="all">전체 등급 (4-Tier)</option>',
+        ...state.tiers.map((tier) => {
+          const meta = TIER_META[tier] || { label: tier };
+          const cnt = typeof counts[tier] === 'number' ? ` (${counts[tier].toLocaleString()})` : '';
+          return `<option value="${esc(tier)}">${esc(meta.label)}${cnt}</option>`;
+        })
+      ];
+      el.tierFilter.innerHTML = opts.join('');
+      el.tierFilter.value = state.tiers.includes(state.tier) ? state.tier : 'all';
+      if (el.tierFilter.value !== state.tier) state.tier = 'all';
+    }
+  }
+
+  if (el.aiFilter) {
+    const group = el.aiFilter.closest('.filter-group');
+    if (group) group.classList.toggle('hidden', state.tiers.length === 0);
+    el.aiFilter.value = state.ai;
+  }
+
   if (el.licenseFilter) {
     const group = el.licenseFilter.closest('.filter-group');
     const hasLicenses = state.licenses.length > 0;
@@ -374,10 +418,12 @@ async function refreshCatalog({ refreshFull = false } = {}) {
   state.catalog = result.items.map((item) => ({ ...item }));
   state.categories = result.categories || extractCatalogCategories(result.items);
   state.licenses = result.licenses || extractCatalogLicenses(result.items);
+  state.tiers = result.tiers || extractCatalogTiers(result.items);
   state.sources = result.sources || extractCatalogSources(result.items);
   state.topTags = result.top_tags || extractTopTags(result.items, 16);
   state.categoryCounts = result.category_counts || null;
   state.licenseCounts = result.license_counts || null;
+  state.tierCounts = result.tier_counts || null;
   state.total = typeof result.total === 'number' ? result.total : result.items.length;
   state.catalogTotal = typeof result.catalog_total === 'number' ? result.catalog_total : state.total;
   state.page = typeof result.page === 'number' ? result.page : 1;
@@ -569,8 +615,11 @@ function renderCards(items) {
     const isAddon = hasExecutableAddon(item);
     const isPending = state.pendingSaves.has(item.asset_id);
     const selected = state.selectedId === item.asset_id ? ' selected' : '';
+    const tierInfo = item.license_tier ? TIER_META[item.license_tier] : null;
+    const isNoAi = /no generative ai|no ai/i.test(String(item.ai_disclosure || ''));
+    const isExternalOnly = item.hosting_policy === 'external_link_only';
     const floatBadge = !isPackage
-      ? '<span class="card-badge-float editorial">일반 콘텐츠 · 가이드</span>'
+      ? (isExternalOnly ? '<span class="card-badge-float editorial">Tier 4 · 외부 링크 전용</span>' : '<span class="card-badge-float editorial">일반 콘텐츠 · 가이드</span>')
       : isSaved
         ? '<span class="card-badge-float saved">저장됨 ✓</span>'
         : isAddon
@@ -582,11 +631,14 @@ function renderCards(items) {
     const actionRow = isPackage
       ? `<button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">상세 계약</button>
          <button type="button" class="btn btn-grow ${isSaved ? 'btn-saved' : 'btn-primary'}" data-action="toggle-library" data-id="${esc(item.asset_id)}"${isPending ? ' disabled' : ''}>${esc(actionLabel)}</button>`
-      : `<span class="state-tag">editorial · 설치 버튼 없음</span>
-         <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">읽기</button>`;
+      : (isExternalOnly && isSafeHttpUrl(item.source_url)
+        ? `<a class="btn btn-primary btn-grow artifact-link" href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">공식 사이트 이동 ↗</a>
+           <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">안내</button>`
+        : `<span class="state-tag">editorial · 설치 버튼 없음</span>
+           <button type="button" class="btn btn-secondary" data-action="inspect-item" data-id="${esc(item.asset_id)}">읽기</button>`);
     const compatLine = isPackage
-      ? `<span class="mono">Godot ${esc(item.engine_compatibility?.godot_tested || '4.7+')}</span><span>·</span><span class="mono">v${esc(item.asset_version_id)}</span>${item.license ? `<span>·</span><span class="license-pill">${esc(item.license)}</span>` : ''}`
-      : `<span class="mono">v${esc(item.asset_version_id)}</span><span>·</span><span>문서 안내</span>`;
+      ? `<span class="mono">Godot ${esc(item.engine_compatibility?.godot_tested || '4.7+')}</span>${item.license ? `<span>·</span><span class="license-pill">${esc(item.license)}</span>` : ''}${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}${isNoAi ? '<span class="ai-pill">No AI</span>' : ''}`
+      : `<span class="mono">v${esc(item.asset_version_id)}</span><span>·</span><span>${isExternalOnly ? '직접 호스팅 금지 · 외부 링크' : '문서 안내'}</span>`;
     const tags = Array.isArray(item.tags) ? item.tags.slice(0, 4) : [];
     const tagRow = tags.length
       ? `<div class="card-tags">${tags.map((t) => `<span class="card-tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join('')}</div>`
@@ -641,16 +693,23 @@ function renderDetail(items) {
 
   if (!isPackage) {
     const lines = Array.isArray(active.article_body) ? active.article_body : [];
+    const isExtOnly = active.hosting_policy === 'external_link_only';
+    const extBtn = isExtOnly && isSafeHttpUrl(active.source_url)
+      ? `<div style="margin-top:8px"><a class="btn btn-primary artifact-link" href="${esc(active.source_url)}" target="_blank" rel="noopener noreferrer">공식 배포처로 이동하여 다운로드 ↗</a></div>`
+      : '';
     el.detail.innerHTML = `
       <div class="detail-left">
         <div class="detail-badge-row">
           <span class="badge-secondary">선택된 에셋 상세</span>
-          <span class="kind-pill kind-editorial">editorial · 일반 콘텐츠 (설치 버튼 없음)</span>
+          <span class="kind-pill kind-editorial">${isExtOnly ? 'Tier 4 · 외부 링크 전용 (직접 호스팅 금지)' : 'editorial · 일반 콘텐츠 (설치 버튼 없음)'}</span>
         </div>
         <h2>${esc(active.title)}</h2>
         <p class="detail-summary">${esc(active.summary)}</p>
         <div class="dock-callout">${lines.map((line) => `<div>${esc(line)}</div>`).join('')}</div>
-        <div class="dock-callout">일반 콘텐츠(<code>release_kind = editorial</code>)는 패키지 설치 대상이 아니며 빈 패키지를 생성하지 않습니다.</div>
+        <div class="dock-callout">${isExtOnly
+          ? '저작권·재배포 금지 약관 준수를 위해 본 리소스는 PlayForge Store 서버에 호스팅하지 않으며 공식 배포처 링크로만 안내합니다.'
+          : '일반 콘텐츠(<code>release_kind = editorial</code>)는 패키지 설치 대상이 아니며 빈 패키지를 생성하지 않습니다.'}</div>
+        ${extBtn}
       </div>
     `;
     return;
@@ -663,8 +722,14 @@ function renderDetail(items) {
     .map((t) => `<button type="button" class="tag-chip${state.tag === t ? ' active' : ''}" data-tag="${esc(t)}">#${esc(t)}</button>`)
     .join('');
   const artifactUrl = active.artifact_url || apiClient.getArtifactUrl(active.asset_id, active.asset_version_id);
+  const externalUrl = isSafeHttpUrl(active.external_download_url)
+    ? active.external_download_url
+    : (isSafeHttpUrl(active.source_url) ? active.source_url : '');
+  const externalAction = externalUrl
+    ? `<a class="btn btn-secondary artifact-link" href="${esc(externalUrl)}" target="_blank" rel="noopener noreferrer">공식 외부 다운로드 / 원출처 ↗</a>`
+    : '';
   const artifactAction = state.mode === 'live'
-    ? `<a class="btn btn-secondary artifact-link" href="${esc(artifactUrl)}" download="${esc(active.asset_id)}-${esc(active.asset_version_id)}.playforgepkg">.playforgepkg 다운로드 확인</a>`
+    ? `<a class="btn btn-secondary artifact-link" href="${esc(artifactUrl)}" download="${esc(active.asset_id)}-${esc(active.asset_version_id)}.playforgepkg">.playforgepkg 메타 패키지 확인</a>`
     : '';
   const statusBanner = state.statusMessage
     ? `<div class="dock-callout status-callout" role="status">${esc(state.statusMessage)}</div>`
@@ -672,8 +737,15 @@ function renderDetail(items) {
   const savedAtRow = libraryEntry?.saved_at
     ? `<tr><th>saved_at</th><td><code>${esc(libraryEntry.saved_at)}</code></td></tr>`
     : '';
+  const tierInfo = active.license_tier ? TIER_META[active.license_tier] : null;
   const licenseRow = active.license
-    ? `<tr><th>license</th><td><span class="license-pill">${esc(active.license)}</span></td></tr>`
+    ? `<tr><th>license</th><td><span class="license-pill">${esc(active.license)}</span> ${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}</td></tr>`
+    : '';
+  const aiRow = active.ai_disclosure
+    ? `<tr><th>ai_disclosure</th><td><span class="ai-pill">${esc(active.ai_disclosure)}</span></td></tr>`
+    : '';
+  const formatsRow = Array.isArray(active.formats) && active.formats.length
+    ? `<tr><th>formats</th><td><code>${esc(active.formats.join(', '))}</code></td></tr>`
     : '';
   const authorRow = active.author
     ? `<tr><th>author</th><td>${esc(active.author)}</td></tr>`
@@ -685,6 +757,16 @@ function renderDetail(items) {
         : esc(active.source_provider)
     }</td></tr>`
     : '';
+  const creditText = active.attribution_text || '';
+  const creditBox = creditText
+    ? `<div class="credit-box">
+        <div class="credit-box-head">
+          <strong>표준 크레딧 고지 (<code>Third-Party Notices.txt</code> · <code>CREDITS.md</code>)</strong>
+          <button type="button" class="btn btn-secondary" data-action="copy-credit" data-id="${esc(active.asset_id)}">크레딧 복사</button>
+        </div>
+        <code>${esc(creditText)}</code>
+      </div>`
+    : '';
   const compat = active.engine_compatibility || { godot_min: '4.3', godot_tested: '4.7.2', platforms: ['web', 'windows', 'linux', 'macos'] };
 
   el.detail.innerHTML = `
@@ -694,15 +776,18 @@ function renderDetail(items) {
           <span class="badge-secondary">선택된 에셋 상세</span>
           <span class="kind-pill ${isSaved ? 'card-badge-float saved' : 'kind-package'}" style="position:static">${isSaved ? 'saved_to_library' : esc(active.store_state)}</span>
           ${active.license ? `<span class="license-pill">${esc(active.license)}</span>` : ''}
+          ${tierInfo ? `<span class="tier-pill ${tierInfo.cls}">${esc(tierInfo.label)}</span>` : ''}
+          ${/no generative ai|no ai/i.test(String(active.ai_disclosure || '')) ? '<span class="ai-pill">No AI</span>' : ''}
           ${hasExecutableAddon(active) ? '<span class="badge-tertiary">executable_addon: true</span>' : ''}
         </div>
         <h2>${esc(active.title)}</h2>
         <p class="detail-summary">${esc(active.summary)}</p>
         ${tagChips ? `<div class="tag-cloud">${tagChips}</div>` : ''}
+        ${creditBox}
         <div class="manifest-chips">${manifestChips}</div>
         ${statusBanner}
         <div class="dock-callout">
-          <strong>다음 단계 (Godot Store 도크):</strong> Godot 4.7.2 에디터에서 <strong>새로고침</strong>을 눌러 같은 Hub 계정 라이브러리를 조회하고, SHA-256 검증 및 6단계 변경 검토 후 선택한 프로젝트에만 적용하세요.
+          <strong>다음 단계 (Godot Store 도크 · 외부 연동 우선):</strong> <strong>공식 외부 다운로드</strong>로 원파일을 바로 받거나, <strong>내 라이브러리 저장</strong> 후 Godot 4.7.2 에디터 도크에서 <code>Third-Party Notices.txt</code>와 함께 6단계 검증 후 프로젝트에 적용하세요.
         </div>
       </div>
 
@@ -718,6 +803,8 @@ function renderDetail(items) {
           <tr><th>platforms</th><td>${esc((compat.platforms || []).join(', '))}</td></tr>
           <tr><th>artifact_digest</th><td><code title="${esc(active.artifact_digest)}">${esc(shortDigest(active.artifact_digest))}</code></td></tr>
           ${licenseRow}
+          ${aiRow}
+          ${formatsRow}
           ${authorRow}
           ${sourceRow}
           <tr><th>license_ref</th><td><code>${esc(active.license_snapshot_ref)}</code></td></tr>
@@ -729,6 +816,7 @@ function renderDetail(items) {
               ? '동기화 중…'
               : (isSaved ? '라이브러리에 저장됨 ✓ (클릭 시 제거)' : '내 라이브러리에 저장')
           }</button>
+          ${externalAction}
           ${artifactAction}
         </div>
       </div>
@@ -819,6 +907,14 @@ document.addEventListener('click', (event) => {
     if (action === 'toggle-library') toggleLibrary(id);
     else if (action === 'select-item') selectItem(id, false);
     else if (action === 'inspect-item') selectItem(id, true);
+    else if (action === 'copy-credit') {
+      const target = findItemById(id);
+      if (target?.attribution_text) {
+        navigator.clipboard?.writeText(target.attribution_text).catch(() => {});
+        actionBtn.textContent = '복사됨 ✓';
+        setTimeout(() => { actionBtn.textContent = '크레딧 복사'; }, 1800);
+      }
+    }
     return;
   }
   const card = event.target.closest('[data-card-id]');
@@ -852,8 +948,22 @@ el.kindFilter?.addEventListener('change', (event) => {
   else render();
 });
 
+el.tierFilter?.addEventListener('change', (event) => {
+  state.tier = event.target.value;
+  state.page = 1;
+  if (state.mode === 'live') refreshCatalog();
+  else render();
+});
+
 el.licenseFilter?.addEventListener('change', (event) => {
   state.license = event.target.value;
+  state.page = 1;
+  if (state.mode === 'live') refreshCatalog();
+  else render();
+});
+
+el.aiFilter?.addEventListener('change', (event) => {
+  state.ai = event.target.value;
   state.page = 1;
   if (state.mode === 'live') refreshCatalog();
   else render();
@@ -875,7 +985,9 @@ el.resetFiltersBtn?.addEventListener('click', () => {
   state.query = '';
   state.category = 'all';
   state.kind = 'all';
+  state.tier = 'all';
   state.license = 'all';
+  state.ai = 'all';
   state.source = 'all';
   state.tag = 'all';
   state.sort = 'default';
@@ -883,7 +995,9 @@ el.resetFiltersBtn?.addEventListener('click', () => {
   if (el.search) el.search.value = '';
   if (el.categoryFilter) el.categoryFilter.value = 'all';
   if (el.kindFilter) el.kindFilter.value = 'all';
+  if (el.tierFilter) el.tierFilter.value = 'all';
   if (el.licenseFilter) el.licenseFilter.value = 'all';
+  if (el.aiFilter) el.aiFilter.value = 'all';
   if (el.sourceFilter) el.sourceFilter.value = 'all';
   if (el.sortSelect) el.sortSelect.value = 'default';
   renderCategoryOptions();

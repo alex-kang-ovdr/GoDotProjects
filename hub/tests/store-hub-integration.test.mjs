@@ -110,14 +110,18 @@ test('Hub /store/ proxy mounts 4,592-asset Store, forwards verified Hub SSO sess
   assert.match(html, /PlayForge Asset Store/);
   assert.match(html, /id="hub-home-link"/);
 
-  // 2. /api/store/catalog through Hub returns all 4,592 assets
+  // 2. /api/store/catalog through Hub returns the full merged catalog (11,800+ assets)
+  const expectedTotal = loadMergedCatalog().length;
   const catRes = await fetch(`${userBaseUrl}/api/store/catalog?limit=12`);
   assert.equal(catRes.status, 200);
   const catData = await catRes.json();
-  assert.equal(catData.catalog_total, 4592);
+  assert.equal(catData.catalog_total, expectedTotal);
+  assert.ok(catData.catalog_total >= 11800);
   assert.equal(catData.items.length, 12);
   assert.ok(catData.licenses.includes('CC0-1.0'));
   assert.ok(catData.licenses.includes('MIT'));
+  assert.ok(catData.licenses.includes('CC-BY-3.0'));
+  assert.ok(catData.licenses.includes('OFL-1.1'));
 
   // 3. Spoofed client SSO headers are stripped by storeProxy (falls back to local_default without valid Hub cookie)
   const spoofRes = await fetch(`${userBaseUrl}/api/store/session`, {
@@ -217,7 +221,7 @@ test('Hub stays 100% healthy when Store upstream is down (outage isolation) and 
   assert.equal(ov.summary.totalPackages, 5);
   assert.equal(ov.contractPolicy.hubCatalogIsolated, true);
   assert.equal(ov.liveCatalog.available, true);
-  assert.equal(ov.liveCatalog.totalEntries, 4592);
+  assert.equal(ov.liveCatalog.totalEntries, loadMergedCatalog().length);
 });
 
 const chromePath = process.env.PLAYHUB_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -294,7 +298,7 @@ test('Real Chrome CDP navigates PlayHub Home -> Create -> /store/ (4,592 assets)
     await send('Page.navigate', { url: `${userBaseUrl}/store/` });
     await until("document.querySelector('#connection-badge')?.dataset.mode === 'live' && document.querySelectorAll('#catalog-list .card').length === 24");
     const resultsText = await evaluate("document.querySelector('#results-count')?.textContent");
-    assert.match(resultsText, /4,592/);
+    assert.match(resultsText, new RegExp(loadMergedCatalog().length.toLocaleString('en-US').replace(/,/g, ',')));
     const hubLinkVisible = await evaluate("!document.querySelector('#hub-home-link')?.hidden && document.querySelector('#hub-home-link')?.getAttribute('href') === '/'");
     assert.equal(hubLinkVisible, true);
 

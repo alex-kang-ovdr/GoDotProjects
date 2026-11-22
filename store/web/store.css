@@ -868,6 +868,70 @@ button { cursor: pointer; }
   text-decoration: underline;
   word-break: break-all;
 }
+.tier-pill {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tier-pill.tier1 { background: #DCFCE7; color: #166534; }
+.tier-pill.tier2 { background: #DBEAFE; color: #1E40AF; }
+.tier-pill.tier2b { background: #FEF3C7; color: #92400E; }
+.tier-pill.tier4 { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+.ai-pill {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #EDE9FE;
+  color: #5B21B6;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.credit-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--text);
+}
+.credit-box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.credit-box code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-word;
+}
+.store-attribution-bar {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto 28px;
+  padding: 12px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+.store-attribution-bar a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.store-attribution-bar a:hover { text-decoration: underline; }
 
 /* ==================== Responsive Mobile (Unity Mobile Flow) ==================== */
 @media (max-width: 1100px) {

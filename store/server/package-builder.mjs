@@ -361,8 +361,64 @@ export const LICENSE_SUMMARY_TEXT = Object.freeze({
     '',
     'Licensed under the Apache License, Version 2.0. You may obtain a copy of the License at the URL above.',
     'Permits commercial use, modification, distribution, and patent use with notice preservation.'
+  ].join('\n'),
+  'CC-BY-4.0': [
+    'Creative Commons Attribution 4.0 International (CC BY 4.0)',
+    'https://creativecommons.org/licenses/by/4.0/',
+    '',
+    'You are free to share and adapt for any purpose, even commercially, provided appropriate credit',
+    'is given, a link to the license is provided, and changes are indicated.'
+  ].join('\n'),
+  'CC-BY-3.0': [
+    'Creative Commons Attribution 3.0 Unported (CC BY 3.0)',
+    'https://creativecommons.org/licenses/by/3.0/',
+    '',
+    'You are free to share and adapt for any purpose, even commercially, provided appropriate credit',
+    'is given to the original author and a link to the license is provided.'
+  ].join('\n'),
+  'OGA-BY-3.0': [
+    'OpenGameArt.org Attribution 3.0 (OGA-BY 3.0)',
+    'https://static.opengameart.org/OGA-BY-3.0.txt',
+    '',
+    'Permits commercial use, modification, and redistribution with author attribution and no DRM restriction.'
+  ].join('\n'),
+  'OFL-1.1': [
+    'SIL Open Font License, Version 1.1 (OFL-1.1)',
+    'https://openfontlicense.org/',
+    '',
+    'Free to use, embed in commercial games, modify, and redistribute with this license notice.',
+    'Standalone paid sale of the font files by themselves is prohibited; free distribution only.'
   ].join('\n')
 });
+
+export function buildThirdPartyNoticesText(item) {
+  const title = String(item.title || item.asset_id || 'Asset');
+  const author = String(item.author || item.publisher_id || 'Community');
+  const licenseId = String(item.license || 'CC0-1.0');
+  const sourceUrl = String(item.source_url || item.download_url || 'PlayForge Asset Store');
+  const aiDisclosure = String(item.ai_disclosure || 'No generative AI used');
+  const provider = String(item.source_provider || 'PlayForge Open Catalog');
+  const downloadUrl = String(item.external_download_url || item.download_url || sourceUrl);
+  const attributionLine = String(item.attribution_text || '')
+    || `Asset uses ${title} by ${author} under ${licenseId} (${sourceUrl}); see Third-Party Notices.txt file in package for details. (AI Disclosure: ${aiDisclosure})`;
+
+  return [
+    'THIRD-PARTY ASSET NOTICES',
+    '=========================',
+    '',
+    attributionLine,
+    '',
+    `Asset ID: ${item.asset_id || ''}`,
+    `Title: ${title}`,
+    `Author / Creator: ${author}`,
+    `License: ${licenseId} (${item.license_tier || 'tier1_cc0'})`,
+    `Source Provider: ${provider}`,
+    `Source URL: ${sourceUrl}`,
+    `External Download URL: ${downloadUrl}`,
+    `AI Disclosure: ${aiDisclosure}`,
+    ''
+  ].join('\n');
+}
 
 export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
   const slug = String(item.asset_id || 'asset');
@@ -371,15 +427,21 @@ export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
   const author = String(item.author || item.publisher_id || 'Community');
   const sourceProvider = String(item.source_provider || 'PlayForge Open Catalog');
   const sourceUrl = String(item.source_url || '');
-  const downloadUrl = String(item.download_url || sourceUrl);
+  const downloadUrl = String(item.external_download_url || item.download_url || sourceUrl);
   const tags = Array.isArray(item.tags) ? item.tags : [];
+  const formats = Array.isArray(item.formats) ? item.formats : [];
+  const aiDisclosure = String(item.ai_disclosure || 'No generative AI used');
+  const licenseTier = String(item.license_tier || 'tier1_cc0');
+  const attributionText = String(item.attribution_text || '')
+    || `Asset uses ${item.title} by ${author} under ${licenseId} (${sourceUrl || downloadUrl}); see Third-Party Notices.txt file in package for details. (AI Disclosure: ${aiDisclosure})`;
 
   const licenseTxt = [
     `Asset: ${item.title} (${slug})`,
     `Author: ${author}`,
     `Source: ${sourceProvider}${sourceUrl ? ` (${sourceUrl})` : ''}`,
-    `License: ${licenseId}`,
+    `License: ${licenseId} (${licenseTier})`,
     `License Snapshot Ref: ${item.license_snapshot_ref || ''}`,
+    `AI Disclosure: ${aiDisclosure}`,
     '',
     '---',
     '',
@@ -387,25 +449,34 @@ export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
     ''
   ].join('\n');
 
+  const noticesTxt = buildThirdPartyNoticesText(item);
+
   const readmeMd = [
     `# ${item.title}`,
     '',
     `- **Asset ID**: \`${slug}\``,
     `- **카테고리**: ${item.category || '기타'}`,
-    `- **라이선스**: \`${licenseId}\` (상업·비상업 게임 제작 자유 사용 가능)`,
+    `- **라이선스**: \`${licenseId}\` (\`${licenseTier}\` · 상업·비상업 게임 제작 활용 가능)`,
+    `- **AI 투명성 표기**: ${aiDisclosure}`,
     `- **저작자 / 출처**: ${author} · ${sourceProvider}`,
     sourceUrl ? `- **공식 원본 페이지**: ${sourceUrl}` : '',
-    downloadUrl ? `- **공식 다운로드 경로**: ${downloadUrl}` : '',
+    downloadUrl ? `- **외부 공식 다운로드 경로**: ${downloadUrl}` : '',
+    formats.length ? `- **지원 포맷**: ${formats.join(', ')}` : '',
     tags.length ? `- **태그**: ${tags.map((t) => `#${t}`).join(' ')}` : '',
     `- **지원 환경**: Godot ${item.engine_compatibility?.godot_min || '4.3'}+ (검증 ${item.engine_compatibility?.godot_tested || '4.7.2'}) · Forge 전용 (${(item.engine_compatibility?.platforms || ['web', 'windows', 'linux', 'macos']).join(', ')})`,
     '',
     '## 설명',
     item.summary || '',
     '',
+    '## 표준 크레딧 표기 (CREDITS.md)',
+    '```text',
+    attributionText,
+    '```',
+    '',
     '## Godot 4.7.2 프로젝트 적용 안내',
-    '1. PlayForge Store 웹에서 본 패키지를 **내 라이브러리**에 저장합니다.',
+    '1. PlayForge Store 웹에서 본 패키지를 **내 라이브러리**에 저장하거나 **외부 공식 다운로드**에서 원파일을 직접 받습니다.',
     '2. Godot 에디터(설치형 또는 웹 에디터)의 **PlayForge Store 도크**에서 새로고침 후 6단계 검토를 거쳐 프로젝트에 적용합니다.',
-    '3. 모든 파일은 `assets/' + slug + '/` 하위 격리 경로에 배치되며 라이선스 고지(`LICENSE.txt`)가 함께 포함됩니다.',
+    '3. 모든 파일은 `assets/' + slug + '/` 하위 격리 경로에 배치되며 `LICENSE.txt` 및 `Third-Party Notices.txt` 고지 파일이 함께 포함됩니다.',
     ''
   ].filter((line) => line !== null).join('\n');
 
@@ -418,12 +489,18 @@ export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
     summary: item.summary || '',
     category: item.category || '',
     tags,
+    formats,
     license: licenseId,
+    license_tier: licenseTier,
+    hosting_policy: item.hosting_policy || 'direct_or_external',
+    ai_disclosure: aiDisclosure,
+    attribution_text: attributionText,
     license_snapshot_ref: item.license_snapshot_ref || '',
     author,
     source_provider: sourceProvider,
     source_url: sourceUrl,
     download_url: downloadUrl,
+    external_download_url: downloadUrl,
     thumbnail_url: item.thumbnail_url || '',
     engine_compatibility: item.engine_compatibility || null
   }, null, 2)}\n`;
@@ -431,7 +508,8 @@ export function buildCollectedPackageFiles(item, repoRoot = DEFAULT_REPO_ROOT) {
   const files = [
     { path: `assets/${slug}/ASSET_METADATA.json`, executable_addon: false, content: Buffer.from(metadataJson, 'utf8') },
     { path: `assets/${slug}/LICENSE.txt`, executable_addon: false, content: Buffer.from(licenseTxt, 'utf8') },
-    { path: `assets/${slug}/README.md`, executable_addon: false, content: Buffer.from(readmeMd, 'utf8') }
+    { path: `assets/${slug}/README.md`, executable_addon: false, content: Buffer.from(readmeMd, 'utf8') },
+    { path: `assets/${slug}/Third-Party Notices.txt`, executable_addon: false, content: Buffer.from(noticesTxt, 'utf8') }
   ];
 
   if (Array.isArray(item.local_bundle_files) && item.local_bundle_files.length > 0) {

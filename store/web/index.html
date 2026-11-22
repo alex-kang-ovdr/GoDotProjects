@@ -97,9 +97,24 @@
           </div>
 
           <div class="filter-group">
+            <label class="filter-label" for="tier-filter">라이선스 등급 (4-Tier 정책)</label>
+            <select id="tier-filter" aria-label="라이선스 등급 필터">
+              <option value="all">전체 등급 (Tier 1 · 2 · 2-B · 4)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
             <label class="filter-label" for="license-filter">라이선스 (상업적 사용 가능)</label>
             <select id="license-filter" aria-label="라이선스 필터">
-              <option value="all">전체 라이선스 (CC0 · MIT 등)</option>
+              <option value="all">전체 라이선스 (CC0 · MIT · CC-BY · OFL)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="ai-filter">AI 투명성 (Steam/Fab 규격)</label>
+            <select id="ai-filter" aria-label="AI 투명성 필터">
+              <option value="all">전체</option>
+              <option value="no-ai">No AI (생성형 AI 미사용 검증)</option>
             </select>
           </div>
 
@@ -177,6 +192,19 @@
         </section>
       </div>
     </main>
+
+    <footer class="store-attribution-bar" aria-label="외부 API 및 오픈 라이선스 출처">
+      <span>외부 공식 API 우선 연동:</span>
+      <a href="https://polyhaven.com/" target="_blank" rel="noopener noreferrer">Powered by Poly Haven (CC0)</a>
+      <span>·</span>
+      <a href="https://ambientcg.com/" target="_blank" rel="noopener noreferrer">Powered by ambientCG (CC0)</a>
+      <span>·</span>
+      <a href="https://godotengine.org/asset-library/asset" target="_blank" rel="noopener noreferrer">Godot Asset Library</a>
+      <span>·</span>
+      <a href="https://game-icons.net/" target="_blank" rel="noopener noreferrer">Game-Icons.net (CC-BY-3.0)</a>
+      <span>·</span>
+      <span>패키지 루트 <code>Third-Party Notices.txt</code> 자동 동봉</span>
+    </footer>
   </div>
 
   <script type="module" src="./store.js"></script>
