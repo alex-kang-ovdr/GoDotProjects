@@ -135,7 +135,13 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   shorts_videos: ['id', 'creator_id', 'creator_name', 'game_id', 'project_id', 'title', 'caption', 'hashtags_json', 'prompt', 'flow_prompt', 'style_preset', 'camera_motion', 'storyboard_json', 'engine_id', 'resolved_engine_id', 'engine_model', 'status', 'visibility', 'is_primary', 'progress', 'stage_label', 'error_code', 'error_message', 'video_rel_path', 'poster_rel_path', 'mime_type', 'bytes', 'sha256', 'duration_sec', 'width', 'height', 'aspect_ratio', 'quoted_coins', 'charged_coins', 'billing_hold_id', 'billing_journal_entry_id', 'view_count', 'like_count', 'published_at', 'created_at', 'updated_at'],
   shorts_likes: ['short_id', 'principal_id', 'created_at'],
   shorts_views: ['short_id', 'viewer_key', 'day_bucket', 'created_at'],
-  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at']
+  shorts_idempotency: ['scope', 'idempotency_key', 'principal_id', 'request_hash', 'status_code', 'response_json', 'created_at'],
+  // Flywheel 3 Trust, Quality & Margin Defense Engine (5 tables)
+  user_consents: ['principal_id', 'purpose', 'granted', 'policy_version', 'source', 'updated_at'],
+  risk_assessments: ['id', 'domain', 'entity_type', 'entity_id', 'principal_id', 'model_version', 'risk_score', 'decision', 'top_factors_json', 'feature_snapshot_json', 'created_at'],
+  risk_review_queue: ['id', 'assessment_id', 'domain', 'principal_id', 'target_ref', 'status', 'assigned_to', 'resolution_note', 'explanation_ko', 'user_appeal_text', 'sla_due_at', 'resolved_at', 'created_at'],
+  desktop_shader_telemetry: ['id', 'game_id', 'game_version', 'engine_version', 'renderer', 'gpu_vendor', 'gpu_name', 'driver_version', 'cold_start', 'first_frame_ms', 'frame_p95_ms', 'frame_p99_ms', 'max_frame_ms', 'hitch_50ms', 'hitch_100ms', 'pipeline_counts_json', 'created_at'],
+  mmo_room_telemetry: ['id', 'room_id', 'game_id', 'is_party', 'online_count', 'bot_count', 'rtt_p50_ms', 'rtt_p95_ms', 'events_received_delta', 'sampled_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -200,7 +206,11 @@ export const DROP_TABLES = Object.freeze([
   'shorts_idempotency',
   'shorts_views',
   // GamerQA Hub multi-platform run logs
-  'gamerqa_hub_runs'
+  'gamerqa_hub_runs',
+  // Flywheel 3 Trust consent records & risk review evidence (child-before-parent FK order)
+  'risk_review_queue',
+  'risk_assessments',
+  'user_consents'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);

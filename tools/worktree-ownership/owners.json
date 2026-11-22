@@ -458,6 +458,13 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "AI-Learning-Trust": {
+      "role": "플라이휠 3 신뢰·품질·마진 방어 엔진 (Phase 0 동의/DSAR/연령, N5 리스크 ML/PIPA HITL, N7 셰이더/Warm Pool ML, N8 윤리적 DDA)",
+      "owns": [
+        "hub/server/trust/**",
+        "hub/tests/ai-learning-trust*.mjs"
+      ]
     }
   }
 }

@@ -32,6 +32,8 @@ import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
 import { createHubAgent } from './agent/routes.mjs';
 import { createShorts } from './shorts/routes.mjs';
+import { createTrust } from './trust/routes.mjs';
+import { assertWebPlayAgeAllowed } from './trust/consent.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -209,6 +211,8 @@ export function createApp(input, dependencies = {}) {
   });
   // Hub-Shorts (Game Intro Shorts: Google Flow/Veo · PlayForge Motion · PlayCoin Hold/Capture · Feed & My Game Registration)
   const shorts = createShorts({ config, db, rootDir, platformRoot, catalogOptions, sessionFor, requireSession, promote, assertNotPlatformSanctioned, now, audit, rate, env: dependencies.env || process.env, fetchImpl: dependencies.shortsFetch || dependencies.fetch || globalThis.fetch, customRenderers: dependencies.shortsRenderers || null });
+  // Flywheel 3 Trust, Quality & Margin Defense Engine (Consents, DSAR, Risk ML HITL, Shader/WarmPool ML, Ethical DDA)
+  const trust = createTrust({ config, db, sessionFor, requireSession, now, audit, rate, rateLimitIp });
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
@@ -411,6 +415,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
     if (await billing.publicRoute(req,res,url)) return;
+    if (await trust.publicRoute(req,res,url)) return;
     if (await hubAgent.publicRoute(req,res,url)) return;
     if (await shorts.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
@@ -485,6 +490,7 @@ export function createApp(input, dependencies = {}) {
       rate(`play:${s.id_hash}`,60,60000);
       const body = await readJson(req,8192), game = findGame(rootDir,db,assertId(body.gameId),true,catalogOptions), principal = promote(s,req,res), id = uid();
       assertNotPlatformSanctioned(principal.principal_id);
+      assertWebPlayAgeAllowed(db, principal.principal_id, game, rootDir);
       db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(id,principal.id_hash,principal.principal_id,principal.analytics_subject,game.id,game.buildId,now(),now()+2*3600000,principal.traffic_type,principal.qa_run_id);
       serverEvent('play_session_created',principal,game.id,id);
       const mp = ugcMultiplayer.descriptorForGame(game);
@@ -697,6 +703,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await billing.adminRoute(req,res,url,s)) return;
+    if (await trust.adminRoute(req,res,url,s)) return;
     if (await hubAgent.adminRoute(req,res,url,s)) return;
     if (await shorts.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
@@ -847,7 +854,8 @@ export function createApp(input, dependencies = {}) {
           if (await adgame.publicRoute(req, res, url, { getSession: sessionFor, rateLimitIp })) return;
         }
         const isBillingS2S = kind === 'public' && billing.enabled && (url.pathname.startsWith('/api/billing/webhooks/') || url.pathname === '/api/billing/usage' || url.pathname.startsWith('/api/billing/usage/holds'));
-        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isBillingS2S;
+        const isDesktopTelemetry = kind === 'public' && url.pathname === '/api/desktop/telemetry/shader';
+        const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isBillingS2S && !isDesktopTelemetry;
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,isMutation)) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:versionCompat.buildInfo.semver,buildId:versionCompat.buildInfo.buildId,buildCode:versionCompat.buildInfo.buildCode}); return; }
         if (url.pathname === '/api/version' && req.method === 'GET') { versionCompat.handleVersion(res); return; }
@@ -890,7 +898,7 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
-  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
+  return { db,cdn,billing,trust,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
