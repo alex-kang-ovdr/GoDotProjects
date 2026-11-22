@@ -458,7 +458,7 @@
         </div>
         <div class="creator-hub-tiles">
           <a class="hub-tile hub-tile-forge" href="/forge/OfficialGodot/" data-testid="home-forge-tile"><span class="hub-tile-icon" aria-hidden="true">🛠️</span><span class="hub-tile-copy"><strong>PlayForge 바로 열기</strong><small>웹 Godot 4.7.2 에디터</small></span></a>
-          <a class="hub-tile hub-tile-store" href="/store/" data-testid="home-store-tile"><span class="hub-tile-icon" aria-hidden="true">🧩</span><span class="hub-tile-copy"><strong>에셋 스토어</strong><small>CC0 · MIT 11,830+ 에셋</small></span></a>
+          <a class="hub-tile hub-tile-store" href="/store/" data-testid="home-store-tile"><span class="hub-tile-icon" aria-hidden="true">🧩</span><span class="hub-tile-copy"><strong>에셋 스토어</strong><small>무료 오픈 에셋 11,830+</small></span></a>
         </div>
       </section>`;
 
@@ -729,7 +729,7 @@
       <div id="creator-shorts-root"></div>
       <section class="surface" aria-labelledby="asset-store-title">
         <h2 id="asset-store-title">PlayForge 에셋 스토어</h2>
-        <p>상업적 사용이 가능한 CC0 · MIT 오픈 게임 에셋(3D 모델 · PBR 텍스처 · HDRI · Godot 4 애드온)을 PlayHub 계정으로 라이브러리에 저장하고 Godot 4.7.2 도크에서 6단계 검증 후 프로젝트에 적용할 수 있습니다. (Forge 전용 · Web/Win/Linux/macOS 지원 · AOS/iOS 미지원)</p>
+        <p>상업적 게임 제작에 활용할 수 있는 11,830+ 오픈 에셋(3D 모델 · 텍스처 · 아이콘 · Godot 애드온)을 라이브러리에 저장하고 PlayForge 에디터에서 바로 적용하세요.</p>
         <a class="button secondary" href="/store/">에셋 카탈로그 탐색 →</a>
       </section>
       <div id="creator">${available?'':`<section class="surface">

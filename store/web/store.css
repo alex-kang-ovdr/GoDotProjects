@@ -518,7 +518,7 @@ button { cursor: pointer; }
 .card {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface);
@@ -538,6 +538,7 @@ button { cursor: pointer; }
   position: relative;
   aspect-ratio: 16 / 9;
   background: var(--surface-mid);
+  border-radius: 15px 15px 0 0;
   overflow: hidden;
 }
 .card-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -932,6 +933,149 @@ button { cursor: pointer; }
   font-weight: 600;
 }
 .store-attribution-bar a:hover { text-decoration: underline; }
+
+/* ==================== Accessible License & Info Tooltips ==================== */
+.filter-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.info-tip {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-low);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+.info-tip:hover, .info-tip:focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--secondary-container);
+}
+.info-tip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-low);
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.info-tip-chip:hover, .info-tip-chip:focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.tip-mark {
+  opacity: 0.72;
+  font-style: normal;
+  font-size: 10px;
+}
+.has-tooltip {
+  position: relative;
+  cursor: help;
+}
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  z-index: 80;
+  width: max-content;
+  max-width: 260px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: #191B23;
+  color: #FAF8FF;
+  font-family: "Plus Jakarta Sans", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 10px 26px rgba(17, 19, 27, 0.26);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease-out, transform 140ms ease-out;
+}
+.has-tooltip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 3px);
+  transform: translateX(-50%);
+  z-index: 80;
+  border: 5px solid transparent;
+  border-top-color: #191B23;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease-out;
+}
+.has-tooltip:hover::after,
+.has-tooltip:focus-visible::after,
+.has-tooltip.tip-open::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.has-tooltip:hover::before,
+.has-tooltip:focus-visible::before,
+.has-tooltip.tip-open::before {
+  opacity: 1;
+}
+.topbar .has-tooltip::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) translateY(-4px);
+}
+.topbar .has-tooltip::before {
+  bottom: auto;
+  top: calc(100% + 3px);
+  border-top-color: transparent;
+  border-bottom-color: #191B23;
+}
+.topbar .has-tooltip:hover::after,
+.topbar .has-tooltip:focus-visible::after,
+.topbar .has-tooltip.tip-open::after {
+  transform: translateX(-50%) translateY(0);
+}
+.filter-sidebar .has-tooltip::after {
+  left: auto;
+  right: 0;
+  transform: translateY(4px);
+}
+.filter-sidebar .has-tooltip:hover::after,
+.filter-sidebar .has-tooltip:focus-visible::after,
+.filter-sidebar .has-tooltip.tip-open::after {
+  transform: translateY(0);
+}
+.tech-details {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-low);
+  font-size: 12px;
+}
+.tech-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--muted);
+}
+.tech-spec-table {
+  margin-top: 8px;
+}
 
 /* ==================== Responsive Mobile (Unity Mobile Flow) ==================== */
 @media (max-width: 1100px) {

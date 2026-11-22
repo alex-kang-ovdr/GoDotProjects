@@ -4,74 +4,63 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#FAF8FF" />
-  <title>PlayForge Store — Asset Store · 탐색 · 상세 · 내 라이브러리</title>
+  <title>PlayForge Store — 오픈 게임 에셋</title>
   <link rel="stylesheet" href="./store.css" />
 </head>
 <body>
   <div class="store-shell">
-    <!-- Sticky Light Header (Unity Asset Store Flow) -->
+    <!-- Sticky Light Header -->
     <header class="topbar">
       <div class="topbar-row1">
         <a href="#store-top" class="brand-group" id="store-top">
           <span class="brand-icon" aria-hidden="true">❖</span>
           <span class="brand-text">
             <span class="brand-badge">PlayForge Asset Store</span>
-            <span class="brand-sub">패키지 계약 v1 · /api/store</span>
+            <span class="brand-sub">오픈 게임 에셋</span>
           </span>
         </a>
 
         <!-- Wide Central Search Bar -->
         <form class="central-search" role="search" onsubmit="return false;">
           <span class="search-glyph" aria-hidden="true">⌕</span>
-          <input id="search-input" type="search" placeholder="패키지 명, asset_id, 제작자, 태그 검색..." aria-label="Store 검색" />
-          <span class="engine-chip">Godot 4.7+</span>
+          <input id="search-input" type="search" placeholder="에셋 이름, 제작자, 태그 검색..." aria-label="에셋 검색" />
+          <span class="engine-chip has-tooltip" tabindex="0" data-tooltip="Godot 4.3 이상과 PlayForge 웹 에디터(4.7.2)에서 바로 사용할 수 있습니다.">Godot 4.7+</span>
         </form>
 
         <!-- Primary Tabs + Utility Badges -->
         <div class="topbar-right">
-          <div class="tabs" role="tablist" aria-label="Store 주요 탭">
+          <div class="tabs" role="tablist" aria-label="스토어 주요 탭">
             <button type="button" class="tab active" role="tab" data-tab="browse" aria-selected="true">탐색</button>
             <button type="button" class="tab" role="tab" data-tab="library" aria-selected="false">내 라이브러리 <span class="count-badge" id="library-count">0</span></button>
             <button type="button" class="tab" role="tab" data-tab="publisher" aria-selected="false">게시자</button>
           </div>
           <span class="topbar-divider" aria-hidden="true"></span>
           <div class="identity-bar">
-            <span class="sso-pill" id="sso-badge">Hub SSO · creator-demo</span>
-            <span class="mode-pill" id="connection-badge" data-mode="static">정적 열람 모드</span>
+            <span class="sso-pill" id="sso-badge">creator-demo</span>
+            <span class="mode-pill" id="connection-badge" data-mode="static">오프라인</span>
             <a class="hub-link-btn" id="hub-home-link" href="/">PLAY HUB</a>
             <a class="hub-link-btn" id="forge-home-link" href="/forge/OfficialGodot/">PlayForge</a>
           </div>
         </div>
       </div>
 
-      <!-- Row 2: Unity-Style Horizontal Category Mega-Nav -->
+      <!-- Row 2: Horizontal Category Nav -->
       <nav class="category-bar" aria-label="에셋 카테고리">
         <div class="category-bar-inner">
           <div class="category-pills" id="category-pills">
             <button type="button" class="cat-pill active" data-cat="all">전체 에셋</button>
           </div>
-          <span class="platform-support-note">지원: Web · Win · Linux · macOS (AOS/iOS 미지원)</span>
+          <button type="button" class="info-tip-chip has-tooltip" data-tooltip="웹, Windows, Linux, macOS의 PlayForge 에디터에서 설치할 수 있습니다. (모바일 앱 제외)">PC · Web 지원 <span aria-hidden="true">ⓘ</span></button>
         </div>
       </nav>
     </header>
 
-    <!-- Async Handoff Principle Strip -->
-    <div class="notice-strip" role="status">
-      <div class="notice-strip-inner">
-        <div class="notice-copy">
-          <span class="notice-icon" aria-hidden="true">ⓘ</span>
-          <p><strong>비동기 연동 원칙:</strong> 웹에서는 패키지를 <code>StoreLibraryEntry</code>에만 저장하며 프로젝트 파일은 변경되지 않습니다. 실제 설치는 <strong>Godot Store 도크 6단계 검증</strong> 후 진행됩니다.</p>
-        </div>
-        <span class="notice-mono-tag">SHA-256 불변 아티팩트</span>
-      </div>
-    </div>
-
     <!-- Main Store Content -->
     <main class="store-main">
       <!-- Featured Spotlight Hero (Visible on Browse tab when unfiltered) -->
-      <section class="spotlight-hero" id="spotlight-hero" aria-label="추천 큐레이션"></section>
+      <section class="spotlight-hero" id="spotlight-hero" aria-label="추천 에셋"></section>
 
-      <!-- Unity-Style Split: Left Faceted Filters + Right Catalog & Detail Contract -->
+      <!-- Split: Left Faceted Filters + Right Catalog & Detail -->
       <div class="workspace" id="store-workspace">
         <!-- Left Faceted Filter Sidebar -->
         <aside class="filter-sidebar" id="browse-controls" aria-label="에셋 필터">
@@ -88,38 +77,47 @@
           </div>
 
           <div class="filter-group">
-            <label class="filter-label" for="kind-filter">콘텐츠 유형</label>
-            <select id="kind-filter" aria-label="콘텐츠 형식 필터">
-              <option value="all">전체 형식</option>
-              <option value="package">패키지 (.playforgepkg)</option>
-              <option value="editorial">가이드 · 일반 콘텐츠 (editorial)</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label class="filter-label" for="tier-filter">라이선스 등급 (4-Tier 정책)</label>
-            <select id="tier-filter" aria-label="라이선스 등급 필터">
-              <option value="all">전체 등급 (Tier 1 · 2 · 2-B · 4)</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label class="filter-label" for="license-filter">라이선스 (상업적 사용 가능)</label>
-            <select id="license-filter" aria-label="라이선스 필터">
-              <option value="all">전체 라이선스 (CC0 · MIT · CC-BY · OFL)</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label class="filter-label" for="ai-filter">AI 투명성 (Steam/Fab 규격)</label>
-            <select id="ai-filter" aria-label="AI 투명성 필터">
+            <label class="filter-label" for="kind-filter">유형</label>
+            <select id="kind-filter" aria-label="유형 필터">
               <option value="all">전체</option>
-              <option value="no-ai">No AI (생성형 AI 미사용 검증)</option>
+              <option value="package">설치 가능 에셋</option>
+              <option value="editorial">가이드 · 외부 링크</option>
             </select>
           </div>
 
           <div class="filter-group">
-            <label class="filter-label" for="source-filter">출처 소스</label>
+            <div class="filter-label-row">
+              <label class="filter-label" for="tier-filter">사용 조건</label>
+              <button type="button" class="info-tip has-tooltip" aria-label="사용 조건 안내" data-tooltip="모든 에셋은 상업적 게임 제작에 사용할 수 있습니다. 출처 표기 필요 여부에 따라 구분됩니다.">ⓘ</button>
+            </div>
+            <select id="tier-filter" aria-label="사용 조건 필터">
+              <option value="all">전체</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-label-row">
+              <label class="filter-label" for="license-filter">라이선스</label>
+              <button type="button" class="info-tip has-tooltip" aria-label="라이선스 안내" data-tooltip="CC0는 출처 없이 자유 사용, MIT·CC-BY는 제작자 출처 표기 시 상업적 사용 가능합니다. 카드 배지에 마우스를 올리면 상세 안내가 표시됩니다.">ⓘ</button>
+            </div>
+            <select id="license-filter" aria-label="라이선스 필터">
+              <option value="all">전체 라이선스</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-label-row">
+              <label class="filter-label" for="ai-filter">AI 사용 여부</label>
+              <button type="button" class="info-tip has-tooltip" aria-label="AI 사용 여부 안내" data-tooltip="생성형 AI를 사용하지 않은 것으로 확인된 에셋만 필터링합니다.">ⓘ</button>
+            </div>
+            <select id="ai-filter" aria-label="AI 사용 여부 필터">
+              <option value="all">전체</option>
+              <option value="no-ai">No AI (AI 미사용)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="source-filter">출처</label>
             <select id="source-filter" aria-label="출처 필터">
               <option value="all">전체 출처</option>
             </select>
@@ -131,48 +129,29 @@
           </div>
 
           <div class="filter-group">
-            <span class="filter-label">엔진 호환성</span>
-            <div class="filter-check-list">
-              <span class="compat-pill active">Godot 4.7.2 검증</span>
-              <span class="compat-pill">Godot 4.3+ 호환</span>
-            </div>
-          </div>
-
-          <div class="filter-group">
-            <span class="filter-label">지원 플랫폼</span>
+            <span class="filter-label">지원 환경</span>
             <div class="platform-chip-group">
               <span class="plat-chip">Web</span>
               <span class="plat-chip">Windows</span>
               <span class="plat-chip">Linux</span>
               <span class="plat-chip">macOS</span>
             </div>
-            <p class="filter-footnote">모바일 네이티브 앱 미지원</p>
           </div>
-
-          <div class="filter-group">
-            <span class="filter-label">무결성 검증</span>
-            <div class="verified-box">
-              <span class="verified-check" aria-hidden="true">✓</span>
-              <span>SHA-256 불변 아티팩트 검증</span>
-            </div>
-          </div>
-
-          <div class="filter-boundary-note">Admin 관리: Hub <code>?tab=store</code> 분리</div>
         </aside>
 
-        <!-- Right Main Catalog + Contract Column -->
+        <!-- Right Main Catalog + Detail Column -->
         <section class="catalog-column" aria-label="목록 및 상세 영역">
           <!-- Results Count & Sort Bar -->
           <div class="results-bar" id="results-bar">
             <div class="results-bar-left">
               <strong id="results-count">총 0개 에셋</strong>
-              <span class="contract-version-pill">패키지 계약 v1</span>
+              <button type="button" class="info-tip-chip has-tooltip" data-tooltip="웹에서는 내 라이브러리에만 저장되며, 실제 설치는 PlayForge 에디터에서 무결성 검증 후 적용됩니다.">설치 안내 <span aria-hidden="true">ⓘ</span></button>
             </div>
             <div class="results-bar-right">
               <label for="sort-select">정렬:</label>
               <select id="sort-select" aria-label="정렬 기준">
                 <option value="default">인기순</option>
-                <option value="version">최신 릴리스</option>
+                <option value="version">최신순</option>
                 <option value="title">이름순</option>
               </select>
             </div>
@@ -187,23 +166,21 @@
           <!-- Publisher Drafts List -->
           <div id="publisher-panel" class="publisher-list hidden"></div>
 
-          <!-- Selected Asset Immutable Package Contract Panel (Unity Detail Flow) -->
-          <aside class="detail-pane" id="detail-pane" aria-label="상세 정보 및 불변 계약"></aside>
+          <!-- Selected Asset Detail Panel -->
+          <aside class="detail-pane" id="detail-pane" aria-label="에셋 상세 정보"></aside>
         </section>
       </div>
     </main>
 
-    <footer class="store-attribution-bar" aria-label="외부 API 및 오픈 라이선스 출처">
-      <span>외부 공식 API 우선 연동:</span>
-      <a href="https://polyhaven.com/" target="_blank" rel="noopener noreferrer">Powered by Poly Haven (CC0)</a>
+    <footer class="store-attribution-bar" aria-label="오픈 에셋 출처">
+      <span>오픈 에셋 출처:</span>
+      <a href="https://polyhaven.com/" target="_blank" rel="noopener noreferrer">Poly Haven</a>
       <span>·</span>
-      <a href="https://ambientcg.com/" target="_blank" rel="noopener noreferrer">Powered by ambientCG (CC0)</a>
+      <a href="https://ambientcg.com/" target="_blank" rel="noopener noreferrer">ambientCG</a>
       <span>·</span>
       <a href="https://godotengine.org/asset-library/asset" target="_blank" rel="noopener noreferrer">Godot Asset Library</a>
       <span>·</span>
-      <a href="https://game-icons.net/" target="_blank" rel="noopener noreferrer">Game-Icons.net (CC-BY-3.0)</a>
-      <span>·</span>
-      <span>패키지 루트 <code>Third-Party Notices.txt</code> 자동 동봉</span>
+      <a href="https://game-icons.net/" target="_blank" rel="noopener noreferrer">Game-Icons.net</a>
     </footer>
   </div>
 
