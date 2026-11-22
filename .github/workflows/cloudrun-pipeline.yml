@@ -21,6 +21,7 @@ on:
           - promote-qa
           - promote-live
           - rollback
+          - prune-ar
       target:
         description: '대상 컴포넌트'
         required: true
@@ -91,7 +92,7 @@ jobs:
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Run build-version, compatibility gate, entrypoint proxy, packaging/SSOT contract & P0 build worker tests
-        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/prune-ar-images.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs
       - name: Smoke test Cloud Run Hub entrypoint
         run: node deploy/cloudrun/smoke-test.mjs
 
@@ -375,6 +376,68 @@ jobs:
             --set-env-vars="PLAYFORGE_SHARED_WEB_RUNTIME_BASE=/runtime/godot/4.7.2" \
             --memory=1Gi --cpu=1 --task-timeout=180s --max-retries=0 \
             --quiet
+      - name: Checkout Artifact Registry prune script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy/cloudrun
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Mint WIF access token for Artifact Registry cleanup
+        id: ar_auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
+          token_format: 'access_token'
+          export_environment_variables: false
+      - name: Prune old Artifact Registry tags & apply Cleanup Policy (keep latest 3 per package)
+        env:
+          AR_ACCESS_TOKEN: ${{ steps.ar_auth.outputs.access_token }}
+          HUB_BUILD_TAG: ${{ needs.build.outputs.hub_build_tag }}
+          FORGE_BUILD_TAG: ${{ needs.build.outputs.forge_build_tag }}
+          WORKER_TAG: ${{ needs.build.outputs.worker_tag }}
+        run: |
+          set -euo pipefail
+          node deploy/cloudrun/prune-ar-images.mjs \
+            --project="${DEV_HUB_PROJECT}" \
+            --location="${REGION}" \
+            --repository="playhub-containers" \
+            --keep=3 \
+            --apply-policy \
+            --protect-tag="${HUB_BUILD_TAG}" \
+            --protect-tag="${FORGE_BUILD_TAG}" \
+            --protect-tag="${WORKER_TAG}"
+
+  prune-ar:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'prune-ar'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy/cloudrun
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Mint WIF access token for Artifact Registry cleanup
+        id: ar_auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
+          token_format: 'access_token'
+          export_environment_variables: false
+      - name: Prune old Artifact Registry tags & apply Cleanup Policy (keep latest 3 per package)
+        env:
+          AR_ACCESS_TOKEN: ${{ steps.ar_auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          node deploy/cloudrun/prune-ar-images.mjs \
+            --project="${DEV_HUB_PROJECT}" \
+            --location="${REGION}" \
+            --repository="playhub-containers" \
+            --keep=3 \
+            --apply-policy
 
   publish-stage:
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'publish-stage'
