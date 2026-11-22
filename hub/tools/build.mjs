@@ -72,6 +72,7 @@ export function build({root=projectRoot,config={}}={}){
   try{
     const user=path.join(temporary,'user'),admin=path.join(temporary,'admin');
     copyStatic(path.join(root,'web/user'),user);copyStatic(path.join(root,'web/admin'),admin);
+    if(fs.existsSync(path.join(root,'web/adgame')))copyStatic(path.join(root,'web/adgame'),path.join(user,'adgame'));
     copyStatic(path.join(root,'games'),path.join(user,'games'),new Set(games.map(game=>game.id)));
     if(fs.existsSync(path.join(root,'shared')))copyStatic(path.join(root,'shared'),path.join(user,'shared'));
     fs.mkdirSync(path.join(user,'catalog'),{recursive:true});
