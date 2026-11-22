@@ -29,6 +29,7 @@ import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
 import { createSocial } from './social/routes.mjs';
 import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
 import { createGamerQaHub } from './gamerqa-hub.mjs';
+import { createAdGame } from './adgame/routes.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -199,6 +200,7 @@ export function createApp(input, dependencies = {}) {
   });
   const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, env: dependencies.env || process.env });
   const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
+  const adgame = createAdGame({ config, db, rootDir, now, rate, audit, env: dependencies.env || process.env });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
@@ -763,6 +765,22 @@ export function createApp(input, dependencies = {}) {
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
+        }
+        if (kind === 'public' && (url.pathname.startsWith('/api/adgame/') || url.pathname.startsWith('/ad/') || url.pathname === '/.well-known/assetlinks.json')) {
+          const reqOrigin = req.headers.origin;
+          if (reqOrigin) {
+            res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+            res.setHeader('Vary', 'Origin');
+            if (config.userOrigins.includes(reqOrigin)) res.setHeader('Access-Control-Allow-Credentials', 'true');
+          }
+          res.setHeader('X-Content-Type-Options', 'nosniff');
+          res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+          if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.statusCode = 204; res.end(); return;
+          }
+          if (await adgame.publicRoute(req, res, url, { getSession: sessionFor, rateLimitIp })) return;
         }
         const isBillingS2S = kind === 'public' && billing.enabled && (url.pathname.startsWith('/api/billing/webhooks/') || url.pathname === '/api/billing/usage' || url.pathname.startsWith('/api/billing/usage/holds'));
         const isMutation = ['POST','PUT','PATCH','DELETE'].includes(req.method) && !(kind === 'public' && url.pathname === '/api/compat/check') && !isBillingS2S;

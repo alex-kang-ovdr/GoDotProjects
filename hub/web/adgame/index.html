@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Hub-AdGame PoC — 당근마켓 무설치 데모 게임 → PlayHub 본편 연동</title>
+  <link rel="stylesheet" href="/adgame/adgame.css">
+</head>
+<body>
+  <div class="poc-shell">
+    <!-- Left: Authentic Karrot (당근) Mobile App Simulator -->
+    <section class="phone-stage" aria-label="당근마켓 모바일 앱 시뮬레이터">
+      <div class="phone-frame" id="phone-frame">
+        <!-- Status bar (desktop visual aid) -->
+        <div class="phone-statusbar">
+          <span class="sb-time" id="sb-time">10:08</span>
+          <span class="sb-pill">Karrot WebView PoC</span>
+          <span class="sb-net">5G · 92%</span>
+        </div>
+
+        <!-- SCREEN 1: 커뮤니티 동네생활 피드 (Screenshot 1) -->
+        <div class="karrot-screen is-active" id="screen-feed" data-screen="feed">
+          <header class="k-header">
+            <h1 class="k-title">커뮤니티</h1>
+            <div class="k-header-actions">
+              <button class="k-icon-btn" type="button" id="btn-open-hub-top" title="커뮤니티 게임 허브">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              </button>
+              <button class="k-icon-btn has-dot" type="button" id="btn-notify" title="알림">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </button>
+              <button class="k-icon-btn" type="button" id="btn-open-menu" title="내 커뮤니티 · 커뮤니티 게임" data-testid="btn-karrot-menu">
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              </button>
+            </div>
+          </header>
+
+          <nav class="k-primary-tabs" aria-label="커뮤니티 탭">
+            <button type="button" class="k-tab is-active" data-feed-tab="life">동네생활</button>
+            <button type="button" class="k-tab" data-feed-tab="games" data-testid="tab-karrot-games">커뮤니티 게임<span class="k-dot"></span></button>
+            <button type="button" class="k-tab" data-feed-tab="group">모임</button>
+            <button type="button" class="k-tab" data-feed-tab="cafe">카페</button>
+            <button type="button" class="k-tab" data-feed-tab="apt">아파트</button>
+            <button type="button" class="k-tab" data-feed-tab="run">러닝</button>
+          </nav>
+
+          <div class="k-chip-row" role="tablist" aria-label="피드 필터">
+            <button type="button" class="k-chip is-active" data-filter="all">추천 ∨</button>
+            <button type="button" class="k-chip" data-filter="popular">인기</button>
+            <button type="button" class="k-chip is-highlight" data-filter="online-game" data-testid="chip-online-game">🎮 온라인게임</button>
+            <button type="button" class="k-chip" data-filter="hobby">취미/여가</button>
+            <button type="button" class="k-chip" data-filter="sport">운동</button>
+          </div>
+
+          <div class="k-scroll-body" id="feed-scroll">
+            <!-- Standard neighborhood post 1 -->
+            <article class="k-post" data-category="life">
+              <div class="k-post-top">
+                <span class="k-post-tag">생활/편의</span>
+                <span class="k-more">⋮</span>
+              </div>
+              <h2 class="k-post-title">[견적요청] 아파트 화장실 담배냄새 유입 점검 및 보수</h2>
+              <p class="k-post-body">아파트 화장실 천장 환풍기 쪽에서 담배냄새가 들어오는 것 같아 점검 요청드려요...</p>
+              <div class="k-post-meta">
+                <span><span class="js-region-text">일원본동</span> · 1주 전 · 조회 28</span>
+                <span class="k-post-stats">👍 1 · 💬 1</span>
+              </div>
+            </article>
+
+            <!-- PlayHub Partner In-Feed Playable Ad Post -->
+            <article class="k-post k-ad-post" data-category="online-game" id="infeed-playable-post">
+              <div class="k-post-top">
+                <span class="k-post-tag is-orange">온라인게임 · 무설치 체험</span>
+                <span class="k-ad-label">PlayHub 제휴</span>
+              </div>
+              <p class="k-repost-line">🎮 <span class="js-region-text">일원본동</span> 이웃 128명이 지금 도전 중</p>
+              <h2 class="k-post-title">설치 없이 1초 만에 바로 한 판! 탕탕특공대 동네 1위 깨보실 분?</h2>
+              <div class="k-infeed-playable-card" id="infeed-hero-card">
+                <!-- Populated dynamically -->
+              </div>
+              <div class="k-post-meta">
+                <span><span class="js-region-text">일원본동</span> · 방금 전 · 무설치 웹 체험</span>
+                <span class="k-post-stats">👍 154 · 💬 42</span>
+              </div>
+            </article>
+
+            <!-- Carousel section modeled directly on Screenshot 1 ("나무꾼님을 위한 추천 유료일정 >") -->
+            <section class="k-carousel-section" aria-label="무설치 데모 게임 추천">
+              <div class="k-section-head">
+                <h2>🎮 나무꾼님을 위한 무설치 데모 게임</h2>
+                <button type="button" class="k-chevron-btn" id="btn-carousel-more" aria-label="커뮤니티 게임 전체 보기">›</button>
+              </div>
+              <div class="k-carousel-track" id="feed-carousel" data-testid="feed-demo-carousel">
+                <!-- 5 PoC game cards injected here -->
+              </div>
+            </section>
+
+            <!-- Standard neighborhood post 2 -->
+            <article class="k-post" data-category="life">
+              <div class="k-post-top">
+                <span class="k-post-tag">일반</span>
+                <span class="k-more">⋮</span>
+              </div>
+              <p class="k-repost-line">↻ 이웃이 동네에 알린 글</p>
+              <h2 class="k-post-title">퇴근길에 잠깐 하기 좋은 무설치 전략 게임 추천</h2>
+              <p class="k-post-body">아이언 타이드랑 비 시즈 당근에서 바로 켜지길래 해봤는데 기록 그대로 PlayHub 앱에 이어지네요!</p>
+              <div class="k-post-meta">
+                <span><span class="js-region-text">일원본동</span> · 3시간 전 · 조회 1,420</span>
+                <span class="k-post-stats">👍 89 · 💬 24</span>
+              </div>
+            </article>
+          </div>
+
+          <button class="k-fab" type="button" id="btn-fab-hub" title="커뮤니티 게임 허브 열기">+</button>
+
+          <footer class="k-bottom-nav" aria-label="하단 메뉴">
+            <button type="button" class="k-bnav-item" data-nav="home"><span>🏠</span><small>홈</small></button>
+            <button type="button" class="k-bnav-item is-active" data-nav="feed"><span>👥</span><small>커뮤니티</small></button>
+            <button type="button" class="k-bnav-item" data-nav="hub"><span>🎮</span><small>게임허브</small></button>
+            <button type="button" class="k-bnav-item has-badge" data-nav="chat"><span>💬</span><small>채팅</small><em>2</em></button>
+            <button type="button" class="k-bnav-item" data-nav="menu"><span>👤</span><small>나의 당근</small></button>
+          </footer>
+        </div>
+
+        <!-- SCREEN 2: ☰ 내 커뮤니티 메뉴 & 커뮤니티 게임 4열 숏컷 (Screenshot 2) -->
+        <div class="karrot-screen" id="screen-menu" data-screen="menu">
+          <header class="k-header">
+            <button class="k-icon-btn" type="button" data-goto="feed" aria-label="뒤로">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span class="k-header-spacer"></span>
+            <button class="k-icon-btn" type="button" title="고객센터">🎧</button>
+          </header>
+
+          <div class="k-scroll-body k-menu-body">
+            <div class="k-profile-row">
+              <div class="k-avatar">👤</div>
+              <div>
+                <div class="k-profile-name">나무꾼 <span class="k-temp">36.6°C</span></div>
+                <div class="k-profile-sub"><span class="js-region-text">일원본동</span> 이웃 &nbsp;|&nbsp; 동네 설정 ⚙️</div>
+              </div>
+            </div>
+
+            <div class="k-quick-actions">
+              <button type="button"><span>📝</span><small>내가 쓴 글/댓글</small></button>
+              <button type="button"><span>🔖</span><small>저장한 글</small></button>
+              <button type="button"><span>🤍</span><small>관심목록</small></button>
+            </div>
+
+            <section class="k-menu-section">
+              <h2 class="k-menu-heading">커뮤니티 게임 <span class="k-sub-pill">PlayHub 제휴 확장</span></h2>
+              <div class="k-game-icon-grid" id="menu-game-shortcuts" data-testid="menu-game-shortcuts">
+                <!-- 3 featured demo game icons + '게임 전체' button -->
+              </div>
+            </section>
+
+            <section class="k-menu-section">
+              <h2 class="k-menu-heading">최근 방문</h2>
+              <ul class="k-recent-list">
+                <li><span class="k-mini-thumb">💻</span> 헬리오시티에서 1인 게임개발중</li>
+                <li><span class="k-mini-thumb">🏎️</span> RC카 하이엔드</li>
+                <li><span class="k-mini-thumb">🇫🇷</span> 낭만 프랑스 살롱</li>
+              </ul>
+            </section>
+
+            <section class="k-menu-section">
+              <h2 class="k-menu-heading">아파트</h2>
+              <ul class="k-recent-list">
+                <li><span class="k-mini-thumb">🏢</span> 아파트 공개 게시판</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- SCREEN 3: ✕ 커뮤니티 게임 허브 (Screenshot 3 — 자체 허브 + PlayHub 제휴 5종) -->
+        <div class="karrot-screen" id="screen-hub" data-screen="hub">
+          <header class="k-header">
+            <div class="k-header-left">
+              <button class="k-icon-btn" type="button" data-goto="feed" aria-label="닫기">✕</button>
+              <h1 class="k-title k-title-sm">커뮤니티 게임</h1>
+            </div>
+            <div class="k-hub-avatar" title="나무꾼">🧑‍🚀</div>
+          </header>
+
+          <div class="k-scroll-body k-hub-body">
+            <!-- Hero featured card (Screenshot 3 style) -->
+            <section class="k-hero-card" id="hub-hero-card" data-testid="hub-hero-card">
+              <!-- Populated dynamically with selected featured PlayHub demo -->
+            </section>
+
+            <!-- User ranking bar (Screenshot 3 style) -->
+            <section class="k-rank-bar" id="hub-rank-bar">
+              <div class="k-rank-left">
+                <span class="k-rank-num" id="my-rank-num">-</span>
+                <span class="k-rank-avatar">나</span>
+                <div>
+                  <strong id="my-rank-name">나무꾼 ✎</strong>
+                  <small id="my-rank-detail">데모 플레이 후 <span class="js-region-text">일원본동</span> 순위 기록</small>
+                </div>
+              </div>
+              <button type="button" class="k-challenge-btn" id="btn-hero-challenge">도전하기</button>
+            </section>
+
+            <!-- PlayHub Partner 5 Games Grid ("이런 게임은 어때요?") -->
+            <section class="k-hub-grid-section">
+              <div class="k-hub-grid-head">
+                <h2>이런 게임은 어때요?</h2>
+                <span class="k-partner-chip">PlayHub 무설치 데모 5종</span>
+              </div>
+              <div class="k-hub-2col-grid" id="hub-partner-grid" data-testid="hub-partner-grid">
+                <!-- 5 requested games rendered in 2-col big rounded square cards -->
+              </div>
+            </section>
+
+            <!-- Comparison reference: Karrot's existing hyper-casual games -->
+            <section class="k-hub-grid-section k-existing-ref">
+              <div class="k-hub-grid-head">
+                <h2>당근 자체 초캐주얼 (기존 보유 비교)</h2>
+                <span class="k-muted-chip">1분 캐주얼</span>
+              </div>
+              <div class="k-existing-row">
+                <div class="k-existing-item"><span>🍎</span><small>팡팡 사과게임</small></div>
+                <div class="k-existing-item"><span>🍉</span><small>쌓아라! 수박</small></div>
+                <div class="k-existing-item"><span>🐹</span><small>추억의 두더지</small></div>
+              </div>
+              <p class="k-existing-note">당근은 이미 초캐주얼 미니게임 허브를 운영 중입니다. PlayHub는 <strong>전략·공성·MOBA·액션 체험 데모</strong>로 장르 공백을 채우고, 플랫폼 협의에 따라 <strong>콘텐츠 단독 공급</strong> 또는 <strong>허브 연계 배너</strong>를 선택 적용합니다.</p>
+            </section>
+          </div>
+        </div>
+
+        <!-- SCREEN 4: 토스 앱인토스 게임 탭 (Screenshot 5 사례 재현) -->
+        <div class="karrot-screen" id="screen-toss" data-screen="toss">
+          <header class="k-header toss-header">
+            <button class="k-icon-btn" type="button" data-goto="feed" aria-label="뒤로">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="k-header-spacer"></span>
+            <button class="k-icon-btn" type="button" title="내 프로필">👤</button>
+          </header>
+
+          <div class="toss-search-wrap">
+            <div class="toss-search-bar">🔍 유심, 사주, 게임 등을 검색해보세요</div>
+          </div>
+
+          <nav class="toss-tabs" aria-label="토스 앱인토스 탭">
+            <button type="button" class="toss-tab">추천</button>
+            <button type="button" class="toss-tab is-active">게임</button>
+            <button type="button" class="toss-tab">포인트</button>
+            <button type="button" class="toss-tab">카테고리</button>
+          </nav>
+
+          <div class="k-chip-row toss-chips">
+            <button type="button" class="k-chip">⊞ 전체</button>
+            <button type="button" class="k-chip toss-chip-hot">🔥 실시간 인기</button>
+            <button type="button" class="k-chip">✨ 신규</button>
+            <button type="button" class="k-chip">🧩 퍼즐</button>
+          </div>
+
+          <div class="k-scroll-body toss-body">
+            <div class="toss-section-head">
+              <h2>실시간 인기</h2>
+              <span class="toss-policy-pill">콘텐츠 완결 · IAA/IAP 수익화</span>
+            </div>
+            <div class="toss-rank-list" id="toss-rank-list" data-testid="toss-rank-list">
+              <!-- 5 PlayHub games + reference Toss entries -->
+            </div>
+          </div>
+        </div>
+
+        <!-- OVERLAY 1: Fullscreen Zero-Install Demo WebView Player -->
+        <div class="webview-overlay" id="demo-overlay" hidden>
+          <header class="wv-topbar">
+            <button type="button" class="wv-close" id="btn-demo-close">← 당근</button>
+            <div class="wv-title-wrap">
+              <strong id="wv-game-title">게임 로딩 중...</strong>
+              <small id="wv-game-sub">무설치 체험 데모</small>
+            </div>
+            <div class="wv-right-tools">
+              <span class="wv-timer" id="wv-timer" data-testid="demo-timer">45s</span>
+              <button type="button" class="wv-cta-mini" id="btn-demo-finish-now" data-testid="btn-finish-demo">본편 이어하기 ↗</button>
+            </div>
+          </header>
+
+          <div class="wv-status-strip">
+            <span id="wv-load-badge">⏳ 번들 로드 중</span>
+            <span id="wv-score-badge">🏆 예상 점수 0</span>
+            <span id="wv-region-badge">📍 일원본동</span>
+          </div>
+
+          <div class="wv-iframe-wrap">
+            <iframe id="demo-iframe" title="무설치 데모 게임" allow="autoplay; fullscreen; gamepad" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms"></iframe>
+          </div>
+
+          <!-- Slim Hub Banner shown ONLY in 배너삽입형 (install_direct / soft_banner) -->
+          <div class="wv-hub-banner" id="wv-hub-banner" hidden data-testid="wv-hub-banner">
+            <div class="wv-hb-copy">
+              <strong id="wv-hb-title">PLAY HUB 본편 &amp; 기록 저장 연동</strong>
+              <small id="wv-hb-sub">데모 점수·스타터 보상 그대로 이어하기</small>
+            </div>
+            <button type="button" class="wv-hb-btn" id="btn-wv-banner-cta">본편 열기 ↗</button>
+          </div>
+        </div>
+
+        <!-- OVERLAY 2: Cliffhanger Conversion Sheet (Demo -> PlayHub Install / Full Game) -->
+        <div class="handoff-overlay" id="handoff-overlay" hidden data-testid="handoff-overlay">
+          <div class="handoff-sheet">
+            <div class="handoff-kicker" id="ho-kicker">🥕 당근마켓 데모 체험 완료</div>
+            <h2 class="handoff-title" id="ho-title">기록 그대로 본 게임으로 이어갈까요?</h2>
+            <p class="handoff-sub" id="ho-sub">방금 플레이한 기록과 스타터 보상이 PlayHub에 자동 연동됩니다.</p>
+
+            <div class="handoff-metrics">
+              <div class="ho-stat">
+                <small>데모 기록</small>
+                <strong id="ho-score">0점</strong>
+              </div>
+              <div class="ho-stat">
+                <small><span class="js-region-text">일원본동</span> 순위</small>
+                <strong id="ho-rank">상위 8%</strong>
+              </div>
+              <div class="ho-stat">
+                <small>이어하기 코드</small>
+                <strong class="ho-code" id="ho-code">------</strong>
+              </div>
+            </div>
+
+            <div class="handoff-reward-box">
+              <span>🎁</span>
+              <div>
+                <strong>본편 진입 시 즉시 지급 보상</strong>
+                <p id="ho-reward-label">스타터 팩 + PlayCoin</p>
+              </div>
+            </div>
+
+            <!-- Target switcher when Forge Godot full game exists (e.g. besiege -> forge-iron-wood, survivor-io -> forge-survivor-io) -->
+            <div class="handoff-target-toggle" id="ho-target-toggle" hidden>
+              <label>
+                <span>본편 실행 버전:</span>
+                <select id="ho-target-select"></select>
+              </label>
+            </div>
+
+            <div class="handoff-actions" id="ho-actions">
+              <button type="button" class="ho-btn ho-btn-primary" id="btn-ho-install-sim" data-testid="btn-install-sim">
+                📲 PlayHub 앱 설치하고 본 게임 직행
+              </button>
+              <a class="ho-btn ho-btn-secondary" id="btn-ho-web-continue" href="#" data-testid="btn-web-continue">
+                ⚡ 설치 없이 PlayHub 웹 본편으로 이어하기
+              </a>
+              <div class="ho-btn-row">
+                <a class="ho-btn ho-btn-ghost" id="btn-ho-smart-router" href="#" target="_blank" rel="noopener">
+                  🔗 스마트 라우터 (/ad/go)
+                </a>
+                <button type="button" class="ho-btn ho-btn-ghost" id="btn-ho-copy-code">
+                  📋 코드 복사
+                </button>
+              </div>
+              <button type="button" class="ho-btn ho-btn-text" id="btn-ho-replay">
+                ↺ 데모 1판 더 체험하기 (강제 이탈 없음)
+              </button>
+            </div>
+
+            <p class="ho-policy-note" id="ho-policy-note"></p>
+          </div>
+        </div>
+
+        <!-- OVERLAY 3: Interactive Store Install & Play Install Referrer Simulator -->
+        <div class="store-overlay" id="store-overlay" hidden data-testid="store-overlay">
+          <div class="store-sheet">
+            <div class="store-head">
+              <span class="store-badge" id="st-store-badge">Google Play 스토어 시뮬레이터</span>
+              <button type="button" class="store-close" id="btn-store-close">✕</button>
+            </div>
+            <div class="store-app-row">
+              <div class="store-app-icon">▶</div>
+              <div>
+                <h3>PLAY HUB — 미니게임 &amp; UGC</h3>
+                <p>PlayHub Studio · 전체이용가 · 4.8 ★</p>
+              </div>
+            </div>
+
+            <div class="store-referrer-box">
+              <small>자동 전달되는 Install Referrer / Deep Link 페이로드</small>
+              <code id="st-referrer-payload"></code>
+            </div>
+
+            <div class="store-progress-wrap" id="st-progress-wrap" hidden>
+              <div class="store-progress-bar"><div class="store-progress-fill" id="st-progress-fill"></div></div>
+              <small id="st-progress-label">PlayHub 설치 중... 0%</small>
+            </div>
+
+            <button type="button" class="ho-btn ho-btn-primary" id="btn-store-install" data-testid="btn-store-install">
+              설치하기 (Deferred Deep Link 유지)
+            </button>
+            <a class="ho-btn ho-btn-launch" id="btn-store-launch" href="#" hidden data-testid="btn-store-launch">
+              🚀 PlayHub 열기 → 본 게임 3초 직행
+            </a>
+          </div>
+        </div>
+        <!-- Preset mode floating badge + mobile inspector toggle -->
+        <button type="button" class="mobile-inspector-fab" id="btn-mobile-inspector" title="연동 검증 콘솔 열기">
+          📊 <span id="mobile-preset-label">연동 콘솔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Right: Real-Time Integration & Funnel Verification Console (Desktop side / Mobile modal drawer) -->
+    <aside class="inspector-panel" id="inspector-panel" aria-label="연동 흐름 실시간 검증 콘솔">
+      <header class="ins-header">
+        <div>
+          <span class="ins-eyebrow">Hub-AdGame Live PoC</span>
+          <h1>당근·토스 무설치 데모 → PlayHub 연동 검증</h1>
+        </div>
+        <div class="ins-links">
+          <button type="button" class="ins-link-btn ins-mobile-close" id="btn-close-inspector" hidden>✕ 닫기</button>
+          <a href="/" class="ins-link-btn">PLAY HUB ↗</a>
+        </div>
+      </header>
+
+      <!-- Quick screen & policy controls -->
+      <section class="ins-card">
+        <h2>1. 시뮬레이션 조건 &amp; 화면 전환</h2>
+        <div class="ins-screen-switch">
+          <button type="button" class="ins-pill is-active" data-goto="feed">① 당근 피드</button>
+          <button type="button" class="ins-pill" data-goto="menu">② ☰ 내 커뮤니티</button>
+          <button type="button" class="ins-pill" data-goto="hub">③ 당근 게임허브</button>
+          <button type="button" class="ins-pill" data-goto="toss" data-testid="btn-goto-toss">④ 토스 게임탭</button>
+        </div>
+
+        <div class="ins-controls-grid">
+          <label class="ins-field">
+            <span>플랫폼 협력 전략 (ctaMode)</span>
+            <select id="ctl-partner" data-testid="ctl-partner">
+              <option value="karrot">당근 · 허브 연계 배너형 (install_direct)</option>
+              <option value="karrot-content">당근 · 순수 컨텐츠 제공형 (content_only)</option>
+              <option value="karrot-soft">당근 · 소프트 클라우드 저장형 (soft_banner)</option>
+              <option value="toss">토스 · 순수 컨텐츠 제공형 (content_only)</option>
+              <option value="toss-soft">토스 · 코드 연동형 (partner_contained)</option>
+            </select>
+          </label>
+          <label class="ins-field">
+            <span>동네 컨텍스트</span>
+            <select id="ctl-region">
+              <option value="일원본동">일원본동</option>
+              <option value="잠실4동">잠실4동</option>
+              <option value="역삼동">역삼동</option>
+              <option value="판교동">판교동</option>
+            </select>
+          </label>
+          <label class="ins-field">
+            <span>데모 체험 시간 (PoC)</span>
+            <select id="ctl-duration">
+              <option value="15">15초 (빠른 검증)</option>
+              <option value="30">30초</option>
+              <option value="45" selected>45초 (기본)</option>
+              <option value="60">60초</option>
+            </select>
+          </label>
+          <label class="ins-field">
+            <span>스토어 시뮬레이터 OS</span>
+            <select id="ctl-os">
+              <option value="android">Android (Install Referrer)</option>
+              <option value="ios">iOS (Universal Link + 6자리 코드)</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- 6-Step Live Pipeline Tracker -->
+      <section class="ins-card">
+        <div class="ins-card-head">
+          <h2>2. 6단계 연동 파이프라인 실시간 상태</h2>
+          <button type="button" class="ins-mini-btn" id="btn-refresh-funnel">새로고침</button>
+        </div>
+        <ol class="pipeline-steps" id="pipeline-steps">
+          <li data-step="impression"><span class="step-dot">1</span><div><strong>파트너 피드 노출 · 클릭</strong><small>impression</small></div><em class="step-cnt">0</em></li>
+          <li data-step="loaded"><span class="step-dot">2</span><div><strong>무설치 데모 로드 &amp; 첫 조작</strong><small>loaded / first_input</small></div><em class="step-cnt">0</em></li>
+          <li data-step="demo_complete"><span class="step-dot">3</span><div><strong>데모 종료 · 1회성 Handoff Token 발급</strong><small>demo_complete</small></div><em class="step-cnt">0</em></li>
+          <li data-step="cta_click"><span class="step-dot">4</span><div><strong>CTA 클릭 · 스토어/스마트 라우터 이동</strong><small>cta_click / store_redirect</small></div><em class="step-cnt">0</em></li>
+          <li data-step="handoff_claimed"><span class="step-dot">5</span><div><strong>PlayHub 실행 · 토큰 소비 &amp; 보상 지급</strong><small>app_open / handoff_claimed</small></div><em class="step-cnt">0</em></li>
+          <li data-step="qualified_play"><span class="step-dot">6</span><div><strong>본 게임 실행 · 유효 플레이 CPA 확정</strong><small>full_game_start / qualified_play</small></div><em class="step-cnt">0</em></li>
+        </ol>
+      </section>
+
+      <!-- 5 Games Quick Launch & Funnel Table -->
+      <section class="ins-card">
+        <h2>3. 5종 PoC 게임별 연동 실적 (SQLite 실측)</h2>
+        <div class="ins-table-wrap">
+          <table class="ins-table">
+            <thead>
+              <tr>
+                <th>게임</th>
+                <th>데모</th>
+                <th>토큰</th>
+                <th>본편청구</th>
+                <th>CPA확정</th>
+                <th>즉시실행</th>
+              </tr>
+            </thead>
+            <tbody id="ins-campaign-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Live Telemetry Stream -->
+      <section class="ins-card">
+        <h2>4. 실시간 서버 이벤트 로그</h2>
+        <div class="ins-log-list" id="ins-event-logs"></div>
+      </section>
+    </aside>
+  </div>
+
+  <script src="/adgame/adgame.js" defer></script>
+</body>
+</html>

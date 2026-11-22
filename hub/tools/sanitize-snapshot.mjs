@@ -118,7 +118,14 @@ export const SCHEMA_ALLOWLIST = Object.freeze({
   social_party_launches: ['launch_id', 'party_id', 'game_id', 'room_code', 'match_room_id', 'launched_by', 'status', 'created_at'],
   social_party_launch_acks: ['launch_id', 'principal_id', 'platform', 'state', 'updated_at'],
   // Hub-SSO email credentials (sensitive: dropped unconditionally)
-  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at']
+  email_credentials: ['user_id', 'email', 'password_hash', 'salt', 'failed_attempts', 'locked_until', 'created_at', 'updated_at'],
+  // Hub-AdGame playable demo & handoff attribution (6 tables)
+  ad_partners: ['id', 'name', 'adapter_type', 'cta_mode', 'revshare_bps', 'cpa_krw', 'allowed_origins_json', 'status', 'created_at'],
+  ad_campaigns: ['id', 'partner_id', 'demo_game_id', 'target_game_id', 'forge_target_game_id', 'title_ko', 'subtitle_ko', 'genre_ko', 'badge_text', 'bundle_kb', 'demo_duration_sec', 'reward_type', 'reward_payload_json', 'age_rating', 'region_mode', 'sort_order', 'status', 'starts_at', 'ends_at'],
+  ad_demo_sessions: ['id', 'campaign_id', 'partner_id', 'demo_game_id', 'target_game_id', 'region_tag', 'user_agent_family', 'started_at', 'play_ms', 'best_score', 'stage_reached', 'completed_at'],
+  ad_handoff_tokens: ['token_hash', 'short_code', 'session_id', 'campaign_id', 'partner_id', 'target_game_id', 'region_tag', 'snapshot_json', 'status', 'claimed_user_id', 'claimed_device_hash', 'expires_at', 'claimed_at', 'created_at'],
+  ad_funnel_events: ['id', 'session_id', 'campaign_id', 'partner_id', 'event_type', 'meta_json', 'created_at'],
+  ad_attributions: ['id', 'user_id', 'partner_id', 'campaign_id', 'handoff_token_hash', 'install_channel', 'qualified_at', 'payout_status', 'created_at']
 });
 
 // High-risk auth, session, token, sensitive payment, giftcard PIN, moderation evidence,
@@ -172,7 +179,10 @@ export const DROP_TABLES = Object.freeze([
   'social_party_members',
   'social_parties',
   // Hub-SSO email credentials (emails + password hashes)
-  'email_credentials'
+  'email_credentials',
+  // Hub-AdGame one-time handoff tokens & attribution payouts
+  'ad_handoff_tokens',
+  'ad_attributions'
 ]);
 
 export const DEFAULT_PRESERVE_PREFIXES = Object.freeze(['local_', 'dev_', 'qa_']);

@@ -43,13 +43,13 @@ export function createStaticServer(directory,{forgeProxy,storeProxy,ugcMultiplay
     const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
     if(storeProxy&&storeProxy.matches(rawPath)){storeProxy.handle(request,response);return;}
     let normalizedProxyPath=null;
-    if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/'))){
+    if(apiPort&&(rawPath.startsWith('/api/')||rawPath.startsWith('/play-ugc/')||rawPath.startsWith('/ad/')||rawPath==='/.well-known/assetlinks.json')){
       try{
         const decoded=decodeURIComponent(rawPath);
         if(!decoded.includes('\0')&&!decoded.includes('\\'))normalizedProxyPath=path.posix.normalize(decoded);
       }catch{}
     }
-    if(apiPort&&normalizedProxyPath&&((normalizedProxyPath.startsWith('/api/')&&normalizedProxyPath!=='/api/admin'&&!normalizedProxyPath.startsWith('/api/admin/'))||normalizedProxyPath.startsWith('/play-ugc/'))){
+    if(apiPort&&normalizedProxyPath&&((normalizedProxyPath.startsWith('/api/')&&normalizedProxyPath!=='/api/admin'&&!normalizedProxyPath.startsWith('/api/admin/'))||normalizedProxyPath.startsWith('/play-ugc/')||normalizedProxyPath.startsWith('/ad/')||normalizedProxyPath==='/.well-known/assetlinks.json')){
       const headers={...request.headers,host:`127.0.0.1:${apiPort}`};
       delete headers['x-playhub-proxy-secret'];
       delete headers['cf-connecting-ip'];

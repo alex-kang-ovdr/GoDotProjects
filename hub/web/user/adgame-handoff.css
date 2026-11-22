@@ -1,0 +1,104 @@
+.adgame-handoff-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  margin: 0 0 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 111, 15, 0.14), rgba(0, 74, 198, 0.12));
+  border: 1px solid rgba(255, 111, 15, 0.42);
+  color: inherit;
+}
+
+.adgame-handoff-banner[hidden] {
+  display: none;
+}
+
+.adgame-handoff-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.adgame-handoff-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ff6f0f;
+}
+
+.adgame-handoff-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.adgame-handoff-meta {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.adgame-handoff-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.adgame-handoff-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 111, 15, 0.15);
+  color: #c24b00;
+}
+
+.adgame-handoff-chip.is-qualified {
+  background: rgba(16, 185, 129, 0.18);
+  color: #047857;
+}
+
+.adgame-handoff-chip.is-warn {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.adgame-handoff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.adgame-handoff-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 111, 15, 0.4);
+  background: rgba(255, 111, 15, 0.12);
+  color: #c24b00;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.adgame-handoff-back:hover {
+  background: rgba(255, 111, 15, 0.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  .adgame-handoff-chip { color: #ff9c57; }
+  .adgame-handoff-chip.is-qualified { color: #34d399; }
+  .adgame-handoff-chip.is-warn { color: #fbbf24; }
+  .adgame-handoff-back { color: #ff9c57; }
+}

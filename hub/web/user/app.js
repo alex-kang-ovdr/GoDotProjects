@@ -664,6 +664,8 @@
       if(detailParams.get('autolaunch')==='1')void startPlay(game);
     }else{
       state.crossplay=null;
+      if(window.PlayHubAdHandoff)void window.PlayHubAdHandoff.onGameDetail(game,{startPlay,toast});
+      else if(detailParams.get('autolaunch')==='1')void startPlay(game);
     }
   }
   function selectDetailPanel(panel,id){
