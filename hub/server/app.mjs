@@ -257,10 +257,41 @@ export function createApp(input, dependencies = {}) {
     });
     return { id:m.id,sourceSaveCount:source.length,conflicts };
   }
-  function profile(s) {
+  const adminAllowedEmails = new Set(
+    [
+      ...(Array.isArray(config.admin?.allowedEmails) ? config.admin.allowedEmails : []),
+      ...String(env.PLAYHUB_ADMIN_EMAILS || '').split(','),
+    ].map(x => String(x || '').trim().toLowerCase()).filter(Boolean)
+  );
+  function hasAdminPrivilege(s, req) {
+    if (req && sessionFor(req, 'admin')?.admin_authenticated) return true;
+    if (!s?.principal_id || s.traffic_type === 'qa' || !adminAllowedEmails.size) return false;
+    const user = db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id);
+    if (user?.kind !== 'registered') return false;
+    const rows = db.prepare('SELECT subject FROM identities WHERE user_id=?').all(s.principal_id);
+    return rows.some(r => adminAllowedEmails.has(String(r.subject || '').trim().toLowerCase()));
+  }
+  function resolveAdminLinkUrl() {
+    const explicit = String(config.admin?.publicUrl || env.PLAYHUB_ADMIN_URL || '').trim();
+    if (explicit) return explicit;
+    if (!config.adminBaseUrl) return null;
+    try {
+      const adminU = new URL(config.adminBaseUrl);
+      const userU = new URL(config.userBaseUrl);
+      const isLoopback = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(adminU.hostname);
+      const userLoopback = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(userU.hostname);
+      if (isLoopback && !userLoopback) return null;
+      return config.adminBaseUrl;
+    } catch {
+      return null;
+    }
+  }
+  function profile(s, req = null) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
     const kind = user?.kind || 'anonymous';
     const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : (kind === 'guest' ? 'guest' : null);
+    const isAdmin = hasAdminPrivilege(s, req);
+    const adminUrl = isAdmin ? resolveAdminLinkUrl() : null;
     const googleEnabled = google.enabled && s.traffic_type !== 'qa';
     const naverEnabled = sso.naver.enabled && s.traffic_type !== 'qa';
     const emailEnabled = sso.email.enabled && s.traffic_type !== 'qa';
@@ -270,6 +301,8 @@ export function createApp(input, dependencies = {}) {
       csrfToken:s.csrf,
       displayName:user?.display_name || null,
       authProvider,
+      isAdmin,
+      adminUrl,
       googleEnabled,
       naverEnabled,
       emailEnabled,
@@ -390,7 +423,7 @@ export function createApp(input, dependencies = {}) {
     if (path === '/api/session' && req.method === 'GET') {
       let s = renewGuestSession(req,res,sessionFor(req,'public'));
       if (!s) { rate(`session:${rateLimitIp(req)}`,120,60000); s = newSession(res,'public'); }
-      json(res,200,profile(s)); return;
+      json(res,200,profile(s, req)); return;
     }
     if (path === '/api/wishlist' && req.method === 'GET') { json(res,200,wishlist(sessionFor(req,'public'))); return; }
     if (path === '/api/preferences' && req.method === 'GET') {
@@ -410,7 +443,6 @@ export function createApp(input, dependencies = {}) {
     if (path.includes('/leaderboards') && await leaderboard.publicRoute(req,res,url)) return;
     if ((path.endsWith('/progression') || path.endsWith('/stats') || path.includes('/achievements/')) && await progression.publicRoute(req,res,url)) return;
     if (path.startsWith('/api/social/') && await webSocial.route(req,res,url)) return;
-    if ((path === '/api/qa/targets' || path === '/api/qa/runs') && req.method === 'GET' && await gamerQaHub.publicRoute(req, res, url, sessionFor(req, 'public'))) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -448,7 +480,6 @@ export function createApp(input, dependencies = {}) {
       const next=newSession(res,'public',null,null,false,{trafficType:'qa',qaRunId:uid()});revokeSession(s);
       json(res,201,profile(next));return;
     }
-    if (path === '/api/qa/runs' && req.method === 'POST' && await gamerQaHub.publicRoute(req, res, url, s)) return;
     if (path === '/api/play-sessions' && req.method === 'POST') {
       assertNotPlatformSanctioned(s.principal_id);
       rate(`play:${s.id_hash}`,60,60000);
@@ -671,6 +702,7 @@ export function createApp(input, dependencies = {}) {
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
+    if (await gamerQaHub.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/sanctions' || path.startsWith('/api/admin/sanctions/')) && await sanctions.adminRoute(req,res,url,s)) return;

@@ -315,7 +315,7 @@ function escapeHtml(value) {
 
 function loginGateHtml(loginUrl) {
   const href = escapeHtml(loginUrl);
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayForge 로그인 필요</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#161a22;color:#e8edf5;font:15px/1.6 system-ui,sans-serif}main{max-width:420px;padding:28px;border:1px solid #343d4d;border-radius:12px;background:#1f2531}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 18px;color:#b4c0d2}a{display:inline-block;padding:10px 16px;border-radius:8px;background:#4c8df6;color:#fff;text-decoration:none;font-weight:600}</style></head><body><main><h1>PlayHub Google 로그인이 필요합니다</h1><p>PlayForge 에디터와 개인 프로젝트는 PlayHub Google 계정으로 로그인한 뒤 이용할 수 있습니다.</p><a href="${href}">PlayHub 로그인으로 이동</a></main></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayForge 로그인 필요</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#161a22;color:#e8edf5;font:15px/1.6 system-ui,sans-serif}main{max-width:420px;padding:28px;border:1px solid #343d4d;border-radius:12px;background:#1f2531}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 18px;color:#b4c0d2}a{display:inline-block;padding:10px 16px;border-radius:8px;background:#4c8df6;color:#fff;text-decoration:none;font-weight:600}</style></head><body><main><h1>PlayHub 로그인이 필요합니다</h1><p>PlayForge 에디터와 개인 프로젝트는 PlayHub 계정(이메일·Google·네이버)으로 로그인한 뒤 이용할 수 있습니다.</p><a href="${href}">PlayHub 로그인으로 이동</a></main></body></html>`;
 }
 
 function firstOrigin(configured) {

@@ -445,25 +445,25 @@ export function createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate
     };
   }
 
-  async function publicRoute(req, res, url, session) {
+  async function adminRoute(req, res, url, session) {
     const p = url.pathname;
-    if (p === '/api/qa/targets' && req.method === 'GET') {
+    if (p === '/api/admin/gamerqa/targets' && req.method === 'GET') {
       json(res, 200, buildTargetCatalog());
       return true;
     }
-    if (p === '/api/qa/runs' && req.method === 'GET') {
+    if (p === '/api/admin/gamerqa/runs' && req.method === 'GET') {
       const platform = url.searchParams.get('platform') || null;
       const limit = url.searchParams.get('limit') || '60';
       json(res, 200, listRuns({ platform, limit }));
       return true;
     }
-    if (p === '/api/qa/runs' && req.method === 'POST') {
-      const key = session?.id_hash || req.socket?.remoteAddress || 'anon';
+    if (p === '/api/admin/gamerqa/runs' && req.method === 'POST') {
+      const key = session?.id_hash || req.socket?.remoteAddress || 'admin';
       rate(`gamerqa-run:${key}`, 300, 60000);
       const body = await readJson(req, 8192);
       const platform = typeof body.platform === 'string' && body.platform.trim() ? body.platform.trim() : 'all';
       const targetId = body.targetId !== undefined && body.targetId !== null ? safeString(body.targetId, 80) : null;
-      const qaRunId = session?.qa_run_id || (typeof body.qaRunId === 'string' ? safeString(body.qaRunId, 80) : null);
+      const qaRunId = typeof body.qaRunId === 'string' ? safeString(body.qaRunId, 80) : uid();
       const result = runBatch({ platform, targetId, qaRunId });
       json(res, 201, result);
       return true;
@@ -475,6 +475,6 @@ export function createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate
     buildTargetCatalog,
     runBatch,
     listRuns,
-    publicRoute,
+    adminRoute,
   };
 }

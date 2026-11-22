@@ -152,6 +152,12 @@
     if($('naver-login')){$('naver-login').hidden=registered||!session||state.limited||state.authStale;$('naver-login').disabled=!canNaver;}
     $('logout').hidden=!registered;
     $('merge-open').hidden=!session?.pendingMerge;
+    const adminLink=$('nav-admin-link');
+    if(adminLink){
+      const showAdmin=Boolean(session?.isAdmin&&session?.adminUrl&&!state.limited&&!state.authStale);
+      adminLink.hidden=!showAdmin;
+      if(showAdmin)adminLink.href=session.adminUrl;
+    }
     $('account-help').textContent=accountHelp(canSignIn,canNaver,canEmail);
     for(const button of document.querySelectorAll('[data-google-login]')){
       button.hidden=!canSignIn;

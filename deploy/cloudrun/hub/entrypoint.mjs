@@ -256,6 +256,10 @@ function serveStatic(req, res, staticRoot) {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300',
   };
+  if (pathname.startsWith('/games/')) {
+    headers['Access-Control-Allow-Origin'] = '*';
+    headers['Cross-Origin-Resource-Policy'] = 'cross-origin';
+  }
 
   const acceptEncoding = String(req.headers['accept-encoding'] || '');
   if (req.method !== 'HEAD' && COMPRESSIBLE.has(ext) && acceptEncoding.includes('gzip')) {

@@ -831,11 +831,23 @@ function populateQaRunSelect(qaRunIds) {
 
 async function refreshQaViews() {
   const token = generation;
-  qaCache = await api('/api/admin/qa/overview');
+  const [overview, gamerqaTargets, gamerqaRuns] = await Promise.all([
+    api('/api/admin/qa/overview'),
+    api('/api/admin/gamerqa/targets').catch(() => null),
+    api('/api/admin/gamerqa/runs?limit=60').catch(() => null),
+  ]);
   if (token !== generation || !authenticated) return;
+  qaCache = { ...overview, gamerqaTargets, gamerqaRuns };
   const ctx = {
     number, kstStamp,
     onNavigate: (tab, view) => navigate(tab, view),
+    onRunGamerQa: async (platform, targetId = null) => {
+      await api('/api/admin/gamerqa/runs', {
+        method: 'POST',
+        body: targetId ? { platform, targetId } : { platform },
+      });
+      await refreshQaViews();
+    },
     onSelectRunId: runId => {
       dataset = 'qa';
       filters.qaRunId = runId;
