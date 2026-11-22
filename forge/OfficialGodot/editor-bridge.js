@@ -189,7 +189,7 @@
   const processedCommandIds = new Set();
   let sessionSyncTimer = null;
   const buildMode = String(window.__PLAYFORGE_BUILD_MODE__ || query.get('mode') || 'debug').toLowerCase();
-  let remoteControlAllowed = ['debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
+  let remoteControlAllowed = ['dev', 'debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
 
   function disableRemoteControl() {
     remoteControlAllowed = false;

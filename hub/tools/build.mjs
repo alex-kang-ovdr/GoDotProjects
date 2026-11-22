@@ -5,6 +5,13 @@ import {createHash} from 'node:crypto';
 import {validGameUpdateDate} from '../server/catalog.mjs';
 
 export const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+export const DEV_DEMO_BUILD_MODES=new Set(['dev','development','debug','test']);
+export function resolveBuildMode(config={},env=process.env,explicitMode=null){
+  const raw=String(explicitMode||config.buildMode||env.PLAYHUB_BUILD_MODE||(String(env.NODE_ENV||'').trim().toLowerCase()==='production'?'prod':'dev')).trim().toLowerCase();
+  return raw||'dev';
+}
+export function isDevDemoBuildMode(mode){return DEV_DEMO_BUILD_MODES.has(String(mode||'').trim().toLowerCase());}
+const DEV_DEMO_HTML_BLOCK=/\s*<!--\s*playhub-dev-demo:start\s*-->[\s\S]*?<!--\s*playhub-dev-demo:end\s*-->/gi;
 const escaped=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const identifier=/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 export const staticExtensions=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt','.wasm','.pck']);
@@ -17,15 +24,15 @@ export function renameOutput(from,to){
   }
 }
 
-function copyStatic(source,destination,selected){
+function copyStatic(source,destination,selected,excludeNames=null){
   const st=fs.lstatSync(source);
   if(st.isSymbolicLink())throw new Error('Symbolic links are not allowed in web output: '+source);
   if(st.isDirectory()){
     if(destination)fs.mkdirSync(destination,{recursive:true});
     for(const name of fs.readdirSync(source)){
-      if(name.startsWith('.')||name==='node_modules')continue;
+      if(name.startsWith('.')||name==='node_modules'||excludeNames?.has(name))continue;
       const target=destination&&(!selected||selected.has(name))?path.join(destination,name):null;
-      copyStatic(path.join(source,name),target);
+      copyStatic(path.join(source,name),target,null,excludeNames);
     }
   } else if(destination&&st.isFile()&&staticExtensions.has(path.extname(source).toLowerCase()))fs.copyFileSync(source,destination);
 }
@@ -64,14 +71,17 @@ export function readCatalog(root=projectRoot){
   return {catalog,games};
 }
 
-export function build({root=projectRoot,config={}}={}){
+export function build({root=projectRoot,config={},buildMode:explicitBuildMode=null,outputDir=null}={}){
   const {catalog,games}=readCatalog(root);
-  const output=path.join(root,'dist'),temporary=path.join(root,`.dist-${process.pid}`),backup=output+'.previous';
+  const buildMode=resolveBuildMode(config,process.env,explicitBuildMode);
+  const includeDevDemoUi=isDevDemoBuildMode(buildMode);
+  const output=outputDir?path.resolve(outputDir):path.join(root,'dist'),temporary=path.join(path.dirname(output),`.dist-${process.pid}-${Date.now()}`),backup=output+'.previous';
   if(fs.existsSync(temporary))fs.rmSync(temporary,{recursive:true});
   fs.mkdirSync(temporary,{recursive:true});
   try{
     const user=path.join(temporary,'user'),admin=path.join(temporary,'admin');
-    copyStatic(path.join(root,'web/user'),user);copyStatic(path.join(root,'web/admin'),admin);
+    const excludedUserFiles=includeDevDemoUi?null:new Set(['dev-demo-ui.js']);
+    copyStatic(path.join(root,'web/user'),user,null,excludedUserFiles);copyStatic(path.join(root,'web/admin'),admin);
     copyStatic(path.join(root,'games'),path.join(user,'games'),new Set(games.map(game=>game.id)));
     if(fs.existsSync(path.join(root,'shared')))copyStatic(path.join(root,'shared'),path.join(user,'shared'));
     fs.mkdirSync(path.join(user,'catalog'),{recursive:true});
@@ -86,12 +96,13 @@ export function build({root=projectRoot,config={}}={}){
         fs.writeFileSync(entryFile,html);
       }
     }
-    const publicConfig={apiPort:config.publicPort||8090,apiBaseUrl:'',mode:'local-iis-poc',playforgeUrl:config.playforgeUrl,storeUrl:config.storeUrl};
-    const adminConfig={apiPort:config.adminPort||8091,apiBaseUrl:'',mode:'local-iis-poc'};
+    const publicConfig={apiPort:config.publicPort||8090,apiBaseUrl:'',mode:'local-iis-poc',buildMode,includeDevDemoUi,playforgeUrl:config.playforgeUrl,storeUrl:config.storeUrl};
+    const adminConfig={apiPort:config.adminPort||8091,apiBaseUrl:'',mode:'local-iis-poc',buildMode,includeDevDemoUi};
     fs.writeFileSync(path.join(user,'config.js'),'window.PLAYHUB_CONFIG='+JSON.stringify(publicConfig)+';\n');
     fs.writeFileSync(path.join(admin,'config.js'),'window.PLAYHUB_ADMIN_CONFIG='+JSON.stringify(adminConfig)+';\n');
     const userBase=(config.userBaseUrl||'http://localhost:8080').replace(/\/$/,'');
-    const shell=fs.readFileSync(path.join(user,'index.html'),'utf8');
+    const rawShell=fs.readFileSync(path.join(user,'index.html'),'utf8');
+    const shell=includeDevDemoUi?rawShell:rawShell.replace(DEV_DEMO_HTML_BLOCK,'');
     const homeContent='<article id="catalog-seo"><h2>로그인 없이 즐기는 기본 게임</h2><ul>'+games.filter(g=>g.enabled).map(g=>`<li><a href="/play/${g.id}/">${escaped(g.manifest.title.ko)}</a> — ${escaped(g.manifest.summary.ko)}</li>`).join('')+'</ul></article>';
     fs.writeFileSync(path.join(user,'index.html'),shell.replace('<!-- SEO_CONTENT -->',homeContent).replace('</head>',`<link rel="canonical" href="${escaped(userBase+'/')}"></head>`));
     const routes=[];
@@ -118,8 +129,8 @@ export function build({root=projectRoot,config={}}={}){
     if(fs.existsSync(output))renameOutput(output,backup);
     try{renameOutput(temporary,output);}catch(error){if(fs.existsSync(backup))renameOutput(backup,output);throw error;}
     if(fs.existsSync(backup))fs.rmSync(backup,{recursive:true});
-    const report={ok:true,generatedAt:new Date().toISOString(),games:games.length,activeGames:games.filter(g=>g.enabled).length,routes:routes.length,output,searchIndexingEnabled:indexing,catalogSha256:createHash('sha256').update(JSON.stringify(catalog)).digest('hex')};
-    fs.mkdirSync(path.join(root,'reports'),{recursive:true});fs.writeFileSync(path.join(root,'reports/build.json'),JSON.stringify(report,null,2));
+    const report={ok:true,generatedAt:new Date().toISOString(),buildMode,includeDevDemoUi,games:games.length,activeGames:games.filter(g=>g.enabled).length,routes:routes.length,output,searchIndexingEnabled:indexing,catalogSha256:createHash('sha256').update(JSON.stringify(catalog)).digest('hex')};
+    if(!outputDir){fs.mkdirSync(path.join(root,'reports'),{recursive:true});fs.writeFileSync(path.join(root,'reports/build.json'),JSON.stringify(report,null,2));}
     return report;
   }catch(error){if(fs.existsSync(temporary))fs.rmSync(temporary,{recursive:true});throw error;}
 }
@@ -127,10 +138,13 @@ async function runBuildCommand(){
   const i=process.argv.indexOf('--config');const p=i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json');
   const config=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')):{};
   const j=process.argv.indexOf('--webgames');
+  const m=process.argv.indexOf('--build-mode');
+  const explicitBuildMode=m>=0?process.argv[m+1]:null;
   try{
     if(j>=0&&(!process.argv[j+1]||process.argv[j+1].startsWith('--')))throw new Error('--webgames requires a path.');
+    if(m>=0&&(!explicitBuildMode||explicitBuildMode.startsWith('--')))throw new Error('--build-mode requires a value (dev|debug|test|prod|release).');
     await syncCheckoutGames({webgames:j>=0?process.argv[j+1]:undefined});
-    console.log(JSON.stringify(build({config}),null,2));
+    console.log(JSON.stringify(build({config,buildMode:explicitBuildMode}),null,2));
   }catch(error){console.error('Build failed: '+error.message);process.exitCode=1;}
 }
 // Finish module evaluation before importing the synchronizer, which shares the

@@ -77,6 +77,8 @@
       || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
   }
 
+  const isDevDemoUiOn = () => window.PlayHubDevDemoUI?.isEnabled?.() === true;
+
   function dispatchBillingError(error, { toast, inlineEl = null, fatalRoot = null, fallback = '요청 처리 중 오류가 발생했습니다.', fatalTitle = '결제 서비스를 계속할 수 없습니다' } = {}) {
     if (window.PlayHubErrorUI?.report) {
       return window.PlayHubErrorUI.report(error, { inlineEl, fatalRoot, fallback, fatalTitle });
@@ -422,9 +424,12 @@
         ];
 
     function renderDialog() {
+      const demoUi = isDevDemoUiOn();
+      const showDemoAccount = Boolean(catalog.allowDemoAccount) && demoUi;
+      const showSandboxUi = isMock && demoUi;
       const selectedBrand = easyPayBrandMeta(selectedMethod);
       const selectedMeta = koreaEasyPay[selectedMethod] || null;
-      const submitCtaLabel = isMock
+      const submitCtaLabel = showSandboxUi
         ? `${selectedBrand.label} 샌드박스 결제 열기`
         : `${selectedBrand.label}로 결제 진행`;
 
@@ -433,7 +438,7 @@
           <h2 id="billing-checkout-title">PlayCoin 충전 확인</h2>
           <button class="icon-button" type="button" data-billing-close aria-label="닫기">×</button>
         </div>
-        ${isMock ? '<p class="billing-badge sandbox" style="margin:6px 0 0;color:#854d0e;background:#fef9c3;border-color:#fde047;">샌드박스 모드 · 카카오페이·네이버페이·토스페이 공식 리다이렉트·승인 흐름 시뮬레이션 (실청구 없음)</p>' : ''}
+        ${showSandboxUi ? '<p class="billing-badge sandbox" data-dev-demo-ui style="margin:6px 0 0;color:#854d0e;background:#fef9c3;border-color:#fde047;">샌드박스 모드 · 카카오페이·네이버페이·토스페이 공식 리다이렉트·승인 흐름 시뮬레이션 (실청구 없음)</p>' : ''}
         <div class="checkout-summary">
           <div class="checkout-summary-line"><span>결제 금액</span><strong>${esc(formatMoney(item.amountMinor, item.currency))}</strong></div>
           <div class="checkout-summary-line"><span>유상 기본 (paid)</span><span>${esc(formatCoins(item.baseCoins))}</span></div>
@@ -445,8 +450,8 @@
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
           <div class="dialog-actions" style="flex-wrap:wrap;">
             <button type="button" class="button secondary" data-billing-close>취소</button>
-            <a class="button secondary" href="/?view=account" data-billing-close>계정 로그인 화면</a>
-            ${catalog.allowDemoAccount ? '<button type="button" class="button primary" id="billing-dialog-demo-signin">🧪 데모 계정으로 로그인 후 충전 계속</button>' : ''}
+            <a class="button primary" href="/?view=account" data-billing-close>계정 로그인 화면</a>
+            ${showDemoAccount ? '<button type="button" class="button secondary" id="billing-dialog-demo-signin" data-dev-demo-ui>🧪 데모 계정으로 로그인 후 충전 계속</button>' : ''}
           </div>
         ` : !createdOrder ? `
           <p class="checkout-notice" style="margin-bottom:4px;"><strong>결제 수단 선택</strong> ${uiState.currency === 'KRW' ? '(한국 KRW · 카카오페이·네이버페이·토스페이 직가맹 / 토스페이먼츠 Direct 자동 라우팅)' : '(글로벌 · Google Pay Instant Flow 지원)'}</p>
@@ -459,11 +464,12 @@
                   <span class="easypay-brand-chip ${esc(b.badgeClass)}">${esc(b.short)}</span>
                   <span class="easypay-method-label">${esc(m.label)}</span>
                 </span>
-                ${routeNote ? `<span class="easypay-method-sub">${esc(routeNote)}</span>` : ''}
+                ${routeNote && showSandboxUi ? `<span class="easypay-method-sub">${esc(routeNote)}</span>` : (!isMock && routeNote ? `<span class="easypay-method-sub">${esc(routeNote)}</span>` : '')}
               </button>`;
             }).join('')}
           </div>
-          ${selectedMeta ? `<p class="checkout-notice" style="margin-top:0;">라우팅 경로: <strong>${esc(integrationBadgeText(selectedMeta))}</strong>${selectedMeta.failoverChain?.length > 1 ? ` · 장애 시 자동 폴백(${esc(selectedMeta.failoverChain.join(' → '))})` : ''}</p>` : ''}
+          ${selectedMeta && (!isMock || showSandboxUi) ? `<p class="checkout-notice" style="margin-top:0;">라우팅 경로: <strong>${esc(integrationBadgeText(selectedMeta))}</strong>${selectedMeta.failoverChain?.length > 1 ? ` · 장애 시 자동 폴백(${esc(selectedMeta.failoverChain.join(' → '))})` : ''}</p>` : ''}
+          ${isMock && !showSandboxUi ? '<p class="checkout-notice">실제 결제 PG 연결 전입니다. 결제가 준비되면 바로 충전할 수 있습니다.</p>' : ''}
           <label class="check-row" style="font-size:13px;margin:8px 0;">
             <input type="checkbox" id="billing-agree-terms">
             <span>유상 원금(${esc(item.baseCoins)})과 채널 보너스(+${esc(item.bonusCoins)}) 구분을 확인했으며, <strong>결제 후 7일 이내 미사용 시 전액 청약철회 가능(원금 또는 보너스 1 PlayCoin 이상 사용 시 청약철회 제한)</strong> 및 미성년자 법정대리인 동의 안내에 동의합니다.</span>
@@ -471,7 +477,7 @@
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
           <div class="dialog-actions">
             <button type="button" class="button secondary" data-billing-close>취소</button>
-            <button type="button" class="button primary" id="billing-create-order" disabled>${esc(submitCtaLabel)}</button>
+            <button type="button" class="button primary" id="billing-create-order" disabled>${esc(isMock && !showSandboxUi ? '결제 준비 중' : submitCtaLabel)}</button>
           </div>
         ` : `
           <div class="easypay-sandbox-sheet ${esc(selectedBrand.badgeClass)}">
@@ -541,11 +547,11 @@
             const nextSubmit = dialog.querySelector('#billing-create-order');
             if (nextAgree && nextSubmit) {
               nextAgree.checked = wasChecked;
-              nextSubmit.disabled = !wasChecked;
+              nextSubmit.disabled = (isMock && !showSandboxUi) || !wasChecked;
             }
           };
         });
-        agree.onchange = () => { submitBtn.disabled = !agree.checked; };
+        agree.onchange = () => { submitBtn.disabled = (isMock && !showSandboxUi) || !agree.checked; };
         submitBtn.onclick = async () => {
           const errEl = dialog.querySelector('#billing-checkout-error');
           errEl.hidden = true;
@@ -655,11 +661,14 @@
       const authed = Boolean(walletData?.authenticated);
       const isPro = walletData?.subscription?.effectivePlan === 'pro';
       const isMock = catalog.billingMode === 'mock';
+      const demoUi = isDevDemoUiOn();
+      const showDemoAccount = Boolean(catalog.allowDemoAccount) && demoUi;
+      const showSandboxUi = isMock && demoUi;
       const stageBadge = {
         stage1: 'Stage 1 · Xsolla MoR (글로벌 + 한국 간편결제)',
         stage2: 'Stage 2 · KRW Toss + 글로벌 Xsolla (자동 폴백)',
         stage3: 'Stage 3 · Toss + Stripe Google Pay (0%) + Xsolla',
-        mock: '🧪 샌드박스 Mock PG 활성 (실청구 없음)'
+        mock: showSandboxUi ? '🧪 샌드박스 Mock PG 활성 (실청구 없음)' : ''
       }[catalog.routingStage || (isMock ? 'mock' : 'stage1')];
 
       root.innerHTML = `<div class="page billing-page">
@@ -706,7 +715,7 @@
           <div class="billing-account-bar-actions">
             ${authed
               ? `<a class="button secondary small" href="/?view=wallet" data-route>내 지갑 · 청약철회 →</a>`
-              : `${catalog.allowDemoAccount ? '<button type="button" class="button primary small" id="billing-demo-signin">🧪 데모 계정으로 바로 체험</button>' : ''}
+              : `${showDemoAccount ? '<button type="button" class="button primary small" id="billing-demo-signin" data-dev-demo-ui>🧪 데모 계정으로 바로 체험</button>' : ''}
                  <button type="button" class="button secondary small" data-google-login hidden>Google로 로그인</button>
                  <a class="button secondary small" href="/?view=account" data-route>계정 화면</a>`
             }
@@ -773,7 +782,7 @@
               <div class="save-actions">
                 ${isPro
                   ? `<span class="status-chip active">Pro 이용 중</span><a class="button secondary small" href="/?view=wallet" data-route>구독 관리</a>`
-                  : `<button type="button" class="button primary small" id="billing-start-pro" ${!authed || !isMock ? 'disabled' : ''}>${isMock ? '샌드박스 Pro 시작' : 'Pro 출시 예정'}</button>`
+                  : `<button type="button" class="button primary small" id="billing-start-pro" ${!authed || !showSandboxUi ? 'disabled' : ''}>${showSandboxUi ? '샌드박스 Pro 시작' : 'Pro 출시 예정'}</button>`
                 }
               </div>
             </article>
@@ -895,7 +904,7 @@
             <h2>로그인이 필요합니다</h2>
             <p class="muted">PlayCoin 잔액, 구독·사용량 현황, 7일 청약철회 및 보유 아이템 권한(Entitlement)을 확인하려면 로그인해 주세요.</p>
             <div class="save-actions">
-              ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="wallet-demo-signin">🧪 데모 계정으로 바로 체험</button>' : ''}
+              ${walletData.allowDemoAccount && isDevDemoUiOn() ? '<button type="button" class="button primary" id="wallet-demo-signin" data-dev-demo-ui>🧪 데모 계정으로 바로 체험</button>' : ''}
               <a class="button secondary" href="/?view=billing" data-route>상점 둘러보기</a>
             </div>
           </section>
@@ -995,8 +1004,8 @@
               </div>`;
             }).join('')}
           </div>
-          ${walletData.allowDemoAccount ? `
-            <div class="redeem-sandbox-bar" style="margin-bottom:14px;">
+          ${walletData.allowDemoAccount && isDevDemoUiOn() ? `
+            <div class="redeem-sandbox-bar" data-dev-demo-ui style="margin-bottom:14px;">
               <strong>🧪 샌드박스 사용량 시뮬레이터 (FIFO 차감 · Hold/Capture · Anti-Bonus-Stripping 검증):</strong>
               <button type="button" class="button secondary small" data-demo-usage="ai_direct">🤖 AI 100유닛 사용 (-20 PlayCoin)</button>
               <button type="button" class="button secondary small" data-demo-usage="server_hold_capture">🖥️ 서버 Hold/Capture (60 예약 → 35 정산)</button>
@@ -1204,7 +1213,7 @@
             <h2>로그인이 필요합니다</h2>
             <p class="muted">기프트카드 PlayCoin을 안전하게 계정에 귀속하려면 먼저 로그인해 주세요.</p>
             <div class="save-actions">
-              ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="redeem-demo-signin">🧪 데모 계정으로 바로 체험</button>' : ''}
+              ${walletData.allowDemoAccount && isDevDemoUiOn() ? '<button type="button" class="button primary" id="redeem-demo-signin" data-dev-demo-ui>🧪 데모 계정으로 바로 체험</button>' : ''}
               <a class="button secondary" href="/?view=billing" data-route>PlayCoin 상점 보기</a>
             </div>
           </section>
@@ -1254,8 +1263,8 @@
             <span class="muted">현재 가용 잔액: <strong>🪙 ${esc(formatCoins(walletData.wallet.available))}</strong></span>
           </div>
 
-          ${walletData.allowDemoAccount ? `
-            <div class="redeem-sandbox-bar">
+          ${walletData.allowDemoAccount && isDevDemoUiOn() ? `
+            <div class="redeem-sandbox-bar" data-dev-demo-ui>
               <strong>🧪 샌드박스 테스트용 PIN 즉시 발급:</strong>
               <button type="button" class="button secondary small" data-demo-gc="gift_card_direct">직접판매 +25% (1,250 PlayCoin)</button>
               <button type="button" class="button secondary small" data-demo-gc="gift_card_retail">리테일 +20% (1,200 PlayCoin)</button>
@@ -1471,7 +1480,7 @@
             <h2>창작자 로그인이 필요합니다</h2>
             <p class="muted">결제 계정 연결, 게임 상품 등록, 웹 직접구매 테스트를 진행하려면 로그인해 주세요.</p>
             <div class="save-actions">
-              ${walletData.allowDemoAccount ? '<button type="button" class="button primary" id="direct-demo-signin">🧪 데모 창작자로 바로 체험</button>' : ''}
+              ${walletData.allowDemoAccount && isDevDemoUiOn() ? '<button type="button" class="button primary" id="direct-demo-signin" data-dev-demo-ui>🧪 데모 창작자로 바로 체험</button>' : ''}
               <a class="button secondary" href="/?view=billing" data-route>PlayCoin 상점 보기</a>
             </div>
           </section>
@@ -1503,8 +1512,8 @@
       ]);
 
       const conn = connData.connection;
-      const isMockDirect = connData.directMode === 'mock';
-      const isDemo = Boolean(walletData.allowDemoAccount);
+      const isMockDirect = connData.directMode === 'mock' && isDevDemoUiOn();
+      const isDemo = Boolean(walletData.allowDemoAccount) && isDevDemoUiOn();
 
       root.innerHTML = `<div class="page billing-page">
         ${billingSubnavHtml('direct')}

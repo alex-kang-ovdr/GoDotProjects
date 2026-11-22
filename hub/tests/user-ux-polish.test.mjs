@@ -58,9 +58,11 @@ async function withChromeCdp(t, url, fn, { width = 1280, height = 900, mobile = 
   proc.stderr.on('data', chunk => { stderr += chunk.toString('utf8'); });
 
   t.after(async () => {
+    try { proc.stderr?.destroy(); } catch {}
     try { proc.kill(); } catch {}
+    try { proc.unref(); } catch {}
     await delay(200);
-    fs.rmSync(profileDir, { recursive: true, force: true });
+    try { fs.rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 80 }); } catch {}
   });
 
   let wsUrl = '';
@@ -171,7 +173,7 @@ async function startBillingHub(t) {
   const addrs = await hubApp.listen();
   fs.writeFileSync(
     path.join(liveUserDir, 'config.js'),
-    `window.PLAYHUB_CONFIG=${JSON.stringify({ apiPort: addrs.public.port, apiBaseUrl: '', sameOriginApi: true, mode: 'local-iis-poc' })};\n`
+    `window.PLAYHUB_CONFIG=${JSON.stringify({ apiPort: addrs.public.port, apiBaseUrl: '', sameOriginApi: true, buildMode: 'dev', includeDevDemoUi: true, mode: 'local-iis-poc' })};\n`
   );
 
   const userServer = createStaticServer(liveUserDir, {
@@ -190,10 +192,41 @@ async function startBillingHub(t) {
   return { userBaseUrl };
 }
 
-test('PlayCoin top-up dialog opens cleanly in Billing Shop (including unauthenticated demo-login flow) & Avatar Shop', async t => {
+test('PlayCoin top-up dialog opens cleanly in Billing Shop (default demo OFF -> toggle ON + F5) & Avatar Shop', async t => {
   const { userBaseUrl } = await startBillingHub(t);
 
-  await withChromeCdp(t, `${userBaseUrl}/?view=billing`, async ({ evalJs }) => {
+  await withChromeCdp(t, `${userBaseUrl}/?view=billing`, async ({ send, evalJs }) => {
+    // 1) Default OFF in dev build: dialog opens cleanly, demo sign-in button hidden until Dev setting is ON
+    const defaultOff = await evalJs(`(async () => {
+      for (let i = 0; i < 40; i++) {
+        if (document.querySelector('[data-buy-sku]')) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      const hasShopDemoBefore = Boolean(document.getElementById('billing-demo-signin'));
+      document.querySelector('[data-buy-sku]')?.click();
+      await new Promise(r => setTimeout(r, 150));
+      const dlg = document.getElementById('billing-checkout-dialog');
+      const hasDialogDemoBefore = Boolean(document.getElementById('billing-dialog-demo-signin'));
+      if (dlg?.open) dlg.close();
+      return {
+        dialogOpenedWhenOff: Boolean(dlg),
+        hasShopDemoBefore,
+        hasDialogDemoBefore,
+        hasDevToggle: Boolean(document.getElementById('dev-demo-nav-toggle'))
+      };
+    })()`);
+
+    assert.equal(defaultOff.dialogOpenedWhenOff, true, 'Checkout dialog must open even when Test/Demo UI is OFF');
+    assert.equal(defaultOff.hasShopDemoBefore, false, 'Demo sign-in button must be hidden by default (OFF)');
+    assert.equal(defaultOff.hasDialogDemoBefore, false, 'In-dialog demo button must be hidden by default (OFF)');
+    assert.equal(defaultOff.hasDevToggle, true, 'Dev build must render Dev Demo UI toggle');
+
+    // 2) Turn ON via Dev toggle and F5 reload -> persists ON and shows demo UI
+    await evalJs(`document.getElementById('dev-demo-nav-toggle').click();`);
+    await delay(200);
+    await send('Page.reload', { ignoreCache: true });
+    await delay(900);
+
     const initial = await evalJs(`(async () => {
       for (let i = 0; i < 40; i++) {
         if (document.querySelector('[data-buy-sku]')) break;
@@ -215,7 +248,7 @@ test('PlayCoin top-up dialog opens cleanly in Billing Shop (including unauthenti
 
     assert.equal(initial.found, true, `Expected SKU buy button on billing shop: ${initial.text || ''}`);
     assert.equal(initial.dialogOpen, true, 'Clicking 구매하기 must open #billing-checkout-dialog even when unauthenticated');
-    assert.equal(initial.hasDemoBtn, true, 'Unauthenticated checkout dialog should show demo sign-in CTA');
+    assert.equal(initial.hasDemoBtn, true, 'After turning Dev Demo UI ON + F5 reload, demo sign-in CTA must appear');
 
     // Click demo sign-in inside the dialog -> should seamlessly transition to payment method selector & complete order
     const checkout = await evalJs(`(async () => {
@@ -261,9 +294,9 @@ test('PlayCoin top-up dialog opens cleanly in Billing Shop (including unauthenti
     assert.match(checkout.pillText, /[1-9]/, `Expected PlayCoin balance credited in header pill, got "${checkout.pillText}"`);
   });
 
-  // Verify Avatar Shop top-up dialog opens cleanly
+  // Verify Avatar Shop top-up dialog opens cleanly (default OFF hides instant test packs, ON shows packs)
   await withChromeCdp(t, `${userBaseUrl}/?view=avatar`, async ({ evalJs }) => {
-    const avatarRes = await evalJs(`(async () => {
+    const avatarOff = await evalJs(`(async () => {
       for (let i = 0; i < 40; i++) {
         if (document.getElementById('avatar-topup-open')) break;
         await new Promise(r => setTimeout(r, 100));
@@ -271,19 +304,34 @@ test('PlayCoin top-up dialog opens cleanly in Billing Shop (including unauthenti
       const openBtn = document.getElementById('avatar-topup-open');
       if (!openBtn) return { hasBtn: false };
       openBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+      const dlg = document.getElementById('avatar-topup-dialog');
+      const packsOff = dlg ? dlg.querySelectorAll('[data-topup-pack]').length : 0;
+      if (dlg?.open) dlg.close();
+      return {
+        hasBtn: true,
+        dialogOpen: Boolean(dlg),
+        packsOff
+      };
+    })()`);
+    assert.equal(avatarOff.hasBtn, true, 'Avatar shop should render PlayCoin top-up button');
+    assert.equal(avatarOff.packsOff, 0, 'Instant dev test top-up packs must be hidden when Dev Demo UI is OFF');
+
+    const avatarOn = await evalJs(`(async () => {
+      document.getElementById('dev-demo-nav-toggle').click();
+      await new Promise(r => setTimeout(r, 300));
+      document.getElementById('avatar-topup-open').click();
       await new Promise(r => setTimeout(r, 250));
       const dlg = document.getElementById('avatar-topup-dialog');
       const packs = dlg ? dlg.querySelectorAll('[data-topup-pack]').length : 0;
       return {
-        hasBtn: true,
         dialogOpen: Boolean(dlg && (dlg.open || dlg.hasAttribute('open'))),
         packCount: packs
       };
     })()`);
 
-    assert.equal(avatarRes.hasBtn, true, 'Avatar shop should render PlayCoin top-up button');
-    assert.equal(avatarRes.dialogOpen, true, 'Clicking avatar PlayCoin 충전 must open #avatar-topup-dialog');
-    assert.ok(avatarRes.packCount >= 1, `Expected at least 1 top-up pack inside #avatar-topup-dialog, got ${avatarRes.packCount}`);
+    assert.equal(avatarOn.dialogOpen, true, 'Clicking avatar PlayCoin 충전 must open #avatar-topup-dialog');
+    assert.ok(avatarOn.packCount >= 1, `Expected at least 1 top-up pack when Dev Demo UI is ON, got ${avatarOn.packCount}`);
   });
 });
 

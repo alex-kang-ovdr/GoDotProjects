@@ -240,6 +240,19 @@ function bindTemplateToolbar() {
       renderTemplates();
     });
   }
+  window.addEventListener("playforge:dev-demo-ui-change", (e) => {
+    const enabled = Boolean(e?.detail?.enabled);
+    if (!enabled && activeTemplateFilter === "showcase") {
+      activeTemplateFilter = "all";
+      const filtersEl = $("templateFilters");
+      if (filtersEl) {
+        for (const b of filtersEl.querySelectorAll("button[data-filter]")) {
+          b.setAttribute("aria-pressed", String(b.dataset.filter === "all"));
+        }
+      }
+      renderTemplates();
+    }
+  });
 }
 function projectCard(x) {
   const wrap = document.createElement("div");

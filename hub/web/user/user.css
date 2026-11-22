@@ -1499,6 +1499,94 @@ dialog {
   gap: 10px;
   margin-top: 20px;
 }
+
+/* ==================== Dev / Debug / Test Demo UI Settings ==================== */
+.dev-demo-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 11px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed #94A3B8;
+  background: #F8FAFC;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dev-demo-nav-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.dev-demo-nav-pill[data-state="on"] {
+  border-style: solid;
+  border-color: #D97706;
+  background: #FEF3C7;
+  color: #92400E;
+}
+.dev-demo-settings-card {
+  border: 1.5px dashed #F59E0B;
+  background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);
+}
+.dev-demo-settings-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.dev-demo-settings-head h2 {
+  margin: 4px 0 0;
+}
+.dev-demo-build-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: #1E293B;
+  color: #F8FAFC;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.dev-demo-state-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--surface-low);
+  color: var(--muted);
+}
+.dev-demo-state-pill[data-state="on"] {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.dev-demo-settings-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+.dev-demo-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.dev-demo-switch input {
+  width: 18px;
+  height: 18px;
+  accent-color: #D97706;
+}
 dialog::backdrop { background: rgba(17, 19, 27, 0.52); backdrop-filter: blur(2px); }
 .dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .dialog-heading h2 { margin: 0; font-size: 20px; letter-spacing: -0.02em; line-height: 1.25; }

@@ -111,7 +111,7 @@
           <h2 id="avatar-topup-title">PlayCoin 충전 (웹 최대 +25% 보너스)</h2>
           <button type="button" class="icon-button" id="avatar-topup-close" aria-label="닫기">×</button>
         </div>
-        <p class="muted">Track A PlayCoin 3-Bucket(유상 · 보너스 · 프로모) 원장에 적립됩니다. (로컬/개발 테스트 즉시 충전)</p>
+        <p id="avatar-topup-note" class="muted">Track A PlayCoin 3-Bucket(유상 · 보너스 · 프로모) 원장에 적립됩니다.</p>
         <div class="avatar-topup-grid" id="avatar-topup-packs"></div>
         <div class="dialog-actions" style="justify-content:space-between;margin-top:12px;">
           <a class="button secondary small" href="/?view=billing" data-route>PlayCoin 상점 (+25% 간편결제) →</a>
@@ -304,14 +304,26 @@
       }).join('');
     }
 
+    function isDevDemoUiOn() {
+      return window.PlayHubDevDemoUI?.isEnabled?.() === true;
+    }
+
     function renderTopupPacks() {
       const box = $el('#avatar-topup-packs');
-      if (!box || !catalog) return;
+      const note = $el('#avatar-topup-note');
+      if (!box) return;
+      if (!isDevDemoUiOn()) {
+        if (note) note.textContent = 'Track A PlayCoin 3-Bucket(유상 · 보너스 · 프로모) 원장에 적립됩니다. 아래 PlayCoin 상점에서 안전하게 충전할 수 있습니다.';
+        box.innerHTML = '<p class="muted" style="grid-column:1/-1;margin:0;">PlayCoin 충전은 PlayCoin 상점에서 간편결제(+25% 보너스)로 진행해 주세요.</p>';
+        return;
+      }
+      if (note) note.textContent = 'Track A PlayCoin 3-Bucket(유상 · 보너스 · 프로모) 원장에 적립됩니다. (Dev 테스트 즉시 충전 ON)';
+      if (!catalog) return;
       box.innerHTML = (catalog.topupPacks || []).map((pack) => `
-        <div class="avatar-topup-card">
+        <div class="avatar-topup-card" data-dev-demo-ui>
           <strong>${esc(pack.label)}</strong>
           <span class="muted" style="font-size:0.82rem;">유상 ${pack.paidCoins.toLocaleString()} + 보너스 ${pack.bonusCoins.toLocaleString()} (+${pack.bonusPercent}%)</span>
-          <button type="button" class="button primary small" data-topup-pack="${esc(pack.id)}" ${busy ? 'disabled' : ''}>${esc(pack.priceDisplay)} · 충전</button>
+          <button type="button" class="button primary small" data-topup-pack="${esc(pack.id)}" ${busy ? 'disabled' : ''}>${esc(pack.priceDisplay)} · 테스트 즉시 충전</button>
         </div>
       `).join('');
     }

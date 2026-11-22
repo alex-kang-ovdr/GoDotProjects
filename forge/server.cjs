@@ -331,7 +331,8 @@ function createServer(options = {}) {
   const basePath = normalizeBasePath(options.basePath ?? serverEnv.PLAYFORGE_BASE_PATH ?? '');
   const webEditorVendorDir = resolveWebEditorVendorDir(options, serverEnv);
   const resolvedBuildMode = String(options.buildMode || serverEnv.PLAYFORGE_BUILD_MODE || serverEnv.NODE_ENV || 'debug').trim().toLowerCase();
-  const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
+  const devDemoUiIncluded = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
+  const remoteControlEnabled = devDemoUiIncluded;
   const hubAuthConfig = options.hubAuth === false ? null : (options.hubAuth || hubAuthConfigFromEnv(serverEnv));
   const hubAccountUrl = validateHubAccountUrl(options.hubAccountUrl || hubAuthConfig?.loginUrl || serverEnv.PLAYHUB_FORGE_HUB_ACCOUNT_URL || '/?view=account');
   const hubAuth = hubAuthConfig ? createHubSessionAuth({ ...hubAuthConfig, loginUrl: hubAuthConfig.loginUrl || hubAccountUrl }) : null;
@@ -523,10 +524,10 @@ function createServer(options = {}) {
 
     if (routePath === '/api/session' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
-      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null });
+      if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded });
       const auth = await hubAuth.verify(req, { requireCsrf: false });
-      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl });
-      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken });
+      if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded });
+      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded });
     }
 
     let auth = null;
@@ -822,6 +823,9 @@ function createServer(options = {}) {
     if (segments.some(part => part.startsWith('.') || ['node_modules', 'saved', 'engine', 'tools', 'godot', 'privateaccount'].includes(part.toLowerCase()))) {
       return reply(403, 'Private path');
     }
+    if (!devDemoUiIncluded && /(?:^|\/)dev-demo-ui\.js$/i.test(pathname)) {
+      return reply(404, 'Not found');
+    }
     const isVendorBinary = pathname.startsWith('/OfficialGodot/vendor/');
     const allowedRoot = isVendorBinary && webEditorVendorDir ? webEditorVendorDir : root;
     let file = isVendorBinary && webEditorVendorDir
@@ -841,8 +845,26 @@ function createServer(options = {}) {
       if (!insideDir(allowedRoot, file)) return reply(403, 'Outside project');
       info = await fs.promises.stat(file);
       if (!info.isFile()) return reply(404, 'Not found');
+      const ext = path.extname(file).toLowerCase();
+      if (ext === '.html' && !isVendorBinary) {
+        let html = await fs.promises.readFile(file, 'utf8');
+        if (!devDemoUiIncluded) {
+          html = html.replace(/\s*<!--\s*playforge-dev-demo:start\s*-->[\s\S]*?<!--\s*playforge-dev-demo:end\s*-->/gi, '');
+        }
+        const buildScript = `<script>window.__PLAYFORGE_BUILD_MODE__=${JSON.stringify(resolvedBuildMode)};window.__PLAYFORGE_DEV_DEMO_UI_INCLUDED__=${JSON.stringify(devDemoUiIncluded)};</script>`;
+        if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, `${buildScript}\n</head>`);
+        const body = Buffer.from(html, 'utf8');
+        res.writeHead(200, {
+          'Content-Type': mime['.html'],
+          'Content-Length': body.length,
+          'Cache-Control': 'no-cache',
+          'X-Content-Type-Options': 'nosniff',
+          'Referrer-Policy': 'no-referrer',
+        });
+        return res.end(req.method === 'HEAD' ? undefined : body);
+      }
       await streamStaticFile(req, res, file, info, {
-        'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
+        'Content-Type': mime[ext] || 'application/octet-stream',
         'Cache-Control': isVendorBinary ? 'public, max-age=86400' : 'no-cache',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'no-referrer',

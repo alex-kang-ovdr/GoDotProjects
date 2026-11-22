@@ -1300,6 +1300,7 @@
   setInterval(()=>{if(!document.hidden){refreshGameUpdateBadges();refreshConnection();}},30000);
   window.addEventListener('online',()=>refreshConnection());
   window.addEventListener('focus',()=>{if(state.session&&!state.closing)refreshConnection();});
+  window.addEventListener('playhub:dev-demo-ui-change',()=>{if(!state.active)void renderRoute();});
 
   init().catch(error=>{banner(error?.message||'서비스를 불러오지 못했습니다.');showFatalPage($('app'),'서비스를 불러오지 못했습니다',error?.message||'연결을 확인한 뒤 잠시 후 다시 시도해 주세요.',{code:error?.code||'BOOTSTRAP_FAILED'});});
 })();

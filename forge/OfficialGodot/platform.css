@@ -516,6 +516,86 @@ aside.editor-drawer button { margin: 6px 6px 0 0; }
 .guided select { padding: 7px; border-radius: 8px; border: 1px solid var(--line-strong); }
 .guided button { font-size: 12px; padding: 7px 10px; }
 
+/* Dev / Debug / Test Demo UI Settings */
+.forge-dev-demo-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px dashed #94A3B8;
+  background: #F8FAFC;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.forge-dev-demo-pill[data-state="on"] {
+  border-style: solid;
+  border-color: #D97706;
+  background: #FEF3C7;
+  color: #92400E;
+}
+.forge-dev-demo-card {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1.5px dashed #F59E0B;
+  border-radius: 12px;
+  background: #FFFDF5;
+  display: grid;
+  gap: 8px;
+}
+.forge-dev-demo-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.forge-dev-build-badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #1E293B;
+  color: #F8FAFC;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+.forge-dev-state-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-mid);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.forge-dev-state-pill[data-state="on"] {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.forge-dev-demo-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.forge-dev-demo-switch input {
+  width: 16px;
+  height: 16px;
+  accent-color: #D97706;
+}
+.forge-dev-demo-note {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.forge-dev-refresh-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .forge-topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 10px; }
