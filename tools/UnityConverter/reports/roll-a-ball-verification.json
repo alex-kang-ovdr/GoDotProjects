@@ -21,17 +21,17 @@
       "passed": true
     },
     {
-      "detail": "rot=(0.062514, 0.208402, 0.299744)",
+      "detail": "rot=(0.068242, 0.223163, 0.322783)",
       "name": "pickups_rotating",
       "passed": true
     },
     {
-      "detail": "dx=1.28",
+      "detail": "dx=1.36",
       "name": "rigidbody_rolls_with_force",
       "passed": true
     },
     {
-      "detail": "cam_dx=1.28",
+      "detail": "cam_dx=1.36",
       "name": "camera_follows_player",
       "passed": true
     },
@@ -46,7 +46,7 @@
       "passed": true
     }
   ],
-  "elapsedMs": 3873,
+  "elapsedMs": 240,
   "engineVersion": "4.7.2-stable (official)",
   "failedChecks": 0,
   "game": "Roll-a-Ball",

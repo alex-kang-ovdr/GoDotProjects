@@ -11,12 +11,12 @@
       "passed": true
     },
     {
-      "detail": "bg=0.014 gnd=0.104",
+      "detail": "bg=0.012 gnd=0.086",
       "name": "parallax_scrolls",
       "passed": true
     },
     {
-      "detail": "rot=-13.9",
+      "detail": "rot=-13.6",
       "name": "bird_flaps_and_tilts",
       "passed": true
     },
@@ -36,7 +36,7 @@
       "passed": true
     }
   ],
-  "elapsedMs": 526,
+  "elapsedMs": 102,
   "engineVersion": "4.7.2-stable (official)",
   "failedChecks": 0,
   "game": "Flappy Bird",

@@ -560,6 +560,268 @@ def build_template_tanks_3d():
     return validate_template_budget(dst)
 
 
+def build_template_boss_room():
+    src = PORTED_ROOT / 'godot-boss-room'
+    dst = TEMPLATES_ROOT / 'unity-boss-room'
+    if dst.exists():
+        shutil.rmtree(dst)
+    dst.mkdir(parents=True)
+
+    # 1. Bake 6 role meshes + 13 dungeon prop meshes into compact text-only ArrayMesh .tres
+    models_out = dst / 'assets' / 'models'
+    models_out.mkdir(parents=True, exist_ok=True)
+    baker_gd = CONVERTER_ROOT / 'src' / 'export_boss_room_template_meshes.gd'
+    res = subprocess.run(
+        [str(GODOT_EXE), '--headless', '--path', str(src), '--script', str(baker_gd), '--', f'--out={models_out}'],
+        capture_output=True,
+        text=True,
+    )
+    if res.returncode != 0:
+        raise RuntimeError(f'Boss Room mesh bake failed:\n{res.stdout}\n{res.stderr}')
+
+    # 2. Convert key PBR & character PNG textures -> compact format=4 ImageTexture .tres
+    tex_src = src / 'assets' / 'textures'
+    tex_dst = dst / 'assets' / 'textures'
+    tex_dst.mkdir(parents=True, exist_ok=True)
+    for pf in sorted(tex_src.glob('*.png')):
+        stem = pf.stem
+        # Skip raw unused packed MSE originals & heavy normal maps to keep template crisp & < 8 MB
+        if stem.endswith('MetalSmoothEmissive') or stem.endswith('_metallic') or stem.endswith('_roughness') or stem.endswith('_Normal'):
+            continue
+        is_alpha = 'Eyes' in stem or 'Mouths' in stem
+        max_dim = 256 if 'env_deco' in stem else (128 if not is_alpha else 128)
+        png_to_imagetexture_tres(pf, tex_dst / f'{stem}.tres', max_dim=max_dim, use_rgb=not is_alpha)
+
+    # 3. Convert 5 WAV SFX -> compact AudioStreamWAV .tres
+    for wf in sorted((src / 'assets' / 'audio').glob('*.wav')):
+        wav_to_audiostream_tres(
+            wf,
+            dst / 'assets' / 'audio' / f'{wf.stem}.tres',
+            target_rate=16000,
+            max_seconds=2.5,
+            loop=False,
+        )
+
+    # 4. Copy scripts adapted for text-only .tres meshes, textures, and audio
+    for f in sorted((src / 'scripts').glob('*.gd')):
+        txt = f.read_text(encoding='utf-8')
+        txt = txt.replace('.wav', '.tres').replace('.png', '.tres')
+        if f.name == 'character_visual.gd':
+            txt = '''extends Node3D
+class_name CharacterVisual
+## Text-only PlayForge Template CharacterVisual loading baked per-role ArrayMesh .tres & ImageTexture .tres.
+
+const MODEL_DIR := "res://assets/models/"
+const TEX_DIR := "res://assets/textures/"
+
+static var _tex_cache: Dictionary = {}
+
+var role_id: String = "tank"
+var model_pivot: Node3D = null
+var active_meshes: Array[MeshInstance3D] = []
+var original_mats: Array[StandardMaterial3D] = []
+var hit_flash_timer: float = 0.0
+var attack_anim_timer: float = 0.0
+var walk_phase: float = 0.0
+var shield_raised: bool = false
+var is_stunned: bool = false
+var is_downed: bool = false
+var base_scale: float = 1.0
+
+
+static func _get_tex(file_name: String) -> Texture2D:
+\tif _tex_cache.has(file_name):
+\t\treturn _tex_cache[file_name] as Texture2D
+\tvar full := TEX_DIR + file_name
+\tif not ResourceLoader.exists(full):
+\t\treturn null
+\tvar tex: Texture2D = load(full) as Texture2D
+\t_tex_cache[file_name] = tex
+\treturn tex
+
+
+func setup(p_role: String, p_scale: float = 1.0) -> void:
+\trole_id = p_role.to_lower()
+\tbase_scale = p_scale
+
+\tmodel_pivot = Node3D.new()
+\tmodel_pivot.name = "ModelPivot"
+\tmodel_pivot.scale = Vector3.ONE * base_scale
+\tadd_child(model_pivot)
+
+\tvar mesh_path := MODEL_DIR + "char_" + role_id + ".tres"
+\tvar mesh_res: ArrayMesh = load(mesh_path) as ArrayMesh
+\tif mesh_res == null:
+\t\treturn
+\tvar mi := MeshInstance3D.new()
+\tmi.mesh = mesh_res
+\tmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+\tfor s in mesh_res.get_surface_count():
+\t\tvar sname: String = mesh_res.surface_get_name(s)
+\t\tvar mat: StandardMaterial3D = _build_material_for_mesh(sname)
+\t\tmi.set_surface_override_material(s, mat)
+\t\toriginal_mats.append(mat)
+\tmodel_pivot.add_child(mi)
+\tactive_meshes.append(mi)
+
+
+func _build_material_for_mesh(mesh_name: String) -> StandardMaterial3D:
+\tvar mat := StandardMaterial3D.new()
+\tmat.roughness = 0.62
+\tmat.metallic = 0.08
+\tvar low := mesh_name.to_lower()
+\tvar tex_file := ""
+
+\tif low.contains("eyes"):
+\t\tvar is_enemy := role_id == "boss" or role_id == "imp"
+\t\ttex_file = "Enemy_Eyes.tres" if is_enemy else "Hero_Eyes.tres"
+\t\tmat.albedo_texture = _get_tex(tex_file)
+\t\tmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+\t\tmat.cull_mode = BaseMaterial3D.CULL_DISABLED
+\t\tmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+\t\tif role_id == "boss":
+\t\t\tmat.albedo_color = Color(1.0, 0.85, 0.25)
+\t\t\tmat.emission_enabled = true
+\t\t\tmat.emission = Color(1.0, 0.28, 0.05)
+\t\t\tmat.emission_energy_multiplier = 3.0
+\t\treturn mat
+\tif low.contains("mouth"):
+\t\tvar is_enemy := role_id == "boss" or role_id == "imp"
+\t\ttex_file = "Enemy_Mouths.tres" if is_enemy else "Hero_Mouths.tres"
+\t\tmat.albedo_texture = _get_tex(tex_file)
+\t\tmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+\t\tmat.cull_mode = BaseMaterial3D.CULL_DISABLED
+\t\tmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+\t\treturn mat
+
+\tmatch role_id:
+\t\t"tank":
+\t\t\ttex_file = "Tank_Hair_Boy_CLR.tres" if low.contains("hair") else ("Tank_Head_Boy_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Tank_Weapon_CLR.tres" if (low.contains("weapon") or low.contains("shield")) else "Tank_Torso_CLR.tres"))
+\t\t"archer":
+\t\t\ttex_file = "Archer_Hair_Boy_CLR.tres" if low.contains("hair") else ("Archer_Head_Boy_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Archer_Weapons_CLR.tres" if (low.contains("weapon") or low.contains("quiver")) else "Archer_Torso_CLR.tres"))
+\t\t"mage":
+\t\t\ttex_file = "Mage_Hair_Girl_CLR.tres" if low.contains("hair") else ("Mage_Head_Girl_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Mage_Weapons_CLR.tres" if low.contains("weapon") else "Mage_Torso_CLR_Girl.tres"))
+\t\t"rogue":
+\t\t\ttex_file = "Rogue_Hair_Boy_CLR.tres" if low.contains("hair") else ("Rogue_Head_Boy_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Rogue_Weapon_CLR.tres" if low.contains("weapon") else "Rogue_Torso_CLR.tres"))
+\t\t"imp":
+\t\t\ttex_file = "Imp_Head_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Imp_Weapons_CLR.tres" if low.contains("weapon") else "Imp_Torso_CLR.tres")
+\t\t"boss":
+\t\t\ttex_file = "Imp_Helmet_CLR.tres" if low.contains("helmet") else ("Boss_Head_CLR.tres" if (low.contains("head") or low.contains("ears")) else ("Imp_Weapons_CLR.tres" if low.contains("weapon") else "Boss_Torso_CLR.tres"))
+\tif tex_file != "":
+\t\tmat.albedo_texture = _get_tex(tex_file)
+\treturn mat
+
+
+func trigger_attack(duration: float = 0.32) -> void:
+\tattack_anim_timer = duration
+
+
+func trigger_hit_flash(duration: float = 0.09) -> void:
+\thit_flash_timer = duration
+
+
+func animate(delta: float, move_speed: float, charging: bool = false) -> void:
+\tif model_pivot == null:
+\t\treturn
+\twalk_phase += delta * (9.5 if move_speed > 0.15 else 2.4)
+\tvar bob_y: float = absf(sin(walk_phase)) * (0.14 if move_speed > 0.15 else 0.03)
+\tvar pitch_x: float = 0.28 if charging else (-0.12 if shield_raised else (-1.35 if is_downed else 0.0))
+\tvar roll_z: float = sin(walk_phase * 4.5) * 0.22 if is_stunned else sin(walk_phase) * (0.07 if move_speed > 0.15 else 0.012)
+\tif attack_anim_timer > 0.0:
+\t\tattack_anim_timer = maxf(0.0, attack_anim_timer - delta)
+\t\tpitch_x += sin((attack_anim_timer / 0.32) * PI) * 0.36
+\tmodel_pivot.position.y = lerpf(model_pivot.position.y, -0.35 if is_downed else bob_y, minf(1.0, delta * 14.0))
+\tmodel_pivot.rotation = Vector3(lerpf(model_pivot.rotation.x, pitch_x, minf(1.0, delta * 16.0)), 0.0, lerpf(model_pivot.rotation.z, roll_z, minf(1.0, delta * 16.0)))
+\tif hit_flash_timer > 0.0:
+\t\thit_flash_timer = maxf(0.0, hit_flash_timer - delta)
+\t\tvar on := hit_flash_timer > 0.0
+\t\tfor mat in original_mats:
+\t\t\tif mat.shading_mode != BaseMaterial3D.SHADING_MODE_UNSHADED:
+\t\t\t\tmat.emission_enabled = on
+\t\t\t\tmat.emission = Color(0.9, 0.2, 0.12)
+\t\t\t\tmat.emission_energy_multiplier = 0.42
+'''
+        elif f.name == 'dungeon_builder.gd':
+            txt = txt.replace(
+                'var pieces_scene: PackedScene = load(DUNGEON_PIECES_PATH) as PackedScene\n\tvar pieces_inst: Node = pieces_scene.instantiate()\n\tvar mesh_map: Dictionary = {}\n\t_extract_meshes(pieces_inst, mesh_map)',
+                'var mesh_map: Dictionary = {}\n\tfor k in ["boss_floor", "boss_floor_2", "wall1_base_straight_1", "wall1_top_straight_1", "Pillar_LOD0", "banner_LOD0", "torch2", "pot2_LOD0", "door_crystral_base", "fx_arrrow"]:\n\t\tvar mp := "res://assets/models/prop_" + str(k) + ".tres"\n\t\tif ResourceLoader.exists(mp):\n\t\t\tmesh_map[k] = load(mp)',
+            )
+            txt = txt.replace('\tpieces_inst.free()\n', '')
+            txt = txt.replace(
+                '\tboss_arena_mat.normal_enabled = true\n\tboss_arena_mat.normal_texture = load(TEX_DIR + "env_deco_boss_arena_Normal.tres") as Texture2D\n\tboss_arena_mat.normal_scale = 1.15\n\tboss_arena_mat.roughness_texture = load(TEX_DIR + "env_deco_boss_arena_MetalSmoothEmissive_roughness.tres") as Texture2D',
+                '\tboss_arena_mat.roughness = 0.88',
+            )
+            txt = txt.replace(
+                '\tenv_deco_mat.normal_enabled = true\n\tenv_deco_mat.normal_texture = load(TEX_DIR + "env_deco_Normal.tres") as Texture2D\n\tenv_deco_mat.normal_scale = 1.1\n\tenv_deco_mat.metallic_texture = load(TEX_DIR + "env_deco_MetalSmoothEmissive_metallic.tres") as Texture2D\n\tenv_deco_mat.metallic = 0.25\n\tenv_deco_mat.roughness_texture = load(TEX_DIR + "env_deco_MetalSmoothEmissive_roughness.tres") as Texture2D',
+                '\tenv_deco_mat.metallic = 0.25',
+            )
+            txt = txt.replace(
+                'var ps: PackedScene = load(DOOR_BOSS_PATH) as PackedScene\n\tdoor_node = Node3D.new()\n\tdoor_node.name = "BossDoor"\n\tdoor_node.position = Vector3(0.0, 0.0, 17.4)\n\tdoor_node.scale = Vector3(0.85, 0.85, 0.85)\n\tadd_child(door_node)\n\n\tvar inst: Node = ps.instantiate()\n\tdoor_node.add_child(inst)\n\t_apply_mat_recursive(inst, env_deco_mat)\n\tdoor_anim = _find_anim_player(inst)\n\tif door_anim != null:\n\t\tdoor_anim.stop()',
+                'door_node = Node3D.new()\n\tdoor_node.name = "BossDoor"\n\tdoor_node.position = Vector3(0.0, 0.0, 17.4)\n\tdoor_node.scale = Vector3(0.85, 0.85, 0.85)\n\tadd_child(door_node)\n\tvar d_mi := MeshInstance3D.new()\n\td_mi.mesh = load("res://assets/models/prop_door_boss.tres") as Mesh\n\td_mi.material_override = env_deco_mat\n\tdoor_node.add_child(d_mi)',
+            )
+            txt = txt.replace(
+                'var ps: PackedScene = load(FLOOR_SWITCH_PATH) as PackedScene\n\tswitch_node = Node3D.new()\n\tswitch_node.name = "FloorSwitch"\n\tswitch_node.position = Vector3(0.0, 0.08, 25.0)\n\tadd_child(switch_node)\n\n\tvar inst: Node = ps.instantiate()\n\tswitch_node.add_child(inst)\n\t_apply_mat_recursive(inst, env_deco_mat)\n\tswitch_anim = _find_anim_player(inst)\n\tif switch_anim != null:\n\t\tswitch_anim.stop()',
+                'switch_node = Node3D.new()\n\tswitch_node.name = "FloorSwitch"\n\tswitch_node.position = Vector3(0.0, 0.08, 25.0)\n\tadd_child(switch_node)\n\tvar sw_mi := MeshInstance3D.new()\n\tsw_mi.mesh = load("res://assets/models/prop_floor_switch.tres") as Mesh\n\tsw_mi.material_override = env_deco_mat\n\tswitch_node.add_child(sw_mi)',
+            )
+            txt = txt.replace(
+                'var ps: PackedScene = load(CHEST_PATH) as PackedScene\n\tchest_node = Node3D.new()\n\tchest_node.name = "TreasureChest"\n\tchest_node.position = Vector3(0.0, 0.0, -13.2)\n\tchest_node.scale = Vector3(0.95, 0.95, 0.95)\n\tadd_child(chest_node)\n\n\tvar inst: Node = ps.instantiate()\n\tchest_node.add_child(inst)\n\t_apply_mat_recursive(inst, env_deco_mat)\n\tchest_anim = _find_anim_player(inst)\n\tif chest_anim != null:\n\t\tchest_anim.stop()',
+                'chest_node = Node3D.new()\n\tchest_node.name = "TreasureChest"\n\tchest_node.position = Vector3(0.0, 0.0, -13.2)\n\tchest_node.scale = Vector3(0.95, 0.95, 0.95)\n\tadd_child(chest_node)\n\tvar ch_mi := MeshInstance3D.new()\n\tch_mi.mesh = load("res://assets/models/prop_treasure_chest.tres") as Mesh\n\tch_mi.material_override = env_deco_mat\n\tchest_node.add_child(ch_mi)',
+            )
+        elif f.name == 'hero_unit.gd':
+            txt = txt.replace(
+                'class_name HeroUnit\n',
+                'const CharacterVisual = preload("res://scripts/character_visual.gd")\n',
+            ).replace('hero: HeroUnit', 'hero').replace('HeroUnit.CLASS_STATS', 'CLASS_STATS')
+        elif f.name == 'enemy_unit.gd':
+            txt = txt.replace(
+                'class_name EnemyUnit\n',
+                'const CharacterVisual = preload("res://scripts/character_visual.gd")\nconst HeroUnit = preload("res://scripts/hero_unit.gd")\n',
+            ).replace('enemy: EnemyUnit', 'enemy').replace('boss: EnemyUnit', 'boss')
+        elif f.name == 'boss_room_game.gd':
+            txt = txt.replace(
+                'class_name BossRoomGame\n',
+                'const DungeonBuilder = preload("res://scripts/dungeon_builder.gd")\nconst HeroUnit = preload("res://scripts/hero_unit.gd")\nconst EnemyUnit = preload("res://scripts/enemy_unit.gd")\n',
+            )
+        write_text(dst / 'scripts' / f.name, txt)
+
+    # 5. Copy compiled deterministic shaders if present
+    sh_src = src / 'assets' / 'shaders'
+    if sh_src.exists():
+        for sf in sorted(sh_src.glob('*.gdshader')):
+            write_text(dst / 'assets' / 'shaders' / sf.name, sf.read_text(encoding='utf-8'))
+
+    # 6. scenes/main.tscn & project.godot
+    write_text(dst / 'scenes' / 'main.tscn', (src / 'scenes' / 'boss_room.tscn').read_text(encoding='utf-8'))
+    pg = (src / 'project.godot').read_text(encoding='utf-8').replace('res://scenes/boss_room.tscn', 'res://scenes/main.tscn')
+    write_text(dst / 'project.godot', pg)
+
+    asset_paths = collect_asset_paths(dst)
+    meta = {
+        'id': 'unity-boss-room',
+        'name': 'Unity Boss Room 3D Co-op',
+        'description': 'Official Unity Boss Room co-op 3D RPG auto-ported to Godot 4.7.2: 4 hero classes (Tank/Archer/Mage/Rogue) with party AI, @rpc ActionBus, crimson rune Boss Arena, Trample vs ChargedShield stun counter, and Victory Treasure Chest.',
+        'dimension': '3d',
+        'assetPaths': asset_paths,
+        'guideOrder': [
+            'scripts/network_action_bus.gd',
+            'scripts/character_visual.gd',
+            'scripts/dungeon_builder.gd',
+            'scripts/hero_unit.gd',
+            'scripts/enemy_unit.gd',
+            'scripts/boss_room_game.gd',
+            'scenes/main.tscn',
+            'project.godot',
+        ],
+        'guide': 'README.md',
+    }
+    write_text(dst / 'metadata.json', json.dumps(meta, indent=2, ensure_ascii=False))
+    write_text(
+        dst / 'README.md',
+        '# Unity Boss Room 3D Co-op — Godot 4.7.2 Template\n\nUnity 공식 멀티플레이어 3D 코옵 RPG 샘플(Boss Room)을 Godot 4.7.2로 결정론적 자동 포팅한 템플릿입니다.\n\n- 클래스 전환: `1` Tank / `2` Archer / `3` Mage / `4` Rogue (나머지 3명은 협동 AI)\n- 조작: `WASD` 이동, `Space` 기본 공격, `Q` 주력 스킬(Tank 방패 막기 → 보스 돌진 스턴 / Mage 광역 힐 / Archer 파워샷 / Rogue 대시), `E` 특수 스킬, `R` 아군 부활\n',
+    )
+    return validate_template_budget(dst)
+
+
 if __name__ == '__main__':
     builders = [
         ('unity-2d-roguelike', build_template_2d_roguelike),
@@ -567,6 +829,7 @@ if __name__ == '__main__':
         ('unity-flappy-bird', build_template_flappy_bird),
         ('unity-space-shooter', build_template_space_shooter),
         ('unity-tanks-3d', build_template_tanks_3d),
+        ('unity-boss-room', build_template_boss_room),
     ]
     for name, fn in builders:
         cnt, total = fn()

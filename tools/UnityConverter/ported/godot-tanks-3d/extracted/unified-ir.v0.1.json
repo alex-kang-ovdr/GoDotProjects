@@ -1,0 +1,1498 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "Tanks! 3D (Binary Prefab + 26 FBX)",
+    "project_path": "samples/unity-tanks",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "_Complete-Game",
+      "source_path": "Assets/_Complete-Game.unity",
+      "entities": []
+    },
+    {
+      "id": "scene_2",
+      "name": "Main",
+      "source_path": "Assets/Scenes/Main.unity",
+      "entities": []
+    }
+  ],
+  "entities": [],
+  "logic": [
+    {
+      "id": "logic_1_CameraControl",
+      "name": "CameraControl",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Camera/CameraControl.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_2_GameManager",
+      "name": "GameManager",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/GameManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.SceneManagement.SceneManager",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Coroutine",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_3_TankManager",
+      "name": "TankManager",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/TankManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_4_ShellExplosion",
+      "name": "ShellExplosion",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Shell/ShellExplosion.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Physics.OverlapSphere",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_5_TankHealth",
+      "name": "TankHealth",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankHealth.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_6_TankMovement",
+      "name": "TankMovement",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankMovement.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Input.GetAxis",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_7_TankShooting",
+      "name": "TankShooting",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankShooting.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_8_UIDirectionControl",
+      "name": "UIDirectionControl",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/UI/UIDirectionControl.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_9_MoveSceneViewCamera",
+      "name": "MoveSceneViewCamera",
+      "kind": "script",
+      "source_path": "Assets/Editor/MoveSceneViewCamera.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_10_CameraControl",
+      "name": "CameraControl",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Camera/CameraControl.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_11_GameManager",
+      "name": "GameManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/GameManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.SceneManagement.SceneManager",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.Coroutine",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_12_TankManager",
+      "name": "TankManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/TankManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_13_ShellExplosion",
+      "name": "ShellExplosion",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Shell/ShellExplosion.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Physics.OverlapSphere",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_14_TankHealth",
+      "name": "TankHealth",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankHealth.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_15_TankMovement",
+      "name": "TankMovement",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankMovement.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Input.GetAxis",
+          "grade": "A"
+        },
+        {
+          "id": "api_2",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_16_TankShooting",
+      "name": "TankShooting",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankShooting.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.AudioSource",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_17_UIDirectionControl",
+      "name": "UIDirectionControl",
+      "kind": "script",
+      "source_path": "Assets/Scripts/UI/UIDirectionControl.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_18_ReadmeEditor",
+      "name": "ReadmeEditor",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "target_entity_class": "Editor",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_19_Readme",
+      "name": "Readme",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "target_entity_class": "ScriptableObject",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "scene",
+      "source_path": "Assets/_Complete-Game.unity",
+      "sha256": "ba576600fff87e03d8c78fe39fa3787a4267241de64e1ab52426f6b2080bb270",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "animation",
+      "source_path": "Assets/_Completed-Assets/Animators/CompletePumpjack.controller",
+      "sha256": "8795b3e21dae790d50ee7df19a34dddc0cf0c760e19ec8b250e01a370c3b5d4b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "misc",
+      "source_path": "Assets/_Completed-Assets/AudioMixers/CompleteMainMix.mixer",
+      "sha256": "47b20a26cbd55fa5b7fc12d3aa908128bba9ad143c3df19e610dcb6a81889064",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteDustTrail.prefab",
+      "sha256": "8d01122c32876e454e26664b42907c71ea24c5868c406cf4feb4276b1e7b4840",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteLevelArt.prefab",
+      "sha256": "4ef37228d30f9f2c714b2bafc6777deae09a1ff4f44396e3b4678f153aea0ed2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0006",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompletePumpJack.prefab",
+      "sha256": "fd0d6c1fa29909bdfa4e0bb4095fd2773ab4b0f9c65aa85287bf08c953e9b4e2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0007",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteShell.prefab",
+      "sha256": "a8d0b6de1c0d5259b846f951c8d1bb3c36be3d8444575f3b253cadcbbf60d96d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0008",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteShellExplosion.prefab",
+      "sha256": "45c1cf460617140378c3bafb4faf747d1323ccf1cab249a7013a63074d6d20f0",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0009",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteTank.prefab",
+      "sha256": "7e3c0b520d891570543910d5c027d21f48d9ac57e99847cff5fd231b2884a36e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0010",
+      "kind": "prefab",
+      "source_path": "Assets/_Completed-Assets/Prefabs/CompleteTankExplosion.prefab",
+      "sha256": "e3688907c19fbfdeafc5b32932ce98a1f88f1cbdd7f0f88de0ad14b6355bdf61",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0011",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Camera/CameraControl.cs",
+      "sha256": "b2fbd149cd15e0e552894fe31b4bc65ad073f9d764c583c705b63355a0c5d2f7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0012",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/GameManager.cs",
+      "sha256": "5c2620456f483ff85f9b6224272b398933f63400385c677ed77c4338d673d733",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0013",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Managers/TankManager.cs",
+      "sha256": "d0fea7a49065474c28482037828425af4894ddee7342136deae14292d870397c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0014",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Shell/ShellExplosion.cs",
+      "sha256": "6f5ee27e072f8f9bdc29c67754473d1a89a7a67dcc4b7261e6617647fc0c8568",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0015",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankHealth.cs",
+      "sha256": "f523a14b6fc4337129848927387c66ca5864dadeab1fd7dc73063912fc602eeb",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0016",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankMovement.cs",
+      "sha256": "ad1c4b02889eb53cf2e3a2c700a5976c3ef46126b6e622db89f403bfc71d7b56",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0017",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/Tank/TankShooting.cs",
+      "sha256": "e503a901f3dd843b426ddc90be1cd4ce3d54cd04c852d4a99e8b71ffc17c2e84",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0018",
+      "kind": "script",
+      "source_path": "Assets/_Completed-Assets/Scripts/UI/UIDirectionControl.cs",
+      "sha256": "a8e4faedd4b1bfdd8fda0cb9c9bca1e02d943affe06f850c56ae5c63bb72dace",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0019",
+      "kind": "animation",
+      "source_path": "Assets/Animators/Pumpjack.controller",
+      "sha256": "eac30c453346ebc0517692b942dbc7a43d964ce10a986f0aaa2596f225e18b40",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0020",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/BackgroundMusic.wav",
+      "sha256": "51a2920280ebce2165d031ff119bd4f86f9acb7810d3971ea0213142ecdc2860",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0021",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/EngineDriving.aif",
+      "sha256": "6b077a802f9ba7f176874ae444820e183f4f08d48ff4b54a1be6b0e095764f8f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0022",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/EngineIdle.aif",
+      "sha256": "f38f7bede43d23848c8e910078a5221d3ae193becbc00fcb4ff406afe1cf3b6c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0023",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShellExplosion.wav",
+      "sha256": "7dedb8ba25e82dc6cc2aac68ac0f94a737dd3332830d386723ee8f62f73cb2c9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0024",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShotCharging.wav",
+      "sha256": "c68359564f5c766bfbdb9017e02849f412b65505e014fa78b2e1037ae5a7c62f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0025",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/ShotFiring.wav",
+      "sha256": "08ca4a33fc4e2d7a094d3c2cf8898e10feb4403a70750cfb1c89f8fafb8dc997",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0026",
+      "kind": "audio",
+      "source_path": "Assets/AudioClips/TankExplosion.wav",
+      "sha256": "4b3f0992088ba20d85c6fadeb0797362c8a6aa0e78a7273b263819dc9216b24f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0027",
+      "kind": "misc",
+      "source_path": "Assets/AudioMixers/MainMix.mixer",
+      "sha256": "7be19eed5a918c3bdc1ffb520de99457f2edaf085bad70df78050d05c1e1c163",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0028",
+      "kind": "script",
+      "source_path": "Assets/Editor/MoveSceneViewCamera.cs",
+      "sha256": "d62b803bac8c49f1a2f288b419295437c18a63665c8124898c7e217c8dc1d3f8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0029",
+      "kind": "font",
+      "source_path": "Assets/Fonts/Bowlby_One/BowlbyOne-Regular.ttf",
+      "sha256": "f126ffc989945ec678659d054b5ecdd9ca2d14a768c5f25ac5c891316da3a8b3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0030",
+      "kind": "material",
+      "source_path": "Assets/Materials/Blue.mat",
+      "sha256": "125f7be2de67698ce76402bbd0518c5ac73649e7d1d985d41d2eb8a2d1ee4d9f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0031",
+      "kind": "material",
+      "source_path": "Assets/Materials/Brown.mat",
+      "sha256": "86af788c1681835f629615f683030f008dfb5c042991be13cd5527c392593b7a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0032",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingGlass.mat",
+      "sha256": "c87d99a3a1194383049e3f2e96a9617e4ae3b661b596218bb8f536c72a8a7593",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0033",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingGrey.mat",
+      "sha256": "84b43d900cf8aaebfeafde36c4a239d94a25350368de4f26d8e80d20f1e2eb02",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0034",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingMetal.mat",
+      "sha256": "4a4dec4d0203addbdde64bc041612141377c671c2b69aab1093dffeb127916ad",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0035",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingStone.mat",
+      "sha256": "a0f9f74ec2f94202fe104a0ce120140f066d2e000d95d963ac017837a9cca8d9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0036",
+      "kind": "material",
+      "source_path": "Assets/Materials/BuildingWhite.mat",
+      "sha256": "6bf0a564658a6e4c383eacb64e321f3545a825dfd105863c99d380ca564aef4a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0037",
+      "kind": "material",
+      "source_path": "Assets/Materials/Dust.mat",
+      "sha256": "f9823672fec01a4a01c1f37f9c46a84d97226fc9b8b86e506a479c1d1daf4603",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0038",
+      "kind": "material",
+      "source_path": "Assets/Materials/Explosion.mat",
+      "sha256": "4b8f3754390d7ad4e5d492811e5283cdb2dedc74520abff4383ae6d6d5162818",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0039",
+      "kind": "material",
+      "source_path": "Assets/Materials/Gold.mat",
+      "sha256": "507c2d7ea44da3baed045d98f83c105ef2ae77448fd19c46c0b4e533b0da3722",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0040",
+      "kind": "material",
+      "source_path": "Assets/Materials/Green.mat",
+      "sha256": "856d5ff97e2367200d75ec26d879fae5951876690c77e4768ff755a439b1f6af",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0041",
+      "kind": "material",
+      "source_path": "Assets/Materials/Grey.mat",
+      "sha256": "be9ab23ffae6e2c5aa6de212b64140e7da4fbd52c99d570e806aed4ad2e3b23b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0042",
+      "kind": "material",
+      "source_path": "Assets/Materials/OilDrums.mat",
+      "sha256": "bf3c375dfc5dceeadd4c18d3d4bbfa9585b42626d7cd8d47c2a4737a4713891e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0043",
+      "kind": "material",
+      "source_path": "Assets/Materials/Red.mat",
+      "sha256": "b1351da02e01e669350b8a52c1a4bbd560c648c1e1f4878bbce0477731ca5aaa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0044",
+      "kind": "material",
+      "source_path": "Assets/Materials/Smoke.mat",
+      "sha256": "a760f4d88e51b8c423ebe5222c101f1f45e971508020f43e2dd489d14910fdb9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0045",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankColour.mat",
+      "sha256": "0482aa8a8886e539de07d1b031f76407449dded0a2194bedaeec637022e97aa1",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0046",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankGrey.mat",
+      "sha256": "ba3cd5712f5227c83f21f6cba671689cb077b841445b6f9674856ebc2f30e52e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0047",
+      "kind": "material",
+      "source_path": "Assets/Materials/TankLights.mat",
+      "sha256": "2216f43eb406343cc1968cbc144fafc5cc4296ef0e4bd5990c5a098881399551",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0048",
+      "kind": "material",
+      "source_path": "Assets/Materials/White.mat",
+      "sha256": "81765d90f1c8c87f4ab1000ff839ca1756dcfea4836d59b201a5cc6a09f824dc",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0049",
+      "kind": "material",
+      "source_path": "Assets/Materials/YellowDark.mat",
+      "sha256": "568234580f64f58f64b98a5ba5084f8bc0ea4cefbdd5f7736b938fbbc0a0041f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0050",
+      "kind": "material",
+      "source_path": "Assets/Materials/YellowLight.mat",
+      "sha256": "1df2f31076990c9df61e3f84cc6905afd3dd7bcd24b0483e517abab2cbb48b6c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0051",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Building01.fbx",
+      "sha256": "aaa93912a99feb37293f11ab490429ed04b165c777c55df0227a87237a95eb5e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0052",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Building02.fbx",
+      "sha256": "593a8f0865dfa6226644393a596c6a92216eab1734c5e4ffd2540a39bccf14bc",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0053",
+      "kind": "mesh",
+      "source_path": "Assets/Models/BustedTank.fbx",
+      "sha256": "1da1ad777167f98328b7bc6cad8762d457d85c47b0364311c1ed6e1c4cd2fc2f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0054",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cactus.fbx",
+      "sha256": "fb8b3a6daf9a0546c8fd677a73c0aa87adf4f06c9834dae5885f00e15d1c9266",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0055",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cliff.fbx",
+      "sha256": "1153bb6905ce70ed8c8272c05111735d3a85ccbe21e306d30244e00f1e97ea61",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0056",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Column01.FBX",
+      "sha256": "f0683251d9387c171287b7d3a3074766e13fe3848d416f02a6e2d20aba3798b2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0057",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Column02.FBX",
+      "sha256": "2b12a55871a7a3d2f02ea77daecbb42d13bf1f96afc096673f857cc73bb5a8ae",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0058",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Concrete.fbx",
+      "sha256": "f55e79af58ce55c018d5f3846493cc370ae001622f021b3914c4e06c6f3e2517",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0059",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Cow.fbx",
+      "sha256": "3d3151793d10b76e05356018f4b483f98558f7b9bdd1733755270ce5afc3e6f7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0060",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Crater01.fbx",
+      "sha256": "19de421fe1d83fe174cb6b328e6fdfe9648581ec3605faf3cc3c1a660b86e20f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0061",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Dunes01.fbx",
+      "sha256": "3948ea603c7518c1e9a94652e3cd6b7c24766b6aedd9c577c224256c96e8f931",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0062",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Dunes02.fbx",
+      "sha256": "cb4bee6b2a1e1ef605788e3ae86a42f3717f6d40797309a8f7bd039ccbcbf3ae",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0063",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Helipad.fbx",
+      "sha256": "cd1ddfdb98c815d6fa68969f028b2cb93b0613ca7f67002060bac338d172ec09",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0064",
+      "kind": "mesh",
+      "source_path": "Assets/Models/OilStorage.fbx",
+      "sha256": "1d44ea5373fa519b43de53e3a54c9cafd1eb4a079965db8416171a7dfe1f388e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0065",
+      "kind": "mesh",
+      "source_path": "Assets/Models/PalmTree.fbx",
+      "sha256": "afec188b31410f3767d3262880f6cd0ba3ebacdb76a7768048587403f4cccd19",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0066",
+      "kind": "mesh",
+      "source_path": "Assets/Models/PumpJack.fbx",
+      "sha256": "f91ade1ddf65fa112912306f94429dd62ed32d0135f2372befae106101559731",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0067",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Radar.fbx",
+      "sha256": "52479682de4a8d0f0921ffb28b7d7cf53278b84a71496d43aeca447d89180603",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0068",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Refinery.fbx",
+      "sha256": "070a89ec2f82888c7d61737c0a6fc0bd2b2bcea60064834778c1905b6f99476e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0069",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks01.fbx",
+      "sha256": "7dab0854f3ced78af9f89739053effe64d240246b2913ff555a5d4b17826ce0e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0070",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks02.fbx",
+      "sha256": "d82668ae1f4d392f987a312a6a7a9dc817a1f16a44058f185273fd859b0480ad",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0071",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Rocks03.fbx",
+      "sha256": "138b61598cfec7d164b9a9e269e95c93343e2478d03bfb9628bf957b5e6593ac",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0072",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Ruins01.fbx",
+      "sha256": "3fc8008313aaac9bd6465155c2305adb2739e0938abbc6bae099d5ff4f6ae03c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0073",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Shell.fbx",
+      "sha256": "bd6a35f9698faf4df69492b1bebc8ce37587e59291f6994aab787b36fbe57bff",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0074",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Tank.fbx",
+      "sha256": "b0f9e25d9b9e5f0681be8b3ab10528729dde7a8aede10417b08b3985213a86e9",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0075",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Terrain.fbx",
+      "sha256": "dc9af6d707c3874e6acd5add1e89830f63b82345433bb0e7aa7bb7ca35f58c24",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0076",
+      "kind": "mesh",
+      "source_path": "Assets/Models/Tree.fbx",
+      "sha256": "ae318af026513816b8ac2b7b35c0ccaeaf668ec894c9e76005514da0920c33d0",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0077",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/DustTrail.prefab",
+      "sha256": "ee5d59e9ce7e165ce68ea7211ee5d6eaaea3b950af96ef0b96b3e1f87fc202bd",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0078",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/LevelArt.prefab",
+      "sha256": "612ff114beb8b4c14f4d80957254576db9bf0f9a1246c3137f9c3704f221c654",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0079",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/PumpJack.prefab",
+      "sha256": "f9f6e833c3073f4962a5563ec431425900dd92cef014b9fe0b22d9e64a8b99b2",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0080",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Shell.prefab",
+      "sha256": "177bb258035e01e5e91a71c5d568cdff935a1a7f034b46297b56540697e19cd3",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0081",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/ShellExplosion.prefab",
+      "sha256": "014a76663db9b37dda6e9fb33dd5fa5382439f0f7b6a8d31c89c24efa5a2e76d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0082",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Tank.prefab",
+      "sha256": "18bfb4e249950a223cb347aa385d009fd086a8f15a0cefb6ae9f4a1b5f40c1aa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0083",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/TankExplosion.prefab",
+      "sha256": "616d388761c745d4033697b0bb8a1de1715911d51c10ac7e3550b262881a807c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0084",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Profiles/GlobalProfile.asset",
+      "sha256": "8552376451dc2394af7ebe11725b905f374feac66d08af7912c5ac5f22f78ece",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0085",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Readme.asset",
+      "sha256": "142b269f594557a6fad5cd3fffd22057d0935f4158e1bed42ec0b08393adde74",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0086",
+      "kind": "scriptable_object",
+      "source_path": "Assets/Scenes/Main/LightingData.asset",
+      "sha256": "b02feeeb27867e17278447280ab895a15afec18157ece0770527e2a2fca13325",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0087",
+      "kind": "misc",
+      "source_path": "Assets/Scenes/Main/ReflectionProbe-0.exr",
+      "sha256": "019749c4799d931d82af07cfdf2661667e5acfaa1864f60594deb84f391da618",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0088",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Main.unity",
+      "sha256": "07be9540fa14a949d5037b93020853930e5e7def3088e6f80f1e9caa0e260571",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0089",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Camera/CameraControl.cs",
+      "sha256": "2c8ec9ecac94a3299e55559eca2f2417e88c016183d775792b47fbece1d1d00f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0090",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/GameManager.cs",
+      "sha256": "04f14e60519ad9e6bffc87d6406d05df4691a855c8e582bb127ea36f8d643d2b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0091",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Managers/TankManager.cs",
+      "sha256": "1ed3bd14bf2f9fbf94dd594f234c7da34ba0ea8f205477cb1b6803eff654d68c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0092",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Shell/ShellExplosion.cs",
+      "sha256": "9cc75f9523ab48fa03b92387b3bcb469264bcaabc623d5bd37321fc996452c1a",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0093",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankHealth.cs",
+      "sha256": "02bf7b4879fd7d8c702fedd76df6a87d3b8232266be1ee082a59cffed3a4221c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0094",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankMovement.cs",
+      "sha256": "b80620fb43d46c8c1588779716b7b66e8c4bf2c1cfd97bdb3b9fcaee34522a02",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0095",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Tank/TankShooting.cs",
+      "sha256": "2b0cc9bdfdb12391ff44aece2632d869147dfbb5dd1f1a521fb77c892a5df481",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0096",
+      "kind": "script",
+      "source_path": "Assets/Scripts/UI/UIDirectionControl.cs",
+      "sha256": "50121822555eea7a2615bd0b9ad07e7f0ae95156a43a556852e75ef03ecb944f",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0097",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Aim Arrow.png",
+      "sha256": "330fa12ce868431a983ef11fd3a396f4b79185c3e6ac7a9ecb049e5c921587bb",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0098",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Health Wheel.png",
+      "sha256": "1a8cd82a7107440e1585c41ad0a81a8801fac60781f9288510d1f55ad72f3093",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0099",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Smoke.tif",
+      "sha256": "869a61cb194ecfdd1ddf4e907231768a8c7bf8bf926a8bbf67e78cb0fcab9e67",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0100",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Help_Icon.png",
+      "sha256": "3c18c946842525d4b53a6fc3c9371c8be3ba6a58a1ec28c1ddff2f5c87d5ca57",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0101",
+      "kind": "texture",
+      "source_path": "Assets/TutorialInfo/Icons/Tanks.png",
+      "sha256": "3eb5545e2be14489fc2af3d64517ed34c5225d4f52d546ccb2b60339f83febd4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0102",
+      "kind": "misc",
+      "source_path": "Assets/TutorialInfo/Layout.wlt",
+      "sha256": "30d232879ca5c0c7377f245c9601feaf77053e5d70c222419ef25782e3272d2c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0103",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "sha256": "a5c33793bf12cdb4b928f4b03437daf14eed6bfc271ab39c11e7d1cf312b8d8c",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0104",
+      "kind": "script",
+      "source_path": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "sha256": "63edc46472a354f6f254aedf8c918a4f7ccc83cdbfb0742aa0869d7a21751f45",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Camera/CameraControl.cs",
+      "unity_class": "CameraControl",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Managers/GameManager.cs",
+      "unity_class": "GameManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.SceneManagement.SceneManager[A]",
+        "UnityEngine.Coroutine[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Managers/TankManager.cs",
+      "unity_class": "TankManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Shell/ShellExplosion.cs",
+      "unity_class": "ShellExplosion",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Physics.OverlapSphere[A]",
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Tank/TankHealth.cs",
+      "unity_class": "TankHealth",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Tank/TankMovement.cs",
+      "unity_class": "TankMovement",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Input.GetAxis[A]",
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/Tank/TankShooting.cs",
+      "unity_class": "TankShooting",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/_Completed-Assets/Scripts/UI/UIDirectionControl.cs",
+      "unity_class": "UIDirectionControl",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Editor/MoveSceneViewCamera.cs",
+      "unity_class": "MoveSceneViewCamera",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Camera/CameraControl.cs",
+      "unity_class": "CameraControl",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Managers/GameManager.cs",
+      "unity_class": "GameManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.SceneManagement.SceneManager[A]",
+        "UnityEngine.Coroutine[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Managers/TankManager.cs",
+      "unity_class": "TankManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Shell/ShellExplosion.cs",
+      "unity_class": "ShellExplosion",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Physics.OverlapSphere[A]",
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Tank/TankHealth.cs",
+      "unity_class": "TankHealth",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Tank/TankMovement.cs",
+      "unity_class": "TankMovement",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Input.GetAxis[A]",
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Tank/TankShooting.cs",
+      "unity_class": "TankShooting",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.AudioSource[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/UI/UIDirectionControl.cs",
+      "unity_class": "UIDirectionControl",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+      "unity_class": "ReadmeEditor",
+      "base_class": "Editor",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/TutorialInfo/Scripts/Readme.cs",
+      "unity_class": "Readme",
+      "base_class": "ScriptableObject",
+      "detected_apis": []
+    }
+  ],
+  "diagnostics": []
+}

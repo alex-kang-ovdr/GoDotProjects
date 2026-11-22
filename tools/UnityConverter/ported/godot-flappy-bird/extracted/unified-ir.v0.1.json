@@ -1,0 +1,536 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "engine": "unity",
+    "version": "Unity 2022/6 LTS",
+    "project": "Flappy Bird (2D UV Parallax)",
+    "project_path": "samples/unity-flappy-bird",
+    "extracted_at": "deterministic"
+  },
+  "units": {
+    "distance": "meter",
+    "coordinate_system": "godot_3d",
+    "scale_factor": 1,
+    "axis_mapping": "unity_lh_y_up_to_godot_rh_y_up (x, y, -z)"
+  },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "name": "Flappy Bird",
+      "source_path": "Assets/Scenes/Flappy Bird.unity",
+      "entities": [
+        "scene_1_ent_1_55615827",
+        "scene_1_ent_2_149568773",
+        "scene_1_ent_3_519420028",
+        "scene_1_ent_4_527830923",
+        "scene_1_ent_5_1644428178",
+        "scene_1_ent_6_1949728348",
+        "scene_1_ent_7_2105631070"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "scene_1_ent_1_55615827",
+      "name": "Ground",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          -4.5,
+          1
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          24,
+          2,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_2_149568773",
+      "name": "Game Manager",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_3_519420028",
+      "name": "Main Camera",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          10
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_4_527830923",
+      "name": "Player",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          2
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_5_1644428178",
+      "name": "EventSystem",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_6_1949728348",
+      "name": "Background",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          0,
+          0,
+          -1
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          24,
+          10.666667,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    },
+    {
+      "id": "scene_1_ent_7_2105631070",
+      "name": "Spawner",
+      "source_class": "UnityEngine.GameObject",
+      "godot_class": "Node3D",
+      "parent_id": null,
+      "transform": {
+        "position": [
+          12,
+          0,
+          0
+        ],
+        "rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "type": "Transform"
+        }
+      ],
+      "logic_refs": [],
+      "animation_ref": null
+    }
+  ],
+  "logic": [
+    {
+      "id": "logic_1_GameManager",
+      "name": "GameManager",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_2_Parallax",
+      "name": "Parallax",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Parallax.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [
+        {
+          "id": "api_1",
+          "type": "UnityEngine.Material.mainTextureOffset",
+          "grade": "A"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "logic_3_Pipes",
+      "name": "Pipes",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Pipes.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_4_Player",
+      "name": "Player",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "logic_5_Spawner",
+      "name": "Spawner",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Spawner.cs",
+      "target_entity_class": "MonoBehaviour",
+      "variables": [],
+      "nodes": [],
+      "edges": []
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_0001",
+      "kind": "font",
+      "source_path": "Assets/Fonts/bit5x3.ttf",
+      "sha256": "4f151ec589dd396ff2261ba7a40584b1fa410de409d9cde0476e5f5b325a953b",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0002",
+      "kind": "material",
+      "source_path": "Assets/Materials/Background.mat",
+      "sha256": "b885f9f07bb8aeec836ce3588bff0624f95b800f91ce45312ab9d718de0b5c45",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0003",
+      "kind": "material",
+      "source_path": "Assets/Materials/Ground.mat",
+      "sha256": "4e2500d683e41ce45b9a7b27a0da98851ac4c508fd34d6fa5e624b2b638c97e8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0004",
+      "kind": "prefab",
+      "source_path": "Assets/Prefabs/Pipes.prefab",
+      "sha256": "3692fe02e891b5177fd69771634038790628ed8f0b46d707bea9e931baa789d8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0005",
+      "kind": "scene",
+      "source_path": "Assets/Scenes/Flappy Bird.unity",
+      "sha256": "7bd6d784dea478af892cb9f0dbc33119631c2de1da9ac0d15500f21399f96852",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0006",
+      "kind": "script",
+      "source_path": "Assets/Scripts/GameManager.cs",
+      "sha256": "1dd55ff59e13d01e2ab4378560a2604415e63e8eac67b351cbd5472f4d625d09",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0007",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Parallax.cs",
+      "sha256": "c4e6147fc044326d66ebaa77fe3d1426b924b1ca0ea27bc0e5c57156119ab1d6",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0008",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Pipes.cs",
+      "sha256": "a4c85038ff3b61389c7f1b5733d76557ce4a3881fb379acce81c0f244f08bdd8",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0009",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Player.cs",
+      "sha256": "b14ca8867c13355dcecbe6cdefd5f56b4a7c21eae24cc293781baa8c9c828e5d",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0010",
+      "kind": "script",
+      "source_path": "Assets/Scripts/Spawner.cs",
+      "sha256": "8106ae24aa696547bdab50282a4dd104a96dfb6fcc8416a891d8b87528e94e05",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0011",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Background.png",
+      "sha256": "4ff6af075816942c153f95bde85612d211dd6a8dd66309016dcfce54dfdd0ae7",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0012",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_01.png",
+      "sha256": "fe2bfd569ab57407f3d6802a950922db9f81d669ebf9406e9baf3707ae80e2a4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0013",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_02.png",
+      "sha256": "458b384d8d53fe4abf89d6333bfe066a309e2b8703a9d4294c40351b5d6fc6fa",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0014",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Bird_03.png",
+      "sha256": "ca484ac22a2d2979b09acc2a1d3182da002e681b0de60857cf3f39c90ed29675",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0015",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/GameOver.png",
+      "sha256": "88948eff0eb2cc41b7b0090a8d7c38036ea6e01eb591fe24b0e4c675e2262c2e",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0016",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/GetReady.png",
+      "sha256": "dca44bc2159bbdbd85494f0c9c8b3c4afab03cd08402c2865552f83960e29677",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0017",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Ground.png",
+      "sha256": "11d7fbfd86717f2964ab2a4d23cb1a51402b55ce72248e98de69618a758f0830",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0018",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/Pipe.png",
+      "sha256": "13b2bfed860e57d726e159d734f5e29753adbd3dba50e783a65835f904706664",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    },
+    {
+      "id": "asset_0019",
+      "kind": "texture",
+      "source_path": "Assets/Sprites/PlayButton.png",
+      "sha256": "b60958fed6ad21b9f830d8e98a285d0482e155930093e9e3ca2f06735d9e68f4",
+      "license": "unity_official_sample",
+      "license_status": "allowed",
+      "redistributable": true,
+      "godot_path": null
+    }
+  ],
+  "source_map": [
+    {
+      "unity_script": "Assets/Scripts/GameManager.cs",
+      "unity_class": "GameManager",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Parallax.cs",
+      "unity_class": "Parallax",
+      "base_class": "MonoBehaviour",
+      "detected_apis": [
+        "UnityEngine.Material.mainTextureOffset[A]"
+      ]
+    },
+    {
+      "unity_script": "Assets/Scripts/Pipes.cs",
+      "unity_class": "Pipes",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Player.cs",
+      "unity_class": "Player",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    },
+    {
+      "unity_script": "Assets/Scripts/Spawner.cs",
+      "unity_class": "Spawner",
+      "base_class": "MonoBehaviour",
+      "detected_apis": []
+    }
+  ],
+  "diagnostics": []
+}

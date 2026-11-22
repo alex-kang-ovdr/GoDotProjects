@@ -1,0 +1,73 @@
+{
+  "bossStuns": 1,
+  "captures": [
+    "01_entrance_switch_door.png",
+    "02_boss_arena_combat.png",
+    "03_boss_trample_telegraph.png",
+    "04_boss_stunned_and_coop_skills.png",
+    "05_victory_treasure_chest.png"
+  ],
+  "checks": [
+    {
+      "detail": "heroes=4",
+      "name": "party_4_classes_spawned",
+      "passed": true
+    },
+    {
+      "detail": "enemies=3",
+      "name": "boss_and_imps_spawned",
+      "passed": true
+    },
+    {
+      "detail": "door/switch/chest ready",
+      "name": "dungeon_fbx_assets_built",
+      "passed": true
+    },
+    {
+      "detail": "door_open=true",
+      "name": "floor_switch_opens_boss_door",
+      "passed": true
+    },
+    {
+      "detail": "rpcs=7",
+      "name": "boss_arena_combat_active",
+      "passed": true
+    },
+    {
+      "detail": "hp=1038/1200",
+      "name": "heroes_damage_boss",
+      "passed": true
+    },
+    {
+      "detail": "rejected=2",
+      "name": "server_authority_range_check",
+      "passed": true
+    },
+    {
+      "detail": "stun_count=1",
+      "name": "tank_charged_shield_stuns_trample_boss",
+      "passed": true
+    },
+    {
+      "detail": "rogue_hp=112",
+      "name": "downed_hero_revived_by_ally",
+      "passed": true
+    },
+    {
+      "detail": "archer_hp=70->125",
+      "name": "mage_heal_aoe_restores_party",
+      "passed": true
+    },
+    {
+      "detail": "chest_open=true",
+      "name": "boss_defeat_opens_chest_and_victory",
+      "passed": true
+    }
+  ],
+  "failedChecks": 0,
+  "game": "Unity Boss Room (com.unity.multiplayer.samples.coop)",
+  "godotVersion": "4.7.2-stable (official)",
+  "passedChecks": 11,
+  "rpcDispatches": 13,
+  "totalChecks": 11
+}

@@ -463,19 +463,23 @@ func _run() -> void:
 
 \t# Collect first 6 pickups and capture mid-game
 \tfor i in range(6):
+\t\tplayer.sleeping = false
+\t\tPhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, Transform3D(Basis.IDENTITY, pickups[i].global_position))
+\t\tPhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_LINEAR_VELOCITY, Vector3.ZERO)
 \t\tplayer.global_position = pickups[i].global_position
-\t\tplayer.linear_velocity = Vector3.ZERO
-\t\tawait get_tree().physics_frame
-\t\tawait get_tree().physics_frame
+\t\tfor _f in range(4):
+\t\t\tawait get_tree().physics_frame
 \t_assert("mid_game_count_6", player.count == 6 and scene.count_label.text == "Count: 6", "count=%d" % player.count)
 \tawait _save_shot("02_mid_play.png")
 
 \t# Collect remaining 6 pickups and verify YOU WIN!
 \tfor i in range(6, 12):
+\t\tplayer.sleeping = false
+\t\tPhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, Transform3D(Basis.IDENTITY, pickups[i].global_position))
+\t\tPhysicsServer3D.body_set_state(player.get_rid(), PhysicsServer3D.BODY_STATE_LINEAR_VELOCITY, Vector3.ZERO)
 \t\tplayer.global_position = pickups[i].global_position
-\t\tplayer.linear_velocity = Vector3.ZERO
-\t\tawait get_tree().physics_frame
-\t\tawait get_tree().physics_frame
+\t\tfor _f in range(4):
+\t\t\tawait get_tree().physics_frame
 \t_assert("all_12_collected_win", player.count == 12 and scene.win_label.text == "YOU WIN!", "text=%s" % scene.win_label.text)
 \tawait _save_shot("03_you_win.png")
 

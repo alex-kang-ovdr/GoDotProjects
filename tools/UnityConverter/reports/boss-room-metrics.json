@@ -1,0 +1,22 @@
+{
+  "game": "Boss Room (Official Unity Co-op RPG Sample)",
+  "unityRepo": "https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop",
+  "godotTarget": "4.7.2",
+  "modelsCopied": 7,
+  "texturesConvertedTgaToPng": 28,
+  "texturesCopiedPng": 4,
+  "unpackedMetalSmoothEmissive": [
+    "env_deco_MetalSmoothEmissive",
+    "env_deco_boss_arena_MetalSmoothEmissive"
+  ],
+  "audioWavCopied": 5,
+  "gdScriptsGenerated": 6,
+  "scenesGenerated": 2,
+  "architectureMappings": {
+    "Unity.Netcode.NetworkBehaviour + ServerRpc/ClientRpc": "Godot 4 MultiplayerAPI @rpc(\"any_peer\") / @rpc(\"authority\") ActionBus",
+    "ServerActionPlayer + ClientActionPlayer": "scripts/network_action_bus.gd (cooldown + range cheat check + action broadcast)",
+    "Unity URP ShaderGraph (MetalSmoothEmissive)": "Unpacked R=Metallic, 1-G=Roughness, B=Emissive PNG + StandardMaterial3D",
+    "FBX CharacterSet + DungeonPieces + Animated Props": "Native Godot 4.7.2 ufbx import + Skeleton3D + AnimationPlayer",
+    "4 Hero Classes + Imp Boss + FloorSwitch/Door/Chest": "100% playable co-op loop with party AI & Tank Shield-Stun counter"
+  }
+}

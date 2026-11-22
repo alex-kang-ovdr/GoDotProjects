@@ -1,0 +1,60 @@
+{
+  "env_deco_boss_arena": {
+    "name": "env_deco_boss_arena",
+    "serialization": "urp_packed_mse",
+    "color_srgb": [
+      0.88,
+      0.89,
+      0.94,
+      1
+    ],
+    "color_linear": [
+      0.748414,
+      0.767769,
+      0.868899,
+      1
+    ],
+    "albedo_texture": "res://assets/textures/env_deco_boss_arena_BaseColor.png",
+    "normal_texture": "res://assets/textures/env_deco_boss_arena_Normal.png",
+    "metallic_texture": "res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_metallic.png",
+    "roughness_texture": "res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_roughness.png",
+    "emissive_texture": "res://assets/textures/env_deco_boss_arena_MetalSmoothEmissive_emissive.png",
+    "emissive_color": [
+      1,
+      0.25,
+      0.08
+    ],
+    "emissive_energy": 3.4,
+    "metallic": 0.05,
+    "roughness": 0.86
+  },
+  "env_deco": {
+    "name": "env_deco",
+    "serialization": "urp_packed_mse",
+    "color_srgb": [
+      0.88,
+      0.89,
+      0.94,
+      1
+    ],
+    "color_linear": [
+      0.748414,
+      0.767769,
+      0.868899,
+      1
+    ],
+    "albedo_texture": "res://assets/textures/env_deco_BaseColor.png",
+    "normal_texture": "res://assets/textures/env_deco_Normal.png",
+    "metallic_texture": "res://assets/textures/env_deco_MetalSmoothEmissive_metallic.png",
+    "roughness_texture": "res://assets/textures/env_deco_MetalSmoothEmissive_roughness.png",
+    "emissive_texture": "res://assets/textures/env_deco_MetalSmoothEmissive_emissive.png",
+    "emissive_color": [
+      0,
+      0,
+      0
+    ],
+    "emissive_energy": 0,
+    "metallic": 0.25,
+    "roughness": 0.86
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "Background": {
+    "name": "Background",
+    "serialization": "yaml",
+    "color_srgb": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "color_linear": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "metallic": 0,
+    "roughness": 0.5,
+    "emissive": null
+  },
+  "Ground": {
+    "name": "Ground",
+    "serialization": "yaml",
+    "color_srgb": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "color_linear": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "metallic": 0,
+    "roughness": 0.5,
+    "emissive": null
+  }
+}
