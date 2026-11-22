@@ -481,6 +481,46 @@
         "forge/OfficialGodot/shorts-*",
         "forge/Tests/playforge_shorts/**"
       ]
+    },
+    "PlayHub-JavaGames-doukyuusei2": {
+      "role": "Doukyuusei 2 역설계·프로토타입 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "games/doukyuusei-2/**"
+      ]
+    },
+    "PlayHub-JavaGames-eve-burst-error": {
+      "role": "EVE Burst Error 역설계·프로토타입 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "games/eve-burst-error/**"
+      ]
+    },
+    "PlayHub-JavaGames-isaku": {
+      "role": "Isaku 역설계·프로토타입 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "games/isaku/**"
+      ]
+    },
+    "PlayHub-JavaGames-kichikuou-rance": {
+      "role": "Kichikuou Rance 역설계·프로토타입 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "games/kichikuou-rance/**"
+      ]
+    },
+    "PlayHub-JavaGames-yuno": {
+      "role": "YU-NO 역설계·프로토타입 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "games/yu-no/**"
+      ]
     }
   }
 }
