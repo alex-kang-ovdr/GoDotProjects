@@ -6,9 +6,12 @@ import { fileURLToPath } from 'node:url';
 import {
   SAMPLE_CATALOG,
   STORE_STATES,
+  COMMERCIAL_GAME_ALLOWED_LICENSES,
   canInstallInStoreWeb,
+  isCommercialHubDistributable,
   validateReleaseContract
 } from '../web/store-catalog.js';
+import { loadMergedCatalog } from '../server/index.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -55,4 +58,23 @@ test('contract validator rejects package without digest and editorial with insta
     artifact_id: 'art-invalid-editorial'
   };
   assert.ok(validateReleaseContract(brokenEditorial).length > 0);
+});
+
+test('merged Store catalog contains ONLY commercial Forge game & PlayHub distributable licenses', () => {
+  const catalog = loadMergedCatalog(root);
+  assert.ok(catalog.length > 10000, `expected full open catalog, got ${catalog.length}`);
+  for (const item of catalog) {
+    assert.equal(isCommercialHubDistributable(item), true, `non-distributable item leaked: ${item.asset_id} (${item.license})`);
+    assert.notEqual(item.hosting_policy, 'external_link_only');
+    assert.notEqual(item.license_tier, 'tier4_external_only');
+    assert.notEqual(item.license, 'Custom-No-Redist');
+    if (item.license) {
+      assert.equal(COMMERCIAL_GAME_ALLOWED_LICENSES.has(item.license), true, `unexpected license: ${item.license}`);
+    }
+  }
+  assert.equal(isCommercialHubDistributable({ asset_id: 'x', release_kind: 'package', license: 'GPL-3.0' }), false);
+  assert.equal(isCommercialHubDistributable({ asset_id: 'x', release_kind: 'package', license: 'CC-BY-NC-4.0' }), false);
+  assert.equal(isCommercialHubDistributable({ asset_id: 'x', release_kind: 'package', license: 'CC-BY-SA-4.0' }), false);
+  assert.equal(isCommercialHubDistributable({ asset_id: 'x', release_kind: 'package', license: 'CC-BY-ND-4.0' }), false);
+  assert.equal(isCommercialHubDistributable({ asset_id: 'x', release_kind: 'editorial', license: 'Custom-No-Redist', hosting_policy: 'external_link_only' }), false);
 });

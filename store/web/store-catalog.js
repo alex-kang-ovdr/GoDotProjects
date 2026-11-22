@@ -8,6 +8,38 @@ export const STORE_STATES = Object.freeze([
   'update_available'
 ]);
 
+export const COMMERCIAL_GAME_ALLOWED_LICENSES = Object.freeze(new Set([
+  'CC0-1.0',
+  'Unlicense',
+  'MIT',
+  'Apache-2.0',
+  'BSD-3-Clause',
+  'BSD-2-Clause',
+  'Zlib',
+  'CC-BY-3.0',
+  'CC-BY-4.0',
+  'OFL-1.1'
+]));
+
+const FORBIDDEN_LICENSE_RE = /\b(CUSTOM-NO-REDIST|NO-REDIST|GPL|AGPL|LGPL|MPL|CC-BY-NC|CC-BY-SA|CC-BY-ND|NC-SA|NC-ND|PROPRIETARY)\b/i;
+
+export function isCommercialHubDistributable(item) {
+  if (!item || typeof item !== 'object') return false;
+  if (item.hosting_policy === 'external_link_only') return false;
+  if (item.license_tier === 'tier4_external_only') return false;
+  const rawLicense = String(item.license || '').trim();
+  const ref = String(item.license_snapshot_ref || '').trim();
+  if (FORBIDDEN_LICENSE_RE.test(rawLicense) || FORBIDDEN_LICENSE_RE.test(ref)) return false;
+  if (item.release_kind === 'editorial') {
+    return !rawLicense || COMMERCIAL_GAME_ALLOWED_LICENSES.has(rawLicense);
+  }
+  if (rawLicense) {
+    return COMMERCIAL_GAME_ALLOWED_LICENSES.has(rawLicense);
+  }
+  // Built-in first-party sample packages must carry a safe license_snapshot_ref
+  return /^lic-(cc0|mit|royalty-free|apache|bsd|ofl)/i.test(ref);
+}
+
 export const SAMPLE_CATALOG = Object.freeze([
   {
     schema_version: 1,
@@ -228,7 +260,7 @@ export function extractCatalogSources(entries = SAMPLE_CATALOG) {
 }
 
 export function extractCatalogTiers(entries = SAMPLE_CATALOG) {
-  const order = ['tier1_cc0', 'tier2_attribution', 'tier2b_ofl_font', 'tier4_external_only'];
+  const order = ['tier1_cc0', 'tier2_attribution', 'tier2b_ofl_font'];
   const present = new Set();
   for (const item of entries || []) {
     const tier = String(item?.license_tier || '').trim();

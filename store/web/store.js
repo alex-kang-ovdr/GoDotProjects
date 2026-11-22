@@ -19,22 +19,17 @@ const TIER_META = Object.freeze({
   tier1_cc0: {
     label: '자유 사용',
     cls: 'tier1',
-    tooltip: 'CC0 · 퍼블릭 도메인: 출처 표기 없이 상업적 사용·수정·배포가 모두 자유롭습니다.'
+    tooltip: 'CC0 · Unlicense: 출처 표기 없이 포지 상용 게임 제작 및 PlayHub 배포 모두 자유롭습니다.'
   },
   tier2_attribution: {
     label: '출처 표기',
     cls: 'tier2',
-    tooltip: '상업적 사용·수정이 가능하며, 게임 크레딧에 원작자 출처만 표기하면 됩니다.'
+    tooltip: '포지 상용 게임 제작 및 PlayHub 배포 가능 · 게임 크레딧(자동 포함)에 원작자 출처만 표기하면 됩니다.'
   },
   tier2b_ofl_font: {
     label: '폰트 자유 사용',
     cls: 'tier2b',
-    tooltip: 'SIL OFL: 게임 내 자유롭게 포함·배포할 수 있습니다. (폰트 파일 단독 재판매 제외)'
-  },
-  tier4_external_only: {
-    label: '외부 다운로드',
-    cls: 'tier4',
-    tooltip: '공식 배포처 약관을 존중해 직접 호스팅하지 않고 공식 사이트 링크로 연결합니다.'
+    tooltip: 'SIL OFL: 포지 상용 게임 내 자유 임베딩 및 PlayHub 배포 가능 (폰트 단독 재판매 제외)'
   }
 });
 

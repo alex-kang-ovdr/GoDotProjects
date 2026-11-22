@@ -885,7 +885,6 @@ async function main() {
   const started = Date.now();
   const localPacks = collectLocalVerifiedGlbPacks();
   const curatedPacks = collectGeminiReportCuratedExternalPacks();
-  const externalDir = collectTier4ExternalDirectory();
   const [polyHaven, ambientCG, godotLib, gameIcons] = await Promise.all([
     collectPolyHavenAssets(),
     collectAmbientCGAssets(),
@@ -893,6 +892,9 @@ async function main() {
     collectGameIconsAssets(),
   ]);
 
+  const ALLOWED_COMMERCIAL_LICENSES = new Set([
+    'CC0-1.0', 'Unlicense', 'MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'Zlib', 'CC-BY-3.0', 'CC-BY-4.0', 'OFL-1.1'
+  ]);
   const items = [
     ...localPacks,
     ...curatedPacks,
@@ -900,8 +902,11 @@ async function main() {
     ...ambientCG,
     ...godotLib,
     ...gameIcons,
-    ...externalDir,
-  ];
+  ].filter((item) =>
+    item.hosting_policy !== 'external_link_only'
+    && item.license_tier !== 'tier4_external_only'
+    && ALLOWED_COMMERCIAL_LICENSES.has(item.license)
+  );
 
   const byCategory = {};
   const byLicense = {};
@@ -919,7 +924,7 @@ async function main() {
     schema_version: 1,
     generated_at: new Date().toISOString(),
     total: items.length,
-    license_policy: '4-Tier Open Asset Policy: Tier 1 (CC0-1.0, Unlicense), Tier 2 (MIT, Apache-2.0, BSD-3-Clause, Zlib, CC-BY-3.0/4.0 with Third-Party Notices.txt), Tier 2-B (SIL OFL-1.1 free font only), Tier 4 (External Link Directory only, zero raw hosting). Zero GPL/LGPL/MPL/CC-BY-SA/CC-BY-NC hosting.',
+    license_policy: 'PlayForge Commercial Game & PlayHub Distribution Policy: ONLY licenses cleared for commercial games created in PlayForge and distributed on PlayHub (CC0-1.0, Unlicense, MIT, Apache-2.0, BSD-3-Clause, Zlib, CC-BY-3.0/4.0 with Third-Party Notices.txt, SIL OFL-1.1 fonts). Excludes Custom-No-Redist, external-link-only, GPL/LGPL/AGPL/MPL, CC-BY-SA, CC-BY-NC, and CC-BY-ND.',
     external_attributions: [
       'Powered by Poly Haven (https://polyhaven.com/)',
       'Powered by ambientCG (https://ambientcg.com/)',
