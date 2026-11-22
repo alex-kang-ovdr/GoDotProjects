@@ -14,6 +14,13 @@ COPY hub/dist ./hub/dist
 COPY hub/tools/runtime-output.cjs ./hub/tools/runtime-output.cjs
 COPY hub/tools/backup.mjs ./hub/tools/backup.mjs
 COPY hub/tools/restore-data.mjs ./hub/tools/restore-data.mjs
+COPY hub/tools/store-proxy.mjs ./hub/tools/store-proxy.mjs
+
+# Embedded PlayForge Asset Store runtime & catalog (served via /store/ SSO proxy)
+COPY store/server ./store/server
+COPY store/web ./store/web
+COPY store/schemas ./store/schemas
+COPY store/data ./store/data
 
 # Forge tools required by Hub ForgeGateway (local mode until S4 remote gateway lands)
 COPY forge/Tools ./forge/Tools
