@@ -3,6 +3,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { transaction } from './db.mjs';
@@ -397,24 +398,40 @@ export function createUgcPublish({
     const resolved = storage.resolveAssetPath(hostSlug, releaseId, restPath || 'index.html');
     if (!resolved) throw new ApiError(404, 'ASSET_NOT_FOUND');
 
-    const isHtml = resolved.relativePath.toLowerCase().endsWith('.html');
-    res.writeHead(200, {
+    const lowerRel = resolved.relativePath.toLowerCase();
+    const isHtml = lowerRel.endsWith('.html');
+    const isCompressible = /\.(?:html|js|mjs|css|json|svg|txt|wasm|pck)$/.test(lowerRel);
+    const acceptEncoding = String(req.headers?.['accept-encoding'] || '');
+    const useGzip = req.method !== 'HEAD' && isCompressible && acceptEncoding.includes('gzip');
+    const headers = {
       'Content-Type': resolved.contentType,
-      'Content-Length': resolved.size,
       'Access-Control-Allow-Origin': '*',
       'Cross-Origin-Resource-Policy': 'cross-origin',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
       'Content-Security-Policy': ugcCsp,
       'Cache-Control': isHtml ? 'no-cache' : 'public, max-age=31536000, immutable'
-    });
+    };
+    if (useGzip) {
+      headers['Content-Encoding'] = 'gzip';
+      headers.Vary = 'Accept-Encoding';
+    } else {
+      headers['Content-Length'] = resolved.size;
+    }
+    res.writeHead(200, headers);
     if (req.method === 'HEAD') {
       res.end();
       return true;
     }
     const stream = fs.createReadStream(resolved.filePath);
     stream.on('error', () => { if (!res.writableEnded) res.destroy(); });
-    stream.pipe(res);
+    if (useGzip) {
+      const gz = zlib.createGzip({ level: 6 });
+      gz.on('error', () => { if (!res.writableEnded) res.destroy(); });
+      stream.pipe(gz).pipe(res);
+    } else {
+      stream.pipe(res);
+    }
     return true;
   }
 

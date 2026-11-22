@@ -484,7 +484,7 @@ function createInternalApi(options = {}) {
     // 1a. Verified release package binary stream: GET .../projects/{pid}/releases/{rid}/package
     const releasePkgMatch = subpath.match(/^\/projects\/([a-f0-9]{24})\/releases\/([a-f0-9]{24})\/package$/);
     if (releasePkgMatch) {
-      if (method !== 'GET') return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' }), true;
+      if (method !== 'GET' && method !== 'HEAD') return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' }), true;
       let resolved;
       try {
         resolved = builds.resolveWithMetadata(accountKey, releasePkgMatch[1], releasePkgMatch[2]);
@@ -492,17 +492,47 @@ function createInternalApi(options = {}) {
         const status = Number.isSafeInteger(err?.status) ? err.status : 404;
         return sendJson(res, status, { ok: false, error: err?.code || 'RELEASE_PACKAGE_UNAVAILABLE' }), true;
       }
-      res.writeHead(200, {
+      const total = resolved.bytes.length;
+      const baseHeaders = {
         'Content-Type': 'application/zip',
-        'Content-Length': resolved.bytes.length,
+        'Accept-Ranges': 'bytes',
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff',
         'X-Artifact-Sha256': resolved.sha256,
+        'X-Artifact-Total-Bytes': String(total),
         'X-Release-Id': resolved.release.id,
         'X-Release-Revision': String(resolved.release.revision),
         'X-Build-Id': resolved.job.id
+      };
+      const rangeHeader = typeof req.headers?.range === 'string' ? req.headers.range.trim() : '';
+      if (rangeHeader) {
+        const rm = /^bytes=(\d+)-(\d*)$/.exec(rangeHeader);
+        if (!rm) {
+          res.writeHead(416, { 'Content-Range': `bytes */${total}`, 'Cache-Control': 'no-store' });
+          res.end();
+          return true;
+        }
+        const start = Number(rm[1]);
+        const end = rm[2] === '' ? total - 1 : Math.min(Number(rm[2]), total - 1);
+        if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start >= total || end < start) {
+          res.writeHead(416, { 'Content-Range': `bytes */${total}`, 'Cache-Control': 'no-store' });
+          res.end();
+          return true;
+        }
+        const slice = resolved.bytes.subarray(start, end + 1);
+        res.writeHead(206, {
+          ...baseHeaders,
+          'Content-Range': `bytes ${start}-${end}/${total}`,
+          'Content-Length': slice.length
+        });
+        res.end(method === 'HEAD' ? undefined : slice);
+        return true;
+      }
+      res.writeHead(200, {
+        ...baseHeaders,
+        'Content-Length': total
       });
-      res.end(resolved.bytes);
+      res.end(method === 'HEAD' ? undefined : resolved.bytes);
       return true;
     }
 

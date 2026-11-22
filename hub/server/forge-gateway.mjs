@@ -563,38 +563,98 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     assertProjectId(projectId);
     assertReleaseId(releaseId);
     const release = await getRelease(accountKey, projectId, releaseId);
+    const declaredBytes = Number(release?.build?.bytes || 0);
+    // Cloud Run HTTP/1.1 enforces a 32 MiB response body limit; stream >16 MiB packages in 16 MiB Range chunks.
+    const RANGE_CHUNK_BYTES = 16 * 1024 * 1024;
+    const pkgUrl = `${baseOrigin}/internal/v1/accounts/${accountKey}/projects/${projectId}/releases/${releaseId}/package`;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), Math.max(timeoutMs, 30000));
+    const timer = setTimeout(() => controller.abort(), Math.max(timeoutMs, 60000));
     active.add(controller);
     try {
-      let response;
-      try {
-        response = await fetchImpl(`${baseOrigin}/internal/v1/accounts/${accountKey}/projects/${projectId}/releases/${releaseId}/package`, {
-          method: 'GET',
-          headers: { 'X-PlayHub-Internal-Secret': internalSecret },
-          redirect: 'error',
-          signal: controller.signal
-        });
-      } catch {
-        throw fail(503, 'SERVICE_UNAVAILABLE');
+      let computedSha = '';
+      let totalBytes = 0;
+      let fullBuffer = null;
+      let headerSha = '';
+      let buildId = String(release?.build?.buildId || '');
+
+      if (Number.isSafeInteger(declaredBytes) && declaredBytes > RANGE_CHUNK_BYTES) {
+        if (declaredBytes > maxBytes) throw fail(413, 'PACKAGE_TOO_LARGE');
+        const hasher = crypto.createHash('sha256');
+        const parts = [];
+        let offset = 0;
+        let expectedTotal = declaredBytes;
+        while (offset < expectedTotal) {
+          const end = Math.min(offset + RANGE_CHUNK_BYTES - 1, expectedTotal - 1);
+          let response;
+          try {
+            response = await fetchImpl(pkgUrl, {
+              method: 'GET',
+              headers: {
+                'X-PlayHub-Internal-Secret': internalSecret,
+                Range: `bytes=${offset}-${end}`
+              },
+              redirect: 'error',
+              signal: controller.signal
+            });
+          } catch {
+            throw fail(503, 'SERVICE_UNAVAILABLE');
+          }
+          if (response.status !== 206 && response.status !== 200) {
+            let errBody = null;
+            try { errBody = await response.json(); } catch {}
+            throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
+          }
+          if (!headerSha) headerSha = String(response.headers.get('x-artifact-sha256') || '').toLowerCase();
+          if (!buildId) buildId = String(response.headers.get('x-build-id') || '');
+          const hdrTotal = Number(response.headers.get('x-artifact-total-bytes') || 0);
+          if (Number.isSafeInteger(hdrTotal) && hdrTotal > 0) {
+            if (hdrTotal > maxBytes) throw fail(413, 'PACKAGE_TOO_LARGE');
+            expectedTotal = hdrTotal;
+          }
+          const chunkStream = await readBoundedPackageStream(response, { maxBytes: maxBytes - totalBytes, retainBuffer: true, controller });
+          if (chunkStream.bytes === 0) throw fail(502, 'RELEASE_PACKAGE_TRUNCATED');
+          hasher.update(chunkStream.buffer);
+          if (retainBuffer) parts.push(chunkStream.buffer);
+          totalBytes += chunkStream.bytes;
+          offset += chunkStream.bytes;
+          if (response.status === 200) break;
+        }
+        computedSha = hasher.digest('hex');
+        if (retainBuffer) fullBuffer = Buffer.concat(parts);
+      } else {
+        let response;
+        try {
+          response = await fetchImpl(pkgUrl, {
+            method: 'GET',
+            headers: { 'X-PlayHub-Internal-Secret': internalSecret },
+            redirect: 'error',
+            signal: controller.signal
+          });
+        } catch {
+          throw fail(503, 'SERVICE_UNAVAILABLE');
+        }
+        if (!response.ok) {
+          let errBody = null;
+          try { errBody = await response.json(); } catch {}
+          throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
+        }
+        const streamed = await readBoundedPackageStream(response, { maxBytes, retainBuffer, controller });
+        computedSha = streamed.sha256;
+        totalBytes = streamed.bytes;
+        fullBuffer = streamed.buffer;
+        headerSha = String(response.headers.get('x-artifact-sha256') || '').toLowerCase();
+        buildId = String(response.headers.get('x-build-id') || buildId);
       }
-      if (!response.ok) {
-        let errBody = null;
-        try { errBody = await response.json(); } catch {}
-        throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
-      }
-      const streamed = await readBoundedPackageStream(response, { maxBytes, retainBuffer, controller });
-      const computedSha = streamed.sha256;
-      const headerSha = String(response.headers.get('x-artifact-sha256') || '').toLowerCase();
+
       if (headerSha && headerSha !== computedSha) throw fail(502, 'PACKAGE_INTEGRITY_MISMATCH');
       const expectedSha = expectedReleaseArtifactSha(release);
       if (expectedSha && expectedSha !== computedSha) throw fail(409, 'PACKAGE_INTEGRITY_MISMATCH');
       return {
-        ...(retainBuffer ? { buffer: streamed.buffer } : { verified: true }),
-        bytes: streamed.bytes,
+        ...(retainBuffer ? { buffer: fullBuffer } : { verified: true }),
+        bytes: totalBytes,
         sha256: computedSha,
         release,
-        buildId: String(response.headers.get('x-build-id') || release?.build?.buildId || '')
+        buildId
       };
     } finally {
       clearTimeout(timer);
