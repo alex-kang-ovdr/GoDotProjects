@@ -458,6 +458,12 @@
         "forge/Tools/hub-agent-bridge.cjs",
         "forge/OfficialGodot/porting-studio.*"
       ]
+    },
+    "PlayHub-JavaGames-doukyuusei2": {
+      "role": "동급생 2 (同級生2) 역기획서·원작 데이터 복원 및 데이터 기반 NPC 일정·동선·관계 이벤트 엔진",
+      "owns": [
+        "games/doukyuusei-2/**"
+      ]
     }
   }
 }

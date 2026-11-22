@@ -1,0 +1,661 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "doukyuusei-2",
+  "travel_cost_rules": {
+    "town_map_facility_entry_min": 15,
+    "indoor_subarea_transition_min": 10,
+    "school_floor_or_room_transition_min": 10,
+    "train_ride_min": 30,
+    "train_total_with_station_entry_min": 45,
+    "inspect_in_place_min": 0,
+    "evidence_level": "[확인]",
+    "notes": "원작 공략 자료 기준 마을 전체 맵 진입 15분, 자택/학교 내부 구획 이동 10분, 전철 탑승 30분(역 진입 포함 편도 45분). 단 일부 자료에서 실내 이동 5분 표기가 혼재하므로 DATA_GAPS에 기록."
+  },
+  "zones": [
+    {
+      "id": "yasohachi_town",
+      "name_ja": "八十八町",
+      "name_ko": "야소하치 마을",
+      "description": "주인공의 자택·학교·병원·보육원·주요 히로인 자택이 모인 기본 생활권 맵.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "yasohachi_gakuen",
+      "name_ja": "八十八学園",
+      "name_ko": "야소하치 학원",
+      "description": "교문, 운동장, 3-B 교실, 교무실, 도서실, 테니스 코트, 궁도장, 체육관 뒤, 사진부실로 구성된 학교 하위 맵.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "kisaragi_town",
+      "name_ja": "如月町",
+      "name_ko": "키사라기 마을",
+      "description": "전철(야소하치역↔키사라기역)로 왕래하는 번화가·오락·데이트·방송/연예 시설 밀집 맵.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "touji_onsen",
+      "name_ja": "冬至温泉",
+      "name_ko": "동지온천",
+      "description": "12/29~12/30 온천 여행 분기 진입 시에만 체류하는 격리 리조트 맵(나가시마 료칸·노천온천·스키 슬로프).",
+      "evidence_level": "[확인]"
+    }
+  ],
+  "locations": [
+    {
+      "id": "loc_home_front",
+      "zone_id": "yasohachi_town",
+      "name_ja": "自宅前",
+      "name_ko": "자택 앞",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_living", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_cafe", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_yasohachi_station", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_school_gate", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_tomomi_house", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_hanazono_nursery", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_city_hospital", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_sevenmart", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_yasohachi_park", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_shirahegaike_park", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_izumi_house", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_karen_house", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_youko_house", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_akira_house", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_saionji_mansion", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_yasohachi_coast", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_home_living",
+      "zone_id": "yasohachi_town",
+      "name_ja": "自宅リビング",
+      "name_ko": "자택 거실",
+      "category": "residence",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_room", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_yui_room", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_bath", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_cafe", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_home_room",
+      "zone_id": "yasohachi_town",
+      "name_ja": "主人公の自室",
+      "name_ko": "주인공 방",
+      "category": "residence",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_living", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_home_yui_room",
+      "zone_id": "yasohachi_town",
+      "name_ja": "唯の部屋",
+      "name_ko": "유이 방",
+      "category": "residence",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_living", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_home_bath",
+      "zone_id": "yasohachi_town",
+      "name_ja": "自宅浴室",
+      "name_ko": "자택 욕실",
+      "category": "residence",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_living", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_home_cafe",
+      "zone_id": "yasohachi_town",
+      "name_ja": "自宅1階 喫茶店",
+      "name_ko": "자택 1층 찻집",
+      "category": "commercial",
+      "indoor": true,
+      "open_minute": 540,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_home_living", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_yasohachi_station",
+      "zone_id": "yasohachi_town",
+      "name_ja": "八十八駅",
+      "name_ko": "야소하치 역",
+      "category": "transit",
+      "indoor": false,
+      "open_minute": 360,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_nyubai_travel", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 30, "mode": "train" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_nyubai_travel",
+      "zone_id": "yasohachi_town",
+      "name_ja": "入梅興業・旅行代理店",
+      "name_ko": "뉴바이 흥업 여행사",
+      "category": "commercial",
+      "indoor": true,
+      "open_minute": 480,
+      "close_minute": 1140,
+      "connected_to": [
+        { "target_id": "loc_yasohachi_station", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_yasohachi_park",
+      "zone_id": "yasohachi_town",
+      "name_ja": "八十八公園",
+      "name_ko": "야소하치 공원",
+      "category": "park",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_shirahegaike_park",
+      "zone_id": "yasohachi_town",
+      "name_ja": "白蛇ヶ池公園",
+      "name_ko": "시라헤가이케 공원",
+      "category": "park",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_sevenmart",
+      "zone_id": "yasohachi_town",
+      "name_ja": "コンビニ SEVENMART",
+      "name_ko": "편의점 세븐마트",
+      "category": "commercial",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_hanazono_nursery",
+      "zone_id": "yasohachi_town",
+      "name_ja": "聖・花園保育園",
+      "name_ko": "성 하나조노 보육원",
+      "category": "public",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1080,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_city_hospital",
+      "zone_id": "yasohachi_town",
+      "name_ja": "市民病院",
+      "name_ko": "시민병원",
+      "category": "public",
+      "indoor": true,
+      "open_minute": 540,
+      "close_minute": 1380,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_yasohachi_coast",
+      "zone_id": "yasohachi_town",
+      "name_ja": "八十八海岸",
+      "name_ko": "야소하치 해안",
+      "category": "landmark",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_tomomi_house",
+      "zone_id": "yasohachi_town",
+      "name_ja": "水野友美の家",
+      "name_ko": "미즈노 토모미의 집",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_izumi_house",
+      "zone_id": "yasohachi_town",
+      "name_ja": "篠原いずみの家",
+      "name_ko": "시노하라 이즈미의 집",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_karen_house",
+      "zone_id": "yasohachi_town",
+      "name_ja": "舞島可憐の家",
+      "name_ko": "마이지마 카렌의 집",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_youko_house",
+      "zone_id": "yasohachi_town",
+      "name_ja": "南川モータース・洋子の家",
+      "name_ko": "미나미카와 모터스·요코의 집",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_akira_house",
+      "zone_id": "yasohachi_town",
+      "name_ja": "川尻あきらの家",
+      "name_ko": "카와지리 아키라의 집",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_saionji_mansion",
+      "zone_id": "yasohachi_town",
+      "name_ja": "西御寺邸",
+      "name_ko": "사이온지 저택",
+      "category": "residence",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_gate",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "八十八学園 校門前",
+      "name_ko": "야소하치 학원 교문",
+      "category": "school",
+      "indoor": false,
+      "open_minute": 450,
+      "close_minute": 1200,
+      "connected_to": [
+        { "target_id": "loc_home_front", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_school_yard", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_3b", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_staffroom", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_library", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_yard",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "校庭",
+      "name_ko": "운동장",
+      "category": "school",
+      "indoor": false,
+      "open_minute": 450,
+      "close_minute": 1200,
+      "connected_to": [
+        { "target_id": "loc_school_gate", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_tennis", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_kyudo", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_gym_back", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_3b",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "3年B組教室",
+      "name_ko": "3학년 B반 교실",
+      "category": "school",
+      "indoor": true,
+      "open_minute": 450,
+      "close_minute": 1200,
+      "connected_to": [
+        { "target_id": "loc_school_gate", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_library", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_photo_club", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_staffroom",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "職員室",
+      "name_ko": "교무실",
+      "category": "school",
+      "indoor": true,
+      "open_minute": 480,
+      "close_minute": 1140,
+      "connected_to": [
+        { "target_id": "loc_school_gate", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_library",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "図書室",
+      "name_ko": "도서실",
+      "category": "school",
+      "indoor": true,
+      "open_minute": 480,
+      "close_minute": 1080,
+      "connected_to": [
+        { "target_id": "loc_school_gate", "travel_minutes": 10, "mode": "school_step" },
+        { "target_id": "loc_school_3b", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_tennis",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "テニスコート",
+      "name_ko": "테니스 코트",
+      "category": "school",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1140,
+      "connected_to": [
+        { "target_id": "loc_school_yard", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_kyudo",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "弓道場",
+      "name_ko": "궁도장",
+      "category": "school",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1140,
+      "connected_to": [
+        { "target_id": "loc_school_yard", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_gym_back",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "体育館裏・ネット裏",
+      "name_ko": "체육관 뒤·네트 뒤",
+      "category": "school",
+      "indoor": false,
+      "open_minute": 450,
+      "close_minute": 1200,
+      "connected_to": [
+        { "target_id": "loc_school_yard", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_school_photo_club",
+      "zone_id": "yasohachi_gakuen",
+      "name_ja": "写真部部室",
+      "name_ko": "사진부 부실",
+      "category": "school",
+      "indoor": true,
+      "open_minute": 480,
+      "close_minute": 1140,
+      "connected_to": [
+        { "target_id": "loc_school_3b", "travel_minutes": 10, "mode": "school_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_kisaragi_station",
+      "zone_id": "kisaragi_town",
+      "name_ja": "如月駅",
+      "name_ko": "키사라기 역",
+      "category": "transit",
+      "indoor": false,
+      "open_minute": 360,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_yasohachi_station", "travel_minutes": 30, "mode": "train" },
+        { "target_id": "loc_studio_ataru", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_station_hotel", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_game_center", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_talent_prod", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_tv_station", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_kisaragi_shrine", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_takadai", "travel_minutes": 15, "mode": "town_map" },
+        { "target_id": "loc_construction_site", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_studio_ataru",
+      "zone_id": "kisaragi_town",
+      "name_ja": "スタジオATARU",
+      "name_ko": "스튜디오 ATARU",
+      "category": "leisure",
+      "indoor": true,
+      "open_minute": 600,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_station_hotel",
+      "zone_id": "kisaragi_town",
+      "name_ja": "ステーションホテル",
+      "name_ko": "스테이션 호텔",
+      "category": "leisure",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_game_center",
+      "zone_id": "kisaragi_town",
+      "name_ja": "ゲームセンター",
+      "name_ko": "게임센터",
+      "category": "leisure",
+      "indoor": true,
+      "open_minute": 600,
+      "close_minute": 1380,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_talent_prod",
+      "zone_id": "kisaragi_town",
+      "name_ja": "芸能プロダクション VIP",
+      "name_ko": "연예 프로덕션 VIP",
+      "category": "commercial",
+      "indoor": true,
+      "open_minute": 540,
+      "close_minute": 1260,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_tv_station",
+      "zone_id": "kisaragi_town",
+      "name_ja": "TV局",
+      "name_ko": "방송국",
+      "category": "commercial",
+      "indoor": true,
+      "open_minute": 540,
+      "close_minute": 1320,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_kisaragi_shrine",
+      "zone_id": "kisaragi_town",
+      "name_ja": "如月神社",
+      "name_ko": "키사라기 신사",
+      "category": "landmark",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_takadai",
+      "zone_id": "kisaragi_town",
+      "name_ja": "高台",
+      "name_ko": "언덕 전망대",
+      "category": "landmark",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_construction_site",
+      "zone_id": "kisaragi_town",
+      "name_ja": "工事現場",
+      "name_ko": "공사현장",
+      "category": "work",
+      "indoor": false,
+      "open_minute": 480,
+      "close_minute": 1080,
+      "connected_to": [
+        { "target_id": "loc_kisaragi_station", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_nagashima_ryokan",
+      "zone_id": "touji_onsen",
+      "name_ja": "永島旅館",
+      "name_ko": "나가시마 료칸",
+      "category": "resort",
+      "indoor": true,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_onsen_open_bath", "travel_minutes": 10, "mode": "indoor_step" },
+        { "target_id": "loc_onsen_ski_slope", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_onsen_open_bath",
+      "zone_id": "touji_onsen",
+      "name_ja": "露天風呂",
+      "name_ko": "노천온천",
+      "category": "resort",
+      "indoor": false,
+      "open_minute": 0,
+      "close_minute": 1440,
+      "connected_to": [
+        { "target_id": "loc_nagashima_ryokan", "travel_minutes": 10, "mode": "indoor_step" }
+      ],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "loc_onsen_ski_slope",
+      "zone_id": "touji_onsen",
+      "name_ja": "ゲレンデ",
+      "name_ko": "스키 슬로프",
+      "category": "resort",
+      "indoor": false,
+      "open_minute": 540,
+      "close_minute": 1080,
+      "connected_to": [
+        { "target_id": "loc_nagashima_ryokan", "travel_minutes": 15, "mode": "town_map" }
+      ],
+      "evidence_level": "[확인]"
+    }
+  ]
+}

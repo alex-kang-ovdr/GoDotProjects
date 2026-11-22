@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "doukyuusei-2",
+  "clock_spec": {
+    "base_quantum_minutes": 5,
+    "default_wake_minute": 480,
+    "default_sleep_cutoff_minute": 1440,
+    "midnight_rollover_note": "기본 자유행동 시작 시각은 AM 08:00(480분). 일부 심야 이벤트(예: 1/6 AM 02:00 미사코 거실 이벤트)는 해당 날짜 00:00~02:00(0~180분) 구간으로 기록된다.",
+    "forced_curfew": false,
+    "evidence_level": "[확인]"
+  },
+  "time_slots": [
+    { "id": "late_night", "label_ko": "심야", "start_minute": 0, "end_minute": 360 },
+    { "id": "early_morning", "label_ko": "이른 아침", "start_minute": 360, "end_minute": 480 },
+    { "id": "morning", "label_ko": "오전", "start_minute": 480, "end_minute": 720 },
+    { "id": "noon", "label_ko": "정오", "start_minute": 720, "end_minute": 840 },
+    { "id": "afternoon", "label_ko": "오후", "start_minute": 840, "end_minute": 1020 },
+    { "id": "evening", "label_ko": "저녁", "start_minute": 1020, "end_minute": 1200 },
+    { "id": "night", "label_ko": "밤", "start_minute": 1200, "end_minute": 1440 }
+  ],
+  "days": [
+    {
+      "day_index": 1,
+      "date": "12-22",
+      "label_ja": "12月22日",
+      "label_ko": "12월 22일",
+      "day_type": "winter_break_start",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "본편 자유행동 개시일(AM 08:00 주인공 자실). 다수 히로인 초기 조우 및 온천 사전 플래그 시작.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 2,
+      "date": "12-23",
+      "label_ja": "12月23日",
+      "label_ko": "12월 23일",
+      "day_type": "holiday",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "아키라·요코 중재 사전 플래그 마감 구간(12/22~23), 카렌·사쿠라코·미사토 초기 루프 진행.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 3,
+      "date": "12-24",
+      "label_ja": "12月24日",
+      "label_ko": "12월 24일 (크리스마스 이브)",
+      "day_type": "christmas_eve",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "PM 2:00 찻집 개구리 아저씨(미사코), PM 8:00 거실 유이 외투, PM 11:00 거실 미사코, 시민병원 사쿠라코 고백 전조.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 4,
+      "date": "12-25",
+      "label_ja": "12月25日",
+      "label_ko": "12월 25일 (크리스마스)",
+      "day_type": "christmas",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "코즈에 테니스코트/도서실 약속, 타나카 미사 야소하치역 첫 충돌 구간 개시, 카렌 라이브·방송국 이벤트.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 5,
+      "date": "12-26",
+      "label_ja": "12月26日",
+      "label_ko": "12월 26일",
+      "day_type": "regular",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "카렌 3-B 교실 교복 덮어주기 및 요시키 사진 거래 거절 분기 개시, 아즈미-텐도 연적 이벤트 전개.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 6,
+      "date": "12-27",
+      "label_ja": "12月27日",
+      "label_ko": "12월 27일",
+      "day_type": "regular",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "온천 분기 직전 준비일. 미노리 3-B 화병 사전 이벤트 마감, 이즈미 사전 데이트 준비 및 세이브 권장 시점.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 7,
+      "date": "12-28",
+      "label_ja": "12月28日",
+      "label_ko": "12월 28일 (온천 분기 결정일)",
+      "day_type": "macro_branch",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "AM 10:00~PM 9:00 자실 아키라 온천 당첨 전화. 참가 여부 및 파트너(유이/토모미/이즈미) 선택이 전체 15인 중 7인 이상 루트를 갈라놓는 최대 분기점.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 8,
+      "date": "12-29",
+      "label_ja": "12月29日",
+      "label_ko": "12월 29일 (동지온천 1일차 / 마을 잔류 분기)",
+      "day_type": "onsen_or_town",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "active_zones_if_onsen": ["touji_onsen"],
+      "special_notes": "온천 참가 시 나가시마 료칸·노천온천·슬로프 진입(사치코·쿠미코·미사토 핵심). 마을 잔류 시 미사 테니스 승부(09:00) 또는 미노리 10:30 고백 목격 & 13:00 시라헤가이케 구출 진행.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 9,
+      "date": "12-30",
+      "label_ja": "12月30日",
+      "label_ko": "12월 30일 (동지온천 2일차 / 마을 잔류 분기)",
+      "day_type": "onsen_or_town",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "active_zones_if_onsen": ["touji_onsen"],
+      "special_notes": "온천 2일차 및 귀환. 마을 잔류 시 미사 키사라기 데이트(12:45~) 및 미레이·아즈미 연말 전개.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 10,
+      "date": "12-31",
+      "label_ja": "12月31日",
+      "label_ko": "12월 31일 (섣달그믐)",
+      "day_type": "new_years_eve",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "PM 3:00 사이온지 정보 -> PM 5:00 스테이션 호텔 미레이 위로, PM 10:00 시민병원 사쿠라코 야간 데이트.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 11,
+      "date": "01-01",
+      "label_ja": "1月1日",
+      "label_ko": "1월 1일 (설날·하츠모데)",
+      "day_type": "new_years_day",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "AM 8:00 유이 키사라기 신사 첫참배, PM 2:00 시민병원 사쿠라코 오인 충격 이벤트, 심야 욕실 미사코 자동 이벤트.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 12,
+      "date": "01-02",
+      "label_ja": "1月2日",
+      "label_ko": "1월 2일",
+      "day_type": "new_year_holiday",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "신년 데이트 및 쿠미코 상경/연계 이벤트 개시 구간.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 13,
+      "date": "01-03",
+      "label_ja": "1月3日",
+      "label_ko": "1월 3일",
+      "day_type": "new_year_holiday",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "각 히로인 후반 갈등·신년 순회 이벤트 집중 구간.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 14,
+      "date": "01-04",
+      "label_ja": "1月4日",
+      "label_ko": "1월 4일",
+      "day_type": "regular",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "토모미 사진부실 진상 규명 및 오해 해소(1/4 이후), 미노리 영화 권유 분기.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 15,
+      "date": "01-05",
+      "label_ja": "1月5日",
+      "label_ko": "1월 5일",
+      "day_type": "regular",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "미노리 키사라기역 약속 및 각 히로인 최종 직전 관계 확정 이벤트.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 16,
+      "date": "01-06",
+      "label_ja": "1月6日",
+      "label_ko": "1월 6일 (자유행동 최종일)",
+      "day_type": "final_free_day",
+      "playable": true,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen", "kisaragi_town"],
+      "special_notes": "AM 2:00 미사코 거실 최종 고백, 오후 사쿠라코 야소하치역→해안, 밤 유이 최종 이벤트. 온천 연계 루트(요코·이즈미·쿠미코·사치코·미사토) 진행 중 당일 자택 귀가 시 플래그 파손/배드 주의.",
+      "evidence_level": "[확인]"
+    },
+    {
+      "day_index": 17,
+      "date": "01-07",
+      "label_ja": "1月7日",
+      "label_ko": "1월 7일 (3학기 시업식·엔딩 판정일)",
+      "day_type": "ending_resolution",
+      "playable": false,
+      "active_zones_default": ["yasohachi_town", "yasohachi_gakuen"],
+      "special_notes": "강제 귀환 및 3학기 시업식 고백/에필로그 판정. 누적 플래그와 우선순위 규칙에 따라 최종 엔딩 결정.",
+      "evidence_level": "[확인]"
+    }
+  ]
+}

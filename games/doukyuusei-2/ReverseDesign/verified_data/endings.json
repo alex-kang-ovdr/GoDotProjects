@@ -1,0 +1,198 @@
+{
+  "schema_version": "1.0.0",
+  "game_id": "doukyuusei-2",
+  "resolution_day": 17,
+  "resolution_rule": "1월 7일 3학기 시업식 도달 시 evaluation_priority 내림차순으로 엔딩 조건을 평가하여 첫 일치 엔딩을 확정한다. 미나미카와 요코의 우선순위 트랩 플래그(flg_youko_ending_override_active)가 활성화된 경우 타 히로인 완료 플래그보다 우선 덮어쓰기 된다.",
+  "endings": [
+    {
+      "id": "end_youko_main",
+      "character_id": "chr_youko",
+      "category": "heroine_override",
+      "title_ko": "미나미카와 요코 엔딩 1 (바이크·우선권 덮어쓰기 포함)",
+      "evaluation_priority": 1000,
+      "required_flags": ["flg_youko_route_complete", "flg_youko_ending_override_active"],
+      "blocked_by_flags": ["flg_youko_route_alt_variant", "flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_youko_alt",
+      "character_id": "chr_youko",
+      "category": "heroine_override",
+      "title_ko": "미나미카와 요코 엔딩 2 (후일담 분기)",
+      "evaluation_priority": 990,
+      "required_flags": ["flg_youko_route_complete", "flg_youko_route_alt_variant"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_yui",
+      "character_id": "chr_yui",
+      "category": "heroine",
+      "title_ko": "나루사와 유이 엔딩",
+      "evaluation_priority": 900,
+      "required_flags": ["flg_yui_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_misako",
+      "character_id": "chr_misako",
+      "category": "heroine",
+      "title_ko": "나루사와 미사코 엔딩",
+      "evaluation_priority": 890,
+      "required_flags": ["flg_misako_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_sakurako",
+      "character_id": "chr_sakurako",
+      "category": "heroine",
+      "title_ko": "스기모토 사쿠라코 엔딩",
+      "evaluation_priority": 880,
+      "required_flags": ["flg_sakurako_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_tomomi",
+      "character_id": "chr_tomomi",
+      "category": "heroine",
+      "title_ko": "미즈노 토모미 엔딩",
+      "evaluation_priority": 870,
+      "required_flags": ["flg_tomomi_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_izumi",
+      "character_id": "chr_izumi",
+      "category": "heroine",
+      "title_ko": "시노하라 이즈미 엔딩",
+      "evaluation_priority": 860,
+      "required_flags": ["flg_izumi_route_complete"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_karen",
+      "character_id": "chr_karen",
+      "category": "heroine",
+      "title_ko": "마이지마 카렌 엔딩",
+      "evaluation_priority": 850,
+      "required_flags": ["flg_karen_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_kozue",
+      "character_id": "chr_kozue",
+      "category": "heroine",
+      "title_ko": "츠즈키 코즈에 엔딩",
+      "evaluation_priority": 840,
+      "required_flags": ["flg_kozue_route_complete"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_mirei",
+      "character_id": "chr_mirei",
+      "category": "heroine",
+      "title_ko": "카타기리 미레이 엔딩",
+      "evaluation_priority": 830,
+      "required_flags": ["flg_mirei_route_complete"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_minori",
+      "character_id": "chr_minori",
+      "category": "heroine",
+      "title_ko": "카토 미노리(스즈키 히로코) 엔딩",
+      "evaluation_priority": 820,
+      "required_flags": ["flg_minori_route_complete"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_azumi",
+      "character_id": "chr_azumi",
+      "category": "heroine",
+      "title_ko": "야스다 아즈미 엔딩",
+      "evaluation_priority": 810,
+      "required_flags": ["flg_azumi_route_complete"],
+      "blocked_by_flags": ["flg_azumi_tendo_lost"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_misato",
+      "character_id": "chr_misato",
+      "category": "heroine",
+      "title_ko": "노노무라 미사토 엔딩",
+      "evaluation_priority": 800,
+      "required_flags": ["flg_misato_route_complete"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_sachiko",
+      "character_id": "chr_sachiko",
+      "category": "heroine",
+      "title_ko": "나가시마 사치코 엔딩",
+      "evaluation_priority": 790,
+      "required_flags": ["flg_sachiko_route_complete"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_kumiko",
+      "character_id": "chr_kumiko",
+      "category": "heroine",
+      "title_ko": "나가시마 쿠미코 엔딩",
+      "evaluation_priority": 780,
+      "required_flags": ["flg_kumiko_route_complete"],
+      "blocked_by_flags": ["flg_onsen_jan6_home_broken"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_misa",
+      "character_id": "chr_misa",
+      "category": "heroine",
+      "title_ko": "타나카 미사 엔딩",
+      "evaluation_priority": 770,
+      "required_flags": ["flg_misa_route_complete"],
+      "blocked_by_flags": ["flg_onsen_trip_joined"],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_azumi_rival_fail",
+      "character_id": "chr_azumi",
+      "category": "route_fail",
+      "title_ko": "아즈미 루트 패배 분기 (텐도 신칸센에게 양보)",
+      "evaluation_priority": 120,
+      "required_flags": ["flg_azumi_tendo_lost"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_onsen_jan6_home_fail",
+      "character_id": null,
+      "category": "route_fail",
+      "title_ko": "1/6 자택 귀가 제약 위반 (온천 연계 플래그 파손)",
+      "evaluation_priority": 110,
+      "required_flags": ["flg_onsen_jan6_home_broken"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    },
+    {
+      "id": "end_solo_normal",
+      "character_id": "chr_ryunosuke",
+      "category": "normal_bad",
+      "title_ko": "솔로 노멀/배드 엔딩 (미공략 시업식)",
+      "evaluation_priority": 0,
+      "required_flags": ["flg_prologue_done"],
+      "blocked_by_flags": [],
+      "evidence_level": "[확인]"
+    }
+  ]
+}
