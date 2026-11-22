@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>귀축왕 란스 · Kichikuou Rance — Hybrid SLG &amp; Character Scenario Engine</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="kr-shell">
+    <!-- Top Royal HUD -->
+    <header class="kr-topbar">
+      <div class="kr-brand">
+        <div class="kr-crest" aria-hidden="true">👑</div>
+        <div class="kr-brand-text">
+          <h1>귀축왕 란스 <span class="kr-en">KICHIKUOU RANCE</span></h1>
+          <div class="kr-subtitle" id="hud-phase-badge">리자스 내란 진압 페이즈</div>
+        </div>
+      </div>
+
+      <div class="kr-hud-stats">
+        <div class="kr-stat-chip">
+          <span class="label">달력 / 턴</span>
+          <strong id="hud-calendar">LP 3/04/1 · T1</strong>
+        </div>
+        <div class="kr-stat-chip gold">
+          <span class="label">국고 자금</span>
+          <strong id="hud-gold">18,000G</strong>
+        </div>
+        <div class="kr-stat-chip">
+          <span class="label">군단 사기</span>
+          <strong id="hud-morale">75%</strong>
+        </div>
+        <div class="kr-stat-chip">
+          <span class="label">지배 영토</span>
+          <strong id="hud-territories">3 / 29</strong>
+        </div>
+      </div>
+
+      <div class="kr-top-actions">
+        <button id="btn-open-codex" class="kr-btn ghost" type="button">14 엔딩 도감</button>
+        <button id="btn-open-save" class="kr-btn ghost" type="button">저장 / 불러오기</button>
+        <button id="btn-new-game" class="kr-btn ghost" type="button">새 캠페인</button>
+      </div>
+    </header>
+
+    <!-- Weekly Typed Action Slot Bar -->
+    <section class="kr-slotbar" aria-label="주간 액션 슬롯">
+      <div class="kr-slots-list" id="weekly-slots-bar">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="kr-slotbar-right">
+        <button id="btn-end-turn" class="kr-btn primary end-turn-btn" type="button">
+          턴 종료 ▶
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Workspace: Continent Map + Strategic Dock -->
+    <main class="kr-workspace">
+      <!-- Left: Interactive Continent Map (29 Territories) -->
+      <section class="kr-map-panel">
+        <div class="kr-map-header">
+          <div class="kr-map-title">
+            <h2>루드라사움 대륙 전략 맵 <span class="muted">(29개 연결 거점 · 10대 세력)</span></h2>
+          </div>
+          <div class="kr-map-legend-toggle">
+            <span class="legend-pill frontier">황금 테두리: 침공 가능 전선</span>
+            <span class="legend-pill crisis">! 표시: 기한·위기 시나리오</span>
+          </div>
+        </div>
+
+        <div class="kr-map-stage">
+          <svg id="continent-map-svg" viewBox="0 0 1080 640" role="img" aria-label="루드라사움 대륙 29개 영토 전략 맵"></svg>
+        </div>
+
+        <div class="kr-faction-bar" id="faction-legend-bar">
+          <!-- All 10 factions dynamically rendered -->
+        </div>
+      </section>
+
+      <!-- Right: Strategic Command, Scenarios/Timers, 33 Commanders, Chronicle -->
+      <aside class="kr-dock">
+        <nav class="kr-tabs" role="tablist">
+          <button class="kr-tab active" data-tab="territory" role="tab" type="button">영토 명령</button>
+          <button class="kr-tab" data-tab="scenarios" role="tab" type="button">
+            시나리오·위기 <span class="tab-badge" id="badge-scenarios">0</span>
+          </button>
+          <button class="kr-tab" data-tab="commanders" role="tab" type="button">
+            지휘관 <span class="tab-badge neutral" id="badge-commanders">8/33</span>
+          </button>
+          <button class="kr-tab" data-tab="chronicle" role="tab" type="button">연대기</button>
+        </nav>
+
+        <div class="kr-dock-body">
+          <div id="tab-territory" class="kr-tab-pane active"></div>
+          <div id="tab-scenarios" class="kr-tab-pane"></div>
+          <div id="tab-commanders" class="kr-tab-pane"></div>
+          <div id="tab-chronicle" class="kr-tab-pane"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Toast feedback -->
+    <div id="toast-container" class="kr-toast-container" aria-live="polite"></div>
+
+    <!-- Modal: 4-Squad Deployment -->
+    <div id="modal-deploy" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card deploy-card">
+        <div class="kr-modal-header">
+          <h3 id="deploy-title">침공 부대 편성 (최대 4부대 · 전열/후열)</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-deploy" type="button">✕</button>
+        </div>
+        <div id="deploy-body" class="kr-modal-body"></div>
+        <div class="kr-modal-footer">
+          <button class="kr-btn ghost" data-close-modal="modal-deploy" type="button">취소</button>
+          <button id="btn-launch-battle" class="kr-btn danger" type="button">⚔ 출격 개시</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: 4v4 Front/Back Row Battle Arena -->
+    <div id="modal-battle" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card battle-card">
+        <div class="kr-modal-header battle-header">
+          <div>
+            <h3 id="battle-title">군단 전투</h3>
+            <div class="battle-meta" id="battle-meta"></div>
+          </div>
+          <div class="battle-header-actions">
+            <button id="btn-battle-auto-step" class="kr-btn ghost small" type="button">1턴 자동</button>
+            <button id="btn-battle-auto-all" class="kr-btn gold small" type="button">전체 자동전투</button>
+            <button id="btn-battle-retreat" class="kr-btn danger small" type="button">전략 철수</button>
+          </div>
+        </div>
+
+        <div class="battle-queue-strip">
+          <span class="queue-label">최소 병수 행동순 큐 ▶</span>
+          <div id="battle-turn-queue" class="queue-items"></div>
+        </div>
+
+        <div class="battle-arena-grid" id="battle-arena-grid">
+          <!-- Player Back / Player Front  VS  Enemy Front / Enemy Back -->
+        </div>
+
+        <div class="battle-controls-panel">
+          <div class="battle-actor-info" id="battle-actor-info"></div>
+          <div class="battle-action-buttons" id="battle-action-buttons"></div>
+        </div>
+
+        <div class="battle-log-box" id="battle-log-box"></div>
+      </div>
+    </div>
+
+    <!-- Modal: Save / Load -->
+    <div id="modal-save" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card small-card">
+        <div class="kr-modal-header">
+          <h3>캠페인 저장 / 불러오기 (로컬 슬롯)</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-save" type="button">✕</button>
+        </div>
+        <div id="save-slots-body" class="kr-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Modal: 14 Endings & Destiny Codex -->
+    <div id="modal-codex" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card wide-card">
+        <div class="kr-modal-header">
+          <h3>14개 메인 엔딩 &amp; 캐릭터 운명(Destiny) 도감</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-codex" type="button">✕</button>
+        </div>
+        <div id="codex-body" class="kr-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Modal: New Campaign Mode Picker -->
+    <div id="modal-newgame" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card small-card">
+        <div class="kr-modal-header">
+          <h3>새 캠페인 시작</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-newgame" type="button">✕</button>
+        </div>
+        <div class="kr-modal-body">
+          <p class="muted">시작 페이즈를 선택하세요. 모든 시나리오·타이머·4v4 전투는 검증 데이터 기반으로 결정론적 실행됩니다.</p>
+          <div class="newgame-choices">
+            <button id="btn-start-rebellion" class="kr-btn primary full" type="button">
+              👑 본편 시작 — 리자스 내란 진압 (권장)
+            </button>
+            <button id="btn-start-prologue" class="kr-btn gold full" type="button">
+              ⚔ 도적 프롤로그 시작 — 루베란 토벌대 분기 (도적왕 엔딩 체험)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Ending Achieved Banner -->
+    <div id="modal-ending" class="kr-modal hidden" role="dialog" aria-modal="true">
+      <div class="kr-modal-card ending-card">
+        <div class="kr-modal-header">
+          <h3 id="ending-modal-title">엔딩 달성</h3>
+          <button class="kr-icon-btn" data-close-modal="modal-ending" type="button">✕</button>
+        </div>
+        <div id="ending-modal-body" class="kr-modal-body"></div>
+        <div class="kr-modal-footer">
+          <button class="kr-btn ghost" data-close-modal="modal-ending" type="button">맵 확인</button>
+          <button id="btn-ending-newgame" class="kr-btn primary" type="button">새 캠페인 시작</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zero external CDNs; works identically via file:// and HTTP -->
+  <script src="data/game-data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

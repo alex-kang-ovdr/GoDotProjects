@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "kichikuou-rance",
+  "slug": "kichikuou-rance",
+  "title": "귀축왕 란스",
+  "titleEn": "Kichikuou Rance",
+  "subtitle": "전략 시뮬레이션과 캐릭터별 시나리오의 통합",
+  "description": "10대 세력과 29개 대륙 영토, 유형별 주간 액션 슬롯, 최소 병수 우선 4v4 전열/후열 군단전, 그리고 33명 정사 지휘관과 16개 위기 타이머·14개 멀티 엔딩이 결합된 하이브리드 전략 시뮬레이션 RPG.",
+  "descriptionEn": "Hybrid grand-strategy SLG and character scenario RPG featuring 10 factions, 29 connected continent territories, typed weekly action slots, smallest-troop-first 4v4 front/back row tactical combat, 33 canonical commanders, 16 crisis timers, and 14 endings.",
+  "genre": "SLG / Tactical RPG",
+  "tags": [
+    "strategy",
+    "slg",
+    "tactical-rpg",
+    "turn-based",
+    "character-scenario",
+    "multi-ending"
+  ],
+  "entry": "index.html",
+  "webEntry": "Web/index.html",
+  "version": "1.0.0",
+  "updatedOn": "2026-11-22",
+  "runtime": {
+    "type": "web",
+    "offlineCapable": true,
+    "storageNamespace": "playhub.kichikuou-rance"
+  },
+  "media": {
+    "cover": "assets/cover.svg"
+  },
+  "controls": {
+    "primary": "mouse",
+    "supported": ["mouse", "touch", "keyboard"]
+  },
+  "dataSources": {
+    "factions": "ReverseDesign/verified_data/factions.json",
+    "territories": "ReverseDesign/verified_data/territories.json",
+    "unitClasses": "ReverseDesign/verified_data/unit_classes.json",
+    "characters": "ReverseDesign/verified_data/characters.json",
+    "scenarioEvents": "ReverseDesign/verified_data/scenario_events_and_timers.json",
+    "endings": "ReverseDesign/verified_data/endings.json"
+  }
+}

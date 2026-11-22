@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480" role="img" aria-label="귀축왕 란스 Kichikuou Rance Cover">
+  <defs>
+    <radialGradient id="bgObsidian" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#251722"/>
+      <stop offset="55%" stop-color="#141118"/>
+      <stop offset="100%" stop-color="#09080d"/>
+    </radialGradient>
+    <linearGradient id="goldEmblem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0b8"/>
+      <stop offset="45%" stop-color="#e5b44c"/>
+      <stop offset="100%" stop-color="#9e6d1c"/>
+    </linearGradient>
+    <linearGradient id="crimsonBanner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d62839"/>
+      <stop offset="65%" stop-color="#8f1422"/>
+      <stop offset="100%" stop-color="#4e0912"/>
+    </linearGradient>
+    <linearGradient id="parchmentMap" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c2420" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#191418" stop-opacity="0.96"/>
+    </linearGradient>
+    <filter id="glowGold" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Obsidian Tactical Table Background -->
+  <rect width="800" height="480" fill="url(#bgObsidian)"/>
+
+  <!-- Ornate Outer Double Border -->
+  <rect x="14" y="14" width="772" height="452" rx="12" fill="none" stroke="#c89b3c" stroke-width="2" stroke-opacity="0.7"/>
+  <rect x="22" y="22" width="756" height="436" rx="8" fill="none" stroke="#c89b3c" stroke-width="0.8" stroke-opacity="0.35"/>
+
+  <!-- Subtle Cartographic Grid Lines -->
+  <g stroke="#d4af37" stroke-opacity="0.08" stroke-width="1">
+    <line x1="22" y1="120" x2="778" y2="120"/>
+    <line x1="22" y1="240" x2="778" y2="240"/>
+    <line x1="22" y1="360" x2="778" y2="360"/>
+    <line x1="160" y1="22" x2="160" y2="458"/>
+    <line x1="320" y1="22" x2="320" y2="458"/>
+    <line x1="480" y1="22" x2="480" y2="458"/>
+    <line x1="640" y1="22" x2="640" y2="458"/>
+  </g>
+
+  <!-- Stylized Continent Silhouette (Dark Parchment-Obsidian) -->
+  <path d="M90,145 L175,92 L295,110 L425,75 L565,98 L685,126 L705,215 L665,305 L725,355 L685,392 L580,382 L475,405 L350,388 L235,372 L132,330 L84,242 Z"
+        fill="url(#parchmentMap)" stroke="#c89b3c" stroke-width="1.6" stroke-opacity="0.55"/>
+
+  <!-- Eastern Island (JAPAN) -->
+  <path d="M726,258 L758,286 L748,348 L714,332 Z"
+        fill="url(#parchmentMap)" stroke="#e0704c" stroke-width="1.4" stroke-opacity="0.7"/>
+
+  <!-- Territory Adjacency Network Lines -->
+  <g stroke="#e5b44c" stroke-opacity="0.34" stroke-width="1.8" stroke-dasharray="4 3">
+    <line x1="150" y1="225" x2="245" y2="215"/>
+    <line x1="245" y1="215" x2="360" y2="145"/>
+    <line x1="245" y1="215" x2="355" y2="315"/>
+    <line x1="360" y1="145" x2="490" y2="165"/>
+    <line x1="355" y1="315" x2="495" y2="320"/>
+    <line x1="490" y1="165" x2="612" y2="188"/>
+    <line x1="495" y1="320" x2="612" y2="188"/>
+    <line x1="612" y1="188" x2="635" y2="295"/>
+    <line x1="635" y1="295" x2="735" y2="305"/>
+  </g>
+
+  <!-- Faction Territory Nodes -->
+  <!-- Monster Realm (Deep Crimson-Violet) -->
+  <circle cx="150" cy="225" r="14" fill="#6e172a" stroke="#ff5c7c" stroke-width="2.2"/>
+  <circle cx="245" cy="215" r="11" fill="#522563" stroke="#d48cff" stroke-width="2"/>
+  <!-- Helman (Royal Navy) -->
+  <circle cx="360" cy="145" r="13" fill="#38629c" stroke="#8bb8f5" stroke-width="2"/>
+  <circle cx="490" cy="165" r="10" fill="#38629c" stroke="#8bb8f5" stroke-width="1.8"/>
+  <!-- Zeth (Arcane Purple) -->
+  <circle cx="355" cy="315" r="13" fill="#7a44a8" stroke="#c99cf5" stroke-width="2"/>
+  <circle cx="495" cy="320" r="10" fill="#7a44a8" stroke="#c99cf5" stroke-width="1.8"/>
+  <!-- Free Cities & AL Church -->
+  <circle cx="635" cy="295" r="11" fill="#2f8f6b" stroke="#7de2b8" stroke-width="2"/>
+  <circle cx="565" cy="340" r="9" fill="#c4962c" stroke="#fae08c" stroke-width="1.8"/>
+  <!-- JAPAN -->
+  <circle cx="735" cy="305" r="9" fill="#c95b38" stroke="#ffb194" stroke-width="1.8"/>
+  <!-- Leazas Capital (Crimson & Gold Beacon) -->
+  <circle cx="612" cy="188" r="17" fill="#c92a3e" stroke="#ffd873" stroke-width="3" filter="url(#glowGold)"/>
+
+  <!-- Crimson Leazas Royal Banner (Left Center) -->
+  <g transform="translate(344, 50)">
+    <path d="M0,0 L112,0 L112,174 L56,210 L0,174 Z" fill="url(#crimsonBanner)" stroke="url(#goldEmblem)" stroke-width="3"/>
+    <path d="M8,8 L104,8 L104,166 L56,198 L8,166 Z" fill="none" stroke="#ffd873" stroke-opacity="0.55" stroke-width="1.2"/>
+
+    <!-- Crossed Swords Behind Crown -->
+    <g stroke="url(#goldEmblem)" stroke-width="4.5" stroke-linecap="round">
+      <line x1="22" y1="146" x2="90" y2="54"/>
+      <line x1="90" y1="146" x2="22" y2="54"/>
+      <!-- Crossguards -->
+      <line x1="20" y1="128" x2="38" y2="144" stroke-width="3.5"/>
+      <line x1="92" y1="128" x2="74" y2="144" stroke-width="3.5"/>
+    </g>
+
+    <!-- Gold Crown Emblem -->
+    <path d="M26,112 L34,68 L56,90 L78,68 L86,112 Z" fill="url(#goldEmblem)" stroke="#4a2e08" stroke-width="2" filter="url(#glowGold)"/>
+    <rect x="25" y="112" width="62" height="10" rx="2" fill="url(#goldEmblem)" stroke="#4a2e08" stroke-width="1.5"/>
+    <circle cx="34" cy="64" r="4" fill="#fff2c2"/>
+    <circle cx="56" cy="58" r="5" fill="#fff2c2"/>
+    <circle cx="78" cy="64" r="4" fill="#fff2c2"/>
+    <circle cx="56" cy="102" r="4.5" fill="#b81d2f"/>
+  </g>
+
+  <!-- Title Plate -->
+  <g transform="translate(400, 344)">
+    <rect x="-288" y="-34" width="576" height="106" rx="10" fill="#100c12" fill-opacity="0.88" stroke="url(#goldEmblem)" stroke-width="1.6"/>
+    <text x="0" y="6" text-anchor="middle" font-family="'Noto Serif KR', 'Malgun Gothic', Georgia, serif" font-size="38" font-weight="800" fill="url(#goldEmblem)" letter-spacing="4">귀축왕 란스</text>
+    <text x="0" y="34" text-anchor="middle" font-family="'Segoe UI', Georgia, serif" font-size="14" font-weight="600" fill="#e8d6b3" letter-spacing="3">KICHIKUOU RANCE · HYBRID SLG &amp; SCENARIO ENGINE</text>
+    <text x="0" y="56" text-anchor="middle" font-family="'Malgun Gothic', sans-serif" font-size="12" fill="#c9a875">10대 세력 · 29개 영토 · 4v4 최소병수 군단전 · 33명 지휘관 · 16 위기 타이머 · 14 엔딩</text>
+  </g>
+
+  <!-- Corner Compass Rosettes -->
+  <g stroke="#c89b3c" stroke-opacity="0.5" fill="none" stroke-width="1.2">
+    <circle cx="56" cy="56" r="16"/>
+    <path d="M56,36 L60,52 L76,56 L60,60 L56,76 L52,60 L36,56 L52,52 Z" fill="#c89b3c" fill-opacity="0.3"/>
+  </g>
+</svg>
