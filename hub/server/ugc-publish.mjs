@@ -410,7 +410,8 @@ export function createUgcPublish({
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
       'Content-Security-Policy': ugcCsp,
-      'Cache-Control': isHtml ? 'no-cache' : 'public, max-age=31536000, immutable'
+      'Cache-Control': isHtml ? 'no-cache' : 'public, max-age=31536000, immutable',
+      'CDN-Cache-Control': isHtml ? 'no-store' : 'public, max-age=31536000, immutable'
     };
     if (useGzip) {
       headers['Content-Encoding'] = 'gzip';

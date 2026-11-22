@@ -15,10 +15,12 @@ import {
   validateReleaseContract
 } from '../web/store-catalog.js';
 import {
+  buildCatalogArtifact,
   createCatalogArtifacts,
   formatSha256Digest,
   sha256Hex
 } from './package-builder.mjs';
+import { openCatalogSqlite } from './catalog-sqlite.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_WEB_DIR = path.resolve(HERE, '..', 'web');
@@ -474,6 +476,7 @@ export function createStoreApp(options = {}) {
     webDir = DEFAULT_WEB_DIR,
     serveStatic = true,
     catalog = SAMPLE_CATALOG,
+    catalogDbPath = null,
     ownCatalog = false,
     publisherDrafts = PUBLISHER_DRAFTS,
     customArtifacts = null,
@@ -490,29 +493,97 @@ export function createStoreApp(options = {}) {
   const configuredOrigins = parseAllowedOrigins(allowedOrigins);
   const configuredOriginSet = configuredOrigins ? new Set(configuredOrigins) : null;
 
-  const catalogList = ownCatalog ? [...catalog] : [...catalog].map((item) => structuredClone(item));
-  for (const item of catalogList) {
-    const errors = validateReleaseContract(item);
-    if (errors.length > 0) {
-      throw new Error(`Invalid store catalog entry ${item?.asset_id}: ${errors.join(', ')}`);
-    }
-  }
+  const useSqliteCatalog = Boolean(catalogDbPath && fs.existsSync(catalogDbPath));
+  const sqliteCatalog = useSqliteCatalog ? openCatalogSqlite(catalogDbPath) : null;
 
-  const catalogBySlug = new Map(catalogList.map((item) => [item.asset_id, item]));
-  const catalogCategories = extractCatalogCategories(catalogList);
-  const catalogLicenses = extractCatalogLicenses(catalogList);
-  const catalogTiers = extractCatalogTiers(catalogList);
-  const catalogSources = extractCatalogSources(catalogList);
-  const catalogTopTags = extractTopTags(catalogList, 24);
-  const categoryCounts = {};
-  const licenseCounts = {};
-  const tierCounts = {};
-  for (const item of catalogList) {
-    if (item.category) categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
-    if (item.license) licenseCounts[item.license] = (licenseCounts[item.license] || 0) + 1;
-    if (item.license_tier) tierCounts[item.license_tier] = (tierCounts[item.license_tier] || 0) + 1;
+  let catalogList = null;
+  let catalogBySlug = null;
+  let catalogTotal = 0;
+  let packageCount = 0;
+  let editorialCount = 0;
+  let catalogCategories = [];
+  let catalogLicenses = [];
+  let catalogTiers = [];
+  let catalogSources = [];
+  let catalogTopTags = [];
+  let categoryCounts = {};
+  let licenseCounts = {};
+  let tierCounts = {};
+  let artifacts = null;
+
+  if (sqliteCatalog) {
+    const meta = sqliteCatalog.meta;
+    catalogTotal = meta.catalog_total;
+    packageCount = meta.package_count;
+    editorialCount = meta.editorial_count;
+    catalogCategories = meta.categories;
+    catalogLicenses = meta.licenses;
+    catalogTiers = meta.tiers;
+    catalogSources = meta.sources;
+    catalogTopTags = meta.top_tags;
+    categoryCounts = meta.category_counts;
+    licenseCounts = meta.license_counts;
+    tierCounts = meta.tier_counts;
+    catalogBySlug = {
+      get: (slug) => sqliteCatalog.getBySlug(slug),
+      has: (slug) => Boolean(sqliteCatalog.getBySlug(slug))
+    };
+    const artifactCache = new Map();
+    const MAX_SQLITE_ARTIFACT_CACHE = 32;
+    artifacts = {
+      get size() {
+        return packageCount;
+      },
+      get(key) {
+        if (artifactCache.has(key)) {
+          const hit = artifactCache.get(key);
+          artifactCache.delete(key);
+          artifactCache.set(key, hit);
+          return hit;
+        }
+        const atIdx = key.lastIndexOf('@');
+        if (atIdx <= 0) return undefined;
+        const slug = key.slice(0, atIdx);
+        const item = sqliteCatalog.getBySlug(slug);
+        if (!item || item.release_kind !== 'package') return undefined;
+        const built = buildCatalogArtifact(item, { customArtifacts });
+        if (!built) return undefined;
+        if (artifactCache.size >= MAX_SQLITE_ARTIFACT_CACHE) {
+          const oldest = artifactCache.keys().next().value;
+          if (oldest !== undefined) artifactCache.delete(oldest);
+        }
+        artifactCache.set(key, built);
+        return built;
+      }
+    };
+  } else {
+    catalogList = ownCatalog ? [...catalog] : [...catalog].map((item) => structuredClone(item));
+    for (const item of catalogList) {
+      const errors = validateReleaseContract(item);
+      if (errors.length > 0) {
+        throw new Error(`Invalid store catalog entry ${item?.asset_id}: ${errors.join(', ')}`);
+      }
+    }
+
+    catalogBySlug = new Map(catalogList.map((item) => [item.asset_id, item]));
+    catalogTotal = catalogList.length;
+    packageCount = catalogList.filter((item) => item.release_kind === 'package').length;
+    editorialCount = catalogList.filter((item) => item.release_kind === 'editorial').length;
+    catalogCategories = extractCatalogCategories(catalogList);
+    catalogLicenses = extractCatalogLicenses(catalogList);
+    catalogTiers = extractCatalogTiers(catalogList);
+    catalogSources = extractCatalogSources(catalogList);
+    catalogTopTags = extractTopTags(catalogList, 24);
+    categoryCounts = {};
+    licenseCounts = {};
+    tierCounts = {};
+    for (const item of catalogList) {
+      if (item.category) categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+      if (item.license) licenseCounts[item.license] = (licenseCounts[item.license] || 0) + 1;
+      if (item.license_tier) tierCounts[item.license_tier] = (tierCounts[item.license_tier] || 0) + 1;
+    }
+    artifacts = createCatalogArtifacts(catalogList, customArtifacts);
   }
-  const artifacts = createCatalogArtifacts(catalogList, customArtifacts);
   const store = new JsonLibraryStore(dataDir, { clock });
   const webDirReal = serveStatic && webDir && fs.existsSync(webDir) ? fs.realpathSync(webDir) : null;
 
@@ -650,9 +721,10 @@ export function createStoreApp(options = {}) {
           ok: true,
           service: 'playforge-store',
           schema_version: 1,
-          catalog_count: catalogList.length,
-          package_count: catalogList.filter((item) => item.release_kind === 'package').length,
-          editorial_count: catalogList.filter((item) => item.release_kind === 'editorial').length
+          catalog_backend: sqliteCatalog ? 'sqlite' : 'memory',
+          catalog_count: catalogTotal,
+          package_count: packageCount,
+          editorial_count: editorialCount
         });
       }
 
@@ -718,27 +790,44 @@ export function createStoreApp(options = {}) {
         }
         const account = await resolveAccount(req);
         const savedSet = store.getSavedSet(account.account_key);
-        const filtered = filterCatalogEntries(catalogList, {
-          category,
-          q,
-          release_kind: releaseKind,
-          license,
-          tier,
-          ai,
-          source,
-          tag
-        });
-        const total = filtered.length;
         const paginate = rawPage !== null || rawLimit !== null;
-        const limit = paginate ? Math.max(1, Math.min(200, Number(rawLimit || 24) || 24)) : total;
-        const totalPages = paginate ? Math.max(1, Math.ceil(total / limit)) : 1;
-        const page = paginate ? Math.max(1, Math.min(totalPages, Number(rawPage || 1) || 1)) : 1;
-        const slice = paginate ? filtered.slice((page - 1) * limit, page * limit) : filtered;
+        let total = 0;
+        let limit = 0;
+        let totalPages = 1;
+        let page = 1;
+        let slice = [];
+        if (sqliteCatalog) {
+          const result = sqliteCatalog.query(
+            { category, q, release_kind: releaseKind, license, tier, ai, source, tag },
+            { paginate, page: Number(rawPage || 1) || 1, limit: Number(rawLimit || 24) || 24 }
+          );
+          total = result.total;
+          limit = result.limit;
+          totalPages = result.totalPages;
+          page = result.page;
+          slice = result.items;
+        } else {
+          const filtered = filterCatalogEntries(catalogList, {
+            category,
+            q,
+            release_kind: releaseKind,
+            license,
+            tier,
+            ai,
+            source,
+            tag
+          });
+          total = filtered.length;
+          limit = paginate ? Math.max(1, Math.min(200, Number(rawLimit || 24) || 24)) : total;
+          totalPages = paginate ? Math.max(1, Math.ceil(total / limit)) : 1;
+          page = paginate ? Math.max(1, Math.min(totalPages, Number(rawPage || 1) || 1)) : 1;
+          slice = paginate ? filtered.slice((page - 1) * limit, page * limit) : filtered;
+        }
         const items = slice.map((item) => enrichCatalogItem(item, savedSet));
         return sendJson(res, 200, {
           items,
           total,
-          catalog_total: catalogList.length,
+          catalog_total: catalogTotal,
           page,
           limit,
           total_pages: totalPages,
@@ -1017,6 +1106,7 @@ export function createStoreApp(options = {}) {
     async close() {
       if (closed) return;
       closed = true;
+      sqliteCatalog?.close();
       await store.writeQueue.catch(() => {});
       await new Promise((resolve) => {
         if (!server.listening) {

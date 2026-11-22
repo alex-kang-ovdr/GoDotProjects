@@ -653,6 +653,37 @@ export function createStoreAdmin({
 
   function readLiveCatalogSummary() {
     const baseRoot = platformRoot || path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', '..');
+    const sqlitePath = path.join(baseRoot, 'store', 'data', 'collected-catalog.sqlite');
+    if (fs.existsSync(sqlitePath)) {
+      try {
+        const stat = fs.statSync(sqlitePath);
+        if (cachedLiveCatalog && cachedLiveCatalogMtime === stat.mtimeMs) {
+          return cachedLiveCatalog;
+        }
+        const roDb = new DatabaseSync(sqlitePath, { readOnly: true });
+        try {
+          const row = roDb.prepare('SELECT value_json FROM meta WHERE key = ?').get('summary');
+          if (row?.value_json) {
+            const s = JSON.parse(row.value_json);
+            cachedLiveCatalog = {
+              available: true,
+              totalEntries: s.catalog_total || 0,
+              packageCount: s.package_count || 0,
+              editorialCount: s.editorial_count || 0,
+              collectedCount: s.collected_count || 0,
+              licenses: s.license_counts || {},
+              sources: s.source_counts || {},
+              categoryCount: Array.isArray(s.categories) ? s.categories.length : Object.keys(s.category_counts || {}).length,
+              storeWebUrl: config?.userBaseUrl ? `${String(config.userBaseUrl).replace(/\/$/, '')}/store/` : '/store/'
+            };
+            cachedLiveCatalogMtime = stat.mtimeMs;
+            return cachedLiveCatalog;
+          }
+        } finally {
+          roDb.close();
+        }
+      } catch {}
+    }
     const jsonPath = path.join(baseRoot, 'store', 'data', 'collected-catalog.json');
     const gzPath = `${jsonPath}.gz`;
     const catalogPath = fs.existsSync(jsonPath) ? jsonPath : gzPath;

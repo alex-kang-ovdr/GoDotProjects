@@ -25,7 +25,10 @@ RUN set -eux; \
 FROM node:24-slim AS store-data-prep
 WORKDIR /prep
 COPY store/data ./store/data
-RUN node -e "const fs=require('fs'),z=require('zlib'),p='./store/data/collected-catalog.json'; if(fs.existsSync(p)){fs.writeFileSync(p+'.gz',z.gzipSync(fs.readFileSync(p),{level:9})); fs.unlinkSync(p);}"
+COPY store/server/catalog-sqlite.mjs ./store/server/catalog-sqlite.mjs
+COPY store/web/store-catalog.js ./store/web/store-catalog.js
+RUN node ./store/server/catalog-sqlite.mjs --store-root /prep/store --out /prep/store/data/collected-catalog.sqlite \
+    && rm -f /prep/store/data/collected-catalog.json /prep/store/data/collected-catalog.json.gz
 
 FROM node:24-slim
 

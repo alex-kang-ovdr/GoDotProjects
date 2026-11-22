@@ -193,6 +193,11 @@ const ETAG_CATALOG_PATHS = new Set([
   '/api/store/catalog',
   '/forge/api/platform/templates',
 ]);
+const PUBLIC_CDN_API_TTL = Object.freeze({
+  '/api/games': { browser: 60, cdn: 300, swr: 600 },
+  '/api/avatar/catalog': { browser: 300, cdn: 3600, swr: 86400 },
+  '/api/store/catalog': { browser: 60, cdn: 600, swr: 3600 },
+});
 const MAX_EDGE_COMPRESS_BYTES = 4 * 1024 * 1024;
 const COMPRESSIBLE_CT_RE = /^(?:application\/json|application\/javascript|text\/javascript|text\/html|text\/css|text\/plain|image\/svg\+xml)/i;
 
@@ -309,16 +314,26 @@ export function attachEdgeCompressionAndEtag(req, res, pathname) {
     delete outHeaders.connection;
     delete outHeaders['keep-alive'];
     delete outHeaders['proxy-connection'];
+    const hasAuthContext = Boolean(req.headers.cookie || req.headers.authorization || outHeaders['set-cookie']);
+    const cdnTtl = PUBLIC_CDN_API_TTL[pathname] || null;
     if (allowEtag && !outHeaders['set-cookie']) {
       const etag = `W/"${crypto.createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
       outHeaders.etag = etag;
-      outHeaders['cache-control'] = 'no-cache';
+      if (cdnTtl && !hasAuthContext) {
+        outHeaders['cache-control'] = `public, max-age=${cdnTtl.browser}, s-maxage=${cdnTtl.cdn}, stale-while-revalidate=${cdnTtl.swr}`;
+        outHeaders['cdn-cache-control'] = `public, max-age=${cdnTtl.cdn}, stale-while-revalidate=${cdnTtl.swr}`;
+      } else {
+        outHeaders['cache-control'] = 'private, no-cache';
+        outHeaders['cdn-cache-control'] = 'no-store';
+      }
       const inm = String(req.headers['if-none-match'] || '').trim();
       if (inm === etag) {
         delete outHeaders['content-type'];
         origWriteHead(304, outHeaders);
         return origEnd(doneCb);
       }
+    } else if (!outHeaders['cdn-cache-control']) {
+      outHeaders['cdn-cache-control'] = 'no-store';
     }
     if (preferredEnc && body.length >= 1024) {
       const compressed = preferredEnc === 'br'
@@ -457,6 +472,7 @@ export function serveStatic(req, res, staticRoot) {
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400',
+    'CDN-Cache-Control': ext === '.html' ? 'public, max-age=60, stale-while-revalidate=300' : 'public, max-age=86400, stale-while-revalidate=604800',
     'ETag': etag,
   };
   if (pathname.startsWith('/games/')) {
@@ -535,21 +551,26 @@ if (isDirectExecution) {
     if (!storeInitPromise) {
       storeInitPromise = (async () => {
         try {
-          const [{ createStoreApp }, { loadMergedCatalog }] = await Promise.all([
-            import('../../../store/server/store-api.mjs'),
-            import('../../../store/server/index.mjs'),
-          ]);
           const storeRoot = path.join(repoRoot, 'store');
           const storeDataDir = path.join(DATA_DIR, 'store');
           fs.mkdirSync(storeDataDir, { recursive: true, mode: 0o700 });
-          embeddedStore = createStoreApp({
+          const sqliteCatalogPath = path.join(storeRoot, 'data', 'collected-catalog.sqlite');
+          const useSqliteCatalog = fs.existsSync(sqliteCatalogPath);
+          const { createStoreApp } = await import('../../../store/server/store-api.mjs');
+          const storeOpts = {
             dataDir: storeDataDir,
             webDir: path.join(storeRoot, 'web'),
             serveStatic: true,
-            catalog: loadMergedCatalog(storeRoot),
-            ownCatalog: true,
             internalSecret: storeInternalSecret,
-          });
+          };
+          if (useSqliteCatalog) {
+            storeOpts.catalogDbPath = sqliteCatalogPath;
+          } else {
+            const { loadMergedCatalog } = await import('../../../store/server/index.mjs');
+            storeOpts.catalog = loadMergedCatalog(storeRoot);
+            storeOpts.ownCatalog = true;
+          }
+          embeddedStore = createStoreApp(storeOpts);
           const storeAddr = await embeddedStore.listen(0, '127.0.0.1');
           storeProxy = createStoreProxy({
             upstream: `http://127.0.0.1:${storeAddr.port}`,
@@ -689,6 +710,7 @@ if (isDirectExecution) {
         const headers = {
           'Content-Type': mime,
           'Cache-Control': 'public, max-age=31536000, immutable',
+          'CDN-Cache-Control': 'public, max-age=31536000, immutable',
           'Access-Control-Allow-Origin': '*',
           'Cross-Origin-Resource-Policy': 'cross-origin',
           'X-Content-Type-Options': 'nosniff',

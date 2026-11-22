@@ -14,6 +14,9 @@ import {
   serveStatic,
 } from './hub/entrypoint.mjs';
 import { loadMergedCatalog } from '../../store/server/index.mjs';
+import { buildCatalogSqlite, openCatalogSqlite } from '../../store/server/catalog-sqlite.mjs';
+import { createStoreApp } from '../../store/server/store-api.mjs';
+import { SAMPLE_CATALOG } from '../../store/web/store-catalog.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -239,7 +242,6 @@ test('loadMergedCatalog reads precompressed collected-catalog.json.gz when uncom
 
 test('forge/server.cjs serves precompressed-only vendor-release (.br/.gz + wasm-meta.json) with identity fallback', async t => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-precomp-'));
-  t.after(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
 
   const jsRaw = Buffer.from('console.log("godot-editor-release");'.repeat(20), 'utf8');
   const wasmRaw = Buffer.concat([Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]), Buffer.alloc(2048, 0x42)]);
@@ -258,7 +260,10 @@ test('forge/server.cjs serves precompressed-only vendor-release (.br/.gz + wasm-
   const srv = createForgeServer({ webEditorVendorDir: tmpDir, hubAuth: false });
   await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
   const port = srv.address().port;
-  t.after(() => new Promise(resolve => srv.close(resolve)));
+  t.after(async () => {
+    await new Promise(resolve => { srv.close(resolve); srv.closeAllConnections?.(); });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
 
   const rawGet = (p, hdrs = {}) => new Promise((resolve, reject) => {
     const req = http.request(`http://127.0.0.1:${port}${p}`, { headers: hdrs }, res => {
@@ -291,4 +296,83 @@ test('forge/server.cjs serves precompressed-only vendor-release (.br/.gz + wasm-
   assert.equal(plainRes.status, 200);
   assert.equal(plainRes.headers['content-encoding'], undefined);
   assert.ok(plainRes.body.equals(jsRaw));
+});
+
+test('attachEdgeCompressionAndEtag emits public CDN-Cache-Control for anonymous catalogs and private no-store for authenticated requests', async t => {
+  const payload = JSON.stringify({ items: Array.from({ length: 20 }, (_, i) => ({ id: i, name: `game-${i}` })) });
+  const srv = http.createServer((req, res) => {
+    const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+    attachEdgeCompressionAndEtag(req, res, pathname);
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(payload);
+  });
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const port = srv.address().port;
+  t.after(() => new Promise(resolve => { srv.close(resolve); srv.closeAllConnections?.(); }));
+
+  const rawGet = (p, hdrs = {}) => new Promise((resolve, reject) => {
+    const req = http.request(`http://127.0.0.1:${port}${p}`, { headers: hdrs }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+
+  const anonGames = await rawGet('/api/games', { 'Accept-Encoding': 'br' });
+  assert.equal(anonGames.status, 200);
+  assert.match(String(anonGames.headers['cache-control']), /public.*s-maxage=300/);
+  assert.match(String(anonGames.headers['cdn-cache-control']), /public.*max-age=300/);
+
+  const authStore = await rawGet('/api/store/catalog?limit=12', { 'Accept-Encoding': 'br', Cookie: 'playhub_session=secret' });
+  assert.equal(authStore.status, 200);
+  assert.equal(authStore.headers['cache-control'], 'private, no-cache');
+  assert.equal(authStore.headers['cdn-cache-control'], 'no-store');
+});
+
+test('SQLite-backed Store catalog serves filtered queries, slug detail, and SHA-256 verified artifacts with parity', async t => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'store-sqlite-test-'));
+  let app = null;
+  t.after(async () => {
+    if (app) await app.close();
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+  const dbPath = path.join(tmpDir, 'collected-catalog.sqlite');
+  const built = buildCatalogSqlite({ entries: SAMPLE_CATALOG, collectedCount: 0, dbPath });
+  assert.equal(built.count, SAMPLE_CATALOG.length);
+
+  const reader = openCatalogSqlite(dbPath);
+  try {
+    assert.equal(reader.meta.catalog_total, SAMPLE_CATALOG.length);
+    const pkgOnly = reader.query({ release_kind: 'package' }, { paginate: true, page: 1, limit: 10 });
+    assert.ok(pkgOnly.total >= 1);
+    assert.ok(pkgOnly.items.every(i => i.release_kind === 'package'));
+    const qMatch = reader.query({ q: 'fortress' }, { paginate: true, page: 1, limit: 10 });
+    assert.ok(qMatch.items.some(i => i.asset_id === 'lowpoly-fortress-pack'));
+  } finally {
+    reader.close();
+  }
+
+  app = createStoreApp({
+    dataDir: path.join(tmpDir, 'saved'),
+    serveStatic: false,
+    catalogDbPath: dbPath,
+  });
+  const addr = await app.listen(0, '127.0.0.1');
+
+  const health = await (await fetch(`http://127.0.0.1:${addr.port}/api/store/health`)).json();
+  assert.equal(health.catalog_backend, 'sqlite');
+  assert.equal(health.catalog_count, SAMPLE_CATALOG.length);
+
+  const catRes = await (await fetch(`http://127.0.0.1:${addr.port}/api/store/catalog?release_kind=package&limit=2&page=1`)).json();
+  assert.equal(catRes.items.length, 2);
+  assert.equal(catRes.catalog_total, SAMPLE_CATALOG.length);
+
+  const detail = await (await fetch(`http://127.0.0.1:${addr.port}/api/store/packages/lowpoly-fortress-pack`)).json();
+  assert.equal(detail.asset_id, 'lowpoly-fortress-pack');
+
+  const artRes = await fetch(`http://127.0.0.1:${addr.port}${detail.artifact_url}`);
+  assert.equal(artRes.status, 200);
+  assert.equal(artRes.headers.get('x-playforge-artifact-digest'), detail.artifact_digest);
 });

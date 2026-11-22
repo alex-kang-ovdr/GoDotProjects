@@ -1,0 +1,6 @@
+name = "playhub-cdn-edge"
+main = "cdn-proxy-worker.mjs"
+compatibility_date = "2026-11-01"
+
+[vars]
+ORIGIN_URL = "https://playhub-hub-88778617121.us-west1.run.app"
