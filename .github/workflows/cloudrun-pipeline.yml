@@ -357,6 +357,7 @@ jobs:
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/build-worker:${WORKER_SHA_TAG}" \
             --service-account="forge-build-worker-sa@${DEV_FORGE_PROJECT}.iam.gserviceaccount.com" \
+            --set-env-vars="PLAYFORGE_SHARED_WEB_RUNTIME_BASE=/runtime/godot/4.7.2" \
             --memory=2Gi --cpu=1 --task-timeout=180s --max-retries=0 \
             --quiet
 

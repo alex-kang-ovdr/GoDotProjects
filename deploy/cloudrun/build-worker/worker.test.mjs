@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { buildScrubbedChildEnv, materializeSnapshot, executeIsolatedBuild } from './worker.mjs';
+import { buildScrubbedChildEnv, materializeSnapshot, executeIsolatedBuild, rewriteHtmlForSharedRuntime } from './worker.mjs';
 
 test('buildScrubbedChildEnv strips Signed URLs and cloud/PlayHub secrets from child godot process', () => {
   const dirty = {
@@ -144,6 +144,65 @@ process.exit(1);
     assert.equal(result.status, 'failed');
     assert.equal(zipBuffer, null);
     assert.match(result.error, /Symbolic link rejected/);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('executeIsolatedBuild with sharedRuntimeBase produces modular-thin-ugc ZIP without duplicated engine wasm/js', async () => {
+  const sampleHtml = '<!doctype html><html><head><title>Thin</title></head><body><script src="index.js"></script><script>\nconst GODOT_CONFIG = {"executable":"index","fileSizes":{"index.pck":1234,"index.wasm":39514754}};\n</script></body></html>';
+  const rewritten = rewriteHtmlForSharedRuntime(sampleHtml, '/runtime/godot/4.7.2');
+  assert.ok(rewritten.includes('<script src="/runtime/godot/4.7.2/godot.js"></script>'));
+  assert.ok(rewritten.includes('"executable":"/runtime/godot/4.7.2/godot"'));
+  assert.ok(rewritten.includes('"mainPack":"index.pck"'));
+  assert.ok(rewritten.includes('"/runtime/godot/4.7.2/godot.wasm":39514754'));
+  assert.ok(!rewritten.includes('"index.wasm"'));
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'p0-thin-godot-'));
+  const mockScript = path.join(tmp, 'mock-godot-thin.mjs');
+  fs.writeFileSync(mockScript, `
+import fs from 'node:fs';
+import path from 'node:path';
+const args = process.argv.slice(2);
+if (args.includes('--import')) process.exit(0);
+const exportIdx = args.indexOf('--export-release');
+if (exportIdx >= 0) {
+  const outHtml = args[exportIdx + 2];
+  const outDir = path.dirname(outHtml);
+  fs.writeFileSync(outHtml, ${JSON.stringify(sampleHtml)});
+  fs.writeFileSync(path.join(outDir, 'index.js'), '// engine loader 300kb');
+  fs.writeFileSync(path.join(outDir, 'index.audio.worklet.js'), '// worklet');
+  fs.writeFileSync(path.join(outDir, 'index.wasm'), Buffer.alloc(1024 * 1024, 0x61));
+  fs.writeFileSync(path.join(outDir, 'index.pck'), Buffer.from('GDPC-TINY-GAME'));
+  process.exit(0);
+}
+process.exit(1);
+`, 'utf8');
+
+  try {
+    const { result, zipBuffer } = await executeIsolatedBuild(
+      {
+        id: '0123456789abcdef01234567',
+        revision: 2,
+        files: [{ path: 'project.godot', content: 'config_version=5\n' }],
+      },
+      {
+        godotBin: process.execPath,
+        godotPrefixArgs: [mockScript],
+        sharedRuntimeBase: '/runtime/godot/4.7.2',
+      }
+    );
+    assert.equal(result.status, 'succeeded');
+    assert.equal(result.packaging, 'modular-thin-ugc');
+    assert.equal(result.sharedRuntimeBase, '/runtime/godot/4.7.2');
+    assert.equal(result.engineWasmBytes, 1024 * 1024);
+    assert.ok(result.files.includes('index.html'));
+    assert.ok(result.files.includes('index.pck'));
+    assert.ok(result.files.includes('ugc.manifest.json'));
+    assert.ok(!result.files.includes('index.wasm'));
+    assert.ok(!result.files.includes('index.js'));
+    assert.ok(!result.files.includes('index.audio.worklet.js'));
+    assert.ok(zipBuffer.length < 32 * 1024, `Expected thin ZIP < 32KB (without 1MB wasm), got ${zipBuffer.length}`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }

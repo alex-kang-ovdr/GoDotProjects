@@ -1,4 +1,27 @@
 # syntax=docker/dockerfile:1.7
+FROM debian:bookworm-slim AS godot-web-runtime
+ARG GODOT_VERSION=4.7.2-stable
+ARG GODOT_SHORT_VERSION=4.7.2
+ARG GODOT_RELEASE_BASE=https://github.com/godotengine/godot-builds/releases/download
+RUN set -eux; \
+    apt-get update && apt-get install -y --no-install-recommends ca-certificates curl unzip gzip \
+    && rm -rf /var/lib/apt/lists/*; \
+    mkdir -p /tmp/gd /runtime/godot/${GODOT_SHORT_VERSION}; \
+    curl -fsSL "${GODOT_RELEASE_BASE}/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -o /tmp/gd/templates.tpz; \
+    unzip -q -j /tmp/gd/templates.tpz 'templates/web_nothreads_release.zip' -d /tmp/gd; \
+    unzip -q /tmp/gd/web_nothreads_release.zip -d /tmp/gd/web; \
+    for pair in "wasm:godot.wasm" "js:godot.js" "audio.worklet.js:godot.audio.worklet.js" "audio.position.worklet.js:godot.audio.position.worklet.js"; do \
+      ext="${pair%%:*}"; out="${pair##*:}"; \
+      for cand in "/tmp/gd/web/godot.${ext}" "/tmp/gd/web/index.${ext}"; do \
+        if [ -f "$cand" ]; then cp "$cand" "/runtime/godot/${GODOT_SHORT_VERSION}/${out}"; break; fi; \
+      done; \
+    done; \
+    test -f "/runtime/godot/${GODOT_SHORT_VERSION}/godot.wasm"; \
+    test -f "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
+    gzip -9 -k "/runtime/godot/${GODOT_SHORT_VERSION}/godot.wasm"; \
+    gzip -9 -k "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
+    rm -rf /tmp/gd
+
 FROM node:24-slim
 
 ENV NODE_ENV=production \
@@ -60,6 +83,9 @@ RUN SEMVER=$(node -p "require('./hub/package.json').version") \
 
 # Cloud Run edge wrapper (keeps local hub/server/* and Run_PlayHub_Portable.cmd untouched)
 COPY deploy/cloudrun/hub/entrypoint.mjs ./deploy/cloudrun/hub/entrypoint.mjs
+
+# Shared immutable Godot 4.7.2 Web runtime (modular-thin-ugc Layer 1: cached once across all UGC games)
+COPY --from=godot-web-runtime /runtime/godot ./runtime/godot
 
 RUN useradd --system --uid 10001 --home /tmp --shell /usr/sbin/nologin playhub \
     && chown -R playhub:playhub /app

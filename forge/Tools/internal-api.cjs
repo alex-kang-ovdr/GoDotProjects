@@ -485,24 +485,46 @@ function createInternalApi(options = {}) {
     const releasePkgMatch = subpath.match(/^\/projects\/([a-f0-9]{24})\/releases\/([a-f0-9]{24})\/package$/);
     if (releasePkgMatch) {
       if (method !== 'GET' && method !== 'HEAD') return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' }), true;
-      let resolved;
+      let meta = null;
+      let memBytes = null;
       try {
-        resolved = builds.resolveWithMetadata(accountKey, releasePkgMatch[1], releasePkgMatch[2]);
+        if (typeof builds.resolveFileMetadata === 'function') {
+          meta = builds.resolveFileMetadata(accountKey, releasePkgMatch[1], releasePkgMatch[2]);
+        } else {
+          const resolved = builds.resolveWithMetadata(accountKey, releasePkgMatch[1], releasePkgMatch[2]);
+          memBytes = resolved.bytes;
+          meta = { filePath: null, size: resolved.bytes.length, sha256: resolved.sha256, release: resolved.release, job: resolved.job };
+        }
       } catch (err) {
         const status = Number.isSafeInteger(err?.status) ? err.status : 404;
         return sendJson(res, status, { ok: false, error: err?.code || 'RELEASE_PACKAGE_UNAVAILABLE' }), true;
       }
-      const total = resolved.bytes.length;
+      const total = meta.size;
       const baseHeaders = {
         'Content-Type': 'application/zip',
         'Accept-Ranges': 'bytes',
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff',
-        'X-Artifact-Sha256': resolved.sha256,
+        'X-Artifact-Sha256': meta.sha256,
         'X-Artifact-Total-Bytes': String(total),
-        'X-Release-Id': resolved.release.id,
-        'X-Release-Revision': String(resolved.release.revision),
-        'X-Build-Id': resolved.job.id
+        'X-Release-Id': meta.release.id,
+        'X-Release-Revision': String(meta.release.revision),
+        'X-Build-Id': meta.job.id
+      };
+      const sendSlice = (status, start, end, extraHeaders = {}) => {
+        const len = end - start + 1;
+        res.writeHead(status, { ...baseHeaders, ...extraHeaders, 'Content-Length': len });
+        if (method === 'HEAD') {
+          res.end();
+          return;
+        }
+        if (meta.filePath) {
+          const stream = fs.createReadStream(meta.filePath, { start, end });
+          stream.on('error', () => { if (!res.writableEnded) res.destroy(); });
+          stream.pipe(res);
+        } else {
+          res.end(memBytes.subarray(start, end + 1));
+        }
       };
       const rangeHeader = typeof req.headers?.range === 'string' ? req.headers.range.trim() : '';
       if (rangeHeader) {
@@ -519,20 +541,10 @@ function createInternalApi(options = {}) {
           res.end();
           return true;
         }
-        const slice = resolved.bytes.subarray(start, end + 1);
-        res.writeHead(206, {
-          ...baseHeaders,
-          'Content-Range': `bytes ${start}-${end}/${total}`,
-          'Content-Length': slice.length
-        });
-        res.end(method === 'HEAD' ? undefined : slice);
+        sendSlice(206, start, end, { 'Content-Range': `bytes ${start}-${end}/${total}` });
         return true;
       }
-      res.writeHead(200, {
-        ...baseHeaders,
-        'Content-Length': total
-      });
-      res.end(method === 'HEAD' ? undefined : resolved.bytes);
+      sendSlice(200, 0, total - 1);
       return true;
     }
 

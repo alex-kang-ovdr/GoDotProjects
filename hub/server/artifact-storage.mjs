@@ -48,10 +48,215 @@ const crcTable = Array.from({ length: 256 }, (_, n) => {
   return c >>> 0;
 });
 
+function crc32Update(c, buf) {
+  for (let i = 0; i < buf.length; i++) c = crcTable[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+  return c >>> 0;
+}
+
 function crc32(buf) {
-  let c = 0xffffffff;
-  for (const byte of buf) c = crcTable[(c ^ byte) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
+  return (crc32Update(0xffffffff, buf) ^ 0xffffffff) >>> 0;
+}
+
+function readExact(fd, length, position) {
+  const buf = Buffer.allocUnsafe(length);
+  let got = 0;
+  while (got < length) {
+    const n = fs.readSync(fd, buf, got, length - got, position + got);
+    if (n <= 0) throw unsafeZip();
+    got += n;
+  }
+  return buf;
+}
+
+/**
+ * Streaming file-backed strict ZIP validator and extractor.
+ * Never buffers the full archive or all extracted files in RAM simultaneously.
+ */
+export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expectedSha256 = null } = {}) {
+  if (typeof zipFilePath !== 'string' || !zipFilePath) throw unsafeZip();
+  const stat = fs.lstatSync(zipFilePath);
+  if (stat.isSymbolicLink() || !stat.isFile() || stat.size < 22 || stat.size > MAX_ZIP_BYTES) throw unsafeZip();
+  const fileSize = stat.size;
+  const fd = fs.openSync(zipFilePath, 'r');
+  try {
+    // 1. Stream whole-file SHA-256 in 256 KB chunks
+    const hasher = crypto.createHash('sha256');
+    const chunkBuf = Buffer.allocUnsafe(256 * 1024);
+    let readOff = 0;
+    while (readOff < fileSize) {
+      const n = fs.readSync(fd, chunkBuf, 0, Math.min(chunkBuf.length, fileSize - readOff), readOff);
+      if (n <= 0) throw unsafeZip();
+      hasher.update(n === chunkBuf.length ? chunkBuf : chunkBuf.subarray(0, n));
+      readOff += n;
+    }
+    const sha256 = hasher.digest('hex');
+    if (expectedSha256 && expectedSha256.toLowerCase() !== sha256) {
+      throw Object.assign(new Error('ARTIFACT_SHA256_MISMATCH'), { code: 'ARTIFACT_SHA256_MISMATCH', status: 409 });
+    }
+
+    // 2. Validate strict EOCD + Central Directory
+    const end = fileSize - 22;
+    const eocd = readExact(fd, 22, end);
+    if (eocd.readUInt32LE(0) !== 0x06054b50
+        || eocd.readUInt16LE(4) !== 0
+        || eocd.readUInt16LE(6) !== 0
+        || eocd.readUInt16LE(20) !== 0) {
+      throw unsafeZip();
+    }
+    const count = eocd.readUInt16LE(10);
+    const offset = eocd.readUInt32LE(16);
+    const size = eocd.readUInt32LE(12);
+    if (!count || count > MAX_ENTRIES || count !== eocd.readUInt16LE(8) || offset + size !== end || size > 4 * 1024 * 1024) {
+      throw unsafeZip();
+    }
+
+    const cdBuf = readExact(fd, size, offset);
+    let pos = 0;
+    let expandedBytes = 0;
+    const seenNormalized = new Set();
+    const ranges = [];
+    const entries = [];
+    const parsedEntries = [];
+    let hasIndexHtml = false;
+
+    for (let i = 0; i < count; i++) {
+      if (pos + 46 > size || cdBuf.readUInt32LE(pos) !== 0x02014b50) throw unsafeZip();
+      const flags = cdBuf.readUInt16LE(pos + 8);
+      const method = cdBuf.readUInt16LE(pos + 10);
+      const crc = cdBuf.readUInt32LE(pos + 16);
+      const compressed = cdBuf.readUInt32LE(pos + 20);
+      const length = cdBuf.readUInt32LE(pos + 24);
+      const nl = cdBuf.readUInt16LE(pos + 28);
+      const extra = cdBuf.readUInt16LE(pos + 30);
+      const comment = cdBuf.readUInt16LE(pos + 32);
+      const local = cdBuf.readUInt32LE(pos + 42);
+      const mode = (cdBuf.readUInt32LE(pos + 38) >>> 16) & 0xf000;
+
+      if ((flags & ~0x800) !== 0
+          || ![0, 8].includes(method)
+          || extra !== 0
+          || comment !== 0
+          || cdBuf.readUInt16LE(pos + 34) !== 0
+          || ![0, 0x8000, 0x4000].includes(mode)
+          || pos + 46 + nl > size) {
+        throw unsafeZip();
+      }
+
+      const rawName = cdBuf.subarray(pos + 46, pos + 46 + nl);
+      let name;
+      try {
+        name = new TextDecoder('utf-8', { fatal: true }).decode(rawName);
+      } catch {
+        throw unsafeZip();
+      }
+      const isDir = name.endsWith('/');
+      const parts = (isDir ? name.slice(0, -1) : name).split('/');
+      if (!nl || name.length > 240 || /[\\:\x00-\x1f\x7f%?#]/.test(name)
+          || parts.some(p => !p || p.startsWith('.') || /[. ]$/.test(p) || WINDOWS_RESERVED_RE.test(p))) {
+        throw unsafeZip();
+      }
+      const normalized = name.normalize('NFC').toLowerCase().replace(/\/$/, '');
+      if (seenNormalized.has(normalized)) throw unsafeZip();
+      seenNormalized.add(normalized);
+
+      if ((!isDir && !ALLOWED_EXT_RE.test(name)) || (mode === 0x4000 && !isDir)) throw unsafeZip();
+      expandedBytes += length;
+      if (expandedBytes > MAX_EXPANDED_BYTES || length > MAX_ZIP_BYTES || length > Math.max(compressed * 200, 1024 * 1024)) {
+        throw unsafeZip();
+      }
+
+      if (local + 30 + nl > offset) throw unsafeZip();
+      const lh = readExact(fd, 30 + nl, local);
+      if (lh.readUInt32LE(0) !== 0x04034b50
+          || lh.readUInt16LE(6) !== flags
+          || lh.readUInt16LE(8) !== method
+          || lh.readUInt32LE(14) !== crc
+          || lh.readUInt32LE(18) !== compressed
+          || lh.readUInt32LE(22) !== length
+          || lh.readUInt16LE(26) !== nl
+          || lh.readUInt16LE(28) !== 0
+          || !lh.subarray(30, 30 + nl).equals(rawName)) {
+        throw unsafeZip();
+      }
+
+      const start = local + 30 + nl;
+      const stop = start + compressed;
+      if (stop > offset) throw unsafeZip();
+      if (isDir && length !== 0) throw unsafeZip();
+
+      ranges.push([local, stop]);
+      entries.push(name);
+      if (name === 'index.html' && !isDir) hasIndexHtml = true;
+      parsedEntries.push({ name, isDir, method, crc, compressed, length, start });
+      pos += 46 + nl;
+    }
+
+    ranges.sort((a, b) => a[0] - b[0]);
+    let cursor = 0;
+    for (const [start, stop] of ranges) {
+      if (start !== cursor) throw unsafeZip();
+      cursor = stop;
+    }
+    if (cursor !== offset || pos !== size || !hasIndexHtml) throw unsafeZip();
+
+    const fileNames = new Set(entries.filter(n => !n.endsWith('/')).map(n => n.normalize('NFC').toLowerCase()));
+    for (const n of entries) {
+      const parts = n.toLowerCase().split('/');
+      for (let i = 1; i < parts.length; i++) {
+        if (fileNames.has(parts.slice(0, i).join('/'))) throw unsafeZip();
+      }
+    }
+
+    // 3. Stream-extract each entry directly to disk while verifying CRC-32
+    if (destDir) {
+      for (const entry of parsedEntries) {
+        if (entry.isDir) continue;
+        const dest = path.join(destDir, entry.name);
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        if (entry.method === 0) {
+          if (entry.compressed !== entry.length) throw unsafeZip();
+          const outFd = fs.openSync(dest, 'w');
+          let runningCrc = 0xffffffff;
+          let rem = entry.length;
+          let srcOff = entry.start;
+          try {
+            while (rem > 0) {
+              const n = fs.readSync(fd, chunkBuf, 0, Math.min(chunkBuf.length, rem), srcOff);
+              if (n <= 0) throw unsafeZip();
+              const slice = n === chunkBuf.length ? chunkBuf : chunkBuf.subarray(0, n);
+              runningCrc = crc32Update(runningCrc, slice);
+              fs.writeSync(outFd, slice, 0, n);
+              rem -= n;
+              srcOff += n;
+            }
+          } finally {
+            fs.closeSync(outFd);
+          }
+          if (((runningCrc ^ 0xffffffff) >>> 0) !== entry.crc) throw unsafeZip();
+        } else {
+          const packed = readExact(fd, entry.compressed, entry.start);
+          let content;
+          try {
+            content = zlib.inflateRawSync(packed, { maxOutputLength: Math.max(entry.length, 1) });
+          } catch {
+            throw unsafeZip();
+          }
+          if (content.length !== entry.length || crc32(content) !== entry.crc) throw unsafeZip();
+          fs.writeFileSync(dest, content);
+        }
+      }
+    }
+
+    return {
+      sha256,
+      bytes: fileSize,
+      expandedBytes,
+      entryCount: entries.length,
+      entryPoint: 'index.html'
+    };
+  } finally {
+    fs.closeSync(fd);
+  }
 }
 
 const unsafeZip = (reason = 'UNSAFE_DEPLOYMENT_ZIP') => Object.assign(new Error(reason), { code: 'UNSAFE_DEPLOYMENT_ZIP', status: 400 });
@@ -207,11 +412,15 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     return path.join(rootDir, hostSlug, releaseId);
   }
 
-  function putReleaseBundle({ hostSlug, releaseId, zipBuffer, expectedSha256 = null, releaseManifest = null, gameManifest = null }) {
+  function putReleaseBundle({ hostSlug, releaseId, zipBuffer = null, zipFilePath = null, expectedSha256 = null, releaseManifest = null, gameManifest = null }) {
     assertSlugAndRelease(hostSlug, releaseId);
-    const extracted = validateAndExtractDeploymentZip(zipBuffer);
-    if (expectedSha256 && expectedSha256.toLowerCase() !== extracted.sha256) {
-      throw Object.assign(new Error('ARTIFACT_SHA256_MISMATCH'), { code: 'ARTIFACT_SHA256_MISMATCH', status: 409 });
+    const useFileMode = typeof zipFilePath === 'string' && zipFilePath.length > 0;
+    let extracted = null;
+    if (!useFileMode) {
+      extracted = validateAndExtractDeploymentZip(zipBuffer);
+      if (expectedSha256 && expectedSha256.toLowerCase() !== extracted.sha256) {
+        throw Object.assign(new Error('ARTIFACT_SHA256_MISMATCH'), { code: 'ARTIFACT_SHA256_MISMATCH', status: 409 });
+      }
     }
 
     const hostDir = path.join(rootDir, hostSlug);
@@ -220,16 +429,16 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     const metaPath = path.join(hostDir, `${releaseId}.meta.json`);
     const artifactBaseUrl = `${basePrefix}/${hostSlug}/${releaseId}/`;
 
-    const existingResultIfMatching = () => {
+    const existingResultIfMatching = sha => {
       if (fs.existsSync(path.join(targetDir, 'index.html')) && fs.existsSync(metaPath)) {
         try {
           const existingMeta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-          if (existingMeta?.sha256 === extracted.sha256) {
+          if (existingMeta?.sha256 === sha) {
             return {
-              sha256: extracted.sha256,
-              bytes: extracted.bytes,
-              expandedBytes: extracted.expandedBytes,
-              entryCount: extracted.entryCount,
+              sha256: existingMeta.sha256,
+              bytes: existingMeta.bytes,
+              expandedBytes: existingMeta.expandedBytes,
+              entryCount: existingMeta.entryCount,
               artifactBaseUrl
             };
           }
@@ -238,10 +447,13 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
       return null;
     };
 
+    const preCheckSha = extracted?.sha256 || (expectedSha256 ? expectedSha256.toLowerCase() : null);
     // Immutable releaseId: idempotently reuse only on identical sha256; never overwrite an existing release.
     if (fs.existsSync(targetDir) || fs.existsSync(metaPath)) {
-      const reused = existingResultIfMatching();
-      if (reused) return reused;
+      if (preCheckSha) {
+        const reused = existingResultIfMatching(preCheckSha);
+        if (reused) return reused;
+      }
       throw Object.assign(new Error('RELEASE_IMMUTABLE_CONFLICT'), {
         code: 'RELEASE_IMMUTABLE_CONFLICT',
         status: 409
@@ -253,10 +465,14 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     const tempMetaPath = path.join(hostDir, `.tmp-${releaseId}-${nonce}.meta.json`);
     fs.mkdirSync(tempDir, { recursive: true });
     try {
-      for (const [relativePath, content] of extracted.files.entries()) {
-        const dest = path.join(tempDir, relativePath);
-        fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.writeFileSync(dest, content);
+      if (useFileMode) {
+        extracted = validateAndExtractDeploymentZipFile(zipFilePath, tempDir, { expectedSha256 });
+      } else {
+        for (const [relativePath, content] of extracted.files.entries()) {
+          const dest = path.join(tempDir, relativePath);
+          fs.mkdirSync(path.dirname(dest), { recursive: true });
+          fs.writeFileSync(dest, content);
+        }
       }
       fs.writeFileSync(tempMetaPath, JSON.stringify({
         hostSlug,
@@ -273,7 +489,7 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
         fs.renameSync(tempDir, targetDir);
       } catch (renameErr) {
         if (fs.existsSync(targetDir)) {
-          const reused = existingResultIfMatching();
+          const reused = existingResultIfMatching(extracted.sha256);
           if (reused) return reused;
           throw Object.assign(new Error('RELEASE_IMMUTABLE_CONFLICT'), {
             code: 'RELEASE_IMMUTABLE_CONFLICT',

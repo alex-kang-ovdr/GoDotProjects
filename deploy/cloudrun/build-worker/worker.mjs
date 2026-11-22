@@ -150,11 +150,59 @@ function runGodotCommand(godotBin, args, { cwd, env, timeoutMs = 120000 }) {
   });
 }
 
+const SHARED_ENGINE_FILENAMES = new Set([
+  'index.wasm',
+  'index.js',
+  'index.audio.worklet.js',
+  'index.audio.position.worklet.js',
+  'index.service.worker.js',
+  'index.side.wasm',
+]);
+
+/**
+ * Rewrite Godot 4.7.2 Web export index.html so the game loads the shared immutable
+ * engine runtime (godot.js + godot.wasm + worklets) from sharedRuntimeBase while
+ * loading only its own lightweight index.pck from the per-release UGC folder.
+ */
+export function rewriteHtmlForSharedRuntime(html, sharedRuntimeBase) {
+  const base = String(sharedRuntimeBase || '').trim().replace(/\/+$/, '');
+  if (!base || !base.startsWith('/') || base.includes('..') || /[\s"'<>]/.test(base)) {
+    throw new Error(`Invalid sharedRuntimeBase: ${sharedRuntimeBase}`);
+  }
+  let out = String(html);
+  out = out.replace(
+    /<script\s+src=["'](?:\.\/)?index\.js["']\s*><\/script>/i,
+    `<script src="${base}/godot.js"></script>`
+  );
+  const cfgRe = /const\s+GODOT_CONFIG\s*=\s*(\{[\s\S]*?\})\s*;/;
+  const match = cfgRe.exec(out);
+  if (!match) {
+    throw new Error('Failed to locate GODOT_CONFIG in Godot Web export index.html');
+  }
+  const cfg = JSON.parse(match[1]);
+  cfg.executable = `${base}/godot`;
+  cfg.mainPack = 'index.pck';
+  if (cfg.fileSizes && typeof cfg.fileSizes === 'object') {
+    if (Object.hasOwn(cfg.fileSizes, 'index.wasm')) {
+      cfg.fileSizes[`${base}/godot.wasm`] = cfg.fileSizes['index.wasm'];
+      delete cfg.fileSizes['index.wasm'];
+    }
+  }
+  out = out.replace(cfgRe, `const GODOT_CONFIG = ${JSON.stringify(cfg)};`);
+  return out;
+}
+
 /** Execute one isolated build from a snapshot object and return { result, zipBuffer }. */
 export async function executeIsolatedBuild(snapshot, options = {}) {
   const godotBin = options.godotBin || process.env.GODOT_BIN || '/usr/local/bin/godot';
   const godotPrefixArgs = Array.isArray(options.godotPrefixArgs) ? options.godotPrefixArgs : [];
   const timeoutMs = Number(options.timeoutMs || process.env.BUILD_TIMEOUT_MS || 120000);
+  const rawSharedRuntimeBase = options.sharedRuntimeBase !== undefined
+    ? options.sharedRuntimeBase
+    : (process.env.PLAYFORGE_SHARED_WEB_RUNTIME_BASE || '');
+  const sharedRuntimeBase = snapshot?.packaging === 'standalone'
+    ? ''
+    : String(rawSharedRuntimeBase || '').trim().replace(/\/+$/, '');
   const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-p0-build-'));
   const projectDir = path.join(workRoot, 'project');
   const outputDir = path.join(workRoot, 'output');
@@ -210,9 +258,31 @@ export async function executeIsolatedBuild(snapshot, options = {}) {
     }
 
     const shellInjected = injectPlayHubShell(outputDir);
+    const engineWasmBytes = fs.statSync(path.join(outputDir, 'index.wasm')).size;
+    const mainPackBytes = fs.statSync(path.join(outputDir, 'index.pck')).size;
+    let packaging = 'standalone';
+    if (sharedRuntimeBase) {
+      const indexPath = path.join(outputDir, 'index.html');
+      const rewritten = rewriteHtmlForSharedRuntime(fs.readFileSync(indexPath, 'utf8'), sharedRuntimeBase);
+      fs.writeFileSync(indexPath, rewritten, 'utf8');
+      const ugcManifest = {
+        schemaVersion: 2,
+        packaging: 'modular-thin-ugc',
+        sharedRuntimeBase,
+        executable: `${sharedRuntimeBase}/godot`,
+        mainPack: 'index.pck',
+        engineWasmBytes,
+        mainPackBytes,
+        projectId: result.projectId,
+        revision: result.revision,
+      };
+      fs.writeFileSync(path.join(outputDir, 'ugc.manifest.json'), JSON.stringify(ugcManifest, null, 2) + '\n', 'utf8');
+      packaging = 'modular-thin-ugc';
+    }
     const names = fs.readdirSync(outputDir)
       .filter(name => {
         if (name === 'PlayForge-Web.zip') return false;
+        if (packaging === 'modular-thin-ugc' && SHARED_ENGINE_FILENAMES.has(name.toLowerCase())) return false;
         const st = fs.lstatSync(path.join(outputDir, name));
         if (st.isSymbolicLink()) {
           throw new Error(`Symbolic link rejected in build output: ${name}`);
@@ -225,6 +295,10 @@ export async function executeIsolatedBuild(snapshot, options = {}) {
 
     result.status = 'succeeded';
     result.finishedAt = new Date().toISOString();
+    result.packaging = packaging;
+    if (sharedRuntimeBase) result.sharedRuntimeBase = sharedRuntimeBase;
+    result.engineWasmBytes = engineWasmBytes;
+    result.mainPackBytes = mainPackBytes;
     result.files = [...names, 'PlayForge-Web.zip'];
     result.artifactSha256 = validation.sha256;
     result.bytes = validation.bytes;

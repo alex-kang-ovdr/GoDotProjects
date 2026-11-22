@@ -18,6 +18,7 @@
 //   close()
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 
@@ -39,7 +40,7 @@ function expectedReleaseArtifactSha(release) {
   return SHA256_HEX_RE.test(lower) ? lower : '';
 }
 
-async function readBoundedPackageStream(response, { maxBytes = MAX_PACKAGE_BYTES, retainBuffer = true, controller = null } = {}) {
+async function readBoundedPackageStream(response, { maxBytes = MAX_PACKAGE_BYTES, retainBuffer = true, controller = null, fd = null, hasher = null } = {}) {
   const rawLength = response.headers?.get?.('content-length');
   if (rawLength !== null && rawLength !== undefined && rawLength !== '') {
     const declared = Number(rawLength);
@@ -49,31 +50,33 @@ async function readBoundedPackageStream(response, { maxBytes = MAX_PACKAGE_BYTES
       throw fail(413, 'PACKAGE_TOO_LARGE');
     }
   }
-  const hasher = crypto.createHash('sha256');
+  const activeHasher = hasher || crypto.createHash('sha256');
   let totalBytes = 0;
   const chunks = [];
+  const consumeChunk = buf => {
+    totalBytes += buf.length;
+    if (totalBytes > maxBytes) {
+      try { controller?.abort(); } catch {}
+      throw fail(413, 'PACKAGE_TOO_LARGE');
+    }
+    activeHasher.update(buf);
+    if (fd !== null && fd !== undefined) {
+      fs.writeSync(fd, buf, 0, buf.length);
+    } else if (retainBuffer) {
+      chunks.push(buf);
+    }
+  };
   if (response.body && typeof response.body[Symbol.asyncIterator] === 'function') {
     for await (const chunk of response.body) {
-      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-      totalBytes += buf.length;
-      if (totalBytes > maxBytes) {
-        try { controller?.abort(); } catch {}
-        throw fail(413, 'PACKAGE_TOO_LARGE');
-      }
-      hasher.update(buf);
-      if (retainBuffer) chunks.push(buf);
+      consumeChunk(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     }
   } else {
-    const buf = Buffer.from(await response.arrayBuffer());
-    totalBytes = buf.length;
-    if (totalBytes > maxBytes) throw fail(413, 'PACKAGE_TOO_LARGE');
-    hasher.update(buf);
-    if (retainBuffer) chunks.push(buf);
+    consumeChunk(Buffer.from(await response.arrayBuffer()));
   }
   return {
-    buffer: retainBuffer ? Buffer.concat(chunks) : null,
+    buffer: (fd === null && retainBuffer) ? Buffer.concat(chunks) : null,
     bytes: totalBytes,
-    sha256: hasher.digest('hex')
+    sha256: hasher ? null : activeHasher.digest('hex')
   };
 }
 const send = (res, status, body) => {
@@ -557,7 +560,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     return data.release;
   }
 
-  async function fetchReleasePackage(accountKey, projectId, releaseId, { retainBuffer = true, maxBytes = MAX_PACKAGE_BYTES } = {}) {
+  async function fetchReleasePackage(accountKey, projectId, releaseId, { retainBuffer = true, toTempFile = false, maxBytes = MAX_PACKAGE_BYTES } = {}) {
     ensureActive();
     assertAccountKey(accountKey);
     assertProjectId(projectId);
@@ -570,7 +573,23 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), Math.max(timeoutMs, 60000));
     active.add(controller);
+    const useTempFile = Boolean(toTempFile && retainBuffer);
+    let tempFilePath = null;
+    let tempFd = null;
+    const removeTempFile = () => {
+      if (tempFd !== null) {
+        try { fs.closeSync(tempFd); } catch {}
+        tempFd = null;
+      }
+      if (tempFilePath) {
+        try { fs.rmSync(tempFilePath, { force: true }); } catch {}
+      }
+    };
     try {
+      if (useTempFile) {
+        tempFilePath = path.join(os.tmpdir(), `playhub-pkg-${crypto.randomBytes(8).toString('hex')}.zip`);
+        tempFd = fs.openSync(tempFilePath, 'wx', 0o600);
+      }
       let computedSha = '';
       let totalBytes = 0;
       let fullBuffer = null;
@@ -611,16 +630,21 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
             if (hdrTotal > maxBytes) throw fail(413, 'PACKAGE_TOO_LARGE');
             expectedTotal = hdrTotal;
           }
-          const chunkStream = await readBoundedPackageStream(response, { maxBytes: maxBytes - totalBytes, retainBuffer: true, controller });
+          const chunkStream = await readBoundedPackageStream(response, {
+            maxBytes: maxBytes - totalBytes,
+            retainBuffer: retainBuffer && !useTempFile,
+            controller,
+            fd: tempFd,
+            hasher
+          });
           if (chunkStream.bytes === 0) throw fail(502, 'RELEASE_PACKAGE_TRUNCATED');
-          hasher.update(chunkStream.buffer);
-          if (retainBuffer) parts.push(chunkStream.buffer);
+          if (retainBuffer && !useTempFile && chunkStream.buffer) parts.push(chunkStream.buffer);
           totalBytes += chunkStream.bytes;
           offset += chunkStream.bytes;
           if (response.status === 200) break;
         }
         computedSha = hasher.digest('hex');
-        if (retainBuffer) fullBuffer = Buffer.concat(parts);
+        if (retainBuffer && !useTempFile) fullBuffer = Buffer.concat(parts);
       } else {
         let response;
         try {
@@ -638,7 +662,12 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
           try { errBody = await response.json(); } catch {}
           throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
         }
-        const streamed = await readBoundedPackageStream(response, { maxBytes, retainBuffer, controller });
+        const streamed = await readBoundedPackageStream(response, {
+          maxBytes,
+          retainBuffer: retainBuffer && !useTempFile,
+          controller,
+          fd: tempFd
+        });
         computedSha = streamed.sha256;
         totalBytes = streamed.bytes;
         fullBuffer = streamed.buffer;
@@ -646,9 +675,26 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
         buildId = String(response.headers.get('x-build-id') || buildId);
       }
 
+      if (tempFd !== null) {
+        fs.closeSync(tempFd);
+        tempFd = null;
+      }
+
       if (headerSha && headerSha !== computedSha) throw fail(502, 'PACKAGE_INTEGRITY_MISMATCH');
       const expectedSha = expectedReleaseArtifactSha(release);
       if (expectedSha && expectedSha !== computedSha) throw fail(409, 'PACKAGE_INTEGRITY_MISMATCH');
+      if (useTempFile) {
+        const finalPath = tempFilePath;
+        tempFilePath = null; // ownership transferred to caller's cleanup()
+        return {
+          filePath: finalPath,
+          cleanup() { try { fs.rmSync(finalPath, { force: true }); } catch {} },
+          bytes: totalBytes,
+          sha256: computedSha,
+          release,
+          buildId
+        };
+      }
       return {
         ...(retainBuffer ? { buffer: fullBuffer } : { verified: true }),
         bytes: totalBytes,
@@ -656,7 +702,14 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
         release,
         buildId
       };
+    } catch (err) {
+      removeTempFile();
+      throw err;
     } finally {
+      if (tempFd !== null) {
+        try { fs.closeSync(tempFd); } catch {}
+        tempFd = null;
+      }
       clearTimeout(timer);
       active.delete(controller);
     }

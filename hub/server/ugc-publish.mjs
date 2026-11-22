@@ -321,7 +321,7 @@ export function createUgcPublish({
       throw new ApiError(503, 'FORGE_PACKAGE_UNAVAILABLE');
     }
     try {
-      return await forgeGateway.getReleasePackage(ownerKey, projectId, releaseId);
+      return await forgeGateway.getReleasePackage(ownerKey, projectId, releaseId, { toTempFile: true });
     } catch (err) {
       if (err.status === 404) throw new ApiError(404, 'RELEASE_PACKAGE_NOT_FOUND', '배포할 빌드 패키지를 찾을 수 없습니다.');
       if (err.status === 409) throw new ApiError(409, 'BUILD_PACKAGE_INVALID', '빌드 패키지 무결성 검증에 실패했습니다.');
@@ -470,59 +470,64 @@ export function createUgcPublish({
         }
 
         const pkg = await fetchVerifiedPackage(owner.key, projectId, releaseId);
-        const release = pkg.release;
-        const existingByProject = getPubByOwnerProject.get(owner.key, projectId);
-        const rawSlug = typeof body.gameSlug === 'string' && GAME_ID_RE.test(body.gameSlug.trim())
-          ? body.gameSlug.trim()
-          : (existingByProject?.game_id || release?.gameMetadata?.slug || slugifyGameId(body.title || release?.label, projectId));
-        assertNotStaticId(rawSlug);
-        const existingBySlug = getPubById.get(rawSlug);
-        if (existingBySlug && existingBySlug.owner_key !== owner.key) {
-          throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
-        }
-        if (existingBySlug && existingBySlug.project_id !== projectId) {
-          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
-        }
-        if (existingByProject && existingByProject.game_id !== rawSlug) {
-          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
-        }
-        const existingPub = existingByProject || existingBySlug;
-        if (existingPub && existingPub.status === 'suspended') {
-          throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN', '운영자에 의해 차단된 게임은 미리보기를 생성할 수 없습니다.');
-        }
-
-        const hostSlug = existingByProject?.host_slug || existingBySlug?.host_slug || generateHostSlug(owner.key, projectId);
-        const deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
-          deployMode: DEPLOY_MODES.has(body.deployMode) ? body.deployMode : 'singleplay',
-          serverRuntime: 'none',
-          specTier: 'free-nano'
-        };
-        const deployMode = DEPLOY_MODES.has(deployProfile.deployMode) ? deployProfile.deployMode : 'singleplay';
-        const stamp = now();
-        const gameManifest = buildHubGameManifest({
-          gameId: rawSlug,
-          title: body.title || release?.gameMetadata?.title?.ko || release?.label,
-          description: body.description,
-          release,
-          metadataOverride: body.gameMetadata,
-          visibility,
-          nowMs: stamp
-        });
-        const manifestJson = JSON.stringify(gameManifest);
-        const deployProfileJson = JSON.stringify(deployProfile);
-
-        let stored;
+        let rawSlug, hostSlug, deployProfile, deployMode, stamp, manifestJson, deployProfileJson, stored;
         try {
-          stored = storage.putReleaseBundle({
-            hostSlug,
-            releaseId,
-            zipBuffer: pkg.buffer,
-            expectedSha256: pkg.sha256,
-            releaseManifest: release?.releaseManifest || null,
-            gameManifest
+          const release = pkg.release;
+          const existingByProject = getPubByOwnerProject.get(owner.key, projectId);
+          rawSlug = typeof body.gameSlug === 'string' && GAME_ID_RE.test(body.gameSlug.trim())
+            ? body.gameSlug.trim()
+            : (existingByProject?.game_id || release?.gameMetadata?.slug || slugifyGameId(body.title || release?.label, projectId));
+          assertNotStaticId(rawSlug);
+          const existingBySlug = getPubById.get(rawSlug);
+          if (existingBySlug && existingBySlug.owner_key !== owner.key) {
+            throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
+          }
+          if (existingBySlug && existingBySlug.project_id !== projectId) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
+          }
+          if (existingByProject && existingByProject.game_id !== rawSlug) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
+          }
+          const existingPub = existingByProject || existingBySlug;
+          if (existingPub && existingPub.status === 'suspended') {
+            throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN', '운영자에 의해 차단된 게임은 미리보기를 생성할 수 없습니다.');
+          }
+
+          hostSlug = existingByProject?.host_slug || existingBySlug?.host_slug || generateHostSlug(owner.key, projectId);
+          deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
+            deployMode: DEPLOY_MODES.has(body.deployMode) ? body.deployMode : 'singleplay',
+            serverRuntime: 'none',
+            specTier: 'free-nano'
+          };
+          deployMode = DEPLOY_MODES.has(deployProfile.deployMode) ? deployProfile.deployMode : 'singleplay';
+          stamp = now();
+          const gameManifest = buildHubGameManifest({
+            gameId: rawSlug,
+            title: body.title || release?.gameMetadata?.title?.ko || release?.label,
+            description: body.description,
+            release,
+            metadataOverride: body.gameMetadata,
+            visibility,
+            nowMs: stamp
           });
-        } catch (err) {
-          throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP');
+          manifestJson = JSON.stringify(gameManifest);
+          deployProfileJson = JSON.stringify(deployProfile);
+
+          try {
+            stored = storage.putReleaseBundle({
+              hostSlug,
+              releaseId,
+              zipBuffer: pkg.buffer || null,
+              zipFilePath: pkg.filePath || null,
+              expectedSha256: pkg.sha256,
+              releaseManifest: release?.releaseManifest || null,
+              gameManifest
+            });
+          } catch (err) {
+            throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP');
+          }
+        } finally {
+          pkg?.cleanup?.();
         }
 
         const previewResult = transaction(db, () => {
@@ -817,73 +822,78 @@ export function createUgcPublish({
         }
 
         const pkg = await fetchVerifiedPackage(submission.owner_key, submission.project_id, submission.release_id);
-        const release = pkg.release;
-        if (release.revision !== submission.release_revision) {
-          throw new ApiError(409, 'SUBMISSION_RELEASE_MISMATCH');
-        }
-
-        let submissionManifestMeta = null;
-        try { submissionManifestMeta = submission.manifest_json ? JSON.parse(submission.manifest_json) : null; } catch {}
-
-        const existingByProject = getPubByOwnerProject.get(submission.owner_key, submission.project_id);
-        const candidateSlug = typeof body.gameSlug === 'string' && GAME_ID_RE.test(body.gameSlug.trim())
-          ? body.gameSlug.trim()
-          : (submission.game_slug && GAME_ID_RE.test(submission.game_slug)
-            ? submission.game_slug
-            : (existingByProject?.game_id
-              || release?.gameMetadata?.slug
-              || submissionManifestMeta?.slug
-              || slugifyGameId(submission.title, submission.project_id)));
-        assertNotStaticId(candidateSlug);
-
-        const existingBySlug = getPubById.get(candidateSlug);
-        if (existingBySlug && existingBySlug.owner_key !== submission.owner_key) {
-          throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
-        }
-        if (existingBySlug && existingBySlug.project_id !== submission.project_id) {
-          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
-        }
-        if (existingByProject && existingByProject.game_id !== candidateSlug) {
-          throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
-        }
-
-        const deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
-          deployMode: DEPLOY_MODES.has(submission.deploy_mode) ? submission.deploy_mode : 'singleplay',
-          serverRuntime: 'none',
-          specTier: 'free-nano'
-        };
-        const deployMode = DEPLOY_MODES.has(deployProfile.deployMode) ? deployProfile.deployMode : 'singleplay';
-        const visibility = VISIBILITIES.has(submission.visibility) ? submission.visibility : 'public';
-        if (deployMode === 'mmo' && deployProfile.specTier === 'free-nano' && visibility === 'public') {
-          throw new ApiError(409, 'MMO_PUBLIC_REQUIRES_PAID_TIER', 'MMO 라이브 공개는 유료 허브 포인트 프리셋이 필요합니다.');
-        }
-
-        const hostSlug = existingByProject?.host_slug || existingBySlug?.host_slug || generateHostSlug(submission.owner_key, submission.project_id);
-        const stamp = now();
-        const gameManifest = buildHubGameManifest({
-          gameId: candidateSlug,
-          title: submission.title,
-          description: submission.description,
-          release,
-          metadataOverride: submissionManifestMeta,
-          visibility,
-          nowMs: stamp
-        });
-        const manifestJson = JSON.stringify(gameManifest);
-        const deployProfileJson = JSON.stringify(deployProfile);
-
-        let stored;
+        let candidateSlug, deployProfile, deployMode, visibility, hostSlug, stamp, manifestJson, deployProfileJson, stored;
         try {
-          stored = storage.putReleaseBundle({
-            hostSlug,
-            releaseId: submission.release_id,
-            zipBuffer: pkg.buffer,
-            expectedSha256: pkg.sha256,
-            releaseManifest: release?.releaseManifest || null,
-            gameManifest
+          const release = pkg.release;
+          if (release.revision !== submission.release_revision) {
+            throw new ApiError(409, 'SUBMISSION_RELEASE_MISMATCH');
+          }
+
+          let submissionManifestMeta = null;
+          try { submissionManifestMeta = submission.manifest_json ? JSON.parse(submission.manifest_json) : null; } catch {}
+
+          const existingByProject = getPubByOwnerProject.get(submission.owner_key, submission.project_id);
+          candidateSlug = typeof body.gameSlug === 'string' && GAME_ID_RE.test(body.gameSlug.trim())
+            ? body.gameSlug.trim()
+            : (submission.game_slug && GAME_ID_RE.test(submission.game_slug)
+              ? submission.game_slug
+              : (existingByProject?.game_id
+                || release?.gameMetadata?.slug
+                || submissionManifestMeta?.slug
+                || slugifyGameId(submission.title, submission.project_id)));
+          assertNotStaticId(candidateSlug);
+
+          const existingBySlug = getPubById.get(candidateSlug);
+          if (existingBySlug && existingBySlug.owner_key !== submission.owner_key) {
+            throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
+          }
+          if (existingBySlug && existingBySlug.project_id !== submission.project_id) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이미 다른 프로젝트에 연결된 게임 슬러그입니다.');
+          }
+          if (existingByProject && existingByProject.game_id !== candidateSlug) {
+            throw new ApiError(409, 'GAME_SLUG_PROJECT_MISMATCH', '이 프로젝트에 이미 연결된 슬러그와 다릅니다.');
+          }
+
+          deployProfile = release?.deployProfile || release?.releaseManifest?.deployProfile || {
+            deployMode: DEPLOY_MODES.has(submission.deploy_mode) ? submission.deploy_mode : 'singleplay',
+            serverRuntime: 'none',
+            specTier: 'free-nano'
+          };
+          deployMode = DEPLOY_MODES.has(deployProfile.deployMode) ? deployProfile.deployMode : 'singleplay';
+          visibility = VISIBILITIES.has(submission.visibility) ? submission.visibility : 'public';
+          if (deployMode === 'mmo' && deployProfile.specTier === 'free-nano' && visibility === 'public') {
+            throw new ApiError(409, 'MMO_PUBLIC_REQUIRES_PAID_TIER', 'MMO 라이브 공개는 유료 허브 포인트 프리셋이 필요합니다.');
+          }
+
+          hostSlug = existingByProject?.host_slug || existingBySlug?.host_slug || generateHostSlug(submission.owner_key, submission.project_id);
+          stamp = now();
+          const gameManifest = buildHubGameManifest({
+            gameId: candidateSlug,
+            title: submission.title,
+            description: submission.description,
+            release,
+            metadataOverride: submissionManifestMeta,
+            visibility,
+            nowMs: stamp
           });
-        } catch (err) {
-          throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP');
+          manifestJson = JSON.stringify(gameManifest);
+          deployProfileJson = JSON.stringify(deployProfile);
+
+          try {
+            stored = storage.putReleaseBundle({
+              hostSlug,
+              releaseId: submission.release_id,
+              zipBuffer: pkg.buffer || null,
+              zipFilePath: pkg.filePath || null,
+              expectedSha256: pkg.sha256,
+              releaseManifest: release?.releaseManifest || null,
+              gameManifest
+            });
+          } catch (err) {
+            throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP');
+          }
+        } finally {
+          pkg?.cleanup?.();
         }
 
         const responsePayload = transaction(db, () => {

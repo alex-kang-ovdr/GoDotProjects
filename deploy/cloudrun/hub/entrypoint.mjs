@@ -404,6 +404,54 @@ if (isDirectExecution) {
         storeProxy.handle(req, res);
         return;
       }
+      if (pathname.startsWith('/runtime/godot/')) {
+        if (!['GET', 'HEAD'].includes(req.method || '')) {
+          res.writeHead(405, { Allow: 'GET, HEAD' });
+          res.end();
+          return;
+        }
+        const rel = pathname.slice('/runtime/godot/'.length);
+        const parts = rel.split('/');
+        const runtimeBase = path.join(repoRoot, 'runtime', 'godot');
+        if (parts.length !== 2 || parts.some(p => !/^[0-9A-Za-z._-]{1,80}$/.test(p) || p.startsWith('.'))) {
+          res.writeHead(404);
+          res.end('Not found');
+          return;
+        }
+        const target = path.resolve(runtimeBase, parts[0], parts[1]);
+        if (!target.startsWith(runtimeBase + path.sep) || !fs.existsSync(target) || !fs.statSync(target).isFile()) {
+          res.writeHead(404);
+          res.end('Not found');
+          return;
+        }
+        const ext = path.extname(target).toLowerCase();
+        const mime = MIME[ext];
+        if (!mime) {
+          res.writeHead(404);
+          res.end('Not found');
+          return;
+        }
+        const acceptEncoding = String(req.headers['accept-encoding'] || '');
+        const gzPath = target + '.gz';
+        const usePrecompressed = req.method !== 'HEAD' && acceptEncoding.includes('gzip') && fs.existsSync(gzPath) && fs.statSync(gzPath).isFile();
+        const servePath = usePrecompressed ? gzPath : target;
+        const headers = {
+          'Content-Type': mime,
+          'Content-Length': fs.statSync(servePath).size,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Access-Control-Allow-Origin': '*',
+          'Cross-Origin-Resource-Policy': 'cross-origin',
+          'X-Content-Type-Options': 'nosniff',
+        };
+        if (usePrecompressed) {
+          headers['Content-Encoding'] = 'gzip';
+          headers.Vary = 'Accept-Encoding';
+        }
+        res.writeHead(200, headers);
+        if (req.method === 'HEAD') res.end();
+        else fs.createReadStream(servePath).pipe(res);
+        return;
+      }
       if (pathname === '/forge') {
         res.writeHead(308, { Location: '/forge/' });
         res.end();
