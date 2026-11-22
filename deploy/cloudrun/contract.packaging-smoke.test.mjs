@@ -7,7 +7,7 @@ import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { build as buildHubDist } from '../../hub/tools/build.mjs';
+import { build as buildHubDist, syncCheckoutGames } from '../../hub/tools/build.mjs';
 import { TOOLS as PORTABLE_SEA_TOOLS, createBundle as createPortableSeaBundle } from '../../hub/portable/build-sea.mjs';
 
 const require = createRequire(import.meta.url);
@@ -462,8 +462,11 @@ test('TC-2.3: Staged Dockerfile COPY isolation boot smoke test with PLAYHUB_SECU
       );
 
       if (src === 'hub/dist') {
-        // Build fresh static dist directly into stagingRoot (works even in CI before `node hub/tools/build.mjs`)
+        // Build fresh static dist directly into stagingRoot (sync WebGames catalog first on fresh CI checkouts)
         fs.mkdirSync(path.dirname(destAbs), { recursive: true });
+        if (!fs.existsSync(path.join(repoRoot, 'hub', 'catalog', 'games.json'))) {
+          await syncCheckoutGames({ root: path.join(repoRoot, 'hub') });
+        }
         buildHubDist({ root: path.join(repoRoot, 'hub'), outputDir: destAbs });
         continue;
       }
