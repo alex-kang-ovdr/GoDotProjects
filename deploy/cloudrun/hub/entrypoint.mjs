@@ -126,6 +126,18 @@ function buildConfig() {
   };
 }
 
+export function allowCloudRunSameHostOrigin(req, origins, env = process.env) {
+  if (!env?.K_SERVICE || !Array.isArray(origins)) return false;
+  const origin = typeof req?.headers?.origin === 'string' ? req.headers.origin.trim() : '';
+  const host = typeof req?.headers?.host === 'string' ? req.headers.host.trim().toLowerCase() : '';
+  if (!origin || !host) return false;
+  if (!/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.run\.app$/i.test(host)) return false;
+  const expected = `https://${host}`;
+  if (origin !== expected) return false;
+  if (!origins.includes(expected) && origins.length < 16) origins.push(expected);
+  return true;
+}
+
 export function rewriteProxyLocation(location, stripPrefix = '') {
   if (!stripPrefix || typeof location !== 'string') return location;
   if (!location.startsWith('/') || location.startsWith('//') || location.startsWith('/?')) {
@@ -328,6 +340,7 @@ if (isDirectExecution) {
     }
 
     if (pathname.startsWith('/api/') || (ROLE === 'public' && pathname.startsWith('/play-ugc/'))) {
+      if (ROLE === 'public') allowCloudRunSameHostOrigin(req, config.userOrigins);
       stripSpoofedHeaders(req);
       apiHandler(req, res);
       return;

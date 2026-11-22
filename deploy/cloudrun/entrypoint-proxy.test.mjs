@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import {
+  allowCloudRunSameHostOrigin,
   rewriteProxyLocation,
   buildUpstreamRequestOptions,
   proxyRequest,
@@ -90,4 +91,30 @@ test('proxyRequest rewrites Location headers cleanly without duplicating /forge'
   const r2 = await fetch(`http://127.0.0.1:${proxyPort}/forge/unprefixed`, { redirect: 'manual' });
   assert.equal(r2.status, 302);
   assert.equal(r2.headers.get('location'), '/forge/editor');
+});
+
+test('allowCloudRunSameHostOrigin permits matching *.run.app same-host origin and rejects external origins', () => {
+  const origins = ['https://playhub-hub-hash-uw.a.run.app'];
+  const allowed = allowCloudRunSameHostOrigin(
+    { headers: { host: 'playhub-hub-88778617121.us-west1.run.app', origin: 'https://playhub-hub-88778617121.us-west1.run.app' } },
+    origins,
+    { K_SERVICE: 'playhub-hub' },
+  );
+  assert.equal(allowed, true);
+  assert.ok(origins.includes('https://playhub-hub-88778617121.us-west1.run.app'));
+
+  const deniedExternal = allowCloudRunSameHostOrigin(
+    { headers: { host: 'playhub-hub-88778617121.us-west1.run.app', origin: 'https://evil.example.com' } },
+    origins,
+    { K_SERVICE: 'playhub-hub' },
+  );
+  assert.equal(deniedExternal, false);
+  assert.ok(!origins.includes('https://evil.example.com'));
+
+  const deniedLocal = allowCloudRunSameHostOrigin(
+    { headers: { host: 'playhub-hub-88778617121.us-west1.run.app', origin: 'https://playhub-hub-88778617121.us-west1.run.app' } },
+    ['http://localhost:8080'],
+    {},
+  );
+  assert.equal(deniedLocal, false);
 });
