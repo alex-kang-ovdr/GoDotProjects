@@ -285,3 +285,38 @@ test('TC-REG-006 (ISS-009): PlayForge Desktop download UI and /api/desktop-downl
     }
   }
 });
+
+test('TC-REG-007 (ISS-010): User-facing Hub/Forge NEVER inject "데모 OFF" pills; Admin owns "실험기능 보기"', () => {
+  const forgeDevDemo = fs.readFileSync(path.join(OFFICIAL_GODOT_DIR, 'dev-demo-ui.js'), 'utf8');
+  for (const forbidden of [
+    'forge-dev-demo-toggle',
+    'forge-dev-demo-panel',
+    'forge-editor-dev-demo-toggle',
+    'forge-editor-f5-refresh',
+    '데모 OFF',
+    '테스트/데모',
+  ]) {
+    assert.ok(!forgeDevDemo.includes(forbidden), `forge/OfficialGodot/dev-demo-ui.js must NOT inject "${forbidden}"`);
+  }
+
+  const hubDevDemo = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'web', 'user', 'dev-demo-ui.js'), 'utf8');
+  for (const forbidden of [
+    'dev-demo-nav-toggle',
+    'dev-demo-settings-card',
+    '데모 OFF',
+    '테스트/데모 UI',
+  ]) {
+    assert.ok(!hubDevDemo.includes(forbidden), `hub/web/user/dev-demo-ui.js must NOT inject "${forbidden}"`);
+  }
+
+  const adminHtml = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'web', 'admin', 'index.html'), 'utf8');
+  const adminJs = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'web', 'admin', 'admin.js'), 'utf8');
+  const adminViews = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'web', 'admin', 'domain-views.js'), 'utf8');
+  const hubServer = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'server', 'app.mjs'), 'utf8');
+
+  assert.ok(adminHtml.includes('id="admin-experimental-toggle"'), 'Admin index.html must expose #admin-experimental-toggle');
+  assert.ok(adminJs.includes('/api/admin/experimental-features'), 'Admin admin.js must call /api/admin/experimental-features');
+  assert.ok(adminViews.includes('실험기능 보기'), 'Admin domain-views.js must render 실험기능 보기 control');
+  assert.ok(hubServer.includes('/api/admin/experimental-features'), 'Hub server must provide /api/admin/experimental-features');
+  assert.ok(hubServer.includes('experimentalFeaturesEnabled'), 'Hub /api/session must expose experimentalFeaturesEnabled');
+});

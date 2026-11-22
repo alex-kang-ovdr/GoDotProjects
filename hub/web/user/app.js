@@ -158,6 +158,9 @@
       adminLink.hidden=!showAdmin;
       if(showAdmin)adminLink.href=session.adminUrl;
     }
+    if(typeof session?.experimentalFeaturesEnabled==='boolean'){
+      window.PlayHubDevDemoUI?.syncFromServer?.(session.experimentalFeaturesEnabled);
+    }
     $('account-help').textContent=accountHelp(canSignIn,canNaver,canEmail);
     for(const button of document.querySelectorAll('[data-google-login]')){
       button.hidden=!canSignIn;

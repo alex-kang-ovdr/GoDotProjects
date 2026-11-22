@@ -232,45 +232,44 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     assert.equal(state.hasShopDemoBtn, false, 'Prod build must never show demo sign-in button');
   });
 
-  // 2) Debug build: Account page toggle ON -> F5 reload -> persists ON; toggle OFF -> F5 -> persists OFF
+  // 2) Debug build: ZERO user-facing "데모 OFF" pills/cards; experimental UI stays OFF by default
+  //    and is controlled via Admin (?devDemoUi=1 / PlayHubDevDemoUI API) with F5 persistence.
   const debugUrl = await launchMode('debug');
   await withChromeCdp(t, `${debugUrl}/?view=account`, async ({ send, evalJs }) => {
     const initial = await evalJs(`({
       mode: window.PlayHubDevDemoUI?.getBuildMode?.(),
       enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
-      hasCard: Boolean(document.getElementById('dev-demo-settings-card')),
-      checked: Boolean(document.getElementById('dev-demo-ui-toggle')?.checked)
+      hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
+      hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
     })`);
     assert.equal(initial.mode, 'debug');
     assert.equal(initial.enabled, false, 'Debug build must default to OFF');
-    assert.equal(initial.hasCard, true, 'Debug build must show Dev settings card in Account');
-    assert.equal(initial.checked, false);
+    assert.equal(initial.hasNavToggle, false, 'PlayHub user header must NOT render 데모 OFF button (Admin owns 실험기능 보기)');
+    assert.equal(initial.hasCard, false, 'PlayHub user account page must NOT render 데모 UI card');
 
-    // Toggle ON in Account settings -> F5 reload -> verify ON persists
-    await evalJs(`document.getElementById('dev-demo-ui-toggle').click();`);
-    await delay(150);
+    // Enable via Admin launch/API -> F5 reload -> verify ON persists without rendering user-facing 데모 buttons
+    await evalJs(`window.PlayHubDevDemoUI.setEnabled(true);`);
+    await delay(100);
     await send('Page.reload', { ignoreCache: true });
     await delay(800);
     const afterF5On = await evalJs(`({
       enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
-      checked: Boolean(document.getElementById('dev-demo-ui-toggle')?.checked),
-      navText: document.getElementById('dev-demo-nav-toggle')?.textContent || ''
+      hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
+      hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
     })`);
-    assert.equal(afterF5On.enabled, true, 'Setting ON must persist after F5 reload');
-    assert.equal(afterF5On.checked, true);
-    assert.match(afterF5On.navText, /DEBUG.*ON/);
+    assert.equal(afterF5On.enabled, true, 'Admin-enabled experimental setting ON must persist after F5 reload');
+    assert.equal(afterF5On.hasNavToggle, false);
+    assert.equal(afterF5On.hasCard, false);
 
-    // Toggle OFF -> F5 reload -> verify OFF persists
-    await evalJs(`document.getElementById('dev-demo-ui-toggle').click();`);
-    await delay(150);
+    // Disable -> F5 reload -> verify OFF persists
+    await evalJs(`window.PlayHubDevDemoUI.setEnabled(false);`);
+    await delay(100);
     await send('Page.reload', { ignoreCache: true });
     await delay(800);
     const afterF5Off = await evalJs(`({
-      enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
-      checked: Boolean(document.getElementById('dev-demo-ui-toggle')?.checked)
+      enabled: window.PlayHubDevDemoUI?.isEnabled?.()
     })`);
     assert.equal(afterF5Off.enabled, false, 'Setting OFF must persist after F5 reload');
-    assert.equal(afterF5Off.checked, false);
   });
 });
 
@@ -325,7 +324,9 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
       mode: window.PlayForgeDevDemoUI?.getBuildMode?.(),
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
       htmlHidden: document.documentElement.hidden,
-      hasToggle: Boolean(document.getElementById('forge-dev-demo-toggle')),
+      hasTopToggle: Boolean(document.getElementById('forge-dev-demo-toggle')),
+      hasSidebarPanel: Boolean(document.getElementById('forge-dev-demo-panel')),
+      hasEditorToggle: Boolean(document.getElementById('forge-editor-dev-demo-toggle')),
       showcaseVisible: (() => {
         const btn = document.querySelector('button[data-filter="showcase"]');
         return Boolean(btn && !btn.hidden && !btn.hasAttribute('data-dev-demo-ui'));
@@ -336,24 +337,26 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
     assert.equal(before.mode, 'test');
     assert.equal(before.enabled, false, 'PlayForge test build must default to OFF');
     assert.equal(before.htmlHidden, false, '<html> root must never be hidden when dev-demo UI is OFF');
-    assert.equal(before.hasToggle, true);
+    assert.equal(before.hasTopToggle, false, 'PlayForge topbar must NOT render 데모 OFF button');
+    assert.equal(before.hasSidebarPanel, false, 'PlayForge sidebar must NOT render 데모 card');
+    assert.equal(before.hasEditorToggle, false, 'PlayForge editor must NOT render 데모 OFF button');
     assert.equal(before.showcaseVisible, true, '제작과정 보기(showcase)는 완성된 정식 사용자 기능이므로 dev-demo OFF에서도 항상 표시되어야 합니다');
     assert.ok(before.totalDemoCount >= 2, 'PlayForge should have gated test/demo UI controls');
     assert.equal(before.visibleDemoCount, 0, 'All PlayForge test/demo UI must be hidden when OFF');
 
-    // Toggle ON -> verify visible -> F5 reload -> verify STILL ON & visible!
-    await evalJs(`document.getElementById('forge-dev-demo-toggle').click();`);
-    await delay(150);
+    // Enable via Admin launch/API -> verify visible -> F5 reload -> verify STILL ON & visible!
+    await evalJs(`window.PlayForgeDevDemoUI.setEnabled(true);`);
+    await delay(100);
     await send('Page.reload', { ignoreCache: true });
     await delay(850);
 
     const afterF5 = await evalJs(`({
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
-      visibleDemoCount: [...document.body.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length,
-      toggleText: document.getElementById('forge-dev-demo-toggle')?.textContent || ''
+      hasTopToggle: Boolean(document.getElementById('forge-dev-demo-toggle')),
+      visibleDemoCount: [...document.body.querySelectorAll('[data-dev-demo-ui]')].filter(el => !el.hidden).length
     })`);
     assert.equal(afterF5.enabled, true, 'PlayForge setting ON must persist across F5 reload');
+    assert.equal(afterF5.hasTopToggle, false, 'PlayForge must still NOT inject 데모 toggle buttons');
     assert.ok(afterF5.visibleDemoCount >= 2, 'PlayForge test/demo UI must remain visible after F5 reload');
-    assert.match(afterF5.toggleText, /TEST.*ON/);
   });
 });

@@ -229,7 +229,7 @@ export function renderSystemOverview(container, data, { number, kstStamp, onNavi
   container.replaceChildren(healthPanel, countsPanel);
 }
 
-export function renderSystemConfig(container, data) {
+export function renderSystemConfig(container, data, ctx = {}) {
   const n = data.network, a = data.auth, f = data.features;
   const p1 = panel('CONFIGURATION (READ-ONLY)', '네트워크·도메인 및 인증 설정 진단');
   p1.append(kvList([
@@ -244,6 +244,41 @@ export function renderSystemConfig(container, data) {
   ]));
   p1.append(el('p', '보안 원칙에 따라 OAuth Client Secret, Drive Refresh Token, 관리자 해시·salt 등 비밀정보는 API 및 화면에 노출하지 않으며 설정 변경은 서버 private 설정/환경변수에서만 수행합니다.', 'panel-foot'));
 
+  const exp = ctx.experimental || { enabled: false, allowedInBuild: true, buildMode: 'dev', userBaseUrl: n.userBaseUrl || '' };
+  const pExp = panel(
+    'EXPERIMENTAL FEATURES (ADMIN ONLY)',
+    '실험기능 보기 (PlayHub · PlayForge)',
+    pill(exp.enabled ? 'ON · 표시 중' : 'OFF · 숨김', exp.enabled ? 'warn' : 'muted')
+  );
+  pExp.dataset.testid = 'admin-experimental-panel';
+  pExp.append(el(
+    'p',
+    '사용자 화면(PlayHub · PlayForge)에는 데모 토글을 노출하지 않으며, 관리자 콘솔에서만 실험기능 보기(테스트 워크스페이스·샌드박스 결제·데모 로그인 등)를 제어합니다. 운영(prod/release) 빌드에서는 항상 비활성화됩니다.',
+    'muted'
+  ));
+  const expActions = el('div', '', 'inline-actions');
+  const toggleBtn = el('button', exp.enabled ? '실험기능 보기 끄기 (OFF)' : '실험기능 보기 켜기 (ON)', exp.enabled ? 'quiet' : 'primary');
+  toggleBtn.type = 'button';
+  toggleBtn.dataset.testid = 'admin-experimental-panel-toggle';
+  toggleBtn.disabled = !exp.allowedInBuild || typeof ctx.onToggleExperimental !== 'function';
+  toggleBtn.addEventListener('click', () => {
+    if (typeof ctx.onToggleExperimental === 'function') void ctx.onToggleExperimental(!exp.enabled);
+  });
+  expActions.append(toggleBtn);
+  const baseUserUrl = String(exp.userBaseUrl || n.userBaseUrl || '').replace(/\/$/, '');
+  if (exp.allowedInBuild && baseUserUrl) {
+    const hubLink = el('a', 'PlayHub 실험기능 열기 ↗', 'quiet');
+    hubLink.href = `${baseUserUrl}/?devDemoUi=1`;
+    hubLink.target = '_blank';
+    hubLink.rel = 'noopener noreferrer';
+    const forgeLink = el('a', 'PlayForge 실험기능 열기 ↗', 'quiet');
+    forgeLink.href = `${baseUserUrl}/forge/OfficialGodot/?devDemoUi=1`;
+    forgeLink.target = '_blank';
+    forgeLink.rel = 'noopener noreferrer';
+    expActions.append(hubLink, forgeLink);
+  }
+  pExp.append(expActions);
+
   const p2 = panel('FEATURE FLAGS', '컴포넌트 기능 활성화 상태');
   p2.append(kvList([
     ['Forge 계정/프로젝트 API (forge.enabled)', f.forgeEnabled ? 'ON' : 'OFF', f.forgeEnabled ? 'ok' : 'muted'],
@@ -253,7 +288,7 @@ export function renderSystemConfig(container, data) {
     ['Drive OAuth 환경변수 (PLAYHUB_DRIVE_*)', f.driveCredentialsConfigured ? 'SET' : 'UNSET', f.driveCredentialsConfigured ? 'ok' : 'muted'],
     ['Forge 저장 경로 루트 외부 격리', f.forgeDirectoryOutsideRoot === null ? '미설정' : f.forgeDirectoryOutsideRoot ? 'PASS' : 'WARN', f.forgeDirectoryOutsideRoot ? 'ok' : 'muted']
   ]));
-  container.replaceChildren(p1, p2);
+  container.replaceChildren(pExp, p1, p2);
 }
 
 export function renderSystemAccess(container, data, { kstStamp }) {

@@ -12,7 +12,6 @@
   }
 
   const buildMode = ALLOWED_MODES.has(rawMode) ? rawMode : 'debug';
-  const modeBadgeLabel = buildMode === 'debug' ? 'DEBUG' : buildMode === 'test' ? 'TEST' : 'DEV';
 
   function readStored() {
     try {
@@ -41,110 +40,63 @@
     // Ignore URL errors
   }
 
-  let enabled = readStored();
+  let localEnabled = readStored();
+  let serverEnabled = false;
+  let effectiveEnabled = Boolean(localEnabled || serverEnabled);
 
   function applyDocumentState() {
+    effectiveEnabled = Boolean(localEnabled || serverEnabled);
     document.documentElement.dataset.buildMode = buildMode;
-    document.documentElement.dataset.devDemoUi = enabled ? 'on' : 'off';
+    document.documentElement.dataset.devDemoUi = effectiveEnabled ? 'on' : 'off';
 
     for (const el of document.querySelectorAll('[data-dev-demo-ui]')) {
       if (el === document.documentElement) continue;
-      el.hidden = !enabled;
+      el.hidden = !effectiveEnabled;
     }
+  }
 
-    const topBtn = document.getElementById('forge-dev-demo-toggle');
-    if (topBtn) {
-      topBtn.setAttribute('aria-pressed', String(enabled));
-      topBtn.dataset.state = enabled ? 'on' : 'off';
-      topBtn.textContent = `${modeBadgeLabel} · 테스트/데모 ${enabled ? 'ON' : 'OFF'}`;
-    }
-
-    const editorBtn = document.getElementById('forge-editor-dev-demo-toggle');
-    if (editorBtn) {
-      editorBtn.setAttribute('aria-pressed', String(enabled));
-      editorBtn.dataset.state = enabled ? 'on' : 'off';
-      editorBtn.textContent = `${modeBadgeLabel} · 데모 ${enabled ? 'ON' : 'OFF'}`;
-    }
-
-    const checkbox = document.getElementById('forge-dev-demo-checkbox');
-    if (checkbox) checkbox.checked = enabled;
-
-    const statePill = document.getElementById('forge-dev-demo-state');
-    if (statePill) {
-      statePill.textContent = enabled ? 'ON (표시)' : 'OFF (숨김)';
-      statePill.dataset.state = enabled ? 'on' : 'off';
-    }
+  function emitChange() {
+    window.dispatchEvent(new CustomEvent('playforge:dev-demo-ui-change', {
+      detail: { enabled: effectiveEnabled, buildMode }
+    }));
   }
 
   function setEnabled(next, { reload = false } = {}) {
     const value = Boolean(next);
-    enabled = value;
+    localEnabled = value;
+    if (!value) serverEnabled = false;
     writeStored(value);
     applyDocumentState();
-    window.dispatchEvent(new CustomEvent('playforge:dev-demo-ui-change', {
-      detail: { enabled: value, buildMode }
-    }));
+    emitChange();
     if (reload) {
       location.reload();
     }
-    return value;
+    return effectiveEnabled;
   }
 
-  function mountControls() {
-    // 1. PlayForge Creator Hub (OfficialGodot/index.html)
-    const topActions = document.querySelector('.forge-topbar-actions');
-    if (topActions && !document.getElementById('forge-dev-demo-toggle')) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.type = 'button';
-      toggleBtn.id = 'forge-dev-demo-toggle';
-      toggleBtn.className = 'forge-dev-demo-pill';
-      toggleBtn.dataset.testid = 'forge-dev-demo-toggle';
-      toggleBtn.addEventListener('click', () => setEnabled(!enabled));
-      topActions.prepend(toggleBtn);
-    }
-
-    const sidebar = document.querySelector('.forge-sidebar');
-    if (sidebar && !document.getElementById('forge-dev-demo-panel')) {
-      const panel = document.createElement('div');
-      panel.id = 'forge-dev-demo-panel';
-      panel.className = 'forge-dev-demo-card';
-      panel.dataset.testid = 'forge-dev-demo-panel';
-      panel.innerHTML = `
-        <div class="forge-dev-demo-card-head">
-          <span class="forge-dev-build-badge">${modeBadgeLabel}</span>
-          <span id="forge-dev-demo-state" class="forge-dev-state-pill"></span>
-        </div>
-        <label class="forge-dev-demo-switch" for="forge-dev-demo-checkbox">
-          <input type="checkbox" id="forge-dev-demo-checkbox" data-testid="forge-dev-demo-checkbox">
-          <span>테스트·데모 UI 표시</span>
-        </label>
-        <p class="forge-dev-demo-note">Dev · Debug · Test 빌드 전용 (기본 OFF · F5 새로고침 유지)</p>
-        <button type="button" class="forge-dev-refresh-btn" id="forge-dev-demo-refresh" data-testid="forge-dev-demo-refresh">F5 새로고침</button>
-      `;
-      sidebar.append(panel);
-      const cb = panel.querySelector('#forge-dev-demo-checkbox');
-      cb?.addEventListener('change', () => setEnabled(cb.checked));
-      panel.querySelector('#forge-dev-demo-refresh')?.addEventListener('click', () => location.reload());
-    }
-
-    // 2. PlayForge Web Editor (OfficialGodot/editor.html)
-    const editorActions = document.getElementById('actions');
-    if (editorActions && !document.getElementById('forge-editor-dev-demo-toggle')) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.id = 'forge-editor-dev-demo-toggle';
-      btn.dataset.testid = 'forge-editor-dev-demo-toggle';
-      btn.addEventListener('click', () => setEnabled(!enabled));
-      const f5Btn = document.createElement('button');
-      f5Btn.type = 'button';
-      f5Btn.id = 'forge-editor-f5-refresh';
-      f5Btn.textContent = 'F5 새로고침';
-      f5Btn.addEventListener('click', () => location.reload());
-      editorActions.prepend(f5Btn);
-      editorActions.prepend(btn);
-    }
-
+  function syncFromServer(nextServerEnabled) {
+    const next = Boolean(nextServerEnabled);
+    if (next === serverEnabled) return effectiveEnabled;
+    const prevEffective = effectiveEnabled;
+    serverEnabled = next;
     applyDocumentState();
+    if (effectiveEnabled !== prevEffective) {
+      emitChange();
+    }
+    return effectiveEnabled;
+  }
+
+  async function pullAdminExperimentalFlag() {
+    try {
+      const res = await fetch('/api/session', { credentials: 'same-origin', cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json().catch(() => null);
+      if (data && typeof data.experimentalFeaturesEnabled === 'boolean') {
+        syncFromServer(data.experimentalFeaturesEnabled);
+      }
+    } catch {
+      // Standalone Forge without Hub proxy ignores /api/session errors
+    }
   }
 
   // Ensure F5 refreshes cleanly even when editor canvas/controls are focused
@@ -158,29 +110,31 @@
   window.addEventListener('storage', (event) => {
     if (event.key !== STORAGE_KEY) return;
     const next = event.newValue === '1';
-    if (next === enabled) return;
-    enabled = next;
+    if (next === localEnabled) return;
+    localEnabled = next;
     applyDocumentState();
-    window.dispatchEvent(new CustomEvent('playforge:dev-demo-ui-change', {
-      detail: { enabled, buildMode }
-    }));
+    emitChange();
   });
 
   window.PlayForgeDevDemoUI = {
     STORAGE_KEY,
     isIncluded: () => true,
     getBuildMode: () => buildMode,
-    isEnabled: () => enabled,
+    isEnabled: () => effectiveEnabled,
     setEnabled,
-    toggle: () => setEnabled(!enabled),
+    syncFromServer,
+    toggle: () => setEnabled(!effectiveEnabled),
     refresh: () => location.reload(),
     syncDom: applyDocumentState
   };
 
   applyDocumentState();
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mountControls, { once: true });
+    document.addEventListener('DOMContentLoaded', () => {
+      applyDocumentState();
+      void pullAdminExperimentalFlag();
+    }, { once: true });
   } else {
-    mountControls();
+    void pullAdminExperimentalFlag();
   }
 })();

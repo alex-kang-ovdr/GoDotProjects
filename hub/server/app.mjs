@@ -1,4 +1,5 @@
 import http from 'node:http';
+import fs from 'node:fs';
 import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
@@ -286,12 +287,49 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
+  const resolvedBuildMode = String(config.buildMode || process.env.PLAYHUB_BUILD_MODE || 'dev').trim().toLowerCase();
+  const experimentalAllowedInBuild = ['dev', 'development', 'debug', 'test'].includes(resolvedBuildMode);
+  const experimentalFeaturesPath = config.dataDir ? resolve(config.dataDir, 'experimental-features.json') : null;
+  function readExperimentalFeatures() {
+    if (!experimentalAllowedInBuild) {
+      return { enabled: false, allowedInBuild: false, buildMode: resolvedBuildMode, updatedAt: null, updatedBy: null };
+    }
+    if (experimentalFeaturesPath && fs.existsSync(experimentalFeaturesPath)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(experimentalFeaturesPath, 'utf8'));
+        return {
+          enabled: parsed?.enabled === true,
+          allowedInBuild: true,
+          buildMode: resolvedBuildMode,
+          updatedAt: parsed?.updatedAt || null,
+          updatedBy: parsed?.updatedBy || null
+        };
+      } catch {}
+    }
+    return { enabled: false, allowedInBuild: true, buildMode: resolvedBuildMode, updatedAt: null, updatedBy: null };
+  }
+  function writeExperimentalFeatures(enabled, actor) {
+    if (!experimentalAllowedInBuild) {
+      throw new ApiError(403, 'EXPERIMENTAL_DISABLED_IN_PROD', '운영(prod/release) 빌드에서는 실험기능 보기를 켤 수 없습니다.');
+    }
+    const payload = {
+      enabled: Boolean(enabled),
+      updatedAt: new Date(now()).toISOString(),
+      updatedBy: actor || 'admin'
+    };
+    if (experimentalFeaturesPath) {
+      fs.mkdirSync(dirname(experimentalFeaturesPath), { recursive: true });
+      fs.writeFileSync(experimentalFeaturesPath, JSON.stringify(payload, null, 2), 'utf8');
+    }
+    return { ...payload, allowedInBuild: true, buildMode: resolvedBuildMode };
+  }
   function profile(s, req = null) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
     const kind = user?.kind || 'anonymous';
     const authProvider = kind === 'registered' ? providerForUser(db, s.principal_id) : (kind === 'guest' ? 'guest' : null);
     const isAdmin = hasAdminPrivilege(s, req);
     const adminUrl = isAdmin ? resolveAdminLinkUrl() : null;
+    const experimentalFeaturesEnabled = readExperimentalFeatures().enabled;
     const googleEnabled = google.enabled && s.traffic_type !== 'qa';
     const naverEnabled = sso.naver.enabled && s.traffic_type !== 'qa';
     const emailEnabled = sso.email.enabled && s.traffic_type !== 'qa';
@@ -303,6 +341,7 @@ export function createApp(input, dependencies = {}) {
       authProvider,
       isAdmin,
       adminUrl,
+      experimentalFeaturesEnabled,
       googleEnabled,
       naverEnabled,
       emailEnabled,
@@ -694,6 +733,31 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
     }
     const s = requireSession(req,'admin',true);
+    if (path === '/api/admin/experimental-features' && req.method === 'GET') {
+      const state = readExperimentalFeatures();
+      const userBaseUrl = String(config.userBaseUrl || '').replace(/\/$/, '');
+      json(res, 200, {
+        ok: true,
+        ...state,
+        userBaseUrl,
+        playforgeUrl: userBaseUrl ? `${userBaseUrl}/forge/OfficialGodot/` : '/forge/OfficialGodot/'
+      });
+      return;
+    }
+    if (path === '/api/admin/experimental-features' && req.method === 'POST') {
+      const body = await readJson(req, 4096);
+      if (typeof body.enabled !== 'boolean') throw new ApiError(422, 'ENABLED_REQUIRED');
+      const next = writeExperimentalFeatures(body.enabled, s.admin_username);
+      audit('system_experimental_features_update', s.admin_username || 'admin', { enabled: next.enabled });
+      const userBaseUrl = String(config.userBaseUrl || '').replace(/\/$/, '');
+      json(res, 200, {
+        ok: true,
+        ...next,
+        userBaseUrl,
+        playforgeUrl: userBaseUrl ? `${userBaseUrl}/forge/OfficialGodot/` : '/forge/OfficialGodot/'
+      });
+      return;
+    }
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await billing.adminRoute(req,res,url,s)) return;

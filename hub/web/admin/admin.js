@@ -50,6 +50,7 @@ let communityRequest = 0, communityOffset = 0, communityLoaded = false, communit
 let gameRows = null, gameSort = { key: 'activePlayers', direction: 'descending' };
 let selectedGameId = null;
 let badgesCache = null, systemCache = null, forgeCache = null, qaCache = null, usersCache = null, auditCache = [];
+let experimentalCache = null;
 let activeRoute = Rules.resolveAdminRoute(location.search, location.hash);
 
 const datasetLabels = { live: '실제 이용 기록', qa: 'QA 실행 기록', demo: '독립 가상 예제' };
@@ -264,8 +265,59 @@ function clearDashboard() {
   $('community-list').replaceChildren(); $('community-message').textContent = '';
   $('community-prev').disabled = true; $('community-next').disabled = true;
   badgesCache = systemCache = forgeCache = qaCache = usersCache = null;
+  experimentalCache = null;
   auditCache = [];
 }
+
+function paintExperimentalButton() {
+  const btn = $('admin-experimental-toggle');
+  if (!btn) return;
+  if (!authenticated || !experimentalCache || !experimentalCache.allowedInBuild) {
+    btn.hidden = true;
+    return;
+  }
+  btn.hidden = false;
+  btn.setAttribute('aria-pressed', String(Boolean(experimentalCache.enabled)));
+  btn.textContent = experimentalCache.enabled ? '실험기능 보기 ON' : '실험기능 보기 OFF';
+  btn.className = experimentalCache.enabled ? 'primary' : 'quiet';
+}
+
+async function refreshExperimentalFeatures() {
+  if (!authenticated) { experimentalCache = null; paintExperimentalButton(); return null; }
+  try {
+    experimentalCache = await api('/api/admin/experimental-features');
+  } catch {
+    experimentalCache = null;
+  }
+  paintExperimentalButton();
+  return experimentalCache;
+}
+
+async function toggleExperimentalFeatures(nextEnabled) {
+  const btn = $('admin-experimental-toggle');
+  if (btn) btn.disabled = true;
+  try {
+    experimentalCache = await api('/api/admin/experimental-features', { method: 'POST', body: { enabled: Boolean(nextEnabled) } });
+    paintExperimentalButton();
+    notice(experimentalCache.enabled
+      ? 'PlayHub · PlayForge 실험기능 보기를 ON으로 전환했습니다.'
+      : 'PlayHub · PlayForge 실험기능 보기를 OFF로 전환했습니다.');
+    if (activeRoute.tab === 'system' && systemCache) {
+      renderSystemConfig($('system-config-panel'), systemCache, {
+        experimental: experimentalCache,
+        onToggleExperimental: toggleExperimentalFeatures
+      });
+    }
+  } catch (error) {
+    if (!handleAuthError(error)) notice(error.message || '실험기능 보기 설정 변경에 실패했습니다.', true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+$('admin-experimental-toggle')?.addEventListener('click', () => {
+  void toggleExperimentalFeatures(!experimentalCache?.enabled);
+});
 
 const LOCAL_LOGOUT_KEY = 'playhub-admin-local-logout';
 let localAutoLoginEnabled = false;
@@ -287,9 +339,11 @@ function showSession(session) {
   if (authenticated) {
     updatePanelVisibility();
     submissionReview.start();
+    void refreshExperimentalFeatures();
   } else {
     generation++;
     clearDashboard();
+    paintExperimentalButton();
     submissionReview.reset();
     storeController.reset();
   }
@@ -761,8 +815,11 @@ async function refreshSystemViews() {
   }
   systemCache = await api('/api/admin/system/overview');
   if (token !== generation || !authenticated) return;
+  await refreshExperimentalFeatures();
   const ctx = {
     number, kstStamp,
+    experimental: experimentalCache,
+    onToggleExperimental: toggleExperimentalFeatures,
     onNavigate: (tab, view) => navigate(tab, view),
     onCreateBackup: async () => {
       await api('/api/admin/system/backups', { method: 'POST', body: {} });
@@ -785,7 +842,7 @@ async function refreshSystemViews() {
     }
   };
   renderSystemOverview($('system-overview-panel'), systemCache, ctx);
-  renderSystemConfig($('system-config-panel'), systemCache);
+  renderSystemConfig($('system-config-panel'), systemCache, ctx);
   renderSystemAccess($('system-access-panel'), systemCache, ctx);
   renderSystemBackups($('system-backups-panel'), systemCache, ctx);
 }
