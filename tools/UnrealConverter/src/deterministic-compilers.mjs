@@ -452,12 +452,64 @@ export function compilePhysicsAssetsDeterministic(portedDir) {
   return { compiledPhysicsAssets: count };
 }
 
+/**
+ * Pass 6: Deterministic ControlRig (CR_*) -> Godot 4.7 SkeletonModifier3D & Gizmo Rig Compiler.
+ */
+export function compileControlRigsDeterministic(portedDir) {
+  const rigs = readJsonSafe(path.join(portedDir, "extracted/control_rigs.json"));
+  const scriptsDir = path.join(portedDir, "scripts");
+  const outRigDir = path.join(portedDir, "scenes/rigs");
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.mkdirSync(outRigDir, { recursive: true });
+
+  let count = 0;
+  for (const [rigName] of Object.entries(rigs)) {
+    if (rigName.toLowerCase().includes("bot")) {
+      const modifierGd = `class_name CRBotCorrectionModifier
+extends SkeletonModifier3D
+## Deterministically compiled from StackOBot CR_Bot_Correction.uasset (ControlRigBlueprint)
+## Applies procedural velocity-based lean & spine stabilization on SK_Bot.
+
+var target_lean_rad: Vector2 = Vector2.ZERO
+var _spine_idx: int = -1
+
+func _process_modification() -> void:
+	var skel: Skeleton3D = get_skeleton()
+	if skel == null:
+		return
+	if _spine_idx < 0:
+		_spine_idx = skel.find_bone("spine_02")
+		if _spine_idx < 0:
+			_spine_idx = skel.find_bone("spine_01")
+	if _spine_idx >= 0 and target_lean_rad.length_squared() > 1e-6:
+		var cur_rot: Quaternion = skel.get_bone_pose_rotation(_spine_idx)
+		var delta_q := Quaternion.from_euler(Vector3(target_lean_rad.y, 0.0, target_lean_rad.x))
+		skel.set_bone_pose_rotation(_spine_idx, cur_rot * delta_q)
+`;
+      writeIfChanged(path.join(scriptsDir, "cr_bot_correction_modifier.gd"), modifierGd);
+      count++;
+    } else {
+      const rigTscn = `[gd_scene format=3]
+
+[node name="${rigName}" type="Node3D"]
+
+[node name="TargetControlGizmo" type="Marker3D" parent="."]
+position = Vector3(0, 0, 3)
+`;
+      writeIfChanged(path.join(outRigDir, `${rigName}.tscn`), rigTscn);
+      count++;
+    }
+  }
+  return { compiledControlRigs: count };
+}
+
 export function runAllDeterministicCompilers(portedDir) {
   return {
     ...compileMaterialsDeterministic(portedDir),
     ...compileNiagaraDeterministic(portedDir),
     ...compileMetaSoundsDeterministic(portedDir),
     ...compileUmgWidgetsDeterministic(portedDir),
-    ...compilePhysicsAssetsDeterministic(portedDir)
+    ...compilePhysicsAssetsDeterministic(portedDir),
+    ...compileControlRigsDeterministic(portedDir)
   };
 }

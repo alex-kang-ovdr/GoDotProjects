@@ -491,19 +491,24 @@ test("15. Deterministic Resource Compilers + Agent-Orchestrated Pipeline Scoreca
 
   assert.equal(orch.architecture, "deterministic_core_with_agent_orchestration");
   assert.equal(orch.completeness_scorecard.total_ue5_assets, 260);
-  assert.ok(
-    orch.completeness_scorecard.usable_in_godot_pct >= 95.0,
-    `Expected >=95% usable assets after deterministic compilers, got ${orch.completeness_scorecard.usable_in_godot_pct}%`
+  assert.equal(orch.completeness_scorecard.failed_unsupported, 0);
+  assert.equal(
+    orch.completeness_scorecard.usable_in_godot_pct,
+    100,
+    `Expected 100% usable assets after deterministic compilers, got ${orch.completeness_scorecard.usable_in_godot_pct}%`
   );
   assert.ok(orch.deterministic_compilers.compiledMaterials >= 40);
   assert.equal(orch.deterministic_compilers.compiledNiagaraScenes, 6);
   assert.equal(orch.deterministic_compilers.compiledMetaSoundWavs, 3);
   assert.equal(orch.deterministic_compilers.compiledUmgScenes, 7);
   assert.equal(orch.deterministic_compilers.compiledPhysicsAssets, 1);
+  assert.equal(orch.deterministic_compilers.compiledControlRigs, 2);
 
   if (!orch.runtime_verification.skipped) {
     assert.equal(orch.runtime_verification.passed, true);
     assert.equal(orch.runtime_verification.script_error_count, 0);
+    assert.equal(orch.runtime_verification.telemetry.has_backpack_mesh, true);
+    assert.equal(orch.runtime_verification.telemetry.has_control_rig_modifier, true);
     assert.equal(orch.runtime_verification.telemetry.shots.length, 6);
   }
 });

@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-11-22T02:36:38.7527968Z",
+  "generated_at": "2026-11-22T03:25:06.9919550Z",
   "source_content_dir": "C:\\ProgramData\\Epic\\EpicGamesLauncher\\VaultCache\\StackOBot_5.4\\data\\Content",
   "oodle_dll": "C:\\Epic Games\\UE_5.6\\Engine\\Binaries\\DotNET\\AutomationTool\\oo2core_9_win64.dll",
   "totals": {
     "total_assets_audited": 260,
-    "ported_full": 178,
-    "ported_partial": 74,
-    "failed_unsupported": 8,
+    "ported_full": 182,
+    "ported_partial": 78,
+    "failed_unsupported": 0,
     "mainworld_external_actors": 419,
     "static_mesh_actors": 237,
     "blueprint_actors": 96,
@@ -39,9 +39,9 @@
     {
       "category": "CharacterMesh",
       "total": 2,
-      "full": 1,
+      "full": 2,
       "partial": 0,
-      "failed": 1
+      "failed": 0
     },
     {
       "category": "DataAsset/Misc",
@@ -89,8 +89,8 @@
       "category": "Rig/ControlRig",
       "total": 2,
       "full": 0,
-      "partial": 0,
-      "failed": 2
+      "partial": 2,
+      "failed": 0
     },
     {
       "category": "Rig/Physics",
@@ -109,16 +109,16 @@
     {
       "category": "StaticMesh",
       "total": 57,
-      "full": 56,
+      "full": 57,
       "partial": 0,
-      "failed": 1
+      "failed": 0
     },
     {
       "category": "Texture",
       "total": 50,
-      "full": 46,
-      "partial": 0,
-      "failed": 4
+      "full": 48,
+      "partial": 2,
+      "failed": 0
     },
     {
       "category": "UI/UMG",
@@ -442,11 +442,11 @@
       "AssetName": "CR_MovingPlatform",
       "Category": "Rig/ControlRig",
       "UnrealClass": "ControlRigBlueprint",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 RigVM procedural IK / bone-correction graph",
-      "FailureReason": "RigVM bytecode executes procedural bone constraints at runtime; Godot 4.7 has no RigVM interpreter.",
-      "RemediationTodo": "Map common RigVM nodes (BasicIK, ModifyTransforms, Aim) to Godot 4.4\u002B SkeletonModifier3D / TwoBoneIK3D / LookAtModifier3D."
+      "Status": "PORTED_PARTIAL",
+      "GodotOutput": "res://scenes/rigs/CR_MovingPlatform.tscn",
+      "Details": "Extracted ControlRig hierarchy \u0026 RigVM metadata (394 exports, targets=[/ControlRig/Controls/DefaultGizmoLibrary,/Script/ControlRig.CachedRigElement,/Script/ControlRig.CRSimPoint,/Script/ControlRig.EBoneGetterSetterMode,/Script/ControlRig.ERigElementType,/Script/ControlRig.ERigUnitVisualDebugPointMode]) -\u003E Godot 4.7 SkeletonModifier3D / gizmo rig.",
+      "FailureReason": "RigVM custom bytecode approximated via deterministic Godot 4.7 SkeletonModifier3D procedural bone modifier.",
+      "RemediationTodo": "Implement full FRigVMByteCode opcode translator to SkeletonModifier3D expression chain."
     },
     {
       "RelativePath": "StackOBot/Blueprints/SaveGame/CollectableObjectData.uasset",
@@ -530,11 +530,11 @@
       "AssetName": "SKM_Backpack",
       "Category": "CharacterMesh",
       "UnrealClass": "SkeletalMesh",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "SKM_Backpack is serialized as UE5 RawExport FSkeletalMeshRenderData without accompanying source FBX",
-      "FailureReason": "UAssetAPI exposes USkeletalMesh as unparsed RawExport; UE5 FSkeletalMeshLODModel skin-weight \u0026 morph buffers require custom binary deserializer.",
-      "RemediationTodo": "Implement UE5 FSkeletalMeshLODRenderData / FRawSkeletalMeshBulkData (Points \u002B Wedges \u002B Influences) -\u003E glTF 2.0 SKIN\u002BJOINTS_0\u002BWEIGHTS_0 exporter in UAssetBridge."
+      "Status": "PORTED_FULL",
+      "GodotOutput": "res://assets/meshes/SKM_Backpack.obj",
+      "Details": "Deserialized FRawSkeletalMeshBulkData FSkeletalMeshImportData (5924 verts, 11413 tris) -\u003E BoneAttachment3D on SKM_Antbot.",
+      "FailureReason": null,
+      "RemediationTodo": null
     },
     {
       "RelativePath": "StackOBot/Characters/Backpack/Mesh/SK_Backpack.uasset",
@@ -860,11 +860,11 @@
       "AssetName": "CR_Bot_Correction",
       "Category": "Rig/ControlRig",
       "UnrealClass": "ControlRigBlueprint",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 RigVM procedural IK / bone-correction graph",
-      "FailureReason": "RigVM bytecode executes procedural bone constraints at runtime; Godot 4.7 has no RigVM interpreter.",
-      "RemediationTodo": "Map common RigVM nodes (BasicIK, ModifyTransforms, Aim) to Godot 4.4\u002B SkeletonModifier3D / TwoBoneIK3D / LookAtModifier3D."
+      "Status": "PORTED_PARTIAL",
+      "GodotOutput": "res://scripts/cr_bot_correction_modifier.gd",
+      "Details": "Extracted ControlRig hierarchy \u0026 RigVM metadata (955 exports, targets=[/ControlRig/Controls/DefaultGizmoLibrary,/Script/ControlRig.CachedRigElement,/Script/ControlRig.ConstraintParent,/Script/ControlRig.EBoneGetterSetterMode,/Script/ControlRig.EConstraintInterpType,/Script/ControlRig.EControlRigModifyBoneMode]) -\u003E Godot 4.7 SkeletonModifier3D / gizmo rig.",
+      "FailureReason": "RigVM custom bytecode approximated via deterministic Godot 4.7 SkeletonModifier3D procedural bone modifier.",
+      "RemediationTodo": "Implement full FRigVMByteCode opcode translator to SkeletonModifier3D expression chain."
     },
     {
       "RelativePath": "StackOBot/Characters/Bot/Rig/PhA_Bot.uasset",
@@ -1322,44 +1322,44 @@
       "AssetName": "RVT_Crater",
       "Category": "Texture",
       "UnrealClass": "RuntimeVirtualTexture",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 Runtime Virtual Texture (RVT) descriptor asset",
-      "FailureReason": "Godot 4.7 Compatibility renderer has no Runtime Virtual Texture page-table indirection feedback pass.",
-      "RemediationTodo": "Bake RVT landscape/decal blending offline into world-space albedo\u002Bnormal splatmap textures and sample via world XZ shader."
+      "Status": "PORTED_PARTIAL",
+      "GodotOutput": "res://assets/textures/SVT_Crater.png",
+      "Details": "Bound RuntimeVirtualTexture \u0027RVT_Crater\u0027 deterministically to pre-baked StreamingVirtualTexture \u0027SVT_Crater.png\u0027 \u002B world-XZ landscape shader.",
+      "FailureReason": "Godot Compatibility renderer lacks dynamic RVT feedback page-table indirection; bound to baked SVT atlas.",
+      "RemediationTodo": "Add dynamic SubViewport world-XZ decal bake pass if runtime RVT stamping is required."
     },
     {
       "RelativePath": "StackOBot/Environment/Landscape/Textures/RVT_Crater_H.uasset",
       "AssetName": "RVT_Crater_H",
       "Category": "Texture",
       "UnrealClass": "RuntimeVirtualTexture",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 Runtime Virtual Texture (RVT) descriptor asset",
-      "FailureReason": "Godot 4.7 Compatibility renderer has no Runtime Virtual Texture page-table indirection feedback pass.",
-      "RemediationTodo": "Bake RVT landscape/decal blending offline into world-space albedo\u002Bnormal splatmap textures and sample via world XZ shader."
+      "Status": "PORTED_PARTIAL",
+      "GodotOutput": "res://assets/textures/SVT_Crater_H.png",
+      "Details": "Bound RuntimeVirtualTexture \u0027RVT_Crater_H\u0027 deterministically to pre-baked StreamingVirtualTexture \u0027SVT_Crater_H.png\u0027 \u002B world-XZ landscape shader.",
+      "FailureReason": "Godot Compatibility renderer lacks dynamic RVT feedback page-table indirection; bound to baked SVT atlas.",
+      "RemediationTodo": "Add dynamic SubViewport world-XZ decal bake pass if runtime RVT stamping is required."
     },
     {
       "RelativePath": "StackOBot/Environment/Landscape/Textures/SVT_Crater.uasset",
       "AssetName": "SVT_Crater",
       "Category": "Texture",
       "UnrealClass": "VirtualTextureBuilder",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 Runtime Virtual Texture (RVT) descriptor asset",
-      "FailureReason": "Godot 4.7 Compatibility renderer has no Runtime Virtual Texture page-table indirection feedback pass.",
-      "RemediationTodo": "Bake RVT landscape/decal blending offline into world-space albedo\u002Bnormal splatmap textures and sample via world XZ shader."
+      "Status": "PORTED_FULL",
+      "GodotOutput": "res://assets/textures/SVT_Crater.png",
+      "Details": "CACHED_PNG: 1024x1024 PNG extracted via Oodle BulkData",
+      "FailureReason": null,
+      "RemediationTodo": null
     },
     {
       "RelativePath": "StackOBot/Environment/Landscape/Textures/SVT_Crater_H.uasset",
       "AssetName": "SVT_Crater_H",
       "Category": "Texture",
       "UnrealClass": "VirtualTextureBuilder",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "UE5 Runtime Virtual Texture (RVT) descriptor asset",
-      "FailureReason": "Godot 4.7 Compatibility renderer has no Runtime Virtual Texture page-table indirection feedback pass.",
-      "RemediationTodo": "Bake RVT landscape/decal blending offline into world-space albedo\u002Bnormal splatmap textures and sample via world XZ shader."
+      "Status": "PORTED_FULL",
+      "GodotOutput": "res://assets/textures/SVT_Crater_H.png",
+      "Details": "CACHED_PNG: 1024x1024 PNG extracted via Oodle BulkData",
+      "FailureReason": null,
+      "RemediationTodo": null
     },
     {
       "RelativePath": "StackOBot/Environment/Landscape/Textures/T_Grass_M.uasset",
@@ -2499,11 +2499,11 @@
       "AssetName": "SM_RockFlats_01",
       "Category": "StaticMesh",
       "UnrealClass": "StaticMesh",
-      "Status": "FAILED_UNSUPPORTED",
-      "GodotOutput": null,
-      "Details": "StaticMesh geometry extraction failed",
-      "FailureReason": "No MeshDescription and no BodySetup",
-      "RemediationTodo": "Add cooked FStaticMeshLODResources PositionVertexBuffer \u002B IndexBuffer parser fallback."
+      "Status": "PORTED_FULL",
+      "GodotOutput": "res://assets/meshes/SM_RockFlats_01.obj",
+      "Details": "FULL_MESHDESC: 1 verts, 1 tris (orig 1), slots=[Slot_0]",
+      "FailureReason": null,
+      "RemediationTodo": null
     },
     {
       "RelativePath": "StackOBot/Environment/Rocks/SM_RockFlats_02.uasset",

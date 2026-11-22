@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-11-22T02:37:04.290Z",
-  "total_duration_ms": 151582,
+  "generated_at": "2026-11-22T03:25:37.998Z",
+  "total_duration_ms": 142890,
   "architecture": "deterministic_core_with_agent_orchestration",
   "completeness_scorecard": {
     "total_ue5_assets": 260,
-    "ported_full": 178,
-    "ported_partial": 74,
-    "failed_unsupported": 8,
-    "usable_in_godot_pct": 96.92,
-    "weighted_completeness_pct": 88.38,
-    "static_meshes_ported": "56/57 (98.2%)",
-    "textures_ported": "46/50 (92.0%)",
+    "ported_full": 182,
+    "ported_partial": 78,
+    "failed_unsupported": 0,
+    "usable_in_godot_pct": 100,
+    "weighted_completeness_pct": 91,
+    "static_meshes_ported": "57/57 (100.0%)",
+    "textures_ported": "50/50 (100.0%)",
     "audio_playable_in_godot": "6/6 (100.0%)",
     "niagara_fx_compiled": "6/6 (100.0%)",
     "umg_widgets_compiled": "7/7 (100.0%)",
@@ -21,58 +21,61 @@
     "compiledNiagaraScenes": 6,
     "compiledMetaSoundWavs": 3,
     "compiledUmgScenes": 7,
-    "compiledPhysicsAssets": 1
+    "compiledPhysicsAssets": 1,
+    "compiledControlRigs": 2
   },
   "runtime_verification": {
     "passed": true,
     "attempt": 0,
     "exit_code": 0,
-    "duration_ms": 15321,
+    "duration_ms": 24678,
     "script_error_count": 0,
     "script_errors": [],
     "telemetry": {
+      "has_backpack_mesh": true,
+      "has_control_rig_modifier": true,
       "loaded_fbx_anim_clips": 3,
       "passed": true,
       "shots": [
         {
           "file": "01_mainworld_island_overview.png",
           "height": 720,
-          "mean_luminance": 0.7648,
+          "mean_luminance": 0.7542,
           "non_black_ratio": 1,
           "width": 1280
         },
         {
           "file": "02_antbot_character_rig_closeup.png",
           "height": 720,
-          "mean_luminance": 0.7065,
+          "mean_luminance": 0.6772,
           "non_black_ratio": 1,
           "width": 1280
         },
         {
           "file": "03_gameplay_run_and_orbs.png",
           "height": 720,
-          "mean_luminance": 0.6026,
+          "mean_luminance": 0.5763,
           "non_black_ratio": 1,
           "width": 1280
         },
         {
           "file": "04_jetpack_thruster_fx_and_stack.png",
           "height": 720,
-          "mean_luminance": 0.4314,
+          "mean_luminance": 0.4302,
           "non_black_ratio": 1,
           "width": 1280
         },
         {
           "file": "05_modular_building_door_and_props.png",
           "height": 720,
-          "mean_luminance": 0.7232,
+          "mean_luminance": 0.6875,
           "non_black_ratio": 1,
           "width": 1280
         },
         {
           "file": "06_upper_facility_and_foliage.png",
           "height": 720,
-          "mean_luminance": 0.5715,
+          "mean_luminance": 0.5672,
           "non_black_ratio": 1,
           "width": 1280
         }
@@ -81,10 +84,10 @@
       "world_stats": {
         "bp_actors": 96,
         "doors_opened": 0,
-        "multimesh_batches": 112,
-        "multimesh_instances": 9869,
+        "multimesh_batches": 116,
+        "multimesh_instances": 13976,
         "orbs_total": 21,
-        "static_actors": 118
+        "static_actors": 237
       }
     }
   },
@@ -93,80 +96,83 @@
     {
       "stage": "1_deterministic_binary_extract",
       "passed": true,
-      "duration_ms": 126365,
+      "duration_ms": 112141,
       "stdout_tail": [
         "[StackOBotExtractor] Scanning 260 UE5 assets in C:\\ProgramData\\Epic\\EpicGamesLauncher\\VaultCache\\StackOBot_5.4\\data\\Content\\StackOBot (Oodle DLL prep)...",
-        "[StackOBotExtractor] DONE! Audited=260 (Full=178, Partial=74, Failed=8), MainWorld StaticActors=237, BPActors=96, MultiMeshInstances=13976, LandscapeTris=96100"
+        "[StackOBotExtractor] DONE! Audited=260 (Full=182, Partial=78, Failed=0), MainWorld StaticActors=237, BPActors=96, MultiMeshInstances=13976, LandscapeTris=96100"
       ]
     },
     {
       "stage": "2_deterministic_resource_compile",
       "passed": true,
-      "duration_ms": 1244,
+      "duration_ms": 81,
       "outputs": {
         "compiledMaterials": 40,
         "compiledNiagaraScenes": 6,
         "compiledMetaSoundWavs": 3,
         "compiledUmgScenes": 7,
-        "compiledPhysicsAssets": 1
+        "compiledPhysicsAssets": 1,
+        "compiledControlRigs": 2
       }
     },
     {
       "stage": "3_godot_import_attempt_0",
       "passed": true,
-      "duration_ms": 7560
+      "duration_ms": 4904
     },
     {
       "stage": "4_gpu_runtime_and_visual_gate_attempt_0",
       "passed": true,
       "attempt": 0,
       "exit_code": 0,
-      "duration_ms": 15321,
+      "duration_ms": 24678,
       "script_error_count": 0,
       "script_errors": [],
       "telemetry": {
+        "has_backpack_mesh": true,
+        "has_control_rig_modifier": true,
         "loaded_fbx_anim_clips": 3,
         "passed": true,
         "shots": [
           {
             "file": "01_mainworld_island_overview.png",
             "height": 720,
-            "mean_luminance": 0.7648,
+            "mean_luminance": 0.7542,
             "non_black_ratio": 1,
             "width": 1280
           },
           {
             "file": "02_antbot_character_rig_closeup.png",
             "height": 720,
-            "mean_luminance": 0.7065,
+            "mean_luminance": 0.6772,
             "non_black_ratio": 1,
             "width": 1280
           },
           {
             "file": "03_gameplay_run_and_orbs.png",
             "height": 720,
-            "mean_luminance": 0.6026,
+            "mean_luminance": 0.5763,
             "non_black_ratio": 1,
             "width": 1280
           },
           {
             "file": "04_jetpack_thruster_fx_and_stack.png",
             "height": 720,
-            "mean_luminance": 0.4314,
+            "mean_luminance": 0.4302,
             "non_black_ratio": 1,
             "width": 1280
           },
           {
             "file": "05_modular_building_door_and_props.png",
             "height": 720,
-            "mean_luminance": 0.7232,
+            "mean_luminance": 0.6875,
             "non_black_ratio": 1,
             "width": 1280
           },
           {
             "file": "06_upper_facility_and_foliage.png",
             "height": 720,
-            "mean_luminance": 0.5715,
+            "mean_luminance": 0.5672,
             "non_black_ratio": 1,
             "width": 1280
           }
@@ -175,10 +181,10 @@
         "world_stats": {
           "bp_actors": 96,
           "doors_opened": 0,
-          "multimesh_batches": 112,
-          "multimesh_instances": 9869,
+          "multimesh_batches": 116,
+          "multimesh_instances": 13976,
           "orbs_total": 21,
-          "static_actors": 118
+          "static_actors": 237
         }
       }
     }

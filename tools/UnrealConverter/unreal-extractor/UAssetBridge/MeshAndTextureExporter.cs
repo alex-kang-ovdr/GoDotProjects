@@ -42,9 +42,9 @@ public static class MeshAndTextureExporter
     {
         try
         {
-            var texExp = ua.Exports.OfType<NormalExport>().FirstOrDefault(e => e.GetExportClassType().ToString() == "Texture2D");
+            var texExp = ua.Exports.OfType<NormalExport>().FirstOrDefault(e => e.GetExportClassType().ToString() is "Texture2D" or "VirtualTexture2D");
             if (texExp == null)
-                return new TextureExportResult(false, "FAILED", 0, 0, "No Texture2D export found");
+                return new TextureExportResult(false, "FAILED", 0, 0, "No Texture2D/VirtualTexture2D export found");
 
             int sizeX = 0, sizeY = 0, srcFmt = 1;
             if (texExp["Source"] is StructPropertyData srcStruct)
@@ -652,9 +652,8 @@ public static class MeshAndTextureExporter
         long viIdxDataStart = viIdxHdr + 28;
         long cur = viIdxDataStart + (long)numVI * 4;
 
-        // Jump over all remaining VI attributes (TextureCoordinate, Normal, Tangent, BinormalSign, Color) + UVs + Edges!
-        // Scan backwards from the end of the stream (last 64 MB) for "Triangles" -> "VertexInstanceIndex"!
-        long tailStart = Math.Max(cur, sb.Length - 80L * 1024 * 1024);
+        // Jump over all remaining VI attributes + UVs + Edges; scan last 420 MB for "Triangles" -> "VertexInstanceIndex"!
+        long tailStart = Math.Max(cur, sb.Length - 420L * 1024 * 1024);
         long secTris = -1;
         for (long scan = sb.Length - 4 * 1024 * 1024; scan >= tailStart - 4 * 1024 * 1024; scan -= 3 * 1024 * 1024)
         {
@@ -666,7 +665,7 @@ public static class MeshAndTextureExporter
         if (secTris < 0)
             return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: Missing Triangles");
 
-        if (FindStreamAsciiTag(sb, "VertexInstanceIndex", secTris, 4 * 1024 * 1024, out long triVIHdr) < 0)
+        if (FindStreamAsciiTag(sb, "VertexInstanceIndex", secTris, 8 * 1024 * 1024, out long triVIHdr) < 0)
             return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: Missing Tri.VIIndex");
 
         int numTris = sb.ReadInt32(triVIHdr + 8);
@@ -674,7 +673,6 @@ public static class MeshAndTextureExporter
         if (numTris <= 0 || triVIDataStart + (long)numTris * 12 > sb.Length)
             return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: Invalid Tris");
 
-        // Read all vertex positions (e.g. 500k * 12 = 6 MB — tiny!) and spatial-cluster to ~36^3 grid!
         byte[] rawPos = new byte[numVerts * 12];
         if (!sb.ReadBytes(posDataStart, rawPos))
             return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: Pos read failed");
@@ -682,10 +680,6 @@ public static class MeshAndTextureExporter
         byte[] rawVIIndex = new byte[numVI * 4];
         if (!sb.ReadBytes(viIdxDataStart, rawVIIndex))
             return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: VIIndex read failed");
-
-        byte[] rawTriVI = new byte[numTris * 12];
-        if (!sb.ReadBytes(triVIDataStart, rawTriVI))
-            return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "Stream: TriVI read failed");
 
         float minX = float.MaxValue, minY = float.MaxValue, minZ = float.MaxValue;
         float maxX = float.MinValue, maxY = float.MinValue, maxZ = float.MinValue;
@@ -723,36 +717,43 @@ public static class MeshAndTextureExporter
         var seenFaces = new HashSet<long>();
         var outFaces = new List<(int a, int b, int c, float nx, float ny, float nz)>();
 
-        for (int t = 0; t < numTris; t++)
+        const int triChunkCount = 65536;
+        byte[] rawTriChunk = new byte[triChunkCount * 12];
+        for (int baseT = 0; baseT < numTris; baseT += triChunkCount)
         {
-            int vi0 = BitConverter.ToInt32(rawTriVI, t * 12);
-            int vi1 = BitConverter.ToInt32(rawTriVI, t * 12 + 4);
-            int vi2 = BitConverter.ToInt32(rawTriVI, t * 12 + 8);
-            if ((uint)vi0 >= (uint)numVI || (uint)vi1 >= (uint)numVI || (uint)vi2 >= (uint)numVI) continue;
-            int rv0 = BitConverter.ToInt32(rawVIIndex, vi0 * 4);
-            int rv1 = BitConverter.ToInt32(rawVIIndex, vi1 * 4);
-            int rv2 = BitConverter.ToInt32(rawVIIndex, vi2 * 4);
-            if ((uint)rv0 >= (uint)numVerts || (uint)rv1 >= (uint)numVerts || (uint)rv2 >= (uint)numVerts) continue;
-            int c0 = clusterMap[rv0], c1 = clusterMap[rv1], c2 = clusterMap[rv2];
-            if (c0 == c1 || c1 == c2 || c0 == c2) continue;
+            int takeT = Math.Min(triChunkCount, numTris - baseT);
+            if (!sb.ReadBytes(triVIDataStart + (long)baseT * 12, rawTriChunk.AsSpan(0, takeT * 12))) break;
+            for (int lt = 0; lt < takeT; lt++)
+            {
+                int vi0 = BitConverter.ToInt32(rawTriChunk, lt * 12);
+                int vi1 = BitConverter.ToInt32(rawTriChunk, lt * 12 + 4);
+                int vi2 = BitConverter.ToInt32(rawTriChunk, lt * 12 + 8);
+                if ((uint)vi0 >= (uint)numVI || (uint)vi1 >= (uint)numVI || (uint)vi2 >= (uint)numVI) continue;
+                int rv0 = BitConverter.ToInt32(rawVIIndex, vi0 * 4);
+                int rv1 = BitConverter.ToInt32(rawVIIndex, vi1 * 4);
+                int rv2 = BitConverter.ToInt32(rawVIIndex, vi2 * 4);
+                if ((uint)rv0 >= (uint)numVerts || (uint)rv1 >= (uint)numVerts || (uint)rv2 >= (uint)numVerts) continue;
+                int c0 = clusterMap[rv0], c1 = clusterMap[rv1], c2 = clusterMap[rv2];
+                if (c0 == c1 || c1 == c2 || c0 == c2) continue;
 
-            if (!vRemap.TryGetValue(c0, out int i0)) { i0 = outVerts.Count + 1; vRemap[c0] = i0; outVerts.Add((gx[c0], gy[c0], gz[c0])); }
-            if (!vRemap.TryGetValue(c2, out int i1)) { i1 = outVerts.Count + 1; vRemap[c2] = i1; outVerts.Add((gx[c2], gy[c2], gz[c2])); }
-            if (!vRemap.TryGetValue(c1, out int i2)) { i2 = outVerts.Count + 1; vRemap[c1] = i2; outVerts.Add((gx[c1], gy[c1], gz[c1])); }
+                if (!vRemap.TryGetValue(c0, out int i0)) { i0 = outVerts.Count + 1; vRemap[c0] = i0; outVerts.Add((gx[c0], gy[c0], gz[c0])); }
+                if (!vRemap.TryGetValue(c2, out int i1)) { i1 = outVerts.Count + 1; vRemap[c2] = i1; outVerts.Add((gx[c2], gy[c2], gz[c2])); }
+                if (!vRemap.TryGetValue(c1, out int i2)) { i2 = outVerts.Count + 1; vRemap[c1] = i2; outVerts.Add((gx[c1], gy[c1], gz[c1])); }
 
-            int sMin = Math.Min(i0, Math.Min(i1, i2));
-            int sMax = Math.Max(i0, Math.Max(i1, i2));
-            int sMid = i0 + i1 + i2 - sMin - sMax;
-            long fKey = ((long)sMin << 40) ^ ((long)sMid << 20) ^ sMax;
-            if (!seenFaces.Add(fKey)) continue;
+                int sMin = Math.Min(i0, Math.Min(i1, i2));
+                int sMax = Math.Max(i0, Math.Max(i1, i2));
+                int sMid = i0 + i1 + i2 - sMin - sMax;
+                long fKey = ((long)sMin << 40) ^ ((long)sMid << 20) ^ sMax;
+                if (!seenFaces.Add(fKey)) continue;
 
-            var p0 = outVerts[i0 - 1]; var p1 = outVerts[i1 - 1]; var p2 = outVerts[i2 - 1];
-            float e1x = p1.x - p0.x, e1y = p1.y - p0.y, e1z = p1.z - p0.z;
-            float e2x = p2.x - p0.x, e2y = p2.y - p0.y, e2z = p2.z - p0.z;
-            float nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
-            float nl = MathF.Sqrt(nx * nx + ny * ny + nz * nz);
-            if (nl < 1e-6f) continue;
-            outFaces.Add((i0, i1, i2, nx / nl, ny / nl, nz / nl));
+                var p0 = outVerts[i0 - 1]; var p1 = outVerts[i1 - 1]; var p2 = outVerts[i2 - 1];
+                float e1x = p1.x - p0.x, e1y = p1.y - p0.y, e1z = p1.z - p0.z;
+                float e2x = p2.x - p0.x, e2y = p2.y - p0.y, e2z = p2.z - p0.z;
+                float nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
+                float nl = MathF.Sqrt(nx * nx + ny * ny + nz * nz);
+                if (nl < 1e-6f) continue;
+                outFaces.Add((i0, i1, i2, nx / nl, ny / nl, nz / nl));
+            }
         }
 
         if (outFaces.Count == 0)
@@ -822,6 +823,217 @@ public static class MeshAndTextureExporter
     }
 
     /// <summary>
+    /// Deserializes UE5 FSkeletalMeshImportData (FRawSkeletalMeshBulkData 0x9E2A83C1 / 0x22222222 Zlib/Oodle archive)
+    /// directly from a USkeletalMesh .uasset (e.g. SKM_Backpack.uasset) without needing any external FBX!
+    /// Exact UE5 binary layout verified on StackOBot_5.4 SKM_Backpack (3,054,566 bytes raw):
+    ///   [36..40] int32 NumFaces (11,413)
+    ///   [40 .. 40 + NumFaces*127] VTriangle[NumFaces] (7-byte mat/flags/smoothing header + uint32 WedgeIndex[3] at +7..+19 + 108B tangents)
+    ///   Followed by Influences, Materials, Points (int32 NumPoints=5,924 + FVector3f[NumPoints]), PointToRawMap, RefBonesBinary,
+    ///   and Wedges (int32 NumWedges == NumFaces*3 == 34,239 + VVertex[NumWedges] of 42 bytes: uint32 VertexIndex@+0, FColor@+4, uint16@+8, FVector2f UV0@+10).
+    /// </summary>
+    public static MeshExportResult ExportSkeletalMeshRawImportDataToGodotObj(UAsset ua, byte[] fileBytes, string outObjPath)
+    {
+        var importedMats = ua.Imports
+            .Where(imp => imp.ClassName.ToString() is "MaterialInstanceConstant" or "Material")
+            .Select(imp => imp.ObjectName.ToString())
+            .Distinct()
+            .ToList();
+
+        try
+        {
+            int lastEnd = (int)ua.Exports.Max(e => e.SerialOffset + e.SerialSize);
+            byte[]? raw = OodleDecompressor.DecompressUeChunkedArchive(fileBytes, lastEnd);
+            if (raw == null || raw.Length < 256)
+                return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, "No FRawSkeletalMeshBulkData archive");
+
+            int numFaces = BitConverter.ToInt32(raw, 36);
+            int facesStart = 40;
+            int faceStride = 127;
+            int faceWedgeOff = 7;
+            if (numFaces > 1)
+            {
+                // Auto-detect UE5 127-byte VTriangle (wedges at +7) vs UE4 126-byte VTriangle (wedges at +0)
+                uint u5_w0 = BitConverter.ToUInt32(raw, facesStart + 7);
+                uint u5_w1 = BitConverter.ToUInt32(raw, facesStart + 11);
+                uint u5_f1 = BitConverter.ToUInt32(raw, facesStart + 127 + 7);
+                if (!(u5_w0 <= 2 && u5_w1 <= 2 && u5_f1 >= 3 && u5_f1 <= 5))
+                {
+                    faceStride = 126;
+                    faceWedgeOff = 0;
+                }
+            }
+
+            int facesBytes = numFaces * faceStride;
+            if (numFaces <= 0 || numFaces > 500000 || facesStart + facesBytes + 64 > raw.Length)
+                return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, $"Invalid NumFaces={numFaces}");
+
+            // Locate Wedges near the end of the buffer: prefer exact nw == numFaces * 3 first!
+            int wedgesPos = -1, numWedges = 0;
+            int expectedWedges = numFaces * 3;
+            for (int tailZeros = 0; tailZeros <= 64; tailZeros += 4)
+            {
+                int candScan = raw.Length - tailZeros - expectedWedges * 42 - 4;
+                if (candScan >= facesStart + facesBytes && BitConverter.ToInt32(raw, candScan) == expectedWedges)
+                {
+                    wedgesPos = candScan + 4;
+                    numWedges = expectedWedges;
+                    break;
+                }
+            }
+            if (wedgesPos < 0)
+            {
+                for (int scan = raw.Length - 64; scan >= facesStart + facesBytes; scan--)
+                {
+                    int nw = BitConverter.ToInt32(raw, scan);
+                    if (nw >= numFaces && nw <= numFaces * 6)
+                    {
+                        long endW = (long)scan + 4 + (long)nw * 42;
+                        if (endW <= raw.Length && raw.Length - endW <= 64)
+                        {
+                            wedgesPos = scan + 4;
+                            numWedges = nw;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (wedgesPos < 0)
+                return new MeshExportResult(false, "FAILED", 0, 0, numFaces, new List<string>(), importedMats, "Could not locate VVertex Wedges array");
+
+            // Exact mathematical invariant: NumPoints >= max(Wedge.VertexIndex) + 1!
+            int maxVertIdx = 0;
+            for (int w = 0; w < numWedges; w++)
+            {
+                int vi = BitConverter.ToInt32(raw, wedgesPos + w * 42);
+                if (vi > maxVertIdx) maxVertIdx = vi;
+            }
+            int minExpectedPoints = maxVertIdx + 1;
+
+            int numPoints = 0, pointsStart = -1;
+            int wedgesCountOff = wedgesPos - 4;
+            // Scan backward for exact np == minExpectedPoints (with maxAbs > 5.0f in UE cm) so Influences [0..1] weights are never matched!
+            for (int scan = wedgesCountOff - 4 - minExpectedPoints * 12; scan >= facesStart + facesBytes; scan--)
+            {
+                int np = BitConverter.ToInt32(raw, scan);
+                if (np == minExpectedPoints && scan + 4 + np * 12 <= wedgesCountOff)
+                {
+                    bool validFloats = true;
+                    float maxAbs = 0f;
+                    for (int s = 0; s < 32; s++)
+                    {
+                        int po = scan + 4 + ((np - 1) * s / 31) * 12;
+                        float fx = BitConverter.ToSingle(raw, po), fy = BitConverter.ToSingle(raw, po + 4), fz = BitConverter.ToSingle(raw, po + 8);
+                        if (!float.IsFinite(fx) || !float.IsFinite(fy) || !float.IsFinite(fz) || Math.Abs(fx) > 5000f || Math.Abs(fy) > 5000f || Math.Abs(fz) > 5000f)
+                        {
+                            validFloats = false;
+                            break;
+                        }
+                        maxAbs = MathF.Max(maxAbs, MathF.Max(MathF.Abs(fx), MathF.Max(MathF.Abs(fy), MathF.Abs(fz))));
+                    }
+                    if (validFloats && maxAbs > 5.0f)
+                    {
+                        numPoints = np;
+                        pointsStart = scan + 4;
+                        break;
+                    }
+                }
+            }
+            var slotNames = new List<string> { "Backpack" };
+            if (pointsStart < 0 || numPoints <= 0)
+                return new MeshExportResult(false, "FAILED", 0, 0, numFaces, slotNames, importedMats, $"Could not locate Points array (minExpected={minExpectedPoints})");
+
+            // Convert UE character space (X=Right, Y=Back, Z=Up in cm) -> Godot meter space (X=Right, Y=Up, Z=Back)
+            var px = new float[numPoints];
+            var py = new float[numPoints];
+            var pz = new float[numPoints];
+            var nx = new float[numPoints];
+            var ny = new float[numPoints];
+            var nz = new float[numPoints];
+            for (int p = 0; p < numPoints; p++)
+            {
+                int po = pointsStart + p * 12;
+                float ux = BitConverter.ToSingle(raw, po);
+                float uy = BitConverter.ToSingle(raw, po + 4);
+                float uz = BitConverter.ToSingle(raw, po + 8);
+                px[p] = ux * 0.01f;
+                py[p] = uz * 0.01f;
+                pz[p] = -uy * 0.01f;
+            }
+
+            // Accumulate smooth outward normals from RH CCW (v0, v2, v1) triangles
+            for (int f = 0; f < numFaces; f++)
+            {
+                int fo = facesStart + f * faceStride + faceWedgeOff;
+                int w0 = BitConverter.ToInt32(raw, fo);
+                int w1 = BitConverter.ToInt32(raw, fo + 4);
+                int w2 = BitConverter.ToInt32(raw, fo + 8);
+                if ((uint)w0 >= (uint)numWedges || (uint)w1 >= (uint)numWedges || (uint)w2 >= (uint)numWedges) continue;
+                int i0 = BitConverter.ToInt32(raw, wedgesPos + w0 * 42);
+                int i1 = BitConverter.ToInt32(raw, wedgesPos + w1 * 42);
+                int i2 = BitConverter.ToInt32(raw, wedgesPos + w2 * 42);
+                if ((uint)i0 >= (uint)numPoints || (uint)i1 >= (uint)numPoints || (uint)i2 >= (uint)numPoints) continue;
+                // RH CCW order is (i0, i2, i1)
+                float e1x = px[i2] - px[i0], e1y = py[i2] - py[i0], e1z = pz[i2] - pz[i0];
+                float e2x = px[i1] - px[i0], e2y = py[i1] - py[i0], e2z = pz[i1] - pz[i0];
+                float fnx = e1y * e2z - e1z * e2y;
+                float fny = e1z * e2x - e1x * e2z;
+                float fnz = e1x * e2y - e1y * e2x;
+                nx[i0] += fnx; ny[i0] += fny; nz[i0] += fnz;
+                nx[i1] += fnx; ny[i1] += fny; nz[i1] += fnz;
+                nx[i2] += fnx; ny[i2] += fny; nz[i2] += fnz;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outObjPath)!);
+            var ic = CultureInfo.InvariantCulture;
+            using var sw = new StreamWriter(outObjPath, false, new UTF8Encoding(false), 65536);
+            sw.WriteLine("# PlayForge UE5 FSkeletalMeshImportData Binary Deserializer -> Godot 4.7.2");
+            sw.WriteLine($"g {SanitizeIdent(slotNames[0])}\nusemtl {SanitizeIdent(slotNames[0])}");
+
+            for (int p = 0; p < numPoints; p++)
+                sw.WriteLine(string.Create(ic, $"v {px[p]:F5} {py[p]:F5} {pz[p]:F5}"));
+
+            for (int w = 0; w < numWedges; w++)
+            {
+                int wo = wedgesPos + w * 42;
+                float u = BitConverter.ToSingle(raw, wo + 10);
+                float v = 1.0f - BitConverter.ToSingle(raw, wo + 14);
+                if (!float.IsFinite(u)) u = 0f;
+                if (!float.IsFinite(v)) v = 0f;
+                sw.WriteLine(string.Create(ic, $"vt {u:F5} {v:F5}"));
+            }
+            for (int p = 0; p < numPoints; p++)
+            {
+                float len = MathF.Sqrt(nx[p] * nx[p] + ny[p] * ny[p] + nz[p] * nz[p]);
+                if (len > 1e-8f)
+                    sw.WriteLine(string.Create(ic, $"vn {nx[p] / len:F4} {ny[p] / len:F4} {nz[p] / len:F4}"));
+                else
+                    sw.WriteLine("vn 0.0000 1.0000 0.0000");
+            }
+
+            int validTris = 0;
+            for (int f = 0; f < numFaces; f++)
+            {
+                int fo = facesStart + f * faceStride + faceWedgeOff;
+                int w0 = BitConverter.ToInt32(raw, fo);
+                int w1 = BitConverter.ToInt32(raw, fo + 4);
+                int w2 = BitConverter.ToInt32(raw, fo + 8);
+                if ((uint)w0 >= (uint)numWedges || (uint)w1 >= (uint)numWedges || (uint)w2 >= (uint)numWedges) continue;
+                int v0 = BitConverter.ToInt32(raw, wedgesPos + w0 * 42) + 1;
+                int v1 = BitConverter.ToInt32(raw, wedgesPos + w1 * 42) + 1;
+                int v2 = BitConverter.ToInt32(raw, wedgesPos + w2 * 42) + 1;
+                if (v0 < 1 || v0 > numPoints || v1 < 1 || v1 > numPoints || v2 < 1 || v2 > numPoints) continue;
+                sw.WriteLine(string.Create(ic, $"f {v0}/{w0 + 1}/{v0} {v2}/{w2 + 1}/{v2} {v1}/{w1 + 1}/{v1}"));
+                validTris++;
+            }
+
+            return new MeshExportResult(validTris > 0, "FULL_SKM_IMPORTDATA", numPoints, validTris, numFaces, slotNames, importedMats, validTris > 0 ? null : "0 valid SKM faces");
+        }
+        catch (Exception ex)
+        {
+            return new MeshExportResult(false, "FAILED", 0, 0, 0, new List<string>(), importedMats, ex.Message);
+        }
+    }
+
     private static byte[]? ReadLandscapeBulkPayload(byte[] fileBytes, long mipStart, int maxRawNeeded)
     {
         if (mipStart < 0 || mipStart + 48 > fileBytes.Length) return null;

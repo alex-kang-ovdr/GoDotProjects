@@ -277,6 +277,20 @@ func get_material(mat_name: String) -> Material:
 		_mat_cache[mat_name] = sb
 		return sb
 
+	if nl.contains("backpack"):
+		var bp_sh := ShaderMaterial.new()
+		bp_sh.shader = load("res://assets/shaders/bot_pbr.gdshader") as Shader
+		var balb: Texture2D = get_tex("T_Backpack_Albedo")
+		var bmsk: Texture2D = get_tex("T_Backpack_Masks")
+		var bnrm: Texture2D = get_tex("T_Backpack_Normal")
+		var bmra: Texture2D = get_tex("T_Backpack_M_R_AO")
+		if balb != null: bp_sh.set_shader_parameter("tex_albedo", balb)
+		if bmsk != null: bp_sh.set_shader_parameter("tex_masks", bmsk)
+		if bnrm != null: bp_sh.set_shader_parameter("tex_normal", bnrm)
+		if bmra != null: bp_sh.set_shader_parameter("tex_mrao", bmra)
+		_mat_cache[mat_name] = bp_sh
+		return bp_sh
+
 	if nl.contains("botface"):
 		var mf := StandardMaterial3D.new()
 		var face: Texture2D = get_tex("T_Antbot_Face_C")
@@ -387,6 +401,9 @@ var is_inactive_clone: bool = false
 var current_anim_state: String = ""
 var orbs_collected: int = 0
 var loaded_clip_count: int = 0
+var has_backpack_mesh: bool = false
+var has_control_rig_modifier: bool = false
+var _cr_modifier: SkeletonModifier3D = null
 var _was_jetpacking: bool = false
 
 func _ready() -> void:
@@ -458,6 +475,7 @@ func _load_real_skm_antbot_and_animations() -> void:
 				inst.scale = Vector3.ONE * 0.01
 			inst.rotation_degrees.y = 180.0
 			_bind_fbx_animations(inst)
+			_attach_real_skm_backpack_and_control_rig(inst.scale.x)
 
 func _collect_meshes_and_skeleton(n: Node, out_meshes: Array[MeshInstance3D]) -> void:
 	if n is MeshInstance3D:
@@ -537,6 +555,32 @@ func _find_anim_player(n: Node) -> AnimationPlayer:
 		if f != null:
 			return f
 	return null
+
+func _attach_real_skm_backpack_and_control_rig(_inst_scale: float) -> void:
+	# 1. Attach binary-extracted SKM_Backpack.obj (5,924 verts, 11,413 tris) flush on Antbot's dorsal torso!
+	var bp_mesh_path: String = "res://assets/meshes/SKM_Backpack.obj"
+	if ResourceLoader.exists(bp_mesh_path):
+		var bp_mesh: Mesh = load(bp_mesh_path) as Mesh
+		if bp_mesh != null:
+			var bp_mi := MeshInstance3D.new()
+			bp_mi.name = "SKM_Backpack"
+			bp_mi.mesh = bp_mesh
+			bp_mi.material_override = mat_lib.get_material("MI_Backpack")
+			bp_mi.scale = Vector3.ONE
+			bp_mi.position = Vector3(0.0, 0.56, 0.09)
+			visual_pivot.add_child(bp_mi)
+			has_backpack_mesh = true
+
+	# 2. Attach deterministically compiled CR_Bot_Correction SkeletonModifier3D!
+	var cr_script_path: String = "res://scripts/cr_bot_correction_modifier.gd"
+	if skeleton != null and ResourceLoader.exists(cr_script_path):
+		var cr_scr: Script = load(cr_script_path) as Script
+		if cr_scr != null:
+			_cr_modifier = SkeletonModifier3D.new()
+			_cr_modifier.name = "CR_Bot_Correction"
+			_cr_modifier.set_script(cr_scr)
+			skeleton.add_child(_cr_modifier)
+			has_control_rig_modifier = true
 
 func _build_jetpack_fx_and_audio() -> void:
 	thruster_particles_l = _make_thruster_emitter(Vector3(-0.14, 0.72, 0.24))
@@ -1343,6 +1387,8 @@ func _write_telemetry_and_quit(code: int) -> void:
 			"passed": code == 0 and bones >= 50 and shot_metrics.size() == 6,
 			"skeleton_bone_count": bones,
 			"loaded_fbx_anim_clips": clips,
+			"has_backpack_mesh": bool(bot.get("has_backpack_mesh")) if bot != null else false,
+			"has_control_rig_modifier": bool(bot.get("has_control_rig_modifier")) if bot != null else false,
 			"world_stats": wstats,
 			"shots": shot_metrics
 		}
@@ -1370,12 +1416,12 @@ func _physics_process(_delta: float) -> void:
 	elif frame_idx == 14:
 		_save_shot("01_mainworld_island_overview.png")
 
-	# Shot 2: Hero close-up of 53-bone skinned SKM_Antbot on real BP_SpawnPad + HoloGrid + SpawnFX
+	# Shot 2: Hero close-up of 53-bone skinned SKM_Antbot + SKM_Backpack on real BP_SpawnPad + HoloGrid + SpawnFX
 	elif frame_idx == 16 and bot != null:
 		var bp: Vector3 = bot.global_position
 		var vp: Node3D = bot.get("visual_pivot") as Node3D
 		if vp != null:
-			vp.rotation.y = deg_to_rad(25.0)
+			vp.rotation.y = deg_to_rad(120.0)
 		_aim(bp + Vector3(1.15, 1.25, 2.35), bp + Vector3(0.0, 0.72, 0.0), 52.0)
 	elif frame_idx == 24:
 		_save_shot("02_antbot_character_rig_closeup.png")
@@ -1411,7 +1457,7 @@ func _physics_process(_delta: float) -> void:
 		bot.call("set_thruster_forced", true)
 		var vp3: Node3D = bot.get("visual_pivot") as Node3D
 		if vp3 != null:
-			vp3.rotation.y = deg_to_rad(145.0)
+			vp3.rotation.y = deg_to_rad(35.0)
 		_aim(base_p + Vector3(3.4, 2.4, 3.6), base_p + Vector3(0.1, 1.35, -0.1), 58.0)
 	elif frame_idx == 52:
 		_save_shot("04_jetpack_thruster_fx_and_stack.png")

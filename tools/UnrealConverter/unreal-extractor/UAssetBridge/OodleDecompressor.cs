@@ -222,6 +222,74 @@ public static class OodleDecompressor
         return results;
     }
 
+    /// <summary>
+    /// Decompresses UE5 FArchiveSaveCompressedProxy chunked archives (magic 0x9E2A83C1):
+    ///   - Version 0x00000000: Zlib chunks (32-byte summary + numChunks*16 table + Zlib streams)
+    ///   - Version 0x22222222: UE5 Compressor-tagged chunks (17-byte summary after version: int64 blockSize, byte method=3 Oodle, int64 totalComp, int64 totalRaw + numChunks*16 table + Oodle blocks)
+    /// </summary>
+    public static byte[]? DecompressUeChunkedArchive(byte[] fileBytes, int startOffset)
+    {
+        for (int i = Math.Max(0, startOffset); i <= fileBytes.Length - 49; i++)
+        {
+            if (BinaryPrimitives.ReadUInt32LittleEndian(fileBytes.AsSpan(i, 4)) != 0x9E2A83C1u)
+                continue;
+
+            uint ver = BinaryPrimitives.ReadUInt32LittleEndian(fileBytes.AsSpan(i + 4, 4));
+            if (ver == 0x22222222u)
+            {
+                long blockSize = BinaryPrimitives.ReadInt64LittleEndian(fileBytes.AsSpan(i + 8, 8));
+                byte method = fileBytes[i + 16];
+                long totalComp = BinaryPrimitives.ReadInt64LittleEndian(fileBytes.AsSpan(i + 17, 8));
+                long totalRaw = BinaryPrimitives.ReadInt64LittleEndian(fileBytes.AsSpan(i + 25, 8));
+                if (blockSize <= 0 || totalRaw <= 0 || totalRaw > 128L * 1024 * 1024 || totalComp <= 0) continue;
+                int numChunks = (int)((totalRaw + blockSize - 1) / blockSize);
+                int tablePos = i + 33;
+                int dataPos = tablePos + numChunks * 16;
+                if (dataPos + totalComp > fileBytes.Length) continue;
+
+                var fn = EnsureLoaded();
+                byte[] output = new byte[totalRaw];
+                int outPos = 0;
+                for (int c = 0; c < numChunks; c++)
+                {
+                    int cSize = (int)BinaryPrimitives.ReadInt64LittleEndian(fileBytes.AsSpan(tablePos + c * 16, 8));
+                    int rSize = (int)BinaryPrimitives.ReadInt64LittleEndian(fileBytes.AsSpan(tablePos + c * 16 + 8, 8));
+                    if (cSize <= 0 || dataPos + cSize > fileBytes.Length) return null;
+                    if (cSize == rSize || method == 0)
+                    {
+                        Buffer.BlockCopy(fileBytes, dataPos, output, outPos, rSize);
+                    }
+                    else if (fileBytes[dataPos] == 0x78) // Zlib stream (0x78 0x9C / 0x78 0xDA / 0x78 0x01)
+                    {
+                        using var zms = new System.IO.Compression.ZLibStream(new MemoryStream(fileBytes, dataPos, cSize), System.IO.Compression.CompressionMode.Decompress);
+                        int readTotal = 0;
+                        while (readTotal < rSize)
+                        {
+                            int n = zms.Read(output, outPos + readTotal, rSize - readTotal);
+                            if (n <= 0) break;
+                            readTotal += n;
+                        }
+                        if (readTotal != rSize) return null;
+                    }
+                    else
+                    {
+                        if (fn == null) return null;
+                        byte[] cBuf = new byte[cSize];
+                        Buffer.BlockCopy(fileBytes, dataPos, cBuf, 0, cSize);
+                        byte[] rBuf = new byte[rSize];
+                        long dec = fn(cBuf, cSize, rBuf, rSize, 1, 0, 0, IntPtr.Zero, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, 3);
+                        if (dec != rSize) return null;
+                        Buffer.BlockCopy(rBuf, 0, output, outPos, rSize);
+                    }
+                    dataPos += cSize;
+                    outPos += rSize;
+                }
+                return output;
+            }
+        }
+        return null;
+    }
+
     private static byte[]? DecompressOne(byte[] fileBytes, int i, byte method, byte blockExp, uint blockCount, long totalRaw)
     {
         if (method == 0)
