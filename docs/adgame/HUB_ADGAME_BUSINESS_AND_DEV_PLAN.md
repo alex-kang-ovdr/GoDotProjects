@@ -1,6 +1,7 @@
 # Hub-AdGame 사업 기획 및 개발 계획서
 
 > **대상 브랜치**: `Hub-AdGame` (기준 트렁크: `PlayHub-Platform` `d739455`)  
+> **브랜치 분류**: **실험 (Experimental) — `PlayHub-Platform` 허브 트렁크 통합 제외** (`owners.json`: `experimental: true`, `integrateToTrunk: false` — 독립 PoC·제휴 시연 전용 브랜치로 유지)  
 > **작성일**: 2026-11-22  
 > **핵심 목표**: 당근마켓·토스 등 모바일 슈퍼앱/플랫폼에 **클릭 한 번으로 무설치 즉시 실행되는 초경량 데모 게임**을 제휴 공급하고, 플레이 직후 **PlayHub 앱 설치 및 본 게임 직행(기록·보상 승계)**으로 끊김 없이 전환하는 성장(UA)·제휴 파이프라인 구축
 

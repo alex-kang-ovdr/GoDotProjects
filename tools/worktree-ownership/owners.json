@@ -35,7 +35,8 @@
     "forge/Tests/game-template-runtime.test.cjs",
     "forge/Templates/*/showcase.json",
     "tools/qa/fast-gate.json",
-    "godot-sdk/playhub_runtime_sdk.gd"
+    "godot-sdk/playhub_runtime_sdk.gd",
+    "tools/worktree-ownership/owners.json"
   ],
   "branches": {
     "PlayHub-Platform": {
@@ -433,6 +434,20 @@
         "forge/Tools/showcase-daily-profile.cjs",
         "forge/Tests/playforge_platform/**",
         "forge/Tests/forge-user-usecase-suite.cjs"
+      ]
+    },
+    "Hub-AdGame": {
+      "role": "외부 모바일 플랫폼(당근·카카오·토스) 무설치 데모 게임 제휴 PoC 및 본편 핸드오프 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "docs/adgame/**",
+        "hub/server/adgame/**",
+        "hub/web/adgame/**",
+        "hub/web/user/adgame-handoff.js",
+        "hub/web/user/adgame-handoff.css",
+        "hub/tests/adgame*.mjs",
+        "tools/adgame/**"
       ]
     }
   }
