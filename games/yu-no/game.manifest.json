@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "yu-no",
+  "slug": "yu-no",
+  "title": "이 세상 끝에서 사랑을 노래하는 소녀 YU-NO",
+  "titleEn": "YU-NO: A Girl Who Chants Love at the Bound of This World",
+  "titleJp": "この世の果てで恋を唄う少女YU-NO",
+  "subtitle": "A.D.M.S. 병렬 분기 그래프 · 플래그 추적 · 루트 간 정보 계승 SF 미스터리 ADV",
+  "version": "1.0.0",
+  "updatedOn": "2026-11-22",
+  "entry": "index.html",
+  "platformEnabled": true,
+  "genre": "SF Mystery Visual Novel / Parallel-World Adventure",
+  "tags": [
+    "ADMS",
+    "parallel-world",
+    "branching-graph",
+    "flag-tracking",
+    "cross-route-inheritance",
+    "mystery-adv",
+    "sci-fi"
+  ],
+  "summary": "실종된 아버지가 남긴 리플렉터 디바이스와 유한한 보옥(PC-98 8개 / 리메이크 10개)을 사용해 사카이마치의 6대 평행세계 분기를 넘나들며 아이템과 글로벌 플래그를 역계승하고, 모든 보옥을 모아 이세계 데라 그란트의 진엔딩에 도달하는 결정론적 A.D.M.S. 인터랙티브 프로토타입.",
+  "pillar": "YU-NO: 병렬 분기 그래프, 플래그 추적, 루트 간 정보 계승",
+  "media": {
+    "cover": "assets/cover.svg"
+  },
+  "runtime": {
+    "engine": "vanilla-js-svg",
+    "offlineReady": true,
+    "fileProtocolCompatible": true,
+    "externalCdn": false
+  },
+  "dataStats": {
+    "characters": 20,
+    "locations": 27,
+    "admsNodes": 35,
+    "routes": 9,
+    "endings": 9,
+    "jewelSlotsPc98": 8,
+    "jewelSlotsRemake": 10,
+    "items": 17,
+    "carriedItems": 14,
+    "localItems": 3,
+    "globalFlags": 11,
+    "localFlags": 12,
+    "crossRouteTransfers": 5
+  }
+}

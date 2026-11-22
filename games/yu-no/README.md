@@ -9,23 +9,38 @@
 - **원작 제작·발매**: 엘프(elf) — PC-9801(1996.12.26), 세가새턴(1997.12.04), Windows(2000.12.22) / MAGES.(5pb.) 풀 리메이크(2017.03.16)
 - **장르**: 커맨드 선택·포인트 앤 클릭 SF 미스터리 어드벤처 (병렬세계 분기 그래프 + 루트 간 아이템 계승)
 
-## 2. 디렉터리 구성
-- [ReverseDesign/README.md](ReverseDesign/README.md): 역기획서 전체 색인 및 문서 맵
-- [ReverseDesign/00_scope_evidence_and_glossary.md](ReverseDesign/00_scope_evidence_and_glossary.md): 분석 범위, 버전 차이, 증거 태그 기준, 용어집
-- [ReverseDesign/01_core_loop_and_state_machine.md](ReverseDesign/01_core_loop_and_state_machine.md): 게임 코어 루프 및 2부(현세편→이세계편) 상태 머신
-- [ReverseDesign/02_adms_parallel_branching_graph.md](ReverseDesign/02_adms_parallel_branching_graph.md): A.D.M.S. 병렬 분기 그래프, 리플렉터 디바이스, 보옥(8개/10개) 경제학
-- [ReverseDesign/03_flag_tracking_and_cross_route_inheritance.md](ReverseDesign/03_flag_tracking_and_cross_route_inheritance.md): 로컬·글로벌 상태 분할, 루트 간 아이템·플래그 계승 매트릭스, 패러독스·교착 방지
-- [ReverseDesign/04_modern_to_isekai_convergence_and_routes.md](ReverseDesign/04_modern_to_isekai_convergence_and_routes.md): 현세편(사카이마치) 6대 히로인 루트 → 서재·삼각산 수렴 → 이세계편(데라 그란트)
-- [ReverseDesign/05_characters_and_content_structure.md](ReverseDesign/05_characters_and_content_structure.md): 정규 등장인물 20명, 27개 로케이션, 9개 루트·9개 엔딩 구조
-- [ReverseDesign/06_ui_ux_and_save_architecture.md](ReverseDesign/06_ui_ux_and_save_architecture.md): 포인트 앤 클릭 ADV UI, A.D.M.S. 맵 뷰어, 리플렉터 보옥 슬롯 및 세이브 아키텍처
-- [ReverseDesign/07_data_schemas_and_engine_architecture.md](ReverseDesign/07_data_schemas_and_engine_architecture.md): PlayHub용 TypeScript/JSON 스키마 및 결정론적 A.D.M.S. 그래프·플래그 엔진 설계
-- [ReverseDesign/08_verification_and_test_plan.md](ReverseDesign/08_verification_and_test_plan.md): 자동화 검증 계획, 그래프 도달성/순서 독립성 테스트
-- [ReverseDesign/SOURCE_REGISTER.md](ReverseDesign/SOURCE_REGISTER.md): 원작 고증 출처 레지스터
-- [ReverseDesign/DATA_GAPS.md](ReverseDesign/DATA_GAPS.md): 미확정·버전 차이·1차 바이너리 대조 필요 갭 목록
-- [ReverseDesign/verified_data/](ReverseDesign/verified_data/): 정규화된 원작 복원 데이터(JSON 6종, CSV 2종) 및 Node ESM 검증기(`validate_data.mjs`)
+## 2. 빠른 실행 (Playable Web Prototype)
+외부 CDN 없이 오프라인(`file://`) 및 로컬 HTTP 서버 모두에서 즉시 실행됩니다.
+- **실행 진입점**: `games/yu-no/Web/index.html`을 브라우저에서 직접 열거나 정적 서버로 서빙합니다.
+- **주요 플레이 기능**:
+  - **35노드 A.D.M.S. 병렬 분기 SVG 그래프**: 프롤로그 → 사카이마치 6대 히로인 분기 → 서재 수렴 → 데라 그란트 이세계편 → 트루 엔딩까지 전체 병렬세계 트리와 5대 교차 계승 궤적을 실시간 시각화합니다. 금색 보옥 앵커가 꽂힌 노드를 클릭하면 즉시 리플렉터 점프 프리뷰가 열립니다.
+  - **팔각형 리플렉터 디바이스 위젯**: PC-98(초기 2 + 발견 6 = **8슬롯**)과 SS/리메이크(초기 4 + 발견 6 = **10슬롯**) 모드 전환, 분기 예고 점멸등, 보옥 배치·점프·원격 회수, 추가 광점 보옥 6종 추적.
+  - **ADV 장면 & 커맨드 패널**: 로케이션별 프로시저럴 SVG 배경, 인물 배지, 현장 조사(`inspectLocation`), 아이템 사용(`useItem`, 예: 1일차 거점에서 서재 열쇠 사용 → 괘종시계 `6→3` 보옥 6 획득), 잠긴 관문 사유 툴팁.
+  - **비대칭 상태 추적기 & 3슬롯 시스템 세이브**: 시간축 점프 시 유지되는 **계승 상태(Global Items 14종 · Global Flags 11종)**와 점프 시 스냅샷 복원되는 **로컬 상태(Local Items 3종 · Local Flags 12종)** 및 5대 루트 간 교차 계승 체인을 실시간 비교합니다.
 
-## 3. 데이터 무결성 검증 실행
+## 3. 데이터 동기화 · 검증 · 자동화 테스트 실행
+리포지터리 루트에서 다음 명령을 순서대로 실행합니다.
 ```bash
+# 1. verified_data/*.json -> Web/data/game-data.js 번들 동기화
+node games/yu-no/Source/sync-data.mjs
+
+# 2. SSOT 데이터 무결성 & 고정점 도달성 검증 (0 errors)
 node games/yu-no/ReverseDesign/verified_data/validate_data.mjs
+
+# 3. 헤드리스 A.D.M.S. & 리플렉터 엔진 자동화 테스트 (node --test)
+node --test games/yu-no/Source/engine.test.mjs
+
+# 4. PlayHub 브랜치 소유권 & 스킬 게이트 검증
+npm run check:ownership
+npm run check:skills
 ```
-- **검증 항목**: JSON/CSV 행·열 일치, 전 엔티티 참조 무결성(dangling ID 0), 보옥 불변식(PC-98 2+6=8 / SS·리메이크 4+6=10), A.D.M.S. 그래프 도달성 및 교차 루트 고정점 만족성(트루 엔딩 도달 가능성) 검증.
+
+## 4. 디렉터리 구성
+- `game.manifest.json`: PlayHub 게임 매니페스트 (`id: "yu-no"`, `version: "1.0.0"`)
+- `Source/sync-data.mjs`: `ReverseDesign/verified_data/*.json` → `Web/data/game-data.js` SSOT 번들러
+- `Source/engine.test.mjs`: 보옥 경제·소용돌이 복구·5대 교차 계승·트루 엔딩 완주·직렬화 결정성 테스트
+- `Web/index.html`, `Web/styles.css`, `Web/app.js`: 플레이어블 A.D.M.S. 웹 UI
+- `Web/engine.js`: 무상태/결정론적 헤드리스 A.D.M.S. & 리플렉터 엔진 (UMD)
+- `Web/data/game-data.js`: SSOT 생성 데이터 번들 (`globalThis.YUNO_DATA` + `module.exports`)
+- `Web/assets/cover.svg`: 리플렉터 디바이스 & 평행세계 성좌 커버 아트
+- [ReverseDesign/README.md](ReverseDesign/README.md): 역기획서 전체 색인 및 문서 맵 (00~08, `verified_data/`)
