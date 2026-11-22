@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>유작 (遺作 / Isaku) — 구교사 탐색 어드벤처 엔진</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Status HUD -->
+    <header class="top-hud">
+      <div class="brand-block">
+        <div class="brand-emblem" aria-hidden="true">遺</div>
+        <div>
+          <h1 class="brand-title">유작 (遺作) <span>오우란 학원 구교사 탐색 엔진</span></h1>
+          <p class="phase-sub" id="hud-phase-label">Phase 1 · 5F 밀실 감금 및 탈출 단서</p>
+        </div>
+      </div>
+
+      <div class="hud-metrics">
+        <div class="metric-pill cyan">현재 위치 <strong id="hud-location">5F 음악실</strong></div>
+        <div class="metric-pill">행동 틱 <strong id="hud-ticks">0</strong></div>
+        <div class="metric-pill">퍼즐 <strong id="hud-puzzles">0 / 16</strong></div>
+        <div class="metric-pill">미유키 신뢰 <strong id="hud-miyuki">♥ 0 / 3</strong></div>
+        <div class="metric-pill" id="hud-risk-pill">생존 위기 <strong id="hud-risk-count">0건</strong></div>
+      </div>
+
+      <div class="hud-actions">
+        <button type="button" id="btn-save-load" class="btn-accent">💾 세이브/로드</button>
+        <button type="button" id="btn-archive" class="btn-gold">📜 엔딩 도감 (<span id="hud-endings-unlocked">0</span>/5)</button>
+        <button type="button" id="btn-guide">❓ 탐색 가이드</button>
+        <button type="button" id="btn-reset" class="btn-danger">↺ 새 게임</button>
+      </div>
+    </header>
+
+    <!-- Active Incident Crisis Banner -->
+    <section class="incident-banner" id="incident-banner" aria-live="polite"></section>
+
+    <!-- Main 2-Column Workspace -->
+    <main class="workspace-grid">
+      <!-- Left Column: Room Exploration Stage, Characters, Exits, Log -->
+      <div class="left-column">
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title" id="stage-room-title">🚪 5F 음악실</h2>
+            <span class="panel-subtitle" id="stage-room-sub">5階 音楽室 · 5F Music Room</span>
+          </div>
+
+          <!-- Active Use-Item Bar -->
+          <div class="use-mode-bar" id="use-mode-bar">
+            <span id="use-mode-text">아이템 사용 대상 핫스팟을 클릭하세요</span>
+            <button type="button" id="btn-cancel-use">취소</button>
+          </div>
+
+          <!-- Atmospheric Room SVG Scene -->
+          <div class="stage-viewport">
+            <svg id="room-stage-svg" class="stage-svg" viewBox="0 0 720 380" role="img" aria-label="현재 방 탐색 화면"></svg>
+          </div>
+
+          <!-- Clickable Hotspots -->
+          <div class="section-label">조사 지점 / 핫스팟 (Hotspots)</div>
+          <div class="hotspot-grid" id="hotspot-list"></div>
+
+          <!-- Present Characters -->
+          <div class="section-label">현재 방의 인물 (Talk / Rescue)</div>
+          <div class="char-cards-row" id="present-characters"></div>
+
+          <!-- Connected Exits -->
+          <div class="section-label">연결된 통로 (Exits)</div>
+          <div class="exits-row" id="exit-list"></div>
+        </section>
+
+        <!-- Narrative & Clue Log -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">📖 탐색 기록 &amp; 추리 로그</h2>
+            <span class="panel-subtitle" id="log-count-label">최근 기록</span>
+          </div>
+          <div class="log-box" id="log-box" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <!-- Right Column: Floor Map, Inventory & Combine Workbench, Survivor Monitor -->
+      <div class="right-column">
+        <!-- Floor-by-Floor Interactive School Map -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">🗺️ 구교사 층별 지도</h2>
+            <span class="panel-subtitle" id="map-floor-label">구교사 5층</span>
+          </div>
+          <div class="floor-tabs" id="floor-tabs"></div>
+          <div class="map-svg-wrap">
+            <svg id="floor-map-svg" class="map-svg" viewBox="0 0 420 235" role="img" aria-label="구교사 층별 평면도"></svg>
+          </div>
+          <div class="map-legend">
+            <span>🟡 현재 위치</span>
+            <span>🔒 잠긴 문</span>
+            <span>⚠️ 위기 발생</span>
+            <span>● 인접 방 클릭 이동</span>
+          </div>
+        </section>
+
+        <!-- Inventory & Combine Workbench -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">🎒 인벤토리 &amp; 조합 작업대</h2>
+            <span class="panel-subtitle" id="inv-count-label">보유 1종</span>
+          </div>
+          <div class="workbench-controls">
+            <button type="button" id="btn-toggle-combine" class="btn-accent">🧪 조합 모드: 꺼짐</button>
+            <button type="button" id="btn-exec-combine" class="btn-gold" disabled>선택 2종 조합 실행</button>
+          </div>
+          <div class="prepared-flags" id="prepared-flags"></div>
+          <div class="inventory-grid" id="inventory-grid"></div>
+        </section>
+
+        <!-- Survivor Status Monitor -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">👥 생존자 상태 모니터</h2>
+            <span class="panel-subtitle" id="survivor-summary">구출 0/8 · 피해 0명</span>
+          </div>
+          <div class="survivor-grid" id="survivor-grid"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Safe Keypad Modal (3878) -->
+  <div class="modal-backdrop" id="modal-keypad" role="dialog" aria-modal="true" aria-labelledby="keypad-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="keypad-title">🔐 5F 남자 화장실 비밀번호 금고</h3>
+        <button type="button" data-close-modal="modal-keypad">닫기</button>
+      </div>
+      <div class="keypad-hint" id="keypad-hint">4자리 비밀번호를 입력하세요. (3-2 교실 메모와 이과 실험실 단서를 참고하세요.)</div>
+      <div class="keypad-display" id="keypad-display">----</div>
+      <div class="keypad-grid" id="keypad-grid"></div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" id="keypad-clear" style="flex:1;">지우기</button>
+        <button type="button" id="keypad-submit" class="btn-gold" style="flex:2; font-weight:700;">해제 시도 (ENTER)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialogue / Crisis Intervention Modal -->
+  <div class="modal-backdrop" id="modal-dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogue-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="dialogue-title">대화</h3>
+        <button type="button" data-close-modal="modal-dialogue">닫기</button>
+      </div>
+      <p id="dialogue-body" style="margin:0; font-size:13.5px; color:var(--text-main);"></p>
+      <div class="choice-list" id="dialogue-choices"></div>
+    </div>
+  </div>
+
+  <!-- Save / Load Modal -->
+  <div class="modal-backdrop" id="modal-save" role="dialog" aria-modal="true" aria-labelledby="save-title">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h3 id="save-title">💾 세이브 / 로드 슬롯 (LocalStorage)</h3>
+        <button type="button" data-close-modal="modal-save">닫기</button>
+      </div>
+      <p style="margin:0 0 10px; font-size:12px; color:var(--text-muted);">
+        층 해정이나 위기 분기 직전에 슬롯을 분리 보관하면 모든 5종 엔딩을 안전하게 탐색할 수 있습니다.
+      </p>
+      <div class="save-slot-list" id="save-slot-list"></div>
+    </div>
+  </div>
+
+  <!-- Ending & Archive Modal -->
+  <div class="modal-backdrop" id="modal-ending" role="dialog" aria-modal="true" aria-labelledby="ending-title">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h3 id="ending-title">🎬 결말 판정 및 엔딩 아카이브</h3>
+        <button type="button" data-close-modal="modal-ending">닫기</button>
+      </div>
+      <div id="ending-current-section"></div>
+      <div class="section-label" style="margin-top:14px;">해금된 정본 엔딩 도감 (5종)</div>
+      <div class="ending-archive-list" id="ending-archive-list"></div>
+      <div style="display:flex; gap:8px; margin-top:14px; justify-content:flex-end;">
+        <button type="button" id="ending-btn-load" class="btn-accent">💾 세이브 불러오기</button>
+        <button type="button" id="ending-btn-restart" class="btn-gold">↺ 처음부터 다시 탐색</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Exploration Guide Modal -->
+  <div class="modal-backdrop" id="modal-guide" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h3 id="guide-title">❓ 유작 탐색 어드벤처 엔진 조작 가이드</h3>
+        <button type="button" data-close-modal="modal-guide">닫기</button>
+      </div>
+      <div style="font-size:13px; color:var(--text-main); display:flex; flex-direction:column; gap:8px;">
+        <p style="margin:0;"><strong>1. 방 탐색 &amp; 핫스팟:</strong> 상단 씬의 빛나는 마커 또는 아래 핫스팟 버튼을 클릭해 단서·아이템을 수집하고 장치를 조사합니다.</p>
+        <p style="margin:0;"><strong>2. 아이템 사용 &amp; 조합:</strong> 인벤토리에서 <em>[사용]</em>을 누른 뒤 대상 핫스팟을 클릭하세요. <em>[조합 모드]</em>에서는 두 아이템을 결합할 수 있습니다 (예: <code>기계유 + 녹슨 철제 열쇠</code>, <code>갈색 표지 책 + 알코올 병</code>, <code>목제 사다리 + 드라이버</code>).</p>
+        <p style="margin:0;"><strong>3. 생존 위기 경보:</strong> 방을 이동하거나 퍼즐을 풀면 행동 틱이 경과합니다. 상단에 붉은 위기 경보가 뜨면 제한 틱 안에 해당 방으로 이동해 동료를 구출하세요!</p>
+        <p style="margin:0;"><strong>4. 5종 엔딩 조건:</strong> 피해 0명 + 미유키 신뢰 3 이상(미유키 해피) / 2 이하(코토미 해피), 피해 발생 후 탈출(노멀), 아케미 배전반 화재·시계탑/진파치 실패(즉시 배드 엔딩).</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/game-data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

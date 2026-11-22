@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="유작 (遺作) 커버 아트">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#050811"/>
+      <stop offset="48%" stop-color="#0d172a"/>
+      <stop offset="100%" stop-color="#1a1f2e"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="76%" cy="22%" r="28%">
+      <stop offset="0%" stop-color="#a5f3fc" stop-opacity="0.48"/>
+      <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0d172a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="clockGlow" cx="50%" cy="24%" r="16%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.65"/>
+      <stop offset="45%" stop-color="#dc2626" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldMetal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+    <linearGradient id="fogGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#05080f" stop-opacity="0.96"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Night Sky -->
+  <rect width="800" height="500" fill="url(#skyGrad)"/>
+  <rect width="800" height="500" fill="url(#moonGlow)"/>
+  <rect width="800" height="500" fill="url(#clockGlow)"/>
+
+  <!-- Stars & Moonlight Shafts -->
+  <g fill="#bae6fd" opacity="0.55">
+    <circle cx="92" cy="64" r="1.4"/>
+    <circle cx="154" cy="42" r="1.1"/>
+    <circle cx="248" cy="86" r="1.5"/>
+    <circle cx="310" cy="48" r="1"/>
+    <circle cx="512" cy="54" r="1.3"/>
+    <circle cx="678" cy="52" r="1.4"/>
+    <circle cx="728" cy="144" r="1.1"/>
+    <circle cx="64" cy="138" r="1.2"/>
+  </g>
+  <polygon points="610,108 320,460 540,460" fill="#67e8f9" opacity="0.045"/>
+
+  <!-- Crescent Moon -->
+  <circle cx="614" cy="106" r="36" fill="#e0f2fe" opacity="0.92"/>
+  <circle cx="628" cy="98" r="32" fill="#0b1324"/>
+
+  <!-- Distant Tree Silhouette -->
+  <path d="M0 370 Q45 315 88 356 Q128 310 170 364 L170 460 L0 460 Z" fill="#070b14"/>
+  <path d="M625 362 Q670 310 718 352 Q760 320 800 358 L800 460 L625 460 Z" fill="#070b14"/>
+
+  <!-- 5-Story Old Schoolhouse + Clock Tower Silhouette -->
+  <g>
+    <!-- Clock Tower (6F) -->
+    <polygon points="400,52 362,92 438,92" fill="#0c111d" stroke="#334155" stroke-width="1.5"/>
+    <rect x="368" y="92" width="64" height="86" fill="#0e1422" stroke="#334155" stroke-width="1.5"/>
+    <!-- Glowing Red-Amber Clock Face -->
+    <circle cx="400" cy="128" r="22" fill="#2a0a0a" stroke="#f59e0b" stroke-width="2.5"/>
+    <circle cx="400" cy="128" r="17" fill="#7f1d1d" opacity="0.72"/>
+    <line x1="400" y1="128" x2="400" y2="115" stroke="#fde68a" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="400" y1="128" x2="411" y2="132" stroke="#fca5a5" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="400" cy="128" r="2.5" fill="#fef3c7"/>
+
+    <!-- Main 5-Story Building -->
+    <rect x="155" y="176" width="490" height="248" fill="#0b101c" stroke="#293548" stroke-width="2"/>
+    <rect x="145" y="168" width="510" height="10" fill="#131c2e"/>
+    <!-- Vertical Structural Pillars -->
+    <rect x="155" y="178" width="14" height="246" fill="#111827"/>
+    <rect x="336" y="178" width="12" height="246" fill="#111827"/>
+    <rect x="452" y="178" width="12" height="246" fill="#111827"/>
+    <rect x="631" y="178" width="14" height="246" fill="#111827"/>
+
+    <!-- Floor Windows (5F -> 1F) -->
+    <!-- 5F Music Room (Lit Cyan Moonlight + Boarded) -->
+    <g fill="#172033" stroke="#1e293b" stroke-width="1">
+      <rect x="186" y="194" width="34" height="24" fill="#38bdf8" opacity="0.55"/>
+      <rect x="234" y="194" width="34" height="24" fill="#0ea5e9" opacity="0.28"/>
+      <rect x="282" y="194" width="34" height="24"/>
+      <rect x="372" y="194" width="56" height="24" fill="#fbbf24" opacity="0.32"/>
+      <rect x="484" y="194" width="34" height="24"/>
+      <rect x="532" y="194" width="34" height="24" fill="#ef4444" opacity="0.35"/>
+      <rect x="580" y="194" width="34" height="24"/>
+
+      <!-- 4F -->
+      <rect x="186" y="236" width="34" height="24"/>
+      <rect x="234" y="236" width="34" height="24" fill="#f59e0b" opacity="0.45"/>
+      <rect x="282" y="236" width="34" height="24"/>
+      <rect x="372" y="236" width="56" height="24"/>
+      <rect x="484" y="236" width="34" height="24" fill="#dc2626" opacity="0.52"/>
+      <rect x="532" y="236" width="34" height="24"/>
+      <rect x="580" y="236" width="34" height="24"/>
+
+      <!-- 3F -->
+      <rect x="186" y="278" width="34" height="24" fill="#67e8f9" opacity="0.26"/>
+      <rect x="234" y="278" width="34" height="24"/>
+      <rect x="282" y="278" width="34" height="24"/>
+      <rect x="372" y="278" width="56" height="24" fill="#f59e0b" opacity="0.24"/>
+      <rect x="484" y="278" width="34" height="24"/>
+      <rect x="532" y="278" width="34" height="24"/>
+      <rect x="580" y="278" width="34" height="24"/>
+
+      <!-- 2F -->
+      <rect x="186" y="320" width="34" height="24"/>
+      <rect x="234" y="320" width="34" height="24"/>
+      <rect x="282" y="320" width="34" height="24" fill="#f97316" opacity="0.58"/>
+      <rect x="372" y="320" width="56" height="24"/>
+      <rect x="484" y="320" width="34" height="24"/>
+      <rect x="532" y="320" width="34" height="24" fill="#38bdf8" opacity="0.25"/>
+      <rect x="580" y="320" width="34" height="24"/>
+
+      <!-- 1F + Sealed Main Entrance -->
+      <rect x="186" y="362" width="34" height="24"/>
+      <rect x="234" y="362" width="34" height="24"/>
+      <rect x="282" y="362" width="34" height="24"/>
+      <rect x="366" y="360" width="68" height="64" fill="#090d16" stroke="#475569" stroke-width="2"/>
+      <!-- Crossed planks on sealed main gate -->
+      <line x1="366" y1="364" x2="434" y2="418" stroke="#92400e" stroke-width="5"/>
+      <line x1="434" y1="364" x2="366" y2="418" stroke="#78350f" stroke-width="5"/>
+      <rect x="484" y="362" width="34" height="24"/>
+      <rect x="532" y="362" width="34" height="24" fill="#22d3ee" opacity="0.38"/>
+      <rect x="580" y="362" width="34" height="24"/>
+    </g>
+
+    <!-- Boarded Planks on 5F Music Window -->
+    <line x1="184" y1="201" x2="222" y2="207" stroke="#0f172a" stroke-width="3"/>
+    <line x1="184" y1="212" x2="222" y2="208" stroke="#0f172a" stroke-width="3"/>
+  </g>
+
+  <!-- Ground Fog -->
+  <rect y="355" width="800" height="145" fill="url(#fogGrad)"/>
+
+  <!-- Foreground Left: Safe Dial Motif (3878) -->
+  <g transform="translate(106, 396)" opacity="0.92">
+    <circle cx="0" cy="0" r="56" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+    <circle cx="0" cy="0" r="44" fill="#1e293b" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <circle cx="0" cy="0" r="24" fill="#090d16" stroke="url(#goldMetal)" stroke-width="2.5"/>
+    <line x1="0" y1="-44" x2="0" y2="-34" stroke="#ef4444" stroke-width="3"/>
+    <text x="0" y="5" text-anchor="middle" fill="#fde68a" font-family="monospace" font-size="14" font-weight="bold" letter-spacing="1.5">3878</text>
+  </g>
+
+  <!-- Foreground Right: Antique Rusted-Gold Key Motif -->
+  <g transform="translate(658, 398) rotate(-24)" opacity="0.94">
+    <circle cx="-38" cy="0" r="20" fill="none" stroke="url(#goldMetal)" stroke-width="6"/>
+    <circle cx="-38" cy="0" r="9" fill="none" stroke="#fde68a" stroke-width="1.5" opacity="0.6"/>
+    <rect x="-18" y="-4" width="76" height="8" rx="3" fill="url(#goldMetal)"/>
+    <rect x="30" y="4" width="8" height="14" rx="1.5" fill="url(#goldMetal)"/>
+    <rect x="44" y="4" width="8" height="19" rx="1.5" fill="url(#goldMetal)"/>
+  </g>
+
+  <!-- Title Plate -->
+  <g transform="translate(400, 444)" text-anchor="middle">
+    <text x="0" y="-12" fill="#f8fafc" font-family="Georgia, 'Noto Serif KR', serif" font-size="44" font-weight="700" letter-spacing="8">유작 · 遺作</text>
+    <text x="0" y="16" fill="#67e8f9" font-family="system-ui, sans-serif" font-size="13" font-weight="600" letter-spacing="3">OURAN OLD SCHOOLHOUSE · ESCAPE ADVENTURE ENGINE</text>
+  </g>
+</svg>

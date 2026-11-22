@@ -25,10 +25,31 @@
 - [ReverseDesign/DATA_GAPS.md](./ReverseDesign/DATA_GAPS.md) — 미확정 수치·판본 차이·추가 검증 과제
 - [ReverseDesign/verified_data/](./ReverseDesign/verified_data/) — JSON/CSV 원작 복원 데이터 및 자동 검증 스크립트(`validate_data.mjs`)
 
-## 데이터 검증 실행
+## 플레이 가능한 웹 프로토타입 실행
+
+외부 CDN 없이 `file://` 직접 열기 및 로컬 HTTP 서버 모두에서 동작합니다.
+
+- **직접 실행**: `games/isaku/Web/index.html`을 브라우저로 바로 열기
+- **데이터 번들 동기화** (`ReverseDesign/verified_data/*.json` → `Web/data/game-data.js`):
+  ```powershell
+  node games/isaku/Source/sync-data.mjs
+  ```
+
+### 주요 구현 기능
+- **순수 결정론적 탐색 어드벤처 엔진 (`Web/engine.js`)**: 11명 정본 캐스트, 29개 방(6F 시계탑 ~ 0F 외부), 45개 핫스팟, 23종 아이템, 16개 퍼즐 DAG(금고 `3878`, 윤활 소프트락 방지, 아이템 조합, 5F 백트래킹, 2F 난로 연소, 3F 바 록 역이용), 8종 시간·트리거 기반 구출 사건 및 연쇄 가속, 5종 엔딩 판정기.
+- **인터랙티브 UI (`Web/index.html`, `Web/app.js`, `Web/styles.css`)**: 층별 클릭 이동 SVG 평면도(`6F`~`0F`), 룸 탐색 SVG 스테이지 및 핫스팟 마커, 금고 키패드 모달(`3878`), 인벤토리 사용/조합 작업대, 생존자 상태 모니터·위기 경보 배너, `localStorage` 다중 슬롯 세이브/로드 + 자동 체크포인트 + 5종 엔딩 도감.
+
+## 데이터 검증 및 자동 테스트 실행
 
 ```powershell
+# 1. 원작 복원 데이터 번들 생성
+node games/isaku/Source/sync-data.mjs
+
+# 2. 데이터 무결성·DAG 비순환·정방향 완주 검증
 node games/isaku/ReverseDesign/verified_data/validate_data.mjs
+
+# 3. 헤드리스 엔진 자동 회귀 테스트 (전 퍼즐·구출·5종 엔딩·세이브/로드)
+node --test games/isaku/Source/engine.test.mjs
 ```
 
 정상 출력 예시:

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "isaku",
+  "slug": "isaku",
+  "title": {
+    "ko": "유작 (遺作)",
+    "en": "Isaku",
+    "ja": "遺作",
+    "zh-CN": "遗作",
+    "fr": "Isaku",
+    "es": "Isaku",
+    "pt-BR": "Isaku",
+    "hi": "इसाकू (Isaku)"
+  },
+  "summary": {
+    "ko": "봉쇄된 5층 구교사에서 방·아이템·퍼즐·사건이 맞물리는 밀실 서바이벌 탐색 어드벤처.",
+    "en": "A closed-school survival mystery adventure intertwining rooms, items, puzzles, and timed rescue incidents.",
+    "ja": "封鎖された5階建て旧校舎で、部屋・アイテム・謎解き・事件が連動する密室探索アドベンチャー。",
+    "zh-CN": "在封锁的五层旧校舍中，融合房间探索、道具组合、谜题与限时救援事件的密室悬疑冒险。",
+    "fr": "Une aventure d'exploration et de survie mêlant salles, objets, énigmes et sauvetages minutés dans une vieille école scellée.",
+    "es": "Una aventura de misterio y supervivencia en una escuela sellada que combina salas, objetos, acertijos y rescates contrarreloj.",
+    "pt-BR": "Uma aventura de mistério e sobrevivência em uma escola lacrada combinando salas, itens, quebra-cabeças e resgates cronometrados.",
+    "hi": "एक बंद पुरानी स्कूल इमारत में कमरों, वस्तुओं, पहेलियों और समयबद्ध बचाव घटनाओं को जोड़ने वाला रहस्यमय एडवेंचर।"
+  },
+  "instructions": {
+    "ko": "지도와 방 핫스팟을 클릭해 단서와 도구를 모으고, 아이템 사용·조합과 금고 해제(3878)로 아래층을 개방하며 동료들의 위기 경보에 제한 틱 안에 대응하세요.",
+    "en": "Explore rooms and hotspots to gather clues and tools, use or combine items to unlock lower floors, and respond to active survivor incident alerts before their tick timers expire.",
+    "ja": "マップと部屋のホットスポットを調べて手がかりと道具を集め、アイテムの使用・組み合わせで下層を開放しながら、制限ティック内に仲間の危機に対応してください。",
+    "zh-CN": "点击地图与房间热点收集线索和工具，通过道具使用与组合解锁下层通道，并在行动刻度耗尽前及时响应同伴的危机警报。",
+    "fr": "Explorez les salles et zones interactives pour trouver indices et outils, combinez vos objets pour déverrouiller les étages et intervenez avant l'expiration des alertes.",
+    "es": "Explora salas y puntos clave para reunir pistas y herramientas, usa o combina objetos para abrir pisos inferiores y atiende las alertas de rescate antes de que venza el contador.",
+    "pt-BR": "Explore salas e pontos de interesse para coletar pistas e ferramentas, use ou combine itens para destrancar andares e responda aos alertas de resgate antes que o tempo acabe.",
+    "hi": "सुराग और औजार खोजने के लिए कमरों और हॉटस्पॉट की जांच करें, निचली मंजिलें खोलने के लिए वस्तुओं का उपयोग/संयोजन करें और समय समाप्त होने से पहले साथियों को बचाएं।"
+  },
+  "rules": {
+    "ko": "전원 생존(피해 0명) 상태로 1F 보건실 비밀 탈출구에 도달하면 미유키 호감도에 따라 진 해피 엔딩(3 이상) 또는 코토미 해피 엔딩(2 이하)을 달성합니다. 1명 이상 피해 발생 시 노멀 엔딩, 배전반 화재·시계탑/진파치 대치 실패 시 즉시 배드 엔딩으로 분기합니다.",
+    "en": "Reach the 1F Infirmary secret exit with zero compromised survivors for the Miyuki (affection >= 3) or Kotomi (affection <= 2) Happy Ending. Any compromised ally leads to the Normal Ending; failing critical crises triggers an immediate Bad Ending.",
+    "ja": "犠牲者0人で1F保健室の秘密脱出口に到達すると、美由紀好感度に応じて美由紀ハッピーエンド(3以上)または琴未ハッピーエンド(2以下)に到達します。犠牲発生時はノーマルエンド、致命的危機の失敗時は即時バッドエンドとなります。",
+    "zh-CN": "零受害状态下抵达1F保健室秘密脱出口，将依美由纪好感度进入真好结局(>=3)或琴美好结局(<=2)；出现受害者则进入普通结局，关键危机失败将立即触发坏结局。",
+    "fr": "Atteignez la sortie secrète de l'infirmerie (1F) sans aucune victime pour débloquer la fin heureuse de Miyuki (affection >= 3) ou Kotomi (affection <= 2).",
+    "es": "Llega a la salida secreta de la enfermería (1F) sin víctimas para lograr el final feliz de Miyuki (afecto >= 3) o Kotomi (afecto <= 2).",
+    "pt-BR": "Chegue à saída secreta da enfermaria (1F) sem vítimas para alcançar o final feliz de Miyuki (afeição >= 3) ou Kotomi (afeição <= 2).",
+    "hi": "बिना किसी नुकसान के 1F इन्फर्मरी के गुप्त मार्ग तक पहुँचने पर मियुकी (>=3) या कोटोमी (<=2) हैप्पी एंडिंग मिलती है।"
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "updatedOn": "2026-11-22",
+  "tags": [
+    "adventure",
+    "mystery",
+    "escape",
+    "puzzle"
+  ],
+  "controls": [
+    "mouse",
+    "keyboard",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 6
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Isaku (1995)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}
