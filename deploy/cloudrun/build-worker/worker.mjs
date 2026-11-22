@@ -192,6 +192,89 @@ export function rewriteHtmlForSharedRuntime(html, sharedRuntimeBase) {
   return out;
 }
 
+const DEFAULT_GODOT_WASM_BYTES = 39514754;
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+/** Generate a lightweight Godot 4.7.2 Web shell HTML referencing the shared immutable runtime. */
+export function buildSharedRuntimeHtml({ title = 'PlayHub Game', sharedRuntimeBase, mainPackBytes = 0, engineWasmBytes = DEFAULT_GODOT_WASM_BYTES } = {}) {
+  const base = String(sharedRuntimeBase || '').trim().replace(/\/+$/, '');
+  if (!base || !base.startsWith('/') || base.includes('..') || /[\s"'<>]/.test(base)) {
+    throw new Error(`Invalid sharedRuntimeBase: ${sharedRuntimeBase}`);
+  }
+  const godotConfig = {
+    args: [],
+    canvasResizePolicy: 2,
+    emscriptenPoolSize: 8,
+    ensureCrossOriginIsolationHeaders: false,
+    executable: `${base}/godot`,
+    mainPack: 'index.pck',
+    experimentalVK: false,
+    fileSizes: {
+      'index.pck': Number(mainPackBytes) || 0,
+      [`${base}/godot.wasm`]: Number(engineWasmBytes) || DEFAULT_GODOT_WASM_BYTES,
+    },
+    focusCanvas: true,
+    gdextensionLibs: [],
+    godotPoolSize: 4,
+  };
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+  <title>${escapeHtml(title)}</title>
+  <style>
+html, body, #canvas { margin: 0; padding: 0; border: 0; }
+body { color: #fff; background: #000; overflow: hidden; touch-action: none; }
+#canvas { display: block; }
+#canvas:focus { outline: none; }
+#status { position: absolute; inset: 0; background: #181c24; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: system-ui, sans-serif; }
+#status-progress { width: 50%; max-width: 360px; }
+#status-notice { display: none; margin: 1rem 2rem; padding: 1rem; border-radius: 8px; background: #5b3943; color: #f3e6ea; }
+  </style>
+  <script src="playhub-godot-shell.js"></script>
+</head>
+<body>
+  <canvas id="canvas">Your browser does not support the canvas tag.</canvas>
+  <div id="status">
+    <progress id="status-progress"></progress>
+    <div id="status-notice"></div>
+  </div>
+  <script src="${base}/godot.js"></script>
+  <script>
+const GODOT_CONFIG = ${JSON.stringify(godotConfig)};
+const engine = new Engine(GODOT_CONFIG);
+(function () {
+  const statusOverlay = document.getElementById('status');
+  const statusProgress = document.getElementById('status-progress');
+  const statusNotice = document.getElementById('status-notice');
+  function fail(err) {
+    console.error(err);
+    statusProgress.style.display = 'none';
+    statusNotice.style.display = 'block';
+    statusNotice.textContent = err instanceof Error ? err.message : String(err || 'Failed to start game');
+  }
+  const missing = Engine.getMissingFeatures({ threads: false });
+  if (missing.length) {
+    fail('Missing browser features: ' + missing.join(', '));
+    return;
+  }
+  engine.startGame({
+    onProgress: function (current, total) {
+      if (current > 0 && total > 0) { statusProgress.value = current; statusProgress.max = total; }
+      else { statusProgress.removeAttribute('value'); statusProgress.removeAttribute('max'); }
+    }
+  }).then(function () { statusOverlay.remove(); }, fail);
+}());
+  </script>
+</body>
+</html>
+`;
+}
+
 /** Execute one isolated build from a snapshot object and return { result, zipBuffer }. */
 export async function executeIsolatedBuild(snapshot, options = {}) {
   const godotBin = options.godotBin || process.env.GODOT_BIN || '/usr/local/bin/godot';
@@ -237,34 +320,39 @@ export async function executeIsolatedBuild(snapshot, options = {}) {
       [...godotPrefixArgs, '--headless', '--path', projectDir, '--editor', '--import', '--quit'],
       { cwd: projectDir, env: childEnv, timeoutMs }
     );
-    const exportLog = await runGodotCommand(
-      godotBin,
-      [...godotPrefixArgs, '--headless', '--path', projectDir, '--export-release', 'Web', path.join(outputDir, 'index.html')],
-      { cwd: projectDir, env: childEnv, timeoutMs }
-    );
-    result.log = (importLog + '\n' + exportLog).slice(-12000);
-
-    for (const name of fs.readdirSync(outputDir)) {
-      if (fs.lstatSync(path.join(outputDir, name)).isSymbolicLink()) {
-        throw new Error(`Symbolic link rejected in build output: ${name}`);
-      }
-    }
-
-    for (const reqFile of ['index.html', 'index.wasm', 'index.pck']) {
-      const reqPath = path.join(outputDir, reqFile);
-      if (!fs.existsSync(reqPath) || !fs.lstatSync(reqPath).isFile()) {
-        throw new Error(`Godot did not produce required Web file: ${reqFile}`);
-      }
-    }
-
-    const shellInjected = injectPlayHubShell(outputDir);
-    const engineWasmBytes = fs.statSync(path.join(outputDir, 'index.wasm')).size;
-    const mainPackBytes = fs.statSync(path.join(outputDir, 'index.pck')).size;
+    let exportLog = '';
+    let engineWasmBytes = DEFAULT_GODOT_WASM_BYTES;
+    let mainPackBytes = 0;
     let packaging = 'standalone';
+    let shellInjected = false;
+
     if (sharedRuntimeBase) {
-      const indexPath = path.join(outputDir, 'index.html');
-      const rewritten = rewriteHtmlForSharedRuntime(fs.readFileSync(indexPath, 'utf8'), sharedRuntimeBase);
-      fs.writeFileSync(indexPath, rewritten, 'utf8');
+      // Fast thin-UGC path: export ONLY index.pck (skips unpacking 39.5 MB Web template into Cloud Run tmpfs RAM)
+      exportLog = await runGodotCommand(
+        godotBin,
+        [...godotPrefixArgs, '--headless', '--path', projectDir, '--export-pack', 'Web', path.join(outputDir, 'index.pck')],
+        { cwd: projectDir, env: childEnv, timeoutMs }
+      );
+      result.log = (importLog + '\n' + exportLog).slice(-12000);
+
+      for (const name of fs.readdirSync(outputDir)) {
+        if (fs.lstatSync(path.join(outputDir, name)).isSymbolicLink()) {
+          throw new Error(`Symbolic link rejected in build output: ${name}`);
+        }
+      }
+      const pckPath = path.join(outputDir, 'index.pck');
+      if (!fs.existsSync(pckPath) || !fs.lstatSync(pckPath).isFile()) {
+        throw new Error('Godot did not produce required Web file: index.pck');
+      }
+      mainPackBytes = fs.statSync(pckPath).size;
+      const html = buildSharedRuntimeHtml({
+        title: snapshot?.name || 'PlayHub Game',
+        sharedRuntimeBase,
+        mainPackBytes,
+        engineWasmBytes,
+      });
+      fs.writeFileSync(path.join(outputDir, 'index.html'), html, 'utf8');
+      shellInjected = injectPlayHubShell(outputDir);
       const ugcManifest = {
         schemaVersion: 2,
         packaging: 'modular-thin-ugc',
@@ -278,6 +366,29 @@ export async function executeIsolatedBuild(snapshot, options = {}) {
       };
       fs.writeFileSync(path.join(outputDir, 'ugc.manifest.json'), JSON.stringify(ugcManifest, null, 2) + '\n', 'utf8');
       packaging = 'modular-thin-ugc';
+    } else {
+      exportLog = await runGodotCommand(
+        godotBin,
+        [...godotPrefixArgs, '--headless', '--path', projectDir, '--export-release', 'Web', path.join(outputDir, 'index.html')],
+        { cwd: projectDir, env: childEnv, timeoutMs }
+      );
+      result.log = (importLog + '\n' + exportLog).slice(-12000);
+
+      for (const name of fs.readdirSync(outputDir)) {
+        if (fs.lstatSync(path.join(outputDir, name)).isSymbolicLink()) {
+          throw new Error(`Symbolic link rejected in build output: ${name}`);
+        }
+      }
+
+      for (const reqFile of ['index.html', 'index.wasm', 'index.pck']) {
+        const reqPath = path.join(outputDir, reqFile);
+        if (!fs.existsSync(reqPath) || !fs.lstatSync(reqPath).isFile()) {
+          throw new Error(`Godot did not produce required Web file: ${reqFile}`);
+        }
+      }
+      shellInjected = injectPlayHubShell(outputDir);
+      engineWasmBytes = fs.statSync(path.join(outputDir, 'index.wasm')).size;
+      mainPackBytes = fs.statSync(path.join(outputDir, 'index.pck')).size;
     }
     const names = fs.readdirSync(outputDir)
       .filter(name => {

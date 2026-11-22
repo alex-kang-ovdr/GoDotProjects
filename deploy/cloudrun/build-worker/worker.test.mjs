@@ -162,18 +162,12 @@ test('executeIsolatedBuild with sharedRuntimeBase produces modular-thin-ugc ZIP 
   const mockScript = path.join(tmp, 'mock-godot-thin.mjs');
   fs.writeFileSync(mockScript, `
 import fs from 'node:fs';
-import path from 'node:path';
 const args = process.argv.slice(2);
 if (args.includes('--import')) process.exit(0);
-const exportIdx = args.indexOf('--export-release');
-if (exportIdx >= 0) {
-  const outHtml = args[exportIdx + 2];
-  const outDir = path.dirname(outHtml);
-  fs.writeFileSync(outHtml, ${JSON.stringify(sampleHtml)});
-  fs.writeFileSync(path.join(outDir, 'index.js'), '// engine loader 300kb');
-  fs.writeFileSync(path.join(outDir, 'index.audio.worklet.js'), '// worklet');
-  fs.writeFileSync(path.join(outDir, 'index.wasm'), Buffer.alloc(1024 * 1024, 0x61));
-  fs.writeFileSync(path.join(outDir, 'index.pck'), Buffer.from('GDPC-TINY-GAME'));
+const packIdx = args.indexOf('--export-pack');
+if (packIdx >= 0) {
+  const outPck = args[packIdx + 2];
+  fs.writeFileSync(outPck, Buffer.from('GDPC-TINY-GAME'));
   process.exit(0);
 }
 process.exit(1);
@@ -183,6 +177,7 @@ process.exit(1);
     const { result, zipBuffer } = await executeIsolatedBuild(
       {
         id: '0123456789abcdef01234567',
+        name: 'Thin Cloud Game',
         revision: 2,
         files: [{ path: 'project.godot', content: 'config_version=5\n' }],
       },
@@ -195,9 +190,10 @@ process.exit(1);
     assert.equal(result.status, 'succeeded');
     assert.equal(result.packaging, 'modular-thin-ugc');
     assert.equal(result.sharedRuntimeBase, '/runtime/godot/4.7.2');
-    assert.equal(result.engineWasmBytes, 1024 * 1024);
+    assert.equal(result.mainPackBytes, 14);
     assert.ok(result.files.includes('index.html'));
     assert.ok(result.files.includes('index.pck'));
+    assert.ok(result.files.includes('playhub-godot-shell.js'));
     assert.ok(result.files.includes('ugc.manifest.json'));
     assert.ok(!result.files.includes('index.wasm'));
     assert.ok(!result.files.includes('index.js'));

@@ -293,39 +293,197 @@ if (isDirectExecution) {
 
   let embeddedStore = null;
   let storeProxy = null;
-  if (ROLE === 'public') {
-    const storeInternalSecret = process.env.PLAYHUB_STORE_INTERNAL_SECRET || crypto.randomBytes(32).toString('hex');
-    let storeUpstream = STORE_UPSTREAM_ENV;
-    if (!storeUpstream && fs.existsSync(path.join(repoRoot, 'store', 'server', 'store-api.mjs'))) {
-      try {
-        const [{ createStoreApp }, { loadMergedCatalog }] = await Promise.all([
-          import('../../../store/server/store-api.mjs'),
-          import('../../../store/server/index.mjs'),
-        ]);
-        const storeRoot = path.join(repoRoot, 'store');
-        const storeDataDir = path.join(DATA_DIR, 'store');
-        fs.mkdirSync(storeDataDir, { recursive: true, mode: 0o700 });
-        embeddedStore = createStoreApp({
-          dataDir: storeDataDir,
-          webDir: path.join(storeRoot, 'web'),
-          serveStatic: true,
-          catalog: loadMergedCatalog(storeRoot),
-          internalSecret: storeInternalSecret,
-        });
-        const storeAddr = await embeddedStore.listen(0, '127.0.0.1');
-        storeUpstream = `http://127.0.0.1:${storeAddr.port}`;
-      } catch (err) {
-        console.error('[cloudrun_hub] embedded store startup failed:', err?.message || err);
+  let storeInitPromise = null;
+  const storeInternalSecret = process.env.PLAYHUB_STORE_INTERNAL_SECRET || crypto.randomBytes(32).toString('hex');
+  const embeddedStoreScriptExists = fs.existsSync(path.join(repoRoot, 'store', 'server', 'store-api.mjs'));
+  const storeProxyEnabled = ROLE === 'public' && (Boolean(STORE_UPSTREAM_ENV) || embeddedStoreScriptExists);
+  const isStorePath = p => p === '/store' || p.startsWith('/store/') || p === '/api/store' || p.startsWith('/api/store/');
+
+  if (ROLE === 'public' && STORE_UPSTREAM_ENV) {
+    storeProxy = createStoreProxy({
+      upstream: STORE_UPSTREAM_ENV,
+      allowedOrigins: config.userOrigins,
+      resolveSessionIdentity: req => app.resolveStoreIdentity(req),
+      internalSecret: storeInternalSecret,
+    });
+  }
+
+  async function ensureStoreProxy() {
+    if (storeProxy) return storeProxy;
+    if (!storeProxyEnabled) return null;
+    if (!storeInitPromise) {
+      storeInitPromise = (async () => {
+        try {
+          const [{ createStoreApp }, { loadMergedCatalog }] = await Promise.all([
+            import('../../../store/server/store-api.mjs'),
+            import('../../../store/server/index.mjs'),
+          ]);
+          const storeRoot = path.join(repoRoot, 'store');
+          const storeDataDir = path.join(DATA_DIR, 'store');
+          fs.mkdirSync(storeDataDir, { recursive: true, mode: 0o700 });
+          embeddedStore = createStoreApp({
+            dataDir: storeDataDir,
+            webDir: path.join(storeRoot, 'web'),
+            serveStatic: true,
+            catalog: loadMergedCatalog(storeRoot),
+            internalSecret: storeInternalSecret,
+          });
+          const storeAddr = await embeddedStore.listen(0, '127.0.0.1');
+          storeProxy = createStoreProxy({
+            upstream: `http://127.0.0.1:${storeAddr.port}`,
+            allowedOrigins: config.userOrigins,
+            resolveSessionIdentity: req => app.resolveStoreIdentity(req),
+            internalSecret: storeInternalSecret,
+          });
+          return storeProxy;
+        } catch (err) {
+          storeInitPromise = null;
+          console.error('[cloudrun_hub] embedded store startup failed:', err?.message || err);
+          return null;
+        }
+      })();
+    }
+    return storeInitPromise;
+  }
+
+  const ETAG_CATALOG_PATHS = new Set([
+    '/api/games',
+    '/api/avatar/catalog',
+    '/api/store/catalog',
+    '/forge/api/platform/templates',
+  ]);
+  const MAX_EDGE_COMPRESS_BYTES = 4 * 1024 * 1024;
+  const COMPRESSIBLE_CT_RE = /^(?:application\/json|application\/javascript|text\/javascript|text\/html|text\/css|text\/plain|image\/svg\+xml)/i;
+
+  function attachEdgeCompressionAndEtag(req, res, pathname) {
+    if (req.method !== 'GET') return;
+    if (pathname.endsWith('/events')) return;
+    const acceptGzip = String(req.headers['accept-encoding'] || '').includes('gzip');
+    const allowEtag = ETAG_CATALOG_PATHS.has(pathname);
+    if (!acceptGzip && !allowEtag) return;
+
+    const origWriteHead = res.writeHead.bind(res);
+    const origWrite = res.write.bind(res);
+    const origEnd = res.end.bind(res);
+    let intercepted = false;
+    let passthrough = false;
+    let savedStatus = 200;
+    let savedHeaders = {};
+    const chunks = [];
+    let totalLen = 0;
+
+    const mergeHeaders = (extra) => {
+      const merged = {};
+      for (const [k, v] of Object.entries(res.getHeaders())) merged[k.toLowerCase()] = v;
+      if (extra && typeof extra === 'object') {
+        for (const [k, v] of Object.entries(extra)) {
+          if (v !== undefined) merged[k.toLowerCase()] = v;
+        }
       }
-    }
-    if (storeUpstream) {
-      storeProxy = createStoreProxy({
-        upstream: storeUpstream,
-        allowedOrigins: config.userOrigins,
-        resolveSessionIdentity: req => app.resolveStoreIdentity(req),
-        internalSecret: storeInternalSecret,
-      });
-    }
+      return merged;
+    };
+
+    const restoreMethods = () => {
+      res.writeHead = origWriteHead;
+      res.write = origWrite;
+      res.end = origEnd;
+    };
+
+    const flushPassthrough = () => {
+      passthrough = true;
+      intercepted = false;
+      restoreMethods();
+      origWriteHead(savedStatus, savedHeaders);
+      for (const c of chunks) origWrite(c);
+      chunks.length = 0;
+    };
+
+    const decideIntercept = (statusCode, hdrObj) => {
+      const merged = mergeHeaders(hdrObj);
+      const ct = String(merged['content-type'] || '');
+      const hasCe = Boolean(merged['content-encoding']);
+      const isSse = ct.toLowerCase().includes('text/event-stream');
+      if (statusCode === 200 && !hasCe && !isSse && COMPRESSIBLE_CT_RE.test(ct)) {
+        intercepted = true;
+        savedStatus = statusCode;
+        savedHeaders = merged;
+        return true;
+      }
+      passthrough = true;
+      restoreMethods();
+      return false;
+    };
+
+    res.writeHead = (statusCode, statusMsgOrHeaders, maybeHeaders) => {
+      const hdrObj = typeof statusMsgOrHeaders === 'object' ? statusMsgOrHeaders : maybeHeaders;
+      if (decideIntercept(statusCode, hdrObj)) return res;
+      return origWriteHead(statusCode, statusMsgOrHeaders, maybeHeaders);
+    };
+
+    res.write = (chunk, encoding, cb) => {
+      if (!intercepted && !passthrough) {
+        if (!decideIntercept(res.statusCode || 200, null)) {
+          return origWrite(chunk, encoding, cb);
+        }
+      }
+      if (!intercepted || passthrough) return origWrite(chunk, encoding, cb);
+      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+      totalLen += buf.length;
+      if (totalLen > MAX_EDGE_COMPRESS_BYTES) {
+        flushPassthrough();
+        return origWrite(buf, cb);
+      }
+      chunks.push(buf);
+      if (typeof encoding === 'function') encoding();
+      else if (typeof cb === 'function') cb();
+      return true;
+    };
+
+    res.end = (chunk, encoding, cb) => {
+      if (!intercepted && !passthrough) {
+        if (!decideIntercept(res.statusCode || 200, null)) {
+          return origEnd(chunk, encoding, cb);
+        }
+      }
+      if (!intercepted || passthrough) return origEnd(chunk, encoding, cb);
+      if (chunk && typeof chunk !== 'function') {
+        const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+        totalLen += buf.length;
+        chunks.push(buf);
+      }
+      const doneCb = typeof chunk === 'function' ? chunk : (typeof encoding === 'function' ? encoding : cb);
+      const body = chunks.length === 1 ? chunks[0] : Buffer.concat(chunks);
+      chunks.length = 0;
+      passthrough = true;
+      intercepted = false;
+      restoreMethods();
+
+      for (const name of res.getHeaderNames()) res.removeHeader(name);
+      const outHeaders = { ...savedHeaders };
+      delete outHeaders['content-length'];
+      if (allowEtag && !outHeaders['set-cookie']) {
+        const etag = `W/"${crypto.createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
+        outHeaders.etag = etag;
+        outHeaders['cache-control'] = 'no-cache';
+        const inm = String(req.headers['if-none-match'] || '').trim();
+        if (inm === etag) {
+          delete outHeaders['content-type'];
+          origWriteHead(304, outHeaders);
+          return origEnd(doneCb);
+        }
+      }
+      if (acceptGzip && body.length >= 1024) {
+        const gz = zlib.gzipSync(body, { level: 6 });
+        outHeaders['content-encoding'] = 'gzip';
+        outHeaders.vary = outHeaders.vary ? `${outHeaders.vary}, Accept-Encoding` : 'Accept-Encoding';
+        outHeaders['content-length'] = gz.length;
+        origWriteHead(savedStatus, outHeaders);
+        return origEnd(gz, doneCb);
+      }
+      outHeaders['content-length'] = body.length;
+      origWriteHead(savedStatus, outHeaders);
+      return origEnd(body, doneCb);
+    };
   }
 
   const stripSpoofedHeaders = req => {
@@ -400,8 +558,18 @@ if (isDirectExecution) {
         res.end();
         return;
       }
-      if (storeProxy && storeProxy.matches(pathname)) {
-        storeProxy.handle(req, res);
+      if (storeProxyEnabled && isStorePath(pathname)) {
+        attachEdgeCompressionAndEtag(req, res, pathname);
+        void ensureStoreProxy().then(proxy => {
+          if (!proxy) {
+            if (!res.headersSent) {
+              res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+              res.end(JSON.stringify({ error: { code: 'STORE_UNAVAILABLE', message: 'Asset Store unavailable' } }));
+            }
+            return;
+          }
+          proxy.handle(req, res);
+        });
         return;
       }
       if (pathname.startsWith('/runtime/godot/')) {
@@ -419,7 +587,10 @@ if (isDirectExecution) {
           return;
         }
         const target = path.resolve(runtimeBase, parts[0], parts[1]);
-        if (!target.startsWith(runtimeBase + path.sep) || !fs.existsSync(target) || !fs.statSync(target).isFile()) {
+        const gzPath = target + '.gz';
+        const hasRaw = target.startsWith(runtimeBase + path.sep) && fs.existsSync(target) && fs.statSync(target).isFile();
+        const hasGz = gzPath.startsWith(runtimeBase + path.sep) && fs.existsSync(gzPath) && fs.statSync(gzPath).isFile();
+        if (!hasRaw && !hasGz) {
           res.writeHead(404);
           res.end('Not found');
           return;
@@ -432,24 +603,34 @@ if (isDirectExecution) {
           return;
         }
         const acceptEncoding = String(req.headers['accept-encoding'] || '');
-        const gzPath = target + '.gz';
-        const usePrecompressed = req.method !== 'HEAD' && acceptEncoding.includes('gzip') && fs.existsSync(gzPath) && fs.statSync(gzPath).isFile();
-        const servePath = usePrecompressed ? gzPath : target;
+        const wantsGzip = acceptEncoding.includes('gzip');
         const headers = {
           'Content-Type': mime,
-          'Content-Length': fs.statSync(servePath).size,
           'Cache-Control': 'public, max-age=31536000, immutable',
           'Access-Control-Allow-Origin': '*',
           'Cross-Origin-Resource-Policy': 'cross-origin',
           'X-Content-Type-Options': 'nosniff',
         };
-        if (usePrecompressed) {
+        if (hasGz && wantsGzip) {
           headers['Content-Encoding'] = 'gzip';
           headers.Vary = 'Accept-Encoding';
+          headers['Content-Length'] = fs.statSync(gzPath).size;
+          res.writeHead(200, headers);
+          if (req.method === 'HEAD') res.end();
+          else fs.createReadStream(gzPath).pipe(res);
+          return;
         }
+        if (hasRaw) {
+          headers['Content-Length'] = fs.statSync(target).size;
+          res.writeHead(200, headers);
+          if (req.method === 'HEAD') res.end();
+          else fs.createReadStream(target).pipe(res);
+          return;
+        }
+        // Only .gz exists and client did not advertise gzip: stream gunzipped on the fly.
         res.writeHead(200, headers);
         if (req.method === 'HEAD') res.end();
-        else fs.createReadStream(servePath).pipe(res);
+        else fs.createReadStream(gzPath).pipe(zlib.createGunzip()).pipe(res);
         return;
       }
       if (pathname === '/forge') {
@@ -463,6 +644,7 @@ if (isDirectExecution) {
           res.end(JSON.stringify({ error: 'FORGE_UPSTREAM_NOT_CONFIGURED' }));
           return;
         }
+        if (pathname.startsWith('/forge/api/')) attachEdgeCompressionAndEtag(req, res, pathname);
         proxyRequest(req, res, FORGE_UPSTREAM, '/forge');
         return;
       }
@@ -477,6 +659,7 @@ if (isDirectExecution) {
     if (pathname.startsWith('/api/') || (ROLE === 'public' && pathname.startsWith('/play-ugc/'))) {
       if (ROLE === 'public') allowCloudRunSameHostOrigin(req, config.userOrigins);
       stripSpoofedHeaders(req);
+      if (pathname.startsWith('/api/')) attachEdgeCompressionAndEtag(req, res, pathname);
       apiHandler(req, res);
       return;
     }
@@ -503,7 +686,7 @@ if (isDirectExecution) {
     port: EDGE_PORT,
     publicOrigin: config.userBaseUrl,
     forgeProxyEnabled: Boolean(FORGE_UPSTREAM),
-    storeProxyEnabled: Boolean(storeProxy),
+    storeProxyEnabled,
     remoteVerifyEnabled: ALLOW_REMOTE_VERIFY,
     revision: process.env.K_REVISION || 'local',
   }));

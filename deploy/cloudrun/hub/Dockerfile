@@ -18,8 +18,8 @@ RUN set -eux; \
     done; \
     test -f "/runtime/godot/${GODOT_SHORT_VERSION}/godot.wasm"; \
     test -f "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
-    gzip -9 -k "/runtime/godot/${GODOT_SHORT_VERSION}/godot.wasm"; \
-    gzip -9 -k "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
+    gzip -9 "/runtime/godot/${GODOT_SHORT_VERSION}/godot.wasm"; \
+    gzip -9 "/runtime/godot/${GODOT_SHORT_VERSION}/godot.js"; \
     rm -rf /tmp/gd
 
 FROM node:24-slim

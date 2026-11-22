@@ -23,7 +23,7 @@ RUN set -eux; \
     mv /tmp/godot-dl/bin/Godot_v*_linux.x86_64 /usr/local/bin/godot; \
     chmod 0755 /usr/local/bin/godot; \
     curl -fsSL "${GODOT_RELEASE_BASE}/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -o /tmp/godot-dl/templates.tpz; \
-    unzip -q -j /tmp/godot-dl/templates.tpz 'templates/web_*' -d "/home/builder/.local/share/godot/export_templates/${GODOT_TEMPLATE_DIR}"; \
+    unzip -q -j /tmp/godot-dl/templates.tpz 'templates/web_nothreads_release.zip' -d "/home/builder/.local/share/godot/export_templates/${GODOT_TEMPLATE_DIR}"; \
     rm -rf /tmp/godot-dl; \
     chown -R builder:builder /home/builder
 
