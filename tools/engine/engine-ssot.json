@@ -6,8 +6,8 @@
   "submodulePath": "godot-engine",
   "upstreamBaseVersion": "4.7.2-stable",
   "upstreamBaseCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
-  "pinnedForkCommit": "ed003ce541967cbf80fa43503d77ccaa2f59625b",
-  "releaseTag": "playforge-4.7.2-ed003ce5",
+  "pinnedForkCommit": "83f5f345fdaa5c49c8c2463dc34067b66bc13dd0",
+  "releaseTag": "playforge-4.7.2-83f5f345",
   "requiredForkSymbols": [
     "PlayForgePlatform",
     "playforge-core-pack"

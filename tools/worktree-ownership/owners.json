@@ -545,6 +545,17 @@
         "forge/Tests/playforge_unreal_compat/**",
         "forge/Templates/unreal-*/**"
       ]
+    },
+    "Forge-HavokPhysics": {
+      "role": "Havok Physics 2025.1.1 GDExtension 통합 및 Jolt Physics 대비 결정론적 물리 폭파 성능·히치·메모리 벤치마크 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "forge/Godot/addons/playforge_havok_physics/**",
+        "forge/Tests/playforge_havok_physics/**",
+        "HavokProfile/**",
+        "docs/havok/**"
+      ]
     }
   }
 }
