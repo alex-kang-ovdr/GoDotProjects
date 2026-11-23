@@ -1,0 +1,39 @@
+{
+	"all_deterministic": true,
+	"completed_cases": 8,
+	"determinism": {
+		"144": {
+			"deterministic": true,
+			"hashes": [
+				3666637507,
+				3666637507
+			]
+		},
+		"24": {
+			"deterministic": true,
+			"hashes": [
+				3026710458,
+				3026710458
+			]
+		},
+		"48": {
+			"deterministic": true,
+			"hashes": [
+				509879248,
+				509879248
+			]
+		},
+		"96": {
+			"deterministic": true,
+			"hashes": [
+				1751247823,
+				1751247823
+			]
+		}
+	},
+	"expected_cases": 8,
+	"output": "d:/Github/GoDotProjects-worktrees/Forge-HavokPhysics/HavokProfile/godot/../results/jolt-stage3-clean",
+	"passed": true,
+	"physics_engine": "Jolt Physics",
+	"server_class": "PhysicsServer3D"
+}

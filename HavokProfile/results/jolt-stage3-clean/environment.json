@@ -1,0 +1,25 @@
+{
+	"batch_sync": true,
+	"cpu": "Intel(R) Core(TM) Ultra 7 265K",
+	"cpu_count": 20,
+	"engine": "Godot 4.7.2-stable (custom_build)",
+	"gpu": "NVIDIA GeForce RTX 4070 Ti",
+	"has_engine_batch": true,
+	"havok_worker_threads": 0,
+	"headless": false,
+	"physics_engine": "Jolt Physics",
+	"platform": "Windows",
+	"renderer": "forward_plus",
+	"repeats": 2,
+	"seed": 1337,
+	"server_class": "PhysicsServer3D",
+	"sizes": [
+		24,
+		48,
+		96,
+		144
+	],
+	"tag": "jolt-stage3-clean",
+	"ticks": 300,
+	"timestamp_utc": "2026-11-23T12:59:14"
+}

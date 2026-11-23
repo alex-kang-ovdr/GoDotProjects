@@ -26,6 +26,9 @@ var opt := {
 	"plane": 0.30,
 	"tag": "default",
 	"batch_sync": false,
+	"shape": "box",
+	"jolt_gsk_mode": 0,
+	"jolt_narrow_stats": false,
 }
 
 var cases: Array = []
@@ -93,6 +96,9 @@ func _ready() -> void:
 	server_class = PhysicsServer3D.get_class()
 	has_havok_stats = ClassDB.class_exists(&"HavokPhysicsStats")
 	has_engine_batch = ClassDB.class_exists(&"PlayForgePhysicsBatch")
+	if has_engine_batch:
+		ClassDB.class_call_static(&"PlayForgePhysicsBatch", &"set_jolt_gsk_mode", int(opt.jolt_gsk_mode))
+		ClassDB.class_call_static(&"PlayForgePhysicsBatch", &"set_jolt_narrow_stats_enabled", bool(opt.jolt_narrow_stats))
 
 	if not is_headless:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -133,6 +139,9 @@ func _parse_args() -> void:
 			"no-quit": opt.no_quit = true
 			"tag": opt.tag = v
 			"batch-sync": opt.batch_sync = true
+			"shape": opt.shape = v
+			"jolt-gsk-mode": opt.jolt_gsk_mode = int(v)
+			"jolt-narrow-stats": opt.jolt_narrow_stats = true
 
 
 func _ue_to_godot(v: Vector3) -> Vector3:
@@ -379,9 +388,21 @@ func _run_single_case() -> bool:
 	)
 	PhysicsServer3D.body_set_space(floor_body_rid, space_rid)
 
-	# Shared 1x1x1m box shape for all voxel blocks
-	box_shape_rid = PhysicsServer3D.box_shape_create()
-	PhysicsServer3D.shape_set_data(box_shape_rid, Vector3(0.5, 0.5, 0.5))
+	# Shared 1x1x1m shape for all voxel blocks (box or 32-vertex deterministic convex hull)
+	if opt.shape == "convex":
+		box_shape_rid = PhysicsServer3D.convex_polygon_shape_create()
+		var verts := PackedVector3Array()
+		var n_pts := 32
+		var golden := PI * (3.0 - sqrt(5.0))
+		for k in range(n_pts):
+			var y := 1.0 - (float(k) / float(n_pts - 1)) * 2.0
+			var r := sqrt(maxf(0.0, 1.0 - y * y))
+			var theta := golden * float(k)
+			verts.append(Vector3(cos(theta) * r * 0.5, y * 0.5, sin(theta) * r * 0.5))
+		PhysicsServer3D.shape_set_data(box_shape_rid, verts)
+	else:
+		box_shape_rid = PhysicsServer3D.box_shape_create()
+		PhysicsServer3D.shape_set_data(box_shape_rid, Vector3(0.5, 0.5, 0.5))
 
 	body_rids.resize(layout_blocks)
 	body_rid_ints.resize(layout_blocks)
@@ -437,6 +458,8 @@ func _run_single_case() -> bool:
 	# Wait 1 frame so first-frame pipeline compilation does not pollute frame metrics
 	if not is_headless:
 		await RenderingServer.frame_post_draw
+	if has_engine_batch and opt.jolt_narrow_stats:
+		ClassDB.class_call_static(&"PlayForgePhysicsBatch", &"reset_jolt_narrow_stats")
 	last_frame_us = Time.get_ticks_usec()
 	running_case = true
 
@@ -621,6 +644,9 @@ static func _count_gt(values: PackedFloat64Array, thresh: float) -> int:
 
 func _finish_case() -> void:
 	var size: int = cur_case.size
+	var np_stats := {}
+	if has_engine_batch and opt.jolt_narrow_stats:
+		np_stats = ClassDB.class_call_static(&"PlayForgePhysicsBatch", &"get_jolt_narrow_stats")
 	await _clear_physics_world()
 	await get_tree().physics_frame
 	var mem_after_cleanup_mb := _private_mem_mb()
@@ -660,6 +686,15 @@ func _finish_case() -> void:
 		case_index + 1, cases.size(), engine_name, size, layout_blocks, cur_case.repeat,
 		build_ms, p_p50, p_p95, p_max, f_p50, f_p95, h16, mem_peak_mb - mem_baseline_mb, state_hash_end
 	])
+	if not np_stats.is_empty():
+		var gjk_calls: int = int(np_stats.get("gjk_calls", 0))
+		var gjk_iters: int = int(np_stats.get("gjk_iters", 0))
+		var avg_iter := (float(gjk_iters) / float(gjk_calls)) if gjk_calls > 0 else 0.0
+		print("  NARROW_STATS mode=%d shape=%s np_cpu_ms=%.2f pairs=%d cache_hit=%d cache_miss=%d gsk_warm=%d early_sep=%d gjk=%d avg_iter=%.3f epa=%d" % [
+			int(opt.jolt_gsk_mode), opt.shape, float(np_stats.get("narrow_phase_ms", 0.0)),
+			int(np_stats.get("pair_total", 0)), int(np_stats.get("pair_cache_hits", 0)), int(np_stats.get("pair_cache_misses", 0)),
+			int(np_stats.get("gsk_warm_hits", 0)), int(np_stats.get("gsk_early_sep", 0)), gjk_calls, avg_iter, int(np_stats.get("epa_calls", 0))
+		])
 
 
 func _write_environment() -> void:

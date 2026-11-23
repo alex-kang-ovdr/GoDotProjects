@@ -178,9 +178,44 @@
 
 ---
 
-## 8. 재현 방법
+## 8. 3단계 최적화 적용 결과 — Jolt AVX2/FMA SIMD · `ContactListener` 락프리/Fast-Path · 경량 4B 옥타헤드럴 GSK 워밍업 (`jolt-stage3-clean`)
+
+2단계 커스텀 포크에 이어, `Forge-godot-engine`에 아래 3단계 패치를 단계별 커밋으로 적용하고 `Box(size=24/48/96/144)` 및 `32정점 ConvexHull(size=48/96)`로 A/B 및 순수 타이밍을 검증했습니다.
+
+1. **P0-2 (`70892ae8`) — x86_64 데스크톱 Jolt AVX2/FMA/SSE4.2 SIMD 활성화** (`modules/jolt_physics/SCsub`): MSVC `/arch:AVX2` / GCC·Clang `-mavx2 -mfma -msse4.2 -mlzcnt -mbmi` 적용.
+2. **P0-1 + P0-3 (`c9050da1`) — `JoltContactListener3D` 락프리 & Fast-Path** (`modules/jolt_physics/spaces/jolt_contact_listener_3d.{h,cpp}`): `OnContactRemoved`의 20스레드 전역 `write_mutex` 2중 경합을 `atomic<bool>` 가드로 우회하고, `OnContactAdded`/`OnContactPersisted`에서 `IsSensor()`·`GetUserData()` 단일 역참조 및 대칭 레이어 fast-path 적용.
+3. **경량 4B 옥타헤드럴 GSK 하이브리드 워밍업 (`e7a83dd7`)** (`thirdparty/jolt_physics/...`, `modules/playforge_core/playforge_physics_batch.{h,cpp}`): `CachedBodyPair`를 32B로 유지하면서 무-`sqrt` 4바이트 옥타헤드럴 분리/관통축을 저장해 `BodyPairContactCache` 미스 페어를 워밍업(Mode 2 기본 활성, 런타임 `0/1/2` A/B 전환 및 협역 계측 API 제공).
+
+### 8.1 단계별 Jolt 진화 vs Havok 2025.1.1 (`size=96` / `size=144`, 순수 타이밍, 2회 평균)
+
+| 지표 | Jolt 기본 | Jolt 2단계 | **Jolt 3단계 (AVX2+P0+4B GSK)** | Havok 2025.1.1 (커스텀) |
+|---|---:|---:|---:|---:|
+| `size=96` `phys_p50_ms` | 13.90 ms | 10.88 ms | **7.469 ms (-46.3%, Havok 추월)** | 8.73 ms |
+| `size=96` `hitch > 16.67ms` | 3.5회 | **0회** | **0회** | **0회** |
+| `size=144` `phys_p50_ms` | 30.07 ms | 26.92 ms | **16.627 ms (-44.7%, Havok 추월)** | 20.11 ms |
+| `size=144` `phys_p95_ms` (폭파 피크) | 65.75 ms | 54.24 ms | **56.38 ms** | 73.64 ms |
+| `size=144` `frame_p50_ms` | 82.76 ms | 0.40 ms | **0.390 ms (212×)** | 0.395 ms |
+| `size=144` `frame_p95_ms` | 116.82 ms | 9.31 ms | **8.82 ms (13.2×)** | 1.04 ms |
+| `size=144` `frame_p99_ms` | 139.75 ms | 17.39 ms | **15.77 ms (8.9×, 60Hz 이내)** | 8.55 ms |
+| `size=144` `hitch > 16.67ms` | 81.5회 | 38.5회 | **28.5회 (-65.0%)** | 7.0회 |
+| `size=144` `hitch > 33.33ms` | 79.0회 | 19.5회 | **12.0회 (6.6× 감소)** | 2.0회 |
+| `size=144` `hitch > 50.0ms` | 67.5회 | 9.0회 | **4.0회 (16.9× 감소)** | 1.0회 |
+
+### 8.2 Narrow-Phase CPU A/B 계측 (`np_cpu_ms`, 2회 평균)
+
+| 시나리오 | 2단계 (SSE2, Mode 0) | 3단계 AVX2+P0 (Mode 0) | **3단계 AVX2+P0 + 4B GSK (Mode 2)** | 개선율 |
+|---|---:|---:|---:|---:|
+| **Box `size=96`** (9,428) | 15,245 ms | 11,182 ms (-26.7%) | **11,061 ms** | **-27.4%** |
+| **Box `size=144`** (21,319) | 38,091 ms | 26,945 ms (-29.3%) | **26,931 ms** | **-29.3%** |
+| **ConvexHull 32정점 `size=96`** | 18,253 ms | 14,869 ms (-18.5%) | **14,873 ms** (EPA **-20.4%**) | **-18.5%** |
+
+---
+
+## 9. 재현 방법
 
 ```powershell
+# 0) 수동 대규모 폭파 렌더링 확인 (더블클릭 또는 콘솔 실행)
+HavokProfile\Run_Explosion_Visual_Test.bat
 # 1) Havok Physics 2025.1.1 GDExtension DLL 빌드 (VS2022 x64 Release)
 powershell -NoProfile -ExecutionPolicy Bypass -File forge\Godot\addons\playforge_havok_physics\build.ps1
 
