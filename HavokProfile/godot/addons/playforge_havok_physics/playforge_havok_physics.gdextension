@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "playforge_havok_physics_init"
+compatibility_minimum = "4.4"
+reloadable = false
+
+[libraries]
+
+windows.debug.x86_64 = "res://addons/playforge_havok_physics/bin/libplayforge_havok_physics.windows.template_release.x86_64.dll"
+windows.release.x86_64 = "res://addons/playforge_havok_physics/bin/libplayforge_havok_physics.windows.template_release.x86_64.dll"

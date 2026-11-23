@@ -1,0 +1,5 @@
+build_obj/
+bin/*.dll
+bin/*.lib
+bin/*.exp
+bin/*.pdb

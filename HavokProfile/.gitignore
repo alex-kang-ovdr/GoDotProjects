@@ -1,0 +1,7 @@
+godot/override.cfg
+godot/.godot/imported/
+godot/.godot/shader_cache/
+godot/.godot/uid_cache.bin
+godot/addons/playforge_havok_physics/bin/*.dll
+results/*/console.log
+results/*/ticks.csv

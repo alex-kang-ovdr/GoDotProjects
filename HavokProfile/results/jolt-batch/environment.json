@@ -1,0 +1,23 @@
+{
+	"cpu": "Intel(R) Core(TM) Ultra 7 265K",
+	"cpu_count": 20,
+	"engine": "Godot 4.7.2-stable (official)",
+	"gpu": "NVIDIA GeForce RTX 4070 Ti",
+	"havok_worker_threads": 0,
+	"headless": false,
+	"physics_engine": "Jolt Physics",
+	"platform": "Windows",
+	"renderer": "forward_plus",
+	"repeats": 2,
+	"seed": 1337,
+	"server_class": "PhysicsServer3D",
+	"sizes": [
+		24,
+		48,
+		96,
+		144
+	],
+	"tag": "jolt-batch",
+	"ticks": 300,
+	"timestamp_utc": "2026-11-23T05:32:05"
+}
