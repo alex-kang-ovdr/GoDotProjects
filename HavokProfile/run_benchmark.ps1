@@ -4,6 +4,7 @@ param(
     [int]$Repeats = 2,
     [int]$Ticks = 300,
     [int]$Seed = 1337,
+    [string]$TagSuffix = "",
     [switch]$Headless,
     [switch]$Shots,
     [switch]$BatchSync
@@ -15,7 +16,7 @@ $Proj = Join-Path $Root "godot"
 $Results = Join-Path $Root "results"
 New-Item -ItemType Directory -Force $Results | Out-Null
 
-$suffix = if ($BatchSync) { "-batch" } else { "" }
+$suffix = if ($TagSuffix -ne "") { $TagSuffix } elseif ($BatchSync) { "-batch" } else { "" }
 $engines = @(
     @{ Tag = "jolt$suffix";  Name = "Jolt Physics" },
     @{ Tag = "havok$suffix"; Name = "HavokPhysics" }

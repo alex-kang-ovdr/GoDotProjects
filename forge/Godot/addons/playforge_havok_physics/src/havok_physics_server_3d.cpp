@@ -1457,6 +1457,20 @@ static void v_body_get_collision_mask(HavokPhysicsServer3D* s, const GDExtension
     *static_cast<int64_t*>(r) = s->body_get_collision_mask(*static_cast<const uint64_t*>(a[0]));
 }
 static void v_noop(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr) {}
+static void v_ret_null_obj(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r) {
+    if (r) *static_cast<GDExtensionObjectPtr*>(r) = nullptr;
+}
+static void v_ret_zero_i64(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r) {
+    if (r) *static_cast<int64_t*>(r) = 0;
+}
+static void v_ret_false(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r) {
+    if (r) *static_cast<GDExtensionBool*>(r) = 0;
+}
+static void v_ret_zero_rid(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r) {
+    if (r) *static_cast<uint64_t*>(r) = 0;
+}
+
+static void v_space_get_direct_state(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r);
 
 static void init_virtual_table() {
     auto add = [](const char* name, VirtualHandlerFn fn) {
@@ -1476,20 +1490,40 @@ static void init_virtual_table() {
     add("_box_shape_create", v_box_shape_create);
     add("_sphere_shape_create", v_sphere_shape_create);
     add("_capsule_shape_create", v_capsule_shape_create);
+    add("_cylinder_shape_create", v_capsule_shape_create);
+    add("_convex_polygon_shape_create", v_box_shape_create);
+    add("_concave_polygon_shape_create", v_box_shape_create);
+    add("_heightmap_shape_create", v_box_shape_create);
     add("_world_boundary_shape_create", v_world_boundary_shape_create);
+    add("_separation_ray_shape_create", v_sphere_shape_create);
     add("_shape_set_data", v_shape_set_data);
     add("_shape_get_type", v_shape_get_type);
     add("_shape_get_data", v_shape_get_data);
+    add("_shape_set_margin", v_noop);
+    add("_shape_get_margin", v_space_get_param);
 
     add("_space_create", v_space_create);
     add("_space_set_active", v_space_set_active);
     add("_space_is_active", v_space_is_active);
     add("_space_set_param", v_space_set_param);
     add("_space_get_param", v_space_get_param);
+    add("_space_get_direct_state", v_space_get_direct_state);
 
     add("_area_create", v_area_create);
     add("_area_set_space", v_area_set_space);
+    add("_area_get_space", v_ret_zero_rid);
     add("_area_set_param", v_area_set_param);
+    add("_area_set_transform", v_noop);
+    add("_area_add_shape", v_noop);
+    add("_area_clear_shapes", v_noop);
+    add("_area_set_collision_layer", v_noop);
+    add("_area_set_collision_mask", v_noop);
+    add("_area_set_monitorable", v_noop);
+    add("_area_set_ray_pickable", v_noop);
+    add("_area_attach_object_instance_id", v_noop);
+    add("_area_get_object_instance_id", v_ret_zero_i64);
+    add("_area_set_monitor_callback", v_noop);
+    add("_area_set_area_monitor_callback", v_noop);
 
     add("_body_create", v_body_create);
     add("_body_set_space", v_body_set_space);
@@ -1519,6 +1553,16 @@ static void init_virtual_table() {
     add("_body_set_collision_priority", v_noop);
     add("_body_set_shape_transform", v_noop);
     add("_body_set_shape_disabled", v_noop);
+    add("_body_attach_object_instance_id", v_noop);
+    add("_body_get_object_instance_id", v_ret_zero_i64);
+    add("_body_set_max_contacts_reported", v_noop);
+    add("_body_get_max_contacts_reported", v_ret_zero_i64);
+    add("_body_set_omit_force_integration", v_noop);
+    add("_body_is_omitting_force_integration", v_ret_false);
+    add("_body_set_axis_lock", v_noop);
+    add("_body_is_axis_locked", v_ret_false);
+    add("_body_get_direct_state", v_ret_null_obj);
+    add("_body_test_motion", v_ret_false);
 }
 
 static void clear_virtual_table() {
@@ -1533,8 +1577,24 @@ static void clear_virtual_table() {
 // ---------------------------------------------------------------------------
 static GdStringName g_sn_havok_server;
 static GdStringName g_sn_parent_server;
+static GdStringName g_sn_havok_space_state;
+static GdStringName g_sn_parent_space_state;
 static GdStringName g_sn_havok_stats;
 static GdStringName g_sn_object;
+
+static GDExtensionObjectPtr g_dummy_space_state = nullptr;
+
+static GDExtensionObjectPtr space_state_create_instance(void*, GDExtensionBool) {
+    return g_api.classdb_construct_object2(&g_sn_parent_space_state);
+}
+static void space_state_free_instance(void*, GDExtensionClassInstancePtr) {}
+
+static void v_space_get_direct_state(HavokPhysicsServer3D*, const GDExtensionConstTypePtr*, GDExtensionTypePtr r) {
+    if (!g_dummy_space_state) {
+        g_dummy_space_state = g_api.classdb_construct_object2(&g_sn_havok_space_state);
+    }
+    if (r) *static_cast<GDExtensionObjectPtr*>(r) = g_dummy_space_state;
+}
 
 static const GDExtensionInstanceBindingCallbacks g_binding_callbacks = {nullptr, nullptr, nullptr};
 
@@ -1894,8 +1954,20 @@ static void initialize_level(void*, GDExtensionInitializationLevel p_level) {
 
     g_sn_havok_server = make_sn("HavokPhysicsServer3D");
     g_sn_parent_server = make_sn("PhysicsServer3DExtension");
+    g_sn_havok_space_state = make_sn("HavokDirectSpaceState3D");
+    g_sn_parent_space_state = make_sn("PhysicsDirectSpaceState3DExtension");
     g_sn_havok_stats = make_sn("HavokPhysicsStats");
     g_sn_object = make_sn("Object");
+
+    // 0. Register HavokDirectSpaceState3D stub
+    GDExtensionClassCreationInfo4 ssinfo{};
+    ssinfo.is_virtual = 0;
+    ssinfo.is_abstract = 0;
+    ssinfo.is_exposed = 1;
+    ssinfo.is_runtime = 0;
+    ssinfo.create_instance_func = space_state_create_instance;
+    ssinfo.free_instance_func = space_state_free_instance;
+    g_api.classdb_register_class4(g_api.library, &g_sn_havok_space_state, &g_sn_parent_space_state, &ssinfo);
 
     // 1. Register HavokPhysicsServer3D
     GDExtensionClassCreationInfo4 cinfo{};
@@ -1959,10 +2031,14 @@ static void deinitialize_level(void*, GDExtensionInitializationLevel p_level) {
         return;
     }
     shutdown_batch_buf();
+    g_dummy_space_state = nullptr;
     g_api.classdb_unregister_class(g_api.library, &g_sn_havok_stats);
+    g_api.classdb_unregister_class(g_api.library, &g_sn_havok_space_state);
     g_api.classdb_unregister_class(g_api.library, &g_sn_havok_server);
     free_sn(g_sn_havok_server);
     free_sn(g_sn_parent_server);
+    free_sn(g_sn_havok_space_state);
+    free_sn(g_sn_parent_space_state);
     free_sn(g_sn_havok_stats);
     free_sn(g_sn_object);
     clear_virtual_table();

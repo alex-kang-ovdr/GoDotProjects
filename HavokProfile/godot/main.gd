@@ -55,6 +55,7 @@ var layout_hash := 0
 var engine_name := ""
 var server_class := ""
 var has_havok_stats := false
+var has_engine_batch := false
 var is_headless := false
 
 # Per-case state
@@ -91,6 +92,7 @@ func _ready() -> void:
 	engine_name = str(ProjectSettings.get_setting("physics/3d/physics_engine"))
 	server_class = PhysicsServer3D.get_class()
 	has_havok_stats = ClassDB.class_exists(&"HavokPhysicsStats")
+	has_engine_batch = ClassDB.class_exists(&"PlayForgePhysicsBatch")
 
 	if not is_headless:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -487,9 +489,16 @@ func _compute_state_hash() -> int:
 
 func _sync_multimesh_from_physics() -> float:
 	var t0 := Time.get_ticks_usec()
-	if opt.batch_sync and has_havok_stats:
-		ClassDB.class_call_static(&"HavokPhysicsStats", &"sync_multimesh_from_bodies", mm.get_rid(), body_rid_ints, block_types)
-		return (Time.get_ticks_usec() - t0) / 1000.0
+	if opt.batch_sync:
+		if engine_name == "HavokPhysics" and has_havok_stats:
+			ClassDB.class_call_static(&"HavokPhysicsStats", &"sync_multimesh_from_bodies", mm.get_rid(), body_rid_ints, block_types)
+			return (Time.get_ticks_usec() - t0) / 1000.0
+		if has_engine_batch:
+			ClassDB.class_call_static(&"PlayForgePhysicsBatch", &"sync_multimesh_from_bodies", mm.get_rid(), body_rid_ints, block_types)
+			return (Time.get_ticks_usec() - t0) / 1000.0
+		if has_havok_stats:
+			ClassDB.class_call_static(&"HavokPhysicsStats", &"sync_multimesh_from_bodies", mm.get_rid(), body_rid_ints, block_types)
+			return (Time.get_ticks_usec() - t0) / 1000.0
 	for i in range(layout_blocks):
 		var xf: Transform3D = PhysicsServer3D.body_get_state(body_rids[i], PhysicsServer3D.BODY_STATE_TRANSFORM)
 		var b := xf.basis
@@ -661,6 +670,8 @@ func _write_environment() -> void:
 		"engine": "Godot " + Engine.get_version_info().string,
 		"physics_engine": engine_name,
 		"server_class": server_class,
+		"batch_sync": opt.batch_sync,
+		"has_engine_batch": has_engine_batch,
 		"havok_worker_threads": hk_threads,
 		"platform": OS.get_name(),
 		"cpu": OS.get_processor_name(),

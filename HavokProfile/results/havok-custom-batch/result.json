@@ -1,0 +1,39 @@
+{
+	"all_deterministic": true,
+	"completed_cases": 8,
+	"determinism": {
+		"144": {
+			"deterministic": true,
+			"hashes": [
+				654704613,
+				654704613
+			]
+		},
+		"24": {
+			"deterministic": true,
+			"hashes": [
+				2906108917,
+				2906108917
+			]
+		},
+		"48": {
+			"deterministic": true,
+			"hashes": [
+				2544036446,
+				2544036446
+			]
+		},
+		"96": {
+			"deterministic": true,
+			"hashes": [
+				1100377522,
+				1100377522
+			]
+		}
+	},
+	"expected_cases": 8,
+	"output": "d:\\Github\\GoDotProjects-worktrees\\Forge-HavokPhysics\\HavokProfile\\results\\havok-custom-batch",
+	"passed": true,
+	"physics_engine": "HavokPhysics",
+	"server_class": "HavokPhysicsServer3D"
+}

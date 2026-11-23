@@ -105,22 +105,97 @@
 | `hitch > 33.33ms` | 79.0회 | **60.5회** | **-23.4%** | 10.0회 | **2.0회** | **5.0× 감소** |
 | `hitch > 50.0ms` | 67.5회 | **40.5회** | **-40.0%** | 6.0회 | **1.0회** | **6.0× 감소** |
 
-> **Jolt 추가 개선 시사점**: 현재 GDExtension 경계에서는 Jolt도 `body_get_state()` C++ 배치 호출만으로 `frame_mean` **3.94×**, `frame_p50` **9.46×**, 50ms 초과 히치 **40% 감소** 효과를 얻었습니다. 만약 동일한 배치 함수를 커스텀 포크의 `modules/playforge_core/`에 직접 배치해 `PhysicsServer3D` 내부 트랜스폼을 `Variant` 박싱 없이 직접 읽으면, Jolt의 `sync_p50_ms`(4.99 ms)도 Havok과 같은 **~1.0 ms** 수준으로 4 ms 추가 단축이 가능합니다.
+> **Jolt 추가 개선 시사점**: 현재 GDExtension 경계에서는 Jolt도 `body_get_state()` C++ 배치 호출만으로 `frame_mean` **3.94×**, `frame_p50` **9.46×**, 50ms 초과 히치 **40% 감소** 효과를 얻었습니다. 동일한 배치 함수를 커스텀 포크의 `modules/playforge_core/`에 직접 배치해 `PhysicsServer3D` 내부 트랜스폼을 `Variant` 박싱 없이 직접 읽은 결과는 아래 7절에서 확인합니다.
 
 ---
 
-## 7. 재현 방법
+## 7. 2단계 최적화 적용 결과 — 커스텀 Godot 포크 코어 패치 (`jolt-custom-batch` / `havok-custom-batch`)
+
+커스텀 Godot 포크(`d:\Github\GoDotProjects\godot-engine`, 브랜치 `Forge-godot-engine`)에 **ABI 불변(Variant·Vector3·Transform3D 메모리 레이아웃 변경 없음)·멀티플랫폼 호환** 코어 패치 4종을 적용하고 `template_release` 바이너리를 빌드해 **Jolt Physics가 커스텀 엔진에서 얼마나 개선되는지**, 그리고 **Havok Physics 2025.1.1과 비교해 어떤 위치에 도달하는지** 동일 결정론 시나리오(`seed=1337`, 300틱, 2회 반복)로 검증했습니다.
+
+### 7.1 적용한 커스텀 엔진 패치 4종
+
+1. **Jolt 네이티브 락프리 `JPH::JobSystemThreadPool` 전환** (`modules/jolt_physics/jolt_physics_server_3d.{h,cpp}`, `spaces/jolt_job_system.cpp`)
+   - 데스크톱/모바일(`!defined(WEB_ENABLED)`)에서 Godot `WorkerThreadPool` 래퍼와 전역 `SpinLock`(`timings_lock`) 경합을 우회하고 Jolt 고유의 락프리 work-stealing 큐(`JPH::JobSystemThreadPool`)를 직접 구동합니다. (웹/WASM은 기존 `JoltJobSystem` 유지, 디버그 타이밍 락은 `EngineDebugger::is_profiling("servers")` 활성화 시에만 기록)
+2. **`JoltSpace3D::_pre_step` 활성 바디 루프 병렬화** (`modules/jolt_physics/spaces/jolt_space_3d.cpp`)
+   - 매 물리 틱 단일 스레드로 순회하던 활성 바디 전처리(`_pre_step`)를 활성 리지드바디 512개 이상일 때 256바디 청크 단위로 `WorkerThreadPool::add_group_task` 병렬 실행합니다.
+3. **`PhysicsServer3D::batch_fill_multimesh_buffer` + `PhysicsServer3DWrapMT` 포워딩 + `PlayForgePhysicsBatch` 무박싱 동기화** (`servers/physics_3d/physics_server_3d.{h,cpp}`, `physics_server_3d_wrap_mt.h`, `modules/jolt_physics/jolt_physics_server_3d.cpp`, `modules/playforge_core/playforge_physics_batch.{h,cpp}`)
+   - `JoltPhysicsServer3D::batch_fill_multimesh_buffer()`가 `Variant`/`Transform3D` 박싱과 가상함수 디스패치 없이 `JPH::Body::GetWorldTransform()`에서 `MultiMesh` 16-float 스트라이드 버퍼로 직접 기록하며, 2,048바디 이상일 때 512바디 청크로 멀티스레드 병렬 패킹합니다.
+   - `PhysicsServer3DWrapMT` 래퍼가 해당 가상함수를 내부 `physics_server_3d`로 직접 포워딩하도록 연결했습니다.
+4. **무분기(branchless) `AABB::intersects_convex_shape` / `inside_convex_shape`** (`core/math/aabb.h`)
+   - 절두체 평면마다 3축 분기로 `min/max` 꼭짓점을 고르던 루프를 `center·normal + half_extents·|normal|` 무분기 내적으로 치환했습니다.
+
+### 7.2 6종 구성 전 구간 동기화 시간 (`sync_p50_ms`, 2회 평균)
+
+| 크기 | 블록 | Jolt 기본 | Jolt + GDExt Batch | **Jolt + 커스텀 포크 (2단계)** | Havok 기본 | Havok + GDExt Batch | **Havok + 커스텀 포크 (2단계)** |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 24 | 629 | 0.288 ms | 0.195 ms | **0.090 ms (3.2×)** | 0.242 ms | 0.046 ms | **0.046 ms (5.3×)** |
+| 48 | 2,410 | 1.038 ms | 0.659 ms | **0.226 ms (4.6×)** | 0.874 ms | 0.135 ms | **0.130 ms (6.7×)** |
+| 96 | 9,428 | 3.931 ms | 2.438 ms | **0.577 ms (6.8×)** | 3.533 ms | 0.475 ms | **0.430 ms (8.2×)** |
+| 144 | 21,319 | 8.790 ms | 4.987 ms | **1.098 ms (8.0×)** | 8.002 ms | 1.038 ms | **0.943 ms (8.5×)** |
+
+### 7.3 `size=96` (9,428 동적 바디) 6종 구성 종합 비교 (2회 평균)
+
+| 지표 (`size=96`, 9,428 바디) | Jolt 기본 | Jolt + 1단계 | **Jolt + 2단계 커스텀** | Havok 기본 | Havok + 1단계 | **Havok + 2단계 커스텀** |
+|---|---:|---:|---:|---:|---:|---:|
+| `build_ms` | 15.59 ms | 15.64 ms | **12.14 ms (-22%)** | 12.86 ms | 12.80 ms | **11.08 ms** |
+| `sync_p50_ms` | 3.931 ms | 2.438 ms | **0.577 ms (6.8×)** | 3.533 ms | 0.475 ms | **0.430 ms (8.2×)** |
+| `phys_p50_ms` | 13.90 ms | 11.79 ms | **10.88 ms (-22%)** | 10.40 ms | 6.24 ms | **8.73 ms** |
+| `phys_p95_ms` (폭파 피크) | 30.06 ms | 29.26 ms | **23.41 ms (-22%)** | 31.30 ms | 32.43 ms | **28.38 ms** |
+| `frame_p99_ms` | 10.26 ms | 8.52 ms | **5.87 ms (1.75×)** | 6.24 ms | 2.98 ms | **3.55 ms** |
+| `frame_max_ms` | 34.10 ms | 26.96 ms | **12.96 ms (2.63×)** | 29.21 ms | 26.45 ms | **11.26 ms (2.59×)** |
+| `hitch > 16.67ms` | 3.5회 | 2.5회 | **0회 (히치 완전 제거)** | 1.5회 | 1.5회 | **0회 (히치 완전 제거)** |
+| `mem_delta_peak_mb` | 83.36 MB | 82.06 MB | **57.33 MB (-31%)** | 28.21 MB | 33.47 MB | **17.30 MB (rep1: 4.47)** |
+| 결정론 해시 (`state_hash_end`) | `265782276` | `265782276` | **`265782276` (100% 일치)** | `1100377522` | `1100377522` | **`1100377522` (100% 일치)** |
+
+### 7.4 `size=144` (21,319 동적 바디) 6종 구성 종합 비교 (2회 평균)
+
+| 지표 (`size=144`, 21,319 바디) | Jolt 기본 | Jolt + 1단계 | **Jolt + 2단계 커스텀** | Havok 기본 | Havok + 1단계 | **Havok + 2단계 커스텀** |
+|---|---:|---:|---:|---:|---:|---:|
+| `build_ms` | 33.41 ms | 32.49 ms | **28.01 ms (-16%)** | 27.58 ms | 29.14 ms | **25.06 ms** |
+| `sync_p50_ms` | 8.790 ms | 4.987 ms | **1.098 ms (8.0×)** | 8.002 ms | 1.038 ms | **0.943 ms (8.5×)** |
+| `phys_p50_ms` | 30.07 ms | 33.99 ms | **26.92 ms (-10.5%)** | 23.62 ms | 20.29 ms | **20.11 ms** |
+| `phys_p95_ms` (폭파 피크) | 65.75 ms | 63.38 ms | **54.24 ms (-17.5%)** | 74.08 ms | 75.93 ms | **73.64 ms** |
+| `frame_mean_ms` | 80.56 ms | 20.42 ms | **1.46 ms (55.2×)** | 5.09 ms | 0.63 ms | **0.77 ms** |
+| `frame_p50_ms` | 82.76 ms | 8.75 ms | **0.40 ms (206.9×)** | 1.04 ms | 0.36 ms | **0.40 ms** |
+| `frame_p95_ms` | 116.82 ms | 89.01 ms | **9.31 ms (12.5×)** | 16.16 ms | 0.74 ms | **1.04 ms** |
+| `frame_p99_ms` | 139.75 ms | 116.57 ms | **17.39 ms (8.0×)** | 43.56 ms | 7.47 ms | **8.55 ms** |
+| `hitch > 16.67ms` | 81.5회 | 89.0회 | **38.5회 (-52.8%)** | 45.0회 | 6.5회 | **7.0회** |
+| `hitch > 33.33ms` | 79.0회 | 60.5회 | **19.5회 (4.1× 감소)** | 10.0회 | 2.0회 | **2.0회** |
+| `hitch > 50.0ms` | 67.5회 | 40.5회 | **9.0회 (7.5× 감소)** | 6.0회 | 1.0회 | **1.0회** |
+| `mem_delta_peak_mb` | 102.20 MB | 97.15 MB | **71.05 MB (-30.5%)** | 38.20 MB | 49.85 MB | **33.64 MB (rep1: 10.04)** |
+| 결정론 해시 (`state_hash_end`) | `519827234` | `519827234` | **`519827234` (100% 일치)** | `654704613` | `654704613` | **`654704613` (100% 일치)** |
+
+### 7.5 결론 및 아키텍처 권장사항
+
+1. **커스텀 포크 패치로 Jolt Physics가 극적으로 개선됨**:
+   - **9,428 동적 바디(`size=96`)**: Jolt의 프레임 최대 시간이 `34.10 ms → 12.96 ms`로 줄어 **16.67ms 초과 히치가 0회**가 되었으며, 폭파 직후 물리 스파이크(`23.41 ms`)는 오히려 Havok(`28.38 ms`)보다 낮습니다.
+   - **21,319 동적 바디(`size=144`)**: 기본 Jolt에서 발생하던 60Hz catch-up 스파이럴(`frame_p50 = 82.76 ms`)이 완전히 해소되어 **`frame_p50 = 0.40 ms`(207× 개선), `frame_p95 = 9.31 ms`(12.5× 개선), 50ms 초과 심각 히치 7.5× 감소(67.5 → 9.0회), 메모리 피크 증분 30.5% 감소(102.2 → 71.1 MB)**를 달성했습니다.
+   - **결정론 100% 보존**: 락프리 `JobSystemThreadPool`과 병렬 `_pre_step`, 병렬 배치 동기화를 적용한 뒤에도 전 구간(24/48/96/144) 상태 해시가 기존 Jolt와 비트 단위로 동일합니다.
+2. **Havok Physics vs 패치된 Jolt Physics의 역할 분담**:
+   - **웹(WASM) · 모바일(Android/iOS) · 일반 3D 게임(~1만 동적 바디 이하)**: 추가 바이너리 용량 **0 MB**, MIT 오픈소스, 멀티플랫폼 호환을 유지하면서 히치 0회(`size=96`)를 달성한 **2단계 커스텀 엔진 Jolt Physics + `PlayForgePhysicsBatch`**가 최적의 기본 엔진입니다.
+   - **PC/콘솔 초대규모 파괴 시뮬레이션(2만+ 동적 충돌 바디 지속 활성)**: 21,319 바디에서도 `frame_p95 = 1.04 ms`, `hitch > 50ms = 1.0회`, 순수 물리 스텝 `5.68 ms`를 유지하는 **Havok Physics 2025.1.1 GDExtension 플러그인**이 여전히 가장 높은 상한선을 제공합니다.
+
+---
+
+## 8. 재현 방법
 
 ```powershell
 # 1) Havok Physics 2025.1.1 GDExtension DLL 빌드 (VS2022 x64 Release)
 powershell -NoProfile -ExecutionPolicy Bypass -File forge\Godot\addons\playforge_havok_physics\build.ps1
 
-# 2) 기본(GDScript 동기화) Jolt vs Havok 결정론적 물리 폭파 벤치마크 실행
+# 2) 커스텀 Godot 포크(d:\Github\GoDotProjects\godot-engine) template_release 빌드
+C:\Users\taru0\AppData\Local\Programs\Python\Python313\python.exe -m SCons -C d:\Github\GoDotProjects\godot-engine platform=windows target=template_release arch=x86_64 profile=d:\Github\GoDotProjects-worktrees\Forge-HavokPhysics\tools\desktop\custom.py accesskit=no d3d12=no lto=none disable_path_overrides=no -j20
+
+# 3) 기본(공식 Godot 4.7.2 + GDScript 동기화) Jolt vs Havok 벤치마크
 powershell -NoProfile -ExecutionPolicy Bypass -File HavokProfile\run_benchmark.ps1 -Sizes "24,48,96,144" -Repeats 2 -Ticks 300 -Seed 1337
 
-# 3) 1단계 최적화(C++ 배치 동기화) Jolt vs Havok 벤치마크 실행
+# 4) 1단계 최적화(공식 Godot 4.7.2 + GDExtension C++ 배치 동기화) Jolt vs Havok 벤치마크
 powershell -NoProfile -ExecutionPolicy Bypass -File HavokProfile\run_benchmark.ps1 -Sizes "24,48,96,144" -Repeats 2 -Ticks 300 -Seed 1337 -BatchSync
+
+# 5) 2단계 최적화(커스텀 Godot 포크 + PlayForgePhysicsBatch / Havok 배치 동기화) Jolt vs Havok 벤치마크
+powershell -NoProfile -ExecutionPolicy Bypass -File HavokProfile\run_benchmark.ps1 -GodotExe "d:\Github\GoDotProjects\godot-engine\bin\godot.windows.template_release.x86_64.console.exe" -Sizes "24,48,96,144" -Repeats 2 -Ticks 300 -Seed 1337 -BatchSync -TagSuffix "-custom"
 ```
 
-- 원자료: `HavokProfile/results/{jolt,havok,jolt-batch,havok-batch}/summary.csv`, `result.json`
+- 원자료: `HavokProfile/results/{jolt,havok,jolt-batch,havok-batch,jolt-custom-batch,havok-custom-batch}/summary.csv`, `result.json`
 - 시각 증거(폭파 전/중/후 스크린샷 20장): `HavokProfile/results/evidence/`
