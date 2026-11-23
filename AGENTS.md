@@ -41,8 +41,12 @@
   - 영역 태그: `[Admin]` `[Hub]` `[Forge]` `[GD-Ext]` `[GD-Core]` `[Game]` `[Script]` `[Tool]` `[QA]` (여러 영역이면 연달아 붙인다)
   - `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `merge:`는 영역 태그 뒤에 선택적으로 붙인다.
 - **본문 (한국어)**: `변경 이유` / `요청 내용` / `변경 내용`(실행한 검증과 생략한 검증 구분) / `사용 모델 및 작업 시간`
-- **기계 판독 메트릭**: 에이전트 커밋은 본문 아래 빈 줄 뒤에 `Agent-*` Git trailer(사용자 요청 수·소요시간·권한/판단 요청 수·모델별 토큰)를 붙인다. 수치는 추측하지 않으며 측정 불가 시 `N/A`로 적는다.
+- **기계 판독 메트릭**: 에이전트 커밋은 본문 아래 빈 줄 뒤에 `Agent-*` Git trailer(사용자 요청 수·소요시간·권한/판단 요청 수·모델별 토큰)를 붙인다. 커밋 메시지 작성 직전 샌드박스(`BypassSandbox: false`)에서 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/agent-skills/collect-agent-metrics.ps1 -SinceLastCommit`을 실행해 대화 로그(`transcript.jsonl`)의 실측값을 채우며(`N/A` 금지), 트랜스크립트가 없는 환경에서만 `N/A`로 적는다.
 - **실행 방식**: 제목과 본문 전체를 UTF-8 임시 파일로 작성해 `git commit -F <파일>`로 전달하고 커밋 결과를 확인한다.
+- **권한 승인 재발 방지 (Prefix-Match 명령 형태)**:
+  - `.git/*` 내부 파일은 파일 도구(`read_file`/`edit_file`)로 직접 읽거나 수정하지 않고 `git config` 명령으로만 조회·변경한다.
+  - `BypassSandbox: true`가 필요한 명령(`git add`/`commit`/`push`, 외부 네트워크 호출)에는 `$변수` 대입, `$(...)` 치환, 멀티라인 `;`/`\n`/`if ($LASTEXITCODE)` 체인을 절대 사용하지 않고 단일 리터럴 명령으로 실행해 `Always Allow` 접두어 매칭이 유지되게 한다.
+  - GitHub Actions CI 상태 조회 및 라이브 Cloud Run 스모크 검증은 인라인 스크립트 대신 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/devops/check-ci-status.ps1` 및 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/devops/verify-cloudrun-live.ps1`을 사용한다.
 
 ---
 

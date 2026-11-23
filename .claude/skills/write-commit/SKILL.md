@@ -31,7 +31,13 @@ description: PlayHub-Platform 워크트리에서 Git 커밋 메시지를 작성�
 
 본문의 모든 항목을 한글로 작성하되 모델 ID, 파일명, 제품명 등 고유 식별자는 그대로 쓴다. 여러 변경이 있으면 검토자가 동작과 영향을 이해할 수 있는 단위로 나눈다. 검증 결과가 필요하면 변경 내용에 짧게 덧붙이고, 실행한 확인과 생략한 확인을 구분한다. 모델과 시간을 확인할 수 없으면 각각 `모델 ID 확인 불가`, `작업 시간 미측정`이라고 적고 추정치를 사실처럼 쓰지 않는다. 위 예시의 꺾쇠 자리표시자는 실제 메시지에서 제거한다.
 
-AI 에이전트가 커밋하는 경우 본문 마지막에 빈 줄을 두고 `Agent-User-Requests`, `Agent-Elapsed`, `Agent-Permission-Requests`, `Agent-Decision-Requests`, `Agent-Tokens-Total`, `Agent-Tokens-Model` Git trailer를 붙인다. 에이전트가 제공하는 집계 도구의 실측값만 쓰고, 측정할 수 없으면 `N/A`로 적는다. 커밋 전 `npm run gate`(소유권·스킬 동기화·Fast QA) 통과 여부를 변경 내용의 검증 항목에 기록한다.
+AI 에이전트가 커밋하는 경우 본문 마지막에 빈 줄을 두고 `Agent-User-Requests`, `Agent-Elapsed`, `Agent-Permission-Requests`, `Agent-Decision-Requests`, `Agent-Tokens-Total`, `Agent-Tokens-Model` Git trailer를 붙인다. 커밋 메시지 작성 직전에 반드시 샌드박스(`BypassSandbox: false`)에서 아래 집계 스크립트를 실행해 대화 트랜스크립트(`transcript.jsonl`)의 실측값을 추출하고, `사용 모델 및 작업 시간` 및 `Agent-*` trailer에 그대로 반영한다(`N/A`로 남기지 않는다).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File d:\Github\GoDotProjects-worktrees\PlayHub-Platform\tools\agent-skills\collect-agent-metrics.ps1 -SinceLastCommit
+```
+
+트랜스크립트 파일이 아예 존재하지 않는 환경에서만 예외적으로 `N/A`로 적는다. 커밋 전 `npm run gate`(소유권·스킬 동기화·Fast QA) 통과 여부를 변경 내용의 검증 항목에 기록한다.
 
 ## PlayHub-Platform 워크트리 규칙
 
@@ -58,4 +64,4 @@ AI 에이전트가 커밋하는 경우 본문 마지막에 빈 줄을 두고 `Ag
 [GD-Core] fix: Godot 포크의 웹 에디터 입력 처리 수정
 ```
 
-커밋을 실행할 때는 제목과 본문 전체를 UTF-8 임시 파일로 작성해 `git commit -F`로 전달한다. 커밋 후 실제 메시지의 제목 태그와 본문 항목을 확인한다. 메시지 작성 요청만 받은 경우 초안을 반환한다. 이미 생성된 커밋을 다시 쓰거나 푸시하는 권한은 별도로 판단한다.
+커밋을 실행할 때는 제목과 본문 전체를 UTF-8 임시 파일로 작성해 `git commit -F`로 전달한다. 이때 권한 승인 프롬프트가 매번 재발하지 않도록(Prefix-Match 자동 승인 유지) `$변수`, `$(...)`, `;`, `if ($LASTEXITCODE)` 체인을 섞지 말고 반드시 단일 리터럴 명령(`git -C <워크트리경로> add ...`, `git -C <워크트리경로> commit -F <메시지파일>`, `git -C <워크트리경로> push origin <브랜치>`)으로 각각 실행한다. 커밋 후 실제 메시지의 제목 태그와 본문 항목을 확인한다. 메시지 작성 요청만 받은 경우 초안을 반환한다. 이미 생성된 커밋을 다시 쓰거나 푸시하는 권한은 별도로 판단한다.
