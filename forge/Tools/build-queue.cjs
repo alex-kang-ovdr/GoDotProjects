@@ -59,17 +59,38 @@ function buildThinUgcArtifact(forgeRoot, snapshot) {
 const PLAYHUB_SHELL_PATH = path.join(__dirname, 'playhub-godot-shell.js');
 const PLAYHUB_SHELL_TAG = '<script src="playhub-godot-shell.js"></script>';
 
+function patchGodotLifecycleHooks(html) {
+  let next = html;
+  if (!next.includes('PlayHubBridge.fail') && /function displayFailureNotice\(err\)\s*\{/.test(next)) {
+    next = next.replace(
+      /function displayFailureNotice\(err\)\s*\{/,
+      'function displayFailureNotice(err) {\n\t\tconst __phMsg = err instanceof Error ? err.message : (typeof err === \'string\' ? err : \'An unknown error occurred.\');\n\t\tconst __phCode = /missing|webgl/i.test(__phMsg) ? \'GODOT_MISSING_FEATURES\' : \'GODOT_INIT_FAILED\';\n\t\tif (window.PlayHubBridge && typeof window.PlayHubBridge.fail === \'function\') { void window.PlayHubBridge.fail(__phCode, __phMsg); }'
+    );
+  }
+  if (!next.includes('PlayHubBridge.ready') && /setStatusMode\('hidden'\);/.test(next)) {
+    next = next.replace(
+      /setStatusMode\('hidden'\);/,
+      'setStatusMode(\'hidden\');\n\t\t\tif (window.PlayHubBridge && typeof window.PlayHubBridge.ready === \'function\') { void window.PlayHubBridge.ready(); }'
+    );
+  }
+  return next;
+}
+
 function injectPlayHubShell(outputDir) {
   const indexPath = path.join(outputDir, 'index.html');
   if (!fs.existsSync(indexPath) || !fs.existsSync(PLAYHUB_SHELL_PATH)) return false;
   fs.copyFileSync(PLAYHUB_SHELL_PATH, path.join(outputDir, 'playhub-godot-shell.js'));
   const html = fs.readFileSync(indexPath, 'utf8');
-  if (html.includes('playhub-godot-shell.js')) return true;
-  let patched;
-  if (/<\/head>/i.test(html)) patched = html.replace(/<\/head>/i, `  ${PLAYHUB_SHELL_TAG}\n</head>`);
-  else if (/<\/body>/i.test(html)) patched = html.replace(/<\/body>/i, `  ${PLAYHUB_SHELL_TAG}\n</body>`);
-  else patched = `${html}\n${PLAYHUB_SHELL_TAG}\n`;
-  fs.writeFileSync(indexPath, patched, 'utf8');
+  let patched = html;
+  if (!patched.includes('playhub-godot-shell.js')) {
+    if (/<\/head>/i.test(patched)) patched = patched.replace(/<\/head>/i, `  ${PLAYHUB_SHELL_TAG}\n</head>`);
+    else if (/<\/body>/i.test(patched)) patched = patched.replace(/<\/body>/i, `  ${PLAYHUB_SHELL_TAG}\n</body>`);
+    else patched = `${patched}\n${PLAYHUB_SHELL_TAG}\n`;
+  }
+  patched = patchGodotLifecycleHooks(patched);
+  if (patched !== html) {
+    fs.writeFileSync(indexPath, patched, 'utf8');
+  }
   return true;
 }
 

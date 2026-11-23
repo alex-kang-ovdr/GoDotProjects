@@ -336,6 +336,8 @@ export function createApp(input, dependencies = {}) {
     const guestEnabled = s.traffic_type !== 'qa';
     return {
       kind,
+      sessionId: digest(`session:${s.id_hash}`),
+      principalKey: s.principal_id ? digest(`principal:${s.principal_id}`) : null,
       csrfToken:s.csrf,
       displayName:user?.display_name || null,
       authProvider,

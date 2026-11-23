@@ -6,7 +6,18 @@
   const eligibleImpression=(item,now,visible)=>Boolean(visible&&item.ratio>=.5&&!item.recorded&&now-item.started>=1000);
   const activeDelta=(active,now,visible)=>active.ready&&!active.paused&&visible&&active.ratio>=.5&&now>=active.lastPulse&&now-active.lastPulse<2600?Math.min(Math.max(now-active.lastTick,0),1000):0;
   const authFailure=error=>(error?.status===401&&error?.code!=='PLAY_FIRST')||(error?.status===403&&error?.code==='CSRF_INVALID');
-  const sameSession=(before,after)=>Boolean(before?.csrfToken&&after?.csrfToken&&before.csrfToken===after.csrfToken);
+  const sameSession=(before,after)=>{
+    if(!before||!after)return false;
+    if(before.principalKey||after.principalKey){
+      if(before.principalKey&&after.principalKey)return before.principalKey===after.principalKey;
+      if(before.sessionId&&after.sessionId&&before.sessionId===after.sessionId&&!before.principalKey&&after.principalKey){
+        return after.kind==='guest';
+      }
+      return false;
+    }
+    if(before.sessionId&&after.sessionId)return before.sessionId===after.sessionId;
+    return Boolean(before.csrfToken&&after.csrfToken&&before.csrfToken===after.csrfToken);
+  };
   const dayMilliseconds=24*60*60*1000, seoulOffset=9*60*60*1000;
   function parseGameUpdateDate(value){
     if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;

@@ -128,6 +128,9 @@ function buildConfig() {
       directory: FORGE_DIR,
       internalSecret: forgeInternalSecret || crypto.randomBytes(32).toString('hex'),
     },
+    billing: {
+      enabled: !['0', 'false', 'off', 'no'].includes(String(process.env.PLAYHUB_BILLING_ENABLED || '1').trim().toLowerCase()),
+    },
   };
 }
 
@@ -422,7 +425,29 @@ function getCachedCompressedStatic(realPath, stat, encoding) {
   return compressed;
 }
 
-export function serveStatic(req, res, staticRoot) {
+export function resolvePublicOrigin(req, fallbackOrigin = PUBLIC_ORIGIN, env = process.env) {
+  if (PUBLIC_ORIGIN && /^https?:\/\//i.test(PUBLIC_ORIGIN)) return PUBLIC_ORIGIN;
+  if (env?.K_SERVICE && typeof req?.headers?.host === 'string') {
+    const host = req.headers.host.trim().toLowerCase();
+    if (/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.run\.app$/i.test(host)) {
+      return `https://${host}`;
+    }
+  }
+  return fallbackOrigin || '';
+}
+
+export function rewriteSeoContent(text, pathname, ext, publicOrigin, searchIndexingEnabled = false) {
+  let out = String(text);
+  if (publicOrigin && /^https?:\/\/[A-Za-z0-9.:-]+$/i.test(publicOrigin) && publicOrigin !== 'http://localhost:8080') {
+    out = out.replaceAll('http://localhost:8080', publicOrigin);
+  }
+  if (pathname === '/robots.txt' && searchIndexingEnabled) {
+    out = out.replace(/^Disallow:\s*\/\s*$/m, 'Disallow: /games/\nDisallow: /shared/\nDisallow: /catalog/');
+  }
+  return out;
+}
+
+export function serveStatic(req, res, staticRoot, options = {}) {
   if (!['GET', 'HEAD'].includes(req.method || '')) {
     res.writeHead(405);
     res.end();
@@ -466,7 +491,17 @@ export function serveStatic(req, res, staticRoot) {
   }
 
   const stat = fs.statSync(real);
-  const etag = `W/"${stat.size.toString(16)}-${Math.trunc(stat.mtimeMs).toString(16)}"`;
+  const seoPublicOrigin = typeof options.publicOrigin === 'string' ? options.publicOrigin : '';
+  const searchIndexingEnabled = options.searchIndexingEnabled === true;
+  const shouldRewriteSeo = Boolean(
+    !pathname.startsWith('/games/') &&
+    (pathname === '/robots.txt' || pathname === '/sitemap.xml' || ext === '.html') &&
+    ((seoPublicOrigin && seoPublicOrigin !== 'http://localhost:8080') || (pathname === '/robots.txt' && searchIndexingEnabled))
+  );
+  const etagBase = `${stat.size.toString(16)}-${Math.trunc(stat.mtimeMs).toString(16)}`;
+  const etag = shouldRewriteSeo
+    ? `W/"${etagBase}-${crypto.createHash('sha256').update(`${seoPublicOrigin}|${searchIndexingEnabled}`).digest('hex').slice(0, 8)}"`
+    : `W/"${etagBase}"`;
   const headers = {
     'Content-Type': mime,
     'X-Content-Type-Options': 'nosniff',
@@ -491,6 +526,31 @@ export function serveStatic(req, res, staticRoot) {
   const encoding = COMPRESSIBLE.has(ext)
     ? (/\bbr\b/i.test(acceptEncoding) ? 'br' : (/\bgzip\b/i.test(acceptEncoding) ? 'gzip' : null))
     : null;
+
+  if (shouldRewriteSeo) {
+    const rewritten = Buffer.from(
+      rewriteSeoContent(fs.readFileSync(real, 'utf8'), pathname, ext, seoPublicOrigin, searchIndexingEnabled),
+      'utf8'
+    );
+    if (encoding && rewritten.length >= 1024) {
+      headers.Vary = 'Accept-Encoding';
+      const compressed = encoding === 'br'
+        ? zlib.brotliCompressSync(rewritten, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: rewritten.length } })
+        : zlib.gzipSync(rewritten, { level: 6 });
+      if (compressed.length < rewritten.length) {
+        headers['Content-Encoding'] = encoding;
+        headers['Content-Length'] = compressed.length;
+        res.writeHead(200, headers);
+        res.end(req.method === 'HEAD' ? undefined : compressed);
+        return;
+      }
+    }
+    headers['Content-Length'] = rewritten.length;
+    res.writeHead(200, headers);
+    res.end(req.method === 'HEAD' ? undefined : rewritten);
+    return;
+  }
+
   if (encoding) {
     headers.Vary = 'Accept-Encoding';
     const cached = getCachedCompressedStatic(real, stat, encoding);
@@ -562,6 +622,7 @@ if (isDirectExecution) {
             webDir: path.join(storeRoot, 'web'),
             serveStatic: true,
             internalSecret: storeInternalSecret,
+            anonymousWhenUnverified: true,
           };
           if (useSqliteCatalog) {
             storeOpts.catalogDbPath = sqliteCatalogPath;
@@ -768,7 +829,10 @@ if (isDirectExecution) {
       return;
     }
 
-    serveStatic(req, res, staticRoot);
+    serveStatic(req, res, staticRoot, ROLE === 'public' ? {
+      publicOrigin: resolvePublicOrigin(req, config.userBaseUrl),
+      searchIndexingEnabled: config.searchIndexingEnabled === true,
+    } : {});
   });
 
   const EDGE_HOST = process.env.HOST || '0.0.0.0';

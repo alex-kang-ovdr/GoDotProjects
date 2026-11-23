@@ -7,6 +7,8 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import {
   allowCloudRunSameHostOrigin,
+  resolvePublicOrigin,
+  rewriteSeoContent,
   rewriteProxyLocation,
   buildUpstreamRequestOptions,
   proxyRequest,
@@ -375,4 +377,31 @@ test('SQLite-backed Store catalog serves filtered queries, slug detail, and SHA-
   const artRes = await fetch(`http://127.0.0.1:${addr.port}${detail.artifact_url}`);
   assert.equal(artRes.status, 200);
   assert.equal(artRes.headers.get('x-playforge-artifact-digest'), detail.artifact_digest);
+});
+
+test('serveStatic rewrites baked localhost:8080 SEO URLs to active Cloud Run publicOrigin', async t => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-seo-rewrite-'));
+  t.after(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(tmpDir, 'index.html'), '<html><head><link rel="canonical" href="http://localhost:8080/"></head><body></body></html>', 'utf8');
+  fs.writeFileSync(path.join(tmpDir, 'robots.txt'), 'User-agent: *\nDisallow: /\nSitemap: http://localhost:8080/sitemap.xml\n', 'utf8');
+  fs.writeFileSync(path.join(tmpDir, 'sitemap.xml'), '<?xml version="1.0"?><urlset><url><loc>http://localhost:8080/</loc></url></urlset>', 'utf8');
+
+  const srv = http.createServer((req, res) => serveStatic(req, res, tmpDir, {
+    publicOrigin: resolvePublicOrigin(req, '', { K_SERVICE: 'playhub-hub' }),
+    searchIndexingEnabled: false,
+  }));
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const port = srv.address().port;
+  t.after(() => new Promise(resolve => srv.close(resolve)));
+
+  const headers = { Host: 'playhub-hub-88778617121.us-west1.run.app' };
+  const idx = await (await fetch(`http://127.0.0.1:${port}/`, { headers })).text();
+  const robots = await (await fetch(`http://127.0.0.1:${port}/robots.txt`, { headers })).text();
+  const sitemap = await (await fetch(`http://127.0.0.1:${port}/sitemap.xml`, { headers })).text();
+
+  assert.match(idx, /https:\/\/playhub-hub-88778617121\.us-west1\.run\.app\//);
+  assert.doesNotMatch(idx, /localhost:8080/);
+  assert.match(robots, /Sitemap: https:\/\/playhub-hub-88778617121\.us-west1\.run\.app\/sitemap\.xml/);
+  assert.match(sitemap, /https:\/\/playhub-hub-88778617121\.us-west1\.run\.app\//);
+  assert.doesNotMatch(rewriteSeoContent('Disallow: /\nSitemap: http://localhost:8080/sitemap.xml', '/robots.txt', '.txt', 'https://playhub.example', true), /^Disallow:\s*\/$/m);
 });

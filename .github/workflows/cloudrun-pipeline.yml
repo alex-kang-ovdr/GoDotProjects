@@ -277,7 +277,7 @@ jobs:
               --region="${REGION}" \
               --format='value(status.url)' || true)
           fi
-          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
+          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BILLING_ENABLED=1##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
           if [[ "${EXISTING_HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
             ENV_VARS="${ENV_VARS}##PLAYHUB_PUBLIC_ORIGIN=${EXISTING_HUB_URL}"
           fi
@@ -286,7 +286,7 @@ jobs:
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/hub:${HUB_BUILD_TAG}" \
             --allow-unauthenticated \
-            --memory=256Mi --cpu=1 --min-instances=0 --max-instances=1 \
+            --memory=512Mi --cpu=1 --min-instances=0 --max-instances=1 \
             --update-env-vars="${ENV_VARS}" \
             ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet

@@ -404,6 +404,7 @@
   function openCheckoutDialog({ item, catalog, api, toast, authed: initialAuthed = true, refreshSession, onComplete }) {
     const dialog = ensureCheckoutDialog();
     const isMock = catalog.billingMode === 'mock';
+    const isUnavailable = catalog.billingMode === 'unavailable' || !Array.isArray(catalog.enabledProviders) || catalog.enabledProviders.length === 0;
     const koreaEasyPay = catalog.paymentMethods?.koreaEasyPay || {};
     let isAuthed = Boolean(initialAuthed);
     let selectedMethod = uiState.currency === 'KRW' ? 'kakaopay' : 'google_pay';
@@ -427,6 +428,7 @@
       const demoUi = isDevDemoUiOn();
       const showDemoAccount = Boolean(catalog.allowDemoAccount) && demoUi;
       const showSandboxUi = isMock && demoUi;
+      const pgUnavailable = (isUnavailable || isMock) && !showSandboxUi;
       const selectedBrand = easyPayBrandMeta(selectedMethod);
       const selectedMeta = koreaEasyPay[selectedMethod] || null;
       const submitCtaLabel = showSandboxUi
@@ -450,7 +452,7 @@
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
           <div class="dialog-actions" style="flex-wrap:wrap;">
             <button type="button" class="button secondary" data-billing-close>취소</button>
-            <a class="button primary" href="/?view=account" data-billing-close>계정 로그인 화면</a>
+            <a class="button primary" href="/?view=account" data-route data-billing-close>계정 로그인 화면</a>
             ${showDemoAccount ? '<button type="button" class="button secondary" id="billing-dialog-demo-signin" data-dev-demo-ui>🧪 데모 계정으로 로그인 후 충전 계속</button>' : ''}
           </div>
         ` : !createdOrder ? `
@@ -468,8 +470,8 @@
               </button>`;
             }).join('')}
           </div>
-          ${selectedMeta && (!isMock || showSandboxUi) ? `<p class="checkout-notice" style="margin-top:0;">라우팅 경로: <strong>${esc(integrationBadgeText(selectedMeta))}</strong>${selectedMeta.failoverChain?.length > 1 ? ` · 장애 시 자동 폴백(${esc(selectedMeta.failoverChain.join(' → '))})` : ''}</p>` : ''}
-          ${isMock && !showSandboxUi ? '<p class="checkout-notice">실제 결제 PG 연결 전입니다. 결제가 준비되면 바로 충전할 수 있습니다.</p>' : ''}
+          ${selectedMeta && !pgUnavailable ? `<p class="checkout-notice" style="margin-top:0;">라우팅 경로: <strong>${esc(integrationBadgeText(selectedMeta))}</strong>${selectedMeta.failoverChain?.length > 1 ? ` · 장애 시 자동 폴백(${esc(selectedMeta.failoverChain.join(' → '))})` : ''}</p>` : ''}
+          ${pgUnavailable ? '<p class="checkout-notice">실제 결제 PG 연결 전입니다. 결제가 준비되면 바로 충전할 수 있습니다.</p>' : ''}
           <label class="check-row" style="font-size:13px;margin:8px 0;">
             <input type="checkbox" id="billing-agree-terms">
             <span>유상 원금(${esc(item.baseCoins)})과 채널 보너스(+${esc(item.bonusCoins)}) 구분을 확인했으며, <strong>결제 후 7일 이내 미사용 시 전액 청약철회 가능(원금 또는 보너스 1 PlayCoin 이상 사용 시 청약철회 제한)</strong> 및 미성년자 법정대리인 동의 안내에 동의합니다.</span>
@@ -477,7 +479,7 @@
           <div id="billing-checkout-error" class="inline-error" role="alert" hidden></div>
           <div class="dialog-actions">
             <button type="button" class="button secondary" data-billing-close>취소</button>
-            <button type="button" class="button primary" id="billing-create-order" disabled>${esc(isMock && !showSandboxUi ? '결제 준비 중' : submitCtaLabel)}</button>
+            <button type="button" class="button primary" id="billing-create-order" disabled>${esc(pgUnavailable ? '결제 준비 중' : submitCtaLabel)}</button>
           </div>
         ` : `
           <div class="easypay-sandbox-sheet ${esc(selectedBrand.badgeClass)}">
@@ -547,11 +549,11 @@
             const nextSubmit = dialog.querySelector('#billing-create-order');
             if (nextAgree && nextSubmit) {
               nextAgree.checked = wasChecked;
-              nextSubmit.disabled = (isMock && !showSandboxUi) || !wasChecked;
+              nextSubmit.disabled = pgUnavailable || !wasChecked;
             }
           };
         });
-        agree.onchange = () => { submitBtn.disabled = (isMock && !showSandboxUi) || !agree.checked; };
+        agree.onchange = () => { submitBtn.disabled = pgUnavailable || !agree.checked; };
         submitBtn.onclick = async () => {
           const errEl = dialog.querySelector('#billing-checkout-error');
           errEl.hidden = true;
@@ -668,8 +670,9 @@
         stage1: 'Stage 1 · Xsolla MoR (글로벌 + 한국 간편결제)',
         stage2: 'Stage 2 · KRW Toss + 글로벌 Xsolla (자동 폴백)',
         stage3: 'Stage 3 · Toss + Stripe Google Pay (0%) + Xsolla',
-        mock: showSandboxUi ? '🧪 샌드박스 Mock PG 활성 (실청구 없음)' : ''
-      }[catalog.routingStage || (isMock ? 'mock' : 'stage1')];
+        mock: showSandboxUi ? '🧪 샌드박스 Mock PG 활성 (실청구 없음)' : '',
+        unavailable: '결제 PG 연동 준비 중'
+      }[catalog.routingStage || (isMock ? 'mock' : 'stage1')] || '';
 
       root.innerHTML = `<div class="page billing-page">
         ${billingSubnavHtml('billing')}

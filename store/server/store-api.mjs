@@ -165,6 +165,7 @@ export async function resolveAccountIdentity(req, options = {}) {
     internalSecret = '',
     allowMockSession = false,
     requireAuth = false,
+    anonymousWhenUnverified = false,
     defaultAccountLabel = DEFAULT_LOCAL_ACCOUNT_LABEL
   } = options;
 
@@ -240,6 +241,15 @@ export async function resolveAccountIdentity(req, options = {}) {
 
   if (requireAuth) {
     throw new StoreApiError(401, 'AUTHENTICATION_REQUIRED', 'Hub SSO authentication required');
+  }
+
+  if (anonymousWhenUnverified) {
+    return {
+      account_key: sha256Hex('hub-anonymous'),
+      account_label: '게스트 (미로그인)',
+      display_name: '게스트',
+      auth_mode: 'anonymous'
+    };
   }
 
   return {
@@ -485,6 +495,7 @@ export function createStoreApp(options = {}) {
     internalSecret = process.env.PLAYHUB_STORE_INTERNAL_SECRET || '',
     allowMockSession = false,
     requireAuth = false,
+    anonymousWhenUnverified = false,
     defaultAccountLabel = DEFAULT_LOCAL_ACCOUNT_LABEL,
     allowedOrigins = process.env.PLAYFORGE_STORE_ALLOWED_ORIGINS || process.env.STORE_ALLOWED_ORIGINS || null
   } = options;
@@ -697,6 +708,7 @@ export function createStoreApp(options = {}) {
       internalSecret,
       allowMockSession: mockSessionEnabled,
       requireAuth,
+      anonymousWhenUnverified,
       defaultAccountLabel
     });
   }

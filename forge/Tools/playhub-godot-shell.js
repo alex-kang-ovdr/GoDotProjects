@@ -18,6 +18,7 @@
   var serial = 0;
   var connected = false;
   var readySent = false;
+  var failed = false;
   var resolveConnect;
   var rejectConnect;
   var pending = new Map();
@@ -55,11 +56,32 @@
   }
 
   function sendReadyOnce() {
-    if (!embedded || readySent) return Promise.resolve();
+    if (!embedded || readySent || failed) return Promise.resolve();
     readySent = true;
     return request('ready', { version: 1 }).catch(function () {
       readySent = false;
     });
+  }
+
+  function reportFailure(code, message, extra) {
+    if (failed) return Promise.resolve();
+    failed = true;
+    readySent = false;
+    emitStatus({ state: 'error', message: String(message || code || 'Game initialization failed') });
+    if (!embedded) return Promise.resolve({ offline: true });
+    var props = {
+      code: String(code || 'GODOT_RUNTIME_ERROR').slice(0, 60),
+      message: String(message || 'Game failed to start').slice(0, 240),
+      fatal: true
+    };
+    if (extra && typeof extra === 'object') {
+      for (var k in extra) {
+        if (Object.prototype.hasOwnProperty.call(extra, k) && !Object.prototype.hasOwnProperty.call(props, k)) {
+          props[k] = extra[k];
+        }
+      }
+    }
+    return request('event', { name: 'runtime_error', properties: props }).catch(function () {});
   }
 
   if (embedded) {
@@ -122,7 +144,6 @@
       port.start();
       emitStatus({ state: 'connected', message: 'PlayHub connected' });
       resolveConnect();
-      sendReadyOnce();
     };
 
     var hello = function () {
@@ -158,6 +179,8 @@
     locale: locale,
     connect: function () { return connection; },
     ready: sendReadyOnce,
+    fail: reportFailure,
+    reportFailure: reportFailure,
     load: function () { return request('load', { slot: 'main', schemaVersion: 1 }); },
     save: function (payload) { return request('save', { slot: 'main', schemaVersion: 1, value: payload }); },
     getAvatarLoadout: function () {

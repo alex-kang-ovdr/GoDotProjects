@@ -70,6 +70,8 @@ child.stdout.on('data', async d => {
     const intl = await fetch(`${base}/internal/session/verify`);
     const storePage = await fetch(`${base}/store/`);
     const storeCat = await fetch(`${base}/api/store/catalog?limit=2`).then(r => r.json());
+    const billCat = await fetch(`${base}/api/billing/catalog?currency=KRW&channel=web_browser`);
+    const billWallet = await fetch(`${base}/api/billing/wallet`);
     const forgeRedir = await fetch(`${base}/PlayForge/`, { redirect: 'manual' });
     const res = {
       hz,
@@ -87,6 +89,8 @@ child.stdout.on('data', async d => {
       internalBlocked: intl.status,
       storePageStatus: storePage.status,
       storeCatalogTotal: storeCat.total ?? storeCat.items?.length ?? 0,
+      billingCatalogStatus: billCat.status,
+      billingWalletStatus: billWallet.status,
       playForgeRedirectStatus: forgeRedir.status,
       playForgeRedirectLocation: forgeRedir.headers.get('location'),
     };
@@ -107,6 +111,8 @@ child.stdout.on('data', async d => {
       intl.status !== 404 ||
       storePage.status !== 200 ||
       res.storeCatalogTotal < 1 ||
+      billCat.status !== 200 ||
+      billWallet.status !== 200 ||
       forgeRedir.status !== 302 ||
       res.playForgeRedirectLocation !== '/forge/OfficialGodot/'
     ) {

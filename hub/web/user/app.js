@@ -129,7 +129,7 @@
   function cacheGet(id,backup=false,scope=state.cacheScope){try{const value=JSON.parse(sessionStorage.getItem(cacheKey(id,backup,scope))||'null');return value&&value.gameId===id?value:null;}catch(_){return null;}}
   function cacheSet(id,value,baseRevision,dirty=false,backup=false,scope=state.cacheScope){try{sessionStorage.setItem(cacheKey(id,backup,scope),JSON.stringify({gameId:id,value,baseRevision,dirty,updatedAt:Date.now()}));return true;}catch(_){return false;}}
   function clearPrivateCache(){try{for(const key of Object.keys(sessionStorage))if(/^ph-(save|backup|local-scope)/.test(key))sessionStorage.removeItem(key);}catch(_) {}}
-  function setSession(session){const next=storageScope(session.csrfToken||uuid());if(state.cacheScope&&state.cacheScope!==next){clearPrivateCache();resetWishlist();state.sessionEpoch++;state.events=[];state.preparedPlay=null;}state.session=session;state.cacheScope=next;state.authStale=false;updateAccount();}
+  function setSession(session){const samePrincipal=Boolean(state.session?.principalKey&&session?.principalKey&&state.session.principalKey===session.principalKey);const next=samePrincipal?state.cacheScope:storageScope(session.sessionId||session.principalKey||session.csrfToken||uuid());if(state.cacheScope&&state.cacheScope!==next){clearPrivateCache();resetWishlist();state.sessionEpoch++;state.events=[];state.preparedPlay=null;}state.session=session;state.cacheScope=next;state.authStale=false;updateAccount();}
   function markAuthStale(){if(!state.session||state.authStale)return;state.authStale=true;state.events=[];if(state.active&&!state.active.local){heartbeat(state.active);state.active.authPreviousSaveBlocked=state.active.saveBlocked;state.active.saveBlocked=true;state.active.port?.postMessage({type:'host_pause'});saveStatus('로그인 상태가 바뀌었거나 만료됐어요. 서버 연결을 확인해 주세요.',true);}if(state.view==='create')renderCreator();else updateAccount();banner('로그인 상태를 다시 확인해야 합니다. 이전 기록을 다른 계정에 자동 적용하지 않습니다.');}
   let ssoController=null;
   let pendingLoginAction=null;
@@ -398,6 +398,15 @@
   function filterOptions(options,selected){
     return options.map(([value,label])=>`<option value="${esc(value)}"${value===selected?' selected':''}>${esc(label)}</option>`).join('');
   }
+  function localizedGameTitle(game){
+    if(state.locale==='ko')return game.title;
+    const translated=window.PlayHubLocale?.translate?.(game.title);
+    if(translated&&translated!==game.title)return translated;
+    const metaTitle=state.allMetadata.get(game.id)?.title?.[state.locale];
+    if(typeof metaTitle==='string'&&metaTitle.trim())return metaTitle;
+    if(state.locale==='en'&&game.englishTitle)return game.englishTitle;
+    return game.title;
+  }
   function renderBrowse(){
     const terms=searchTerms();
     const rawTagOptions=[...new Set(state.games.flatMap(game=>game.tags))].map(tag=>[tag,genres[tag]||tag]);
@@ -411,7 +420,7 @@
         (control==='all'||game.controls.includes(control))&&gameMatches(game,terms);
     });
     if(sort==='updated')games.sort((a,b)=>(Rules.parseGameUpdateDate(b.updatedOn)?.getTime()||0)-(Rules.parseGameUpdateDate(a.updatedOn)?.getTime()||0));
-    if(sort==='title')games.sort((a,b)=>a.title.localeCompare(b.title,state.locale));
+    if(sort==='title')games.sort((a,b)=>localizedGameTitle(a).localeCompare(localizedGameTitle(b),state.locale));
     const genreButtons=[['all','전체'],...tagOptions].map(([value,label])=>`<button class="filter${value===genre?' active':''}" type="button" data-genre-filter="${esc(value)}" aria-pressed="${value===genre?'true':'false'}">${esc(label)}</button>`).join('');
     const isHomePortal=state.view==='home'&&!terms.length&&genre==='all'&&device==='all'&&control==='all'&&sort==='default';
     let homeContinueHtml='';
@@ -436,8 +445,8 @@
           <div class="continue-cover-wrap"><img src="${esc(g.cover)}" alt="" loading="lazy" decoding="async" width="640" height="360"></div>
           <div class="continue-progress" aria-hidden="true"><span style="width:${isRecentMode?pcts[idx%pcts.length]:100}%"></span></div>
           <div class="continue-body">
-            <div class="continue-meta"><strong>${esc(g.title)}</strong><small>${esc(genres[g.tags[0]]||g.tags[0]||'웹 게임')}${g.controls.includes('touch')?' · 터치 지원':''}</small></div>
-            <span class="continue-cta">▶ ${isRecentMode?'이어하기':'플레이'}</span>
+            <div class="continue-meta"><strong>${esc(g.title)}</strong><small><span>${esc(genres[g.tags[0]]||g.tags[0]||'웹 게임')}</span>${g.controls.includes('touch')?' · <span>터치 지원</span>':''}</small></div>
+            <span class="continue-cta"><span aria-hidden="true">▶</span> <span>${isRecentMode?'이어하기':'플레이'}</span></span>
           </div>
         </a>`).join('')}</div>
       </section>`;
@@ -475,7 +484,7 @@
             <span class="top-rank-num" aria-hidden="true">${i+1}</span>
             <img class="top-rank-thumb" src="${esc(g.cover)}" alt="" loading="lazy" decoding="async" width="320" height="200">
           </div>
-          <div class="top-rank-info"><strong>${esc(g.title)}</strong><small>${esc(genres[g.tags[0]]||g.tags[0]||'게임')}${g.controls.includes('touch')?' · 터치 지원':''}</small></div>
+          <div class="top-rank-info"><strong>${esc(g.title)}</strong><small><span>${esc(genres[g.tags[0]]||g.tags[0]||'게임')}</span>${g.controls.includes('touch')?' · <span>터치 지원</span>':''}</small></div>
         </a>`).join('')}</div>
       </section>`;
     }
@@ -633,7 +642,7 @@
             <div class="section-heading"><h2 id="related-title">다른 게임 추천</h2></div>
             <div class="related-list">${related.map(rg=>`<a class="related-compact-card" href="/play/${rg.id}/" data-game-link="${esc(rg.id)}" data-impression="${esc(rg.id)}">
               <img src="${esc(rg.cover)}" alt="" loading="lazy" decoding="async" width="148" height="104">
-              <div class="related-compact-meta"><strong>${esc(rg.title)}</strong><small>${esc(genres[rg.tags[0]]||rg.tags[0]||'게임')}${rg.controls.includes('touch')?' · 터치 지원':''}</small></div>
+              <div class="related-compact-meta"><strong>${esc(rg.title)}</strong><small><span>${esc(genres[rg.tags[0]]||rg.tags[0]||'게임')}</span>${rg.controls.includes('touch')?' · <span>터치 지원</span>':''}</small></div>
             </a>`).join('')}</div>
           </section>
         </aside>`:''}
@@ -713,15 +722,27 @@
       initialRoomCode:(params.get('room')||'').trim().toUpperCase()
     });
   }
+  function enabledAuthMethods(session=state.session){
+    const loopback=['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname);
+    const secureOrigin=location.protocol==='https:'||loopback;
+    const canSignIn=Boolean(session?.googleEnabled&&!state.limited&&!state.authStale&&secureOrigin);
+    const canNaver=Boolean(session?.naverEnabled&&!state.limited&&!state.authStale&&secureOrigin);
+    const canEmail=Boolean(session?.emailEnabled&&!state.limited&&!state.authStale);
+    return {canSignIn,canNaver,canEmail,methods:[canEmail?'이메일':null,canNaver?'네이버':null,canSignIn?'Google':null].filter(Boolean)};
+  }
   function renderCreator(){
     stopImpressions();
     const session=state.session;
     const available=session?.kind==='registered'&&!state.limited&&!state.authStale;
+    const {canSignIn,methods}=enabledAuthMethods(session);
+    const loginPrompt=methods.length
+      ?`소유 프로젝트와 제출 상태를 보려면 PlayHub 계정(${methods.join(' · ')})으로 로그인하세요.`
+      :accountHelp(false);
     $('app').innerHTML=`<div class="page creator-page">
       <div class="section-heading"><h1>만들기</h1></div>
       <section class="surface" aria-labelledby="forge-title">
         <h2 id="forge-title">PlayForge</h2>
-        <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
+        <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 계정으로 연결됩니다.</p>
         <div class="save-actions">
           <a class="button secondary" href="/forge/OfficialGodot/">PlayForge 열기</a>
           <a class="button secondary" href="/?view=agent" data-route data-testid="creator-agent-link">AI 스튜디오 (채팅·3D·포팅)</a>
@@ -737,9 +758,12 @@
       </section>
       <div id="creator">${available?'':`<section class="surface">
         <h2>창작자 대시보드</h2>
-        <p>${session?.kind==='registered'?accountHelp(false):'소유 프로젝트와 제출 상태를 보려면 PlayHub에서 Google로 로그인하세요.'}</p>
-        <button class="button primary" type="button" data-google-login hidden>Google로 로그인</button>
-        <a class="button secondary" href="/?view=account" data-route>계정 상태 확인</a>
+        <p>${session?.kind==='registered'?accountHelp(false):esc(loginPrompt)}</p>
+        <div class="save-actions">
+          ${canSignIn?'<button class="button primary" type="button" data-google-login>Google로 로그인</button>':''}
+          ${!canSignIn&&methods.length?'<a class="button primary" href="/?view=account" data-route>계정으로 로그인</a>':''}
+          <a class="button secondary" href="/?view=account" data-route>계정 상태 확인</a>
+        </div>
       </section>`}</div>
     </div>`;
     meta('만들기 | PLAY HUB','소유 프로젝트와 릴리스, 제출 상태를 확인하세요.','/?view=create');
@@ -921,7 +945,7 @@
     else if(state.view==='account'){
       stopImpressions();
       $('app').replaceChildren();
-      meta('내 계정 | PLAY HUB','Google 계정, 게스트 기록, 언어 설정을 관리하세요.','/?view=account');
+      meta('내 계정 | PLAY HUB','로그인 계정, 게스트 기록, 언어 설정을 관리하세요.','/?view=account');
       updateAccount();
     }
   }
@@ -972,7 +996,7 @@
     };const promise=(a.saveChain||Promise.resolve()).catch(()=>{}).then(task);a.saveChain=promise;return promise;
   }
   async function retrySave(){const a=state.active;if(!a||a.local)return;if(a.saveBlocked){await openSaveManager(a.game);return;}try{const snapshot=await requestSnapshot(a),value=snapshot||cacheGet(a.game.id,false,a.cacheScope)?.value;if(value)await writeSave(a,value);if(!a.dirty)banner('');}catch(error){toast(error.message);}}
-  function playEvent(a,name,properties={}){if(a.local)return;event(name,a.game.id,properties,{play_session_id:a.id});if(['game_ready','game_resume','game_pause','game_end','round_complete'].includes(name))flushEvents();}
+  function playEvent(a,name,properties={}){if(a.local)return;event(name,a.game.id,properties,{play_session_id:a.id});if(['game_ready','game_resume','game_pause','game_end','round_complete','runtime_error'].includes(name))flushEvents();}
   function accumulate(a,now=performance.now()){a.activeMs+=Rules.activeDelta(a,now,!document.hidden);a.lastTick=now;}
   function heartbeat(a){if(!a?.ready)return;accumulate(a);const delta=Math.floor(a.activeMs);if(delta<=0)return;a.activeMs-=delta;playEvent(a,'play_heartbeat',{sequence:a.sequence++,active_delta_ms:delta,document_visible:true,paused:false,game_updating:true});}
   async function allowLocal(game){
@@ -1001,7 +1025,7 @@
         mpQuery=`&multiplayer=1&ws=${encodeURIComponent(wsUrl)}&gameId=${encodeURIComponent(mpInfo.gameId||game.id)}&name=${encodeURIComponent(playerLabel)}`+(roomParam&&!state.crossplay?`&room=${encodeURIComponent(roomParam)}`:'');
       }
       iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}${cpQ}${mpQuery}#nonce=${nonce}`;
-      const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
+      const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,failed:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
       const overlay=buildHostPlatformOverlay(a);
       $('player-panel').replaceChildren(iframe,overlay.bar,overlay.menu);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       if(!local)void window.PlayHubSocial?.reportPresence(api,{status:'in_game',gameId:game.id,gameTitle:game.title,roomCode:state.crossplay?.roomCode||null});
@@ -1019,7 +1043,7 @@
       const now=performance.now();if(now-a.requestWindow>1000){a.requestWindow=now;a.requestCount=0;}if(++a.requestCount>80||a.inFlight>=24){a.port.postMessage({id:data.id,ok:false,error:{code:'RATE_LIMITED',message:'게임 요청이 너무 많습니다.'}});return;}a.inFlight++;
       const reply=(ok,payload,error)=>{if(!a.closed)a.port.postMessage({id:data.id,ok,payload,error});};
       try{let result={};
-        if(data.type==='ready'){if(!a.ready){a.ready=true;clearTimeout(a.timer);playEvent(a,'game_ready',{sdk_version:1});if(a.saveBlocked)saveStatus('서버와 임시 진행이 달라요. 저장 기록에서 선택해 주세요.',true);else if(!a.dirty)saveStatus(a.local?'로컬 모드 · 이 탭에 임시 저장 · 서버 통계 없음':'준비됐어요. 게임 화면에서 시작하세요.',a.local);}}
+        if(data.type==='ready'){if(!a.ready&&!a.failed){a.ready=true;clearTimeout(a.timer);playEvent(a,'game_ready',{sdk_version:1});if(a.saveBlocked)saveStatus('서버와 임시 진행이 달라요. 저장 기록에서 선택해 주세요.',true);else if(!a.dirty)saveStatus(a.local?'로컬 모드 · 이 탭에 임시 저장 · 서버 통계 없음':'준비됐어요. 게임 화면에서 시작하세요.',a.local);}}
         else if(data.type==='load')result=await loadSave(a);
         else if(data.type==='save')result=await writeSave(a,data.payload?.value);
         else if(data.type==='avatar_loadout')result=await loadAvatarLoadout();
@@ -1032,7 +1056,7 @@
           if(name==='round_start'||name==='round_complete'){if(typeof source.run_id!=='string'||!/^[a-f0-9-]{20,64}$/i.test(source.run_id))throw new Error('라운드 ID가 올바르지 않습니다.');props.run_id=source.run_id;if(name==='round_complete'){if(!['win','loss','abandoned'].includes(source.result)||!Number.isFinite(source.score)||source.score<0||source.score>1e9)throw new Error('라운드 결과가 올바르지 않습니다.');props.result=source.result;props.score=Math.round(source.score);heartbeat(a);}}
           if(name==='game_pause'){heartbeat(a);a.paused=true;}
           if(name==='game_resume'){if(!a.ready)throw new Error('게임 준비가 끝나지 않았습니다.');a.paused=false;a.lastTick=performance.now();if(document.hidden||a.ratio<.5)a.port.postMessage({type:'host_pause'});}
-          if(name==='runtime_error'){props.code=String(source.code||'GAME_RUNTIME').slice(0,60);props.message=String(source.message||'게임 실행 중 오류').slice(0,240);}
+          if(name==='runtime_error'){props.code=String(source.code||'GAME_RUNTIME').slice(0,60);props.message=String(source.message||'게임 실행 중 오류').slice(0,240);if(source.fatal===true||!a.ready){a.failed=true;a.ready=false;clearTimeout(a.timer);saveStatus('게임을 실행할 수 없습니다. 브라우저의 WebGL2 또는 필수 기능을 확인해 주세요.',true);}}
           playEvent(a,name,props);
         }else throw new Error('지원하지 않는 게임 요청입니다.');reply(true,result);
       }catch(error){reply(false,null,{code:error.code||'BROKER_ERROR',message:error.message||'플랫폼 요청 실패'});}finally{a.inFlight--;}
@@ -1281,6 +1305,7 @@
     const locale=e.target.value;
     applyLocale(locale,{remember:true,updateUrl:true});
     savePreference(locale);
+    if((state.view==='home'||state.view==='library')&&state.sort==='title')renderBrowse();
   }
   $('language-select').addEventListener('change',changeLocale);
   document.addEventListener('click',e=>{

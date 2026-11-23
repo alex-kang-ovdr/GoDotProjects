@@ -26,16 +26,17 @@ class Element {
 }
 function setup(){
   const elements=new Map();
-  const context={console,URL,URLSearchParams,Uint8Array,AbortController,Blob,crypto:webcrypto,performance:{now:()=>1000},IntersectionObserver:class{observe(){}disconnect(){}},sessionStorage:new Storage(),localStorage:new Storage(),setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},addEventListener(){},confirm:()=>true,scrollTo(){},location:{hostname:'localhost',protocol:'http:',origin:'http://localhost:8080',pathname:'/',search:''},history:{pushState(){}},fetch:()=>{throw new Error('Unexpected fetch');},document:{hidden:false,getElementById(id){if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},querySelectorAll(){return [];},querySelector(){return new Element();},createElement(){return new Element();},createTextNode(value){return value;},addEventListener(){},contains:()=>true,documentElement:new Element(),head:new Element()}};
+  const winListeners={};
+  const context={console,URL,URLSearchParams,Uint8Array,AbortController,Blob,MessageChannel,crypto:webcrypto,performance:{now:()=>1000},IntersectionObserver:class{observe(){}disconnect(){}},sessionStorage:new Storage(),localStorage:new Storage(),setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,clearInterval(){},addEventListener(name,fn){(winListeners[name]??=[]).push(fn);},confirm:()=>true,scrollTo(){},location:{hostname:'localhost',protocol:'http:',origin:'http://localhost:8080',pathname:'/',search:''},history:{pushState(){}},fetch:()=>{throw new Error('Unexpected fetch');},document:{hidden:false,getElementById(id){if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},querySelectorAll(){return [];},querySelector(){return new Element();},createElement(){return new Element();},createTextNode(value){return value;},addEventListener(){},contains:()=>true,documentElement:new Element(),head:new Element()}};
   context.window=context;vm.createContext(context);
   vm.runInContext(readFileSync(new URL('../web/user/contracts.js',import.meta.url),'utf8'),context);
   let source=readFileSync(new URL('../web/user/app.js',import.meta.url),'utf8');
   const boot=/^  init\(\)\.catch\(.*$/m;assert.match(source,boot);
-  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot,normalizeGame,cardMarkup,isPublicGame,startPlay,renderDefaultRoute:renderRoute}; renderRoute=async()=>{};');
+  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot,normalizeGame,cardMarkup,isPublicGame,startPlay,renderCreator,renderDefaultRoute:renderRoute}; renderRoute=async()=>{};');
   vm.runInContext(source,context);
   const portal=context.portalTest;portal.setSession({kind:'guest',csrfToken:'session-A',googleEnabled:false});
-  function active(extra={}){const a={id:'play-1',game:{id:'slide-puzzle',title:'Slide'},epoch:portal.state.sessionEpoch,cacheScope:portal.state.cacheScope,local:false,port:null,closed:false,saveBlocked:false,resolving:false,dirty:false,revision:2,etag:'"r2"',saveChain:Promise.resolve(),hostPending:new Map(),iframe:new Element(),ready:false,activeMs:0,lastTick:1000,...extra};portal.state.active=a;return a;}
-  return {context,portal,active,elements};
+  function active(extra={}){const a={id:'play-1',game:{id:'slide-puzzle',title:'Slide'},epoch:portal.state.sessionEpoch,cacheScope:portal.state.cacheScope,local:false,port:null,closed:false,saveBlocked:false,resolving:false,dirty:false,revision:2,etag:'"r2"',saveChain:Promise.resolve(),hostPending:new Map(),iframe:new Element(),ready:false,failed:false,activeMs:0,lastTick:1000,...extra};portal.state.active=a;return a;}
+  return {context,portal,active,elements,winListeners};
 }
 const payload=score=>({gameId:'slide-puzzle',schemaVersion:1,state:{score,elapsed:10,status:'playing'}});
 const response=(status,data,etag=null)=>({ok:status>=200&&status<300,status,headers:{get:()=>etag},json:async()=>data});
@@ -172,4 +173,58 @@ test('removing an additional slot sends its revision and refreshes recoverable b
 test('the save manager never offers deletion of main through its action handler',async()=>{
   const {context,portal,active,elements}=setup(),a=active();saveManager(portal,a);let calls=0;context.fetch=async()=>{calls++;throw new Error('Unexpected');};
   await portal.removeSavedSlot({slot:'main',revision:2});assert.equal(calls,0);assert.match(elements.get('saves-error').textContent,/제거할 수 없습니다/);
+});
+test('sameSession separates principal identity from csrfToken rotation and anonymous-to-guest promotion',()=>{
+  const {context}=setup();
+  const {sameSession}=context.PortalRules;
+  assert.equal(sameSession({kind:'guest',sessionId:'s1',principalKey:'p1',csrfToken:'c1'},{kind:'guest',sessionId:'s1',principalKey:'p1',csrfToken:'c2'}),true);
+  assert.equal(sameSession({kind:'anonymous',sessionId:'s1',principalKey:null,csrfToken:'c1'},{kind:'guest',sessionId:'s1',principalKey:'p1',csrfToken:'c1'}),true);
+  assert.equal(sameSession({kind:'guest',sessionId:'s1',principalKey:'p1',csrfToken:'c1'},{kind:'registered',sessionId:'s2',principalKey:'p2',csrfToken:'c2'}),false);
+  assert.equal(sameSession({kind:'guest',sessionId:'s1',principalKey:'p1',csrfToken:'c1'},{kind:'anonymous',sessionId:'s2',principalKey:null,csrfToken:'c2'}),false);
+});
+test('renderBrowse sorts by displayed localized title in English mode',async()=>{
+  const {context,portal,elements}=setup();
+  context.PlayHubLocale={translate:v=>({'지뢰 찾기':'Mines Grid','블록 드롭':'Block Drop','슬라이드 나인':'Slide Nine'}[v]||v)};
+  context.location.search='?view=browse&sort=title';
+  portal.state.locale='en';portal.state.view='library';portal.state.sort='title';
+  portal.state.games=[
+    portal.normalizeGame({id:'mines-grid',title:'지뢰 찾기',enabled:true}),
+    portal.normalizeGame({id:'slide-puzzle',title:'슬라이드 나인',enabled:true}),
+    portal.normalizeGame({id:'falling-blocks',title:'블록 드롭',enabled:true})
+  ];
+  await portal.renderDefaultRoute();
+  const html=elements.get('app').innerHTML;
+  const order=[...html.matchAll(/data-game-id="([^"]+)"/g)].map(m=>m[1]);
+  assert.deepEqual(order,['falling-blocks','mines-grid','slide-puzzle']);
+});
+test('renderCreator adapts sign-in prompt to enabled auth providers when Google is disabled',()=>{
+  const {portal,elements}=setup();
+  portal.setSession({kind:'guest',csrfToken:'session-A',googleEnabled:false,naverEnabled:false,emailEnabled:true});
+  portal.renderCreator();
+  const html=elements.get('app').innerHTML;
+  assert.match(html,/이메일/);
+  assert.doesNotMatch(html,/PlayHub에서 Google로 로그인하세요/);
+  assert.doesNotMatch(html,/Google 계정으로 연결됩니다/);
+});
+test('fatal runtime_error prevents Hub from marking a failed game ready',async()=>{
+  const {context,portal,active,elements,winListeners}=setup();
+  const a=active({nonce:'a'.repeat(32),requestWindow:0,requestCount:0,inFlight:0});
+  let initPort=null;
+  a.iframe.contentWindow={postMessage(msg,_target,ports){if(msg.type==='playhub:init')initPort=ports[0];}};
+  context.fetch=async()=>response(202,{accepted:[],duplicates:[],rejected:[]});
+  for(const fn of winListeners.message||[])fn({source:a.iframe.contentWindow,origin:'null',data:{type:'playhub:connect',version:1,nonce:a.nonce}});
+  assert.ok(initPort,'MessageChannel port should be transferred');
+  const replies=[];
+  initPort.onmessage=e=>replies.push(e.data);
+  initPort.start();
+  initPort.postMessage({id:'e1',type:'event',payload:{name:'runtime_error',properties:{code:'GODOT_MISSING_FEATURES',message:'WebGL2 missing',fatal:true}}});
+  initPort.postMessage({id:'r1',type:'ready',payload:{version:1}});
+  await new Promise(r=>setTimeout(r,50));
+  initPort.close();
+  a.port.close();
+  assert.equal(a.failed,true);
+  assert.equal(a.ready,false);
+  assert.match(elements.get('save-indicator').textContent,/실행할 수 없습니다/);
+  assert.equal(portal.state.events.some(e=>e.event_name==='runtime_error'),true);
+  assert.equal(portal.state.events.some(e=>e.event_name==='game_ready'),false);
 });

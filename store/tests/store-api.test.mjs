@@ -849,3 +849,18 @@ test('Store web UI connects to live server, persists library actions, and preser
     fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
 });
+
+test('anonymousWhenUnverified omits demo creator identity when Hub session is unauthenticated', async (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-store-anon-'));
+  const app = createStoreApp({ dataDir: dir, serveStatic: false, anonymousWhenUnverified: true });
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+  const addr = await app.listen(0, '127.0.0.1');
+  const res = await fetch(`http://127.0.0.1:${addr.port}/api/store/session`);
+  assert.equal(res.status, 200);
+  const data = await res.json();
+  assert.equal(data.account.auth_mode, 'anonymous');
+  assert.notEqual(data.account.account_label, 'creator-demo@playhub.local');
+});

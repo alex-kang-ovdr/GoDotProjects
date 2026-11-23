@@ -105,8 +105,8 @@ const state = {
   savedIds: new Set(),
   libraryEntries: [],
   account: {
-    account_label: 'creator-demo@playhub.local',
-    auth_mode: 'local_default'
+    account_label: '세션 확인 중',
+    auth_mode: 'pending'
   },
   pendingSaves: new Set(),
   statusMessage: '',
@@ -339,14 +339,23 @@ function renderFacetOptions() {
 }
 
 function renderConnectionBadges() {
+  const mode = state.account?.auth_mode || 'pending';
+  const hasIdentifiedAccount = state.mode === 'live' && mode !== 'anonymous' && mode !== 'pending';
   if (el.ssoBadge) {
-    const label = state.account?.account_label || 'creator-demo@playhub.local';
+    let label = '게스트 (미연결)';
+    if (hasIdentifiedAccount && state.account?.account_label) {
+      label = state.account.account_label;
+    } else if (state.mode === 'live' && mode === 'anonymous') {
+      label = state.account?.account_label || '게스트 (미로그인)';
+    } else if (mode === 'pending') {
+      label = '세션 확인 중';
+    }
     el.ssoBadge.textContent = label;
   }
   if (el.connectionBadge) {
     el.connectionBadge.dataset.mode = state.mode;
     el.connectionBadge.textContent = state.mode === 'live'
-      ? '연결됨'
+      ? (mode === 'anonymous' || mode === 'pending' ? '미로그인' : '연결됨')
       : '오프라인';
   }
   const underHub = window.location.pathname.startsWith('/store/') || window.location.pathname === '/store';

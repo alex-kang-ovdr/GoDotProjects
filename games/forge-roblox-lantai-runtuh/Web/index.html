@@ -155,6 +155,9 @@ const engine = new Engine(GODOT_CONFIG);
 	}
 
 	function displayFailureNotice(err) {
+		const __phMsg = err instanceof Error ? err.message : (typeof err === 'string' ? err : 'An unknown error occurred.');
+		const __phCode = /missing|webgl/i.test(__phMsg) ? 'GODOT_MISSING_FEATURES' : 'GODOT_INIT_FAILED';
+		if (window.PlayHubBridge && typeof window.PlayHubBridge.fail === 'function') { void window.PlayHubBridge.fail(__phCode, __phMsg); }
 		console.error(err);
 		if (err instanceof Error) {
 			setStatusNotice(err.message);
@@ -216,6 +219,7 @@ const engine = new Engine(GODOT_CONFIG);
 			},
 		}).then(() => {
 			setStatusMode('hidden');
+			if (window.PlayHubBridge && typeof window.PlayHubBridge.ready === 'function') { void window.PlayHubBridge.ready(); }
 		}, displayFailureNotice);
 	}
 }());

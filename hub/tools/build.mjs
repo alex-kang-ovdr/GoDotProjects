@@ -101,7 +101,7 @@ export function build({root=projectRoot,config={},buildMode:explicitBuildMode=nu
     const adminConfig={apiPort:config.adminPort||8091,apiBaseUrl:'',mode:'local-iis-poc',buildMode,includeDevDemoUi};
     fs.writeFileSync(path.join(user,'config.js'),'window.PLAYHUB_CONFIG='+JSON.stringify(publicConfig)+';\n');
     fs.writeFileSync(path.join(admin,'config.js'),'window.PLAYHUB_ADMIN_CONFIG='+JSON.stringify(adminConfig)+';\n');
-    const userBase=(config.userBaseUrl||'http://localhost:8080').replace(/\/$/,'');
+    const userBase=(config.userBaseUrl||process.env.PLAYHUB_PUBLIC_ORIGIN||'http://localhost:8080').replace(/\/$/,'');
     const rawShell=fs.readFileSync(path.join(user,'index.html'),'utf8');
     const shell=includeDevDemoUi?rawShell:rawShell.replace(DEV_DEMO_HTML_BLOCK,'');
     const homeContent='<article id="catalog-seo"><h2>로그인 없이 즐기는 기본 게임</h2><ul>'+games.filter(g=>g.enabled).map(g=>`<li><a href="/play/${g.id}/">${escaped(g.manifest.title.ko)}</a> — ${escaped(g.manifest.summary.ko)}</li>`).join('')+'</ul></article>';

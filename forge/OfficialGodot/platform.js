@@ -119,7 +119,7 @@ async function ensureSession() {
   const response = await fetch(forgePath("/api/session"), { credentials: "same-origin", cache: "no-store" });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = Error(data.error || "PlayHub Google 로그인이 필요합니다.");
+    const error = Error(data.error || "PlayHub 로그인이 필요합니다.");
     error.status = response.status;
     error.loginUrl = data.loginUrl || "/?view=account";
     throw error;

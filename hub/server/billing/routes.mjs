@@ -269,13 +269,14 @@ export function createBilling({
     enabledProviders.includes('stripe_gpay') ? 'stage3'
       : (enabledProviders.includes('toss') || hasKoreaDirectProvider) ? 'stage2'
         : enabledProviders.includes('xsolla') ? 'stage1'
-          : 'mock'
+          : (allowMockProvider ? 'mock' : 'unavailable')
   );
   const stageRouteMap = {
     stage1: DEFAULT_STAGE1_ROUTES,
     stage2: STAGE2_HYBRID_ROUTES,
     stage3: STAGE3_MULTI_PSP_ROUTES,
-    mock: [{ id: 'mock_default', match: {}, providers: ['mock'] }]
+    mock: [{ id: 'mock_default', match: {}, providers: ['mock'] }],
+    unavailable: []
   };
   const routes = billingCfg.routes || stageRouteMap[resolvedStage] || DEFAULT_STAGE1_ROUTES;
 

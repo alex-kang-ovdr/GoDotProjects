@@ -114,6 +114,10 @@ test('injectPlayHubShell injects bridge script idempotently and passes deploymen
     assert.equal((html.match(/playhub-godot-shell\.js/g) || []).length, 1);
     assert.equal(fs.existsSync(path.join(tmp, 'playhub-godot-shell.js')), true);
 
+    const shellSrc = fs.readFileSync(path.join(tmp, 'playhub-godot-shell.js'), 'utf8');
+    assert.ok(shellSrc.includes('reportFailure'), 'shell bridge must expose failure reporting');
+    assert.doesNotMatch(shellSrc, /resolveConnect\(\);\s*sendReadyOnce\(\);/, 'shell bridge must not fire ready before engine initialization');
+
     const names = fs.readdirSync(tmp).sort();
     const zipBuffer = zipFiles(names.map(name => [name, fs.readFileSync(path.join(tmp, name))]));
     const validated = validateDeploymentZip(zipBuffer);
