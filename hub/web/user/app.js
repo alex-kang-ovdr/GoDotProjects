@@ -734,7 +734,7 @@
     stopImpressions();
     const session=state.session;
     const available=session?.kind==='registered'&&!state.limited&&!state.authStale;
-    const {canSignIn,methods}=enabledAuthMethods(session);
+    const {canSignIn,canNaver,methods}=enabledAuthMethods(session);
     const loginPrompt=methods.length
       ?`소유 프로젝트와 제출 상태를 보려면 PlayHub 계정(${methods.join(' · ')})으로 로그인하세요.`
       :accountHelp(false);
@@ -742,7 +742,7 @@
       <div class="section-heading"><h1>만들기</h1></div>
       <section class="surface" aria-labelledby="forge-title">
         <h2 id="forge-title">PlayForge</h2>
-        <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 계정으로 연결됩니다.</p>
+        <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. 게스트 또는 PlayHub에 로그인한 계정으로 바로 연결됩니다.</p>
         <div class="save-actions">
           <a class="button secondary" href="/forge/OfficialGodot/">PlayForge 열기</a>
           <a class="button secondary" href="/?view=agent" data-route data-testid="creator-agent-link">AI 스튜디오 (채팅·3D·포팅)</a>
@@ -761,7 +761,8 @@
         <p>${session?.kind==='registered'?accountHelp(false):esc(loginPrompt)}</p>
         <div class="save-actions">
           ${canSignIn?'<button class="button primary" type="button" data-google-login>Google로 로그인</button>':''}
-          ${!canSignIn&&methods.length?'<a class="button primary" href="/?view=account" data-route>계정으로 로그인</a>':''}
+          ${canNaver?'<button class="button secondary" type="button" data-naver-login>네이버로 로그인</button>':''}
+          ${!canSignIn&&!canNaver&&methods.length?'<a class="button primary" href="/?view=account" data-route>계정으로 로그인</a>':''}
           <a class="button secondary" href="/?view=account" data-route>계정 상태 확인</a>
         </div>
       </section>`}</div>

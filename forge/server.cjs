@@ -581,13 +581,60 @@ function normalizeBasePath(raw) {
   return value;
 }
 
-function escapeHtml(value) {
-  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+function parseCookieValue(cookieHeader, names) {
+  if (typeof cookieHeader !== 'string' || !cookieHeader) return null;
+  const parts = cookieHeader.split(';');
+  for (const name of names) {
+    for (const part of parts) {
+      const idx = part.indexOf('=');
+      if (idx <= 0) continue;
+      if (part.slice(0, idx).trim() === name) {
+        const val = part.slice(idx + 1).trim();
+        if (val && /^[A-Za-z0-9._-]{8,256}$/.test(val)) return val;
+      }
+    }
+  }
+  return null;
 }
 
-function loginGateHtml(loginUrl) {
-  const href = escapeHtml(loginUrl);
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayForge 로그인 필요</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#161a22;color:#e8edf5;font:15px/1.6 system-ui,sans-serif}main{max-width:420px;padding:28px;border:1px solid #343d4d;border-radius:12px;background:#1f2531}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 18px;color:#b4c0d2}a{display:inline-block;padding:10px 16px;border-radius:8px;background:#4c8df6;color:#fff;text-decoration:none;font-weight:600}</style></head><body><main><h1>PlayHub 로그인이 필요합니다</h1><p>PlayForge 에디터와 개인 프로젝트는 PlayHub 계정(이메일·Google·네이버)으로 로그인한 뒤 이용할 수 있습니다.</p><a href="${href}">PlayHub 로그인으로 이동</a></main></body></html>`;
+function resolveForgeGuestFallback(req, res, { loginUrl = '/?view=account', requireCsrf } = {}) {
+  const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : '';
+  let token = parseCookieValue(cookieHeader, [
+    '__Host-playhub_forge_session',
+    'playhub_forge_session',
+    '__Host-playhub_session',
+    'playhub_session',
+    'playhub_forge_guest',
+  ]);
+  if (!token) {
+    token = crypto.randomBytes(24).toString('base64url');
+    if (res && !res.headersSent) {
+      res.setHeader('Set-Cookie', `playhub_forge_guest=${token}; Path=/; Max-Age=7776000; HttpOnly; SameSite=Lax`);
+    }
+  }
+  const sub = crypto.createHash('sha256').update('forge-guest-sub:' + token).digest('hex').slice(0, 32);
+  const identity = { iss: 'https://playhub.local/auth/guest', sub };
+  const accountKey = crypto.createHash('sha256').update(identity.iss + '\0' + identity.sub).digest('hex');
+  const csrfToken = crypto.createHash('sha256').update('forge-guest-csrf:' + token).digest('hex').slice(0, 32);
+  const method = String(req.method || 'GET').toUpperCase();
+  const providedCsrf = typeof req.headers?.['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : undefined;
+  const needsCsrf = requireCsrf !== undefined
+    ? Boolean(requireCsrf)
+    : (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) || providedCsrf !== undefined);
+  if (needsCsrf && providedCsrf !== csrfToken) {
+    return { authenticated: false, status: 403, error: 'CSRF_INVALID', loginUrl };
+  }
+  return {
+    authenticated: true,
+    guest: true,
+    userId: `guest:${sub}`,
+    displayName: '게스트',
+    accountKey,
+    identity,
+    csrfToken,
+    expiresAt: Date.now() + 90 * 86400000,
+    loginUrl,
+  };
 }
 
 function firstOrigin(configured) {
@@ -895,26 +942,29 @@ function createServer(options = {}) {
     if (routePath === '/api/session' && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       if (!hubAuth) return json(200, { ok: true, authenticated: true, hubAuth: false, csrfToken: null, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
-      const auth = await hubAuth.verify(req, { requireCsrf: false });
+      let auth = await hubAuth.verify(req, { requireCsrf: false });
+      const allowGuestFallback = options.allowGuest === true || String(serverEnv.PLAYFORGE_ALLOW_GUEST || '').trim() === '1';
+      if (!auth.authenticated && allowGuestFallback) {
+        auth = resolveForgeGuestFallback(req, res, { loginUrl: hubAccountUrl, requireCsrf: false });
+      }
       if (!auth.authenticated) return json(auth.status, { ok: false, authenticated: false, error: auth.error, loginUrl: auth.loginUrl, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
-      return json(200, { ok: true, authenticated: true, hubAuth: true, displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
+      return json(200, { ok: true, authenticated: true, hubAuth: true, guest: Boolean(auth.guest), displayName: auth.displayName, accountKey: auth.accountKey, csrfToken: auth.csrfToken, buildMode: resolvedBuildMode, devDemoUiIncluded, webEditorWasmProfile, webEditorWasmRelease, webEditorWasmBytes, webEditorWasmTag });
     }
 
     let auth = null;
     if (hubAuth) {
+      const allowGuestFallback = options.allowGuest === true || String(serverEnv.PLAYFORGE_ALLOW_GUEST || '').trim() === '1';
       if (routePath.startsWith('/api/')) {
         if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
         auth = await hubAuth.verify(req);
+        if (!auth.authenticated && allowGuestFallback) {
+          auth = resolveForgeGuestFallback(req, res, { loginUrl: hubAccountUrl });
+        }
         if (!auth.authenticated) return json(auth.status, { ok: false, error: auth.error, loginUrl: auth.loginUrl });
       } else {
         auth = await hubAuth.verify(req, { requireCsrf: false });
-        if (!auth.authenticated) {
-          if (auth.status === 503) return reply(503, 'Authentication service unavailable', { 'Cache-Control': 'no-store' });
-          if (req.method === 'GET' && String(req.headers.accept || '').includes('text/html')) {
-            res.writeHead(401, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
-            return res.end(loginGateHtml(auth.loginUrl));
-          }
-          return reply(401, 'Google login required', { 'Cache-Control': 'no-store' });
+        if (!auth.authenticated && allowGuestFallback) {
+          auth = resolveForgeGuestFallback(req, res, { loginUrl: hubAccountUrl, requireCsrf: false });
         }
       }
     }

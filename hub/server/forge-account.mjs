@@ -7,6 +7,7 @@ const ALLOWED_FORGE_ISSUERS = new Set([
   'https://accounts.google.com',
   'https://playhub.local/auth/email',
   'https://playhub.local/auth/naver',
+  'https://playhub.local/auth/guest',
 ]);
 function canonicalForgeIssuer(iss) {
   if (iss === 'accounts.google.com' || iss === 'https://accounts.google.com') return 'https://accounts.google.com';
@@ -15,10 +16,14 @@ function canonicalForgeIssuer(iss) {
 function validSub(sub) {
   return typeof sub === 'string' && Boolean(sub) && sub.length <= 255 && !/[\x00-\x20\x7f]/.test(sub);
 }
-// Only a verified Hub session and its persisted registered identity (Google, email, or Naver) can select an owner.
-export function googleIdentityForSession(db,session){
+// Only a verified Hub session and its persisted identity (Google, email, Naver, or guest when allowGuest=true) can select an owner.
+export function googleIdentityForSession(db,session,{allowGuest=false}={}){
   if(!session?.principal_id || session.traffic_type==='qa')throw fail(401,'GOOGLE_LOGIN_REQUIRED');
   const user=db.prepare('SELECT kind FROM users WHERE id=?').get(session.principal_id);
+  if(allowGuest && user?.kind==='guest'){
+    if(!validSub(session.principal_id))throw fail(401,'GOOGLE_LOGIN_REQUIRED');
+    return {iss:'https://playhub.local/auth/guest',sub:session.principal_id};
+  }
   if(user?.kind!=='registered')throw fail(401,'GOOGLE_LOGIN_REQUIRED');
   const googleIds=db.prepare('SELECT subject FROM identities WHERE provider=? AND user_id=?').all('google',session.principal_id);
   if(googleIds.length>1)throw fail(401,'GOOGLE_LOGIN_REQUIRED');

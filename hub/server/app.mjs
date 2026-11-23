@@ -104,7 +104,7 @@ export function createApp(input, dependencies = {}) {
     db.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,admin_authenticated,admin_username,created_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(hash, kind, principal, subject || `a:${uid()}`, csrf, authenticated ? 1 : 0, authenticated ? (config.admin?.username || 'admin') : null, stamp, stamp + ttl,traffic.trafficType || 'live',traffic.qaRunId || null);
     const maxAge = Math.floor(ttl / 1000);
     setCookie(res, cookieName(kind), token, config.secureCookies, maxAge);
-    if (kind === 'public' && registered && (traffic.trafficType || 'live') !== 'qa') {
+    if (kind === 'public' && (traffic.trafficType || 'live') !== 'qa') {
       setCookie(res, FORGE_COOKIE, token, config.secureCookies, maxAge, '/forge');
     }
     return db.prepare('SELECT * FROM sessions WHERE id_hash=?').get(hash);
@@ -131,7 +131,9 @@ export function createApp(input, dependencies = {}) {
     const stamp=now(),expires=stamp+90*DAY;
     const updated=db.prepare("UPDATE sessions SET expires_at=? WHERE id_hash=? AND kind='public' AND expires_at>?").run(expires,s.id_hash,stamp);
     if(updated.changes!==1)return null;
-    setCookie(res,PUBLIC_COOKIE,cookies(req)[PUBLIC_COOKIE],config.secureCookies,90*DAY/1000);
+    const rawToken=cookies(req)[PUBLIC_COOKIE];
+    setCookie(res,PUBLIC_COOKIE,rawToken,config.secureCookies,90*DAY/1000);
+    if (s.traffic_type !== 'qa') setCookie(res,FORGE_COOKIE,rawToken,config.secureCookies,90*DAY/1000,'/forge');
     return {...s,expires_at:expires};
   }
   function promote(s,req,res) {
@@ -146,7 +148,9 @@ export function createApp(input, dependencies = {}) {
       const updated=db.prepare('UPDATE sessions SET principal_id=?,expires_at=? WHERE id_hash=? AND expires_at>?').run(userId,expires,current.id_hash,stamp);
       if(updated.changes!==1)throw new ApiError(401,'SESSION_REQUIRED');
     });
-    setCookie(res,PUBLIC_COOKIE,cookies(req)[PUBLIC_COOKIE],config.secureCookies,90*DAY/1000);
+    const rawToken=cookies(req)[PUBLIC_COOKIE];
+    setCookie(res,PUBLIC_COOKIE,rawToken,config.secureCookies,90*DAY/1000);
+    if (current.traffic_type !== 'qa') setCookie(res,FORGE_COOKIE,rawToken,config.secureCookies,90*DAY/1000,'/forge');
     return { ...current, principal_id: userId,expires_at:expires };
   }
   ensureSsotSchema(db);
@@ -844,25 +848,33 @@ export function createApp(input, dependencies = {}) {
     }
     const tokenHash = digest(token);
     if (remoteForgeVerify) rate(`forgeverify:${tokenHash}`, 1200, 60000);
-    const s = db.prepare("SELECT * FROM sessions WHERE id_hash=? AND kind='public'").get(tokenHash);
+    let s = db.prepare("SELECT * FROM sessions WHERE id_hash=? AND kind='public'").get(tokenHash);
     if (!s || s.expires_at <= now()) { json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' }); return; }
-    let identity;
-    try { identity = googleIdentityForSession(db, s); }
-    catch { json(res, 401, { authenticated: false, error: 'GOOGLE_LOGIN_REQUIRED' }); return; }
-    if (hasActiveSanction(db, s.principal_id, ['all'], now())) {
+    if (!s.principal_id && s.traffic_type !== 'qa') {
+      const guestId = uid(), stamp = now(), expires = stamp + 90 * DAY;
+      transaction(db, () => {
+        db.prepare('INSERT INTO users VALUES(?,?,?,?)').run(guestId, 'guest', null, stamp);
+        db.prepare('UPDATE sessions SET principal_id=?,expires_at=? WHERE id_hash=?').run(guestId, expires, s.id_hash);
+      });
+      s = { ...s, principal_id: guestId, expires_at: expires };
+    }
+    if (s.principal_id && hasActiveSanction(db, s.principal_id, ['all'], now())) {
       json(res, 403, { authenticated: false, error: 'USER_SANCTIONED' });
       return;
     }
+    let identity;
+    try { identity = googleIdentityForSession(db, s, { allowGuest: true }); }
+    catch { json(res, 401, { authenticated: false, error: 'GOOGLE_LOGIN_REQUIRED' }); return; }
     const method = typeof body.method === 'string' ? body.method.toUpperCase() : 'GET';
     const requireCsrf = typeof body.requireCsrf === 'boolean'
       ? body.requireCsrf
       : (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) || body.csrfToken !== undefined);
     if (requireCsrf && !equal(body.csrfToken, s.csrf)) { json(res, 403, { authenticated: false, error: 'CSRF_INVALID' }); return; }
-    const user = db.prepare('SELECT display_name FROM users WHERE id=?').get(s.principal_id);
+    const user = db.prepare('SELECT kind, display_name FROM users WHERE id=?').get(s.principal_id);
     json(res, 200, {
       authenticated: true,
       userId: s.principal_id,
-      displayName: user?.display_name || null,
+      displayName: user?.display_name || (user?.kind === 'guest' ? '게스트' : null),
       accountKey: forgeAccountKey(identity),
       identity,
       csrfToken: s.csrf,

@@ -496,7 +496,7 @@ test('TC-3.2: 4 auth providers (Email, Google, Naver, Guest) cross-feature matri
     { name: 'email', client: emailClient, expectedKind: 'registered', expectedProvider: 'email', expectedForgeStatus: 200, expectedIssuer: 'https://playhub.local/auth/email' },
     { name: 'google', client: googleClient, expectedKind: 'registered', expectedProvider: 'google', expectedForgeStatus: 200, expectedIssuer: 'https://accounts.google.com' },
     { name: 'naver', client: naverClient, expectedKind: 'registered', expectedProvider: 'naver', expectedForgeStatus: 200, expectedIssuer: 'https://playhub.local/auth/naver' },
-    { name: 'guest', client: guestClient, expectedKind: 'guest', expectedProvider: 'guest', expectedForgeStatus: 401, expectedIssuer: null },
+    { name: 'guest', client: guestClient, expectedKind: 'guest', expectedProvider: 'guest', expectedForgeStatus: 200, expectedIssuer: 'https://playhub.local/auth/guest' },
   ];
 
   const forgeAccountKeys = new Set();
@@ -522,7 +522,7 @@ test('TC-3.2: 4 auth providers (Email, Google, Naver, Guest) cross-feature matri
     assert.equal(socialProf.data.principalId, avatarMe.data.principal.id);
     assert.match(socialProf.data.handle, /#[0-9]{4}$/);
 
-    // /internal/session/verify (Email, Google, Naver MUST all be allowed into Forge; Guest MUST be 401)
+    // /internal/session/verify (Email, Google, Naver, and Guest MUST all be allowed into Forge with isolated accountKeys)
     const verifyRes = await fetch(`${adminBase}/internal/session/verify`, {
       method: 'POST',
       headers: {
@@ -558,7 +558,7 @@ test('TC-3.2: 4 auth providers (Email, Google, Naver, Guest) cross-feature matri
     assert.deepEqual(saveGet.data.payload, { owner: acc.name, stage: 3 });
   }
 
-  assert.equal(forgeAccountKeys.size, 3, 'Email, Google, and Naver must map to 3 distinct Forge accountKeys');
+  assert.equal(forgeAccountKeys.size, 4, 'Email, Google, Naver, and Guest must map to 4 distinct Forge accountKeys');
 
   // 2) Guest -> Registered merge (/api/auth/merge) preserves Avatar wallet & purchased inventory
   const mergeClient = makeCookieClient(pubBase, origin);

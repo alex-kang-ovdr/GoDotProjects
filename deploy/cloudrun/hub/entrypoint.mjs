@@ -86,13 +86,23 @@ function buildConfig() {
   const adminPasswordHash = process.env.PLAYHUB_ADMIN_PASSWORD_HASH ||
     crypto.scryptSync(process.env.PLAYHUB_ADMIN_PASSWORD || crypto.randomBytes(24).toString('hex'), adminSalt, 64).toString('hex');
 
-  const google = (process.env.PLAYHUB_GOOGLE_CLIENT_ID && process.env.PLAYHUB_GOOGLE_CLIENT_SECRET && process.env.PLAYHUB_GOOGLE_REDIRECT_URI)
+  const google = (process.env.PLAYHUB_GOOGLE_CLIENT_ID && process.env.PLAYHUB_GOOGLE_CLIENT_SECRET)
     ? {
         clientId: process.env.PLAYHUB_GOOGLE_CLIENT_ID,
         clientSecret: process.env.PLAYHUB_GOOGLE_CLIENT_SECRET,
-        redirectUri: process.env.PLAYHUB_GOOGLE_REDIRECT_URI,
+        redirectUri: process.env.PLAYHUB_GOOGLE_REDIRECT_URI || `${fallbackOrigin}/api/auth/google/callback`,
       }
     : {};
+  const naver = (process.env.PLAYHUB_NAVER_CLIENT_ID && process.env.PLAYHUB_NAVER_CLIENT_SECRET)
+    ? {
+        clientId: process.env.PLAYHUB_NAVER_CLIENT_ID,
+        clientSecret: process.env.PLAYHUB_NAVER_CLIENT_SECRET,
+        redirectUri: process.env.PLAYHUB_NAVER_REDIRECT_URI || `${fallbackOrigin}/api/auth/naver/callback`,
+      }
+    : {};
+  const builtinOAuthFallback = !['0', 'false', 'off', 'no'].includes(
+    String(process.env.PLAYHUB_OAUTH_BUILTIN_FALLBACK || '1').trim().toLowerCase()
+  );
 
   const forgeInternalSecret = String(process.env.PLAYHUB_FORGE_INTERNAL_SECRET || '');
   const remoteForgeConfigured = Boolean(FORGE_UPSTREAM) && forgeInternalSecret.length >= 32;
@@ -116,6 +126,11 @@ function buildConfig() {
     secureCookies: process.env.PLAYHUB_SECURE_COOKIES ? process.env.PLAYHUB_SECURE_COOKIES === 'true' : isHttps,
     searchIndexingEnabled: process.env.PLAYHUB_SEARCH_INDEXING === 'true',
     google,
+    naver,
+    auth: {
+      emailEnabled: true,
+      builtinOAuthFallback,
+    },
     admin: {
       username: process.env.PLAYHUB_ADMIN_USERNAME || 'admin',
       passwordHash: adminPasswordHash,
@@ -138,10 +153,13 @@ export function allowCloudRunSameHostOrigin(req, origins, env = process.env) {
   if (!env?.K_SERVICE || !Array.isArray(origins)) return false;
   const origin = typeof req?.headers?.origin === 'string' ? req.headers.origin.trim() : '';
   const host = typeof req?.headers?.host === 'string' ? req.headers.host.trim().toLowerCase() : '';
-  if (!origin || !host) return false;
-  if (!/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.run\.app$/i.test(host)) return false;
+  if (!host || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.run\.app$/i.test(host)) return false;
   const expected = `https://${host}`;
-  if (origin !== expected) return false;
+  if (origin) {
+    if (origin !== expected) return false;
+  } else if (!['GET', 'HEAD'].includes(String(req?.method || 'GET').toUpperCase())) {
+    return false;
+  }
   if (!origins.includes(expected) && origins.length < 16) origins.push(expected);
   return true;
 }
@@ -808,6 +826,16 @@ if (isDirectExecution) {
           res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
           res.end(JSON.stringify({ error: 'FORGE_UPSTREAM_NOT_CONFIGURED' }));
           return;
+        }
+        allowCloudRunSameHostOrigin(req, config.userOrigins);
+        const reqOrigin = typeof req.headers.origin === 'string' ? req.headers.origin.trim() : '';
+        if (reqOrigin) {
+          if (!config.userOrigins.includes(reqOrigin)) {
+            res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ ok: false, error: 'Foreign origin' }));
+            return;
+          }
+          delete req.headers.origin;
         }
         if (pathname.startsWith('/forge/api/')) attachEdgeCompressionAndEtag(req, res, pathname);
         proxyRequest(req, res, FORGE_UPSTREAM, '/forge');

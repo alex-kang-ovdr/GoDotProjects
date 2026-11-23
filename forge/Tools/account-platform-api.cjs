@@ -12,6 +12,7 @@ const ALLOWED_ISSUERS = new Set([
   'https://accounts.google.com',
   'https://playhub.local/auth/email',
   'https://playhub.local/auth/naver',
+  'https://playhub.local/auth/guest',
 ]);
 function accountKey(identity) {
   const rawIss = identity?.iss;

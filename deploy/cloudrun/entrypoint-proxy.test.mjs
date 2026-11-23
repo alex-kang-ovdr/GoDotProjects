@@ -416,3 +416,39 @@ test('serveStatic rewrites baked localhost:8080 SEO URLs to active Cloud Run pub
   assert.match(sitemap, /https:\/\/playhub-hub-88778617121\.us-west1\.run\.app\//);
   assert.doesNotMatch(rewriteSeoContent('Disallow: /\nSitemap: http://localhost:8080/sitemap.xml', '/robots.txt', '.txt', 'https://playhub.example', true), /^Disallow:\s*\/$/m);
 });
+
+test('forge/server.cjs allows direct guest access without login gate when allowGuest is enabled', async t => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-guest-direct-'));
+  const srv = createForgeServer({
+    hubAuth: {
+      verifyUrl: 'http://127.0.0.1:9/internal/session/verify',
+      internalSecret: 'g'.repeat(32),
+      accountsDirectory: path.join(tmpDir, 'accounts'),
+      studioDirectory: path.join(tmpDir, 'studios'),
+    },
+    allowGuest: true,
+    buildDirectory: path.join(tmpDir, 'builds'),
+  });
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const port = srv.address().port;
+  t.after(async () => {
+    await new Promise(resolve => { srv.close(resolve); srv.closeAllConnections?.(); });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  const htmlRes = await fetch(`http://127.0.0.1:${port}/OfficialGodot/index.html`, {
+    headers: { Accept: 'text/html' },
+  });
+  assert.equal(htmlRes.status, 200);
+  const html = await htmlRes.text();
+  assert.doesNotMatch(html, /PlayForge 로그인 필요/);
+  assert.doesNotMatch(html, /PlayHub 로그인이 필요합니다/);
+
+  const sessRes = await fetch(`http://127.0.0.1:${port}/api/session`);
+  assert.equal(sessRes.status, 200);
+  const sess = await sessRes.json();
+  assert.equal(sess.authenticated, true);
+  assert.equal(sess.guest, true);
+  assert.equal(sess.displayName, '게스트');
+  assert.match(sess.accountKey, /^[a-f0-9]{64}$/);
+});

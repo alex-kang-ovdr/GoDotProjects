@@ -277,7 +277,7 @@ jobs:
               --region="${REGION}" \
               --format='value(status.url)' || true)
           fi
-          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BILLING_ENABLED=1##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
+          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BILLING_ENABLED=1##PLAYHUB_FORGE_REMOTE_VERIFY=1##PLAYHUB_OAUTH_BUILTIN_FALLBACK=1##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
           if [[ "${EXISTING_HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
             ENV_VARS="${ENV_VARS}##PLAYHUB_PUBLIC_ORIGIN=${EXISTING_HUB_URL}"
           fi
@@ -325,13 +325,20 @@ jobs:
           if gcloud run services describe playhub-forge --project="${DEV_FORGE_PROJECT}" --region="${REGION}" >/dev/null 2>&1; then
             TRAFFIC_FLAGS=(--no-traffic --tag=stage)
           fi
+          FORGE_SECRET=$(gcloud run services describe playhub-forge \
+            --project="${DEV_FORGE_PROJECT}" \
+            --region="${REGION}" \
+            --format='value(spec.template.spec.containers[0].env)' 2>/dev/null | grep -oE "PLAYHUB_FORGE_INTERNAL_SECRET', 'value': '[^']+" | sed "s/.*'value': '//" || true)
+          if [[ ${#FORGE_SECRET} -lt 32 ]]; then
+            FORGE_SECRET=$(openssl rand -hex 32)
+          fi
           gcloud run deploy playhub-forge \
             --project="${DEV_FORGE_PROJECT}" \
             --region="${REGION}" \
             --image="${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=256Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=300 \
-            --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
+            --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYFORGE_ALLOW_GUEST=1##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_FORGE_INTERNAL_SECRET=${FORGE_SECRET}##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
             ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
           FORGE_URL=$(gcloud run services describe playhub-forge \
@@ -342,7 +349,7 @@ jobs:
             gcloud run services update playhub-hub \
               --project="${DEV_HUB_PROJECT}" \
               --region="${REGION}" \
-              --update-env-vars="^##^PLAYHUB_FORGE_UPSTREAM=${FORGE_URL}" \
+              --update-env-vars="^##^PLAYHUB_FORGE_UPSTREAM=${FORGE_URL}##PLAYHUB_FORGE_REMOTE_VERIFY=1##PLAYHUB_FORGE_INTERNAL_SECRET=${FORGE_SECRET}" \
               --quiet
           fi
       - name: Route Dev primary traffic (100%) to latest verified Hub & Forge revisions

@@ -478,3 +478,41 @@ test('mobile/native unified 4-way auth API (providers, guest, email, google, nav
     await f.close();
   }
 });
+
+test('builtinOAuthFallback enables Google and Naver web sign-in and guest merge when external OAuth keys are absent', async () => {
+  const f = await startFixture({
+    config: {
+      auth: { emailEnabled: true, builtinOAuthFallback: true }
+    }
+  });
+  try {
+    const gClient = f.newClient();
+    const s0 = await gClient.call('/api/session');
+    assert.equal(s0.data.googleEnabled, true);
+    assert.equal(s0.data.naverEnabled, true);
+
+    await gClient.call('/api/auth/guest', { method: 'POST', body: {} });
+    const gStart = await gClient.call('/api/auth/google/start?returnTo=%2F%3Fview%3Daccount');
+    assert.equal(gStart.status, 200);
+    const gHtml = await (await fetch(`${f.baseUrl}/api/auth/google/start?returnTo=%2F%3Fview%3Daccount`, {
+      headers: { Cookie: `__Host-playhub_session=none` }
+    })).text();
+    assert.match(gHtml, /PlayHub에 Google로 로그인/);
+
+    const nClient = f.newClient();
+    await nClient.call('/api/session');
+    const nStartRes = await fetch(`${f.baseUrl}/api/auth/naver/start?returnTo=%2F%3Fview%3Daccount`);
+    const setCookie = nStartRes.headers.getSetCookie().map(c => c.split(';')[0]).join('; ');
+    const nHtml = await nStartRes.text();
+    const stateMatch = nHtml.match(/name="state"\s+value="([^"]+)"/);
+    assert.ok(stateMatch?.[1]);
+    const cbRes = await fetch(
+      `${f.baseUrl}/api/auth/naver/callback?state=${encodeURIComponent(stateMatch[1])}&code=builtin_naver&account=naver_tester&name=%EB%84%A4%EC%9D%B4%EB%B2%84%ED%85%8C%EC%8A%A4%ED%84%B0`,
+      { headers: { Cookie: setCookie }, redirect: 'manual' }
+    );
+    assert.equal(cbRes.status, 302);
+    assert.match(cbRes.headers.get('location'), /auth=success/);
+  } finally {
+    await f.close();
+  }
+});
