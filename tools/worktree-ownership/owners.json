@@ -556,6 +556,17 @@
         "HavokProfile/**",
         "docs/havok/**"
       ]
+    },
+    "Forge-Research-PlayerBot": {
+      "role": "지능형 NPC·플레이어 봇 연구 기반 독립 PoC 게임 2종(playerbot-last-light · playerbot-frontier-colony) 및 Gemini OAuth 게이트웨이 (실험 · 허브 통합 제외)",
+      "experimental": true,
+      "integrateToTrunk": false,
+      "owns": [
+        "docs/playerbot/**",
+        "games/playerbot-last-light/**",
+        "games/playerbot-frontier-colony/**",
+        "tools/playerbot/**"
+      ]
     }
   }
 }

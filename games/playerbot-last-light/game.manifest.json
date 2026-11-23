@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "playerbot-last-light",
+  "slug": "playerbot-last-light",
+  "title": {
+    "ko": "마지막 불빛 · PlayerBot",
+    "en": "Last Light · PlayerBot"
+  },
+  "summary": {
+    "ko": "토큰 0 프로그램 AI + 2단계 커밋 LLM 대화 + 0.5x~20x 봇 전용 시뮬레이션 + Gemini OAuth 리서치 샘플",
+    "en": "Token-0 Program AI + 2PC LLM Dialogue + 0.5x-20x Bot-Only Simulation + Gemini OAuth Research Sample"
+  },
+  "entry": "Web/index.html",
+  "version": "0.3.0-poc",
+  "tags": ["research", "playerbot", "survival", "ai-npc"],
+  "controls": ["keyboard", "mouse"],
+  "researchOnly": true,
+  "baseGame": "this-war-of-mine"
+}

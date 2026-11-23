@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "playerbot-frontier-colony",
+  "slug": "playerbot-frontier-colony",
+  "title": {
+    "ko": "변방의 기록 · PlayerBot",
+    "en": "Frontier Colony · PlayerBot"
+  },
+  "summary": {
+    "ko": "정착지 AI 봇 + 2단계 커밋 + 0.5x~20x 가속 시뮬레이션 + 머리 위 토스트 대사 + Gemini OAuth 리서치 샘플",
+    "en": "Colony AI Bot + 2PC Commit + 0.5x-20x Accelerated Simulation + Floating Head Toasts + Gemini OAuth Research Sample"
+  },
+  "entry": "Web/index.html",
+  "version": "0.3.0-poc",
+  "tags": ["research", "playerbot", "colony", "ai-npc"],
+  "controls": ["keyboard", "mouse"],
+  "researchOnly": true,
+  "baseGame": "rimworld"
+}

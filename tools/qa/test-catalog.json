@@ -6208,6 +6208,44 @@
         "live"
       ],
       "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "tools/playerbot/tests/contract.playerbot-invariants.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "game",
+        "regression"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Research-PlayerBot"
+    },
+    {
+      "path": "tools/playerbot/tests/contract.playerbot-safety.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "game",
+        "regression"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Research-PlayerBot"
+    },
+    {
+      "path": "tools/playerbot/tests/regression.lastlight-bot-e2e.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "game",
+        "regression"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Research-PlayerBot"
     }
   ]
 }
