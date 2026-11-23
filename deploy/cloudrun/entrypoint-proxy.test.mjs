@@ -394,10 +394,21 @@ test('serveStatic rewrites baked localhost:8080 SEO URLs to active Cloud Run pub
   const port = srv.address().port;
   t.after(() => new Promise(resolve => srv.close(resolve)));
 
-  const headers = { Host: 'playhub-hub-88778617121.us-west1.run.app' };
-  const idx = await (await fetch(`http://127.0.0.1:${port}/`, { headers })).text();
-  const robots = await (await fetch(`http://127.0.0.1:${port}/robots.txt`, { headers })).text();
-  const sitemap = await (await fetch(`http://127.0.0.1:${port}/sitemap.xml`, { headers })).text();
+  const rawGet = p => new Promise((resolve, reject) => {
+    const req = http.request(`http://127.0.0.1:${port}${p}`, {
+      headers: { Host: 'playhub-hub-88778617121.us-west1.run.app', 'Accept-Encoding': 'identity' },
+    }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+
+  const idx = await rawGet('/');
+  const robots = await rawGet('/robots.txt');
+  const sitemap = await rawGet('/sitemap.xml');
 
   assert.match(idx, /https:\/\/playhub-hub-88778617121\.us-west1\.run\.app\//);
   assert.doesNotMatch(idx, /localhost:8080/);
