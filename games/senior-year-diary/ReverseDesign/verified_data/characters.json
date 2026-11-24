@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0.0",
-  "game_id": "doukyuusei-2",
-  "title_ja": "同級生2",
-  "title_ko": "동급생 2",
-  "title_en": "Doukyuusei 2",
+  "game_id": "senior-year-diary",
+  "title_ja": "Senior Year Diary",
+  "title_ko": "졸업반 다이어리",
+  "title_en": "Senior Year Diary",
   "developer": "elf (1995 original) / FG REMAKE (2024 remake)",
   "notes": "원작 PC-98/DOS/Win95/SS/PS 및 2024 리メイク 공개 자료 기준 15인 공략 히로인 + 주인공 + 핵심 조연/라이벌 NPC 6인(총 22명). 미확인 프로필 항목은 null로 표기하며 evidence_level 태그로 출처 신뢰도를 구분한다.",
   "characters": [

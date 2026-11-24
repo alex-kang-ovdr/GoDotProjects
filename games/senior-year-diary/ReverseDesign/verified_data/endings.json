@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "game_id": "doukyuusei-2",
+  "game_id": "senior-year-diary",
   "resolution_day": 17,
   "resolution_rule": "1월 7일 3학기 시업식 도달 시 evaluation_priority 내림차순으로 엔딩 조건을 평가하여 첫 일치 엔딩을 확정한다. 미나미카와 요코의 우선순위 트랩 플래그(flg_youko_ending_override_active)가 활성화된 경우 타 히로인 완료 플래그보다 우선 덮어쓰기 된다.",
   "endings": [

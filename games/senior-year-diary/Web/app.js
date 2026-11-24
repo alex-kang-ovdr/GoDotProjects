@@ -1,6 +1,6 @@
 /**
- * Doukyuusei 2 (동급생 2) PlayHub Web UI Adapter (Phase 2)
- * Connects Doukyuusei2Engine & DOUKYUUSEI2_DATA to:
+ * Senior Year Diary (졸업반 다이어리) PlayHub Web UI Adapter (Phase 2)
+ * Connects SeniorYearDiaryEngine & SENIOR_YEAR_DIARY_DATA to:
  * - 4-Zone interactive SVG map + Quick Route Guide
  * - Interactive 24h NPC Timeline bar (Map & Notebook)
  * - Telephone Directory Modal (Home Phone & Payphone calls + Incoming Phone Events)
@@ -11,10 +11,10 @@
 (function () {
   'use strict';
 
-  const DATA = globalThis.DOUKYUUSEI2_DATA;
-  const { Doukyuusei2Engine, formatMinutes, formatDateLabel, TENNIS_SHOTS } = globalThis.Doukyuusei2Engine;
+  const DATA = globalThis.SENIOR_YEAR_DIARY_DATA;
+  const { SeniorYearDiaryEngine, formatMinutes, formatDateLabel, TENNIS_SHOTS } = globalThis.SeniorYearDiaryEngine;
 
-  const STORAGE_PREFIX = 'doukyuusei-2:v1:';
+  const STORAGE_PREFIX = 'senior-year-diary:v1:';
   const SAVE_SLOTS = [1, 2, 3];
 
   // Distinct visual styling for all 22 characters (SVG portrait palette + hairstyle)
@@ -328,7 +328,7 @@
   }
 
   // Application Controller
-  const engine = new Doukyuusei2Engine(DATA, { mode: 'easy_remake' });
+  const engine = new SeniorYearDiaryEngine(DATA, { mode: 'easy_remake' });
   const uiState = {
     selectedZoneId: engine.state.zoneId,
     selectedTimelineCharId: 'chr_yui',

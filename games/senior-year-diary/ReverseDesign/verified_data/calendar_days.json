@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "game_id": "doukyuusei-2",
+  "game_id": "senior-year-diary",
   "clock_spec": {
     "base_quantum_minutes": 5,
     "default_wake_minute": 480,

@@ -3,10 +3,10 @@
   'use strict';
   const DATA = {
   "schema_version": "2.0.0",
-  "game_id": "doukyuusei-2",
-  "title_ja": "同級生2",
-  "title_ko": "동급생 2",
-  "title_en": "Doukyuusei 2",
+  "game_id": "senior-year-diary",
+  "title_ja": "Senior Year Diary",
+  "title_ko": "졸업반 다이어리",
+  "title_en": "Senior Year Diary",
   "generated_from": "ReverseDesign/verified_data",
   "clock_spec": {
     "base_quantum_minutes": 5,
@@ -8263,7 +8263,7 @@
     }
   ]
 };
-  root.DOUKYUUSEI2_DATA = DATA;
+  root.SENIOR_YEAR_DIARY_DATA = DATA;
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = DATA;
   }

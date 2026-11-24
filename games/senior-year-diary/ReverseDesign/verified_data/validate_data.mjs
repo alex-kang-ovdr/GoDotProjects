@@ -395,7 +395,7 @@ if (endedHeroines.size !== 15) {
   fail(`Expected all 15 heroines to have valid endings, found ${endedHeroines.size}`);
 }
 
-console.log('=== Doukyuusei 2 Verified Data Validation (Phase 2) ===');
+console.log('=== Senior Year Diary Verified Data Validation (Phase 2) ===');
 console.log(`Characters: ${charactersData.characters.length} (Heroines: ${heroines.length})`);
 console.log(`Zones: ${locationsData.zones.length} | Locations: ${locationsData.locations.length}`);
 console.log(`Calendar Days: ${calendarData.days.length} (${calendarData.days[0].date} ~ ${calendarData.days[16].date})`);

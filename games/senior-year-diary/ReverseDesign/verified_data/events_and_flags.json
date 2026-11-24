@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0.0",
-  "game_id": "doukyuusei-2",
+  "game_id": "senior-year-diary",
   "content_policy_note": "성인용 이벤트는 원작 묘사를 일절 배제하고 순수 관계 단계/분기 식별자(milestone_abstracted) 및 상태 플래그 전이로만 추상화한다.",
   "evidence_tier_mapping": {
     "[확인]": "VERIFIED_PUBLIC",

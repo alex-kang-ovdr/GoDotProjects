@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "game_id": "doukyuusei-2",
+  "game_id": "senior-year-diary",
   "travel_cost_rules": {
     "town_map_facility_entry_min": 15,
     "indoor_subarea_transition_min": 10,

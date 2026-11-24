@@ -1,10 +1,10 @@
-# 동급생 2 (同級生2 / Doukyuusei 2)
+# 졸업반 다이어리 (Senior Year Diary)
 
-PlayHub 웹 게임 복원·재구현 프로젝트를 위한 **《동급생 2》(elf, 1995 PC-98 원작 / 2024 FG REMAKE 기준)** 역기획서, 원작 검증 데이터 번들, 그리고 **데이터 기반 웹 시뮬레이션 프로토타입**입니다.
+PlayHub 웹 게임 복원·재구현 프로젝트를 위한 **《졸업반 다이어리》(원작 연구 대상: 《동급생 2(同級生2)》, elf, 1995 PC-98 원작 / 2024 FG REMAKE 기준)** 역기획서, 원작 검증 데이터 번들, 그리고 **데이터 기반 웹 시뮬레이션 프로토타입**입니다.
 
 ## 핵심 설계 기둥
 
-> **"동급생 2: NPC 일정·동선, 시간 진행, 관계 이벤트를 데이터 기반으로 구성"**
+> **"졸업반 다이어리: NPC 일정·동선, 시간 진행, 관계 이벤트를 데이터 기반으로 구성"**
 
 - **시간·캘린더 엔진**: 12월 22일 ~ 1월 7일(17일간, 자유행동 16일 + 1/7 3학기 시업식 엔딩 판정), 5분 양자 시계, 시설 진입 15분 / 실내·교내 이동 10분 / 전철 30분(역 진입 포함 45분) 소비 모델, 다익스트라 최단 경로 탐색.
 - **NPC 일정·동선 엔진**: 원작 15인 히로인의 3대 출현 유형(`고정 출현`, `아치코치 순회`, `복합 전환`)을 선언적 스케줄 테이블(`npc_schedules.json`, 57슬롯)과 우선순위 리졸버로 데이터화.
@@ -14,7 +14,7 @@ PlayHub 웹 게임 복원·재구현 프로젝트를 위한 **《동급생 2》(
 
 ## 디렉터리 구조
 
-- [`game.manifest.json`](./game.manifest.json) — PlayHub 게임 매니페스트 (`id: "doukyuusei-2"`)
+- [`game.manifest.json`](./game.manifest.json) — PlayHub 게임 매니페스트 (`id: "senior-year-diary"`)
 - [`Web/index.html`](./Web/index.html) — 외부 CDN 없이 로컬(`file://`) 및 HTTP에서 바로 실행되는 웹 프로토타입 진입점
 - [`Web/engine.js`](./Web/engine.js) — DOM 비의존 순수 결정론적 헤드리스 시뮬레이션 엔진
 - [`Web/data/game-data.js`](./Web/data/game-data.js) — `Source/sync-data.mjs`가 `verified_data/*.json`에서 생성하는 런타임 데이터 번들
@@ -38,13 +38,13 @@ PlayHub 웹 게임 복원·재구현 프로젝트를 위한 **《동급생 2》(
 ## 빠른 실행 및 테스트
 
 ### 웹 프로토타입 실행
-- `games/doukyuusei-2/Web/index.html`을 브라우저에서 직접 열거나(`file://` 지원), 로컬 정적 서버로 실행합니다.
+- `games/senior-year-diary/Web/index.html`을 브라우저에서 직접 열거나(`file://` 지원), 로컬 정적 서버로 실행합니다.
 - 상단 우측에서 **클래식 / 이지 레이더** 모드 전환, **3슬롯 세이브/로드**, **19종 엔딩 도감**을 이용할 수 있습니다.
 
 ### 데이터 동기화 · 정합성 검증 · 엔진 테스트
 
 ```bash
-node games/doukyuusei-2/Source/sync-data.mjs
-node games/doukyuusei-2/ReverseDesign/verified_data/validate_data.mjs
-node --test games/doukyuusei-2/Source/engine.test.mjs
+node games/senior-year-diary/Source/sync-data.mjs
+node games/senior-year-diary/ReverseDesign/verified_data/validate_data.mjs
+node --test games/senior-year-diary/Source/engine.test.mjs
 ```

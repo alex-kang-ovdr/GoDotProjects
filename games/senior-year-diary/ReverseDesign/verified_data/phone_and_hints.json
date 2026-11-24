@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "game_id": "doukyuusei-2",
-  "description": "동급생 2 전화 이벤트(12/28 아키라 동지온천 당첨 전화·1/3 사치코/유이 호출 전화·토모미/이즈미 야간 전화 [확인]) 및 자택·공중전화 발신 단서 디렉터리 [재구성안].",
+  "game_id": "senior-year-diary",
+  "description": "졸업반 다이어리 전화 이벤트(12/28 아키라 동지온천 당첨 전화·1/3 사치코/유이 호출 전화·토모미/이즈미 야간 전화 [확인]) 및 자택·공중전화 발신 단서 디렉터리 [재구성안].",
   "call_time_cost_minutes": 5,
   "evidence_level": "[재구성안]",
   "callable_locations": [

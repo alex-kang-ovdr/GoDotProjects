@@ -1,5 +1,5 @@
 /**
- * Doukyuusei 2 (동급생 2) Pure Deterministic Headless Simulation Engine (Phase 2)
+ * Senior Year Diary (졸업반 다이어리) Pure Deterministic Headless Simulation Engine (Phase 2)
  * 100% data-driven by ReverseDesign/verified_data/*.json (via Web/data/game-data.js)
  * Zero DOM / network / Date.now() / Math.random() dependency for gameplay determinism.
  *
@@ -655,11 +655,11 @@
     return JSON.parse(JSON.stringify(obj));
   }
 
-  class Doukyuusei2Engine {
+  class SeniorYearDiaryEngine {
     constructor(data, options = {}) {
-      this.data = data || (typeof globalThis !== 'undefined' ? globalThis.DOUKYUUSEI2_DATA : null);
+      this.data = data || (typeof globalThis !== 'undefined' ? globalThis.SENIOR_YEAR_DIARY_DATA : null);
       if (!this.data) {
-        throw new Error('Doukyuusei2Engine requires game data bundle (DOUKYUUSEI2_DATA).');
+        throw new Error('SeniorYearDiaryEngine requires game data bundle (SENIOR_YEAR_DIARY_DATA).');
       }
 
       this.charMap = new Map(this.data.characters.map((c) => [c.id, c]));
@@ -2483,16 +2483,16 @@
   }
 
   const exportsObj = {
-    Doukyuusei2Engine,
+    SeniorYearDiaryEngine,
     formatMinutes,
     formatDateLabel,
     WEEKDAYS_KO,
     TENNIS_STANCES,
     TENNIS_SHOTS,
-    createEngine: (data, options) => new Doukyuusei2Engine(data, options)
+    createEngine: (data, options) => new SeniorYearDiaryEngine(data, options)
   };
 
-  root.Doukyuusei2Engine = exportsObj;
+  root.SeniorYearDiaryEngine = exportsObj;
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = exportsObj;
   }

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import '../Web/data/game-data.js';
 import '../Web/engine.js';
 
-const DATA = globalThis.DOUKYUUSEI2_DATA;
-const { Doukyuusei2Engine, formatMinutes } = globalThis.Doukyuusei2Engine;
+const DATA = globalThis.SENIOR_YEAR_DIARY_DATA;
+const { SeniorYearDiaryEngine, formatMinutes } = globalThis.SeniorYearDiaryEngine;
 
 function advanceToDay(engine, targetDayIndex) {
   while (engine.state.dayIndex < targetDayIndex && !engine.state.ended) {
@@ -22,7 +22,7 @@ function waitUntil(engine, targetMinute) {
 }
 
 test('1. Initial state & Phase 2 verified data bundle integrity', () => {
-  const engine = new Doukyuusei2Engine(DATA);
+  const engine = new SeniorYearDiaryEngine(DATA);
   assert.equal(DATA.characters.length, 22);
   assert.equal(engine.heroines.length, 15);
   assert.equal(DATA.zones.length, 4);
@@ -52,7 +52,7 @@ test('1. Initial state & Phase 2 verified data bundle integrity', () => {
 });
 
 test('2. 5-minute clock quantization, Dijkstra travel costs across zones & facility hours', () => {
-  const engine = new Doukyuusei2Engine(DATA);
+  const engine = new SeniorYearDiaryEngine(DATA);
 
   const r1 = engine.travelTo('loc_home_living');
   assert.equal(r1.ok, true);
@@ -94,7 +94,7 @@ test('2. 5-minute clock quantization, Dijkstra travel costs across zones & facil
 test('3. Expanded 142-slot schedule coverage across all 15 heroines & all 17 calendar days', () => {
   const seenHeroines = new Set();
 
-  const engineTown = new Doukyuusei2Engine(DATA);
+  const engineTown = new SeniorYearDiaryEngine(DATA);
   for (const p of engineTown.getPresentNpcs(0, 480)) seenHeroines.add(p.characterId);
   for (const p of engineTown.getPresentNpcs(0, 600)) seenHeroines.add(p.characterId);
   for (const p of engineTown.getPresentNpcs(0, 690)) seenHeroines.add(p.characterId);
@@ -115,7 +115,7 @@ test('3. Expanded 142-slot schedule coverage across all 15 heroines & all 17 cal
   }
 
   // Check Touji Onsen heroines (Sachiko, Kumiko) on Day 7 (12-29) via 12/28 Onsen + Yui branch
-  const engineOnsen = new Doukyuusei2Engine(DATA);
+  const engineOnsen = new SeniorYearDiaryEngine(DATA);
   waitUntil(engineOnsen, 540);
   assert.equal(engineOnsen.travelTo('loc_school_gym_back').ok, true);
   assert.equal(engineOnsen.triggerEvent('evt_onsen_pre_akira_youko').ok, true);
@@ -141,7 +141,7 @@ test('3. Expanded 142-slot schedule coverage across all 15 heroines & all 17 cal
 });
 
 test('4. Mutual exclusion enforcement: 12/28 Onsen branch & 12/29 Minori vs Misa', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
   waitUntil(eng, 540);
   assert.equal(eng.travelTo('loc_school_gym_back').ok, true);
   assert.equal(eng.triggerEvent('evt_onsen_pre_akira_youko').ok, true);
@@ -161,7 +161,7 @@ test('4. Mutual exclusion enforcement: 12/28 Onsen branch & 12/29 Minori vs Misa
   assert.equal(eng.hasFlag('flg_onsen_trip_declined'), true);
   assert.equal(eng.hasFlag('flg_onsen_trip_joined'), false);
 
-  const engMx = new Doukyuusei2Engine(DATA);
+  const engMx = new SeniorYearDiaryEngine(DATA);
   assert.equal(engMx.travelTo('loc_school_3b').ok, true);
   assert.equal(engMx.triggerEvent('evt_minori_vase_broken').ok, true);
 
@@ -187,7 +187,7 @@ test('4. Mutual exclusion enforcement: 12/28 Onsen branch & 12/29 Minori vs Misa
 });
 
 test('5. Telephone System: live whereabouts, 5-min cost, mood/affection & 12/28 Onsen phone trigger', () => {
-  const eng = new Doukyuusei2Engine(DATA, { mode: 'classic' });
+  const eng = new SeniorYearDiaryEngine(DATA, { mode: 'classic' });
 
   // Home room has a phone
   assert.equal(eng.canUsePhone().canCall, true);
@@ -248,7 +248,7 @@ test('5. Telephone System: live whereabouts, 5-min cost, mood/affection & 12/28 
 test('6. Playable 12/29 Misa Tennis Rally Minigame: both Win and Loss paths advance cleanly', () => {
   // Setup helper at Day 7 (12-29) 09:00 loc_school_tennis with flg_misa_station_bump
   function setupMisaTennisDay() {
-    const e = new Doukyuusei2Engine(DATA);
+    const e = new SeniorYearDiaryEngine(DATA);
     advanceToDay(e, 3); // 12-25
     waitUntil(e, 540);
     assert.equal(e.travelTo('loc_yasohachi_station').ok, true);
@@ -307,7 +307,7 @@ test('6. Playable 12/29 Misa Tennis Rally Minigame: both Win and Loss paths adva
 });
 
 test('7. Daily 24h NPC Timeline Helper & Quick Route Guide recommendations', () => {
-  const eng = new Doukyuusei2Engine(DATA, { mode: 'easy_remake' });
+  const eng = new SeniorYearDiaryEngine(DATA, { mode: 'easy_remake' });
   const misakoTl = eng.getDayTimelineForHeroine('chr_misako', 0);
   assert.equal(misakoTl.visibleInCurrentMode, true);
   assert.ok(misakoTl.segments.length >= 3, `Expected multiple daily segments for Misako, got ${misakoTl.segments.length}`);
@@ -329,7 +329,7 @@ test('7. Daily 24h NPC Timeline Helper & Quick Route Guide recommendations', () 
 
 test('8. Verified Mood/Affection choice branches (Karen house & Youko End 2 variant)', () => {
   // Karen 12/22 '만나러 왔을 뿐' (+mood) vs '사인' (-mood)
-  const engPos = new Doukyuusei2Engine(DATA);
+  const engPos = new SeniorYearDiaryEngine(DATA);
   waitUntil(engPos, 660);
   assert.equal(engPos.travelTo('loc_karen_house').ok, true);
   const posRes = engPos.triggerEvent('evt_karen_house_intro', 0);
@@ -338,7 +338,7 @@ test('8. Verified Mood/Affection choice branches (Karen house & Youko End 2 vari
   assert.equal(engPos.state.mood.chr_karen, 68);
   assert.equal(engPos.hasFlag('flg_karen_mood_positive'), true);
 
-  const engNeg = new Doukyuusei2Engine(DATA);
+  const engNeg = new SeniorYearDiaryEngine(DATA);
   waitUntil(engNeg, 660);
   assert.equal(engNeg.travelTo('loc_karen_house').ok, true);
   const negRes = engNeg.triggerEvent('evt_karen_house_intro', 1);
@@ -348,7 +348,7 @@ test('8. Verified Mood/Affection choice branches (Karen house & Youko End 2 vari
   assert.equal(engNeg.getMoodMeta(engNeg.state.mood.chr_karen).id, 'gloomy');
 
   // Youko climax Choice 1 reaches end_youko_alt!
-  const engYoukoAlt = new Doukyuusei2Engine(DATA);
+  const engYoukoAlt = new SeniorYearDiaryEngine(DATA);
   advanceToDay(engYoukoAlt, 1);
   waitUntil(engYoukoAlt, 720);
   assert.equal(engYoukoAlt.travelTo('loc_game_center').ok, true);
@@ -363,7 +363,7 @@ test('8. Verified Mood/Affection choice branches (Karen house & Youko End 2 vari
 });
 
 test('9. Full scripted playthrough A: Narusawa Yui ending on 01-07', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
 
   advanceToDay(eng, 2);
   waitUntil(eng, 1200);
@@ -391,7 +391,7 @@ test('9. Full scripted playthrough A: Narusawa Yui ending on 01-07', () => {
 });
 
 test('10. Full scripted playthrough B: Minamikawa Youko priority-1000 override trumps Yui', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
 
   advanceToDay(eng, 1);
   waitUntil(eng, 720);
@@ -425,7 +425,7 @@ test('10. Full scripted playthrough B: Minamikawa Youko priority-1000 override t
 });
 
 test('11. Full scripted playthrough C: Izumi Onsen partner route + 01/06 home-return trap verification', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
 
   waitUntil(eng, 540);
   assert.equal(eng.travelTo('loc_home_front').ok, true);
@@ -473,7 +473,7 @@ test('11. Full scripted playthrough C: Izumi Onsen partner route + 01/06 home-re
 });
 
 test('12. Full scripted playthrough D: Tanaka Misa full route via playable Tennis Minigame', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
   advanceToDay(eng, 3); // 12-25
   waitUntil(eng, 540);
   assert.equal(eng.travelTo('loc_yasohachi_station').ok, true);
@@ -504,7 +504,7 @@ test('12. Full scripted playthrough D: Tanaka Misa full route via playable Tenni
 });
 
 test('13. Full scripted playthrough E: Solo Normal Ending on 01-07', () => {
-  const eng = new Doukyuusei2Engine(DATA);
+  const eng = new SeniorYearDiaryEngine(DATA);
   advanceToDay(eng, 16);
   assert.equal(eng.state.ended, true);
   assert.equal(eng.state.endingId, 'end_solo_normal');
@@ -512,7 +512,7 @@ test('13. Full scripted playthrough E: Solo Normal Ending on 01-07', () => {
 });
 
 test('14. Save/load serialization round-trip determinism (with mood/phone) & corruption guard', () => {
-  const eng1 = new Doukyuusei2Engine(DATA, { mode: 'classic' });
+  const eng1 = new SeniorYearDiaryEngine(DATA, { mode: 'classic' });
   eng1.callHeroine('chr_tomomi');
   eng1.travelTo('loc_home_living');
   eng1.talkToNpc('chr_yui');
@@ -521,7 +521,7 @@ test('14. Save/load serialization round-trip determinism (with mood/phone) & cor
   eng1.triggerEvent('evt_izumi_parfait_intro');
 
   const serialized = eng1.serialize();
-  const eng2 = new Doukyuusei2Engine(DATA);
+  const eng2 = new SeniorYearDiaryEngine(DATA);
   eng2.deserialize(serialized);
 
   // lastImpact is transient UI toast, normalize before deepEqual

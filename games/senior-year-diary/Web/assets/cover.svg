@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="동급생 2 겨울방학 커버 아트워크">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="졸업반 다이어리 겨울방학 커버 아트워크">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#070d1f"/>
@@ -188,8 +188,8 @@
     <rect x="0" y="0" width="224" height="32" rx="16" fill="#f2849e" fill-opacity="0.22" stroke="#f2849e" stroke-opacity="0.6"/>
     <text x="112" y="21" text-anchor="middle" fill="#ffd9e3" font-size="14" font-weight="600" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" letter-spacing="1.5">WINTER BREAK · 17 DAYS</text>
 
-    <text x="2" y="106" fill="url(#goldText)" font-size="84" font-weight="800" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" letter-spacing="-2" filter="url(#softGlow)">동급생 2</text>
-    <text x="6" y="144" fill="#d3e3ff" font-size="24" font-weight="500" font-family="'Yu Gothic', 'Meiryo', sans-serif" letter-spacing="6" opacity="0.9">同級生 2 · DOUKYUUSEI 2</text>
+    <text x="2" y="106" fill="url(#goldText)" font-size="58" font-weight="800" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" letter-spacing="-2" filter="url(#softGlow)">졸업반 다이어리</text>
+    <text x="6" y="144" fill="#d3e3ff" font-size="24" font-weight="500" font-family="'Yu Gothic', 'Meiryo', sans-serif" letter-spacing="6" opacity="0.9">SENIOR YEAR DIARY</text>
 
     <line x1="6" y1="166" x2="430" y2="166" stroke="#f6b868" stroke-opacity="0.65" stroke-width="2"/>
     <text x="6" y="198" fill="#eef4ff" font-size="20" font-weight="500" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif">NPC 일정·동선 · 5분 양자 시계 · 관계 이벤트 DAG</text>

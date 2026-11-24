@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "doukyuusei-2",
-  "slug": "doukyuusei-2",
-  "title": "동급생 2",
+  "id": "senior-year-diary",
+  "slug": "senior-year-diary",
+  "title": "졸업반 다이어리",
   "subtitle": "겨울방학 일정·동선·관계 시뮬레이션",
   "version": "1.0.0",
   "entry": "index.html",
@@ -21,7 +21,7 @@
     "ko"
   ],
   "storage": {
-    "namespace": "doukyuusei-2",
+    "namespace": "senior-year-diary",
     "slots": 3,
     "autoSave": true
   },

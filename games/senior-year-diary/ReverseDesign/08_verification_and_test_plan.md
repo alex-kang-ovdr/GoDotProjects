@@ -37,7 +37,7 @@
 저장소 규칙에 따라 다음 명령으로 브랜치 소유권 및 스킬 동기화 상태를 확인한다:
 
 ```bash
-node games/doukyuusei-2/ReverseDesign/verified_data/validate_data.mjs
+node games/senior-year-diary/ReverseDesign/verified_data/validate_data.mjs
 npm run check:ownership
 npm run check:skills
 ```
