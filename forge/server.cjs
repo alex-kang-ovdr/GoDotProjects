@@ -605,11 +605,21 @@ function resolveForgeGuestFallback(req, res, { loginUrl = '/?view=account', requ
     '__Host-playhub_session',
     'playhub_session',
     'playhub_forge_guest',
+    // Firebase Hosting forwards only the `__session` cookie to Cloud Run rewrites,
+    // so the guest token must also travel under that name or every request becomes
+    // a new guest with a new CSRF token (CSRF_INVALID on web.app).
+    '__session',
   ]);
   if (!token) {
     token = crypto.randomBytes(24).toString('base64url');
     if (res && !res.headersSent) {
-      res.setHeader('Set-Cookie', `playhub_forge_guest=${token}; Path=/; Max-Age=7776000; HttpOnly; SameSite=Lax`);
+      const attributes = 'Path=/; Max-Age=7776000; HttpOnly; SameSite=Lax';
+      const previous = res.getHeader('Set-Cookie');
+      res.setHeader('Set-Cookie', [
+        ...(previous === undefined ? [] : Array.isArray(previous) ? previous : [String(previous)]),
+        `playhub_forge_guest=${token}; ${attributes}`,
+        `__session=${token}; ${attributes}`,
+      ]);
     }
   }
   const sub = crypto.createHash('sha256').update('forge-guest-sub:' + token).digest('hex').slice(0, 32);
