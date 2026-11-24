@@ -459,10 +459,10 @@
         "forge/OfficialGodot/porting-studio.*"
       ]
     },
-    "PlayHub-JavaGames-eve-burst-error": {
-      "role": "EVE burst error 역기획서 및 원작 데이터 복원 (복수 주인공의 관점 전환과 정보 비대칭)",
+    "PlayHub-JavaGames-twin-sight-paradox": {
+      "role": "Twin Sight Paradox 역기획서 및 원작 데이터 복원 (복수 주인공의 관점 전환과 정보 비대칭)",
       "owns": [
-        "games/eve-burst-error/**"
+        "games/twin-sight-paradox/**"
       ]
     }
   }
