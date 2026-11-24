@@ -9,8 +9,8 @@
   'use strict';
   return {
   "schemaVersion": "2.0.0",
-  "gameId": "eve-burst-error",
-  "sourceBaseline": "PC-98 (1995) / SEGA SATURN (1997) / EVE burst error R (2016)",
+  "gameId": "twin-sight-paradox",
+  "sourceBaseline": "PC-98 (1995) / SEGA SATURN (1997) / Twin Sight Paradox R (2016)",
   "calendarSpan": {
     "start_date": "12-02",
     "end_date": "12-08",

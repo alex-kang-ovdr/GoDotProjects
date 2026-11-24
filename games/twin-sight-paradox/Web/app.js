@@ -1,4 +1,4 @@
-/* EVE burst error — Playable Web UI Controller (Phase 2)
+/* Twin Sight Paradox — Playable Web UI Controller (Phase 2)
  * Zero external CDNs; works via file:// and HTTP.
  * Connects index.html directly to globalThis.EVE_DATA + globalThis.EveEngine.
  *
@@ -12,7 +12,7 @@
 (function () {
   'use strict';
 
-  var STORAGE_PREFIX = 'playhub.eve-burst-error.v2.slot.';
+  var STORAGE_PREFIX = 'playhub.twin-sight-paradox.v2.slot.';
   var MANUAL_SLOTS = [1, 2, 3];
   var AUTO_SLOT = 'auto';
 

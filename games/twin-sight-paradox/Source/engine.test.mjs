@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * EVE burst error — Phase 2 Multi-Sight Dual-Perspective Engine Automated Test Suite (14 Tests)
+ * Twin Sight Paradox — Phase 2 Multi-Sight Dual-Perspective Engine Automated Test Suite (14 Tests)
  *
  * Verifies:
  * 1. Phase 2 SSOT bundle counts (18 chars, 16 locs, 27 scenes, 12 sync barriers, 22 clues, 8 correlations, 16 items, 3 deduction steps, 4 endings).

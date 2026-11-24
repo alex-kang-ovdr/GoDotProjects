@@ -1,5 +1,5 @@
 /**
- * EVE burst error — Pure Deterministic Multi-Sight Dual-Perspective Engine (Phase 2)
+ * Twin Sight Paradox — Pure Deterministic Multi-Sight Dual-Perspective Engine (Phase 2)
  *
  * Zero DOM dependencies. UMD export (globalThis.EveEngine + module.exports).
  * Driven 100% by verified_data SSOT bundled in Web/data/game-data.js (EVE_DATA).
@@ -2668,7 +2668,7 @@
       var payloadStr = JSON.stringify(payload);
       var envelope = {
         schemaVersion: SCHEMA_VERSION,
-        gameId: data.gameId || 'eve-burst-error',
+        gameId: data.gameId || 'twin-sight-paradox',
         checksum: fnv1aHash(payloadStr),
         state: payload,
       };

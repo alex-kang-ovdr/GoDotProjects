@@ -2,7 +2,7 @@
 
 ## 1. 아키텍처 개요: 데이터 주도 멀티 사이트 엔진 `[재구성안]`
 
-PlayHub에서 《EVE burst error》를 구현할 때 시나리오 로직을 하드코딩된 `if/else` 스크립트로 흩뿌리면 동기화 장벽 교착이나 정보 비대칭 누수(예: 코지로가 마리나만 아는 정보를 말하는 버그)가 필연적으로 발생한다. 따라서 **순수 데이터 SSOT(`verified_data/*.json`) + 결정론적 순수 함수 리듀서(Deterministic State Reducer)** 구조를 채택한다.
+PlayHub에서 《Twin Sight Paradox》를 구현할 때 시나리오 로직을 하드코딩된 `if/else` 스크립트로 흩뿌리면 동기화 장벽 교착이나 정보 비대칭 누수(예: 코지로가 마리나만 아는 정보를 말하는 버그)가 필연적으로 발생한다. 따라서 **순수 데이터 SSOT(`verified_data/*.json`) + 결정론적 순수 함수 리듀서(Deterministic State Reducer)** 구조를 채택한다.
 
 ```mermaid
 flowchart TB

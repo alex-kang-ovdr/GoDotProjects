@@ -1,10 +1,10 @@
-# EVE burst error — 역기획서, 원작 검증 데이터 및 플레이어블 웹 프로토타입
+# Twin Sight Paradox — 역기획서, 원작 검증 데이터 및 플레이어블 웹 프로토타입
 
 > **핵심 아키텍처 축**: **복수 주인공의 관점 전환(Multi-Sight)과 정보 비대칭(Information Asymmetry)**
 
 ## 1. 프로젝트 개요
 
-본 디렉터리는 C's ware(シーズウェア, 시나리오·기획: 칸노 히로유키 / 원화: 타지마 나오 / 음악: 우메모토 류)가 1995년 PC-9801로 최초 발매하고, 1997년 세가 새턴(SEGA SATURN), Windows 95, 2003년 PS2(`PLUS`), 2016년 이후 리마스터(`R`)로 이어진 추리 서스펜스 어드벤처 **《EVE burst error》**의 **역기획서(Reverse Design)**, **검증된 원작 데이터(Verified Data)**, 그리고 이를 100% 데이터 주도 방식으로 구현한 **PlayHub 플레이어블 웹 프로토타입**을 수록합니다.
+본 디렉터리는 C's ware(シーズウェア, 시나리오·기획: 칸노 히로유키 / 원화: 타지마 나오 / 음악: 우메모토 류)가 1995년 PC-9801로 최초 발매하고, 1997년 세가 새턴(SEGA SATURN), Windows 95, 2003년 PS2(`PLUS`), 2016년 이후 리마스터(`R`)로 이어진 추리 서스펜스 어드벤처 **《Twin Sight Paradox》**의 **역기획서(Reverse Design)**, **검증된 원작 데이터(Verified Data)**, 그리고 이를 100% 데이터 주도 방식으로 구현한 **PlayHub 플레이어블 웹 프로토타입**을 수록합니다.
 
 모든 문서·데이터·프로토타입은 원작의 성인용 묘사를 배제하고 **멀티 사이트(Multi-Sight) 시점 전환 시스템, 교차 시간축 동기화 장벽(`SB_01`~`SB_08`), 주인공 간 정보 비대칭 모델, 그리고 트리스탄호 최종 수렴(`C_D6_01`) 및 진범 추리**에 초점을 맞추어 작성되었습니다.
 
@@ -26,18 +26,18 @@
 
 ```powershell
 # 1) verified_data/*.json (SSOT) -> Web/data/game-data.js 번들 동기화
-node games/eve-burst-error/Source/sync-data.mjs
+node games/twin-sight-paradox/Source/sync-data.mjs
 
 # 2) 원작 정형 데이터 무결성 + 동기화 장벽 DAG/데드락 부재 검증
-node games/eve-burst-error/ReverseDesign/verified_data/validate_data.mjs
+node games/twin-sight-paradox/ReverseDesign/verified_data/validate_data.mjs
 
 # 3) 헤드리스 멀티 사이트 엔진 자동 테스트 (격리 · 8대 장벽 · 16씬 완주 · 범인 추리 · 세이브/로드)
-node --test games/eve-burst-error/Source/engine.test.mjs
+node --test games/twin-sight-paradox/Source/engine.test.mjs
 ```
 
 ## 4. 디렉터리 구조
 
-- [game.manifest.json](game.manifest.json): PlayHub 게임 매니페스트 (`id: "eve-burst-error"`, `version: "1.0.0"`)
+- [game.manifest.json](game.manifest.json): PlayHub 게임 매니페스트 (`id: "twin-sight-paradox"`, `version: "1.0.0"`)
 - `Web/`: 플레이어블 웹 프로토타입 (Zero-CDN, `file://` 및 HTTP 호환)
   - [Web/index.html](Web/index.html): 메인 ADV 인터페이스 & 멀티 사이트 HUD
   - [Web/styles.css](Web/styles.css): 시점 전환 동적 테마(코지로 앰버 누아르 ⇄ 마리나 코발트 시안 ⇄ 트리스탄 수렴)

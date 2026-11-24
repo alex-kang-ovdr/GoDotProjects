@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="EVE burst error Multi-Sight Cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="Twin Sight Paradox Multi-Sight Cover">
   <defs>
     <!-- Kojiro Warm Noir Amber-Crimson Gradient -->
     <linearGradient id="kojiroBg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -162,7 +162,7 @@
   <!-- TITLE PLATE -->
   <g transform="translate(400,342)">
     <rect x="-250" y="-42" width="500" height="84" rx="10" fill="rgba(6, 10, 18, 0.84)" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
-    <text x="0" y="-3" text-anchor="middle" fill="url(#titleMetal)" font-family="'Segoe UI', 'Malgun Gothic', sans-serif" font-size="38" font-weight="800" letter-spacing="6">EVE burst error</text>
+    <text x="0" y="-3" text-anchor="middle" fill="url(#titleMetal)" font-family="'Segoe UI', 'Malgun Gothic', sans-serif" font-size="30" font-weight="800" letter-spacing="4">TWIN SIGHT PARADOX</text>
     <text x="0" y="25" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', 'Malgun Gothic', sans-serif" font-size="13" font-weight="600" letter-spacing="2.4">MULTI-SIGHT MYSTERY ADV · 복수 주인공 관점 전환 &amp; 정보 비대칭</text>
   </g>
 

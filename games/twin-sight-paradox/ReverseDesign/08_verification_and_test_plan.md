@@ -6,7 +6,7 @@
 
 | 검증 계층 | 대상 | 실행 도구 / 방식 | 통과 기준 |
 | --- | --- | --- | --- |
-| **L1. 정적 데이터 무결성** | `verified_data/*.json`, `*.csv` | `node games/eve-burst-error/ReverseDesign/verified_data/validate_data.mjs` | JSON/CSV 100% 일치, 중복 ID 0건, 댕글링 참조 0건 |
+| **L1. 정적 데이터 무결성** | `verified_data/*.json`, `*.csv` | `node games/twin-sight-paradox/ReverseDesign/verified_data/validate_data.mjs` | JSON/CSV 100% 일치, 중복 ID 0건, 댕글링 참조 0건 |
 | **L2. 동기화 그래프 무교착성** | `timeline_chapters.json` + `sync_barriers.json` | `validate_data.mjs` 내 Kahn 위상 정렬 + 도달성·진행성 시뮬레이터 | 유향 사이클 0건, `M_D0_01` → `C_D6_01` 100% 도달, 모든 중간 상태에서 최소 1명 진행 가능 |
 | **L3. 정보 비대칭·엔진 단위 테스트** | `MultiSightReducer`, `EpistemicFilter`, `CulpritDeductionValidator` | Node ESM 단위 테스트 (향후 구현 시) | 인벤토리/단서 누수 0건, DBMS 데드락(`SB_05`→`SB_06`) 재현, 범인 입력 다국어 정규화 통과 |
 | **L4. 플레이스루 & 워크트리 게이트** | 전체 골든 패스 + 레포 소유권/스킬 | `npm run check:ownership`, `npm run check:skills`, E2E 리플레이 | `fail 0`, Day 0 → True Ending 최단/역순 교차 경로 모두 클리어 |

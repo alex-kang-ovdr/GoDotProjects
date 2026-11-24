@@ -1,6 +1,6 @@
 # 02. 멀티 사이트 시스템과 동기화 장벽 엔진 (핵심 아키텍처 ①)
 
-> 본 문서는 《EVE burst error》의 가장 독창적인 메커니즘인 **멀티 사이트(Multi-Sight) 시점 전환**과 **교차 시간축 동기화 장벽(Cross-Protagonist Synchronization Barrier)**을 형식적으로 정의하고, 교착 상태(Deadlock)가 절대 발생하지 않음을 보장하는 엔진 설계를 제시한다.
+> 본 문서는 《Twin Sight Paradox》의 가장 독창적인 메커니즘인 **멀티 사이트(Multi-Sight) 시점 전환**과 **교차 시간축 동기화 장벽(Cross-Protagonist Synchronization Barrier)**을 형식적으로 정의하고, 교착 상태(Deadlock)가 절대 발생하지 않음을 보장하는 엔진 설계를 제시한다.
 
 ## 1. 멀티 사이트 시스템의 4가지 핵심 원리 `[확인]` `[해석]`
 

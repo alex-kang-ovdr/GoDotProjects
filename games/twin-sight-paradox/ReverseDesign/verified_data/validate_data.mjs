@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * EVE burst error — Verified Data & Multi-Sight Sync Barrier Validator (Phase 2)
+ * Twin Sight Paradox — Verified Data & Multi-Sight Sync Barrier Validator (Phase 2)
  *
  * Validates:
  * 1. JSON & CSV parsing and bidirectional parity (characters, locations)
@@ -405,7 +405,7 @@ if (unlockedBarriers.size !== barriers.length) {
 }
 
 // Report summary
-console.log('=== EVE burst error Verified Data Validation (Phase 2) ===');
+console.log('=== Twin Sight Paradox Verified Data Validation (Phase 2) ===');
 console.log(`Characters   : ${characters.length} (CSV parity OK: ${charactersCsv.length})`);
 console.log(`Locations    : ${locations.length} (CSV parity OK: ${locationsCsv.length})`);
 console.log(`Scenes       : ${scenes.length} (Kojiro: ${scenes.filter((s) => s.track === 'kojiro').length}, Marina: ${scenes.filter((s) => s.track === 'marina').length}, Convergence: ${scenes.filter((s) => s.track === 'both').length})`);
