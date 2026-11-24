@@ -1,4 +1,4 @@
-// Interactive Web Frontend for 유작 (遺作 / Isaku) — Phase 2 Elevated Edition
+// Interactive Web Frontend for 침묵의 세입자 (The Silent Tenant) — Phase 2 Elevated Edition
 // Zero external dependencies; works seamlessly over file:// and HTTP.
 (function () {
   'use strict';

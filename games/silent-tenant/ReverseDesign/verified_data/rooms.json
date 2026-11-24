@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.1.0",
-  "gameId": "isaku",
+  "gameId": "silent-tenant",
   "startRoomId": "rm_5f_music",
   "goalRoomId": "rm_escape_exit",
   "floors": [

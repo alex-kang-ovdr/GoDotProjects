@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.0.0",
-  "gameId": "isaku",
+  "gameId": "silent-tenant",
   "title": {
-    "ko": "유작",
-    "ja": "遺作",
-    "en": "Isaku"
+    "ko": "침묵의 세입자",
+    "ja": "沈黙の住人",
+    "en": "The Silent Tenant"
   },
   "setting": {
     "schoolJa": "桜蘭学園 旧校舎",

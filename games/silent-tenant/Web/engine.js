@@ -1,4 +1,4 @@
-// Pure Deterministic Headless Exploration Adventure Engine for 유작 (遺作 / Isaku)
+// Pure Deterministic Headless Exploration Adventure Engine for 침묵의 세입자 (The Silent Tenant)
 // Phase 2: Playable Cipher Decoder, Threat/Surveillance Tension, Canonical Miyuki Affection Matrix,
 // 4F->3F Rusted-Key Break Fallback, Evidence Tape Detection, and Detective Memo Assistant.
 // Zero DOM dependencies. UMD export: globalThis.IsakuEngine + module.exports

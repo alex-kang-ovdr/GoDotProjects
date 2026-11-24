@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "gameId": "isaku",
+  "gameId": "silent-tenant",
   "safetyAbstractionNotice": "모든 사건 데이터는 원작의 성인향·폭력적 묘사를 배제하고, 탐색 어드벤처 상태 머신의 위험 윈도우(at_risk)·구출(rescued)·피해(compromised) 플래그로만 모델링합니다.",
   "clockModel": {
     "unit": "action_ticks",

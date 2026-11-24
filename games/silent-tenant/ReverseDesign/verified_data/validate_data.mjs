@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 유작 (遺作 / Isaku) 원작 복원 데이터 자동 검증기 (Phase 2 확장)
+ * 침묵의 세입자 (The Silent Tenant) 원작 복원 데이터 자동 검증기 (Phase 2 확장)
  * - JSON / CSV 정합성 검증
  * - 모든 참조 ID 무결성(Dangling ID 0건) 검증
  * - 방 그래프 양방향/도달성, 핫스팟 공간 좌표(x,y), 잠금 출구-퍼즐 매칭 검증
@@ -403,11 +403,11 @@ for (const ded of cipherData.deductions || []) {
 }
 
 if (errors.length) {
-  console.error(`[isaku:validate] FAIL (${errors.length} errors):`);
+  console.error(`[silent-tenant:validate] FAIL (${errors.length} errors):`);
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
 
 console.log(
-  `[isaku:validate] OK — characters=${charsData.characters.length}, rooms=${roomsData.rooms.length}, hotspots=${hotspotToRoom.size}, items=${itemsData.items.length}, puzzles=${puzzlesData.puzzles.length}, incidents=${incEndData.incidents.length}, endings=${incEndData.endings.length}, dialogueBranches=${dialogueData.branches.length}, cipherDeductions=${cipherData.deductions.length}, DAG=acyclic, forwardSim=goal_reached, errors=0`
+  `[silent-tenant:validate] OK — characters=${charsData.characters.length}, rooms=${roomsData.rooms.length}, hotspots=${hotspotToRoom.size}, items=${itemsData.items.length}, puzzles=${puzzlesData.puzzles.length}, incidents=${incEndData.incidents.length}, endings=${incEndData.endings.length}, dialogueBranches=${dialogueData.branches.length}, cipherDeductions=${cipherData.deductions.length}, DAG=acyclic, forwardSim=goal_reached, errors=0`
 );

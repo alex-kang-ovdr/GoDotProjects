@@ -4,7 +4,7 @@
 
 실행 명령:
 ```powershell
-node games/isaku/ReverseDesign/verified_data/validate_data.mjs
+node games/silent-tenant/ReverseDesign/verified_data/validate_data.mjs
 ```
 
 자동 검증 항목 6종:

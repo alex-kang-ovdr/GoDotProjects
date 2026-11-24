@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "isaku",
-  "slug": "isaku",
+  "id": "silent-tenant",
+  "slug": "silent-tenant",
   "title": {
-    "ko": "유작 (遺作)",
-    "en": "Isaku",
-    "ja": "遺作",
-    "zh-CN": "遗作",
-    "fr": "Isaku",
-    "es": "Isaku",
-    "pt-BR": "Isaku",
-    "hi": "इसाकू (Isaku)"
+    "ko": "침묵의 세입자",
+    "en": "The Silent Tenant",
+    "ja": "沈黙の住人",
+    "zh-CN": "沉默的住客",
+    "fr": "Le Locataire Silencieux",
+    "es": "El Inquilino Silencioso",
+    "pt-BR": "O Inquilino Silencioso",
+    "hi": "मूक किरायेदार"
   },
   "summary": {
     "ko": "봉쇄된 5층 구교사에서 방·아이템·퍼즐·사건이 맞물리는 밀실 서바이벌 탐색 어드벤처.",
@@ -80,7 +80,6 @@
     "screenshots": []
   },
   "integration": "legacy-localstorage",
-  "referenceGame": "Isaku (1995)",
   "supportedLocales": [
     "ko",
     "en",

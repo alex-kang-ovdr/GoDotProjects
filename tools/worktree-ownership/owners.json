@@ -459,10 +459,10 @@
         "forge/OfficialGodot/porting-studio.*"
       ]
     },
-    "PlayHub-JavaGames-isaku": {
-      "role": "유작 (遺作 / Isaku) 역기획서·원작 데이터 복원 및 탐색 어드벤처 엔진 설계",
+    "PlayHub-JavaGames-silent-tenant": {
+      "role": "침묵의 세입자 (The Silent Tenant) 역기획서·원작 데이터 복원 및 탐색 어드벤처 엔진 설계",
       "owns": [
-        "games/isaku/**"
+        "games/silent-tenant/**"
       ]
     }
   }

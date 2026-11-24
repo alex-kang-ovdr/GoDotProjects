@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.1.0",
-  "gameId": "isaku",
+  "gameId": "silent-tenant",
   "certaintyNote": "난수표의 '2자리 숫자 1조(앞자리=세로 행, 뒷자리=가로 열)' 읽기 방식과 3-2 교실 메모·골격 메모·방송실 난수표·금고 번호 3878의 인과 구조는 [확인](SRC-04, SRC-05)되었으며, 개별 셀 문자열과 해독 문구는 저작권 비침해 오리지널 추리 데이터[재구성안]로 구성했다.",
   "requiredItemId": "item_cipher_table",
   "gridSpec": {

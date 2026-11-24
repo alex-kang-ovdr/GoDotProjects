@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="유작 (遺作) 커버 아트">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="침묵의 세입자 커버 아트">
   <defs>
     <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#050811"/>
@@ -152,7 +152,7 @@
 
   <!-- Title Plate -->
   <g transform="translate(400, 444)" text-anchor="middle">
-    <text x="0" y="-12" fill="#f8fafc" font-family="Georgia, 'Noto Serif KR', serif" font-size="44" font-weight="700" letter-spacing="8">유작 · 遺作</text>
+    <text x="0" y="-12" fill="#f8fafc" font-family="Georgia, 'Noto Serif KR', serif" font-size="30" font-weight="700" letter-spacing="4">침묵의 세입자</text>
     <text x="0" y="16" fill="#67e8f9" font-family="system-ui, sans-serif" font-size="13" font-weight="600" letter-spacing="3">OURAN OLD SCHOOLHOUSE · ESCAPE ADVENTURE ENGINE</text>
   </g>
 </svg>
