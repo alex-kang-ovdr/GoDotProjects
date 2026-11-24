@@ -69,6 +69,11 @@ env:
   ARTIFACT_REPO: us-west1-docker.pkg.dev/playhub-dev-2611/playhub-containers
   DEV_HUB_PROJECT: playhub-dev-2611
   DEV_FORGE_PROJECT: forge-dev-2611
+  # Browser-facing origins served by Firebase Hosting in front of playhub-hub.
+  # Hub (PLAYHUB_EXTRA_ORIGINS) and Forge (PUBLIC_ORIGIN) reject any other Origin header.
+  DEV_PUBLIC_ORIGINS: https://playhub-dev-2611.web.app,https://playhub-dev-2611.firebaseapp.com
+  # Custom-fork web editor binaries (forge/OfficialGodot/vendor-release is gitignored).
+  WEB_EDITOR_ARTIFACT_BASE: gs://playhub-dev-deploy-2611/forge/web-editor
   LIVE_HUB_PROJECT: playhub-live-2611
   LIVE_FORGE_PROJECT: forge-live-2611
   DEFAULT_WIF_PROVIDER: projects/88778617121/locations/global/workloadIdentityPools/github-actions-pool/providers/github-oidc
@@ -92,7 +97,7 @@ jobs:
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Run build-version, compatibility gate, entrypoint proxy, packaging/SSOT contract & P0 build worker tests
-        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/prune-ar-images.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/prune-ar-images.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs deploy/cloudrun/forge/web-origin-config.test.mjs
       - name: Smoke test Cloud Run Hub entrypoint
         run: node deploy/cloudrun/smoke-test.mjs
 
@@ -202,6 +207,7 @@ jobs:
             echo "Invalid update_policy: ${POLICY}" >&2
             exit 1
           fi
+          node deploy/cloudrun/forge/web-editor-artifact.mjs fetch --base "${WEB_EDITOR_ARTIFACT_BASE}"
           docker build -f deploy/cloudrun/forge/Dockerfile \
             --build-arg PLAYFORGE_CHANNEL=dev \
             --build-arg PLAYFORGE_BUILD_NUM="${GITHUB_RUN_NUMBER}" \
@@ -277,7 +283,7 @@ jobs:
               --region="${REGION}" \
               --format='value(status.url)' || true)
           fi
-          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BILLING_ENABLED=1##PLAYHUB_FORGE_REMOTE_VERIFY=1##PLAYHUB_OAUTH_BUILTIN_FALLBACK=1##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
+          ENV_VARS="^##^PLAYHUB_ROLE=public##PLAYHUB_SECURE_COOKIES=true##PLAYHUB_CHANNEL=dev##PLAYHUB_BILLING_ENABLED=1##PLAYHUB_FORGE_REMOTE_VERIFY=1##PLAYHUB_OAUTH_BUILTIN_FALLBACK=1##PLAYHUB_EXTRA_ORIGINS=${DEV_PUBLIC_ORIGINS}##PLAYHUB_BUILD_ID=${HUB_BUILD_ID}##PLAYHUB_BUILD_CODE=${HUB_BUILD_CODE}##PLAYHUB_UPDATE_POLICY=${POLICY}##PLAYHUB_FORCE_TARGETS=${FORCE_TARGETS}"
           if [[ "${EXISTING_HUB_URL}" =~ ^https://[A-Za-z0-9.-]+$ ]]; then
             ENV_VARS="${ENV_VARS}##PLAYHUB_PUBLIC_ORIGIN=${EXISTING_HUB_URL}"
           fi
@@ -338,7 +344,7 @@ jobs:
             --image="${ARTIFACT_REPO}/forge:${FORGE_BUILD_TAG}" \
             --allow-unauthenticated \
             --memory=256Mi --cpu=1 --min-instances=0 --max-instances=1 --timeout=300 \
-            --update-env-vars="^##^PLAYFORGE_BASE_PATH=/forge##PLAYFORGE_ALLOW_GUEST=1##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_FORGE_INTERNAL_SECRET=${FORGE_SECRET}##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
+            --update-env-vars="^##^PUBLIC_ORIGIN=${DEV_PUBLIC_ORIGINS},${HUB_URL}##PLAYFORGE_BASE_PATH=/forge##PLAYFORGE_ALLOW_GUEST=1##PLAYHUB_FORGE_AUTH_MODE=hub##PLAYHUB_FORGE_INTERNAL_SECRET=${FORGE_SECRET}##PLAYHUB_SESSION_VERIFY_URL=${HUB_URL}/internal/session/verify##PLAYFORGE_BUILD_ID=${FORGE_BUILD_ID}##PLAYFORGE_BUILD_BACKEND=cloudrun-job##PLAYFORGE_BUILD_PROJECT=${DEV_FORGE_PROJECT}##PLAYFORGE_BUILD_REGION=${REGION}##PLAYFORGE_BUILD_JOB=forge-build-worker##PLAYFORGE_BUILD_BUCKET=playhub-dev-deploy-2611" \
             ${TRAFFIC_FLAGS[@]+"${TRAFFIC_FLAGS[@]}"} \
             --quiet
           FORGE_URL=$(gcloud run services describe playhub-forge \

@@ -2,7 +2,11 @@
 FROM node:24-slim AS forge-assets-prep
 WORKDIR /prep
 COPY forge/OfficialGodot ./OfficialGodot
-RUN rm -rf ./OfficialGodot/vendor \
+# vendor-release is gitignored: CI must run deploy/cloudrun/forge/web-editor-artifact.mjs fetch first.
+# Fail the build instead of shipping an image whose web editor 404s.
+RUN test -s ./OfficialGodot/vendor-release/godot.editor.wasm && test -s ./OfficialGodot/vendor-release/godot.editor.js \
+    || { echo 'forge/OfficialGodot/vendor-release is missing the custom web editor (run web-editor-artifact.mjs fetch)' >&2; exit 1; }
+RUN rm -rf ./OfficialGodot/vendor ./OfficialGodot/vendor-release/SHA256SUMS \
     && node -e "const fs=require('fs'),c=require('crypto'),p=require('path'),z=require('zlib'); const d='./OfficialGodot/vendor-release'; const w=p.join(d,'godot.editor.wasm'), j=p.join(d,'godot.editor.js'); if(fs.existsSync(w)){ const buf=fs.readFileSync(w); const tag=buf.length+'-'+c.createHash('sha256').update(buf).digest('hex').slice(0,8); if(!fs.existsSync(w+'.gz')) fs.writeFileSync(w+'.gz', z.gzipSync(buf,{level:9})); if(!fs.existsSync(w+'.br')) fs.writeFileSync(w+'.br', z.brotliCompressSync(buf)); fs.writeFileSync(p.join(d,'wasm-meta.json'), JSON.stringify({rawBytes:buf.length,validWasm:true,debugSymbolsStripped:true,contentTag:tag})); fs.unlinkSync(w); } if(fs.existsSync(j)){ const buf=fs.readFileSync(j); if(!fs.existsSync(j+'.gz')) fs.writeFileSync(j+'.gz', z.gzipSync(buf,{level:9})); if(!fs.existsSync(j+'.br')) fs.writeFileSync(j+'.br', z.brotliCompressSync(buf)); fs.unlinkSync(j); }"
 
 FROM node:24-slim
