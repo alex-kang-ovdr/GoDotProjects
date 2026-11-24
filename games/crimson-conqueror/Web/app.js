@@ -1,5 +1,5 @@
-/* 귀축왕 란스 — Interactive Web UI Controller (Phase 2)
- * Binds RANCE_DATA + KichikuouRanceEngine to:
+/* 적색 정복왕 (Crimson Conqueror) — Interactive Web UI Controller (Phase 2)
+ * Binds RANCE_DATA + CrimsonConquerorEngine to:
  * - Continent SVG Map (29 territories, 10 factions, 4 dungeons)
  * - 4v4 Battle Arena w/ Operation Tactic Selector & Combat Zone (戦闘域) Gauge
  * - Post-Battle Enemy Commander Capture & Recruitment Modal
@@ -10,15 +10,15 @@
   "use strict";
 
   const DATA = globalThis.RANCE_DATA;
-  const Engine = globalThis.KichikuouRanceEngine;
+  const Engine = globalThis.CrimsonConquerorEngine;
 
   if (!DATA || !Engine) {
-    console.error("Failed to load RANCE_DATA or KichikuouRanceEngine.");
+    console.error("Failed to load RANCE_DATA or CrimsonConquerorEngine.");
     return;
   }
 
-  const STORAGE_PREFIX = "playhub.kichikuou-rance.slot.";
-  const META_KEY = "playhub.kichikuou-rance.meta";
+  const STORAGE_PREFIX = "playhub.crimson-conqueror.slot.";
+  const META_KEY = "playhub.crimson-conqueror.meta";
   const SAVE_SLOTS = [1, 2, 3];
 
   const PHASE_LABELS = {

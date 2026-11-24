@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "kichikuou-rance",
-  "slug": "kichikuou-rance",
-  "title": "귀축왕 란스",
-  "titleEn": "Kichikuou Rance",
+  "id": "crimson-conqueror",
+  "slug": "crimson-conqueror",
+  "title": "적색 정복왕",
+  "titleEn": "Crimson Conqueror",
   "subtitle": "전략 시뮬레이션과 캐릭터별 시나리오의 통합",
   "description": "10대 세력과 29개 대륙 영토, 유형별 주간 액션 슬롯, 최소 병수 우선 4v4 전열/후열 군단전, 그리고 33명 정사 지휘관과 16개 위기 타이머·14개 멀티 엔딩이 결합된 하이브리드 전략 시뮬레이션 RPG.",
   "descriptionEn": "Hybrid grand-strategy SLG and character scenario RPG featuring 10 factions, 29 connected continent territories, typed weekly action slots, smallest-troop-first 4v4 front/back row tactical combat, 33 canonical commanders, 16 crisis timers, and 14 endings.",
@@ -23,7 +23,7 @@
   "runtime": {
     "type": "web",
     "offlineCapable": true,
-    "storageNamespace": "playhub.kichikuou-rance"
+    "storageNamespace": "playhub.crimson-conqueror"
   },
   "media": {
     "cover": "assets/cover.svg"

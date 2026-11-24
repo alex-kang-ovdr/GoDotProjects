@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "sourceBasis": "Expanded from 33 to 69 canonical units (59 playable commanders covering all 52 canonical subordinates + court/scenario recruitables + 10 key rulers, Demon Apostles & endgame bosses) cross-checked against AliceSoft Wiki (Kichikuou Rance:Subordinates) and JP archives (xfu.jp, penpen.ne.jp, fctv.ne.jp). Every unit explicitly tags initialStats.statsBasis as VERIFIED_PUBLIC_PROFILE or BALANCED_RECONSTRUCTION.",
   "originalPlayableUnitCount": 52,
   "restoredPlayableCount": 59,

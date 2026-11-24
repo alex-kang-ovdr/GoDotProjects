@@ -2,7 +2,7 @@
 (function (root) {
   const RANCE_DATA = {
   "schemaVersion": "2.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "generatedAt": "2026-11-22",
   "counts": {
     "factions": 10,

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "calendarSystem": "LP Year/Month/Week (1 turn = 1 week)",
   "sourceBasis": "Expanded from 16 to 28 canonical scenario events, crisis timers, faction routes, and dungeon/relic chains verified across AliceSoft Wiki (Kichikuou Rance:Walkthrough, Endings, Locations) and JP guides (xfu.jp, penpen.ne.jp, sakura.ne.jp).",
   "events": [

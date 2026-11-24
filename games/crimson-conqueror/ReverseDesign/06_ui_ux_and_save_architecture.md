@@ -51,7 +51,7 @@ flowchart LR
 ```json
 {
   "saveVersion": "1.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "savedAt": "2026-11-22T00:00:00Z",
   "rngSeed": 987654321,
   "rngCallCount": 1420,

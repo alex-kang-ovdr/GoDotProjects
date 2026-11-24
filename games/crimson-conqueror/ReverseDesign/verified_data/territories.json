@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "sourceBasis": "Canonical Continent macro-topology reconstructed from Kichikuou Rance:Locations & regional walkthroughs (AliceSoft Wiki / JP guides). Exact micro-node count documented in DATA_GAPS.md.",
   "territories": [
     {

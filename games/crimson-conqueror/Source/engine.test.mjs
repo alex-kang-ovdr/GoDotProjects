@@ -5,7 +5,7 @@ await import("../Web/data/game-data.js");
 await import("../Web/engine.js");
 
 const RANCE_DATA = globalThis.RANCE_DATA;
-const Engine = globalThis.KichikuouRanceEngine;
+const Engine = globalThis.CrimsonConquerorEngine;
 
 test("1. Bundled RANCE_DATA matches all Phase 2 canonical verified_data counts (52+ playable, 14 verified endings, 28 destinies, 28 scenarios)", () => {
   assert.equal(RANCE_DATA.factions.length, 10);

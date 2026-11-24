@@ -1,4 +1,4 @@
-# 귀축왕 란스 (鬼畜王ランス / Kichikuou Rance)
+# 적색 정복왕 (Crimson Conqueror)
 
 > **핵심 아키텍처 축**: **전략 시뮬레이션(SLG)과 캐릭터별 시나리오(Character Scenario Graph)의 통합**
 >
@@ -9,7 +9,7 @@
 ## 빠른 실행 & 테스트 (Play & Test)
 
 ### 웹 프로토타입 실행 (Zero-CDN · `file://` 및 HTTP 동시 지원)
-- 브라우저에서 `games/kichikuou-rance/Web/index.html`을 직접 열거나 로컬 HTTP 서버로 실행합니다.
+- 브라우저에서 `games/crimson-conqueror/Web/index.html`을 직접 열거나 로컬 HTTP 서버로 실행합니다.
 - **주요 플레이 기능**:
   - **29개 대륙 영토 SVG 전략 맵**: 10대 세력 색상, 인접 연결선, 침공 가능 전선 강조, 시설 아이콘, 위기(!) 배지.
   - **유형별 주간 액션 슬롯**: 도시(징세/프레이야 저지), 캐릭터 시나리오, 부하 대화, 증원/보충(택1), 수도 시설 건설(병원·마법연구소·마리아연구소·도서관), 미궁 탐색(사사호 B66F 하니와 킹 포함), 닌자 공작(닌자당 5회), 침공.
@@ -20,13 +20,13 @@
 
 ```powershell
 # 1. verified_data/*.json → Web/data/game-data.js 번들 동기화
-node games/kichikuou-rance/Source/sync-data.mjs
+node games/crimson-conqueror/Source/sync-data.mjs
 
 # 2. 원작 검증 데이터 참조 무결성 & 29영토 그래프 검증
-node games/kichikuou-rance/ReverseDesign/verified_data/validate_data.mjs
+node games/crimson-conqueror/ReverseDesign/verified_data/validate_data.mjs
 
 # 3. 결정론적 SLG + 4v4 전투 + 시나리오/타이머/엔딩 단위 테스트
-node --test games/kichikuou-rance/Source/engine.test.mjs
+node --test games/crimson-conqueror/Source/engine.test.mjs
 ```
 
 ---
@@ -41,11 +41,11 @@ node --test games/kichikuou-rance/Source/engine.test.mjs
 
 ## 디렉터리 구조
 
-- `game.manifest.json` — PlayHub 게임 매니페스트 (`id: "kichikuou-rance"`, `version: "1.0.0"`)
+- `game.manifest.json` — PlayHub 게임 매니페스트 (`id: "crimson-conqueror"`, `version: "1.0.0"`)
 - `Source/sync-data.mjs` — `ReverseDesign/verified_data/*.json` → `Web/data/game-data.js` 번들 생성기
 - `Source/engine.test.mjs` — Node.js 내장 테스트 러너(`node --test`) 기반 코어 엔진 자동화 테스트
 - `Web/index.html`, `Web/styles.css`, `Web/app.js` — 다크 판타지 전략 맵·주간 슬롯·4v4 전투·시나리오·도감 웹 UI
-- `Web/engine.js` — 순수 결정론적 헤드리스 SLG + 시나리오 엔진 (`KichikuouRanceEngine`)
+- `Web/engine.js` — 순수 결정론적 헤드리스 SLG + 시나리오 엔진 (`CrimsonConquerorEngine`)
 - `Web/data/game-data.js` — 자동 생성된 정적 마스터 데이터 번들 (`RANCE_DATA`)
 - `Web/assets/cover.svg` — 대륙 전략 맵·리자스 깃발·황금 왕관 SVG 커버 아트
 - [ReverseDesign/README.md](./ReverseDesign/README.md) — 역기획서 전체 색인 및 문서별 요약 (`00`~`08`, `SOURCE_REGISTER.md`, `DATA_GAPS.md`)

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480" role="img" aria-label="귀축왕 란스 Kichikuou Rance Cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480" role="img" aria-label="적색 정복왕 Crimson Conqueror Cover">
   <defs>
     <radialGradient id="bgObsidian" cx="50%" cy="42%" r="72%">
       <stop offset="0%" stop-color="#251722"/>
@@ -111,8 +111,8 @@
   <!-- Title Plate -->
   <g transform="translate(400, 344)">
     <rect x="-288" y="-34" width="576" height="106" rx="10" fill="#100c12" fill-opacity="0.88" stroke="url(#goldEmblem)" stroke-width="1.6"/>
-    <text x="0" y="6" text-anchor="middle" font-family="'Noto Serif KR', 'Malgun Gothic', Georgia, serif" font-size="38" font-weight="800" fill="url(#goldEmblem)" letter-spacing="4">귀축왕 란스</text>
-    <text x="0" y="34" text-anchor="middle" font-family="'Segoe UI', Georgia, serif" font-size="14" font-weight="600" fill="#e8d6b3" letter-spacing="3">KICHIKUOU RANCE · HYBRID SLG &amp; SCENARIO ENGINE</text>
+    <text x="0" y="6" text-anchor="middle" font-family="'Noto Serif KR', 'Malgun Gothic', Georgia, serif" font-size="38" font-weight="800" fill="url(#goldEmblem)" letter-spacing="4">적색 정복왕</text>
+    <text x="0" y="34" text-anchor="middle" font-family="'Segoe UI', Georgia, serif" font-size="14" font-weight="600" fill="#e8d6b3" letter-spacing="3">CRIMSON CONQUEROR · HYBRID SLG &amp; SCENARIO ENGINE</text>
     <text x="0" y="56" text-anchor="middle" font-family="'Malgun Gothic', sans-serif" font-size="12" fill="#c9a875">10대 세력 · 29개 영토 · 69유닛(52부하) · 28시나리오 · 28운명 · 14엔딩</text>
   </g>
 

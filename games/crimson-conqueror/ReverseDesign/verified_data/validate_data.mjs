@@ -365,7 +365,7 @@ const summary = {
   warnings: warnings.length,
 };
 
-console.log("[kichikuou-rance] Verified Data Validation Summary:");
+console.log("[crimson-conqueror] Verified Data Validation Summary:");
 console.log(JSON.stringify(summary, null, 2));
 
 if (errors.length > 0) {

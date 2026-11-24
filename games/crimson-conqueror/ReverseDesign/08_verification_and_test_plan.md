@@ -16,7 +16,7 @@
 
 실행 커맨드:
 ```powershell
-node games/kichikuou-rance/ReverseDesign/verified_data/validate_data.mjs
+node games/crimson-conqueror/ReverseDesign/verified_data/validate_data.mjs
 ```
 
 ---
@@ -63,8 +63,8 @@ node games/kichikuou-rance/ReverseDesign/verified_data/validate_data.mjs
 ## 4. 레포지토리 통합 검증 게이트
 
 ```powershell
-# 1. 귀축왕 란스 데이터 무결성 검증
-node games/kichikuou-rance/ReverseDesign/verified_data/validate_data.mjs
+# 1. 적색 정복왕 데이터 무결성 검증
+node games/crimson-conqueror/ReverseDesign/verified_data/validate_data.mjs
 
 # 2. 워크트리 소유권 검증
 npm run check:ownership

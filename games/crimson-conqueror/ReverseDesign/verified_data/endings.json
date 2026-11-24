@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "gameId": "kichikuou-rance",
+  "gameId": "crimson-conqueror",
   "sourceBasis": "All 14 canonical main story endings verified via cross-check of AliceSoft Wiki (Kichikuou Rance:Endings) and JP complete archive guides (xfu.jp, penpen.ne.jp, namu.wiki). 7 Clear/CG-Mode endings + 7 Game-Over/Special endings = 14/14 verified with zero unverified slots.",
   "mainEndingCountDocumented": 14,
   "characterDestinySystem": {

@@ -1,9 +1,9 @@
-/* Kichikuou Rance — Pure Deterministic Headless Hybrid SLG + Character Scenario Engine (Phase 2)
+/* Crimson Conqueror — Pure Deterministic Headless Hybrid SLG + Character Scenario Engine (Phase 2)
  * Zero DOM dependencies. Data-driven directly from verified_data/*.json via RANCE_DATA.
  * Features: 69 Canonical Units (59 Playable), 14 Verified Endings, 28 Character Destinies,
  * 28 Scenario Chains, 4v4 Combat w/ Tactics & Combat Zone Gauge, Post-Battle Capture/Recruitment,
  * 4 Multi-Floor Dungeons w/ Bosses & Relics, and Faction Diplomacy.
- * UMD Export: globalThis.KichikuouRanceEngine & module.exports
+ * UMD Export: globalThis.CrimsonConquerorEngine & module.exports
  */
 (function (root) {
   "use strict";
@@ -318,7 +318,7 @@
   function resolveData(data) {
     if (data && data.territories && data.factions) return data;
     if (root && root.RANCE_DATA) return root.RANCE_DATA;
-    throw new Error("KichikuouRanceEngine: RANCE_DATA is required.");
+    throw new Error("CrimsonConquerorEngine: RANCE_DATA is required.");
   }
 
   // Deterministic LCG PRNG (Numerical Recipes constants)
@@ -950,7 +950,7 @@
 
     const state = {
       saveVersion: SAVE_VERSION,
-      gameId: "kichikuou-rance",
+      gameId: "crimson-conqueror",
       turn: 1,
       calendar: { year: 3, month: 4, week: 1, totalWeeks: 0 },
       campaignPhase: startPhase,
@@ -3186,8 +3186,8 @@
   function deserialize(json, rawData) {
     resolveData(rawData);
     const parsed = typeof json === "string" ? JSON.parse(json) : deepClone(json);
-    if (!parsed || parsed.gameId !== "kichikuou-rance" || !parsed.territories || !parsed.commanders) {
-      throw new Error("Invalid Kichikuou Rance save snapshot.");
+    if (!parsed || parsed.gameId !== "crimson-conqueror" || !parsed.territories || !parsed.commanders) {
+      throw new Error("Invalid Crimson Conqueror save snapshot.");
     }
     // Backfill Phase 2 fields if loading a legacy save
     parsed.relics = parsed.relics || [];
@@ -3247,7 +3247,7 @@
   };
 
   if (typeof root !== "undefined") {
-    root.KichikuouRanceEngine = Engine;
+    root.CrimsonConquerorEngine = Engine;
   }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = Engine;
