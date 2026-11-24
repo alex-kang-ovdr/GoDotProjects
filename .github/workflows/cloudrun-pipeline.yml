@@ -69,9 +69,10 @@ env:
   ARTIFACT_REPO: us-west1-docker.pkg.dev/playhub-dev-2611/playhub-containers
   DEV_HUB_PROJECT: playhub-dev-2611
   DEV_FORGE_PROJECT: forge-dev-2611
-  # Browser-facing origins served by Firebase Hosting in front of playhub-hub.
+  # Browser-facing origins: Firebase Hosting in front of playhub-hub, plus the Hub's deterministic
+  # run.app URL and stage tag URL (previously set by hand on playhub-forge PUBLIC_ORIGIN).
   # Hub (PLAYHUB_EXTRA_ORIGINS) and Forge (PUBLIC_ORIGIN) reject any other Origin header.
-  DEV_PUBLIC_ORIGINS: https://playhub-dev-2611.web.app,https://playhub-dev-2611.firebaseapp.com
+  DEV_PUBLIC_ORIGINS: https://playhub-dev-2611.web.app,https://playhub-dev-2611.firebaseapp.com,https://playhub-hub-88778617121.us-west1.run.app,https://stage---playhub-hub-88778617121.us-west1.run.app
   # Custom-fork web editor binaries (forge/OfficialGodot/vendor-release is gitignored).
   WEB_EDITOR_ARTIFACT_BASE: gs://playhub-dev-deploy-2611/forge/web-editor
   LIVE_HUB_PROJECT: playhub-live-2611
