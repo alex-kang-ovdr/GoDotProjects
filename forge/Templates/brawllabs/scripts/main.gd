@@ -42,13 +42,13 @@ var touch_aim_max_travel := 0.0
 var touch_tap_fire := 0.0
 var touch_super_id := -1
 var touch_gadget_id := -1
-const TOUCH_STICK_RADIUS := 124.0
-const TOUCH_MOVE_HOME := Vector2(182.0, 610.0)
-const TOUCH_AIM_HOME := Vector2(1098.0, 610.0)
-const TOUCH_SUPER_CENTER := Vector2(936.0, 520.0)
-const TOUCH_SUPER_RADIUS := 58.0
-const TOUCH_GADGET_CENTER := Vector2(1040.0, 415.0)
-const TOUCH_GADGET_RADIUS := 48.0
+const TOUCH_STICK_RADIUS := 88.0
+const TOUCH_MOVE_HOME := Vector2(152.0, 622.0)
+const TOUCH_AIM_HOME := Vector2(1128.0, 622.0)
+const TOUCH_SUPER_CENTER := Vector2(982.0, 548.0)
+const TOUCH_SUPER_RADIUS := 44.0
+const TOUCH_GADGET_CENTER := Vector2(1062.0, 468.0)
+const TOUCH_GADGET_RADIUS := 38.0
 var _rng := RandomNumberGenerator.new()
 var multiplayer_mode := false
 var network_actor := -1
@@ -648,28 +648,28 @@ func _draw_touch_controls() -> void:
 	var mc := touch_move_origin if touch_move_id != -1 else TOUCH_MOVE_HOME
 	var mk := mc + touch_move_vec * TOUCH_STICK_RADIUS * 0.72
 	draw_circle(mc, TOUCH_STICK_RADIUS, Color(0.06, 0.16, 0.24, 0.44 if touch_move_id != -1 else 0.26))
-	draw_arc(mc, TOUCH_STICK_RADIUS, 0.0, TAU, 64, Color(0.38, 0.88, 0.94, 0.80 if touch_move_id != -1 else 0.45), 3.5, true)
-	draw_circle(mk, 52.0, Color(0.50, 0.92, 0.98, 0.76 if touch_move_id != -1 else 0.42))
-	draw_string(ThemeDB.fallback_font, mc + Vector2(-60.0, TOUCH_STICK_RADIUS + 22.0), "MOVE", HORIZONTAL_ALIGNMENT_CENTER, 120.0, 15, Color(0.84, 0.94, 0.98, 0.78))
+	draw_arc(mc, TOUCH_STICK_RADIUS, 0.0, TAU, 56, Color(0.38, 0.88, 0.94, 0.80 if touch_move_id != -1 else 0.45), 2.8, true)
+	draw_circle(mk, 36.0, Color(0.50, 0.92, 0.98, 0.76 if touch_move_id != -1 else 0.42))
+	draw_string(ThemeDB.fallback_font, mc + Vector2(-50.0, TOUCH_STICK_RADIUS + 18.0), "MOVE", HORIZONTAL_ALIGNMENT_CENTER, 100.0, 13, Color(0.84, 0.94, 0.98, 0.78))
 
 	var ac := touch_aim_origin if touch_aim_id != -1 else TOUCH_AIM_HOME
 	var ak := ac + touch_aim_vec * TOUCH_STICK_RADIUS * 0.72
 	draw_circle(ac, TOUCH_STICK_RADIUS, Color(0.28, 0.08, 0.14, 0.46 if touch_aim_id != -1 else 0.28))
-	draw_arc(ac, TOUCH_STICK_RADIUS, 0.0, TAU, 64, Color(1.0, 0.54, 0.60, 0.85 if touch_aim_id != -1 else 0.48), 3.5, true)
-	draw_circle(ak, 52.0, Color(1.0, 0.62, 0.66, 0.78 if touch_aim_id != -1 else 0.45))
-	draw_string(ThemeDB.fallback_font, ac + Vector2(-72.0, TOUCH_STICK_RADIUS + 22.0), "AIM · FIRE", HORIZONTAL_ALIGNMENT_CENTER, 144.0, 15, Color(1.0, 0.86, 0.88, 0.80))
+	draw_arc(ac, TOUCH_STICK_RADIUS, 0.0, TAU, 56, Color(1.0, 0.54, 0.60, 0.85 if touch_aim_id != -1 else 0.48), 2.8, true)
+	draw_circle(ak, 36.0, Color(1.0, 0.62, 0.66, 0.78 if touch_aim_id != -1 else 0.45))
+	draw_string(ThemeDB.fallback_font, ac + Vector2(-60.0, TOUCH_STICK_RADIUS + 18.0), "AIM · FIRE", HORIZONTAL_ALIGNMENT_CENTER, 120.0, 13, Color(1.0, 0.86, 0.88, 0.80))
 
 	var super_ready := super_charge >= 1.0
 	var super_col := Color(0.76, 0.50, 1.0, 0.84) if super_ready else Color(0.42, 0.34, 0.56, 0.45)
 	draw_circle(TOUCH_SUPER_CENTER, TOUCH_SUPER_RADIUS, super_col)
-	draw_arc(TOUCH_SUPER_CENTER, TOUCH_SUPER_RADIUS, -PI * 0.5, -PI * 0.5 + TAU * clampf(super_charge, 0.0, 1.0), 40, Color(0.95, 0.82, 1.0, 0.95), 3.5, true)
-	draw_string(ThemeDB.fallback_font, TOUCH_SUPER_CENTER + Vector2(-48.0, 6.0), "SUPER" if super_ready else "%d%%" % int(super_charge * 100), HORIZONTAL_ALIGNMENT_CENTER, 96.0, 15, Color(0.98, 0.97, 1.0, 0.96))
+	draw_arc(TOUCH_SUPER_CENTER, TOUCH_SUPER_RADIUS, -PI * 0.5, -PI * 0.5 + TAU * clampf(super_charge, 0.0, 1.0), 36, Color(0.95, 0.82, 1.0, 0.95), 3.0, true)
+	draw_string(ThemeDB.fallback_font, TOUCH_SUPER_CENTER + Vector2(-42.0, 5.0), "SUPER" if super_ready else "%d%%" % int(super_charge * 100), HORIZONTAL_ALIGNMENT_CENTER, 84.0, 13, Color(0.98, 0.97, 1.0, 0.96))
 
 	var gadget_ready := gadget_clock <= 0.0
 	var gadget_col := Color(0.28, 0.82, 0.74, 0.80) if gadget_ready else Color(0.24, 0.38, 0.42, 0.45)
 	draw_circle(TOUCH_GADGET_CENTER, TOUCH_GADGET_RADIUS, gadget_col)
-	draw_arc(TOUCH_GADGET_CENTER, TOUCH_GADGET_RADIUS, 0.0, TAU, 36, Color(0.74, 0.96, 0.94, 0.85), 3.0, true)
-	draw_string(ThemeDB.fallback_font, TOUCH_GADGET_CENTER + Vector2(-42.0, 6.0), "STEP" if gadget_ready else "%ds" % ceili(gadget_clock), HORIZONTAL_ALIGNMENT_CENTER, 84.0, 14, Color(0.96, 1.0, 0.98, 0.96))
+	draw_arc(TOUCH_GADGET_CENTER, TOUCH_GADGET_RADIUS, 0.0, TAU, 32, Color(0.74, 0.96, 0.94, 0.85), 2.4, true)
+	draw_string(ThemeDB.fallback_font, TOUCH_GADGET_CENTER + Vector2(-36.0, 5.0), "STEP" if gadget_ready else "%ds" % ceili(gadget_clock), HORIZONTAL_ALIGNMENT_CENTER, 72.0, 12, Color(0.96, 1.0, 0.98, 0.96))
 
 func _draw_arena() -> void:
 	draw_rect(Rect2(Vector2.ZERO, WORLD), Color("101a2b"))

@@ -228,26 +228,25 @@ func _vp_size() -> Vector2:
 func _layout_geometry() -> Dictionary:
 	var sz := _vp_size()
 	var short_side := minf(sz.x, sz.y)
-	# 2x thumbstick & button sizing for comfortable mobile thumb ergonomics,
-	# clamped on narrow portrait viewports so left/right zones never overlap.
-	var base_r := clampf(short_side * 0.195, 84.0, 136.0)
-	base_r = minf(base_r, sz.x * 0.21)
+	# Balanced 70% sizing (~96px radius on 720p) for comfortable thumb control without crowding the viewport.
+	var base_r := clampf(short_side * 0.136, 60.0, 96.0)
+	base_r = minf(base_r, sz.x * 0.17)
 	left_radius = base_r
 	right_radius = base_r
 
-	var margin_x := clampf(sz.x * 0.032, 18.0, 44.0)
-	var margin_y := clampf(sz.y * 0.042, 18.0, 40.0)
-	var left_center := Vector2(margin_x + base_r + 8.0, sz.y - margin_y - base_r - 12.0)
-	var right_center := Vector2(sz.x - margin_x - base_r - 8.0, sz.y - margin_y - base_r - 12.0)
+	var margin_x := clampf(sz.x * 0.032, 18.0, 42.0)
+	var margin_y := clampf(sz.y * 0.042, 18.0, 38.0)
+	var left_center := Vector2(margin_x + base_r + 8.0, sz.y - margin_y - base_r - 10.0)
+	var right_center := Vector2(sz.x - margin_x - base_r - 8.0, sz.y - margin_y - base_r - 10.0)
 
 	# Toggle pill at top-right (never collides with PlayHub top-left overlay)
-	var pill_w := clampf(short_side * 0.13, 72.0, 96.0)
-	var pill_h := clampf(short_side * 0.068, 34.0, 46.0)
+	var pill_w := clampf(short_side * 0.11, 62.0, 82.0)
+	var pill_h := clampf(short_side * 0.056, 30.0, 38.0)
 	_toggle_rect = Rect2(sz.x - pill_w - 16.0, 14.0, pill_w, pill_h)
 
 	# Layout action buttons cleanly around right stick (or left stick for flight_stick)
-	var btn_d := clampf(short_side * 0.185, 86.0, 132.0)
-	btn_d = minf(btn_d, sz.x * 0.20)
+	var btn_d := clampf(short_side * 0.130, 62.0, 92.0)
+	btn_d = minf(btn_d, sz.x * 0.16)
 	var right_btns: Array[int] = []
 	var left_btns: Array[int] = []
 	for i in range(buttons.size()):
@@ -641,6 +640,12 @@ func _find_voxel_player() -> Node:
 		return null
 	if "player" in scene and is_instance_valid(scene.get("player")):
 		return scene.get("player")
+	var by_name := scene.get_node_or_null("Player")
+	if by_name != null and ("pitch" in by_name) and ("camera" in by_name):
+		return by_name
+	for child in scene.get_children():
+		if child is Node3D and ("pitch" in child) and ("camera" in child):
+			return child
 	return scene.find_child("VoxelPlayer", true, false)
 
 
@@ -815,10 +820,10 @@ func _draw_pad(ctrl: Control) -> void:
 	var pill_bg := Color(0.08, 0.12, 0.16, 0.78) if user_visible else Color(0.08, 0.10, 0.13, 0.45)
 	var pill_border := Color(0.0, 0.76, 0.48, 0.85) if user_visible else Color(0.55, 0.62, 0.70, 0.45)
 	ctrl.draw_rect(_toggle_rect, pill_bg, true)
-	ctrl.draw_rect(_toggle_rect, pill_border, false, 2.0)
+	ctrl.draw_rect(_toggle_rect, pill_border, false, 1.8)
 	if font != null:
 		var lbl := "PAD ON" if user_visible else "PAD"
-		ctrl.draw_string(font, _toggle_rect.position + Vector2(0, _toggle_rect.size.y * 0.68), lbl, HORIZONTAL_ALIGNMENT_CENTER, _toggle_rect.size.x, 14, Color(0.92, 0.97, 0.99, 0.92))
+		ctrl.draw_string(font, _toggle_rect.position + Vector2(0, _toggle_rect.size.y * 0.68), lbl, HORIZONTAL_ALIGNMENT_CENTER, _toggle_rect.size.x, 12, Color(0.92, 0.97, 0.99, 0.92))
 
 	if not user_visible:
 		return
@@ -829,11 +834,11 @@ func _draw_pad(ctrl: Control) -> void:
 		var active := left_touch_id != -1
 		var knob := c + left_vec * base_r * 0.72
 		ctrl.draw_circle(c, base_r, Color(0.06, 0.14, 0.20, 0.42 if active else 0.28))
-		ctrl.draw_arc(c, base_r, 0.0, TAU, 64, Color(0.45, 0.90, 0.96, 0.82 if active else 0.48), 3.5, true)
+		ctrl.draw_arc(c, base_r, 0.0, TAU, 56, Color(0.45, 0.90, 0.96, 0.82 if active else 0.48), 2.8, true)
 		ctrl.draw_circle(knob, base_r * 0.42, Color(0.56, 0.92, 0.98, 0.76 if active else 0.46))
-		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 40, Color(0.90, 0.98, 1.0, 0.88), 2.5, true)
+		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 36, Color(0.90, 0.98, 1.0, 0.88), 2.0, true)
 		if font != null:
-			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 22.0), left_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 15, Color(0.84, 0.92, 0.96, 0.78))
+			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 18.0), left_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 13, Color(0.84, 0.92, 0.96, 0.78))
 
 	# Right stick
 	if has_right_stick:
@@ -841,11 +846,11 @@ func _draw_pad(ctrl: Control) -> void:
 		var active := right_touch_id != -1
 		var knob := c + right_vec * base_r * 0.72
 		ctrl.draw_circle(c, base_r, Color(0.24, 0.08, 0.12, 0.44 if active else 0.28))
-		ctrl.draw_arc(c, base_r, 0.0, TAU, 64, Color(1.0, 0.56, 0.60, 0.85 if active else 0.50), 3.5, true)
+		ctrl.draw_arc(c, base_r, 0.0, TAU, 56, Color(1.0, 0.56, 0.60, 0.85 if active else 0.50), 2.8, true)
 		ctrl.draw_circle(knob, base_r * 0.42, Color(1.0, 0.62, 0.64, 0.78 if active else 0.48))
-		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 40, Color(1.0, 0.92, 0.92, 0.90), 2.5, true)
+		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 36, Color(1.0, 0.92, 0.92, 0.90), 2.0, true)
 		if font != null:
-			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 22.0), right_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 15, Color(1.0, 0.86, 0.88, 0.80))
+			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 18.0), right_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 13, Color(1.0, 0.86, 0.88, 0.80))
 
 	# Action buttons
 	for b in buttons:
@@ -856,7 +861,7 @@ func _draw_pad(ctrl: Control) -> void:
 		var pressed := int(b["touch_id"]) != -1
 		var fill := col.lightened(0.22) if pressed else Color(col.r, col.g, col.b, col.a * 0.55)
 		ctrl.draw_circle(center, rad, fill)
-		ctrl.draw_arc(center, rad, 0.0, TAU, 44, col.lightened(0.35), 3.0, true)
+		ctrl.draw_arc(center, rad, 0.0, TAU, 40, col.lightened(0.35), 2.4, true)
 		if font != null:
 			var label_text := str(b["label"])
-			ctrl.draw_string(font, Vector2(r.position.x, center.y + 6.0), label_text, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 16, Color(0.98, 0.99, 1.0, 0.96))
+			ctrl.draw_string(font, Vector2(r.position.x, center.y + 5.0), label_text, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 13, Color(0.98, 0.99, 1.0, 0.96))
