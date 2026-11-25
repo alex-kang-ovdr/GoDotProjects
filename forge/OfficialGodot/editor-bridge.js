@@ -33,6 +33,17 @@
   const returnToEditorButton = document.getElementById('return-to-editor');
   const nativeGameOverlay = document.getElementById('native-game-overlay');
   const nativeGameFrame = document.getElementById('native-game-frame');
+  const nativeGameStatus = document.getElementById('native-game-status');
+  function setNativeGameStatus(message) {
+    if (!nativeGameStatus) return;
+    if (!message) {
+      nativeGameStatus.hidden = true;
+      nativeGameStatus.textContent = '';
+    } else {
+      nativeGameStatus.textContent = message;
+      nativeGameStatus.hidden = false;
+    }
+  }
   const agentFrame = document.getElementById('agent-dock-frame');
   const blenderDrawer = document.getElementById('blender-drawer');
   const portingDrawer = document.getElementById('porting-drawer');
@@ -548,16 +559,22 @@
   function positionNativeGame() {
     if (!nativeGameVisible || !nativeGameRect) return;
     const bounds = canvas.getBoundingClientRect();
-    nativeGameOverlay.style.left = `${bounds.left + nativeGameRect.x * bounds.width}px`;
-    nativeGameOverlay.style.top = `${bounds.top + nativeGameRect.y * bounds.height}px`;
-    nativeGameOverlay.style.width = `${nativeGameRect.width * bounds.width}px`;
-    nativeGameOverlay.style.height = `${nativeGameRect.height * bounds.height}px`;
+    if (!bounds.width || !bounds.height) return;
+    const x = Math.max(0, Math.min(1, nativeGameRect.x));
+    const y = Math.max(0, Math.min(1, nativeGameRect.y));
+    const right = Math.max(x, Math.min(1, nativeGameRect.x + nativeGameRect.width));
+    const bottom = Math.max(y, Math.min(1, nativeGameRect.y + nativeGameRect.height));
+    nativeGameOverlay.style.left = `${bounds.left + x * bounds.width}px`;
+    nativeGameOverlay.style.top = `${bounds.top + y * bounds.height}px`;
+    nativeGameOverlay.style.width = `${Math.max(1, (right - x) * bounds.width)}px`;
+    nativeGameOverlay.style.height = `${Math.max(1, (bottom - y) * bounds.height)}px`;
   }
   new ResizeObserver(positionNativeGame).observe(canvas);
   window.addEventListener('resize', positionNativeGame);
   nativeGameFrame.addEventListener('load', () => {
     if (nativeGameVisible) {
       status.textContent = '';
+      setNativeGameStatus('');
       nativeGameFrame.contentWindow?.focus();
     }
   });
@@ -603,13 +620,19 @@
     if (['brawllabs', 'fortress-war', 'tappy-chicken-mmo', 'captain-forever-mmo'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
       nativeGameBuildProfile = requestedProfile;
+      setNativeGameStatus('');
       await mountMultiplayerWorkspace(latest.project.template, requestedProfile);
       return;
     }
-    if (nativeGameRevision === latest.revision && nativeGameBuildProfile === requestedProfile && nativeGameFrame.getAttribute('src')) return;
-    status.textContent = requestedProfile === 'playhub-publish'
+    if (nativeGameRevision === latest.revision && nativeGameBuildProfile === requestedProfile && nativeGameFrame.getAttribute('src')) {
+      setNativeGameStatus('');
+      return;
+    }
+    const buildMsg = requestedProfile === 'playhub-publish'
       ? 'PIE 빌드 중 (PlayHub 배포용 · 아바타 ON)…'
       : 'PIE 빌드 중 (표준 Godot 미배포용 · 아바타 OFF)…';
+    status.textContent = buildMsg;
+    setNativeGameStatus(buildMsg);
     const token = await ensureCsrfToken();
     const response = await fetch(forgePath(`/api/platform-builds/${encodeURIComponent(projectId)}`), {
       method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-CSRF-Token': token } : {}) },
@@ -695,8 +718,12 @@
   function showNativeGame(screenMessage) {
     const rect = screenMessage.rect;
     if (!rect || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(rect[key])) ||
-        rect.x < 0 || rect.y < 0 || rect.width <= 0 || rect.height <= 0 || rect.x + rect.width > 1.01 || rect.y + rect.height > 1.01) return;
-    nativeGameRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        rect.width <= 0 || rect.height <= 0) return;
+    const x = Math.max(0, Math.min(0.99, rect.x));
+    const y = Math.max(0, Math.min(0.99, rect.y));
+    const width = Math.max(0.05, Math.min(1 - x, rect.width));
+    const height = Math.max(0.05, Math.min(1 - y, rect.height));
+    nativeGameRect = { x, y, width, height };
     window.__playforgeNativeGameRect = { ...nativeGameRect };
     nativeGameVisible = true;
     nativeGameOverlay.style.display = 'block';
@@ -705,6 +732,7 @@
       const generation = nativeGameGeneration;
       const load = loadNativeGame(generation).catch(error => {
         if (generation !== nativeGameGeneration) return;
+        setNativeGameStatus(`게임 뷰를 불러오지 못했습니다: ${error.message}`);
         showNotice(`Game workspace failed: ${error.message}`);
         console.error(error);
       }).finally(() => { if (nativeGameLoad === load) nativeGameLoad = null; });
@@ -947,7 +975,7 @@
     const concurrency = Math.min(24, Math.max(12, navigator.hardwareConcurrency || 1));
     game = new Engine({
       canvas: gameCanvas,
-      canvasResizePolicy: 1,
+      canvasResizePolicy: 2,
       persistentPaths: ['/home/web_user'],
       unloadAfterInit: false,
       emscriptenPoolSize: concurrency,

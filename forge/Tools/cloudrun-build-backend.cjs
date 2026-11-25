@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
+const { extractValidatedDeploymentZip } = require('./deployment-zip-validator.cjs');
 
 const METADATA_BASE = 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default';
 
@@ -248,7 +248,7 @@ async function runCloudRunBuild(job, snapshot, outputDir, deps = {}) {
   }
 
   const zipBuffer = await downloadGcsObject({ bucket: cfg.bucket, objectName: zipObject, accessToken, fetchImpl });
-  const zipValidation = validateDeploymentZip(zipBuffer);
+  const zipValidation = extractValidatedDeploymentZip(zipBuffer, outputDir);
   const expectedSha256 = typeof workerResult.artifactSha256 === 'string'
     ? workerResult.artifactSha256.trim().toLowerCase()
     : '';
@@ -259,9 +259,11 @@ async function runCloudRunBuild(job, snapshot, outputDir, deps = {}) {
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(path.join(outputDir, 'PlayForge-Web.zip'), zipBuffer);
 
-  job.files = ['PlayForge-Web.zip'];
+  const extractedFiles = Array.isArray(zipValidation.extractedFiles) ? zipValidation.extractedFiles : [];
+  const hasPreview = extractedFiles.includes('index.html');
+  job.files = [...extractedFiles, 'PlayForge-Web.zip'];
   job.downloadUrl = '/api/builds/' + job.id + '/files/PlayForge-Web.zip';
-  job.previewUrl = null;
+  job.previewUrl = hasPreview ? ('/api/builds/' + job.id + '/files/index.html') : null;
   job.artifactSha256 = zipValidation.sha256;
   job.bytes = zipValidation.bytes;
   job.expandedBytes = zipValidation.expandedBytes;

@@ -9,7 +9,8 @@
   <style>
     *{box-sizing:border-box}
     html,body{width:100%;height:100%;margin:0;background:#FAF8FF;color:#191B23;font:13.5px "Plus Jakarta Sans","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;overflow:hidden}
-    #toolbar{height:48px;display:flex;align-items:center;padding:0 14px;gap:10px;background:#FFFFFF;border-bottom:1px solid #DFE1F4}
+    #toolbar{height:48px;display:flex;align-items:center;padding:0 14px;gap:10px;background:#FFFFFF;border-bottom:1px solid #DFE1F4;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    #toolbar::-webkit-scrollbar{display:none}
     .brand-switcher{display:inline-flex;align-items:center;gap:12px;flex-shrink:0}
     .brand-hub-link{display:inline-flex;align-items:center;gap:5px;font-weight:800;color:#9AA0B4;text-decoration:none;white-space:nowrap;transition:color 150ms ease}
     .brand-hub-link:hover,.brand-hub-link:focus-visible{color:#191B23}
@@ -29,12 +30,14 @@
     #actions button[data-action="publish"]:hover{background:#003BA0;border-color:#003BA0;color:#FFFFFF}
     #notice{display:none;position:fixed;z-index:30;left:50%;bottom:16px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:10px 16px;border:1px solid #C3C6D7;border-radius:999px;background:#191B23;color:#FAF8FF;box-shadow:0 8px 24px rgba(17,19,27,0.28);overflow-wrap:anywhere}
     #editor-canvas{display:block;width:100%;height:calc(100% - 48px);outline:none;background:#15191F}
-    #game-overlay{display:none;position:absolute;inset:48px 0 0;background:#11131B;z-index:2}
-    #game-canvas{display:block;width:100%;height:100%;outline:none}
+    #game-overlay{display:none;position:fixed;inset:48px 0 0;background:#11131B;z-index:22;overflow:hidden}
+    #game-canvas{display:block;width:100%;height:100%;outline:none;touch-action:none}
     #return-to-editor{position:absolute;z-index:3;top:12px;right:14px;padding:7px 14px;border:1px solid #C3C6D7;border-radius:999px;background:#FFFFFF;color:#191B23;font:700 12.5px system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.25)}
     #return-to-editor:hover{border-color:#004AC6;color:#004AC6}
-    #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}
-    #native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
+    #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#0D111A;contain:strict}
+    #native-game-frame{display:block;width:100%;height:100%;border:0;background:#0D111A}
+    #native-game-status{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;background:rgba(13,17,26,0.92);color:#E8EEFA;font:600 13.5px/1.5 "Plus Jakarta Sans","Noto Sans KR",system-ui,sans-serif;text-align:center;z-index:2}
+    #native-game-status[hidden]{display:none}
     #agent-dock-frame{position:fixed;z-index:19;border:0;border-left:1px solid #DFE1F4;background:#FFFFFF}
     #blender-drawer,#porting-drawer{position:fixed;top:48px;right:0;bottom:0;width:min(820px,96vw);z-index:25;border:0;border-left:1px solid #DFE1F4;background:#12161f;box-shadow:-10px 0 30px rgba(17,19,27,0.24)}
     #blender-drawer[hidden],#porting-drawer[hidden]{display:none}
@@ -54,7 +57,7 @@
   <canvas id="editor-canvas" tabindex="0"></canvas>
   <div id="editor-loading" role="status" aria-live="polite"><strong id="editor-loading-title">Godot 웹 에디터 준비 중…</strong><div id="editor-loading-bar-wrap"><div id="editor-loading-bar"></div></div><div id="editor-loading-detail">프로젝트 파일을 불러오고 있습니다.</div></div>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
-  <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
+  <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe><div id="native-game-status" hidden></div></div>
   <iframe id="agent-dock-frame" title="PlayForge AI Agent" hidden></iframe>
   <iframe id="blender-drawer" title="PlayForge AI 3D Studio (Headless Blender)" hidden></iframe>
   <iframe id="porting-drawer" title="PlayForge AI Project Porting" hidden></iframe>
