@@ -903,7 +903,7 @@
     const joinMatch=location.pathname.match(/^\/join\/([^/]+)\/?/);
     if(joinMatch&&params.get('room')){state.view='social';}
     else if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))state.view='detail';
-    else if(['shorts','wishlist','social','create','agent','account','avatar','billing','wallet','redeem','direct'].includes(view))state.view=view;
+    else if(['shorts','wishlist','social','create','agent','account','avatar','billing','wallet','redeem','direct','downloads'].includes(view))state.view=view;
     else state.view=view==='browse'||state.query?'library':'home';
     if(state.view!=='social')window.PlayHubSocial?.unmount();
     $('app').hidden=state.view==='account';
@@ -925,6 +925,11 @@
     else if(state.view==='create')renderCreator();
     else if(state.view==='agent')renderHubAgent();
     else if(state.view==='avatar')renderAvatar();
+    else if(state.view==='downloads'){
+      stopImpressions();
+      meta('다운로드 | PLAY HUB','Windows · macOS · Android · iOS용 Play Hub 앱과 Forge 에디터를 다운로드하세요.','/?view=downloads');
+      await window.PlayHubDownloads?.mount($('app'),{api,toast});
+    }
     else if(state.view==='billing'||state.view==='wallet'||state.view==='redeem'||state.view==='direct'){
       stopImpressions();
       const billingCtx={api,toast,navigate,refreshSession:async()=>{const s=await api('/api/session');setSession(s);}};

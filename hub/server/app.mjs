@@ -33,6 +33,7 @@ import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
 import { createHubAgent } from './agent/routes.mjs';
 import { createShorts } from './shorts/routes.mjs';
+import { createDownloads } from './downloads.mjs';
 import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -225,6 +226,7 @@ export function createApp(input, dependencies = {}) {
   const mobile = createMobile({ config: mobileAppConfig, db, rootDir, now, rate, audit, google, sso, fetchImpl: dependencies.fetch || globalThis.fetch, ugcPublish, ugcMultiplayer, verifyMobileGoogleToken: dependencies.verifyMobileGoogleToken, verifyMobileNaverToken: dependencies.verifyMobileNaverToken, env: dependencies.env || process.env });
   const gamerQaHub = createGamerQaHub({ db, rootDir, versionCompat, mobile, now, rate });
   const adgame = createAdGame({ config, db, rootDir, now, rate, audit, env: dependencies.env || process.env });
+  const downloads = createDownloads({ config, platformRoot, env: dependencies.env || process.env });
   // Cross-Platform Social API for PC Hub & Hub Web (/api/social/*), sharing the same 9 SQLite tables with Mobile (/api/mobile/social/*).
   const webSocial = createSocial({
     config,
@@ -476,6 +478,7 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{locale:row?.locale || null}); return;
     }
     if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db,catalogOptions).filter(g => g.enabled).map(g => ({ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) })) }); return; }
+    if ((path === '/api/downloads' || path.startsWith('/api/downloads/')) && await downloads.publicRoute(req, res, url)) return;
     const gamePath = path.match(/^\/api\/games\/([a-zA-Z0-9_-]+)$/);
     if (gamePath && req.method === 'GET') { const g = findGame(rootDir,db,gamePath[1],true,catalogOptions); json(res,200,{ ...g, multiplayer: ugcMultiplayer.descriptorForGame(g) }); return; }
     if (path === '/api/auth/google/start' && req.method === 'GET') {
