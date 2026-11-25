@@ -62,7 +62,6 @@ targets:
       - sdk: Foundation.framework
       - sdk: GameController.framework
       - sdk: Metal.framework
-      - sdk: MetalFX.framework
       - sdk: OpenGLES.framework
       - sdk: QuartzCore.framework
       - sdk: Security.framework
@@ -76,6 +75,10 @@ targets:
         HEADER_SEARCH_PATHS:
           - "$(inherited)"
           - "$(SRCROOT)/GodotRuntime"
+        "OTHER_LDFLAGS[sdk=iphoneos*]":
+          - "$(inherited)"
+          - "-weak_framework"
+          - "MetalFX"
     preBuildScripts:
       - name: PlayHub Build Policy & Live Trunk Guard
         basedOnDependencyAnalysis: false

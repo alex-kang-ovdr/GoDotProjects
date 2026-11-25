@@ -101,7 +101,8 @@ jobs:
             -derivedDataPath "${DERIVED}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" \
+            VALIDATE_PRODUCT=NO
           APP_DIR="${DERIVED}/Build/Products/Release-iphoneos/PlayHubApp.app"
           test -d "${APP_DIR}"
           rm -rf "${DERIVED}/Payload"
