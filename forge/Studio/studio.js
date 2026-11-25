@@ -22,7 +22,7 @@
   function snapshotFrom(data){const doc=data?.document&&typeof data.document==='object'?data.document:data;return{revision:doc?.revision,settingsRevision:doc?.settingsRevision,project:doc?.project||state.project||{},source:String(doc?.source??state.source??''),textState:doc?.textState,settings:doc?.settings??state.settings,schema:doc?.settingsSchema??doc?.project?.settingsSchema??state.schema};}
   function ensureDoc(textState,source=''){
     if(!Y){log('error','Yjs bundle unavailable');return}
-    if(!state.doc){state.doc=new Y.Doc();state.text=state.doc.getText('lua');}
+    if(!state.doc){state.doc=new Y.Doc();state.text=state.doc.getText('script');}
     if(textState){try{Y.applyUpdate(state.doc,decode64(textState),remoteOrigin)}catch(error){log('error','Invalid shared source state: '+error.message)}}
     else if(!state.text.length&&source)state.doc.transact(()=>state.text.insert(0,source),remoteOrigin);
     if(!state.undo)state.undo=new Y.UndoManager(state.text,{trackedOrigins:new Set([localOrigin]),captureTimeout:500});
@@ -142,7 +142,7 @@
     const requestId=uuid();sendTextUpdate(Y.encodeStateAsUpdate(state.doc),requestId);
   }
   function editSource(value){
-    if(!state.text||!state.doc){$('luaNotice').textContent=t('sourceUnavailable');return}
+    if(!state.text||!state.doc){$('scriptNotice').textContent=t('sourceUnavailable');return}
     const old=state.text.toString();if(old===value)return;
     let start=0;while(start<old.length&&start<value.length&&old[start]===value[start])start++;
     let oldEnd=old.length,newEnd=value.length;while(oldEnd>start&&newEnd>start&&old[oldEnd-1]===value[newEnd-1]){oldEnd--;newEnd--;}
@@ -202,17 +202,17 @@
   }
   function renderPresence(){
     const users=state.users.filter(user=>user.clientId!==sessionId);$('userCount').textContent=String(users.length);$('presenceCount').textContent=String(users.length);
-    const list=$('presenceList');list.replaceChildren();const focusKeys={scene:'sceneFocus',lua:'luaFocus',assets:'assetFocus',settings:'settingsFocus',pie:'unknownFocus'};
+    const list=$('presenceList');list.replaceChildren();const focusKeys={scene:'sceneFocus',script:'scriptFocus',assets:'assetFocus',settings:'settingsFocus',pie:'unknownFocus'};
     document.querySelectorAll('.asset-thumb').forEach(button=>button.classList.remove('remote-selected'));
     for(const user of users){const row=document.createElement('div');row.className='presence-person';const avatar=document.createElement('span');avatar.className='presence-avatar';avatar.style.background=user.color||'#b7f46a';avatar.textContent=(user.name||'?').slice(0,1).toUpperCase();const name=document.createElement('span');name.textContent=user.name||'Guest';const focus=document.createElement('span');focus.className='presence-detail';const field=user.focusField?state.schema?.fields?.find(item=>item.key===user.focusField):null;const focusText=t(focusKeys[user.focus]||'unknownFocus');focus.textContent=field?focusText+' · '+t(field.labelKey||field.key):user.focusField==='sourceEditor'?focusText+' · '+$('scriptTitle').textContent:focusText;row.append(avatar,name,focus);list.append(row);if(user.selectedAsset){const asset=state.project?.assets?.find(item=>item.id===user.selectedAsset);const button=[...document.querySelectorAll('.asset-thumb')].find(node=>node.dataset.assetKey===user.selectedAsset||node.dataset.assetKey===asset?.path);if(button){button.classList.add('remote-selected');button.style.setProperty('--cursor-color',user.color||'#b7f46a');button.title=user.name||'Guest';}}}
     renderCursors();
   }
   function renderCursors(){
-    const layers={scene:$('sceneCursors'),lua:$('luaCursors'),assets:$('assetsCursors'),settings:$('settingsCursors'),pie:$('pieCursors')};
+    const layers={scene:$('sceneCursors'),script:$('scriptCursors'),assets:$('assetsCursors'),settings:$('settingsCursors'),pie:$('pieCursors')};
     new Set(Object.values(layers)).forEach(layer=>layer.replaceChildren());
     for(const user of state.users){if(user.clientId===sessionId||!user.cursor)continue;const pane=user.cursor.pane||user.focus||'scene',layer=layers[pane];if(!layer)continue;const cursor=document.createElement('span');cursor.className='presence-cursor';cursor.style.setProperty('--cursor-color',user.color||'#b7f46a');cursor.style.left=(Math.max(0,Math.min(1,user.cursor.x||0))*100)+'%';cursor.style.top=(Math.max(0,Math.min(1,user.cursor.y||0))*100)+'%';cursor.textContent=user.name||'Guest';layer.append(cursor)}
   }
-  function focusFor(target){if(target.closest('#sourceEditor'))return'lua';if(target.closest('#assetGrid,#assetsPane'))return'assets';if(target.closest('#settingsPane,.inspector-section'))return'settings';if(target.closest('#gameCanvas'))return'pie';return state.tab==='pie'?'pie':state.tab==='lua'?'lua':'scene'}
+  function focusFor(target){if(target.closest('#sourceEditor'))return'script';if(target.closest('#assetGrid,#assetsPane'))return'assets';if(target.closest('#settingsPane,.inspector-section'))return'settings';if(target.closest('#gameCanvas'))return'pie';return state.tab==='pie'?'pie':state.tab==='script'?'script':'scene'}
   function sendPresence(event){
     const ws=state.ws;if(!ws||ws.readyState!==WebSocket.OPEN)return;
     state.focus=event?focusFor(event.target):state.focus;let pane=state.focus,x=.5,y=.5;
@@ -223,7 +223,7 @@
   }
   function schedulePresence(event){if(event)state.lastPointerEvent=event;if(state.cursorTimer)return;state.cursorTimer=window.setTimeout(()=>{state.cursorTimer=0;sendPresence(state.lastPointerEvent)},70)}
   function log(kind,message){const row=document.createElement('div');row.className='log-entry '+kind;const time=document.createElement('span');time.className='log-time';time.textContent=new Date().toLocaleTimeString(i18n.locale,{hour:'2-digit',minute:'2-digit',second:'2-digit'});const text=document.createElement('span');text.textContent=message;row.append(time,text);$('logList').append(row);while($('logList').children.length>140)$('logList').firstElementChild.remove();$('logList').scrollTop=$('logList').scrollHeight}
-  function setTab(tab){const prior=state.tab;state.tab=tab;document.querySelectorAll('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab===tab));$('sceneView').hidden=tab!=='scene';$('luaView').hidden=tab!=='lua';$('pieView').hidden=tab!=='pie';state.focus=tab==='lua'?'lua':tab==='pie'?'pie':'scene';state.focusField='';if(prior!==tab&&ownsSettings()&&!state.settingsDirty)releaseLock();sendPresence()}
+  function setTab(tab){const prior=state.tab;state.tab=tab;document.querySelectorAll('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab===tab));$('sceneView').hidden=tab!=='scene';$('scriptView').hidden=tab!=='script';$('pieView').hidden=tab!=='pie';state.focus=tab==='script'?'script':tab==='pie'?'pie':'scene';state.focusField='';if(prior!==tab&&ownsSettings()&&!state.settingsDirty)releaseLock();sendPresence()}
   function assetLabel(asset){return asset.localizedName?.[i18n.locale]||asset.name||asset.path?.split('/').pop()||'Asset'}
   function openAsset(index){const asset=state.project?.assets?.[index];if(!asset){log('warning',t('assetMissing'));return}state.assetReturn=document.activeElement;state.selectedAsset=asset.id||asset.path;document.querySelectorAll('.asset-thumb').forEach(button=>button.classList.toggle('selected',button.dataset.assetKey===state.selectedAsset));$('assetTitle').textContent=assetLabel(asset);$('assetImage').src=asset.path;$('assetImage').alt=asset.alt||assetLabel(asset);$('assetType').textContent=asset.type||'—';$('assetPath').textContent=asset.path||'—';$('assetId').textContent=asset.id||'—';if(!$('assetModal').open)$('assetModal').showModal();state.focus='assets';sendPresence()}
   function closeAsset(){if($('assetModal').open)$('assetModal').close();state.assetReturn?.focus?.();state.assetReturn=null}
@@ -237,7 +237,7 @@
   async function saveProject(){
     if(state.settingsDirty&&!ownsSettings()){log('warning',t('settingsLockRequired'));return false}
     if(state.doc&&state.ws?.readyState===WebSocket.OPEN)sendFullText();
-    if(!state.settingsDirty){$('luaNotice').textContent=state.pendingText.size?t('syncingSource'):t('sourceSynced');return await waitForTextSync(5000)}
+    if(!state.settingsDirty){$('scriptNotice').textContent=state.pendingText.size?t('syncingSource'):t('sourceSynced');return await waitForTextSync(5000)}
     const payload={clientId:sessionId,lockToken:state.lockToken,settingsRevision:state.settingsRevision,baseRevision:state.revision,source:state.text?.toString()??state.source,settings:{...state.settings}};
     $('saveSource').disabled=true;
     try{
@@ -247,7 +247,7 @@
       if(!response.ok||data.ok===false)throw new Error(data.error||'HTTP '+response.status);
       const doc=data.document||data;state.revision=doc.revision??state.revision;state.settingsRevision=doc.settingsRevision??state.settingsRevision;state.project=doc.project||state.project;
       state.settings={...valuesFrom(doc.settings??state.settings)};state.originalSettings=JSON.stringify(state.settings);state.settingsDirty=false;renderSettings();updateRevision();renderAssets();updateDirty();log('success',t('saved'));sendPresence();if(ownsSettings())releaseLock();return true;
-    }catch(error){log('error',t('saveFailed')+' '+error.message);$('luaNotice').textContent=t('saveFailed');return false}
+    }catch(error){log('error',t('saveFailed')+' '+error.message);$('scriptNotice').textContent=t('saveFailed');return false}
     finally{updateDirty()}
   }
   function waitForTextSync(timeout){return new Promise(resolve=>{if(!state.pendingText.size)return resolve(true);const start=Date.now(),timer=window.setInterval(()=>{if(!state.pendingText.size){clearInterval(timer);resolve(true)}else if(Date.now()-start>=timeout){clearInterval(timer);resolve(false)}},50)})}
@@ -336,7 +336,7 @@
   }
   function initEvents(){
     document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
-    document.querySelectorAll('[data-file]').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.file==='lua'?'lua':'scene')));
+    document.querySelectorAll('[data-file]').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.file==='script'?'script':'scene')));
     document.querySelector('.inspector-section').addEventListener('pointerdown',acquireLock,true);
     $('acquireSettingsLock').addEventListener('click',acquireLock);
     $('releaseSettingsLock').addEventListener('click',()=>{if(!state.settingsDirty)releaseLock()});

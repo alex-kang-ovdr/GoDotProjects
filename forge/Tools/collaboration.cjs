@@ -73,7 +73,7 @@ function attachCollaboration(server, store, onLeave = () => {}, originAllowed = 
         const cursor = message.cursor;
         if (cursor && typeof cursor === 'object' && !Array.isArray(cursor) &&
             Number.isFinite(cursor.x) && Number.isFinite(cursor.y) &&
-            ['scene', 'lua', 'assets', 'settings', 'pie'].includes(cursor.pane)) {
+            ['scene', 'script', 'assets', 'settings', 'pie'].includes(cursor.pane)) {
           peer.cursor = { pane: cursor.pane, x: Math.max(0, Math.min(1, cursor.x)), y: Math.max(0, Math.min(1, cursor.y)) };
         } else peer.cursor = null;
         if (typeof message.name === 'string') peer.name = message.name.trim().slice(0, 40) || peer.name;

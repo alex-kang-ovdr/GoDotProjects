@@ -43,9 +43,9 @@ test('two real sockets share presence, cursor and focus; disconnect removes the 
   const bob = await join(base, 'client-bobby', 'Bob');
   t.after(() => { alice.terminate(); bob.terminate(); });
   await until(() => alice.messages.some(m => m.type === 'presence' && m.users.length === 2));
-  bob.send(JSON.stringify({ type: 'presence', focus: 'lua-source', focusField: 'f'.repeat(140),
+  bob.send(JSON.stringify({ type: 'presence', focus: 'script-source', focusField: 'f'.repeat(140),
     selectedAsset: 'asset/'.repeat(50), cursor: { x: .25, y: .75, pane: 'pie' } }));
-  const update = await until(() => alice.messages.find(m => m.type === 'presence' && m.users.some(u => u.clientId === 'client-bobby' && u.focus === 'lua-source')));
+  const update = await until(() => alice.messages.find(m => m.type === 'presence' && m.users.some(u => u.clientId === 'client-bobby' && u.focus === 'script-source')));
   const collaborator = update.users.find(u => u.clientId === 'client-bobby');
   assert.deepEqual(collaborator.cursor, { x: .25, y: .75, pane: 'pie' });
   assert.equal(collaborator.focusField.length, 120);
@@ -132,9 +132,9 @@ test('concurrent Y.Text inserts converge, duplicate operations are idempotent, a
   Y.applyUpdate(aliceDoc, Buffer.from(initial.textState, 'base64'));
   Y.applyUpdate(bobDoc, Buffer.from(initial.textState, 'base64'));
   const baseline = Y.encodeStateVector(aliceDoc);
-  const offset = aliceDoc.getText('lua').length;
-  aliceDoc.getText('lua').insert(offset, '\n-- Alice concurrent edit');
-  bobDoc.getText('lua').insert(offset, '\n-- Bob concurrent edit');
+  const offset = aliceDoc.getText('script').length;
+  aliceDoc.getText('script').insert(offset, '\n# Alice concurrent edit');
+  bobDoc.getText('script').insert(offset, '\n# Bob concurrent edit');
   const aliceUpdate = Buffer.from(Y.encodeStateAsUpdate(aliceDoc, baseline)).toString('base64');
   const bobUpdate = Buffer.from(Y.encodeStateAsUpdate(bobDoc, baseline)).toString('base64');
   alice.send(JSON.stringify({ type: 'text-update', requestId: 'alice-edit-0001', update: aliceUpdate }));
@@ -143,11 +143,11 @@ test('concurrent Y.Text inserts converge, duplicate operations are idempotent, a
   await until(() => bob.messages.find(message => message.type === 'text-ack' && message.requestId === 'bobby-edit-0001'));
 
   const document = await (await fetch(base + '/api/project')).json();
-  assert.match(document.source, /-- Alice concurrent edit/);
-  assert.match(document.source, /-- Bob concurrent edit/);
+  assert.match(document.source, /# Alice concurrent edit/);
+  assert.match(document.source, /# Bob concurrent edit/);
   const mergedDoc = new Y.Doc();
   Y.applyUpdate(mergedDoc, Buffer.from(document.textState, 'base64'));
-  assert.equal(mergedDoc.getText('lua').toString(), document.source);
+  assert.equal(mergedDoc.getText('script').toString(), document.source);
   assert.equal(document.textRevision, initial.textRevision + 2);
 
   const storePath = path.resolve(__dirname, '..');
@@ -162,7 +162,7 @@ test('concurrent Y.Text inserts converge, duplicate operations are idempotent, a
   const rejoined = charlie.messages.find(message => message.type === 'welcome').document;
   const replayDoc = new Y.Doc();
   Y.applyUpdate(replayDoc, Buffer.from(rejoined.textState, 'base64'));
-  assert.equal(replayDoc.getText('lua').toString(), document.source);
+  assert.equal(replayDoc.getText('script').toString(), document.source);
 
   const beforeDuplicate = document.revision;
   alice.messages.length = 0;

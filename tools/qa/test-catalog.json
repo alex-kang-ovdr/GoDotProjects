@@ -675,6 +675,20 @@
       "owner": "PlayForge-Main"
     },
     {
+      "path": "forge/Tests/project-store-migration.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Refactoring"
+    },
+    {
       "path": "forge/Tests/deployment-zip-archive.test.cjs",
       "tier": "fast",
       "suites": [

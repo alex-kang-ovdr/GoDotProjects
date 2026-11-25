@@ -16,7 +16,7 @@
     <span class="studio-mark">GODOT LAYOUT</span>
     <div class="menu-strip" aria-label="Editor navigation">
       <button type="button" class="menu-link" data-open-view="scene">Project</button>
-      <button type="button" class="menu-link" data-open-view="lua">Script</button>
+      <button type="button" class="menu-link" data-open-view="script">Script</button>
       <button type="button" class="menu-link" data-open-view="pie">Game / Run</button>
     </div>
     <span class="project-title">Project</span>
@@ -35,7 +35,7 @@
       <div class="project-tree scene-tree">
         <button class="tree-row selected" id="projectTree" type="button"><span aria-hidden="true">▾</span><b id="projectTreeName">Project</b></button>
         <button class="tree-row child active" data-file="scene" type="button"><span class="file-icon scene-icon" aria-hidden="true">◇</span><span data-i18n="mainScene">Main Scene</span></button>
-        <button class="tree-row child" data-file="lua" type="button"><span class="file-icon lua-icon" aria-hidden="true">⌘</span><span id="sourceFileName">Script</span></button>
+        <button class="tree-row child" data-file="script" type="button"><span class="file-icon script-icon" aria-hidden="true">⌘</span><span id="sourceFileName">Script</span></button>
       </div>
       <div class="dock-heading"><span>FileSystem</span><span class="muted">res://</span></div>
       <div class="cursor-pane filesystem" id="assetsPane">
@@ -50,7 +50,7 @@
     <main class="center-pane">
       <nav class="tabs" aria-label="Editor views">
         <button class="tab active" data-tab="scene" type="button"><span aria-hidden="true">◇</span><span data-i18n="scene">2D Scene</span></button>
-        <button class="tab" data-tab="lua" type="button"><span aria-hidden="true">⌘</span><span>GDScript</span><i class="dirty-dot" id="dirtyDot" hidden></i></button>
+        <button class="tab" data-tab="script" type="button"><span aria-hidden="true">⌘</span><span>GDScript</span><i class="dirty-dot" id="dirtyDot" hidden></i></button>
         <button class="tab" data-tab="pie" type="button"><span aria-hidden="true">▷</span><span>Game</span></button>
       </nav>
       <section class="editor-view scene-view" id="sceneView">
@@ -58,10 +58,10 @@
         <div class="scene-stage"><div class="scene-frame" id="sceneFrame"></div><div class="cursor-layer" id="sceneCursors" aria-hidden="true"></div><span class="collab-focus" id="sceneFocus"></span></div>
         <div class="scene-caption"><span data-i18n="sceneHint">게임 코드는 GDScript 탭에서 편집하고 PIE에서 실행하세요.</span><span id="sceneCursorText"></span></div>
       </section>
-      <section class="editor-view lua-view" id="luaView" hidden>
+      <section class="editor-view script-view" id="scriptView" hidden>
         <div class="viewport-head"><div><span class="eyebrow" data-i18n="sourceEditorTitle">SCRIPT EDITOR</span><h1 id="scriptTitle">Script</h1></div><span class="sync-indicator" id="sourceStatus"></span></div>
-        <div class="lua-editor-wrap"><div class="line-numbers" id="lineNumbers" aria-hidden="true"></div><textarea id="sourceEditor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="GDScript source editor"></textarea><div class="cursor-layer lua-cursor-layer" id="luaCursors" aria-hidden="true"></div></div>
-        <div class="editor-actions"><div class="source-tools"><button class="button" id="undoButton" type="button" data-i18n="undo">Undo</button><button class="button" id="redoButton" type="button" data-i18n="redo">Redo</button><span id="luaNotice" class="muted"></span></div><button class="button primary" id="saveSource" type="button" data-i18n="saveChanges">변경사항 저장</button></div>
+        <div class="script-editor-wrap"><div class="line-numbers" id="lineNumbers" aria-hidden="true"></div><textarea id="sourceEditor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="GDScript source editor"></textarea><div class="cursor-layer script-cursor-layer" id="scriptCursors" aria-hidden="true"></div></div>
+        <div class="editor-actions"><div class="source-tools"><button class="button" id="undoButton" type="button" data-i18n="undo">Undo</button><button class="button" id="redoButton" type="button" data-i18n="redo">Redo</button><span id="scriptNotice" class="muted"></span></div><button class="button primary" id="saveSource" type="button" data-i18n="saveChanges">변경사항 저장</button></div>
       </section>
       <section class="editor-view pie-view" id="pieView" hidden>
         <div class="pie-toolbar"><div><span class="eyebrow" data-i18n="playInEditor">GAME VIEW</span><strong data-i18n="runtime">Runtime</strong></div><div class="pie-actions"><button class="button" id="soundButton" type="button" data-i18n="soundOn">♫ 소리 켬</button><button class="button" id="pauseButton" type="button" data-i18n="pause">일시정지</button><button class="button" id="restartButton" type="button" data-i18n="restart">다시 시작</button><button class="button stop" id="stopButton" type="button" data-i18n="stop">정지</button></div></div>

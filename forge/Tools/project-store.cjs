@@ -8,6 +8,11 @@ const MAX_SOURCE_BYTES = 256000;
 const MAX_UPDATE_BYTES = 512000;
 const LOCK_LEASE_MS = 30000;
 const ID_PATTERN = /^[a-zA-Z0-9_-]{8,100}$/;
+// Shared GDScript source lives in this Y.Text root. Version 1 states (before 2026-11-25) used the root name
+// LEGACY_TEXT_KEY; they are rebuilt once under SCRIPT_TEXT_KEY on load (see migrateLegacyTextState).
+const SCRIPT_TEXT_KEY = 'script';
+const LEGACY_TEXT_KEY = 'lua';
+const TEXT_STATE_VERSION = 2;
 
 class ProjectStore {
   constructor(root, workspace) {
@@ -41,29 +46,36 @@ class ProjectStore {
       const savedSettings = knownSettings(this.settingsSchema, saved.settings);
       this.validate({ ...saved, settings: savedSettings }, savedSettings);
       if (!Number.isSafeInteger(saved.revision) || saved.revision < 1) throw new Error('Invalid saved workspace revision');
-      if (saved.textState !== undefined) {
+      let migrated = false;
+      if (saved.textState !== undefined && saved.textStateVersion === TEXT_STATE_VERSION) {
         if (typeof saved.textState !== 'string' || saved.textState.length > 700000) throw new Error('Invalid saved text state');
         Y.applyUpdate(this.textDoc, decodeBase64(saved.textState, MAX_UPDATE_BYTES));
-        this.source = this.textDoc.getText('lua').toString();
+        this.source = this.textDoc.getText(SCRIPT_TEXT_KEY).toString();
         if (saved.source !== this.source) throw new Error('Saved GDScript source does not match its Yjs state');
       } else {
-        this.textDoc.getText('lua').insert(0, saved.source);
+        // Legacy state (version 1 under LEGACY_TEXT_KEY, or source-only): rebuild under SCRIPT_TEXT_KEY.
+        if (saved.textState !== undefined) migrateLegacyTextState(saved);
+        this.textDoc.getText(SCRIPT_TEXT_KEY).insert(0, saved.source);
         this.source = saved.source;
+        migrated = true;
       }
       this.settings = savedSettings;
       this.revision = saved.revision;
       this.textRevision = Number.isSafeInteger(saved.textRevision) && saved.textRevision >= 1 ? saved.textRevision : 1;
       this.settingsRevision = Number.isSafeInteger(saved.settingsRevision) && saved.settingsRevision >= 1 ? saved.settingsRevision : 1;
       this.lockFence = Number.isSafeInteger(saved.lockFence) && saved.lockFence >= 0 ? saved.lockFence : 0;
-      this.operations = Array.isArray(saved.operations) ? saved.operations : [];
+      // Journal entries of a legacy state only touch the legacy root, so they are dropped on migration.
+      this.operations = !migrated && Array.isArray(saved.operations) ? saved.operations : [];
       for (const operation of this.operations) {
         if (!operation || typeof operation.clientId !== 'string' || typeof operation.requestId !== 'string' ||
             typeof operation.hash !== 'string' || typeof operation.update !== 'string') {
           throw new Error('Invalid saved collaboration journal');
         }
       }
+      // Persist the migrated state right away so every later load (and every client) sees one stable Y history.
+      if (migrated) this.persistSync(this.persistedState());
     } else {
-      this.textDoc.getText('lua').insert(0, this.source);
+      this.textDoc.getText(SCRIPT_TEXT_KEY).insert(0, this.source);
     }
     this.validate({ source: this.source, settings: this.settings });
   }
@@ -101,6 +113,7 @@ class ProjectStore {
       textRevision: this.textRevision,
       settingsRevision: this.settingsRevision,
       source: this.source,
+      textStateVersion: TEXT_STATE_VERSION,
       textState: encodeBase64(Y.encodeStateAsUpdate(this.textDoc)),
       settings: { ...this.settings },
     };
@@ -171,7 +184,7 @@ class ProjectStore {
       let candidateDoc = this.textDoc;
       if (sourceChanged) {
         candidateDoc = cloneDoc(this.textDoc);
-        const text = candidateDoc.getText('lua');
+        const text = candidateDoc.getText(SCRIPT_TEXT_KEY);
         candidateDoc.transact(() => {
           if (text.length) text.delete(0, text.length);
           if (change.source.length) text.insert(0, change.source);
@@ -217,7 +230,9 @@ class ProjectStore {
       const candidateDoc = cloneDoc(this.textDoc);
       try {
         Y.applyUpdate(candidateDoc, bytes);
-        const source = candidateDoc.getText('lua').toString();
+        // A tab still running the pre-migration Studio writes to the legacy root; refuse so it reloads.
+        if (candidateDoc.share.has(LEGACY_TEXT_KEY)) throw new Error('Outdated editor: reload the page to continue editing');
+        const source = candidateDoc.getText(SCRIPT_TEXT_KEY).toString();
         if (Buffer.byteLength(source, 'utf8') > MAX_SOURCE_BYTES) throw new Error('GDScript source must be under 256 KB');
         const revision = this.revision + 1;
         const textRevision = this.textRevision + 1;
@@ -271,6 +286,7 @@ class ProjectStore {
       revision: this.revision,
       textRevision: this.textRevision,
       settingsRevision: this.settingsRevision,
+      textStateVersion: TEXT_STATE_VERSION,
       textState: encodeBase64(Y.encodeStateAsUpdate(this.textDoc)),
       operations: this.operations,
       lockFence: this.lockFence,
@@ -286,6 +302,18 @@ class ProjectStore {
       await fs.promises.rename(temporary, this.file);
     } catch (error) {
       await fs.promises.unlink(temporary).catch(() => {});
+      throw error;
+    }
+  }
+
+  persistSync(state) {
+    fs.mkdirSync(path.dirname(this.file), { recursive: true });
+    const temporary = `${this.file}.tmp-${process.pid}-${crypto.randomBytes(6).toString('hex')}`;
+    try {
+      fs.writeFileSync(temporary, JSON.stringify(state, null, 2) + '\n', { flag: 'wx' });
+      fs.renameSync(temporary, this.file);
+    } catch (error) {
+      try { fs.unlinkSync(temporary); } catch {}
       throw error;
     }
   }
@@ -322,10 +350,22 @@ function decodeBase64(value, maximumBytes) {
   }
   return bytes;
 }
+// Reads a version 1 text state and checks it still matches the saved source before it is rebuilt.
+function migrateLegacyTextState(saved) {
+  if (typeof saved.textState !== 'string' || saved.textState.length > 700000) throw new Error('Invalid saved text state');
+  const legacyDoc = new Y.Doc();
+  try {
+    Y.applyUpdate(legacyDoc, decodeBase64(saved.textState, MAX_UPDATE_BYTES));
+    const legacySource = legacyDoc.getText(LEGACY_TEXT_KEY).toString();
+    if (legacySource !== saved.source) throw new Error('Saved GDScript source does not match its legacy Yjs state');
+  } finally {
+    legacyDoc.destroy();
+  }
+}
 function cloneDoc(doc) {
   const clone = new Y.Doc();
   Y.applyUpdate(clone, Y.encodeStateAsUpdate(doc));
   return clone;
 }
 
-module.exports = { ProjectStore };
+module.exports = { ProjectStore, SCRIPT_TEXT_KEY, TEXT_STATE_VERSION };

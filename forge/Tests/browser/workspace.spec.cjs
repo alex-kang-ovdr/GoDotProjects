@@ -90,8 +90,8 @@ test('classic and Godot editor layouts share the same GDScript document', async 
     await openStudio(godotStudio, '/StudioGodot/');
     await expect(page.locator('#presenceList')).toContainText('Godot editor');
     await expect(godotStudio.locator('#presenceList')).toContainText('Classic editor');
-    await page.locator('[data-tab="lua"]').click();
-    await godotStudio.locator('[data-tab="lua"]').click();
+    await page.locator('[data-tab="script"]').click();
+    await godotStudio.locator('[data-tab="script"]').click();
     await page.locator('#sourceEditor').press('Control+End');
     await page.keyboard.insertText('\n# Cross frontend shared source proof');
     await expect(godotStudio.locator('#sourceEditor')).toHaveValue(new RegExp('Cross frontend shared source proof'));
@@ -133,7 +133,7 @@ test('native Godot GDScript PIE starts, pauses, survives language changes and re
 
 test('editing GDScript changes the actual engine result, and syntax errors recover', async ({ page }) => {
   await openStudio(page);
-  await page.locator('[data-tab="lua"]').click();
+  await page.locator('[data-tab="script"]').click();
   const original = await page.locator('#sourceEditor').inputValue();
   const proof = original.replace('"state": _state,', '"editorProof": 731,\n\t\t"state": _state,');
   expect(proof).not.toBe(original);
@@ -143,7 +143,7 @@ test('editing GDScript changes the actual engine result, and syntax errors recov
     await page.locator('#playButton').click();
     await expect.poll(async () => (await runtime(page))?.editorProof).toBe(731);
     await page.locator('#stopButton').click();
-    await page.locator('[data-tab="lua"]').click();
+    await page.locator('[data-tab="script"]').click();
     await page.locator('#sourceEditor').fill('this is not valid GDScript');
     await page.locator('#saveSource').click();
     await page.locator('#playButton').click();
@@ -151,7 +151,7 @@ test('editing GDScript changes the actual engine result, and syntax errors recov
     await expect(page.locator('#logList')).toContainText(runtimeFailure);
     expect(await runtime(page)).toBeNull();
   } finally {
-    await page.locator('[data-tab="lua"]').click();
+    await page.locator('[data-tab="script"]').click();
     await page.locator('#sourceEditor').fill(original);
     await page.locator('#saveSource').click();
   }
@@ -171,12 +171,12 @@ test('two users share cursors, merge GDScript edits, preserve remote undo and en
     await openStudio(bob);
     await expect(page.locator('#presenceList')).toContainText('Bob');
     await expect(bob.locator('#presenceList')).toContainText('Alice');
-    await page.locator('[data-tab="lua"]').click(); await bob.locator('[data-tab="lua"]').click();
+    await page.locator('[data-tab="script"]').click(); await bob.locator('[data-tab="script"]').click();
     const original = await page.locator('#sourceEditor').inputValue();
     const box = await bob.locator('#sourceEditor').boundingBox();
     await bob.mouse.move(box.x + box.width * .4, box.y + box.height * .3);
     await bob.locator('#sourceEditor').focus();
-    await expect.poll(() => page.evaluate(() => GamePlayForgeStudio.state.users.some(u => u.name === 'Bob' && u.cursor?.pane === 'lua'))).toBe(true);
+    await expect.poll(() => page.evaluate(() => GamePlayForgeStudio.state.users.some(u => u.name === 'Bob' && u.cursor?.pane === 'script'))).toBe(true);
     await Promise.all([
       page.locator('#sourceEditor').press('Control+End').then(() => page.keyboard.insertText('\n# Alice concurrent edit')),
       bob.locator('#sourceEditor').press('Control+End').then(() => bob.keyboard.insertText('\n# Bob concurrent edit'))

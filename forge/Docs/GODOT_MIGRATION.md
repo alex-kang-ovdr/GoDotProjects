@@ -28,7 +28,7 @@ Studio GDScript editor ── Yjs / settings revisions ── Node local service
 GDScript는 `extends RefCounted`와 `reset(settings)`, `input(action)`, `update(dt)`, `snapshot()`을 구현합니다.
 load는 전달된 source를 새 GDScript 인스턴스로 컴파일하고 reset합니다. Studio 수정은 다음 load에 반영합니다.
 기본 프로젝트는 manifest의 runtime.entry에서 선택되며 Studio 작업 데이터와 저장소 파일은 분리되어 있습니다.
-기존 Yjs 문서의 내부 키 `lua`와 UI DOM 식별자는 저장·협업 호환성을 위해 남았고, 언어와 표시는 GDScript입니다.
+공유 GDScript 소스의 Yjs 루트 키는 `script`입니다(textStateVersion 2, 2026-11-25). 이전 버전 작업 공간은 처음 불러올 때 한 번 `script` 루트로 다시 만들어 저장하고, 옛 키에 쓰는 갱신(새로고침하지 않은 이전 탭)은 거부합니다. UI DOM 식별자도 `script`로 바꿨습니다.
 
 상호작용 모드는 Godot `_physics_process` 60Hz로 진행합니다. Studio는 snapshot만 조회하므로 중복 update가 없습니다.
 테스트 모드는 동일 host의 manual clock으로 정확한 dt를 입력합니다. realtime 모드에서 외부 step을 거부합니다.
