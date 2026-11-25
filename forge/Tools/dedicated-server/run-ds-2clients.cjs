@@ -1,0 +1,327 @@
+#!/usr/bin/env node
+'use strict';
+/**
+ * Godot 데디케이티드 서버 R0 스파이크 실행기 (로드맵 25/28).
+ *
+ * 1 headless 서버 + 2 headless 클라이언트(+ 늦은 입장 1, 공격 probe 4)를 별도 프로세스로 띄우고
+ * 서버/클라이언트 JSON 이벤트(NETEV)로 다음을 판정한다.
+ *   - 클라이언트 상태가 서버 권위 상태(위치·체력)로 수렴
+ *   - 다른 플레이어 Controller에 보낸 owner RPC 거부
+ *   - JoinTicket 재사용·slot 위조·점유 slot·drain 중 입장 거부
+ *   - 서버가 플레이어 목록/슬롯에 없음
+ *   - drain: 새 입장 거부 → 기존 플레이어 퇴장 대기 → 종료 코드 0
+ *
+ * 사용: node forge/Tools/dedicated-server/run-ds-2clients.cjs [--godot <exe>] [--out <dir>] [--no-late] [--json]
+ * Godot 결정: --godot > GODOT_BIN > 저장소 옆 GoDotProjects/Godot_v4.7.2-stable_win64.exe > tools/engine/resolve-godot.cjs
+ * 실패 시 종료 코드 1, Godot 미발견 시 2.
+ */
+const fs = require('node:fs');
+const path = require('node:path');
+const dgram = require('node:dgram');
+const readline = require('node:readline');
+const { spawn, spawnSync } = require('node:child_process');
+
+const REPO = path.resolve(__dirname, '../../..');
+const PROJECT = path.join(REPO, 'forge', 'Godot');
+const SCENE = 'res://addons/playforge_netframework/demo/spike.tscn';
+const SELFTEST = 'res://addons/playforge_netframework/demo/ticket_selftest.gd';
+const POS_TOLERANCE = 0.5;
+
+function parseArgs(argv) {
+  const out = { late: true, json: false };
+  for (let i = 0; i < argv.length; i += 1) {
+    const a = argv[i];
+    if (a === '--godot') out.godot = argv[++i];
+    else if (a === '--out') out.out = argv[++i];
+    else if (a === '--no-late') out.late = false;
+    else if (a === '--json') out.json = true;
+  }
+  return out;
+}
+
+function resolveGodot(explicit) {
+  const candidates = [explicit, process.env.GODOT_BIN].filter(Boolean);
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return { executable: path.resolve(c), source: 'explicit' };
+    return { executable: null, source: 'explicit', reason: `not found: ${c}` };
+  }
+  const exe = process.platform === 'win32' ? 'Godot_v4.7.2-stable_win64.exe' : 'Godot_v4.7.2-stable_linux.x86_64';
+  for (const dir of [path.resolve(REPO, '..', '..', 'GoDotProjects'), path.resolve(REPO, '..', 'GoDotProjects'), path.resolve(REPO, '..')]) {
+    const p = path.join(dir, exe);
+    if (fs.existsSync(p)) return { executable: p, source: 'stock-4.7.2' };
+  }
+  try {
+    // eslint-disable-next-line global-require
+    const { resolveGodotBinary } = require(path.join(REPO, 'tools', 'engine', 'resolve-godot.cjs'));
+    const r = resolveGodotBinary({});
+    if (r.found) return { executable: r.executable, source: `resolver:${r.source}` };
+    return { executable: null, source: 'resolver', reason: r.reason };
+  } catch (err) {
+    return { executable: null, source: 'resolver', reason: err.message };
+  }
+}
+
+function freeUdpPort() {
+  return new Promise((resolve, reject) => {
+    const s = dgram.createSocket('udp4');
+    s.once('error', reject);
+    s.bind(0, '127.0.0.1', () => {
+      const { port } = s.address();
+      s.close(() => resolve(port));
+    });
+  });
+}
+
+class GodotProc {
+  constructor(name, godot, userArgs, outDir) {
+    this.name = name;
+    this.events = [];
+    this.waiters = [];
+    this.exitCode = null;
+    this.startedAt = Date.now();
+    this.logPath = path.join(outDir, `${name}.log`);
+    const logStream = fs.createWriteStream(this.logPath);
+    const args = ['--headless', '--path', PROJECT, SCENE, '--', ...userArgs];
+    this.child = spawn(godot, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    this.exited = new Promise((resolve) => {
+      this.child.on('exit', (code) => {
+        this.exitCode = code;
+        this.exitedAt = Date.now();
+        resolve(code);
+      });
+    });
+    for (const stream of [this.child.stdout, this.child.stderr]) {
+      readline.createInterface({ input: stream }).on('line', (line) => {
+        logStream.write(`${line}\n`);
+        const idx = line.indexOf('NETEV ');
+        if (idx < 0) return;
+        try {
+          const ev = JSON.parse(line.slice(idx + 6));
+          ev._wall = Date.now();
+          this.events.push(ev);
+          this.waiters = this.waiters.filter((w) => {
+            if (!w.pred(ev)) return true;
+            w.resolve(ev);
+            return false;
+          });
+        } catch { /* 비JSON 줄 무시 */ }
+      });
+    }
+    this.child.on('exit', () => setTimeout(() => logStream.end(), 50));
+  }
+
+  waitFor(pred, timeoutMs, label) {
+    const hit = this.events.find(pred);
+    if (hit) return Promise.resolve(hit);
+    return new Promise((resolve, reject) => {
+      const w = { pred, resolve };
+      this.waiters.push(w);
+      const timer = setTimeout(() => {
+        this.waiters = this.waiters.filter((x) => x !== w);
+        reject(new Error(`${this.name}: timeout waiting for ${label}`));
+      }, timeoutMs);
+      const orig = w.resolve;
+      w.resolve = (ev) => { clearTimeout(timer); orig(ev); };
+    });
+  }
+
+  ev(name) { return this.events.filter((e) => e.ev === name); }
+  first(name) { return this.events.find((e) => e.ev === name); }
+  kill() { if (this.exitCode === null) this.child.kill(); }
+}
+
+function withTimeout(promise, ms, label) {
+  return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error(`timeout: ${label}`)), ms))]);
+}
+
+function pct(values, q) {
+  if (!values.length) return null;
+  const s = [...values].sort((a, b) => a - b);
+  return s[Math.min(s.length - 1, Math.max(0, Math.ceil(q * s.length) - 1))];
+}
+
+async function main() {
+  const opts = parseArgs(process.argv.slice(2));
+  const g = resolveGodot(opts.godot);
+  if (!g.executable) {
+    console.error(`[ds-spike] Godot not found (${g.reason || g.source})`);
+    process.exit(2);
+  }
+  const godot = g.executable;
+  const version = spawnSync(godot, ['--version'], { encoding: 'utf8', windowsHide: true }).stdout.trim().split(/\r?\n/).pop();
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const outDir = path.resolve(opts.out || path.join(REPO, 'forge', 'Saved', 'Tests', 'netframework', `ds-spike-${stamp}`));
+  fs.mkdirSync(path.join(outDir, 'control'), { recursive: true });
+  const ticket = (u) => path.join(outDir, 'tickets', `${u}.ticket`);
+  const checks = [];
+  const check = (id, ok, detail) => checks.push({ id, ok: !!ok, detail });
+  const procs = [];
+  const start = (name, args) => { const p = new GodotProc(name, godot, args, outDir); procs.push(p); return p; };
+  const t0 = Date.now();
+  let fatal = null;
+
+  // 0) JoinTicket 단위 자가 시험
+  const st = spawnSync(godot, ['--headless', '--path', PROJECT, '--script', SELFTEST], { encoding: 'utf8', windowsHide: true, timeout: 30000 });
+  fs.writeFileSync(path.join(outDir, 'ticket-selftest.log'), `${st.stdout || ''}${st.stderr || ''}`);
+  check('ticket_selftest', st.status === 0 && /TICKET_SELFTEST_OK/.test(st.stdout || ''), `exit=${st.status}`);
+
+  const port = await freeUdpPort();
+  const common = [`--port=${port}`, '--max-seconds=45'];
+  const server = start('server', ['--role=server', ...common, `--run-dir=${outDir}`, '--play-ticks=150', '--settle-max=10']);
+  try {
+    await server.waitFor((e) => e.ev === 'tickets_issued', 15000, 'tickets_issued');
+    const a = start('client-a', ['--role=client', '--bot=a', ...common, `--ticket=${ticket('bot-a')}`]);
+    const b = start('client-b', ['--role=client', '--bot=b', ...common, `--ticket=${ticket('bot-b')}`]);
+    await server.waitFor((e) => e.ev === 'phase' && e.to === 'play', 20000, 'phase play');
+
+    // 늦은 입장 + 공격 probe (play 중)
+    if (opts.late) start('client-c-late', ['--role=client', '--bot=c', ...common, `--ticket=${ticket('bot-c')}`]);
+    const probes = [
+      start('probe-reuse', ['--role=client', '--bot=probe-reuse', ...common, `--ticket=${ticket('bot-a')}`]),
+      start('probe-tamper', ['--role=client', '--bot=probe-tamper', ...common, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
+      start('probe-wrongslot', ['--role=client', '--bot=probe-wrongslot', ...common, `--ticket=${ticket('bot-x')}`]),
+    ];
+
+    // settle 진입 후 drain probe를 대기시킨 뒤 외부 drain 신호(SIGTERM 대체) 파일을 쓴다.
+    await server.waitFor((e) => e.ev === 'phase' && e.to === 'settle', 20000, 'phase settle');
+    const drainFile = path.join(outDir, 'control', 'drain');
+    const probeDrain = start('probe-drain', ['--role=client', '--bot=probe-drain', ...common, `--ticket=${ticket('bot-c')}`, `--wait-file=${drainFile}`]);
+    probes.push(probeDrain);
+    await probeDrain.waitFor((e) => e.ev === 'client_boot', 15000, 'probe-drain boot');
+    fs.writeFileSync(drainFile, `drain requested by run-ds-2clients at ${new Date().toISOString()}\n`);
+    await withTimeout(server.exited, 25000, 'server exit');
+    await withTimeout(Promise.all(procs.map((p) => p.exited)), 10000, 'all processes exit');
+  } catch (err) {
+    fatal = err.message;
+  } finally {
+    for (const p of procs) p.kill();
+  }
+
+  // ------------------------------------------------------------------ 판정
+  const byName = Object.fromEntries(procs.map((p) => [p.name, p]));
+  const players = ['client-a', 'client-b', ...(opts.late ? ['client-c-late'] : [])].map((n) => byName[n]).filter(Boolean);
+  const listening = server.first('server_listening');
+  const serverSnap = server.first('server_snapshot');
+  const metrics = server.first('server_metrics');
+  const drainDone = server.first('drain_complete');
+  check('no_fatal', !fatal, fatal || 'ok');
+  check('server_clean_exit', server.exitCode === 0, `exit=${server.exitCode}`);
+  check('drain_waited_for_players', drainDone && drainDone.forced === false && drainDone.remaining === 0, drainDone ? `forced=${drainDone.forced} remaining=${drainDone.remaining}` : 'missing');
+  for (const p of players) check(`${p.name}_clean_exit`, p.exitCode === 0, `exit=${p.exitCode}`);
+
+  // 서버는 플레이어가 아니다
+  const serverInList = !serverSnap
+    || serverSnap.playerPeers.includes(1)
+    || serverSnap.players.some((pl) => pl.peer === 1)
+    || players.some((p) => { const s = p.first('client_snapshot'); return !s || s.playerPeers.includes(1) || s.players.some((pl) => pl.peer === 1); });
+  check('server_not_in_player_list', listening && listening.serverIsPlayer === false && !serverInList,
+    serverSnap ? `playerPeers=${JSON.stringify(serverSnap.playerPeers)}` : 'no server snapshot');
+
+  // 수렴
+  const convergence = [];
+  for (const p of players) {
+    const cs = p.first('client_snapshot');
+    if (!serverSnap || !cs) { convergence.push({ client: p.name, ok: false, detail: 'snapshot missing' }); continue; }
+    let maxPos = 0; let healthMismatch = 0; let missing = 0;
+    for (const sp of serverSnap.players) {
+      const cp = cs.players.find((x) => x.slot === sp.slot && x.peer === sp.peer);
+      if (!cp) { missing += 1; continue; }
+      maxPos = Math.max(maxPos, Math.hypot(cp.pos[0] - sp.pos[0], cp.pos[1] - sp.pos[1]));
+      if (cp.health !== sp.health) healthMismatch += 1;
+    }
+    const extra = cs.players.length - serverSnap.players.length;
+    const ok = missing === 0 && extra === 0 && healthMismatch === 0 && maxPos <= POS_TOLERANCE;
+    convergence.push({ client: p.name, ok, maxPosErr: Number(maxPos.toFixed(3)), healthMismatch, missing, extra });
+  }
+  check('clients_converge_to_server', convergence.length > 0 && convergence.every((c) => c.ok), JSON.stringify(convergence));
+
+  // 게임 규칙이 실제로 작동했는가(이동·피해)
+  const sA = serverSnap && serverSnap.players.find((x) => x.slot === 0);
+  const sB = serverSnap && serverSnap.players.find((x) => x.slot === 1);
+  check('server_rules_applied', sA && sB && sA.pos[0] > 100 && sB.health < 100,
+    sA && sB ? `A.pos=${JSON.stringify(sA.pos)} B.health=${sB.health}` : 'missing');
+
+  // 불법 owner RPC
+  const illegalSent = (byName['client-b'] && byName['client-b'].ev('illegal_rpc_sent').length) || 0;
+  const notOwner = metrics ? metrics.rpc.not_owner : -1;
+  check('illegal_owner_rpc_rejected', illegalSent > 0 && notOwner >= illegalSent && sA && sA.ackedSeq < 1000000,
+    `sent=${illegalSent} rejected_not_owner=${notOwner} A.ackedSeq=${sA ? sA.ackedSeq : 'n/a'}`);
+
+  // JoinTicket 거부
+  const rej = server.ev('join_rejected');
+  const probeExpect = { 'probe-reuse': 'ticket_reused', 'probe-tamper': 'hmac_invalid', 'probe-wrongslot': 'slot_taken', 'probe-drain': 'draining' };
+  for (const [name, reason] of Object.entries(probeExpect)) {
+    const p = byName[name];
+    const refused = p && p.first('join_refused');
+    const serverSaw = rej.some((e) => e.reason === reason);
+    check(`ticket_${reason}`, p && p.exitCode === 0 && refused && refused.reason === reason && serverSaw && !p.first('connected'),
+      `client=${refused ? refused.reason : 'none'} exit=${p ? p.exitCode : 'n/a'} serverSaw=${serverSaw}`);
+  }
+
+  // 늦은 입장
+  if (opts.late) {
+    const c = byName['client-c-late'];
+    const poss = c && c.first('possessed');
+    const conv = convergence.find((x) => x.client === 'client-c-late');
+    const joined = server.ev('player_joined').find((e) => e.user === 'bot-c');
+    check('late_join_receives_world', joined && joined.phase === 'play' && poss && poss.phase === 'play' && poss.visiblePlayers >= 3 && conv && conv.ok,
+      poss ? `serverPhaseAtJoin=${joined && joined.phase} clientPhase=${poss.phase} playTick=${poss.playTick} visible=${poss.visiblePlayers}` : 'not possessed');
+  }
+
+  // WorldKey 일관성: 모든 클라이언트가 같은 WorldKey(session 포함)를 받았다
+  {
+    const wk = serverSnap && serverSnap.worldKey;
+    const seen = players.map((p) => (p.first('possessed') || {}).worldKey);
+    check('world_key_consistent', wk && listening && wk.includes(listening.worldKey.sessionId) && seen.every((x) => x === wk), `worldKey=${wk}`);
+  }
+
+  // drain 순서: drain_started → 플레이어 퇴장 → drain_complete
+  const drainStart = server.first('drain_started');
+  const lefts = server.ev('player_left');
+  check('drain_order', drainStart && drainDone && lefts.length === players.length
+    && lefts.every((e) => e.phase === 'draining' && e._wall >= drainStart._wall && e._wall <= drainDone._wall),
+  `left=${lefts.length}/${players.length}`);
+
+  // 계측
+  const connectMs = players.map((p) => (p.first('connected') || {}).connectMs).filter((x) => typeof x === 'number');
+  const leaving = players.map((p) => ({ name: p.name, ...(p.first('client_leaving') || {}) }));
+  const measurements = {
+    godot: { executable: godot, source: g.source, version },
+    port,
+    wallMs: Date.now() - t0,
+    serverReadyMs: listening ? listening._wall - server.startedAt : null,
+    connectMs: { values: connectMs, p50: pct(connectMs, 0.5), max: connectMs.length ? Math.max(...connectMs) : null },
+    serverTick: metrics ? { hz: metrics.tickHz, ticks: metrics.ticks, us: metrics.tickUs } : null,
+    serverEnet: metrics ? metrics.enet : null,
+    rpcCounters: metrics ? metrics.rpc : null,
+    tickets: metrics ? metrics.tickets : null,
+    joinRejected: metrics ? metrics.joinRejected : null,
+    clients: leaving.map((l) => ({ name: l.name, inputsSent: l.inputsSent, acksReceived: l.acksReceived, ackedSeq: l.ackedSeq, enet: l.enet })),
+    serverSnapshot: serverSnap ? serverSnap.players : null,
+  };
+  const failed = checks.filter((c) => !c.ok);
+  const summary = { ok: failed.length === 0, outDir, checks, measurements };
+  fs.writeFileSync(path.join(outDir, 'summary.json'), JSON.stringify(summary, null, 2));
+
+  if (opts.json) {
+    console.log(JSON.stringify(summary, null, 2));
+  } else {
+    console.log(`[ds-spike] godot=${version} (${g.source}) port=${port} out=${outDir}`);
+    for (const c of checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${c.id}  ${c.detail || ''}`);
+    const m = measurements;
+    console.log(`  server ready ${m.serverReadyMs} ms; connect(auth incl.) ms ${JSON.stringify(m.connectMs.values)}`);
+    if (m.serverTick) console.log(`  server tick ${m.serverTick.hz}Hz x${m.serverTick.ticks}: p50 ${m.serverTick.us.p50}us p95 ${m.serverTick.us.p95}us p99 ${m.serverTick.us.p99}us max ${m.serverTick.us.max}us`);
+    if (m.serverEnet) console.log(`  server ENet sent ${m.serverEnet.sentBytes} B / ${m.serverEnet.sentPackets} pkts, recv ${m.serverEnet.recvBytes} B / ${m.serverEnet.recvPackets} pkts`);
+    console.log(`  total wall ${m.wallMs} ms -> ${summary.ok ? 'OK' : `FAILED (${failed.length})`}`);
+  }
+  process.exit(summary.ok ? 0 : 1);
+}
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = { resolveGodot };

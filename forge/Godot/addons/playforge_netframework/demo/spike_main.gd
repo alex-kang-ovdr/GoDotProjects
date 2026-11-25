@@ -1,0 +1,317 @@
+extends Node
+## R0 스파이크 진입점: 같은 씬을 역할별 별도 프로세스로 실행한다.
+##   서버:   godot --headless --path <proj> res://addons/playforge_netframework/demo/spike.tscn -- --role=server --port=N --run-dir=DIR
+##   클라:   ... -- --role=client --port=N --bot=a --ticket=DIR/tickets/bot-a.ticket
+## 역할 결정 순서: --role 인자 > `dedicated_server` feature tag > headless 표시 서버 → server, 그 외 client.
+## 봇: a/b/c(늦은 입장)는 스크립트 이동, probe는 입장 거부를 기대하는 공격 클라이언트.
+
+const NetWorldScript := preload("res://addons/playforge_netframework/runtime/net_world.gd")
+const NetGameModeScript := preload("res://addons/playforge_netframework/runtime/net_game_mode.gd")
+const NetGameStateScript := preload("res://addons/playforge_netframework/runtime/net_game_state.gd")
+const NetJoinTicketScript := preload("res://addons/playforge_netframework/runtime/join_ticket.gd")
+const NetEventLogScript := preload("res://addons/playforge_netframework/runtime/net_event_log.gd")
+const NetIdsScript := preload("res://addons/playforge_netframework/runtime/net_ids.gd")
+const NetPlayerControllerScript := preload("res://addons/playforge_netframework/runtime/net_player_controller.gd")
+const NetPlayerStateScript := preload("res://addons/playforge_netframework/runtime/net_player_state.gd")
+
+const TICK_HZ := 30
+
+var args: Dictionary = {}
+var role: String = ""
+var event_log: NetEventLogScript
+var world: NetWorldScript
+var smp: SceneMultiplayer
+var game_mode: NetGameModeScript
+
+# 클라이언트 상태
+var bot: String = ""
+var is_probe: bool = false
+var ticket: String = ""
+var connected: bool = false
+var connect_start_us: int = 0
+var my_root: Node = null
+var first_play_tick: int = -1
+var illegal_sent: int = 0
+var snapshot_done: bool = false
+var leave_at_ms: int = -1
+var leaving: bool = false
+var inputs_sent: int = 0
+var wait_file: String = ""
+var _deadline_ms: int = 0
+var _quitting: bool = false
+
+
+func _ready() -> void:
+	args = _parse_args()
+	role = _resolve_role()
+	Engine.physics_ticks_per_second = TICK_HZ
+	Engine.max_fps = 60
+	get_tree().auto_accept_quit = false
+	bot = String(args.get("bot", "ds"))
+	is_probe = bot.begins_with("probe")
+	event_log = NetEventLogScript.new("%s:%s" % [role, bot], String(args.get("log", "")))
+	_deadline_ms = Time.get_ticks_msec() + int(float(args.get("max-seconds", "45")) * 1000.0)
+	world = NetWorldScript.new()
+	world.name = "World"
+	add_child(world)
+	smp = multiplayer as SceneMultiplayer
+	smp.server_relay = false
+	if role == "server":
+		_start_server()
+	else:
+		wait_file = String(args.get("wait-file", ""))
+		event_log.emit("client_boot", {"bot": bot, "probe": is_probe, "waitFile": not wait_file.is_empty()})
+		if wait_file.is_empty():
+			_start_client()
+
+
+func _parse_args() -> Dictionary:
+	var out := {}
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--"):
+			var kv := a.substr(2).split("=", true, 1)
+			out[kv[0]] = kv[1] if kv.size() > 1 else "true"
+	return out
+
+
+func _resolve_role() -> String:
+	if args.has("role"):
+		return String(args.role)
+	if OS.has_feature("dedicated_server"):
+		return "server"
+	if DisplayServer.get_name() == "headless":
+		return "server"
+	return "client"
+
+
+func _notification(what: int) -> void:
+	# 창 닫기 요청(그리고 이를 매핑하는 플랫폼의 SIGTERM)은 즉시 종료하지 않고 drain으로 보낸다.
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		if role == "server" and game_mode != null:
+			game_mode.request_drain("close_request")
+		else:
+			_leave("close_request")
+
+
+# ================================================================ server
+
+func _start_server() -> void:
+	var port := int(args.get("port", "24565"))
+	var run_dir := String(args.get("run-dir", "user://ds-spike"))
+	var session_id := NetIdsScript.random_id(8)
+	var instance_id := "local-" + str(OS.get_process_id())
+	var world_key := NetIdsScript.make_world_key("local", "forge-ds-spike", "dev-%d.%d.%d" % [Engine.get_version_info().major, Engine.get_version_info().minor, Engine.get_version_info().patch], session_id, 1)
+	var tickets := NetJoinTicketScript.new(session_id, instance_id, 1, int(args.get("ticket-ttl", "60")))
+
+	var peer := ENetMultiplayerPeer.new()
+	peer.set_bind_ip("127.0.0.1")
+	var err := peer.create_server(port, 16)
+	if err != OK:
+		event_log.emit("fatal", {"error": "create_server", "code": err, "port": port})
+		get_tree().quit(2)
+		return
+	game_mode = NetGameModeScript.new()
+	game_mode.name = "GameMode"
+	game_mode.max_players = int(args.get("max-players", "3"))
+	game_mode.play_ticks = int(args.get("play-ticks", "150"))
+	game_mode.settle_max_seconds = float(args.get("settle-max", "10"))
+	game_mode.drain_request_file = run_dir.path_join("control/drain")
+	add_child(game_mode)
+	game_mode.setup(world, event_log, tickets, smp)
+	game_mode.finished.connect(_on_server_finished)
+	smp.multiplayer_peer = peer
+	world.game_state.world_key = NetIdsScript.world_key_string(world_key)
+
+	# 로컬 가짜 제공자: 사용자별 1회용 티켓 발급. 파일에는 서명된 티켓만 있고 비밀키는 없다.
+	DirAccess.make_dir_recursive_absolute(run_dir.path_join("tickets"))
+	var issued: Array = []
+	for spec in [["bot-a", 0], ["bot-b", 1], ["bot-c", 2], ["bot-x", 0]]:
+		var t := tickets.issue(String(spec[0]), int(spec[1]))
+		var f := FileAccess.open(run_dir.path_join("tickets/%s.ticket" % spec[0]), FileAccess.WRITE)
+		f.store_string(t)
+		f.close()
+		issued.append({"userId": spec[0], "slot": spec[1]})
+	event_log.emit("server_listening", {
+		"port": port, "worldKey": world_key, "maxPlayers": game_mode.max_players,
+		"tickHz": TICK_HZ, "engine": Engine.get_version_info().string,
+		"dedicatedServerFeature": OS.has_feature("dedicated_server"), "displayServer": DisplayServer.get_name(),
+		"serverIsPlayer": false,
+	})
+	event_log.emit("tickets_issued", {"tickets": issued, "ttlSec": tickets.ttl_sec})
+
+
+func _on_server_finished(code: int) -> void:
+	await get_tree().create_timer(0.2).timeout
+	smp.multiplayer_peer.close()
+	smp.multiplayer_peer = null
+	event_log.emit("server_exit", {"code": code})
+	get_tree().quit(code)
+
+
+# ================================================================ client
+
+func _start_client() -> void:
+	var path := String(args.get("ticket", ""))
+	ticket = FileAccess.get_file_as_string(path).strip_edges()
+	if ticket.is_empty():
+		event_log.emit("fatal", {"error": "ticket_missing"})
+		get_tree().quit(2)
+		return
+	if args.has("tamper-slot"):
+		ticket = NetJoinTicketScript.debug_tamper_slot(ticket, int(args["tamper-slot"]))
+	smp.auth_callback = _client_auth
+	smp.peer_authenticating.connect(_on_authenticating)
+	smp.connected_to_server.connect(_on_connected)
+	smp.connection_failed.connect(func() -> void:
+		event_log.emit("connection_failed", {})
+		_quit(0 if is_probe else 1))
+	smp.server_disconnected.connect(_on_server_disconnected)
+	var peer := ENetMultiplayerPeer.new()
+	var err := peer.create_client(String(args.get("host", "127.0.0.1")), int(args.get("port", "24565")))
+	if err != OK:
+		event_log.emit("fatal", {"error": "create_client", "code": err})
+		get_tree().quit(2)
+		return
+	connect_start_us = Time.get_ticks_usec()
+	smp.multiplayer_peer = peer
+
+
+func _on_authenticating(peer_id: int) -> void:
+	if peer_id == 1:
+		smp.send_auth(1, ticket.to_utf8_buffer())
+
+
+func _client_auth(peer_id: int, data: PackedByteArray) -> void:
+	var reply := data.get_string_from_utf8()
+	if reply == "ok":
+		smp.complete_auth(peer_id)
+		return
+	var reason := reply.trim_prefix("rej:")
+	event_log.emit("join_refused", {"reason": reason, "expected": is_probe})
+	_quit(0 if is_probe else 1)
+
+
+func _on_connected() -> void:
+	connected = true
+	var ms := float(Time.get_ticks_usec() - connect_start_us) / 1000.0
+	event_log.emit("connected", {"peer": multiplayer.get_unique_id(), "connectMs": snappedf(ms, 0.01), "phase": world.game_state.phase})
+	if is_probe:
+		event_log.emit("probe_admitted_unexpectedly", {})
+		_quit(1)
+
+
+func _on_server_disconnected() -> void:
+	if leaving:
+		_quit(0)
+		return
+	event_log.emit("server_disconnected", {"snapshotDone": snapshot_done})
+	_quit(0 if (is_probe or snapshot_done) else 1)
+
+
+func _process(_dt: float) -> void:
+	if Time.get_ticks_msec() > _deadline_ms:
+		event_log.emit("watchdog_timeout", {})
+		_quit(4)
+		return
+	if role == "client" and not wait_file.is_empty() and FileAccess.file_exists(wait_file):
+		wait_file = ""
+		_start_client()
+
+
+func _physics_process(_dt: float) -> void:
+	if role != "client" or not connected or leaving:
+		return
+	var gs: NetGameStateScript = world.game_state
+	if my_root == null:
+		# Ready barrier: GameState 첫 복제(world_key)와 내 Pawn 스폰이 모두 도착해야 조작을 시작한다.
+		# (스폰 패킷이 정적 GameState Sync보다 먼저 올 수 있다.)
+		if gs.world_key.is_empty():
+			return
+		my_root = world.find_player_by_peer(multiplayer.get_unique_id())
+		if my_root != null:
+			event_log.emit("possessed", {
+				"slot": (my_root.get_node("PlayerState") as NetPlayerStateScript).slot,
+				"visiblePlayers": world.players.get_child_count(),
+				"phase": gs.phase, "playTick": gs.play_tick, "worldKey": gs.world_key,
+			})
+		return
+	if gs.phase == NetGameStateScript.PHASE_PLAY:
+		if first_play_tick < 0:
+			first_play_tick = gs.play_tick
+		var ctrl: NetPlayerControllerScript = my_root.get_node("Controller")
+		ctrl.client_send_input(_bot_move(gs.play_tick))
+		inputs_sent += 1
+		if bot == "b" and gs.play_tick >= 20 and illegal_sent < 3:
+			_try_illegal_rpc()
+	elif gs.phase == NetGameStateScript.PHASE_DRAINING and not snapshot_done:
+		snapshot_done = true
+		var snap := world.snapshot()
+		snap["myPeer"] = multiplayer.get_unique_id()
+		event_log.emit("client_snapshot", snap)
+		leave_at_ms = Time.get_ticks_msec() + int(float(args.get("linger", "3")) * 1000.0)
+	if leave_at_ms > 0 and Time.get_ticks_msec() >= leave_at_ms:
+		_leave("drain")
+
+
+func _bot_move(t: int) -> Vector2:
+	match bot:
+		"a":
+			if t < 45:
+				return Vector2.RIGHT
+			if t < 75:
+				return Vector2.DOWN
+		"b":
+			if t < 60:
+				return Vector2.RIGHT
+			if t < 90:
+				return Vector2.ZERO
+			if t < 120:
+				return Vector2.LEFT
+		"c":
+			if t - first_play_tick < 20:
+				return Vector2.UP
+	return Vector2.ZERO
+
+
+## 다른 플레이어(slot 0)의 Controller에 owner RPC를 위조 전송한다. 서버는 거부해야 한다.
+func _try_illegal_rpc() -> void:
+	var victim := world.find_player_by_slot(0)
+	if victim == null or victim == my_root:
+		return
+	var ctrl: NetPlayerControllerScript = victim.get_node("Controller")
+	ctrl.server_submit_input.rpc_id(1, 1000000 + illegal_sent, Vector2.LEFT)
+	illegal_sent += 1
+	event_log.emit("illegal_rpc_sent", {"target": String(ctrl.get_path()), "n": illegal_sent})
+
+
+func _leave(reason: String) -> void:
+	if leaving:
+		return
+	leaving = true
+	var ctrl: NetPlayerControllerScript = my_root.get_node("Controller") if my_root != null else null
+	var stats := {}
+	var enet := smp.multiplayer_peer as ENetMultiplayerPeer
+	if enet != null and enet.host != null:
+		stats = {
+			"sentBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_SENT_DATA),
+			"recvBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_RECEIVED_DATA),
+		}
+	event_log.emit("client_leaving", {
+		"reason": reason, "inputsSent": inputs_sent,
+		"acksReceived": ctrl.acks_received if ctrl != null else 0,
+		"ackedSeq": ctrl.acked_seq if ctrl != null else 0,
+		"enet": stats,
+	})
+	if enet != null:
+		enet.disconnect_peer(1)
+	get_tree().create_timer(1.5).timeout.connect(func() -> void: _quit(0))
+
+
+func _quit(code: int) -> void:
+	if _quitting:
+		return
+	_quitting = true
+	if smp.multiplayer_peer != null:
+		smp.multiplayer_peer.close()
+	event_log.emit("client_exit", {"code": code})
+	get_tree().quit(code)
