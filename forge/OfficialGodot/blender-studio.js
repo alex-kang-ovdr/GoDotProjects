@@ -4,7 +4,7 @@
   const query = new URLSearchParams(location.search);
   const embedded = query.get('embedded') === '1';
   const projectId = query.get('project') || '';
-  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1]) || '';
   const apiPath = route => (forgeBase && route.startsWith('/') && !route.startsWith(forgeBase + '/')) ? forgeBase + route : route;
 
   const blenderStatusPill = document.getElementById('blender-status-pill');
