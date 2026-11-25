@@ -16,6 +16,11 @@ var clock_running := true
 var pause_label := ""
 var primary_held := false
 var primary_touch := -1
+var _flight_touch_map: Dictionary = {}
+var _flight_mouse_action := ""
+var _throttle_touch_id := -1
+var _throttle_mouse_held := false
+var throttle_value := 0.0
 var missile_status := "NO LAUNCHER"
 var holding_part := false
 var defeated := false
@@ -55,6 +60,11 @@ func _process(delta: float) -> void:
 		mission_time += delta
 	if not input_enabled:
 		primary_held = false
+		_flight_touch_map.clear()
+		_flight_mouse_action = ""
+		_throttle_touch_id = -1
+		_throttle_mouse_held = false
+		throttle_value = 0.0
 	_redraw_accum += delta
 	if _redraw_accum >= HUD_REDRAW_INTERVAL:
 		_redraw_accum = 0.0
@@ -71,6 +81,75 @@ func announce(text: String) -> void:
 func radar_center() -> Vector2:
 	var vp := get_viewport_rect().size
 	return Vector2(vp.x - RADAR_RADIUS - 22.0, RADAR_RADIUS + 68.0)
+
+
+func flight_dpad_rects() -> Array[Dictionary]:
+	var vp := get_viewport_rect().size
+	var s := 72.0
+	var gap := 8.0
+	var ox := 22.0
+	var top_y := vp.y - 24.0 - (s * 2.0 + gap)
+	var btn := Vector2(s, s)
+	return [
+		{"action": "turn_left", "glyph": "↺", "label": "좌회전", "rect": Rect2(Vector2(ox, top_y), btn)},
+		{"action": "turn_right", "glyph": "↻", "label": "우회전", "rect": Rect2(Vector2(ox + (s + gap) * 2.0, top_y + s + gap), btn)},
+	]
+
+
+func throttle_stick_rect() -> Rect2:
+	var vp := get_viewport_rect().size
+	var s := 72.0
+	var gap := 8.0
+	var ox := 22.0
+	var top_y := vp.y - 24.0 - (s * 2.0 + gap)
+	return Rect2(Vector2(ox + s + gap, top_y), Vector2(s, s * 2.0 + gap))
+
+
+func flight_dpad_bounds() -> Rect2:
+	var vp := get_viewport_rect().size
+	var s := 72.0
+	var gap := 8.0
+	var h := s * 2.0 + gap
+	var w := s * 3.0 + gap * 2.0
+	return Rect2(Vector2(22.0, vp.y - 24.0 - h), Vector2(w, h))
+
+
+func _update_throttle_from_point(point: Vector2) -> void:
+	var rect := throttle_stick_rect()
+	var center_y := rect.get_center().y
+	var max_travel := maxf(18.0, rect.size.y * 0.5 - 22.0)
+	var raw := clampf((center_y - point.y) / max_travel, -1.0, 1.0)
+	throttle_value = 0.0 if absf(raw) < 0.08 else raw
+
+
+func flight_forward_strength() -> float:
+	if not input_enabled:
+		return 0.0
+	return maxf(0.0, throttle_value)
+
+
+func flight_reverse_strength() -> float:
+	if not input_enabled:
+		return 0.0
+	return maxf(0.0, -throttle_value)
+
+
+func flight_action_held(action: String) -> bool:
+	if not input_enabled:
+		return false
+	if _flight_mouse_action == action:
+		return true
+	for held_action in _flight_touch_map.values():
+		if str(held_action) == action:
+			return true
+	return false
+
+
+func _hit_flight_dpad(point: Vector2) -> String:
+	for entry in flight_dpad_rects():
+		if Rect2(entry.rect).has_point(point):
+			return str(entry.action)
+	return ""
 
 
 func weapon_button_rects() -> Array[Dictionary]:
@@ -107,16 +186,60 @@ func utility_button_rects() -> Array[Dictionary]:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == -1: return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-		if primary_held:
-			primary_held = false
-			get_viewport().set_input_as_handled()
-		return
-	if event is InputEventScreenTouch and not event.pressed and event.index == primary_touch:
-		primary_held = false
-		primary_touch = -1
+	if event is InputEventMouseMotion and _throttle_mouse_held:
+		_update_throttle_from_point(event.position)
+		queue_redraw()
 		get_viewport().set_input_as_handled()
 		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		var handled := false
+		if primary_held:
+			primary_held = false
+			handled = true
+		if not _flight_mouse_action.is_empty():
+			_flight_mouse_action = ""
+			handled = true
+		if _throttle_mouse_held:
+			_throttle_mouse_held = false
+			throttle_value = 0.0
+			handled = true
+		if handled:
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+		return
+	if event is InputEventScreenTouch and not event.pressed:
+		if event.index == primary_touch:
+			primary_held = false
+			primary_touch = -1
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+		if event.index == _throttle_touch_id:
+			_throttle_touch_id = -1
+			throttle_value = 0.0
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+		if _flight_touch_map.has(event.index):
+			_flight_touch_map.erase(event.index)
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+	if event is InputEventScreenDrag:
+		if event.index == _throttle_touch_id:
+			_update_throttle_from_point(event.position)
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+		if _flight_touch_map.has(event.index):
+			var next_action := _hit_flight_dpad(event.position)
+			if not next_action.is_empty():
+				_flight_touch_map[event.index] = next_action
+			elif not flight_dpad_bounds().grow(28.0).has_point(event.position):
+				_flight_touch_map.erase(event.index)
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
 	var pressed := false
 	var point := Vector2.ZERO
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -133,6 +256,24 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if not input_enabled:
+		return
+	if throttle_stick_rect().has_point(point):
+		if event is InputEventScreenTouch:
+			_throttle_touch_id = event.index
+		else:
+			_throttle_mouse_held = true
+		_update_throttle_from_point(point)
+		queue_redraw()
+		get_viewport().set_input_as_handled()
+		return
+	var dpad_action := _hit_flight_dpad(point)
+	if not dpad_action.is_empty():
+		if event is InputEventScreenTouch:
+			_flight_touch_map[event.index] = dpad_action
+		else:
+			_flight_mouse_action = dpad_action
+		queue_redraw()
+		get_viewport().set_input_as_handled()
 		return
 	for entry in weapon_button_rects():
 		if Rect2(entry.rect).has_point(point):
@@ -238,12 +379,13 @@ func _draw() -> void:
 		draw_rect(p_box, Color("ffd36e"), false, 1.5)
 		draw_string(font, p_box.position + Vector2(10, 24), pause_label, HORIZONTAL_ALIGNMENT_CENTER, 400, 15, Color("ffe596"))
 
-	# 4. Weapon & Overdrive Deck
+	# 4. Left-Bottom Fixed Cross Flight D-Pad & Right-Bottom Weapon Deck
+	draw_flight_dpad(font)
 	draw_weapon_controls(font)
 
 	# 5. Module Inspector Tooltip (works in both modes on hover!)
 	if not module_title.is_empty():
-		var panel := Rect2(20, vp.y - 116, minf(620, vp.x - 420), 56)
+		var panel := Rect2(272, vp.y - 116, maxf(240.0, minf(620.0, vp.x - 672.0)), 56)
 		draw_rect(panel, Color("071221", 0.92), true)
 		draw_rect(panel, Color("62ffd2", 0.78), false, 1.2)
 		draw_string(font, panel.position + Vector2(12, 22), module_title, HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 24, 15, Color.WHITE)
@@ -252,11 +394,11 @@ func _draw() -> void:
 	# 6. Toast Message Bar
 	if message_time > 0.0:
 		var message_y := vp.y - 22.0
-		var message_width := vp.x - 416.0
-		var toast := Rect2(20, message_y - 25.0, message_width, 32)
+		var message_width := maxf(240.0, vp.x - 668.0)
+		var toast := Rect2(272, message_y - 25.0, message_width, 32)
 		draw_rect(toast, Color(0.02, 0.07, 0.14, 0.88), true)
 		draw_rect(toast, Color("48ceff", 0.45), false, 1.0)
-		draw_string(font, Vector2(34, message_y - 4.0), message, HORIZONTAL_ALIGNMENT_LEFT, message_width - 28.0, 13, Color("eef9ff"))
+		draw_string(font, Vector2(286, message_y - 4.0), message, HORIZONTAL_ALIGNMENT_LEFT, message_width - 28.0, 13, Color("eef9ff"))
 
 
 func _draw_tactical_radar(font: Font) -> void:
@@ -301,6 +443,46 @@ func _draw_tactical_radar(font: Font) -> void:
 		draw_colored_polygon(tri, Color.WHITE)
 
 	draw_string(font, rc + Vector2(-RADAR_RADIUS, RADAR_RADIUS + 18.0), "전술 레이더 (클릭 항법)", HORIZONTAL_ALIGNMENT_CENTER, RADAR_RADIUS * 2.0, 11, Color("8cc8e8"))
+
+
+func draw_flight_dpad(font: Font) -> void:
+	# 1. 좌상단(좌회전) · 우하단(우회전) 정사각형 버튼
+	for entry in flight_dpad_rects():
+		var rect: Rect2 = entry.rect
+		var action := str(entry.action)
+		var held := flight_action_held(action)
+		var accent := Color("8ef0c8")
+		draw_rect(rect, Color(accent.r * 0.28, accent.g * 0.34, accent.b * 0.40, 0.94) if held else Color("071221", 0.88), true)
+		draw_rect(rect, accent if held else Color(accent.r, accent.g, accent.b, 0.65), false, 2.4 if held else 1.6)
+		draw_string(font, rect.position + Vector2(0, 35), str(entry.glyph), HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, 20, Color.WHITE if held else accent)
+		draw_string(font, rect.position + Vector2(0, 57), str(entry.label), HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, 12, Color("eef9ff") if held else Color("b6d8ee"))
+
+	# 2. 중앙 단일 스로틀 썸스틱 (위=가속/전진, 중앙=중립, 아래=감속/후진, 놓으면 중립 복귀)
+	var srect := throttle_stick_rect()
+	var active := _throttle_touch_id != -1 or _throttle_mouse_held
+	var accent := Color("55f4ff") if throttle_value > 0.01 else (Color("ff9e66") if throttle_value < -0.01 else Color("5aa8d6"))
+	draw_rect(srect, Color("071221", 0.90), true)
+	draw_rect(srect, accent if active else Color("38b6ff", 0.62), false, 2.2 if active else 1.6)
+
+	var cx := srect.get_center().x
+	var cy := srect.get_center().y
+	var max_travel := maxf(18.0, srect.size.y * 0.5 - 22.0)
+	# 중앙 세로 트랙 & 중립 기준선
+	draw_line(Vector2(cx, srect.position.y + 22.0), Vector2(cx, srect.end.y - 22.0), Color("284866", 0.85), 4.0)
+	draw_line(Vector2(srect.position.x + 12.0, cy), Vector2(srect.end.x - 12.0, cy), Color("8cc8e8", 0.45), 1.4)
+	# 가속/감속 채움 바
+	var knob_y := cy - throttle_value * max_travel
+	if absf(throttle_value) > 0.02:
+		draw_line(Vector2(cx, cy), Vector2(cx, knob_y), accent, 6.0)
+	# 상/하 라벨
+	draw_string(font, Vector2(srect.position.x, srect.position.y + 15.0), "▲ 가속", HORIZONTAL_ALIGNMENT_CENTER, srect.size.x, 11, Color("55f4ff") if throttle_value > 0.01 else Color("8cc8e8"))
+	draw_string(font, Vector2(srect.position.x, srect.end.y - 6.0), "▼ 감속", HORIZONTAL_ALIGNMENT_CENTER, srect.size.x, 11, Color("ff9e66") if throttle_value < -0.01 else Color("8cc8e8"))
+	# 썸스틱 노브
+	var knob_pos := Vector2(cx, knob_y)
+	draw_circle(knob_pos, 18.0, Color(accent.r * 0.25, accent.g * 0.35, accent.b * 0.42, 0.95) if active else Color("102438", 0.95))
+	draw_arc(knob_pos, 18.0, 0.0, TAU, 20, accent, 2.4 if active else 1.8)
+	var pct_label := "중립" if absf(throttle_value) < 0.02 else "%+d%%" % roundi(throttle_value * 100.0)
+	draw_string(font, Vector2(srect.position.x, knob_y + 4.0), pct_label, HORIZONTAL_ALIGNMENT_CENTER, srect.size.x, 10, Color.WHITE)
 
 
 func draw_weapon_controls(font: Font) -> void:

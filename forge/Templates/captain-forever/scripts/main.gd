@@ -69,6 +69,9 @@ var skip_automation_hook := false
 var ram_cooldowns: Dictionary = {}
 var _hud_sync_accum := 0.0
 var _main_draw_accum := 0.0
+var _pinch_touches: Dictionary = {}
+var _pinch_active := false
+var _pinch_prev_dist := 0.0
 
 func _install_ui_font() -> void:
 	if FileAccess.file_exists("res://assets/fonts/captain-ui.txt"):
@@ -80,6 +83,8 @@ func _install_ui_font() -> void:
 
 
 func _ready() -> void:
+	if get_tree() != null and get_tree().root != null:
+		get_tree().root.set_meta("playhub_native_touch_controls", true)
 	_install_ui_font()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	developer_mode_active = developer_mode_requested()
@@ -437,10 +442,12 @@ func _physics_process(delta: float) -> void:
 	update_route()
 	if gameplay_blocked():
 		return
-	var forward := Input.get_action_strength("thrust_forward")
-	var reverse := Input.get_action_strength("thrust_reverse")
+	var forward := maxf(Input.get_action_strength("thrust_forward"), hud.flight_forward_strength())
+	var reverse := maxf(Input.get_action_strength("thrust_reverse"), hud.flight_reverse_strength())
 	# 기존 웹 버전과 같이 D=양수(우회전), A=음수(좌회전) RCS 접선 힘을 사용한다.
-	var turn := Input.get_action_strength("turn_right") - Input.get_action_strength("turn_left")
+	var turn_r := maxf(Input.get_action_strength("turn_right"), 1.0 if hud.flight_action_held("turn_right") else 0.0)
+	var turn_l := maxf(Input.get_action_strength("turn_left"), 1.0 if hud.flight_action_held("turn_left") else 0.0)
+	var turn := turn_r - turn_l
 	var has_dock := not nearby_station().is_empty()
 	var strafe_l := Input.get_action_strength("strafe_left") if held_part == null else 0.0
 	var strafe_r := Input.get_action_strength("strafe_right") if not has_dock else 0.0
@@ -537,21 +544,55 @@ func _unhandled_input(event: InputEvent) -> void:
 			if drag.length_squared() > 9.0:
 				rotating_view = true
 				camera.global_rotation += event.relative.x * 0.006
+	elif event is InputEventMagnifyGesture:
+		set_zoom_level(camera.zoom.x * float(event.factor), false)
 	elif event is InputEventScreenTouch:
-		if touch_index != -1 and touch_index != event.index: return
-		var world_point := viewport_to_world(event.position)
-		pointer_world = world_point
 		if event.pressed:
+			_pinch_touches[event.index] = event.position
+			if _pinch_touches.size() >= 2:
+				_pinch_active = true
+				touch_index = -1
+				left_dragged = false
+				var pts := _pinch_touches.values()
+				_pinch_prev_dist = (pts[0] as Vector2).distance_to(pts[1] as Vector2)
+				return
+			if touch_index != -1 and touch_index != event.index:
+				return
+			var world_point := viewport_to_world(event.position)
+			pointer_world = world_point
 			touch_index = event.index
 			left_press_started_holding = held_part != null
 			left_dragged = false
 			left_press_position = event.position
 			begin_left_action(world_point)
-		elif left_press_started_holding or left_dragged:
-			end_left_action(world_point)
-		if not event.pressed: touch_index = -1
+		else:
+			_pinch_touches.erase(event.index)
+			if _pinch_touches.size() < 2:
+				_pinch_prev_dist = 0.0
+			if _pinch_active:
+				if _pinch_touches.is_empty():
+					_pinch_active = false
+				return
+			if touch_index != event.index:
+				return
+			var world_point := viewport_to_world(event.position)
+			pointer_world = world_point
+			if left_press_started_holding or left_dragged:
+				end_left_action(world_point)
+			touch_index = -1
 	elif event is InputEventScreenDrag:
-		if event.index != touch_index: return
+		if _pinch_touches.has(event.index):
+			_pinch_touches[event.index] = event.position
+		if _pinch_touches.size() >= 2:
+			_pinch_active = true
+			var pts := _pinch_touches.values()
+			var dist := (pts[0] as Vector2).distance_to(pts[1] as Vector2)
+			if _pinch_prev_dist > 12.0 and dist > 12.0:
+				set_zoom_level(camera.zoom.x * (dist / _pinch_prev_dist), false)
+			_pinch_prev_dist = dist
+			return
+		if _pinch_active or event.index != touch_index:
+			return
 		pointer_world = viewport_to_world(event.position)
 		if event.position.distance_squared_to(left_press_position) > 9.0:
 			left_dragged = true
@@ -1176,12 +1217,18 @@ func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "",
 	world_layer.add_child(salvage)
 	salvage.setup(data, initial_velocity, initial_angular_velocity, narrative_tag, collision_grace_seconds)
 
-func change_zoom(direction: int) -> void:
-	var next := clampf(camera.zoom.x + direction * 0.1, 1.0 / 3.0, 1.5)
+func set_zoom_level(next_zoom: float, show_toast: bool = true) -> void:
+	if camera == null:
+		return
+	var next := clampf(next_zoom, 1.0 / 3.0, 1.8)
 	if is_equal_approx(next, camera.zoom.x):
 		return
 	camera.zoom = Vector2.ONE * next
-	announce("ORTHOGRAPHIC ZOOM · %d%%" % roundi(next * 100.0))
+	if show_toast:
+		announce("ORTHOGRAPHIC ZOOM · %d%%" % roundi(next * 100.0))
+
+func change_zoom(direction: int) -> void:
+	set_zoom_level(camera.zoom.x + direction * 0.1, true)
 
 func announce(text: String) -> void:
 	message = text
