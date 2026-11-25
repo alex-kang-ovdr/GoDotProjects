@@ -39,6 +39,16 @@ func reset_bird() -> void:
 func flap() -> void:
 	velocity_y = -strength
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not active:
+		return
+	if event is InputEventScreenTouch and event.pressed:
+		flap()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.device != InputEvent.DEVICE_ID_EMULATION:
+		flap()
+		get_viewport().set_input_as_handled()
+
 func _process(delta: float) -> void:
 	# AnimateSprite every 0.15s (InvokeRepeating equivalent)
 	anim_timer += delta
@@ -50,7 +60,7 @@ func _process(delta: float) -> void:
 	if not active:
 		return
 
-	if Input.is_action_just_pressed("ui_accept") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if Input.is_action_just_pressed("ui_accept"):
 		flap()
 
 	velocity_y += fall_gravity * delta

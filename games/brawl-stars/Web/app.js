@@ -515,7 +515,7 @@
   window.addEventListener('pointerup', e => { if (e.button === 0 && e.pointerType !== 'touch') mouseDown = false; });
   canvas.addEventListener('pointerup', e => { if (e.pointerType === 'touch') { mobileSticks.move.end(e); mobileSticks.aim.end(e); } });
   canvas.addEventListener('pointercancel', e => { mouseDown = false; mobileSticks.move.cancel(e); mobileSticks.aim.cancel(e); });
-  canvas.addEventListener('lostpointercapture', e => { mobileSticks.move.cancel(e); mobileSticks.aim.cancel(e); });
+  canvas.addEventListener('lostpointercapture', e => { if (e.pointerType !== 'touch') mouseDown = false; });
 
   function bindStick(id, kind) {
     const zone = $(id), knob = zone.querySelector('.stick-knob');
@@ -540,18 +540,23 @@
       pointerId = e.pointerId; originX = e.clientX; originY = e.clientY; started = performance.now(); maxTravel = 0;
       if (floating) {
         const arenaRect = $('arena').getBoundingClientRect(), zoneRect = zone.getBoundingClientRect();
-        zone.style.left = `${e.clientX - arenaRect.left - zoneRect.width / 2}px`;
-        zone.style.top = `${e.clientY - arenaRect.top - zoneRect.height / 2}px`; zone.style.bottom = 'auto'; zone.style.right = 'auto';
+        const zw = zoneRect.width || 96, zh = zoneRect.height || 96;
+        zone.style.left = `${e.clientX - arenaRect.left - zw / 2}px`;
+        zone.style.top = `${e.clientY - arenaRect.top - zh / 2}px`; zone.style.bottom = 'auto'; zone.style.right = 'auto';
       }
-      radius = Math.max(20, zone.querySelector('.stick-base').getBoundingClientRect().width * .43);
-      capture.setPointerCapture(e.pointerId); zone.classList.add('active'); sound.wake();
+      radius = Math.max(20, (zone.querySelector('.stick-base').getBoundingClientRect().width || 72) * .43);
+      try { capture.setPointerCapture(e.pointerId); } catch (_) {}
+      zone.classList.add('active'); sound.wake();
     };
     const end = e => { if (e.pointerId !== pointerId) return; if (kind === 'aim' && maxTravel < 12 && performance.now() - started < 350) tapFire = .12; reset(); };
     const cancel = e => { if (e.pointerId === pointerId) reset(); };
-    zone.addEventListener('pointerdown', e => begin(e));
+    zone.addEventListener('pointerdown', e => { e.stopPropagation(); begin(e); });
     zone.addEventListener('pointermove', move);
     zone.addEventListener('pointerup', end);
-    zone.addEventListener('pointercancel', cancel); zone.addEventListener('lostpointercapture', cancel);
+    zone.addEventListener('pointercancel', cancel);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', cancel);
     return { begin, move, end, cancel };
   }
   mobileSticks.move = bindStick('moveZone', 'move'); mobileSticks.aim = bindStick('aimZone', 'aim');

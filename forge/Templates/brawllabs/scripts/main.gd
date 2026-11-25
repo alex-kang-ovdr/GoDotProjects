@@ -29,6 +29,26 @@ var super_charge := 0.0
 var notice := ""
 var notice_clock := 0.0
 var mouse_target := Vector2(900, 400)
+var touch_controls_visible := false
+var touch_move_id := -1
+var touch_move_origin := Vector2(150.0, 625.0)
+var touch_move_vec := Vector2.ZERO
+var touch_aim_id := -1
+var touch_aim_origin := Vector2(1130.0, 625.0)
+var touch_aim_vec := Vector2.ZERO
+var touch_aim_active := false
+var touch_aim_press_ms := 0
+var touch_aim_max_travel := 0.0
+var touch_tap_fire := 0.0
+var touch_super_id := -1
+var touch_gadget_id := -1
+const TOUCH_STICK_RADIUS := 68.0
+const TOUCH_MOVE_HOME := Vector2(150.0, 625.0)
+const TOUCH_AIM_HOME := Vector2(1130.0, 625.0)
+const TOUCH_SUPER_CENTER := Vector2(995.0, 560.0)
+const TOUCH_SUPER_RADIUS := 42.0
+const TOUCH_GADGET_CENTER := Vector2(1075.0, 470.0)
+const TOUCH_GADGET_RADIUS := 36.0
 var _rng := RandomNumberGenerator.new()
 var multiplayer_mode := false
 var network_actor := -1
@@ -43,6 +63,9 @@ func _ready() -> void:
 		return
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	$Preview.hide()
+	if get_tree().root != null:
+		get_tree().root.set_meta("playhub_native_touch_controls", true)
+	touch_controls_visible = OS.has_feature("android") or OS.has_feature("ios") or DisplayServer.is_touchscreen_available()
 	_rng.seed = 1404
 	start_match()
 	if OS.has_feature("web"):
@@ -82,11 +105,108 @@ func _tick_match(delta: float) -> void:
 	_update_objective(delta)
 	queue_redraw()
 
+func _canvas_point(screen_pos: Vector2) -> Vector2:
+	return get_canvas_transform().affine_inverse() * screen_pos
+
+func _reset_touch_controls() -> void:
+	touch_move_id = -1
+	touch_move_vec = Vector2.ZERO
+	touch_aim_id = -1
+	touch_aim_vec = Vector2.ZERO
+	touch_aim_active = false
+	touch_tap_fire = 0.0
+	touch_super_id = -1
+	touch_gadget_id = -1
+
 func _input(event: InputEvent) -> void:
 	if Engine.is_editor_hint():
 		return
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
 	if event is InputEventMouseMotion or event is InputEventMouseButton:
-		mouse_target = event.position
+		mouse_target = _canvas_point(event.position)
+		return
+	if event is InputEventScreenTouch:
+		touch_controls_visible = true
+		var pt := _canvas_point(event.position)
+		if event.pressed:
+			if match_result and not multiplayer_mode:
+				start_match()
+				get_viewport().set_input_as_handled()
+				return
+			if is_paused:
+				is_paused = false
+				get_tree().paused = false
+				get_viewport().set_input_as_handled()
+				return
+			if touch_super_id == -1 and pt.distance_to(TOUCH_SUPER_CENTER) <= TOUCH_SUPER_RADIUS + 12.0:
+				touch_super_id = event.index
+				if not multiplayer_mode and not actors.is_empty() and actors[0]["alive"]:
+					_use_super()
+				get_viewport().set_input_as_handled()
+				return
+			if touch_gadget_id == -1 and pt.distance_to(TOUCH_GADGET_CENTER) <= TOUCH_GADGET_RADIUS + 12.0:
+				touch_gadget_id = event.index
+				if not multiplayer_mode and not actors.is_empty() and actors[0]["alive"]:
+					_use_gadget()
+				get_viewport().set_input_as_handled()
+				return
+			if pt.x < WORLD.x * 0.5 and touch_move_id == -1:
+				touch_move_id = event.index
+				touch_move_origin = pt if pt.distance_to(TOUCH_MOVE_HOME) > TOUCH_STICK_RADIUS * 1.1 else TOUCH_MOVE_HOME
+				touch_move_vec = (pt - touch_move_origin).limit_length(TOUCH_STICK_RADIUS) / TOUCH_STICK_RADIUS
+				if touch_move_vec.length() < 0.12:
+					touch_move_vec = Vector2.ZERO
+				get_viewport().set_input_as_handled()
+				return
+			if pt.x >= WORLD.x * 0.5 and touch_aim_id == -1:
+				touch_aim_id = event.index
+				touch_aim_origin = pt if pt.distance_to(TOUCH_AIM_HOME) > TOUCH_STICK_RADIUS * 1.1 else TOUCH_AIM_HOME
+				touch_aim_vec = (pt - touch_aim_origin).limit_length(TOUCH_STICK_RADIUS) / TOUCH_STICK_RADIUS
+				touch_aim_active = touch_aim_vec.length() > 0.16
+				touch_aim_press_ms = Time.get_ticks_msec()
+				touch_aim_max_travel = 0.0
+				get_viewport().set_input_as_handled()
+				return
+		else:
+			if event.index == touch_move_id:
+				touch_move_id = -1
+				touch_move_vec = Vector2.ZERO
+				get_viewport().set_input_as_handled()
+			elif event.index == touch_aim_id:
+				if touch_aim_max_travel < 16.0 and (Time.get_ticks_msec() - touch_aim_press_ms) < 340:
+					touch_tap_fire = 0.15
+				touch_aim_id = -1
+				touch_aim_vec = Vector2.ZERO
+				touch_aim_active = false
+				get_viewport().set_input_as_handled()
+			elif event.index == touch_super_id:
+				touch_super_id = -1
+				get_viewport().set_input_as_handled()
+			elif event.index == touch_gadget_id:
+				touch_gadget_id = -1
+				get_viewport().set_input_as_handled()
+	elif event is InputEventScreenDrag:
+		touch_controls_visible = true
+		var pt := _canvas_point(event.position)
+		if event.index == touch_move_id:
+			var d := pt - touch_move_origin
+			var clamped := d.limit_length(TOUCH_STICK_RADIUS)
+			touch_move_vec = clamped / TOUCH_STICK_RADIUS
+			if touch_move_vec.length() < 0.12:
+				touch_move_vec = Vector2.ZERO
+			get_viewport().set_input_as_handled()
+		elif event.index == touch_aim_id:
+			var d := pt - touch_aim_origin
+			touch_aim_max_travel = maxf(touch_aim_max_travel, d.length())
+			var clamped := d.limit_length(TOUCH_STICK_RADIUS)
+			touch_aim_vec = clamped / TOUCH_STICK_RADIUS
+			touch_aim_active = touch_aim_vec.length() > 0.16
+			get_viewport().set_input_as_handled()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_reset_touch_controls()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Engine.is_editor_hint() or multiplayer_mode or match_result or is_paused or actors.is_empty() or not actors[0]["alive"]:
@@ -214,12 +334,30 @@ func _update_player(delta: float) -> void:
 		return
 	var body: CharacterBody2D = player["body"]
 	var movement := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	body.velocity = movement * float(player["speed"])
+	if touch_move_vec.length_squared() > movement.length_squared():
+		movement = touch_move_vec
+	body.velocity = movement.limit_length(1.0) * float(player["speed"])
 	body.move_and_slide()
-	var aim := mouse_target - body.global_position
-	if aim.length_squared() > 1.0:
-		player["aim"] = aim.normalized()
-	if Input.is_action_pressed("attack") and fire_clock <= 0.0 and player["ammo"] > 0:
+	touch_tap_fire = maxf(0.0, touch_tap_fire - delta)
+	var firing := Input.is_action_pressed("attack")
+	if touch_aim_active and touch_aim_vec.length_squared() > 0.02:
+		player["aim"] = touch_aim_vec.normalized()
+		mouse_target = body.global_position + player["aim"] * 280.0
+		firing = true
+	elif touch_tap_fire > 0.0:
+		var enemy_idx := _closest_enemy(0)
+		if enemy_idx >= 0:
+			var enemy_body: CharacterBody2D = actors[enemy_idx]["body"]
+			var to_enemy := enemy_body.global_position - body.global_position
+			if to_enemy.length_squared() > 1.0:
+				player["aim"] = to_enemy.normalized()
+				mouse_target = enemy_body.global_position
+		firing = true
+	else:
+		var aim := mouse_target - body.global_position
+		if aim.length_squared() > 1.0:
+			player["aim"] = aim.normalized()
+	if firing and fire_clock <= 0.0 and player["ammo"] > 0:
 		_fire(actor_index_for_body(body), player["aim"])
 		fire_clock = float(player["cooldown"])
 		player["ammo"] = int(player["ammo"]) - 1
@@ -465,6 +603,8 @@ func _use_gadget() -> void:
 	var player: Dictionary = actors[0]
 	var body: CharacterBody2D = player["body"]
 	var movement := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if touch_move_vec.length_squared() > movement.length_squared():
+		movement = touch_move_vec
 	var direction: Vector2 = movement if movement.length_squared() > 0.0 else player["aim"]
 	body.position += direction.normalized() * 110.0
 	body.position.x = clampf(body.position.x, 45.0, 1235.0)
@@ -497,10 +637,39 @@ func _draw() -> void:
 		if actor["alive"]:
 			_draw_actor(actor)
 	_draw_hud()
+	if touch_controls_visible and not is_paused and match_result.is_empty():
+		_draw_touch_controls()
 	if is_paused:
-		_draw_overlay("PAUSED", "Press P / Esc to return")
+		_draw_overlay("PAUSED", "Tap screen or press P / Esc to return")
 	elif match_result:
-		_draw_overlay(match_result, "Open a new lobby to play again" if multiplayer_mode else "Press R to play again")
+		_draw_overlay(match_result, "Open a new lobby to play again" if multiplayer_mode else "Tap screen or press R to play again")
+
+func _draw_touch_controls() -> void:
+	var mc := touch_move_origin if touch_move_id != -1 else TOUCH_MOVE_HOME
+	var mk := mc + touch_move_vec * TOUCH_STICK_RADIUS * 0.72
+	draw_circle(mc, TOUCH_STICK_RADIUS, Color(0.06, 0.16, 0.24, 0.44 if touch_move_id != -1 else 0.26))
+	draw_arc(mc, TOUCH_STICK_RADIUS, 0.0, TAU, 48, Color(0.38, 0.88, 0.94, 0.80 if touch_move_id != -1 else 0.45), 2.5, true)
+	draw_circle(mk, 28.0, Color(0.50, 0.92, 0.98, 0.76 if touch_move_id != -1 else 0.42))
+	draw_string(ThemeDB.fallback_font, mc + Vector2(-46.0, TOUCH_STICK_RADIUS + 18.0), "MOVE", HORIZONTAL_ALIGNMENT_CENTER, 92.0, 12, Color(0.84, 0.94, 0.98, 0.72))
+
+	var ac := touch_aim_origin if touch_aim_id != -1 else TOUCH_AIM_HOME
+	var ak := ac + touch_aim_vec * TOUCH_STICK_RADIUS * 0.72
+	draw_circle(ac, TOUCH_STICK_RADIUS, Color(0.28, 0.08, 0.14, 0.46 if touch_aim_id != -1 else 0.28))
+	draw_arc(ac, TOUCH_STICK_RADIUS, 0.0, TAU, 48, Color(1.0, 0.54, 0.60, 0.85 if touch_aim_id != -1 else 0.48), 2.5, true)
+	draw_circle(ak, 28.0, Color(1.0, 0.62, 0.66, 0.78 if touch_aim_id != -1 else 0.45))
+	draw_string(ThemeDB.fallback_font, ac + Vector2(-56.0, TOUCH_STICK_RADIUS + 18.0), "AIM · FIRE", HORIZONTAL_ALIGNMENT_CENTER, 112.0, 12, Color(1.0, 0.86, 0.88, 0.76))
+
+	var super_ready := super_charge >= 1.0
+	var super_col := Color(0.76, 0.50, 1.0, 0.84) if super_ready else Color(0.42, 0.34, 0.56, 0.45)
+	draw_circle(TOUCH_SUPER_CENTER, TOUCH_SUPER_RADIUS, super_col)
+	draw_arc(TOUCH_SUPER_CENTER, TOUCH_SUPER_RADIUS, -PI * 0.5, -PI * 0.5 + TAU * clampf(super_charge, 0.0, 1.0), 36, Color(0.95, 0.82, 1.0, 0.95), 3.0, true)
+	draw_string(ThemeDB.fallback_font, TOUCH_SUPER_CENTER + Vector2(-40.0, 5.0), "SUPER" if super_ready else "%d%%" % int(super_charge * 100), HORIZONTAL_ALIGNMENT_CENTER, 80.0, 12, Color(0.98, 0.97, 1.0, 0.95))
+
+	var gadget_ready := gadget_clock <= 0.0
+	var gadget_col := Color(0.28, 0.82, 0.74, 0.80) if gadget_ready else Color(0.24, 0.38, 0.42, 0.45)
+	draw_circle(TOUCH_GADGET_CENTER, TOUCH_GADGET_RADIUS, gadget_col)
+	draw_arc(TOUCH_GADGET_CENTER, TOUCH_GADGET_RADIUS, 0.0, TAU, 32, Color(0.74, 0.96, 0.94, 0.85), 2.2, true)
+	draw_string(ThemeDB.fallback_font, TOUCH_GADGET_CENTER + Vector2(-34.0, 5.0), "STEP" if gadget_ready else "%ds" % ceili(gadget_clock), HORIZONTAL_ALIGNMENT_CENTER, 68.0, 11, Color(0.96, 1.0, 0.98, 0.95))
 
 func _draw_arena() -> void:
 	draw_rect(Rect2(Vector2.ZERO, WORLD), Color("101a2b"))
@@ -684,8 +853,14 @@ func _send_network_input(delta: float) -> void:
 	network_clock = 0.0
 	network_sequence += 1
 	var movement := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if touch_move_vec.length_squared() > movement.length_squared():
+		movement = touch_move_vec
+	var aim_pos := mouse_target
+	if touch_aim_active and network_actor >= 0 and network_actor < actors.size():
+		var net_body: CharacterBody2D = actors[network_actor]["body"]
+		aim_pos = net_body.global_position + touch_aim_vec.normalized() * 280.0
 	var payload := {"source": "playforge-brawl-game", "type": "input", "input": {
 		"seq": network_sequence, "moveX": movement.x, "moveY": movement.y,
-		"aimX": mouse_target.x, "aimY": mouse_target.y, "fire": Input.is_action_pressed("attack"),
-		"super": Input.is_action_pressed("super"), "gadget": Input.is_action_pressed("gadget")}}
+		"aimX": aim_pos.x, "aimY": aim_pos.y, "fire": Input.is_action_pressed("attack") or touch_aim_active or touch_tap_fire > 0.0,
+		"super": Input.is_action_pressed("super") or touch_super_id != -1, "gadget": Input.is_action_pressed("gadget") or touch_gadget_id != -1}}
 	JavaScriptBridge.eval("window.parent.postMessage(JSON.parse(%s),location.origin);" % JSON.stringify(JSON.stringify(payload)), true)

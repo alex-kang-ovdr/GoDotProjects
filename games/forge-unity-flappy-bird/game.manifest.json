@@ -44,9 +44,9 @@
     "hi": "Unity 2D Flappy Bird tutorial ported to Godot 4.7.2 with GLSL UV parallax scrolling, sprite animation, pipe spawner, and Ready/GameOver HUD."
   },
   "entry": "index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publishedOn": "2026-11-22",
-  "updatedOn": "2026-11-22",
+  "updatedOn": "2026-11-25",
   "tags": [
     "forge",
     "arcade"

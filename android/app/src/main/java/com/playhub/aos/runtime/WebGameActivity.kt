@@ -17,6 +17,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -74,8 +75,14 @@ class WebGameActivity : Activity() {
             settings.mediaPlaybackRequiresUserGesture = false
             settings.useWideViewPort = true
             settings.loadWithOverviewMode = true
+            settings.setSupportZoom(false)
+            settings.builtInZoomControls = false
+            settings.displayZoomControls = false
             settings.allowFileAccess = false
             settings.allowContentAccess = false
+            isFocusable = true
+            isFocusableInTouchMode = true
+            webChromeClient = WebChromeClient()
             addJavascriptInterface(PlayHubJsBridge(gameId), "PlayHubNative")
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

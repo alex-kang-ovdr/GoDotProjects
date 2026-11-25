@@ -56,7 +56,7 @@ func _read_project_binary(path: String) -> Dictionary:
 		var key := key_bytes.get_string_from_utf8()
 		var vlen := f.get_32()
 		var val_bytes := f.get_buffer(vlen)
-		var val: Variant = bytes_to_var(val_bytes)
+		var val: Variant = bytes_to_var_with_objects(val_bytes)
 		result[key] = val
 	f.close()
 	return result
@@ -116,6 +116,57 @@ func _apply_game_display_settings(settings: Dictionary) -> void:
 	else:
 		DisplayServer.screen_set_orientation(DisplayServer.SCREEN_SENSOR_LANDSCAPE)
 
+func _register_input_actions(settings: Dictionary) -> void:
+	var registered := 0
+	for full_key in settings.keys():
+		var key_str := str(full_key)
+		if not key_str.begins_with("input/"):
+			continue
+		var action_name := key_str.trim_prefix("input/")
+		if action_name.is_empty():
+			continue
+		var spec: Variant = settings[full_key]
+		if not (spec is Dictionary):
+			continue
+		var deadzone := float(spec.get("deadzone", 0.2))
+		if not InputMap.has_action(action_name):
+			InputMap.add_action(action_name, deadzone)
+		else:
+			InputMap.action_set_deadzone(action_name, deadzone)
+		var events: Variant = spec.get("events", [])
+		if events is Array:
+			for ev in events:
+				if ev is InputEvent and not InputMap.action_has_event(action_name, ev):
+					InputMap.action_add_event(action_name, ev)
+		registered += 1
+	print("PlayHubBootstrap: registered input actions=", registered)
+
+func _apply_game_input_settings(settings: Dictionary) -> void:
+	if settings.has("input_devices/pointing/emulate_mouse_from_touch"):
+		var emulate := bool(settings.get("input_devices/pointing/emulate_mouse_from_touch", true))
+		if Input.has_method("set_emulate_mouse_from_touch"):
+			Input.set_emulate_mouse_from_touch(emulate)
+		print("PlayHubBootstrap: applied emulate_mouse_from_touch=", emulate)
+
+func _attach_virtual_gamepad(pck_path: String, settings: Dictionary) -> void:
+	if get_tree().root.get_node_or_null("PlayHubVirtualGamepad") != null:
+		return
+	var script_res: Resource = ResourceLoader.load("res://virtual_gamepad.gd")
+	if script_res == null or not (script_res is Script):
+		return
+	var game_id := ""
+	if Engine.has_singleton("PlayHubBridge"):
+		var bridge := Engine.get_singleton("PlayHubBridge")
+		if bridge != null and bridge.has_method("get_profile"):
+			var prof: Variant = JSON.parse_string(str(bridge.call("get_profile")))
+			if prof is Dictionary:
+				game_id = str(prof.get("gameId", ""))
+	var pad: Node = (script_res as Script).new()
+	pad.name = "PlayHubVirtualGamepad"
+	get_tree().root.add_child(pad)
+	if pad.has_method("configure"):
+		pad.call("configure", game_id, pck_path, settings)
+
 func _register_autoloads(settings: Dictionary) -> void:
 	for full_key in settings.keys():
 		var key_str := str(full_key)
@@ -170,7 +221,10 @@ func _mount_and_launch(label: Label) -> void:
 		game_settings = _read_project_text("res://project.godot")
 
 	_apply_game_display_settings(game_settings)
+	_apply_game_input_settings(game_settings)
+	_register_input_actions(game_settings)
 	_register_autoloads(game_settings)
+	_attach_virtual_gamepad(pck_path, game_settings)
 
 	var main_scene := str(game_settings.get("application/run/main_scene", ""))
 	if main_scene.is_empty() or main_scene == "res://bootstrap.tscn":

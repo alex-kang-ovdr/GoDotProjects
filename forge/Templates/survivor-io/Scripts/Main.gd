@@ -61,6 +61,8 @@ var _meta_buttons: Dictionary = {}
 
 
 func _ready() -> void:
+	if get_tree().root != null:
+		get_tree().root.set_meta("playhub_native_touch_controls", true)
 	sim = SimScript.new()
 	sim.load_profile()
 	_install_font()
@@ -160,6 +162,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			if _joy_vec.length() > 1.0:
 				_joy_vec = _joy_vec.normalized()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.device == InputEvent.DEVICE_ID_EMULATION:
+			return
 		if sim.state != "playing":
 			_joy_active = false
 			_joy_vec = Vector2.ZERO
@@ -173,6 +177,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_joy_active = false
 			_joy_vec = Vector2.ZERO
 	elif event is InputEventMouseMotion and _joy_active and sim.state == "playing":
+		if event.device == InputEvent.DEVICE_ID_EMULATION:
+			return
 		var delta := _canvas_point(event.position) - _joy_origin
 		_joy_vec = delta / 64.0
 		if _joy_vec.length() > 1.0:

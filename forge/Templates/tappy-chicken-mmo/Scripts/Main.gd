@@ -90,7 +90,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				action = "togglePause"
 			KEY_R:
 				action = "restart"
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.device != InputEvent.DEVICE_ID_EMULATION:
 		if _accept_tap(event.position):
 			action = "flap"
 	elif event is InputEventScreenTouch and event.pressed:

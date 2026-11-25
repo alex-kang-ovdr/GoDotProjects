@@ -66,5 +66,13 @@ func increase_score() -> void:
 	score_label.text = str(score)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if state != "playing" and event.is_action_pressed("ui_accept"):
+	if state == "playing":
+		return
+	var triggered := event.is_action_pressed("ui_accept")
+	if event is InputEventScreenTouch and event.pressed:
+		triggered = true
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.device != InputEvent.DEVICE_ID_EMULATION:
+		triggered = true
+	if triggered:
 		play()
+		get_viewport().set_input_as_handled()

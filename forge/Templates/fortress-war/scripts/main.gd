@@ -339,7 +339,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var point := Vector2.ZERO
 	var aim := false
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and event.device != InputEvent.DEVICE_ID_EMULATION:
 		point = event.position
 		aim = true
 	elif event is InputEventScreenTouch and event.pressed:

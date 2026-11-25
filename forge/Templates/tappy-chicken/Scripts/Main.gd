@@ -31,6 +31,8 @@ var _result_audio: AudioStreamPlayer
 
 
 func _ready() -> void:
+	if get_tree().root != null:
+		get_tree().root.set_meta("playhub_native_touch_controls", true)
 	_frames.append(bird.texture)
 	for filename in ["chicken-wing-up", "chicken-wing-down", "chicken-hit"]:
 		var path := "res://Assets/%s.svg" % filename
@@ -61,7 +63,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				action = "togglePause"
 			KEY_R:
 				action = "restart"
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.device != InputEvent.DEVICE_ID_EMULATION:
 		if _accept_tap(event.position):
 			action = "flap"
 	elif event is InputEventScreenTouch and event.pressed:

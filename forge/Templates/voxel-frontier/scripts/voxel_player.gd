@@ -43,6 +43,7 @@ var controls_open := false:
 var mining_tools := MiningTools.new()
 var survival := SurvivalState.new()
 var mining_held := false
+var touch_mining := false
 var mining_elapsed := 0.0
 var mining_duration := 0.0
 var mining_cell := Vector3i.ZERO
@@ -52,7 +53,7 @@ var mining_serial := -1
 
 func _ready() -> void:
 	_build_body()
-	if OS.has_feature("web"):
+	if OS.has_feature("web") or OS.has_feature("android") or OS.has_feature("ios"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -74,6 +75,8 @@ func setup(target_world: VoxelWorld) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if controls_open or (world != null and world.gameplay_locked()):
+		return
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
@@ -124,6 +127,7 @@ func _notification(what: int) -> void:
 
 func cancel_mining() -> void:
 	mining_held = false
+	touch_mining = false
 	mining_elapsed = 0.0
 	mining_material = -1
 	mining_serial = -1
@@ -132,7 +136,7 @@ func cancel_mining() -> void:
 func _process(delta: float) -> void:
 	if world == null: return
 	survival.tick(delta)
-	if controls_open or world.gameplay_locked() or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if controls_open or world.gameplay_locked() or (Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not touch_mining):
 		cancel_mining()
 		return
 	if not mining_held: return
@@ -187,6 +191,8 @@ func _physics_process(delta: float) -> void:
 func _break_target() -> void:
 	if world != null and not world.gameplay_locked() and not controls_open:
 		mining_held = true
+		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+			touch_mining = true
 
 
 func _place_target() -> void:

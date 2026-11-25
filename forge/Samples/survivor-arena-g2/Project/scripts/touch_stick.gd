@@ -11,10 +11,14 @@ const RADIUS: float = 62.0
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if get_tree().root != null:
+		get_tree().root.set_meta("playhub_native_touch_controls", true)
 
 func _input(event: InputEvent) -> void:
 	if not enabled:
 		clear()
+		return
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
 	if event is InputEventScreenTouch:
 		# End an existing capture even if a GUI overlay consumed the release.
@@ -31,6 +35,8 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not enabled or dragging:
+		return
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
 	if event is InputEventScreenTouch and event.pressed:
 		if _inside_play_area(event.position):
