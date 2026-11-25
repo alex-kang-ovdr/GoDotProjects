@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-megabonk",
+  "slug": "forge-megabonk",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "메가봉크 · 와일드런 (Forge)",
+    "en": "MEGABONK · Wildrun Expedition (Forge)",
+    "ja": "MEGABONK · Wildrun Expedition (Forge)",
+    "zh-CN": "MEGABONK · Wildrun Expedition (Forge)",
+    "fr": "MEGABONK · Wildrun Expedition (Forge)",
+    "es": "MEGABONK · Wildrun Expedition (Forge)",
+    "pt-BR": "MEGABONK · Wildrun Expedition (Forge)",
+    "hi": "MEGABONK · Wildrun Expedition (Forge)"
+  },
+  "summary": {
+    "ko": "15명 모험가·16종 무기·18종 Tome·24종 아이템으로 3개 3D 지역(숲·사막·묘지)의 몬스터 군세와 보스 포털을 돌파하는 3D 액션 로그라이크입니다.",
+    "en": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "ja": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "zh-CN": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "fr": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "es": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "pt-BR": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "hi": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes."
+  },
+  "instructions": {
+    "ko": "WASD/방향키로 이동, Space 점프, Shift 대시, C/Ctrl 슬라이드, E 상자·제단·포털 상호작용, 우클릭 드래그로 시점을 회전하고 M으로 전체 지도를 확인하세요. 레벨업 시 1/2/3 또는 클릭으로 무기와 Tome을 조합해 보스 포털과 최후의 군세를 돌파하세요.",
+    "en": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "ja": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "zh-CN": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "fr": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "es": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "pt-BR": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm.",
+    "hi": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm."
+  },
+  "rules": {
+    "ko": "15명 모험가·16종 무기·18종 Tome·24종 아이템으로 3개 3D 지역(숲·사막·묘지)의 몬스터 군세와 보스 포털을 돌파하는 3D 액션 로그라이크입니다.",
+    "en": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "ja": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "zh-CN": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "fr": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "es": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "pt-BR": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes.",
+    "hi": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-25",
+  "updatedOn": "2026-11-25",
+  "tags": [
+    "forge",
+    "action",
+    "roguelike",
+    "survival",
+    "3d"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (megabonk)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

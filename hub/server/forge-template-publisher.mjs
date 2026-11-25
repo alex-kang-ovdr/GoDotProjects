@@ -74,6 +74,11 @@ const TEMPLATE_PRESETS = Object.freeze({
     koSummary: 'Godot 3D 기반 탐험·액션 스타터 템플릿 게임입니다.',
     tags: ['action', 'adventure']
   },
+  'megabonk': {
+    koName: '메가봉크 · 와일드런 (Forge)',
+    koSummary: '15명 모험가·16종 무기·18종 Tome·24종 아이템으로 3개 3D 지역(숲·사막·묘지)의 몬스터 군세와 보스 포털을 돌파하는 Godot 3D 액션 로그라이크입니다.',
+    tags: ['action', 'roguelike', 'survival', '3d']
+  },
   'survivor-io': {
     koName: '서바이버 템플릿 (Forge)',
     koSummary: '몰려오는 적을 피하며 성장하는 Godot 2D 서바이벌 스타터 게임입니다.',

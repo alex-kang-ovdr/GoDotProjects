@@ -1,0 +1,130 @@
+{
+  "id": "megabonk",
+  "name": "MEGABONK · Wildrun Expedition",
+  "description": "3D 액션 로그라이크 서바이벌 게임(MEGABONK) Godot 4.7.2 네이티브 구현. 15명 모험가, 16종 무기, 18종 Tome, 24종 아이템, 29종 적, 3개 지역(숲·사막·묘지), 절차형 3D 모델 397부품, 자동 전투·점프·대시·슬라이드·보스 포털·최후의 군세 및 은화 영구 강화를 포함합니다.",
+  "dimension": "3d",
+  "assetPaths": [
+    "data/catalog.json",
+    "data/icon_aliases.json",
+    "assets/existing_models.json",
+    "assets/favicon.svg",
+    "assets/fonts/megabonk-ui.txt",
+    "assets/fonts/OFL.txt",
+    "assets/icons/aura.svg",
+    "assets/icons/axe.svg",
+    "assets/icons/bag.svg",
+    "assets/icons/banana.svg",
+    "assets/icons/blackhole.svg",
+    "assets/icons/bone.svg",
+    "assets/icons/book.svg",
+    "assets/icons/bow.svg",
+    "assets/icons/card.svg",
+    "assets/icons/chest.svg",
+    "assets/icons/clock.svg",
+    "assets/icons/close.svg",
+    "assets/icons/coin.svg",
+    "assets/icons/dash.svg",
+    "assets/icons/desert.svg",
+    "assets/icons/expand.svg",
+    "assets/icons/fire.svg",
+    "assets/icons/flask.svg",
+    "assets/icons/forest.svg",
+    "assets/icons/gem.svg",
+    "assets/icons/grave.svg",
+    "assets/icons/gun.svg",
+    "assets/icons/hammer.svg",
+    "assets/icons/heart.svg",
+    "assets/icons/jump.svg",
+    "assets/icons/key.svg",
+    "assets/icons/lightning.svg",
+    "assets/icons/luck.svg",
+    "assets/icons/magnet.svg",
+    "assets/icons/pause.svg",
+    "assets/icons/plus.svg",
+    "assets/icons/poison.svg",
+    "assets/icons/reroll.svg",
+    "assets/icons/settings.svg",
+    "assets/icons/shield.svg",
+    "assets/icons/skull.svg",
+    "assets/icons/snow.svg",
+    "assets/icons/sparkles.svg",
+    "assets/icons/speed.svg",
+    "assets/icons/star.svg",
+    "assets/icons/sword.svg",
+    "assets/icons/target.svg",
+    "assets/icons/trophy.svg",
+    "assets/icons/wind.svg",
+    "assets/icons/wing.svg",
+    "assets/licenses/THREE-LICENSE.txt",
+    "assets/portraits/Amog.svg",
+    "assets/portraits/Athena.svg",
+    "assets/portraits/Birdo.svg",
+    "assets/portraits/Bush.svg",
+    "assets/portraits/Calcium.svg",
+    "assets/portraits/Cl4nk.svg",
+    "assets/portraits/Fox.svg",
+    "assets/portraits/Megachad.svg",
+    "assets/portraits/Monke.svg",
+    "assets/portraits/Ninja.svg",
+    "assets/portraits/Noelle.svg",
+    "assets/portraits/Ogre.svg",
+    "assets/portraits/Robinette.svg",
+    "assets/portraits/SirOofie.svg",
+    "assets/portraits/Spaceman.svg"
+  ],
+  "guideOrder": [
+    "scripts/deterministic_random.gd",
+    "scripts/js_compat.gd",
+    "scripts/spatial_hash.gd",
+    "scripts/data.gd",
+    "scripts/meta.gd",
+    "scripts/terrain.gd",
+    "scripts/simulation.gd",
+    "scripts/world_renderer.gd",
+    "scripts/audio.gd",
+    "scripts/map_view.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "megabonk",
+      "title": {
+        "ko": "메가봉크 · 와일드런 (Forge)",
+        "en": "MEGABONK · Wildrun Expedition (Forge)"
+      },
+      "summary": {
+        "ko": "15명 모험가·16종 무기·18종 Tome·24종 아이템으로 3개 3D 지역(숲·사막·묘지)의 몬스터 군세와 보스 포털을 돌파하는 3D 액션 로그라이크입니다.",
+        "en": "3D action roguelike survivor with 15 characters, 16 weapons, 18 tomes, 24 items, 29 enemy types, and 3 procedural 3D biomes."
+      },
+      "instructions": {
+        "ko": "WASD/방향키로 이동, Space 점프, Shift 대시, C/Ctrl 슬라이드, E 상자·제단·포털 상호작용, 우클릭 드래그로 시점을 회전하고 M으로 전체 지도를 확인하세요. 레벨업 시 1/2/3 또는 클릭으로 무기와 Tome을 조합해 보스 포털과 최후의 군세를 돌파하세요.",
+        "en": "Move with WASD/Arrows, Space to jump, Shift to dash, C/Ctrl to slide, E to interact with chests/shrines/portals, right-drag to orbit camera, and M for full map. Pick upgrades with 1/2/3 or click to survive the boss portal and final swarm."
+      },
+      "tags": [
+        "action",
+        "roguelike",
+        "survival",
+        "3d"
+      ],
+      "controls": [
+        "keyboard",
+        "mouse",
+        "touch"
+      ],
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "orientation": "landscape",
+        "resize": "fit"
+      }
+    }
+  }
+}

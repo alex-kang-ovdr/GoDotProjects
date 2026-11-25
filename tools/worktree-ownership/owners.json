@@ -374,6 +374,14 @@
         "forge/Tests/voxel-frontier.test.cjs"
       ]
     },
+    "Forge-Games-megabonk": {
+      "role": "MEGABONK 3D 액션 로그라이크 서바이벌 템플릿",
+      "owns": [
+        "forge/Templates/megabonk/**",
+        "forge/Tests/megabonk.test.cjs",
+        "games/forge-megabonk/**"
+      ]
+    },
     "Forge-ISM-profile": {
       "role": "Unreal InstancedMesh ↔ Godot MultiMesh/Node3D 성능 비교 벤치마크 (실험)",
       "owns": [

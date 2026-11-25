@@ -2040,6 +2040,20 @@
       "owner": "Forge-Games-voxelFrontier"
     },
     {
+      "path": "forge/Tests/megabonk.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-Games-megabonk"
+    },
+    {
       "path": "forge/Tests/web-editor-wasm-release.test.cjs",
       "tier": "integration",
       "suites": [
