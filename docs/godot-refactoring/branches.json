@@ -217,9 +217,9 @@
   },
   {
     "id": "12",
-    "branch": "Godot-Refactoring-12-physicsStep",
+    "branch": "Godot-Refactoring-JoltPhysics",
     "engine": true,
-    "note": "Forge-HavokPhysics와 capability 계약 공유",
+    "note": "Jolt 성능 패치 4건과 함께 관리. Forge-HavokPhysics와 capability 계약 공유",
     "title": "물리 수동 스텝·상태 복구·조인트 안정성",
     "prio": "P1/P2/R&D",
     "pw": "32-56",

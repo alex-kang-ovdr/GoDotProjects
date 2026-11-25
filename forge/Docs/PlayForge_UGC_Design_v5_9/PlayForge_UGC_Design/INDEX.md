@@ -1,5 +1,7 @@
 # PlayForge UGC 설계 ZIP — 파일 인덱스
 
+> **참고 자료 (2026-11-25)**: Godot 채택 이전의 자체 엔진(C++/Lua) 전제 설계다. Lua는 지원하지 않으며, 현재 정본은 [docs/godot-refactoring/SSOT.md](../../../../docs/godot-refactoring/SSOT.md)를 따른다.
+
 - [00_Overview/README.md](00_Overview/README.md)
 - [01_Prefab_AI_Lua/01_Prefab_and_Reuse.md](01_Prefab_AI_Lua/01_Prefab_and_Reuse.md)
 - [01_Prefab_AI_Lua/02_AI_Lua_Authoring.md](01_Prefab_AI_Lua/02_AI_Lua_Authoring.md)

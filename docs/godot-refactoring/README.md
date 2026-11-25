@@ -1,6 +1,6 @@
 # Godot-Refactoring
 
-Godot 엔진 개선 로드맵(30개 항목)의 SSOT. 엔진 소스를 바꾸는 항목은 `Godot-Refactoring-*` 브랜치에서, 엔진을 바꾸지 않는 항목은 해당 영역의 Forge 계열 브랜치에서 진행한다.
+Godot 엔진 개선 로드맵(30개 항목)의 SSOT. 엔진 소스를 바꾸는 항목은 **godot-engine 포크 저장소**(`D:/Github/godot-engine`)의 `Godot-Refactoring-*` 브랜치에서, 엔진을 바꾸지 않는 항목은 해당 영역의 Forge 계열 브랜치에서 진행한다.
 
 - [00_Development_Roadmap.md](00_Development_Roadmap.md) — 통합 로드맵 원문
 - [90_Source_Coverage_and_Validation.md](90_Source_Coverage_and_Validation.md) — 원문 대응·검증 기록

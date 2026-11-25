@@ -67,7 +67,7 @@ PR #113429는 upstream master 병합이다. 우리 pin(4.7.2 기반 추정)에 �
 ## 4. 브랜치 운영 결정
 
 - 상위: `Godot-Refactoring` (기준 트렁크 `PlayHub-Platform`). 로드맵 SSOT·검토·착수 문서와 엔진 패치 큐를 관리한다. 통합은 사용자 요청 시에만 머지한다.
-- 엔진 변경 항목(01/03/04/05/06/07/12/19/20/21)은 `Godot-Refactoring-<번호>-<주제>` 10개 브랜치, 엔진 무변경 항목은 영역별 Forge 계열 브랜치로 통합한다. 대상은 [README.md](README.md)·[branches.json](branches.json).
+- 엔진 변경 항목(01/03/04/05/06/07/12/19/20/21)과 기존 포크 패치(아바타·Jolt)는 godot-engine 포크 저장소의 `Godot-Refactoring-*` 브랜치에서 작업한다([SSOT.md](SSOT.md) §3). 엔진 무변경 항목은 영역별 Forge 계열 브랜치로 통합한다. 대상은 [README.md](README.md)·[branches.json](branches.json).
 - 워크트리: 30개 동시 체크아웃(브랜치당 약 9,900 파일)은 대형 체크아웃에 해당하므로 **착수하는 브랜치만** `D:\Github\GoDotProjects-worktrees\` 아래에 만든다.
 - 소유권: 트렁크 AGENTS.md §2(새 브랜치는 같은 작업에서 등록)에 따라 `Godot-Refactoring`·`Forge-Profiling`·`Forge-BuildExport`·`Forge-Multiplayer`를 `owners.json`에 등록했다. 네 브랜치에 같은 등록 내용을 넣어 병합 시 충돌이 나지 않게 했다.
 
