@@ -6,6 +6,9 @@ signal detached(reason: String)
 const BalanceData = preload("res://scripts/balance.gd")
 const CHAIN_POINT_COUNT := 20
 const CHAIN_SOLVER_ITERATIONS := 24
+const TOW_MIN_MASS_RATIO := 0.87
+const TOW_DOMINANT_MASS_RATIO := 1.25
+const TOW_DOMINANT_THRUST_RATIO := 1.25
 
 var owner_ship: ShipBody
 var target_ship: ShipBody
@@ -22,6 +25,42 @@ var hp := max_hp
 var chain_rest_length := 0.0
 var current_tension := 0.0
 var peak_tension := 0.0
+var _oscillation_stress := 0.0
+var _prev_v_rel := 0.0
+
+static func ship_forward_thrust(ship: ShipBody) -> float:
+	if ship == null or ship.model == null:
+		return 0.0
+	var total := 0.0
+	for part in ship.model.parts:
+		if str(part.spec().get("actuator", "")) == "forward":
+			total += ship.effective_module_thrust(part)
+	return total
+
+static func ship_active_thrust_along(ship: ShipBody, world_axis: Vector2) -> float:
+	if ship == null or ship.model == null:
+		return 0.0
+	var total := 0.0
+	for part in ship.model.parts:
+		var actuator := str(part.spec().get("actuator", ""))
+		if actuator != "forward" and actuator != "reverse":
+			continue
+		var entry: Variant = ship.active_exhausts.get(part.uid, null)
+		if not (entry is Dictionary):
+			continue
+		var intensity := float(entry.get("intensity", 0.0))
+		if intensity <= 0.12:
+			continue
+		var world_push := ship.global_transform.basis_xform(ship.module_push_vector(part)).normalized()
+		var aligned := world_push.dot(world_axis)
+		if aligned > 0.2:
+			total += intensity * aligned
+	return total
+
+static func can_tow(tower: ShipBody, target: ShipBody) -> bool:
+	if tower == null or target == null:
+		return false
+	return tower.mass >= target.mass * TOW_MIN_MASS_RATIO
 
 func launch(next_owner: ShipBody, next_target: ShipBody) -> void:
 	owner_ship = next_owner
@@ -55,8 +94,13 @@ func _physics_process(delta: float) -> void:
 func create_physical_chain() -> void:
 	if connected:
 		return
+	if not can_tow(owner_ship, target_ship):
+		detach("TARGET TOO HEAVY · 더 큰 함선은 견인 불가")
+		return
 	hook_flying = false
 	connected = true
+	_oscillation_stress = 0.0
+	_prev_v_rel = 0.0
 	var p_a := owner_ship.global_position
 	var p_b := target_ship.global_position
 	var distance := p_a.distance_to(p_b)
@@ -143,6 +187,35 @@ func apply_tension_stabilizer(delta: float = 1.0 / 60.0) -> void:
 
 	current_tension = clampf(j_mag / dt + stretch * 120.0, 0.0, float(BalanceData.GRAPPLE.max_tension_force))
 	peak_tension = maxf(peak_tension, current_tension)
+
+	# 3) 질량/추력 조건 검증:
+	# - 대상이 확실히 더 큰 함선(1.15배 초과)이면 견인 불가 -> 단선
+	# - 비슷한 질량이라도 대상이 스러스트 없이 가만히 있으면 정상 견인 가능
+	# - 양쪽 함선이 모두 스러스트를 가동하며 질량/추력이 비슷해 진동·경합이 발생하면 단선
+	if not can_tow(owner_ship, target_ship):
+		detach("TARGET TOO HEAVY · 더 큰 함선은 견인 불가")
+		return
+	var mass_ratio := owner_ship.mass / maxf(target_ship.mass, 0.1)
+	var thrust_ratio := ship_forward_thrust(owner_ship) / maxf(ship_forward_thrust(target_ship), 1.0)
+	var owner_pulling := owner_ship.active_command_thrust > 0.05 and ship_active_thrust_along(owner_ship, -direction) > 0.15
+	var target_resisting := target_ship.active_command_thrust > 0.05 and ship_active_thrust_along(target_ship, direction) > 0.15
+	var both_thrusting := owner_pulling and target_resisting
+	var parity_contested := both_thrusting and (mass_ratio < TOW_DOMINANT_MASS_RATIO or thrust_ratio < TOW_DOMINANT_THRUST_RATIO)
+	var raw_v_rel := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(direction)
+	if parity_contested:
+		var flipped := (_prev_v_rel * raw_v_rel < 0.0) and (absf(raw_v_rel - _prev_v_rel) > 16.0)
+		if flipped:
+			_oscillation_stress += 0.34
+		elif stretch > 0.2 and current_tension > 350.0:
+			_oscillation_stress += dt * 1.45
+		else:
+			_oscillation_stress = maxf(0.0, _oscillation_stress - dt * 0.7)
+		if _oscillation_stress >= 1.0:
+			detach("RESONANCE BREAK · 질량/추력 경합 진동 단선")
+			return
+	else:
+		_oscillation_stress = maxf(0.0, _oscillation_stress - dt * 1.5)
+	_prev_v_rel = raw_v_rel
 
 func _step_visual_chain(delta: float) -> void:
 	var n := _chain_nodes.size()
@@ -241,8 +314,8 @@ func _draw() -> void:
 		points.append(to_local(target_ship.global_position))
 	if points.size() >= 2:
 		var integrity := hp / maxf(max_hp, 1.0)
-		var tension_ratio := clampf(current_tension / maxf(float(BalanceData.GRAPPLE.max_tension_force) * 0.25, 1.0), 0.0, 1.0)
-		var chain_color := Color("91eaff").lerp(Color("ffcf72"), tension_ratio).lerp(Color("ff7d75"), 1.0 - integrity)
+		var tension_ratio := clampf(maxf(current_tension / maxf(float(BalanceData.GRAPPLE.max_tension_force) * 0.25, 1.0), _oscillation_stress), 0.0, 1.0)
+		var chain_color := Color("91eaff").lerp(Color("ffcf72"), tension_ratio).lerp(Color("ff5c5c"), maxf(1.0 - integrity, _oscillation_stress * 0.85))
 		draw_polyline(points, chain_color, 2.5)
 		for point in points:
 			draw_circle(point, 3.2, Color("c8fbff"))

@@ -33,6 +33,7 @@ var shield_layer_bonus := 0
 var shield_recharge_reduction := 0.0
 var turret_target := Vector2.ZERO
 var is_player := true
+var active_command_thrust := 0.0
 var active_exhausts: Dictionary = {}
 var exhaust_particles: Dictionary = {}
 var hull_bound_radius := 0.0
@@ -305,9 +306,11 @@ func module_push_vector(part: PartData) -> Vector2:
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float, strafe: float = 0.0) -> void:
 	if is_destroying:
+		active_command_thrust = 0.0
 		active_exhausts.clear()
 		sync_exhaust_particles()
 		return
+	active_command_thrust = maxf(absf(forward), maxf(absf(reverse), absf(strafe)))
 	active_exhausts.clear()
 	if absf(forward) < 0.01 and absf(reverse) < 0.01 and absf(turn) < 0.01 and absf(strafe) < 0.01:
 		apply_neutral_braking()

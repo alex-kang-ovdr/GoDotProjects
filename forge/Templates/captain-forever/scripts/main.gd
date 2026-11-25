@@ -873,6 +873,9 @@ func toggle_grapple() -> void:
 	if not player.is_within_surface_range(target, float(BalanceData.GRAPPLE.max_range)):
 		announce("GRAPPLE OUT OF RANGE · 최대 %dpx" % BalanceData.GRAPPLE.max_range)
 		return
+	if not GrappleTetherScript.can_tow(player, target):
+		announce("GRAPPLE 불가 · 더 큰 함선은 견인할 수 없습니다 (내 질량 %.1f / 대상 %.1f)" % [player.mass, target.mass])
+		return
 	grapple = GrappleTetherScript.new()
 	world_layer.add_child(grapple)
 	grapple.detached.connect(func(reason: String):
