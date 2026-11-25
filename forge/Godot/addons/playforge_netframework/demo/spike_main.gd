@@ -1,8 +1,10 @@
 extends Node
 ## R0 스파이크 진입점: 같은 씬을 역할별 별도 프로세스로 실행한다.
-##   서버:   godot --headless --path <proj> res://addons/playforge_netframework/demo/spike.tscn -- --role=server --port=N --run-dir=DIR
-##   클라:   ... -- --role=client --port=N --bot=a --ticket=DIR/tickets/bot-a.ticket
-## 역할 결정 순서: --role 인자 > `dedicated_server` feature tag > headless 표시 서버 → server, 그 외 client.
+##   서버:   godot --headless --path <proj> res://addons/playforge_netframework/demo/spike.tscn -- --netmode=dedicated-server --port=N --run-dir=DIR
+##   listen: godot --path <proj> res://addons/playforge_netframework/demo/spike.tscn -- --netmode=listen-server --port=N
+##   로컬:   godot --path <proj> res://addons/playforge_netframework/demo/spike.tscn -- --netmode=standalone
+##   클라:   ... --netmode=client --bot=a --ticket=DIR/tickets/bot-a.ticket
+## 기본 모드는 dedicated-server feature/headless이면 서버, 그 외 standalone.
 ## 봇: a/b/c(늦은 입장)는 스크립트 이동, probe는 입장 거부를 기대하는 공격 클라이언트.
 
 const NetWorldScript := preload("res://addons/playforge_netframework/runtime/net_world.gd")
@@ -10,15 +12,23 @@ const NetGameModeScript := preload("res://addons/playforge_netframework/runtime/
 const NetGameStateScript := preload("res://addons/playforge_netframework/runtime/net_game_state.gd")
 const NetJoinTicketScript := preload("res://addons/playforge_netframework/runtime/join_ticket.gd")
 const NetEventLogScript := preload("res://addons/playforge_netframework/runtime/net_event_log.gd")
+const NetProfilerScript := preload("res://addons/playforge_netframework/runtime/net_profiler.gd")
 const NetIdsScript := preload("res://addons/playforge_netframework/runtime/net_ids.gd")
 const NetPlayerControllerScript := preload("res://addons/playforge_netframework/runtime/net_player_controller.gd")
 const NetPlayerStateScript := preload("res://addons/playforge_netframework/runtime/net_player_state.gd")
+const NetModeScript := preload("res://addons/playforge_netframework/runtime/net_mode.gd")
 
 const TICK_HZ := 30
+const CLI_OPTIONS := [
+	"netmode", "host", "port", "run-dir", "bot", "log", "ticket", "ticket-ttl",
+	"max-players", "play-ticks", "settle-max", "max-seconds", "tamper-slot", "wait-file", "linger",
+	"net-profile", "net-profile-interval", "net-profile-output", "net-debug", "net-debug-proxy", "net-debug-reply",
+]
 
 var args: Dictionary = {}
 var role: String = ""
 var event_log: NetEventLogScript
+var net_profiler: NetProfilerScript
 var world: NetWorldScript
 var smp: SceneMultiplayer
 var game_mode: NetGameModeScript
@@ -39,55 +49,90 @@ var inputs_sent: int = 0
 var wait_file: String = ""
 var _deadline_ms: int = 0
 var _quitting: bool = false
+var _local_root: Node
+var _bot_client := false
+var _standalone_inputs := 0
+var _standalone_progress_reported := false
+var _net_debug_enabled := false
+var _net_debug_reply_path := ""
+var _net_debug_reply_seq := 0
+var _next_net_debug_reply_poll_ms := 0
+var _debug_canvas: CanvasLayer
+var _debug_panel: PanelContainer
+var _debug_input: LineEdit
+var _debug_output: Label
+var _debug_lines: PackedStringArray = PackedStringArray()
 
 
 func _ready() -> void:
-	args = _parse_args()
+	if not _parse_args():
+		get_tree().quit(2)
+		return
 	role = _resolve_role()
+	if role.is_empty():
+		get_tree().quit(2)
+		return
 	Engine.physics_ticks_per_second = TICK_HZ
 	Engine.max_fps = 60
 	get_tree().auto_accept_quit = false
 	bot = String(args.get("bot", "ds"))
 	is_probe = bot.begins_with("probe")
+	_bot_client = args.has("bot")
 	event_log = NetEventLogScript.new("%s:%s" % [role, bot], String(args.get("log", "")))
-	_deadline_ms = Time.get_ticks_msec() + int(float(args.get("max-seconds", "45")) * 1000.0)
+	net_profiler = NetProfilerScript.new()
+	net_profiler.name = "NetProfiler"
+	net_profiler.configure(event_log, event_log.role, float(args.get("net-profile-interval", "1")), String(args.get("net-profile-output", "")), role)
+	add_child(net_profiler)
+	if args.has("net-profile"):
+		net_profiler.start_periodic()
+	_net_debug_enabled = args.has("net-debug")
+	_net_debug_reply_path = String(args.get("net-debug-reply", ""))
+	if _net_debug_enabled and DisplayServer.get_name() != "headless":
+		_setup_net_debug_console()
+	var default_deadline := "0" if role == "standalone" else "45"
+	var max_seconds := float(args.get("max-seconds", default_deadline))
+	_deadline_ms = Time.get_ticks_msec() + int(max_seconds * 1000.0) if max_seconds > 0.0 else 0
 	world = NetWorldScript.new()
 	world.name = "World"
+	world.configure_net_mode(role)
+	world.configure_profiler(net_profiler)
 	add_child(world)
 	smp = multiplayer as SceneMultiplayer
 	smp.server_relay = false
-	if role == "server":
+	net_profiler.attach_peer(smp.multiplayer_peer)
+	net_profiler.attach_multiplayer_api(smp, args.has("net-profile") or args.has("net-debug") or args.has("net-profile-output"))
+	if NetModeScript.accepts_clients(role):
 		_start_server()
+	elif role == "standalone":
+		_start_standalone()
 	else:
 		wait_file = String(args.get("wait-file", ""))
-		event_log.emit("client_boot", {"bot": bot, "probe": is_probe, "waitFile": not wait_file.is_empty()})
+		event_log.emit("client_boot", {"bot": bot, "probe": is_probe, "waitFile": not wait_file.is_empty(), "headless": DisplayServer.get_name() == "headless", "netMode": role})
 		if wait_file.is_empty():
 			_start_client()
 
 
-func _parse_args() -> Dictionary:
-	var out := {}
+func _parse_args() -> bool:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--"):
 			var kv := a.substr(2).split("=", true, 1)
-			out[kv[0]] = kv[1] if kv.size() > 1 else "true"
-	return out
+			if kv[0] not in CLI_OPTIONS:
+				push_error("Unknown argument --%s. Select the network mode with --netmode=<mode>." % kv[0])
+				return false
+			args[kv[0]] = kv[1] if kv.size() > 1 else "true"
+	return true
 
 
 func _resolve_role() -> String:
-	if args.has("role"):
-		return String(args.role)
-	if OS.has_feature("dedicated_server"):
-		return "server"
-	if DisplayServer.get_name() == "headless":
-		return "server"
-	return "client"
+	return NetModeScript.resolve(args, OS.has_feature("dedicated_server"), DisplayServer.get_name() == "headless")
 
 
 func _notification(what: int) -> void:
 	# 창 닫기 요청(그리고 이를 매핑하는 플랫폼의 SIGTERM)은 즉시 종료하지 않고 drain으로 보낸다.
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		if role == "server" and game_mode != null:
+		if role == "standalone" and game_mode != null:
+			game_mode.stop_standalone("close_request")
+		elif NetModeScript.accepts_clients(role) and game_mode != null:
 			game_mode.request_drain("close_request")
 		else:
 			_leave("close_request")
@@ -120,6 +165,7 @@ func _start_server() -> void:
 	game_mode.setup(world, event_log, tickets, smp)
 	game_mode.finished.connect(_on_server_finished)
 	smp.multiplayer_peer = peer
+	net_profiler.attach_peer(peer)
 	world.game_state.world_key = NetIdsScript.world_key_string(world_key)
 
 	# 로컬 가짜 제공자: 사용자별 1회용 티켓 발급. 파일에는 서명된 티켓만 있고 비밀키는 없다.
@@ -135,9 +181,28 @@ func _start_server() -> void:
 		"port": port, "worldKey": world_key, "maxPlayers": game_mode.max_players,
 		"tickHz": TICK_HZ, "engine": Engine.get_version_info().string,
 		"dedicatedServerFeature": OS.has_feature("dedicated_server"), "displayServer": DisplayServer.get_name(),
-		"serverIsPlayer": false,
+		"serverIsPlayer": false, "netMode": role, "rendered": DisplayServer.get_name() != "headless",
 	})
 	event_log.emit("tickets_issued", {"tickets": issued, "ttlSec": tickets.ttl_sec})
+	if role == "listen-server":
+		event_log.emit("listen_server_ready", {"localPlayer": false})
+
+
+func _start_standalone() -> void:
+	var session_id := NetIdsScript.random_id(8)
+	var world_key := NetIdsScript.make_world_key("local", "forge-standalone", "dev-%d.%d.%d" % [Engine.get_version_info().major, Engine.get_version_info().minor, Engine.get_version_info().patch], session_id, 1)
+	game_mode = NetGameModeScript.new()
+	game_mode.name = "GameMode"
+	game_mode.max_players = 1
+	game_mode.min_players_to_start = 1
+	game_mode.play_ticks = 0
+	game_mode.settle_max_seconds = 0.0
+	add_child(game_mode)
+	game_mode.setup(world, event_log, null, smp)
+	game_mode.finished.connect(_on_server_finished)
+	world.game_state.world_key = NetIdsScript.world_key_string(world_key)
+	_local_root = game_mode.add_standalone_player("local-player", 0)
+	event_log.emit("standalone_ready", {"worldKey": world_key, "localPlayer": _local_root != null, "network": false})
 
 
 func _on_server_finished(code: int) -> void:
@@ -174,6 +239,7 @@ func _start_client() -> void:
 		return
 	connect_start_us = Time.get_ticks_usec()
 	smp.multiplayer_peer = peer
+	net_profiler.attach_peer(peer)
 
 
 func _on_authenticating(peer_id: int) -> void:
@@ -209,16 +275,127 @@ func _on_server_disconnected() -> void:
 
 
 func _process(_dt: float) -> void:
-	if Time.get_ticks_msec() > _deadline_ms:
-		event_log.emit("watchdog_timeout", {})
-		_quit(4)
+	_poll_net_debug_reply()
+	if _deadline_ms > 0 and Time.get_ticks_msec() > _deadline_ms:
+		event_log.emit("mode_timeout", {"netMode": role})
+		if role == "standalone":
+			event_log.emit("standalone_progress", _standalone_snapshot())
+			game_mode.stop_standalone("max_seconds")
+		elif NetModeScript.accepts_clients(role):
+			game_mode.request_drain("max_seconds")
+		else:
+			_quit(4)
+		_deadline_ms = 0
 		return
 	if role == "client" and not wait_file.is_empty() and FileAccess.file_exists(wait_file):
 		wait_file = ""
 		_start_client()
 
 
+func _setup_net_debug_console() -> void:
+	_debug_canvas = CanvasLayer.new()
+	_debug_canvas.layer = 20
+	add_child(_debug_canvas)
+	_debug_panel = PanelContainer.new()
+	_debug_panel.position = Vector2(16, 16)
+	_debug_panel.custom_minimum_size = Vector2(760, 250)
+	_debug_panel.visible = false
+	_debug_canvas.add_child(_debug_panel)
+	var column := VBoxContainer.new()
+	_debug_panel.add_child(column)
+	_debug_output = Label.new()
+	_debug_output.custom_minimum_size = Vector2(740, 195)
+	_debug_output.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(_debug_output)
+	_debug_input = LineEdit.new()
+	_debug_input.placeholder_text = "netprofile | stat net | NetEmulation.PktLag 100 | NetEmulation.Status"
+	_debug_input.text_submitted.connect(_submit_net_debug_command)
+	column.add_child(_debug_input)
+	_append_net_debug_line("~ opens/closes the local network console")
+
+
+func _input(event: InputEvent) -> void:
+	if not _net_debug_enabled or DisplayServer.get_name() == "headless":
+		return
+	if not (event is InputEventKey) or not event.pressed or event.echo:
+		return
+	if event.physical_keycode == KEY_QUOTELEFT:
+		_set_net_debug_console_visible(not _debug_panel.visible)
+		get_viewport().set_input_as_handled()
+	elif _debug_panel.visible and event.keycode == KEY_ESCAPE:
+		_set_net_debug_console_visible(false)
+		get_viewport().set_input_as_handled()
+
+
+func _set_net_debug_console_visible(visible: bool) -> void:
+	_debug_panel.visible = visible
+	if visible:
+		_debug_input.grab_focus()
+	else:
+		_debug_input.release_focus()
+
+
+func _gameplay_input_vector() -> Vector2:
+	if _debug_panel != null and _debug_panel.visible and _debug_input.has_focus():
+		return Vector2.ZERO
+	return Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+
+
+func _submit_net_debug_command(command: String) -> void:
+	var text := command.strip_edges()
+	_debug_input.clear()
+	if text.is_empty():
+		return
+	_append_net_debug_line("> " + text)
+	if text.to_lower() == "netprofile" or text.to_lower() == "stat net":
+		_append_net_debug_line(net_profiler.handle_command(text))
+		return
+	if text.to_lower().begins_with("netemulation."):
+		if args.has("net-debug-proxy"):
+			event_log.emit("net_debug_command", {"command": text})
+			_append_net_debug_line("sent to local runner; waiting for reply")
+		else:
+			_append_net_debug_line(net_profiler.handle_command(text))
+		return
+	_append_net_debug_line("unknown command (try netprofile or NetEmulation.Status)")
+
+
+func _append_net_debug_line(text: String) -> void:
+	if _debug_output == null:
+		return
+	for line in text.split("\n"):
+		_debug_lines.append(line)
+	while _debug_lines.size() > 14:
+		_debug_lines.remove_at(0)
+	_debug_output.text = "\n".join(_debug_lines)
+
+
+func _poll_net_debug_reply() -> void:
+	if _net_debug_reply_path.is_empty() or Time.get_ticks_msec() < _next_net_debug_reply_poll_ms:
+		return
+	_next_net_debug_reply_poll_ms = Time.get_ticks_msec() + 100
+	if not FileAccess.file_exists(_net_debug_reply_path):
+		return
+	var reply: Variant = JSON.parse_string(FileAccess.get_file_as_string(_net_debug_reply_path))
+	if not reply is Dictionary:
+		return
+	var seq := int(reply.get("seq", 0))
+	if seq <= _net_debug_reply_seq:
+		return
+	_net_debug_reply_seq = seq
+	_append_net_debug_line(String(reply.get("message", "")))
+
+
 func _physics_process(_dt: float) -> void:
+	if role == "standalone" and _local_root != null and not leaving:
+		var ctrl: NetPlayerControllerScript = _local_root.get_node("Controller")
+		ctrl.last_move = _bot_move(world.game_state.play_tick) if _bot_client else _gameplay_input_vector()
+		if world.game_state.phase == NetGameStateScript.PHASE_PLAY and ctrl.last_move != Vector2.ZERO:
+			_standalone_inputs += 1
+		if not _standalone_progress_reported and world.game_state.play_tick >= 10:
+			_standalone_progress_reported = true
+			event_log.emit("standalone_progress", _standalone_snapshot())
+		return
 	if role != "client" or not connected or leaving:
 		return
 	var gs: NetGameStateScript = world.game_state
@@ -239,7 +416,8 @@ func _physics_process(_dt: float) -> void:
 		if first_play_tick < 0:
 			first_play_tick = gs.play_tick
 		var ctrl: NetPlayerControllerScript = my_root.get_node("Controller")
-		ctrl.client_send_input(_bot_move(gs.play_tick))
+		var move := _bot_move(gs.play_tick) if _bot_client else _gameplay_input_vector()
+		ctrl.client_send_input(move)
 		inputs_sent += 1
 		if bot == "b" and gs.play_tick >= 20 and illegal_sent < 3:
 			_try_illegal_rpc()
@@ -273,13 +451,24 @@ func _bot_move(t: int) -> Vector2:
 	return Vector2.ZERO
 
 
+func _standalone_snapshot() -> Dictionary:
+	return {
+		"netMode": role,
+		"network": false,
+		"serverTick": world.game_state.server_tick if world != null else 0,
+		"playTick": world.game_state.play_tick if world != null else 0,
+		"inputs": _standalone_inputs,
+		"world": world.snapshot() if world != null else {},
+	}
+
+
 ## 다른 플레이어(slot 0)의 Controller에 owner RPC를 위조 전송한다. 서버는 거부해야 한다.
 func _try_illegal_rpc() -> void:
 	var victim := world.find_player_by_slot(0)
 	if victim == null or victim == my_root:
 		return
 	var ctrl: NetPlayerControllerScript = victim.get_node("Controller")
-	ctrl.server_submit_input.rpc_id(1, 1000000 + illegal_sent, Vector2.LEFT)
+	ctrl.send_server_submit_input(1000000 + illegal_sent, Vector2.LEFT)
 	illegal_sent += 1
 	event_log.emit("illegal_rpc_sent", {"target": String(ctrl.get_path()), "n": illegal_sent})
 
@@ -291,10 +480,18 @@ func _leave(reason: String) -> void:
 	var ctrl: NetPlayerControllerScript = my_root.get_node("Controller") if my_root != null else null
 	var stats := {}
 	var enet := smp.multiplayer_peer as ENetMultiplayerPeer
-	if enet != null and enet.host != null:
+	if net_profiler != null:
+		var profile: Dictionary = net_profiler.capture_snapshot("client_leaving")
+		var profile_enet: Dictionary = profile.get("enet", {})
+		var sent_bytes: Dictionary = profile_enet.get("sentBytes", {})
+		var received_bytes: Dictionary = profile_enet.get("receivedBytes", {})
+		var sent_packets: Dictionary = profile_enet.get("sentPackets", {})
+		var received_packets: Dictionary = profile_enet.get("receivedPackets", {})
 		stats = {
-			"sentBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_SENT_DATA),
-			"recvBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_RECEIVED_DATA),
+			"sentBytes": int(sent_bytes.get("total", 0)),
+			"recvBytes": int(received_bytes.get("total", 0)),
+			"sentPackets": int(sent_packets.get("total", 0)),
+			"recvPackets": int(received_packets.get("total", 0)),
 		}
 	event_log.emit("client_leaving", {
 		"reason": reason, "inputsSent": inputs_sent,

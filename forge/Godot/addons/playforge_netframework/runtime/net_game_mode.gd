@@ -48,6 +48,7 @@ var _drain_reason: String = ""
 var _empty_seconds: float = 0.0
 var _peak_players: int = 0
 var _tick_us: PackedInt32Array = PackedInt32Array()
+var _next_external_drain_check_ms: int = 0
 var _done: bool = false
 
 
@@ -57,10 +58,11 @@ func setup(p_world: NetWorldScript, p_log: NetEventLogScript, p_tickets: NetJoin
 	tickets = p_tickets
 	smp = p_smp
 	guard = NetRpcGuardScript.new(event_log)
-	smp.auth_callback = _on_auth
-	smp.peer_authentication_failed.connect(_on_auth_failed)
-	smp.peer_connected.connect(_on_peer_connected)
-	smp.peer_disconnected.connect(_on_peer_disconnected)
+	if tickets != null:
+		smp.auth_callback = _on_auth
+		smp.peer_authentication_failed.connect(_on_auth_failed)
+		smp.peer_connected.connect(_on_peer_connected)
+		smp.peer_disconnected.connect(_on_peer_disconnected)
 	world.game_state.max_players = max_players
 	_phase_started_ms = Time.get_ticks_msec()
 
@@ -95,7 +97,7 @@ func _on_auth(peer_id: int, data: PackedByteArray) -> void:
 		smp.send_auth(peer_id, ("rej:" + reason).to_utf8_buffer())
 		# 거부 응답이 전달될 시간을 준 뒤 끊는다.
 		get_tree().create_timer(0.25).timeout.connect(func() -> void:
-			if not _player_roots.has(peer_id):
+			if smp.get_authenticating_peers().has(peer_id):
 				smp.disconnect_peer(peer_id))
 		return
 	_pending[peer_id] = claims
@@ -118,6 +120,28 @@ func _on_peer_connected(peer_id: int) -> void:
 		return
 	var claims: Dictionary = _pending[peer_id]
 	_pending.erase(peer_id)
+	_spawn_player(peer_id, claims)
+
+
+## Standalone demo path: registers one local player without opening a network peer or JoinTicket.
+func add_standalone_player(user_id: String, slot: int) -> Node:
+	var peer_id := multiplayer.get_unique_id()
+	if not multiplayer.is_server() or not (multiplayer.multiplayer_peer is OfflineMultiplayerPeer) or _player_roots.has(peer_id) or _pending.has(peer_id) or _slot_owner.has(slot) or slot < 0 or slot >= max_players:
+		return null
+	var root := _spawn_player(peer_id, {"slot": slot, "userId": user_id})
+	_slot_owner[slot] = peer_id
+	return root
+
+
+## Ends the standalone-only local peer without waiting for a network disconnect callback.
+func stop_standalone(reason: String) -> void:
+	if not (multiplayer.multiplayer_peer is OfflineMultiplayerPeer) or _done:
+		return
+	request_drain(reason)
+	_on_peer_disconnected(multiplayer.get_unique_id())
+
+
+func _spawn_player(peer_id: int, claims: Dictionary) -> Node:
 	var slot := int(claims.slot)
 	var nid := object_ids.allocate()
 	var spawn_pos := Vector2(100, 200 + 200 * slot)
@@ -143,6 +167,7 @@ func _on_peer_connected(peer_id: int) -> void:
 		"netId": [int(nid.index), int(nid.generation)], "phase": state().phase,
 		"players": _player_roots.size(),
 	})
+	return root
 
 
 func _on_peer_disconnected(peer_id: int) -> void:
@@ -191,8 +216,12 @@ func _physics_process(dt: float) -> void:
 		NetGameStateScript.PHASE_PLAY:
 			_tick_play(dt)
 			gs.play_tick += 1
-			if gs.play_tick >= play_ticks:
+			if play_ticks > 0 and gs.play_tick >= play_ticks:
 				_set_phase(NetGameStateScript.PHASE_SETTLE)
+			elif play_ticks == 0 and tickets != null and Time.get_ticks_msec() >= _next_external_drain_check_ms:
+				_next_external_drain_check_ms = Time.get_ticks_msec() + 1000
+				if _drain_requested_by_file():
+					request_drain("external_signal")
 		NetGameStateScript.PHASE_SETTLE:
 			if _drain_requested_by_file() or _phase_age_s() >= settle_max_seconds:
 				request_drain("match_end" if _drain_reason == "" else _drain_reason)
@@ -222,7 +251,7 @@ func _tick_play(dt: float) -> void:
 		if hazard.has_point(pawn.position) and pawn.health > 0:
 			pawn.server_apply_damage(hazard_damage_per_tick)
 		if gs.play_tick % ack_every_ticks == 0 and ctrl.last_seq > 0:
-			ctrl.client_input_ack.rpc_id(int(pid), ctrl.last_seq)
+			ctrl.send_client_input_ack(ctrl.last_seq)
 
 
 func _set_phase(phase: String) -> void:
@@ -271,13 +300,19 @@ func metrics() -> Dictionary:
 	var sorted := _tick_us.duplicate()
 	sorted.sort()
 	var bytes := {}
-	var enet := smp.multiplayer_peer as ENetMultiplayerPeer
-	if enet != null and enet.host != null:
+	var profile_snapshot: Dictionary = {}
+	if world != null and world.net_profiler != null:
+		profile_snapshot = world.net_profiler.capture_snapshot("server_final")
+		var enet_metrics: Dictionary = profile_snapshot.get("enet", {})
+		var sent_bytes: Dictionary = enet_metrics.get("sentBytes", {})
+		var received_bytes: Dictionary = enet_metrics.get("receivedBytes", {})
+		var sent_packets: Dictionary = enet_metrics.get("sentPackets", {})
+		var received_packets: Dictionary = enet_metrics.get("receivedPackets", {})
 		bytes = {
-			"sentBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_SENT_DATA),
-			"recvBytes": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_RECEIVED_DATA),
-			"sentPackets": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_SENT_PACKETS),
-			"recvPackets": enet.host.pop_statistic(ENetConnection.HOST_TOTAL_RECEIVED_PACKETS),
+			"sentBytes": int(sent_bytes.get("total", 0)),
+			"recvBytes": int(received_bytes.get("total", 0)),
+			"sentPackets": int(sent_packets.get("total", 0)),
+			"recvPackets": int(received_packets.get("total", 0)),
 		}
 	return {
 		"ticks": sorted.size(),
@@ -287,10 +322,11 @@ func metrics() -> Dictionary:
 			"max": sorted[sorted.size() - 1] if sorted.size() > 0 else 0,
 		},
 		"rpc": guard.counters,
-		"tickets": {"issued": tickets.issued_count, "accepted": tickets.accepted_count, "rejected": tickets.rejected},
+		"tickets": {"issued": tickets.issued_count, "accepted": tickets.accepted_count, "rejected": tickets.rejected} if tickets != null else {},
 		"joinRejected": _join_rejections,
 		"peakPlayers": _peak_players,
 		"enet": bytes,
+		"netProfile": profile_snapshot,
 	}
 
 

@@ -167,25 +167,25 @@ async function main() {
 
   const port = await freeUdpPort();
   const common = [`--port=${port}`, '--max-seconds=45'];
-  const server = start('server', ['--role=server', ...common, `--run-dir=${outDir}`, '--play-ticks=150', '--settle-max=10']);
+  const server = start('server', ['--netmode=dedicated-server', ...common, `--run-dir=${outDir}`, '--play-ticks=150', '--settle-max=10']);
   try {
     await server.waitFor((e) => e.ev === 'tickets_issued', 15000, 'tickets_issued');
-    const a = start('client-a', ['--role=client', '--bot=a', ...common, `--ticket=${ticket('bot-a')}`]);
-    const b = start('client-b', ['--role=client', '--bot=b', ...common, `--ticket=${ticket('bot-b')}`]);
+    const a = start('client-a', ['--netmode=client', '--bot=a', ...common, `--ticket=${ticket('bot-a')}`]);
+    const b = start('client-b', ['--netmode=client', '--bot=b', ...common, `--ticket=${ticket('bot-b')}`]);
     await server.waitFor((e) => e.ev === 'phase' && e.to === 'play', 20000, 'phase play');
 
     // 늦은 입장 + 공격 probe (play 중)
-    if (opts.late) start('client-c-late', ['--role=client', '--bot=c', ...common, `--ticket=${ticket('bot-c')}`]);
+    if (opts.late) start('client-c-late', ['--netmode=client', '--bot=c', ...common, `--ticket=${ticket('bot-c')}`]);
     const probes = [
-      start('probe-reuse', ['--role=client', '--bot=probe-reuse', ...common, `--ticket=${ticket('bot-a')}`]),
-      start('probe-tamper', ['--role=client', '--bot=probe-tamper', ...common, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
-      start('probe-wrongslot', ['--role=client', '--bot=probe-wrongslot', ...common, `--ticket=${ticket('bot-x')}`]),
+      start('probe-reuse', ['--netmode=client', '--bot=probe-reuse', ...common, `--ticket=${ticket('bot-a')}`]),
+      start('probe-tamper', ['--netmode=client', '--bot=probe-tamper', ...common, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
+      start('probe-wrongslot', ['--netmode=client', '--bot=probe-wrongslot', ...common, `--ticket=${ticket('bot-x')}`]),
     ];
 
     // settle 진입 후 drain probe를 대기시킨 뒤 외부 drain 신호(SIGTERM 대체) 파일을 쓴다.
     await server.waitFor((e) => e.ev === 'phase' && e.to === 'settle', 20000, 'phase settle');
     const drainFile = path.join(outDir, 'control', 'drain');
-    const probeDrain = start('probe-drain', ['--role=client', '--bot=probe-drain', ...common, `--ticket=${ticket('bot-c')}`, `--wait-file=${drainFile}`]);
+    const probeDrain = start('probe-drain', ['--netmode=client', '--bot=probe-drain', ...common, `--ticket=${ticket('bot-c')}`, `--wait-file=${drainFile}`]);
     probes.push(probeDrain);
     await probeDrain.waitFor((e) => e.ev === 'client_boot', 15000, 'probe-drain boot');
     fs.writeFileSync(drainFile, `drain requested by run-ds-2clients at ${new Date().toISOString()}\n`);
@@ -206,8 +206,13 @@ async function main() {
   const drainDone = server.first('drain_complete');
   check('no_fatal', !fatal, fatal || 'ok');
   check('server_clean_exit', server.exitCode === 0, `exit=${server.exitCode}`);
+  check('dedicated_server_net_mode', listening && listening.netMode === 'dedicated-server', `netMode=${listening && listening.netMode}`);
   check('drain_waited_for_players', drainDone && drainDone.forced === false && drainDone.remaining === 0, drainDone ? `forced=${drainDone.forced} remaining=${drainDone.remaining}` : 'missing');
   for (const p of players) check(`${p.name}_clean_exit`, p.exitCode === 0, `exit=${p.exitCode}`);
+  for (const p of players) {
+    const boot = p.first('client_boot');
+    check(`${p.name}_client_net_mode`, boot && boot.netMode === 'client', `netMode=${boot && boot.netMode}`);
+  }
 
   // 서버는 플레이어가 아니다
   const serverInList = !serverSnap
@@ -324,4 +329,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { resolveGodot };
+module.exports = { resolveGodot, freeUdpPort };

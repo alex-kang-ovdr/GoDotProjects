@@ -16,12 +16,44 @@ const NetGameStateScript := preload("net_game_state.gd")
 const NetPlayerStateScript := preload("net_player_state.gd")
 const NetPlayerControllerScript := preload("net_player_controller.gd")
 const NetPawnScript := preload("net_pawn.gd")
+const NetProfilerScript := preload("net_profiler.gd")
 
 signal player_spawned(root: Node)
 
 var game_state: NetGameStateScript
 var players: Node
 var spawner: MultiplayerSpawner
+var net_profiler: NetProfilerScript
+## Local process mode for game rules; deliberately excluded from network replication.
+var _net_mode: String = ""
+
+const PLAYER_COLORS := [Color("#65c8ff"), Color("#ff8c68"), Color("#b1e879"), Color("#d69cff")]
+
+
+func _process(_dt: float) -> void:
+	if DisplayServer.get_name() != "headless":
+		queue_redraw()
+
+
+func _draw() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	var arena := Rect2(Vector2.ZERO, Vector2(800, 800))
+	draw_rect(arena, Color("#17212d"), true)
+	draw_rect(arena, Color("#65788b"), false, 3.0)
+	draw_rect(Rect2(300, 0, 120, 800), Color(0.9, 0.22, 0.2, 0.18), true)
+	draw_line(Vector2(300, 0), Vector2(300, 800), Color("#ff716c"), 2.0)
+	draw_line(Vector2(420, 0), Vector2(420, 800), Color("#ff716c"), 2.0)
+	for player in players.get_children():
+		var ps: NetPlayerStateScript = player.get_node_or_null("PlayerState")
+		var pawn: NetPawnScript = player.get_node_or_null("Pawn")
+		if ps == null or pawn == null:
+			continue
+		var color: Color = PLAYER_COLORS[posmod(ps.slot, PLAYER_COLORS.size())]
+		draw_circle(pawn.position, 16.0, color)
+		draw_arc(pawn.position, 19.0, 0.0, TAU, 32, Color.WHITE, 2.0)
+		draw_string(ThemeDB.fallback_font, pawn.position + Vector2(-22, -25), "P%d  HP %d" % [ps.slot + 1, pawn.health], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+	draw_string(ThemeDB.fallback_font, Vector2(18, 28), "%s  tick %d  players %d" % [game_state.phase, game_state.server_tick, players.get_child_count()], HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
 
 
 func _ready() -> void:
@@ -39,6 +71,18 @@ func _ready() -> void:
 	add_child(spawner)
 
 
+func configure_net_mode(mode: String) -> void:
+	_net_mode = mode
+
+
+func configure_profiler(profiler: NetProfilerScript) -> void:
+	net_profiler = profiler
+
+
+func get_net_mode() -> String:
+	return _net_mode
+
+
 ## spawn data: {slot, user, peer, x, y, net_index, net_gen, health}
 func _build_player(data: Variant) -> Node:
 	var d: Dictionary = data
@@ -53,6 +97,7 @@ func _build_player(data: Variant) -> Node:
 	var ctrl := NetPlayerControllerScript.new()
 	ctrl.name = "Controller"
 	ctrl.owner_peer_id = int(d.peer)
+	ctrl.set_net_profiler(net_profiler)
 	root.add_child(ctrl)
 	var pawn := NetPawnScript.new()
 	pawn.name = "Pawn"

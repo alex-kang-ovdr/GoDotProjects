@@ -26,7 +26,8 @@ test('Godot DS + 2 clients: convergence, owner RPC rejection, JoinTicket rejecti
   assert.deepEqual(failed, [], `failed checks (evidence: ${summary.outDir})`);
   assert.equal(r.status, 0);
   for (const id of ['clients_converge_to_server', 'illegal_owner_rpc_rejected', 'ticket_ticket_reused', 'ticket_hmac_invalid',
-    'ticket_slot_taken', 'ticket_draining', 'server_not_in_player_list', 'drain_waited_for_players', 'ticket_selftest']) {
+    'ticket_slot_taken', 'ticket_draining', 'server_not_in_player_list', 'drain_waited_for_players', 'ticket_selftest',
+    'dedicated_server_net_mode', 'client-a_client_net_mode', 'client-b_client_net_mode', 'client-c-late_client_net_mode']) {
     assert.ok(summary.checks.some((c) => c.id === id && c.ok), `${id} must pass`);
   }
 });

@@ -1078,6 +1078,51 @@
       "note": "Godot 4.7.2 headless DS 1 + clients 2 (+late join, JoinTicket/owner RPC probes) via forge/Tools/dedicated-server/run-ds-2clients.cjs"
     },
     {
+      "path": "forge/Tests/netframework/net-modes.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Forge --netmode selection, headless defaults, rejection of obsolete arguments, and listen-server rendering"
+    },
+    {
+      "path": "forge/Tests/netframework/net-emulation-proxy.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Loopback UDP proxy: bidirectional delay/loss, runtime zero-profile restore, queued-packet and socket cleanup"
+    },
+    {
+      "path": "forge/Tests/netframework/net-lab.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Live 2-client ENet net lab: runtime per-client impairments, restore, profiler counters, and evidence capture"
+    },
+    {
       "path": "forge/Tests/operator-oauth-token.test.cjs",
       "tier": "fast",
       "suites": [
