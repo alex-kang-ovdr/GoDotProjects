@@ -240,9 +240,13 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ss
         manifestAndroid = parsed?.android || null;
       }
     } catch {}
-    const pckDiskPath = resolve(rootDir, 'games', gameId, 'Web', 'index.pck');
-    const hasPck = existsSync(pckDiskPath) || manifestAndroid?.runtime === 'godot-pck';
-    const pckBytes = existsSync(pckDiskPath) ? statSync(pckDiskPath).size : (Number(manifestAndroid?.bundle?.bytes) || 0);
+    const pckCandidates = [
+      resolve(rootDir, 'games', gameId, 'index.pck'),
+      resolve(rootDir, 'games', gameId, 'Web', 'index.pck')
+    ];
+    const pckDiskPath = pckCandidates.find(p => existsSync(p)) || null;
+    const hasPck = Boolean(pckDiskPath) || manifestAndroid?.runtime === 'godot-pck';
+    const pckBytes = pckDiskPath ? statSync(pckDiskPath).size : (Number(manifestAndroid?.bundle?.bytes) || 0);
     return {
       runtime: hasPck ? 'godot-pck' : 'web',
       requiredEngineVersion: hasPck ? (manifestAndroid?.engineVersion || '4.7.2') : null,

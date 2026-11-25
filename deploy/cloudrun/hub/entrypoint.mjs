@@ -146,6 +146,10 @@ function buildConfig() {
     billing: {
       enabled: !['0', 'false', 'off', 'no'].includes(String(process.env.PLAYHUB_BILLING_ENABLED || '1').trim().toLowerCase()),
     },
+    mobile: {
+      enabled: !['0', 'false', 'off', 'no'].includes(String(process.env.PLAYHUB_MOBILE_ENABLED || '1').trim().toLowerCase()),
+      ...(process.env.PLAYHUB_MOBILE_JWT_SECRET ? { jwtSecret: process.env.PLAYHUB_MOBILE_JWT_SECRET } : {}),
+    },
   };
 }
 
