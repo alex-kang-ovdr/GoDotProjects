@@ -4,6 +4,7 @@ extends Node2D
 signal detached(reason: String)
 
 const BalanceData = preload("res://scripts/balance.gd")
+const CHAIN_SOLVER_ITERATIONS := 20
 
 var owner_ship: ShipBody
 var target_ship: ShipBody
@@ -13,6 +14,7 @@ var connected := false
 var links: Array[RigidBody2D] = []
 var _chain_nodes: PackedVector2Array = PackedVector2Array()
 var _chain_prev: PackedVector2Array = PackedVector2Array()
+var _chain_inv_mass: PackedFloat32Array = PackedFloat32Array()
 var _chain_seg_len := 36.0
 var max_hp := maxf(float(BalanceData.GRAPPLE.hp) * 3.0, 96.0)
 var hp := max_hp
@@ -63,10 +65,16 @@ func create_physical_chain() -> void:
 	_chain_seg_len = chain_rest_length / float(seg_count)
 	_chain_nodes.resize(seg_count + 1)
 	_chain_prev.resize(seg_count + 1)
+	_chain_inv_mass.resize(seg_count + 1)
+	var m_a := maxf(owner_ship.mass, 0.5)
+	var m_b := maxf(target_ship.mass, 0.5)
 	for i in range(seg_count + 1):
-		var pt := p_a.lerp(p_b, float(i) / float(seg_count))
+		var t := float(i) / float(seg_count)
+		var pt := p_a.lerp(p_b, t)
 		_chain_nodes[i] = pt
 		_chain_prev[i] = pt
+		# 각 체인 포인트의 질량을 함선 A·B 질량 사이 값으로 선형 보간해 질량비 차이를 최소화한다.
+		_chain_inv_mass[i] = 1.0 / maxf(lerpf(m_a, m_b, t), 0.5)
 
 # Split-Impulse 비탄성 로프 제약 (에너지 주입 0%):
 # 1) 분리 속도만 정확히 상쇄(반발/되튐 없음)
@@ -141,17 +149,22 @@ func _step_visual_chain(delta: float) -> void:
 		return
 	var p_start := owner_ship.global_position
 	var p_end := target_ship.global_position
+	var m_a := maxf(owner_ship.mass, 0.5)
+	var m_b := maxf(target_ship.mass, 0.5)
+	var inv_denom := 1.0 / float(n - 1)
+	for i in range(n):
+		_chain_inv_mass[i] = 1.0 / maxf(lerpf(m_a, m_b, float(i) * inv_denom), 0.5)
 	_chain_nodes[0] = p_start
 	_chain_prev[0] = p_start
 	_chain_nodes[n - 1] = p_end
 	_chain_prev[n - 1] = p_end
-	var damp := exp(-7.5 * delta)
+	var damp := exp(-8.0 * delta)
 	for i in range(1, n - 1):
 		var cur := _chain_nodes[i]
 		var vel := (cur - _chain_prev[i]) * damp
 		_chain_prev[i] = cur
 		_chain_nodes[i] = cur + vel
-	for _iter in 6:
+	for _iter in CHAIN_SOLVER_ITERATIONS:
 		_chain_nodes[0] = p_start
 		_chain_nodes[n - 1] = p_end
 		for i in range(n - 1):
@@ -162,14 +175,13 @@ func _step_visual_chain(delta: float) -> void:
 			if d <= 0.0001:
 				continue
 			var err := (d - _chain_seg_len) / d
-			if i == 0:
-				_chain_nodes[i + 1] = b - diff * err
-			elif i + 1 == n - 1:
-				_chain_nodes[i] = a + diff * err
-			else:
-				var half_corr := diff * (err * 0.5)
-				_chain_nodes[i] = a + half_corr
-				_chain_nodes[i + 1] = b - half_corr
+			var w_a := 0.0 if i == 0 else _chain_inv_mass[i]
+			var w_b := 0.0 if i + 1 == n - 1 else _chain_inv_mass[i + 1]
+			var w_sum := w_a + w_b
+			if w_sum <= 0.000001:
+				continue
+			_chain_nodes[i] = a + diff * (err * (w_a / w_sum))
+			_chain_nodes[i + 1] = b - diff * (err * (w_b / w_sum))
 
 func detach(reason: String = "MANUAL RELEASE") -> void:
 	detached.emit(reason)

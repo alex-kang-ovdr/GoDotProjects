@@ -18,6 +18,9 @@ renderer/rendering_method.mobile="gl_compatibility"
 textures/default_filters/use_nearest_mipmap_filter=false
 textures/canvas_textures/default_texture_filter=0
 
+[physics]
+2d/solver/solver_iterations=32
+
 [input]
 thrust_forward={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":87)]}
 thrust_reverse={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":83)]}
