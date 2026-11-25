@@ -1093,6 +1093,21 @@
       "owner": "PlayForge-Main"
     },
     {
+      "path": "forge/Tests/netframework/ds-spike.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Godot 4.7.2 headless DS 1 + clients 2 (+late join, JoinTicket/owner RPC probes) via forge/Tools/dedicated-server/run-ds-2clients.cjs"
+    },
+    {
       "path": "forge/Tests/operator-oauth-token.test.cjs",
       "tier": "fast",
       "suites": [
