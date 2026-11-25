@@ -14,7 +14,7 @@ var links: Array[RigidBody2D] = []
 var _chain_nodes: PackedVector2Array = PackedVector2Array()
 var _chain_prev: PackedVector2Array = PackedVector2Array()
 var _chain_seg_len := 36.0
-var max_hp := float(BalanceData.GRAPPLE.hp)
+var max_hp := maxf(float(BalanceData.GRAPPLE.hp) * 3.0, 96.0)
 var hp := max_hp
 var chain_rest_length := 0.0
 var current_tension := 0.0
@@ -68,8 +68,10 @@ func create_physical_chain() -> void:
 		_chain_nodes[i] = pt
 		_chain_prev[i] = pt
 
-# 임펄스 기반 로프 거리 제약 + 횡진동 감쇠:
-# 다중 PinJoint2D 체인의 질량비 발산·고무줄 튕김·과회전 없이 안정적으로 견인한다.
+# Split-Impulse 비탄성 로프 제약 (에너지 주입 0%):
+# 1) 분리 속도만 정확히 상쇄(반발/되튐 없음)
+# 2) 위치 오차는 속도 변화 없이 직접 보정(진동 증폭 원천 차단)
+# 3) 장력 구간에서 상대 속도·각속도를 지수 감쇠해 안정적으로 견인한다.
 func apply_tension_stabilizer(delta: float = 1.0 / 60.0) -> void:
 	var dt := maxf(delta, 0.001)
 	var offset := target_ship.global_position - owner_ship.global_position
@@ -81,43 +83,57 @@ func apply_tension_stabilizer(delta: float = 1.0 / 60.0) -> void:
 	var min_safe := owner_ship.hull_bound_radius + target_ship.hull_bound_radius + 14.0
 	var inv_m1 := 1.0 / maxf(owner_ship.mass, 0.5)
 	var inv_m2 := 1.0 / maxf(target_ship.mass, 0.5)
-	var eff_mass := 1.0 / (inv_m1 + inv_m2)
+	var inv_sum := inv_m1 + inv_m2
+	var w1 := inv_m1 / inv_sum
+	var w2 := inv_m2 / inv_sum
+	var eff_mass := 1.0 / inv_sum
 
-	# 너무 가까이 붙었을 때 겹침/튕김 방지 완충
+	# 근접 시 겹침 방지: 접근 속도만 소산(튕겨내기 없음)
 	if distance < min_safe:
 		var closing := (owner_ship.linear_velocity - target_ship.linear_velocity).dot(direction)
 		if closing > 0.0:
-			var push_j := closing * eff_mass * 0.65
-			owner_ship.apply_central_impulse(-direction * push_j)
-			target_ship.apply_central_impulse(direction * push_j)
+			owner_ship.linear_velocity -= direction * (closing * w1)
+			target_ship.linear_velocity += direction * (closing * w2)
+		var overlap := min_safe - distance
+		if overlap > 0.5:
+			var push := minf(overlap * 0.35, 10.0)
+			owner_ship.global_position -= direction * (push * w1)
+			target_ship.global_position += direction * (push * w2)
 		current_tension = 0.0
 		return
 
 	var stretch := distance - chain_rest_length
+	if stretch <= -16.0:
+		current_tension = 0.0
+		return
+
+	# 장력/준장력 구간: 상대 속도 지수 감쇠 (진동·진자 흔들림 억제)
+	var rel_vel := target_ship.linear_velocity - owner_ship.linear_velocity
+	var damp_alpha := 1.0 - exp(-5.0 * dt)
+	var damp_vec := rel_vel * damp_alpha
+	owner_ship.linear_velocity += damp_vec * (w1 * 0.6)
+	target_ship.linear_velocity -= damp_vec * (w2 * 0.9)
+	target_ship.angular_velocity *= exp(-5.0 * dt)
+
 	if stretch <= 0.0:
 		current_tension = 0.0
 		return
 
-	# 장력(비탄성 로프 제약): 분리 속도 제거 + 완만한 위치 오차 보정(Baumgarte)
+	# 1) 순수 분리 속도 상쇄 (내측 반발 속도 주입 없음 -> 진동 증폭 불가능)
 	var v_rel := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(direction)
-	var bias_vel := minf(stretch * 7.5, 240.0)
-	var max_impulse := float(BalanceData.GRAPPLE.max_tension_force) * dt
-	var j_mag := clampf((v_rel + bias_vel) * eff_mass, 0.0, max_impulse)
-	current_tension = j_mag / dt
+	var j_mag := 0.0
+	if v_rel > 0.0:
+		j_mag = v_rel * eff_mass
+		owner_ship.linear_velocity += direction * (v_rel * w1)
+		target_ship.linear_velocity -= direction * (v_rel * w2)
+
+	# 2) Split-Impulse 위치 보정 (속도에 에너지를 넣지 않고 늘어난 거리만 부드럽게 복원)
+	var corr := minf(stretch * 0.5, 28.0)
+	owner_ship.global_position += direction * (corr * w1)
+	target_ship.global_position -= direction * (corr * w2)
+
+	current_tension = clampf(j_mag / dt + stretch * 120.0, 0.0, float(BalanceData.GRAPPLE.max_tension_force))
 	peak_tension = maxf(peak_tension, current_tension)
-	if j_mag > 0.0:
-		owner_ship.apply_central_impulse(direction * j_mag)
-		target_ship.apply_central_impulse(-direction * j_mag)
-
-		# 견인 중 좌우 진자 흔들림(횡진동) 감쇠로 안정적 추적
-		var tangent := Vector2(-direction.y, direction.x)
-		var v_tan := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(tangent)
-		var tan_j := clampf(v_tan * eff_mass * 2.4 * dt, -j_mag * 0.35, j_mag * 0.35)
-		owner_ship.apply_central_impulse(tangent * tan_j)
-		target_ship.apply_central_impulse(-tangent * tan_j)
-
-		# 피견인 함선의 과도한 팽이 회전 억제
-		target_ship.angular_velocity *= exp(-3.5 * dt)
 
 func _step_visual_chain(delta: float) -> void:
 	var n := _chain_nodes.size()

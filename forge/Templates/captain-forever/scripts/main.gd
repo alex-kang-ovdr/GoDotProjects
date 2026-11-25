@@ -930,7 +930,7 @@ func resolve_projectile_hits(delta: float = 0.0) -> void:
 		if not node is Projectile or node.is_queued_for_deletion():
 			continue
 		node.advance(delta)
-		if grapple != null and is_instance_valid(grapple) and grapple.can_be_hit_at(node.global_position):
+		if node.team == "enemy" and grapple != null and is_instance_valid(grapple) and grapple.can_be_hit_at(node.global_position):
 			grapple.apply_damage(node.damage)
 			node.queue_free()
 			continue
