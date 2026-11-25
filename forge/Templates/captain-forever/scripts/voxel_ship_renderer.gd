@@ -29,6 +29,7 @@ func rebuild(model: ShipModel) -> void:
 	surface.position = bounds.get_center()
 	var world_pixels := camera_3d.size * BalanceData.CELL
 	surface.scale = Vector2.ONE * world_pixels / float(viewport.size.y)
+	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func ensure_nodes() -> void:
 	if viewport != null:
@@ -37,11 +38,11 @@ func ensure_nodes() -> void:
 		atlas_texture = load(VisualData.VOXEL_PART_TEXTURE_ATLAS) as Texture2D
 	viewport = SubViewport.new()
 	viewport.name = "VoxelPartViewport"
-	viewport.size = Vector2i(512, 512)
+	viewport.size = Vector2i(256, 256)
 	viewport.transparent_bg = true
 	viewport.own_world_3d = true
-	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-	viewport.msaa_3d = Viewport.MSAA_2X
+	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	viewport.msaa_3d = Viewport.MSAA_DISABLED
 	add_child(viewport)
 	mesh_root = Node3D.new()
 	viewport.add_child(mesh_root)
@@ -77,6 +78,8 @@ func refresh_display_mode() -> void:
 	for child in mesh_root.get_children():
 		if child is MeshInstance3D:
 			child.material_override = voxel_material(child.get_meta("part_data"))
+	if viewport != null:
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func voxel_material(part: PartData) -> Material:
 	if not VisualData.use_textured_design:

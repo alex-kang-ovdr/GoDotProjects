@@ -7,6 +7,15 @@ const VisualData = preload("res://scripts/visual_tuning.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const VoxelShipRendererScript = preload("res://scripts/voxel_ship_renderer.gd")
 
+static var _cached_flame_texture: Texture2D
+static var _cached_smoke_texture: Texture2D
+
+class StaticHullLayer extends Node2D:
+	var owner_ship: ShipBody
+	func _draw() -> void:
+		if is_instance_valid(owner_ship):
+			owner_ship._draw_static_cosmoteer_hull(self)
+
 var model: ShipModel = ShipModelScript.new()
 var shield_layers := 0
 var shield_recharge_left := 0.0
@@ -41,6 +50,17 @@ var last_hit_shield_absorbed := false
 var last_damage_leftover := 0.0
 var last_volatile_blasts: Array[Dictionary] = []
 
+# 성능 최적화용 구조/드로우 캐시 (조립·파손 시에만 갱신)
+var _static_hull_layer: StaticHullLayer
+var _cached_occupied: Dictionary = {}
+var _cached_cell_parts: Dictionary = {}
+var _cached_exhaust_blocked: Dictionary = {}
+var _cached_battery_count := 0.0
+var _cached_power_efficiency := 1.0
+var _cached_conduit_segments := PackedVector2Array()
+var _cached_display_mode := true
+var _draw_accum := 0.0
+
 func _ready() -> void:
 	gravity_scale = 0.0
 	linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
@@ -50,6 +70,11 @@ func _ready() -> void:
 	physics_material_override = PhysicsData.dynamic_material(PhysicsData.SHIP_ASTEROID_BOUNCE)
 	contact_monitor = true
 	max_contacts_reported = 12
+	_static_hull_layer = StaticHullLayer.new()
+	_static_hull_layer.name = "StaticHullLayer"
+	_static_hull_layer.owner_ship = self
+	_static_hull_layer.z_index = -1
+	add_child(_static_hull_layer)
 	add_collision_shape()
 	if not VisualData.VOXEL_PART_TEXTURE_ATLAS.is_empty() and ResourceLoader.exists(VisualData.VOXEL_PART_TEXTURE_ATLAS, "Texture2D"):
 		voxel_texture = load(VisualData.VOXEL_PART_TEXTURE_ATLAS) as Texture2D
@@ -83,7 +108,46 @@ func refresh_mass() -> void:
 	inertia = maxf(moment, 1.0)
 	hull_bound_radius = model.bound_radius()
 	shield_layers = mini(shield_layers, shield_max_layers())
+	_rebuild_model_caches()
 	refresh_collision_box()
+	mark_hull_visual_dirty()
+
+func _rebuild_model_caches() -> void:
+	_cached_occupied.clear()
+	_cached_cell_parts.clear()
+	_cached_exhaust_blocked.clear()
+	_cached_battery_count = 0.0
+	for part in model.parts:
+		if part.kind == "battery":
+			_cached_battery_count += 1.0
+		for cell in part.cells():
+			_cached_occupied[cell] = part.uid
+			_cached_cell_parts[cell] = part
+	_cached_power_efficiency = model.power_efficiency()
+	for part in model.parts:
+		if part.spec().get("actuator", "") != "":
+			_cached_exhaust_blocked[part.uid] = model.is_exhaust_blocked(part, _cached_occupied)
+	var segs := PackedVector2Array()
+	for cell_var in _cached_occupied.keys():
+		var cell: Vector2i = cell_var
+		var p_here: PartData = _cached_cell_parts.get(cell, null)
+		if p_here != null and _is_wedge_part(p_here):
+			continue
+		var a_pos := Vector2(cell) * BalanceData.CELL
+		for axis in [Vector2i.RIGHT, Vector2i.DOWN]:
+			var next_cell: Vector2i = cell + axis
+			if _cached_occupied.has(next_cell):
+				var p_next: PartData = _cached_cell_parts.get(next_cell, null)
+				if p_next != null and _is_wedge_part(p_next):
+					continue
+				segs.append(a_pos)
+				segs.append(Vector2(next_cell) * BalanceData.CELL)
+	_cached_conduit_segments = segs
+
+func mark_hull_visual_dirty() -> void:
+	if is_instance_valid(_static_hull_layer):
+		_static_hull_layer.queue_redraw()
+	queue_redraw()
 
 func refresh_collision_box() -> void:
 	if hull_collider == null:
@@ -175,15 +239,16 @@ func is_within_surface_range(other: ShipBody, surface_range: float) -> bool:
 	return global_position.distance_squared_to(other.global_position) <= expanded_range * expanded_range
 
 func _physics_process(delta: float) -> void:
-	var pwr_eff: float = model.power_efficiency()
+	var pwr_eff: float = _cached_power_efficiency
 	laser_cooldown = maxf(0.0, laser_cooldown - delta * pwr_eff)
 	missile_cooldown = maxf(0.0, missile_cooldown - delta * pwr_eff)
 	mini_missile_cooldown = maxf(0.0, mini_missile_cooldown - delta * pwr_eff)
-	var battery_count := float(model.parts.filter(func(part): return part.kind == "battery").size())
-	heat = maxf(0.0, heat - delta * pwr_eff * (18.0 + (22.0 if overdrive_active else 0.0) + cooling_bonus + battery_count * 9.0))
+	heat = maxf(0.0, heat - delta * pwr_eff * (18.0 + (22.0 if overdrive_active else 0.0) + cooling_bonus + _cached_battery_count * 9.0))
 	break_shake_time = maxf(0.0, break_shake_time - delta)
 	if break_shake_time <= 0.0:
 		break_shake = 0.0
+		if is_instance_valid(_static_hull_layer) and _static_hull_layer.position != Vector2.ZERO:
+			_static_hull_layer.position = Vector2.ZERO
 	if shield_layers < shield_max_layers():
 		shield_recharge_left -= delta * pwr_eff
 		if shield_recharge_left <= 0.0:
@@ -201,7 +266,20 @@ func _physics_process(delta: float) -> void:
 			shield_arc_flash.erase(uid)
 		else:
 			shield_arc_flash[uid] = next_flash
-	queue_redraw()
+	if _cached_display_mode != VisualData.use_textured_design:
+		_cached_display_mode = VisualData.use_textured_design
+		mark_hull_visual_dirty()
+		return
+	_draw_accum += delta
+	var urgent := break_shake_time > 0.0 or not weapon_recoil.is_empty() or not shield_arc_flash.is_empty()
+	var interval := 0.033 if is_player else 0.066
+	if urgent or _draw_accum >= interval:
+		_draw_accum = 0.0
+		if not is_player and not urgent:
+			var cam := get_viewport().get_camera_2d()
+			if cam != null and global_position.distance_squared_to(cam.get_screen_center_position()) > 3240000.0:
+				return
+		queue_redraw()
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	var angular_retain := PhysicsData.PLAYER_ANGULAR_RETAIN_PER_SECOND if is_player else PhysicsData.NPC_ANGULAR_RETAIN_PER_SECOND
@@ -213,7 +291,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 func effective_module_thrust(part: PartData) -> float:
 	var base := maxf(float(part.spec().get("force", 0.0)), 0.0)
-	if model.is_exhaust_blocked(part):
+	if bool(_cached_exhaust_blocked.get(part.uid, false)):
 		return base * PhysicsData.EXHAUST_BLOCKED_MULTIPLIER
 	return base
 
@@ -500,19 +578,18 @@ func rebuild_exhaust_particles() -> void:
 			if is_instance_valid(nozzle.smoke):
 				nozzle.smoke.queue_free()
 	exhaust_particles.clear()
+	# 적 함선은 벡터 마하 플룸(_draw_mach_plume)을 직접 그리므로 CPUParticles2D 오버헤드를 생략한다.
+	if not is_player:
+		return
 	for part in model.parts:
-		if part.spec().get("actuator", "") == "":
+		var actuator := str(part.spec().get("actuator", ""))
+		if actuator == "":
 			continue
 		var nozzles: Array[Dictionary] = []
-		var count := 3 if part.spec().get("actuator", "") == "turn" else 1
-		for index in count:
-			var fire := make_exhaust_particles(false)
-			var smoke := make_exhaust_particles(true)
-			fire.position = module_local_center(part)
-			smoke.position = fire.position
-			add_child(fire)
-			add_child(smoke)
-			nozzles.append({"fire": fire, "smoke": smoke, "base_position": fire.position, "effect_visible": false, "effect_tier": 0})
+		var fire := make_exhaust_particles(false)
+		fire.position = module_local_center(part)
+		add_child(fire)
+		nozzles.append({"fire": fire, "smoke": null, "base_position": fire.position, "effect_visible": false, "effect_tier": 0})
 		var entry: Dictionary = nozzles[0].duplicate()
 		entry["nozzles"] = nozzles
 		exhaust_particles[part.uid] = entry
@@ -520,9 +597,9 @@ func rebuild_exhaust_particles() -> void:
 func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
 	var particles := CPUParticles2D.new()
 	particles.name = "SmokeParticles" if smoke else "FlameParticles"
-	particles.amount = VisualData.THRUSTER_SMOKE_AMOUNT if smoke else VisualData.THRUSTER_FLAME_AMOUNT
-	particles.lifetime = 0.56 if smoke else 0.22
-	particles.preprocess = particles.lifetime
+	particles.amount = 6 if smoke else 10
+	particles.lifetime = 0.42 if smoke else 0.20
+	particles.preprocess = 0.0
 	particles.local_coords = true
 	particles.emitting = false
 	particles.z_index = 0 if smoke else 1
@@ -539,22 +616,33 @@ func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
 	return particles
 
 func particle_texture(smoke: bool) -> Texture2D:
+	if smoke and _cached_smoke_texture != null:
+		return _cached_smoke_texture
+	if not smoke and _cached_flame_texture != null:
+		return _cached_flame_texture
 	var path := VisualData.THRUSTER_SMOKE_TEXTURE if smoke else VisualData.THRUSTER_FLAME_TEXTURE
+	var tex: Texture2D = null
 	if ResourceLoader.exists(path, "Texture2D"):
-		var imported := load(path) as Texture2D
-		if imported != null:
-			return imported
-	var image := Image.create(32, 32, false, Image.FORMAT_RGBA8)
-	var center := Vector2(15.5, 15.5)
-	for y in range(32):
-		for x in range(32):
-			var distance := center.distance_to(Vector2(x, y)) / 16.0
-			var alpha := clampf(1.0 - distance, 0.0, 1.0) * (0.40 if smoke else 0.88)
-			var color := Color("8aa0b2", alpha) if smoke else Color("58eaff", alpha)
-			image.set_pixel(x, y, color)
-	return ImageTexture.create_from_image(image)
+		tex = load(path) as Texture2D
+	if tex == null:
+		var image := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+		var center := Vector2(15.5, 15.5)
+		for y in range(32):
+			for x in range(32):
+				var distance := center.distance_to(Vector2(x, y)) / 16.0
+				var alpha := clampf(1.0 - distance, 0.0, 1.0) * (0.40 if smoke else 0.88)
+				var color := Color("8aa0b2", alpha) if smoke else Color("58eaff", alpha)
+				image.set_pixel(x, y, color)
+		tex = ImageTexture.create_from_image(image)
+	if smoke:
+		_cached_smoke_texture = tex
+	else:
+		_cached_flame_texture = tex
+	return tex
 
 func sync_exhaust_particles() -> void:
+	if exhaust_particles.is_empty():
+		return
 	for uid in exhaust_particles:
 		var entry: Dictionary = exhaust_particles[uid]
 		var exhaust: Dictionary = active_exhausts.get(uid, {})
@@ -576,6 +664,8 @@ func sync_exhaust_nozzle(entry: Dictionary, exhaust: Dictionary) -> void:
 	var is_vis := tier > 0
 	var was_visible := bool(entry.get("effect_visible", false))
 	for particle in [entry.fire, entry.smoke]:
+		if not is_instance_valid(particle):
+			continue
 		if was_visible and not is_vis:
 			particle.restart()
 		particle.visible = is_vis
@@ -600,10 +690,10 @@ func exhaust_effect_tier(intensity: float) -> int:
 func configure_exhaust_particle(particle: CPUParticles2D, smoke: bool, tier: int) -> void:
 	if int(particle.get_meta("effect_tier", -1)) == tier:
 		return
-	var amount := int(VisualData.THRUSTER_EFFECT_SMOKE_AMOUNT[tier] if smoke else VisualData.THRUSTER_EFFECT_FIRE_AMOUNT[tier])
+	var base_amt := int(VisualData.THRUSTER_EFFECT_SMOKE_AMOUNT[tier] if smoke else VisualData.THRUSTER_EFFECT_FIRE_AMOUNT[tier])
 	var speed_scale := float(VisualData.THRUSTER_EFFECT_SPEED_SCALE[tier])
 	var size_scale := float(VisualData.THRUSTER_EFFECT_SIZE_SCALE[tier])
-	particle.amount = maxi(amount, 1)
+	particle.amount = clampi(int(round(float(base_amt) * 0.45)), 1, 14)
 	particle.initial_velocity_min = (32.0 if smoke else 110.0) * speed_scale
 	particle.initial_velocity_max = (68.0 if smoke else 180.0) * speed_scale
 	particle.scale_amount_min = (0.18 if smoke else 0.22) * size_scale
@@ -834,18 +924,20 @@ func local_cell_at(world_point: Vector2) -> Vector2i:
 # ==============================================================================
 
 func _draw() -> void:
-	var hull_cells: Dictionary = model.occupied()
 	var shake := Vector2.ZERO
 	if break_shake_time > 0.0:
 		shake = Vector2(sin(Time.get_ticks_msec() * 0.11), cos(Time.get_ticks_msec() * 0.16)) * break_shake
+	if is_instance_valid(_static_hull_layer):
+		_static_hull_layer.position = shake
+		_static_hull_layer.visible = not VisualData.USE_VOXEL_MESH_RENDERER
 	if is_instance_valid(voxel_renderer):
 		voxel_renderer.position = shake
 	if overdrive_active:
 		var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.014)
-		draw_arc(shake, hull_bound_radius + 7.0, 0.0, TAU, 40, Color(1.0, 0.82, 0.32, 0.34 + 0.22 * pulse), 2.8, true)
+		draw_arc(shake, hull_bound_radius + 7.0, 0.0, TAU, 28, Color(1.0, 0.82, 0.32, 0.34 + 0.22 * pulse), 2.8)
 
 	if not VisualData.USE_VOXEL_MESH_RENDERER:
-		_draw_cosmoteer_ship(shake, hull_cells)
+		_draw_cosmoteer_ship(shake, _cached_occupied)
 
 	if not VisualData.use_textured_design:
 		for part in model.parts:
@@ -882,86 +974,65 @@ func _wedge_polygon_for_cell(cell: Vector2i, part: PartData, shake: Vector2, hul
 		out.append(center + pt.rotated(rot))
 	return out
 
-func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
+func _draw_static_cosmoteer_hull(canvas: CanvasItem) -> void:
+	if VisualData.USE_VOXEL_MESH_RENDERER or model == null or model.parts.is_empty():
+		return
+	var hull_cells: Dictionary = _cached_occupied
 	var half: float = BalanceData.CELL * 0.5
 	var full := Vector2.ONE * BalanceData.CELL
-	var now_ms: float = float(Time.get_ticks_msec())
 
-	# Pass 0: 선체 통합 외곽 그림자 (셀 간 분절 없이 일체형 함선 깊이감 형성)
+	# Pass 0: 선체 통합 외곽 그림자 (조립·파손 시에만 1회 렌더)
 	var shadow_offset := Vector2(3.0, 5.0)
 	for part in model.parts:
 		if _is_wedge_part(part):
 			for cell in part.cells():
-				var poly := _wedge_polygon_for_cell(cell, part, shake + shadow_offset, hull_cells)
-				draw_colored_polygon(poly, Color(0.01, 0.02, 0.05, 0.52))
+				var poly := _wedge_polygon_for_cell(cell, part, shadow_offset, hull_cells)
+				canvas.draw_colored_polygon(poly, Color(0.01, 0.02, 0.05, 0.52))
 		else:
 			for cell in part.cells():
-				var rect := Rect2(Vector2(cell) * BalanceData.CELL + shake + shadow_offset - Vector2.ONE * half, full)
-				draw_rect(rect, Color(0.01, 0.02, 0.05, 0.52), true)
+				var rect := Rect2(Vector2(cell) * BalanceData.CELL + shadow_offset - Vector2.ONE * half, full)
+				canvas.draw_rect(rect, Color(0.01, 0.02, 0.05, 0.52), true)
 
 	# Pass 1: 무봉제(Flush 42x42) 내부 데크 바닥 타일 + 격자 그레이팅
 	var deck_base := Color("162231") if is_player else Color("241720")
 	for part in model.parts:
 		var spec := part.spec()
 		var role_tint := Color(str(spec.fill))
-		var hp_ratio := clampf(part.hp / maxf(part.max_hp, 1.0), 0.0, 1.0)
 		var room_floor := deck_base.lerp(role_tint, 0.28)
-		if hp_ratio < 0.6:
-			room_floor = room_floor.lerp(Color("4a1812"), (0.6 - hp_ratio) * 0.72)
 		if _is_wedge_part(part):
 			for cell in part.cells():
-				var poly := _wedge_polygon_for_cell(cell, part, shake, hull_cells)
-				draw_colored_polygon(poly, role_tint.lightened(0.08) if is_player else role_tint.lerp(Color("662430"), 0.35))
+				var poly := _wedge_polygon_for_cell(cell, part, Vector2.ZERO, hull_cells)
+				canvas.draw_colored_polygon(poly, role_tint.lightened(0.08) if is_player else role_tint.lerp(Color("662430"), 0.35))
 				var closed := poly.duplicate()
 				closed.append(poly[0])
-				draw_polyline(closed, Color(str(spec.stroke)).lightened(0.18), 2.2, true)
+				canvas.draw_polyline(closed, Color(str(spec.stroke)).lightened(0.18), 2.2)
 		else:
 			for cell in part.cells():
-				var c_pos := Vector2(cell) * BalanceData.CELL + shake
+				var c_pos := Vector2(cell) * BalanceData.CELL
 				var rect := Rect2(c_pos - Vector2.ONE * half, full)
-				draw_rect(rect, room_floor, true)
-				# 내부 데크 그레이팅 십자 서브그리드
-				draw_line(c_pos + Vector2(-half, 0), c_pos + Vector2(half, 0), Color(1, 1, 1, 0.045), 1.0)
-				draw_line(c_pos + Vector2(0, -half), c_pos + Vector2(0, half), Color(1, 1, 1, 0.045), 1.0)
-				# 서로 다른 모듈 사이에는 얇은 내부 격벽선만 그어 한 척의 함선으로 묶는다
+				canvas.draw_rect(rect, room_floor, true)
+				canvas.draw_line(c_pos + Vector2(-half, 0), c_pos + Vector2(half, 0), Color(1, 1, 1, 0.045), 1.0)
+				canvas.draw_line(c_pos + Vector2(0, -half), c_pos + Vector2(0, half), Color(1, 1, 1, 0.045), 1.0)
 				for axis in [Vector2i.RIGHT, Vector2i.DOWN]:
 					var other_uid: int = int(hull_cells.get(cell + axis, -1))
 					if other_uid != -1 and other_uid != part.uid:
 						if axis == Vector2i.RIGHT:
-							draw_line(rect.position + Vector2(rect.size.x, 0), rect.end, Color(0.03, 0.06, 0.10, 0.78), 1.2)
+							canvas.draw_line(rect.position + Vector2(rect.size.x, 0), rect.end, Color(0.03, 0.06, 0.10, 0.78), 1.2)
 						else:
-							draw_line(rect.position + Vector2(0, rect.size.y), rect.end, Color(0.03, 0.06, 0.10, 0.78), 1.2)
+							canvas.draw_line(rect.position + Vector2(0, rect.size.y), rect.end, Color(0.03, 0.06, 0.10, 0.78), 1.2)
 
-	# Pass 2: Cosmoteer 스타일 함내 전력 버스 도관(Power Conduit) 네트워크
-	var pwr_eff: float = model.power_efficiency()
-	var conduit_pulse: float = 0.55 + 0.45 * sin(now_ms * 0.007)
-	var bus_col := (Color("48e5ff") if is_player else Color("ff6280"))
-	if pwr_eff < 0.95:
-		bus_col = Color("ffae52")
-	var bus_alpha: float = clampf(0.18 + 0.22 * conduit_pulse * clampf(pwr_eff, 0.4, 1.2), 0.12, 0.48)
-	for cell_var in hull_cells.keys():
-		var cell: Vector2i = cell_var
-		var p_here := model.part_at(cell)
-		if p_here != null and _is_wedge_part(p_here):
-			continue
-		var a_pos := Vector2(cell) * BalanceData.CELL + shake
-		for axis in [Vector2i.RIGHT, Vector2i.DOWN]:
-			if hull_cells.has(cell + axis):
-				var p_next := model.part_at(cell + axis)
-				if p_next != null and _is_wedge_part(p_next):
-					continue
-				var b_pos := Vector2(cell + axis) * BalanceData.CELL + shake
-				draw_line(a_pos, b_pos, Color(0.04, 0.08, 0.13, 0.65), 4.0)
-				draw_line(a_pos, b_pos, Color(bus_col.r, bus_col.g, bus_col.b, bus_alpha), 1.5)
+	# Pass 2 Base: 전력 버스 도관 외피 (단일 draw_multiline 배치)
+	if not _cached_conduit_segments.is_empty():
+		canvas.draw_multiline(_cached_conduit_segments, Color(0.04, 0.08, 0.13, 0.65), 4.0)
 
-	# Pass 3: 외곽 노출면에만 두꺼운 이중 베벨 건메탈 장갑 외벽(Hull Armor Rim) 렌더링
+	# Pass 3: 외곽 노출면에만 두꺼운 이중 베벨 건메탈 장갑 외벽(Hull Armor Rim)
 	var armor_outer := Color("0a111a")
 	var armor_bevel := Color("7fa6c9") if is_player else Color("c97b88")
 	for part in model.parts:
 		if _is_wedge_part(part):
 			continue
 		for cell in part.cells():
-			var rect := Rect2(Vector2(cell) * BalanceData.CELL + shake - Vector2.ONE * half, full)
+			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * half, full)
 			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 				if not hull_cells.has(cell + axis):
 					var a := rect.position
@@ -975,12 +1046,110 @@ func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
 						b += Vector2(rect.size.x, 0); inward = Vector2(0, 2.0)
 					else:
 						a += Vector2(0, rect.size.y); b += rect.size; inward = Vector2(0, -2.0)
-					draw_line(a, b, armor_outer, 3.8, true)
-					draw_line(a + inward, b + inward, armor_bevel, 1.8, true)
+					canvas.draw_line(a, b, armor_outer, 3.8)
+					canvas.draw_line(a + inward, b + inward, armor_bevel, 1.8)
 
-	# Pass 4: 모듈별 내부 컷어웨이 아키텍처 & 선체 외곽 돌출 하드웨어(벨 노즐/포탑/플룸)
+	# Pass 4 Static: 장갑판·리벳·추진기 벨 노즐 외형·코어/배터리 프레임
 	for part in model.parts:
-		_draw_cosmoteer_module_detail(part, shake, hull_cells, now_ms)
+		var spec := part.spec()
+		var center := module_local_center(part)
+		var rot_rad := float(part.quarter_turn) * PI * 0.5
+		var grade_col := VisualData.grade_color(str(spec.get("grade_color", "gray")))
+		match part.kind:
+			"core":
+				_draw_hazard_strip_on(canvas, Rect2(center + Vector2(-16, -18), Vector2(32, 3.0)))
+				_draw_hazard_strip_on(canvas, Rect2(center + Vector2(-16, 15), Vector2(32, 3.0)))
+				canvas.draw_circle(center, 14.5, Color("0b1522"))
+				for c_i in 4:
+					var ca := float(c_i) * PI * 0.5 + PI * 0.25
+					canvas.draw_circle(center + Vector2.from_angle(ca) * 12.0, 2.4, Color("293b52"))
+			"battery":
+				_draw_hazard_strip_on(canvas, Rect2(center + Vector2(-15, -16), Vector2(30, 2.6)))
+				canvas.draw_rect(Rect2(center + Vector2(-14, -11), Vector2(28, 22)), Color("0d1826"), true)
+			"armor", "block", "beam2", "beam3", "beam4", "plate4":
+				var plate_col := Color(str(spec.fill)).lightened(0.14 if is_player else 0.04)
+				if not is_player:
+					plate_col = plate_col.lerp(Color("662834"), 0.28)
+				for cell in part.cells():
+					var cp := Vector2(cell) * BalanceData.CELL
+					var slab := Rect2(cp - Vector2.ONE * 16.5, Vector2.ONE * 33.0)
+					canvas.draw_rect(slab, plate_col, true)
+					canvas.draw_rect(slab, Color(1, 1, 1, 0.14), false, 1.2)
+					if part.kind == "armor" or part.kind == "plate4":
+						canvas.draw_line(slab.position + Vector2(4, 4), slab.end - Vector2(4, 4), plate_col.darkened(0.28), 1.6)
+						for rx in [-12.0, 12.0]:
+							for ry in [-12.0, 12.0]:
+								canvas.draw_circle(cp + Vector2(float(rx), float(ry)), 1.6, grade_col.lightened(0.2))
+					else:
+						canvas.draw_line(slab.position + Vector2(3, 3), slab.end - Vector2(3, 3), Color(0.08, 0.13, 0.20, 0.65), 1.5)
+						canvas.draw_line(slab.position + Vector2(slab.size.x - 3, 3), slab.position + Vector2(3, slab.size.y - 3), Color(0.08, 0.13, 0.20, 0.65), 1.5)
+			"thruster", "reverse_thruster":
+				var exhaust_dir := Vector2.LEFT.rotated(rot_rad) if part.kind == "thruster" else Vector2.RIGHT.rotated(rot_rad)
+				var perp := Vector2(-exhaust_dir.y, exhaust_dir.x)
+				canvas.draw_rect(Rect2(center - Vector2(11, 11), Vector2(22, 22)), Color("102230") if part.kind == "thruster" else Color("24182c"), true)
+				canvas.draw_circle(center - exhaust_dir * 3.0, 6.5, Color("2d4f68") if part.kind == "thruster" else Color("543866"))
+				var nozzle := PackedVector2Array([
+					center + exhaust_dir * 10.0 + perp * 6.8,
+					center + exhaust_dir * 27.0 + perp * 12.6,
+					center + exhaust_dir * 27.0 - perp * 12.6,
+					center + exhaust_dir * 10.0 - perp * 6.8,
+				])
+				canvas.draw_colored_polygon(nozzle, Color("1a2838"))
+				canvas.draw_polyline(PackedVector2Array([nozzle[0], nozzle[1], nozzle[2], nozzle[3]]), Color("6b8eb0", 0.85), 1.5)
+				canvas.draw_line(center + exhaust_dir * 16.0 + perp * 9.0, center + exhaust_dir * 16.0 - perp * 9.0, Color("6688a8", 0.70), 1.4)
+				canvas.draw_line(center + exhaust_dir * 22.0 + perp * 11.2, center + exhaust_dir * 22.0 - perp * 11.2, Color("94bfe2", 0.80), 1.6)
+				if bool(_cached_exhaust_blocked.get(part.uid, false)):
+					canvas.draw_line(center + exhaust_dir * 25.5 + perp * 11.0, center + exhaust_dir * 25.5 - perp * 11.0, Color("ff9e3d"), 3.2)
+			"rcs_thruster":
+				canvas.draw_circle(center, 8.2, Color("18302c"))
+				canvas.draw_arc(center, 8.2, 0.0, TAU, 16, Color("8cf0cd", 0.65), 1.5)
+				canvas.draw_circle(center, 3.6, Color("aefae0"))
+				for jet_force in rcs_thrust_directions(part):
+					var port_dir := -jet_force.normalized()
+					canvas.draw_line(center + port_dir * 7.5, center + port_dir * 13.5, Color("486b66"), 3.6)
+			"shield_generator":
+				var gen_dir := Vector2.from_angle(rot_rad)
+				var gen_perp := Vector2(-gen_dir.y, gen_dir.x)
+				var hex := PackedVector2Array()
+				for i in 7:
+					var a := rot_rad + float(i) * TAU / 6.0
+					hex.append(center + Vector2(cos(a), sin(a)) * 10.5)
+				canvas.draw_colored_polygon(hex.slice(0, 6), Color("143b52"))
+				canvas.draw_polyline(hex, Color("7ef9ff"), 1.9)
+				canvas.draw_line(center + gen_perp * 6.0, center + gen_dir * 15.0 + gen_perp * 9.0, Color("66eeff"), 2.2)
+				canvas.draw_line(center - gen_perp * 6.0, center + gen_dir * 15.0 - gen_perp * 9.0, Color("66eeff"), 2.2)
+				canvas.draw_circle(center, 4.4, Color("d8fcff"))
+
+func _draw_hazard_strip_on(canvas: CanvasItem, rect: Rect2) -> void:
+	canvas.draw_rect(rect, Color("d99b26", 0.88), true)
+	var stripes := maxi(2, int(rect.size.x / 6.0))
+	for i in stripes:
+		if i % 2 == 0:
+			var sx := rect.position.x + float(i) * 6.0
+			canvas.draw_rect(Rect2(Vector2(sx, rect.position.y), Vector2(minf(3.0, rect.end.x - sx), rect.size.y)), Color("14181f", 0.90), true)
+
+func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
+	var now_ms: float = float(Time.get_ticks_msec())
+
+	# Pass 2 Dynamic: 전력 버스 도관 맥동 (단일 draw_multiline 호출)
+	if not _cached_conduit_segments.is_empty():
+		var pwr_eff: float = _cached_power_efficiency
+		var conduit_pulse: float = 0.55 + 0.45 * sin(now_ms * 0.007)
+		var bus_col := (Color("48e5ff") if is_player else Color("ff6280"))
+		if pwr_eff < 0.95:
+			bus_col = Color("ffae52")
+		var bus_alpha: float = clampf(0.18 + 0.22 * conduit_pulse * clampf(pwr_eff, 0.4, 1.2), 0.12, 0.48)
+		if shake == Vector2.ZERO:
+			draw_multiline(_cached_conduit_segments, Color(bus_col.r, bus_col.g, bus_col.b, bus_alpha), 1.5)
+		else:
+			draw_set_transform(shake, 0.0, Vector2.ONE)
+			draw_multiline(_cached_conduit_segments, Color(bus_col.r, bus_col.g, bus_col.b, bus_alpha), 1.5)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+	# Pass 4 Dynamic: 애니메이션·회전 포탑·추진 플룸만 매 프레임 갱신
+	var has_missile_ammo := model.ammo_total("missile") > 0
+	for part in model.parts:
+		_draw_cosmoteer_module_detail(part, shake, hull_cells, now_ms, has_missile_ammo)
 
 	# Pass 5: 국소 전투 손상 균열(Fracture Cracks) · 용융 균열광 · 손상 HP 바
 	for part in model.parts:
@@ -993,8 +1162,8 @@ func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
 			var c1 := Vector2.from_angle(seed_ang) * 12.0
 			var c2 := Vector2.from_angle(seed_ang + 2.1) * 9.5
 			var crack_col := Color("ff6e38", 0.88) if hp_ratio < 0.40 else Color("070b12", 0.85)
-			draw_line(center - c1 * 0.6, center + Vector2(2.5, -1.5), crack_col, 1.8, true)
-			draw_line(center + Vector2(2.5, -1.5), center + c2, crack_col, 1.5, true)
+			draw_line(center - c1 * 0.6, center + Vector2(2.5, -1.5), crack_col, 1.8)
+			draw_line(center + Vector2(2.5, -1.5), center + c2, crack_col, 1.5)
 			if hp_ratio < 0.40:
 				draw_circle(center + Vector2(1.5, -1.0), 2.6, Color("ffae42", 0.75))
 		var bar_width := 28.0
@@ -1002,110 +1171,82 @@ func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
 		draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 14.0), Vector2(bar_width * hp_ratio, 3.4)), Color("6ee7a4") if hp_ratio > 0.5 else Color("ff7866"), true)
 
 func _draw_hazard_strip(rect: Rect2) -> void:
-	draw_rect(rect, Color("d99b26", 0.88), true)
-	var stripes := maxi(2, int(rect.size.x / 6.0))
-	for i in stripes:
-		if i % 2 == 0:
-			var sx := rect.position.x + float(i) * 6.0
-			draw_rect(Rect2(Vector2(sx, rect.position.y), Vector2(minf(3.0, rect.end.x - sx), rect.size.y)), Color("14181f", 0.90), true)
+	_draw_hazard_strip_on(self, rect)
 
-func _draw_cosmoteer_module_detail(part: PartData, shake: Vector2, _hull_cells: Dictionary, now_ms: float) -> void:
-	var spec := part.spec()
-	var center := module_local_center(part) + shake
-	var pulse := 0.5 + 0.5 * sin(now_ms * 0.006 + float(part.uid))
-	var aim_local := (to_local(turret_target) - center).angle() if turret_target != Vector2.ZERO else 0.0
-	var rot_rad := float(part.quarter_turn) * PI * 0.5
-	var recoil_amt: float = float(weapon_recoil.get(part.uid, 0.0))
-	var grade_col := VisualData.grade_color(str(spec.get("grade_color", "gray")))
-
+func _draw_cosmoteer_module_detail(part: PartData, shake: Vector2, _hull_cells: Dictionary, now_ms: float, has_missile_ammo: bool = true) -> void:
 	match part.kind:
+		"armor", "block", "beam2", "beam3", "beam4", "plate4", "shield_generator", "wedge", "wedge_long", "scrap":
+			return
 		"core":
+			var center := module_local_center(part) + shake
+			var pulse := 0.5 + 0.5 * sin(now_ms * 0.006 + float(part.uid))
 			var core_col := Color("55f4ff") if is_player else Color("ff5c77")
-			_draw_hazard_strip(Rect2(center + Vector2(-16, -18), Vector2(32, 3.0)))
-			_draw_hazard_strip(Rect2(center + Vector2(-16, 15), Vector2(32, 3.0)))
-			draw_circle(center, 14.5, Color("0b1522"))
 			draw_circle(center, 13.0, Color(core_col, 0.22 + 0.14 * pulse))
 			var spin := now_ms * 0.0032
-			draw_arc(center, 11.5, spin, spin + PI * 1.35, 18, core_col, 2.4, true)
-			draw_arc(center, 9.0, -spin * 1.3, -spin * 1.3 + PI * 1.2, 16, core_col.lightened(0.28), 1.6, true)
-			for c_i in 4:
-				var ca := float(c_i) * PI * 0.5 + PI * 0.25
-				var cp := center + Vector2.from_angle(ca) * 12.0
-				draw_circle(cp, 2.4, Color("293b52"))
+			draw_arc(center, 11.5, spin, spin + PI * 1.35, 14, core_col, 2.4)
+			draw_arc(center, 9.0, -spin * 1.3, -spin * 1.3 + PI * 1.2, 12, core_col.lightened(0.28), 1.6)
 			draw_circle(center, 5.8, core_col.lightened(0.35))
 			draw_circle(center, 2.8, Color.WHITE)
 		"battery":
-			_draw_hazard_strip(Rect2(center + Vector2(-15, -16), Vector2(30, 2.6)))
-			draw_rect(Rect2(center + Vector2(-14, -11), Vector2(28, 22)), Color("0d1826"), true)
+			var center := module_local_center(part) + shake
 			for b in 3:
 				var bx := -10.5 + float(b) * 8.0
 				var cell_glow := 0.65 + 0.35 * sin(now_ms * 0.008 + float(b) * 1.4)
 				draw_rect(Rect2(center + Vector2(bx, -8.5), Vector2(5.2, 17.0)), Color("46f2c8", cell_glow), true)
-				draw_rect(Rect2(center + Vector2(bx, -8.5), Vector2(5.2, 17.0)), Color("b8ffee", 0.55), false, 1.0)
-		"armor", "block", "beam2", "beam3", "beam4", "plate4":
-			var plate_col := Color(str(spec.fill)).lightened(0.14 if is_player else 0.04)
-			if not is_player:
-				plate_col = plate_col.lerp(Color("662834"), 0.28)
-			for cell in part.cells():
-				var cp := Vector2(cell) * BalanceData.CELL + shake
-				var slab := Rect2(cp - Vector2.ONE * 16.5, Vector2.ONE * 33.0)
-				draw_rect(slab, plate_col, true)
-				draw_rect(slab, Color(1, 1, 1, 0.14), false, 1.2)
-				if part.kind == "armor" or part.kind == "plate4":
-					draw_line(slab.position + Vector2(4, 4), slab.end - Vector2(4, 4), plate_col.darkened(0.28), 1.6)
-					for rx in [-12.0, 12.0]:
-						for ry in [-12.0, 12.0]:
-							draw_circle(cp + Vector2(float(rx), float(ry)), 1.6, grade_col.lightened(0.2))
-				else:
-					draw_line(slab.position + Vector2(3, 3), slab.end - Vector2(3, 3), Color(0.08, 0.13, 0.20, 0.65), 1.5)
-					draw_line(slab.position + Vector2(slab.size.x - 3, 3), slab.position + Vector2(3, slab.size.y - 3), Color(0.08, 0.13, 0.20, 0.65), 1.5)
 		"laser":
+			var center := module_local_center(part) + shake
+			var aim_local := (to_local(turret_target) - center).angle() if turret_target != Vector2.ZERO else 0.0
+			var recoil_amt: float = float(weapon_recoil.get(part.uid, 0.0))
 			var dir := Vector2.from_angle(aim_local)
 			var perp := Vector2(-dir.y, dir.x)
 			var kick := -dir * (4.5 * recoil_amt)
 			draw_circle(center, 13.5, Color("171324"))
-			draw_arc(center, 13.5, 0.0, TAU, 24, Color("ff92e8", 0.45), 1.4, true)
-			draw_line(center + kick + perp * 4.0, center + kick + perp * 4.0 + dir * 16.5, Color("ff7ae0"), 3.0, true)
-			draw_line(center + kick - perp * 4.0, center + kick - perp * 4.0 + dir * 16.5, Color("ff7ae0"), 3.0, true)
+			draw_arc(center, 13.5, 0.0, TAU, 16, Color("ff92e8", 0.45), 1.4)
+			draw_line(center + kick + perp * 4.0, center + kick + perp * 4.0 + dir * 16.5, Color("ff7ae0"), 3.0)
+			draw_line(center + kick - perp * 4.0, center + kick - perp * 4.0 + dir * 16.5, Color("ff7ae0"), 3.0)
 			draw_circle(center + kick, 7.2, Color("2e1936"))
 			draw_circle(center + kick, 4.2, Color("ffd1f6"))
 		"machine_gun":
+			var center := module_local_center(part) + shake
+			var aim_local := (to_local(turret_target) - center).angle() if turret_target != Vector2.ZERO else 0.0
+			var recoil_amt: float = float(weapon_recoil.get(part.uid, 0.0))
 			var dir := Vector2.from_angle(aim_local)
 			var perp := Vector2(-dir.y, dir.x)
 			var kick := -dir * (3.8 * recoil_amt)
 			draw_circle(center, 13.0, Color("15202e"))
-			draw_arc(center, 13.0, 0.0, TAU, 22, Color("9ebbe4", 0.45), 1.3, true)
+			draw_arc(center, 13.0, 0.0, TAU, 16, Color("9ebbe4", 0.45), 1.3)
 			for s in [-4.2, 0.0, 4.2]:
-				draw_line(center + kick + perp * float(s), center + kick + perp * float(s) + dir * 17.0, Color("c4deff"), 2.1, true)
+				draw_line(center + kick + perp * float(s), center + kick + perp * float(s) + dir * 17.0, Color("c4deff"), 2.1)
 			draw_rect(Rect2(center + kick - Vector2(6, 6), Vector2(12, 12)), Color("2c3e54"), true)
 			draw_circle(center + kick, 3.8, Color("ffe09e"))
 		"railgun":
+			var center := module_local_center(part) + shake
+			var aim_local := (to_local(turret_target) - center).angle() if turret_target != Vector2.ZERO else 0.0
+			var recoil_amt: float = float(weapon_recoil.get(part.uid, 0.0))
 			var dir := Vector2.from_angle(aim_local)
 			var perp := Vector2(-dir.y, dir.x)
 			var kick := -dir * (6.2 * recoil_amt)
 			draw_circle(center, 14.5, Color("18122b"))
-			draw_arc(center, 14.5, 0.0, TAU, 26, Color("c993ff", 0.58), 1.6, true)
-			draw_line(center + kick, center + kick + dir * 20.0, Color("7ef9ff", 0.85), 2.2, true)
+			draw_arc(center, 14.5, 0.0, TAU, 18, Color("c993ff", 0.58), 1.6)
+			draw_line(center + kick, center + kick + dir * 20.0, Color("7ef9ff", 0.85), 2.2)
 			for rung in [6.0, 11.5, 16.5]:
 				var rp: Vector2 = center + kick + dir * float(rung)
-				draw_line(rp - perp * 5.2, rp + perp * 5.2, Color("7ef9ff", 0.72), 1.6, true)
-			draw_line(center + kick + perp * 4.6, center + kick + perp * 4.6 + dir * 21.5, Color("d6b3ff"), 3.2, true)
-			draw_line(center + kick - perp * 4.6, center + kick - perp * 4.6 + dir * 21.5, Color("d6b3ff"), 3.2, true)
+				draw_line(rp - perp * 5.2, rp + perp * 5.2, Color("7ef9ff", 0.72), 1.6)
+			draw_line(center + kick + perp * 4.6, center + kick + perp * 4.6 + dir * 21.5, Color("d6b3ff"), 3.2)
+			draw_line(center + kick - perp * 4.6, center + kick - perp * 4.6 + dir * 21.5, Color("d6b3ff"), 3.2)
 			draw_circle(center + kick, 5.2, Color("ebd9ff"))
 		"missile_launcher", "mini_missile_launcher":
+			var center := module_local_center(part) + shake
 			var pod_col := Color("ffbd78") if part.kind == "missile_launcher" else Color("d7ed8e")
-			var has_ammo := model.ammo_total("missile") > 0
-			_draw_hazard_strip(Rect2(center + Vector2(-15, -16), Vector2(30, 2.5)))
 			for ox in [-6.8, 6.8]:
 				for oy in [-5.5, 6.5]:
 					var tube: Vector2 = center + Vector2(float(ox), float(oy))
 					draw_circle(tube, 4.5, Color("0d141f"))
-					draw_arc(tube, 4.5, 0.0, TAU, 12, Color("5a6d85"), 1.0, true)
-					if has_ammo:
+					if has_missile_ammo:
 						draw_circle(tube, 2.5, pod_col)
 		"ammo_bay":
+			var center := module_local_center(part) + shake
 			var ratio := clampf(float(part.ammo) / maxf(float(part.capacity), 1.0), 0.0, 1.0)
-			_draw_hazard_strip(Rect2(center + Vector2(-16, -17), Vector2(32, 2.6)))
 			draw_rect(Rect2(center + Vector2(-15, -12), Vector2(30, 25)), Color("0e151f"), true)
 			var total_slots := 6
 			var active_slots := roundi(ratio * float(total_slots))
@@ -1116,6 +1257,7 @@ func _draw_cosmoteer_module_detail(part: PartData, shake: Vector2, _hull_cells: 
 				if s_idx < active_slots:
 					draw_rect(Rect2(center + Vector2(sx, -9.0), Vector2(3.0, 2.5)), Color("ff6b57"), true)
 		"bullet_bay":
+			var center := module_local_center(part) + shake
 			var ratio := clampf(float(part.ammo) / maxf(float(part.capacity), 1.0), 0.0, 1.0)
 			draw_rect(Rect2(center + Vector2(-15, -13), Vector2(30, 26)), Color("0e1718"), true)
 			var crates := 6
@@ -1126,68 +1268,38 @@ func _draw_cosmoteer_module_detail(part: PartData, shake: Vector2, _hull_cells: 
 				var c_col := Color("a8f0c0") if c_idx < lit else Color("223033")
 				draw_rect(Rect2(center + Vector2(cx, cy), Vector2(6.0, 7.0)), c_col, true)
 		"thruster", "reverse_thruster":
-			var exhaust_dir := Vector2.LEFT.rotated(rot_rad)
-			if part.kind == "reverse_thruster":
-				exhaust_dir = Vector2.RIGHT.rotated(rot_rad)
-			var perp := Vector2(-exhaust_dir.y, exhaust_dir.x)
-			# 기관실 터보펌프 매니폴드 + 외부 리브 벨 노즐
-			draw_rect(Rect2(center - Vector2(11, 11), Vector2(22, 22)), Color("102230") if part.kind == "thruster" else Color("24182c"), true)
-			draw_circle(center - exhaust_dir * 3.0, 6.5, Color("2d4f68") if part.kind == "thruster" else Color("543866"))
-			var nozzle := PackedVector2Array([
-				center + exhaust_dir * 10.0 + perp * 6.8,
-				center + exhaust_dir * 27.0 + perp * 12.6,
-				center + exhaust_dir * 27.0 - perp * 12.6,
-				center + exhaust_dir * 10.0 - perp * 6.8,
-			])
-			draw_colored_polygon(nozzle, Color("1a2838"))
-			draw_polyline(PackedVector2Array([nozzle[0], nozzle[1], nozzle[2], nozzle[3]]), Color("6b8eb0", 0.85), 1.5, true)
-			draw_line(center + exhaust_dir * 16.0 + perp * 9.0, center + exhaust_dir * 16.0 - perp * 9.0, Color("6688a8", 0.70), 1.4)
-			draw_line(center + exhaust_dir * 22.0 + perp * 11.2, center + exhaust_dir * 22.0 - perp * 11.2, Color("94bfe2", 0.80), 1.6)
-			var blocked := model.is_exhaust_blocked(part)
-			if blocked:
-				draw_line(center + exhaust_dir * 25.5 + perp * 11.0, center + exhaust_dir * 25.5 - perp * 11.0, Color("ff9e3d"), 3.2)
 			var exhaust_entry: Variant = active_exhausts.get(part.uid, null)
 			var intensity := float(exhaust_entry.get("intensity", 0.0)) if exhaust_entry is Dictionary else 0.0
+			if intensity <= 0.04:
+				return
+			var center := module_local_center(part) + shake
+			var rot_rad := float(part.quarter_turn) * PI * 0.5
+			var exhaust_dir := Vector2.LEFT.rotated(rot_rad) if part.kind == "thruster" else Vector2.RIGHT.rotated(rot_rad)
 			var plume_dir: Vector2 = exhaust_entry.get("direction", exhaust_dir) if exhaust_entry is Dictionary else exhaust_dir
-			if intensity > 0.04 and plume_dir.length_squared() > 0.01:
+			if plume_dir.length_squared() > 0.01:
+				var blocked := bool(_cached_exhaust_blocked.get(part.uid, false))
 				_draw_mach_plume(center + plume_dir * 24.5, plume_dir, intensity, part.kind == "reverse_thruster", blocked, now_ms + float(part.uid) * 19.0)
 		"rcs_thruster":
-			draw_circle(center, 8.2, Color("18302c"))
-			draw_arc(center, 8.2, 0.0, TAU, 18, Color("8cf0cd", 0.65), 1.5, true)
-			draw_circle(center, 3.6, Color("aefae0"))
-			for jet_force in rcs_thrust_directions(part):
-				var port_dir := -jet_force.normalized()
-				draw_line(center + port_dir * 7.5, center + port_dir * 13.5, Color("486b66"), 3.6)
 			var exhaust_entry: Variant = active_exhausts.get(part.uid, null)
-			if exhaust_entry is Dictionary:
-				var jets: Array = exhaust_entry.get("jets", [exhaust_entry])
-				for jet in jets:
-					if not (jet is Dictionary):
-						continue
-					var j_int: float = float(jet.get("intensity", 0.0))
-					var j_dir: Vector2 = jet.get("direction", Vector2.ZERO)
-					if j_int > 0.04 and j_dir.length_squared() > 0.01:
-						var jp := Vector2(-j_dir.y, j_dir.x)
-						var j_len := 10.0 + 18.0 * j_int
-						var tri := PackedVector2Array([
-							center + j_dir * 12.0 + jp * 3.8,
-							center + j_dir * (12.0 + j_len),
-							center + j_dir * 12.0 - jp * 3.8,
-						])
-						draw_colored_polygon(tri, Color("7ef9ff", 0.72))
-						draw_circle(center + j_dir * 13.0, 2.8 * j_int + 1.2, Color.WHITE)
-		"shield_generator":
-			var gen_dir := Vector2.from_angle(rot_rad)
-			var gen_perp := Vector2(-gen_dir.y, gen_dir.x)
-			var hex := PackedVector2Array()
-			for i in 7:
-				var a := rot_rad + float(i) * TAU / 6.0
-				hex.append(center + Vector2(cos(a), sin(a)) * 10.5)
-			draw_colored_polygon(hex.slice(0, 6), Color("143b52"))
-			draw_polyline(hex, Color("7ef9ff"), 1.9, true)
-			draw_line(center + gen_perp * 6.0, center + gen_dir * 15.0 + gen_perp * 9.0, Color("66eeff"), 2.2, true)
-			draw_line(center - gen_perp * 6.0, center + gen_dir * 15.0 - gen_perp * 9.0, Color("66eeff"), 2.2, true)
-			draw_circle(center, 4.4, Color("d8fcff"))
+			if not (exhaust_entry is Dictionary):
+				return
+			var center := module_local_center(part) + shake
+			var jets: Array = exhaust_entry.get("jets", [exhaust_entry])
+			for jet in jets:
+				if not (jet is Dictionary):
+					continue
+				var j_int: float = float(jet.get("intensity", 0.0))
+				var j_dir: Vector2 = jet.get("direction", Vector2.ZERO)
+				if j_int > 0.04 and j_dir.length_squared() > 0.01:
+					var jp := Vector2(-j_dir.y, j_dir.x)
+					var j_len := 10.0 + 18.0 * j_int
+					var tri := PackedVector2Array([
+						center + j_dir * 12.0 + jp * 3.8,
+						center + j_dir * (12.0 + j_len),
+						center + j_dir * 12.0 - jp * 3.8,
+					])
+					draw_colored_polygon(tri, Color("7ef9ff", 0.72))
+					draw_circle(center + j_dir * 13.0, 2.8 * j_int + 1.2, Color.WHITE)
 
 func _draw_mach_plume(nozzle_tip: Vector2, plume_dir: Vector2, intensity: float, is_reverse: bool, is_blocked: bool, phase_ms: float) -> void:
 	var perp := Vector2(-plume_dir.y, plume_dir.x)
@@ -1252,11 +1364,11 @@ func _draw_directional_shields(shake: Vector2) -> void:
 		# 방어막 투사기 팬 광선 (Emitter Fan Rays)
 		var p_left := shake + Vector2.from_angle(start_a) * r
 		var p_right := shake + Vector2.from_angle(end_a) * r
-		draw_line(gen_pos, p_left, Color(col.r, col.g, col.b, alpha * 0.26), 1.2, true)
-		draw_line(gen_pos, p_right, Color(col.r, col.g, col.b, alpha * 0.26), 1.2, true)
+		draw_line(gen_pos, p_left, Color(col.r, col.g, col.b, alpha * 0.26), 1.2)
+		draw_line(gen_pos, p_right, Color(col.r, col.g, col.b, alpha * 0.26), 1.2)
 
 		# 136도 방향성 아크 에너지 장벽
-		draw_arc(shake, r - 3.0, start_a, end_a, 28, Color(col.r, col.g, col.b, alpha * 0.22), 7.0, true)
-		draw_arc(shake, r, start_a, end_a, 28, col, 2.8 + flash * 1.8, true)
+		draw_arc(shake, r - 3.0, start_a, end_a, 18, Color(col.r, col.g, col.b, alpha * 0.22), 7.0)
+		draw_arc(shake, r, start_a, end_a, 18, col, 2.8 + flash * 1.8)
 		if shield_layers >= 2:
-			draw_arc(shake, r + 5.0, start_a + 0.06, end_a - 0.06, 24, Color(col.r, col.g, col.b, alpha * 0.60), 1.6, true)
+			draw_arc(shake, r + 5.0, start_a + 0.06, end_a - 0.06, 16, Color(col.r, col.g, col.b, alpha * 0.60), 1.6)

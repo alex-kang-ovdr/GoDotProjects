@@ -44,6 +44,8 @@ var grapple_label := "READY"
 var radar_blips: Array[Dictionary] = []
 var waypoint_world := Vector2.ZERO
 var _sweep_angle := 0.0
+var _redraw_accum := 0.0
+const HUD_REDRAW_INTERVAL := 0.066
 
 
 func _process(delta: float) -> void:
@@ -53,12 +55,17 @@ func _process(delta: float) -> void:
 		mission_time += delta
 	if not input_enabled:
 		primary_held = false
-	queue_redraw()
+	_redraw_accum += delta
+	if _redraw_accum >= HUD_REDRAW_INTERVAL:
+		_redraw_accum = 0.0
+		queue_redraw()
 
 
 func announce(text: String) -> void:
 	message = text
 	message_time = 4.2
+	_redraw_accum = HUD_REDRAW_INTERVAL
+	queue_redraw()
 
 
 func radar_center() -> Vector2:
@@ -255,14 +262,14 @@ func _draw() -> void:
 func _draw_tactical_radar(font: Font) -> void:
 	var rc := radar_center()
 	draw_circle(rc, RADAR_RADIUS + 4.0, Color(0.02, 0.06, 0.13, 0.88))
-	draw_arc(rc, RADAR_RADIUS + 4.0, 0.0, TAU, 48, Color("38b6ff", 0.62), 1.6, true)
-	draw_arc(rc, RADAR_RADIUS * 0.5, 0.0, TAU, 36, Color("38b6ff", 0.18), 1.0, true)
+	draw_arc(rc, RADAR_RADIUS + 4.0, 0.0, TAU, 36, Color("38b6ff", 0.62), 1.6)
+	draw_arc(rc, RADAR_RADIUS * 0.5, 0.0, TAU, 24, Color("38b6ff", 0.18), 1.0)
 	draw_line(rc + Vector2(-RADAR_RADIUS, 0), rc + Vector2(RADAR_RADIUS, 0), Color("38b6ff", 0.16), 1.0)
 	draw_line(rc + Vector2(0, -RADAR_RADIUS), rc + Vector2(0, RADAR_RADIUS), Color("38b6ff", 0.16), 1.0)
 
 	# Rotating radar sweep line
 	var sweep_end := rc + Vector2.from_angle(_sweep_angle) * RADAR_RADIUS
-	draw_line(rc, sweep_end, Color(0.35, 0.96, 0.85, 0.35), 1.6, true)
+	draw_line(rc, sweep_end, Color(0.35, 0.96, 0.85, 0.35), 1.6)
 
 	if ship != null:
 		var origin := ship.global_position

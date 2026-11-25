@@ -67,6 +67,8 @@ var developer_overlay
 var player_destroyed := false
 var skip_automation_hook := false
 var ram_cooldowns: Dictionary = {}
+var _hud_sync_accum := 0.0
+var _main_draw_accum := 0.0
 
 func _install_ui_font() -> void:
 	if FileAccess.file_exists("res://assets/fonts/captain-ui.txt"):
@@ -481,11 +483,21 @@ func _physics_process(delta: float) -> void:
 	hud.kill_streak = kill_streak
 	hud.overdrive_charge = overdrive_charge
 	hud.overdrive_active = player.overdrive_active
-	hud.hostile_count = enemies.filter(func(enemy): return is_instance_valid(enemy) and enemy.is_attacking_player()).size()
-	update_weapon_hud()
-	update_mission_hud()
-	_refresh_radar_blips()
-	queue_redraw()
+	_hud_sync_accum += delta
+	if _hud_sync_accum >= 0.066:
+		_hud_sync_accum = 0.0
+		var hostile := 0
+		for enemy in enemies:
+			if is_instance_valid(enemy) and enemy.is_attacking_player():
+				hostile += 1
+		hud.hostile_count = hostile
+		update_weapon_hud()
+		update_mission_hud()
+		_refresh_radar_blips()
+	_main_draw_accum += delta
+	if held_part != null or _main_draw_accum >= 0.033:
+		_main_draw_accum = 0.0
+		queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if gameplay_blocked() or player_destroyed:
