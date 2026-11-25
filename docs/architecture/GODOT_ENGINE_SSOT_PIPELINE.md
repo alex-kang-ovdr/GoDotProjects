@@ -2,7 +2,7 @@
 
 - **정본 저장소:** `git@github.com:alex-kang-ovdr/godot-engine.git` (서브모듈 경로: `godot-engine`)
 - **기반 버전:** 공식 Godot `4.7.2-stable` (`ed1daf0bf001b61586d9930840f2f1394092c079`)
-- **현재 포크 핀:** `fe0b4fe19e39a270229eef9b85af1d8722af7188` (`tools/engine/engine-ssot.json` 단일 정본)
+- **현재 포크 핀:** `e7a83dd7399f1c359e62502b23c93b54ced8a860` (2026-11-25 갱신, 코어 패치 7건 목록은 `docs/godot-refactoring/SSOT.md` §3) (`tools/engine/engine-ssot.json` 단일 정본)
 - **필수 커스텀 심볼:** `PlayForgePlatform`, `playforge-core-pack` (`modules/playforge_core`)
 - **전 플랫폼 공통 SCons 불변식:**
   - `module_playforge_core_enabled = "yes"` (아바타 C++ VFS 봉인 · `PlayForgeCoreHUD` · 3D 초상 UI)
@@ -18,8 +18,8 @@
 | `web-template` | ⏳ `pending_fork_rebuild` | `tools/forge/web_editor_release_slim.py` (`target=template_release`) | 포크 웹 익스포트 템플릿 빌드 후 `games/forge-*/Web/index.wasm` 18종 재익스포트 |
 | `desktop-windows` | ⏳ `pending_fork_rebuild` | `tools/desktop/custom.py` | Windows `editor` + `template_release` 포크 빌드 릴리스 및 `prepare-player.ps1`·`package-windows-server.ps1` 전환 |
 | `cloudrun-worker` | ⏳ `pending_fork_rebuild` | `deploy/cloudrun/build-worker/Dockerfile` | Linux headless + 웹 템플릿 포크 릴리스 URL + SHA-256 핀닝 전환 |
-| `android-aar` | ⏳ `pending_fork_rebuild` | `tools/aos/godot-aar.lock.json` | Android `template_release` AAR 포크 빌드 → `forkCommit`을 `fe0b4fe1...`로 갱신 |
-| `ios-xcframework` | ⏳ `pending_fork_rebuild` | `tools/ios/godot-xcframework.lock.json` | macOS에서 iOS `template_release` XCFramework 포크 빌드 → `forkCommit`을 `fe0b4fe1...`로 갱신 |
+| `android-aar` | ⏳ `pending_fork_rebuild` | `tools/aos/godot-aar.lock.json` | Android `template_release` AAR 포크 빌드 → `forkCommit`을 `e7a83dd7...`로 갱신 |
+| `ios-xcframework` | ⏳ `pending_fork_rebuild` | `tools/ios/godot-xcframework.lock.json` | macOS에서 iOS `template_release` XCFramework 포크 빌드 → `forkCommit`을 `e7a83dd7...`로 갱신 |
 
 ---
 

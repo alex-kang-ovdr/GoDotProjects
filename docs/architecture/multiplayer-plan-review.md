@@ -26,11 +26,13 @@
 
 ### 3.1 이미 멀티플레이 서버가 있다 (ADR-05와 다른 구조)
 
-- 현재 Forge에는 `brawllabs`, `fortress-war`, `tappy-chicken-mmo` 세 개의 멀티플레이 서버가 있다(`forge/Tools/*-multiplayer.cjs`, 합계 약 1,100줄). **게임 규칙을 Node.js가 직접 계산하는 권위 서버**이고(예: BrawlLabs는 50ms 간격 `tick()`·`simulate()`), Forge 에디터와 **같은 프로세스**에서 WebSocket(`/brawllabs` 등)으로 열린다.
+- 현재 Forge에는 `brawllabs`, `fortress-war`, `tappy-chicken-mmo`, `captain-forever-mmo` 네 개의 멀티플레이 서버가 있다(`forge/Tools/*-multiplayer.cjs`, 2026-11-25 기준 합계 약 1,900줄; 검토 당시 3개·약 1,100줄). **게임 규칙을 Node.js가 직접 계산하는 권위 서버**이고(예: BrawlLabs는 50ms 간격 `tick()`·`simulate()`), Forge 에디터와 **같은 프로세스**에서 WebSocket(`/brawllabs` 등)으로 열린다.
 - 계획안 ADR-05는 "게임 시뮬레이션은 Godot Linux 서버"이고, §3은 Godot high-level 프로토콜이 Godot 아닌 서버용이 아니라고 짚는다. 현재 구현은 Godot RPC가 아니라 템플릿별 자체 메시지 프로토콜이라 이 제약에 걸리지는 않는다. 하지만 **템플릿마다 서버 로직을 Node로 다시 쓰는 구조**라 UGC 제작자가 자기 게임 서버를 만들 수 없다.
 - 판단: 계획안의 ADR-12(기존 게임은 선택적 등록)를 적용해 **현재 Node 서버는 "플랫폼 제공 템플릿 전용 경로"로 유지**하고, 제작자 게임용 Godot 데디케이티드 서버 경로를 새로 만든다. 단, 멀티플레이 서버가 에디터와 같은 프로세스에 있는 것은 ADR-01에 어긋나므로 **분리 계획에 "멀티플레이 서버의 Forge 프로세스 분리"를 추가**한다(§4).
 
 ### 3.2 빌드·실행이 격리 없이 Forge 호스트에서 돈다 (현재 위험)
+
+> **갱신(2026-11-25)**: 이후 `PLAYFORGE_BUILD_BACKEND=cloudrun-job` 격리 worker(`build-worker-p0-plan.md`)가 생겼다. 남은 gap은 기본값이 호스트 로컬 실행인 점, worker가 포크가 아닌 순정 4.7.2를 받는 점, PIE가 로컬 실행인 점이다. 추적은 `docs/godot-refactoring/SSOT.md`와 Forge-BuildExport의 `docs/build-export/ISOLATED_BUILD_WORKER.md`.
 
 - `forge/Tools/build-queue.cjs`는 사용자 프로젝트 파일을 호스트 디스크에 쓰고, 호스트의 Godot을 `--headless --editor --import`로 직접 실행한다(`spawn(findGodot(...))`). `native-runtime.cjs`의 PIE 런타임도 같은 방식이다.
 - 계획안 §7.2·§17.3이 지적하듯, Godot import/export는 `@tool` 스크립트와 에디터 플러그인을 실행할 수 있다. Hub 인증 모드에서는 **Google 로그인 사용자 누구나** 빌드를 요청할 수 있으므로, 이론상 임의 코드가 Forge 호스트 권한으로 실행될 수 있다. 이 경로는 실제로 재현해 보지 않았다(코드 읽기와 Godot 동작 근거).

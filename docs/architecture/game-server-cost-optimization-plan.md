@@ -47,7 +47,7 @@ PlayForge 배포 센터([publish-panel.js](../../forge/OfficialGodot/publish-pan
 
 ### 레버 4. 외부 IPv4 제거 + WSS Gateway 집약 — *IP 비용 90%+ 절감*
 - 게임 서버 VM/컨테이너에는 **외부 IPv4를 부여하지 않음**(IP당 월 \$3.65 절감).
-- 앞단 **WSS Gateway(Cloud Run 또는 소수 L7 프록시)**가 TLS 종단·입장 티켓(`ConnectTicket`) 검증·DDoS 방어를 전담하고, 내부 VPC IP로 백엔드 게임 프로세스에 중계합니다.
+- 앞단 **WSS Gateway(Cloud Run 또는 소수 L7 프록시)**가 TLS 종단·입장 티켓(`JoinTicket`, 2026-11-25 용어 통일 — 구 명칭 ConnectTicket) 검증·DDoS 방어를 전담하고, 내부 VPC IP로 백엔드 게임 프로세스에 중계합니다.
 
 ### 레버 5. 장르별 서버 런타임 이원화 (`node-wss-v1` vs `godot-server`) — *RAM 50~70% 절감*
 - **턴제 · 카드 · 보드 · 단순 2D 아케이드**(3D 물리 불필요): 초경량 **Node.js WSS 권위 서버** 유지 (프로세스당 30~60 MB RAM → 동일 호스트에 Godot 대비 3~4배 수용).
