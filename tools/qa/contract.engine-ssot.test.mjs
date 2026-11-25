@@ -83,6 +83,18 @@ test('TC-E4: resolveGodotBinary prefers custom fork builds over stock fallback a
 
   const strictFail = resolveGodotBinary({ searchFrom: tmp, searchOnly: true, env: {}, platform: 'win32', requireFork: true });
   assert.equal(strictFail.found, false);
+
+  // Export templates cannot run a project directory (--path is disabled), so a fork dir holding only
+  // templates must not shadow a working editor unless the caller opts in with allowTemplate.
+  fs.mkdirSync(forkDir, { recursive: true });
+  const templateExe = path.join(forkDir, 'godot.windows.template_debug.x86_64.exe');
+  fs.writeFileSync(templateExe, Buffer.from('MZ-FAKE-FORK-TEMPLATE PlayForgePlatform --playforge-core-pack'));
+  const skipsTemplate = resolveGodotBinary({ searchFrom: tmp, searchOnly: true, env: {}, platform: 'win32' });
+  assert.equal(skipsTemplate.executable, stockExe);
+  assert.equal(skipsTemplate.source, 'stock-fallback');
+  const optedIn = resolveGodotBinary({ searchFrom: tmp, searchOnly: true, env: {}, platform: 'win32', allowTemplate: true });
+  assert.equal(optedIn.executable, templateExe);
+  assert.equal(optedIn.source, 'fork-discovered');
 });
 
 test('TC-E5: check-engine-ssot CLI returns JSON report with exit 0 in default mode and exit 1 in --strict while pending targets remain', () => {

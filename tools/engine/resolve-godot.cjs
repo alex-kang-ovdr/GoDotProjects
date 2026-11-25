@@ -96,6 +96,10 @@ function selectBinaryFromDir(dir, patterns) {
  *   1. Explicit override (options.godotBin / GODOT_BIN / GODOT_CONSOLE_BIN / GODOT_EDITOR)
  *   2. Custom fork builds (godot-engine/bin, artifacts/local-runtime/godot-fork, sibling Forge-GodotEngine/bin)
  *   3. Stock fallback (artifacts/local-runtime/godot, GoDotProjects/Godot_v4.*, PATH) — blocked if requireFork: true
+ *
+ * Fork discovery returns editor builds only. Export templates (template_debug/template_release) are
+ * built with path overrides disabled, so they cannot import, export or run a project directory
+ * (--path); they are returned only when options.allowTemplate === true.
  */
 function resolveGodotBinary(options = {}) {
   const env = options.env || process.env;
@@ -103,6 +107,7 @@ function resolveGodotBinary(options = {}) {
   const requireFork = options.requireFork === true;
   const verifySymbols = options.verifySymbols === true || requireFork;
   const isWin = (options.platform || process.platform) === 'win32';
+  const allowTemplate = options.allowTemplate === true;
 
   const finalize = (rawPath, source) => {
     const executable = preferConsole ? rawPath : realEngineExecutable(rawPath);
@@ -156,10 +161,13 @@ function resolveGodotBinary(options = {}) {
   for (const r of roots) {
     forkDirs.push(path.join(r, 'godot-engine', 'bin'));
     forkDirs.push(path.join(r, 'artifacts', 'local-runtime', 'godot-fork'));
+    // Fork worktree of the maintained branch (godot-engine Forge-Refactoring), then the older one.
+    forkDirs.push(path.join(r, 'Forge-Refactoring-engine', 'bin'));
+    forkDirs.push(path.join(r, 'GoDotProjects-worktrees', 'Forge-Refactoring-engine', 'bin'));
     forkDirs.push(path.join(r, 'Forge-GodotEngine', 'bin'));
   }
 
-  const forkPatterns = isWin
+  const allForkPatterns = isWin
     ? (preferConsole
       ? [
           /^godot\.windows\.editor\.x86_64\.console\.exe$/i,
@@ -179,6 +187,8 @@ function resolveGodotBinary(options = {}) {
         /^godot\.linuxbsd\.template_release\.x86_64$/i,
         /^godot\.linuxbsd\.template_debug\.x86_64$/i,
       ];
+
+  const forkPatterns = allowTemplate ? allForkPatterns : allForkPatterns.filter((pattern) => !/template_/.test(pattern.source));
 
   for (const dir of new Set(forkDirs)) {
     const hit = selectBinaryFromDir(dir, forkPatterns);

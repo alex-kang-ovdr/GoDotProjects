@@ -78,6 +78,7 @@
   "knownStockFallbackPending": [
     "deploy/cloudrun/build-worker/Dockerfile",
     "forge/Tools/install-web-editor.ps1",
-    "forge/OfficialGodot/upstream.json"
+    "forge/OfficialGodot/upstream.json",
+    "deploy/cloudrun/hub/Dockerfile"
   ]
 }

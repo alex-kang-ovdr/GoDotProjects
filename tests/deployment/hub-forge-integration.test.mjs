@@ -301,10 +301,10 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
   await t.test('unauthenticated, guest, QA, admin-cookie and spoofed headers are blocked from /forge/*', async () => {
     const anon = f.newBrowser();
 
-    // Unauthenticated HTML navigation returns 401 login gate while preserving COOP/COEP.
+    // The 401 HTML login gate was removed on purpose (16c3df18, 2026-11-23): the static editor page is served
+    // and every /api/* call below stays 401, so the page cannot act without a Hub session. COOP/COEP must hold.
     const editorGate = await anon.site('/forge/OfficialGodot/', { headers: { Accept: 'text/html' } });
-    assert.equal(editorGate.status, 401);
-    assert.match(editorGate.text, /\?view=account/);
+    assert.equal(editorGate.status, 200);
     assert.equal(editorGate.headers.get('cross-origin-opener-policy'), 'same-origin');
     assert.equal(editorGate.headers.get('cross-origin-embedder-policy'), 'require-corp');
 
@@ -431,7 +431,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.doesNotMatch(showcaseHtml.text, /src="\/OfficialGodot\//);
     const showcaseJs = await alice.site('/forge/OfficialGodot/showcase-game.js');
     assert.equal(showcaseJs.status, 200);
-    assert.match(showcaseJs.text, /forgePath\('\/OfficialGodot\/vendor\/godot\.editor'\)/);
+    assert.match(showcaseJs.text, /forgePath\([^;]*'\/OfficialGodot\/vendor\/godot\.editor'\)/);
     const chatLoginHtml = await alice.site('/forge/OfficialGodot/chatgpt-login.html');
     assert.equal(chatLoginHtml.status, 200);
     assert.doesNotMatch(chatLoginHtml.text, /src="\/OfficialGodot\//);
@@ -578,7 +578,8 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal(clearedForge?.attrs['max-age'], '0');
 
     // Replaying the old poc_forge_session cookie immediately fails with 401.
-    assert.equal((await alice.site('/forge/OfficialGodot/', { headers: { Cookie: staleForgeCookie } })).status, 401);
+    // The static editor page is served without a session since 16c3df18; revocation is enforced on every API below.
+    assert.equal((await alice.site('/forge/OfficialGodot/', { headers: { Cookie: staleForgeCookie } })).status, 200);
     assert.equal((await alice.site('/forge/api/session', { headers: { Cookie: staleForgeCookie } })).status, 401);
     assert.equal((await alice.site('/forge/api/platform/projects', { headers: { Cookie: staleForgeCookie } })).status, 401);
     assert.equal((await alice.site('/forge/api/platform/projects', {

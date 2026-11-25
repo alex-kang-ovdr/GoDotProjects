@@ -6295,6 +6295,86 @@
         "live"
       ],
       "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/cloudrun/forge/web-origin-config.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/cloudrun/prune-ar-images.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "deploy/vm/vm-config.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
+      "path": "forge/Tests/editor-loading-overlay.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "forge/Tests/guest-firebase-session-cookie.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "forge",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayForge-Main"
+    },
+    {
+      "path": "hub/tests/downloads.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "component"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Hub-AOS"
     }
   ]
 }

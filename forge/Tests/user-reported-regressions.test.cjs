@@ -155,7 +155,7 @@ test('TC-REG-004 (ISS-007): content-tagged vendor URLs prevent stale 91.9MB cach
   if (!hasLocalVendor) {
     fs.writeFileSync(path.join(fakeVendorRoot, 'godot.editor.js'), 'window.Engine = function(){};');
     fs.writeFileSync(path.join(fakeVendorRoot, 'godot.editor.wasm'), buildMinimalWasm());
-    envOverrides.PLAYFORGE_WEB_EDITOR_VENDOR_DIR = fakeVendorRoot;
+    envOverrides.PLAYFORGE_WEB_EDITOR_DIR = fakeVendorRoot; // the variable forge/server.cjs resolveWebEditorVendor reads
   }
 
   const { port } = await startTempServer(t, { env: envOverrides });
