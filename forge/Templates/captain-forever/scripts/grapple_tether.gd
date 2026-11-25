@@ -11,6 +11,9 @@ var hook_position := Vector2.ZERO
 var hook_flying := true
 var connected := false
 var links: Array[RigidBody2D] = []
+var _chain_nodes: PackedVector2Array = PackedVector2Array()
+var _chain_prev: PackedVector2Array = PackedVector2Array()
+var _chain_seg_len := 36.0
 var max_hp := float(BalanceData.GRAPPLE.hp)
 var hp := max_hp
 var chain_rest_length := 0.0
@@ -39,7 +42,8 @@ func _physics_process(delta: float) -> void:
 		if owner_ship.global_position.distance_squared_to(hook_position) > float(BalanceData.GRAPPLE.max_range) * float(BalanceData.GRAPPLE.max_range):
 			detach("OUT OF RANGE")
 	elif connected:
-		apply_tension_stabilizer()
+		apply_tension_stabilizer(delta)
+		_step_visual_chain(delta)
 		var break_range := float(BalanceData.GRAPPLE.max_range) + owner_ship.hull_bound_radius + target_ship.hull_bound_radius + float(BalanceData.GRAPPLE.break_slack)
 		if owner_ship.global_position.distance_squared_to(target_ship.global_position) > break_range * break_range:
 			detach("CHAIN BROKEN")
@@ -50,51 +54,106 @@ func create_physical_chain() -> void:
 		return
 	hook_flying = false
 	connected = true
-	var distance := owner_ship.global_position.distance_to(target_ship.global_position)
-	chain_rest_length = distance
-	var link_count := clampi(ceili(distance / float(BalanceData.GRAPPLE.link_length)) - 1, 1, int(BalanceData.GRAPPLE.max_links))
-	var previous: Node2D = owner_ship
-	for index in link_count:
-		var link := RigidBody2D.new()
-		link.name = "ChainLink_%02d" % index
-		link.global_position = owner_ship.global_position.lerp(target_ship.global_position, float(index + 1) / float(link_count + 1))
-		link.mass = float(BalanceData.GRAPPLE.link_mass)
-		link.gravity_scale = 0.0
-		link.linear_damp = float(BalanceData.GRAPPLE.link_damp)
-		link.angular_damp = float(BalanceData.GRAPPLE.link_damp)
-		link.collision_layer = 0
-		link.collision_mask = 0
-		add_child(link)
-		add_pin_joint(previous, link)
-		links.append(link)
-		previous = link
-	add_pin_joint(previous, target_ship)
+	var p_a := owner_ship.global_position
+	var p_b := target_ship.global_position
+	var distance := p_a.distance_to(p_b)
+	var min_safe := owner_ship.hull_bound_radius + target_ship.hull_bound_radius + 18.0
+	chain_rest_length = maxf(distance, min_safe)
+	var seg_count := clampi(ceili(chain_rest_length / float(BalanceData.GRAPPLE.link_length)), 3, mini(int(BalanceData.GRAPPLE.max_links), 16))
+	_chain_seg_len = chain_rest_length / float(seg_count)
+	_chain_nodes.resize(seg_count + 1)
+	_chain_prev.resize(seg_count + 1)
+	for i in range(seg_count + 1):
+		var pt := p_a.lerp(p_b, float(i) / float(seg_count))
+		_chain_nodes[i] = pt
+		_chain_prev[i] = pt
 
-# PinJoint 링크는 실제 체인 관절을 보존한다. 끝점의 장력 보정은 긴 체인에서
-# 누적되는 제약 오차를 줄여, 고출력 추진 시에도 견인 연결을 단단하게 유지한다.
-func apply_tension_stabilizer() -> void:
+# 임펄스 기반 로프 거리 제약 + 횡진동 감쇠:
+# 다중 PinJoint2D 체인의 질량비 발산·고무줄 튕김·과회전 없이 안정적으로 견인한다.
+func apply_tension_stabilizer(delta: float = 1.0 / 60.0) -> void:
+	var dt := maxf(delta, 0.001)
 	var offset := target_ship.global_position - owner_ship.global_position
 	var distance := offset.length()
 	if distance <= 0.001:
 		current_tension = 0.0
 		return
-	var stretch := distance - chain_rest_length - float(BalanceData.GRAPPLE.tension_slack)
+	var direction := offset / distance
+	var min_safe := owner_ship.hull_bound_radius + target_ship.hull_bound_radius + 14.0
+	var inv_m1 := 1.0 / maxf(owner_ship.mass, 0.5)
+	var inv_m2 := 1.0 / maxf(target_ship.mass, 0.5)
+	var eff_mass := 1.0 / (inv_m1 + inv_m2)
+
+	# 너무 가까이 붙었을 때 겹침/튕김 방지 완충
+	if distance < min_safe:
+		var closing := (owner_ship.linear_velocity - target_ship.linear_velocity).dot(direction)
+		if closing > 0.0:
+			var push_j := closing * eff_mass * 0.65
+			owner_ship.apply_central_impulse(-direction * push_j)
+			target_ship.apply_central_impulse(direction * push_j)
+		current_tension = 0.0
+		return
+
+	var stretch := distance - chain_rest_length
 	if stretch <= 0.0:
 		current_tension = 0.0
 		return
-	var direction := offset / distance
-	var separation_speed := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(direction)
-	current_tension = minf(float(BalanceData.GRAPPLE.max_tension_force), stretch * float(BalanceData.GRAPPLE.tension_stiffness) + maxf(separation_speed, 0.0) * float(BalanceData.GRAPPLE.tension_damping))
-	peak_tension = maxf(peak_tension, current_tension)
-	owner_ship.apply_central_force(direction * current_tension)
-	target_ship.apply_central_force(-direction * current_tension)
 
-func add_pin_joint(first: Node2D, second: Node2D) -> void:
-	var joint := PinJoint2D.new()
-	joint.global_position = first.global_position.lerp(second.global_position, 0.5)
-	add_child(joint)
-	joint.node_a = joint.get_path_to(first)
-	joint.node_b = joint.get_path_to(second)
+	# 장력(비탄성 로프 제약): 분리 속도 제거 + 완만한 위치 오차 보정(Baumgarte)
+	var v_rel := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(direction)
+	var bias_vel := minf(stretch * 7.5, 240.0)
+	var max_impulse := float(BalanceData.GRAPPLE.max_tension_force) * dt
+	var j_mag := clampf((v_rel + bias_vel) * eff_mass, 0.0, max_impulse)
+	current_tension = j_mag / dt
+	peak_tension = maxf(peak_tension, current_tension)
+	if j_mag > 0.0:
+		owner_ship.apply_central_impulse(direction * j_mag)
+		target_ship.apply_central_impulse(-direction * j_mag)
+
+		# 견인 중 좌우 진자 흔들림(횡진동) 감쇠로 안정적 추적
+		var tangent := Vector2(-direction.y, direction.x)
+		var v_tan := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(tangent)
+		var tan_j := clampf(v_tan * eff_mass * 2.4 * dt, -j_mag * 0.35, j_mag * 0.35)
+		owner_ship.apply_central_impulse(tangent * tan_j)
+		target_ship.apply_central_impulse(-tangent * tan_j)
+
+		# 피견인 함선의 과도한 팽이 회전 억제
+		target_ship.angular_velocity *= exp(-3.5 * dt)
+
+func _step_visual_chain(delta: float) -> void:
+	var n := _chain_nodes.size()
+	if n < 2:
+		return
+	var p_start := owner_ship.global_position
+	var p_end := target_ship.global_position
+	_chain_nodes[0] = p_start
+	_chain_prev[0] = p_start
+	_chain_nodes[n - 1] = p_end
+	_chain_prev[n - 1] = p_end
+	var damp := exp(-7.5 * delta)
+	for i in range(1, n - 1):
+		var cur := _chain_nodes[i]
+		var vel := (cur - _chain_prev[i]) * damp
+		_chain_prev[i] = cur
+		_chain_nodes[i] = cur + vel
+	for _iter in 6:
+		_chain_nodes[0] = p_start
+		_chain_nodes[n - 1] = p_end
+		for i in range(n - 1):
+			var a := _chain_nodes[i]
+			var b := _chain_nodes[i + 1]
+			var diff := b - a
+			var d := diff.length()
+			if d <= 0.0001:
+				continue
+			var err := (d - _chain_seg_len) / d
+			if i == 0:
+				_chain_nodes[i + 1] = b - diff * err
+			elif i + 1 == n - 1:
+				_chain_nodes[i] = a + diff * err
+			else:
+				var half_corr := diff * (err * 0.5)
+				_chain_nodes[i] = a + half_corr
+				_chain_nodes[i + 1] = b - half_corr
 
 func detach(reason: String = "MANUAL RELEASE") -> void:
 	detached.emit(reason)
@@ -120,12 +179,11 @@ func can_be_hit_at(point: Vector2) -> bool:
 	return false
 
 func chain_points() -> PackedVector2Array:
+	if not hook_flying and _chain_nodes.size() >= 2:
+		return _chain_nodes
 	var points := PackedVector2Array()
 	if owner_ship != null and is_instance_valid(owner_ship):
 		points.append(owner_ship.global_position)
-	for link in links:
-		if is_instance_valid(link):
-			points.append(link.global_position)
 	if not hook_flying and target_ship != null and is_instance_valid(target_ship):
 		points.append(target_ship.global_position)
 	return points
@@ -141,22 +199,24 @@ func point_segment_distance_squared(point: Vector2, from: Vector2, to: Vector2) 
 func _draw() -> void:
 	if owner_ship == null or not is_instance_valid(owner_ship):
 		return
-	var points := PackedVector2Array([to_local(owner_ship.global_position)])
+	var points := PackedVector2Array()
 	if hook_flying:
+		points.append(to_local(owner_ship.global_position))
 		points.append(to_local(hook_position))
-	else:
-		for link in links:
-			if is_instance_valid(link):
-				points.append(to_local(link.global_position))
-		if target_ship != null and is_instance_valid(target_ship):
-			points.append(to_local(target_ship.global_position))
+	elif _chain_nodes.size() >= 2:
+		points.resize(_chain_nodes.size())
+		for i in _chain_nodes.size():
+			points[i] = to_local(_chain_nodes[i])
+	elif target_ship != null and is_instance_valid(target_ship):
+		points.append(to_local(owner_ship.global_position))
+		points.append(to_local(target_ship.global_position))
 	if points.size() >= 2:
 		var integrity := hp / maxf(max_hp, 1.0)
-		var tension_ratio := current_tension / maxf(float(BalanceData.GRAPPLE.max_tension_force), 1.0)
+		var tension_ratio := clampf(current_tension / maxf(float(BalanceData.GRAPPLE.max_tension_force) * 0.25, 1.0), 0.0, 1.0)
 		var chain_color := Color("91eaff").lerp(Color("ffcf72"), tension_ratio).lerp(Color("ff7d75"), 1.0 - integrity)
-		draw_polyline(points, chain_color, 2.5, true)
+		draw_polyline(points, chain_color, 2.5)
 		for point in points:
-			draw_circle(point, 3.5, Color("c8fbff"))
+			draw_circle(point, 3.2, Color("c8fbff"))
 		var hud_point := points[points.size() >> 1]
 		draw_rect(Rect2(hud_point + Vector2(-18, -14), Vector2(36, 4)), Color("08111f", 0.9), true)
 		draw_rect(Rect2(hud_point + Vector2(-18, -14), Vector2(36 * integrity, 4)), chain_color, true)

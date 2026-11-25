@@ -88,10 +88,12 @@ func _draw() -> void:
 	var vp_size := get_viewport_rect().size
 	var zx := maxf(camera_zoom.x, 0.25)
 	var zy := maxf(camera_zoom.y, 0.25)
-	var half_w := vp_size.x * 0.5 / zx + 64.0
-	var half_h := vp_size.y * 0.5 / zy + 64.0
+	# 카메라 회전 시에도 화면 모서리가 비지 않도록 외접 반지름(대각선 절반)을 사용한다.
+	var vis_radius := Vector2(vp_size.x / zx, vp_size.y / zy).length() * 0.5 + 120.0
+	var half_w := vis_radius
+	var half_h := vis_radius
 
-	draw_rect(Rect2(-half_w - 64.0, -half_h - 64.0, (half_w + 64.0) * 2.0, (half_h + 64.0) * 2.0), Color("040915"), true)
+	draw_rect(Rect2(-vis_radius - 240.0, -vis_radius - 240.0, (vis_radius + 240.0) * 2.0, (vis_radius + 240.0) * 2.0), Color("040915"), true)
 
 	# 1. Deep-space nebula clouds (slow parallax + viewport culling)
 	var neb_span := Vector2(7200.0, 5200.0)
