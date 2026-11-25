@@ -120,6 +120,8 @@ export function resolvePlatformDownloads({ platformRoot, publicBaseUrl = '', env
       version: '0.1.0',
       defaultFilename: 'PlayHub-Android-arm64.apk',
       bootstrapFilename: 'PlayHub-Android-Guide.txt',
+      defaultExternalUrl: 'https://github.com/alex-kang-ovdr/GoDotProjects/releases/download/dev-downloads/PlayHub-Android-arm64.apk',
+      defaultSizeBytes: 29715832,
       envUrl: env.PLAYHUB_DOWNLOAD_ANDROID_HUB_URL || '',
       localPaths: [
         env.PLAYHUB_DOWNLOAD_ANDROID_HUB_PATH,
@@ -189,13 +191,17 @@ export function resolvePlatformDownloads({ platformRoot, publicBaseUrl = '', env
 
   return specs.map((spec) => {
     const rawEnvUrl = String(spec.envUrl || '').trim();
-    const externalUrl = /^https?:\/\//i.test(rawEnvUrl) ? rawEnvUrl : null;
-    const localFile = externalUrl ? null : findFirstExistingFile(spec.localPaths);
+    const envExternalUrl = /^https?:\/\//i.test(rawEnvUrl) ? rawEnvUrl : null;
+    const localFile = envExternalUrl ? null : findFirstExistingFile(spec.localPaths);
+    const defaultExternalUrl = (!envExternalUrl && !localFile && /^https?:\/\//i.test(String(spec.defaultExternalUrl || '').trim()))
+      ? String(spec.defaultExternalUrl).trim()
+      : null;
+    const externalUrl = envExternalUrl || defaultExternalUrl;
     const packageType = externalUrl ? 'external' : (localFile ? 'binary' : 'launcher');
     const filename = localFile
       ? path.basename(localFile.path)
       : (externalUrl ? spec.defaultFilename : spec.bootstrapFilename);
-    const sizeBytes = localFile ? localFile.sizeBytes : null;
+    const sizeBytes = localFile ? localFile.sizeBytes : (defaultExternalUrl ? (spec.defaultSizeBytes || null) : null);
     return {
       id: spec.id,
       platform: spec.platform,

@@ -176,7 +176,7 @@
       <div class="dl-card-actions">
         <a class="button ${item.isCurrentPlatform ? 'primary' : 'secondary'} dl-download-btn"
            href="${escapeHtml(item.downloadUrl)}"
-           download="${escapeHtml(item.filename || '')}"
+           ${item.packageType === 'external' ? '' : `download="${escapeHtml(item.filename || '')}"`}
            data-testid="download-btn-${escapeHtml(item.id)}">
           <span class="dl-btn-label">다운로드</span>
           ${item.isCurrentPlatform ? `<span class="dl-btn-badge" data-testid="current-platform-badge-${escapeHtml(item.id)}">현재 기기 · ${escapeHtml(pMeta.label)}</span>` : ''}

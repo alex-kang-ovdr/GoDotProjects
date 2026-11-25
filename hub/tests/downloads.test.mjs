@@ -78,10 +78,16 @@ test('GET /api/downloads and /api/downloads/:id serve all 6 items and redirect w
   const { items } = await listRes.json();
   assert.equal(items.length, 6);
 
-  for (const id of ['windows-hub', 'macos-hub', 'android-hub', 'windows-forge', 'macos-forge']) {
+  for (const id of ['windows-hub', 'macos-hub', 'windows-forge', 'macos-forge']) {
     const r = await fetch(`http://127.0.0.1:${port}/api/downloads/${id}`, { method: 'HEAD' });
     assert.equal(r.status, 200, `${id} should be downloadable`);
     assert.match(String(r.headers.get('content-disposition')), /attachment; filename=/);
+  }
+
+  const androidRes = await fetch(`http://127.0.0.1:${port}/api/downloads/android-hub`, { method: 'HEAD', redirect: 'manual' });
+  assert.ok([200, 302].includes(androidRes.status), 'android-hub should stream local APK or redirect to GitHub Release APK');
+  if (androidRes.status === 302) {
+    assert.match(String(androidRes.headers.get('location')), /PlayHub-Android-arm64\.apk$/);
   }
 
   const iosRes = await fetch(`http://127.0.0.1:${port}/api/downloads/ios-hub`, { redirect: 'manual' });
