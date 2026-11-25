@@ -37,8 +37,7 @@
     "test:playforge-blender": "node --test Tests/playforge_blender/blender-pipeline.test.cjs Tests/playforge_blender/blender-godot-import.test.cjs"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.1",
-    "esbuild": "^0.28.2"
+    "@playwright/test": "^1.65.1"
   },
   "dependencies": {
     "three": "^0.187.0",

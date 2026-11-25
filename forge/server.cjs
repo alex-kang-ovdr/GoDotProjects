@@ -31,7 +31,6 @@ const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
-const MAX_RUNTIMES_PER_ACCOUNT = 4;
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.woff2': 'font/woff2',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
@@ -751,17 +750,6 @@ function createServer(options = {}) {
   });
   const accountPlatforms = new Map();
   const accountStudios = new Map();
-  const runtimes = new Map();
-  const sessionCommands = new Map();
-  // Serialize the whole lifecycle, including asynchronous process teardown.
-  const inSession = async (id, operation) => {
-    const previous = sessionCommands.get(id) || Promise.resolve();
-    const next = previous.catch(() => {}).then(operation);
-    sessionCommands.set(id, next);
-    try { return await next; }
-    finally { if (sessionCommands.get(id) === next) sessionCommands.delete(id); }
-  };
-  const closeRuntime = id => { const closed = runtimes.get(id)?.runtime.close(); runtimes.delete(id); return closed; };
 
   let internalApi = null;
   const getPlatformFor = accountKey => {
@@ -1235,45 +1223,6 @@ function createServer(options = {}) {
           if (body.revision !== document.revision) return json(409, { ok: false, error: 'revision_conflict', document });
           return json(202, { ok: true, build: builds.enqueue({ ...document, ...(hubAuth ? { ownerKey: auth.accountKey } : {}) }) });
         }
-        if (routePath === '/api/pie' && req.method === 'POST') {
-          const id = body.sessionId;
-          if (!/^[a-zA-Z0-9_-]{8,100}$/.test(id || '')) return json(400, { ok: false, error: 'Invalid session ID' });
-          if (!['load', 'step', 'input', 'snapshot', 'settings', 'stop'].includes(body.op)) return json(400, { ok: false, error: 'Unknown PIE command' });
-          if (body.op === 'load' && !executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
-          const runtimeKey = hubAuth ? `${auth.accountKey}:${id}` : id;
-          return await inSession(runtimeKey, async () => {
-            if (body.op === 'stop') { await closeRuntime(runtimeKey); return json(200, { ok: true, state: null }); }
-            if (body.op === 'load' || body.op === 'settings') {
-              if (!body.settings || typeof body.settings !== 'object' || Array.isArray(body.settings) || Object.keys(body.settings).length > 128
-                || Object.values(body.settings).some(value => !(typeof value === 'number' && Number.isFinite(value)) && !(typeof value === 'string' && value.length <= 128) && typeof value !== 'boolean')) {
-                return json(400, { ok: false, error: 'Runtime settings must contain bounded scalar values' });
-              }
-            }
-            if (body.op === 'load') {
-              if (typeof body.source !== 'string' || Buffer.byteLength(body.source, 'utf8') > 256000) return json(400, { ok: false, error: 'GDScript source exceeds the allowed size' });
-              await closeRuntime(runtimeKey);
-              if (runtimes.size >= 16) return json(429, { ok: false, error: 'Runtime session limit reached' });
-              if (hubAuth) {
-                let ownedCount = 0;
-                for (const entry of runtimes.values()) if (entry.ownerKey === auth.accountKey) ownedCount++;
-                if (ownedCount >= MAX_RUNTIMES_PER_ACCOUNT) return json(429, { ok: false, error: 'Account runtime session limit reached' });
-              }
-              const runtime = new NativeRuntime(root, () => {
-                if (runtimes.get(runtimeKey)?.runtime === runtime) runtimes.delete(runtimeKey);
-              }, { realtime: true });
-              runtimes.set(runtimeKey, { runtime, lastUsed: Date.now(), ownerKey: hubAuth ? auth.accountKey : null });
-            }
-            const session = runtimes.get(runtimeKey);
-            if (!session || (hubAuth && session.ownerKey !== auth.accountKey)) return json(409, { ok: false, error: 'Start PIE first' });
-            session.lastUsed = Date.now();
-            const { sessionId, ...command } = body;
-            let result;
-            try { result = await session.runtime.request(command); }
-            catch (error) { await closeRuntime(runtimeKey); throw error; }
-            if (body.op === 'load' && !result.ok) await closeRuntime(runtimeKey);
-            return json(200, result);
-          });
-        }
         return json(404, { ok: false, error: 'Unknown API' });
       } catch (error) { return json(error.status || 400, { ok: false, error: error.message }); }
     }
@@ -1458,15 +1407,10 @@ function createServer(options = {}) {
     accountPlatforms.clear();
     accountStudios.clear();
     builds.close();
-    for (const id of runtimes.keys()) closeRuntime(id);
   };
-  const cleanup = setInterval(() => {
-    for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
-  }, 10000);
-  cleanup.unref();
-  server.on('close', () => { clearInterval(cleanup); closeOwned(); });
+  server.on('close', () => { closeOwned(); });
   server.httpCache = httpCache;
-  server.shutdown = () => { clearInterval(cleanup); closeOwned(); server.closeAllConnections?.(); server.close(); };
+  server.shutdown = () => { closeOwned(); server.closeAllConnections?.(); server.close(); };
   return server;
 }
 

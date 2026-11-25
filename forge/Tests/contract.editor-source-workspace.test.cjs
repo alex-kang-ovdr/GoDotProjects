@@ -116,6 +116,11 @@ test('retired Studio routes, PUT /api/project and the collaboration socket are g
   });
   assert.equal(legacyPut.status, 404);
   assert.equal((await (await fetch(base + '/api/project')).json()).source, document.source);
+  const retiredPie = await fetch(base + '/api/pie', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: 'retired-pie-0001', op: 'snapshot' }),
+  });
+  assert.equal(retiredPie.status, 404);
 
   const socket = new WebSocket(base.replace('http:', 'ws:') + '/collaboration', { origin: base });
   t.after(() => socket.terminate());

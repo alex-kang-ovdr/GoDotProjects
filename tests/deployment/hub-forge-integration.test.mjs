@@ -311,7 +311,6 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal((await anon.site('/forge/api/session')).status, 401);
     assert.equal((await anon.site('/forge/api/platform/projects')).status, 401);
     assert.equal((await anon.site('/forge/api/platform/projects', { method: 'POST', body: { name: 'Blocked' } })).status, 401);
-    assert.equal((await anon.site('/forge/api/pie', { method: 'POST', body: { sessionId: 'sess-unauth-1', op: 'snapshot' } })).status, 401);
 
     // Unauthenticated WebSocket upgrade through Hub proxy is rejected with 401.
     const wsUnauth = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/brawllabs', { Origin: f.siteOrigin });
@@ -550,22 +549,18 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal(bobStudio.status, 200);
     assert.doesNotMatch(bobStudio.data.source, /# alice-private-marker/);
 
-    // P0 execution allowlist: unset in this fixture, so no account may run builds or PIE (fail closed).
+    // P0 execution allowlist: unset in this fixture, so no account may run builds (fail closed).
     for (const [route, body] of [
       [`/forge/api/platform-builds/${aliceProjectId}`, { revision: 1 }],
       ['/forge/api/builds', { target: 'web', revision: 1 }],
-      ['/forge/api/pie', { sessionId: 'alice-pie-session-1', op: 'load', source: 'extends Node', settings: {} }],
     ]) {
       const denied = await alice.site(route, { method: 'POST', body });
       assert.equal(denied.status, 403, `${route}: ${JSON.stringify(denied.data)}`);
       assert.equal(denied.data.error, 'EXECUTION_NOT_ALLOWED');
     }
 
-    // Bob cannot inspect or control a runtime session ID outside Bob's account scope.
-    const bobPie = await bob.site('/forge/api/pie', {
-      method: 'POST', body: { sessionId: 'alice-pie-session-1', op: 'snapshot' },
-    });
-    assert.equal(bobPie.status, 409);
+    // The Studio-only PIE route was retired with the HTML/JS Studio (2026-11-25).
+    assert.equal((await bob.site('/forge/api/pie', { method: 'POST', body: { sessionId: 'bob-pie-session-1', op: 'snapshot' } })).status, 404);
   });
 
   await t.test('Hub logout clears both cookies and immediately revokes Forge HTTP and WebSocket access', async () => {
