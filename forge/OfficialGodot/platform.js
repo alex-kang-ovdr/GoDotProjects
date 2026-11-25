@@ -1,6 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || "";
+const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1]) || "";
 const forgePath = (route) => typeof route === "string" && route.startsWith("/") && forgeBase && !route.startsWith(forgeBase + "/") ? forgeBase + route : route;
 window.__playforgeBasePath = forgeBase;
 let csrfToken = null;
