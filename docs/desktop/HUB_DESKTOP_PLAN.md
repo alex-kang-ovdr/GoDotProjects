@@ -2,7 +2,7 @@
 
 - **브랜치 / 워크트리**: `Hub-Desktop` (`D:\Github\GoDotProjects-worktrees\Hub-Desktop`, 기준·통합 트렁크 **`PlayHub-Platform`** `b8efde0`)
 - **문서 상태**: v0.6 (2026-11-22 — 첫 실행 셰이더 컴파일 히치 지속 모니터링·관리·개선 체계(§6.2) 및 `bridge.v1` `shader_telemetry` 계약 추가. v0.5: 통합 트렁크 `PlayHub-Platform` 기준 반영 및 `owners.json` 등록 완료)
-- **대상 엔진**: `godot-engine` 포크 고정 커밋 `ed1daf0bf001b61586d9930840f2f1394092c079` (**Godot 4.7.2-stable**)
+- **대상 엔진**: `godot-engine` 포크 — 고정 커밋은 `tools/engine/engine-ssot.json`의 `pinnedForkCommit`이 정본이다(2026-11-25 기준 `e7a83dd7`, **Godot 4.7.2-stable** `ed1daf0` 위 코어 패치 7건). `desktop-windows` 타깃은 아직 `pending_fork_rebuild`.
 - **입력 문서**: `PlayHub_Desktop_Performance_Responsiveness_LowFriction.md` (사용자 제공 데스크톱 최적화 설계), 기술 전략 검토 기록(2026-11-21~22)
 
 ### 확정 사항 요약
