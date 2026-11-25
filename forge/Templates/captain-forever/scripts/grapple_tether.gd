@@ -4,7 +4,8 @@ extends Node2D
 signal detached(reason: String)
 
 const BalanceData = preload("res://scripts/balance.gd")
-const CHAIN_SOLVER_ITERATIONS := 20
+const CHAIN_POINT_COUNT := 20
+const CHAIN_SOLVER_ITERATIONS := 24
 
 var owner_ship: ShipBody
 var target_ship: ShipBody
@@ -61,7 +62,7 @@ func create_physical_chain() -> void:
 	var distance := p_a.distance_to(p_b)
 	var min_safe := owner_ship.hull_bound_radius + target_ship.hull_bound_radius + 18.0
 	chain_rest_length = maxf(distance, min_safe)
-	var seg_count := clampi(ceili(chain_rest_length / float(BalanceData.GRAPPLE.link_length)), 3, mini(int(BalanceData.GRAPPLE.max_links), 16))
+	var seg_count := CHAIN_POINT_COUNT - 1
 	_chain_seg_len = chain_rest_length / float(seg_count)
 	_chain_nodes.resize(seg_count + 1)
 	_chain_prev.resize(seg_count + 1)
