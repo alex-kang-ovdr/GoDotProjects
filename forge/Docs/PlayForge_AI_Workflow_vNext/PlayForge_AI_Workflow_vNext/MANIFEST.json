@@ -11,8 +11,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4264,
-      "sha256": "c717de6d785ffccfeae6f4fae2cd95ff62f707381ff80834462e58151f02d9a0"
+      "bytes": 4269,
+      "sha256": "6b38ed75694a2e4408acdb3415d7eba17122954e0450f8d8cddab510bc40cfe4"
     },
     {
       "path": "config/policy-profile.template.json",
@@ -36,8 +36,8 @@
     },
     {
       "path": "docs/01_Architecture.md",
-      "bytes": 7268,
-      "sha256": "b320a52374108615571f0c130d64845a064b6b098f62e3177411c5ef7a61216e"
+      "bytes": 7278,
+      "sha256": "4c26d870a1085c10adf1219e704b4f8e5d4065ba33a4fd6b20816123354f389f"
     },
     {
       "path": "docs/02_DataPolicy_Security.md",
@@ -46,8 +46,8 @@
     },
     {
       "path": "docs/03_RecursiveEvaluation.md",
-      "bytes": 7969,
-      "sha256": "9f9900b4d1035b503ab6045b8aa7f3611226cf21c50474dbca9b563add317c43"
+      "bytes": 7974,
+      "sha256": "671a43b81b765fd005c6cc1cfe457b132a5a7c5722317341d2e75b8eac0ae84a"
     },
     {
       "path": "docs/04_Sources.md",

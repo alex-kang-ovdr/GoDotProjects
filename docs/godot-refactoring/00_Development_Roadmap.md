@@ -10,7 +10,7 @@ Godot의 기존 기능을 먼저 활용하고, 공통 addon/GDExtension으로 �
 
 멀티플레이는 서버 권한 GameMode·복제 GameState/PlayerState·owner 전용 PlayerController·Pawn/Character를 기본으로 한다. Iris는 복제 아키텍처를 참고한 Godot용 독립 구현으로 계획한다. UE 소스 이식이나 UE 서버와의 wire compatibility는 가정하지 않는다.
 
-게임 기본 언어는 GDScript로 두고 C# 통합·Web 지원은 선택 수요에 대응한다. 웹 플랫폼 UI는 별도 서비스 계층이다. 게임 프로젝트의 데이터·에셋·규칙은 독립 보관하고 분석·빌드·진단·애드온 도구를 재사용한다.
+게임 스크립트 언어는 GDScript만 지원한다(Lua·C# 미지원, 2026-11-25 결정). Web 지원은 선택 수요에 대응한다. 웹 플랫폼 UI는 별도 서비스 계층이다. 게임 프로젝트의 데이터·에셋·규칙은 독립 보관하고 분석·빌드·진단·애드온 도구를 재사용한다.
 
 ## 2. 문서 사용 방법
 
@@ -37,17 +37,17 @@ P0는 공통 기반/초기 서비스 필수, P1은 상용화에 우선 필요한
 | 07 | [선택적 Deferred 렌더러 연구·개발 계획](plans/07_Deferred_Renderer.md) | R&D/P3 | 40-63 |
 | 08 | [애니메이션 임포트·리타게팅·본 제어 개발 계획](plans/08_Animation_Import_Retargeting.md) | P1/P2 | 20-32 |
 | 09 | [데이터 지향 연산·ECS·멀티스레딩 개발 계획](plans/09_DOD_ECS_Multithreading.md) | P1/P0 | 18-30 |
-| 10 | [C# GDExtension·언어 간 상호운용 개발 계획](plans/10_CSharp_GDExtension_Interop.md) | P2/R&D | 30-52 |
-| 11 | [C# 개발 경험·안전한 핫리로드·IDE 통합 개발 계획](plans/11_CSharp_DX_HotReload.md) | P2 | 14-24 |
+| 10 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 | — | — |
+| 11 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 | — | — |
 | 12 | [물리 수동 스텝·상태 복구·조인트 안정성 개발 계획](plans/12_Physics_Step_Snapshot_Stability.md) | P1/P2/R&D | 32-56 |
-| 13 | [GDScript·C#·GPU·메모리 진단 및 심볼 개발 계획](plans/13_Profiling_Memory_GPU_Symbols.md) | P0/P1 | 24-40 |
+| 13 | [GDScript·GPU·메모리 진단 및 심볼 개발 계획](plans/13_Profiling_Memory_GPU_Symbols.md) | P0/P1 | 24-40 |
 | 14 | [적응형 오디오 저작·FMOD/Wwise 연동 개발 계획](plans/14_Audio_Middleware_Authoring.md) | P1/P2 | 22-36 |
 | 15 | [팀 협업·버전 관리·잠금·검수 개발 계획](plans/15_Collaboration_VCS_Review.md) | P0/P1 | 28-46 |
 | 16 | [재현 가능한 빌드·헤드리스 익스포트·배포 용량 개선](plans/16_Build_Export_CI_Size.md) | P0 | 17-27 |
 | 17 | [모바일 실기기 자동화·GPU 호환성·성능 회귀 체계](plans/17_Mobile_Device_QA.md) | P0 | 12-20 |
 | 18 | [모바일 결제·광고·분석 SDK와 터치 입력 표준화](plans/18_Mobile_Live_SDK_Input.md) | P1/P0 | 18-30 |
 | 19 | [RenderingDevice 기반 WebGPU 백엔드 개발](plans/19_WebGPU_Backend.md) | P2/R&D | 44-74 |
-| 20 | [C#/.NET Web 익스포트 연구·제품화 계획](plans/20_CSharp_Web_Export.md) | P3/R&D | 30-54 |
+| 20 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 | — | — |
 | 21 | [콘솔 포팅 경계·출시 준비·총소유비용 검증](plans/21_Console_Portability_TCO.md) | P3 | 12-22 |
 | 22 | [에셋 스토어 결제·정산·평가·탐색 개발](plans/22_Asset_Store_Commerce.md) | P1 | 26-42 |
 | 23 | [애드온 패키지·Global Addons·CLI·서명 검증](plans/23_Addon_Package_Global_CLI.md) | P0 | 16-26 |
@@ -109,10 +109,8 @@ Iris 공식 문서가 설명하는 상태 복제 분리 원칙을 참고한다. 
 | iOS client | 고정 Apple SDK/서명·device profile | macOS runner·실기기·스토어 SDK 검증 |
 | Linux dedicated | headless release export template | 시각 리소스 없이 규칙·physics·network 재현 |
 | Web client | 현재 검증된 Compatibility 경로 | browser·WebRTC·storage/audio/input 제약 시험 |
-| WebGPU / C# Web | 각각 독립 R&D branch | 19와 20의 별도 완료 gate |
+| WebGPU | 독립 R&D branch | 19의 별도 완료 gate |
 | 콘솔 | 계약된 provider와 인증된 조합 | SDK 접근·devkit·한 플랫폼 slice·TCO gate |
-
-Godot의 현행 Web 문서는 C# Web export 제한을 명시한다. WebGPU backend를 개발한다고 C# 런타임 배포가 함께 해결되는 것으로 계획하지 않는다. [Godot Web export](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html)
 
 ## 7. 공통 데이터와 API 계약
 
@@ -151,7 +149,7 @@ flowchart TD
 
 28과 29는 서로 완성될 때까지 기다리는 선행 관계가 아니다. session/allocation/join 계약을 먼저 고정하고 로컬 fake provider로 양쪽을 병행한 뒤 접속 gate에서 합친다.
 
-13과 16도 완제품 전체가 선행인 것은 아니다. 최초 측정·build identity·심볼 묶음만 먼저 제공하고 나머지 profiler와 최적화는 점진적으로 추가한다. 10의 신규 .NET 바인딩이나 11 hot reload 완성을 20의 모든 Web 연구에 강제하지 않는다.
+13과 16도 완제품 전체가 선행인 것은 아니다. 최초 측정·build identity·심볼 묶음만 먼저 제공하고 나머지 profiler와 최적화는 점진적으로 추가한다.
 
 렌더·지형·오디오·애니메이션은 같은 build/trace/package 계약에 붙지만 네트워크 전체 완성을 기다릴 필요가 없다. 서버가 사용하는 collision/nav/root-motion 데이터만 양쪽이 조기 합의한다.
 
@@ -176,7 +174,7 @@ flowchart TD
 | 통합 인수 | 17 최소 실기기, 회귀·재접속·운영 복구 | 6-8 |
 | 합계 | 각 문서의 전체 WBS를 축소 선택한 subset | **36-52** |
 
-이 MVP는 제한된 장르·하나의 기준 게임·8인 목표 프로파일에 대한 계획이다. 100인전, 전체 physics resimulation, WebGPU, C# Web, 모든 광고 SDK, 유료 스토어, 고급 동시 편집은 포함하지 않는다. Windows/Android client+Linux server를 먼저 인수하고 iOS는 macOS runner·실기기 준비 gate에 맞춰 합친다.
+이 MVP는 제한된 장르·하나의 기준 게임·8인 목표 프로파일에 대한 계획이다. 100인전, 전체 physics resimulation, WebGPU, 모든 광고 SDK, 유료 스토어, 고급 동시 편집은 포함하지 않는다. Windows/Android client+Linux server를 먼저 인수하고 iOS는 macOS runner·실기기 준비 gate에 맞춰 합친다.
 
 전담 엔지니어 3-4명과 QA 지원이 있는 경우 12-18주를 초기 일정 후보로 삼을 수 있다. 전문 인력 배치·실기기·외부 승인·기술 스파이크 결과에 따라 다시 산정한다. 1인 개발에서 동일 범위를 같은 달력 기간으로 약속하지 않는다.
 
@@ -187,7 +185,7 @@ flowchart TD
 | R0 | 시작 후 2-4주 | 위험 spike, 기능 baseline, 문서의 가정 검증 | 핵심 플레이·기기·protocol의 구조적 blocker 판정 |
 | R1 | 0-6개월 | 위 MVP, 기본 협업/패키지, 모바일 안정화 | 기본 서비스 회귀·복구·배포 통과 |
 | R2 | 6-18개월 | 필요한 3D/streaming/animation/audio, Iris 최적화, SDK·스토어 | 유저/제작 수요와 측정 효과가 개발비 정당화 |
-| R3 | 18-36개월 | 선택 WebGPU/C# Web/HWRT/Deferred/HDDAGI, 콘솔·vendor 확장 | 연구 gate·플랫폼·유지보수 인력·TCO 통과 |
+| R3 | 18-36개월 | 선택 WebGPU/HWRT/Deferred/HDDAGI, 콘솔·vendor 확장 | 연구 gate·플랫폼·유지보수 인력·TCO 통과 |
 
 이는 원문의 36개월 트랙을 우리 실행 단계로 옮긴 포트폴리오이며 공식 Godot release 일정이 아니다. R&D가 실패해도 검증된 기존 렌더러·GDScript·서버 기본 경로로 서비스를 유지한다.
 
@@ -198,10 +196,10 @@ No-Go가 나오면 원인에 따라 프로파일/장르 범위를 줄이거나 e
 | 범주 | 본체 공수 합계 |
 | --- | --- |
 | 01-08 그래픽 | 226-363 PW |
-| 09-15 런타임·도구 | 168-284 PW |
-| 16-24 플랫폼·생태계 | 185-311 PW |
+| 09-15 런타임·도구 (10·11 철회) | 124-208 PW |
+| 16-24 플랫폼·생태계 (20 철회) | 155-257 PW |
 | 25-30 네트워크 | 114-176 PW |
-| 단순 합계 | **693-1,134 PW** |
+| 단순 합계 | **619-1,004 PW** |
 
 이 합계는 선택 연구·대안 경로까지 각 계획의 본체 추정을 더한 비교치다. 모두 실행하라는 예산이나 한 팀의 일정이 아니며, 통합 시 공용 작업·병행 가능한 작업·취소할 연구를 다시 정산해야 한다. 15의 선택 Perforce 8-14 PW·Unity VCS 6-10 PW는 본체 합계 외이고, 전체 콘솔 게임 포팅·인증·법무·라이선스·장비·서비스 이용료도 별도다.
 

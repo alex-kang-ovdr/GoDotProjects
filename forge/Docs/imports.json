@@ -67,12 +67,6 @@
           "sha256": "60c1448fa600465b746a08659ce78aa05744a5416178b89619790de346d9f9a4"
         },
         {
-          "source": "PlayForge_Studio_v18/TappyChicken/Scripts/Game.lua",
-          "destination": "References/PlayForgeStudio/v18/TappyChicken/Scripts/Game.lua",
-          "bytes": 2701,
-          "sha256": "ea6497ab5cb99779f763290f63e118eba1e0103c6c405335a81fbd6891fb1154"
-        },
-        {
           "source": "PlayForge_Studio_v18/TappyChicken/Scenes/Main.scene.json",
           "destination": "References/PlayForgeStudio/v18/TappyChicken/Scenes/Main.scene.json",
           "bytes": 840,

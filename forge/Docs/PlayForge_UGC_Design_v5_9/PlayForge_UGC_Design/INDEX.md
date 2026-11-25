@@ -4,7 +4,6 @@
 
 - [00_Overview/README.md](00_Overview/README.md)
 - [01_Prefab_AI_Lua/01_Prefab_and_Reuse.md](01_Prefab_AI_Lua/01_Prefab_and_Reuse.md)
-- [01_Prefab_AI_Lua/02_AI_Lua_Authoring.md](01_Prefab_AI_Lua/02_AI_Lua_Authoring.md)
 - [02_Multiplayer_Collaboration/01_PIE_EOS_Matchmaking.md](02_Multiplayer_Collaboration/01_PIE_EOS_Matchmaking.md)
 - [02_Multiplayer_Collaboration/02_Collaboration.md](02_Multiplayer_Collaboration/02_Collaboration.md)
 - [03_Publishing_Discovery/01_Publish_Release.md](03_Publishing_Discovery/01_Publish_Release.md)

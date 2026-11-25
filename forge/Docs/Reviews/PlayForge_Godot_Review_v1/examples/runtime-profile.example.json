@@ -9,7 +9,7 @@
     "precision": "single"
   },
   "languages": {
-    "gameplay": "Lua 5.4",
+    "gameplay": "GDScript",
     "runtime": "C++20",
     "web": "TypeScript"
   },
@@ -54,8 +54,7 @@
   "integration": {
     "preferred": "E1_GDExtension",
     "static_module_requires_approval": true,
-    "internal_patches_allowed": false,
-    "lua_binding_commit": null
+    "internal_patches_allowed": false
   },
   "network": {
     "schema_owner": "PlayForge",

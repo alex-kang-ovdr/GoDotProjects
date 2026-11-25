@@ -8,7 +8,7 @@ Project Owner/Admin/Editor/Viewer. 프로젝트 접근·공유 에셋 권한·Pu
 
 ## Workspace Authority
 
-Workspace별 논리적 단일 Authority가 UI/MCP/AI 명령을 순차 검증·적용하고 Operation Log에 기록. Presence(커서·선택·포커스)는 휘발성, Lua 텍스트에만 CRDT 사용.
+Workspace별 논리적 단일 Authority가 UI/MCP/AI 명령을 순차 검증·적용하고 Operation Log에 기록. Presence(커서·선택·포커스)는 휘발성, GDScript 텍스트에만 CRDT 사용.
 
 ## 편집 잠금
 
@@ -24,4 +24,4 @@ Source of Truth는 크리에이터 GitHub. Workspace Autosave는 Git Commit과 �
 
 ## 수용 기준
 
-동시 Property 편집 충돌, Lock 회수, 네트워크 재접속 후 Operation Replay, Undo 충돌, CRDT Lua 병합, GitHub 충돌을 E2E 테스트한다.
+동시 Property 편집 충돌, Lock 회수, 네트워크 재접속 후 Operation Replay, Undo 충돌, CRDT GDScript 병합, GitHub 충돌을 E2E 테스트한다.

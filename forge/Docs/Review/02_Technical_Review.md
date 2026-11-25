@@ -31,7 +31,7 @@
 ### P2. Project Data 편집 내용이 게임 preview에 반영되지 않음
 - 근거: `Editor/index.html:135`는 JSON을 `cur().settings`에 저장한다. `:22`는 기존 preview URL만 iframe src로 지정한다. 에디터에는 postMessage 호출이 없다.
 - `TappyChicken/index.html:2`에는 settingsRestart/settingsLive 수신기가 있지만 현 v16 에디터에서는 호출하지 않는다. 게임은 자체 기본 gravity/speed 등으로 시작한다.
-- 결과: 설정 변경 후 Play에서 기대한 동작이 나오지 않는다. Lua도 UI에 명시된 대로 실제 실행되지 않는다.
+- 결과: 설정 변경 후 Play에서 기대한 동작이 나오지 않는다. 스크립트도 UI에 명시된 대로 실제 실행되지 않는다.
 - 수정 방향: 버전이 있는 프로젝트 snapshot을 runtime adapter로 전달하고 적용 ACK를 기다린 뒤 Play를 허용한다. 편집 설정과 실행 데이터의 동일성을 테스트한다.
 
 ### P2. 확장 전 미리보기 보안 경계 필요

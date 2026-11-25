@@ -37,4 +37,4 @@ API는 `code/message/retryable/correlationId`를 공통 제공. 멱등 명령에
 
 ## 권한
 
-읽기/편집/배포/운영/신고 처리 권한 분리, 게임별 Lua 권한 검증, EOS Secret 서버 보관, AI는 위임된 Command 범위만 호출.
+읽기/편집/배포/운영/신고 처리 권한 분리, 게임별 GDScript 권한 검증, EOS Secret 서버 보관, AI는 위임된 Command 범위만 호출.

@@ -20,4 +20,4 @@ Source 변경된 Key만 AI Batch Translation, 변수/ICU MessageFormat 검증, �
 
 ## 생태계 성장
 
-템플릿에서 시작 → AI 제작 → 플레이테스트 → 공개 게임 → Lua/Prefab 공유 → 다른 제작자의 재사용. 콘텐츠 원본 소유권과 라이선스는 명시적으로 유지한다.
+템플릿에서 시작 → AI 제작 → 플레이테스트 → 공개 게임 → GDScript/Prefab 공유 → 다른 제작자의 재사용. 콘텐츠 원본 소유권과 라이선스는 명시적으로 유지한다.

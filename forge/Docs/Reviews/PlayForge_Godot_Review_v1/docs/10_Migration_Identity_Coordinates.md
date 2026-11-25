@@ -4,11 +4,11 @@
 
 ## 현재 전환 출발점
 
-기존 v17 안의 v16 README와 Tappy Chicken project.json은 **브라우저 JavaScript 게임·Canvas 에디터이며 실제 Lua VM이 없다는 점**을 명시한다. 따라서 완성된 네이티브 엔진을 동일 API로 갈아끼우는 일정으로 추정하지 않는다.
+기존 v17 안의 v16 README와 Tappy Chicken project.json은 **브라우저 JavaScript 게임·Canvas 에디터이며 실제 스크립트 런타임이 없다는 점**을 명시한다. 따라서 완성된 네이티브 엔진을 동일 API로 갈아끼우는 일정으로 추정하지 않는다.
 
 Tappy 예제 Scene은 viewport 480×640, position [135, 290] 같은 값을 가지며, 설정에는 gravity 1050·flap 345가 있다. 이런 값은 별도 단위 주석 없이 1 unit=1m로 재해석하면 안 된다. 초기 마이그레이션은 pixel-domain 동작을 보존하고 PPU가 명시된 후 물리 단위 변환을 적용한다.
 
-입력 ZIP은 본 패키지에서 읽었지만 게임 실행·시각 비교·Lua 의미 일치를 검증하지 않았다.
+입력 ZIP은 본 패키지에서 읽었지만 게임 실행·시각 비교·게임 규칙 의미 일치를 검증하지 않았다.
 
 ## 1단계: 원본 동결과 이력
 
@@ -56,9 +56,9 @@ Blender → glTF 단계에서 이미 정규화된 에셋에 Blender Z-up 변환�
 
 Canvas 픽셀·위쪽/아래쪽 Y, Box2D XY 미터, UI anchor를 한 행렬로 섞지 않는다. `pixelsPerMeter`, 원점, Y 방향, angle sign을 프로젝트 또는 컴포넌트에 명시한다. 3D 모델의 +Z 변환을 2D Sprite에 일괄 적용하지 않는다.
 
-## 6단계: Lua 의미 보존
+## 6단계: 게임 규칙 의미 보존
 
-Game.lua가 참조 구현인지 실제 실행 API인지 분류한다. 없는 API를 임의 보완해 성공으로 표시하지 않는다. lifecycle, fixed dt, timer, input edge, RNG seed, collision ordering을 계약 시험으로 고정한다. 화면/입력은 TS이고 게임 규칙은 Lua라는 원칙을 유지한다.
+기존 Tappy 게임 규칙이 참조 구현인지 실제 실행 API인지 분류한다. 없는 API를 임의 보완해 성공으로 표시하지 않는다. lifecycle, fixed dt, timer, input edge, RNG seed, collision ordering을 계약 시험으로 고정한다. 화면/입력은 TS이고 게임 규칙은 GDScript라는 원칙을 유지한다.
 
 ## 7단계: 원본 에셋 재임포트
 

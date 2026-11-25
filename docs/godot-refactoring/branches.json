@@ -4,7 +4,7 @@
     "branch": "Forge-Profiling",
     "engine": false,
     "note": "신규 (R0 착수)",
-    "title": "GDScript·C#·GPU·메모리 진단 및 심볼",
+    "title": "GDScript·GPU·메모리 진단 및 심볼",
     "prio": "P0/P1",
     "pw": "24-40",
     "phase": "R0",
@@ -300,30 +300,6 @@
     "file": "items/07_Deferred_Renderer.md"
   },
   {
-    "id": "10",
-    "branch": "Forge-CSharp",
-    "engine": false,
-    "note": "신규 (R3, 수요 확인 후 생성)",
-    "title": "C# GDExtension·언어 간 상호운용",
-    "prio": "P2/R&D",
-    "pw": "30-52",
-    "phase": "R3",
-    "area": "GD-Ext",
-    "file": "items/10_CSharp_GDExtension_Interop.md"
-  },
-  {
-    "id": "11",
-    "branch": "Forge-CSharp",
-    "engine": false,
-    "note": "신규 (R3, 10과 같은 브랜치)",
-    "title": "C# 개발 경험·핫리로드·IDE 통합",
-    "prio": "P2",
-    "pw": "14-24",
-    "phase": "R3",
-    "area": "Tool",
-    "file": "items/11_CSharp_DX_HotReload.md"
-  },
-  {
     "id": "19",
     "branch": "Godot-Refactoring-19-webgpu",
     "engine": true,
@@ -334,18 +310,6 @@
     "phase": "R3",
     "area": "GD-Core",
     "file": "items/19_WebGPU_Backend.md"
-  },
-  {
-    "id": "20",
-    "branch": "Godot-Refactoring-20-csharpWeb",
-    "engine": true,
-    "note": "",
-    "title": "C#/.NET Web 익스포트 연구",
-    "prio": "P3/R&D",
-    "pw": "30-54",
-    "phase": "R3",
-    "area": "GD-Core",
-    "file": "items/20_CSharp_Web_Export.md"
   },
   {
     "id": "21",

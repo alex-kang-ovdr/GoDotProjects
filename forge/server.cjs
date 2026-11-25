@@ -37,7 +37,7 @@ const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
   '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.woff2': 'font/woff2',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
-  '.csv': 'text/csv; charset=utf-8', '.lua': 'text/plain; charset=utf-8',
+  '.csv': 'text/csv; charset=utf-8',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.zip': 'application/zip' };
 const COMPRESSIBLE_EXTS = new Set(['.wasm', '.pck', '.js', '.css', '.html', '.svg', '.json']);
 const DEFAULT_HTTP_CACHE_MAX_BYTES = 256 * 1024 * 1024;

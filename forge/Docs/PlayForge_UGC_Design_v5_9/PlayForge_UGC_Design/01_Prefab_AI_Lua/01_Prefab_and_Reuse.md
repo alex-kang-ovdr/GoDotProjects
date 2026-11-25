@@ -13,7 +13,7 @@ Prefab 생성·인스턴스 배치·Variant·Override·Nested Prefab(1단계부�
 ## Prefab 직렬화 예시
 
 ```json
-{"prefabId":"pf-door","version":3,"rootClass":"Actor","components":[{"id":"mesh","type":"StaticMesh"},{"id":"trigger","type":"BoxTrigger"},{"id":"script","type":"LuaBehaviour","script":"Scripts/Door.lua"}],"defaults":{"OpenTime":2.0}}
+{"prefabId":"pf-door","version":3,"rootClass":"Actor","components":[{"id":"mesh","type":"StaticMesh"},{"id":"trigger","type":"BoxTrigger"},{"id":"script","type":"ScriptBehaviour","script":"Scripts/Door.gd"}],"defaults":{"OpenTime":2.0}}
 ```
 
 ## 편집 명령

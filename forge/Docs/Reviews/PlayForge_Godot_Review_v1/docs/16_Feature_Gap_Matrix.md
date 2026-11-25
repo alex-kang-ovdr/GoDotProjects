@@ -21,7 +21,7 @@
 |---|---|---|---|---|---|
 | F001 | 무설치 React 웹 에디터 | 플랫폼 별도 | External | High | React 유지, Godot는 Canvas 실행면만 연결 [G06](../references/Verified_Sources.md#g06) [G37](../references/Verified_Sources.md#g37) |
 | F002 | 온라인 공동 Scene 편집 | 플랫폼 별도 | External | High | Workspace Authority와 Revision/Operation 유지  |
-| F003 | Lua 공동 텍스트 편집 | 플랫폼 별도 | External | High | 텍스트 CRDT와 구조화 Command 경계 유지  |
+| F003 | GDScript 공동 텍스트 편집 | 플랫폼 별도 | External | High | 텍스트 CRDT와 구조화 Command 경계 유지  |
 | F004 | 사용자·AI Presence/커서 | 플랫폼 별도 | External | Medium | 일시 상태 별도 채널, 영구 source에 포함하지 않음  |
 | F005 | 클라우드 Snapshot/수동·자동 저장 | 플랫폼 별도 | External | High | 단일 원본·불변 파일 버전·복원 epoch  |
 | F006 | 조건부 Undo와 선택 ChangeSet | 플랫폼 별도 | External | High | 서버 검증, Godot 편집 Undo에 의존하지 않음  |
@@ -32,7 +32,7 @@
 
 | ID | 요구 | 판정 | 변경 등급 | 난이도 | 처리 방안 |
 |---|---|---|---|---|---|
-| F009 | WASM 2D/3D PIE | 어댑터 필요 | E0/E1 | High | 실제 Lua 및 Runtime Bridge 추가 [G06](../references/Verified_Sources.md#g06) [G37](../references/Verified_Sources.md#g37) |
+| F009 | WASM 2D/3D PIE | 어댑터 필요 | E0/E1 | High | 실제 GDScript 및 Runtime Bridge 추가 [G06](../references/Verified_Sources.md#g06) [G37](../references/Verified_Sources.md#g37) |
 | F010 | 웹 WebGPU Renderer | 요구 조정/포크 위험 | E3-risk | VeryHigh | 현재 기본 경로 아님. WebGL 2 허용 또는 별도 승인 [G06](../references/Verified_Sources.md#g06) |
 | F011 | 웹과 DX12/Vulkan 표현 완전 동일 | 제약·미검증 | E0/E3-risk | High | Capability와 품질 차이 명시, 고급 효과 미지원 검사 [G06](../references/Verified_Sources.md#g06) [G07](../references/Verified_Sources.md#g07) |
 | F012 | Thread/Extension 무조건 실행 | 제약·미검증 | E1/E2 | High | COOP/COEP·iframe·실기기 조합 통과 조건 [G06](../references/Verified_Sources.md#g06) |
@@ -69,14 +69,6 @@
 | F033 | Component GUID/Property ID | 어댑터 필요 | E1 | High | ClassDB는 메타데이터 기반, 영구 ID는 별도 [G25](../references/Verified_Sources.md#g25) [G27](../references/Verified_Sources.md#g27) |
 | F034 | INI/CVar/Scalability/DeviceProfile | 어댑터 필요 | E0/E1 | Medium | registry·우선순위·apply mode 별도 구현 [G34](../references/Verified_Sources.md#g34) [G35](../references/Verified_Sources.md#g35) [G36](../references/Verified_Sources.md#g36) |
 | F035 | 전체 내부 Allocator/Job 시스템 대체 | 요구 조정/포크 위험 | E3-risk | VeryHigh | 미들웨어별 어댑터와 budget만, Godot 전역 교체 금지 [G20](../references/Verified_Sources.md#g20) [G21](../references/Verified_Sources.md#g21) |
-
-## Lua
-
-| ID | 요구 | 판정 | 변경 등급 | 난이도 | 처리 방안 |
-|---|---|---|---|---|---|
-| F036 | Lua 5.4 게임플레이 | 어댑터 필요 | E1/E2 | High | 확장 후보 검증, 플랫폼 공통 PF API 유지 [G23](../references/Verified_Sources.md#g23) [G38](../references/Verified_Sources.md#g38) |
-| F037 | UGC Lua 샌드박스 | 어댑터 필요 | E1/External | VeryHigh | whitelist+실행 예산+프로세스 격리, 자동 안전 아님 [G37](../references/Verified_Sources.md#g37) [G38](../references/Verified_Sources.md#g38) |
-| F038 | 코드 Hot Reload/Debug | 제약·미검증 | E1 | High | 함수·closure·coroutine·구독 규약 한정  |
 
 ## 물리
 
@@ -131,7 +123,7 @@
 
 | ID | 요구 | 판정 | 변경 등급 | 난이도 | 처리 방안 |
 |---|---|---|---|---|---|
-| F063 | 서버 UGC 보안 격리 | 플랫폼 별도 | External | VeryHigh | Lua만으로 경계 보장하지 않음  |
+| F063 | 서버 UGC 보안 격리 | 플랫폼 별도 | External | VeryHigh | 스크립트 언어만으로 경계 보장하지 않음  |
 | F064 | 콘솔 미래 지원 | 제약·미검증 | E1/E2 | High | 승인 SDK와 포트 경로 별도 확인 [G44](../references/Verified_Sources.md#g44) |
 | F065 | 패키지 50/100 MB 한도 충족 | 제약·미검증 | E0/External | High | 실제 template+content 측정, quota 조정 자동 승인 금지  |
 | F066 | AI 자동 Godot upstream PR | 범위 제외 | None | None | 업스트림 기여 정책과 내부 제품 사용 구분 [G47](../references/Verified_Sources.md#g47) |

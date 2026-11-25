@@ -1,4 +1,4 @@
-# 13. GDScript·C#·GPU·메모리 진단 및 심볼
+# 13. GDScript·GPU·메모리 진단 및 심볼
 
 - 원본 계획서: `plans/13_Profiling_Memory_GPU_Symbols.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
 - 통합 대상 브랜치: `Forge-Profiling` — 신규 (R0 착수)

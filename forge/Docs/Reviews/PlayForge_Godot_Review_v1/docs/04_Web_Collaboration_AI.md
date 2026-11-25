@@ -4,7 +4,7 @@
 
 ## 에디터를 통째로 이식하지 않는다
 
-React/TypeScript는 프로젝트 선택, Hierarchy, Inspector, Lua 편집, Snapshot, Changes, AI 작업을 담당한다. Godot Web Runtime은 Scene/Game 화면과 실제 실행을 담당한다. 데스크톱 Godot EditorPlugin UI가 브라우저의 React 패널이 되는 것은 아니다.
+React/TypeScript는 프로젝트 선택, Hierarchy, Inspector, GDScript 편집, Snapshot, Changes, AI 작업을 담당한다. Godot Web Runtime은 Scene/Game 화면과 실제 실행을 담당한다. 데스크톱 Godot EditorPlugin UI가 브라우저의 React 패널이 되는 것은 아니다.
 
 Godot의 JavaScriptBridge는 Web export와 호스트 JavaScript의 연결점이다. PlayForge에서는 이를 신뢰된 Bridge가 사용하는 제한된 채널로 감싼다. [G37](../references/Verified_Sources.md#g37)
 
@@ -20,7 +20,7 @@ Runtime Apply는 원본 저장 성공과 다르다. Godot 반영 실패가 발�
 
 ## 협업 단순화 유지
 
-구조화된 Scene/Prefab/Property는 서버 순차 Command와 대상별 Revision을 사용한다. Lua 텍스트만 CRDT 후보로 유지한다. Presence는 별도 TTL 정보로 처리하고 영구 파일·스냅샷에 넣지 않는다.
+구조화된 Scene/Prefab/Property는 서버 순차 Command와 대상별 Revision을 사용한다. GDScript 텍스트만 CRDT 후보로 유지한다. Presence는 별도 TTL 정보로 처리하고 영구 파일·스냅샷에 넣지 않는다.
 
 드래그는 로컬에서 즉시 표현하고 제한 빈도의 임시 Preview를 보내며, 확정 시 하나의 Undo Group을 기록한다. 임시 값이 CDO/Prefab 정의나 다른 사용자의 확정 변경을 덮어쓰지 않도록 세션 ID·시퀀스·기준 Revision을 검사한다.
 
@@ -36,7 +36,7 @@ Web Extension/Thread 프로필은 교차 출처 격리 조건을 검증해야 �
 
 ## Scene와 Game 분리
 
-Editor Preview는 작성 Snapshot에서 렌더 가능한 상태를 구성하며 게임 Lua는 기본 실행하지 않는다. Play를 누르면 불변 Snapshot에서 PIE 인스턴스를 만든다. 에디터 변경은 기본적으로 다음 실행에만 반영하며 Hot Apply는 허용 Property에 명시적으로 수행한다.
+Editor Preview는 작성 Snapshot에서 렌더 가능한 상태를 구성하며 게임 GDScript는 기본 실행하지 않는다. Play를 누르면 불변 Snapshot에서 PIE 인스턴스를 만든다. 에디터 변경은 기본적으로 다음 실행에만 반영하며 Hot Apply는 허용 Property에 명시적으로 수행한다.
 
 여러 Viewport는 화면 분할의 수단이지 서로 불신하는 UGC의 보안 경계가 아니다. 안전성이 필요한 PIE는 별도 iframe·프로세스·실행 세션으로 구분한다. Godot Viewport가 자체 World를 가질 수 있어도 모든 엔진 전역 상태가 분리되는 것은 아니다. [G15](../references/Verified_Sources.md#g15)[G22](../references/Verified_Sources.md#g22)
 

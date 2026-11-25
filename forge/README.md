@@ -4,7 +4,7 @@
 
 기존 GamePlayForge의 Studio·공동 편집·Tappy Chicken을 **Godot 4.7 + GDScript**로 이어받았습니다.
 게임 규칙, 60Hz 게임 루프, 키보드·마우스 입력, SVG 자산 표시가 실제 Godot 프로세스에서 실행됩니다.
-Studio의 Canvas는 같은 상태를 보여주는 미러입니다. C++ 빌드나 Lua 확장 설치는 필요하지 않습니다.
+Studio의 Canvas는 같은 상태를 보여주는 미러입니다. C++ 빌드나 별도 스크립트 언어 확장 설치는 필요하지 않습니다.
 
 ## Creator 서비스 시작
 
@@ -57,7 +57,7 @@ Studio Stop·브라우저 연결 종료·Godot 창 닫기는 해당 실행 세�
 ## 실행 범위
 
 GDScript는 **신뢰하는 로컬 프로젝트 코드**이며 파일·네트워크 등 Godot API를 사용할 수 있습니다.
-기존 Lua의 메모리·명령 수 제한이나 OS 격리가 적용되지 않습니다. 서버 기본 연결은 localhost입니다.
+메모리·명령 수 제한이나 OS 격리가 적용되지 않습니다. 서버 기본 연결은 localhost입니다.
 공유 서버의 GDScript 작성자는 서버 운영 계정 권한을 사용하는 신뢰된 참여자여야 합니다.
 
 현재 코어는 Tappy Chicken 프로젝트 로드, GDScript 실행 계약, 고정 시간 재생, 네이티브 2D 화면, Studio 연동입니다.
@@ -67,5 +67,4 @@ Tappy의 독립 Web 빌드 ZIP을 생성합니다. 범용 3D 씬 편집, 게임 
 - [Godot 이관·검증 기록](Docs/GODOT_MIGRATION.md)
 - [10개 마일스톤 계획](Docs/MILESTONE_PLAN.md)
 - [게임 레퍼런스](References/README.md)
-- `Engine/`와 `Game.lua`: 이전 C++/Lua 구현 보존본. 현재 실행 경로에서는 사용하지 않습니다.
 

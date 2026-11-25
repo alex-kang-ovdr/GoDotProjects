@@ -69,7 +69,7 @@
       ],
       "properties": {
         "gameplay": {
-          "const": "Lua 5.4"
+          "const": "GDScript"
         },
         "runtime": {
           "const": "C++20"
@@ -118,8 +118,7 @@
       "required": [
         "preferred",
         "static_module_requires_approval",
-        "internal_patches_allowed",
-        "lua_binding_commit"
+        "internal_patches_allowed"
       ],
       "properties": {
         "preferred": {
@@ -130,12 +129,6 @@
         },
         "internal_patches_allowed": {
           "const": false
-        },
-        "lua_binding_commit": {
-          "type": [
-            "string",
-            "null"
-          ]
         }
       }
     },

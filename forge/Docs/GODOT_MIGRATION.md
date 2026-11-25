@@ -41,7 +41,7 @@ JSON 요청은 load/input/step/settings/snapshot/stop을 지원하며 응답에 
 source는 256KB, bridge 메시지는 512KB로 제한합니다. snapshot은 JSON 값으로만 구성된 Dictionary이며 깊이 64,
 100,000개 항목 한계와 순환 참조 검사를 적용합니다. 기존 게임의 설정·난수·충돌·점수는 원본 JS와 비교합니다.
 
-**신뢰 경계 변경:** GDScript는 Lua 제한 환경을 대체하는 격리 실행기가 아닙니다. OS 파일·네트워크 등 엔진 API에 접근할 수 있습니다.
+**신뢰 경계 변경:** GDScript는 격리 실행기가 아닙니다. OS 파일·네트워크 등 엔진 API에 접근할 수 있습니다.
 프로세스별 timeout과 종료는 복구 수단이며 보안 격리가 아닙니다. 공개 UGC 실행 서비스로 노출하는 것은 범위 밖입니다.
 Godot GDScript 자체 runtime 오류는 예외 포착 API가 없으므로 프로세스 로그와 계약 검증을 함께 확인해야 합니다.
 사용자 스크립트가 임의의 Godot API나 추가 thread를 쓰는 경우까지 안전성을 보증하지 않습니다.

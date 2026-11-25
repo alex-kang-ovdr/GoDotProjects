@@ -14,4 +14,4 @@ Open `01_Editor/PlayForge_Editor_v16/index.html` locally. This is the **existing
 - `06_TestPlans`: manual prototype checks and native-engine implementation acceptance criteria
 
 ## Status and caveats
-Designs are **specifications**, not implemented native engine features. DX12, Vulkan, PBR/Toon GPU shaders, debug view GPU passes, camera projection and render sorting remain to be implemented in C++ RHI. No real Lua runtime. No automatic browser testing performed in this packaging pass.
+Designs are **specifications**, not implemented native engine features. DX12, Vulkan, PBR/Toon GPU shaders, debug view GPU passes, camera projection and render sorting remain to be implemented in C++ RHI. No real script runtime. No automatic browser testing performed in this packaging pass.

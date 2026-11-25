@@ -30,7 +30,7 @@
 | 크로스플레이 릴레이 | `hub/server/ugc-multiplayer.mjs` + `tools/ugc-shared/mmo-room-core.cjs` (Forge-Publish) | — | 29의 relay는 이 경로를 재사용 검토 |
 | 진단 trace 형식 | 로드맵 13 TraceSample(Forge-Profiling, `docs/profiling/`) | ISMProfile CSV, HavokProfile CSV, daily-profile JSON, 데스크톱 `shader_telemetry`는 각 도구의 원시 출력으로 유지하고 TraceSample로 변환 | 13 |
 | 물리 결정성 | Forge-HavokPhysics 벤치마크: **같은 기기 반복 실행**에서만 상태 hash 일치 확인 | — | 12/27은 기기 간 결정성을 가정하지 않는다(서버 보정 전제) |
-| 게임 스크립트 언어 | **GDScript. Lua는 지원하지 않는다** (2026-11-25 사용자 결정, §5 D1) | Godot Review v1 ADR-G04·UGC v5.9의 Lua 5.4 — 철회 | 10/11/20 C#은 R3 선택 |
+| 게임 스크립트 언어 | **GDScript만 지원. Lua·C#은 지원하지 않는다** (2026-11-25 사용자 결정, §5 D1·D6) | Godot Review v1 ADR-G04·UGC v5.9의 Lua 5.4, 로드맵 10/11/20의 C# — 철회 | 10/11/20 철회. Roblox Luau·Unity C# 변환기는 입력 형식으로만 유지 |
 
 ## 3. 엔진 패치 정책과 현재 패치 큐
 
@@ -55,7 +55,9 @@ Godot Review v1 `02_Minimal_Change_Policy.md`는 코어 수정(E3)을 기본 금
 
 ### 엔진 변경 브랜치의 작업 위치
 
-엔진 변경은 **전부 godot-engine 포크 저장소**(`alex-kang-ovdr/godot-engine`, 로컬 `D:/Github/godot-engine`)의 작업이다(2026-11-25 사용자 결정 D4). 포크에 `Godot-Refactoring`(기준: 현재 pin `e7a83dd7`)과 하위 브랜치 `Godot-Refactoring-ForgeAvatar`(`ed003ce5`), `Godot-Refactoring-JoltPhysics`, `Godot-Refactoring-<번호>-<주제>` 9개를 만들었다(로컬, push 안 함). PlayHub 저장소에는 엔진 브랜치를 두지 않는다. PlayHub 저장소의 `Godot-Refactoring` 브랜치는 이 SSOT 문서와 소유권 등록만 담고, 포크 패치가 확정되면 서브모듈 pin과 `engine-ssot.json`의 `pinnedForkCommit`을 PlayHub-Platform 경로로 올린다. 남은 5개 타깃(desktop-windows, web-template, cloudrun-worker, android-aar, ios-xcframework)이 `pending_fork_rebuild`인 동안은 엔진 패치가 해당 산출물에 반영되지 않는다.
+엔진 변경은 **전부 godot-engine 포크 저장소**(`alex-kang-ovdr/godot-engine`, 로컬 `D:/Github/godot-engine`)의 작업이다(2026-11-25 사용자 결정 D4). 포크에 `Godot-Refactoring`(기준: 현재 pin `e7a83dd7`)과 하위 브랜치 `Godot-Refactoring-ForgeAvatar`(`ed003ce5`), `Godot-Refactoring-JoltPhysics`, `Godot-Refactoring-<번호>-<주제>` 9개를 만들었다(origin에 push함). PlayHub 저장소에는 엔진 브랜치를 두지 않는다.
+
+**유지 방식 (D5)**: 커스텀 엔진은 포크 `Godot-Refactoring` 브랜치 하나로 통합해 유지한다. 하위 브랜치 작업은 이 브랜치로 merge하고, 패치는 커밋으로 남으므로 재적용하지 않는다. PlayHub 쪽은 서브모듈 pin과 `engine-ssot.json`의 `pinnedForkCommit`만 올리면 된다(`.gitmodules`에 `branch = Godot-Refactoring` 지정). 별도 동기화 도구는 두지 않는다. upstream Godot 버전을 올릴 때만 해당 태그를 `Godot-Refactoring`에 merge한다. 2026-11-25 upstream master 시험 병합에서 우리 패치 파일 중 충돌은 8개였다(나머지 충돌 150건은 4.7.2-stable이 master와 다른 stable 계열이라 생기는 것으로, 우리가 고치지 않은 파일이라 upstream 쪽을 택하면 된다). 남은 5개 타깃(desktop-windows, web-template, cloudrun-worker, android-aar, ios-xcframework)이 `pending_fork_rebuild`인 동안은 엔진 패치가 해당 산출물에 반영되지 않는다.
 
 ## 4. 다른 브랜치에 보낼 갱신 요청
 
@@ -75,7 +77,9 @@ Godot Review v1 `02_Minimal_Change_Policy.md`는 코어 수정(E3)을 기본 금
 
 | ID | 결정 | 반영 |
 | --- | --- | --- |
-| D1 | **Lua는 지원하지 않는다.** 게임 스크립트는 GDScript, C#은 R3 선택 | §2 언어 행, Review v1 ADR-G04에 철회 표기, UGC v5.9 머리말 |
+| D1 | **Lua는 지원하지 않는다.** 게임 스크립트는 GDScript | §2 언어 행, Review v1 ADR-G04에 철회 표기, UGC v5.9 머리말 |
 | D2 | **아바타·CoreHUD 코어 패치 3건은 엔진 패치로 유지**하고 `Godot-Refactoring-ForgeAvatar` 브랜치로 이관 | §3, [patches/ForgeAvatar.md](patches/ForgeAvatar.md), 이 저장소와 포크 저장소에 같은 이름 브랜치 |
 | D3 | **§4 갱신 요청 승인** — 각 소유 브랜치에서 반영 | §4 표의 반영 커밋 |
 | D4 | **Jolt 성능 패치와 항목 12는 `Godot-Refactoring-JoltPhysics`로 이관. 엔진 변경 브랜치는 전부 godot-engine 포크 저장소에서 작업** | §3, [patches/JoltPhysics.md](patches/JoltPhysics.md), 포크 브랜치 12개 |
+| D5 | **커스텀 엔진은 포크 `Godot-Refactoring` 한 브랜치로 통합 유지, 서브모듈 업데이트로 반영. 동기화 도구 없음** | §3 유지 방식, `.gitmodules` branch |
+| D6 | **C#도 지원하지 않는다. Lua·C# 레거시 흔적 제거** (변환기 입력 형식은 유지) | §2 언어 행, 로드맵 10·11·20 철회 |

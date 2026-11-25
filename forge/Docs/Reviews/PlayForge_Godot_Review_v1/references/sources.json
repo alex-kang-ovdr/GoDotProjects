@@ -370,16 +370,6 @@
     "runtime_tested": false
   },
   {
-    "id": "G38",
-    "title": "Lua GDExtension — maintainer repository",
-    "url": "https://github.com/gilzoide/lua-gdextension",
-    "channel": "community-primary",
-    "scope": "Lua 5.4 후보. 공식 Godot 기본 언어가 아니며 저장소 상태와 커밋 고정 필요.",
-    "verified_on": "2026-11-17",
-    "kind": "primary",
-    "runtime_tested": false
-  },
-  {
     "id": "G39",
     "title": "Godot 4.8 dev5 release note",
     "url": "https://godotengine.org/article/dev-snapshot-godot-4-8-dev-5/",

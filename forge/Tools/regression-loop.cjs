@@ -17,7 +17,7 @@ function snapshot() {
       for (const entry of fs.readdirSync(absolute).sort()) visit(path.join(relative, entry));
     } else files.push({ path: relative.replaceAll('\\', '/'), sha256: crypto.createHash('sha256').update(fs.readFileSync(absolute)).digest('hex') });
   }
-  for (const entry of ['Engine/src', 'Engine/build/Release/GamePlayForgeRuntime.exe', 'Projects', 'Studio', 'assets', 'Tools', 'Tests', 'server.cjs', 'package.json', 'package-lock.json', 'playwright.config.cjs']) visit(entry);
+  for (const entry of ['Projects', 'Studio', 'assets', 'Tools', 'Tests', 'server.cjs', 'package.json', 'package-lock.json', 'playwright.config.cjs']) visit(entry);
   return { sha256: crypto.createHash('sha256').update(JSON.stringify(files)).digest('hex'), files };
 }
 const initial = snapshot();

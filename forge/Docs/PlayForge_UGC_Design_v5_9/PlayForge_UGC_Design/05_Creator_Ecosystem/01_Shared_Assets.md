@@ -20,8 +20,8 @@ Asset ID + 정수 Version. 게시된 버전은 불변, 프로젝트는 특정 �
 
 ## 미리보기·Import
 
-Mesh 회전·줌·애니메이션, Texture Alpha/Mip, Audio 청취·Waveform·Trim, Lua 코드 정적 Preview. Scale/Unit/Axis, Collider, Compression Profile 설정. Import 결과는 Pre-Cook DDC 재사용.
+Mesh 회전·줌·애니메이션, Texture Alpha/Mip, Audio 청취·Waveform·Trim, GDScript 코드 정적 Preview. Scale/Unit/Axis, Collider, Compression Profile 설정. Import 결과는 Pre-Cook DDC 재사용.
 
 ## 콘텐츠 품질
 
-필수 썸네일·설명·태그, 중복 Hash, 저작권/라이선스 확인, 악성 Lua 검사, 호환성 테스트, 신고/Unshare. 사용 횟수는 인기 지표이며 삭제 안전성은 참조 레코드로 결정.
+필수 썸네일·설명·태그, 중복 Hash, 저작권/라이선스 확인, 악성 GDScript 검사, 호환성 테스트, 신고/Unshare. 사용 횟수는 인기 지표이며 삭제 안전성은 참조 레코드로 결정.

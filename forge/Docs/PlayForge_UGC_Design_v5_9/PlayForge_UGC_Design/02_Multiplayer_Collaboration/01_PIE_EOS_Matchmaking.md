@@ -24,7 +24,7 @@ EOS Connect/Session/Lobby/Voice/EAC(지원 PC만)는 외부 서비스 Adapter. P
 
 ## Live Changes
 
-Transform/Material Parameter는 Hot Apply; Lua 본문은 안전한 Hot Reload; Collider는 Body Recreate; Reflection/RPC Schema 변경은 PIE Restart. Cook Task Hash로 영향 범위만 갱신.
+Transform/Material Parameter는 Hot Apply; GDScript 본문은 안전한 Hot Reload; Collider는 Body Recreate; Reflection/RPC Schema 변경은 PIE Restart. Cook Task Hash로 영향 범위만 갱신.
 
 ## 검증
 

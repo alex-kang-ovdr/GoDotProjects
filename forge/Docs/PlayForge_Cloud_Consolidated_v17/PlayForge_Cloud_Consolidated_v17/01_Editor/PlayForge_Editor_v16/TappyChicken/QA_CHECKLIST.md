@@ -11,4 +11,4 @@
 - [ ] Restart resets score and seed
 
 ## Scope
-The HTML game runs JavaScript gameplay matching the Lua reference, not a Lua VM. No networked PIE or EOS connection.
+The HTML game runs JavaScript gameplay in the browser, not an embedded script runtime. No networked PIE or EOS connection.

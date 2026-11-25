@@ -48,7 +48,7 @@
 - AI 작업 기록·외부 AI·재귀 평가 설계와 정책 게이트 예제: `Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/README.md`
 - UGC 영역별 설계: `Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/INDEX.md`
 
-압축을 모두 해제한 다음 `index.html`을 브라우저로 여세요. 편집기는 JavaScript/Canvas 프런트엔드 프로토타입이며 서버 배포·AI 계정 연결·실제 Lua 런타임을 설치하는 과정이 아닙니다.
+압축을 모두 해제한 다음 `index.html`을 브라우저로 여세요. 편집기는 JavaScript/Canvas 프런트엔드 프로토타입이며 서버 배포·AI 계정 연결·게임 런타임을 설치하는 과정이 아닙니다.
 
 원본 파일은 수정하지 않았습니다. `Original_Zips`에는 최초 확보한 19개 ZIP을 보관합니다. 제품의 모든 기능이 연동되었다는 뜻은 아니며, 상세 판단은 이번 리뷰를 기준으로 확인하세요.
 

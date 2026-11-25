@@ -4,9 +4,9 @@
 
 ## 결론
 
-**Godot를 PlayForge의 실행 엔진 후보로 검증하되, PlayForge의 웹 에디터·협업·클라우드 원본·Lua 공개 API는 유지한다.** 권장 경로는 공식 확장 API를 쓰는 GDExtension이며, 엔진 내부 파일 패치는 기본적으로 금지한다. 이것은 채택 확정이나 포팅 완료 보고가 아니다.
+**Godot를 PlayForge의 실행 엔진 후보로 검증하되, PlayForge의 웹 에디터·협업·클라우드 원본은 유지하고, 게임 스크립트는 GDScript를 사용한다.** 권장 경로는 공식 확장 API를 쓰는 GDExtension이며, 엔진 내부 파일 패치는 기본적으로 금지한다. 이것은 채택 확정이나 포팅 완료 보고가 아니다.
 
-핵심 가치는 게임 엔진 기능 수가 아니라 온라인 공동 제작, 브라우저 무설치, AI 작업의 검증·반복 개선이다. 따라서 Renderer/Audio/Input을 직접 재작성하는 비용을 줄이는 대신, 안정 ID·명령·협업·Lua 안전 경계에 개발 역량을 집중한다.
+핵심 가치는 게임 엔진 기능 수가 아니라 온라인 공동 제작, 브라우저 무설치, AI 작업의 검증·반복 개선이다. 따라서 Renderer/Audio/Input을 직접 재작성하는 비용을 줄이는 대신, 안정 ID·명령·협업·GDScript 안전 경계에 개발 역량을 집중한다.
 
 ## 기준 버전과 증거 수준
 
@@ -18,7 +18,6 @@
 
 | 유지 | 조정이 필요한 수단 |
 |---|---|
-| Lua 5.4 게임 코드 | Godot 기본 언어가 아니므로 안전한 바인딩을 별도 구현 |
 | 범용 웹 에디터 | 전체 Godot Editor를 브라우저 UI로 복제하지 않음 |
 | 안정 GUID·Prefab Override | Godot NodePath/Instance ID로 영구 ID를 대체하지 않음 |
 | DX12·Vulkan 네이티브 | Godot Renderer를 사용하고 자체 RHI를 동시에 소유하지 않음 |
@@ -33,7 +32,7 @@ Godot 웹 Export는 현재 Compatibility/WebGL 2 경로다. WebGPU나 네이티�
 
 **렌더러 제어.** RenderingDevice·Compositor는 확장 지점이지, Godot 내부 Render Graph와 전역 Draw 정렬을 전부 대체하는 플러그인 계약은 아니다. 기존 HLSL 중심 자체 RHI 설계를 그대로 보존하려면 변경 최소화 목표와 충돌한다. [G08](../references/Verified_Sources.md#g08)[G09](../references/Verified_Sources.md#g09)[G10](../references/Verified_Sources.md#g10)
 
-**Lua와 UGC.** 공식 기본 언어에 Lua는 없다. 별도 Lua VM을 붙일 수 있지만, 엔진 API 전체 노출·파일 접근·Native 함수 무한 실행까지 자동으로 격리되지는 않는다. [G23](../references/Verified_Sources.md#g23)[G38](../references/Verified_Sources.md#g38)
+**GDScript와 UGC.** GDScript는 엔진 API·파일 접근을 사용할 수 있으므로 UGC 실행이 자동으로 격리되지는 않는다. [G23](../references/Verified_Sources.md#g23)
 
 **다중 Room.** LibGodot의 엔진 인스턴스는 프로세스당 하나다. 여러 논리 World를 둘 수 있는 것과 각 Room이 완전히 독립적인 엔진·Tick·메모리를 갖는 것은 다르다. [G22](../references/Verified_Sources.md#g22)[G15](../references/Verified_Sources.md#g15)
 
@@ -46,7 +45,7 @@ Godot 웹 Export는 현재 Compatibility/WebGL 2 경로다. WebGPU나 네이티�
 | 접근 | 판단 |
 |---|---|
 | PlayForge 소스 → Godot 실행 산출물 | 권장. 원본 한 곳, 생성물은 재생성 가능 |
-| GDExtension으로 제한된 Lua·Runtime Bridge | 우선 검증 |
+| GDExtension 기반 Runtime Bridge | 우선 검증 |
 | 웹용 정적 모듈 | 공개 API로 해결 안 될 때 E2 예외 심사 |
 | LibGodot를 모든 플랫폼의 필수 기반으로 사용 | 보류 |
 | Godot 전체를 Unreal식 Core/ECS로 재구현 | 비권장 |
@@ -55,7 +54,7 @@ Godot 웹 Export는 현재 Compatibility/WebGL 2 경로다. WebGPU나 네이티�
 
 ## 채택 기준
 
-1. 실제 Lua 5.4가 웹·Windows에서 같은 게임 규칙을 실행한다.
+1. 실제 GDScript가 웹·Windows에서 같은 게임 규칙을 실행한다.
 2. 두 사용자의 협업 변경을 안전하게 실행 View에 반영한다.
 3. 2D와 3D 예제를 범용 UI로 편집하며 특정 게임 분기를 추가하지 않는다.
 4. Dedicated/Listen·초기 복제·충돌 안전 장벽이 실제 통신에서 통과한다.

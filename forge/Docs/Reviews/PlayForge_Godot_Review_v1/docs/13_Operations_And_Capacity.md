@@ -9,7 +9,7 @@ Godot의 라이선스 비용과 운영 CPU/RAM/스토리지/AI 비용은 분리�
 | 실행 | 로컬 자원 | 서버 작업 |
 |---|---|---|
 | 일반 웹 편집 | UI·Scene/Godot Web preview | 협업 명령·내구성·권한 |
-| Local PIE | Lua·Physics·Renderer | Snapshot 제공·선택적 검증 |
+| Local PIE | GDScript·Physics·Renderer | Snapshot 제공·선택적 검증 |
 | Listen PIE | Host Authority·표현 | 인증·매칭·필요 시 연결 중계 |
 | Dedicated PIE | 각 Client 표현 | 시험 서버 World·복제 |
 | 자동 시각 테스트 | 테스트 브라우저 CPU/GPU | Worker 실행·아티팩트 수집 |
@@ -21,7 +21,7 @@ Godot의 라이선스 비용과 운영 CPU/RAM/스토리지/AI 비용은 분리�
 
 LibGodot를 필수로 사용하지 않고 Export Template 기반 Dedicated 프로세스로 시작한다. headless 서버는 편집기 바이너리와 불필요한 Client Resource를 제외한다. [G32](../references/Verified_Sources.md#g32)
 
-처음에는 한 Room 또는 한 신뢰 경계별 프로세스를 사용한다. 이후 동일 Release의 여러 Room을 묶을 때 전역 설정·Autoload·Resource cache·물리 서버·Lua VM 간 오염을 검증한다. 비용 절감 수치 없이 밀도를 먼저 고정하지 않는다. [G22](../references/Verified_Sources.md#g22)[G20](../references/Verified_Sources.md#g20)
+처음에는 한 Room 또는 한 신뢰 경계별 프로세스를 사용한다. 이후 동일 Release의 여러 Room을 묶을 때 전역 설정·Autoload·Resource cache·물리 서버·스크립트 상태 간 오염을 검증한다. 비용 절감 수치 없이 밀도를 먼저 고정하지 않는다. [G22](../references/Verified_Sources.md#g22)[G20](../references/Verified_Sources.md#g20)
 
 ## 측정 단위
 
@@ -38,12 +38,12 @@ LibGodot를 필수로 사용하지 않고 Export Template 기반 Dedicated 프�
 
 ## 패키지 용량 실험
 
-빈 프로젝트, 2D Lua 예제, 3D 예제 각각에 대해 다음을 기록한다.
+빈 프로젝트, 2D GDScript 예제, 3D 예제 각각에 대해 다음을 기록한다.
 
 | 지표 | 의미 |
 |---|---|
 | template_bytes | 엔진 공통 실행 파일·WASM |
-| content_bytes | 게임 전용 cooked resource·Lua |
+| content_bytes | 게임 전용 cooked resource·GDScript |
 | transfer_bytes | 압축 전송 크기 |
 | install_bytes | 설치 후 디스크 크기 |
 | source_archive_bytes | 원본·Import 설정·필요 파일 |

@@ -8,7 +8,7 @@ Name, stable ID, type (bool/int/float/string), default, help, flags (ReadOnly, C
 
 ## Commands
 `help`, `cvar.list`, `cvar.get r.VSync`, `cvar.set r.VSync 0`, `stat fps`, `stat unit`, `stat memory`, `stat net`, `viewmode lit`, `show collision`, `scalability set high`, `deviceprofile show`.
-Console command registry is distinct from CVar registry. Untrusted UGC Lua cannot execute arbitrary console commands. Public client allows only whitelisted settings. Dedicated server admin commands require authentication.
+Console command registry is distinct from CVar registry. Untrusted UGC GDScript cannot execute arbitrary console commands. Public client allows only whitelisted settings. Dedicated server admin commands require authentication.
 
 ## INI handling
 Support sections, key/value, repeated +CVars entries, inheritance, comments, validation, diagnostics, deterministic merge and serialization. Do not apply startup-only backend selection during runtime.

@@ -12,7 +12,7 @@
 
 ## Release Bundle
 
-프로젝트 Source Snapshot, 원본 Mesh/Texture/Audio, 공유 에셋 원본 및 Import Settings, Lua, Localization, Dependency Lock, Engine/Cooker/SDK Version, Target Cooked Package, Validation Report. 비밀키·타인 비허가 콘텐츠·독점 SDK는 제외.
+프로젝트 Source Snapshot, 원본 Mesh/Texture/Audio, 공유 에셋 원본 및 Import Settings, GDScript, Localization, Dependency Lock, Engine/Cooker/SDK Version, Target Cooked Package, Validation Report. 비밀키·타인 비허가 콘텐츠·독점 SDK는 제외.
 
 ## 공개 범위
 
@@ -20,7 +20,7 @@ Private(제작자), Test(초대/링크), Unlisted(직접 링크), Public(검색�
 
 ## 배포 안전성
 
-자동 Lua 보안 검사, 권한/라이선스, 성능 예산, 서버/클라이언트 호환, 초기 Replication Barrier, Collision Streaming, 악성 파일 검사, 연령·콘텐츠 표시, 신고 상태를 검사한다.
+자동 GDScript 보안 검사, 권한/라이선스, 성능 예산, 서버/클라이언트 호환, 초기 Replication Barrier, Collision Streaming, 악성 파일 검사, 연령·콘텐츠 표시, 신고 상태를 검사한다.
 
 ## 롤백
 

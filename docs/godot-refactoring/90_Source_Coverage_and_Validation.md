@@ -41,11 +41,11 @@ PDF는 요구사항과 문제의식의 출처다. 버전·공식 지원·성능�
 | --- | --- | --- | --- |
 | 3·7-9 | DOD/ECS·Flecs·RID·MultiMesh·국소 native 최적화 | 09 | hot loop별 SoA·batch·job graph, 전체 게임 ECS 강제 없음 |
 | 3·7-8 | SceneTree 멀티스레딩 감사·회귀 | 09 | 주 스레드 boundary·resource 수명·측정된 경합 검증 |
-| 3-4·7-8 | C# GDExtension 통합·바이너리/마샬링 | 10 | 현행 production과 WIP 바인딩 분리, 지원 ABI·수명·성능 |
-| 4·9 | C# IDE·[Tool]·hot reload·문서 | 11 | 기존 IDE 기능 활용, 지원 수정·상태 복구·디버거 품질 |
+| 3-4·7-8 | C# GDExtension 통합·바이너리/마샬링 | 10 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 |
+| 4·9 | C# IDE·hot reload·문서 | 11 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 |
 | 3·5·7-8 | 수동 physics step·rollback 기반 | 12 + 27 | backend capability·snapshot·journal·게임 이벤트 재실행 |
 | 3 | 조인트·로프·softbody/cloth 안정성 | 12 | backend별 선택 범위와 stress fixture, 기능 자동 동등성 없음 |
-| 6-8 | GDScript/C# memory profiler·GPU/VRAM·frame 진단 | 13 | 논리 객체와 실제 할당, clock/trace 연결, 정확/추정치 구분 |
+| 6-8 | GDScript memory profiler·GPU/VRAM·frame 진단 | 13 | 논리 객체와 실제 할당, clock/trace 연결, 정확/추정치 구분 |
 | 6-8 | 데스크톱 분리 debug symbols | 13 + 16 | build identity·symbol bundle·크래시 재현·배포 |
 | 6·9 | FMOD/Wwise·적응형 음악·RTPC·공간음향 | 14 | 공통 audio API, 기존 AudioServer 활용, 선택 vendor adapter |
 | 6·8-9 | Git/LFS·씬 분할·UID·병합·독점 잠금 | 15 | revision/snapshot·UID 검증·파일/씬 잠금·복원 |
@@ -62,7 +62,7 @@ PDF는 요구사항과 문제의식의 출처다. 버전·공식 지원·성능�
 | 5·9 | IAP·AdMob/AppLovin·Firebase/analytics 등 SDK | 18 | billing 검증·원장·SDK version matrix·adapter |
 | 5 | 조이스틱·온스크린 입력 | 18 | 기존 터치 버튼 기반 pointer 소유권·safe area·조이스틱 |
 | 5·7-8 | WebGPU·브라우저 compute/3D | 19 | RenderingDevice backend·제한 renderer·device loss·fallback |
-| 5·7-8 | C#/.NET WASM Web export | 20 | 기존/신규 binding·정적 embedding 연구·별도 gate |
+| 5·7-8 | C#/.NET WASM Web export | 20 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 |
 | 4·9-10 | 콘솔·W4/포팅사·버전 pin·TCO | 21 | 계약·SDK 경계·한 콘솔 slice·가격 입력형 TCO |
 | 6-8 | 유료 Asset Store·결제·정산 | 22 | 자체 Hub/Forge commerce, PSP·정산 상태·복구 |
 | 6-8 | 리뷰 점수·태그 탐색·유통 품질 | 22 | 검증 구매/사용 기록·review·신고·검색·품질 지표 |
@@ -97,8 +97,8 @@ PDF의 Netfox·Monke-Net·Nakama·GodotSteam 등은 비교·선택 adapter 후�
 | texture streaming 출시 상태 | PR #113429가 master에 병합됨 | 병합과 선택 tag 포함·플랫폼 지원·제품 인수는 별도 확인 |
 | HDDAGI 전면 교체 일정 | PR #86267은 열람 시 Draft | 제품 기본 경로의 선행이 아닌 R&D gate |
 | Terrain3D 플랫폼 단정 | 공식 플랫폼 문서가 renderer/OS별 지원·제약을 구분 | Compatibility/모바일을 일괄 불가 처리하지 않고 실제 target 인증 |
-| C# 바인딩 이전 | godot-dotnet 공식 저장소는 GDExtension 기반, WIP 경고 | 10에서 현행 경로 유지·호환/ABI 검증; zero-copy 자동 달성 가정 제거 |
-| Hot Reload 전무 | Rider 2025.1에 Godot C# breakpoint 중 Hot Reload 안내 | 11은 기존 기능 검증과 안전한 상태 복원으로 범위 조정 |
+| C# 바인딩 이전 | godot-dotnet 공식 저장소는 GDExtension 기반, WIP 경고 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 |
+| Hot Reload 전무 | Rider 2025.1에 Godot C# breakpoint 중 Hot Reload 안내 | 철회 — 2026-11-25 결정: 게임 스크립트는 GDScript만 지원, Lua·C# 미지원 |
 | 온스크린 입력 노드 전무 | TouchScreenButton 공식 API와 multitouch 지원 존재 | 18은 joystick·safe area·입력 통합의 빈 부분을 개발 |
 | Firebase Test Lab 고정 사용 | 공식 문서가 2027-09-30 종료 예정·후속 preview 표시 | 17은 provider 교체 경계와 로컬 기기 기준선 포함 |
 | MIT의 소스 공개 강제 | Godot 라이선스 문서는 변경판의 비공개 배포도 허용하고 고지를 요구 | 21에서 MIT 성격과 콘솔 SDK/NDA·계약 문제를 구분 |
@@ -118,8 +118,6 @@ PDF의 Netfox·Monke-Net·Nakama·GodotSteam 등은 비교·선택 adapter 후�
 - [Texture mip streaming PR #113429](https://github.com/godotengine/godot/pull/113429)
 - [HDDAGI PR #86267](https://github.com/godotengine/godot/pull/86267)
 - [Terrain3D platforms](https://terrain3d.readthedocs.io/en/stable/docs/platforms.html)
-- [godot-dotnet](https://github.com/godotengine/godot-dotnet)
-- [Rider 2025.1](https://www.jetbrains.com/rider/whatsnew/2025-1/)
 - [TouchScreenButton](https://docs.godotengine.org/en/stable/classes/class_touchscreenbutton.html)
 - [Firebase Test Lab migration](https://firebase.google.com/docs/test-lab/migrate)
 - [Godot license](https://godotengine.org/license/)
@@ -145,7 +143,6 @@ PDF의 Netfox·Monke-Net·Nakama·GodotSteam 등은 비교·선택 adapter 후�
 | 작은 누수 허용 위험 | 수치 미만이어도 설명되지 않는 지속 메모리 증가면 실패 |
 | UGC와 서버 credential | 장기 secret을 trusted broker에 두고 불신 실행 프로세스와 분리 |
 | 28↔29 의존성 순환 | session/join/allocation 계약 먼저 동결 후 runtime와 service 병행 |
-| 20 연구의 불필요 선행 | 10/11 계약 참조, 신규 binding·hot reload 전체 완료를 필수로 두지 않음 |
 | Perforce/Unity VCS 단순 후순위 표기 | 15에 별도 작업·추가 공수·잠금·복구·검증 부록 추가 |
 | 원문 깨진 span | 원문의 편집 흔적을 계획서에 복사하지 않고 정상 문장으로 재작성 |
 
@@ -177,7 +174,7 @@ PDF의 Netfox·Monke-Net·Nakama·GodotSteam 등은 비교·선택 adapter 후�
 - 결제·정산·광고·콘솔·EAC 벤더 승인과 실제 통합
 - 외부 사이트 재배포·업스트림 PR 제출·유료 서비스 계약
 
-본체 공수 693-1,134 PW는 문서상 선택 연구까지의 단순 합계이며 실행 예산이나 확정 일정이 아니다. 개별 문서에 명시한 범위 제외·선택 부록·외부 비용을 고려해야 한다. 서버 성능·호환성·안정성은 실제 시험 뒤 결과 파일로 별도 기록한다.
+본체 공수 619-1,004 PW(10·11·20 철회 반영, 원래 693-1,134 PW)는 문서상 선택 연구까지의 단순 합계이며 실행 예산이나 확정 일정이 아니다. 개별 문서에 명시한 범위 제외·선택 부록·외부 비용을 고려해야 한다. 서버 성능·호환성·안정성은 실제 시험 뒤 결과 파일로 별도 기록한다.
 
 ## 7. 패키지 구성과 무결성 확인
 

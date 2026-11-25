@@ -32,7 +32,7 @@
 ## upstream 상태
 
 - upstream에 제안하지 않는다. 플랫폼 전용 정책이라 upstream 채택 대상이 아니다.
-- 따라서 엔진 버전을 올릴 때마다 재적용 비용이 생긴다. 충돌 위험이 큰 파일은 `object.*`, `node.*`, `scene_tree.*`, `control.*`, `main.cpp`다.
+- 패치는 포크 `Godot-Refactoring` 브랜치에 커밋으로 유지되므로 재적용하지 않는다. upstream Godot 버전을 올릴 때만 merge 충돌을 한 번 해결한다(2026-11-25 upstream master 시험 병합: 우리 패치 파일 중 충돌 8개, 이 중 아바타 쪽은 `main/main.cpp`, `scene/main/node.cpp`, `scene/main/scene_tree.cpp`).
 
 ## 제거 조건
 

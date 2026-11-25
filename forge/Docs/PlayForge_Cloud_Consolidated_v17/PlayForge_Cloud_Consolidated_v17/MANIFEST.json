@@ -3,7 +3,7 @@
   "files": [
     {
       "path": "01_Editor/PlayForge_Editor_v16/README.md",
-      "bytes": 1013
+      "bytes": 1024
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Gameplay.settings.json",
@@ -11,35 +11,31 @@
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/QA_CHECKLIST.md",
-      "bytes": 536
+      "bytes": 542
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Scenes/Main.scene.json",
-      "bytes": 840
-    },
-    {
-      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Scripts/Game.lua",
-      "bytes": 2701
+      "bytes": 810
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/index.html",
-      "bytes": 10102
+      "bytes": 10090
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/project.json",
-      "bytes": 577
+      "bytes": 565
     },
     {
       "path": "01_Editor/PlayForge_Editor_v16/index.html",
-      "bytes": 53184
+      "bytes": 53146
     },
     {
       "path": "02_EngineSpecs/00_Architecture.md",
-      "bytes": 1446
+      "bytes": 1468
     },
     {
       "path": "02_EngineSpecs/01_Settings_INI_CVar.md",
-      "bytes": 1396
+      "bytes": 1401
     },
     {
       "path": "02_EngineSpecs/02_Scalability_DeviceProfiles.md",
@@ -59,7 +55,7 @@
     },
     {
       "path": "02_EngineSpecs/06_Reflection_Prefab.md",
-      "bytes": 746
+      "bytes": 751
     },
     {
       "path": "02_EngineSpecs/07_Streaming_Network.md",
@@ -87,23 +83,19 @@
     },
     {
       "path": "04_Examples/TappyChicken/QA_CHECKLIST.md",
-      "bytes": 536
+      "bytes": 542
     },
     {
       "path": "04_Examples/TappyChicken/Scenes/Main.scene.json",
-      "bytes": 840
-    },
-    {
-      "path": "04_Examples/TappyChicken/Scripts/Game.lua",
-      "bytes": 2701
+      "bytes": 810
     },
     {
       "path": "04_Examples/TappyChicken/index.html",
-      "bytes": 10102
+      "bytes": 10090
     },
     {
       "path": "04_Examples/TappyChicken/project.json",
-      "bytes": 577
+      "bytes": 565
     },
     {
       "path": "05_History/PlayForge_Frontend_Preview_v10_2D3D.zip",
@@ -179,7 +171,7 @@
     },
     {
       "path": "README.md",
-      "bytes": 1077
+      "bytes": 1318
     }
   ]
 }

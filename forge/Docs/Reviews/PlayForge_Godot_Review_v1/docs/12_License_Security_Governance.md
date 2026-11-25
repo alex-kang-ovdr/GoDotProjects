@@ -11,7 +11,6 @@ Godot는 MIT로 상업적 이용·수정·재배포를 허용하며 재배포 �
 | 영역 | 출시 전 확인 |
 |---|---|
 | Godot/선택된 모듈 | 고정 버전의 LICENSE·COPYRIGHT·빌드 포함 목록 |
-| Lua 확장 | 라이선스, 실제 종속성, 유지보수 책임 |
 | Havok | 계약된 제품·플랫폼·Cloud Cook·UGC 재배포·보관 범위 |
 | EOS | 서비스·SDK·실행 타겟·사용자 식별/안티치트 조건 |
 | 공유 에셋 | 다운로드·수정·비공개 아카이브·재배포·AI 활용 권한 |
@@ -24,7 +23,7 @@ Godot는 MIT로 상업적 이용·수정·재배포를 허용하며 재배포 �
 
 ## UGC 위협 모델
 
-공격 입력은 Lua뿐 아니라 Scene/Resource, 압축파일, 이미지·모델·오디오 파서, Shader, Import 설정, 외부 AI가 만든 변경이다. 게임 엔진을 재사용한다고 멀티테넌트 보안 경계가 자동 제공되지는 않는다.
+공격 입력은 GDScript뿐 아니라 Scene/Resource, 압축파일, 이미지·모델·오디오 파서, Shader, Import 설정, 외부 AI가 만든 변경이다. 게임 엔진을 재사용한다고 멀티테넌트 보안 경계가 자동 제공되지는 않는다.
 
 ### 클라우드 Worker
 
@@ -32,7 +31,7 @@ Godot는 MIT로 상업적 이용·수정·재배포를 허용하며 재배포 �
 
 ### Native Runtime
 
-일반 크리에이터의 Native 확장 업로드는 금지한다. 허용된 Lua API, 메모리 allocator 예산, instruction/wall-time budget, Native 호출 watchdog, 프로세스 제한을 함께 사용한다. Lua hook만으로 긴 C++ 호출을 강제 중단할 수 있다고 약속하지 않는다.
+일반 크리에이터의 Native 확장 업로드는 금지한다. 허용된 스크립트 API, 메모리 allocator 예산, instruction/wall-time budget, Native 호출 watchdog, 프로세스 제한을 함께 사용한다.
 
 ### 웹 Runtime
 
@@ -40,7 +39,7 @@ Godot는 MIT로 상업적 이용·수정·재배포를 허용하며 재배포 �
 
 ### 온라인
 
-클라이언트 입력은 서버에서 재검증한다. Ready ACK, 로컬 테스트 통과, 외부 AI의 검증 주장 등은 게임플레이 권한이나 무결성 증명으로 사용하지 않는다. EAC 지원 타겟 여부와 Lua sandbox는 서로 대체 관계가 아니다.
+클라이언트 입력은 서버에서 재검증한다. Ready ACK, 로컬 테스트 통과, 외부 AI의 검증 주장 등은 게임플레이 권한이나 무결성 증명으로 사용하지 않는다. EAC 지원 타겟 여부와 스크립트 sandbox는 서로 대체 관계가 아니다.
 
 ## 데이터 수집과 AI 개선
 

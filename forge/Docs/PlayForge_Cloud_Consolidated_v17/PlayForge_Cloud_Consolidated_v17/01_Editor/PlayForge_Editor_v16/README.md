@@ -15,6 +15,6 @@ Standalone HTML prototype based on v15. Open `index.html` in a browser.
 4. Change the source Prefab and verify unrelated instance structural overrides remain.
 
 ## Limits
-- Browser mock, not C++ Reflection or actual Lua VM.
+- Browser mock, not C++ Reflection or an actual script runtime.
 - Component identities are currently unique type names, not stable component GUIDs. Multiple components of the same type and nested structural changes are future work.
 - 3D scene uses Canvas projection rather than WebGL.
