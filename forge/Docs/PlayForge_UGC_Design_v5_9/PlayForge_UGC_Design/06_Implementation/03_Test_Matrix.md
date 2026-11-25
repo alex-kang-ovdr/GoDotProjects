@@ -8,7 +8,7 @@
 |---|---|---|
 | PF-01 | Prefab 기본값 변경 | 비Override 인스턴스만 갱신 |
 | PF-02 | AI와 사용자 동시 Property 수정 | Revision 충돌 처리 |
-| PF-03 | Lua 무한 루프 | 샌드박스 Budget 중단 |
+| PF-03 | GDScript 무한 루프 | 샌드박스 Budget 중단 |
 | PF-04 | Listen Host | 별도 Client World 없음 |
 | PF-05 | Initial Snapshot 일부 누락 | 플레이 시작 차단 |
 | PF-06 | Teleport 목적지 Collision 지연 | 기존 위치 유지 |

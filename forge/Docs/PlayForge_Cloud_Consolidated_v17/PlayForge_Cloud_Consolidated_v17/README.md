@@ -1,5 +1,7 @@
 # PlayForge Cloud — Consolidated v17
 
+> **참고 자료 (2026-11-25)**: Godot 채택 이전의 자체 엔진(C++/Lua) 전제 설계다. Lua는 지원하지 않으며, 현재 정본은 [docs/forge-refactoring/SSOT.md](../../../../docs/forge-refactoring/SSOT.md)를 따른다.
+
 ## Quick start
 Open `01_Editor/PlayForge_Editor_v16/index.html` locally. This is the **existing v16 JavaScript/Canvas prototype**, not a native renderer. Example project in `04_Examples/TappyChicken`.
 
@@ -12,4 +14,4 @@ Open `01_Editor/PlayForge_Editor_v16/index.html` locally. This is the **existing
 - `06_TestPlans`: manual prototype checks and native-engine implementation acceptance criteria
 
 ## Status and caveats
-Designs are **specifications**, not implemented native engine features. DX12, Vulkan, PBR/Toon GPU shaders, debug view GPU passes, camera projection and render sorting remain to be implemented in C++ RHI. No real Lua runtime. No automatic browser testing performed in this packaging pass.
+Designs are **specifications**, not implemented native engine features. DX12, Vulkan, PBR/Toon GPU shaders, debug view GPU passes, camera projection and render sorting remain to be implemented in C++ RHI. No real script runtime. No automatic browser testing performed in this packaging pass.

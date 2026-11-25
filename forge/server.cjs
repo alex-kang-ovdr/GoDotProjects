@@ -8,7 +8,6 @@ const zlib = require('node:zlib');
 const { pipeline } = require('node:stream/promises');
 const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
-const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
@@ -32,12 +31,11 @@ const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
-const MAX_RUNTIMES_PER_ACCOUNT = 4;
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.woff2': 'font/woff2',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
-  '.csv': 'text/csv; charset=utf-8', '.lua': 'text/plain; charset=utf-8',
+  '.csv': 'text/csv; charset=utf-8',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.zip': 'application/zip' };
 const COMPRESSIBLE_EXTS = new Set(['.wasm', '.pck', '.js', '.css', '.html', '.svg', '.json']);
 const DEFAULT_HTTP_CACHE_MAX_BYTES = 256 * 1024 * 1024;
@@ -752,17 +750,6 @@ function createServer(options = {}) {
   });
   const accountPlatforms = new Map();
   const accountStudios = new Map();
-  const runtimes = new Map();
-  const sessionCommands = new Map();
-  // Serialize the whole lifecycle, including asynchronous process teardown.
-  const inSession = async (id, operation) => {
-    const previous = sessionCommands.get(id) || Promise.resolve();
-    const next = previous.catch(() => {}).then(operation);
-    sessionCommands.set(id, next);
-    try { return await next; }
-    finally { if (sessionCommands.get(id) === next) sessionCommands.delete(id); }
-  };
-  const closeRuntime = id => { const closed = runtimes.get(id)?.runtime.close(); runtimes.delete(id); return closed; };
 
   let internalApi = null;
   const getPlatformFor = accountKey => {
@@ -818,21 +805,17 @@ function createServer(options = {}) {
   }) : null;
 
   const getStudioFor = accountKey => {
-    if (!hubAuth) return { store, collaboration };
+    if (!hubAuth) return { store };
     let entry = accountStudios.get(accountKey);
     if (!entry) {
       if (accountStudios.size >= MAX_ACCOUNTS) throw Object.assign(new Error('Account capacity reached'), { status: 503 });
-      const accountStore = new ProjectStore(root, path.join(studioDirectory, accountKey));
-      const bus = new EventEmitter();
-      const accountCollaboration = attachCollaboration(bus, accountStore, clientId => closeRuntime(`${accountKey}:${clientId}`), originAllowed);
-      entry = { store: accountStore, collaboration: accountCollaboration, bus };
+      entry = { store: new ProjectStore(root, path.join(studioDirectory, accountKey)) };
       accountStudios.set(accountKey, entry);
     }
     return entry;
   };
 
   const upgradeBus = new EventEmitter();
-  let collaboration = hubAuth ? null : attachCollaboration(upgradeBus, store, closeRuntime, originAllowed);
 
   const server = http.createServer(async (req, res) => {
     const reply = (status, message, headers = {}) => {
@@ -1228,9 +1211,8 @@ function createServer(options = {}) {
           const activeStudio = getStudioFor(auth?.accountKey);
           const current = activeStudio.store.snapshot();
           if (body.baseRevision !== current.revision) return json(409, { ok: false, error: 'revision_conflict', document: current });
-          const result = await activeStudio.store.update({ source: body.source, settings: current.settings, baseRevision: body.baseRevision });
+          const result = await activeStudio.store.updateSource(body.source, body.baseRevision);
           if (result.conflict) return json(409, { ok: false, error: 'revision_conflict', document: result.document });
-          activeStudio.collaboration.documentChanged(result.document, 'official-editor');
           return json(200, { ok: true, document: result.document });
         }
         if (routePath === '/api/builds' && req.method === 'POST') {
@@ -1240,52 +1222,6 @@ function createServer(options = {}) {
           const document = activeStudio.store.snapshot();
           if (body.revision !== document.revision) return json(409, { ok: false, error: 'revision_conflict', document });
           return json(202, { ok: true, build: builds.enqueue({ ...document, ...(hubAuth ? { ownerKey: auth.accountKey } : {}) }) });
-        }
-        if (routePath === '/api/project' && req.method === 'PUT') {
-          const activeStudio = getStudioFor(auth?.accountKey);
-          const result = await activeStudio.store.update(body);
-          if (result.conflict) return json(409, { ok: false, error: 'revision_conflict', document: result.document });
-          activeStudio.collaboration.documentChanged(result.document, body.clientId);
-          return json(200, { ok: true, ...result.document, document: result.document });
-        }
-        if (routePath === '/api/pie' && req.method === 'POST') {
-          const id = body.sessionId;
-          if (!/^[a-zA-Z0-9_-]{8,100}$/.test(id || '')) return json(400, { ok: false, error: 'Invalid session ID' });
-          if (!['load', 'step', 'input', 'snapshot', 'settings', 'stop'].includes(body.op)) return json(400, { ok: false, error: 'Unknown PIE command' });
-          if (body.op === 'load' && !executionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
-          const runtimeKey = hubAuth ? `${auth.accountKey}:${id}` : id;
-          return await inSession(runtimeKey, async () => {
-            if (body.op === 'stop') { await closeRuntime(runtimeKey); return json(200, { ok: true, state: null }); }
-            if (body.op === 'load' || body.op === 'settings') {
-              if (!body.settings || typeof body.settings !== 'object' || Array.isArray(body.settings) || Object.keys(body.settings).length > 128
-                || Object.values(body.settings).some(value => !(typeof value === 'number' && Number.isFinite(value)) && !(typeof value === 'string' && value.length <= 128) && typeof value !== 'boolean')) {
-                return json(400, { ok: false, error: 'Runtime settings must contain bounded scalar values' });
-              }
-            }
-            if (body.op === 'load') {
-              if (typeof body.source !== 'string' || Buffer.byteLength(body.source, 'utf8') > 256000) return json(400, { ok: false, error: 'GDScript source exceeds the allowed size' });
-              await closeRuntime(runtimeKey);
-              if (runtimes.size >= 16) return json(429, { ok: false, error: 'Runtime session limit reached' });
-              if (hubAuth) {
-                let ownedCount = 0;
-                for (const entry of runtimes.values()) if (entry.ownerKey === auth.accountKey) ownedCount++;
-                if (ownedCount >= MAX_RUNTIMES_PER_ACCOUNT) return json(429, { ok: false, error: 'Account runtime session limit reached' });
-              }
-              const runtime = new NativeRuntime(root, () => {
-                if (runtimes.get(runtimeKey)?.runtime === runtime) runtimes.delete(runtimeKey);
-              }, { realtime: true });
-              runtimes.set(runtimeKey, { runtime, lastUsed: Date.now(), ownerKey: hubAuth ? auth.accountKey : null });
-            }
-            const session = runtimes.get(runtimeKey);
-            if (!session || (hubAuth && session.ownerKey !== auth.accountKey)) return json(409, { ok: false, error: 'Start PIE first' });
-            session.lastUsed = Date.now();
-            const { sessionId, ...command } = body;
-            let result;
-            try { result = await session.runtime.request(command); }
-            catch (error) { await closeRuntime(runtimeKey); throw error; }
-            if (body.op === 'load' && !result.ok) await closeRuntime(runtimeKey);
-            return json(200, result);
-          });
         }
         return json(404, { ok: false, error: 'Unknown API' });
       } catch (error) { return json(error.status || 400, { ok: false, error: error.message }); }
@@ -1438,8 +1374,10 @@ function createServer(options = {}) {
       socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
       return;
     }
+    const multiplayerRoute = req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo';
     if (!hubAuth) {
-      upgradeBus.emit('upgrade', req, socket, head);
+      if (multiplayerRoute) upgradeBus.emit('upgrade', req, socket, head);
+      else socket.destroy();
       return;
     }
     const auth = await hubAuth.verify(req, { requireCsrf: false });
@@ -1449,12 +1387,7 @@ function createServer(options = {}) {
       return;
     }
     req.hubAuth = auth;
-    if (req.url === '/collaboration') {
-      try { getStudioFor(auth.accountKey).bus.emit('upgrade', req, socket, head); }
-      catch { socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); }
-      return;
-    }
-    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo') {
+    if (multiplayerRoute) {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -1470,21 +1403,14 @@ function createServer(options = {}) {
     tappyChickenMmo.close();
     captainForeverMmo.close();
     platformApi?.close?.();
-    collaboration?.close?.();
     for (const entry of accountPlatforms.values()) entry.api.close?.();
     accountPlatforms.clear();
-    for (const entry of accountStudios.values()) entry.collaboration.close?.();
     accountStudios.clear();
     builds.close();
-    for (const id of runtimes.keys()) closeRuntime(id);
   };
-  const cleanup = setInterval(() => {
-    for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
-  }, 10000);
-  cleanup.unref();
-  server.on('close', () => { clearInterval(cleanup); closeOwned(); });
+  server.on('close', () => { closeOwned(); });
   server.httpCache = httpCache;
-  server.shutdown = () => { clearInterval(cleanup); closeOwned(); server.closeAllConnections?.(); server.close(); };
+  server.shutdown = () => { closeOwned(); server.closeAllConnections?.(); server.close(); };
   return server;
 }
 
@@ -1504,7 +1430,7 @@ if (require.main === module) {
       console.log(`GamePlayForge: http://127.0.0.1:${port}/`);
       if (host === '0.0.0.0') {
         for (const adapters of Object.values(require('node:os').networkInterfaces())) for (const adapter of adapters || []) {
-          if (adapter.family === 'IPv4' && !adapter.internal) console.log(`LAN collaboration: http://${adapter.address}:${port}/Studio/`);
+          if (adapter.family === 'IPv4' && !adapter.internal) console.log(`LAN: http://${adapter.address}:${port}/OfficialGodot/`);
         }
       }
     });

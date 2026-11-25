@@ -9,10 +9,10 @@
 | 영역 | 기준 |
 |---|---|
 | 제품 핵심 | 실시간 온라인 협업, 무설치 웹 제작, AI 주도 재귀 개선 |
-| 언어 | C++20 런타임/백엔드, Lua 5.4 게임, TypeScript 웹. Rust 제외 |
+| 언어 | C++20 런타임/백엔드, GDScript 게임(Lua·C# 미지원), TypeScript 웹. Rust 제외 |
 | 에디터 | Unity식 Hierarchy/Scene/Inspector/Project, 브라우저 내부 패널 |
 | 게임 독립성 | Tappy Chicken은 예제 프로젝트. 전용 도구를 플랫폼에 하드코딩하지 않음 |
-| UGC 로직 | Device 전용 시스템 없음. Actor/Component/Prefab/Lua 생성 |
+| UGC 로직 | Device 전용 시스템 없음. Actor/Component/Prefab/GDScript 생성 |
 | 플랫폼 | Windows 클라이언트/서버, Android/iOS 클라이언트 우선. Linux는 서버 중심 |
 | 렌더링 | Windows DX12, Android Vulkan 우선. iOS는 검증된 네이티브 경로 |
 | Material | Mobile/Desktop PBR, Toon, Debug View, Ortho/Perspective, 정렬 제어 |
@@ -43,12 +43,12 @@ Godot 공통 런타임의 용량을 배포 사용량에서 제외할지는 **미
 
 ## 확인한 기존 파일 상태
 
-`PlayForge_Cloud_Consolidated_v17.zip`의 v16 README는 Canvas 투영 목업, 실제 C++ Reflection/Lua VM 미연동, Component 타입명 기반 식별 제한을 명시한다. 따라서 현재 전환 대상은 **이미 완성된 C++ 엔진의 바이너리 교체가 아니라, 기존 웹 프로토타입·프로젝트 규약을 실제 실행 엔진으로 연결하는 작업**이다.
+`PlayForge_Cloud_Consolidated_v17.zip`의 v16 README는 Canvas 투영 목업, 실제 C++ Reflection/스크립트 런타임 미연동, Component 타입명 기반 식별 제한을 명시한다. 따라서 현재 전환 대상은 **이미 완성된 C++ 엔진의 바이너리 교체가 아니라, 기존 웹 프로토타입·프로젝트 규약을 실제 실행 엔진으로 연결하는 작업**이다.
 
 `PlayForge_AI_Workflow_vNext.zip`은 정책 예제·스키마·검증 자료이며 실제 OAuth/MCP 운영 서버나 게임 엔진을 포함한 배포본이 아니다. 본 패키지에서는 기존 테스트를 재실행했다고 주장하지 않는다. 입력 ZIP의 CRC와 파일 해시만 확인했다. 정확한 식별자는 `references/input-artifacts.json`을 참조한다.
 
 ## 요구 변경은 ADR로 남긴다
 
-가령 HLSL을 Godot Shader로 바꾸는 것은 엔진 재사용 수단의 변경이다. 반대로 Lua를 GDScript로 바꾸거나 런타임 다운로드를 추가하는 것은 사용자 요구 변경이다. 후자를 단순한 구현 편의로 승인해서는 안 된다.
+가령 HLSL을 Godot Shader로 바꾸는 것은 엔진 재사용 수단의 변경이다. 반대로 런타임 다운로드를 추가하는 것은 사용자 요구 변경이다. 후자를 단순한 구현 편의로 승인해서는 안 된다.
 
 각 변경안은 기존 요구, 새 의미, 사용자 영향, 실패 시 되돌리는 방법을 포함한다. 이 검토 패키지의 제안만으로 구현·채택 상태를 자동 변경하지 않는다.

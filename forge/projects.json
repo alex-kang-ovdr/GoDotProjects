@@ -1,8 +1,7 @@
 {
   "version": 1,
   "projects": [
-    {"id":"studio","title":"GamePlayForge Studio","kind":"studio","role":"editor","entrypoint":"Studio/index.html","description":"GDScript 편집, Godot PIE 실행, 다국어와 공동 편집을 지원하는 제작 공간입니다.","reference":"Docs/GODOT_MIGRATION.md","version":"0.1","available":true},
-    {"id":"tappy-chicken","title":"Tappy Chicken · Godot PIE","kind":"playable","role":"godot-gdscript","entrypoint":"Studio/index.html?project=tappy-chicken","description":"실제 Godot 엔진이 GDScript 게임 규칙과 장면을 실행하는 프로젝트입니다.","reference":"References/TappyChicken/ANALYSIS.md","version":"3","available":true},
+    {"id":"official-godot","title":"PlayForge Godot Web Editor","kind":"studio","role":"editor","entrypoint":"OfficialGodot/index.html","description":"공식 Godot 웹 에디터에서 프로젝트를 만들고 GDScript를 편집·실행·배포하는 제작 공간입니다.","reference":"Docs/GODOT_MIGRATION.md","version":"1","available":true},
     {"id":"nexus-front","title":"Nexus Front · 참조 PoC","kind":"playable","role":"reference-poc","entrypoint":"WebProjects/League of Legends/Playable/Current/dist/index.html","description":"원본 파일을 사용할 수 있을 때 비교를 재개하는 JavaScript MOBA 프로토타입입니다.","reference":"References/League of Legends/ANALYSIS.md","version":"7","available":false,"availabilityReason":"원본 파일 누락"},
     {"id":"rtk11","title":"삼국지 11 · 참조 PoC","kind":"playable","role":"reference-poc","entrypoint":"WebProjects/삼국지 11/Playable/Current/index.html","description":"원본 파일을 사용할 수 있을 때 비교를 재개하는 JavaScript 전략 프로토타입입니다.","reference":"References/삼국지 11/ANALYSIS.md","version":"3","available":false,"availabilityReason":"원본 파일 누락"}
   ]

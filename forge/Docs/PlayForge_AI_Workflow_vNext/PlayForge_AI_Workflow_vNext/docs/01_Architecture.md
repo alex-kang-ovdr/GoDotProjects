@@ -23,7 +23,7 @@ Human UI / Platform AI / Personal API / External MCP
     → Optional asynchronous analysis (purpose checked)
 ```
 
-MCP는 얇은 Adapter다. 에디터·AI의 수정 경로는 같고 게임 전용 에디터 기능을 추가하지 않는다. Actor, Component, Property, Prefab, Lua, Asset 타입은 프로젝트의 Schema에서 발견한다.
+MCP는 얇은 Adapter다. 에디터·AI의 수정 경로는 같고 게임 전용 에디터 기능을 추가하지 않는다. Actor, Component, Property, Prefab, GDScript, Asset 타입은 프로젝트의 Schema에서 발견한다.
 
 ### 저장 실패 경계
 
@@ -57,7 +57,7 @@ begin → query_schema/context → apply(dry_run) → apply → validate → rep
 
 ## 5. 공동 편집 안전성
 
-전체 Workspace Revision만으로 모든 편집을 거부하지 않는다. Property는 property revision, Lua 파일 patch는 document revision, 구조 변경은 구조 revision과 필요한 짧은 lease를 검사한다.
+전체 Workspace Revision만으로 모든 편집을 거부하지 않는다. Property는 property revision, GDScript 파일 patch는 document revision, 구조 변경은 구조 revision과 필요한 짧은 lease를 검사한다.
 
 ```text
 사용자 A: 속도 변경, property revision 7 → 8

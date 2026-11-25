@@ -11,9 +11,8 @@
       "components": [
         "Sprite",
         "CircleCollision",
-        "LuaBehaviour"
+        "ScriptBehaviour"
       ],
-      "script": "Scripts/Game.lua",
       "position": [
         135,
         290
@@ -35,7 +34,7 @@
       "id": "pipeSpawner",
       "class": "Actor",
       "components": [
-        "LuaBehaviour"
+        "ScriptBehaviour"
       ],
       "position": [
         510,

@@ -182,7 +182,7 @@ func _as_number(value: Variant) -> Variant:
 
 
 func _random01() -> float:
-	# Match JavaScript uint32 arithmetic used by the original Lua rules.
+	# Match JavaScript uint32 arithmetic so the seeded sequence stays deterministic.
 	_seed = (_seed * 1664525 + 1013904223) & 0xffffffff
 	return float(_seed) / 4294967296.0
 

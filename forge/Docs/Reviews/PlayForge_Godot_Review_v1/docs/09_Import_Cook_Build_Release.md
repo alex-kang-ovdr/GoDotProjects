@@ -25,7 +25,7 @@ TaskKey는 source hash, 적용 설정 hash, 실제 입력 목록, 엔진/플러�
 | 변경 | 최소 재처리 제안 |
 |---|---|
 | Actor Transform | Scene/Cell 생성 데이터 |
-| Lua 함수 | 스크립트 검증·번들·허용된 재시작 |
+| GDScript 함수 | 스크립트 검증·번들·허용된 재시작 |
 | Texture 원본 | 해당 Import와 타겟 Texture |
 | Material scalar | 파라미터·Scene/Material 데이터 |
 | Shading model | 생성 Shader·관련 pipeline 준비 |
@@ -36,7 +36,7 @@ TaskKey는 source hash, 적용 설정 hash, 실제 입력 목록, 엔진/플러�
 
 ## 파일 포함·경로 규칙
 
-PlayForge Source를 generated Godot project로 투영한다. `.lua`, 자체 JSON/loc 데이터 등 비표준 리소스는 export 결과의 포함 목록을 검증한다. Runtime에서 실제 파일이 없는데 에디터 로컬 파일 덕분에 성공하는 상황을 테스트로 잡는다.
+PlayForge Source를 generated Godot project로 투영한다. 자체 JSON/loc 데이터 등 비표준 리소스는 export 결과의 포함 목록을 검증한다. Runtime에서 실제 파일이 없는데 에디터 로컬 파일 덕분에 성공하는 상황을 테스트로 잡는다.
 
 생성 파일의 경로보다 GUID 매핑을 우선한다. `.import` 설정과 리소스 UID가 재생성될 때 기존 Source identity를 바꾸지 않는다. 생성 산출물을 Creator의 소스 원본처럼 양방향 편집하지 않는다.
 
@@ -48,7 +48,7 @@ PlayForge Source를 generated Godot project로 투영한다. `.lua`, 자체 JSON
 | Android Client | ARM64/Vulkan, 터치·발열·메모리 |
 | iOS Client | macOS/Xcode 빌드와 서명, 네이티브 실행 |
 | Windows/Linux Dedicated | headless·불필요한 시각 데이터 제거 |
-| Web PIE | WASM·Compatibility·Lua·보안 헤더 |
+| Web PIE | WASM·Compatibility·GDScript·보안 헤더 |
 
 iOS export는 macOS와 Xcode가 필요한 공식 경로다. 제작자가 로컬 SDK를 설치하지 않아도 된다는 제품 요구는 서버 빌드 호스트의 SDK 요구까지 없앤다는 뜻이 아니다. [G45](../references/Verified_Sources.md#g45)
 

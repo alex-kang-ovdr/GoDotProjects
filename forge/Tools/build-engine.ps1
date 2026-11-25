@@ -52,7 +52,7 @@ func _initialize() -> void:
 		"gap": 70, "interval": "0.1", "seed": "5.9", "best": "-1",
 	})
 	if state.settings.difficulty != "hard" or state.settings.speed != 450.0 or state.settings.gap != 95.0:
-		_fail("Difficulty profile or numeric clamping differs from Lua")
+		_fail("Difficulty profile or numeric clamping differs from the expected rules")
 		return
 	if state.settings.gravity != 1050.0 or state.settings.interval != 0.5 or state.settings.seed != 5 or state.settings.best != 0:
 		_fail("Invalid settings did not fall back or clamp as expected")
@@ -72,7 +72,7 @@ func _initialize() -> void:
 	for index in range(23):
 		state = game.call("update", 0.04)
 	if state.pipes.size() != 1 or state.seed != 87628868 or absf(state.pipes[0].x - 503.2) > 0.000001:
-		_fail("Seeded pipe spawn did not match the Lua LCG")
+		_fail("Seeded pipe spawn did not match the expected LCG sequence")
 		return
 	state.world.width = 1
 	state.bird.y = -100

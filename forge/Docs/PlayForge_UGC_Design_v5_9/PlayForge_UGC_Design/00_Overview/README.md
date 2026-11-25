@@ -8,8 +8,8 @@
 
 ## 확정된 기술 원칙
 
-- C++20 Core / Lua 5.4 Gameplay / TypeScript Web Editor
-- 일반 Actor/Component/Prefab/Lua 사용; **Device 전용 시스템 없음**
+- C++20 Core / GDScript Gameplay / TypeScript Web Editor
+- 일반 Actor/Component/Prefab/GDScript 사용; **Device 전용 시스템 없음**
 - UI·AI·MCP는 동일 Workspace Command API 사용
 - GitHub는 프로젝트 원본, Workspace는 임시 공동 편집 상태, Release는 불변 아카이브
 - EOS Connect/Session/Voice 연동; PlayForge가 Matchmaker·서버 배정·Authority 담당
@@ -18,7 +18,7 @@
 
 ## 문서 목차
 
-1. `01_Prefab_AI_Lua/` — Prefab·Lua·AI 제작·검증
+1. `01_Prefab_AI_Lua/` — Prefab 재사용
 2. `02_Multiplayer_Collaboration/` — PIE·EOS·협업·Initial Play Barrier
 3. `03_Publishing_Discovery/` — Release·SEO·추천·검색
 4. `04_Analytics_Safety/` — 지표·운영·안전성·안티치트

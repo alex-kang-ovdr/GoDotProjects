@@ -9,7 +9,7 @@
 | ADR-G01 | Godot를 실행 엔진 후보로, 웹 플랫폼은 유지 | 핵심 가치에 집중 | 검토 제안 |
 | ADR-G02 | E1 기본·E2 승인·E3 기본 금지 | 업그레이드 비용 통제 | 채택 심사 필요 |
 | ADR-G03 | PlayForge Source가 유일한 편집 원본 | 양방향 동기화 제거 | 기존 원칙 유지 |
-| ADR-G04 | Lua 5.4 유지 | 사용자 결정, JS 이중 게임 규칙 금지 | 고정 제약 |
+| ADR-G04 | ~~Lua 5.4 유지~~ → **철회(2026-11-25): Lua 미지원, GDScript 기본** ([SSOT.md](../../../../../docs/forge-refactoring/SSOT.md) §5 D1) | 사용자 결정 | 철회 |
 | ADR-G05 | RHI·렌더 루프는 Godot 소유 | 자체 Renderer 중복 제거 | 기존 수단 조정 승인 필요 |
 | ADR-G06 | 웹과 네이티브 Capability 분리 | WebGL 2와 Forward+/Mobile 차이 | 검증 필요 |
 | ADR-G07 | Room별 프로세스부터 | 격리·Tick·전역 상태 위험 | 초기 운영 제안 |
@@ -23,7 +23,6 @@
 
 | 질문 | 필요한 증거 | 결정권 |
 |---|---|---|
-| 웹 Lua는 동적 E1인가 정적 E2인가 | 대상 브라우저의 실행·크기·격리 시험 | 런타임/보안 |
 | 실제 물리 첫 백엔드는 무엇인가 | Box2D/Havok 기능·SDK·성능 | 엔진/제품 |
 | Mip streaming을 어느 버전에서 통과시키는가 | stable/beta 별 API·GPU 메모리 시험 | 렌더/제품 |
 | Godot 고수준 net를 제품에 쓰는가 | PF schema 필요성·비-Godot 경계 | 네트워크 |
@@ -36,7 +35,7 @@
 
 **1. GodotInstance 하나와 World 하나는 다르다.** 프로세스당 GodotInstance 제한이 있어도 Viewport/World를 여러 개 둘 수 있다. 반대로 여러 World가 완전한 엔진·보안·메모리 격리를 뜻하지 않는다. [G22](../references/Verified_Sources.md#g22)[G15](../references/Verified_Sources.md#g15)
 
-**2. Lua는 채택 결정이 아니라 통합 과제다.** 커뮤니티 확장을 발견했다고 공식 기본 언어 지원으로 표기하지 않는다. [G23](../references/Verified_Sources.md#g23)[G38](../references/Verified_Sources.md#g38)
+**2. 게임 스크립트는 GDScript만 지원한다.** 커뮤니티 언어 확장을 발견했다고 지원 언어로 표기하지 않는다. [G23](../references/Verified_Sources.md#g23)
 
 **3. 물리 확장 가능과 backend hot swap은 다르다.** PhysicsServer 확장점이 있어도 시작 후 선택 변경은 지원되지 않는다. [G16](../references/Verified_Sources.md#g16)[G18](../references/Verified_Sources.md#g18)
 
@@ -56,4 +55,4 @@
 
 ## 의사결정 회의 순서
 
-첫 회의는 미들웨어 브랜드 선호보다 Lua/Web 안전한 실행과 Source/Runtime 계약부터 확인한다. 다음은 렌더 기능 차이와 패키지 크기, 다음은 게임 네트워크와 미들웨어, 마지막은 대규모 Room 밀도·고급 rendering이다. 핵심 협업 실증 전에 E3 엔진 개발로 범위를 넓히지 않는다.
+첫 회의는 미들웨어 브랜드 선호보다 GDScript/Web 안전한 실행과 Source/Runtime 계약부터 확인한다. 다음은 렌더 기능 차이와 패키지 크기, 다음은 게임 네트워크와 미들웨어, 마지막은 대규모 Room 밀도·고급 rendering이다. 핵심 협업 실증 전에 E3 엔진 개발로 범위를 넓히지 않는다.

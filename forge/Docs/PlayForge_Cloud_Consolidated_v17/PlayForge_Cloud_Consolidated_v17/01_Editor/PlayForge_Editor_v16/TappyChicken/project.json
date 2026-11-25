@@ -3,7 +3,7 @@
   "name": "Tappy Chicken",
   "version": 1,
   "engine": "PlayForge C++20 (proposed)",
-  "scripting": "Lua 5.4",
+  "scripting": "GDScript",
   "genre": "Casual / Arcade",
   "tags": [
     "Flappy",
@@ -13,9 +13,6 @@
     "Starter"
   ],
   "mainScene": "Scenes/Main.scene.json",
-  "scripts": [
-    "Scripts/Game.lua"
-  ],
   "preview": "index.html",
   "target": [
     "Web Preview",
@@ -23,6 +20,6 @@
     "Android",
     "iOS"
   ],
-  "note": "Browser preview is a JavaScript port of the Lua rules; no embedded Lua VM.",
+  "note": "Browser preview is a standalone JavaScript implementation of the game rules; no embedded script runtime.",
   "settings": "Gameplay.settings.json"
 }

@@ -24,7 +24,7 @@
   </main>
   <script>
   (async()=>{
-    const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+    const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1])||'';
     const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
     const host=document.getElementById('frontendContent');
     const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
@@ -53,10 +53,10 @@
       const scroll=el('div','comp-scroll');const table=el('table','');table.setAttribute('aria-label','프론트엔드 기능 비교');
       const thead=el('thead',''),headRow=el('tr','');headRow.append(el('th','', '비교 항목'));for(const f of registry.frontends)headRow.append(el('th','',f.title));thead.append(headRow);table.append(thead);
       const tbody=el('tbody','');for(const row of registry.comparison){const tr=el('tr','');tr.append(el('th','',row.label));for(const f of registry.frontends){const td=el('td','',f[row.key]||'—');if(f.planned&&row.key==='capabilities'){td.append(el('p','planned-note',f.planned))}tr.append(td)}tbody.append(tr)}table.append(tbody);scroll.append(table);comparison.append(scroll);
-      const note=el('div','footnote');note.append(el('strong','', '프로젝트 데이터 경계. '),document.createTextNode('Classic과 Godot Layout은 기존 Tappy 문서를 공유합니다. Creator는 프로젝트별 파일·버전·배포를 관리하며 저장된 텍스트 파일을 동기화합니다. 동일 씬의 속성 단위 병합과 바이너리 자산 동기화는 후속 범위입니다.'));comparison.append(note);host.append(comparison);
+      const note=el('div','footnote');note.append(el('strong','', '프로젝트 데이터 경계. '),document.createTextNode('Creator는 프로젝트별 파일·버전·배포를 관리하며 저장된 텍스트 파일을 동기화합니다. 동일 씬의 속성 단위 병합과 바이너리 자산 동기화는 후속 범위입니다.'));comparison.append(note);host.append(comparison);
       const docs=el('nav','docs');docs.setAttribute('aria-label','구현 문서');for(const d of registry.docs){const a=el('a','',d.label+' ↗');a.href=forgePath(d.href);docs.append(a)}host.append(docs);
       document.title='PlayForge · '+registry.title;
-    }catch(error){host.replaceChildren();const box=el('div','load-error',error.message+' 잠시 후 다시 시도하거나 Classic Studio로 이동하세요.');host.append(box,link(forgePath('/Studio/'),'Classic Studio 열기'))}
+    }catch(error){host.replaceChildren();const box=el('div','load-error',error.message+' 잠시 후 다시 시도하거나 PlayForge Creator로 이동하세요.');host.append(box,link(forgePath('/OfficialGodot/'),'PlayForge Creator 열기'))}
   })();
   </script>
 </body>

@@ -16,15 +16,15 @@ Godot 본체 변경 최소화를 우선하면서 PlayForge의 온라인 협업·
 
 PlayForge 웹 에디터와 Source/협업/MCP는 유지하고, Godot는 실행 엔진으로 활용합니다. GDExtension을 기본으로 하고 정적 모듈은 예외 승인, 내부 패치는 기본 금지합니다. 이 선택은 아직 채택 확정이 아닙니다.
 
-웹/네이티브 렌더링 차이, Lua 5.4 격리, 로컬 Mip Streaming, 다중 Room, 자체 렌더러·HLSL·정렬 요구가 중요한 검증 지점입니다. 미지원 기능을 조용히 축소하지 않습니다.
+웹/네이티브 렌더링 차이, GDScript 격리, 로컬 Mip Streaming, 다중 Room, 자체 렌더러·HLSL·정렬 요구가 중요한 검증 지점입니다. 미지원 기능을 조용히 축소하지 않습니다.
 
 ## 구성
 
-- `docs/`: 분야별 검토 17개. 구현 난이도·제약·우회·마이그레이션·검증 기준.
+- `docs/`: 분야별 검토 16개. 구현 난이도·제약·우회·마이그레이션·검증 기준.
 - `data/feature-matrix.json`: 66개 요구의 가용성·확장 등급·난이도.
 - `data/risk-register.json`: 16개 위험과 책임 역할.
 - `data/acceptance-tests.json`: 64개 Runtime 수락 시험. **모두 미실시**.
-- `references/`: 48개 공식/원저자 자료와 입력 ZIP 해시.
+- `references/`: 47개 공식/원저자 자료와 입력 ZIP 해시.
 - `examples/`, `schemas/`: 제안 계약의 JSON 예시·Schema. 실제 실행 설정 아님.
 - `tools/verify_bundle.py`: 문서 패키지 검증.
 - `reports/`: 패키지 검사 결과 및 Runtime 시험 체크리스트.
@@ -32,13 +32,13 @@ PlayForge 웹 에디터와 Source/협업/MCP는 유지하고, Godot는 실행 �
 
 ## 유지한 요구
 
-게임은 Lua 5.4, 런타임/백엔드는 C++20, 웹은 TypeScript입니다. Rust·Device 전용 시스템을 추가하지 않습니다. Listen Host는 단일 Authority World이며 별도 Local Client World/Loopback을 만들지 않습니다. Actor별 Asset Streaming과 런타임 CDN 다운로드를 지원하지 않습니다.
+게임은 GDScript(Lua·C# 미지원), 런타임/백엔드는 C++20, 웹은 TypeScript입니다. Rust·Device 전용 시스템을 추가하지 않습니다. Listen Host는 단일 Authority World이며 별도 Local Client World/Loopback을 만들지 않습니다. Actor별 Asset Streaming과 런타임 CDN 다운로드를 지원하지 않습니다.
 
 클라우드 Snapshot이 기본 버전관리이고 GitHub는 선택입니다. Free는 제작 100 MB·프로젝트 3개·배포 50 MB, Pro는 제작 1 GB·프로젝트 개수 무제한·배포 100 MB입니다. 가격·AI 사용량의 구체 수치는 미정이며 Godot 도입으로 변경하지 않습니다.
 
 ## 검증과 한계
 
-공식 자료 대조와 입력 ZIP의 텍스트·CRC 확인을 수행했습니다. 본 패키지의 JSON/참조/해시/링크 검사는 별도 보고서에 기록합니다. **Godot 설치·빌드·Export·브라우저 PIE·Lua·Havok·Box2D·멀티플레이·실기기·실측 비교는 수행하지 않았습니다.**
+공식 자료 대조와 입력 ZIP의 텍스트·CRC 확인을 수행했습니다. 본 패키지의 JSON/참조/해시/링크 검사는 별도 보고서에 기록합니다. **Godot 설치·빌드·Export·브라우저 PIE·Havok·Box2D·멀티플레이·실기기·실측 비교는 수행하지 않았습니다.**
 
 현재 확인한 기준 안정판은 4.7.2, 개발 채널은 4.8 beta3입니다. 정확한 채택 버전·commit·템플릿 해시는 PoC에서 확정합니다. stable/latest 문서의 기능을 버전 고정 바이너리에서 다시 검증해야 합니다. [공식 배포 목록](https://godotengine.org/download/archive/)
 
@@ -57,7 +57,6 @@ python tools/verify_bundle.py
 - [00 · 도입 판단과 의사결정 요약](docs/00_Executive_Decision.md)
 - [01 · 기존 요구사항과 변경 금지 기준](docs/01_Product_Baseline.md)
 - [02 · Godot 변경 최소화 정책과 확장 경계](docs/02_Minimal_Change_Policy.md)
-- [03 · Runtime Bridge·Lua·객체 모델](docs/03_Runtime_Bridge_And_Lua.md)
 - [04 · 무설치 웹 에디터·협업·MCP·재귀 개선](docs/04_Web_Collaboration_AI.md)
 - [05 · 렌더링·셰이더·카메라·정렬 제약](docs/05_Rendering_Cameras_Sorting.md)
 - [06 · Havok·Box2D·Navigation·Animation·ECS](docs/06_Physics_Animation_Nav_ECS.md)

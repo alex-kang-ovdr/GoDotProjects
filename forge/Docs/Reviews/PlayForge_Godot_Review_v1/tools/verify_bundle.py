@@ -61,7 +61,7 @@ def main() -> int:
     check('risk_ids_unique',len({r['id'] for r in risks})==len(risks))
     check('all_risks_open',all(r['status']=='open' for r in risks))
     constraints = load('data/product-constraints.json')
-    check('gameplay_lua54',constraints['languages']['gameplay']=='Lua 5.4')
+    check('gameplay_gdscript',constraints['languages']['gameplay']=='GDScript')
     check('runtime_cpp20',constraints['languages']['runtime_and_backend']=='C++20')
     check('no_host_client_world',constraints['hosting']['local_client_world'] is False)
     check('no_host_loopback',constraints['hosting']['loopback_replication_for_host'] is False)
@@ -105,7 +105,7 @@ def main() -> int:
         check('schema_example_valid',validator.is_valid(example)); schema_cases+=1
         mutations=[('streaming','actor_asset_streaming',True),('streaming','runtime_cdn_downloads',True),
                    ('network','listen_host_client_world',True),('network','host_loopback_replication',True),
-                   ('evidence','runtime_executed',True),('languages','gameplay','GDScript'),
+                   ('evidence','runtime_executed',True),('languages','gameplay','Lua 5.4'),
                    ('integration','internal_patches_allowed',True)]
         for obj,key,value in mutations:
             mutated=json.loads(json.dumps(example)); mutated[obj][key]=value

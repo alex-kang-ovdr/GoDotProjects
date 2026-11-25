@@ -21,7 +21,7 @@ Iris 소스를 이식한다는 의미가 아니라 독립적인 상태 수집·�
 Host Process
 └── Authority Runtime / World 하나
     ├── Local Host Player + Input
-    ├── Game Lua / Physics
+    ├── Game GDScript / Physics
     ├── Host Render / Audio
     └── Remote Replication → 원격 클라이언트
 ```
@@ -67,7 +67,7 @@ Client의 Ready 보고는 **동기화 진행 신호이지 클라이언트 무결
 
 ## EOS 등 외부 서비스
 
-EOS Voice/Auth/Session/EAC 요구는 별도 Provider로 유지한다. Godot 채택만으로 SDK의 브라우저·모바일·UGC 재배포 지원이 생기지 않는다. 공급자별 승인과 Native SDK 빌드를 별도 통과 조건으로 둔다. Matchmaker/Join Token은 플랫폼의 서버측 서비스이며 게임 Lua에 자격증명을 주지 않는다.
+EOS Voice/Auth/Session/EAC 요구는 별도 Provider로 유지한다. Godot 채택만으로 SDK의 브라우저·모바일·UGC 재배포 지원이 생기지 않는다. 공급자별 승인과 Native SDK 빌드를 별도 통과 조건으로 둔다. Matchmaker/Join Token은 플랫폼의 서버측 서비스이며 게임 스크립트에 자격증명을 주지 않는다.
 
 ## Headless와 Room 격리
 

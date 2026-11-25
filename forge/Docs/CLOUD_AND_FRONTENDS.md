@@ -1,19 +1,17 @@
 # 웹 프론트엔드 선택과 공유 서버
 
-갱신일: 2026-11-17. 구현 상태와 local/browser evidence를 구분하며 실제 cloud deployment 완료 보고는 아닙니다.
+갱신일: 2026-11-25. 구현 상태와 local/browser evidence를 구분하며 실제 cloud deployment 완료 보고는 아닙니다.
 
 | 실행 파일 | 웹 경로 | 편집·협업 방식 |
 | --- | --- | --- |
-| `Launch/PlayForge-Web-Classic.exe` | `/Studio/` | 기존 PlayForge UI, Godot-layout Web과 같은 Yjs live document |
-| `Launch/PlayForge-Web-Godot.exe` | `/StudioGodot/` | Godot Editor layout 기반 웹 UI, 같은 controller/shared Yjs document |
 | `Launch/PlayForge-Web-Official.exe` | `/OfficialGodot/` | PlayForge 프로젝트 라이브러리와 공식 Godot Web Editor iframe을 한 화면에서 제공. 상단 단일 바에서 프로젝트·협업·버전·빌드·배포를 관리 |
 
-세 실행 파일은 Classic, Godot-layout Web, 공식 Godot 통합 Creator 경로를 각각 계속 제공합니다. 기본 실행은 `START_GAMEPLAYFORGE.cmd` 또는 `Launch/PlayForge-Web-Official.exe`이며, 나머지 두 실행 파일은 대체 웹 UI를 직접 열 때 사용합니다. Godot-layout Web은 native Godot Editor나 browser Godot Web Editor 자체가 아니며, Classic과 같은 live document를 사용합니다.
+기본 실행은 `START_GAMEPLAYFORGE.cmd` 또는 `Launch/PlayForge-Web-Official.exe`입니다. 기존 HTML/JS Studio 두 경로(`Launch/PlayForge-Web-Classic.exe` → `/Studio/`, `Launch/PlayForge-Web-Godot.exe` → `/StudioGodot/`)와 그 Yjs 공유 문서(`/collaboration` WebSocket, `PUT /api/project`, 설정 잠금)는 2026-11-25에 폐기했습니다. 두 경로는 이제 404를 반환하며 launcher도 Official 하나만 빌드합니다.
 
 실행 파일은 local server가 없으면 Node server를 시작하고, 실행 창의 Open으로 브라우저를 엽니다.
 직접 시작한 프로세스만 Stop/창 닫기에서 정리합니다. 같은 포트의 기존 Godot server는 재사용하며 종료하지 않습니다.
-런처의 로컬 웹 UI PIE는 `PLAYFORGE_HEADLESS=1`로 native Godot process를 창 없이 실행하고 Canvas에 상태를 미러합니다. 이는 브라우저 WASM 실행과 다릅니다. 별도 actual Web runtime은 Godot WASM으로 브라우저에서 실행되며 focused smoke evidence가 있습니다. 별도 네이티브 창 플레이는 `npm run play`입니다.
-런처 재생성: `Tools/Launchers/build-launchers.ps1 -SelfTest`. `--smoke-test`는 실제 server start/routes/stop 확인으로 세 launcher에서 통과했습니다.
+런처는 `PLAYFORGE_HEADLESS=1`로 server를 시작합니다. 별도 네이티브 창 플레이는 `npm run play`입니다.
+런처 재생성: `Tools/Launchers/build-launchers.ps1 -SelfTest`.
 
 ## 공유 서버 연결
 
@@ -25,9 +23,9 @@
 1. Node.js 22+, Godot 4.7+ 설치 후 `GODOT_BIN` 지정 및 `npm ci`.
 2. `Tools/start-cloud-backend.ps1 -PublicOrigin https://실제도메인` 실행. backend는 `127.0.0.1:4173`에 바인딩합니다.
 3. TLS·접근 인증을 담당하는 reverse proxy를 앞에 둡니다. `Deploy/Caddyfile.example`은 환경변수로 도메인·사용자·비밀번호 해시를 받습니다.
-4. `Saved/GodotWorkspace`를 server의 영속 저장소로 보존하고 백업합니다. 현재 구조는 단일 서버·단일 공유 project입니다.
+4. `Saved/Platform`(플랫폼 프로젝트)과 `Saved/GodotWorkspace`(editor plugin source workspace)를 server의 영속 저장소로 보존하고 백업합니다.
 
-`PUBLIC_ORIGIN`은 browser가 보는 HTTPS origin과 정확히 일치해야 합니다. HTTP API와 WebSocket upgrade에 같은 검사를 적용합니다.
+`PUBLIC_ORIGIN`은 browser가 보는 HTTPS origin과 정확히 일치해야 합니다. HTTP API와 멀티플레이 WebSocket upgrade에 같은 검사를 적용합니다.
 브라우저는 HTTPS에서 WSS를 선택합니다. 전달된 X-Forwarded-* 헤더로 origin 검사를 우회하지 않습니다.
 실제 cloud hosting, SSO/auth identity 연동, Caddy/TLS deployment는 아직 검증되지 않았습니다. 로컬 HTTPS origin 모사 환경에서 HTTP·WS 경계만 확인했습니다.
 
@@ -57,7 +55,7 @@ Official Web Editor browser에서 crossOriginIsolated 상태의 WASM 시작, ZIP
 
 Web export/build succeeded; result: `Saved/Tests/web-build-result.json`. `npm run test:web-runtime`은 실제 server Web build를 Chrome에서 실행해 Godot WASM load/input/pause freeze/restart를 통과했습니다. Evidence: `Saved/Tests/web-runtime/runtime.json`, `build.json`, `web-game.png`. Official-editor strict smoke는 별도이며 위의 두 errors로 실패 상태입니다.
 
-이는 Tappy 2D focused runtime smoke입니다. full browser matrix, generic 3D project, Web/native visual parity, networked gameplay, 모든 review acceptance cases를 통과했다는 뜻이 아닙니다. Studio UI PIE는 별도로 native Godot execution state의 Canvas mirror를 보여줍니다.
+이는 Tappy 2D focused runtime smoke입니다. full browser matrix, generic 3D project, Web/native visual parity, networked gameplay, 모든 review acceptance cases를 통과했다는 뜻이 아닙니다.
 
 참고: [Godot 공식 웹 에디터 안내](https://docs.godotengine.org/en/stable/tutorials/editor/using_the_web_editor.html), [Caddy WebSocket reverse proxy](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy), [Caddy 인증 설정](https://caddyserver.com/docs/caddyfile/directives/basic_auth).
 

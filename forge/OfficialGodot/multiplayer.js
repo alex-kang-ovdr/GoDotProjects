@@ -2,7 +2,7 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   'use strict';
   options ||= {};
   root ||= document;
-  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1])||'';
   const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
   const query=new URLSearchParams(location.search),projectId=query.get('project')||'',projectName=query.get('name')||'멀티플레이 테스트 워크스페이스';
   const templateId = options.template || query.get('template') || 'brawllabs';

@@ -8,7 +8,7 @@
     "forge/Tests/brawllabs-multiplayer.test.cjs",
     "forge/Tests/build-queue-reuse.test.cjs",
     "forge/Tests/cloud-origin.test.cjs",
-    "forge/Tests/collaboration.test.cjs",
+    "forge/Tests/contract.editor-source-workspace.test.cjs",
     "forge/Tests/deployment-zip-archive.test.cjs",
     "forge/Tests/drive-retention-policy.test.cjs",
     "forge/Tests/drive-snapshot-store.test.cjs",

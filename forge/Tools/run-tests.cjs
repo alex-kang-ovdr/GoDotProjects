@@ -18,7 +18,6 @@ try {
 
 const tests = [
   'Tests/integration.test.cjs',
-  'Tests/collaboration.test.cjs',
   'Tests/godot-parity.test.cjs',
   'Tests/native-runtime.test.cjs',
   'Tests/godot-runtime.test.cjs',

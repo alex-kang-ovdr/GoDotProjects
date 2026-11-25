@@ -30,9 +30,9 @@ Mobile/Desktop은 물리적으로 다른 게임 스키마가 아니라 성능·�
 
 ## Console과 프로파일러
 
-명령은 로컬 View, Runtime, Authority Server, Workspace를 명시적으로 선택한다. 게임 Lua에 문자열 `ExecuteConsole`을 무제한 노출하지 않는다. 외부 AI도 동일한 명령 권한을 따른다.
+명령은 로컬 View, Runtime, Authority Server, Workspace를 명시적으로 선택한다. 게임 GDScript에 문자열 `ExecuteConsole`을 무제한 노출하지 않는다. 외부 AI도 동일한 명령 권한을 따른다.
 
-기본 지표는 Scene 생성 시간, Lua 실행, 물리 Step, Replication, Render frame, 메모리, 패키지 I/O다. 엔진 내부 단계가 공개되지 않으면 어댑터 구간만 측정하고 'Havok Solver 내부 시간'처럼 이름을 붙이지 않는다. `headless`와 GPU 측정 환경은 별도다.
+기본 지표는 Scene 생성 시간, GDScript 실행, 물리 Step, Replication, Render frame, 메모리, 패키지 I/O다. 엔진 내부 단계가 공개되지 않으면 어댑터 구간만 측정하고 'Havok Solver 내부 시간'처럼 이름을 붙이지 않는다. `headless`와 GPU 측정 환경은 별도다.
 
 Log는 category/verbosity, world/session/request ID, source location, redaction 정책을 유지한다. 멀티 Room 로그를 user-visible game log와 플랫폼 보안 로그로 분리한다. optional 상세 profiling은 실행 비용을 함께 기록한다.
 

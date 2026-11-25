@@ -11,13 +11,13 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 @media(max-width:700px){aside{position:static;width:100%;height:auto;padding:20px}aside nav{display:none}aside nav.open{display:block;max-height:340px;overflow:auto}.mobile-nav{display:block;border:1px solid #4a6073;color:#e1edf3;background:#243e51;border-radius:5px;padding:8px 12px;font:inherit;font-size:12px;margin-top:10px}aside .brand small{margin-bottom:12px}.side-note{display:none}main{margin:0;padding:24px 14px}header h1{font-size:29px}.chapter{padding:22px 18px}.chapter h1{font-size:22px}.chapter h2{font-size:18px}.hero-grid{gap:8px}.metric{padding:14px}.metric strong{font-size:25px}body{font-size:14px}}
 @media print{aside,.actions,.source-file{display:none}main{margin:0;padding:0}body{background:white;font-size:10pt}.chapter{border:0;padding:0;break-before:page;overflow:visible}pre{white-space:pre-wrap;background:#eee;color:#111}.table-wrap{overflow:visible}table{min-width:0!important;font-size:9pt!important}header{break-after:page}}
 </style></head><body>
-<aside><div class="brand">PlayForge × Godot<small>ENGINE ADOPTION REVIEW</small></div><label for="nav-search">문서 목차 찾기</label><input id="nav-search" type="search" placeholder="Lua, 렌더링, 마이그레이션…" autocomplete="off"><button class="mobile-nav" aria-controls="toc" aria-expanded="false">목차 펼치기</button><nav id="toc" aria-label="문서 목차"><a href="#chapter-00" data-title="00 · 도입 판단과 의사결정 요약"><span>00</span>도입 판단과 의사결정 요약</a><a href="#chapter-01" data-title="01 · 기존 요구사항과 변경 금지 기준"><span>01</span>기존 요구사항과 변경 금지 기준</a><a href="#chapter-02" data-title="02 · Godot 변경 최소화 정책과 확장 경계"><span>02</span>Godot 변경 최소화 정책과 확장 경계</a><a href="#chapter-03" data-title="03 · Runtime Bridge·Lua·객체 모델"><span>03</span>Runtime Bridge·Lua·객체 모델</a><a href="#chapter-04" data-title="04 · 무설치 웹 에디터·협업·MCP·재귀 개선"><span>04</span>무설치 웹 에디터·협업·MCP·재귀 개선</a><a href="#chapter-05" data-title="05 · 렌더링·셰이더·카메라·정렬 제약"><span>05</span>렌더링·셰이더·카메라·정렬 제약</a><a href="#chapter-06" data-title="06 · Havok·Box2D·Navigation·Animation·ECS"><span>06</span>Havok·Box2D·Navigation·Animation·ECS</a><a href="#chapter-07" data-title="07 · 멀티플레이·Listen·PIE·초기 준비 장벽"><span>07</span>멀티플레이·Listen·PIE·초기 준비 장벽</a><a href="#chapter-08" data-title="08 · World Cell·Texture Streaming·로컬 패키지"><span>08</span>World Cell·Texture Streaming·로컬 패키지</a><a href="#chapter-09" data-title="09 · Import·증분 Cook·빌드·배포"><span>09</span>Import·증분 Cook·빌드·배포</a><a href="#chapter-10" data-title="10 · 기존 산출물 마이그레이션과 좌표·단위"><span>10</span>기존 산출물 마이그레이션과 좌표·단위</a><a href="#chapter-11" data-title="11 · INI·Console·Device Profile·진단·지역화"><span>11</span>INI·Console·Device Profile·진단·지역화</a><a href="#chapter-12" data-title="12 · 라이선스·UGC 보안·AI 운영"><span>12</span>라이선스·UGC 보안·AI 운영</a><a href="#chapter-13" data-title="13 · 운영·서버 리소스·패키지·요금제 영향"><span>13</span>운영·서버 리소스·패키지·요금제 영향</a><a href="#chapter-14" data-title="14 · 단계별 PoC·완료 기준·중단 기준"><span>14</span>단계별 PoC·완료 기준·중단 기준</a><a href="#chapter-15" data-title="15 · ADR·미결정 항목·기존 설명 보완"><span>15</span>ADR·미결정 항목·기존 설명 보완</a><a href="#chapter-16" data-title="16 · 전체 요구사항 갭 매트릭스"><span>16</span>전체 요구사항 갭 매트릭스</a><a href="#sources" data-title="출처 공식 문서"><span>REF</span>공식·원저자 출처</a><a href="#verification" data-title="검증 범위 미실시"><span>QA</span>검증 범위</a></nav><div class="side-note">2026.11.17 · Review v1<br>공식 자료 검토와 제안 설계를 구분했습니다.<br>Godot 실행·성능 검증은 수행하지 않았습니다.</div></aside>
+<aside><div class="brand">PlayForge × Godot<small>ENGINE ADOPTION REVIEW</small></div><label for="nav-search">문서 목차 찾기</label><input id="nav-search" type="search" placeholder="GDScript, 렌더링, 마이그레이션…" autocomplete="off"><button class="mobile-nav" aria-controls="toc" aria-expanded="false">목차 펼치기</button><nav id="toc" aria-label="문서 목차"><a href="#chapter-00" data-title="00 · 도입 판단과 의사결정 요약"><span>00</span>도입 판단과 의사결정 요약</a><a href="#chapter-01" data-title="01 · 기존 요구사항과 변경 금지 기준"><span>01</span>기존 요구사항과 변경 금지 기준</a><a href="#chapter-02" data-title="02 · Godot 변경 최소화 정책과 확장 경계"><span>02</span>Godot 변경 최소화 정책과 확장 경계</a><a href="#chapter-04" data-title="04 · 무설치 웹 에디터·협업·MCP·재귀 개선"><span>04</span>무설치 웹 에디터·협업·MCP·재귀 개선</a><a href="#chapter-05" data-title="05 · 렌더링·셰이더·카메라·정렬 제약"><span>05</span>렌더링·셰이더·카메라·정렬 제약</a><a href="#chapter-06" data-title="06 · Havok·Box2D·Navigation·Animation·ECS"><span>06</span>Havok·Box2D·Navigation·Animation·ECS</a><a href="#chapter-07" data-title="07 · 멀티플레이·Listen·PIE·초기 준비 장벽"><span>07</span>멀티플레이·Listen·PIE·초기 준비 장벽</a><a href="#chapter-08" data-title="08 · World Cell·Texture Streaming·로컬 패키지"><span>08</span>World Cell·Texture Streaming·로컬 패키지</a><a href="#chapter-09" data-title="09 · Import·증분 Cook·빌드·배포"><span>09</span>Import·증분 Cook·빌드·배포</a><a href="#chapter-10" data-title="10 · 기존 산출물 마이그레이션과 좌표·단위"><span>10</span>기존 산출물 마이그레이션과 좌표·단위</a><a href="#chapter-11" data-title="11 · INI·Console·Device Profile·진단·지역화"><span>11</span>INI·Console·Device Profile·진단·지역화</a><a href="#chapter-12" data-title="12 · 라이선스·UGC 보안·AI 운영"><span>12</span>라이선스·UGC 보안·AI 운영</a><a href="#chapter-13" data-title="13 · 운영·서버 리소스·패키지·요금제 영향"><span>13</span>운영·서버 리소스·패키지·요금제 영향</a><a href="#chapter-14" data-title="14 · 단계별 PoC·완료 기준·중단 기준"><span>14</span>단계별 PoC·완료 기준·중단 기준</a><a href="#chapter-15" data-title="15 · ADR·미결정 항목·기존 설명 보완"><span>15</span>ADR·미결정 항목·기존 설명 보완</a><a href="#chapter-16" data-title="16 · 전체 요구사항 갭 매트릭스"><span>16</span>전체 요구사항 갭 매트릭스</a><a href="#sources" data-title="출처 공식 문서"><span>REF</span>공식·원저자 출처</a><a href="#verification" data-title="검증 범위 미실시"><span>QA</span>검증 범위</a></nav><div class="side-note">2026.11.17 · Review v1<br>공식 자료 검토와 제안 설계를 구분했습니다.<br>Godot 실행·성능 검증은 수행하지 않았습니다.</div></aside>
 <main><header><div class="eyebrow">PLAYFORGE / TECHNICAL DECISION PACK</div><h1>엔진을 다시 만들지 않고,<br>제작 플랫폼에 집중하기.</h1><p class="lead">Godot 본체 변경 최소화를 기준으로 구현 가능성, 제한, 추가 개발 범위와 마이그레이션 위험을 정리했습니다. 온라인 협업·무설치 웹 제작·AI 주도 개선은 PlayForge가 계속 소유합니다.</p><span class="status">채택 후보 검토 · 포팅 완료본 아님</span><span class="status soft">GDExtension 우선 · 내부 패치 기본 금지</span>
 <div class="hero-grid"><div class="metric"><strong>17</strong><span>분야별 검토 문서</span></div><div class="metric"><strong>66</strong><span>요구사항 비교 항목</span></div><div class="metric"><strong>64</strong><span>미실시 수락 시험 계획</span></div><div class="metric"><strong>48</strong><span>공식·원저자 참고 자료</span></div></div><div class="actions"><a href="README.md">구성 안내</a><a href="PlayForge_Godot_Review_Complete.md">통합 Markdown</a><a href="data/feature-matrix.json">요구사항 JSON</a><a href="#verification">검증 범위</a></div></header><section class="chapter" id="chapter-00"><h1>00 · 도입 판단과 의사결정 요약</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
 <h2>결론</h2>
-<p><strong>Godot를 PlayForge의 실행 엔진 후보로 검증하되, PlayForge의 웹 에디터·협업·클라우드 원본·Lua 공개 API는 유지한다.</strong> 권장 경로는 공식 확장 API를 쓰는 GDExtension이며, 엔진 내부 파일 패치는 기본적으로 금지한다. 이것은 채택 확정이나 포팅 완료 보고가 아니다.</p>
-<p>핵심 가치는 게임 엔진 기능 수가 아니라 온라인 공동 제작, 브라우저 무설치, AI 작업의 검증·반복 개선이다. 따라서 Renderer/Audio/Input을 직접 재작성하는 비용을 줄이는 대신, 안정 ID·명령·협업·Lua 안전 경계에 개발 역량을 집중한다.</p>
+<p><strong>Godot를 PlayForge의 실행 엔진 후보로 검증하되, PlayForge의 웹 에디터·협업·클라우드 원본은 유지하고, 게임 스크립트는 GDScript를 사용한다.</strong> 권장 경로는 공식 확장 API를 쓰는 GDExtension이며, 엔진 내부 파일 패치는 기본적으로 금지한다. 이것은 채택 확정이나 포팅 완료 보고가 아니다.</p>
+<p>핵심 가치는 게임 엔진 기능 수가 아니라 온라인 공동 제작, 브라우저 무설치, AI 작업의 검증·반복 개선이다. 따라서 Renderer/Audio/Input을 직접 재작성하는 비용을 줄이는 대신, 안정 ID·명령·협업·GDScript 안전 경계에 개발 역량을 집중한다.</p>
 <h2>기준 버전과 증거 수준</h2>
 <p>공식 배포 목록에서 2026-11-17 확인한 안정판은 <strong>4.7.2</strong>, 개발 채널은 <strong>4.8 beta3</strong>다. 검토 기준으로 안정판을 제안하며, 실제 채택에는 바이너리·소스 commit·export template 해시를 다시 고정한다. <code>stable</code>과 <code>latest</code> 문서 URL은 움직이므로 버전 고정 빌드의 실제 API와 재대조해야 한다. <a href="#g01">G01</a><a href="#g24">G24</a></p>
 <p>이 문서에서 <strong>확인</strong>은 공식 자료가 기술한 기능, <strong>제안</strong>은 PlayForge 설계 판단, <strong>미검증</strong>은 실제 실행 결과가 없는 항목이다. 공식 API 존재가 PlayForge 구현 완료를 뜻하지 않는다.</p>
@@ -30,10 +30,6 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 </tr>
 </thead>
 <tbody>
-<tr>
-  <td>Lua 5.4 게임 코드</td>
-  <td>Godot 기본 언어가 아니므로 안전한 바인딩을 별도 구현</td>
-</tr>
 <tr>
   <td>범용 웹 에디터</td>
   <td>전체 Godot Editor를 브라우저 UI로 복제하지 않음</td>
@@ -67,7 +63,7 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 <p>Godot 웹 Export는 현재 Compatibility/WebGL 2 경로다. WebGPU나 네이티브 Forward+와 완전히 같은 화면을 기본 지원으로 볼 수 없다. <a href="#g06">G06</a><a href="#g07">G07</a></p>
 <h2>가장 큰 제약 다섯 가지</h2>
 <p><strong>렌더러 제어.</strong> RenderingDevice·Compositor는 확장 지점이지, Godot 내부 Render Graph와 전역 Draw 정렬을 전부 대체하는 플러그인 계약은 아니다. 기존 HLSL 중심 자체 RHI 설계를 그대로 보존하려면 변경 최소화 목표와 충돌한다. <a href="#g08">G08</a><a href="#g09">G09</a><a href="#g10">G10</a></p>
-<p><strong>Lua와 UGC.</strong> 공식 기본 언어에 Lua는 없다. 별도 Lua VM을 붙일 수 있지만, 엔진 API 전체 노출·파일 접근·Native 함수 무한 실행까지 자동으로 격리되지는 않는다. <a href="#g23">G23</a><a href="#g38">G38</a></p>
+<p><strong>GDScript와 UGC.</strong> GDScript는 엔진 API·파일 접근을 사용할 수 있으므로 UGC 실행이 자동으로 격리되지는 않는다. <a href="#g23">G23</a></p>
 <p><strong>다중 Room.</strong> LibGodot의 엔진 인스턴스는 프로세스당 하나다. 여러 논리 World를 둘 수 있는 것과 각 Room이 완전히 독립적인 엔진·Tick·메모리를 갖는 것은 다르다. <a href="#g22">G22</a><a href="#g15">G15</a></p>
 <p><strong>Texture Streaming.</strong> 4.8 개발 과정의 Mip Streaming과 Experimental API를 안정판 제품 보증으로 계산하지 않는다. 원래 요구를 삭제하지 않고 별도 보류·승인 항목으로 둔다. <a href="#g39">G39</a><a href="#g40">G40</a><a href="#g41">G41</a></p>
 <p><strong>물리 의미 일치.</strong> Havok/Box2D 공식 확장점은 있지만 어댑터 구현·SDK 권한·기능 일치 시험이 필요하다. Godot 기본 물리를 이름만 Havok/Box2D로 바꾸지 않는다. <a href="#g16">G16</a><a href="#g17">G17</a></p>
@@ -85,7 +81,7 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
   <td>권장. 원본 한 곳, 생성물은 재생성 가능</td>
 </tr>
 <tr>
-  <td>GDExtension으로 제한된 Lua·Runtime Bridge</td>
+  <td>GDExtension 기반 Runtime Bridge</td>
   <td>우선 검증</td>
 </tr>
 <tr>
@@ -112,7 +108,7 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 </table></div>
 <h2>채택 기준</h2>
 <ol>
-<li>실제 Lua 5.4가 웹·Windows에서 같은 게임 규칙을 실행한다.</li>
+<li>실제 GDScript가 웹·Windows에서 같은 게임 규칙을 실행한다.</li>
 <li>두 사용자의 협업 변경을 안전하게 실행 View에 반영한다.</li>
 <li>2D와 3D 예제를 범용 UI로 편집하며 특정 게임 분기를 추가하지 않는다.</li>
 <li>Dedicated/Listen·초기 복제·충돌 안전 장벽이 실제 통신에서 통과한다.</li>
@@ -138,7 +134,7 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 </tr>
 <tr>
   <td>언어</td>
-  <td>C++20 런타임/백엔드, Lua 5.4 게임, TypeScript 웹. Rust 제외</td>
+  <td>C++20 런타임/백엔드, GDScript 게임(Lua·C# 미지원), TypeScript 웹. Rust 제외</td>
 </tr>
 <tr>
   <td>에디터</td>
@@ -150,7 +146,7 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 </tr>
 <tr>
   <td>UGC 로직</td>
-  <td>Device 전용 시스템 없음. Actor/Component/Prefab/Lua 생성</td>
+  <td>Device 전용 시스템 없음. Actor/Component/Prefab/GDScript 생성</td>
 </tr>
 <tr>
   <td>플랫폼</td>
@@ -246,10 +242,10 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 <p>Godot 공통 런타임의 용량을 배포 사용량에서 제외할지는 <strong>미확정</strong>이다. 기술 설계가 과금 기준을 임의로 바꾸지 않는다. MB/GB의 정확한 byte convention도 출시 설정에서 명시해야 하며 이번 문서는 사용자가 지정한 표시 단위를 보존한다.</p>
 <p>수동/주기적 버전 저장은 협업 명령의 내구성 저장과 다르다. 자동 스냅샷 옵션을 꺼도 서버가 승인한 변경 기록을 버리지 않는다. 내부 Cook 캐시와 계측 로그를 사용자 소스로 가장해 용량에 중복 차감하지 않는다.</p>
 <h2>확인한 기존 파일 상태</h2>
-<p><code>PlayForge_Cloud_Consolidated_v17.zip</code>의 v16 README는 Canvas 투영 목업, 실제 C++ Reflection/Lua VM 미연동, Component 타입명 기반 식별 제한을 명시한다. 따라서 현재 전환 대상은 <strong>이미 완성된 C++ 엔진의 바이너리 교체가 아니라, 기존 웹 프로토타입·프로젝트 규약을 실제 실행 엔진으로 연결하는 작업</strong>이다.</p>
+<p><code>PlayForge_Cloud_Consolidated_v17.zip</code>의 v16 README는 Canvas 투영 목업, 실제 C++ Reflection/스크립트 런타임 미연동, Component 타입명 기반 식별 제한을 명시한다. 따라서 현재 전환 대상은 <strong>이미 완성된 C++ 엔진의 바이너리 교체가 아니라, 기존 웹 프로토타입·프로젝트 규약을 실제 실행 엔진으로 연결하는 작업</strong>이다.</p>
 <p><code>PlayForge_AI_Workflow_vNext.zip</code>은 정책 예제·스키마·검증 자료이며 실제 OAuth/MCP 운영 서버나 게임 엔진을 포함한 배포본이 아니다. 본 패키지에서는 기존 테스트를 재실행했다고 주장하지 않는다. 입력 ZIP의 CRC와 파일 해시만 확인했다. 정확한 식별자는 <code>references/input-artifacts.json</code>을 참조한다.</p>
 <h2>요구 변경은 ADR로 남긴다</h2>
-<p>가령 HLSL을 Godot Shader로 바꾸는 것은 엔진 재사용 수단의 변경이다. 반대로 Lua를 GDScript로 바꾸거나 런타임 다운로드를 추가하는 것은 사용자 요구 변경이다. 후자를 단순한 구현 편의로 승인해서는 안 된다.</p>
+<p>가령 HLSL을 Godot Shader로 바꾸는 것은 엔진 재사용 수단의 변경이다. 반대로 런타임 다운로드를 추가하는 것은 사용자 요구 변경이다. 후자를 단순한 구현 편의로 승인해서는 안 된다.</p>
 <p>각 변경안은 기존 요구, 새 의미, 사용자 영향, 실패 시 되돌리는 방법을 포함한다. 이 검토 패키지의 제안만으로 구현·채택 상태를 자동 변경하지 않는다.</p>
 <a class="source-file" href="docs/01_Product_Baseline.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-02"><h1>02 · Godot 변경 최소화 정책과 확장 경계</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
@@ -299,10 +295,10 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
 </ul>
 <p>일부 결과는 공개 저수준 API로 별도 구현 가능하다. 그러나 <strong>공개 API로 화면 효과를 하나 추가하는 것과, 기본 엔진 파이프라인을 완전히 치환하는 것은 다른 범위</strong>다. <a href="#g08">G08</a><a href="#g09">G09</a><a href="#g20">G20</a><a href="#g22">G22</a></p>
 <h2>Native 확장 공급망</h2>
-<p>일반 크리에이터는 Lua·Scene·에셋을 제출한다. 임의 DLL/so/dylib/WASM Extension을 사용자 업로드로 자동 링크하거나 실행하지 않는다. Native 확장은 플랫폼이 검토·서명·버전 고정한 집합만 사용한다.</p>
+<p>일반 크리에이터는 GDScript·Scene·에셋을 제출한다. 임의 DLL/so/dylib/WASM Extension을 사용자 업로드로 자동 링크하거나 실행하지 않는다. Native 확장은 플랫폼이 검토·서명·버전 고정한 집합만 사용한다.</p>
 <p>Godot 내부 ABI를 안정된 상용 플러그인 ABI로 간주하지 않는다. <code>engine version + precision + extension API + toolchain + target + plugin lock</code>을 호환성 키로 관리한다. 공식 문서의 하위 목표 버전 호환 정책도 실제 회귀 검증을 대체하지 않는다. <a href="#g05">G05</a></p>
 <h2>빌드 정책</h2>
-<p>Godot는 제공된 엔진 빌드 경로를 유지하고, PlayForge 모듈은 적절한 연동 빌드로 구성한다. 전체 Godot를 CMake 프로젝트로 재작성하는 일을 도입 조건에 넣지 않는다. 엔진 바이너리 재빌드와 프로젝트 Lua·에셋 반복 빌드를 분리한다.</p>
+<p>Godot는 제공된 엔진 빌드 경로를 유지하고, PlayForge 모듈은 적절한 연동 빌드로 구성한다. 전체 Godot를 CMake 프로젝트로 재작성하는 일을 도입 조건에 넣지 않는다. 엔진 바이너리 재빌드와 프로젝트 GDScript·에셋 반복 빌드를 분리한다.</p>
 <p>다음 두 프로필을 먼저 비교한다.</p>
 <div class="table-wrap" tabindex="0"><table>
 <thead>
@@ -318,125 +314,16 @@ main{margin-left:292px;padding:44px 4.2vw 80px;max-width:1700px}header{margin-bo
   <td>네이티브와 웹 확장으로 빠른 검증</td>
   <td>웹 확장용 템플릿·격리 헤더 검사</td>
 </tr>
-<tr>
-  <td>E2 Lua-static</td>
-  <td>웹용 Lua 정적 포함 가능성 검증</td>
-  <td>정적 모듈이 모든 브라우저 문제를 해결한다고 가정 금지</td>
-</tr>
 </tbody>
 </table></div>
 <p>어느 쪽도 실행 검증 전 운영 기본값으로 확정하지 않는다.</p>
 <h2>예외 승인 양식</h2>
 <p><code>missing_api</code>, <code>required_behavior</code>, <code>public_api_attempt</code>, <code>affected_targets</code>, <code>upstream_diff</code>, <code>security_impact</code>, <code>upgrade_test</code>, <code>rollback</code>, <code>owner</code>, <code>expiry</code>를 기록한다. 단순 LOC 수보다 내부 서브시스템 변경 범위를 평가한다.</p>
 <p>AI Agent는 예외 승인·정책·평가 기준을 바꿀 수 없다. Agent는 구현 후보와 실패 근거를 생성하고 사람이 승인한다. Godot 업스트림에 기여할 때는 제품 내부 MIT 이용 조건과 별개로 현재 기여 규칙을 따른다. <a href="#g47">G47</a></p>
-<a class="source-file" href="docs/02_Minimal_Change_Policy.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-03"><h1>03 · Runtime Bridge·Lua·객체 모델</h1>
-<p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
-<h2>책임을 나누되 중복 엔진을 만들지 않는다</h2>
-<pre><code class="language-text">Workspace / Project IR     ← 편집 데이터의 유일한 기준
-           │ 승인된 Snapshot / Delta
-           ▼
-PlayForge Runtime Bridge   ← ID·권한·API·수명·명령 변환
-           │ 공개 API
-           ▼
-Godot Runtime              ← 실행 트리·렌더·오디오·입력
-           │
-승인된 미들웨어 확장       ← 필요 시 Havok / Box2D / EOS
-</code></pre>
-<p>Bridge는 또 다른 범용 엔진 전체가 아니라 공개 기능의 좁은 계약이다. 게임에는 PlayForge Lua API를 노출하고, 구현은 가능한 한 Godot 기능을 사용한다. 문서의 API 이름은 제안 계약이며 Godot가 제공하는 PlayForge API가 아니다.</p>
-<h2>객체 식별자</h2>
-<div class="table-wrap" tabindex="0"><table>
-<thead>
-<tr>
-  <th>식별자</th>
-  <th>소유 범위</th>
-  <th>영구 저장</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>Actor GUID / Component GUID / Property ID</td>
-  <td>PlayForge 소스</td>
-  <td>가능</td>
-</tr>
-<tr>
-  <td>Asset GUID + Version + Hash</td>
-  <td>콘텐츠 버전</td>
-  <td>가능</td>
-</tr>
-<tr>
-  <td>Godot ResourceUID</td>
-  <td>생성된 Godot 프로젝트</td>
-  <td>해당 생성물과 매핑 관리</td>
-</tr>
-<tr>
-  <td>Godot ObjectID / RID</td>
-  <td>실행 프로세스</td>
-  <td>금지</td>
-</tr>
-<tr>
-  <td>Network ID + Generation</td>
-  <td>게임 세션</td>
-  <td>세션 프로토콜 전용</td>
-</tr>
-</tbody>
-</table></div>
-<p>ResourceUID는 프로젝트 리소스 참조를 유지하는 기능이지 플랫폼 전역 ID가 아니다. PackedScene은 소유 노드 저장 기능이므로 <code>owner</code> 누락에 따른 저장 누락도 시험해야 한다. <a href="#g26">G26</a><a href="#g27">G27</a></p>
-<h2>CDO / Prefab / Instance</h2>
-<p>PlayForge 편집 원본은 Native/Schema 기본값 → Class Defaults → Prefab/Variant → Instance Override 순서로 해석한다. Godot 실행 객체에는 해석한 값과 origin metadata를 적용한다. 런타임은 필요 없이 상속 체인 전체를 매 Tick 재해석하지 않는다.</p>
-<p>값이 기본값과 같더라도 명시적인 Override는 남긴다. Component ID는 타입명과 분리해 같은 타입 여러 개를 구분한다. 클래스 이름·파일 경로를 바꿨다고 영구 Property ID를 다시 생성하지 않는다.</p>
-<p>ClassDB는 엔진/GDExtension 메타데이터를 활용하는 출발점이지만 모든 script-defined class를 포괄하지 않는다. 따라서 Lua Schema와 PlayForge의 허용 속성 목록을 별도로 결합한다. 공개 가능한 최소 Schema만 생성하고 엔진 메타데이터 전체를 UGC 권한으로 간주하지 않는다. <a href="#g25">G25</a></p>
-<h2>Lua 경로</h2>
-<p>Godot 공식 언어에 Lua는 없으므로 E1 바인딩이 필요하다. 커뮤니티 <code>lua-gdextension</code>은 Lua 5.4·별도 State·라이브러리 선택의 검증 후보일 뿐 제품 채택 확정이 아니다. <a href="#g23">G23</a><a href="#g38">G38</a></p>
-<p>권장 P0는 일반 Godot 객체를 무제한 조작하는 Lua보다 <strong>LuaBehaviour + 제한 API + 안정 핸들</strong>이다. 완전한 Lua ScriptLanguage 통합, Godot 모든 타입 자동 바인딩, 범용 디버거를 동시에 1차 요구로 잡지 않는다.</p>
-<pre><code class="language-text">Lua Move 요청
-→ World/Actor 핸들 확인
-→ 게임플레이 실행 권한 확인
-→ 허용된 Component 명령 생성
-→ Simulation 안전 시점 적용
-→ 결과/오류 코드 반환
-</code></pre>
-<p>게임 Lua가 임의 OS·파일·동적 Native 모듈·JavaScript eval·네트워크 자격증명에 접근하지 못하게 한다. 승인된 서버 게임 로직도 Workspace 소스나 플랫폼 관리 DB에 접근하지 않는다. JavaScriptBridge는 웹 연결 수단이지만 그대로 Lua에 노출할 API는 아니다. <a href="#g37">G37</a></p>
-<h2>상태 소유와 스레딩</h2>
-<div class="table-wrap" tabindex="0"><table>
-<thead>
-<tr>
-  <th>상태</th>
-  <th>쓰기 주체</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>편집 Source Property</td>
-  <td>Workspace Authority</td>
-</tr>
-<tr>
-  <td>실행 중 Dynamic Body</td>
-  <td>선택된 물리 백엔드</td>
-</tr>
-<tr>
-  <td>Kinematic 목표</td>
-  <td>권위 게임 로직</td>
-</tr>
-<tr>
-  <td>화면 보간</td>
-  <td>렌더 표현 상태, Gameplay에 역쓰기 금지</td>
-</tr>
-<tr>
-  <td>네트워크 Proxy</td>
-  <td>승인된 Replication Apply</td>
-</tr>
-</tbody>
-</table></div>
-<p>Lua VM은 동시에 여러 스레드에서 호출하지 않는다. 순수 배열 계산은 Job으로 분리하고 SceneTree 변경은 정해진 실행 지점에 모은다. Godot의 활성 SceneTree는 일반적인 멀티스레드 수정 대상이 아니다. <a href="#g20">G20</a></p>
-<h2>Hot Reload</h2>
-<p>함수 본문 교체도 closure·coroutine·이벤트 구독이 호환될 때만 허용한다. 구조·RPC Schema·Native 타입 변경은 PIE 재시작을 기본으로 한다. 중단된 기존 coroutine을 자동으로 새 코드의 같은 줄로 이동시키지 않는다. 실패 시 이전 Snapshot으로 재시작할 수 있어야 한다.</p>
-<h2>타입 연결</h2>
-<p><code>FName</code>은 필요 시 StringName에 매핑하되 내부 index를 파일·네트워크에 저장하지 않는다. <code>FGameplayTag</code>의 계층 검증은 PlayForge의 작은 레지스트리로 유지한다. <code>FLocText</code>는 key·source·format args를 보존하며 포맷 의미가 다른 경우 명시적으로 변환한다. 이름이 비슷하다는 이유로 Godot 번역 API와 ICU 메시지 문법을 동일시하지 않는다. <a href="#g33">G33</a></p>
-<p>Math는 공개 경계에서만 변환한다. 매 벡터 덧셈마다 Lua→PlayForge→Godot→Havok 왕복을 만들지 않는다. 대량 Body/Transform 요청은 일괄 처리하되 결과 동일성은 별도 시험한다.</p>
-<a class="source-file" href="docs/03_Runtime_Bridge_And_Lua.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-04"><h1>04 · 무설치 웹 에디터·협업·MCP·재귀 개선</h1>
+<a class="source-file" href="docs/02_Minimal_Change_Policy.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-04"><h1>04 · 무설치 웹 에디터·협업·MCP·재귀 개선</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
 <h2>에디터를 통째로 이식하지 않는다</h2>
-<p>React/TypeScript는 프로젝트 선택, Hierarchy, Inspector, Lua 편집, Snapshot, Changes, AI 작업을 담당한다. Godot Web Runtime은 Scene/Game 화면과 실제 실행을 담당한다. 데스크톱 Godot EditorPlugin UI가 브라우저의 React 패널이 되는 것은 아니다.</p>
+<p>React/TypeScript는 프로젝트 선택, Hierarchy, Inspector, GDScript 편집, Snapshot, Changes, AI 작업을 담당한다. Godot Web Runtime은 Scene/Game 화면과 실제 실행을 담당한다. 데스크톱 Godot EditorPlugin UI가 브라우저의 React 패널이 되는 것은 아니다.</p>
 <p>Godot의 JavaScriptBridge는 Web export와 호스트 JavaScript의 연결점이다. PlayForge에서는 이를 신뢰된 Bridge가 사용하는 제한된 채널로 감싼다. <a href="#g37">G37</a></p>
 <pre><code class="language-text">웹 UI/AI ─── Workspace Command ─── 승인 Revision
   │                                   │
@@ -446,7 +333,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 </code></pre>
 <p>Runtime Apply는 원본 저장 성공과 다르다. Godot 반영 실패가 발생하면 Source를 조용히 되돌리는 대신 Preview를 오류 상태로 두고 확정 Snapshot으로 재구성한다.</p>
 <h2>협업 단순화 유지</h2>
-<p>구조화된 Scene/Prefab/Property는 서버 순차 Command와 대상별 Revision을 사용한다. Lua 텍스트만 CRDT 후보로 유지한다. Presence는 별도 TTL 정보로 처리하고 영구 파일·스냅샷에 넣지 않는다.</p>
+<p>구조화된 Scene/Prefab/Property는 서버 순차 Command와 대상별 Revision을 사용한다. GDScript 텍스트만 CRDT 후보로 유지한다. Presence는 별도 TTL 정보로 처리하고 영구 파일·스냅샷에 넣지 않는다.</p>
 <p>드래그는 로컬에서 즉시 표현하고 제한 빈도의 임시 Preview를 보내며, 확정 시 하나의 Undo Group을 기록한다. 임시 값이 CDO/Prefab 정의나 다른 사용자의 확정 변경을 덮어쓰지 않도록 세션 ID·시퀀스·기준 Revision을 검사한다.</p>
 <p><code>save</code>는 서버가 확정한 전체 프로젝트의 체크포인트다. 자신의 변경만 내보내는 ChangeSet 기능과 다르다. 복원은 새 Workspace epoch를 발급하며, 이전 epoch의 지연 명령을 자동 적용하지 않는다.</p>
 <h2>브라우저 실행 격리</h2>
@@ -454,7 +341,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 <p>Web Extension/Thread 프로필은 교차 출처 격리 조건을 검증해야 한다. 광고·외부 스크립트·cross-origin iframe의 조합이 이를 방해할 수 있으므로 보안 헤더를 임의로 완화하는 대신 실행 프로필을 분리한다. <a href="#g06">G06</a></p>
 <p>개인 AI 자격증명·플랫폼 refresh token은 Game iframe에 넘기지 않는다. Game은 권한이 좁고 만료되는 세션 capability만 받는다.</p>
 <h2>Scene와 Game 분리</h2>
-<p>Editor Preview는 작성 Snapshot에서 렌더 가능한 상태를 구성하며 게임 Lua는 기본 실행하지 않는다. Play를 누르면 불변 Snapshot에서 PIE 인스턴스를 만든다. 에디터 변경은 기본적으로 다음 실행에만 반영하며 Hot Apply는 허용 Property에 명시적으로 수행한다.</p>
+<p>Editor Preview는 작성 Snapshot에서 렌더 가능한 상태를 구성하며 게임 GDScript는 기본 실행하지 않는다. Play를 누르면 불변 Snapshot에서 PIE 인스턴스를 만든다. 에디터 변경은 기본적으로 다음 실행에만 반영하며 Hot Apply는 허용 Property에 명시적으로 수행한다.</p>
 <p>여러 Viewport는 화면 분할의 수단이지 서로 불신하는 UGC의 보안 경계가 아니다. 안전성이 필요한 PIE는 별도 iframe·프로세스·실행 세션으로 구분한다. Godot Viewport가 자체 World를 가질 수 있어도 모든 엔진 전역 상태가 분리되는 것은 아니다. <a href="#g15">G15</a><a href="#g22">G22</a></p>
 <h2>AI 도구 계약</h2>
 <p>공통 API는 query/schema/apply_batch/validate/play/test/diff를 제공한다. 영구 GUID와 Property ID를 사용하고 Godot NodePath는 내부 진단용으로만 사용한다. 확인되지 않은 Node 타입·API는 미지원 오류를 반환한다.</p>
@@ -652,7 +539,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 <pre><code class="language-text">Host Process
 └── Authority Runtime / World 하나
     ├── Local Host Player + Input
-    ├── Game Lua / Physics
+    ├── Game GDScript / Physics
     ├── Host Render / Audio
     └── Remote Replication → 원격 클라이언트
 </code></pre>
@@ -707,7 +594,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 </table></div>
 <p>이 과정에서 Texture 고해상도 mip은 대기 조건이 아니다. 네트워크가 지연되면 기존 위치 유지·입력 잠금·명시적 타임아웃을 사용하고, 충돌을 꺼서 먼저 목적지로 보내는 우회는 금지한다.</p>
 <h2>EOS 등 외부 서비스</h2>
-<p>EOS Voice/Auth/Session/EAC 요구는 별도 Provider로 유지한다. Godot 채택만으로 SDK의 브라우저·모바일·UGC 재배포 지원이 생기지 않는다. 공급자별 승인과 Native SDK 빌드를 별도 통과 조건으로 둔다. Matchmaker/Join Token은 플랫폼의 서버측 서비스이며 게임 Lua에 자격증명을 주지 않는다.</p>
+<p>EOS Voice/Auth/Session/EAC 요구는 별도 Provider로 유지한다. Godot 채택만으로 SDK의 브라우저·모바일·UGC 재배포 지원이 생기지 않는다. 공급자별 승인과 Native SDK 빌드를 별도 통과 조건으로 둔다. Matchmaker/Join Token은 플랫폼의 서버측 서비스이며 게임 스크립트에 자격증명을 주지 않는다.</p>
 <h2>Headless와 Room 격리</h2>
 <p>Dedicated는 headless Export Template을 사용하고 서버용 시각 리소스를 제거한다. 단순히 창만 끄고 Client 패키지를 그대로 올리는 것과는 다르다. <a href="#g32">G32</a></p>
 <p>P0 제안은 Room/신뢰경계별 프로세스다. 같은 Release의 다중 Room은 이후 성능·오염·장애 테스트를 통과한 경우만 허용한다. 하나의 GodotInstance/SceneTree에서 World별로 모든 전역 상태와 scheduling이 분리된다고 보장하지 않는다. <a href="#g22">G22</a><a href="#g20">G20</a></p>
@@ -800,7 +687,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
   <td>Scene/Cell 생성 데이터</td>
 </tr>
 <tr>
-  <td>Lua 함수</td>
+  <td>GDScript 함수</td>
   <td>스크립트 검증·번들·허용된 재시작</td>
 </tr>
 <tr>
@@ -827,7 +714,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 </table></div>
 <p>이 표는 목표다. Godot Importer가 공개하는 세분성보다 더 미세한 invalidation을 약속하지 않는다. 같은 Input에서 clean build와 incremental build의 의미적 일치를 비교한다. 버전·환경 차이로 바뀐 파생 결과를 낡은 캐시에 붙이지 않는다.</p>
 <h2>파일 포함·경로 규칙</h2>
-<p>PlayForge Source를 generated Godot project로 투영한다. <code>.lua</code>, 자체 JSON/loc 데이터 등 비표준 리소스는 export 결과의 포함 목록을 검증한다. Runtime에서 실제 파일이 없는데 에디터 로컬 파일 덕분에 성공하는 상황을 테스트로 잡는다.</p>
+<p>PlayForge Source를 generated Godot project로 투영한다. 자체 JSON/loc 데이터 등 비표준 리소스는 export 결과의 포함 목록을 검증한다. Runtime에서 실제 파일이 없는데 에디터 로컬 파일 덕분에 성공하는 상황을 테스트로 잡는다.</p>
 <p>생성 파일의 경로보다 GUID 매핑을 우선한다. <code>.import</code> 설정과 리소스 UID가 재생성될 때 기존 Source identity를 바꾸지 않는다. 생성 산출물을 Creator의 소스 원본처럼 양방향 편집하지 않는다.</p>
 <h2>타겟 빌드</h2>
 <div class="table-wrap" tabindex="0"><table>
@@ -856,7 +743,7 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 </tr>
 <tr>
   <td>Web PIE</td>
-  <td>WASM·Compatibility·Lua·보안 헤더</td>
+  <td>WASM·Compatibility·GDScript·보안 헤더</td>
 </tr>
 </tbody>
 </table></div>
@@ -872,9 +759,9 @@ Godot Runtime              ← 실행 트리·렌더·오디오·입력
 <a class="source-file" href="docs/09_Import_Cook_Build_Release.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-10"><h1>10 · 기존 산출물 마이그레이션과 좌표·단위</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
 <h2>현재 전환 출발점</h2>
-<p>기존 v17 안의 v16 README와 Tappy Chicken project.json은 <strong>브라우저 JavaScript 게임·Canvas 에디터이며 실제 Lua VM이 없다는 점</strong>을 명시한다. 따라서 완성된 네이티브 엔진을 동일 API로 갈아끼우는 일정으로 추정하지 않는다.</p>
+<p>기존 v17 안의 v16 README와 Tappy Chicken project.json은 <strong>브라우저 JavaScript 게임·Canvas 에디터이며 실제 스크립트 런타임이 없다는 점</strong>을 명시한다. 따라서 완성된 네이티브 엔진을 동일 API로 갈아끼우는 일정으로 추정하지 않는다.</p>
 <p>Tappy 예제 Scene은 viewport 480×640, position [135, 290] 같은 값을 가지며, 설정에는 gravity 1050·flap 345가 있다. 이런 값은 별도 단위 주석 없이 1 unit=1m로 재해석하면 안 된다. 초기 마이그레이션은 pixel-domain 동작을 보존하고 PPU가 명시된 후 물리 단위 변환을 적용한다.</p>
-<p>입력 ZIP은 본 패키지에서 읽었지만 게임 실행·시각 비교·Lua 의미 일치를 검증하지 않았다.</p>
+<p>입력 ZIP은 본 패키지에서 읽었지만 게임 실행·시각 비교·게임 규칙 의미 일치를 검증하지 않았다.</p>
 <h2>1단계: 원본 동결과 이력</h2>
 <p>원본 ZIP 해시, 선택 프로젝트 Snapshot, 기존 schemaVersion을 보관한다. 파괴적 변환은 하지 않는다. ConversionJob은 새 Snapshot을 생성하고 이전 원본은 유지한다. 재실행은 같은 매핑·입력에 대해 중복 객체를 생성하지 않아야 한다.</p>
 <h2>2단계: 안정 식별자 배정</h2>
@@ -931,8 +818,8 @@ T_g = B4 · T_pf · inverse(B4)
 <p>Blender → glTF 단계에서 이미 정규화된 에셋에 Blender Z-up 변환을 다시 적용하지 않는다. 원본 파일의 의미와 Import adapter 책임을 기록한다.</p>
 <h2>5단계: 2D 좌표 분리</h2>
 <p>Canvas 픽셀·위쪽/아래쪽 Y, Box2D XY 미터, UI anchor를 한 행렬로 섞지 않는다. <code>pixelsPerMeter</code>, 원점, Y 방향, angle sign을 프로젝트 또는 컴포넌트에 명시한다. 3D 모델의 +Z 변환을 2D Sprite에 일괄 적용하지 않는다.</p>
-<h2>6단계: Lua 의미 보존</h2>
-<p>Game.lua가 참조 구현인지 실제 실행 API인지 분류한다. 없는 API를 임의 보완해 성공으로 표시하지 않는다. lifecycle, fixed dt, timer, input edge, RNG seed, collision ordering을 계약 시험으로 고정한다. 화면/입력은 TS이고 게임 규칙은 Lua라는 원칙을 유지한다.</p>
+<h2>6단계: 게임 규칙 의미 보존</h2>
+<p>기존 Tappy 게임 규칙이 참조 구현인지 실제 실행 API인지 분류한다. 없는 API를 임의 보완해 성공으로 표시하지 않는다. lifecycle, fixed dt, timer, input edge, RNG seed, collision ordering을 계약 시험으로 고정한다. 화면/입력은 TS이고 게임 규칙은 GDScript라는 원칙을 유지한다.</p>
 <h2>7단계: 원본 에셋 재임포트</h2>
 <p>기존 cooked shape/animation/navmesh를 이식 가능한 범용 소스로 취급하지 않는다. 원본과 설정에서 타겟별로 재생성한다. Physics/Animation backend 변경은 동일한 기능 API만으로 완전한 수치 일치를 보장하지 않으므로 허용 오차·게임 규칙을 별도 검증한다.</p>
 <h2>업그레이드·복구</h2>
@@ -995,8 +882,8 @@ T_g = B4 · T_pf · inverse(B4)
 <p>Mobile/Desktop은 물리적으로 다른 게임 스키마가 아니라 성능·표현 프로필이다. Godot renderer/feature 태그와 연결하되 품질 값으로 사용할 수 없는 기능을 강제로 활성화하지 않는다. <a href="#g36">G36</a></p>
 <p>적용 결과는 requested/effective/source/restart_required를 구분해 Inspector와 콘솔에 표시한다. Device Profile은 기본값과 하드웨어 제한을 분리한다. 권한이 높은 Console도 지원하지 않는 기능이나 안전 한도를 우회하지 못한다.</p>
 <h2>Console과 프로파일러</h2>
-<p>명령은 로컬 View, Runtime, Authority Server, Workspace를 명시적으로 선택한다. 게임 Lua에 문자열 <code>ExecuteConsole</code>을 무제한 노출하지 않는다. 외부 AI도 동일한 명령 권한을 따른다.</p>
-<p>기본 지표는 Scene 생성 시간, Lua 실행, 물리 Step, Replication, Render frame, 메모리, 패키지 I/O다. 엔진 내부 단계가 공개되지 않으면 어댑터 구간만 측정하고 'Havok Solver 내부 시간'처럼 이름을 붙이지 않는다. <code>headless</code>와 GPU 측정 환경은 별도다.</p>
+<p>명령은 로컬 View, Runtime, Authority Server, Workspace를 명시적으로 선택한다. 게임 GDScript에 문자열 <code>ExecuteConsole</code>을 무제한 노출하지 않는다. 외부 AI도 동일한 명령 권한을 따른다.</p>
+<p>기본 지표는 Scene 생성 시간, GDScript 실행, 물리 Step, Replication, Render frame, 메모리, 패키지 I/O다. 엔진 내부 단계가 공개되지 않으면 어댑터 구간만 측정하고 'Havok Solver 내부 시간'처럼 이름을 붙이지 않는다. <code>headless</code>와 GPU 측정 환경은 별도다.</p>
 <p>Log는 category/verbosity, world/session/request ID, source location, redaction 정책을 유지한다. 멀티 Room 로그를 user-visible game log와 플랫폼 보안 로그로 분리한다. optional 상세 profiling은 실행 비용을 함께 기록한다.</p>
 <h2>FName / GameplayTag</h2>
 <p>StringName은 interned string이므로 FName의 구현 후보지만 process-local 식별값을 저장 포맷이나 네트워크 dictionary로 내보내지 않는다. <a href="#g33">G33</a></p>
@@ -1025,10 +912,6 @@ T_g = B4 · T_pf · inverse(B4)
   <td>고정 버전의 LICENSE·COPYRIGHT·빌드 포함 목록</td>
 </tr>
 <tr>
-  <td>Lua 확장</td>
-  <td>라이선스, 실제 종속성, 유지보수 책임</td>
-</tr>
-<tr>
   <td>Havok</td>
   <td>계약된 제품·플랫폼·Cloud Cook·UGC 재배포·보관 범위</td>
 </tr>
@@ -1053,15 +936,15 @@ T_g = B4 · T_pf · inverse(B4)
 <p>콘솔은 공개 Godot Export Template만으로 끝나지 않는다. 승인된 개발자와 공식 SDK, 자체/서드파티 포팅 경로가 필요하다. <a href="#g44">G44</a></p>
 <p>이 문서는 기술·제품 검토이며 계약 해석의 법률 자문이 아니다. 특히 비공개 SDK 권한은 공개 웹 문서로 확정하지 않는다.</p>
 <h2>UGC 위협 모델</h2>
-<p>공격 입력은 Lua뿐 아니라 Scene/Resource, 압축파일, 이미지·모델·오디오 파서, Shader, Import 설정, 외부 AI가 만든 변경이다. 게임 엔진을 재사용한다고 멀티테넌트 보안 경계가 자동 제공되지는 않는다.</p>
+<p>공격 입력은 GDScript뿐 아니라 Scene/Resource, 압축파일, 이미지·모델·오디오 파서, Shader, Import 설정, 외부 AI가 만든 변경이다. 게임 엔진을 재사용한다고 멀티테넌트 보안 경계가 자동 제공되지는 않는다.</p>
 <h3>클라우드 Worker</h3>
 <p>불신 원본은 권한 없는 격리 프로세스에서 처리한다. 파일 확장자만 믿지 않고 signature·압축 해제 크기·경로 탈출·참조 외부 URL·리소스 개수·실행 시간을 검사한다. 필요한 파일만 마운트하고 플랫폼 DB·GitHub token·서명키 접근을 주지 않는다.</p>
 <h3>Native Runtime</h3>
-<p>일반 크리에이터의 Native 확장 업로드는 금지한다. 허용된 Lua API, 메모리 allocator 예산, instruction/wall-time budget, Native 호출 watchdog, 프로세스 제한을 함께 사용한다. Lua hook만으로 긴 C++ 호출을 강제 중단할 수 있다고 약속하지 않는다.</p>
+<p>일반 크리에이터의 Native 확장 업로드는 금지한다. 허용된 스크립트 API, 메모리 allocator 예산, instruction/wall-time budget, Native 호출 watchdog, 프로세스 제한을 함께 사용한다.</p>
 <h3>웹 Runtime</h3>
 <p>에디터와 게임 실행 origin을 나누고 브라우저 저장·인증 토큰 접근을 최소화한다. postMessage는 타입·대상·세션·크기를 검사한다. Godot JavaScriptBridge의 광범위 기능을 UGC에 노출하지 않고 필요한 호출만 신뢰된 어댑터가 사용한다. <a href="#g37">G37</a></p>
 <h3>온라인</h3>
-<p>클라이언트 입력은 서버에서 재검증한다. Ready ACK, 로컬 테스트 통과, 외부 AI의 검증 주장 등은 게임플레이 권한이나 무결성 증명으로 사용하지 않는다. EAC 지원 타겟 여부와 Lua sandbox는 서로 대체 관계가 아니다.</p>
+<p>클라이언트 입력은 서버에서 재검증한다. Ready ACK, 로컬 테스트 통과, 외부 AI의 검증 주장 등은 게임플레이 권한이나 무결성 증명으로 사용하지 않는다. EAC 지원 타겟 여부와 스크립트 sandbox는 서로 대체 관계가 아니다.</p>
 <h2>데이터 수집과 AI 개선</h2>
 <p>작업 실행 기록·프로젝트 보관·워크플로 개선·모델 학습·마케팅의 목적을 구분한다. external MCP 작업도 같은 명령 이력을 쓰되 전체 외부 대화를 수집할 수 있다고 가정하지 않는다. 미확인 token은 null로 보존한다.</p>
 <p>개인 구독은 해당 사용자의 승인 작업에만 사용하고, 플랫폼 공통 벤치마크와 데이터 학습 작업은 플랫폼 예산으로 수행한다. 최신 공급자 계약과 동의 상태를 실행·추출·재사용 시점에 검사하도록 제안한다. 본 패키지는 개별 공급자 연결 승인 또는 데이터 학습 허가를 발급하지 않는다.</p>
@@ -1089,7 +972,7 @@ T_g = B4 · T_pf · inverse(B4)
 </tr>
 <tr>
   <td>Local PIE</td>
-  <td>Lua·Physics·Renderer</td>
+  <td>GDScript·Physics·Renderer</td>
   <td>Snapshot 제공·선택적 검증</td>
 </tr>
 <tr>
@@ -1117,7 +1000,7 @@ T_g = B4 · T_pf · inverse(B4)
 <p>브라우저 Listen은 네이티브 리슨과 같은 소켓 환경이 아니다. 브라우저 지원 전송과 연결 정책을 별도 검증한다. <a href="#g06">G06</a></p>
 <h2>P0 프로세스 정책</h2>
 <p>LibGodot를 필수로 사용하지 않고 Export Template 기반 Dedicated 프로세스로 시작한다. headless 서버는 편집기 바이너리와 불필요한 Client Resource를 제외한다. <a href="#g32">G32</a></p>
-<p>처음에는 한 Room 또는 한 신뢰 경계별 프로세스를 사용한다. 이후 동일 Release의 여러 Room을 묶을 때 전역 설정·Autoload·Resource cache·물리 서버·Lua VM 간 오염을 검증한다. 비용 절감 수치 없이 밀도를 먼저 고정하지 않는다. <a href="#g22">G22</a><a href="#g20">G20</a></p>
+<p>처음에는 한 Room 또는 한 신뢰 경계별 프로세스를 사용한다. 이후 동일 Release의 여러 Room을 묶을 때 전역 설정·Autoload·Resource cache·물리 서버·스크립트 상태 간 오염을 검증한다. 비용 절감 수치 없이 밀도를 먼저 고정하지 않는다. <a href="#g22">G22</a><a href="#g20">G20</a></p>
 <h2>측정 단위</h2>
 <p>프로세스 CPU 시간/RSS/네트워크는 직접 측정값, World별 메모리는 attributed estimate일 수 있다. 공유 리소스를 각 World에 중복 합산하지 않는다. CPU tick wall time과 모든 worker의 누적 CPU time을 나누어 기록한다.</p>
 <pre><code class="language-text">동시 세션 수 = 지역·게임·모드별 실제 점유를 반영해 집계
@@ -1127,7 +1010,7 @@ T_g = B4 · T_pf · inverse(B4)
 </code></pre>
 <p>평균 CPU만으로 용량을 확정하지 않고 P95/P99 tick, initial replication burst, spawn/cell activation, 재접속 폭주를 포함한다. 대기열 과부하 시 시험 Pool을 줄이되 공개 게임 서버를 잠식하지 않는다.</p>
 <h2>패키지 용량 실험</h2>
-<p>빈 프로젝트, 2D Lua 예제, 3D 예제 각각에 대해 다음을 기록한다.</p>
+<p>빈 프로젝트, 2D GDScript 예제, 3D 예제 각각에 대해 다음을 기록한다.</p>
 <div class="table-wrap" tabindex="0"><table>
 <thead>
 <tr>
@@ -1142,7 +1025,7 @@ T_g = B4 · T_pf · inverse(B4)
 </tr>
 <tr>
   <td>content_bytes</td>
-  <td>게임 전용 cooked resource·Lua</td>
+  <td>게임 전용 cooked resource·GDScript</td>
 </tr>
 <tr>
   <td>transfer_bytes</td>
@@ -1190,7 +1073,7 @@ T_g = B4 · T_pf · inverse(B4)
 </tr>
 <tr>
   <td>GATE-1</td>
-  <td>Lua 5.4 Web/Windows 샘플</td>
+  <td>GDScript Web/Windows 샘플</td>
   <td>게임 규칙 중복 JS 구현 없음</td>
 </tr>
 <tr>
@@ -1227,7 +1110,7 @@ T_g = B4 · T_pf · inverse(B4)
 </table></div>
 <p>이 게이트들은 병렬 연구가 가능하지만, 실패한 필수 조건을 완료로 바꾸고 다음 단계에 합치지 않는다.</p>
 <h2>최초 수직 시나리오</h2>
-<p>빈 프로젝트 → 일반 Actor/Component → Lua 게임 구현 → Web PIE → 두 사용자의 동시 편집 → AI Batch 변경 → 검증 실패 → 수정 → Snapshot 저장 → Native/Server Export.</p>
+<p>빈 프로젝트 → 일반 Actor/Component → GDScript 게임 구현 → Web PIE → 두 사용자의 동시 편집 → AI Batch 변경 → 검증 실패 → 수정 → Snapshot 저장 → Native/Server Export.</p>
 <p>Tappy Chicken은 작은 2D 입력·규칙 시험에 사용한다. 3D 테스트는 카메라·Mesh·Material·collider·animation을 별도 프로젝트로 만든다. 특정 예제의 속성 이름을 플랫폼 코드에서 찾는 자동 검사를 추가한다.</p>
 <h2>필수 실기기 매트릭스</h2>
 <p>Windows DX12 + Windows Vulkan, Android ARM64 Vulkan, iOS Native, Windows/Linux headless, Chromium Web, Firefox Web, Safari Web을 구분한다. 하드웨어·OS·브라우저·GPU driver·engine hash·build flags를 결과에 기록한다. 웹 프레임 성능으로 모바일 네이티브 성능을 대신하지 않는다.</p>
@@ -1239,7 +1122,7 @@ T_g = B4 · T_pf · inverse(B4)
 <li>텔레포트 중 Cell unload·Actor destroy·old epoch packet·재접속.</li>
 <li>Ready 이전 이동·공격 요청의 서버 거부.</li>
 <li>Host local player의 직접 Authority 입력, Host 복제 없음.</li>
-<li>Godot 객체 삭제 후 stale Lua handle 안전 실패.</li>
+<li>Godot 객체 삭제 후 stale 스크립트 handle 안전 실패.</li>
 <li>ResourceUID/NodePath rename과 PF GUID 보존.</li>
 <li>SDK·엔진 교체 시 source/schema/cooked artifact의 구분.</li>
 </ul>
@@ -1248,10 +1131,10 @@ T_g = B4 · T_pf · inverse(B4)
 <p>실제 Godot Runtime과 대상 대안에서 같은 게임 요구·원본·해상도·Physics 설정·동작 테스트를 사용한다. cold/warm, debug/release, 브라우저/네이티브를 별도 행으로 기록한다. P50/P95/P99, 실패율, 메모리 peak, CPU/GPU, 패키지, 토큰 근거를 함께 보관한다.</p>
 <p>Unity MCP 기준선은 정확한 Editor·MCP 구현·모델·설정과 사용량 근거가 있어야 한다. 외부 AI의 추론 전체를 모르면 해당 run으로 전체 시간·토큰 우위를 주장하지 않는다. 미공개 과제를 개선 Agent에게 노출하지 않는다.</p>
 <h2>채택 중단 또는 요구 재승인 조건</h2>
-<p>필수 Lua sandbox를 E1/E2 범위에서 안전하게 만들 수 없거나, 웹 표현 최소 요구를 충족하지 못하거나, 요구한 Mip streaming을 검증하지 못하거나, 서버 tick/패키지 예산을 초과하면 조건부 채택을 보류한다.</p>
+<p>필수 UGC 스크립트 격리를 E1/E2 범위에서 안전하게 만들 수 없거나, 웹 표현 최소 요구를 충족하지 못하거나, 요구한 Mip streaming을 검증하지 못하거나, 서버 tick/패키지 예산을 초과하면 조건부 채택을 보류한다.</p>
 <p>각 실패는 세 가지로만 처리한다: 공개 API 대안 시험, 제품 요구 변경 승인, 해당 프로필 제외/엔진 대안 유지. 몰래 내부 patch를 늘리거나 기능명을 유지한 채 동작을 축소하지 않는다.</p>
 <h2>문서 검증과 Runtime 시험의 구분</h2>
-<p>이번 ZIP의 link/JSON/schema/hash/CRC 검사는 문서 패키지의 정합성 검사다. Godot Export, Lua 실행, Havok, 브라우저 PIE, 협업 서버, 성능, 법률/SDK 승인 검증을 수행한 것이 아니다. 출력 report에도 이를 별도 boolean으로 기록한다.</p>
+<p>이번 ZIP의 link/JSON/schema/hash/CRC 검사는 문서 패키지의 정합성 검사다. Godot Export, GDScript 실행, Havok, 브라우저 PIE, 협업 서버, 성능, 법률/SDK 승인 검증을 수행한 것이 아니다. 출력 report에도 이를 별도 boolean으로 기록한다.</p>
 <a class="source-file" href="docs/14_Roadmap_And_Acceptance.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-15"><h1>15 · ADR·미결정 항목·기존 설명 보완</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
 <h2>ADR 요약</h2>
@@ -1285,9 +1168,9 @@ T_g = B4 · T_pf · inverse(B4)
 </tr>
 <tr>
   <td>ADR-G04</td>
-  <td>Lua 5.4 유지</td>
-  <td>사용자 결정, JS 이중 게임 규칙 금지</td>
-  <td>고정 제약</td>
+  <td><del>Lua 5.4 유지</del> → <strong>철회(2026-11-25): Lua 미지원, GDScript 기본</strong> (<a href="../../../../docs/forge-refactoring/SSOT.md">SSOT.md</a> §5 D1)</td>
+  <td>사용자 결정</td>
+  <td>철회</td>
 </tr>
 <tr>
   <td>ADR-G05</td>
@@ -1350,11 +1233,6 @@ T_g = B4 · T_pf · inverse(B4)
 </thead>
 <tbody>
 <tr>
-  <td>웹 Lua는 동적 E1인가 정적 E2인가</td>
-  <td>대상 브라우저의 실행·크기·격리 시험</td>
-  <td>런타임/보안</td>
-</tr>
-<tr>
   <td>실제 물리 첫 백엔드는 무엇인가</td>
   <td>Box2D/Havok 기능·SDK·성능</td>
   <td>엔진/제품</td>
@@ -1393,7 +1271,7 @@ T_g = B4 · T_pf · inverse(B4)
 </table></div>
 <h2>기존 설명에서 혼동하지 말아야 할 것</h2>
 <p><strong>1. GodotInstance 하나와 World 하나는 다르다.</strong> 프로세스당 GodotInstance 제한이 있어도 Viewport/World를 여러 개 둘 수 있다. 반대로 여러 World가 완전한 엔진·보안·메모리 격리를 뜻하지 않는다. <a href="#g22">G22</a><a href="#g15">G15</a></p>
-<p><strong>2. Lua는 채택 결정이 아니라 통합 과제다.</strong> 커뮤니티 확장을 발견했다고 공식 기본 언어 지원으로 표기하지 않는다. <a href="#g23">G23</a><a href="#g38">G38</a></p>
+<p><strong>2. 게임 스크립트는 GDScript만 지원한다.</strong> 커뮤니티 언어 확장을 발견했다고 지원 언어로 표기하지 않는다. <a href="#g23">G23</a></p>
 <p><strong>3. 물리 확장 가능과 backend hot swap은 다르다.</strong> PhysicsServer 확장점이 있어도 시작 후 선택 변경은 지원되지 않는다. <a href="#g16">G16</a><a href="#g18">G18</a></p>
 <p><strong>4. Mipmap과 Mip Residency는 다르다.</strong> 저해상도 샘플링만으로 실제 GPU 메모리 해제를 증명할 수 없다. 개발 채널 API는 안정판 지원으로 승격해 기록하지 않는다. <a href="#g39">G39</a><a href="#g40">G40</a></p>
 <p><strong>5. 웹이 GPU를 사용한다고 WebGPU인 것은 아니다.</strong> 현재 공식 Export는 WebGL 2 Compatibility다. <a href="#g06">G06</a></p>
@@ -1403,7 +1281,7 @@ T_g = B4 · T_pf · inverse(B4)
 <p><strong>9. GDExtension은 모든 내부 hook을 노출하지 않는다.</strong> 공개 API로 범위를 증명하지 못한 기능은 미검증 또는 E3 위험으로 남긴다. <a href="#g04">G04</a><a href="#g05">G05</a></p>
 <p><strong>10. 단일 엔진 채택으로 플랫폼이 완성되지 않는다.</strong> 협업, AI 워크플로 평가, 계정·과금·스냅샷·신고·배포 운영은 PlayForge 서비스다.</p>
 <h2>의사결정 회의 순서</h2>
-<p>첫 회의는 미들웨어 브랜드 선호보다 Lua/Web 안전한 실행과 Source/Runtime 계약부터 확인한다. 다음은 렌더 기능 차이와 패키지 크기, 다음은 게임 네트워크와 미들웨어, 마지막은 대규모 Room 밀도·고급 rendering이다. 핵심 협업 실증 전에 E3 엔진 개발로 범위를 넓히지 않는다.</p>
+<p>첫 회의는 미들웨어 브랜드 선호보다 GDScript/Web 안전한 실행과 Source/Runtime 계약부터 확인한다. 다음은 렌더 기능 차이와 패키지 크기, 다음은 게임 네트워크와 미들웨어, 마지막은 대규모 Room 밀도·고급 rendering이다. 핵심 협업 실증 전에 E3 엔진 개발로 범위를 넓히지 않는다.</p>
 <a class="source-file" href="docs/15_ADR_Open_Issues_Corrections.md">Markdown 원문 ↗</a></section><section class="chapter" id="chapter-16"><h1>16 · 전체 요구사항 갭 매트릭스</h1>
 <p><strong>검토 기준일:</strong> 2026-11-17 · <strong>상태:</strong> 설계·공식 문서 검토, Godot 런타임 실증 미실시</p>
 <h2>분류 기준</h2>
@@ -1473,7 +1351,7 @@ T_g = B4 · T_pf · inverse(B4)
 </tr>
 <tr>
   <td>F003</td>
-  <td>Lua 공동 텍스트 편집</td>
+  <td>GDScript 공동 텍스트 편집</td>
   <td>플랫폼 별도</td>
   <td>External</td>
   <td>High</td>
@@ -1540,7 +1418,7 @@ T_g = B4 · T_pf · inverse(B4)
   <td>어댑터 필요</td>
   <td>E0/E1</td>
   <td>High</td>
-  <td>실제 Lua 및 Runtime Bridge 추가 <a href="#g06">G06</a> <a href="#g37">G37</a></td>
+  <td>실제 GDScript 및 Runtime Bridge 추가 <a href="#g06">G06</a> <a href="#g37">G37</a></td>
 </tr>
 <tr>
   <td>F010</td>
@@ -1779,45 +1657,6 @@ T_g = B4 · T_pf · inverse(B4)
   <td>E3-risk</td>
   <td>VeryHigh</td>
   <td>미들웨어별 어댑터와 budget만, Godot 전역 교체 금지 <a href="#g20">G20</a> <a href="#g21">G21</a></td>
-</tr>
-</tbody>
-</table></div>
-<h2>Lua</h2>
-<div class="table-wrap" tabindex="0"><table>
-<thead>
-<tr>
-  <th>ID</th>
-  <th>요구</th>
-  <th>판정</th>
-  <th>변경 등급</th>
-  <th>난이도</th>
-  <th>처리 방안</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>F036</td>
-  <td>Lua 5.4 게임플레이</td>
-  <td>어댑터 필요</td>
-  <td>E1/E2</td>
-  <td>High</td>
-  <td>확장 후보 검증, 플랫폼 공통 PF API 유지 <a href="#g23">G23</a> <a href="#g38">G38</a></td>
-</tr>
-<tr>
-  <td>F037</td>
-  <td>UGC Lua 샌드박스</td>
-  <td>어댑터 필요</td>
-  <td>E1/External</td>
-  <td>VeryHigh</td>
-  <td>whitelist+실행 예산+프로세스 격리, 자동 안전 아님 <a href="#g37">G37</a> <a href="#g38">G38</a></td>
-</tr>
-<tr>
-  <td>F038</td>
-  <td>코드 Hot Reload/Debug</td>
-  <td>제약·미검증</td>
-  <td>E1</td>
-  <td>High</td>
-  <td>함수·closure·coroutine·구독 규약 한정</td>
 </tr>
 </tbody>
 </table></div>
@@ -2107,7 +1946,7 @@ T_g = B4 · T_pf · inverse(B4)
   <td>플랫폼 별도</td>
   <td>External</td>
   <td>VeryHigh</td>
-  <td>Lua만으로 경계 보장하지 않음</td>
+  <td>스크립트 언어만으로 경계 보장하지 않음</td>
 </tr>
 <tr>
   <td>F064</td>
@@ -2398,13 +2237,6 @@ T_g = B4 · T_pf · inverse(B4)
 <li>문서 채널: <code>stable</code> · 확인일: 2026-11-17</li>
 <li>사용 범위: Web export의 JS 연결. 기본 공개 API를 UGC에 무제한 노출하면 안 됨.</li>
 </ul>
-<p><a id="g38"></a></p>
-<h2>G38 · Lua GDExtension — maintainer repository</h2>
-<ul>
-<li>원문: <a href="https://github.com/gilzoide/lua-gdextension">Lua GDExtension — maintainer repository</a></li>
-<li>문서 채널: <code>community-primary</code> · 확인일: 2026-11-17</li>
-<li>사용 범위: Lua 5.4 후보. 공식 Godot 기본 언어가 아니며 저장소 상태와 커밋 고정 필요.</li>
-</ul>
 <p><a id="g39"></a></p>
 <h2>G39 · Godot 4.8 dev5 release note</h2>
 <ul>
@@ -2476,7 +2308,7 @@ T_g = B4 · T_pf · inverse(B4)
 <li>사용 범위: Godot Y-up 오른손 공간과 미터 단위. 모델 앞 방향과 카메라 방향 구별.</li>
 </ul>
 </section>
-<section class="chapter" id="verification"><h1>검증 범위와 산출물 상태</h1><div class="qa-box"><strong>이 페이지는 검토 문서 뷰어입니다.</strong> Godot 기반 에디터·게임·Lua 실행·네트워크·GPU 성능을 구현하거나 실증한 화면이 아닙니다.</div><h2>문서 패키지 검사</h2><p>문서 링크·JSON Schema·요구사항/출처/테스트 ID·파일 hash와 ZIP CRC를 확인합니다. 검사 결과는 <a href="reports/verification.json">verification.json</a>에 기록합니다. 정식 결과가 없는 Runtime 케이스는 not_run으로 보존합니다.</p><h2>다음 실증의 기준</h2><p>Lua 5.4 Web 실행 → 범용 2D/3D 편집 → 두 사용자+AI 협업 → Dedicated/Listen Ready → 플랫폼과 메모리·패키지 크기 → 보안·업그레이드의 순서로 통과 여부를 판정합니다.</p><p><a href="reports/Runtime_Acceptance_Checklist.md">런타임 수락 체크리스트</a> · <a href="NOTICE.md">고지 및 검증 한계</a></p></section><p class="foot">PlayForge × Godot review v1 · 2026-11-17 · 오프라인 열람 가능 · 원본 코드·SDK·폰트 미포함</p></main>
+<section class="chapter" id="verification"><h1>검증 범위와 산출물 상태</h1><div class="qa-box"><strong>이 페이지는 검토 문서 뷰어입니다.</strong> Godot 기반 에디터·게임·GDScript 실행·네트워크·GPU 성능을 구현하거나 실증한 화면이 아닙니다.</div><h2>문서 패키지 검사</h2><p>문서 링크·JSON Schema·요구사항/출처/테스트 ID·파일 hash와 ZIP CRC를 확인합니다. 검사 결과는 <a href="reports/verification.json">verification.json</a>에 기록합니다. 정식 결과가 없는 Runtime 케이스는 not_run으로 보존합니다.</p><h2>다음 실증의 기준</h2><p>GDScript Web 실행 → 범용 2D/3D 편집 → 두 사용자+AI 협업 → Dedicated/Listen Ready → 플랫폼과 메모리·패키지 크기 → 보안·업그레이드의 순서로 통과 여부를 판정합니다.</p><p><a href="reports/Runtime_Acceptance_Checklist.md">런타임 수락 체크리스트</a> · <a href="NOTICE.md">고지 및 검증 한계</a></p></section><p class="foot">PlayForge × Godot review v1 · 2026-11-17 · 오프라인 열람 가능 · 원본 코드·SDK·폰트 미포함</p></main>
 <script>
 (()=>{
 const search=document.getElementById('nav-search');

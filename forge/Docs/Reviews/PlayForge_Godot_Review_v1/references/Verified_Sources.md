@@ -228,12 +228,6 @@
 - 문서 채널: `stable` · 확인일: 2026-11-17
 - 사용 범위: Web export의 JS 연결. 기본 공개 API를 UGC에 무제한 노출하면 안 됨.
 
-<a id="g38"></a>
-## G38 · Lua GDExtension — maintainer repository
-- 원문: [Lua GDExtension — maintainer repository](https://github.com/gilzoide/lua-gdextension)
-- 문서 채널: `community-primary` · 확인일: 2026-11-17
-- 사용 범위: Lua 5.4 후보. 공식 Godot 기본 언어가 아니며 저장소 상태와 커밋 고정 필요.
-
 <a id="g39"></a>
 ## G39 · Godot 4.8 dev5 release note
 - 원문: [Godot 4.8 dev5 release note](https://godotengine.org/article/dev-snapshot-godot-4-8-dev-5/)

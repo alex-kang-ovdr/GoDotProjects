@@ -4,7 +4,7 @@
   const projectId = query.get('project') || '';
   const playShowcase = query.get('showcase') === '1';
   const origin = location.origin;
-  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1]) || '';
   const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
   window.__playforgeBasePath = forgeBase;
   const wasmTag = String(window.__PLAYFORGE_WEB_EDITOR_WASM_TAG__ || '').trim();

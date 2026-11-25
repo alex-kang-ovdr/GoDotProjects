@@ -31,20 +31,19 @@ Godot 객체·Resource·Server 공개 API 호출, 새 Node/Resource/ScriptLangua
 
 ## Native 확장 공급망
 
-일반 크리에이터는 Lua·Scene·에셋을 제출한다. 임의 DLL/so/dylib/WASM Extension을 사용자 업로드로 자동 링크하거나 실행하지 않는다. Native 확장은 플랫폼이 검토·서명·버전 고정한 집합만 사용한다.
+일반 크리에이터는 GDScript·Scene·에셋을 제출한다. 임의 DLL/so/dylib/WASM Extension을 사용자 업로드로 자동 링크하거나 실행하지 않는다. Native 확장은 플랫폼이 검토·서명·버전 고정한 집합만 사용한다.
 
 Godot 내부 ABI를 안정된 상용 플러그인 ABI로 간주하지 않는다. `engine version + precision + extension API + toolchain + target + plugin lock`을 호환성 키로 관리한다. 공식 문서의 하위 목표 버전 호환 정책도 실제 회귀 검증을 대체하지 않는다. [G05](../references/Verified_Sources.md#g05)
 
 ## 빌드 정책
 
-Godot는 제공된 엔진 빌드 경로를 유지하고, PlayForge 모듈은 적절한 연동 빌드로 구성한다. 전체 Godot를 CMake 프로젝트로 재작성하는 일을 도입 조건에 넣지 않는다. 엔진 바이너리 재빌드와 프로젝트 Lua·에셋 반복 빌드를 분리한다.
+Godot는 제공된 엔진 빌드 경로를 유지하고, PlayForge 모듈은 적절한 연동 빌드로 구성한다. 전체 Godot를 CMake 프로젝트로 재작성하는 일을 도입 조건에 넣지 않는다. 엔진 바이너리 재빌드와 프로젝트 GDScript·에셋 반복 빌드를 분리한다.
 
 다음 두 프로필을 먼저 비교한다.
 
 | 프로필 | 목적 | 제한 |
 |---|---|---|
 | Official + E1 | 네이티브와 웹 확장으로 빠른 검증 | 웹 확장용 템플릿·격리 헤더 검사 |
-| E2 Lua-static | 웹용 Lua 정적 포함 가능성 검증 | 정적 모듈이 모든 브라우저 문제를 해결한다고 가정 금지 |
 
 어느 쪽도 실행 검증 전 운영 기본값으로 확정하지 않는다.
 

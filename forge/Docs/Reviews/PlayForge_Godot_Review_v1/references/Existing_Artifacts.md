@@ -11,10 +11,10 @@
 
 ## 보존한 한계
 
-v16 웹 에디터는 Canvas 기반이며 실제 C++ Reflection/Lua VM이 아닙니다. Component는 타입명 기반 제한이 있습니다. Tappy의 Scene·설정 값은 픽셀 좌표처럼 보이며 단위가 확정된 물리 데이터로 보지 않았습니다.
+v16 웹 에디터는 Canvas 기반이며 실제 C++ Reflection/스크립트 런타임이 아닙니다. Component는 타입명 기반 제한이 있습니다. Tappy의 Scene·설정 값은 픽셀 좌표처럼 보이며 단위가 확정된 물리 데이터로 보지 않았습니다.
 
 AI Workflow 패키지의 기존 테스트 보고서는 이번에 실행한 테스트가 아닙니다. 본 문서는 이를 실제 Godot 보안/런타임 테스트로 인용하지 않습니다.
 
 ## 대화 결정 반영
 
-뒤의 대화에서 확정된 클라우드 Snapshot 기본 저장, GitHub 선택 연결, 최신 Free/Pro 한도, Lua 유지, Actor Asset Streaming·런타임 CDN 미지원, 외부 AI 목적별 사용 정책이 오래된 v17 일반 설명보다 우선합니다.
+뒤의 대화에서 확정된 클라우드 Snapshot 기본 저장, GitHub 선택 연결, 최신 Free/Pro 한도, GDScript 단일 지원(Lua 미지원), Actor Asset Streaming·런타임 CDN 미지원, 외부 AI 목적별 사용 정책이 오래된 v17 일반 설명보다 우선합니다.

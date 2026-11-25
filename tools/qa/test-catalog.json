@@ -661,18 +661,18 @@
       "owner": "PlayForge-Main"
     },
     {
-      "path": "forge/Tests/collaboration.test.cjs",
+      "path": "forge/Tests/contract.editor-source-workspace.test.cjs",
       "tier": "fast",
       "suites": [
         "forge",
-        "multiplatform"
+        "component"
       ],
       "envs": [
         "local",
         "dev",
         "live"
       ],
-      "owner": "PlayForge-Main"
+      "owner": "Forge-Refactoring"
     },
     {
       "path": "forge/Tests/deployment-zip-archive.test.cjs",

@@ -4,7 +4,7 @@
 
 ## P0 — 완결된 제작·배포 루프
 
-1. Actor/Component/Prefab/Instance Override + Lua Reflection
+1. Actor/Component/Prefab/Instance Override + GDScript Reflection
 2. AI Command/ChangeSet/Review + PIE 자동 검사
 3. 협업 Presence/Revision/Undo + GitHub Commit
 4. Single/Listen/Dedicated PIE + Initial Play Barrier
@@ -23,11 +23,11 @@
 
 ## E2E 수용 시나리오
 
-A. 빈 템플릿에서 AI로 PvP 게임 생성→Lua/Prefab 리뷰→2인 PIE→Private Build→Public Release→다른 사용자 플레이
+A. 빈 템플릿에서 AI로 PvP 게임 생성→GDScript/Prefab 리뷰→2인 PIE→Private Build→Public Release→다른 사용자 플레이
 B. 공유 에셋 검색→3D/Audio Preview→Scale Import→프로젝트 참조→Pre-Cook Cache Hit→Release Bundle
 C. Dedicated 매치 참가→초기 Actor/Collision 준비→Ready ACK→StartPlay→Teleport Barrier→재접속
 D. 신고→검토→공개 중단→검색 제외→이의제기→복구
-E. Lua만 수정→Native Rebuild 0, Texture만 수정→Mesh/Physics Cook 0.
+E. GDScript만 수정→Native Rebuild 0, Texture만 수정→Mesh/Physics Cook 0.
 
 ## 계측·성능
 

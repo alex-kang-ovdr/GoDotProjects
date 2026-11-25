@@ -4,7 +4,7 @@
 
 ## 현재 구현
 
-공식 Godot 기반 PlayForge Creator가 주력 경로다. Classic/Godot Layout 비교 경로는 보존한다. upstream 4.7.2 엔진 바이너리를 고정하고 자체 웹 부트스트랩과 서비스 EditorPlugin을 분리했다. 별도 엔진 소스 분기 `playforge-web`는 [엔진 포크 기록](../GodotFork/README.md)에 준비했다. 엔진 C++ 코어 패치 및 별도 포크 바이너리 빌드는 아직 없으며, 웹 코드 수정은 `OfficialGodot/editor.html`과 `editor-bridge.js`로 관리한다.
+공식 Godot 기반 PlayForge Creator가 유일한 편집 경로다. Classic/Godot Layout 비교 경로(기존 HTML/JS Studio)와 Yjs 실시간 협업은 2026-11-25에 폐기했다. upstream 4.7.2 엔진 바이너리를 고정하고 자체 웹 부트스트랩과 서비스 EditorPlugin을 분리했다. 별도 엔진 소스 분기 `playforge-web`는 [엔진 포크 기록](../GodotFork/README.md)에 준비했다. 엔진 C++ 코어 패치 및 별도 포크 바이너리 빌드는 아직 없으며, 웹 코드 수정은 `OfficialGodot/editor.html`과 `editor-bridge.js`로 관리한다.
 
 - `/OfficialGodot/`: 프로젝트 라이브러리와 같은 화면의 Godot iframe. 첫 방문은 빈 3D 프로젝트를 생성한다. 예제는 회전 큐브가 있는 3D Playground다.
 - 시작 선택: 완성된 예제 열기 또는 제작 과정 보기. 가이드는 준비된 스크립트와 설정을 한 번에 적용하고, 씬을 단계별로 구성하며 커서 이동·선택을 시각화한다. 0.5/1/2/4배속, 일시정지·재개·중지를 제공한다. 이는 스크립트로 재생하는 제작 시연이며 실제 AI 모델이나 MCP 서버가 판단하는 과정은 아니다.
@@ -23,7 +23,7 @@
 |---|---|---|
 | 빈 지도 | 새 프로젝트에서 Empty/Default Map을 열거나 최근 프로젝트를 재개 | 새 프로젝트 설정, 초기 scene, target profile이 명시됨 |
 | 템플릿 | 검토된 starter template를 선택해 복제 | engine/plugin/template 버전과 자산 출처·라이선스를 기록 |
-| 공동 편집 | 초대된 구성원이 역할에 맞춰 scene/code를 동시 수정 | identity와 ACL, 명령 검증·충돌 정책, 저장 상태가 먼저 구현되어야 함. 현행 shared Yjs는 기존 두 웹 UI에 한정 |
+| 공동 편집 | 초대된 구성원이 역할에 맞춰 scene/code를 동시 수정 | identity와 ACL, 명령 검증·충돌 정책, 저장 상태가 먼저 구현되어야 함. 기존 두 웹 UI의 shared Yjs는 2026-11-25 폐기 |
 | 테스트 | 변경 revision을 고정해 로컬/Web 또는 협동 테스트 실행 | 결과에 source revision/hash, engine lock, target, 로그를 결합. 미지원 테스트를 성공으로 표시하지 않음 |
 | 버전 | 이름/설명이 있는 checkpoint 저장, 차이 보기, 복원 | 복원은 새 source revision으로 생성하고 기존 기록은 보존 |
 | 배포 | 검증된 artifact를 검토 후 사용자가 명시적으로 게시 | 게시가 실제 연결된 target에만 노출. artifact digest와 source revision 저장, 권한 확인, 실패 시 이전 release로 되돌리는 절차 제공 |

@@ -36,5 +36,5 @@ test('official-editor ZIP contains current shared source/settings and self-conta
   assert.match(entries.get('README.txt'), /revision: 123/);
   assert.match(entries.get('project.godot'), /res:\/\/scenes\/main.tscn/);
   assert.match(entries.get('scripts/runtime_host.gd'), /res:\/\/Projects\/TappyChicken\/project.json/);
-  assert.ok([...entries.keys()].every(name => !name.includes('..') && !/Saved|Workspace|node_modules|Engine\/|Game.lua/.test(name)));
+  assert.ok([...entries.keys()].every(name => !name.includes('..') && !/Saved|Workspace|node_modules/.test(name)));
 });
