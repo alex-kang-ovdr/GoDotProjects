@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),query=new URLSearchParams(location.search),frame=$('game');
-  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1])||'';
   const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
   let csrfToken=null;
   async function ensureCsrf(){if(csrfToken!==null)return csrfToken;const r=await fetch(forgePath('/api/session'),{credentials:'same-origin',cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'PlayHub Google 로그인이 필요합니다.');csrfToken=typeof d.csrfToken==='string'?d.csrfToken:'';return csrfToken;}
