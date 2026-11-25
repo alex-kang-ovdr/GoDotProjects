@@ -557,10 +557,10 @@
         "docs/havok/**"
       ]
     },
-    "Godot-Refactoring": {
-      "role": "Godot 엔진 개선 로드맵 SSOT·엔진 포크 패치 큐 (엔진 변경 항목 01/03-07/12/19-21의 상위 브랜치)",
+    "Forge-Refactoring": {
+      "role": "Godot 엔진 개선 로드맵 SSOT (엔진 변경은 godot-engine 포크 Forge-Refactoring 브랜치, 서브모듈로 반영)",
       "owns": [
-        "docs/godot-refactoring/**"
+        "docs/forge-refactoring/**"
       ]
     },
     "Forge-Profiling": {
