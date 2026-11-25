@@ -26,8 +26,11 @@
 
 ## 회귀 fixture (현재 상태와 할 일)
 
-- 현재: 포크 커밋 메시지에 "스킨 10종 × 장착물 20종 멀티월드 접속 및 위변조 차단 검증"이 기록돼 있으나, 저장소에서 재실행 가능한 fixture 위치는 확인하지 못했다(미확인).
-- 할 일: 봉인 위반 시도(삭제·스크립트 교체·reparent·축소·투명화·layer 초과·팩 덮어쓰기·숨김 예산 초과)를 각각 실행하는 헤드리스 시험을 만들고, 위반 카운터가 늘고 상태가 유지되는지 확인한다. 위치는 이 브랜치의 owns 경로로 정한다.
+- 2026-11-25 포크 `playforge/tests/`(커밋 `bb65179d`)에 헤드리스 회귀 테스트를 추가했다. 실행: `python playforge/tests/run.py` (편집기 4.7.2 custom_build e7a83dd73).
+- 통과: 부트스트랩(CoreHUD layer 128·봉인 아바타·spawn_position), 아바타 봉인(free·remove·reparent·set_script·숨김·축소·process_mode 차단), CoreHUD 봉인(layer 100 클램프 포함), 초상 최소 크기·투명도 하한, 숨김 예산(30초 상한·실시간 소모·0.2초/초 충전), VFS 봉인.
+- **실패(실제 결함)**: 봉인된 자식을 가진 부모를 권한 범위 밖에서 해제하면 힙 손상으로 크래시(0xC0000374). `NOTIFICATION_PREDELETE`의 `remove_child`가 봉인 검사에 막혀 자식이 이중 삭제된다. 재현: `current_scene.queue_free()`, 초상 모드 해제 후 다음 프레임의 `_flush_delete_queue`.
+- 우회 관찰(판정 없음): `node_added`로 숨긴 HUD 참조 획득, `transform` 대입으로 아바타 축소, 위치 이동으로 화면 밖 숨김, `root.remove_child(current_scene)` 연쇄 제거, Windows에서 대소문자 다른 경로로 봉인 디렉터리 쓰기.
+- 미검증: 코어 팩(.pck) 경로와 그 스크립트, CoreHUD 버튼.
 
 ## upstream 상태
 
