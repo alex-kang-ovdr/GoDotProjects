@@ -2,7 +2,7 @@
 
 - Path: `godot-engine` (submodule name `godot` in `.gitmodules`). Originally registered at `engine/godot`; moved during the location correction, see [godot-location-correction.md](godot-location-correction.md).
 - Fork: git@github.com:alex-kang-ovdr/godot-engine.git
-- Fixed commit: engine-ssot.json `pinnedForkCommit` 이 정본이다 (2026-11-25 기준 `e7a83dd7`, upstream base `ed1daf0bf001b61586d9930840f2f1394092c079` 4.7.2-stable 위 코어 패치 7건 포함). 패치 목록은 [docs/forge-refactoring/SSOT.md](../forge-refactoring/SSOT.md) §3.
+- Fixed commit: engine-ssot.json `pinnedForkCommit` 이 정본이다 (2026-11-25 기준 `814b87c8`, upstream base `ed1daf0bf001b61586d9930840f2f1394092c079` 4.7.2-stable 위 PlayForge 커밋 9건(패치 8, 테스트 1)). 패치 목록은 [docs/forge-refactoring/SSOT.md](../forge-refactoring/SSOT.md) §3.
 - Existing sources inspected: D:/Github/godot-engine and D:/Github/GoDotProjects-worktrees/PlayForge-Engine. Both had no reported working-tree changes.
 - Original Forge GodotFork/upstream.json identifies this exact commit and reports no engine core patches, no fork binary build.
 
