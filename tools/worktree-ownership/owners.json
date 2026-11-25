@@ -556,6 +556,38 @@
         "HavokProfile/**",
         "docs/havok/**"
       ]
+    },
+    "Godot-Refactoring": {
+      "role": "Godot 엔진 개선 로드맵 SSOT·엔진 포크 패치 큐 (엔진 변경 항목 01/03-07/12/19-21의 상위 브랜치)",
+      "owns": [
+        "docs/godot-refactoring/**"
+      ]
+    },
+    "Forge-Profiling": {
+      "role": "Godot 진단·TraceSample 계약·기존 프로파일 출력 변환 (로드맵 13)",
+      "owns": [
+        "forge/Tools/trace/**",
+        "forge/Tests/trace/**",
+        "forge/Godot/addons/playforge_trace/**",
+        "docs/profiling/**"
+      ]
+    },
+    "Forge-BuildExport": {
+      "role": "재현 가능한 빌드·EngineLock/BuildManifest·헤드리스 익스포트·격리 빌드 워커 (로드맵 16)",
+      "owns": [
+        "forge/Tools/build-export/**",
+        "forge/Tests/build-export/**",
+        "docs/build-export/**"
+      ]
+    },
+    "Forge-Multiplayer": {
+      "role": "Godot 데디케이티드 서버·서버 권한 게임 프레임워크·복제·예측·검증 (로드맵 25-30, 제작자 게임용 Godot DS 경로)",
+      "owns": [
+        "forge/Godot/addons/playforge_netframework/**",
+        "forge/Tests/netframework/**",
+        "forge/Tools/dedicated-server/**",
+        "docs/multiplayer/**"
+      ]
     }
   }
 }
