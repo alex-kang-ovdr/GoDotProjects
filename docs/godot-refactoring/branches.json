@@ -243,7 +243,7 @@
     "id": "18",
     "branch": "Forge-MobileSDK",
     "engine": false,
-    "note": "신규 (착수 시 생성) — 원장·IAP 서버는 Hub-Billing·Hub-IOS 소유",
+    "note": "신규 — 터치 입력·가상 조이스틱 addon만. godot-sdk/** 는 Hub-AOS, IAP 서버는 Hub-IOS, 원장은 Hub-Billing 소유",
     "title": "모바일 결제·광고·분석 SDK와 터치 입력",
     "prio": "P1/P0",
     "pw": "18-30",

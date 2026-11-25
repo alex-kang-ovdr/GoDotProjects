@@ -34,22 +34,27 @@
 | 16 빌드 | `build-queue.cjs`, `export-godot-project.cjs`, `tools/build-version`, PlayHub-DevOps | EngineLock을 기존 build-version·release-manifest에 통합 |
 | 17 모바일 QA | Forge-GamerQA, PlayHub-GamerQA, Hub-AOS/IOS | 실기기 절차만 신규 |
 | 18 결제·광고 | Hub-Billing, Hub-AdGame | billing 원장은 Hub-Billing 소유 유지 |
-| 22/23 스토어·패키지 | Forge-AssetStore, PlayHub-Store, `playforge_*` addon 7종 | 중복 스토어 금지. 정산·리뷰 gap만 |
+| 22/23 스토어·패키지 | Forge-AssetStore, PlayHub-Store, `playforge_*` addon 9종(트렁크 기준) | 중복 스토어 금지. 정산·리뷰 gap만 |
 | 25-28 네트워크 | Node 권위 서버 3종(`forge/Tools/*-multiplayer.cjs`), `package-windows-server.ps1`, `deploy/cloudrun`, PlayHub-GameDeploy | 기존 검토 ADR-12 결정 유지: Node 서버는 템플릿 전용, 제작자 게임용 Godot DS 경로를 25/28이 신규로 만든다 |
 | 29 온라인 서비스 | Hub-SSO 4종 로그인, PlayHub-EOS, `hub-session-auth.cjs` | JoinTicket 계약만 신규, 계정은 Hub 소유 |
 | 08 애니메이션 | Forge-UnrealPort 53본·ControlRig→SkeletonModifier3D, Forge-Avatar | 공통 retarget workflow로 수렴 |
 
-### 3.2 멀티플레이 계획 문서가 세 벌이다
+### 3.2 멀티플레이 계획 문서가 여러 벌이다 (→ [SSOT.md](SSOT.md))
 
-`forge/Docs/PlayForge_UGC_Design_v5_9`(PIE·EOS·안티치트), `PlayForge_Cloud_Consolidated_v17`(스트리밍·네트워크), 외부 컨설팅 계획 v1과 그 검토, 그리고 이번 25-30이 같은 범위를 다룬다. **25-30 착수 전에 어느 문서를 기준(SSOT)으로 삼을지 결정이 필요하다.** 권장: 계약·수명·복제는 이번 25-30, 배포·호스팅·신원 경계는 기존 컨설팅 계획 검토 결과를 따르고 충돌 시 이 문서에 기록한다.
+처음 검토에서는 세 벌로 봤으나 재조사 결과 최소 8개 출처가 겹친다: UGC Design v5.9, Cloud Consolidated v17, Godot Review v1(07·15, ADR-G07/G08), 컨설팅 계획 검토(ADR-12), multiplayer-deploy-billing-plan, game-server-cost-optimization-plan, EOS SSOT 계획, 이번 25-30. 영역별 정본은 [SSOT.md](SSOT.md) §2에서 판정했다. 요지: Godot 게임 내부 계층은 25-30, 배포·호스팅·과금은 deploy-billing·비용 계획, 신원·매치메이킹은 EOS 계획, 게임 서버 입장 티켓은 JoinTicket 하나로 통일한다.
 
-### 3.3 보안 선행 조건이 MVP에 빠져 있다
+### 3.3 격리 빌드는 있으나 기본값이 아니다
 
-기존 검토 §3.2대로 빌드·PIE가 Forge 호스트에서 격리 없이 실행된다(`build-queue.cjs`, `native-runtime.cjs`). 로드맵 MVP의 "30 필수 validator"는 게임 내 행동 검증만 포함한다. **격리 build worker를 16/30의 MVP 범위에 넣는다**(공수 재산정 필요, 추정 +2-4 PW — 본 검토의 추정치).
+처음 검토의 "격리 없음"은 정정한다. `PLAYFORGE_BUILD_BACKEND=cloudrun-job`이면 Cloud Run Jobs 격리 worker(`docs/architecture/build-worker-p0-plan.md`, `deploy/cloudrun/build-worker/`)로 빌드한다. 남은 gap은 (1) 기본값이 Forge 호스트 로컬 실행, (2) worker가 포크가 아닌 순정 4.7.2를 내려받음, (3) PIE(`native-runtime.cjs`)는 여전히 로컬 실행이다. 이 gap은 16(Forge-BuildExport)에서 다룬다. 공개 전 기본값 전환을 권장한다.
 
 ### 3.4 엔진 포크가 이미 있다
 
-`godot-engine` 서브모듈(`alex-kang-ovdr/godot-engine`, pin `ed1daf0`)이 있으나 워크트리에서 초기화되지 않았다. 01/03/04/06/07/12/19/20의 `[GD-Core]` 작업은 서브모듈 체크아웃이 필요하며, 저장소 규칙상 대형 체크아웃은 사전 승인 대상이다. EngineLock의 `commit`은 이 서브모듈 pin을 기준으로 삼는다. 로드맵 §6의 "4.7.2 초기 후보"와 포크 pin이 같은 tag 기반인지 R0에서 확인한다(미확인).
+트렁크에는 이미 엔진 정본이 있다: [tools/engine/engine-ssot.json](../../tools/engine/engine-ssot.json)(포크 `alex-kang-ovdr/godot-engine`, upstream base `4.7.2-stable` `ed1daf0`, 포크 pin `e7a83dd7`, release tag `playforge-4.7.2-e7a83dd7`, 6개 타깃별 SCons 프로필)과 검사기 `npm run check:engine-ssot`. 6개 타깃 중 `web-editor`만 포크로 전환됐고 나머지 5개(desktop-windows, web-template, cloudrun-worker, android-aar, ios-xcframework)는 `pending_fork_rebuild`다(파일 기준, 2026-11-25).
+
+- **로드맵 §7 EngineLock은 새로 만들지 않는다.** engine-ssot.json이 정본이고, 16(Forge-BuildExport)의 BuildManifest는 거기서 파생한다.
+- 엔진 변경 항목(Godot-Refactoring-*)의 패치는 포크 저장소에 커밋하고, 서브모듈 pin과 engine-ssot.json의 `pinnedForkCommit`을 함께 올린다(검사기가 불일치를 FAIL 처리).
+- 서브모듈은 워크트리에서 초기화되지 않았다. 엔진 변경 브랜치 착수 시 체크아웃 승인이 필요하다.
+- 남은 5개 타깃의 포크 재빌드가 엔진 변경 항목보다 먼저다. 그 전에는 패치를 넣어도 데스크톱·서버·모바일 산출물에 반영되지 않는다.
 
 ### 3.5 03 텍스처 스트리밍 전제 확인 필요
 
@@ -68,10 +73,10 @@ PR #113429는 upstream master 병합이다. 우리 pin(4.7.2 기반 추정)에 �
 
 ## 5. 결정 필요 사항
 
-1. 25-30 네트워크 계획의 기준 문서(§3.2)
-2. 격리 build worker를 MVP에 포함할지(§3.3)
+1. 25-30 네트워크 계획의 기준 문서(§3.2) — [SSOT.md](SSOT.md)에서 판정. 남은 결정은 SSOT.md §5
+2. 격리 build worker를 기본값으로 전환할지(§3.3)
 3. 원본 개별 계획서 30개 패키지 반입
-4. R0 착수 브랜치(권장: 16 → 13 → 25 → 28)의 워크트리 생성 승인
+4. (완료) R0 착수 — 2026-11-25 Forge-Profiling(13), Forge-BuildExport(16), Forge-Multiplayer(25+28) 워크트리 생성
 
 ## 6. 이번 검토에서 수행한 것과 하지 않은 것
 

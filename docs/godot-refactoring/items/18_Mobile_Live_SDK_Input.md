@@ -1,7 +1,7 @@
 # 18. 모바일 결제·광고·분석 SDK와 터치 입력
 
 - 원본 계획서: `plans/18_Mobile_Live_SDK_Input.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
-- 통합 대상 브랜치: `Forge-MobileSDK` — 신규 (착수 시 생성) — 원장·IAP 서버는 Hub-Billing·Hub-IOS 소유
+- 통합 대상 브랜치: `Forge-MobileSDK` — 신규 — 터치 입력·가상 조이스틱 addon만. godot-sdk/** 는 Hub-AOS, IAP 서버는 Hub-IOS, 원장은 Hub-Billing 소유
 - 분류: 엔진 무변경 → Forge 계열
 - 우선순위: P1/P0 / 본체 공수: 18-30 PW / 착수 단계: R2
 - 커밋 영역 성격: GD-Ext
