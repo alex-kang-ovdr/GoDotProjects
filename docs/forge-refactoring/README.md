@@ -5,6 +5,8 @@ Godot 엔진 개선 로드맵(30개 항목)의 SSOT. 엔진 소스를 바꾸는 
 - [00_Development_Roadmap.md](00_Development_Roadmap.md) — 통합 로드맵 원문
 - [90_Source_Coverage_and_Validation.md](90_Source_Coverage_and_Validation.md) — 원문 대응·검증 기록
 - [REVIEW.md](REVIEW.md) — 저장소 대조 검토
+- [RESEARCH_INPUTS.md](RESEARCH_INPUTS.md) — 사전 연구 자료 목록과 누락분(개별 계획서 30개 등)
+- [research/Forge_Godot_Extension_Case_Study_20261125.md](research/Forge_Godot_Extension_Case_Study_20261125.md) — Forge 유사 Godot 확장 사례 조사
 - [SSOT.md](SSOT.md) — 중복 계획·구현의 정본 지정과 보완 사항
 - [branches.json](branches.json) — 항목별 통합 대상(기계 판독용)
 
