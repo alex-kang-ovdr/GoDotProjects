@@ -1,0 +1,5 @@
+# Copied to a Linux VM (often from a Windows checkout): keep LF so bash and Caddy parse them.
+*.sh text eol=lf
+Caddyfile text eol=lf
+*.yml text eol=lf
+*.example text eol=lf

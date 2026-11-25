@@ -1,0 +1,14 @@
+# Single public entry point. Caddy obtains a Let's Encrypt certificate for
+# PLAYHUB_SITE (e.g. 34-82-1-2.sslip.io) and proxies HTTP + WebSocket to Hub,
+# which forwards /forge/* to Forge on loopback.
+{$PLAYHUB_SITE} {
+	# Hub-to-Forge session verification stays on loopback only.
+	@internal path /internal /internal/*
+	respond @internal 404
+
+	# Hub and Forge already send pre-compressed (br/gzip) assets; no re-encoding here
+	# keeps CPU free on an e2-micro.
+	reverse_proxy 127.0.0.1:8080 {
+		flush_interval -1
+	}
+}

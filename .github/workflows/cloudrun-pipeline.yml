@@ -22,6 +22,7 @@ on:
           - promote-live
           - rollback
           - prune-ar
+          - deploy-vm
       target:
         description: '대상 컴포넌트'
         required: true
@@ -32,7 +33,7 @@ on:
           - hub
           - forge
       image_tag:
-        description: '승격할 불변 이미지 태그 또는 SHA (promote-qa / promote-live 시 지정)'
+        description: '승격할 불변 이미지 태그 또는 SHA (promote-qa / promote-live / deploy-vm 시 지정)'
         required: false
         default: ''
       canary_percent:
@@ -98,7 +99,7 @@ jobs:
       - name: Build Hub static output
         run: node hub/tools/build.mjs
       - name: Run build-version, compatibility gate, entrypoint proxy, packaging/SSOT contract & P0 build worker tests
-        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/prune-ar-images.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs deploy/cloudrun/forge/web-origin-config.test.mjs
+        run: node --test tools/build-version/build-version.test.mjs hub/tests/compat-version.test.mjs hub/tests/contract.schema-ssot.test.mjs deploy/cloudrun/entrypoint-proxy.test.mjs deploy/cloudrun/prune-ar-images.test.mjs deploy/cloudrun/contract.packaging-smoke.test.mjs deploy/cloudrun/build-worker/worker.test.mjs deploy/cloudrun/build-worker/cloudrun-backend.test.mjs deploy/cloudrun/forge/web-origin-config.test.mjs deploy/vm/vm-config.test.mjs
       - name: Smoke test Cloud Run Hub entrypoint
         run: node deploy/cloudrun/smoke-test.mjs
 
@@ -422,6 +423,48 @@ jobs:
             --protect-tag="${HUB_BUILD_TAG}" \
             --protect-tag="${FORGE_BUILD_TAG}" \
             --protect-tag="${WORKER_TAG}"
+
+  deploy-vm:
+    # Single-VM deployment (deploy/vm): Hub + Forge + Caddy on one e2-micro, no Firebase Hosting.
+    # Push: runs after build when repository variable PLAYHUB_VM_ENABLED is 'true'.
+    # Manual: action=deploy-vm with image_tag (e.g. sha-317e02b).
+    needs: build
+    if: >-
+      !cancelled() &&
+      ((github.event_name == 'push' && vars.PLAYHUB_VM_ENABLED == 'true' && needs.build.result == 'success') ||
+       (github.event_name == 'workflow_dispatch' && inputs.action == 'deploy-vm'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: playhub-vm-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy/vm
+      - name: Deploy immutable images to the PlayHub VM over SSH
+        env:
+          VM_HOST: ${{ vars.PLAYHUB_VM_HOST }}
+          VM_USER: ${{ vars.PLAYHUB_VM_USER }}
+          VM_SSH_KEY: ${{ secrets.PLAYHUB_VM_SSH_KEY }}
+          VM_KNOWN_HOSTS: ${{ secrets.PLAYHUB_VM_KNOWN_HOSTS }}
+          TAG: ${{ github.event_name == 'push' && needs.build.outputs.sha_tag || inputs.image_tag }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${VM_HOST}" || -z "${VM_USER}" || -z "${VM_SSH_KEY}" || -z "${VM_KNOWN_HOSTS}" ]]; then
+            echo "PLAYHUB_VM_HOST / PLAYHUB_VM_USER variables and PLAYHUB_VM_SSH_KEY / PLAYHUB_VM_KNOWN_HOSTS secrets are required" >&2
+            exit 1
+          fi
+          if [[ ! "${TAG}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]; then
+            echo "Invalid image tag: ${TAG}" >&2
+            exit 1
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "${VM_SSH_KEY}" > ~/.ssh/playhub_vm
+          printf '%s\n' "${VM_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/playhub_vm ~/.ssh/known_hosts
+          SSH=(ssh -i ~/.ssh/playhub_vm -o StrictHostKeyChecking=yes -o BatchMode=yes)
+          scp -i ~/.ssh/playhub_vm -o StrictHostKeyChecking=yes -o BatchMode=yes -r deploy/vm "${VM_USER}@${VM_HOST}:playhub-vm-next"
+          "${SSH[@]}" "${VM_USER}@${VM_HOST}" "rm -rf playhub-vm && mv playhub-vm-next playhub-vm && sudo bash playhub-vm/deploy.sh '${TAG}'"
 
   prune-ar:
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'prune-ar'
