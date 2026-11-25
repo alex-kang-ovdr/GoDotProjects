@@ -14,16 +14,16 @@
 
 ## NetMode 실행·transport 계약
 
-25번의 네 가지 `NetMode`를 프로세스 시작 계약으로 사용한다. 이는 Forge bootstrap 설정이며 Godot 기본 CLI가 제공하는 모드가 아니다.
+25번의 네 가지 `NetMode`를 프로세스 시작 계약으로 사용한다. `--netmode=<mode>`가 Forge bootstrap의 유일한 모드 인자이며 Godot 기본 CLI가 제공하는 옵션이 아니다.
 
-| `--net-mode` | 시작·렌더링 | 연결 동작 |
+| `--netmode` | 시작·렌더링 | 연결 동작 |
 | --- | --- | --- |
 | `dedicated-server` | `--headless`; 서버 권위 프로세스, 로컬 플레이어 슬롯 없음 | 서버 endpoint를 열고 readiness 전에 build/protocol/session 설정을 검증 |
 | `listen-server` | 렌더링하는 권위 서버, 로컬 플레이어 슬롯 없음 | 서버 endpoint를 열어 remote client를 받음. 호스트 플레이는 별도 `client` 프로세스에서 수행 |
 | `standalone` | 렌더링하는 단일 플레이 프로세스 | 네트워크 listener·client transport·JoinTicket 없이 실행 |
 | `client` | 비권위 프로세스; `--headless` 봇 실행 허용 | DedicatedServer 또는 ListenServer에 접속; transport 연결과 서버 Ready를 별도로 확인 |
 
-**기존 인자 호환:** 원문 계획의 `--role=server`는 `--net-mode=dedicated-server`의 별칭으로 유지하고, `--role=client`는 `--net-mode=client` 별칭으로 지원한다. `--net-mode`를 정식 인자로 삼으며 둘 다 지정해 서로 다른 모드가 되면 시작을 거부한다. Forge bootstrap이 해석하는 인자이며 기본 Godot CLI 옵션은 아니다. 원문은 `--session-id`를 제안하지만 현재 스파이크 지원을 보장하지 않는다.
+`--netmode`만 허용하며 다른 모드 인자 별칭은 제공하지 않는다. 원문은 `--session-id`를 제안하지만 현재 스파이크 지원을 보장하지 않는다.
 
 ## 첫 작업 (spike)
 

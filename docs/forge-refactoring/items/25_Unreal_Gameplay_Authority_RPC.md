@@ -13,9 +13,9 @@
 
 ## NetMode와 권한·표시 계약
 
-`NetMode`는 Forge bootstrap의 실행 모드이며 Godot 내장 CLI 옵션이 아니다. `--net-mode` 값은 소문자 케밥 표기를 사용하고 권한과 transport는 렌더링 여부와 별도로 정한다.
+`NetMode`는 Forge bootstrap의 실행 모드이며 Godot 내장 CLI 옵션이 아니다. Forge bootstrap은 `--netmode=<mode>` 하나만 받아 소문자 케밥 값으로 모드를 정하고, 권한과 transport는 렌더링 여부와 별도로 정한다.
 
-| `--net-mode` | 권한·게임 상태 | 로컬 플레이어 | 렌더링 | Transport |
+| `--netmode` | 권한·게임 상태 | 로컬 플레이어 | 렌더링 | Transport |
 | --- | --- | --- | --- | --- |
 | `dedicated-server` | 서버 권위. 모든 입력·RPC를 검증하고 경기 결과를 확정 | 자동 생성하지 않음 | headless, 게임 화면 렌더링 없음 | 서버 endpoint 수신 |
 | `listen-server` | 렌더링하는 서버 권위. remote client 입력을 검증하고 결과 확정 | 로컬 슬롯 없음. 호스트 플레이는 별도 `client` 프로세스로 접속 | 권위 서버 화면 렌더링 | 서버 endpoint 수신 및 remote client 연결 허용 |
@@ -26,9 +26,9 @@
 
 ## 구현 경계와 다음 검증
 
-기본 구현은 Godot 공개 `MultiplayerAPI`/ENet 재사용이며, 네 가지 NetMode와 권한·복제 스키마는 Forge bootstrap/addon 계층에 둔다. `listen-server`는 렌더링하는 권위 서버지만 로컬 플레이어를 자동 생성하지 않는다. 이번 실측 프로파일러·패킷 시뮬레이션을 위한 좁은 E3 예외는 [NET_DEBUG_E3_ADR](https://github.com/alex-kang-ovdr/godot-engine/blob/Forge-Refactoring-Multiplayer/playforge/NET_DEBUG_E3_ADR.md)에 따라 승인되어, 엔진 구현은 [`Forge-Refactoring-Multiplayer` 브랜치](https://github.com/alex-kang-ovdr/godot-engine/tree/Forge-Refactoring-Multiplayer)에 분리했다. Windows 엔진 검증은 33/33을 두 차례 통과했고, NetMode·연결 검증은 8/8 통과했다. 후속 기능은 Godot 공개 API와 Forge 계층으로 먼저 검증하고, 필요한 동작이나 계측을 제공할 수 없을 때만 엔진 수정 범위를 다시 검토한다.
+기본 구현은 Godot 공개 `MultiplayerAPI`/ENet 재사용이며, 네 가지 NetMode와 권한·복제 스키마는 Forge bootstrap/addon 계층에 둔다. `listen-server`는 렌더링하는 권위 서버지만 로컬 플레이어를 자동 생성하지 않는다. 좁은 E3 예외는 [NET_DEBUG_E3_ADR](https://github.com/alex-kang-ovdr/godot-engine/blob/Forge-Refactoring-Multiplayer/playforge/NET_DEBUG_E3_ADR.md)에 따라 승인됐고, 현재 엔진 회귀는 [후속 커밋 `4153e53e1b60f138a31d36381bf9fd4eacf5e911`](https://github.com/alex-kang-ovdr/godot-engine/commit/4153e53e1b60f138a31d36381bf9fd4eacf5e911)에 있다. Windows loopback DTLS 시험은 런타임 생성한 `CN=localhost` 자체 서명 인증서를 명시적 trust root로 사용해 안전한 TLS client 인증서·호스트명 검증, reliable 요청·응답 실제 수신을 확인한다. NetMode·연결 검증은 8/8을 통과했고, `enet_rpc_netdebug`는 두 차례 각각 50/50 통과했다. 두 반복 모두 120 ms 설정 지연이 80 ms 판정 하한을 넘었고, `Off` 뒤 같은 연결에서 secure payload 전달이 복구됐다. 이 테스트는 운영 CA/인증서 체인을 검증하지 않는다.
 
-다음 검증은 이미 성공한 Linux ELF export를 실제 Linux 호스트에서 기동해 접속·SIGTERM 종료까지 확인하고, 별도로 WSS Gateway 경로를 실행하는 것이다. Native ENet+DTLS는 실제 인증서 검증·호스트명·MTU·손실·재접속 시험이 남아 있으며, ENet 사용만으로 암호화 완료로 간주하지 않는다([항목 28](28_Dedicated_Server_Runtime_Operations.md), [원문 계획 29 §6](../plans/29_Online_Services_Sessions_Relay.md#6-native-web-전송-설계)).
+남은 검증은 Linux ELF export의 실제 Linux 호스트 기동·접속·SIGTERM 종료, WSS Gateway 경로, 운영 인증서 체인, MTU, 패킷 손실, 재접속이다. 현재 인증서·호스트명 시험은 Windows loopback 자체 서명 인증서 범위이며 운영 인증서로의 검증을 대신하지 않는다. ENet 사용만으로 암호화 완료로 간주하지 않는다([항목 28](28_Dedicated_Server_Runtime_Operations.md), [원문 계획 29 §6](../plans/29_Online_Services_Sessions_Relay.md#6-native-web-전송-설계)).
 
 ## 첫 작업 (spike)
 
