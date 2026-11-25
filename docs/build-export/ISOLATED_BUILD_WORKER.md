@@ -2,7 +2,7 @@
 
 - 브랜치: `Forge-BuildExport` · 성격: **설계 문서만** (코드 변경 없음)
 - 기준 설계: [docs/architecture/build-worker-p0-plan.md](../architecture/build-worker-p0-plan.md) (Cloud Run Jobs 1회성 워커)
-- 관련 검토: `Godot-Refactoring` 브랜치 `docs/godot-refactoring/REVIEW.md` §3.3, `docs/architecture/multiplayer-plan-review.md` §3.2
+- 관련 검토: `Forge-Refactoring` 브랜치 `docs/forge-refactoring/REVIEW.md` §3.3, `docs/architecture/multiplayer-plan-review.md` §3.2
 - 이 문서는 새 워커를 설계하지 않는다. 이미 있는 워커를 **기본 경로로 만들기 위해 빠진 것**만 정리한다.
 
 ## 1. 위협 (요약)
