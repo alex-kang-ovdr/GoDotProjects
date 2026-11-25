@@ -19,16 +19,16 @@
 - **결정성 범위**: 벤치마크는 같은 기기 반복 실행에서 1cm 양자화 상태 hash 일치만 확인했다. SIMD 설정이 데스크톱 x86_64 한정이라 모바일·서버(Linux)와 결과가 갈릴 수 있다. 항목 27(네트워크 물리)은 기기 간 결정성을 가정하지 않는다.
 - **third-party 수정**: `thirdparty/jolt_physics/**` 수정도 포크 커밋으로 유지되므로 평소에는 재적용하지 않는다. upstream이 Jolt 버전을 올리면(upstream master는 이미 Jolt 5.6.0) 그 merge에서 한 번 맞춘다. 시험 병합 충돌은 `PhysicsSystem.cpp`, `jolt_contact_listener_3d.*`, `physics_server_3d.cpp`, `core/math/aabb.h`.
 - **코어 수정**: `core/math/aabb.h`, `servers/physics_3d/physics_server_3d*` 변경은 E3(코어)에 해당한다. 예외 사유를 아래 양식으로 채운다.
-- **회귀 fixture**: HavokProfile 벤치마크(Forge-HavokPhysics)가 유일한 측정 경로다. 트렁크에 재실행 가능한 fixture가 없다(미확인). 항목 13 TraceSample 형식으로 측정을 다시 묶는다(Forge-Profiling에 HavokProfile 어댑터 있음).
+- **회귀 fixture**: 2026-11-25 포크 `playforge/tests/`(`bb65179d`)에 추가. 같은 기기에서 600박스·폭발 300틱의 1cm 양자화 hash가 프로세스 안팎과 GSK 모드 0/1/2 모두에서 일치한다. 기기·OS 간 결정성은 여전히 미검증.
 
 ## 로드맵 §13 양식 (패치별로 채울 것)
 
 | 커밋 | 대체 불가 API | 회귀 fixture | upstream 상태 | 제거 조건 |
 | --- | --- | --- | --- | --- |
-| `83f5f345` | 미작성 | 미작성 | 미제안 | 미작성 |
-| `70892ae8` | 빌드 설정(API 아님) | 미작성 | 미제안 | 미작성 |
-| `c9050da1` | 미작성 | 미작성 | 미제안 | 미작성 |
-| `e7a83dd7` | 미작성 | 미작성 | 미제안 | 실험 종료 시 A/B 계측 API 제거 |
+| `83f5f345` | 미작성 | jolt_api·jolt_determinism·jolt_contacts 통과 | 미제안 | 미작성 |
+| `70892ae8` | 빌드 설정(API 아님) | 소스 표식만(바이너리 SIMD 여부는 실행 중 확인 불가) | 미제안 | 미작성 |
+| `c9050da1` | 미작성 | jolt_contacts(800 바디) 통과 | 미제안 | 미작성 |
+| `e7a83dd7` | 미작성 | jolt_api(GSK 모드·통계)·결정성(모드 0/1/2) 통과 | 미제안 | 실험 종료 시 A/B 계측 API 제거 |
 
 ## 항목 12의 첫 작업
 
