@@ -2,7 +2,7 @@
 
 - 원본 계획서: `plans/03_Asset_Streaming.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
 - 통합 대상 브랜치: `Forge-Refactoring-03-assetStreaming`
-- 분류: 엔진 변경 → Forge-Refactoring 계열
+- 분류: 엔진 변경 → Godot-Refactoring 계열
 - 우선순위: P1/P2/P3 / 본체 공수: 26-42 PW / 착수 단계: R2
 - 커밋 영역 성격: GD-Core
 

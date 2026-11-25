@@ -29,7 +29,7 @@ test('catalog launches available entries and links to existing analysis', async 
   const response = await request('/projects.json');
   assert.equal(response.status, 200);
   const { projects } = JSON.parse(response.body);
-  assert.equal(new Set(projects.map(p => p.id)).size, 4);
+  assert.equal(new Set(projects.map(p => p.id)).size, projects.length);
   const missingEntries = [];
   for (const project of projects) {
     assert.ok(project.title && project.description && project.kind);
@@ -44,7 +44,7 @@ test('catalog launches available entries and links to existing analysis', async 
       assert.equal(status, 200, project[field]);
     }
   }
-  assert.ok(projects.some(project => project.id === 'studio') && projects.some(project => project.id === 'tappy-chicken'));
+  assert.ok(projects.some(project => project.id === 'official-godot'));
   if (missingEntries.length) t.diagnostic(`Historical catalog entries unavailable in this checkout:\n${missingEntries.join('\n')}`);
 });
 test('available imported reference files retain their original bytes', t => {
@@ -98,10 +98,12 @@ test('HTTP preserves UTF-8, script MIME, HEAD and directory-relative links', asy
   const korean = await request('/' + encodeURI('References/삼국지 11/ANALYSIS.md'));
   assert.equal(korean.status, 200); assert.match(korean.headers['content-type'], /text\/plain.*utf-8/);
   assert.match(korean.body, /삼국지/);
-  const script = await request('/Studio/studio.js', 'HEAD');
+  const script = await request('/OfficialGodot/platform.js', 'HEAD');
   assert.equal(script.status, 200); assert.match(script.headers['content-type'], /javascript/); assert.equal(script.body, '');
-  assert.equal((await request('/Studio')).status, 308);
-  assert.equal((await request('/Studio/')).status, 200);
+  assert.equal((await request('/OfficialGodot')).status, 308);
+  assert.equal((await request('/OfficialGodot/')).status, 200);
+  // The legacy HTML/JS Studio was retired on 2026-11-25.
+  for (const url of ['/Studio/', '/StudioGodot/', '/Studio/studio.js']) assert.equal((await request(url)).status, 404, url);
 });
 test('server rejects traversal, metadata and writes without exposing other worktree files', async () => {
   for (const url of ['/%2e%2e%2fAGENTS.md', '/.git/config', '/Saved/Tests/latest/summary.json', '/sAvEd/test', '/Engine/build/a.exe', '/node_modules/a', '/WebProjects/League%20of%20Legends/Playable/Current/.openai/hosting.json']) {

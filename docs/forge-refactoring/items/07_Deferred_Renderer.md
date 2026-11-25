@@ -2,7 +2,7 @@
 
 - 원본 계획서: `plans/07_Deferred_Renderer.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
 - 통합 대상 브랜치: `Forge-Refactoring-07-deferred`
-- 분류: 엔진 변경 → Forge-Refactoring 계열
+- 분류: 엔진 변경 → Godot-Refactoring 계열
 - 우선순위: R&D/P3 / 본체 공수: 40-63 PW / 착수 단계: R3
 - 커밋 영역 성격: GD-Core
 

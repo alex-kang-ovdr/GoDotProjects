@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "title": "PlayForge 프론트엔드 선택",
-  "updated": "2026-11-17",
+  "updated": "2026-11-25",
   "layout": {
     "headline": "편집 화면을 선택하세요",
-    "subheadline": "Classic, Godot Layout, 공식 Godot 기반 Creator의 제작 흐름을 비교합니다.",
-    "architecture": "Classic과 Godot Layout은 기존 Tappy 공유 문서를 사용합니다. Creator는 새 프로젝트별 저장·버전·빌드 공간과 통합 Godot 에디터를 사용합니다."
+    "subheadline": "공식 Godot 기반 PlayForge Creator의 제작 흐름과 현재 제공 범위를 확인합니다.",
+    "architecture": "Creator는 프로젝트별 저장·버전·빌드 공간과 통합 Godot 에디터를 사용합니다. 기존 HTML/JS Studio(Classic Web·Godot Layout Web)와 Yjs 실시간 협업은 2026-11-25에 폐기되었습니다."
   },
   "comparison": [
     {
@@ -38,42 +38,6 @@
     }
   ],
   "frontends": [
-    {
-      "id": "classic-web",
-      "title": "Classic Web",
-      "subtitle": "기존 PlayForge Studio",
-      "route": "/Studio/",
-      "theme": "classic",
-      "status": "현재 사용 가능",
-      "summary": "기존 제작 화면에서 씬 미리보기, GDScript 편집, 실행과 설정을 사용합니다.",
-      "language": "GDScript",
-      "runtime": "같은 서버의 Godot 네이티브 프로세스가 프로젝트 코드를 실행합니다.",
-      "rendering": "Godot 실행 상태를 브라우저 Canvas 미러로 표시합니다. 브라우저 안에서 Godot WASM을 실행하는 Web PIE는 아닙니다.",
-      "collaboration": "Godot Layout과 같은 Yjs 공유 문서와 presence를 사용합니다. 현재 연결 범위는 로컬/신뢰된 참여자이며 HTTPS/WSS 서버에 연결할 수 있습니다. 인증 cloud authority와 역할별 ACL은 미완료입니다.",
-      "state": "같은 PlayForge 서버의 저장 프로젝트와 리비전을 편집합니다.",
-      "launch": "별도 런처 또는 /Studio/ 경로에서 바로 엽니다.",
-      "capabilities": "GDScript 편집·저장, Godot 실행 입력, 설정 잠금, Yjs 텍스트 협업과 presence가 연결되어 있습니다.",
-      "shareGroup": "playforge-saved-project",
-      "evidence": "현재 UI/controller 및 로컬 실행 경로. 범용 프로젝트 지원이나 공개 UGC 안전성의 증거는 아닙니다."
-    },
-    {
-      "id": "godot-layout-web",
-      "title": "Godot Layout Web",
-      "subtitle": "Godot 에디터 관습을 반영한 웹 UI",
-      "route": "/StudioGodot/",
-      "theme": "godot",
-      "status": "현재 사용 가능",
-      "summary": "Scene·FileSystem·Inspector·Output 패널을 갖춘 웹 제작 화면입니다. 네이티브 Godot Editor UI를 브라우저에 내장한 것은 아닙니다.",
-      "language": "GDScript",
-      "runtime": "Classic과 같은 서버 측 Godot 네이티브 런타임을 사용합니다.",
-      "rendering": "Studio 실행은 Canvas 미러입니다. 서비스 빌드 API의 별도 Web 산출물은 실제 Godot WASM 런타임입니다.",
-      "collaboration": "Classic과 동일한 Yjs 공유 문서와 presence를 사용합니다. 같은 서버에 접속한 두 화면은 동일 문서를 편집합니다. HTTPS/WSS 배포도 연결 구성은 가능하지만 production cloud 서비스 검증과 ACL은 완료되지 않았습니다.",
-      "state": "Classic과 같은 저장 프로젝트·리비전입니다. 별도 데이터 복사본을 만들지 않습니다.",
-      "launch": "별도 런처 또는 /StudioGodot/ 경로에서 바로 엽니다.",
-      "capabilities": "GDScript 편집·저장, Godot 실행 입력, 설정 잠금, Yjs 협업을 Classic과 같은 controller/API로 제공합니다.",
-      "shareGroup": "playforge-saved-project",
-      "evidence": "현재 공유 frontend/controller 연결. Godot 전체 scene editor의 동등 기능을 뜻하지 않습니다."
-    },
     {
       "id": "official-godot-service",
       "title": "PlayForge Creator",

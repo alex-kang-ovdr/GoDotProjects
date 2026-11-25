@@ -8,7 +8,6 @@ const zlib = require('node:zlib');
 const { pipeline } = require('node:stream/promises');
 const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
-const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./Tools/tappy-chicken-mmo-multiplayer.cjs');
@@ -818,21 +817,17 @@ function createServer(options = {}) {
   }) : null;
 
   const getStudioFor = accountKey => {
-    if (!hubAuth) return { store, collaboration };
+    if (!hubAuth) return { store };
     let entry = accountStudios.get(accountKey);
     if (!entry) {
       if (accountStudios.size >= MAX_ACCOUNTS) throw Object.assign(new Error('Account capacity reached'), { status: 503 });
-      const accountStore = new ProjectStore(root, path.join(studioDirectory, accountKey));
-      const bus = new EventEmitter();
-      const accountCollaboration = attachCollaboration(bus, accountStore, clientId => closeRuntime(`${accountKey}:${clientId}`), originAllowed);
-      entry = { store: accountStore, collaboration: accountCollaboration, bus };
+      entry = { store: new ProjectStore(root, path.join(studioDirectory, accountKey)) };
       accountStudios.set(accountKey, entry);
     }
     return entry;
   };
 
   const upgradeBus = new EventEmitter();
-  let collaboration = hubAuth ? null : attachCollaboration(upgradeBus, store, closeRuntime, originAllowed);
 
   const server = http.createServer(async (req, res) => {
     const reply = (status, message, headers = {}) => {
@@ -1228,9 +1223,8 @@ function createServer(options = {}) {
           const activeStudio = getStudioFor(auth?.accountKey);
           const current = activeStudio.store.snapshot();
           if (body.baseRevision !== current.revision) return json(409, { ok: false, error: 'revision_conflict', document: current });
-          const result = await activeStudio.store.update({ source: body.source, settings: current.settings, baseRevision: body.baseRevision });
+          const result = await activeStudio.store.updateSource(body.source, body.baseRevision);
           if (result.conflict) return json(409, { ok: false, error: 'revision_conflict', document: result.document });
-          activeStudio.collaboration.documentChanged(result.document, 'official-editor');
           return json(200, { ok: true, document: result.document });
         }
         if (routePath === '/api/builds' && req.method === 'POST') {
@@ -1240,13 +1234,6 @@ function createServer(options = {}) {
           const document = activeStudio.store.snapshot();
           if (body.revision !== document.revision) return json(409, { ok: false, error: 'revision_conflict', document });
           return json(202, { ok: true, build: builds.enqueue({ ...document, ...(hubAuth ? { ownerKey: auth.accountKey } : {}) }) });
-        }
-        if (routePath === '/api/project' && req.method === 'PUT') {
-          const activeStudio = getStudioFor(auth?.accountKey);
-          const result = await activeStudio.store.update(body);
-          if (result.conflict) return json(409, { ok: false, error: 'revision_conflict', document: result.document });
-          activeStudio.collaboration.documentChanged(result.document, body.clientId);
-          return json(200, { ok: true, ...result.document, document: result.document });
         }
         if (routePath === '/api/pie' && req.method === 'POST') {
           const id = body.sessionId;
@@ -1438,8 +1425,10 @@ function createServer(options = {}) {
       socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
       return;
     }
+    const multiplayerRoute = req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo';
     if (!hubAuth) {
-      upgradeBus.emit('upgrade', req, socket, head);
+      if (multiplayerRoute) upgradeBus.emit('upgrade', req, socket, head);
+      else socket.destroy();
       return;
     }
     const auth = await hubAuth.verify(req, { requireCsrf: false });
@@ -1449,12 +1438,7 @@ function createServer(options = {}) {
       return;
     }
     req.hubAuth = auth;
-    if (req.url === '/collaboration') {
-      try { getStudioFor(auth.accountKey).bus.emit('upgrade', req, socket, head); }
-      catch { socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); }
-      return;
-    }
-    if (req.url === '/brawllabs' || req.url === '/fortress-war' || req.url === '/tappy-chicken-mmo' || req.url === '/captain-forever-mmo') {
+    if (multiplayerRoute) {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -1470,10 +1454,8 @@ function createServer(options = {}) {
     tappyChickenMmo.close();
     captainForeverMmo.close();
     platformApi?.close?.();
-    collaboration?.close?.();
     for (const entry of accountPlatforms.values()) entry.api.close?.();
     accountPlatforms.clear();
-    for (const entry of accountStudios.values()) entry.collaboration.close?.();
     accountStudios.clear();
     builds.close();
     for (const id of runtimes.keys()) closeRuntime(id);
@@ -1504,7 +1486,7 @@ if (require.main === module) {
       console.log(`GamePlayForge: http://127.0.0.1:${port}/`);
       if (host === '0.0.0.0') {
         for (const adapters of Object.values(require('node:os').networkInterfaces())) for (const adapter of adapters || []) {
-          if (adapter.family === 'IPv4' && !adapter.internal) console.log(`LAN collaboration: http://${adapter.address}:${port}/Studio/`);
+          if (adapter.family === 'IPv4' && !adapter.internal) console.log(`LAN: http://${adapter.address}:${port}/OfficialGodot/`);
         }
       }
     });

@@ -41,9 +41,7 @@ function Test-Launcher([string]$path, [string]$name) {
 }
 
 $variants = @(
-    @{ Name = 'PlayForge-Web-Classic.exe'; Define = $null },
-    @{ Name = 'PlayForge-Web-Godot.exe'; Define = 'FRONTEND_GODOT' },
-    @{ Name = 'PlayForge-Web-Official.exe'; Define = 'FRONTEND_OFFICIAL' }
+    @{ Name = 'PlayForge-Web-Official.exe'; Define = $null }
 )
 foreach ($variant in $variants) {
     $destination = Join-Path $output $variant.Name

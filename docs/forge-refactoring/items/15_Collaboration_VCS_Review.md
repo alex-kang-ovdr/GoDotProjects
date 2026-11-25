@@ -8,7 +8,7 @@
 
 ## 저장소에 이미 있는 관련 자산
 
-- forge/Tools/collaboration.cjs, yjs-entry.js (실시간 협업)
+- HTML/JS Studio와 Yjs 실시간 협업(collaboration.cjs)은 2026-11-25 폐기 — 협업은 웹 Godot 편집기 기준으로 새로 설계
 - project-drive-sync.cjs, drive-snapshot-store.cjs (snapshot)
 - Forge-Publish 브랜치
 

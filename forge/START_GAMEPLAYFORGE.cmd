@@ -13,7 +13,7 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-if not exist "node_modules\yjs\package.json" (
+if not exist "node_modules\ws\package.json" (
   call npm.cmd ci
   if errorlevel 1 (
     pause

@@ -30,7 +30,7 @@
 | 항목 | 이미 있는 것 | 처리 |
 | --- | --- | --- |
 | 13 진단 | `ISMProfile`(Forge-ISM-profile), 데일리 프로파일·GPU 텔레메트리 | TraceSample 스키마로 기존 출력을 묶는다. 새 profiler부터 만들지 않는다 |
-| 15 협업 | `collaboration.cjs`·`yjs-entry.js`, Drive snapshot/sync, Forge-Publish | gap 분석 후 snapshot/복원 부족분만 |
+| 15 협업 | Drive snapshot/sync, Forge-Publish (HTML/JS Studio의 Yjs 협업은 2026-11-25 폐기) | gap 분석 후 snapshot/복원 부족분만 |
 | 16 빌드 | `build-queue.cjs`, `export-godot-project.cjs`, `tools/build-version`, PlayHub-DevOps | EngineLock을 기존 build-version·release-manifest에 통합 |
 | 17 모바일 QA | Forge-GamerQA, PlayHub-GamerQA, Hub-AOS/IOS | 실기기 절차만 신규 |
 | 18 결제·광고 | Hub-Billing, Hub-AdGame | billing 원장은 Hub-Billing 소유 유지 |

@@ -56,7 +56,7 @@ PlayForge는 `/OfficialGodot/` 같은 루트 기준 주소와 COOP/COEP/CORP 보
 
 - Node.js 22.16.0 Windows x64 및 런타임 라이선스
 - Godot 4.7.2-stable Windows x64, 공식 라이선스와 portable Web export 템플릿
-- `ws`, `yjs`, `lib0` 프로덕션 모듈과 각 라이선스
+- `ws` 프로덕션 모듈과 라이선스 (`yjs`·`lib0`은 2026-11-25 Studio 폐기로 제외)
 - `Deploy/MANIFEST.json`에 포함 파일의 SHA-256과 런타임 버전이 기록됩니다. ZIP의 SHA-256은 배포 ZIP 옆 `.sha256` 파일에서 확인할 수 있습니다.
 
 배포 패키지에 포함된 모든 타사 런타임 및 라이선스 고지를 확인하고, 필요에 따라 원문 라이선스를 함께 제공하세요.

@@ -18,17 +18,11 @@ test('external HTTPS origin works for HTTP and WebSocket behind a proxy; foreign
   assert.equal(allowed.status, 200);
   const foreign = await fetch(base + '/api/project', { headers: { Origin: 'https://foreign.test', 'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': 'foreign.test' } });
   assert.equal(foreign.status, 403);
-  const socket = new WebSocket(base.replace('http:', 'ws:') + '/collaboration', { origin: 'https://cloud.playforge.test' });
+  // Multiplayer WebSockets share the same origin policy as HTTP.
+  const socket = new WebSocket(base.replace('http:', 'ws:') + '/brawllabs', { origin: 'https://cloud.playforge.test' });
   t.after(() => socket.terminate());
   await new Promise((resolve, reject) => { socket.once('open', resolve); socket.once('error', reject); });
-  const welcome = new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('No collaboration welcome')), 2000);
-    socket.on('message', data => { const message = JSON.parse(data); if (message.type === 'welcome') { clearTimeout(timer); resolve(message); } });
-  });
-  socket.send(JSON.stringify({ type: 'join', clientId: 'cloud-alice-001', name: 'Alice' }));
-  const state = await welcome;
-  assert.ok(state.document.source.includes('extends RefCounted'));
-  const rejected = new WebSocket(base.replace('http:', 'ws:') + '/collaboration', { origin: 'https://foreign.test' });
+  const rejected = new WebSocket(base.replace('http:', 'ws:') + '/brawllabs', { origin: 'https://foreign.test' });
   t.after(() => rejected.terminate());
   await new Promise((resolve, reject) => { rejected.once('error', resolve); rejected.once('open', () => reject(new Error('Foreign WebSocket origin accepted'))); });
 });

@@ -15,8 +15,10 @@
 
 ## 변경한 실행 경로
 
+아래 그림의 Studio 편집기와 Yjs 공유 문서는 2026-11-25에 폐기됐습니다(아래 참조). 현재 GDScript source는 Godot editor plugin이 `PUT /api/editor/source`로 저장합니다.
+
 ```text
-Studio GDScript editor ── Yjs / settings revisions ── Node local service
+(폐기) Studio GDScript editor ── Yjs / settings revisions ── Node local service
                                                           │
                                      loopback TCP + per-session random token
                                                           │
@@ -28,7 +30,7 @@ Studio GDScript editor ── Yjs / settings revisions ── Node local service
 GDScript는 `extends RefCounted`와 `reset(settings)`, `input(action)`, `update(dt)`, `snapshot()`을 구현합니다.
 load는 전달된 source를 새 GDScript 인스턴스로 컴파일하고 reset합니다. Studio 수정은 다음 load에 반영합니다.
 기본 프로젝트는 manifest의 runtime.entry에서 선택되며 Studio 작업 데이터와 저장소 파일은 분리되어 있습니다.
-공유 GDScript 소스의 Yjs 루트 키는 `script`입니다(textStateVersion 2, 2026-11-25). 이전 버전 작업 공간은 처음 불러올 때 한 번 `script` 루트로 다시 만들어 저장하고, 옛 키에 쓰는 갱신(새로고침하지 않은 이전 탭)은 거부합니다. UI DOM 식별자도 `script`로 바꿨습니다.
+기존 HTML/JS Studio(`/Studio/`, `/StudioGodot/`)와 Yjs 실시간 협업(`/collaboration` WebSocket, `PUT /api/project`, 설정 잠금)은 2026-11-25에 폐기했습니다. 작업 공간 파일(`Saved/GodotWorkspace/tappy.json`)은 `source`·`settings`·`revision`만 사용하며, 이전에 저장된 `textState`·`textStateVersion`·`operations`·`lockFence`·`textRevision`·`settingsRevision` 필드는 불러올 때 무시하고 다음 저장에서 제거합니다.
 
 상호작용 모드는 Godot `_physics_process` 60Hz로 진행합니다. Studio는 snapshot만 조회하므로 중복 update가 없습니다.
 테스트 모드는 동일 host의 manual clock으로 정확한 dt를 입력합니다. realtime 모드에서 외부 step을 거부합니다.
@@ -52,7 +54,7 @@ Godot GDScript 자체 runtime 오류는 예외 포착 API가 없으므로 프로
 - `npm test`: 실제 Godot 프로세스에서 원본 JS 동등성, 입력·설정·오류·종료·독립 세션·realtime 등 검사.
 - `Tools/test-godot-visible.cjs`: 네이티브 Space/P/R/마우스 이벤트, pause freeze, 300회 dt=0.04,
   seed=698, speed=40, gap=350, interval=4, pipeWidth=25, 16회마다 flap. 최소 1점 획득.
-- `npm run test:browser`: 보이는 Chrome와 Godot 창에서 Studio 기능 확인.
+- `npm run test:browser`: 보이는 Chrome에서 로컬 프로젝트 허브와 참조 PoC 확인(Studio 시나리오는 2026-11-25 폐기와 함께 제거).
 - 로그: `Saved/Tests/latest/summary.json`, `godot-game-validation.log`, `godot-native-input.log`,
   `godot-visible.json`, `godot-visible.csv`, `godot-native.png`, `browser/report.json`.
 
@@ -75,12 +77,12 @@ visible CSV는 명령 왕복 시간으로, GPU frame time이나 대량 객체 �
 갱신일: 2026-11-17. 아래는 기존 Windows native runtime 기록에 추가된 Web/Editor 검증 상태이며, 제품 전체 마이그레이션 완료 보고가 아닙니다.
 
 - `npm run test:web-runtime` (`Tools/test-godot-web.cjs`)가 server에서 실제 Godot Web export를 만들고 Chrome의 Godot WASM에서 Tappy GDScript load, input, pause freeze, restart를 확인했습니다. 결과: `Saved/Tests/web-runtime/runtime.json`, `build.json`, `web-game.png`. Web artifact build 상세는 `Saved/Tests/web-build-result.json`에 있습니다.
-- 이 검증은 Studio의 UI PIE와 분리됩니다. UI PIE Canvas는 여전히 native Godot process 실행의 state/visual mirror이며, Chrome smoke는 별도의 실제 WASM game runtime입니다.
+- 이 검증은 (2026-11-25 폐기된) Studio의 UI PIE와 분리됩니다. UI PIE Canvas는 native Godot process 실행의 state/visual mirror였으며, Chrome smoke는 별도의 실제 WASM game runtime입니다.
 - Official upstream Godot 4.7.2 Web Editor vendor 설치의 hash가 확인됐습니다. Browser에서 `crossOriginIsolated` 상태의 WASM startup, ZIP import 완료, `PLAYFORGE_EDITOR_READY`/`pluginReady:true`를 확인했습니다. `npm run test:official-editor` strict smoke는 아래 두 오류로 실패하므로 전체 성공으로 표시하지 않습니다.
 - `Godot/addons/playforge_service/plugin.gd`는 project ZIP `Launch/PlayForge-Godot-Project.zip`에 포함되며 native headless import가 통과했습니다. `Tests/plugin-service.test.cjs`는 native Godot에서 HTTP `GET /api/project`, `PUT /api/editor/source`, stale revision `409`를 실제로 확인했습니다. Build polling은 fake fixture라 실제 build API 통합 증거가 아닙니다.
 - Official browser editor의 ZIP project import와 plugin ready marker는 확인됐지만 browser에서 plugin HTTP API full round-trip은 검증되지 않았습니다. Strict smoke log `Saved/Tests/web-runtime/official-browser.log`에는 `Attempt of waiting to finish on a thread that was never started`와 TCP `ERR_CANT_CREATE` 두 오류가 있습니다. `Saved/Tests/web-runtime/official-result.json`은 `pluginReady:true`와 이 오류들을 함께 기록합니다.
 - 현재 PlayForge engine core patch는 0입니다. Upstream official Web Editor를 vendor해 시험하는 것이 engine fork source를 수정/빌드 완료했다는 의미는 아닙니다.
-- 세 launcher는 `--smoke-test` 실제 start/routes/stop을 통과했습니다. `npm test`는 31 checks pass, 두 과거 game suites skip. Browser automation은 각 browser에서 6 pass·2 skip(원본 game fixture 누락)입니다. `npm run test:web-runtime` actual Web WASM smoke는 pass. 이 결과 모두 review acceptance `T001–T064` not_run 상태를 바꾸지 않습니다.
+- (Studio 폐기 전 기록) 세 launcher는 `--smoke-test` 실제 start/routes/stop을 통과했습니다. 현재는 Official launcher만 빌드합니다. `npm test`는 31 checks pass, 두 과거 game suites skip. Browser automation은 각 browser에서 6 pass·2 skip(원본 game fixture 누락)입니다. `npm run test:web-runtime` actual Web WASM smoke는 pass. 이 결과 모두 review acceptance `T001–T064` not_run 상태를 바꾸지 않습니다.
 
 진행·경로 비교 표는 [구현 계획](IMPLEMENTATION_PLAN.md), [마일스톤 인덱스](MILESTONE_PLAN.md), [Cloud/frontends](CLOUD_AND_FRONTENDS.md)를 참조합니다.
 

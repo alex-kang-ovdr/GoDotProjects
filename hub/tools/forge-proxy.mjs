@@ -10,7 +10,7 @@ const STRIPPED_IDENTITY_HEADERS = new Set([
   'forwarded', 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto',
   'x-forwarded-port', 'x-forwarded-user', 'x-forwarded-email', 'x-real-ip',
 ]);
-const FORGE_REDIRECT_PATH = /^\/(?:OfficialGodot|Studio|StudioGodot|Frontends|api|play|assets|Projects)(?:\/|$|\?)/;
+const FORGE_REDIRECT_PATH = /^\/(?:OfficialGodot|Frontends|api|play|assets|Projects)(?:\/|$|\?)/;
 const MULTIPLAYER_HTTP_PATH = /^\/api\/(?:brawllabs|fortress-war|tappy-chicken-mmo)\/rooms\/[a-f0-9]{12}(?:\?|$)/;
 const MULTIPLAYER_WS_PATH = /^\/(?:brawllabs|fortress-war|tappy-chicken-mmo)(?:\?|$)/;
 

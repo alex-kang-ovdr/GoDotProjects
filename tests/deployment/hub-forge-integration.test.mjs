@@ -314,7 +314,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal((await anon.site('/forge/api/pie', { method: 'POST', body: { sessionId: 'sess-unauth-1', op: 'snapshot' } })).status, 401);
 
     // Unauthenticated WebSocket upgrade through Hub proxy is rejected with 401.
-    const wsUnauth = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/collaboration', { Origin: f.siteOrigin });
+    const wsUnauth = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/brawllabs', { Origin: f.siteOrigin });
     assert.equal(wsUnauth.ok, false);
     assert.equal(wsUnauth.status, 401);
 
@@ -419,7 +419,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal(slashEditor.status, 308);
     assert.equal(slashEditor.headers.get('location'), '/forge/OfficialGodot/');
 
-    for (const route of ['/forge/OfficialGodot/', '/forge/Studio/', '/forge/StudioGodot/', '/forge/Frontends/']) {
+    for (const route of ['/forge/OfficialGodot/', '/forge/Frontends/']) {
       const page = await alice.site(route);
       assert.equal(page.status, 200, route);
       assert.equal(page.headers.get('cross-origin-opener-policy'), 'same-origin');
@@ -467,7 +467,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     const accountStore = new PlatformStore(path.join(REPO_ROOT, 'forge'), path.join(f.accountsDir, aliceAccountKey));
     assert.equal(accountStore.getProject(aliceProjectId).name, 'Alice Private Game');
 
-    // Studio PUT + Collaboration WebSocket work through /forge/* proxy.
+    // The Godot editor plugin source endpoint works through the /forge/* proxy.
     const initialStudio = await alice.site('/forge/api/project');
     assert.equal(initialStudio.status, 200);
     const updatedSource = initialStudio.data.source + '\n# alice-private-marker\n';
@@ -476,22 +476,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       body: { source: updatedSource, baseRevision: initialStudio.data.revision },
     });
     assert.equal(savedStudio.status, 200, JSON.stringify(savedStudio.data));
-
-    const wsAlice = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/collaboration', {
-      Origin: f.siteOrigin,
-      Cookie: alice.cookieHeaderFor('/forge/collaboration'),
-    });
-    assert.equal(wsAlice.ok, true, JSON.stringify(wsAlice));
-    f.openSockets.push(wsAlice.ws);
-    const welcomeAlice = await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('Alice collaboration welcome timeout')), 3000);
-      wsAlice.ws.on('message', raw => {
-        const msg = JSON.parse(raw.toString());
-        if (msg.type === 'welcome') { clearTimeout(timer); resolve(msg); }
-      });
-      wsAlice.ws.send(JSON.stringify({ type: 'join', clientId: 'alice-collab-001', name: 'Alice' }));
-    });
-    assert.match(welcomeAlice.document.source, /# alice-private-marker/);
+    assert.match(savedStudio.data.document.source, /# alice-private-marker/);
 
     // Seed a succeeded build owned by Alice so we can verify build isolation without running Godot export.
     // Release validation checks the canonical source hash and the package hash (OwnedBuildPackages).
@@ -539,7 +524,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.match(buildFile.text, /Alice Build/);
   });
 
-  await t.test('cross-account isolation blocks Bob from Alice projects, builds, Studio docs, collaboration and runtime sessions', async () => {
+  await t.test('cross-account isolation blocks Bob from Alice projects, builds, editor source and runtime sessions', async () => {
     await f.loginGoogle(bob, { sub: 'google-bob-002', name: 'Bob' });
     const bobSession = await bob.site('/forge/api/session');
     assert.equal(bobSession.status, 200);
@@ -560,26 +545,10 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     assert.equal((await bob.site(`/forge/api/builds/${aliceBuildId}`)).status, 404);
     assert.equal((await bob.site(`/forge/api/builds/${aliceBuildId}/files/index.html`)).status, 404);
 
-    // Bob cannot see Alice's Studio document via HTTP or WebSocket collaboration.
+    // Bob cannot see Alice's editor source.
     const bobStudio = await bob.site('/forge/api/project');
     assert.equal(bobStudio.status, 200);
     assert.doesNotMatch(bobStudio.data.source, /# alice-private-marker/);
-
-    const wsBob = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/collaboration', {
-      Origin: f.siteOrigin,
-      Cookie: bob.cookieHeaderFor('/forge/collaboration'),
-    });
-    assert.equal(wsBob.ok, true);
-    f.openSockets.push(wsBob.ws);
-    const welcomeBob = await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('Bob collaboration welcome timeout')), 3000);
-      wsBob.ws.on('message', raw => {
-        const msg = JSON.parse(raw.toString());
-        if (msg.type === 'welcome') { clearTimeout(timer); resolve(msg); }
-      });
-      wsBob.ws.send(JSON.stringify({ type: 'join', clientId: 'bob-collab-001', name: 'Bob' }));
-    });
-    assert.doesNotMatch(welcomeBob.document.source, /# alice-private-marker/);
 
     // P0 execution allowlist: unset in this fixture, so no account may run builds or PIE (fail closed).
     for (const [route, body] of [
@@ -622,7 +591,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       headers: { Cookie: staleForgeCookie, 'X-CSRF-Token': staleCsrf },
     })).status, 401);
 
-    const wsStale = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/collaboration', {
+    const wsStale = await openWs(f.siteOrigin.replace('http:', 'ws:') + '/forge/brawllabs', {
       Origin: f.siteOrigin,
       Cookie: staleForgeCookie,
     });

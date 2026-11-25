@@ -26,7 +26,7 @@ const repoRoot = path.resolve(forgeRoot, '..');
 // Fallback node_modules resolution for fresh git worktrees that share PlayHub-Platform's installed forge dependencies
 const localNodeModules = path.join(forgeRoot, 'node_modules');
 const fallbackNodeModules = process.env.PLAYFORGE_NODE_MODULES_FALLBACK || 'D:\\Github\\GoDotProjects-worktrees\\PlayHub-Platform\\forge\\node_modules';
-if (!fs.existsSync(path.join(localNodeModules, 'yjs')) && fs.existsSync(fallbackNodeModules)) {
+if (!fs.existsSync(path.join(localNodeModules, 'ws')) && fs.existsSync(fallbackNodeModules)) {
   process.env.NODE_PATH = process.env.NODE_PATH
     ? `${process.env.NODE_PATH}${path.delimiter}${fallbackNodeModules}`
     : fallbackNodeModules;

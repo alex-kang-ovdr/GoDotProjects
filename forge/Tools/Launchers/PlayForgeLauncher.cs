@@ -11,16 +11,8 @@ using System.Windows.Forms;
 
 internal static class PlayForgeLauncher
 {
-#if FRONTEND_OFFICIAL
     private const string FrontendPath = "/OfficialGodot/";
     private const string ProductName = "PlayForge Web (Official Godot)";
-#elif FRONTEND_GODOT
-    private const string FrontendPath = "/StudioGodot/";
-    private const string ProductName = "PlayForge Web (Godot)";
-#else
-    private const string FrontendPath = "/Studio/";
-    private const string ProductName = "PlayForge Web (Classic)";
-#endif
     private static Form form;
     private static TextBox urlBox;
     private static Label statusLabel;
@@ -115,7 +107,6 @@ internal static class PlayForgeLauncher
             {
                 if (!String.Equals(existingEngine, "Godot", StringComparison.OrdinalIgnoreCase))
                     throw new InvalidOperationException("A service is already using this port, but its engine is not Godot. Set PORT to a free port.");
-#if FRONTEND_OFFICIAL
                 if (TryReadPlatformTemplates(port))
                 {
                     reusedServer = true;
@@ -129,16 +120,11 @@ internal static class PlayForgeLauncher
                 port = FindFreePort();
                 Environment.SetEnvironmentVariable("PORT", port.ToString());
                 resolvedUrl = LocalUrl(port, FrontendPath);
-#else
-                reusedServer = true;
-                SetReady("Reusing the running Godot server");
-                return;
-#endif
             }
 
             string node = FindNode();
             if (node == null) throw new InvalidOperationException("Node.js was not found. Install Node.js 22 or add node.exe to PATH.");
-            if (!File.Exists(Path.Combine(appRoot, "node_modules", "yjs", "package.json")))
+            if (!File.Exists(Path.Combine(appRoot, "node_modules", "ws", "package.json")))
                 throw new InvalidOperationException("Dependencies are missing. Open a terminal in the GamePlayForge folder and run: npm ci");
             string server = Path.Combine(appRoot, "server.cjs");
             if (!File.Exists(server)) throw new InvalidOperationException("server.cjs was not found next to this launcher.");
@@ -177,10 +163,8 @@ internal static class PlayForgeLauncher
                     string racedEngine;
                     if (TryReadHealth(port, out racedEngine) && String.Equals(racedEngine, "Godot", StringComparison.OrdinalIgnoreCase))
                     {
-#if FRONTEND_OFFICIAL
                         if (!TryReadPlatformTemplates(port))
                             throw new InvalidOperationException("A legacy Godot server took the selected port but does not provide the platform API. It was left running; restart this launcher with PORT set to a free port.");
-#endif
                         reusedServer = true;
                         SetReady("Reusing the running Godot server");
                         return;
@@ -195,13 +179,11 @@ internal static class PlayForgeLauncher
                         StopOwnedServer();
                         throw new InvalidOperationException("The local health endpoint did not report engine=Godot.");
                     }
-#if FRONTEND_OFFICIAL
                     if (!TryReadPlatformTemplates(port))
                     {
                         StopOwnedServer();
                         throw new InvalidOperationException("The local server started but does not provide the Official Godot platform API.");
                     }
-#endif
                     SetReady("Local Godot server is ready");
                     return;
                 }
@@ -291,7 +273,6 @@ internal static class PlayForgeLauncher
 
     private static bool TryReadPlatformTemplates(int port)
     {
-#if FRONTEND_OFFICIAL
         if (!TryReadOfficialCapabilities(port)) return false;
         try
         {
@@ -313,9 +294,6 @@ internal static class PlayForgeLauncher
             }
         }
         catch { return false; }
-#else
-        return true;
-#endif
     }
 
     private static bool TryReadOfficialCapabilities(int port)
