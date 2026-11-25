@@ -98,6 +98,9 @@ export function sanitizeGameRelPath(rawRel) {
 
 export function resolveWithinRoot(allowedRoot, safeRel) {
   if (!safeRel) return null;
+  // Reject drive letters, backslashes and absolute paths on every OS: on POSIX 'C:/x' is a relative path
+  // and would otherwise resolve inside the root, so the boundary must not depend on the host platform.
+  if (/^[A-Za-z]:/.test(safeRel) || safeRel.includes('\\') || safeRel.startsWith('/') || isAbsolute(safeRel)) return null;
   const rootAbs = resolve(allowedRoot);
   const resolved = resolve(rootAbs, safeRel);
   const rel = relative(rootAbs, resolved);
