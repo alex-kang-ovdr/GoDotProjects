@@ -116,7 +116,7 @@ Write-PackageText 'index.html' "<!doctype html><html lang=`"ko`"><meta charset=`
 Write-PackageText 'playhub.integration.json' (@{ service = 'PlayForge'; defaultPort = 4173; healthPath = '/api/health'; editorPath = '/OfficialGodot/'; projectPath = '/OfficialGodot/?project=<project-id>'; deployment = 'separate-origin'; embeddedIframe = 'requires-isolation-header-validation' } | ConvertTo-Json -Depth 4)
 
 $requiredTools = @(
-    'project-store.cjs', 'native-runtime.cjs', 'collaboration.cjs', 'brawllabs-multiplayer.cjs',
+    'project-store.cjs', 'native-runtime.cjs', 'brawllabs-multiplayer.cjs',
     'fortress-multiplayer.cjs', 'fortress-engine.cjs', 'tappy-chicken-mmo-multiplayer.cjs',
     'multiplayer-server.cjs', 'origin-policy.cjs', 'export-godot-project.cjs', 'build-queue.cjs',
     'platform-store.cjs', 'platform-api.cjs', 'account-platform-api.cjs', 'owned-build-packages.cjs',
@@ -130,6 +130,10 @@ $requiredTools = @(
     'local-ollama.cjs', 'record-agent-mcp.cjs'
 )
 foreach ($tool in $requiredTools) { Copy-File (Join-Path $root "Tools/$tool") "Tools/$tool" }
+# Legacy Studio collaboration (retired 2026-11-25 on Forge-Refactoring): bundle it only while it still exists.
+$legacyCollaboration = Test-Path -LiteralPath (Join-Path $root 'Tools/collaboration.cjs')
+if ($legacyCollaboration) { Copy-File (Join-Path $root 'Tools/collaboration.cjs') 'Tools/collaboration.cjs' }
+$runtimeModules = if ($legacyCollaboration) { @('ws', 'yjs', 'lib0', 'isomorphic.js') } else { @('ws') }
 
 Copy-Tree 'Godot' 'Godot'
 Copy-Tree 'Projects/TappyChicken' 'Projects/TappyChicken'
@@ -137,7 +141,7 @@ Copy-Tree 'Templates' 'Templates'
 Copy-Tree 'OfficialGodot' 'OfficialGodot'
 
 # Bundle only the runtime packages used by the service; no npm or dev dependencies are needed.
-foreach ($module in @('ws', 'yjs', 'lib0', 'isomorphic.js')) {
+foreach ($module in $runtimeModules) {
     Copy-Tree "node_modules/$module" "node_modules/$module" @('test', 'tests', '__tests__', 'coverage', 'docs', 'examples')
 }
 
@@ -156,7 +160,7 @@ $nodeLicenseText = Get-Content -Raw -LiteralPath (Join-Path $stage 'Deploy/Node-
 if ($nodeVersion -ne 'v22.16.0' -or $nodeLicenseText -notmatch 'Node\.js is licensed') { throw "The Node.js binary and included 22.16.0 license must match (found $nodeVersion)." }
 $godotVersion = (& $godotConsole --headless --version | Select-Object -First 1).Trim()
 $moduleVersions = @{}
-foreach ($module in @('ws', 'yjs', 'lib0', 'isomorphic.js')) {
+foreach ($module in $runtimeModules) {
     $metadata = Get-Content -Raw -LiteralPath (Join-Path $stage "node_modules/$module/package.json") | ConvertFrom-Json
     $moduleVersions[$module] = $metadata.version
 }

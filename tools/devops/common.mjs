@@ -57,7 +57,8 @@ export function ensureForgeNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAUL
   const forgeDir = path.join(targetRepoRoot, 'forge');
   if (!isExistingDir(forgeDir)) return { seeded: false, path: null };
   const dest = path.join(forgeDir, 'node_modules');
-  if (isExistingDir(path.join(dest, 'ws')) && isExistingDir(path.join(dest, 'yjs'))) {
+  // yjs is no longer a forge dependency (Studio retired 2026-11-25); ws is the runtime marker.
+  if (isExistingDir(path.join(dest, 'ws'))) {
     return { seeded: false, path: dest };
   }
   const candidates = [
@@ -68,7 +69,6 @@ export function ensureForgeNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAUL
   for (const src of candidates) {
     if (
       isExistingDir(path.join(src, 'ws')) &&
-      isExistingDir(path.join(src, 'yjs')) &&
       path.resolve(src) !== path.resolve(dest)
     ) {
       fs.cpSync(src, dest, { recursive: true });

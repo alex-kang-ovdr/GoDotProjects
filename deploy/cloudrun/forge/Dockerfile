@@ -25,8 +25,6 @@ RUN npm ci --omit=dev --ignore-scripts
 
 COPY forge/server.cjs forge/index.html forge/projects.json ./
 COPY --from=forge-assets-prep /prep/OfficialGodot ./OfficialGodot
-COPY forge/Studio ./Studio
-COPY forge/StudioGodot ./StudioGodot
 COPY forge/Frontends ./Frontends
 COPY forge/Godot ./Godot
 COPY forge/Templates ./Templates
