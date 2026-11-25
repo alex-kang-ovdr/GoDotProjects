@@ -1,0 +1,219 @@
+{
+  "package": "Godot_Improvement_Development_Plans_20261124",
+  "document_date": "2026-11-24",
+  "language": "ko",
+  "status": "development_plans_not_implemented",
+  "plan_count": 30,
+  "markdown_count": 32,
+  "markdown_bytes": 340376,
+  "source_pdf": {
+    "filename": "유니티 대비 고도 엔진 개선방안.pdf",
+    "bytes": 342991,
+    "sha256": "043d3c4df0f646facf75dccbed5c19241053b10c939a5e48801a891ac6ce4784"
+  },
+  "validation": {
+    "utf8": "PASS",
+    "markdown_structure": "PASS",
+    "relative_links_checked": 76,
+    "broken_relative_links": 0,
+    "wbs_tables_checked": 32,
+    "wbs_sum_consistency": "PASS",
+    "json_examples_parsed": 5,
+    "engine_runtime_tests": "NOT_PERFORMED",
+    "claims": "공수·성능 수치는 계획 추정/목표이며 실측 결과가 아님"
+  },
+  "files": [
+    {
+      "path": "00_Development_Roadmap.md",
+      "bytes": 21363,
+      "sha256": "a8ac24a28b857ff02b59c93f618ecc8763cbd8376e17f856e0ee0b2465cfd4ec",
+      "crc32": "97bd2f8b"
+    },
+    {
+      "path": "90_Source_Coverage_and_Validation.md",
+      "bytes": 16974,
+      "sha256": "5a05bf6ebc9ba267574ff8e917df5543091472c0cd542f5437a07afa0657dc2a",
+      "crc32": "5ad8b474"
+    },
+    {
+      "path": "plans/01_GPU_Driven_Rendering.md",
+      "bytes": 8908,
+      "sha256": "45c4d8cd371b79cc064cfba7fbd5cec8d890db1ab4b9ba8d66e8b945a668ef60",
+      "crc32": "9265f5b4"
+    },
+    {
+      "path": "plans/02_Terrain_Integration.md",
+      "bytes": 9008,
+      "sha256": "54a56396389833a2754c410c864503a1599d4afc8001f5a166d793e3931e97bb",
+      "crc32": "bc5b5ab2"
+    },
+    {
+      "path": "plans/03_Asset_Streaming.md",
+      "bytes": 8795,
+      "sha256": "5ede4598f9c9c059e4b869ec8add819321fba8121883d60c701b1659011f8541",
+      "crc32": "b083e676"
+    },
+    {
+      "path": "plans/04_Compositor_Render_Passes.md",
+      "bytes": 8603,
+      "sha256": "70ab8b77a1346623923ad7c254a989d73f68b27afe82880b7bf01ce1d2e2a3e1",
+      "crc32": "da86a8e8"
+    },
+    {
+      "path": "plans/05_GI_Lightmap_HDDAGI.md",
+      "bytes": 8920,
+      "sha256": "ce5f0ee822b10154ca96c12d6da234a3df1c6e03ecdce2dde8a2d5c8807d9a9e",
+      "crc32": "866047cc"
+    },
+    {
+      "path": "plans/06_Hardware_Ray_Tracing.md",
+      "bytes": 8278,
+      "sha256": "356293b3102fe2c62b9f66a63fb23044e2424d73a5386be50666c871371eda7c",
+      "crc32": "0b44b3c8"
+    },
+    {
+      "path": "plans/07_Deferred_Renderer.md",
+      "bytes": 8257,
+      "sha256": "d6293ca3f29b6456f5e3602635fc5f56125ec4f442721bd10d520b9e8c1bf35d",
+      "crc32": "2ab4b6fb"
+    },
+    {
+      "path": "plans/08_Animation_Import_Retargeting.md",
+      "bytes": 9389,
+      "sha256": "e956814a6907e6d4cc4ea99580e6c89c4cf08e30364584e6094b60b622478f8c",
+      "crc32": "7475008c"
+    },
+    {
+      "path": "plans/09_DOD_ECS_Multithreading.md",
+      "bytes": 9421,
+      "sha256": "8704ce4ed89b1a2cef8ba9b59ce4f7a8d8fae76a8c79568b9ab4835ca305879b",
+      "crc32": "17db9bdd"
+    },
+    {
+      "path": "plans/10_CSharp_GDExtension_Interop.md",
+      "bytes": 9692,
+      "sha256": "5a509fa3fe13846369f3571fa791239405351dc4871ce0c06de7bcbb3d756171",
+      "crc32": "eee6e6df"
+    },
+    {
+      "path": "plans/11_CSharp_DX_HotReload.md",
+      "bytes": 8883,
+      "sha256": "53821a125a81c9302507633c62efe1035b68865936e628af1c29261d715af125",
+      "crc32": "fec3e4ca"
+    },
+    {
+      "path": "plans/12_Physics_Step_Snapshot_Stability.md",
+      "bytes": 9921,
+      "sha256": "aecbe8200877c50b25eb112175c29305d67845b46cd905759f5d66255bd97cff",
+      "crc32": "1d164de1"
+    },
+    {
+      "path": "plans/13_Profiling_Memory_GPU_Symbols.md",
+      "bytes": 9388,
+      "sha256": "16448877be08efb26478cab7e98f1177e120bb324411b5ef1e2a968786241e95",
+      "crc32": "64bb305a"
+    },
+    {
+      "path": "plans/14_Audio_Middleware_Authoring.md",
+      "bytes": 9442,
+      "sha256": "1a506bd6df26da74709acef48cfe715063cabc607587781bc608b64d629fae1f",
+      "crc32": "a1077e32"
+    },
+    {
+      "path": "plans/15_Collaboration_VCS_Review.md",
+      "bytes": 22767,
+      "sha256": "eb1566f19589fbaf91685c5bc71751cf4f3b903063d79bd6370a43326aaa57bf",
+      "crc32": "4f92127f"
+    },
+    {
+      "path": "plans/16_Build_Export_CI_Size.md",
+      "bytes": 9454,
+      "sha256": "a1dc91ff30cb0fcd9a8c80cc9d068c2a61540a86ce0d091de40acd1530dc9691",
+      "crc32": "e6835974"
+    },
+    {
+      "path": "plans/17_Mobile_Device_QA.md",
+      "bytes": 8412,
+      "sha256": "1f58fe958aa160c7465d28b44bd893354a64c6c4c90742bb6d3fcb6471c6466b",
+      "crc32": "9528f5d5"
+    },
+    {
+      "path": "plans/18_Mobile_Live_SDK_Input.md",
+      "bytes": 8738,
+      "sha256": "7bcc8b75b8d7f5798a49d9057d4ac1c7ba962d3f74aa7c0576250508c3fb6516",
+      "crc32": "c09dda34"
+    },
+    {
+      "path": "plans/19_WebGPU_Backend.md",
+      "bytes": 8229,
+      "sha256": "83cd9ea21fce59d40bce833c3b273b44d881c6a7f7913633078972b35af7f014",
+      "crc32": "ad3b76ac"
+    },
+    {
+      "path": "plans/20_CSharp_Web_Export.md",
+      "bytes": 9165,
+      "sha256": "18a69424a7c83afa82367dfc7748300b852eae48686000ed88c6d7d3d333da5f",
+      "crc32": "a813d4d2"
+    },
+    {
+      "path": "plans/21_Console_Portability_TCO.md",
+      "bytes": 8386,
+      "sha256": "92936ab507bd1c5ba7f87811e4966243b475c63064213042d34469e9f5d49c58",
+      "crc32": "6dec559c"
+    },
+    {
+      "path": "plans/22_Asset_Store_Commerce.md",
+      "bytes": 8637,
+      "sha256": "5e3735b08c6122dbf30143c885c5eb6aefeae8f0a71fd830515f5d8dac15cedb",
+      "crc32": "63cce19f"
+    },
+    {
+      "path": "plans/23_Addon_Package_Global_CLI.md",
+      "bytes": 8685,
+      "sha256": "12212a17af834db0f9abd861b641365d65413a29b95ea51a6811ba7fc18f83a5",
+      "crc32": "37f74cb4"
+    },
+    {
+      "path": "plans/24_Partnership_Funding_Governance.md",
+      "bytes": 9029,
+      "sha256": "7d6d3a2c362d0f14503b04860a8d8365b5a854df50507c951e1498a6a9a86f82",
+      "crc32": "d4f1cc94"
+    },
+    {
+      "path": "plans/25_Unreal_Gameplay_Authority_RPC.md",
+      "bytes": 12539,
+      "sha256": "ba422e9f07d6e8b574c6de6641299df4c48721850d62dfa6ac8855e464e71e46",
+      "crc32": "f320377a"
+    },
+    {
+      "path": "plans/26_Iris_Style_Replication.md",
+      "bytes": 13875,
+      "sha256": "30d9eb771a487fe5f1ce546ed1d47a334ee6783284b5e70872e979600d635fab",
+      "crc32": "4f04295c"
+    },
+    {
+      "path": "plans/27_Movement_Prediction_Network_Physics.md",
+      "bytes": 12783,
+      "sha256": "b621608484c85b10140fb1ccedc80890eae3eb644ded8b839150fe001dd5df6a",
+      "crc32": "c6a0960d"
+    },
+    {
+      "path": "plans/28_Dedicated_Server_Runtime_Operations.md",
+      "bytes": 12417,
+      "sha256": "a3d0aa8f536fe5863c4570d90e5022b6493555639bb6c9ce3c4113e7868a3e6c",
+      "crc32": "a4a77c36"
+    },
+    {
+      "path": "plans/29_Online_Services_Sessions_Relay.md",
+      "bytes": 10658,
+      "sha256": "aa5f7faf93c93d4fc537483d4f7e745f383c085efb1e1e45831c98c28303f9a3",
+      "crc32": "d99eaa58"
+    },
+    {
+      "path": "plans/30_AntiCheat_Server_Validation.md",
+      "bytes": 11360,
+      "sha256": "693894d7e1e09885dafe0e68a5e02242642a77ea3148593ee879da4f38ef3222",
+      "crc32": "3032e794"
+    }
+  ]
+}

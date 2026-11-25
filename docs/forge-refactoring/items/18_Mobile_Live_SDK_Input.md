@@ -1,6 +1,6 @@
 # 18. 모바일 결제·광고·분석 SDK와 터치 입력
 
-- 원본 계획서: `plans/18_Mobile_Live_SDK_Input.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
+- 원본 계획서: [`plans/18_Mobile_Live_SDK_Input.md`](../plans/18_Mobile_Live_SDK_Input.md) (ZIP 원문 SHA-256 대조 및 저장소 반입 완료)
 - 통합 대상 브랜치: `Forge-MobileSDK` — 신규 — 터치 입력·가상 조이스틱 addon만. godot-sdk/** 는 Hub-AOS, IAP 서버는 Hub-IOS, 원장은 Hub-Billing 소유
 - 분류: 엔진 무변경 → Forge 계열
 - 우선순위: P1/P0 / 본체 공수: 18-30 PW / 착수 단계: R2
@@ -22,6 +22,11 @@
 
 ## 진행 상태
 
-- [ ] 원본 계획서 반입
+- [x] 원본 계획서 반입
 - [ ] 첫 spike 이슈 분해
 - [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+
+## 원본 계획 대조
+
+- 원본 WBS 참조: §7 7. 작업 분해 (원본 83행); §8 8. 단계와 검증 gate (원본 95행); §9 9. 정량 완료 기준 (원본 101행)
+- 패키지 내 원문 SHA-256: `7bcc8b75b8d7f5798a49d9057d4ac1c7ba962d3f74aa7c0576250508c3fb6516`

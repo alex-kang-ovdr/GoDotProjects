@@ -1,6 +1,6 @@
 # 05. GI 품질·Lightmap 제작·HDDAGI 검증
 
-- 원본 계획서: `plans/05_GI_Lightmap_HDDAGI.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
+- 원본 계획서: [`plans/05_GI_Lightmap_HDDAGI.md`](../plans/05_GI_Lightmap_HDDAGI.md) (ZIP 원문 SHA-256 대조 및 저장소 반입 완료)
 - 통합 대상 브랜치: `Forge-Refactoring-05-giLightmap`
 - 분류: 엔진 변경 → Godot-Refactoring 계열
 - 우선순위: P1/P2/R&D / 본체 공수: 26-41 PW / 착수 단계: R2
@@ -20,6 +20,11 @@
 
 ## 진행 상태
 
-- [ ] 원본 계획서 반입
+- [x] 원본 계획서 반입
 - [ ] 첫 spike 이슈 분해
 - [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+
+## 원본 계획 대조
+
+- 원본 WBS 참조: §7 7. 작업 분해 (원본 76행); §8 8. 도입 단계와 의존성 (원본 88행); §9 9. 완료 기준 (원본 94행)
+- 패키지 내 원문 SHA-256: `ce5f0ee822b10154ca96c12d6da234a3df1c6e03ecdce2dde8a2d5c8807d9a9e`

@@ -1,4 +1,4 @@
-# 사전 연구 자료 목록과 누락분
+# 사전 연구 자료와 원본 패키지 검증 기록
 
 - 점검: 2026-11-25. 사용자가 전달한 자료를 `Downloads`에서 다시 확인하고 저장소 사본과 hash를 대조했다.
 - 같은 이름의 `(1)` 사본(00·90·PDF)은 원본과 SHA-256이 같아 새 자료가 아니다.
@@ -12,19 +12,13 @@
 | `90_Source_Coverage_and_Validation.md` | 16,974 B | `5a05bf6ebc9ba267` | [90_Source_Coverage_and_Validation.md](90_Source_Coverage_and_Validation.md) (C# 철회 반영으로 수정됨) | 원문 대응·사실 보정 기록 |
 | `Forge_Godot_Extension_Case_Study_20261125.md` | 41,634 B | `0737ad46d97222df` | [research/Forge_Godot_Extension_Case_Study_20261125.md](research/Forge_Godot_Extension_Case_Study_20261125.md) (원문 그대로) | Forge 유사 Godot 확장 사례 조사(2026-11-25) |
 
-## 2. 누락된 자료
+## 2. 원본 패키지 검증 (2026-11-25)
 
-로드맵 00과 기록 90이 인용하지만 받은 자료에 없는 것이다. `Downloads`(하위 폴더 4단계, 최근 ZIP 40개 내부 포함)에서도 찾지 못했다.
+첨부한 `Godot_Improvement_Development_Plans_20261124.zip`은 174,498바이트이며 SHA-256은 `a25e003c034eeb9e4283b2b97cc41003218b1f19dde9b7fe7b91db65db513827`이다.
 
-| 누락 자료 | 인용 위치 | 영향 |
-| --- | --- | --- |
-| **개별 계획서 30개** `plans/01_GPU_Driven_Rendering.md` … `plans/30_AntiCheat_Server_Validation.md` | 00 §3 색인(링크 30개), 90 §5 "개별 계획 30개" | 각 항목의 WBS·제안 API·공수 근거·완료 기준·중단 경로가 없다. 현재 [items/](items/) 착수 문서는 00 색인과 저장소 대조로 만든 대체본이다. 00의 `plans/` 링크 30개는 깨져 있다. |
-| `MANIFEST.json` | 90 §7 | 32개 Markdown의 경로·바이트·SHA-256·CRC32 목록. 원본 패키지 무결성을 대조할 수 없다. |
-| `SHA256SUMS.txt` | 90 §7 | 위와 같음 |
-| 원본 ZIP 패키지 | 90 §5·§7 | ZIP 자체의 크기·SHA-256과 검사 결과는 "다운로드 안내"에 있다고 적혀 있으나 받지 못했다. |
-| 15 §13 Perforce·Unity VCS 부록 | 90 §2.2·§4 | 15번 계획서 안의 부록이라 계획서와 함께 누락 |
-
-원문 PDF의 참고문헌 108개는 PDF 안에 있으며, 90 §1이 밝힌 대로 개별 재검증 대상이 아니다.
+- ZIP의 Markdown 32개(로드맵·검증 기록·개별 계획 30개)의 길이, SHA-256, CRC32가 [MANIFEST.json](MANIFEST.json)과 일치했다. MANIFEST를 포함한 33개 파일의 SHA-256도 [SHA256SUMS.txt](SHA256SUMS.txt)와 일치했다. 두 목록의 기준은 11월 24일 ZIP 안의 원본이다.
+- [개별 계획서](plans/)는 원본 바이트로 반입했다. [15번 계획 §13](plans/15_Collaboration_VCS_Review.md)에 Perforce·Unity VCS 부록이 있다.
+- 저장소의 00·90은 11월 25일 결정을 반영한 편집본이다. 현재 로드맵은 활성 계획 27개를 연결하며 10·11·20은 철회 상태다. 작업 범위와 담당 브랜치는 [SSOT](SSOT.md)와 [착수 문서](items/)를 따른다.
 
 ## 3. 사례 조사(2026-11-25)와 기존 결정의 관계
 
@@ -39,7 +33,6 @@
 
 사례 조사 §8.3(기존 계획과의 연결)과 §9(검증 제안 A·B·C)는 각 항목 착수 시 입력으로 쓴다. 해당 항목: 02, 12, 13, 15, 16, 17, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30.
 
-## 4. 요청할 것
+## 4. 처리 결과
 
-1. 개별 계획서 30개와 `MANIFEST.json`·`SHA256SUMS.txt`가 든 원본 ZIP.
-2. ZIP을 받으면 `docs/forge-refactoring/plans/`에 넣고 MANIFEST의 SHA-256으로 대조한 뒤, 00의 링크와 [items/](items/) 착수 문서를 원본 WBS 기준으로 갱신한다.
+원본 ZIP과 30개 계획서는 §2의 검증을 마쳐 이 저장소에 반입했다. 00 로드맵과 [items/](items/) 착수 문서는 현재 결정과 원본 WBS 연결을 반영한다.

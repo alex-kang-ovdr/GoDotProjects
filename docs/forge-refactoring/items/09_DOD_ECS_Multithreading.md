@@ -1,6 +1,6 @@
 # 09. 데이터 지향 연산·ECS·멀티스레딩
 
-- 원본 계획서: `plans/09_DOD_ECS_Multithreading.md` (아직 저장소에 없음 — 원본 패키지 수령 후 이 파일 옆에 추가)
+- 원본 계획서: [`plans/09_DOD_ECS_Multithreading.md`](../plans/09_DOD_ECS_Multithreading.md) (ZIP 원문 SHA-256 대조 및 저장소 반입 완료)
 - 통합 대상 브랜치: `Forge-ISM-profile` — 기존 브랜치 (MultiMesh/인스턴스 벤치마크)
 - 분류: 엔진 무변경 → Forge 계열
 - 우선순위: P1/P0 / 본체 공수: 18-30 PW / 착수 단계: R1
@@ -20,6 +20,11 @@
 
 ## 진행 상태
 
-- [ ] 원본 계획서 반입
+- [x] 원본 계획서 반입
 - [ ] 첫 spike 이슈 분해
 - [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+
+## 원본 계획 대조
+
+- 원본 WBS 참조: §6 6. 작업분해와 공수 (원본 62행); §7 7. 도입 순서와 게이트 (원본 74행); §8 8. 완료 기준과 검증 방법 (원본 82행)
+- 패키지 내 원문 SHA-256: `8704ce4ed89b1a2cef8ba9b59ce4f7a8d8fae76a8c79568b9ab4835ca305879b`
