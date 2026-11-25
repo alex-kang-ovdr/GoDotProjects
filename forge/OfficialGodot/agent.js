@@ -26,7 +26,7 @@
     'connect-dialog', 'provider-list', 'provider-global-status', 'provider-refresh', 'connect-close',
   ].map(id => [id, el(id)]));
 
-  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Frontends)(?:\/|$)/)?.[1]) || '';
   const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
   const csrfHeaders = () => {
     let token = window.__playforgeCsrfToken || '';
