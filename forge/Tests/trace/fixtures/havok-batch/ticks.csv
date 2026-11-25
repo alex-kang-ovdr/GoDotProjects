@@ -1,0 +1,3 @@
+case,engine,size,repeat,tick,phys_ms,sync_ms,hk_step_ms,hk_collide_ms,hk_solve_ms,mem_private_mb
+0,HavokPhysics,24,0,1,0.9850,0.0450,0.3960,0.2050,0.1650,1017.219
+0,HavokPhysics,24,0,2,10.3870,0.0460,0.4100,0.2190,0.1720,1038.570

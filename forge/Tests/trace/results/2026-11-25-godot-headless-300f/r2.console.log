@@ -1,0 +1,9 @@
+$ D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe --headless --path D:\Github\GoDotProjects-worktrees\Forge-Profiling\forge\Godot -s res://addons/playforge_trace/trace_main.gd -- --trace-out=D:\Github\GoDotProjects-worktrees\Forge-Profiling\artifacts\trace\godot-headless-300-r2\trace.jsonl --trace-frames=300 --trace-warmup=30 --trace-build-id=forge-desktop-v0.1.0-20261125-1033-forge-profiling-g74c7fc1-b0-dirty --trace-quit
+--- stdout ---
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PLAYFORGE_TRACE_COMPLETE samples=3610 frames=300 out=D:\Github\GoDotProjects-worktrees\Forge-Profiling\artifacts\trace\godot-headless-300-r2\trace.jsonl
+
+--- stderr ---
+
+exit=0 signal=null

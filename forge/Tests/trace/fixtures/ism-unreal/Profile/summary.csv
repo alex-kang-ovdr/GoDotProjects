@@ -1,0 +1,2 @@
+case,repeat,mode,seed,size,blocks,layout_hash,collision,block_actors,mesh_components,generate_ms,build_submit_ms,samples,frame_mean_ms,frame_p50_ms,frame_p95_ms,game_p50_ms,render_p50_ms,gpu_p50_ms,process_memory_mb,valid
+0,0,ISM,1337,48,2410,4078198733,0,0,1,0.7061,3.0936,702,7.123984,7.309698,9.324599,1.947300,7.412000,5.928500,2390.219,1
