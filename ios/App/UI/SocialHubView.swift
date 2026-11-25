@@ -37,12 +37,10 @@ public enum SocialChatTarget: Identifiable, Equatable {
 public struct SocialHubView: View {
     @ObservedObject public var vm: PlayHubShellViewModel
     @State private var friendFilter: Int = 0 // 0 = all, 1 = online
-    @State private var showAddFriend = false
     @State private var showCreateParty = false
     @State private var showJoinCode = false
-    @State private var activeChat: SocialChatTarget?
 
-    private let playGreen = Color(red: 0.0, green: 0.69, blue: 0.435)
+    private let playGreen = HubStitchTheme.playGreen
 
     public init(vm: PlayHubShellViewModel) {
         self.vm = vm
@@ -50,6 +48,10 @@ public struct SocialHubView: View {
 
     private var filteredFriends: [SocialFriend] {
         friendFilter == 1 ? vm.socialFriends.filter { $0.presence.online } : vm.socialFriends
+    }
+
+    private var isChildProtectedLocked: Bool {
+        vm.ageTier == .childProtected && !vm.parentalConsentVerified
     }
 
     public var body: some View {
@@ -86,10 +88,24 @@ public struct SocialHubView: View {
                         .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
                     }
 
+                    if isChildProtectedLocked {
+                        HStack(spacing: 10) {
+                            Image(systemName: "lock.fill")
+                                .foregroundStyle(HubStitchTheme.warnAmber)
+                            Text("아동 보호 모드: 자유 채팅이 제한되며 법정대리인 동의 후 사전 정의 안전 퀵메시지만 사용할 수 있습니다.")
+                                .font(.caption)
+                                .foregroundStyle(HubStitchTheme.onSurfaceVariant)
+                        }
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(HubStitchTheme.surfaceContainer, in: RoundedRectangle(cornerRadius: 12))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(HubStitchTheme.warnAmber.opacity(0.5), lineWidth: 1))
+                    }
+
                     // Action Buttons Row
                     HStack(spacing: 10) {
                         Button {
-                            showAddFriend = true
+                            vm.showAddFriendSheet = true
                         } label: {
                             Label("친구 추가", systemImage: "person.badge.plus")
                                 .font(.caption.bold())
@@ -97,6 +113,7 @@ public struct SocialHubView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(playGreen)
+                        .disabled(isChildProtectedLocked)
 
                         Button {
                             showCreateParty = true
@@ -188,7 +205,7 @@ public struct SocialHubView: View {
                         } else {
                             ForEach(filteredFriends) { friend in
                                 Button {
-                                    activeChat = .dm(friend)
+                                    vm.activeSocialChat = .dm(friend)
                                 } label: {
                                     HStack(spacing: 12) {
                                         avatarCircle(
@@ -230,9 +247,36 @@ public struct SocialHubView: View {
                             }
                         }
                     }
+                    // Outgoing Friend Requests
+                    if !vm.outgoingRequests.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("보낸 친구 요청 (\(vm.outgoingRequests.count)건)")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(HubStitchTheme.onSurfaceVariant)
+                            ForEach(vm.outgoingRequests) { req in
+                                HStack(spacing: 10) {
+                                    avatarCircle(name: req.displayName, hex: req.avatarColor, size: 34, online: false)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(req.displayName).font(.subheadline.bold())
+                                        Text(req.handle).font(.caption).foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Text("대기 중")
+                                        .font(.caption2.bold())
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(HubStitchTheme.surfaceHigh, in: Capsule())
+                                        .foregroundStyle(HubStitchTheme.onSurfaceVariant)
+                                }
+                                .padding(10)
+                                .background(HubStitchTheme.surfaceContainer, in: RoundedRectangle(cornerRadius: 12))
+                            }
+                        }
+                    }
                 }
                 .padding()
             }
+            .background(HubStitchTheme.surface)
             .refreshable {
                 await vm.syncSocial()
             }
@@ -245,17 +289,11 @@ public struct SocialHubView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showAddFriend) {
-                AddFriendSheet(vm: vm)
-            }
             .sheet(isPresented: $showCreateParty) {
                 CreatePartySheet(vm: vm)
             }
             .sheet(isPresented: $showJoinCode) {
                 JoinPartyCodeSheet(vm: vm)
-            }
-            .sheet(item: $activeChat) { target in
-                SocialChatRoomSheet(vm: vm, target: target)
             }
         }
     }
@@ -335,7 +373,7 @@ public struct SocialHubView: View {
                 .controlSize(.small)
 
                 Button("파티 채팅") {
-                    activeChat = .party(party)
+                    vm.activeSocialChat = .party(party)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)

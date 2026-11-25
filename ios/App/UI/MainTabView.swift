@@ -1,5 +1,6 @@
 import PlayHubCore
 import SwiftUI
+import UIKit
 
 public enum PlayHubTab: Int, CaseIterable {
     case home
@@ -11,9 +12,9 @@ public enum PlayHubTab: Int, CaseIterable {
     var title: String {
         switch self {
         case .home: return "홈"
-        case .charts: return "차트"
+        case .charts: return "탐색"
         case .avatar: return "아바타"
-        case .party: return "파티"
+        case .party: return "채팅"
         case .more: return "더보기"
         }
     }
@@ -21,9 +22,9 @@ public enum PlayHubTab: Int, CaseIterable {
     var systemImage: String {
         switch self {
         case .home: return "house.fill"
-        case .charts: return "chart.bar.fill"
+        case .charts: return "safari.fill"
         case .avatar: return "person.crop.circle.fill"
-        case .party: return "person.3.fill"
+        case .party: return "bubble.left.and.bubble.right.fill"
         case .more: return "ellipsis.circle.fill"
         }
     }
@@ -49,14 +50,24 @@ public final class PlayHubShellViewModel: ObservableObject {
     @Published public var showGameModal: Bool = false
     @Published public var showUniversalOverlay: Bool = false
 
+    // MARK: AOS-Parity Search, Explore & Detail State
+    @Published public var searchOpen: Bool = false
+    @Published public var searchQuery: String = ""
+    @Published public var selectedCategory: CatalogCategory = .all
+    @Published public var selectedExperienceGame: MobileCatalogGame?
+    @Published public var parentalConsentVerified: Bool = false
+
     // MARK: M3 Social State
     @Published public var socialProfile: SocialProfile?
     @Published public var socialFriends: [SocialFriend] = []
     @Published public var incomingRequests: [SocialFriendRequest] = []
+    @Published public var outgoingRequests: [SocialFriendRequest] = []
     @Published public var activeParty: SocialParty?
     @Published public var quickMessages: [SocialQuickMessage] = []
     @Published public var socialToast: String?
     @Published public var leaderboardGame: MobileCatalogGame?
+    @Published public var activeSocialChat: SocialChatTarget?
+    @Published public var showAddFriendSheet: Bool = false
     private var accessTokenCache: String?
     @Published public var authProvider: String = "guest"
     @Published public var lastAuthProvider: String? = UserDefaults.standard.string(forKey: "playhub_last_auth_provider")
@@ -292,6 +303,8 @@ public final class PlayHubShellViewModel: ObservableObject {
             avatarAccentHex = prof.avatarColor
             socialFriends = fr.friends
             incomingRequests = fr.incomingRequests
+            outgoingRequests = fr.outgoingRequests
+            parentalConsentVerified = prof.ageCompliance?.parentalConsentStatus == "verified"
             activeParty = party
             quickMessages = qm
             _ = try? await client.updatePresence(
@@ -670,6 +683,28 @@ public final class PlayHubShellViewModel: ObservableObject {
         }
     }
 
+    public func filteredCatalog(applyCategory: Bool) -> [MobileCatalogGame] {
+        CatalogFilterEngine.filter(
+            games: catalogGames,
+            query: searchQuery,
+            category: selectedCategory,
+            applyCategory: applyCategory
+        )
+    }
+
+    public func openExperienceDetail(_ game: MobileCatalogGame) {
+        let compat = compatibilityFor(game)
+        if !compat.compatible {
+            incompatibilityAlert = compat
+            return
+        }
+        selectedExperienceGame = game
+    }
+
+    public func openDmFromHome(_ friend: SocialFriend) {
+        activeSocialChat = .dm(friend)
+    }
+
     private static func fallbackDemoCatalog() -> [MobileCatalogGame] {
         [
             MobileCatalogGame(
@@ -682,6 +717,18 @@ public final class PlayHubShellViewModel: ObservableObject {
                 allowed: true,
                 compatibility: MobileCatalogGameCompatibility(compatible: true, reason: nil, message: nil),
                 entryUrl: "/games/survivor-arena-g2/index.pck",
+                coverUrl: nil
+            ),
+            MobileCatalogGame(
+                id: "match3-garden",
+                title: "Match3 Garden",
+                description: "즉시 실행 HTML5 퍼즐 매치 체험",
+                genre: "퍼즐",
+                runtime: "web",
+                ageRating: "ALL",
+                allowed: true,
+                compatibility: MobileCatalogGameCompatibility(compatible: true, reason: nil, message: nil),
+                entryUrl: "/games/match3-garden/index.html",
                 coverUrl: nil
             ),
             MobileCatalogGame(
@@ -714,10 +761,14 @@ public struct MainTabView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            topUtilityBar
+            HubTopUtilityBar(vm: vm)
             TabView(selection: $vm.selectedTab) {
-                homeView.tabItem { Label(PlayHubTab.home.title, systemImage: PlayHubTab.home.systemImage) }.tag(PlayHubTab.home)
-                placeholderTab(title: "차트", subtitle: "인기 · 급상승 · 신규 게임 랭킹").tabItem { Label(PlayHubTab.charts.title, systemImage: PlayHubTab.charts.systemImage) }.tag(PlayHubTab.charts)
+                HubHomeTabView(vm: vm)
+                    .tabItem { Label(PlayHubTab.home.title, systemImage: PlayHubTab.home.systemImage) }
+                    .tag(PlayHubTab.home)
+                HubExploreTabView(vm: vm)
+                    .tabItem { Label(PlayHubTab.charts.title, systemImage: PlayHubTab.charts.systemImage) }
+                    .tag(PlayHubTab.charts)
                 AvatarStudioView(vm: vm)
                     .tabItem { Label(PlayHubTab.avatar.title, systemImage: PlayHubTab.avatar.systemImage) }
                     .tag(PlayHubTab.avatar)
@@ -729,11 +780,29 @@ public struct MainTabView: View {
                     .tabItem { Label(PlayHubTab.more.title, systemImage: PlayHubTab.more.systemImage) }
                     .tag(PlayHubTab.more)
             }
-            .tint(Color(red: 0.0, green: 0.69, blue: 0.435))
+            .tint(HubStitchTheme.playGreen)
+            .onChange(of: vm.selectedTab) { nextTab in
+                if nextTab != .home && vm.searchOpen {
+                    vm.searchOpen = false
+                }
+                if nextTab == .party {
+                    Task { await vm.syncSocial() }
+                }
+            }
         }
+        .background(HubStitchTheme.surface)
         .preferredColorScheme(.dark)
         .sheet(isPresented: $vm.showFarmSheet) { farmSelectorSheet }
         .sheet(isPresented: $vm.showStoreSheet) { storeSheet }
+        .sheet(isPresented: $vm.showAddFriendSheet) {
+            AddFriendSheet(vm: vm)
+        }
+        .sheet(item: $vm.selectedExperienceGame) { game in
+            ExperienceDetailSheet(vm: vm, game: game)
+        }
+        .sheet(item: $vm.activeSocialChat) { target in
+            SocialChatRoomSheet(vm: vm, target: target)
+        }
         .sheet(item: $vm.leaderboardGame) { game in
             GameLeaderboardSheet(vm: vm, game: game)
         }
@@ -743,6 +812,7 @@ public struct MainTabView: View {
         }
         .fullScreenCover(isPresented: $vm.showGameModal) {
             GodotGameHostContainer(
+                vm: vm,
                 gameTitle: vm.activeGameTitle ?? "Play Hub Game",
                 showOverlay: $vm.showUniversalOverlay,
                 onLeave: {
@@ -767,164 +837,7 @@ public struct MainTabView: View {
         .task {
             await vm.refreshFarmHealth()
             await vm.syncOnlineCatalog()
-        }
-    }
-
-    private var topUtilityBar: some View {
-        HStack(spacing: 10) {
-            Text("▶ Play Hub")
-                .font(.headline.bold())
-                .foregroundStyle(.white)
-
-            if vm.allowFarmSelector {
-                let health = vm.farmHealth[vm.activeFarm.id] ?? FarmHealthResult(status: .checking)
-                Button {
-                    vm.showFarmSheet = true
-                    Task { await vm.refreshFarmHealth() }
-                } label: {
-                    HStack(spacing: 5) {
-                        Circle()
-                            .fill(colorForStatus(health.status))
-                            .frame(width: 8, height: 8)
-                        Text("\(vm.activeFarm.id) · \(health.compactPillText())")
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.white.opacity(0.12), in: Capsule())
-                }
-            }
-
-            Spacer()
-
-            Button {
-                vm.showStoreSheet = true
-            } label: {
-                Label("\(vm.coinBalance)", systemImage: "bitcoinsign.circle.fill")
-                    .font(.caption.bold())
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.yellow.opacity(0.18), in: Capsule())
-                    .foregroundStyle(.yellow)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(Color(red: 0.06, green: 0.09, blue: 0.16))
-    }
-
-    private var homeView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Text(vm.syncStatusText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Button("새로고침") {
-                        Task {
-                            await vm.refreshFarmHealth()
-                            await vm.syncOnlineCatalog()
-                        }
-                    }
-                    .font(.caption.bold())
-                }
-
-                if vm.isFreeUsbMode {
-                    Label("무료 Apple ID USB 테스트 모드 (Guest · Farm · 로컬 StoreKit · Godot 런타임 활성)", systemImage: "cable.connector")
-                        .font(.caption2)
-                        .foregroundStyle(Color(red: 0.52, green: 0.85, blue: 1.0))
-                        .padding(10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.blue.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
-                }
-
-                ForEach(vm.catalogGames) { game in
-                    let compat = vm.compatibilityFor(game)
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(game.title).font(.headline)
-                            Spacer()
-                            Text(game.ageRating)
-                                .font(.caption2.bold())
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                                .background(Color.white.opacity(0.12), in: Capsule())
-                        }
-                        if let desc = game.description {
-                            Text(desc).font(.caption).foregroundStyle(.secondary)
-                        }
-                        if let badge = compat.badgeText {
-                            Text(badge)
-                                .font(.caption.bold())
-                                .foregroundStyle(.orange)
-                        }
-                        HStack(spacing: 8) {
-                            Button {
-                                vm.attemptLaunch(game)
-                            } label: {
-                                Label(compat.compatible ? "▶ 플레이" : "버전 안내 보기", systemImage: compat.compatible ? "play.fill" : "exclamationmark.triangle.fill")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(compat.compatible ? Color(red: 0.0, green: 0.69, blue: 0.435) : .orange)
-
-                            Button {
-                                vm.leaderboardGame = game
-                            } label: {
-                                Image(systemName: "trophy.fill")
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                    }
-                    .padding(14)
-                    .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
-                }
-            }
-            .padding()
-        }
-    }
-
-    private var moreView: some View {
-        List {
-            Section("런타임 정보") {
-                LabeledContent("Bundle ID", value: Bundle.main.bundleIdentifier ?? "unknown")
-                LabeledContent("Engine", value: "Godot \(vm.engineVersion) (release XCFramework)")
-                LabeledContent("Forge 포함 여부", value: "미포함 (Runtime Only)")
-                LabeledContent("내장 스타터 게임", value: "0종 (100% On-Demand)")
-                if vm.isFreeUsbMode {
-                    LabeledContent("서명 모드", value: "무료 Apple ID (USB 7일 갱신)")
-                }
-                LabeledContent("연령 티어", value: vm.ageTier.rawValue)
-            }
-            Section("결제 · 공용 코인 지갑 (Roblox/UEFN Shared Wallet)") {
-                Button("Play Coin & Play Pass 스토어") { vm.showStoreSheet = true }
-                Button("구매 복원 (Restore Purchases)") {
-                    Task { await store.restorePurchases() }
-                }
-            }
-            if vm.allowFarmSelector {
-                Section("개발 / 테스트 서버군") {
-                    Button("Farm 서버군 선택 (\(vm.activeFarm.label))") {
-                        vm.showFarmSheet = true
-                        Task { await vm.refreshFarmHealth() }
-                    }
-                }
-            }
-            Section("계정 및 개인정보 (Apple 5.1.1(v))") {
-                if vm.isFreeUsbMode {
-                    Text("Sign in with Apple / APNs는 유료 Developer(\$99/년) 전환 시 활성화됩니다.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Button("연령 게이트 다시 테스트") {
-                    vm.ageGateCompleted = false
-                    vm.ageTier = .unknown
-                    UserDefaults.standard.removeObject(forKey: "playhub_age_tier")
-                }
-                Button("인앱 계정 삭제 요청", role: .destructive) {}
-            }
+            await vm.syncSocial()
         }
     }
 
@@ -1080,6 +993,7 @@ private struct NeutralAgeGateSheet: View {
 }
 
 private struct GodotGameHostContainer: View {
+    @ObservedObject var vm: PlayHubShellViewModel
     let gameTitle: String
     @Binding var showOverlay: Bool
     let onLeave: () -> Void
@@ -1092,10 +1006,32 @@ private struct GodotGameHostContainer: View {
         .sheet(isPresented: $showOverlay) {
             NavigationStack {
                 List {
+                    Section("People · 파티 및 친구 초대") {
+                        if let party = vm.activeParty {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(party.title).font(.subheadline.bold())
+                                    Text("코드 \(party.roomCode) · \(party.members.count)/\(party.maxMembers)명")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Button("코드 복사") {
+                                    UIPasteboard.general.string = party.roomCode
+                                    vm.showSocialToast("파티 코드 복사됨: \(party.roomCode)")
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                        } else {
+                            Text("온라인 친구 \(vm.socialFriends.filter { $0.presence.online }.count)명 · 채팅 탭에서 파티를 만들 수 있습니다.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     Section("유니버설 인게임 오버레이") {
-                        Label("People · 친구/파티 초대", systemImage: "person.2.fill")
-                        Label("Store · Play Coin 즉시 충전", systemImage: "bitcoinsign.circle.fill")
-                        Label("Settings · 볼륨 · 절전 · 햅틱", systemImage: "slider.horizontal.3")
+                        Label("Store · 보유 코인 \(HubStitchTheme.formatCoin(vm.coinBalance)) Play Coin", systemImage: "bitcoinsign.circle.fill")
+                        Label("Settings · 볼륨 · 절전 · 햅틱 · FPS", systemImage: "slider.horizontal.3")
                     }
                     Section {
                         Button("클라우드 즉시 저장 (host_snapshot)") { showOverlay = false }

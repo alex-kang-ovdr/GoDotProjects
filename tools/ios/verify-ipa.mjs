@@ -9,6 +9,7 @@
  *   5. IPA download size budget gate (Stage 1 <= 30 MiB by default)
  *   6. Privacy Manifest gate (PrivacyInfo.xcprivacy present, NSPrivacyTracking=false, Required Reason APIs declared)
  */
+import { execFileSync } from 'node:child_process';
 import { readFileSync, statSync } from 'node:fs';
 import { inflateRawSync } from 'node:zlib';
 
@@ -75,6 +76,20 @@ export function readZipEntries(buffer) {
     });
   }
   return entries;
+}
+
+function decodePlistBufferToXml(buf) {
+  if (buf.length >= 6 && buf.subarray(0, 6).toString('ascii') === 'bplist') {
+    try {
+      return execFileSync('plutil', ['-convert', 'xml1', '-o', '-', '--', '-'], {
+        input: buf,
+        encoding: 'utf8'
+      });
+    } catch {
+      return buf.toString('utf8');
+    }
+  }
+  return buf.toString('utf8');
 }
 
 /**
@@ -160,7 +175,7 @@ export function verifyIpaBuffer(ipaBuffer, options = {}) {
   if (!infoEntry) {
     failures.push(`INFO_PLIST_MISSING: ${appRoot}Info.plist not found`);
   } else {
-    const xml = infoEntry.readData().toString('utf8');
+    const xml = decodePlistBufferToXml(infoEntry.readData());
     if (FORBIDDEN_PATTERN.test(xml)) {
       failures.push('FORGE_EXCLUSION_GATE: forbidden Forge reference found inside Info.plist');
     }
@@ -174,8 +189,9 @@ export function verifyIpaBuffer(ipaBuffer, options = {}) {
       failures.push(`LIVE_TRUNK_GUARD: live build must use com.playhub.gamedev.live, got '${bundleId}'`);
     }
     if (stage === 'release' || stage === 'live') {
-      if (plistMap.PlayHubAllowFarmSelector === true) {
-        failures.push(`PRODUCTION_LOCK_GATE: PlayHubAllowFarmSelector must be false in '${stage}'`);
+      const farmFlag = plistMap.PlayHubAllowFarmSelector;
+      if (farmFlag === true || String(farmFlag || '').toUpperCase() === 'YES' || String(farmFlag || '').toLowerCase() === 'true') {
+        failures.push(`PRODUCTION_LOCK_GATE: PlayHubAllowFarmSelector must be false/NO in '${stage}'`);
       }
       if (plistMap.NSAllowsArbitraryLoads === true) {
         failures.push(`PRODUCTION_LOCK_GATE: NSAllowsArbitraryLoads must not be true in '${stage}'`);
@@ -194,7 +210,7 @@ export function verifyIpaBuffer(ipaBuffer, options = {}) {
   if (!privacyEntry) {
     failures.push(`PRIVACY_MANIFEST_GATE: ${appRoot}PrivacyInfo.xcprivacy missing`);
   } else {
-    const privXml = privacyEntry.readData().toString('utf8');
+    const privXml = decodePlistBufferToXml(privacyEntry.readData());
     const privMap = parseSimpleXmlPlist(privXml);
     if (privMap.NSPrivacyTracking !== false) {
       failures.push('PRIVACY_MANIFEST_GATE: NSPrivacyTracking must be explicitly false');

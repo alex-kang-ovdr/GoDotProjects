@@ -1,0 +1,129 @@
+name: PlayHub iOS Free Build & Scenario Verification (macos-15)
+
+on:
+  push:
+    branches: ["Hub-IOS"]
+    paths:
+      - "ios/**"
+      - "tools/ios/**"
+      - "hub/server/mobile/apple-*.mjs"
+      - "hub/server/mobile/aasa.mjs"
+      - "hub/server/mobile/apns.mjs"
+      - "hub/server/iap/apple*.mjs"
+      - "hub/tests/ios-*.mjs"
+      - "hub/tests/iap-apple*.mjs"
+      - ".github/workflows/ios-playhub-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  backend-and-gates:
+    name: Apple Backend & IPA 6-Gate Tests (Node 24)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Run Apple Backend & IPA 6-Gate Unit Tests
+        run: node --test hub/tests/ios-*.test.mjs hub/tests/iap-apple.test.mjs
+
+  ios-build-and-verify:
+    name: iOS Build, User Scenario Tests & Unsigned IPA (Free macos-15)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Cache Godot 4.7.2 iOS Release XCFramework
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ios/Vendor
+          key: godot-ios-xcframework-4.7.2-2b4c924b
+
+      - name: Download & Extract Locked Godot 4.7.2 iOS XCFramework
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          curl -fSL -o /tmp/godot-templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz"
+          unzip -q -j /tmp/godot-templates.tpz "templates/ios.zip" -d /tmp
+          rm -f /tmp/godot-templates.tpz
+          GODOT_IOS_TEMPLATE_ZIP="/tmp/ios.zip" bash tools/ios/extract-godot-xcframework.sh
+          rm -f /tmp/ios.zip
+
+      - name: Pack 7KB Minimal Bootstrap data.pck
+        run: node tools/ios/pack-bootstrap.mjs ios/App/Resources/Bootstrap/data.pck
+
+      - name: Run PlayHubCore Unit & User Scenario Tests (swift test)
+        working-directory: ios/Packages/PlayHubCore
+        run: swift test -v
+
+      - name: Install XcodeGen & Generate PlayHub.xcodeproj
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
+
+      - name: Run PlayHubApp Unit & Scenario Tests on iOS Simulator (DebugFree)
+        run: |
+          set -euo pipefail
+          SIM_UDID="$(node -e '
+            const { execFileSync } = require("node:child_process");
+            const raw = execFileSync("xcrun", ["simctl", "list", "devices", "available", "-j"], { encoding: "utf8" });
+            const data = JSON.parse(raw);
+            const candidates = [];
+            for (const [runtime, list] of Object.entries(data.devices || {})) {
+              if (!runtime.includes("iOS")) continue;
+              for (const d of list) {
+                if (d.isAvailable && /iPhone/.test(d.name)) candidates.push({ runtime, name: d.name, udid: d.udid });
+              }
+            }
+            candidates.sort((a, b) => b.runtime.localeCompare(a.runtime) || b.name.localeCompare(a.name));
+            if (!candidates.length) { console.error("No iOS Simulator found"); process.exit(1); }
+            console.error(`Selected Simulator: ${candidates[0].name} (${candidates[0].runtime}) -> ${candidates[0].udid}`);
+            console.log(candidates[0].udid);
+          ')"
+          xcodebuild test \
+            -project ios/PlayHub.xcodeproj \
+            -scheme PlayHubAppFree \
+            -configuration DebugFree \
+            -destination "platform=iOS Simulator,id=${SIM_UDID}" \
+            -only-testing:PlayHubAppTests \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Build Unsigned arm64 Release IPA & Run 6-Gate Security/Size Verifier
+        run: |
+          set -euo pipefail
+          DERIVED="${PWD}/ios/build/ci-release"
+          mkdir -p "${DERIVED}"
+          xcodebuild build \
+            -project ios/PlayHub.xcodeproj \
+            -scheme PlayHubApp \
+            -configuration Release \
+            -sdk iphoneos \
+            ARCHS=arm64 \
+            -derivedDataPath "${DERIVED}" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+          APP_DIR="${DERIVED}/Build/Products/Release-iphoneos/PlayHubApp.app"
+          test -d "${APP_DIR}"
+          rm -rf "${DERIVED}/Payload"
+          mkdir -p "${DERIVED}/Payload"
+          cp -R "${APP_DIR}" "${DERIVED}/Payload/PlayHubApp.app"
+          IPA_OUT="${PWD}/ios/build/PlayHub-Hub-IOS-unsigned-release.ipa"
+          (cd "${DERIVED}" && zip -qry "${IPA_OUT}" Payload)
+          ls -lh "${IPA_OUT}"
+          node tools/ios/verify-ipa.mjs "${IPA_OUT}" --stage release --max-mib 30
+
+      - name: Upload Unsigned Release IPA Artifact (Sideloadly / AltStore Ready)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlayHub-Hub-IOS-unsigned-release-ipa
+          path: ios/build/PlayHub-Hub-IOS-unsigned-release.ipa
+          retention-days: 14
