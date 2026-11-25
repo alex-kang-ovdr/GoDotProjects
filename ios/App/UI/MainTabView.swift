@@ -628,7 +628,7 @@ public final class PlayHubShellViewModel: ObservableObject {
     }
 
     public func oauthStartURL(provider: String) -> URL? {
-        let base = selectedFarm.baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let base = activeFarm.baseUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return URL(string: "\(base)/api/auth/\(provider)/start?returnTo=%2F%3Fview%3Daccount")
     }
 
@@ -755,8 +755,14 @@ public struct MainTabView: View {
     @ObservedObject private var vm: PlayHubShellViewModel
     @StateObject private var store = StoreKit2Manager()
 
-    public init(vm: PlayHubShellViewModel = PlayHubShellViewModel()) {
+    @MainActor
+    public init(vm: PlayHubShellViewModel) {
         self.vm = vm
+    }
+
+    @MainActor
+    public init() {
+        self.vm = PlayHubShellViewModel()
     }
 
     public var body: some View {
@@ -883,7 +889,7 @@ public struct MainTabView: View {
             }
             .navigationTitle("Farm 서버군 상태")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("새로고침") {
                         Task { await vm.refreshFarmHealth() }
                     }
@@ -966,7 +972,7 @@ private struct NeutralAgeGateSheet: View {
                     }
                     Picker("출생 연도", selection: $selectedYear) {
                         Text("선택해 주세요").tag(Optional<Int>.none)
-                        ForEach((1940...2026).reversed(), id: \.self) { y in
+                        ForEach(Array((1940...2026).reversed()), id: \.self) { y in
                             Text("\(y)년").tag(Optional(y))
                         }
                     }

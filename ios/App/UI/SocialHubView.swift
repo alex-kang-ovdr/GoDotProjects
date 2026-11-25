@@ -281,7 +281,7 @@ public struct SocialHubView: View {
                 await vm.syncSocial()
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         Task { await vm.syncSocial() }
                     } label: {
@@ -654,7 +654,7 @@ public struct SocialChatRoomSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("닫기") { dismiss() } }
                 if case .dm = target {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(placement: .navigationBarTrailing) {
                         Button("관리") { showManage = true }
                     }
                 }

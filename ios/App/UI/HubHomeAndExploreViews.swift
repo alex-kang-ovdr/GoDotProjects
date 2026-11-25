@@ -282,7 +282,7 @@ public struct HubHomeTabView: View {
                     sectionHeader(title: "인기 급상승", actionLabel: "더보기") {
                         vm.selectedTab = .charts
                     }
-                    gameCarousel(games: games.reversed(), showPlayButton: false, showFriendTag: false, playingFriends: [])
+                    gameCarousel(games: Array(games.reversed()), showPlayButton: false, showFriendTag: false, playingFriends: [])
                 }
 
                 // Section 5: Bottom Profile & Sync Status Card
@@ -900,7 +900,7 @@ public struct ExperienceDetailSheet: View {
                             .font(.system(size: 11.5))
                             .foregroundStyle(HubStitchTheme.onSurfaceVariant)
                     } else {
-                        ForEach(topEntries.prefix(3)) { e in
+                        ForEach(Array(topEntries.prefix(3))) { e in
                             HStack {
                                 Text("#\(e.rank)")
                                     .font(.system(size: 12, weight: .bold, design: .monospaced))

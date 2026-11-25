@@ -43,8 +43,8 @@ targets:
       - path: WebRuntime
       - path: App/Resources/PrivacyInfo.xcprivacy
         buildPhase: resources
-    resources:
       - path: App/Resources/Bootstrap/data.pck
+        buildPhase: resources
         optional: true
     dependencies:
       - package: PlayHubCore
@@ -78,6 +78,7 @@ targets:
           - "$(SRCROOT)/GodotRuntime"
     preBuildScripts:
       - name: PlayHub Build Policy & Live Trunk Guard
+        basedOnDependencyAnalysis: false
         script: |
           set -euo pipefail
           STAGE="${PLAYHUB_BUILD_STAGE:-debug}"
@@ -104,6 +105,12 @@ targets:
     dependencies:
       - target: PlayHubApp
       - package: PlayHubCore
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        CODE_SIGN_ENTITLEMENTS: ""
+        PRODUCT_BUNDLE_IDENTIFIER: com.playhub.hub-ios.tests
 
   PlayHubAppUITests:
     type: bundle.ui-testing
@@ -113,6 +120,12 @@ targets:
       - path: Tests/PlayHubAppUITests
     dependencies:
       - target: PlayHubApp
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        CODE_SIGN_ENTITLEMENTS: ""
+        PRODUCT_BUNDLE_IDENTIFIER: com.playhub.hub-ios.uitests
 
 schemes:
   PlayHubAppFree:
