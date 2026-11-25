@@ -22,6 +22,7 @@ const TICK_HZ := 30
 const CLI_OPTIONS := [
 	"netmode", "host", "port", "run-dir", "bot", "log", "ticket", "ticket-ttl",
 	"max-players", "play-ticks", "settle-max", "max-seconds", "tamper-slot", "wait-file", "linger",
+	"settle-file", "leave-file",
 	"net-profile", "net-profile-interval", "net-profile-output", "net-debug", "net-debug-proxy", "net-debug-reply",
 ]
 
@@ -47,6 +48,7 @@ var leave_at_ms: int = -1
 var leaving: bool = false
 var inputs_sent: int = 0
 var wait_file: String = ""
+var leave_file: String = ""
 var _deadline_ms: int = 0
 var _quitting: bool = false
 var _local_root: Node
@@ -107,6 +109,7 @@ func _ready() -> void:
 		_start_standalone()
 	else:
 		wait_file = String(args.get("wait-file", ""))
+		leave_file = String(args.get("leave-file", ""))
 		event_log.emit("client_boot", {"bot": bot, "probe": is_probe, "waitFile": not wait_file.is_empty(), "headless": DisplayServer.get_name() == "headless", "netMode": role})
 		if wait_file.is_empty():
 			_start_client()
@@ -159,6 +162,7 @@ func _start_server() -> void:
 	game_mode.name = "GameMode"
 	game_mode.max_players = int(args.get("max-players", "3"))
 	game_mode.play_ticks = int(args.get("play-ticks", "150"))
+	game_mode.settle_request_file = String(args.get("settle-file", ""))
 	game_mode.settle_max_seconds = float(args.get("settle-max", "10"))
 	game_mode.drain_request_file = run_dir.path_join("control/drain")
 	add_child(game_mode)
@@ -226,6 +230,10 @@ func _start_client() -> void:
 		ticket = NetJoinTicketScript.debug_tamper_slot(ticket, int(args["tamper-slot"]))
 	smp.auth_callback = _client_auth
 	smp.peer_authenticating.connect(_on_authenticating)
+	smp.peer_authentication_failed.connect(func(peer_id: int) -> void:
+		if peer_id == 1 and not _quitting:
+			event_log.emit("client_auth_failed", {})
+			_quit(1))
 	smp.connected_to_server.connect(_on_connected)
 	smp.connection_failed.connect(func() -> void:
 		event_log.emit("connection_failed", {})
@@ -240,6 +248,7 @@ func _start_client() -> void:
 	connect_start_us = Time.get_ticks_usec()
 	smp.multiplayer_peer = peer
 	net_profiler.attach_peer(peer)
+	event_log.emit("client_connect_started", {"bot": bot})
 
 
 func _on_authenticating(peer_id: int) -> void:
@@ -428,7 +437,8 @@ func _physics_process(_dt: float) -> void:
 		event_log.emit("client_snapshot", snap)
 		leave_at_ms = Time.get_ticks_msec() + int(float(args.get("linger", "3")) * 1000.0)
 	if leave_at_ms > 0 and Time.get_ticks_msec() >= leave_at_ms:
-		_leave("drain")
+		if leave_file.is_empty() or FileAccess.file_exists(leave_file):
+			_leave("drain")
 
 
 func _bot_move(t: int) -> Vector2:

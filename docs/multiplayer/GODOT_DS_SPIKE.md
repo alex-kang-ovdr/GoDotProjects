@@ -101,7 +101,7 @@ JoinTicket payload(camelCase, `contracts/desktop/launch-ticket.v1.schema.json`�
 
 ## 5. 실측 결과 (2026-11-25, `run-ds-2clients.cjs`)
 
-시나리오: 서버 시작 → 티켓 4장 발급(bot-a slot0, bot-b slot1, bot-c slot2, bot-x slot0) → A·B 입장 → 2명이 되면 play(150 tick = 5초) → play 중 C 늦은 입장 + probe 3개 → settle(입력 무시) → drain probe 대기 후 외부 drain 신호 → 클라이언트 스냅샷 기록 후 3초 뒤 퇴장 → 서버 종료.
+서버는 A·B 입장 후 150틱(30Hz에서 5초) 동안 경기를 진행한다. 실행기는 그 뒤에 C와 입장 검사용 클라이언트 세 개를 시작한다. 서버는 C가 플레이어를 할당받고 세 클라이언트가 거부 응답을 받을 때까지 play를 유지한다. 종료 중 입장을 시도할 클라이언트의 준비가 끝나면 실행기가 settle과 외부 drain을 차례로 요청한다. 서버가 `drain_started`를 기록한 뒤 해당 클라이언트를 접속시키고, 실제 `join_refused` 응답을 받은 뒤 기존 플레이어의 퇴장을 허용한다. 실행기 전용 신호 파일을 지정하지 않은 경기에서는 설정된 틱 수와 퇴장 유예 시간을 따른다.
 
 봇: A는 오른쪽 45 tick, 아래 30 tick. B는 오른쪽 60 tick(위험 지역 x∈[300,420] 진입, tick당 체력 1 감소), 30 tick 대기, 왼쪽 30 tick. B는 play tick 20부터 **A의 Controller**에 `server_submit_input`을 3회 위조 전송. C는 위로 20 tick.
 

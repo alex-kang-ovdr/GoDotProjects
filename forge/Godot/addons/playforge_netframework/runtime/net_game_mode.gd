@@ -28,6 +28,7 @@ var settle_max_seconds: float = 10.0
 var drain_timeout_seconds: float = 10.0
 var idle_shutdown_seconds: float = 90.0
 var drain_request_file: String = ""
+var settle_request_file: String = ""
 var hazard: Rect2 = Rect2(300, 0, 120, 800)
 var hazard_damage_per_tick: int = 1
 var ack_every_ticks: int = 5
@@ -165,7 +166,7 @@ func _spawn_player(peer_id: int, claims: Dictionary) -> Node:
 	event_log.emit("player_joined", {
 		"peer": peer_id, "slot": slot, "user": String(claims.userId),
 		"netId": [int(nid.index), int(nid.generation)], "phase": state().phase,
-		"players": _player_roots.size(),
+		"players": _player_roots.size(), "playTick": state().play_tick,
 	})
 	return root
 
@@ -217,7 +218,10 @@ func _physics_process(dt: float) -> void:
 			_tick_play(dt)
 			gs.play_tick += 1
 			if play_ticks > 0 and gs.play_tick >= play_ticks:
-				_set_phase(NetGameStateScript.PHASE_SETTLE)
+				if settle_request_file.is_empty() or FileAccess.file_exists(settle_request_file):
+					_set_phase(NetGameStateScript.PHASE_SETTLE)
+				elif gs.play_tick == play_ticks:
+					event_log.emit("play_ticks_elapsed", {"playTick": gs.play_tick})
 			elif play_ticks == 0 and tickets != null and Time.get_ticks_msec() >= _next_external_drain_check_ms:
 				_next_external_drain_check_ms = Time.get_ticks_msec() + 1000
 				if _drain_requested_by_file():
