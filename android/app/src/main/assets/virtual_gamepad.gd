@@ -228,22 +228,26 @@ func _vp_size() -> Vector2:
 func _layout_geometry() -> Dictionary:
 	var sz := _vp_size()
 	var short_side := minf(sz.x, sz.y)
-	var base_r := clampf(short_side * 0.115, 42.0, 68.0)
+	# 2x thumbstick & button sizing for comfortable mobile thumb ergonomics,
+	# clamped on narrow portrait viewports so left/right zones never overlap.
+	var base_r := clampf(short_side * 0.195, 84.0, 136.0)
+	base_r = minf(base_r, sz.x * 0.21)
 	left_radius = base_r
 	right_radius = base_r
 
-	var margin_x := clampf(sz.x * 0.045, 22.0, 56.0)
-	var margin_y := clampf(sz.y * 0.055, 22.0, 56.0)
-	var left_center := Vector2(margin_x + base_r + 12.0, sz.y - margin_y - base_r - 10.0)
-	var right_center := Vector2(sz.x - margin_x - base_r - 12.0, sz.y - margin_y - base_r - 10.0)
+	var margin_x := clampf(sz.x * 0.032, 18.0, 44.0)
+	var margin_y := clampf(sz.y * 0.042, 18.0, 40.0)
+	var left_center := Vector2(margin_x + base_r + 8.0, sz.y - margin_y - base_r - 12.0)
+	var right_center := Vector2(sz.x - margin_x - base_r - 8.0, sz.y - margin_y - base_r - 12.0)
 
 	# Toggle pill at top-right (never collides with PlayHub top-left overlay)
-	var pill_w := clampf(short_side * 0.11, 56.0, 76.0)
-	var pill_h := clampf(short_side * 0.055, 28.0, 36.0)
+	var pill_w := clampf(short_side * 0.13, 72.0, 96.0)
+	var pill_h := clampf(short_side * 0.068, 34.0, 46.0)
 	_toggle_rect = Rect2(sz.x - pill_w - 16.0, 14.0, pill_w, pill_h)
 
 	# Layout action buttons cleanly around right stick (or left stick for flight_stick)
-	var btn_d := clampf(short_side * 0.115, 50.0, 74.0)
+	var btn_d := clampf(short_side * 0.185, 86.0, 132.0)
+	btn_d = minf(btn_d, sz.x * 0.20)
 	var right_btns: Array[int] = []
 	var left_btns: Array[int] = []
 	for i in range(buttons.size()):
@@ -254,36 +258,36 @@ func _layout_geometry() -> Dictionary:
 
 	for idx in range(left_btns.size()):
 		var bi := left_btns[idx]
-		var bw := btn_d * 0.78
-		var bh := btn_d * 0.56
-		var bx := left_center.x - bw - 6.0 + float(idx) * (bw + 12.0)
-		var by := left_center.y - base_r - bh - 18.0
+		var bw := btn_d * 0.72
+		var bh := btn_d * 0.48
+		var bx := left_center.x - bw - 8.0 + float(idx) * (bw + 16.0)
+		var by := left_center.y - base_r - bh - 16.0
 		buttons[bi]["rect"] = Rect2(bx, by, bw, bh)
 
 	if has_right_stick:
 		# Place action buttons in an arc above/left of the right stick
 		var arc_offsets := [
-			Vector2(-base_r * 1.45, -base_r * 0.25),
-			Vector2(-base_r * 0.95, -base_r * 1.35),
-			Vector2(base_r * 0.25, -base_r * 1.55),
-			Vector2(-base_r * 1.85, -base_r * 1.15),
+			Vector2(-base_r * 1.42, -base_r * 0.22),
+			Vector2(-base_r * 0.92, -base_r * 1.28),
+			Vector2(base_r * 0.22, -base_r * 1.48),
+			Vector2(-base_r * 1.75, -base_r * 1.05),
 		]
 		for idx in range(right_btns.size()):
 			var bi := right_btns[idx]
 			var off: Vector2 = arc_offsets[idx % arc_offsets.size()]
-			var d := btn_d * (0.82 if idx >= 2 else 0.95)
+			var d := btn_d * (0.76 if idx >= 2 else 0.88)
 			var c := right_center + off
 			c.x = clampf(c.x, d * 0.6, sz.x - d * 0.6)
-			c.y = clampf(c.y, 64.0 + d * 0.5, sz.y - d * 0.6)
+			c.y = clampf(c.y, 68.0 + d * 0.5, sz.y - d * 0.6)
 			buttons[bi]["rect"] = Rect2(c - Vector2(d * 0.5, d * 0.5), Vector2(d, d))
 	else:
 		# No right stick: place primary action button cleanly in bottom-right
 		for idx in range(right_btns.size()):
 			var bi := right_btns[idx]
-			var d := btn_d * (1.22 if idx == 0 else 0.86)
-			var c := right_center if idx == 0 else (right_center + Vector2(-btn_d * 1.25, -btn_d * 0.75 * float(idx)))
+			var d := btn_d * (1.12 if idx == 0 else 0.78)
+			var c := right_center if idx == 0 else (right_center + Vector2(-btn_d * 1.15, -btn_d * 0.75 * float(idx)))
 			c.x = clampf(c.x, d * 0.6, sz.x - d * 0.6)
-			c.y = clampf(c.y, 64.0 + d * 0.5, sz.y - d * 0.6)
+			c.y = clampf(c.y, 68.0 + d * 0.5, sz.y - d * 0.6)
 			buttons[bi]["rect"] = Rect2(c - Vector2(d * 0.5, d * 0.5), Vector2(d, d))
 
 	return {
@@ -344,10 +348,10 @@ func _input(event: InputEvent) -> void:
 
 			# 3. Left stick (hit zone: circle around bottom-left stick or bottom-left quadrant)
 			var sz := _vp_size()
-			var in_left_zone := pos.distance_to(left_center) <= base_r * 1.75 or (pos.x < sz.x * 0.38 and pos.y > sz.y * 0.45)
+			var in_left_zone := pos.distance_to(left_center) <= base_r * 1.35 or (pos.x < sz.x * 0.44 and pos.y > sz.y * 0.40)
 			if has_left_stick and left_touch_id == -1 and in_left_zone:
 				left_touch_id = event.index
-				left_origin = pos if pos.distance_to(left_center) > base_r * 0.9 else left_center
+				left_origin = left_center if pos.distance_to(left_center) <= base_r * 1.1 else pos
 				left_vec = _compute_stick_vec(pos, left_origin, left_radius)
 				if _overlay:
 					_overlay.queue_redraw()
@@ -355,10 +359,10 @@ func _input(event: InputEvent) -> void:
 				return
 
 			# 4. Right stick (hit zone: circle around bottom-right stick or bottom-right quadrant)
-			var in_right_zone := pos.distance_to(right_center) <= base_r * 1.75 or (pos.x > sz.x * 0.58 and pos.y > sz.y * 0.35)
+			var in_right_zone := pos.distance_to(right_center) <= base_r * 1.35 or (pos.x > sz.x * 0.54 and pos.y > sz.y * 0.35)
 			if has_right_stick and right_touch_id == -1 and in_right_zone:
 				right_touch_id = event.index
-				right_origin = pos if (right_mode == "fps_look" or pos.distance_to(right_center) > base_r * 0.9) else right_center
+				right_origin = pos if right_mode == "fps_look" else (right_center if pos.distance_to(right_center) <= base_r * 1.1 else pos)
 				right_last = pos
 				right_vec = _compute_stick_vec(pos, right_origin, right_radius)
 				right_press_time = Time.get_ticks_msec() / 1000.0
@@ -475,11 +479,17 @@ func _sync_left_stick_inputs(v: Vector2) -> void:
 			_set_key(KEY_D, v.x > 0.25)
 			_set_key(KEY_W, v.y < -0.25)
 			_set_key(KEY_S, v.y > 0.25)
-		"dual_stick_fps", "stick_charge":
+		"dual_stick_fps":
 			_set_key(KEY_A, v.x < -0.22)
 			_set_key(KEY_D, v.x > 0.22)
 			_set_key(KEY_W, v.y < -0.22)
 			_set_key(KEY_S, v.y > 0.22)
+		"stick_charge":
+			if not _apply_camera_aligned_tank_drive(v):
+				_set_key(KEY_A, v.x < -0.22)
+				_set_key(KEY_D, v.x > 0.22)
+				_set_key(KEY_W, v.y < -0.22)
+				_set_key(KEY_S, v.y > 0.22)
 		"dual_stick_vehicle":
 			_set_action_axis("steer_left", "steer_right", v.x)
 			_set_action_axis("move_forward", "move_back", v.y)
@@ -556,6 +566,71 @@ func _find_arena_player_screen_pos() -> Vector2:
 				var body_pos: Vector2 = first["body"].global_position
 				return scene.get_canvas_transform() * body_pos
 	return _vp_size() * 0.5
+
+
+func _find_p1_tank() -> Node3D:
+	if not is_inside_tree():
+		return null
+	var scene := get_tree().current_scene
+	if scene == null:
+		return null
+	if "tanks" in scene:
+		var tank_list: Variant = scene.get("tanks")
+		if tank_list is Array and not tank_list.is_empty():
+			var first: Variant = tank_list[0]
+			if first is Node3D and is_instance_valid(first):
+				return first as Node3D
+	var found := scene.find_child("Tank_P1", true, false)
+	if found is Node3D:
+		return found as Node3D
+	return null
+
+
+func _apply_camera_aligned_tank_drive(v: Vector2) -> bool:
+	var tank := _find_p1_tank()
+	if tank == null or not ("synthetic_move" in tank) or not ("synthetic_turn" in tank):
+		return false
+	var mag := v.length()
+	if mag < STICK_DEADZONE:
+		tank.set("synthetic_move", 0.0)
+		tank.set("synthetic_turn", 0.0)
+		return true
+
+	# Project active Camera3D axes onto the XZ ground plane so thumbstick UP/RIGHT
+	# matches screen UP/RIGHT regardless of the 45-degree isometric CameraRig angle.
+	var vp := get_viewport()
+	var cam := vp.get_camera_3d() if vp != null else null
+	var cam_fwd := Vector3(0.0, 0.0, -1.0)
+	var cam_right := Vector3(1.0, 0.0, 0.0)
+	if cam != null:
+		var raw_fwd := -cam.global_transform.basis.z
+		raw_fwd.y = 0.0
+		if raw_fwd.length_squared() > 0.0001:
+			cam_fwd = raw_fwd.normalized()
+		var raw_right := cam.global_transform.basis.x
+		raw_right.y = 0.0
+		if raw_right.length_squared() > 0.0001:
+			cam_right = raw_right.normalized()
+
+	var desired := (cam_right * v.x + cam_fwd * (-v.y)).normalized()
+	var tank_fwd := -tank.global_transform.basis.z
+	tank_fwd.y = 0.0
+	if tank_fwd.length_squared() > 0.0001:
+		tank_fwd = tank_fwd.normalized()
+	else:
+		tank_fwd = Vector3(0.0, 0.0, -1.0)
+
+	# Signed yaw angle from tank nose to desired world direction:
+	# positive => desired is to the LEFT (CCW around +Y => positive rotate_y).
+	var signed_angle := atan2(tank_fwd.cross(desired).y, tank_fwd.dot(desired))
+	var turn_in := clampf(signed_angle / 0.55, -1.0, 1.0)
+	if absf(signed_angle) < 0.04:
+		turn_in = 0.0
+	var align := cos(signed_angle)
+	var move_in := clampf(mag * maxf(0.15, align), 0.0, 1.0) if align > -0.35 else 0.0
+	tank.set("synthetic_turn", turn_in)
+	tank.set("synthetic_move", move_in)
+	return true
 
 
 func _find_voxel_player() -> Node:
@@ -705,6 +780,11 @@ func _release_all() -> void:
 	_dpad_dir = ""
 	_dpad_timer = 0.0
 	_tap_fire_timer = 0.0
+	if profile == "stick_charge":
+		var tank := _find_p1_tank()
+		if tank != null and ("synthetic_move" in tank) and ("synthetic_turn" in tank):
+			tank.set("synthetic_move", 0.0)
+			tank.set("synthetic_turn", 0.0)
 	for i in range(buttons.size()):
 		if int(buttons[i]["touch_id"]) != -1:
 			buttons[i]["touch_id"] = -1
@@ -735,10 +815,10 @@ func _draw_pad(ctrl: Control) -> void:
 	var pill_bg := Color(0.08, 0.12, 0.16, 0.78) if user_visible else Color(0.08, 0.10, 0.13, 0.45)
 	var pill_border := Color(0.0, 0.76, 0.48, 0.85) if user_visible else Color(0.55, 0.62, 0.70, 0.45)
 	ctrl.draw_rect(_toggle_rect, pill_bg, true)
-	ctrl.draw_rect(_toggle_rect, pill_border, false, 1.5)
+	ctrl.draw_rect(_toggle_rect, pill_border, false, 2.0)
 	if font != null:
 		var lbl := "PAD ON" if user_visible else "PAD"
-		ctrl.draw_string(font, _toggle_rect.position + Vector2(0, _toggle_rect.size.y * 0.68), lbl, HORIZONTAL_ALIGNMENT_CENTER, _toggle_rect.size.x, 11, Color(0.92, 0.97, 0.99, 0.92))
+		ctrl.draw_string(font, _toggle_rect.position + Vector2(0, _toggle_rect.size.y * 0.68), lbl, HORIZONTAL_ALIGNMENT_CENTER, _toggle_rect.size.x, 14, Color(0.92, 0.97, 0.99, 0.92))
 
 	if not user_visible:
 		return
@@ -747,25 +827,25 @@ func _draw_pad(ctrl: Control) -> void:
 	if has_left_stick:
 		var c := left_origin if left_touch_id != -1 else left_center
 		var active := left_touch_id != -1
-		var knob := c + left_vec * base_r * 0.75
+		var knob := c + left_vec * base_r * 0.72
 		ctrl.draw_circle(c, base_r, Color(0.06, 0.14, 0.20, 0.42 if active else 0.28))
-		ctrl.draw_arc(c, base_r, 0.0, TAU, 48, Color(0.45, 0.90, 0.96, 0.78 if active else 0.45), 2.5, true)
-		ctrl.draw_circle(knob, base_r * 0.42, Color(0.56, 0.92, 0.98, 0.72 if active else 0.44))
-		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 32, Color(0.90, 0.98, 1.0, 0.85), 1.5, true)
+		ctrl.draw_arc(c, base_r, 0.0, TAU, 64, Color(0.45, 0.90, 0.96, 0.82 if active else 0.48), 3.5, true)
+		ctrl.draw_circle(knob, base_r * 0.42, Color(0.56, 0.92, 0.98, 0.76 if active else 0.46))
+		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 40, Color(0.90, 0.98, 1.0, 0.88), 2.5, true)
 		if font != null:
-			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 16.0), left_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 11, Color(0.84, 0.92, 0.96, 0.72))
+			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 22.0), left_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 15, Color(0.84, 0.92, 0.96, 0.78))
 
 	# Right stick
 	if has_right_stick:
 		var c := right_origin if right_touch_id != -1 else right_center
 		var active := right_touch_id != -1
-		var knob := c + right_vec * base_r * 0.75
+		var knob := c + right_vec * base_r * 0.72
 		ctrl.draw_circle(c, base_r, Color(0.24, 0.08, 0.12, 0.44 if active else 0.28))
-		ctrl.draw_arc(c, base_r, 0.0, TAU, 48, Color(1.0, 0.56, 0.60, 0.82 if active else 0.48), 2.5, true)
-		ctrl.draw_circle(knob, base_r * 0.42, Color(1.0, 0.62, 0.64, 0.76 if active else 0.46))
-		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 32, Color(1.0, 0.92, 0.92, 0.88), 1.5, true)
+		ctrl.draw_arc(c, base_r, 0.0, TAU, 64, Color(1.0, 0.56, 0.60, 0.85 if active else 0.50), 3.5, true)
+		ctrl.draw_circle(knob, base_r * 0.42, Color(1.0, 0.62, 0.64, 0.78 if active else 0.48))
+		ctrl.draw_arc(knob, base_r * 0.42, 0.0, TAU, 40, Color(1.0, 0.92, 0.92, 0.90), 2.5, true)
 		if font != null:
-			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 16.0), right_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 11, Color(1.0, 0.86, 0.88, 0.76))
+			ctrl.draw_string(font, c + Vector2(-base_r, base_r + 22.0), right_label, HORIZONTAL_ALIGNMENT_CENTER, base_r * 2.0, 15, Color(1.0, 0.86, 0.88, 0.80))
 
 	# Action buttons
 	for b in buttons:
@@ -776,7 +856,7 @@ func _draw_pad(ctrl: Control) -> void:
 		var pressed := int(b["touch_id"]) != -1
 		var fill := col.lightened(0.22) if pressed else Color(col.r, col.g, col.b, col.a * 0.55)
 		ctrl.draw_circle(center, rad, fill)
-		ctrl.draw_arc(center, rad, 0.0, TAU, 36, col.lightened(0.35), 2.2, true)
+		ctrl.draw_arc(center, rad, 0.0, TAU, 44, col.lightened(0.35), 3.0, true)
 		if font != null:
 			var label_text := str(b["label"])
-			ctrl.draw_string(font, Vector2(r.position.x, center.y + 4.0), label_text, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 11, Color(0.98, 0.99, 1.0, 0.95))
+			ctrl.draw_string(font, Vector2(r.position.x, center.y + 6.0), label_text, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 16, Color(0.98, 0.99, 1.0, 0.96))
