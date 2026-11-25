@@ -134,25 +134,25 @@ final class UserScenarioTests: XCTestCase {
 
             switch key {
             case "GET /api/mobile/social/users/search":
-                return self.respond(url: url, json: #"{"users":[{"principalId":"u-minjun","displayName":"민준","handle":"minjun#1024","avatarColor":"#2563EB","relation":"none"}]}"#)
+                return self.respond(url: url, json: ##"{"users":[{"principalId":"u-minjun","displayName":"민준","handle":"minjun#1024","avatarColor":"#2563EB","relation":"none"}]}"##)
             case "POST /api/mobile/social/friends/request":
-                return self.respond(url: url, status: 201, json: #"{"targetPrincipalId":"u-minjun","status":"pending"}"#)
+                return self.respond(url: url, status: 201, json: ##"{"targetPrincipalId":"u-minjun","status":"pending"}"##)
             case "POST /api/mobile/social/friends/respond":
-                return self.respond(url: url, json: #"{"requesterId":"u-minjun","status":"accepted"}"#)
+                return self.respond(url: url, json: ##"{"requesterId":"u-minjun","status":"accepted"}"##)
             case "POST /api/mobile/social/messages":
-                return self.respond(url: url, status: 201, json: #"{"id":"m-1","channelType":"dm","senderId":"u-me","senderName":"나","senderHandle":"me#0001","senderAvatarColor":"#00B06F","senderMe":true,"body":"같이 플레이하자!","isQuickMessage":false,"createdAt":"2026-11-25T09:00:00Z"}"#)
+                return self.respond(url: url, status: 201, json: ##"{"id":"m-1","channelType":"dm","senderId":"u-me","senderName":"나","senderHandle":"me#0001","senderAvatarColor":"#00B06F","senderMe":true,"body":"같이 플레이하자!","isQuickMessage":false,"createdAt":"2026-11-25T09:00:00Z"}"##)
             case "POST /api/mobile/social/parties":
-                return self.respond(url: url, status: 201, json: #"{"party":{"id":"p-1","leaderId":"u-me","title":"주말 스쿼드","targetGameId":"survivor-arena-g2","roomCode":"PLAY99","maxMembers":4,"inviteUrl":"https://hub.playhub.test/join/survivor-arena-g2?room=PLAY99","deepLinkUrl":"playhub://join/survivor-arena-g2?room=PLAY99","members":[{"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","role":"leader","ready":true,"presence":null}],"activeLaunch":null}}"#)
+                return self.respond(url: url, status: 201, json: ##"{"party":{"id":"p-1","leaderId":"u-me","title":"주말 스쿼드","targetGameId":"survivor-arena-g2","roomCode":"PLAY99","maxMembers":4,"inviteUrl":"https://hub.playhub.test/join/survivor-arena-g2?room=PLAY99","deepLinkUrl":"playhub://join/survivor-arena-g2?room=PLAY99","members":[{"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","role":"leader","ready":true,"presence":null}],"activeLaunch":null}}"##)
             case "POST /api/mobile/social/parties/p-1/launch":
-                return self.respond(url: url, json: #"{"launch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"}]},"party":{"id":"p-1","leaderId":"u-me","title":"주말 스쿼드","targetGameId":"survivor-arena-g2","roomCode":"PLAY99","maxMembers":4,"inviteUrl":null,"deepLinkUrl":"playhub://join/survivor-arena-g2?room=PLAY99","members":[{"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","role":"leader","ready":true,"presence":null}],"activeLaunch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"}]}}}"#)
+                return self.respond(url: url, json: ##"{"launch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"}]},"party":{"id":"p-1","leaderId":"u-me","title":"주말 스쿼드","targetGameId":"survivor-arena-g2","roomCode":"PLAY99","maxMembers":4,"inviteUrl":null,"deepLinkUrl":"playhub://join/survivor-arena-g2?room=PLAY99","members":[{"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","role":"leader","ready":true,"presence":null}],"activeLaunch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"}]}}}"##)
             case "POST /api/mobile/social/parties/p-1/launch/ack":
-                return self.respond(url: url, json: #"{"launch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"},{"principalId":"u-minjun","displayName":"민준","handle":"minjun#1024","platform":"android","state":"entered"}]},"party":null}"#)
+                return self.respond(url: url, json: ##"{"launch":{"launchId":"l-1","gameId":"survivor-arena-g2","roomCode":"PLAY99","matchRoomId":"match-PLAY99-1","launchedBy":"u-me","status":"active","createdAt":"2026-11-25T09:01:00Z","participants":[{"principalId":"u-me","displayName":"나","handle":"me#0001","platform":"ios","state":"entered"},{"principalId":"u-minjun","displayName":"민준","handle":"minjun#1024","platform":"android","state":"entered"}]},"party":null}"##)
             case "GET /api/mobile/social/leaderboards/survivor-arena-g2/high_score":
-                return self.respond(url: url, json: #"{"gameId":"survivor-arena-g2","boardId":"high_score","scope":"global","periodKey":"all","entries":[{"rank":1,"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","score":9850,"isMe":true}]}"#)
+                return self.respond(url: url, json: ##"{"gameId":"survivor-arena-g2","boardId":"high_score","scope":"global","periodKey":"all","entries":[{"rank":1,"principalId":"u-me","displayName":"나","handle":"me#0001","avatarColor":"#00B06F","score":9850,"isMe":true}]}"##)
             case "POST /api/mobile/social/blocks":
-                return self.respond(url: url, json: #"{"blocked":true}"#)
+                return self.respond(url: url, json: ##"{"blocked":true}"##)
             default:
-                return self.respond(url: url, status: 404, json: #"{"error":"NOT_FOUND"}"#)
+                return self.respond(url: url, status: 404, json: ##"{"error":"NOT_FOUND"}"##)
             }
         }
 
