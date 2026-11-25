@@ -600,6 +600,36 @@
       "owner": "Forge-Games-brawlLabs"
     },
     {
+      "path": "forge/Tests/build-export/contract.build-manifest.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-BuildExport"
+    },
+    {
+      "path": "forge/Tests/build-export/contract.content-hash.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-BuildExport"
+    },
+    {
       "path": "forge/Tests/build-queue-reuse.test.cjs",
       "tier": "fast",
       "suites": [
