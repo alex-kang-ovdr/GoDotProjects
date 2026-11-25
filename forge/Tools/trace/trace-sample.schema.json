@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playforge.local/schemas/trace-sample.v1.json",
+  "title": "TraceSample v1",
+  "description": "PlayForge 공통 성능·메모리 계측 샘플(로드맵 §7 TraceSample). JSONL 한 줄 = 한 객체. 정본 문서: docs/profiling/TRACE_SAMPLE.md, 런타임 검증기: forge/Tools/trace/trace-sample.cjs",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "build_id", "source", "device", "clock_domain", "metric", "value", "unit", "exact", "ts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "build_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "source": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "cpu", "gpu", "driver"],
+      "properties": {
+        "os": { "type": "string", "minLength": 1 },
+        "cpu": { "type": "string", "minLength": 1 },
+        "gpu": { "type": "string", "minLength": 1 },
+        "driver": { "type": "string", "minLength": 1 }
+      }
+    },
+    "clock_domain": { "enum": ["engine_frame", "physics_tick", "wall"] },
+    "frame": { "type": "integer", "minimum": 0 },
+    "tick": { "type": "integer", "minimum": 0 },
+    "metric": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$" },
+    "value": { "type": "number" },
+    "unit": { "enum": ["ms", "bytes", "count"] },
+    "exact": { "type": "boolean" },
+    "ts": { "type": "string", "format": "date-time" },
+    "tags": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "unit": { "const": "bytes" } } },
+      "then": { "properties": { "metric": { "pattern": "_bytes(\\.(p50|p95|p99|mean|min|max))?$" } } }
+    },
+    {
+      "if": { "properties": { "unit": { "const": "ms" } } },
+      "then": { "properties": { "metric": { "pattern": "_ms(\\.(p50|p95|p99|mean|min|max))?$" } } }
+    },
+    {
+      "if": { "properties": { "unit": { "const": "count" } } },
+      "then": { "properties": { "metric": { "not": { "pattern": "_(ms|bytes)(\\.(p50|p95|p99|mean|min|max))?$" } } } }
+    },
+    {
+      "if": {
+        "required": ["clock_domain", "metric"],
+        "properties": { "clock_domain": { "const": "engine_frame" }, "metric": { "not": { "pattern": "\\.(p50|p95|p99|mean|min|max)$" } } }
+      },
+      "then": { "required": ["frame"] }
+    },
+    {
+      "if": {
+        "required": ["clock_domain", "metric"],
+        "properties": { "clock_domain": { "const": "physics_tick" }, "metric": { "not": { "pattern": "\\.(p50|p95|p99|mean|min|max)$" } } }
+      },
+      "then": { "required": ["tick"] }
+    }
+  ]
+}

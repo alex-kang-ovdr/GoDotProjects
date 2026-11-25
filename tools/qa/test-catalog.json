@@ -1802,6 +1802,48 @@
       "owner": "Forge-Games-tappyChickenMMO"
     },
     {
+      "path": "forge/Tests/trace/contract.trace-adapters.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Profiling"
+    },
+    {
+      "path": "forge/Tests/trace/contract.trace-sample.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Profiling"
+    },
+    {
+      "path": "forge/Tests/trace/contract.trace-summarize.test.cjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "forge"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "Forge-Profiling"
+    },
+    {
       "path": "forge/Tests/user-reported-regressions.test.cjs",
       "tier": "fast",
       "suites": [
