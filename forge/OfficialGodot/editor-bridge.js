@@ -1131,6 +1131,10 @@
         emscriptenPoolSize: concurrency,
         godotPoolSize: Math.floor(concurrency / 3),
         onProgress: (current, total) => {
+          // Godot's preloader reports its final progress on requestAnimationFrame. On a cold
+          // (uncached) load that frame is starved by the editor's startup work and fires after
+          // engine.start() resolved, re-showing a stale "100%" overlay over a running editor.
+          if (started) return;
           const mb = bytes => (bytes / (1024 * 1024)).toFixed(1);
           const effectiveTotal = Math.max(total || 0, knownWasmBytes || 0);
           if (effectiveTotal > 0) {
