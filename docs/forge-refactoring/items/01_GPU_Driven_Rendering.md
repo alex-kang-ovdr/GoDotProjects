@@ -8,7 +8,7 @@
 
 ## 저장소에 이미 있는 관련 자산
 
-- 엔진 정본 tools/engine/engine-ssot.json (포크 pin `e7a83dd7`, 5개 타깃 pending_fork_rebuild) — 서브모듈은 워크트리에서 미초기화
+- 엔진 정본 tools/engine/engine-ssot.json (포크 Forge-Refactoring 기준 커밋, 5개 타깃 pending_fork_rebuild) — 서브모듈은 워크트리에서 미초기화
 - Forge-UnrealPort의 MultiMesh 인스턴스 대량 배치(13,976개)가 측정 대상 장면 후보
 
 ## 첫 작업 (spike)

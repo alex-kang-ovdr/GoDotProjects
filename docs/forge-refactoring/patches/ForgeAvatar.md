@@ -12,6 +12,7 @@
 | `a18fb005` | 2026-11-21 | `core/object/object.*`, `scene/main/node.*`, `scene/main/scene_tree.*`, `scene/3d/node_3d.cpp`, `scene/main/canvas_item.cpp`, `scene/main/canvas_layer.cpp`, `core/io/file_access*.{h,cpp}`, `main/main.cpp`, `modules/playforge_core/**` | 봉인 오브젝트의 free·set_script·remove_child·reparent·숨김 차단, 사용자 CanvasLayer.layer ≤ 100 강제, `--playforge-core-pack`/`--playforge-ugc-pack` 마운트와 `addons/playforge_avatar/` VFS 봉인, PlayForgePlatform 싱글톤·좌상단 CoreHUD(layer 128)·빈 3D 씬 자동 아바타 |
 | `fe0b4fe1` | 2026-11-21 | `scene/gui/control.*`, `scene/main/canvas_item.cpp`, `modules/playforge_core/playforge_platform.*` | 봉인 Control 최소 크기·축소 하한, 알파 0.85 미만 투명화 차단, 아바타 표현 모드 4종(3D 월드·상반신·전신·병행) |
 | `ed003ce5` | 2026-11-22 | `modules/playforge_core/playforge_platform.*` | 아바타·CoreHUD 임시 숨김 예산(최대 30초, 초당 0.2초 충전, 실시간 기준), 템플릿별 스폰 위치·초상 좌표 프로젝트 설정 |
+| `814b87c8` | 2026-11-25 | `scene/main/node.{h,cpp}`, `modules/playforge_core/playforge_platform.cpp` | 위 결함 수정: 봉인 노드 루트 보존(월드 위치 유지·정지)과 다음 씬 입양, 봉인 노드 자기 해제 허용 |
 
 ## 유지 이유와 대체 불가 API
 
@@ -28,7 +29,7 @@
 
 - 2026-11-25 포크 `playforge/tests/`(커밋 `bb65179d`)에 헤드리스 회귀 테스트를 추가했다. 실행: `python playforge/tests/run.py` (편집기 4.7.2 custom_build e7a83dd73).
 - 통과: 부트스트랩(CoreHUD layer 128·봉인 아바타·spawn_position), 아바타 봉인(free·remove·reparent·set_script·숨김·축소·process_mode 차단), CoreHUD 봉인(layer 100 클램프 포함), 초상 최소 크기·투명도 하한, 숨김 예산(30초 상한·실시간 소모·0.2초/초 충전), VFS 봉인.
-- **실패(실제 결함)**: 봉인된 자식을 가진 부모를 권한 범위 밖에서 해제하면 힙 손상으로 크래시(0xC0000374). `NOTIFICATION_PREDELETE`의 `remove_child`가 봉인 검사에 막혀 자식이 이중 삭제된다. 재현: `current_scene.queue_free()`, 초상 모드 해제 후 다음 프레임의 `_flush_delete_queue`.
+- **수정 완료(2026-11-25, 포크 `814b87c8`)**: 봉인된 자식을 가진 부모를 권한 범위 밖에서 해제하면 `NOTIFICATION_PREDELETE`의 `remove_child`가 봉인 검사에 막혀 자식이 이중 삭제되며 크래시(0xC0000374)했다. 순정 4.7.2에서는 같은 코드가 정상이라 upstream 수정 대상이 아니다. 수정: 권한 밖에서 서브트리를 떼어내거나 해제하면 안의 봉인 노드를 트리 루트로 옮겨 마지막 월드 위치를 유지하고 정지시키며(`Node::_playforge_preserve_sealed_descendants`), 다음 씬이 로드되면 새로 만들지 않고 입양한다(`ensure_scene_avatar`). 봉인 노드 자신의 해제는 부모에서 빠지는 동작을 허용한다. `sealed_parent_free` 16건, `portrait_mode_switch` 통과. `root.remove_child(current_scene)` 우회도 같은 보존으로 막혔다.
 - 우회 관찰(판정 없음): `node_added`로 숨긴 HUD 참조 획득, `transform` 대입으로 아바타 축소, 위치 이동으로 화면 밖 숨김, `root.remove_child(current_scene)` 연쇄 제거, Windows에서 대소문자 다른 경로로 봉인 디렉터리 쓰기.
 - 미검증: 코어 팩(.pck) 경로와 그 스크립트, CoreHUD 버튼.
 

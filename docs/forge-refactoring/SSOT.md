@@ -49,6 +49,8 @@ Godot Review v1 `02_Minimal_Change_Policy.md`는 코어 수정(E3)을 기본 금
 | `70892ae8` | 11-23 | x86_64 데스크톱 Jolt AVX2/FMA/SSE4.2 | 빌드 설정(데스크톱 한정 → 기기 간 결정성 영향) | Forge-Refactoring-JoltPhysics |
 | `c9050da1` | 11-23 | JoltContactListener3D 락프리·fast path | 성능 패치 | Forge-Refactoring-JoltPhysics |
 | `e7a83dd7` | 11-23 | Jolt GSK 워밍업 캐시, A/B 계측 API | 성능 패치 + 계측 API | Forge-Refactoring-JoltPhysics |
+| `bb65179d` | 11-25 | 패치 7건 헤드리스 회귀 테스트(`playforge/tests/`) | 테스트 | Forge-Refactoring |
+| `814b87c8` | 11-25 | 봉인 노드 부모 해제 시 이중 삭제 크래시 수정, 봉인 노드 루트 보존·다음 씬 입양 | a18fb005·fe0b4fe1 결함 수정 | Forge-Refactoring (현재 기준 커밋) |
 
 - 아바타·CoreHUD 3건은 **엔진 패치로 유지**한다(§5 D2). 엔진 쪽 관리는 `Forge-Refactoring-ForgeAvatar` 브랜치로 옮겼고, 패치 기록은 [patches/ForgeAvatar.md](patches/ForgeAvatar.md)에 있다. Forge-Avatar 브랜치는 addon·Hub 상점 등 엔진 밖 코드만 계속 소유한다.
 - Jolt 4건은 실험 브랜치(Forge-HavokPhysics, 트렁크 미통합 분류)에서 나온 결과가 트렁크 pin에 들어간 것이다. 엔진 쪽 관리는 `Forge-Refactoring-JoltPhysics` 브랜치(항목 12와 통합)로 옮겼고, 패치 기록은 [patches/JoltPhysics.md](patches/JoltPhysics.md)에 있다.
