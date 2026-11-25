@@ -11,7 +11,7 @@
     {
       "path": "INDEX.html",
       "size_bytes": 133303,
-      "sha256": "e850efb09888e954461ce70b09e495fb417dc060dbebf3d10b51506e60090b2c"
+      "sha256": "bba8ed0d2d20f37f58ee38eb00a6bc7aad091463b877aa549752c4cdc8bc620b"
     },
     {
       "path": "NOTICE.md",
@@ -21,7 +21,7 @@
     {
       "path": "PlayForge_Godot_Review_Complete.md",
       "size_bytes": 88040,
-      "sha256": "c2371dda5b5c035531adbc948db9bf6f3c3c4686dca39391dd5720b375c6589a"
+      "sha256": "6a36e74f9aa5b1bd6b73df06899aeeeb2011ec7e396210cf8d7a4fbd419cdded"
     },
     {
       "path": "README.md",
@@ -121,7 +121,7 @@
     {
       "path": "docs/15_ADR_Open_Issues_Corrections.md",
       "size_bytes": 5248,
-      "sha256": "ca2a987379a072a5413cccb0dae2547695fae4cedb94e02b5688173e532c36f8"
+      "sha256": "ab7ab49ffd581f3bbdffc13d97c8f15172f2f9eafa07d3a64138e37196896edf"
     },
     {
       "path": "docs/16_Feature_Gap_Matrix.md",

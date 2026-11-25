@@ -1,6 +1,6 @@
 # 엔진 패치 기록: ForgeAvatar (아바타·CoreHUD 봉인)
 
-- 관리 브랜치: godot-engine 포크 저장소(`D:/Github/godot-engine`)의 `Godot-Refactoring-ForgeAvatar` (로컬 생성, 기준 `ed003ce5` = 아바타 패치 3건의 끝). PlayHub 저장소에는 엔진 브랜치를 두지 않는다.
+- 관리 브랜치: godot-engine 포크 저장소(`D:/Github/godot-engine`)의 `Forge-Refactoring-ForgeAvatar` (로컬 생성, 기준 `ed003ce5` = 아바타 패치 3건의 끝). PlayHub 저장소에는 엔진 브랜치를 두지 않는다.
 - 결정: 2026-11-25 사용자 결정 D2 — 엔진 패치로 유지 ([SSOT.md](../SSOT.md) §5)
 - 양식: 로드맵 §13 (이유·대체 불가 API·회귀 fixture·upstream 상태·제거 조건)
 - 엔진 밖 코드(`forge/Godot/addons/playforge_avatar/**`, Hub 상점·락커)는 계속 Forge-Avatar 소유다.
@@ -32,7 +32,7 @@
 ## upstream 상태
 
 - upstream에 제안하지 않는다. 플랫폼 전용 정책이라 upstream 채택 대상이 아니다.
-- 패치는 포크 `Godot-Refactoring` 브랜치에 커밋으로 유지되므로 재적용하지 않는다. upstream Godot 버전을 올릴 때만 merge 충돌을 한 번 해결한다(2026-11-25 upstream master 시험 병합: 우리 패치 파일 중 충돌 8개, 이 중 아바타 쪽은 `main/main.cpp`, `scene/main/node.cpp`, `scene/main/scene_tree.cpp`).
+- 패치는 포크 `Forge-Refactoring` 브랜치에 커밋으로 유지되므로 재적용하지 않는다. upstream Godot 버전을 올릴 때만 merge 충돌을 한 번 해결한다(2026-11-25 upstream master 시험 병합: 우리 패치 파일 중 충돌 8개, 이 중 아바타 쪽은 `main/main.cpp`, `scene/main/node.cpp`, `scene/main/scene_tree.cpp`).
 
 ## 제거 조건
 

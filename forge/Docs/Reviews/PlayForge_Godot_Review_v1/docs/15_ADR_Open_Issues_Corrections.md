@@ -9,7 +9,7 @@
 | ADR-G01 | Godot를 실행 엔진 후보로, 웹 플랫폼은 유지 | 핵심 가치에 집중 | 검토 제안 |
 | ADR-G02 | E1 기본·E2 승인·E3 기본 금지 | 업그레이드 비용 통제 | 채택 심사 필요 |
 | ADR-G03 | PlayForge Source가 유일한 편집 원본 | 양방향 동기화 제거 | 기존 원칙 유지 |
-| ADR-G04 | ~~Lua 5.4 유지~~ → **철회(2026-11-25): Lua 미지원, GDScript 기본** ([SSOT.md](../../../../../docs/godot-refactoring/SSOT.md) §5 D1) | 사용자 결정 | 철회 |
+| ADR-G04 | ~~Lua 5.4 유지~~ → **철회(2026-11-25): Lua 미지원, GDScript 기본** ([SSOT.md](../../../../../docs/forge-refactoring/SSOT.md) §5 D1) | 사용자 결정 | 철회 |
 | ADR-G05 | RHI·렌더 루프는 Godot 소유 | 자체 Renderer 중복 제거 | 기존 수단 조정 승인 필요 |
 | ADR-G06 | 웹과 네이티브 Capability 분리 | WebGL 2와 Forward+/Mobile 차이 | 검증 필요 |
 | ADR-G07 | Room별 프로세스부터 | 격리·Tick·전역 상태 위험 | 초기 운영 제안 |

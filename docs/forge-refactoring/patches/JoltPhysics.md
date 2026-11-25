@@ -1,8 +1,8 @@
 # 엔진 패치 기록: JoltPhysics (Jolt 성능 패치 + 로드맵 항목 12)
 
-- 관리 브랜치: godot-engine 포크 저장소(`D:/Github/godot-engine`)의 `Godot-Refactoring-JoltPhysics` (로컬 생성, 기준 `e7a83dd7` = 현재 pin). PlayHub 저장소에는 엔진 브랜치를 두지 않는다.
+- 관리 브랜치: godot-engine 포크 저장소(`D:/Github/godot-engine`)의 `Forge-Refactoring-JoltPhysics` (로컬 생성, 기준 `e7a83dd7` = 현재 pin). PlayHub 저장소에는 엔진 브랜치를 두지 않는다.
 - 결정: 2026-11-25 사용자 결정 D4 — Jolt 변경·성능 개선과 로드맵 12(물리 수동 스텝·상태 복구·조인트 안정성)를 이 브랜치로 통합 ([SSOT.md](../SSOT.md) §5)
-- 포크 이력이 직선이므로 이 브랜치는 아바타 패치 3건(`Godot-Refactoring-ForgeAvatar`) 위에 쌓여 있다.
+- 포크 이력이 직선이므로 이 브랜치는 아바타 패치 3건(`Forge-Refactoring-ForgeAvatar`) 위에 쌓여 있다.
 - 출처: 실험 브랜치 Forge-HavokPhysics의 Havok 대비 Jolt 벤치마크 결과 (`docs/havok/HAVOK_VS_JOLT_BENCHMARK.md`, origin 원격에만 있음)
 
 ## 패치 목록

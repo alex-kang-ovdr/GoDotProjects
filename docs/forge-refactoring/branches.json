@@ -145,7 +145,7 @@
   },
   {
     "id": "01",
-    "branch": "Godot-Refactoring-01-gpuRendering",
+    "branch": "Forge-Refactoring-01-gpuRendering",
     "engine": true,
     "note": "",
     "title": "GPU 주도 렌더링과 컬링",
@@ -169,7 +169,7 @@
   },
   {
     "id": "03",
-    "branch": "Godot-Refactoring-03-assetStreaming",
+    "branch": "Forge-Refactoring-03-assetStreaming",
     "engine": true,
     "note": "",
     "title": "텍스처 중심 자산 스트리밍",
@@ -181,7 +181,7 @@
   },
   {
     "id": "04",
-    "branch": "Godot-Refactoring-04-compositor",
+    "branch": "Forge-Refactoring-04-compositor",
     "engine": true,
     "note": "",
     "title": "Compositor·렌더 패스·셰이더 확장",
@@ -193,7 +193,7 @@
   },
   {
     "id": "05",
-    "branch": "Godot-Refactoring-05-giLightmap",
+    "branch": "Forge-Refactoring-05-giLightmap",
     "engine": true,
     "note": "",
     "title": "GI 품질·Lightmap 제작·HDDAGI 검증",
@@ -217,7 +217,7 @@
   },
   {
     "id": "12",
-    "branch": "Godot-Refactoring-JoltPhysics",
+    "branch": "Forge-Refactoring-JoltPhysics",
     "engine": true,
     "note": "Jolt 성능 패치 4건과 함께 관리. Forge-HavokPhysics와 capability 계약 공유",
     "title": "물리 수동 스텝·상태 복구·조인트 안정성",
@@ -265,7 +265,7 @@
   },
   {
     "id": "24",
-    "branch": "Godot-Refactoring",
+    "branch": "Forge-Refactoring",
     "engine": false,
     "note": "문서 전용 (코드 없음)",
     "title": "벤더 인증·유지보수 파트너십·재원",
@@ -277,7 +277,7 @@
   },
   {
     "id": "06",
-    "branch": "Godot-Refactoring-06-hwrt",
+    "branch": "Forge-Refactoring-06-hwrt",
     "engine": true,
     "note": "",
     "title": "하드웨어 레이트레이싱 통합·확장",
@@ -289,7 +289,7 @@
   },
   {
     "id": "07",
-    "branch": "Godot-Refactoring-07-deferred",
+    "branch": "Forge-Refactoring-07-deferred",
     "engine": true,
     "note": "",
     "title": "선택적 Deferred 렌더러 연구",
@@ -301,7 +301,7 @@
   },
   {
     "id": "19",
-    "branch": "Godot-Refactoring-19-webgpu",
+    "branch": "Forge-Refactoring-19-webgpu",
     "engine": true,
     "note": "",
     "title": "RenderingDevice 기반 WebGPU 백엔드",
@@ -313,7 +313,7 @@
   },
   {
     "id": "21",
-    "branch": "Godot-Refactoring-21-console",
+    "branch": "Forge-Refactoring-21-console",
     "engine": true,
     "note": "플랫폼 포팅 레이어",
     "title": "콘솔 포팅 경계·출시 준비·TCO",

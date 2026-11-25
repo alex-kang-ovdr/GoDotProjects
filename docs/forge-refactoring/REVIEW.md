@@ -2,7 +2,7 @@
 
 - 대상: [00_Development_Roadmap.md](00_Development_Roadmap.md), [90_Source_Coverage_and_Validation.md](90_Source_Coverage_and_Validation.md) (기준일 2026-11-24)
 - 원본 근거: 「유니티 대비 고도 엔진 개선방안.pdf」 SHA-256 `043d3c4d…6ce4784` — 90번 기록의 hash와 일치함을 확인
-- 검토: 2026-11-25, 최초 `PlayForge-Main` `26467dfc` 기준으로 대조한 뒤 트렁크 `PlayHub-Platform` `668e4b9d` 기준 `Godot-Refactoring` 브랜치로 옮김
+- 검토: 2026-11-25, 최초 `PlayForge-Main` `26467dfc` 기준으로 대조한 뒤 트렁크 `PlayHub-Platform` `668e4b9d` 기준 `Forge-Refactoring` 브랜치로 옮김
 - 관련 기존 검토: [docs/architecture/multiplayer-plan-review.md](../architecture/multiplayer-plan-review.md) (외부 멀티플레이 계획 v1 검토)
 
 ## 1. 총평
@@ -52,7 +52,7 @@
 트렁크에는 이미 엔진 정본이 있다: [tools/engine/engine-ssot.json](../../tools/engine/engine-ssot.json)(포크 `alex-kang-ovdr/godot-engine`, upstream base `4.7.2-stable` `ed1daf0`, 포크 pin `e7a83dd7`, release tag `playforge-4.7.2-e7a83dd7`, 6개 타깃별 SCons 프로필)과 검사기 `npm run check:engine-ssot`. 6개 타깃 중 `web-editor`만 포크로 전환됐고 나머지 5개(desktop-windows, web-template, cloudrun-worker, android-aar, ios-xcframework)는 `pending_fork_rebuild`다(파일 기준, 2026-11-25).
 
 - **로드맵 §7 EngineLock은 새로 만들지 않는다.** engine-ssot.json이 정본이고, 16(Forge-BuildExport)의 BuildManifest는 거기서 파생한다.
-- 엔진 변경 항목(Godot-Refactoring-*)의 패치는 포크 저장소에 커밋하고, 서브모듈 pin과 engine-ssot.json의 `pinnedForkCommit`을 함께 올린다(검사기가 불일치를 FAIL 처리).
+- 엔진 변경 항목(Forge-Refactoring-*)의 패치는 포크 저장소에 커밋하고, 서브모듈 pin과 engine-ssot.json의 `pinnedForkCommit`을 함께 올린다(검사기가 불일치를 FAIL 처리).
 - 서브모듈은 워크트리에서 초기화되지 않았다. 엔진 변경 브랜치 착수 시 체크아웃 승인이 필요하다.
 - 남은 5개 타깃의 포크 재빌드가 엔진 변경 항목보다 먼저다. 그 전에는 패치를 넣어도 데스크톱·서버·모바일 산출물에 반영되지 않는다.
 
@@ -66,10 +66,10 @@ PR #113429는 upstream master 병합이다. 우리 pin(4.7.2 기반 추정)에 �
 
 ## 4. 브랜치 운영 결정
 
-- 상위: `Godot-Refactoring` (기준 트렁크 `PlayHub-Platform`). 로드맵 SSOT·검토·착수 문서와 엔진 패치 큐를 관리한다. 통합은 사용자 요청 시에만 머지한다.
-- 엔진 변경 항목(01/03/04/05/06/07/12/19/20/21)과 기존 포크 패치(아바타·Jolt)는 godot-engine 포크 저장소의 `Godot-Refactoring-*` 브랜치에서 작업한다([SSOT.md](SSOT.md) §3). 엔진 무변경 항목은 영역별 Forge 계열 브랜치로 통합한다. 대상은 [README.md](README.md)·[branches.json](branches.json).
+- 상위: `Forge-Refactoring` (기준 트렁크 `PlayHub-Platform`). 로드맵 SSOT·검토·착수 문서와 엔진 패치 큐를 관리한다. 통합은 사용자 요청 시에만 머지한다.
+- 엔진 변경 항목(01/03/04/05/06/07/12/19/20/21)과 기존 포크 패치(아바타·Jolt)는 godot-engine 포크 저장소의 `Forge-Refactoring-*` 브랜치에서 작업한다([SSOT.md](SSOT.md) §3). 엔진 무변경 항목은 영역별 Forge 계열 브랜치로 통합한다. 대상은 [README.md](README.md)·[branches.json](branches.json).
 - 워크트리: 30개 동시 체크아웃(브랜치당 약 9,900 파일)은 대형 체크아웃에 해당하므로 **착수하는 브랜치만** `D:\Github\GoDotProjects-worktrees\` 아래에 만든다.
-- 소유권: 트렁크 AGENTS.md §2(새 브랜치는 같은 작업에서 등록)에 따라 `Godot-Refactoring`·`Forge-Profiling`·`Forge-BuildExport`·`Forge-Multiplayer`를 `owners.json`에 등록했다. 네 브랜치에 같은 등록 내용을 넣어 병합 시 충돌이 나지 않게 했다.
+- 소유권: 트렁크 AGENTS.md §2(새 브랜치는 같은 작업에서 등록)에 따라 `Forge-Refactoring`·`Forge-Profiling`·`Forge-BuildExport`·`Forge-Multiplayer`를 `owners.json`에 등록했다. 네 브랜치에 같은 등록 내용을 넣어 병합 시 충돌이 나지 않게 했다.
 
 ## 5. 결정 필요 사항
 
