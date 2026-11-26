@@ -17,6 +17,7 @@ const FIT_MARGIN := 38.0
 const INSET_MARGIN := 12.0
 
 var battle: Variant
+var show_cutaway := false
 var _camera_center := Vector2.ZERO
 var _zoom := 1.0
 var _camera_ready := false
@@ -342,7 +343,7 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			if dot.is_finite() and dot.x >= -3.0 and dot.y >= -3.0 and dot.x <= size.x + 3.0 and dot.y <= size.y + 3.0:
 				draw_circle(dot, 1.3, color)
 			continue
-		var orig_tex: Texture2D = AssetLoader.get_part_texture(id, "roof")
+		var orig_tex: Texture2D = AssetLoader.get_part_texture(id, "cutaway" if show_cutaway else "roof")
 		var border := PackedVector2Array(quad)
 		border.append(quad[0])
 		if orig_tex != null:
@@ -356,17 +357,27 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			var base_tint := Color(str(livery.tint))
 			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else base_tint
 			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
-			var turret_tex: Texture2D = AssetLoader.get_part_texture(id, "turret")
-			if turret_tex != null:
-				var p_dims := _part_screen_size(part, zoom)
-				var t_sz := Vector2(p_dims.y, p_dims.x) if (rot_q % 2 == 1) else p_dims
-				var local_t := float(part.get("turret_angle_local", float(rot_q - 1) * PI * 0.5))
-				var t_center := _center_of(quad)
-				draw_set_transform(t_center, float(ship.heading) + local_t + PI * 0.5, Vector2.ONE)
-				draw_texture_rect(turret_tex, Rect2(-t_sz * 0.5, t_sz), false, tint)
-				draw_set_transform(Vector2.ZERO)
-			var edge_col := Color(str(livery.trim)) if paint_id != "default" and not dead else color
-			draw_polyline(border, Color(edge_col, 0.55), 1.1, true)
+			if not show_cutaway:
+				var turret_tex: Texture2D = AssetLoader.get_part_texture(id, "turret")
+				if turret_tex != null:
+					var p_dims := _part_screen_size(part, zoom)
+					var t_sz := Vector2(p_dims.y, p_dims.x) if (rot_q % 2 == 1) else p_dims
+					var local_t := float(part.get("turret_angle_local", float(rot_q - 1) * PI * 0.5))
+					var t_center := _center_of(quad)
+					draw_set_transform(t_center, float(ship.heading) + local_t + PI * 0.5, Vector2.ONE)
+					draw_texture_rect(turret_tex, Rect2(-t_sz * 0.5, t_sz), false, tint)
+					draw_set_transform(Vector2.ZERO)
+			if not dead and float(part.hp) < float(part.max_hp) * 0.66:
+				var crack_tex: Texture2D = AssetLoader.get_sprite("damage_cracks")
+				var dmg_a := 0.58 if float(part.hp) < float(part.max_hp) * 0.33 else 0.28
+				if crack_tex != null:
+					draw_polygon(quad, PackedColorArray([Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a)]), uvs, crack_tex)
+			if paint_id != "default" and not dead:
+				draw_polyline(border, Color(str(livery.trim), 0.48), 1.1, true)
+			elif show_cutaway:
+				draw_polyline(border, Color("#1d3240", 0.55), 0.9, true)
+			else:
+				draw_polyline(border, Color("#0a131c", 0.22), 0.8, true)
 		else:
 			draw_colored_polygon(quad, color.darkened(0.56))
 			draw_polyline(border, color.darkened(0.08), 1.4, true)
@@ -385,6 +396,25 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			_draw_reticle(_center_of(quad), minf(_part_screen_size(part, zoom).x, _part_screen_size(part, zoom).y) * 0.72 + 8.0, AMBER)
 		if dead:
 			_draw_destroyed(quad)
+	if show_cutaway and zoom >= 2.2:
+		for member in ship.get("crew", []):
+			if not member.get("alive", true):
+				continue
+			var pos_grid: Vector2 = Vector2(member.get("pos", Vector2.ZERO)) + Vector2(0.5, 0.5)
+			var c_scr := _world_to_screen(_grid_world(ship, pos_grid), camera, zoom, viewport_center)
+			var role := str(member.get("role", "carrier"))
+			var carrying := role == "carrier" and int(member.get("cargo", 0)) > 0
+			var ctex: Texture2D = AssetLoader.get_sprite("crew_carry" if carrying else ("crew_operate" if role != "carrier" else "crew_walk"))
+			var csz := clampf(zoom * 0.52, 4.0, 18.0)
+			if ctex != null:
+				draw_texture_rect(ctex, Rect2(c_scr - Vector2(csz, csz) * 0.5, Vector2(csz, csz)), false, Color.WHITE)
+				if carrying:
+					var btex: Texture2D = AssetLoader.get_sprite("battery")
+					if btex != null:
+						var bsz := csz * 0.55
+						draw_texture_rect(btex, Rect2(c_scr - Vector2(bsz, bsz) * 0.5, Vector2(bsz, bsz)), false, Color.WHITE)
+			else:
+				draw_circle(c_scr, maxf(1.8, csz * 0.3), MINT if role == "carrier" else AMBER)
 
 
 func _draw_part_icon(ship: Dictionary, part: Dictionary, quad: PackedVector2Array, color: Color, zoom: float) -> void:
@@ -469,13 +499,25 @@ func _draw_thruster_plumes(ship: Dictionary, camera: Vector2, zoom: float, viewp
 			var p1 := _world_to_screen(tail_world, camera, zoom, viewport_center)
 			var bright := Color("#ecffff")
 			var hot := Color("#75d7ff") if ship == battle.player else Color("#ffb185")
-			if part.get("boost_active",false):
+			if part.get("overclocked", false):
+				hot = Color("#ff9840")
+			elif part.get("boost_active",false):
 				hot = Color("#ff8e59")
 			elif part.id.ends_with("rocket_nozzle"):
 				hot = Color("#c0a2ff")
-			draw_line(p0, p1, Color(hot, 0.35 * activation), maxf(3.0, zoom * 0.68 * activation), true)
-			draw_line(p0, p0.lerp(p1, 0.72), hot.lightened(0.12), maxf(1.5, zoom * 0.24 * activation), true)
-			draw_line(p0, p0.lerp(p1, 0.28), bright, maxf(1.0, zoom * 0.11 * activation), true)
+			var flame_tex: Texture2D = AssetLoader.get_sprite("flame")
+			if flame_tex != null:
+				var f_len := maxf(8.0, p0.distance_to(p1) * (1.18 + 0.14 * sin(float(battle.elapsed) * 32.0 + float(part.uid))))
+				var f_wid := maxf(4.0, zoom * 0.85 * activation)
+				var f_mid := p0.lerp(p1, 0.52)
+				draw_set_transform(f_mid, exhaust_dir.angle() + PI * 0.5, Vector2.ONE)
+				draw_texture_rect(flame_tex, Rect2(-Vector2(f_wid * 0.5, f_len * 0.5), Vector2(f_wid, f_len)), false, Color(hot, 0.82 * activation))
+				draw_texture_rect(flame_tex, Rect2(-Vector2(f_wid * 0.28, f_len * 0.35), Vector2(f_wid * 0.56, f_len * 0.7)), false, Color(bright, 0.85 * activation))
+				draw_set_transform(Vector2.ZERO)
+			else:
+				draw_line(p0, p1, Color(hot, 0.35 * activation), maxf(3.0, zoom * 0.68 * activation), true)
+				draw_line(p0, p0.lerp(p1, 0.72), hot.lightened(0.12), maxf(1.5, zoom * 0.24 * activation), true)
+				draw_line(p0, p0.lerp(p1, 0.28), bright, maxf(1.0, zoom * 0.11 * activation), true)
 
 
 func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2, tint: Color) -> void:
@@ -526,14 +568,19 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 
 
 func _draw_fires(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	var fframe := int(floor(float(battle.elapsed) * 12.0)) % 4
+	var ftex: Texture2D = AssetLoader.get_sprite("fire_%d" % fframe)
 	for part in ship.parts.values():
 		var f := float(part.get("fire", 0.0))
 		if f <= 0.05 or float(part.get("hp", 0.0)) <= 0.0:
 			continue
 		var center := _world_to_screen(_part_world(ship, int(part.uid)), camera, zoom, viewport_center)
-		var r := maxf(3.0, minf(part.size.x, part.size.y) * zoom * (0.28 + 0.18 * f))
-		draw_circle(center, r, Color("#ff6a2b", 0.55 * f))
-		draw_circle(center, r * 0.5, Color("#ffe066", 0.85 * f))
+		var r := maxf(4.0, minf(part.size.x, part.size.y) * zoom * (0.45 + 0.25 * f))
+		if ftex != null:
+			draw_texture_rect(ftex, Rect2(center - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color(1.0, 0.92, 0.78, clampf(0.55 + 0.45 * f, 0.0, 1.0)))
+		else:
+			draw_circle(center, r * 0.7, Color("#ff6a2b", 0.55 * f))
+			draw_circle(center, r * 0.35, Color("#ffe066", 0.85 * f))
 
 
 func _draw_pd_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -820,6 +867,15 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 			else:
 				draw_circle(pos, r * 0.45, Color("#ffae52", alpha * 0.55))
 				draw_arc(pos, r, 0.0, TAU, 24, Color("#ff7354", alpha * 0.9), maxf(2.0, zoom * 0.35), true)
+			var dtex: Texture2D = AssetLoader.get_sprite("debris")
+			if dtex != null:
+				var dsz := maxf(5.0, zoom * 0.95)
+				for di in 4:
+					var dang := float(int(ev.get("uid", 1)) * 17 + di * 90) * 0.01745 + t * 1.4
+					var dpos := pos + Vector2.from_angle(dang) * (r * (0.55 + 0.65 * t))
+					draw_set_transform(dpos, dang * 2.4, Vector2.ONE)
+					draw_texture_rect(dtex, Rect2(-Vector2(dsz, dsz) * 0.5, Vector2(dsz, dsz)), false, Color(0.85, 0.82, 0.78, alpha * 0.85))
+				draw_set_transform(Vector2.ZERO)
 		elif kind == "shield_down":
 			var r := maxf(10.0, (4.0 + 10.0 * t) * zoom)
 			draw_arc(pos, r, 0.0, TAU, 28, Color("#7ef2ff", alpha * 0.95), maxf(2.4, zoom * 0.4), true)

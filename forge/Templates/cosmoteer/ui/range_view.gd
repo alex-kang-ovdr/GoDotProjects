@@ -1,5 +1,6 @@
 extends Control
 
+const AssetLoader := preload("res://sim/asset_loader.gd")
 const INK := Color("#0c1822")
 const GRID := Color("#1c2c38")
 const STEEL := Color("#57717c")
@@ -40,27 +41,49 @@ func _draw() -> void:
 		for k in range(7):
 			draw_line(Vector2(162+k*11,y+2),Vector2(168+k*11,y+18),STEEL,2)
 	draw_rect(Rect2(83, 141, 81, 84), Color("#244946"))
+	var rtex: Texture2D = AssetLoader.get_part_texture("cosmoteer.reactor_small", "cutaway")
+	if rtex != null:
+		draw_texture_rect(rtex, Rect2(83, 141, 81, 84), false, Color.WHITE)
 	draw_rect(Rect2(83, 141, 81, 84), MINT, false, 1)
 	var center := Vector2(123, 183)
 	draw_arc(center, 29, 0, TAU, 48, MINT.darkened(.45), 4, true)
 	draw_arc(center, 29, -PI/2, -PI/2 + TAU*float(sim.reactor_energy)/maxf(1,sim.reactor_capacity), 48, MINT, 3, true)
-	draw_circle(center, 17, Color("#42675e"), true, -1, true)
-	draw_circle(center, 8, MINT, true, -1, true)
+	if rtex == null:
+		draw_circle(center, 17, Color("#42675e"), true, -1, true)
+		draw_circle(center, 8, MINT, true, -1, true)
 	draw_rect(Rect2(164, 170, 132, 28), Color("#17242b"))
+	var ctex_cor: Texture2D = AssetLoader.get_part_texture("cosmoteer.corridor", "cutaway")
+	if ctex_cor != null:
+		for cx in range(164, 290, 28):
+			draw_texture_rect(ctex_cor, Rect2(cx, 170, 28, 28), false, Color(0.9, 0.95, 1.0, 0.85))
 	draw_dashed_line(Vector2(167,184),Vector2(294,184),STEEL,1,5)
 	var gate_color := MINT if sim.route_open else RED
 	draw_rect(Rect2(225, 160, 5, 12 if sim.route_open else 46), gate_color)
 	draw_rect(Rect2(225, 196, 5, 10), gate_color)
 	draw_rect(Rect2(297, 157, 56, 54), Color("#4e4139"))
-	draw_rect(Rect2(297, 157, 56, 54), AMBER, false, 1)
-	draw_circle(Vector2(325,184),16,Color("#9a7b60"),true,-1,true)
-	draw_rect(Rect2(325,176,60,16),STEEL)
-	draw_rect(Rect2(338,180,56,8),AMBER.darkened(.18))
+	var ltex: Texture2D = AssetLoader.get_part_texture("cosmoteer.laser_blaster_small", "cutaway")
+	if ltex != null:
+		draw_set_transform(Vector2(342, 184), PI * 0.5, Vector2.ONE)
+		draw_texture_rect(ltex, Rect2(-22, -46, 44, 92), false, Color.WHITE)
+		draw_set_transform((size - design * scale_factor) / 2, 0, Vector2.ONE * scale_factor)
+	else:
+		draw_rect(Rect2(297, 157, 56, 54), AMBER, false, 1)
+		draw_circle(Vector2(325,184),16,Color("#9a7b60"),true,-1,true)
+		draw_rect(Rect2(325,176,60,16),STEEL)
+		draw_rect(Rect2(338,180,56,8),AMBER.darkened(.18))
 	draw_circle(Vector2(317,207),4,MINT if sim.gunner_active else RED)
 	var carrier := Vector2(162 + float(sim.carrier_position)*135,184)
-	draw_circle(carrier,7,Color("#eef6ef"),true,-1,true)
-	if sim.cargo > 0:
-		draw_rect(Rect2(carrier + Vector2(-4,-4), Vector2(8,8)), MINT.darkened(.25))
+	var crtex: Texture2D = AssetLoader.get_sprite("crew_carry" if sim.cargo > 0 else "crew_walk")
+	if crtex != null:
+		draw_texture_rect(crtex, Rect2(carrier - Vector2(12, 12), Vector2(24, 24)), false, Color.WHITE)
+		if sim.cargo > 0:
+			var btex: Texture2D = AssetLoader.get_sprite("battery")
+			if btex != null:
+				draw_texture_rect(btex, Rect2(carrier - Vector2(7, 7), Vector2(14, 14)), false, Color.WHITE)
+	else:
+		draw_circle(carrier,7,Color("#eef6ef"),true,-1,true)
+		if sim.cargo > 0:
+			draw_rect(Rect2(carrier + Vector2(-4,-4), Vector2(8,8)), MINT.darkened(.25))
 	_callout(Vector2(122,140),Vector2(122,73),"소형 반응로",MINT)
 	_callout(Vector2(327,154),Vector2(327,82),"소형 레이저",AMBER)
 	_callout(Vector2(224,205),Vector2(224,312),"보급 통로",LABEL)

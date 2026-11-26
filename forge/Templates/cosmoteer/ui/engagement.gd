@@ -38,6 +38,7 @@ var cutaway: Control
 var flight_page := HBoxContainer.new()
 var flight_view
 var view_button: Button
+var cutaway_toggle_button: Button
 var flight_readout: Label
 var boost_button: Button
 var propulsion_readout: Label
@@ -80,6 +81,9 @@ func build(host) -> void:
 	command_button = lab.button("명령: 수동",_cycle_command)
 	command_button.focus_mode = Control.FOCUS_NONE
 	header.add_child(command_button)
+	cutaway_toggle_button = lab.button("내부 투시",_toggle_space_cutaway)
+	cutaway_toggle_button.focus_mode = Control.FOCUS_NONE
+	header.add_child(cutaway_toggle_button)
 	view_button = lab.button("함선 내부",_switch_view)
 	header.add_child(view_button)
 	pause_button = lab.button("일시 정지",_pause)
@@ -244,6 +248,13 @@ func _cycle_command() -> void:
 	var idx := (order.find(battle.player_command) + 1) % order.size()
 	battle.set_player_command(order[idx])
 	_refresh()
+
+func _toggle_space_cutaway() -> void:
+	if flight_view == null:
+		return
+	flight_view.show_cutaway = not flight_view.show_cutaway
+	cutaway_toggle_button.text = "외장 보기" if flight_view.show_cutaway else "내부 투시"
+	flight_view.queue_redraw()
 
 func _play_new_sfx() -> void:
 	if sfx == null or battle == null:

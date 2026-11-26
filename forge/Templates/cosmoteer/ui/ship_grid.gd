@@ -221,11 +221,22 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 			draw_line(Vector2(rect.end.x - 4, rect.position.y + 4), Vector2(rect.position.x + 4, rect.end.y - 4), RED, maxf(1.5, minf(cell_size.x, cell_size.y) * 0.05))
 		elif part.get("thermal_trip", false):
 			draw_rect(rect.grow(-2), RED, false, 2)
+		if not dead and float(part.get("hp", 1.0)) < float(part.get("max_hp", 1.0)) * 0.66:
+			var crack_tex: Texture2D = AssetLoader.get_sprite("damage_cracks")
+			var dmg_alpha := 0.55 if float(part.get("hp", 1.0)) < float(part.get("max_hp", 1.0)) * 0.33 else 0.28
+			if crack_tex != null:
+				draw_texture_rect(crack_tex, rect, false, Color(0.15, 0.12, 0.10, dmg_alpha))
 		if not dead and float(part.get("fire", 0.0)) > 0.05:
 			var f := float(part.get("fire", 0.0))
 			var inset_f := minf(cell_size.x, cell_size.y)
-			draw_circle(rect.get_center(), inset_f * (0.22 + 0.14 * f), Color("#ff6a2b", 0.65 * f))
-			draw_circle(rect.get_center(), inset_f * 0.14, Color("#ffe066", 0.9 * f))
+			var fframe := int(Time.get_ticks_msec() / 90) % 4
+			var ftex: Texture2D = AssetLoader.get_sprite("fire_%d" % fframe)
+			if ftex != null:
+				var fsz := inset_f * (0.65 + 0.35 * f)
+				draw_texture_rect(ftex, Rect2(rect.get_center() - Vector2(fsz, fsz) * 0.5, Vector2(fsz, fsz)), false, Color(1.0, 0.92, 0.78, clampf(0.55 + 0.45 * f, 0.0, 1.0)))
+			else:
+				draw_circle(rect.get_center(), inset_f * (0.22 + 0.14 * f), Color("#ff6a2b", 0.65 * f))
+				draw_circle(rect.get_center(), inset_f * 0.14, Color("#ffe066", 0.9 * f))
 		return
 	draw_rect(rect, color.darkened(0.2), false, maxf(1.0, cell_size.x * 0.035))
 	var center := rect.get_center()

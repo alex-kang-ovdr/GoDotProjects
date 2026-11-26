@@ -20,9 +20,10 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from PIL import Image
+    from PIL import Image, ImageChops
 except ImportError:
     Image = None
+    ImageChops = None
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SOURCE = Path(r"C:\Temp\Cosmoteer")
@@ -103,11 +104,14 @@ def build_part_sprite_map(data_root: Path) -> dict[str, dict[str, Any]]:
                 if cand.is_dir():
                     pdir = cand
         rel_dir = pdir.relative_to(data_root).as_posix() if pdir.is_dir() else ""
-        floor = pick_best_png(pdir, ["floor.png", "floor_on.png", "armor.png", "structure.png"])
+        floor = pick_best_png(pdir, ["floor.png", "floor_on1.png", "floor_on.png", "armor.png", "structure.png"])
         roof = pick_best_png(pdir, ["roof.png", "roof_lights.png", "armor.png", "structure.png"])
         walls = pick_best_png(pdir, ["walls.png"])
-        doodad = pick_best_png(pdir, ["doodads_on1.png", "doodads_on_a1.png", "doodads_on.png", "doodad_external.png"])
-        turret = pick_best_png(pdir, ["turret.png", "barrel.png", "barrel1.png", "weapon.png", "emitter.png", "nozzle.png"])
+        ext_walls = pick_best_png(pdir, ["external_walls.png"])
+        doodad = pick_best_png(pdir, ["reactor.png", "doodads_on1.png", "doodads_on_a1.png", "doodads_on.png", "doodad_external.png"])
+        glow = pick_best_png(pdir, ["reactor_core_on.png", "lights1.png", "lights.png", "OClights.png"])
+        roof_glow = pick_best_png(pdir, ["roof_glows.png", "doodad_external.png"])
+        turret = pick_best_png(pdir, ["turret_on.png", "turret.png", "barrel.png", "barrel1.png", "weapon.png", "emitter.png", "nozzle.png"])
         blueprint = pick_best_png(pdir, ["blueprints.png", "blueprints_he.png", "blueprint.png"])
         # Fallback to first non-normal PNG if still none
         if not any([floor, roof, blueprint]) and pdir.is_dir():
@@ -126,8 +130,14 @@ def build_part_sprite_map(data_root: Path) -> dict[str, dict[str, Any]]:
                 rec["roof"] = f"{rel_dir}/{roof}"
             if walls:
                 rec["walls"] = f"{rel_dir}/{walls}"
+            if ext_walls:
+                rec["ext_walls"] = f"{rel_dir}/{ext_walls}"
             if doodad:
                 rec["doodad"] = f"{rel_dir}/{doodad}"
+            if glow:
+                rec["glow"] = f"{rel_dir}/{glow}"
+            if roof_glow:
+                rec["roof_glow"] = f"{rel_dir}/{roof_glow}"
             if turret:
                 rec["turret"] = f"{rel_dir}/{turret}"
             if blueprint:
@@ -250,6 +260,14 @@ def _collect_extra_sprites(data_root: Path) -> list[tuple[str, Any]]:
         ("exp_med", "common_effects/particles/explosions/med_part_explode.png", (128, 128)),
         ("exp_big", "common_effects/particles/explosions/big_part_explode.png", (160, 160)),
         ("exp_spark", "common_effects/particles/explode_spark.png", (48, 48)),
+        ("fire_0", "statuses/fire/fire00.png", (64, 64)),
+        ("fire_1", "statuses/fire/fire04.png", (64, 64)),
+        ("fire_2", "statuses/fire/fire08.png", (64, 64)),
+        ("fire_3", "statuses/fire/fire12.png", (64, 64)),
+        ("debris", "common_effects/particles/debris.png", (64, 64)),
+        ("flame", "common_effects/particles/flame.png", (64, 96)),
+        ("damage_cracks", "common_effects/particles/noise_cracks.png", (96, 96)),
+        ("shield_energy", "ships/terran/shield_gen_small/shield_energy.png", (96, 96)),
     ]
     out: list[tuple[str, Any]] = []
     for key, rel, target_size in specs:
@@ -287,8 +305,27 @@ def _decode_cosmoteer_roof_mask(img: Any) -> Any:
     return out
 
 
-def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_dir: Path, cell_px: int = 48) -> dict[str, Any]:
-    """Build a composited HD RGBA sprite atlas (96 Terran parts + turrets + environment/crew/shots/explosions)."""
+def _additive_composite(base: Any, glow: Any) -> Any:
+    """Additive emissive blend matching Cosmoteer's GPU glow pass (preserves base alpha & avoids blackening)."""
+    g = glow.convert("RGBA")
+    if base.size != g.size:
+        g = g.resize(base.size, Image.Resampling.LANCZOS)
+    # Premultiply glow RGB by its own alpha so transparent areas add zero
+    br, bg, bb, ba = base.split()
+    gr, gg, gb, ga = g.split()
+    gr = ImageChops.multiply(gr, ga)
+    gg = ImageChops.multiply(gg, ga)
+    gb = ImageChops.multiply(gb, ga)
+    return Image.merge("RGBA", (
+        ImageChops.add(br, gr),
+        ImageChops.add(bg, gg),
+        ImageChops.add(bb, gb),
+        ba,
+    ))
+
+
+def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_dir: Path, cell_px: int = 44) -> dict[str, Any]:
+    """Build a composited HD RGBA sprite atlas (96 Terran parts + glows + turrets + environment/crew/shots/fire/debris)."""
     if Image is None:
         return {"generated": False, "reason": "Pillow not installed"}
 
@@ -306,10 +343,10 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
         w_cells, h_cells = int(rec["size"][0]), int(rec["size"][1])
         tw, th = w_cells * cell_px, h_cells * cell_px
 
-        # Interior/cutaway composite: floor -> walls -> doodad -> turret (fallback blueprint)
+        # Interior/cutaway composite: floor -> walls -> ext_walls -> doodad -> glow -> turret
         cutaway = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
         layered = False
-        for layer_key in ("floor", "walls", "doodad", "turret"):
+        for layer_key in ("floor", "walls", "ext_walls", "doodad", "glow", "turret"):
             rel = rec.get(layer_key)
             if not rel:
                 continue
@@ -317,9 +354,15 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
             if not p.is_file():
                 continue
             try:
-                img = Image.open(p).convert("RGBA").resize((tw, th), Image.Resampling.LANCZOS)
-                cutaway.alpha_composite(img)
-                layered = True
+                raw_img = Image.open(p)
+                if layer_key == "turret":
+                    raw_img = _decode_cosmoteer_roof_mask(raw_img)
+                img = raw_img.convert("RGBA").resize((tw, th), Image.Resampling.LANCZOS)
+                if layer_key == "glow" and layered:
+                    cutaway = _additive_composite(cutaway, img)
+                else:
+                    cutaway.alpha_composite(img)
+                    layered = True
             except Exception:
                 continue
         if not layered and rec.get("blueprint"):
@@ -334,12 +377,23 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
         if layered:
             tiles.append(("part", f"{pid}|cutaway", cutaway))
 
-        # Exterior/roof composite: decode Cosmoteer green hull-paint mask into clean painted warship steel
+        # Exterior/roof composite: decode Cosmoteer green hull-paint mask + exterior glow vents
         if rec.get("roof"):
             p = data_root / rec["roof"]
             if p.is_file():
                 try:
                     ext = _decode_cosmoteer_roof_mask(Image.open(p)).resize((tw, th), Image.Resampling.LANCZOS)
+                    for extra_k in ("ext_walls", "roof_glow"):
+                        erel = rec.get(extra_k)
+                        if not erel:
+                            continue
+                        ep = data_root / erel
+                        if ep.is_file():
+                            eimg = Image.open(ep).convert("RGBA").resize((tw, th), Image.Resampling.LANCZOS)
+                            if extra_k == "roof_glow":
+                                ext = _additive_composite(ext, eimg)
+                            else:
+                                ext.alpha_composite(eimg)
                     if rec.get("turret") and pid not in TURRETED_PARTS:
                         tp = data_root / rec["turret"]
                         if tp.is_file():
