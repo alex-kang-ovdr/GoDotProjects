@@ -115,8 +115,8 @@ test('Admin Backups UI renders Data Migration Snapshot panel with skip/overwrite
     await new Promise(resolve => { servedAdmin.close(resolve); servedAdmin.closeAllConnections(); });
     await app2.close();
     await delay(150);
-    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
-    fs.rmSync(tmpDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+    try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch {}
+    try { fs.rmSync(tmpDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch {}
   });
 
   const portFile = path.join(profile, 'DevToolsActivePort');

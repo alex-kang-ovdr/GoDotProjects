@@ -329,17 +329,19 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
     });
     assert.equal(spoofed.status, 401);
 
-    // Guest Hub session (no Google login) cannot access Forge.
+    // Guest Hub session connects directly to Forge with an isolated guest accountKey (16c3df18, 2026-11-23).
     const guest = f.newBrowser();
     await guest.hubApi('/api/session');
     assert.equal((await guest.hubApi('/api/play-sessions', { method: 'POST', body: { gameId: 'test-puzzle' } })).status, 201);
-    assert.equal(guest.cookieHeaderFor('/forge/OfficialGodot/'), '');
-    assert.equal((await guest.site('/forge/api/platform/projects')).status, 401);
-    // Even if guest manually replays poc_public_session cookie to /forge/*, Hub rejects it as GOOGLE_LOGIN_REQUIRED.
-    const guestApiCookie = guest.cookieHeaderFor('/api/session');
-    const guestReplay = await guest.site('/forge/api/platform/projects', { headers: { Cookie: guestApiCookie } });
-    assert.equal(guestReplay.status, 401);
-    assert.equal(guestReplay.data.error, 'GOOGLE_LOGIN_REQUIRED');
+    assert.match(guest.cookieHeaderFor('/forge/OfficialGodot/'), /\bpoc_forge_session=/);
+    const guestSession = await guest.site('/forge/api/session');
+    assert.equal(guestSession.status, 200);
+    assert.equal(guestSession.data.authenticated, true);
+    assert.equal(guestSession.data.displayName, '게스트');
+    assert.match(guestSession.data.accountKey, /^[a-f0-9]{64}$/);
+    const guestProjects = await guest.site('/forge/api/platform/projects');
+    assert.equal(guestProjects.status, 200);
+    assert.deepEqual(guestProjects.data.projects, []);
 
     // QA session cannot access Forge.
     const qa = f.newBrowser();

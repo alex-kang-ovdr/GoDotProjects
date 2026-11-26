@@ -10,6 +10,8 @@ against another process concurrently replacing parent directories.
 from __future__ import annotations
 
 from collections import Counter
+import base64
+import binascii
 from html.parser import HTMLParser
 from itertools import islice
 import json
@@ -182,7 +184,9 @@ class _AssetParser(HTMLParser):
         if tag == "link":
             rel = set((attributes.get("rel") or "").lower().split())
             if rel & {"stylesheet", "icon", "preload", "modulepreload", "manifest", "prefetch", "apple-touch-icon"}:
-                reference_attributes["link"] = ("href",)
+                if "href" in attributes:
+                    context = "link[icon]" if rel == {"icon"} else "link[href]"
+                    self.references.append((attributes["href"] or "", context))
         for attribute in reference_attributes.get(tag, ()):
             if attribute in attributes:
                 self.references.append((attributes[attribute] or "", f"{tag}[{attribute}]"))
@@ -200,11 +204,37 @@ class _AssetParser(HTMLParser):
                     self.references.append((parts[0], f"{tag}[srcset]"))
 
 
+SVG_INLINE_ICON_MAX_BYTES = 4 * 1024
+
+
+def _verify_inline_svg_icon(reference: str) -> None:
+    if len(reference) > SVG_INLINE_ICON_MAX_BYTES * 3:
+        raise ValueError("인라인 SVG 파비콘 크기 한도를 초과했습니다")
+    match = re.fullmatch(r"data:image/svg\+xml(;base64)?,(.+)", reference, re.I | re.S)
+    if not match:
+        raise ValueError(f"외부/절대 자산 URL 거부: {reference}")
+    is_base64, payload = bool(match.group(1)), match.group(2)
+    try:
+        if is_base64:
+            raw = base64.b64decode(payload, validate=True)
+            svg = raw.decode("utf-8")
+        else:
+            svg = unquote(payload, encoding="utf-8", errors="strict")
+    except (ValueError, UnicodeDecodeError, binascii.Error) as error:
+        raise ValueError(f"잘못된 인라인 SVG 파비콘 인코딩: {error}") from error
+    if len(svg.encode("utf-8")) > SVG_INLINE_ICON_MAX_BYTES:
+        raise ValueError("인라인 SVG 파비콘 본문 4 KiB 한도 초과")
+    _svg_profile_source(svg)
+
+
 def _asset_path(reference: str, html_relative: str, context: str) -> str | None:
     if (not reference or reference != reference.strip() or "\\" in reference
             or any(ord(char) < 32 for char in reference)):
         raise ValueError(f"비어 있거나 잘못된 자산 URL: {reference!r}")
     parsed = urlsplit(reference)
+    if parsed.scheme == "data" and context == "link[icon]":
+        _verify_inline_svg_icon(reference)
+        return None
     if parsed.scheme == "data" and context in ("img[src]", "video[poster]", "input[src]"):
         if re.match(r"data:image/(?:png|jpeg|gif|webp|avif);base64,", reference, re.I):
             return None
@@ -232,9 +262,8 @@ def _asset_path(reference: str, html_relative: str, context: str) -> str | None:
     return "/".join(parts)
 
 
-def _svg_profile(path: Path) -> str:
-    """A conservative static SVG authoring profile, not a browser sanitizer."""
-    source = _read(path, MAX_SVG_BYTES).decode("utf-8-sig")
+def _svg_profile_source(source: str) -> str:
+    """Validate an SVG string against the conservative static SVG authoring profile."""
     if re.search(r"<!\s*(?:DOCTYPE|ENTITY)\b|<\?\s*xml-stylesheet\b", source, re.I):
         raise ValueError("SVG의 DTD·entity·외부 stylesheet 선언은 허용하지 않습니다")
     try:
@@ -244,11 +273,14 @@ def _svg_profile(path: Path) -> str:
     namespace = "{http://www.w3.org/2000/svg}"
     if root.tag != namespace + "svg":
         raise ValueError("SVG 루트와 표준 SVG namespace가 필요합니다")
-    allowed_elements = {"svg", "g", "rect", "circle", "ellipse", "line", "polyline",
+    allowed_elements = {"svg", "g", "defs", "linearGradient", "radialGradient", "stop",
+                        "rect", "circle", "ellipse", "line", "polyline",
                         "polygon", "path", "text", "tspan", "title", "desc"}
     allowed_attributes = {
         "id", "width", "height", "viewBox", "version", "preserveAspectRatio",
         "x", "y", "x1", "y1", "x2", "y2", "dx", "dy", "cx", "cy", "r", "rx", "ry",
+        "fx", "fy", "fr", "offset", "stop-color", "stop-opacity",
+        "gradientUnits", "gradientTransform", "spreadMethod",
         "d", "points", "fill", "fill-opacity", "fill-rule", "opacity", "stroke",
         "stroke-width", "stroke-opacity", "stroke-linecap", "stroke-linejoin",
         "stroke-dasharray", "stroke-dashoffset", "stroke-miterlimit", "transform",
@@ -257,6 +289,8 @@ def _svg_profile(path: Path) -> str:
         "role", "aria-label", "aria-labelledby", "aria-describedby", "focusable",
         "textLength", "lengthAdjust", "vector-effect",
     }
+    defined_ids: set[str] = set()
+    referenced_ids: set[str] = set()
     pending, visited = [(root, 0)], 0
     while pending:
         element, depth = pending.pop()
@@ -266,15 +300,25 @@ def _svg_profile(path: Path) -> str:
         if (not isinstance(element.tag, str) or not element.tag.startswith(namespace)
                 or element.tag[len(namespace):] not in allowed_elements):
             raise ValueError(f"지원하지 않는 SVG 요소: {element.tag}")
+        elem_id = element.attrib.get("id")
+        if elem_id:
+            defined_ids.add(elem_id)
         for attribute, value in element.attrib.items():
             local_name = attribute.rsplit("}", 1)[-1]
             if local_name.lower().startswith("on"):
                 raise ValueError("SVG 이벤트 속성은 허용하지 않습니다")
             if attribute not in allowed_attributes:
                 raise ValueError(f"SVG 제한 프로필에서 지원하지 않는 속성: {attribute}")
-            if "\\" in value or re.search(r"url\s*\(|(?:javascript|vbscript)\s*:|@import", value, re.I):
+            if "\\" in value or re.search(r"(?:javascript|vbscript)\s*:|@import", value, re.I):
                 raise ValueError("SVG의 url()·활성 URL·외부 스타일 참조는 허용하지 않습니다")
+            if re.search(r"url\s*\(", value, re.I):
+                frag = re.fullmatch(r"url\(#([A-Za-z_][A-Za-z0-9_.-]*)\)", value.strip())
+                if attribute not in ("fill", "stroke") or not frag:
+                    raise ValueError("SVG의 url()·활성 URL·외부 스타일 참조는 허용하지 않습니다")
+                referenced_ids.add(frag.group(1))
         pending.extend((child, depth + 1) for child in element)
+    if referenced_ids - defined_ids:
+        raise ValueError("SVG의 url()·활성 URL·외부 스타일 참조는 허용하지 않습니다")
     size_ok = True
     for key in ("width", "height"):
         value = root.attrib.get(key, "")
@@ -295,6 +339,12 @@ def _svg_profile(path: Path) -> str:
     if not size_ok and not viewbox_ok:
         raise ValueError("SVG에 양수 width/height 또는 유효한 viewBox가 필요합니다")
     return "image/svg+xml"
+
+
+def _svg_profile(path: Path) -> str:
+    """A conservative static SVG authoring profile, not a browser sanitizer."""
+    source = _read(path, MAX_SVG_BYTES).decode("utf-8-sig")
+    return _svg_profile_source(source)
 
 
 def _image_header(path: Path) -> str:
@@ -349,8 +399,9 @@ def _metadata_issues(manifest: dict) -> list[str]:
         for language, text in translations.items():
             if not isinstance(text, str):
                 continue
-            if len(text.strip()) < 20:
-                issues.append(f"{field}.{language}: 의미 있는 본문이 20자 미만입니다")
+            min_len = 10 if language in ("zh-CN", "ja") else 20
+            if len(text.strip()) < min_len:
+                issues.append(f"{field}.{language}: 의미 있는 본문이 {min_len}자 미만입니다")
             if re.search(r"<\s*(?:script|iframe|object|embed|style)\b|(?:javascript|vbscript)\s*:", text, re.I):
                 issues.append(f"{field}.{language}: 허용하지 않는 활성 콘텐츠 표기")
     return issues[:20]

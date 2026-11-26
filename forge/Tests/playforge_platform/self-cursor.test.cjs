@@ -58,12 +58,17 @@ test('project participants see each other activity but not their own echo; guide
       body: editorStub,
     }));
   }
-  await pages[0].goto(origin + '/OfficialGodot/', { waitUntil: 'domcontentloaded' });
+  const created = await fetch(`${origin}/api/platform/projects`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Self Cursor Test', template: 'playground3d' }),
+  }).then(r => r.json());
+  const projectId = created?.project?.id;
+  assert.ok(projectId, 'starter project should be created via platform API');
+  await pages[0].goto(`${origin}/OfficialGodot/?project=${encodeURIComponent(projectId)}`, { waitUntil: 'domcontentloaded' });
   await pages[0].locator('#workspace').waitFor({ state: 'visible' });
   await pages[0].frameLocator('#editor').locator('#editor').waitFor({ state: 'visible' });
   await pages[0].waitForFunction(() => document.querySelector('#editor')?.dataset.ready === 'true');
-  const projectId = new URL(pages[0].url()).searchParams.get('project');
-  assert.ok(projectId, 'first browser page should open the starter project');
   await pages[1].goto(`${origin}/OfficialGodot/?project=${encodeURIComponent(projectId)}`, { waitUntil: 'domcontentloaded' });
   await pages[1].locator('#workspace').waitFor({ state: 'visible' });
   await pages[1].frameLocator('#editor').locator('#editor').waitFor({ state: 'visible' });

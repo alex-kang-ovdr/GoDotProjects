@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -9,12 +10,15 @@ const http = require('node:http');
 const { PlatformStore } = require('../../Tools/platform-store.cjs');
 const { createPlatformApi } = require('../../Tools/platform-api.cjs');
 
+const buildIdFor = (projectId, revision) =>
+  crypto.createHash('sha256').update(`build-${projectId}-${revision}`).digest('hex').slice(0, 16);
+
 async function setup(t, options = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-platform-'));
   const store = new PlatformStore(root);
   const api = createPlatformApi(store, {
     buildMode: options.buildMode,
-    validateBuild: async (buildId, projectId, revision) => buildId === `build-${projectId}-${revision}`
+    validateBuild: async (buildId, projectId, revision) => buildId === buildIdFor(projectId, revision)
       ? { buildId, previewUrl: `/api/builds/${buildId}`, downloadUrl: `/api/builds/${buildId}/files/game.zip` } : null,
   });
   const server = http.createServer(async (req, res) => {
@@ -63,9 +67,10 @@ test('history restore creates a new revision and releases remain immutable snaps
   const base = created.body;
   const rev2 = await request(`/api/platform/projects/${id}`, 'PUT', { baseRevision: base.revision,
     files: base.files.map(file => file.path === 'scenes/main.tscn' ? { ...file, content: '[gd_scene format=3]\n[node name="A" type="Node3D"]\n' } : file) });
-  const release = await request(`/api/platform/projects/${id}/releases`, 'POST', { revision: rev2.body.revision, label: 'First playtest', buildId: `build-${id}-${rev2.body.revision}` });
+  const rev2BuildId = buildIdFor(id, rev2.body.revision);
+  const release = await request(`/api/platform/projects/${id}/releases`, 'POST', { revision: rev2.body.revision, label: 'First playtest', buildId: rev2BuildId });
   assert.equal(release.status, 201, JSON.stringify(release.body));
-  assert.equal(release.body.release.previewUrl, `/api/builds/build-${id}-2`);
+  assert.equal(release.body.release.previewUrl, `/api/builds/${rev2BuildId}`);
 
   const rev3 = await request(`/api/platform/projects/${id}`, 'PUT', { baseRevision: rev2.body.revision,
     files: rev2.body.files.map(file => file.path === 'scenes/main.tscn' ? { ...file, content: '[gd_scene format=3]\n[node name="B" type="Node3D"]\n' } : file) });
@@ -80,7 +85,7 @@ test('history restore creates a new revision and releases remain immutable snaps
   const releases = await request(`/api/platform/projects/${id}/releases`);
   assert.equal(releases.body.releases[0].revision, 2);
   assert.equal(releases.body.releases[0].id, release.body.release.id);
-  assert.equal(releases.body.releases[0].buildId, `build-${id}-2`);
+  assert.equal(releases.body.releases[0].buildId, rev2BuildId);
   assert.equal((await request(`/api/platform/projects/${id}/releases`, 'POST', { buildId: 'wrong' })).status, 409);
   const rolledBack = await request(`/api/platform/projects/${id}/releases/${release.body.release.id}/rollback`, 'POST', { baseRevision: 4 });
   assert.equal(rolledBack.body.revision, 5);

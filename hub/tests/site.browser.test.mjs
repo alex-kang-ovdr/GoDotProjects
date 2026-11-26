@@ -152,6 +152,6 @@ test('site navigation, filters, OAuth return, creator access and mobile layout',
   } finally {
     socket?.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
     await new Promise(resolve => { chrome.once('exit', resolve); if (chrome.exitCode !== null || !chrome.kill()) resolve(); });
-    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 });
+    try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch {}
   }
 });

@@ -59,6 +59,28 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Cache Linux Godot 4.7.2 Headless Binary
+        id: cache_godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/playhub-godot-4.7.2
+          key: linux-godot-4.7.2-stable-x86_64-v1
+
+      - name: Install Linux Godot 4.7.2 Headless Binary for Forge Tests
+        run: |
+          set -euo pipefail
+          GODOT_CACHE="${HOME}/.cache/playhub-godot-4.7.2"
+          GODOT_EXE="${GODOT_CACHE}/Godot_v4.7.2-stable_linux.x86_64"
+          if [ ! -x "${GODOT_EXE}" ]; then
+            mkdir -p "${GODOT_CACHE}"
+            curl -fsSL "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip" -o /tmp/godot-4.7.2-linux.zip
+            unzip -qo /tmp/godot-4.7.2-linux.zip -d "${GODOT_CACHE}"
+            chmod +x "${GODOT_EXE}"
+            rm -f /tmp/godot-4.7.2-linux.zip
+          fi
+          echo "GODOT_BIN=${GODOT_EXE}" >> "${GITHUB_ENV}"
+          "${GODOT_EXE}" --version
+
       - name: Install Hub, Forge & Python QA Dependencies
         run: |
           set -euo pipefail
@@ -159,7 +181,7 @@ jobs:
           OUT_DIR: ${{ steps.daily_ci.outputs.out_dir }}
         run: |
           set -euo pipefail
-          if gcloud storage buckets describe "gs://${ARCHIVE_BUCKET}" --project="${GCP_PROJECT}" >/dev/null 2>&1; then
+          if gcloud storage ls "gs://${ARCHIVE_BUCKET}" --project="${GCP_PROJECT}" >/dev/null 2>&1; then
             DEST="gs://${ARCHIVE_BUCKET}/daily-builds/${RUN_ID}"
             gcloud storage rsync -r "${OUT_DIR}" "${DEST}"
             gcloud storage cp "artifacts/daily-builds/latest-cloud.json" "gs://${ARCHIVE_BUCKET}/daily-builds/latest-cloud.json"

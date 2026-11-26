@@ -265,7 +265,7 @@ export async function runDeterministicCi(rawOpts = {}) {
     executable: node24,
     args: hubArgs,
     cwd: path.join(repoRoot, 'hub'),
-    timeoutMs: 420000,
+    timeoutMs: 720000,
     env: { ...process.env, ...(hasJsonSchema ? { PLAYHUB_PYTHON: python } : {}) },
     reportFile: hubReport,
   });

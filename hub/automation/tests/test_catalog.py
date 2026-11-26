@@ -169,7 +169,36 @@ class CatalogChecksTest(unittest.TestCase):
         self.write(self.manifest_path, manifest)
 
     def test_safe_svg_profile(self):
-        self.use_svg('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><title>Fixture</title><rect width="640" height="360" fill="#123456"/><circle cx="40" cy="40" r="10"/><text x="20" y="100" font-family="sans-serif">Fixture</text></svg>')
+        self.use_svg('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><title>Fixture</title><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#102a24"/><stop offset="100%" stop-color="#1f5747"/></linearGradient></defs><rect width="640" height="360" fill="url(#bg)"/><circle cx="40" cy="40" r="10"/><text x="20" y="100" font-family="sans-serif">Fixture</text></svg>')
+        self.assertFalse([r for r in self.run_checks() if r["status"] == "fail"])
+
+    def test_svg_unresolved_local_gradient_fragment_rejected(self):
+        self.use_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="url(#missing)"/></svg>')
+        self.assert_fails("MEDIA")
+
+    def test_inline_svg_favicon_allowed_and_active_svg_rejected(self):
+        safe_icon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23102a24'/%3E%3C/svg%3E"
+        (self.game / "index.html").write_text(f'<link rel="icon" href="{safe_icon}"><script src="main.js"></script>', encoding="utf-8")
+        self.assertFalse([r for r in self.run_checks() if r["status"] == "fail"])
+
+        evil_icon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/svg%3E"
+        (self.game / "index.html").write_text(f'<link rel="icon" href="{evil_icon}"><script src="main.js"></script>', encoding="utf-8")
+        self.assert_fails("ASSETS")
+
+        (self.game / "index.html").write_text(f'<link rel="stylesheet" href="{safe_icon}"><script src="main.js"></script>', encoding="utf-8")
+        self.assert_fails("ASSETS")
+
+    def test_extended_l10n_manifest_and_cjk_rules_length(self):
+        manifest = self.read(self.manifest_path)
+        manifest["referenceGame"] = "PlayForge Template (demo)"
+        manifest["deployMode"] = "singleplay"
+        manifest["supportedLocales"] = ["ko", "en", "ja", "zh-CN", "fr", "es", "pt-BR", "hi"]
+        manifest["rules"] = {
+            "ko": "규칙 본문은 한국어로 최소 스무 글자 이상 작성합니다.",
+            "en": "Game rules in English must be at least twenty characters.",
+            "zh-CN": "指挥舰船，规划炮击与航线。",
+        }
+        self.write(self.manifest_path, manifest)
         self.assertFalse([r for r in self.run_checks() if r["status"] == "fail"])
 
     def test_svg_active_content_and_external_references(self):

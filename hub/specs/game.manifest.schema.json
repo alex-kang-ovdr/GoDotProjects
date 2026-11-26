@@ -46,12 +46,30 @@
       "format": "date",
       "description": "한국 시간 기준으로 이 통합판을 반영한 날짜."
     },
+    "deployMode": {
+      "enum": ["singleplay", "mo", "mmo"],
+      "description": "선택 배포 실행 모드(싱글플레이·MO·MMO)."
+    },
+    "referenceGame": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "선택 레퍼런스 또는 템플릿 출처 표기."
+    },
+    "supportedLocales": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "enum": ["ko", "en", "ja", "zh-CN", "fr", "es", "pt-BR", "hi"] },
+      "description": "선택 지원 로케일 목록."
+    },
     "tags": {
       "type": "array",
       "minItems": 1,
       "maxItems": 10,
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/identifier" }
+      "items": { "$ref": "#/$defs/tagIdentifier" }
     },
     "controls": {
       "type": "array",
@@ -146,13 +164,25 @@
       "maxLength": 64,
       "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
     },
+    "tagIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
     "localizedTitle": {
       "type": "object",
       "additionalProperties": false,
       "required": ["ko", "en"],
       "properties": {
         "ko": { "type": "string", "minLength": 1, "maxLength": 100 },
-        "en": { "type": "string", "minLength": 1, "maxLength": 100 }
+        "en": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "ja": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "zh-CN": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "fr": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "es": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "pt-BR": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "hi": { "type": "string", "minLength": 1, "maxLength": 100 }
       }
     },
     "localizedSummary": {
@@ -161,7 +191,13 @@
       "required": ["ko", "en"],
       "properties": {
         "ko": { "type": "string", "minLength": 10, "maxLength": 600 },
-        "en": { "type": "string", "minLength": 10, "maxLength": 600 }
+        "en": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "ja": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "zh-CN": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "fr": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "es": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "pt-BR": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "hi": { "type": "string", "minLength": 10, "maxLength": 600 }
       }
     },
     "localizedBody": {
@@ -170,7 +206,13 @@
       "required": ["ko", "en"],
       "properties": {
         "ko": { "type": "string", "minLength": 20, "maxLength": 4000 },
-        "en": { "type": "string", "minLength": 20, "maxLength": 4000 }
+        "en": { "type": "string", "minLength": 20, "maxLength": 4000 },
+        "ja": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "zh-CN": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "fr": { "type": "string", "minLength": 20, "maxLength": 4000 },
+        "es": { "type": "string", "minLength": 20, "maxLength": 4000 },
+        "pt-BR": { "type": "string", "minLength": 20, "maxLength": 4000 },
+        "hi": { "type": "string", "minLength": 20, "maxLength": 4000 }
       },
       "description": "문자열 길이는 JSON Schema의 문자 단위다. 스키마가 XSS를 차단하지는 않는다. 렌더러가 HTML을 escape하고 허용된 Markdown·링크 스킴만 처리해야 한다."
     },
