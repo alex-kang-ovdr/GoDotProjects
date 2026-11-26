@@ -226,6 +226,31 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 			draw_rect(bed, color.lightened(0.09), true)
 			draw_rect(Rect2(bed.position + Vector2(2, 2), Vector2(maxf(2, bunk_w * 0.25), bunk_h - 4)), PALE)
 			draw_rect(bed, Color(PALE, 0.6), false, 1.0)
+	elif id == "cosmoteer.shield_gen_small":
+		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
+		if _is_mirrored_battle():
+			rest_rot = PI - rest_rot
+		draw_circle(center, inset * 0.28, color.darkened(0.15))
+		draw_circle(center, inset * 0.14, PALE)
+		draw_arc(center, minf(rect.size.x, rect.size.y) * 0.44, rest_rot - 0.9, rest_rot + 0.9, 20, Color("#7ef2ff"), maxf(2.0, inset * 0.09), true)
+	elif id == "cosmoteer.missile_launcher":
+		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(rest_rot)
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		var side_vec := dir.orthogonal()
+		for off in [-0.24, 0.24]:
+			var base_p: Vector2 = center + side_vec * inset * off - dir * inset * 0.35
+			var tip_p: Vector2 = center + side_vec * inset * off + dir * inset * 0.42
+			draw_line(base_p, tip_p, color, maxf(2.5, inset * 0.16), true)
+			draw_circle(tip_p, maxf(1.8, inset * 0.1), Color("#ffe4b5"))
+	elif id == "cosmoteer.point_defense":
+		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(float(part.get("turret_angle_local", rest_rot)))
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		draw_arc(center, inset * 0.28, 0.0, TAU, 20, color, maxf(1.5, inset * 0.07), true)
+		draw_line(center, center + dir * inset * 0.36, PALE, maxf(1.8, inset * 0.09), true)
 	elif id.contains("laser") or id.contains("cannon") or id.contains("weapon"):
 		var barrel_len := minf(rect.size.x, rect.size.y) * 0.50
 		var rest_rotation := deg_to_rad(float(stats.get("turret_rotation_deg",-90))) + int(part.rotation)*PI*0.5
@@ -333,6 +358,16 @@ func _part_color(id: String) -> Color:
 		return MINT
 	if id.contains("crew_quarters") or id.contains("bunk"):
 		return BLUE
+	if id == "cosmoteer.shield_gen_small":
+		return Color("#5ce1ff")
+	if id == "cosmoteer.missile_launcher":
+		return Color("#ff8a5c")
+	if id == "cosmoteer.point_defense":
+		return Color("#6ef2d6")
+	if id == "cosmoteer.laser_blaster_large":
+		return Color("#78e4ff")
+	if id == "cosmoteer.cannon_med":
+		return Color("#f0ad58")
 	if id.contains("laser") or id.contains("cannon") or id.contains("weapon"):
 		return AMBER
 	if id.contains("control_room") or id.contains("bridge"):

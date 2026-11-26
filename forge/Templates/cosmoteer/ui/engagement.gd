@@ -3,6 +3,8 @@ extends VBoxContainer
 signal return_requested
 signal finished(result: String)
 const Battle = preload("res://sim/ship_battle.gd")
+const CombatSystems = preload("res://sim/combat_systems.gd")
+const SfxBank = preload("res://sim/sfx.gd")
 const Grid = preload("res://ui/ship_grid.gd")
 const FlightView = preload("res://ui/flight_view.gd")
 const RESULTS := {"win":"승리", "loss":"패배", "draw":"무승부"}
@@ -11,7 +13,10 @@ const OUTCOMES := {
 	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 모두 제거", "survived":"대피 시간 확보",
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착",
 }
-const ACTIONS := {"shot":"발사", "hit":"명중", "destroyed":"부품 파괴", "delivery":"전력 전달"}
+const ACTIONS := {
+	"shot":"발사", "hit":"명중", "destroyed":"부품 파괴", "delivery":"전력 전달",
+	"shield_hit":"방어막 요격", "shield_down":"방어막 붕괴", "intercept":"미사일 요격",
+}
 const AIM := {"offline":"동력·인원 대기","out_of_range":"사거리 밖","out_of_arc":"포탑 사각","tracking":"조준 중","ready":"사격 가능"}
 
 var lab
@@ -45,11 +50,17 @@ var engine_selector_uids: Array[int] = []
 var selected_engine_uid := -1
 var readiness: Label
 var fleet_readout: Label
+var shield_target_button: Button
+var sfx_button: Button
+var sfx
+var _sfx_event_time := -1.0
 var held := {}
 var telemetry_age := 0.0
 
 func build(host) -> void:
 	lab = host
+	sfx = SfxBank.new()
+	add_child(sfx)
 	visibility_changed.connect(func(): held.clear())
 	get_window().focus_exited.connect(func(): held.clear())
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -61,6 +72,8 @@ func build(host) -> void:
 	header.add_spacer(false)
 	clock_label = lab.label("",16,lab.SOFT)
 	header.add_child(clock_label)
+	sfx_button = lab.button("음향 켬",_toggle_sfx)
+	header.add_child(sfx_button)
 	view_button = lab.button("함선 내부",_switch_view)
 	header.add_child(view_button)
 	pause_button = lab.button("일시 정지",_pause)
@@ -110,8 +123,11 @@ func build(host) -> void:
 	var row := HBoxContainer.new()
 	orders.add_child(row)
 	row.add_child(lab.label("집중 사격",17,lab.WHITE))
-	for item in [["적 함교","control_room_small"],["적 레이저","laser_blaster_small"],["적 반응로","reactor_small"]]:
-		row.add_child(lab.button(item[0],_choose_type.bind("cosmoteer."+item[1])))
+	row.add_child(lab.button("적 함교",_choose_type.bind("cosmoteer.control_room_small")))
+	row.add_child(lab.button("적 무장",_choose_any.bind(CombatSystems.WEAPON_IDS)))
+	shield_target_button = lab.button("적 방어막",_choose_type.bind(CombatSystems.SHIELD_SMALL))
+	row.add_child(shield_target_button)
+	row.add_child(lab.button("적 반응로",_choose_any.bind(CombatSystems.REACTOR_IDS)))
 	row.add_spacer(false)
 	boost_button = lab.button("B  부스트 켜기",_toggle_boost)
 	boost_button.focus_mode = Control.FOCUS_NONE
@@ -198,6 +214,32 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_overclock()
 		get_viewport().set_input_as_handled()
 
+func _toggle_sfx() -> void:
+	if sfx == null:
+		return
+	sfx.enabled = not sfx.enabled
+	sfx_button.text = "음향 켬" if sfx.enabled else "음향 끔"
+
+func _play_new_sfx() -> void:
+	if sfx == null or battle == null:
+		return
+	var newest := _sfx_event_time
+	for ev in battle.events:
+		var t := float(ev.get("time", 0.0))
+		if t <= _sfx_event_time:
+			continue
+		if t > newest:
+			newest = t
+		var kind := str(ev.get("kind", ""))
+		if kind == "shot":
+			var side_ship: Dictionary = battle.player if ev.get("side") == "player" else battle.enemy
+			var part: Dictionary = side_ship.parts.get(int(ev.get("uid", -1)), {})
+			var wkind := str(part.get("stats", {}).get("weapon_kind", "laser"))
+			sfx.play("shot_" + wkind)
+		elif kind in ["shield_hit", "shield_down", "intercept", "destroyed"]:
+			sfx.play(kind)
+	_sfx_event_time = newest
+
 func _toggle_overclock() -> void:
 	if battle == null or paused or battle.result != "active":
 		return
@@ -246,6 +288,7 @@ func launch(design, mission: Dictionary = {}) -> bool:
 	view_button.text = "함선 내부"
 	held.clear()
 	telemetry_age = 0
+	_sfx_event_time = -1.0
 	paused = false
 	speed = 1
 	speed_button.select(0)
@@ -258,6 +301,7 @@ func _physics_process(delta: float) -> void:
 	if not paused and battle.result == "active":
 		battle.set_flight_input(Vector2(_axis("flight_reverse","flight_forward"),_axis("flight_port","flight_starboard")),_axis("flight_turn_left","flight_turn_right"))
 		battle.step(delta*speed)
+		_play_new_sfx()
 		if flight_page.visible:
 			flight_view.queue_redraw()
 		else:
@@ -278,12 +322,16 @@ func _choose_cell(cell: Vector2i, erase: bool) -> void:
 		_refresh()
 
 func _choose_type(id: String) -> void:
+	_choose_any([id])
+
+func _choose_any(ids: Array) -> void:
 	if battle == null or battle.result != "active":
 		return
-	for part in battle.enemy.parts.values():
-		if part.id == id and part.hp > 0 and battle.select_target(part.uid):
-			_refresh()
-			return
+	for id in ids:
+		for part in battle.enemy.parts.values():
+			if part.id == id and part.hp > 0 and battle.select_target(part.uid):
+				_refresh()
+				return
 
 func _pause() -> void:
 	if battle.result == "active":
@@ -310,23 +358,28 @@ func _refresh() -> void:
 		var team: Dictionary = sides[i]
 		var bridge_hp := 0.0
 		var bridge_max := 0.0
-		var laser_energy := 0
+		var weapon_energy := 0
 		var carrying := 0
 		for part in team.parts.values():
 			if part.id == "cosmoteer.control_room_small":
 				bridge_hp += part.hp
 				bridge_max += part.max_hp
-			elif part.id == "cosmoteer.laser_blaster_small":
-				laser_energy += int(part.energy)
+			elif CombatSystems.is_weapon(part.id):
+				weapon_energy += int(part.energy)
 		for crew in team.crew:
 			if crew.alive and crew.cargo > 0:
 				carrying += 1
-		supply_metrics[i].text = "레이저 전력 %d   ·   배터리 운반 %d명" % [laser_energy,carrying]
+		var def: Dictionary = Battle.defense_state(team)
+		supply_metrics[i].text = ("무장 전력 %d · 방어막 %d · 운반 %d명" % [weapon_energy, roundi(def.shield_hp), carrying]) if def.shield_count > 0 else ("무장 전력 %d   ·   배터리 운반 %d명" % [weapon_energy,carrying])
 		health[i].max_value = maxf(bridge_max,1)
 		health[i].value = bridge_hp
-		hull_report.append("%s 함교   %d / %d" % ["아군" if i == 0 else "적",bridge_hp,bridge_max])
+		var line_txt := "%s 함교   %d / %d" % ["아군" if i == 0 else "적",bridge_hp,bridge_max]
+		if def.shield_count > 0:
+			line_txt += "  (방어막 %d)" % roundi(def.shield_hp)
+		hull_report.append(line_txt)
 		metrics[i].text = "함교 %d / %d     보급 %d    발사 %d    명중 %d" % [bridge_hp,bridge_max,team.deliveries,team.shots,team.hits]
 		grids[i].queue_redraw()
+	shield_target_button.visible = Battle.defense_state(battle.enemy).shield_count > 0
 	var target: Dictionary = battle.enemy.parts.get(battle.target_uid,{})
 	var focus := "없음" if target.is_empty() else "%s  ·  HP %d / %d" % [lab.shipyard.display_name(target.id),target.hp,target.max_hp]
 	var goal := "적 함교 제압"
@@ -364,7 +417,7 @@ func _update_flight_readout() -> void:
 			installed += 1
 			if part.activation > 0.01:
 				firing += 1
-		elif part.id == "cosmoteer.laser_blaster_small" and part.hp > 0:
+		elif CombatSystems.is_weapon(part.id) and part.hp > 0:
 			var caption: String = AIM.get(part.get("aim_status","offline"),"조준 대기")
 			if not aim_states.has(caption):
 				aim_states.append(caption)
@@ -377,7 +430,15 @@ func _update_flight_readout() -> void:
 	else:
 		var bearing: float = wrapf((battle.enemy.position-ship.position).angle()-ship.heading,-PI,PI)
 		readiness.text = "상대 방위   %s %.0f°" % ["우현" if bearing >= 0 else "좌현",absf(rad_to_deg(bearing))]
-	readiness.text += "\n레이저   " + ("파괴됨" if aim_states.is_empty() else " / ".join(aim_states))
+	readiness.text += "\n무장   " + ("파괴됨" if aim_states.is_empty() else " / ".join(aim_states))
+	var pdef: Dictionary = Battle.defense_state(ship)
+	if pdef.shield_count > 0 or pdef.pd_count > 0:
+		var def_parts := PackedStringArray()
+		if pdef.shield_count > 0:
+			def_parts.append("방어막 %d/%d" % [roundi(pdef.shield_hp), roundi(pdef.shield_max_hp)])
+		if pdef.pd_count > 0:
+			def_parts.append("PD 요격 %d" % int(pdef.pd_intercepts))
+		readiness.text += "\n" + " · ".join(def_parts)
 	var state: Dictionary = battle.propulsion_state(ship)
 	boost_button.visible = state.boost_count > 0
 	boost_button.disabled = paused or battle.result != "active" or (state.boost_active == 0 and state.boost_ready == 0)

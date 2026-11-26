@@ -73,6 +73,7 @@ func _draw() -> void:
 	_draw_shields(battle.enemy, _camera_center, _zoom, viewport_center, Color("#ff9e7d"))
 	_draw_pd_beams(_camera_center, _zoom, viewport_center)
 	_draw_projectiles(_camera_center, _zoom, viewport_center)
+	_draw_effects(_camera_center, _zoom, viewport_center)
 	_draw_target(battle.player, int(battle.enemy_target_uid), _camera_center, _zoom, viewport_center, ENEMY)
 	_draw_target(battle.enemy, int(battle.target_uid), _camera_center, _zoom, viewport_center, AMBER)
 	_draw_heading(battle.player, _camera_center, _zoom, viewport_center, MINT)
@@ -387,6 +388,7 @@ func _draw_tactical_inset() -> void:
 	var view_center: Vector2 = data.viewport_center
 	var camera: Vector2 = data.camera
 	_draw_ship(ship, camera, zoom, view_center, uid, true)
+	_draw_shields(ship, camera, zoom, view_center, Color("#5ce1ff") if ship == battle.player else Color("#ff9e7d"))
 	draw_string(ThemeDB.fallback_font, rect.position + Vector2(9, 16), "전술 확대 · 실시간 표적", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, TEXT)
 
 
@@ -488,7 +490,48 @@ func _quad_size(quad: PackedVector2Array) -> Vector2:
 	return high - low
 
 
+func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	var now := float(battle.elapsed)
+	for ev in battle.events:
+		if not ev.has("pos"):
+			continue
+		var age := now - float(ev.get("time", 0.0))
+		if age < 0.0 or age > 0.45:
+			continue
+		var t := clampf(age / 0.45, 0.0, 1.0)
+		var alpha := 1.0 - t
+		var pos := _world_to_screen(Vector2(ev.pos), camera, zoom, viewport_center)
+		var kind := str(ev.get("kind", ""))
+		if kind == "destroyed":
+			var r := maxf(8.0, (2.5 + 8.5 * t) * zoom)
+			draw_circle(pos, r * 0.45, Color("#ffae52", alpha * 0.55))
+			draw_arc(pos, r, 0.0, TAU, 24, Color("#ff7354", alpha * 0.9), maxf(2.0, zoom * 0.35), true)
+		elif kind == "shield_down":
+			var r := maxf(10.0, (4.0 + 10.0 * t) * zoom)
+			draw_arc(pos, r, 0.0, TAU, 28, Color("#7ef2ff", alpha * 0.95), maxf(2.4, zoom * 0.4), true)
+		elif kind == "shield_hit":
+			var r := maxf(5.0, (1.5 + 4.5 * t) * zoom)
+			draw_arc(pos, r, 0.0, TAU, 18, Color("#9af7ff", alpha * 0.9), maxf(1.6, zoom * 0.24), true)
+		elif kind == "intercept":
+			var r := maxf(4.0, (1.2 + 3.8 * t) * zoom)
+			draw_circle(pos, r * 0.4, Color(Color.WHITE, alpha * 0.85))
+			draw_arc(pos, r, 0.0, TAU, 14, Color("#8cf7ff", alpha * 0.8), 1.4, true)
+		elif kind == "hit":
+			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)
+			draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)
+
+
 func _part_color(id: String) -> Color:
+	if id == "cosmoteer.shield_gen_small":
+		return Color("#5ce1ff")
+	if id == "cosmoteer.missile_launcher":
+		return Color("#ff8a5c")
+	if id == "cosmoteer.point_defense":
+		return Color("#6ef2d6")
+	if id == "cosmoteer.laser_blaster_large":
+		return Color("#78e4ff")
+	if id == "cosmoteer.cannon_med":
+		return Color("#f0ad58")
 	if id.contains("reactor"):
 		return Color("#5de0bd")
 	if id.contains("crew_quarters") or id.contains("bunk"):
