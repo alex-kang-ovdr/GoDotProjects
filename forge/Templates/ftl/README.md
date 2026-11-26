@@ -28,9 +28,13 @@
 ## 실행 및 검증
 
 ```powershell
-# Godot 4.7.2 데스크톱 실행
+# 1. Godot 4.7.2 Web(WASM) 내보내기 + 원본 ftl.dat.vanilla 제로카피 스트리밍 웹 서버 실행 (추천)
+node "D:\Github\GoDotProjects-worktrees\Forge-GameDev-FTL\forge\Templates\ftl\tools\serve-ftl-web.mjs" --export --port 4191
+# 브라우저 접속: http://127.0.0.1:4191/
+
+# 2. Godot 4.7.2 데스크톱 직접 실행
 & "D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe" --path "D:\Github\GoDotProjects-worktrees\Forge-GameDev-FTL\forge\Templates\ftl"
 
-# 헤드리스 복원 검증 테스트
+# 3. 헤드리스 복원 검증 테스트
 & "D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe" --headless --path "D:\Github\GoDotProjects-worktrees\Forge-GameDev-FTL\forge\Templates\ftl" --script tests/ftl_restore_tests.gd
 ```

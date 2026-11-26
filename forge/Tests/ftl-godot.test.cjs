@@ -69,3 +69,40 @@ test('FTL Godot 4.7.2 restoration passes PKG archive, XML database, simulation, 
   assert.equal(summary.failed, 0, out);
   assert.ok(summary.passed >= 14, out);
 });
+
+test('FTL Web server streams xml-bundle.json and raw PNG/OGG assets from ftl.dat.vanilla cleanly', async t => {
+  const { createFtlWebServer, findFtlArchive } = await import('../Templates/ftl/tools/serve-ftl-web.mjs');
+  const archive = findFtlArchive();
+  if (!archive) {
+    t.skip('C:\\Temp\\FTL\\ftl.dat.vanilla not present on this machine');
+    return;
+  }
+  const { server, pkg } = createFtlWebServer({ archivePath: archive });
+  t.after(() => new Promise(resolve => server.close(() => resolve())));
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address();
+  const base = `http://127.0.0.1:${port}`;
+
+  assert.equal(pkg.loaded, true);
+  assert.ok(pkg.entries.size >= 3000);
+
+  const bundleRes = await fetch(`${base}/ftl-pkg/xml-bundle.json`);
+  assert.equal(bundleRes.status, 200);
+  assert.equal(bundleRes.headers.get('content-encoding'), null, 'must not gzip xml-bundle.json for Godot Web HTTPRequest');
+  const bundle = await bundleRes.json();
+  assert.ok(bundle.entry_count >= 3000);
+  assert.ok(bundle.files['data/blueprints.xml']);
+  assert.ok(bundle.files['data/kestral.txt']);
+
+  const pngRes = await fetch(`${base}/ftl-pkg/raw/img/ship/kestral_base.png`);
+  assert.equal(pngRes.status, 200);
+  assert.equal(pngRes.headers.get('content-type'), 'image/png');
+  const pngBuf = Buffer.from(await pngRes.arrayBuffer());
+  assert.equal(pngBuf.subarray(1, 4).toString('ascii'), 'PNG');
+
+  const oggRes = await fetch(`${base}/ftl-pkg/raw/audio/music/bp_MUS_CivilEXPLORE.ogg`);
+  assert.equal(oggRes.status, 200);
+  assert.equal(oggRes.headers.get('content-type'), 'audio/ogg');
+  const oggBuf = Buffer.from(await oggRes.arrayBuffer());
+  assert.equal(oggBuf.subarray(0, 4).toString('ascii'), 'OggS');
+});

@@ -51,6 +51,8 @@ func _ready() -> void:
 
 	pkg = FTLPkg.new()
 	pkg.auto_open()
+	pkg.data_pack_ready.connect(_on_web_data_pack_ready)
+	pkg.texture_loaded.connect(_on_web_texture_loaded)
 	db = FTLDatabase.new()
 	db.load_all(pkg)
 
@@ -84,10 +86,37 @@ func _ready() -> void:
 	_build_modal_ui()
 
 	_show_hangar()
+	if not pkg.is_loaded and (OS.has_feature("web") or not OS.get_environment("FTL_WEB_BASE_URL").is_empty()):
+		if pkg.start_web_bootstrap(self):
+			hangar_refs["src_badge"].text = "Web FTL 데이터 스트리밍 중 (/ftl-pkg/xml-bundle.json)..."
 	print("FTL_GODOT_READY | archive=%s | entries=%d | ships=%d | weapons=%d | events=%d" % [
 		pkg.archive_path if pkg.is_loaded else "fallback",
 		pkg.entry_count, db.ships.size(), db.weapons.size(), db.events.size()
 	])
+
+
+func _on_web_data_pack_ready(ok: bool) -> void:
+	if ok:
+		db.load_all(pkg)
+		if mode == "hangar":
+			_show_hangar()
+		print("FTL_WEB_DATA_READY | entries=%d | ships=%d | weapons=%d | events=%d" % [
+			pkg.entry_count, db.ships.size(), db.weapons.size(), db.events.size()
+		])
+	else:
+		hangar_refs["src_badge"].text = "Web 독립 실행 모드 (내장 FTL 폴백 데이터)"
+
+
+func _on_web_texture_loaded(_rel_path: String) -> void:
+	if mode == "hangar" and not db.player_ship_ids.is_empty():
+		var sid := db.player_ship_ids[clampi(selected_hangar_idx, 0, db.player_ship_ids.size() - 1)]
+		var bp: Dictionary = db.ships.get(sid, {})
+		var img_n := str(bp.get("img", "kestral"))
+		var tex := pkg.load_texture("ship/%s_base.png" % img_n)
+		if tex != null:
+			hangar_refs["preview_tex"].texture = tex
+	if battle_view != null:
+		battle_view.queue_redraw()
 
 
 func _exit_tree() -> void:
@@ -1007,13 +1036,13 @@ func _update_hud_labels() -> void:
 		var bars := ""
 		for lv in range(int(s.level)):
 			if lv >= int(s.level) - int(s.damage):
-				bars += "✕"
+				bars += "X"
 			elif int(s.ion_level) > 0:
 				bars += "◇"
 			elif lv < eff:
-				bars += "█"
+				bars += "■"
 			else:
-				bars += "░"
+				bars += "□"
 		btn.text = "%s\n%s\n%d/%d" % [sname.left(4).to_upper(), bars, eff, int(s.level)]
 
 	# Update weapon buttons

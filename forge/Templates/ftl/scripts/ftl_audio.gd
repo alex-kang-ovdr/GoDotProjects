@@ -16,6 +16,8 @@ var _combat_player: AudioStreamPlayer
 var _sfx_pool: Array[AudioStreamPlayer] = []
 var _sfx_cursor: int = 0
 var _current_track: String = ""
+var _desired_explore_key: String = ""
+var _desired_combat_key: String = ""
 var _in_combat: bool = false
 var _combat_blend: float = 0.0
 var _headless: bool = false
@@ -43,9 +45,33 @@ func _ready() -> void:
 func setup(p_pkg: FTLPkg, p_db: FTLDatabase) -> void:
 	pkg = p_pkg
 	db = p_db
+	if pkg != null and not pkg.audio_loaded.is_connected(_on_web_audio_loaded):
+		pkg.audio_loaded.connect(_on_web_audio_loaded)
 	var ini := pkg.load_settings_ini() if pkg != null else {}
 	music_volume = clampf(float(ini.get("music", 75)) / 100.0 * 0.75, 0.0, 1.0)
 	sfx_volume = clampf(float(ini.get("sound", 80)) / 100.0 * 0.85, 0.0, 1.0)
+
+
+func _on_web_audio_loaded(rel_path: String) -> void:
+	if _headless or pkg == null:
+		return
+	if rel_path == _desired_explore_key:
+		var s := pkg.load_audio(rel_path)
+		if s is AudioStreamOggVorbis:
+			(s as AudioStreamOggVorbis).loop = true
+		if s != null:
+			_explore_player.stream = s
+			_explore_player.play()
+			_apply_music_volumes()
+	elif rel_path == _desired_combat_key:
+		var sc := pkg.load_audio(rel_path)
+		if sc is AudioStreamOggVorbis:
+			(sc as AudioStreamOggVorbis).loop = true
+		if sc != null:
+			_combat_player.stream = sc
+			var pos := _explore_player.get_playback_position() if _explore_player.playing else 0.0
+			_combat_player.play(pos)
+			_apply_music_volumes()
 
 
 func play_track(track_name: String, combat: bool = false) -> void:
@@ -65,15 +91,17 @@ func play_track(track_name: String, combat: bool = false) -> void:
 
 	var exp_file: String = str(track.get("explore", ""))
 	var cmb_file: String = str(track.get("combat", ""))
-	if not exp_file.is_empty():
-		var s := pkg.load_audio("audio/music/" + exp_file)
+	_desired_explore_key = ("audio/music/" + exp_file) if not exp_file.is_empty() else ""
+	_desired_combat_key = ("audio/music/" + cmb_file) if not cmb_file.is_empty() else ""
+	if not _desired_explore_key.is_empty():
+		var s := pkg.load_audio(_desired_explore_key)
 		if s is AudioStreamOggVorbis:
 			(s as AudioStreamOggVorbis).loop = true
 		if s != null:
 			_explore_player.stream = s
 			_explore_player.play()
-	if not cmb_file.is_empty():
-		var sc := pkg.load_audio("audio/music/" + cmb_file)
+	if not _desired_combat_key.is_empty():
+		var sc := pkg.load_audio(_desired_combat_key)
 		if sc is AudioStreamOggVorbis:
 			(sc as AudioStreamOggVorbis).loop = true
 		if sc != null:
