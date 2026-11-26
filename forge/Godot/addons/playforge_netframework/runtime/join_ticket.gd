@@ -25,6 +25,10 @@ var rejected: Dictionary = {}
 
 var _crypto: Crypto = Crypto.new()
 var _secret: PackedByteArray
+var _keyring: Dictionary = {} # kid -> PackedByteArray
+var _active_kid: String = ""
+var _external_keyring_path: String = ""
+var _external_keyring_mtime: int = 0
 var _used_nonces: Dictionary = {}
 
 
@@ -34,6 +38,70 @@ func _init(p_session_id: String, p_instance_id: String, p_lease_epoch: int, p_tt
 	lease_epoch = p_lease_epoch
 	ttl_sec = p_ttl_sec
 	_secret = _crypto.generate_random_bytes(32)
+
+
+## 외부 컨트롤 플레인(Hub/Broker)에서 전달된 키링(kid -> base64url 또는 PackedByteArray)을 적재한다.
+func load_keyring(keys: Dictionary, active_kid: String = "") -> bool:
+	var loaded := {}
+	for k in keys:
+		var kid := String(k)
+		var v: Variant = keys[k]
+		var raw: PackedByteArray
+		if v is PackedByteArray:
+			raw = v
+		elif v is String:
+			raw = b64url_decode(String(v))
+		else:
+			continue
+		if raw.size() >= 16:
+			loaded[kid] = raw
+	if loaded.is_empty():
+		return false
+	_keyring = loaded
+	if not active_kid.is_empty() and _keyring.has(active_kid):
+		_active_kid = active_kid
+	else:
+		_active_kid = String(_keyring.keys()[0])
+	_secret = _keyring[_active_kid]
+	return true
+
+
+## 키 로테이션 시 폐기 키를 키링에서 제거한다(폐기 키로 서명된 티켓은 즉시 거절).
+func retire_key(kid: String) -> bool:
+	if not _keyring.has(kid) or _keyring.size() <= 1:
+		return false
+	_keyring.erase(kid)
+	if _active_kid == kid:
+		_active_kid = String(_keyring.keys()[0])
+		_secret = _keyring[_active_kid]
+	return true
+
+
+func load_keyring_from_file(path: String) -> bool:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return false
+	var text := FileAccess.get_file_as_string(path)
+	var parsed: Variant = JSON.parse_string(text)
+	if not (parsed is Dictionary):
+		return false
+	var d: Dictionary = parsed
+	var keys: Variant = d.get("keys", {})
+	if not (keys is Dictionary):
+		return false
+	var ok := load_keyring(keys, String(d.get("activeKid", "")))
+	if ok:
+		_external_keyring_path = path
+		_external_keyring_mtime = FileAccess.get_modified_time(path)
+	return ok
+
+
+func reload_keyring_if_updated() -> bool:
+	if _external_keyring_path.is_empty() or not FileAccess.file_exists(_external_keyring_path):
+		return false
+	var mtime := FileAccess.get_modified_time(_external_keyring_path)
+	if mtime == _external_keyring_mtime:
+		return false
+	return load_keyring_from_file(_external_keyring_path)
 
 
 func issue(user_id: String, slot: int, now_unix: float = -1.0) -> String:
@@ -52,6 +120,8 @@ func issue(user_id: String, slot: int, now_unix: float = -1.0) -> String:
 		"singleUse": true,
 		"nonce": b64url(_crypto.generate_random_bytes(16)),
 	}
+	if not _active_kid.is_empty():
+		payload["kid"] = _active_kid
 	issued_count += 1
 	return _sign(b64url(JSON.stringify(payload).to_utf8_buffer()))
 
@@ -59,6 +129,7 @@ func issue(user_id: String, slot: int, now_unix: float = -1.0) -> String:
 ## 결과: {ok: bool, reason: String, claims: Dictionary}
 ## 성공한 티켓은 즉시 소비(single-use)된다.
 func verify_and_consume(ticket: String, now_unix: float = -1.0) -> Dictionary:
+	reload_keyring_if_updated()
 	var result := _verify(ticket, now_unix)
 	if result.ok:
 		_used_nonces[String(result.claims.nonce)] = String(result.claims.userId)
@@ -74,14 +145,20 @@ func _verify(ticket: String, now_unix: float) -> Dictionary:
 	var parts := ticket.split(".")
 	if parts.size() != 2 or not _is_b64url(parts[0]) or not _is_b64url(parts[1]):
 		return _fail("malformed")
-	var expected := _crypto.hmac_digest(HashingContext.HASH_SHA256, _secret, parts[0].to_utf8_buffer())
-	var got := b64url_decode(parts[1])
-	if got.size() != expected.size() or not _crypto.constant_time_compare(expected, got):
-		return _fail("hmac_invalid")
 	var parsed: Variant = JSON.parse_string(b64url_decode(parts[0]).get_string_from_utf8())
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return _fail("malformed")
 	var claims: Dictionary = parsed
+	var verify_key: PackedByteArray = _secret
+	if not _keyring.is_empty():
+		var kid := String(claims.get("kid", ""))
+		if kid.is_empty() or not _keyring.has(kid):
+			return _fail("key_retired_or_unknown")
+		verify_key = _keyring[kid]
+	var expected := _crypto.hmac_digest(HashingContext.HASH_SHA256, verify_key, parts[0].to_utf8_buffer())
+	var got := b64url_decode(parts[1])
+	if got.size() != expected.size() or not _crypto.constant_time_compare(expected, got):
+		return _fail("hmac_invalid")
 	for key in ["version", "sessionId", "instanceId", "leaseEpoch", "userId", "slot", "expiresAtUnix", "nonce"]:
 		if not claims.has(key):
 			return _fail("malformed")

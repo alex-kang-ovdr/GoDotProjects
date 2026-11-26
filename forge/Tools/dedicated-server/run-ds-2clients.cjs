@@ -18,6 +18,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const dgram = require('node:dgram');
+const net = require('node:net');
 const readline = require('node:readline');
 const { spawn, spawnSync } = require('node:child_process');
 
@@ -28,11 +29,13 @@ const SELFTEST = 'res://addons/playforge_netframework/demo/ticket_selftest.gd';
 const POS_TOLERANCE = 0.5;
 
 function parseArgs(argv) {
-  const out = { late: true, json: false };
+  const out = { late: true, json: false, transport: 'enet' };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--godot') out.godot = argv[++i];
     else if (a === '--out') out.out = argv[++i];
+    else if (a === '--transport') out.transport = argv[++i];
+    else if (a.startsWith('--transport=')) out.transport = a.slice('--transport='.length);
     else if (a === '--no-late') out.late = false;
     else if (a === '--json') out.json = true;
   }
@@ -72,25 +75,39 @@ function freeUdpPort() {
   });
 }
 
+function freeTcpPort() {
+  return new Promise((resolve, reject) => {
+    const s = net.createServer();
+    s.once('error', reject);
+    s.listen(0, '127.0.0.1', () => {
+      const { port } = s.address();
+      s.close(() => resolve(port));
+    });
+  });
+}
+
 class GodotProc {
   constructor(name, godot, userArgs, outDir) {
     this.name = name;
     this.events = [];
     this.waiters = [];
     this.exitCode = null;
+    this.signal = null;
+    this.status = { state: 'starting', code: null, signal: null, error: null };
+    this.lastEvent = null;
     this.startedAt = Date.now();
     this.logPath = path.join(outDir, `${name}.log`);
     const logStream = fs.createWriteStream(this.logPath);
     const args = ['--headless', '--path', PROJECT, SCENE, '--', ...userArgs];
     this.child = spawn(godot, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-    this.exited = new Promise((resolve) => {
-      this.child.on('exit', (code) => {
-        this.exitCode = code;
-        this.exitedAt = Date.now();
-        resolve(code);
-      });
+    GodotProc.active.add(this);
+    this.child.once('spawn', () => { this.status.state = 'running'; });
+    this.child.on('error', (err) => {
+      this.status.state = 'spawn_error';
+      this.status.error = err.message;
     });
     for (const stream of [this.child.stdout, this.child.stderr]) {
+      if (!stream) continue;
       readline.createInterface({ input: stream }).on('line', (line) => {
         logStream.write(`${line}\n`);
         const idx = line.indexOf('NETEV ');
@@ -99,39 +116,73 @@ class GodotProc {
           const ev = JSON.parse(line.slice(idx + 6));
           ev._wall = Date.now();
           this.events.push(ev);
+          this.lastEvent = ev;
           this.waiters = this.waiters.filter((w) => {
             if (!w.pred(ev)) return true;
+            clearTimeout(w.timer);
             w.resolve(ev);
             return false;
           });
         } catch { /* 비JSON 줄 무시 */ }
       });
     }
-    this.child.on('exit', () => setTimeout(() => logStream.end(), 50));
+    this.exited = new Promise((resolve) => {
+      this.child.once('close', (code, signal) => {
+        this.exitCode = code;
+        this.signal = signal;
+        this.exitedAt = Date.now();
+        if (this.status.state !== 'spawn_error') this.status.state = 'closed';
+        this.status.code = code;
+        this.status.signal = signal;
+        this.waiters.splice(0).forEach((w) => {
+          clearTimeout(w.timer);
+          w.reject(new Error(`${this.name}: process closed before ${w.label}; ${this.describe()}`));
+        });
+        // Child 'close' follows stdout/stderr closure. Wait for the file stream
+        // to flush too, so exited means both process output and log are complete.
+        logStream.end(() => {
+          GodotProc.active.delete(this);
+          resolve(code);
+        });
+      });
+    });
   }
 
   waitFor(pred, timeoutMs, label) {
     const hit = this.events.find(pred);
     if (hit) return Promise.resolve(hit);
+    if (this.exitedAt !== undefined) return Promise.reject(new Error(`${this.name}: process already closed before ${label}; ${this.describe()}`));
     return new Promise((resolve, reject) => {
-      const w = { pred, resolve };
+      const w = { pred, resolve, reject, label, timer: null };
       this.waiters.push(w);
-      const timer = setTimeout(() => {
+      w.timer = setTimeout(() => {
         this.waiters = this.waiters.filter((x) => x !== w);
-        reject(new Error(`${this.name}: timeout waiting for ${label}`));
+        reject(new Error(`${this.name}: timeout waiting for ${label}; ${this.describe()}`));
       }, timeoutMs);
-      const orig = w.resolve;
-      w.resolve = (ev) => { clearTimeout(timer); orig(ev); };
     });
   }
 
   ev(name) { return this.events.filter((e) => e.ev === name); }
   first(name) { return this.events.find((e) => e.ev === name); }
-  kill() { if (this.exitCode === null) this.child.kill(); }
+  describe() {
+    const event = this.lastEvent ? `${this.lastEvent.ev || 'event'}@${this.lastEvent.t_ms ?? '?'}ms` : 'no NETEV';
+    const detail = this.status.error ? ` error=${this.status.error}` : '';
+    return `status=${this.status.state} code=${this.exitCode} signal=${this.signal} last=${event}${detail}`;
+  }
+  kill() { if (this.exitedAt === undefined) this.child.kill(); }
 }
 
+GodotProc.active = new Set();
+
 function withTimeout(promise, ms, label) {
-  return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error(`timeout: ${label}`)), ms))]);
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const processes = [...GodotProc.active].map((p) => `${p.name}[${p.describe()}]`);
+      reject(new Error(`timeout: ${label}${processes.length ? `; active: ${processes.join('; ')}` : '; no active Godot processes'}`));
+    }, ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
 function pct(values, q) {
@@ -151,8 +202,16 @@ async function main() {
   const version = spawnSync(godot, ['--version'], { encoding: 'utf8', windowsHide: true }).stdout.trim().split(/\r?\n/).pop();
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const outDir = path.resolve(opts.out || path.join(REPO, 'forge', 'Saved', 'Tests', 'netframework', `ds-spike-${stamp}`));
-  fs.mkdirSync(path.join(outDir, 'control'), { recursive: true });
-  const ticket = (u) => path.join(outDir, 'tickets', `${u}.ticket`);
+  fs.mkdirSync(outDir, { recursive: true });
+  const runDir = opts.out ? fs.mkdtempSync(path.join(outDir, 'match-')) : outDir;
+  const control = path.join(runDir, 'control');
+  fs.mkdirSync(control);
+  const ticket = (u) => path.join(runDir, 'tickets', `${u}.ticket`);
+  const settleFile = path.join(control, 'settle');
+  const drainFile = path.join(control, 'drain');
+  const probeFile = path.join(control, 'probe-connect');
+  const leaveFile = path.join(control, 'leave');
+  const release = (file) => fs.writeFileSync(file, 'ready\n', { flag: 'wx' });
   const checks = [];
   const check = (id, ok, detail) => checks.push({ id, ok: !!ok, detail });
   const procs = [];
@@ -165,36 +224,52 @@ async function main() {
   fs.writeFileSync(path.join(outDir, 'ticket-selftest.log'), `${st.stdout || ''}${st.stderr || ''}`);
   check('ticket_selftest', st.status === 0 && /TICKET_SELFTEST_OK/.test(st.stdout || ''), `exit=${st.status}`);
 
-  const port = await freeUdpPort();
-  const common = [`--port=${port}`, '--max-seconds=45'];
-  const server = start('server', ['--role=server', ...common, `--run-dir=${outDir}`, '--play-ticks=150', '--settle-max=10']);
+  const transport = String(opts.transport || 'enet').toLowerCase();
+  const port = transport === 'enet' ? await freeUdpPort() : await freeTcpPort();
+  const common = [`--port=${port}`, `--transport=${transport}`, '--max-seconds=45'];
+  const server = start('server', ['--netmode=dedicated-server', ...common, `--run-dir=${runDir}`,
+    '--play-ticks=150', `--settle-file=${settleFile}`]);
   try {
+    const listeningEv = await server.waitFor((e) => e.ev === 'server_listening', 15000, 'server_listening');
     await server.waitFor((e) => e.ev === 'tickets_issued', 15000, 'tickets_issued');
-    const a = start('client-a', ['--role=client', '--bot=a', ...common, `--ticket=${ticket('bot-a')}`]);
-    const b = start('client-b', ['--role=client', '--bot=b', ...common, `--ticket=${ticket('bot-b')}`]);
+    const tlsClientArgs = transport === 'wss' && listeningEv.tlsCertPath
+      ? [`--tls-ca=${listeningEv.tlsCertPath}`, '--tls-hostname=localhost']
+      : [];
+    const playerArgs = ['--netmode=client', ...common, ...tlsClientArgs, `--leave-file=${leaveFile}`];
+    start('client-a', [...playerArgs, '--bot=a', `--ticket=${ticket('bot-a')}`]);
+    start('client-b', [...playerArgs, '--bot=b', `--ticket=${ticket('bot-b')}`]);
     await server.waitFor((e) => e.ev === 'phase' && e.to === 'play', 20000, 'phase play');
 
-    // 늦은 입장 + 공격 probe (play 중)
-    if (opts.late) start('client-c-late', ['--role=client', '--bot=c', ...common, `--ticket=${ticket('bot-c')}`]);
-    const probes = [
-      start('probe-reuse', ['--role=client', '--bot=probe-reuse', ...common, `--ticket=${ticket('bot-a')}`]),
-      start('probe-tamper', ['--role=client', '--bot=probe-tamper', ...common, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
-      start('probe-wrongslot', ['--role=client', '--bot=probe-wrongslot', ...common, `--ticket=${ticket('bot-x')}`]),
+    // Start C after the normal play budget to exercise slow startup on every run.
+    await server.waitFor((e) => e.ev === 'play_ticks_elapsed', 15000, 'minimum play ticks');
+    const late = opts.late && start('client-c-late', [...playerArgs, '--bot=c', `--ticket=${ticket('bot-c')}`]);
+    const playProbes = [
+      start('probe-reuse', ['--netmode=client', '--bot=probe-reuse', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-a')}`]),
+      start('probe-tamper', ['--netmode=client', '--bot=probe-tamper', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
+      start('probe-wrongslot', ['--netmode=client', '--bot=probe-wrongslot', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-x')}`]),
     ];
 
-    // settle 진입 후 drain probe를 대기시킨 뒤 외부 drain 신호(SIGTERM 대체) 파일을 쓴다.
-    await server.waitFor((e) => e.ev === 'phase' && e.to === 'settle', 20000, 'phase settle');
-    const drainFile = path.join(outDir, 'control', 'drain');
-    const probeDrain = start('probe-drain', ['--role=client', '--bot=probe-drain', ...common, `--ticket=${ticket('bot-c')}`, `--wait-file=${drainFile}`]);
-    probes.push(probeDrain);
+    await Promise.all([
+      ...playProbes.map((p) => p.waitFor((e) => e.ev === 'join_refused', 20000, 'play admission result')),
+      ...(late ? [late.waitFor((e) => e.ev === 'possessed', 20000, 'late player possession')] : []),
+    ]);
+    const probeDrain = start('probe-drain', ['--netmode=client', '--bot=probe-drain', ...common, ...tlsClientArgs,
+      `--ticket=${ticket('bot-c')}`, `--wait-file=${probeFile}`]);
     await probeDrain.waitFor((e) => e.ev === 'client_boot', 15000, 'probe-drain boot');
-    fs.writeFileSync(drainFile, `drain requested by run-ds-2clients at ${new Date().toISOString()}\n`);
+    release(settleFile);
+    await server.waitFor((e) => e.ev === 'phase' && e.to === 'settle', 10000, 'phase settle');
+    release(drainFile);
+    await server.waitFor((e) => e.ev === 'drain_started', 10000, 'drain started');
+    release(probeFile);
+    await probeDrain.waitFor((e) => e.ev === 'join_refused', 10000, 'drain admission result');
+    release(leaveFile);
     await withTimeout(server.exited, 25000, 'server exit');
     await withTimeout(Promise.all(procs.map((p) => p.exited)), 10000, 'all processes exit');
   } catch (err) {
     fatal = err.message;
   } finally {
     for (const p of procs) p.kill();
+    await Promise.all(procs.map((p) => p.exited));
   }
 
   // ------------------------------------------------------------------ 판정
@@ -206,8 +281,13 @@ async function main() {
   const drainDone = server.first('drain_complete');
   check('no_fatal', !fatal, fatal || 'ok');
   check('server_clean_exit', server.exitCode === 0, `exit=${server.exitCode}`);
+  check('dedicated_server_net_mode', listening && listening.netMode === 'dedicated-server', `netMode=${listening && listening.netMode}`);
   check('drain_waited_for_players', drainDone && drainDone.forced === false && drainDone.remaining === 0, drainDone ? `forced=${drainDone.forced} remaining=${drainDone.remaining}` : 'missing');
   for (const p of players) check(`${p.name}_clean_exit`, p.exitCode === 0, `exit=${p.exitCode}`);
+  for (const p of players) {
+    const boot = p.first('client_boot');
+    check(`${p.name}_client_net_mode`, boot && boot.netMode === 'client', `netMode=${boot && boot.netMode}`);
+  }
 
   // 서버는 플레이어가 아니다
   const serverInList = !serverSnap
@@ -264,8 +344,8 @@ async function main() {
     const poss = c && c.first('possessed');
     const conv = convergence.find((x) => x.client === 'client-c-late');
     const joined = server.ev('player_joined').find((e) => e.user === 'bot-c');
-    check('late_join_receives_world', joined && joined.phase === 'play' && poss && poss.phase === 'play' && poss.visiblePlayers >= 3 && conv && conv.ok,
-      poss ? `serverPhaseAtJoin=${joined && joined.phase} clientPhase=${poss.phase} playTick=${poss.playTick} visible=${poss.visiblePlayers}` : 'not possessed');
+    check('late_join_receives_world', joined && joined.phase === 'play' && joined.playTick >= 150 && poss && poss.phase === 'play' && poss.visiblePlayers >= 3 && conv && conv.ok,
+      poss ? `serverPhaseAtJoin=${joined && joined.phase} serverPlayTick=${joined && joined.playTick} clientPhase=${poss.phase} visible=${poss.visiblePlayers}` : 'not possessed');
   }
 
   // WorldKey 일관성: 모든 클라이언트가 같은 WorldKey(session 포함)를 받았다
@@ -278,6 +358,10 @@ async function main() {
   // drain 순서: drain_started → 플레이어 퇴장 → drain_complete
   const drainStart = server.first('drain_started');
   const lefts = server.ev('player_left');
+  const drainRejection = rej.find((e) => e.reason === 'draining');
+  check('drain_refusal_before_player_departure', drainStart && drainRejection && lefts.length > 0
+    && drainStart.t_ms <= drainRejection.t_ms && lefts.every((e) => e.t_ms >= drainRejection.t_ms),
+  `start=${drainStart?.t_ms} refusal=${drainRejection?.t_ms} firstLeave=${lefts[0]?.t_ms} ms`);
   check('drain_order', drainStart && drainDone && lefts.length === players.length
     && lefts.every((e) => e.phase === 'draining' && e._wall >= drainStart._wall && e._wall <= drainDone._wall),
   `left=${lefts.length}/${players.length}`);
@@ -287,6 +371,8 @@ async function main() {
   const leaving = players.map((p) => ({ name: p.name, ...(p.first('client_leaving') || {}) }));
   const measurements = {
     godot: { executable: godot, source: g.source, version },
+    transport,
+    transportCaps: listening ? listening.transportCaps : null,
     port,
     wallMs: Date.now() - t0,
     serverReadyMs: listening ? listening._wall - server.startedAt : null,
@@ -324,4 +410,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { resolveGodot };
+module.exports = { resolveGodot, freeUdpPort, freeTcpPort };

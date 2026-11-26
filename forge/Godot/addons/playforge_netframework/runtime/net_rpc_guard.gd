@@ -11,6 +11,7 @@ var counters: Dictionary = {
 	"accepted": 0,
 	"not_owner": 0,
 	"not_server": 0,
+	"stale_owner_epoch": 0,
 	"stale_seq": 0,
 	"malformed": 0,
 	"clamped": 0,
@@ -32,6 +33,13 @@ func check_owner(mp: MultiplayerAPI, owner_peer_id: int, rpc_name: String, targe
 	var sender := mp.get_remote_sender_id()
 	if sender != owner_peer_id or sender <= 1:
 		_reject("not_owner", {"rpc": rpc_name, "target": target, "sender": sender, "owner": owner_peer_id})
+		return false
+	return true
+
+
+func check_owner_epoch(expected_epoch: int, received_epoch: int, rpc_name: String) -> bool:
+	if received_epoch != expected_epoch:
+		_reject("stale_owner_epoch", {"rpc": rpc_name, "expected": expected_epoch, "received": received_epoch})
 		return false
 	return true
 
@@ -59,7 +67,7 @@ func accept() -> void:
 
 
 func total_rejected() -> int:
-	return int(counters.not_owner) + int(counters.not_server) + int(counters.stale_seq) + int(counters.malformed)
+	return int(counters.not_owner) + int(counters.not_server) + int(counters.stale_owner_epoch) + int(counters.stale_seq) + int(counters.malformed)
 
 
 func _reject(reason: String, data: Dictionary) -> void:

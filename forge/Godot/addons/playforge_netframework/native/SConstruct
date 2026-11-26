@@ -1,0 +1,65 @@
+import os
+import sys
+
+from SCons.Errors import UserError
+from SCons.Script import ARGUMENTS, Action, Default, SConscript
+
+API_VERSION = "4.7"
+
+
+def get_godot_cpp_dir():
+	godot_cpp_dir = os.environ.get("GODOT_CPP_DIR")
+	if not godot_cpp_dir:
+		raise UserError("Set GODOT_CPP_DIR to a compatible godot-cpp checkout")
+	godot_cpp_dir = os.path.abspath(godot_cpp_dir)
+	if not os.path.isfile(os.path.join(godot_cpp_dir, "SConstruct")):
+		raise UserError("GODOT_CPP_DIR does not contain godot-cpp/SConstruct: {}".format(godot_cpp_dir))
+	return godot_cpp_dir
+
+
+def write_descriptor(target, source, env):
+	descriptor = """[configuration]
+entry_symbol = "playforge_iris_native_library_init"
+compatibility_minimum = "4.7"
+
+[libraries]
+windows.debug.x86_64 = "res://addons/playforge_netframework/bin/playforge_iris_native.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/playforge_netframework/bin/playforge_iris_native.windows.template_debug.x86_64.dll"
+"""
+	with open(target[0].abspath, "w", encoding="utf-8", newline="\n") as f:
+		f.write(descriptor)
+	return 0
+
+
+def write_scan_ignore(target, source, env):
+	with open(target[0].abspath, "w", encoding="utf-8", newline="\n") as f:
+		f.write("")
+	return 0
+
+
+godot_cpp_dir = get_godot_cpp_dir()
+env = SConscript(os.path.join(godot_cpp_dir, "SConstruct"), {"api_version": API_VERSION})
+if env["platform"] == "windows":
+	env.Append(CXXFLAGS=["/O2"])
+else:
+	env.Append(CXXFLAGS=["-O3"])
+
+output_dir = os.path.normpath(os.path.join("..", "bin"))
+os.makedirs(output_dir, exist_ok=True)
+library = env.SharedLibrary(
+	os.path.join(output_dir, "playforge_iris_native{}{}".format(env["suffix"], env["SHLIBSUFFIX"])),
+	["fg_iris_native.cpp"],
+)
+env.NoCache(library)
+
+descriptor = env.Command(
+	os.path.join(output_dir, "playforge_iris_native.gdextension"),
+	library,
+	Action(write_descriptor, "Generating $TARGET"),
+)
+scan_ignore = env.Command(
+	os.path.join(output_dir, ".gdignore"),
+	descriptor,
+	Action(write_scan_ignore, "Writing $TARGET"),
+)
+Default(scan_ignore)

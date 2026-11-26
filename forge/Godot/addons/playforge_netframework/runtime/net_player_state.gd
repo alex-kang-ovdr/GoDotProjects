@@ -6,6 +6,7 @@ extends Node
 var slot: int = -1
 var user_id: String = ""
 var peer_id: int = 0
+var owner_epoch: int = 1
 var score: int = 0
 ## AuthoritySnapshot.acked_input_seq 대응: 서버가 마지막으로 적용한 입력 순번.
 var acked_input_seq: int = 0

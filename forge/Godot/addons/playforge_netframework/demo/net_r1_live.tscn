@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/playforge_netframework/demo/net_r1_live.gd" id="1"]
+
+[node name="NetR1Live" type="Node"]
+script = ExtResource("1")
