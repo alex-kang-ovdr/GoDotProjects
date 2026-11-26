@@ -362,13 +362,25 @@ async function packageProjectForPlatforms({
   exporter = null,
   onProgress = () => {},
 } = {}) {
+  const startedAt = Date.now();
+  const timings = {
+    importMs: 0,
+    webMs: 0,
+    mobileMs: 0,
+    desktopMs: 0,
+    verifyAndManifestMs: 0,
+    zipMs: 0,
+    totalMs: 0,
+  };
   const targetPlatforms = normalizePlatforms(platforms);
   fs.mkdirSync(outputDir, { recursive: true });
   const logs = [];
 
   if (typeof exporter === 'function') {
     onProgress('packaging_custom', '플랫폼별 패키징 실행 중…');
+    const t0 = Date.now();
     await exporter({ projectDir, outputDir, platforms: targetPlatforms });
+    timings.webMs = Date.now() - t0;
   } else {
     const bin = godotBin || findGodot(forgeRoot);
     if (!bin || !fs.existsSync(bin)) {
@@ -377,16 +389,21 @@ async function packageProjectForPlatforms({
     fs.writeFileSync(path.join(projectDir, 'export_presets.cfg'), MULTI_PLATFORM_EXPORT_PRESETS, 'utf8');
 
     onProgress('importing', 'Godot 프로젝트 리소스 임포트 중…');
+    let t0 = Date.now();
     logs.push(await runGodot(bin, ['--headless', '--path', projectDir, '--editor', '--import', '--quit'], { cwd: projectDir, timeoutMs: 120000 }));
+    timings.importMs = Date.now() - t0;
 
     onProgress('packaging_web', 'Web 플랫폼 패키징 중…');
+    t0 = Date.now();
     logs.push(await runGodot(bin, ['--headless', '--path', projectDir, '--export-release', 'Web', path.join(outputDir, 'index.html')], { cwd: projectDir, timeoutMs: 180000 }));
     injectPlayHubShell(outputDir);
+    timings.webMs = Date.now() - t0;
 
     const needsMobilePck = targetPlatforms.includes('android') || targetPlatforms.includes('ios');
     let mobilePckPath = null;
     if (needsMobilePck) {
       onProgress('packaging_mobile', 'Android/iOS 모바일 PCK 패키징 중…');
+      t0 = Date.now();
       const mobileTmp = path.join(outputDir, '.mobile-pack-tmp.pck');
       try {
         logs.push(await runGodot(bin, ['--headless', '--path', projectDir, '--export-pack', 'MobilePack', mobileTmp], { cwd: projectDir, timeoutMs: 180000 }));
@@ -395,6 +412,7 @@ async function packageProjectForPlatforms({
         // Fallback to Web PCK if mobile export preset fails on host template
         logs.push(`[mobile-pack-fallback] ${err.message}`);
       }
+      timings.mobileMs = Date.now() - t0;
     }
 
     const webPck = path.join(outputDir, 'index.pck');
@@ -410,14 +428,18 @@ async function packageProjectForPlatforms({
     }
     if (targetPlatforms.includes('desktop')) {
       onProgress('packaging_desktop', 'Desktop PCK 패키징 중…');
+      t0 = Date.now();
       const destDir = path.join(outputDir, 'platforms', 'desktop');
       fs.mkdirSync(destDir, { recursive: true });
       fs.copyFileSync(webPck, path.join(destDir, 'index.pck'));
+      timings.desktopMs = Date.now() - t0;
     }
     if (mobilePckPath && fs.existsSync(mobilePckPath)) {
       try { fs.unlinkSync(mobilePckPath); } catch {}
     }
   }
+
+  const tVerifyStart = Date.now();
 
   // Verify Web bundle essentials
   for (const reqFile of ['index.html', 'index.pck']) {
@@ -446,6 +468,8 @@ async function packageProjectForPlatforms({
 
   // Deduplicate identical PCK payloads across platforms so PlayHub-GameDeploy.zip stays compact (< 64 MiB)
   const seenPckBySha = new Map([[webPckSha, 'index.pck']]);
+  let rawPlatformPckBytes = webPckBytes.length;
+  let dedupedPckBytes = webPckBytes.length;
   for (const plat of ['android', 'desktop', 'ios']) {
     if (!targetPlatforms.includes(plat)) continue;
     const platDir = path.join(outputDir, 'platforms', plat);
@@ -457,12 +481,14 @@ async function packageProjectForPlatforms({
     const info = verifyPckHeader(platPck);
     const bytes = fs.readFileSync(platPck);
     const sha = sha256Hex(bytes);
+    rawPlatformPckBytes += bytes.length;
     let canonicalPckRel = `platforms/${plat}/index.pck`;
     if (seenPckBySha.has(sha)) {
       canonicalPckRel = seenPckBySha.get(sha);
       try { fs.unlinkSync(platPck); } catch {}
     } else {
       seenPckBySha.set(sha, canonicalPckRel);
+      dedupedPckBytes += bytes.length;
     }
     const platManifest = {
       schemaVersion: 1,
@@ -493,6 +519,9 @@ async function packageProjectForPlatforms({
     };
   }
 
+  const dedupSavedBytes = Math.max(0, rawPlatformPckBytes - dedupedPckBytes);
+  timings.verifyAndManifestMs = Date.now() - tVerifyStart;
+
   const unifiedManifest = {
     schemaVersion: 1,
     packagingMode: 'server-multi-platform',
@@ -500,15 +529,19 @@ async function packageProjectForPlatforms({
     sourceZipSha256,
     packagedAt: new Date().toISOString(),
     targetPlatforms,
+    dedupSavedBytes,
     platforms: platformPackages,
   };
   fs.writeFileSync(path.join(outputDir, 'platform-packages.json'), JSON.stringify(unifiedManifest, null, 2), 'utf8');
 
   onProgress('zipping', '배포 번들 검증 및 패키징 중…');
+  const tZipStart = Date.now();
   const entries = collectFilesRecursive(outputDir).filter(([rel]) => rel !== 'PlayHub-GameDeploy.zip').sort(([a], [b]) => a.localeCompare(b, 'en'));
   const bundleZipBuffer = zipFiles(entries);
   const validation = validateDeploymentZip(bundleZipBuffer);
   fs.writeFileSync(path.join(outputDir, 'PlayHub-GameDeploy.zip'), bundleZipBuffer);
+  timings.zipMs = Date.now() - tZipStart;
+  timings.totalMs = Date.now() - startedAt;
 
   return {
     bundleZipPath: path.join(outputDir, 'PlayHub-GameDeploy.zip'),
@@ -519,6 +552,17 @@ async function packageProjectForPlatforms({
     entryCount: validation.entryCount,
     platformManifest: unifiedManifest,
     platforms: platformPackages,
+    metrics: {
+      timings,
+      sizes: {
+        rawPlatformPckBytes,
+        dedupedPckBytes,
+        dedupSavedBytes,
+        bundleBytes: validation.bytes,
+        expandedBytes: validation.expandedBytes,
+        entryCount: validation.entryCount,
+      },
+    },
     log: logs.join('\n').slice(-120000),
   };
 }

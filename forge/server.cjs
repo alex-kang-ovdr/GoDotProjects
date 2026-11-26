@@ -1138,6 +1138,9 @@ function createServer(options = {}) {
         const reqOrigin = firstOrigin(configuredOrigin) || (req.headers.host ? `http://${req.headers.host}` : '');
         return json(200, gameDeploy.getConfig(reqOrigin));
       }
+      if (routePath === '/api/platform/game-deploy/stats' && req.method === 'GET') {
+        return json(200, { ok: true, ...gameDeploy.getStats(auth?.accountKey || null) });
+      }
       if (routePath === '/api/platform/game-deploy/probe-farm' && req.method === 'POST') {
         try {
           const chunks = [];
@@ -1160,6 +1163,7 @@ function createServer(options = {}) {
       if (routePath === '/api/platform/game-deploy/jobs' && req.method === 'POST') {
         if (!buildExecutionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
         try {
+          const receiveStartedMs = Date.now();
           const contentType = String(req.headers['content-type'] || '').toLowerCase();
           const reqOrigin = firstOrigin(configuredOrigin) || (req.headers.host ? `http://${req.headers.host}` : '');
           let meta = {};
@@ -1205,6 +1209,7 @@ function createServer(options = {}) {
               return json(400, { ok: false, error: '프로젝트 ZIP 업로드 또는 유효한 projectId가 필요합니다.' });
             }
           }
+          const uploadReceiveMs = Math.max(1, Date.now() - receiveStartedMs);
 
           const job = gameDeploy.enqueue({
             ownerKey: auth?.accountKey || null,
@@ -1212,6 +1217,7 @@ function createServer(options = {}) {
             projectSnapshot,
             zipBuffer,
             uploadFilename: meta.uploadFilename || '',
+            uploadReceiveMs,
             platforms: meta.platforms,
             targetFarmId: meta.targetFarmId || 'default',
             customFarmUrl: meta.customFarmUrl || '',

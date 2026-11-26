@@ -271,6 +271,76 @@ test('Web Forge uploads Project ZIP -> server packages Web/Android/Desktop/iOS -
   const pckBuf = Buffer.from(await pckRes.arrayBuffer());
   assert.equal(pckBuf.subarray(0, 4).toString('ascii'), 'GDPC');
   assert.match(pckBuf.toString('utf8'), /android-mobile-etc2/);
+
+  // 5. Verify per-job deployment metrics (transfer volume, processing time, resource usage, dedup savings)
+  assert.ok(job.metrics, 'Completed job must include metrics');
+  assert.ok(job.metrics.transfer.uploadBytes > 0);
+  assert.ok(job.metrics.transfer.bundleBytes > 0);
+  assert.ok(job.metrics.transfer.expandedBytes > 0);
+  assert.ok(job.metrics.transfer.dedupSavedBytes > 0, 'Desktop/iOS PCK deduplication must report saved bytes');
+  assert.equal(job.metrics.transfer.farmTransferBytes, job.bundleBytes);
+  assert.equal(
+    job.metrics.transfer.totalTransferBytes,
+    job.metrics.transfer.uploadBytes + job.metrics.transfer.farmTransferBytes
+  );
+  assert.ok(job.metrics.timing.totalMs >= 0);
+  assert.ok(job.metrics.timing.extractMs >= 0);
+  assert.ok(job.metrics.timing.packageMs >= 0);
+  assert.ok(job.metrics.timing.farmUploadMs >= 0);
+  assert.ok(job.metrics.timing.hubServerMs >= 0);
+  assert.ok(job.metrics.timing.packageStages && Number.isFinite(job.metrics.timing.packageStages.zipMs));
+  assert.ok(job.metrics.usage.cpuTotalMs >= 0);
+  assert.ok(job.metrics.usage.peakRssMb > 0);
+  assert.ok(job.metrics.usage.workspaceDiskBytes > 0);
+
+  assert.ok(job.deployResult.metrics, 'Hub deploy response must include server-side metrics');
+  assert.ok(job.deployResult.metrics.bundleBytes > 0);
+  assert.ok(job.deployResult.metrics.expandedBytes > 0);
+  assert.ok(job.deployResult.metrics.entryCount >= 3);
+  assert.ok(job.deployResult.metrics.rssMb > 0);
+
+  // 6. Verify Forge aggregated deployment statistics endpoint
+  const forgeStatsRes = await fetch(`${forgeBase}/api/platform/game-deploy/stats`);
+  assert.equal(forgeStatsRes.status, 200);
+  const forgeStats = await forgeStatsRes.json();
+  assert.equal(forgeStats.ok, true);
+  assert.equal(forgeStats.totalDeploys, 1);
+  assert.equal(forgeStats.succeeded, 1);
+  assert.equal(forgeStats.failed, 0);
+  assert.equal(forgeStats.successRate, 100);
+  assert.ok(forgeStats.transfer.totalBytes > 0);
+  assert.ok(forgeStats.transfer.totalDedupSavedBytes > 0);
+  assert.ok(forgeStats.usage.peakRssMb > 0);
+  assert.ok(forgeStats.usage.totalWorkspaceDiskBytes > 0);
+  assert.equal(forgeStats.byPlatform.web.count, 1);
+  assert.equal(forgeStats.byPlatform.android.count, 1);
+  assert.equal(forgeStats.byPlatform.desktop.count, 1);
+  assert.equal(forgeStats.byPlatform.ios.count, 1);
+  assert.equal(forgeStats.byFarm.custom.count, 1);
+  assert.equal(forgeStats.recent.length, 1);
+  assert.equal(forgeStats.recent[0].gameSlug, 'ftl-zip-test');
+
+  // 7. Verify Hub deployment statistics endpoint (requires auth, returns persisted SQLite stats)
+  const unauthStatsRes = await fetch(`${devHub.baseUrl}/api/creator/publications/deploy-stats`);
+  assert.equal(unauthStatsRes.status, 401);
+
+  const hubStatsRes = await fetch(`${devHub.baseUrl}/api/creator/publications/deploy-stats`, {
+    headers: { 'X-PlayHub-Dev-Deploy-Token': devHub.devToken },
+  });
+  assert.equal(hubStatsRes.status, 200);
+  const hubStats = await hubStatsRes.json();
+  assert.equal(hubStats.ok, true);
+  assert.equal(hubStats.totalDeploys, 1);
+  assert.equal(hubStats.succeeded, 1);
+  assert.equal(hubStats.failed, 0);
+  assert.equal(hubStats.successRate, 100);
+  assert.ok(hubStats.transfer.totalBundleBytes > 0);
+  assert.ok(hubStats.transfer.totalExpandedBytes > 0);
+  assert.ok(hubStats.usage.peakRssMb > 0);
+  assert.ok(hubStats.usage.totalStorageBytes > 0);
+  assert.equal(hubStats.byPlatform.android, 1);
+  assert.equal(hubStats.recent.length, 1);
+  assert.equal(hubStats.recent[0].gameId, 'ftl-zip-test');
 });
 
 test('Live Hub channel and Live Forge mode fail-closed against farm selection & direct public deploy', async (t) => {

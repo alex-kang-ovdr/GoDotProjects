@@ -85,6 +85,23 @@
     return Math.round(bytes / 1024) + " KB";
   }
 
+  function formatSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
+    if (bytes >= 1024 * 1024 * 1024) return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    if (bytes >= 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return Math.round(bytes) + " B";
+  }
+
+  function formatDuration(ms) {
+    if (!Number.isFinite(ms) || ms <= 0) return "0ms";
+    if (ms < 1000) return Math.round(ms) + "ms";
+    if (ms < 60000) return (ms / 1000).toFixed(2) + "s";
+    const mins = Math.floor(ms / 60000);
+    const secs = ((ms % 60000) / 1000).toFixed(1);
+    return `${mins}m ${secs}s`;
+  }
+
   function estimatePoints(state, config) {
     const krwPerPoint = config.krwPerPoint || 14;
     const freeLimit = config.freeMonthlyPointLimit || 100;
@@ -210,7 +227,9 @@
       gameDeploying: false,
       gameDeployJob: null,
       gameDeployError: "",
-      showGameDeployLog: false
+      showGameDeployLog: false,
+      deployStats: null,
+      loadingStats: false
     };
 
     function applyMetadata(gm, dp) {
@@ -238,15 +257,27 @@
       }
     }
 
+    async function loadDeployStats() {
+      state.loadingStats = true;
+      try {
+        const statsRes = await ctx.api("/api/platform/game-deploy/stats").catch(() => null);
+        if (statsRes?.ok) state.deployStats = statsRes;
+      } finally {
+        state.loadingStats = false;
+      }
+    }
+
     async function loadMeta() {
       try {
-        const [cfg, deployCfg, rel, tpl] = await Promise.all([
+        const [cfg, deployCfg, rel, tpl, statsRes] = await Promise.all([
           ctx.api("/api/platform/publish-config").catch(() => null),
           ctx.api("/api/platform/game-deploy/config").catch(() => null),
           ctx.api("/api/platform/projects/" + project.id + "/releases").catch(() => ({ releases: [] })),
-          project.template ? ctx.api("/api/platform/templates/" + encodeURIComponent(project.template)).catch(() => null) : Promise.resolve(null)
+          project.template ? ctx.api("/api/platform/templates/" + encodeURIComponent(project.template)).catch(() => null) : Promise.resolve(null),
+          ctx.api("/api/platform/game-deploy/stats").catch(() => null)
         ]);
         if (cfg?.specTiers) state.config = cfg;
+        if (statsRes?.ok) state.deployStats = statsRes;
         if (deployCfg?.ok) {
           state.deployConfig = deployCfg;
           if (!deployCfg.farmSelectorAllowed) {
@@ -373,6 +404,7 @@
         state.showGameDeployLog = true;
       } finally {
         state.gameDeploying = false;
+        await loadDeployStats();
         render();
       }
     }
@@ -1197,6 +1229,44 @@
           sec.append(grid);
         }
 
+        if (job.metrics) {
+          const tr = job.metrics.transfer || {};
+          const tm = job.metrics.timing || {};
+          const us = job.metrics.usage || {};
+          const speedText = tr.farmThroughputMBps > 0
+            ? ` · ${tr.farmThroughputMBps} MB/s`
+            : (tr.uploadThroughputMBps > 0 ? ` · ${tr.uploadThroughputMBps} MB/s` : "");
+          sec.append(
+            el("div", { className: "pf-metric-card" },
+              el("h5", { text: "이번 배포 통계 (전송량 · 처리시간 · 사용량)" }),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "전송량" }),
+                el("strong", {
+                  text: `총 ${formatSize(tr.totalTransferBytes)} (업로드 ${formatSize(tr.uploadBytes)} / 팜 ${formatSize(tr.farmTransferBytes)}${speedText})`
+                })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "패키지·절감" }),
+                el("strong", {
+                  text: `번들 ${formatSize(tr.bundleBytes)} · 전개 ${formatSize(tr.expandedBytes)} · 중복절감 ${formatSize(tr.dedupSavedBytes)}`
+                })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "처리시간" }),
+                el("strong", {
+                  text: `총 ${formatDuration(tm.totalMs)} (해제 ${formatDuration(tm.extractMs)} · 패키징 ${formatDuration(tm.packageMs)} · 전송 ${formatDuration(tm.farmUploadMs)} · 허브 ${formatDuration(tm.hubServerMs)})`
+                })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "리소스 사용량" }),
+                el("strong", {
+                  text: `CPU ${formatDuration(us.cpuTotalMs)} · 피크 RAM ${us.peakRssMb || 0} MB · 디스크 ${formatSize(us.workspaceDiskBytes)}`
+                })
+              )
+            )
+          );
+        }
+
         if (job.deployResult?.fullPlayUrl) {
           const url = job.deployResult.fullPlayUrl;
           sec.append(
@@ -1242,14 +1312,147 @@
       return sec;
     }
 
+    function renderDeployStats() {
+      const sec = el("div", { className: "pf-pub-section" });
+      const s = state.deployStats;
+      sec.append(
+        el("div", { className: "pf-release-head" },
+          el("strong", { style: "font-size:13px;", text: "전송량 · 처리시간 · 사용량 누적 통계" }),
+          el("button", {
+            type: "button",
+            disabled: state.loadingStats,
+            text: state.loadingStats ? "갱신 중…" : "새로고침",
+            onClick: async () => {
+              render();
+              await loadDeployStats();
+              render();
+            }
+          })
+        )
+      );
+
+      if (!s || !s.totalDeploys) {
+        sec.append(
+          el("div", { className: "pf-pub-box" },
+            el("span", { style: "font-size:12px;color:#434655;", text: "아직 기록된 게임 단독 배포 통계가 없습니다. [게임 단독 배포] 탭에서 배포를 실행하면 전송량·처리시간·CPU/메모리/디스크 사용량이 자동 누적됩니다." })
+          )
+        );
+        return sec;
+      }
+
+      const tr = s.transfer || {};
+      const tm = s.timing || {};
+      const us = s.usage || {};
+
+      sec.append(
+        el("div", { className: "pf-stats-grid" },
+          el("div", { className: "pf-stat-card" },
+            el("span", { text: "총 배포 · 성공률" }),
+            el("strong", { text: `${s.totalDeploys}건 · ${s.successRate}%` }),
+            el("small", { text: `성공 ${s.succeeded}건 / 실패 ${s.failed}건` })
+          ),
+          el("div", { className: "pf-stat-card" },
+            el("span", { text: "누적 전송량 · 절감" }),
+            el("strong", { text: formatSize(tr.totalBytes) }),
+            el("small", { text: `업로드 ${formatSize(tr.totalUploadBytes)} · 팜 ${formatSize(tr.totalFarmTransferBytes)} · 절감 ${formatSize(tr.totalDedupSavedBytes)}` })
+          ),
+          el("div", { className: "pf-stat-card" },
+            el("span", { text: "처리시간 (평균 / P95)" }),
+            el("strong", { text: `${formatDuration(tm.avgTotalMs)} / ${formatDuration(tm.p95TotalMs)}` }),
+            el("small", { text: `패키징 평균 ${formatDuration(tm.avgPackageMs)} · 팜전송 평균 ${formatDuration(tm.avgFarmUploadMs)}` })
+          ),
+          el("div", { className: "pf-stat-card" },
+            el("span", { text: "서버 리소스 사용량" }),
+            el("strong", { text: `피크 ${us.peakRssMb || 0} MB` }),
+            el("small", { text: `누적 CPU ${formatDuration(us.totalCpuMs)} · 디스크 ${formatSize(us.totalWorkspaceDiskBytes)}` })
+          )
+        )
+      );
+
+      const platEntries = Object.entries(s.byPlatform || {});
+      if (platEntries.length) {
+        const platGrid = el("div", { className: "pf-plat-grid" });
+        for (const [plat, info] of platEntries) {
+          platGrid.append(
+            el("div", { className: "pf-plat-item" },
+              el("strong", { text: plat.toUpperCase() }),
+              el("span", { style: "font-size:11px;color:#434655;", text: `${info.count}회 · 평균 ${formatSize(info.avgBytes)}` })
+            )
+          );
+        }
+        sec.append(
+          el("div", { className: "pf-pub-box" },
+            el("h4", { text: "플랫폼별 패키징 현황" }),
+            platGrid
+          )
+        );
+      }
+
+      const farmEntries = Object.values(s.byFarm || {});
+      if (farmEntries.length) {
+        const farmBox = el("div", { className: "pf-pub-box" },
+          el("h4", { text: "대상 팜별 배포 현황" })
+        );
+        for (const f of farmEntries) {
+          farmBox.append(
+            el("div", { className: "pf-metric-line" },
+              el("span", { text: `${f.label} (${f.succeeded}/${f.count})` }),
+              el("strong", { text: `${formatSize(f.totalTransferBytes)} · 평균 ${formatDuration(f.avgTotalMs)}` })
+            )
+          );
+        }
+        sec.append(farmBox);
+      }
+
+      const recent = Array.isArray(s.recent) ? s.recent : [];
+      if (recent.length) {
+        sec.append(el("h4", { style: "margin:4px 0 0;font-size:13px;", text: `최근 배포 이력 (${recent.length}건)` }));
+        for (const r of recent.slice(0, 10)) {
+          sec.append(
+            el("div", { className: "pf-release-item" },
+              el("div", { className: "pf-release-head" },
+                el("strong", { text: `${r.title || r.gameSlug} (${r.gameSlug})` }),
+                el("span", {
+                  className: "pf-badge " + (r.status === "succeeded" ? "live" : "fail"),
+                  text: r.status === "succeeded" ? "성공" : "실패"
+                })
+              ),
+              el("small", {
+                style: "color:#586079;font-size:11px;",
+                text: `${r.farmLabel || "—"} · ${(r.platforms || []).map(p => p.toUpperCase()).join(", ") || "WEB"} · ${formatDuration(r.totalMs)}`
+              }),
+              el("small", {
+                style: "color:#434655;font-size:11px;",
+                text: `업로드 ${formatSize(r.uploadBytes)} · 번들 ${formatSize(r.bundleBytes)} · 절감 ${formatSize(r.dedupSavedBytes)} · CPU ${formatDuration(r.cpuTotalMs)} · RAM ${r.peakRssMb || 0}MB`
+              })
+            )
+          );
+        }
+      }
+
+      return sec;
+    }
+
     function render() {
       bodyEl.replaceChildren();
+      const statsCount = state.deployStats?.totalDeploys || 0;
       const tabs = el("div", { className: "pf-pub-tabs" },
         el("button", {
           type: "button",
           className: "pf-pub-tab" + (state.tab === "game-deploy" ? " active" : ""),
           text: "게임 단독 배포",
           onClick: () => { state.tab = "game-deploy"; render(); }
+        }),
+        el("button", {
+          type: "button",
+          className: "pf-pub-tab" + (state.tab === "stats" ? " active" : ""),
+          text: statsCount ? `배포 통계 (${statsCount})` : "배포 통계",
+          onClick: async () => {
+            state.tab = "stats";
+            render();
+            await loadDeployStats();
+            render();
+          }
         }),
         el("button", {
           type: "button",
@@ -1260,7 +1463,7 @@
         el("button", {
           type: "button",
           className: "pf-pub-tab" + (state.tab === "history" ? " active" : ""),
-          text: `릴리스 · 롤백 (${state.releases.length})`,
+          text: `릴리스 (${state.releases.length})`,
           onClick: () => { state.tab = "history"; render(); }
         })
       );
@@ -1268,6 +1471,10 @@
 
       if (state.tab === "game-deploy") {
         bodyEl.append(renderGameOnlyDeploy());
+        return;
+      }
+      if (state.tab === "stats") {
+        bodyEl.append(renderDeployStats());
         return;
       }
       if (state.tab === "history") {

@@ -257,6 +257,30 @@ export function createUgcPublish({
       response_json TEXT NOT NULL,
       created_at INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS hub_game_deploy_metrics (
+      id TEXT PRIMARY KEY,
+      game_id TEXT NOT NULL,
+      release_id TEXT,
+      owner_key TEXT NOT NULL,
+      owner_id TEXT NOT NULL,
+      visibility TEXT NOT NULL,
+      deploy_mode TEXT NOT NULL,
+      status TEXT NOT NULL,
+      bundle_bytes INTEGER NOT NULL DEFAULT 0,
+      expanded_bytes INTEGER NOT NULL DEFAULT 0,
+      entry_count INTEGER NOT NULL DEFAULT 0,
+      receive_ms INTEGER NOT NULL DEFAULT 0,
+      storage_ms INTEGER NOT NULL DEFAULT 0,
+      db_ms INTEGER NOT NULL DEFAULT 0,
+      total_ms INTEGER NOT NULL DEFAULT 0,
+      rss_mb REAL NOT NULL DEFAULT 0,
+      platforms_json TEXT,
+      error_code TEXT,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS hub_game_deploy_metrics_owner ON hub_game_deploy_metrics(owner_key, created_at DESC);
+    CREATE INDEX IF NOT EXISTS hub_game_deploy_metrics_created ON hub_game_deploy_metrics(created_at DESC);
   `);
 
   const pubCols = new Set(db.prepare('PRAGMA table_info(hub_publications)').all().map(c => c.name));
@@ -285,6 +309,110 @@ export function createUgcPublish({
   const insertHistory = db.prepare(`INSERT INTO hub_publication_history
     (id, game_id, from_release_id, to_release_id, action, actor_id, reason, cas_version, created_at, manifest_json, deploy_profile_json, artifact_sha256)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`);
+  const insertDeployMetric = db.prepare(`INSERT INTO hub_game_deploy_metrics
+    (id, game_id, release_id, owner_key, owner_id, visibility, deploy_mode, status,
+     bundle_bytes, expanded_bytes, entry_count, receive_ms, storage_ms, db_ms, total_ms, rss_mb, platforms_json, error_code, created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+
+  function recordDeployMetric(m) {
+    try {
+      insertDeployMetric.run(
+        uid(),
+        String(m.gameId || 'unknown'),
+        m.releaseId || null,
+        String(m.ownerKey || ''),
+        String(m.ownerId || ''),
+        String(m.visibility || 'public'),
+        String(m.deployMode || 'singleplay'),
+        String(m.status || 'succeeded'),
+        Number(m.bundleBytes) || 0,
+        Number(m.expandedBytes) || 0,
+        Number(m.entryCount) || 0,
+        Number(m.receiveMs) || 0,
+        Number(m.storageMs) || 0,
+        Number(m.dbMs) || 0,
+        Number(m.totalMs) || 0,
+        Number(m.rssMb) || 0,
+        m.platforms ? JSON.stringify(m.platforms) : null,
+        m.errorCode || null,
+        Number(m.createdAt) || now()
+      );
+    } catch {}
+  }
+
+  function queryDeployStats(ownerKey = null) {
+    const rows = ownerKey
+      ? db.prepare('SELECT * FROM hub_game_deploy_metrics WHERE owner_key=? ORDER BY created_at DESC LIMIT 500').all(ownerKey)
+      : db.prepare('SELECT * FROM hub_game_deploy_metrics ORDER BY created_at DESC LIMIT 500').all();
+    const totalDeploys = rows.length;
+    let succeeded = 0;
+    let failed = 0;
+    let totalTransferBytes = 0;
+    let totalExpandedBytes = 0;
+    let totalMsSum = 0;
+    let storageMsSum = 0;
+    let maxTotalMs = 0;
+    let peakRssMb = 0;
+    const byPlatform = {};
+
+    for (const r of rows) {
+      if (r.status === 'succeeded') succeeded += 1;
+      else failed += 1;
+      totalTransferBytes += Number(r.bundle_bytes) || 0;
+      totalExpandedBytes += Number(r.expanded_bytes) || 0;
+      const tm = Number(r.total_ms) || 0;
+      totalMsSum += tm;
+      if (tm > maxTotalMs) maxTotalMs = tm;
+      storageMsSum += Number(r.storage_ms) || 0;
+      if (Number(r.rss_mb) > peakRssMb) peakRssMb = Number(r.rss_mb);
+      let plats = [];
+      try { plats = JSON.parse(r.platforms_json || '[]'); } catch {}
+      if (Array.isArray(plats)) {
+        for (const p of plats) byPlatform[p] = (byPlatform[p] || 0) + 1;
+      }
+    }
+
+    return {
+      totalDeploys,
+      succeeded,
+      failed,
+      successRate: totalDeploys ? Number(((succeeded / totalDeploys) * 100).toFixed(1)) : 0,
+      transfer: {
+        totalBundleBytes: totalTransferBytes,
+        totalExpandedBytes,
+        avgBundleBytes: totalDeploys ? Math.round(totalTransferBytes / totalDeploys) : 0
+      },
+      timing: {
+        avgTotalMs: totalDeploys ? Math.round(totalMsSum / totalDeploys) : 0,
+        avgStorageMs: totalDeploys ? Math.round(storageMsSum / totalDeploys) : 0,
+        maxTotalMs
+      },
+      usage: {
+        peakRssMb: Number(peakRssMb.toFixed(2)),
+        totalStorageBytes: totalExpandedBytes
+      },
+      byPlatform,
+      recent: rows.slice(0, 20).map(r => ({
+        id: r.id,
+        gameId: r.game_id,
+        releaseId: r.release_id,
+        status: r.status,
+        visibility: r.visibility,
+        deployMode: r.deploy_mode,
+        bundleBytes: r.bundle_bytes,
+        expandedBytes: r.expanded_bytes,
+        entryCount: r.entry_count,
+        receiveMs: r.receive_ms,
+        storageMs: r.storage_ms,
+        dbMs: r.db_ms,
+        totalMs: r.total_ms,
+        rssMb: r.rss_mb,
+        platforms: (() => { try { return JSON.parse(r.platforms_json || '[]'); } catch { return []; } })(),
+        errorCode: r.error_code || null,
+        createdAt: new Date(r.created_at).toISOString()
+      }))
+    };
+  }
 
   function recordHistory(gameId, fromReleaseId, toReleaseId, action, actorId, reason, casVersion, createdAt, extra = {}) {
     insertHistory.run(
@@ -633,15 +761,23 @@ export function createUgcPublish({
         return true;
       }
 
+      if (pathname === '/api/creator/publications/deploy-stats' && req.method === 'GET') {
+        const owner = requireCreatorOrDevDeployToken(req);
+        json(res, 200, { ok: true, ...queryDeployStats(owner.key) });
+        return true;
+      }
+
       // Game-only direct deployment endpoint (Web Forge -> selected Dev Farm / Hub)
       // Uploads ONLY the server-packaged game bundle (web + android/desktop/ios PCK) and updates
       // hub_publications atomically without touching platform containers or unrelated games.
       if (pathname === '/api/creator/publications/deploy-game' && req.method === 'POST') {
+        const reqStartedMs = Date.now();
         const owner = requireCreatorOrDevDeployToken(req);
         const contentType = String(req.headers['content-type'] || '').toLowerCase();
         let meta = {};
         let zipBuffer = null;
 
+        const tReceive = Date.now();
         if (contentType.includes('application/zip') || contentType.includes('application/octet-stream')) {
           const rawHeader = String(req.headers['x-playhub-deploy-meta'] || '').trim();
           if (rawHeader) {
@@ -659,6 +795,7 @@ export function createUgcPublish({
             zipBuffer = Buffer.from(body.bundleZipBase64, 'base64');
           }
         }
+        const receiveMs = Date.now() - tReceive;
 
         if (!Buffer.isBuffer(zipBuffer) || zipBuffer.length < 22) {
           throw new ApiError(400, 'DEPLOY_BUNDLE_REQUIRED', '유효한 게임 배포 ZIP 번들이 필요합니다.');
@@ -712,6 +849,7 @@ export function createUgcPublish({
         });
 
         let stored;
+        const tStorage = Date.now();
         try {
           stored = storage.putReleaseBundle({
             hostSlug,
@@ -722,8 +860,18 @@ export function createUgcPublish({
             gameManifest
           });
         } catch (err) {
+          recordDeployMetric({
+            gameId: rawSlug, releaseId, ownerKey: owner.key, ownerId: owner.id,
+            visibility: requestedVis, deployMode, status: 'failed',
+            bundleBytes: zipBuffer.length, receiveMs, storageMs: Date.now() - tStorage,
+            totalMs: Date.now() - reqStartedMs,
+            rssMb: Number((process.memoryUsage().rss / (1024 * 1024)).toFixed(2)),
+            platforms: Array.isArray(meta.platforms) ? meta.platforms : ['web'],
+            errorCode: err.code || 'UNSAFE_DEPLOYMENT_ZIP', createdAt: stamp
+          });
           throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP', err.message);
         }
+        const storageMs = Date.now() - tStorage;
 
         // Enrich gameManifest with per-platform package metadata from platform-packages.json if present
         let platformPackages = null;
@@ -753,6 +901,7 @@ export function createUgcPublish({
         const manifestJson = JSON.stringify(gameManifest);
         const deployProfileJson = JSON.stringify(deployProfile);
 
+        const tDb = Date.now();
         const deployResult = transaction(db, () => {
           const current = getPubById.get(rawSlug);
           if (current && current.owner_key !== owner.key) throw new ApiError(409, 'GAME_SLUG_TAKEN');
@@ -792,6 +941,32 @@ export function createUgcPublish({
           });
           return formatPublication(getPubById.get(rawSlug));
         });
+        const dbMs = Date.now() - tDb;
+        const totalMs = Date.now() - reqStartedMs;
+        const rssMb = Number((process.memoryUsage().rss / (1024 * 1024)).toFixed(2));
+        const platList = platformPackages ? Object.keys(platformPackages) : (Array.isArray(meta.platforms) ? meta.platforms : ['web']);
+        const deployMetrics = {
+          receiveMs,
+          storageMs,
+          dbMs,
+          totalMs,
+          bundleBytes: stored.bytes || zipBuffer.length,
+          expandedBytes: stored.expandedBytes || 0,
+          entryCount: stored.entryCount || 0,
+          rssMb
+        };
+        recordDeployMetric({
+          gameId: deployResult.gameId,
+          releaseId,
+          ownerKey: owner.key,
+          ownerId: owner.id,
+          visibility: requestedVis,
+          deployMode,
+          status: 'succeeded',
+          ...deployMetrics,
+          platforms: platList,
+          createdAt: stamp
+        });
 
         json(res, 201, {
           ok: true,
@@ -803,6 +978,7 @@ export function createUgcPublish({
           mobileCatalogUrl: '/api/mobile/catalog',
           artifactSha256: stored.sha256,
           platforms: platformPackages,
+          metrics: deployMetrics,
           directPublished: requestedVis === 'public'
         });
         return true;
@@ -859,6 +1035,10 @@ export function createUgcPublish({
             history: listPubHistory.all(row.game_id).map(toHistoryRow)
           }))
         });
+        return true;
+      }
+      if (pathname === '/api/admin/publications/deploy-stats' && req.method === 'GET') {
+        json(res, 200, { ok: true, ...queryDeployStats(null) });
         return true;
       }
 
