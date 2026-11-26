@@ -1373,6 +1373,8 @@
     "shot_laser": "ships/terran/laser_blaster_small/sounds/laser_blaster_reload_01.wav",
     "shot_heavy_laser": "ships/terran/laser_blaster_large/sounds/heavy_laser_shot_01.wav",
     "shot_cannon": "ships/terran/cannon_med/sounds/cannon_med_shot.wav",
+    "shot_cannon_large": "ships/terran/cannon_large/sounds/cannon_large_shot.wav",
+    "shot_cannon_deck": "ships/terran/cannon_deck/sounds/cannon_deck_shot.wav",
     "shot_missile": "ships/terran/missile_launcher/nuke/sounds/launcher_launch_nuke.wav",
     "shot_disruptor": "ships/terran/disruptor/sounds/disruptor_shot_01.wav",
     "shot_ion": "shots/ion_beam/sounds/ion_beam_loop.wav",
@@ -1395,5 +1397,9 @@
     "part_count": 96,
     "sprite_count": 43,
     "tile_count": 242
+  },
+  "web_sfx": {
+    "count": 16,
+    "total_bytes": 761288
   }
 }

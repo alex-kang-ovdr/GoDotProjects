@@ -18,9 +18,14 @@ const INSET_MARGIN := 12.0
 
 var battle: Variant
 var show_cutaway := false
+var manual_camera := false
 var _camera_center := Vector2.ZERO
 var _zoom := 1.0
 var _camera_ready := false
+var _dragging := false
+var _drag_last := Vector2.ZERO
+var _shake := 0.0
+var _last_shake_time := -1.0
 var _stars: Array[Vector3] = []
 
 
@@ -45,10 +50,33 @@ func _process(delta: float) -> void:
 		_camera_center = desired_center
 		_zoom = desired_zoom
 		_camera_ready = true
-	else:
+	elif not manual_camera:
 		var blend := 1.0 - exp(-5.0 * delta)
 		_camera_center = _camera_center.lerp(desired_center, blend)
 		_zoom = lerpf(_zoom, desired_zoom, blend)
+	# Subtle micro screen-shake on heavy blasts & module destructions
+	var newest_t := _last_shake_time
+	for ev in battle.events:
+		var et := float(ev.get("time", 0.0))
+		if et <= _last_shake_time:
+			continue
+		if et > newest_t:
+			newest_t = et
+		var ek := str(ev.get("kind", ""))
+		if ek == "blast":
+			var bk := str(ev.get("blast_kind", "he"))
+			_shake = minf(9.0, _shake + (6.5 if bk == "nuke" else 3.2))
+		elif ek == "destroyed":
+			_shake = minf(9.0, _shake + 2.6)
+	_last_shake_time = newest_t
+	if _shake > 0.01:
+		_shake = maxf(0.0, _shake - delta * 14.0)
+	queue_redraw()
+
+
+func reset_camera() -> void:
+	manual_camera = false
+	_dragging = false
 	queue_redraw()
 
 
@@ -75,6 +103,9 @@ func _draw() -> void:
 	_draw_environment(_camera_center, _zoom)
 	_draw_world_grid(_camera_center, _zoom)
 	var viewport_center := size * 0.5
+	if _shake > 0.05:
+		var st := float(battle.elapsed) * 57.0
+		viewport_center += Vector2(sin(st) * _shake, cos(st * 1.3) * _shake)
 	_draw_asteroids(_camera_center, _zoom, viewport_center)
 	_draw_ship_lights(battle.player, _camera_center, _zoom, viewport_center)
 	_draw_ship_lights(battle.enemy, _camera_center, _zoom, viewport_center)
@@ -396,6 +427,9 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			_draw_reticle(_center_of(quad), minf(_part_screen_size(part, zoom).x, _part_screen_size(part, zoom).y) * 0.72 + 8.0, AMBER)
 		if dead:
 			_draw_destroyed(quad)
+		elif float(part.hp) < float(part.max_hp) * 0.35:
+			var sm_c := _center_of(quad) + Vector2(sin(float(battle.elapsed) * 2.2 + float(part.uid)) * 4.0, -fposmod(float(battle.elapsed) * 9.0 + float(part.uid) * 3.0, 14.0))
+			draw_circle(sm_c, maxf(2.2, zoom * 0.55), Color("#23272e", 0.36))
 	if show_cutaway and zoom >= 2.2:
 		for member in ship.get("crew", []):
 			if not member.get("alive", true):
@@ -541,8 +575,10 @@ func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_cent
 			var half_arc := float(part.get("shield_arc_rad", deg_to_rad(110.0))) * 0.5
 			var flash := clampf(float(part.get("shield_flash", 0.0)), 0.0, 1.0)
 			var glow := tint.lerp(Color.WHITE, flash * 0.7)
-			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, 0.18 + 0.28 * ratio + 0.25 * flash), maxf(4.0, zoom * 0.85), true)
-			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, 0.55 + 0.4 * ratio), maxf(1.8, zoom * 0.26), true)
+			var shimmer := 0.88 + 0.12 * sin(float(battle.elapsed) * 6.5 + float(uid))
+			draw_arc(center, radius * 1.03, facing - half_arc, facing + half_arc, 32, Color(glow, (0.10 + 0.16 * ratio + 0.22 * flash) * shimmer), maxf(6.5, zoom * 1.25), true)
+			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, (0.20 + 0.30 * ratio + 0.28 * flash) * shimmer), maxf(3.8, zoom * 0.75), true)
+			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow.lightened(0.25), 0.58 + 0.38 * ratio), maxf(1.8, zoom * 0.26), true)
 
 
 func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -564,7 +600,14 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.4, zoom * 0.40 * strength), true)
 		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16 * strength), true)
 		if beam.hit_kind != "miss":
-			draw_circle(b, maxf(3.5, zoom * 0.42 * strength), outer.lightened(0.45))
+			var bspark: Texture2D = AssetLoader.get_sprite("exp_spark")
+			if bspark != null:
+				var bsr := maxf(6.0, zoom * 0.95 * strength)
+				draw_set_transform(b, float(battle.elapsed) * 8.0, Vector2.ONE)
+				draw_texture_rect(bspark, Rect2(-Vector2(bsr, bsr), Vector2(bsr * 2.0, bsr * 2.0)), false, outer.lightened(0.45))
+				draw_set_transform(Vector2.ZERO)
+			else:
+				draw_circle(b, maxf(3.5, zoom * 0.42 * strength), outer.lightened(0.45))
 
 
 func _draw_fires(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -902,6 +945,27 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 				draw_texture_rect(stex_h, Rect2(pos - Vector2(r * 1.4, r * 1.4), Vector2(r * 2.8, r * 2.8)), false, Color(1.0, 0.92, 0.75, alpha * 0.9))
 			else:
 				draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)
+	# Brief muzzle flash on recent weapon shots
+	var mspark: Texture2D = AssetLoader.get_sprite("exp_spark")
+	for ev in battle.events:
+		if str(ev.get("kind", "")) != "shot":
+			continue
+		var age_s := now - float(ev.get("time", 0.0))
+		if age_s < 0.0 or age_s > 0.14:
+			continue
+		var side_ship: Dictionary = battle.player if ev.get("side") == "player" else battle.enemy
+		var suid := int(ev.get("uid", -1))
+		if not side_ship.get("parts", {}).has(suid):
+			continue
+		var p_gun: Dictionary = side_ship.parts[suid]
+		var m_world := _grid_world(side_ship, p_gun.get("mount_local", Vector2(p_gun.cell) + Vector2(p_gun.size) * 0.5))
+		var m_scr := _world_to_screen(m_world, camera, zoom, viewport_center)
+		var ma := 1.0 - age_s / 0.14
+		var mr := maxf(4.0, zoom * 0.85 * ma)
+		if mspark != null:
+			draw_texture_rect(mspark, Rect2(m_scr - Vector2(mr, mr), Vector2(mr * 2.0, mr * 2.0)), false, Color(1.0, 0.95, 0.75, ma * 0.85))
+		else:
+			draw_circle(m_scr, mr * 0.55, Color("#fff2b2", ma * 0.8))
 
 
 func _part_color(id: String) -> Color:
@@ -949,7 +1013,38 @@ func _part_color(id: String) -> Color:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if not event is InputEventMouseButton or event.button_index != MOUSE_BUTTON_LEFT or not event.pressed or battle == null:
+	if battle == null:
+		return
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+			manual_camera = true
+			_zoom = clampf(_zoom * 1.18, 0.08, 24.0)
+			queue_redraw()
+			accept_event()
+			return
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+			manual_camera = true
+			_zoom = clampf(_zoom / 1.18, 0.08, 24.0)
+			queue_redraw()
+			accept_event()
+			return
+		elif event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+			_dragging = event.pressed
+			_drag_last = event.position
+			if _dragging:
+				manual_camera = true
+			accept_event()
+			return
+		if event.button_index != MOUSE_BUTTON_LEFT or not event.pressed:
+			return
+	elif event is InputEventMouseMotion and _dragging:
+		var delta_px: Vector2 = event.position - _drag_last
+		_drag_last = event.position
+		_camera_center -= delta_px / maxf(_zoom, 0.05)
+		queue_redraw()
+		accept_event()
+		return
+	else:
 		return
 	var inset := _tactical_inset_data()
 	if not inset.is_empty() and inset.rect.has_point(event.position):

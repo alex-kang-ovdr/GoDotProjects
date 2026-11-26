@@ -27,7 +27,8 @@ func test() -> void:
 	_check(int(summary.get("missing_files", 1)) == 0 and int(summary.get("mismatched_files", 1)) == 0, "asset index records zero omissions and zero mismatches")
 	_check(int(summary.get("extracted_files", 0)) >= 12080, "asset index records >= 12,080 extracted files")
 	_check(loader.index.get("part_sprites", {}).size() == 96, "asset index maps all 96 Terran parts")
-	_check(loader.index.get("audio_sfx", {}).size() >= 14, "asset index maps all 14 combat SFX kinds")
+	_check(loader.index.get("audio_sfx", {}).size() >= 16, "asset index maps all 16 combat SFX kinds")
+	_check(int(loader.index.get("web_sfx", {}).get("count", 0)) >= 14, "compact Web SFX WAV pack exported for Web Godot audio streaming")
 
 	# If local extracted_assets/ or C:/Temp/Cosmoteer/Data is present, verify real PNG & WAV loading
 	if not loader.data_root.is_empty():

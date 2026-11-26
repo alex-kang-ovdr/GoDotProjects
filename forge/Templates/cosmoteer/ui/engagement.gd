@@ -189,7 +189,20 @@ func _build_flight_page() -> void:
 	var console: VBoxContainer = lab.panel_column(flight_page)
 	console.get_parent().custom_minimum_size.x = 255
 	console.get_parent().size_flags_horizontal = Control.SIZE_SHRINK_END
-	console.add_child(lab.label("비행 계기",21,lab.WHITE))
+	var console_head := HBoxContainer.new()
+	console.add_child(console_head)
+	console_head.add_child(lab.label("비행 계기",21,lab.WHITE))
+	console_head.add_spacer(false)
+	var cam_reset: Button = lab.button("카메라 복귀",func():
+		if flight_view != null:
+			flight_view.reset_camera())
+	cam_reset.focus_mode = Control.FOCUS_NONE
+	cam_reset.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cam_reset.add_theme_font_size_override("font_size",12)
+	cam_reset.add_theme_stylebox_override("normal",lab.box(lab.SURFACE,lab.EDGE,3))
+	cam_reset.add_theme_stylebox_override("hover",lab.box(Color("#213947"),lab.SOFT,3))
+	cam_reset.add_theme_stylebox_override("pressed",lab.box(Color("#20483e"),lab.GREEN,3))
+	console_head.add_child(cam_reset)
 	flight_readout = lab.label("",16,lab.SOFT)
 	console.add_child(flight_readout)
 	readiness = lab.label("",15,lab.GREEN)

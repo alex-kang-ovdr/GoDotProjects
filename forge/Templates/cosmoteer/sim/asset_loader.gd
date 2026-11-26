@@ -6,6 +6,7 @@ extends Node
 ## Gracefully falls back to procedural vector rendering & synthesized SFX if external assets are unavailable.
 
 signal assets_ready(part_count: int)
+signal sfx_ready(kind: String, stream: AudioStreamWAV)
 
 const INDEX_PATH := "res://data/asset_index.json"
 
@@ -23,6 +24,10 @@ var use_original_sprites := true
 var loaded_count := 0
 var _http_json: HTTPRequest = null
 var _http_png: HTTPRequest = null
+var _http_sfx: HTTPRequest = null
+var _sfx_queue: Array[String] = []
+var _sfx_inflight := ""
+var _web_origin := ""
 var _pending_meta: Dictionary = {}
 
 
@@ -85,6 +90,7 @@ func _start_web_atlas_fetch() -> void:
 			origin = raw
 	if origin.is_empty():
 		return
+	_web_origin = origin
 	_http_json = HTTPRequest.new()
 	add_child(_http_json)
 	_http_json.request_completed.connect(_on_web_json_done)
@@ -116,6 +122,38 @@ func _on_web_png_done(result: int, code: int, _headers: PackedStringArray, body:
 	if img.load_png_from_buffer(body) != OK:
 		return
 	_apply_atlas(img, _pending_meta)
+	_start_web_sfx_fetch()
+
+
+func _start_web_sfx_fetch() -> void:
+	if _web_origin.is_empty() or index.is_empty():
+		return
+	_sfx_queue.clear()
+	for k in index.get("audio_sfx", {}).keys():
+		_sfx_queue.append(str(k))
+	if _sfx_queue.is_empty():
+		return
+	_http_sfx = HTTPRequest.new()
+	add_child(_http_sfx)
+	_http_sfx.request_completed.connect(_on_web_sfx_done)
+	_fetch_next_web_sfx()
+
+
+func _fetch_next_web_sfx() -> void:
+	if _sfx_queue.is_empty():
+		_sfx_inflight = ""
+		return
+	_sfx_inflight = _sfx_queue.pop_front()
+	_http_sfx.request(_web_origin + "/cosmoteer-assets/web_sfx/" + _sfx_inflight + ".wav")
+
+
+func _on_web_sfx_done(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and not _sfx_inflight.is_empty():
+		var wav := _parse_wav_bytes(body)
+		if wav != null:
+			wav_cache[_sfx_inflight] = wav
+			sfx_ready.emit(_sfx_inflight, wav)
+	_fetch_next_web_sfx()
 
 
 func _apply_atlas(img: Image, meta: Dictionary) -> void:
@@ -224,7 +262,10 @@ func load_sfx_wav(kind: String) -> AudioStreamWAV:
 
 
 static func _parse_wav_file(abs_path: String) -> AudioStreamWAV:
-	var bytes := FileAccess.get_file_as_bytes(abs_path)
+	return _parse_wav_bytes(FileAccess.get_file_as_bytes(abs_path))
+
+
+static func _parse_wav_bytes(bytes: PackedByteArray) -> AudioStreamWAV:
 	if bytes.size() < 44:
 		return null
 	if bytes.slice(0, 4).get_string_from_ascii() != "RIFF" or bytes.slice(8, 12).get_string_from_ascii() != "WAVE":

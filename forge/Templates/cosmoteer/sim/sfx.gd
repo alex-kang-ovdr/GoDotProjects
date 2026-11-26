@@ -61,10 +61,17 @@ func build_streams() -> void:
 	streams["fire_ignite"] = _make_sweep(0.16, 420.0, 260.0, 0.26, true)
 	streams["destroyed"] = _make_sweep(0.32, 160.0, 38.0, 0.48, true)
 	if AssetLoader.instance != null:
+		if not AssetLoader.instance.sfx_ready.is_connected(_on_sfx_ready):
+			AssetLoader.instance.sfx_ready.connect(_on_sfx_ready)
 		for k in KINDS:
 			var real_wav: AudioStreamWAV = AssetLoader.instance.load_sfx_wav(k)
 			if real_wav != null:
 				streams[k] = real_wav
+
+
+func _on_sfx_ready(kind: String, stream: AudioStreamWAV) -> void:
+	if stream != null:
+		streams[kind] = stream
 
 
 func play(kind: String) -> void:

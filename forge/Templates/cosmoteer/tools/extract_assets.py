@@ -14,7 +14,9 @@ import hashlib
 import json
 import os
 import shutil
+import struct
 import sys
+import wave
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -160,6 +162,16 @@ def build_audio_map(data_root: Path) -> dict[str, str]:
         "shot_cannon": (
             ["ships/terran/cannon_med/sounds/cannon_med_shot.wav"],
             "ships/terran/cannon_med/**/*.wav",
+        ),
+        "shot_cannon_large": (
+            ["ships/terran/cannon_large/sounds/cannon_large_shot.wav",
+             "ships/terran/cannon_large/sounds/cannon_large_shot_01.wav"],
+            "ships/terran/cannon_large/**/*.wav",
+        ),
+        "shot_cannon_deck": (
+            ["ships/terran/cannon_deck/sounds/cannon_deck_shot.wav",
+             "ships/terran/cannon_deck/sounds/deck_cannon_shot_01.wav"],
+            "ships/terran/cannon_deck/**/*.wav",
         ),
         "shot_missile": (
             ["ships/terran/missile_launcher/he/sounds/launcher_launch_he_01.wav",
@@ -472,6 +484,57 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
         "sprite_count": len(sprite_rects),
         "tile_count": len(placements),
     }
+
+
+def build_web_sfx(data_root: Path, audio_map: dict[str, str], out_dir: Path, target_rate: int = 22050, max_sec: float = 1.2) -> dict[str, Any]:
+    """Export compact 16-bit mono 22050Hz WAVs for Web Godot (WASM) HTTP audio streaming."""
+    sfx_dir = out_dir / "web_sfx"
+    sfx_dir.mkdir(parents=True, exist_ok=True)
+    exported: dict[str, int] = {}
+    for kind, rel in sorted(audio_map.items()):
+        src = data_root / rel
+        if not src.is_file():
+            continue
+        try:
+            with wave.open(str(src), "rb") as w:
+                nch = w.getnchannels()
+                sw = w.getsampwidth()
+                rate = w.getframerate()
+                nframes = min(w.getnframes(), int(rate * max_sec))
+                raw = w.readframes(nframes)
+            if sw not in (2, 3) or nframes <= 0:
+                continue
+            if sw == 2:
+                samples = struct.unpack(f"<{len(raw) // 2}h", raw)
+            else:
+                samples = [struct.unpack("<h", raw[i + 1:i + 3])[0] for i in range(0, len(raw) - 2, 3)]
+            # Mix down to mono
+            if nch >= 2:
+                mono = [int((samples[i] + samples[i + 1]) * 0.5) for i in range(0, len(samples) - 1, nch)]
+            else:
+                mono = list(samples)
+            # Linear resample to target_rate
+            if rate != target_rate and len(mono) > 1:
+                out_len = max(1, int(len(mono) * target_rate / rate))
+                step = (len(mono) - 1) / max(1, out_len - 1)
+                resampled = []
+                for idx in range(out_len):
+                    pos = idx * step
+                    i0 = int(pos)
+                    frac = pos - i0
+                    i1 = min(len(mono) - 1, i0 + 1)
+                    resampled.append(int(mono[i0] * (1.0 - frac) + mono[i1] * frac))
+                mono = resampled
+            dst = sfx_dir / f"{kind}.wav"
+            with wave.open(str(dst), "wb") as ow:
+                ow.setnchannels(1)
+                ow.setsampwidth(2)
+                ow.setframerate(target_rate)
+                ow.writeframes(struct.pack(f"<{len(mono)}h", *mono))
+            exported[kind] = dst.stat().st_size
+        except Exception:
+            continue
+    return {"count": len(exported), "total_bytes": sum(exported.values()), "files": exported}
 
 
 def extract_all(

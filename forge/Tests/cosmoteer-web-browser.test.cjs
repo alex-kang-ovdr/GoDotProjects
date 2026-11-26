@@ -57,18 +57,18 @@ test('Cosmoteer template exports to Godot Web (WASM) and runs interactively in h
     server.removeAllListeners('request');
     server.on('request', (req, res) => {
       if (req.url && req.url.startsWith('/cosmoteer-assets/')) {
-        const rel = path.basename(req.url.split('?')[0]);
-        if (rel === 'web_atlas.json' || rel === 'web_atlas.png') {
-          const fp = path.join(extractedAssetsDir, rel);
-          if (fs.existsSync(fp)) {
-            if (rel === 'web_atlas.png') webAtlasFetched = true;
-            res.writeHead(200, {
-              'Content-Type': rel.endsWith('.png') ? 'image/png' : 'application/json; charset=utf-8',
-              'Cross-Origin-Resource-Policy': 'same-origin',
-            });
-            fs.createReadStream(fp).pipe(res);
-            return;
-          }
+        const sub = decodeURIComponent(req.url.slice('/cosmoteer-assets/'.length).split('?')[0]);
+        const full = path.resolve(extractedAssetsDir, sub);
+        if (full.startsWith(path.resolve(extractedAssetsDir)) && fs.existsSync(full) && fs.statSync(full).isFile()) {
+          if (sub === 'web_atlas.png') webAtlasFetched = true;
+          const ext = path.extname(full).toLowerCase();
+          const ct = ext === '.png' ? 'image/png' : ext === '.json' ? 'application/json; charset=utf-8' : ext === '.wav' ? 'audio/wav' : 'application/octet-stream';
+          res.writeHead(200, {
+            'Content-Type': ct,
+            'Cross-Origin-Resource-Policy': 'same-origin',
+          });
+          fs.createReadStream(full).pipe(res);
+          return;
         }
       }
       for (const fn of prevListeners) fn.call(server, req, res);

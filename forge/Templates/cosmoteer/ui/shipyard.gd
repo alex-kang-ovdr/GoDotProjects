@@ -661,7 +661,24 @@ func _design_changed() -> void:
 	depart_button.tooltip_text = reason
 	undo_button.disabled = history.is_empty()
 	load_button.disabled = not FileAccess.file_exists(save_path)
-	resources.text = "부품 %d개     건조 재료   %s" % [design.parts.size(),_cost_text(design.total_cost())]
+	var total_mass := 0.0
+	var total_crew := 0
+	var total_shield := 0
+	var total_dps := 0.0
+	for part in design.parts:
+		var row: Dictionary = design.by_id[part.id]
+		var st: Dictionary = row.stats
+		total_mass += float(part.size.x * part.size.y) * float(row.get("density", 1.0))
+		if CombatSystems.is_bunk(part.id):
+			total_crew += int(st.get("crew_capacity", 0))
+		if CombatSystems.is_shield(part.id):
+			total_shield += int(st.get("shield_max_hp", 0))
+		if CombatSystems.is_weapon(part.id):
+			if st.has("beam_dps"):
+				total_dps += float(st.beam_dps)
+			elif float(st.get("fire_interval", 0.0)) > 0.0:
+				total_dps += float(st.get("damage", 0.0)) / float(st.fire_interval)
+	resources.text = "부품 %d개 · 질량 %.0ft · 화력 %d DPS · 방어막 %d · 승무원 %d명   |   재료 %s" % [design.parts.size(), total_mass, roundi(total_dps), total_shield, total_crew, _cost_text(design.total_cost())]
 
 func _cost_text(cost: Dictionary) -> String:
 	var items := PackedStringArray()
