@@ -1,0 +1,2434 @@
+{
+  "schemaVersion": 1,
+  "gameBuild": 24423041,
+  "simVersion": "SimDLL.dll sha256 031960F120AC1D59FD8E43F6E1A7369111C629B90C24D52186B691DFE2D8A727",
+  "runner": "capture-native-gas-traces.py",
+  "seed": 73,
+  "world": {
+    "width": 32,
+    "height": 32,
+    "coordinateConvention": "x increases right; y increases down; native y is flipped as 31-y",
+    "background": {
+      "element": "Unobtanium",
+      "cellState": "solid",
+      "massKg": 20000,
+      "tempK": 293.15
+    },
+    "cellRecordPrecision": "native float32 values preserved in JSON numbers; tempC = tempK - 273.15"
+  },
+  "elementTable": {
+    "source": "installed StreamingAssets/elements/*.yaml, base-game entries only",
+    "order": "ElementLoader.FinaliseElementsTable: phase (state & Solid) descending, then signed SimHashes ascending",
+    "count": 202,
+    "gasDefaultMassKg": 1.0,
+    "gasMaxMassKg": 1.8,
+    "note": "gas maxMass is ElementLoader default metadata; SimDataInitializeFromCells accepts the high-mass probes below"
+  },
+  "cases": [
+    {
+      "caseId": "pair-horizontal-Oxygen",
+      "role": "calibration",
+      "geometry": {
+        "width": 5,
+        "height": 5,
+        "originX": 14,
+        "originY": 13,
+        "solidCells": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "boundaryElement": "Unobtanium",
+        "boundaryTempK": 293.15
+      },
+      "dtSeconds": 0.2,
+      "ticks": 8,
+      "frames": [
+        {
+          "timeSeconds": 0.0,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 2.0,
+              "massG": 2000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": null,
+              "cellState": "vacuum",
+              "massKg": 0.0,
+              "massG": 0.0,
+              "tempK": 0.0,
+              "tempC": null
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 0.2,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.7599999904632568,
+              "massG": 1759.9999904632568,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.23999999463558197,
+              "massG": 239.99999463558197,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 0.4,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.5776000022888184,
+              "massG": 1577.6000022888184,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.42239999771118164,
+              "massG": 422.39999771118164,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 0.6,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.4389760494232178,
+              "massG": 1438.9760494232178,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.561024010181427,
+              "massG": 561.024010181427,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 0.8,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.333621859550476,
+              "massG": 1333.621859550476,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.6663782596588135,
+              "massG": 666.3782596588135,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 1.0,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.2535526752471924,
+              "massG": 1253.5526752471924,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.7464475035667419,
+              "massG": 746.447503566742,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 1.2,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.1927000284194946,
+              "massG": 1192.7000284194946,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.8073001503944397,
+              "massG": 807.3001503944397,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 1.4,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.1464520692825317,
+              "massG": 1146.4520692825317,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.8535481095314026,
+              "massG": 853.5481095314026,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        },
+        {
+          "timeSeconds": 1.6,
+          "cells": [
+            {
+              "x": 14,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 13,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 14,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 1.1113035678863525,
+              "massG": 1111.3035678863525,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 15,
+              "element": "Oxygen",
+              "cellState": "gas",
+              "massKg": 0.8886966109275818,
+              "massG": 888.6966109275818,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 15,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 16,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 14,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 15,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 16,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 17,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            },
+            {
+              "x": 18,
+              "y": 17,
+              "element": "Unobtanium",
+              "cellState": "solid",
+              "massKg": 20000.0,
+              "massG": 20000000.0,
+              "tempK": 293.1499938964844,
+              "tempC": 19.999993896484398
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
