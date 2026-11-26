@@ -35,7 +35,7 @@ func _draw() -> void:
 
 			var sol := world.solid_el[i]
 			if not sol.is_empty():
-				var base_c: Color = OniElements.get_element(sol).get("color", Color(0.5, 0.5, 0.5, 1.0))
+				var base_c: Color = OniElements.get_element_color(sol)
 				if dim_world:
 					base_c = base_c.darkened(0.65)
 				draw_rect(rect, base_c, true)
@@ -51,7 +51,7 @@ func _draw() -> void:
 				else:
 					var bg := Color(0.08, 0.10, 0.14, 1.0) if overlay_mode == "pipe" else Color(0.10, 0.13, 0.17, 1.0)
 					if gel != "Vacuum" and gm > 0.01 and overlay_mode != "pipe":
-						var ec: Color = OniElements.get_element(gel).get("color", Color(0.3, 0.7, 0.9))
+						var ec: Color = OniElements.get_element_color(gel)
 						var alpha := clampf(gm / 2.2, 0.04, 0.36)
 						bg = bg.lerp(ec, alpha)
 					draw_rect(rect, bg, true)
@@ -168,7 +168,7 @@ func _draw_conduit_layers(ts: int) -> void:
 					if world.in_bounds(nx, ny) and world.has_gas_pipe[world.idx(nx, ny)] == 1:
 						draw_line(Vector2(cx, cy) + offset, Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5) + offset, gpc, pipe_w)
 				if world.gpipe_mass[i] > 0.01 and world.gpipe_el[i] != "Vacuum":
-					var pec: Color = OniElements.get_element(world.gpipe_el[i]).get("color", Color(0.7, 0.95, 1.0))
+					var pec: Color = OniElements.get_element_color(world.gpipe_el[i])
 					draw_circle(Vector2(cx, cy) + offset, 4.5, pec)
 
 func _draw_solid_pattern(rect: Rect2, sol: String, x: int, y: int, dim: bool) -> void:
@@ -296,7 +296,7 @@ func _draw_duplicant(dupe: OniDuplicant, ts: int) -> void:
 func _gas_overlay_color(el: String, mass: float) -> Color:
 	if el == "Vacuum" or mass < 0.005:
 		return Color(0.05, 0.06, 0.08, 1.0)
-	var base: Color = OniElements.get_element(el).get("color", Color(0.4, 0.8, 1.0))
+	var base: Color = OniElements.get_element_color(el)
 	var k := clampf(mass / 1.8, 0.22, 1.0)
 	return Color(base.r * k, base.g * k, base.b * k, 1.0)
 

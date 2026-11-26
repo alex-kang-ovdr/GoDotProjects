@@ -9,6 +9,7 @@ var paused := false
 var speed_mult := 1.0
 var active_tool := "select"
 var active_cat := "base"
+var show_all_techs := false
 
 var _panning := false
 var _pan_last_mouse := Vector2.ZERO
@@ -196,17 +197,22 @@ func _build_hud() -> void:
 	_res_info_lbl.add_theme_font_size_override("font_size", 12)
 	res_panel.add_child(_res_info_lbl)
 
-	# 연구 패널 팝업 (R)
+	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
 	_research_panel = PanelContainer.new()
 	_research_panel.position = Vector2(220, 96)
-	_research_panel.custom_minimum_size = Vector2(440, 260)
+	_research_panel.custom_minimum_size = Vector2(520, 360)
 	_research_panel.visible = false
 	_style_panel(_research_panel, Color(0.09, 0.12, 0.19, 0.96))
 	_ui_root.add_child(_research_panel)
 
+	var res_scroll := ScrollContainer.new()
+	res_scroll.custom_minimum_size = Vector2(500, 344)
+	_research_panel.add_child(res_scroll)
+
 	_research_vbox = VBoxContainer.new()
-	_research_vbox.add_theme_constant_override("separation", 6)
-	_research_panel.add_child(_research_vbox)
+	_research_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_research_vbox.add_theme_constant_override("separation", 5)
+	res_scroll.add_child(_research_vbox)
 	_refresh_research_panel()
 
 	# 우측 하단 타일 인스펙터
@@ -368,12 +374,22 @@ func _refresh_research_panel() -> void:
 
 	var hdr := HBoxContainer.new()
 	var hlbl := Label.new()
-	hlbl.text = "기초 연구 트리 (연구 작업대 60W · 흙 50kg/점)"
+	hlbl.text = "원작 연구 트리 (%d종 · 연구 작업대 60W)" % OniElements.techs.size()
 	hlbl.add_theme_color_override("font_color", Color(0.65, 0.90, 1.0))
 	hdr.add_child(hlbl)
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hdr.add_child(sp)
+
+	var filter_btn := Button.new()
+	filter_btn.text = "전체 97종" if not show_all_techs else "핵심 해금만"
+	filter_btn.pressed.connect(func():
+		audio.play_click()
+		show_all_techs = not show_all_techs
+		_refresh_research_panel()
+	)
+	hdr.add_child(filter_btn)
+
 	var unlock_btn := Button.new()
 	unlock_btn.text = "전체 해금 ON" if world.sandbox_unlock_all else "전체 해금"
 	unlock_btn.pressed.connect(func():
@@ -385,25 +401,35 @@ func _refresh_research_panel() -> void:
 	hdr.add_child(unlock_btn)
 	_research_vbox.add_child(hdr)
 
-	for tid_v in OniElements.TECHS.keys():
+	for tid_v in OniElements.techs.keys():
 		var tid := String(tid_v)
-		var tdef: Dictionary = OniElements.TECHS[tid]
-		var cost: float = float(tdef["cost_basic"])
+		var tdef: Dictionary = OniElements.techs[tid]
+		var unlocks: Array = tdef.get("unlocks", [])
+		if not show_all_techs and unlocks.is_empty():
+			continue
+		var cost: float = float(tdef.get("cost_basic", 10.0))
 		var prog: float = float(world.tech_progress.get(tid, 0.0))
 		var done: bool = world.is_tech_done(tid)
+		var can_res: bool = world.can_research_tech(tid)
 		var row := HBoxContainer.new()
 		var tbtn := Button.new()
-		var status_txt := "[완료]" if done else ("(진행 중 %.1f/%.0f)" % [prog, cost] if world.active_tech == tid else "(%.1f/%.0f)" % [prog, cost])
-		tbtn.text = "%s %s - %s" % [String(tdef["name_ko"]), status_txt, String(tdef["desc"])]
+		var status_txt := "[완료]" if done else ("(진행 %.1f/%.0f)" % [prog, cost] if world.active_tech == tid else ("(%.1f/%.0f)" % [prog, cost] if can_res else "[선행 필요]"))
+		var tier_n: int = int(tdef.get("tier", 1))
+		var desc_s := String(tdef.get("desc", ""))
+		if desc_s.length() > 36:
+			desc_s = desc_s.substr(0, 36) + "…"
+		tbtn.text = "T%d %s %s %s" % [tier_n, String(tdef.get("name_ko", tid)), status_txt, desc_s]
 		tbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		tbtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		if done:
 			tbtn.modulate = Color(0.55, 0.96, 0.65)
 		elif world.active_tech == tid:
 			tbtn.modulate = Color(0.55, 0.92, 1.0)
+		elif not can_res:
+			tbtn.modulate = Color(0.62, 0.65, 0.72)
 		tbtn.pressed.connect(func():
 			audio.play_click()
-			if not done:
+			if not done and (can_res or world.sandbox_unlock_all):
 				world.active_tech = tid
 				_refresh_research_panel()
 		)
@@ -542,18 +568,16 @@ func _refresh_hud() -> void:
 
 	var tech_str := "완료"
 	if not world.active_tech.is_empty():
-		var td: Dictionary = OniElements.TECHS.get(world.active_tech, {})
-		tech_str = "%s %.0f/%.0f" % [String(td.get("name_ko", "")), float(world.tech_progress.get(world.active_tech, 0.0)), float(td.get("cost_basic", 10.0))]
+		var td := OniElements.get_tech(world.active_tech)
+		tech_str = "%s %.0f/%.0f" % [String(td.get("name_ko", world.active_tech)), float(world.tech_progress.get(world.active_tech, 0.0)), float(td.get("cost_basic", 10.0))]
 
-	_res_info_lbl.text = "사암 %.0f · 구리 %.0f · 조류 %.0f · 흙 %.0f · 석탄 %.0fkg | 식량 %.0fkcal | 배터리 %.1f/%.1fkJ | 연구: %s" % [
+	_res_info_lbl.text = "%s | 사암 %.0f · 구리 %.0f · 조류 %.0f · 흙 %.0fkg | 식량 %.0fkcal | 연구: %s" % [
+		OniElements.get_counts_summary(),
 		float(world.inventory.get("SandStone", 0.0)),
 		float(world.inventory.get("Cuprite", 0.0)),
 		float(world.inventory.get("Algae", 0.0)),
 		float(world.inventory.get("Dirt", 0.0)),
-		float(world.inventory.get("Carbon", 0.0)),
 		world.food_kcal,
-		world.total_battery_j / 1000.0,
-		world.total_battery_cap_j / 1000.0,
 		tech_str,
 	]
 
@@ -562,15 +586,22 @@ func _refresh_hud() -> void:
 	if world.in_bounds(sc.x, sc.y):
 		var info := world.get_cell_summary(sc.x, sc.y)
 		lines.append("[좌표 %d, %d] 온도 %.1f°C" % [sc.x, sc.y, float(info["temp_c"])])
+		var inspect_el := ""
 		if not String(info["solid_el"]).is_empty():
-			lines.append("지형: %s (%.0f kg)" % [OniElements.get_element_name(String(info["solid_el"])), float(info["solid_mass"])])
+			inspect_el = String(info["solid_el"])
+			lines.append("지형: %s (%.0f kg)" % [OniElements.get_element_name(inspect_el), float(info["solid_mass"])])
 		elif float(info["liquid_mass"]) > 1.0:
+			inspect_el = "Water"
 			lines.append("액체: 물 (%.0f kg)" % float(info["liquid_mass"]))
 		else:
-			var gname := OniElements.get_element_name(String(info["gas_el"]))
+			inspect_el = String(info["gas_el"])
+			var gname := OniElements.get_element_name(inspect_el)
 			var g_grams := float(info["gas_mass"]) * 1000.0
 			var d_grams := float(info["gas_delta"]) * 1000.0
 			lines.append("기체: %s %.0f g (Δ %+.1f g)" % [gname, g_grams, d_grams])
+		if not inspect_el.is_empty() and inspect_el != "Vacuum":
+			var ed := OniElements.get_element(inspect_el)
+			lines.append("물성: 비열 %.3f · 전도 %.4f · 몰 %.1f" % [float(ed.get("shc", 0.0)), float(ed.get("tc", 0.0)), float(ed.get("molar_mass", 0.0))])
 		if not String(info["building"]).is_empty():
 			var b_id := String(info["building"])
 			var bname := "인쇄기" if b_id == "pod" else String(OniElements.get_building(b_id).get("name_ko", b_id))

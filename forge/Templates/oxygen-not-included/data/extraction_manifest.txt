@@ -1,0 +1,20 @@
+{
+  "source_path": "C:\\Temp\\Oxygen",
+  "extracted_at_utc": "2026-11-26T08:41:40.777918+00:00",
+  "counts": {
+    "ko_strings": 21114,
+    "elements": 196,
+    "biomes": 13,
+    "sandstone_base_cells": 115,
+    "sandstone_base_buildings": 10,
+    "techs": 97,
+    "tech_edges": 89,
+    "buildings": 21
+  },
+  "source_hashes_sha256": {
+    "gas.yaml": "e606d65f24d2f2c2321344d9a401e7bad8f960d3784754046bcdb152f18fe406",
+    "liquid.yaml": "f5f992109f2348b8cf1cd90cd61eb91d6927d8470379e0d665597c4ba3c31654",
+    "solid.yaml": "e85993648fd75d29cc625b2c69e5cd1169ae536d7b4f9a6f89abe2ab6c014ffc",
+    "sandstoneBase.yaml": "dd824ece1518bf9cca2f49d4cfe7d9139e4944ea17d7fefa3297fc734265a344"
+  }
+}

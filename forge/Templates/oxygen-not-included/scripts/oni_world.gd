@@ -52,7 +52,7 @@ var food_kcal := 6000.0
 # 연구 상태
 var unlocked_techs: Dictionary = {}
 var tech_progress: Dictionary = {}
-var active_tech := "farming"
+var active_tech := "FarmingTech"
 var sandbox_unlock_all := false
 
 var power_produced_w := 0.0
@@ -78,6 +78,7 @@ func in_bounds(x: int, y: int) -> bool:
 	return x >= 0 and x < WIDTH and y >= 0 and y < HEIGHT
 
 func generate(p_seed := 73) -> void:
+	OniElements.ensure_loaded()
 	seed_value = p_seed
 	var rng := RandomNumberGenerator.new()
 	rng.seed = p_seed
@@ -122,10 +123,10 @@ func generate(p_seed := 73) -> void:
 
 	unlocked_techs.clear()
 	tech_progress.clear()
-	for tid_v in OniElements.TECHS.keys():
+	for tid_v in OniElements.techs.keys():
 		var tid := String(tid_v)
 		tech_progress[tid] = 0.0
-	active_tech = "farming"
+	active_tech = "FarmingTech" if OniElements.techs.has("FarmingTech") else ""
 
 	inventory = {
 		"SandStone": 1200.0,
@@ -135,6 +136,10 @@ func generate(p_seed := 73) -> void:
 		"Carbon": 400.0,
 		"IgneousRock": 0.0,
 		"Ice": 0.0,
+		"SlimeMold": 0.0,
+		"GoldAmalgam": 0.0,
+		"IronOre": 0.0,
+		"Wolframite": 0.0,
 	}
 
 	for y in range(HEIGHT):
@@ -165,22 +170,41 @@ func generate(p_seed := 73) -> void:
 			gas_prev_mass[i] = 0.0
 
 			if x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1:
-				_set_solid(i, "Granite", 21.0)
+				_set_solid(i, "Unobtanium" if OniElements.elements.has("Unobtanium") else "Granite", 21.0)
 				continue
 
+			# 서쪽: 원작 Frozen 바이옴 (Ice, Snow, DirtyIce, Wolframite, Granite)
 			var dist_ice := Vector2(x - 7, y - 14).length()
-			if dist_ice < 5.5 + rng.randf_range(-0.8, 0.8):
-				_set_solid(i, "Ice", -12.0 + rng.randf_range(-3.0, 2.0))
+			if dist_ice < 6.2 + rng.randf_range(-0.8, 0.8):
+				var fr := rng.randf()
+				var fel := "Ice" if fr < 0.48 else ("Snow" if fr < 0.68 else ("Wolframite" if fr < 0.84 else "Granite"))
+				_set_solid(i, fel, -14.0 + rng.randf_range(-5.0, 4.0))
 				continue
 
+			# 남동쪽: 원작 Magma 심부 + Katairite 단열 경계
 			var dist_hot := Vector2(x - 40, y - 26).length()
 			if dist_hot < 4.2:
-				_set_solid(i, "IgneousRock", 132.0 + rng.randf_range(-4.0, 12.0))
+				_set_solid(i, "Obsidian" if rng.randf() < 0.45 else "IgneousRock", 132.0 + rng.randf_range(-4.0, 12.0))
 				continue
 			elif dist_hot < 5.6:
 				_set_solid(i, "Katairite", 24.0)
 				continue
 
+			# 동쪽 상단: 원작 HotMarsh(늪) 바이옴 (SlimeMold, Clay, GoldAmalgam, SedimentaryRock)
+			if x >= 35 and y <= 17:
+				var mr := rng.randf()
+				var mel := "SlimeMold" if mr < 0.36 else ("Clay" if mr < 0.62 else ("GoldAmalgam" if mr < 0.80 else "SedimentaryRock"))
+				_set_solid(i, mel, 32.0 + rng.randf_range(-2.0, 3.0))
+				continue
+
+			# 북쪽: 원작 Jungle(부식) 바이옴 (IgneousRock, IronOre, BleachStone, Carbon)
+			if y <= 7:
+				var jr := rng.randf()
+				var jel := "IgneousRock" if jr < 0.45 else ("IronOre" if jr < 0.70 else ("BleachStone" if jr < 0.82 else "Carbon"))
+				_set_solid(i, jel, 35.0 + rng.randf_range(-2.0, 4.0))
+				continue
+
+			# 중앙: 원작 Sedimentary(사암) 바이옴
 			var roll := rng.randf()
 			var el := "SandStone"
 			if roll < 0.14:
@@ -191,22 +215,56 @@ func generate(p_seed := 73) -> void:
 				el = "Dirt"
 			elif roll < 0.56 and y > 18:
 				el = "Carbon"
-			elif roll < 0.62 and y > 22:
+			elif roll < 0.60:
+				el = "OxyRock"
+			elif roll < 0.66 and y > 22:
 				el = "IgneousRock"
 			_set_solid(i, el, 21.5 + rng.randf_range(-1.5, 1.5))
 
-	# 중앙 시작 공실 (x: 19..28, y: 13..16)
-	for y in range(13, 17):
-		for x in range(19, 29):
+	# 중앙 시작 공실: 원작 sandstoneBase.yaml 추출 셀 스탬프 적용
+	var sb_data: Dictionary = OniElements.worldgen.get("sandstone_base", {})
+	var sb_cells: Array = sb_data.get("cells", [])
+	var cx_base := 23
+	var cy_base := 16
+	if not sb_cells.is_empty():
+		for cell_v in sb_cells:
+			var c: Dictionary = cell_v
+			var wx: int = cx_base + int(c.get("x", 0))
+			var wy: int = cy_base - int(c.get("y", 0)) # Unity Y-up -> Godot Y-down
+			if not in_bounds(wx, wy):
+				continue
+			var ci := idx(wx, wy)
+			var cel := String(c.get("element", "Oxygen"))
+			var cmass := float(c.get("mass", 1.0))
+			var ctemp := float(c.get("temp_c", 22.0))
+			var cstate := String(OniElements.get_element(cel).get("state", "solid"))
+			temp_c[ci] = ctemp
+			if cstate == "gas":
+				solid_el[ci] = ""
+				solid_mass[ci] = 0.0
+				gas_el[ci] = cel
+				gas_mass[ci] = clampf(cmass, 0.5, 2.0)
+				gas_prev_mass[ci] = gas_mass[ci]
+			elif cstate == "liquid":
+				solid_el[ci] = ""
+				solid_mass[ci] = 0.0
+				liquid_mass[ci] = clampf(cmass, 100.0, 1000.0)
+			else:
+				solid_el[ci] = cel
+				solid_mass[ci] = maxf(100.0, cmass)
+				gas_el[ci] = "Vacuum"
+				gas_mass[ci] = 0.0
+
+	# 인쇄기 주변 최소 활동 공간 보장 + 바닥 타일 (y = 17, x: 20..27)
+	for y in range(14, 17):
+		for x in range(20, 28):
 			var i := idx(x, y)
 			solid_el[i] = ""
 			solid_mass[i] = 0.0
-			gas_el[i] = "Oxygen"
-			gas_mass[i] = 1.25
-			gas_prev_mass[i] = 1.25
-			temp_c[i] = 22.0
-
-	# 시작 바닥 타일 (y = 17, x: 20..27)
+			if gas_el[i] == "Vacuum":
+				gas_el[i] = "Oxygen"
+				gas_mass[i] = 1.25
+				gas_prev_mass[i] = 1.25
 	for x in range(20, 28):
 		var i := idx(x, 17)
 		solid_el[i] = ""
@@ -302,10 +360,22 @@ func is_building_unlocked(b_id: String) -> bool:
 func is_tech_done(tid: String) -> bool:
 	return unlocked_techs.has(tid)
 
+func can_research_tech(tid: String) -> bool:
+	if unlocked_techs.has(tid):
+		return false
+	var tdef := OniElements.get_tech(tid)
+	if tdef.is_empty():
+		return false
+	var prereqs: Array = tdef.get("prereqs", [])
+	for p_v in prereqs:
+		if not unlocked_techs.has(String(p_v)):
+			return false
+	return true
+
 func add_research_points(pts: float) -> void:
 	if active_tech.is_empty() or unlocked_techs.has(active_tech):
 		return
-	var tdef: Dictionary = OniElements.TECHS.get(active_tech, {})
+	var tdef := OniElements.get_tech(active_tech)
 	if tdef.is_empty():
 		return
 	var cost: float = float(tdef.get("cost_basic", 10.0))
@@ -313,11 +383,10 @@ func add_research_points(pts: float) -> void:
 	tech_progress[active_tech] = minf(cur, cost)
 	if tech_progress[active_tech] >= cost:
 		unlocked_techs[active_tech] = true
-		# 다음 미완료 기술 자동 선택
 		active_tech = ""
-		for tid_v in OniElements.TECHS.keys():
+		for tid_v in OniElements.techs.keys():
 			var tid := String(tid_v)
-			if not unlocked_techs.has(tid):
+			if can_research_tech(tid):
 				active_tech = tid
 				break
 
@@ -754,33 +823,55 @@ func _step_heat(dt: float) -> void:
 		temp_c[i] += delta_t[i]
 
 func _step_phase_change() -> void:
-	# 원작 상변화 임계값 ±1°C 히스테리시스: Water(-0.65°C <-> Ice, 99.35°C <-> Steam)
+	# 원작 elements_extracted.json 기반 전 원소 상변화 (±1°C 히스테리시스)
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
 			var t := temp_c[i]
-			# 얼음 융해 (> 0.35°C)
-			if solid_el[i] == "Ice" and t > 0.35:
-				liquid_mass[i] += minf(solid_mass[i], 1000.0)
-				solid_el[i] = ""
-				solid_mass[i] = 0.0
-			# 물 기화 (> 100.35°C)
-			elif liquid_mass[i] > 5.0 and t > 100.35:
-				var boil := minf(liquid_mass[i], 2.0)
-				liquid_mass[i] -= boil
-				if gas_el[i] == "Vacuum" or gas_el[i] == "Steam":
-					gas_el[i] = "Steam"
-					gas_mass[i] += boil
-			# 물 결빙 (< -1.65°C)
-			elif liquid_mass[i] > 200.0 and t < -1.65 and building[i].is_empty():
-				solid_el[i] = "Ice"
-				solid_mass[i] = liquid_mass[i]
-				liquid_mass[i] = 0.0
-			# 증기 응결 (< 98.35°C)
-			elif gas_el[i] == "Steam" and gas_mass[i] > 0.05 and t < 98.35:
-				liquid_mass[i] += gas_mass[i]
-				gas_mass[i] = 0.0
-				gas_el[i] = "Vacuum"
+			# 고체 -> 고온 전이 (융해/열분해: Ice->Water, Snow->Water, Algae->Dirt 등)
+			if not solid_el[i].is_empty():
+				var info := OniElements.get_element(solid_el[i])
+				var hc: Variant = info.get("high_c", null)
+				var ht: Variant = info.get("high_target", null)
+				if hc != null and ht != null and t > float(hc) + 1.0:
+					var target_id := String(ht)
+					var tstate := String(OniElements.get_element(target_id).get("state", "solid"))
+					if tstate == "liquid":
+						liquid_mass[i] += minf(solid_mass[i], 1000.0)
+						solid_el[i] = ""
+						solid_mass[i] = 0.0
+					elif tstate == "solid":
+						solid_el[i] = target_id
+					elif tstate == "gas":
+						gas_el[i] = target_id
+						gas_mass[i] += minf(solid_mass[i], 5.0)
+						solid_el[i] = ""
+						solid_mass[i] = 0.0
+			# 액체 물 -> 기화(>100.35°C) / 결빙(<-1.65°C)
+			elif liquid_mass[i] > 5.0:
+				var w_info := OniElements.get_element("Water")
+				var wh: float = float(w_info.get("high_c", 99.35))
+				var wl: float = float(w_info.get("low_c", -0.65))
+				if t > wh + 1.0:
+					var boil := minf(liquid_mass[i], 2.0)
+					liquid_mass[i] -= boil
+					if gas_el[i] == "Vacuum" or gas_el[i] == "Steam":
+						gas_el[i] = "Steam"
+						gas_mass[i] += boil
+				elif liquid_mass[i] > 200.0 and t < wl - 1.0 and building[i].is_empty():
+					solid_el[i] = "Ice"
+					solid_mass[i] = liquid_mass[i]
+					liquid_mass[i] = 0.0
+			# 기체 -> 저온 응결 (Steam->Water 등)
+			elif gas_el[i] != "Vacuum" and gas_mass[i] > 0.05:
+				var g_info := OniElements.get_element(gas_el[i])
+				var lc: Variant = g_info.get("low_c", null)
+				var lt: Variant = g_info.get("low_target", null)
+				if lc != null and lt != null and t < float(lc) - 1.0:
+					if String(lt) == "Water":
+						liquid_mass[i] += gas_mass[i]
+						gas_mass[i] = 0.0
+						gas_el[i] = "Vacuum"
 
 func _cell_conductivity(i: int) -> float:
 	if not solid_el[i].is_empty():
