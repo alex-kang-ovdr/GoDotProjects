@@ -18,6 +18,19 @@
 - `1`~`4`: 음식 섭취(베리/당근/미트볼/피에로기), `T`: 1×/8× 배속 토글
 - 좌측 사이드바: 도구·모닥불·과학기계·무기·방어구·요리냄비·농경지·브라이트셰이드 평면 장비 제작
 
+## 에셋 추출 도구
+1. **웹 런타임 경량 번들 추출 (`tools/extract_dst_assets.py`)**:
+   - PlayForge WebAssembly 런타임용 경량 번들(`data/dst_*_extracted.txt`, `data/extraction_manifest.json`) 생성.
+   ```powershell
+   python forge/Templates/dont-starve-together/tools/extract_dst_assets.py
+   ```
+2. **로컬 전체 무누락 전수 추출 (`tools/extract_dst_all.py`)**:
+   - 로컬 Steam 설치본 `data/` 11,132개 원본 파일 전체를 `extracted_assets/`(Git 제외)로 전수 추출·디코딩하고, 검증 인덱스 `data/full_asset_index.json` 생성 (`unaccounted_source_files == 0`, `failures_total == 0`).
+   - 암호화된 Klei 스킨 번들(`data/anim/dynamic/*.dyn`, 3,533건)은 복호화 우회 없이 파일명·크기 인벤토리만 기록.
+   ```powershell
+   python forge/Templates/dont-starve-together/tools/extract_dst_all.py
+   ```
+
 ## 자동화 테스트 실행
 ```powershell
 & "D:\Github\GoDotProjects-worktrees\PlayHub-Platform\artifacts\local-runtime\node24\node.exe" --test forge/Tests/dont-starve-together.test.cjs

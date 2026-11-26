@@ -1,0 +1,66 @@
+{
+  "extracted_at": "2026-11-26T14:20:11.415685+00:00",
+  "elapsed_seconds": 65.65,
+  "source_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Don't Starve Together",
+  "source_version": "763928",
+  "zero_omission_verified": true,
+  "source_audit": {
+    "total_files_in_data": 11132,
+    "accounted_source_files": 11132,
+    "unaccounted_source_files": 0,
+    "by_top_dir": {
+      "_root": 2,
+      "anim": 7225,
+      "bigportraits": 377,
+      "databundles": 8,
+      "fx": 24,
+      "haptics": 1762,
+      "images": 1347,
+      "levels": 164,
+      "minimap": 8,
+      "movies": 1,
+      "sound": 213,
+      "unsafedata": 1
+    },
+    "anim_non_zip_files": [],
+    "anim_dynamic_other_files": []
+  },
+  "totals": {
+    "scripts_extracted": 4109,
+    "shaders_ksh_and_glsl": 70,
+    "fonts_extracted": 25,
+    "klump_extracted": 1,
+    "bigportraits_xml_extracted": 369,
+    "misc_files_copied": 4,
+    "haptics_wavs": 1762,
+    "images_zip_tex_png": 68,
+    "images_zip_xml": 682,
+    "atlas_groups_cropped": 389,
+    "atlas_individual_icons_png": 8715,
+    "minimap_icons_png": 1005,
+    "loose_atlas_icons_png": 1727,
+    "loose_ktex_png": 1539,
+    "loose_xml_bin": 381,
+    "kanim_zips_parsed": 3692,
+    "kanim_atlas_png": 3321,
+    "anim_dynamic_builds_parsed": 3439,
+    "anim_dyn_encrypted_inventoried": 3533,
+    "fmod_fsb_banks": 155,
+    "fmod_fev_files": 58,
+    "fmod_samples_indexed": 20891,
+    "fmod_pcm16_wavs_extracted": 2568,
+    "fmod_mode_counts": {
+      "15": 18295,
+      "2": 2568,
+      "11": 28
+    },
+    "movies_extracted": 1,
+    "failures_total": 0,
+    "output_files_on_disk": 23540,
+    "output_size_mb": 1648.58
+  },
+  "notes": {
+    "encrypted_dyn_policy": "data/anim/dynamic/*.dyn (3,533 encrypted Klei skin bundles) are inventoried by filename/size without decryption bypass; all 94 non-encrypted data/anim/dynamic/*.zip archives are fully parsed and KTEX-decoded.",
+    "fmod_vorbis_policy": "All 155 FSB5 banks (20,891 samples) are 100% indexed; all 2,568 PCM16 samples are extracted as lossless WAV; 18,295 Vorbis + 28 ADPCM samples are indexed with bank/name/rate/channels/frames."
+  }
+}

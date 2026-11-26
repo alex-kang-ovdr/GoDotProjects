@@ -36,10 +36,31 @@ test('DST Godot template exposes valid PlayForge metadata and ready/guided proje
   assert.ok(ready.files['data/dst_kanim_sprites_extracted.txt']);
   assert.ok(ready.files['data/dst_audio_extracted.txt']);
   assert.ok(ready.files['data/dst_shaders_extracted.txt']);
+  assert.ok(ready.files['data/full_asset_index.json']);
 
   const guided = store.createProject({ name: 'DST Guided', template: 'dont-starve-together', mode: 'guided' });
   assert.match(guided.files['scenes/main.tscn'], /Node3D/);
   assert.equal(Object.keys(guided.files).filter(f => f.endsWith('.gd')).length, 0);
+});
+
+test('DST zero-omission full asset index verifies 100% source file accounting and 0 failures', () => {
+  const indexPath = path.join(templateDir, 'data', 'full_asset_index.json');
+  assert.ok(fs.existsSync(indexPath), 'data/full_asset_index.json must exist');
+  const idx = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  assert.equal(idx.zero_omission_verified, true);
+  assert.equal(idx.source_audit.unaccounted_source_files, 0);
+  assert.equal(idx.source_audit.total_files_in_data, idx.source_audit.accounted_source_files);
+  assert.equal(idx.totals.failures_total, 0);
+  assert.ok(idx.totals.scripts_extracted >= 4100);
+  assert.equal(idx.totals.shaders_ksh_and_glsl, 70);
+  assert.ok(idx.totals.haptics_wavs >= 1700);
+  assert.ok(idx.totals.images_zip_tex_png >= 68);
+  assert.ok(idx.totals.atlas_individual_icons_png >= 8000);
+  assert.ok(idx.totals.loose_ktex_png >= 1500);
+  assert.ok(idx.totals.kanim_zips_parsed >= 3690);
+  assert.equal(idx.totals.fmod_fsb_banks, 155);
+  assert.ok(idx.totals.fmod_samples_indexed >= 20800);
+  assert.ok(idx.totals.fmod_pcm16_wavs_extracted >= 2560);
 });
 
 test('DST static catalog JSON contains verified full counts from local installation', () => {
