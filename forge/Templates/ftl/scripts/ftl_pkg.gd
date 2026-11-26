@@ -52,7 +52,7 @@ static func _read_be32(buf: PackedByteArray, pos: int) -> int:
 
 
 func auto_open() -> bool:
-	if OS.has_feature("web"):
+	if OS.has_feature("web") or OS.has_feature("android") or OS.has_feature("ios"):
 		return false
 	var candidates: Array[String] = []
 	var env_path := OS.get_environment("FTL_DAT_PATH").strip_edges()

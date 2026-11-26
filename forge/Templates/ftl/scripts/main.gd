@@ -23,6 +23,7 @@ var selected_boarder_id: int = -1
 var targeting_weapon_idx: int = -1
 var special_target_mode: String = "" # "", "tp_send", "tp_back", "hack", "mind"
 var paused: bool = false
+var power_remove_mode: bool = false
 var in_combat: bool = false
 var active_event: Dictionary = {}
 var current_store_inventory: Dictionary = {}
@@ -339,7 +340,7 @@ func _show_hangar() -> void:
 	audio.play_track("title", false)
 
 	var prof_txt := " · 프로필: %d승/%d전" % [int(profile.stats.get("total_victories", 0)), int(profile.stats.get("total_games", 0))] if (profile != null and profile.loaded) else ""
-	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("독립 실행 데이터팩 (%d함선 · %d무기 · %d이벤트)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), prof_txt]))
+	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("독립 실행 모드 (%d함선 · %d무기 · %d사건)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), prof_txt]))
 	hangar_refs["cont_btn"].visible = FileAccess.file_exists(SAVE_PATH)
 
 	var list_box: VBoxContainer = hangar_refs["ship_list"]
@@ -528,7 +529,17 @@ func _build_hud_ui() -> void:
 	var react_lbl := _mk_label("8 / 8", 20, Color("7eff8b"))
 	react_v.add_child(react_lbl)
 	hud_refs["react_lbl"] = react_lbl
-	react_v.add_child(_mk_label("L-Click +\nR-Click -", 11, Color("8da8c2")))
+	var pwr_mode_btn := _mk_btn("전력 +", func():
+		power_remove_mode = not power_remove_mode
+		var b: Button = hud_refs["pwr_mode_btn"]
+		b.text = "전력 -" if power_remove_mode else "전력 +"
+		b.add_theme_stylebox_override("normal", _box(Color("5c1f1a") if power_remove_mode else Color("173124"), Color("ff7866") if power_remove_mode else Color("5ee88d"), 4, 4))
+		_banner("전력 해제 모드: 시스템·무기를 탭하면 전력을 뺍니다." if power_remove_mode else "전력 공급 모드: 시스템·무기를 탭하면 전력을 올립니다.")
+	)
+	pwr_mode_btn.custom_minimum_size = Vector2(88, 30)
+	pwr_mode_btn.add_theme_stylebox_override("normal", _box(Color("173124"), Color("5ee88d"), 4, 4))
+	react_v.add_child(pwr_mode_btn)
+	hud_refs["pwr_mode_btn"] = pwr_mode_btn
 
 	# Systems bar container
 	var sys_h := HBoxContainer.new()
@@ -1045,6 +1056,13 @@ func _on_enemy_room_clicked(room_id: int) -> void:
 			w.beam_rooms = []
 			audio.play_sfx("select_up1")
 		targeting_weapon_idx = -1
+	elif selected_boarder_id >= 0:
+		# Touch-friendly: tapping an enemy room while a boarder is selected moves that boarder
+		for c in enemy_ship.crew:
+			if int(c.id) == selected_boarder_id and bool(c.is_player) and c.hp > 0.0:
+				enemy_ship.command_crew_to_room(c, room_id)
+				audio.play_sfx("powerUpSystem")
+				return
 	else:
 		# Convenience: clicking an enemy room directly targets all powered untargeted non-beam weapons
 		var targeted := false
@@ -1126,7 +1144,16 @@ func _on_player_room_clicked(room_id: int, button_index: int) -> void:
 				audio.play_sfx("powerUpSystem")
 				break
 	elif button_index == MOUSE_BUTTON_LEFT:
-		# Select first friendly crew inside clicked room
+		# Touch-friendly: if a friendly crew is already selected and user taps another room, move them there
+		if selected_crew_id >= 0:
+			for c in player_ship.crew:
+				if int(c.id) == selected_crew_id and bool(c.is_player) and c.hp > 0.0:
+					if int(c.room_id) != room_id:
+						player_ship.command_crew_to_room(c, room_id)
+						audio.play_sfx("powerUpSystem")
+						return
+					break
+		# Otherwise select first friendly crew inside clicked room
 		for c in player_ship.crew:
 			if int(c.room_id) == room_id and bool(c.is_player) and c.hp > 0.0:
 				_on_crew_clicked(int(c.id))
@@ -1151,7 +1178,7 @@ func _on_crew_clicked(crew_id: int) -> void:
 func _on_weapon_slot_clicked(idx: int, button_index: int) -> void:
 	if player_ship == null or idx < 0 or idx >= player_ship.weapons.size():
 		return
-	if button_index == MOUSE_BUTTON_RIGHT:
+	if button_index == MOUSE_BUTTON_RIGHT or (button_index == MOUSE_BUTTON_LEFT and power_remove_mode):
 		if bool(player_ship.weapons[idx].powered):
 			player_ship.toggle_weapon_power(idx)
 		if targeting_weapon_idx == idx:
@@ -1421,10 +1448,10 @@ func _rebuild_hud_controls() -> void:
 		btn.name = "SysBtn_" + sname
 		btn.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed:
-				if ev.button_index == MOUSE_BUTTON_LEFT:
-					player_ship.add_system_power(sname)
-				elif ev.button_index == MOUSE_BUTTON_RIGHT:
+				if ev.button_index == MOUSE_BUTTON_RIGHT or (ev.button_index == MOUSE_BUTTON_LEFT and power_remove_mode):
 					player_ship.remove_system_power(sname)
+				elif ev.button_index == MOUSE_BUTTON_LEFT:
+					player_ship.add_system_power(sname)
 				_update_hud_labels()
 		)
 		sys_h.add_child(btn)

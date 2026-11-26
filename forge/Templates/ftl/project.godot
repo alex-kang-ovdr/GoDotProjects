@@ -28,6 +28,11 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 window/size/min_width=960
 window/size/min_height=540
+window/handheld/orientation=0
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
 
 [rendering]
 
