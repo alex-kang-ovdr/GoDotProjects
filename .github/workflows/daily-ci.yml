@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ inputs.ref || 'PlayHub-Platform' }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -79,7 +79,7 @@ jobs:
           BUILD_ID: gha-${{ github.run_id }}
           PROJECT_ID: ${{ env.GCP_PROJECT }}
           COMMIT_SHA: ${{ github.sha }}
-          BRANCH_NAME: ${{ inputs.ref || github.ref_name }}
+          BRANCH_NAME: ${{ inputs.ref || 'PlayHub-Platform' }}
         run: |
           set -euo pipefail
           SHORT_SHA="${GITHUB_SHA:0:7}"

@@ -250,14 +250,15 @@ public final class PlayHubShellViewModel: ObservableObject {
     // MARK: - M3 Social Actions
 
     private func makeApiClient(enableAuthRetry: Bool = true) -> PlayHubApiClient {
-        PlayHubApiClient(
+        let refresher: PlayHubApiClient.AccessTokenRefresher? = enableAuthRetry ? { [weak self] failedToken in
+            guard let self else { return nil }
+            return await self.ensureAccessToken(forceRefresh: true, failedToken: failedToken)
+        } : nil
+        return PlayHubApiClient(
             baseUrl: activeFarm.baseUrl,
             engineVersion: engineVersion,
             appBuildNumber: appBuildNumber,
-            onUnauthorizedRefresh: enableAuthRetry ? { [weak self] failedToken in
-                guard let self else { return nil }
-                return await self.ensureAccessToken(forceRefresh: true, failedToken: failedToken)
-            } : nil
+            onUnauthorizedRefresh: refresher
         )
     }
 

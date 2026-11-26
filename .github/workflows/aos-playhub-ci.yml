@@ -54,6 +54,8 @@ jobs:
           node-version: "24"
       - name: Install Hub dependencies
         run: npm ci --prefix hub --ignore-scripts
+      - name: Sync webgames catalog (hub/games)
+        run: node hub/tools/sync-webgames.mjs
       - name: Run Mobile, Social & APK Server Unit Tests
         run: node --test hub/tests/mobile-*.test.mjs hub/tests/social-*.test.mjs tools/aos/serve-apk-download.test.mjs
 
