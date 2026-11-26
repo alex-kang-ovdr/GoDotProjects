@@ -36,7 +36,12 @@ export const BUILDING_FOOTPRINTS = Object.freeze({
   liquidBridge:installed(3,1,{liquidIn:[-1,0],liquidOut:[1,0]},{rotatable:true,placement:'conduit',overlay:true}),
   supercomputer:installed(3,3,{power:[0,0]}),
   planetarium:installed(4,4,{power:[0,0]},{portEvidence:'default-building-offset'}),
-  steamRocket:installed(7,5,{gasIn:[2,3]},{portEvidence:'web-adaptation'}),
+  steamRocket:installed(7,5,{gasIn:[2,3]},
+    {attachmentPoint:[0,5],portEvidence:'installed-dll'}),
+  researchModule:installed(5,5,{},
+    {attachmentPoint:[0,5],attachablePosition:[0,0],placement:'attachment'}),
+  commandModule:installed(5,5,{},
+    {attachablePosition:[0,0],placement:'attachment'}),
   core:webOnly(2,2,{liquidOut:[0,0]}), steamVent:webOnly(1,1),
 });
 
@@ -70,10 +75,24 @@ export function buildingPort(building,kind) {
   // BuildingDef.GenerateOffsets centers odd-width footprints around its
   // placement cell; translate the installed port offset into our lower-left
   // anchor coordinates before rotation.
+  return offsetCell(building,port,spec);
+}
+
+function offsetCell(building,offset,spec=specFor(building)) {
   const firstX=Math.floor(spec.width/2)-spec.width+1;
-  const local=[port[0]-firstX,port[1]];
+  const local=[offset[0]-firstX,offset[1]];
   const {x,y}=rotatePort(local,spec,rotationFor(building,spec));
   return {x:building.x+x,y:building.y-y};
+}
+
+export function buildingAttachmentPoint(building) {
+  const spec=specFor(building);
+  return spec.attachmentPoint?offsetCell(building,spec.attachmentPoint,spec):null;
+}
+
+export function buildingAttachableCell(building) {
+  const spec=specFor(building);
+  return spec.attachablePosition?offsetCell(building,spec.attachablePosition,spec):null;
 }
 
 export function buildingCells(building) {

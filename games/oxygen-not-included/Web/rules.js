@@ -1,10 +1,12 @@
 import { GAS_KG_PER_UNIT } from './environment.js';
 
+export const RESTORED_RULES = 'oni-4.4';
 export const MODERN_RULES = 'oni-4.3';
 export const ORIGINAL_RULES = 'oni-base';
 export const LEGACY_RULES = 'breath-4.1';
 
-export function usesOriginalRates(ruleset) { return ruleset === ORIGINAL_RULES || ruleset === MODERN_RULES; }
+export function usesModernRules(ruleset) { return ruleset === MODERN_RULES || ruleset === RESTORED_RULES; }
+export function usesOriginalRates(ruleset) { return ruleset === ORIGINAL_RULES || usesModernRules(ruleset); }
 
 export function cycleSecondsFor(ruleset) {
   return usesOriginalRates(ruleset) ? 600 : 120;
