@@ -255,6 +255,19 @@ func jump_to(bid: int, adv_ftl_nav: bool = false) -> Dictionary:
 	return b
 
 
+func add_quest_beacon(event_id: String) -> int:
+	var candidates: Array[int] = []
+	for b in beacons:
+		if not bool(b.visited) and not bool(b.rebel) and str(b.type) == "normal" and not bool(b.get("quest", false)):
+			candidates.append(int(b.id))
+	if candidates.is_empty():
+		return -1
+	var pick := candidates[randi() % candidates.size()]
+	beacons[pick]["quest"] = true
+	beacons[pick]["event_id"] = event_id
+	return pick
+
+
 func get_next_sector_options() -> Array:
 	if current_sector_index >= 7:
 		return []

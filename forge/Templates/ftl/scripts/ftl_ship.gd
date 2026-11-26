@@ -359,6 +359,7 @@ func add_crew(species: String, room_id: int, p_is_player: bool, custom_name: Str
 		"species": species,
 		"is_player": p_is_player,
 		"room_id": room_id,
+		"home_room": room_id,
 		"target_room": room_id,
 		"path": [],
 		"pos": pos,
@@ -1215,6 +1216,40 @@ func command_crew_to_room(crew_member: Dictionary, dest_room: int) -> void:
 		return
 	crew_member.target_room = dest_room
 	crew_member.path = find_room_path(int(crew_member.room_id), dest_room)
+
+
+func save_crew_stations() -> int:
+	var saved := 0
+	for c in crew:
+		if bool(c.is_player) == is_player and float(c.hp) > 0.0:
+			c["home_room"] = int(c.room_id)
+			saved += 1
+	return saved
+
+
+func return_crew_to_stations() -> int:
+	var moved := 0
+	for c in crew:
+		if bool(c.is_player) == is_player and float(c.hp) > 0.0:
+			var hr := int(c.get("home_room", int(c.room_id)))
+			if room_by_id.has(hr) and int(c.room_id) != hr:
+				command_crew_to_room(c, hr)
+				moved += 1
+	return moved
+
+
+func dismiss_crew(cid: int) -> bool:
+	var living := 0
+	for c in crew:
+		if bool(c.is_player) == is_player and float(c.hp) > 0.0:
+			living += 1
+	if living <= 1:
+		return false
+	for i in range(crew.size()):
+		if int(crew[i].id) == cid and bool(crew[i].is_player) == is_player:
+			crew.remove_at(i)
+			return true
+	return false
 
 
 func _assign_room_tiles(room_id: int) -> void:

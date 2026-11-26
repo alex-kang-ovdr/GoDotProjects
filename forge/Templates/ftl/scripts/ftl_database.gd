@@ -616,8 +616,12 @@ func _convert_event_node(n: Dictionary) -> Dictionary:
 		"weapon": "",
 		"crew": "",
 		"augment": "",
+		"quest": "",
 		"choices": [],
 	}
+	var q_node := _child(n, "quest")
+	if not q_node.is_empty():
+		ev.quest = str(q_node.attrs.get("event", ""))
 	var ship_node := _child(n, "ship")
 	if not ship_node.is_empty():
 		ev.ship = str(ship_node.attrs.get("load", ""))

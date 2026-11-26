@@ -348,6 +348,18 @@ func _run() -> void:
 	auto_ship.is_unmanned = true
 	_check(auto_ship.has_living_crew(), "Unmanned Auto-Scout stays active with 0 crew")
 
+	# 8l. Save/Return Crew Stations (S/R), Crew Dismiss, & Quest Beacon placement
+	var st_ship := FTLShip.new()
+	st_ship.init_from_blueprint(db, "PLAYER_SHIP_HARD", true, 0)
+	var st_orig_room := int(st_ship.crew[0].room_id)
+	var saved_cnt := st_ship.save_crew_stations()
+	st_ship.crew[0].room_id = int(st_ship.rooms[-1].id)
+	var ret_cnt := st_ship.return_crew_to_stations()
+	var dismiss_ok := st_ship.dismiss_crew(int(st_ship.crew[-1].id))
+	var q_bid := smap.add_quest_beacon("QUEST_TEST_EVENT")
+	_check(saved_cnt >= 3 and ret_cnt >= 1 and int(st_ship.crew[0].target_room) == st_orig_room and dismiss_ok and q_bid >= 0 and bool(smap.beacons[q_bid].get("quest", false)),
+		"Crew Save/Return Stations (S/R), Crew Dismiss & Quest Beacon work")
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

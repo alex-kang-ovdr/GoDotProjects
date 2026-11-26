@@ -478,6 +478,23 @@ func _build_hud_ui() -> void:
 	crew_list.add_theme_constant_override("separation", 4)
 	crew_v.add_child(crew_list)
 	hud_refs["crew_list"] = crew_list
+	var st_h := HBoxContainer.new()
+	st_h.add_theme_constant_override("separation", 4)
+	crew_v.add_child(st_h)
+	var b_save_st := _mk_btn("SAVE (S)", func():
+		if player_ship != null:
+			var n := player_ship.save_crew_stations()
+			_banner("승무원 %d명 배치 위치 저장 완료! (R 키로 복귀)" % n)
+	)
+	b_save_st.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	st_h.add_child(b_save_st)
+	var b_ret_st := _mk_btn("RET (R)", func():
+		if player_ship != null:
+			var n := player_ship.return_crew_to_stations()
+			_banner("승무원 %d명 저장된 배치 위치로 복귀 중!" % n if n > 0 else "모든 승무원이 이미 배치 위치에 있습니다.")
+	)
+	b_ret_st.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	st_h.add_child(b_ret_st)
 
 	# BOTTOM BAR: Reactor + Systems + Weapons + Drones/Doors
 	var bot_panel := PanelContainer.new()
@@ -937,6 +954,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_battery_pressed()
 		elif kc == KEY_K:
 			_on_crystal_lockdown_pressed()
+		elif kc == KEY_S:
+			var sn := player_ship.save_crew_stations()
+			_banner("승무원 %d명 배치 위치 저장 완료! (R 키로 복귀)" % sn)
+		elif kc == KEY_R:
+			var rn := player_ship.return_crew_to_stations()
+			_banner("승무원 %d명 저장된 배치 위치로 복귀 중!" % rn if rn > 0 else "모든 승무원이 이미 배치 위치에 있습니다.")
 		elif kc == KEY_T:
 			_on_tp_send_pressed()
 		elif kc == KEY_Y:
@@ -1805,6 +1828,16 @@ func _check_blue_requirement(req: String, lvl: int) -> bool:
 	for c in player_ship.crew:
 		if bool(c.is_player) and str(c.species) == req:
 			return true
+	# Weapon & Drone Blueprint or BlueprintList Blue Options (authentic FTL XML!)
+	var blist: Array = db.blueprint_lists.get(req, [])
+	for w in player_ship.weapons:
+		var wid := str(w.id)
+		if wid == req or blist.has(wid):
+			return true
+	for d in player_ship.drones:
+		var did := str(d.id)
+		if did == req or blist.has(did):
+			return true
 	return false
 
 
@@ -1856,6 +1889,11 @@ func _choose_event_option(ch: Dictionary) -> void:
 		player_ship.add_crew(sp, player_ship.rooms[0].id, true)
 		summary_lines.append("+Crew: %s" % sp.capitalize())
 		_rebuild_hud_controls()
+	var q_ev := str(nxt.get("quest", ""))
+	if not q_ev.is_empty():
+		var qbid := sector_map.add_quest_beacon(q_ev)
+		if qbid >= 0:
+			summary_lines.append("QUEST MARKED ON MAP")
 
 	if bool(nxt.get("store", false)):
 		current_store_inventory = _generate_store_inventory()
@@ -1965,6 +2003,32 @@ func _open_upgrades() -> void:
 			var abp: Dictionary = db.augments.get(aid, {})
 			var albl := _mk_label("• %s — %s" % [str(abp.get("title", aid)), str(abp.get("desc", "")).left(84)], 12, Color("d8e8f5"))
 			modal_box.add_child(albl)
+
+	# Crew Roster, Skills & Dismissal
+	var roster := _get_friendly_crew()
+	if not roster.is_empty():
+		modal_box.add_child(_mk_label("CREW ROSTER & SKILLS (%d/8)" % roster.size(), 14, Color("93b9d8")))
+		for m in roster:
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 8)
+			modal_box.add_child(row)
+			var sk: Dictionary = m.get("skills", {})
+			var clbl := _mk_label(
+				"%s [%s] HP %d/%d · P:%d E:%d S:%d W:%d R:%d C:%d" % [
+					str(m.name), str(m.species).capitalize(), int(round(float(m.hp))), int(round(float(m.max_hp))),
+					int(sk.get("pilot", 0)), int(sk.get("engines", 0)), int(sk.get("shields", 0)),
+					int(sk.get("weapons", 0)), int(sk.get("repair", 0)), int(sk.get("combat", 0))
+				], 12, Color("e6eef5")
+			)
+			clbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(clbl)
+			if roster.size() > 1:
+				var cid := int(m.id)
+				row.add_child(_mk_btn("Dismiss", func():
+					if player_ship.dismiss_crew(cid):
+						_rebuild_hud_controls()
+						_open_upgrades()
+				))
 
 
 func _generate_store_inventory() -> Dictionary:

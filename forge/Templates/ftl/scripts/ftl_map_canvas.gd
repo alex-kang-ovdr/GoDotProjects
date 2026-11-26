@@ -93,6 +93,8 @@ func _draw() -> void:
 			col = Color("ff4c44")
 		elif btype == "exit" or btype == "boss_base":
 			col = Color("ffd54f")
+		elif bool(b.get("quest", false)) and not bool(b.visited):
+			col = Color("ffda55")
 		elif btype == "store":
 			col = Color("5ef282")
 		elif btype == "distress":
@@ -112,6 +114,7 @@ func _draw() -> void:
 			var tag := ""
 			if btype == "exit": tag = "EXIT"
 			elif btype == "boss_base": tag = "FLAGSHIP"
+			elif bool(b.get("quest", false)) and not bool(b.visited): tag = "QUEST"
 			elif btype == "store" and (bool(b.explored) or bool(b.visited)): tag = "STORE"
 			elif btype == "distress": tag = "DISTRESS"
 			elif bool(b.rebel): tag = "REBEL"

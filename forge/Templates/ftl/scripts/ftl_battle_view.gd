@@ -231,8 +231,9 @@ func step_fx(delta: float) -> void:
 				continue
 			var u := clampf(float(p.t) / maxf(0.05, float(p.dur)), 0.0, 1.0)
 			p.pos = (p.start_pos as Vector2).lerp(p.end_pos as Vector2, u)
-			# Defense drone interception for enemy missiles
-			if u >= 0.62 and u <= 0.78 and str(p.bp.get("type", "")) == "MISSILES" and _try_defense_drone_intercept(p.to_ship, p.pos):
+			# Defense Drone I (missiles/asteroids) & Defense Drone II (lasers/flak/ion/missiles) interception!
+			var ptype := str(p.bp.get("type", ""))
+			if u >= 0.60 and u <= 0.78 and not bool(p.get("is_bomb", false)) and _try_defense_drone_intercept(p.to_ship, p.pos, ptype):
 				explosions.append({"pos": p.pos, "life": 0.25, "max_life": 0.25, "radius": 18.0})
 				popups.append({"pos": p.pos, "text": "INTERCEPT!", "color": Color("65e8ff"), "life": 0.85, "max_life": 0.85})
 				continue
@@ -286,13 +287,30 @@ func step_fx(delta: float) -> void:
 	queue_redraw()
 
 
-func _try_defense_drone_intercept(target_ship: FTLShip, world_pos: Vector2) -> bool:
+func _try_defense_drone_intercept(target_ship: FTLShip, world_pos: Vector2, proj_type: String = "MISSILES") -> bool:
 	if target_ship == null:
 		return false
 	for d in target_ship.drones:
-		if bool(d.powered) and str(d.bp.get("type", "")) == "DEFENSE" and float(d.cooldown) <= 0.0:
-			d.cooldown = 3.2
-			return true
+		if not bool(d.powered) or str(d.bp.get("type", "")) != "DEFENSE" or float(d.cooldown) > 0.0:
+			continue
+		var is_mk2 := str(d.id).to_upper().contains("2") or int(d.bp.get("power", 2)) >= 3
+		var can_hit := (proj_type == "MISSILES") or (is_mk2 and proj_type in ["LASER", "BURST", "ION"])
+		if not can_hit:
+			continue
+		d.cooldown = 1.6 if is_mk2 else 3.2
+		var b := target_ship.get_ship_bounds_local()
+		var ang := float(d.angle)
+		var orbit_r := maxf(b.size.x, b.size.y) * 0.62
+		var drone_w := ship_local_to_world(target_ship, b.get_center() + Vector2(cos(ang) * orbit_r, sin(ang) * orbit_r * 0.72))
+		beams.append({
+			"origin_world": drone_w,
+			"sweep_start_world": world_pos,
+			"sweep_end_world": world_pos,
+			"color": Color("65e8ff"),
+			"life": 0.18,
+			"max_life": 0.18,
+		})
+		return true
 	return false
 
 
@@ -606,11 +624,22 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 		if not sname.is_empty() and ship.systems.has(sname):
 			_draw_room_system_icon(ship, ship.systems[sname], rr)
 
-		# Fires & breaches
+		# Fires & breaches & Repair/Sabotage progress bar
 		if room_visible and int(r.fires) > 0:
 			_draw_fire_in_room(rr, int(r.fires))
 		if room_visible and int(r.breach) > 0:
 			_draw_breach_in_room(rr)
+		if room_visible:
+			var rp := float(r.get("repair_progress", 0.0))
+			var sp := float(r.get("sabotage_progress", 0.0))
+			if rp > 0.02:
+				var br := Rect2(rr.position + Vector2(4, rr.size.y - 8), Vector2(rr.size.x - 8, 4))
+				draw_rect(br, Color(0.1, 0.12, 0.15, 0.85), true)
+				draw_rect(Rect2(br.position, Vector2(br.size.x * clampf(rp, 0.0, 1.0), br.size.y)), Color("7eff8b"), true)
+			elif sp > 0.02:
+				var br := Rect2(rr.position + Vector2(4, rr.size.y - 8), Vector2(rr.size.x - 8, 4))
+				draw_rect(br, Color(0.1, 0.12, 0.15, 0.85), true)
+				draw_rect(Rect2(br.position, Vector2(br.size.x * clampf(sp, 0.0, 1.0), br.size.y)), Color("ff6b4a"), true)
 
 		# Crystal Lockdown crystalline barrier!
 		if float(r.get("lockdown_timer", 0.0)) > 0.0:
@@ -820,6 +849,13 @@ func _draw_crew_member(c: Dictionary) -> void:
 	if not drew:
 		var col: Color = c.color if bool(c.is_player) else Color("ff5c5c")
 		draw_circle(pos, 10.0, col)
+	# Crew HP bar right above head
+	var hp_ratio := clampf(float(c.hp) / maxf(1.0, float(c.max_hp)), 0.0, 1.0)
+	if hp_ratio < 0.995 or bool(c.selected) or not bool(c.is_player):
+		var hbr := Rect2(pos + Vector2(-12, -19), Vector2(24, 3.5))
+		draw_rect(hbr, Color(0.08, 0.1, 0.12, 0.9), true)
+		var hcol := Color("e070ff") if float(c.get("mind_timer", 0.0)) > 0.0 else (Color("65ff88") if bool(c.is_player) else Color("ff5c5c"))
+		draw_rect(Rect2(hbr.position, Vector2(hbr.size.x * hp_ratio, hbr.size.y)), hcol, true)
 		draw_circle(pos, 10.0, Color(0.1, 0.12, 0.15), false, 1.5)
 
 	# Crew HP bar (when injured or selected)
