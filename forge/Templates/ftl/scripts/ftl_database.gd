@@ -27,6 +27,7 @@ var anims: Dictionary = {}            # name -> {sheet,length,x,y,time}
 var music_tracks: Dictionary = {}     # name -> {explore,combat}
 var sound_effects: Dictionary = {}    # name -> {file,volume,loop}
 var _layout_cache: Dictionary = {}
+var _standalone_layouts: Dictionary = {}
 
 const CREW_BASE_STATS := {
 	"human":     {"max_hp": 100, "move": 1.0,  "repair": 1.0, "combat": 1.0, "fire_immune": false, "no_o2": false, "bonus_power": 0, "skill_rate": 1.1, "color": Color("7bb2ff")},
@@ -848,13 +849,11 @@ func pick_store_augments(count: int = 2) -> Array[String]:
 	return out
 
 
-# ==================== BUILT-IN FALLBACK (when ftl.dat absent) ====================
+# ==================== BUILT-IN STANDALONE DATA (zero ftl.dat.vanilla dependency) ====================
 func _install_builtin_fallback() -> void:
 	for sname in ["shields", "engines", "oxygen", "weapons", "drones", "medbay", "clonebay", "teleporter", "cloaking", "pilot", "sensors", "doors", "artillery", "hacking", "mind", "battery"]:
-		var max_p := 8 if sname in ["shields", "engines", "weapons", "drones"] else 3
+		var max_p := 8 if sname in ["shields", "engines", "weapons", "drones"] else (4 if sname == "artillery" else (2 if sname == "battery" else 3))
 		var costs: Array[int] = [20, 30, 40, 60, 80, 100, 120]
-		if sname == "shields":
-			costs = [20, 30, 40, 60, 80, 100, 120]
 		systems[sname] = {
 			"id": sname, "type": sname, "title": sname.capitalize(), "desc": "",
 			"startPower": 1, "maxPower": max_p, "cost": 60, "rarity": 1, "upgradeCost": costs,
@@ -868,6 +867,49 @@ func _install_builtin_fallback() -> void:
 			"fire_immune": st.fire_immune, "no_o2": st.no_o2, "bonus_power": st.bonus_power,
 			"skill_rate": st.skill_rate, "color": st.color,
 		}
+
+	# Load full self-contained res://data/standalone_data.json (10 playable cruisers, 13 enemy/boss ships, 28 weapons, 9 drones, 19 augments, 10 layouts, 11 sectors, 10 events)
+	if FileAccess.file_exists("res://data/standalone_data.json"):
+		var raw := FileAccess.get_file_as_string("res://data/standalone_data.json")
+		var parsed = JSON.parse_string(raw)
+		if parsed is Dictionary:
+			for wid in parsed.get("weapons", {}).keys():
+				var w: Dictionary = (parsed.weapons[wid] as Dictionary).duplicate(true)
+				var ca = w.get("color", [1.0, 0.28, 0.22])
+				if ca is Array and ca.size() >= 3:
+					w["color"] = Color(float(ca[0]), float(ca[1]), float(ca[2]), 1.0)
+				weapons[str(wid)] = w
+			for did in parsed.get("drones", {}).keys():
+				drones[str(did)] = (parsed.drones[did] as Dictionary).duplicate(true)
+			for aid in parsed.get("augments", {}).keys():
+				augments[str(aid)] = (parsed.augments[aid] as Dictionary).duplicate(true)
+			for sid in parsed.get("ships", {}).keys():
+				ships[str(sid)] = (parsed.ships[sid] as Dictionary).duplicate(true)
+			for eid in parsed.get("events", {}).keys():
+				events[str(eid)] = (parsed.events[eid] as Dictionary).duplicate(true)
+			for seid in parsed.get("ship_events", {}).keys():
+				ship_events[str(seid)] = (parsed.ship_events[seid] as Dictionary).duplicate(true)
+			for stk in parsed.get("sector_types", {}).keys():
+				var arr: Array[String] = []
+				for item in parsed.sector_types[stk]:
+					arr.append(str(item))
+				sector_types[str(stk)] = arr
+			for scid in parsed.get("sectors", {}).keys():
+				sectors[str(scid)] = (parsed.sectors[scid] as Dictionary).duplicate(true)
+			_standalone_layouts.clear()
+			for lname in parsed.get("layouts", {}).keys():
+				var ld: Dictionary = (parsed.layouts[lname] as Dictionary).duplicate(true)
+				var ir = ld.get("img_rect", [-40, -50, 420, 300])
+				if ir is Array and ir.size() >= 4:
+					ld["img_rect"] = Rect2(float(ir[0]), float(ir[1]), float(ir[2]), float(ir[3]))
+				var fo = ld.get("floor_offset", [0, 0])
+				if fo is Array and fo.size() >= 2:
+					ld["floor_offset"] = Vector2(float(fo[0]), float(fo[1]))
+				var co = ld.get("cloak_offset", [0, 0])
+				if co is Array and co.size() >= 2:
+					ld["cloak_offset"] = Vector2(float(co[0]), float(co[1]))
+				_standalone_layouts[str(lname)] = ld
+			return
 	weapons["LASER_BURST_2"] = {
 		"id": "LASER_BURST_2", "type": "LASER", "title": "Burst Laser Mark II", "short": "Burst Laser II",
 		"desc": "Fires 3 lasers dealing 1 damage each.", "damage": 1, "sysDamage": 0, "persDamage": 0,
@@ -982,6 +1024,8 @@ func _install_builtin_fallback() -> void:
 
 
 func _fallback_layout(layout_name: String) -> Dictionary:
+	if _standalone_layouts.has(layout_name):
+		return (_standalone_layouts[layout_name] as Dictionary).duplicate(true)
 	if layout_name == "kestral":
 		return {
 			"name": "kestral", "x_offset": 0, "y_offset": 2, "vertical": 0, "horizontal": 0,

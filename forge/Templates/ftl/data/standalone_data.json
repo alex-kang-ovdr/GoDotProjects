@@ -1,0 +1,7265 @@
+{
+  "schemaVersion": 1,
+  "weapons": {
+    "LASER_BURST_1": {
+      "id": "LASER_BURST_1",
+      "type": "LASER",
+      "title": "Dual Lasers",
+      "short": "Dual Lasers",
+      "desc": "Efficient 2-shot laser.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 2,
+      "sp": 0,
+      "fireChance": 1,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 10,
+      "power": 1,
+      "cost": 45,
+      "rarity": 0,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.28,
+        0.22
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_BURST_2": {
+      "id": "LASER_BURST_2",
+      "type": "LASER",
+      "title": "Burst Laser Mark II",
+      "short": "Burst Laser II",
+      "desc": "Fires 3 lasers dealing 1 damage each.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 3,
+      "sp": 0,
+      "fireChance": 1,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 12,
+      "power": 2,
+      "cost": 80,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.28,
+        0.22
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_BURST_3": {
+      "id": "LASER_BURST_3",
+      "type": "LASER",
+      "title": "Burst Laser Mark III",
+      "short": "Burst Laser III",
+      "desc": "Fires a 5-laser volley.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 5,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 19,
+      "power": 4,
+      "cost": 95,
+      "rarity": 4,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.28,
+        0.22
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_HEAVY_1": {
+      "id": "LASER_HEAVY_1",
+      "type": "LASER",
+      "title": "Heavy Laser Mark I",
+      "short": "Heavy Laser I",
+      "desc": "High-impact 2-damage laser with fire & breach chance.",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 3,
+      "breachChance": 3,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 9,
+      "power": 1,
+      "cost": 50,
+      "rarity": 1,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.5,
+        0.18
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_HEAVY_2": {
+      "id": "LASER_HEAVY_2",
+      "type": "LASER",
+      "title": "Heavy Laser Mark II",
+      "short": "Heavy Laser II",
+      "desc": "Fires 2 heavy 2-damage bolts.",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 2,
+      "sp": 0,
+      "fireChance": 3,
+      "breachChance": 3,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 13,
+      "power": 3,
+      "cost": 65,
+      "rarity": 3,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.5,
+        0.18
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_CHAINGUN": {
+      "id": "LASER_CHAINGUN",
+      "type": "LASER",
+      "title": "Chain Laser",
+      "short": "Chain Laser",
+      "desc": "Cooldown drops by 3s after each shot (up to 3x).",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 2,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 16,
+      "power": 2,
+      "cost": 65,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "cooldown",
+      "boostAmount": 3,
+      "boostCount": 3,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.35,
+        0.55
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_CHAINGUN_2": {
+      "id": "LASER_CHAINGUN_2",
+      "type": "LASER",
+      "title": "Chain Vulcan",
+      "short": "Chain Vulcan",
+      "desc": "Spools up to fire every 1.1 seconds!",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 11.1,
+      "power": 4,
+      "cost": 95,
+      "rarity": 4,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "cooldown",
+      "boostAmount": 2,
+      "boostCount": 5,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.3,
+        0.6
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_CHARGEGUN": {
+      "id": "LASER_CHARGEGUN",
+      "type": "LASER",
+      "title": "Charge Laser Mark I",
+      "short": "Charge Laser",
+      "desc": "Charges up to 2 shots.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 6,
+      "power": 2,
+      "cost": 55,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 2,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.75,
+        0.25
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "LASER_CHARGEGUN_2": {
+      "id": "LASER_CHARGEGUN_2",
+      "type": "LASER",
+      "title": "Charge Laser Mark II",
+      "short": "Charge Laser II",
+      "desc": "Charges up to 4 shots.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 5,
+      "power": 3,
+      "cost": 70,
+      "rarity": 3,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 4,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.75,
+        0.25
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "SHOTGUN": {
+      "id": "SHOTGUN",
+      "type": "BURST",
+      "title": "Flak Gun Mark I",
+      "short": "Flak I",
+      "desc": "Fires 3 debris shards across a 42px scatter zone.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 3,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 10,
+      "power": 2,
+      "cost": 65,
+      "rarity": 1,
+      "speed": 42,
+      "length": 0,
+      "radius": 42,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.68,
+        0.28
+      ],
+      "launchSounds": [
+        "flak"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "SHOTGUN_2": {
+      "id": "SHOTGUN_2",
+      "type": "BURST",
+      "title": "Flak Gun Mark II",
+      "short": "Flak II",
+      "desc": "Fires 7 debris shards across a 65px scatter zone.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 7,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 21,
+      "power": 3,
+      "cost": 80,
+      "rarity": 3,
+      "speed": 40,
+      "length": 0,
+      "radius": 65,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.68,
+        0.28
+      ],
+      "launchSounds": [
+        "flak"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "MISSILES_1": {
+      "id": "MISSILES_1",
+      "type": "MISSILES",
+      "title": "Leto Missile",
+      "short": "Leto",
+      "desc": "Fast 1-damage shield-piercing missile.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 5,
+      "fireChance": 1,
+      "breachChance": 1,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 9,
+      "power": 1,
+      "cost": 25,
+      "rarity": 1,
+      "speed": 38,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.72,
+        0.2
+      ],
+      "launchSounds": [
+        "smallMissile1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "MISSILES_2_PLAYER": {
+      "id": "MISSILES_2_PLAYER",
+      "type": "MISSILES",
+      "title": "Artemis Missile",
+      "short": "Artemis",
+      "desc": "Pierces all shields for 2 damage.",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 5,
+      "fireChance": 1,
+      "breachChance": 1,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 11,
+      "power": 1,
+      "cost": 38,
+      "rarity": 0,
+      "speed": 35,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.72,
+        0.2
+      ],
+      "launchSounds": [
+        "smallMissile1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "MISSILES_3": {
+      "id": "MISSILES_3",
+      "type": "MISSILES",
+      "title": "Hermes Missile",
+      "short": "Hermes",
+      "desc": "Heavy 3-damage missile.",
+      "damage": 3,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 5,
+      "fireChance": 3,
+      "breachChance": 2,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 14,
+      "power": 3,
+      "cost": 45,
+      "rarity": 2,
+      "speed": 34,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.65,
+        0.18
+      ],
+      "launchSounds": [
+        "smallMissile1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "MISSILES_BREACH": {
+      "id": "MISSILES_BREACH",
+      "type": "MISSILES",
+      "title": "Breach Missile",
+      "short": "Breach Missile",
+      "desc": "Massive 4-damage missile with high breach chance.",
+      "damage": 4,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 5,
+      "fireChance": 3,
+      "breachChance": 8,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 22,
+      "power": 3,
+      "cost": 65,
+      "rarity": 3,
+      "speed": 32,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.45,
+        0.15
+      ],
+      "launchSounds": [
+        "smallMissile1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_1": {
+      "id": "BEAM_1",
+      "type": "BEAM",
+      "title": "Mini Beam",
+      "short": "Mini Beam",
+      "desc": "Fast 1-power beam slicing 1 damage per room.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 1,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 12,
+      "power": 1,
+      "cost": 35,
+      "rarity": 0,
+      "speed": 60,
+      "length": 55,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.22,
+        0.18
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_LONG": {
+      "id": "BEAM_LONG",
+      "type": "BEAM",
+      "title": "Pike Beam",
+      "short": "Pike Beam",
+      "desc": "Long 145px beam slicing many rooms.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 16,
+      "power": 2,
+      "cost": 55,
+      "rarity": 1,
+      "speed": 60,
+      "length": 145,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.32,
+        0.18
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_2": {
+      "id": "BEAM_2",
+      "type": "BEAM",
+      "title": "Halberd Beam",
+      "short": "Halberd Beam",
+      "desc": "Powerful 2-damage beam that cuts through 1 shield.",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 1,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 17,
+      "power": 3,
+      "cost": 65,
+      "rarity": 2,
+      "speed": 60,
+      "length": 90,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.2,
+        0.15
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_3": {
+      "id": "BEAM_3",
+      "type": "BEAM",
+      "title": "Glaive Beam",
+      "short": "Glaive Beam",
+      "desc": "Devastating 3-damage beam!",
+      "damage": 3,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 25,
+      "power": 4,
+      "cost": 95,
+      "rarity": 4,
+      "speed": 60,
+      "length": 85,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.15,
+        0.25
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_FIRE": {
+      "id": "BEAM_FIRE",
+      "type": "BEAM",
+      "title": "Fire Beam",
+      "short": "Fire Beam",
+      "desc": "Ignites rooms across the enemy hull.",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 9,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 20,
+      "power": 2,
+      "cost": 50,
+      "rarity": 2,
+      "speed": 60,
+      "length": 120,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.58,
+        0.1
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BEAM_BIO": {
+      "id": "BEAM_BIO",
+      "type": "BEAM",
+      "title": "Anti-Bio Beam",
+      "short": "Anti-Bio Beam",
+      "desc": "Harmless to hull, lethal to enemy crew.",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 4,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 16,
+      "power": 2,
+      "cost": 50,
+      "rarity": 2,
+      "speed": 60,
+      "length": 110,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.72,
+        0.28,
+        1
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "ION_1": {
+      "id": "ION_1",
+      "type": "LASER",
+      "title": "Ion Blast",
+      "short": "Ion Blast",
+      "desc": "Deals 1 ion damage every 8 seconds.",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 1,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 1,
+      "missiles": 0,
+      "cooldown": 8,
+      "power": 1,
+      "cost": 30,
+      "rarity": 1,
+      "speed": 36,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.35,
+        0.88,
+        1
+      ],
+      "launchSounds": [
+        "ionShoot1"
+      ],
+      "hitShieldSounds": [
+        "ionHit1"
+      ],
+      "hitShipSounds": [
+        "ionHit1"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "ION_4": {
+      "id": "ION_4",
+      "type": "LASER",
+      "title": "Ion Blast Mark II",
+      "short": "Ion Blast II",
+      "desc": "Rapid-fire 1-ion cannon (4s cooldown).",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 1,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 1,
+      "missiles": 0,
+      "cooldown": 4,
+      "power": 3,
+      "cost": 70,
+      "rarity": 3,
+      "speed": 38,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.35,
+        0.88,
+        1
+      ],
+      "launchSounds": [
+        "ionShoot1"
+      ],
+      "hitShieldSounds": [
+        "ionHit1"
+      ],
+      "hitShipSounds": [
+        "ionHit1"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BOMB_1": {
+      "id": "BOMB_1",
+      "type": "BOMB",
+      "title": "Small Bomb",
+      "short": "Small Bomb",
+      "desc": "Teleports past shields for 2 system & crew damage.",
+      "damage": 0,
+      "sysDamage": 2,
+      "persDamage": 2,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 1,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 13,
+      "power": 1,
+      "cost": 45,
+      "rarity": 1,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.5,
+        0.2
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BOMB_FIRE": {
+      "id": "BOMB_FIRE",
+      "type": "BOMB",
+      "title": "Fire Bomb",
+      "short": "Fire Bomb",
+      "desc": "Teleports an incendiary bomb into any room.",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 2,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 10,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 15,
+      "power": 2,
+      "cost": 50,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.6,
+        0.12
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "BOMB_ION": {
+      "id": "BOMB_ION",
+      "type": "BOMB",
+      "title": "Ion Bomb",
+      "short": "Ion Bomb",
+      "desc": "Deals massive 4 ion damage past shields.",
+      "damage": 0,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 4,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 3,
+      "missiles": 1,
+      "cooldown": 22,
+      "power": 1,
+      "cost": 55,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.4,
+        0.85,
+        1
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "CRYSTAL_BURST_1": {
+      "id": "CRYSTAL_BURST_1",
+      "type": "LASER",
+      "title": "Crystal Burst Mark I",
+      "short": "Crystal Burst",
+      "desc": "Fires 2 shards that pierce 1 shield layer.",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 2,
+      "sp": 1,
+      "fireChance": 0,
+      "breachChance": 2,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 15,
+      "power": 2,
+      "cost": 60,
+      "rarity": 3,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.45,
+        0.92,
+        1
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    },
+    "CRYSTAL_HEAVY_1": {
+      "id": "CRYSTAL_HEAVY_1",
+      "type": "LASER",
+      "title": "Heavy Crystal Mark I",
+      "short": "Heavy Crystal",
+      "desc": "Pierces 1 shield for 2 damage.",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 1,
+      "fireChance": 0,
+      "breachChance": 3,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 13,
+      "power": 1,
+      "cost": 55,
+      "rarity": 3,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        0.45,
+        0.92,
+        1
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
+    }
+  },
+  "drones": {
+    "COMBAT_1": {
+      "id": "COMBAT_1",
+      "type": "COMBAT",
+      "title": "Combat Drone Mark I",
+      "short": "Combat I",
+      "desc": "Orbits enemy ship firing lasers.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 15,
+      "cost": 50,
+      "rarity": 1,
+      "droneImage": "drone_combat",
+      "weaponBlueprint": "LASER_BURST_1"
+    },
+    "COMBAT_BEAM": {
+      "id": "COMBAT_BEAM",
+      "type": "COMBAT",
+      "title": "Beam Drone Mark I",
+      "short": "Beam Drone",
+      "desc": "Orbits enemy ship slicing with a mini beam.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 14,
+      "cost": 50,
+      "rarity": 2,
+      "droneImage": "drone_beam",
+      "weaponBlueprint": "BEAM_1"
+    },
+    "DEFENSE_1": {
+      "id": "DEFENSE_1",
+      "type": "DEFENSE",
+      "title": "Defense Drone Mark I",
+      "short": "Defense I",
+      "desc": "Shoots down incoming missiles.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 6,
+      "cost": 50,
+      "rarity": 1,
+      "droneImage": "drone_defense",
+      "weaponBlueprint": ""
+    },
+    "DEFENSE_2": {
+      "id": "DEFENSE_2",
+      "type": "DEFENSE",
+      "title": "Defense Drone Mark II",
+      "short": "Defense II",
+      "desc": "Shoots down missiles, lasers, flak, and ion.",
+      "power": 3,
+      "cooldown": 1000,
+      "speed": 8,
+      "cost": 70,
+      "rarity": 3,
+      "droneImage": "drone_defense2",
+      "weaponBlueprint": ""
+    },
+    "DRONE_SHIELD": {
+      "id": "DRONE_SHIELD",
+      "type": "SHIELD",
+      "title": "Shield Overcharger",
+      "short": "Shield+",
+      "desc": "Periodically adds +1 Super-Shield layer.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 6,
+      "cost": 60,
+      "rarity": 3,
+      "droneImage": "drone_shield",
+      "weaponBlueprint": ""
+    },
+    "BOARDER": {
+      "id": "BOARDER",
+      "type": "BOARDER",
+      "title": "Boarding Drone",
+      "short": "Boarder",
+      "desc": "Breaches enemy hull and deploys a combat drone.",
+      "power": 3,
+      "cooldown": 1000,
+      "speed": 18,
+      "cost": 70,
+      "rarity": 3,
+      "droneImage": "drone_boarder",
+      "weaponBlueprint": ""
+    },
+    "BATTLE": {
+      "id": "BATTLE",
+      "type": "BATTLE",
+      "title": "Anti-Personnel Drone",
+      "short": "Anti-Pers",
+      "desc": "Defends your ship against enemy boarders.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 10,
+      "cost": 35,
+      "rarity": 2,
+      "droneImage": "drone_anti",
+      "weaponBlueprint": ""
+    },
+    "REPAIR": {
+      "id": "REPAIR",
+      "type": "REPAIR",
+      "title": "System Repair Drone",
+      "short": "Sys Repair",
+      "desc": "Automatically repairs damaged systems.",
+      "power": 1,
+      "cooldown": 1000,
+      "speed": 10,
+      "cost": 30,
+      "rarity": 1,
+      "droneImage": "drone_repair",
+      "weaponBlueprint": ""
+    },
+    "SHIP_REPAIR": {
+      "id": "SHIP_REPAIR",
+      "type": "SHIP_REPAIR",
+      "title": "Hull Repair Drone",
+      "short": "Hull Repair",
+      "desc": "Repairs damaged hull plating.",
+      "power": 2,
+      "cooldown": 1000,
+      "speed": 10,
+      "cost": 85,
+      "rarity": 3,
+      "droneImage": "drone_shiprepair",
+      "weaponBlueprint": ""
+    }
+  },
+  "augments": {
+    "ENERGY_SHIELD": {
+      "id": "ENERGY_SHIELD",
+      "title": "Zoltan Shield",
+      "desc": "Starts every fight with a 5-point Super-Shield blocking weapons & boarding.",
+      "cost": 100,
+      "rarity": 0,
+      "value": 0,
+      "stackable": false
+    },
+    "WEAPON_PREIGNITE": {
+      "id": "WEAPON_PREIGNITE",
+      "title": "Weapon Pre-Igniter",
+      "desc": "Weapons start fully charged at the start of every jump.",
+      "cost": 120,
+      "rarity": 4,
+      "value": 0,
+      "stackable": false
+    },
+    "AUTO_COOLDOWN": {
+      "id": "AUTO_COOLDOWN",
+      "title": "Automated Re-loader",
+      "desc": "Weapons charge 10% faster.",
+      "cost": 40,
+      "rarity": 2,
+      "value": 0.1,
+      "stackable": true
+    },
+    "SCRAP_COLLECTOR": {
+      "id": "SCRAP_COLLECTOR",
+      "title": "Scrap Recovery Arm",
+      "desc": "Gain +10% bonus scrap from all salvage.",
+      "cost": 50,
+      "rarity": 2,
+      "value": 0.1,
+      "stackable": true
+    },
+    "SHIELD_RECHARGE": {
+      "id": "SHIELD_RECHARGE",
+      "title": "Shield Charge Booster",
+      "desc": "Shields recharge 15% faster.",
+      "cost": 45,
+      "rarity": 2,
+      "value": 0.15,
+      "stackable": true
+    },
+    "FTL_BOOSTER": {
+      "id": "FTL_BOOSTER",
+      "title": "FTL Recharge Booster",
+      "desc": "FTL drive charges 25% faster.",
+      "cost": 50,
+      "rarity": 2,
+      "value": 0.25,
+      "stackable": false
+    },
+    "CLOAK_FIRE": {
+      "id": "CLOAK_FIRE",
+      "title": "Stealth Weapons",
+      "desc": "Firing weapons does not reduce Cloaking duration.",
+      "cost": 50,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "ROCK_ARMOR": {
+      "id": "ROCK_ARMOR",
+      "title": "Rock Plating",
+      "desc": "15% chance to negate incoming hull damage.",
+      "cost": 80,
+      "rarity": 3,
+      "value": 0.15,
+      "stackable": false
+    },
+    "ZOLTAN_BYPASS": {
+      "id": "ZOLTAN_BYPASS",
+      "title": "Zoltan Shield Bypass",
+      "desc": "Teleporter & Mind Control bypass Super-Shields.",
+      "cost": 55,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "NANO_MEDBAY": {
+      "id": "NANO_MEDBAY",
+      "title": "Engi Med-bot Dispersal",
+      "desc": "Heals all friendly crew ship-wide while Medbay is powered.",
+      "cost": 60,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "SLUG_GEL": {
+      "id": "SLUG_GEL",
+      "title": "Slug Repair Gel",
+      "desc": "Automatically seals hull breaches over time.",
+      "cost": 60,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "FIRE_EXTINGUISHERS": {
+      "id": "FIRE_EXTINGUISHERS",
+      "title": "Fire Suppression",
+      "desc": "Automatically extinguishes fires ship-wide.",
+      "cost": 65,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "O2_MASKS": {
+      "id": "O2_MASKS",
+      "title": "Emergency Respirators",
+      "desc": "Crew take 50% less suffocation damage.",
+      "cost": 50,
+      "rarity": 2,
+      "value": 0.5,
+      "stackable": false
+    },
+    "EXPLOSIVE_REPLICATOR": {
+      "id": "EXPLOSIVE_REPLICATOR",
+      "title": "Explosive Replicator",
+      "desc": "50% chance not to consume missiles when firing.",
+      "cost": 60,
+      "rarity": 3,
+      "value": 0.5,
+      "stackable": false
+    },
+    "RECON_TELEPORTER": {
+      "id": "RECON_TELEPORTER",
+      "title": "Reconstructive Teleport",
+      "desc": "Crew heal to 100% HP whenever teleporting.",
+      "cost": 70,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "REPAIR_ARM": {
+      "id": "REPAIR_ARM",
+      "title": "Hull Repair Arm",
+      "desc": "Repairs +2 Hull on combat salvage (-15% scrap).",
+      "cost": 50,
+      "rarity": 2,
+      "value": 0,
+      "stackable": false
+    },
+    "DRONE_RECOVERY": {
+      "id": "DRONE_RECOVERY",
+      "title": "Drone Recovery Arm",
+      "desc": "Recovers active external drone parts after combat.",
+      "cost": 50,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "FTL_JUMPER": {
+      "id": "FTL_JUMPER",
+      "title": "Adv. FTL Navigation",
+      "desc": "Allows jumping back to any previously visited beacon.",
+      "cost": 50,
+      "rarity": 3,
+      "value": 0,
+      "stackable": false
+    },
+    "LONG_RANGED_SCANNERS": {
+      "id": "LONG_RANGED_SCANNERS",
+      "title": "Long-Ranged Scanners",
+      "desc": "Reveals hostile ships and hazards on adjacent beacons.",
+      "cost": 30,
+      "rarity": 1,
+      "value": 0,
+      "stackable": false
+    }
+  },
+  "ships": {
+    "PLAYER_SHIP_HARD": {
+      "id": "PLAYER_SHIP_HARD",
+      "layout": "kestral",
+      "img": "kestral",
+      "class_name": "Kestrel Cruiser",
+      "name": "The Kestrel",
+      "desc": "Reliable Federation cruiser balanced for all-around combat.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 10,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 13,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 14,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2",
+        "MISSILES_2_PLAYER"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 8,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 2,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_CIRCLE": {
+      "id": "PLAYER_SHIP_CIRCLE",
+      "layout": "engi_torus",
+      "img": "circle_cruiser",
+      "class_name": "Engi Cruiser",
+      "name": "The Torus",
+      "desc": "Drone-focused Engi cruiser equipped with Ion Blast II and Med-bot Dispersal.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "drones": {
+          "power": 3,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_drones",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 6,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 7,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 8,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 3,
+      "weapons": [
+        "ION_4"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 1,
+      "missiles": 0,
+      "drones": [
+        "COMBAT_1"
+      ],
+      "droneListLoad": "",
+      "droneParts": 15,
+      "health": 30,
+      "maxPower": 10,
+      "crew": [
+        "human",
+        "engi",
+        "engi"
+      ],
+      "augments": [
+        "NANO_MEDBAY"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_FED": {
+      "id": "PLAYER_SHIP_FED",
+      "layout": "fed_osprey",
+      "img": "fed_cruiser",
+      "class_name": "Federation Cruiser",
+      "name": "The Osprey",
+      "desc": "Features an automatic shield-piercing Artillery Beam.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "artillery": {
+          "power": 1,
+          "max": 4,
+          "room": 1,
+          "start": true,
+          "img": "room_artillery",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 8,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 9,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 1,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "human",
+        "mantis",
+        "rock",
+        "engi"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_ENERGY": {
+      "id": "PLAYER_SHIP_ENERGY",
+      "layout": "zoltan_adj",
+      "img": "energy_cruiser",
+      "class_name": "Zoltan Cruiser",
+      "name": "The Adjudicator",
+      "desc": "Protected by a 5-point Zoltan Super-Shield and armed with a Halberd Beam.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 2,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 1,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "BEAM_2",
+        "MISSILES_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 12,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 2,
+      "health": 30,
+      "maxPower": 5,
+      "crew": [
+        "energy",
+        "energy",
+        "energy"
+      ],
+      "augments": [
+        "ENERGY_SHIELD"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_MANTIS": {
+      "id": "PLAYER_SHIP_MANTIS",
+      "layout": "mantis_gila",
+      "img": "mantis_cruiser",
+      "class_name": "Mantis Cruiser",
+      "name": "The Gila Monster",
+      "desc": "Built for aggressive Crew Teleporter boarding raids.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "teleporter": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_teleporter",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 8,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_1",
+        "BOMB_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 16,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 7,
+      "crew": [
+        "mantis",
+        "mantis",
+        "mantis",
+        "engi"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_SLUG": {
+      "id": "PLAYER_SHIP_SLUG",
+      "layout": "zoltan_adj",
+      "img": "jelly_cruiser",
+      "class_name": "Slug Cruiser",
+      "name": "Man of War",
+      "desc": "Equipped with Anti-Bio Beam, Slug Telepathy, and automatic breach-sealing gel.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 2,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_1",
+        "BOMB_1",
+        "BEAM_BIO"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 3,
+      "missiles": 10,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "slug",
+        "slug"
+      ],
+      "augments": [
+        "SLUG_GEL"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_ROCK": {
+      "id": "PLAYER_SHIP_ROCK",
+      "layout": "fed_osprey",
+      "img": "rock_cruiser",
+      "class_name": "Rock Cruiser",
+      "name": "Bulwark",
+      "desc": "Heavily armored hull with Rock Plating and fire-immune crew.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 8,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 9,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "MISSILES_2_PLAYER",
+        "MISSILES_3"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 28,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "rock",
+        "rock",
+        "rock"
+      ],
+      "augments": [
+        "ROCK_ARMOR"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_STEALTH": {
+      "id": "PLAYER_SHIP_STEALTH",
+      "layout": "stealth_nes",
+      "img": "stealth",
+      "class_name": "Stealth Cruiser",
+      "name": "The Nesasio",
+      "desc": "Starts without Shields, relying on Cloaking, high evasion, and Long-Ranged Scanners.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "cloaking": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_cloaking",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 2,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 4,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_1",
+        "BEAM_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 2,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [
+        "LONG_RANGED_SCANNERS"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_ANAEROBIC": {
+      "id": "PLAYER_SHIP_ANAEROBIC",
+      "layout": "lanius_kruos",
+      "img": "anaerobic_cruiser",
+      "class_name": "Lanius Cruiser",
+      "name": "Kruos",
+      "desc": "Advanced Edition cruiser featuring Clone Bay, Hacking, Chain Laser, and Flak I.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "hacking": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_hacking",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "clonebay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_clonebay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 8,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_CHAINGUN",
+        "SHOTGUN"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 12,
+      "health": 30,
+      "maxPower": 9,
+      "crew": [
+        "anaerobic",
+        "anaerobic",
+        "human"
+      ],
+      "augments": [
+        "O2_MASKS"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_CRYSTAL": {
+      "id": "PLAYER_SHIP_CRYSTAL",
+      "layout": "lanius_kruos",
+      "img": "crystal_cruiser",
+      "class_name": "Crystal Cruiser",
+      "name": "Bravais",
+      "desc": "Ancient vessel crewed by Crystal beings with room Lockdown (K) and shield-piercing shards.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "battery": {
+          "power": 1,
+          "max": 2,
+          "room": 1,
+          "start": true,
+          "img": "room_battery",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 8,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "CRYSTAL_BURST_1",
+        "CRYSTAL_HEAVY_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "crystal",
+        "crystal",
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "REBEL_SKINNY": {
+      "id": "REBEL_SKINNY",
+      "layout": "rebel_fighter",
+      "img": "rebel_long",
+      "class_name": "Rebel Fighter",
+      "name": "Rebel Fighter",
+      "desc": "Rebel patrol vessel.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "LASER_BURST_1",
+        "MISSILES_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 6,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 1,
+      "health": 10,
+      "maxPower": 8,
+      "crew": [
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "REBEL_FAT": {
+      "id": "REBEL_FAT",
+      "layout": "rebel_fighter",
+      "img": "rebel_squat",
+      "class_name": "Rebel Rigger",
+      "name": "Rebel Rigger",
+      "desc": "Drone-equipped Rebel vessel.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "drones": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_drones",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 1,
+      "missiles": 4,
+      "drones": [
+        "COMBAT_1"
+      ],
+      "droneListLoad": "",
+      "droneParts": 4,
+      "health": 12,
+      "maxPower": 10,
+      "crew": [
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 1,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "AUTO_BASIC": {
+      "id": "AUTO_BASIC",
+      "layout": "auto_scout",
+      "img": "auto_basic",
+      "class_name": "Auto-Scout",
+      "name": "Rebel Auto-Scout",
+      "desc": "Unmanned AI scout ship with self-repair.",
+      "systems": {
+        "pilot": {
+          "power": 2,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "LASER_BURST_1",
+        "ION_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 4,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 9,
+      "maxPower": 9,
+      "crew": [],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "AUTO_ASSAULT": {
+      "id": "AUTO_ASSAULT",
+      "layout": "auto_scout",
+      "img": "auto_assault",
+      "class_name": "Auto-Assault",
+      "name": "Rebel Auto-Assault",
+      "desc": "Heavy unmanned gunship.",
+      "systems": {
+        "pilot": {
+          "power": 2,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 4,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 4,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 3,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2",
+        "SHOTGUN"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 8,
+      "drones": [
+        "COMBAT_1"
+      ],
+      "droneListLoad": "",
+      "droneParts": 4,
+      "health": 13,
+      "maxPower": 14,
+      "crew": [],
+      "augments": [],
+      "minSector": 3,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "MANTIS_SCOUT": {
+      "id": "MANTIS_SCOUT",
+      "layout": "rebel_fighter",
+      "img": "mantis_scout",
+      "class_name": "Mantis Scout",
+      "name": "Mantis Scout",
+      "desc": "Fast Mantis raider.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "LASER_HEAVY_1",
+        "MISSILES_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 6,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 10,
+      "maxPower": 8,
+      "crew": [
+        "mantis",
+        "mantis"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "MANTIS_FIGHTER": {
+      "id": "MANTIS_FIGHTER",
+      "layout": "rebel_fighter",
+      "img": "mantis_fighter",
+      "class_name": "Mantis Fighter",
+      "name": "Mantis Fighter",
+      "desc": "Aggressive Mantis cruiser.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 4,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 3,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "LASER_BURST_2",
+        "BOMB_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 8,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 13,
+      "maxPower": 12,
+      "crew": [
+        "mantis",
+        "mantis",
+        "engi"
+      ],
+      "augments": [],
+      "minSector": 2,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "ROCK_SCOUT": {
+      "id": "ROCK_SCOUT",
+      "layout": "rebel_fighter",
+      "img": "rock_scout",
+      "class_name": "Rock Scout",
+      "name": "Rock Scout",
+      "desc": "Missile-armed Rock vessel.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "MISSILES_2_PLAYER",
+        "LASER_HEAVY_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 10,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 12,
+      "maxPower": 9,
+      "crew": [
+        "rock",
+        "rock"
+      ],
+      "augments": [
+        "ROCK_ARMOR"
+      ],
+      "minSector": 1,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "ENERGY_FIGHTER": {
+      "id": "ENERGY_FIGHTER",
+      "layout": "rebel_fighter",
+      "img": "energy_fighter",
+      "class_name": "Zoltan Fighter",
+      "name": "Zoltan Fighter",
+      "desc": "Protected by a Zoltan Super-Shield.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "ION_1",
+        "BEAM_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 4,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 10,
+      "maxPower": 9,
+      "crew": [
+        "energy",
+        "energy"
+      ],
+      "augments": [
+        "ENERGY_SHIELD"
+      ],
+      "minSector": 1,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "JELLY_BUTTON": {
+      "id": "JELLY_BUTTON",
+      "layout": "rebel_fighter",
+      "img": "jelly_button",
+      "class_name": "Slug Interceptor",
+      "name": "Slug Interceptor",
+      "desc": "Cunning Nebula ambush craft.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 3,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "LASER_BURST_1",
+        "BEAM_BIO"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 4,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 11,
+      "maxPower": 10,
+      "crew": [
+        "slug",
+        "slug"
+      ],
+      "augments": [
+        "SLUG_GEL"
+      ],
+      "minSector": 1,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "ANAEROBIC_SCOUT": {
+      "id": "ANAEROBIC_SCOUT",
+      "layout": "rebel_fighter",
+      "img": "anaerobic_scout",
+      "class_name": "Lanius Scout",
+      "name": "Lanius Scout",
+      "desc": "Airless metallic scavenger vessel.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 4,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 3,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "clonebay": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_clonebay",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 1,
+      "weapons": [
+        "SHOTGUN",
+        "LASER_CHAINGUN"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 2,
+      "health": 12,
+      "maxPower": 11,
+      "crew": [
+        "anaerobic",
+        "anaerobic"
+      ],
+      "augments": [],
+      "minSector": 2,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "BOSS_1": {
+      "id": "BOSS_1",
+      "layout": "boss_flagship",
+      "img": "boss_1",
+      "class_name": "Rebel Flagship",
+      "name": "Rebel Flagship (Phase 1)",
+      "desc": "Massive dreadnought with Cloaking & Hacking.",
+      "systems": {
+        "pilot": {
+          "power": 3,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 8,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 6,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 4,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 2,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "cloaking": {
+          "power": 3,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_cloaking",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 3,
+          "max": 3,
+          "room": 6,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2",
+        "MISSILES_3",
+        "BEAM_2",
+        "ION_4"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 4,
+      "missiles": 30,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 10,
+      "health": 20,
+      "maxPower": 26,
+      "crew": [
+        "human",
+        "human",
+        "human",
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 7,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "BOSS_2": {
+      "id": "BOSS_2",
+      "layout": "boss_flagship",
+      "img": "boss_2",
+      "class_name": "Rebel Flagship",
+      "name": "Rebel Flagship (Phase 2)",
+      "desc": "Armed with Drone Power Surges & Boarding Drones.",
+      "systems": {
+        "pilot": {
+          "power": 3,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 8,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 6,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 4,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 2,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "drones": {
+          "power": 4,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_drones",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 3,
+          "max": 3,
+          "room": 6,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_2",
+        "MISSILES_3",
+        "BEAM_2"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 3,
+      "missiles": 30,
+      "drones": [
+        "COMBAT_1",
+        "DEFENSE_1"
+      ],
+      "droneListLoad": "",
+      "droneParts": 15,
+      "health": 22,
+      "maxPower": 26,
+      "crew": [
+        "human",
+        "human",
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [],
+      "minSector": 7,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "BOSS_3": {
+      "id": "BOSS_3",
+      "layout": "boss_flagship",
+      "img": "boss_3",
+      "class_name": "Rebel Flagship",
+      "name": "Rebel Flagship (Phase 3)",
+      "desc": "12-HP Super-Shield, 7-Shot Laser Surge & Mind Control.",
+      "systems": {
+        "pilot": {
+          "power": 3,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 8,
+          "max": 8,
+          "room": 1,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 6,
+          "max": 8,
+          "room": 2,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 6,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 2,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "mind": {
+          "power": 3,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_mind",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_3",
+        "MISSILES_3"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 30,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 10,
+      "health": 20,
+      "maxPower": 28,
+      "crew": [
+        "human",
+        "human",
+        "human",
+        "human"
+      ],
+      "augments": [
+        "ENERGY_SHIELD"
+      ],
+      "minSector": 7,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    }
+  },
+  "layouts": {
+    "kestral": {
+      "name": "kestral",
+      "hull_style": "kestrel",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 365,
+        "ry": 242,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 14,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 12,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 10,
+          "y": 2,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 3,
+          "x": 10,
+          "y": 3,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 4,
+          "x": 8,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 8,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 6,
+          "y": 0,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 7,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 6,
+          "y": 5,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 10,
+          "x": 4,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 11,
+          "x": 3,
+          "y": 1,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 12,
+          "x": 3,
+          "y": 4,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 13,
+          "x": 1,
+          "y": 1,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 14,
+          "x": 1,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 15,
+          "x": 1,
+          "y": 4,
+          "w": 2,
+          "h": 1
+        },
+        {
+          "id": 16,
+          "x": 0,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 14,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 3,
+          "vertical": false
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 5,
+          "vertical": false
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 5,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 7,
+          "room_b": 8,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 7,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 10,
+          "room_b": 11,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 10,
+          "room_b": 12,
+          "vertical": false
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "room_a": 11,
+          "room_b": 13,
+          "vertical": true
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "room_a": 12,
+          "room_b": 15,
+          "vertical": true
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "room_a": 13,
+          "room_b": 14,
+          "vertical": false
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "room_a": 14,
+          "room_b": 15,
+          "vertical": false
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "room_a": 14,
+          "room_b": 16,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 16,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "room_a": 6,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "room_a": 9,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -59,
+        -103,
+        652,
+        418
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 540,
+          "y": 155,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 540,
+          "y": 262,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 390,
+          "y": 122,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 390,
+          "y": 294,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    },
+    "engi_torus": {
+      "name": "engi_torus",
+      "hull_style": "engi",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 241,
+        "ry": 180,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 8,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 4,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 4,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 2,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 0,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 0,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 4,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 8,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 10,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 10,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "room_a": 5,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 5,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 6,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "room_a": 7,
+          "room_b": 8,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 9,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "room_a": 7,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "room_a": 8,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -50,
+        430,
+        310
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 340,
+          "y": 70,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 340,
+          "y": 210,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 240,
+          "y": 40,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        }
+      ]
+    },
+    "fed_osprey": {
+      "name": "fed_osprey",
+      "hull_style": "fed",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 308,
+        "ry": 191,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 12,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 10,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 8,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 4,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 4,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 0,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 11,
+          "x": 0,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 12,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "room_a": 2,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 5,
+          "room_b": 6,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 5,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 5,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 6,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 7,
+          "room_b": 8,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "room_a": 7,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 8,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 11,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 9,
+          "room_b": 11,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "room_a": 10,
+          "room_b": 11,
+          "vertical": false
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "room_a": 10,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "room_a": 11,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -50,
+        -60,
+        550,
+        330
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 430,
+          "y": 85,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 430,
+          "y": 195,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 310,
+          "y": 60,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 310,
+          "y": 220,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    },
+    "zoltan_adj": {
+      "name": "zoltan_adj",
+      "hull_style": "zoltan",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 274,
+        "ry": 186,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 10,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 8,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 8,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 4,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 4,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 4,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 5,
+          "room_b": 6,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 5,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 6,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 8,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 9,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 10,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "room_a": 5,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 7,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -55,
+        490,
+        320
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 385,
+          "y": 80,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 385,
+          "y": 195,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 270,
+          "y": 50,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 270,
+          "y": 225,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    },
+    "mantis_gila": {
+      "name": "mantis_gila",
+      "hull_style": "mantis",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 277,
+        "ry": 186,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 10,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 8,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 8,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 6,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 6,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 4,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 4,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "room_a": 2,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 5,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 5,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 8,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 9,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 10,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "room_a": 3,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 5,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -55,
+        495,
+        320
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 395,
+          "y": 70,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 395,
+          "y": 205,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 290,
+          "y": 45,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        }
+      ]
+    },
+    "stealth_nes": {
+      "name": "stealth_nes",
+      "hull_style": "stealth",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 272,
+        "ry": 180,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 10,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 8,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 4,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 4,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 3,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 5,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 5,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 5,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 7,
+          "room_b": 8,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 9,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "room_a": 6,
+          "room_b": -1,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 8,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -55,
+        485,
+        310
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 380,
+          "y": 85,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 380,
+          "y": 190,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 265,
+          "y": 55,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        }
+      ]
+    },
+    "lanius_kruos": {
+      "name": "lanius_kruos",
+      "hull_style": "lanius",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 274,
+        "ry": 186,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 10,
+          "y": 2,
+          "w": 1,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 8,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 8,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 6,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 4,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 4,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 4,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 5,
+          "room_b": 6,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 5,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 6,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 8,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "room_a": 9,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 10,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -55,
+        490,
+        320
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 390,
+          "y": 75,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 390,
+          "y": 200,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 280,
+          "y": 50,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 280,
+          "y": 225,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    },
+    "rebel_fighter": {
+      "name": "rebel_fighter",
+      "hull_style": "rebel",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 196,
+        "ry": 139,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 6,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 4,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 4,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 0,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 4,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "room_a": 5,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -35,
+        -45,
+        350,
+        240
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 250,
+          "y": 45,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 250,
+          "y": 155,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 180,
+          "y": 25,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        }
+      ]
+    },
+    "auto_scout": {
+      "name": "auto_scout",
+      "hull_style": "auto",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 154,
+        "ry": 128,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 4,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 0,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 2,
+          "room_b": 3,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -30,
+        -40,
+        275,
+        220
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 190,
+          "y": 45,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 190,
+          "y": 145,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    },
+    "boss_flagship": {
+      "name": "boss_flagship",
+      "hull_style": "boss",
+      "x_offset": 0,
+      "y_offset": 0,
+      "vertical": 0,
+      "horizontal": 0,
+      "ellipse": {
+        "rx": 286,
+        "ry": 191,
+        "ox": 0,
+        "oy": 0
+      },
+      "rooms": [
+        {
+          "id": 0,
+          "x": 10,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 1,
+          "x": 8,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 2,
+          "x": 8,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 3,
+          "x": 6,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 4,
+          "x": 6,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 5,
+          "x": 6,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 6,
+          "x": 4,
+          "y": 1,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 7,
+          "x": 4,
+          "y": 3,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 8,
+          "x": 2,
+          "y": 0,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 9,
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 10,
+          "x": 2,
+          "y": 4,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "id": 11,
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2
+        }
+      ],
+      "doors": [
+        {
+          "x": 10,
+          "y": 2,
+          "room_a": 0,
+          "room_b": 1,
+          "vertical": true
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "room_a": 0,
+          "room_b": 2,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 1,
+          "room_b": 2,
+          "vertical": false
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "room_a": 1,
+          "room_b": 3,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "room_a": 1,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "room_a": 2,
+          "room_b": 4,
+          "vertical": true
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "room_a": 2,
+          "room_b": 5,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 3,
+          "room_b": 4,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "room_a": 3,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 4,
+          "room_b": 5,
+          "vertical": false
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "room_a": 4,
+          "room_b": 6,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "room_a": 4,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "room_a": 5,
+          "room_b": 7,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 6,
+          "room_b": 7,
+          "vertical": false
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "room_a": 6,
+          "room_b": 8,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "room_a": 6,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "room_a": 7,
+          "room_b": 9,
+          "vertical": true
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "room_a": 7,
+          "room_b": 10,
+          "vertical": true
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 8,
+          "room_b": 9,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "room_a": 9,
+          "room_b": 10,
+          "vertical": false
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "room_a": 9,
+          "room_b": 11,
+          "vertical": true
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "room_a": 11,
+          "room_b": -1,
+          "vertical": true
+        }
+      ],
+      "img_rect": [
+        -45,
+        -55,
+        510,
+        330
+      ],
+      "floor_offset": [
+        0,
+        0
+      ],
+      "cloak_offset": [
+        0,
+        0
+      ],
+      "weapon_mounts": [
+        {
+          "x": 400,
+          "y": 65,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 400,
+          "y": 210,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        },
+        {
+          "x": 300,
+          "y": 35,
+          "rotate": true,
+          "mirror": true,
+          "slide": "up"
+        },
+        {
+          "x": 300,
+          "y": 240,
+          "rotate": true,
+          "mirror": false,
+          "slide": "down"
+        }
+      ]
+    }
+  },
+  "events": {
+    "START_BEACON": {
+      "text": "Welcome to the Federation Fleet! Carry vital intelligence across 8 sectors and destroy the Rebel Flagship.",
+      "choices": [
+        {
+          "text": "Begin Mission (임무 시작)",
+          "event": {}
+        }
+      ]
+    },
+    "HOSTILE_PIRATE": {
+      "text": "A pirate cruiser drops out of FTL and locks weapons onto your hull!",
+      "hostile": true,
+      "ship": "PIRATE_STD",
+      "choices": [
+        {
+          "text": "Battle Stations!",
+          "event": {}
+        }
+      ]
+    },
+    "DISTRESS_MINER": {
+      "text": "A civilian mining station is on fire after a solar flare! They plead for help.",
+      "choices": [
+        {
+          "text": "[BLUE ROCK] Send your Rock crew into the flames to rescue survivors.",
+          "req": "rock",
+          "lvl": 1,
+          "event": {
+            "text": "Your fire-immune Rock crew pulls everyone out safely! The grateful miners reward you generously.",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH"
+          }
+        },
+        {
+          "text": "[BLUE TELEPORTER] Beam the trapped miners directly aboard.",
+          "req": "teleporter",
+          "lvl": 1,
+          "event": {
+            "text": "You lock onto their biosigns and beam them out cleanly. They transfer scrap and a weapon schematic!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH",
+            "weapon": "LASER_HEAVY_1"
+          }
+        },
+        {
+          "text": "Dock and help put out the fire.",
+          "event": {
+            "text": "You extinguish the blaze with minor hull scorching and receive salvage.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED",
+            "damage": 2
+          }
+        },
+        {
+          "text": "Leave them — too risky.",
+          "event": {
+            "text": "You power up your FTL drive and move on."
+          }
+        }
+      ]
+    },
+    "QUEST_CACHE": {
+      "text": "A retired Federation scout offers coordinates to a hidden weapons cache in this sector.",
+      "choices": [
+        {
+          "text": "Upload the coordinates to your Star Map.",
+          "event": {
+            "text": "A golden QUEST beacon has been marked on your Star Map!",
+            "quest": "QUEST_CACHE_REWARD"
+          }
+        },
+        {
+          "text": "Decline politely.",
+          "event": {
+            "text": "The scout wishes you luck against the Rebels."
+          }
+        }
+      ]
+    },
+    "QUEST_CACHE_REWARD": {
+      "text": "You arrive at the secret Federation supply cache hidden inside an asteroid belt!",
+      "choices": [
+        {
+          "text": "Open the vault and salvage the supplies.",
+          "event": {
+            "text": "Inside you find pristine weapons and a huge stash of scrap!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH",
+            "weapon": "SHOTGUN"
+          }
+        }
+      ]
+    },
+    "ENGI_HELP": {
+      "text": "An Engi research vessel has suffered a reactor core cascade failure.",
+      "choices": [
+        {
+          "text": "[BLUE ENGI] Have your Engi crew stabilize their nanite core.",
+          "req": "engi",
+          "lvl": 1,
+          "event": {
+            "text": "Your Engi repairs the core effortlessly! They reward you generously.",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH"
+          }
+        },
+        {
+          "text": "[BLUE SENSORS] Scan the core remotely to guide them.",
+          "req": "sensors",
+          "lvl": 2,
+          "event": {
+            "text": "Your upgraded sensors pinpoint the fault immediately.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Offer assistance to jump-start their backup cells.",
+          "event": {
+            "text": "They thank you and transfer scrap in return.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        }
+      ]
+    },
+    "MERCHANT_DRIFT": {
+      "text": "A wandering merchant convoy hails you near the beacon.",
+      "choices": [
+        {
+          "text": "Open Trading Post (상점 열기)",
+          "event": {
+            "store": true
+          }
+        },
+        {
+          "text": "Move on.",
+          "event": {}
+        }
+      ]
+    },
+    "DERELICT_POD": {
+      "text": "You spot an intact escape pod drifting beside a shattered cruiser.",
+      "choices": [
+        {
+          "text": "Recover the pod and open it.",
+          "event": {
+            "text": "A grateful survivor joins your crew!",
+            "crew": "engi",
+            "autoReward": "fuel",
+            "autoRewardLevel": "LOW"
+          }
+        },
+        {
+          "text": "[BLUE CLONEBAY] Scan neural patterns before opening.",
+          "req": "clonebay",
+          "lvl": 1,
+          "event": {
+            "text": "You safely revive a veteran Mantis warrior who pledges loyalty to your ship!",
+            "crew": "mantis",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Leave it alone.",
+          "event": {
+            "text": "You leave the pod drifting in the void."
+          }
+        }
+      ]
+    },
+    "REBEL_AMBUSH": {
+      "text": "A Rebel patrol intercepts your transponder signal!",
+      "choices": [
+        {
+          "text": "[BLUE CLOAKING] Engage Cloaking and slip past undetected.",
+          "req": "cloaking",
+          "lvl": 1,
+          "event": {
+            "text": "You vanish from their sensors and salvage an unguarded supply buoy.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "[BLUE ENGINES] Burn full thrust to outrun them.",
+          "req": "engines",
+          "lvl": 4,
+          "event": {
+            "text": "Your powerful engines leave the Rebel patrol in the dust."
+          }
+        },
+        {
+          "text": "Stand and fight!",
+          "event": {
+            "text": "Weapons hot — engage the Rebel patrol!",
+            "hostile": true,
+            "ship": "REBEL_STD"
+          }
+        }
+      ]
+    },
+    "NEBULA_SMUGGLER": {
+      "text": "Inside the dense nebula, a Slug smuggler offers a mysterious cargo crate.",
+      "choices": [
+        {
+          "text": "[BLUE SLUG] Read their mind to verify the deal.",
+          "req": "slug",
+          "lvl": 1,
+          "event": {
+            "text": "You expose their hidden stash and claim the real treasure!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH",
+            "weapon": "BEAM_2"
+          }
+        },
+        {
+          "text": "[BLUE LONG_RANGED_SCANNERS] Scan the crate before docking.",
+          "req": "LONG_RANGED_SCANNERS",
+          "lvl": 1,
+          "event": {
+            "text": "Your scanners detect a trap — you ambush the smugglers first!",
+            "hostile": true,
+            "ship": "SLUG_STD"
+          }
+        },
+        {
+          "text": "Accept the trade.",
+          "event": {
+            "text": "The crate holds useful fuel and scrap.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        }
+      ]
+    }
+  },
+  "ship_events": {
+    "PIRATE_STD": {
+      "id": "PIRATE_STD",
+      "auto_blueprint": "REBEL_SKINNY",
+      "surrender": true,
+      "destroyed_text": "Enemy ship destroyed!",
+      "dead_crew_text": "Enemy crew eliminated!"
+    },
+    "REBEL_STD": {
+      "id": "REBEL_STD",
+      "auto_blueprint": "REBEL_FAT",
+      "surrender": true,
+      "destroyed_text": "Rebel patrol destroyed!",
+      "dead_crew_text": "Rebel crew neutralized!"
+    },
+    "SLUG_STD": {
+      "id": "SLUG_STD",
+      "auto_blueprint": "JELLY_BUTTON",
+      "surrender": true,
+      "destroyed_text": "Slug ship destroyed!",
+      "dead_crew_text": "Slug crew neutralized!"
+    }
+  },
+  "sector_types": {
+    "CIVILIAN": [
+      "CIVILIAN_SECTOR",
+      "ENGI_SECTOR",
+      "ZOLTAN_SECTOR"
+    ],
+    "HOSTILE": [
+      "REBEL_SECTOR",
+      "PIRATE_SECTOR",
+      "MANTIS_SECTOR",
+      "ROCK_SECTOR",
+      "LANIUS_SECTOR"
+    ],
+    "NEBULA": [
+      "NEBULA_SECTOR",
+      "SLUG_SECTOR"
+    ]
+  },
+  "sectors": {
+    "CIVILIAN_SECTOR": {
+      "id": "CIVILIAN_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Civilian Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "ENGI_SECTOR": {
+      "id": "ENGI_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Engi Controlled Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "ZOLTAN_SECTOR": {
+      "id": "ZOLTAN_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Zoltan Controlled Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "REBEL_SECTOR": {
+      "id": "REBEL_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Rebel Controlled Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "PIRATE_SECTOR": {
+      "id": "PIRATE_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Pirate Controlled Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "MANTIS_SECTOR": {
+      "id": "MANTIS_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Mantis Homeworlds"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "ROCK_SECTOR": {
+      "id": "ROCK_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Rock Controlled Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "LANIUS_SECTOR": {
+      "id": "LANIUS_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Abandoned Sector"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "NEBULA_SECTOR": {
+      "id": "NEBULA_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Uncharted Nebula"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "SLUG_SECTOR": {
+      "id": "SLUG_SECTOR",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "Slug Controlled Nebula"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    },
+    "FINAL": {
+      "id": "FINAL",
+      "minSector": 0,
+      "unique": false,
+      "names": [
+        "The Last Stand"
+      ],
+      "tracks": [
+        "civilian"
+      ],
+      "events": [
+        {
+          "name": "HOSTILE_PIRATE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DISTRESS_MINER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "QUEST_CACHE",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ENGI_HELP",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MERCHANT_DRIFT",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "DERELICT_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_AMBUSH",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "startEvent": "START_BEACON"
+    }
+  }
+}

@@ -9,6 +9,7 @@
     "assets/fonts/OFL.txt"
   ],
   "guideOrder": [
+    "scripts/ftl_standalone_assets.gd",
     "scripts/ftl_pkg.gd",
     "scripts/ftl_profile.gd",
     "scripts/ftl_database.gd",

@@ -172,9 +172,12 @@ func start_web_bootstrap(host_node: Node, explicit_base_url: String = "") -> boo
 		if not env_url.is_empty():
 			base = env_url
 		elif OS.has_feature("web"):
-			var href := str(JavaScriptBridge.eval("window.location.href.split('?')[0].split('#')[0].replace(/\\/[^\\/]*$/, '/')", true))
-			if href.begins_with("http://") or href.begins_with("https://"):
-				base = href
+			var host := str(JavaScriptBridge.eval("window.location.hostname || ''", true))
+			# Only query local /ftl-pkg/ streaming bridge on localhost; cloud/standalone hosts boot immediately with 0 404s!
+			if host == "localhost" or host == "127.0.0.1" or host == "[::1]":
+				var href := str(JavaScriptBridge.eval("window.location.href.split('?')[0].split('#')[0].replace(/\\/[^\\/]*$/, '/')", true))
+				if href.begins_with("http://") or href.begins_with("https://"):
+					base = href
 	if base.is_empty():
 		return false
 	if not base.ends_with("/"):
@@ -368,8 +371,9 @@ func load_texture(rel_path: String) -> Texture2D:
 		_enqueue_web_asset("tex", key)
 		return null
 	if not has_file(key):
-		_texture_cache[key] = null
-		return null
+		var proc_tex := FTLStandaloneAssets.get_texture(key)
+		_texture_cache[key] = proc_tex
+		return proc_tex
 	var bytes := read_bytes(key)
 	if bytes.is_empty():
 		_texture_cache[key] = null

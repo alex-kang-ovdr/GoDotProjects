@@ -116,19 +116,23 @@ func set_combat(combat: bool) -> void:
 
 
 func play_sfx(sound_id: String, pitch_jitter: float = 0.04) -> void:
-	if _headless or muted or pkg == null or db == null or not pkg.is_loaded:
+	if _headless or muted or sound_id.is_empty():
 		return
-	if sound_id.is_empty() or not db.sound_effects.has(sound_id):
-		return
-	var info: Dictionary = db.sound_effects[sound_id]
-	var rel: String = "audio/waves/" + str(info.get("file", ""))
-	var stream := pkg.load_audio(rel)
+	var stream: AudioStream = null
+	var vol_scale := sfx_volume
+	if pkg != null and db != null and pkg.is_loaded and db.sound_effects.has(sound_id):
+		var info: Dictionary = db.sound_effects[sound_id]
+		var rel: String = "audio/waves/" + str(info.get("file", ""))
+		stream = pkg.load_audio(rel)
+		vol_scale = clampf(float(info.get("volume", 7)) / 10.0, 0.1, 1.0) * sfx_volume
+	if stream == null:
+		stream = FTLStandaloneAssets.get_procedural_sfx(sound_id)
+		vol_scale = 0.65 * sfx_volume
 	if stream == null:
 		return
 	var p := _sfx_pool[_sfx_cursor % _sfx_pool.size()]
 	_sfx_cursor += 1
 	p.stream = stream
-	var vol_scale := clampf(float(info.get("volume", 7)) / 10.0, 0.1, 1.0) * sfx_volume
 	p.volume_db = linear_to_db(maxf(0.001, vol_scale))
 	p.pitch_scale = randf_range(1.0 - pitch_jitter, 1.0 + pitch_jitter) if pitch_jitter > 0.0 else 1.0
 	p.play()

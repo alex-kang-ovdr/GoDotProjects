@@ -1507,11 +1507,12 @@ func _update_hud_labels() -> void:
 	hud_refs["res_missiles"].text = "%d" % player_ship.missiles
 	hud_refs["res_drones"].text = "%d" % player_ship.drone_parts
 	hud_refs["res_scrap"].text = "%d" % player_ship.scrap
-	if pkg != null and pkg.is_loaded:
-		for rk in ["fuel", "missiles", "drones", "scrap"]:
-			var tr: TextureRect = hud_refs["icon_" + rk]
-			if tr.texture == null:
-				tr.texture = pkg.load_texture("ui_icons/icon_%s.png" % rk)
+	for rk in ["fuel", "missiles", "drones", "scrap"]:
+		var tr: TextureRect = hud_refs["icon_" + rk]
+		if tr.texture == null:
+			var rtex := pkg.load_texture("ui_icons/icon_%s.png" % rk) if (pkg != null and pkg.is_loaded) else FTLStandaloneAssets.get_texture("ui_icons/icon_%s.png" % rk)
+			if rtex != null:
+				tr.texture = rtex
 	hud_refs["stat_lbl"].text = "EVADE %d%%  O2 %d%%" % [player_ship.get_evasion(), int(round(player_ship.get_average_oxygen()))]
 	var haz_tag := ""
 	match battle_view.hazard_kind:
@@ -1550,14 +1551,13 @@ func _update_hud_labels() -> void:
 			btn.text = "%s\n%d%%" % [bars, apct]
 		else:
 			btn.text = "%s\n%d/%d" % [bars, eff, int(s.level)]
-		if pkg != null and pkg.is_loaded:
-			var suf := "blue1" if int(s.ion_level) > 0 else ("red1" if int(s.damage) >= int(s.level) else ("orange1" if int(s.damage) > 0 else ("grey1" if (eff <= 0 and not (sname in FTLShip.SUBSYSTEMS)) else "green1")))
-			var stex := pkg.load_texture("icons/s_%s_%s.png" % [sname, suf])
-			if stex != null:
-				btn.icon = stex
-				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-				btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-				btn.expand_icon = true
+		var suf := "blue1" if int(s.ion_level) > 0 else ("red1" if int(s.damage) >= int(s.level) else ("orange1" if int(s.damage) > 0 else ("grey1" if (eff <= 0 and not (sname in FTLShip.SUBSYSTEMS)) else "green1")))
+		var stex := pkg.load_texture("icons/s_%s_%s.png" % [sname, suf]) if (pkg != null and pkg.is_loaded) else FTLStandaloneAssets.get_texture("icons/s_%s_%s.png" % [sname, suf])
+		if stex != null:
+			btn.icon = stex
+			btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+			btn.expand_icon = true
 
 	# Update weapon buttons
 	var wpn_h: HBoxContainer = hud_refs["wpn_h"]

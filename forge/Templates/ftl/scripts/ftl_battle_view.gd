@@ -618,10 +618,8 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 	if hull_tex != null:
 		draw_texture_rect(hull_tex, img_rect, false, hull_tint)
 	else:
-		# Crisp procedural hull silhouette fallback
-		var hull_box := bounds.grow(28.0)
-		draw_rect(hull_box, Color(0.24, 0.29, 0.35, 0.95) * hull_tint, true)
-		draw_rect(hull_box, Color(0.56, 0.66, 0.76, 0.95) * hull_tint, false, 3.0)
+		# Sleek procedural multi-layered sci-fi hull silhouette (zero external asset dependency!)
+		_draw_procedural_hull(ship, bounds, hull_tint)
 
 	# 4. Floor graphic overlay
 	var floor_tex: Texture2D = _load_ship_tex(ship.img_name, "floor")
@@ -847,6 +845,8 @@ func _draw_room_system_icon(ship: FTLShip, sys: Dictionary, rr: Rect2) -> void:
 		icon_tex = pkg.load_texture("icons/s_%s_%s.png" % [sname, state_suffix])
 		if icon_tex == null:
 			icon_tex = pkg.load_texture("icons/s_%s_overlay.png" % sname)
+	if icon_tex == null:
+		icon_tex = FTLStandaloneAssets.get_texture("icons/s_%s_%s.png" % [sname, state_suffix])
 	var center := rr.get_center()
 	if icon_tex != null:
 		var sz := Vector2(30, 30)
@@ -1148,6 +1148,47 @@ func _draw_combat_fx() -> void:
 			var c: Color = pop.color
 			draw_string(font, (pop.pos as Vector2) + Vector2(-28, 1), str(pop.text), HORIZONTAL_ALIGNMENT_CENTER, 72, 15, Color(0, 0, 0, a * 0.85))
 			draw_string(font, (pop.pos as Vector2) + Vector2(-29, 0), str(pop.text), HORIZONTAL_ALIGNMENT_CENTER, 72, 15, Color(c.r, c.g, c.b, a))
+
+
+func _draw_procedural_hull(ship: FTLShip, bounds: Rect2, tint: Color) -> void:
+	var style := str(ship.layout.get("hull_style", "kestrel"))
+	var base_col := Color("4c5b6e")
+	var accent_col := Color("c84638")
+	var trim_col := Color("8ea4bc")
+	match style:
+		"engi": base_col = Color("425e68"); accent_col = Color("46b8a0"); trim_col = Color("86d4c8")
+		"fed": base_col = Color("5a6270"); accent_col = Color("d89b38"); trim_col = Color("b2c0d2")
+		"zoltan": base_col = Color("526438"); accent_col = Color("78e05a"); trim_col = Color("b4dc88")
+		"mantis": base_col = Color("5c3234"); accent_col = Color("d6453a"); trim_col = Color("e08a72")
+		"stealth": base_col = Color("28303d"); accent_col = Color("5294d8"); trim_col = Color("6b829e")
+		"lanius": base_col = Color("444a56"); accent_col = Color("72c8e8"); trim_col = Color("96a8be")
+		"boss": base_col = Color("4d2f2b"); accent_col = Color("e85038"); trim_col = Color("f0a064")
+		"rebel", "auto": base_col = Color("4e4338"); accent_col = Color("e07b38"); trim_col = Color("b49a7e")
+
+	var b := bounds.grow(24.0)
+	var cy := b.get_center().y
+	var nose_x := b.end.x + 36.0
+	var tail_x := b.position.x - 16.0
+	# Main armored hull polygon (tapered prow + engine wings)
+	var poly := PackedVector2Array([
+		Vector2(tail_x, b.position.y + 18.0),
+		Vector2(b.position.x + b.size.x * 0.35, b.position.y - 16.0),
+		Vector2(b.end.x - 18.0, b.position.y + 6.0),
+		Vector2(nose_x, cy - 14.0),
+		Vector2(nose_x, cy + 14.0),
+		Vector2(b.end.x - 18.0, b.end.y - 6.0),
+		Vector2(b.position.x + b.size.x * 0.35, b.end.y + 16.0),
+		Vector2(tail_x, b.end.y - 18.0),
+	])
+	draw_colored_polygon(poly, base_col * tint)
+	draw_polyline(poly + PackedVector2Array([poly[0]]), trim_col * tint, 2.5)
+	# Faction racing stripes & cockpit canopy
+	draw_rect(Rect2(Vector2(b.position.x + 12.0, b.position.y - 6.0), Vector2(b.size.x * 0.55, 8.0)), accent_col * tint, true)
+	draw_rect(Rect2(Vector2(b.position.x + 12.0, b.end.y - 2.0), Vector2(b.size.x * 0.55, 8.0)), accent_col * tint, true)
+	draw_rect(Rect2(Vector2(b.end.x - 2.0, cy - 12.0), Vector2(22.0, 24.0)), Color(0.55, 0.85, 1.0, 0.72) * tint, true)
+	# Aft engine nacelles
+	draw_rect(Rect2(Vector2(tail_x - 10.0, b.position.y + 22.0), Vector2(16.0, 24.0)), Color("2c3644") * tint, true)
+	draw_rect(Rect2(Vector2(tail_x - 10.0, b.end.y - 46.0), Vector2(16.0, 24.0)), Color("2c3644") * tint, true)
 
 
 func _draw_ellipse_glow(center: Vector2, rx: float, ry: float, col: Color) -> void:
