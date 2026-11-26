@@ -145,13 +145,102 @@ func _run() -> void:
 				st["fuel"] = 180.0
 	_check(sim.day >= 4 and not sim.is_ghost, "SIM_SURVIVE_3_DAYS", "day=%d ghost=%s" % [sim.day, str(sim.is_ghost)])
 
+	# M4: 6인 캐릭터 고유 기믹 검증 (볼프강/위그프리드/윌로우/웬디/윌슨)
+	sim.init_world(db, 1004, "wolfgang")
+	_check(sim.get_wolfgang_form() == "MIGHTY" and _approx(sim.get_effective_damage_mult(), 2.0), "M4_WOLFGANG_MIGHTY", "form=%s mult=%.2f" % [sim.get_wolfgang_form(), sim.get_effective_damage_mult()])
+	sim.hunger = 50.0
+	_check(sim.get_wolfgang_form() == "WIMPY" and _approx(sim.get_effective_damage_mult(), 0.75), "M4_WOLFGANG_WIMPY", "form=%s mult=%.2f" % [sim.get_wolfgang_form(), sim.get_effective_damage_mult()])
+
+	sim.init_world(db, 1005, "wathgrithr")
+	_check(not sim.eat_food("berries"), "M4_WIGFRID_NO_VEGGIE")
+	sim.add_item("meatballs", 1)
+	_check(sim.eat_food("meatballs"), "M4_WIGFRID_EAT_MEAT")
+	sim.health = 150.0
+	sim.spawn_creature("spider", sim.player_pos + Vector2(1.5, 0.0))
+	var hit_w: Dictionary = sim.player_attack_nearest()
+	_check(bool(hit_w["hit"]) and sim.health > 150.0, "M4_WIGFRID_LIFESTEAL", "hp=%.1f" % sim.health)
+
+	sim.init_world(db, 1006, "wendy")
+	var ab_sp: Dictionary = sim.spawn_creature("spider", sim.player_pos + Vector2(2.0, 0.0))
+	var sp_hp0: float = float(ab_sp["hp"])
+	for _t in range(4):
+		sim.step(0.5, Vector2.ZERO)
+	_check(float(ab_sp["hp"]) < sp_hp0, "M4_WENDY_ABIGAIL_AOE", "hp0=%.1f hp1=%.1f" % [sp_hp0, float(ab_sp["hp"])])
+
+	sim.init_world(db, 1007, "wilson")
+	var g0: int = int(sim.inventory.get("goldnugget", 0))
+	_check(sim.transmute_rocks_to_gold() and int(sim.inventory.get("goldnugget", 0)) == g0 + 1, "M4_WILSON_TRANSMUTE")
+
+	# M4: 보트 진수·돛 3개 장착(0.7^k 속도 증가)·바다 항해 허용 검증
+	sim.init_world(db, 1008, "wilson")
+	sim.add_item("log", 20)
+	sim.add_item("cutgrass", 20)
+	sim.add_item("twigs", 20)
+	sim.add_item("rocks", 10)
+	sim.craft_recipe("researchlab")
+	_check(sim.craft_recipe("boat_item") and sim.boat_active, "M4_BOAT_CRAFT")
+	var v0: float = sim.get_boat_speed()
+	_check(sim.craft_recipe("mast") and sim.craft_recipe("mast") and sim.craft_recipe("mast") and sim.boat_masts == 3, "M4_BOAT_3_MASTS")
+	_check(sim.get_boat_speed() > v0 + 4.0, "M4_BOAT_SPEED_UP", "v0=%.2f v3=%.2f" % [v0, sim.get_boat_speed()])
+	_check(sim.toggle_boat() and sim.on_boat, "M4_BOAT_BOARD")
+	sim.player_pos = Vector2(52.5, 0.0)
+	sim.boat_pos = sim.player_pos
+	sim.step(1.0, Vector2(1.0, 0.0))
+	_check(sim.player_pos.length() > 54.0 and sim.get_biome_at(sim.player_pos) == "ocean", "M4_BOAT_SAIL_OCEAN", "r=%.2f" % sim.player_pos.length())
+
+	# M5: 인사이트 스킬트리 해금 & 전투/평면 피해 반영 검증
+	sim.init_world(db, 1009, "wilson")
+	_check(sim.unlock_skill("combat_mastery") and sim.unlock_skill("affinity_lunar"), "M5_SKILL_UNLOCK")
+	_check(_approx(sim.get_effective_damage_mult(), 1.2), "M5_SKILL_COMBAT_MULT")
+	sim.spawn_creature("spider", sim.player_pos + Vector2(1.5, 0.0))
+	var sk_hit: Dictionary = sim.player_attack_nearest()
+	_check(bool(sk_hit["hit"]) and _approx(float(sk_hit["planar"]), 12.0), "M5_SKILL_LUNAR_PLANAR", str(sk_hit))
+
+	# M2: 70일 사계절 가속 시뮬레이션 게이트 (4계절 순환 + 거대 작물 + 겨울 외눈사슴)
+	sim.init_world(db, 1010, "willow")
+	sim.add_item("log", 20)
+	sim.add_item("cutgrass", 20)
+	sim.add_item("twigs", 20)
+	sim.add_item("rocks", 10)
+	sim.craft_recipe("campfire")
+	sim.craft_recipe("researchlab")
+	sim.craft_recipe("farm_plot")
+	var seasons_seen: Dictionary = {sim.get_season_name(): true}
+	var saw_deerclops: bool = false
+	var saw_oversized: bool = false
+	for _day_tick in range(70 * 16): # 70일 × 16세그(30초씩)
+		sim.step(30.0, Vector2.ZERO)
+		seasons_seen[sim.get_season_name()] = true
+		if not sim.get_active_boss().is_empty():
+			saw_deerclops = true
+			sim.creatures.clear() # 보스 출현 확인 후 계속 생존 진행
+		elif sim.creatures.size() > 4:
+			sim.creatures.clear() # 가속 테스트 중 하운드 누적 방지
+		for fp in sim.farm_plots:
+			if bool(fp["harvestable"]) and bool(fp["oversized"]):
+				saw_oversized = true
+			else:
+				fp["hydrated"] = true
+				fp["fertilized"] = true
+				fp["tended"] = true
+		sim.health = sim.get_max_health_with_penalty()
+		sim.hunger = sim.max_hunger
+		sim.sanity = sim.max_sanity
+		sim.temperature = 35.0
+		for st in sim.structures:
+			if str(st["kind"]) == "campfire":
+				st["fuel"] = 180.0
+	_check(seasons_seen.size() == 4, "M2_70DAY_4_SEASONS", str(seasons_seen.keys()))
+	_check(saw_deerclops, "M2_WINTER_DEERCLOPS_SPAWN")
+	_check(saw_oversized, "M2_FARM_OVERSIZED_HARVEST")
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")
 	if packed != null:
 		var inst: Node = packed.instantiate()
 		root.add_child(inst)
-		_check(inst.get("sim") != null and inst.get("cam") != null, "MAIN_SCENE_READY")
+		_check(inst.get("sim") != null and inst.get("cam") != null and inst.get("hud") != null, "MAIN_SCENE_READY")
 		inst.queue_free()
 
 	var summary: Dictionary = {"passed": passed, "failed": failed, "errors": errors}

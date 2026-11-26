@@ -44,6 +44,26 @@ var world_reset_countdown: float = -1.0
 var dark_exposure_timer: float = 0.0
 var attack_cooldown: float = 0.0
 var attack_anim_timer: float = 0.0
+var player_hit_flash: float = 0.0
+
+# 보트 & 바다 항해 (M4 + QA-09)
+var boat_active: bool = false
+var boat_pos: Vector2 = Vector2(18.0, -14.0)
+var boat_hp: float = 200.0
+var boat_masts: int = 0 # 0..3 (0.7^k 체감 속도)
+var on_boat: bool = false
+
+# 웬디 동반 영혼 아비게일 & WX-78 감전 타이머
+var abigail_pos: Vector2 = Vector2(2.0, 2.0)
+var _abigail_pulse_timer: float = 0.0
+var _wx_shock_timer: float = 0.0
+
+# 인사이트 스킬트리 (M5)
+var insight_points: int = 3
+var unlocked_skills: Dictionary = {}
+
+# 시각 피드백 큐 (렌더러가 소비)
+var floating_events: Array = [] # { pos: Vector2, text: String, color: Color }
 
 # 인벤토리 & 장비 (4슬롯: hands, head, body, beard) & 프로토타입
 var inventory: Dictionary = {} # item_id -> count (단순화하되 15종 슬롯 한도 검사)
@@ -84,6 +104,9 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 	_perish_accum = 0.0
 	_hound_timer = 320.0
 	event_log.clear()
+	health_penalty = 0.0
+	is_ghost = false
+	world_reset_countdown = -1.0
 
 	select_character(char_id)
 	player_pos = Vector2.ZERO
@@ -96,6 +119,18 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 	dark_exposure_timer = 0.0
 	sanity_mode = 0
 	is_sane = true
+	player_hit_flash = 0.0
+	boat_active = false
+	boat_pos = Vector2(18.0, -14.0)
+	boat_hp = float(db.data["boat"]["health"])
+	boat_masts = 0
+	on_boat = false
+	abigail_pos = Vector2(2.0, 2.0)
+	_abigail_pulse_timer = 0.0
+	_wx_shock_timer = 0.0
+	insight_points = 3
+	unlocked_skills.clear()
+	floating_events.clear()
 
 	inventory = {
 		"twigs": 4,
@@ -190,6 +225,100 @@ func push_log(msg: String) -> void:
 		event_log.pop_front()
 
 
+func push_floating(pos: Vector2, text: String, col: Color = Color(1.0, 0.95, 0.7)) -> void:
+	floating_events.append({"pos": pos, "text": text, "color": col})
+	if floating_events.size() > 32:
+		floating_events.pop_front()
+
+
+func get_wolfgang_form() -> String:
+	if character_id != "wolfgang":
+		return ""
+	if hunger >= 150.0:
+		return "MIGHTY"
+	elif hunger < 70.0:
+		return "WIMPY"
+	return "NORMAL"
+
+
+func get_effective_damage_mult() -> float:
+	var base_mult: float = float(db.data["characters"][character_id]["damage_mult"])
+	if character_id == "wolfgang":
+		var f: String = get_wolfgang_form()
+		base_mult = 2.0 if f == "MIGHTY" else (0.75 if f == "WIMPY" else 1.0)
+	if unlocked_skills.has("combat_mastery"):
+		base_mult *= 1.20
+	return base_mult
+
+
+func get_boat_speed() -> float:
+	if boat_masts <= 0:
+		return 4.2 # 노 젓기 기본 속도
+	var mvels: Array = []
+	for _i in range(boat_masts):
+		mvels.append(2.0)
+	var b: Dictionary = db.data["boat"]
+	var raw_v: float = DSTDatabase.calc_boat_max_velocity(mvels, float(b["max_velocity"]), float(b["max_allowed_velocity"]))
+	return 4.2 + raw_v * 1.45
+
+
+func toggle_boat() -> bool:
+	if is_ghost or not boat_active:
+		return false
+	if on_boat:
+		if player_pos.length() > 53.5:
+			push_log("바다 한가운데서는 하선할 수 없습니다! 해안으로 접근하세요.")
+			return false
+		on_boat = false
+		push_log("보트에서 하선했습니다.")
+		return true
+	if player_pos.distance_to(boat_pos) <= 5.5:
+		on_boat = true
+		player_pos = boat_pos
+		push_log("보트 승선! (돛 %d개 · 항해 속도 %.1f)" % [boat_masts, get_boat_speed()])
+		push_floating(player_pos, "SAIL!", Color(0.55, 0.88, 1.0))
+		return true
+	push_log("보트가 너무 멀리 있습니다 (거리 %.1fm)." % player_pos.distance_to(boat_pos))
+	return false
+
+
+func unlock_skill(skill_id: String) -> bool:
+	if unlocked_skills.has(skill_id):
+		return false
+	for sk in db.data.get("skills", []):
+		if str(sk["id"]) == skill_id:
+			var cost: int = int(sk.get("cost", 1))
+			if insight_points < cost:
+				push_log("인사이트 포인트가 부족합니다 (필요 %d / 보유 %d)." % [cost, insight_points])
+				return false
+			insight_points -= cost
+			unlocked_skills[skill_id] = true
+			push_log("스킬 해금: %s (%s)" % [str(sk["name"]), str(sk["desc"])])
+			push_floating(player_pos, "+SKILL: %s" % str(sk["name"]), Color(0.98, 0.85, 0.35))
+			return true
+	return false
+
+
+func transmute_rocks_to_gold() -> bool:
+	if not (unlocked_skills.has("alchemy_transmute") or character_id == "wilson"):
+		push_log("연금술 변환 스킬 또는 윌슨 캐릭터가 필요합니다.")
+		return false
+	if not consume_item("rocks", 3):
+		push_log("돌이 3개 이상 필요합니다.")
+		return false
+	add_item("goldnugget", 1)
+	push_log("연금술 변환 성공: 돌 ×3 → 금덩이 ×1")
+	push_floating(player_pos, "+1 GOLD", Color(1.0, 0.86, 0.24))
+	return true
+
+
+func get_active_boss() -> Dictionary:
+	for c in creatures:
+		if bool(c.get("boss", false)):
+			return c
+	return {}
+
+
 func _populate_world() -> void:
 	# 초기 모닥불 자리 근처의 자원 배치
 	var kinds: Array = [
@@ -248,6 +377,7 @@ func spawn_creature(kind: String, pos: Vector2) -> Dictionary:
 		"boss": bool(d.get("boss", false)),
 		"loot": d.get("loot", {}),
 		"aggro": bool(d.get("boss", false)),
+		"hit_flash": 0.0,
 	}
 	_next_uid += 1
 	creatures.append(ent)
@@ -261,6 +391,7 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 	_total_elapsed += sim_dt
 	attack_cooldown = max(0.0, attack_cooldown - sim_dt)
 	attack_anim_timer = max(0.0, attack_anim_timer - dt)
+	player_hit_flash = max(0.0, player_hit_flash - dt)
 
 	# 1. 시계 / 달 / 계절 진행
 	var total_day: float = float(db.data["clock"]["total_day_time"])
@@ -270,22 +401,48 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 		_advance_day()
 	_update_clock_and_moon()
 
-	# 2. 이동 및 경계 (바다 진입 제한)
+	# 2. 이동 및 경계 (보트 승선 시 바다 항해 허용, WX-78 바이오 회로 이속 +15%)
 	var move_speed: float = 6.0 # WILSON_RUN_SPEED = 6
-	if not equip_body.is_empty():
-		var adef: Dictionary = db.data["armors"].get(str(equip_body.get("id", "")), {})
-		move_speed *= float(adef.get("speed_mult", 1.0))
+	if on_boat:
+		move_speed = get_boat_speed()
+	else:
+		if character_id == "wx78":
+			move_speed *= 1.15
+		if not equip_body.is_empty():
+			var adef: Dictionary = db.data["armors"].get(str(equip_body.get("id", "")), {})
+			move_speed *= float(adef.get("speed_mult", 1.0))
 	if is_ghost:
 		move_speed = 7.5
+	var max_radius: float = 68.0 if on_boat else 53.0
 	if move_input.length_squared() > 0.001:
 		var dir: Vector2 = move_input.normalized()
 		player_facing = dir
 		var next_pos: Vector2 = player_pos + dir * move_speed * sim_dt
-		if next_pos.length() <= 53.0:
+		if next_pos.length() <= max_radius:
 			player_pos = next_pos
+		if on_boat:
+			boat_pos = player_pos
 		player_vel = dir * move_speed
 	else:
 		player_vel = Vector2.ZERO
+
+	# 2b. 웬디 아비게일 동반 궤도 및 주변 광역 공격
+	if character_id == "wendy" and not is_ghost:
+		var orbit_ang: float = _total_elapsed * 1.4
+		var target_ab: Vector2 = player_pos + Vector2(cos(orbit_ang), sin(orbit_ang)) * 2.4
+		abigail_pos = abigail_pos.lerp(target_ab, clamp(dt * 4.0, 0.0, 1.0))
+		_abigail_pulse_timer += sim_dt
+		if _abigail_pulse_timer >= 1.5:
+			_abigail_pulse_timer = 0.0
+			for ci in range(creatures.size() - 1, -1, -1):
+				var cr: Dictionary = creatures[ci]
+				if abigail_pos.distance_to(cr["pos"]) <= 5.5:
+					var ab_dmg: float = 20.0 if phase != "day" else 12.0
+					cr["hp"] = float(cr["hp"]) - ab_dmg
+					cr["hit_flash"] = 0.2
+					push_floating(cr["pos"], "아비게일 -%.0f" % ab_dmg, Color(0.95, 0.62, 0.85))
+					if float(cr["hp"]) <= 0.0:
+						_handle_creature_death(ci)
 
 	# 3. 달섬 진입 시 달 계몽(LUNACY) 모드 자동 전환
 	var biome: String = get_biome_at(player_pos)
@@ -313,12 +470,18 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 func _advance_day() -> void:
 	day += 1
 	day_in_season += 1
+	if day % 3 == 0 and insight_points < 15:
+		insight_points += 1
+		push_log("생존 인사이트 포인트 +1 획득! (보유 %d)" % insight_points)
 	var sname: String = get_season_name()
 	var slen: int = int(db.data["seasons"]["lengths"][sname])
 	if day_in_season > slen:
 		day_in_season = 1
 		season_index = (season_index + 1) % 4
 		push_log("계절 전환: %s 시작! (Day %d)" % [get_season_name().to_upper(), day])
+	# 겨울 10일차 밤: 외눈사슴 자연 출현 (활성 보스 없을 때)
+	if get_season_name() == "winter" and day_in_season == 10 and get_active_boss().is_empty() and not is_ghost:
+		spawn_creature("deerclops", player_pos + Vector2(18.0, 0.0))
 
 
 func _update_clock_and_moon() -> void:
@@ -426,9 +589,16 @@ func _update_environment_and_stats(dt: float, fire_power: float) -> void:
 	# 습기 업데이트
 	update_moisture(dt, 1.0 if is_raining else 0.0, fire_power)
 
-	# 체온 업데이트 (temperature.lua 수렴 모델)
+	# 체온 업데이트 (temperature.lua 수렴 모델 + 윌슨 수염 단열 + 극한 단열 스킬)
 	var moist_penalty: float = -(moisture / 100.0) * float(surv["moisture_temp_penalty"])
 	var target_temp: float = world_temperature + moist_penalty + fire_power * 48.0
+	if character_id == "wilson" and target_temp < 15.0:
+		target_temp += 15.0 # 수염 겨울 단열 보너스
+	if unlocked_skills.has("survival_insulation"):
+		if target_temp < 20.0:
+			target_temp += 12.0
+		elif target_temp > 55.0:
+			target_temp -= 12.0
 	var diff: float = target_temp - temperature
 	temperature = clamp(temperature + clamp(diff, -1.0, 1.0) * dt * 1.2, float(surv["min_entity_temp"]), float(surv["max_entity_temp"]))
 
@@ -436,6 +606,14 @@ func _update_environment_and_stats(dt: float, fire_power: float) -> void:
 		apply_health_delta(-(max_health / float(surv["freezing_kill_time"])) * dt, "cold")
 	elif temperature > float(surv["overheat_temp"]):
 		apply_health_delta(-(max_health / float(surv["freezing_kill_time"])) * dt, "hot")
+
+	# WX-78 습기 감전 취약
+	if character_id == "wx78" and is_wet:
+		_wx_shock_timer += dt
+		if _wx_shock_timer >= 3.0:
+			_wx_shock_timer = 0.0
+			apply_health_delta(-2.5, "wet_shock")
+			push_floating(player_pos, "감전 -2.5", Color(0.45, 0.88, 1.0))
 
 	# 허기 1초 주기 갱신 (hunger.lua:4 UPDATE_PERIOD = 1)
 	_hunger_accum += dt
@@ -446,14 +624,16 @@ func _update_environment_and_stats(dt: float, fire_power: float) -> void:
 		if hunger <= 0.0:
 			apply_health_delta(-(max_health / float(surv["starve_kill_time"])), "hunger")
 
-	# 빛 & 어둠(찰리) & 정신력
-	var has_light: bool = (phase != "night") or (moon_phase == "full") or (fire_power > 0.05) or (int(inventory.get("torch", 0)) > 0 and equip_hands == "torch")
+	# 빛 & 어둠(찰리) & 정신력 (윌로우 라이터 상시 광원 + 불 근처 정신력 회복)
+	var has_light: bool = (phase != "night") or (moon_phase == "full") or (fire_power > 0.05) or (character_id == "willow") or (int(inventory.get("torch", 0)) > 0 and equip_hands == "torch")
 	var san_delta: float = 0.0
 	if sanity_mode == 0:
 		if phase == "dusk" or (phase == "night" and has_light):
 			san_delta -= 0.083 * float(cdef["sanity_drain_mult"])
 		elif phase == "night" and not has_light:
 			san_delta -= 0.833 * float(cdef["sanity_drain_mult"])
+		if character_id == "willow" and fire_power > 0.1:
+			san_delta += 0.25
 	else:
 		if phase == "day":
 			san_delta += 0.025
@@ -530,7 +710,25 @@ func receive_attack(raw_damage: float, raw_planar: float = 0.0, source_name: Str
 		equip_body = {}
 
 	apply_health_delta(-float(res["total_damage"]), source_name)
+	player_hit_flash = 0.25
+	push_floating(player_pos, "-%.0f HP" % float(res["total_damage"]), Color(1.0, 0.32, 0.28))
 	return res
+
+
+func _handle_creature_death(idx: int) -> void:
+	if idx < 0 or idx >= creatures.size():
+		return
+	var target: Dictionary = creatures[idx]
+	var loot: Dictionary = target.get("loot", {})
+	for lk in loot.keys():
+		add_item(str(lk), int(loot[lk]))
+	if bool(target.get("boss", false)):
+		insight_points = min(15, insight_points + 2)
+		push_log("거대 보스 %s 처치! 전리품 + 인사이트 포인트 +2!" % str(target["name"]))
+		push_floating(target["pos"], "BOSS SLAIN! +2 INSIGHT", Color(1.0, 0.88, 0.30))
+	else:
+		push_log("%s 처치 완료! 전리품 획득." % str(target["name"]))
+	creatures.remove_at(idx)
 
 
 func player_attack_nearest() -> Dictionary:
@@ -555,9 +753,13 @@ func player_attack_nearest() -> Dictionary:
 	attack_cooldown = float(db.data["survival"]["wilson_attack_period"])
 	attack_anim_timer = 0.25
 	var target: Dictionary = creatures[best_idx]
-	var char_mult: float = float(db.data["characters"][character_id]["damage_mult"])
+	var char_mult: float = get_effective_damage_mult()
 	var phys_dmg: float = float(w["damage"]) * char_mult
 	var planar_dmg: float = float(w.get("planar_damage", 0.0))
+	if unlocked_skills.has("affinity_lunar"):
+		planar_dmg += 12.0
+	if unlocked_skills.has("affinity_shadow") and (bool(target.get("boss", false)) or bool(target.get("planar_entity", false))):
+		phys_dmg *= 1.25
 
 	if bool(target.get("planar_entity", false)):
 		phys_dmg = DSTDatabase.planar_entity_absorb(phys_dmg)
@@ -565,14 +767,21 @@ func player_attack_nearest() -> Dictionary:
 	var total_dmg: float = phys_dmg + planar_dmg
 	target["hp"] = float(target["hp"]) - total_dmg
 	target["aggro"] = true
+	target["hit_flash"] = 0.22
+	if planar_dmg > 0.0:
+		push_floating(target["pos"], "-%.0f (+%.0f⚡)" % [phys_dmg, planar_dmg], Color(0.50, 0.94, 1.0))
+	else:
+		push_floating(target["pos"], "-%.0f" % total_dmg, Color(1.0, 0.90, 0.45))
+
+	# 위그프리드 전투 흡혈 패시브
+	if character_id == "wathgrithr":
+		apply_health_delta(2.0, "lifesteal")
+		delta_sanity(1.5)
+
 	push_log("%s 타격: 물리 %.1f + 평면 %.1f = %.1f (잔여 HP %.0f)" % [str(target["name"]), phys_dmg, planar_dmg, total_dmg, max(0.0, float(target["hp"]))])
 
 	if float(target["hp"]) <= 0.0:
-		var loot: Dictionary = target.get("loot", {})
-		for lk in loot.keys():
-			add_item(str(lk), int(loot[lk]))
-		push_log("%s 처치 완료! 전리품 획득." % str(target["name"]))
-		creatures.remove_at(best_idx)
+		_handle_creature_death(best_idx)
 	return {"hit": true, "phys": phys_dmg, "planar": planar_dmg, "total": total_dmg}
 
 
@@ -625,30 +834,39 @@ func interact_nearest() -> bool:
 
 	var res: Dictionary = resources[best_idx]
 	res["hp"] = int(res["hp"]) - 1
+	var bonus: int = 1 if unlocked_skills.has("harvest_bounty") else 0
 	if int(res["hp"]) <= 0:
 		res["respawn_timer"] = 180.0
 		match str(res["kind"]):
 			"evergreen":
-				add_item("log", 3)
-				push_log("상록수 벌목: 통나무 ×3")
+				add_item("log", 3 + bonus)
+				push_log("상록수 벌목: 통나무 ×%d" % (3 + bonus))
+				push_floating(res["pos"], "+%d 통나무" % (3 + bonus), Color(0.85, 0.72, 0.45))
 			"boulder":
-				add_item("rocks", 3)
+				add_item("rocks", 3 + bonus)
 				add_item("flint", 1)
 				add_item("goldnugget", 1)
-				push_log("바위 채광: 돌 ×3, 부싯돌 ×1, 금 ×1")
+				push_log("바위 채광: 돌 ×%d, 부싯돌 ×1, 금 ×1" % (3 + bonus))
+				push_floating(res["pos"], "+%d 돌 +1 금" % (3 + bonus), Color(0.92, 0.85, 0.42))
 			"sapling":
-				add_item("twigs", 2)
-				push_log("묘목 채집: 잔가지 ×2")
+				add_item("twigs", 2 + bonus)
+				push_log("묘목 채집: 잔가지 ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 잔가지" % (2 + bonus), Color(0.82, 0.74, 0.50))
 			"grass_tuft":
-				add_item("cutgrass", 2)
-				push_log("풀 채집: 풀 ×2")
+				add_item("cutgrass", 2 + bonus)
+				push_log("풀 채집: 풀 ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 풀" % (2 + bonus), Color(0.75, 0.90, 0.42))
 			"berrybush":
-				add_item("berries", 2)
+				add_item("berries", 2 + bonus)
 				food_freshness["berries"] = 1.0
-				push_log("베리 수확: 베리 ×2")
+				push_log("베리 수확: 베리 ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 베리" % (2 + bonus), Color(0.96, 0.40, 0.42))
 			"lunar_crystal":
-				add_item("purebrilliance", 2)
-				push_log("순수한 광채 결정 채광: ×2")
+				add_item("purebrilliance", 2 + bonus)
+				push_log("순수한 광채 결정 채광: ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 광채" % (2 + bonus), Color(0.55, 0.95, 1.0))
+	else:
+		push_floating(res["pos"], "채집 (%d/%d)" % [int(res["max_hp"]) - int(res["hp"]), int(res["max_hp"])], Color(0.9, 0.9, 0.85))
 	return true
 
 
@@ -712,6 +930,19 @@ func craft_recipe(recipe_id: String) -> bool:
 			})
 			_next_uid += 1
 		push_log("건설 완료: %s" % str(r["name"]))
+	elif rtype == "boat":
+		boat_active = true
+		boat_pos = player_pos + player_facing.normalized() * 3.0
+		boat_hp = float(db.data["boat"]["health"])
+		push_log("보트 진수 완료! B 키로 승선/하선 및 바다 항해 가능.")
+		push_floating(boat_pos, "BOAT READY!", Color(0.55, 0.88, 1.0))
+	elif rtype == "mast":
+		if not boat_active:
+			boat_active = true
+			boat_pos = player_pos + player_facing.normalized() * 3.0
+		boat_masts = min(3, boat_masts + 1)
+		push_log("보트에 돛 장착! (현재 돛 %d/3 · 항해 속도 %.1f)" % [boat_masts, get_boat_speed()])
+		push_floating(boat_pos, "MAST %d/3" % boat_masts, Color(0.95, 0.92, 0.72))
 	elif rtype == "weapon":
 		add_item(recipe_id, 1)
 		equip_hands = recipe_id
@@ -773,6 +1004,11 @@ func cook_in_pot(ingredients: Array) -> Dictionary:
 
 func eat_food(food_id: String) -> bool:
 	if is_ghost or int(inventory.get(food_id, 0)) <= 0 or not db.foods_by_id.has(food_id):
+		return false
+	# 위그프리드 육식 전용 규칙 (채소·과일 거부)
+	if character_id == "wathgrithr" and (food_id == "berries" or food_id == "carrot"):
+		push_log("위그프리드는 육식만 섭취할 수 있습니다! (%s 거부)" % food_id)
+		push_floating(player_pos, "육식 전용!", Color(0.95, 0.45, 0.40))
 		return false
 	consume_item(food_id, 1)
 	var f: Dictionary = db.foods_by_id[food_id]
@@ -868,6 +1104,7 @@ func _update_creatures(dt: float) -> void:
 
 	for c in creatures:
 		c["cd"] = max(0.0, float(c["cd"]) - dt)
+		c["hit_flash"] = max(0.0, float(c.get("hit_flash", 0.0)) - dt)
 		var dist: float = player_pos.distance_to(c["pos"])
 		if not is_ghost and dist < (14.0 if bool(c["boss"]) else 8.5):
 			c["aggro"] = true

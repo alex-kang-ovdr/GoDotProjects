@@ -569,20 +569,29 @@ def main():
 
     DATA_OUT.mkdir(parents=True, exist_ok=True)
     FILES_OUT.mkdir(parents=True, exist_ok=True)
+    (FILES_OUT / ".gdignore").write_text("# Ignore raw extracted reference assets during Godot project import\n", encoding="utf-8")
 
-    # A. Terrain Tiles (8 core biomes) + Portraits (6 characters) + Inventory Icons (32 core items)
-    print("[1/4] Decoding KTEX terrain tiles, portraits, and XML inventory atlases...")
-    tile_names = ["grass", "forest", "yellowgrass", "rocky", "meteor", "farmsoil", "marsh", "ocean_ice"]
+    # A. Seamless Terrain Turf Textures (8 core biomes from levels/textures/*noise*.tex) + Portraits (6) + Icons (35)
+    print("[1/4] Decoding KTEX seamless turf textures, portraits, and XML inventory atlases...")
+    tile_sources = {
+        "grass": "mini_grass_noise.tex",
+        "forest": "mini_forest_noise.tex",
+        "yellowgrass": "mini_grass2_noise.tex",
+        "rocky": "noise_rocky.tex",
+        "meteor": "noise_meteor.tex",
+        "farmsoil": "Ground_noise_dirt.tex",
+        "marsh": "mini_marsh_noise.tex",
+        "ocean_ice": "ocean_noise.tex",
+    }
     tiles_b64 = {}
-    for tn in tile_names:
-        tp = data_dir / "levels" / "tiles" / f"{tn}.tex"
+    for tn, tex_fn in tile_sources.items():
+        tp = data_dir / "levels" / "textures" / tex_fn
         if tp.exists():
             im = decode_ktex(tp.read_bytes(), flip_y=True)
-            # Crop clean repeating tile patch (top-left 256x256 of tileset sheet) and resize to 128x128
             w, h = im.size
-            crop = im.crop((0, 0, min(512, w), min(512, h))).resize((128, 128), Image.Resampling.LANCZOS)
-            save_png(crop, FILES_OUT / "tiles" / f"{tn}.png")
-            tiles_b64[tn] = {"orig_w": w, "orig_h": h, "size": 128, "png_b64": pil_to_png_b64(crop)}
+            resized = im.resize((128, 128), Image.Resampling.LANCZOS)
+            save_png(resized, FILES_OUT / "tiles" / f"{tn}.png")
+            tiles_b64[tn] = {"orig_w": w, "orig_h": h, "size": 128, "source": tex_fn, "png_b64": pil_to_png_b64(resized)}
 
     portrait_chars = ["wilson", "willow", "wolfgang", "wendy", "wathgrithr", "wx78"]
     portraits_b64 = {}
@@ -602,7 +611,8 @@ def main():
     target_icons = {
         "axe": "axe.tex", "pickaxe": "pickaxe.tex", "campfire": "campfire.tex", "torch": "torch.tex",
         "researchlab": "researchlab.tex", "spear": "spear.tex", "armorwood": "armorwood.tex",
-        "footballhat": "footballhat.tex", "cookpot": "cookpot.tex", "telltale_heart": "reviver.tex",
+        "footballhat": "footballhat.tex", "cookpot": "cookpot.tex", "farm_plot": "farm_hoe.tex",
+        "boat_item": "boat_item.tex", "mast": "mast_item.tex", "telltale_heart": "reviver.tex",
         "sword_lunarplant": "sword_lunarplant.tex", "lunarplanthat": "lunarplanthat.tex",
         "armor_lunarplant": "armor_lunarplant.tex", "twigs": "twigs.tex", "flint": "flint.tex",
         "cutgrass": "cutgrass.tex", "log": "log.tex", "rocks": "rocks.tex", "goldnugget": "goldnugget.tex",

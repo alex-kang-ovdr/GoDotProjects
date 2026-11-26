@@ -1,7 +1,7 @@
 extends Node3D
 
 ## Don't Starve Together (Godot 4.7.2 Restoration) 메인 컨트롤러.
-## 고정 30Hz 시뮬레이션 스텝 + FollowCamera + 2.5D 빌보드 렌더러 + HUD 연결.
+## 고정 30Hz 시뮬레이션 스텝 + FollowCamera + 2.5D 빌보드 렌더러 + 원작 HUD/미니맵/스킬트리 연결.
 
 var db: DSTDatabase
 var sim: DSTWorldSim
@@ -98,6 +98,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			sim.player_attack_nearest()
 			_play_sfx("attack")
 			hud.refresh()
+		elif k == KEY_B:
+			_on_hud_action("toggle_boat", "")
+		elif k == KEY_K:
+			_on_hud_action("toggle_skills", "")
+		elif k == KEY_M:
+			_on_hud_action("toggle_minimap", "")
+		elif k == KEY_G:
+			_on_hud_action("transmute", "")
 		elif k == KEY_1:
 			if sim.eat_food("berries"): _play_sfx("eat")
 			hud.refresh()
@@ -124,6 +132,14 @@ func _on_hud_action(action: String, arg: String) -> void:
 		"craft":
 			if sim.craft_recipe(arg):
 				_play_sfx("fire" if arg == "campfire" or arg == "torch" else "craft")
+		"use_item":
+			if db.foods_by_id.has(arg):
+				if sim.eat_food(arg):
+					_play_sfx("eat")
+			elif db.data["weapons"].has(arg) or arg == "torch":
+				sim.equip_hands = arg
+				sim.push_log("장착: %s" % arg)
+				_play_sfx("ui_click")
 		"cook_meatballs":
 			if int(sim.inventory.get("egg", 0)) > 0 and int(sim.inventory.get("meat", 0)) > 0 and int(sim.inventory.get("carrot", 0)) > 0 and int(sim.inventory.get("berries", 0)) > 0:
 				sim.cook_in_pot(["egg", "meat", "carrot", "berries"])
@@ -137,6 +153,21 @@ func _on_hud_action(action: String, arg: String) -> void:
 			var idx: int = (_char_keys.find(sim.character_id) + 1) % _char_keys.size()
 			sim.select_character(str(_char_keys[idx]))
 			_play_sfx("ui_click")
+		"toggle_boat":
+			if sim.toggle_boat():
+				_play_sfx("ui_click")
+		"toggle_skills":
+			hud.toggle_skill_panel()
+			_play_sfx("ui_click")
+		"toggle_minimap":
+			hud.toggle_minimap()
+			_play_sfx("ui_click")
+		"unlock_skill":
+			if sim.unlock_skill(arg):
+				_play_sfx("magic")
+		"transmute":
+			if sim.transmute_rocks_to_gold():
+				_play_sfx("magic")
 		"toggle_speed":
 			sim.time_scale = 8.0 if sim.time_scale < 2.0 else 1.0
 			sim.push_log("시간 배속: %.0f×" % sim.time_scale)

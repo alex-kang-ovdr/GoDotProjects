@@ -82,13 +82,21 @@
     "mast_diminish": 0.7
   },
   "characters": {
-    "wilson": { "name": "Wilson", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#d6453a" },
-    "willow": { "name": "Willow", "health": 150.0, "hunger": 150.0, "sanity": 120.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.1, "color": "#e06d2b" },
-    "wolfgang": { "name": "Wolfgang", "health": 200.0, "hunger": 200.0, "sanity": 200.0, "damage_mult": 1.5, "hunger_rate_mult": 1.2, "sanity_drain_mult": 1.1, "color": "#4f6fd8" },
-    "wendy": { "name": "Wendy", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 0.75, "hunger_rate_mult": 1.0, "sanity_drain_mult": 0.75, "color": "#c95b7d" },
-    "wathgrithr": { "name": "Wigfrid", "health": 200.0, "hunger": 120.0, "sanity": 120.0, "damage_mult": 1.25, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#c44242" },
-    "wx78": { "name": "WX-78", "health": 100.0, "hunger": 100.0, "sanity": 100.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#87999c" }
+    "wilson": { "name": "Wilson", "trait": "수염 단열(+15°C) · 연금술 변환", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#d6453a" },
+    "willow": { "name": "Willow", "trait": "라이터 상시 광원 · 불 근처 정신력 회복", "health": 150.0, "hunger": 150.0, "sanity": 120.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.1, "color": "#e06d2b" },
+    "wolfgang": { "name": "Wolfgang", "trait": "근력 변신 (마이티 2.0× / 약체 0.75×)", "health": 200.0, "hunger": 200.0, "sanity": 200.0, "damage_mult": 1.5, "hunger_rate_mult": 1.2, "sanity_drain_mult": 1.1, "color": "#4f6fd8" },
+    "wendy": { "name": "Wendy", "trait": "아비게일 영혼 자동 광역 공격 · 어둠 저항", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 0.75, "hunger_rate_mult": 1.0, "sanity_drain_mult": 0.75, "color": "#c95b7d" },
+    "wathgrithr": { "name": "Wigfrid", "trait": "전투 흡혈(HP/정신력) · 육식 전용", "health": 200.0, "hunger": 120.0, "sanity": 120.0, "damage_mult": 1.25, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#c44242" },
+    "wx78": { "name": "WX-78", "trait": "바이오 회로(+15% 이속) · 젖음 감전 취약", "health": 100.0, "hunger": 100.0, "sanity": 100.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#87999c" }
   },
+  "skills": [
+    { "id": "survival_insulation", "name": "극한 단열 I", "branch": "SURVIVAL", "cost": 1, "desc": "체온 극한 완화 (±12°C 보정)" },
+    { "id": "harvest_bounty", "name": "풍요의 채집", "branch": "SURVIVAL", "cost": 1, "desc": "자원 채집 시 획득량 +1" },
+    { "id": "combat_mastery", "name": "전투 숙련", "branch": "COMBAT", "cost": 1, "desc": "근접 물리 공격력 +20%" },
+    { "id": "alchemy_transmute", "name": "연금술 변환", "branch": "ALCHEMY", "cost": 1, "desc": "돌 3개 → 금덩이 1개 즉시 변환" },
+    { "id": "affinity_lunar", "name": "달 친화력 (Lunar)", "branch": "AFFINITY", "cost": 1, "desc": "모든 공격에 평면 피해 +12 추가" },
+    { "id": "affinity_shadow", "name": "그림자 친화력 (Shadow)", "branch": "AFFINITY", "cost": 1, "desc": "보스·평면 개체 대상 피해 +25%" }
+  ],
   "weapons": {
     "unarmed": { "name": "Fists", "damage": 10.0, "planar_damage": 0.0, "uses": 999999, "range": 2.0 },
     "axe": { "name": "Axe", "damage": 27.2, "planar_damage": 0.0, "uses": 100, "range": 2.2, "tool": "chop" },
@@ -121,6 +129,8 @@
     { "id": "footballhat", "name": "풋볼 헬멧 (Helmet)", "tech": 1, "category": "ARMOUR", "ingredients": { "pigskin": 1, "cutgrass": 3 }, "result_type": "armor" },
     { "id": "cookpot", "name": "요리 냄비 (Crock Pot)", "tech": 1, "category": "COOKING", "ingredients": { "rocks": 6, "log": 3, "twigs": 6 }, "result_type": "structure" },
     { "id": "farm_plot", "name": "농경지 (Farm Soil)", "tech": 1, "category": "GARDENING", "ingredients": { "cutgrass": 4, "twigs": 2, "log": 2 }, "result_type": "structure" },
+    { "id": "boat_item", "name": "보트 키트 (Boat Kit)", "tech": 1, "category": "SEAFARING", "ingredients": { "log": 4, "cutgrass": 4 }, "result_type": "boat" },
+    { "id": "mast", "name": "돛 장착 (Mast 0.7^k)", "tech": 1, "category": "SEAFARING", "ingredients": { "log": 2, "twigs": 2, "cutgrass": 2 }, "result_type": "mast" },
     { "id": "telltale_heart", "name": "고백 심장 (Revive)", "tech": 0, "category": "RESTORATION", "ingredients": { "cutgrass": 3 }, "hp_cost": 40, "result_type": "item" },
     { "id": "sword_lunarplant", "name": "브라이트셰이드 검", "tech": 2, "category": "WEAPONS", "ingredients": { "purebrilliance": 2, "log": 2 }, "result_type": "weapon" },
     { "id": "lunarplanthat", "name": "브라이트셰이드 투구", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "rocks": 2 }, "result_type": "armor" },
