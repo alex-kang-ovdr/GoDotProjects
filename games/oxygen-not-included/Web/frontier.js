@@ -1,5 +1,5 @@
 /* Structural rooms, portable oxygen and productive work specialization. No DOM dependency. */
-import { breathingUnitsPerSecond } from './rules.js';
+import { usesModernRules, breathingUnitsPerSecond } from './rules.js';
 import { canBreathe } from './environment.js';
 import { atmosphereOf, atmosphereSpaceKg, emitAtmosphere, takeAtmosphere } from './atmosphere.js';
 import { GAS_KG_PER_UNIT } from './environment.js';
@@ -17,7 +17,7 @@ export const FRONTIER_OBJECTIVES = [
 ];
 export const FRONTIER_PRODUCTION_KEYS = ['oxygenCompressed','oxygenRefilled','portableOxygenUsed','protectedSeconds','trainingPointsSpent','bedroomRestSeconds','messhallMeals','greenhouseHarvests'];
 const MODES=['auto','open','locked'];
-const usesFootprints=state=>state.modernRules===true||state.ruleset==='oni-4.3';
+const usesFootprints=state=>state.modernRules===true||usesModernRules(state.ruleset);
 const MASK_MODES=['auto','off'];
 const SKILLS=['dig','engineering','life'];
 const SKILL_NAMES={dig:'굴착',engineering:'공학',life:'생활'};

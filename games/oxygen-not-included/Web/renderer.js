@@ -299,10 +299,20 @@ export class Renderer {
     this._pipes(ctx, x0, y0, x1, y1, simulationTime);
 
     const buildings = g.buildings || [];
+    const away=g.restoredRules&&buildings.some(b=>b.type==='steamRocket'&&b.returnAt>g.time);
     for (const b of buildings) {
       const bounds=this._bounds(b);
       if (bounds.x+bounds.width < x0 || bounds.y+bounds.height < y0 || bounds.x > x1 || bounds.y > y1 || !this._cell(b.x,b.y)?.revealed) continue;
       if (b.type === 'tile' && b.progress >= 1 && this._cell(b.x,b.y)?.solid === 'tile') continue;
+      if(away&&['steamRocket','researchModule','commandModule'].includes(b.type)&&g.getRocketState?.(b.id)?.returnAt>g.time){
+        ctx.save();ctx.setLineDash([.2,.18]);
+        rounded(ctx,bounds.x+.08,bounds.y+.08,bounds.width-.16,bounds.height-.16,.12,'rgba(85,110,127,.08)','#6c929c',.05);ctx.restore();
+        if(b.type==='steamRocket'){
+          ctx.save();ctx.textAlign='center';ctx.font='0.43px system-ui';ctx.fillStyle='#bad7d8';
+          ctx.fillText('귀환까지 '+Math.ceil(b.returnAt-g.time)+'초',bounds.x+bounds.width/2,bounds.y+bounds.height/2);ctx.restore();
+        }
+        continue;
+      }
       ctx.save(); ctx.translate(bounds.x,bounds.y); ctx.scale(bounds.width,bounds.height);
       if (b.progress < 1) ctx.globalAlpha = .34;
       else if(this.overlay==='plumbing')ctx.globalAlpha=.68;
@@ -320,7 +330,7 @@ export class Renderer {
     this._tasks(ctx,simulationTime);
     this._selectedPath(ctx);
     this._oxygenTransfers(ctx,x0,y0,x1,y1);
-    for (const crew of g.crew || []) this._drawCrew(ctx,crew,simulationTime);
+    for (const crew of g.crew || []) if(!crew.rocketFlightId&&!crew.rocketBoardedId)this._drawCrew(ctx,crew,simulationTime);
     this._roomLabels(ctx,visibleRooms);
     this._frontierLabels(ctx,x0,y0,x1,y1);
 
@@ -967,7 +977,35 @@ export class Renderer {
         line(ctx,[[.44,.63],[.86,.63]],'#d69c93',.028);line(ctx,[[.44,.75],[.86,.75]],'#d69c93',.022);
         line(ctx,[[.06,.59],[.06,.85]],'#a1b3a1',.055);
         break;
+      case 'researchModule': {
+        rounded(ctx,.12,.04,.76,.92,.09,'#9cafaa',frame,.035);
+        rounded(ctx,.11,.10,.78,.12,.02,'#55726f',frame,.025);
+        rounded(ctx,.11,.8,.78,.11,.025,'#667f78',frame,.025);
+        circle(ctx,.41,.49,.2,'#324a53','#c4d7c8',.035);
+        circle(ctx,.41,.49,.13,'#497889','#233e4b',.022);
+        line(ctx,[[.36,.54],[.48,.41]],'#b4d3d4',.023);
+        for(const y of [.38,.48,.58])line(ctx,[[.65,y],[.77,y]],'#526b66',.035);
+        break;
+      }
+      case 'commandModule':
+        polygon(ctx,[[.12,.9],[.28,.31],[.44,.07],[.56,.07],[.72,.31],[.88,.9]],'#c9c5ae',frame,.035);
+        polygon(ctx,[[.25,.68],[.34,.37],[.66,.37],[.75,.68]],'#365767','#9cbcb6',.03);
+        line(ctx,[[.5,.37],[.5,.67]],'#94b2ad',.023);
+        rounded(ctx,.1,.88,.8,.1,.02,'#687c76',frame,.025);
+        break;
       case 'steamRocket':
+        if(this.game.restoredRules){
+          rounded(ctx,.22,.02,.56,.55,.065,'#9bafa6',frame,.035);
+          rounded(ctx,.17,.14,.66,.09,.02,'#c18f75',frame,.025);
+          for(const x of [.27,.5,.73]){
+            rounded(ctx,x-.08,.48,.16,.19,.035,'#798c88',frame,.026);
+            polygon(ctx,[[x-.05,.63],[x+.05,.63],[x+.12,.89],[x-.12,.89]],'#53686d',frame,.03);
+            ellipse(ctx,x,.89,.12,.03,'#283c44','#a2a79b',.015);
+          }
+          line(ctx,[[.24,.39],[.12,.62],[.1,.94]],'#ba9d7c',.045);
+          line(ctx,[[.76,.39],[.88,.62],[.9,.94]],'#ba9d7c',.045);
+          break;
+        }
         polygon(ctx,[[.35,.74],[.35,.34],[.5,.05],[.65,.34],[.65,.74]],'#b7c7bd','#31454c',.035);
         circle(ctx,.5,.4,.085,'#518597','#d2e4dd',.025);
         polygon(ctx,[[.35,.56],[.2,.85],[.35,.78]],'#ce866f');
@@ -1605,6 +1643,15 @@ export class Renderer {
       const bounds=selected?this._bounds(selected):{x,y,width:1,height:1};
       rounded(ctx,bounds.x+.025,bounds.y+.025,bounds.width-.05,bounds.height-.05,.07,'rgba(162,214,181,.035)','rgba(172,224,194,.75)',.033);
       this._corners(ctx,x,y,'#c7e8c5',.06);
+    }
+    if(this.game.restoredRules&&['researchModule','commandModule'].includes(this.tool)){
+      for(const lower of this.game.buildings){
+        if(!['steamRocket','researchModule'].includes(lower.type)||lower.progress<1)continue;
+        const base=this._bounds(lower),anchorX=base.x+Math.floor((base.width-5)/2),anchorY=base.y-1;
+        if(!this._cell(anchorX,anchorY)?.revealed||this.game._buildingAt?.(anchorX,anchorY))continue;
+        this._corners(ctx,anchorX,anchorY,'#bce5b6',.07);
+        line(ctx,[[anchorX,anchorY+.98],[anchorX+5,anchorY+.98]],'#a0c8a8',.06);
+      }
     }
     if(!validCell)return;
     const {x,y}=h;
