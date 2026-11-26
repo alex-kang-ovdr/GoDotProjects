@@ -23,6 +23,7 @@ const NetTransportScript := preload("res://addons/playforge_netframework/runtime
 const TICK_HZ := 30
 const CLI_OPTIONS := [
 	"netmode", "transport", "host", "port", "run-dir", "bot", "log", "ticket", "ticket-ttl",
+	"keyring-file", "session-id", "instance-id", "lease-epoch",
 	"tls-cert", "tls-key", "tls-ca", "tls-hostname",
 	"reconnect-grace", "disconnect-after-ticks", "stale-epoch-probe",
 	"max-players", "play-ticks", "settle-max", "max-seconds", "tamper-slot", "wait-file", "linger",
@@ -161,10 +162,17 @@ func _notification(what: int) -> void:
 func _start_server() -> void:
 	var port := int(args.get("port", "24565"))
 	var run_dir := String(args.get("run-dir", "user://ds-spike"))
-	var session_id := NetIdsScript.random_id(8)
-	var instance_id := "local-" + str(OS.get_process_id())
+	var session_id := String(args.get("session-id", NetIdsScript.random_id(8)))
+	var instance_id := String(args.get("instance-id", "local-" + str(OS.get_process_id())))
+	var lease_epoch := int(args.get("lease-epoch", "1"))
 	var world_key := NetIdsScript.make_world_key("local", "forge-ds-spike", "dev-%d.%d.%d" % [Engine.get_version_info().major, Engine.get_version_info().minor, Engine.get_version_info().patch], session_id, 1)
-	var tickets := NetJoinTicketScript.new(session_id, instance_id, 1, int(args.get("ticket-ttl", "60")))
+	var tickets := NetJoinTicketScript.new(session_id, instance_id, lease_epoch, int(args.get("ticket-ttl", "60")))
+	var external_keyring := String(args.get("keyring-file", ""))
+	if not external_keyring.is_empty():
+		if not tickets.load_keyring_from_file(external_keyring):
+			event_log.emit("fatal", {"error": "keyring_load_failed"})
+			get_tree().quit(2)
+			return
 
 	var tls_options: TLSOptions = null
 	var tls_cert_path := ""
@@ -208,23 +216,25 @@ func _start_server() -> void:
 	net_profiler.attach_peer(peer, transport)
 	world.game_state.world_key = NetIdsScript.world_key_string(world_key)
 
-	# 로컬 가짜 제공자: 사용자별 1회용 티켓 발급. 파일에는 서명된 티켓만 있고 비밀키는 없다.
-	DirAccess.make_dir_recursive_absolute(run_dir.path_join("tickets"))
+	# 외부 키링(컨트롤 플레인 발급)이 없을 때만 로컬 가짜 티켓을 발급한다.
 	var issued: Array = []
-	for spec in [["bot-a", 0], ["bot-b", 1], ["bot-c", 2], ["bot-x", 0]]:
-		var t := tickets.issue(String(spec[0]), int(spec[1]))
-		var f := FileAccess.open(run_dir.path_join("tickets/%s.ticket" % spec[0]), FileAccess.WRITE)
-		f.store_string(t)
-		f.close()
-		issued.append({"userId": spec[0], "slot": spec[1]})
+	if external_keyring.is_empty():
+		DirAccess.make_dir_recursive_absolute(run_dir.path_join("tickets"))
+		for spec in [["bot-a", 0], ["bot-b", 1], ["bot-c", 2], ["bot-x", 0]]:
+			var t := tickets.issue(String(spec[0]), int(spec[1]))
+			var f := FileAccess.open(run_dir.path_join("tickets/%s.ticket" % spec[0]), FileAccess.WRITE)
+			f.store_string(t)
+			f.close()
+			issued.append({"userId": spec[0], "slot": spec[1]})
 	event_log.emit("server_listening", {
 		"port": port, "transport": transport, "transportCaps": srv.capabilities, "tlsCertPath": tls_cert_path,
+		"externalKeyring": not external_keyring.is_empty(),
 		"worldKey": world_key, "maxPlayers": game_mode.max_players,
 		"tickHz": TICK_HZ, "engine": Engine.get_version_info().string,
 		"dedicatedServerFeature": OS.has_feature("dedicated_server"), "displayServer": DisplayServer.get_name(),
 		"serverIsPlayer": false, "netMode": role, "rendered": DisplayServer.get_name() != "headless",
 	})
-	event_log.emit("tickets_issued", {"tickets": issued, "ttlSec": tickets.ttl_sec})
+	event_log.emit("tickets_issued", {"tickets": issued, "ttlSec": tickets.ttl_sec, "external": not external_keyring.is_empty()})
 	if role == "listen-server":
 		event_log.emit("listen_server_ready", {"localPlayer": false})
 

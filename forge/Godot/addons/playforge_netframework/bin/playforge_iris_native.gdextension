@@ -1,0 +1,7 @@
+[configuration]
+entry_symbol = "playforge_iris_native_library_init"
+compatibility_minimum = "4.7"
+
+[libraries]
+windows.debug.x86_64 = "res://addons/playforge_netframework/bin/playforge_iris_native.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/playforge_netframework/bin/playforge_iris_native.windows.template_debug.x86_64.dll"
