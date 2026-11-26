@@ -1,0 +1,49 @@
+{
+  "id": "ftl",
+  "name": "FTL: Faster Than Light (Godot 4 Restoration)",
+  "description": "C:\\Temp\\FTL\\ftl.dat.vanilla 원본 데이터(XML 블루프린트·함선 레이아웃·PNG 스프라이트·OGG/WAV 오디오)를 런타임 직접 로드하여 복원한 Godot 4.7.2 FTL 전략 로그라이크 프로젝트.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "assets/fonts/ftl-ui.txt",
+    "assets/fonts/OFL.txt"
+  ],
+  "guideOrder": [
+    "scripts/ftl_pkg.gd",
+    "scripts/ftl_database.gd",
+    "scripts/ftl_audio.gd",
+    "scripts/ftl_ship.gd",
+    "scripts/ftl_sector_map.gd",
+    "scripts/ftl_battle_view.gd",
+    "scripts/ftl_map_canvas.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "ftl",
+      "title": {
+        "ko": "FTL: 패스터 댄 라이트 (Godot 복원)",
+        "en": "FTL: Faster Than Light (Godot 4)"
+      },
+      "summary": {
+        "ko": "실시간 전술 일시정지 우주선 전투, 원자로 전력 배분, 선실 산소/화재/에어락 관리, 승무원 경로 탐색, 8섹터 성도 항해 및 반란군 기함 3페이즈 보스전을 구현한 Godot 4.7.2 FTL 복원 프로젝트입니다.",
+        "en": "Data-driven Godot 4.7.2 restoration of FTL with tactical pause combat, reactor power routing, O2/fire/airlock simulation, crew pathfinding, 8-sector star map, and 3-phase Rebel Flagship."
+      },
+      "instructions": {
+        "ko": "Space로 전술 일시정지, 하단 시스템 좌클릭(전력+)/우클릭(전력-), 1~4 키로 무기를 조준하고 적 선실을 클릭해 공격하세요. 승무원 선택 후 아군 선실 우클릭으로 이동, Z/X로 문과 에어락 개폐, J로 성도 지도를 열어 점프하세요.",
+        "en": "Press Space for tactical pause, left/right-click systems for power, keys 1-4 to target enemy rooms, right-click rooms to move selected crew, Z/X for doors/airlocks, and J to open the Star Map."
+      },
+      "tags": ["strategy", "roguelike", "space", "tactical"],
+      "controls": ["keyboard", "mouse"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
+}

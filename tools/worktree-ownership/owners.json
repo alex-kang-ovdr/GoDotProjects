@@ -374,6 +374,13 @@
         "forge/Tests/voxel-frontier.test.cjs"
       ]
     },
+    "Forge-GameDev-FTL": {
+      "role": "FTL: Faster Than Light 원본 데이터(C:\\Temp\\FTL) 기반 Godot 4.7.2 복원 프로젝트",
+      "owns": [
+        "forge/Templates/ftl/**",
+        "forge/Tests/ftl-godot.test.cjs"
+      ]
+    },
     "Forge-ISM-profile": {
       "role": "Unreal InstancedMesh ↔ Godot MultiMesh/Node3D 성능 비교 벤치마크 (실험)",
       "owns": [
