@@ -4216,7 +4216,137 @@
       "game": "league-of-legends"
     },
     {
+      "path": "games/oxygen-not-included/Source/Project/tests/atmosphere43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/colony43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/conduits43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
       "path": "games/oxygen-not-included/Source/Project/tests/engine.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/footprint43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/gas44.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/launch-colony44.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/oni-rules.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/packet-buildings43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/research43.test.mjs",
+      "tier": "integration",
+      "suites": [
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "PlayHub-GameDeploy",
+      "game": "oxygen-not-included"
+    },
+    {
+      "path": "games/oxygen-not-included/Source/Project/tests/rocket44.test.mjs",
       "tier": "integration",
       "suites": [
         "game"

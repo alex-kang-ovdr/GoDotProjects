@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { Game, BUILDINGS, CYCLE_SECONDS } from '../dist/engine.js';
+import { Game, BUILDINGS, CYCLE_SECONDS } from '../../../Web/engine.js';
 import { clone, at, buildingAt, close, finiteState, advance, until } from './helpers.mjs';
 import { command, establishFrontierColony } from './scenarios.mjs';
 
@@ -13,7 +13,7 @@ let frontierSnapshot;
 function preparedFrontier() {
   // The reusable source is a real new-game route. Controlled variants below are boundary tests only.
   frontierSnapshot ||= establishFrontierColony().serialize();
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   game.load(clone(frontierSnapshot));
   return game;
 }
@@ -32,7 +32,7 @@ function finish(game, plans, message = 'reachable construction did not finish') 
 let bedroomSnapshot;
 function bedroomColony() {
   if (!bedroomSnapshot) {
-    const game = new Game(73), ceiling = [];
+    const game = new Game(73, 'breath-4.1'), ceiling = [];
     for (let x = 14; x <= 19; x++) ceiling.push(command(game, 'tile', x, 9));
     finish(game, ceiling);
     finish(game, [[14,10],[19,10]].map(([x,y]) => command(game, 'tile', x, y)));
@@ -41,7 +41,7 @@ function bedroomColony() {
     assert.equal(game.roomAt(15,11)?.valid, true);
     bedroomSnapshot = game.serialize();
   }
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   game.load(clone(bedroomSnapshot));
   return game;
 }
@@ -67,7 +67,7 @@ function boundaryNeeds(game, first = {}) {
 const roomQuantity = (game, room, key) => room.cells.reduce((sum,index) => sum + game.cells[index][key], 0);
 
 test('v4 adds safe expansion without granting free oxygen, experience or room progress', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   assert.equal(game.version, 4);
   assert.equal(game.objectives.length, 20);
   assert.deepEqual(game.objectives.filter(o => o.stage === 5).map(o => [o.id, o.target]),
@@ -100,7 +100,7 @@ test('v4 adds safe expansion without granting free oxygen, experience or room pr
 
 for (const filename of ['v3-progress.json', 'v3-victory.json']) {
   test(`authentic ${filename} migrates without rewriting the played colony or inventing frontier progress`, () => {
-    const input = legacy(filename), original = clone(input), game = new Game(91);
+    const input = legacy(filename), original = clone(input), game = new Game(91, 'breath-4.1');
     assert.equal(input.version, 3, 'this fixture was saved by the original v3 engine');
     assert.notEqual(game.load(input), false);
     assert.deepEqual(input, original);
@@ -108,10 +108,16 @@ for (const filename of ['v3-progress.json', 'v3-victory.json']) {
     assert.equal(game.seed, input.seed);
     assert.equal(game.time, input.time);
     assert.deepEqual(game.cells, input.cells, 'all terrain, fluids and infrastructure survive migration');
-    assert.deepEqual(game.resources, input.resources);
+    for (const [key,value] of Object.entries(input.resources)) {
+      const expected = key === 'hydrogen' ? value * 0.21875 : value;
+      close(game.resources[key],expected,`${key} survives the gas-mass migration`);
+    }
     assert.deepEqual(game.tasks, input.tasks);
     assert.deepEqual(game.debris, input.debris);
-    for (const [key,value] of Object.entries(input.production)) close(game.production[key], value, `production.${key} survives`);
+    for (const [key,value] of Object.entries(input.production)) {
+      const expected = ['hydrogenProduced','hydrogenConsumed'].includes(key) ? value * 0.21875 : value;
+      close(game.production[key],expected,`production.${key} survives the gas-mass migration`);
+    }
     for (const old of input.buildings) {
       const current = game.buildings.find(b => b.id === old.id);
       for (const [key,value] of Object.entries(old)) assert.deepEqual(current[key], value, `building ${old.id}.${key} survives`);
@@ -129,7 +135,7 @@ for (const filename of ['v3-progress.json', 'v3-victory.json']) {
     assert.equal(game.won, false, 'the preserved old victory continues into four new goals');
     assert.ok(game.objectives.filter(o => o.stage === 5).every(o => !o.done));
     for (const key of newCounters) assert.equal(game.production[key], 0);
-    const saved = game.serialize(), restored = new Game(1);
+    const saved = game.serialize(), restored = new Game(1, 'breath-4.1');
     restored.load(clone(saved));
     assert.deepEqual(restored.serialize(), saved, 'the converted v4 save round-trips exactly');
     advance(restored, 3);
@@ -250,7 +256,7 @@ test('a valid bedroom improves actual bed recovery and a physical breach removes
 });
 
 test('a dining room counts actual consumed table meals and adds its real stress benefit', () => {
-  const dining = new Game(73);
+  const dining = new Game(73, 'breath-4.1');
   finish(dining,[command(dining,'mess',20,16)]);
   const ceiling = [];
   for (let x = 16; x <= 22; x++) ceiling.push(command(dining,'tile',x,14));
@@ -259,7 +265,7 @@ test('a dining room counts actual consumed table meals and adds its real stress 
   finish(dining,[[16,16],[22,16]].map(([x,y]) => command(dining,'door',x,y)));
   assert.equal(dining.roomAt(20,16)?.valid,true);
   assert.equal(dining.production.messhallMeals,0,'an unused completed dining room does not fabricate meals');
-  const plain = new Game(73); plain.load(dining.serialize());
+  const plain = new Game(73, 'breath-4.1'); plain.load(dining.serialize());
   command(plain,'deconstruct',21,14);
   until(plain, () => !at(plain,21,14).solid,60);
   for (const game of [dining,plain]) boundaryNeeds(game,{x:20.5,y:16.5,hunger:40,stress:30});
@@ -274,7 +280,7 @@ test('a dining room counts actual consumed table meals and adds its real stress 
 });
 
 test('a greenhouse accelerates supplied growth and only actual harvests earn its use counter', () => {
-  const greenhouse = new Game(73);
+  const greenhouse = new Game(73, 'breath-4.1');
   command(greenhouse,'pipe',31,11);
   finish(greenhouse,[command(greenhouse,'farm',31,11)]);
   const ceiling = [];
@@ -284,7 +290,7 @@ test('a greenhouse accelerates supplied growth and only actual harvests earn its
   finish(greenhouse,[[29,11],[33,11]].map(([x,y]) => command(greenhouse,'door',x,y)));
   assert.equal(greenhouse.roomAt(30,11)?.type,'greenhouse');
   assert.equal(greenhouse.roomAt(30,11)?.valid,true);
-  const plain = new Game(73); plain.load(greenhouse.serialize());
+  const plain = new Game(73, 'breath-4.1'); plain.load(greenhouse.serialize());
   command(plain,'deconstruct',32,9);
   until(plain, () => !at(plain,32,9).solid,60);
   for (const game of [greenhouse,plain]) {
@@ -333,7 +339,7 @@ test('public commands finish twenty goals after a real dock interruption and sus
   assert.ok(game.stats.totalSkillRanks >= 3 && game.production.protectedSeconds >= 30);
   assert.ok(game.production.bedroomRestSeconds > 0 && game.production.messhallMeals > 0,
     'the finished colony actually uses the newly recognized rooms');
-  const saved = game.serialize(), restored = new Game(1);
+  const saved = game.serialize(), restored = new Game(1, 'breath-4.1');
   restored.load(clone(saved));
   assert.deepEqual(restored.serialize(),saved,'all twenty completed goals and in-progress equipment/jobs round-trip');
   const before = clone(restored.production), farms = restored.buildings.filter(b => b.type === 'farm' && b.y === 16);

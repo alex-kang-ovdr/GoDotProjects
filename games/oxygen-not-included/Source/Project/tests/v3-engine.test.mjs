@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { Game, BUILDINGS, CYCLE_SECONDS } from '../dist/engine.js';
-import { analyzeRooms } from '../dist/frontier.js';
+import { Game, BUILDINGS, CYCLE_SECONDS } from '../../../Web/engine.js';
+import { analyzeRooms } from '../../../Web/frontier.js';
 import { clone, at, buildingAt, close, solidAmount, finiteState, advance, until } from './helpers.mjs';
 import { command, establishCommunityColony } from './scenarios.mjs';
 
@@ -14,7 +14,7 @@ let communitySnapshot;
 function preparedColony() {
   // This cached fixture is produced entirely by public commands and normal elapsed time.
   communitySnapshot ||= establishCommunityColony({ schedules: false }).serialize();
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   game.load(clone(communitySnapshot));
   return game;
 }
@@ -57,7 +57,7 @@ function rejectsAtomically(game, input, label) {
 }
 
 test('v3 adds actual collection, cooking, schedules and four community milestones', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   assert.equal(game.version, 4);
   assert.equal(game.objectives.length, 20);
   assert.deepEqual(game.objectives.filter(o => o.stage === 4).map(o => o.id),
@@ -86,7 +86,7 @@ test('v3 adds actual collection, cooking, schedules and four community milestone
 });
 
 test('mined solids remain on the ground and only an actual depot delivery adds inventory', () => {
-  const game = new Game(73), rock = game.resources.rock;
+  const game = new Game(73, 'breath-4.1'), rock = game.resources.rock;
   command(game, 'dig', 11, 11);
   until(game, () => !at(game, 11, 11).solid, 60);
   assert.equal(game.resources.rock, rock, 'finishing a dig does not teleport its output');
@@ -103,7 +103,7 @@ test('mined solids remain on the ground and only an actual depot delivery adds i
   assert.equal(carrier.cargo.amount, 6);
   assert.equal(game.resources.rock, rock, 'pickup is still not shared stock');
   close(solidAmount(game, 'rock'), rock + 6, 'stock + piles + cargo conserve the mined rock');
-  const saved = game.serialize(), restored = new Game(1);
+  const saved = game.serialize(), restored = new Game(1, 'breath-4.1');
   restored.load(clone(saved));
   assert.deepEqual(restored.serialize(), saved, 'an in-flight cargo and route round-trip exactly');
   until(restored, () => restored.production.hauledItems === 6, 60);
@@ -118,7 +118,7 @@ test('mined solids remain on the ground and only an actual depot delivery adds i
 
 test('role and schedule changes drop carried material without losing or duplicating it', () => {
   for (const change of ['role', 'schedule']) {
-    const game = new Game(73), initial = game.resources.rock;
+    const game = new Game(73, 'breath-4.1'), initial = game.resources.rock;
     command(game, 'dig', 11, 11);
     until(game, () => game.crew.some(c => c.cargo), 60);
     const carrier = game.crew.find(c => c.cargo), x = Math.floor(carrier.x), y = Math.floor(carrier.y);
@@ -136,7 +136,7 @@ test('role and schedule changes drop carried material without losing or duplicat
 });
 
 test('urgent breathing preempts a loaded haul without trapping an idle worker or losing the cargo', () => {
-  const game = new Game(73), initial = game.resources.rock;
+  const game = new Game(73, 'breath-4.1'), initial = game.resources.rock;
   command(game, 'dig', 11, 11);
   until(game, () => game.crew.some(c => c.cargo), 60);
   const id = game.crew.find(c => c.cargo).id, fixture = game.serialize();
@@ -158,7 +158,7 @@ test('urgent breathing preempts a loaded haul without trapping an idle worker or
 });
 
 test('a blocked delivery route drops its load safely and hauling resumes after the wall is removed', () => {
-  const game = new Game(73), initial = game.resources.rock;
+  const game = new Game(73, 'breath-4.1'), initial = game.resources.rock;
   command(game, 'dig', 11, 11);
   until(game, () => game.crew.some(c => c.cargo), 60);
   const fixture = game.serialize();
@@ -182,7 +182,7 @@ test('a blocked delivery route drops its load safely and hauling resumes after t
 });
 
 test('a carrier death leaves a recoverable pile and is safe to save and resume', () => {
-  const game = new Game(73), initial = game.resources.rock;
+  const game = new Game(73, 'breath-4.1'), initial = game.resources.rock;
   command(game, 'dig', 11, 11);
   until(game, () => game.crew.some(c => c.cargo), 60);
   const id = game.crew.find(c => c.cargo).id, fixture = game.serialize();
@@ -203,7 +203,7 @@ test('a carrier death leaves a recoverable pile and is safe to save and resume',
 });
 
 test('nearby enabled storage is a physical delivery point and full shared capacity blocks pickup', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const storage = command(game, 'storage', 13, 11);
   until(game, () => storage.progress === 1, 60);
   assert.equal(game.logistics.capacity, 840);
@@ -248,9 +248,9 @@ test('nearby enabled storage is a physical delivery point and full shared capaci
 });
 
 test('high stress reduces real work progress under otherwise identical conditions', () => {
-  const base = new Game(73).serialize();
+  const base = new Game(73, 'breath-4.1').serialize();
   base.crew[0].x = 12.5; base.crew[0].y = 11.5;
-  const calm = new Game(73), stressed = new Game(73);
+  const calm = new Game(73, 'breath-4.1'), stressed = new Game(73, 'breath-4.1');
   calm.load(clone(base));
   base.crew[0].stress = 95; stressed.load(base);
   command(calm, 'dig', 11, 11); command(stressed, 'dig', 11, 11);
@@ -348,7 +348,7 @@ test('powered refrigeration reduces actual spoilage and a power cut restores the
   const cold = quietColony();
   disable(cold, ['kitchen']);
   until(cold, () => cold.foodStatus.cold, 30);
-  const warm = new Game(73); warm.load(cold.serialize());
+  const warm = new Game(73, 'breath-4.1'); warm.load(cold.serialize());
   const fridge = warm.buildings.find(b => b.type === 'fridge');
   assert.ok(warm.toggleBuilding(fridge.id));
   const before = { food: cold.foodStatus.total, spoil: cold.production.foodSpoiled };
@@ -393,7 +393,7 @@ test('table meals require actual movement and consumption, and disabled tables c
 });
 
 test('staggered schedules count real six-second bed sleep once per shifted cycle', () => {
-  const game = new Game(73), crew = game.crew[0];
+  const game = new Game(73, 'breath-4.1'), crew = game.crew[0];
   assert.ok(game.setCrewSchedule(crew.id, 'day').ok);
   until(game, () => crew.schedulePhase === 'sleep' && crew._job?.kind === 'rest' && !crew._job.path.length, 120);
   const target = game.buildings.find(b => b.id === crew._job.targetId);
@@ -404,7 +404,7 @@ test('staggered schedules count real six-second bed sleep once per shifted cycle
   assert.equal(crew.restedCycles, 0, 'merely reaching a bed does not satisfy planned sleep');
   until(game, () => crew.restedCycles === 1, 3);
   assert.equal(game.production.scheduledRests, 1);
-  const restored = new Game(73); restored.load(game.serialize());
+  const restored = new Game(73, 'breath-4.1'); restored.load(game.serialize());
   advance(restored, 4);
   assert.equal(restored.crew[0].restedCycles, 1, 'save/load cannot count the same scheduled night twice');
   assert.equal(restored.production.scheduledRests, 1);
@@ -419,15 +419,21 @@ test('staggered schedules count real six-second bed sleep once per shifted cycle
 
 for (const filename of ['v2-progress.json', 'v2-victory.json']) {
   test(`authentic ${filename} migrates to the current version while preserving the whole played v2 colony`, () => {
-    const input = legacy(filename), original = clone(input), game = new Game(91);
+    const input = legacy(filename), original = clone(input), game = new Game(91, 'breath-4.1');
     assert.notEqual(game.load(input), false);
     assert.deepEqual(input, original);
     assert.equal(game.version, 4);
     assert.equal(game.time, input.time);
     assert.equal(game.seed, input.seed);
     assert.deepEqual(game.cells, input.cells, 'all old terrain, wire, pipe and physical water slots survive');
-    for (const [key, value] of Object.entries(input.resources)) close(game.resources[key], value, `${key} survives`);
-    for (const [key, value] of Object.entries(input.production)) close(game.production[key], value, `${key} production survives`);
+    for (const [key, value] of Object.entries(input.resources)) {
+      const expected = key === 'hydrogen' ? value * 0.21875 : value;
+      close(game.resources[key], expected, `${key} survives`);
+    }
+    for (const [key, value] of Object.entries(input.production)) {
+      const expected = ['hydrogenProduced','hydrogenConsumed'].includes(key) ? value * 0.21875 : value;
+      close(game.production[key], expected, `${key} production survives`);
+    }
     assert.deepEqual(game.tasks, input.tasks, 'unfinished work and reservations survive');
     for (const old of input.buildings) {
       const current = game.buildings.find(b => b.id === old.id);
@@ -446,7 +452,7 @@ for (const filename of ['v2-progress.json', 'v2-victory.json']) {
     for (const old of input.objectives) assert.equal(game.objectives.find(o => o.id === old.id).done, old.done);
     assert.equal(game.objectives.length, 20);
     assert.equal(game.won, false, 'old victory offers the subsequent community and frontier goals');
-    const saved = game.serialize(), restored = new Game(73); restored.load(clone(saved));
+    const saved = game.serialize(), restored = new Game(73, 'breath-4.1'); restored.load(clone(saved));
     assert.deepEqual(restored.serialize(), saved);
     advance(restored, 3); finiteState(restored); waterAccounting(restored);
   });
@@ -480,12 +486,12 @@ test('malformed v3 stock, routines and production saves are rejected before any 
 });
 
 test('real pile reservations round-trip and inconsistent pickup or cargo relationships are rejected', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   command(game, 'dig', 11, 11);
   until(game, () => game.crew.some(c => c._job?.kind === 'haul' && c._job.phase === 'pickup'), 60);
   const carrier = game.crew.find(c => c._job?.kind === 'haul'), saved = game.serialize();
   assert.equal(saved.debris.find(p => p.id === carrier._job.pileId).reservedBy, carrier.id);
-  const restored = new Game(1); restored.load(clone(saved));
+  const restored = new Game(1, 'breath-4.1'); restored.load(clone(saved));
   assert.deepEqual(restored.serialize(), saved, 'the pending pickup preserves exactly one reservation owner');
   const changes = [
     ['unowned pickup', s => { s.debris[0].reservedBy = null; }],

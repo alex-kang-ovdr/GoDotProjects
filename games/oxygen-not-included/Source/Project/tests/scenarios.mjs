@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Game, CYCLE_SECONDS } from '../dist/engine.js';
+import { Game, CYCLE_SECONDS } from '../../../Web/engine.js';
 import { at, buildingAt, until, frontierDig } from './helpers.mjs';
 
 export function command(game, tool, x, y) {
@@ -18,7 +18,7 @@ export function line(game, tool, x1, y1, x2, y2) {
 
 /** A reproducible player route: only public commands and elapsed time, no gifted resources. */
 export function establishUtilityColony() {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const plans = [
     command(game, 'diffuser', 26, 11), command(game, 'battery', 27, 11),
     command(game, 'research', 28, 11), command(game, 'toilet', 25, 11),

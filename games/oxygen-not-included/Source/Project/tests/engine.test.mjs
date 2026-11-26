@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Game, BUILDINGS, WORLD_W, WORLD_H, CYCLE_SECONDS } from '../dist/engine.js';
+import { Game, BUILDINGS, WORLD_W, WORLD_H, CYCLE_SECONDS } from '../../../Web/engine.js';
 
 import { clone, at, buildingAt, finiteState, advance, until, nearestSite, plan, frontierDig } from './helpers.mjs';
 
 test('new colony has finite stores, three distinct crew, a usable world and objectives', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   assert.equal(game.w, WORLD_W);
   assert.equal(game.h, WORLD_H);
   assert.equal(game.crew.length, 3);
@@ -26,7 +26,7 @@ test('new colony has finite stores, three distinct crew, a usable world and obje
 });
 
 test('placement queries are read-only and invalid commands do not spend resources', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const before = clone(game.serialize());
   const site = nearestSite(game, 'farm');
   game.canPlace('farm', site.x, site.y);
@@ -44,7 +44,7 @@ test('placement queries are read-only and invalid commands do not spend resource
 });
 
 test('construction reserves its cost once and cancelling a blueprint refunds it once', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const site = nearestSite(game, 'farm');
   const before = clone(game.resources);
   assert.ok(game.queue('farm', site.x, site.y).ok);
@@ -64,7 +64,7 @@ test('construction reserves its cost once and cancelling a blueprint refunds it 
 });
 
 test('a queued dig is performed by crew and opens the terrain', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const site = frontierDig(game);
   assert.ok(at(game, site.x, site.y).solid);
   const completed = game.stats.completedDigs;
@@ -79,7 +79,7 @@ test('a queued dig is performed by crew and opens the terrain', () => {
 });
 
 test('a reachable blueprint is built and completed demolition returns only part of its cost', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const b = plan(game, 'cot');
   assert.ok(b.progress < 1, 'a blueprint is not instantly built');
   until(game, () => b.progress >= 1, CYCLE_SECONDS * 2, 'crew never completed reachable construction');
@@ -93,7 +93,7 @@ test('a reachable blueprint is built and completed demolition returns only part 
 });
 
 test('wire placement is immediate, idempotent and removable without a worker', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const site = nearestSite(game, 'wire');
   assert.equal(at(game, site.x, site.y).wire, false);
   const before = game.resources.metal, taskCount = game.tasks.length;
@@ -110,7 +110,7 @@ test('wire placement is immediate, idempotent and removable without a worker', (
 });
 
 test('connected life support consumes algae, manual work generates power, and a battery stores surplus', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const diffuser = plan(game, 'diffuser', { wired: true });
   const battery = plan(game, 'battery', { wired: true });
   let previousAlgae = game.resources.algae;
@@ -136,7 +136,7 @@ test('connected life support consumes algae, manual work generates power, and a 
 });
 
 test('a device joins and leaves the power network when its connecting wires are built and removed', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const around = (x, y) => [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]];
   let target;
   // Use a free portion of the real starting bus; only ordinary wire commands alter topology.
@@ -169,7 +169,7 @@ test('a device joins and leaves the power network when its connecting wires are 
 });
 
 test('a healthy starting farm uses water and a crew harvest adds usable food', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   assert.ok(game.buildings.some(b => b.type === 'farm' && b.progress >= 1), 'starter farm exists');
   const waterBefore = game.resources.water;
   let previousFood = game.resources.food, producedFood = false;
@@ -184,13 +184,13 @@ test('a healthy starting farm uses water and a crew harvest adds usable food', (
 });
 
 test('save/load preserves an in-progress colony and malformed saves leave it unchanged', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   plan(game, 'battery', { wired: true });
   const dig = frontierDig(game);
   game.queue('dig', dig.x, dig.y);
   advance(game, 1.2);
   const saved = clone(game.serialize());
-  const restored = new Game(91);
+  const restored = new Game(91, 'breath-4.1');
   assert.notEqual(restored.load(clone(saved)), false);
   assert.deepEqual(restored.serialize(), saved, 'save round-trip preserves tasks, world, crew and resources');
   const mutations = [
@@ -223,7 +223,7 @@ test('save/load preserves an in-progress colony and malformed saves leave it unc
 });
 
 test('the starting colony can reach the settlement milestones through real work', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const plans = [plan(game, 'diffuser', { wired: true }), plan(game, 'battery', { wired: true })];
   while (game.buildings.filter(b => b.type === 'farm').length < 4) plans.push(plan(game, 'farm', { wired: true }));
   plans.push(plan(game, 'research', { wired: true }));

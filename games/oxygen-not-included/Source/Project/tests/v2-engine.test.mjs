@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { Game, BUILDINGS, CYCLE_SECONDS } from '../dist/engine.js';
+import { Game, BUILDINGS, CYCLE_SECONDS } from '../../../Web/engine.js';
 import { clone, at, buildingAt, finiteState, advance, until, plan } from './helpers.mjs';
 import { establishUtilityColony } from './scenarios.mjs';
 
@@ -35,7 +35,7 @@ let utilitySnapshot;
 function preparedColony() {
   // Independent copies of a real played colony keep isolated failure tests fast.
   utilitySnapshot ||= establishUtilityColony().serialize();
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   game.load(clone(utilitySnapshot));
   return game;
 }
@@ -61,7 +61,7 @@ function rejectedWithoutMutation(game, input, label) {
 }
 
 test('utility systems retain separate water networks, needs, production and research', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   assert.equal(game.version, 4);
   assert.ok(game.research.cap >= 100);
   assert.deepEqual(new Set(game.objectives.map(o => o.stage)), new Set([1, 2, 3, 4, 5]));
@@ -81,7 +81,7 @@ test('utility systems retain separate water networks, needs, production and rese
 });
 
 test('both pipe layers coexist with a wired building and targeted removal refunds only that layer', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const generator = game.buildings.find(b => b.type === 'generator');
   const { x, y } = generator;
   const cell = at(game, x, y);
@@ -123,7 +123,7 @@ test('both pipe layers coexist with a wired building and targeted removal refund
 });
 
 test('an uncharged battery requests real manual generation even without a consuming machine', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const battery = plan(game, 'battery', { wired: true });
   until(game, () => battery.progress === 1 && battery.charge > 20, CYCLE_SECONDS * 2,
     'a reserve-only battery never charged');
@@ -133,7 +133,7 @@ test('an uncharged battery requests real manual generation even without a consum
 });
 
 test('an unreachable plan explains the blockage rather than silently waiting', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const farm = command(game, 'farm', 40, 11);
   advance(game, 15);
   const task = game.tasks.find(t => t.buildingId === farm.id);
@@ -148,7 +148,7 @@ test('an unreachable plan explains the blockage rather than silently waiting', (
 });
 
 test('a farm without its water port cannot spend remote clean stock and resumes after reconnection', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const farm = game.buildings.find(b => b.type === 'farm');
   assert.ok(game.resources.water > 0);
   command(game, 'removePipe', farm.x, farm.y);
@@ -166,7 +166,7 @@ test('a farm without its water port cannot spend remote clean stock and resumes 
 });
 
 test('one starter farm no longer produces more meals than three idle residents consume', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const food = game.resources.food;
   advance(game, CYCLE_SECONDS * 5 + 1);
   assert.ok(game.production.harvestedFood > 0, 'starter farm still works');
@@ -178,7 +178,7 @@ test('one starter farm no longer produces more meals than three idle residents c
 });
 
 test('crew reach sanitation fixtures and convert clean input to separately stored waste', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const toilet = command(game, 'toilet', 25, 11);
   const sink = command(game, 'sink', 26, 11);
   const tank = command(game, 'reservoir', 27, 11);
@@ -292,33 +292,228 @@ test('purification consumes real waste and filter rock, obeys both ports, and re
 });
 
 test('electrolysis needs water and power and its hydrogen produces actual electrical energy', () => {
-  const game = preparedColony();
-  const electrolyzer = game.buildings.find(b => b.type === 'electrolyzer');
-  const generator = game.buildings.find(b => b.type === 'hydrogenGen');
+  const game = new Game(73, 'breath-4.1');
+  disable(game, ['generator', 'coalgen', 'hydrogenGen', 'pump', 'farm', 'research', 'toilet',
+    'sink', 'purifier', 'diffuser', 'scrubber', 'cooler']);
+  const electrolyzer = game._addBuilding('electrolyzer', 32, 11, true);
+  game._addBuilding('battery', 31, 11, true);
+  game.cell(31, 11).pipe = true; game.cell(32, 11).pipe = true;
+  game._fluidDirty = true;
+  game._rebuildFluids();
+  game._rebuildNetworks();
+  const battery = game.buildings.find(b => b.type === 'battery');
+  for (const b of game.buildings.filter(v => v.type === 'battery')) b.charge = 0;
+  battery.charge = battery.capacity;
+  game.resources.hydrogen = 0;
+  const p = game.cell(electrolyzer.x, electrolyzer.y);
+  p.oxygen = .5; p.co2 = 0; p.temp = 22;
   assert.ok(BUILDINGS.electrolyzer.power > 0 && BUILDINGS.hydrogenGen.power < 0);
   assert.ok(game.setAutomation(electrolyzer.id, 'always').ok);
-  let activeElectrolysis = false, activeGeneration = false;
-  const water = game.production.hydrogenProduced, energy = game.production.hydrogenEnergy;
-  advance(game, 45, () => {
-    activeElectrolysis ||= electrolyzer.active && game.power.demand >= BUILDINGS.electrolyzer.power;
-    activeGeneration ||= generator.active && game.power.production >= -BUILDINGS.hydrogenGen.power;
-  });
-  assert.ok(activeElectrolysis && activeGeneration, 'both devices perform their jobs on the real circuit');
-  assert.ok(game.production.hydrogenProduced > water);
-  assert.ok(game.production.hydrogenConsumed > 0 && game.production.hydrogenEnergy > energy);
-  close(game.resources.hydrogen,
-    game.production.hydrogenProduced - game.production.hydrogenConsumed,
-    'shared hydrogen stores match cumulative production and consumption');
-  game.toggleBuilding(electrolyzer.id);
-  const produced = game.production.hydrogenProduced;
-  advance(game, 5);
-  close(game.production.hydrogenProduced, produced, 'manual stop overrides automatic supply control');
+  const waterNet = game._fluidNet(electrolyzer, 'water');
+  const waterBefore = game._fluidAmount(waterNet);
+  game._utilityDt = 0.1;
+  game._buildingStep(0.1);
+  assert.ok(electrolyzer.active, 'electrolyzer receives power on its connected circuit');
+  close(game.power.demand, BUILDINGS.electrolyzer.power, 'the full-rate electrolyzer draws rated power');
+  const electrolyzerTemp = p.temp;
+  game._finishUtilities(0.1);
+  close(p.temp - electrolyzerTemp, .006, 'electrolyzer heat follows 0.1 seconds of actual activity');
+  const hydrogenProduced = game.production.hydrogenProduced;
+  const oxygenProduced = game.production.oxygenProduced;
+  close(oxygenProduced, hydrogenProduced * (.888 / .112) / .5328,
+    'electrolyzer preserves its mass ratio using the explicit web-atmosphere conversion', 1e-4);
+  close(waterBefore - game._fluidAmount(waterNet), hydrogenProduced / .112,
+    'one water-network liter is modeled as one kilogram in the reaction', 1e-4);
+
+  const generator = game._addBuilding('hydrogenGen', 34, 11, true);
+  game.cell(34, 11).wire = true;
+  game._rebuildNetworks();
+  assert.ok(game.setAutomation(generator.id, 'always').ok);
+  game.resources.hydrogen = 0.0004375;
+  const generatorCell = game.cell(generator.x, generator.y), temp = generatorCell.temp;
+  const consumed = game.production.hydrogenConsumed, energy = game.production.hydrogenEnergy;
+  const watts = game._hydrogenPower(generator, 0.1, 70);
+  close(watts, 35, 'last hydrogen buffer limits generator watts at 8,000 J/kg');
+  close(game.production.hydrogenConsumed - consumed, 0.0004375,
+    'generator consumes only the hydrogen mass that exists');
+  close(game.production.hydrogenEnergy - energy, 3.5,
+    'generated joules follow actual output watts');
+  close(generatorCell.temp - temp, .09 * .1 * watts / 70,
+    'generator heat follows its actual utilization');
   waterAccounting(game);
   finiteState(game);
 });
 
+test('diffuser scales oxygen, algae, heat and power to the supplied fraction', () => {
+  const game = new Game(73, 'breath-4.1');
+  const diffuser = game._addBuilding('diffuser', 26, 11, true);
+  const battery = game._addBuilding('battery', 27, 11, true);
+  disable(game, ['generator', 'coalgen', 'hydrogenGen', 'farm', 'research', 'pump', 'scrubber',
+    'purifier', 'electrolyzer', 'cooler']);
+  assert.ok(diffuser && battery);
+  assert.ok(game.setAutomation(diffuser.id, 'always').ok);
+  for (const b of game.buildings.filter(v => v.type === 'battery')) b.charge = 0;
+  battery.charge = 0.6;
+  game.resources.algae = 20;
+  const p = game.cell(diffuser.x, diffuser.y);
+  p.oxygen = 0.5; p.co2 = 0; p.temp = 22;
+  game._utilityDt = 0.1;
+  const algae = game.resources.algae, oxygen = p.oxygen, temp = p.temp;
+  game._buildingStep(0.1);
+  close(diffuser.activeFraction, 0.5, 'half of the 1.2 J diffuser request is available');
+  close(game.power.demand, BUILDINGS.diffuser.power * 0.5, 'power demand is actual draw');
+  close(game.resources.algae, algae - 0.025 * 0.1 * 0.5, 'algae burn follows active time');
+  close(p.oxygen, oxygen + 0.35 * 0.1 * 0.5, 'oxygen output follows active time');
+  close(p.temp, temp + 0.025 * 0.1 * 0.5, 'heat follows active time');
+});
+
+test('oni-base runs the original diffuser and electrolyzer mass and power rates', () => {
+  const game = new Game(73, 'oni-base');
+  disable(game, ['generator', 'coalgen', 'hydrogenGen', 'pump', 'farm', 'research', 'toilet',
+    'sink', 'purifier', 'diffuser', 'scrubber', 'cooler', 'electrolyzer']);
+
+  const diffuser = game._addBuilding('diffuser', 26, 11, true);
+  const diffuserBattery = game._addBuilding('battery', 27, 11, true);
+  assert.equal(diffuser.automation, 'always', 'original diffuser defaults to continuous pressure-limited operation');
+  for (let x = 26; x <= 27; x++) game.cell(x, 11).wire = true;
+  game._rebuildNetworks();
+  diffuserBattery.charge = 120;
+  game.resources.algae = 1;
+  const atmosphere = game.cell(diffuser.x, diffuser.y);
+  atmosphere.oxygen = 0;
+  atmosphere.co2 = 0;
+  atmosphere.hydrogen = 0;
+  atmosphere.temp = 22;
+  game._buildingStep(0.1);
+  assert.equal(diffuser.active, true);
+  close(game.power.demand, 120, 'diffuser draws its original 120 W rate');
+  close(game.resources.algae, 0.945, 'diffuser consumes 0.55 kg algae per second');
+  close(atmosphere.oxygen * 0.5328, 0.05, 'diffuser produces 0.5 kg oxygen per second');
+  assert.ok(atmosphere.temp > 22 && atmosphere.temp < 30,
+    '30 C output mixes by actual oxygen heat capacity into the room');
+
+  const electrolyzer = game._addBuilding('electrolyzer', 32, 11, true);
+  const battery = game._addBuilding('battery', 33, 11, true);
+  assert.equal(electrolyzer.automation, 'always', 'original electrolyzer defaults to continuous operation');
+  for (let x = 31; x <= 33; x++) game.cell(x, 11).wire = true;
+  game.cell(31, 11).pipe = true;
+  game.cell(32, 11).pipe = true;
+  game._rebuildFluids();
+  game._rebuildNetworks();
+  battery.charge = 120;
+  const cell = game.cell(electrolyzer.x, electrolyzer.y);
+  cell.oxygen = 0;
+  cell.co2 = 0;
+  cell.hydrogen = 0;
+  game._startUtilities(0.1);
+  const waterBefore = game._fluidAmount(game._fluidNet(electrolyzer, 'water'));
+  game._buildingStep(0.1);
+  assert.equal(electrolyzer.active, true);
+  close(game.power.demand, 240, 'the connected diffuser and electrolyzer each draw their original 120 W rate');
+  game._finishUtilities(0.1);
+  close(waterBefore - game._fluidAmount(game._fluidNet(electrolyzer, 'water')), 0.1,
+    'electrolyzer consumes 1 kg water per second');
+  close(cell.oxygen * 0.5328, 0.0888, 'electrolyzer output has the original 0.888 oxygen mass ratio');
+  close(cell.hydrogen, 0.0112, 'hydrogen is stored as actual gas kilograms in the room');
+  assert.ok(cell.temp > 22, '70 C oxygen and hydrogen outputs mix through their heat capacities');
+
+  cell.oxygen = 1.8 / 0.5328;
+  game._buildingStep(0.1);
+  assert.equal(electrolyzer.active, false, 'the electrolyzer stops when the room reaches 1.8 kg gas pressure');
+
+  const hGenerator = game._addBuilding('hydrogenGen', 34, 11, true);
+  assert.equal(hGenerator.automation, 'always', 'original hydrogen generators default to continuous fuel use');
+  hGenerator.hydrogenBuffer = 0.01;
+  const consumed = game.production.hydrogenConsumed;
+  const energy = game.production.hydrogenEnergy;
+  close(game._hydrogenPower(hGenerator, 0.1, 800), 800,
+    'the original hydrogen generator produces its rated 800 W');
+  close(game.production.hydrogenConsumed - consumed, 0.01,
+    'original generator consumes the staged hydrogen mass');
+  close(game.production.hydrogenEnergy - energy, 80,
+    'original generator records output joules from consumed hydrogen');
+
+  const expectedPipeCapacity = game.cells.filter(c => c.pipe).length * 10
+    + game.buildings.reduce((sum, b) => sum + b.cleanCapacity, 0);
+  close(game.plumbing.waterCapacity, expectedPipeCapacity,
+    'original liquid pipes and equipment use 10 kg per pipe cell');
+  const saved = game.serialize();
+  const restored = new Game(1, 'oni-base');
+  assert.equal(restored.load(saved), true, 'original mass-capacity save reloads');
+  close(restored.plumbing.waterCapacity, expectedPipeCapacity,
+    'original pipe capacity remains consistent after load');
+});
+
+test('oni-base coal generation and pumping use kilogram rates and real stores', () => {
+  const game = new Game(73, 'oni-base');
+  disable(game, ['generator', 'coalgen', 'hydrogenGen', 'pump', 'farm', 'research', 'toilet',
+    'sink', 'purifier', 'diffuser', 'scrubber', 'cooler', 'electrolyzer']);
+  const coal = game._addBuilding('coalgen', 26, 11, true);
+  const battery = game._addBuilding('battery', 27, 11, true);
+  assert.equal(coal.automation, 'always', 'original coal generators default to continuous fuel use');
+  for (let x = 26; x <= 27; x++) game.cell(x, 11).wire = true;
+  game._rebuildNetworks();
+  game.resources.coal = 0.1;
+  const exhaust = game.cell(coal.x, coal.y);
+  exhaust.oxygen = 0;
+  exhaust.co2 = 0;
+  exhaust.hydrogen = 0;
+  game._buildingStep(0.1);
+  close(game.power.production, 600, 'coal generator produces its rated 600 W');
+  close(game.resources.coal, 0, 'coal is consumed at 1 kg per second');
+  close(exhaust.co2 * 0.5328, 0.002, 'coal exhaust releases 0.02 kg CO2 per second');
+  assert.ok(exhaust.temp > 22, '110 C CO2 exhaust uses physical heat mixing');
+
+  const pump = game._addBuilding('pump', 36, 11, true);
+  const pumpBattery = game._addBuilding('battery', 35, 11, true);
+  for (let x = 35; x <= 36; x++) game.cell(x, 11).wire = true;
+  for (let x = 35; x <= 36; x++) game.cell(x, 11).pipe = true;
+  game._rebuildFluids();
+  game._rebuildNetworks();
+  pumpBattery.charge = 240;
+  const source = game.cell(pump.x + 1, pump.y);
+  source.solid = null;
+  source.water = 0.02;
+  const pumpedBefore = game.production.pumpedWater;
+  game._startUtilities(0.1);
+  game._buildingStep(0.1);
+  assert.equal(pump.active, true);
+  close(game.power.demand, 240, 'original water pump draws 240 W');
+  close(game.production.pumpedWater - pumpedBefore, 1,
+    'the original 10 kg/s pump moves one kilogram in 0.1 seconds');
+  assert.equal(pump.cleanCapacity, 20, 'pump exposes its original 20 kg output buffer');
+
+  const manualGame = new Game(73, 'oni-base');
+  disable(manualGame, ['generator', 'coalgen', 'hydrogenGen', 'pump', 'farm', 'research', 'toilet',
+    'sink', 'purifier', 'diffuser', 'scrubber', 'cooler', 'electrolyzer']);
+  const manual = manualGame._addBuilding('generator', 26, 11, true);
+  manualGame._addBuilding('battery', 27, 11, true);
+  manual.workerId = manualGame.crew[0].id;
+  manualGame.cell(26, 11).wire = true;
+  manualGame.cell(27, 11).wire = true;
+  manualGame._rebuildNetworks();
+  manualGame._buildingStep(0.1);
+  close(manualGame.power.production, 400, 'working manual generator produces its original 400 W');
+});
+
+test('oni-base mealwood farms do not create water-pipe demand', () => {
+  const game = new Game(73, 'oni-base');
+  const farm = game._addBuilding('farm', 33, 16, true);
+  assert.equal(farm.waterConnected, false);
+  assert.equal(game._utilityReady(farm, 0.1), null,
+    'original mealwood growth does not require a web water connection');
+  farm.active = true;
+  game._startUtilities(0.1);
+  game._finishUtilities(0.1);
+  assert.equal(game.plumbing.waterDemand, 0,
+    'mealwood has no synthetic liquid irrigation demand');
+  const inspection = game.inspect(farm.x, farm.y);
+  assert.ok(!inspection.lines.some(line => line.includes('청수') || line.includes('오수')),
+    'original farm inspection does not show irrelevant pipe connections');
+});
+
 test('completed farm demolition refunds water into real storage instead of losing the refund', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   const farm = command(game, 'farm', 25, 11);
   until(game, () => farm.progress === 1, CYCLE_SECONDS);
   disable(game, ['farm']);
@@ -365,7 +560,7 @@ test('oxygen automation preserves hysteresis across saves and manual disable tak
 });
 
 test('a researched cooler spends power and water, produces wastewater and reduces nearby heat', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   game.load(legacy('v1-progress.json'));
   until(game, () => game.stats.research >= BUILDINGS.cooler.unlock, CYCLE_SECONDS * 4,
     'normal research could not unlock cooling');
@@ -380,7 +575,7 @@ test('a researched cooler spends power and water, produces wastewater and reduce
   for (let y = 8; y <= 11; y++) for (let x = 27; x <= 35; x++) {
     if (!fixture.cells[y * game.w + x].solid) fixture.cells[y * game.w + x].temp = 40;
   }
-  const working = new Game(73), control = new Game(73);
+  const working = new Game(73, 'breath-4.1'), control = new Game(73, 'breath-4.1');
   working.load(clone(fixture));
   control.load(clone(fixture));
   control.toggleBuilding(cooler.id);
@@ -430,7 +625,7 @@ test('the first twelve utility goals still complete after an interrupted supply 
 for (const filename of ['v1-progress.json', 'v1-victory.json']) {
   test(`authentic ${filename} migrates without erasing progress or mutating the input`, () => {
     const input = legacy(filename), original = clone(input);
-    const game = new Game(91);
+    const game = new Game(91, 'breath-4.1');
     assert.notEqual(game.load(input), false);
     assert.deepEqual(input, original, 'migration never rewrites caller-owned data');
     assert.equal(game.version, 4);
@@ -465,7 +660,7 @@ for (const filename of ['v1-progress.json', 'v1-victory.json']) {
     assert.ok(game.crew.every(c => c.bladder < 80 && c.hygiene > 50),
       'migration allows time to add the new sanitation facilities');
     waterAccounting(game);
-    const converted = clone(game.serialize()), restored = new Game(1);
+    const converted = clone(game.serialize()), restored = new Game(1, 'breath-4.1');
     restored.load(clone(converted));
     assert.deepEqual(restored.serialize(), converted, 'converted current save round-trips');
     advance(restored, 3);
@@ -474,8 +669,39 @@ for (const filename of ['v1-progress.json', 'v1-victory.json']) {
   });
 }
 
+test('legacy hydrogen stocks migrate to kilograms once while joules and objective progress survive', () => {
+  const inputs = [
+    [2, legacy('v2-progress.json')],
+    [3, legacy('v3-progress.json')],
+    [4, new Game(73, 'breath-4.1').serialize()],
+  ];
+  for (const [version, input] of inputs) {
+    delete input.gasMassSchemaVersion;
+    input.resources.hydrogen = 8;
+    input.production.hydrogenProduced = 4;
+    input.production.hydrogenConsumed = 2;
+    input.production.hydrogenEnergy = 1234;
+    const hydrogenGoal = input.objectives.find(o => o.id === 'hydrogen');
+    hydrogenGoal.progress = hydrogenGoal.target * 0.5;
+    const original = clone(input);
+    const game = new Game(1, 'breath-4.1');
+    game.load(input);
+    assert.deepEqual(input, original, `v${version} input remains unchanged`);
+    close(game.resources.hydrogen, 8 * .21875, `v${version} stored hydrogen converts to kg`);
+    close(game.production.hydrogenProduced, 4 * .21875, `v${version} produced hydrogen converts to kg`);
+    close(game.production.hydrogenConsumed, 2 * .21875, `v${version} consumed hydrogen converts to kg`);
+    close(game.production.hydrogenEnergy, 1234, `v${version} historical generated joules stay intact`);
+    close(game.objectives.find(o => o.id === 'hydrogen').progress, hydrogenGoal.target * 0.5,
+      `v${version} hydrogen-goal progress stays intact`);
+    const converted = game.serialize();
+    assert.equal(converted.gasMassSchemaVersion, 1);
+    game.load(clone(converted));
+    assert.deepEqual(game.serialize(), converted, `v${version} converted save is not converted again`);
+  }
+});
+
 test('malformed v1 migration and new v2 fields are rejected atomically', () => {
-  const game = new Game(73);
+  const game = new Game(73, 'breath-4.1');
   advance(game, 2);
   const legacyBad = legacy('v1-progress.json');
   legacyBad.resources.water = -1;
@@ -489,6 +715,7 @@ test('malformed v1 migration and new v2 fields are rejected atomically', () => {
     ['negative waste buffer', v => { v.cells[0].dirtyWater = -1; }],
     ['mismatched water total', v => { v.resources.water += 1; }],
     ['negative hydrogen', v => { v.resources.hydrogen = -1; }],
+    ['unknown gas mass schema', v => { v.gasMassSchemaVersion = 2; }],
     ['invalid bladder', v => { v.crew[0].bladder = 101; }],
     ['missing hygiene', v => { delete v.crew[0].hygiene; }],
     ['invalid automation', v => { v.buildings.find(b => b.type === 'generator').automation = 'invent-water'; }],

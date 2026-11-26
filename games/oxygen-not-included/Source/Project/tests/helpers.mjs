@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { CYCLE_SECONDS } from '../dist/engine.js';
+import { CYCLE_SECONDS } from '../../../Web/engine.js';
 
 export const DT = 0.1;
 export const clone = value => structuredClone(value);
@@ -31,6 +31,8 @@ export function finiteState(game) {
     }
   }
   if (game.version >= 3) {
+    const solids = ['rock','metal','algae','coal'];
+    if (game.originalRules) solids.push('soil');
     for (const [key, value] of Object.entries(game.logistics)) numeric(value, `logistics.${key}`, 0);
     for (const [key, value] of Object.entries(game.foodStatus)) {
       if (key === 'cold') assert.equal(typeof value, 'boolean');
@@ -41,10 +43,10 @@ export function finiteState(game) {
     assert.equal(new Set(game.debris.map(p => p.id)).size, game.debris.length);
     for (const pile of game.debris) {
       numeric(pile.amount, `debris ${pile.id} amount`, 0);
-      assert.ok(['rock', 'metal', 'algae', 'coal'].includes(pile.resource));
+      assert.ok(solids.includes(pile.resource));
       numeric(pile.priority, `debris ${pile.id} priority`, 1, 5);
     }
-    close(game.logistics.stored, ['rock','metal','algae','coal'].reduce((n,k)=>n+game.resources[k],0),
+    close(game.logistics.stored, solids.reduce((n,k)=>n+game.resources[k],0),
       'settled solids are counted once');
     close(game.logistics.loose, game.debris.reduce((n,p)=>n+p.amount,0), 'loose stock matches actual piles');
     close(game.logistics.carried, game.crew.reduce((n,c)=>n+(c.cargo?.amount||0),0), 'carried stock matches actual cargo');
