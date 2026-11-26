@@ -86,6 +86,7 @@ var _next_crew_id: int = 1
 
 # Enemy/boss state
 var is_boss: bool = false
+var is_unmanned: bool = false
 var boss_phase: int = 1
 var boss_surge_timer: float = 18.0
 var ai_decision_timer: float = 0.6
@@ -264,6 +265,7 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 		add_crew(species, start_room, is_player)
 
 	# Initial shields full
+	is_unmanned = bp_id.begins_with("AUTO_") or (not is_player and not is_boss and crew.is_empty())
 	shield_max_layers = get_effective_system_power("shields") / 2
 	shield_layers = shield_max_layers
 	shield_charge = 0.0
@@ -711,6 +713,8 @@ func teleport_send(target_ship: FTLShip, target_room_id: int) -> int:
 	pending_teleports.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "incoming": true})
 	var moved := 0
 	for c in boarders:
+		if has_augment("RECON_TELEPORTER"):
+			c.hp = float(c.max_hp)
 		crew.erase(c)
 		c.room_id = target_room_id
 		c.target_room = target_room_id
@@ -747,6 +751,8 @@ func teleport_retrieve(target_ship: FTLShip, target_room_id: int = -1) -> int:
 	pending_teleports.append({"ship": self, "pos_local": get_room_center_local(tp_room), "incoming": true})
 	var moved := 0
 	for c in returning:
+		if has_augment("RECON_TELEPORTER"):
+			c.hp = float(c.max_hp)
 		target_ship.crew.erase(c)
 		c.room_id = tp_room
 		c.target_room = tp_room
@@ -1112,7 +1118,41 @@ func toggle_door(door_idx: int) -> void:
 	if door_idx < 0 or door_idx >= doors.size():
 		return
 	doors[door_idx].open = not bool(doors[door_idx].open)
+	if not bool(doors[door_idx].open):
+		doors[door_idx].hp = get_door_max_hp()
 	pending_sfx.append("doorOpen" if doors[door_idx].open else "doorClose")
+
+
+func get_door_max_hp() -> float:
+	var dlvl := get_effective_system_power("doors")
+	var manned := systems.has("doors") and int(systems.doors.manned_by) != -1
+	var eff := dlvl + (1 if manned else 0)
+	if eff <= 1:
+		return 30.0
+	elif eff == 2:
+		return 75.0
+	return 140.0
+
+
+func get_door_between(room_a: int, room_b: int) -> int:
+	for i in range(doors.size()):
+		var d: Dictionary = doors[i]
+		if (int(d.room_a) == room_a and int(d.room_b) == room_b) or (int(d.room_a) == room_b and int(d.room_b) == room_a):
+			return i
+	return -1
+
+
+func recover_active_drones() -> int:
+	if not has_augment("DRONE_RECOVERY"):
+		return 0
+	var recovered := 0
+	for d in drones:
+		if bool(d.powered):
+			var dtype := str(d.bp.get("type", "COMBAT"))
+			if dtype in ["COMBAT", "DEFENSE", "SHIELD"]:
+				drone_parts += 1
+				recovered += 1
+	return recovered
 
 
 func set_all_doors_open(open_state: bool, include_airlocks: bool = false) -> void:
@@ -1368,10 +1408,26 @@ func _step_atmosphere(delta: float) -> void:
 			ra.oxygen = clampf(float(ra.oxygen) - diff, 0.0, 100.0)
 			rb.oxygen = clampf(float(rb.oxygen) + diff, 0.0, 100.0)
 
-	# Fires
+	# Fires, Fire Suppression, Slug Repair Gel, Fire Spread & Unmanned Auto-Repair
 	for r in rooms:
+		if int(r.breach) > 0 and has_augment("SLUG_GEL"):
+			r.breach_hp = maxf(0.0, float(r.breach_hp) - 12.0 * delta)
+			if float(r.breach_hp) <= 0.0:
+				r.breach = 0
+		if is_unmanned and int(r.breach) == 0 and not str(r.system).is_empty() and systems.has(str(r.system)):
+			var us: Dictionary = systems[str(r.system)]
+			if int(us.damage) > 0:
+				r.repair_progress = float(r.repair_progress) + 0.06 * delta
+				if float(r.repair_progress) >= 1.0:
+					r.repair_progress = 0.0
+					us.damage = maxi(0, int(us.damage) - 1)
 		if int(r.fires) <= 0:
 			continue
+		if has_augment("FIRE_EXTINGUISHERS"):
+			r.fire_hp = maxf(0.0, float(r.fire_hp) - 18.0 * delta)
+			if float(r.fire_hp) <= 0.0:
+				r.fires = 0
+				continue
 		if float(r.oxygen) < 8.0 or int(r.breach) > 0:
 			r.fire_hp = maxf(0.0, float(r.fire_hp) - 35.0 * delta)
 			if float(r.fire_hp) <= 0.0:
@@ -1384,6 +1440,20 @@ func _step_atmosphere(delta: float) -> void:
 				if float(r.repair_progress) <= -1.0:
 					r.repair_progress = 0.0
 					apply_system_damage(sname, 1)
+			# Fire spread through open doors to adjacent oxygenated rooms
+			r["fire_spread"] = float(r.get("fire_spread", 0.0)) + 0.07 * float(r.fires) * delta
+			if float(r["fire_spread"]) >= 1.0:
+				r["fire_spread"] = 0.0
+				for d in doors:
+					if not bool(d.open) or bool(d.airlock):
+						continue
+					var adj_id := int(d.room_b) if int(d.room_a) == int(r.id) else (int(d.room_a) if int(d.room_b) == int(r.id) else -1)
+					if adj_id >= 0 and room_by_id.has(adj_id):
+						var ar: Dictionary = room_by_id[adj_id]
+						if int(ar.fires) == 0 and float(ar.oxygen) > 15.0 and int(ar.breach) == 0:
+							ar.fires = 1
+							ar.fire_hp = 100.0
+							break
 
 
 func _step_crew(delta: float) -> void:
@@ -1411,25 +1481,39 @@ func _step_crew(delta: float) -> void:
 		var eff_player := _crew_effective_player(c)
 		var belongs_to_ship := (eff_player == is_player)
 		var r: Dictionary = room_by_id.get(int(c.room_id), {})
-		# Suffocation & fire damage
+		# Suffocation & fire damage (with Emergency Respirators O2_MASKS & Engi Med-bot Dispersal NANO_MEDBAY)
 		if not r.is_empty():
 			if float(r.oxygen) < 5.0 and not bool(c.no_o2):
-				c.hp -= 6.4 * delta
+				var suff_dps := 3.2 if (belongs_to_ship and has_augment("O2_MASKS")) else 6.4
+				c.hp -= suff_dps * delta
 			if int(r.fires) > 0 and not bool(c.fire_immune):
 				c.hp -= 4.5 * float(r.fires) * delta
 			# Medbay healing (blocked if medbay is actively hacked!)
-			if str(r.system) == "medbay" and belongs_to_ship:
-				var med_hacked := hacked_active and hacked_room == int(r.id)
-				var med_p := get_effective_system_power("medbay")
-				if med_p > 0 and not med_hacked:
+			var med_hacked := hacked_active and systems.has("medbay") and hacked_room == int(systems.medbay.room)
+			var med_p := get_effective_system_power("medbay")
+			if belongs_to_ship and med_p > 0 and not med_hacked:
+				if str(r.system) == "medbay":
 					c.hp = minf(float(c.max_hp), float(c.hp) + (6.4 * float(med_p)) * delta)
+				elif has_augment("NANO_MEDBAY"):
+					c.hp = minf(float(c.max_hp), float(c.hp) + 2.5 * delta)
 
-		# Movement along path (blocked if current or next room is Crystal-locked!)
+		# Movement along path (blocked by Crystal Lockdown OR closed Blast Doors for hostile intruders!)
 		if not c.path.is_empty():
 			var next_rid := int(c.path[0])
 			var cur_locked := float(r.get("lockdown_timer", 0.0)) > 0.0 if not r.is_empty() else false
 			var nxt_locked := float(room_by_id.get(next_rid, {}).get("lockdown_timer", 0.0)) > 0.0
-			if not cur_locked and not nxt_locked:
+			var door_blocked := false
+			if not belongs_to_ship and not cur_locked and not nxt_locked:
+				var didx := get_door_between(int(c.room_id), next_rid)
+				if didx >= 0 and not bool(doors[didx].open):
+					door_blocked = true
+					c.state = "fight"
+					doors[didx].hp = maxf(0.0, float(doors[didx].hp) - 16.0 * float(c.combat_mult) * delta)
+					if float(doors[didx].hp) <= 0.0:
+						doors[didx].open = true
+						doors[didx].hp = get_door_max_hp()
+						pending_sfx.append("doorOpen")
+			if not cur_locked and not nxt_locked and not door_blocked:
 				var dest := get_room_center_local(next_rid)
 				var delta_v: Vector2 = dest - c.pos
 				if delta_v.length() <= float(c.move_speed) * delta + 2.0:
@@ -1610,7 +1694,8 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 			if mcost > 0 and missiles < mcost:
 				continue
 			if mcost > 0:
-				missiles -= mcost
+				if not (has_augment("EXPLOSIVE_REPLICATOR") and randf() < 0.5):
+					missiles -= mcost
 			var fired_charges := maxi(1, int(w.get("charge_level", 1))) if max_charges > 1 else 1
 			w.charge = 0.0
 			w.charge_level = 0
@@ -1718,27 +1803,69 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 		d.angle = fmod(float(d.angle) + delta * 1.4, TAU)
 		d.cooldown = float(d.cooldown) - delta
 		var dtype := str(d.bp.get("type", "COMBAT"))
+		var did_str := str(d.id).to_upper()
 		if dtype == "COMBAT" and float(d.cooldown) <= 0.0 and enemy_ship.cloak_timer <= 0.0:
 			d.cooldown = 3.6
 			if not enemy_ship.rooms.is_empty():
 				var tr := int(enemy_ship.rooms[randi() % enemy_ship.rooms.size()].id)
-				var wbp: Dictionary = db.weapons.get("LASER_BURST_1", db.weapons.get("LASER_BURST_2", {})).duplicate()
-				wbp.shots = 1
-				wbp.damage = 1
-				pending_shots.append({
-					"from_ship": self,
-					"to_ship": enemy_ship,
-					"weapon": {"id": "DRONE_LASER", "bp": wbp, "mount_idx": 0},
-					"weapon_idx": -1,
-					"target_room": tr,
-				})
-				pending_sfx.append("lightLaser1")
-		elif dtype == "REPAIR" and float(d.cooldown) <= 0.0:
-			d.cooldown = 4.0
-			for sname in systems.keys():
-				if int(systems[sname].damage) > 0:
-					systems[sname].damage -= 1
+				if did_str.contains("BEAM"):
+					var bbp := {"id": "DRONE_BEAM", "type": "BEAM", "damage": 1, "sysDamage": 0, "persDamage": 0, "ion": 0, "shots": 1, "sp": 0, "fireChance": 1, "breachChance": 0, "stunChance": 0, "length": 75.0, "color": Color("ffaa33")}
+					var bs := enemy_ship.get_room_center_local(tr)
+					var be := bs + Vector2(65.0, 20.0).rotated(randf() * TAU)
+					var brs := enemy_ship.compute_beam_rooms(bs, be)
+					if brs.is_empty(): brs = [tr]
+					pending_shots.append({"from_ship": self, "to_ship": enemy_ship, "weapon": {"id": "DRONE_BEAM", "bp": bbp, "mount_idx": 0}, "weapon_idx": -1, "target_room": tr, "beam_start": bs, "beam_end": be, "beam_rooms": brs})
+					pending_sfx.append("beam1")
+				else:
+					var wbp: Dictionary = db.weapons.get("LASER_BURST_1", db.weapons.get("LASER_BURST_2", {})).duplicate()
+					wbp.shots = 1
+					wbp.damage = 1
+					pending_shots.append({
+						"from_ship": self, "to_ship": enemy_ship,
+						"weapon": {"id": "DRONE_LASER", "bp": wbp, "mount_idx": 0},
+						"weapon_idx": -1, "target_room": tr,
+					})
+					pending_sfx.append("lightLaser1")
+		elif dtype == "SHIELD" and float(d.cooldown) <= 0.0:
+			d.cooldown = 8.0
+			var cap := maxi(5, zoltan_shield_max)
+			if zoltan_shield < cap:
+				zoltan_shield += 1
+				pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "+1 OVERCHARGE SHIELD", "color": Color("7eff8b")})
+				pending_sfx.append("powerUpSystem")
+		elif dtype == "BOARDER" and not bool(d.get("deployed", false)) and enemy_ship.zoltan_shield <= 0 and not enemy_ship.rooms.is_empty():
+			d["deployed"] = true
+			var tr := int(enemy_ship.rooms[randi() % enemy_ship.rooms.size()].id)
+			enemy_ship.room_by_id[tr].breach = 1
+			enemy_ship.room_by_id[tr].breach_hp = 100.0
+			var bdrone := enemy_ship.add_crew("engi", tr, is_player, "Boarding Drone")
+			bdrone.max_hp = 150.0
+			bdrone.hp = 150.0
+			bdrone.no_o2 = true
+			bdrone.fire_immune = true
+			bdrone.combat_mult = 1.25
+			bdrone.color = Color("ff9f43")
+			pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_room_center_local(tr), "text": "BOARDING DRONE!", "color": Color("ff9f43")})
+			pending_sfx.append("hitHull2")
+		elif dtype == "BATTLE" and float(d.cooldown) <= 0.0:
+			d.cooldown = 2.0
+			for c in crew:
+				if _crew_effective_player(c) != is_player and float(c.hp) > 0.0:
+					c.hp -= 18.0
+					pending_popups.append({"ship": self, "pos_local": c.pos, "text": "AP DRONE -18", "color": Color("65e8ff")})
 					break
+		elif (dtype == "REPAIR" or dtype == "SHIP_REPAIR") and float(d.cooldown) <= 0.0:
+			d.cooldown = 4.0
+			if did_str.contains("HULL") or dtype == "SHIP_REPAIR":
+				if hull < max_hull:
+					hull = mini(max_hull, hull + 1)
+					pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "+1 HULL REPAIR", "color": Color("7eff8b")})
+					pending_sfx.append("upgradeSystem")
+			else:
+				for sname in systems.keys():
+					if int(systems[sname].damage) > 0:
+						systems[sname].damage -= 1
+						break
 
 
 func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
@@ -1985,6 +2112,8 @@ func apply_ion_damage(sname: String, amount: int) -> void:
 
 
 func has_living_crew() -> bool:
+	if is_unmanned:
+		return true
 	for c in crew:
 		if c.is_player == is_player and c.hp > 0.0:
 			return true

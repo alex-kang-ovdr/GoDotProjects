@@ -825,8 +825,9 @@ func _check_combat_outcome() -> void:
 		var dead_crew := not enemy_ship.has_living_crew() and enemy_ship.hull > 0
 		var was_boss := enemy_ship.is_boss
 		var prev_phase := enemy_ship.boss_phase
-		# Auto-recall surviving friendly boarders & detach hacking pod before clearing enemy_ship
+		# Auto-recall surviving friendly boarders, recover external drones (DRONE_RECOVERY) & detach hacking pod
 		var recalled := player_ship.retrieve_all_boarders(enemy_ship)
+		player_ship.recover_active_drones()
 		player_ship.clear_hacking(enemy_ship)
 		if recalled > 0:
 			_rebuild_crew_list()
@@ -865,6 +866,9 @@ func _check_combat_outcome() -> void:
 			scrap_gain *= 1.15
 		if player_ship.has_augment("SCRAP_COLLECTOR"):
 			scrap_gain *= 1.10
+		if player_ship.has_augment("REPAIR_ARM"):
+			scrap_gain *= 0.85
+			player_ship.hull = mini(player_ship.max_hull, player_ship.hull + 2)
 		var sg := int(round(scrap_gain))
 		var fuel_gain := randi_range(1, 3)
 		var msl_gain := randi_range(0, 2)
@@ -1604,6 +1608,8 @@ func _open_star_map() -> void:
 
 	var mc := FTLMapCanvas.new()
 	mc.sector_map = sector_map
+	mc.has_long_scanners = player_ship.has_augment("LONG_RANGED_SCANNERS")
+	mc.has_adv_ftl_nav = player_ship.has_augment("FTL_JUMPER")
 	mc.beacon_clicked.connect(_on_beacon_jump_requested)
 	modal_box.add_child(mc)
 
@@ -1619,7 +1625,8 @@ func _open_star_map() -> void:
 
 
 func _on_beacon_jump_requested(bid: int) -> void:
-	if not sector_map.can_jump_to(bid):
+	var adv_nav := player_ship.has_augment("FTL_JUMPER")
+	if not sector_map.can_jump_to(bid, adv_nav):
 		return
 	if player_ship.fuel <= 0:
 		_close_modal()
@@ -1627,6 +1634,7 @@ func _on_beacon_jump_requested(bid: int) -> void:
 		return
 	player_ship.fuel = maxi(0, player_ship.fuel - 1)
 	if in_combat:
+		player_ship.recover_active_drones()
 		player_ship.clear_hacking(enemy_ship)
 		selected_boarder_id = -1
 		special_target_mode = ""
@@ -1635,7 +1643,7 @@ func _on_beacon_jump_requested(bid: int) -> void:
 		battle_view.set_ships(player_ship, null)
 		audio.set_combat(false)
 
-	var b := sector_map.jump_to(bid)
+	var b := sector_map.jump_to(bid, adv_nav)
 	if b.is_empty():
 		return
 	player_ship.on_ftl_jump()

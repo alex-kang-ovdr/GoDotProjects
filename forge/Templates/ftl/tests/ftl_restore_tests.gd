@@ -299,6 +299,55 @@ func _run() -> void:
 			drone_surge_shots += 1
 	_check(drone_surge_shots >= 5, "Rebel Flagship Phase 2 fires 5-shot Drone Power Surge", "shots=%d" % drone_surge_shots)
 
+	# 8k. Blast Doors block intruders & break down, Shield Overcharger Drone, Augments (NANO_MEDBAY/SLUG_GEL/DRONE_RECOVERY) & Unmanned Auto-Scout
+	var door_ship := FTLShip.new()
+	door_ship.init_from_blueprint(db, "PLAYER_SHIP_HARD", true, 0)
+	door_ship.set_all_doors_open(false, true)
+	var d_start := int(door_ship.rooms[0].id)
+	var d_next := -1
+	for dd in door_ship.doors:
+		if not bool(dd.airlock) and (int(dd.room_a) == d_start or int(dd.room_b) == d_start):
+			d_next = int(dd.room_b) if int(dd.room_a) == d_start else int(dd.room_a)
+			dd.hp = 20.0
+			break
+	var intruder := door_ship.add_crew("mantis", d_start, false, "Raider")
+	door_ship.command_crew_to_room(intruder, d_next)
+	door_ship.step(0.4, null, false)
+	var blocked_initially := int(intruder.room_id) == d_start
+	for _bk in range(20):
+		door_ship.step(0.2, null, false)
+	var broke_through := int(intruder.room_id) == d_next
+	_check(blocked_initially and broke_through, "Closed Blast Doors block intruder until broken down")
+
+	door_ship.reactor_max += 4
+	door_ship.install_system("drones")
+	door_ship.systems.drones.level = 2
+	door_ship.add_system_power("drones")
+	door_ship.add_system_power("drones")
+	if door_ship.get_effective_system_power("medbay") <= 0:
+		door_ship.add_system_power("medbay")
+	door_ship.augments.append("SLUG_GEL")
+	door_ship.augments.append("NANO_MEDBAY")
+	door_ship.augments.append("DRONE_RECOVERY")
+	door_ship.rooms[0].breach = 1
+	door_ship.rooms[0].breach_hp = 5.0
+	door_ship.crew[0].hp = 50.0
+	door_ship.step(1.0, null, false)
+	var gel_ok := int(door_ship.rooms[0].breach) == 0
+	var nano_ok := float(door_ship.crew[0].hp) > 50.0
+	door_ship.drones.append({"id": "DRONE_SHIELD", "bp": {"type": "SHIELD", "power": 2}, "powered": true, "active": true, "angle": 0.0, "cooldown": 0.0, "hp": 1})
+	door_ship.step(0.2, boss2, true)
+	var ov_shield_ok := door_ship.zoltan_shield >= 1
+	var rec_parts := door_ship.recover_active_drones()
+	_check(gel_ok and nano_ok and ov_shield_ok and rec_parts >= 1,
+		"Augments (Slug Gel, Nano Medbay, Drone Recovery) & Shield Overcharger Drone work")
+
+	var auto_ship := FTLShip.new()
+	auto_ship.init_from_blueprint(db, "AUTO_BASIC", false, 1)
+	auto_ship.crew.clear()
+	auto_ship.is_unmanned = true
+	_check(auto_ship.has_living_crew(), "Unmanned Auto-Scout stays active with 0 crew")
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

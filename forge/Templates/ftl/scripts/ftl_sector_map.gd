@@ -228,14 +228,16 @@ func _reveal_neighbors(bid: int) -> void:
 		beacons[nb].explored = true
 
 
-func can_jump_to(bid: int) -> bool:
+func can_jump_to(bid: int, adv_ftl_nav: bool = false) -> bool:
 	if bid < 0 or bid >= beacons.size() or bid == current_beacon_id:
 		return false
+	if adv_ftl_nav and bool(beacons[bid].visited):
+		return true
 	return beacons[current_beacon_id].links.has(bid)
 
 
-func jump_to(bid: int) -> Dictionary:
-	if not can_jump_to(bid):
+func jump_to(bid: int, adv_ftl_nav: bool = false) -> Dictionary:
+	if not can_jump_to(bid, adv_ftl_nav):
 		return {}
 	current_beacon_id = bid
 	total_jumps += 1

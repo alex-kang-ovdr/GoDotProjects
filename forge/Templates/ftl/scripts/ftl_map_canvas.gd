@@ -5,6 +5,8 @@ extends Control
 
 var sector_map: FTLSectorMap
 var hover_beacon_id: int = -1
+var has_long_scanners: bool = false
+var has_adv_ftl_nav: bool = false
 var can_jump_now: bool = true
 
 signal beacon_clicked(beacon_id: int)
@@ -84,7 +86,7 @@ func _draw() -> void:
 		var pos: Vector2 = b.pos
 		var btype := str(b.type)
 		var is_cur := (bid == sector_map.current_beacon_id)
-		var reachable := sector_map.can_jump_to(bid)
+		var reachable := sector_map.can_jump_to(bid, has_adv_ftl_nav)
 
 		var col := Color("c8d8e8")
 		if bool(b.rebel):
@@ -114,6 +116,7 @@ func _draw() -> void:
 			elif btype == "distress": tag = "DISTRESS"
 			elif bool(b.rebel): tag = "REBEL"
 			elif not str(b.hazard).is_empty() and bool(b.explored): tag = str(b.hazard).to_upper()
+			elif has_long_scanners and bool(b.explored) and not bool(b.visited) and btype == "hostile": tag = "!SHIP"
 			if not tag.is_empty():
 				draw_string(font, pos + Vector2(-26, -11), tag, HORIZONTAL_ALIGNMENT_CENTER, 56, 11, col)
 			if is_cur:
