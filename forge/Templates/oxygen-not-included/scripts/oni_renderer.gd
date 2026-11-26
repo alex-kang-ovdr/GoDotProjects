@@ -10,6 +10,77 @@ var drag_start := Vector2i.ZERO
 var drag_end := Vector2i.ZERO
 var active_tool := "select"
 
+var _anim_time := 0.0
+var _fx_particles: Array[Dictionary] = []
+
+func tick_fx(delta: float) -> void:
+	_anim_time += delta
+	# 기존 파티클 수명/이동 갱신
+	var alive: Array[Dictionary] = []
+	for p: Dictionary in _fx_particles:
+		var life: float = float(p["life"]) - delta
+		if life <= 0.0:
+			continue
+		p["life"] = life
+		var pos: Vector2 = p["pos"]
+		var vel: Vector2 = p["vel"]
+		p["pos"] = pos + vel * delta
+		alive.append(p)
+	_fx_particles = alive
+
+	if world == null or _fx_particles.size() > 72:
+		return
+
+	var ts := float(OniWorld.TILE_SIZE)
+	# 대원 채굴/건설 작업 중 파편/스파크 파티클 방출
+	for dupe in world.duplicants:
+		if (dupe.state == "DIG" or dupe.state == "BUILD") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
+			if randf() < delta * 9.0:
+				var tx := (float(dupe.target_cell.x) + 0.5) * ts
+				var ty := (float(dupe.target_cell.y) + 0.5) * ts
+				spawn_fx(
+					Vector2(tx + randf_range(-6, 6), ty + randf_range(-6, 6)),
+					Vector2(randf_range(-28, 28), randf_range(-38, -8)),
+					0.55,
+					"dust" if dupe.state == "DIG" else "spark",
+					Color(1.0, 0.78, 0.32, 0.9) if dupe.state == "DIG" else Color(0.45, 0.94, 1.0, 0.9)
+				)
+
+	# 가동 중 산소 확산기 / 전해조 기포 이펙트
+	if randf() < delta * 6.0:
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var i := world.idx(x, y)
+				if world.machine_running[i] == 1 and (world.building[i] == "diffuser" or world.building[i] == "electrolyzer"):
+					if randf() < 0.35:
+						spawn_fx(
+							Vector2((float(x) + 0.5) * ts + randf_range(-8, 8), (float(y) + 0.3) * ts),
+							Vector2(randf_range(-8, 8), randf_range(-26, -12)),
+							0.9,
+							"bubble",
+							Color(0.55, 0.94, 1.0, 0.85)
+						)
+
+func spawn_fx(pos: Vector2, vel: Vector2, life: float, kind: String, col: Color) -> void:
+	if _fx_particles.size() > 90:
+		return
+	_fx_particles.append({
+		"pos": pos,
+		"vel": vel,
+		"life": life,
+		"max_life": life,
+		"kind": kind,
+		"color": col,
+	})
+
+func spawn_burst(cell: Vector2i, kind: String, col: Color) -> void:
+	var ts := float(OniWorld.TILE_SIZE)
+	var center := Vector2((float(cell.x) + 0.5) * ts, (float(cell.y) + 0.5) * ts)
+	for _k in range(7):
+		var ang := randf() * TAU
+		var spd := randf_range(18.0, 52.0)
+		spawn_fx(center, Vector2(cos(ang), sin(ang)) * spd, randf_range(0.35, 0.65), kind, col)
+
 func _draw() -> void:
 	if world == null:
 		return
@@ -21,25 +92,36 @@ func _draw() -> void:
 
 	var dim_world := overlay_mode == "gas" or overlay_mode == "pipe"
 
-	# 1) 지형, 액체, 기체 배경
+	# 1) 지형(원작 추출 Texture2D), 액체, 기체 배경
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var rect := Rect2(x * ts, y * ts, ts, ts)
+			var sol := world.solid_el[i]
 
 			if overlay_mode == "temp":
-				draw_rect(rect, _temp_color(world.temp_c[i]), true)
-				if not world.solid_el[i].is_empty():
-					draw_rect(rect, Color(0, 0, 0, 0.18), false, 1.0)
+				var tc := _temp_color(world.temp_c[i])
+				if not sol.is_empty():
+					var ttex := OniMedia.get_element_texture(sol)
+					if ttex != null:
+						draw_texture_rect(ttex, rect, false, tc.lerp(Color(1, 1, 1, 1), 0.15))
+					else:
+						draw_rect(rect, tc, true)
+					draw_rect(rect, Color(0, 0, 0, 0.22), false, 1.0)
+				else:
+					draw_rect(rect, tc, true)
 				continue
 
-			var sol := world.solid_el[i]
 			if not sol.is_empty():
-				var base_c: Color = OniElements.get_element_color(sol)
-				if dim_world:
-					base_c = base_c.darkened(0.65)
-				draw_rect(rect, base_c, true)
-				_draw_solid_pattern(rect, sol, x, y, dim_world)
+				var tex := OniMedia.get_element_texture(sol)
+				if tex != null:
+					var mod := Color(0.36, 0.40, 0.46, 1.0) if dim_world else Color(1.0, 1.0, 1.0, 1.0)
+					draw_texture_rect(tex, rect, false, mod)
+				else:
+					var base_c: Color = OniElements.get_element_color(sol)
+					if dim_world:
+						base_c = base_c.darkened(0.65)
+					draw_rect(rect, base_c, true)
 				draw_rect(rect, Color(0.04, 0.05, 0.07, 0.35), false, 1.0)
 			else:
 				var gel := world.gas_el[i]
@@ -64,9 +146,10 @@ func _draw() -> void:
 					var lrect := Rect2(x * ts, (y + 1) * ts - lh, ts, lh)
 					var lalpha := 0.38 if overlay_mode == "pipe" else 0.78
 					draw_rect(lrect, Color(0.16, 0.56, 0.88, lalpha), true)
-					draw_line(Vector2(x * ts, lrect.position.y), Vector2((x + 1) * ts, lrect.position.y), Color(0.55, 0.85, 1.0, lalpha), 1.5)
+					var wave := sin(_anim_time * 3.0 + float(x) * 0.9) * 1.2
+					draw_line(Vector2(x * ts, lrect.position.y + wave), Vector2((x + 1) * ts, lrect.position.y - wave), Color(0.62, 0.90, 1.0, lalpha), 1.6)
 
-	# 2) 건물 레이어
+	# 2) 건물 레이어 (원작 추출 타일 텍스처 + KAnim 기반 애니메이션 모션)
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
@@ -102,7 +185,10 @@ func _draw() -> void:
 	for dupe in world.duplicants:
 		_draw_duplicant(dupe, ts)
 
-	# 6) 호버 / 선택 / 드래그 프리뷰
+	# 6) 실시간 이펙트 파티클 (원작 FX 텍스처 + 발광 입자)
+	_draw_fx_particles()
+
+	# 7) 호버 / 선택 / 드래그 프리뷰
 	if world.in_bounds(selected_cell.x, selected_cell.y):
 		var srect := Rect2(selected_cell.x * ts, selected_cell.y * ts, ts, ts)
 		draw_rect(srect, Color(1.0, 0.95, 0.45, 0.95), false, 2.5)
@@ -121,6 +207,24 @@ func _draw() -> void:
 		draw_rect(drect, col, true)
 		draw_rect(drect, Color(col.r, col.g, col.b, 0.95), false, 2.0)
 
+func _draw_fx_particles() -> void:
+	var bubble_tex := OniMedia.get_fx_texture("liquid_surface_bubble_fx_0")
+	for p: Dictionary in _fx_particles:
+		var pos: Vector2 = p["pos"]
+		var ratio := clampf(float(p["life"]) / maxf(0.01, float(p["max_life"])), 0.0, 1.0)
+		var col: Color = p["color"]
+		var c := Color(col.r, col.g, col.b, col.a * ratio)
+		var kind := String(p["kind"])
+		if kind == "bubble" and bubble_tex != null:
+			var r := 6.0 + (1.0 - ratio) * 4.0
+			draw_circle(pos, r * 0.45, Color(c.r, c.g, c.b, c.a * 0.45))
+			draw_arc(pos, r * 0.45, 0.0, TAU, 10, c, 1.2)
+		elif kind == "burst":
+			var r := 4.0 + (1.0 - ratio) * 7.0
+			draw_arc(pos, r, 0.0, TAU, 12, c, 1.8)
+		else:
+			draw_circle(pos, 2.2 + ratio * 1.8, c)
+
 func _draw_conduit_layers(ts: int) -> void:
 	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 	var pipe_alpha := 1.0 if overlay_mode == "pipe" else 0.55
@@ -132,7 +236,6 @@ func _draw_conduit_layers(ts: int) -> void:
 			var cx := x * ts + ts * 0.5
 			var cy := y * ts + ts * 0.5
 
-			# 전선
 			if world.has_wire[i] == 1:
 				var wc := Color(0.96, 0.58, 0.22, 0.95 if overlay_mode == "pipe" else 0.80)
 				draw_circle(Vector2(cx, cy), 3.0, wc)
@@ -144,7 +247,6 @@ func _draw_conduit_layers(ts: int) -> void:
 						if world.has_wire[ni] == 1 or world.building[ni] in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "diffuser", "electrolyzer", "liquid_pump", "gas_pump", "research_station"]:
 							draw_line(Vector2(cx, cy), Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5), wc, 3.0)
 
-			# 액체관
 			if world.has_liquid_pipe[i] == 1:
 				var lpc := Color(0.24, 0.64, 0.98, pipe_alpha)
 				var offset := Vector2(-4, -4)
@@ -157,7 +259,6 @@ func _draw_conduit_layers(ts: int) -> void:
 				if world.lpipe_mass[i] > 0.1:
 					draw_circle(Vector2(cx, cy) + offset, 4.5, Color(0.55, 0.88, 1.0, 0.95))
 
-			# 기체관
 			if world.has_gas_pipe[i] == 1:
 				var gpc := Color(0.36, 0.90, 0.78, pipe_alpha)
 				var offset := Vector2(4, 4)
@@ -171,45 +272,36 @@ func _draw_conduit_layers(ts: int) -> void:
 					var pec: Color = OniElements.get_element_color(world.gpipe_el[i])
 					draw_circle(Vector2(cx, cy) + offset, 4.5, pec)
 
-func _draw_solid_pattern(rect: Rect2, sol: String, x: int, y: int, dim: bool) -> void:
-	var a := 0.14 if dim else 0.34
-	var p := rect.position
-	if sol == "Algae":
-		draw_circle(p + Vector2(10, 12), 4.0, Color(0.44, 0.84, 0.42, a))
-		draw_circle(p + Vector2(22, 20), 5.0, Color(0.16, 0.38, 0.20, a))
-	elif sol == "Cuprite":
-		draw_rect(Rect2(p + Vector2(6, 7), Vector2(8, 5)), Color(0.98, 0.66, 0.34, a), true)
-		draw_rect(Rect2(p + Vector2(18, 18), Vector2(7, 6)), Color(0.42, 0.22, 0.12, a), true)
-	elif sol == "Ice":
-		draw_line(p + Vector2(5, 22), p + Vector2(22, 5), Color(0.92, 0.98, 1.0, a + 0.12), 2.0)
-	elif sol == "Katairite":
-		draw_rect(rect.grow(-5), Color(0.62, 0.40, 0.82, a), false, 1.5)
-	elif sol == "Carbon":
-		draw_circle(p + Vector2(15, 16), 6.0, Color(0.08, 0.08, 0.10, a + 0.15))
-	elif (x + y) % 2 == 0:
-		draw_rect(Rect2(p + Vector2(6, 10), Vector2(12, 3)), Color(0, 0, 0, a * 0.6), true)
-
 func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 	var rect := Rect2(x * ts, y * ts, ts, ts)
 	var p := rect.position
 	var running := world.machine_running[i] == 1
+	var dim := overlay_mode == "gas" or overlay_mode == "pipe"
+	var mod := Color(0.52, 0.56, 0.62, 1.0) if dim else Color(1.0, 1.0, 1.0, 1.0)
+
 	match b:
 		"tile":
-			draw_rect(rect, Color(0.56, 0.60, 0.66, 1.0), true)
-			draw_rect(rect.grow(-2), Color(0.68, 0.72, 0.78, 1.0), false, 1.5)
-			draw_line(p + Vector2(3, ts * 0.5), p + Vector2(ts - 3, ts * 0.5), Color(0.42, 0.46, 0.52, 0.8), 1.5)
+			var btex := OniMedia.get_building_texture("tile")
+			if btex != null:
+				draw_texture_rect(btex, rect, false, mod)
+			else:
+				draw_rect(rect, Color(0.56, 0.60, 0.66, 1.0), true)
+			draw_rect(rect, Color(0.18, 0.22, 0.28, 0.45), false, 1.0)
 		"insulated_tile":
-			draw_rect(rect, Color(0.72, 0.62, 0.48, 1.0), true)
-			draw_rect(rect.grow(-3), Color(0.88, 0.78, 0.62, 1.0), false, 2.0)
-			draw_line(p + Vector2(4, 4), p + Vector2(ts - 4, ts - 4), Color(0.45, 0.36, 0.26, 0.75), 1.5)
+			var itex := OniMedia.get_building_texture("insulated_tile")
+			if itex != null:
+				draw_texture_rect(itex, rect, false, mod)
+			else:
+				draw_rect(rect, Color(0.72, 0.62, 0.48, 1.0), true)
+			draw_rect(rect, Color(0.32, 0.24, 0.38, 0.55), false, 1.0)
 		"farm_tile":
 			draw_rect(rect, Color(0.44, 0.34, 0.22, 1.0), true)
 			draw_rect(Rect2(p, Vector2(ts, 7)), Color(0.32, 0.68, 0.34, 1.0), true)
-			# 위쪽 칸에 끼니나무 줄기/잎 표시
 			var g := clampf(world.farm_growth[i], 0.08, 1.0)
 			var h := 22.0 * g
-			draw_line(p + Vector2(ts * 0.5, 0), p + Vector2(ts * 0.5, -h), Color(0.44, 0.86, 0.42, 1.0), 3.0)
-			draw_circle(p + Vector2(ts * 0.5, -h), 3.5 + 3.0 * g, Color(0.56, 0.94, 0.46, 1.0))
+			var sway := sin(_anim_time * 2.2 + float(x)) * 1.8
+			draw_line(p + Vector2(ts * 0.5, 0), p + Vector2(ts * 0.5 + sway, -h), Color(0.44, 0.86, 0.42, 1.0), 3.0)
+			draw_circle(p + Vector2(ts * 0.5 + sway, -h), 3.5 + 3.0 * g, Color(0.56, 0.94, 0.46, 1.0))
 		"ladder":
 			var lc := Color(0.78, 0.60, 0.34, 1.0)
 			draw_line(p + Vector2(7, 0), p + Vector2(7, ts), lc, 3.0)
@@ -217,13 +309,18 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 			for ry: int in [6, 14, 22, 29]:
 				draw_line(p + Vector2(7, ry), p + Vector2(ts - 7, ry), lc, 2.0)
 		"pod":
-			draw_rect(rect.grow(-1), Color(0.24, 0.34, 0.48, 0.92), true)
-			draw_rect(rect.grow(-3), Color(0.44, 0.86, 1.0, 0.75), false, 2.0)
-			draw_circle(p + Vector2(ts * 0.5, ts * 0.5), 5.0, Color(0.55, 0.94, 1.0, 0.85))
+			var pulse := 0.72 + 0.22 * sin(_anim_time * 2.6)
+			draw_rect(rect.grow(-1), Color(0.20, 0.30, 0.44, 0.92), true)
+			draw_rect(rect.grow(-3), Color(0.44, 0.86, 1.0, pulse), false, 2.0)
+			draw_circle(p + Vector2(ts * 0.5, ts * 0.5), 5.0 + pulse * 1.2, Color(0.55, 0.94, 1.0, pulse))
 		"diffuser":
 			draw_rect(Rect2(p + Vector2(4, 6), Vector2(ts - 8, ts - 6)), Color(0.24, 0.58, 0.48, 1.0), true)
 			draw_rect(Rect2(p + Vector2(4, 6), Vector2(ts - 8, ts - 6)), Color(0.50, 0.92, 0.78, 1.0), false, 1.5)
-			draw_circle(p + Vector2(ts * 0.5, 16), 6.0, Color(0.42, 0.95, 1.0, 1.0) if running else Color(0.25, 0.34, 0.36, 1.0))
+			var ang := _anim_time * 8.0 if running else 0.0
+			var c_center := p + Vector2(ts * 0.5, 16)
+			draw_circle(c_center, 6.0, Color(0.42, 0.95, 1.0, 1.0) if running else Color(0.25, 0.34, 0.36, 1.0))
+			if running:
+				draw_line(c_center - Vector2(cos(ang), sin(ang)) * 5.0, c_center + Vector2(cos(ang), sin(ang)) * 5.0, Color(0.10, 0.32, 0.38, 1.0), 2.0)
 		"electrolyzer":
 			draw_rect(Rect2(p + Vector2(3, 4), Vector2(ts - 6, ts - 4)), Color(0.20, 0.48, 0.72, 1.0), true)
 			draw_rect(Rect2(p + Vector2(3, 4), Vector2(ts - 6, ts - 4)), Color(0.56, 0.88, 1.0, 1.0), false, 1.5)
@@ -231,11 +328,15 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 			draw_circle(p + Vector2(21, 16), 4.0, Color(0.92, 0.50, 0.96, 1.0) if running else Color(0.34, 0.28, 0.38, 1.0))
 		"generator":
 			var c := Color(0.95, 0.78, 0.28, 1.0) if running else Color(0.68, 0.54, 0.26, 1.0)
-			draw_arc(p + Vector2(ts * 0.5, ts * 0.5), 11.0, 0.0, TAU, 18, c, 3.0)
-			draw_circle(p + Vector2(ts * 0.5, ts * 0.5), 3.0, c)
+			var g_center := p + Vector2(ts * 0.5, ts * 0.5)
+			draw_arc(g_center, 11.0, 0.0, TAU, 18, c, 3.0)
+			var spin := _anim_time * 9.0 if running else 0.0
+			draw_line(g_center, g_center + Vector2(cos(spin), sin(spin)) * 10.0, c, 2.0)
+			draw_circle(g_center, 3.0, c)
 		"coal_gen":
 			draw_rect(Rect2(p + Vector2(3, 6), Vector2(ts - 6, ts - 6)), Color(0.36, 0.30, 0.28, 1.0), true)
-			draw_rect(Rect2(p + Vector2(7, 12), Vector2(ts - 14, 10)), Color(1.0, 0.52, 0.16, 1.0) if running else Color(0.20, 0.18, 0.18, 1.0), true)
+			var glow := 0.8 + 0.2 * sin(_anim_time * 10.0) if running else 1.0
+			draw_rect(Rect2(p + Vector2(7, 12), Vector2(ts - 14, 10)), Color(1.0, 0.52 * glow, 0.16, 1.0) if running else Color(0.20, 0.18, 0.18, 1.0), true)
 		"hydrogen_gen":
 			draw_rect(Rect2(p + Vector2(3, 5), Vector2(ts - 6, ts - 5)), Color(0.48, 0.28, 0.58, 1.0), true)
 			draw_circle(p + Vector2(ts * 0.5, 16), 6.0, Color(0.96, 0.58, 1.0, 1.0) if running else Color(0.32, 0.22, 0.38, 1.0))
@@ -269,8 +370,9 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 			draw_line(p + Vector2(5, 14), p + Vector2(ts - 5, 14), Color(0.74, 0.78, 0.84, 1.0), 2.0)
 
 func _draw_duplicant(dupe: OniDuplicant, ts: int) -> void:
+	var bob := sin(_anim_time * 9.0 + float(dupe.id) * 2.1) * (1.8 if dupe.state == "MOVE" else 0.4)
 	var px := dupe.pos.x * ts + ts * 0.5
-	var py := dupe.pos.y * ts + ts * 0.5
+	var py := dupe.pos.y * ts + ts * 0.5 + bob
 
 	draw_rect(Rect2(px - 6, py - 2, 12, 13), dupe.suit_color, true)
 	draw_circle(Vector2(px, py - 8), 7.5, Color(0.96, 0.88, 0.78, 1.0))
@@ -281,8 +383,10 @@ func _draw_duplicant(dupe: OniDuplicant, ts: int) -> void:
 	if (dupe.state == "DIG" or dupe.state == "BUILD") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 		var tx := dupe.target_cell.x * ts + ts * 0.5
 		var ty := dupe.target_cell.y * ts + ts * 0.5
-		var beam_c := Color(1.0, 0.72, 0.25, 0.85) if dupe.state == "DIG" else Color(0.35, 0.92, 1.0, 0.85)
-		draw_line(Vector2(px, py - 2), Vector2(tx, ty), beam_c, 2.2)
+		var pulse := 0.65 + 0.35 * sin(_anim_time * 24.0)
+		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else Color(0.35, 0.92, 1.0, pulse)
+		draw_line(Vector2(px, py - 2), Vector2(tx, ty), beam_c, 2.8)
+		draw_circle(Vector2(tx, ty), 4.0 * pulse, beam_c)
 
 	if dupe.breath < 85.0:
 		var bw := 18.0 * clampf(dupe.breath / 100.0, 0.0, 1.0)

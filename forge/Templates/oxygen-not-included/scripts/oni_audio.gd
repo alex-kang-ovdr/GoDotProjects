@@ -1,26 +1,49 @@
 extends Node
 class_name OniAudio
 
+# 원작 FMOD FSB5에서 추출한 실제 PCM16 AudioStreamWAV 우선 재생 + 절차형 합성음 폴백
+
 var muted := false
-var _player: AudioStreamPlayer
+var _wav_players: Array[AudioStreamPlayer] = []
+var _wav_cursor := 0
+var _synth_player: AudioStreamPlayer
 var _playback: AudioStreamGeneratorPlayback
 var _sample_rate := 22050.0
 
 func _ready() -> void:
-	_player = AudioStreamPlayer.new()
+	OniMedia.ensure_loaded()
+	for _i in range(4):
+		var p := AudioStreamPlayer.new()
+		p.volume_db = -8.0
+		add_child(p)
+		_wav_players.append(p)
+
+	_synth_player = AudioStreamPlayer.new()
 	var gen := AudioStreamGenerator.new()
 	gen.mix_rate = _sample_rate
 	gen.buffer_length = 0.25
-	_player.stream = gen
-	_player.volume_db = -14.0
-	add_child(_player)
-	_player.play()
-	_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
+	_synth_player.stream = gen
+	_synth_player.volume_db = -14.0
+	add_child(_synth_player)
+	_synth_player.play()
+	_playback = _synth_player.get_stream_playback() as AudioStreamGeneratorPlayback
+
+func _play_extracted(key: String, fallback_freq: float, fallback_dur := 0.07) -> void:
+	if muted:
+		return
+	var stream := OniMedia.get_sfx_stream(key)
+	if stream != null and not _wav_players.is_empty():
+		var p: AudioStreamPlayer = _wav_players[_wav_cursor]
+		_wav_cursor = (_wav_cursor + 1) % _wav_players.size()
+		p.stream = stream
+		p.play()
+		return
+	play_tone(fallback_freq, fallback_dur, 0.20)
 
 func play_tone(freq: float, duration := 0.07, gain := 0.22) -> void:
 	if muted or _playback == null:
 		return
-	var frames := int(min(float(_playback.get_frames_available()), _sample_rate * duration))
+	var frames := int(minf(float(_playback.get_frames_available()), _sample_rate * duration))
 	if frames <= 0:
 		return
 	var phase := 0.0
@@ -32,10 +55,19 @@ func play_tone(freq: float, duration := 0.07, gain := 0.22) -> void:
 		phase += step
 
 func play_click() -> void:
-	play_tone(520.0, 0.04, 0.16)
+	_play_extracted("click", 520.0, 0.04)
+
+func play_drag() -> void:
+	_play_extracted("drag", 460.0, 0.03)
+
+func play_place() -> void:
+	_play_extracted("place", 580.0, 0.06)
+
+func play_toggle() -> void:
+	_play_extracted("toggle", 600.0, 0.05)
 
 func play_dig_done() -> void:
-	play_tone(290.0, 0.07, 0.22)
+	_play_extracted("dig_done", 290.0, 0.07)
 
 func play_build_done() -> void:
-	play_tone(640.0, 0.09, 0.20)
+	_play_extracted("build_done", 640.0, 0.09)

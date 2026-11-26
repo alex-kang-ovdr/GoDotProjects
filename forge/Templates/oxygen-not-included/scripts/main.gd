@@ -43,6 +43,7 @@ const CAT_TOOLS := {
 
 func _ready() -> void:
 	_install_ui_font()
+	OniMedia.ensure_loaded()
 
 	audio = OniAudio.new()
 	add_child(audio)
@@ -453,6 +454,9 @@ func _process(delta: float) -> void:
 	if not paused:
 		var sim_dt := minf(delta, 0.05) * speed_mult
 		world.step(sim_dt)
+		renderer.tick_fx(sim_dt)
+	else:
+		renderer.tick_fx(delta * 0.25)
 	if world.unlocked_techs.size() != prev_unlocked:
 		_rebuild_tool_buttons()
 		if _research_panel.visible:
@@ -554,11 +558,13 @@ func _apply_drag(c0: Vector2i, c1: Vector2i) -> void:
 			elif active_tool != "select":
 				world.order_build(x, y, active_tool)
 
-func _on_dig_completed(_cell: Vector2i, _el: String, _gained: float) -> void:
+func _on_dig_completed(cell: Vector2i, _el: String, _gained: float) -> void:
 	audio.play_dig_done()
+	renderer.spawn_burst(cell, "dust", Color(1.0, 0.78, 0.34, 0.95))
 
-func _on_build_completed(_cell: Vector2i, _b_id: String) -> void:
+func _on_build_completed(cell: Vector2i, _b_id: String) -> void:
 	audio.play_build_done()
+	renderer.spawn_burst(cell, "burst", Color(0.45, 0.94, 1.0, 0.95))
 
 func _refresh_hud() -> void:
 	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)
@@ -571,12 +577,12 @@ func _refresh_hud() -> void:
 		var td := OniElements.get_tech(world.active_tech)
 		tech_str = "%s %.0f/%.0f" % [String(td.get("name_ko", world.active_tech)), float(world.tech_progress.get(world.active_tech, 0.0)), float(td.get("cost_basic", 10.0))]
 
-	_res_info_lbl.text = "%s | 사암 %.0f · 구리 %.0f · 조류 %.0f · 흙 %.0fkg | 식량 %.0fkcal | 연구: %s" % [
+	_res_info_lbl.text = "%s | %s | 사암 %.0f · 구리 %.0f · 조류 %.0f | 식량 %.0fkcal | 연구: %s" % [
 		OniElements.get_counts_summary(),
+		OniMedia.get_media_summary(),
 		float(world.inventory.get("SandStone", 0.0)),
 		float(world.inventory.get("Cuprite", 0.0)),
 		float(world.inventory.get("Algae", 0.0)),
-		float(world.inventory.get("Dirt", 0.0)),
 		world.food_kcal,
 		tech_str,
 	]

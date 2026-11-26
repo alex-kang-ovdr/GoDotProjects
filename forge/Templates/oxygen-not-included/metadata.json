@@ -1,7 +1,7 @@
 {
   "id": "oxygen-not-included",
   "name": "숨 · Oxygen Not Included",
-  "description": "2D underground colony survival simulator in Godot 4.7 powered by reverse-engineered ONI data (196 elements, 13 biomes, sandstoneBase layout, 97-node tech tree, 21 localized buildings) with 0.2s gas ticks, conduits, phase change, and BFS duplicants.",
+  "description": "2D underground colony survival simulator in Godot 4.7 powered by reverse-engineered ONI data (196 elements, 13 biomes, sandstoneBase, 97-node tech tree, 32 extracted ONI textures, 15 KAnim meshes, 8 FMOD banks with real PCM16 SFX).",
   "dimension": "2d",
   "assetPaths": [
     "assets/icon.svg",
@@ -10,14 +10,23 @@
     "data/biomes_worldgen_extracted.txt",
     "data/tech_tree_extracted.txt",
     "data/buildings_extracted.txt",
-    "data/extraction_manifest.txt"
+    "data/extraction_manifest.txt",
+    "data/textures_extracted.txt",
+    "data/kanim_meshes_extracted.txt",
+    "data/rendering_fx_extracted.txt",
+    "data/audio_extracted.txt"
   ],
   "guideOrder": [
     "data/elements_extracted.txt",
     "data/biomes_worldgen_extracted.txt",
     "data/tech_tree_extracted.txt",
     "data/buildings_extracted.txt",
+    "data/textures_extracted.txt",
+    "data/kanim_meshes_extracted.txt",
+    "data/rendering_fx_extracted.txt",
+    "data/audio_extracted.txt",
     "scripts/oni_elements.gd",
+    "scripts/oni_media.gd",
     "scripts/oni_world.gd",
     "scripts/oni_duplicant.gd",
     "scripts/oni_renderer.gd",
