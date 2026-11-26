@@ -31,6 +31,15 @@ func _run() -> void:
 	_check(db.load_from_path("res://data/dst_tuning.json"), "DB_LOAD", "dst_tuning.json 로드")
 	_check(db.foods_by_id.has("meatballs") and db.foods_by_id.has("perogies"), "DB_FOODS", "핵심 요리 존재")
 
+	# 원작 추출 에셋(KTEX 타일 8 + 초상화 6 + 아이콘 32 + KAnim 21 + FSB5 SFX 10 + 셰이더 70) 검증
+	DSTMedia.ensure_loaded()
+	_check(DSTMedia.terrain_tiles.size() >= 8, "MEDIA_TILES", "tiles=%d" % DSTMedia.terrain_tiles.size())
+	_check(DSTMedia.portraits.size() >= 6, "MEDIA_PORTRAITS", "portraits=%d" % DSTMedia.portraits.size())
+	_check(DSTMedia.icons.size() >= 32, "MEDIA_ICONS", "icons=%d" % DSTMedia.icons.size())
+	_check(DSTMedia.kanim_sprites.size() >= 21, "MEDIA_KANIM", "kanim=%d" % DSTMedia.kanim_sprites.size())
+	_check(DSTMedia.sfx_streams.size() >= 10, "MEDIA_SFX", "sfx=%d" % DSTMedia.sfx_streams.size())
+	_check(DSTMedia.shader_count == 70, "MEDIA_SHADERS", "shaders=%d" % DSTMedia.shader_count)
+
 	# QA-01: DST 다중 방어구 공식 (투구 80% + 갑옷 80% 동시 착용, 물리 100 피격)
 	var armors_qa01: Array = [
 		{"id": "footballhat", "absorption": 0.80, "durability": 315.0, "planar_defense": 0.0},

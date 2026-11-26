@@ -20,6 +20,7 @@ var tex_cache: Dictionary = {}
 
 func setup(world_sim: DSTWorldSim) -> void:
 	sim = world_sim
+	DSTMedia.ensure_loaded()
 	_build_environment()
 	_build_ground()
 	_build_player_visual()
@@ -51,24 +52,40 @@ func _build_environment() -> void:
 
 
 func _build_ground() -> void:
-	# 바이옴 컬러를 담은 절차적 타일 지면 텍스처 생성 (초원/숲/사바나/암석/달섬/바다)
+	# 원작 KTEX 추출 지형 타일 텍스처를 바이옴별로 타일링 합성 (미존재 시 절차적 색상 폴백)
 	var img_size: int = 256
 	var img: Image = Image.create(img_size, img_size, false, Image.FORMAT_RGBA8)
+	var biome_tile_map: Dictionary = {
+		"grass": DSTMedia.terrain_images.get("grass", null),
+		"forest": DSTMedia.terrain_images.get("forest", null),
+		"savanna": DSTMedia.terrain_images.get("yellowgrass", null),
+		"rocky": DSTMedia.terrain_images.get("rocky", null),
+		"moon_island": DSTMedia.terrain_images.get("meteor", null),
+		"ocean": DSTMedia.terrain_images.get("ocean_ice", null),
+	}
 	for py in range(img_size):
 		for px in range(img_size):
 			var wx: float = ((float(px) / float(img_size)) - 0.5) * 140.0
 			var wz: float = ((float(py) / float(img_size)) - 0.5) * 140.0
 			var b: String = sim.get_biome_at(Vector2(wx, wz))
-			var n: float = sin(wx * 0.45) * cos(wz * 0.45) * 0.04
+			var tile_im: Image = biome_tile_map.get(b, null)
 			var col: Color
-			match b:
-				"ocean": col = Color(0.11, 0.25, 0.34, 1.0)
-				"moon_island": col = Color(0.62, 0.70, 0.72, 1.0)
-				"rocky": col = Color(0.45, 0.43, 0.39, 1.0)
-				"forest": col = Color(0.18, 0.28, 0.16, 1.0)
-				"savanna": col = Color(0.60, 0.49, 0.25, 1.0)
-				_: col = Color(0.32, 0.44, 0.21, 1.0)
-			col = Color(clamp(col.r + n, 0.0, 1.0), clamp(col.g + n, 0.0, 1.0), clamp(col.b + n, 0.0, 1.0), 1.0)
+			if tile_im != null:
+				var tw: int = tile_im.get_width()
+				var th: int = tile_im.get_height()
+				col = tile_im.get_pixel((px * 4) % tw, (py * 4) % th)
+				if b == "ocean":
+					col = col.lerp(Color(0.09, 0.24, 0.36, 1.0), 0.72)
+			else:
+				var n: float = sin(wx * 0.45) * cos(wz * 0.45) * 0.04
+				match b:
+					"ocean": col = Color(0.11, 0.25, 0.34, 1.0)
+					"moon_island": col = Color(0.62, 0.70, 0.72, 1.0)
+					"rocky": col = Color(0.45, 0.43, 0.39, 1.0)
+					"forest": col = Color(0.18, 0.28, 0.16, 1.0)
+					"savanna": col = Color(0.60, 0.49, 0.25, 1.0)
+					_: col = Color(0.32, 0.44, 0.21, 1.0)
+				col = Color(clamp(col.r + n, 0.0, 1.0), clamp(col.g + n, 0.0, 1.0), clamp(col.b + n, 0.0, 1.0), 1.0)
 			img.set_pixel(px, py, col)
 
 	var tex: ImageTexture = ImageTexture.create_from_image(img)
@@ -112,6 +129,9 @@ func _make_billboard(tex: Texture2D, height_m: float) -> Sprite3D:
 
 
 func _get_sprite_tex(kind: String, primary: Color) -> Texture2D:
+	var kanim_tex: Texture2D = DSTMedia.get_kanim_texture(kind)
+	if kanim_tex != null:
+		return kanim_tex
 	var key: String = "%s_%s" % [kind, primary.to_html(false)]
 	if tex_cache.has(key):
 		return tex_cache[key]
@@ -187,9 +207,14 @@ func sync_visuals(_dt: float) -> void:
 	env_node.environment.ambient_light_color = amb_col
 	sun_light.light_energy = sun_e
 
-	# 2. 플레이어 위치 및 외형
+	# 2. 플레이어 위치 및 외형 (원작 KAnim 캐릭터 6인 + 유령 스프라이트 우선)
 	var ccol: Color = Color.from_string(str(sim.db.data["characters"][sim.character_id]["color"]), Color(0.84, 0.27, 0.23))
-	player_sprite.texture = _get_sprite_tex("ghost" if sim.is_ghost else "player", Color(0.75, 0.92, 0.98) if sim.is_ghost else ccol)
+	var pkey: String = "ghost" if sim.is_ghost else sim.character_id
+	var ptex: Texture2D = _get_sprite_tex(pkey, Color(0.75, 0.92, 0.98) if sim.is_ghost else ccol)
+	if player_sprite.texture != ptex:
+		player_sprite.texture = ptex
+		player_sprite.pixel_size = 2.6 / float(max(1, ptex.get_height()))
+		player_sprite.offset = Vector2(0.0, float(ptex.get_height()) * 0.48)
 	var atk_bump: float = 0.25 if sim.attack_anim_timer > 0.0 else 0.0
 	player_sprite.position = Vector3(sim.player_pos.x, atk_bump, sim.player_pos.y)
 	player_ring.position = Vector3(sim.player_pos.x, 0.04, sim.player_pos.y)
@@ -233,7 +258,7 @@ func sync_visuals(_dt: float) -> void:
 	, false)
 
 	_sync_array(sim.farm_plots, farm_nodes, func(_fp: Dictionary) -> Sprite3D:
-		return _make_billboard(_get_sprite_tex("farm", Color(0.48, 0.34, 0.18)), 1.6)
+		return _make_billboard(_get_sprite_tex("farm_plot", Color(0.48, 0.34, 0.18)), 1.9)
 	, false)
 
 	_sync_array(sim.creatures, creature_nodes, func(c: Dictionary) -> Sprite3D:

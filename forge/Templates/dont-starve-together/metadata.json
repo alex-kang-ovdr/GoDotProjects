@@ -5,10 +5,16 @@
   "dimension": "3d",
   "assetPaths": [
     "assets/icon.svg",
-    "data/dst_tuning.json"
+    "data/dst_tuning.json",
+    "data/extraction_manifest.json",
+    "data/dst_textures_extracted.txt",
+    "data/dst_kanim_sprites_extracted.txt",
+    "data/dst_audio_extracted.txt",
+    "data/dst_shaders_extracted.txt"
   ],
   "guideOrder": [
     "data/dst_tuning.json",
+    "scripts/dst_media.gd",
     "scripts/dst_database.gd",
     "scripts/dst_world_sim.gd",
     "scripts/dst_camera.gd",

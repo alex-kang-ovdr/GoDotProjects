@@ -25,12 +25,17 @@ test('DST Godot template exposes valid PlayForge metadata and ready/guided proje
 
   const ready = store.createProject({ name: 'DST Ready', template: 'dont-starve-together', mode: 'ready' });
   assert.match(ready.files['scenes/main.tscn'], /type="Node3D"/);
+  assert.ok(ready.files['scripts/dst_media.gd']);
   assert.ok(ready.files['scripts/dst_database.gd']);
   assert.ok(ready.files['scripts/dst_world_sim.gd']);
   assert.ok(ready.files['scripts/dst_camera.gd']);
   assert.ok(ready.files['scripts/dst_renderer.gd']);
   assert.ok(ready.files['scripts/dst_hud.gd']);
   assert.ok(ready.files['scripts/main.gd']);
+  assert.ok(ready.files['data/dst_textures_extracted.txt']);
+  assert.ok(ready.files['data/dst_kanim_sprites_extracted.txt']);
+  assert.ok(ready.files['data/dst_audio_extracted.txt']);
+  assert.ok(ready.files['data/dst_shaders_extracted.txt']);
 
   const guided = store.createProject({ name: 'DST Guided', template: 'dont-starve-together', mode: 'guided' });
   assert.match(guided.files['scenes/main.tscn'], /Node3D/);

@@ -8,6 +8,7 @@ extends CanvasLayer
 
 var sim: DSTWorldSim
 var clock_panel: Control
+var portrait_rect: TextureRect
 var stats_label: Label
 var inv_label: Label
 var log_label: Label
@@ -77,11 +78,16 @@ func _build_ui() -> void:
 		var btn: Button = Button.new()
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.text = str(r["name"])
+		var ic: Texture2D = DSTMedia.get_icon_texture(rid)
+		if ic != null:
+			btn.icon = ic
+			btn.expand_icon = true
+			btn.custom_minimum_size = Vector2(214, 30)
 		btn.pressed.connect(func() -> void: action_callback.call("craft", rid))
 		recipe_box.add_child(btn)
 		recipe_buttons[rid] = btn
 
-	# 2. 우측 상단 시계 + 생존 배지 패널
+	# 2. 우측 상단 시계 + 원작 캐릭터 초상화 + 생존 배지 패널
 	var right_panel: PanelContainer = PanelContainer.new()
 	right_panel.anchor_left = 1.0
 	right_panel.anchor_right = 1.0
@@ -94,11 +100,20 @@ func _build_ui() -> void:
 	var rbox: VBoxContainer = VBoxContainer.new()
 	right_panel.add_child(rbox)
 
+	var top_row: HBoxContainer = HBoxContainer.new()
+	rbox.add_child(top_row)
+
 	var cw: ClockWidget = ClockWidget.new()
 	cw.sim = sim
 	cw.custom_minimum_size = Vector2(130, 130)
-	rbox.add_child(cw)
+	top_row.add_child(cw)
 	clock_panel = cw
+
+	portrait_rect = TextureRect.new()
+	portrait_rect.custom_minimum_size = Vector2(96, 96)
+	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	top_row.add_child(portrait_rect)
 
 	stats_label = Label.new()
 	stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -166,6 +181,10 @@ func refresh() -> void:
 		return
 	if clock_panel != null:
 		clock_panel.queue_redraw()
+	if portrait_rect != null:
+		var ptex: Texture2D = DSTMedia.get_portrait_texture(sim.character_id)
+		if ptex != null and portrait_rect.texture != ptex:
+			portrait_rect.texture = ptex
 
 	var smode_txt: String = "달 계몽(LUNACY)" if sim.sanity_mode == 1 else "정신력(INSANITY)"
 	var sstate_txt: String = "계몽!" if sim.is_enlightened() else ("광기!" if sim.is_insane() else "정상")

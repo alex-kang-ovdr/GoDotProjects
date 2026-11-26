@@ -1,0 +1,23 @@
+{
+  "extracted_at": "2026-11-26T14:03:58.159058+00:00",
+  "source_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Don't Starve Together",
+  "source_version": "763928",
+  "counts": {
+    "terrain_tiles": 8,
+    "portraits": 6,
+    "inventory_icons_embedded": 32,
+    "inventory_atlas_elements_total": 3072,
+    "kanim_sprites_composited": 21,
+    "fmod_banks": 155,
+    "fmod_samples_total": 20891,
+    "fmod_pcm16_samples": 2568,
+    "sfx_embedded": 10,
+    "shaders_total": 70
+  },
+  "bundle_bytes": {
+    "dst_textures_extracted.txt": 430893,
+    "dst_kanim_sprites_extracted.txt": 348684,
+    "dst_audio_extracted.txt": 204649,
+    "dst_shaders_extracted.txt": 27686
+  }
+}
