@@ -6,6 +6,7 @@ signal hover_cell(cell: Vector2i)
 signal hover_exited
 
 const GRID_SIZE := Vector2i(16, 10)
+const AssetLoader := preload("res://sim/asset_loader.gd")
 const INK := Color("#09141d")
 const GRID := Color("#1b303d")
 const STEEL := Color("#527080")
@@ -200,6 +201,27 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 		color = Color("#302a34")
 	draw_rect(rect, Color("#172731"), true)
 	draw_rect(rect, color.darkened(0.54), true)
+	var orig_tex: Texture2D = AssetLoader.get_part_texture(id, "cutaway")
+	if orig_tex != null:
+		var rot_q: int = posmod(int(part.get("rotation", 0)), 4)
+		var base_sz := Vector2(rect.size.y, rect.size.x) if (rot_q % 2 == 1) else rect.size
+		var mirror_x := -1.0 if _is_mirrored_battle() else 1.0
+		var tint_tex := Color(0.42, 0.36, 0.42, 0.85) if dead else Color.WHITE
+		draw_set_transform(rect.get_center(), float(rot_q) * PI * 0.5 * mirror_x, Vector2(mirror_x, 1.0))
+		draw_texture_rect(orig_tex, Rect2(-base_sz * 0.5, base_sz), false, tint_tex)
+		draw_set_transform(Vector2.ZERO)
+		draw_rect(rect, color.darkened(0.15), false, maxf(1.0, cell_size.x * 0.035))
+		if dead:
+			draw_line(rect.position + Vector2(4, 4), rect.end - Vector2(4, 4), RED, maxf(1.5, minf(cell_size.x, cell_size.y) * 0.05))
+			draw_line(Vector2(rect.end.x - 4, rect.position.y + 4), Vector2(rect.position.x + 4, rect.end.y - 4), RED, maxf(1.5, minf(cell_size.x, cell_size.y) * 0.05))
+		elif part.get("thermal_trip", false):
+			draw_rect(rect.grow(-2), RED, false, 2)
+		if not dead and float(part.get("fire", 0.0)) > 0.05:
+			var f := float(part.get("fire", 0.0))
+			var inset_f := minf(cell_size.x, cell_size.y)
+			draw_circle(rect.get_center(), inset_f * (0.22 + 0.14 * f), Color("#ff6a2b", 0.65 * f))
+			draw_circle(rect.get_center(), inset_f * 0.14, Color("#ffe066", 0.9 * f))
+		return
 	draw_rect(rect, color.darkened(0.2), false, maxf(1.0, cell_size.x * 0.035))
 	var center := rect.get_center()
 	var inset := minf(cell_size.x, cell_size.y)

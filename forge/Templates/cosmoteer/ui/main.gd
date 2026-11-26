@@ -1,6 +1,7 @@
 extends Control
 
 const Simulation = preload("res://sim/power_range.gd")
+const AssetLoader = preload("res://sim/asset_loader.gd")
 const RangeView = preload("res://ui/range_view.gd")
 const CatalogView = preload("res://ui/catalog.gd")
 const ShipyardView = preload("res://ui/shipyard.gd")
@@ -16,6 +17,7 @@ const EVENT_NAMES := {"pickup":"반응로에서 전력 수령", "delivery":"레�
 	"shot":"레이저 발사", "hit":"표적 명중", "destroyed":"장갑 파괴"}
 
 var sim = Simulation.new()
+var asset_loader
 var running := false
 var speed := 1
 var stage: VBoxContainer
@@ -57,6 +59,9 @@ func _load_ui_font() -> Font:
 	return chosen
 
 func _ready() -> void:
+	asset_loader = AssetLoader.new()
+	add_child(asset_loader)
+	asset_loader.assets_ready.connect(_on_assets_ready)
 	var face := _load_ui_font()
 	theme = Theme.new()
 	theme.default_font = face
@@ -105,6 +110,14 @@ func _ready() -> void:
 	_show_tab(shipyard)
 	if sim.load_error.is_empty():
 		_refresh()
+
+
+func _on_assets_ready(_count: int) -> void:
+	if shipyard != null:
+		if shipyard.grid != null:
+			shipyard.grid.queue_redraw()
+		if shipyard.duel != null and shipyard.duel.flight_view != null:
+			shipyard.duel.flight_view.queue_redraw()
 
 func _build_range(face: Font) -> void:
 	var heading := HBoxContainer.new()

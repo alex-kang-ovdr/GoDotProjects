@@ -5,6 +5,7 @@ extends Control
 signal target_selected(uid: int)
 
 const SPACE := Color("#07101b")
+const AssetLoader := preload("res://sim/asset_loader.gd")
 const GRID := Color("#173143")
 const AXIS := Color("#25455a")
 const TEXT := Color("#c5d9e1")
@@ -161,11 +162,22 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			if dot.is_finite() and dot.x >= -3.0 and dot.y >= -3.0 and dot.x <= size.x + 3.0 and dot.y <= size.y + 3.0:
 				draw_circle(dot, 1.3, color)
 			continue
-		draw_colored_polygon(quad, color.darkened(0.56))
+		var orig_tex: Texture2D = AssetLoader.get_part_texture(id, "roof")
 		var border := PackedVector2Array(quad)
 		border.append(quad[0])
-		draw_polyline(border, color.darkened(0.08), 1.4, true)
-		_draw_part_icon(ship, part, quad, color, zoom)
+		if orig_tex != null:
+			var rot_q: int = posmod(int(part.get("rotation", 0)), 4)
+			var base_uv := [Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
+			var uvs := PackedVector2Array()
+			for k in 4:
+				uvs.append(base_uv[posmod(k - rot_q, 4)])
+			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else Color.WHITE
+			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
+			draw_polyline(border, Color(color, 0.45), 1.0, true)
+		else:
+			draw_colored_polygon(quad, color.darkened(0.56))
+			draw_polyline(border, color.darkened(0.08), 1.4, true)
+			_draw_part_icon(ship, part, quad, color, zoom)
 		_draw_hp_bar(quad, float(part.hp), float(part.max_hp))
 		if not dead and part.get("thermal_trip",false):
 			draw_polyline(border,ENEMY,2.0,true)

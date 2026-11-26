@@ -10,9 +10,11 @@
     "data/catalog.json",
     "data/operations.json",
     "data/rule_graph.json",
-    "data/logic_trace.json"
+    "data/logic_trace.json",
+    "data/asset_index.json"
   ],
   "guideOrder": [
+    "sim/asset_loader.gd",
     "sim/engine_room.gd",
     "sim/combat_systems.gd",
     "sim/sfx.gd",

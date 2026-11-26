@@ -2,5 +2,6 @@
 __pycache__/
 /analysis/bin/
 /analysis/obj/
+/extracted_assets/
 /tests/results/*
 !/tests/results/.gdignore

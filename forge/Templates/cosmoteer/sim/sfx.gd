@@ -4,6 +4,7 @@ extends Node
 ## Zero external audio assets; safe under both WebAssembly and --headless test runners.
 
 const SAMPLE_RATE := 22050
+const AssetLoader := preload("res://sim/asset_loader.gd")
 const POOL_SIZE := 6
 const KINDS := [
 	"shot_laser",
@@ -55,6 +56,11 @@ func build_streams() -> void:
 	streams["intercept"] = _make_sweep(0.06, 1760.0, 920.0, 0.24, false)
 	streams["fire_ignite"] = _make_sweep(0.16, 420.0, 260.0, 0.26, true)
 	streams["destroyed"] = _make_sweep(0.32, 160.0, 38.0, 0.48, true)
+	if AssetLoader.instance != null:
+		for k in KINDS:
+			var real_wav: AudioStreamWAV = AssetLoader.instance.load_sfx_wav(k)
+			if real_wav != null:
+				streams[k] = real_wav
 
 
 func play(kind: String) -> void:
