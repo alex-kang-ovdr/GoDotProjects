@@ -33,6 +33,7 @@ const GODOT_TEST_SCRIPTS = [
   'tests/test_dreadnought_systems.gd',
   'tests/test_prism_flak_symmetry.gd',
   'tests/test_asset_loader.gd',
+  'tests/test_restored_rules.gd',
 ];
 
 test('Cosmoteer Godot template exposes valid PlayForge metadata and ready/guided project files', t => {

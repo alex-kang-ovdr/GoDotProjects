@@ -10,7 +10,9 @@
       "distance": 120,
       "seconds": 0,
       "ai": "balanced",
-      "requires": ""
+      "requires": "",
+      "faction": "fringe",
+      "background": "bg_blue"
     },
     {
       "id": "disarm",
@@ -21,7 +23,9 @@
       "distance": 145,
       "seconds": 0,
       "ai": "pursuit",
-      "requires": "skirmish"
+      "requires": "skirmish",
+      "faction": "monolith",
+      "background": "bg_tan_teal_blue"
     },
     {
       "id": "escort",
@@ -32,7 +36,9 @@
       "distance": 135,
       "seconds": 32,
       "ai": "standoff",
-      "requires": "disarm"
+      "requires": "disarm",
+      "faction": "io",
+      "background": "bg_yellow_orange"
     },
     {
       "id": "vanguard",
@@ -43,7 +49,9 @@
       "distance": 150,
       "seconds": 0,
       "ai": "balanced",
-      "requires": "escort"
+      "requires": "escort",
+      "faction": "cabal",
+      "background": "bg_galaxy"
     },
     {
       "id": "dreadnought",
@@ -54,7 +62,9 @@
       "distance": 180,
       "seconds": 0,
       "ai": "balanced",
-      "requires": "vanguard"
+      "requires": "vanguard",
+      "faction": "monolith",
+      "background": "bg_tan_pink_silver"
     },
     {
       "id": "prism_fortress",
@@ -65,7 +75,22 @@
       "distance": 170,
       "seconds": 0,
       "ai": "balanced",
-      "requires": "dreadnought"
+      "requires": "dreadnought",
+      "faction": "cabal",
+      "background": "bg_galaxy"
+    },
+    {
+      "id": "imperium_flagship",
+      "title": "임페리움 갑판포 기함",
+      "summary": "270° 갑판포와 대형 캐논으로 무장한 임페리움 중전함을 격파하세요.",
+      "objective": "duel",
+      "opponent": "imperium",
+      "distance": 165,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": "prism_fortress",
+      "faction": "imperium",
+      "background": "bg_red_blue"
     }
   ]
 }

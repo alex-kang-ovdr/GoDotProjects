@@ -110,6 +110,9 @@ static func _make_opponent(profile: String):
 	if profile == "prism":
 		opponent.prism_flak_destroyer()
 		return opponent
+	if profile == "imperium":
+		opponent.deck_cannon_brawler()
+		return opponent
 	opponent.flight_starter()
 	match profile:
 		"fast":
@@ -532,6 +535,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				"shield_damage_mult": float(gun.stats.get("shield_damage_mult", 1.0)),
 				"shield_energy_drain": int(gun.stats.get("shield_energy_drain", 0)),
 				"pierce": int(gun.stats.get("pierce", 0)),
+				"aoe_radius": float(gun.stats.get("aoe_radius", 0.0)),
 				"hit_uids": {},
 				"ignite": float(gun.stats.get("ignite_intensity", 0.0)),
 				"pos": muzzle, "previous_pos": muzzle,
@@ -793,6 +797,14 @@ func _fly() -> void:
 			events[-1].pos = contact.pos
 		if part.hp == 0:
 			_on_part_destroyed(victim, uid, bolt.side, bolt.target_uid, contact.pos)
+		var aoe_r := float(bolt.get("aoe_radius", 0.0))
+		if aoe_r > 0.1:
+			_record("blast", bolt.side, uid, bolt.target_uid)
+			events[-1].pos = contact.pos
+			events[-1].radius = aoe_r
+			var splash_dead := CombatSystems.apply_aoe_splash(victim, contact.pos, aoe_r, float(bolt.damage) * float(bolt.power) * 0.45, uid)
+			for s_uid in splash_dead:
+				_on_part_destroyed(victim, s_uid, bolt.side, bolt.target_uid, part_world(victim, s_uid))
 
 
 func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, target: int, pos: Vector2) -> void:

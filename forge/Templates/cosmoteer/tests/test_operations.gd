@@ -12,14 +12,15 @@ func _initialize() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	var ops := Operations.new(path)
 	_check(ops.load_error.is_empty(), "operation catalog loads: " + ops.load_error)
-	_check(ops.missions.size() == 6, "six data-driven operations load")
-	if ops.missions.size() == 6:
+	_check(ops.missions.size() == 7, "seven data-driven operations load")
+	if ops.missions.size() == 7:
 		_check(ops.missions[0].id == "skirmish" and ops.missions[0].objective == "duel" and ops.missions[0].opponent == "flight" and ops.missions[0].distance == 120 and ops.missions[0].ai == "balanced" and ops.missions[0].requires == "", "skirmish catalog parameters match")
 		_check(ops.missions[1].id == "disarm" and ops.missions[1].objective == "disarm" and ops.missions[1].opponent == "fast" and ops.missions[1].distance == 145 and ops.missions[1].ai == "pursuit" and ops.missions[1].requires == "skirmish", "disarm catalog parameters match")
 		_check(ops.missions[2].id == "escort" and ops.missions[2].objective == "survive" and ops.missions[2].opponent == "siege" and ops.missions[2].distance == 135 and ops.missions[2].seconds == 32 and ops.missions[2].ai == "standoff" and ops.missions[2].requires == "disarm", "escort catalog parameters match")
 		_check(ops.missions[3].id == "vanguard" and ops.missions[3].objective == "duel" and ops.missions[3].opponent == "vanguard" and ops.missions[3].distance == 150 and ops.missions[3].ai == "balanced" and ops.missions[3].requires == "escort", "vanguard catalog parameters match")
 		_check(ops.missions[4].id == "dreadnought" and ops.missions[4].objective == "duel" and ops.missions[4].opponent == "dreadnought" and ops.missions[4].distance == 180 and ops.missions[4].ai == "balanced" and ops.missions[4].requires == "vanguard", "dreadnought catalog parameters match")
 		_check(ops.missions[5].id == "prism_fortress" and ops.missions[5].objective == "duel" and ops.missions[5].opponent == "prism" and ops.missions[5].distance == 170 and ops.missions[5].ai == "balanced" and ops.missions[5].requires == "dreadnought", "prism_fortress catalog parameters match")
+		_check(ops.missions[6].id == "imperium_flagship" and ops.missions[6].objective == "duel" and ops.missions[6].opponent == "imperium" and ops.missions[6].distance == 165 and ops.missions[6].ai == "balanced" and ops.missions[6].requires == "prism_fortress", "imperium_flagship catalog parameters match")
 	_check(ops.is_unlocked("skirmish") and not ops.is_unlocked("disarm") and not ops.is_unlocked("escort"), "only first operation starts unlocked")
 	_check(not ops.record_win("disarm", 44, 10, 8) and ops.completed.is_empty(), "locked operation result is rejected")
 	_check(not ops.record_win("skirmish", 0, 10, 8) and not ops.record_win("skirmish", 20, 4, 5), "invalid elapsed and hit counts are rejected")

@@ -413,3 +413,33 @@ func prism_flak_destroyer() -> void:
 	for x in range(7, 15):
 		place(CORRIDOR, Vector2i(x, 3))
 		place(CORRIDOR, Vector2i(x, 6))
+
+
+func deck_cannon_brawler() -> void:
+	_clear_layout()
+	place(CombatSystems.BUNK_MED, Vector2i(0, 2))
+	place(CombatSystems.BUNK_MED, Vector2i(0, 5))
+	place(CombatSystems.REACTOR_LARGE, Vector2i(3, 3))
+	place("cosmoteer.control_room_small", Vector2i(7, 4))
+	place(CombatSystems.FIRE_EXTINGUISHER, Vector2i(7, 6))
+	place(CombatSystems.CANNON_DECK, Vector2i(10, 3), 1)
+	place(CombatSystems.CANNON_LARGE, Vector2i(9, 0), 1)
+	place(CombatSystems.POINT_DEFENSE, Vector2i(7, 1), 1)
+	place(CombatSystems.SHIELD_SMALL, Vector2i(12, 8), 1)
+	place("cosmoteer.armor", Vector2i(15, 4))
+	place("cosmoteer.armor", Vector2i(15, 5))
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 8))
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 8))
+	for y in range(1, 9):
+		place(CORRIDOR, Vector2i(2, y))
+	for x in range(3, 9):
+		place(CORRIDOR, Vector2i(x, 2))
+	place(CORRIDOR, Vector2i(7, 3))
+	place(CORRIDOR, Vector2i(8, 3))
+	place(CORRIDOR, Vector2i(8, 6))
+	for y in range(3, 7):
+		place(CORRIDOR, Vector2i(9, y))
+	for x in range(3, 15):
+		place(CORRIDOR, Vector2i(x, 7))

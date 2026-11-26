@@ -17,7 +17,8 @@ const CORE := {
 	"cosmoteer.crew_quarters_small":"소형 선실", "cosmoteer.crew_quarters_med":"중형 선실",
 	"cosmoteer.control_room_small":"소형 함교", "cosmoteer.fire_extinguisher":"소화기",
 	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
-	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.missile_launcher":"미사일 발사기",
+	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.cannon_large":"대형 캐논",
+	"cosmoteer.cannon_deck":"갑판포", "cosmoteer.missile_launcher":"미사일 발사기",
 	"cosmoteer.disruptor":"디스럽터", "cosmoteer.ion_beam_emitter":"이온 빔 방출기",
 	"cosmoteer.ion_beam_prism":"이온 빔 프리즘",
 	"cosmoteer.flak_cannon_large":"플랙 대공포",
@@ -118,6 +119,7 @@ func build(host) -> void:
 	preset_picker.add_item("방어막·미사일 함선")
 	preset_picker.add_item("이온·레일건 전함")
 	preset_picker.add_item("프리즘·플랙 구축함")
+	preset_picker.add_item("갑판포 중전함")
 	preset_picker.item_selected.connect(_on_advanced_preset)
 	toolbar.add_child(preset_picker)
 	toolbar.add_child(lab.button("비우기",_clear))
@@ -486,6 +488,7 @@ func _on_advanced_preset(index: int) -> void:
 		1: _cruiser_preset()
 		2: _dreadnought_preset()
 		3: _prism_preset()
+		4: _deck_brawler_preset()
 	preset_picker.select(0)
 
 func _dreadnought_preset() -> void:
@@ -498,6 +501,12 @@ func _prism_preset() -> void:
 	_remember(design.serialize())
 	design.prism_flak_destroyer()
 	note.text = "이온 빔 프리즘·플랙 대공포·체인건과 탄창을 탑재한 구축함 설계입니다."
+	_design_changed()
+
+func _deck_brawler_preset() -> void:
+	_remember(design.serialize())
+	design.deck_cannon_brawler()
+	note.text = "270° 갑판포·대형 캐논·소형 방어막·소화기를 탑재한 임페리움 중전함 설계입니다."
 	_design_changed()
 
 func _design_changed() -> void:

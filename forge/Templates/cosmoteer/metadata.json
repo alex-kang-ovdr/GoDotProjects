@@ -11,7 +11,8 @@
     "data/operations.json",
     "data/rule_graph.json",
     "data/logic_trace.json",
-    "data/asset_index.json"
+    "data/asset_index.json",
+    "data/extracted_rules.json"
   ],
   "guideOrder": [
     "sim/asset_loader.gd",

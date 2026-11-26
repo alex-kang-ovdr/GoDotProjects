@@ -6,6 +6,7 @@ signal target_selected(uid: int)
 
 const SPACE := Color("#07101b")
 const AssetLoader := preload("res://sim/asset_loader.gd")
+const CombatSystems := preload("res://sim/combat_systems.gd")
 const GRID := Color("#173143")
 const AXIS := Color("#25455a")
 const TEXT := Color("#c5d9e1")
@@ -51,7 +52,13 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), SPACE)
+	var bg_tint := SPACE
+	if battle != null and battle.mission is Dictionary and battle.mission.has("background"):
+		var bg: Dictionary = CombatSystems.get_background(str(battle.mission.background))
+		var pal: Array = bg.get("palette", [])
+		if not pal.is_empty():
+			bg_tint = SPACE.lerp(Color(str(pal[0])), 0.14)
+	draw_rect(Rect2(Vector2.ZERO, size), bg_tint)
 	if size.x < 2.0 or size.y < 2.0:
 		return
 	if battle == null or battle.player.is_empty() or battle.enemy.is_empty():
@@ -85,7 +92,14 @@ func _draw() -> void:
 	var player_bounds := _ship_screen_bounds(battle.player, _camera_center, _zoom, viewport_center)
 	var enemy_bounds := _ship_screen_bounds(battle.enemy, _camera_center, _zoom, viewport_center)
 	var player_name := _draw_ship_name("내 함선", player_bounds, enemy_bounds, MINT, Rect2())
-	_draw_ship_name("적함", enemy_bounds, player_bounds, ENEMY, player_name)
+	var enemy_caption := "적함"
+	var enemy_color := ENEMY
+	if battle.mission is Dictionary and battle.mission.has("faction"):
+		var fac: Dictionary = CombatSystems.get_faction(str(battle.mission.faction))
+		if not fac.is_empty():
+			enemy_caption = "적함 · " + str(fac.get("name_en", ""))
+			enemy_color = Color(str(fac.get("color", "#ff8f85"))).lightened(0.22)
+	_draw_ship_name(enemy_caption, enemy_bounds, player_bounds, enemy_color, player_name)
 	var grid_step := _grid_pitch(_zoom)
 	draw_line(Vector2(14, size.y - 15), Vector2(14 + grid_step * _zoom, size.y - 15), AXIS, 2.0, true)
 	draw_string(ThemeDB.fallback_font, Vector2(22 + grid_step * _zoom, size.y - 11), "그리드 %dm" % roundi(grid_step), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, TEXT)
@@ -345,6 +359,10 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 			draw_line(back, tip, Color("#ff8a4c", 0.55), maxf(3.5, zoom * 0.55), true)
 			draw_line(back.lerp(tip, 0.35), tip, Color("#ffd599"), maxf(2.0, zoom * 0.25), true)
 			draw_circle(tip, maxf(2.4, zoom * 0.24), Color("#fff5e6"))
+		elif kind == "cannon_deck" or kind == "cannon_large":
+			var sc := 1.45 if kind == "cannon_deck" else 1.15
+			draw_line(a, tip, Color("#ff6414", 0.72), maxf(4.2, zoom * 0.68 * sc), true)
+			draw_circle(tip, maxf(3.2, zoom * 0.34 * sc), Color("#ffcb78"))
 		elif kind == "cannon":
 			draw_line(a, tip, Color(AMBER, 0.6), maxf(3.5, zoom * 0.5), true)
 			draw_circle(tip, maxf(2.8, zoom * 0.28), AMBER)
@@ -570,6 +588,10 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 			var r := maxf(4.0, (1.2 + 3.8 * t) * zoom)
 			draw_circle(pos, r * 0.4, Color(Color.WHITE, alpha * 0.85))
 			draw_arc(pos, r, 0.0, TAU, 14, Color("#8cf7ff", alpha * 0.8), 1.4, true)
+		elif kind == "blast":
+			var br := maxf(8.0, float(ev.get("radius", 3.5)) * zoom * (0.4 + 0.75 * t))
+			draw_circle(pos, br * 0.55, Color("#ff7c2b", alpha * 0.38))
+			draw_arc(pos, br, 0.0, TAU, 24, Color("#ffd166", alpha * 0.9), maxf(2.0, zoom * 0.32), true)
 		elif kind == "hit":
 			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)
 			draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)

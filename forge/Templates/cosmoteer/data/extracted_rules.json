@@ -1,0 +1,1768 @@
+{
+  "version": 1,
+  "summary": {
+    "strings_loaded": 451,
+    "factions_count": 5,
+    "buffs_count": 29,
+    "backgrounds_count": 8,
+    "shots_count": 20,
+    "part_specs_count": 96
+  },
+  "factions": [
+    {
+      "id": "monolith",
+      "name_key": "Factions/Monolith",
+      "name_en": "Monolith Cooperative",
+      "description_en": "",
+      "color": "#00c4ff",
+      "source_file": "factions/factions.rules"
+    },
+    {
+      "id": "cabal",
+      "name_key": "Factions/Cabal",
+      "name_en": "Cabal of Sol",
+      "description_en": "",
+      "color": "#ffed66",
+      "source_file": "factions/factions.rules"
+    },
+    {
+      "id": "imperium",
+      "name_key": "Factions/Imperium",
+      "name_en": "Centauri Imperium",
+      "description_en": "",
+      "color": "#ff0031",
+      "source_file": "factions/factions.rules"
+    },
+    {
+      "id": "fringe",
+      "name_key": "Factions/Fringe",
+      "name_en": "Fringe Systems Resistance",
+      "description_en": "",
+      "color": "#7f7f7f",
+      "source_file": "factions/factions.rules"
+    },
+    {
+      "id": "io",
+      "name_key": "Factions/Io",
+      "name_en": "Great House Io",
+      "description_en": "",
+      "color": "#ff7f00",
+      "source_file": "factions/factions.rules"
+    }
+  ],
+  "buffs": {
+    "EnginePowerDistribution": {
+      "id": "EnginePowerDistribution",
+      "combine_mode": "Add"
+    },
+    "EngineHeatCollection": {
+      "id": "EngineHeatCollection",
+      "combine_mode": "Add"
+    },
+    "HeatDissipation": {
+      "id": "HeatDissipation",
+      "combine_mode": "Add"
+    },
+    "ThermalIntensity": {
+      "id": "ThermalIntensity",
+      "combine_mode": "Add"
+    },
+    "ThermalRadius": {
+      "id": "ThermalRadius",
+      "combine_mode": "Add"
+    },
+    "ThermalShieldPiercing": {
+      "id": "ThermalShieldPiercing",
+      "combine_mode": "Add"
+    },
+    "Overclock": {
+      "id": "Overclock",
+      "combine_mode": "Add"
+    },
+    "IonOverclockCharge": {
+      "id": "IonOverclockCharge",
+      "combine_mode": "Add"
+    },
+    "BoostOverclockPowerRamp": {
+      "id": "BoostOverclockPowerRamp",
+      "combine_mode": "Add"
+    },
+    "ShieldOverclockExtended": {
+      "id": "ShieldOverclockExtended",
+      "combine_mode": "Add"
+    },
+    "ShieldOverclockReinforced": {
+      "id": "ShieldOverclockReinforced",
+      "combine_mode": "Add"
+    },
+    "Engine": {
+      "id": "Engine",
+      "combine_mode": "Max",
+      "base_value": 100.0,
+      "color": "#0ad462"
+    },
+    "Factory": {
+      "id": "Factory",
+      "combine_mode": "Add",
+      "base_value": 100.0,
+      "color": "#0ad462"
+    },
+    "Railgun": {
+      "id": "Railgun",
+      "combine_mode": "Add"
+    },
+    "RailgunShot": {
+      "id": "RailgunShot",
+      "combine_mode": "Add",
+      "base_value": 100.0
+    },
+    "RailgunOperation": {
+      "id": "RailgunOperation",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "RailgunReverseOperation": {
+      "id": "RailgunReverseOperation",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "Rocket": {
+      "id": "Rocket",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "RocketThrust": {
+      "id": "RocketThrust",
+      "combine_mode": "Add",
+      "base_value": 0.0
+    },
+    "RocketRampUp": {
+      "id": "RocketRampUp",
+      "combine_mode": "Add",
+      "base_value": 0.0
+    },
+    "RocketRampUpFinal": {
+      "id": "RocketRampUpFinal",
+      "combine_mode": "Add",
+      "base_value": 0.0
+    },
+    "RocketOperation": {
+      "id": "RocketOperation",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "RocketExtraForce": {
+      "id": "RocketExtraForce",
+      "combine_mode": "Add",
+      "base_value": 0.0
+    },
+    "RocketBatteryConnection": {
+      "id": "RocketBatteryConnection",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "RateOfFire": {
+      "id": "RateOfFire",
+      "combine_mode": "Add"
+    },
+    "ChaingunMagConnection": {
+      "id": "ChaingunMagConnection",
+      "combine_mode": "Add",
+      "color": "#0ad462"
+    },
+    "ElectronNebula": {
+      "id": "ElectronNebula",
+      "combine_mode": "Max",
+      "base_value": 0.0
+    },
+    "ElectronBuff": {
+      "id": "ElectronBuff",
+      "combine_mode": "Max",
+      "base_value": 100.0
+    },
+    "ElectronDebuff": {
+      "id": "ElectronDebuff",
+      "combine_mode": "Min",
+      "base_value": 100.0
+    }
+  },
+  "backgrounds": [
+    {
+      "id": "bg_black",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_black.rules"
+    },
+    {
+      "id": "bg_blue",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_blue.rules"
+    },
+    {
+      "id": "bg_galaxy",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_galaxy.rules"
+    },
+    {
+      "id": "bg_red_blue",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_red_blue.rules"
+    },
+    {
+      "id": "bg_tan_pink_silver",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_tan_pink_silver.rules"
+    },
+    {
+      "id": "bg_tan_teal_blue",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_tan_teal_blue.rules"
+    },
+    {
+      "id": "bg_yellow_orange",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_yellow_orange.rules"
+    },
+    {
+      "id": "bg_zero",
+      "palette": [
+        "#07101b",
+        "#13232f"
+      ],
+      "source_file": "backgrounds/bg_zero.rules"
+    }
+  ],
+  "shots": {
+    "bullet_deck": {
+      "id": "bullet_deck",
+      "range": 190.0,
+      "speed": 120.0,
+      "damage": 7500.0,
+      "structural_damage": 3600.0,
+      "penetration": 9.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff6400",
+      "source_file": "shots/bullet_deck/bullet_deck.rules"
+    },
+    "bullet_large": {
+      "id": "bullet_large",
+      "range": 190.0,
+      "speed": 150.0,
+      "damage": 2400.0,
+      "structural_damage": 1200.0,
+      "penetration": 7.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff6400",
+      "source_file": "shots/bullet_large/bullet_large.rules"
+    },
+    "bullet_med": {
+      "id": "bullet_med",
+      "range": 200.0,
+      "speed": 200.0,
+      "damage": 750.0,
+      "structural_damage": 375.0,
+      "penetration": 5.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff6400",
+      "source_file": "shots/bullet_med/bullet_med.rules"
+    },
+    "bullet_railgun": {
+      "id": "bullet_railgun",
+      "range": 300.0,
+      "speed": 432.0,
+      "damage": 10000.0,
+      "structural_damage": 0.0,
+      "penetration": 15.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "source_file": "shots/bullet_railgun/bullet_railgun.rules"
+    },
+    "chaingun_shot": {
+      "id": "chaingun_shot",
+      "range": 240.0,
+      "speed": 1.0,
+      "damage": 600.0,
+      "structural_damage": 450.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/chaingun_shot/chaingun_shot.rules"
+    },
+    "disruptor_bolt": {
+      "id": "disruptor_bolt",
+      "range": 180.0,
+      "speed": 216.0,
+      "damage": 100.0,
+      "structural_damage": 75.0,
+      "penetration": 50.0,
+      "aoe_radius": 0.0,
+      "resource_drain": true,
+      "ignites_fire": false,
+      "color": "#e7ff02",
+      "source_file": "shots/disruptor_bolt/disruptor_bolt.rules"
+    },
+    "flak_large": {
+      "id": "flak_large",
+      "range": 150.0,
+      "speed": 200.0,
+      "damage": 3000.0,
+      "structural_damage": 2250.0,
+      "penetration": 0.0,
+      "aoe_radius": 4.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "source_file": "shots/flak_large/flak_large.rules"
+    },
+    "ion_beam": {
+      "id": "ion_beam",
+      "range": 350.0,
+      "speed": 0.7,
+      "damage": 2500.0,
+      "structural_damage": 2000.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": true,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/ion_beam/ion_beam.rules"
+    },
+    "laser_bolt_large": {
+      "id": "laser_bolt_large",
+      "range": 260.0,
+      "speed": 360.0,
+      "damage": 1000.0,
+      "structural_damage": 500.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff0000",
+      "source_file": "shots/laser_bolt_large/laser_bolt_large.rules"
+    },
+    "laser_bolt_small": {
+      "id": "laser_bolt_small",
+      "range": 260.0,
+      "speed": 408.0,
+      "damage": 500.0,
+      "structural_damage": 250.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff0000",
+      "source_file": "shots/laser_bolt_small/laser_bolt_small.rules"
+    },
+    "manipulator_beam": {
+      "id": "manipulator_beam",
+      "range": 450.0,
+      "speed": 100.0,
+      "damage": 0.0,
+      "structural_damage": 0.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/manipulator_beam/manipulator_beam.rules"
+    },
+    "mine": {
+      "id": "mine",
+      "range": 150.0,
+      "speed": 100.0,
+      "damage": 0.0,
+      "structural_damage": 0.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#000078",
+      "source_file": "shots/mine/mine.rules"
+    },
+    "mining_beam_small": {
+      "id": "mining_beam_small",
+      "range": 150.0,
+      "speed": 1.0,
+      "damage": 32000.0,
+      "structural_damage": 500.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/mining_beam_small/mining_beam_small.rules"
+    },
+    "missile_emp": {
+      "id": "missile_emp",
+      "range": 700.0,
+      "speed": 54.0,
+      "damage": 300.0,
+      "structural_damage": 225.0,
+      "penetration": 0.0,
+      "aoe_radius": 18.0,
+      "resource_drain": true,
+      "ignites_fire": false,
+      "source_file": "shots/missile_emp/missile_emp.rules"
+    },
+    "missile_he": {
+      "id": "missile_he",
+      "range": 450.0,
+      "speed": 54.0,
+      "damage": 15000.0,
+      "structural_damage": 11250.0,
+      "penetration": 0.0,
+      "aoe_radius": 4.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "source_file": "shots/missile_he/missile_he.rules"
+    },
+    "missile_nuke": {
+      "id": "missile_nuke",
+      "range": 250.0,
+      "speed": 120.0,
+      "damage": 200000.0,
+      "structural_damage": 150000.0,
+      "penetration": 0.0,
+      "aoe_radius": 10.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff0000",
+      "source_file": "shots/missile_nuke/missile_nuke_stage1.rules"
+    },
+    "missile_thermal": {
+      "id": "missile_thermal",
+      "range": 450.0,
+      "speed": 100.0,
+      "damage": 0.0,
+      "structural_damage": 0.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "source_file": "shots/missile_thermal/missile_thermal.rules"
+    },
+    "pd_shot": {
+      "id": "pd_shot",
+      "range": 200.0,
+      "speed": 420.0,
+      "damage": 180.0,
+      "structural_damage": 35.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/pd_shot/pd_shot.rules"
+    },
+    "resonance_beam": {
+      "id": "resonance_beam",
+      "range": 200.0,
+      "speed": 200.0,
+      "damage": 0.0,
+      "structural_damage": 0.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ff4600",
+      "source_file": "shots/resonance_beam/resonance_beam.rules"
+    },
+    "tractor_beam": {
+      "id": "tractor_beam",
+      "range": 300.0,
+      "speed": 200.0,
+      "damage": 0.0,
+      "structural_damage": 0.0,
+      "penetration": 0.0,
+      "aoe_radius": 0.0,
+      "resource_drain": false,
+      "ignites_fire": false,
+      "color": "#ffffff",
+      "source_file": "shots/tractor_beam/tractor_beam.rules"
+    }
+  },
+  "part_specs": {
+    "cosmoteer.corridor": {
+      "id": "cosmoteer.corridor",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Corridor",
+      "description_en": "A hallway through which crew quickly travel.",
+      "source_file": "ships/terran/corridor/corridor.rules"
+    },
+    "cosmoteer.laser_blaster_small": {
+      "id": "cosmoteer.laser_blaster_small",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 4000,
+      "name_en": "Laser Blaster",
+      "description_en": "A highly accurate and versatile weapon that fires single blasts of energy, dealing moderate damage to enemy ships.",
+      "source_file": "ships/terran/laser_blaster_small/laser_blaster_small.rules",
+      "fire_delay": 0.4,
+      "firing_arc_deg": 200.0,
+      "rotate_speed_deg": 90.0,
+      "crew_capacity": 1.0,
+      "battery_capacity": 4000.0,
+      "shot_id": "laser_bolt_small"
+    },
+    "cosmoteer.laser_blaster_large": {
+      "id": "cosmoteer.laser_blaster_large",
+      "size": [
+        2,
+        5
+      ],
+      "max_health": 12000,
+      "name_en": "Heavy Laser Blaster",
+      "description_en": "Pairs together two large laser guns on a single turret, which combine for much higher damage at the expense of some accuracy and versatility.",
+      "source_file": "ships/terran/laser_blaster_large/laser_blaster_large.rules",
+      "fire_interval": 0.0,
+      "firing_arc_deg": 190.0,
+      "rotate_speed_deg": 45.0,
+      "shield_radius": 0.84375,
+      "crew_capacity": 2.0,
+      "battery_capacity": 10000.0,
+      "shot_id": "laser_bolt_large"
+    },
+    "cosmoteer.disruptor": {
+      "id": "cosmoteer.disruptor",
+      "size": [
+        1,
+        4
+      ],
+      "max_health": 5000,
+      "name_en": "Disruptor",
+      "description_en": "Fires bolts of electrical energy that deal little damage but can short-circuit enemy systems, causing them to lose power. Can penetrate shields while draining them.",
+      "source_file": "ships/terran/disruptor/disruptor.rules",
+      "firing_arc_deg": 200.0,
+      "rotate_speed_deg": 90.0,
+      "crew_capacity": 1.0,
+      "battery_capacity": 6000.0,
+      "shot_id": "disruptor_bolt"
+    },
+    "cosmoteer.ion_beam_emitter": {
+      "id": "cosmoteer.ion_beam_emitter",
+      "size": [
+        2,
+        5
+      ],
+      "max_health": 8000,
+      "name_en": "Ion Beam Emitter",
+      "description_en": "Shoots a powerful beam of ion energy in a fixed direction. Damage is lower at longer range. Can be shot into an Ion Beam Prism to redirect its angle.",
+      "source_file": "ships/terran/ion_beam_emitter/ion_beam_emitter.rules",
+      "shield_arc_deg": 0.0,
+      "crew_capacity": 2.0,
+      "production_interval": 0.5,
+      "battery_capacity": 16000.0,
+      "shot_id": "ion_beam"
+    },
+    "cosmoteer.ion_beam_prism": {
+      "id": "cosmoteer.ion_beam_prism",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 8000,
+      "name_en": "Ion Beam Prism",
+      "description_en": "Redirects the angles of incoming ion beams, aiming them at enemy ships or other Ion Beam Prisms.",
+      "source_file": "ships/terran/ion_beam_prism/ion_beam_prism.rules",
+      "firing_arc_deg": 360.0,
+      "rotate_speed_deg": 60.0,
+      "shot_id": "ion_beam"
+    },
+    "cosmoteer.resonance_beam_turret": {
+      "id": "cosmoteer.resonance_beam_turret",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 12500,
+      "name_en": "Thermal Resonance Lance",
+      "description_en": "A roof-mounted turret that fires a beam of pure heat energy but also produces a great deal of its own waste heat. Weakens shields around the impact point.  ",
+      "source_file": "ships/terran/resonance_beam_turret/resonance_beam_turret.rules",
+      "firing_arc_deg": 270.0,
+      "rotate_speed_deg": 30.0,
+      "shield_radius": 1.328125,
+      "crew_capacity": 4.0,
+      "production_interval": 0.5,
+      "battery_capacity": 24000.0,
+      "shot_id": "resonance_beam"
+    },
+    "cosmoteer.thermal_dilation_pump": {
+      "id": "cosmoteer.thermal_dilation_pump",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 2000,
+      "name_en": "Lance Dilation Pump",
+      "description_en": "Increases the heat area-of-effect for all Thermal Resonance Lances connected to the same thermal network. Both of the pump's ports must be connected to achieve full effect.",
+      "source_file": "ships/terran/thermal_dilation_pump/thermal_dilation_pump.rules",
+      "production_interval": 1.0,
+      "battery_capacity": 8000.0
+    },
+    "cosmoteer.thermal_amplification_pump": {
+      "id": "cosmoteer.thermal_amplification_pump",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 2000,
+      "name_en": "Lance Amplification Pump",
+      "description_en": "Increases the heat intensity for all Thermal Resonance Lances connected to the same thermal network.",
+      "source_file": "ships/terran/thermal_amplification_pump/thermal_amplification_pump.rules",
+      "production_interval": 1.0,
+      "battery_capacity": 6000.0
+    },
+    "cosmoteer.cannon_med": {
+      "id": "cosmoteer.cannon_med",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 12000,
+      "name_en": "Standard Cannon",
+      "description_en": "Fires single rounds of projectile ammunition that can penetrate into enemy ships, sometimes starting fires.",
+      "source_file": "ships/terran/cannon_med/cannon_med.rules",
+      "firing_arc_deg": 115.0,
+      "rotate_speed_deg": 45.0,
+      "shield_radius": 0.72,
+      "crew_capacity": 1.0,
+      "battery_capacity": 1.0,
+      "shot_id": "bullet_med"
+    },
+    "cosmoteer.cannon_large": {
+      "id": "cosmoteer.cannon_large",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 21000,
+      "name_en": "Large Cannon",
+      "description_en": "Fuses together four rounds of projectile ammunition to greatly enhance damage and penetration depth compared to the Standard Cannon.",
+      "source_file": "ships/terran/cannon_large/cannon_large.rules",
+      "fire_interval": 1.35,
+      "firing_arc_deg": 115.0,
+      "rotate_speed_deg": 30.0,
+      "shield_radius": 1.155,
+      "crew_capacity": 2.0,
+      "battery_capacity": 4.0,
+      "shot_id": "bullet_large"
+    },
+    "cosmoteer.cannon_deck": {
+      "id": "cosmoteer.cannon_deck",
+      "size": [
+        4,
+        5
+      ],
+      "max_health": 20000,
+      "name_en": "Deck Cannon",
+      "description_en": "A huge double-barreled cannon that is mounted on top of the ship instead of the side for extra stability. Each barrel fuses together ten rounds of projectile ammunition and is so loud that it briefly stuns nearby crew.  ",
+      "source_file": "ships/terran/cannon_deck/cannon_deck.rules",
+      "fire_interval": 0.0,
+      "firing_arc_deg": 270.0,
+      "rotate_speed_deg": 20.0,
+      "shield_radius": 6.0,
+      "crew_capacity": 4.0,
+      "shot_id": "bullet_deck"
+    },
+    "cosmoteer.missile_launcher": {
+      "id": "cosmoteer.missile_launcher",
+      "size": [
+        2,
+        4
+      ],
+      "max_health": 6000,
+      "name_en": "Missile & Mine Launcher",
+      "description_en": "Launches missiles or mines of any type.  The type of munition launched can be changed at any time during or after construction, even during battle.",
+      "source_file": "ships/terran/missile_launcher/missile_launcher.rules",
+      "crew_capacity": 2.0
+    },
+    "cosmoteer.railgun_launcher": {
+      "id": "cosmoteer.railgun_launcher",
+      "size": [
+        2,
+        4
+      ],
+      "max_health": 6000,
+      "name_en": "Railgun Launcher Module",
+      "description_en": "A required component of all railguns. Must be paired with a Loader and zero or more Accelerators.  ",
+      "source_file": "ships/terran/railgun_launcher/railgun_launcher.rules",
+      "fire_interval": 4.0,
+      "shield_arc_deg": 0.0,
+      "battery_capacity": 2000.0,
+      "shot_id": "bullet_railgun"
+    },
+    "cosmoteer.railgun_accelerator": {
+      "id": "cosmoteer.railgun_accelerator",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Railgun Accelerator Module",
+      "description_en": "An optional component placed between a railgun's Launcher and Loader. Each accelerator increases the projectile's velocity, damage, and penetration depth.  ",
+      "source_file": "ships/terran/railgun_accelerator/railgun_accelerator.rules",
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.railgun_loader": {
+      "id": "cosmoteer.railgun_loader",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Railgun Loader Module",
+      "description_en": "A required component of all railguns. Must be paired with a Launcher and zero or more Accelerators.  ",
+      "source_file": "ships/terran/railgun_loader/railgun_loader.rules",
+      "crew_capacity": 2.0,
+      "production_interval": 0.15,
+      "battery_capacity": 6.0
+    },
+    "cosmoteer.chaingun": {
+      "id": "cosmoteer.chaingun",
+      "size": [
+        3,
+        6
+      ],
+      "max_health": 18000,
+      "name_en": "Chaingun",
+      "description_en": "A powerful rotary cannon that increases its rate of fire the longer it shoots and hides behind a protective shell while not shooting. Additional ammunition magazines can be attached to increase its duration and rate of fire.",
+      "source_file": "ships/terran/chaingun/chaingun.rules",
+      "firing_arc_deg": 220.0,
+      "shield_radius": 0.84375,
+      "crew_capacity": 3.0,
+      "battery_capacity": 6.0,
+      "shot_id": "chaingun_shot"
+    },
+    "cosmoteer.chaingun_magazine": {
+      "id": "cosmoteer.chaingun_magazine",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 2000,
+      "name_en": "Chaingun Magazine",
+      "description_en": "An extra ammunition storage for the Chaingun, increasing its duration and rate of fire. Must be attached to the lower left or right sides of the chaingun.",
+      "source_file": "ships/terran/chaingun_magazine/chaingun_magazine.rules",
+      "shield_radius": 3.0,
+      "production_interval": 0.03333333333333333,
+      "battery_capacity": 4.0
+    },
+    "cosmoteer.shield_gen_small": {
+      "id": "cosmoteer.shield_gen_small",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Small Shield Generator",
+      "description_en": "Projects a small defensive energy shield in an arc outside the ship, blocking most incoming fire. Vulnerable to Disruptors and EMPs.  ",
+      "source_file": "ships/terran/shield_gen_small/shield_gen_small.rules",
+      "shield_radius": 2.2,
+      "shield_arc_deg": 20.0,
+      "production_interval": 1.0,
+      "battery_capacity": 6000.0
+    },
+    "cosmoteer.shield_gen_large": {
+      "id": "cosmoteer.shield_gen_large",
+      "size": [
+        3,
+        6
+      ],
+      "max_health": 12000,
+      "name_en": "Large Shield Generator",
+      "description_en": "Projects a large defensive energy shield in an arc outside the ship, blocking most incoming fire. Vulnerable to Disruptors and EMPs.  ",
+      "source_file": "ships/terran/shield_gen_large/shield_gen_large.rules",
+      "shield_radius": 13.0,
+      "shield_arc_deg": 160.0,
+      "production_interval": 1.0,
+      "battery_capacity": 18000.0
+    },
+    "cosmoteer.flak_cannon_large": {
+      "id": "cosmoteer.flak_cannon_large",
+      "size": [
+        3,
+        6
+      ],
+      "max_health": 21000,
+      "name_en": "Flak Array",
+      "description_en": "A powerful defensive system that can destroy enemy missiles, lasers, and projectiles. Can also inflict moderate damage to enemy ships.",
+      "source_file": "ships/terran/flak_cannon_large/flak_cannon_large.rules",
+      "fire_interval": 0.25,
+      "firing_arc_deg": 50.0,
+      "rotate_speed_deg": 120.0,
+      "crew_capacity": 3.0,
+      "battery_capacity": 6.0,
+      "shot_id": "flak_large"
+    },
+    "cosmoteer.point_defense": {
+      "id": "cosmoteer.point_defense",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 3000,
+      "name_en": "Point Defense System",
+      "description_en": "An automated defensive system that shoots down enemy missiles and projectiles using super-heated plasma rounds. Can also inflict light damage to enemy ships.",
+      "source_file": "ships/terran/point_defense/point_defense.rules",
+      "firing_arc_deg": 120.0,
+      "rotate_speed_deg": 1080.0,
+      "shield_radius": 0.35,
+      "production_interval": 1.0,
+      "battery_capacity": 2000.0,
+      "shot_id": "pd_shot"
+    },
+    "cosmoteer.armor": {
+      "id": "cosmoteer.armor",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 4000,
+      "name_en": "Armor",
+      "description_en": "Absorbs a great deal of enemy weapons fire, protecting a ship's juicy innards. Also acts as a \"lightning rod\" for E.M.P. effects.",
+      "source_file": "ships/terran/armor/armor.rules"
+    },
+    "cosmoteer.armor_2x1": {
+      "id": "cosmoteer.armor_2x1",
+      "size": [
+        2,
+        1
+      ],
+      "max_health": 8000,
+      "name_en": "Armor 2x1",
+      "description_en": "",
+      "source_file": "ships/terran/armor_2x1/armor_2x1.rules"
+    },
+    "cosmoteer.armor_wedge": {
+      "id": "cosmoteer.armor_wedge",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 2000,
+      "name_en": "Armor Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_wedge/armor_wedge.rules"
+    },
+    "cosmoteer.armor_1x2_wedge": {
+      "id": "cosmoteer.armor_1x2_wedge",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Armor 1x2 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_1x2_wedge/armor_1x2_wedge.rules"
+    },
+    "cosmoteer.armor_1x3_wedge": {
+      "id": "cosmoteer.armor_1x3_wedge",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Armor 1x3 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_1x3_wedge/armor_1x3_wedge.rules"
+    },
+    "cosmoteer.armor_tri": {
+      "id": "cosmoteer.armor_tri",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Armor Triangle",
+      "description_en": "",
+      "source_file": "ships/terran/armor_tri/armor_tri.rules"
+    },
+    "cosmoteer.thruster_small": {
+      "id": "cosmoteer.thruster_small",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 1000,
+      "name_en": "Small Thruster",
+      "description_en": "A weak propulsion engine used mainly for maneuvering. Contains a small dynamo that slowly regenerates power.",
+      "source_file": "ships/terran/thruster_small/thruster_small.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 1000.0
+    },
+    "cosmoteer.thruster_small_2way": {
+      "id": "cosmoteer.thruster_small_2way",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 1000,
+      "name_en": "2-Way Small Thruster",
+      "description_en": "A weak, bi-directional propulsion engine used mainly for maneuvering. Contains a small dynamo that slowly regenerates power.",
+      "source_file": "ships/terran/thruster_small_2way/thruster_small_2way.rules",
+      "battery_capacity": 1000.0
+    },
+    "cosmoteer.thruster_small_3way": {
+      "id": "cosmoteer.thruster_small_3way",
+      "size": [
+        3,
+        2
+      ],
+      "max_health": 1000,
+      "name_en": "3-Way Small Thruster",
+      "description_en": "A weak, tri-directional propulsion engine used mainly for maneuvering. Contains a small dynamo that slowly regenerates power.",
+      "source_file": "ships/terran/thruster_small_3way/thruster_small_3way.rules",
+      "battery_capacity": 1000.0
+    },
+    "cosmoteer.thruster_med": {
+      "id": "cosmoteer.thruster_med",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 2000,
+      "name_en": "Standard Thruster",
+      "description_en": "A standard-sized propulsion engine capable of pushing the ship with a modest amount of force. Requires a short time to achieve full thrust.",
+      "source_file": "ships/terran/thruster_med/thruster_med.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.thruster_large": {
+      "id": "cosmoteer.thruster_large",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 4000,
+      "name_en": "Large Thruster",
+      "description_en": "A double-sized propulsion engine capable of pushing the ship with more than twice the force of the Standard Thruster. Requires a medium amount of time to achieve full thrust.",
+      "source_file": "ships/terran/thruster_large/thruster_large.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.thruster_huge": {
+      "id": "cosmoteer.thruster_huge",
+      "size": [
+        3,
+        4
+      ],
+      "max_health": 9000,
+      "name_en": "Huge Thruster",
+      "description_en": "A huge propulsion engine capable of pushing the ship with more than twice the force of the Large Thruster. Requires a long time to achieve full thrust.",
+      "source_file": "ships/terran/thruster_huge/thruster_huge.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 8000.0
+    },
+    "cosmoteer.thruster_boost": {
+      "id": "cosmoteer.thruster_boost",
+      "size": [
+        2,
+        5
+      ],
+      "max_health": 6000,
+      "name_en": "Boost Thruster",
+      "description_en": "A variant of the Large Thruster that can inject raw plasma directly into its combustors for a powerful but short-lived boost. Power cannot be delivered while boosting.",
+      "source_file": "ships/terran/thruster_boost/thruster_boost.rules",
+      "shield_radius": 0.78125,
+      "production_interval": 0.5,
+      "battery_capacity": 6000.0
+    },
+    "cosmoteer.thruster_rocket_nozzle": {
+      "id": "cosmoteer.thruster_rocket_nozzle",
+      "size": [
+        3,
+        5
+      ],
+      "max_health": 12000,
+      "name_en": "M.R.T. Nozzle Module",
+      "description_en": "A required component of all Modular Rocket Thrusters. May be combined with zero or more Extender modules and up to two Fuel Pods per Nozzle or Extender.  ",
+      "source_file": "ships/terran/thruster_rocket_nozzle/thruster_rocket_nozzle.rules",
+      "crew_capacity": 2.0,
+      "production_interval": 0.5,
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.thruster_rocket_extender": {
+      "id": "cosmoteer.thruster_rocket_extender",
+      "size": [
+        3,
+        2
+      ],
+      "max_health": 6000,
+      "name_en": "M.R.T. Extender Module",
+      "description_en": "An optional component placed behind a Modular Rocket Thruster's Nozzle or other Extender. Each extender increases its maximum thrust, power usage, and ramp-up time. Battery fuel capacity may be extended with up to two Fuel Pods.  ",
+      "source_file": "ships/terran/thruster_rocket_extender/thruster_rocket_extender.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.thruster_rocket_battery": {
+      "id": "cosmoteer.thruster_rocket_battery",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 2000,
+      "name_en": "M.R.T. Fuel Pod",
+      "description_en": "Extends the battery fuel capacity of an attached M.R.T. Nozzle or Extender by four batteries.  ",
+      "source_file": "ships/terran/thruster_rocket_battery/thruster_rocket_battery.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.engine_room": {
+      "id": "cosmoteer.engine_room",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Engine Room",
+      "description_en": "Increases the thrust and power usage of adjacent thrusters by 50%. Also acts as a central delivery point for adjacent thrusters to which crew can deliver batteries without having to travel to each one individually.",
+      "source_file": "ships/terran/engine_room/engine_room.rules",
+      "crew_capacity": 2.0,
+      "production_interval": 1.0,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.control_room_small": {
+      "id": "cosmoteer.control_room_small",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Cockpit",
+      "description_en": "Allows the ship to fly and coordinate its weapons by providing <good>+50<image name='command_points' colored='true'/></good> Command Points. ",
+      "source_file": "ships/terran/control_room_small/control_room_small.rules",
+      "crew_capacity": 1.0,
+      "production_interval": 60.0,
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.control_room_med": {
+      "id": "cosmoteer.control_room_med",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Control Room",
+      "description_en": "Allows the ship to fly and coordinate its weapons by providing <good>+250<image name='command_points' colored='true'/></good> Command Points. ",
+      "source_file": "ships/terran/control_room_med/control_room_med.rules",
+      "crew_capacity": 3.0,
+      "production_interval": 30.0,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.control_room_large": {
+      "id": "cosmoteer.control_room_large",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Bridge",
+      "description_en": "Allows the ship to fly and coordinate its weapons by providing <good>+1000<image name='command_points' colored='true'/></good> Command Points. ",
+      "source_file": "ships/terran/control_room_large/control_room_large.rules",
+      "crew_capacity": 7.0,
+      "production_interval": 15.0,
+      "battery_capacity": 8000.0
+    },
+    "cosmoteer.hyperdrive_small": {
+      "id": "cosmoteer.hyperdrive_small",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Small Hyperdrive",
+      "description_en": "Allows the ship to instantaneously travel to other destinations within the solar system, to friendly ships with Hyperdrive Beacons, or when assisted by a Hyper-Jump Relay, to other solar systems.",
+      "source_file": "ships/terran/hyperdrive_small/hyperdrive_small.rules",
+      "battery_capacity": 16000.0
+    },
+    "cosmoteer.hyperdrive_med": {
+      "id": "cosmoteer.hyperdrive_med",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Medium Hyperdrive",
+      "description_en": "Allows the ship to instantaneously travel to other destinations within the solar system, to friendly ships with Hyperdrive Beacons, or when assisted by a Hyper-Jump Relay, to other solar systems.  ",
+      "source_file": "ships/terran/hyperdrive_med/hyperdrive_med.rules",
+      "battery_capacity": 24000.0
+    },
+    "cosmoteer.hyperdrive_large": {
+      "id": "cosmoteer.hyperdrive_large",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Large Hyperdrive",
+      "description_en": "Allows the ship to instantaneously travel to other destinations within the solar system, to friendly ships with Hyperdrive Beacons, or when assisted by a Hyper-Jump Relay, to other solar systems.  ",
+      "source_file": "ships/terran/hyperdrive_large/hyperdrive_large.rules",
+      "battery_capacity": 32000.0
+    },
+    "cosmoteer.crew_quarters_small": {
+      "id": "cosmoteer.crew_quarters_small",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 2000,
+      "name_en": "Crew's Bunk",
+      "description_en": "Provides beds for 2 crew.",
+      "source_file": "ships/terran/crew_quarters_small/crew_quarters_small.rules",
+      "crew_capacity": 2.0
+    },
+    "cosmoteer.crew_quarters_med": {
+      "id": "cosmoteer.crew_quarters_med",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Crew's Quarters",
+      "description_en": "Provides beds for 6 crew.",
+      "source_file": "ships/terran/crew_quarters_med/crew_quarters_med.rules",
+      "crew_capacity": 6.0
+    },
+    "cosmoteer.crew_quarters_large": {
+      "id": "cosmoteer.crew_quarters_large",
+      "size": [
+        3,
+        4
+      ],
+      "max_health": 12000,
+      "name_en": "Crew's Barracks",
+      "description_en": "Provides beds for 24 crew.",
+      "source_file": "ships/terran/crew_quarters_large/crew_quarters_large.rules",
+      "crew_capacity": 24.0
+    },
+    "cosmoteer.airlock": {
+      "id": "cosmoteer.airlock",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Airlock Hatch",
+      "description_en": "Allows crew to enter and exit the ship, such as to pick up resources or transfer between ships.",
+      "source_file": "ships/terran/airlock/airlock.rules"
+    },
+    "cosmoteer.conveyor": {
+      "id": "cosmoteer.conveyor",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Moving Walkway",
+      "description_en": "Allows crew to travel faster, but only in one direction.",
+      "source_file": "ships/terran/conveyor/conveyor.rules"
+    },
+    "cosmoteer.reactor_small": {
+      "id": "cosmoteer.reactor_small",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Small Reactor Core",
+      "description_en": "A power generator that produces the plasma batteries needed to power many of the ship's systems.",
+      "source_file": "ships/terran/reactor_small/reactor_small.rules",
+      "shield_radius": 8.0,
+      "production_interval": 0.6666666666666666,
+      "battery_capacity": 8000.0,
+      "shot_id": "missile_emp"
+    },
+    "cosmoteer.reactor_med": {
+      "id": "cosmoteer.reactor_med",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 4000,
+      "name_en": "Medium Reactor Core",
+      "description_en": "A power generator that produces double-capacity plasma batteries needed to power many of the ship's systems.",
+      "source_file": "ships/terran/reactor_med/reactor_med.rules",
+      "shield_radius": 14.0,
+      "production_interval": 0.2222222222222222,
+      "battery_capacity": 16000.0,
+      "shot_id": "missile_emp"
+    },
+    "cosmoteer.reactor_large": {
+      "id": "cosmoteer.reactor_large",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 4000,
+      "name_en": "Large Reactor Core",
+      "description_en": "A power generator that produces triple-capacity plasma batteries needed to power many of the ship's systems.",
+      "source_file": "ships/terran/reactor_large/reactor_large.rules",
+      "shield_radius": 24.0,
+      "production_interval": 0.07407407407407407,
+      "battery_capacity": 24000.0,
+      "shot_id": "missile_emp"
+    },
+    "cosmoteer.power_storage": {
+      "id": "cosmoteer.power_storage",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Power Capacitor",
+      "description_en": "Stores a limited cache of plasma batteries that may be delivered by crew to nearby ship's systems.",
+      "source_file": "ships/terran/power_storage/power_storage.rules",
+      "production_interval": 0.5,
+      "battery_capacity": 24000.0
+    },
+    "cosmoteer.heat_pipe_adaptive": {
+      "id": "cosmoteer.heat_pipe_adaptive",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Heat Pipe",
+      "description_en": "Instantaneously transfers thermal energy between connected parts.",
+      "source_file": "ships/terran/heat_pipe_adaptive/heat_pipe_adaptive.rules"
+    },
+    "cosmoteer.heat_pipe_crossing": {
+      "id": "cosmoteer.heat_pipe_crossing",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Heat Pipe Crossing",
+      "description_en": "<string id='Parts/HeatPipeAdaptiveDesc'/> Allows crew to walk underneath the pipe.",
+      "source_file": "ships/terran/heat_pipe_crossing/heat_pipe_crossing.rules"
+    },
+    "cosmoteer.heat_pipe_adaptive_structure": {
+      "id": "cosmoteer.heat_pipe_adaptive_structure",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Heat Pipe Structure",
+      "description_en": "",
+      "source_file": "ships/terran/heat_pipe_adaptive_structure/heat_pipe_adaptive_structure.rules"
+    },
+    "cosmoteer.radiator": {
+      "id": "cosmoteer.radiator",
+      "size": [
+        1,
+        4
+      ],
+      "max_health": 4000,
+      "name_en": "Radiator",
+      "description_en": "Dissipates heat from the connected thermal network. Dissipation effectiveness is reduced if the area in front of the radiator is blocked.",
+      "source_file": "ships/terran/radiator/radiator.rules",
+      "production_interval": 0.5
+    },
+    "cosmoteer.thermal_battery": {
+      "id": "cosmoteer.thermal_battery",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Thermal Battery",
+      "description_en": "Safely contains large amounts of thermal energy, providing additional heat storage to the connected thermal network.",
+      "source_file": "ships/terran/thermal_battery/thermal_battery.rules"
+    },
+    "cosmoteer.heat_exchanger": {
+      "id": "cosmoteer.heat_exchanger",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Heat Exchanger",
+      "description_en": "Absorbs heat from the hull, transferring it to the connected thermal network while generating some additional waste heat.",
+      "source_file": "ships/terran/heat_exchanger/heat_exchanger.rules"
+    },
+    "cosmoteer.factory_ammo": {
+      "id": "cosmoteer.factory_ammo",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Cannon Ammo Factory",
+      "description_en": "Manufactures projectile ammunition used by cannons and railguns. Consumes sulfur. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_ammo/factory_ammo.rules",
+      "shield_radius": 4.0,
+      "battery_capacity": 2000.0
+    },
+    "cosmoteer.factory_he": {
+      "id": "cosmoteer.factory_he",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "High-Explosive Missile Factory",
+      "description_en": "Manufactures guided High-Explosive missiles that cause significant damage over a small area. Consumes iron and sulfur. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_he/factory_he.rules",
+      "shield_radius": 5.0,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_emp": {
+      "id": "cosmoteer.factory_emp",
+      "size": [
+        3,
+        4
+      ],
+      "max_health": 12000,
+      "name_en": "E.M.P. Missile Factory",
+      "description_en": "Manufactures guided Electromagnetic Pulse missiles that drain power from enemy systems in a very large area. Consumes iron and copper. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_emp/factory_emp.rules",
+      "shield_radius": 12.0,
+      "battery_capacity": 4000.0,
+      "shot_id": "missile_emp"
+    },
+    "cosmoteer.factory_thermal": {
+      "id": "cosmoteer.factory_thermal",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Thermal Canister Missile Factory",
+      "description_en": "Manufactures guided Thermal Canister Missiles that take thermal energy from their own ship's heat pipe network and inflict it upon the target in a small area of effect. Consumes copper and sulfur. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_thermal/factory_thermal.rules",
+      "shield_radius": 5.0,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_nuke": {
+      "id": "cosmoteer.factory_nuke",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Nuclear Missile Factory",
+      "description_en": "Manufactures Tactical Nuclear Missiles that cause massive damage in a very large area. Consumes iron and uranium. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_nuke/factory_nuke.rules",
+      "shield_radius": 10.0,
+      "battery_capacity": 6000.0,
+      "shot_id": "missile_nuke"
+    },
+    "cosmoteer.factory_mine": {
+      "id": "cosmoteer.factory_mine",
+      "size": [
+        4,
+        3
+      ],
+      "max_health": 12000,
+      "name_en": "Mine Factory",
+      "description_en": "Manufactures mines that explode when in proximity to enemy ships, launching damaging shrapnel. Consumes iron and ammo. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_mine/factory_mine.rules",
+      "shield_radius": 5.0,
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_steel": {
+      "id": "cosmoteer.factory_steel",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Steel Smelter",
+      "description_en": "Manufactures steel plates, which are used to construct almost all ship parts. Consumes iron. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_steel/factory_steel.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_coil": {
+      "id": "cosmoteer.factory_coil",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Coil Factory",
+      "description_en": "Manufactures coils, which are used to construct many ship parts. Consumes copper. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_coil/factory_coil.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_coil2": {
+      "id": "cosmoteer.factory_coil2",
+      "size": [
+        4,
+        3
+      ],
+      "max_health": 12000,
+      "name_en": "Hyper-Coil Factory",
+      "description_en": "Manufactures hyper-coils, which are used to construct many advanced ship parts. Consumes copper and coils. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_coil2/factory_coil2.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_tristeel": {
+      "id": "cosmoteer.factory_tristeel",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Tri-Steel Smelter",
+      "description_en": "Manufactures Tri-Steel plates, which are used to construct some advanced ship parts. Consumes tritanium. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_tristeel/factory_tristeel.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_diamond": {
+      "id": "cosmoteer.factory_diamond",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Diamond Smelter",
+      "description_en": "Manufactures diamonds, which are used to construct some advanced ship parts. Consumes carbon.",
+      "source_file": "ships/terran/factory_diamond/factory_diamond.rules",
+      "battery_capacity": 20.0
+    },
+    "cosmoteer.factory_processor": {
+      "id": "cosmoteer.factory_processor",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Processor Fabricator",
+      "description_en": "Manufactures processors, which are used to construct some advanced ship parts. Consumes gold and coils. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_processor/factory_processor.rules",
+      "battery_capacity": 4000.0
+    },
+    "cosmoteer.factory_uranium": {
+      "id": "cosmoteer.factory_uranium",
+      "size": [
+        3,
+        4
+      ],
+      "max_health": 12000,
+      "name_en": "Uranium Enricher",
+      "description_en": "Enriches uranium, which is needed to construct reactors and other advanced ship parts. Consumes unenriched uranium. Gains +25% production speed for each adjacent factory of any type.",
+      "source_file": "ships/terran/factory_uranium/factory_uranium.rules",
+      "shield_radius": 10.0,
+      "battery_capacity": 4000.0,
+      "shot_id": "missile_nuke"
+    },
+    "cosmoteer.storage_2x2": {
+      "id": "cosmoteer.storage_2x2",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Storage Bay (4)",
+      "description_en": "Stores 4 stacks of resources of any types.",
+      "source_file": "ships/terran/storage_2x2/storage_2x2.rules"
+    },
+    "cosmoteer.storage_3x2": {
+      "id": "cosmoteer.storage_3x2",
+      "size": [
+        3,
+        2
+      ],
+      "max_health": 6000,
+      "name_en": "Storage Bay (6)",
+      "description_en": "Stores 6 stacks of resources of any types.",
+      "source_file": "ships/terran/storage_3x2/storage_3x2.rules"
+    },
+    "cosmoteer.storage_3x3": {
+      "id": "cosmoteer.storage_3x3",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Storage Bay (9)",
+      "description_en": "Stores 9 stacks of resources of any types.",
+      "source_file": "ships/terran/storage_3x3/storage_3x3.rules"
+    },
+    "cosmoteer.storage_4x3": {
+      "id": "cosmoteer.storage_4x3",
+      "size": [
+        4,
+        3
+      ],
+      "max_health": 12000,
+      "name_en": "Storage Bay (12)",
+      "description_en": "Stores 12 stacks of resources of any types.",
+      "source_file": "ships/terran/storage_4x3/storage_4x3.rules"
+    },
+    "cosmoteer.storage_4x4": {
+      "id": "cosmoteer.storage_4x4",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Storage Bay (16)",
+      "description_en": "Stores 16 stacks of resources of any types.",
+      "source_file": "ships/terran/storage_4x4/storage_4x4.rules"
+    },
+    "cosmoteer.fire_extinguisher": {
+      "id": "cosmoteer.fire_extinguisher",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Fire Extinguisher Closet",
+      "description_en": "Stores a fire extinguisher that crew can use to put out fires. Fire extinguishers have a limited capacity but a new one will be constructed out of thin air every 15 seconds.",
+      "source_file": "ships/terran/fire_extinguisher/fire_extinguisher.rules"
+    },
+    "cosmoteer.mining_laser_small": {
+      "id": "cosmoteer.mining_laser_small",
+      "size": [
+        2,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Mining Laser",
+      "description_en": "A pair of roof-mounted precision laser beams that can quickly extract resources from even the toughest asteroids. Also effective at salvaging ships, and in a pinch can be used as a short-range weapon.",
+      "source_file": "ships/terran/mining_laser_small/mining_laser_small.rules",
+      "fire_interval": 0.2,
+      "firing_arc_deg": 270.0,
+      "rotate_speed_deg": 20.0,
+      "shield_radius": 0.6666666666666666,
+      "crew_capacity": 1.0,
+      "production_interval": 0.5,
+      "battery_capacity": 10000.0,
+      "shot_id": "mining_beam_small"
+    },
+    "cosmoteer.manipulator_beam_emitter": {
+      "id": "cosmoteer.manipulator_beam_emitter",
+      "size": [
+        2,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Manipulator Beam Emitter",
+      "description_en": "Projects up to 16 small, roof-mounted tractor beams that can collect resources and boost flying crew. A single crew can control up to four beams, and they will only go to the Manipulator Beam Emitter when there are tasks to help with.",
+      "source_file": "ships/terran/manipulator_beam_emitter/manipulator_beam_emitter.rules",
+      "firing_arc_deg": 360.0,
+      "crew_capacity": 1.0,
+      "battery_capacity": 4000.0,
+      "shot_id": "manipulator_beam"
+    },
+    "cosmoteer.tractor_beam_emitter": {
+      "id": "cosmoteer.tractor_beam_emitter",
+      "size": [
+        5,
+        5
+      ],
+      "max_health": 25000,
+      "name_en": "Tractor Beam Emitter",
+      "description_en": "Emits a gravitation beam that pulls and pushes ships and other large objects.",
+      "source_file": "ships/terran/tractor_beam_emitter/tractor_beam_emitter.rules",
+      "firing_arc_deg": 360.0,
+      "rotate_speed_deg": 120.0,
+      "shield_radius": 1.5,
+      "crew_capacity": 4.0,
+      "production_interval": 0.5,
+      "battery_capacity": 24000.0,
+      "shot_id": "tractor_beam"
+    },
+    "cosmoteer.sensor_array": {
+      "id": "cosmoteer.sensor_array",
+      "size": [
+        3,
+        3
+      ],
+      "max_health": 9000,
+      "name_en": "Sensor Array",
+      "description_en": "Extends the sensor range of your ship. (Does not stack with other sensor arrays.)",
+      "source_file": "ships/terran/sensor_array/sensor_array.rules",
+      "shield_radius": 0.9,
+      "crew_capacity": 4.0,
+      "production_interval": 1.0,
+      "battery_capacity": 8000.0
+    },
+    "cosmoteer.hyperdrive_beacon": {
+      "id": "cosmoteer.hyperdrive_beacon",
+      "size": [
+        4,
+        4
+      ],
+      "max_health": 16000,
+      "name_en": "Hyperdrive Beacon",
+      "description_en": "Ships with Hyperdrives can jump to ships with Hyperdrive Beacons.",
+      "source_file": "ships/terran/hyperdrive_beacon/hyperdrive_beacon.rules",
+      "shield_radius": 0.6,
+      "crew_capacity": 6.0,
+      "production_interval": 1.0,
+      "battery_capacity": 12000.0
+    },
+    "cosmoteer.explosive_charge": {
+      "id": "cosmoteer.explosive_charge",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Explosive Charge",
+      "description_en": "A small explosive device that can be manually detonated. Primarily used for deliberately splitting ships into multiple pieces.",
+      "source_file": "ships/terran/explosive_charge/explosive_charge.rules",
+      "shield_radius": 2.5
+    },
+    "cosmoteer.roof_light": {
+      "id": "cosmoteer.roof_light",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Exterior Light",
+      "description_en": "A small exterior light. Provides no practical benefit.",
+      "source_file": "ships/terran/roof_light/roof_light.rules"
+    },
+    "cosmoteer.roof_headlight": {
+      "id": "cosmoteer.roof_headlight",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Exterior Headlight",
+      "description_en": "An exterior headlight that can be aimed. Provides no practical benefit.",
+      "source_file": "ships/terran/roof_headlight/roof_headlight.rules",
+      "firing_arc_deg": 360.0,
+      "rotate_speed_deg": 120.0
+    },
+    "cosmoteer.structure": {
+      "id": "cosmoteer.structure",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Structure",
+      "description_en": "The underlying structural frame that holds a ship together. Structure is automatically included with all rooms and corridors.",
+      "source_file": "ships/terran/structure/structure.rules"
+    },
+    "cosmoteer.structure_wedge": {
+      "id": "cosmoteer.structure_wedge",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 500,
+      "name_en": "Structure Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/structure_wedge/structure_wedge.rules"
+    },
+    "cosmoteer.structure_1x2_wedge": {
+      "id": "cosmoteer.structure_1x2_wedge",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 1000,
+      "name_en": "Structure 1x2 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/structure_1x2_wedge/structure_1x2_wedge.rules"
+    },
+    "cosmoteer.structure_1x3_wedge": {
+      "id": "cosmoteer.structure_1x3_wedge",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 1500,
+      "name_en": "Structure 1x3 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/structure_1x3_wedge/structure_1x3_wedge.rules"
+    },
+    "cosmoteer.structure_tri": {
+      "id": "cosmoteer.structure_tri",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 250,
+      "name_en": "Structure Triangle",
+      "description_en": "",
+      "source_file": "ships/terran/structure_tri/structure_tri.rules"
+    },
+    "cosmoteer.armor_structure_hybrid_1x1": {
+      "id": "cosmoteer.armor_structure_hybrid_1x1",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 2000,
+      "name_en": "Armor + Structure Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_structure_hybrid_1x1/armor_structure_hybrid_1x1.rules"
+    },
+    "cosmoteer.armor_structure_hybrid_1x2": {
+      "id": "cosmoteer.armor_structure_hybrid_1x2",
+      "size": [
+        1,
+        2
+      ],
+      "max_health": 4000,
+      "name_en": "Armor + Structure 1x2 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_structure_hybrid_1x2/armor_structure_hybrid_1x2.rules"
+    },
+    "cosmoteer.armor_structure_hybrid_1x3": {
+      "id": "cosmoteer.armor_structure_hybrid_1x3",
+      "size": [
+        1,
+        3
+      ],
+      "max_health": 6000,
+      "name_en": "Armor + Structure 1x3 Wedge",
+      "description_en": "",
+      "source_file": "ships/terran/armor_structure_hybrid_1x3/armor_structure_hybrid_1x3.rules"
+    },
+    "cosmoteer.armor_structure_hybrid_tri": {
+      "id": "cosmoteer.armor_structure_hybrid_tri",
+      "size": [
+        1,
+        1
+      ],
+      "max_health": 1000,
+      "name_en": "Armor + Structure Triangle",
+      "description_en": "",
+      "source_file": "ships/terran/armor_structure_hybrid_tri/armor_structure_hybrid_tri.rules"
+    }
+  }
+}

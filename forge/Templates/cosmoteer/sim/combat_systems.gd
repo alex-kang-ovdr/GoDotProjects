@@ -11,6 +11,8 @@ const Flight := preload("res://sim/flight_dynamics.gd")
 const LASER_SMALL := "cosmoteer.laser_blaster_small"
 const LASER_LARGE := "cosmoteer.laser_blaster_large"
 const CANNON_MED := "cosmoteer.cannon_med"
+const CANNON_LARGE := "cosmoteer.cannon_large"
+const CANNON_DECK := "cosmoteer.cannon_deck"
 const MISSILE_LAUNCHER := "cosmoteer.missile_launcher"
 const DISRUPTOR := "cosmoteer.disruptor"
 const ION_BEAM := "cosmoteer.ion_beam_emitter"
@@ -32,12 +34,15 @@ const BUNK_MED := "cosmoteer.crew_quarters_med"
 const ARMOR_2X1 := "cosmoteer.armor_2x1"
 const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
 
-const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
-const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
+const EXTRACTED_RULES_PATH := "res://data/extracted_rules.json"
+const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
+const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
 const SHIELD_IDS := [SHIELD_SMALL, SHIELD_LARGE]
 const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
 const BUNK_IDS := [BUNK_SMALL, BUNK_MED]
 const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
+
+static var _extracted_cache: Dictionary = {}
 
 const EXTRA_STATS := {
 	LASER_LARGE: {
@@ -61,6 +66,7 @@ const EXTRA_STATS := {
 	},
 	CANNON_MED: {
 		"weapon_kind": "cannon",
+		"shot_id": "bullet_med",
 		"battery_capacity": 4000,
 		"crew_required": 1,
 		"resupply_threshold": 400,
@@ -77,6 +83,51 @@ const EXTRA_STATS := {
 		"firing_arc_deg": 130.0,
 		"rotate_speed_deg": 65.0,
 		"fire_threshold_deg": 2.5,
+	},
+	CANNON_LARGE: {
+		"weapon_kind": "cannon_large",
+		"shot_id": "bullet_large",
+		"pierce": 1,
+		"ignite_intensity": 0.35,
+		"battery_capacity": 5000,
+		"crew_required": 2,
+		"resupply_threshold": 600,
+		"fire_interval": 1.65,
+		"fire_delay": 0.30,
+		"battery_per_shot": 550,
+		"min_resources_used": 200,
+		"projectile_speed": 220.0,
+		"range": 240.0,
+		"damage": 2600.0,
+		"structural_damage": 1800.0,
+		"turret_location": [1.5, 0.7],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 110.0,
+		"rotate_speed_deg": 45.0,
+		"fire_threshold_deg": 3.0,
+	},
+	CANNON_DECK: {
+		"weapon_kind": "cannon_deck",
+		"shot_id": "bullet_deck",
+		"pierce": 1,
+		"aoe_radius": 3.2,
+		"ignite_intensity": 0.55,
+		"battery_capacity": 8000,
+		"crew_required": 2,
+		"resupply_threshold": 900,
+		"fire_interval": 2.2,
+		"fire_delay": 0.35,
+		"battery_per_shot": 850,
+		"min_resources_used": 400,
+		"projectile_speed": 150.0,
+		"range": 190.0,
+		"damage": 4200.0,
+		"structural_damage": 2800.0,
+		"turret_location": [2.0, 2.0],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 270.0,
+		"rotate_speed_deg": 35.0,
+		"fire_threshold_deg": 4.0,
 	},
 	MISSILE_LAUNCHER: {
 		"weapon_kind": "missile",
@@ -288,7 +339,36 @@ const EXTRA_STATS := {
 }
 
 
+static func extracted_rules() -> Dictionary:
+	if _extracted_cache.is_empty() and FileAccess.file_exists(EXTRACTED_RULES_PATH):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(EXTRACTED_RULES_PATH))
+		if parsed is Dictionary:
+			_extracted_cache = parsed
+	return _extracted_cache
+
+
+static func get_faction(faction_id: String) -> Dictionary:
+	for f in extracted_rules().get("factions", []):
+		if str(f.get("id", "")) == faction_id:
+			return f
+	return {}
+
+
+static func get_background(bg_id: String) -> Dictionary:
+	for bg in extracted_rules().get("backgrounds", []):
+		if str(bg.get("id", "")) == bg_id:
+			return bg
+	return {}
+
+
+static func get_part_spec(part_id: String) -> Dictionary:
+	return extracted_rules().get("part_specs", {}).get(part_id, {})
+
+
 static func augment_definitions(definitions: Dictionary) -> void:
+	var rules := extracted_rules()
+	var part_specs: Dictionary = rules.get("part_specs", {})
+	var shots: Dictionary = rules.get("shots", {})
 	for id in EXTRA_STATS:
 		if not definitions.has(id):
 			continue
@@ -297,6 +377,18 @@ static func augment_definitions(definitions: Dictionary) -> void:
 		for key in EXTRA_STATS[id]:
 			if not stats.has(key):
 				stats[key] = EXTRA_STATS[id][key]
+		# Overlay authentic extracted Cosmoteer parameters where available
+		var spec: Dictionary = part_specs.get(id, {})
+		if not spec.is_empty():
+			if spec.has("firing_arc_deg") and id in [CANNON_DECK, CANNON_LARGE]:
+				stats["firing_arc_deg"] = float(spec.firing_arc_deg)
+			var shot_key := str(stats.get("shot_id", spec.get("shot_id", "")))
+			if not shot_key.is_empty() and shots.has(shot_key):
+				var sh: Dictionary = shots[shot_key]
+				if float(sh.get("range", 0.0)) > 20.0 and id in [CANNON_DECK, CANNON_LARGE, MISSILE_LAUNCHER, ION_BEAM]:
+					stats["range"] = float(sh.range)
+				if float(sh.get("aoe_radius", 0.0)) > 0.0 and not stats.has("aoe_radius"):
+					stats["aoe_radius"] = float(sh.aoe_radius)
 		row["stats"] = stats
 		if row.get("crew_speed_factor") == null:
 			row["crew_speed_factor"] = 0.5
@@ -321,12 +413,36 @@ static func is_bunk(id: String) -> bool:
 
 static func is_walkable_expansion(id: String) -> bool:
 	return id in [
-		LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, ION_PRISM,
+		LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, ION_PRISM,
 		FLAK_CANNON, CHAINGUN, CHAINGUN_MAG,
 		RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER,
 		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
 		REACTOR_MED, REACTOR_LARGE, BUNK_MED, FIRE_EXTINGUISHER,
 	]
+
+
+## Apply AoE blast splash damage to nearby alive modules within aoe_radius (meters).
+## Returns array of newly destroyed part UIDs.
+static func apply_aoe_splash(victim: Dictionary, center_world: Vector2, aoe_radius: float, base_damage: float, exclude_uid: int) -> Array[int]:
+	var destroyed: Array[int] = []
+	if aoe_radius <= 0.1 or base_damage <= 0.0:
+		return destroyed
+	for uid in victim.parts:
+		if int(uid) == exclude_uid:
+			continue
+		var part: Dictionary = victim.parts[uid]
+		if float(part.hp) <= 0.0:
+			continue
+		var pcenter: Vector2 = Vector2(victim.position) + (Vector2(part.cell) + Vector2(part.size) * 0.5 - Vector2(victim.center_of_mass)).rotated(victim.heading)
+		var dist := pcenter.distance_to(center_world)
+		if dist > aoe_radius:
+			continue
+		var falloff := clampf(1.0 - dist / (aoe_radius * 1.15), 0.18, 0.75)
+		var was_alive: bool = part.hp > 0.0
+		part.hp = maxf(0.0, float(part.hp) - base_damage * falloff)
+		if was_alive and part.hp <= 0.0:
+			destroyed.append(int(uid))
+	return destroyed
 
 
 static func prepare_part(part: Dictionary) -> void:
