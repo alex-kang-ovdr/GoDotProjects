@@ -1,0 +1,6 @@
+.godot/
+__pycache__/
+/analysis/bin/
+/analysis/obj/
+/tests/results/*
+!/tests/results/.gdignore
