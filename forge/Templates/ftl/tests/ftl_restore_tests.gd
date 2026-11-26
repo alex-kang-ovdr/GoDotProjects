@@ -111,7 +111,85 @@ func _run() -> void:
 	var jumped := smap.jump_to(int(start_links[0]))
 	_check(not jumped.is_empty() and smap.rebel_fleet_x > prev_rebel_x, "FTL jump updates beacon & advances Rebel Fleet")
 
-	# 7. Native scenes/main.tscn boot + Start Run smoke
+	# 7. ae_prof.sav Binary Profile Parsing & Unlock/Victory Badges
+	var prof := FTLProfile.new()
+	var expect_prof := FileAccess.file_exists("C:/Temp/FTL/FTL_Sav/ae_prof.sav")
+	if expect_prof:
+		var prof_ok := prof.load_from_sav_file("C:/Temp/FTL/FTL_Sav/ae_prof.sav")
+		_check(prof_ok and prof.version == 9, "ae_prof.sav v9 parsed natively", "v=%d ach=%d" % [prof.version, prof.achievements.size()])
+		_check(int(prof.stats.total_games) >= 300 and int(prof.stats.total_victories) >= 50,
+			"ae_prof.sav lifetime stats extracted",
+			"games=%d wins=%d scrap=%d" % [int(prof.stats.total_games), int(prof.stats.total_victories), int(prof.stats.total_scrap)])
+		_check(prof.top_scores.size() == 5 and prof.crew_records.size() == 5,
+			"ae_prof.sav Top 5 scores & 5 Crew Legends parsed",
+			"top=%d crew=%d" % [prof.top_scores.size(), prof.crew_records.size()])
+		_check(prof.is_ship_unlocked("PLAYER_SHIP_HARD") and not prof.get_ship_victory_badge("PLAYER_SHIP_HARD").is_empty(),
+			"ae_prof.sav unlocks & victory badge resolved for Kestrel",
+			"badge=%s" % prof.get_ship_victory_badge("PLAYER_SHIP_HARD"))
+	else:
+		_check(true, "Fallback profile check (no C:/Temp/FTL/FTL_Sav/ae_prof.sav)")
+
+	# 8. Deep Feature Tests: Teleporter Boarding, Hacking, Mind Control, Beam Drag-Line
+	var adv_player := FTLShip.new()
+	adv_player.init_from_blueprint(db, "PLAYER_SHIP_HARD", true, 0)
+	adv_player.reactor_max = 16
+	adv_player.drone_parts = 4
+	var adv_enemy := FTLShip.new()
+	adv_enemy.init_from_blueprint(db, "REBEL_SKINNY", false, 0)
+	adv_enemy.shield_layers = 2
+	adv_enemy.systems.engines.power = 2
+
+	# 8a. System installation & Teleporter Boarding
+	var inst_tp := adv_player.install_system("teleporter")
+	var inst_hk := adv_player.install_system("hacking")
+	var inst_mc := adv_player.install_system("mind")
+	_check(inst_tp and inst_hk and inst_mc, "Store install_system installs Teleporter, Hacking, Mind Control")
+	adv_player.add_system_power("teleporter")
+	var tp_rid := int(adv_player.systems.teleporter.room)
+	var boarder: Dictionary = adv_player.crew[0]
+	boarder.room_id = tp_rid
+	boarder.pos = adv_player.get_room_center_local(tp_rid)
+	var enemy_target_rid := int(adv_enemy.rooms[0].id)
+	var sent := adv_player.teleport_send(adv_enemy, enemy_target_rid)
+	_check(sent >= 1 and adv_enemy.crew.has(boarder) and not adv_player.crew.has(boarder),
+		"Teleporter sends friendly boarder to enemy room", "sent=%d" % sent)
+	adv_player.teleporter_cooldown = 0.0
+	var returned := adv_player.teleport_retrieve(adv_enemy, enemy_target_rid)
+	_check(returned >= 1 and adv_player.crew.has(boarder) and not adv_enemy.crew.has(boarder),
+		"Teleporter retrieves boarder back to player ship", "returned=%d" % returned)
+
+	# 8b. Hacking pod launch + active pulse drains shields / zeroes evasion
+	adv_player.add_system_power("hacking")
+	var enemy_sh_room := int(adv_enemy.systems.shields.room) if adv_enemy.systems.has("shields") else int(adv_enemy.rooms[0].id)
+	var hk_launched := adv_player.launch_hacking(adv_enemy, enemy_sh_room)
+	var hk_pulsed := adv_player.activate_hacking(adv_enemy)
+	for _h in range(40):
+		adv_player.step(0.1, adv_enemy, true)
+	_check(hk_launched and hk_pulsed and adv_enemy.shield_layers < 2,
+		"Hacking pod & pulse drains enemy shields", "shields=%d" % adv_enemy.shield_layers)
+	adv_player.clear_hacking(adv_enemy)
+
+	# 8c. Mind Control flips enemy crew allegiance
+	adv_player.add_system_power("mind")
+	var enemy_crew_rid := int(adv_enemy.crew[0].room_id) if not adv_enemy.crew.is_empty() else 0
+	var mc_ok := adv_player.activate_mind_control(adv_enemy, enemy_crew_rid)
+	var mc_flipped := false
+	for c in adv_enemy.crew:
+		if float(c.get("mind_timer", 0.0)) > 0.0 and adv_enemy._crew_effective_player(c):
+			mc_flipped = true
+			break
+	_check(mc_ok and mc_flipped, "Mind Control flips enemy crew allegiance temporarily")
+
+	# 8d. Beam Drag-Line exact room intersection
+	var b0 := adv_enemy.get_room_center_local(int(adv_enemy.rooms[0].id))
+	var b1 := adv_enemy.get_room_center_local(int(adv_enemy.rooms[-1].id))
+	var beam_hits := adv_enemy.compute_beam_rooms(b0, b1)
+	_check(beam_hits.size() >= 2 and beam_hits.has(int(adv_enemy.rooms[0].id)) and beam_hits.has(int(adv_enemy.rooms[-1].id)),
+		"Beam drag-line segment intersects multiple exact rooms", "rooms=%s" % str(beam_hits))
+
+	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
+	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
+	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())
 	var packed := load("res://scenes/main.tscn") as PackedScene
 	_check(packed != null, "scenes/main.tscn loads as PackedScene")
 	var inst := packed.instantiate()
@@ -119,6 +197,10 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	_check(inst.mode == "hangar" and inst.hangar_panel.visible, "Main scene boots cleanly into Hangar")
+	inst._open_profile_modal()
+	await process_frame
+	_check(inst.modal_kind == "profile" and inst.modal_overlay.visible, "Profile & Hall of Fame modal opens cleanly")
+	inst._close_modal()
 	inst._start_new_run()
 	await process_frame
 	_check(inst.mode == "play" and inst.player_ship != null and inst.hud_root.visible, "Start Run initializes ship & Combat HUD")

@@ -25,6 +25,7 @@ test('FTL Godot template exposes valid PlayForge metadata and ready/guided proje
   const ready = store.createProject({ name: 'FTL Ready', template: 'ftl', mode: 'ready' });
   assert.match(ready.files['scenes/main.tscn'], /type="Node2D"/);
   assert.ok(ready.files['scripts/ftl_pkg.gd']);
+  assert.ok(ready.files['scripts/ftl_profile.gd']);
   assert.ok(ready.files['scripts/ftl_database.gd']);
   assert.ok(ready.files['scripts/ftl_ship.gd']);
   assert.ok(ready.files['scripts/ftl_battle_view.gd']);
@@ -105,4 +106,17 @@ test('FTL Web server streams xml-bundle.json and raw PNG/OGG assets from ftl.dat
   assert.equal(oggRes.headers.get('content-type'), 'audio/ogg');
   const oggBuf = Buffer.from(await oggRes.arrayBuffer());
   assert.equal(oggBuf.subarray(0, 4).toString('ascii'), 'OggS');
+
+  const profRes = await fetch(`${base}/ftl-pkg/profile.json`);
+  assert.equal(profRes.status, 200);
+  assert.equal(profRes.headers.get('content-encoding'), null, 'must not gzip profile.json for Godot Web HTTPRequest');
+  const prof = await profRes.json();
+  if (fs.existsSync('C:\\Temp\\FTL\\FTL_Sav\\ae_prof.sav')) {
+    assert.equal(prof.loaded, true);
+    assert.equal(prof.version, 9);
+    assert.ok(prof.stats.total_games >= 300);
+    assert.ok(prof.stats.total_victories >= 50);
+    assert.equal(prof.top_scores.length, 5);
+    assert.equal(prof.crew_records.length, 5);
+  }
 });

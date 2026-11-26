@@ -10,6 +10,7 @@
   ],
   "guideOrder": [
     "scripts/ftl_pkg.gd",
+    "scripts/ftl_profile.gd",
     "scripts/ftl_database.gd",
     "scripts/ftl_audio.gd",
     "scripts/ftl_ship.gd",

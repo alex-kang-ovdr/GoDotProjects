@@ -27,14 +27,22 @@ var hazard_kind: String = ""
 var is_nebula: bool = false
 var paused: bool = false
 var targeting_weapon_idx: int = -1
+var special_target_mode: String = "" # "", "tp_send", "tp_back", "hack", "mind"
 var hover_pos: Vector2 = Vector2.ZERO
 var anim_clock: float = 0.0
 
-# Active projectiles, beams, ripples, explosions, popups
+# Beam drag-line aiming state (in enemy ship local coordinates)
+var beam_drag_active: bool = false
+var beam_drag_start: Vector2 = Vector2.ZERO
+var beam_drag_end: Vector2 = Vector2.ZERO
+var beam_drag_rooms: Array[int] = []
+
+# Active projectiles, beams, ripples, explosions, teleports, popups
 var projectiles: Array = [] # {from_ship, to_ship, bp, target_room, pos, start_pos, end_pos, t, dur}
-var beams: Array = []       # {to_ship, start_world, end_world, color, life, max_life}
+var beams: Array = []       # {origin_world, sweep_start_world, sweep_end_world, color, life, max_life}
 var explosions: Array = []  # {pos, life, max_life, radius}
 var shield_hits: Array = [] # {ship, pos, life, max_life}
+var teleport_fx: Array = [] # {pos, incoming, life, max_life}
 var popups: Array = []      # {pos, text, color, life, max_life}
 
 # Computed transforms for hit-testing
@@ -44,9 +52,12 @@ var _enemy_offset: Vector2 = Vector2(960.0, 290.0)
 var _enemy_scale: float = 0.88
 
 signal enemy_room_clicked(room_id: int)
+signal enemy_room_right_clicked(room_id: int)
+signal enemy_beam_aimed(beam_start: Vector2, beam_end: Vector2, beam_rooms: Array)
 signal player_room_clicked(room_id: int, button_index: int)
 signal player_door_clicked(door_idx: int)
 signal crew_clicked(crew_id: int)
+signal boarder_clicked(crew_id: int)
 
 
 func setup(p_pkg: FTLPkg, p_db: FTLDatabase) -> void:
@@ -73,7 +84,10 @@ func clear_combat_fx() -> void:
 	beams.clear()
 	explosions.clear()
 	shield_hits.clear()
+	teleport_fx.clear()
 	popups.clear()
+	beam_drag_active = false
+	beam_drag_rooms.clear()
 
 
 func spawn_shot(shot: Dictionary) -> void:
@@ -89,20 +103,32 @@ func spawn_shot(shot: Dictionary) -> void:
 	var target_world := ship_local_to_world(to_ship, to_ship.get_room_center_local(target_room))
 
 	if wtype == "BEAM":
-		# Sweep beam across up to 3 nearby rooms!
-		var hit_rooms: Array[int] = [target_room]
-		var base_c := to_ship.get_room_center_local(target_room)
-		for r in to_ship.rooms:
-			if int(r.id) != target_room and hit_rooms.size() < 3:
-				if to_ship.get_room_center_local(int(r.id)).distance_to(base_c) <= CELL * 2.4:
-					hit_rooms.append(int(r.id))
-		var end_world := ship_local_to_world(to_ship, to_ship.get_room_center_local(hit_rooms[-1]))
+		var hit_rooms: Array[int] = []
+		var b_start_local: Vector2 = shot.get("beam_start", Vector2.ZERO)
+		var b_end_local: Vector2 = shot.get("beam_end", Vector2.ZERO)
+		var raw_rooms: Array = shot.get("beam_rooms", [])
+		for rr_id in raw_rooms:
+			hit_rooms.append(int(rr_id))
+		if hit_rooms.is_empty():
+			# Fallback auto-sweep if AI or single-click fired without drag
+			hit_rooms.append(target_room)
+			var base_c := to_ship.get_room_center_local(target_room)
+			var blen := clampf(float(bp.get("length", 80.0)), 45.0, 175.0)
+			for r in to_ship.rooms:
+				if int(r.id) != target_room and hit_rooms.size() < 3:
+					if to_ship.get_room_center_local(int(r.id)).distance_to(base_c) <= blen:
+						hit_rooms.append(int(r.id))
+			b_start_local = base_c
+			b_end_local = to_ship.get_room_center_local(hit_rooms[-1])
+		var sweep_start_w := ship_local_to_world(to_ship, b_start_local)
+		var sweep_end_w := ship_local_to_world(to_ship, b_end_local)
 		beams.append({
-			"start_world": origin_world,
-			"end_world": end_world,
+			"origin_world": origin_world,
+			"sweep_start_world": sweep_start_w,
+			"sweep_end_world": sweep_end_w,
 			"color": bp.get("color", Color(1.0, 0.25, 0.15)),
-			"life": 0.65,
-			"max_life": 0.65,
+			"life": 0.75,
+			"max_life": 0.75,
 		})
 		for rid in hit_rooms:
 			var res := to_ship.apply_projectile_impact(bp, rid)
@@ -154,8 +180,9 @@ func step_fx(delta: float) -> void:
 		if sh == null:
 			continue
 		for pop in sh.pending_popups:
+			var pop_ship: FTLShip = pop.get("ship", sh)
 			popups.append({
-				"pos": ship_local_to_world(sh, pop.pos_local),
+				"pos": ship_local_to_world(pop_ship, pop.pos_local),
 				"text": str(pop.text),
 				"color": pop.color,
 				"life": 1.05,
@@ -170,6 +197,14 @@ func step_fx(delta: float) -> void:
 				"radius": 34.0 if bool(ex.big) else 22.0,
 			})
 		sh.pending_explosions.clear()
+		for tp in sh.pending_teleports:
+			teleport_fx.append({
+				"pos": ship_local_to_world(tp.ship, tp.pos_local),
+				"incoming": bool(tp.incoming),
+				"life": 0.65,
+				"max_life": 0.65,
+			})
+		sh.pending_teleports.clear()
 
 	if not paused:
 		# Advance projectiles
@@ -217,6 +252,13 @@ func step_fx(delta: float) -> void:
 			if float(sh.life) > 0.0:
 				alive_sh.append(sh)
 		shield_hits = alive_sh
+
+		var alive_tp: Array = []
+		for tp in teleport_fx:
+			tp.life = float(tp.life) - delta
+			if float(tp.life) > 0.0:
+				alive_tp.append(tp)
+		teleport_fx = alive_tp
 
 		var alive_pop: Array = []
 		for pop in popups:
@@ -279,24 +321,82 @@ func _weapon_mount_world(ship: FTLShip, mount_idx: int) -> Vector2:
 	return ship_local_to_world(ship, ship.get_ship_bounds_local().get_center())
 
 
-func handle_mouse_click(screen_pos: Vector2, button_index: int) -> bool:
-	# 1. Enemy room click when targeting a weapon
-	if enemy_ship != null and enemy_ship.hull > 0 and button_index == MOUSE_BUTTON_LEFT:
+func _is_targeting_beam() -> bool:
+	if player_ship == null or targeting_weapon_idx < 0 or targeting_weapon_idx >= player_ship.weapons.size():
+		return false
+	return str(player_ship.weapons[targeting_weapon_idx].bp.get("type", "")) == "BEAM"
+
+
+func _get_targeting_beam_length() -> float:
+	if not _is_targeting_beam():
+		return 80.0
+	return clampf(float(player_ship.weapons[targeting_weapon_idx].bp.get("length", 80.0)), 40.0, 180.0)
+
+
+func handle_mouse_motion(screen_pos: Vector2) -> void:
+	hover_pos = screen_pos
+	if beam_drag_active and enemy_ship != null:
 		var elocal := world_to_ship_local(enemy_ship, screen_pos)
-		var eroom := enemy_ship.find_room_at_local(elocal)
-		if eroom >= 0:
-			enemy_room_clicked.emit(eroom)
+		var dv := elocal - beam_drag_start
+		var max_len := _get_targeting_beam_length()
+		if dv.length() > max_len:
+			dv = dv.normalized() * max_len
+		elif dv.length() < 6.0:
+			dv = Vector2(minf(45.0, max_len), 0.0)
+		beam_drag_end = beam_drag_start + dv
+		beam_drag_rooms = enemy_ship.compute_beam_rooms(beam_drag_start, beam_drag_end)
+		queue_redraw()
+
+
+func handle_mouse_release(screen_pos: Vector2, button_index: int) -> bool:
+	if beam_drag_active and button_index == MOUSE_BUTTON_LEFT:
+		handle_mouse_motion(screen_pos)
+		beam_drag_active = false
+		if not beam_drag_rooms.is_empty():
+			enemy_beam_aimed.emit(beam_drag_start, beam_drag_end, beam_drag_rooms.duplicate())
+		beam_drag_rooms.clear()
+		queue_redraw()
+		return true
+	return false
+
+
+func handle_mouse_click(screen_pos: Vector2, button_index: int) -> bool:
+	# 1. Beam drag-line aiming start on enemy ship
+	if enemy_ship != null and enemy_ship.hull > 0 and button_index == MOUSE_BUTTON_LEFT and _is_targeting_beam() and special_target_mode.is_empty():
+		if ENEMY_BOX.has_point(screen_pos):
+			var elocal := world_to_ship_local(enemy_ship, screen_pos)
+			beam_drag_active = true
+			beam_drag_start = elocal
+			beam_drag_end = elocal + Vector2(minf(45.0, _get_targeting_beam_length()), 0.0)
+			beam_drag_rooms = enemy_ship.compute_beam_rooms(beam_drag_start, beam_drag_end)
+			queue_redraw()
 			return true
 
-	# 2. Player ship interactions (doors, crew, rooms)
+	# 2. Enemy ship interactions (boarder selection, right-click boarder move, room targeting / TP / Hack / Mind)
+	if enemy_ship != null and enemy_ship.hull > 0:
+		var elocal := world_to_ship_local(enemy_ship, screen_pos)
+		if button_index == MOUSE_BUTTON_LEFT and targeting_weapon_idx < 0 and special_target_mode.is_empty():
+			for c in enemy_ship.crew:
+				if bool(c.is_player) and c.hp > 0.0 and (c.pos as Vector2).distance_to(elocal) <= 18.0:
+					boarder_clicked.emit(int(c.id))
+					return true
+		var eroom := enemy_ship.find_room_at_local(elocal)
+		if eroom >= 0:
+			if button_index == MOUSE_BUTTON_RIGHT:
+				enemy_room_right_clicked.emit(eroom)
+				return true
+			if button_index == MOUSE_BUTTON_LEFT:
+				enemy_room_clicked.emit(eroom)
+				return true
+
+	# 3. Player ship interactions (doors, crew, rooms)
 	if player_ship != null:
 		var plocal := world_to_ship_local(player_ship, screen_pos)
-		if button_index == MOUSE_BUTTON_LEFT:
+		if button_index == MOUSE_BUTTON_LEFT and special_target_mode.is_empty():
 			var didx := player_ship.find_door_at_local(plocal, 11.5)
 			if didx >= 0:
 				player_door_clicked.emit(didx)
 				return true
-			# Check clicking directly on a player crew member
 			for c in player_ship.crew:
 				if c.is_player and c.hp > 0.0 and (c.pos as Vector2).distance_to(plocal) <= 17.0:
 					crew_clicked.emit(int(c.id))
@@ -467,6 +567,15 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 		if int(r.breach) > 0:
 			_draw_breach_in_room(rr)
 
+		# Hacking drone pod & purple pulse overlay
+		if ship.hacked_room == int(r.id):
+			var pulse_a := (0.34 + 0.24 * absf(sin(anim_clock * 11.0))) if ship.hacked_active else 0.14
+			draw_rect(rr, Color(0.75, 0.25, 1.0, pulse_a), true)
+			draw_rect(rr, Color(0.88, 0.45, 1.0, 0.95), false, 3.0)
+			var pod_p := rr.position + Vector2(rr.size.x * 0.5, -6.0)
+			draw_circle(pod_p, 7.0, Color("c85aff"))
+			draw_circle(pod_p, 3.5, Color.WHITE)
+
 	# 6. Doors & airlocks
 	for d in ship.doors:
 		_draw_door(d, ship.get_effective_system_power("doors"))
@@ -619,6 +728,13 @@ func _draw_door(d: Dictionary, door_lvl: int) -> void:
 
 func _draw_crew_member(c: Dictionary) -> void:
 	var pos: Vector2 = c.pos
+	if float(c.get("mind_timer", 0.0)) > 0.0:
+		var pulse_r := 16.0 + sin(anim_clock * 9.0) * 2.0
+		draw_circle(pos, pulse_r, Color(0.82, 0.28, 1.0, 0.3))
+		draw_arc(pos, pulse_r, 0, TAU, 20, Color("e070ff"), 2.2)
+		var mfont := ThemeDB.fallback_font
+		if mfont != null:
+			draw_string(mfont, pos + Vector2(-12, -22), "MC", HORIZONTAL_ALIGNMENT_CENTER, 24, 11, Color("f0a0ff"))
 	if bool(c.selected):
 		draw_circle(pos, 15.0, Color(0.28, 1.0, 0.42, 0.28))
 		draw_arc(pos, 15.0, 0, TAU, 18, Color(0.35, 1.0, 0.48, 0.95), 2.0)
@@ -656,37 +772,92 @@ func _draw_crew_member(c: Dictionary) -> void:
 func _draw_targeting_overlays() -> void:
 	if player_ship == null or enemy_ship == null or enemy_ship.hull <= 0:
 		return
+	var font := ThemeDB.fallback_font
 	for i in range(player_ship.weapons.size()):
 		var w: Dictionary = player_ship.weapons[i]
 		if not bool(w.powered) or int(w.target_room) < 0:
 			continue
-		var tgt := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(int(w.target_room)))
 		var col := Color("ff4444") if not bool(w.autofire) else Color("ffbb33")
+		var b_rooms: Array = w.get("beam_rooms", [])
+		if str(w.bp.get("type", "")) == "BEAM" and not b_rooms.is_empty():
+			for rid in b_rooms:
+				if enemy_ship.room_by_id.has(int(rid)):
+					var rrect := enemy_ship.get_room_rect_local(enemy_ship.room_by_id[int(rid)])
+					var wrect := Rect2(ship_local_to_world(enemy_ship, rrect.position), rrect.size * _enemy_scale)
+					draw_rect(wrect, Color(1.0, 0.3, 0.15, 0.22), true)
+			var ws := ship_local_to_world(enemy_ship, w.beam_start)
+			var we := ship_local_to_world(enemy_ship, w.beam_end)
+			draw_line(ws, we, col, 3.0)
+			draw_circle(ws, 5.0, col)
+			draw_circle(we, 5.0, col)
+			if font != null:
+				draw_string(font, we + Vector2(8, -6), "%d (%dR)" % [i + 1, b_rooms.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, col)
+			continue
+		var tgt := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(int(w.target_room)))
 		draw_arc(tgt, 17.0, 0, TAU, 24, col, 2.2)
 		draw_line(tgt + Vector2(-22, 0), tgt + Vector2(-11, 0), col, 2.0)
 		draw_line(tgt + Vector2(11, 0), tgt + Vector2(22, 0), col, 2.0)
 		draw_line(tgt + Vector2(0, -22), tgt + Vector2(0, -11), col, 2.0)
 		draw_line(tgt + Vector2(0, 11), tgt + Vector2(0, 22), col, 2.0)
-		var font := ThemeDB.fallback_font
 		if font != null:
 			draw_string(font, tgt + Vector2(14, -12), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, col)
 
-	# Hover crosshair when selecting a target for targeting_weapon_idx
-	if targeting_weapon_idx >= 0:
+	# Active Beam drag-line preview
+	if beam_drag_active:
+		for rid in beam_drag_rooms:
+			if enemy_ship.room_by_id.has(int(rid)):
+				var rrect := enemy_ship.get_room_rect_local(enemy_ship.room_by_id[int(rid)])
+				var wrect := Rect2(ship_local_to_world(enemy_ship, rrect.position), rrect.size * _enemy_scale)
+				draw_rect(wrect, Color(1.0, 0.65, 0.15, 0.34), true)
+				draw_rect(wrect, Color("ffd54f"), false, 2.0)
+		var ds := ship_local_to_world(enemy_ship, beam_drag_start)
+		var de := ship_local_to_world(enemy_ship, beam_drag_end)
+		draw_line(ds, de, Color("ffd54f"), 4.0)
+		draw_circle(ds, 6.0, Color("7eff8b"))
+		draw_circle(de, 6.0, Color("ff5c5c"))
+		if font != null:
+			draw_string(font, de + Vector2(10, -8), "BEAM: %d ROOMS" % beam_drag_rooms.size(), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("ffd54f"))
+
+	# Special targeting cursor (Teleporter / Hacking / Mind Control)
+	if not special_target_mode.is_empty():
+		var elocal := world_to_ship_local(enemy_ship, hover_pos)
+		var eroom := enemy_ship.find_room_at_local(elocal)
+		if eroom >= 0:
+			var c := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(eroom))
+			var scol := Color("5ce1ff") if special_target_mode == "tp_send" else (Color("7eff8b") if special_target_mode == "tp_back" else Color("e070ff"))
+			draw_arc(c, 22.0 + sin(anim_clock * 10.0) * 2.5, 0, TAU, 24, scol, 2.6)
+			if font != null:
+				draw_string(font, c + Vector2(-34, -26), special_target_mode.to_upper(), HORIZONTAL_ALIGNMENT_CENTER, 72, 12, scol)
+	elif targeting_weapon_idx >= 0 and not beam_drag_active:
 		var elocal := world_to_ship_local(enemy_ship, hover_pos)
 		var eroom := enemy_ship.find_room_at_local(elocal)
 		if eroom >= 0:
 			var c := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(eroom))
 			draw_arc(c, 22.0 + sin(anim_clock * 10.0) * 2.5, 0, TAU, 24, Color("7eff8b"), 2.4)
+			if _is_targeting_beam() and font != null:
+				draw_string(font, c + Vector2(-46, -26), "DRAG BEAM LINE", HORIZONTAL_ALIGNMENT_CENTER, 96, 12, Color("ffd54f"))
 
 
 func _draw_combat_fx() -> void:
-	# Beams
+	# Sweeping Beams (origin -> linearly moving contact point from sweep_start to sweep_end)
 	for b in beams:
-		var a := clampf(float(b.life) / maxf(0.01, float(b.max_life)), 0.0, 1.0)
+		var max_l := maxf(0.01, float(b.max_life))
+		var u := clampf(1.0 - float(b.life) / max_l, 0.0, 1.0)
+		var a := clampf(float(b.life) / max_l * 1.4, 0.0, 1.0)
 		var col: Color = b.color
-		draw_line(b.start_world, b.end_world, Color(col.r, col.g, col.b, a * 0.45), 11.0)
-		draw_line(b.start_world, b.end_world, Color(1.0, 0.92, 0.85, a), 3.5)
+		var contact: Vector2 = (b.sweep_start_world as Vector2).lerp(b.sweep_end_world as Vector2, u)
+		draw_line(b.origin_world, contact, Color(col.r, col.g, col.b, a * 0.45), 11.0)
+		draw_line(b.origin_world, contact, Color(1.0, 0.94, 0.85, a), 3.5)
+		draw_line(b.sweep_start_world, contact, Color(1.0, 0.55, 0.15, a * 0.8), 4.0)
+		draw_circle(contact, 10.0 * a, Color(1.0, 0.88, 0.55, a))
+
+	# Teleporter beam columns
+	for tp in teleport_fx:
+		var a := clampf(float(tp.life) / maxf(0.01, float(tp.max_life)), 0.0, 1.0)
+		var p: Vector2 = tp.pos
+		var col := Color(0.35, 0.95, 1.0, a * 0.55) if bool(tp.incoming) else Color(0.55, 1.0, 0.8, a * 0.55)
+		draw_rect(Rect2(p + Vector2(-18, -52), Vector2(36, 76)), col, true)
+		draw_rect(Rect2(p + Vector2(-8, -58), Vector2(16, 86)), Color(0.9, 1.0, 1.0, a * 0.85), true)
 
 	# Projectiles
 	for p in projectiles:

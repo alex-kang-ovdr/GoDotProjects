@@ -8,6 +8,7 @@ extends RefCounted
 ##  3. Godot Web in-memory PKG buffer (from browser file picker via JavaScriptBridge)
 
 signal data_pack_ready(ok: bool)
+signal profile_ready(profile_data: Dictionary)
 signal texture_loaded(rel_path: String)
 signal audio_loaded(rel_path: String)
 
@@ -213,7 +214,28 @@ func start_web_bootstrap(host_node: Node, explicit_base_url: String = "") -> boo
 	if err != OK:
 		req.queue_free()
 		return false
+	_request_web_profile(host_node, web_base_url)
 	return true
+
+
+func _request_web_profile(host_node: Node, base_url: String) -> void:
+	if host_node == null:
+		return
+	var preq := HTTPRequest.new()
+	preq.accept_gzip = false
+	preq.timeout = 10.0
+	host_node.add_child(preq)
+	preq.request_completed.connect(func(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray):
+		preq.queue_free()
+		if result == HTTPRequest.RESULT_SUCCESS and code == 200 and not body.is_empty():
+			var parsed = JSON.parse_string(body.get_string_from_utf8())
+			if parsed is Dictionary:
+				profile_ready.emit(parsed)
+				return
+		profile_ready.emit({})
+	)
+	if preq.request(base_url + "ftl-pkg/profile.json") != OK:
+		preq.queue_free()
 
 
 func _enqueue_web_asset(kind: String, key: String) -> void:

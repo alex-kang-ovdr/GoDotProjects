@@ -7,6 +7,7 @@ const SAVE_PATH := "user://ftl_godot_run_v1.json"
 
 var pkg: FTLPkg
 var db: FTLDatabase
+var profile: FTLProfile
 var audio: FTLAudio
 var battle_view: FTLBattleView
 var sector_map: FTLSectorMap
@@ -18,7 +19,9 @@ var mode: String = "hangar" # hangar, play, victory, defeat
 var difficulty: int = 0     # 0=Easy, 1=Normal, 2=Hard
 var selected_hangar_idx: int = 0
 var selected_crew_id: int = -1
+var selected_boarder_id: int = -1
 var targeting_weapon_idx: int = -1
+var special_target_mode: String = "" # "", "tp_send", "tp_back", "hack", "mind"
 var paused: bool = false
 var in_combat: bool = false
 var active_event: Dictionary = {}
@@ -52,9 +55,13 @@ func _ready() -> void:
 	pkg = FTLPkg.new()
 	pkg.auto_open()
 	pkg.data_pack_ready.connect(_on_web_data_pack_ready)
+	pkg.profile_ready.connect(_on_web_profile_ready)
 	pkg.texture_loaded.connect(_on_web_texture_loaded)
 	db = FTLDatabase.new()
 	db.load_all(pkg)
+
+	profile = FTLProfile.new()
+	profile.auto_load()
 
 	audio = FTLAudio.new()
 	audio.name = "FTLAudio"
@@ -66,9 +73,12 @@ func _ready() -> void:
 	add_child(battle_view)
 	battle_view.setup(pkg, db)
 	battle_view.enemy_room_clicked.connect(_on_enemy_room_clicked)
+	battle_view.enemy_room_right_clicked.connect(_on_enemy_room_right_clicked)
+	battle_view.enemy_beam_aimed.connect(_on_enemy_beam_aimed)
 	battle_view.player_room_clicked.connect(_on_player_room_clicked)
 	battle_view.player_door_clicked.connect(_on_player_door_clicked)
 	battle_view.crew_clicked.connect(_on_crew_clicked)
+	battle_view.boarder_clicked.connect(_on_boarder_clicked)
 
 	sector_map = FTLSectorMap.new()
 
@@ -105,6 +115,18 @@ func _on_web_data_pack_ready(ok: bool) -> void:
 		])
 	else:
 		hangar_refs["src_badge"].text = "Web 독립 실행 모드 (내장 FTL 폴백 데이터)"
+
+
+func _on_web_profile_ready(profile_data: Dictionary) -> void:
+	if not profile_data.is_empty():
+		profile.load_from_dict(profile_data)
+		if mode == "hangar":
+			_show_hangar()
+		print("FTL_WEB_PROFILE_READY | games=%d | victories=%d | achievements=%d" % [
+			int(profile.stats.get("total_games", 0)),
+			int(profile.stats.get("total_victories", 0)),
+			profile.achievements.size()
+		])
 
 
 func _on_web_texture_loaded(_rel_path: String) -> void:
@@ -288,21 +310,26 @@ func _build_hangar_ui() -> void:
 	var foot := HBoxContainer.new()
 	foot.add_theme_constant_override("separation", 10)
 	root_v.add_child(foot)
-	var hint := _mk_label("Space 일시정지 · 1-4 무기 · 좌클릭 전력+/우클릭 전력- · 우클릭 승무원 이동 · Z/X 문 개폐 · J 성도 지도", 12, Color("8da8c2"))
+	var hint := _mk_label("Space 정지 · 1-4 무기(빔 드래그) · T/Y 보딩 · H 해킹 · N 마인드 · Z/X 문 · J 지도", 12, Color("8da8c2"))
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	foot.add_child(hint)
+	var prof_btn := _mk_btn("프로필 · 기록 (PROFILE)", _open_profile_modal)
+	foot.add_child(prof_btn)
+	hangar_refs["prof_btn"] = prof_btn
 	var cont_btn := _mk_btn("이어하기 (CONTINUE)", _continue_saved_run)
 	foot.add_child(cont_btn)
 	hangar_refs["cont_btn"] = cont_btn
 	var start_btn := _mk_btn("출항 시작 (START RUN)", _start_new_run, true)
 	start_btn.custom_minimum_size.x = 185
 	foot.add_child(start_btn)
+	hangar_refs["start_btn"] = start_btn
 
 
 func _show_hangar() -> void:
 	mode = "hangar"
 	in_combat = false
 	paused = false
+	special_target_mode = ""
 	_close_modal()
 	hangar_panel.visible = true
 	hud_root.visible = false
@@ -311,7 +338,8 @@ func _show_hangar() -> void:
 	battle_view.set_backdrop(0, false, "")
 	audio.play_track("title", false)
 
-	hangar_refs["src_badge"].text = ("FTL 데이터 연결됨: %s (%d개 에셋)" % [pkg.archive_path.get_file(), pkg.entry_count]) if pkg.is_loaded else "내장 폴백 데이터 모드 (C:\\Temp\\FTL\\ftl.dat.vanilla 미감지)"
+	var prof_txt := " · 프로필: %d승/%d전" % [int(profile.stats.get("total_victories", 0)), int(profile.stats.get("total_games", 0))] if (profile != null and profile.loaded) else ""
+	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("내장 폴백 데이터 모드%s" % prof_txt))
 	hangar_refs["cont_btn"].visible = FileAccess.file_exists(SAVE_PATH)
 
 	var list_box: VBoxContainer = hangar_refs["ship_list"]
@@ -320,9 +348,14 @@ func _show_hangar() -> void:
 	for i in range(db.player_ship_ids.size()):
 		var sid := db.player_ship_ids[i]
 		var bp: Dictionary = db.ships.get(sid, {})
-		var label_txt := "%s — %s" % [str(bp.get("class_name", sid)), str(bp.get("name", sid))]
+		var unlocked := profile == null or profile.is_ship_unlocked(sid)
+		var badge := profile.get_ship_victory_badge(sid) if profile != null else ""
+		var prefix := ("[LOCK] " if not unlocked else (badge + " " if not badge.is_empty() else ""))
+		var label_txt := "%s%s — %s" % [prefix, str(bp.get("class_name", sid)), str(bp.get("name", sid))]
 		var btn := _mk_btn(label_txt, func(): _select_hangar_ship(i))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		if not unlocked:
+			btn.add_theme_color_override("font_color", Color("6d7e8d"))
 		list_box.add_child(btn)
 	_select_hangar_ship(clampi(selected_hangar_idx, 0, maxi(0, db.player_ship_ids.size() - 1)))
 	_set_difficulty(difficulty)
@@ -334,9 +367,15 @@ func _select_hangar_ship(idx: int) -> void:
 	selected_hangar_idx = clampi(idx, 0, db.player_ship_ids.size() - 1)
 	var sid := db.player_ship_ids[selected_hangar_idx]
 	var bp: Dictionary = db.ships.get(sid, {})
-	hangar_refs["ship_title"].text = "%s (%s)" % [str(bp.get("name", sid)), str(bp.get("class_name", ""))]
+	var unlocked := profile == null or profile.is_ship_unlocked(sid)
+	var badge := profile.get_ship_victory_badge(sid) if profile != null else ""
+	var best_sc := profile.get_ship_best_score(sid) if profile != null else 0
+	var badge_str := ("  [" + badge + "]") if not badge.is_empty() else ("  [미해금 - 프로필에서 전체 언락 가능]" if not unlocked else "")
+	hangar_refs["ship_title"].text = "%s (%s)%s" % [str(bp.get("name", sid)), str(bp.get("class_name", "")), badge_str]
 	hangar_refs["ship_desc"].text = str(bp.get("desc", ""))
 	hangar_refs["name_edit"].text = str(bp.get("name", "The Kestrel"))
+	if hangar_refs.has("start_btn"):
+		hangar_refs["start_btn"].disabled = not unlocked
 
 	var wp_names: Array[String] = []
 	for w in bp.get("weapons", []):
@@ -344,11 +383,13 @@ func _select_hangar_ship(idx: int) -> void:
 	var aug_names: Array[String] = []
 	for a in bp.get("augments", []):
 		aug_names.append(str(db.augments.get(str(a), {}).get("title", str(a))))
-	hangar_refs["ship_stats"].text = "선체: %d  |  원자로: %d  |  승무원: %d (%s)\n무기: %s  |  보조장치: %s" % [
+	var best_line := ("  |  최고 기록: %d점" % best_sc) if best_sc > 0 else ""
+	hangar_refs["ship_stats"].text = "선체: %d  |  원자로: %d  |  승무원: %d (%s)%s\n무기: %s  |  보조장치: %s" % [
 		int(bp.get("health", 30)),
 		int(bp.get("maxPower", 8)),
 		(bp.get("crew", []) as Array).size(),
 		", ".join(PackedStringArray(bp.get("crew", []))),
+		best_line,
 		", ".join(PackedStringArray(wp_names)) if not wp_names.is_empty() else "없음",
 		", ".join(PackedStringArray(aug_names)) if not aug_names.is_empty() else "없음",
 	]
@@ -481,18 +522,38 @@ func _build_hud_ui() -> void:
 	wpn_v.add_child(wpn_h)
 	hud_refs["wpn_h"] = wpn_h
 
-	# Drones & Utilities (Cloak, Doors)
+	# Drones & Utilities (Cloak, Teleporter, Hacking, Mind Control, Doors)
 	var util_v := VBoxContainer.new()
-	util_v.custom_minimum_size.x = 225
-	util_v.add_theme_constant_override("separation", 5)
+	util_v.custom_minimum_size.x = 270
+	util_v.add_theme_constant_override("separation", 4)
 	bot_h.add_child(util_v)
 	var drone_h := HBoxContainer.new()
 	drone_h.add_theme_constant_override("separation", 4)
 	util_v.add_child(drone_h)
 	hud_refs["drone_h"] = drone_h
 
+	var spec_h := HBoxContainer.new()
+	spec_h.add_theme_constant_override("separation", 4)
+	util_v.add_child(spec_h)
+	var tp_send_btn := _mk_btn("TP SEND (T)", _on_tp_send_pressed)
+	tp_send_btn.custom_minimum_size.y = 26
+	spec_h.add_child(tp_send_btn)
+	hud_refs["tp_send_btn"] = tp_send_btn
+	var tp_back_btn := _mk_btn("TP BACK (Y)", _on_tp_back_pressed)
+	tp_back_btn.custom_minimum_size.y = 26
+	spec_h.add_child(tp_back_btn)
+	hud_refs["tp_back_btn"] = tp_back_btn
+	var hack_btn := _mk_btn("HACK (H)", _on_hack_pressed)
+	hack_btn.custom_minimum_size.y = 26
+	spec_h.add_child(hack_btn)
+	hud_refs["hack_btn"] = hack_btn
+	var mind_btn := _mk_btn("MIND (N)", _on_mind_pressed)
+	mind_btn.custom_minimum_size.y = 26
+	spec_h.add_child(mind_btn)
+	hud_refs["mind_btn"] = mind_btn
+
 	var door_h := HBoxContainer.new()
-	door_h.add_theme_constant_override("separation", 6)
+	door_h.add_theme_constant_override("separation", 5)
 	util_v.add_child(door_h)
 	door_h.add_child(_mk_btn("OPEN (Z)", func(): if player_ship: player_ship.open_all_doors_smart()))
 	door_h.add_child(_mk_btn("CLOSE (X)", func(): if player_ship: player_ship.set_all_doors_open(false, true)))
@@ -565,9 +626,12 @@ func _start_new_run() -> void:
 	ships_defeated = 0
 	scrap_collected = 0
 	selected_crew_id = int(player_ship.crew[0].id) if not player_ship.crew.is_empty() else -1
+	selected_boarder_id = -1
 	if selected_crew_id >= 0:
 		player_ship.crew[0].selected = true
 	targeting_weapon_idx = -1
+	special_target_mode = ""
+	battle_view.special_target_mode = ""
 	in_combat = false
 	paused = false
 
@@ -610,6 +674,10 @@ func _continue_saved_run() -> void:
 	sector_map.init_campaign(db)
 	sector_map.enter_sector(clampi(int(parsed.get("sector_index", 0)), 0, 7), 0)
 	enemy_ship = null
+	selected_boarder_id = -1
+	targeting_weapon_idx = -1
+	special_target_mode = ""
+	battle_view.special_target_mode = ""
 	in_combat = false
 	paused = false
 	mode = "play"
@@ -656,6 +724,7 @@ func _process(delta: float) -> void:
 	var sim_paused := paused or modal_blocking
 	battle_view.paused = sim_paused
 	battle_view.targeting_weapon_idx = targeting_weapon_idx
+	battle_view.special_target_mode = special_target_mode
 	battle_view.hover_pos = get_viewport().get_mouse_position()
 
 	if not sim_paused:
@@ -725,8 +794,15 @@ func _check_combat_outcome() -> void:
 		var dead_crew := not enemy_ship.has_living_crew() and enemy_ship.hull > 0
 		var was_boss := enemy_ship.is_boss
 		var prev_phase := enemy_ship.boss_phase
+		# Auto-recall surviving friendly boarders & detach hacking pod before clearing enemy_ship
+		var recalled := player_ship.retrieve_all_boarders(enemy_ship)
+		player_ship.clear_hacking(enemy_ship)
+		if recalled > 0:
+			_rebuild_crew_list()
 		in_combat = false
 		targeting_weapon_idx = -1
+		special_target_mode = ""
+		selected_boarder_id = -1
 		ships_defeated += 1
 		audio.set_combat(false)
 		audio.play_sfx("explosion")
@@ -784,6 +860,10 @@ func _check_combat_outcome() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+		if not modal_kind.is_empty() and modal_kind != "event":
+			_close_modal()
+			return
 	if mode != "play" or player_ship == null:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -795,8 +875,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if kc == KEY_ESCAPE:
 			if not modal_kind.is_empty() and modal_kind != "event":
 				_close_modal()
-			elif targeting_weapon_idx >= 0:
+			elif targeting_weapon_idx >= 0 or not special_target_mode.is_empty():
 				targeting_weapon_idx = -1
+				special_target_mode = ""
+				battle_view.beam_drag_active = false
+				battle_view.beam_drag_rooms.clear()
 			return
 		if not modal_kind.is_empty():
 			if modal_kind == "event" and kc >= KEY_1 and kc <= KEY_9:
@@ -815,6 +898,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			player_ship.set_all_doors_open(false, true)
 		elif kc == KEY_C:
 			_on_cloak_pressed()
+		elif kc == KEY_T:
+			_on_tp_send_pressed()
+		elif kc == KEY_Y:
+			_on_tp_back_pressed()
+		elif kc == KEY_H:
+			_on_hack_pressed()
+		elif kc == KEY_N:
+			_on_mind_pressed()
 		elif kc == KEY_V:
 			_toggle_autofire_all()
 		elif kc >= KEY_1 and kc <= KEY_4:
@@ -825,24 +916,62 @@ func _unhandled_input(event: InputEvent) -> void:
 			if ci < friendly.size():
 				_on_crew_clicked(int(friendly[ci].id))
 
-	elif event is InputEventMouseButton and event.pressed and modal_kind.is_empty():
-		if battle_view.handle_mouse_click(event.position, event.button_index):
-			get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion and modal_kind.is_empty():
+		battle_view.handle_mouse_motion(event.position)
+	elif event is InputEventMouseButton and modal_kind.is_empty():
+		if event.pressed:
+			if battle_view.handle_mouse_click(event.position, event.button_index):
+				get_viewport().set_input_as_handled()
+		else:
+			if battle_view.handle_mouse_release(event.position, event.button_index):
+				get_viewport().set_input_as_handled()
 
 
 func _on_enemy_room_clicked(room_id: int) -> void:
 	if enemy_ship == null or not in_combat:
 		return
+	if not special_target_mode.is_empty():
+		var m := special_target_mode
+		special_target_mode = ""
+		if m == "tp_send":
+			var moved := player_ship.teleport_send(enemy_ship, room_id)
+			if moved > 0:
+				_banner("보딩 팀 %d명 적 선실로 전송 완료! (적 선실 우클릭으로 이동)" % moved)
+				_rebuild_crew_list()
+			else:
+				_banner("텔레포터실에 아군 승무원이 없거나 졸탄 쉴드에 막혔습니다.")
+		elif m == "tp_back":
+			var ret := player_ship.teleport_retrieve(enemy_ship, room_id)
+			if ret > 0:
+				_banner("보딩 팀 %d명 아군 함선으로 귀환 완료!" % ret)
+				selected_boarder_id = -1
+				_rebuild_crew_list()
+			else:
+				_banner("해당 적 선실에 귀환할 아군 보더가 없습니다.")
+		elif m == "hack":
+			if player_ship.launch_hacking(enemy_ship, room_id):
+				_banner("해킹 드론 포드 부착! H 키로 해킹 펄스를 발동하세요.")
+			else:
+				_banner("해킹 발사 실패 (드론 부품·전력·졸탄 쉴드 확인)")
+		elif m == "mind":
+			if player_ship.activate_mind_control(enemy_ship, room_id):
+				_banner("마인드 컨트롤 발동! 적 승무원이 아군으로 전향했습니다!")
+			else:
+				_banner("해당 선실에 마인드 컨트롤 가능한 적 승무원이 없습니다.")
+		_update_hud_labels()
+		return
+
 	if targeting_weapon_idx >= 0 and targeting_weapon_idx < player_ship.weapons.size():
 		var w: Dictionary = player_ship.weapons[targeting_weapon_idx]
 		if not bool(w.powered):
 			player_ship.toggle_weapon_power(targeting_weapon_idx)
 		if bool(w.powered):
 			w.target_room = room_id
+			w.beam_rooms = []
 			audio.play_sfx("select_up1")
 		targeting_weapon_idx = -1
 	else:
-		# Convenience: clicking an enemy room directly targets all powered untargeted weapons!
+		# Convenience: clicking an enemy room directly targets all powered untargeted non-beam weapons
 		var targeted := false
 		for w in player_ship.weapons:
 			if bool(w.powered) and int(w.target_room) < 0:
@@ -854,7 +983,67 @@ func _on_enemy_room_clicked(room_id: int) -> void:
 					w.target_room = room_id
 
 
+func _on_enemy_room_right_clicked(room_id: int) -> void:
+	if enemy_ship == null or not in_combat:
+		return
+	if selected_boarder_id < 0:
+		# Auto-pick first friendly boarder aboard enemy ship
+		for c in enemy_ship.crew:
+			if bool(c.is_player) and c.hp > 0.0:
+				selected_boarder_id = int(c.id)
+				c.selected = true
+				break
+	if selected_boarder_id >= 0:
+		for c in enemy_ship.crew:
+			if int(c.id) == selected_boarder_id and bool(c.is_player) and c.hp > 0.0:
+				enemy_ship.command_crew_to_room(c, room_id)
+				audio.play_sfx("powerUpSystem")
+				break
+
+
+func _on_enemy_beam_aimed(b_start: Vector2, b_end: Vector2, b_rooms: Array) -> void:
+	if enemy_ship == null or not in_combat:
+		return
+	if targeting_weapon_idx < 0 or targeting_weapon_idx >= player_ship.weapons.size():
+		return
+	var w: Dictionary = player_ship.weapons[targeting_weapon_idx]
+	if not bool(w.powered):
+		player_ship.toggle_weapon_power(targeting_weapon_idx)
+	if bool(w.powered) and not b_rooms.is_empty():
+		var rooms_typed: Array[int] = []
+		for rid in b_rooms:
+			rooms_typed.append(int(rid))
+		w.beam_start = b_start
+		w.beam_end = b_end
+		w.beam_rooms = rooms_typed
+		w.target_room = rooms_typed[0]
+		audio.play_sfx("select_up1")
+		_banner("빔 경로 지정 완료 (%d개 선실 관통)" % rooms_typed.size())
+	targeting_weapon_idx = -1
+	_update_hud_labels()
+
+
+func _on_boarder_clicked(crew_id: int) -> void:
+	selected_boarder_id = crew_id
+	selected_crew_id = -1
+	if player_ship != null:
+		for c in player_ship.crew:
+			c.selected = false
+	if enemy_ship != null:
+		for c in enemy_ship.crew:
+			c.selected = (int(c.id) == crew_id and bool(c.is_player))
+	_rebuild_crew_list()
+
+
 func _on_player_room_clicked(room_id: int, button_index: int) -> void:
+	if special_target_mode == "mind" and button_index == MOUSE_BUTTON_LEFT:
+		special_target_mode = ""
+		if player_ship.activate_mind_control(player_ship, room_id):
+			_banner("아군 승무원의 마인드 컨트롤을 해제했습니다!")
+		else:
+			_banner("해당 선실에 세뇌된 아군 승무원이 없습니다.")
+		_update_hud_labels()
+		return
 	if button_index == MOUSE_BUTTON_RIGHT and selected_crew_id >= 0:
 		for c in player_ship.crew:
 			if int(c.id) == selected_crew_id and bool(c.is_player):
@@ -875,8 +1064,12 @@ func _on_player_door_clicked(door_idx: int) -> void:
 
 func _on_crew_clicked(crew_id: int) -> void:
 	selected_crew_id = crew_id
+	selected_boarder_id = -1
 	for c in player_ship.crew:
 		c.selected = (int(c.id) == crew_id)
+	if enemy_ship != null:
+		for c in enemy_ship.crew:
+			c.selected = false
 	_rebuild_crew_list()
 
 
@@ -892,13 +1085,102 @@ func _on_weapon_slot_clicked(idx: int, button_index: int) -> void:
 	if not bool(player_ship.weapons[idx].powered):
 		player_ship.toggle_weapon_power(idx)
 	if bool(player_ship.weapons[idx].powered) and in_combat:
+		special_target_mode = ""
 		targeting_weapon_idx = idx
+		if str(player_ship.weapons[idx].bp.get("type", "")) == "BEAM":
+			_banner("빔 무기 조준: 적 함선 위를 좌클릭 드래그해 관통 직선을 지정하세요!")
 
 
 func _on_cloak_pressed() -> void:
 	if player_ship != null and in_combat:
 		if player_ship.activate_cloaking():
 			_banner("은폐 장치 가동! (회피 +60%)")
+
+
+func _on_tp_send_pressed() -> void:
+	if player_ship == null or not in_combat or not player_ship.systems.has("teleporter"):
+		return
+	if not player_ship.can_teleport_send():
+		if player_ship.teleporter_cooldown > 0.0:
+			_banner("텔레포터 재충전 중 (%.0fs)" % player_ship.teleporter_cooldown)
+		elif player_ship.get_effective_system_power("teleporter") <= 0:
+			_banner("텔레포터에 전력을 배분하세요.")
+		else:
+			_banner("먼저 아군 승무원을 텔레포터실로 이동시키세요!")
+		return
+	targeting_weapon_idx = -1
+	special_target_mode = "" if special_target_mode == "tp_send" else "tp_send"
+	if special_target_mode == "tp_send":
+		_banner("보딩 전송 대상 적 선실을 클릭하세요! (ESC 취소)")
+
+
+func _on_tp_back_pressed() -> void:
+	if player_ship == null or not in_combat or enemy_ship == null or not player_ship.systems.has("teleporter"):
+		return
+	if player_ship.get_effective_system_power("teleporter") <= 0 or player_ship.teleporter_cooldown > 0.0:
+		_banner("텔레포터가 준비되지 않았습니다.")
+		return
+	# Collect distinct rooms containing friendly boarders on enemy ship
+	var boarder_rooms: Array[int] = []
+	for c in enemy_ship.crew:
+		if bool(c.is_player) and c.hp > 0.0:
+			var rid := int(c.room_id)
+			if not boarder_rooms.has(rid):
+				boarder_rooms.append(rid)
+	if boarder_rooms.is_empty():
+		_banner("적 함선에 파견된 아군 보딩 팀이 없습니다.")
+		return
+	if boarder_rooms.size() == 1:
+		var ret := player_ship.teleport_retrieve(enemy_ship, boarder_rooms[0])
+		if ret > 0:
+			_banner("보딩 팀 %d명 귀환 완료!" % ret)
+			selected_boarder_id = -1
+			_rebuild_crew_list()
+			_update_hud_labels()
+		return
+	targeting_weapon_idx = -1
+	special_target_mode = "" if special_target_mode == "tp_back" else "tp_back"
+	if special_target_mode == "tp_back":
+		_banner("귀환시킬 아군 보더가 있는 적 선실을 클릭하세요!")
+
+
+func _on_hack_pressed() -> void:
+	if player_ship == null or not in_combat or enemy_ship == null or not player_ship.systems.has("hacking"):
+		return
+	if player_ship.get_effective_system_power("hacking") <= 0:
+		_banner("해킹 시스템에 전력을 배분하세요.")
+		return
+	if player_ship.hacking_target_room >= 0:
+		if player_ship.activate_hacking(enemy_ship):
+			var r: Dictionary = enemy_ship.room_by_id.get(player_ship.hacking_target_room, {})
+			var sname := str(r.get("system", "room")).to_upper()
+			_banner("해킹 펄스 발동! 적 %s 무력화 (%.0fs)" % [sname, player_ship.hacking_active_timer])
+		elif player_ship.hacking_cooldown > 0.0:
+			_banner("해킹 펄스 재충전 중 (%.0fs)" % player_ship.hacking_cooldown)
+		_update_hud_labels()
+		return
+	if player_ship.drone_parts <= 0:
+		_banner("해킹 포드 발사에 드론 부품 1개가 필요합니다.")
+		return
+	targeting_weapon_idx = -1
+	special_target_mode = "" if special_target_mode == "hack" else "hack"
+	if special_target_mode == "hack":
+		_banner("해킹 드론 포드를 부착할 적 선실을 클릭하세요! (드론 부품 1 소모)")
+
+
+func _on_mind_pressed() -> void:
+	if player_ship == null or not in_combat or enemy_ship == null or not player_ship.systems.has("mind"):
+		return
+	if player_ship.get_effective_system_power("mind") <= 0:
+		_banner("마인드 컨트롤에 전력을 배분하세요.")
+		return
+	if player_ship.mind_cooldown > 0.0:
+		_banner("마인드 컨트롤 재충전 중 (%.0fs)" % player_ship.mind_cooldown)
+		return
+	targeting_weapon_idx = -1
+	special_target_mode = "" if special_target_mode == "mind" else "mind"
+	if special_target_mode == "mind":
+		_banner("마인드 컨트롤 대상 선실을 클릭하세요! (적 승무원 세뇌 / 아군 세뇌 해제)")
 
 
 func _toggle_autofire_all() -> void:
@@ -989,6 +1271,10 @@ func _rebuild_hud_controls() -> void:
 		drone_h.add_child(db_btn)
 
 	hud_refs["cloak_btn"].visible = player_ship.systems.has("cloaking")
+	hud_refs["tp_send_btn"].visible = player_ship.systems.has("teleporter")
+	hud_refs["tp_back_btn"].visible = player_ship.systems.has("teleporter")
+	hud_refs["hack_btn"].visible = player_ship.systems.has("hacking")
+	hud_refs["mind_btn"].visible = player_ship.systems.has("mind")
 	_update_hud_labels()
 
 
@@ -1001,8 +1287,17 @@ func _rebuild_crew_list() -> void:
 		var m: Dictionary = friendly[i]
 		var btn := _mk_btn("%s (%d)" % [str(m.name), int(round(float(m.hp)))], func(): _on_crew_clicked(int(m.id)), bool(m.selected))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.custom_minimum_size.y = 30
+		btn.custom_minimum_size.y = 28
 		box.add_child(btn)
+	# Also show friendly boarders deployed on the enemy ship
+	if enemy_ship != null and in_combat:
+		for c in enemy_ship.crew:
+			if bool(c.is_player) and c.hp > 0.0:
+				var cid := int(c.id)
+				var bbtn := _mk_btn("[BD] %s (%d)" % [str(c.name), int(round(float(c.hp)))], func(): _on_boarder_clicked(cid), cid == selected_boarder_id)
+				bbtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+				bbtn.custom_minimum_size.y = 28
+				box.add_child(bbtn)
 
 
 func _update_hud_labels() -> void:
@@ -1052,12 +1347,15 @@ func _update_hud_labels() -> void:
 			break
 		var wb: Button = wpn_h.get_child(i)
 		var w: Dictionary = player_ship.weapons[i]
+		var is_beam := str(w.bp.get("type", "")) == "BEAM"
 		var pct := int(round(clampf(float(w.charge) / maxf(0.1, float(w.cooldown)), 0.0, 1.0) * 100.0))
 		var st := "READY" if pct >= 100 else ("%d%%" % pct)
 		if not bool(w.powered):
 			st = "OFF"
 		elif targeting_weapon_idx == i:
-			st = "AIMING..."
+			st = "DRAG BEAM" if is_beam else "AIMING..."
+		elif is_beam and not (w.get("beam_rooms", []) as Array).is_empty():
+			st += " x%d" % (w.get("beam_rooms", []) as Array).size()
 		elif int(w.target_room) >= 0:
 			st += " ◎"
 		wb.text = "[%d] %s\nPWR:%d  %s" % [i + 1, str(w.bp.get("short", w.id)).left(13), int(w.bp.get("power", 1)), st]
@@ -1072,6 +1370,33 @@ func _update_hud_labels() -> void:
 		var db_btn: Button = drone_h.get_child(i)
 		var d: Dictionary = player_ship.drones[i]
 		db_btn.text = "%s\n%s" % [str(d.bp.get("short", d.id)).left(10), "ON" if bool(d.powered) else "OFF"]
+
+	# Update special system buttons (Teleporter, Hacking, Mind Control, Cloaking)
+	if player_ship.systems.has("teleporter"):
+		var tp_cd := player_ship.teleporter_cooldown
+		hud_refs["tp_send_btn"].text = "TP %.0fs" % tp_cd if tp_cd > 0.0 else ("TARGET..." if special_target_mode == "tp_send" else "TP SEND (T)")
+		hud_refs["tp_back_btn"].text = "TP %.0fs" % tp_cd if tp_cd > 0.0 else ("PICK..." if special_target_mode == "tp_back" else "TP BACK (Y)")
+	if player_ship.systems.has("hacking"):
+		if player_ship.hacking_active_timer > 0.0:
+			hud_refs["hack_btn"].text = "HACKING %.0fs" % player_ship.hacking_active_timer
+		elif player_ship.hacking_cooldown > 0.0:
+			hud_refs["hack_btn"].text = "HACK %.0fs" % player_ship.hacking_cooldown
+		elif player_ship.hacking_target_room >= 0:
+			hud_refs["hack_btn"].text = "PULSE (H)"
+		else:
+			hud_refs["hack_btn"].text = "TARGET..." if special_target_mode == "hack" else "HACK (H)"
+	if player_ship.systems.has("mind"):
+		if player_ship.mind_cooldown > 0.0:
+			hud_refs["mind_btn"].text = "MC %.0fs" % player_ship.mind_cooldown
+		else:
+			hud_refs["mind_btn"].text = "TARGET..." if special_target_mode == "mind" else "MIND (N)"
+	if player_ship.systems.has("cloaking"):
+		if player_ship.cloak_timer > 0.0:
+			hud_refs["cloak_btn"].text = "CLOAK %.0fs" % player_ship.cloak_timer
+		elif player_ship.cloak_cooldown > 0.0:
+			hud_refs["cloak_btn"].text = "CD %.0fs" % player_ship.cloak_cooldown
+		else:
+			hud_refs["cloak_btn"].text = "CLOAK (C)"
 
 	# Banner
 	var b_lbl: Label = hud_refs["banner"]
@@ -1120,6 +1445,9 @@ func _on_beacon_jump_requested(bid: int) -> void:
 		player_ship.fuel = 2
 	player_ship.fuel = maxi(0, player_ship.fuel - 1)
 	if in_combat:
+		player_ship.clear_hacking(enemy_ship)
+		selected_boarder_id = -1
+		special_target_mode = ""
 		in_combat = false
 		enemy_ship = null
 		battle_view.set_ships(player_ship, null)
@@ -1499,9 +1827,119 @@ func _open_store() -> void:
 				_open_store()
 		, player_ship.scrap >= acost))
 
+	# Installable Systems (Teleporter, Hacking, Mind Control, Cloaking)
+	var sys_catalog := [
+		{"id": "teleporter", "name": "Crew Teleporter (텔레포터 보딩)", "cost": 90},
+		{"id": "hacking", "name": "Hacking System (해킹 +2 드론부품)", "cost": 80},
+		{"id": "mind", "name": "Mind Control (마인드 컨트롤)", "cost": 75},
+		{"id": "cloaking", "name": "Cloaking (은폐 장치)", "cost": 150},
+	]
+	var avail_sys: Array = []
+	for item in sys_catalog:
+		if not player_ship.systems.has(str(item.id)):
+			avail_sys.append(item)
+	if not avail_sys.is_empty():
+		modal_box.add_child(_mk_label("INSTALLABLE SYSTEMS (시스템 증설)", 14, Color("7eff8b")))
+		var sgrid := GridContainer.new()
+		sgrid.columns = 2
+		sgrid.add_theme_constant_override("h_separation", 8)
+		sgrid.add_theme_constant_override("v_separation", 6)
+		modal_box.add_child(sgrid)
+		for item in avail_sys:
+			var sid := str(item.id)
+			var scost := int(item.cost)
+			var sbtn := _mk_btn("%s (%d Scrap)" % [str(item.name), scost], func():
+				if player_ship.scrap >= scost and player_ship.install_system(sid):
+					player_ship.scrap -= scost
+					if sid == "hacking":
+						player_ship.drone_parts += 2
+					audio.play_sfx("upgradeSystem")
+					_rebuild_hud_controls()
+					_open_store()
+			, player_ship.scrap >= scost)
+			sbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			sgrid.add_child(sbtn)
+
+
+func _open_profile_modal() -> void:
+	_open_modal("profile", 780, 560)
+	var head := HBoxContainer.new()
+	modal_box.add_child(head)
+	var src_lbl := profile.source_label if (profile != null and profile.loaded) else "미연동"
+	var tl := _mk_label("FTL PROFILE & HALL OF FAME (%s)" % src_lbl, 18, Color("ffd54f"))
+	tl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(tl)
+	head.add_child(_mk_btn("닫기 (ESC)", _close_modal))
+
+	if profile == null:
+		modal_box.add_child(_mk_label("프로필이 초기화되지 않았습니다.", 14, Color("ff7878")))
+		return
+
+	var st: Dictionary = profile.stats
+	var summary_txt := "총 플레이: %d회  |  총 승리: %d회  |  격파 함선: %d척 (단일 최고 %d)\n탐사 비콘: %d회 (단일 최고 %d)  |  누적 스크랩: %d (단일 최고 %d)\n고용 승무원: %d명  |  달성 도전과제: %d개" % [
+		int(st.get("total_games", 0)), int(st.get("total_victories", 0)),
+		int(st.get("total_ships_defeated", 0)), int(st.get("most_ships_defeated", 0)),
+		int(st.get("total_beacons", 0)), int(st.get("most_beacons", 0)),
+		int(st.get("total_scrap", 0)), int(st.get("most_scrap", 0)),
+		int(st.get("total_crew_hired", 0)), profile.achievements.size(),
+	]
+	modal_box.add_child(_mk_label(summary_txt, 13, Color("d8ecff"), true))
+
+	# Sandbox Unlock-All Toggle
+	var toggle_row := HBoxContainer.new()
+	toggle_row.add_theme_constant_override("separation", 10)
+	modal_box.add_child(toggle_row)
+	var sb_btn := _mk_btn(
+		"전체 함선 언락 (SANDBOX: %s)" % ("ON - 모든 29종 사용 가능" if profile.unlock_all_sandbox else "OFF - ae_prof.sav 언락 반영"),
+		func():
+			profile.unlock_all_sandbox = not profile.unlock_all_sandbox
+			_show_hangar()
+			_open_profile_modal()
+	, profile.unlock_all_sandbox)
+	toggle_row.add_child(sb_btn)
+	toggle_row.add_child(_mk_label("※ 원본 ae_prof.sav는 읽기 전용으로 보호됩니다.", 12, Color("8da8c2")))
+
+	# Top 5 High Scores
+	modal_box.add_child(_mk_label("TOP 5 HIGH SCORES (명예의 전당)", 15, Color("7eff8b")))
+	if profile.top_scores.is_empty():
+		modal_box.add_child(_mk_label("기록된 점수가 없습니다.", 13, Color("93b9d8")))
+	else:
+		var diff_names := ["EASY", "NORMAL", "HARD"]
+		for i in range(profile.top_scores.size()):
+			var sc: Dictionary = profile.top_scores[i]
+			var d_idx := clampi(int(sc.get("diff", 0)), 0, 2)
+			var vic_tag := "★ VICTORY" if bool(sc.get("victory", false)) else ("Sector %d" % int(sc.get("sector", 1)))
+			var line := "#%d  %s  —  %d pts  [%s · %s]" % [
+				i + 1, str(sc.get("ship_name", sc.get("ship_id", "Ship"))),
+				int(sc.get("score", 0)), vic_tag, diff_names[d_idx]
+			]
+			modal_box.add_child(_mk_label(line, 13, Color("ffd54f") if i == 0 else Color("e6f2ff")))
+
+	# Crew Hall of Fame Records
+	modal_box.add_child(_mk_label("CREW LEGENDS (전설의 승무원 기록)", 15, Color("5cd6ff")))
+	if profile.crew_records.is_empty():
+		modal_box.add_child(_mk_label("승무원 기록이 없습니다.", 13, Color("93b9d8")))
+	else:
+		for cr in profile.crew_records:
+			var cline := "• %s: %s (%s) — %d" % [
+				str(cr.get("label", "Record")),
+				str(cr.get("name", "Crew")),
+				str(cr.get("species", "human")).capitalize(),
+				int(cr.get("value", 0)),
+			]
+			modal_box.add_child(_mk_label(cline, 13, Color("cde6f8")))
+
 
 func _show_end_modal(won: bool) -> void:
-	_open_modal("end", 560, 340)
+	var diff_mult := 1.0 + float(difficulty) * 0.25
+	var final_score := int(round((float(scrap_collected) + float(ships_defeated) * 20.0 + float(sector_map.total_jumps) * 10.0) * diff_mult)) + (500 if won else 0)
+	if profile != null and player_ship != null:
+		profile.record_godot_run(
+			player_ship.blueprint_id, player_ship.ship_name, final_score,
+			sector_map.current_sector_index + 1, won, difficulty,
+			ships_defeated, sector_map.total_jumps, scrap_collected
+		)
+	_open_modal("end", 560, 370)
 	modal_box.add_child(_mk_label("VICTORY — FEDERATION SAVED!" if won else "SHIP DESTROYED — GAME OVER", 24, Color("7eff8b") if won else Color("ff5c5c")))
 	modal_box.add_child(_mk_label(
 		"The Rebel Flagship has been shattered! The Federation fleet rallies and pushes the Rebellion back." if won
@@ -1509,8 +1947,8 @@ func _show_end_modal(won: bool) -> void:
 		15, Color("e6f0f7"), true
 	))
 	modal_box.add_child(_mk_label(
-		"Ship: %s\nSector Reached: %d / 8\nBeacons Explored: %d\nShips Defeated: %d\nTotal Scrap Collected: %d" % [
-			player_ship.ship_name, sector_map.current_sector_index + 1, sector_map.total_jumps, ships_defeated, scrap_collected
+		"Ship: %s\nFinal Score: %d pts (프로필 오버레이에 기록됨)\nSector Reached: %d / 8\nBeacons Explored: %d\nShips Defeated: %d\nTotal Scrap Collected: %d" % [
+			player_ship.ship_name, final_score, sector_map.current_sector_index + 1, sector_map.total_jumps, ships_defeated, scrap_collected
 		],
 		14, Color("ffd54f")
 	))

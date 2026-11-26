@@ -36,7 +36,7 @@ var missiles: int = 8
 var drone_parts: int = 2
 var reactor_max: int = 8
 
-# Shields & Cloak & FTL
+# Shields & Cloak & FTL & AE Special Systems
 var shield_layers: int = 0
 var shield_max_layers: int = 0
 var shield_charge: float = 0.0
@@ -44,6 +44,14 @@ var zoltan_shield: int = 0
 var zoltan_shield_max: int = 0
 var cloak_timer: float = 0.0
 var cloak_cooldown: float = 0.0
+var teleporter_cooldown: float = 0.0
+var hacking_target_room: int = -1
+var hacking_active_timer: float = 0.0
+var hacking_cooldown: float = 0.0
+var hacked_room: int = -1
+var hacked_active: bool = false
+var mind_active_timer: float = 0.0
+var mind_cooldown: float = 0.0
 var ftl_charge: float = 1.0 # 0..1
 
 # Rooms: Array[Dictionary] -> {id, x, y, w, h, system, oxygen, fires, breach, repair_progress, breach_progress}
@@ -74,10 +82,11 @@ var boss_surge_timer: float = 18.0
 var ai_decision_timer: float = 0.6
 
 # Combat feedback events emitted to view/main
-var pending_shots: Array = []    # {from_ship, weapon, weapon_idx, target_room, origin_local}
+var pending_shots: Array = []    # {from_ship, weapon, weapon_idx, target_room, beam_start, beam_end, beam_rooms}
 var pending_popups: Array = []   # {ship, pos_local, text, color}
 var pending_sfx: Array[String] = []
 var pending_explosions: Array = [] # {ship, pos_local, big}
+var pending_teleports: Array = []  # {ship, pos_local, incoming}
 
 
 func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, sector_scale: int = 0) -> void:
@@ -114,7 +123,7 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 	rooms.clear()
 	room_by_id.clear()
 	for r in layout.get("rooms", []):
-		var room := {
+		rooms.append({
 			"id": int(r.id),
 			"x": int(r.x),
 			"y": int(r.y),
@@ -127,9 +136,9 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 			"breach": 0,      # 0..1
 			"breach_hp": 0.0,
 			"repair_progress": 0.0,
-		}
-		rooms.append(room)
-		room_by_id[room.id] = room
+			"sabotage_progress": 0.0,
+		})
+		room_by_id[rooms[-1].id] = rooms[-1]
 
 	# Doors
 	doors.clear()
@@ -284,6 +293,9 @@ func add_weapon(weapon_id: String) -> bool:
 			"charge": 0.0,
 			"cooldown": float(bp.get("cooldown", 10.0)),
 			"target_room": -1,
+			"beam_start": Vector2.ZERO,
+			"beam_end": Vector2.ZERO,
+			"beam_rooms": [],
 			"autofire": false,
 			"fire_anim": 0.0,
 			"mount_idx": weapons.size(),
@@ -344,9 +356,11 @@ func add_crew(species: String, room_id: int, p_is_player: bool, custom_name: Str
 		"skills": {"pilot": 0, "engines": 0, "shields": 0, "weapons": 0, "repair": 0, "combat": 0},
 		"anim_t": randf() * 4.0,
 		"facing": Vector2.DOWN,
-		"state": "idle", # idle, walk, man, repair, fire, fight
+		"state": "idle", # idle, walk, man, repair, fire, fight, sabotage
 		"selected": false,
 		"stun_timer": 0.0,
+		"mind_timer": 0.0,
+		"mind_combat_mult": 1.0,
 	}
 	crew.append(member)
 	_assign_room_tiles(room_id)
@@ -540,7 +554,290 @@ func activate_cloaking() -> bool:
 	return true
 
 
+# ==================== TELEPORTER BOARDING ====================
+func get_crew_in_teleporter() -> Array:
+	var out: Array = []
+	if not systems.has("teleporter"):
+		return out
+	var tp_room := int(systems.teleporter.room)
+	for c in crew:
+		if bool(c.is_player) == is_player and c.hp > 0.0 and int(c.room_id) == tp_room:
+			out.append(c)
+	return out
+
+
+func can_teleport_send() -> bool:
+	if not systems.has("teleporter"):
+		return false
+	var p := get_effective_system_power("teleporter")
+	if p <= 0 or teleporter_cooldown > 0.0:
+		return false
+	return not get_crew_in_teleporter().is_empty()
+
+
+func teleport_send(target_ship: FTLShip, target_room_id: int) -> int:
+	if target_ship == null or not can_teleport_send() or not target_ship.room_by_id.has(target_room_id):
+		pending_sfx.append("powerUpFail")
+		return 0
+	if target_ship.zoltan_shield > 0 and not has_augment("ZOLTAN_BYPASS"):
+		pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "ZOLTAN BLOCKS TP!", "color": Color("7eff8b")})
+		pending_sfx.append("powerUpFail")
+		return 0
+	var boarders := get_crew_in_teleporter()
+	if boarders.is_empty():
+		return 0
+	var tp_room := int(systems.teleporter.room)
+	var p := get_effective_system_power("teleporter")
+	teleporter_cooldown = maxf(10.0, 25.0 - float(p) * 5.0) # Lv1=20s, Lv2=15s, Lv3=10s
+	pending_teleports.append({"ship": self, "pos_local": get_room_center_local(tp_room), "incoming": false})
+	pending_teleports.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "incoming": true})
+	var moved := 0
+	for c in boarders:
+		crew.erase(c)
+		c.room_id = target_room_id
+		c.target_room = target_room_id
+		c.path = []
+		c.pos = target_ship.get_room_tile_local(target_room_id, moved)
+		c.selected = false
+		target_ship.crew.append(c)
+		moved += 1
+	target_ship._assign_room_tiles(target_room_id)
+	pending_sfx.append("teleport")
+	pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "BOARDERS (%d)!" % moved, "color": Color("5ce1ff")})
+	return moved
+
+
+func teleport_retrieve(target_ship: FTLShip, target_room_id: int = -1) -> int:
+	if target_ship == null or not systems.has("teleporter"):
+		return 0
+	var p := get_effective_system_power("teleporter")
+	if p <= 0 or teleporter_cooldown > 0.0:
+		pending_sfx.append("powerUpFail")
+		return 0
+	var tp_room := int(systems.teleporter.room)
+	var returning: Array = []
+	for c in target_ship.crew:
+		if bool(c.is_player) == is_player and c.hp > 0.0:
+			if target_room_id < 0 or int(c.room_id) == target_room_id:
+				returning.append(c)
+	if returning.is_empty():
+		pending_sfx.append("powerUpFail")
+		return 0
+	teleporter_cooldown = maxf(10.0, 25.0 - float(p) * 5.0)
+	var src_room := int(returning[0].room_id)
+	pending_teleports.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(src_room), "incoming": false})
+	pending_teleports.append({"ship": self, "pos_local": get_room_center_local(tp_room), "incoming": true})
+	var moved := 0
+	for c in returning:
+		target_ship.crew.erase(c)
+		c.room_id = tp_room
+		c.target_room = tp_room
+		c.path = []
+		c.pos = get_room_tile_local(tp_room, moved)
+		crew.append(c)
+		moved += 1
+	_assign_room_tiles(tp_room)
+	pending_sfx.append("teleport")
+	pending_popups.append({"ship": self, "pos_local": get_room_center_local(tp_room), "text": "RECALLED (%d)" % moved, "color": Color("7eff8b")})
+	return moved
+
+
+func retrieve_all_boarders(target_ship: FTLShip) -> int:
+	if target_ship == null:
+		return 0
+	var tp_room := int(systems.teleporter.room) if systems.has("teleporter") else (int(rooms[0].id) if not rooms.is_empty() else 0)
+	var returning: Array = []
+	for c in target_ship.crew:
+		if bool(c.is_player) == is_player and c.hp > 0.0:
+			returning.append(c)
+	for i in range(returning.size()):
+		var c: Dictionary = returning[i]
+		target_ship.crew.erase(c)
+		c.room_id = tp_room
+		c.target_room = tp_room
+		c.path = []
+		c.pos = get_room_tile_local(tp_room, i)
+		crew.append(c)
+	if not returning.is_empty():
+		_assign_room_tiles(tp_room)
+	return returning.size()
+
+
+# ==================== HACKING SYSTEM ====================
+func launch_hacking(target_ship: FTLShip, target_room_id: int) -> bool:
+	if target_ship == null or not systems.has("hacking") or not target_ship.room_by_id.has(target_room_id):
+		return false
+	var p := get_effective_system_power("hacking")
+	if p <= 0 or drone_parts <= 0:
+		pending_sfx.append("powerUpFail")
+		return false
+	if target_ship.zoltan_shield > 0:
+		pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "ZOLTAN BLOCKS HACK!", "color": Color("7eff8b")})
+		pending_sfx.append("powerUpFail")
+		return false
+	drone_parts -= 1
+	hacking_target_room = target_room_id
+	target_ship.hacked_room = target_room_id
+	target_ship.hacked_active = false
+	hacking_active_timer = 0.0
+	hacking_cooldown = 0.0
+	pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "HACK POD ATTACHED", "color": Color("d580ff")})
+	pending_sfx.append("upgradeSystem")
+	return true
+
+
+func activate_hacking(target_ship: FTLShip) -> bool:
+	if target_ship == null or not systems.has("hacking") or hacking_target_room < 0:
+		return false
+	var p := get_effective_system_power("hacking")
+	if p <= 0 or hacking_active_timer > 0.0 or hacking_cooldown > 0.0:
+		pending_sfx.append("powerUpFail")
+		return false
+	hacking_active_timer = 1.0 + float(p) * 3.0 # Lv1=4s, Lv2=7s, Lv3=10s
+	hacking_cooldown = 20.0
+	target_ship.hacked_room = hacking_target_room
+	target_ship.hacked_active = true
+	# Close & lock doors connected to hacked room
+	for d in target_ship.doors:
+		if int(d.room_a) == hacking_target_room or int(d.room_b) == hacking_target_room:
+			d.open = false
+	pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(hacking_target_room), "text": "HACKING PULSE!", "color": Color("e070ff")})
+	pending_sfx.append("ionHit1")
+	return true
+
+
+func clear_hacking(target_ship: FTLShip = null) -> void:
+	hacking_target_room = -1
+	hacking_active_timer = 0.0
+	hacking_cooldown = 0.0
+	if target_ship != null:
+		target_ship.hacked_room = -1
+		target_ship.hacked_active = false
+
+
+# ==================== MIND CONTROL SYSTEM ====================
+func activate_mind_control(target_ship: FTLShip, target_room_id: int) -> bool:
+	if target_ship == null or not systems.has("mind"):
+		return false
+	var p := get_effective_system_power("mind")
+	if p <= 0 or mind_cooldown > 0.0:
+		pending_sfx.append("powerUpFail")
+		return false
+	if target_ship != self and target_ship.zoltan_shield > 0 and not has_augment("ZOLTAN_BYPASS"):
+		pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "ZOLTAN BLOCKS MC!", "color": Color("7eff8b")})
+		pending_sfx.append("powerUpFail")
+		return false
+
+	# Counter mind-control on own ship
+	if target_ship == self:
+		for c in crew:
+			if int(c.room_id) == target_room_id and float(c.mind_timer) > 0.0:
+				c.mind_timer = 0.0
+				c.mind_combat_mult = 1.0
+				mind_cooldown = 20.0
+				pending_popups.append({"ship": self, "pos_local": c.pos, "text": "MC CLEARED!", "color": Color("7eff8b")})
+				pending_sfx.append("upgradeSystem")
+				return true
+		pending_sfx.append("powerUpFail")
+		return false
+
+	# Mind-control an enemy crew member on target_ship
+	for c in target_ship.crew:
+		if int(c.room_id) == target_room_id and c.hp > 0.0 and bool(c.is_player) != is_player and float(c.mind_timer) <= 0.0:
+			var dur := 14.0 if p == 1 else (20.0 if p == 2 else 28.0)
+			var bonus_hp := 15.0 if p == 1 else (25.0 if p == 2 else 35.0)
+			var c_mult := 1.25 if p == 1 else (1.5 if p == 2 else 2.0)
+			c.mind_timer = dur
+			c.mind_combat_mult = c_mult
+			c.hp = minf(float(c.max_hp) + bonus_hp, float(c.hp) + bonus_hp)
+			mind_active_timer = dur
+			mind_cooldown = 20.0
+			pending_popups.append({"ship": target_ship, "pos_local": c.pos, "text": "MIND CONTROL!", "color": Color("d580ff")})
+			pending_sfx.append("ionHit1")
+			return true
+	pending_sfx.append("powerUpFail")
+	return false
+
+
+func install_system(sname: String) -> bool:
+	if systems.has(sname):
+		return false
+	var target_room := -1
+	for r in rooms:
+		if str(r.system).is_empty():
+			target_room = int(r.id)
+			break
+	if target_room < 0:
+		return false
+	var sbp: Dictionary = db.systems.get(sname, {})
+	var max_lvl := int(sbp.get("maxPower", 3))
+	systems[sname] = {
+		"id": sname,
+		"room": target_room,
+		"level": 1,
+		"max_level": max_lvl,
+		"power": 0,
+		"damage": 0,
+		"ion_level": 0,
+		"ion_timer": 0.0,
+		"img": "room_%s" % sname,
+		"slot_dir": "up",
+		"slot_num": 0,
+		"manned_by": -1,
+	}
+	room_by_id[target_room].system = sname
+	pending_sfx.append("upgradeSystem")
+	return true
+
+
+# ==================== BEAM LINE-BOX INTERSECTION ====================
+func compute_beam_rooms(p0: Vector2, p1: Vector2) -> Array[int]:
+	var hits: Array = [] # [{id, t}]
+	var d: Vector2 = p1 - p0
+	for r in rooms:
+		var rect := get_room_rect_local(r)
+		var t_enter := _segment_rect_enter_t(p0, d, rect)
+		if t_enter >= 0.0:
+			hits.append({"id": int(r.id), "t": t_enter})
+	hits.sort_custom(func(a, b): return float(a.t) < float(b.t))
+	var out: Array[int] = []
+	for h in hits:
+		out.append(int(h.id))
+	return out
+
+
+static func _segment_rect_enter_t(p0: Vector2, d: Vector2, rect: Rect2) -> float:
+	var tmin := 0.0
+	var tmax := 1.0
+	# X slab
+	if absf(d.x) < 1e-6:
+		if p0.x < rect.position.x or p0.x > rect.end.x:
+			return -1.0
+	else:
+		var tx1 := (rect.position.x - p0.x) / d.x
+		var tx2 := (rect.end.x - p0.x) / d.x
+		tmin = maxf(tmin, minf(tx1, tx2))
+		tmax = minf(tmax, maxf(tx1, tx2))
+	# Y slab
+	if absf(d.y) < 1e-6:
+		if p0.y < rect.position.y or p0.y > rect.end.y:
+			return -1.0
+	else:
+		var ty1 := (rect.position.y - p0.y) / d.y
+		var ty2 := (rect.end.y - p0.y) / d.y
+		tmin = maxf(tmin, minf(ty1, ty2))
+		tmax = minf(tmax, maxf(ty1, ty2))
+	if tmax >= tmin and tmax >= 0.0 and tmin <= 1.0:
+		return tmin
+	return -1.0
+
+
 func get_evasion() -> int:
+	# Active hacking on engines or piloting drops evasion to 0%!
+	if hacked_active and hacked_room >= 0 and room_by_id.has(hacked_room):
+		var hsys := str(room_by_id[hacked_room].system)
+		if hsys == "engines" or hsys == "pilot":
+			return 0
 	if not systems.has("pilot") or not systems.has("engines"):
 		return 0
 	var pilot_lvl := get_effective_system_power("pilot")
@@ -785,11 +1082,28 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 			s.power = usable
 	_enforce_weapon_drone_power()
 
-	# 2. Cloaking timers
+	# 2. Cloaking / Teleporter / Hacking / Mind Control timers
 	if cloak_timer > 0.0:
 		cloak_timer = maxf(0.0, cloak_timer - delta)
 	elif cloak_cooldown > 0.0:
 		cloak_cooldown = maxf(0.0, cloak_cooldown - delta)
+
+	if teleporter_cooldown > 0.0:
+		teleporter_cooldown = maxf(0.0, teleporter_cooldown - delta)
+
+	if hacking_active_timer > 0.0:
+		hacking_active_timer = maxf(0.0, hacking_active_timer - delta)
+		if enemy_ship != null and in_combat:
+			_apply_hacking_pulse(delta, enemy_ship)
+		if hacking_active_timer <= 0.0 and enemy_ship != null:
+			enemy_ship.hacked_active = false
+	elif hacking_cooldown > 0.0:
+		hacking_cooldown = maxf(0.0, hacking_cooldown - delta)
+
+	if mind_active_timer > 0.0:
+		mind_active_timer = maxf(0.0, mind_active_timer - delta)
+	elif mind_cooldown > 0.0:
+		mind_cooldown = maxf(0.0, mind_cooldown - delta)
 
 	# 3. FTL Drive charge (charges when pilot + engines operational)
 	if ftl_charge < 1.0:
@@ -834,6 +1148,32 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 	# 8. Enemy AI
 	if not is_player and in_combat and enemy_ship != null and hull > 0 and enemy_ship.hull > 0:
 		_step_enemy_ai(delta, enemy_ship)
+
+
+func _apply_hacking_pulse(delta: float, target_ship: FTLShip) -> void:
+	if target_ship == null or hacking_target_room < 0 or not target_ship.room_by_id.has(hacking_target_room):
+		return
+	target_ship.hacked_room = hacking_target_room
+	target_ship.hacked_active = true
+	var r: Dictionary = target_ship.room_by_id[hacking_target_room]
+	var hsys := str(r.system)
+	if hsys == "shields":
+		target_ship.shield_charge = maxf(0.0, target_ship.shield_charge - delta * 1.4)
+		if target_ship.shield_layers > 0:
+			r.sabotage_progress = float(r.get("sabotage_progress", 0.0)) + delta * 0.55
+			if float(r.sabotage_progress) >= 1.0:
+				r.sabotage_progress = 0.0
+				target_ship.shield_layers = maxi(0, target_ship.shield_layers - 1)
+				target_ship.shield_charge = 0.0
+	elif hsys == "weapons":
+		for w in target_ship.weapons:
+			w.charge = maxf(0.0, float(w.charge) - delta * 1.65)
+	elif hsys == "oxygen":
+		r.oxygen = maxf(0.0, float(r.oxygen) - 18.0 * delta)
+	elif hsys == "medbay":
+		for c in target_ship.crew:
+			if int(c.room_id) == hacking_target_room and c.hp > 0.0:
+				c.hp -= 12.0 * delta
 
 
 func _step_atmosphere(delta: float) -> void:
@@ -900,11 +1240,18 @@ func _step_crew(delta: float) -> void:
 			dead_ids.append(int(c.id))
 			continue
 		c.anim_t = float(c.anim_t) + delta
+		if float(c.get("mind_timer", 0.0)) > 0.0:
+			c.mind_timer = maxf(0.0, float(c.mind_timer) - delta)
+			if float(c.mind_timer) <= 0.0:
+				c.mind_combat_mult = 1.0
+				c.hp = minf(float(c.max_hp), float(c.hp))
 		if float(c.stun_timer) > 0.0:
 			c.stun_timer = maxf(0.0, float(c.stun_timer) - delta)
 			c.state = "idle"
 			continue
 
+		var eff_player := _crew_effective_player(c)
+		var belongs_to_ship := (eff_player == is_player)
 		var r: Dictionary = room_by_id.get(int(c.room_id), {})
 		# Suffocation & fire damage
 		if not r.is_empty():
@@ -912,10 +1259,11 @@ func _step_crew(delta: float) -> void:
 				c.hp -= 6.4 * delta
 			if int(r.fires) > 0 and not bool(c.fire_immune):
 				c.hp -= 4.5 * float(r.fires) * delta
-			# Medbay healing
-			if str(r.system) == "medbay" and c.is_player == is_player:
+			# Medbay healing (blocked if medbay is actively hacked!)
+			if str(r.system) == "medbay" and belongs_to_ship:
+				var med_hacked := hacked_active and hacked_room == int(r.id)
 				var med_p := get_effective_system_power("medbay")
-				if med_p > 0:
+				if med_p > 0 and not med_hacked:
 					c.hp = minf(float(c.max_hp), float(c.hp) + (6.4 * float(med_p)) * delta)
 
 		# Movement along path
@@ -943,15 +1291,31 @@ func _step_crew(delta: float) -> void:
 				c.state = "walk"
 				continue
 
-		# In-room actions (Combat -> Fire -> Breach -> Repair -> Manning)
-		var hostile := _find_hostile_in_room(int(c.room_id), bool(c.is_player))
+		# In-room actions (Combat -> Sabotage if boarder/MC -> Fire -> Breach -> Repair -> Manning)
+		var hostile := _find_hostile_in_room(int(c.room_id), eff_player)
 		if not hostile.is_empty():
 			c.state = "fight"
-			var dps := 6.5 * float(c.combat_mult)
+			var dps := 6.5 * float(c.combat_mult) * float(c.get("mind_combat_mult", 1.0))
 			hostile.hp -= dps * delta
 			continue
 
-		if not r.is_empty() and c.is_player == is_player:
+		if not r.is_empty() and not belongs_to_ship:
+			# Boarder or Mind-Controlled crew sabotages enemy system!
+			var sname := str(r.system)
+			if not sname.is_empty() and systems.has(sname) and int(systems[sname].damage) < int(systems[sname].level):
+				c.state = "sabotage"
+				r.sabotage_progress = float(r.get("sabotage_progress", 0.0)) + 0.16 * float(c.combat_mult) * float(c.get("mind_combat_mult", 1.0)) * delta
+				if float(r.sabotage_progress) >= 1.0:
+					r.sabotage_progress = 0.0
+					apply_system_damage(sname, 1)
+					hull = maxi(0, hull - 1)
+					pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(r.id)), "text": "SABOTAGE!", "color": Color("ff8c42")})
+					pending_sfx.append("hitHull2")
+				continue
+			c.state = "idle"
+			continue
+
+		if not r.is_empty() and belongs_to_ship:
 			if int(r.fires) > 0:
 				c.state = "fire"
 				r.fire_hp = maxf(0.0, float(r.fire_hp) - 18.0 * float(c.repair_rate) * delta)
@@ -998,9 +1362,16 @@ func _step_crew(delta: float) -> void:
 		crew = surviving
 
 
-func _find_hostile_in_room(room_id: int, my_is_player: bool) -> Dictionary:
+func _crew_effective_player(c: Dictionary) -> bool:
+	var base := bool(c.is_player)
+	if float(c.get("mind_timer", 0.0)) > 0.0:
+		return not base
+	return base
+
+
+func _find_hostile_in_room(room_id: int, my_eff_player: bool) -> Dictionary:
 	for c in crew:
-		if int(c.room_id) == room_id and c.hp > 0.0 and bool(c.is_player) != my_is_player:
+		if int(c.room_id) == room_id and c.hp > 0.0 and _crew_effective_player(c) != my_eff_player:
 			return c
 	return {}
 
@@ -1032,8 +1403,12 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 			w.charge = 0.0
 			w.fire_anim = 1.0
 			var target_rid := int(w.target_room)
+			var b_start: Vector2 = w.get("beam_start", Vector2.ZERO)
+			var b_end: Vector2 = w.get("beam_end", Vector2.ZERO)
+			var b_rooms: Array = (w.get("beam_rooms", []) as Array).duplicate()
 			if not bool(w.autofire):
 				w.target_room = -1
+				w.beam_rooms = []
 			# Firing weapon breaks cloak (except Stealth Weapons augment)
 			if cloak_timer > 0.0 and not has_augment("CLOAK_FIRE"):
 				cloak_timer = maxf(0.0, cloak_timer - 3.0)
@@ -1047,6 +1422,9 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 				"weapon": w,
 				"weapon_idx": i,
 				"target_room": target_rid,
+				"beam_start": b_start,
+				"beam_end": b_end,
+				"beam_rooms": b_rooms,
 			})
 			var lsnds: Array = w.bp.get("launchSounds", [])
 			if not lsnds.is_empty():
@@ -1127,9 +1505,17 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 			})
 			pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "POWER SURGE!", "color": Color("ff5c5c")})
 
-	# Enemy crew repair AI
+	# Enemy crew anti-boarder & repair AI
+	var intruder_room := -1
 	for c in crew:
-		if c.is_player != is_player or not c.path.is_empty() or c.state in ["fight", "fire", "repair"]:
+		if _crew_effective_player(c) != is_player and c.hp > 0.0:
+			intruder_room = int(c.room_id)
+			break
+	for c in crew:
+		if _crew_effective_player(c) != is_player or not c.path.is_empty() or c.state in ["fight", "fire", "repair"]:
+			continue
+		if intruder_room >= 0 and int(c.room_id) != intruder_room:
+			command_crew_to_room(c, intruder_room)
 			continue
 		for r in rooms:
 			var sname := str(r.system)

@@ -158,6 +158,131 @@ export class FtlPkgReader {
   }
 }
 
+export function findFtlProfile(explicitPath = '') {
+  const candidates = [
+    explicitPath,
+    process.env.FTL_PROFILE_PATH || '',
+    'C:\\Temp\\FTL\\FTL_Sav\\ae_prof.sav',
+    path.join(projectDir, 'ae_prof.sav'),
+  ].filter(Boolean);
+  for (const cand of candidates) {
+    if (fs.existsSync(cand)) return cand;
+  }
+  return '';
+}
+
+export function parseAeProfileSav(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) return null;
+  const buf = fs.readFileSync(filePath);
+  if (buf.length < 64) return null;
+  let pos = 0;
+  const ri = () => { if (pos + 4 > buf.length) return 0; const v = buf.readInt32LE(pos); pos += 4; return v; };
+  const rs = () => {
+    const n = ri();
+    if (n <= 0 || n > 1024 || pos + n > buf.length) return '';
+    const s = buf.subarray(pos, pos + n).toString('utf8');
+    pos += n;
+    return s;
+  };
+  const rscore = (ver) => ({
+    ship_name: rs(), ship_id: rs(), score: ri(), sector: ri(),
+    victory: ri() !== 0, diff: ri(), ae: ver === 9 ? (ri() !== 0) : false,
+  });
+
+  const version = ri();
+  if (version !== 9 && version !== 4) return null;
+  if (version === 9) ri(); // AE flag
+
+  const achievements = {};
+  const victories = {};
+  const achCnt = ri();
+  if (achCnt < 0 || achCnt > 500) return null;
+  for (let i = 0; i < achCnt; i++) {
+    const aid = rs();
+    const diff = ri();
+    achievements[aid] = diff;
+    if (version === 9 && aid.endsWith('_VICTORY')) {
+      const va = ri(), vb = ri(), vc = ri();
+      victories[aid.slice(0, -8)] = { best_diff: diff, A: va, B: vb, C: vc };
+    }
+  }
+
+  const classOrder = [
+    'PLAYER_SHIP_HARD', 'PLAYER_SHIP_CIRCLE', 'PLAYER_SHIP_FED', 'PLAYER_SHIP_ENERGY',
+    'PLAYER_SHIP_MANTIS', 'PLAYER_SHIP_JELLY', 'PLAYER_SHIP_ROCK', 'PLAYER_SHIP_STEALTH',
+    'PLAYER_SHIP_ANAEROBIC', 'PLAYER_SHIP_CRYSTAL',
+  ];
+  const achPrefix = {
+    PLAYER_SHIP_HARD: 'ACH_SHIP_KESTRAL', PLAYER_SHIP_CIRCLE: 'ACH_SHIP_ENGI',
+    PLAYER_SHIP_FED: 'ACH_SHIP_FED', PLAYER_SHIP_ENERGY: 'ACH_SHIP_ENERGY',
+    PLAYER_SHIP_MANTIS: 'ACH_SHIP_MANTIS', PLAYER_SHIP_JELLY: 'ACH_SHIP_JELLY',
+    PLAYER_SHIP_ROCK: 'ACH_SHIP_ROCK', PLAYER_SHIP_STEALTH: 'ACH_SHIP_STEALTH',
+    PLAYER_SHIP_ANAEROBIC: 'ACH_SHIP_ANAEROBIC', PLAYER_SHIP_CRYSTAL: 'ACH_SHIP_CRYSTAL',
+  };
+  const class_unlocks = {};
+  for (let i = 0; i < 12; i++) {
+    const aVal = ri();
+    const cVal = version === 9 ? ri() : 0;
+    if (i < classOrder.length) {
+      const base = classOrder[i];
+      const v = victories[base] || {};
+      const pref = achPrefix[base] || '';
+      const achCount = pref ? Object.keys(achievements).filter(k => k.startsWith(pref)).length : 0;
+      class_unlocks[base] = {
+        A: aVal !== 0 || base === 'PLAYER_SHIP_HARD',
+        B: (v.B ?? -1) >= 0 || (v.C ?? -1) >= 0 || achCount >= 2,
+        C: cVal !== 0,
+      };
+    }
+  }
+
+  const topCnt = ri();
+  const top_scores = [];
+  for (let i = 0; i < Math.min(Math.max(0, topCnt), 50); i++) top_scores.push(rscore(version));
+
+  const bestCnt = ri();
+  const ship_bests = {};
+  for (let i = 0; i < Math.min(Math.max(0, bestCnt), 500); i++) {
+    const sc = rscore(version);
+    if (!ship_bests[sc.ship_id] || sc.score > ship_bests[sc.ship_id].score) ship_bests[sc.ship_id] = sc;
+  }
+
+  const stats = pos + 40 <= buf.length ? {
+    most_ships_defeated: ri(), total_ships_defeated: ri(),
+    most_beacons: ri(), total_beacons: ri(),
+    most_scrap: ri(), total_scrap: ri(),
+    most_crew_hired: ri(), total_crew_hired: ri(),
+    total_games: ri(), total_victories: ri(),
+  } : {};
+
+  const recLabels = [
+    '최다 수리 (Repairs)', '최다 처치 (Combat Kills)', '최다 회피 (Piloted Evasions)',
+    '최다 점프 (Jumps Survived)', '최다 숙련 (Skill Masteries)',
+  ];
+  const crew_records = [];
+  for (const label of recLabels) {
+    if (pos + 12 > buf.length) break;
+    const value = ri();
+    const name = rs();
+    const species = rs();
+    ri(); // male
+    if (name) crew_records.push({ label, value, name, species });
+  }
+
+  return {
+    loaded: true,
+    version,
+    source: path.basename(filePath),
+    achievements,
+    victories,
+    class_unlocks,
+    top_scores,
+    ship_bests,
+    stats,
+    crew_records,
+  };
+}
+
 export function findFtlArchive(explicitPath = '') {
   const candidates = [
     explicitPath,
@@ -232,9 +357,12 @@ export function exportFtlWeb(outDir = defaultOutDir) {
   }
 }
 
-export function createFtlWebServer({ webDir = defaultOutDir, archivePath = '' } = {}) {
+export function createFtlWebServer({ webDir = defaultOutDir, archivePath = '', profilePath = '' } = {}) {
   const pkgPath = findFtlArchive(archivePath);
   const pkg = pkgPath ? new FtlPkgReader(pkgPath) : null;
+  const profPath = findFtlProfile(profilePath);
+  const parsedProfile = profPath ? parseAeProfileSav(profPath) : null;
+  const profileJsonBuf = parsedProfile ? Buffer.from(JSON.stringify(parsedProfile), 'utf8') : null;
   const gzipCache = new Map();
 
   const server = http.createServer((req, res) => {
@@ -242,6 +370,20 @@ export function createFtlWebServer({ webDir = defaultOutDir, archivePath = '' } 
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
     res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+
+    if (urlPath === '/ftl-pkg/profile.json') {
+      if (!profileJsonBuf) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'ae_prof.sav not found' }));
+        return;
+      }
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('Content-Length', profileJsonBuf.length);
+      res.writeHead(200);
+      res.end(profileJsonBuf);
+      return;
+    }
 
     // 1. FTL PKG streaming endpoints
     if (urlPath === '/ftl-pkg/xml-bundle.json') {
