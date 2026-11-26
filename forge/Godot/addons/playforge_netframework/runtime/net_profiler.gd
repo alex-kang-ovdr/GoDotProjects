@@ -19,6 +19,7 @@ var interval_sec: float = 1.0
 var enabled: bool = false
 
 var _peer: ENetMultiplayerPeer
+var _transport_name: String = "offline"
 var _multiplayer_api: MultiplayerAPI
 var _engine_rpc_profile_enabled: bool = false
 var _totals: Dictionary = {"sentBytes": 0, "receivedBytes": 0, "sentPackets": 0, "receivedPackets": 0}
@@ -46,8 +47,16 @@ func configure(p_log: NetEventLogScript, p_role: String, sample_interval_sec: fl
 			push_warning("Cannot write net profile output: %s" % output_path)
 
 
-func attach_peer(peer: MultiplayerPeer) -> void:
+func attach_peer(peer: MultiplayerPeer, transport_name: String = "") -> void:
 	_peer = peer as ENetMultiplayerPeer
+	if not transport_name.is_empty():
+		_transport_name = transport_name
+	elif _peer != null:
+		_transport_name = "enet"
+	elif peer is WebSocketMultiplayerPeer:
+		_transport_name = "ws"
+	else:
+		_transport_name = "offline"
 	_last_sample_us = Time.get_ticks_usec()
 	_next_sample_us = _last_sample_us + int(interval_sec * 1000000.0)
 
@@ -116,6 +125,7 @@ func capture_snapshot(reason: String = "manual") -> Dictionary:
 		"reason": reason,
 		"role": role,
 		"netMode": net_mode,
+		"transport": _transport_name,
 		"sampledAtMs": Time.get_ticks_msec(),
 		"windowMs": float(elapsed_us) / 1000.0,
 		"enet": enet,

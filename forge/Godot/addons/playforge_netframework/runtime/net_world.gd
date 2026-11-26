@@ -93,10 +93,12 @@ func _build_player(data: Variant) -> Node:
 	ps.slot = int(d.slot)
 	ps.user_id = String(d.user)
 	ps.peer_id = int(d.peer)
+	ps.owner_epoch = int(d.get("owner_epoch", 1))
 	root.add_child(ps)
 	var ctrl := NetPlayerControllerScript.new()
 	ctrl.name = "Controller"
 	ctrl.owner_peer_id = int(d.peer)
+	ctrl.owner_epoch = ps.owner_epoch
 	ctrl.set_net_profiler(net_profiler)
 	root.add_child(ctrl)
 	var pawn := NetPawnScript.new()
@@ -113,6 +115,8 @@ func _build_player(data: Variant) -> Node:
 	var cfg := SceneReplicationConfig.new()
 	_add(cfg, "Pawn:position", SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
 	_add(cfg, "Pawn:health", SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
+	_add(cfg, "PlayerState:peer_id", SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
+	_add(cfg, "PlayerState:owner_epoch", SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
 	_add(cfg, "PlayerState:score", SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
 	_add(cfg, "PlayerState:acked_input_seq", SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
 	sync.replication_config = cfg
@@ -150,6 +154,7 @@ func snapshot() -> Dictionary:
 			"slot": ps.slot,
 			"user": ps.user_id,
 			"peer": ps.peer_id,
+			"ownerEpoch": ps.owner_epoch,
 			"netId": [pawn.net_index, pawn.net_generation],
 			"pos": [snappedf(pawn.position.x, 0.001), snappedf(pawn.position.y, 0.001)],
 			"health": pawn.health,

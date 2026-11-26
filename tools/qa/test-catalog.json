@@ -1123,6 +1123,51 @@
       "note": "Live 2-client ENet net lab: runtime per-client impairments, restore, profiler counters, and evidence capture"
     },
     {
+      "path": "forge/Tests/netframework/wss-reconnect.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Verified WSS TLS DS+2 clients spike, missing trust-root rejection, and reconnect slot/owner_epoch preservation"
+    },
+    {
+      "path": "forge/Tests/netframework/iris-replication.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Iris-style state replication: quantization, delta/ACK, owner privacy, tombstone, 100k lifecycle, AOI/dormancy, fuzz, N0/N1"
+    },
+    {
+      "path": "forge/Tests/netframework/movement-prediction.godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local"
+      ],
+      "owner": "Forge-Multiplayer",
+      "note": "Static-world movement prediction, reconcile/replay, remote interpolation, server validator, and live UDP proxy matrix"
+    },
+    {
       "path": "forge/Tests/operator-oauth-token.test.cjs",
       "tier": "fast",
       "suites": [

@@ -18,6 +18,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const dgram = require('node:dgram');
+const net = require('node:net');
 const readline = require('node:readline');
 const { spawn, spawnSync } = require('node:child_process');
 
@@ -28,11 +29,13 @@ const SELFTEST = 'res://addons/playforge_netframework/demo/ticket_selftest.gd';
 const POS_TOLERANCE = 0.5;
 
 function parseArgs(argv) {
-  const out = { late: true, json: false };
+  const out = { late: true, json: false, transport: 'enet' };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--godot') out.godot = argv[++i];
     else if (a === '--out') out.out = argv[++i];
+    else if (a === '--transport') out.transport = argv[++i];
+    else if (a.startsWith('--transport=')) out.transport = a.slice('--transport='.length);
     else if (a === '--no-late') out.late = false;
     else if (a === '--json') out.json = true;
   }
@@ -66,6 +69,17 @@ function freeUdpPort() {
     const s = dgram.createSocket('udp4');
     s.once('error', reject);
     s.bind(0, '127.0.0.1', () => {
+      const { port } = s.address();
+      s.close(() => resolve(port));
+    });
+  });
+}
+
+function freeTcpPort() {
+  return new Promise((resolve, reject) => {
+    const s = net.createServer();
+    s.once('error', reject);
+    s.listen(0, '127.0.0.1', () => {
       const { port } = s.address();
       s.close(() => resolve(port));
     });
@@ -210,13 +224,18 @@ async function main() {
   fs.writeFileSync(path.join(outDir, 'ticket-selftest.log'), `${st.stdout || ''}${st.stderr || ''}`);
   check('ticket_selftest', st.status === 0 && /TICKET_SELFTEST_OK/.test(st.stdout || ''), `exit=${st.status}`);
 
-  const port = await freeUdpPort();
-  const common = [`--port=${port}`, '--max-seconds=45'];
+  const transport = String(opts.transport || 'enet').toLowerCase();
+  const port = transport === 'enet' ? await freeUdpPort() : await freeTcpPort();
+  const common = [`--port=${port}`, `--transport=${transport}`, '--max-seconds=45'];
   const server = start('server', ['--netmode=dedicated-server', ...common, `--run-dir=${runDir}`,
     '--play-ticks=150', `--settle-file=${settleFile}`]);
-  const playerArgs = ['--netmode=client', ...common, `--leave-file=${leaveFile}`];
   try {
+    const listeningEv = await server.waitFor((e) => e.ev === 'server_listening', 15000, 'server_listening');
     await server.waitFor((e) => e.ev === 'tickets_issued', 15000, 'tickets_issued');
+    const tlsClientArgs = transport === 'wss' && listeningEv.tlsCertPath
+      ? [`--tls-ca=${listeningEv.tlsCertPath}`, '--tls-hostname=localhost']
+      : [];
+    const playerArgs = ['--netmode=client', ...common, ...tlsClientArgs, `--leave-file=${leaveFile}`];
     start('client-a', [...playerArgs, '--bot=a', `--ticket=${ticket('bot-a')}`]);
     start('client-b', [...playerArgs, '--bot=b', `--ticket=${ticket('bot-b')}`]);
     await server.waitFor((e) => e.ev === 'phase' && e.to === 'play', 20000, 'phase play');
@@ -225,16 +244,16 @@ async function main() {
     await server.waitFor((e) => e.ev === 'play_ticks_elapsed', 15000, 'minimum play ticks');
     const late = opts.late && start('client-c-late', [...playerArgs, '--bot=c', `--ticket=${ticket('bot-c')}`]);
     const playProbes = [
-      start('probe-reuse', ['--netmode=client', '--bot=probe-reuse', ...common, `--ticket=${ticket('bot-a')}`]),
-      start('probe-tamper', ['--netmode=client', '--bot=probe-tamper', ...common, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
-      start('probe-wrongslot', ['--netmode=client', '--bot=probe-wrongslot', ...common, `--ticket=${ticket('bot-x')}`]),
+      start('probe-reuse', ['--netmode=client', '--bot=probe-reuse', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-a')}`]),
+      start('probe-tamper', ['--netmode=client', '--bot=probe-tamper', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-b')}`, '--tamper-slot=0']),
+      start('probe-wrongslot', ['--netmode=client', '--bot=probe-wrongslot', ...common, ...tlsClientArgs, `--ticket=${ticket('bot-x')}`]),
     ];
 
     await Promise.all([
       ...playProbes.map((p) => p.waitFor((e) => e.ev === 'join_refused', 20000, 'play admission result')),
       ...(late ? [late.waitFor((e) => e.ev === 'possessed', 20000, 'late player possession')] : []),
     ]);
-    const probeDrain = start('probe-drain', ['--netmode=client', '--bot=probe-drain', ...common,
+    const probeDrain = start('probe-drain', ['--netmode=client', '--bot=probe-drain', ...common, ...tlsClientArgs,
       `--ticket=${ticket('bot-c')}`, `--wait-file=${probeFile}`]);
     await probeDrain.waitFor((e) => e.ev === 'client_boot', 15000, 'probe-drain boot');
     release(settleFile);
@@ -352,6 +371,8 @@ async function main() {
   const leaving = players.map((p) => ({ name: p.name, ...(p.first('client_leaving') || {}) }));
   const measurements = {
     godot: { executable: godot, source: g.source, version },
+    transport,
+    transportCaps: listening ? listening.transportCaps : null,
     port,
     wallMs: Date.now() - t0,
     serverReadyMs: listening ? listening._wall - server.startedAt : null,
@@ -389,4 +410,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { resolveGodot, freeUdpPort };
+module.exports = { resolveGodot, freeUdpPort, freeTcpPort };

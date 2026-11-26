@@ -16,11 +16,15 @@ const NetProfilerScript := preload("res://addons/playforge_netframework/runtime/
 const NetIdsScript := preload("res://addons/playforge_netframework/runtime/net_ids.gd")
 const NetPlayerControllerScript := preload("res://addons/playforge_netframework/runtime/net_player_controller.gd")
 const NetPlayerStateScript := preload("res://addons/playforge_netframework/runtime/net_player_state.gd")
+const NetPawnScript := preload("res://addons/playforge_netframework/runtime/net_pawn.gd")
 const NetModeScript := preload("res://addons/playforge_netframework/runtime/net_mode.gd")
+const NetTransportScript := preload("res://addons/playforge_netframework/runtime/net_transport.gd")
 
 const TICK_HZ := 30
 const CLI_OPTIONS := [
-	"netmode", "host", "port", "run-dir", "bot", "log", "ticket", "ticket-ttl",
+	"netmode", "transport", "host", "port", "run-dir", "bot", "log", "ticket", "ticket-ttl",
+	"tls-cert", "tls-key", "tls-ca", "tls-hostname",
+	"reconnect-grace", "disconnect-after-ticks", "stale-epoch-probe",
 	"max-players", "play-ticks", "settle-max", "max-seconds", "tamper-slot", "wait-file", "linger",
 	"settle-file", "leave-file",
 	"net-profile", "net-profile-interval", "net-profile-output", "net-debug", "net-debug-proxy", "net-debug-reply",
@@ -28,6 +32,7 @@ const CLI_OPTIONS := [
 
 var args: Dictionary = {}
 var role: String = ""
+var transport: String = NetTransportScript.ENET
 var event_log: NetEventLogScript
 var net_profiler: NetProfilerScript
 var world: NetWorldScript
@@ -43,6 +48,9 @@ var connect_start_us: int = 0
 var my_root: Node = null
 var first_play_tick: int = -1
 var illegal_sent: int = 0
+var stale_epoch_sent: int = 0
+var disconnect_after_ticks: int = 0
+var stale_epoch_probe: bool = false
 var snapshot_done: bool = false
 var leave_at_ms: int = -1
 var leaving: bool = false
@@ -74,6 +82,13 @@ func _ready() -> void:
 	if role.is_empty():
 		get_tree().quit(2)
 		return
+	transport = String(args.get("transport", NetTransportScript.ENET)).to_lower()
+	if not NetTransportScript.is_valid(transport):
+		push_error("Unknown --transport: %s (expected enet, ws, or wss)" % transport)
+		get_tree().quit(2)
+		return
+	disconnect_after_ticks = int(args.get("disconnect-after-ticks", "0"))
+	stale_epoch_probe = args.has("stale-epoch-probe")
 	Engine.physics_ticks_per_second = TICK_HZ
 	Engine.max_fps = 60
 	get_tree().auto_accept_quit = false
@@ -151,25 +166,46 @@ func _start_server() -> void:
 	var world_key := NetIdsScript.make_world_key("local", "forge-ds-spike", "dev-%d.%d.%d" % [Engine.get_version_info().major, Engine.get_version_info().minor, Engine.get_version_info().patch], session_id, 1)
 	var tickets := NetJoinTicketScript.new(session_id, instance_id, 1, int(args.get("ticket-ttl", "60")))
 
-	var peer := ENetMultiplayerPeer.new()
-	peer.set_bind_ip("127.0.0.1")
-	var err := peer.create_server(port, 16)
-	if err != OK:
-		event_log.emit("fatal", {"error": "create_server", "code": err, "port": port})
+	var tls_options: TLSOptions = null
+	var tls_cert_path := ""
+	if transport == NetTransportScript.WSS:
+		if args.has("tls-cert") and args.has("tls-key"):
+			var loaded := NetTransportScript.load_server_tls(String(args["tls-cert"]), String(args["tls-key"]))
+			if not loaded.ok:
+				event_log.emit("fatal", {"error": "tls_load", "reason": loaded.get("reason", ""), "code": loaded.get("error", -1)})
+				get_tree().quit(2)
+				return
+			tls_options = loaded.tlsOptions
+			tls_cert_path = String(loaded.certPath)
+		else:
+			var gen := NetTransportScript.generate_loopback_tls(run_dir.path_join("tls"), String(args.get("tls-hostname", "localhost")))
+			if not gen.ok:
+				event_log.emit("fatal", {"error": "tls_generate", "reason": gen.get("reason", ""), "code": gen.get("error", -1)})
+				get_tree().quit(2)
+				return
+			tls_options = TLSOptions.server(gen.key, gen.cert)
+			tls_cert_path = String(gen.certPath)
+
+	var srv := NetTransportScript.create_server(transport, "127.0.0.1", port, 16, tls_options)
+	if not srv.ok:
+		event_log.emit("fatal", {"error": "create_server", "transport": transport, "reason": srv.get("reason", ""), "code": srv.get("error", -1), "port": port})
 		get_tree().quit(2)
 		return
+	var peer: MultiplayerPeer = srv.peer
 	game_mode = NetGameModeScript.new()
 	game_mode.name = "GameMode"
 	game_mode.max_players = int(args.get("max-players", "3"))
 	game_mode.play_ticks = int(args.get("play-ticks", "150"))
 	game_mode.settle_request_file = String(args.get("settle-file", ""))
 	game_mode.settle_max_seconds = float(args.get("settle-max", "10"))
+	game_mode.reconnect_grace_seconds = float(args.get("reconnect-grace", "0"))
+	game_mode.ticket_dir = run_dir.path_join("tickets")
 	game_mode.drain_request_file = run_dir.path_join("control/drain")
 	add_child(game_mode)
 	game_mode.setup(world, event_log, tickets, smp)
 	game_mode.finished.connect(_on_server_finished)
 	smp.multiplayer_peer = peer
-	net_profiler.attach_peer(peer)
+	net_profiler.attach_peer(peer, transport)
 	world.game_state.world_key = NetIdsScript.world_key_string(world_key)
 
 	# 로컬 가짜 제공자: 사용자별 1회용 티켓 발급. 파일에는 서명된 티켓만 있고 비밀키는 없다.
@@ -182,7 +218,8 @@ func _start_server() -> void:
 		f.close()
 		issued.append({"userId": spec[0], "slot": spec[1]})
 	event_log.emit("server_listening", {
-		"port": port, "worldKey": world_key, "maxPlayers": game_mode.max_players,
+		"port": port, "transport": transport, "transportCaps": srv.capabilities, "tlsCertPath": tls_cert_path,
+		"worldKey": world_key, "maxPlayers": game_mode.max_players,
 		"tickHz": TICK_HZ, "engine": Engine.get_version_info().string,
 		"dedicatedServerFeature": OS.has_feature("dedicated_server"), "displayServer": DisplayServer.get_name(),
 		"serverIsPlayer": false, "netMode": role, "rendered": DisplayServer.get_name() != "headless",
@@ -239,16 +276,22 @@ func _start_client() -> void:
 		event_log.emit("connection_failed", {})
 		_quit(0 if is_probe else 1))
 	smp.server_disconnected.connect(_on_server_disconnected)
-	var peer := ENetMultiplayerPeer.new()
-	var err := peer.create_client(String(args.get("host", "127.0.0.1")), int(args.get("port", "24565")))
-	if err != OK:
-		event_log.emit("fatal", {"error": "create_client", "code": err})
+	var cli := NetTransportScript.create_client(
+		transport,
+		String(args.get("host", "127.0.0.1")),
+		int(args.get("port", "24565")),
+		String(args.get("tls-ca", "")),
+		String(args.get("tls-hostname", "localhost"))
+	)
+	if not cli.ok:
+		event_log.emit("fatal", {"error": "create_client", "transport": transport, "reason": cli.get("reason", ""), "code": cli.get("error", -1)})
 		get_tree().quit(2)
 		return
+	var peer: MultiplayerPeer = cli.peer
 	connect_start_us = Time.get_ticks_usec()
 	smp.multiplayer_peer = peer
-	net_profiler.attach_peer(peer)
-	event_log.emit("client_connect_started", {"bot": bot})
+	net_profiler.attach_peer(peer, transport)
+	event_log.emit("client_connect_started", {"bot": bot, "transport": transport, "transportCaps": cli.capabilities})
 
 
 func _on_authenticating(peer_id: int) -> void:
@@ -415,8 +458,15 @@ func _physics_process(_dt: float) -> void:
 			return
 		my_root = world.find_player_by_peer(multiplayer.get_unique_id())
 		if my_root != null:
+			var my_ps: NetPlayerStateScript = my_root.get_node("PlayerState")
+			var my_ctrl: NetPlayerControllerScript = my_root.get_node("Controller")
+			var my_pawn: NetPawnScript = my_root.get_node("Pawn")
+			my_ctrl.owner_peer_id = my_ps.peer_id
+			my_ctrl.owner_epoch = my_ps.owner_epoch
 			event_log.emit("possessed", {
-				"slot": (my_root.get_node("PlayerState") as NetPlayerStateScript).slot,
+				"slot": my_ps.slot,
+				"ownerEpoch": my_ps.owner_epoch,
+				"netId": [my_pawn.net_index, my_pawn.net_generation],
 				"visiblePlayers": world.players.get_child_count(),
 				"phase": gs.phase, "playTick": gs.play_tick, "worldKey": gs.world_key,
 			})
@@ -424,10 +474,27 @@ func _physics_process(_dt: float) -> void:
 	if gs.phase == NetGameStateScript.PHASE_PLAY:
 		if first_play_tick < 0:
 			first_play_tick = gs.play_tick
+		var ps_cur: NetPlayerStateScript = my_root.get_node("PlayerState")
 		var ctrl: NetPlayerControllerScript = my_root.get_node("Controller")
+		ctrl.owner_peer_id = ps_cur.peer_id
+		ctrl.owner_epoch = ps_cur.owner_epoch
+		if stale_epoch_probe and ps_cur.owner_epoch > 1 and stale_epoch_sent < 2:
+			ctrl.send_server_submit_input(ctrl.next_seq + 1, Vector2.LEFT, ps_cur.owner_epoch - 1)
+			stale_epoch_sent += 1
+			event_log.emit("stale_epoch_rpc_sent", {"sentEpoch": ps_cur.owner_epoch - 1, "currentEpoch": ps_cur.owner_epoch, "n": stale_epoch_sent})
 		var move := _bot_move(gs.play_tick) if _bot_client else _gameplay_input_vector()
 		ctrl.client_send_input(move)
 		inputs_sent += 1
+		if disconnect_after_ticks > 0 and inputs_sent >= disconnect_after_ticks:
+			var my_pawn_drop: NetPawnScript = my_root.get_node("Pawn")
+			event_log.emit("client_simulated_drop", {
+				"inputsSent": inputs_sent,
+				"ownerEpoch": ps_cur.owner_epoch,
+				"pos": [snappedf(my_pawn_drop.position.x, 0.001), snappedf(my_pawn_drop.position.y, 0.001)],
+				"health": my_pawn_drop.health,
+			})
+			_quit(0)
+			return
 		if bot == "b" and gs.play_tick >= 20 and illegal_sent < 3:
 			_try_illegal_rpc()
 	elif gs.phase == NetGameStateScript.PHASE_DRAINING and not snapshot_done:
@@ -509,8 +576,8 @@ func _leave(reason: String) -> void:
 		"ackedSeq": ctrl.acked_seq if ctrl != null else 0,
 		"enet": stats,
 	})
-	if enet != null:
-		enet.disconnect_peer(1)
+	if smp.multiplayer_peer != null and not (smp.multiplayer_peer is OfflineMultiplayerPeer):
+		smp.multiplayer_peer.disconnect_peer(1)
 	get_tree().create_timer(1.5).timeout.connect(func() -> void: _quit(0))
 
 

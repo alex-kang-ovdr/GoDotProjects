@@ -27,6 +27,8 @@ var play_ticks: int = 150
 var settle_max_seconds: float = 10.0
 var drain_timeout_seconds: float = 10.0
 var idle_shutdown_seconds: float = 90.0
+var reconnect_grace_seconds: float = 0.0
+var ticket_dir: String = ""
 var drain_request_file: String = ""
 var settle_request_file: String = ""
 var hazard: Rect2 = Rect2(300, 0, 120, 800)
@@ -40,9 +42,11 @@ var guard: NetRpcGuardScript
 var smp: SceneMultiplayer
 var object_ids := NetIdsScript.ObjectIdAllocator.new()
 
-var _pending: Dictionary = {}      # peer_id -> claims (인증 통과, 연결 완료 대기)
-var _slot_owner: Dictionary = {}   # slot -> peer_id (예약 포함)
-var _player_roots: Dictionary = {} # peer_id -> Node
+var _pending: Dictionary = {}        # peer_id -> claims (인증 통과, 연결 완료 대기)
+var _pending_resume: Dictionary = {} # peer_id -> slot (재접속 인증 통과, 연결 완료 대기)
+var _disconnected: Dictionary = {}   # slot -> {root, userId, slot, disconnectedAtMs, oldPeer, oldEpoch}
+var _slot_owner: Dictionary = {}     # slot -> peer_id (예약 포함; -1이면 유예 중인 슬롯)
+var _player_roots: Dictionary = {}   # peer_id -> Node
 var _join_rejections: Dictionary = {}
 var _phase_started_ms: int = 0
 var _drain_reason: String = ""
@@ -79,6 +83,7 @@ func _on_auth(peer_id: int, data: PackedByteArray) -> void:
 		return
 	var reason := ""
 	var claims: Dictionary = {}
+	var is_resume := false
 	if state().phase == NetGameStateScript.PHASE_DRAINING:
 		reason = "draining"
 	else:
@@ -91,7 +96,10 @@ func _on_auth(peer_id: int, data: PackedByteArray) -> void:
 			if slot < 0 or slot >= max_players:
 				reason = "slot_out_of_range"
 			elif _slot_owner.has(slot):
-				reason = "slot_taken"
+				if _disconnected.has(slot) and int(_slot_owner[slot]) == -1 and String(_disconnected[slot].userId) == String(claims.userId):
+					is_resume = true
+				else:
+					reason = "slot_taken"
 	if reason != "":
 		_join_rejections[reason] = int(_join_rejections.get(reason, 0)) + 1
 		event_log.emit("join_rejected", {"peer": peer_id, "reason": reason, "claims": NetJoinTicketScript.public_claims(claims)})
@@ -102,8 +110,10 @@ func _on_auth(peer_id: int, data: PackedByteArray) -> void:
 				smp.disconnect_peer(peer_id))
 		return
 	_pending[peer_id] = claims
+	if is_resume:
+		_pending_resume[peer_id] = int(claims.slot)
 	_slot_owner[int(claims.slot)] = peer_id
-	event_log.emit("join_accepted", {"peer": peer_id, "claims": NetJoinTicketScript.public_claims(claims)})
+	event_log.emit("join_accepted", {"peer": peer_id, "resume": is_resume, "claims": NetJoinTicketScript.public_claims(claims)})
 	smp.send_auth(peer_id, "ok".to_utf8_buffer())
 	smp.complete_auth(peer_id)
 
@@ -121,6 +131,12 @@ func _on_peer_connected(peer_id: int) -> void:
 		return
 	var claims: Dictionary = _pending[peer_id]
 	_pending.erase(peer_id)
+	if _pending_resume.has(peer_id):
+		var slot := int(_pending_resume[peer_id])
+		_pending_resume.erase(peer_id)
+		if _disconnected.has(slot):
+			_reattach_player(peer_id, slot)
+			return
 	_spawn_player(peer_id, claims)
 
 
@@ -171,13 +187,83 @@ func _spawn_player(peer_id: int, claims: Dictionary) -> Node:
 	return root
 
 
+func _reattach_player(peer_id: int, slot: int) -> Node:
+	var rec: Dictionary = _disconnected[slot]
+	_disconnected.erase(slot)
+	var root: Node = rec.root
+	var ps: NetPlayerStateScript = root.get_node("PlayerState")
+	var ctrl: NetPlayerControllerScript = root.get_node("Controller")
+	var pawn: NetPawnScript = root.get_node("Pawn")
+	ps.peer_id = peer_id
+	ps.owner_epoch += 1
+	ctrl.owner_peer_id = peer_id
+	ctrl.owner_epoch = ps.owner_epoch
+	ctrl.last_seq = 0
+	ctrl.last_move = Vector2.ZERO
+	_slot_owner[slot] = peer_id
+	_player_roots[peer_id] = root
+	_refresh_player_peers()
+	_peak_players = maxi(_peak_players, _player_roots.size())
+	event_log.emit("player_reconnected", {
+		"peer": peer_id,
+		"oldPeer": int(rec.oldPeer),
+		"slot": slot,
+		"user": ps.user_id,
+		"netId": [pawn.net_index, pawn.net_generation],
+		"ownerEpoch": ps.owner_epoch,
+		"pos": [snappedf(pawn.position.x, 0.001), snappedf(pawn.position.y, 0.001)],
+		"health": pawn.health,
+		"phase": state().phase,
+		"players": _player_roots.size(),
+	})
+	return root
+
+
 func _on_peer_disconnected(peer_id: int) -> void:
 	_release_reservation(peer_id)
 	if not _player_roots.has(peer_id):
 		return
 	var root: Node = _player_roots[peer_id]
 	var ps: NetPlayerStateScript = root.get_node("PlayerState")
+	var ctrl: NetPlayerControllerScript = root.get_node("Controller")
 	var pawn: NetPawnScript = root.get_node("Pawn")
+	var can_grace := reconnect_grace_seconds > 0.0 \
+		and state().phase in [NetGameStateScript.PHASE_WAITING, NetGameStateScript.PHASE_PLAY] \
+		and tickets != null \
+		and not (multiplayer.multiplayer_peer is OfflineMultiplayerPeer)
+	if can_grace:
+		ctrl.last_move = Vector2.ZERO
+		ctrl.owner_peer_id = 0
+		ps.peer_id = 0
+		_player_roots.erase(peer_id)
+		_slot_owner[ps.slot] = -1
+		_disconnected[ps.slot] = {
+			"root": root,
+			"userId": ps.user_id,
+			"slot": ps.slot,
+			"disconnectedAtMs": Time.get_ticks_msec(),
+			"oldPeer": peer_id,
+			"oldEpoch": ps.owner_epoch,
+		}
+		_refresh_player_peers()
+		event_log.emit("player_disconnected_grace", {
+			"peer": peer_id,
+			"slot": ps.slot,
+			"user": ps.user_id,
+			"ownerEpoch": ps.owner_epoch,
+			"graceSec": reconnect_grace_seconds,
+			"pos": [snappedf(pawn.position.x, 0.001), snappedf(pawn.position.y, 0.001)],
+			"health": pawn.health,
+		})
+		if not ticket_dir.is_empty():
+			var resume_ticket := tickets.issue(ps.user_id, ps.slot)
+			var ticket_path := ticket_dir.path_join("%s-resume.ticket" % ps.user_id)
+			var f := FileAccess.open(ticket_path, FileAccess.WRITE)
+			if f != null:
+				f.store_string(resume_ticket)
+				f.close()
+				event_log.emit("resume_ticket_issued", {"user": ps.user_id, "slot": ps.slot, "ticketPath": ticket_path})
+		return
 	object_ids.release(pawn.net_object_id())
 	_slot_owner.erase(ps.slot)
 	_player_roots.erase(peer_id)
@@ -186,7 +272,29 @@ func _on_peer_disconnected(peer_id: int) -> void:
 	event_log.emit("player_left", {"peer": peer_id, "slot": ps.slot, "phase": state().phase, "remaining": _player_roots.size()})
 
 
+func _release_disconnected_slot(slot: int, reason: String) -> void:
+	if not _disconnected.has(slot):
+		return
+	var rec: Dictionary = _disconnected[slot]
+	_disconnected.erase(slot)
+	var root: Node = rec.root
+	var pawn: NetPawnScript = root.get_node("Pawn")
+	object_ids.release(pawn.net_object_id())
+	if int(_slot_owner.get(slot, -2)) == -1:
+		_slot_owner.erase(slot)
+	root.queue_free()
+	event_log.emit("player_grace_expired", {
+		"slot": slot, "user": String(rec.userId), "reason": reason,
+		"phase": state().phase, "remaining": _player_roots.size(),
+	})
+
+
 func _release_reservation(peer_id: int) -> void:
+	if _pending_resume.has(peer_id):
+		var resume_slot := int(_pending_resume[peer_id])
+		_pending_resume.erase(peer_id)
+		if _disconnected.has(resume_slot) and int(_slot_owner.get(resume_slot, -2)) == peer_id:
+			_slot_owner[resume_slot] = -1
 	if _pending.has(peer_id):
 		var claims: Dictionary = _pending[peer_id]
 		_pending.erase(peer_id)
@@ -234,7 +342,16 @@ func _physics_process(dt: float) -> void:
 				_finish(false)
 			elif _phase_age_s() >= drain_timeout_seconds:
 				_finish(true)
-	if gs.phase == NetGameStateScript.PHASE_WAITING and _player_roots.is_empty() and _pending.is_empty():
+	if not _disconnected.is_empty():
+		var now_ms := Time.get_ticks_msec()
+		var expired_slots: Array = []
+		for s in _disconnected.keys():
+			var rec: Dictionary = _disconnected[s]
+			if float(now_ms - int(rec.disconnectedAtMs)) / 1000.0 >= reconnect_grace_seconds:
+				expired_slots.append(s)
+		for s in expired_slots:
+			_release_disconnected_slot(int(s), "grace_timeout")
+	if gs.phase == NetGameStateScript.PHASE_WAITING and _player_roots.is_empty() and _pending.is_empty() and _disconnected.is_empty():
 		_empty_seconds += dt
 		if _empty_seconds >= idle_shutdown_seconds:
 			request_drain("idle_empty")
@@ -288,6 +405,8 @@ func request_drain(reason: String) -> void:
 	if state().phase == NetGameStateScript.PHASE_DRAINING or _done:
 		return
 	_drain_reason = reason
+	for s in _disconnected.keys().duplicate():
+		_release_disconnected_slot(int(s), "drain")
 	event_log.emit("server_snapshot", world.snapshot())
 	_set_phase(NetGameStateScript.PHASE_DRAINING)
 	event_log.emit("drain_started", {"reason": reason, "players": _player_roots.size()})

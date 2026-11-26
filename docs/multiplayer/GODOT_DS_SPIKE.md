@@ -197,9 +197,9 @@ quit
 
 포크에서 프록시 없이 실행한 `spike.tscn -- --net-debug` 세션은 게임 콘솔 명령을 현재 ENet 호스트의 `apply_debug_packet_command()`에 직접 전달한다. 위의 다중 클라이언트 실행기는 순정 엔진과 동일한 조건을 재현하기 위해 프록시만 사용한다. 한 연결에서 장애를 두 번 주입하지 않는다. 엔진 호스트의 `pop_statistic()`는 읽을 때 초기화되므로 각 프로세스에서는 프로파일러 한 곳에서만 읽는다. 바이트 수는 ENet에서 센 값이며 IP 헤더를 포함한 실제 회선 사용량이나 상대방의 수신 보장을 뜻하지 않는다.
 
-## 9. 다음 단계 제안
+## 9. 다음 단계 제안 및 R0 마감 / R1 진행 반영 (2026-11-26)
 
-1. WSS 전송으로 같은 시나리오 재실행(`WebSocketMultiplayerPeer`), 측정 비교.
-2. Linux 호스트(또는 CI ubuntu runner)에서 export 바이너리 실행 + SIGTERM → drain 확인.
-3. §8의 지연·손실 설정으로 기기별 입력 ACK 지연과 보정 오차를 측정해 예측(27번) 기준값을 정한다.
-4. JoinTicket 발급을 Hub 백엔드 API로 옮기고 서명 키 관리(비대칭 서명 또는 Gateway 내부 키) 결정.
+1. ~~WSS 전송으로 같은 시나리오 재실행(`WebSocketMultiplayerPeer`), 측정 비교.~~ → **완료** (`--transport=enet|ws|wss`, 루프백 RSA 2048 `CN=localhost` 인증서 + 명시적 trust root TLS 검증, 23/23 PASS, ENet vs WSS 실측 비교 완료).
+2. Linux 호스트(또는 CI ubuntu runner)에서 export 바이너리 실행 + SIGTERM → drain 확인. *(로컬 Windows에 WSL/Docker 미설치로 미검증 유지)*
+3. ~~§8의 지연·손실 설정으로 기기별 입력 ACK 지연과 보정 오차를 측정해 예측(27번) 기준값을 정한다.~~ → **Windows 루프백 기준선 및 R1 코어 구현 완료** (재접속 `owner_epoch`, 26번 Iris 방식 상태 복제, 27번 정적 월드 이동 예측·보정·원격 보간, 30번 서버 Validator, `NetEmulationProxy` 기반 LAN / 150ms+1% / 300ms+5% 라이브 매트릭스 통과). 상세 실측은 [R1_REPLICATION_PREDICTION_REPORT.md](R1_REPLICATION_PREDICTION_REPORT.md) 참조.
+4. JoinTicket 발급을 Hub 백엔드 API로 옮기고 서명 키 관리(비대칭 서명 또는 Gateway 내부 키) 결정 + Android 실기기 및 Linux VM 검증.
