@@ -3,6 +3,7 @@ extends RefCounted
 const GRID_SIZE := Vector2i(16, 10)
 const CATALOG_PATH := "res://data/catalog.json"
 const EngineRoom := preload("res://sim/engine_room.gd")
+const CombatSystems := preload("res://sim/combat_systems.gd")
 const CORRIDOR := "cosmoteer.corridor"
 const DIRECTIONS: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 const MAX_UID := 9007199254740991  # Largest safe integer for a JSON double.
@@ -76,6 +77,7 @@ func _init() -> void:
 			load_error = "비행 카탈로그의 ship_physics.%s 값을 확인하세요." % name_key
 			return
 	definitions[EngineRoom.ID] = EngineRoom.ROOM.duplicate(true)
+	CombatSystems.augment_definitions(definitions)
 	by_id = definitions
 	ship_physics = physics
 	crew_speed = float(crew.base_speed) * float(floor_def.crew_speed_factor)
@@ -324,3 +326,27 @@ func special_starter() -> void:
 		place(CORRIDOR, Vector2i(10, y))
 	for x in range(4, 10):
 		place(CORRIDOR, Vector2i(x, 9))
+
+
+func shield_missile_cruiser() -> void:
+	_clear_layout()
+	place(CombatSystems.BUNK_MED, Vector2i(2, 4))
+	place(CombatSystems.REACTOR_MED, Vector2i(4, 4))
+	place(CombatSystems.BUNK_SMALL, Vector2i(7, 4), 2)
+	place("cosmoteer.control_room_small", Vector2i(8, 4))
+	place(CombatSystems.SHIELD_SMALL, Vector2i(11, 4), 1)
+	place(CombatSystems.MISSILE_LAUNCHER, Vector2i(8, 1), 1)
+	place(CombatSystems.POINT_DEFENSE, Vector2i(12, 2), 1)
+	place(CombatSystems.CANNON_MED, Vector2i(11, 7), 1)
+	place(CombatSystems.LASER_SMALL, Vector2i(13, 6), 1)
+	place(CombatSystems.ARMOR_2X1, Vector2i(14, 4), 1)
+	place("cosmoteer.thruster_small_3way", Vector2i(2, 1), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(6, 1), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(7, 7))
+	place("cosmoteer.thruster_small_3way", Vector2i(9, 7))
+	for x in range(2, 13):
+		place(CORRIDOR, Vector2i(x, 3))
+	place(CORRIDOR, Vector2i(10, 4))
+	place(CORRIDOR, Vector2i(10, 5))
+	for x in range(7, 13):
+		place(CORRIDOR, Vector2i(x, 6))

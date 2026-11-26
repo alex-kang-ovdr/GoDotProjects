@@ -13,8 +13,13 @@ const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함�
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착"}
 const CORE := {
 	"cosmoteer.corridor":"통로", "cosmoteer.reactor_small":"소형 반응로",
-	"cosmoteer.crew_quarters_small":"소형 선실", "cosmoteer.control_room_small":"소형 함교",
-	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.armor":"장갑",
+	"cosmoteer.reactor_med":"중형 반응로",
+	"cosmoteer.crew_quarters_small":"소형 선실", "cosmoteer.crew_quarters_med":"중형 선실",
+	"cosmoteer.control_room_small":"소형 함교",
+	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
+	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.missile_launcher":"미사일 발사기",
+	"cosmoteer.shield_gen_small":"소형 방어막", "cosmoteer.point_defense":"근접 방어 포탑",
+	"cosmoteer.armor":"장갑", "cosmoteer.armor_2x1":"2×1 장갑",
 	"cosmoteer.thruster_small":"소형 추진기", "cosmoteer.thruster_small_2way":"2방향 소형 추진기",
 	"cosmoteer.thruster_small_3way":"3방향 소형 추진기", "cosmoteer.thruster_med":"중형 추진기",
 	"cosmoteer.thruster_large":"대형 추진기", "cosmoteer.thruster_huge":"초대형 추진기",
@@ -97,6 +102,7 @@ func build(host) -> void:
 	toolbar.add_spacer(false)
 	toolbar.add_child(lab.button("기본 함선",_preset))
 	toolbar.add_child(lab.button("특수 추진 실험선",_special_preset))
+	toolbar.add_child(lab.button("방어막·미사일 함선",_cruiser_preset))
 	toolbar.add_child(lab.button("비우기",_clear))
 	grid = Grid.new()
 	grid.design = design
@@ -424,6 +430,12 @@ func _special_preset() -> void:
 	_remember(design.serialize())
 	design.special_starter()
 	note.text = "출격 후 O로 오버클럭, B로 부스트를 켭니다. 엔진룸에 맞닿은 추진기에 오버클럭이 적용됩니다."
+	_design_changed()
+
+func _cruiser_preset() -> void:
+	_remember(design.serialize())
+	design.shield_missile_cruiser()
+	note.text = "방어막 생성기·유도 미사일·근접 방어 포탑·중형 캐논을 탑재한 순양함 설계입니다."
 	_design_changed()
 
 func _design_changed() -> void:

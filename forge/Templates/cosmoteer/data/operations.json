@@ -33,6 +33,17 @@
       "seconds": 32,
       "ai": "standoff",
       "requires": "disarm"
+    },
+    {
+      "id": "vanguard",
+      "title": "방어막 돌파",
+      "summary": "방어막과 미사일을 갖춘 순양함의 함교를 제압하세요.",
+      "objective": "duel",
+      "opponent": "vanguard",
+      "distance": 150,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": "escort"
     }
   ]
 }

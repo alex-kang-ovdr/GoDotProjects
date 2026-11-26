@@ -378,7 +378,7 @@
       "role": "Cosmoteer 원본 규칙 카탈로그 기반 Godot 4.7.2 함선 실험실 프로젝트",
       "owns": [
         "forge/Templates/cosmoteer/**",
-        "forge/Tests/cosmoteer-godot.test.cjs"
+        "forge/Tests/cosmoteer-*.test.cjs"
       ]
     },
     "Forge-ISM-profile": {

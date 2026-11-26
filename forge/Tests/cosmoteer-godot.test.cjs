@@ -28,6 +28,7 @@ const GODOT_TEST_SCRIPTS = [
   'tests/test_operations.gd',
   'tests/test_operation_combat.gd',
   'tests/test_operations_ui.gd',
+  'tests/test_combat_expansion.gd',
 ];
 
 test('Cosmoteer Godot template exposes valid PlayForge metadata and ready/guided project files', t => {

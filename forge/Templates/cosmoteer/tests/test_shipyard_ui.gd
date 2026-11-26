@@ -23,7 +23,7 @@ func test() -> void:
 	await process_frame
 	var yard = lab.shipyard
 	verify(yard.is_visible_in_tree() and not yard.depart_button.disabled,"shipyard is the launch scene")
-	verify(yard.parts_list.item_count==17,"operational palette includes propulsion and the lab engine room")
+	verify(yard.parts_list.item_count==25,"operational palette includes propulsion, combat expansion, and the lab engine room")
 	yard.selection.select(1)
 	yard.selection.item_selected.emit(1)
 	verify(yard.parts_list.item_count==97,"all 96 catalog modules and the lab engine room are offered")

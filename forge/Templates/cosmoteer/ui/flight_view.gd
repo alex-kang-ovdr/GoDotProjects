@@ -69,6 +69,9 @@ func _draw() -> void:
 	_draw_thruster_plumes(battle.enemy, _camera_center, _zoom, viewport_center)
 	_draw_ship(battle.player, _camera_center, _zoom, viewport_center, -1, false)
 	_draw_ship(battle.enemy, _camera_center, _zoom, viewport_center, int(battle.target_uid), false)
+	_draw_shields(battle.player, _camera_center, _zoom, viewport_center, Color("#5ce1ff"))
+	_draw_shields(battle.enemy, _camera_center, _zoom, viewport_center, Color("#ff9e7d"))
+	_draw_pd_beams(_camera_center, _zoom, viewport_center)
 	_draw_projectiles(_camera_center, _zoom, viewport_center)
 	_draw_target(battle.player, int(battle.enemy_target_uid), _camera_center, _zoom, viewport_center, ENEMY)
 	_draw_target(battle.enemy, int(battle.target_uid), _camera_center, _zoom, viewport_center, AMBER)
@@ -259,17 +262,60 @@ func _draw_thruster_plumes(ship: Dictionary, camera: Vector2, zoom: float, viewp
 			draw_line(p0, p0.lerp(p1, 0.28), bright, maxf(1.0, zoom * 0.11 * activation), true)
 
 
+func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2, tint: Color) -> void:
+	for uid in ship.get("ids", {}).get("cosmoteer.shield_gen_small", []):
+		var part: Dictionary = ship.parts[uid]
+		if float(part.get("hp", 0.0)) <= 0.0 or not part.get("shield_active", false):
+			continue
+		var max_hp := maxf(1.0, float(part.get("shield_max_hp", 6000.0)))
+		var ratio := clampf(float(part.get("shield_hp", 0.0)) / max_hp, 0.0, 1.0)
+		var local_mount: Vector2 = part.get("mount_local", Vector2(part.cell) + Vector2(part.size) * 0.5)
+		var center := _world_to_screen(_grid_world(ship, local_mount), camera, zoom, viewport_center)
+		var radius := maxf(6.0, float(part.get("shield_radius", 7.5)) * zoom)
+		var facing := float(ship.heading) + float(part.get("rest_angle", 0.0))
+		var half_arc := float(part.get("shield_arc_rad", deg_to_rad(110.0))) * 0.5
+		var flash := clampf(float(part.get("shield_flash", 0.0)), 0.0, 1.0)
+		var glow := tint.lerp(Color.WHITE, flash * 0.7)
+		draw_arc(center, radius, facing - half_arc, facing + half_arc, 28, Color(glow, 0.18 + 0.28 * ratio + 0.25 * flash), maxf(4.0, zoom * 0.75), true)
+		draw_arc(center, radius, facing - half_arc, facing + half_arc, 28, Color(glow, 0.55 + 0.4 * ratio), maxf(1.8, zoom * 0.24), true)
+
+
+func _draw_pd_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	for beam in battle.get("pd_beams"):
+		var a := _world_to_screen(beam.from, camera, zoom, viewport_center)
+		var b := _world_to_screen(beam.to, camera, zoom, viewport_center)
+		var tint := Color("#8cf7ff") if beam.side == "player" else Color("#ffb38f")
+		draw_line(a, b, Color(tint, 0.85), maxf(1.5, zoom * 0.16), true)
+		draw_circle(b, maxf(2.5, zoom * 0.22), Color.WHITE)
+
+
 func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
 	for bolt in battle.projectiles:
 		var a := _world_to_screen(bolt.get("previous_pos", bolt.pos), camera, zoom, viewport_center)
 		var b := _world_to_screen(bolt.pos, camera, zoom, viewport_center)
+		var kind := str(bolt.get("kind", "laser"))
 		var tint := MINT if bolt.side == "player" else ENEMY
 		var direction := b - a
 		if direction.length_squared() < 0.01:
 			direction = bolt.velocity.normalized() * maxf(6.0, zoom * 1.5)
-		draw_line(a, b if a.distance_to(b) > 1.5 else b + direction, Color(tint, 0.52), maxf(3.0, zoom * 0.55), true)
-		draw_line(a, b if a.distance_to(b) > 1.5 else b + direction, tint, maxf(1.5, zoom * 0.17), true)
-		draw_circle(b if a.distance_to(b) > 1.5 else b + direction, maxf(2.0, zoom * 0.18), TEXT)
+		var tip := b if a.distance_to(b) > 1.5 else b + direction
+		if kind == "missile":
+			var back: Vector2 = tip - Vector2(bolt.velocity).normalized() * maxf(7.0, zoom * 1.4)
+			draw_line(back, tip, Color("#ff8a4c", 0.55), maxf(3.5, zoom * 0.55), true)
+			draw_line(back.lerp(tip, 0.35), tip, Color("#ffd599"), maxf(2.0, zoom * 0.25), true)
+			draw_circle(tip, maxf(2.4, zoom * 0.24), Color("#fff5e6"))
+		elif kind == "cannon":
+			draw_line(a, tip, Color(AMBER, 0.6), maxf(3.5, zoom * 0.5), true)
+			draw_circle(tip, maxf(2.8, zoom * 0.28), AMBER)
+		elif kind == "heavy_laser":
+			var heavy := Color("#66f2ff") if bolt.side == "player" else Color("#ff6e6e")
+			draw_line(a, tip, Color(heavy, 0.55), maxf(4.8, zoom * 0.82), true)
+			draw_line(a, tip, heavy.lightened(0.25), maxf(2.2, zoom * 0.3), true)
+			draw_circle(tip, maxf(2.4, zoom * 0.24), Color.WHITE)
+		else:
+			draw_line(a, tip, Color(tint, 0.52), maxf(3.0, zoom * 0.55), true)
+			draw_line(a, tip, tint, maxf(1.5, zoom * 0.17), true)
+			draw_circle(tip, maxf(2.0, zoom * 0.18), TEXT)
 
 
 func _draw_target(ship: Dictionary, uid: int, camera: Vector2, zoom: float, viewport_center: Vector2, color: Color) -> void:

@@ -2054,6 +2054,21 @@
       "owner": "Forge-GameDev-Cosmoteer"
     },
     {
+      "path": "forge/Tests/cosmoteer-web-browser.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "browser",
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-GameDev-Cosmoteer"
+    },
+    {
       "path": "forge/Tests/web-editor-wasm-release.test.cjs",
       "tier": "integration",
       "suites": [

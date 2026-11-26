@@ -14,6 +14,7 @@
   ],
   "guideOrder": [
     "sim/engine_room.gd",
+    "sim/combat_systems.gd",
     "sim/rocket_network.gd",
     "sim/ship_design.gd",
     "sim/power_range.gd",
