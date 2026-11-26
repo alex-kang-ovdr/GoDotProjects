@@ -523,6 +523,12 @@
         "games/yu-no/**"
       ]
     },
+    "Forge-GameDev-ONI": {
+      "role": "숨 JavaScript 게임 개발",
+      "owns": [
+        "games/oxygen-not-included/**"
+      ]
+    },
     "Forge-Tripo": {
       "role": "Tripo3D API v3 모델링 생성·자동 리깅·애니메이션·Godot GLB 즉시 임포트 PoC (실험 · 허브 통합 제외)",
       "experimental": true,
