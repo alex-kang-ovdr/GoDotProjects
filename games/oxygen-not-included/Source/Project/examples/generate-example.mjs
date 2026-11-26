@@ -2,13 +2,13 @@
 // Run from the project root: node examples/generate-example.mjs
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
-import { Game, CYCLE_SECONDS } from '../dist/engine.js';
+import { Game, CYCLE_SECONDS } from '../../../Web/engine.js';
 import { establishFrontierColony } from '../tests/scenarios.mjs';
 import { at, clone, advance, until, finiteState } from '../tests/helpers.mjs';
 
 const game = establishFrontierColony();
 until(game, () => game.won, CYCLE_SECONDS * 20, 'the example did not complete all twenty goals');
-const saved = game.serialize(), restored = new Game(1);
+const saved = game.serialize(), restored = new Game(1, 'breath-4.1');
 restored.load(clone(saved));
 assert.deepEqual(restored.serialize(), saved, 'the exported completed colony must reload exactly');
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {Game} from '../dist/engine.js';
-import {Renderer} from '../dist/renderer.js';
+import {Game} from '../../../Web/engine.js';
+import {Renderer} from '../../../Web/renderer.js';
 
 let calls=0;
 let trace=null;
@@ -39,7 +39,7 @@ class Canvas{
 globalThis.window={devicePixelRatio:1};
 globalThis.OffscreenCanvas=Canvas;
 const parse=name=>JSON.parse(readFileSync(new URL('../'+name,import.meta.url),'utf8'));
-const initial=new Game(73);
+const initial=new Game(73, 'breath-4.1');
 const sample=parse('examples/self-sustaining-colony.json').game;
 const legacy=parse('tests/fixtures/v2-victory.json');
 const variants=[initial.serialize(),sample,legacy];
@@ -77,6 +77,26 @@ Object.assign(modern.crew[0],{x:25.5,y:16.5,path:[],_job:{kind:'refillOxygen',ta
 Object.assign(modern.crew[1],{x:22.5,y:11.5,path:[],portableOxygen:4,portableCapacity:6,maskMode:'auto',usingPortable:true,level:6,skillPoints:0,skills:{dig:1,engineering:2,life:3},health:100});
 Object.assign(modern.crew[2],{x:21.5,y:11.5,path:[],portableOxygen:1,portableCapacity:6,maskMode:'off',usingPortable:false,level:2,skillPoints:1,skills:{dig:0,engineering:0,life:1},health:100});
 for(const state of [modern,{...modern,rooms:[]},{...modern,rooms:[{...modern.rooms[0],type:'generic',valid:false,reasons:['침실에 산업 시설이 있습니다.']}]}])for(const overlay of ['normal','oxygen','temperature','power','plumbing','logistics','rooms'])for(const [w,h,dpr] of [[920,650,1],[390,640,2],[844,280,1.5],[1440,900,2.5]]){window.devicePixelRatio=dpr;renderCase(state,w,h,overlay);}
+const gasColony=new Game(73,'oni-base');
+gasColony._addBuilding('gasPump',26,10);gasColony._addBuilding('gasVent',29,10);
+for(const [offset,element] of ['oxygen','co2','hydrogen','steam'].entries()){
+ const x=26+offset;assert.ok(gasColony.queue('gaspipe',x,10).ok);
+ gasColony.cell(x,10).gasPacket={element,mass:0.5,temp:70};
+}
+gasColony.cell(26,10).hydrogen=1.2;
+const gasState={...gasColony.serialize(),originalRules:true};
+for(const [w,h,dpr] of [[920,650,1],[390,640,2],[844,280,1.5],[1440,900,2.5]]){
+ window.devicePixelRatio=dpr;
+ renderCase(gasState,w,h,'gas',{x:26,y:10});
+}
+const currentColony=new Game(73);
+const currentState={...currentColony.serialize(),originalRules:true,modernRules:true,restoredRules:true};
+for(const [type,x,y] of [['steamRocket',33,20],['researchModule',34,15],['commandModule',34,10]])currentState.buildings.push({type,x,y,progress:1,enabled:true});
+for(const [x,type] of [[14,'gasBridge'],[20,'supercomputer'],[26,'planetarium']])currentState.buildings.push({type,x,y:16,rotation:1,progress:1,enabled:true});
+for(const size of [[390,844],[1280,800]])for(const overlay of ['normal','gas','power','plumbing']){
+ const {canvas,renderer}=renderCase(currentState,...size,overlay);
+ renderer.tool='gasBridge';renderer.hover={x:18,y:16};renderer.render(5);assert.equal(canvas.ctx.depth,0);
+}
 let checks=0;
 function capture(ctx,fn){ctx.save();ctx.fillStyle='#000';ctx.strokeStyle='#000';ctx.lineWidth=1;ctx.font='10px sans-serif';trace=[];fn();const out=trace;trace=null;ctx.restore();assert.equal(ctx.depth,0);checks++;return out;}
 const g=structuredClone(modern);g.canPlace=()=>({ok:true});
@@ -136,7 +156,7 @@ const frozenRenderer=new Renderer(new Canvas(920,650),frozen);
 for(const overlay of ['normal','oxygen','rooms']){frozenRenderer.overlay=overlay;frozenRenderer.selection={x:25,y:16};frozenRenderer.render(30);checks++;}
 console.log(JSON.stringify({scenarios,checks,calls,stateInvariant:true,gameplayPauseInvariant:true,geometryFinite:true,canvasBalanced:true}));
 
-const live=new Game(73);live.step(3);
+const live=new Game(73, 'breath-4.1');live.step(3);
 const liveBefore=JSON.stringify(live),liveRenderer=new Renderer(new Canvas(920,650),live);
 for(const overlay of ['normal','oxygen','rooms']){liveRenderer.overlay=overlay;liveRenderer.render(99);}
 assert.equal(JSON.stringify(live),liveBefore,'rendering real v4 Game instance is read-only');

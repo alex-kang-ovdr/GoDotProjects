@@ -3,18 +3,20 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve, dirname, basename } from 'node:path';
 import { Script } from 'node:vm';
+import { readNativeGasReference } from './native-gas-reference.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = resolve(root, 'dist');
-const files = ['utilities.js', 'community.js', 'frontier.js', 'engine.js', 'renderer.js', 'app.js'];
+const web = resolve(root, '../../Web');
+const output = resolve(web, 'index.html');
+const files = ['elements.js', 'atmosphere.js', 'environment.js', 'rules.js', 'footprint.js', 'utilities.js', 'community.js', 'frontier.js', 'conduits.js', 'gas-network.js', 'pipe-system.js', 'expedition.js', 'research.js', 'engine.js', 'renderer.js', 'research-ui.js', 'gas-comparison.js', 'app.js'];
 const available = new Set();
 const chunks = [];
 
 for (const file of files) {
-  let source = await readFile(resolve(dist, file), 'utf8');
+  let source = await readFile(resolve(web, file), 'utf8');
   // The simulation and renderer are safe to import without a DOM. Reading actual
   // module exports keeps multi-declarator exports and future additions intact.
-  const names = file === 'app.js' ? [] : Object.keys(await import(pathToFileURL(resolve(dist, file))));
+  const names = file === 'app.js' ? [] : Object.keys(await import(pathToFileURL(resolve(web, file))));
   source = source.replace(/^import\s*\{([^}]+)\}\s*from\s*['"]\.\/([^'"]+)['"];?\s*$/gm, (_, bindings, dependency) => {
     if (!available.has(dependency)) throw new Error(`${file}: dependency ${dependency} is not bundled yet`);
     const destructuring = bindings.split(',').map(binding => {
@@ -33,15 +35,25 @@ for (const file of files) {
 const bundle = `(() => {\n'use strict';\nconst __modules = Object.create(null);\n${chunks.join('\n\n')}\n})();`;
 new Script(bundle, { filename: 'breath-colony-standalone.js' });
 const [template, css] = await Promise.all([
-  readFile(resolve(dist, 'index.html'), 'utf8'),
-  readFile(resolve(dist, 'styles.css'), 'utf8'),
+  readFile(output, 'utf8'),
+  readFile(resolve(web, 'styles.css'), 'utf8'),
 ]);
-const styleTag = '<link rel="stylesheet" href="./styles.css">';
-const scriptTag = '<script type="module" src="./app.js"></script>';
-if (!template.includes(styleTag) || !template.includes(scriptTag)) throw new Error('Expected HTML entry points changed');
+const styleTag = template.match(/<style\b[^>]*>[\s\S]*?<\/style\s*>/i)?.[0];
+const scriptTags = template.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) ?? [];
+const scriptTag = scriptTags.find(tag => !/\bsrc\s*=/i.test(tag.slice(0, tag.indexOf('>'))));
+if (!styleTag || !scriptTag || scriptTags.filter(tag => !/\bsrc\s*=/i.test(tag.slice(0, tag.indexOf('>')))).length !== 1) {
+  throw new Error('Expected one inline style and one inline application script in Web/index.html');
+}
+const reference=await readNativeGasReference();
 const html = template
+  .replace(/<template id="gas-measurements">[\s\S]*?<\/template>/,()=>'<template id="gas-measurements">'+JSON.stringify(reference).replace(/</g,'\\u003c')+'</template>')
   .replace(styleTag, () => `<style>\n${css.replace(/<\/style/gi, '<\\/style')}\n</style>`)
   .replace(scriptTag, () => `<script>\n${bundle.replace(/<\/script/gi, '<\\/script')}\n</script>`);
-const output = resolve(dist, 'standalone.html');
+const outputScriptTags = html.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) ?? [];
+const outputScript = outputScriptTags.find(tag => !/\bsrc\s*=/i.test(tag.slice(0, tag.indexOf('>'))));
+if (!outputScript || outputScriptTags.filter(tag => !/\bsrc\s*=/i.test(tag.slice(0, tag.indexOf('>')))).length !== 1) {
+  throw new Error('Expected one generated inline application script in Web/index.html');
+}
+new Script(outputScript.slice(outputScript.indexOf('>') + 1, outputScript.toLowerCase().lastIndexOf('</script')), { filename: 'Web/index.html inline application script' });
 await writeFile(output, html);
-console.log(`${basename(output)} created: ${Buffer.byteLength(html).toLocaleString('en-US')} bytes; ${files.length} modules, inline CSS and JavaScript.`);
+console.log(`${basename(output)} regenerated: ${Buffer.byteLength(html).toLocaleString('en-US')} bytes; ${files.length} modules, inline CSS and JavaScript.`);
