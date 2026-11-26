@@ -488,7 +488,12 @@ func _draw_backdrop(vp: Vector2) -> void:
 		for i in range(9):
 			var ax := fmod(anim_clock * (22.0 + float(i) * 4.0) + float(i * 173), vp.x + 80.0) - 40.0
 			var ay := fmod(float(i * 97 + 60), vp.y - 120.0) + 60.0
-			draw_circle(Vector2(ax, ay), 7.0 + float(i % 3) * 4.0, Color(0.46, 0.42, 0.38, 0.72))
+			var atex := pkg.load_texture("asteroids/asteroid%d.png" % (i % 10)) if (pkg != null and pkg.is_loaded) else null
+			if atex != null:
+				var asz := 24.0 + float(i % 3) * 10.0
+				draw_texture_rect(atex, Rect2(Vector2(ax - asz * 0.5, ay - asz * 0.5), Vector2(asz, asz)), false, Color(1, 1, 1, 0.88))
+			else:
+				draw_circle(Vector2(ax, ay), 7.0 + float(i % 3) * 4.0, Color(0.46, 0.42, 0.38, 0.72))
 	elif hazard_kind == "pulsar":
 		var pulse := 0.4 + 0.4 * sin(anim_clock * 3.5)
 		draw_circle(Vector2(690.0, 140.0), 34.0 + pulse * 18.0, Color(0.35, 0.85, 1.0, 0.22))
@@ -652,9 +657,13 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 			var pulse_a := (0.34 + 0.24 * absf(sin(anim_clock * 11.0))) if ship.hacked_active else 0.14
 			draw_rect(rr, Color(0.75, 0.25, 1.0, pulse_a), true)
 			draw_rect(rr, Color(0.88, 0.45, 1.0, 0.95), false, 3.0)
-			var pod_p := rr.position + Vector2(rr.size.x * 0.5, -6.0)
-			draw_circle(pod_p, 7.0, Color("c85aff"))
-			draw_circle(pod_p, 3.5, Color.WHITE)
+			var pod_p := rr.position + Vector2(rr.size.x * 0.5, -8.0)
+			var htex := pkg.load_texture("ship/drones/drone_hack_base.png") if (pkg != null and pkg.is_loaded) else null
+			if htex != null:
+				draw_texture_rect(htex, Rect2(pod_p - Vector2(14, 14), Vector2(28, 28)), false)
+			else:
+				draw_circle(pod_p, 7.0, Color("c85aff"))
+				draw_circle(pod_p, 3.5, Color.WHITE)
 
 	# 6. Doors & airlocks
 	for d in ship.doors:
@@ -683,14 +692,26 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 		if cloak_tex != null:
 			draw_texture_rect(cloak_tex, img_rect, false, Color(0.65, 0.9, 1.0, 0.55))
 
-	# 9. Orbiting drones
+	# 9. Orbiting drones (real original FTL drone PNG sprites!)
 	for d in ship.drones:
 		if bool(d.powered):
 			var ang := float(d.angle)
 			var orbit_r := maxf(bounds.size.x, bounds.size.y) * 0.62
 			var dp := bounds.get_center() + Vector2(cos(ang) * orbit_r, sin(ang) * orbit_r * 0.72)
-			draw_circle(dp, 8.0, Color("66e0ff") if str(d.bp.get("type", "")) == "DEFENSE" else Color("ff9f43"))
-			draw_circle(dp, 4.0, Color.WHITE)
+			var dtex: Texture2D = null
+			if pkg != null and pkg.is_loaded:
+				var dimg := str(d.bp.get("droneImage", ""))
+				if not dimg.is_empty():
+					dtex = pkg.load_texture("ship/drones/%s_base.png" % dimg)
+				if dtex == null:
+					var dtype := str(d.bp.get("type", "COMBAT"))
+					var fallback_img := "drone_defense_base.png" if dtype == "DEFENSE" else ("drone_shield_base.png" if dtype == "SHIELD" else ("drone_shiprepair_base.png" if dtype == "SHIP_REPAIR" else "drone_combat_base.png"))
+					dtex = pkg.load_texture("ship/drones/%s" % fallback_img)
+			if dtex != null:
+				draw_texture_rect(dtex, Rect2(dp - Vector2(18, 18), Vector2(36, 36)), false)
+			else:
+				draw_circle(dp, 8.0, Color("66e0ff") if str(d.bp.get("type", "")) == "DEFENSE" else Color("ff9f43"))
+				draw_circle(dp, 4.0, Color.WHITE)
 
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -755,25 +776,30 @@ func _draw_ship_weapons(ship: FTLShip, img_rect: Rect2) -> void:
 
 func _draw_room_system_icon(ship: FTLShip, sys: Dictionary, rr: Rect2) -> void:
 	var sname := str(sys.id)
-	var col := Color(0.92, 0.96, 1.0, 0.88)
+	var state_suffix := "green1"
+	var col := Color(0.92, 0.96, 1.0, 0.95)
 	if int(sys.ion_level) > 0:
+		state_suffix = "blue1"
 		col = Color("4ce0ff")
 	elif int(sys.damage) >= int(sys.level):
+		state_suffix = "red1"
 		col = Color("ff4444")
 	elif int(sys.damage) > 0:
+		state_suffix = "orange1"
 		col = Color("ffaa33")
 	elif int(sys.power) <= 0 and not (sname in FTLShip.SUBSYSTEMS):
-		col = Color(0.58, 0.62, 0.66, 0.72)
+		state_suffix = "grey1"
+		col = Color(0.65, 0.7, 0.74, 0.85)
 
 	var icon_tex: Texture2D = null
 	if pkg != null and pkg.is_loaded:
-		icon_tex = pkg.load_texture("icons/s_%s_overlay.png" % sname)
+		icon_tex = pkg.load_texture("icons/s_%s_%s.png" % [sname, state_suffix])
 		if icon_tex == null:
-			icon_tex = pkg.load_texture("icons/s_%s_green1.png" % sname)
+			icon_tex = pkg.load_texture("icons/s_%s_overlay.png" % sname)
 	var center := rr.get_center()
 	if icon_tex != null:
-		var sz := Vector2(28, 28)
-		draw_texture_rect(icon_tex, Rect2(center - sz * 0.5, sz), false, col)
+		var sz := Vector2(30, 30)
+		draw_texture_rect(icon_tex, Rect2(center - sz * 0.5, sz), false, Color.WHITE)
 	else:
 		var font := ThemeDB.fallback_font
 		if font != null:
@@ -820,12 +846,16 @@ func _draw_door(d: Dictionary, door_lvl: int) -> void:
 func _draw_crew_member(c: Dictionary) -> void:
 	var pos: Vector2 = c.pos
 	if float(c.get("mind_timer", 0.0)) > 0.0:
-		var pulse_r := 16.0 + sin(anim_clock * 9.0) * 2.0
-		draw_circle(pos, pulse_r, Color(0.82, 0.28, 1.0, 0.3))
-		draw_arc(pos, pulse_r, 0, TAU, 20, Color("e070ff"), 2.2)
-		var mfont := ThemeDB.fallback_font
-		if mfont != null:
-			draw_string(mfont, pos + Vector2(-12, -22), "MC", HORIZONTAL_ALIGNMENT_CENTER, 24, 11, Color("f0a0ff"))
+		var mc_tex := pkg.load_texture("people/mindcontrol_strip8.png") if (pkg != null and pkg.is_loaded) else null
+		if mc_tex != null:
+			var fw := float(mc_tex.get_width()) / 8.0
+			var fh := float(mc_tex.get_height())
+			var fr := int(anim_clock * 10.0) % 8
+			draw_texture_rect_region(mc_tex, Rect2(pos + Vector2(-14, -28), Vector2(28, 22)), Rect2(float(fr) * fw, 0.0, fw, fh))
+		else:
+			var pulse_r := 16.0 + sin(anim_clock * 9.0) * 2.0
+			draw_circle(pos, pulse_r, Color(0.82, 0.28, 1.0, 0.3))
+			draw_arc(pos, pulse_r, 0, TAU, 20, Color("e070ff"), 2.2)
 	if bool(c.selected):
 		draw_circle(pos, 15.0, Color(0.28, 1.0, 0.42, 0.28))
 		draw_arc(pos, 15.0, 0, TAU, 18, Color(0.35, 1.0, 0.48, 0.95), 2.0)
@@ -1002,12 +1032,24 @@ func _draw_combat_fx() -> void:
 		var r := 14.0 + (1.0 - a) * 32.0
 		draw_arc(sh.pos, r, 0, TAU, 24, Color(0.45, 0.88, 1.0, a * 0.9), 3.0)
 
-	# Explosions
+	# Explosions (real FTL animated explosion strips!)
 	for ex in explosions:
-		var a := clampf(float(ex.life) / maxf(0.01, float(ex.max_life)), 0.0, 1.0)
-		var r := float(ex.radius) * (0.4 + (1.0 - a) * 0.9)
-		draw_circle(ex.pos, r, Color(1.0, 0.45, 0.12, a * 0.65))
-		draw_circle(ex.pos, r * 0.55, Color(1.0, 0.92, 0.55, a * 0.9))
+		var max_l := maxf(0.01, float(ex.max_life))
+		var u := clampf(1.0 - float(ex.life) / max_l, 0.0, 1.0)
+		var is_big := float(ex.radius) >= 30.0
+		var ex_tex := pkg.load_texture("effects/explosion_big1_strip10.png" if is_big else "effects/explosion_small1_strip9.png") if (pkg != null and pkg.is_loaded) else null
+		if ex_tex != null:
+			var frames := 10 if is_big else 9
+			var fw := float(ex_tex.get_width()) / float(frames)
+			var fh := float(ex_tex.get_height())
+			var fr := clampi(int(u * float(frames)), 0, frames - 1)
+			var sz := Vector2(72.0, 72.0) if is_big else Vector2(46.0, 46.0)
+			draw_texture_rect_region(ex_tex, Rect2((ex.pos as Vector2) - sz * 0.5, sz), Rect2(float(fr) * fw, 0.0, fw, fh))
+		else:
+			var a := clampf(float(ex.life) / max_l, 0.0, 1.0)
+			var r := float(ex.radius) * (0.4 + u * 0.9)
+			draw_circle(ex.pos, r, Color(1.0, 0.45, 0.12, a * 0.65))
+			draw_circle(ex.pos, r * 0.55, Color(1.0, 0.92, 0.55, a * 0.9))
 
 	# Floating combat popups
 	var font := ThemeDB.fallback_font

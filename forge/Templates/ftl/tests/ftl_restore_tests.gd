@@ -360,6 +360,25 @@ func _run() -> void:
 	_check(saved_cnt >= 3 and ret_cnt >= 1 and int(st_ship.crew[0].target_room) == st_orig_room and dismiss_ok and q_bid >= 0 and bool(smap.beacons[q_bid].get("quest", false)),
 		"Crew Save/Return Stations (S/R), Crew Dismiss & Quest Beacon work")
 
+	# 8m. Zero-missing Sprite & Icon Asset integrity check against ftl.dat.vanilla
+	var missing_assets: Array[String] = []
+	for sname in FTLShip.SYSTEM_ORDER:
+		for suf in ["green1", "orange1", "red1", "blue1", "grey1", "overlay"]:
+			var p := "icons/s_%s_%s.png" % [sname, suf]
+			if pkg.load_texture(p) == null:
+				missing_assets.append(p)
+	for ui_ic in ["ui_icons/icon_fuel.png", "ui_icons/icon_missiles.png", "ui_icons/icon_drones.png", "ui_icons/icon_scrap.png"]:
+		if pkg.load_texture(ui_ic) == null:
+			missing_assets.append(ui_ic)
+	for sp in ["human", "engi", "mantis", "rock", "energy", "slug", "crystal", "anaerobic", "battle", "repair"]:
+		var cp := "people/%s_base.png" % sp
+		if pkg.load_texture(cp) == null:
+			missing_assets.append(cp)
+	for fx_p in ["ship/drones/drone_combat_base.png", "ship/drones/drone_defense_base.png", "ship/drones/drone_hack_base.png", "effects/explosion_big1_strip10.png", "effects/explosion_small1_strip9.png", "people/mindcontrol_strip8.png", "asteroids/asteroid0.png"]:
+		if pkg.load_texture(fx_p) == null:
+			missing_assets.append(fx_p)
+	_check(missing_assets.is_empty(), "Zero-missing core FTL sprite & icon assets decoded from PKG (117/117)", "missing=%s" % str(missing_assets))
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

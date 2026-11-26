@@ -437,9 +437,19 @@ func _build_hud_ui() -> void:
 	top_h.add_child(sh_lbl)
 	hud_refs["sh_lbl"] = sh_lbl
 
-	var res_lbl := _mk_label("FUEL 16  MSL 8  DRN 2  SCRAP 30", 14, Color("ffd54f"))
-	top_h.add_child(res_lbl)
-	hud_refs["res_lbl"] = res_lbl
+	var res_box := HBoxContainer.new()
+	res_box.add_theme_constant_override("separation", 6)
+	top_h.add_child(res_box)
+	for r_item in [["fuel", "16"], ["missiles", "8"], ["drones", "2"], ["scrap", "30"]]:
+		var ic := TextureRect.new()
+		ic.custom_minimum_size = Vector2(20, 20)
+		ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		res_box.add_child(ic)
+		hud_refs["icon_" + r_item[0]] = ic
+		var rl := _mk_label(r_item[1], 14, Color("ffd54f"))
+		res_box.add_child(rl)
+		hud_refs["res_" + r_item[0]] = rl
 
 	var stat_lbl := _mk_label("EVADE 15%  O2 100%", 14, Color("b8d8ee"))
 	top_h.add_child(stat_lbl)
@@ -1493,7 +1503,15 @@ func _update_hud_labels() -> void:
 	if player_ship.zoltan_shield > 0:
 		sh_dots += " +Z%d" % player_ship.zoltan_shield
 	hud_refs["sh_lbl"].text = "SHIELD %s" % (sh_dots if not sh_dots.is_empty() else "—")
-	hud_refs["res_lbl"].text = "FUEL %d  MSL %d  DRN %d  SCRAP %d" % [player_ship.fuel, player_ship.missiles, player_ship.drone_parts, player_ship.scrap]
+	hud_refs["res_fuel"].text = "%d" % player_ship.fuel
+	hud_refs["res_missiles"].text = "%d" % player_ship.missiles
+	hud_refs["res_drones"].text = "%d" % player_ship.drone_parts
+	hud_refs["res_scrap"].text = "%d" % player_ship.scrap
+	if pkg != null and pkg.is_loaded:
+		for rk in ["fuel", "missiles", "drones", "scrap"]:
+			var tr: TextureRect = hud_refs["icon_" + rk]
+			if tr.texture == null:
+				tr.texture = pkg.load_texture("ui_icons/icon_%s.png" % rk)
 	hud_refs["stat_lbl"].text = "EVADE %d%%  O2 %d%%" % [player_ship.get_evasion(), int(round(player_ship.get_average_oxygen()))]
 	var haz_tag := ""
 	match battle_view.hazard_kind:
@@ -1529,9 +1547,17 @@ func _update_hud_labels() -> void:
 				bars += "□"
 		if sname == "artillery" and eff > 0 and in_combat:
 			var apct := int(round(clampf(player_ship.artillery_charge / maxf(1.0, player_ship.artillery_cooldown), 0.0, 1.0) * 100.0))
-			btn.text = "ARTI\n%s\n%d%%" % [bars, apct]
+			btn.text = "%s\n%d%%" % [bars, apct]
 		else:
-			btn.text = "%s\n%s\n%d/%d" % [sname.left(4).to_upper(), bars, eff, int(s.level)]
+			btn.text = "%s\n%d/%d" % [bars, eff, int(s.level)]
+		if pkg != null and pkg.is_loaded:
+			var suf := "blue1" if int(s.ion_level) > 0 else ("red1" if int(s.damage) >= int(s.level) else ("orange1" if int(s.damage) > 0 else ("grey1" if (eff <= 0 and not (sname in FTLShip.SUBSYSTEMS)) else "green1")))
+			var stex := pkg.load_texture("icons/s_%s_%s.png" % [sname, suf])
+			if stex != null:
+				btn.icon = stex
+				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+				btn.expand_icon = true
 
 	# Update weapon buttons
 	var wpn_h: HBoxContainer = hud_refs["wpn_h"]
