@@ -2,7 +2,7 @@ import { getResearchStatus, researchTechName, RESEARCH_TYPE_NAMES_KO, RESEARCH_B
 
 import { BUILDINGS } from './engine.js';
 
-const unlockName = id => ({pipe:'액체관',gaspipe:'기체관'}[id] || BUILDINGS[id]?.name || id);
+const unlockName = (id,game) => game.restoredRules&&id==='steamRocket'?'증기 엔진':({pipe:'액체관',gaspipe:'기체관'}[id] || BUILDINGS[id]?.name || id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const pointText = (costs,progress) => Object.entries(costs).filter(([,value])=>value>0).map(([kind,value])=>`${RESEARCH_TYPE_NAMES_KO[kind]||kind} ${progress?`${Math.floor(progress[kind]||0)} / `:''}${value}`).join(' · ') || '비용 없음';
 
@@ -23,7 +23,7 @@ export function renderResearchPanel(game) {
     `<details class="research-tier-group" ${tier<=3?'open':''}><summary>연구 단계 ${tier}<small>${techs.filter(row=>row.complete).length} / ${techs.length} 완료</small></summary><div class="research-tech-list">${techs.map(row=>{
       const pct=Object.entries(row.costs).reduce((sum,[kind,cost])=>sum+(cost>0?Math.min(1,(row.progress[kind]||0)/cost):0),0)/Math.max(1,Object.values(row.costs).filter(cost=>cost>0).length);
       const reason=row.complete?'완료':row.unsupportedKinds.length?`필요 포인트 미지원 · ${row.unsupportedKinds.map(k=>RESEARCH_TYPE_NAMES_KO[k]||k).join(', ')}`:row.queued?`대기 · 선행 ${row.missingPrerequisites.length}`:row.missingPrerequisites.length?`선행 대기 · ${row.missingPrerequisites.length}개 기술을 자동 추가`:row.available?'선택 가능':'잠김';
-      return `<button type="button" class="research-tech ${row.complete?'complete':''} ${row.selected?'selected':''} ${row.queued?'queued':''}" data-research-tech="${esc(row.id)}" ${row.queueable?'':'disabled'}><span class="research-tech-main"><b>${esc(row.name)}</b><small>${esc(pointText(row.costs,row.selected||row.complete||Object.keys(row.progress).length?row.progress:null))}</small></span><span class="research-tech-status">${esc(reason)}</span><i class="research-progress"><i style="width:${(pct*100).toFixed(1)}%"></i></i>${row.unlocks.length?`<small class="research-unlock">해금 · ${row.unlocks.filter(id=>id!=='wastepipe').map(id=>esc(unlockName(id))).join(', ')}</small>`:''}</button>`;
+      return `<button type="button" class="research-tech ${row.complete?'complete':''} ${row.selected?'selected':''} ${row.queued?'queued':''}" data-research-tech="${esc(row.id)}" ${row.queueable?'':'disabled'}><span class="research-tech-main"><b>${esc(row.name)}</b><small>${esc(pointText(row.costs,row.selected||row.complete||Object.keys(row.progress).length?row.progress:null))}</small></span><span class="research-tech-status">${esc(reason)}</span><i class="research-progress"><i style="width:${(pct*100).toFixed(1)}%"></i></i>${row.unlocks.length?`<small class="research-unlock">해금 · ${row.unlocks.filter(id=>id!=='wastepipe'&&(game.restoredRules||!['researchModule','commandModule'].includes(id))).map(id=>esc(unlockName(id,game))).join(', ')}</small>`:''}</button>`;
     }).join('')}</div></details>`).join('');
   return `${intro}${queueMarkup}<label class="research-search-label">기술 찾기<input type="search" data-research-search placeholder="기술 이름 검색" autocomplete="off"></label><p class="research-points-note">${RESEARCH_BUILDING_NAMES_KO.research}는 흙 50kg, ${RESEARCH_BUILDING_NAMES_KO.supercomputer}는 저장 청수 50kg, ${RESEARCH_BUILDING_NAMES_KO.planetarium}는 데이터 뱅크 1kg을 연구 점수 1점으로 처리합니다.</p><div class="research-tree-list">${tiers}</div>`;
 }

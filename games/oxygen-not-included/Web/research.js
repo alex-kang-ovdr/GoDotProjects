@@ -1,3 +1,5 @@
+import { usesModernRules } from './rules.js';
+
 // TechTree GraphML and Database.Techs tier table extracted from the installed base-game build.
 const TECH_ROWS = [
   {"id": "Acoustics", "prerequisites": ["Combustion"], "tier": 3, "costs": {"basic": 30, "advanced": 20}},
@@ -91,7 +93,7 @@ const TECH_ROWS = [
 
 export const RESEARCH_TECHS = Object.freeze(TECH_ROWS.map(tech => Object.freeze({...tech, prerequisites:Object.freeze(tech.prerequisites), costs:Object.freeze(tech.costs)})));
 const TECH_BY_ID=new Map(RESEARCH_TECHS.map(tech=>[tech.id,tech]));
-export const RESEARCH_UNLOCKS=Object.freeze({farm:'FineDining',kitchen:'FineDining',mess:'FineDining',fridge:'Agriculture',gasPump:'GasPiping',gasVent:'GasPiping',gasBridge:'GasPiping',gaspipe:'GasPiping',pump:'LiquidPiping',pipe:'LiquidPiping',wastepipe:'LiquidPiping',liquidBridge:'LiquidPiping',liquidVent:'LiquidPiping',reservoir:'ImprovedLiquidPiping',supercomputer:'AdvancedResearch',coalgen:'Combustion',hydrogenGen:'AdvancedPowerRegulation',steamTurbine:'RenewableEnergy',electrolyzer:'ImprovedOxygen',scrubber:'DirectedAirStreams',purifier:'Distillation',cooler:'TemperatureModulation',toilet:'SanitationSciences',sink:'SanitationSciences',oxygenDock:'PortableGasses',planetarium:'DupeTrafficControl',steamRocket:'BasicRocketry'});
+export const RESEARCH_UNLOCKS=Object.freeze({farm:'FineDining',kitchen:'FineDining',mess:'FineDining',fridge:'Agriculture',gasPump:'GasPiping',gasVent:'GasPiping',gasBridge:'GasPiping',gaspipe:'GasPiping',pump:'LiquidPiping',pipe:'LiquidPiping',wastepipe:'LiquidPiping',liquidBridge:'LiquidPiping',liquidVent:'LiquidPiping',reservoir:'ImprovedLiquidPiping',supercomputer:'AdvancedResearch',coalgen:'Combustion',hydrogenGen:'AdvancedPowerRegulation',steamTurbine:'RenewableEnergy',electrolyzer:'ImprovedOxygen',scrubber:'DirectedAirStreams',purifier:'Distillation',cooler:'TemperatureModulation',toilet:'SanitationSciences',sink:'SanitationSciences',oxygenDock:'PortableGasses',planetarium:'DupeTrafficControl',steamRocket:'BasicRocketry',researchModule:'BasicRocketry',commandModule:'BasicRocketry'});
 export const RESEARCH_NAMES_KO=Object.freeze({
   "PrettyGoodConductors": "저저항 도체",
   "Plastics": "플라스틱 제조",
@@ -253,5 +255,5 @@ export function installResearch(Game,{BUILDINGS}){
  p.canPlace=function(tool,x,y,rotation){const def=BUILDINGS[tool];if(['supercomputer','planetarium'].includes(tool)&&!this.modernRules)return{ok:false,message:'이 연구 설비는 4.3 원작 규칙에서 사용할 수 있어요.'};if(this.modernRules&&RESEARCH_UNLOCKS[tool]&&!isBuildingResearchUnlocked(this,tool))return{ok:false,message:`연구 ${researchTechName(RESEARCH_UNLOCKS[tool])} 필요`};if(this.modernRules&&def?.unlock&&!RESEARCH_UNLOCKS[tool])return{ok:false,message:'이 건물은 설치본 연구 트리에 연결된 해금이 없습니다.'};return base.place.call(this,tool,x,y,rotation);};
  p._consumerReady=function(b){if(this.modernRules&&['research','supercomputer','planetarium'].includes(b.type)){if(!b.enabled)return'수동 정지';if(!this._researchCanWork(b))return stateOf(this).selected?'연구 포인트 또는 연구 재료 대기':'연구 목표 선택 필요';if(!b.workerId)return'연구원 대기';if(!b.connected)return'전력망 연결 필요';return null;}return base.ready.call(this,b);};
  p.serialize=function(){const result=base.serialize.call(this);if(this.modernRules)result.researchProgress=JSON.parse(JSON.stringify(stateOf(this)));return result;};
- p.load=function(raw){if(raw?.ruleset==='oni-4.3'&&!validResearchSave(raw.researchProgress,raw.buildings||[],raw.stats))throw new Error('저장 파일을 불러올 수 없어요: 연구 대기열 또는 연구 진행 데이터가 올바르지 않습니다.');const result=base.load.call(this,raw);if(this.modernRules){this.researchProgress=JSON.parse(JSON.stringify(raw.researchProgress));for(const b of this.buildings)if(['research','supercomputer','planetarium'].includes(b.type)&&b.researchRemainder===undefined)b.researchRemainder=0;}else delete this.researchProgress;return result;};
+ p.load=function(raw){if(usesModernRules(raw?.ruleset)&&!validResearchSave(raw.researchProgress,raw.buildings||[],raw.stats))throw new Error('저장 파일을 불러올 수 없어요: 연구 대기열 또는 연구 진행 데이터가 올바르지 않습니다.');const result=base.load.call(this,raw);if(this.modernRules){this.researchProgress=JSON.parse(JSON.stringify(raw.researchProgress));for(const b of this.buildings)if(['research','supercomputer','planetarium'].includes(b.type)&&b.researchRemainder===undefined)b.researchRemainder=0;}else delete this.researchProgress;return result;};
 }

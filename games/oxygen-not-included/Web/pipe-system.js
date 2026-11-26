@@ -1,3 +1,4 @@
+import { usesModernRules } from './rules.js';
 import { buildConduitGraph, advanceConduits, pipeDue, cellConduitAdapter } from './conduits.js';
 import { buildingPort } from './footprint.js';
 import { atmosphereOf, displaceAtmosphereForLiquid, takeAtmosphere, emitAtmosphere } from './atmosphere.js';
@@ -221,13 +222,13 @@ export function installPacketPipes(Game){
   p._completeTask=function(t){const result=base.complete.call(this,t);this._packetDirty=true;return result;};
   p._finishUtilities=function(dt){base.finish.call(this,dt);if(this.modernRules){stepLiquids(this,dt);this._syncFluidTotals();}};
   p.load=function(s){
-    if(s?.ruleset==='oni-4.3'&&Array.isArray(s.cells))for(const c of s.cells){
+    if(usesModernRules(s?.ruleset)&&Array.isArray(s.cells))for(const c of s.cells){
       if(c.wastepipe||c.cleanWater>0&&c.dirtyWater>0||(c.dirtyWater>0&&!c.pipe))throw new Error('한 액체관에는 한 원소만 저장할 수 있습니다.');
       for(const key of ['gasLastIn','gasLastOut','liquidLastIn','liquidLastOut'])if(key in c&&(!Number.isInteger(c[key])||c[key]<0||c[key]>=s.cells.length))throw new Error('배관 분기 순서가 올바르지 않습니다.');
       if('liquidElement' in c&&!['dirtyWater','cleanWater'].includes(c.liquidElement))throw new Error('바닥 액체 종류가 올바르지 않습니다.');
       if('liquidPacketTemp' in c&&(!Number.isFinite(c.liquidPacketTemp)||c.liquidPacketTemp< -100||c.liquidPacketTemp>300))throw new Error('액체관 온도가 올바르지 않습니다.');
     }
-    if(s?.ruleset==='oni-4.3'&&Array.isArray(s.buildings))for(const b of s.buildings){
+    if(usesModernRules(s?.ruleset)&&Array.isArray(s.buildings))for(const b of s.buildings){
       for(const field of ['cleanWaterTemp','dirtyWaterTemp'])if(field in b&&(!Number.isFinite(b[field])||b[field]< -100||b[field]>300))throw new Error('저장 액체 온도가 올바르지 않습니다.');
       if(b.type==='reservoir'&&b.cleanWater+b.dirtyWater>5000+EPS||b.type==='pump'&&b.cleanWater+b.dirtyWater>20+EPS)throw new Error('액체 저장 용량을 초과했습니다.');
     }
