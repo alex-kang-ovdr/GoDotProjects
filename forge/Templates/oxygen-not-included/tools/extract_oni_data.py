@@ -75,16 +75,16 @@ TECH_BUILDING_MAP = {
     "AdvancedPowerRegulation": ["hydrogen_gen"],
     "TemperatureModulation": ["insulated_tile"],
     "LiquidTemperature": ["thermo_aquatuner"],
-    "RefinedObjects": ["metal_refinery", "fire_pole"],
-    "Plastics": ["oil_refinery"],
+    "RefinedObjects": ["metal_refinery", "fire_pole", "rock_crusher", "kiln", "metal_tile"],
+    "Plastics": ["oil_refinery", "petrol_gen"],
     "SolidTransport": ["auto_sweeper", "sweep_station", "conveyor_loader", "conveyor_chute"],
-    "LogicControl": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"],
+    "LogicControl": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"],
     "SkyDetectors": ["telescope", "bunker_door", "space_scanner", "bunker_tile"],
     "RenewableEnergy": ["steam_turbine", "solar_panel"],
     "MedicineI": ["medical_cot", "apothecary", "wash_sink"],
     "MedicineII": ["massage_table"],
     "Luxury": ["water_cooler", "jukebot", "arcade_cabinet"],
-    "Suits": ["suit_maker"],
+    "Suits": ["suit_maker", "suit_dock", "suit_checkpoint"],
 }
 
 # Building prefab ID -> template ID + measured DLL constants (45 playable buildings + 3 POI props)
@@ -161,6 +161,21 @@ BUILDING_PREFAB_MAP = {
     "liquid_filter": {"prefab": "LIQUIDFILTER", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.2, "power_w": 120.0},
     "conveyor_chute": {"prefab": "SOLIDCONDUITOUTBOX", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.0},
     "suit_maker": {"prefab": "SUITFABRICATOR", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.0, "power_w": 240.0, "needs_floor": True},
+    "metal_tile": {"prefab": "METALTILE", "cat": "base", "cost_element": "Cuprite", "cost_kg": 100.0, "build_time": 1.6, "solid": True, "decor": 15.0},
+    "suit_dock": {"prefab": "SUITLOCKER", "cat": "base", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.2, "power_w": 120.0, "needs_floor": True},
+    "suit_checkpoint": {"prefab": "SUITMARKER", "cat": "base", "cost_element": "Cuprite", "cost_kg": 150.0, "build_time": 1.8, "needs_floor": True},
+    "logic_switch": {"prefab": "LOGICSWITCH", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.0},
+    "logic_and": {"prefab": "LOGICGATEAND", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.0},
+    "logic_or": {"prefab": "LOGICGATEOR", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.0},
+    "logic_not": {"prefab": "LOGICGATENOT", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.0},
+    "logic_buffer": {"prefab": "LOGICGATEBUFFER", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.0},
+    "logic_alarm": {"prefab": "LOGICALARM", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 50.0, "build_time": 1.4},
+    "petrol_gen": {"prefab": "PETROLEUMGENERATOR", "cat": "power", "cost_element": "Cuprite", "cost_kg": 600.0, "build_time": 3.8, "power_w": -2000.0, "needs_floor": True, "decor": -20.0},
+    "rock_crusher": {"prefab": "ROCKCRUSHER", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.8, "power_w": 240.0, "needs_floor": True, "decor": -10.0},
+    "kiln": {"prefab": "KILN", "cat": "colony", "cost_element": "SandStone", "cost_kg": 400.0, "build_time": 2.6, "needs_floor": True, "decor": -10.0},
+    "rocket_petroleum_engine": {"prefab": "KEROSENEENGINE", "cat": "space", "cost_element": "IronOre", "cost_kg": 600.0, "build_time": 4.2, "needs_floor": True},
+    "rocket_fuel_tank": {"prefab": "LIQUIDFUELTANK", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.4},
+    "rocket_oxidizer_tank": {"prefab": "OXIDIZERTANK", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.4},
 }
 
 

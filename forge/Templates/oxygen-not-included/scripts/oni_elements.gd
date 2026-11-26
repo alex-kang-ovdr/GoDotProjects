@@ -149,6 +149,21 @@ const BUILDING_COLORS := {
 	"conveyor_chute": Color(0.72, 0.62, 0.48, 1.0),
 	"rocket_cargo_bay": Color(0.78, 0.46, 0.36, 1.0),
 	"suit_maker": Color(0.92, 0.78, 0.34, 1.0),
+	"metal_tile": Color(0.84, 0.68, 0.42, 1.0),
+	"suit_dock": Color(0.32, 0.74, 0.96, 1.0),
+	"suit_checkpoint": Color(0.36, 0.88, 0.72, 1.0),
+	"logic_switch": Color(0.30, 0.96, 0.48, 1.0),
+	"logic_and": Color(0.28, 0.86, 0.68, 1.0),
+	"logic_or": Color(0.34, 0.88, 0.76, 1.0),
+	"logic_not": Color(0.96, 0.44, 0.36, 1.0),
+	"logic_buffer": Color(0.46, 0.84, 0.96, 1.0),
+	"logic_alarm": Color(0.98, 0.32, 0.28, 1.0),
+	"petrol_gen": Color(0.76, 0.42, 0.24, 1.0),
+	"rock_crusher": Color(0.64, 0.56, 0.48, 1.0),
+	"kiln": Color(0.82, 0.46, 0.26, 1.0),
+	"rocket_petroleum_engine": Color(0.86, 0.54, 0.26, 1.0),
+	"rocket_fuel_tank": Color(0.90, 0.64, 0.22, 1.0),
+	"rocket_oxidizer_tank": Color(0.42, 0.80, 0.96, 1.0),
 }
 
 static func ensure_loaded() -> void:

@@ -14,8 +14,11 @@ static var fx_textures: Dictionary = {}
 static var kanim_building_idle: Dictionary = {}
 static var kanim_building_work: Dictionary = {}
 static var kanim_dupes: Array = []
+static var kanim_atmosuit_dupe: Dictionary = {}
 static var sfx_streams: Dictionary = {}
 static var bgm_streams: Dictionary = {}
+static var music_bank_tracks: Array = []
+static var ambience_bank_tracks: Array = []
 static var kanim_builds: Dictionary = {}
 static var kanim_anims: Dictionary = {}
 static var rendering_inventory: Dictionary = {}
@@ -37,7 +40,7 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
 
-	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt", "res://data/kanim_sprites_ext4_extracted.txt"]:
+	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt", "res://data/kanim_sprites_ext4_extracted.txt", "res://data/kanim_sprites_ext5_extracted.txt"]:
 		var ksp_doc: Variant = _load_json(kpath)
 		if ksp_doc is Dictionary:
 			var bs_v: Variant = ksp_doc.get("building_sprites", {})
@@ -65,6 +68,18 @@ static func ensure_loaded() -> void:
 								"walk0": tw0 if tw0 != null else ti,
 								"walk1": tw1 if tw1 != null else ti,
 							})
+			var as_v: Variant = ksp_doc.get("atmosuit_duplicant", {})
+			if as_v is Dictionary and not (as_v as Dictionary).is_empty():
+				var ad: Dictionary = as_v
+				var si := _decode_png_b64(String(ad.get("idle_b64", "")))
+				var sw0 := _decode_png_b64(String(ad.get("walk0_b64", "")))
+				var sw1 := _decode_png_b64(String(ad.get("walk1_b64", "")))
+				if si != null:
+					kanim_atmosuit_dupe = {
+						"idle": si,
+						"walk0": sw0 if sw0 != null else si,
+						"walk1": sw1 if sw1 != null else si,
+					}
 
 	var kanim_doc: Variant = _load_json("res://data/kanim_meshes_extracted.txt")
 	if kanim_doc is Dictionary:
@@ -123,7 +138,15 @@ static func ensure_loaded() -> void:
 		fmod_events_summary = {
 			"tokens": int(fe_doc.get("total_tokens", 0)),
 			"radix_nodes": int(fe_doc.get("radix_nodes_est", 0)),
+			"music_tracks": int(fe_doc.get("music_bank_tracks_count", 0)),
+			"ambience_tracks": int(fe_doc.get("ambience_bank_tracks_count", 0)),
 		}
+		var mt_v: Variant = fe_doc.get("music_bank_tracks", [])
+		if mt_v is Array:
+			music_bank_tracks = mt_v
+		var at_v: Variant = fe_doc.get("ambience_bank_tracks", [])
+		if at_v is Array:
+			ambience_bank_tracks = at_v
 
 	var aud_doc: Variant = _load_json("res://data/audio_extracted.txt")
 	if aud_doc is Dictionary:
@@ -217,14 +240,18 @@ static func get_building_sprite(b_id: String, working := false) -> Texture2D:
 		return t
 	return null
 
-static func get_duplicant_sprite(dupe_id: int, moving := false, phase := 0.0) -> Texture2D:
+static func get_duplicant_sprite(dupe_id: int, moving := false, phase := 0.0, wearing_suit := false) -> Texture2D:
 	ensure_loaded()
-	if kanim_dupes.is_empty():
-		return null
-	var entry: Dictionary = kanim_dupes[dupe_id % kanim_dupes.size()]
 	var key := "idle"
 	if moving:
 		key = "walk0" if int(floor(phase * 6.0)) % 2 == 0 else "walk1"
+	if wearing_suit and not kanim_atmosuit_dupe.is_empty():
+		var st: Variant = kanim_atmosuit_dupe.get(key, null)
+		if st is Texture2D:
+			return st
+	if kanim_dupes.is_empty():
+		return null
+	var entry: Dictionary = kanim_dupes[dupe_id % kanim_dupes.size()]
 	var t: Variant = entry.get(key, null)
 	if t is Texture2D:
 		return t
@@ -268,10 +295,9 @@ static func get_bgm_stream(bgm_key: String) -> AudioStreamWAV:
 static func get_media_summary() -> String:
 	ensure_loaded()
 	var tex_n: int = element_textures.size() + building_textures.size() + fx_textures.size()
-	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size()
+	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1)
 	var sfx_n: int = sfx_streams.size()
 	var bgm_n: int = bgm_streams.size()
-	var sh_n: int = int(shaders_summary.get("shaders", 0))
 	return "텍%d·KAnim%d·SFX%d·BGM%d" % [tex_n, spr_n, sfx_n, bgm_n]
 
 static func get_complete_audit_lines() -> Array[String]:
@@ -308,7 +334,7 @@ static func get_complete_audit_lines() -> Array[String]:
 	lines.append("[텍스처/메시] 임베딩 타일·FX %d종 (전체 %d) · 조립 KAnim %d종 (전체 %d)" % [
 		element_textures.size() + building_textures.size() + fx_textures.size(),
 		int(rendering_inventory.get("textures_total", 0)),
-		kanim_building_idle.size() + kanim_dupes.size(),
+		kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1),
 		int(rendering_inventory.get("kanim_textassets_total", 0)),
 	])
 	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 5종" % [
@@ -384,12 +410,22 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			lines.append("• [POI] %s · 셀 %d · 건물 %d" % [pk, int(pd.get("cells", 0)), int(pd.get("buildings", 0))])
 	elif tab_id == "buildings":
 		var bd: Dictionary = po.get("buildings_ko", {}) as Dictionary
-		lines.append("=== 원작 건물 공식 한국어 도감 (%d종 · 플레이 가능 33종) ===" % bd.size())
+		lines.append("=== 원작 건물 공식 한국어 도감 (%d종 · 플레이 가능 %d종) ===" % [bd.size(), OniElements.buildings.size()])
 		var bkeys: Array = bd.keys()
 		bkeys.sort()
 		for bk_v in bkeys:
 			var bk := String(bk_v)
 			lines.append("• %s (%s)" % [String(bd[bk]), bk])
+	elif tab_id == "music":
+		lines.append("=== 원작 FMOD 사운드트랙·앰비언스 카탈로그 (Music.bank %d곡 · Ambiences.bank %d트랙 · 재생 SFX %d · BGM %d) ===" % [
+			int(fmod_events_summary.get("music_tracks", music_bank_tracks.size())),
+			int(fmod_events_summary.get("ambience_tracks", ambience_bank_tracks.size())),
+			sfx_streams.size(), bgm_streams.size()
+		])
+		for mt_v in music_bank_tracks:
+			lines.append("• [Music.bank] " + String(mt_v))
+		for at_v in ambience_bank_tracks:
+			lines.append("• [Ambiences.bank] " + String(at_v))
 	elif tab_id == "creatures":
 		var cd: Dictionary = po.get("creatures_ko", {}) as Dictionary
 		var fd: Dictionary = po.get("foods_ko", {}) as Dictionary

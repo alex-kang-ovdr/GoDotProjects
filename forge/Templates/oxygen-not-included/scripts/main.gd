@@ -33,6 +33,7 @@ var _dupes_panel: PanelContainer
 var _dupes_vbox: VBoxContainer
 var _space_panel: PanelContainer
 var _space_vbox: VBoxContainer
+var _starmap_canvas: Control
 var _report_panel: PanelContainer
 var _report_vbox: VBoxContainer
 var _alert_lbl: Label
@@ -56,14 +57,14 @@ const CATEGORIES := [
 ]
 
 const CAT_TOOLS := {
-	"base": ["tile", "insulated_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light", "oxygen_dock"],
+	"base": ["tile", "insulated_tile", "metal_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light", "suit_dock", "suit_checkpoint"],
 	"living": ["outhouse", "wash_basin", "flush_toilet", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
 	"med": ["medical_cot", "apothecary", "massage_table", "wash_sink", "shower", "water_cooler", "jukebot", "arcade_cabinet"],
-	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "wire"],
+	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "petrol_gen", "steam_turbine", "solar_panel", "battery", "wire"],
 	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "liquid_filter", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir", "gas_filter"],
-	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "sweep_station", "conveyor_loader", "conveyor_chute"],
-	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker"],
-	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "rocket_steam_engine", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
+	"auto": ["logic_wire", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "conveyor_loader", "conveyor_chute"],
+	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "rock_crusher", "kiln", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker"],
+	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "rocket_steam_engine", "rocket_petroleum_engine", "rocket_fuel_tank", "rocket_oxidizer_tank", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
 }
 
 const WORLD_PRESETS := ["terra", "rime", "oceana", "badlands"]
@@ -80,6 +81,7 @@ func _ready() -> void:
 	world.on_build_completed = Callable(self, "_on_build_completed")
 	world.on_meteor_alert = Callable(self, "_on_meteor_alert")
 	world.on_meteor_impact = Callable(self, "_on_meteor_impact")
+	world.on_suit_equipped = Callable(self, "_on_suit_equipped")
 
 	renderer = OniRenderer.new()
 	renderer.world = world
@@ -326,12 +328,12 @@ func _build_hud() -> void:
 	_dupes_vbox.add_theme_constant_override("separation", 6)
 	_dupes_panel.add_child(_dupes_vbox)
 
-	# 우주 스타맵·로켓 발사 관제 팝업 (U)
+	# 우주 스타맵·2D 궤도 뷰·로켓 발사 관제 팝업 (U)
 	_space_panel = PanelContainer.new()
-	_space_panel.position = Vector2(250, 110)
-	_space_panel.custom_minimum_size = Vector2(620, 310)
+	_space_panel.position = Vector2(180, 94)
+	_space_panel.custom_minimum_size = Vector2(660, 440)
 	_space_panel.visible = false
-	_style_panel(_space_panel, Color(0.06, 0.09, 0.18, 0.97))
+	_style_panel(_space_panel, Color(0.05, 0.08, 0.16, 0.97))
 	_ui_root.add_child(_space_panel)
 
 	_space_vbox = VBoxContainer.new()
@@ -393,6 +395,7 @@ func _build_hud() -> void:
 		{"id": "personalities", "label": "복제체"},
 		{"id": "worlds", "label": "행성·POI"},
 		{"id": "shaders", "label": "셰이더"},
+		{"id": "music", "label": "사운드"},
 	]:
 		var ctb := Button.new()
 		ctb.text = String(ct["label"])
@@ -653,6 +656,17 @@ func _refresh_dupes_panel() -> void:
 				_refresh_dupes_panel()
 		)
 		row.add_child(skb)
+		var suitb := Button.new()
+		suitb.text = "특수복ON" if d.wearing_suit else "특수복"
+		suitb.modulate = Color(0.42, 0.92, 1.0) if d.wearing_suit else Color(0.78, 0.82, 0.88)
+		var dc3: OniDuplicant = d
+		suitb.pressed.connect(func():
+			dc3.wearing_suit = not dc3.wearing_suit
+			dc3.suit_o2 = 100.0
+			audio.play_suit_equip()
+			_refresh_dupes_panel()
+		)
+		row.add_child(suitb)
 		_dupes_vbox.add_child(row)
 	var cb := Button.new()
 	cb.text = "닫기"
@@ -668,24 +682,57 @@ func _refresh_space_panel() -> void:
 	var hdr := HBoxContainer.new()
 	var hl := Label.new()
 	var st_ko := "발사 준비 완료" if world.rocket_state == "READY" else ("발사 상승 중!" if world.rocket_state == "LAUNCHING" else ("우주 탐사 중 (%.0fs)" % world.rocket_mission_timer if world.rocket_state == "IN_SPACE" else "귀환 착륙 중!"))
-	hl.text = "우주 스타맵 관제 (110 목적지) · 로켓: %s · 데이터 뱅크 %d · 발사 %d회" % [st_ko, world.data_banks, world.rockets_launched]
+	var bonus_s := "화물 베이 2x 적재" if world.get_rocket_cargo_bonus() > 1.5 else "기본 적재 1x"
+	hl.text = "2D 우주 궤도 스타맵 (110 목적지) · %s · %s · 뱅크 %d" % [st_ko, bonus_s, world.data_banks]
 	hl.add_theme_color_override("font_color", Color(0.58, 0.88, 1.0))
 	hl.add_theme_font_size_override("font_size", 12)
 	hdr.add_child(hl)
 	_space_vbox.add_child(hdr)
 
+	# 실시간 인터랙티브 2D 궤도 스타맵 캔버스 (행성 노드 클릭 선택 + Klei/RocketPath 궤적 + 실시간 비행 로켓)
+	var smap := OniStarmapCanvas.new()
+	smap.world = world
+	smap.custom_minimum_size = Vector2(640, 215)
+	smap.on_node_selected = func(idx_sel: int):
+		world.selected_mission_idx = idx_sel
+		audio.play_scanner_ping()
+		_refresh_space_panel()
+	_starmap_canvas = smap
+	_space_vbox.add_child(smap)
+
 	var act_row := HBoxContainer.new()
 	act_row.add_theme_constant_override("separation", 6)
+	var sel_idx := clampi(world.selected_mission_idx, 0, maxi(0, world.space_missions.size() - 1))
+	var sel_m: Dictionary = world.space_missions[sel_idx] if not world.space_missions.is_empty() else {}
+	var launch_btn := Button.new()
+	launch_btn.text = "▶ [%s] %s 로켓 발사 (%s)" % [String(sel_m.get("dist", "")), String(sel_m.get("name_ko", "")), String(sel_m.get("desc", ""))]
+	launch_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	launch_btn.modulate = Color(0.48, 0.98, 0.72)
+	launch_btn.disabled = world.rocket_state != "READY"
+	launch_btn.pressed.connect(func():
+		if world.launch_rocket(sel_idx):
+			audio.play_rocket_launch()
+			audio.play_print_ok()
+			camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 2.8 * OniWorld.TILE_SIZE)
+			_clamp_camera()
+			_space_panel.visible = false
+			_refresh_hud()
+	)
+	act_row.add_child(launch_btn)
+	_space_vbox.add_child(act_row)
+
+	var act_row2 := HBoxContainer.new()
+	act_row2.add_theme_constant_override("separation", 6)
 	var jump_btn := Button.new()
 	jump_btn.text = "▲ 우주 발사대·스캐너 카메라 이동"
 	jump_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	jump_btn.pressed.connect(func():
 		audio.play_click()
-		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.0 * OniWorld.TILE_SIZE)
+		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 2.8 * OniWorld.TILE_SIZE)
 		_clamp_camera()
 		_space_panel.visible = false
 	)
-	act_row.add_child(jump_btn)
+	act_row2.add_child(jump_btn)
 
 	var met_btn := Button.new()
 	met_btn.text = "★ 운석우·벙커 방어 발동 (방어 %d)" % world.meteors_blocked
@@ -697,33 +744,37 @@ func _refresh_space_panel() -> void:
 		_space_panel.visible = false
 		_refresh_hud()
 	)
-	act_row.add_child(met_btn)
-	_space_vbox.add_child(act_row)
+	act_row2.add_child(met_btn)
 
-	for mi in range(world.space_missions.size()):
-		var m: Dictionary = world.space_missions[mi]
-		var mb := Button.new()
-		mb.text = "[발사] [%s] %s — %s" % [String(m["dist"]), String(m["name_ko"]), String(m["desc"])]
-		mb.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		mb.disabled = world.rocket_state != "READY"
-		var cap_i: int = mi
-		mb.pressed.connect(func():
-			if world.launch_rocket(cap_i):
-				audio.play_rocket_launch()
-				audio.play_print_ok()
-				camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.0 * OniWorld.TILE_SIZE)
-				_clamp_camera()
-				_space_panel.visible = false
-				_refresh_hud()
-		)
-		_space_vbox.add_child(mb)
 	var cb := Button.new()
 	cb.text = "닫기"
 	cb.pressed.connect(func():
 		audio.play_click()
 		_space_panel.visible = false
 	)
-	_space_vbox.add_child(cb)
+	act_row2.add_child(cb)
+	_space_vbox.add_child(act_row2)
+
+	# 6개 행성/소행성 빠른 선택 행 (2열 그리드)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 6)
+	grid.add_theme_constant_override("v_separation", 4)
+	for mi in range(world.space_missions.size()):
+		var m: Dictionary = world.space_missions[mi]
+		var mb := Button.new()
+		mb.text = "[%s] %s (뱅크+%d)" % [String(m["dist"]), String(m["name_ko"]), int(m["banks"])]
+		mb.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		mb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		mb.modulate = Color(0.55, 0.96, 1.0) if mi == sel_idx else Color(0.88, 0.92, 0.98)
+		var cap_i: int = mi
+		mb.pressed.connect(func():
+			world.selected_mission_idx = cap_i
+			audio.play_click()
+			_refresh_space_panel()
+		)
+		grid.add_child(mb)
+	_space_vbox.add_child(grid)
 
 func _refresh_report_panel() -> void:
 	for child in _report_vbox.get_children():
@@ -931,6 +982,9 @@ func _process(delta: float) -> void:
 			om = 3
 		_atmo_shader_mat.set_shader_parameter("overlay_mode", om)
 		_atmo_shader_mat.set_shader_parameter("avg_oxygen", world.avg_oxygen_kg)
+	if _space_panel != null and _space_panel.visible and _starmap_canvas != null:
+		_starmap_canvas.queue_redraw()
+	audio.set_space_mode(camera.position.y < 6.5 * OniWorld.TILE_SIZE or world.rocket_state != "READY")
 	_refresh_hud()
 	renderer.request_redraw()
 
@@ -1014,11 +1068,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			if event.pressed:
 				if world.in_bounds(cell.x, cell.y):
 					renderer.selected_cell = cell
-					if active_tool != "select":
+					if active_tool == "select":
+						var sw := world.toggle_logic_switch(cell.x, cell.y)
+						if sw == 1:
+							audio.play_switch_on()
+						elif sw == 0:
+							audio.play_switch_off()
+						else:
+							audio.play_click()
+					else:
 						renderer.drag_active = true
 						renderer.drag_start = cell
 						renderer.drag_end = cell
-					audio.play_click()
+						audio.play_click()
 			else:
 				if renderer.drag_active:
 					_apply_drag(renderer.drag_start, renderer.drag_end)
@@ -1080,6 +1142,95 @@ func _on_meteor_alert() -> void:
 func _on_meteor_impact(cell: Vector2i, blocked: bool) -> void:
 	audio.play_meteor_impact()
 	renderer.spawn_burst(cell, "burst" if blocked else "dust", Color(1.0, 0.82, 0.32, 0.98) if blocked else Color(1.0, 0.42, 0.14, 0.98))
+
+func _on_suit_equipped(cell: Vector2i) -> void:
+	audio.play_suit_equip()
+	renderer.spawn_burst(cell, "burst", Color(0.42, 0.92, 1.0, 0.95))
+
+class OniStarmapCanvas extends Control:
+	var world: OniWorld
+	var on_node_selected: Callable
+	var _node_positions: Array[Vector2] = []
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			for i in range(_node_positions.size()):
+				if event.position.distance_to(_node_positions[i]) <= 24.0:
+					if on_node_selected.is_valid():
+						on_node_selected.call(i)
+					return
+
+	func _draw() -> void:
+		var sz := size
+		if sz.x < 10.0 or sz.y < 10.0 or world == null:
+			return
+		# 심우주 배경 + 성운 글로우 + 반짝이는 별빛
+		draw_rect(Rect2(Vector2.ZERO, sz), Color(0.025, 0.038, 0.088, 1.0), true)
+		var origin := Vector2(sz.x * 0.5, sz.y - 26.0)
+		draw_circle(origin, 145.0, Color(0.14, 0.32, 0.56, 0.14))
+		draw_circle(Vector2(sz.x * 0.22, sz.y * 0.28), 90.0, Color(0.42, 0.18, 0.54, 0.12))
+		var t := world.sim_time
+		for si in range(75):
+			var hx := absf(fmod(sin(float(si * 67 + 19)) * 43758.5453, 1.0))
+			var hy := absf(fmod(sin(float(si * 97 + 41)) * 24634.6345, 1.0))
+			var tw := 0.38 + 0.62 * sin(t * (1.5 + float(si % 3)) + float(si))
+			draw_circle(Vector2(hx * sz.x, hy * sz.y), 1.4 if si % 5 == 0 else 0.9, Color(0.86, 0.94, 1.0, tw))
+
+		var font := ThemeDB.fallback_font
+		# 5개 동심원 궤도 거리 링 (10,000 ~ 50,000 km)
+		for ring_i in range(1, 6):
+			var rad := 32.0 + float(ring_i) * 32.0
+			draw_arc(origin, rad, -PI + 0.12, -0.12, 48, Color(0.32, 0.56, 0.82, 0.32), 1.2)
+			if font != null:
+				draw_string(font, Vector2(origin.x + rad - 18.0, origin.y - 6.0), "%dk" % (ring_i * 10), HORIZONTAL_ALIGNMENT_LEFT, 36, 9, Color(0.54, 0.74, 0.94, 0.72))
+
+		# 모행성 (테라)
+		draw_circle(origin, 17.0, Color(0.24, 0.68, 0.92, 0.24))
+		draw_circle(origin, 11.5, Color(0.26, 0.64, 0.44, 1.0))
+		draw_arc(origin, 12.0, 0.0, TAU, 24, Color(0.46, 0.90, 1.0, 0.92), 1.6)
+		if font != null:
+			draw_string(font, Vector2(origin.x - 32.0, origin.y + 22.0), world.get_world_preset_label() + " (기지)", HORIZONTAL_ALIGNMENT_CENTER, 64, 10, Color(0.75, 0.96, 1.0, 0.95))
+
+		# 6개 행성/소행성 목적지 노드 + 선택된 Klei/RocketPath 점선 비행 궤적
+		_node_positions.clear()
+		var sel_idx := clampi(world.selected_mission_idx, 0, maxi(0, world.space_missions.size() - 1))
+		for mi in range(world.space_missions.size()):
+			var m: Dictionary = world.space_missions[mi]
+			var rad := 32.0 + float(int(m.get("ring", 1))) * 32.0
+			var ang := float(m.get("ang", -1.5))
+			var np := origin + Vector2(cos(ang) * rad * 1.48, sin(ang) * rad)
+			np.x = clampf(np.x, 42.0, sz.x - 42.0)
+			np.y = clampf(np.y, 20.0, sz.y - 34.0)
+			_node_positions.append(np)
+
+			var is_sel := mi == sel_idx
+			if is_sel:
+				# Klei/RocketPath 스타일 점선 궤적
+				for st in range(14):
+					var f0 := float(st) / 14.0
+					var f1 := minf(1.0, f0 + 0.04)
+					draw_line(origin.lerp(np, f0), origin.lerp(np, f1), Color(0.38, 0.98, 0.72, 0.85), 2.0)
+				var pulse := 0.75 + 0.25 * sin(t * 5.0)
+				draw_arc(np, 15.0 + pulse * 3.0, 0.0, TAU, 22, Color(0.42, 0.98, 0.76, 0.92), 1.8)
+
+			var mc: Color = m.get("col", Color(0.8, 0.8, 0.9))
+			draw_circle(np, 12.0, Color(mc.r, mc.g, mc.b, 0.22))
+			draw_circle(np, 8.5, mc)
+			draw_arc(np, 8.8, 0.0, TAU, 18, Color(0.95, 0.98, 1.0, 0.85), 1.2)
+			if font != null:
+				draw_string(font, Vector2(np.x - 48.0, np.y - 12.0), String(m["name_ko"]), HORIZONTAL_ALIGNMENT_CENTER, 96, 10, Color(1.0, 0.98, 0.84, 1.0) if is_sel else Color(0.84, 0.90, 0.98, 0.90))
+
+		# 실시간 비행 로켓 아이콘 (대기 중엔 기지 상공, 발사 시 궤적 따라 이동)
+		if sel_idx < _node_positions.size():
+			var tgt := _node_positions[sel_idx]
+			var prog := clampf(world.rocket_mission_progress, 0.0, 1.0)
+			var rp := origin.lerp(tgt, prog if world.rocket_state != "READY" else 0.14)
+			var dir := (tgt - origin).normalized()
+			var perp := Vector2(-dir.y, dir.x)
+			draw_colored_polygon(PackedVector2Array([rp + dir * 10.0, rp - dir * 6.0 + perp * 5.0, rp - dir * 6.0 - perp * 5.0]), Color(1.0, 0.96, 0.82, 1.0))
+			if world.rocket_state != "READY":
+				draw_circle(rp - dir * 8.0, 4.5, Color(1.0, 0.56, 0.14, 0.92))
+		draw_rect(Rect2(Vector2.ZERO, sz), Color(0.28, 0.48, 0.72, 0.85), false, 1.5)
 
 func _refresh_hud() -> void:
 	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)

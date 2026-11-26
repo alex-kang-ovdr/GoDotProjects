@@ -45,10 +45,14 @@ var alerts: Array[String] = []
 var rocket_state := "READY" # READY, LAUNCHING, IN_SPACE, LANDING
 var rocket_y_offset := 0.0
 var rocket_mission_timer := 0.0
+var rocket_mission_progress := 0.0
 var rocket_target_name := ""
+var selected_mission_idx := 0
 var rockets_launched := 0
 var data_banks := 0
 var space_missions: Array[Dictionary] = []
+var logic_switch_state: Dictionary = {}
+var on_suit_equipped: Callable
 var _eco_accum := 0.0
 var report_digs := 0
 var report_builds := 0
@@ -188,9 +192,12 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	rocket_state = "READY"
 	rocket_y_offset = 0.0
 	rocket_mission_timer = 0.0
+	rocket_mission_progress = 0.0
 	rocket_target_name = ""
+	selected_mission_idx = 0
 	rockets_launched = 0
 	data_banks = 0
+	logic_switch_state.clear()
 	_eco_accum = 0.0
 	report_digs = 0
 	report_builds = 0
@@ -438,12 +445,24 @@ func generate(p_seed := 73, p_preset := "") -> void:
 				gas_el[i] = "Oxygen"
 				gas_mass[i] = 1.25
 				gas_prev_mass[i] = 1.25
-	for x in range(20, 28):
+	for x in range(20, 30):
 		var i := idx(x, 17)
 		solid_el[i] = ""
 		solid_mass[i] = 0.0
-		building[i] = "tile"
+		building[i] = "metal_tile" if (x == 23 or x == 24 or x >= 28) else "tile"
 		temp_c[i] = 22.0
+	# 우측 출입구: 환경 특수복(Atmo Suit) 거치대 & 체크포인트 + 금속 타일 고속 통로
+	for sx in range(28, 30):
+		for sy in range(15, 17):
+			var si := idx(sx, sy)
+			solid_el[si] = ""
+			solid_mass[si] = 0.0
+			gas_el[si] = "Oxygen"
+			gas_mass[si] = 1.15
+			gas_prev_mass[si] = 1.15
+		has_wire[idx(sx, 16)] = 1
+	building[idx(28, 16)] = "suit_dock"
+	building[idx(29, 16)] = "suit_checkpoint"
 
 	# 인쇄기 (Printing Pod) 2x2
 	building[idx(23, 16)] = "pod"
@@ -538,13 +557,17 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	building[idx(19, 3)] = "solar_panel"
 	building[idx(21, 3)] = "telescope"
 	building[idx(23, 3)] = "rocket_steam_engine"
-	building[idx(23, 2)] = "rocket_research_module"
-	building[idx(23, 1)] = "rocket_command_module"
+	building[idx(23, 2)] = "rocket_cargo_bay"
+	building[idx(23, 1)] = "rocket_research_module"
+	building[idx(23, 0)] = "rocket_command_module"
 	building[idx(26, 3)] = "bunker_door"
+	building[idx(27, 3)] = "logic_switch"
+	logic_switch_state[idx(27, 3)] = true
 	building[idx(28, 3)] = "space_scanner"
-	for swx in range(19, 29):
+	building[idx(29, 3)] = "logic_alarm"
+	for swx in range(19, 30):
 		has_wire[idx(swx, 3)] = 1
-	for slx in range(26, 29):
+	for slx in range(26, 30):
 		has_logic_wire[idx(slx, 3)] = 1
 
 	# 우측 깨끗한 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
@@ -680,6 +703,9 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	var spawn_xs: Array[int] = [21, 22, 25]
 	for d_idx in range(3):
 		var dupe := OniDuplicant.new(d_idx, names[d_idx], Vector2i(spawn_xs[d_idx], 16), colors[d_idx], dupe_traits[d_idx])
+		if d_idx == 2:
+			dupe.wearing_suit = true
+			dupe.suit_o2 = 100.0
 		duplicants.append(dupe)
 
 	_step_logic_network()
@@ -743,9 +769,33 @@ func is_solid_cell(x: int, y: int) -> bool:
 	if not solid_el[i].is_empty():
 		return true
 	var b := building[i]
-	if b == "tile" or b == "insulated_tile" or b == "farm_tile" or b == "bunker_tile":
+	if b == "tile" or b == "insulated_tile" or b == "farm_tile" or b == "bunker_tile" or b == "metal_tile":
 		return true
 	return false
+
+func has_suit_dock() -> bool:
+	for i in range(WIDTH * HEIGHT):
+		if building[i] in ["suit_dock", "suit_checkpoint", "oxygen_dock"]:
+			return true
+	return false
+
+func toggle_logic_switch(x: int, y: int) -> int:
+	if not in_bounds(x, y):
+		return -1
+	var i := idx(x, y)
+	if building[i] != "logic_switch":
+		return -1
+	var next_on := not bool(logic_switch_state.get(i, true))
+	logic_switch_state[i] = next_on
+	_step_logic_network()
+	return 1 if next_on else 0
+
+func get_rocket_cargo_bonus() -> float:
+	for y in range(0, 5):
+		for x in range(16, 34):
+			if in_bounds(x, y) and building[idx(x, y)] in ["rocket_cargo_bay", "rocket_petroleum_engine"]:
+				return 2.0
+	return 1.0
 
 func is_passable(x: int, y: int) -> bool:
 	return not is_solid_cell(x, y)
@@ -767,10 +817,12 @@ func _init_space_missions() -> void:
 	OniMedia.ensure_loaded()
 	var sdest: Dictionary = OniMedia.world_codex_doc.get("space_destinations", {}) as Dictionary
 	var picks: Array[Dictionary] = [
-		{"id": "ASTEROIDS.CARBONACEOUSASTEROID", "fallback": "탄소질 소행성", "dist": "10,000 km", "reward_el": "Carbon", "reward_kg": 1600.0, "banks": 15},
-		{"id": "ASTEROIDS.METALLICASTEROID", "fallback": "금속 소행성", "dist": "20,000 km", "reward_el": "GoldAmalgam", "reward_kg": 1200.0, "banks": 25},
-		{"id": "ASTEROIDS.GOLDASTEROID", "fallback": "황금 소행성", "dist": "30,000 km", "reward_el": "IronOre", "reward_kg": 1800.0, "banks": 35},
-		{"id": "ARTIFACT_POI.GRAVITASSPACESTATION1", "fallback": "그라비타스 우주 정거장", "dist": "40,000 km", "reward_el": "Cuprite", "reward_kg": 1500.0, "banks": 50},
+		{"id": "ASTEROIDS.CARBONACEOUSASTEROID", "fallback": "탄소질 소행성", "dist": "10,000 km", "ring": 1, "ang": -2.25, "col": Color(0.58, 0.56, 0.54), "reward_el": "Carbon", "reward_kg": 1600.0, "banks": 15},
+		{"id": "ASTEROIDS.METALLICASTEROID", "fallback": "금속 소행성", "dist": "20,000 km", "ring": 2, "ang": -1.10, "col": Color(0.84, 0.72, 0.36), "reward_el": "GoldAmalgam", "reward_kg": 1200.0, "banks": 25},
+		{"id": "ASTEROIDS.GOLDASTEROID", "fallback": "황금 소행성", "dist": "30,000 km", "ring": 3, "ang": -1.92, "col": Color(1.0, 0.84, 0.28), "reward_el": "IronOre", "reward_kg": 1800.0, "banks": 35},
+		{"id": "ARTIFACT_POI.GRAVITASSPACESTATION1", "fallback": "파괴된 위성", "dist": "40,000 km", "ring": 4, "ang": -0.78, "col": Color(0.42, 0.86, 1.0), "reward_el": "Cuprite", "reward_kg": 1500.0, "banks": 50},
+		{"id": "PLANETS.ICEPLANET", "fallback": "얼음 행성", "dist": "50,000 km", "ring": 5, "ang": -2.42, "col": Color(0.55, 0.88, 1.0), "reward_el": "Ice", "reward_kg": 2400.0, "banks": 70},
+		{"id": "ARTIFACT_POI.RUSSELSTEAPOT", "fallback": "그라비타스 정거장", "dist": "50,000 km", "ring": 5, "ang": -1.38, "col": Color(0.84, 0.52, 0.98), "reward_el": "GoldAmalgam", "reward_kg": 2200.0, "banks": 90},
 	]
 	for p: Dictionary in picks:
 		var sid := String(p["id"])
@@ -783,6 +835,9 @@ func _init_space_missions() -> void:
 			"id": sid,
 			"name_ko": nm,
 			"dist": String(p["dist"]),
+			"ring": int(p["ring"]),
+			"ang": float(p["ang"]),
+			"col": p["col"],
 			"reward_el": String(p["reward_el"]),
 			"reward_kg": float(p["reward_kg"]),
 			"banks": int(p["banks"]),
@@ -792,10 +847,12 @@ func _init_space_missions() -> void:
 func launch_rocket(mission_idx: int) -> bool:
 	if rocket_state != "READY" or mission_idx < 0 or mission_idx >= space_missions.size():
 		return false
+	selected_mission_idx = mission_idx
 	var m: Dictionary = space_missions[mission_idx]
 	rocket_state = "LAUNCHING"
 	rocket_y_offset = 0.0
 	rocket_mission_timer = 14.0
+	rocket_mission_progress = 0.0
 	rocket_target_name = String(m["name_ko"])
 	set_meta("active_mission", m)
 	return true
@@ -803,22 +860,28 @@ func launch_rocket(mission_idx: int) -> bool:
 func _step_rocket(dt: float) -> void:
 	if rocket_state == "LAUNCHING":
 		rocket_y_offset -= 95.0 * dt
+		rocket_mission_progress = clampf(absf(rocket_y_offset) / 260.0 * 0.25, 0.0, 0.25)
 		if rocket_y_offset <= -260.0:
 			rocket_state = "IN_SPACE"
 	elif rocket_state == "IN_SPACE":
 		rocket_mission_timer = maxf(0.0, rocket_mission_timer - dt)
+		var f := 1.0 - (rocket_mission_timer / 14.0)
+		rocket_mission_progress = 0.25 + (f * 1.5 if f <= 0.5 else (1.0 - f) * 1.5) * 0.5
 		if rocket_mission_timer <= 0.0:
 			rocket_state = "LANDING"
 	elif rocket_state == "LANDING":
 		rocket_y_offset = minf(0.0, rocket_y_offset + 85.0 * dt)
+		rocket_mission_progress = clampf(absf(rocket_y_offset) / 260.0 * 0.25, 0.0, 0.25)
 		if rocket_y_offset >= 0.0:
 			rocket_y_offset = 0.0
+			rocket_mission_progress = 0.0
 			rocket_state = "READY"
 			rockets_launched += 1
 			if has_meta("active_mission"):
 				var m: Dictionary = get_meta("active_mission")
+				var bonus := get_rocket_cargo_bonus()
 				var rel := String(m.get("reward_el", "GoldAmalgam"))
-				inventory[rel] = float(inventory.get(rel, 0.0)) + float(m.get("reward_kg", 1000.0))
+				inventory[rel] = float(inventory.get(rel, 0.0)) + float(m.get("reward_kg", 1000.0)) * bonus
 				data_banks += int(m.get("banks", 20))
 				add_research_points(12.0)
 
@@ -1700,7 +1763,7 @@ func _is_logic_node(i: int) -> bool:
 	if has_logic_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door"]
+	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"]
 
 func _step_logic_network() -> void:
 	# 원작 자동화(Automation) 논리 회로 연결 컴포넌트 계산 (GREEN=1 / RED=0)
@@ -1740,6 +1803,10 @@ func _step_logic_network() -> void:
 					has_source = true
 					if meteor_shower_active:
 						any_green = true
+				elif b == "logic_switch":
+					has_source = true
+					if bool(logic_switch_state.get(ci, true)):
+						any_green = true
 				for d: Vector2i in dirs:
 					var nx: int = cur.x + d.x
 					var ny: int = cur.y + d.y
@@ -1749,6 +1816,13 @@ func _step_logic_network() -> void:
 							visited[ni] = 1
 							q.append(Vector2i(nx, ny))
 			var sig: int = 1 if (not has_source or any_green) else 0
+			var has_not := false
+			for ci: int in net:
+				if building[ci] == "logic_not":
+					has_not = true
+					break
+			if has_not:
+				sig = 0 if sig == 1 else 1
 			for ci: int in net:
 				logic_signal[ci] = sig
 
@@ -1953,6 +2027,10 @@ func _cell_conductivity(i: int) -> float:
 	var b := building[i]
 	if b == "insulated_tile":
 		return 0.029 # SandStone 2.9 * 0.01
+	if b == "metal_tile":
+		return 60.0
+	if b == "bunker_tile":
+		return 54.0
 	if b == "tile" or b == "farm_tile":
 		return 2.9
 	if liquid_mass[i] > 1.0:
@@ -2313,7 +2391,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker"]
+	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker", "suit_dock"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0

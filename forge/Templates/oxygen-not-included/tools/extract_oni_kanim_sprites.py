@@ -132,8 +132,25 @@ EXTENDED_RECIPES_4 = {
     "suit_maker": (["suit_maker"], "suit_maker", ["working_loop", "on", "off"], 96),
 }
 
-# Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
-DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap"]
+# 6th KAnim shard (Exosuit Dock/Checkpoint, Logic Gates AND/OR/Buffer/Switch/Alarm, Petrol Gen, Rock Crusher, Kiln, Petroleum Rocket Modules)
+EXTENDED_RECIPES_5 = {
+    "suit_dock": (["changingarea"], "changingarea", ["full", "on", "off"], 88),
+    "suit_checkpoint": (["changingarea_arrow"], "changingarea_arrow", ["on", "off"], 80),
+    "logic_switch": (["switchpower"], "switchpower", ["on", "off"], 68),
+    "logic_and": (["logic_and"], "logic_and", ["on", "off"], 68),
+    "logic_or": (["logic_or"], "logic_or", ["on", "off"], 68),
+    "logic_buffer": (["logic_buffer"], "logic_buffer", ["on", "off"], 68),
+    "logic_alarm": (["alarm_sensor"], "alarm_sensor", ["on", "off"], 72),
+    "petrol_gen": (["generatorpetrol"], "generatorpetrol", ["working_loop", "on", "off"], 104),
+    "rock_crusher": (["rockrefinery"], "rockrefinery", ["working_loop", "on", "off"], 96),
+    "kiln": (["kiln"], "kiln", ["working_loop", "on", "off"], 92),
+    "rocket_petroleum_engine": (["rocket_petroleum_engine"], "rocket_petroleum_engine", ["grounded", "launch", "on", "off"], 112),
+    "rocket_fuel_tank": (["rocket_liquid_fuel_tank"], "rocket_liquid_fuel_tank", ["grounded", "on", "off"], 108),
+    "rocket_oxidizer_tank": (["rocket_oxidizer_tank"], "rocket_oxidizer_tank", ["grounded", "on", "off"], 108),
+}
+
+# Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap + atmosuit)
+DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap", "atmosuit_basic_blue"]
 
 
 def parse_bild_full(raw: bytes) -> dict:
@@ -466,6 +483,7 @@ def main() -> int:
     all_recipes.update(EXTENDED_RECIPES_2)
     all_recipes.update(EXTENDED_RECIPES_3)
     all_recipes.update(EXTENDED_RECIPES_4)
+    all_recipes.update(EXTENDED_RECIPES_5)
     for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
@@ -542,6 +560,7 @@ def main() -> int:
     out_buildings_ext2 = {}
     out_buildings_ext3 = {}
     out_buildings_ext4 = {}
+    out_buildings_ext5 = {}
     preview_list = []
 
     for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
@@ -612,7 +631,8 @@ def main() -> int:
                 out_buildings_ext if key in EXTENDED_RECIPES else
                 out_buildings_ext2 if key in EXTENDED_RECIPES_2 else
                 out_buildings_ext3 if key in EXTENDED_RECIPES_3 else
-                out_buildings_ext4
+                out_buildings_ext4 if key in EXTENDED_RECIPES_4 else
+                out_buildings_ext5
             )
             target_dict[key] = {
                 "size": out_sz,
@@ -708,6 +728,33 @@ def main() -> int:
                 })
                 preview_list.append((f"dupe_{idx_p}", im_i))
 
+        # Also composite authentic Atmo-Suit wearing Duplicant (atmosuit_basic_blue + head_swap + body_comp_default)
+        suit_sources = []
+        for bn in ["atmosuit_basic_blue", "head_swap", "hair_swap", "body_comp_default"]:
+            if bn in builds_parsed and (bn + "_0") in atlases_pil:
+                suit_sources.append((builds_parsed[bn], atlases_pil[bn + "_0"]))
+        out_suit_dupe = {}
+        if suit_sources and idle_clip:
+            suit_swap = {
+                "snapto_headshape": "headshape_001", "snapto_eyes": "eyes_001",
+                "snapto_mouth": "mouth_001", "snapto_hair": "hair_001",
+            }
+            suit_filter = ("snapto", "skirt", "necklace", "headfx", "hat", "goggles", "fx")
+            sim_i = composite_kanim_frame(idle_clip["frames"][0], suit_sources, out_size=84, filter_out_names=suit_filter, symbol_swap=suit_swap)
+            sim_w0, sim_w1 = sim_i, sim_i
+            if walk_clip and len(walk_clip["frames"]) >= 4:
+                wf = walk_clip["frames"]
+                sim_w0 = composite_kanim_frame(wf[0], suit_sources, out_size=84, filter_out_names=suit_filter, symbol_swap=suit_swap) or sim_i
+                sim_w1 = composite_kanim_frame(wf[len(wf) // 2], suit_sources, out_size=84, filter_out_names=suit_filter, symbol_swap=suit_swap) or sim_i
+            if sim_i is not None:
+                out_suit_dupe = {
+                    "size": 84,
+                    "idle_b64": pil_to_b64(sim_i),
+                    "walk0_b64": pil_to_b64(sim_w0),
+                    "walk1_b64": pil_to_b64(sim_w1),
+                }
+                preview_list.append(("dupe_atmosuit", sim_i))
+
     doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "building_sprites": out_buildings,
@@ -751,6 +798,15 @@ def main() -> int:
     with open(ext4_path, "w", encoding="utf-8") as f:
         json.dump(ext4_doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext5_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext5,
+        "atmosuit_duplicant": out_suit_dupe if 'out_suit_dupe' in locals() else {},
+    }
+    ext5_path = os.path.join(args.out, "kanim_sprites_ext5_extracted.txt")
+    with open(ext5_path, "w", encoding="utf-8") as f:
+        json.dump(ext5_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
         cols = 10
@@ -770,13 +826,16 @@ def main() -> int:
         "buildings_composited_ext2": len(out_buildings_ext2),
         "buildings_composited_ext3": len(out_buildings_ext3),
         "buildings_composited_ext4": len(out_buildings_ext4),
-        "ext4_keys": list(out_buildings_ext4.keys()),
+        "buildings_composited_ext5": len(out_buildings_ext5),
+        "ext5_keys": list(out_buildings_ext5.keys()),
+        "atmosuit_composited": bool(ext5_doc["atmosuit_duplicant"]),
         "duplicants_composited": len(out_dupes),
         "main_file_bytes": os.path.getsize(out_path),
         "ext_file_bytes": os.path.getsize(ext_path),
         "ext2_file_bytes": os.path.getsize(ext2_path),
         "ext3_file_bytes": os.path.getsize(ext3_path),
         "ext4_file_bytes": os.path.getsize(ext4_path),
+        "ext5_file_bytes": os.path.getsize(ext5_path),
     }, ensure_ascii=False, indent=2))
     return 0
 

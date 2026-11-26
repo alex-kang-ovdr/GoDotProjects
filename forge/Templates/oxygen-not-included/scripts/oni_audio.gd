@@ -5,6 +5,7 @@ class_name OniAudio
 
 var muted := false
 var bgm_enabled := true
+var _in_space_mode := false
 var _wav_players: Array[AudioStreamPlayer] = []
 var _wav_cursor := 0
 var _bgm_player: AudioStreamPlayer
@@ -55,13 +56,25 @@ func _process(delta: float) -> void:
 		_bgm_player.play()
 	_chime_timer -= delta
 	if _chime_timer <= 0.0:
-		_chime_timer = 26.0
-		var keys := ["chime_1", "chime_2", "chime_3"]
+		_chime_timer = 22.0
+		var keys := ["chime_1", "chime_2", "chime_3", "chime_4", "chime_5", "chime_6"]
 		var cs := OniMedia.get_bgm_stream(keys[_chime_idx % keys.size()])
 		_chime_idx += 1
 		if cs != null and _chime_player != null:
 			_chime_player.stream = cs
 			_chime_player.play()
+
+func set_space_mode(in_space: bool) -> void:
+	if in_space == _in_space_mode:
+		return
+	_in_space_mode = in_space
+	if _bgm_player == null:
+		return
+	var target := OniMedia.get_bgm_stream("space_loop" if in_space else "ambient_loop")
+	if target != null:
+		_bgm_player.stream = target
+		if bgm_enabled and not muted:
+			_bgm_player.play()
 
 func toggle_bgm() -> bool:
 	bgm_enabled = not bgm_enabled
@@ -168,6 +181,15 @@ func play_bunker_close() -> void:
 
 func play_heal_chime() -> void:
 	_play_extracted("heal_chime", 740.0, 0.14)
+
+func play_suit_equip() -> void:
+	_play_extracted("suit_equip", 640.0, 0.12)
+
+func play_switch_on() -> void:
+	_play_extracted("switch_on", 680.0, 0.08)
+
+func play_switch_off() -> void:
+	_play_extracted("switch_off", 420.0, 0.08)
 
 func play_overlay_switch(oid: String) -> void:
 	match oid:

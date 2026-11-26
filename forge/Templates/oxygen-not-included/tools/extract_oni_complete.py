@@ -437,6 +437,33 @@ def extract_fmod_strings_bank(streaming_dir: str) -> dict:
         if hits:
             domains[dom] = len(hits)
 
+    # Extract full Music.bank (352) and Ambiences.bank (507) track titles for soundtrack catalog
+    def list_bank_tracks(bname: str) -> list:
+        bp = os.path.join(streaming_dir, bname)
+        if not os.path.exists(bp):
+            return []
+        braw = open(bp, "rb").read()
+        pos, names = 0, []
+        while True:
+            idx = braw.find(b"FSB5", pos)
+            if idx < 0:
+                break
+            ver, n, shdr_sz, name_sz, _data_sz, _mode = struct.unpack("<IIIIII", braw[idx + 4 : idx + 28])
+            hdr_len = 60 if ver == 1 else 64
+            name_off = idx + hdr_len + shdr_sz
+            if name_sz > 0:
+                for k in range(n):
+                    rel = struct.unpack("<I", braw[name_off + k * 4 : name_off + k * 4 + 4])[0]
+                    s0 = name_off + rel
+                    s1 = braw.find(b"\x00", s0)
+                    if s1 > s0:
+                        names.append(braw[s0:s1].decode("utf-8", "replace"))
+            pos = idx + 4
+        return sorted(set(names))
+
+    music_tracks = list_bank_tracks("Music.bank")
+    ambience_tracks = list_bank_tracks("Ambiences.bank")
+
     return {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "stdt_bytes": chunk_len,
@@ -444,6 +471,10 @@ def extract_fmod_strings_bank(streaming_dir: str) -> dict:
         "total_tokens": len(tokens),
         "root_markers": root_markers,
         "domain_token_counts": domains,
+        "music_bank_tracks_count": len(music_tracks),
+        "music_bank_tracks": music_tracks,
+        "ambience_bank_tracks_count": len(ambience_tracks),
+        "ambience_bank_tracks": ambience_tracks[:160],
         "sample_tokens": tokens[:150],
     }
 
@@ -517,7 +548,7 @@ def main() -> int:
     # Merge texture/kanim/audio totals if present
     kanim_ext_n = 0
     kanim_ext_dupes = 0
-    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt", "kanim_sprites_ext4_extracted.txt"]:
+    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt", "kanim_sprites_ext4_extracted.txt", "kanim_sprites_ext5_extracted.txt"]:
         ext_p = os.path.join(args.out, ext_fn)
         if os.path.exists(ext_p):
             with open(ext_p, "r", encoding="utf-8") as ef:

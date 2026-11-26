@@ -126,13 +126,20 @@ SFX_TARGETS = {
     "view_pipe": ("UI.bank", "SG_HUD_techView_liquidVent_v02"),
     "view_room": ("UI.bank", "SG_HUD_techView_rooms"),
     "view_germ": ("UI.bank", "SG_HUD_techView_disease"),
+    "suit_equip": ("UI.bank", "SG_HUD_techView_suit_v02"),
+    "switch_on": ("Buildings.bank", "switch_on_1"),
+    "switch_off": ("Buildings.bank", "switch_off_2"),
 }
 
 BGM_TARGETS = {
     "ambient_loop": ("UI.bank", "SG_UI_clusterMap_PayloadLP-003_EQed", 11025, 8.2, True),
+    "space_loop": ("UI.bank", "SG_UI_clusterMap_Rocket LP-001", 11025, 5.2, True),
     "chime_1": ("UI.bank", "SG_UI_achievementUnlocked_musical_01", 16000, 0.85, False),
-    "chime_2": ("UI.bank", "SG_UI_achievementUnlocked_musical_03", 16000, 0.85, False),
-    "chime_3": ("UI.bank", "SG_UI_achievementUnlocked_musical_05", 16000, 0.85, False),
+    "chime_2": ("UI.bank", "SG_UI_achievementUnlocked_musical_02", 16000, 0.85, False),
+    "chime_3": ("UI.bank", "SG_UI_achievementUnlocked_musical_03", 16000, 0.85, False),
+    "chime_4": ("UI.bank", "SG_UI_achievementUnlocked_musical_04", 16000, 0.85, False),
+    "chime_5": ("UI.bank", "SG_UI_achievementUnlocked_musical_05", 16000, 0.85, False),
+    "chime_6": ("UI.bank", "SG_UI_achievementUnlocked_musical_06", 16000, 0.85, False),
 }
 
 FREQ_TABLE = {
