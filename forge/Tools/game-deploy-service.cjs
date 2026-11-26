@@ -209,16 +209,36 @@ class GameDeployService {
       }
     }
 
+    const enqueuedAtMs = Date.now();
+    const createdAt = new Date(enqueuedAtMs).toISOString();
+    const cleanUploadReceiveMs = Math.max(0, Number(uploadReceiveMs) || 0);
+    const sourceMode = Buffer.isBuffer(zipBuffer) && zipBuffer.length > 0 ? 'zip-upload' : 'forge-project-zip';
+    const historicalStats = this.getStats(ownerKey);
+    const immediateMetrics = {
+      phase: 'accepted',
+      uploadBytes: sourceZip.length,
+      uploadReceiveMs: cleanUploadReceiveMs,
+      uploadThroughputMBps: calcThroughputMBps(sourceZip.length, cleanUploadReceiveMs),
+      sourceMode,
+      targetPlatformCount: cleanPlatforms.length,
+      targetPlatforms: cleanPlatforms,
+      queuePosition: this.pending.length + 1,
+      activeJobs: this.running ? 1 : 0,
+      serverRssMb: Number((process.memoryUsage().rss / (1024 * 1024)).toFixed(2)),
+      estimatedTotalMs: historicalStats.timing?.avgTotalMs > 0 ? historicalStats.timing.avgTotalMs : null,
+      enqueuedAt: createdAt,
+    };
+
     const job = {
       id,
       releaseId,
       ownerKey,
       projectId: projectId || projectSnapshot?.id || null,
-      sourceMode: Buffer.isBuffer(zipBuffer) && zipBuffer.length > 0 ? 'zip-upload' : 'forge-project-zip',
+      sourceMode,
       uploadFilename: uploadFilename || (projectSnapshot?.name ? `${projectSnapshot.name}.zip` : 'project.zip'),
       sourceZipBytes: sourceZip.length,
-      enqueuedAtMs: Date.now(),
-      uploadReceiveMs: Math.max(0, Number(uploadReceiveMs) || 0),
+      enqueuedAtMs,
+      uploadReceiveMs: cleanUploadReceiveMs,
       gameSlug: normalizedSlug,
       title: String(title || gameMetadata?.title?.ko || projectSnapshot?.name || normalizedSlug).trim(),
       titleEn: String(titleEn || gameMetadata?.title?.en || title || normalizedSlug).trim(),
@@ -234,7 +254,7 @@ class GameDeployService {
       pushToFarm: Boolean(pushToFarm && targetFarm?.baseUrl),
       status: 'queued',
       step: '대기 중',
-      createdAt: new Date().toISOString(),
+      createdAt,
       startedAt: null,
       finishedAt: null,
       platforms: {},
@@ -242,6 +262,7 @@ class GameDeployService {
       bundleSha256: null,
       bundleBytes: 0,
       deployResult: null,
+      immediateMetrics,
       metrics: null,
       files: [],
       log: '',
@@ -477,6 +498,7 @@ class GameDeployService {
 
       job.finishedAt = new Date(finishedMs).toISOString();
       job.metrics = {
+        phase: 'final',
         transfer: {
           uploadBytes: job.sourceZipBytes,
           uploadThroughputMBps: calcThroughputMBps(job.sourceZipBytes, job.uploadReceiveMs),

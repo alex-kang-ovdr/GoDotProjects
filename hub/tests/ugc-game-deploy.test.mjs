@@ -12,6 +12,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 import { createApp } from '../server/app.mjs';
 
 const require = createRequire(import.meta.url);
@@ -231,6 +232,15 @@ test('Web Forge uploads Project ZIP -> server packages Web/Android/Desktop/iOS -
   assert.equal(startRes.status, 202);
   const { job: initialJob } = await startRes.json();
   assert.equal(initialJob.sourceMode, 'zip-upload');
+  // Immediate-response stats are available immediately on 202 Accepted before packaging finishes
+  assert.ok(initialJob.immediateMetrics, '202 Accepted response must include immediateMetrics');
+  assert.equal(initialJob.immediateMetrics.phase, 'accepted');
+  assert.equal(initialJob.immediateMetrics.uploadBytes, projectZip.length);
+  assert.ok(initialJob.immediateMetrics.uploadReceiveMs >= 0);
+  assert.equal(initialJob.immediateMetrics.targetPlatformCount, 4);
+  assert.ok(initialJob.immediateMetrics.queuePosition >= 1);
+  assert.ok(initialJob.immediateMetrics.serverRssMb > 0);
+  assert.equal(initialJob.metrics, null, 'Final completion metrics must remain null until deploy finishes');
 
   // Poll until completed
   let job = initialJob;
@@ -272,8 +282,11 @@ test('Web Forge uploads Project ZIP -> server packages Web/Android/Desktop/iOS -
   assert.equal(pckBuf.subarray(0, 4).toString('ascii'), 'GDPC');
   assert.match(pckBuf.toString('utf8'), /android-mobile-etc2/);
 
-  // 5. Verify per-job deployment metrics (transfer volume, processing time, resource usage, dedup savings)
-  assert.ok(job.metrics, 'Completed job must include metrics');
+  // 5. Verify per-job deployment metrics (immediate preserved + final transfer/timing/usage populated)
+  assert.ok(job.immediateMetrics, 'Completed job must retain immediateMetrics');
+  assert.equal(job.immediateMetrics.phase, 'accepted');
+  assert.ok(job.metrics, 'Completed job must include final metrics');
+  assert.equal(job.metrics.phase, 'final');
   assert.ok(job.metrics.transfer.uploadBytes > 0);
   assert.ok(job.metrics.transfer.bundleBytes > 0);
   assert.ok(job.metrics.transfer.expandedBytes > 0);
@@ -386,4 +399,78 @@ test('Live Hub channel and Live Forge mode fail-closed against farm selection & 
     body: makeSampleProjectZip(),
   });
   assert.equal(overrideRes.status, 403);
+});
+
+test('Browser notification formatter includes full deploy stats in Dev builds and redacts internal host metrics in Live builds', () => {
+  const src = fs.readFileSync(path.join(REPO_ROOT, 'forge/OfficialGodot/publish-panel.js'), 'utf8');
+  const sandbox = { window: {}, console };
+  sandbox.window = sandbox;
+  vm.runInNewContext(src, sandbox, { filename: 'publish-panel.js' });
+  const { buildDeployNotificationPayload } = sandbox.PlayForgePublish;
+  assert.equal(typeof buildDeployNotificationPayload, 'function');
+
+  const sampleJob = {
+    id: 'job1234567890ab',
+    title: 'FTL 테스트',
+    gameSlug: 'ftl-test',
+    status: 'succeeded',
+    targetPlatforms: ['web', 'android', 'desktop'],
+    targetFarm: { label: 'DEV · 현재' },
+    pushToFarm: true,
+    bundleBytes: 17 * 1024 * 1024,
+    deployResult: { fullPlayUrl: 'https://dev.example/play-ugc/ftl-test/index.html' },
+    metrics: {
+      phase: 'final',
+      transfer: {
+        uploadBytes: 14 * 1024 * 1024,
+        farmTransferBytes: 17 * 1024 * 1024,
+        totalTransferBytes: 31 * 1024 * 1024,
+        bundleBytes: 17 * 1024 * 1024,
+        dedupSavedBytes: 30 * 1024 * 1024,
+        farmThroughputMBps: 18.5,
+      },
+      timing: {
+        totalMs: 12400,
+        packageMs: 9800,
+        farmUploadMs: 1600,
+      },
+      usage: {
+        cpuTotalMs: 4200,
+        peakRssMb: 246.5,
+        workspaceDiskBytes: 64 * 1024 * 1024,
+      },
+    },
+  };
+
+  const devPayload = buildDeployNotificationPayload(sampleJob, { isDevBuild: true });
+  assert.match(devPayload.title, /^\[DEV 배포 완료\] FTL 테스트/);
+  assert.match(devPayload.body, /DEV · 현재/);
+  assert.match(devPayload.body, /전송 31\.00 MB/);
+  assert.match(devPayload.body, /절감 30\.00 MB/);
+  assert.match(devPayload.body, /시간 12\.40s/);
+  assert.match(devPayload.body, /CPU 4\.20s/);
+  assert.match(devPayload.body, /RAM 246\.5MB/);
+  assert.match(devPayload.body, /디스크 64\.00 MB/);
+
+  const livePayload = buildDeployNotificationPayload(sampleJob, { isDevBuild: false });
+  assert.match(livePayload.title, /^\[배포 완료\] FTL 테스트/);
+  assert.match(livePayload.body, /WEB, ANDROID, DESKTOP/);
+  assert.match(livePayload.body, /번들 17\.00 MB/);
+  assert.match(livePayload.body, /소요 12\.40s/);
+  assert.doesNotMatch(livePayload.body, /RAM|CPU|디스크|DEV · 현재/);
+
+  const devFailPayload = buildDeployNotificationPayload(
+    { ...sampleJob, status: 'failed', error: 'EXPORT_FAILED' },
+    { isDevBuild: true }
+  );
+  assert.match(devFailPayload.title, /^\[DEV 배포 실패\]/);
+  assert.match(devFailPayload.body, /EXPORT_FAILED/);
+  assert.match(devFailPayload.body, /RAM 246\.5MB/);
+
+  const liveFailPayload = buildDeployNotificationPayload(
+    { ...sampleJob, status: 'failed', error: 'EXPORT_FAILED' },
+    { isDevBuild: false }
+  );
+  assert.match(liveFailPayload.title, /^\[배포 실패\]/);
+  assert.doesNotMatch(liveFailPayload.body, /RAM|CPU|디스크/);
 });

@@ -23,6 +23,154 @@
     ["ios", "iOS (모바일 PCK)", false]
   ];
   const FARM_STORAGE_KEY = "playforge_target_farm_v1";
+  const NOTIFY_STORAGE_KEY = "playforge_deploy_notify_v1";
+
+  function loadNotifyPref() {
+    try {
+      const raw = localStorage.getItem(NOTIFY_STORAGE_KEY);
+      if (raw === null) return true;
+      return raw === "true";
+    } catch {
+      return true;
+    }
+  }
+
+  function saveNotifyPref(enabled) {
+    try {
+      localStorage.setItem(NOTIFY_STORAGE_KEY, enabled ? "true" : "false");
+    } catch {}
+  }
+
+  function getBrowserNotifyStatus() {
+    if (typeof window === "undefined" || !("Notification" in window)) return "unsupported";
+    return Notification.permission || "default";
+  }
+
+  function buildDeployNotificationPayload(job, { isDevBuild = false } = {}) {
+    const ok = job?.status === "succeeded";
+    const name = job?.title || job?.gameSlug || "게임";
+    const plats = Array.isArray(job?.targetPlatforms) && job.targetPlatforms.length
+      ? job.targetPlatforms.map(p => String(p).toUpperCase()).join(", ")
+      : "WEB";
+    const tr = job?.metrics?.transfer || {};
+    const tm = job?.metrics?.timing || {};
+    const us = job?.metrics?.usage || {};
+    const farmLabel = job?.targetFarm?.label || (job?.pushToFarm ? "기본 팜" : "로컬 패키징");
+
+    if (isDevBuild) {
+      const title = ok ? `[DEV 배포 완료] ${name}` : `[DEV 배포 실패] ${name}`;
+      if (ok) {
+        const speedText = tr.farmThroughputMBps > 0 ? ` · ${tr.farmThroughputMBps}MB/s` : "";
+        const lines = [
+          `${farmLabel} · ${plats}`,
+          `전송 ${formatSize(tr.totalTransferBytes)} (업로드 ${formatSize(tr.uploadBytes)} / 팜 ${formatSize(tr.farmTransferBytes)}${speedText} · 절감 ${formatSize(tr.dedupSavedBytes)})`,
+          `시간 ${formatDuration(tm.totalMs)} (패키징 ${formatDuration(tm.packageMs)} · 팜 ${formatDuration(tm.farmUploadMs)}) · CPU ${formatDuration(us.cpuTotalMs)} · RAM ${us.peakRssMb || 0}MB · 디스크 ${formatSize(us.workspaceDiskBytes)}`
+        ];
+        return { title, body: lines.join("\n"), ok: true, isDevBuild: true, playUrl: job?.deployResult?.fullPlayUrl || null };
+      }
+      const lines = [
+        `${farmLabel} · 실패: ${String(job?.error || "알 수 없는 오류").slice(0, 90)}`,
+        `소요 ${formatDuration(tm.totalMs)} · 업로드 ${formatSize(tr.uploadBytes || job?.immediateMetrics?.uploadBytes || 0)} · RAM ${us.peakRssMb || 0}MB · 디스크 ${formatSize(us.workspaceDiskBytes)}`
+      ];
+      return { title, body: lines.join("\n"), ok: false, isDevBuild: true, playUrl: null };
+    }
+
+    // Live / Release build: exclude internal host usage (CPU/RAM/disk/internal farm details)
+    const title = ok ? `[배포 완료] ${name}` : `[배포 실패] ${name}`;
+    const body = ok
+      ? `${plats} · 번들 ${formatSize(tr.bundleBytes || job?.bundleBytes || 0)} · 소요 ${formatDuration(tm.totalMs)}`
+      : `배포 실패: ${String(job?.error || "배포 처리에 실패했습니다.").slice(0, 100)}`;
+    return { title, body, ok, isDevBuild: false, playUrl: job?.deployResult?.fullPlayUrl || null };
+  }
+
+  let activeToastTimer = null;
+  let savedOrigTitle = null;
+  let titleRestoreBound = false;
+
+  function flashBackgroundTabTitle(ok, label) {
+    if (typeof document === "undefined") return;
+    const isBg = document.hidden || (typeof document.hasFocus === "function" && !document.hasFocus());
+    if (!isBg) return;
+    if (savedOrigTitle === null) savedOrigTitle = document.title;
+    document.title = `${ok ? "✅" : "❌"} ${label} — ${savedOrigTitle}`;
+    if (!titleRestoreBound && typeof window !== "undefined") {
+      titleRestoreBound = true;
+      const restore = () => {
+        if (savedOrigTitle !== null) {
+          document.title = savedOrigTitle;
+          savedOrigTitle = null;
+        }
+        titleRestoreBound = false;
+        window.removeEventListener("focus", restore);
+        document.removeEventListener("visibilitychange", onVis);
+      };
+      const onVis = () => { if (!document.hidden) restore(); };
+      window.addEventListener("focus", restore);
+      document.addEventListener("visibilitychange", onVis);
+    }
+  }
+
+  function showDeployToast(payload) {
+    if (typeof document === "undefined" || !document.body) return;
+    const existing = document.getElementById("pfDeployToast");
+    if (existing) existing.remove();
+    if (activeToastTimer) {
+      clearTimeout(activeToastTimer);
+      activeToastTimer = null;
+    }
+    const toast = el("div", {
+      id: "pfDeployToast",
+      className: "pf-deploy-toast" + (payload.ok ? "" : " fail"),
+      role: "status",
+      "aria-live": "polite"
+    },
+      el("div", { className: "pf-deploy-toast-head" },
+        el("strong", { text: payload.title }),
+        el("button", {
+          type: "button",
+          text: "닫기",
+          style: "padding:2px 8px;font-size:11px;",
+          onClick: () => toast.remove()
+        })
+      ),
+      el("div", { className: "pf-deploy-toast-body", text: payload.body }),
+      payload.playUrl
+        ? el("div", { className: "pf-deploy-toast-actions" },
+            el("a", {
+              href: payload.playUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              style: "font-weight:700;color:#004AC6;text-decoration:none;"
+            }, "배포된 게임 열기 ↗")
+          )
+        : null
+    );
+    document.body.append(toast);
+    activeToastTimer = setTimeout(() => {
+      toast.remove();
+      activeToastTimer = null;
+    }, 15000);
+  }
+
+  function dispatchDeployNotification(job, { isDevBuild = false, desktopEnabled = true } = {}) {
+    const payload = buildDeployNotificationPayload(job, { isDevBuild });
+    showDeployToast(payload);
+    flashBackgroundTabTitle(payload.ok, payload.ok ? "배포 완료" : "배포 실패");
+    const isBg = typeof document !== "undefined" && (document.hidden || (typeof document.hasFocus === "function" && !document.hasFocus()));
+    if (desktopEnabled && isBg && typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+      try {
+        const notif = new Notification(payload.title, {
+          body: payload.body,
+          tag: `playforge-deploy-${job?.id || Date.now()}`
+        });
+        notif.onclick = () => {
+          try { window.focus(); } catch {}
+          notif.close();
+        };
+      } catch {}
+    }
+    return payload;
+  }
 
   function encodeUtf8Base64(obj) {
     const json = JSON.stringify(obj);
@@ -228,6 +376,7 @@
       gameDeployJob: null,
       gameDeployError: "",
       showGameDeployLog: false,
+      desktopNotify: loadNotifyPref(),
       deployStats: null,
       loadingStats: false
     };
@@ -338,6 +487,9 @@
       state.gameDeploying = true;
       state.gameDeployError = "";
       state.gameDeployJob = null;
+      if (state.desktopNotify && "Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission().then(() => render()).catch(() => {});
+      }
       render();
       try {
         const latest = ctx.getSelected ? ctx.getSelected() : ctx.selected;
@@ -396,8 +548,16 @@
         if (!job || job.status !== "succeeded") {
           state.gameDeployError = job?.error || "게임 단독 배포 시간이 초과되었습니다.";
           state.showGameDeployLog = true;
+          dispatchDeployNotification(
+            job || { title: state.titleKo, gameSlug: state.slug, status: "failed", error: state.gameDeployError },
+            { isDevBuild: Boolean(state.deployConfig.farmSelectorAllowed), desktopEnabled: state.desktopNotify }
+          );
         } else {
           ctx.status?.(`게임 단독 배포 완료 (${job.gameSlug})`);
+          dispatchDeployNotification(job, {
+            isDevBuild: Boolean(state.deployConfig.farmSelectorAllowed),
+            desktopEnabled: state.desktopNotify
+          });
         }
       } catch (err) {
         state.gameDeployError = err.message || "게임 단독 배포에 실패했습니다.";
@@ -1229,6 +1389,35 @@
           sec.append(grid);
         }
 
+        if (job.immediateMetrics) {
+          const im = job.immediateMetrics;
+          const upSpeed = im.uploadThroughputMBps > 0 ? ` · ${im.uploadThroughputMBps} MB/s` : "";
+          sec.append(
+            el("div", { className: "pf-metric-card" },
+              el("div", { className: "pf-metric-head" },
+                el("h5", { text: "접수 즉시 통계 (배포 요청 직후 응답)" }),
+                el("span", { className: "pf-badge", text: "즉시 응답" })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "업로드 전송" }),
+                el("strong", { text: `${formatSize(im.uploadBytes)} · 수신 ${formatDuration(im.uploadReceiveMs)}${upSpeed}` })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "대기열 · 대상" }),
+                el("strong", {
+                  text: `대기 #${im.queuePosition || 1}${im.activeJobs ? " (진행중 1)" : ""} · 플랫폼 ${im.targetPlatformCount || 1}종`
+                })
+              ),
+              el("div", { className: "pf-metric-line" },
+                el("span", { text: "접수 시점 서버" }),
+                el("strong", {
+                  text: `RAM ${im.serverRssMb || 0} MB${im.estimatedTotalMs ? ` · 과거 평균 ${formatDuration(im.estimatedTotalMs)}` : ""}`
+                })
+              )
+            )
+          );
+        }
+
         if (job.metrics) {
           const tr = job.metrics.transfer || {};
           const tm = job.metrics.timing || {};
@@ -1238,9 +1427,12 @@
             : (tr.uploadThroughputMBps > 0 ? ` · ${tr.uploadThroughputMBps} MB/s` : "");
           sec.append(
             el("div", { className: "pf-metric-card" },
-              el("h5", { text: "이번 배포 통계 (전송량 · 처리시간 · 사용량)" }),
+              el("div", { className: "pf-metric-head" },
+                el("h5", { text: "최종 완료 통계 (패키징·배포 확정)" }),
+                el("span", { className: "pf-badge " + (job.status === "succeeded" ? "live" : "fail"), text: "완료 확정" })
+              ),
               el("div", { className: "pf-metric-line" },
-                el("span", { text: "전송량" }),
+                el("span", { text: "최종 전송량" }),
                 el("strong", {
                   text: `총 ${formatSize(tr.totalTransferBytes)} (업로드 ${formatSize(tr.uploadBytes)} / 팜 ${formatSize(tr.farmTransferBytes)}${speedText})`
                 })
@@ -1252,17 +1444,27 @@
                 })
               ),
               el("div", { className: "pf-metric-line" },
-                el("span", { text: "처리시간" }),
+                el("span", { text: "단계별 처리시간" }),
                 el("strong", {
-                  text: `총 ${formatDuration(tm.totalMs)} (해제 ${formatDuration(tm.extractMs)} · 패키징 ${formatDuration(tm.packageMs)} · 전송 ${formatDuration(tm.farmUploadMs)} · 허브 ${formatDuration(tm.hubServerMs)})`
+                  text: `총 ${formatDuration(tm.totalMs)} (대기 ${formatDuration(tm.queueWaitMs)} · 해제 ${formatDuration(tm.extractMs)} · 패키징 ${formatDuration(tm.packageMs)} · 전송 ${formatDuration(tm.farmUploadMs)} · 허브 ${formatDuration(tm.hubServerMs)})`
                 })
               ),
               el("div", { className: "pf-metric-line" },
-                el("span", { text: "리소스 사용량" }),
+                el("span", { text: "실측 리소스 사용량" }),
                 el("strong", {
                   text: `CPU ${formatDuration(us.cpuTotalMs)} · 피크 RAM ${us.peakRssMb || 0} MB · 디스크 ${formatSize(us.workspaceDiskBytes)}`
                 })
               )
+            )
+          );
+        } else if (["queued", "running"].includes(job.status)) {
+          sec.append(
+            el("div", { className: "pf-metric-card" },
+              el("div", { className: "pf-metric-head" },
+                el("h5", { text: "최종 완료 통계 (패키징·배포 확정)" }),
+                el("span", { className: "pf-badge pending", text: "집계 중…" })
+              ),
+              el("div", { style: "font-size:11.5px;color:#586079;", text: "플랫폼 PCK 크기·중복절감·단계별 실측 시간·CPU/피크 RAM/디스크는 최종 완료 시 확정됩니다." })
             )
           );
         }
@@ -1298,7 +1500,31 @@
         }
       }
 
+      const perm = getBrowserNotifyStatus();
+      const permLabel = perm === "granted"
+        ? "OS 알림 허용됨"
+        : (perm === "denied" ? "OS 알림 차단됨(인앱 토스트 사용)" : (perm === "unsupported" ? "OS 알림 미지원" : "배포 시 권한 요청"));
       sec.append(
+        el("div", { className: "pf-chip-list", style: "align-items:center;" },
+          el("label", { className: "pf-chip-toggle" },
+            el("input", {
+              type: "checkbox",
+              checked: state.desktopNotify,
+              onChange: e => {
+                state.desktopNotify = e.target.checked;
+                saveNotifyPref(state.desktopNotify);
+                if (state.desktopNotify && "Notification" in window && Notification.permission === "default") {
+                  Notification.requestPermission().then(() => render()).catch(() => {});
+                }
+                render();
+              }
+            }),
+            dcfg.farmSelectorAllowed
+              ? "완료 시 브라우저 알림 (백그라운드 OS 팝업 · Dev 통계 포함)"
+              : "완료 시 브라우저 알림 (백그라운드 OS 팝업)"
+          ),
+          el("span", { className: "pf-badge" + (perm === "granted" ? " live" : ""), text: permLabel })
+        ),
         el("button", {
           type: "button",
           className: "pf-pub-primary",
@@ -1512,5 +1738,5 @@
     void loadMeta();
   }
 
-  root.PlayForgePublish = { open, estimatePoints, slugify };
+  root.PlayForgePublish = { open, estimatePoints, slugify, buildDeployNotificationPayload };
 })(window);
