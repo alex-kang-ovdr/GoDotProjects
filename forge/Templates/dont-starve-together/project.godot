@@ -1,0 +1,37 @@
+; Engine configuration file.
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Don't Starve Together (Godot 4.7 Restoration)"
+run/main_scene="res://scenes/main.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="DST_Godot_Restoration"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/icon.svg"
+
+[debug]
+
+gdscript/warnings/treat_warnings_as_errors=false
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+window/size/min_width=960
+window/size/min_height=540
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.06, 0.08, 0.07, 1)
+textures/canvas_textures/default_texture_filter=1

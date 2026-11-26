@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "source_game": "Don't Starve Together",
+    "source_buildid": "26797476",
+    "source_version": "763928",
+    "note": "Verified constants from local DST scripts.zip (tuning.lua, clock.lua, seasons.lua, combat.lua, inventory.lua, planarentity.lua, farmplantstress.lua, boatphysics.lua)"
+  },
+  "clock": {
+    "seg_time": 30.0,
+    "num_segs": 16,
+    "total_day_time": 480.0,
+    "moon_phase_cycle": [
+      "new", "quarter", "quarter", "quarter", "half", "half", "half",
+      "threequarter", "threequarter", "threequarter", "full",
+      "threequarter", "threequarter", "threequarter", "half", "half", "half",
+      "quarter", "quarter", "quarter"
+    ]
+  },
+  "seasons": {
+    "order": ["autumn", "winter", "spring", "summer"],
+    "lengths": { "autumn": 20, "winter": 15, "spring": 20, "summer": 15 },
+    "clock_segs": {
+      "autumn": { "day": 8, "dusk": 6, "night": 2 },
+      "winter": { "day": 5, "dusk": 5, "night": 6 },
+      "spring": { "day": 5, "dusk": 8, "night": 3 },
+      "summer": { "day": 11, "dusk": 1, "night": 4 }
+    },
+    "base_temp": { "autumn": 28.0, "winter": -10.0, "spring": 22.0, "summer": 66.0 },
+    "phase_temp": { "day": 5.0, "dusk": 0.0, "night": -6.0 }
+  },
+  "survival": {
+    "wilson_attack": 34.0,
+    "wilson_attack_period": 0.4,
+    "calories_per_day": 75.0,
+    "starve_kill_time": 120.0,
+    "freezing_kill_time": 120.0,
+    "starting_temp": 35.0,
+    "freezing_temp": 0.0,
+    "overheat_temp": 70.0,
+    "min_entity_temp": -20.0,
+    "max_entity_temp": 90.0,
+    "moisture_max": 100.0,
+    "moisture_wet_threshold": 35.0,
+    "moisture_dry_threshold": 15.0,
+    "moisture_temp_penalty": 30.0,
+    "sanity_insane_enter": 0.15,
+    "sanity_insane_exit": 0.175,
+    "sanity_lunacy_enter": 0.85,
+    "sanity_lunacy_exit": 0.825,
+    "max_health_penalty": 0.75,
+    "revive_health_penalty": 0.25,
+    "world_reset_time": 120.0,
+    "armor_durability_modifier": 0.7,
+    "electric_damage_mult": 1.5,
+    "electric_wet_damage_mult": 1.0
+  },
+  "perish_mults": {
+    "fridge": 0.5,
+    "saltbox": 0.25,
+    "foodpreserver": 0.75,
+    "ground": 1.5,
+    "wet": 1.3,
+    "winter": 0.75,
+    "summer": 1.25
+  },
+  "camera": {
+    "fov": 35.0,
+    "heading_default": 45.0,
+    "dist_default": 30.0,
+    "min_dist": 15.0,
+    "max_dist": 50.0,
+    "min_pitch": 30.0,
+    "max_pitch": 60.0,
+    "zoom_step": 4.0,
+    "target_offset_y": 1.5
+  },
+  "boat": {
+    "health": 200.0,
+    "radius": 4.0,
+    "max_allowed_velocity": 10.0,
+    "max_velocity": 1.2,
+    "mast_diminish": 0.7
+  },
+  "characters": {
+    "wilson": { "name": "Wilson", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#d6453a" },
+    "willow": { "name": "Willow", "health": 150.0, "hunger": 150.0, "sanity": 120.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.1, "color": "#e06d2b" },
+    "wolfgang": { "name": "Wolfgang", "health": 200.0, "hunger": 200.0, "sanity": 200.0, "damage_mult": 1.5, "hunger_rate_mult": 1.2, "sanity_drain_mult": 1.1, "color": "#4f6fd8" },
+    "wendy": { "name": "Wendy", "health": 150.0, "hunger": 150.0, "sanity": 200.0, "damage_mult": 0.75, "hunger_rate_mult": 1.0, "sanity_drain_mult": 0.75, "color": "#c95b7d" },
+    "wathgrithr": { "name": "Wigfrid", "health": 200.0, "hunger": 120.0, "sanity": 120.0, "damage_mult": 1.25, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#c44242" },
+    "wx78": { "name": "WX-78", "health": 100.0, "hunger": 100.0, "sanity": 100.0, "damage_mult": 1.0, "hunger_rate_mult": 1.0, "sanity_drain_mult": 1.0, "color": "#87999c" }
+  },
+  "weapons": {
+    "unarmed": { "name": "Fists", "damage": 10.0, "planar_damage": 0.0, "uses": 999999, "range": 2.0 },
+    "axe": { "name": "Axe", "damage": 27.2, "planar_damage": 0.0, "uses": 100, "range": 2.2, "tool": "chop" },
+    "pickaxe": { "name": "Pickaxe", "damage": 27.2, "planar_damage": 0.0, "uses": 33, "range": 2.2, "tool": "mine" },
+    "spear": { "name": "Spear", "damage": 34.0, "planar_damage": 0.0, "uses": 150, "range": 2.6 },
+    "hambat": { "name": "Ham Bat", "damage": 59.5, "planar_damage": 0.0, "uses": 9999, "range": 2.6 },
+    "nightsword": { "name": "Dark Sword", "damage": 68.0, "planar_damage": 0.0, "uses": 100, "range": 2.8, "dapperness": -0.33 },
+    "sword_lunarplant": { "name": "Brightshade Sword", "damage": 38.0, "planar_damage": 30.0, "uses": 200, "range": 2.8, "alignment": "lunar" },
+    "voidcloth_scythe": { "name": "Shadow Reaper", "damage": 38.0, "planar_damage": 18.0, "uses": 200, "range": 3.0, "alignment": "shadow" }
+  },
+  "armors": {
+    "armorgrass": { "name": "Grass Suit", "slot": "body", "durability": 157.5, "absorption": 0.60, "planar_defense": 0.0 },
+    "armorwood": { "name": "Log Suit", "slot": "body", "durability": 315.0, "absorption": 0.80, "planar_defense": 0.0 },
+    "footballhat": { "name": "Football Helmet", "slot": "head", "durability": 315.0, "absorption": 0.80, "planar_defense": 0.0 },
+    "armormarble": { "name": "Marble Suit", "slot": "body", "durability": 735.0, "absorption": 0.95, "planar_defense": 0.0, "speed_mult": 0.7 },
+    "armorruins": { "name": "Thulecite Suit", "slot": "body", "durability": 1260.0, "absorption": 0.90, "planar_defense": 0.0 },
+    "lunarplanthat": { "name": "Brightshade Helm", "slot": "head", "durability": 830.0, "absorption": 0.80, "planar_defense": 10.0, "lunar_resist": 0.9 },
+    "armor_lunarplant": { "name": "Brightshade Armor", "slot": "body", "durability": 830.0, "absorption": 0.80, "planar_defense": 10.0, "lunar_resist": 0.9 },
+    "voidclothhat": { "name": "Void Cowl", "slot": "head", "durability": 830.0, "absorption": 0.80, "planar_defense": 10.0, "shadow_resist": 0.9 },
+    "armor_voidcloth": { "name": "Void Robe", "slot": "body", "durability": 830.0, "absorption": 0.80, "planar_defense": 10.0, "shadow_resist": 0.9 }
+  },
+  "recipes": [
+    { "id": "axe", "name": "도끼 (Axe)", "tech": 0, "category": "TOOLS", "ingredients": { "twigs": 1, "flint": 1 }, "result_type": "weapon" },
+    { "id": "pickaxe", "name": "곡괭이 (Pickaxe)", "tech": 0, "category": "TOOLS", "ingredients": { "twigs": 2, "flint": 2 }, "result_type": "weapon" },
+    { "id": "campfire", "name": "모닥불 (Campfire)", "tech": 0, "category": "LIGHT", "ingredients": { "cutgrass": 3, "log": 2 }, "result_type": "structure" },
+    { "id": "torch", "name": "횃불 (Torch)", "tech": 0, "category": "LIGHT", "ingredients": { "cutgrass": 2, "twigs": 2 }, "result_type": "item" },
+    { "id": "researchlab", "name": "과학 기계 (Science)", "tech": 0, "category": "PROTOTYPERS", "ingredients": { "goldnugget": 1, "log": 4, "rocks": 4 }, "result_type": "structure" },
+    { "id": "spear", "name": "창 (Spear)", "tech": 1, "category": "WEAPONS", "ingredients": { "twigs": 2, "flint": 1, "cutgrass": 3 }, "result_type": "weapon" },
+    { "id": "armorwood", "name": "나무 갑옷 (Log Suit)", "tech": 1, "category": "ARMOUR", "ingredients": { "log": 8, "cutgrass": 6 }, "result_type": "armor" },
+    { "id": "footballhat", "name": "풋볼 헬멧 (Helmet)", "tech": 1, "category": "ARMOUR", "ingredients": { "pigskin": 1, "cutgrass": 3 }, "result_type": "armor" },
+    { "id": "cookpot", "name": "요리 냄비 (Crock Pot)", "tech": 1, "category": "COOKING", "ingredients": { "rocks": 6, "log": 3, "twigs": 6 }, "result_type": "structure" },
+    { "id": "farm_plot", "name": "농경지 (Farm Soil)", "tech": 1, "category": "GARDENING", "ingredients": { "cutgrass": 4, "twigs": 2, "log": 2 }, "result_type": "structure" },
+    { "id": "telltale_heart", "name": "고백 심장 (Revive)", "tech": 0, "category": "RESTORATION", "ingredients": { "cutgrass": 3 }, "hp_cost": 40, "result_type": "item" },
+    { "id": "sword_lunarplant", "name": "브라이트셰이드 검", "tech": 2, "category": "WEAPONS", "ingredients": { "purebrilliance": 2, "log": 2 }, "result_type": "weapon" },
+    { "id": "lunarplanthat", "name": "브라이트셰이드 투구", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "rocks": 2 }, "result_type": "armor" },
+    { "id": "armor_lunarplant", "name": "브라이트셰이드 갑옷", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "log": 4 }, "result_type": "armor" }
+  ],
+  "foods": [
+    { "id": "berries", "name": "베리", "health": 0.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 6.0, "tags": { "fruit": 0.5 } },
+    { "id": "carrot", "name": "당근", "health": 1.0, "hunger": 12.5, "sanity": 0.0, "perish_days": 10.0, "tags": { "veggie": 1.0 } },
+    { "id": "meat", "name": "고기", "health": 1.0, "hunger": 25.0, "sanity": -10.0, "perish_days": 6.0, "tags": { "meat": 1.0 } },
+    { "id": "monstermeat", "name": "괴물 고기", "health": -20.0, "hunger": 18.75, "sanity": -15.0, "perish_days": 6.0, "tags": { "meat": 1.0, "monster": 1.0 } },
+    { "id": "egg", "name": "알", "health": 0.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 10.0, "tags": { "egg": 1.0 } },
+    { "id": "ice", "name": "얼음", "health": 0.5, "hunger": 2.34, "sanity": 0.0, "perish_days": 3.0, "tags": { "frozen": 1.0 } },
+    { "id": "meatballs", "name": "미트볼", "priority": -1, "weight": 1.0, "health": 3.0, "hunger": 62.5, "sanity": 5.0, "perish_days": 10.0, "cooktime": 0.75 },
+    { "id": "perogies", "name": "피에로기", "priority": 5, "weight": 1.0, "health": 40.0, "hunger": 37.5, "sanity": 5.0, "perish_days": 20.0, "cooktime": 1.0 },
+    { "id": "baconeggs", "name": "베이컨에그", "priority": 10, "weight": 1.0, "health": 20.0, "hunger": 75.0, "sanity": 5.0, "perish_days": 20.0, "cooktime": 2.0 },
+    { "id": "bonestew", "name": "미트스튜", "priority": 0, "weight": 1.0, "health": 12.0, "hunger": 150.0, "sanity": 5.0, "perish_days": 10.0, "cooktime": 0.75 },
+    { "id": "monsterlasagna", "name": "몬스터 라자냐", "priority": 10, "weight": 1.0, "health": -20.0, "hunger": 37.5, "sanity": -20.0, "perish_days": 6.0, "cooktime": 0.5 },
+    { "id": "wetgoop", "name": "젖은 찌꺼기", "priority": -10, "weight": 1.0, "health": 0.0, "hunger": 0.0, "sanity": 0.0, "perish_days": 6.0, "cooktime": 0.25 }
+  ],
+  "creatures": {
+    "spider": { "name": "거미", "health": 100.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 3.0, "speed": 3.2, "range": 2.1, "planar_entity": false, "loot": { "monstermeat": 1, "silk": 1 } },
+    "hound": { "name": "하운드", "health": 150.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 2.0, "speed": 5.8, "range": 2.2, "planar_entity": false, "loot": { "monstermeat": 1, "houndstooth": 1 } },
+    "crawlinghorror": { "name": "기어다니는 공포", "health": 300.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 2.5, "speed": 3.8, "range": 2.4, "planar_entity": false, "loot": { "nightmarefuel": 2 } },
+    "deerclops": { "name": "외눈사슴 (Deerclops)", "health": 4000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 4.0, "speed": 3.4, "range": 4.2, "planar_entity": false, "boss": true, "loot": { "meat": 4, "purebrilliance": 2 } },
+    "mutated_deerclops": { "name": "결정화 외눈사슴 (Planar)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 30.0, "attack_period": 3.0, "speed": 3.8, "range": 4.5, "planar_entity": true, "boss": true, "loot": { "purebrilliance": 4, "meat": 4 } }
+  }
+}

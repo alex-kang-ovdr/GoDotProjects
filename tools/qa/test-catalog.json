@@ -6511,6 +6511,20 @@
         "dev"
       ],
       "owner": "Hub-AOS"
+    },
+    {
+      "path": "forge/Tests/dont-starve-together.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-GameDev-DontStarveTogether"
     }
   ]
 }

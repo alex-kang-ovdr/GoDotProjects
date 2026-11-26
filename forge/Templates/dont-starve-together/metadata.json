@@ -1,0 +1,47 @@
+{
+  "id": "dont-starve-together",
+  "name": "Don't Starve Together (Godot 4.7 Restoration)",
+  "description": "Don't Starve Together 로컬 설치본 역기획(buildid 26797476, v763928) 수식·데이터를 기반으로 구현한 2.5D(FollowCamera 35°/45°) 생존·계절·요리·농사·전투·평면 피해 Godot 4.7.2 템플릿.",
+  "dimension": "3d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "data/dst_tuning.json"
+  ],
+  "guideOrder": [
+    "data/dst_tuning.json",
+    "scripts/dst_database.gd",
+    "scripts/dst_world_sim.gd",
+    "scripts/dst_camera.gd",
+    "scripts/dst_renderer.gd",
+    "scripts/dst_hud.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "dont-starve-together",
+      "title": {
+        "ko": "돈 스타브 투게더 (Godot 4.7 복원)",
+        "en": "Don't Starve Together (Godot 4.7)"
+      },
+      "summary": {
+        "ko": "16세그먼트 하루·20일 달 주기·4계절·이중 정신력(광기/달 계몽)·요리 냄비·7스트레스 농사·DST 방어구/평면 전투·외눈사슴/변이 거인 보스전을 재현한 2.5D 협동 생존 템플릿입니다.",
+        "en": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters."
+      },
+      "instructions": {
+        "ko": "WASD로 이동, Space로 채집/수확/모닥불 연료 보충, F로 근접 공격(카이팅), Q/E로 카메라 ±45° 회전, 휠로 줌, 좌측 제작 메뉴 클릭으로 도구·방어구·과학기계·요리냄비 제작, 1~6 키로 인벤토리 사용/장착.",
+        "en": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6."
+      },
+      "tags": ["survival", "crafting", "sandbox", "2.5d", "boss"],
+      "controls": ["keyboard", "mouse"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
+}

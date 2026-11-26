@@ -1,6 +1,6 @@
 # Don't Starve Together (DST) 정본 역기획서
 
-> 작성일: 2026-11-26 | 대상 브랜치: `Forge-GameDev-DontStarveTogether` | 문서 수: 15편 (`00`~`13`, `90`)  
+> 작성일: 2026-11-26 | 대상 브랜치: `Forge-GameDev-DontStarveTogether` | 문서 수: 16편 (`00`~`14`, `90`) + JSON 카탈로그  
 > 1차 분석 대상: 로컬 Steam PC 설치본 `C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together\`  
 > 빌드 식별: Steam AppID `322330` · `buildid` `26797476` · Depot `322331` Manifest `55127838891314407` · `version.txt` `763928`
 
@@ -47,6 +47,7 @@
 | 11 | [11_multiplayer_network_architecture.md](11_multiplayer_network_architecture.md) | 서버 권한(`ismastersim`), 19종 `replica`·`classified`, 110종 Client RPC + Shard RPC, 이동 예측·틱 루프 |
 | 12 | [12_ui_camera_audio_rendering.md](12_ui_camera_audio_rendering.md) | 2.5D `FollowCamera` 투영식, KAnim 파이프라인, 70종 `.ksh` 셰이더(3중 ColourCube), FMOD 오디오, L10N |
 | 13 | [13_godot_rebuild_plan_qa.md](13_godot_rebuild_plan_qa.md) | Godot 4.7.2 / PlayForge 아키텍처 매핑, 저사양/웹 성능 예산, M0~M5 구현 로드맵, 경계 조건 QA 기준 |
+| 14 | [14_detailed_catalog_and_skilltrees.md](14_detailed_catalog_and_skilltrees.md) | 전수 카탈로그 통계(958 레시피·1,621 프리팹·79 요리), 12인 스킬트리 전체 노드표 + [dst_catalog.json](data/dst_catalog.json) |
 | 90 | [90_sources_and_verification.md](90_sources_and_verification.md) | 스냅샷 인벤토리, 코드 출처 인덱스, 라이선스 경계, 미검증 항목 |
 
 ---
