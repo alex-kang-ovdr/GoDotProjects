@@ -1,12 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "summary": {
     "strings_loaded": 451,
     "factions_count": 5,
     "buffs_count": 29,
     "backgrounds_count": 8,
     "shots_count": 20,
-    "part_specs_count": 96
+    "part_specs_count": 96,
+    "nebulas_count": 3,
+    "planets_count": 9,
+    "sectors_count": 5,
+    "ai_profiles_count": 11
   },
   "factions": [
     {
@@ -251,6 +255,108 @@
       ],
       "source_file": "backgrounds/bg_zero.rules"
     }
+  ],
+  "nebulas": [
+    {
+      "id": "cloudy",
+      "rule_file": "nebulas/cloudy/nebula_cloudy.rules",
+      "has_buff": false,
+      "has_lightning": false
+    },
+    {
+      "id": "electron",
+      "rule_file": "nebulas/electron/nebula_electron.rules",
+      "has_buff": true,
+      "has_lightning": false
+    },
+    {
+      "id": "ion_storm",
+      "rule_file": "nebulas/ion_storm/nebula_ion_storm.rules",
+      "has_buff": false,
+      "has_lightning": true
+    }
+  ],
+  "planets": [
+    {
+      "id": "planet_alien",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_alien.rules"
+    },
+    {
+      "id": "planet_gas",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_gas.rules"
+    },
+    {
+      "id": "planet_gas_ringed",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_gas_ringed.rules"
+    },
+    {
+      "id": "planet_lava",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_lava.rules"
+    },
+    {
+      "id": "planet_rocky",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_rocky.rules"
+    },
+    {
+      "id": "planet_sand",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_sand.rules"
+    },
+    {
+      "id": "planet_sun",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_sun.rules"
+    },
+    {
+      "id": "planet_terra",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_terra.rules"
+    },
+    {
+      "id": "planet_water",
+      "color": "#6da8d6",
+      "source_file": "planets/planet_water.rules"
+    }
+  ],
+  "sectors": [
+    {
+      "id": "sector_basic",
+      "source_file": "modes/career/sectors/sector_basic/sector_basic.rules"
+    },
+    {
+      "id": "sector_binary",
+      "source_file": "modes/career/sectors/sector_binary/sector_binary.rules"
+    },
+    {
+      "id": "sector_electron",
+      "source_file": "modes/career/sectors/sector_electron/sector_electron.rules"
+    },
+    {
+      "id": "sector_high_density_nebula",
+      "source_file": "modes/career/sectors/sector_high_density_nebula/sector_high_density_nebula.rules"
+    },
+    {
+      "id": "sector_supernova",
+      "source_file": "modes/career/sectors/sector_supernova/sector_supernova.rules"
+    }
+  ],
+  "ai_profiles": [
+    "ai_buildbattle",
+    "ai_common",
+    "ai_defense_platform",
+    "ai_easy",
+    "ai_military_station",
+    "ai_normal",
+    "ai_police",
+    "ai_space_station",
+    "ai_station_guard",
+    "ai_trade_ship",
+    "ai_wanderer"
   ],
   "shots": {
     "bullet_deck": {

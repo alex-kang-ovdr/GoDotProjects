@@ -12,27 +12,35 @@ const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함�
 	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 제거", "survived":"대피 시간 확보",
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착"}
 const CORE := {
-	"cosmoteer.corridor":"통로", "cosmoteer.reactor_small":"소형 반응로",
+	"cosmoteer.corridor":"통로", "cosmoteer.conveyor":"컨베이어 통로",
+	"cosmoteer.reactor_small":"소형 반응로",
 	"cosmoteer.reactor_med":"중형 반응로", "cosmoteer.reactor_large":"대형 반응로",
+	"cosmoteer.power_storage":"전력 축전기",
 	"cosmoteer.crew_quarters_small":"소형 선실", "cosmoteer.crew_quarters_med":"중형 선실",
-	"cosmoteer.control_room_small":"소형 함교", "cosmoteer.fire_extinguisher":"소화기",
+	"cosmoteer.crew_quarters_large":"대형 선실",
+	"cosmoteer.control_room_small":"소형 함교", "cosmoteer.control_room_med":"중형 함교",
+	"cosmoteer.control_room_large":"대형 함교",
+	"cosmoteer.fire_extinguisher":"소화기", "cosmoteer.radiator":"방열판",
+	"cosmoteer.sensor_array":"센서 어레이",
 	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
 	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.cannon_large":"대형 캐논",
 	"cosmoteer.cannon_deck":"갑판포", "cosmoteer.missile_launcher":"미사일 발사기",
 	"cosmoteer.disruptor":"디스럽터", "cosmoteer.ion_beam_emitter":"이온 빔 방출기",
-	"cosmoteer.ion_beam_prism":"이온 빔 프리즘",
+	"cosmoteer.ion_beam_prism":"이온 빔 프리즘", "cosmoteer.resonance_beam_turret":"열공명 랜스",
+	"cosmoteer.mining_laser_small":"채굴 레이저", "cosmoteer.tractor_beam_emitter":"트랙터 빔",
 	"cosmoteer.flak_cannon_large":"플랙 대공포",
 	"cosmoteer.chaingun":"체인건", "cosmoteer.chaingun_magazine":"체인건 탄창",
 	"cosmoteer.railgun_launcher":"레일건 발사부", "cosmoteer.railgun_accelerator":"레일건 가속기",
 	"cosmoteer.railgun_loader":"레일건 장전기",
 	"cosmoteer.shield_gen_small":"소형 방어막", "cosmoteer.shield_gen_large":"대형 방어막",
 	"cosmoteer.point_defense":"근접 방어 포탑",
-	"cosmoteer.armor":"장갑", "cosmoteer.armor_2x1":"2×1 장갑",
+	"cosmoteer.armor":"장갑", "cosmoteer.armor_2x1":"2×1 장갑", "cosmoteer.armor_wedge":"쐐기 장갑",
 	"cosmoteer.thruster_small":"소형 추진기", "cosmoteer.thruster_small_2way":"2방향 소형 추진기",
 	"cosmoteer.thruster_small_3way":"3방향 소형 추진기", "cosmoteer.thruster_med":"중형 추진기",
 	"cosmoteer.thruster_large":"대형 추진기", "cosmoteer.thruster_huge":"초대형 추진기",
 	"cosmoteer.thruster_boost":"부스트 추진기", "cosmoteer.thruster_rocket_nozzle":"로켓 노즐",
 	"cosmoteer.thruster_rocket_extender":"로켓 연장기", "cosmoteer.thruster_rocket_battery":"로켓 배터리",
+	"cosmoteer.engine_room":"원본 엔진룸",
 	EngineRoom.ID:"엔진룸",
 }
 
@@ -120,6 +128,7 @@ func build(host) -> void:
 	preset_picker.add_item("이온·레일건 전함")
 	preset_picker.add_item("프리즘·플랙 구축함")
 	preset_picker.add_item("갑판포 중전함")
+	preset_picker.add_item("열공명·핵 타이탄")
 	preset_picker.item_selected.connect(_on_advanced_preset)
 	toolbar.add_child(preset_picker)
 	toolbar.add_child(lab.button("비우기",_clear))
@@ -489,7 +498,14 @@ func _on_advanced_preset(index: int) -> void:
 		2: _dreadnought_preset()
 		3: _prism_preset()
 		4: _deck_brawler_preset()
+		5: _titan_preset()
 	preset_picker.select(0)
+
+func _titan_preset() -> void:
+	_remember(design.serialize())
+	design.thermal_lance_titan()
+	note.text = "열공명 랜스·미사일(HE/EMP/NUKE)·컨베이어 통로·전력 축전기·원본 엔진룸·센서 어레이를 탑재한 타이탄 설계입니다."
+	_design_changed()
 
 func _dreadnought_preset() -> void:
 	_remember(design.serialize())

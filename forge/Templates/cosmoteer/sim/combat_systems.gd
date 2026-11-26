@@ -17,6 +17,9 @@ const MISSILE_LAUNCHER := "cosmoteer.missile_launcher"
 const DISRUPTOR := "cosmoteer.disruptor"
 const ION_BEAM := "cosmoteer.ion_beam_emitter"
 const ION_PRISM := "cosmoteer.ion_beam_prism"
+const RESONANCE_LANCE := "cosmoteer.resonance_beam_turret"
+const MINING_LASER := "cosmoteer.mining_laser_small"
+const TRACTOR_BEAM := "cosmoteer.tractor_beam_emitter"
 const FLAK_CANNON := "cosmoteer.flak_cannon_large"
 const CHAINGUN := "cosmoteer.chaingun"
 const CHAINGUN_MAG := "cosmoteer.chaingun_magazine"
@@ -29,17 +32,29 @@ const POINT_DEFENSE := "cosmoteer.point_defense"
 const REACTOR_SMALL := "cosmoteer.reactor_small"
 const REACTOR_MED := "cosmoteer.reactor_med"
 const REACTOR_LARGE := "cosmoteer.reactor_large"
+const BRIDGE_SMALL := "cosmoteer.control_room_small"
+const BRIDGE_MED := "cosmoteer.control_room_med"
+const BRIDGE_LARGE := "cosmoteer.control_room_large"
 const BUNK_SMALL := "cosmoteer.crew_quarters_small"
 const BUNK_MED := "cosmoteer.crew_quarters_med"
+const BUNK_LARGE := "cosmoteer.crew_quarters_large"
+const CONVEYOR := "cosmoteer.conveyor"
+const CAPACITOR := "cosmoteer.power_storage"
+const RADIATOR := "cosmoteer.radiator"
+const SENSOR_ARRAY := "cosmoteer.sensor_array"
+const ENGINE_ROOM_REAL := "cosmoteer.engine_room"
 const ARMOR_2X1 := "cosmoteer.armor_2x1"
 const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
 
 const EXTRACTED_RULES_PATH := "res://data/extracted_rules.json"
-const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
+const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RESONANCE_LANCE, MINING_LASER, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
 const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
+const BEAM_WEAPON_IDS := [ION_BEAM, RESONANCE_LANCE, MINING_LASER]
 const SHIELD_IDS := [SHIELD_SMALL, SHIELD_LARGE]
 const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
-const BUNK_IDS := [BUNK_SMALL, BUNK_MED]
+const BRIDGE_IDS := [BRIDGE_SMALL, BRIDGE_MED, BRIDGE_LARGE]
+const BUNK_IDS := [BUNK_SMALL, BUNK_MED, BUNK_LARGE]
+const CORRIDOR_IDS := ["cosmoteer.corridor", CONVEYOR]
 const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
 
 static var _extracted_cache: Dictionary = {}
@@ -333,6 +348,77 @@ const EXTRA_STATS := {
 	BUNK_MED: {
 		"crew_capacity": 6,
 	},
+	BUNK_LARGE: {
+		"crew_capacity": 24,
+	},
+	BRIDGE_MED: {
+		"battery_capacity": 6000,
+		"resupply_threshold": 1000,
+		"drain_interval": 1.0,
+		"drain_quantity": 100,
+	},
+	BRIDGE_LARGE: {
+		"battery_capacity": 12000,
+		"resupply_threshold": 1500,
+		"drain_interval": 1.0,
+		"drain_quantity": 150,
+	},
+	CAPACITOR: {
+		"battery_capacity": 12000,
+		"pickup_quantity": 1000,
+		"resupply_threshold": 1000,
+	},
+	RESONANCE_LANCE: {
+		"weapon_kind": "resonance",
+		"beam_weapon": true,
+		"beam_dps": 3200.0,
+		"beam_structural_dps": 2200.0,
+		"beam_power_per_sec": 950.0,
+		"ignite_intensity": 0.90,
+		"battery_capacity": 10000,
+		"crew_required": 2,
+		"resupply_threshold": 1200,
+		"min_resources_used": 150,
+		"projectile_speed": 100000.0,
+		"range": 240.0,
+		"turret_location": [2.0, 2.0],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 220.0,
+		"rotate_speed_deg": 45.0,
+		"fire_threshold_deg": 10.0,
+	},
+	MINING_LASER: {
+		"weapon_kind": "mining",
+		"beam_weapon": true,
+		"beam_dps": 1400.0,
+		"beam_structural_dps": 1800.0,
+		"beam_power_per_sec": 420.0,
+		"ignite_intensity": 0.30,
+		"battery_capacity": 4000,
+		"crew_required": 1,
+		"resupply_threshold": 600,
+		"min_resources_used": 80,
+		"projectile_speed": 100000.0,
+		"range": 150.0,
+		"turret_location": [1.0, 0.6],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 120.0,
+		"rotate_speed_deg": 90.0,
+		"fire_threshold_deg": 10.0,
+	},
+	TRACTOR_BEAM: {
+		"battery_capacity": 8000,
+		"resupply_threshold": 1000,
+		"tractor_range": 300.0,
+		"tractor_force": 4500.0,
+		"turret_location": [2.5, 2.5],
+		"turret_rotation_deg": -90.0,
+	},
+	SENSOR_ARRAY: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 800,
+		"range_bonus": 0.15,
+	},
 	FIRE_EXTINGUISHER: {
 		"extinguish_rate": 0.42,
 	},
@@ -411,14 +497,104 @@ static func is_bunk(id: String) -> bool:
 	return id in BUNK_IDS
 
 
+static func is_bridge(id: String) -> bool:
+	return id in BRIDGE_IDS
+
+
+static func is_corridor(id: String) -> bool:
+	return id in CORRIDOR_IDS
+
+
 static func is_walkable_expansion(id: String) -> bool:
 	return id in [
-		LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, ION_PRISM,
+		LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR,
+		ION_BEAM, ION_PRISM, RESONANCE_LANCE, MINING_LASER, TRACTOR_BEAM,
 		FLAK_CANNON, CHAINGUN, CHAINGUN_MAG,
 		RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER,
 		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
-		REACTOR_MED, REACTOR_LARGE, BUNK_MED, FIRE_EXTINGUISHER,
+		REACTOR_MED, REACTOR_LARGE, BRIDGE_MED, BRIDGE_LARGE, BUNK_MED, BUNK_LARGE,
+		CONVEYOR, CAPACITOR, RADIATOR, SENSOR_ARRAY, ENGINE_ROOM_REAL, FIRE_EXTINGUISHER,
 	]
+
+
+static func sensor_range_mult(ship: Dictionary) -> float:
+	for uid in ship.ids.get(SENSOR_ARRAY, []):
+		var p: Dictionary = ship.parts[uid]
+		if p.hp > 0.0 and ship.command:
+			return 1.0 + float(p.stats.get("range_bonus", 0.15))
+	return 1.0
+
+
+static func missile_warhead_profile(mode: String) -> Dictionary:
+	var rules := extracted_rules()
+	var shots: Dictionary = rules.get("shots", {})
+	match mode:
+		"emp":
+			var emp: Dictionary = shots.get("missile_emp", {})
+			return {
+				"kind": "missile_emp",
+				"range": float(emp.get("range", 700.0)),
+				"speed": 195.0,
+				"damage": 400.0,
+				"structural_damage": 250.0,
+				"shield_damage_mult": 5.0,
+				"shield_energy_drain": 1800,
+				"aoe_radius": minf(12.0, float(emp.get("aoe_radius", 18.0)) * 0.5),
+				"emp_aoe": true,
+				"ignite": 0.0,
+			}
+		"nuke":
+			var nk: Dictionary = shots.get("missile_nuke", {})
+			return {
+				"kind": "missile_nuke",
+				"range": float(nk.get("range", 250.0)),
+				"speed": 150.0,
+				"damage": 5200.0,
+				"structural_damage": 4200.0,
+				"shield_damage_mult": 1.6,
+				"shield_energy_drain": 0,
+				"aoe_radius": minf(8.5, float(nk.get("aoe_radius", 10.0)) * 0.8),
+				"emp_aoe": false,
+				"ignite": 0.95,
+			}
+		_:
+			return {
+				"kind": "missile",
+				"range": 450.0,
+				"speed": 185.0,
+				"damage": 1800.0,
+				"structural_damage": 1400.0,
+				"shield_damage_mult": 1.0,
+				"shield_energy_drain": 0,
+				"aoe_radius": 4.0,
+				"emp_aoe": false,
+				"ignite": 0.55,
+			}
+
+
+static func tick_tractor_beams(ship: Dictionary, other: Dictionary, side: String, dt: float) -> Array[Dictionary]:
+	var beams: Array[Dictionary] = []
+	for uid in ship.ids.get(TRACTOR_BEAM, []):
+		var tb: Dictionary = ship.parts[uid]
+		if tb.hp <= 0.0 or not ship.command or tb.energy < 100:
+			continue
+		var origin := shield_world_center(ship, tb)
+		var delta: Vector2 = Vector2(other.position) - origin
+		var dist := delta.length()
+		var max_r := float(tb.stats.get("tractor_range", 300.0))
+		if dist < 18.0 or dist > max_r:
+			continue
+		tb.energy = maxi(0, int(tb.energy) - maxi(1, roundi(120.0 * dt)))
+		var pull_dir := -delta / maxf(dist, 0.001)
+		var accel := pull_dir * float(tb.stats.get("tractor_force", 4500.0)) / maxf(1.0, float(other.mass))
+		other.velocity = Vector2(other.velocity) + accel * dt
+		beams.append({
+			"from": origin, "to": Vector2(other.position), "side": side,
+			"source_uid": uid, "hit_kind": "tractor", "beam_kind": "tractor",
+			"hit_uid": -1, "strength": 1.2,
+			"collapsed": false, "destroyed": false, "ignited": false,
+		})
+	return beams
 
 
 ## Apply AoE blast splash damage to nearby alive modules within aoe_radius (meters).
@@ -471,7 +647,7 @@ static func prepare_part(part: Dictionary) -> void:
 		part["rail_range_mult"] = 1.0
 		part["rail_speed_mult"] = 1.0
 		part["rail_reload_mult"] = 1.0
-	elif part.id == ION_BEAM:
+	elif part.id in BEAM_WEAPON_IDS:
 		part["ion_active"] = false
 		part["ion_power_accum"] = 0.0
 
@@ -745,6 +921,27 @@ static func tick_ion_beams(ship: Dictionary, other: Dictionary, side: String, ta
 		prism.turret_angle_local = wrapf(dir.angle() - float(ship.heading), -PI, PI)
 		var strength := total_dps / 2400.0
 		beams.append(_trace_ion_beam(origin, dir, float(prism.stats.get("range", 340.0)), total_dps, total_sdps, max_ignite * minf(1.8, strength), strength, other, side, int(puid), dt))
+	# Also tick Thermal Resonance Lance and Mining Laser continuous beams
+	for bid in [RESONANCE_LANCE, MINING_LASER]:
+		for uid in ship.ids.get(bid, []):
+			var emitter: Dictionary = ship.parts[uid]
+			emitter.ion_active = false
+			var need_crew := int(emitter.stats.get("crew_required", 1))
+			if emitter.hp <= 0.0 or emitter.staffed < need_crew or not ship.command or emitter.energy < int(emitter.stats.get("min_resources_used", 80)) or target < 0 or not other.parts.has(target) or other.parts[target].hp <= 0.0:
+				emitter.aim_status = "offline"
+				continue
+			if not Flight.aim(ship, other, emitter, target, dt):
+				continue
+			emitter.ion_active = true
+			var power_cost := float(emitter.stats.get("beam_power_per_sec", 500.0)) * dt + float(emitter.ion_power_accum)
+			var spend := mini(int(emitter.energy), int(floor(power_cost)))
+			emitter.ion_power_accum = power_cost - float(spend)
+			emitter.energy -= spend
+			var muzzle := shield_world_center(ship, emitter)
+			var dir := Vector2.from_angle(float(ship.heading) + float(emitter.turret_angle_local))
+			var beam := _trace_ion_beam(muzzle, dir, float(emitter.stats.get("range", 200.0)) * sensor_range_mult(ship), float(emitter.stats.get("beam_dps", 2000.0)), float(emitter.stats.get("beam_structural_dps", 1500.0)), float(emitter.stats.get("ignite_intensity", 0.5)), 1.35 if bid == RESONANCE_LANCE else 0.85, other, side, uid, dt)
+			beam["beam_kind"] = str(emitter.stats.get("weapon_kind", "ion"))
+			beams.append(beam)
 	return beams
 
 
@@ -801,7 +998,7 @@ static func tick_flak_defense(ship: Dictionary, side: String, projectiles: Array
 			if p.side == side:
 				continue
 			var pk := str(p.get("kind", ""))
-			if pk != "missile" and pk != "cannon":
+			if not pk.begins_with("missile") and pk != "cannon":
 				continue
 			var delta: Vector2 = Vector2(p.pos) - origin
 			var dist := delta.length()

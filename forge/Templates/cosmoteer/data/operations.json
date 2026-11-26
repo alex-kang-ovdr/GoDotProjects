@@ -91,6 +91,19 @@
       "requires": "prism_fortress",
       "faction": "imperium",
       "background": "bg_red_blue"
+    },
+    {
+      "id": "thermal_titan",
+      "title": "열공명 타이탄",
+      "summary": "열공명 랜스·미사일·대형 엔진룸으로 무장한 아이오 기함을 제압하세요.",
+      "objective": "duel",
+      "opponent": "titan",
+      "distance": 190,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": "imperium_flagship",
+      "faction": "io",
+      "background": "bg_yellow_orange"
     }
   ]
 }

@@ -297,6 +297,60 @@ def extract_part_specs(data_root: Path, strings: dict[str, str], shots: dict[str
     return specs
 
 
+def extract_nebulas(data_root: Path) -> list[dict[str, Any]]:
+    neb_dir = data_root / "nebulas"
+    if not neb_dir.is_dir():
+        return []
+    out: list[dict[str, Any]] = []
+    for f in sorted(neb_dir.glob("*/*.rules")):
+        if "particle" in f.as_posix().lower():
+            continue
+        text = _strip_comments(f.read_text(encoding="utf-8", errors="ignore"))
+        out.append({
+            "id": f.parent.name,
+            "rule_file": f.relative_to(data_root).as_posix(),
+            "has_buff": "Buff" in text or "Debuff" in text,
+            "has_lightning": "Lightning" in text,
+        })
+    return out
+
+
+def extract_planets(data_root: Path) -> list[dict[str, Any]]:
+    pdir = data_root / "planets"
+    if not pdir.is_dir():
+        return []
+    out: list[dict[str, Any]] = []
+    for f in sorted(pdir.glob("planet_*.rules")):
+        text = _strip_comments(f.read_text(encoding="utf-8", errors="ignore"))
+        color = _find_color_hex(text, "Color") or _find_color_hex(text, "HaloColor") or "#6da8d6"
+        out.append({
+            "id": f.stem,
+            "color": color,
+            "source_file": f.relative_to(data_root).as_posix(),
+        })
+    return out
+
+
+def extract_sectors(data_root: Path) -> list[dict[str, Any]]:
+    sdir = data_root / "modes" / "career" / "sectors"
+    if not sdir.is_dir():
+        return []
+    out: list[dict[str, Any]] = []
+    for f in sorted(sdir.glob("*/*.rules")):
+        out.append({
+            "id": f.parent.name,
+            "source_file": f.relative_to(data_root).as_posix(),
+        })
+    return out
+
+
+def extract_ai_profiles(data_root: Path) -> list[str]:
+    adir = data_root / "ai"
+    if not adir.is_dir():
+        return []
+    return [f.stem for f in sorted(adir.glob("ai_*.rules"))]
+
+
 def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     strings = parse_en_strings(data_root)
     factions = extract_factions(data_root, strings)
@@ -304,9 +358,13 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     backgrounds = extract_backgrounds(data_root)
     shots = extract_shots(data_root)
     part_specs = extract_part_specs(data_root, strings, shots)
+    nebulas = extract_nebulas(data_root)
+    planets = extract_planets(data_root)
+    sectors = extract_sectors(data_root)
+    ai_profiles = extract_ai_profiles(data_root)
 
     payload = {
-        "version": 1,
+        "version": 2,
         "summary": {
             "strings_loaded": len(strings),
             "factions_count": len(factions),
@@ -314,10 +372,18 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
             "backgrounds_count": len(backgrounds),
             "shots_count": len(shots),
             "part_specs_count": len(part_specs),
+            "nebulas_count": len(nebulas),
+            "planets_count": len(planets),
+            "sectors_count": len(sectors),
+            "ai_profiles_count": len(ai_profiles),
         },
         "factions": factions,
         "buffs": buffs,
         "backgrounds": backgrounds,
+        "nebulas": nebulas,
+        "planets": planets,
+        "sectors": sectors,
+        "ai_profiles": ai_profiles,
         "shots": shots,
         "part_specs": part_specs,
     }

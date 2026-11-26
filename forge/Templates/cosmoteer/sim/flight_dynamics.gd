@@ -205,7 +205,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 			n.activation *= fraction
 			engine.activation = maxf(engine.activation, n.activation)
 		var overclock_load: float = engine.activation if engine.overclocked else 0.0
-		EngineRoom.apply_heat(engine, engine.actual_fuel_rate + engine.boost_power_rate, overclock_load, dt)
+		EngineRoom.apply_heat(engine, engine.actual_fuel_rate + engine.boost_power_rate, overclock_load, dt, EngineRoom.radiator_cooling(ship))
 		spent = spent * fraction + float(engine.fuel_fraction)
 		var units := floori(spent + 1e-8)
 		if engine.id == Special.ROCKET and units > 0:

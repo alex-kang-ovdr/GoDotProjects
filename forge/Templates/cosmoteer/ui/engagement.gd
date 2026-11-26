@@ -52,6 +52,7 @@ var selected_engine_uid := -1
 var readiness: Label
 var fleet_readout: Label
 var shield_target_button: Button
+var missile_mode_button: Button
 var sfx_button: Button
 var sfx
 var _sfx_event_time := -1.0
@@ -124,12 +125,15 @@ func build(host) -> void:
 	var row := HBoxContainer.new()
 	orders.add_child(row)
 	row.add_child(lab.label("집중 사격",17,lab.WHITE))
-	row.add_child(lab.button("적 함교",_choose_type.bind("cosmoteer.control_room_small")))
+	row.add_child(lab.button("적 함교",_choose_any.bind(CombatSystems.BRIDGE_IDS)))
 	row.add_child(lab.button("적 무장",_choose_any.bind(CombatSystems.WEAPON_IDS)))
 	shield_target_button = lab.button("적 방어막",_choose_any.bind(CombatSystems.SHIELD_IDS))
 	row.add_child(shield_target_button)
 	row.add_child(lab.button("적 반응로",_choose_any.bind(CombatSystems.REACTOR_IDS)))
 	row.add_spacer(false)
+	missile_mode_button = lab.button("탄두: HE",_cycle_missile_mode)
+	missile_mode_button.focus_mode = Control.FOCUS_NONE
+	row.add_child(missile_mode_button)
 	boost_button = lab.button("B  부스트 켜기",_toggle_boost)
 	boost_button.focus_mode = Control.FOCUS_NONE
 	row.add_child(boost_button)
@@ -220,6 +224,14 @@ func _toggle_sfx() -> void:
 		return
 	sfx.enabled = not sfx.enabled
 	sfx_button.text = "음향 켬" if sfx.enabled else "음향 끔"
+
+func _cycle_missile_mode() -> void:
+	if battle == null or battle.result != "active":
+		return
+	var order := ["he", "emp", "nuke"]
+	var idx := (order.find(battle.missile_mode) + 1) % order.size()
+	battle.set_missile_mode(order[idx])
+	_refresh()
 
 func _play_new_sfx() -> void:
 	if sfx == null or battle == null:
@@ -364,7 +376,7 @@ func _refresh() -> void:
 		var weapon_energy := 0
 		var carrying := 0
 		for part in team.parts.values():
-			if part.id == "cosmoteer.control_room_small":
+			if CombatSystems.is_bridge(part.id):
 				bridge_hp += part.hp
 				bridge_max += part.max_hp
 			elif CombatSystems.is_weapon(part.id):
@@ -383,6 +395,9 @@ func _refresh() -> void:
 		metrics[i].text = "함교 %d / %d     보급 %d    발사 %d    명중 %d" % [bridge_hp,bridge_max,team.deliveries,team.shots,team.hits]
 		grids[i].queue_redraw()
 	shield_target_button.visible = Battle.defense_state(battle.enemy).shield_count > 0
+	var has_missiles: bool = not battle.player.ids.get(CombatSystems.MISSILE_LAUNCHER, []).is_empty()
+	missile_mode_button.visible = has_missiles
+	missile_mode_button.text = "탄두: " + battle.missile_mode.to_upper()
 	var target: Dictionary = battle.enemy.parts.get(battle.target_uid,{})
 	var focus := "없음" if target.is_empty() else "%s  ·  HP %d / %d" % [lab.shipyard.display_name(target.id),target.hp,target.max_hp]
 	var goal := "적 함교 제압"

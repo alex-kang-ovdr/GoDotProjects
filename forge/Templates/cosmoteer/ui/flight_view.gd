@@ -316,12 +316,19 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 		var a := _world_to_screen(beam.from, camera, zoom, viewport_center)
 		var b := _world_to_screen(beam.to, camera, zoom, viewport_center)
 		var strength := clampf(float(beam.get("strength", 1.0)), 0.8, 3.0)
+		var bkind := str(beam.get("beam_kind", "ion"))
 		var outer := Color("#ff47a3") if beam.side == "player" else Color("#ff5b5b")
+		if bkind == "resonance":
+			outer = Color("#ff5514")
+		elif bkind == "mining":
+			outer = Color("#ffe36e")
+		elif bkind == "tractor":
+			outer = Color("#59e8ff")
 		draw_line(a, b, Color(outer, 0.35), maxf(5.5, zoom * 1.05 * strength), true)
 		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.4, zoom * 0.40 * strength), true)
 		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16 * strength), true)
 		if beam.hit_kind != "miss":
-			draw_circle(b, maxf(3.5, zoom * 0.42 * strength), Color("#ffd6ef", 0.9))
+			draw_circle(b, maxf(3.5, zoom * 0.42 * strength), outer.lightened(0.45))
 
 
 func _draw_fires(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -354,11 +361,12 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 		if direction.length_squared() < 0.01:
 			direction = bolt.velocity.normalized() * maxf(6.0, zoom * 1.5)
 		var tip := b if a.distance_to(b) > 1.5 else b + direction
-		if kind == "missile":
+		if kind == "missile" or kind == "missile_emp" or kind == "missile_nuke":
 			var back: Vector2 = tip - Vector2(bolt.velocity).normalized() * maxf(7.0, zoom * 1.4)
-			draw_line(back, tip, Color("#ff8a4c", 0.55), maxf(3.5, zoom * 0.55), true)
-			draw_line(back.lerp(tip, 0.35), tip, Color("#ffd599"), maxf(2.0, zoom * 0.25), true)
-			draw_circle(tip, maxf(2.4, zoom * 0.24), Color("#fff5e6"))
+			var plume := Color("#a864ff", 0.65) if kind == "missile_emp" else (Color("#ff2d2d", 0.78) if kind == "missile_nuke" else Color("#ff8a4c", 0.55))
+			draw_line(back, tip, plume, maxf(3.5, zoom * (0.75 if kind == "missile_nuke" else 0.55)), true)
+			draw_line(back.lerp(tip, 0.35), tip, plume.lightened(0.35), maxf(2.0, zoom * 0.25), true)
+			draw_circle(tip, maxf(2.4, zoom * (0.32 if kind == "missile_nuke" else 0.24)), Color("#fff5e6"))
 		elif kind == "cannon_deck" or kind == "cannon_large":
 			var sc := 1.45 if kind == "cannon_deck" else 1.15
 			draw_line(a, tip, Color("#ff6414", 0.72), maxf(4.2, zoom * 0.68 * sc), true)
@@ -590,8 +598,11 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 			draw_arc(pos, r, 0.0, TAU, 14, Color("#8cf7ff", alpha * 0.8), 1.4, true)
 		elif kind == "blast":
 			var br := maxf(8.0, float(ev.get("radius", 3.5)) * zoom * (0.4 + 0.75 * t))
-			draw_circle(pos, br * 0.55, Color("#ff7c2b", alpha * 0.38))
-			draw_arc(pos, br, 0.0, TAU, 24, Color("#ffd166", alpha * 0.9), maxf(2.0, zoom * 0.32), true)
+			var bk := str(ev.get("blast_kind", "he"))
+			var fill_c := Color("#a864ff", alpha * 0.36) if bk == "emp" else (Color("#ff3322", alpha * 0.48) if bk == "nuke" else Color("#ff7c2b", alpha * 0.38))
+			var ring_c := Color("#d8b4ff", alpha * 0.92) if bk == "emp" else (Color("#ffec80", alpha * 0.95) if bk == "nuke" else Color("#ffd166", alpha * 0.9))
+			draw_circle(pos, br * 0.55, fill_c)
+			draw_arc(pos, br, 0.0, TAU, 24, ring_c, maxf(2.0, zoom * 0.32), true)
 		elif kind == "hit":
 			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)
 			draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)

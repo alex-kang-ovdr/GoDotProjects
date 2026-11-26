@@ -1,6 +1,10 @@
 extends RefCounted
 
 const ID := "cosmoteer.lab_engine_room"
+const REAL_ID := "cosmoteer.engine_room"
+const ALL_IDS := [ID, REAL_ID]
+const RADIATOR_ID := "cosmoteer.radiator"
+const RADIATOR_COOLING := 6.0
 const ROOM := {
 	"id": ID, "size": [2, 2], "max_health": 2600, "health_type": "Operational",
 	"density": 1.25, "resources": {"steel": 48, "coil": 18, "processor": 2}, "stats": {}
@@ -34,9 +38,10 @@ static func setup(ship: Dictionary) -> void:
 		engine.heat_rate = 0.0
 		engine.thermal_trip = false
 		engine.total_power_rate = 0.0
-		for room_uid in ship.ids.get(ID, []):
-			if adjacent(engine, ship.parts[room_uid]):
-				engine.engine_rooms.append(room_uid)
+		for rid in ALL_IDS:
+			for room_uid in ship.ids.get(rid, []):
+				if adjacent(engine, ship.parts[room_uid]):
+					engine.engine_rooms.append(room_uid)
 
 
 static func linked(ship: Dictionary, engine: Dictionary) -> bool:
@@ -56,14 +61,22 @@ static func available(ship: Dictionary) -> bool:
 	return false
 
 
-static func apply_heat(engine: Dictionary, power_rate: float, overclock_load: float, dt: float) -> void:
+static func apply_heat(engine: Dictionary, power_rate: float, overclock_load: float, dt: float, extra_cooling: float = 0.0) -> void:
 	engine.total_power_rate = power_rate
 	engine.heat_rate = minf(power_rate * HEAT_PER_POWER, STOCK_HEAT_LIMIT) + OVERCLOCK_HEAT * overclock_load
-	engine.heat = clampf(engine.heat + (engine.heat_rate - IDLE_COOLING) * dt, 0, HEAT_LIMIT)
+	engine.heat = clampf(engine.heat + (engine.heat_rate - (IDLE_COOLING + extra_cooling)) * dt, 0, HEAT_LIMIT)
 	if engine.heat >= HEAT_LIMIT:
 		engine.thermal_trip = true
 	elif engine.heat <= RESET_HEAT:
 		engine.thermal_trip = false
+
+
+static func radiator_cooling(ship: Dictionary) -> float:
+	var bonus := 0.0
+	for uid in ship.ids.get(RADIATOR_ID, []):
+		if ship.parts[uid].hp > 0:
+			bonus += RADIATOR_COOLING
+	return bonus
 
 
 static func snapshot(ship: Dictionary) -> Dictionary:
@@ -71,9 +84,10 @@ static func snapshot(ship: Dictionary) -> Dictionary:
 		"ready": false, "tripped": 0, "engines": []}
 	if ship.is_empty():
 		return state
-	for uid in ship.ids.get(ID, []):
-		state.installed += 1
-		state.online += int(ship.parts[uid].hp > 0 and ship.command)
+	for rid in ALL_IDS:
+		for uid in ship.ids.get(rid, []):
+			state.installed += 1
+			state.online += int(ship.parts[uid].hp > 0 and ship.command)
 	state.active = ship.overclock
 	for uid in ship.engines:
 		var engine: Dictionary = ship.parts[uid]

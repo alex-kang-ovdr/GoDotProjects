@@ -25,6 +25,7 @@ var events: Array[Dictionary] = []
 var projectiles: Array[Dictionary] = []
 var pd_beams: Array[Dictionary] = []
 var ion_beams: Array[Dictionary] = []
+var missile_mode := "he"
 var result := "idle"
 var outcome_reason := ""
 var mission: Dictionary = {}
@@ -81,9 +82,16 @@ func start(design, opponent = null, operation: Dictionary = {}) -> bool:
 	Flight.deploy(enemy, Vector2(half_distance, 0), PI, opponent.ship_physics)
 	_prepare_engines(player)
 	_prepare_engines(enemy)
-	target_uid = _choose_target(enemy, CombatSystems.WEAPON_IDS if mission.get("objective") == "disarm" else [ARMOR, CombatSystems.ARMOR_2X1, GUN, CombatSystems.LASER_LARGE, CombatSystems.CANNON_MED, CombatSystems.MISSILE_LAUNCHER, BRIDGE])
-	enemy_target_uid = _choose_target(player, [BRIDGE])
+	target_uid = _choose_target(enemy, CombatSystems.WEAPON_IDS if mission.get("objective") == "disarm" else [ARMOR, CombatSystems.ARMOR_2X1, GUN, CombatSystems.LASER_LARGE, CombatSystems.CANNON_MED, CombatSystems.CANNON_LARGE, CombatSystems.CANNON_DECK, CombatSystems.MISSILE_LAUNCHER, CombatSystems.RESONANCE_LANCE] + CombatSystems.BRIDGE_IDS)
+	enemy_target_uid = _choose_target(player, CombatSystems.BRIDGE_IDS)
 	result = "active"
+	return true
+
+
+func set_missile_mode(mode: String) -> bool:
+	if not (mode in ["he", "emp", "nuke"]):
+		return false
+	missile_mode = mode
 	return true
 
 
@@ -112,6 +120,9 @@ static func _make_opponent(profile: String):
 		return opponent
 	if profile == "imperium":
 		opponent.deck_cannon_brawler()
+		return opponent
+	if profile == "titan":
+		opponent.thermal_lance_titan()
 		return opponent
 	opponent.flight_starter()
 	match profile:
@@ -196,7 +207,7 @@ static func _prepare_engines(ship: Dictionary) -> void:
 			var quantity := mini(int(reactor.energy), requested - int(p.energy))
 			p.energy += quantity
 			reactor.energy -= quantity
-			if p.id == BRIDGE and p.energy > 0:
+			if CombatSystems.is_bridge(p.id) and p.energy > 0:
 				ship.command = true
 			if p.energy >= requested:
 				break
@@ -227,7 +238,9 @@ static func _build_ship(design) -> Dictionary:
 		var stats: Dictionary = row.stats
 		var part: Dictionary = item.duplicate()
 		var walk_factor := 0.0
-		if item.id in [REACTOR, GUN, BRIDGE, BUNK, CORRIDOR] or stats.has("nozzles") or stats.has("special_propulsion") or CombatSystems.is_walkable_expansion(item.id):
+		if item.id == CombatSystems.CONVEYOR:
+			walk_factor = 2.0
+		elif item.id in [REACTOR, GUN, BRIDGE, BUNK, CORRIDOR] or stats.has("nozzles") or stats.has("special_propulsion") or CombatSystems.is_walkable_expansion(item.id):
 			walk_factor = float(row.crew_speed_factor) / float(design.by_id[CORRIDOR].crew_speed_factor)
 		part.merge({
 			"hp": float(row.max_health), "max_hp": float(row.max_health),
@@ -251,7 +264,7 @@ static func _build_ship(design) -> Dictionary:
 				ship.blocked_cells[Vector2i(blocked.floor())] = true
 		if not part.nozzles.is_empty():
 			ship.engines.append(part.uid)
-		if part.id in [BRIDGE, Special.EXTENDER, Special.BATTERY, CombatSystems.POINT_DEFENSE] or CombatSystems.is_shield(part.id) or CombatSystems.is_weapon(part.id) or not part.nozzles.is_empty():
+		if part.id in [Special.EXTENDER, Special.BATTERY, CombatSystems.POINT_DEFENSE, CombatSystems.CAPACITOR, CombatSystems.TRACTOR_BEAM, CombatSystems.SENSOR_ARRAY] or CombatSystems.is_bridge(part.id) or CombatSystems.is_shield(part.id) or CombatSystems.is_weapon(part.id) or not part.nozzles.is_empty():
 			ship.consumers.append(part.uid)
 		ship.parts[part.uid] = part
 		if not ship.ids.has(part.id):
@@ -271,7 +284,7 @@ static func _build_ship(design) -> Dictionary:
 	# Staff the bridge and weapons from reachable berths, leaving a courier to supply them.
 	var available: int = ship.crew.size()
 	var assigned := {}
-	var phase_groups: Array = [[BRIDGE], CombatSystems.WEAPON_IDS, [Special.ROCKET], [BRIDGE]]
+	var phase_groups: Array = [CombatSystems.BRIDGE_IDS, CombatSystems.WEAPON_IDS, [Special.ROCKET], CombatSystems.BRIDGE_IDS]
 	for phase in phase_groups.size():
 		for id in phase_groups[phase]:
 			for uid in ship.ids.get(id, []):
@@ -299,7 +312,7 @@ static func _build_ship(design) -> Dictionary:
 						break
 					member.station = uid
 					member.seat = seat
-					member.role = "pilot" if id == BRIDGE else ("rocket_operator" if id == Special.ROCKET else "gunner")
+					member.role = "pilot" if CombatSystems.is_bridge(id) else ("rocket_operator" if id == Special.ROCKET else "gunner")
 					member.goal = uid
 					member.path = shortest
 					assigned[uid] = true
@@ -319,7 +332,7 @@ static func _build_ship(design) -> Dictionary:
 static func _launch_issue(ship: Dictionary) -> String:
 	for pair in [
 		[CombatSystems.BUNK_IDS, "승무원 침실"],
-		[[BRIDGE], "소형 조종실"],
+		[CombatSystems.BRIDGE_IDS, "조종실"],
 		[CombatSystems.REACTOR_IDS, "원자로"],
 		[CombatSystems.WEAPON_IDS, "무기"],
 	]:
@@ -406,10 +419,10 @@ static func _path(ship: Dictionary, origin: Vector2i, goal: int, seat_tile: Vari
 			var uid: int = ship.cells.get(next, -1)
 			if previous.has(next) or ship.blocked_cells.has(next) or not _alive(ship, uid):
 				continue
-			var is_corridor: bool = ship.parts[uid].id == CORRIDOR
+			var is_corridor: bool = CombatSystems.is_corridor(ship.parts[uid].id)
 			if uid != from and uid != goal and not is_corridor:
 				continue
-			if uid != current_uid and not is_corridor and ship.parts[current_uid].id != CORRIDOR:
+			if uid != current_uid and not is_corridor and not CombatSystems.is_corridor(ship.parts[current_uid].id):
 				continue
 			previous[next] = current
 			if uid == goal and (seat_tile == null or next == seat_tile):
@@ -443,9 +456,9 @@ func step(seconds: float) -> void:
 		if result != "active":
 			break
 		if not _alive(enemy, target_uid):
-			target_uid = _choose_target(enemy, CombatSystems.WEAPON_IDS if mission.get("objective") == "disarm" else [BRIDGE])
+			target_uid = _choose_target(enemy, CombatSystems.WEAPON_IDS if mission.get("objective") == "disarm" else CombatSystems.BRIDGE_IDS)
 		if not _alive(player, enemy_target_uid):
-			enemy_target_uid = _choose_target(player, [BRIDGE])
+			enemy_target_uid = _choose_target(player, CombatSystems.BRIDGE_IDS)
 		ion_beams.clear()
 		_operate(player, enemy, "player", target_uid)
 		_operate(enemy, player, "enemy", enemy_target_uid)
@@ -461,14 +474,14 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 		if part.clock >= roundi(part.stats.production_interval * HZ):
 			part.energy = mini(part.capacity, part.energy + int(part.stats.production_quantity))
 			part.clock = 0
-	for id in [BRIDGE, Special.ROCKET] + CombatSystems.WEAPON_IDS:
+	for id in CombatSystems.BRIDGE_IDS + [Special.ROCKET] + CombatSystems.WEAPON_IDS:
 		for uid in ship.ids.get(id, []):
 			ship.parts[uid].staffed = 0
 	for crew in ship.crew:
 		if crew.alive:
 			_crew_tick(ship, crew, side)
 	ship.command = false
-	for uid in ship.ids[BRIDGE]:
+	for uid in _ids_of(ship, CombatSystems.BRIDGE_IDS):
 		var part: Dictionary = ship.parts[uid]
 		if part.hp <= 0 or part.staffed <= 0 or part.energy <= 0:
 			continue
@@ -477,6 +490,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			part.energy = maxi(0, part.energy - int(part.stats.drain_quantity))
 			part.clock = 0
 		ship.command = ship.command or part.energy > 0
+	var range_mult := CombatSystems.sensor_range_mult(ship)
 	for uid in _ids_of(ship, CombatSystems.PROJECTILE_WEAPON_IDS):
 		var gun: Dictionary = ship.parts[uid]
 		var need_crew := int(gun.stats.get("crew_required", 1))
@@ -487,7 +501,10 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				gun.chaingun_spin = maxf(0.0, float(gun.get("chaingun_spin", 0.0)) - float(gun.stats.get("spin_down_rate", 0.3)) * DT)
 			continue
 		var is_homing := bool(gun.stats.get("homing", false))
-		var eff_range := float(gun.stats.range) * float(gun.get("rail_range_mult", 1.0))
+		var eff_range := float(gun.stats.range) * float(gun.get("rail_range_mult", 1.0)) * range_mult
+		var warhead := CombatSystems.missile_warhead_profile(missile_mode if side == "player" else "he") if gun.id == CombatSystems.MISSILE_LAUNCHER else {}
+		if not warhead.is_empty():
+			eff_range = float(warhead.range) * range_mult
 		if is_homing:
 			var muzzle_pos := grid_world(ship, gun.mount_local)
 			var target_pos := part_world(other, target)
@@ -524,30 +541,32 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			gun.energy -= spent
 			gun.shots += 1
 			ship.shots += 1
-			var eff_speed := float(gun.stats.projectile_speed) * float(gun.get("rail_speed_mult", 1.0))
+			var eff_speed := float(warhead.speed) if not warhead.is_empty() else float(gun.stats.projectile_speed) * float(gun.get("rail_speed_mult", 1.0))
 			var dmg_mult := float(gun.get("rail_damage_mult", 1.0))
 			projectiles.append({
 				"side": side, "source_uid": uid, "target_uid": target, "aim_uid": target, "progress": 0.0,
-				"kind": str(gun.stats.get("weapon_kind", "laser")),
+				"kind": str(warhead.kind) if not warhead.is_empty() else str(gun.stats.get("weapon_kind", "laser")),
 				"homing": is_homing,
 				"turn_rate": deg_to_rad(float(gun.stats.get("turn_rate_deg", 0.0))),
 				"hp": float(gun.stats.get("missile_hp", 0.0)),
-				"shield_damage_mult": float(gun.stats.get("shield_damage_mult", 1.0)),
-				"shield_energy_drain": int(gun.stats.get("shield_energy_drain", 0)),
+				"shield_damage_mult": float(warhead.shield_damage_mult) if not warhead.is_empty() else float(gun.stats.get("shield_damage_mult", 1.0)),
+				"shield_energy_drain": int(warhead.shield_energy_drain) if not warhead.is_empty() else int(gun.stats.get("shield_energy_drain", 0)),
+				"emp_aoe": bool(warhead.get("emp_aoe", false)),
 				"pierce": int(gun.stats.get("pierce", 0)),
-				"aoe_radius": float(gun.stats.get("aoe_radius", 0.0)),
+				"aoe_radius": float(warhead.aoe_radius) if not warhead.is_empty() else float(gun.stats.get("aoe_radius", 0.0)),
 				"hit_uids": {},
-				"ignite": float(gun.stats.get("ignite_intensity", 0.0)),
+				"ignite": float(warhead.ignite) if not warhead.is_empty() else float(gun.stats.get("ignite_intensity", 0.0)),
 				"pos": muzzle, "previous_pos": muzzle,
 				"velocity": Flight.point_velocity(ship, muzzle) + direction * eff_speed,
 				"travelled": 0.0, "range": eff_range,
 				"speed": eff_speed,
 				"power": float(spent) / gun.stats.battery_per_shot,
-				"damage": float(gun.stats.damage) * dmg_mult,
-				"structural_damage": float(gun.stats.structural_damage) * dmg_mult,
+				"damage": float(warhead.damage) if not warhead.is_empty() else float(gun.stats.damage) * dmg_mult,
+				"structural_damage": float(warhead.structural_damage) if not warhead.is_empty() else float(gun.stats.structural_damage) * dmg_mult,
 			})
 			_record("shot", side, uid, target)
 	var active_ions := CombatSystems.tick_ion_beams(ship, other, side, target, DT)
+	active_ions.append_array(CombatSystems.tick_tractor_beams(ship, other, side, DT))
 	for beam in active_ions:
 		ion_beams.append(beam)
 		if beam.hit_kind == "shield":
@@ -678,7 +697,7 @@ func _find_job(ship: Dictionary, crew: Dictionary) -> void:
 			continue
 		var promised := Special.total(ship, stores, "energy")
 		var room := Special.total(ship, stores, "capacity")
-		var has_staff: bool = not consumer.nozzles.is_empty() or consumer.id in [Special.BATTERY, Special.EXTENDER, CombatSystems.POINT_DEFENSE] or CombatSystems.is_shield(consumer.id)
+		var has_staff: bool = not consumer.nozzles.is_empty() or consumer.id in [Special.BATTERY, Special.EXTENDER, CombatSystems.POINT_DEFENSE, CombatSystems.CAPACITOR, CombatSystems.TRACTOR_BEAM, CombatSystems.SENSOR_ARRAY] or CombatSystems.is_shield(consumer.id)
 		for other in ship.crew:
 			if not other.alive:
 				continue
@@ -694,9 +713,16 @@ func _find_job(ship: Dictionary, crew: Dictionary) -> void:
 		if room - promised < threshold:
 			continue
 		var priority: float = float(promised) / room
-		if consumer.id == BRIDGE:
+		if CombatSystems.is_bridge(consumer.id):
 			priority += -2.0 if promised == 0 else 1.0
-		var sources: Array = [-1] if crew.cargo > 0 else _ids_of(ship, CombatSystems.REACTOR_IDS)
+		elif consumer.id == CombatSystems.CAPACITOR:
+			priority += 0.65
+		var power_sources: Array = _ids_of(ship, CombatSystems.REACTOR_IDS)
+		if consumer.id != CombatSystems.CAPACITOR:
+			for cap_uid in ship.ids.get(CombatSystems.CAPACITOR, []):
+				if int(ship.parts[cap_uid].energy) >= 1000:
+					power_sources.append(cap_uid)
+		var sources: Array = [-1] if crew.cargo > 0 else power_sources
 		for source in sources:
 			var goal: int = uid if source == -1 else source
 			var route := _path(ship, crew.at, goal)
@@ -802,9 +828,16 @@ func _fly() -> void:
 			_record("blast", bolt.side, uid, bolt.target_uid)
 			events[-1].pos = contact.pos
 			events[-1].radius = aoe_r
-			var splash_dead := CombatSystems.apply_aoe_splash(victim, contact.pos, aoe_r, float(bolt.damage) * float(bolt.power) * 0.45, uid)
-			for s_uid in splash_dead:
-				_on_part_destroyed(victim, s_uid, bolt.side, bolt.target_uid, part_world(victim, s_uid))
+			events[-1].blast_kind = "emp" if bool(bolt.get("emp_aoe", false)) else ("nuke" if str(bolt.get("kind", "")) == "missile_nuke" else "he")
+			if bool(bolt.get("emp_aoe", false)):
+				for euid in victim.parts:
+					var ep: Dictionary = victim.parts[euid]
+					if ep.hp > 0.0 and int(ep.energy) > 0 and part_world(victim, int(euid)).distance_to(contact.pos) <= aoe_r:
+						ep.energy = maxi(0, int(ep.energy) - 1200)
+			else:
+				var splash_dead := CombatSystems.apply_aoe_splash(victim, contact.pos, aoe_r, float(bolt.damage) * float(bolt.power) * 0.45, uid)
+				for s_uid in splash_dead:
+					_on_part_destroyed(victim, s_uid, bolt.side, bolt.target_uid, part_world(victim, s_uid))
 
 
 func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, target: int, pos: Vector2) -> void:
@@ -832,8 +865,8 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 
 
 func _resolve() -> void:
-	var ours := _choose_target(player, [BRIDGE]) >= 0
-	var theirs := _choose_target(enemy, [BRIDGE]) >= 0
+	var ours := _choose_target(player, CombatSystems.BRIDGE_IDS) >= 0
+	var theirs := _choose_target(enemy, CombatSystems.BRIDGE_IDS) >= 0
 	match mission.get("objective", "duel"):
 		"survive":
 			if not ours:

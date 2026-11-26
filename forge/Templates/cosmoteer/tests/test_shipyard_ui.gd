@@ -23,11 +23,11 @@ func test() -> void:
 	await process_frame
 	var yard = lab.shipyard
 	verify(yard.is_visible_in_tree() and not yard.depart_button.disabled,"shipyard is the launch scene")
-	verify(yard.parts_list.item_count==39,"operational palette includes propulsion, combat expansion, dreadnought, prism/flak/chaingun, heavy/deck cannons, and the lab engine room")
+	verify(yard.parts_list.item_count==51,"operational palette includes propulsion, combat expansion, dreadnought, prism/flak/chaingun, heavy/deck cannons, thermal lance, utilities, and the lab engine room")
 	yard.selection.select(1)
 	yard.selection.item_selected.emit(1)
 	verify(yard.parts_list.item_count==97,"all 96 catalog modules and the lab engine room are offered")
-	yard.search.text="sensor_array"
+	yard.search.text="hyperdrive_beacon"
 	yard.search.text_changed.emit(yard.search.text)
 	verify(yard.parts_list.item_count>=1 and "고유 장치 동작 미구현" in yard.part_info.text,"passive catalog part marked")
 	yard.search.clear()
