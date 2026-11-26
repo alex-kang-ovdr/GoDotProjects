@@ -181,7 +181,9 @@ func _draw() -> void:
 				if world.build_progress[i] > 0.01:
 					draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * clampf(world.build_progress[i], 0.0, 1.0), 4), Color(0.35, 0.95, 0.55, 1.0), true)
 
-	# 5) 대원
+	# 5) 대원 및 생물(해치·푸프·빛벌레)
+	for cr: Dictionary in world.critters:
+		_draw_critter(cr, ts)
 	for dupe in world.duplicants:
 		_draw_duplicant(dupe, ts)
 
@@ -315,7 +317,15 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 	var ktex := OniMedia.get_building_sprite(b, use_work)
 	if ktex != null:
 		var draw_r := rect
-		if b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "research_station", "cot"]:
+		if b in ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"]:
+			var dw := float(ts) * 2.15
+			var dh := float(ts) * 2.05
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
+		elif b in ["geyser_steam", "geyser_water", "geyser_hydrogen"]:
+			var dw := float(ts) * 1.65
+			var dh := float(ts) * 1.65
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
+		elif b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "research_station", "cot"]:
 			# 설비는 타일 바닥에 맞춰 살짝 크고 선명하게 표시
 			var scale_w := 1.45 if b in ["steam_turbine", "research_station", "cot", "generator"] else 1.28
 			var scale_h := 1.38 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine"] else 1.25
@@ -349,6 +359,24 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 
 	# 폴백 도형 렌더링 (스프라이트 미로드 시)
 	draw_rect(rect.grow(-4), Color(0.48, 0.56, 0.66, 0.9), true)
+
+func _draw_critter(cr: Dictionary, ts: int) -> void:
+	var cid := String(cr["id"])
+	var pos: Vector2 = cr["pos"]
+	var dir: float = float(cr["dir"])
+	var px := pos.x * float(ts) + float(ts) * 0.5
+	var py := pos.y * float(ts) + float(ts) * 0.5
+	if cid == "critter_lightbug":
+		var glow := 0.25 + 0.12 * sin(_anim_time * 4.5)
+		draw_circle(Vector2(px, py - 4), 26.0, Color(1.0, 0.94, 0.55, glow))
+	var ctex := OniMedia.get_building_sprite(cid, int(floor(_anim_time * 3.5)) % 2 == 1)
+	if ctex != null:
+		var sz := 30.0
+		var top_y := pos.y * float(ts) + float(ts) - sz + 2.0
+		if dir < 0.0:
+			draw_texture_rect(ctex, Rect2(px + sz * 0.5, top_y, -sz, sz), false)
+		else:
+			draw_texture_rect(ctex, Rect2(px - sz * 0.5, top_y, sz, sz), false)
 
 func _draw_duplicant(dupe: OniDuplicant, ts: int) -> void:
 	var moving := dupe.state == "MOVE"

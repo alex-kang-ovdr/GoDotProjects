@@ -42,6 +42,15 @@ BUILDING_RECIPES = {
     "gas_pump": (["pumpgas"], "pumpgas", ["working_loop", "on", "off"], 80),
     "gas_vent": (["ventgas"], "ventgas", ["working_loop", "on", "off"], 64),
     "mealwood": (["meallice"], "meallice", ["idle_full", "grow", "idle"], 80),
+    "rocket_steam_engine": (["rocket_steam_engine"], "rocket_steam_engine", ["grounded", "launch", "on", "off"], 112),
+    "rocket_research_module": (["rocket_research_module"], "rocket_research_module", ["grounded", "on", "off"], 112),
+    "rocket_command_module": (["rocket_command_module"], "rocket_command_module", ["grounded", "on", "off"], 112),
+    "geyser_steam": (["geyser_gas_steam"], "geyser_gas_steam", ["erupt", "inactive", "on", "off"], 96),
+    "geyser_water": (["geyser_liquid_water_hot"], "geyser_liquid_water_hot", ["erupt", "inactive", "on", "off"], 96),
+    "geyser_hydrogen": (["geyser_gas_hydrogen_hot"], "geyser_gas_hydrogen_hot", ["erupt", "inactive", "on", "off"], 96),
+    "critter_hatch": (["hatch_build", "hatch"], "hatch", ["idle_loop", "walk_loop", "idle"], 72),
+    "critter_puft": (["puft_build", "puft"], "puft", ["idle_loop", "fly_loop", "idle"], 72),
+    "critter_lightbug": (["lightbug_build", "lightbug"], "lightbug", ["idle_loop", "fly_loop", "idle"], 72),
 }
 
 # Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
@@ -458,23 +467,55 @@ def main() -> int:
             print(f"  SKIP {key}: clips={bool(clips)} sources={len(sources)}")
             continue
 
-        # Select idle clip and working clip (if available)
-        chosen_idle = None
-        chosen_work = None
-        for pc in pref_clips:
-            if pc in clips and clips[pc]["frames"]:
-                if chosen_work is None and ("work" in pc or pc in ("on", "idle_full", "grow")):
-                    chosen_work = clips[pc]
-                if chosen_idle is None and pc in ("off", "idle", "on"):
-                    chosen_idle = clips[pc]
-        if chosen_idle is None:
-            chosen_idle = next((c for c in clips.values() if c["frames"]), None)
-        if chosen_work is None:
-            chosen_work = chosen_idle
+        # Select idle clip and working clip (prefer clips matching pref_clips with richest symbol count)
+        base_filter = ("place", "meter", "ui", "highlight", "snapto", "glow") if key.startswith("critter_") else ("place", "meter", "ui", "highlight", "snapto")
 
-        im_idle = composite_kanim_frame(chosen_idle["frames"][0], sources, out_size=out_sz)
-        w_frames = chosen_work["frames"]
-        im_work = composite_kanim_frame(w_frames[len(w_frames) // 2], sources, out_size=out_sz) if len(w_frames) > 1 else im_idle
+        def first_drawable_image(clip_list):
+            for c in clip_list:
+                if not c or not c.get("frames"):
+                    continue
+                # Pick frame with most elements for critters so full body is visible
+                frames_to_try = sorted(
+                    range(len(c["frames"])),
+                    key=lambda idx_f: len(c["frames"][idx_f]["elems"]),
+                    reverse=True,
+                )[:2] if key.startswith("critter_") else [0, len(c["frames"]) // 2]
+                for fi in frames_to_try:
+                    im = composite_kanim_frame(
+                        c["frames"][fi], sources, out_size=out_sz,
+                        filter_out_names=base_filter,
+                    )
+                    if im is not None:
+                        return c, im
+            return None, None
+
+        ordered_clips = []
+        for pc in pref_clips:
+            if pc in clips:
+                ordered_clips.append(clips[pc])
+        # For critters, sort fallback clips by max element count descending to skip 1-element fx/burrow clips
+        rest_clips = [c for c in clips.values() if c not in ordered_clips]
+        if key.startswith("critter_"):
+            rest_clips.sort(key=lambda c: max((len(fr["elems"]) for fr in c.get("frames", [])), default=0), reverse=True)
+        ordered_clips.extend(rest_clips)
+
+        chosen_idle, im_idle = first_drawable_image(ordered_clips)
+        chosen_work = chosen_idle
+        im_work = im_idle
+        if chosen_idle is not None:
+            work_cands = [c for c in ordered_clips if any(w in c["name"].lower() for w in ("work", "walk", "fly", "erupt", "launch", "on"))]
+            if work_cands:
+                cw, iw = first_drawable_image(work_cands)
+                if cw is not None and iw is not None:
+                    chosen_work, im_work = cw, iw
+            elif len(chosen_idle["frames"]) > 1:
+                w_frames = chosen_idle["frames"]
+                iw2 = composite_kanim_frame(
+                    w_frames[len(w_frames) // 2], sources, out_size=out_sz,
+                    filter_out_names=("place", "meter", "ui", "highlight", "snapto"),
+                )
+                if iw2 is not None:
+                    im_work = iw2
 
         if im_idle is not None:
             out_buildings[key] = {

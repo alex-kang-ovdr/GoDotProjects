@@ -71,3 +71,15 @@ func play_dig_done() -> void:
 
 func play_build_done() -> void:
 	_play_extracted("build_done", 640.0, 0.09)
+
+func play_cancel() -> void:
+	_play_extracted("cancel", 340.0, 0.05)
+
+func play_door() -> void:
+	_play_extracted("door", 420.0, 0.08)
+
+func play_print_ok() -> void:
+	_play_extracted("print_ok", 720.0, 0.12)
+
+func play_research_done() -> void:
+	_play_extracted("research_done", 820.0, 0.14)

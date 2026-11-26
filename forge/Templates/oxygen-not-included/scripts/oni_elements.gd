@@ -91,6 +91,12 @@ const BUILDING_COLORS := {
 	"gas_vent": Color(0.56, 0.94, 0.88, 1.0),
 	"farm_tile": Color(0.38, 0.68, 0.34, 1.0),
 	"research_station": Color(0.56, 0.50, 0.88, 1.0),
+	"rocket_steam_engine": Color(0.86, 0.72, 0.32, 1.0),
+	"rocket_research_module": Color(0.46, 0.72, 0.94, 1.0),
+	"rocket_command_module": Color(0.82, 0.86, 0.92, 1.0),
+	"geyser_steam": Color(0.68, 0.80, 0.88, 1.0),
+	"geyser_water": Color(0.82, 0.32, 0.28, 1.0),
+	"geyser_hydrogen": Color(0.76, 0.38, 0.82, 1.0),
 }
 
 static func ensure_loaded() -> void:
@@ -135,6 +141,44 @@ static func ensure_loaded() -> void:
 			var bd: Dictionary = raw_b[bk]
 			bd["color"] = BUILDING_COLORS.get(bk, Color(0.6, 0.7, 0.8, 1.0))
 			buildings[bk] = bd
+
+	# 조립식 연구 로켓 3단 모듈 & 자연 간헐천 3종 런타임 등록
+	var extra_buildings := {
+		"rocket_steam_engine": {
+			"name_ko": "증기 엔진", "cat": "space", "desc": "조립식 로켓 하단 추진 모듈 (증기 100kg)",
+			"cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.8, "needs_floor": true,
+			"color": BUILDING_COLORS["rocket_steam_engine"],
+		},
+		"rocket_research_module": {
+			"name_ko": "연구 모듈", "cat": "space", "desc": "우주 탐사 데이터뱅크 수집 모듈",
+			"cost_element": "Cuprite", "cost_kg": 300.0, "build_time": 3.2,
+			"color": BUILDING_COLORS["rocket_research_module"],
+		},
+		"rocket_command_module": {
+			"name_ko": "조종 모듈", "cat": "space", "desc": "로켓 상단 조종석 모듈",
+			"cost_element": "Cuprite", "cost_kg": 300.0, "build_time": 3.2,
+			"color": BUILDING_COLORS["rocket_command_module"],
+		},
+		"geyser_steam": {
+			"name_ko": "증기 분출구", "cat": "natural", "desc": "155°C 증기 주기적 분출",
+			"cost_element": "Granite", "cost_kg": 0.0, "build_time": 1.0,
+			"color": BUILDING_COLORS["geyser_steam"],
+		},
+		"geyser_water": {
+			"name_ko": "열수 간헐천", "cat": "natural", "desc": "고온 청수 주기적 분출",
+			"cost_element": "Granite", "cost_kg": 0.0, "build_time": 1.0,
+			"color": BUILDING_COLORS["geyser_water"],
+		},
+		"geyser_hydrogen": {
+			"name_ko": "수소 분출구", "cat": "natural", "desc": "고온 수소 기체 주기적 분출",
+			"cost_element": "Granite", "cost_kg": 0.0, "build_time": 1.0,
+			"color": BUILDING_COLORS["geyser_hydrogen"],
+		},
+	}
+	for ek_v in extra_buildings.keys():
+		var ek := String(ek_v)
+		if not buildings.has(ek):
+			buildings[ek] = extra_buildings[ek]
 
 	var raw_wg: Variant = _load_json("res://data/biomes_worldgen_extracted.txt")
 	if raw_wg is Dictionary:

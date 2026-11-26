@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 import numpy as np
 from PIL import Image
 
-# Element ID -> exact ONI Texture2D name in sharedassets0.assets
+# Element ID -> exact ONI Texture2D name in sharedassets0.assets (36 terrain textures)
 ELEMENT_TEXTURE_MAP = {
     "SandStone": "sand_stone",
     "Sand": "sand",
@@ -47,6 +47,18 @@ ELEMENT_TEXTURE_MAP = {
     "Phosphorite": "phosphorite",
     "Salt": "salt",
     "Unobtanium": "neutronium",
+    "Lime": "limestone",
+    "MaficRock": "mafic_rock",
+    "Regolith": "regolith",
+    "Fossil": "fossil",
+    "CrushedIce": "crushed_ice",
+    "Fertilizer": "fertilizer",
+    "AluminumOre": "aluminum_ore",
+    "Cobaltite": "cobalt_ore",
+    "Copper": "copper",
+    "Gold": "gold",
+    "Iron": "iron",
+    "Steel": "steel",
 }
 
 BUILDING_TILE_TEX_MAP = {
@@ -81,7 +93,7 @@ KANIM_TARGETS = [
     "odor_fx",
 ]
 
-# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback
+# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (10 SFX)
 SFX_TARGETS = {
     "click": ("FX.bank", "SG_UI_click_small"),
     "drag": ("FX.bank", "SG_UI_dragTile_v02"),
@@ -89,6 +101,10 @@ SFX_TARGETS = {
     "build_done": ("Buildings.bank", "SG_UI_finishBuilding_small_07_v02"),
     "dig_done": ("DuplicantActions.bank", "lazerdrill_v02_LP"),
     "toggle": ("UI.bank", "SG_logic_building_toggle_ON_22_v03"),
+    "cancel": ("UI.bank", "SG_logic_building_toggle_OFF_07_v03"),
+    "door": ("Buildings.bank", "SM_PressureDoor_Open_1"),
+    "print_ok": ("FX.bank", "SG_UI_Batering_Print_Success_01"),
+    "research_done": ("UI.bank", "SG_UI_achievementUnlocked_impact_03"),
 }
 
 FREQ_TABLE = {

@@ -63,6 +63,7 @@ var avg_oxygen_kg := 0.0
 
 var pod_origin := Vector2i(23, 15)
 var duplicants: Array = []
+var critters: Array[Dictionary] = []
 
 var on_dig_completed: Callable
 var on_build_completed: Callable
@@ -325,7 +326,7 @@ func generate(p_seed := 73) -> void:
 			gas_prev_mass[i] = 0.85
 			temp_c[i] = 24.0
 
-	# 남동쪽 증기 분출실 (x: 39..41, y: 25..26, 155°C 증기)
+	# 남동쪽 증기 분출실 (x: 39..41, y: 25..26, 155°C 증기 + 실제 증기 간헐천)
 	for y in range(25, 27):
 		for x in range(39, 42):
 			var i := idx(x, y)
@@ -335,6 +336,15 @@ func generate(p_seed := 73) -> void:
 			gas_mass[i] = 2.0
 			gas_prev_mass[i] = 2.0
 			temp_c[i] = 155.0
+	building[idx(40, 26)] = "geyser_steam"
+	building[idx(33, 17)] = "geyser_water"
+	building[idx(23, 9)] = "geyser_hydrogen"
+
+	# 원작 생물 3종 스폰 (해치, 푸프, 빛벌레)
+	critters.clear()
+	critters.append({"id": "critter_hatch", "name_ko": "해치", "pos": Vector2(22.0, 16.0), "dir": 1.0, "fly": false, "timer": 1.2})
+	critters.append({"id": "critter_puft", "name_ko": "푸프", "pos": Vector2(25.5, 14.3), "dir": -1.0, "fly": true, "timer": 0.8})
+	critters.append({"id": "critter_lightbug", "name_ko": "빛벌레", "pos": Vector2(21.5, 14.5), "dir": 1.0, "fly": true, "timer": 1.5})
 
 	# 대원 3명 생성
 	duplicants.clear()
@@ -600,6 +610,7 @@ func step(dt: float) -> void:
 
 	_step_power_and_machines(dt)
 	_step_farms(dt)
+	_step_geysers_and_critters(dt)
 
 	_gas_accum += dt
 	while _gas_accum >= OniElements.GAS_TICK_DT:
@@ -919,6 +930,45 @@ func _step_farms(dt: float) -> void:
 					food_kcal += OniElements.MEALWOOD_HARVEST_KCAL
 			else:
 				machine_running[i] = 0
+
+func _step_geysers_and_critters(dt: float) -> void:
+	# 간헐천 주기 분출 (매 사이클 초 60% 활성)
+	var erupting := fmod(sim_time, 60.0) < 36.0
+	for gy_pos: Vector2i in [Vector2i(40, 26), Vector2i(33, 17), Vector2i(23, 9)]:
+		var gi := idx(gy_pos.x, gy_pos.y)
+		var gb := building[gi]
+		if not erupting:
+			machine_running[gi] = 0
+			continue
+		if gb == "geyser_steam" and gas_mass[gi] < 2.5:
+			gas_el[gi] = "Steam"
+			gas_mass[gi] += 0.45 * dt
+			temp_c[gi] = lerpf(temp_c[gi], 160.0, 0.1)
+			machine_running[gi] = 1
+		elif gb == "geyser_water" and liquid_mass[gi] < 850.0:
+			liquid_mass[gi] += 18.0 * dt
+			temp_c[gi] = lerpf(temp_c[gi], 35.0, 0.05)
+			machine_running[gi] = 1
+		elif gb == "geyser_hydrogen" and gas_mass[gi] < 2.2:
+			gas_el[gi] = "Hydrogen"
+			gas_mass[gi] += 0.25 * dt
+			machine_running[gi] = 1
+
+	# 원작 생물 3종 자율 배회 AI
+	for c: Dictionary in critters:
+		var pos: Vector2 = c["pos"]
+		var dir: float = float(c["dir"])
+		var fly: bool = bool(c["fly"])
+		var spd: float = 1.15 if fly else 0.75
+		var nx := pos.x + dir * spd * dt
+		var ny := pos.y + (sin(sim_time * 2.4 + pos.x) * 0.35 * dt if fly else 0.0)
+		var cx := int(floor(nx))
+		var cy := int(floor(ny))
+		var ok := is_passable(cx, cy) and (fly or is_solid_cell(cx, cy + 1))
+		if ok:
+			c["pos"] = Vector2(nx, ny)
+		else:
+			c["dir"] = -dir
 
 func _step_power_and_machines(dt: float) -> void:
 	var total := WIDTH * HEIGHT

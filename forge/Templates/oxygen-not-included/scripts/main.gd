@@ -22,6 +22,9 @@ var _status_lbl: Label
 var _tool_row: HBoxContainer
 var _research_panel: PanelContainer
 var _research_vbox: VBoxContainer
+var _audit_panel: PanelContainer
+var _audit_lbl: Label
+var _atmo_shader_mat: ShaderMaterial
 var _tool_buttons: Dictionary = {}
 var _cat_buttons: Dictionary = {}
 var _overlay_buttons: Dictionary = {}
@@ -32,6 +35,7 @@ const CATEGORIES := [
 	{"id": "power", "label": "전력·산소"},
 	{"id": "pipe", "label": "배관"},
 	{"id": "colony", "label": "농사·연구"},
+	{"id": "space", "label": "우주"},
 ]
 
 const CAT_TOOLS := {
@@ -39,6 +43,7 @@ const CAT_TOOLS := {
 	"power": ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "wire"],
 	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "gas_pipe", "gas_pump", "gas_vent"],
 	"colony": ["farm_tile", "research_station"],
+	"space": ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
 }
 
 func _ready() -> void:
@@ -90,6 +95,18 @@ func _build_hud() -> void:
 		ui_theme.default_font = _ui_font
 		_ui_root.theme = ui_theme
 	canvas.add_child(_ui_root)
+
+	# 원작 Klei/GasTest·PostFX 포팅 셰이더 오버레이 적용 (oni_atmosphere_fx.gdshader)
+	if ResourceLoader.exists("res://shaders/oni_atmosphere_fx.gdshader"):
+		var sh: Variant = load("res://shaders/oni_atmosphere_fx.gdshader")
+		if sh is Shader:
+			var fx_rect := ColorRect.new()
+			fx_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+			fx_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_atmo_shader_mat = ShaderMaterial.new()
+			_atmo_shader_mat.shader = sh
+			fx_rect.material = _atmo_shader_mat
+			_ui_root.add_child(fx_rect)
 
 	# 상단 바 (PIE 좌측 상단 오버레이 회피)
 	var top_panel := PanelContainer.new()
@@ -174,6 +191,14 @@ func _build_hud() -> void:
 	)
 	top_hbox.add_child(res_btn)
 
+	var audit_btn := Button.new()
+	audit_btn.text = "도감/셰이더(I)"
+	audit_btn.pressed.connect(func():
+		audio.play_toggle()
+		_toggle_audit_panel()
+	)
+	top_hbox.add_child(audit_btn)
+
 	var reset_btn := Button.new()
 	reset_btn.text = "새 기지"
 	reset_btn.pressed.connect(func():
@@ -215,6 +240,20 @@ func _build_hud() -> void:
 	_research_vbox.add_theme_constant_override("separation", 5)
 	res_scroll.add_child(_research_vbox)
 	_refresh_research_panel()
+
+	# 도감 / 셰이더 / 에셋 추출 완결 감사 팝업 (I)
+	_audit_panel = PanelContainer.new()
+	_audit_panel.position = Vector2(220, 96)
+	_audit_panel.custom_minimum_size = Vector2(620, 230)
+	_audit_panel.visible = false
+	_style_panel(_audit_panel, Color(0.08, 0.12, 0.18, 0.96))
+	_ui_root.add_child(_audit_panel)
+
+	_audit_lbl = Label.new()
+	_audit_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_audit_lbl.add_theme_font_size_override("font_size", 12)
+	_audit_lbl.text = "\n".join(OniMedia.get_complete_audit_lines())
+	_audit_panel.add_child(_audit_lbl)
 
 	# 우측 하단 타일 인스펙터
 	var insp_panel := PanelContainer.new()
@@ -367,7 +406,14 @@ func _select_overlay(oid: String) -> void:
 func _toggle_research_panel() -> void:
 	_research_panel.visible = not _research_panel.visible
 	if _research_panel.visible:
+		_audit_panel.visible = false
 		_refresh_research_panel()
+
+func _toggle_audit_panel() -> void:
+	_audit_panel.visible = not _audit_panel.visible
+	if _audit_panel.visible:
+		_research_panel.visible = false
+		_audit_lbl.text = "\n".join(OniMedia.get_complete_audit_lines())
 
 func _refresh_research_panel() -> void:
 	for child in _research_vbox.get_children():
@@ -458,9 +504,21 @@ func _process(delta: float) -> void:
 	else:
 		renderer.tick_fx(delta * 0.25)
 	if world.unlocked_techs.size() != prev_unlocked:
+		audio.play_research_done()
 		_rebuild_tool_buttons()
 		if _research_panel.visible:
 			_refresh_research_panel()
+	if _atmo_shader_mat != null:
+		_atmo_shader_mat.set_shader_parameter("time_sec", world.sim_time)
+		var om := 0
+		if renderer.overlay_mode == "gas":
+			om = 1
+		elif renderer.overlay_mode == "temp":
+			om = 2
+		elif renderer.overlay_mode == "pipe":
+			om = 3
+		_atmo_shader_mat.set_shader_parameter("overlay_mode", om)
+		_atmo_shader_mat.set_shader_parameter("avg_oxygen", world.avg_oxygen_kg)
 	_refresh_hud()
 	renderer.queue_redraw()
 
@@ -497,6 +555,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "pipe" else "pipe")
 		elif event.physical_keycode == KEY_R:
 			_toggle_research_panel()
+		elif event.physical_keycode == KEY_I:
+			_toggle_audit_panel()
 		elif event.is_action_pressed("tool_dig"):
 			_select_tool("dig")
 		elif event.is_action_pressed("tool_cancel"):
@@ -549,14 +609,25 @@ func _apply_drag(c0: Vector2i, c1: Vector2i) -> void:
 	var x1: int = maxi(c0.x, c1.x)
 	var y0: int = mini(c0.y, c1.y)
 	var y1: int = maxi(c0.y, c1.y)
+	var placed_any := false
 	for y in range(y0, y1 + 1):
 		for x in range(x0, x1 + 1):
 			if active_tool == "dig":
-				world.order_dig(x, y)
+				if world.order_dig(x, y):
+					placed_any = true
 			elif active_tool == "cancel":
-				world.cancel_order(x, y)
+				if world.cancel_order(x, y):
+					placed_any = true
 			elif active_tool != "select":
-				world.order_build(x, y, active_tool)
+				if world.order_build(x, y, active_tool):
+					placed_any = true
+	if placed_any:
+		if active_tool == "cancel":
+			audio.play_cancel()
+		elif active_tool == "dig":
+			audio.play_drag()
+		else:
+			audio.play_place()
 
 func _on_dig_completed(cell: Vector2i, _el: String, _gained: float) -> void:
 	audio.play_dig_done()

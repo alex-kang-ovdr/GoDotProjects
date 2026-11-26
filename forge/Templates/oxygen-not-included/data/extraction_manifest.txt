@@ -9,12 +9,40 @@
     "sandstone_base_buildings": 10,
     "techs": 97,
     "tech_edges": 89,
-    "buildings": 21
+    "buildings": 21,
+    "mobs": 60,
+    "worlds": 15,
+    "traits": 18,
+    "subworlds": 74,
+    "geysers": 23,
+    "codex_files": 347,
+    "po_buildings_ko": 593,
+    "po_creatures_ko": 111,
+    "po_foods_ko": 89,
+    "po_diseases_ko": 14,
+    "po_rooms_ko": 21,
+    "unity_shaders_total": 81,
+    "klei_shaders_total": 56,
+    "unity_materials_total": 285,
+    "fmod_stdt_tokens": 8322,
+    "fmod_radix_nodes_est": 29697,
+    "godot_ported_shaders": 3,
+    "embedded_element_textures": 36,
+    "embedded_building_textures": 3,
+    "embedded_fx_textures": 5,
+    "embedded_kanim_building_sprites": 27,
+    "embedded_kanim_duplicant_sprites": 3,
+    "fmod_banks_total": 8,
+    "fmod_samples_total": 10559,
+    "fmod_pcm16_samples": 636,
+    "fmod_vorbis_samples": 9923,
+    "embedded_pcm16_sfx": 10
   },
   "source_hashes_sha256": {
     "gas.yaml": "e606d65f24d2f2c2321344d9a401e7bad8f960d3784754046bcdb152f18fe406",
     "liquid.yaml": "f5f992109f2348b8cf1cd90cd61eb91d6927d8470379e0d665597c4ba3c31654",
     "solid.yaml": "e85993648fd75d29cc625b2c69e5cd1169ae536d7b4f9a6f89abe2ab6c014ffc",
     "sandstoneBase.yaml": "dd824ece1518bf9cca2f49d4cfe7d9139e4944ea17d7fefa3297fc734265a344"
-  }
+  },
+  "finalized_at_utc": "2026-11-26T09:58:26.254426+00:00"
 }
