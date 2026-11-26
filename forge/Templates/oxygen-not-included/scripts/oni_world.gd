@@ -37,6 +37,8 @@ var rads: PackedFloat32Array = PackedFloat32Array()
 var _rad_accum := 0.0
 var has_logic_wire: PackedByteArray = PackedByteArray()
 var logic_signal: PackedByteArray = PackedByteArray()
+var logic_buffer_timer: PackedFloat32Array = PackedFloat32Array()
+var logic_alarm_active := false
 
 var print_ready_timer := 0.0
 var print_offers: Array[Dictionary] = []
@@ -79,11 +81,15 @@ var has_wire: PackedByteArray = PackedByteArray()
 var has_liquid_pipe: PackedByteArray = PackedByteArray()
 var has_gas_pipe: PackedByteArray = PackedByteArray()
 
+var lpipe_el: PackedStringArray = PackedStringArray()
 var lpipe_mass: PackedFloat32Array = PackedFloat32Array()
 var lpipe_temp: PackedFloat32Array = PackedFloat32Array()
 var gpipe_el: PackedStringArray = PackedStringArray()
 var gpipe_mass: PackedFloat32Array = PackedFloat32Array()
 var gpipe_temp: PackedFloat32Array = PackedFloat32Array()
+var reservoir_el: PackedStringArray = PackedStringArray()
+var reservoir_mass: PackedFloat32Array = PackedFloat32Array()
+var reservoir_temp: PackedFloat32Array = PackedFloat32Array()
 
 var battery_j: PackedFloat32Array = PackedFloat32Array()
 var h2_buffer_kg: PackedFloat32Array = PackedFloat32Array()
@@ -96,6 +102,11 @@ var dig_order: PackedByteArray = PackedByteArray()
 var dig_progress: PackedFloat32Array = PackedFloat32Array()
 var build_order: PackedStringArray = PackedStringArray()
 var build_progress: PackedFloat32Array = PackedFloat32Array()
+var deconstruct_order: PackedByteArray = PackedByteArray()
+var deconstruct_progress: PackedFloat32Array = PackedFloat32Array()
+var mop_order: PackedByteArray = PackedByteArray()
+var mop_progress: PackedFloat32Array = PackedFloat32Array()
+var tile_priority: PackedByteArray = PackedByteArray()
 
 var inventory: Dictionary = {}
 var food_kcal := 6000.0
@@ -108,6 +119,9 @@ var sandbox_unlock_all := false
 
 var power_produced_w := 0.0
 var power_consumed_w := 0.0
+var max_circuit_load_w := 0.0
+var circuit_overloaded := false
+var overloaded_cells: PackedByteArray = PackedByteArray()
 var total_battery_j := 0.0
 var total_battery_cap_j := 0.0
 var avg_oxygen_kg := 0.0
@@ -118,6 +132,8 @@ var critters: Array[Dictionary] = []
 
 var on_dig_completed: Callable
 var on_build_completed: Callable
+var on_deconstruct_completed: Callable
+var on_mop_completed: Callable
 
 func _init(p_seed := 73) -> void:
 	seed_value = p_seed
@@ -191,6 +207,13 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	has_logic_wire.fill(0)
 	logic_signal.resize(total)
 	logic_signal.fill(1)
+	logic_buffer_timer.resize(total)
+	logic_buffer_timer.fill(0.0)
+	logic_alarm_active = false
+	max_circuit_load_w = 0.0
+	circuit_overloaded = false
+	overloaded_cells.resize(total)
+	overloaded_cells.fill(0)
 	print_ready_timer = 0.0
 	print_count = 0
 	alerts.clear()
@@ -221,11 +244,15 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	has_wire.resize(total)
 	has_liquid_pipe.resize(total)
 	has_gas_pipe.resize(total)
+	lpipe_el.resize(total)
 	lpipe_mass.resize(total)
 	lpipe_temp.resize(total)
 	gpipe_el.resize(total)
 	gpipe_mass.resize(total)
 	gpipe_temp.resize(total)
+	reservoir_el.resize(total)
+	reservoir_mass.resize(total)
+	reservoir_temp.resize(total)
 	battery_j.resize(total)
 	h2_buffer_kg.resize(total)
 	farm_growth.resize(total)
@@ -236,6 +263,12 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	dig_progress.resize(total)
 	build_order.resize(total)
 	build_progress.resize(total)
+	deconstruct_order.resize(total)
+	deconstruct_progress.resize(total)
+	mop_order.resize(total)
+	mop_progress.resize(total)
+	tile_priority.resize(total)
+	tile_priority.fill(5)
 
 	sim_time = 0.0
 	cycle = 1
@@ -263,12 +296,17 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		"Algae": 500.0,
 		"Dirt": 800.0,
 		"Carbon": 400.0,
+		"Sand": 250.0,
+		"Clay": 200.0,
 		"IgneousRock": 0.0,
 		"Ice": 0.0,
 		"SlimeMold": 0.0,
 		"GoldAmalgam": 0.0,
 		"IronOre": 0.0,
 		"Wolframite": 0.0,
+		"Copper": 0.0,
+		"Ceramic": 0.0,
+		"Petroleum": 0.0,
 	}
 
 	for y in range(HEIGHT):
@@ -278,11 +316,15 @@ func generate(p_seed := 73, p_preset := "") -> void:
 			has_wire[i] = 0
 			has_liquid_pipe[i] = 0
 			has_gas_pipe[i] = 0
+			lpipe_el[i] = ""
 			lpipe_mass[i] = 0.0
 			lpipe_temp[i] = 22.0
 			gpipe_el[i] = "Vacuum"
 			gpipe_mass[i] = 0.0
 			gpipe_temp[i] = 22.0
+			reservoir_el[i] = ""
+			reservoir_mass[i] = 0.0
+			reservoir_temp[i] = 22.0
 			battery_j[i] = 0.0
 			h2_buffer_kg[i] = 0.0
 			farm_growth[i] = 0.0
@@ -293,6 +335,11 @@ func generate(p_seed := 73, p_preset := "") -> void:
 			dig_progress[i] = 0.0
 			build_order[i] = ""
 			build_progress[i] = 0.0
+			deconstruct_order[i] = 0
+			deconstruct_progress[i] = 0.0
+			mop_order[i] = 0
+			mop_progress[i] = 0.0
+			tile_priority[i] = 5
 			liquid_el[i] = ""
 			liquid_mass[i] = 0.0
 			gas_el[i] = "Vacuum"
@@ -551,11 +598,13 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		building[mfi] = "tile"
 		temp_c[mfi] = 22.0
 		has_wire[idx(mx, 16)] = 1
-	building[idx(14, 16)] = "water_cooler"
-	building[idx(15, 16)] = "medical_cot"
-	building[idx(16, 16)] = "apothecary"
+	building[idx(14, 16)] = "flush_toilet"
+	building[idx(15, 16)] = "wash_sink"
+	building[idx(16, 16)] = "medical_cot"
 	building[idx(17, 16)] = "massage_table"
 	building[idx(18, 16)] = "jukebot"
+	has_liquid_pipe[idx(14, 16)] = 1
+	has_liquid_pipe[idx(15, 16)] = 1
 	building[idx(19, 14)] = "tile"
 	building[idx(19, 15)] = "door"
 	building[idx(19, 16)] = "door"
@@ -606,7 +655,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	building[idx(23, 0)] = "rocket_command_module"
 	building[idx(26, 3)] = "bunker_door"
 	building[idx(27, 3)] = "logic_switch"
-	logic_switch_state[idx(27, 3)] = true
+	logic_switch_state[idx(27, 3)] = false
 	building[idx(28, 3)] = "space_scanner"
 	building[idx(29, 3)] = "logic_alarm"
 	for swx in range(19, 30):
@@ -826,7 +875,7 @@ func is_solid_cell(x: int, y: int) -> bool:
 
 func has_suit_dock() -> bool:
 	for i in range(WIDTH * HEIGHT):
-		if building[i] in ["suit_dock", "suit_checkpoint", "oxygen_dock"]:
+		if building[i] in ["suit_dock", "suit_checkpoint", "jetsuit_dock", "jetsuit_checkpoint", "oxygen_dock"]:
 			return true
 	return false
 
@@ -836,9 +885,9 @@ func toggle_logic_switch(x: int, y: int) -> int:
 	var i := idx(x, y)
 	if building[i] != "logic_switch":
 		return -1
-	var next_on := not bool(logic_switch_state.get(i, true))
+	var next_on := not bool(logic_switch_state.get(i, false))
 	logic_switch_state[i] = next_on
-	_step_logic_network()
+	_step_logic_network(0.0)
 	return 1 if next_on else 0
 
 func get_rocket_cargo_bonus() -> float:
@@ -857,8 +906,35 @@ func is_climbable(x: int, y: int) -> bool:
 	var b := building[idx(x, y)]
 	return b == "ladder" or b == "fire_pole" or b == "travel_tube" or b == "travel_tube_entrance"
 
+func get_schedule_phase() -> String:
+	var f := fmod(sim_time, OniElements.CYCLE_SECONDS) / OniElements.CYCLE_SECONDS
+	if f < 0.70:
+		return "WORK"
+	elif f < 0.80:
+		return "DOWNTIME"
+	elif f < 0.86:
+		return "BATHTIME"
+	return "SLEEP"
+
+func get_schedule_phase_ko() -> String:
+	match get_schedule_phase():
+		"DOWNTIME":
+			return "휴게"
+		"BATHTIME":
+			return "세면"
+		"SLEEP":
+			return "취침"
+		_:
+			return "작업"
+
+func get_solar_factor() -> float:
+	var f := fmod(sim_time, OniElements.CYCLE_SECONDS) / OniElements.CYCLE_SECONDS
+	if f >= 0.85:
+		return 0.0
+	return clampf(sin(PI * ((f + 0.08) / 0.93)), 0.0, 1.0)
+
 func is_night() -> bool:
-	return fmod(sim_time, OniElements.CYCLE_SECONDS) >= OniElements.CYCLE_SECONDS * 0.85
+	return get_schedule_phase() == "SLEEP"
 
 func is_space_cell(x: int, y: int) -> bool:
 	return y >= 0 and y <= 3 and in_bounds(x, y)
@@ -1058,11 +1134,16 @@ func save_colony() -> bool:
 			"id": d.id, "name": d.dupe_name, "trait": d.trait_ko,
 			"x": d.cell.x, "y": d.cell.y,
 			"skill_level": d.skill_level, "skill_name": d.skill_name_ko, "xp": d.xp,
-			"prio_dig": d.prio_dig, "prio_build": d.prio_build, "prio_operate": d.prio_operate, "prio_research": d.prio_research,
+			"bladder": d.bladder, "needs_wash": d.needs_wash,
+			"wearing_suit": d.wearing_suit, "wearing_jetsuit": d.wearing_jetsuit,
+			"prio_dig": d.prio_dig, "prio_build": d.prio_build, "prio_operate": d.prio_operate,
+			"prio_research": d.prio_research, "prio_deconstruct": d.prio_deconstruct, "prio_mop": d.prio_mop,
 		})
 	var bld_map: Dictionary = {}
 	var w_list: Array = []
 	var lw_list: Array = []
+	var lp_list: Array = []
+	var gp_list: Array = []
 	var dig_cleared: Array = []
 	for i in range(WIDTH * HEIGHT):
 		if not building[i].is_empty():
@@ -1071,6 +1152,10 @@ func save_colony() -> bool:
 			w_list.append(i)
 		if has_logic_wire[i] == 1:
 			lw_list.append(i)
+		if has_liquid_pipe[i] == 1:
+			lp_list.append(i)
+		if has_gas_pipe[i] == 1:
+			gp_list.append(i)
 		if solid_el[i].is_empty():
 			dig_cleared.append(i)
 	var snap := {
@@ -1078,6 +1163,7 @@ func save_colony() -> bool:
 		"food_kcal": food_kcal, "data_banks": data_banks, "rockets_launched": rockets_launched,
 		"inventory": inventory, "unlocked_techs": unlocked_techs, "active_tech": active_tech,
 		"duplicants": dupe_arr, "buildings": bld_map, "wires": w_list, "logic_wires": lw_list,
+		"liquid_pipes": lp_list, "gas_pipes": gp_list,
 		"report_digs": report_digs, "report_builds": report_builds,
 	}
 	var f := FileAccess.open("user://oni_save.json", FileAccess.WRITE)
@@ -1123,6 +1209,30 @@ func load_colony() -> bool:
 				building[idx_i] = String(bm[k_v])
 				solid_el[idx_i] = ""
 				solid_mass[idx_i] = 0.0
+	var wl_v: Variant = snap.get("wires", [])
+	if wl_v is Array:
+		for wi in (wl_v as Array):
+			var idx_i := int(wi)
+			if idx_i >= 0 and idx_i < WIDTH * HEIGHT:
+				has_wire[idx_i] = 1
+	var lwl_v: Variant = snap.get("logic_wires", [])
+	if lwl_v is Array:
+		for lwi in (lwl_v as Array):
+			var idx_i := int(lwi)
+			if idx_i >= 0 and idx_i < WIDTH * HEIGHT:
+				has_logic_wire[idx_i] = 1
+	var lp_v: Variant = snap.get("liquid_pipes", [])
+	if lp_v is Array:
+		for lpi in (lp_v as Array):
+			var idx_i := int(lpi)
+			if idx_i >= 0 and idx_i < WIDTH * HEIGHT:
+				has_liquid_pipe[idx_i] = 1
+	var gp_v: Variant = snap.get("gas_pipes", [])
+	if gp_v is Array:
+		for gpi in (gp_v as Array):
+			var idx_i := int(gpi)
+			if idx_i >= 0 and idx_i < WIDTH * HEIGHT:
+				has_gas_pipe[idx_i] = 1
 	var dup_v: Variant = snap.get("duplicants", [])
 	if dup_v is Array and not (dup_v as Array).is_empty():
 		duplicants.clear()
@@ -1133,13 +1243,20 @@ func load_colony() -> bool:
 				nd.skill_level = int(dd.get("skill_level", 0))
 				nd.skill_name_ko = String(dd.get("skill_name", "신입 개척자"))
 				nd.xp = float(dd.get("xp", 80.0))
+				nd.bladder = float(dd.get("bladder", 20.0))
+				nd.needs_wash = bool(dd.get("needs_wash", false))
+				nd.wearing_suit = bool(dd.get("wearing_suit", false))
+				nd.wearing_jetsuit = bool(dd.get("wearing_jetsuit", false))
 				nd.prio_dig = bool(dd.get("prio_dig", true))
 				nd.prio_build = bool(dd.get("prio_build", true))
 				nd.prio_operate = bool(dd.get("prio_operate", true))
 				nd.prio_research = bool(dd.get("prio_research", true))
+				nd.prio_deconstruct = bool(dd.get("prio_deconstruct", true))
+				nd.prio_mop = bool(dd.get("prio_mop", true))
 				duplicants.append(nd)
-	_step_logic_network()
+	_step_logic_network(0.0)
 	_recompute_decor()
+	_recompute_radiation()
 	_recompute_rooms()
 	_recompute_stats()
 	last_save_status = "불러오기 완료 (주기 %d · 복제체 %d명)" % [cycle, duplicants.size()]
@@ -1156,19 +1273,24 @@ func can_stand_at(x: int, y: int) -> bool:
 		return true
 	return false
 
-func order_dig(x: int, y: int) -> bool:
+func order_dig(x: int, y: int, prio: int = 5) -> bool:
 	if not in_bounds(x, y):
 		return false
 	var i := idx(x, y)
 	if solid_el[i].is_empty() or not OniElements.is_diggable(solid_el[i]):
 		return false
+	var p := clampi(prio, 1, 9)
 	if dig_order[i] == 1:
+		if tile_priority[i] != p:
+			tile_priority[i] = p
+			return true
 		return false
 	dig_order[i] = 1
 	dig_progress[i] = 0.0
+	tile_priority[i] = p
 	return true
 
-func order_build(x: int, y: int, b_id: String) -> bool:
+func order_build(x: int, y: int, b_id: String, prio: int = 5) -> bool:
 	if not in_bounds(x, y):
 		return false
 	if not is_building_unlocked(b_id):
@@ -1177,6 +1299,7 @@ func order_build(x: int, y: int, b_id: String) -> bool:
 	if bdef.is_empty():
 		return false
 	var i := idx(x, y)
+	var p := clampi(prio, 1, 9)
 	var layer := String(bdef.get("layer", ""))
 
 	if layer == "wire":
@@ -1184,24 +1307,28 @@ func order_build(x: int, y: int, b_id: String) -> bool:
 			return false
 		build_order[i] = "wire"
 		build_progress[i] = 0.0
+		tile_priority[i] = p
 		return true
 	elif layer == "liquid_pipe":
 		if has_liquid_pipe[i] == 1 or build_order[i] == "liquid_pipe" or building[i] == "pod":
 			return false
 		build_order[i] = "liquid_pipe"
 		build_progress[i] = 0.0
+		tile_priority[i] = p
 		return true
 	elif layer == "gas_pipe":
 		if has_gas_pipe[i] == 1 or build_order[i] == "gas_pipe" or building[i] == "pod":
 			return false
 		build_order[i] = "gas_pipe"
 		build_progress[i] = 0.0
+		tile_priority[i] = p
 		return true
 	elif layer == "logic_wire":
 		if has_logic_wire[i] == 1 or build_order[i] == "logic_wire" or building[i] == "pod":
 			return false
 		build_order[i] = "logic_wire"
 		build_progress[i] = 0.0
+		tile_priority[i] = p
 		return true
 
 	if not solid_el[i].is_empty():
@@ -1211,10 +1338,67 @@ func order_build(x: int, y: int, b_id: String) -> bool:
 	if bool(bdef.get("needs_floor", false)) and not is_solid_cell(x, y + 1):
 		return false
 	if build_order[i] == b_id:
+		if tile_priority[i] != p:
+			tile_priority[i] = p
+			return true
 		return false
 
 	build_order[i] = b_id
 	build_progress[i] = 0.0
+	tile_priority[i] = p
+	return true
+
+func order_deconstruct(x: int, y: int, prio: int = 5) -> bool:
+	if not in_bounds(x, y):
+		return false
+	var i := idx(x, y)
+	var b := building[i]
+	if b in ["pod", "geyser_steam", "geyser_water", "geyser_hydrogen"]:
+		return false
+	var has_any := (not b.is_empty()) or has_wire[i] == 1 or has_liquid_pipe[i] == 1 or has_gas_pipe[i] == 1 or has_logic_wire[i] == 1
+	if not has_any:
+		return false
+	var p := clampi(prio, 1, 9)
+	if deconstruct_order[i] == 1:
+		if tile_priority[i] != p:
+			tile_priority[i] = p
+			return true
+		return false
+	deconstruct_order[i] = 1
+	deconstruct_progress[i] = 0.0
+	tile_priority[i] = p
+	return true
+
+func order_mop(x: int, y: int, prio: int = 5) -> bool:
+	if not in_bounds(x, y):
+		return false
+	var i := idx(x, y)
+	if is_solid_cell(x, y):
+		return false
+	# 원작 규칙: 바닥 위 얕은 액체(1~250kg)만 닦기 가능 (깊은 웅덩이 불가)
+	if liquid_mass[i] < 1.0 or liquid_mass[i] > 250.0:
+		return false
+	if not is_solid_cell(x, y + 1):
+		return false
+	var p := clampi(prio, 1, 9)
+	if mop_order[i] == 1:
+		if tile_priority[i] != p:
+			tile_priority[i] = p
+			return true
+		return false
+	mop_order[i] = 1
+	mop_progress[i] = 0.0
+	tile_priority[i] = p
+	return true
+
+func set_tile_priority(x: int, y: int, prio: int) -> bool:
+	if not in_bounds(x, y):
+		return false
+	var i := idx(x, y)
+	var has_errand := dig_order[i] == 1 or not build_order[i].is_empty() or deconstruct_order[i] == 1 or mop_order[i] == 1
+	if not has_errand:
+		return false
+	tile_priority[i] = clampi(prio, 1, 9)
 	return true
 
 func cancel_order(x: int, y: int) -> bool:
@@ -1230,6 +1414,16 @@ func cancel_order(x: int, y: int) -> bool:
 		build_order[i] = ""
 		build_progress[i] = 0.0
 		changed = true
+	if deconstruct_order[i] == 1:
+		deconstruct_order[i] = 0
+		deconstruct_progress[i] = 0.0
+		changed = true
+	if mop_order[i] == 1:
+		mop_order[i] = 0
+		mop_progress[i] = 0.0
+		changed = true
+	if changed:
+		tile_priority[i] = 5
 	return changed
 
 func has_materials_for(b_id: String) -> bool:
@@ -1297,11 +1491,93 @@ func complete_build(x: int, y: int) -> void:
 			farm_growth[i] = 0.0
 	build_order[i] = ""
 	build_progress[i] = 0.0
+	tile_priority[i] = 5
 	report_builds += 1
+	_step_logic_network(0.0)
 	_recompute_decor()
+	_recompute_radiation()
 	_recompute_rooms()
 	if on_build_completed.is_valid():
 		on_build_completed.call(Vector2i(x, y), b_id)
+
+func complete_deconstruct(x: int, y: int) -> void:
+	if not in_bounds(x, y):
+		return
+	var i := idx(x, y)
+	var b_id := building[i]
+	var removed_id := ""
+	if not b_id.is_empty() and not (b_id in ["pod", "geyser_steam", "geyser_water", "geyser_hydrogen"]):
+		# 원작 규칙: 건물 해체 시 건설 자원 100% 환급
+		var bdef := OniElements.get_building(b_id)
+		var el := String(bdef.get("cost_element", "SandStone"))
+		var cost := float(bdef.get("cost_kg", 100.0))
+		if cost > 0.0:
+			inventory[el] = float(inventory.get(el, 0.0)) + cost
+		removed_id = b_id
+		building[i] = ""
+		battery_j[i] = 0.0
+		h2_buffer_kg[i] = 0.0
+		farm_growth[i] = 0.0
+		reservoir_mass[i] = 0.0
+		reservoir_el[i] = ""
+		machine_running[i] = 0
+		logic_buffer_timer[i] = 0.0
+		logic_switch_state.erase(i)
+	else:
+		# 건물이 없으면 전선/배관/자동화선 해체 + 100% 자원 환급
+		if has_wire[i] == 1:
+			var wd := OniElements.get_building("wire")
+			var wel := String(wd.get("cost_element", "Cuprite"))
+			inventory[wel] = float(inventory.get(wel, 0.0)) + float(wd.get("cost_kg", 25.0))
+			has_wire[i] = 0
+			removed_id = "wire"
+		elif has_liquid_pipe[i] == 1:
+			var pd := OniElements.get_building("liquid_pipe")
+			var pel := String(pd.get("cost_element", "SandStone"))
+			inventory[pel] = float(inventory.get(pel, 0.0)) + float(pd.get("cost_kg", 100.0))
+			has_liquid_pipe[i] = 0
+			lpipe_mass[i] = 0.0
+			lpipe_el[i] = ""
+			removed_id = "liquid_pipe"
+		elif has_gas_pipe[i] == 1:
+			var gd := OniElements.get_building("gas_pipe")
+			var gel := String(gd.get("cost_element", "SandStone"))
+			inventory[gel] = float(inventory.get(gel, 0.0)) + float(gd.get("cost_kg", 100.0))
+			has_gas_pipe[i] = 0
+			gpipe_mass[i] = 0.0
+			gpipe_el[i] = "Vacuum"
+			removed_id = "gas_pipe"
+		elif has_logic_wire[i] == 1:
+			var ld := OniElements.get_building("logic_wire")
+			var lel := String(ld.get("cost_element", "Cuprite"))
+			inventory[lel] = float(inventory.get(lel, 0.0)) + float(ld.get("cost_kg", 25.0))
+			has_logic_wire[i] = 0
+			removed_id = "logic_wire"
+	deconstruct_order[i] = 0
+	deconstruct_progress[i] = 0.0
+	tile_priority[i] = 5
+	_step_logic_network(0.0)
+	_recompute_decor()
+	_recompute_radiation()
+	_recompute_rooms()
+	if not removed_id.is_empty() and on_deconstruct_completed.is_valid():
+		on_deconstruct_completed.call(Vector2i(x, y), removed_id)
+
+func complete_mop(x: int, y: int) -> void:
+	if not in_bounds(x, y):
+		return
+	var i := idx(x, y)
+	var m := liquid_mass[i]
+	var lel := liquid_el[i] if not liquid_el[i].is_empty() else "Water"
+	if m >= 1.0:
+		inventory[lel] = float(inventory.get(lel, 0.0)) + m
+		liquid_mass[i] = 0.0
+		liquid_el[i] = ""
+	mop_order[i] = 0
+	mop_progress[i] = 0.0
+	tile_priority[i] = 5
+	if m >= 1.0 and on_mop_completed.is_valid():
+		on_mop_completed.call(Vector2i(x, y), lel, m)
 
 func _displace_gas_out(x: int, y: int) -> void:
 	var i := idx(x, y)
@@ -1337,7 +1613,7 @@ func step(dt: float) -> void:
 	for dupe in duplicants:
 		dupe.step(self, dt)
 
-	_step_logic_network()
+	_step_logic_network(dt)
 	_step_power_and_machines(dt)
 	_step_farms(dt)
 	_step_geysers_and_critters(dt)
@@ -1471,99 +1747,200 @@ func step_gas_tick() -> void:
 
 func step_conduit_tick() -> void:
 	conduit_tick_count += 1
-	var total := WIDTH * HEIGHT
 	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1), Vector2i(0, 1)]
 
-	# 1) 액체관 패킷 이동 (10kg/s) 및 배출구 방출
+	# 1) 다중 원소 액체관 동기식 1칸/틱 패킷 이동 (10kg/s), 액체 저장고(5,000kg) 버퍼링 및 배출구 방출
+	var prev_lm := lpipe_mass.duplicate()
+	var prev_le := lpipe_el.duplicate()
+	var prev_lt := lpipe_temp.duplicate()
 	var next_lm := lpipe_mass.duplicate()
+	var next_le := lpipe_el.duplicate()
+	var next_lt := lpipe_temp.duplicate()
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
-			if has_liquid_pipe[i] == 0 or lpipe_mass[i] <= 0.01:
+			if has_liquid_pipe[i] == 0:
 				continue
-			# 액체 필터: 오염수를 청수로 정화 및 세균 제거
-			if building[i] == "liquid_filter":
+			var b := building[i]
+			# 액체 저장고 (5,000 kg): 관 과잉 액체 흡수 / 관 부족 시 자동 방출
+			if b == "liquid_reservoir":
+				var cur_m := next_lm[i]
+				var cur_e := next_le[i] if not next_le[i].is_empty() else "Water"
+				if cur_m > 5.0 and reservoir_mass[i] < 5000.0 and (reservoir_mass[i] < 0.05 or reservoir_el[i].is_empty() or reservoir_el[i] == cur_e):
+					var store_m := minf(cur_m - 2.0, minf(OniElements.LIQUID_PIPE_MAX_KG, 5000.0 - reservoir_mass[i]))
+					if store_m > 0.05:
+						var tot_r := reservoir_mass[i] + store_m
+						reservoir_temp[i] = (reservoir_mass[i] * reservoir_temp[i] + store_m * next_lt[i]) / maxf(0.001, tot_r)
+						reservoir_mass[i] = tot_r
+						reservoir_el[i] = cur_e
+						next_lm[i] -= store_m
+						if next_lm[i] < 0.05:
+							next_lm[i] = 0.0
+							next_le[i] = ""
+				elif cur_m < 5.0 and reservoir_mass[i] > 0.1 and (cur_m < 0.05 or next_le[i].is_empty() or next_le[i] == reservoir_el[i]):
+					var out_r := minf(reservoir_mass[i], OniElements.LIQUID_PIPE_MAX_KG - cur_m)
+					if out_r > 0.05:
+						var tot_p := cur_m + out_r
+						next_lt[i] = (cur_m * next_lt[i] + out_r * reservoir_temp[i]) / maxf(0.001, tot_p)
+						next_lm[i] = tot_p
+						next_le[i] = reservoir_el[i]
+						reservoir_mass[i] -= out_r
+						if reservoir_mass[i] < 0.05:
+							reservoir_mass[i] = 0.0
+							reservoir_el[i] = ""
+
+			# 동기식 스냅샷 기준: 이전 틱부터 이 칸에 있던 패킷만 이동 (1틱당 정확히 1칸 전진)
+			var avail_m := minf(prev_lm[i], next_lm[i])
+			if avail_m <= 0.01:
+				continue
+			var pel := prev_le[i] if not prev_le[i].is_empty() else (next_le[i] if not next_le[i].is_empty() else "Water")
+			next_le[i] = pel
+			# 미처리 원료는 정화기/정유기에서 처리될 때까지 대기 (미정화 오염수 통과 차단)
+			if (b == "water_sieve" and pel == "DirtyWater") or (b == "oil_refinery" and pel == "CrudeOil"):
+				continue
+			# 액체 필터: 관 내부 세균 살균 및 분류 표기
+			if b == "liquid_filter":
 				germ_count[i] = 0.0
 				germ_type[i] = ""
 				machine_running[i] = 1
-			# 배출구가 있으면 공간에 방출
-			if building[i] == "liquid_vent" and not is_solid_cell(x, y):
-				var space := maxf(0.0, 1000.0 - liquid_mass[i])
-				var out_m := minf(lpipe_mass[i], space)
-				if out_m > 0.01:
-					if liquid_mass[i] < 1.0 or liquid_el[i].is_empty():
-						liquid_el[i] = "Water"
-					liquid_mass[i] += out_m
-					next_lm[i] -= out_m
-					continue
-			# 인접 액체관 중 질량이 적은 쪽으로 흐름
+			# 액체 배출구: 실제 배관 원소(Water/DirtyWater/CrudeOil/Petroleum/Magma)와 온도 그대로 방출
+			if b == "liquid_vent" and not is_solid_cell(x, y):
+				if liquid_mass[i] < 1.0 or liquid_el[i].is_empty() or liquid_el[i] == pel:
+					var space := maxf(0.0, 1000.0 - liquid_mass[i])
+					var out_m := minf(avail_m, space)
+					if out_m > 0.01:
+						var tot_cell := liquid_mass[i] + out_m
+						temp_c[i] = (liquid_mass[i] * temp_c[i] + out_m * prev_lt[i]) / maxf(0.001, tot_cell)
+						liquid_el[i] = pel
+						liquid_mass[i] = tot_cell
+						next_lm[i] -= out_m
+						if next_lm[i] < 0.05:
+							next_lm[i] = 0.0
+							next_le[i] = ""
+						continue
+			# 인접 액체관 중 같은 원소(또는 빈 관)이면서 질량이 적은 쪽으로 흐름
+			var is_proc_out := (b == "water_sieve" and pel == "Water") or (b == "oil_refinery" and pel == "Petroleum")
 			var best_ni := -1
-			var lowest := lpipe_mass[i] - 0.1
+			var lowest := avail_m - 0.1
+			if is_proc_out:
+				lowest = OniElements.LIQUID_PIPE_MAX_KG
 			for d: Vector2i in dirs:
 				var nx: int = x + d.x
 				var ny: int = y + d.y
 				if not in_bounds(nx, ny):
 					continue
 				var ni := idx(nx, ny)
-				if has_liquid_pipe[ni] == 1 and next_lm[ni] < lowest:
+				if has_liquid_pipe[ni] == 0:
+					continue
+				# 처리기 출력물은 원료 펌프 쪽으로 역류 방지
+				if is_proc_out and building[ni] == "liquid_pump":
+					continue
+				if (next_lm[ni] < 0.05 or next_le[ni].is_empty() or next_le[ni] == pel) and next_lm[ni] < lowest:
 					lowest = next_lm[ni]
 					best_ni = ni
 			if best_ni >= 0:
 				var space_n := maxf(0.0, OniElements.LIQUID_PIPE_MAX_KG - next_lm[best_ni])
-				var move_m := minf(minf(lpipe_mass[i] * 0.5, space_n), OniElements.LIQUID_PIPE_MAX_KG)
+				var frac := 1.0 if is_proc_out else 0.5
+				var move_m := minf(minf(avail_m * frac, space_n), OniElements.LIQUID_PIPE_MAX_KG)
 				if move_m > 0.05:
+					var tot_n := next_lm[best_ni] + move_m
+					next_lt[best_ni] = (next_lm[best_ni] * next_lt[best_ni] + move_m * prev_lt[i]) / maxf(0.001, tot_n)
 					next_lm[i] -= move_m
-					next_lm[best_ni] += move_m
-					lpipe_temp[best_ni] = lerpf(lpipe_temp[best_ni], lpipe_temp[i], 0.5)
+					next_lm[best_ni] = tot_n
+					next_le[best_ni] = pel
+					if next_lm[i] < 0.05:
+						next_lm[i] = 0.0
+						next_le[i] = ""
 	lpipe_mass = next_lm
+	lpipe_el = next_le
+	lpipe_temp = next_lt
 
-	# 2) 기체관 패킷 이동 (1kg/s) 및 배출구 방출
+	# 2) 기체관 동기식 1칸/틱 패킷 이동 (1kg/s), 기체 저장고(150kg) 버퍼링 및 배출구 방출
+	var prev_gm := gpipe_mass.duplicate()
+	var prev_ge := gpipe_el.duplicate()
+	var prev_gt := gpipe_temp.duplicate()
 	var next_gm := gpipe_mass.duplicate()
 	var next_ge := gpipe_el.duplicate()
+	var next_gt := gpipe_temp.duplicate()
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
-			if has_gas_pipe[i] == 0 or gpipe_mass[i] <= 0.005 or gpipe_el[i] == "Vacuum":
+			if has_gas_pipe[i] == 0:
 				continue
-			# 기체 필터: 오염된 산소/CO2를 정제 산소로 분류 정화
-			if building[i] == "gas_filter":
-				if gpipe_el[i] == "ContaminatedOxygen" or gpipe_el[i] == "CarbonDioxide":
+			var b := building[i]
+			if b == "gas_reservoir":
+				var cur_gm := next_gm[i]
+				var cur_ge := next_ge[i]
+				if cur_gm > 0.5 and cur_ge != "Vacuum" and reservoir_mass[i] < 150.0 and (reservoir_mass[i] < 0.01 or reservoir_el[i].is_empty() or reservoir_el[i] == cur_ge):
+					var store_g := minf(cur_gm - 0.2, minf(OniElements.GAS_PIPE_MAX_KG, 150.0 - reservoir_mass[i]))
+					if store_g > 0.01:
+						var tot_gr := reservoir_mass[i] + store_g
+						reservoir_temp[i] = (reservoir_mass[i] * reservoir_temp[i] + store_g * next_gt[i]) / maxf(0.001, tot_gr)
+						reservoir_mass[i] = tot_gr
+						reservoir_el[i] = cur_ge
+						next_gm[i] -= store_g
+						if next_gm[i] < 0.005:
+							next_gm[i] = 0.0
+							next_ge[i] = "Vacuum"
+				elif cur_gm < 0.5 and reservoir_mass[i] > 0.02 and (cur_gm < 0.005 or cur_ge == "Vacuum" or cur_ge == reservoir_el[i]):
+					var out_g := minf(reservoir_mass[i], OniElements.GAS_PIPE_MAX_KG - cur_gm)
+					if out_g > 0.01:
+						var tot_gp := cur_gm + out_g
+						next_gt[i] = (cur_gm * next_gt[i] + out_g * reservoir_temp[i]) / maxf(0.001, tot_gp)
+						next_gm[i] = tot_gp
+						next_ge[i] = reservoir_el[i]
+						reservoir_mass[i] -= out_g
+						if reservoir_mass[i] < 0.005:
+							reservoir_mass[i] = 0.0
+							reservoir_el[i] = ""
+
+			var avail_gm := minf(prev_gm[i], next_gm[i])
+			var pge := prev_ge[i]
+			if avail_gm <= 0.005 or pge == "Vacuum":
+				continue
+			if b == "gas_filter":
+				if pge == "ContaminatedOxygen" or pge == "CarbonDioxide":
+					pge = "Oxygen"
 					next_ge[i] = "Oxygen"
 				machine_running[i] = 1
-			if building[i] == "gas_vent" and not is_solid_cell(x, y):
-				if (gas_el[i] == "Vacuum" or gas_el[i] == gpipe_el[i]) and gas_mass[i] < 2.0:
-					var out_m := minf(gpipe_mass[i], 2.0 - gas_mass[i])
-					gas_el[i] = gpipe_el[i]
-					gas_mass[i] += out_m
+			if b == "gas_vent" and not is_solid_cell(x, y):
+				if (gas_el[i] == "Vacuum" or gas_el[i] == pge) and gas_mass[i] < 2.0:
+					var out_m := minf(avail_gm, 2.0 - gas_mass[i])
+					var tot_g := gas_mass[i] + out_m
+					temp_c[i] = (gas_mass[i] * temp_c[i] + out_m * prev_gt[i]) / maxf(0.001, tot_g)
+					gas_el[i] = pge
+					gas_mass[i] = tot_g
 					next_gm[i] -= out_m
 					if next_gm[i] < 0.005:
 						next_gm[i] = 0.0
 						next_ge[i] = "Vacuum"
 					continue
 			var best_ni := -1
-			var lowest := gpipe_mass[i] - 0.02
+			var lowest := avail_gm - 0.02
 			for d: Vector2i in dirs:
 				var nx: int = x + d.x
 				var ny: int = y + d.y
 				if not in_bounds(nx, ny):
 					continue
 				var ni := idx(nx, ny)
-				if has_gas_pipe[ni] == 1 and (next_ge[ni] == "Vacuum" or next_ge[ni] == gpipe_el[i]) and next_gm[ni] < lowest:
+				if has_gas_pipe[ni] == 1 and (next_ge[ni] == "Vacuum" or next_ge[ni] == pge) and next_gm[ni] < lowest:
 					lowest = next_gm[ni]
 					best_ni = ni
 			if best_ni >= 0:
 				var space_n := maxf(0.0, OniElements.GAS_PIPE_MAX_KG - next_gm[best_ni])
-				var move_m := minf(gpipe_mass[i] * 0.5, space_n)
+				var move_m := minf(avail_gm * 0.5, space_n)
 				if move_m > 0.01:
+					var tot_gn := next_gm[best_ni] + move_m
+					next_gt[best_ni] = (next_gm[best_ni] * next_gt[best_ni] + move_m * prev_gt[i]) / maxf(0.001, tot_gn)
 					next_gm[i] -= move_m
-					next_gm[best_ni] += move_m
-					next_ge[best_ni] = gpipe_el[i]
-					gpipe_temp[best_ni] = lerpf(gpipe_temp[best_ni], gpipe_temp[i], 0.5)
+					next_gm[best_ni] = tot_gn
+					next_ge[best_ni] = pge
 					if next_gm[i] < 0.005:
 						next_gm[i] = 0.0
 						next_ge[i] = "Vacuum"
 	gpipe_mass = next_gm
 	gpipe_el = next_ge
+	gpipe_temp = next_gt
 
 func _liquid_density(el: String) -> float:
 	match el:
@@ -1598,8 +1975,10 @@ func _step_liquids() -> void:
 					var cap: float = maxf(0.0, 1000.0 - liquid_mass[bi])
 					if cap > 1.0:
 						var flow: float = minf(m, cap)
+						var tot_b := liquid_mass[bi] + flow
+						temp_c[bi] = (liquid_mass[bi] * temp_c[bi] + flow * temp_c[i]) / maxf(0.001, tot_b)
 						liquid_mass[i] -= flow
-						liquid_mass[bi] += flow
+						liquid_mass[bi] = tot_b
 						liquid_el[bi] = lel
 						if liquid_mass[i] < 1.0:
 							liquid_mass[i] = 0.0
@@ -1615,6 +1994,9 @@ func _step_liquids() -> void:
 					var tm := liquid_mass[i]
 					liquid_mass[i] = liquid_mass[bi]
 					liquid_mass[bi] = tm
+					var tt := temp_c[i]
+					temp_c[i] = temp_c[bi]
+					temp_c[bi] = tt
 					continue
 			var dirs: Array[int] = [-1, 1]
 			for dx: int in dirs:
@@ -1624,34 +2006,55 @@ func _step_liquids() -> void:
 						var diff := liquid_mass[i] - liquid_mass[si]
 						if diff > 10.0:
 							var flow := diff * 0.25
+							var tot_s := liquid_mass[si] + flow
+							temp_c[si] = (liquid_mass[si] * temp_c[si] + flow * temp_c[i]) / maxf(0.001, tot_s)
 							liquid_mass[i] -= flow
-							liquid_mass[si] += flow
+							liquid_mass[si] = tot_s
 							liquid_el[si] = lel
 
 func _step_heat(dt: float) -> void:
+	# 원작 에너지 보존 열역학: 열용량 C = mass × SHC 기반 dQ 전달 (∑ C_i·ΔT_i = 0)
 	var total := WIDTH * HEIGHT
-	var delta_t := PackedFloat32Array()
-	delta_t.resize(total)
+	var delta_q := PackedFloat32Array()
+	delta_q.resize(total)
+	var therm_c := PackedFloat32Array()
+	therm_c.resize(total)
+	var cond := PackedFloat32Array()
+	cond.resize(total)
+
+	for i in range(total):
+		therm_c[i] = _cell_thermal_mass(i)
+		cond[i] = _cell_conductivity(i) if therm_c[i] > 0.0 else 0.0
 
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
-			var tc1 := _cell_conductivity(i)
-			if tc1 <= 0.0:
+			var tc1 := cond[i]
+			var c1 := therm_c[i]
+			if tc1 <= 0.0 or c1 <= 0.0:
 				continue
+			var ins1 := building[i] == "insulated_tile"
 			var nlist: Array[Vector2i] = [Vector2i(x + 1, y), Vector2i(x, y + 1)]
 			for nc: Vector2i in nlist:
 				var ni := idx(nc.x, nc.y)
-				var tc2 := _cell_conductivity(ni)
-				if tc2 <= 0.0:
+				var tc2 := cond[ni]
+				var c2 := therm_c[ni]
+				if tc2 <= 0.0 or c2 <= 0.0:
 					continue
-				var k: float = minf(tc1, tc2) * 0.015 * dt
-				var d: float = (temp_c[ni] - temp_c[i]) * minf(k, 0.2)
-				delta_t[i] += d
-				delta_t[ni] -= d
+				var dt_temp := temp_c[ni] - temp_c[i]
+				if absf(dt_temp) < 0.005:
+					continue
+				# 원작 규칙: 단열 타일은 min(tc1, tc2), 일반 접촉은 기하평균 sqrt(tc1 * tc2)
+				var k_eff := minf(tc1, tc2) if (ins1 or building[ni] == "insulated_tile") else sqrt(tc1 * tc2)
+				var c_harm := (c1 * c2) / (c1 + c2)
+				var max_dq := absf(c_harm * dt_temp) * 0.22
+				var dq := clampf(k_eff * dt_temp * dt * 2.5, -max_dq, max_dq)
+				delta_q[i] += dq
+				delta_q[ni] -= dq
 
 	for i in range(total):
-		temp_c[i] += delta_t[i]
+		if therm_c[i] > 0.0 and delta_q[i] != 0.0:
+			temp_c[i] = clampf(temp_c[i] + delta_q[i] / therm_c[i], -270.0, 2200.0)
 
 func _step_phase_change() -> void:
 	# 원작 elements_extracted.json 기반 전 원소 상변화 (±1°C 히스테리시스)
@@ -1854,72 +2257,207 @@ func _recompute_radiation() -> void:
 							if d <= 3.5:
 								rads[idx(nx, ny)] += emit * maxf(0.0, 1.0 - d / 3.8)
 
+func _is_logic_gate(b: String) -> bool:
+	return b == "logic_and" or b == "logic_or" or b == "logic_not" or b == "logic_buffer"
+
 func _is_logic_node(i: int) -> bool:
 	if has_logic_wire[i] == 1:
 		return true
 	var b := building[i]
 	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"]
 
-func _step_logic_network() -> void:
-	# 원작 자동화(Automation) 논리 회로 연결 컴포넌트 계산 (GREEN=1 / RED=0)
+func _is_logic_passive_node(i: int) -> bool:
+	if _is_logic_gate(building[i]):
+		return false
+	return _is_logic_node(i)
+
+func _step_logic_network(dt: float = 0.0) -> void:
+	# 원작 자동화(Automation) 수동 배선망 + 진짜 불리언 논리 게이트(AND/OR/NOT/BUFFER/ALARM) 평가
 	var total := WIDTH * HEIGHT
 	logic_signal.fill(1)
-	var visited := PackedByteArray()
-	visited.resize(total)
+	logic_alarm_active = false
+
+	var net_id := PackedInt32Array()
+	net_id.resize(total)
+	net_id.fill(-1)
+
+	var net_has_source: Array[bool] = []
+	var net_source_sig: Array[int] = []
+	var net_driven_by_gate: Array[bool] = []
+	var net_gate_sig: Array[int] = []
+	var net_cells: Array = []
+
 	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var next_nid := 0
+
+	# 1) 게이트 셀을 경계로 수동 배선/센서/액추에이터 연결망 분할
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var si := idx(x, y)
-			if visited[si] == 1 or not _is_logic_node(si):
+			if net_id[si] != -1 or not _is_logic_passive_node(si):
 				continue
-			var net: Array[int] = []
+			var cells: Array[int] = []
 			var q: Array[Vector2i] = [Vector2i(x, y)]
-			visited[si] = 1
-			var has_source := false
+			net_id[si] = next_nid
+			var has_src := false
 			var any_green := false
 			while not q.is_empty():
 				var cur: Vector2i = q.pop_front()
 				var ci := idx(cur.x, cur.y)
-				net.append(ci)
+				cells.append(ci)
 				var b := building[ci]
 				if b == "smart_battery":
-					has_source = true
+					has_src = true
 					if battery_j[ci] < OniElements.BATTERY_CAPACITY_J * 0.88:
 						any_green = true
 				elif b == "atmo_sensor":
-					has_source = true
+					has_src = true
 					if gas_mass[ci] < 1.85:
 						any_green = true
 				elif b == "thermo_sensor":
-					has_source = true
+					has_src = true
 					if temp_c[ci] > 26.0:
 						any_green = true
 				elif b == "space_scanner":
-					has_source = true
+					has_src = true
 					if meteor_shower_active:
 						any_green = true
 				elif b == "logic_switch":
-					has_source = true
-					if bool(logic_switch_state.get(ci, true)):
+					has_src = true
+					if bool(logic_switch_state.get(ci, false)):
 						any_green = true
 				for d: Vector2i in dirs:
 					var nx: int = cur.x + d.x
 					var ny: int = cur.y + d.y
 					if in_bounds(nx, ny):
 						var ni := idx(nx, ny)
-						if visited[ni] == 0 and _is_logic_node(ni):
-							visited[ni] = 1
+						if net_id[ni] == -1 and _is_logic_passive_node(ni):
+							net_id[ni] = next_nid
 							q.append(Vector2i(nx, ny))
-			var sig: int = 1 if (not has_source or any_green) else 0
-			var has_not := false
-			for ci: int in net:
-				if building[ci] == "logic_not":
-					has_not = true
-					break
-			if has_not:
-				sig = 0 if sig == 1 else 1
-			for ci: int in net:
-				logic_signal[ci] = sig
+			net_has_source.append(has_src)
+			net_source_sig.append(1 if any_green else 0)
+			net_driven_by_gate.append(false)
+			net_gate_sig.append(0)
+			net_cells.append(cells)
+			next_nid += 1
+
+	# 2) 게이트 셀 수집
+	var gates: Array[Vector2i] = []
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var gi := idx(x, y)
+			if _is_logic_gate(building[gi]):
+				gates.append(Vector2i(x, y))
+				logic_signal[gi] = 0
+
+	# 3) 방향성 게이트 진리표 평가 (2회 패스로 직렬 게이트 연쇄 전파 지원)
+	for pass_idx in range(2):
+		for k in range(next_nid):
+			net_driven_by_gate[k] = false
+			net_gate_sig[k] = 0
+		for gp: Vector2i in gates:
+			var gi := idx(gp.x, gp.y)
+			var gb := building[gi]
+			var right_ok := in_bounds(gp.x + 1, gp.y) and _is_logic_node(idx(gp.x + 1, gp.y))
+			var in_cells: Array[int] = []
+			var out_cells: Array[int] = []
+			if right_ok:
+				out_cells.append(idx(gp.x + 1, gp.y))
+				for d: Vector2i in [Vector2i(-1, 0), Vector2i(0, -1), Vector2i(0, 1)]:
+					var nx: int = gp.x + d.x
+					var ny: int = gp.y + d.y
+					if in_bounds(nx, ny) and _is_logic_node(idx(nx, ny)):
+						in_cells.append(idx(nx, ny))
+			else:
+				for d: Vector2i in dirs:
+					var nx: int = gp.x + d.x
+					var ny: int = gp.y + d.y
+					if not in_bounds(nx, ny):
+						continue
+					var ni := idx(nx, ny)
+					if not _is_logic_node(ni):
+						continue
+					var nnid := net_id[ni]
+					if nnid >= 0 and not net_has_source[nnid] and not net_driven_by_gate[nnid]:
+						out_cells.append(ni)
+					else:
+						in_cells.append(ni)
+
+			var in_vals: Array[int] = []
+			for ic: int in in_cells:
+				if _is_logic_gate(building[ic]):
+					in_vals.append(int(logic_signal[ic]))
+				else:
+					var inid := net_id[ic]
+					if inid >= 0:
+						var sv: int = 1 if (net_source_sig[inid] == 1 or (net_driven_by_gate[inid] and net_gate_sig[inid] == 1)) else 0
+						in_vals.append(sv)
+
+			var out_sig := 0
+			if gb == "logic_and":
+				if not in_vals.is_empty():
+					out_sig = 1
+					for v: int in in_vals:
+						if v == 0:
+							out_sig = 0
+							break
+			elif gb == "logic_or":
+				for v: int in in_vals:
+					if v == 1:
+						out_sig = 1
+						break
+			elif gb == "logic_not":
+				var any_one := false
+				for v: int in in_vals:
+					if v == 1:
+						any_one = true
+						break
+				out_sig = 0 if any_one else 1
+			elif gb == "logic_buffer":
+				var any_one := false
+				for v: int in in_vals:
+					if v == 1:
+						any_one = true
+						break
+				if any_one:
+					logic_buffer_timer[gi] = 5.0
+					out_sig = 1
+				else:
+					if pass_idx == 0 and dt > 0.0 and logic_buffer_timer[gi] > 0.0:
+						logic_buffer_timer[gi] = maxf(0.0, logic_buffer_timer[gi] - dt)
+					out_sig = 1 if logic_buffer_timer[gi] > 0.0 else 0
+
+			logic_signal[gi] = out_sig
+			for oc: int in out_cells:
+				var onid := net_id[oc]
+				if onid >= 0:
+					net_driven_by_gate[onid] = true
+					if out_sig == 1:
+						net_gate_sig[onid] = 1
+
+	# 4) 최종 신호 각 셀에 반영 + 경보기(logic_alarm)·벙커 문 연동
+	var bunker_has_logic := false
+	var bunker_logic_green := false
+	for k in range(next_nid):
+		var driven := net_has_source[k] or net_driven_by_gate[k]
+		var final_sig := 1
+		if driven:
+			final_sig = 1 if (net_source_sig[k] == 1 or net_gate_sig[k] == 1) else 0
+		var cells_k: Array = net_cells[k]
+		for ci_v in cells_k:
+			var ci := int(ci_v)
+			logic_signal[ci] = final_sig
+			var b := building[ci]
+			if b == "logic_alarm" and driven and final_sig == 1:
+				logic_alarm_active = true
+			elif b == "bunker_door" and driven:
+				bunker_has_logic = true
+				if final_sig == 1:
+					bunker_logic_green = true
+	if meteor_shower_active:
+		bunker_closed = true
+	elif bunker_has_logic:
+		bunker_closed = bunker_logic_green
 
 func generate_print_offers() -> void:
 	# 원작 52명 공식 복제체 인격 + 131종 특성 + 보급품 3지선다 인쇄 오퍼 생성
@@ -2116,6 +2654,30 @@ func _recompute_rooms() -> void:
 	for d in duplicants:
 		d.morale = 1 + colony_morale_bonus
 
+func _cell_thermal_mass(i: int) -> float:
+	if not solid_el[i].is_empty():
+		var shc := maxf(0.1, float(OniElements.get_element(solid_el[i]).get("shc", 0.8)))
+		return maxf(1.0, solid_mass[i]) * shc
+	var b := building[i]
+	if b == "insulated_tile":
+		return 320.0 # 400kg * 0.8 SHC
+	if b == "metal_tile":
+		return 38.6 # 100kg * 0.386 SHC
+	if b == "bunker_tile":
+		return 49.0 # 100kg * 0.49 SHC
+	if b == "glass_tile":
+		return 84.0 # 100kg * 0.84 SHC
+	if b == "tile" or b == "farm_tile" or b == "hydroponic_tile":
+		return 160.0 # 200kg * 0.8 SHC
+	if liquid_mass[i] > 1.0:
+		var lel := liquid_el[i] if not liquid_el[i].is_empty() else "Water"
+		var lshc := maxf(0.2, float(OniElements.get_element(lel).get("shc", 4.179)))
+		return liquid_mass[i] * lshc
+	if gas_mass[i] > 0.005 and gas_el[i] != "Vacuum":
+		var gshc := maxf(0.1, float(OniElements.get_element(gas_el[i]).get("shc", 1.005)))
+		return gas_mass[i] * gshc
+	return 0.0
+
 func _cell_conductivity(i: int) -> float:
 	if not solid_el[i].is_empty():
 		return float(OniElements.get_element(solid_el[i]).get("tc", 1.0))
@@ -2126,11 +2688,14 @@ func _cell_conductivity(i: int) -> float:
 		return 60.0
 	if b == "bunker_tile":
 		return 54.0
-	if b == "tile" or b == "farm_tile":
+	if b == "glass_tile":
+		return 1.11
+	if b == "tile" or b == "farm_tile" or b == "hydroponic_tile":
 		return 2.9
 	if liquid_mass[i] > 1.0:
-		return 0.609
-	if gas_mass[i] > 0.005:
+		var lel := liquid_el[i] if not liquid_el[i].is_empty() else "Water"
+		return float(OniElements.get_element(lel).get("tc", 0.609))
+	if gas_mass[i] > 0.005 and gas_el[i] != "Vacuum":
 		return float(OniElements.get_element(gas_el[i]).get("tc", 0.024))
 	return 0.0
 
@@ -2140,17 +2705,13 @@ func _step_farms(dt: float) -> void:
 			var i := idx(x, y)
 			var b := building[i]
 			if b == "wheezewort":
-				# 씨근풀: 주변 2칸 기체/지형 능동 냉각 (-1.8°C/s -> 최저 -15°C)
+				# 씨근풀: 주변 2칸 기체/지형 능동 냉각 (-0.85°C/s -> 최저 -15°C)
 				for dy in range(-2, 3):
 					for dx in range(-2, 3):
 						if in_bounds(x + dx, y + dy):
 							var ni := idx(x + dx, y + dy)
 							if temp_c[ni] > -15.0:
 								temp_c[ni] = maxf(-15.0, temp_c[ni] - 0.85 * dt)
-				machine_running[i] = 1
-				continue
-			if b == "planetarium" and data_banks > 0 and not active_tech.is_empty():
-				add_research_points(1.8 * dt)
 				machine_running[i] = 1
 				continue
 			if b != "farm_tile" and b != "hydroponic_tile" and b != "planter_box":
@@ -2222,17 +2783,31 @@ func _step_geysers_and_critters(dt: float) -> void:
 func _step_power_and_machines(dt: float) -> void:
 	var total := WIDTH * HEIGHT
 	for i in range(total):
-		if building[i] != "farm_tile":
+		if building[i] != "farm_tile" and building[i] != "hydroponic_tile" and building[i] != "planter_box" and building[i] != "wheezewort":
 			machine_running[i] = 0
+		# 무전력 연료 가마(Kiln): 점토 + 석탄 -> 세라믹 제련
+		if building[i] == "kiln":
+			var need_cl := 1.5 * dt
+			var need_ca := 0.5 * dt
+			if float(inventory.get("Clay", 0.0)) >= need_cl and float(inventory.get("Carbon", 0.0)) >= need_ca:
+				inventory["Clay"] = maxf(0.0, float(inventory["Clay"]) - need_cl)
+				inventory["Carbon"] = maxf(0.0, float(inventory["Carbon"]) - need_ca)
+				inventory["Ceramic"] = float(inventory.get("Ceramic", 0.0)) + need_cl
+				temp_c[i] = minf(120.0, temp_c[i] + 0.9 * dt)
+				machine_running[i] = 1
 
 	power_produced_w = 0.0
 	power_consumed_w = 0.0
+	max_circuit_load_w = 0.0
+	circuit_overloaded = false
+	overloaded_cells.fill(0)
 	total_battery_j = 0.0
 	total_battery_cap_j = 0.0
 
 	var visited := PackedByteArray()
 	visited.resize(total)
 	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var solar_f := get_solar_factor()
 
 	for y in range(HEIGHT):
 		for x in range(WIDTH):
@@ -2258,6 +2833,7 @@ func _step_power_and_machines(dt: float) -> void:
 						queue.append(Vector2i(nx, ny))
 
 			var net_gen_w := 0.0
+			var net_consumed_w := 0.0
 			var net_bat_j := 0.0
 			var bats: Array[int] = []
 			var consumers: Array[int] = []
@@ -2278,6 +2854,31 @@ func _step_power_and_machines(dt: float) -> void:
 							gas_el[ci] = "CarbonDioxide"
 							gas_mass[ci] += OniElements.COAL_GEN_CO2_KG_PER_S * dt
 						temp_c[ci] = lerpf(temp_c[ci], OniElements.COAL_GEN_OUT_TEMP_C, 0.03)
+				elif b == "petrol_gen":
+					# 석유 발전기 (2,000 W): 배관 석유/원유 또는 인벤토리 석유 소비 -> CO2 + 오염수 배출
+					var logic_ok := has_logic_wire[ci] == 0 or logic_signal[ci] == 1
+					var need_fuel := 2.0 * dt
+					var fueled := false
+					if logic_ok:
+						if has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= need_fuel and (lpipe_el[ci] == "Petroleum" or lpipe_el[ci] == "CrudeOil"):
+							lpipe_mass[ci] -= need_fuel
+							if lpipe_mass[ci] < 0.05:
+								lpipe_mass[ci] = 0.0
+								lpipe_el[ci] = ""
+							fueled = true
+						elif float(inventory.get("Petroleum", 0.0)) >= need_fuel:
+							inventory["Petroleum"] = maxf(0.0, float(inventory["Petroleum"]) - need_fuel)
+							fueled = true
+					if fueled:
+						net_gen_w += 2000.0
+						machine_running[ci] = 1
+						if gas_el[ci] == "Vacuum" or gas_el[ci] == "CarbonDioxide":
+							gas_el[ci] = "CarbonDioxide"
+							gas_mass[ci] += 0.5 * dt
+						if liquid_mass[ci] < 400.0 and (liquid_mass[ci] < 1.0 or liquid_el[ci] == "DirtyWater" or liquid_el[ci].is_empty()):
+							liquid_el[ci] = "DirtyWater"
+							liquid_mass[ci] += 0.75 * dt
+						temp_c[ci] = minf(115.0, temp_c[ci] + 1.8 * dt)
 				elif b == "hydrogen_gen":
 					# 기체관에서 수소 보충
 					if has_gas_pipe[ci] == 1 and gpipe_el[ci] == "Hydrogen" and gpipe_mass[ci] > 0.01:
@@ -2289,7 +2890,8 @@ func _step_power_and_machines(dt: float) -> void:
 								gpipe_mass[ci] = 0.0
 								gpipe_el[ci] = "Vacuum"
 					var need_h2 := OniElements.H2_GEN_H2_KG_PER_S * dt
-					if h2_buffer_kg[ci] >= need_h2:
+					var logic_ok := has_logic_wire[ci] == 0 or logic_signal[ci] == 1
+					if logic_ok and h2_buffer_kg[ci] >= need_h2:
 						h2_buffer_kg[ci] -= need_h2
 						net_gen_w += OniElements.H2_GEN_POWER_W
 						machine_running[ci] = 1
@@ -2303,8 +2905,12 @@ func _step_power_and_machines(dt: float) -> void:
 						if gas_mass[below_i] < 0.005:
 							gas_mass[below_i] = 0.0
 							gas_el[below_i] = "Vacuum"
-						if has_liquid_pipe[ci] == 1:
-							lpipe_mass[ci] = minf(OniElements.LIQUID_PIPE_MAX_KG, lpipe_mass[ci] + used_s)
+						if has_liquid_pipe[ci] == 1 and (lpipe_mass[ci] < 0.05 or lpipe_el[ci].is_empty() or lpipe_el[ci] == "Water"):
+							var add_w := minf(used_s, OniElements.LIQUID_PIPE_MAX_KG - lpipe_mass[ci])
+							var tot_w := lpipe_mass[ci] + add_w
+							lpipe_temp[ci] = (lpipe_mass[ci] * lpipe_temp[ci] + add_w * 95.0) / maxf(0.001, tot_w)
+							lpipe_mass[ci] = tot_w
+							lpipe_el[ci] = "Water"
 						net_gen_w += OniElements.TURBINE_POWER_W
 						temp_c[ci] += 0.25 * dt
 						machine_running[ci] = 1
@@ -2319,14 +2925,17 @@ func _step_power_and_machines(dt: float) -> void:
 								var ni := idx(cx + dx, cy + dy)
 								temp_c[ni] = maxf(-80.0, temp_c[ni] - 0.6 * dt)
 				elif b == "solar_panel":
-					net_gen_w += 380.0
-					machine_running[ci] = 1
+					# 실제 낮/밤 일조 곡선 연동 (정오 최대 380W, 야간 0W)
+					var sw := 380.0 * solar_f
+					if sw > 1.0:
+						net_gen_w += sw
+						machine_running[ci] = 1
 				elif b == "battery" or b == "smart_battery":
 					battery_j[ci] = maxf(0.0, battery_j[ci] - OniElements.BATTERY_LEAK_J_PER_S * dt)
 					bats.append(ci)
 					net_bat_j += battery_j[ci]
 					total_battery_cap_j += OniElements.BATTERY_CAPACITY_J
-				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station"]:
+				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "space_scanner", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance", "massage_table", "sauna", "hottub", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter"]:
 					consumers.append(ci)
 
 			power_produced_w += net_gen_w
@@ -2343,7 +2952,7 @@ func _step_power_and_machines(dt: float) -> void:
 					var can_emit := (gas_el[ci] == "Vacuum" or gas_el[ci] == "Oxygen") and gas_mass[ci] < OniElements.DIFFUSER_MAX_PRESSURE_KG
 					if can_emit and available_j - used_j >= need_j and float(inventory.get("Algae", 0.0)) >= need_algae:
 						used_j += need_j
-						power_consumed_w += OniElements.DIFFUSER_POWER_W
+						net_consumed_w += OniElements.DIFFUSER_POWER_W
 						inventory["Algae"] = maxf(0.0, float(inventory["Algae"]) - need_algae)
 						gas_el[ci] = "Oxygen"
 						gas_mass[ci] += OniElements.DIFFUSER_O2_KG_PER_S * dt
@@ -2354,14 +2963,18 @@ func _step_power_and_machines(dt: float) -> void:
 					var need_j := OniElements.ELECTROLYZER_POWER_W * dt
 					var need_w := OniElements.ELECTROLYZER_WATER_KG_PER_S * dt
 					var can_emit := gas_mass[ci] < OniElements.ELECTROLYZER_MAX_PRESSURE_KG
-					if can_emit and available_j - used_j >= need_j and has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= need_w:
+					var has_water_pipe := has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= need_w and (lpipe_el[ci] == "Water" or lpipe_el[ci].is_empty())
+					if can_emit and available_j - used_j >= need_j and has_water_pipe:
 						used_j += need_j
-						power_consumed_w += OniElements.ELECTROLYZER_POWER_W
+						net_consumed_w += OniElements.ELECTROLYZER_POWER_W
 						lpipe_mass[ci] -= need_w
+						if lpipe_mass[ci] < 0.05:
+							lpipe_mass[ci] = 0.0
+							lpipe_el[ci] = ""
 						gas_el[ci] = "Oxygen"
 						gas_mass[ci] += OniElements.ELECTROLYZER_O2_KG_PER_S * dt
+						report_o2_kg += OniElements.ELECTROLYZER_O2_KG_PER_S * dt
 						temp_c[ci] = lerpf(temp_c[ci], OniElements.ELECTROLYZER_OUT_TEMP_C, 0.12)
-						# 수소는 위쪽 빈 칸으로 방출
 						var cx := ci % WIDTH
 						var cy := ci / WIDTH
 						if cy > 1 and is_passable(cx, cy - 1):
@@ -2372,14 +2985,21 @@ func _step_power_and_machines(dt: float) -> void:
 						machine_running[ci] = 1
 				elif b == "liquid_pump":
 					var need_j := OniElements.LIQUID_PUMP_POWER_W * dt
-					if available_j - used_j >= need_j and has_liquid_pipe[ci] == 1 and liquid_mass[ci] > 1.0 and lpipe_mass[ci] < OniElements.LIQUID_PIPE_MAX_KG:
+					var src_el := liquid_el[ci] if not liquid_el[ci].is_empty() else "Water"
+					var pipe_compat := lpipe_mass[ci] < 0.05 or lpipe_el[ci].is_empty() or lpipe_el[ci] == src_el
+					if available_j - used_j >= need_j and has_liquid_pipe[ci] == 1 and liquid_mass[ci] > 1.0 and pipe_compat and lpipe_mass[ci] < OniElements.LIQUID_PIPE_MAX_KG:
 						var take := minf(minf(liquid_mass[ci], OniElements.LIQUID_PUMP_KG_PER_S * dt), OniElements.LIQUID_PIPE_MAX_KG - lpipe_mass[ci])
 						if take > 0.01:
 							used_j += need_j
-							power_consumed_w += OniElements.LIQUID_PUMP_POWER_W
+							net_consumed_w += OniElements.LIQUID_PUMP_POWER_W
+							var tot_p := lpipe_mass[ci] + take
+							lpipe_temp[ci] = (lpipe_mass[ci] * lpipe_temp[ci] + take * temp_c[ci]) / maxf(0.001, tot_p)
 							liquid_mass[ci] -= take
-							lpipe_mass[ci] += take
-							lpipe_temp[ci] = temp_c[ci]
+							if liquid_mass[ci] < 0.5:
+								liquid_mass[ci] = 0.0
+								liquid_el[ci] = ""
+							lpipe_el[ci] = src_el
+							lpipe_mass[ci] = tot_p
 							machine_running[ci] = 1
 				elif b == "gas_pump":
 					var need_j := OniElements.GAS_PUMP_POWER_W * dt
@@ -2388,11 +3008,12 @@ func _step_power_and_machines(dt: float) -> void:
 							var take := minf(minf(gas_mass[ci], OniElements.GAS_PUMP_KG_PER_S * dt), OniElements.GAS_PIPE_MAX_KG - gpipe_mass[ci])
 							if take > 0.005:
 								used_j += need_j
-								power_consumed_w += OniElements.GAS_PUMP_POWER_W
+								net_consumed_w += OniElements.GAS_PUMP_POWER_W
+								var tot_gp := gpipe_mass[ci] + take
+								gpipe_temp[ci] = (gpipe_mass[ci] * gpipe_temp[ci] + take * temp_c[ci]) / maxf(0.001, tot_gp)
 								gas_mass[ci] -= take
 								gpipe_el[ci] = gas_el[ci]
-								gpipe_mass[ci] += take
-								gpipe_temp[ci] = temp_c[ci]
+								gpipe_mass[ci] = tot_gp
 								if gas_mass[ci] < 0.001:
 									gas_mass[ci] = 0.0
 									gas_el[ci] = "Vacuum"
@@ -2404,16 +3025,76 @@ func _step_power_and_machines(dt: float) -> void:
 						var need_dirt := pts * OniElements.RESEARCH_DIRT_PER_PT
 						if float(inventory.get("Dirt", 0.0)) >= need_dirt:
 							used_j += need_j
-							power_consumed_w += OniElements.RESEARCH_POWER_W
+							net_consumed_w += OniElements.RESEARCH_POWER_W
 							inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
 							add_research_points(pts)
 							machine_running[ci] = 1
+				elif b == "super_computer":
+					var need_j := 120.0 * dt
+					if research_active[ci] == 1 and not active_tech.is_empty() and available_j - used_j >= need_j:
+						var pts := 1.2 * dt
+						var fed := false
+						if has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= 0.5 * dt and (lpipe_el[ci] == "Water" or lpipe_el[ci].is_empty()):
+							lpipe_mass[ci] = maxf(0.0, lpipe_mass[ci] - 0.5 * dt)
+							fed = true
+						elif float(inventory.get("Dirt", 0.0)) >= pts * 20.0:
+							inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - pts * 20.0)
+							fed = true
+						if fed:
+							used_j += need_j
+							net_consumed_w += 120.0
+							add_research_points(pts)
+							machine_running[ci] = 1
+				elif b == "planetarium":
+					var need_j := 120.0 * dt
+					if data_banks > 0 and not active_tech.is_empty() and available_j - used_j >= need_j:
+						var mult := 2.0 if research_active[ci] == 1 else 1.0
+						used_j += need_j
+						net_consumed_w += 120.0
+						add_research_points(1.5 * mult * dt)
+						machine_running[ci] = 1
 				elif b == "ceiling_light":
 					var need_j := 10.0 * dt
 					if available_j - used_j >= need_j:
 						used_j += need_j
-						power_consumed_w += 10.0
+						net_consumed_w += 10.0
 						machine_running[ci] = 1
+				elif b == "space_scanner":
+					var need_j := 120.0 * dt
+					if available_j - used_j >= need_j:
+						used_j += need_j
+						net_consumed_w += 120.0
+						machine_running[ci] = 1
+				elif b in ["suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]:
+					var pw := 60.0 if b != "travel_tube_entrance" else 120.0
+					var need_j := pw * dt
+					if available_j - used_j >= need_j:
+						used_j += need_j
+						net_consumed_w += pw
+						machine_running[ci] = 1
+				elif b in ["massage_table", "sauna", "hottub", "jukebot", "arcade_cabinet"]:
+					var in_use := false
+					var cx := ci % WIDTH
+					var cy := ci / WIDTH
+					for d in duplicants:
+						if d.cell == Vector2i(cx, cy) and (d.state == "HEAL" or d.state == "RELAX"):
+							in_use = true
+							break
+					if in_use:
+						var pw := 240.0 if b == "massage_table" else 60.0
+						var need_j := pw * dt
+						if available_j - used_j >= need_j:
+							used_j += need_j
+							net_consumed_w += pw
+							machine_running[ci] = 1
+				elif b == "gas_filter" or b == "liquid_filter":
+					var has_flow := (b == "gas_filter" and has_gas_pipe[ci] == 1 and gpipe_mass[ci] > 0.01) or (b == "liquid_filter" and has_liquid_pipe[ci] == 1 and lpipe_mass[ci] > 0.05)
+					if has_flow:
+						var need_j := 120.0 * dt
+						if available_j - used_j >= need_j:
+							used_j += need_j
+							net_consumed_w += 120.0
+							machine_running[ci] = 1
 				elif b == "co2_skimmer":
 					var need_j := 120.0 * dt
 					if available_j - used_j >= need_j:
@@ -2434,33 +3115,46 @@ func _step_power_and_machines(dt: float) -> void:
 									break
 						if scrubbed:
 							used_j += need_j
-							power_consumed_w += 120.0
+							net_consumed_w += 120.0
 							machine_running[ci] = 1
 				elif b == "water_sieve":
+					# 원작 물 정화기 (120W): 배관의 오염수(DirtyWater) -> 40°C 청수(Water) 정화 + 모래 소비
 					var need_j := 120.0 * dt
 					if available_j - used_j >= need_j:
-						var cx := ci % WIDTH
-						var cy := ci / WIDTH
-						for d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]:
-							var nx: int = cx + d.x
-							var ny: int = cy + d.y
-							if in_bounds(nx, ny):
-								var ni := idx(nx, ny)
-								if liquid_mass[ni] > 10.0 and liquid_el[ni] == "DirtyWater":
-									liquid_el[ni] = "Water"
-									germ_count[ni] = 0.0
-									germ_type[ni] = ""
-									used_j += need_j
-									power_consumed_w += 120.0
-									machine_running[ci] = 1
-									break
+						var purified := false
+						if has_liquid_pipe[ci] == 1 and lpipe_mass[ci] > 0.05 and lpipe_el[ci] == "DirtyWater":
+							lpipe_el[ci] = "Water"
+							lpipe_temp[ci] = 40.0
+							germ_count[ci] = 0.0
+							germ_type[ci] = ""
+							if float(inventory.get("Sand", 0.0)) >= 0.5 * dt:
+								inventory["Sand"] = maxf(0.0, float(inventory["Sand"]) - 0.5 * dt)
+							purified = true
+						else:
+							var cx := ci % WIDTH
+							var cy := ci / WIDTH
+							for d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]:
+								var nx: int = cx + d.x
+								var ny: int = cy + d.y
+								if in_bounds(nx, ny):
+									var ni := idx(nx, ny)
+									if liquid_mass[ni] > 10.0 and liquid_el[ni] == "DirtyWater":
+										liquid_el[ni] = "Water"
+										germ_count[ni] = 0.0
+										germ_type[ni] = ""
+										purified = true
+										break
+						if purified:
+							used_j += need_j
+							net_consumed_w += 120.0
+							machine_running[ci] = 1
 				elif b == "microbe_musher" or b == "electric_grill":
 					var pw := 240.0 if b == "microbe_musher" else 60.0
 					var need_j := pw * dt
 					var need_dirt := 1.2 * dt
 					if available_j - used_j >= need_j and food_kcal < 12000.0 and float(inventory.get("Dirt", 0.0)) >= need_dirt:
 						used_j += need_j
-						power_consumed_w += pw
+						net_consumed_w += pw
 						inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
 						food_kcal += (28.0 if b == "microbe_musher" else 42.0) * dt
 						machine_running[ci] = 1
@@ -2468,28 +3162,61 @@ func _step_power_and_machines(dt: float) -> void:
 					var need_j := 240.0 * dt
 					if available_j - used_j >= need_j and has_liquid_pipe[ci] == 1 and lpipe_mass[ci] > 0.1:
 						used_j += need_j
-						power_consumed_w += 240.0
+						net_consumed_w += 240.0
 						lpipe_temp[ci] = maxf(-10.0, lpipe_temp[ci] - 14.0 * dt)
 						temp_c[ci] = minf(120.0, temp_c[ci] + 4.0 * dt)
+						machine_running[ci] = 1
+				elif b == "rock_crusher":
+					var need_j := 240.0 * dt
+					var need_rock := 2.0 * dt
+					if available_j - used_j >= need_j and float(inventory.get("SandStone", 0.0)) >= 200.0 + need_rock and float(inventory.get("Sand", 0.0)) < 800.0:
+						used_j += need_j
+						net_consumed_w += 240.0
+						inventory["SandStone"] = maxf(0.0, float(inventory["SandStone"]) - need_rock)
+						inventory["Sand"] = float(inventory.get("Sand", 0.0)) + need_rock * 0.5
+						inventory["Cuprite"] = float(inventory.get("Cuprite", 0.0)) + need_rock * 0.25
+						temp_c[ci] = minf(90.0, temp_c[ci] + 0.6 * dt)
 						machine_running[ci] = 1
 				elif b == "metal_refinery":
 					var need_j := 240.0 * dt
 					if available_j - used_j >= need_j and float(inventory.get("Cuprite", 0.0)) >= 1.5 * dt:
 						used_j += need_j
-						power_consumed_w += 240.0
+						net_consumed_w += 240.0
 						inventory["Cuprite"] = maxf(0.0, float(inventory["Cuprite"]) - 1.5 * dt)
 						inventory["Copper"] = float(inventory.get("Copper", 0.0)) + 1.5 * dt
 						temp_c[ci] = minf(110.0, temp_c[ci] + 1.2 * dt)
 						machine_running[ci] = 1
 				elif b == "oil_refinery":
-					var need_j := 240.0 * dt
+					# 정유기 (480W): 배관/인접 원유(CrudeOil) -> 석유(Petroleum) + 천연가스(Methane)
+					var need_j := 480.0 * dt
 					if available_j - used_j >= need_j:
-						used_j += need_j
-						power_consumed_w += 240.0
-						if gas_el[ci] == "Vacuum" or gas_el[ci] == "Methane":
-							gas_el[ci] = "Methane"
-							gas_mass[ci] = minf(2.0, gas_mass[ci] + 0.08 * dt)
-						machine_running[ci] = 1
+						var refined := false
+						if has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= 0.5 * dt and lpipe_el[ci] == "CrudeOil":
+							lpipe_el[ci] = "Petroleum"
+							lpipe_temp[ci] = maxf(lpipe_temp[ci], 75.0)
+							inventory["Petroleum"] = float(inventory.get("Petroleum", 0.0)) + 0.5 * dt
+							refined = true
+						elif liquid_mass[ci] > 2.0 and liquid_el[ci] == "CrudeOil":
+							var take_o := minf(liquid_mass[ci], 1.0 * dt)
+							liquid_mass[ci] -= take_o
+							inventory["Petroleum"] = float(inventory.get("Petroleum", 0.0)) + take_o * 0.5
+							refined = true
+						if refined:
+							used_j += need_j
+							net_consumed_w += 480.0
+							if gas_el[ci] == "Vacuum" or gas_el[ci] == "Methane":
+								gas_el[ci] = "Methane"
+								gas_mass[ci] = minf(2.0, gas_mass[ci] + 0.09 * dt)
+							temp_c[ci] = minf(110.0, temp_c[ci] + 1.0 * dt)
+							machine_running[ci] = 1
+
+			power_consumed_w += net_consumed_w
+			if net_consumed_w > max_circuit_load_w:
+				max_circuit_load_w = net_consumed_w
+			if net_consumed_w > 1000.0:
+				circuit_overloaded = true
+				for ci_o: int in net:
+					overloaded_cells[ci_o] = 1
 
 			var net_delta_j := net_gen_w * dt - used_j
 			if not bats.is_empty():
@@ -2517,6 +3244,10 @@ func _recompute_stats() -> void:
 	avg_oxygen_kg = sum_o2 / float(maxi(1, open_cells))
 
 	alerts.clear()
+	if circuit_overloaded:
+		alerts.append("전력 회로 과부하! %.0f / 1000W" % max_circuit_load_w)
+	if logic_alarm_active:
+		alerts.append("자동 알림 작동!")
 	if meteor_shower_active:
 		alerts.append("운석우 접근! 우주 스캐너·벙커 문 자동 방어 가동 (방어 %d)" % meteors_blocked)
 	if rocket_state == "LAUNCHING" or rocket_state == "IN_SPACE" or rocket_state == "LANDING":
@@ -2560,19 +3291,331 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"room_name": r_name,
 		"room_morale": r_morale,
 		"decor": decor_val[i],
+		"rads": rads[i],
 		"has_logic_wire": has_logic_wire[i] == 1,
 		"logic_signal": logic_signal[i] == 1,
 		"building": building[i],
 		"has_wire": has_wire[i] == 1,
+		"overloaded": overloaded_cells[i] == 1,
 		"has_liquid_pipe": has_liquid_pipe[i] == 1,
+		"lpipe_el": lpipe_el[i],
 		"lpipe_mass": lpipe_mass[i],
+		"lpipe_temp": lpipe_temp[i],
 		"has_gas_pipe": has_gas_pipe[i] == 1,
 		"gpipe_el": gpipe_el[i],
 		"gpipe_mass": gpipe_mass[i],
+		"gpipe_temp": gpipe_temp[i],
+		"reservoir_el": reservoir_el[i],
+		"reservoir_mass": reservoir_mass[i],
 		"battery_j": battery_j[i],
 		"h2_buffer_kg": h2_buffer_kg[i],
 		"farm_growth": farm_growth[i],
 		"machine_running": machine_running[i] == 1,
 		"dig_order": dig_order[i] == 1,
 		"build_order": build_order[i],
+		"deconstruct_order": deconstruct_order[i] == 1,
+		"mop_order": mop_order[i] == 1,
+		"tile_priority": int(tile_priority[i]),
 	}
+
+static func run_logic_self_test() -> Dictionary:
+	# 독립 테스트 월드에서 10대 핵심 ONI 시뮬레이션 불변량 자가검증
+	var w := OniWorld.new(73)
+	var passed := 0
+	var failed := 0
+	var details: Array[String] = []
+
+	# 1) 에너지 보존 열역학 & 단열 vs 금속 타일 전도율 비교
+	var i_gas := w.idx(4, 4)
+	var i_rock := w.idx(5, 4)
+	for cx in range(3, 7):
+		for cy in range(3, 6):
+			var k := w.idx(cx, cy)
+			w.solid_el[k] = ""
+			w.solid_mass[k] = 0.0
+			w.liquid_el[k] = ""
+			w.liquid_mass[k] = 0.0
+			w.gas_el[k] = "Vacuum"
+			w.gas_mass[k] = 0.0
+			w.building[k] = ""
+	w.gas_el[i_gas] = "Oxygen"
+	w.gas_mass[i_gas] = 1.0
+	w.temp_c[i_gas] = 100.0
+	w.solid_el[i_rock] = "SandStone"
+	w.solid_mass[i_rock] = 1000.0
+	w.temp_c[i_rock] = 20.0
+	var c_g := w._cell_thermal_mass(i_gas)
+	var c_r := w._cell_thermal_mass(i_rock)
+	var e_before := c_g * w.temp_c[i_gas] + c_r * w.temp_c[i_rock]
+	for _t in range(15):
+		w._step_heat(0.5)
+	var e_after := c_g * w.temp_c[i_gas] + c_r * w.temp_c[i_rock]
+	var e_err := absf(e_after - e_before) / maxf(1.0, absf(e_before))
+	var ok1 := e_err < 0.0005 and (w.temp_c[i_rock] - 20.0) < 0.25 and w.temp_c[i_gas] < 95.0
+	if ok1:
+		passed += 1
+		details.append("PASS [1/10] 열역학 에너지 보존 (오차 %.5f%% · 암반ΔT %.3f°C · 기체 %.1f°C)" % [e_err * 100.0, w.temp_c[i_rock] - 20.0, w.temp_c[i_gas]])
+	else:
+		failed += 1
+		details.append("FAIL [1/10] 열역학 (오차 %.5f · 암반 %.2f · 기체 %.2f)" % [e_err, w.temp_c[i_rock], w.temp_c[i_gas]])
+
+	# 2) 다중 원소 액체 배관 원소 보존(CrudeOil) & 물 정화기(DirtyWater -> Water 40°C)
+	for lx in range(4, 9):
+		var li := w.idx(lx, 7)
+		w.solid_el[li] = ""
+		w.solid_mass[li] = 0.0
+		w.building[li] = ""
+		w.has_liquid_pipe[li] = 1
+		w.has_wire[li] = 1
+		w.lpipe_mass[li] = 0.0
+		w.lpipe_el[li] = ""
+		w.liquid_mass[li] = 0.0
+		w.liquid_el[li] = ""
+	w.building[w.idx(4, 7)] = "battery"
+	w.battery_j[w.idx(4, 7)] = 8000.0
+	w.building[w.idx(5, 7)] = "liquid_pump"
+	w.liquid_el[w.idx(5, 7)] = "DirtyWater"
+	w.liquid_mass[w.idx(5, 7)] = 200.0
+	w.temp_c[w.idx(5, 7)] = 32.0
+	w.building[w.idx(6, 7)] = "water_sieve"
+	w.building[w.idx(7, 7)] = "liquid_vent"
+	for _s in range(6):
+		w._step_power_and_machines(1.0)
+		w.step_conduit_tick()
+	var sieve_ok := w.liquid_el[w.idx(7, 7)] == "Water" and w.liquid_mass[w.idx(7, 7)] > 1.0
+	# 원유 직송 테스트
+	for lx in range(4, 8):
+		var li := w.idx(lx, 9)
+		w.solid_el[li] = ""
+		w.solid_mass[li] = 0.0
+		w.building[li] = ""
+		w.has_liquid_pipe[li] = 1
+		w.has_wire[li] = 1
+		w.lpipe_mass[li] = 0.0
+		w.lpipe_el[li] = ""
+		w.liquid_mass[li] = 0.0
+		w.liquid_el[li] = ""
+	w.building[w.idx(4, 9)] = "battery"
+	w.battery_j[w.idx(4, 9)] = 8000.0
+	w.building[w.idx(5, 9)] = "liquid_pump"
+	w.liquid_el[w.idx(5, 9)] = "CrudeOil"
+	w.liquid_mass[w.idx(5, 9)] = 200.0
+	w.temp_c[w.idx(5, 9)] = 68.0
+	w.building[w.idx(6, 9)] = "liquid_vent"
+	for _s2 in range(4):
+		w._step_power_and_machines(1.0)
+		w.step_conduit_tick()
+	var oil_ok := w.liquid_el[w.idx(6, 9)] == "CrudeOil" and w.liquid_mass[w.idx(6, 9)] > 1.0
+	if sieve_ok and oil_ok:
+		passed += 1
+		details.append("PASS [2/10] 다중 원소 배관 (DirtyWater→Water 정화 & CrudeOil 원소 보존 배출)")
+	else:
+		failed += 1
+		details.append("FAIL [2/10] 다중 원소 배관 (sieve=%s:%s oil=%s:%s)" % [str(sieve_ok), w.liquid_el[w.idx(7, 7)], str(oil_ok), w.liquid_el[w.idx(6, 9)]])
+
+	# 3) 액체 저장고(5,000kg) 양방향 버퍼링
+	var ir := w.idx(10, 7)
+	w.solid_el[ir] = ""
+	w.solid_mass[ir] = 0.0
+	w.building[ir] = "liquid_reservoir"
+	w.has_liquid_pipe[ir] = 1
+	w.lpipe_el[ir] = "Water"
+	w.lpipe_mass[ir] = 10.0
+	w.lpipe_temp[ir] = 25.0
+	w.reservoir_mass[ir] = 0.0
+	w.reservoir_el[ir] = ""
+	w.step_conduit_tick()
+	var stored := w.reservoir_mass[ir]
+	w.lpipe_mass[ir] = 0.0
+	w.lpipe_el[ir] = ""
+	w.step_conduit_tick()
+	var discharged := w.lpipe_mass[ir]
+	if stored > 5.0 and discharged > 5.0 and w.lpipe_el[ir] == "Water":
+		passed += 1
+		details.append("PASS [3/10] 저장고 버퍼링 (흡수 %.1fkg → 재방출 %.1fkg Water)" % [stored, discharged])
+	else:
+		failed += 1
+		details.append("FAIL [3/10] 저장고 버퍼링 (stored=%.1f discharged=%.1f)" % [stored, discharged])
+
+	# 4) 진짜 불리언 논리 게이트 (AND / OR / NOT / BUFFER 5s / ALARM)
+	for gx in range(30, 44):
+		for gy in range(6, 11):
+			var gi := w.idx(gx, gy)
+			w.building[gi] = ""
+			w.has_logic_wire[gi] = 0
+			w.logic_buffer_timer[gi] = 0.0
+			w.logic_switch_state.erase(gi)
+	# AND(31,7): inputs (30,7) & (31,6), output (32,7)
+	w.building[w.idx(30, 7)] = "logic_switch"
+	w.logic_switch_state[w.idx(30, 7)] = true
+	w.building[w.idx(31, 6)] = "logic_switch"
+	w.logic_switch_state[w.idx(31, 6)] = false
+	w.building[w.idx(31, 7)] = "logic_and"
+	w.has_logic_wire[w.idx(32, 7)] = 1
+	w._step_logic_network(0.0)
+	var and_10 := w.logic_signal[w.idx(32, 7)] == 0
+	w.logic_switch_state[w.idx(31, 6)] = true
+	w._step_logic_network(0.0)
+	var and_11 := w.logic_signal[w.idx(32, 7)] == 1
+	# NOT(36,7): input (35,7)=true -> output (37,7)=0; flip -> 1
+	w.building[w.idx(35, 7)] = "logic_switch"
+	w.logic_switch_state[w.idx(35, 7)] = true
+	w.building[w.idx(36, 7)] = "logic_not"
+	w.has_logic_wire[w.idx(37, 7)] = 1
+	w._step_logic_network(0.0)
+	var not_1 := w.logic_signal[w.idx(37, 7)] == 0
+	w.logic_switch_state[w.idx(35, 7)] = false
+	w._step_logic_network(0.0)
+	var not_0 := w.logic_signal[w.idx(37, 7)] == 1
+	# BUFFER(40,7) + ALARM(41,7): input (39,7)=true -> hold 5s after dropping false
+	w.building[w.idx(39, 7)] = "logic_switch"
+	w.logic_switch_state[w.idx(39, 7)] = true
+	w.building[w.idx(40, 7)] = "logic_buffer"
+	w.building[w.idx(41, 7)] = "logic_alarm"
+	w._step_logic_network(0.0)
+	var buf_on := w.logic_signal[w.idx(41, 7)] == 1 and w.logic_alarm_active
+	w.logic_switch_state[w.idx(39, 7)] = false
+	w._step_logic_network(2.0)
+	var buf_hold := w.logic_signal[w.idx(41, 7)] == 1
+	w._step_logic_network(4.0)
+	var buf_off := w.logic_signal[w.idx(41, 7)] == 0
+	if and_10 and and_11 and not_1 and not_0 and buf_on and buf_hold and buf_off:
+		passed += 1
+		details.append("PASS [4/10] 논리 게이트 진리표 (AND·NOT·BUFFER 5초 유지·ALARM 경보)")
+	else:
+		failed += 1
+		details.append("FAIL [4/10] 논리 게이트 (and=%s/%s not=%s/%s buf=%s/%s/%s)" % [str(and_10), str(and_11), str(not_1), str(not_0), str(buf_on), str(buf_hold), str(buf_off)])
+
+	# 5) 태양광 주야 일조 곡선 & 전력 회로 과부하(>1000W) 감지
+	w.sim_time = 230.0
+	var solar_day := w.get_solar_factor()
+	w.sim_time = 540.0
+	var solar_night := w.get_solar_factor()
+	# 6 x rock_crusher(240W = 1440W > 1000W) + petrol_gen(2000W) 단일 회로 과부하 테스트
+	w.inventory["SandStone"] = 1000.0
+	w.inventory["Sand"] = 100.0
+	w.inventory["Petroleum"] = 500.0
+	for px in range(12, 19):
+		var pi := w.idx(px, 20)
+		w.solid_el[pi] = ""
+		w.solid_mass[pi] = 0.0
+		w.has_wire[pi] = 1
+		w.building[pi] = "petrol_gen" if px == 12 else "rock_crusher"
+	w._step_power_and_machines(0.5)
+	if solar_day > 0.9 and solar_night == 0.0 and w.circuit_overloaded and w.max_circuit_load_w > 1000.0:
+		passed += 1
+		details.append("PASS [5/10] 전력망 (태양광 주간 %.0f%%/야간 0%% · 과부하 %.0fW 감지)" % [solar_day * 100.0, w.max_circuit_load_w])
+	else:
+		failed += 1
+		details.append("FAIL [5/10] 전력망 (day=%.2f night=%.2f ov=%s load=%.0f)" % [solar_day, solar_night, str(w.circuit_overloaded), w.max_circuit_load_w])
+
+	# 6) 건물 해체(Deconstruct) 100% 자원 환급
+	var idc := w.idx(25, 16) # mess_table (SandStone 100kg)
+	var b_ref := OniElements.get_building(w.building[idc])
+	var ref_el := String(b_ref.get("cost_element", "SandStone"))
+	var ref_kg := float(b_ref.get("cost_kg", 100.0))
+	var inv_before := float(w.inventory.get(ref_el, 0.0))
+	var ord_dc := w.order_deconstruct(25, 16, 8)
+	w.complete_deconstruct(25, 16)
+	var inv_after := float(w.inventory.get(ref_el, 0.0))
+	if ord_dc and w.building[idc].is_empty() and absf((inv_after - inv_before) - ref_kg) < 0.01:
+		passed += 1
+		details.append("PASS [6/10] 건물 해체 100%% 환급 (+%.0fkg %s)" % [ref_kg, ref_el])
+	else:
+		failed += 1
+		details.append("FAIL [6/10] 건물 해체 (ord=%s diff=%.1f exp=%.1f)" % [str(ord_dc), inv_after - inv_before, ref_kg])
+
+	# 7) 액체 닦기(Mop): 깊은 웅덩이 거부 vs 얕은 물(40kg) 허용 및 회수
+	var deep_reject := not w.order_mop(33, 18, 5)
+	var mop_c := w.idx(22, 16)
+	w.liquid_el[mop_c] = "DirtyWater"
+	w.liquid_mass[mop_c] = 40.0
+	var shallow_ok := w.order_mop(22, 16, 7)
+	var dw_before := float(w.inventory.get("DirtyWater", 0.0))
+	w.complete_mop(22, 16)
+	var dw_after := float(w.inventory.get("DirtyWater", 0.0))
+	if deep_reject and shallow_ok and w.liquid_mass[mop_c] == 0.0 and absf((dw_after - dw_before) - 40.0) < 0.1:
+		passed += 1
+		details.append("PASS [7/10] 액체 닦기 규칙 (깊은 물 거부 · 얕은 40kg 닦기 회수)")
+	else:
+		failed += 1
+		details.append("FAIL [7/10] 액체 닦기 (deep=%s shallow=%s mass=%.1f)" % [str(deep_reject), str(shallow_ok), w.liquid_mass[mop_c]])
+
+	# 8) 타일 우선순위 1~9 정렬 (멀리 있는 우선9 > 가까운 우선2)
+	var w2 := OniWorld.new(73)
+	var d0: OniDuplicant = w2.duplicants[0]
+	d0.cell = Vector2i(22, 16)
+	d0.pos = Vector2(22, 16)
+	d0.bladder = 10.0
+	d0.stress = 0.0
+	d0.stamina = 100.0
+	w2.sim_time = 60.0
+	# 가까운 타일(20,18? x=20,y=18은 바닥 아래) 대신 시작 방 양쪽 고체 타일 사용: (20,16) 왼쪽 (19,16)은 문 -> (22,18) 불가, (27,15) 위 고체 (28,14) vs (21,13)
+	w2.solid_el[w2.idx(21, 16)] = "SandStone"
+	w2.solid_mass[w2.idx(21, 16)] = 1000.0
+	w2.building[w2.idx(21, 16)] = ""
+	w2.solid_el[w2.idx(27, 16)] = "SandStone"
+	w2.solid_mass[w2.idx(27, 16)] = 1000.0
+	w2.building[w2.idx(27, 16)] = ""
+	w2.order_dig(21, 16, 2) # 거리 1, 우선 2
+	w2.order_dig(27, 16, 9) # 거리 5, 우선 9
+	d0._assign_next_job(w2)
+	if d0.target_cell == Vector2i(27, 16) and d0.job_type == "dig":
+		passed += 1
+		details.append("PASS [8/10] 타일 우선순위 1~9 (먼 우선9 타일을 가까운 우선2보다 선점)")
+	else:
+		failed += 1
+		details.append("FAIL [8/10] 타일 우선순위 (picked=%s type=%s)" % [str(d0.target_cell), d0.job_type])
+
+	# 9) 제트복 360도 공중 비행 경로탐색 vs 일반 보행 제한
+	var w3 := OniWorld.new(73)
+	var dj: OniDuplicant = w3.duplicants[1] # 에이다(제트복)
+	dj.cell = Vector2i(23, 16)
+	dj.wearing_jetsuit = false
+	var air_target := Vector2i(23, 14) # 바닥도 사다리도 없는 공중 칸
+	var reach_walk: Dictionary = dj._bfs_reachable(w3)["dists"]
+	var walk_blocked := not reach_walk.has(air_target)
+	dj.wearing_jetsuit = true
+	var reach_jet: Dictionary = dj._bfs_reachable(w3)["dists"]
+	var jet_ok := reach_jet.has(air_target)
+	if walk_blocked and jet_ok:
+		passed += 1
+		details.append("PASS [9/10] 제트복 360° 공중 비행 (일반 보행 불가 공중 칸 비행 도달)")
+	else:
+		failed += 1
+		details.append("FAIL [9/10] 제트복 비행 (walk_blocked=%s jet_ok=%s)" % [str(walk_blocked), str(jet_ok)])
+
+	# 10) 4단계 스케줄 + 방광 -> 화장실 -> 손 씻기 루프
+	var w4 := OniWorld.new(73)
+	w4.sim_time = 100.0
+	var s_work := w4.get_schedule_phase() == "WORK"
+	w4.sim_time = 450.0
+	var s_down := w4.get_schedule_phase() == "DOWNTIME"
+	w4.sim_time = 500.0
+	var s_bath := w4.get_schedule_phase() == "BATHTIME"
+	w4.sim_time = 550.0
+	var s_sleep := w4.get_schedule_phase() == "SLEEP"
+	w4.sim_time = 100.0
+	var db: OniDuplicant = w4.duplicants[0]
+	db.cell = Vector2i(16, 16)
+	db.pos = Vector2(16, 16)
+	db.bladder = 86.0
+	db.needs_wash = false
+	db._clear_job()
+	db._assign_next_job(w4)
+	var picked_toilet := db.job_type == "toilet" and db.target_cell == Vector2i(14, 16)
+	# 화장실 완료 후 자동 손 씻기(wash_sink at 15,16) 전이 검증
+	db.cell = Vector2i(14, 16)
+	db.pos = Vector2(14, 16)
+	db.state = "TOILET"
+	for _wt in range(15):
+		db.step(w4, 0.3)
+	var washed_or_washing := (db.job_type == "wash" or db.state == "WASH" or (db.bladder < 10.0 and not db.needs_wash))
+	if s_work and s_down and s_bath and s_sleep and picked_toilet and washed_or_washing:
+		passed += 1
+		details.append("PASS [10/10] 4단계 스케줄 & 방광→화장실→손씻기 루프 검증 완료")
+	else:
+		failed += 1
+		details.append("FAIL [10/10] 스케줄/화장실 (sched=%s/%s/%s/%s toilet=%s wash=%s)" % [str(s_work), str(s_down), str(s_bath), str(s_sleep), str(picked_toilet), str(washed_or_washing)])
+
+	return {"passed": passed, "failed": failed, "total": passed + failed, "details": details}

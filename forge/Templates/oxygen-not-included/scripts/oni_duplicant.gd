@@ -7,18 +7,21 @@ var cell := Vector2i.ZERO
 var pos := Vector2.ZERO
 var suit_color := Color(0.4, 0.75, 0.98, 1.0)
 
-var state := "IDLE" # IDLE, MOVE, DIG, BUILD, OPERATE, SLEEP
+var state := "IDLE" # IDLE, MOVE, DIG, BUILD, DECONSTRUCT, MOP, OPERATE, RESEARCH, SLEEP, HEAL, TOILET, WASH, RELAX
 var state_ko := "대기"
 var target_cell := Vector2i(-1, -1)
-var job_type := "" # dig, build, operate, sleep
+var job_type := "" # dig, build, deconstruct, mop, operate, research, sleep, heal, toilet, wash, relax
 var path: Array[Vector2i] = []
 var move_speed := 3.4 # cells/sec
 var facing_left := false
 var _repath_cooldown := 0.0
+var _work_timer := 0.0
 
 var breath := 100.0
 var stamina := 100.0
 var kcal := 4000.0
+var bladder := 20.0
+var needs_wash := false
 var morale := 2
 var stress := 0.0
 var disease := "" # "", "FoodPoisoning", "SlimeLung"
@@ -34,6 +37,8 @@ var prio_dig := true
 var prio_build := true
 var prio_operate := true
 var prio_research := true
+var prio_deconstruct := true
+var prio_mop := true
 
 func _init(p_id: int, p_name: String, p_cell: Vector2i, p_color: Color, p_trait := "조기 기상") -> void:
 	id = p_id
@@ -122,7 +127,7 @@ func step(world: OniWorld, dt: float) -> void:
 		stress_delta = minf(stress_delta, -2.5)
 	stress = clampf(stress + stress_delta * dt, 0.0, 100.0)
 
-	# 2) 칼로리/스태미나 갱신 (배고프면 저장 식량에서 자동 섭취)
+	# 2) 칼로리/스태미나/방광 갱신 (원작 주기당 방광 +100%, 100% 도달 시 실수->오염수 6.7kg + 식중독균)
 	kcal = maxf(0.0, kcal - (OniElements.DUPE_KCAL_PER_CYCLE / OniElements.CYCLE_SECONDS) * dt)
 	if kcal < 2600.0 and world.food_kcal >= 600.0:
 		var eat := minf(1200.0, minf(world.food_kcal, OniElements.DUPE_KCAL_MAX - kcal))
@@ -132,9 +137,19 @@ func step(world: OniWorld, dt: float) -> void:
 		stamina = minf(100.0, stamina + 14.0 * dt)
 	else:
 		stamina = maxf(0.0, stamina - 0.55 * dt)
+	if state != "TOILET":
+		bladder = clampf(bladder + 0.17 * dt, 0.0, 100.0)
+		if bladder >= 100.0:
+			bladder = 0.0
+			stress = clampf(stress + 18.0, 0.0, 100.0)
+			if not world.is_solid_cell(cell.x, cell.y) and (world.liquid_mass[ci] < 1.0 or world.liquid_el[ci] == "DirtyWater" or world.liquid_el[ci].is_empty()):
+				world.liquid_el[ci] = "DirtyWater"
+				world.liquid_mass[ci] = minf(1000.0, world.liquid_mass[ci] + 6.7)
+				world.germ_type[ci] = "FoodPoisoning"
+				world.germ_count[ci] = minf(250000.0, world.germ_count[ci] + 35000.0)
 
-	# 중력 낙하 처리 (바닥이 파였을 때)
-	if not world.can_stand_at(cell.x, cell.y) and world.is_passable(cell.x, cell.y + 1):
+	# 중력 낙하 처리 (바닥이 파였을 때 — 제트복 착용 중에는 공중 부유 가능!)
+	if not wearing_jetsuit and not world.can_stand_at(cell.x, cell.y) and world.is_passable(cell.x, cell.y + 1):
 		cell.y += 1
 		pos = Vector2(cell.x, cell.y)
 		path.clear()
@@ -156,10 +171,20 @@ func step(world: OniWorld, dt: float) -> void:
 			_step_dig(world, dt)
 		"BUILD":
 			_step_build(world, dt)
+		"DECONSTRUCT":
+			_step_deconstruct(world, dt)
+		"MOP":
+			_step_mop(world, dt)
 		"OPERATE":
 			_step_operate(world, dt)
 		"RESEARCH":
 			_step_research(world, dt)
+		"TOILET":
+			_step_toilet(world, dt)
+		"WASH":
+			_step_wash(world, dt)
+		"RELAX":
+			_step_relax(world, dt)
 		"SLEEP":
 			state_ko = "휴식"
 			if stamina >= 96.0:
@@ -237,18 +262,34 @@ func _step_move(world: OniWorld, dt: float) -> void:
 		pos += diff.normalized() * step_d
 
 func _enter_job_work(world: OniWorld) -> void:
+	_work_timer = 0.0
 	if job_type == "dig":
 		state = "DIG"
 		state_ko = "채굴"
 	elif job_type == "build":
 		state = "BUILD"
 		state_ko = "건설"
+	elif job_type == "deconstruct":
+		state = "DECONSTRUCT"
+		state_ko = "해체"
+	elif job_type == "mop":
+		state = "MOP"
+		state_ko = "닦기"
 	elif job_type == "operate":
 		state = "OPERATE"
 		state_ko = "발전"
 	elif job_type == "research":
 		state = "RESEARCH"
 		state_ko = "연구"
+	elif job_type == "toilet":
+		state = "TOILET"
+		state_ko = "화장실"
+	elif job_type == "wash":
+		state = "WASH"
+		state_ko = "손 씻기"
+	elif job_type == "relax":
+		state = "RELAX"
+		state_ko = "휴게·오락"
 	elif job_type == "sleep":
 		state = "SLEEP"
 		state_ko = "휴식"
@@ -299,6 +340,93 @@ func _step_build(world: OniWorld, dt: float) -> void:
 		xp = minf(400.0, xp + 18.0)
 		_clear_job()
 
+func _step_deconstruct(world: OniWorld, dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	if world.deconstruct_order[ti] == 0:
+		_clear_job()
+		return
+	if abs(target_cell.x - cell.x) + abs(target_cell.y - cell.y) > 2:
+		_clear_job()
+		return
+	world.deconstruct_progress[ti] += (dt * work_speed_mult()) / 1.4
+	xp = minf(400.0, xp + 6.0 * dt)
+	if world.deconstruct_progress[ti] >= 1.0:
+		world.complete_deconstruct(target_cell.x, target_cell.y)
+		xp = minf(400.0, xp + 14.0)
+		_clear_job()
+
+func _step_mop(world: OniWorld, dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	if world.mop_order[ti] == 0 or world.liquid_mass[ti] < 1.0:
+		world.mop_order[ti] = 0
+		world.mop_progress[ti] = 0.0
+		_clear_job()
+		return
+	if abs(target_cell.x - cell.x) + abs(target_cell.y - cell.y) > 2:
+		_clear_job()
+		return
+	world.mop_progress[ti] += (dt * work_speed_mult()) / 1.5
+	xp = minf(400.0, xp + 5.0 * dt)
+	if world.mop_progress[ti] >= 1.0:
+		world.complete_mop(target_cell.x, target_cell.y)
+		xp = minf(400.0, xp + 12.0)
+		_clear_job()
+
+func _step_toilet(world: OniWorld, dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	var b := world.building[ti]
+	if b != "flush_toilet" and b != "outhouse":
+		_clear_job()
+		return
+	state_ko = "화장실"
+	bladder = maxf(0.0, bladder - 38.0 * dt)
+	if bladder <= 1.0:
+		bladder = 0.0
+		needs_wash = true
+		if b == "flush_toilet" and world.has_liquid_pipe[ti] == 1:
+			if world.lpipe_mass[ti] < 0.05 or world.lpipe_el[ti].is_empty() or world.lpipe_el[ti] == "DirtyWater":
+				world.lpipe_el[ti] = "DirtyWater"
+				world.lpipe_mass[ti] = minf(OniElements.LIQUID_PIPE_MAX_KG, world.lpipe_mass[ti] + 6.7)
+				world.lpipe_temp[ti] = 37.0
+		else:
+			world.germ_type[ti] = "FoodPoisoning"
+			world.germ_count[ti] = minf(120000.0, world.germ_count[ti] + 15000.0)
+		_clear_job()
+
+func _step_wash(world: OniWorld, dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	var b := world.building[ti]
+	if not (b in ["wash_sink", "wash_basin", "shower"]):
+		_clear_job()
+		return
+	state_ko = "손 씻기"
+	_work_timer += dt
+	world.germ_count[ti] = maxf(0.0, world.germ_count[ti] - 25000.0 * dt)
+	if _work_timer >= 1.4:
+		needs_wash = false
+		stress = maxf(0.0, stress - 3.0)
+		_clear_job()
+
+func _step_relax(world: OniWorld, dt: float) -> void:
+	state_ko = "휴게·오락"
+	_work_timer += dt
+	stress = maxf(0.0, stress - 6.0 * dt)
+	stamina = minf(100.0, stamina + 6.0 * dt)
+	if _work_timer >= 4.0 and (world.get_schedule_phase() != "DOWNTIME" or stress <= 2.0):
+		_clear_job()
+
 func _step_operate(world: OniWorld, dt: float) -> void:
 	if not world.in_bounds(target_cell.x, target_cell.y):
 		_clear_job()
@@ -319,12 +447,16 @@ func _step_research(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	var ti := world.idx(target_cell.x, target_cell.y)
-	if world.building[ti] != "research_station" or world.active_tech.is_empty():
+	var b := world.building[ti]
+	if not (b in ["research_station", "super_computer", "planetarium"]) or world.active_tech.is_empty():
+		_clear_job()
+		return
+	if b == "planetarium" and world.data_banks <= 0:
 		_clear_job()
 		return
 	world.research_active[ti] = 1
-	xp = minf(400.0, xp + 5.0 * dt)
-	state_ko = "연구 중"
+	xp = minf(400.0, xp + (7.5 if b != "research_station" else 5.0) * dt)
+	state_ko = "고급 연구" if b == "super_computer" else ("우주 연구" if b == "planetarium" else "연구 중")
 
 func _assign_next_job(world: OniWorld) -> void:
 	# BFS로 도달 가능한 모든 서 있을 수 있는 셀과 부모 맵 계산
@@ -336,15 +468,48 @@ func _assign_next_job(world: OniWorld) -> void:
 	var best_stand := Vector2i(-1, -1)
 	var best_target := Vector2i(-1, -1)
 	var best_type := ""
+	var sched := world.get_schedule_phase()
 
-	# 0.5) 질병 감염 또는 고스트레스(>=30%) 시 병원(환자용 침대)/마사지 테이블/주크봇 우선 방문
-	if not disease.is_empty() or stress >= 30.0:
+	# 0a) 화장실 사용 직후 손 씻기(세면대/싱크대/샤워실) 최우선
+	if needs_wash:
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				if world.building[i] in ["wash_sink", "wash_basin", "shower"]:
+					var c := Vector2i(x, y)
+					if dists.has(c):
+						var sc := float(dists[c]) - 200.0
+						if sc < best_score:
+							best_score = sc
+							best_stand = c
+							best_target = c
+							best_type = "wash"
+		if best_type.is_empty():
+			needs_wash = false
+
+	# 0b) 방광 긴급(>=80%) 또는 세면 스케줄(>=35%) 시 화장실(수세식 변기/재래식) 방문
+	if best_type.is_empty() and (bladder >= 80.0 or (sched == "BATHTIME" and bladder >= 35.0)):
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				if world.building[i] in ["flush_toilet", "outhouse"]:
+					var c := Vector2i(x, y)
+					if dists.has(c):
+						var sc := float(dists[c]) - 160.0
+						if sc < best_score:
+							best_score = sc
+							best_stand = c
+							best_target = c
+							best_type = "toilet"
+
+	# 0c) 질병 감염 또는 고스트레스(>=30%) 시 병원(환자용 침대)/마사지 테이블/주크봇 우선 방문
+	if best_type.is_empty() and (not disease.is_empty() or stress >= 30.0):
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
 				var b := world.building[i]
 				var match_med := (not disease.is_empty() and b in ["medical_cot", "apothecary", "wash_sink"])
-				var match_rel := (stress >= 30.0 and b in ["massage_table", "jukebot", "arcade_cabinet", "water_cooler"])
+				var match_rel := (stress >= 30.0 and b in ["massage_table", "jukebot", "arcade_cabinet", "water_cooler", "sauna", "hottub", "beach_chair"])
 				if match_med or match_rel:
 					var c := Vector2i(x, y)
 					if dists.has(c):
@@ -355,23 +520,38 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "heal"
 
-	# 1) 야간 취침 스케줄 또는 스태미나 낮을 때 빈 침대 우선
-	if best_type.is_empty() and (stamina < 28.0 or (world.is_night() and stamina < 82.0)):
+	# 0d) 휴게 시간(DOWNTIME) 스케줄 오락·휴게 시설 방문
+	if best_type.is_empty() and sched == "DOWNTIME" and stress >= 5.0:
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
-				if world.building[i] == "cot":
+				if world.building[i] in ["jukebot", "arcade_cabinet", "beach_chair", "sauna", "hottub", "water_cooler"]:
 					var c := Vector2i(x, y)
 					if dists.has(c):
-						var sc := float(dists[c]) - 100.0
+						var sc := float(dists[c]) - 90.0
+						if sc < best_score:
+							best_score = sc
+							best_stand = c
+							best_target = c
+							best_type = "relax"
+
+	# 1) 야간 취침 스케줄 또는 스태미나 낮을 때 빈 침대 우선
+	if best_type.is_empty() and (stamina < 28.0 or (sched == "SLEEP" and stamina < 82.0)):
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				if world.building[i] == "cot" or world.building[i] == "medical_cot":
+					var c := Vector2i(x, y)
+					if dists.has(c):
+						var sc := float(dists[c]) - (100.0 if world.building[i] == "cot" else 85.0)
 						if sc < best_score:
 							best_score = sc
 							best_stand = c
 							best_target = c
 							best_type = "sleep"
 
-	# 2) 채굴·건설 지시 탐색 (대원별 우선순위 토글 반영)
-	if best_type.is_empty() and (prio_dig or prio_build):
+	# 2) 통합 타일 우선순위(1~9) 작업 탐색: 채굴 · 건설 · 해체 · 닦기
+	if best_type.is_empty() and (prio_dig or prio_build or prio_deconstruct or prio_mop):
 		var dirs := [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
@@ -379,28 +559,32 @@ func _assign_next_job(world: OniWorld) -> void:
 				var is_dig := prio_dig and world.dig_order[i] == 1 and not world.solid_el[i].is_empty()
 				var b_id := world.build_order[i]
 				var is_build := prio_build and not b_id.is_empty() and world.has_materials_for(b_id)
-				if not is_dig and not is_build:
+				var is_dec := prio_deconstruct and world.deconstruct_order[i] == 1
+				var is_mop := prio_mop and world.mop_order[i] == 1 and world.liquid_mass[i] >= 1.0
+				if not is_dig and not is_build and not is_dec and not is_mop:
 					continue
 				var tcell := Vector2i(x, y)
-				# 다른 대원이 이미 같은 타일을 작업 중이면 약간 페널티
+				var tprio := clampi(int(world.tile_priority[i]), 1, 9)
+				var prio_weight := float(10 - tprio) * 100.0
 				var claimed_penalty := 0.0
 				for other in world.duplicants:
 					if other != self and other.target_cell == tcell:
 						claimed_penalty = 40.0
 						break
 
+				var etype := "build" if is_build else ("deconstruct" if is_dec else ("mop" if is_mop else "dig"))
 				for d: Vector2i in dirs:
 					var stand: Vector2i = tcell + d
-					if is_dig and d == Vector2i.ZERO:
+					if etype == "dig" and d == Vector2i.ZERO:
 						continue
 					if not dists.has(stand):
 						continue
-					var sc := float(dists[stand]) + claimed_penalty + (0.0 if is_build else 1.5)
+					var sc := prio_weight + float(dists[stand]) + claimed_penalty
 					if sc < best_score:
 						best_score = sc
 						best_stand = stand
 						best_target = tcell
-						best_type = "build" if is_build else "dig"
+						best_type = etype
 
 	# 3) 수동 발전기 작동 (전력 필요하거나 배터리 70% 미만일 때)
 	if best_type.is_empty() and prio_operate:
@@ -427,28 +611,33 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "operate"
 
-	# 4) 연구 작업대 작동 (활성 연구가 있고 흙이 있을 때)
-	if best_type.is_empty() and prio_research and not world.active_tech.is_empty() and float(world.inventory.get("Dirt", 0.0)) >= 5.0:
+	# 4) 연구 시설 작동 (가상 플라네타륨 > 슈퍼 컴퓨터 > 기본 연구 작업대 우선)
+	if best_type.is_empty() and prio_research and not world.active_tech.is_empty():
+		var has_dirt := float(world.inventory.get("Dirt", 0.0)) >= 5.0
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
-				if world.building[i] == "research_station":
-					var c := Vector2i(x, y)
-					if not dists.has(c):
-						continue
-					var busy := false
-					for other in world.duplicants:
-						if other != self and other.target_cell == c and other.job_type == "research":
-							busy = true
-							break
-					if busy:
-						continue
-					var sc := float(dists[c])
-					if sc < best_score:
-						best_score = sc
-						best_stand = c
-						best_target = c
-						best_type = "research"
+				var b := world.building[i]
+				var valid_r := (b == "planetarium" and world.data_banks > 0) or (b == "super_computer" and has_dirt) or (b == "research_station" and has_dirt)
+				if not valid_r:
+					continue
+				var c := Vector2i(x, y)
+				if not dists.has(c):
+					continue
+				var busy := false
+				for other in world.duplicants:
+					if other != self and other.target_cell == c and other.job_type == "research":
+						busy = true
+						break
+				if busy:
+					continue
+				var tier_bonus := -20.0 if b == "planetarium" else (-10.0 if b == "super_computer" else 0.0)
+				var sc := float(dists[c]) + tier_bonus
+				if sc < best_score:
+					best_score = sc
+					best_stand = c
+					best_target = c
+					best_type = "research"
 
 	if best_type.is_empty():
 		return
@@ -483,6 +672,14 @@ func _bfs_reachable(world: OniWorld) -> Dictionary:
 
 func _get_move_neighbors(world: OniWorld, c: Vector2i) -> Array[Vector2i]:
 	var res: Array[Vector2i] = []
+	# 제트복(Jet Suit) 착용 시 360도 공중 자유 비행 경로탐색!
+	if wearing_jetsuit:
+		for d: Vector2i in [Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]:
+			var nx: int = c.x + d.x
+			var ny: int = c.y + d.y
+			if world.is_passable(nx, ny):
+				res.append(Vector2i(nx, ny))
+		return res
 	# 좌우 평지 이동 + 1칸 등반/하강
 	for dx: int in [-1, 1]:
 		var nx: int = c.x + dx
@@ -492,7 +689,7 @@ func _get_move_neighbors(world: OniWorld, c: Vector2i) -> Array[Vector2i]:
 			res.append(Vector2i(nx, c.y - 1))
 		elif world.is_passable(nx, c.y) and world.can_stand_at(nx, c.y + 1):
 			res.append(Vector2i(nx, c.y + 1))
-	# 사다리 상하 이동
+	# 사다리·소방봉·수송 튜브 상하 이동
 	if world.is_climbable(c.x, c.y) and world.can_stand_at(c.x, c.y - 1):
 		res.append(Vector2i(c.x, c.y - 1))
 	if world.can_stand_at(c.x, c.y + 1) and (world.is_climbable(c.x, c.y) or world.is_climbable(c.x, c.y + 1)):

@@ -151,16 +151,17 @@ func tick_fx(delta: float) -> void:
 
 	var ts := float(OniWorld.TILE_SIZE)
 	for dupe in world.duplicants:
-		if (dupe.state == "DIG" or dupe.state == "BUILD") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
+		if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 			if randf() < delta * 10.0:
 				var tx := (float(dupe.target_cell.x) + 0.5) * ts
 				var ty := (float(dupe.target_cell.y) + 0.5) * ts
+				var fcol := Color(1.0, 0.78, 0.32, 0.9) if dupe.state == "DIG" else (Color(1.0, 0.36, 0.32, 0.9) if dupe.state == "DECONSTRUCT" else (Color(0.35, 0.88, 1.0, 0.9) if dupe.state == "MOP" else Color(0.45, 0.94, 1.0, 0.9)))
 				spawn_fx(
 					Vector2(tx + randf_range(-6, 6), ty + randf_range(-6, 6)),
 					Vector2(randf_range(-28, 28), randf_range(-38, -8)),
 					0.55,
-					"dust" if dupe.state == "DIG" else "spark",
-					Color(1.0, 0.78, 0.32, 0.9) if dupe.state == "DIG" else Color(0.45, 0.94, 1.0, 0.9)
+					"bubble" if dupe.state == "MOP" else ("dust" if dupe.state == "DIG" else "spark"),
+					fcol
 				)
 
 	if randf() < delta * 6.5:
@@ -663,22 +664,24 @@ func _draw_overlay_front() -> void:
 	if overlay_mode == "pipe":
 		_draw_conduit_layers_on(_conduit_fg_node, ts, true)
 
-	# 전력망(E) 오버레이: 황금 발광 전력선 + 발전기(초록)/소비기(하늘)/배터리 노드 + 실시간 부하(W) 배지
+	# 전력망(E) 오버레이: 황금 발광 전력선 (과부하 회로 크림슨 점멸) + 발전기/소비기/배터리 노드 + 실시간 부하(W) 배지
 	if overlay_mode == "power":
 		var pdirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+		var ov_pulse := 0.55 + 0.45 * sin(_anim_time * 10.0)
 		for y in range(1, OniWorld.HEIGHT - 1):
 			for x in range(1, OniWorld.WIDTH - 1):
 				var i := world.idx(x, y)
 				var b := world.building[i]
 				var is_pw := world.has_wire[i] == 1
 				var is_gen := b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen"]
-				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper", "sweep_station", "incubator", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker", "suit_dock"]
+				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "telescope", "auto_sweeper", "sweep_station", "incubator", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]
 				var is_bat := b == "battery" or b == "smart_battery"
 				if not is_pw and not is_gen and not is_con and not is_bat:
 					continue
 				var cx := float(x * ts) + float(ts) * 0.5
 				var cy := float(y * ts) + float(ts) * 0.5
-				var wc := Color(1.0, 0.84, 0.22, 0.96)
+				var is_ov := world.overloaded_cells[i] == 1
+				var wc := Color(1.0, 0.22, 0.22, ov_pulse) if is_ov else Color(1.0, 0.84, 0.22, 0.96)
 				if is_pw:
 					_conduit_fg_node.draw_circle(Vector2(cx, cy), 3.6, wc)
 					for d: Vector2i in pdirs:
@@ -686,7 +689,7 @@ func _draw_overlay_front() -> void:
 						var ny: int = y + d.y
 						if world.in_bounds(nx, ny):
 							var ni := world.idx(nx, ny)
-							if world.has_wire[ni] == 1 or world.building[ni] in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper"]:
+							if world._is_power_node(ni):
 								_conduit_fg_node.draw_line(Vector2(cx, cy), Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5), wc, 4.2)
 				if is_gen or is_con or is_bat:
 					var nc := Color(0.28, 0.96, 0.48, 0.96) if is_gen else (Color(0.36, 0.86, 1.0, 0.96) if is_con else Color(1.0, 0.92, 0.34, 0.96))
@@ -695,16 +698,19 @@ func _draw_overlay_front() -> void:
 					_conduit_fg_node.draw_arc(Vector2(cx, cy), 7.0, 0.0, TAU, 14, nc, 1.4)
 		var pfont := ThemeDB.fallback_font
 		if pfont != null:
-			var plbl := "전력망 부하: %.0f / 1000 W (발전 %.0fW · 축전 %.1fkJ)" % [world.power_consumed_w, world.power_produced_w, world.total_battery_j / 1000.0]
+			var ov_tag := " [과부하!]" if world.circuit_overloaded else ""
+			var plbl := "전력망 최대 %.0f/1000W%s (발전 %.0fW · 태양 %.0f%% · 축전 %.1fkJ)" % [world.max_circuit_load_w, ov_tag, world.power_produced_w, world.get_solar_factor() * 100.0, world.total_battery_j / 1000.0]
 			var bx := 24.0 * float(ts)
 			var by := 13.4 * float(ts)
-			_conduit_fg_node.draw_rect(Rect2(bx - 150.0, by - 12.0, 300.0, 24.0), Color(0.06, 0.09, 0.14, 0.92), true)
-			_conduit_fg_node.draw_rect(Rect2(bx - 150.0, by - 12.0, 300.0, 24.0), Color(1.0, 0.84, 0.22, 0.92), false, 1.5)
-			_conduit_fg_node.draw_string(pfont, Vector2(bx - 144.0, by + 4.0), plbl, HORIZONTAL_ALIGNMENT_CENTER, 288, 11, Color(1.0, 0.96, 0.78, 1.0))
+			var bborder := Color(1.0, 0.25, 0.25, 0.96) if world.circuit_overloaded else Color(1.0, 0.84, 0.22, 0.92)
+			_conduit_fg_node.draw_rect(Rect2(bx - 185.0, by - 12.0, 370.0, 24.0), Color(0.06, 0.09, 0.14, 0.92), true)
+			_conduit_fg_node.draw_rect(Rect2(bx - 185.0, by - 12.0, 370.0, 24.0), bborder, false, 1.5)
+			_conduit_fg_node.draw_string(pfont, Vector2(bx - 178.0, by + 4.0), plbl, HORIZONTAL_ALIGNMENT_CENTER, 356, 10, Color(1.0, 0.96, 0.78, 1.0))
 
-	# 자동화(L) 오버레이: ONI 네온 초록(활성)/크림슨 빨강(대기) 논리 회로 리본 + 원형 I/O 포트
+	# 자동화(L) 오버레이: ONI 네온 초록(활성)/크림슨 빨강(대기) 논리 회로 리본 + 게이트 진리표 배지(AND/OR/NOT/BUF/ALM)
 	if overlay_mode == "logic":
 		var ldirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+		var lfont := ThemeDB.fallback_font
 		for y in range(1, OniWorld.HEIGHT - 1):
 			for x in range(1, OniWorld.WIDTH - 1):
 				var i := world.idx(x, y)
@@ -724,12 +730,29 @@ func _draw_overlay_front() -> void:
 						var ny: int = y + d.y
 						if world.in_bounds(nx, ny):
 							var ni := world.idx(nx, ny)
-							if world.has_logic_wire[ni] == 1 or world.building[ni] in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "generator", "coal_gen", "hydrogen_gen", "diffuser", "electrolyzer", "co2_skimmer", "thermo_aquatuner"]:
+							if world._is_logic_node(ni) or world.building[ni] in ["generator", "coal_gen", "petrol_gen", "hydrogen_gen", "diffuser", "electrolyzer", "co2_skimmer", "thermo_aquatuner"]:
 								_conduit_fg_node.draw_line(Vector2(cx, cy), Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5), lc, 4.2)
 				if is_lb:
-					_conduit_fg_node.draw_circle(Vector2(cx, cy), 7.5, Color(0.05, 0.08, 0.12, 0.92))
-					_conduit_fg_node.draw_circle(Vector2(cx, cy), 5.0, lc)
-					_conduit_fg_node.draw_arc(Vector2(cx, cy), 7.5, 0.0, TAU, 14, Color(0.95, 0.98, 1.0, 0.9), 1.5)
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 8.0, Color(0.05, 0.08, 0.12, 0.94))
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 5.2, lc)
+					_conduit_fg_node.draw_arc(Vector2(cx, cy), 8.0, 0.0, TAU, 14, Color(0.95, 0.98, 1.0, 0.9), 1.5)
+					if lfont != null:
+						var gtag := ""
+						if b == "logic_and":
+							gtag = "AND"
+						elif b == "logic_or":
+							gtag = "OR"
+						elif b == "logic_not":
+							gtag = "NOT"
+						elif b == "logic_buffer":
+							gtag = "BUF%.0f" % world.logic_buffer_timer[i] if world.logic_buffer_timer[i] > 0.1 else "BUF"
+						elif b == "logic_alarm":
+							gtag = "ALM"
+						elif b == "logic_switch":
+							gtag = "SW"
+						if not gtag.is_empty():
+							_conduit_fg_node.draw_rect(Rect2(cx - 15.0, cy - 19.0, 30.0, 12.0), Color(0.05, 0.08, 0.14, 0.92), true)
+							_conduit_fg_node.draw_string(lfont, Vector2(cx - 14.0, cy - 10.0), gtag, HORIZONTAL_ALIGNMENT_CENTER, 28, 8, lc)
 
 	# 장식(K) 오버레이: ONI 에메랄드 녹색(고장식) ↔ 크림슨 적색(저해 장식) 히트맵
 	if overlay_mode == "decor":
@@ -778,12 +801,15 @@ func _draw_overlay_front() -> void:
 			_conduit_fg_node.draw_rect(Rect2(bx - 160.0, by - 12.0, 320.0, 24.0), Color(0.45, 1.0, 0.35, 0.92), false, 1.5)
 			_conduit_fg_node.draw_string(rfont2, Vector2(bx - 154.0, by + 4.0), "방사선(X): 우주 260rad(벙커 차폐) · 씨근풀 185rad · 플라네타륨 110rad", HORIZONTAL_ALIGNMENT_CENTER, 308, 10, Color(0.84, 1.0, 0.72, 1.0))
 
-	# 채굴 / 건설 지시 오버레이
+	# 채굴 / 건설 / 해체 / 닦기 지시 + 우선순위 배지 오버레이
+	var efont := ThemeDB.fallback_font
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var rect := Rect2(x * ts, y * ts, ts, ts)
+			var has_err := false
 			if world.dig_order[i] == 1:
+				has_err = true
 				_conduit_fg_node.draw_rect(rect.grow(-2), Color(0.98, 0.62, 0.20, 0.25), true)
 				_conduit_fg_node.draw_rect(rect.grow(-2), Color(1.0, 0.70, 0.24, 0.95), false, 2.0)
 				_conduit_fg_node.draw_line(rect.position + Vector2(6, 6), rect.end - Vector2(6, 6), Color(1.0, 0.75, 0.30, 0.85), 2.0)
@@ -793,11 +819,36 @@ func _draw_overlay_front() -> void:
 
 			var bo := world.build_order[i]
 			if not bo.is_empty():
+				has_err = true
 				var bc: Color = OniElements.get_building(bo).get("color", Color(0.4, 0.8, 1.0))
 				_conduit_fg_node.draw_rect(rect.grow(-2), Color(bc.r, bc.g, bc.b, 0.28), true)
 				_conduit_fg_node.draw_rect(rect.grow(-2), Color(0.45, 0.88, 1.0, 0.95), false, 2.0)
 				if world.build_progress[i] > 0.01:
 					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * clampf(world.build_progress[i], 0.0, 1.0), 4), Color(0.35, 0.95, 0.55, 1.0), true)
+
+			if world.deconstruct_order[i] == 1:
+				has_err = true
+				_conduit_fg_node.draw_rect(rect.grow(-2), Color(0.98, 0.24, 0.28, 0.28), true)
+				_conduit_fg_node.draw_rect(rect.grow(-2), Color(1.0, 0.32, 0.34, 0.96), false, 2.0)
+				_conduit_fg_node.draw_line(rect.position + Vector2(5, 5), rect.end - Vector2(5, 5), Color(1.0, 0.42, 0.42, 0.92), 2.2)
+				_conduit_fg_node.draw_line(Vector2(rect.end.x - 5, rect.position.y + 5), Vector2(rect.position.x + 5, rect.end.y - 5), Color(1.0, 0.42, 0.42, 0.92), 2.2)
+				if world.deconstruct_progress[i] > 0.01:
+					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * clampf(world.deconstruct_progress[i], 0.0, 1.0), 4), Color(1.0, 0.35, 0.35, 1.0), true)
+
+			if world.mop_order[i] == 1:
+				has_err = true
+				_conduit_fg_node.draw_rect(rect.grow(-2), Color(0.20, 0.84, 0.98, 0.26), true)
+				_conduit_fg_node.draw_rect(rect.grow(-2), Color(0.32, 0.94, 1.0, 0.95), false, 2.0)
+				_conduit_fg_node.draw_line(rect.position + Vector2(5, 20), rect.position + Vector2(14, 15), Color(0.55, 0.96, 1.0, 0.95), 2.0)
+				_conduit_fg_node.draw_line(rect.position + Vector2(14, 15), rect.position + Vector2(26, 20), Color(0.55, 0.96, 1.0, 0.95), 2.0)
+				if world.mop_progress[i] > 0.01:
+					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * clampf(world.mop_progress[i], 0.0, 1.0), 4), Color(0.32, 0.96, 1.0, 1.0), true)
+
+			if has_err and efont != null and int(world.tile_priority[i]) != 5:
+				var pval := int(world.tile_priority[i])
+				var pcol := Color(1.0, 0.35, 0.25, 0.95) if pval >= 8 else (Color(1.0, 0.84, 0.28, 0.95) if pval >= 6 else Color(0.68, 0.78, 0.88, 0.92))
+				_conduit_fg_node.draw_rect(Rect2(rect.position.x + 1, rect.position.y + 1, 12, 12), Color(0.05, 0.08, 0.12, 0.90), true)
+				_conduit_fg_node.draw_string(efont, Vector2(rect.position.x + 3, rect.position.y + 10), str(pval), HORIZONTAL_ALIGNMENT_LEFT, 10, 9, pcol)
 
 	# 호버 / 선택 / 드래그 프리뷰
 	if world.in_bounds(selected_cell.x, selected_cell.y):
@@ -814,7 +865,7 @@ func _draw_overlay_front() -> void:
 		var y0: int = mini(drag_start.y, drag_end.y)
 		var y1: int = maxi(drag_start.y, drag_end.y)
 		var drect := Rect2(x0 * ts, y0 * ts, (x1 - x0 + 1) * ts, (y1 - y0 + 1) * ts)
-		var col := Color(1.0, 0.65, 0.20, 0.25) if active_tool == "dig" else (Color(0.95, 0.30, 0.30, 0.25) if active_tool == "cancel" else Color(0.35, 0.85, 1.0, 0.25))
+		var col := Color(1.0, 0.65, 0.20, 0.25) if active_tool == "dig" else (Color(0.98, 0.26, 0.28, 0.28) if (active_tool == "cancel" or active_tool == "deconstruct") else (Color(0.24, 0.90, 1.0, 0.28) if active_tool == "mop" else Color(0.35, 0.85, 1.0, 0.25)))
 		_conduit_fg_node.draw_rect(drect, col, true)
 		_conduit_fg_node.draw_rect(drect, Color(col.r, col.g, col.b, 0.95), false, 2.0)
 
@@ -852,7 +903,17 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 					if world.in_bounds(nx, ny) and world.has_liquid_pipe[world.idx(nx, ny)] == 1:
 						c.draw_line(Vector2(cx, cy) + offset, Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5) + offset, lpc, pipe_w)
 				if bright and world.lpipe_mass[i] > 0.1:
-					c.draw_circle(Vector2(cx, cy) + offset, 4.5, Color(0.55, 0.88, 1.0, 0.95))
+					var lpel := world.lpipe_el[i] if not world.lpipe_el[i].is_empty() else "Water"
+					var lcol := Color(0.55, 0.88, 1.0, 0.95)
+					if lpel == "DirtyWater":
+						lcol = Color(0.68, 0.82, 0.28, 0.95)
+					elif lpel == "CrudeOil":
+						lcol = Color(0.36, 0.24, 0.42, 0.98)
+					elif lpel == "Petroleum":
+						lcol = Color(0.98, 0.68, 0.18, 0.96)
+					elif lpel == "Magma":
+						lcol = Color(1.0, 0.42, 0.12, 0.98)
+					c.draw_circle(Vector2(cx, cy) + offset, 4.5, lcol)
 
 			if world.has_gas_pipe[i] == 1:
 				var gpc := Color(0.36, 0.90, 0.78, pipe_a)
@@ -985,15 +1046,21 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var jp := 0.65 + 0.35 * sin(_anim_time * 5.2)
 			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.4), 20.0, Color(0.76, 0.38, 1.0, 0.10 * jp))
 		elif b == "logic_switch":
-			var sw_on := bool(world.logic_switch_state.get(i, true))
+			var sw_on := bool(world.logic_switch_state.get(i, false))
 			c.draw_circle(p + Vector2(float(ts) * 0.5, 6.0), 3.2, Color(0.22, 0.98, 0.44, 1.0) if sw_on else Color(0.98, 0.24, 0.30, 1.0))
-		elif b == "logic_alarm" and world.meteor_shower_active:
+		elif b == "logic_alarm" and (world.logic_alarm_active or world.meteor_shower_active):
 			var ap := 0.5 + 0.5 * sin(_anim_time * 12.0)
 			c.draw_circle(p + Vector2(float(ts) * 0.5, 6.0), 10.0, Color(1.0, 0.22, 0.18, 0.35 * ap))
 			c.draw_circle(p + Vector2(float(ts) * 0.5, 6.0), 3.5, Color(1.0, 0.35, 0.25, 0.98))
 
-		if running and b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "aetn"]:
+		if running and b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "petrol_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "kiln", "aetn", "space_scanner"]:
 			c.draw_circle(p + Vector2(ts * 0.5, 4), 2.8, Color(0.38, 0.96, 0.65, 0.92))
+		if b == "liquid_reservoir" or b == "gas_reservoir":
+			var cap_r := 5000.0 if b == "liquid_reservoir" else 150.0
+			var rr := clampf(world.reservoir_mass[i] / cap_r, 0.0, 1.0)
+			var rh := (ts - 8) * rr
+			c.draw_rect(Rect2(p.x + ts - 6, p.y + 4, 4, ts - 8), Color(0.10, 0.14, 0.18, 0.85), true)
+			c.draw_rect(Rect2(p.x + ts - 5, p.y + ts - 4 - rh, 2, rh), Color(0.32, 0.84, 1.0, 1.0) if b == "liquid_reservoir" else Color(0.95, 0.62, 0.32, 1.0), true)
 		if b == "battery" or b == "smart_battery":
 			var ratio := clampf(world.battery_j[i] / OniElements.BATTERY_CAPACITY_J, 0.0, 1.0)
 			var bh := (ts - 8) * ratio
@@ -1077,11 +1144,11 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 			c.draw_arc(hc, 11.8, 0.0, TAU, 20, Color(0.56, 0.94, 1.0, 0.85), 1.6)
 			c.draw_arc(hc, 9.2, -2.5, -1.1, 10, Color(1.0, 1.0, 1.0, 0.72), 1.5)
 
-	if (dupe.state == "DIG" or dupe.state == "BUILD") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
+	if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 		var tx := dupe.target_cell.x * ts + ts * 0.5
 		var ty := dupe.target_cell.y * ts + ts * 0.5
 		var pulse := 0.65 + 0.35 * sin(_anim_time * 24.0)
-		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else Color(0.35, 0.92, 1.0, pulse)
+		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else (Color(1.0, 0.32, 0.32, pulse) if dupe.state == "DECONSTRUCT" else (Color(0.32, 0.94, 1.0, pulse) if dupe.state == "MOP" else Color(0.35, 0.92, 1.0, pulse)))
 		c.draw_line(Vector2(px, py - 4), Vector2(tx, ty), beam_c, 3.0)
 		c.draw_circle(Vector2(tx, ty), 5.0 * pulse, beam_c)
 

@@ -8,9 +8,11 @@ var audio: OniAudio
 var paused := false
 var speed_mult := 1.0
 var active_tool := "select"
+var active_priority := 5
 var active_cat := "base"
 var active_codex_tab := "summary"
 var show_all_techs := false
+var _last_self_test: Dictionary = {}
 
 var _panning := false
 var _pan_last_mouse := Vector2.ZERO
@@ -20,6 +22,7 @@ var _top_info_lbl: Label
 var _res_info_lbl: Label
 var _inspector_lbl: Label
 var _status_lbl: Label
+var _prio_btn: Button
 var _tool_row: HBoxContainer
 var _research_panel: PanelContainer
 var _research_vbox: VBoxContainer
@@ -79,6 +82,8 @@ func _ready() -> void:
 	world = OniWorld.new(73)
 	world.on_dig_completed = Callable(self, "_on_dig_completed")
 	world.on_build_completed = Callable(self, "_on_build_completed")
+	world.on_deconstruct_completed = Callable(self, "_on_deconstruct_completed")
+	world.on_mop_completed = Callable(self, "_on_mop_completed")
 	world.on_meteor_alert = Callable(self, "_on_meteor_alert")
 	world.on_meteor_impact = Callable(self, "_on_meteor_impact")
 	world.on_suit_equipped = Callable(self, "_on_suit_equipped")
@@ -319,8 +324,8 @@ func _build_hud() -> void:
 
 	# 대원 우선순위·스킬 관리 팝업 (V)
 	_dupes_panel = PanelContainer.new()
-	_dupes_panel.position = Vector2(230, 110)
-	_dupes_panel.custom_minimum_size = Vector2(680, 320)
+	_dupes_panel.position = Vector2(180, 108)
+	_dupes_panel.custom_minimum_size = Vector2(780, 320)
 	_dupes_panel.visible = false
 	_style_panel(_dupes_panel, Color(0.08, 0.12, 0.19, 0.97))
 	_ui_root.add_child(_dupes_panel)
@@ -341,10 +346,10 @@ func _build_hud() -> void:
 	_space_vbox.add_theme_constant_override("separation", 7)
 	_space_panel.add_child(_space_vbox)
 
-	# 주기 보고서·저장/불러오기 팝업 (O)
+	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(300, 115)
-	_report_panel.custom_minimum_size = Vector2(520, 290)
+	_report_panel.position = Vector2(250, 94)
+	_report_panel.custom_minimum_size = Vector2(620, 390)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
@@ -447,13 +452,15 @@ func _build_hud() -> void:
 	bot_panel.add_child(bot_vbox)
 
 	var cat_row := HBoxContainer.new()
-	cat_row.add_theme_constant_override("separation", 6)
+	cat_row.add_theme_constant_override("separation", 3)
 	bot_vbox.add_child(cat_row)
 
 	for fix_t in [
 		{"id": "select", "label": "선택"},
-		{"id": "dig", "label": "채굴(B)"},
-		{"id": "cancel", "label": "취소(C)"},
+		{"id": "dig", "label": "채굴B"},
+		{"id": "deconstruct", "label": "해체Z"},
+		{"id": "mop", "label": "닦기F"},
+		{"id": "cancel", "label": "취소C"},
 	]:
 		var fbtn := Button.new()
 		fbtn.text = String(fix_t["label"])
@@ -464,6 +471,15 @@ func _build_hud() -> void:
 		)
 		cat_row.add_child(fbtn)
 		_tool_buttons[ftid] = fbtn
+
+	_prio_btn = Button.new()
+	_prio_btn.text = "우%d" % active_priority
+	_prio_btn.modulate = Color(0.88, 0.92, 0.98)
+	_prio_btn.pressed.connect(func():
+		audio.play_click()
+		_set_priority((active_priority % 9) + 1)
+	)
+	cat_row.add_child(_prio_btn)
 
 	var sep := VSeparator.new()
 	cat_row.add_child(sep)
@@ -525,7 +541,7 @@ func _rebuild_tool_buttons() -> void:
 	var remove_keys: Array[String] = []
 	for k in _tool_buttons.keys():
 		var ks := String(k)
-		if ks != "select" and ks != "dig" and ks != "cancel":
+		if not (ks in ["select", "dig", "deconstruct", "mop", "cancel"]):
 			remove_keys.append(ks)
 	for rk: String in remove_keys:
 		_tool_buttons.erase(rk)
@@ -546,6 +562,13 @@ func _rebuild_tool_buttons() -> void:
 		_tool_buttons[tid] = tbtn
 	_update_tool_highlight()
 
+func _set_priority(p: int) -> void:
+	active_priority = clampi(p, 1, 9)
+	if _prio_btn != null:
+		_prio_btn.text = "우%d" % active_priority
+		_prio_btn.modulate = Color(1.0, 0.42, 0.32) if active_priority >= 8 else (Color(1.0, 0.88, 0.36) if active_priority >= 6 else Color(0.88, 0.92, 0.98))
+	_select_tool(active_tool)
+
 func _select_tool(tid: String) -> void:
 	active_tool = tid
 	renderer.active_tool = tid
@@ -553,13 +576,17 @@ func _select_tool(tid: String) -> void:
 	var bdef := OniElements.get_building(tid)
 	if not bdef.is_empty():
 		var el_ko := OniElements.get_element_name(String(bdef.get("cost_element", "SandStone")))
-		_status_lbl.text = "%s (%s %.0fkg) - %s" % [String(bdef["name_ko"]), el_ko, float(bdef["cost_kg"]), String(bdef["desc"])]
+		_status_lbl.text = "%s (%s %.0fkg · 우%d) - %s" % [String(bdef["name_ko"]), el_ko, float(bdef["cost_kg"]), active_priority, String(bdef["desc"])]
 	elif tid == "dig":
-		_status_lbl.text = "좌클릭 드래그로 채굴 지정 · 연구(R)로 배관/전해조/농사 해금"
+		_status_lbl.text = "채굴(우%d): 좌드래그 · 1~9 우선 · F9 검증" % active_priority
+	elif tid == "deconstruct":
+		_status_lbl.text = "해체(우%d): 건물·전선·배관 100%% 자원 환급 해체" % active_priority
+	elif tid == "mop":
+		_status_lbl.text = "닦기(우%d): 바닥의 얕은 액체(250kg 이하) 청소" % active_priority
 	elif tid == "cancel":
-		_status_lbl.text = "좌클릭 드래그로 채굴/건설 지시 취소"
+		_status_lbl.text = "좌클릭 드래그로 채굴/건설/해체/닦기 지시 취소"
 	else:
-		_status_lbl.text = "칸 클릭: 원소·기체·배관·온도 검사 (우클릭: 이동, 휠: 줌)"
+		_status_lbl.text = "칸 클릭: 검사·스위치 전환 (우클릭: 이동, 휠: 줌)"
 
 func _update_tool_highlight() -> void:
 	for k in _tool_buttons.keys():
@@ -624,15 +651,17 @@ func _refresh_dupes_panel() -> void:
 	_dupes_vbox.add_child(hdr)
 	for d in world.duplicants:
 		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 5)
+		row.add_theme_constant_override("separation", 4)
 		var lbl := Label.new()
-		lbl.text = "%s[%s] Lv.%d %s (XP %.0f · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.stress, d.get_disease_ko()]
-		lbl.custom_minimum_size = Vector2(345, 0)
+		lbl.text = "%s[%s] Lv.%d %s (XP%.0f · 방광%.0f%% · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.bladder, d.stress, d.get_disease_ko()]
+		lbl.custom_minimum_size = Vector2(365, 0)
 		lbl.add_theme_font_size_override("font_size", 11)
 		row.add_child(lbl)
 		for pr in [
 			{"k": "dig", "t": "채굴", "v": d.prio_dig},
 			{"k": "build", "t": "건설", "v": d.prio_build},
+			{"k": "deconstruct", "t": "해체", "v": d.prio_deconstruct},
+			{"k": "mop", "t": "닦기", "v": d.prio_mop},
 			{"k": "operate", "t": "발전", "v": d.prio_operate},
 			{"k": "research", "t": "연구", "v": d.prio_research},
 		]:
@@ -647,6 +676,10 @@ func _refresh_dupes_panel() -> void:
 					dc.prio_dig = not dc.prio_dig
 				elif pk == "build":
 					dc.prio_build = not dc.prio_build
+				elif pk == "deconstruct":
+					dc.prio_deconstruct = not dc.prio_deconstruct
+				elif pk == "mop":
+					dc.prio_mop = not dc.prio_mop
 				elif pk == "operate":
 					dc.prio_operate = not dc.prio_operate
 				else:
@@ -790,26 +823,66 @@ func _refresh_space_panel() -> void:
 		grid.add_child(mb)
 	_space_vbox.add_child(grid)
 
+func _run_logic_self_test() -> void:
+	_last_self_test = OniWorld.run_logic_self_test()
+	var p_cnt := int(_last_self_test.get("passed", 0))
+	var f_cnt := int(_last_self_test.get("failed", 0))
+	var t_cnt := int(_last_self_test.get("total", 0))
+	var summary := "[ONI_LOGIC_SELFTEST] PASS %d/%d FAILED %d" % [p_cnt, t_cnt, f_cnt]
+	print(summary)
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("console.log(" + JSON.stringify(summary) + ")")
+	for dl in (_last_self_test.get("details", []) as Array):
+		var dline := "[ONI_LOGIC_DETAIL] " + String(dl)
+		print(dline)
+		if OS.has_feature("web"):
+			JavaScriptBridge.eval("console.log(" + JSON.stringify(dline) + ")")
+	if f_cnt == 0:
+		audio.play_research_done()
+	else:
+		audio.play_red_alert()
+	_close_all_modals(_report_panel)
+	_report_panel.visible = true
+	_refresh_report_panel()
+
 func _refresh_report_panel() -> void:
 	for child in _report_vbox.get_children():
 		child.queue_free()
 	var title := Label.new()
-	title.text = "=== 식민지 주기 %d 보고서 & 브라우저 영속 저장 ===" % world.cycle
+	title.text = "=== 식민지 주기 %d 보고서 · 시뮬레이션 로직 검증 ===" % world.cycle
 	title.add_theme_color_override("font_color", Color(0.55, 0.94, 1.0))
 	_report_vbox.add_child(title)
 	var body := Label.new()
-	body.add_theme_font_size_override("font_size", 12)
+	body.add_theme_font_size_override("font_size", 11)
+	var ov_txt := " [과부하!]" if world.circuit_overloaded else ""
 	body.text = "\n".join([
-		"행성: %s (시드 %d) · 현재 시간: %s" % [world.get_world_preset_label(), world.seed_value, "야간 취침" if world.is_night() else "주간 작업"],
-		"복제체: %d명 · 방 구획: %d개 (사기 보너스 +%d) · 야생 생물: %d마리" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size()],
+		"행성: %s (시드 %d) · 스케줄: %s · 태양광 일조: %.0f%%" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0],
+		"복제체: %d명 · 방 구획: %d개 (사기 +%d) · 생물: %d마리 · 회로 최대부하: %.0f/1000W%s" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size(), world.max_circuit_load_w, ov_txt],
 		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj],
-		"식량 비축: %.0f kcal · 채굴 완료: %d칸 · 건설 완료: %d건" % [world.food_kcal, world.report_digs, world.report_builds],
-		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개 · 운석 방어: %d회" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks, world.meteors_blocked],
+		"식량 비축: %.0f kcal · 채굴 완료: %d칸 · 건설 완료: %d건 · 운석 방어: %d회" % [world.food_kcal, world.report_digs, world.report_builds, world.meteors_blocked],
+		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks],
 		"저장 상태: %s" % (world.last_save_status if not world.last_save_status.is_empty() else "대기 중 (user://oni_save.json)"),
 	])
 	_report_vbox.add_child(body)
+	if not _last_self_test.is_empty():
+		var st_lbl := Label.new()
+		st_lbl.add_theme_font_size_override("font_size", 10)
+		var ok_all := int(_last_self_test.get("failed", 0)) == 0
+		st_lbl.add_theme_color_override("font_color", Color(0.55, 0.98, 0.68) if ok_all else Color(1.0, 0.52, 0.48))
+		var st_lines: Array[String] = ["--- 핵심 로직 자가검증 결과: PASS %d / %d ---" % [int(_last_self_test.get("passed", 0)), int(_last_self_test.get("total", 0))]]
+		for dl in (_last_self_test.get("details", []) as Array):
+			st_lines.append(String(dl))
+		st_lbl.text = "\n".join(st_lines)
+		_report_vbox.add_child(st_lbl)
 	var brow := HBoxContainer.new()
-	brow.add_theme_constant_override("separation", 8)
+	brow.add_theme_constant_override("separation", 6)
+	var test_btn := Button.new()
+	test_btn.text = "로직 자가검증(F9)"
+	test_btn.modulate = Color(0.55, 0.98, 0.72)
+	test_btn.pressed.connect(func():
+		_run_logic_self_test()
+	)
+	brow.add_child(test_btn)
 	var sbtn := Button.new()
 	sbtn.text = "식민지 저장"
 	sbtn.pressed.connect(func():
@@ -1065,8 +1138,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			_refresh_hud()
 		elif event.is_action_pressed("tool_dig"):
 			_select_tool("dig")
+		elif event.physical_keycode == KEY_Z:
+			_select_tool("deconstruct")
+		elif event.physical_keycode == KEY_F:
+			_select_tool("mop")
 		elif event.is_action_pressed("tool_cancel"):
 			_select_tool("cancel")
+		elif event.physical_keycode >= KEY_1 and event.physical_keycode <= KEY_9:
+			audio.play_click()
+			_set_priority(event.physical_keycode - KEY_1 + 1)
+		elif event.physical_keycode == KEY_F9:
+			_run_logic_self_test()
 		elif event.is_action_pressed("step_gas"):
 			paused = true
 			world.step_gas_tick()
@@ -1127,18 +1209,24 @@ func _apply_drag(c0: Vector2i, c1: Vector2i) -> void:
 	for y in range(y0, y1 + 1):
 		for x in range(x0, x1 + 1):
 			if active_tool == "dig":
-				if world.order_dig(x, y):
+				if world.order_dig(x, y, active_priority):
+					placed_any = true
+			elif active_tool == "deconstruct":
+				if world.order_deconstruct(x, y, active_priority):
+					placed_any = true
+			elif active_tool == "mop":
+				if world.order_mop(x, y, active_priority):
 					placed_any = true
 			elif active_tool == "cancel":
 				if world.cancel_order(x, y):
 					placed_any = true
 			elif active_tool != "select":
-				if world.order_build(x, y, active_tool):
+				if world.order_build(x, y, active_tool, active_priority):
 					placed_any = true
 	if placed_any:
-		if active_tool == "cancel":
+		if active_tool == "cancel" or active_tool == "deconstruct":
 			audio.play_cancel()
-		elif active_tool == "dig":
+		elif active_tool == "dig" or active_tool == "mop":
 			audio.play_drag()
 		else:
 			audio.play_place()
@@ -1150,6 +1238,14 @@ func _on_dig_completed(cell: Vector2i, _el: String, _gained: float) -> void:
 func _on_build_completed(cell: Vector2i, _b_id: String) -> void:
 	audio.play_build_done()
 	renderer.spawn_burst(cell, "burst", Color(0.45, 0.94, 1.0, 0.95))
+
+func _on_deconstruct_completed(cell: Vector2i, _b_id: String) -> void:
+	audio.play_dig_done()
+	renderer.spawn_burst(cell, "dust", Color(1.0, 0.42, 0.36, 0.95))
+
+func _on_mop_completed(cell: Vector2i, _el: String, _mass: float) -> void:
+	audio.play_work_chime()
+	renderer.spawn_burst(cell, "bubble", Color(0.36, 0.92, 1.0, 0.95))
 
 func _on_meteor_alert() -> void:
 	audio.play_scanner_ping()
@@ -1250,9 +1346,8 @@ class OniStarmapCanvas extends Control:
 		draw_rect(Rect2(Vector2.ZERO, sz), Color(0.28, 0.48, 0.72, 0.85), false, 1.5)
 
 func _refresh_hud() -> void:
-	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)
-	_top_info_lbl.text = "주%d(%.0fs)|O2 %.2f|%.0f/%.0fW|사기+%d" % [
-		world.cycle, cyc_sec, world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w, world.colony_morale_bonus
+	_top_info_lbl.text = "주%d %s|O2 %.2f|%.0f/%.0fW|사기+%d" % [
+		world.cycle, world.get_schedule_phase_ko(), world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w, world.colony_morale_bonus
 	]
 	if _print_btn != null:
 		if world.print_ready_timer <= 0.0:
@@ -1306,6 +1401,9 @@ func _refresh_hud() -> void:
 			lines.append("방: %s (사기 +%d) · 장식 %+.0f" % [rname, int(info.get("room_morale", 0)), dval])
 		elif absf(dval) >= 1.0:
 			lines.append("장식: %+.0f" % dval)
+		var rad_v := float(info.get("rads", 0.0))
+		if rad_v >= 5.0:
+			lines.append("방사선: %.0f rad" % rad_v)
 		if bool(info.get("has_logic_wire", false)):
 			lines.append("자동화: %s" % ("활성(초록)" if bool(info.get("logic_signal", true)) else "대기(빨강)"))
 		var gcnt := float(info.get("germ_count", 0.0))
@@ -1316,26 +1414,46 @@ func _refresh_hud() -> void:
 			var b_id := String(info["building"])
 			var bname := "인쇄기" if b_id == "pod" else String(OniElements.get_building(b_id).get("name_ko", b_id))
 			var extra := ""
-			if b_id == "battery":
+			if b_id == "battery" or b_id == "smart_battery":
 				extra = " (%.1f kJ)" % (float(info["battery_j"]) / 1000.0)
 			elif b_id == "hydrogen_gen":
 				extra = " (H2 버퍼 %.2f kg)" % float(info["h2_buffer_kg"])
-			elif b_id == "farm_tile":
+			elif b_id == "farm_tile" or b_id == "hydroponic_tile" or b_id == "planter_box":
 				extra = " (성장 %.0f%%)" % (float(info["farm_growth"]) * 100.0)
-			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station"]:
+			elif b_id == "liquid_reservoir" or b_id == "gas_reservoir":
+				var rm := float(info.get("reservoir_mass", 0.0))
+				var re := String(info.get("reservoir_el", ""))
+				extra = " (%s %.1f kg)" % [OniElements.get_element_name(re) if not re.is_empty() else "비어 있음", rm]
+			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "petrol_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "rock_crusher", "kiln", "oil_refinery", "metal_refinery", "thermo_aquatuner", "space_scanner"]:
 				extra = " [가동]" if bool(info["machine_running"]) else " [대기]"
 			lines.append("건물: %s%s" % [bname, extra])
 		if bool(info["has_liquid_pipe"]):
-			lines.append("액체관: 물 %.1f kg" % float(info["lpipe_mass"]))
+			var lpe := String(info.get("lpipe_el", ""))
+			var lpm := float(info["lpipe_mass"])
+			var lpt := float(info.get("lpipe_temp", 22.0))
+			var lp_name := OniElements.get_element_name(lpe) if (not lpe.is_empty() and lpm > 0.05) else "비어 있음"
+			lines.append("액체관: %s %.1f kg (%.1f°C)" % [lp_name, lpm, lpt])
 		if bool(info["has_gas_pipe"]):
-			lines.append("기체관: %s %.0f g" % [OniElements.get_element_name(String(info["gpipe_el"])), float(info["gpipe_mass"]) * 1000.0])
+			var gpe := String(info["gpipe_el"])
+			var gpm := float(info["gpipe_mass"]) * 1000.0
+			var gpt := float(info.get("gpipe_temp", 22.0))
+			lines.append("기체관: %s %.0f g (%.1f°C)" % [OniElements.get_element_name(gpe), gpm, gpt])
 		if bool(info["has_wire"]):
-			lines.append("배선: 전선 연결됨")
+			lines.append("배선: %s" % ("전선 과부하!" if bool(info.get("overloaded", false)) else "전선 연결됨"))
+		var tp := int(info.get("tile_priority", 5))
+		if bool(info.get("dig_order", false)):
+			lines.append("지시: 채굴 (우선 %d)" % tp)
+		elif not String(info.get("build_order", "")).is_empty():
+			lines.append("지시: 건설 %s (우선 %d)" % [OniElements.get_building(String(info["build_order"])).get("name_ko", String(info["build_order"])), tp])
+		elif bool(info.get("deconstruct_order", false)):
+			lines.append("지시: 해체 (우선 %d)" % tp)
+		elif bool(info.get("mop_order", false)):
+			lines.append("지시: 닦기 (우선 %d)" % tp)
 	else:
-		lines.append("[타일 인스펙터] 칸 클릭 · 방(M) · 세균(J) · 도감(I)")
+		lines.append("[타일 인스펙터] 칸 클릭 · 해체(Z) · 닦기(F) · 1~9 우선순위 · F9 검증")
 
 	lines.append("--- 복제체 현황 ---")
 	for d in world.duplicants:
-		lines.append("%s[%s]: %s | 사기 %d | 호흡 %.0f%%" % [d.dupe_name, d.trait_ko, d.state_ko, d.morale, d.breath])
+		lines.append("%s[%s]: %s | 방광%.0f%% | 호흡%.0f%%" % [d.dupe_name, d.trait_ko, d.state_ko, d.bladder, d.breath])
 
 	_inspector_lbl.text = "\n".join(lines)
