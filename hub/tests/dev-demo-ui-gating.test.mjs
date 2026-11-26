@@ -79,18 +79,20 @@ async function withChromeCdp(t, url, fn) {
   });
 
   let wsUrl = '';
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 300; i++) {
     const m = stderr.match(/DevTools listening on (ws:\/\/[^\s]+)/);
     if (m) { wsUrl = m[1]; break; }
     await delay(100);
   }
-  assert.ok(wsUrl, 'Chrome DevTools should start');
+  assert.ok(wsUrl, `Chrome DevTools should start (${stderr.trim().slice(0, 200)})`);
   const debugOrigin = wsUrl.replace(/^ws:/, 'http:').replace(/\/devtools\/browser\/.*$/, '');
   let pageTarget = null;
-  for (let i = 0; i < 40; i++) {
-    const targets = await (await fetch(`${debugOrigin}/json/list`)).json();
-    pageTarget = targets.find(item => item.type === 'page' && item.webSocketDebuggerUrl);
-    if (pageTarget) break;
+  for (let i = 0; i < 150; i++) {
+    try {
+      const targets = await (await fetch(`${debugOrigin}/json/list`)).json();
+      pageTarget = targets.find(item => item.type === 'page' && item.webSocketDebuggerUrl);
+      if (pageTarget) break;
+    } catch {}
     await delay(100);
   }
   assert.ok(pageTarget, 'Page target should exist');
@@ -122,7 +124,7 @@ async function withChromeCdp(t, url, fn) {
     pending.set(id, { resolve, reject });
     ws.send(JSON.stringify({ id, method, params }));
   });
-  const waitForLoad = (timeoutMs = 15000) => new Promise(resolve => {
+  const waitForLoad = (timeoutMs = 20000) => new Promise(resolve => {
     const timer = setTimeout(resolve, timeoutMs);
     loadResolvers.push(() => { clearTimeout(timer); resolve(); });
   });
@@ -133,14 +135,31 @@ async function withChromeCdp(t, url, fn) {
     }
     return res.result?.value;
   };
+  const expectedOrigin = new URL(url).origin;
+  const waitForOriginComplete = async () => {
+    for (let i = 0; i < 150; i++) {
+      try {
+        const ready = await evalJs(`location.origin === ${JSON.stringify(expectedOrigin)} && document.readyState === 'complete'`);
+        if (ready === true) return;
+      } catch {}
+      await delay(100);
+    }
+    throw new Error(`Timed out waiting for ${expectedOrigin} to reach readyState=complete`);
+  };
+  const reloadAndWait = async () => {
+    const loaded = waitForLoad();
+    await send('Page.reload', { ignoreCache: true });
+    await loaded;
+    await waitForOriginComplete();
+  };
   try {
     await send('Page.enable');
     await send('Runtime.enable');
     const loaded = waitForLoad();
     await send('Page.navigate', { url });
     await loaded;
-    await delay(300);
-    return await fn({ send, evalJs, waitForLoad });
+    await waitForOriginComplete();
+    return await fn({ send, evalJs, waitForLoad, reloadAndWait });
   } finally {
     ws.close();
   }
@@ -177,7 +196,7 @@ test('PlayHub build() includes dev-demo-ui.js ONLY in dev/debug/test builds and 
   }
 });
 
-test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manually set; debug build persists toggle across F5', async t => {
+test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manually set; debug build persists toggle across F5', { timeout: 240000 }, async t => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-prod-vs-debug-'));
   const cleanups = [];
   t.after(async () => {
@@ -223,14 +242,11 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
 
   // 1) Prod build: even with localStorage forced to '1', zero Dev toggle & zero Demo UI
   const prodUrl = await launchMode('prod');
-  await withChromeCdp(t, `${prodUrl}/?view=billing`, async ({ send, evalJs, waitForLoad }) => {
+  await withChromeCdp(t, `${prodUrl}/?view=billing`, async ({ evalJs, reloadAndWait }) => {
     await evalJs(`localStorage.setItem('playhub.dev.testDemoUi', '1');`);
-    const reloaded = waitForLoad();
-    await send('Page.reload', { ignoreCache: true });
-    await reloaded;
-    await delay(300);
+    await reloadAndWait();
     const state = await evalJs(`(async () => {
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 100; i++) {
         if (document.querySelector('[data-buy-sku]')) break;
         await new Promise(r => setTimeout(r, 100));
       }
@@ -250,9 +266,9 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
   // 2) Debug build: ZERO user-facing "데모 OFF" pills/cards; experimental UI stays OFF by default
   //    and is controlled via Admin (?devDemoUi=1 / PlayHubDevDemoUI API) with F5 persistence.
   const debugUrl = await launchMode('debug');
-  await withChromeCdp(t, `${debugUrl}/?view=account`, async ({ send, evalJs, waitForLoad }) => {
+  await withChromeCdp(t, `${debugUrl}/?view=account`, async ({ evalJs, reloadAndWait }) => {
     const waitDevApi = `(async () => {
-      for (let i = 0; i < 80; i++) {
+      for (let i = 0; i < 100; i++) {
         if (document.readyState === 'complete' && window.PlayHubDevDemoUI) break;
         await new Promise(r => setTimeout(r, 100));
       }
@@ -272,9 +288,7 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     // Enable via Admin launch/API -> F5 reload -> verify ON persists without rendering user-facing 데모 buttons
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(true);`);
     await delay(100);
-    const reloadedOn = waitForLoad();
-    await send('Page.reload', { ignoreCache: true });
-    await reloadedOn;
+    await reloadAndWait();
     const afterF5On = await evalJs(waitDevApi);
     assert.equal(afterF5On.enabled, true, 'Admin-enabled experimental setting ON must persist after F5 reload');
     assert.equal(afterF5On.hasNavToggle, false);
@@ -283,15 +297,13 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     // Disable -> F5 reload -> verify OFF persists
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(false);`);
     await delay(100);
-    const reloadedOff = waitForLoad();
-    await send('Page.reload', { ignoreCache: true });
-    await reloadedOff;
+    await reloadAndWait();
     const afterF5Off = await evalJs(waitDevApi);
     assert.equal(afterF5Off.enabled, false, 'Setting OFF must persist after F5 reload');
   });
 });
 
-test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by default, toggles ON with F5 persistence, and excludes in prod', async t => {
+test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by default, toggles ON with F5 persistence, and excludes in prod', { timeout: 240000 }, async t => {
   const { createServer } = require(path.join(FORGE_ROOT, 'server.cjs'));
 
   async function startForge(buildMode) {
@@ -337,7 +349,7 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
   const testScriptRes = await fetch(`${testForge}/OfficialGodot/dev-demo-ui.js`);
   assert.equal(testScriptRes.status, 200, 'Test build PlayForge must serve dev-demo-ui.js');
 
-  await withChromeCdp(t, `${testForge}/OfficialGodot/`, async ({ send, evalJs, waitForLoad }) => {
+  await withChromeCdp(t, `${testForge}/OfficialGodot/`, async ({ evalJs, reloadAndWait }) => {
     const before = await evalJs(`({
       mode: window.PlayForgeDevDemoUI?.getBuildMode?.(),
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
@@ -365,10 +377,7 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
     // Enable via Admin launch/API -> verify visible -> F5 reload -> verify STILL ON & visible!
     await evalJs(`window.PlayForgeDevDemoUI.setEnabled(true);`);
     await delay(100);
-    const reloadedForge = waitForLoad();
-    await send('Page.reload', { ignoreCache: true });
-    await reloadedForge;
-    await delay(300);
+    await reloadAndWait();
 
     const afterF5 = await evalJs(`({
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),

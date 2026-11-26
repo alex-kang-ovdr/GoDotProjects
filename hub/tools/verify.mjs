@@ -271,7 +271,9 @@ export function verifyProject({root = DEFAULT_ROOT, tests = false, report: desti
     try { output = execFileSync(process.execPath,['--test','--test-reporter=tap',...files],{cwd:root,encoding:'utf8',timeout:480000,maxBuffer:16*1024*1024,stdio:'pipe'}); }
     catch (err) {
       const rawOut = String(err?.stdout || '');
-      const failedNames = [...rawOut.matchAll(/^not ok \d+ - ([^\r\n]{1,120})/gm)].map(m => m[1].trim()).slice(0, 6);
+      const failedNames = [...rawOut.matchAll(/^not ok \d+ - ([^\r\n]{1,120})(?:\r?\n\s+---[\s\S]*?\r?\n\s+error:\s*([^\r\n]{1,140}))?/gm)]
+        .map(m => m[2] ? `${m[1].trim()} [${m[2].trim()}]` : m[1].trim())
+        .slice(0, 6);
       const reason = err?.code === 'ETIMEDOUT' ? '시간 초과(480s)' : (failedNames.length ? `실패 항목: ${failedNames.join(' | ')}` : '실패/시간 초과');
       throw new Error(`node --test ${reason}. 로컬에서 테스트 명령으로 상세 원인을 확인하세요. 비밀값 유출을 막기 위해 원시 출력은 보고서에 넣지 않습니다.`);
     }
