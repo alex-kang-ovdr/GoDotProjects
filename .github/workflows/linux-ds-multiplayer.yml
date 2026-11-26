@@ -1,0 +1,60 @@
+name: PlayForge Linux Dedicated Server SIGTERM & NetFramework CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch or commit SHA to test"
+        required: false
+        default: "PlayHub-Platform"
+
+jobs:
+  linux-ds-sigterm-and-netframework:
+    name: Linux DS ELF Export + POSIX SIGTERM Drain + NetFramework Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Cache Linux Godot 4.7.2 & Linux Dedicated Export Template
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/playhub-godot-4.7.2-linux-ds
+          key: linux-godot-4.7.2-stable-x86_64-ds-v1
+
+      - name: Install Godot 4.7.2 Linux Binary & Linux x86_64 Release Template
+        run: |
+          set -euo pipefail
+          CACHE="${HOME}/.cache/playhub-godot-4.7.2-linux-ds"
+          GODOT_EXE="${CACHE}/Godot_v4.7.2-stable_linux.x86_64"
+          TPL_CACHE="${CACHE}/export_templates/4.7.2.stable"
+          TPL_DEST="${HOME}/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "${CACHE}" "${TPL_CACHE}"
+          if [ ! -x "${GODOT_EXE}" ]; then
+            curl -fsSL "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip" -o /tmp/godot.zip
+            unzip -qo /tmp/godot.zip -d "${CACHE}"
+            chmod +x "${GODOT_EXE}"
+            rm -f /tmp/godot.zip
+          fi
+          if [ ! -f "${TPL_CACHE}/linux_release.x86_64" ]; then
+            curl -fsSL "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz" -o /tmp/templates.tpz
+            unzip -qo -j /tmp/templates.tpz 'templates/linux_release.x86_64' 'templates/linux_debug.x86_64' -d "${TPL_CACHE}"
+            chmod +x "${TPL_CACHE}/linux_release.x86_64" "${TPL_CACHE}/linux_debug.x86_64"
+            rm -f /tmp/templates.tpz
+          fi
+          mkdir -p "$(dirname "${TPL_DEST}")"
+          ln -sfn "${TPL_CACHE}" "${TPL_DEST}"
+          echo "GODOT_BIN=${GODOT_EXE}" >> "${GITHUB_ENV}"
+          "${GODOT_EXE}" --version
+
+      - name: Verify Linux Dedicated Server ELF Export + POSIX SIGTERM Graceful Drain
+        run: node forge/Tools/dedicated-server/verify-linux-ds-sigterm.cjs
+
+      - name: Run NetFramework Integration Tests on Linux
+        run: node --test forge/Tests/netframework/*.test.cjs

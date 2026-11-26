@@ -5331,6 +5331,22 @@
       "owner": "PlayHub-Platform"
     },
     {
+      "path": "hub/tests/ds-control-plane.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "component",
+        "hub",
+        "multiplatform",
+        "system"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-Platform"
+    },
+    {
       "path": "hub/tests/dungeons-and-dragons.browser.test.mjs",
       "tier": "integration",
       "suites": [

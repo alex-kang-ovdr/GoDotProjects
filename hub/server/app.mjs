@@ -29,6 +29,7 @@ import { createProgression, mergeGuestProgression } from './ssot/progression.mjs
 import { createDataStore, mergeGuestDataStore } from './ssot/datastore.mjs';
 import { createSocial } from './social/routes.mjs';
 import { createUgcMultiplayer } from './ugc-multiplayer.mjs';
+import { createDsControlPlane } from './ds-control-plane.mjs';
 import { createGamerQaHub } from './gamerqa-hub.mjs';
 import { createAdGame } from './adgame/routes.mjs';
 import { createHubAgent } from './agent/routes.mjs';
@@ -219,6 +220,7 @@ export function createApp(input, dependencies = {}) {
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
   const ugcMultiplayer = createUgcMultiplayer({ now, allowedOrigins: config.userOrigins });
+  const dsControlPlane = createDsControlPlane({ platformRoot, now, audit, rate, requireSession: requireUnsanctionedSession, promote, verifyInternalAccess });
   const mobileAppConfig = Object.defineProperties({ ...config }, {
     _rootDir: { value: rootDir, enumerable: false },
     _catalogOptions: { value: catalogOptions, enumerable: false }
@@ -462,6 +464,7 @@ export function createApp(input, dependencies = {}) {
     if (await shorts.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
     if (ugcMultiplayer.publicRoute(req,res,url)) return;
+    if (await dsControlPlane.publicRoute(req,res,url)) return;
     if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     if (await avatar.publicRoute(req,res,url)) return;
@@ -775,6 +778,7 @@ export function createApp(input, dependencies = {}) {
     if (await l10n.adminRoute(req,res,url,s)) return;
     if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
+    if (await dsControlPlane.adminRoute(req,res,url,s)) return;
     if (await gamerQaHub.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
@@ -907,6 +911,10 @@ export function createApp(input, dependencies = {}) {
           if (await hubAgent.internalRoute(req, res, url)) return;
           throw new ApiError(404, 'NOT_FOUND');
         }
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname.startsWith('/internal/v1/multiplayer/ds/')) {
+          if (await dsControlPlane.internalRoute(req, res, url)) return;
+          throw new ApiError(404, 'NOT_FOUND');
+        }
         if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health' && url.pathname !== '/api/version')) throw new ApiError(404,'NOT_FOUND');
         if (kind === 'public' && mobile.enabled && url.pathname.startsWith('/api/mobile/')) {
           if (await mobile.publicRoute(req, res, url)) return;
@@ -971,7 +979,7 @@ export function createApp(input, dependencies = {}) {
       return null;
     }
   }
-  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
+  return { db,cdn,billing,hubAgent,shorts,ugcPublish,ugcMultiplayer,dsControlPlane,avatar,publicHandler,adminHandler,publicServer,adminServer,resolveStoreIdentity,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
