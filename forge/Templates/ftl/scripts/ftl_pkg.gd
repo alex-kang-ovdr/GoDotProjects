@@ -12,6 +12,13 @@ signal profile_ready(profile_data: Dictionary)
 signal texture_loaded(rel_path: String)
 signal audio_loaded(rel_path: String)
 
+const EMBEDDED_PACKS := [
+	"res://data/ftl_pack_xml.res",
+	"res://data/ftl_pack_ships.res",
+	"res://data/ftl_pack_sprites.res",
+	"res://data/ftl_pack_sfx.res",
+]
+
 const DEFAULT_CANDIDATES := [
 	"C:/Temp/FTL/ftl.dat.vanilla",
 	"C:/Temp/FTL/ftl.dat",
@@ -23,13 +30,16 @@ const DEFAULT_CANDIDATES := [
 
 var archive_path: String = ""
 var is_loaded: bool = false
+var embedded_mode: bool = false
 var web_http_mode: bool = false
 var web_base_url: String = ""
 var entry_count: int = 0
 
-var _entries: Dictionary = {} # path -> { "offset": int, "size": int, "uncomp": int, "flags": int }
+var _entries: Dictionary = {} # path -> { "vol": int, "offset": int, "size": int, "uncomp": int, "flags": int }
 var _web_files: Dictionary = {} # path -> true
 var _file: FileAccess = null
+var _files: Array[FileAccess] = []
+var _mem_vols: Array[PackedByteArray] = []
 var _mem_buf: PackedByteArray = PackedByteArray()
 var _texture_cache: Dictionary = {}
 var _audio_cache: Dictionary = {}
@@ -52,12 +62,20 @@ static func _read_be32(buf: PackedByteArray, pos: int) -> int:
 
 
 func auto_open() -> bool:
+	# 1. Explicit env override (desktop/dev only)
+	if not OS.has_feature("web") and not OS.has_feature("android") and not OS.has_feature("ios"):
+		var env_path := OS.get_environment("FTL_DAT_PATH").strip_edges()
+		if not env_path.is_empty():
+			var norm := env_path.replace("\\", "/")
+			if FileAccess.file_exists(norm) and open_archive(norm):
+				return true
+	# 2. Primary: 100% internalized multi-volume PKG packs inside res://data/ (works identically on Desktop, Web WASM, Android, iOS!)
+	if open_embedded_packs():
+		return true
+	# 3. Fallback: local external ftl.dat.vanilla on desktop if embedded packs are absent
 	if OS.has_feature("web") or OS.has_feature("android") or OS.has_feature("ios"):
 		return false
 	var candidates: Array[String] = []
-	var env_path := OS.get_environment("FTL_DAT_PATH").strip_edges()
-	if not env_path.is_empty():
-		candidates.append(env_path.replace("\\", "/"))
 	if FileAccess.file_exists("user://ftl_dat_path.txt"):
 		var saved := FileAccess.get_file_as_string("user://ftl_dat_path.txt").strip_edges()
 		if not saved.is_empty():
@@ -71,19 +89,79 @@ func auto_open() -> bool:
 	return false
 
 
+func open_embedded_packs() -> bool:
+	close()
+	var mounted := 0
+	for pack_path in EMBEDDED_PACKS:
+		if not ResourceLoader.exists(pack_path):
+			continue
+		var res := ResourceLoader.load(pack_path)
+		if res == null:
+			continue
+		var blob_v: Variant = res.get("blob")
+		if not (blob_v is PackedByteArray):
+			continue
+		var blob: PackedByteArray = blob_v
+		var vol_idx := _mem_vols.size()
+		if _parse_pkg_header_from_buffer(blob, vol_idx, false):
+			_mem_vols.append(blob)
+			mounted += 1
+	if mounted <= 0 or _entries.is_empty():
+		close()
+		return false
+	archive_path = "embedded://ftl_packs(%d)" % mounted
+	entry_count = _entries.size()
+	is_loaded = true
+	embedded_mode = true
+	return true
+
+
+func _parse_pkg_header_from_buffer(buf: PackedByteArray, vol_idx: int = -1, clear_first: bool = true) -> bool:
+	if buf.size() < 16:
+		return false
+	if buf[0] != 0x50 or buf[1] != 0x4B or buf[2] != 0x47 or buf[3] != 0x0A:
+		return false
+	var hdr_size := _read_be16(buf, 4)
+	var entry_size := _read_be16(buf, 6)
+	var count := _read_be32(buf, 8)
+	var name_size := _read_be32(buf, 12)
+	var names_base := hdr_size + count * entry_size
+	if entry_size < 20 or count <= 0 or count > 100000 or names_base + name_size > buf.size():
+		return false
+	if clear_first:
+		_entries.clear()
+	for i in range(count):
+		var base := hdr_size + i * entry_size
+		var name_off_raw := _read_be32(buf, base + 4)
+		var data_off := _read_be32(buf, base + 8)
+		var data_size := _read_be32(buf, base + 12)
+		var uncomp_size := _read_be32(buf, base + 16)
+		var flags := (name_off_raw >> 24) & 0xFF
+		var name_off := name_off_raw & 0x00FFFFFF
+		if name_off >= name_size:
+			continue
+		var end := name_off
+		while end < name_size and buf[names_base + end] != 0:
+			end += 1
+		var name_str := buf.slice(names_base + name_off, names_base + end).get_string_from_utf8()
+		_entries[name_str] = {"vol": vol_idx, "offset": data_off, "size": data_size, "uncomp": uncomp_size, "flags": flags}
+	return true
+
+
 func open_archive(path: String) -> bool:
 	close()
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		return false
 	var header := f.get_buffer(16)
-	if not _parse_pkg_header_from_file(f, header):
+	if not _parse_pkg_header_from_file(f, header, -1, true):
 		f.close()
 		return false
 	_file = f
 	archive_path = path
 	entry_count = _entries.size()
 	is_loaded = true
+	embedded_mode = false
 	return true
 
 
@@ -123,7 +201,7 @@ func open_archive_buffer(buf: PackedByteArray, label: String = "browser:ftl.dat"
 	return true
 
 
-func _parse_pkg_header_from_file(f: FileAccess, header: PackedByteArray) -> bool:
+func _parse_pkg_header_from_file(f: FileAccess, header: PackedByteArray, vol_idx: int = -1, clear_first: bool = true) -> bool:
 	if header.size() < 16:
 		return false
 	if header[0] != 0x50 or header[1] != 0x4B or header[2] != 0x47 or header[3] != 0x0A:
@@ -142,7 +220,8 @@ func _parse_pkg_header_from_file(f: FileAccess, header: PackedByteArray) -> bool
 	var names_buf := f.get_buffer(name_size)
 	if names_buf.size() < name_size:
 		return false
-	_entries.clear()
+	if clear_first:
+		_entries.clear()
 	for i in range(count):
 		var base := i * entry_size
 		var name_off_raw := _read_be32(table_buf, base + 4)
@@ -157,7 +236,7 @@ func _parse_pkg_header_from_file(f: FileAccess, header: PackedByteArray) -> bool
 		while end < name_size and names_buf[end] != 0:
 			end += 1
 		var name_str := names_buf.slice(name_off, end).get_string_from_utf8()
-		_entries[name_str] = {"offset": data_off, "size": data_size, "uncomp": uncomp_size, "flags": flags}
+		_entries[name_str] = {"vol": vol_idx, "offset": data_off, "size": data_size, "uncomp": uncomp_size, "flags": flags}
 	return true
 
 
@@ -303,6 +382,11 @@ func close() -> void:
 	if _file != null:
 		_file.close()
 		_file = null
+	for vf in _files:
+		if vf != null:
+			vf.close()
+	_files.clear()
+	_mem_vols.clear()
 	_mem_buf = PackedByteArray()
 	_entries.clear()
 	_web_files.clear()
@@ -313,6 +397,7 @@ func close() -> void:
 	_req_queue.clear()
 	_active_reqs = 0
 	is_loaded = false
+	embedded_mode = false
 	web_http_mode = false
 	entry_count = 0
 	archive_path = ""
@@ -340,12 +425,27 @@ func read_bytes(rel_path: String) -> PackedByteArray:
 	var info: Dictionary = _entries[rel_path]
 	var off := int(info.offset)
 	var sz := int(info.size)
-	if _file != null:
+	var vol := int(info.get("vol", -1))
+	var raw := PackedByteArray()
+	if vol >= 0 and vol < _mem_vols.size():
+		var vbuf: PackedByteArray = _mem_vols[vol]
+		if off + sz <= vbuf.size():
+			raw = vbuf.slice(off, off + sz)
+	elif vol >= 0 and vol < _files.size() and _files[vol] != null:
+		_files[vol].seek(off)
+		raw = _files[vol].get_buffer(sz)
+	elif _file != null:
 		_file.seek(off)
-		return _file.get_buffer(sz)
-	if not _mem_buf.is_empty() and off + sz <= _mem_buf.size():
-		return _mem_buf.slice(off, off + sz)
-	return PackedByteArray()
+		raw = _file.get_buffer(sz)
+	elif not _mem_buf.is_empty() and off + sz <= _mem_buf.size():
+		raw = _mem_buf.slice(off, off + sz)
+	if raw.is_empty():
+		return raw
+	if int(info.get("flags", 0)) == 1:
+		var uncomp := int(info.get("uncomp", 0))
+		if uncomp > 0:
+			return raw.decompress(uncomp, FileAccess.COMPRESSION_DEFLATE)
+	return raw
 
 
 func read_text(rel_path: String) -> String:

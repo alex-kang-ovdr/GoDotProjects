@@ -104,20 +104,27 @@ func play_track(track_name: String, combat: bool = false) -> void:
 	var cmb_file: String = str(track.get("combat", ""))
 	_desired_explore_key = ("audio/music/" + exp_file) if not exp_file.is_empty() else ""
 	_desired_combat_key = ("audio/music/" + cmb_file) if not cmb_file.is_empty() else ""
+	var loaded_exp: AudioStream = null
+	var loaded_cmb: AudioStream = null
 	if not _desired_explore_key.is_empty():
-		var s := pkg.load_audio(_desired_explore_key)
-		if s is AudioStreamOggVorbis:
-			(s as AudioStreamOggVorbis).loop = true
-		if s != null:
-			_explore_player.stream = s
-			_explore_player.play()
+		loaded_exp = pkg.load_audio(_desired_explore_key)
+		if loaded_exp is AudioStreamOggVorbis:
+			(loaded_exp as AudioStreamOggVorbis).loop = true
 	if not _desired_combat_key.is_empty():
-		var sc := pkg.load_audio(_desired_combat_key)
-		if sc is AudioStreamOggVorbis:
-			(sc as AudioStreamOggVorbis).loop = true
-		if sc != null:
-			_combat_player.stream = sc
-			_combat_player.play()
+		loaded_cmb = pkg.load_audio(_desired_combat_key)
+		if loaded_cmb is AudioStreamOggVorbis:
+			(loaded_cmb as AudioStreamOggVorbis).loop = true
+	# If embedded pack omits large OGG BGM tracks (and not streaming via localhost HTTP), seamlessly play procedural Explore/Battle BGM
+	if loaded_exp == null and not pkg.web_http_mode:
+		loaded_exp = FTLStandaloneAssets.get_procedural_bgm(false)
+	if loaded_cmb == null and not pkg.web_http_mode:
+		loaded_cmb = FTLStandaloneAssets.get_procedural_bgm(true)
+	if loaded_exp != null:
+		_explore_player.stream = loaded_exp
+		_explore_player.play()
+	if loaded_cmb != null:
+		_combat_player.stream = loaded_cmb
+		_combat_player.play()
 	_combat_blend = 1.0 if combat else 0.0
 	_apply_music_volumes()
 

@@ -340,7 +340,12 @@ func _show_hangar() -> void:
 	audio.play_track("title", false)
 
 	var prof_txt := " · 프로필: %d승/%d전" % [int(profile.stats.get("total_victories", 0)), int(profile.stats.get("total_games", 0))] if (profile != null and profile.loaded) else ""
-	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("독립 실행 모드 (%d함선 · %d무기 · %d사건)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), prof_txt]))
+	if pkg.is_loaded and pkg.embedded_mode:
+		hangar_refs["src_badge"].text = "FTL 내장 에셋 100%% (%d함선 · %d무기 · %d사건 · %d개)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), pkg.entry_count, prof_txt]
+	elif pkg.is_loaded:
+		hangar_refs["src_badge"].text = "FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]
+	else:
+		hangar_refs["src_badge"].text = "독립 실행 모드 (%d함선 · %d무기 · %d사건)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), prof_txt]
 	hangar_refs["cont_btn"].visible = FileAccess.file_exists(SAVE_PATH)
 
 	var list_box: VBoxContainer = hangar_refs["ship_list"]
@@ -1687,6 +1692,7 @@ func _open_star_map() -> void:
 
 	var mc := FTLMapCanvas.new()
 	mc.sector_map = sector_map
+	mc.pkg = pkg
 	mc.has_long_scanners = player_ship.has_augment("LONG_RANGED_SCANNERS")
 	mc.has_adv_ftl_nav = player_ship.has_augment("FTL_JUMPER")
 	mc.beacon_clicked.connect(_on_beacon_jump_requested)

@@ -488,6 +488,17 @@ func _draw_backdrop(vp: Vector2) -> void:
 		bg_tex = pkg.load_texture(bg_name)
 	if bg_tex != null:
 		draw_texture_rect(bg_tex, Rect2(Vector2.ZERO, vp), false, Color(0.95, 0.96, 1.0, 1.0))
+	# Authentic FTL space planet backdrop in normal/non-nebula sectors
+	if pkg != null and pkg.is_loaded and not is_nebula and hazard_kind != "sun":
+		const PLANETS := [
+			"stars/planet_bigblue.png", "stars/planet_gas_yellow.png", "stars/planet_gas_blue.png",
+			"stars/planet_peach.png", "stars/planet_red.png", "stars/planet_brown.png",
+		]
+		var ptex := pkg.load_texture(str(PLANETS[bg_index % PLANETS.size()]))
+		if ptex != null:
+			var pw := minf(260.0, float(ptex.get_width()) * 0.65)
+			var ph := minf(260.0, float(ptex.get_height()) * 0.65)
+			draw_texture_rect(ptex, Rect2(Vector2(vp.x * 0.56 - pw * 0.5, 68.0), Vector2(pw, ph)), false, Color(1, 1, 1, 0.85))
 	# Subtle drifting space dust parallax (authentic FTL motion feel)
 	for i in range(42):
 		var spd := 4.5 + float(i % 4) * 3.2
@@ -1076,14 +1087,27 @@ func _draw_combat_fx() -> void:
 		draw_rect(Rect2(p + Vector2(-18, -52), Vector2(36, 76)), col, true)
 		draw_rect(Rect2(p + Vector2(-8, -58), Vector2(16, 86)), Color(0.9, 1.0, 1.0, a * 0.85), true)
 
-	# Projectiles (rotated real FTL missile/flak/crystal/laser sprites + glowing core!)
+	# Projectiles (100% authentic FTL weapon anim/sprite sheets from db.anims + db.anim_sheets!)
 	for p in projectiles:
 		if float(p.t) < 0.0:
 			continue
 		var dir: Vector2 = ((p.end_pos as Vector2) - (p.start_pos as Vector2)).normalized()
 		var wtype := str(p.bp.get("type", "LASER"))
 		var ion := int(p.bp.get("ion", 0))
-		if bool(p.is_bomb):
+		var ptex_info := _resolve_projectile_sprite(p.bp)
+		var ptex: Texture2D = ptex_info.get("tex", null)
+		if ptex != null:
+			var fw := float(ptex_info.get("fw", ptex.get_width()))
+			var fh := float(ptex_info.get("fh", ptex.get_height()))
+			var frames := maxi(1, int(ptex_info.get("frames", 1)))
+			var fr := int(anim_clock * 12.0) % frames
+			var rot := (dir.angle() + anim_clock * 6.0) if wtype == "BURST" else (0.0 if bool(p.is_bomb) else dir.angle())
+			var draw_w := clampf(fw, 18.0, 56.0)
+			var draw_h := clampf(fh, 10.0, 36.0)
+			draw_set_transform(p.pos as Vector2, rot, Vector2.ONE)
+			draw_texture_rect_region(ptex, Rect2(Vector2(-draw_w * 0.5, -draw_h * 0.5), Vector2(draw_w, draw_h)), Rect2(float(fr) * fw, 0.0, fw, fh))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		elif bool(p.is_bomb):
 			var pulse := 0.5 + 0.5 * sin(anim_clock * 24.0)
 			draw_circle(p.pos, 9.0 + pulse * 4.0, Color(1.0, 0.45, 0.15, 0.85))
 			draw_circle(p.pos, 5.0, Color.WHITE)
@@ -1091,24 +1115,12 @@ func _draw_combat_fx() -> void:
 			draw_circle(p.pos, 10.0, Color(0.25, 0.82, 1.0, 0.42))
 			draw_circle(p.pos, 5.5, Color(0.88, 0.98, 1.0, 1.0))
 		elif wtype == "MISSILES":
-			var mtex := pkg.load_texture("weapons/missile_1.png") if (pkg != null and pkg.is_loaded) else null
-			if mtex != null:
-				draw_set_transform(p.pos as Vector2, dir.angle(), Vector2.ONE)
-				draw_texture_rect(mtex, Rect2(Vector2(-16, -8), Vector2(32, 16)), false)
-				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-			else:
-				var tip: Vector2 = p.pos + dir * 11.0
-				var tail: Vector2 = p.pos - dir * 10.0
-				draw_line(tail, tip, Color("ffcf5c"), 4.5)
-				draw_circle(tail, 4.0, Color(1.0, 0.45, 0.1, 0.85))
+			var tip: Vector2 = p.pos + dir * 11.0
+			var tail: Vector2 = p.pos - dir * 10.0
+			draw_line(tail, tip, Color("ffcf5c"), 4.5)
+			draw_circle(tail, 4.0, Color(1.0, 0.45, 0.1, 0.85))
 		elif wtype == "BURST":
-			var ftex := pkg.load_texture("weapons/crystal_shot1.png") if (pkg != null and pkg.is_loaded) else null
-			if ftex != null:
-				draw_set_transform(p.pos as Vector2, dir.angle() + anim_clock * 6.0, Vector2.ONE)
-				draw_texture_rect(ftex, Rect2(Vector2(-9, -9), Vector2(18, 18)), false, Color("ffb86c"))
-				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-			else:
-				draw_circle(p.pos, 5.5, Color("ff9e42"))
+			draw_circle(p.pos, 5.5, Color("ff9e42"))
 		else:
 			var col: Color = p.bp.get("color", Color(1.0, 0.25, 0.2))
 			draw_line(p.pos - dir * 18.0, p.pos + dir * 12.0, Color(col.r, col.g, col.b, 0.45), 9.0)
@@ -1148,6 +1160,37 @@ func _draw_combat_fx() -> void:
 			var c: Color = pop.color
 			draw_string(font, (pop.pos as Vector2) + Vector2(-28, 1), str(pop.text), HORIZONTAL_ALIGNMENT_CENTER, 72, 15, Color(0, 0, 0, a * 0.85))
 			draw_string(font, (pop.pos as Vector2) + Vector2(-29, 0), str(pop.text), HORIZONTAL_ALIGNMENT_CENTER, 72, 15, Color(c.r, c.g, c.b, a))
+
+
+func _resolve_projectile_sprite(bp: Dictionary) -> Dictionary:
+	if pkg == null or not pkg.is_loaded:
+		return {}
+	var img_key := str(bp.get("image", ""))
+	if db != null and not img_key.is_empty():
+		var anim: Dictionary = db.anims.get(img_key, {})
+		if not anim.is_empty():
+			var sheet: Dictionary = db.anim_sheets.get(str(anim.get("sheet", "")), {})
+			if not sheet.is_empty():
+				var tex := pkg.load_texture(str(sheet.path))
+				if tex != null:
+					return {"tex": tex, "fw": float(sheet.fw), "fh": float(sheet.fh), "frames": maxi(1, int(anim.get("length", 1)))}
+	var wtype := str(bp.get("type", "LASER"))
+	var ion := int(bp.get("ion", 0))
+	var fallback_path := "weapons/laser_light1.png"
+	if wtype == "BOMB":
+		fallback_path = "weapons/bomb1.png"
+	elif ion > 0:
+		fallback_path = "weapons/ion_1_shot.png"
+	elif wtype == "MISSILES":
+		fallback_path = "weapons/missile_1.png"
+	elif wtype == "BURST":
+		fallback_path = "weapons/debris_med.png"
+	var ftex := pkg.load_texture(fallback_path)
+	if ftex == null and wtype == "BURST":
+		ftex = pkg.load_texture("weapons/crystal_shot1.png")
+	if ftex != null:
+		return {"tex": ftex, "fw": float(ftex.get_width()), "fh": float(ftex.get_height()), "frames": 1}
+	return {}
 
 
 func _draw_procedural_hull(ship: FTLShip, bounds: Rect2, tint: Color) -> void:

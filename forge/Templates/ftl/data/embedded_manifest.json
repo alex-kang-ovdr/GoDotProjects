@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-26T14:46:48.846Z",
+  "totalEntries": 1545,
+  "extractedPngsUsed": 1228,
+  "totalRawBytes": 32768573,
+  "totalPackedBytes": 30828833,
+  "totalPackedMiB": 29.4,
+  "volumes": [
+    {
+      "file": "ftl_pack_xml.pkg",
+      "entries": 180,
+      "rawBytes": 1917895,
+      "packedBytes": 388713,
+      "compressedEntries": 180,
+      "sha256": "422c9732f0fb11e39c3124c79b478af2c4b1907174d14fcd7269ef3647c4e9ec"
+    },
+    {
+      "file": "ftl_pack_ships.pkg",
+      "entries": 357,
+      "rawBytes": 10372472,
+      "packedBytes": 10392530,
+      "compressedEntries": 0,
+      "sha256": "1deffad952f868e7a33eae513c45755ff99abc545461928ac5aa67b021442e35"
+    },
+    {
+      "file": "ftl_pack_sprites.pkg",
+      "entries": 871,
+      "rawBytes": 10734373,
+      "packedBytes": 10780517,
+      "compressedEntries": 0,
+      "sha256": "9ac5b52e51f4325e5c9ad656e51e334baf6702e92b6b1a013f45f69e79e62d9b"
+    },
+    {
+      "file": "ftl_pack_sfx.pkg",
+      "entries": 137,
+      "rawBytes": 9743833,
+      "packedBytes": 9267073,
+      "compressedEntries": 137,
+      "sha256": "208b793aa98cee2516c666e2137ee3bf4a5bc81477aa41ca9c5aac93ece4ec11"
+    }
+  ]
+}

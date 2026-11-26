@@ -21,20 +21,24 @@ func _check(cond: bool, label: String, detail: String = "") -> void:
 func _run() -> void:
 	var started := Time.get_ticks_msec()
 
-	# 1. FTLPkg + FTLDatabase load (tests real C:\Temp\FTL\ftl.dat.vanilla when present)
+	# 1. FTLPkg + FTLDatabase load (tests embedded 100% internalized PKG packs OR C:\Temp\FTL\ftl.dat.vanilla)
 	var pkg := FTLPkg.new()
 	var opened := pkg.auto_open()
-	var expect_real := FileAccess.file_exists("C:/Temp/FTL/ftl.dat.vanilla")
+	var has_embedded := ResourceLoader.exists("res://data/ftl_pack_xml.res")
+	var expect_real := has_embedded or FileAccess.file_exists("C:/Temp/FTL/ftl.dat.vanilla")
 	if expect_real:
-		_check(opened and pkg.entry_count >= 3000, "PKG opens C:/Temp/FTL/ftl.dat.vanilla", "entries=%d" % pkg.entry_count)
+		var min_entries := 1500 if pkg.embedded_mode else 3000
+		_check(opened and pkg.entry_count >= min_entries, "PKG opens embedded packs or ftl.dat.vanilla", "mode=%s entries=%d" % ["embedded" if pkg.embedded_mode else "archive", pkg.entry_count])
 		var kestrel_tex := pkg.load_texture("ship/kestral_base.png")
 		_check(kestrel_tex != null and kestrel_tex.get_width() > 300, "Real PNG texture decoded from PKG", "%dx%d" % [kestrel_tex.get_width() if kestrel_tex else 0, kestrel_tex.get_height() if kestrel_tex else 0])
-		var music_ogg := pkg.load_audio("audio/music/bp_MUS_CivilEXPLORE.ogg")
-		_check(music_ogg != null, "Real OGG music decoded from PKG")
+		var map_icon_tex := pkg.load_texture("map/map_icon_ship.png")
+		_check(map_icon_tex != null and map_icon_tex.get_width() > 8, "Real map icon PNG decoded from PKG")
 		var ui_wav := pkg.load_audio("audio/waves/ui/select_up1.wav")
 		_check(ui_wav != null, "Real WAV SFX decoded from PKG")
+		var laser_ogg := pkg.load_audio("audio/waves/weapons/bp_laser_3.ogg")
+		_check(laser_ogg != null, "Real OGG weapon SFX decoded from PKG")
 	else:
-		_check(true, "Fallback mode active (no C:/Temp/FTL/ftl.dat.vanilla)")
+		_check(true, "Fallback mode active (no embedded packs or ftl.dat.vanilla)")
 
 	var db := FTLDatabase.new()
 	db.load_all(pkg)

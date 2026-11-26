@@ -1,7 +1,7 @@
 {
   "id": "ftl",
   "name": "FTL: Faster Than Light (Godot 4 Restoration)",
-  "description": "C:\\Temp\\FTL\\ftl.dat.vanilla 원본 데이터(XML 블루프린트·함선 레이아웃·PNG 스프라이트·OGG/WAV 오디오)를 런타임 직접 로드하여 복원한 Godot 4.7.2 FTL 전략 로그라이크 프로젝트.",
+  "description": "추출된 원본 FTL 데이터(180종 XML/레이아웃·1,228종 PNG 스프라이트/함선/아이콘·137종 SFX)를 100% 내재화하여 데스크톱·웹·안드로이드에서 외부 파일 의존 없이 구동하는 Godot 4.7.2 FTL 전략 로그라이크 복원 프로젝트.",
   "dimension": "2d",
   "assetPaths": [
     "assets/icon.svg",

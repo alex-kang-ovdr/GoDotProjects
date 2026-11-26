@@ -4,6 +4,7 @@ extends Control
 ## Interactive FTL Sector Star Map canvas: beacons, jump links, Rebel Fleet wave, nebula, and hover lines.
 
 var sector_map: FTLSectorMap
+var pkg: FTLPkg = null
 var hover_beacon_id: int = -1
 var has_long_scanners: bool = false
 var has_adv_ftl_nav: bool = false
@@ -50,10 +51,14 @@ func _draw() -> void:
 		var sy := fmod(float(i * 239 + 17), size.y)
 		draw_circle(Vector2(sx, sy), 1.0, Color(0.75, 0.85, 1.0, 0.35))
 
-	# Nebula patches
+	# Nebula patches (authentic FTL map nebula texture when loaded!)
+	var neb_tex: Texture2D = pkg.load_texture("map/nebula_large_0.png") if (pkg != null and pkg.is_loaded) else null
 	for b in sector_map.beacons:
 		if bool(b.nebula):
-			draw_circle(b.pos, 46.0, Color(0.45, 0.2, 0.62, 0.25))
+			if neb_tex != null:
+				draw_texture_rect(neb_tex, Rect2((b.pos as Vector2) - Vector2(54, 42), Vector2(108, 84)), false, Color(0.85, 0.72, 1.0, 0.55))
+			else:
+				draw_circle(b.pos, 46.0, Color(0.45, 0.2, 0.62, 0.25))
 
 	# Rebel Fleet pursuit zone (red curved frontier)
 	if sector_map.current_sector_index < 7 and sector_map.rebel_fleet_x > -40.0:
@@ -109,6 +114,29 @@ func _draw() -> void:
 
 		draw_circle(pos, 7.5 if (btype in ["exit", "boss_base", "store"]) else 6.0, col)
 		draw_circle(pos, 3.0, Color(0.08, 0.1, 0.14))
+
+		# Overlay authentic FTL map beacon icons when embedded/loaded!
+		if pkg != null and pkg.is_loaded:
+			if is_cur:
+				var stex := pkg.load_texture("map/map_icon_ship.png")
+				if stex != null:
+					draw_texture_rect(stex, Rect2(pos - Vector2(14, 14), Vector2(28, 28)), false)
+			elif btype == "boss_base":
+				var btex := pkg.load_texture("map/map_icon_boss.png")
+				if btex != null:
+					draw_texture_rect(btex, Rect2(pos - Vector2(14, 14), Vector2(28, 28)), false)
+			elif bool(b.rebel):
+				var wtex := pkg.load_texture("map/map_icon_warning.png")
+				if wtex != null:
+					draw_texture_rect(wtex, Rect2(pos - Vector2(12, 12), Vector2(24, 24)), false)
+			elif bool(b.get("quest", false)) and not bool(b.visited):
+				var qtex := pkg.load_texture("map/map_icon_diamond_yellow.png")
+				if qtex != null:
+					draw_texture_rect(qtex, Rect2(pos - Vector2(11, 11), Vector2(22, 22)), false)
+			elif btype == "exit":
+				var etex := pkg.load_texture("map/map_icon_diamond_blue.png")
+				if etex != null:
+					draw_texture_rect(etex, Rect2(pos - Vector2(11, 11), Vector2(22, 22)), false)
 
 		if font != null:
 			var tag := ""
