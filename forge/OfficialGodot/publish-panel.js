@@ -16,6 +16,38 @@
     ["touch", "터치"],
     ["gamepad", "게임패드"]
   ];
+  const PLATFORM_TARGETS = [
+    ["web", "Web (필수 · HTML5/WASM)", true],
+    ["android", "Android (모바일 PCK)", false],
+    ["desktop", "Desktop (PC PCK)", false],
+    ["ios", "iOS (모바일 PCK)", false]
+  ];
+  const FARM_STORAGE_KEY = "playforge_target_farm_v1";
+
+  function encodeUtf8Base64(obj) {
+    const json = JSON.stringify(obj);
+    const bytes = new TextEncoder().encode(json);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  function loadSavedFarm() {
+    try {
+      const raw = localStorage.getItem(FARM_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveFarmChoice(farmId, customUrl) {
+    try {
+      localStorage.setItem(FARM_STORAGE_KEY, JSON.stringify({ farmId, customUrl }));
+    } catch {}
+  }
 
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);
@@ -115,9 +147,10 @@
 
     const project = ctx.selected.project;
     const isHubMode = Boolean(window.__playforgeCsrfToken) || Boolean(ctx.hubAuth);
+    const savedFarm = loadSavedFarm();
 
     const state = {
-      tab: "wizard", // 'wizard' | 'history'
+      tab: "game-deploy", // 'game-deploy' | 'wizard' | 'history'
       step: 1,
       visibility: "public",
       deployMode: "singleplay",
@@ -138,7 +171,7 @@
       instructionsKo: "키보드 또는 터치로 플레이하세요.",
       instructionsEn: "Play with keyboard or touch controls.",
       tags: ["arcade"],
-      controls: ["keyboard", "mouse"],
+      controls: ["keyboard", "mouse", "touch"],
       orientation: "landscape",
       viewportWidth: 1280,
       viewportHeight: 720,
@@ -155,7 +188,29 @@
       publishResult: null,
       releases: [],
       submissions: [],
-      config: { specTiers: DEFAULT_TIERS, krwPerPoint: 14, freeMonthlyPointLimit: 100 }
+      config: { specTiers: DEFAULT_TIERS, krwPerPoint: 14, freeMonthlyPointLimit: 100 },
+      // Game-only ZIP upload + server multi-platform packaging + Dev Target Farm state
+      deployConfig: {
+        buildMode: "dev",
+        farmSelectorAllowed: true,
+        defaultFarmUrl: "",
+        presetFarms: [],
+        supportedPlatforms: ["web", "android", "desktop", "ios"],
+        defaultPlatforms: ["web", "android", "desktop"],
+        maxZipBytes: 64 * 1024 * 1024
+      },
+      sourceMode: "forge-project", // 'forge-project' | 'zip-upload'
+      uploadedZipFile: null,
+      targetPlatforms: ["web", "android", "desktop"],
+      targetFarmId: savedFarm?.farmId || "default",
+      customFarmUrl: savedFarm?.customUrl || "",
+      pushToFarm: true,
+      probingFarm: false,
+      farmHealth: null,
+      gameDeploying: false,
+      gameDeployJob: null,
+      gameDeployError: "",
+      showGameDeployLog: false
     };
 
     function applyMetadata(gm, dp) {
@@ -185,12 +240,23 @@
 
     async function loadMeta() {
       try {
-        const [cfg, rel, tpl] = await Promise.all([
+        const [cfg, deployCfg, rel, tpl] = await Promise.all([
           ctx.api("/api/platform/publish-config").catch(() => null),
+          ctx.api("/api/platform/game-deploy/config").catch(() => null),
           ctx.api("/api/platform/projects/" + project.id + "/releases").catch(() => ({ releases: [] })),
           project.template ? ctx.api("/api/platform/templates/" + encodeURIComponent(project.template)).catch(() => null) : Promise.resolve(null)
         ]);
         if (cfg?.specTiers) state.config = cfg;
+        if (deployCfg?.ok) {
+          state.deployConfig = deployCfg;
+          if (!deployCfg.farmSelectorAllowed) {
+            state.targetFarmId = "default";
+            state.customFarmUrl = "";
+          } else if (state.targetFarmId !== "custom" && deployCfg.presetFarms?.length) {
+            const exists = deployCfg.presetFarms.some(f => f.id === state.targetFarmId);
+            if (!exists) state.targetFarmId = deployCfg.presetFarms[0].id;
+          }
+        }
         state.releases = Array.isArray(rel?.releases) ? rel.releases.slice().reverse() : [];
         if (state.releases[0]?.gameMetadata || state.releases[0]?.deployProfile) {
           applyMetadata(state.releases[0].gameMetadata, state.releases[0].deployProfile);
@@ -205,6 +271,110 @@
         }
       } catch {}
       render();
+    }
+
+    async function probeSelectedFarm() {
+      if (state.probingFarm || !state.deployConfig.farmSelectorAllowed) return;
+      state.probingFarm = true;
+      state.farmHealth = null;
+      render();
+      try {
+        const res = await ctx.api("/api/platform/game-deploy/probe-farm", {
+          farmId: state.targetFarmId,
+          customUrl: state.targetFarmId === "custom" ? state.customFarmUrl.trim() : ""
+        });
+        state.farmHealth = res.health || { ok: false, status: "red" };
+      } catch (err) {
+        state.farmHealth = { ok: false, status: "red", error: err.message || "접속 불가" };
+      } finally {
+        state.probingFarm = false;
+        render();
+      }
+    }
+
+    async function executeGameOnlyDeploy() {
+      if (state.gameDeploying) return;
+      if (state.sourceMode === "zip-upload" && !state.uploadedZipFile) {
+        state.gameDeployError = "업로드할 Godot 프로젝트 .zip 파일을 선택해 주세요.";
+        render();
+        return;
+      }
+      if (state.pushToFarm && state.deployConfig.farmSelectorAllowed && state.targetFarmId === "custom" && !state.customFarmUrl.trim()) {
+        state.gameDeployError = "직접 입력한 대상 팜 URL을 입력해 주세요.";
+        render();
+        return;
+      }
+      state.gameDeploying = true;
+      state.gameDeployError = "";
+      state.gameDeployJob = null;
+      render();
+      try {
+        const latest = ctx.getSelected ? ctx.getSelected() : ctx.selected;
+        const deployMeta = {
+          projectId: state.sourceMode === "forge-project" ? latest.project.id : undefined,
+          uploadFilename: state.uploadedZipFile?.name || `${state.slug}.zip`,
+          gameSlug: state.slug.trim(),
+          title: state.titleKo.trim() || state.slug.trim(),
+          titleEn: state.titleEn.trim() || state.titleKo.trim() || state.slug.trim(),
+          description: state.summaryKo.trim(),
+          instructions: state.instructionsKo.trim(),
+          visibility: state.visibility,
+          deployMode: state.deployMode,
+          tags: state.tags.length ? state.tags : ["arcade"],
+          controls: state.controls.length ? state.controls : ["keyboard", "mouse", "touch"],
+          orientation: state.orientation,
+          platforms: state.targetPlatforms.slice(),
+          targetFarmId: state.deployConfig.farmSelectorAllowed ? state.targetFarmId : "default",
+          customFarmUrl: state.deployConfig.farmSelectorAllowed && state.targetFarmId === "custom" ? state.customFarmUrl.trim() : "",
+          pushToFarm: state.pushToFarm
+        };
+
+        let started;
+        if (state.sourceMode === "zip-upload") {
+          const buf = await state.uploadedZipFile.arrayBuffer();
+          const headers = {
+            "Content-Type": "application/zip",
+            "X-PlayForge-Deploy-Meta": encodeUtf8Base64(deployMeta)
+          };
+          if (window.__playforgeCsrfToken) headers["X-CSRF-Token"] = window.__playforgeCsrfToken;
+          const res = await fetch(ctx.forgePath("/api/platform/game-deploy/jobs"), {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers,
+            body: buf
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data?.error || `프로젝트 ZIP 업로드 실패 (${res.status})`);
+          started = data;
+        } else {
+          await ctx.refresh();
+          started = await ctx.api("/api/platform/game-deploy/jobs", deployMeta);
+        }
+
+        let job = started.job;
+        state.gameDeployJob = job;
+        render();
+        const deadline = Date.now() + 300000;
+        while (job && ["queued", "running"].includes(job.status) && Date.now() < deadline) {
+          await new Promise(r => setTimeout(r, 900));
+          job = (await ctx.api("/api/platform/game-deploy/jobs/" + job.id)).job;
+          state.gameDeployJob = job;
+          render();
+        }
+        if (!job || job.status !== "succeeded") {
+          state.gameDeployError = job?.error || "게임 단독 배포 시간이 초과되었습니다.";
+          state.showGameDeployLog = true;
+        } else {
+          ctx.status?.(`게임 단독 배포 완료 (${job.gameSlug})`);
+        }
+      } catch (err) {
+        state.gameDeployError = err.message || "게임 단독 배포에 실패했습니다.";
+        state.showGameDeployLog = true;
+      } finally {
+        state.gameDeploying = false;
+        render();
+      }
     }
 
     async function runBuild() {
@@ -805,13 +975,286 @@
       return sec;
     }
 
+    function renderGameOnlyDeploy() {
+      const sec = el("div", { className: "pf-pub-section" });
+      const dcfg = state.deployConfig;
+      const latestRev = (ctx.getSelected ? ctx.getSelected() : ctx.selected).revision;
+
+      // 1. Source selection: Current Forge Project ZIP vs Upload Project ZIP
+      const sourceBox = el("div", { className: "pf-pub-box" },
+        el("h4", { text: "1. 프로젝트 소스 ZIP 선택" }),
+        el("div", { className: "pf-mode-grid" },
+          el("button", {
+            type: "button",
+            className: "pf-mode-card" + (state.sourceMode === "forge-project" ? " selected" : ""),
+            onClick: () => { state.sourceMode = "forge-project"; render(); }
+          },
+            el("strong", { text: "현재 Forge 프로젝트" }),
+            el("small", { text: `r${latestRev} 자동 ZIP 패킹 후 서버 패키징` })
+          ),
+          el("button", {
+            type: "button",
+            className: "pf-mode-card" + (state.sourceMode === "zip-upload" ? " selected" : ""),
+            onClick: () => { state.sourceMode = "zip-upload"; render(); }
+          },
+            el("strong", { text: "프로젝트 ZIP 업로드" }),
+            el("small", { text: "로컬 Godot 프로젝트 .zip 직접 업로드" })
+          )
+        )
+      );
+      if (state.sourceMode === "zip-upload") {
+        sourceBox.append(
+          el("div", { className: "pf-upload-drop" },
+            el("span", { text: state.uploadedZipFile
+              ? `선택됨: ${state.uploadedZipFile.name} (${formatBytes(state.uploadedZipFile.size)})`
+              : "project.godot가 포함된 프로젝트 .zip 파일을 선택하세요 (최대 64 MB)" }),
+            el("input", {
+              type: "file",
+              accept: ".zip,application/zip",
+              onChange: e => {
+                const f = e.target.files?.[0] || null;
+                state.uploadedZipFile = f;
+                if (f && (!state.slug || state.slug.startsWith("game-"))) {
+                  state.slug = slugify(f.name.replace(/\.zip$/i, ""), state.slug);
+                }
+                render();
+              }
+            })
+          )
+        );
+      }
+      sec.append(sourceBox);
+
+      // 2. Server-side per-platform packaging selection
+      const platBox = el("div", { className: "pf-pub-box" },
+        el("h4", { text: "2. 서버 플랫폼별 패키징 대상" }),
+        el("div", { className: "pf-chip-list" },
+          PLATFORM_TARGETS.map(([pid, label, required]) =>
+            el("label", { className: "pf-chip-toggle" },
+              el("input", {
+                type: "checkbox",
+                checked: required || state.targetPlatforms.includes(pid),
+                disabled: required,
+                onChange: e => {
+                  if (required) return;
+                  if (e.target.checked && !state.targetPlatforms.includes(pid)) state.targetPlatforms.push(pid);
+                  else if (!e.target.checked) state.targetPlatforms = state.targetPlatforms.filter(x => x !== pid);
+                  render();
+                }
+              }),
+              label
+            )
+          )
+        )
+      );
+      sec.append(platBox);
+
+      // 3. Target Farm selector (Dev/Debug/Test ONLY; fail-closed locked in Live)
+      const farmBox = el("div", { className: "pf-pub-box" },
+        el("h4", { text: dcfg.farmSelectorAllowed ? `3. 대상 팜 선택 (Dev 전용 · ${String(dcfg.buildMode || "dev").toUpperCase()})` : "3. 배포 대상 서버 (Live 고정)" })
+      );
+      farmBox.append(
+        el("label", { className: "pf-chip-toggle" },
+          el("input", {
+            type: "checkbox",
+            checked: state.pushToFarm,
+            onChange: e => { state.pushToFarm = e.target.checked; render(); }
+          }),
+          "플랫폼 패키징 후 선택한 팜에 이 게임만 즉시 배포 (허브/포지 서버 미재배포)"
+        )
+      );
+
+      if (state.pushToFarm) {
+        if (dcfg.farmSelectorAllowed) {
+          const presets = Array.isArray(dcfg.presetFarms) ? dcfg.presetFarms : [];
+          farmBox.append(
+            el("div", { className: "pf-farm-row" },
+              el("select", {
+                value: state.targetFarmId,
+                onChange: e => {
+                  state.targetFarmId = e.target.value;
+                  state.farmHealth = null;
+                  saveFarmChoice(state.targetFarmId, state.customFarmUrl);
+                  render();
+                }
+              },
+                ...presets.map(f => el("option", { value: f.id, selected: state.targetFarmId === f.id, text: `${f.label} (${f.baseUrl})` })),
+                el("option", { value: "custom", selected: state.targetFarmId === "custom", text: "URL 직접 입력 (Custom Farm)" })
+              ),
+              el("button", {
+                type: "button",
+                disabled: state.probingFarm,
+                text: state.probingFarm ? "확인 중…" : "상태 확인",
+                onClick: probeSelectedFarm
+              })
+            )
+          );
+          if (state.targetFarmId === "custom") {
+            farmBox.append(
+              el("input", {
+                type: "text",
+                placeholder: "https://dev-farm.example.com 또는 http://127.0.0.1:18130",
+                value: state.customFarmUrl,
+                onInput: e => {
+                  state.customFarmUrl = e.target.value;
+                  saveFarmChoice(state.targetFarmId, state.customFarmUrl);
+                }
+              })
+            );
+          }
+          if (state.farmHealth) {
+            const h = state.farmHealth;
+            const label = h.ok
+              ? `${String(h.status || "green").toUpperCase()} · ${h.latencyMs}ms${h.revision ? ` · ${h.revision}` : ""}`
+              : `RED · 접속 불가 (${h.error || `HTTP ${h.httpStatus || 0}`})`;
+            farmBox.append(el("span", { className: `pf-farm-pill ${h.status || "red"}`, text: label }));
+          }
+        } else {
+          farmBox.append(
+            el("div", { style: "font-size:12px;color:#434655;", text: `Live 빌드에서는 팜 선택이 잠겨 있으며 기본 연결 허브(${dcfg.defaultFarmUrl || location.origin})로만 배포됩니다.` })
+          );
+        }
+      }
+      sec.append(farmBox);
+
+      // 4. Compact Game Metadata
+      sec.append(
+        el("div", { className: "pf-pub-row" },
+          el("label", { className: "pf-pub-field" },
+            el("span", { text: "게임 슬러그 (영문 소문자·하이픈)" }),
+            el("input", {
+              type: "text",
+              maxlength: 48,
+              value: state.slug,
+              onInput: e => { state.slug = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""); }
+            })
+          ),
+          el("label", { className: "pf-pub-field" },
+            el("span", { text: "게임 제목" }),
+            el("input", {
+              type: "text",
+              maxlength: 80,
+              value: state.titleKo,
+              onInput: e => { state.titleKo = e.target.value; }
+            })
+          )
+        ),
+        el("div", { className: "pf-pub-row" },
+          el("label", { className: "pf-pub-field" },
+            el("span", { text: "공개 범위" }),
+            el("select", {
+              value: state.visibility,
+              onChange: e => { state.visibility = e.target.value; render(); }
+            },
+              el("option", { value: "public", selected: state.visibility === "public", text: dcfg.farmSelectorAllowed ? "공개 (Dev 팜 즉시 반영)" : "공개 (심사 제출)" }),
+              el("option", { value: "unlisted", selected: state.visibility === "unlisted", text: "링크 공유 (Unlisted)" }),
+              el("option", { value: "private", selected: state.visibility === "private", text: "비공개 테스트 (Private)" })
+            )
+          ),
+          el("label", { className: "pf-pub-field" },
+            el("span", { text: "배포 모드" }),
+            el("select", {
+              value: state.deployMode,
+              onChange: e => { state.deployMode = e.target.value; render(); }
+            },
+              el("option", { value: "singleplay", selected: state.deployMode === "singleplay", text: "SinglePlay" }),
+              el("option", { value: "mo", selected: state.deployMode === "mo", text: "MO (룸·매치)" }),
+              el("option", { value: "mmo", selected: state.deployMode === "mmo", text: "MMO (지속 월드)" })
+            )
+          )
+        )
+      );
+
+      if (state.gameDeployError) {
+        sec.append(el("div", { className: "pf-pub-err", text: state.gameDeployError }));
+      }
+
+      const job = state.gameDeployJob;
+      if (job) {
+        const statusCls = job.status === "succeeded" ? "pf-pub-ok" : (job.status === "failed" ? "pf-pub-err" : "pf-pub-box");
+        const statusBox = el("div", { className: statusCls },
+          el("strong", { text: `[${job.status.toUpperCase()}] ${job.step || ""}` }),
+          job.bundleBytes ? el("div", { style: "font-size:11.5px;margin-top:4px;", text: `번들: ${formatBytes(job.bundleBytes)} · SHA-256 ${String(job.bundleSha256 || "").slice(0, 14)}…` }) : null
+        );
+        sec.append(statusBox);
+
+        if (job.platforms && Object.keys(job.platforms).length) {
+          const grid = el("div", { className: "pf-plat-grid" });
+          for (const [platName, info] of Object.entries(job.platforms)) {
+            const pckHref = job.status === "succeeded" && info.pckFile
+              ? ctx.forgePath(`/api/platform/game-deploy/jobs/${job.id}/files/${encodeURIComponent(info.pckFile)}`)
+              : null;
+            grid.append(
+              el("div", { className: "pf-plat-item" },
+                el("div", {},
+                  el("strong", { text: platName.toUpperCase() }),
+                  el("div", { style: "font-size:10.5px;color:#586079;", text: `${formatBytes(info.pckBytes)} · Godot ${info.engineVersion || "4.7.2"}` })
+                ),
+                pckHref ? el("a", { href: pckHref, download: `${job.gameSlug}-${platName}.pck`, text: "PCK ↓" }) : null
+              )
+            );
+          }
+          sec.append(grid);
+        }
+
+        if (job.deployResult?.fullPlayUrl) {
+          const url = job.deployResult.fullPlayUrl;
+          sec.append(
+            el("div", { className: "pf-link-box" },
+              el("a", { href: url, target: "_blank", rel: "noopener noreferrer", text: url }),
+              el("button", { type: "button", text: "복사", onClick: () => navigator.clipboard?.writeText(url) })
+            )
+          );
+        }
+
+        if (job.status === "succeeded") {
+          sec.append(
+            el("div", { className: "pf-chip-list" },
+              el("a", {
+                href: ctx.forgePath(`/api/platform/game-deploy/jobs/${job.id}/files/PlayHub-GameDeploy.zip`),
+                download: `${job.gameSlug}-PlayHub-GameDeploy.zip`,
+                style: "padding:6px 10px;border:1px solid #3c506c;border-radius:6px;text-decoration:none;font-size:12px;"
+              }, "통합 배포 번들(.zip) 다운로드"),
+              job.log ? el("button", {
+                type: "button",
+                text: state.showGameDeployLog ? "로그 숨기기" : "패키징 로그 보기",
+                onClick: () => { state.showGameDeployLog = !state.showGameDeployLog; render(); }
+              }) : null
+            )
+          );
+        }
+        if (state.showGameDeployLog && job.log) {
+          sec.append(el("pre", { className: "pf-pub-log", text: job.log }));
+        }
+      }
+
+      sec.append(
+        el("button", {
+          type: "button",
+          className: "pf-pub-primary",
+          disabled: state.gameDeploying,
+          text: state.gameDeploying
+            ? "프로젝트 ZIP 업로드 · 플랫폼 패키징 중…"
+            : (state.pushToFarm ? "프로젝트 ZIP 업로드 · 플랫폼 패키징 · 게임만 배포" : "프로젝트 ZIP 업로드 · 플랫폼별 패키징만 실행"),
+          onClick: executeGameOnlyDeploy
+        })
+      );
+      return sec;
+    }
+
     function render() {
       bodyEl.replaceChildren();
       const tabs = el("div", { className: "pf-pub-tabs" },
         el("button", {
           type: "button",
+          className: "pf-pub-tab" + (state.tab === "game-deploy" ? " active" : ""),
+          text: "게임 단독 배포",
+          onClick: () => { state.tab = "game-deploy"; render(); }
+        }),
+        el("button", {
+          type: "button",
           className: "pf-pub-tab" + (state.tab === "wizard" ? " active" : ""),
-          text: "새 배포 마법사",
+          text: "릴리스 마법사",
           onClick: () => { state.tab = "wizard"; render(); }
         }),
         el("button", {
@@ -823,6 +1266,10 @@
       );
       bodyEl.append(tabs);
 
+      if (state.tab === "game-deploy") {
+        bodyEl.append(renderGameOnlyDeploy());
+        return;
+      }
       if (state.tab === "history") {
         bodyEl.append(renderHistory());
         return;

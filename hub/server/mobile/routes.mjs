@@ -217,12 +217,24 @@ export function createMobile({ config, db, rootDir, now, rate, audit, google, ss
     const game = typeof gameOrId === 'object' && gameOrId ? gameOrId : null;
     const gameId = game ? game.id : String(gameOrId || '');
     if (game?.source === 'ugc' && game.hostSlug && game.activeReleaseId && ugcPublish?.storage) {
-      const resolvedPck = ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'index.pck');
+      let preferredPckRel = 'index.pck';
+      const platPkgAsset = ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'platform-packages.json');
+      if (platPkgAsset?.filePath && existsSync(platPkgAsset.filePath)) {
+        try {
+          const parsedPlats = JSON.parse(readFileSync(platPkgAsset.filePath, 'utf8'));
+          const androidPck = parsedPlats?.platforms?.android?.pckFile;
+          if (typeof androidPck === 'string' && androidPck.trim()) preferredPckRel = androidPck.trim();
+        } catch {}
+      }
+      const resolvedPck = ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, preferredPckRel)
+        || ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'platforms/android/index.pck')
+        || ugcPublish.storage.resolveAssetPath(game.hostSlug, game.activeReleaseId, 'index.pck');
       if (resolvedPck?.filePath && existsSync(resolvedPck.filePath)) {
         const pckBytes = statSync(resolvedPck.filePath).size;
+        const pckRel = resolvedPck.relativePath || 'index.pck';
         const pckUrl = typeof game.entryUrl === 'string' && game.entryUrl.includes('/')
-          ? game.entryUrl.replace(/\/[^/?#]*(?:[?#].*)?$/, '/index.pck')
-          : `/play-ugc/${game.hostSlug}/${game.activeReleaseId}/index.pck`;
+          ? game.entryUrl.replace(/\/[^/?#]*(?:[?#].*)?$/, `/${pckRel}`)
+          : `/play-ugc/${game.hostSlug}/${game.activeReleaseId}/${pckRel}`;
         return {
           runtime: 'godot-pck',
           requiredEngineVersion: '4.7.2',

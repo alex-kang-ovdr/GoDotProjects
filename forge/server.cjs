@@ -28,6 +28,7 @@ const { loadSealedAvatarBundle, resolveSealedAssetFile } = require('./Tools/avat
 const { createBlenderPipelineHandler } = require('./Tools/blender-pipeline/job-manager.cjs');
 const { createHubAgentBridge } = require('./Tools/hub-agent-bridge.cjs');
 const { createShortsPipelineHandler } = require('./Tools/shorts-pipeline/handler.cjs');
+const { GameDeployService } = require('./Tools/game-deploy-service.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -739,6 +740,15 @@ function createServer(options = {}) {
     env: serverEnv,
     storageDir: options.shortsStorageDir,
   });
+  const gameDeploy = new GameDeployService({
+    forgeRoot: root,
+    directory: options.gameDeployDirectory || (internalDirectory ? path.join(internalDirectory, 'game-deploys') : path.join(root, 'Saved', 'GameDeploys')),
+    buildMode: resolvedBuildMode,
+    defaultFarmUrl: options.defaultFarmUrl ?? serverEnv.PLAYHUB_DEFAULT_FARM_URL ?? serverEnv.PLAYHUB_HUB_ORIGIN ?? '',
+    devDeployToken: options.devDeployToken ?? serverEnv.PLAYHUB_DEV_GAME_DEPLOY_TOKEN ?? '',
+    exporter: options.gameDeployExporter || null,
+    fetchImpl: options.gameDeployFetch || globalThis.fetch,
+  });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
     buildMode: options.buildMode,
@@ -1124,6 +1134,123 @@ function createServer(options = {}) {
           return json(error.status || 404, { ok: false, error: error.message });
         }
       }
+      if (routePath === '/api/platform/game-deploy/config' && req.method === 'GET') {
+        const reqOrigin = firstOrigin(configuredOrigin) || (req.headers.host ? `http://${req.headers.host}` : '');
+        return json(200, gameDeploy.getConfig(reqOrigin));
+      }
+      if (routePath === '/api/platform/game-deploy/probe-farm' && req.method === 'POST') {
+        try {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
+          const reqOrigin = firstOrigin(configuredOrigin) || (req.headers.host ? `http://${req.headers.host}` : '');
+          const result = await gameDeploy.probeFarm({
+            farmId: body.farmId || '',
+            customUrl: body.customUrl || '',
+            requestOrigin: reqOrigin,
+          });
+          return json(200, result);
+        } catch (error) {
+          return json(error.status || 400, { ok: false, error: error.message, code: error.code || 'FARM_PROBE_FAILED' });
+        }
+      }
+      if (routePath === '/api/platform/game-deploy/jobs' && req.method === 'GET') {
+        return json(200, { ok: true, jobs: gameDeploy.list(auth?.accountKey || null) });
+      }
+      if (routePath === '/api/platform/game-deploy/jobs' && req.method === 'POST') {
+        if (!buildExecutionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
+        try {
+          const contentType = String(req.headers['content-type'] || '').toLowerCase();
+          const reqOrigin = firstOrigin(configuredOrigin) || (req.headers.host ? `http://${req.headers.host}` : '');
+          let meta = {};
+          let zipBuffer = null;
+          let projectSnapshot = null;
+
+          if (contentType.includes('application/zip') || contentType.includes('application/octet-stream')) {
+            const rawMeta = String(req.headers['x-playforge-deploy-meta'] || '').trim();
+            if (rawMeta) {
+              try {
+                meta = JSON.parse(Buffer.from(rawMeta, 'base64').toString('utf8'));
+              } catch {
+                return json(400, { ok: false, error: 'X-PlayForge-Deploy-Meta 헤더 형식이 잘못되었습니다.' });
+              }
+            }
+            const chunks = [];
+            let total = 0;
+            for await (const chunk of req) {
+              total += chunk.length;
+              if (total > 64 * 1024 * 1024) {
+                return json(413, { ok: false, error: '프로젝트 ZIP 크기가 최대 한도(64MB)를 초과했습니다.' });
+              }
+              chunks.push(chunk);
+            }
+            zipBuffer = Buffer.concat(chunks, total);
+          } else {
+            const chunks = [];
+            let total = 0;
+            for await (const chunk of req) {
+              total += chunk.length;
+              if (total > 64 * 1024 * 1024) {
+                return json(413, { ok: false, error: '요청 크기가 최대 한도를 초과했습니다.' });
+              }
+              chunks.push(chunk);
+            }
+            meta = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
+            if (typeof meta.projectZipBase64 === 'string' && meta.projectZipBase64.length > 0) {
+              zipBuffer = Buffer.from(meta.projectZipBase64, 'base64');
+            } else if (typeof meta.projectId === 'string' && /^[a-f0-9]{24}$/.test(meta.projectId)) {
+              const activePlatform = getPlatformFor(auth?.accountKey).store;
+              projectSnapshot = activePlatform.getProject(meta.projectId);
+            } else {
+              return json(400, { ok: false, error: '프로젝트 ZIP 업로드 또는 유효한 projectId가 필요합니다.' });
+            }
+          }
+
+          const job = gameDeploy.enqueue({
+            ownerKey: auth?.accountKey || null,
+            projectId: meta.projectId || projectSnapshot?.id || null,
+            projectSnapshot,
+            zipBuffer,
+            uploadFilename: meta.uploadFilename || '',
+            platforms: meta.platforms,
+            targetFarmId: meta.targetFarmId || 'default',
+            customFarmUrl: meta.customFarmUrl || '',
+            requestOrigin: reqOrigin,
+            pushToFarm: meta.pushToFarm !== false,
+            forwardHeaders: {
+              cookie: typeof req.headers.cookie === 'string' ? req.headers.cookie : '',
+              csrfToken: typeof req.headers['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : '',
+              devDeployToken: typeof req.headers['x-playhub-dev-deploy-token'] === 'string' ? req.headers['x-playhub-dev-deploy-token'] : '',
+            },
+            gameSlug: meta.gameSlug || meta.slug || '',
+            title: meta.title || meta.titleKo || '',
+            titleEn: meta.titleEn || '',
+            description: meta.description || meta.summaryKo || '',
+            instructions: meta.instructions || meta.instructionsKo || '',
+            visibility: meta.visibility || 'public',
+            deployMode: meta.deployMode || 'singleplay',
+            tags: meta.tags,
+            controls: meta.controls,
+            orientation: meta.orientation || 'landscape',
+            gameMetadata: meta.gameMetadata || null,
+          });
+          return json(202, { ok: true, job });
+        } catch (error) {
+          return json(error.status || 400, { ok: false, error: error.message, code: error.code || 'GAME_DEPLOY_FAILED' });
+        }
+      }
+      const gameDeployJobRoute = routePath.match(/^\/api\/platform\/game-deploy\/jobs\/([a-f0-9]{16})(?:\/files\/(.+))?$/);
+      if (gameDeployJobRoute && req.method === 'GET') {
+        const [, jobId, fileRel] = gameDeployJobRoute;
+        if (fileRel) {
+          const filePath = gameDeploy.resolveFile(jobId, decodeURIComponent(fileRel), auth?.accountKey || null);
+          if (!filePath) return reply(404, 'Deploy artifact not found');
+          const ext = path.extname(filePath).toLowerCase();
+          return reply(200, await fs.promises.readFile(filePath), mime[ext] || 'application/octet-stream', { 'Cache-Control': 'no-store' });
+        }
+        const job = gameDeploy.get(jobId, auth?.accountKey || null);
+        return job ? json(200, { ok: true, job }) : json(404, { ok: false, error: 'Deploy job not found' });
+      }
       if (routePath.startsWith('/api/platform/')) {
         try {
           const activeApi = getPlatformFor(auth?.accountKey).api;
@@ -1408,6 +1535,7 @@ function createServer(options = {}) {
     accountPlatforms.clear();
     accountStudios.clear();
     builds.close();
+    gameDeploy.close();
   };
   server.on('close', () => { closeOwned(); });
   server.httpCache = httpCache;

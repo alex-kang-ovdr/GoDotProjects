@@ -10,7 +10,7 @@ import { transaction } from './db.mjs';
 import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
 import { createArtifactStorage } from './artifact-storage.mjs';
 import { resolveUgcOrigin } from './runtime-config.mjs';
-import { ApiError, digest, json, readJson, uid } from './security.mjs';
+import { ApiError, digest, equal, json, readJson, uid } from './security.mjs';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -295,6 +295,39 @@ export function createUgcPublish({
 
   function requireForgeEnabled() {
     if (config.forge?.enabled !== true) throw new ApiError(503, 'FORGE_DISABLED');
+  }
+
+  const isLiveChannel = ['live', 'prod', 'production'].includes(
+    String(config.deployChannel || env?.PLAYHUB_CHANNEL || '').trim().toLowerCase()
+  );
+  const devDirectDeployToken = String(
+    config.publish?.devDirectDeployToken || env?.PLAYHUB_DEV_GAME_DEPLOY_TOKEN || ''
+  ).trim();
+
+  async function readRawBody(req, maxBytes = 64 * 1024 * 1024) {
+    const chunks = [];
+    let total = 0;
+    for await (const chunk of req) {
+      total += chunk.length;
+      if (total > maxBytes) {
+        throw new ApiError(413, 'PAYLOAD_TOO_LARGE', '업로드 번들이 최대 크기(64MB)를 초과했습니다.');
+      }
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks, total);
+  }
+
+  function requireCreatorOrDevDeployToken(req) {
+    const suppliedToken = String(req.headers['x-playhub-dev-deploy-token'] || '').trim();
+    if (!isLiveChannel && devDirectDeployToken && suppliedToken && equal(suppliedToken, devDirectDeployToken)) {
+      return {
+        id: 'dev-forge-deploy',
+        key: crypto.createHash('sha256').update('dev-forge-deploy').digest('hex'),
+        sessionHash: 'dev-token',
+        devTokenAuth: true,
+      };
+    }
+    return requireCreator(req);
   }
 
   function requireCreator(req) {
@@ -597,6 +630,181 @@ export function createUgcPublish({
         });
 
         json(res, previewResult.status, previewResult.payload);
+        return true;
+      }
+
+      // Game-only direct deployment endpoint (Web Forge -> selected Dev Farm / Hub)
+      // Uploads ONLY the server-packaged game bundle (web + android/desktop/ios PCK) and updates
+      // hub_publications atomically without touching platform containers or unrelated games.
+      if (pathname === '/api/creator/publications/deploy-game' && req.method === 'POST') {
+        const owner = requireCreatorOrDevDeployToken(req);
+        const contentType = String(req.headers['content-type'] || '').toLowerCase();
+        let meta = {};
+        let zipBuffer = null;
+
+        if (contentType.includes('application/zip') || contentType.includes('application/octet-stream')) {
+          const rawHeader = String(req.headers['x-playhub-deploy-meta'] || '').trim();
+          if (rawHeader) {
+            try {
+              meta = JSON.parse(Buffer.from(rawHeader, 'base64').toString('utf8'));
+            } catch {
+              throw new ApiError(400, 'INVALID_DEPLOY_META', 'X-PlayHub-Deploy-Meta 헤더를 파싱할 수 없습니다.');
+            }
+          }
+          zipBuffer = await readRawBody(req, 64 * 1024 * 1024);
+        } else {
+          const body = await readJson(req, 64 * 1024 * 1024);
+          meta = body;
+          if (typeof body.bundleZipBase64 === 'string' && body.bundleZipBase64.length > 0) {
+            zipBuffer = Buffer.from(body.bundleZipBase64, 'base64');
+          }
+        }
+
+        if (!Buffer.isBuffer(zipBuffer) || zipBuffer.length < 22) {
+          throw new ApiError(400, 'DEPLOY_BUNDLE_REQUIRED', '유효한 게임 배포 ZIP 번들이 필요합니다.');
+        }
+
+        const projectId = typeof meta.projectId === 'string' && FORGE_ID_RE.test(meta.projectId)
+          ? meta.projectId
+          : crypto.createHash('sha256').update(`${owner.key}:${meta.gameSlug || 'game'}`).digest('hex').slice(0, 24);
+        const releaseId = typeof meta.releaseId === 'string' && FORGE_ID_RE.test(meta.releaseId)
+          ? meta.releaseId
+          : crypto.randomBytes(12).toString('hex');
+        const requestedVis = ['public', 'unlisted', 'private'].includes(meta.visibility) ? meta.visibility : 'public';
+        if (isLiveChannel && requestedVis === 'public') {
+          throw new ApiError(
+            403,
+            'LIVE_DIRECT_PUBLIC_FORBIDDEN',
+            'Live 환경에서는 공개 게임 직접 배포가 차단됩니다. 공개 심사 제출 경로를 이용해 주세요.'
+          );
+        }
+
+        const existingByProject = getPubByOwnerProject.get(owner.key, projectId);
+        const rawSlug = typeof meta.gameSlug === 'string' && GAME_ID_RE.test(meta.gameSlug.trim())
+          ? meta.gameSlug.trim()
+          : (existingByProject?.game_id || slugifyGameId(meta.title || 'forge-game', projectId));
+        assertNotStaticId(rawSlug);
+        const existingBySlug = getPubById.get(rawSlug);
+        if (existingBySlug && existingBySlug.owner_key !== owner.key) {
+          throw new ApiError(409, 'GAME_SLUG_TAKEN', '이미 다른 제작자가 사용 중인 슬러그입니다.');
+        }
+        if (existingBySlug?.status === 'suspended' || existingByProject?.status === 'suspended') {
+          throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN', '운영자에 의해 차단된 게임은 배포할 수 없습니다.');
+        }
+
+        const hostSlug = existingBySlug?.host_slug || existingByProject?.host_slug || generateHostSlug(owner.key, projectId);
+        const deployMode = DEPLOY_MODES.has(meta.deployMode) ? meta.deployMode : 'singleplay';
+        const deployProfile = {
+          deployMode,
+          serverRuntime: deployMode === 'singleplay' ? 'none' : 'node-wss-v1',
+          specTier: deployMode === 'singleplay' ? 'free-nano' : 'nano'
+        };
+        const expectedSha256 = String(req.headers['x-playhub-bundle-sha256'] || meta.bundleSha256 || '').trim() || null;
+        const stamp = now();
+        const gameManifest = buildHubGameManifest({
+          gameId: rawSlug,
+          title: meta.title || meta.gameMetadata?.title?.ko || rawSlug,
+          description: meta.description || meta.gameMetadata?.summary?.ko,
+          release: { id: releaseId, label: meta.label || releaseId.slice(0, 8), gameMetadata: meta.gameMetadata },
+          metadataOverride: meta.gameMetadata,
+          visibility: requestedVis,
+          nowMs: stamp
+        });
+
+        let stored;
+        try {
+          stored = storage.putReleaseBundle({
+            hostSlug,
+            releaseId,
+            zipBuffer,
+            expectedSha256,
+            releaseManifest: { releaseId, packaging: 'server-multi-platform', platforms: meta.platforms || ['web'] },
+            gameManifest
+          });
+        } catch (err) {
+          throw new ApiError(err.status || 400, err.code || 'UNSAFE_DEPLOYMENT_ZIP', err.message);
+        }
+
+        // Enrich gameManifest with per-platform package metadata from platform-packages.json if present
+        let platformPackages = null;
+        const platPkgAsset = storage.resolveAssetPath(hostSlug, releaseId, 'platform-packages.json');
+        if (platPkgAsset?.filePath && fs.existsSync(platPkgAsset.filePath)) {
+          try {
+            const parsedPlats = JSON.parse(fs.readFileSync(platPkgAsset.filePath, 'utf8'));
+            platformPackages = parsedPlats?.platforms || null;
+            if (platformPackages) {
+              gameManifest.platforms = platformPackages;
+              if (platformPackages.android?.pckFile) {
+                gameManifest.android = {
+                  runtime: 'godot-pck',
+                  engineVersion: platformPackages.android.engineVersion || '4.7.2',
+                  minAppVersionCode: Number(platformPackages.android.minAppVersionCode) || 1,
+                  bundle: {
+                    url: `${stored.artifactBaseUrl}${platformPackages.android.pckFile}`,
+                    bytes: Number(platformPackages.android.pckBytes) || 0,
+                    sha256: platformPackages.android.pckSha256 || null
+                  }
+                };
+              }
+            }
+          } catch {}
+        }
+
+        const manifestJson = JSON.stringify(gameManifest);
+        const deployProfileJson = JSON.stringify(deployProfile);
+
+        const deployResult = transaction(db, () => {
+          const current = getPubById.get(rawSlug);
+          if (current && current.owner_key !== owner.key) throw new ApiError(409, 'GAME_SLUG_TAKEN');
+          if (current?.status === 'suspended') throw new ApiError(403, 'PUBLICATION_SUSPENDED_BY_ADMIN');
+          const nextCas = current ? current.cas_version + 1 : 1;
+          if (!current) {
+            db.prepare(`INSERT INTO hub_publications
+              (game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
+               visibility, deploy_mode, status, unpublished_by, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
+               cas_version, published_at, updated_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,NULL,?,?,?,?,?,?,?)`)
+              .run(rawSlug, hostSlug, owner.key, owner.id, projectId, releaseId, null,
+                requestedVis, deployMode, 'published', stored.sha256, stored.artifactBaseUrl,
+                manifestJson, deployProfileJson, nextCas, stamp, stamp);
+          } else {
+            const updated = db.prepare(`UPDATE hub_publications
+              SET project_id=?, active_release_id=?, visibility=?, deploy_mode=?, status='published', unpublished_by=NULL,
+                  artifact_sha256=?, artifact_base_url=?, manifest_json=?, deploy_profile_json=?,
+                  cas_version=?, updated_at=?
+              WHERE game_id=? AND cas_version=?`)
+              .run(projectId, releaseId, requestedVis, deployMode, stored.sha256, stored.artifactBaseUrl,
+                manifestJson, deployProfileJson, nextCas, stamp, rawSlug, current.cas_version);
+            if (updated.changes !== 1) throw new ApiError(409, 'PUBLICATION_CAS_CONFLICT');
+          }
+          recordHistory(rawSlug, current?.active_release_id || null, releaseId,
+            current ? 'game_deploy_update' : 'game_deploy_publish', owner.id, 'web_forge_game_only_deploy', nextCas, stamp, {
+              manifestJson,
+              deployProfileJson,
+              artifactSha256: stored.sha256
+            });
+          audit('ugc_game_only_deployed', rawSlug, {
+            ownerId: owner.id,
+            releaseId,
+            visibility: requestedVis,
+            platforms: platformPackages ? Object.keys(platformPackages) : ['web'],
+            casVersion: nextCas
+          });
+          return formatPublication(getPubById.get(rawSlug));
+        });
+
+        json(res, 201, {
+          ok: true,
+          gameId: deployResult.gameId,
+          releaseId,
+          publication: deployResult,
+          entryUrl: deployResult.entryUrl,
+          playUrl: `/play/${deployResult.gameId}/`,
+          mobileCatalogUrl: '/api/mobile/catalog',
+          artifactSha256: stored.sha256,
+          platforms: platformPackages,
+          directPublished: requestedVis === 'public'
+        });
         return true;
       }
 
