@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "missions": [
+    {
+      "id": "skirmish",
+      "title": "항로 교전",
+      "summary": "정찰선의 함교를 제압하세요.",
+      "objective": "duel",
+      "opponent": "flight",
+      "distance": 120,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": ""
+    },
+    {
+      "id": "disarm",
+      "title": "정밀 무장 해제",
+      "summary": "추격선의 무장을 제거하고 적 함교는 보존하세요.",
+      "objective": "disarm",
+      "opponent": "fast",
+      "distance": 145,
+      "seconds": 0,
+      "ai": "pursuit",
+      "requires": "skirmish"
+    },
+    {
+      "id": "escort",
+      "title": "대피 시간 확보",
+      "summary": "장거리 포격을 피해 32초 동안 아군 함교를 지키세요.",
+      "objective": "survive",
+      "opponent": "siege",
+      "distance": 135,
+      "seconds": 32,
+      "ai": "standoff",
+      "requires": "disarm"
+    }
+  ]
+}
