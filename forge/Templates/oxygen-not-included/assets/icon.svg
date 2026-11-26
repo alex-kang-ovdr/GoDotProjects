@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#131b26"/>
+  <rect x="10" y="10" width="108" height="108" rx="14" fill="#1b2838" stroke="#4cc9f0" stroke-width="3"/>
+  <circle cx="64" cy="54" r="28" fill="#1d4e78" stroke="#7ce0ff" stroke-width="4"/>
+  <circle cx="55" cy="46" r="8" fill="#a8ecff" opacity="0.75"/>
+  <text x="64" y="64" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#e8f8ff">O2</text>
+  <rect x="26" y="92" width="76" height="14" rx="4" fill="#3a4c5e"/>
+  <rect x="26" y="92" width="52" height="14" rx="4" fill="#4cc9f0"/>
+</svg>

@@ -524,9 +524,10 @@
       ]
     },
     "Forge-GameDev-ONI": {
-      "role": "숨 JavaScript 게임 개발",
+      "role": "숨(ONI) 게임 개발 (JS 웹판 + PlayForge Godot 4.7 템플릿)",
       "owns": [
-        "games/oxygen-not-included/**"
+        "games/oxygen-not-included/**",
+        "forge/Templates/oxygen-not-included/**"
       ]
     },
     "Forge-Tripo": {
