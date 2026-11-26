@@ -164,6 +164,19 @@ const BUILDING_COLORS := {
 	"rocket_petroleum_engine": Color(0.86, 0.54, 0.26, 1.0),
 	"rocket_fuel_tank": Color(0.90, 0.64, 0.22, 1.0),
 	"rocket_oxidizer_tank": Color(0.42, 0.80, 0.96, 1.0),
+	"glass_tile": Color(0.68, 0.92, 1.0, 0.85),
+	"travel_tube": Color(0.38, 0.88, 0.98, 0.90),
+	"travel_tube_entrance": Color(0.30, 0.78, 0.96, 1.0),
+	"jetsuit_dock": Color(0.96, 0.56, 0.24, 1.0),
+	"jetsuit_checkpoint": Color(0.96, 0.74, 0.28, 1.0),
+	"super_computer": Color(0.34, 0.90, 0.62, 1.0),
+	"planetarium": Color(0.74, 0.44, 0.98, 1.0),
+	"hydroponic_tile": Color(0.34, 0.76, 0.52, 1.0),
+	"planter_box": Color(0.68, 0.46, 0.34, 1.0),
+	"wheezewort": Color(0.42, 0.86, 0.98, 1.0),
+	"sauna": Color(0.82, 0.56, 0.36, 1.0),
+	"hottub": Color(0.44, 0.78, 0.96, 1.0),
+	"beach_chair": Color(0.98, 0.84, 0.42, 1.0),
 }
 
 static func ensure_loaded() -> void:

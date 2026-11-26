@@ -356,7 +356,7 @@ func _draw() -> void:
 		draw_circle(Vector2(sx, sy), 1.6 if (si % 5 == 0) else 1.0, sc)
 	draw_rect(Rect2(0, 0, total_w, total_h), Color(0.05, 0.06, 0.09, 1.0), true)
 
-	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power", "rad"]
 
 	# Layer 0: 우주 표면 별빛 배경(y<=3) + 열린 동굴의 바이옴 천연 배경벽 + 다중 액체(물·오염수·원유·마그마)
 	for y in range(OniWorld.HEIGHT):
@@ -426,7 +426,7 @@ func _draw_terrain_foreground() -> void:
 		return
 	var c := _terrain_fg_node
 	var ts := OniWorld.TILE_SIZE
-	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power", "rad"]
 
 	# 1) 4x4 월드-연속 심리스 고체 암반 (기체 볼륨 Layer 1 위에서 암반 경계로 완벽 마스킹)
 	for y in range(OniWorld.HEIGHT):
@@ -519,7 +519,7 @@ func _draw_terrain_foreground() -> void:
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var b := world.building[i]
-			if b != "tile" and b != "insulated_tile" and b != "bunker_tile" and b != "metal_tile":
+			if b != "tile" and b != "insulated_tile" and b != "bunker_tile" and b != "metal_tile" and b != "glass_tile":
 				continue
 			var rect := Rect2(x * ts, y * ts, ts, ts)
 			var mod := Color(0.46, 0.50, 0.56, 1.0) if dim_world else Color(1.0, 1.0, 1.0, 1.0)
@@ -568,7 +568,7 @@ func _draw_foreground() -> void:
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var b := world.building[i]
-			if not b.is_empty() and b != "tile" and b != "insulated_tile" and b != "bunker_tile" and b != "metal_tile":
+			if not b.is_empty() and b != "tile" and b != "insulated_tile" and b != "bunker_tile" and b != "metal_tile" and b != "glass_tile":
 				_draw_building_on(_fg_node, x, y, i, b, ts)
 
 	# 컨베이어 광물 패킷 & 우주 낙하 운석우
@@ -748,6 +748,36 @@ func _draw_overlay_front() -> void:
 					var k := clampf(-dv / 40.0, 0.16, 0.72)
 					_conduit_fg_node.draw_rect(rect, Color(0.96, 0.24, 0.28, k * 0.68), true)
 
+	# 방사선(X) 오버레이: 우주 태양 방사선 + 씨근풀·가상 플라네타륨 방사장 네온 그린/라임 히트맵
+	if overlay_mode == "rad":
+		for y in range(0, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var rv := world.rads[world.idx(x, y)]
+				if rv < 6.0:
+					continue
+				var k := clampf(rv / 250.0, 0.14, 0.95)
+				var rcol := Color(0.32 + k * 0.50, 0.98, 0.22 + (1.0 - k) * 0.45, k * 0.56)
+				var rect := Rect2(x * ts, y * ts, ts, ts)
+				_conduit_fg_node.draw_rect(rect, rcol, true)
+				if rv > 80.0 and ((x + y) % 2 == 0):
+					var pulse := 0.55 + 0.45 * sin(_anim_time * 4.2 + float(x + y))
+					_conduit_fg_node.draw_circle(rect.get_center(), 3.2 * pulse, Color(0.75, 1.0, 0.35, 0.65 * k))
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var b := world.building[world.idx(x, y)]
+				if b == "wheezewort" or b == "planetarium":
+					var wc := Vector2((float(x) + 0.5) * float(ts), (float(y) + 0.5) * float(ts))
+					var rad_r := 18.0 + fmod(_anim_time * 36.0, 62.0)
+					var a := clampf(1.0 - rad_r / 82.0, 0.0, 0.75)
+					_conduit_fg_node.draw_arc(wc, rad_r, 0.0, TAU, 24, Color(0.55, 1.0, 0.36, a), 2.0)
+		var rfont2 := ThemeDB.fallback_font
+		if rfont2 != null:
+			var bx := 24.0 * float(ts)
+			var by := 12.6 * float(ts)
+			_conduit_fg_node.draw_rect(Rect2(bx - 160.0, by - 12.0, 320.0, 24.0), Color(0.04, 0.10, 0.08, 0.92), true)
+			_conduit_fg_node.draw_rect(Rect2(bx - 160.0, by - 12.0, 320.0, 24.0), Color(0.45, 1.0, 0.35, 0.92), false, 1.5)
+			_conduit_fg_node.draw_string(rfont2, Vector2(bx - 154.0, by + 4.0), "방사선(X): 우주 260rad(벙커 차폐) · 씨근풀 185rad · 플라네타륨 110rad", HORIZONTAL_ALIGNMENT_CENTER, 308, 10, Color(0.84, 1.0, 0.72, 1.0))
+
 	# 채굴 / 건설 지시 오버레이
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
@@ -841,7 +871,7 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 	var rect := Rect2(x * ts, y * ts, ts, ts)
 	var p := rect.position
 	var running := world.machine_running[i] == 1
-	var dim := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
+	var dim := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power", "rad"]
 	var mod := Color(0.55, 0.58, 0.65, 1.0) if dim else Color(1.0, 1.0, 1.0, 1.0)
 
 	# 인쇄기 (2x2 멀티타일 + 다층 방사형 발광 후광)
@@ -859,6 +889,16 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var pod_tex := OniMedia.get_building_sprite("pod", int(floor(_anim_time * 2.0)) % 2 == 1)
 			if pod_tex != null:
 				c.draw_texture_rect(pod_tex, pod_rect, false, mod)
+		return
+
+	# 수송 튜브(travel_tube): 반투명 청록 공압 튜브 벽면 + 상승 공압 펄스 링
+	if b == "travel_tube":
+		var tube_r := Rect2(p.x + 6.0, p.y, float(ts) - 12.0, float(ts))
+		c.draw_rect(tube_r, Color(0.26, 0.78, 0.96, 0.28), true)
+		c.draw_line(Vector2(tube_r.position.x, p.y), Vector2(tube_r.position.x, p.y + float(ts)), Color(0.56, 0.94, 1.0, 0.85), 2.2)
+		c.draw_line(Vector2(tube_r.end.x, p.y), Vector2(tube_r.end.x, p.y + float(ts)), Color(0.56, 0.94, 1.0, 0.85), 2.2)
+		var ring_y := p.y + float(ts) - fmod(_anim_time * 42.0 + float(y) * 9.0, float(ts))
+		c.draw_line(Vector2(tube_r.position.x + 2.0, ring_y), Vector2(tube_r.end.x - 2.0, ring_y), Color(0.72, 0.98, 1.0, 0.68), 1.8)
 		return
 
 	var use_work := running and (int(floor(_anim_time * 4.5)) % 2 == 1)
@@ -887,9 +927,9 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var dw := float(ts) * 1.7
 			var dh := float(ts) * 1.7
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
-		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "kiln", "poi_vending", "poi_desk", "telescope", "ranch_station", "incubator", "oxygen_dock", "suit_dock", "suit_checkpoint", "sweep_station", "space_scanner", "medical_cot", "apothecary", "massage_table", "shower", "jukebot", "arcade_cabinet", "suit_maker"]:
-			var scale_w := 1.48 if b in ["steam_turbine", "solar_panel", "petrol_gen", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "kiln", "poi_desk", "telescope", "ranch_station", "space_scanner", "medical_cot", "massage_table", "suit_maker"] else (1.15 if b in ["suit_dock", "suit_checkpoint"] else 1.30)
-			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "petrol_gen", "outhouse", "water_sieve", "poi_vending", "oil_refinery", "rock_crusher", "telescope", "incubator", "oxygen_dock", "suit_dock", "suit_checkpoint", "space_scanner", "apothecary", "shower", "suit_maker"] else 1.26
+		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "research_station", "super_computer", "planetarium", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "kiln", "poi_vending", "poi_desk", "telescope", "ranch_station", "incubator", "oxygen_dock", "suit_dock", "suit_checkpoint", "jetsuit_dock", "jetsuit_checkpoint", "travel_tube_entrance", "sweep_station", "space_scanner", "medical_cot", "apothecary", "massage_table", "shower", "jukebot", "arcade_cabinet", "sauna", "hottub", "beach_chair", "wheezewort", "suit_maker"]:
+			var scale_w := 1.56 if b in ["planetarium", "super_computer", "sauna", "hottub", "beach_chair"] else (1.48 if b in ["steam_turbine", "solar_panel", "petrol_gen", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "kiln", "poi_desk", "telescope", "ranch_station", "space_scanner", "medical_cot", "massage_table", "suit_maker"] else (1.15 if b in ["suit_dock", "suit_checkpoint", "jetsuit_dock", "jetsuit_checkpoint", "wheezewort"] else 1.30))
+			var scale_h := 1.54 if b in ["planetarium", "super_computer", "travel_tube_entrance", "sauna", "beach_chair"] else (1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "petrol_gen", "outhouse", "water_sieve", "poi_vending", "oil_refinery", "rock_crusher", "telescope", "incubator", "oxygen_dock", "suit_dock", "suit_checkpoint", "jetsuit_dock", "jetsuit_checkpoint", "space_scanner", "apothecary", "shower", "wheezewort", "suit_maker"] else 1.26)
 			var dw := float(ts) * scale_w
 			var dh := float(ts) * scale_h
 			var jitter := sin(_anim_time * 20.0) * 0.7 if running else 0.0
@@ -962,14 +1002,21 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			if b == "smart_battery":
 				var led := Color(0.22, 0.98, 0.44, 1.0) if world.logic_signal[i] == 1 else Color(0.98, 0.24, 0.30, 1.0)
 				c.draw_circle(p + Vector2(6, 6), 3.0, led)
-		elif b == "farm_tile":
-			var plant_tex := OniMedia.get_building_sprite("mealwood", false)
-			var g := clampf(world.farm_growth[i], 0.25, 1.0)
+		elif b == "farm_tile" or b == "hydroponic_tile" or b == "planter_box":
+			var crop_key := "mealwood" if b == "farm_tile" else ("bristle_blossom" if (x % 2 == 1) else "sleet_wheat")
+			var plant_tex := OniMedia.get_building_sprite(crop_key, false)
+			var g := clampf(world.farm_growth[i], 0.35, 1.0)
 			if plant_tex != null:
-				var pw := float(ts) * (0.68 + 0.45 * g)
-				var ph := float(ts) * (0.68 + 0.55 * g)
+				var pw := float(ts) * (0.72 + 0.45 * g)
+				var ph := float(ts) * (0.72 + 0.55 * g)
 				var sway := sin(_anim_time * 2.2 + float(x)) * 1.5
 				c.draw_texture_rect(plant_tex, Rect2(p.x + (float(ts) - pw) * 0.5 + sway, p.y - ph + 4.0, pw, ph), false, mod)
+		elif b == "wheezewort" and not dim:
+			var cp := 0.5 + 0.5 * sin(_anim_time * 3.0 + float(x))
+			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.35), 22.0, Color(0.38, 0.90, 1.0, 0.12 * cp))
+		elif b == "planetarium" and not dim:
+			var pp := 0.65 + 0.35 * sin(_anim_time * 2.6)
+			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.3), 26.0, Color(0.72, 0.42, 1.0, 0.14 * pp))
 
 func _draw_critter_on(c: Node2D, cr: Dictionary, ts: int) -> void:
 	var cid := String(cr["id"])
@@ -1001,16 +1048,29 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 	# 접지 그림자
 	c.draw_rect(Rect2(px - 11, dupe.pos.y * ts + float(ts) - 3, 22, 4), Color(0.02, 0.03, 0.05, 0.48), true)
 
-	var dtex := OniMedia.get_duplicant_sprite(dupe.id, moving, _anim_time + float(dupe.id) * 0.3, dupe.wearing_suit)
+	var dtex := OniMedia.get_duplicant_sprite(dupe.id, moving, _anim_time + float(dupe.id) * 0.3, dupe.wearing_suit, dupe.wearing_jetsuit)
 	if dtex != null:
 		var dw := 42.0
 		var dh := 46.0
 		var top_y := dupe.pos.y * ts + float(ts) - dh + 2.0 + bob
+		if dupe.wearing_jetsuit:
+			# 제트복(Jet Suit) 듀얼 추진 화염 이펙트
+			var fl := 7.0 + 4.0 * sin(_anim_time * 28.0 + float(dupe.id))
+			var jx := px + (7.0 if dupe.facing_left else -7.0)
+			var jy := top_y + 30.0
+			c.draw_colored_polygon(PackedVector2Array([Vector2(jx - 3.5, jy), Vector2(jx + 3.5, jy), Vector2(jx, jy + fl + 5.0)]), Color(1.0, 0.52, 0.12, 0.85))
+			c.draw_colored_polygon(PackedVector2Array([Vector2(jx - 2.0, jy), Vector2(jx + 2.0, jy), Vector2(jx, jy + fl)]), Color(0.55, 0.94, 1.0, 0.92))
 		if dupe.facing_left:
 			c.draw_texture_rect(dtex, Rect2(px + dw * 0.5, top_y, -dw, dh), false)
 		else:
 			c.draw_texture_rect(dtex, Rect2(px - dw * 0.5, top_y, dw, dh), false)
-		if dupe.wearing_suit:
+		if dupe.wearing_jetsuit:
+			# 제트복 주황·금색 가압 헬멧 바이저
+			var hc := Vector2(px, top_y + 14.5)
+			c.draw_circle(hc, 12.0, Color(1.0, 0.68, 0.22, 0.22))
+			c.draw_arc(hc, 12.0, 0.0, TAU, 20, Color(1.0, 0.78, 0.32, 0.92), 1.7)
+			c.draw_arc(hc, 9.2, -2.5, -1.1, 10, Color(1.0, 1.0, 1.0, 0.78), 1.5)
+		elif dupe.wearing_suit:
 			# 원작 환경 특수복(Atmo Suit) 투명 가압 유리 헬멧 돔 + 청록 하이라이트 림
 			var hc := Vector2(px, top_y + 14.5)
 			c.draw_circle(hc, 11.8, Color(0.36, 0.86, 1.0, 0.18))

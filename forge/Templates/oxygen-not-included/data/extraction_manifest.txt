@@ -1,6 +1,6 @@
 {
   "source_path": "C:\\Temp\\Oxygen",
-  "extracted_at_utc": "2026-11-26T14:54:43.672117+00:00",
+  "extracted_at_utc": "2026-11-26T22:12:19.163110+00:00",
   "counts": {
     "ko_strings": 21114,
     "elements": 196,
@@ -9,7 +9,7 @@
     "sandstone_base_buildings": 10,
     "techs": 97,
     "tech_edges": 89,
-    "buildings": 87,
+    "buildings": 100,
     "mobs": 60,
     "worlds": 15,
     "traits": 18,
@@ -38,15 +38,15 @@
     "fmod_radix_nodes_est": 29697,
     "godot_ported_shaders": 5,
     "embedded_element_textures": 36,
-    "embedded_building_textures": 4,
+    "embedded_building_textures": 5,
     "embedded_fx_textures": 5,
-    "embedded_kanim_building_sprites": 103,
+    "embedded_kanim_building_sprites": 119,
     "embedded_kanim_duplicant_sprites": 6,
     "fmod_banks_total": 15,
     "fmod_samples_total": 13681,
     "fmod_pcm16_samples": 653,
     "fmod_vorbis_samples": 13028,
-    "embedded_pcm16_sfx": 33,
+    "embedded_pcm16_sfx": 36,
     "embedded_bgm_tracks": 8
   },
   "source_hashes_sha256": {
@@ -55,5 +55,5 @@
     "solid.yaml": "e85993648fd75d29cc625b2c69e5cd1169ae536d7b4f9a6f89abe2ab6c014ffc",
     "sandstoneBase.yaml": "dd824ece1518bf9cca2f49d4cfe7d9139e4944ea17d7fefa3297fc734265a344"
   },
-  "finalized_at_utc": "2026-11-26T14:55:02.088320+00:00"
+  "finalized_at_utc": "2026-11-26T22:12:44.281968+00:00"
 }

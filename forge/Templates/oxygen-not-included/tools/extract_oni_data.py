@@ -60,10 +60,10 @@ ELEMENT_COLORS = {
 
 # Mapping from original ONI tech IDs to playable buildings in our Godot template
 TECH_BUILDING_MAP = {
-    "FarmingTech": ["farm_tile", "ration_box"],
+    "FarmingTech": ["farm_tile", "ration_box", "planter_box"],
     "Ranching": ["ranch_station", "incubator"],
-    "FoodRepurposing": ["electric_grill"],
-    "InteriorDecor": ["ceiling_light", "flower_pot"],
+    "FoodRepurposing": ["electric_grill", "hydroponic_tile"],
+    "InteriorDecor": ["ceiling_light", "flower_pot", "glass_tile"],
     "Artistry": ["decor_painting", "sculpture"],
     "SanitationSciences": ["water_sieve"],
     "Distillation": ["co2_skimmer"],
@@ -73,18 +73,19 @@ TECH_BUILDING_MAP = {
     "ImprovedOxygen": ["electrolyzer", "oxygen_dock"],
     "Combustion": ["coal_gen"],
     "AdvancedPowerRegulation": ["hydrogen_gen"],
-    "TemperatureModulation": ["insulated_tile"],
+    "TemperatureModulation": ["insulated_tile", "wheezewort"],
     "LiquidTemperature": ["thermo_aquatuner"],
     "RefinedObjects": ["metal_refinery", "fire_pole", "rock_crusher", "kiln", "metal_tile"],
-    "Plastics": ["oil_refinery", "petrol_gen"],
+    "Plastics": ["oil_refinery", "petrol_gen", "travel_tube", "travel_tube_entrance"],
     "SolidTransport": ["auto_sweeper", "sweep_station", "conveyor_loader", "conveyor_chute"],
     "LogicControl": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"],
-    "SkyDetectors": ["telescope", "bunker_door", "space_scanner", "bunker_tile"],
+    "SkyDetectors": ["telescope", "bunker_door", "space_scanner", "bunker_tile", "planetarium"],
     "RenewableEnergy": ["steam_turbine", "solar_panel"],
     "MedicineI": ["medical_cot", "apothecary", "wash_sink"],
     "MedicineII": ["massage_table"],
-    "Luxury": ["water_cooler", "jukebot", "arcade_cabinet"],
-    "Suits": ["suit_maker", "suit_dock", "suit_checkpoint"],
+    "Luxury": ["water_cooler", "jukebot", "arcade_cabinet", "sauna", "hottub", "beach_chair"],
+    "Suits": ["suit_maker", "suit_dock", "suit_checkpoint", "jetsuit_dock", "jetsuit_checkpoint"],
+    "Jobs": ["super_computer"],
 }
 
 # Building prefab ID -> template ID + measured DLL constants (45 playable buildings + 3 POI props)
@@ -176,6 +177,19 @@ BUILDING_PREFAB_MAP = {
     "rocket_petroleum_engine": {"prefab": "KEROSENEENGINE", "cat": "space", "cost_element": "IronOre", "cost_kg": 600.0, "build_time": 4.2, "needs_floor": True},
     "rocket_fuel_tank": {"prefab": "LIQUIDFUELTANK", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.4},
     "rocket_oxidizer_tank": {"prefab": "OXIDIZERTANK", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.4},
+    "glass_tile": {"prefab": "GLASSTILE", "cat": "base", "cost_element": "Sand", "cost_kg": 100.0, "build_time": 1.6, "solid": True, "decor": 15.0},
+    "travel_tube": {"prefab": "TRAVELTUBE", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 50.0, "build_time": 1.0, "climbable": True},
+    "travel_tube_entrance": {"prefab": "TRAVELTUBEENTRANCE", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.6, "power_w": 240.0, "climbable": True, "needs_floor": True},
+    "jetsuit_dock": {"prefab": "JETSUITLOCKER", "cat": "base", "cost_element": "IronOre", "cost_kg": 200.0, "build_time": 2.4, "power_w": 120.0, "needs_floor": True},
+    "jetsuit_checkpoint": {"prefab": "JETSUITMARKER", "cat": "base", "cost_element": "IronOre", "cost_kg": 150.0, "build_time": 1.8, "needs_floor": True},
+    "super_computer": {"prefab": "ADVANCEDRESEARCHCENTER", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.0, "power_w": 120.0, "needs_floor": True},
+    "planetarium": {"prefab": "COSMICRESEARCHCENTER", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.2, "power_w": 120.0, "needs_floor": True},
+    "hydroponic_tile": {"prefab": "HYDROPONICFARM", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 100.0, "build_time": 1.8, "solid": True},
+    "planter_box": {"prefab": "PLANTERBOX", "cat": "colony", "cost_element": "SandStone", "cost_kg": 100.0, "build_time": 1.4, "needs_floor": True, "decor": 5.0},
+    "wheezewort": {"prefab": "PLANTERBOX", "cat": "colony", "cost_element": "Ice", "cost_kg": 50.0, "build_time": 1.4, "needs_floor": True, "decor": 15.0, "override_name": "씨근풀 (냉각·방사)", "override_desc": "주변 기체를 -8°C 냉각하고 방사선을 방출하는 빙하 식물"},
+    "sauna": {"prefab": "SAUNA", "cat": "med", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.8, "power_w": 60.0, "needs_floor": True, "decor": 15.0},
+    "hottub": {"prefab": "HOTTUB", "cat": "med", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.0, "power_w": 240.0, "needs_floor": True, "decor": 20.0},
+    "beach_chair": {"prefab": "BEACHCHAIR", "cat": "med", "cost_element": "SandStone", "cost_kg": 200.0, "build_time": 2.0, "needs_floor": True, "decor": 15.0},
 }
 
 
@@ -485,8 +499,8 @@ def extract_buildings(ko: dict) -> dict:
     for bid, meta in BUILDING_PREFAB_MAP.items():
         pf = meta["prefab"]
         entry = dict(meta)
-        entry["name_ko"] = ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.NAME", bid)
-        entry["desc"] = ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.EFFECT", ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.DESC", ""))
+        entry["name_ko"] = meta.get("override_name") or ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.NAME", bid)
+        entry["desc"] = meta.get("override_desc") or ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.EFFECT", ko.get(f"STRINGS.BUILDINGS.PREFABS.{pf}.DESC", ""))
         out[bid] = entry
     return out
 

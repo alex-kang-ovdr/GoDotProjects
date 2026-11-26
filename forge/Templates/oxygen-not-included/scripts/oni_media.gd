@@ -15,6 +15,7 @@ static var kanim_building_idle: Dictionary = {}
 static var kanim_building_work: Dictionary = {}
 static var kanim_dupes: Array = []
 static var kanim_atmosuit_dupe: Dictionary = {}
+static var kanim_jetsuit_dupe: Dictionary = {}
 static var sfx_streams: Dictionary = {}
 static var bgm_streams: Dictionary = {}
 static var music_bank_tracks: Array = []
@@ -40,7 +41,7 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
 
-	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt", "res://data/kanim_sprites_ext4_extracted.txt", "res://data/kanim_sprites_ext5_extracted.txt"]:
+	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt", "res://data/kanim_sprites_ext4_extracted.txt", "res://data/kanim_sprites_ext5_extracted.txt", "res://data/kanim_sprites_ext6_extracted.txt"]:
 		var ksp_doc: Variant = _load_json(kpath)
 		if ksp_doc is Dictionary:
 			var bs_v: Variant = ksp_doc.get("building_sprites", {})
@@ -79,6 +80,18 @@ static func ensure_loaded() -> void:
 						"idle": si,
 						"walk0": sw0 if sw0 != null else si,
 						"walk1": sw1 if sw1 != null else si,
+					}
+			var js_v: Variant = ksp_doc.get("jetsuit_duplicant", {})
+			if js_v is Dictionary and not (js_v as Dictionary).is_empty():
+				var jd: Dictionary = js_v
+				var ji := _decode_png_b64(String(jd.get("idle_b64", "")))
+				var jw0 := _decode_png_b64(String(jd.get("walk0_b64", "")))
+				var jw1 := _decode_png_b64(String(jd.get("walk1_b64", "")))
+				if ji != null:
+					kanim_jetsuit_dupe = {
+						"idle": ji,
+						"walk0": jw0 if jw0 != null else ji,
+						"walk1": jw1 if jw1 != null else ji,
 					}
 
 	var kanim_doc: Variant = _load_json("res://data/kanim_meshes_extracted.txt")
@@ -240,11 +253,15 @@ static func get_building_sprite(b_id: String, working := false) -> Texture2D:
 		return t
 	return null
 
-static func get_duplicant_sprite(dupe_id: int, moving := false, phase := 0.0, wearing_suit := false) -> Texture2D:
+static func get_duplicant_sprite(dupe_id: int, moving := false, phase := 0.0, wearing_suit := false, wearing_jetsuit := false) -> Texture2D:
 	ensure_loaded()
 	var key := "idle"
 	if moving:
 		key = "walk0" if int(floor(phase * 6.0)) % 2 == 0 else "walk1"
+	if wearing_jetsuit and not kanim_jetsuit_dupe.is_empty():
+		var jt: Variant = kanim_jetsuit_dupe.get(key, null)
+		if jt is Texture2D:
+			return jt
 	if wearing_suit and not kanim_atmosuit_dupe.is_empty():
 		var st: Variant = kanim_atmosuit_dupe.get(key, null)
 		if st is Texture2D:
@@ -295,7 +312,7 @@ static func get_bgm_stream(bgm_key: String) -> AudioStreamWAV:
 static func get_media_summary() -> String:
 	ensure_loaded()
 	var tex_n: int = element_textures.size() + building_textures.size() + fx_textures.size()
-	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1)
+	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1) + (0 if kanim_jetsuit_dupe.is_empty() else 1)
 	var sfx_n: int = sfx_streams.size()
 	var bgm_n: int = bgm_streams.size()
 	return "텍%d·KAnim%d·SFX%d·BGM%d" % [tex_n, spr_n, sfx_n, bgm_n]
@@ -334,7 +351,7 @@ static func get_complete_audit_lines() -> Array[String]:
 	lines.append("[텍스처/메시] 임베딩 타일·FX %d종 (전체 %d) · 조립 KAnim %d종 (전체 %d)" % [
 		element_textures.size() + building_textures.size() + fx_textures.size(),
 		int(rendering_inventory.get("textures_total", 0)),
-		kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1),
+		kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1) + (0 if kanim_jetsuit_dupe.is_empty() else 1),
 		int(rendering_inventory.get("kanim_textassets_total", 0)),
 	])
 	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 5종" % [

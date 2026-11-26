@@ -24,6 +24,7 @@ var stress := 0.0
 var disease := "" # "", "FoodPoisoning", "SlimeLung"
 var disease_timer := 0.0
 var wearing_suit := false
+var wearing_jetsuit := false
 var suit_o2 := 100.0
 var trait_ko := "조기 기상"
 var skill_level := 0
@@ -54,7 +55,7 @@ func upgrade_skill() -> bool:
 func work_speed_mult() -> float:
 	var sick_m := 0.72 if not disease.is_empty() else 1.0
 	var stress_m := 0.85 if stress >= 60.0 else 1.0
-	var suit_m := 1.30 if wearing_suit else 1.0
+	var suit_m := 1.45 if wearing_jetsuit else (1.30 if wearing_suit else 1.0)
 	return (1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.35)) * sick_m * stress_m * suit_m
 
 func get_disease_ko() -> String:
@@ -68,10 +69,17 @@ func step(world: OniWorld, dt: float) -> void:
 	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)
 	_step_breathing(world, dt)
 
-	# 1.5) 환경 특수복(Atmo Suit) 자동 착용/산소 보충 및 스트레스·질병 시뮬레이션
+	# 1.5) 환경 특수복(Atmo Suit)·제트복(Jet Suit) 자동 착용/산소 보충 및 스트레스·질병 시뮬레이션
 	var ci := world.idx(cell.x, cell.y)
 	var b_here := world.building[ci]
-	if b_here in ["suit_dock", "suit_checkpoint", "oxygen_dock"]:
+	if b_here in ["jetsuit_dock", "jetsuit_checkpoint"]:
+		if not wearing_jetsuit:
+			wearing_jetsuit = true
+			wearing_suit = true
+			if world.on_suit_equipped.is_valid():
+				world.on_suit_equipped.call(cell)
+		suit_o2 = 100.0
+	elif b_here in ["suit_dock", "suit_checkpoint", "oxygen_dock"]:
 		if not wearing_suit:
 			wearing_suit = true
 			if world.on_suit_equipped.is_valid():
@@ -210,9 +218,11 @@ func _step_move(world: OniWorld, dt: float) -> void:
 	if absf(diff.x) > 0.01:
 		facing_left = diff.x < 0.0
 	var dist := diff.length()
-	var spd := move_speed
-	# 금속 타일 바닥 이동 시 1.4x 가속, 소방봉(fire_pole) 하강 시 3배 초고속 슬라이드!
-	if world.in_bounds(cell.x, cell.y + 1) and world.building[world.idx(cell.x, cell.y + 1)] == "metal_tile":
+	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0)
+	# 수송 튜브(travel_tube) 이동 시 5배 초고속 공압 이동!
+	if world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] in ["travel_tube", "travel_tube_entrance"]:
+		spd = move_speed * 5.0
+	elif world.in_bounds(cell.x, cell.y + 1) and world.building[world.idx(cell.x, cell.y + 1)] == "metal_tile":
 		spd = move_speed * 1.4
 	if diff.y > 0.1 and world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] == "fire_pole":
 		spd = move_speed * 3.0

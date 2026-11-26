@@ -33,6 +33,8 @@ var room_id: PackedInt32Array = PackedInt32Array()
 var rooms_list: Array[Dictionary] = []
 var colony_morale_bonus := 0
 var decor_val: PackedFloat32Array = PackedFloat32Array()
+var rads: PackedFloat32Array = PackedFloat32Array()
+var _rad_accum := 0.0
 var has_logic_wire: PackedByteArray = PackedByteArray()
 var logic_signal: PackedByteArray = PackedByteArray()
 
@@ -182,6 +184,9 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	colony_morale_bonus = 0
 	decor_val.resize(total)
 	decor_val.fill(0.0)
+	rads.resize(total)
+	rads.fill(0.0)
+	_rad_accum = 0.0
 	has_logic_wire.resize(total)
 	has_logic_wire.fill(0)
 	logic_signal.resize(total)
@@ -463,6 +468,44 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		has_wire[idx(sx, 16)] = 1
 	building[idx(28, 16)] = "suit_dock"
 	building[idx(29, 16)] = "suit_checkpoint"
+	building[idx(29, 15)] = "mech_door"
+	building[idx(29, 14)] = "tile"
+	# 인쇄기 상단 유리 채광창(tiles_glass) + 수직 수송 튜브 고속 엘리베이터 (x=20, y=3..14)
+	for gx in range(22, 26):
+		var gi := idx(gx, 13)
+		solid_el[gi] = ""
+		solid_mass[gi] = 0.0
+		building[gi] = "glass_tile"
+	for ty in range(4, 15):
+		var ti := idx(20, ty)
+		solid_el[ti] = ""
+		solid_mass[ti] = 0.0
+		if gas_el[ti] == "Vacuum":
+			gas_el[ti] = "Oxygen"
+			gas_mass[ti] = 0.9
+			gas_prev_mass[ti] = 0.9
+		building[ti] = "travel_tube_entrance" if ty == 14 else "travel_tube"
+	# 우측 상단(물 웅덩이 위): 코스믹 연구·수경재배·씨근풀 냉각실 (x: 30..36, y: 13..15, 유리 바닥 y=16)
+	for ly in range(13, 16):
+		for lx in range(30, 37):
+			var li := idx(lx, ly)
+			solid_el[li] = ""
+			solid_mass[li] = 0.0
+			gas_el[li] = "Oxygen"
+			gas_mass[li] = 1.05
+			gas_prev_mass[li] = 1.05
+			temp_c[li] = 20.0
+	for lx in range(30, 37):
+		var lfi := idx(lx, 16)
+		solid_el[lfi] = ""
+		solid_mass[lfi] = 0.0
+		building[lfi] = "hydroponic_tile" if (lx == 31 or lx == 35) else "glass_tile"
+		temp_c[lfi] = 20.0
+		has_wire[idx(lx, 15)] = 1
+	building[idx(30, 15)] = "wheezewort"
+	building[idx(32, 15)] = "super_computer"
+	building[idx(34, 15)] = "planetarium"
+	building[idx(36, 15)] = "beach_chair"
 
 	# 인쇄기 (Printing Pod) 2x2
 	building[idx(23, 16)] = "pod"
@@ -555,6 +598,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		building[pi] = "bunker_tile"
 		temp_c[pi] = -15.0
 	building[idx(19, 3)] = "solar_panel"
+	building[idx(20, 3)] = "travel_tube_entrance"
 	building[idx(21, 3)] = "telescope"
 	building[idx(23, 3)] = "rocket_steam_engine"
 	building[idx(23, 2)] = "rocket_cargo_bay"
@@ -690,6 +734,8 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	critters.append({"id": "critter_slickster", "name_ko": "슬릭스터", "pos": Vector2(23.5, 22.0), "dir": 1.0, "fly": true, "swim": false, "timer": 1.1})
 	critters.append({"id": "critter_pip", "name_ko": "핍", "pos": Vector2(24.5, 16.0), "dir": -1.0, "fly": false, "swim": false, "timer": 0.9})
 	critters.append({"id": "critter_moo", "name_ko": "가스 무", "pos": Vector2(15.0, 2.2), "dir": 1.0, "fly": true, "swim": false, "timer": 1.3})
+	critters.append({"id": "critter_pokeshell", "name_ko": "쑤심딱지", "pos": Vector2(33.5, 15.0), "dir": -1.0, "fly": false, "swim": false, "timer": 1.1})
+	critters.append({"id": "critter_vole", "name_ko": "굴착들쥐", "pos": Vector2(18.0, 3.0), "dir": 1.0, "fly": false, "swim": false, "timer": 1.0})
 
 	# 원작 공식 복제체 인격 3명 (미프, 에이다, 버블스)
 	duplicants.clear()
@@ -703,13 +749,18 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	var spawn_xs: Array[int] = [21, 22, 25]
 	for d_idx in range(3):
 		var dupe := OniDuplicant.new(d_idx, names[d_idx], Vector2i(spawn_xs[d_idx], 16), colors[d_idx], dupe_traits[d_idx])
-		if d_idx == 2:
+		if d_idx == 1:
+			dupe.wearing_jetsuit = true
+			dupe.wearing_suit = true
+			dupe.suit_o2 = 100.0
+		elif d_idx == 2:
 			dupe.wearing_suit = true
 			dupe.suit_o2 = 100.0
 		duplicants.append(dupe)
 
 	_step_logic_network()
 	_recompute_decor()
+	_recompute_radiation()
 	_recompute_rooms()
 	generate_print_offers()
 	_recompute_stats()
@@ -769,7 +820,7 @@ func is_solid_cell(x: int, y: int) -> bool:
 	if not solid_el[i].is_empty():
 		return true
 	var b := building[i]
-	if b == "tile" or b == "insulated_tile" or b == "farm_tile" or b == "bunker_tile" or b == "metal_tile":
+	if b == "tile" or b == "insulated_tile" or b == "farm_tile" or b == "bunker_tile" or b == "metal_tile" or b == "glass_tile" or b == "hydroponic_tile":
 		return true
 	return false
 
@@ -804,7 +855,7 @@ func is_climbable(x: int, y: int) -> bool:
 	if not in_bounds(x, y):
 		return false
 	var b := building[idx(x, y)]
-	return b == "ladder" or b == "fire_pole"
+	return b == "ladder" or b == "fire_pole" or b == "travel_tube" or b == "travel_tube_entrance"
 
 func is_night() -> bool:
 	return fmod(sim_time, OniElements.CYCLE_SECONDS) >= OniElements.CYCLE_SECONDS * 0.85
@@ -1341,6 +1392,11 @@ func step(dt: float) -> void:
 		_decor_accum = 0.0
 		_recompute_decor()
 
+	_rad_accum += dt
+	if _rad_accum >= 1.2:
+		_rad_accum = 0.0
+		_recompute_radiation()
+
 	_recompute_stats()
 
 func step_gas_tick() -> void:
@@ -1723,7 +1779,7 @@ func _is_room_boundary(x: int, y: int) -> bool:
 	if is_solid_cell(x, y):
 		return true
 	var b := building[idx(x, y)]
-	return b == "door" or b == "mech_door"
+	return b == "door" or b == "mech_door" or b == "bunker_door" or b == "travel_tube_entrance" or b == "travel_tube"
 
 func _recompute_decor() -> void:
 	# 원작 장식(Decor) 반경 3칸 누적 계산 (명화+20, 조각상+25, 화분+15, 인쇄기+15, 빛벌레+30 vs 산업설비/전선 감점)
@@ -1758,6 +1814,45 @@ func _recompute_decor() -> void:
 				for dx in range(-2, 3):
 					if in_bounds(cx + dx, cy + dy):
 						decor_val[idx(cx + dx, cy + dy)] += 25.0
+
+func _recompute_radiation() -> void:
+	# 우주 태양 방사선(y=0..4, 벙커 타일/암반 차폐) + 씨근풀(Wheezewort) & 가상 플라네타륨 방사장 계산
+	rads.fill(0.0)
+	for x in range(1, WIDTH - 1):
+		var beam := 260.0
+		for y in range(0, 9):
+			var i := idx(x, y)
+			rads[i] = maxf(rads[i], beam)
+			var b := building[i]
+			if b == "bunker_tile" or (b == "bunker_door" and bunker_closed):
+				beam *= 0.08
+			elif not solid_el[i].is_empty() or b in ["tile", "insulated_tile", "metal_tile"]:
+				beam *= 0.22
+			elif b == "glass_tile":
+				beam *= 0.85
+			else:
+				beam *= 0.90
+			if beam < 8.0:
+				break
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var b := building[idx(x, y)]
+			var emit := 0.0
+			if b == "wheezewort":
+				emit = 185.0
+			elif b == "planetarium":
+				emit = 110.0
+			elif b == "aetn":
+				emit = 65.0
+			if emit > 0.0:
+				for dy in range(-3, 4):
+					for dx in range(-3, 4):
+						var nx := x + dx
+						var ny := y + dy
+						if in_bounds(nx, ny):
+							var d := sqrt(float(dx * dx + dy * dy))
+							if d <= 3.5:
+								rads[idx(nx, ny)] += emit * maxf(0.0, 1.0 - d / 3.8)
 
 func _is_logic_node(i: int) -> bool:
 	if has_logic_wire[i] == 1:
@@ -1991,7 +2086,7 @@ func _recompute_rooms() -> void:
 				r_name = "막사"
 				r_morale = 1
 				r_col = Color(0.42, 0.68, 0.96, 0.26)
-			elif int(bcounts.get("research_station", 0)) > 0 and (int(bcounts.get("ceiling_light", 0)) > 0 or int(bcounts.get("pod", 0)) > 0):
+			elif (int(bcounts.get("research_station", 0)) > 0 or int(bcounts.get("super_computer", 0)) > 0 or int(bcounts.get("planetarium", 0)) > 0) and (int(bcounts.get("ceiling_light", 0)) > 0 or int(bcounts.get("pod", 0)) > 0 or int(bcounts.get("planetarium", 0)) > 0):
 				r_type = "laboratory"
 				r_name = "연구실"
 				r_morale = 1
@@ -2043,23 +2138,39 @@ func _step_farms(dt: float) -> void:
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
-			if building[i] != "farm_tile":
+			var b := building[i]
+			if b == "wheezewort":
+				# 씨근풀: 주변 2칸 기체/지형 능동 냉각 (-1.8°C/s -> 최저 -15°C)
+				for dy in range(-2, 3):
+					for dx in range(-2, 3):
+						if in_bounds(x + dx, y + dy):
+							var ni := idx(x + dx, y + dy)
+							if temp_c[ni] > -15.0:
+								temp_c[ni] = maxf(-15.0, temp_c[ni] - 0.85 * dt)
+				machine_running[i] = 1
+				continue
+			if b == "planetarium" and data_banks > 0 and not active_tech.is_empty():
+				add_research_points(1.8 * dt)
+				machine_running[i] = 1
+				continue
+			if b != "farm_tile" and b != "hydroponic_tile" and b != "planter_box":
 				continue
 			var above_i := idx(x, y - 1)
 			if is_solid_cell(x, y - 1):
 				continue
 			var t := temp_c[above_i]
-			var ok_temp := t >= OniElements.MEALWOOD_MIN_C and t <= OniElements.MEALWOOD_MAX_C
+			var ok_temp := t >= -10.0 and t <= 38.0
 			var ok_gas := gas_mass[above_i] >= OniElements.MEALWOOD_MIN_GAS_KG
 			var need_dirt := OniElements.MEALWOOD_DIRT_KG_PER_S * dt
 			var ok_dirt := float(inventory.get("Dirt", 0.0)) >= need_dirt
 			if ok_temp and ok_gas and ok_dirt:
 				inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
-				farm_growth[i] += dt / OniElements.MEALWOOD_GROWTH_S
+				var gmult := 2.0 if b == "hydroponic_tile" else 1.0
+				farm_growth[i] += (dt * gmult) / OniElements.MEALWOOD_GROWTH_S
 				machine_running[i] = 1
 				if farm_growth[i] >= 1.0:
 					farm_growth[i] = 0.0
-					food_kcal += OniElements.MEALWOOD_HARVEST_KCAL
+					food_kcal += OniElements.MEALWOOD_HARVEST_KCAL * gmult
 			else:
 				machine_running[i] = 0
 
@@ -2391,7 +2502,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker", "suit_dock"]
+	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "travel_tube_entrance"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0

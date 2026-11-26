@@ -149,8 +149,28 @@ EXTENDED_RECIPES_5 = {
     "rocket_oxidizer_tank": (["rocket_oxidizer_tank"], "rocket_oxidizer_tank", ["grounded", "on", "off"], 108),
 }
 
-# Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap + atmosuit)
-DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap", "atmosuit_basic_blue"]
+# 7th KAnim shard (Transit Tubes, Jet Suits, Super Computer, Planetarium, Hydroponics, Crops, Wheezewort, Luxury, Pokeshell, Shove Vole)
+EXTENDED_RECIPES_6 = {
+    "travel_tube": (["travel_tube"], "travel_tube", ["on", "off"], 64),
+    "travel_tube_entrance": (["travel_tube_entrance"], "travel_tube_entrance", ["working_loop", "on", "off"], 96),
+    "jetsuit_dock": (["changingarea_jetsuit"], "changingarea_jetsuit", ["full", "on", "off"], 88),
+    "jetsuit_checkpoint": (["changingarea_jetsuit_arrow"], "changingarea_jetsuit_arrow", ["on", "off"], 80),
+    "super_computer": (["research_center2"], "research_center2", ["working_loop", "on", "off"], 96),
+    "planetarium": (["research_space"], "research_space", ["working_loop", "on", "off"], 104),
+    "hydroponic_tile": (["farmtilehydroponicrotating"], "farmtilehydroponicrotating", ["on", "off"], 68),
+    "planter_box": (["planterbox"], "planterbox", ["on", "off"], 72),
+    "wheezewort": (["coldbreather"], "coldbreather", ["grow", "idle_full", "idle"], 84),
+    "sleet_wheat": (["coldwheat"], "coldwheat", ["idle_full", "grow", "idle"], 76),
+    "thimble_reed": (["swampreed"], "swampreed", ["idle_full", "grow", "idle"], 80),
+    "sauna": (["sauna"], "sauna", ["working_loop", "on", "off"], 92),
+    "hottub": (["hottub"], "hottub", ["working_loop", "on", "off"], 96),
+    "beach_chair": (["beach_chair"], "beach_chair", ["on", "off"], 88),
+    "critter_pokeshell": (["pincher_build", "pincher"], "pincher", ["idle_loop", "walk_loop", "idle"], 76),
+    "critter_vole": (["driller_build", "driller"], "driller", ["idle_loop", "walk_loop", "idle"], 76),
+}
+
+# Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap + atmosuit + jetsuit)
+DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap", "atmosuit_basic_blue", "jetsuit_black_default"]
 
 
 def parse_bild_full(raw: bytes) -> dict:
@@ -484,6 +504,7 @@ def main() -> int:
     all_recipes.update(EXTENDED_RECIPES_3)
     all_recipes.update(EXTENDED_RECIPES_4)
     all_recipes.update(EXTENDED_RECIPES_5)
+    all_recipes.update(EXTENDED_RECIPES_6)
     for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
@@ -561,6 +582,7 @@ def main() -> int:
     out_buildings_ext3 = {}
     out_buildings_ext4 = {}
     out_buildings_ext5 = {}
+    out_buildings_ext6 = {}
     preview_list = []
 
     for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
@@ -632,7 +654,8 @@ def main() -> int:
                 out_buildings_ext2 if key in EXTENDED_RECIPES_2 else
                 out_buildings_ext3 if key in EXTENDED_RECIPES_3 else
                 out_buildings_ext4 if key in EXTENDED_RECIPES_4 else
-                out_buildings_ext5
+                out_buildings_ext5 if key in EXTENDED_RECIPES_5 else
+                out_buildings_ext6
             )
             target_dict[key] = {
                 "size": out_sz,
@@ -755,6 +778,33 @@ def main() -> int:
                 }
                 preview_list.append(("dupe_atmosuit", sim_i))
 
+        # Also composite authentic Jet-Suit flying Duplicant (jetsuit_black_default + head_swap + body_comp_default)
+        jet_sources = []
+        for bn in ["jetsuit_black_default", "head_swap", "hair_swap", "body_comp_default"]:
+            if bn in builds_parsed and (bn + "_0") in atlases_pil:
+                jet_sources.append((builds_parsed[bn], atlases_pil[bn + "_0"]))
+        out_jet_dupe = {}
+        if jet_sources and idle_clip:
+            jet_swap = {
+                "snapto_headshape": "headshape_002", "snapto_eyes": "eyes_003",
+                "snapto_mouth": "mouth_002", "snapto_hair": "hair_005",
+            }
+            jet_filter = ("snapto", "skirt", "necklace", "headfx", "hat", "goggles", "fx")
+            jim_i = composite_kanim_frame(idle_clip["frames"][0], jet_sources, out_size=84, filter_out_names=jet_filter, symbol_swap=jet_swap)
+            jim_w0, jim_w1 = jim_i, jim_i
+            if walk_clip and len(walk_clip["frames"]) >= 4:
+                wf = walk_clip["frames"]
+                jim_w0 = composite_kanim_frame(wf[0], jet_sources, out_size=84, filter_out_names=jet_filter, symbol_swap=jet_swap) or jim_i
+                jim_w1 = composite_kanim_frame(wf[len(wf) // 2], jet_sources, out_size=84, filter_out_names=jet_filter, symbol_swap=jet_swap) or jim_i
+            if jim_i is not None:
+                out_jet_dupe = {
+                    "size": 84,
+                    "idle_b64": pil_to_b64(jim_i),
+                    "walk0_b64": pil_to_b64(jim_w0),
+                    "walk1_b64": pil_to_b64(jim_w1),
+                }
+                preview_list.append(("dupe_jetsuit", jim_i))
+
     doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "building_sprites": out_buildings,
@@ -807,6 +857,15 @@ def main() -> int:
     with open(ext5_path, "w", encoding="utf-8") as f:
         json.dump(ext5_doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext6_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext6,
+        "jetsuit_duplicant": out_jet_dupe if 'out_jet_dupe' in locals() else {},
+    }
+    ext6_path = os.path.join(args.out, "kanim_sprites_ext6_extracted.txt")
+    with open(ext6_path, "w", encoding="utf-8") as f:
+        json.dump(ext6_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
         cols = 10
@@ -827,15 +886,12 @@ def main() -> int:
         "buildings_composited_ext3": len(out_buildings_ext3),
         "buildings_composited_ext4": len(out_buildings_ext4),
         "buildings_composited_ext5": len(out_buildings_ext5),
-        "ext5_keys": list(out_buildings_ext5.keys()),
+        "buildings_composited_ext6": len(out_buildings_ext6),
+        "ext6_keys": list(out_buildings_ext6.keys()),
         "atmosuit_composited": bool(ext5_doc["atmosuit_duplicant"]),
+        "jetsuit_composited": bool(ext6_doc["jetsuit_duplicant"]),
         "duplicants_composited": len(out_dupes),
-        "main_file_bytes": os.path.getsize(out_path),
-        "ext_file_bytes": os.path.getsize(ext_path),
-        "ext2_file_bytes": os.path.getsize(ext2_path),
-        "ext3_file_bytes": os.path.getsize(ext3_path),
-        "ext4_file_bytes": os.path.getsize(ext4_path),
-        "ext5_file_bytes": os.path.getsize(ext5_path),
+        "ext6_file_bytes": os.path.getsize(ext6_path),
     }, ensure_ascii=False, indent=2))
     return 0
 

@@ -66,6 +66,7 @@ BUILDING_TILE_TEX_MAP = {
     "insulated_tile": "tiles_insulated",
     "metal_tile": "tiles_metal",
     "bunker_tile": "tiles_bunker",
+    "glass_tile": "tiles_glass",
 }
 
 FX_TEX_NAMES = [
@@ -129,6 +130,9 @@ SFX_TARGETS = {
     "suit_equip": ("UI.bank", "SG_HUD_techView_suit_v02"),
     "switch_on": ("Buildings.bank", "switch_on_1"),
     "switch_off": ("Buildings.bank", "switch_off_2"),
+    "view_lights": ("UI.bank", "SG_HUD_techView_lights_v02"),
+    "view_harvest": ("UI.bank", "SG_HUD_techView_harvest_v02"),
+    "tube_whoosh": ("FX.bank", "SG_UI_dupeShuffle_warp_02"),
 }
 
 BGM_TARGETS = {

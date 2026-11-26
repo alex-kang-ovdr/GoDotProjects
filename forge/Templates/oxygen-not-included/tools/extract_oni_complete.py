@@ -548,7 +548,7 @@ def main() -> int:
     # Merge texture/kanim/audio totals if present
     kanim_ext_n = 0
     kanim_ext_dupes = 0
-    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt", "kanim_sprites_ext4_extracted.txt", "kanim_sprites_ext5_extracted.txt"]:
+    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt", "kanim_sprites_ext4_extracted.txt", "kanim_sprites_ext5_extracted.txt", "kanim_sprites_ext6_extracted.txt"]:
         ext_p = os.path.join(args.out, ext_fn)
         if os.path.exists(ext_p):
             with open(ext_p, "r", encoding="utf-8") as ef:

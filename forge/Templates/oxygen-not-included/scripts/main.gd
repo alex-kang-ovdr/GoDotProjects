@@ -57,14 +57,14 @@ const CATEGORIES := [
 ]
 
 const CAT_TOOLS := {
-	"base": ["tile", "insulated_tile", "metal_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light", "suit_dock", "suit_checkpoint"],
+	"base": ["tile", "insulated_tile", "metal_tile", "glass_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light"],
 	"living": ["outhouse", "wash_basin", "flush_toilet", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
-	"med": ["medical_cot", "apothecary", "massage_table", "wash_sink", "shower", "water_cooler", "jukebot", "arcade_cabinet"],
+	"med": ["medical_cot", "apothecary", "massage_table", "wash_sink", "shower", "water_cooler", "jukebot", "arcade_cabinet", "sauna", "hottub", "beach_chair"],
 	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "petrol_gen", "steam_turbine", "solar_panel", "battery", "wire"],
 	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "liquid_filter", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir", "gas_filter"],
-	"auto": ["logic_wire", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "conveyor_loader", "conveyor_chute"],
-	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "rock_crusher", "kiln", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker"],
-	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "rocket_steam_engine", "rocket_petroleum_engine", "rocket_fuel_tank", "rocket_oxidizer_tank", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
+	"auto": ["logic_wire", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "travel_tube", "travel_tube_entrance", "auto_sweeper", "conveyor_loader", "conveyor_chute"],
+	"colony": ["farm_tile", "hydroponic_tile", "planter_box", "wheezewort", "ranch_station", "incubator", "research_station", "super_computer", "rock_crusher", "kiln", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker", "suit_dock", "suit_checkpoint"],
+	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "planetarium", "jetsuit_dock", "jetsuit_checkpoint", "rocket_steam_engine", "rocket_petroleum_engine", "rocket_fuel_tank", "rocket_oxidizer_tank", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
 }
 
 const WORLD_PRESETS := ["terra", "rime", "oceana", "badlands"]
@@ -134,16 +134,16 @@ func _build_hud() -> void:
 			fx_rect.material = _atmo_shader_mat
 			_ui_root.add_child(fx_rect)
 
-	# 상단 바 (PIE 좌측 상단 오버레이 회피 + 1280px 폭 내 전 버튼 완전 노출)
+	# 상단 바 (PIE 좌측 상단 오버레이 회피 + 1280px 폭 내 전 10종 오버레이 완전 노출)
 	var top_panel := PanelContainer.new()
 	top_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	top_panel.offset_left = 256
+	top_panel.offset_left = 246
 	top_panel.offset_bottom = 48
 	_style_panel(top_panel, Color(0.08, 0.11, 0.16, 0.92))
 	_ui_root.add_child(top_panel)
 
 	var top_hbox := HBoxContainer.new()
-	top_hbox.add_theme_constant_override("separation", 3)
+	top_hbox.add_theme_constant_override("separation", 2)
 	top_panel.add_child(top_hbox)
 
 	var title_lbl := Label.new()
@@ -191,6 +191,7 @@ func _build_hud() -> void:
 		{"id": "germ", "label": "세균J"},
 		{"id": "logic", "label": "자동L"},
 		{"id": "decor", "label": "장식K"},
+		{"id": "rad", "label": "방사X"},
 	]:
 		var obtn := Button.new()
 		obtn.text = String(ov["label"])
@@ -487,9 +488,16 @@ func _build_hud() -> void:
 	_status_lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 0.96))
 	cat_row.add_child(_status_lbl)
 
+	var tool_scroll := ScrollContainer.new()
+	tool_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	tool_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	tool_scroll.custom_minimum_size = Vector2(0, 32)
+	tool_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bot_vbox.add_child(tool_scroll)
+
 	_tool_row = HBoxContainer.new()
-	_tool_row.add_theme_constant_override("separation", 6)
-	bot_vbox.add_child(_tool_row)
+	_tool_row.add_theme_constant_override("separation", 5)
+	tool_scroll.add_child(_tool_row)
 
 func _style_panel(p: PanelContainer, bg: Color) -> void:
 	var sb := StyleBoxFlat.new()
@@ -657,11 +665,17 @@ func _refresh_dupes_panel() -> void:
 		)
 		row.add_child(skb)
 		var suitb := Button.new()
-		suitb.text = "특수복ON" if d.wearing_suit else "특수복"
-		suitb.modulate = Color(0.42, 0.92, 1.0) if d.wearing_suit else Color(0.78, 0.82, 0.88)
+		suitb.text = "제트복" if d.wearing_jetsuit else ("특수복" if d.wearing_suit else "일반복")
+		suitb.modulate = Color(1.0, 0.78, 0.32) if d.wearing_jetsuit else (Color(0.42, 0.92, 1.0) if d.wearing_suit else Color(0.78, 0.82, 0.88))
 		var dc3: OniDuplicant = d
 		suitb.pressed.connect(func():
-			dc3.wearing_suit = not dc3.wearing_suit
+			if not dc3.wearing_suit and not dc3.wearing_jetsuit:
+				dc3.wearing_suit = true
+			elif dc3.wearing_suit and not dc3.wearing_jetsuit:
+				dc3.wearing_jetsuit = true
+			else:
+				dc3.wearing_suit = false
+				dc3.wearing_jetsuit = false
 			dc3.suit_o2 = 100.0
 			audio.play_suit_equip()
 			_refresh_dupes_panel()
@@ -1029,6 +1043,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "logic" else "logic")
 		elif event.physical_keycode == KEY_K:
 			_select_overlay("normal" if renderer.overlay_mode == "decor" else "decor")
+		elif event.physical_keycode == KEY_X:
+			audio.play_overlay_switch("rad")
+			_select_overlay("normal" if renderer.overlay_mode == "rad" else "rad")
 		elif event.physical_keycode == KEY_N:
 			_toggle_print_panel()
 		elif event.physical_keycode == KEY_V:

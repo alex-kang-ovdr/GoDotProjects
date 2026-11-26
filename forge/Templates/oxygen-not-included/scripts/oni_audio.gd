@@ -191,6 +191,9 @@ func play_switch_on() -> void:
 func play_switch_off() -> void:
 	_play_extracted("switch_off", 420.0, 0.08)
 
+func play_tube_whoosh() -> void:
+	_play_extracted("tube_whoosh", 540.0, 0.12)
+
 func play_overlay_switch(oid: String) -> void:
 	match oid:
 		"gas":
@@ -205,5 +208,7 @@ func play_overlay_switch(oid: String) -> void:
 			_play_extracted("view_room", 620.0, 0.06)
 		"germ":
 			_play_extracted("view_germ", 460.0, 0.06)
+		"rad":
+			_play_extracted("view_lights", 680.0, 0.08)
 		_:
 			_play_extracted("circuit_toggle", 580.0, 0.05)
