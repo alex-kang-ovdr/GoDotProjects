@@ -30,12 +30,16 @@ func step(world: OniWorld, dt: float) -> void:
 	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)
 	_step_breathing(world, dt)
 
-	# 2) 칼로리/스태미나 갱신
-	kcal = max(0.0, kcal - (OniElements.DUPE_KCAL_PER_CYCLE / OniElements.CYCLE_SECONDS) * dt)
+	# 2) 칼로리/스태미나 갱신 (배고프면 저장 식량에서 자동 섭취)
+	kcal = maxf(0.0, kcal - (OniElements.DUPE_KCAL_PER_CYCLE / OniElements.CYCLE_SECONDS) * dt)
+	if kcal < 2600.0 and world.food_kcal >= 600.0:
+		var eat := minf(1200.0, minf(world.food_kcal, OniElements.DUPE_KCAL_MAX - kcal))
+		world.food_kcal -= eat
+		kcal += eat
 	if state == "SLEEP":
-		stamina = min(100.0, stamina + 14.0 * dt)
+		stamina = minf(100.0, stamina + 14.0 * dt)
 	else:
-		stamina = max(0.0, stamina - 0.55 * dt)
+		stamina = maxf(0.0, stamina - 0.55 * dt)
 
 	# 중력 낙하 처리 (바닥이 파였을 때)
 	if not world.can_stand_at(cell.x, cell.y) and world.is_passable(cell.x, cell.y + 1):
@@ -62,6 +66,8 @@ func step(world: OniWorld, dt: float) -> void:
 			_step_build(world, dt)
 		"OPERATE":
 			_step_operate(world, dt)
+		"RESEARCH":
+			_step_research(world, dt)
 		"SLEEP":
 			state_ko = "휴식"
 			if stamina >= 96.0:
@@ -133,6 +139,9 @@ func _enter_job_work(world: OniWorld) -> void:
 	elif job_type == "operate":
 		state = "OPERATE"
 		state_ko = "발전"
+	elif job_type == "research":
+		state = "RESEARCH"
+		state_ko = "연구"
 	elif job_type == "sleep":
 		state = "SLEEP"
 		state_ko = "휴식"
@@ -176,7 +185,7 @@ func _step_build(world: OniWorld, dt: float) -> void:
 		world.complete_build(target_cell.x, target_cell.y)
 		_clear_job()
 
-func _step_operate(world: OniWorld, dt: float) -> void:
+func _step_operate(world: OniWorld, _dt: float) -> void:
 	if not world.in_bounds(target_cell.x, target_cell.y):
 		_clear_job()
 		return
@@ -189,6 +198,17 @@ func _step_operate(world: OniWorld, dt: float) -> void:
 	# 배터리가 95% 이상 차고 소비기도 없으면 대기 복귀
 	if world.total_battery_cap_j > 0.0 and world.total_battery_j >= world.total_battery_cap_j * 0.96 and world.power_consumed_w <= 0.1:
 		_clear_job()
+
+func _step_research(world: OniWorld, _dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	if world.building[ti] != "research_station" or world.active_tech.is_empty():
+		_clear_job()
+		return
+	world.research_active[ti] = 1
+	state_ko = "연구 중"
 
 func _assign_next_job(world: OniWorld) -> void:
 	# BFS로 도달 가능한 모든 서 있을 수 있는 셀과 부모 맵 계산
@@ -272,6 +292,29 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_stand = c
 							best_target = c
 							best_type = "operate"
+
+	# 4) 연구 작업대 작동 (활성 연구가 있고 흙이 있을 때)
+	if best_type.is_empty() and not world.active_tech.is_empty() and float(world.inventory.get("Dirt", 0.0)) >= 5.0:
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				if world.building[i] == "research_station":
+					var c := Vector2i(x, y)
+					if not dists.has(c):
+						continue
+					var busy := false
+					for other in world.duplicants:
+						if other != self and other.target_cell == c and other.job_type == "research":
+							busy = true
+							break
+					if busy:
+						continue
+					var sc := float(dists[c])
+					if sc < best_score:
+						best_score = sc
+						best_stand = c
+						best_target = c
+						best_type = "research"
 
 	if best_type.is_empty():
 		return

@@ -6,6 +6,7 @@ class_name OniElements
 
 const CYCLE_SECONDS := 600.0
 const GAS_TICK_DT := 0.2
+const CONDUIT_TICK_DT := 1.0
 const DUPE_O2_KG_PER_S := 0.1
 const DUPE_CO2_KG_PER_S := 0.002
 const DUPE_KCAL_MAX := 4000.0
@@ -17,9 +18,47 @@ const DIFFUSER_OUT_TEMP_C := 30.0
 const DIFFUSER_MAX_PRESSURE_KG := 1.8
 const DIFFUSER_POWER_W := 120.0
 
+const ELECTROLYZER_WATER_KG_PER_S := 1.0
+const ELECTROLYZER_O2_KG_PER_S := 0.888
+const ELECTROLYZER_H2_KG_PER_S := 0.112
+const ELECTROLYZER_OUT_TEMP_C := 70.0
+const ELECTROLYZER_POWER_W := 120.0
+const ELECTROLYZER_MAX_PRESSURE_KG := 1.8
+
 const MANUAL_GEN_POWER_W := 400.0
+const COAL_GEN_POWER_W := 600.0
+const COAL_GEN_CARBON_KG_PER_S := 1.0
+const COAL_GEN_CO2_KG_PER_S := 0.02
+const COAL_GEN_OUT_TEMP_C := 110.0
+
+const H2_GEN_POWER_W := 800.0
+const H2_GEN_H2_KG_PER_S := 0.1
+const H2_GEN_BUFFER_KG := 2.0
+
+const TURBINE_POWER_W := 850.0
+const TURBINE_MIN_STEAM_C := 125.0
+const TURBINE_MAX_BODY_C := 100.0
+const TURBINE_STEAM_KG_PER_S := 2.0
+
+const LIQUID_PIPE_MAX_KG := 10.0
+const GAS_PIPE_MAX_KG := 1.0
+const LIQUID_PUMP_POWER_W := 240.0
+const LIQUID_PUMP_KG_PER_S := 10.0
+const GAS_PUMP_POWER_W := 240.0
+const GAS_PUMP_KG_PER_S := 0.5
+
 const BATTERY_CAPACITY_J := 10000.0
 const BATTERY_LEAK_J_PER_S := 1.6666666
+
+const RESEARCH_POWER_W := 60.0
+const RESEARCH_DIRT_PER_PT := 50.0
+
+const MEALWOOD_GROWTH_S := 1800.0
+const MEALWOOD_DIRT_KG_PER_S := 0.0166667
+const MEALWOOD_HARVEST_KCAL := 600.0
+const MEALWOOD_MIN_C := 10.0
+const MEALWOOD_MAX_C := 30.0
+const MEALWOOD_MIN_GAS_KG := 0.15
 
 const DIG_RETURN_RATIO := 0.5
 
@@ -214,100 +253,267 @@ const ELEMENTS := {
 	},
 }
 
+const TECHS := {
+	"farming": {
+		"name_ko": "기초 농사",
+		"cost_basic": 10.0,
+		"desc": "끼니나무 화분 타일 해금",
+		"unlocks": ["farm_tile"],
+	},
+	"plumbing": {
+		"name_ko": "기초 배관",
+		"cost_basic": 15.0,
+		"desc": "액체관·기체관·펌프·배출구 해금",
+		"unlocks": ["liquid_pipe", "gas_pipe", "liquid_pump", "liquid_vent", "gas_pump", "gas_vent"],
+	},
+	"power": {
+		"name_ko": "전력 조절",
+		"cost_basic": 15.0,
+		"desc": "석탄 발전기(600W)·수소 발전기(800W) 해금",
+		"unlocks": ["coal_gen", "hydrogen_gen"],
+	},
+	"electrolyzer_tech": {
+		"name_ko": "전해 산소",
+		"cost_basic": 20.0,
+		"desc": "전해조(물->산소+수소) 해금",
+		"unlocks": ["electrolyzer"],
+	},
+	"thermal": {
+		"name_ko": "단열·열기관",
+		"cost_basic": 25.0,
+		"desc": "단열 타일·증기 터빈(850W) 해금",
+		"unlocks": ["insulated_tile", "steam_turbine"],
+	},
+}
+
 const BUILDINGS := {
 	"tile": {
 		"name_ko": "바닥 타일",
+		"cat": "base",
 		"desc": "통행 가능 · 기체 차단",
 		"cost_element": "SandStone",
 		"cost_kg": 100.0,
 		"build_time": 1.6,
 		"solid": true,
-		"climbable": false,
-		"power_w": 0.0,
 		"color": Color(0.60, 0.64, 0.70, 1.0),
+	},
+	"insulated_tile": {
+		"name_ko": "단열 타일",
+		"cat": "base",
+		"desc": "열전도도 1% 단열 바닥 타일",
+		"cost_element": "SandStone",
+		"cost_kg": 400.0,
+		"build_time": 2.2,
+		"solid": true,
+		"req_tech": "thermal",
+		"color": Color(0.76, 0.66, 0.52, 1.0),
 	},
 	"ladder": {
 		"name_ko": "사다리",
+		"cat": "base",
 		"desc": "상하 이동 · 기체 통과",
 		"cost_element": "SandStone",
 		"cost_kg": 50.0,
 		"build_time": 1.2,
 		"solid": false,
 		"climbable": true,
-		"power_w": 0.0,
 		"color": Color(0.74, 0.58, 0.34, 1.0),
-	},
-	"diffuser": {
-		"name_ko": "산소 확산기",
-		"desc": "조류 550g/s -> 산소 500g/s (120W)",
-		"cost_element": "Cuprite",
-		"cost_kg": 200.0,
-		"build_time": 3.0,
-		"solid": false,
-		"climbable": false,
-		"power_w": 120.0,
-		"needs_floor": true,
-		"color": Color(0.30, 0.76, 0.62, 1.0),
-	},
-	"generator": {
-		"name_ko": "수동 발전기",
-		"desc": "대원 작동 시 400W 전력 생산",
-		"cost_element": "Cuprite",
-		"cost_kg": 200.0,
-		"build_time": 2.8,
-		"solid": false,
-		"climbable": false,
-		"power_w": -400.0,
-		"needs_floor": true,
-		"color": Color(0.88, 0.68, 0.24, 1.0),
-	},
-	"battery": {
-		"name_ko": "소형 배터리",
-		"desc": "10 kJ 저장 · 누전 1.67 J/s",
-		"cost_element": "Cuprite",
-		"cost_kg": 200.0,
-		"build_time": 2.4,
-		"solid": false,
-		"climbable": false,
-		"power_w": 0.0,
-		"needs_floor": true,
-		"color": Color(0.36, 0.80, 0.42, 1.0),
-	},
-	"wire": {
-		"name_ko": "전선",
-		"desc": "전력 설비 연결",
-		"cost_element": "Cuprite",
-		"cost_kg": 25.0,
-		"build_time": 0.8,
-		"solid": false,
-		"climbable": false,
-		"power_w": 0.0,
-		"layer": "wire",
-		"color": Color(0.95, 0.56, 0.22, 1.0),
 	},
 	"cot": {
 		"name_ko": "간이 침대",
+		"cat": "base",
 		"desc": "대원 휴식 · 스태미나 회복",
 		"cost_element": "SandStone",
 		"cost_kg": 100.0,
 		"build_time": 2.0,
-		"solid": false,
-		"climbable": false,
-		"power_w": 0.0,
 		"needs_floor": true,
 		"color": Color(0.46, 0.62, 0.88, 1.0),
 	},
 	"storage": {
 		"name_ko": "보관함",
+		"cat": "base",
 		"desc": "채굴 자원 정리 및 보관",
 		"cost_element": "SandStone",
 		"cost_kg": 200.0,
 		"build_time": 2.0,
-		"solid": false,
-		"climbable": false,
-		"power_w": 0.0,
 		"needs_floor": true,
 		"color": Color(0.54, 0.58, 0.64, 1.0),
+	},
+	"diffuser": {
+		"name_ko": "산소 확산기",
+		"cat": "power",
+		"desc": "조류 550g/s -> 산소 500g/s (120W)",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 3.0,
+		"power_w": 120.0,
+		"needs_floor": true,
+		"color": Color(0.30, 0.76, 0.62, 1.0),
+	},
+	"electrolyzer": {
+		"name_ko": "전해조",
+		"cat": "power",
+		"desc": "물 1kg/s -> O2 888g + H2 112g @70°C (120W)",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 3.2,
+		"power_w": 120.0,
+		"needs_floor": true,
+		"req_tech": "electrolyzer_tech",
+		"color": Color(0.28, 0.74, 0.94, 1.0),
+	},
+	"generator": {
+		"name_ko": "수동 발전기",
+		"cat": "power",
+		"desc": "대원 작동 시 400W 전력 생산",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 2.8,
+		"power_w": -400.0,
+		"needs_floor": true,
+		"color": Color(0.88, 0.68, 0.24, 1.0),
+	},
+	"coal_gen": {
+		"name_ko": "석탄 발전기",
+		"cat": "power",
+		"desc": "석탄 1kg/s -> 600W + CO2 20g/s",
+		"cost_element": "Cuprite",
+		"cost_kg": 400.0,
+		"build_time": 3.5,
+		"power_w": -600.0,
+		"needs_floor": true,
+		"req_tech": "power",
+		"color": Color(0.46, 0.36, 0.32, 1.0),
+	},
+	"hydrogen_gen": {
+		"name_ko": "수소 발전기",
+		"cat": "power",
+		"desc": "기체관 H2 100g/s -> 800W (버퍼 2kg)",
+		"cost_element": "Cuprite",
+		"cost_kg": 400.0,
+		"build_time": 3.5,
+		"power_w": -800.0,
+		"needs_floor": true,
+		"req_tech": "power",
+		"color": Color(0.74, 0.42, 0.84, 1.0),
+	},
+	"steam_turbine": {
+		"name_ko": "증기 터빈",
+		"cat": "power",
+		"desc": "125°C+ 증기 -> 850W + 응축수 반환",
+		"cost_element": "Cuprite",
+		"cost_kg": 600.0,
+		"build_time": 4.0,
+		"power_w": -850.0,
+		"needs_floor": true,
+		"req_tech": "thermal",
+		"color": Color(0.76, 0.82, 0.88, 1.0),
+	},
+	"battery": {
+		"name_ko": "소형 배터리",
+		"cat": "power",
+		"desc": "10 kJ 저장 · 누전 1.67 J/s",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 2.4,
+		"needs_floor": true,
+		"color": Color(0.36, 0.80, 0.42, 1.0),
+	},
+	"wire": {
+		"name_ko": "전선",
+		"cat": "power",
+		"desc": "전력 설비 연결",
+		"cost_element": "Cuprite",
+		"cost_kg": 25.0,
+		"build_time": 0.8,
+		"layer": "wire",
+		"color": Color(0.95, 0.56, 0.22, 1.0),
+	},
+	"liquid_pipe": {
+		"name_ko": "액체관",
+		"cat": "pipe",
+		"desc": "청수 패킷 10kg/s 수송",
+		"cost_element": "SandStone",
+		"cost_kg": 50.0,
+		"build_time": 0.8,
+		"layer": "liquid_pipe",
+		"req_tech": "plumbing",
+		"color": Color(0.24, 0.62, 0.96, 1.0),
+	},
+	"liquid_pump": {
+		"name_ko": "액체 펌프",
+		"cat": "pipe",
+		"desc": "240W · 물 10kg/s 액체관 송출",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 2.4,
+		"power_w": 240.0,
+		"req_tech": "plumbing",
+		"color": Color(0.20, 0.54, 0.88, 1.0),
+	},
+	"liquid_vent": {
+		"name_ko": "액체 배출구",
+		"cat": "pipe",
+		"desc": "액체관 물을 공간에 배출",
+		"cost_element": "Cuprite",
+		"cost_kg": 100.0,
+		"build_time": 1.4,
+		"req_tech": "plumbing",
+		"color": Color(0.38, 0.74, 0.98, 1.0),
+	},
+	"gas_pipe": {
+		"name_ko": "기체관",
+		"cat": "pipe",
+		"desc": "단일 기체 패킷 1kg/s 수송",
+		"cost_element": "SandStone",
+		"cost_kg": 50.0,
+		"build_time": 0.8,
+		"layer": "gas_pipe",
+		"req_tech": "plumbing",
+		"color": Color(0.36, 0.88, 0.78, 1.0),
+	},
+	"gas_pump": {
+		"name_ko": "기체 펌프",
+		"cat": "pipe",
+		"desc": "240W · 기체 500g/s 기체관 송출",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 2.4,
+		"power_w": 240.0,
+		"req_tech": "plumbing",
+		"color": Color(0.26, 0.74, 0.68, 1.0),
+	},
+	"gas_vent": {
+		"name_ko": "기체 배출구",
+		"cat": "pipe",
+		"desc": "기체관 기체를 공간에 배출 (최대 2kg)",
+		"cost_element": "Cuprite",
+		"cost_kg": 100.0,
+		"build_time": 1.4,
+		"req_tech": "plumbing",
+		"color": Color(0.56, 0.94, 0.88, 1.0),
+	},
+	"farm_tile": {
+		"name_ko": "끼니나무 화분",
+		"cat": "colony",
+		"desc": "10~30°C · 흙 10kg/주기 -> 600kcal 수확",
+		"cost_element": "Dirt",
+		"cost_kg": 100.0,
+		"build_time": 1.8,
+		"solid": true,
+		"req_tech": "farming",
+		"color": Color(0.38, 0.68, 0.34, 1.0),
+	},
+	"research_station": {
+		"name_ko": "연구 작업대",
+		"cat": "colony",
+		"desc": "60W · 흙 50kg당 기초 연구 +1점",
+		"cost_element": "Cuprite",
+		"cost_kg": 200.0,
+		"build_time": 2.8,
+		"power_w": 60.0,
+		"needs_floor": true,
+		"color": Color(0.56, 0.50, 0.88, 1.0),
 	},
 }
 
