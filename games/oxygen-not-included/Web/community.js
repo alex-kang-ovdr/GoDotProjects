@@ -1,5 +1,5 @@
 /* Resource collection, food preparation and crew routines. No DOM dependency. */
-import { cycleSecondsFor } from './rules.js';
+import { cycleSecondsFor, usesOriginalRates } from './rules.js';
 
 export const COMMUNITY_BUILDINGS = {
  storage:{name:'자원 보관함',icon:'storage',description:'대원이 채굴품을 가져오는 수거 거점입니다. 공용 고체 비축 용량을 240 늘립니다.',cost:{rock:15,metal:5},color:'#d9b681'},
@@ -53,7 +53,7 @@ export function installCommunity(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
  proto._depots=function(){return this.buildings.filter(b=>['core','storage'].includes(b.type)&&b.progress>=1&&b.enabled&&this.cell(b.x,b.y).water<.7);};
  proto._findDepot=function(c){let best=null;for(const b of this._depots()){const path=this._path(c,[{x:b.x,y:b.y}]);if(path&&(!best||path.length<best.path.length))best={building:b,path};}return best;};
  proto._storageRemovalReason=function(b){if(b?.type!=='storage'||b.progress<1)return null;const salvage=Object.entries(BUILDINGS.storage.cost).filter(([k])=>SOLIDS.includes(k)).reduce((s,[,v])=>s+Math.floor(v*.75),0);return stockAmount(this.resources)+salvage>storageCapacity(this.buildings)-STORAGE_CAPACITY+1e-8?'보관함 해체 뒤 고체 저장 공간이 부족해요. 자원을 사용하거나 다른 보관함을 지으세요.':null;};
- proto.canPlace=function(tool,x,y){const result=base.canPlace.call(this,tool,x,y);if(result.ok&&tool==='deconstruct'){const reason=this._storageRemovalReason(this._buildingAt(x,y));if(reason)return{ok:false,message:reason};}return result;};
+ proto.canPlace=function(tool,x,y,rotation){const result=base.canPlace.call(this,tool,x,y,rotation);if(result.ok&&tool==='deconstruct'){const reason=this._storageRemovalReason(this._buildingAt(x,y));if(reason)return{ok:false,message:reason};}return result;};
  proto._completeTask=function(t){const b=this.buildings.find(b=>b.id===t.buildingId);if(this._communityReady&&t.type==='deconstruct'){const reason=this._storageRemovalReason(b);if(reason){t.progress=.95;t.blockedReason=reason;return;}}const result=base.complete.call(this,t);this._syncCommunity();return result;};
 
  proto._chooseMeal=function(c){let waiting=false;for(const b of this.buildings.filter(b=>b.type==='mess'&&b.progress>=1&&b.enabled&&this.cell(b.x,b.y).water<.5).sort((a,b)=>Math.abs(c.x-a.x)+Math.abs(c.y-a.y)-Math.abs(c.x-b.x)-Math.abs(c.y-b.y))){const path=this._path(c,[{x:b.x,y:b.y}]);if(!path)continue;if(this._busy(b.id)){waiting=true;continue;}this._assign(c,'eat',path,{targetId:b.id});return true;}if(waiting&&c.hunger>=25){c.action='식탁 자리를 기다리는 중';c._idle=.6;return true;}this._assign(c,'eat',[]);return true;};
@@ -140,7 +140,7 @@ export function installCommunity(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   if(!s.resources||!num(s.resources.meals)||!Array.isArray(s.crew)||!Array.isArray(s.buildings)||!Array.isArray(s.debris)||s.debris.length>6000)fail('식품 또는 자원 더미 정보가 올바르지 않습니다.');
   if(!s.production||!COMMUNITY_PRODUCTION_KEYS.every(k=>num(s.production[k])))fail('운반·생활 생산 기록이 올바르지 않습니다.');
   for(const b of s.buildings){if(!num(b.storageCapacity)||b.storageCapacity!==(b.type==='core'?CORE_CAPACITY:b.type==='storage'?STORAGE_CAPACITY:0)||!Number.isInteger(b.mealTarget)||b.mealTarget<0||b.mealTarget>60||!num(b.recipeProgress,0,1)||b.type!=='kitchen'&&(b.mealTarget!==0||b.recipeProgress!==0))fail('보관함 또는 조리대 상태가 올바르지 않습니다.');}
-  const validSolid=key=>SOLIDS.includes(key)&&(key!=='soil'||s.ruleset==='oni-base');
+  const validSolid=key=>SOLIDS.includes(key)&&(key!=='soil'||usesOriginalRates(s.ruleset));
   const cargoValid=cargo=>cargo===null||cargo&&validSolid(cargo.resource)&&num(cargo.amount,1e-9,CARGO_CAPACITY);
   for(const c of s.crew){if(!SCHEDULES.includes(c.schedule)||!['work','break','sleep'].includes(c.schedulePhase)||!Number.isInteger(c.restedCycles)||c.restedCycles<0||!Number.isInteger(c._lastRestCycle)||c._lastRestCycle< -1||!cargoValid(c.cargo))fail('대원의 일정 또는 운반 화물이 올바르지 않습니다.');if(c.schedulePhase!==phaseAt(s.time,c.schedule,cycleSecondsFor(s.ruleset)))fail('교대표와 현재 생활 구간이 일치하지 않습니다.');if(c.cargo&&(c.health<=0||c._job?.kind!=='haul'||c._job.phase!=='deliver'))fail('운반 화물과 대원 작업이 일치하지 않습니다.');if(c._job?.kind==='haul'&&(!['pickup','deliver'].includes(c._job.phase)||!Number.isInteger(c._job.pileId)||!Number.isInteger(c._job.targetId)||c._job.phase==='deliver'&&!c.cargo))fail('운반 작업의 단계가 올바르지 않습니다.');}
   const ids=new Set();for(const p of s.debris){if(!Number.isInteger(p.id)||p.id<1||ids.has(p.id)||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.x>=48||p.y<0||p.y>=28||!validSolid(p.resource)||!num(p.amount,1e-9)||!Number.isInteger(p.priority)||p.priority<1||p.priority>5||typeof p.blockedReason!=='string'||p.blockedReason.length>300)fail('채굴품 더미가 올바르지 않습니다.');ids.add(p.id);if(p.reservedBy!==null){const c=s.crew.find(c=>c.id===p.reservedBy);if(!c||c.health<=0||c._job?.kind!=='haul'||c._job.phase!=='pickup'||c._job.pileId!==p.id)fail('자원 더미의 운반 예약이 올바르지 않습니다.');}}

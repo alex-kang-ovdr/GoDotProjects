@@ -1,4 +1,6 @@
+import { usesOriginalRates } from './rules.js';
 import { GAS_KG_PER_UNIT, addWarmOxygen, oxygenOutletSpace } from './environment.js';
+import { atmosphereOf, atmosphereSpaceNearKg, emitAtmosphereBatch, takeAtmosphere } from './atmosphere.js';
 /** New utility definitions; mass quantities are kilograms and water-network liters map 1:1 to kg. */
 export const UTILITY_BUILDINGS={
  toilet:{name:'수세식 화장실',icon:'toilet',description:'대원이 용변을 해결합니다. 청수 공급과 오수 배출이 필요해요.',cost:{rock:18,metal:8},color:'#d5cfbf'},
@@ -44,6 +46,7 @@ const LEGACY_HYDROGEN_KG_PER_UNIT=1750/8000;
 const GAS_MASS_SCHEMA_VERSION=1;
 const HYDROGEN_GENERATOR_J_PER_KG=8000;
 function electrolyzerWaterOutputRoom(game,building,oxygenRoomKg,hydrogenRoomKg){
+ if(game.modernRules)return Math.min(oxygenRoomKg/ELECTROLYZER_OXYGEN_KG_PER_KG,hydrogenRoomKg/ELECTROLYZER_HYDROGEN_KG_PER_KG);
  if(!game.originalRules)return Infinity;
  if(game.cell(building.x,building.y)?.gasPipe){
   return Math.min(oxygenRoomKg/ELECTROLYZER_OXYGEN_KG_PER_KG,
@@ -83,14 +86,14 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   this.stability={seconds:0,target:180,healthy:false,reasons:['생활 유지 시설을 준비하세요.']};
   this.history=[];this._historyClock=0;this._fluidDirty=true;this._fluidNetworks={water:[],waste:[]};this._utilitiesReady=true;this._rebuildFluids();this._syncFluidTotals();this._updateStats();return result;
  };
- proto._slots=function(layer){const s=schema[layer],slots=[],pipeCap=pipeCapacity(this);for(let i=0;i<this.cells.length;i++){const c=this.cells[i];if(c[s.flag])slots.push({object:c,key:s.amount,capacity:pipeCap,index:i});}for(const b of this.buildings)if(b.progress>=1&&b[s.capacity]>0)slots.push({object:b,key:s.amount,capacity:b[s.capacity],index:b.y*this.w+b.x});return slots;};
+ proto._slots=function(layer){const s=schema[layer],slots=[],pipeCap=pipeCapacity(this);for(let i=0;i<this.cells.length;i++){const c=this.cells[i];if(c[this.modernRules?'pipe':s.flag])slots.push({object:c,key:s.amount,capacity:pipeCap,index:i});}for(const b of this.buildings)if(b.progress>=1&&b[s.capacity]>0)slots.push({object:b,key:s.amount,capacity:b[s.capacity],index:b.y*this.w+b.x});return slots;};
  proto._rebuildFluids=function(){
   if(!this._utilitiesReady)return;this._fluidDirty=false;this._fluidNetworks={water:[],waste:[]};
-  for(const layer of ['water','waste']){const s=schema[layer],seen=new Set(),map=new Map(),nets=this._fluidNetworks[layer];
-   for(let i=0;i<this.cells.length;i++){if(!this.cells[i][s.flag]||seen.has(i))continue;const n={id:nets.length,layer,cells:[],slots:[],input:0,output:0},q=[i];seen.add(i);
-    for(let k=0;k<q.length;k++){const v=q[k],x=v%this.w,y=Math.floor(v/this.w);n.cells.push(v);map.set(v,n.id);n.slots.push({object:this.cells[v],key:s.amount,capacity:pipeCapacity(this),index:v});for(const[dx,dy]of adjacent){const c=this.cell(x+dx,y+dy),ix=(y+dy)*this.w+x+dx;if(c?.[s.flag]&&!seen.has(ix)){seen.add(ix);q.push(ix);}}}nets.push(n);
+  for(const layer of ['water','waste']){const s=schema[layer],flag=this.modernRules?'pipe':s.flag,seen=new Set(),map=new Map(),nets=this._fluidNetworks[layer];
+   for(let i=0;i<this.cells.length;i++){if(!this.cells[i][flag]||seen.has(i))continue;const n={id:nets.length,layer,cells:[],slots:[],input:0,output:0},q=[i];seen.add(i);
+    for(let k=0;k<q.length;k++){const v=q[k],x=v%this.w,y=Math.floor(v/this.w);n.cells.push(v);map.set(v,n.id);n.slots.push({object:this.cells[v],key:s.amount,capacity:pipeCapacity(this),index:v});for(const[dx,dy]of adjacent){const c=this.cell(x+dx,y+dy),ix=(y+dy)*this.w+x+dx;if(c?.[flag]&&!seen.has(ix)){seen.add(ix);q.push(ix);}}}nets.push(n);
    }
-   for(const b of this.buildings){const id=b.progress>=1?(map.get(b.y*this.w+b.x)??-1):-1;b[s.network]=id;b[s.connected]=id>=0;if(id>=0&&b[s.capacity]>0)nets[id].slots.push({object:b,key:s.amount,capacity:b[s.capacity],index:b.y*this.w+b.x});}
+   for(const b of this.buildings){const pos=this.modernRules&&this._liquidPort?this._liquidPort(b,layer):b;const id=b.progress>=1&&pos?(map.get(pos.y*this.w+pos.x)??-1):-1;b[s.network]=id;b[s.connected]=id>=0;if(id>=0&&b[s.capacity]>0)nets[id].slots.push({object:b,key:s.amount,capacity:b[s.capacity],index:b.y*this.w+b.x});}
   }
  };
  proto._fluidNet=function(b,layer='water'){if(this._fluidDirty)this._rebuildFluids();return this._fluidNetworks?.[layer]?.[b[schema[layer].network]]||null;};
@@ -102,11 +105,11 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
  proto._addWaterStock=function(amount){if(amount<=0)return;const core=this.buildings.find(b=>b.type==='core');if(!core)return;core.cleanCapacity=Math.max(core.cleanCapacity,core.cleanWater+amount);core.cleanWater+=amount;this._fluidDirty=true;};
  proto._syncFluidTotals=function(){if(!this._utilitiesReady)return;const ws=this._slots('water'),ds=this._slots('waste');this.resources.water=ws.reduce((s,v)=>s+v.object[v.key],0);this.resources.waste=ds.reduce((s,v)=>s+v.object[v.key],0);this.plumbing.waterStored=this.resources.water;this.plumbing.wasteStored=this.resources.waste;this.plumbing.waterCapacity=ws.reduce((s,v)=>s+v.capacity,0);this.plumbing.wasteCapacity=ds.reduce((s,v)=>s+v.capacity,0);};
  proto._pay=function(prices,sign=-1){if(!this._utilitiesReady)return base.pay.call(this,prices,sign);for(const[k,v]of Object.entries(prices||{})){if(k==='water'){if(sign>0)this._addWaterStock(v);else{let left=v;for(const s of this._slots('water')){const n=Math.min(left,s.object[s.key]);s.object[s.key]-=n;left-=n;if(left<1e-8)break;}}}else this.resources[k]=Math.max(0,this.resources[k]+sign*v);}this._syncFluidTotals();};
- proto.canPlace=function(tool,x,y){
+ proto.canPlace=function(tool,x,y,rotation){
   if(['pipe','wastepipe','removePipe','removeWastepipe'].includes(tool)){const c=this.cell(x,y);if(!c||!c.revealed)return{ok:false,message:'탐사한 지도 안의 칸을 선택하세요.'};if(this.lost)return{ok:false,message:'새 기지를 시작하거나 저장을 불러오세요.'};const remove=tool.startsWith('remove'),layer=tool==='pipe'||tool==='removePipe'?'water':'waste',s=schema[layer];if(remove){if(!c[s.flag])return{ok:false,message:'해당 배관이 없어요.'};if(this._fluidDirty)this._rebuildFluids();const net=this._fluidNetworks[layer].find(n=>n.cells.includes(y*this.w+x));if(c[s.amount]>this._fluidSpace(net,c)+1e-8)return{ok:false,message:'관 속 물을 옮길 공간이 부족해요. 탱크를 연결하거나 물을 먼저 사용하세요.'};return{ok:true,message:'배관을 철거하고 금속 1을 회수합니다.'};}if(c[s.flag])return{ok:false,message:'이미 해당 배관이 있어요.'};if(c.solid==='bedrock')return{ok:false,message:'기반암에는 설치할 수 없어요.'};return{ok:this.resources.metal>=1,message:this.resources.metal>=1?'금속 1로 배관을 즉시 설치합니다.':'금속이 부족해요.'};}
-  const r=base.canPlace.call(this,tool,x,y);if(r.ok&&tool==='deconstruct'){const b=this._buildingAt(x,y);if(b&&b.progress>=1)for(const layer of ['water','waste']){const s=schema[layer];if(b[s.amount]>this._fluidSpace(this._fluidNet(b,layer),b)+1e-8)return{ok:false,message:'탱크의 물을 옮길 저장 공간이 필요해요.'};}}return r;
+  const r=base.canPlace.call(this,tool,x,y,rotation);if(r.ok&&tool==='deconstruct'){const b=this._buildingAt(x,y);if(b&&b.progress>=1)for(const layer of ['water','waste']){const s=schema[layer];if(b[s.amount]>this._fluidSpace(this._fluidNet(b,layer),b)+1e-8)return{ok:false,message:'탱크의 물을 옮길 저장 공간이 필요해요.'};}}return r;
  };
- proto.queue=function(tool,x,y){if(['pipe','wastepipe','removePipe','removeWastepipe'].includes(tool)){const r=this.canPlace(tool,x,y);if(!r.ok)return r;const c=this.cell(x,y),remove=tool.startsWith('remove'),layer=tool==='pipe'||tool==='removePipe'?'water':'waste',s=schema[layer];if(remove){const n=this._fluidNetworks[layer].find(v=>v.cells.includes(y*this.w+x));const amount=c[s.amount];c[s.amount]=0;this._putFluid(n,amount,null,c);c[s.flag]=false;c[s.flow]=0;this.resources.metal++;}else{c[s.flag]=true;this.resources.metal--;}this._fluidDirty=true;this._rebuildFluids();this._syncFluidTotals();return r;}return base.queue.call(this,tool,x,y);};
+ proto.queue=function(tool,x,y,rotation){if(['pipe','wastepipe','removePipe','removeWastepipe'].includes(tool)){const r=this.canPlace(tool,x,y,rotation);if(!r.ok)return r;const c=this.cell(x,y),remove=tool.startsWith('remove'),layer=tool==='pipe'||tool==='removePipe'?'water':'waste',s=schema[layer];if(remove){const n=this._fluidNetworks[layer].find(v=>v.cells.includes(y*this.w+x));const amount=c[s.amount];c[s.amount]=0;this._putFluid(n,amount,null,c);c[s.flag]=false;c[s.flow]=0;this.resources.metal++;}else{c[s.flag]=true;this.resources.metal--;}this._fluidDirty=true;this._rebuildFluids();this._syncFluidTotals();return r;}return base.queue.call(this,tool,x,y,rotation);};
  proto._completeTask=function(t){
   const b=this.buildings.find(b=>b.id===t.buildingId);
   if(this._utilitiesReady&&t.type==='deconstruct'&&b){for(const layer of ['water','waste']){const s=schema[layer];if(b[s.amount]>this._fluidSpace(this._fluidNet(b,layer),b)+1e-8){t.progress=.95;t.blockedReason='탱크 물을 옮길 공간 부족';return;}}for(const layer of ['water','waste']){const s=schema[layer],amount=b[s.amount];b[s.amount]=0;this._putFluid(this._fluidNet(b,layer),amount,null,b);}}
@@ -122,7 +125,8 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   const body=this.cell(b.x,b.y), inlet=this.cell(b.x+1,b.y), outlet=this._fluidNet(b,'water');
   b.active=false;
   if(body.temp>=100){b.status='터빈 본체 과열 · 100°C 미만으로 냉각';return 0;}
-  if(!inlet||inlet.solid||this._doorBlocksFluid(b.x+1,b.y)||!(inlet.steam>0)||inlet.temp<125){
+  const inletSteam=this.modernRules?(atmosphereOf(inlet)?.element==='steam'?atmosphereOf(inlet).massKg:0):(inlet?.steam||0);
+  if(!inlet||inlet.solid||this._doorBlocksFluid(b.x+1,b.y)||!(inletSteam>0)||inlet.temp<125){
    b.status='오른쪽 흡입구에 125°C 이상 증기 필요';return 0;
   }
   if(!outlet){b.status='응축수 출력 배관 필요';return 0;}
@@ -131,9 +135,9 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   if(requestedWatts<=1e-9){b.status='전력 충분';return 0;}
   // At 200°C the scaled machine reaches 85 W with a 0.2 kg/s inlet.
   const joulesPerKg=(85/.2)*Math.min(1,(inlet.temp-95)/105);
-  const planned=Math.min(inlet.steam,.2*dt,free,requestedWatts*dt/joulesPerKg);
+  const planned=Math.min(inletSteam,.2*dt,free,requestedWatts*dt/joulesPerKg);
   const condensed=this._putFluid(outlet,planned,b);
-  inlet.steam-=condensed;
+  if(this.modernRules)takeAtmosphere(inlet,condensed);else inlet.steam-=condensed;
   body.temp+=condensed*(inlet.temp-95)*.02;
   const watts=condensed*joulesPerKg/dt;
   b.active=condensed>0;b.activeFraction=condensed/(.2*dt);
@@ -159,8 +163,8 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   if(b.type==='cooler'){if(!waste)return'오수 출력 배관 필요';if(this._fluidSpace(waste)<.025*dt)return'오수 출력 가득 참';}
    if(b.type==='electrolyzer'){
     if(this.originalRules){if((this.hydrogenOutputSpace?.(b)||0)<=1e-9)return'수소 배출 공간 부족';}
-    else if(this.resources.hydrogen>=40-1e-9)return'수소 저장고 가득 참';
-    if(oxygenOutletSpace(this.cell(b.x,b.y),this.originalRules)<=1e-9)return'산소 충분 · 압력 대기';
+    else if(this.modernRules?Math.min(atmosphereSpaceNearKg(this,b.x,b.y,'hydrogen'),atmosphereSpaceNearKg(this,b.x,b.y,'oxygen'))<=1e-9:this.resources.hydrogen>=40-1e-9)return this.modernRules?'기체 배출 공간 부족':'수소 저장고 가득 참';
+    if(oxygenOutletSpace(this.cell(b.x,b.y),this.originalRules,this.modernRules,this)<=1e-9)return'산소 충분 · 압력 대기';
    }return null;
  };
  proto._startUtilities=function(dt){if(!this._utilitiesReady)return;this._utilityDt=dt;if(this._fluidDirty)this._rebuildFluids();for(const c of this.cells){c.pipeFlow=0;c.wasteFlow=0;}for(const layer of ['water','waste'])for(const n of this._fluidNetworks[layer]){n.input=0;n.output=0;}this.plumbing.waterDemand=0;
@@ -175,10 +179,10 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
    const p=this.cell(b.x,b.y),input=waterRate*dt;
    if(input<=0)return 0;
    const oxygenRate=waterRate*ELECTROLYZER_OXYGEN_KG_PER_KG*WEB_ATMOSPHERE_UNITS_PER_OXYGEN_KG;
-   const hydrogenRoom=original
+   const hydrogenRoom=this.modernRules?atmosphereSpaceNearKg(this,b.x,b.y,'hydrogen'):original
     ?this.hydrogenOutputSpace?.(b)||0
     :Math.max(0,40-this.resources.hydrogen-(reserved.hydrogen||0));
-   const oxygenRoomUnits=oxygenOutletSpace(p,original);
+   const oxygenRoomUnits=oxygenOutletSpace(p,original,this.modernRules,this);
    const oxygenRoomKg=oxygenRoomUnits*GAS_KG_PER_UNIT;
    const outputRoom=electrolyzerWaterOutputRoom(this,b,oxygenRoomKg,hydrogenRoom);
    return Math.min(1,water/input,hydrogenRoom/(waterRate*ELECTROLYZER_HYDROGEN_KG_PER_KG*dt),oxygenRoomUnits/(oxygenRate*dt),outputRoom/input);
@@ -210,33 +214,35 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
    if(b.type==='purifier'){const input=Math.min(.16*dt,this._fluidAmount(waste),this._fluidSpace(clean)/.95,this.resources.rock/.05);if(input>0){this._takeFluid(waste,input,b);this._putFluid(clean,input*.95,b);this.resources.rock-=input*.05;this.production.purifiedWater+=input*.95;this.cell(b.x,b.y).temp+=.018*dt;}}
     if(b.type==='electrolyzer'){
      const waterRate=this.originalRules?1:ELECTROLYZER_WATER_KG_PER_S;
-     const hydrogenRoom=this.originalRules
+     const hydrogenRoom=this.modernRules?atmosphereSpaceNearKg(this,b.x,b.y,'hydrogen'):this.originalRules
       ?this.hydrogenOutputSpace?.(b)||0
       :Math.max(0,40-this.resources.hydrogen);
      const p=this.cell(b.x,b.y);
-     const cellPressureRoom=this.originalRules?oxygenOutletSpace(p,true)*GAS_KG_PER_UNIT:Infinity;
+     const cellPressureRoom=this.modernRules?atmosphereSpaceNearKg(this,b.x,b.y,'oxygen'):this.originalRules?oxygenOutletSpace(p,true)*GAS_KG_PER_UNIT:Infinity;
      const outputRoom=electrolyzerWaterOutputRoom(this,b,cellPressureRoom,hydrogenRoom);
      const input=Math.min(waterRate*dt*b.activeFraction,this._fluidAmount(clean),outputRoom);
      if(input>1e-12){
       const oxygenKg=input*ELECTROLYZER_OXYGEN_KG_PER_KG;
       const hydrogenKg=input*ELECTROLYZER_HYDROGEN_KG_PER_KG;
-      const emitted=this.originalRules?this.emitHydrogen?.(b,hydrogenKg,70):hydrogenKg;
-      const actualInput=this.originalRules?Math.min(input,(emitted||0)/ELECTROLYZER_HYDROGEN_KG_PER_KG):input;
+      let modernInput=0;
+      if(this.modernRules){let attempt=input;for(let pass=0;pass<10&&attempt>1e-12;pass++){const scale=emitAtmosphereBatch(this,[{x:b.x,y:b.y,element:'oxygen',kg:attempt*ELECTROLYZER_OXYGEN_KG_PER_KG,tempC:70},{x:b.x,y:b.y,element:'hydrogen',kg:attempt*ELECTROLYZER_HYDROGEN_KG_PER_KG,tempC:70}]);if(scale>=1-1e-9){modernInput=attempt;break;}if(scale<=1e-9)break;attempt*=scale;}}
+      const emitted=this.modernRules?modernInput:this.originalRules?this.emitHydrogen?.(b,hydrogenKg,70):hydrogenKg;
+      const actualInput=this.modernRules?emitted:this.originalRules?Math.min(input,(emitted||0)/ELECTROLYZER_HYDROGEN_KG_PER_KG):input;
       if(actualInput<=1e-12)continue;
       this._takeFluid(clean,actualInput,b);
       const actualOxygenKg=actualInput*ELECTROLYZER_OXYGEN_KG_PER_KG;
       const actualHydrogenKg=actualInput*ELECTROLYZER_HYDROGEN_KG_PER_KG;
       const oxygenUnits=actualOxygenKg*WEB_ATMOSPHERE_UNITS_PER_OXYGEN_KG;
-      if(!this.originalRules)this.resources.hydrogen+=actualHydrogenKg;
+      if(!this.originalRules&&!this.modernRules)this.resources.hydrogen+=actualHydrogenKg;
       this.production.oxygenProduced+=oxygenUnits;
       this.production.hydrogenProduced+=actualHydrogenKg;
-      if(this.originalRules)addWarmOxygen(p,oxygenUnits,70,this.waterKgPerCell);else p.oxygen=Math.min(3,p.oxygen+oxygenUnits);
+      if(this.originalRules&&!this.modernRules)addWarmOxygen(p,oxygenUnits,70,this.waterKgPerCell);else if(!this.modernRules)p.oxygen=Math.min(3,p.oxygen+oxygenUnits);
       if(!this.originalRules)p.temp+=.06*input/ELECTROLYZER_WATER_KG_PER_S;
      }
     }
    if(b.type==='cooler'){const amount=Math.min(.025*dt,this._fluidAmount(clean),this._fluidSpace(waste));if(amount>0){this._takeFluid(clean,amount,b);this._putFluid(waste,amount,b);this.production.coolingWaterUsed+=amount;for(let dy=-3;dy<=3;dy++)for(let dx=-4;dx<=4;dx++){const p=this.cell(b.x+dx,b.y+dy);if(p&&!p.solid&&p.temp>23)p.temp=Math.max(23,p.temp-dt*.10);}}}
   }
-  for(const layer of ['water','waste'])for(const net of this._fluidNetworks[layer]){const total=this._fluidAmount(net),capacity=net.slots.reduce((s,v)=>s+v.capacity,0);if(capacity>0)for(const s of net.slots)s.object[s.key]=total*s.capacity/capacity;}
+  if(!this.modernRules)for(const layer of ['water','waste'])for(const net of this._fluidNetworks[layer]){const total=this._fluidAmount(net),capacity=net.slots.reduce((s,v)=>s+v.capacity,0);if(capacity>0)for(const s of net.slots)s.object[s.key]=total*s.capacity/capacity;}
   this.plumbing.waterFlow=this._fluidNetworks.water.reduce((s,n)=>s+Math.max(n.input,n.output),0)/dt;this.plumbing.wasteFlow=this._fluidNetworks.waste.reduce((s,n)=>s+Math.max(n.input,n.output),0)/dt;
    this.plumbing.waterDemand=this.buildings.filter(b=>b.enabled&&b.progress>=1&&b.active).reduce((sum,b)=>{
     let rate=0;
@@ -263,7 +269,7 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   if(this.objectives.every(o=>o.done)&&!this.won){this.won=true;this._event('자립 운영 완료! 물·산소·전력과 생활을 이어가는 기지가 되었습니다.','good');}
   if(this.crew.some(c=>c.health>0&&c.bladder>80))this.alerts.push({id:'toilet',text:'화장실이 급한 대원이 있어요. 배관과 접근 경로를 확인하세요.',tone:'warn'});if(this.crew.some(c=>c.health>0&&c.hygiene<45))this.alerts.push({id:'hygiene',text:'대원의 위생이 낮아요. 세면대와 청수·오수 연결을 확인하세요.',tone:'warn'});if(this.resources.water<8)this.alerts.push({id:'water',text:'청수 재고가 적어요. 오른쪽 지하수에 취수기를 연결하세요.',tone:'danger'});if(this.buildings.some(b=>b.status?.includes('오수')&&b.status?.includes('가득')))this.alerts.push({id:'waste',text:'오수 배출이 막혔어요. 저장 탱크나 정화기를 연결하세요.',tone:'warn'});if(this.stats.blockedTasks)this.alerts.push({id:'blocked',text:`${this.stats.blockedTasks}개 작업에 도달할 길이 없어요.`,tone:'warn'});
  };
- proto.inspect=function(x,y){const result=base.inspect.call(this,x,y),c=this.cell(x,y),pipeCap=pipeCapacity(this);if(!c?.revealed)return result;if(c.pipe)result.lines.push(`청수관 ${c.cleanWater.toFixed(2)} / ${pipeCap}kg`);if(c.wastepipe)result.lines.push(`오수관 ${c.dirtyWater.toFixed(2)} / ${pipeCap}kg`);if(c.spring)result.lines.push('지하수 유입구 · 최대 0.30kg/s 자연 유입');const b=result.building;if(b){if((fluidConsumers.has(b.type)&&!(this.originalRules&&b.type==='farm'))||b.type==='core')result.lines.push(`청수 ${b.waterConnected?'연결':'미연결'} · 오수 ${b.wasteConnected?'연결':'미연결'}`);if(b.cleanCapacity)result.lines.push(`청수 저장 ${b.cleanWater.toFixed(1)} / ${b.cleanCapacity.toFixed(0)}kg`);if(b.dirtyCapacity)result.lines.push(`오수 저장 ${b.dirtyWater.toFixed(1)} / ${b.dirtyCapacity.toFixed(0)}kg`);if(b.type==='hydrogenGen')result.lines.push(this.originalRules?`기체 수소 ${this.hydrogenFuelAt?.(b).toFixed(3)||'0.000'} kg`:`공용 수소 ${this.resources.hydrogen.toFixed(3)} / 40kg`);if(['generator','coalgen','hydrogenGen','diffuser','electrolyzer','cooler'].includes(b.type))result.lines.push(`자동 제어 · ${{always:'항상 가동',battery:'배터리 잔량',oxygen:'주변 산소',temperature:'주변 온도'}[b.automation]||'항상 가동'}`);}if(result.crew)result.lines.push(`용변 ${Math.round(result.crew.bladder)} · 위생 ${Math.round(result.crew.hygiene)}`);const t=this.tasks.find(t=>t.x===x&&t.y===y);if(t?.blockedReason)result.lines.push(t.blockedReason);return result;};
+ proto.inspect=function(x,y){const result=base.inspect.call(this,x,y),c=this.cell(x,y),pipeCap=pipeCapacity(this);if(!c?.revealed)return result;if(c.pipe)result.lines.push(this.modernRules?(c.cleanWater||c.dirtyWater?`액체관 · ${c.dirtyWater?'오수':'청수'} ${(c.dirtyWater||c.cleanWater).toFixed(2)} / 10 kg · ${(c.liquidPacketTemp??c.temp).toFixed(1)}°C`:'액체관 · 비어 있음'):`청수관 ${c.cleanWater.toFixed(2)} / ${pipeCap}kg`);if(c.wastepipe)result.lines.push(`오수관 ${c.dirtyWater.toFixed(2)} / ${pipeCap}kg`);if(c.spring)result.lines.push('지하수 유입구 · 최대 0.30kg/s 자연 유입');const b=result.building;if(b){if(!this.modernRules&&((fluidConsumers.has(b.type)&&!(this.originalRules&&b.type==='farm'))||b.type==='core'))result.lines.push(`청수 ${b.waterConnected?'연결':'미연결'} · 오수 ${b.wasteConnected?'연결':'미연결'}`);if(b.cleanCapacity)result.lines.push(`청수 저장 ${b.cleanWater.toFixed(1)} / ${b.cleanCapacity.toFixed(0)}kg`);if(b.dirtyCapacity)result.lines.push(`오수 저장 ${b.dirtyWater.toFixed(1)} / ${b.dirtyCapacity.toFixed(0)}kg`);if(b.type==='hydrogenGen')result.lines.push(this.originalRules?`기체 수소 ${this.hydrogenFuelAt?.(b).toFixed(3)||'0.000'} kg`:`공용 수소 ${this.resources.hydrogen.toFixed(3)} / 40kg`);if(['generator','coalgen','hydrogenGen','diffuser','electrolyzer','cooler'].includes(b.type))result.lines.push(`자동 제어 · ${{always:'항상 가동',battery:'배터리 잔량',oxygen:'주변 산소',temperature:'주변 온도'}[b.automation]||'항상 가동'}`);}if(result.crew)result.lines.push(`용변 ${Math.round(result.crew.bladder)} · 위생 ${Math.round(result.crew.hygiene)}`);const t=this.tasks.find(t=>t.x===x&&t.y===y);if(t?.blockedReason)result.lines.push(t.blockedReason);return result;};
   proto.serialize=function(){const result=base.serialize.call(this);result.version=2;result.gasMassSchemaVersion=GAS_MASS_SCHEMA_VERSION;for(const key of ['plumbing','research','stability','history','production','_historyClock'])result[key]=clone(this[key]);return result;};
  const migrate=function(raw,fail){
   if(!Array.isArray(raw.objectives)||raw.objectives.length!==legacyObjectives.length||!legacyObjectives.every(o=>raw.objectives.some(v=>v.id===o.id&&v.target===o.target&&typeof v.done==='boolean')))fail('기존 목표 데이터가 손상되었습니다.');
@@ -302,13 +308,13 @@ export function installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS}){
   };
  proto.load=function(raw){const fail=s=>{throw new Error('저장 파일을 불러올 수 없어요: '+s);};const object=this._prepareUtilitiesSave(raw);
   if(!Array.isArray(object.cells)||!Array.isArray(object.buildings)||!Array.isArray(object.crew))fail('지도 또는 설비 정보가 없습니다.');
-  const savedPipeCapacity=object.ruleset==='oni-base'?10:1;
-  for(const c of object.cells){if(typeof c.pipe!=='boolean'||typeof c.wastepipe!=='boolean'||typeof c.spring!=='boolean'||!['cleanWater','dirtyWater','pipeFlow','wasteFlow'].every(k=>goodNum(c[k])&&c[k]>=0)||c.cleanWater>savedPipeCapacity+1e-6||c.dirtyWater>savedPipeCapacity+1e-6||!c.pipe&&c.cleanWater>1e-8||!c.wastepipe&&c.dirtyWater>1e-8)fail('배관 저장량 또는 형식이 올바르지 않습니다.');}
+  const savedPipeCapacity=usesOriginalRates(object.ruleset)?10:1;
+  for(const c of object.cells){if(typeof c.pipe!=='boolean'||typeof c.wastepipe!=='boolean'||typeof c.spring!=='boolean'||!['cleanWater','dirtyWater','pipeFlow','wasteFlow'].every(k=>goodNum(c[k])&&c[k]>=0)||c.cleanWater>savedPipeCapacity+1e-6||c.dirtyWater>savedPipeCapacity+1e-6||!c.pipe&&c.cleanWater>1e-8||!(object.ruleset==='oni-4.3'?c.pipe:c.wastepipe)&&c.dirtyWater>1e-8)fail('배관 저장량 또는 형식이 올바르지 않습니다.');}
   for(const b of object.buildings){if(!['cleanWater','dirtyWater','cleanCapacity','dirtyCapacity'].every(k=>goodNum(b[k])&&b[k]>=0)||b.cleanWater>b.cleanCapacity+1e-7||b.dirtyWater>b.dirtyCapacity+1e-7||typeof b.waterConnected!=='boolean'||typeof b.wasteConnected!=='boolean'||typeof b.autoState!=='boolean')fail('탱크 또는 배관 연결 상태가 올바르지 않습니다.');const allowed=['always'];if(['generator','coalgen','hydrogenGen'].includes(b.type))allowed.push('battery');if(['diffuser','electrolyzer'].includes(b.type))allowed.push('oxygen');if(b.type==='cooler')allowed.push('temperature');if(!allowed.includes(b.automation))fail('허용되지 않는 자동 제어입니다.');if(b.paidCost&&Object.entries(b.paidCost).some(([k,v])=>!['rock','metal','algae','coal','water','food'].includes(k)||!goodNum(v)||v<0))fail('예약 자원 정보가 올바르지 않습니다.');}
   for(const c of object.crew){if(!['bladder','hygiene'].every(k=>goodNum(c[k])&&c[k]>=0&&c[k]<=100)||!goodNum(c._accidentCooldown)||c._accidentCooldown<0)fail('대원 위생 상태가 올바르지 않습니다.');}
   if(!object.resources||!['waste','hydrogen'].every(k=>goodNum(object.resources[k])&&object.resources[k]>=0)||object.resources.hydrogen>40.00001)fail('물 또는 수소 재고가 올바르지 않습니다.');
   const waterTotal=object.cells.reduce((sum,c)=>sum+c.cleanWater,0)+object.buildings.reduce((sum,b)=>sum+b.cleanWater,0),wasteTotal=object.cells.reduce((sum,c)=>sum+c.dirtyWater,0)+object.buildings.reduce((sum,b)=>sum+b.dirtyWater,0);
-  const waterCapacity=object.cells.filter(c=>c.pipe).length*savedPipeCapacity+object.buildings.filter(b=>b.progress>=1).reduce((sum,b)=>sum+b.cleanCapacity,0),wasteCapacity=object.cells.filter(c=>c.wastepipe).length*savedPipeCapacity+object.buildings.filter(b=>b.progress>=1).reduce((sum,b)=>sum+b.dirtyCapacity,0);
+  const waterCapacity=object.cells.filter(c=>c.pipe).length*savedPipeCapacity+object.buildings.filter(b=>b.progress>=1).reduce((sum,b)=>sum+b.cleanCapacity,0),wasteCapacity=object.cells.filter(c=>object.ruleset==='oni-4.3'?c.pipe:c.wastepipe).length*savedPipeCapacity+object.buildings.filter(b=>b.progress>=1).reduce((sum,b)=>sum+b.dirtyCapacity,0);
   if(!object.plumbing||!['waterStored','waterCapacity','wasteStored','wasteCapacity','waterFlow','wasteFlow','waterDemand'].every(k=>goodNum(object.plumbing[k])&&object.plumbing[k]>=0)||Math.abs(waterTotal-object.resources.water)>1e-5||Math.abs(wasteTotal-object.resources.waste)>1e-5||Math.abs(object.plumbing.waterStored-waterTotal)>1e-5||Math.abs(object.plumbing.wasteStored-wasteTotal)>1e-5||Math.abs(object.plumbing.waterCapacity-waterCapacity)>1e-5||Math.abs(object.plumbing.wasteCapacity-wasteCapacity)>1e-5)fail('청수·오수 총량과 실제 저장량이 일치하지 않습니다.');
   if(!object.production||!PRODUCTION_KEYS.every(k=>goodNum(object.production[k])&&object.production[k]>=0))fail('생산 기록이 올바르지 않습니다.');
   if(!object.research||!Number.isInteger(object.research.tier)||object.research.tier<0||object.research.tier>3||object.research.cap!==100||typeof object.research.nextLabel!=='string')fail('연구 단계가 올바르지 않습니다.');

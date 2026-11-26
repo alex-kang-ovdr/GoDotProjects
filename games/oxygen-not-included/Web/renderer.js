@@ -1,4 +1,6 @@
 import { canBreathe, GAS_KG_PER_UNIT } from './environment.js';
+import { buildingBounds, buildingPort, BUILDING_FOOTPRINTS } from './footprint.js';
+import { atmosphereOf } from './atmosphere.js';
 import { BUILDINGS } from './engine.js';
 
 const TAU = Math.PI * 2;
@@ -285,7 +287,7 @@ export class Renderer {
         else this._caveCell(ctx, cell, x, y, simulationTime);
       }
     }
-    if (this.overlay === 'oxygen' || this.overlay === 'temperature') {
+    if (this.overlay === 'oxygen' || this.overlay === 'temperature' || this.overlay === 'gas') {
       this._environmentOverlay(ctx, x0, y0, x1, y1);
     }
     if (this.overlay === 'power' || this.overlay === 'plumbing' || this.overlay === 'logistics') {
@@ -298,9 +300,10 @@ export class Renderer {
 
     const buildings = g.buildings || [];
     for (const b of buildings) {
-      if (b.x < x0-1 || b.y < y0-1 || b.x > x1 || b.y > y1 || !this._cell(b.x,b.y)?.revealed) continue;
+      const bounds=this._bounds(b);
+      if (bounds.x+bounds.width < x0 || bounds.y+bounds.height < y0 || bounds.x > x1 || bounds.y > y1 || !this._cell(b.x,b.y)?.revealed) continue;
       if (b.type === 'tile' && b.progress >= 1 && this._cell(b.x,b.y)?.solid === 'tile') continue;
-      ctx.save(); ctx.translate(b.x,b.y);
+      ctx.save(); ctx.translate(bounds.x,bounds.y); ctx.scale(bounds.width,bounds.height);
       if (b.progress < 1) ctx.globalAlpha = .34;
       else if(this.overlay==='plumbing')ctx.globalAlpha=.68;
       else if(this.overlay==='logistics'&&!['core','storage'].includes(b.type))ctx.globalAlpha=.52;
@@ -308,7 +311,7 @@ export class Renderer {
       ctx.restore();
       if (b.progress < 1) {
         ctx.save(); ctx.setLineDash([.1,.08]);
-        rounded(ctx,b.x+.06,b.y+.05,.88,.9,.06,null,'#98d8cf',.028); ctx.restore();
+        rounded(ctx,bounds.x+.06,bounds.y+.05,bounds.width-.12,bounds.height-.1,.06,null,'#98d8cf',.028); ctx.restore();
       } else this._machineStatus(ctx,b,simulationTime);
       this._machinePorts(ctx,b,simulationTime);
     }
@@ -442,7 +445,7 @@ export class Renderer {
   _environmentOverlay(ctx,x0,y0,x1,y1) {
     for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++) {
       const c=this._cell(x,y);if(!c?.revealed)continue;
-      let color,h2Fraction=0;
+      let color,h2Fraction=0,parcel=null;
       if(this.overlay==='oxygen') {
         if(c.solid)continue;
         const o=canBreathe(c)?clamp(finite(c.oxygen)/.8,0,1):0;
@@ -451,15 +454,22 @@ export class Renderer {
         const temp=finite(c.temp,20);
         color=temp<10?'rgba(123,157,211,.34)':temp<22?'rgba(105,184,176,.2)':temp<32?'rgba(219,180,107,.22)':temp<45?'rgba(229,130,92,.34)':'rgba(207,78,78,.44)';
       } else {
+        if(this.game.modernRules){
+          if(c.solid||c.water>1e-9||c.frost>1e-9)continue;
+          parcel=atmosphereOf(c);
+          const colors={oxygen:'83,199,165',co2:'173,143,105',steam:'220,226,241',hydrogen:'204,127,209'};
+          color=parcel?`rgba(${colors[parcel.element]},${.2+.4*Math.min(1,parcel.massKg/2)})`:'rgba(19,20,32,.59)';
+        }else{
         const hydrogenKg=Math.max(0,finite(c.hydrogen));
         const gasKg=Math.max(0,finite(c.oxygen))*GAS_KG_PER_UNIT+Math.max(0,finite(c.co2))*GAS_KG_PER_UNIT+Math.max(0,finite(c.steam))+hydrogenKg;
         h2Fraction=gasKg>1e-9?clamp(hydrogenKg/gasKg,0,1):0;
         color=h2Fraction>.001?`rgba(89,164,219,${.08+h2Fraction*.48})`:'rgba(122,153,158,.08)';
+        }
       }
       ctx.fillStyle=color;ctx.fillRect(x,y,1.01,1.01);
       if(this.cellSize>40 && !c.solid && x%2===0 && y%2===0) {
         ctx.fillStyle='rgba(236,242,228,.68)';ctx.font=`${8/this.cellSize}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-        const label=this.overlay==='oxygen'?(canBreathe(c)?`${Math.round(clamp(c.oxygen/.8,0,1)*100)}%`:'×'):this.overlay==='temperature'?`${Math.round(c.temp)}°`:`${Math.round(h2Fraction*100)}% H₂`;
+        const label=this.overlay==='oxygen'?(canBreathe(c)?`${Math.round(clamp(c.oxygen/.8,0,1)*100)}%`:'×'):this.overlay==='temperature'?`${Math.round(c.temp)}°`:this.game.modernRules?(parcel?`${Math.round(parcel.massKg*1000)}g`:'진공'):`${Math.round(h2Fraction*100)}% H₂`;
         ctx.fillText(label,x+.5,y+.5);
       }
     }
@@ -467,7 +477,7 @@ export class Renderer {
 
   _wires(ctx,x0,y0,x1,y1,t) {
     const highlighted=this.overlay==='power'||this.tool==='wire';
-    const activePorts=highlighted?new Set((this.game.buildings||[]).filter(b=>b.progress>=1&&b.active&&b.enabled!==false&&Math.abs(finite(BUILDINGS[b.type]?.power))>0).map(b=>b.y*this.game.w+b.x)):null;
+    const activePorts=highlighted?new Set((this.game.buildings||[]).filter(b=>b.progress>=1&&b.active&&b.enabled!==false&&Math.abs(finite(BUILDINGS[b.type]?.power))>0).map(b=>this.game.modernRules?(buildingPort(b,'power')||b):b).map(p=>p.y*this.game.w+p.x)):null;
     ctx.save();
     if(['plumbing','logistics'].includes(this.overlay)&&!highlighted)ctx.globalAlpha=.25;
     const color=highlighted?'#e4c888':'#627c71';
@@ -507,7 +517,7 @@ export class Renderer {
         const packet=layer.packet&&c[layer.packet],filled=gas?!!packet:finite(c[layer.stored])>.001;
         if(layer.key==='pipe'){
           circle(ctx,px,py,highlighted?.075:.045,'#16333d',layer.color,highlighted?.025:.018);
-          if(filled)circle(ctx,px,py,highlighted?.037:.02,'#b9e6df');
+          if(filled||this.game.modernRules&&c.dirtyWater>0)circle(ctx,px,py,highlighted?.05:.027,c.dirtyWater>0&&this.game.modernRules?'#d6aa59':'#b9e6df');
         }else if(gas){
           polygon(ctx,[[px,py-.09],[px+.09,py],[px,py+.09],[px-.09,py]],'#183b39',layer.color,highlighted?.03:.018);
           if(filled){const colors={oxygen:'#c8f2df',co2:'#d5c5a2',steam:'#fff1cf',hydrogen:'#b9d7ef'};circle(ctx,px,py,.035,colors[packet.element]||'#d8eadb');}
@@ -717,6 +727,10 @@ export class Renderer {
       if(finite(c.health,100)<=0||(!c.cargo&&c._job?.kind!=='haul')||!c.path?.length||!Number.isFinite(c.x)||!Number.isFinite(c.y)||!this._cell(Math.floor(c.x),Math.floor(c.y))?.revealed)continue;
       this._crewPath(ctx,c,c.cargo?'rgba(226,200,144,.7)':'rgba(155,210,184,.42)',false);
     }
+  }
+
+  _bounds(b){
+    return this.game.modernRules?buildingBounds(b):{x:b.x,y:b.y,width:1,height:1};
   }
 
   _machine(ctx,b,t) {
@@ -953,6 +967,19 @@ export class Renderer {
         line(ctx,[[.44,.63],[.86,.63]],'#d69c93',.028);line(ctx,[[.44,.75],[.86,.75]],'#d69c93',.022);
         line(ctx,[[.06,.59],[.06,.85]],'#a1b3a1',.055);
         break;
+      case 'steamRocket':
+        polygon(ctx,[[.35,.74],[.35,.34],[.5,.05],[.65,.34],[.65,.74]],'#b7c7bd','#31454c',.035);
+        circle(ctx,.5,.4,.085,'#518597','#d2e4dd',.025);
+        polygon(ctx,[[.35,.56],[.2,.85],[.35,.78]],'#ce866f');
+        polygon(ctx,[[.65,.56],[.8,.85],[.65,.78]],'#ce866f');
+        rounded(ctx,.31,.75,.38,.11,.02,'#42575b','#a7a898',.025);
+        break;
+      case 'planetarium':
+        rounded(ctx,.11,.7,.78,.19,.04,'#53696f','#adc1b5',.025);
+        circle(ctx,.5,.49,.28,'#345c70','#a4c4be',.035);
+        for(const [px,py] of [[.4,.4],[.58,.33],[.62,.55],[.44,.61]])circle(ctx,px,py,.018,'#f8d999');
+        break;
+      case 'supercomputer':
       case 'research':
         rounded(ctx,.08,.75,.84,.1,.025,'#8a9291',shadow);
         for(const x of [.17,.8])line(ctx,[[x,.84],[x,.98]],'#526c6d',.07);
@@ -987,6 +1014,15 @@ export class Renderer {
         rounded(ctx,.27,.85,.58,.09,.025,'#345a65');
         if(active)circle(ctx,.58,.25,.026,'#bce9d8');
         break;
+      case 'gasBridge':
+      case 'liquidBridge': {
+        const horizontal=(b.rotation||0)%2===0;
+        const points=horizontal?[[.08,.68],[.26,.26],[.74,.26],[.92,.68]]:[[.33,.06],[.7,.25],[.7,.75],[.33,.94]];
+        line(ctx,points,'#1c3035',.19);
+        line(ctx,points,b.type==='gasBridge'?'#86c3ae':'#79b6cf',.105);
+        break;
+      }
+      case 'liquidVent':
       case 'gasVent':
         rounded(ctx,.1,.72,.8,.17,.045,'#547f79',shadow,.04);
         rounded(ctx,.18,.28,.64,.48,.07,'#345a58','#a9d4bf',.035);
@@ -1185,6 +1221,23 @@ export class Renderer {
   }
 
   _machinePorts(ctx,b,t) {
+    if(this.game.modernRules){
+      const spec=BUILDING_FOOTPRINTS[b.type],selected=this.selection&&this.game._buildingAt?.(this.selection.x,this.selection.y)===b;
+      for(const key of Object.keys(spec?.ports||{})){
+        const layer=key==='power'?'power':key.startsWith('gas')?'gas':'plumbing';
+        if(this.overlay!==layer&&!selected&&b.progress!==0)continue;
+        const pos=buildingPort(b,key),cell=this._cell(pos.x,pos.y);
+        const connected=!!cell?.[layer==='power'?'wire':layer==='gas'?'gasPipe':'pipe'];
+        const color=key==='power'?'#ffd988':key.endsWith('In')?'#f3f4e8':'#78e89f';
+        const px=pos.x+.5,py=pos.y+(key==='power'?.74:.43);
+        circle(ctx,px,py,.155,'#16383c',color,.04);
+        if(!connected)ctx.setLineDash([.04,.04]);
+        if(key==='power')line(ctx,[[px-.045,py+.065],[px+.035,py-.065]],color,.04);
+        else polygon(ctx,[[px-.055,py-.08],[px+.08,py],[px-.055,py+.08]],color);
+        ctx.setLineDash([]);
+      }
+      return;
+    }
     const ports=FLUID_PORTS[b.type],cell=this._cell(b.x,b.y);
     if(!cell)return;
     const selected=[this.hover,this.selection].some(at=>at?.x===b.x&&at?.y===b.y);
@@ -1548,22 +1601,26 @@ export class Renderer {
     }
     if(this.selection && this.selection.x>=0 && this.selection.y>=0) {
       const {x,y}=this.selection;
-      rounded(ctx,x+.025,y+.025,.95,.95,.07,'rgba(162,214,181,.035)','rgba(172,224,194,.75)',.033);
+      const selected=this.game.modernRules&&this.game._buildingAt?.(x,y);
+      const bounds=selected?this._bounds(selected):{x,y,width:1,height:1};
+      rounded(ctx,bounds.x+.025,bounds.y+.025,bounds.width-.05,bounds.height-.05,.07,'rgba(162,214,181,.035)','rgba(172,224,194,.75)',.033);
       this._corners(ctx,x,y,'#c7e8c5',.06);
     }
     if(!validCell)return;
     const {x,y}=h;
     let ok=true;
     if(this.tool && !['inspect','pan','move'].includes(this.tool)) {
-      try{ok=this.game.canPlace(this.tool,x,y)?.ok!==false;}catch{ok=false;}
+      try{ok=this.game.canPlace(this.tool,x,y,this.game.buildRotation||0)?.ok!==false;}catch{ok=false;}
     }
     const isBuild=!!BUILDINGS[this.tool];
     const cell=this._cell(x,y);
+    const blueprint={type:this.tool,x,y,rotation:this.game.buildRotation||0,progress:0,enabled:true,active:false,connected:false,growth:.5};
+    const bounds=isBuild?this._bounds(blueprint):{x,y,width:1,height:1};
     if(isBuild && !this.dragRect) {
-      ctx.save();ctx.translate(x,y);ctx.globalAlpha=ok?.5:.24;
-      this._machine(ctx,{type:this.tool,x,y,progress:.5,enabled:true,active:false,connected:false,growth:.5},t);
+      ctx.save();ctx.translate(bounds.x,bounds.y);ctx.scale(bounds.width,bounds.height);ctx.globalAlpha=ok?.5:.24;
+      this._machine(ctx,blueprint,t);
       ctx.restore();
-      this._machinePorts(ctx,{type:this.tool,x,y,progress:0,waterConnected:false,wasteConnected:false},t);
+      this._machinePorts(ctx,blueprint,t);
     }
     if(this.tool==='wire'&&!networkDrag) {
       line(ctx,[[x+.2,y+.72],[x+.8,y+.72]],ok?'#eed093':'#d68e7d',.065);
@@ -1584,7 +1641,7 @@ export class Renderer {
     }
     const color=!ok?'#e49a83':['cancel','deconstruct','removePipe','removeWastepipe','removeGasPipe'].includes(this.tool)?'#e7a18c':this.tool==='dig'?'#e6ca8c':pipeLayer?pipeLayer.color:'#c7e4c9';
     const tint=!ok?'rgba(216,122,104,.09)':this.tool==='dig'&&cell?.solid?'rgba(237,204,143,.14)':'rgba(183,225,193,.045)';
-    rounded(ctx,x+.015,y+.015,.97,.97,.05,tint,color,.035);
+    rounded(ctx,bounds.x+.015,bounds.y+.015,bounds.width-.03,bounds.height-.03,.05,tint,color,.035);
     this._corners(ctx,x,y,color,.07);
     if(!ok && isBuild)line(ctx,[[x+.37,y+.38],[x+.63,y+.64]],'#e7a18c',.04);
   }
@@ -1600,7 +1657,7 @@ export class Renderer {
     if(y1!==y2)for(let y=y1+dy;;y+=dy){cells.push({x:x2,y});if(y===y2)break;}
     for(const {x,y} of cells){
       const cell=this._cell(x,y);if(!cell)continue;let valid=!!cell[layer.cellKey||layer.key];
-      if(!valid){try{valid=this.game.canPlace(this.tool,x,y)?.ok===true;}catch{valid=false;}}
+      if(!valid){try{valid=this.game.canPlace(this.tool,x,y,this.game.buildRotation||0)?.ok===true;}catch{valid=false;}}
       const color=valid?layer.color:'#e69b83',px=x+layer.x,py=y+layer.y;
       if(layer.key==='wastepipe')rounded(ctx,px-.075,py-.075,.15,.15,.016,'#263a3a',color,.028);
       else if(layer.key==='gaspipe')polygon(ctx,[[px,py-.065],[px+.065,py],[px,py+.065],[px-.065,py]],'#183b39',color,.028);

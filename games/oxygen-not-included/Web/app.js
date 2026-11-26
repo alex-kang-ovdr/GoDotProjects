@@ -1,6 +1,9 @@
 import { Game, BUILDINGS } from './engine.js';
 import { Renderer } from './renderer.js';
-import { ORIGINAL_RULES, LEGACY_RULES } from './rules.js';
+import { BUILDING_FOOTPRINTS, buildingBounds, buildingPort } from './footprint.js';
+import { clearResearchQueue, selectResearch, researchTechName, RESEARCH_UNLOCKS, isBuildingResearchUnlocked } from './research.js';
+import { renderResearchPanel } from './research-ui.js';
+import { MODERN_RULES } from './rules.js';
 
 const $ = id => document.getElementById(id);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -46,6 +49,7 @@ const ICONS = {
   research:'<path d="M9 2h6M10 2v7L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L14 9V2M7 15h10M10 18h1"/>',
   pump:'<path d="M7 10h10v10H7Zm3 0V5h10V2M4 14h3m-3 0v8M17 15h4m-7-2-4 5M8 6H5"/>',
   gasPump:'<path d="M7 10h10v10H7Zm3 0V5h10V2M4 14h3m-3 0v8M17 15h4m-7-2-4 5M8 6H5"/>',
+  steamRocket:'<path d="M12 2C8 6 7 9 7 15h10c0-6-1-9-5-13Zm-5 9-3 5v4l4-3m9-6 3 5v4l-4-3m-6 1 2 4 2-4"/><circle cx="12" cy="9" r="2"/>',
   gasVent:'<path d="M4 7h16v4H4Zm2 4v9h12v-9M8 15h8m-6-8V3m4 4V3"/>',
   gaspipe:'<path d="M3 6h7v12h11M3 3v6m15 6v6M7 6v12h4"/>',
   scrubber:'<path d="M5 8h14v14H5ZM8 8V5h8v3M9 2h6M8 12h8M8 16h8M8 19h8"/>',
@@ -72,7 +76,7 @@ const ICONS = {
   'volume-off':'<path d="m11 4-5 4H2v8h4l5 4V4Zm5 5 6 6m0-6-6 6"/>',
   volume:'<path d="m11 4-5 4H2v8h4l5 4V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
 };
-function icon(name) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.rock}</svg>`; }
+function icon(name) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS[BUILDINGS[name]?.icon] || ICONS.rock}</svg>`; }
 $$('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
 
 const game = new Game(73);
@@ -95,7 +99,7 @@ const emptyInspector = $('inspector').innerHTML;
 const pointers = new Map();
 let oxygenHistory = [], lastOxygenSample = -10;
 const resources = {soil:'흙',rock:'광석',metal:'금속',algae:'조류',coal:'석탄',water:'청수',waste:'오수',hydrogen:'수소',food:'수확 식량',meals:'조리식'};
-const categories = {base:['ladder','tile','door','wire','cot','storage'],life:['diffuser','farm','toilet','sink','kitchen','mess','fridge','oxygenDock','scrubber','cooler'],industry:['generator','battery','research','coalgen','electrolyzer','hydrogenGen','steamTurbine'],plumbing:['pipe','wastepipe','reservoir','pump','purifier'],gas:['gasPump','gasVent','gaspipe']};
+const categories = {base:['ladder','tile','door','wire','cot','storage'],life:['diffuser','farm','toilet','sink','kitchen','mess','fridge','oxygenDock','scrubber','cooler'],industry:['generator','battery','research','supercomputer','planetarium','steamRocket','coalgen','electrolyzer','hydrogenGen','steamTurbine'],plumbing:['pipe','wastepipe','liquidBridge','liquidVent','reservoir','pump','purifier'],gas:['gasPump','gasVent','gaspipe','gasBridge']};
 const infrastructure = {
   wire:{name:'전선',description:'발전기부터 시설이 있는 칸까지 연결하세요. 드래그하면 가로→세로 경로로 이어집니다.',cost:{metal:1},color:'#dabd7b'},
   pipe:{name:'급수관',description:'청수가 흐르는 배관입니다. 코어·저수조·물 수집기에서 소비 시설의 칸까지 이어 주세요.',cost:{metal:1},color:'#82c7e5'},
@@ -113,7 +117,11 @@ const sourceDescriptions={
   farm:'끼니나무는 10~30°C에서 흙 10 kg/주기를 소비합니다. 3주기 자라면 600 kcal를 수확합니다.'
 };
 const definitionFor = type => {
-  const def=infrastructure[type]||BUILDINGS[type];
+  const source=infrastructure[type]||BUILDINGS[type],def=source&&game.originalRules?{...source,power:game.buildingPower(type)}:source;
+  if(game.modernRules&&type==='research')return {...def,description:'흙과 60 W 전력을 사용하는 기초 연구 작업대입니다. 연구 탭에서 기술을 선택하세요.'};
+  if(game.modernRules&&type==='pump')return {...def,description:'인접한 물 또는 오수를 최대 10 kg/s로 취수해 녹색 액체 출구로 보냅니다.'};
+  if(game.modernRules&&type==='reservoir')return {...def,name:'액체 저장소',description:'입구로 들어온 청수와 오수를 합계 5,000 kg까지 저장해 출구로 보냅니다.'};
+  if(game.modernRules&&type==='pipe')return {...def,name:'액체관',description:'청수와 오수를 칸당 최대 10 kg씩 보냅니다. 한 칸에는 한 종류의 액체만 흐릅니다.'};
   return game.originalRules&&sourceDescriptions[type]?{...def,description:sourceDescriptions[type]}:def;
 };
 const AUTO_OPTIONS = {generator:['always','battery'],coalgen:['always','battery'],hydrogenGen:['always','battery'],diffuser:['always','oxygen'],electrolyzer:['always','oxygen'],cooler:['always','temperature']};
@@ -152,17 +160,29 @@ function beep(kind='click') {
   } catch { soundEnabled = false; }
 }
 
+function lockedTool(type){
+  return game.modernRules?!isBuildingResearchUnlocked(game,type):(definitionFor(type)?.unlock||0)>game.stats.research;
+}
+function rotateBridge(){
+  game.buildRotation=((game.buildRotation||0)+1)%4;
+  setTool(tool);
+}
 function setTool(next) {
-  if (BUILDINGS[next]?.unlock > game.stats.research) { toast(`연구 ${BUILDINGS[next].unlock} 포인트가 필요해요.`, 'warn'); return; }
+  if ((BUILDINGS[next]||infrastructure[next])&&lockedTool(next)) { toast(game.modernRules?`필요한 연구 · ${researchTechName(RESEARCH_UNLOCKS[next])}`:`연구 ${BUILDINGS[next].unlock} 포인트가 필요해요.`, 'warn'); return; }
   tool = next; renderer.tool = next; renderer.dragRect = null;
   $$('[data-tool]').forEach(el => { el.classList.toggle('active', el.dataset.tool === next); el.setAttribute('aria-pressed',el.dataset.tool === next); });
   $$('.build-card').forEach(el => el.classList.toggle('active', el.dataset.build === next));
   canvas.style.cursor = next === 'pan' ? 'grab' : next === 'inspect' ? 'default' : 'crosshair';
   const definition = definitionFor(next);
-  if(['pipe','wastepipe'].includes(next))setOverlay('plumbing');
-  if(['gaspipe','removeGasPipe','gasPump','gasVent'].includes(next))setOverlay('gas');
+  if(['pipe','wastepipe','liquidBridge','liquidVent'].includes(next))setOverlay('plumbing');
+  if(['gaspipe','removeGasPipe','gasPump','gasVent','gasBridge'].includes(next))setOverlay('gas');
   const note = definition ? [definition.name,definition.description,`${costText(definition.cost)}${definition.power ? ` · ${definition.power>0?'소비':'생산'} ${Math.abs(definition.power)} W` : ''} · ${infrastructure[next]?'드래그로 즉시 연결':'빈 칸을 눌러 건설 예약'}`] : toolNotes[next];
+  if(note&&game.modernRules&&BUILDING_FOOTPRINTS[next]){const {width,height}=BUILDING_FOOTPRINTS[next];note[2]+=' · '+width+'×'+height+'칸';}
   if (note) $('tool-note').innerHTML = `<span class="note-eyebrow">${escapeHTML(note[0])}</span><p>${escapeHTML(note[1])}</p><div class="note-rule"></div><small>${escapeHTML(note[2])}</small>`;
+  if(game.modernRules&&BUILDING_FOOTPRINTS[next]?.rotatable){
+    const rotate=document.createElement('button');rotate.type='button';
+    rotate.textContent=`회전 (R) · ${(game.buildRotation||0)*90}°`;rotate.onclick=rotateBridge;$('tool-note').append(rotate);
+  }
   beep();
 }
 function costText(cost) { return Object.entries(cost || {}).filter(([,value])=>value>0).map(([key,value]) => `${resources[key] || key} ${value}`).join(' · '); }
@@ -170,11 +190,11 @@ function renderBuildMenu() {
   const visibleCategories=Object.keys(categories).filter(key=>key!=='gas'||game.originalRules);
   if(!visibleCategories.includes(category))category='base';
   $$('.category-tabs button').forEach(el => { const visible=visibleCategories.includes(el.dataset.category),active=el.dataset.category===category;el.hidden=!visible; el.classList.toggle('active',active); el.setAttribute('aria-selected',active); });
-  $('build-grid').innerHTML = categories[category].filter(type=>game.originalRules||!['gasPump','gasVent','gaspipe'].includes(type)).map(type => {
+  $('build-grid').innerHTML = categories[category].filter(type=>game.modernRules?type!=='wastepipe':!['supercomputer','planetarium','steamRocket','liquidVent','gasBridge','liquidBridge'].includes(type)&&(game.originalRules||!['gasPump','gasVent','gaspipe'].includes(type))).map(type => {
     const def = definitionFor(type);
     if (!def) return '';
-    const locked = (def.unlock || 0) > game.stats.research;
-    return `<button class="build-card ${tool===type?'active':''} ${locked?'locked':''}" data-build="${type}" style="--item-color:${def.color || '#8de0bd'}" title="${escapeHTML(def.description)} · ${escapeHTML(costText(def.cost))}${locked?` · 연구 ${def.unlock} 필요`:''}"><span class="build-symbol">${icon(type)}</span><b>${escapeHTML(def.name)}</b><small>${escapeHTML(costText(def.cost))}</small>${locked?`<span class="locked-tag">${icon('lock')}</span>`:''}</button>`;
+    const locked = lockedTool(type);
+    return `<button class="build-card ${tool===type?'active':''} ${locked?'locked':''}" data-build="${type}" style="--item-color:${def.color || '#8de0bd'}" title="${escapeHTML(def.description)} · ${escapeHTML(costText(def.cost))}${locked?(game.modernRules?` · ${researchTechName(RESEARCH_UNLOCKS[type])} 연구 필요`:` · 연구 ${def.unlock} 필요`):''}"><span class="build-symbol">${icon(type)}</span><b>${escapeHTML(def.name)}</b><small>${escapeHTML(costText(def.cost))}</small>${locked?`<span class="locked-tag">${icon('lock')}</span>`:''}</button>`;
   }).join('');
   $$('.build-card').forEach(el => el.addEventListener('click',()=>setTool(el.dataset.build)));
 }
@@ -186,6 +206,8 @@ function setOverlay(next) {
   if (next==='temperature') legend.innerHTML='<div class="legend-ramp" style="background:linear-gradient(90deg,#65a5d8,#8ed6b2,#e8a65e,#de7573)"></div><div class="legend-ends"><span>차가움</span><span>뜨거움</span></div>';
   if (next==='plumbing') legend.innerHTML='<span style="color:#8bc8e3">━ ○ 급수</span>　<span style="color:#d5b47f">┄ □ 배수</span><br><small>X 배관 없음 · 황색 연결 확인 · 펄스 실제 유량</small>';
   if (next==='gas') legend.innerHTML='<span style="color:#8bc8b7">━ ◇ 기체관</span>　<span style="color:#59a4db">■ H₂ 농도</span><br><small>색이 진할수록 수소 비율이 높아요 · 수소는 부력으로 위쪽에 모입니다.</small>';
+  if(game.modernRules&&next==='gas')legend.innerHTML='<span style="color:#85d2b0">■ 산소</span>　<span style="color:#bf9f73">■ 이산화탄소</span>　<span style="color:#db9de1">■ 수소</span>　<span style="color:#d9e3ef">■ 증기</span><br><small>○ 흰색 입구 · 녹색 출구 · 관 한 칸 1 kg</small>';
+  if(game.modernRules&&next==='plumbing')legend.innerHTML='<span style="color:#a8e5df">● 청수</span>　<span style="color:#d6aa59">● 오수</span><br><small>○ 흰색 입구 · 녹색 출구 · 관 한 칸 10 kg</small>';
   if (next==='logistics') legend.innerHTML='<span style="color:#e8c48d">◇ 현장 자원</span>　<span style="color:#a3c9e0">▣ 수거 거점</span><br><small>상자를 든 대원은 실제 운반 중 · H로 전환</small>';
   if (next==='rooms') legend.innerHTML='<span style="color:#bbade3">■ 침실</span>　<span style="color:#e0bd85">■ 식당</span>　<span style="color:#a1c88a">■ 온실</span><br><small>벽·타일·문으로 나눈 실제 공간 · R로 전환</small>';
   if (next==='power') legend.innerHTML='<span style="color:#e8cb7f">━ 전력망</span>　<span style="color:#ef9887">○ 미연결</span>';
@@ -203,10 +225,11 @@ function setSpeed(next) {
 function switchPanel(next, open=false) {
   activePanel=next;
   $$('[data-panel]').forEach(el=>el.classList.toggle('active',el.dataset.panel===next));
-  ['colony','systems','logistics','rooms','goals','inspect','log'].forEach(key=>{$(`${key}-panel`).hidden=key!==next;});
+  ['colony','systems','logistics','rooms','goals','research','inspect','log'].forEach(key=>{$(`${key}-panel`).hidden=key!==next;});
   if (open && window.innerWidth<=1000) document.body.classList.add('panel-open');
   if (next==='log') $('event-dot').style.opacity='0';
   if (next==='systems') renderOperations();
+  if (next==='research') renderGoals();
   if (next==='logistics') renderLogistics();
   if (next==='rooms') renderRooms();
   if (next==='inspect') renderInspector();
@@ -232,10 +255,11 @@ function save(manual=false) {
 }
 function afterLoad() {
   renderer.game=game; renderer.selection=null; renderer.dragRect=null; currentSelection=null; inspectorKey=''; operationsSignature=''; logisticsSignature=''; roomSignature=''; trainingCrewId=null; $('inspector').innerHTML=emptyInspector;
-  crewSignature='';eventSignature='';objectiveSignature='';seenEnd=game.won?'won':game.lost?'lost':'';
+  crewSignature='';eventSignature='';objectiveSignature='';lastUnlockSignature='';game.buildRotation=0;seenEnd=game.won?'won':game.lost?'lost':'';
   accumulator=0; oxygenHistory=[]; lastOxygenSample=-10; renderer.fit(); renderBuildMenu(); renderUI();
   $('onboarding').hidden=game.time>20;
-  const rulesetLabel=$('ruleset-label');if(rulesetLabel)rulesetLabel.textContent=game.originalRules?'원작 규칙':'4.1 호환 규칙';
+  const rulesetLabel=$('ruleset-label');if(rulesetLabel)rulesetLabel.textContent=game.modernRules?'4.3 원작 규칙':game.originalRules?'4.2 호환 규칙':'4.1 호환 규칙';
+  $('open-research-tree').hidden=!game.modernRules;
   const rulesetInput=$('ruleset-input');if(rulesetInput)rulesetInput.value=game.ruleset;
   document.querySelector('.world-location strong').textContent=`소행성 H–${game.seed || 73}`;
   document.querySelector('.session-label').innerHTML=`<i></i> COLONY ${String(game.seed || 73).padStart(3,'0')}`;
@@ -251,7 +275,7 @@ function loadSave(manual=false) {
     else if(manual)toast('저장한 기지로 돌아왔어요.');return true;
   } catch(error){saveBlocked=true;toast(`저장한 기지를 불러오지 못했어요. 기존 파일은 보존했습니다. ${error.message}`,'warn',7000);return false;}
 }
-function newGame(seed,ruleset=ORIGINAL_RULES) {
+function newGame(seed,ruleset=MODERN_RULES) {
   saveBlocked=false;game.reset(clamp(Math.floor(Number(seed)||73),1,999999),ruleset);
   afterLoad(); seenEnd=''; $('onboarding').hidden=false;setTool('inspect');setOverlay('normal');setSpeed(1);save();
   toast('새로운 탐사가 시작됩니다. 기지 옆의 흙을 채굴해 보세요.');
@@ -313,10 +337,11 @@ function renderInspector() {
   if(key!==inspectorKey){
     inspectorKey=key;
     const modes=b?AUTO_OPTIONS[b.type]:null;
-    $('inspector').innerHTML=`<div class="inspect-heading"><small>COLONY OBSERVATION</small><h3 id="inspect-title"></h3><p>좌표 ${x}, ${y} · 심도 ${y*8} m</p></div><div id="inspect-connections" class="inspect-connections"></div><div id="inspect-lines"></div>${canInsulate?'<button class="inspect-action" id="insulate-tile">단열 보강 · 암석 6</button>':''}${b&&b.progress>=1&&!['core','ladder','tile','door'].includes(b.type)?'<button class="inspect-action" id="toggle-building"></button>':''}${modes&&b.progress>=1?`<label class="automation-field">설비 자동 제어<select id="automation-select">${modes.map(mode=>`<option value="${mode}">${AUTO_LABELS[mode]}</option>`).join('')}</select></label><p class="automation-note">목표 범위에 들어가면 잠시 대기하고, 다시 필요해지면 가동합니다. 수동 정지가 우선합니다.</p>`:''}${b?.type==='kitchen'&&b.progress>=1?'<label class="automation-field" for="kitchen-target">공용 조리식 목표 비축량</label><div class="kitchen-target-wrap"><input type="number" id="kitchen-target" min="0" max="60" step="1"><span>끼</span></div><p class="automation-note">목표량에 도달하면 새 조리를 쉬어요. 0은 조리 대기입니다. 조리 중인 한 배치가 목표를 넘길 수 있어요.</p><div class="recipe-track"><i id="recipe-fill"></i></div>':''}${b?.type==='door'&&b.progress>=1?`<label class="automation-field">출입문 모드<select id="door-mode">${Object.entries(DOOR_LABELS).map(([mode,label])=>`<option value="${mode}">${label}</option>`).join('')}</select></label><p id="door-state" class="automation-note"></p><p class="automation-note">닫힌 문은 기체와 물을 막아요. 잠금은 이동도 막습니다. 대원이 문 칸에 서 있으면 잠글 수 없어요.</p>`:''}${b?.type==='oxygenDock'&&b.progress>=1?'<div class="inspect-oxygen"><span>저장한 산소</span><b id="inspect-oxygen-amount"></b><div class="oxygen-track"><i id="inspect-oxygen-fill"></i></div><small>대원이 직접 방문해 휴대통을 채웁니다.</small></div>':''}<div id="inspect-room"></div><div id="inspect-piles" class="inspect-piles"></div><div class="pipe-actions" id="pipe-actions"></div>`;
+    $('inspector').innerHTML=`<div class="inspect-heading"><small>COLONY OBSERVATION</small><h3 id="inspect-title"></h3><p>좌표 ${x}, ${y} · 심도 ${y*8} m</p></div><div id="inspect-connections" class="inspect-connections"></div><div id="inspect-lines"></div>${b?.type==='steamRocket'&&b.progress>=1?'<button class="inspect-action" id="launch-flight">연구 로켓 출항</button>':''}${canInsulate?'<button class="inspect-action" id="insulate-tile">단열 보강 · 암석 6</button>':''}${b&&b.progress>=1&&!['core','ladder','tile','door'].includes(b.type)?'<button class="inspect-action" id="toggle-building"></button>':''}${modes&&b.progress>=1?`<label class="automation-field">설비 자동 제어<select id="automation-select">${modes.map(mode=>`<option value="${mode}">${AUTO_LABELS[mode]}</option>`).join('')}</select></label><p class="automation-note">목표 범위에 들어가면 잠시 대기하고, 다시 필요해지면 가동합니다. 수동 정지가 우선합니다.</p>`:''}${b?.type==='kitchen'&&b.progress>=1?'<label class="automation-field" for="kitchen-target">공용 조리식 목표 비축량</label><div class="kitchen-target-wrap"><input type="number" id="kitchen-target" min="0" max="60" step="1"><span>끼</span></div><p class="automation-note">목표량에 도달하면 새 조리를 쉬어요. 0은 조리 대기입니다. 조리 중인 한 배치가 목표를 넘길 수 있어요.</p><div class="recipe-track"><i id="recipe-fill"></i></div>':''}${b?.type==='door'&&b.progress>=1?`<label class="automation-field">출입문 모드<select id="door-mode">${Object.entries(DOOR_LABELS).map(([mode,label])=>`<option value="${mode}">${label}</option>`).join('')}</select></label><p id="door-state" class="automation-note"></p><p class="automation-note">닫힌 문은 기체와 물을 막아요. 잠금은 이동도 막습니다. 대원이 문 칸에 서 있으면 잠글 수 없어요.</p>`:''}${b?.type==='oxygenDock'&&b.progress>=1?'<div class="inspect-oxygen"><span>저장한 산소</span><b id="inspect-oxygen-amount"></b><div class="oxygen-track"><i id="inspect-oxygen-fill"></i></div><small>대원이 직접 방문해 휴대통을 채웁니다.</small></div>':''}<div id="inspect-room"></div><div id="inspect-piles" class="inspect-piles"></div><div class="pipe-actions" id="pipe-actions"></div>`;
     if($('insulate-tile'))$('insulate-tile').addEventListener('click',()=>{
       const result=game.queue('insulate',x,y);toast(result.message,result.ok?'good':'warn');renderInspector();
     });
+    if($('launch-flight'))$('launch-flight').onclick=()=>{const r=game.launchResearchFlight(b.id);toast(r.message,r.ok?'good':'warn');renderInspector();};
     if($('automation-select'))$('automation-select').addEventListener('change',event=>{const result=game.setAutomation(b.id,event.target.value);toast(result.message,result.ok?'good':'warn');});
     if($('toggle-building'))$('toggle-building').addEventListener('click',()=>{game.toggleBuilding(b.id);renderInspector();});
     if($('door-mode'))$('door-mode').addEventListener('change',event=>{const result=game.setDoorMode(b.id,event.target.value);toast(result.message,result.ok?'good':'warn');event.target.value=b.doorMode;renderInspector();});
@@ -327,6 +352,13 @@ function renderInspector() {
   const needsClean=!(game.originalRules&&b?.type==='farm')&&['steamTurbine','farm','research','toilet','sink','electrolyzer','cooler','pump','purifier','reservoir','core','kitchen'].includes(b?.type);
   const needsWaste=['toilet','sink','cooler','purifier','reservoir'].includes(b?.type);
   $('inspect-connections').innerHTML=b&&b.progress>=1?`${BUILDINGS[b.type]?.power?`<span class="connection-chip ${b.connected?'':'off'}">전력 ${b.connected?'연결':'미연결'}</span>`:''}${needsClean?`<span class="connection-chip ${b.waterConnected?'':'off'}">급수 ${b.waterConnected?'연결':'미연결'}</span>`:''}${needsWaste?`<span class="connection-chip ${b.wasteConnected?'':'off'}">배수 ${b.wasteConnected?'연결':'미연결'}</span>`:''}`:'';
+  if(game.modernRules&&b){
+    const labels={power:'전력',gasIn:'기체 입구',gasOut:'기체 출구',liquidIn:'액체 입구',liquidOut:'액체 출구'};
+    $('inspect-connections').innerHTML=Object.keys(BUILDING_FOOTPRINTS[b.type]?.ports||{}).map(key=>{
+      const pos=buildingPort(b,key),cell=game.cell(pos.x,pos.y),ok=cell?.[key==='power'?'wire':key.startsWith('gas')?'gasPipe':'pipe'];
+      return `<span class="connection-chip ${ok?'':'off'}">${labels[key]} (${pos.x}, ${pos.y}) · ${ok?'연결':'미연결'}</span>`;
+    }).join('');
+  }
   if($('toggle-building'))$('toggle-building').textContent=b.enabled?'시설 일시정지':'시설 다시 가동';
   if($('automation-select')&&document.activeElement!==$('automation-select'))$('automation-select').value=b.automation||'always';
   if($('kitchen-target')&&document.activeElement!==$('kitchen-target'))$('kitchen-target').value=b.mealTarget??12;
@@ -341,7 +373,12 @@ function renderInspector() {
   const piles=(game.debris||[]).filter(p=>p.x===x&&p.y===y&&p.amount>0);
   updateHTML($('inspect-piles'),piles.map(p=>`<div class="pile-inspect"><span>${escapeHTML(resources[p.resource]||p.resource)} ${Number(p.amount).toFixed(1)}</span><button data-pile-priority="${p.id}" title="운반 우선순위를 높입니다">운반 우선 ${p.priority||3} ↑</button><small>${escapeHTML(p.blockedReason||(p.reservedBy?'수거 대원이 이동 중이에요.':'수거를 기다리고 있어요.'))}</small></div>`).join(''));
   const cell=game.cells[y*game.w+x];
-  updateHTML($('pipe-actions'),`${cell?.pipe?'<button data-remove-pipe="removePipe">급수관만 제거</button>':''}${cell?.wastepipe?'<button data-remove-pipe="removeWastepipe">배수관만 제거</button>':''}${game.originalRules&&cell?.gasPipe?'<button data-remove-pipe="removeGasPipe">기체관만 제거</button>':''}`);
+  const bridges=game.modernRules?game.buildings.filter(v=>{
+    if(v.type!=='gasBridge'&&v.type!=='liquidBridge')return false;
+    const r=buildingBounds(v);return x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
+  }):[];
+  const bridgeActions=bridges.map(v=>`<button data-remove-pipe="${v.type==='gasBridge'?'removeGasBridge':'removeLiquidBridge'}">${escapeHTML(BUILDINGS[v.type].name)} 해체</button>`).join('');
+  updateHTML($('pipe-actions'),bridgeActions+`${cell?.pipe?`<button data-remove-pipe="removePipe">${game.modernRules?'액체관':'급수관'}만 제거</button>`:''}${cell?.wastepipe?'<button data-remove-pipe="removeWastepipe">배수관만 제거</button>':''}${game.originalRules&&cell?.gasPipe?'<button data-remove-pipe="removeGasPipe">기체관만 제거</button>':''}`);
 }
 function trendSVG(values,color){
   if(values.length<2)values=[values[0]||0,values[0]||0];
@@ -425,6 +462,18 @@ function renderOperations(){
   const entries=[['pumpedWater','취수한 청수','L'],['purifiedWater','정화한 청수','L'],['oxygenProduced','생산한 산소',''],['hydrogenProduced','생산한 수소',''],['hydrogenEnergy','수소 발전','J'],['toiletUses','화장실 이용','회'],['washUses','손 씻기','회'],['harvestedFood','수확한 식량','끼'],['hauledItems','수거한 고체',''],['mealsCooked','조리한 식사','끼'],['cookedEaten','먹은 조리식','끼'],['tableMeals','식탁에서 식사','회'],['scheduledRests','계획 수면','회'],['foodSpoiled','부패한 식품','끼'],['oxygenCompressed','충전소에 압축한 산소',''],['oxygenRefilled','휴대통에 옮긴 산소',''],['portableOxygenUsed','휴대통에서 소비한 산소',''],['protectedSeconds','휴대 산소 호흡','초'],['trainingPointsSpent','배분한 기술','점'],['bedroomRestSeconds','침실에서 수면','초'],['messhallMeals','식당에서 식사','회'],['greenhouseHarvests','온실에서 수확','회']];
   $('production-list').innerHTML=entries.filter(([key])=>Object.hasOwn(production,key)).map(([key,label,unit])=>`<div><span>${label}</span><b>${['oxygenCompressed','oxygenRefilled','portableOxygenUsed'].includes(key)?Number(production[key]).toFixed(2):number(production[key])} ${unit}</b></div>`).join('');
 }
+let researchQuery='';
+function filterResearch(){
+  const target=$('research-unlocks'),q=researchQuery.trim().toLowerCase();
+  for(const group of target.querySelectorAll('.research-tier-group')){
+    let count=0;
+    for(const button of group.querySelectorAll('[data-research-tech]')){
+      const matches=!q||(button.textContent+' '+button.dataset.researchTech).toLowerCase().includes(q);
+      button.hidden=!matches;if(matches)count++;
+    }
+    group.hidden=!count;if(q&&count)group.open=true;
+  }
+}
 function renderGoals(){
   const objectives=game.objectives,done=objectives.filter(o=>o.done).length;
   $('objective-count').textContent=`${done} / ${objectives.length}`;$('objective-fill').style.width=`${done/Math.max(1,objectives.length)*100}%`;
@@ -455,6 +504,20 @@ function renderGoals(){
   $('goal-settlement-reasons').innerHTML=settlement.healthy?'<p class="ready">물류·식사·휴식이 안정적이에요. 이 상태를 이어가세요.</p>':(settlement.reasons||[]).map(reason=>`<p>${escapeHTML(reason)}</p>`).join('');
   $('settlement-card').classList.toggle('healthy',settlement.healthy);
   renderFrontierSummary();
+  if(activePanel!=='research')return;
+  if(game.modernRules){
+    $('research-tier').textContent='기술 트리';
+    const html=renderResearchPanel(game);
+    const panel=$('research-unlocks');
+    if(html!==lastUnlockSignature&&!document.activeElement?.matches('[data-research-search]')){
+      const open=[...panel.querySelectorAll('details')].map(el=>el.open);
+      lastUnlockSignature=html;panel.innerHTML=html;
+      [...panel.querySelectorAll('details')].forEach((el,i)=>{if(i<open.length)el.open=open[i];});
+      const search=panel.querySelector('[data-research-search]');if(search)search.value=researchQuery;
+      filterResearch();
+    }
+    return;
+  }
   $('research-tier').textContent=`${['기초','생활','순환','자립'][game.research?.tier||0]} · ${number(game.stats.research)}/${game.research?.cap||100}`;
   const unlocked=Object.entries(BUILDINGS).filter(([,b])=>b.unlock).sort((a,b)=>a[1].unlock-b[1].unlock);
   const unlockSignature=unlocked.map(([key,b])=>`${key}:${game.stats.research>=b.unlock}`).join(',');
@@ -512,7 +575,7 @@ function renderUI() {
   $$('.build-card').forEach(el=>{
     const def=definitionFor(el.dataset.build);
     el.classList.toggle('unaffordable',Object.entries(def.cost||{}).some(([key,n])=>r[key]<n));
-    const locked=(def.unlock||0)>s.research;
+    const locked=lockedTool(el.dataset.build);
     if(el.classList.contains('locked')!==locked)renderBuildMenu();
   });
   $('recruit-button').disabled=game.crew.filter(c=>c.health>0).length>=4;
@@ -545,7 +608,7 @@ function queueArea(start,end) {
     for(const cell of path){if(!inside(cell))continue;const result=game.queue(tool,cell.x,cell.y);if(result.ok)accepted++;else reason=result.message;}
   }else if(areaTools.includes(tool)){
     for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++){const result=game.queue(tool,x,y);if(result.ok)accepted++;else reason=result.message;}
-  }else if(inside(end)){const result=game.queue(tool,end.x,end.y);accepted=result.ok?1:0;reason=result.message;}
+  }else if(inside(end)){const result=game.queue(tool,end.x,end.y,game.buildRotation||0);accepted=result.ok?1:0;reason=result.message;}
   if(accepted){
     const labels={dig:'채굴 지정',cancel:'작업 취소',priority:'우선순위 변경',wire:'전선 설치',pipe:'급수관 설치',wastepipe:'배수관 설치',gaspipe:'기체관 설치',removePipe:'급수관 제거',removeWastepipe:'배수관 제거',removeGasPipe:'기체관 제거',deconstruct:'철거 지정'};
     toast(`${labels[tool] || (BUILDINGS[tool]?.name+' 건설 예약')} · ${accepted}칸`);beep('build');
@@ -611,9 +674,10 @@ document.addEventListener('keydown',event=>{
   else if(key==='v')setOverlay(renderer.overlay==='plumbing'?'normal':'plumbing');
   else if(key==='g'&&game.originalRules)setOverlay(renderer.overlay==='gas'?'normal':'gas');
   else if(key==='h')setOverlay(renderer.overlay==='logistics'?'normal':'logistics');
+  else if(key==='r'&&game.modernRules&&BUILDING_FOOTPRINTS[tool]?.rotatable)rotateBridge();
   else if(key==='r')setOverlay(renderer.overlay==='rooms'?'normal':'rooms');
   else if(key==='l'){category='plumbing';renderBuildMenu();setTool('pipe');}
-  else if(key==='q'){category='plumbing';renderBuildMenu();setTool('wastepipe');}
+  else if(key==='q'&&!game.modernRules){category='plumbing';renderBuildMenu();setTool('wastepipe');}
   else if(key==='arrowleft'){event.preventDefault();renderer.pan(45,0);}else if(key==='arrowright'){event.preventDefault();renderer.pan(-45,0);}
   else if(key==='arrowup'){event.preventDefault();renderer.pan(0,45);}else if(key==='arrowdown'){event.preventDefault();renderer.pan(0,-45);}
   else if(['1','2','4'].includes(key))setSpeed(Number(key));
@@ -627,7 +691,7 @@ $$('[data-panel]').forEach(el=>el.addEventListener('click',()=>switchPanel(el.da
 $$('[data-close-dialog]').forEach(el=>el.addEventListener('click',()=>closeDialog(el.dataset.closeDialog)));
 $('pause-button').addEventListener('click',()=>setSpeed(speed?0:previousSpeed));
 $('help-button').addEventListener('click',()=>openDialog('help-dialog'));
-  $('new-button').addEventListener('click',()=>{const current=$('ruleset-input');if(current)current.value=ORIGINAL_RULES;const notice=$('previous-save-note');if(notice){let hasSave=false;try{hasSave=[SAVE_KEY,...LEGACY_SAVE_KEYS].some(key=>localStorage.getItem(key));}catch{}notice.textContent=hasSave?'저장한 기지는 불러오기를 선택하면 저장 당시 규칙으로 이어집니다. 4.1 이전 기지는 호환 규칙을 사용합니다.':'이전에 내보낸 기지도 도움말에서 불러올 수 있습니다. 4.1 이전 기지는 호환 규칙을 사용합니다.';}openDialog('new-dialog');});
+  $('new-button').addEventListener('click',()=>{const current=$('ruleset-input');if(current)current.value=MODERN_RULES;const notice=$('previous-save-note');if(notice){let hasSave=false;try{hasSave=[SAVE_KEY,...LEGACY_SAVE_KEYS].some(key=>localStorage.getItem(key));}catch{}notice.textContent=hasSave?'저장한 기지는 불러오기를 선택하면 저장 당시 규칙으로 이어집니다. 4.1 이전 기지는 호환 규칙을 사용합니다.':'이전에 내보낸 기지도 도움말에서 불러올 수 있습니다. 4.1 이전 기지는 호환 규칙을 사용합니다.';}openDialog('new-dialog');});
 $('save-button').addEventListener('click',()=>save(true));
 $('load-button').addEventListener('click',()=>{if(loadSave(true)){closeDialog('help-dialog');if(game.lost)setSpeed(0);}});
 $('start-dig').addEventListener('click',()=>{setTool('dig');$('onboarding').hidden=true;});
@@ -649,13 +713,20 @@ $('haul-workers').addEventListener('click',event=>{const button=event.target.clo
 
 $('task-list').addEventListener('click',event=>{const button=event.target.closest('[data-task-jump]');if(!button)return;const task=game.tasks.find(t=>String(t.id)===button.dataset.taskJump);if(task){renderer.centerOn(task.x+.5,task.y+.5);selectCell({x:task.x,y:task.y});}});
 $('objectives-list').addEventListener('click',event=>{if(event.target.closest('[data-goal-training]')){const c=game.crew.find(c=>c.health>0&&c.skillPoints>0)||game.crew.find(c=>c.health>0);if(c)openTraining(c.id);return;}const button=event.target.closest('[data-goal-tool]');if(!button)return;const next=button.dataset.goalTool;const found=Object.entries(categories).find(([,types])=>types.includes(next));if(found){category=found[0];renderBuildMenu();}setTool(next);if(window.innerWidth<=1000)document.body.classList.remove('panel-open');});
+$('open-research-tree').addEventListener('click',()=>{
+  $('research-tree-content').append($('research-unlocks'));openDialog('research-dialog');
+});
+$('close-research-tree').addEventListener('click',()=>closeDialog('research-dialog'));
+$('research-dialog').addEventListener('close',()=>$('open-research-tree').after($('research-unlocks')));
+$('research-unlocks').addEventListener('input',e=>{if(e.target.matches('[data-research-search]')){researchQuery=e.target.value;filterResearch();}});
+$('research-unlocks').addEventListener('click',event=>{if(event.target.closest('[data-research-clear]')){clearResearchQueue(game);renderUI();return;}const button=event.target.closest('[data-research-tech]');if(!button)return;const result=selectResearch(game,button.dataset.researchTech);toast(result.message,result.ok?'good':'warn');renderUI();});
 $('inspector').addEventListener('click',event=>{if(event.target.closest('[data-room-details]')){switchPanel('rooms',true);setOverlay('rooms');return;}const priority=event.target.closest('[data-pile-priority]');if(priority){changePilePriority(priority);return;}const button=event.target.closest('[data-remove-pipe]');if(button&&currentSelection){const result=game.queue(button.dataset.removePipe,currentSelection.x,currentSelection.y);toast(result.message,result.ok?'good':'warn');renderInspector();}});
 $('center-button').addEventListener('click',()=>renderer.fit());
 $('zoom-fit').addEventListener('click',()=>renderer.fit());
 function zoom(factor){const r=canvas.getBoundingClientRect();renderer.zoomAt(factor,r.left+r.width/2,r.top+r.height/2);}
 $('zoom-in').addEventListener('click',()=>zoom(1.2));$('zoom-out').addEventListener('click',()=>zoom(1/1.2));
 $('recruit-button').addEventListener('click',()=>{const result=game.recruit();toast(result.message,result.ok?'good':'warn');renderUI();});
-$('confirm-new').addEventListener('click',()=>{$('new-dialog').close();newGame($('seed-input').value,$('ruleset-input').value===LEGACY_RULES?LEGACY_RULES:ORIGINAL_RULES);});
+$('confirm-new').addEventListener('click',()=>{$('new-dialog').close();newGame($('seed-input').value,$('ruleset-input').value);});
 $('end-continue').addEventListener('click',()=>closeDialog('end-dialog'));
 $('end-restart').addEventListener('click',()=>{const resumeSpeed=dialogSpeed;$('end-dialog').close();openDialog('new-dialog');dialogSpeed=resumeSpeed;});
 $('sound-button').addEventListener('click',()=>{

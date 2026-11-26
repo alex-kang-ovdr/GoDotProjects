@@ -1,5 +1,6 @@
 import { GAS_KG_PER_UNIT, addGasKg } from './environment.js';
-import { ORIGINAL_RULES } from './rules.js';
+import { atmosphereSpaceKg, emitAtmosphere } from './atmosphere.js';
+import { usesOriginalRates } from './rules.js';
 
 // Web-game gas network. These rates/capacities are simulation choices; only the
 // gas pump's 240 W / 0.5 kg/s values are grounded in the installed ONI build.
@@ -70,12 +71,14 @@ export function installGasNetwork(Game) {
   };
   proto.hydrogenOutputSpace = function(b,reservedKg=0) {
     if(!b||!finite(reservedKg)||reservedKg<0)return 0;
-    return Math.max(0,this._gasAmbientSpace(this.cell(b.x,b.y))-reservedKg);
+    const c=this.cell(b.x,b.y);
+    return Math.max(0,Math.min(this._gasAmbientSpace(c),this.modernRules?atmosphereSpaceKg(this,c,'hydrogen'):Infinity)-reservedKg);
   };
   proto.emitHydrogen = function(b,kg,tempC) {
     if(!b||!finite(kg)||kg<=0||!finite(tempC))return 0;
     const c=this.cell(b.x,b.y);if(!c)return 0;
     const amount=Math.min(kg,this._gasAmbientSpace(c));
+    if(this.modernRules)return emitAtmosphere(this,b.x,b.y,'hydrogen',amount,tempC);
     if(amount>0)addGasKg(c,'hydrogen',amount,tempC,this.waterKgPerCell);
     return amount;
   };
@@ -96,7 +99,7 @@ export function installGasNetwork(Game) {
       +this.buildings.reduce((s,b)=>s+(b.hydrogenBuffer||0),0);
   };
 
-  proto.canPlace = function(tool,x,y) {
+  proto.canPlace = function(tool,x,y,rotation) {
     if(tool==='gaspipe'||tool==='removeGasPipe') {
       const c=this.cell(x,y);
       if(!c||!c.revealed)return{ok:false,message:'탐사한 지도 안의 칸을 선택하세요.'};
@@ -113,7 +116,7 @@ export function installGasNetwork(Game) {
     }
     if(['gasPump','gasVent'].includes(tool)&&!this.originalRules)
       return{ok:false,message:'기체 설비는 원작 규칙 기지에서만 설치할 수 있어요.'};
-    const result=base.canPlace.call(this,tool,x,y);
+    const result=base.canPlace.call(this,tool,x,y,rotation);
     if(result.ok&&tool==='deconstruct') {
       const b=this._buildingAt(x,y);
       if(b?.type==='hydrogenGen'&&(b.hydrogenBuffer||0)>1e-9&&this._gasAmbientSpace(this.cell(x,y))+1e-9<(b.hydrogenBuffer||0))
@@ -121,7 +124,7 @@ export function installGasNetwork(Game) {
     }
     return result;
   };
-  proto.queue = function(tool,x,y) {
+  proto.queue = function(tool,x,y,rotation) {
     if(tool==='gaspipe'||tool==='removeGasPipe') {
       const result=this.canPlace(tool,x,y);if(!result.ok)return result;
       const c=this.cell(x,y);
@@ -130,7 +133,7 @@ export function installGasNetwork(Game) {
       this._syncCommunity?.();
       return result;
     }
-    return base.queue.call(this,tool,x,y);
+    return base.queue.call(this,tool,x,y,rotation);
   };
 
   proto._gasExtractAtPump = function(b,dt,topology) {
@@ -248,14 +251,19 @@ export function installGasNetwork(Game) {
   proto._completeTask = function(task) {
     const b=task.type==='deconstruct'?this._buildingAt(task.x,task.y):null;
     const hydrogen=b?.type==='hydrogenGen'?(b.hydrogenBuffer||0):0;
+    if(this.modernRules&&hydrogen>0){
+      b.hydrogenBuffer-=emitAtmosphere(this,b.x,b.y,'hydrogen',hydrogen,this.cell(b.x,b.y).temp);
+      if(b.hydrogenBuffer>1e-9){task.progress=.95;task.blockedReason='수소 배출 공간 부족';return;}
+      b.hydrogenBuffer=0;
+    }
     const result=base.complete.call(this,task);
-    if(hydrogen>0&&b&&!this.buildings.includes(b))addGasKg(this.cell(task.x,task.y),'hydrogen',hydrogen,this.cell(task.x,task.y).temp,this.waterKgPerCell);
+    if(!this.modernRules&&hydrogen>0&&b&&!this.buildings.includes(b))addGasKg(this.cell(task.x,task.y),'hydrogen',hydrogen,this.cell(task.x,task.y).temp,this.waterKgPerCell);
     return result;
   };
   proto.load = function(raw) {
     if(!raw||typeof raw!=='object')return base.load.call(this,raw);
     const saved=JSON.parse(JSON.stringify(raw));
-    const original=saved.ruleset===ORIGINAL_RULES;
+    const original=usesOriginalRates(saved.ruleset);
     if(Array.isArray(saved.cells))for(const c of saved.cells) {
       if('gasPipe' in c&&typeof c.gasPipe!=='boolean')throw new Error('기체관 상태가 올바르지 않습니다.');
       if('gasPacket' in c&&c.gasPacket!==null&&(!c.gasPipe||!c.gasPacket||!VALID_GASES.has(c.gasPacket.element)||!finite(c.gasPacket.mass)||c.gasPacket.mass<=0||c.gasPacket.mass>PIPE_CAPACITY_KG+1e-8||!finite(c.gasPacket.temp)||c.gasPacket.temp< -100||c.gasPacket.temp>300))throw new Error('기체관 저장량 또는 온도가 올바르지 않습니다.');

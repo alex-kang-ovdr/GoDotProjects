@@ -1,4 +1,5 @@
 import { ELEMENTS } from './elements.js';
+import { atmosphereOf, atmosphereSpaceKg, stepAtmosphere, canBreatheAtmosphere } from './atmosphere.js';
 
 // Historical saves use 12 kg per full water cell. Fresh worlds use Water.maxMass from liquid.yaml.
 // The legacy mass table below preserves the 120-second colony's thermal behavior.
@@ -7,12 +8,14 @@ export const ORIGINAL_WATER_PER_CELL = 1000;
 // Retains the established 0.30 units/s display at 0.18 kg/s water input.
 export const GAS_KG_PER_UNIT = 0.5328;
 
-export function oxygenOutletSpace(cell, originalRules = false) {
+export function oxygenOutletSpace(cell, originalRules = false, modernRules=false, game=null) {
+  if(modernRules)return atmosphereSpaceKg(game,cell,'oxygen')/GAS_KG_PER_UNIT;
   if (originalRules) return Math.max(0, (1.8 - (cell.steam || 0) - (cell.hydrogen || 0)) / GAS_KG_PER_UNIT - cell.oxygen - cell.co2);
   return Math.max(0, Math.min(3 - cell.oxygen, 2.5 - cell.oxygen - cell.co2 - (cell.steam || 0) / GAS_KG_PER_UNIT));
 }
 
-export function canBreathe(cell) {
+export function canBreathe(cell, modernRules=false) {
+  if(modernRules)return canBreatheAtmosphere(cell);
   if (!cell || cell.solid || cell.water >= 0.7 || cell.oxygen <= 0.16) return false;
   const gas = cell.oxygen + cell.co2 + ((cell.steam || 0) + (cell.hydrogen || 0)) / GAS_KG_PER_UNIT;
   return cell.oxygen >= gas * 0.16;
@@ -44,9 +47,10 @@ export function conductivity(c) {
   return materialFor(c).thermalConductivity * (c.insulated ? 0.01 : 1);
 }
 
-function heatCapacity(c, waterKgPerCell, solidMass = SOLID_MASS) {
+function heatCapacity(c, waterKgPerCell, solidMass = SOLID_MASS, modernRules=false) {
   if (c.solid) return solidMass[c.solid] * materialFor(c).specificHeatCapacity;
   // Background capacity keeps a nearly evacuated cell numerically stable.
+  if(modernRules){const state=atmosphereOf(c),field=state?.element==='co2'?'CarbonDioxide':state?.element==='hydrogen'?'Hydrogen':state?.element==='steam'?'Steam':'Oxygen';return 0.05+(state?.massKg||0)*ELEMENTS[field].specificHeatCapacity+c.water*waterKgPerCell*water.specificHeatCapacity+(c.frost||0)*waterKgPerCell*ice.specificHeatCapacity;}
   return 0.05 + GAS_KG_PER_UNIT * (c.oxygen * gasO2.specificHeatCapacity + c.co2 * gasCO2.specificHeatCapacity)
     + (c.hydrogen || 0) * ELEMENTS.Hydrogen.specificHeatCapacity
     + c.water * waterKgPerCell * water.specificHeatCapacity
@@ -71,12 +75,25 @@ export function addWarmOxygen(cell, units, minTempC, waterKgPerCell = WATER_PER_
   addGasKg(cell, 'oxygen', units * GAS_KG_PER_UNIT, Math.max(cell.temp, minTempC), waterKgPerCell);
 }
 
-function move(from, to, field, amount, waterKgPerCell) {
+function move(from, to, field, amount, waterKgPerCell, modernRules=false) {
   if (amount <= 0) return;
+  const wasEmpty=field==='water'&&to.water<=1e-12;
+  const sourceLiquid=from.liquidElement==='dirtyWater'?'dirtyWater':'water';
+  if(modernRules&&field==='water'){
+    if(atmosphereOf(to))return;
+    const targetLiquid=to.liquidElement==='dirtyWater'?'dirtyWater':'water';
+    if(to.water>1e-12&&targetLiquid!==sourceLiquid)return;
+    if(to.frost>1e-12&&to.liquidElement==='dirtyWater'&&sourceLiquid!=='dirtyWater')return;
+  }
   const incoming = amount * (field === 'water' ? waterKgPerCell * water.specificHeatCapacity : heatPerUnit[field]);
   to.temp += (from.temp - to.temp) * incoming / (heatCapacity(to, waterKgPerCell) + incoming);
   from[field] -= amount;
   to[field] = (to[field] || 0) + amount;
+  if(modernRules&&field==='water'){
+    if(wasEmpty&&sourceLiquid==='dirtyWater')to.liquidElement='dirtyWater';
+    else if(wasEmpty&&sourceLiquid==='water')delete to.liquidElement;
+    if(from.water<=1e-12&&!from.frost)delete from.liquidElement;
+  }
 }
 
 function exchangeGas(a, b, field, diff, limit, waterKgPerCell) {
@@ -84,17 +101,17 @@ function exchangeGas(a, b, field, diff, limit, waterKgPerCell) {
   if (diff > 0) move(a, b, field, Math.min(diff, a[field], Math.max(0, limit - (b[field] || 0))), waterKgPerCell);
 }
 
-function exchangePair(a, b, vertical, permeable, dt, gasLimit, waterKgPerCell, solidMass) {
+function exchangePair(a, b, vertical, permeable, dt, gasLimit, waterKgPerCell, solidMass, modernRules=false) {
   const delta = a.temp - b.temp;
   if (Math.abs(delta) > 0.000001) {
     const ka = conductivity(a), kb = conductivity(b);
-    const ca = heatCapacity(a, waterKgPerCell, solidMass), cb = heatCapacity(b, waterKgPerCell, solidMass);
+    const ca = heatCapacity(a, waterKgPerCell, solidMass,modernRules), cb = heatCapacity(b, waterKgPerCell, solidMass,modernRules);
     // Limit to thermal equilibrium for this pair, even for a nearly empty cell.
     const energy = delta * Math.min(dt * 2 * ka * kb / (ka + kb || 1), ca * cb / (ca + cb));
     a.temp -= energy / ca;
     b.temp += energy / cb;
   }
-  if (!permeable || a.solid || b.solid) return;
+  if (!permeable || a.solid || b.solid || modernRules) return;
   exchangeGas(a, b, 'oxygen', (a.oxygen - b.oxygen) * dt * 0.32, gasLimit, waterKgPerCell);
   exchangeGas(a, b, 'co2', ((a.co2 - b.co2) * 0.30 + (vertical ? a.co2 * 0.06 : 0)) * dt, gasLimit, waterKgPerCell);
   if (a.hydrogen || b.hydrogen) {
@@ -137,6 +154,7 @@ export function stepEnvironment(game, dt, cycleSeconds) {
   const gasLimit = game.originalRules ? 10 : 3;
   const waterKgPerCell = game.waterKgPerCell ?? WATER_PER_CELL;
   const solidMass = game.originalRules ? ORIGINAL_SOLID_MASS : SOLID_MASS;
+  const modernRules=!!game.modernRules;
   const sealed = game._doorMap;
   const blocked = i => sealed?.has(i) && !sealed.get(i).doorOpen;
   // Alternate edge order to avoid a persistent preferred direction on level ground.
@@ -144,11 +162,12 @@ export function stepEnvironment(game, dt, cycleSeconds) {
   for (let n = 0; n < cells.length; ++n) {
     const i = reverse ? cells.length - 1 - n : n;
     const a = cells[i];
-    if (i % w + 1 < w) exchangePair(a, cells[i + 1], false, !blocked(i) && !blocked(i + 1), dt, gasLimit, waterKgPerCell, solidMass);
-    if (i + w < cells.length) exchangePair(a, cells[i + w], true, !blocked(i) && !blocked(i + w), dt, gasLimit, waterKgPerCell, solidMass);
+    if (i % w + 1 < w) exchangePair(a, cells[i + 1], false, !blocked(i) && !blocked(i + 1), dt, gasLimit, waterKgPerCell, solidMass,modernRules);
+    if (i + w < cells.length) exchangePair(a, cells[i + w], true, !blocked(i) && !blocked(i + w), dt, gasLimit, waterKgPerCell, solidMass,modernRules);
   }
+  if(modernRules)stepAtmosphere(game,dt,cycleSeconds);
   for (const c of cells) {
-    if (c.steamVent && !c.solid && game.time % cycleSeconds < 36) {
+    if (!modernRules&&c.steamVent && !c.solid && game.time % cycleSeconds < 36) {
       const mass = Math.min(dt * 0.2, Math.max(0, 2.5 - (c.steam || 0)));
       if (mass > 0) {
         const incomingHeatCapacity = mass * steam.specificHeatCapacity;
@@ -157,18 +176,19 @@ export function stepEnvironment(game, dt, cycleSeconds) {
         c.ventOutput += mass;
       }
     }
-    changeWaterPhase(c, waterKgPerCell);
+    if(!modernRules)changeWaterPhase(c, waterKgPerCell);
   }
   for (let y = h - 2; y > 0; --y) {
     for (let x = 1; x < w - 1; ++x) {
       const i = y * w + x, a = cells[i];
       if (a.solid || !a.water || blocked(i)) continue;
       const below = cells[i + w];
-      if (!below.solid && !blocked(i + w)) move(a, below, 'water', Math.min(a.water, liquidSpace(below), 2 * dt), waterKgPerCell);
+      if (!below.solid && !blocked(i + w)) move(a, below, 'water', Math.min(a.water, liquidSpace(below), 2 * dt), waterKgPerCell,modernRules);
       for (const offset of reverse ? [1, -1] : [-1, 1]) {
         const b = cells[i + offset];
-        if (!b.solid && !blocked(i + offset) && a.water > b.water + 0.02) {
-          move(a, b, 'water', Math.min((a.water - b.water) / 2, liquidSpace(b), 0.25 * dt), waterKgPerCell);
+        const unlike=modernRules&&a.water>0&&b.water>0&&(a.liquidElement==='dirtyWater')!==(b.liquidElement==='dirtyWater');
+        if (!b.solid && !blocked(i + offset) && !unlike && a.water > b.water + 0.02) {
+          move(a, b, 'water', Math.min((a.water - b.water) / 2, liquidSpace(b), 0.25 * dt), waterKgPerCell,modernRules);
         }
       }
     }
@@ -183,11 +203,15 @@ export function displaceForTile(game, x, y, apply = true) {
     return c && !c.solid && !game._doorBlocksFluid(x + dx, y + dy) ? c : null;
   }).filter(Boolean);
   if (source.frost > 0) return false;
-  const gasLimit = game.originalRules ? 10 : 3;
+  const modernRules=!!game.modernRules;
+  const gasLimit = modernRules?10/GAS_KG_PER_UNIT:game.originalRules ? 10 : 3;
   const waterKgPerCell = game.waterKgPerCell ?? WATER_PER_CELL;
   for (const [field, cap] of [['water',1], ['oxygen',gasLimit], ['co2',gasLimit], ['steam',waterKgPerCell], ['hydrogen',10]]) {
     let left = source[field] || 0;
     for (const c of neighbors) {
+      if(modernRules&&field==='water'&&(atmosphereOf(c)||(c.water>1e-12&&(c.liquidElement==='dirtyWater')!==(source.liquidElement==='dirtyWater'))||(c.frost>1e-12&&c.liquidElement==='dirtyWater'&&source.liquidElement!=='dirtyWater')))continue;
+      if(modernRules&&['oxygen','co2','steam','hydrogen'].includes(field)&&(c.water>1e-12||c.frost>1e-12))continue;
+      if(modernRules&&['oxygen','co2','steam','hydrogen'].includes(field)){const occupied=atmosphereOf(c);if(occupied&&occupied.element!==field)continue;}
       const free = field === 'water' ? liquidSpace(c) : Math.max(0, cap - (c[field] || 0));
       const amount = Math.min(left, free);
       if (amount > 0) moves.push([c, field, amount]);
@@ -197,6 +221,6 @@ export function displaceForTile(game, x, y, apply = true) {
     if (left > 1e-12) return false;
   }
   if (!apply) return true;
-  for (const [c, field, amount] of moves) move(source, c, field, amount, waterKgPerCell);
+  for (const [c, field, amount] of moves) move(source, c, field, amount, waterKgPerCell,modernRules);
   return true;
 }

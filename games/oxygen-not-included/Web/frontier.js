@@ -1,6 +1,9 @@
 /* Structural rooms, portable oxygen and productive work specialization. No DOM dependency. */
 import { breathingUnitsPerSecond } from './rules.js';
 import { canBreathe } from './environment.js';
+import { atmosphereOf, atmosphereSpaceKg, emitAtmosphere, takeAtmosphere } from './atmosphere.js';
+import { GAS_KG_PER_UNIT } from './environment.js';
+import { buildingCells } from './footprint.js';
 
 export const FRONTIER_BUILDINGS = {
   door: { name:'기밀문', icon:'door', description:'자동으로 여닫히며 닫혔을 때 기체와 물을 막습니다. 열림·잠금 모드도 선택할 수 있어요.', cost:{rock:6,metal:4}, color:'#b4c8cf' },
@@ -14,6 +17,7 @@ export const FRONTIER_OBJECTIVES = [
 ];
 export const FRONTIER_PRODUCTION_KEYS = ['oxygenCompressed','oxygenRefilled','portableOxygenUsed','protectedSeconds','trainingPointsSpent','bedroomRestSeconds','messhallMeals','greenhouseHarvests'];
 const MODES=['auto','open','locked'];
+const usesFootprints=state=>state.modernRules===true||state.ruleset==='oni-4.3';
 const MASK_MODES=['auto','off'];
 const SKILLS=['dig','engineering','life'];
 const SKILL_NAMES={dig:'굴착',engineering:'공학',life:'생활'};
@@ -41,7 +45,7 @@ function equipmentSnapshot(state){return {
 /** Only revealed air participates: unknown cavities never leak their shapes into the overlay. */
 export function analyzeRooms(state){
   const {w,h,cells,buildings}=state,doors=new Map(),seen=new Set(),rooms=[];
-  for(const b of buildings)if(b.type==='door'&&complete(b))doors.set(b.y*w+b.x,b);
+  for(const b of buildings)if(b.type==='door'&&complete(b))for(const pos of usesFootprints(state)?buildingCells(b):[{x:b.x,y:b.y}])doors.set(pos.y*w+pos.x,b);
   const open=i=>i>=0&&i<cells.length&&cells[i].revealed&&!cells[i].solid&&!doors.has(i);
   for(let start=0;start<cells.length;start++){
     if(seen.has(start)||!open(start))continue;
@@ -96,7 +100,9 @@ function frontierReasons(state,canReach){
 
 function stateReachability(state){
   const ladders=new Set(state.buildings.filter(b=>b.type==='ladder'&&complete(b)).map(b=>b.y*state.w+b.x));
-  const locked=new Set(state.buildings.filter(b=>b.type==='door'&&complete(b)&&b.doorMode==='locked').map(b=>b.y*state.w+b.x));
+  const modern=usesFootprints(state);
+  const doorCells=b=>modern?buildingCells(b):[{x:b.x,y:b.y}];
+  const locked=new Set(state.buildings.filter(b=>b.type==='door'&&complete(b)&&b.doorMode==='locked').flatMap(b=>doorCells(b).map(pos=>pos.y*state.w+pos.x)));
   const standable=i=>i>=0&&i<state.cells.length&&!state.cells[i].solid&&!locked.has(i)&&(ladders.has(i)||!!state.cells[i+state.w]?.solid);
   const caches=new Map();
   return(c,goals)=>{
@@ -116,7 +122,7 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
   proto.reset=function(seed,ruleset){this._frontierReady=false;const result=base.reset.call(this,seed,ruleset);this.version=4;for(const k of FRONTIER_PRODUCTION_KEYS)this.production[k]=0;this.rooms=[];this.equipment=equipmentSnapshot(this);this.frontier=emptyFrontier();this._roomsDirty=true;this._frontierReady=true;this._syncRooms();this._updateDoors();this._updateStats();return result;};
   proto._syncRooms=function(force=false){
     if(!this._frontierReady)return;
-    if(force||this._roomsDirty){this.rooms=analyzeRooms(this);this._roomsDirty=false;this._roomIndex=new Map();for(const room of this.rooms)for(const i of room.cells)this._roomIndex.set(i,room);this._doorMap=new Map(this.buildings.filter(b=>b.type==='door'&&complete(b)).map(b=>[b.y*this.w+b.x,b]));}
+    if(force||this._roomsDirty){this.rooms=analyzeRooms(this);this._roomsDirty=false;this._roomIndex=new Map();for(const room of this.rooms)for(const i of room.cells)this._roomIndex.set(i,room);this._doorMap=new Map();for(const b of this.buildings.filter(b=>b.type==='door'&&complete(b)))for(const pos of this.modernRules?buildingCells(b):[{x:b.x,y:b.y}])this._doorMap.set(pos.y*this.w+pos.x,b);}
     this.stats.validRooms=this.rooms.filter(r=>r.valid).length;this.stats.specializedRoomTypes=new Set(this.rooms.filter(r=>r.valid).map(r=>r.type)).size;this.stats.totalSkillRanks=rankSum(this.crew);
   };
   proto.roomAt=function(x,y){if(!this.cell(x,y)||!this.cell(x,y).revealed)return null;this._syncRooms();return this._roomIndex?.get(y*this.w+x)||null;};
@@ -131,9 +137,10 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
   proto._standable=function(x,y){const door=this._doorMap?.get(y*this.w+x);return !(this._frontierReady&&door?.doorMode==='locked')&&base.standable.call(this,x,y);};
   proto.setDoorMode=function(id,mode){
     const b=this.buildings.find(b=>b.id===id&&b.type==='door'&&complete(b));if(!b||!MODES.includes(mode))return{ok:false,message:'완공된 문과 올바른 개폐 방식을 선택하세요.'};
-    if(mode==='locked'&&this.crew.some(c=>c.health>0&&Math.floor(c.x)===b.x&&Math.floor(c.y)===b.y))return{ok:false,message:'문 칸을 통과 중인 대원이 있어요. 지나간 뒤 잠그세요.'};
+    const occupiedCells=this.modernRules?buildingCells(b):[{x:b.x,y:b.y}];
+    if(mode==='locked'&&this.crew.some(c=>c.health>0&&occupiedCells.some(pos=>Math.floor(c.x)===pos.x&&Math.floor(c.y)===pos.y)))return{ok:false,message:'문 칸을 통과 중인 대원이 있어요. 지나간 뒤 잠그세요.'};
     b.doorMode=mode;this._navRevision++;this._pathCache=null;this._updateDoors();
-    if(mode==='locked')for(const c of this.crew)if(c._job?.path?.some(p=>p.x===b.x&&p.y===b.y))this._release(c);
+    if(mode==='locked')for(const c of this.crew)if(c._job?.path?.some(p=>occupiedCells.some(pos=>p.x===pos.x&&p.y===pos.y)))this._release(c);
     this._updateFrontier(0);return{ok:true,message:mode==='auto'?'문을 자동 개폐로 설정했어요.':mode==='open'?'문을 열린 상태로 유지합니다.':'문을 잠갔어요. 대원과 기체·물이 통과하지 못합니다.'};
   };
   proto.toggleBuilding=function(id){const b=this.buildings.find(b=>b.id===id);if(b?.type==='door')return false;const result=base.toggle.call(this,id);if(result&&this._frontierReady){this._roomsDirty=true;this._syncRooms();this.equipment=equipmentSnapshot(this);this._updateFrontier(0);}return result;};
@@ -143,19 +150,20 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
     for(let cursor=0;cursor<q.length;cursor++){const p=q[cursor],cell=this.cell(p.x,p.y);if(!cell||cell.solid||!cell.revealed||this._doorBlocksFluid(p.x,p.y))continue;if(cell.water<.7)out.push(cell);if(p.d>=radius)continue;for(const[dx,dy]of DIRS){const x=p.x+dx,y=p.y+dy,i=y*this.w+x;if(!this.cell(x,y)||seen.has(i))continue;seen.add(i);q.push({x,y,d:p.d+1});}}
     return out;
   };
-  proto._dockReleaseReason=function(b){if(b?.type!=='oxygenDock'||!complete(b)||b.oxygenStored<=EPS)return null;const space=this._nearbyGasCells(b).reduce((sum,c)=>sum+Math.max(0,3-c.oxygen),0);return space+EPS<b.oxygenStored?'충전소의 산소를 방출할 공간이 부족해요. 산소통에 옮기거나 주변 공간을 넓히세요.':null;};
+  proto._dockReleaseReason=function(b){if(b?.type!=='oxygenDock'||!complete(b)||b.oxygenStored<=EPS)return null;const space=this.modernRules?this._nearbyGasCells(b).reduce((sum,c)=>sum+atmosphereSpaceKg(this,c,'oxygen')/GAS_KG_PER_UNIT,0):this._nearbyGasCells(b).reduce((sum,c)=>sum+Math.max(0,3-c.oxygen),0);return space+EPS<b.oxygenStored?'충전소의 산소를 방출할 공간이 부족해요. 산소통에 옮기거나 주변 공간을 넓히세요.':null;};
   proto._frontierTaskReason=function(t){
     if(t.type!=='deconstruct')return null;
     const b=this.buildings.find(b=>b.id===t.buildingId),reason=this._dockReleaseReason(b)||this._storageRemovalReason?.(b);if(reason)return reason;
     if(b&&complete(b))for(const [layer,key]of [['water','cleanWater'],['waste','dirtyWater']])if(b[key]>EPS&&b[key]>this._fluidSpace(this._fluidNet(b,layer),b)+EPS)return'탱크의 물을 옮길 저장 공간이 필요해요.';
     return null;
   };
-  proto.canPlace=function(tool,x,y){const result=base.canPlace.call(this,tool,x,y);if(result.ok&&tool==='deconstruct'){const reason=this._dockReleaseReason(this._buildingAt(x,y));if(reason)return{ok:false,message:reason};}return result;};
+  proto.canPlace=function(tool,x,y,rotation){const result=base.canPlace.call(this,tool,x,y,rotation);if(result.ok&&tool==='deconstruct'){const reason=this._dockReleaseReason(this._buildingAt(x,y));if(reason)return{ok:false,message:reason};}return result;};
   proto._completeTask=function(t){
     const b=this.buildings.find(b=>b.id===t.buildingId);
     if(this._frontierReady&&t.type==='deconstruct'&&b?.type==='oxygenDock'){
       const reason=this._dockReleaseReason(b);if(reason){t.progress=.95;t.blockedReason=reason;return;}
-      for(const cell of this._nearbyGasCells(b)){const amount=Math.min(b.oxygenStored,Math.max(0,3-cell.oxygen));cell.oxygen+=amount;b.oxygenStored-=amount;if(b.oxygenStored<=EPS){b.oxygenStored=0;break;}}
+      if(this.modernRules){const emitted=emitAtmosphere(this,b.x,b.y,'oxygen',b.oxygenStored*GAS_KG_PER_UNIT,this.cell(b.x,b.y).temp)/GAS_KG_PER_UNIT;b.oxygenStored=Math.max(0,b.oxygenStored-emitted);if(b.oxygenStored>EPS){t.progress=.95;t.blockedReason='저장 산소를 방출할 공간이 부족해요. 주변 공간을 넓히세요.';return;}}
+      else for(const cell of this._nearbyGasCells(b)){const amount=Math.min(b.oxygenStored,Math.max(0,3-cell.oxygen));cell.oxygen+=amount;b.oxygenStored-=amount;if(b.oxygenStored<=EPS){b.oxygenStored=0;break;}}
     }
     const result=base.complete.call(this,t);if(this._frontierReady){this._roomsDirty=true;this._syncRooms();this._updateDoors();this.equipment=equipmentSnapshot(this);}return result;
   };
@@ -163,11 +171,11 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
   proto._startFrontier=function(){if(!this._frontierReady)return;this._updateDoors();for(const c of this.crew)c.usingPortable=false;};
   proto._frontierProduction=function(dt){
     if(!this._frontierReady)return;
-    for(const b of this.buildings){if(b.type!=='oxygenDock'||!usable(b)||!b.active)continue;let left=Math.min(COMPRESS_RATE*dt,b.oxygenCapacity-b.oxygenStored),compressed=0;for(const c of this._nearbyGasCells(b)){const amount=Math.min(left,Math.max(0,c.oxygen-SOURCE_FLOOR));c.oxygen-=amount;b.oxygenStored+=amount;left-=amount;compressed+=amount;if(left<=EPS)break;}this.production.oxygenCompressed+=compressed;if(compressed>EPS){b.status='주변 산소 압축 중';this.cell(b.x,b.y).temp+=.01*dt;}else{b.active=false;b.status='주변 산소 부족';}}
+    for(const b of this.buildings){if(b.type!=='oxygenDock'||!usable(b)||!b.active)continue;let left=Math.min(COMPRESS_RATE*dt,b.oxygenCapacity-b.oxygenStored),compressed=0;for(const c of this._nearbyGasCells(b)){if(this.modernRules&&atmosphereOf(c)?.element!=='oxygen')continue;const amount=Math.min(left,Math.max(0,c.oxygen-SOURCE_FLOOR));if(this.modernRules)takeAtmosphere(c,amount*GAS_KG_PER_UNIT);else c.oxygen-=amount;b.oxygenStored+=amount;left-=amount;compressed+=amount;if(left<=EPS)break;}this.production.oxygenCompressed+=compressed;if(compressed>EPS){b.status='주변 산소 압축 중';this.cell(b.x,b.y).temp+=.01*dt;}else{b.active=false;b.status='주변 산소 부족';}}
     this.equipment=equipmentSnapshot(this);
   };
   proto._portableBreath=function(c,p,dt){
-    c.usingPortable=false;if(!this._frontierReady||c.health<=0||c.maskMode!=='auto'||canBreathe(p))return false;
+    c.usingPortable=false;if(!this._frontierReady||c.health<=0||c.maskMode!=='auto'||canBreathe(p,this.modernRules))return false;
     const needed=this.breathRate*dt,used=Math.min(needed,c.portableOxygen);if(used<=0)return 0;
     c.portableOxygen=Math.max(0,c.portableOxygen-used);c.usingPortable=true;this.production.portableOxygenUsed+=used;this.production.protectedSeconds+=used/this.breathRate;return used/needed;
   };

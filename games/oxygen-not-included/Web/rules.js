@@ -1,14 +1,17 @@
 import { GAS_KG_PER_UNIT } from './environment.js';
 
+export const MODERN_RULES = 'oni-4.3';
 export const ORIGINAL_RULES = 'oni-base';
 export const LEGACY_RULES = 'breath-4.1';
 
+export function usesOriginalRates(ruleset) { return ruleset === ORIGINAL_RULES || ruleset === MODERN_RULES; }
+
 export function cycleSecondsFor(ruleset) {
-  return ruleset === ORIGINAL_RULES ? 600 : 120;
+  return usesOriginalRates(ruleset) ? 600 : 120;
 }
 
 export function breathingUnitsPerSecond(ruleset) {
-  return ruleset === ORIGINAL_RULES ? 0.1 / GAS_KG_PER_UNIT : 0.055;
+  return usesOriginalRates(ruleset) ? 0.1 / GAS_KG_PER_UNIT : 0.055;
 }
 
 // Negative wattages denote producers throughout the existing power network.
