@@ -1,7 +1,7 @@
 {
   "id": "oxygen-not-included",
   "name": "숨 · Oxygen Not Included",
-  "description": "2D underground colony survival simulator in Godot 4.7 with complete reverse-engineered ONI datasets (196 elements, 13 biomes, 60 mobs, 23 geysers, 97 techs, 347 codex, 44 textures, 30 KAnim sprites, 81 Unity shaders / 3 ported .gdshaders, 10 FMOD PCM16 SFX).",
+  "description": "2D underground colony survival simulator in Godot 4.7 with complete reverse-engineered ONI datasets (196 elements, 13 biomes, 60 mobs, 23 geysers, 97 techs, 347 codex, 44 textures, 30 KAnim sprites, 81 Unity shaders / 5 ported .gdshaders, 10 FMOD PCM16 SFX).",
   "dimension": "2d",
   "assetPaths": [
     "assets/icon.svg",
@@ -9,6 +9,8 @@
     "shaders/oni_atmosphere_fx.gdshader",
     "shaders/oni_tile_surface.gdshader",
     "shaders/oni_water_surface.gdshader",
+    "shaders/oni_gas_volume.gdshader",
+    "shaders/oni_light_compositor.gdshader",
     "data/elements_extracted.txt",
     "data/biomes_worldgen_extracted.txt",
     "data/tech_tree_extracted.txt",
@@ -27,6 +29,8 @@
     "shaders/oni_atmosphere_fx.gdshader",
     "shaders/oni_tile_surface.gdshader",
     "shaders/oni_water_surface.gdshader",
+    "shaders/oni_gas_volume.gdshader",
+    "shaders/oni_light_compositor.gdshader",
     "data/elements_extracted.txt",
     "data/biomes_worldgen_extracted.txt",
     "data/tech_tree_extracted.txt",

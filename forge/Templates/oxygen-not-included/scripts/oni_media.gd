@@ -148,8 +148,17 @@ static func _decode_png_b64(b64: String) -> Texture2D:
 	if b64.is_empty():
 		return null
 	var raw := Marshalls.base64_to_raw(b64)
+	if raw.size() < 4:
+		return null
 	var img := Image.new()
-	if img.load_png_from_buffer(raw) == OK:
+	var err := ERR_INVALID_DATA
+	if raw[0] == 0xFF and raw[1] == 0xD8:
+		err = img.load_jpg_from_buffer(raw)
+	elif raw[0] == 0x52 and raw[1] == 0x49 and raw[2] == 0x46 and raw[3] == 0x46:
+		err = img.load_webp_from_buffer(raw)
+	else:
+		err = img.load_png_from_buffer(raw)
+	if err == OK:
 		return ImageTexture.create_from_image(img)
 	return null
 
@@ -250,7 +259,7 @@ static func get_complete_audit_lines() -> Array[String]:
 		kanim_building_idle.size() + kanim_dupes.size(),
 		int(rendering_inventory.get("kanim_textassets_total", 0)),
 	])
-	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 3종" % [
+	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 5종" % [
 		int(shaders_summary.get("shaders", 0)),
 		klei_shader_names.size(),
 		int(shaders_summary.get("materials", 0)),

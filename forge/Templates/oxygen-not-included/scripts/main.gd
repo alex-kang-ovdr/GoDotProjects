@@ -108,7 +108,7 @@ func _build_hud() -> void:
 			fx_rect.material = _atmo_shader_mat
 			_ui_root.add_child(fx_rect)
 
-	# 상단 바 (PIE 좌측 상단 오버레이 회피)
+	# 상단 바 (PIE 좌측 상단 오버레이 회피 + 1280px 폭 내 전 버튼 완전 노출)
 	var top_panel := PanelContainer.new()
 	top_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	top_panel.offset_left = 260
@@ -117,7 +117,7 @@ func _build_hud() -> void:
 	_ui_root.add_child(top_panel)
 
 	var top_hbox := HBoxContainer.new()
-	top_hbox.add_theme_constant_override("separation", 6)
+	top_hbox.add_theme_constant_override("separation", 4)
 	top_panel.add_child(top_hbox)
 
 	var title_lbl := Label.new()
@@ -156,14 +156,14 @@ func _build_hud() -> void:
 		_speed_buttons[String(sp["id"])] = btn
 
 	var step_btn := Button.new()
-	step_btn.text = "틱+0.2s"
+	step_btn.text = "+틱"
 	step_btn.pressed.connect(func():
 		audio.play_click()
 		paused = true
 		world.step_gas_tick()
 		_update_speed_buttons()
 		_refresh_hud()
-		renderer.queue_redraw()
+		renderer.request_redraw()
 	)
 	top_hbox.add_child(step_btn)
 
@@ -192,7 +192,7 @@ func _build_hud() -> void:
 	top_hbox.add_child(res_btn)
 
 	var audit_btn := Button.new()
-	audit_btn.text = "도감/셰이더(I)"
+	audit_btn.text = "도감(I)"
 	audit_btn.pressed.connect(func():
 		audio.play_toggle()
 		_toggle_audit_panel()
@@ -208,7 +208,7 @@ func _build_hud() -> void:
 		_rebuild_tool_buttons()
 		_refresh_research_panel()
 		_refresh_hud()
-		renderer.queue_redraw()
+		renderer.request_redraw()
 	)
 	top_hbox.add_child(reset_btn)
 
@@ -401,7 +401,7 @@ func _select_overlay(oid: String) -> void:
 	for k in _overlay_buttons.keys():
 		var btn: Button = _overlay_buttons[k]
 		btn.modulate = Color(0.55, 0.95, 1.0) if String(k) == oid else Color(1, 1, 1)
-	renderer.queue_redraw()
+	renderer.request_redraw()
 
 func _toggle_research_panel() -> void:
 	_research_panel.visible = not _research_panel.visible
@@ -520,7 +520,7 @@ func _process(delta: float) -> void:
 		_atmo_shader_mat.set_shader_parameter("overlay_mode", om)
 		_atmo_shader_mat.set_shader_parameter("avg_oxygen", world.avg_oxygen_kg)
 	_refresh_hud()
-	renderer.queue_redraw()
+	renderer.request_redraw()
 
 func _handle_camera_keys(delta: float) -> void:
 	var move := Vector2.ZERO

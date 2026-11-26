@@ -78,6 +78,25 @@ func idx(x: int, y: int) -> int:
 func in_bounds(x: int, y: int) -> bool:
 	return x >= 0 and x < WIDTH and y >= 0 and y < HEIGHT
 
+func _hash2(ix: int, iy: int, s: int) -> float:
+	var h := sin(float(ix) * 127.1 + float(iy) * 311.7 + float(s) * 74.7) * 43758.5453123
+	return h - floor(h)
+
+func _geo_noise(x: float, y: float, scale: float, s: int) -> float:
+	var gx := x / scale
+	var gy := y / scale
+	var ix := int(floor(gx))
+	var iy := int(floor(gy))
+	var fx := gx - float(ix)
+	var fy := gy - float(iy)
+	fx = fx * fx * (3.0 - 2.0 * fx)
+	fy = fy * fy * (3.0 - 2.0 * fy)
+	var a := _hash2(ix, iy, s)
+	var b := _hash2(ix + 1, iy, s)
+	var c := _hash2(ix, iy + 1, s)
+	var d := _hash2(ix + 1, iy + 1, s)
+	return lerpf(lerpf(a, b, fx), lerpf(c, d, fx), fy)
+
 func generate(p_seed := 73) -> void:
 	OniElements.ensure_loaded()
 	seed_value = p_seed
@@ -174,53 +193,73 @@ func generate(p_seed := 73) -> void:
 				_set_solid(i, "Unobtanium" if OniElements.elements.has("Unobtanium") else "Granite", 21.0)
 				continue
 
-			# 서쪽: 원작 Frozen 바이옴 (Ice, Snow, DirtyIce, Wolframite, Granite)
-			var dist_ice := Vector2(x - 7, y - 14).length()
-			if dist_ice < 6.2 + rng.randf_range(-0.8, 0.8):
-				var fr := rng.randf()
-				var fel := "Ice" if fr < 0.48 else ("Snow" if fr < 0.68 else ("Wolframite" if fr < 0.84 else "Granite"))
-				_set_solid(i, fel, -14.0 + rng.randf_range(-5.0, 4.0))
+			# 원작 스타일 유기적 지질 노이즈 (점 단위 체커보드 제거 -> 실제 광맥·지층 형성)
+			var n_biome := _geo_noise(float(x), float(y), 6.5, p_seed + 11)
+			var n_vein_a := _geo_noise(float(x), float(y), 3.4, p_seed + 37)
+			var n_vein_b := _geo_noise(float(x), float(y), 2.9, p_seed + 79)
+			var n_vein_c := _geo_noise(float(x), float(y), 3.8, p_seed + 131)
+
+			# 서쪽: 원작 Frozen 바이옴 (Ice, Snow, Wolframite, Granite)
+			var dist_ice := Vector2(float(x) - 7.0, float(y) - 14.0).length() + (n_biome - 0.5) * 3.2
+			if dist_ice < 6.8:
+				var fel := "Ice"
+				if n_vein_a > 0.66:
+					fel = "Snow"
+				elif n_vein_b > 0.72:
+					fel = "Wolframite"
+				elif n_vein_c < 0.28:
+					fel = "Granite"
+				_set_solid(i, fel, -14.0 + (n_vein_a - 0.5) * 6.0)
 				continue
 
 			# 남동쪽: 원작 Magma 심부 + Katairite 단열 경계
-			var dist_hot := Vector2(x - 40, y - 26).length()
+			var dist_hot := Vector2(float(x) - 40.0, float(y) - 26.0).length() + (n_biome - 0.5) * 1.8
 			if dist_hot < 4.2:
-				_set_solid(i, "Obsidian" if rng.randf() < 0.45 else "IgneousRock", 132.0 + rng.randf_range(-4.0, 12.0))
+				_set_solid(i, "Obsidian" if n_vein_a > 0.52 else "IgneousRock", 132.0 + n_vein_b * 12.0)
 				continue
 			elif dist_hot < 5.6:
 				_set_solid(i, "Katairite", 24.0)
 				continue
 
 			# 동쪽 상단: 원작 HotMarsh(늪) 바이옴 (SlimeMold, Clay, GoldAmalgam, SedimentaryRock)
-			if x >= 35 and y <= 17:
-				var mr := rng.randf()
-				var mel := "SlimeMold" if mr < 0.36 else ("Clay" if mr < 0.62 else ("GoldAmalgam" if mr < 0.80 else "SedimentaryRock"))
-				_set_solid(i, mel, 32.0 + rng.randf_range(-2.0, 3.0))
+			if float(x) + (n_biome - 0.5) * 4.5 >= 35.5 and float(y) + (n_biome - 0.5) * 3.5 <= 17.5:
+				var mel := "SlimeMold"
+				if n_vein_a > 0.62:
+					mel = "Clay"
+				elif n_vein_b > 0.68:
+					mel = "GoldAmalgam"
+				elif n_vein_c < 0.30:
+					mel = "SedimentaryRock"
+				_set_solid(i, mel, 32.0 + (n_vein_a - 0.5) * 4.0)
 				continue
 
 			# 북쪽: 원작 Jungle(부식) 바이옴 (IgneousRock, IronOre, BleachStone, Carbon)
-			if y <= 7:
-				var jr := rng.randf()
-				var jel := "IgneousRock" if jr < 0.45 else ("IronOre" if jr < 0.70 else ("BleachStone" if jr < 0.82 else "Carbon"))
-				_set_solid(i, jel, 35.0 + rng.randf_range(-2.0, 4.0))
+			if float(y) + (n_biome - 0.5) * 3.2 <= 6.8:
+				var jel := "IgneousRock"
+				if n_vein_a > 0.64:
+					jel = "IronOre"
+				elif n_vein_b > 0.76:
+					jel = "BleachStone"
+				elif n_vein_c < 0.26:
+					jel = "Carbon"
+				_set_solid(i, jel, 35.0 + (n_vein_a - 0.5) * 5.0)
 				continue
 
-			# 중앙: 원작 Sedimentary(사암) 바이옴
-			var roll := rng.randf()
+			# 중앙: 원작 Sedimentary(사암) 바이옴 — 연속 사암 기저 + 덩어리진 흙·조류·구리·석탄·옥실라이트 광맥
 			var el := "SandStone"
-			if roll < 0.14:
-				el = "Algae"
-			elif roll < 0.27:
-				el = "Cuprite"
-			elif roll < 0.48:
+			if n_vein_a > 0.65:
 				el = "Dirt"
-			elif roll < 0.56 and y > 18:
+			elif n_vein_b > 0.70:
+				el = "Algae"
+			elif n_vein_c > 0.71:
+				el = "Cuprite"
+			elif y > 18 and n_vein_a < 0.25:
 				el = "Carbon"
-			elif roll < 0.60:
-				el = "OxyRock"
-			elif roll < 0.66 and y > 22:
+			elif y > 22 and n_vein_c < 0.26:
 				el = "IgneousRock"
-			_set_solid(i, el, 21.5 + rng.randf_range(-1.5, 1.5))
+			elif n_vein_b < 0.16 and Vector2(float(x) - 24.0, float(y) - 15.0).length() < 9.5:
+				el = "OxyRock"
+			_set_solid(i, el, 21.5 + (n_vein_a - 0.5) * 2.5)
 
 	# 중앙 시작 공실: 원작 sandstoneBase.yaml 추출 셀 스탬프 적용
 	var sb_data: Dictionary = OniElements.worldgen.get("sandstone_base", {})
@@ -288,9 +327,11 @@ func generate(p_seed := 73) -> void:
 	for wx in range(20, 28):
 		has_wire[idx(wx, 16)] = 1
 
-	# 우측 물 웅덩이 (x: 31..35, y: 17..19)
+	# 우측 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
 	for y in range(17, 20):
 		for x in range(31, 36):
+			if y == 19 and (x == 31 or x == 35):
+				continue
 			var i := idx(x, y)
 			solid_el[i] = ""
 			solid_mass[i] = 0.0
@@ -304,9 +345,11 @@ func generate(p_seed := 73) -> void:
 				gas_mass[i] = 0.0
 			temp_c[i] = 20.5
 
-	# 북쪽 수소 포켓
+	# 북쪽 수소 포켓 (자연 동굴 아치형)
 	for y in range(8, 10):
 		for x in range(22, 26):
+			if y == 8 and (x == 22 or x == 25):
+				continue
 			var i := idx(x, y)
 			solid_el[i] = ""
 			solid_mass[i] = 0.0
@@ -315,9 +358,11 @@ func generate(p_seed := 73) -> void:
 			gas_prev_mass[i] = 0.65
 			temp_c[i] = 23.0
 
-	# 하단 이산화탄소 포켓
+	# 하단 이산화탄소 포켓 (자연 동굴 아치형)
 	for y in range(21, 23):
 		for x in range(21, 27):
+			if (y == 21 and x == 21) or (y == 22 and x == 26):
+				continue
 			var i := idx(x, y)
 			solid_el[i] = ""
 			solid_mass[i] = 0.0

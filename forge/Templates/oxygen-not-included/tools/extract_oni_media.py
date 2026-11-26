@@ -277,14 +277,22 @@ def decode_texture_to_png_b64(info: dict, target_size: int = 64, crop_mode: str 
         return None
     rgba = np.flipud(rgba)
     img = Image.fromarray(rgba, mode="RGBA")
+    save_jpeg = False
     if crop_mode == "terrain" and w >= 512 and h >= 512:
-        img = img.crop((128, 128, 384, 384))
+        # Preserve full seamless 1024x1024 tileable rock pattern at crisp 208x208 (52x52 per 4x4 world tile!)
+        # Encode opaque rock as high-quality JPEG so textures_extracted.txt stays well under PlayForge 1MB/file limit
+        target_size = 208
+        save_jpeg = True
     elif crop_mode == "autotile" and w >= 512 and h >= 512:
-        # Top-left single isolated tile cell from ONI 4x4 autotile sheet
-        img = img.crop((16, 16, 224, 224))
+        # Preserve Klei's exact 4x4 16-state bitmask autotile atlas (0..832, stride 208 -> 192x192 = 48x48/cell)
+        img = img.crop((0, 0, 832, 832))
+        target_size = 192
     img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
     buf = io.BytesIO()
-    img.save(buf, format="PNG", optimize=True)
+    if save_jpeg:
+        img.convert("RGB").save(buf, format="JPEG", quality=78, optimize=True)
+    else:
+        img.save(buf, format="PNG", optimize=True)
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
@@ -450,7 +458,7 @@ def parse_unity_assets(data_dir: str):
                                     "orig_w": w,
                                     "orig_h": h,
                                     "unity_format": fmt,
-                                    "size": 64,
+                                    "size": 208 if cmode == "terrain" else (192 if cmode == "autotile" else 64),
                                     "png_b64": b64,
                                 }
                 elif cid == 49:
