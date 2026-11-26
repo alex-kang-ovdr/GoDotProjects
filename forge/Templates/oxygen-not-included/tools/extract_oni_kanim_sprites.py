@@ -76,6 +76,26 @@ EXTENDED_RECIPES = {
     "critter_slickster": (["oilfloater_build", "oilfloater"], "oilfloater", ["idle_loop", "hover_loop", "idle"], 72),
 }
 
+# 3rd KAnim shard (Automation, Industry, Decor, Gravitas POIs, Pip critter + 3 extra Duplicants)
+EXTENDED_RECIPES_2 = {
+    "smart_battery": (["smartbattery"], "smartbattery", ["on", "off"], 84),
+    "atmo_sensor": (["switchgaspressure"], "switchgaspressure", ["on", "off"], 64),
+    "thermo_sensor": (["switchthermal"], "switchthermal", ["on", "off"], 64),
+    "logic_not": (["logic_not"], "logic_not", ["on", "off"], 64),
+    "mech_door": (["door_external"], "door_external", ["closed", "open", "off"], 84),
+    "thermo_aquatuner": (["liquidconditioner"], "liquidconditioner", ["working_loop", "on", "off"], 96),
+    "oil_refinery": (["oilrefinery"], "oilrefinery", ["working_loop", "on", "off"], 96),
+    "metal_refinery": (["metalrefinery"], "metalrefinery", ["working_loop", "on", "off"], 96),
+    "solar_panel": (["solar_panel"], "solar_panel", ["on", "off"], 96),
+    "decor_painting": (["gravitas_painting"], "gravitas_painting", ["on", "off"], 76),
+    "flower_pot": (["flowervase"], "flowervase", ["off", "on"], 72),
+    "sculpture": (["sculpture_marble_amazing_1"], "sculpture_marble_amazing_1", ["amazing_1", "off", "on"], 88),
+    "aetn": (["massiveheatsink"], "massiveheatsink", ["working_loop", "on", "off"], 112),
+    "poi_vending": (["vendingmachine"], "vendingmachine", ["on", "off"], 84),
+    "poi_desk": (["gravitas_desk"], "gravitas_desk", ["on", "off"], 88),
+    "critter_pip": (["squirrel_build", "squirrel"], "squirrel", ["idle_loop", "walk_loop", "idle"], 72),
+}
+
 # Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
 DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap"]
 
@@ -407,6 +427,7 @@ def main() -> int:
     all_recipes = {}
     all_recipes.update(BUILDING_RECIPES)
     all_recipes.update(EXTENDED_RECIPES)
+    all_recipes.update(EXTENDED_RECIPES_2)
     for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
@@ -480,6 +501,7 @@ def main() -> int:
 
     out_buildings = {}
     out_buildings_ext = {}
+    out_buildings_ext2 = {}
     preview_list = []
 
     for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
@@ -545,7 +567,7 @@ def main() -> int:
                     im_work = iw2
 
         if im_idle is not None:
-            target_dict = out_buildings if key in BUILDING_RECIPES else out_buildings_ext
+            target_dict = out_buildings if key in BUILDING_RECIPES else (out_buildings_ext if key in EXTENDED_RECIPES else out_buildings_ext2)
             target_dict[key] = {
                 "size": out_sz,
                 "idle_clip": chosen_idle["name"],
@@ -588,6 +610,24 @@ def main() -> int:
                 "arm_sleeve": "arm_sleeve_003", "arm_lower_sleeve": "arm_lower_sleeve_003",
                 "arm_upper": "arm_upper_003", "arm_lower": "arm_lower_003", "leg_skin": "leg_skin_003",
             },
+            {
+                "snapto_headshape": "headshape_004", "snapto_eyes": "eyes_002", "snapto_mouth": "mouth_004",
+                "snapto_hair": "hair_011", "torso": "torso_004",
+                "arm_sleeve": "arm_sleeve_004", "arm_lower_sleeve": "arm_lower_sleeve_004",
+                "arm_upper": "arm_upper_004", "arm_lower": "arm_lower_004", "leg_skin": "leg_skin_004",
+            },
+            {
+                "snapto_headshape": "headshape_001", "snapto_eyes": "eyes_004", "snapto_mouth": "mouth_005",
+                "snapto_hair": "hair_015", "torso": "torso_005",
+                "arm_sleeve": "arm_sleeve_005", "arm_lower_sleeve": "arm_lower_sleeve_005",
+                "arm_upper": "arm_upper_005", "arm_lower": "arm_lower_005", "leg_skin": "leg_skin_005",
+            },
+            {
+                "snapto_headshape": "headshape_002", "snapto_eyes": "eyes_001", "snapto_mouth": "mouth_006",
+                "snapto_hair": "hair_020", "torso": "torso_006",
+                "arm_sleeve": "arm_sleeve_006", "arm_lower_sleeve": "arm_lower_sleeve_006",
+                "arm_upper": "arm_upper_006", "arm_lower": "arm_lower_006", "leg_skin": "leg_skin_006",
+            },
         ]
         dupe_filter = ("snapto", "skirt", "necklace", "headfx", "hat", "goggles", "helmet", "backpack", "suit", "fx")
         for idx_p, swap_map in enumerate(presets):
@@ -625,7 +665,7 @@ def main() -> int:
     doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "building_sprites": out_buildings,
-        "duplicant_sprites": out_dupes,
+        "duplicant_sprites": out_dupes[:3],
     }
     os.makedirs(args.out, exist_ok=True)
     out_path = os.path.join(args.out, "kanim_sprites_extracted.txt")
@@ -640,9 +680,18 @@ def main() -> int:
     with open(ext_path, "w", encoding="utf-8") as f:
         json.dump(ext_doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext2_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext2,
+        "duplicant_sprites": out_dupes[3:],
+    }
+    ext2_path = os.path.join(args.out, "kanim_sprites_ext2_extracted.txt")
+    with open(ext2_path, "w", encoding="utf-8") as f:
+        json.dump(ext2_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
-        cols = 8
+        cols = 9
         rows = (len(preview_list) + cols - 1) // cols
         cell = 104
         sheet = Image.new("RGBA", (cols * cell, rows * cell), (22, 28, 36, 255))
@@ -656,10 +705,12 @@ def main() -> int:
     print(json.dumps({
         "buildings_composited_main": len(out_buildings),
         "buildings_composited_ext": len(out_buildings_ext),
-        "ext_keys": list(out_buildings_ext.keys()),
+        "buildings_composited_ext2": len(out_buildings_ext2),
+        "ext2_keys": list(out_buildings_ext2.keys()),
         "duplicants_composited": len(out_dupes),
         "main_file_bytes": os.path.getsize(out_path),
         "ext_file_bytes": os.path.getsize(ext_path),
+        "ext2_file_bytes": os.path.getsize(ext2_path),
     }, ensure_ascii=False, indent=2))
     return 0
 

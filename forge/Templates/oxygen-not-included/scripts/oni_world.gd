@@ -17,6 +17,7 @@ var _heat_accum := 0.0
 var _liquid_accum := 0.0
 var _germ_accum := 0.0
 var _room_accum := 0.0
+var _decor_accum := 0.0
 
 var solid_el: PackedStringArray = PackedStringArray()
 var solid_mass: PackedFloat32Array = PackedFloat32Array()
@@ -31,6 +32,14 @@ var germ_count: PackedFloat32Array = PackedFloat32Array()
 var room_id: PackedInt32Array = PackedInt32Array()
 var rooms_list: Array[Dictionary] = []
 var colony_morale_bonus := 0
+var decor_val: PackedFloat32Array = PackedFloat32Array()
+var has_logic_wire: PackedByteArray = PackedByteArray()
+var logic_signal: PackedByteArray = PackedByteArray()
+
+var print_ready_timer := 0.0
+var print_offers: Array[Dictionary] = []
+var print_count := 0
+var alerts: Array[String] = []
 
 var building: PackedStringArray = PackedStringArray()
 var has_wire: PackedByteArray = PackedByteArray()
@@ -140,6 +149,15 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	room_id.fill(-1)
 	rooms_list.clear()
 	colony_morale_bonus = 0
+	decor_val.resize(total)
+	decor_val.fill(0.0)
+	has_logic_wire.resize(total)
+	has_logic_wire.fill(0)
+	logic_signal.resize(total)
+	logic_signal.fill(1)
+	print_ready_timer = 0.0
+	print_count = 0
+	alerts.clear()
 	building.resize(total)
 	has_wire.resize(total)
 	has_liquid_pipe.resize(total)
@@ -170,6 +188,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	_liquid_accum = 0.0
 	_germ_accum = 0.0
 	_room_accum = 0.0
+	_decor_accum = 0.0
 	food_kcal = 6000.0
 
 	unlocked_techs.clear()
@@ -385,19 +404,47 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	building[idx(23, 15)] = "pod"
 	building[idx(24, 15)] = "pod"
 
-	# 시작 핵심 설비 (수동 발전기 + 배터리 + 식량 상자 + 인쇄기 + 식탁 + 산소 확산기 + 연구 작업대 + 천장 조명)
+	# 시작 핵심 설비 (수동 발전기 + 스마트 배터리 + 식량 상자 + 인쇄기 + 식탁 + 화분 + 산소 확산기 + 기압 센서 + 연구 작업대 + 천장 조명)
 	building[idx(20, 16)] = "generator"
-	building[idx(21, 16)] = "battery"
+	building[idx(21, 16)] = "smart_battery"
 	battery_j[idx(21, 16)] = 4500.0
 	building[idx(22, 16)] = "ration_box"
 	building[idx(25, 16)] = "mess_table"
+	building[idx(25, 14)] = "decor_painting"
 	building[idx(26, 16)] = "diffuser"
+	building[idx(26, 15)] = "atmo_sensor"
 	building[idx(27, 16)] = "research_station"
 	building[idx(27, 14)] = "ceiling_light"
 	for wx in range(20, 28):
 		has_wire[idx(wx, 16)] = 1
 	has_wire[idx(27, 15)] = 1
 	has_wire[idx(27, 14)] = 1
+	# 시작 자동화 논리 회로 데모 (스마트 배터리↔발전기, 기압 센서↔산소 확산기)
+	has_logic_wire[idx(20, 16)] = 1
+	has_logic_wire[idx(21, 16)] = 1
+	has_logic_wire[idx(26, 15)] = 1
+	has_logic_wire[idx(26, 16)] = 1
+
+	# 서쪽 빙하 바이옴: 원작 POI 유적 (Frozen AETN 반엔트로피 열중화기 + 그라비타스 자판기/책상 + 기계식 에어록)
+	for py in range(13, 17):
+		for px in range(5, 13):
+			var pi := idx(px, py)
+			solid_el[pi] = ""
+			solid_mass[pi] = 0.0
+			gas_el[pi] = "Hydrogen" if py == 13 else "Oxygen"
+			gas_mass[pi] = 0.85
+			gas_prev_mass[pi] = 0.85
+			temp_c[pi] = -18.0
+	for px in range(5, 13):
+		var fi := idx(px, 16)
+		solid_el[fi] = ""
+		solid_mass[fi] = 0.0
+		building[fi] = "insulated_tile"
+		temp_c[fi] = -18.0
+	building[idx(7, 15)] = "aetn"
+	building[idx(9, 15)] = "poi_desk"
+	building[idx(11, 15)] = "poi_vending"
+	building[idx(12, 15)] = "mech_door"
 
 	# 우측 깨끗한 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
 	for y in range(17, 20):
@@ -509,7 +556,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	building[idx(33, 17)] = "geyser_water"
 	building[idx(23, 9)] = "geyser_hydrogen"
 
-	# 원작 생물 6종 스폰 (해치, 푸프, 빛벌레, 파쿠, 드레코, 슬릭스터)
+	# 원작 생물 7종 스폰 (해치, 푸프, 빛벌레, 파쿠, 드레코, 슬릭스터, 핍)
 	critters.clear()
 	critters.append({"id": "critter_hatch", "name_ko": "해치", "pos": Vector2(22.0, 16.0), "dir": 1.0, "fly": false, "swim": false, "timer": 1.2})
 	critters.append({"id": "critter_puft", "name_ko": "푸프", "pos": Vector2(25.5, 14.3), "dir": -1.0, "fly": true, "swim": false, "timer": 0.8})
@@ -517,6 +564,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	critters.append({"id": "critter_pacu", "name_ko": "파쿠", "pos": Vector2(33.0, 18.1), "dir": 1.0, "fly": false, "swim": true, "timer": 1.0})
 	critters.append({"id": "critter_drecko", "name_ko": "드레코", "pos": Vector2(39.5, 12.0), "dir": -1.0, "fly": false, "swim": false, "timer": 1.4})
 	critters.append({"id": "critter_slickster", "name_ko": "슬릭스터", "pos": Vector2(23.5, 22.0), "dir": 1.0, "fly": true, "swim": false, "timer": 1.1})
+	critters.append({"id": "critter_pip", "name_ko": "핍", "pos": Vector2(24.5, 16.0), "dir": -1.0, "fly": false, "swim": false, "timer": 0.9})
 
 	# 원작 공식 복제체 인격 3명 (미프, 에이다, 버블스)
 	duplicants.clear()
@@ -532,7 +580,10 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		var dupe := OniDuplicant.new(d_idx, names[d_idx], Vector2i(spawn_xs[d_idx], 16), colors[d_idx], dupe_traits[d_idx])
 		duplicants.append(dupe)
 
+	_step_logic_network()
+	_recompute_decor()
 	_recompute_rooms()
+	generate_print_offers()
 	_recompute_stats()
 
 func _set_solid(i: int, el: String, p_temp: float) -> void:
@@ -654,6 +705,12 @@ func order_build(x: int, y: int, b_id: String) -> bool:
 		build_order[i] = "gas_pipe"
 		build_progress[i] = 0.0
 		return true
+	elif layer == "logic_wire":
+		if has_logic_wire[i] == 1 or build_order[i] == "logic_wire" or building[i] == "pod":
+			return false
+		build_order[i] = "logic_wire"
+		build_progress[i] = 0.0
+		return true
 
 	if not solid_el[i].is_empty():
 		return false
@@ -735,16 +792,20 @@ func complete_build(x: int, y: int) -> void:
 		has_liquid_pipe[i] = 1
 	elif layer == "gas_pipe":
 		has_gas_pipe[i] = 1
+	elif layer == "logic_wire":
+		has_logic_wire[i] = 1
 	else:
 		if bool(bdef.get("solid", false)):
 			_displace_gas_out(x, y)
 		building[i] = b_id
-		if b_id == "battery":
+		if b_id == "battery" or b_id == "smart_battery":
 			battery_j[i] = 1500.0
 		elif b_id == "farm_tile":
 			farm_growth[i] = 0.0
 	build_order[i] = ""
 	build_progress[i] = 0.0
+	_recompute_decor()
+	_recompute_rooms()
 	if on_build_completed.is_valid():
 		on_build_completed.call(Vector2i(x, y), b_id)
 
@@ -782,9 +843,15 @@ func step(dt: float) -> void:
 	for dupe in duplicants:
 		dupe.step(self, dt)
 
+	_step_logic_network()
 	_step_power_and_machines(dt)
 	_step_farms(dt)
 	_step_geysers_and_critters(dt)
+
+	if print_ready_timer > 0.0:
+		print_ready_timer = maxf(0.0, print_ready_timer - dt)
+		if print_ready_timer <= 0.0 and print_offers.is_empty():
+			generate_print_offers()
 
 	_gas_accum += dt
 	while _gas_accum >= OniElements.GAS_TICK_DT:
@@ -816,6 +883,11 @@ func step(dt: float) -> void:
 	if _room_accum >= 1.2:
 		_room_accum = 0.0
 		_recompute_rooms()
+
+	_decor_accum += dt
+	if _decor_accum >= 1.0:
+		_decor_accum = 0.0
+		_recompute_decor()
 
 	_recompute_stats()
 
@@ -1188,7 +1260,174 @@ func _step_offgassing_and_germs(dt: float) -> void:
 func _is_room_boundary(x: int, y: int) -> bool:
 	if is_solid_cell(x, y):
 		return true
-	return building[idx(x, y)] == "door"
+	var b := building[idx(x, y)]
+	return b == "door" or b == "mech_door"
+
+func _recompute_decor() -> void:
+	# 원작 장식(Decor) 반경 3칸 누적 계산 (명화+20, 조각상+25, 화분+15, 인쇄기+15, 빛벌레+30 vs 산업설비/전선 감점)
+	var total := WIDTH * HEIGHT
+	decor_val.fill(0.0)
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var i := idx(x, y)
+			var dv := 0.0
+			var b := building[i]
+			if b == "pod":
+				dv += 15.0
+			elif not b.is_empty():
+				dv += float(OniElements.get_building(b).get("decor", 0.0))
+			if has_wire[i] == 1:
+				dv -= 5.0
+			if absf(dv) >= 1.0:
+				for dy in range(-3, 4):
+					for dx in range(-3, 4):
+						var nx := x + dx
+						var ny := y + dy
+						if in_bounds(nx, ny):
+							var d2 := absf(float(dx)) + absf(float(dy))
+							if d2 <= 3.0:
+								decor_val[idx(nx, ny)] += dv * (1.0 - d2 * 0.20)
+	for cr: Dictionary in critters:
+		if String(cr["id"]) == "critter_lightbug":
+			var cp: Vector2 = cr["pos"]
+			var cx := int(floor(cp.x))
+			var cy := int(floor(cp.y))
+			for dy in range(-2, 3):
+				for dx in range(-2, 3):
+					if in_bounds(cx + dx, cy + dy):
+						decor_val[idx(cx + dx, cy + dy)] += 25.0
+
+func _is_logic_node(i: int) -> bool:
+	if has_logic_wire[i] == 1:
+		return true
+	var b := building[i]
+	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"]
+
+func _step_logic_network() -> void:
+	# 원작 자동화(Automation) 논리 회로 연결 컴포넌트 계산 (GREEN=1 / RED=0)
+	var total := WIDTH * HEIGHT
+	logic_signal.fill(1)
+	var visited := PackedByteArray()
+	visited.resize(total)
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var si := idx(x, y)
+			if visited[si] == 1 or not _is_logic_node(si):
+				continue
+			var net: Array[int] = []
+			var q: Array[Vector2i] = [Vector2i(x, y)]
+			visited[si] = 1
+			var has_source := false
+			var any_green := false
+			while not q.is_empty():
+				var cur: Vector2i = q.pop_front()
+				var ci := idx(cur.x, cur.y)
+				net.append(ci)
+				var b := building[ci]
+				if b == "smart_battery":
+					has_source = true
+					if battery_j[ci] < OniElements.BATTERY_CAPACITY_J * 0.88:
+						any_green = true
+				elif b == "atmo_sensor":
+					has_source = true
+					if gas_mass[ci] < 1.85:
+						any_green = true
+				elif b == "thermo_sensor":
+					has_source = true
+					if temp_c[ci] > 26.0:
+						any_green = true
+				for d: Vector2i in dirs:
+					var nx: int = cur.x + d.x
+					var ny: int = cur.y + d.y
+					if in_bounds(nx, ny):
+						var ni := idx(nx, ny)
+						if visited[ni] == 0 and _is_logic_node(ni):
+							visited[ni] = 1
+							q.append(Vector2i(nx, ny))
+			var sig: int = 1 if (not has_source or any_green) else 0
+			for ci: int in net:
+				logic_signal[ci] = sig
+
+func generate_print_offers() -> void:
+	# 원작 52명 공식 복제체 인격 + 131종 특성 + 보급품 3지선다 인쇄 오퍼 생성
+	print_offers.clear()
+	OniMedia.ensure_loaded()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value + print_count * 97 + int(sim_time) + 17
+
+	var pdet: Dictionary = OniMedia.world_codex_doc.get("personalities_detail", {}) as Dictionary
+	var pkeys: Array = pdet.keys()
+	var d_name := "스팅키"
+	var d_desc := "호기심 많은 개척자 복제체"
+	if not pkeys.is_empty():
+		var pick_k := String(pkeys[rng.randi_range(0, pkeys.size() - 1)])
+		var pd: Dictionary = pdet[pick_k]
+		d_name = String(pd.get("name_ko", pick_k))
+		d_desc = String(pd.get("desc", d_desc)).replace("{0}", d_name)
+		if d_desc.length() > 42:
+			d_desc = d_desc.substr(0, 42) + "…"
+	var traits_pool: Array[String] = ["조기 기상", "빠른 학습자", "잠수부의 폐", "두더지 손", "철의 위장", "야행성"]
+	var d_trait: String = traits_pool[rng.randi_range(0, traits_pool.size() - 1)]
+	print_offers.append({
+		"kind": "duplicant",
+		"title": "복제체: %s [%s]" % [d_name, d_trait],
+		"desc": d_desc,
+		"name": d_name,
+		"trait": d_trait,
+	})
+
+	var care_pkgs: Array[Dictionary] = [
+		{"kind": "resource", "title": "보급품: 석탄 1,500kg", "desc": "석탄 발전기 연료 긴급 보급", "el": "Carbon", "kg": 1500.0},
+		{"kind": "resource", "title": "보급품: 조류 1,200kg", "desc": "산소 확산기용 신선한 조류", "el": "Algae", "kg": 1200.0},
+		{"kind": "resource", "title": "보급품: 구리 광석 1,200kg", "desc": "자동화·전력·배관 건설 자재", "el": "Cuprite", "kg": 1200.0},
+		{"kind": "food", "title": "보급품: 영양 바 4,000kcal", "desc": "부패하지 않는 비상 식량 패키지", "kcal": 4000.0},
+	]
+	print_offers.append(care_pkgs[rng.randi_range(0, care_pkgs.size() - 1)])
+
+	var bonus_pkgs: Array[Dictionary] = [
+		{"kind": "critter", "title": "생물 알: 빛벌레 (+30 장식)", "desc": "인쇄기 주변을 밝히는 발광 빛벌레 스폰", "cid": "critter_lightbug", "cname": "빛벌레", "fly": true},
+		{"kind": "critter", "title": "생물 알: 핍 (Pip)", "desc": "씨앗을 심는 귀여운 숲 다람쥐 스폰", "cid": "critter_pip", "cname": "핍", "fly": false},
+		{"kind": "food", "title": "보급품: 구운 바비큐 4,800kcal", "desc": "고열량 특식 패키지", "kcal": 4800.0},
+	]
+	print_offers.append(bonus_pkgs[rng.randi_range(0, bonus_pkgs.size() - 1)])
+
+func accept_print_offer(offer_idx: int) -> bool:
+	if print_ready_timer > 0.0 or offer_idx < 0 or offer_idx >= print_offers.size():
+		return false
+	var off: Dictionary = print_offers[offer_idx]
+	var kind := String(off.get("kind", ""))
+	if kind == "duplicant":
+		if duplicants.size() >= 8:
+			return false
+		var nid := duplicants.size()
+		var cols: Array[Color] = [
+			Color(0.35, 0.72, 0.98), Color(0.95, 0.56, 0.42), Color(0.54, 0.86, 0.52),
+			Color(0.88, 0.62, 0.96), Color(0.96, 0.84, 0.36), Color(0.42, 0.92, 0.86),
+		]
+		var nd := OniDuplicant.new(nid, String(off["name"]), Vector2i(23, 16), cols[nid % cols.size()], String(off["trait"]))
+		nd.morale = 1 + colony_morale_bonus
+		duplicants.append(nd)
+	elif kind == "resource":
+		var el := String(off["el"])
+		inventory[el] = float(inventory.get(el, 0.0)) + float(off["kg"])
+	elif kind == "food":
+		food_kcal += float(off["kcal"])
+	elif kind == "critter":
+		critters.append({
+			"id": String(off["cid"]),
+			"name_ko": String(off["cname"]),
+			"pos": Vector2(23.5, 15.0 if bool(off["fly"]) else 16.0),
+			"dir": 1.0,
+			"fly": bool(off["fly"]),
+			"swim": false,
+			"timer": 1.0,
+		})
+	print_count += 1
+	print_ready_timer = 45.0
+	print_offers.clear()
+	_recompute_stats()
+	return true
 
 func _recompute_rooms() -> void:
 	# 원작 방(Room) 구획 자동 탐지 (고체 암반·타일·수동 에어록으로 둘러싸인 6~96칸 실내)
@@ -1244,11 +1483,17 @@ func _recompute_rooms() -> void:
 			var r_name := ""
 			var r_morale := 0
 			var r_col := Color(0.45, 0.72, 0.92, 0.24)
+			var has_decor := int(bcounts.get("decor_painting", 0)) > 0 or int(bcounts.get("flower_pot", 0)) > 0 or int(bcounts.get("sculpture", 0)) > 0
 			if int(bcounts.get("outhouse", 0)) > 0 and int(bcounts.get("wash_basin", 0)) > 0:
 				r_type = "latrine"
 				r_name = "화장실"
 				r_morale = 1
 				r_col = Color(0.32, 0.86, 0.72, 0.26)
+			elif int(bcounts.get("mess_table", 0)) > 0 and has_decor:
+				r_type = "great_hall"
+				r_name = "대연회장"
+				r_morale = 6
+				r_col = Color(1.0, 0.82, 0.24, 0.30)
 			elif int(bcounts.get("mess_table", 0)) > 0:
 				r_type = "mess_hall"
 				r_name = "식당"
@@ -1422,7 +1667,8 @@ func _step_power_and_machines(dt: float) -> void:
 					machine_running[ci] = 1
 				elif b == "coal_gen":
 					var need_c := OniElements.COAL_GEN_CARBON_KG_PER_S * dt
-					if float(inventory.get("Carbon", 0.0)) >= need_c:
+					var logic_ok := has_logic_wire[ci] == 0 or logic_signal[ci] == 1
+					if logic_ok and float(inventory.get("Carbon", 0.0)) >= need_c:
 						inventory["Carbon"] = maxf(0.0, float(inventory["Carbon"]) - need_c)
 						net_gen_w += OniElements.COAL_GEN_POWER_W
 						machine_running[ci] = 1
@@ -1460,12 +1706,25 @@ func _step_power_and_machines(dt: float) -> void:
 						net_gen_w += OniElements.TURBINE_POWER_W
 						temp_c[ci] += 0.25 * dt
 						machine_running[ci] = 1
-				elif b == "battery":
+				elif b == "aetn":
+					var cx := ci % WIDTH
+					var cy := ci / WIDTH
+					temp_c[ci] = maxf(-85.0, temp_c[ci] - 1.5 * dt)
+					machine_running[ci] = 1
+					for dy in range(-1, 2):
+						for dx in range(-1, 2):
+							if in_bounds(cx + dx, cy + dy):
+								var ni := idx(cx + dx, cy + dy)
+								temp_c[ni] = maxf(-80.0, temp_c[ni] - 0.6 * dt)
+				elif b == "solar_panel":
+					net_gen_w += 380.0
+					machine_running[ci] = 1
+				elif b == "battery" or b == "smart_battery":
 					battery_j[ci] = maxf(0.0, battery_j[ci] - OniElements.BATTERY_LEAK_J_PER_S * dt)
 					bats.append(ci)
 					net_bat_j += battery_j[ci]
 					total_battery_cap_j += OniElements.BATTERY_CAPACITY_J
-				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "liquid_pump", "gas_pump", "research_station"]:
+				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station"]:
 					consumers.append(ci)
 
 			power_produced_w += net_gen_w
@@ -1474,6 +1733,8 @@ func _step_power_and_machines(dt: float) -> void:
 
 			for ci: int in consumers:
 				var b := building[ci]
+				if has_logic_wire[ci] == 1 and logic_signal[ci] == 0:
+					continue
 				if b == "diffuser":
 					var need_j := OniElements.DIFFUSER_POWER_W * dt
 					var need_algae := OniElements.DIFFUSER_ALGAE_KG_PER_S * dt
@@ -1600,6 +1861,32 @@ func _step_power_and_machines(dt: float) -> void:
 						inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
 						food_kcal += (28.0 if b == "microbe_musher" else 42.0) * dt
 						machine_running[ci] = 1
+				elif b == "thermo_aquatuner":
+					var need_j := 240.0 * dt
+					if available_j - used_j >= need_j and has_liquid_pipe[ci] == 1 and lpipe_mass[ci] > 0.1:
+						used_j += need_j
+						power_consumed_w += 240.0
+						lpipe_temp[ci] = maxf(-10.0, lpipe_temp[ci] - 14.0 * dt)
+						temp_c[ci] = minf(120.0, temp_c[ci] + 4.0 * dt)
+						machine_running[ci] = 1
+				elif b == "metal_refinery":
+					var need_j := 240.0 * dt
+					if available_j - used_j >= need_j and float(inventory.get("Cuprite", 0.0)) >= 1.5 * dt:
+						used_j += need_j
+						power_consumed_w += 240.0
+						inventory["Cuprite"] = maxf(0.0, float(inventory["Cuprite"]) - 1.5 * dt)
+						inventory["Copper"] = float(inventory.get("Copper", 0.0)) + 1.5 * dt
+						temp_c[ci] = minf(110.0, temp_c[ci] + 1.2 * dt)
+						machine_running[ci] = 1
+				elif b == "oil_refinery":
+					var need_j := 240.0 * dt
+					if available_j - used_j >= need_j:
+						used_j += need_j
+						power_consumed_w += 240.0
+						if gas_el[ci] == "Vacuum" or gas_el[ci] == "Methane":
+							gas_el[ci] = "Methane"
+							gas_mass[ci] = minf(2.0, gas_mass[ci] + 0.08 * dt)
+						machine_running[ci] = 1
 
 			var net_delta_j := net_gen_w * dt - used_j
 			if not bats.is_empty():
@@ -1612,7 +1899,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "liquid_pump", "gas_pump", "research_station"]
+	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "aetn"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0
@@ -1625,6 +1912,16 @@ func _recompute_stats() -> void:
 				if gas_el[i] == "Oxygen":
 					sum_o2 += gas_mass[i]
 	avg_oxygen_kg = sum_o2 / float(maxi(1, open_cells))
+
+	alerts.clear()
+	if print_ready_timer <= 0.0:
+		alerts.append("인쇄기 준비 완료! (N)")
+	if avg_oxygen_kg < 0.35:
+		alerts.append("산소 압력 저하")
+	if food_kcal < 1500.0:
+		alerts.append("식량 부족")
+	if total_battery_cap_j > 0.0 and total_battery_j < 400.0 and power_produced_w < power_consumed_w:
+		alerts.append("전력 부족")
 
 func get_cell_summary(x: int, y: int) -> Dictionary:
 	if not in_bounds(x, y):
@@ -1651,6 +1948,9 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"germ_count": germ_count[i],
 		"room_name": r_name,
 		"room_morale": r_morale,
+		"decor": decor_val[i],
+		"has_logic_wire": has_logic_wire[i] == 1,
+		"logic_signal": logic_signal[i] == 1,
 		"building": building[i],
 		"has_wire": has_wire[i] == 1,
 		"has_liquid_pipe": has_liquid_pipe[i] == 1,

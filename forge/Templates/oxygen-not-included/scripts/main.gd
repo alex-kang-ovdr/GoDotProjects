@@ -26,6 +26,10 @@ var _research_vbox: VBoxContainer
 var _audit_panel: PanelContainer
 var _audit_lbl: Label
 var _codex_tab_buttons: Dictionary = {}
+var _print_panel: PanelContainer
+var _print_vbox: VBoxContainer
+var _print_btn: Button
+var _alert_lbl: Label
 var _preset_btn: Button
 var _atmo_shader_mat: ShaderMaterial
 var _tool_buttons: Dictionary = {}
@@ -35,19 +39,21 @@ var _speed_buttons: Dictionary = {}
 
 const CATEGORIES := [
 	{"id": "base", "label": "기본"},
-	{"id": "living", "label": "생활·위생"},
+	{"id": "living", "label": "생활·장식"},
 	{"id": "power", "label": "전력·산소"},
 	{"id": "pipe", "label": "배관"},
-	{"id": "colony", "label": "농사·연구"},
+	{"id": "auto", "label": "자동화"},
+	{"id": "colony", "label": "농사·산업"},
 	{"id": "space", "label": "우주"},
 ]
 
 const CAT_TOOLS := {
 	"base": ["tile", "insulated_tile", "door", "ladder", "cot", "storage", "ceiling_light"],
-	"living": ["outhouse", "wash_basin", "mess_table", "ration_box", "microbe_musher", "electric_grill"],
-	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "wire"],
+	"living": ["outhouse", "wash_basin", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
+	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "wire"],
 	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
-	"colony": ["farm_tile", "research_station"],
+	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"],
+	"colony": ["farm_tile", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery"],
 	"space": ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
 }
 
@@ -164,11 +170,13 @@ func _build_hud() -> void:
 
 	for ov in [
 		{"id": "normal", "label": "기본"},
-		{"id": "gas", "label": "기체(G)"},
-		{"id": "temp", "label": "온도(T)"},
-		{"id": "pipe", "label": "배관(P)"},
-		{"id": "room", "label": "방(M)"},
-		{"id": "germ", "label": "세균(J)"},
+		{"id": "gas", "label": "기체G"},
+		{"id": "temp", "label": "온도T"},
+		{"id": "pipe", "label": "배관P"},
+		{"id": "room", "label": "방M"},
+		{"id": "germ", "label": "세균J"},
+		{"id": "logic", "label": "자동L"},
+		{"id": "decor", "label": "장식K"},
 	]:
 		var obtn := Button.new()
 		obtn.text = String(ov["label"])
@@ -180,8 +188,16 @@ func _build_hud() -> void:
 		top_hbox.add_child(obtn)
 		_overlay_buttons[oid] = obtn
 
+	_print_btn = Button.new()
+	_print_btn.text = "인쇄N"
+	_print_btn.pressed.connect(func():
+		audio.play_toggle()
+		_toggle_print_panel()
+	)
+	top_hbox.add_child(_print_btn)
+
 	var res_btn := Button.new()
-	res_btn.text = "연구(R)"
+	res_btn.text = "연구R"
 	res_btn.pressed.connect(func():
 		audio.play_click()
 		_toggle_research_panel()
@@ -189,7 +205,7 @@ func _build_hud() -> void:
 	top_hbox.add_child(res_btn)
 
 	var audit_btn := Button.new()
-	audit_btn.text = "도감(I)"
+	audit_btn.text = "도감I"
 	audit_btn.pressed.connect(func():
 		audio.play_toggle()
 		_toggle_audit_panel()
@@ -222,6 +238,25 @@ func _build_hud() -> void:
 	_res_info_lbl = Label.new()
 	_res_info_lbl.add_theme_font_size_override("font_size", 12)
 	res_panel.add_child(_res_info_lbl)
+
+	# 식민지 실시간 경보 배너
+	_alert_lbl = Label.new()
+	_alert_lbl.position = Vector2(220, 88)
+	_alert_lbl.add_theme_font_size_override("font_size", 12)
+	_alert_lbl.add_theme_color_override("font_color", Color(1.0, 0.90, 0.42))
+	_ui_root.add_child(_alert_lbl)
+
+	# 인쇄기 보급품 / 신규 복제체 인쇄 팝업 (N)
+	_print_panel = PanelContainer.new()
+	_print_panel.position = Vector2(310, 118)
+	_print_panel.custom_minimum_size = Vector2(560, 250)
+	_print_panel.visible = false
+	_style_panel(_print_panel, Color(0.08, 0.13, 0.20, 0.97))
+	_ui_root.add_child(_print_panel)
+
+	_print_vbox = VBoxContainer.new()
+	_print_vbox.add_theme_constant_override("separation", 8)
+	_print_panel.add_child(_print_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
 	_research_panel = PanelContainer.new()
@@ -440,13 +475,60 @@ func _toggle_research_panel() -> void:
 	_research_panel.visible = not _research_panel.visible
 	if _research_panel.visible:
 		_audit_panel.visible = false
+		_print_panel.visible = false
 		_refresh_research_panel()
 
 func _toggle_audit_panel() -> void:
 	_audit_panel.visible = not _audit_panel.visible
 	if _audit_panel.visible:
 		_research_panel.visible = false
+		_print_panel.visible = false
 		_select_codex_tab(active_codex_tab)
+
+func _toggle_print_panel() -> void:
+	_print_panel.visible = not _print_panel.visible
+	if _print_panel.visible:
+		_research_panel.visible = false
+		_audit_panel.visible = false
+		_refresh_print_panel()
+
+func _refresh_print_panel() -> void:
+	for child in _print_vbox.get_children():
+		child.queue_free()
+	var hdr := Label.new()
+	if world.print_ready_timer > 0.0:
+		hdr.text = "인쇄기 충전 중... (%.0f초 후 다음 보급품/복제체 선택 가능)" % world.print_ready_timer
+	else:
+		hdr.text = "인쇄기 준비 완료! 아래 3가지 원작 복제체·보급품 중 1개를 선택하세요 (현재 복제체 %d/8명)" % world.duplicants.size()
+	hdr.add_theme_color_override("font_color", Color(0.55, 0.94, 1.0))
+	_print_vbox.add_child(hdr)
+
+	if world.print_ready_timer <= 0.0:
+		if world.print_offers.is_empty():
+			world.generate_print_offers()
+		for oi in range(world.print_offers.size()):
+			var off: Dictionary = world.print_offers[oi]
+			var btn := Button.new()
+			btn.text = "%d) %s — %s" % [oi + 1, String(off["title"]), String(off["desc"])]
+			btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			btn.custom_minimum_size = Vector2(520, 42)
+			var idx_cap: int = oi
+			btn.pressed.connect(func():
+				if world.accept_print_offer(idx_cap):
+					audio.play_print_ok()
+					renderer.spawn_burst(Vector2i(23, 15), "burst", Color(0.42, 0.96, 1.0, 1.0))
+					_print_panel.visible = false
+					_refresh_hud()
+					renderer.request_redraw()
+			)
+			_print_vbox.add_child(btn)
+	var close_btn := Button.new()
+	close_btn.text = "닫기"
+	close_btn.pressed.connect(func():
+		audio.play_click()
+		_print_panel.visible = false
+	)
+	_print_vbox.add_child(close_btn)
 
 func _select_codex_tab(tab_id: String) -> void:
 	active_codex_tab = tab_id
@@ -605,6 +687,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "room" else "room")
 		elif event.physical_keycode == KEY_J:
 			_select_overlay("normal" if renderer.overlay_mode == "germ" else "germ")
+		elif event.physical_keycode == KEY_L:
+			_select_overlay("normal" if renderer.overlay_mode == "logic" else "logic")
+		elif event.physical_keycode == KEY_K:
+			_select_overlay("normal" if renderer.overlay_mode == "decor" else "decor")
+		elif event.physical_keycode == KEY_N:
+			_toggle_print_panel()
 		elif event.physical_keycode == KEY_R:
 			_toggle_research_panel()
 		elif event.physical_keycode == KEY_I:
@@ -691,10 +779,18 @@ func _on_build_completed(cell: Vector2i, _b_id: String) -> void:
 
 func _refresh_hud() -> void:
 	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)
-	_top_info_lbl.text = "주기%d(%.0fs) | O2 %.2f | %.0f/%.0fW | 방%d(사기+%d)" % [
-		world.cycle, cyc_sec, world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w,
-		world.rooms_list.size(), world.colony_morale_bonus
+	_top_info_lbl.text = "주%d(%.0fs)|O2 %.2f|%.0f/%.0fW|사기+%d" % [
+		world.cycle, cyc_sec, world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w, world.colony_morale_bonus
 	]
+	if _print_btn != null:
+		if world.print_ready_timer <= 0.0:
+			_print_btn.text = "★인쇄N"
+			_print_btn.modulate = Color(0.55, 1.0, 0.72)
+		else:
+			_print_btn.text = "인쇄(%.0f)" % world.print_ready_timer
+			_print_btn.modulate = Color(0.85, 0.88, 0.94)
+	if _alert_lbl != null:
+		_alert_lbl.text = "" if world.alerts.is_empty() else ("★ " + "  |  ".join(world.alerts))
 
 	var tech_str := "완료"
 	if not world.active_tech.is_empty():
@@ -733,8 +829,13 @@ func _refresh_hud() -> void:
 			var ed := OniElements.get_element(inspect_el)
 			lines.append("물성: 비열 %.3f · 전도 %.4f · 몰 %.1f" % [float(ed.get("shc", 0.0)), float(ed.get("tc", 0.0)), float(ed.get("molar_mass", 0.0))])
 		var rname := String(info.get("room_name", ""))
+		var dval := float(info.get("decor", 0.0))
 		if not rname.is_empty():
-			lines.append("방: %s (사기 +%d)" % [rname, int(info.get("room_morale", 0))])
+			lines.append("방: %s (사기 +%d) · 장식 %+.0f" % [rname, int(info.get("room_morale", 0)), dval])
+		elif absf(dval) >= 1.0:
+			lines.append("장식: %+.0f" % dval)
+		if bool(info.get("has_logic_wire", false)):
+			lines.append("자동화: %s" % ("활성(초록)" if bool(info.get("logic_signal", true)) else "대기(빨강)"))
 		var gcnt := float(info.get("germ_count", 0.0))
 		if gcnt >= 20.0:
 			var gtn := "점액폐균" if String(info.get("germ_type", "")) == "SlimeLung" else "식중독균"

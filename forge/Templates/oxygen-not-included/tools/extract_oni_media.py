@@ -93,7 +93,7 @@ KANIM_TARGETS = [
     "odor_fx",
 ]
 
-# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (14 SFX)
+# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (18 SFX)
 SFX_TARGETS = {
     "click": ("FX.bank", "SG_UI_click_small"),
     "drag": ("FX.bank", "SG_UI_dragTile_v02"),
@@ -109,6 +109,10 @@ SFX_TARGETS = {
     "plant_grow": ("Plants.bank", "SG_plant_coldBreather_grow_01"),
     "warp": ("FX.bank", "SG_UI_dupeShuffle_warp_01"),
     "circuit_toggle": ("Buildings.bank", "SG_logic_circuit_toggle_ON_25_v03"),
+    "alert_warn": ("UI.bank", "SG_UI_notification_dupeThreatening"),
+    "print_ready": ("UI.bank", "SG_UI_notification_achievement_01"),
+    "work_chime": ("UI.bank", "SG_workChime_13"),
+    "new_buildable": ("UI.bank", "SG_UI_newBuildable_embellishment_v04"),
 }
 
 FREQ_TABLE = {

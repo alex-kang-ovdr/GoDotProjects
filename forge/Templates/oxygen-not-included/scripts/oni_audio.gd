@@ -95,3 +95,15 @@ func play_warp() -> void:
 
 func play_circuit_toggle() -> void:
 	_play_extracted("circuit_toggle", 620.0, 0.06)
+
+func play_alert_warn() -> void:
+	_play_extracted("alert_warn", 320.0, 0.14)
+
+func play_print_ready() -> void:
+	_play_extracted("print_ready", 780.0, 0.14)
+
+func play_work_chime() -> void:
+	_play_extracted("work_chime", 660.0, 0.08)
+
+func play_new_buildable() -> void:
+	_play_extracted("new_buildable", 700.0, 0.10)

@@ -180,6 +180,7 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
 
     # 11) Extra worldgen & POI datasets (POIs 62, StoryTraits 17, Clusters 13, Noise 24, Features 13, Temperatures)
     pois = {}
+    poi_blueprints = {}
     for pp in sorted(glob.glob(os.path.join(streaming_dir, "templates", "poi", "**", "*.yaml"), recursive=True)):
         rel = os.path.relpath(pp, os.path.join(streaming_dir, "templates", "poi")).replace("\\", "/")
         pid = os.path.splitext(rel)[0]
@@ -191,6 +192,18 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
                 "cells": len(pd.get("cells") or []),
                 "buildings": len(pd.get("buildings") or []),
             }
+            if pid in ("frozen/heatsink_a", "frozen/frag_vendingmachine"):
+                poi_blueprints[pid] = {
+                    "size": (pd.get("info") or {}).get("size", {}),
+                    "cells": [
+                        {"x": int(c.get("location_x", 0)), "y": int(c.get("location_y", 0)), "el": str(c.get("element", "Oxygen"))}
+                        for c in (pd.get("cells") or [])
+                    ],
+                    "buildings": [
+                        {"x": int(b.get("location_x", 0)), "y": int(b.get("location_y", 0)), "id": str(b.get("id", ""))}
+                        for b in (pd.get("buildings") or [])
+                    ],
+                }
         except Exception:
             pass
 
@@ -236,6 +249,7 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
         "subworlds": subworlds,
         "geysers": geysers,
         "pois": pois,
+        "poi_blueprints": poi_blueprints,
         "story_traits_templates": story_traits_tpl,
         "noise_defs": noise_defs,
         "feature_defs": feature_defs,
@@ -474,10 +488,14 @@ def main() -> int:
     })
     # Merge texture/kanim/audio totals if present
     kanim_ext_n = 0
-    ext_p = os.path.join(args.out, "kanim_sprites_ext_extracted.txt")
-    if os.path.exists(ext_p):
-        with open(ext_p, "r", encoding="utf-8") as ef:
-            kanim_ext_n = len(json.load(ef).get("building_sprites", {}))
+    kanim_ext_dupes = 0
+    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt"]:
+        ext_p = os.path.join(args.out, ext_fn)
+        if os.path.exists(ext_p):
+            with open(ext_p, "r", encoding="utf-8") as ef:
+                ed = json.load(ef)
+                kanim_ext_n += len(ed.get("building_sprites", {}))
+                kanim_ext_dupes += len(ed.get("duplicant_sprites", []))
     for extra_name, key_map in [
         ("buildings_extracted.txt", lambda d: {
             "buildings": len(d),
@@ -489,7 +507,7 @@ def main() -> int:
         }),
         ("kanim_sprites_extracted.txt", lambda d: {
             "embedded_kanim_building_sprites": len(d.get("building_sprites", {})) + kanim_ext_n,
-            "embedded_kanim_duplicant_sprites": len(d.get("duplicant_sprites", [])),
+            "embedded_kanim_duplicant_sprites": len(d.get("duplicant_sprites", [])) + kanim_ext_dupes,
         }),
         ("audio_extracted.txt", lambda d: {
             "fmod_banks_total": d.get("total_banks", 0),

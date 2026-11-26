@@ -36,7 +36,7 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
 
-	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt"]:
+	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt"]:
 		var ksp_doc: Variant = _load_json(kpath)
 		if ksp_doc is Dictionary:
 			var bs_v: Variant = ksp_doc.get("building_sprites", {})
