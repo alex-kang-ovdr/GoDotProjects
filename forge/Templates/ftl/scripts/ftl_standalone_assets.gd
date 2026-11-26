@@ -7,6 +7,7 @@ extends RefCounted
 
 static var _tex_cache: Dictionary = {}
 static var _sfx_cache: Dictionary = {}
+static var _bgm_cache: Dictionary = {}
 
 
 static func get_texture(rel_path: String) -> Texture2D:
@@ -251,6 +252,84 @@ static func get_procedural_sfx(sound_id: String) -> AudioStreamWAV:
 	wav.data = data
 	_sfx_cache[bucket] = wav
 	return wav
+
+
+static func get_procedural_bgm(combat: bool) -> AudioStreamWAV:
+	var key := "battle" if combat else "explore"
+	if _bgm_cache.has(key):
+		return _bgm_cache[key]
+	var rate := 16000
+	var dur := 8.0 # Seamless 8-second loop (4 bars at 120 BPM)
+	var samples := int(float(rate) * dur)
+	var data := PackedByteArray()
+	data.resize(samples * 2)
+	# C-minor sci-fi arpeggio (C3, Eb3, G3, Bb3, C4, G3, F3, Eb3)
+	var arp := [130.81, 155.56, 196.00, 233.08, 261.63, 196.00, 174.61, 155.56]
+	var bass_notes := [65.41, 65.41, 58.27, 77.78]
+	var p1 := 0.0
+	var p2 := 0.0
+	var p3 := 0.0
+	for i in range(samples):
+		var t := float(i) / float(rate)
+		var bar := int(t / 2.0) % 4
+		var step := int(t * (4.0 if combat else 2.0)) % arp.size()
+		var step_u := fmod(t * (4.0 if combat else 2.0), 1.0)
+		var env := exp(-step_u * (4.5 if combat else 3.2))
+		var bf: float = bass_notes[bar]
+		var af: float = arp[step] * (2.0 if combat else 1.0)
+		p1 += TAU * bf / float(rate)
+		p2 += TAU * (bf * 1.5) / float(rate)
+		p3 += TAU * af / float(rate)
+		var pad := (sin(p1) * 0.22 + sin(p2) * 0.12) * (0.75 + 0.25 * sin(t * 1.5))
+		var lead := sin(p3) * env * (0.18 if combat else 0.12)
+		var pulse := 0.0
+		if combat:
+			var beat_u := fmod(t * 2.0, 1.0)
+			pulse = sin(p1 * 2.0) * exp(-beat_u * 8.0) * 0.20
+		var val := clampf(pad + lead + pulse, -0.85, 0.85)
+		var s16 := clampi(int(val * 32767.0), -32768, 32767)
+		data[i * 2] = s16 & 0xFF
+		data[i * 2 + 1] = (s16 >> 8) & 0xFF
+	var wav := AudioStreamWAV.new()
+	wav.format = AudioStreamWAV.FORMAT_16_BITS
+	wav.mix_rate = rate
+	wav.stereo = false
+	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	wav.loop_begin = 0
+	wav.loop_end = samples
+	wav.data = data
+	_bgm_cache[key] = wav
+	return wav
+
+
+static func get_ship_preview_texture(hull_style: String) -> Texture2D:
+	var key := "preview_" + hull_style
+	if _tex_cache.has(key):
+		return _tex_cache[key]
+	var img := Image.create(160, 96, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0.05, 0.08, 0.12, 1.0))
+	var base := Color("4c5b6e")
+	var accent := Color("c84638")
+	match hull_style:
+		"engi": base = Color("425e68"); accent = Color("46b8a0")
+		"fed": base = Color("5a6270"); accent = Color("d89b38")
+		"zoltan": base = Color("526438"); accent = Color("78e05a")
+		"mantis": base = Color("5c3234"); accent = Color("d6453a")
+		"stealth": base = Color("28303d"); accent = Color("5294d8")
+		"lanius": base = Color("444a56"); accent = Color("72c8e8")
+		"boss": base = Color("4d2f2b"); accent = Color("e85038")
+	_fill_rect(img, 24, 30, 92, 36, base)
+	_fill_rect(img, 114, 38, 26, 20, base.lightened(0.15))
+	_fill_rect(img, 40, 18, 52, 12, base.darkened(0.1))
+	_fill_rect(img, 40, 66, 52, 12, base.darkened(0.1))
+	_fill_rect(img, 36, 34, 72, 6, accent)
+	_fill_rect(img, 36, 56, 72, 6, accent)
+	_fill_rect(img, 122, 42, 12, 12, Color("66e0ff"))
+	_fill_rect(img, 14, 34, 10, 10, Color("ff9e42"))
+	_fill_rect(img, 14, 52, 10, 10, Color("ff9e42"))
+	var tex := ImageTexture.create_from_image(img)
+	_tex_cache[key] = tex
+	return tex
 
 
 static func _fill_rect(img: Image, x0: int, y0: int, w: int, h: int, col: Color) -> void:

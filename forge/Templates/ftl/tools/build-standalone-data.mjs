@@ -135,6 +135,10 @@ const weapons = {
   BOMB_ION: mkW('BOMB_ION','BOMB','Ion Bomb','Ion Bomb','Deals massive 4 ion damage past shields.',0,1,22,1,55,2,{ion:4,missiles:1,stunChance:3,color:[0.4,0.85,1.0]}),
   CRYSTAL_BURST_1: mkW('CRYSTAL_BURST_1','LASER','Crystal Burst Mark I','Crystal Burst','Fires 2 shards that pierce 1 shield layer.',1,2,15,2,60,3,{sp:1,breachChance:2,color:[0.45,0.92,1.0]}),
   CRYSTAL_HEAVY_1: mkW('CRYSTAL_HEAVY_1','LASER','Heavy Crystal Mark I','Heavy Crystal','Pierces 1 shield for 2 damage.',2,1,13,1,55,3,{sp:1,breachChance:3,color:[0.45,0.92,1.0]}),
+  LASER_HULL_1: mkW('LASER_HULL_1','LASER','Hull Smasher Laser I','Hull Laser I','Deals 2x hull damage to empty (systemless) rooms!',1,2,14,2,55,2,{breachChance:2,hullBonus:true,color:[1.0,0.42,0.18]}),
+  BEAM_HULL: mkW('BEAM_HULL','BEAM','Hull Beam','Hull Beam','Deals 2x damage to empty rooms along a 120px sweep!',1,1,14,2,70,2,{length:120,hullBonus:true,color:[1.0,0.62,0.12]}),
+  MISSILES_HULL: mkW('MISSILES_HULL','MISSILES','Hull Missile','Hull Missile','Pierces shields and deals 2x damage to empty rooms!',2,1,17,2,65,2,{sp:5,missiles:1,breachChance:3,hullBonus:true,speed:35,color:[1.0,0.55,0.15]}),
+  BOMB_BREACH_2: mkW('BOMB_BREACH_2','BOMB','Breach Bomb Mark II','Breach II','Teleports a devastating hull-breaching bomb (3 sys dmg).',0,1,17,2,60,2,{sysDamage:3,persDamage:3,missiles:1,breachChance:10,color:[1.0,0.35,0.22]}),
 };
 
 const drones = {
@@ -250,12 +254,47 @@ const ships = {
     weaponSlots:4,droneSlots:2,weapons:['CRYSTAL_BURST_1','CRYSTAL_HEAVY_1'],weaponListLoad:'',weaponListCount:2,missiles:0,
     drones:[],droneListLoad:'',droneParts:0,health:30,maxPower:8,crew:['crystal','crystal','human','human'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'
   },
+  PLAYER_SHIP_HARD_2: {
+    id:'PLAYER_SHIP_HARD_2',layout:'kestral',img:'kestral_2',class_name:'Kestrel Cruiser B',name:'Red-Tail',
+    desc:'Iconic Type-B Kestrel armed with a 4-laser volley and diverse crew.',
+    systems: mkSys({pilot:[0,1,3],doors:[2,1,3],sensors:[3,1,3],medbay:[4,1,3],shields:[5,2,8],weapons:[10,4,8],oxygen:[13,1,3],engines:[14,2,8]}),
+    weaponSlots:4,droneSlots:2,weapons:['LASER_BURST_1','LASER_BURST_1','LASER_HEAVY_1'],weaponListLoad:'',weaponListCount:3,missiles:0,
+    drones:[],droneListLoad:'',droneParts:0,health:30,maxPower:9,crew:['human','human','mantis','energy'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'
+  },
+  PLAYER_SHIP_FED_2: {
+    id:'PLAYER_SHIP_FED_2',layout:'fed_osprey',img:'fed_cruiser_2',class_name:'Federation Cruiser B',name:'Nisos',
+    desc:'Upgraded Lv.2 Artillery Beam paired with Dual Lasers and Leto Missile.',
+    systems: mkSys({pilot:[0,1,3],artillery:[1,2,4],sensors:[3,1,3],doors:[4,1,3],shields:[5,2,8],weapons:[6,2,8],medbay:[7,1,3],engines:[8,2,8],oxygen:[9,1,3]}),
+    weaponSlots:4,droneSlots:2,weapons:['LASER_BURST_1','MISSILES_1'],weaponListLoad:'',weaponListCount:2,missiles:10,
+    drones:[],droneListLoad:'',droneParts:0,health:30,maxPower:9,crew:['human','slug','energy'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'
+  },
+  PLAYER_SHIP_MANTIS_2: {
+    id:'PLAYER_SHIP_MANTIS_2',layout:'mantis_gila',img:'mantis_cruiser_2',class_name:'Mantis Cruiser B',name:'The Basilisk',
+    desc:'Double-shielded boarding fortress with Teleporter, Defense Drone I, and Boarding Drone.',
+    systems: mkSys({pilot:[0,1,3],teleporter:[1,1,3],doors:[2,1,3],shields:[3,4,8],drones:[4,3,8],medbay:[5,1,3],engines:[6,2,8],oxygen:[7,1,3],weapons:[8,1,8]}),
+    weaponSlots:4,droneSlots:2,weapons:[],weaponListLoad:'',weaponListCount:0,missiles:0,
+    drones:['DEFENSE_1','BOARDER'],droneListLoad:'',droneParts:16,health:30,maxPower:10,crew:['mantis','mantis'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'
+  },
+  PLAYER_SHIP_STEALTH_2: {
+    id:'PLAYER_SHIP_STEALTH_2',layout:'stealth_nes',img:'stealth_2',class_name:'Stealth Cruiser B',name:'DA-SR 12',
+    desc:'Glass cannon equipped with Lv.2 Cloaking and the devastating Glaive Beam.',
+    systems: mkSys({pilot:[0,1,3],cloaking:[1,2,3],sensors:[2,2,3],doors:[3,1,3],weapons:[4,4,8],medbay:[5,1,3],engines:[6,2,8],oxygen:[7,1,3]}),
+    weaponSlots:3,droneSlots:2,weapons:['BEAM_3'],weaponListLoad:'',weaponListCount:1,missiles:0,
+    drones:[],droneListLoad:'',droneParts:0,health:30,maxPower:8,crew:['human','human','energy'],augments:['LONG_RANGED_SCANNERS'],minSector:0,maxSector:8,boardingAI:'sabotage'
+  },
+  PLAYER_SHIP_ENERGY_2: {
+    id:'PLAYER_SHIP_ENERGY_2',layout:'zoltan_adj',img:'energy_cruiser_2',class_name:'Zoltan Cruiser B',name:'Noether',
+    desc:'Starts with Zoltan Super-Shield, dual Ion Blasts, and a sweeping Pike Beam.',
+    systems: mkSys({pilot:[0,1,3],doors:[1,1,3],sensors:[2,1,3],shields:[3,1,8],weapons:[4,4,8],medbay:[5,1,3],engines:[6,2,8],oxygen:[7,1,3]}),
+    weaponSlots:4,droneSlots:2,weapons:['ION_1','ION_1','BEAM_LONG'],weaponListLoad:'',weaponListCount:3,missiles:0,
+    drones:[],droneListLoad:'',droneParts:0,health:30,maxPower:6,crew:['energy','energy','energy'],augments:['ENERGY_SHIELD'],minSector:0,maxSector:8,boardingAI:'sabotage'
+  },
   REBEL_SKINNY: {id:'REBEL_SKINNY',layout:'rebel_fighter',img:'rebel_long',class_name:'Rebel Fighter',name:'Rebel Fighter',desc:'Rebel patrol vessel.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,2,8],engines:[3,2,8],oxygen:[4,1,3]}),weaponSlots:3,droneSlots:1,weapons:['LASER_BURST_1','MISSILES_1'],weaponListLoad:'',weaponListCount:2,missiles:6,drones:[],droneListLoad:'',droneParts:1,health:10,maxPower:8,crew:['human','human'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'},
   REBEL_FAT: {id:'REBEL_FAT',layout:'rebel_fighter',img:'rebel_squat',class_name:'Rebel Rigger',name:'Rebel Rigger',desc:'Drone-equipped Rebel vessel.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,2,8],drones:[3,2,8],engines:[4,2,8],oxygen:[5,1,3]}),weaponSlots:3,droneSlots:2,weapons:['LASER_BURST_2'],weaponListLoad:'',weaponListCount:1,missiles:4,drones:['COMBAT_1'],droneListLoad:'',droneParts:4,health:12,maxPower:10,crew:['human','human','human'],augments:[],minSector:1,maxSector:8,boardingAI:'sabotage'},
   AUTO_BASIC: {id:'AUTO_BASIC',layout:'auto_scout',img:'auto_basic',class_name:'Auto-Scout',name:'Rebel Auto-Scout',desc:'Unmanned AI scout ship with self-repair.',systems:mkSys({pilot:[0,2,3],shields:[1,2,8],weapons:[2,2,8],engines:[3,2,8]}),weaponSlots:3,droneSlots:1,weapons:['LASER_BURST_1','ION_1'],weaponListLoad:'',weaponListCount:2,missiles:4,drones:[],droneListLoad:'',droneParts:0,health:9,maxPower:9,crew:[],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'},
   AUTO_ASSAULT: {id:'AUTO_ASSAULT',layout:'auto_scout',img:'auto_assault',class_name:'Auto-Assault',name:'Rebel Auto-Assault',desc:'Heavy unmanned gunship.',systems:mkSys({pilot:[0,2,3],shields:[1,4,8],weapons:[2,4,8],engines:[3,3,8]}),weaponSlots:4,droneSlots:2,weapons:['LASER_BURST_2','SHOTGUN'],weaponListLoad:'',weaponListCount:2,missiles:8,drones:['COMBAT_1'],droneListLoad:'',droneParts:4,health:13,maxPower:14,crew:[],augments:[],minSector:3,maxSector:8,boardingAI:'sabotage'},
   MANTIS_SCOUT: {id:'MANTIS_SCOUT',layout:'rebel_fighter',img:'mantis_scout',class_name:'Mantis Scout',name:'Mantis Scout',desc:'Fast Mantis raider.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,2,8],engines:[3,2,8],oxygen:[4,1,3]}),weaponSlots:3,droneSlots:1,weapons:['LASER_HEAVY_1','MISSILES_1'],weaponListLoad:'',weaponListCount:2,missiles:6,drones:[],droneListLoad:'',droneParts:0,health:10,maxPower:8,crew:['mantis','mantis'],augments:[],minSector:0,maxSector:8,boardingAI:'sabotage'},
-  MANTIS_FIGHTER: {id:'MANTIS_FIGHTER',layout:'rebel_fighter',img:'mantis_fighter',class_name:'Mantis Fighter',name:'Mantis Fighter',desc:'Aggressive Mantis cruiser.',systems:mkSys({pilot:[0,1,3],shields:[1,4,8],weapons:[2,3,8],engines:[3,3,8],oxygen:[4,1,3],medbay:[5,1,3]}),weaponSlots:3,droneSlots:1,weapons:['LASER_BURST_2','BOMB_1'],weaponListLoad:'',weaponListCount:2,missiles:8,drones:[],droneListLoad:'',droneParts:0,health:13,maxPower:12,crew:['mantis','mantis','engi'],augments:[],minSector:2,maxSector:8,boardingAI:'sabotage'},
+  MANTIS_FIGHTER: {id:'MANTIS_FIGHTER',layout:'rebel_fighter',img:'mantis_fighter',class_name:'Mantis Fighter',name:'Mantis Fighter',desc:'Aggressive Mantis cruiser with Crew Teleporter.',systems:mkSys({pilot:[0,1,3],shields:[1,4,8],weapons:[2,3,8],engines:[3,3,8],oxygen:[4,1,3],teleporter:[5,1,3]}),weaponSlots:3,droneSlots:1,weapons:['LASER_BURST_2','BOMB_1'],weaponListLoad:'',weaponListCount:2,missiles:8,drones:[],droneListLoad:'',droneParts:0,health:13,maxPower:12,crew:['mantis','mantis','engi'],augments:[],minSector:2,maxSector:8,boardingAI:'sabotage'},
   ROCK_SCOUT: {id:'ROCK_SCOUT',layout:'rebel_fighter',img:'rock_scout',class_name:'Rock Scout',name:'Rock Scout',desc:'Missile-armed Rock vessel.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,3,8],engines:[3,2,8],oxygen:[4,1,3]}),weaponSlots:3,droneSlots:1,weapons:['MISSILES_2_PLAYER','LASER_HEAVY_1'],weaponListLoad:'',weaponListCount:2,missiles:10,drones:[],droneListLoad:'',droneParts:0,health:12,maxPower:9,crew:['rock','rock'],augments:['ROCK_ARMOR'],minSector:1,maxSector:8,boardingAI:'sabotage'},
   ENERGY_FIGHTER: {id:'ENERGY_FIGHTER',layout:'rebel_fighter',img:'energy_fighter',class_name:'Zoltan Fighter',name:'Zoltan Fighter',desc:'Protected by a Zoltan Super-Shield.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,3,8],engines:[3,2,8],oxygen:[4,1,3]}),weaponSlots:3,droneSlots:1,weapons:['ION_1','BEAM_1'],weaponListLoad:'',weaponListCount:2,missiles:4,drones:[],droneListLoad:'',droneParts:0,health:10,maxPower:9,crew:['energy','energy'],augments:['ENERGY_SHIELD'],minSector:1,maxSector:8,boardingAI:'sabotage'},
   JELLY_BUTTON: {id:'JELLY_BUTTON',layout:'rebel_fighter',img:'jelly_button',class_name:'Slug Interceptor',name:'Slug Interceptor',desc:'Cunning Nebula ambush craft.',systems:mkSys({pilot:[0,1,3],shields:[1,2,8],weapons:[2,3,8],engines:[3,3,8],oxygen:[4,1,3]}),weaponSlots:3,droneSlots:1,weapons:['LASER_BURST_1','BEAM_BIO'],weaponListLoad:'',weaponListCount:2,missiles:4,drones:[],droneListLoad:'',droneParts:0,health:11,maxPower:10,crew:['slug','slug'],augments:['SLUG_GEL'],minSector:1,maxSector:8,boardingAI:'sabotage'},
@@ -329,12 +368,89 @@ const events = {
       {text:'Accept the trade.',event:{text:'The crate holds useful fuel and scrap.',autoReward:'standard',autoRewardLevel:'MED'}},
     ]
   },
+  GIANT_ALIEN_SPIDERS: {
+    text:'A research station is overrun by Giant Alien Spiders! Giant alien spiders are no joke.',
+    choices:[
+      {text:'[BLUE BEAM_BIO] Sweep the station corridors with your Anti-Bio Beam.',req:'BEAM_BIO',lvl:1,event:{text:'The bio-beam clears the infestation cleanly without risking a single crew member!',autoReward:'standard',autoRewardLevel:'HIGH'}},
+      {text:'[BLUE CLONEBAY] Send crew in with Clone Bay backup active.',req:'clonebay',lvl:1,event:{text:'After a fierce fight, the station is cleared and your crew returns with generous salvage!',autoReward:'standard',autoRewardLevel:'HIGH'}},
+      {text:'Leave them alone — giant alien spiders are no joke.',event:{text:'You wisely jump away from the infested station.'}},
+    ]
+  },
+  MANTIS_SLAVER: {
+    text:'A Mantis slaver ship hails you: "Surrender a crew member or prepare to be boarded!"',
+    choices:[
+      {text:'Never! Power up weapons and engage!',event:{text:'The Mantis slavers charge their teleporter!',hostile:true,ship:'MANTIS_STD'}},
+      {text:'[BLUE TELEPORTER] Launch a counter-boarding raid immediately!',req:'teleporter',lvl:1,event:{text:'Caught off guard, the slavers free a captive Engi and flee!',crew:'engi',autoReward:'standard',autoRewardLevel:'MED'}},
+    ]
+  },
+  ZOLTAN_BORDER: {
+    text:'A Zoltan peacekeeper patrol scans your hull for illegal weapons.',
+    choices:[
+      {text:'[BLUE ZOLTAN] Let your Zoltan crew negotiate passage.',req:'energy',lvl:1,event:{text:'The patrol salutes your Zoltan officer and shares reactor telemetry (+Scrap & Fuel)!',autoReward:'standard',autoRewardLevel:'MED'}},
+      {text:'Submit to the scan peacefully.',event:{text:'They find no contraband and transfer +2 Fuel for your journey.',autoReward:'fuel',autoRewardLevel:'LOW'}},
+      {text:'Refuse the scan and open fire!',event:{text:'The Zoltan Super-Shield flares to life!',hostile:true,ship:'ZOLTAN_STD'}},
+    ]
+  },
+  CRYSTAL_STASIS_POD: {
+    text:'Deep inside a shattered asteroid, you discover an ancient crystalline stasis pod pulsing softly.',
+    choices:[
+      {text:'Recover the pod and unlock its stasis field.',event:{text:'A mysterious Crystal warrior awakens and joins your crew!',crew:'crystal',autoReward:'standard',autoRewardLevel:'MED'}},
+      {text:'Salvage the rare crystal hull plating instead.',event:{text:'You strip valuable scrap and a Hull Laser from the wreckage.',autoReward:'standard',autoRewardLevel:'HIGH',weapon:'LASER_HULL_1'}},
+    ]
+  },
+  AUTO_SHIPYARD: {
+    text:'You stumble upon an automated Rebel drone shipyard humming with activity.',
+    choices:[
+      {text:'[BLUE HACKING] Hack the shipyard fabricator to print a weapon!',req:'hacking',lvl:1,event:{text:'The fabricator spits out a pristine Flak Gun Mark II before shutting down!',weapon:'SHOTGUN_2',autoReward:'standard',autoRewardLevel:'MED'}},
+      {text:'Raid the shipyard defenses!',event:{text:'An automated Rebel gunship powers up to defend the dock!',hostile:true,ship:'AUTO_STD'}},
+      {text:'Slip away quietly.',event:{text:'You leave the automated shipyard undisturbed.'}},
+    ]
+  },
+  REBEL_STRONGHOLD: {
+    text:'Scanners detect a Rebel forward supply depot guarded by a Rigger.',
+    choices:[
+      {text:'Assault the Rebel supply depot!',event:{text:'The Rebel Rigger deploys combat drones — engage!',hostile:true,ship:'REBEL_STD'}},
+      {text:'[BLUE MIND] Cause confusion among their bridge crew and raid the outer crates.',req:'mind',lvl:1,event:{text:'While the Rebels argue on comms, you scoop up scrap and missiles!',autoReward:'missiles',autoRewardLevel:'HIGH'}},
+    ]
+  },
+  ROCK_DISTRESS: {
+    text:'A damaged Rock freighter is trapped in a dense asteroid field.',
+    choices:[
+      {text:'[BLUE SHIELDS] Extend your shields to cover their hull while towing them out.',req:'shields',lvl:4,event:{text:'The Rock captain is impressed by your resilience and gifts you a Hull Beam!',weapon:'BEAM_HULL',autoReward:'standard',autoRewardLevel:'MED'}},
+      {text:'Brave the asteroids to pull them clear.',event:{text:'You take minor scratches but earn their gratitude.',autoReward:'standard',autoRewardLevel:'MED',damage:2}},
+    ]
+  },
+  LANIUS_SCAVENGERS: {
+    text:'A pair of metallic Lanius scavengers are stripping an old Federation wreck.',
+    choices:[
+      {text:'[BLUE ANAEROBIC] Your Lanius crew translates and negotiates a fair split.',req:'anaerobic',lvl:1,event:{text:'They happily share half of the salvage and a Breach Bomb II!',weapon:'BOMB_BREACH_2',autoReward:'standard',autoRewardLevel:'HIGH'}},
+      {text:'Engage the Lanius scavengers!',event:{text:'The Lanius Scout turns its Flak cannon toward you!',hostile:true,ship:'LANIUS_STD'}},
+    ]
+  },
+  FEDERATION_OUTPOST: {
+    text:'A hidden Federation listening post offers emergency hull repairs and intel.',
+    choices:[
+      {text:'Accept hull repairs (+5 Hull) and sector charts.',event:{text:'Engineers patch your hull plating cleanly.',damage:-5,autoReward:'fuel',autoRewardLevel:'LOW'}},
+      {text:'Ask for munitions instead.',event:{text:'They load extra missiles and scrap into your cargo bay.',autoReward:'missiles',autoRewardLevel:'MED'}},
+    ]
+  },
+  PULSAR_BEACON: {
+    text:'A derelict research probe orbits a spinning pulsar, broadcasting encrypted data.',
+    choices:[
+      {text:'[BLUE BATTERY] Shield your systems with Backup Battery power and download the data.',req:'battery',lvl:1,event:{text:'You extract valuable Federation coordinates and high-grade scrap!',autoReward:'standard',autoRewardLevel:'HIGH',quest:'QUEST_CACHE_REWARD'}},
+      {text:'Attempt a quick flyby salvage.',event:{text:'You grab a modest cache of scrap before the next pulse hits.',autoReward:'standard',autoRewardLevel:'MED'}},
+    ]
+  },
 };
 
 const ship_events = {
   PIRATE_STD: {id:'PIRATE_STD',auto_blueprint:'REBEL_SKINNY',surrender:true,destroyed_text:'Enemy ship destroyed!',dead_crew_text:'Enemy crew eliminated!'},
   REBEL_STD: {id:'REBEL_STD',auto_blueprint:'REBEL_FAT',surrender:true,destroyed_text:'Rebel patrol destroyed!',dead_crew_text:'Rebel crew neutralized!'},
   SLUG_STD: {id:'SLUG_STD',auto_blueprint:'JELLY_BUTTON',surrender:true,destroyed_text:'Slug ship destroyed!',dead_crew_text:'Slug crew neutralized!'},
+  MANTIS_STD: {id:'MANTIS_STD',auto_blueprint:'MANTIS_FIGHTER',surrender:true,destroyed_text:'Mantis cruiser destroyed!',dead_crew_text:'Mantis crew eliminated!'},
+  ZOLTAN_STD: {id:'ZOLTAN_STD',auto_blueprint:'ENERGY_FIGHTER',surrender:true,destroyed_text:'Zoltan vessel destroyed!',dead_crew_text:'Zoltan crew neutralized!'},
+  AUTO_STD: {id:'AUTO_STD',auto_blueprint:'AUTO_ASSAULT',surrender:false,destroyed_text:'Auto-Assault neutralized!',dead_crew_text:'Auto-Assault neutralized!'},
+  LANIUS_STD: {id:'LANIUS_STD',auto_blueprint:'ANAEROBIC_SCOUT',surrender:true,destroyed_text:'Lanius scout destroyed!',dead_crew_text:'Lanius crew eliminated!'},
 };
 
 const sector_types = {
@@ -343,7 +459,12 @@ const sector_types = {
   NEBULA: ['NEBULA_SECTOR','SLUG_SECTOR'],
 };
 
-const evList = ['HOSTILE_PIRATE','DISTRESS_MINER','QUEST_CACHE','ENGI_HELP','MERCHANT_DRIFT','DERELICT_POD','REBEL_AMBUSH','NEBULA_SMUGGLER'].map(name => ({name,min:0,max:2}));
+const evList = [
+  'HOSTILE_PIRATE','DISTRESS_MINER','QUEST_CACHE','ENGI_HELP','MERCHANT_DRIFT','DERELICT_POD',
+  'REBEL_AMBUSH','NEBULA_SMUGGLER','GIANT_ALIEN_SPIDERS','MANTIS_SLAVER','ZOLTAN_BORDER',
+  'CRYSTAL_STASIS_POD','AUTO_SHIPYARD','REBEL_STRONGHOLD','ROCK_DISTRESS','LANIUS_SCAVENGERS',
+  'FEDERATION_OUTPOST','PULSAR_BEACON'
+].map(name => ({name,min:0,max:2}));
 const sectors = {};
 for (const [sid, sname] of [
   ['CIVILIAN_SECTOR','Civilian Sector'],['ENGI_SECTOR','Engi Controlled Sector'],['ZOLTAN_SECTOR','Zoltan Controlled Sector'],

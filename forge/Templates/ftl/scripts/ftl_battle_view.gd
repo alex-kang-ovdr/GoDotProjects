@@ -759,8 +759,7 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 			if dtex != null:
 				draw_texture_rect(dtex, Rect2(dp - Vector2(18, 18), Vector2(36, 36)), false)
 			else:
-				draw_circle(dp, 8.0, Color("66e0ff") if str(d.bp.get("type", "")) == "DEFENSE" else Color("ff9f43"))
-				draw_circle(dp, 4.0, Color.WHITE)
+				_draw_procedural_drone(dp, ang, str(d.bp.get("type", "COMBAT")))
 
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -819,8 +818,7 @@ func _draw_ship_weapons(ship: FTLShip, img_rect: Rect2) -> void:
 					draw_texture_rect_region(tex, dst, src, Color.WHITE if bool(w.powered) else Color(0.6, 0.6, 0.65, 0.85))
 					drew = true
 		if not drew:
-			var col := Color("ff9f43") if bool(w.powered) else Color(0.45, 0.48, 0.52)
-			draw_rect(Rect2(pos - Vector2(10, 5), Vector2(20, 10)), col, true)
+			_draw_procedural_weapon_mount(pos, w)
 
 
 func _draw_room_system_icon(ship: FTLShip, sys: Dictionary, rr: Rect2) -> void:
@@ -951,8 +949,10 @@ func _draw_crew_member(c: Dictionary) -> void:
 			draw_texture_rect_region(tex, Rect2(pos - Vector2(16, 16), Vector2(32, 32)), src, tint)
 			drew = true
 	if not drew:
-		var col: Color = c.color if bool(c.is_player) else Color("ff5c5c")
-		draw_circle(pos, 10.0, col)
+		_draw_procedural_crew(pos, c)
+	# Stun halo if stunned by Ion/Stun weapon
+	if float(c.get("stun_timer", 0.0)) > 0.0:
+		draw_arc(pos + Vector2(0, -14), 7.0, 0, TAU, 14, Color("ffd54f"), 2.0)
 	# Crew HP bar right above head
 	var hp_ratio := clampf(float(c.hp) / maxf(1.0, float(c.max_hp)), 0.0, 1.0)
 	if hp_ratio < 0.995 or bool(c.selected) or not bool(c.is_player):
@@ -1189,6 +1189,74 @@ func _draw_procedural_hull(ship: FTLShip, bounds: Rect2, tint: Color) -> void:
 	# Aft engine nacelles
 	draw_rect(Rect2(Vector2(tail_x - 10.0, b.position.y + 22.0), Vector2(16.0, 24.0)), Color("2c3644") * tint, true)
 	draw_rect(Rect2(Vector2(tail_x - 10.0, b.end.y - 46.0), Vector2(16.0, 24.0)), Color("2c3644") * tint, true)
+
+
+func _draw_procedural_crew(pos: Vector2, c: Dictionary) -> void:
+	var sp := str(c.species)
+	var col: Color = c.color if bool(c.is_player) else Color("ff5c5c")
+	var bob := sin(float(c.anim_t) * 10.0) * 1.8 if str(c.state) == "walk" else 0.0
+	var p := pos + Vector2(0, bob)
+	match sp:
+		"engi":
+			draw_rect(Rect2(p - Vector2(8, 8), Vector2(16, 16)), col, true)
+			draw_rect(Rect2(p - Vector2(5, 5), Vector2(10, 4)), Color("66ffff"), true)
+		"mantis":
+			var pts := PackedVector2Array([p + Vector2(0, -11), p + Vector2(10, 4), p + Vector2(0, 9), p + Vector2(-10, 4)])
+			draw_colored_polygon(pts, col)
+			draw_line(p + Vector2(-8, -2), p + Vector2(-13, -8), Color("a8ff78"), 2.2)
+			draw_line(p + Vector2(8, -2), p + Vector2(13, -8), Color("a8ff78"), 2.2)
+		"rock":
+			draw_rect(Rect2(p - Vector2(10, 9), Vector2(20, 18)), col, true)
+			draw_rect(Rect2(p - Vector2(10, 9), Vector2(20, 18)), Color("ffd580"), false, 1.8)
+		"energy":
+			draw_circle(p, 11.0, Color(0.45, 1.0, 0.55, 0.35))
+			draw_circle(p, 7.5, Color("a8ff78"))
+			draw_circle(p, 3.5, Color.WHITE)
+		"crystal":
+			var cpts := PackedVector2Array([p + Vector2(0, -12), p + Vector2(9, 0), p + Vector2(0, 11), p + Vector2(-9, 0)])
+			draw_colored_polygon(cpts, Color("65e8ff"))
+			draw_polyline(cpts + PackedVector2Array([cpts[0]]), Color.WHITE, 1.5)
+		"anaerobic":
+			var lpts := PackedVector2Array([p + Vector2(-9, -8), p + Vector2(9, -8), p + Vector2(5, 10), p + Vector2(-5, 10)])
+			draw_colored_polygon(lpts, Color("8ea8c2"))
+			draw_line(p + Vector2(-6, -4), p + Vector2(6, 4), Color("5ce1ff"), 2.0)
+		_:
+			draw_circle(p, 8.5, col)
+			draw_rect(Rect2(p + Vector2(-5, -5), Vector2(10, 4)), Color("d8f0ff"), true)
+	if str(c.state) in ["fight", "sabotage"]:
+		draw_circle(p + Vector2(8, -4), 3.0, Color("ffd54f"))
+	elif str(c.state) == "repair":
+		draw_circle(p + Vector2(8, 4), 2.8, Color("65e8ff"))
+
+
+func _draw_procedural_weapon_mount(pos: Vector2, w: Dictionary) -> void:
+	var pwr := bool(w.powered)
+	var base_c := Color("4f6278") if pwr else Color("2c343e")
+	var wtype := str(w.bp.get("type", "LASER"))
+	var glow_c: Color = w.bp.get("color", Color("ff9f43"))
+	var ratio := clampf(float(w.charge) / maxf(0.1, float(w.cooldown)), 0.0, 1.0) if pwr else 0.0
+	draw_rect(Rect2(pos - Vector2(12, 6), Vector2(24, 12)), base_c, true)
+	draw_rect(Rect2(pos - Vector2(12, 6), Vector2(24, 12)), Color("94adc4"), false, 1.4)
+	if wtype == "BEAM":
+		draw_rect(Rect2(pos + Vector2(4, -3), Vector2(11, 6)), glow_c if pwr else Color("55606e"), true)
+	elif wtype == "MISSILES":
+		draw_circle(pos + Vector2(7, 0), 4.5, Color("ffd54f") if pwr else Color("55606e"))
+	else:
+		draw_rect(Rect2(pos + Vector2(6, -2.5), Vector2(10, 5)), Color("c8d8e8") if pwr else Color("55606e"), true)
+	if ratio > 0.05:
+		draw_rect(Rect2(pos + Vector2(-10, -2), Vector2(16.0 * ratio, 4)), glow_c, true)
+
+
+func _draw_procedural_drone(dp: Vector2, ang: float, dtype: String) -> void:
+	var col := Color("66e0ff") if dtype == "DEFENSE" else (Color("7eff8b") if dtype == "SHIELD" else Color("ff9f43"))
+	var pts := PackedVector2Array([
+		dp + Vector2(11, 0).rotated(ang),
+		dp + Vector2(-8, -7).rotated(ang),
+		dp + Vector2(-4, 0).rotated(ang),
+		dp + Vector2(-8, 7).rotated(ang),
+	])
+	draw_colored_polygon(pts, col)
+	draw_polyline(pts + PackedVector2Array([pts[0]]), Color.WHITE, 1.5)
 
 
 func _draw_ellipse_glow(center: Vector2, rx: float, ry: float, col: Color) -> void:

@@ -76,7 +76,18 @@ func _on_web_audio_loaded(rel_path: String) -> void:
 
 func play_track(track_name: String, combat: bool = false) -> void:
 	_in_combat = combat
-	if _headless or pkg == null or db == null or not pkg.is_loaded:
+	if _headless:
+		return
+	if pkg == null or db == null or not pkg.is_loaded:
+		if _current_track == "__standalone_synth__" and _explore_player.playing:
+			return
+		_current_track = "__standalone_synth__"
+		_explore_player.stream = FTLStandaloneAssets.get_procedural_bgm(false)
+		_combat_player.stream = FTLStandaloneAssets.get_procedural_bgm(true)
+		_explore_player.play()
+		_combat_player.play()
+		_combat_blend = 1.0 if combat else 0.0
+		_apply_music_volumes()
 		return
 	if track_name == _current_track and _explore_player.playing:
 		return

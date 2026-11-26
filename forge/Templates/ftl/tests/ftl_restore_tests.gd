@@ -379,17 +379,33 @@ func _run() -> void:
 			missing_assets.append(fx_p)
 	_check(missing_assets.is_empty(), "Zero-missing core FTL sprite & icon assets decoded from PKG (124/124)", "missing=%s" % str(missing_assets))
 
-	# 8n. Pure Standalone Mode (ZERO ftl.dat.vanilla dependency): full 10-ship hangar, 28 weapons, procedural icons & WAV SFX
+	# 8n. Pure Standalone Mode (ZERO ftl.dat.vanilla dependency): full 15-ship hangar, 32 weapons, 20 events, Hull 2x damage, procedural icons, preview & BGM/SFX
 	var st_db := FTLDatabase.new()
 	st_db.load_all(null)
-	var st_ok := st_db.player_ship_ids.size() >= 10 and st_db.ships.size() >= 23 and st_db.weapons.size() >= 28 and st_db.drones.size() >= 9 and st_db.augments.size() >= 19 and st_db.events.size() >= 10
+	var st_ok := st_db.player_ship_ids.size() >= 15 and st_db.ships.size() >= 28 and st_db.weapons.size() >= 32 and st_db.drones.size() >= 9 and st_db.augments.size() >= 19 and st_db.events.size() >= 20
 	var st_fed := FTLShip.new()
 	st_fed.init_from_blueprint(st_db, "PLAYER_SHIP_FED", true, 0)
 	var st_icon := FTLStandaloneAssets.get_texture("icons/s_shields_green1.png")
 	var st_res_ic := FTLStandaloneAssets.get_texture("ui_icons/icon_scrap.png")
+	var st_prev := FTLStandaloneAssets.get_ship_preview_texture("fed")
 	var st_wav := FTLStandaloneAssets.get_procedural_sfx("lightLaser1")
-	_check(st_ok and st_fed.rooms.size() >= 10 and st_fed.systems.has("artillery") and st_icon != null and st_res_ic != null and st_wav != null,
-		"100% Standalone Mode boots with 0 ftl.dat.vanilla dependency", "ships=%d wpns=%d" % [st_db.ships.size(), st_db.weapons.size()])
+	var st_bgm := FTLStandaloneAssets.get_procedural_bgm(true)
+	_check(st_ok and st_fed.rooms.size() >= 10 and st_fed.systems.has("artillery") and st_icon != null and st_res_ic != null and st_prev != null and st_wav != null and st_bgm != null,
+		"100% Standalone Mode boots with 0 ftl.dat.vanilla dependency", "ships=%d wpns=%d ev=%d" % [st_db.ships.size(), st_db.weapons.size(), st_db.events.size()])
+
+	# 8o. Hull Weapon 2x empty-room bonus
+	var hull_tgt := FTLShip.new()
+	hull_tgt.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", false, 0)
+	hull_tgt.shield_layers = 0
+	hull_tgt.systems.engines.power = 0
+	var empty_rid := -1
+	for r in hull_tgt.rooms:
+		if str(r.system).is_empty():
+			empty_rid = int(r.id)
+			break
+	var h_before := hull_tgt.hull
+	hull_tgt.apply_projectile_impact(st_db.weapons["LASER_HULL_1"], empty_rid)
+	_check(empty_rid >= 0 and (h_before - hull_tgt.hull) == 2, "Hull Weapon deals 2x hull damage to empty rooms", "dmg=%d" % (h_before - hull_tgt.hull))
 
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())

@@ -1948,6 +1948,29 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 	if systems.has("cloaking") and cloak_cooldown <= 0.0 and cloak_timer <= 0.0 and randf() < 0.25:
 		activate_cloaking()
 
+	# Authentic Enemy Teleporter Boarding AI (enemies with Teleporter or Flagship Phase 3!)
+	if (systems.has("teleporter") or (is_boss and boss_phase == 3)) and teleporter_cooldown <= 0.0 and player_ship.zoltan_shield <= 0 and not player_ship.rooms.is_empty():
+		var enemy_avail: Array = []
+		for c in crew:
+			if not bool(c.is_player) and float(c.hp) > 45.0:
+				enemy_avail.append(c)
+		if enemy_avail.size() >= 2 and randf() < 0.28:
+			teleporter_cooldown = 22.0
+			var dest_rid := int(player_ship.rooms[randi() % player_ship.rooms.size()].id)
+			var send_n := mini(2, enemy_avail.size() - 1)
+			for bi in range(send_n):
+				var bc: Dictionary = enemy_avail[bi]
+				crew.erase(bc)
+				bc.room_id = dest_rid
+				bc.target_room = dest_rid
+				bc.path = []
+				bc.pos = player_ship.get_room_center_local(dest_rid)
+				player_ship.crew.append(bc)
+			player_ship._assign_room_tiles(dest_rid)
+			pending_teleports.append({"ship": player_ship, "pos_local": player_ship.get_room_center_local(dest_rid), "incoming": true})
+			pending_popups.append({"ship": player_ship, "pos_local": player_ship.get_room_center_local(dest_rid), "text": "INTRUDERS!", "color": Color("ff5c5c")})
+			pending_sfx.append("teleport")
+
 	# Rebel Flagship Phase 1 / Phase 2 / Phase 3 Distinct Patterns
 	if is_boss:
 		boss_surge_timer -= 0.75
@@ -2084,6 +2107,11 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int) -> Stri
 		return "resist"
 
 	if dmg > 0:
+		# Authentic FTL Hull Weapons deal 2x hull damage to empty (systemless) rooms!
+		var is_hull_wpn := bool(weapon_bp.get("hullBonus", false)) or str(weapon_bp.get("id", "")).contains("HULL")
+		if is_hull_wpn and room_by_id.has(target_room_id) and str(room_by_id[target_room_id].system).is_empty():
+			dmg *= 2
+			pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -16), "text": "2x HULL!", "color": Color("ffd54f")})
 		hull = maxi(0, hull - dmg)
 		pending_popups.append({"ship": self, "pos_local": room_center, "text": "-%d" % dmg, "color": Color("ff5c5c")})
 		pending_explosions.append({"ship": self, "pos_local": room_center, "big": dmg >= 2})

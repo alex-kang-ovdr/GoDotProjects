@@ -1316,6 +1316,197 @@
       "missSounds": [
         "miss"
       ]
+    },
+    "LASER_HULL_1": {
+      "id": "LASER_HULL_1",
+      "type": "LASER",
+      "title": "Hull Smasher Laser I",
+      "short": "Hull Laser I",
+      "desc": "Deals 2x hull damage to empty (systemless) rooms!",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 2,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 2,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 14,
+      "power": 2,
+      "cost": 55,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.42,
+        0.18
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ],
+      "hullBonus": true
+    },
+    "BEAM_HULL": {
+      "id": "BEAM_HULL",
+      "type": "BEAM",
+      "title": "Hull Beam",
+      "short": "Hull Beam",
+      "desc": "Deals 2x damage to empty rooms along a 120px sweep!",
+      "damage": 1,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 0,
+      "stunChance": 0,
+      "missiles": 0,
+      "cooldown": 14,
+      "power": 2,
+      "cost": 70,
+      "rarity": 2,
+      "speed": 60,
+      "length": 120,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.62,
+        0.12
+      ],
+      "launchSounds": [
+        "beam2"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ],
+      "hullBonus": true
+    },
+    "MISSILES_HULL": {
+      "id": "MISSILES_HULL",
+      "type": "MISSILES",
+      "title": "Hull Missile",
+      "short": "Hull Missile",
+      "desc": "Pierces shields and deals 2x damage to empty rooms!",
+      "damage": 2,
+      "sysDamage": 0,
+      "persDamage": 0,
+      "ion": 0,
+      "shots": 1,
+      "sp": 5,
+      "fireChance": 0,
+      "breachChance": 3,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 17,
+      "power": 2,
+      "cost": 65,
+      "rarity": 2,
+      "speed": 35,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.55,
+        0.15
+      ],
+      "launchSounds": [
+        "smallMissile1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ],
+      "hullBonus": true
+    },
+    "BOMB_BREACH_2": {
+      "id": "BOMB_BREACH_2",
+      "type": "BOMB",
+      "title": "Breach Bomb Mark II",
+      "short": "Breach II",
+      "desc": "Teleports a devastating hull-breaching bomb (3 sys dmg).",
+      "damage": 0,
+      "sysDamage": 3,
+      "persDamage": 3,
+      "ion": 0,
+      "shots": 1,
+      "sp": 0,
+      "fireChance": 0,
+      "breachChance": 10,
+      "stunChance": 0,
+      "missiles": 1,
+      "cooldown": 17,
+      "power": 2,
+      "cost": 60,
+      "rarity": 2,
+      "speed": 60,
+      "length": 0,
+      "radius": 0,
+      "boostType": "",
+      "boostAmount": 0,
+      "boostCount": 0,
+      "chargeLevels": 1,
+      "image": "laser_light1",
+      "weaponArt": "laser_burst_1",
+      "color": [
+        1,
+        0.35,
+        0.22
+      ],
+      "launchSounds": [
+        "lightLaser1"
+      ],
+      "hitShieldSounds": [
+        "hitShield1"
+      ],
+      "hitShipSounds": [
+        "hitHull2"
+      ],
+      "missSounds": [
+        "miss"
+      ]
     }
   },
   "drones": {
@@ -2721,6 +2912,554 @@
       "maxSector": 8,
       "boardingAI": "sabotage"
     },
+    "PLAYER_SHIP_HARD_2": {
+      "id": "PLAYER_SHIP_HARD_2",
+      "layout": "kestral",
+      "img": "kestral_2",
+      "class_name": "Kestrel Cruiser B",
+      "name": "Red-Tail",
+      "desc": "Iconic Type-B Kestrel armed with a 4-laser volley and diverse crew.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 4,
+          "max": 8,
+          "room": 10,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 13,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 14,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_1",
+        "LASER_BURST_1",
+        "LASER_HEAVY_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 3,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 9,
+      "crew": [
+        "human",
+        "human",
+        "mantis",
+        "energy"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_FED_2": {
+      "id": "PLAYER_SHIP_FED_2",
+      "layout": "fed_osprey",
+      "img": "fed_cruiser_2",
+      "class_name": "Federation Cruiser B",
+      "name": "Nisos",
+      "desc": "Upgraded Lv.2 Artillery Beam paired with Dual Lasers and Leto Missile.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "artillery": {
+          "power": 2,
+          "max": 4,
+          "room": 1,
+          "start": true,
+          "img": "room_artillery",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 4,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 2,
+          "max": 8,
+          "room": 5,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 8,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 9,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "LASER_BURST_1",
+        "MISSILES_1"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 2,
+      "missiles": 10,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 9,
+      "crew": [
+        "human",
+        "slug",
+        "energy"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_MANTIS_2": {
+      "id": "PLAYER_SHIP_MANTIS_2",
+      "layout": "mantis_gila",
+      "img": "mantis_cruiser_2",
+      "class_name": "Mantis Cruiser B",
+      "name": "The Basilisk",
+      "desc": "Double-shielded boarding fortress with Teleporter, Defense Drone I, and Boarding Drone.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "teleporter": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_teleporter",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 4,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "drones": {
+          "power": 3,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_drones",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 1,
+          "max": 8,
+          "room": 8,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [],
+      "weaponListLoad": "",
+      "weaponListCount": 0,
+      "missiles": 0,
+      "drones": [
+        "DEFENSE_1",
+        "BOARDER"
+      ],
+      "droneListLoad": "",
+      "droneParts": 16,
+      "health": 30,
+      "maxPower": 10,
+      "crew": [
+        "mantis",
+        "mantis"
+      ],
+      "augments": [],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_STEALTH_2": {
+      "id": "PLAYER_SHIP_STEALTH_2",
+      "layout": "stealth_nes",
+      "img": "stealth_2",
+      "class_name": "Stealth Cruiser B",
+      "name": "DA-SR 12",
+      "desc": "Glass cannon equipped with Lv.2 Cloaking and the devastating Glaive Beam.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "cloaking": {
+          "power": 2,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_cloaking",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 2,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 3,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 4,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 3,
+      "droneSlots": 2,
+      "weapons": [
+        "BEAM_3"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 1,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 8,
+      "crew": [
+        "human",
+        "human",
+        "energy"
+      ],
+      "augments": [
+        "LONG_RANGED_SCANNERS"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
+    "PLAYER_SHIP_ENERGY_2": {
+      "id": "PLAYER_SHIP_ENERGY_2",
+      "layout": "zoltan_adj",
+      "img": "energy_cruiser_2",
+      "class_name": "Zoltan Cruiser B",
+      "name": "Noether",
+      "desc": "Starts with Zoltan Super-Shield, dual Ion Blasts, and a sweeping Pike Beam.",
+      "systems": {
+        "pilot": {
+          "power": 1,
+          "max": 3,
+          "room": 0,
+          "start": true,
+          "img": "room_pilot",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "doors": {
+          "power": 1,
+          "max": 3,
+          "room": 1,
+          "start": true,
+          "img": "room_doors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "sensors": {
+          "power": 1,
+          "max": 3,
+          "room": 2,
+          "start": true,
+          "img": "room_sensors",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "shields": {
+          "power": 1,
+          "max": 8,
+          "room": 3,
+          "start": true,
+          "img": "room_shields",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "weapons": {
+          "power": 4,
+          "max": 8,
+          "room": 4,
+          "start": true,
+          "img": "room_weapons",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "medbay": {
+          "power": 1,
+          "max": 3,
+          "room": 5,
+          "start": true,
+          "img": "room_medbay",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "engines": {
+          "power": 2,
+          "max": 8,
+          "room": 6,
+          "start": true,
+          "img": "room_engines",
+          "slot_dir": "up",
+          "slot_num": 0
+        },
+        "oxygen": {
+          "power": 1,
+          "max": 3,
+          "room": 7,
+          "start": true,
+          "img": "room_oxygen",
+          "slot_dir": "up",
+          "slot_num": 0
+        }
+      },
+      "weaponSlots": 4,
+      "droneSlots": 2,
+      "weapons": [
+        "ION_1",
+        "ION_1",
+        "BEAM_LONG"
+      ],
+      "weaponListLoad": "",
+      "weaponListCount": 3,
+      "missiles": 0,
+      "drones": [],
+      "droneListLoad": "",
+      "droneParts": 0,
+      "health": 30,
+      "maxPower": 6,
+      "crew": [
+        "energy",
+        "energy",
+        "energy"
+      ],
+      "augments": [
+        "ENERGY_SHIELD"
+      ],
+      "minSector": 0,
+      "maxSector": 8,
+      "boardingAI": "sabotage"
+    },
     "REBEL_SKINNY": {
       "id": "REBEL_SKINNY",
       "layout": "rebel_fighter",
@@ -3101,7 +3840,7 @@
       "img": "mantis_fighter",
       "class_name": "Mantis Fighter",
       "name": "Mantis Fighter",
-      "desc": "Aggressive Mantis cruiser.",
+      "desc": "Aggressive Mantis cruiser with Crew Teleporter.",
       "systems": {
         "pilot": {
           "power": 1,
@@ -3148,12 +3887,12 @@
           "slot_dir": "up",
           "slot_num": 0
         },
-        "medbay": {
+        "teleporter": {
           "power": 1,
           "max": 3,
           "room": 5,
           "start": true,
-          "img": "room_medbay",
+          "img": "room_teleporter",
           "slot_dir": "up",
           "slot_num": 0
         }
@@ -6623,6 +7362,263 @@
           }
         }
       ]
+    },
+    "GIANT_ALIEN_SPIDERS": {
+      "text": "A research station is overrun by Giant Alien Spiders! Giant alien spiders are no joke.",
+      "choices": [
+        {
+          "text": "[BLUE BEAM_BIO] Sweep the station corridors with your Anti-Bio Beam.",
+          "req": "BEAM_BIO",
+          "lvl": 1,
+          "event": {
+            "text": "The bio-beam clears the infestation cleanly without risking a single crew member!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH"
+          }
+        },
+        {
+          "text": "[BLUE CLONEBAY] Send crew in with Clone Bay backup active.",
+          "req": "clonebay",
+          "lvl": 1,
+          "event": {
+            "text": "After a fierce fight, the station is cleared and your crew returns with generous salvage!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH"
+          }
+        },
+        {
+          "text": "Leave them alone — giant alien spiders are no joke.",
+          "event": {
+            "text": "You wisely jump away from the infested station."
+          }
+        }
+      ]
+    },
+    "MANTIS_SLAVER": {
+      "text": "A Mantis slaver ship hails you: \"Surrender a crew member or prepare to be boarded!\"",
+      "choices": [
+        {
+          "text": "Never! Power up weapons and engage!",
+          "event": {
+            "text": "The Mantis slavers charge their teleporter!",
+            "hostile": true,
+            "ship": "MANTIS_STD"
+          }
+        },
+        {
+          "text": "[BLUE TELEPORTER] Launch a counter-boarding raid immediately!",
+          "req": "teleporter",
+          "lvl": 1,
+          "event": {
+            "text": "Caught off guard, the slavers free a captive Engi and flee!",
+            "crew": "engi",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        }
+      ]
+    },
+    "ZOLTAN_BORDER": {
+      "text": "A Zoltan peacekeeper patrol scans your hull for illegal weapons.",
+      "choices": [
+        {
+          "text": "[BLUE ZOLTAN] Let your Zoltan crew negotiate passage.",
+          "req": "energy",
+          "lvl": 1,
+          "event": {
+            "text": "The patrol salutes your Zoltan officer and shares reactor telemetry (+Scrap & Fuel)!",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Submit to the scan peacefully.",
+          "event": {
+            "text": "They find no contraband and transfer +2 Fuel for your journey.",
+            "autoReward": "fuel",
+            "autoRewardLevel": "LOW"
+          }
+        },
+        {
+          "text": "Refuse the scan and open fire!",
+          "event": {
+            "text": "The Zoltan Super-Shield flares to life!",
+            "hostile": true,
+            "ship": "ZOLTAN_STD"
+          }
+        }
+      ]
+    },
+    "CRYSTAL_STASIS_POD": {
+      "text": "Deep inside a shattered asteroid, you discover an ancient crystalline stasis pod pulsing softly.",
+      "choices": [
+        {
+          "text": "Recover the pod and unlock its stasis field.",
+          "event": {
+            "text": "A mysterious Crystal warrior awakens and joins your crew!",
+            "crew": "crystal",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Salvage the rare crystal hull plating instead.",
+          "event": {
+            "text": "You strip valuable scrap and a Hull Laser from the wreckage.",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH",
+            "weapon": "LASER_HULL_1"
+          }
+        }
+      ]
+    },
+    "AUTO_SHIPYARD": {
+      "text": "You stumble upon an automated Rebel drone shipyard humming with activity.",
+      "choices": [
+        {
+          "text": "[BLUE HACKING] Hack the shipyard fabricator to print a weapon!",
+          "req": "hacking",
+          "lvl": 1,
+          "event": {
+            "text": "The fabricator spits out a pristine Flak Gun Mark II before shutting down!",
+            "weapon": "SHOTGUN_2",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Raid the shipyard defenses!",
+          "event": {
+            "text": "An automated Rebel gunship powers up to defend the dock!",
+            "hostile": true,
+            "ship": "AUTO_STD"
+          }
+        },
+        {
+          "text": "Slip away quietly.",
+          "event": {
+            "text": "You leave the automated shipyard undisturbed."
+          }
+        }
+      ]
+    },
+    "REBEL_STRONGHOLD": {
+      "text": "Scanners detect a Rebel forward supply depot guarded by a Rigger.",
+      "choices": [
+        {
+          "text": "Assault the Rebel supply depot!",
+          "event": {
+            "text": "The Rebel Rigger deploys combat drones — engage!",
+            "hostile": true,
+            "ship": "REBEL_STD"
+          }
+        },
+        {
+          "text": "[BLUE MIND] Cause confusion among their bridge crew and raid the outer crates.",
+          "req": "mind",
+          "lvl": 1,
+          "event": {
+            "text": "While the Rebels argue on comms, you scoop up scrap and missiles!",
+            "autoReward": "missiles",
+            "autoRewardLevel": "HIGH"
+          }
+        }
+      ]
+    },
+    "ROCK_DISTRESS": {
+      "text": "A damaged Rock freighter is trapped in a dense asteroid field.",
+      "choices": [
+        {
+          "text": "[BLUE SHIELDS] Extend your shields to cover their hull while towing them out.",
+          "req": "shields",
+          "lvl": 4,
+          "event": {
+            "text": "The Rock captain is impressed by your resilience and gifts you a Hull Beam!",
+            "weapon": "BEAM_HULL",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        },
+        {
+          "text": "Brave the asteroids to pull them clear.",
+          "event": {
+            "text": "You take minor scratches but earn their gratitude.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED",
+            "damage": 2
+          }
+        }
+      ]
+    },
+    "LANIUS_SCAVENGERS": {
+      "text": "A pair of metallic Lanius scavengers are stripping an old Federation wreck.",
+      "choices": [
+        {
+          "text": "[BLUE ANAEROBIC] Your Lanius crew translates and negotiates a fair split.",
+          "req": "anaerobic",
+          "lvl": 1,
+          "event": {
+            "text": "They happily share half of the salvage and a Breach Bomb II!",
+            "weapon": "BOMB_BREACH_2",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH"
+          }
+        },
+        {
+          "text": "Engage the Lanius scavengers!",
+          "event": {
+            "text": "The Lanius Scout turns its Flak cannon toward you!",
+            "hostile": true,
+            "ship": "LANIUS_STD"
+          }
+        }
+      ]
+    },
+    "FEDERATION_OUTPOST": {
+      "text": "A hidden Federation listening post offers emergency hull repairs and intel.",
+      "choices": [
+        {
+          "text": "Accept hull repairs (+5 Hull) and sector charts.",
+          "event": {
+            "text": "Engineers patch your hull plating cleanly.",
+            "damage": -5,
+            "autoReward": "fuel",
+            "autoRewardLevel": "LOW"
+          }
+        },
+        {
+          "text": "Ask for munitions instead.",
+          "event": {
+            "text": "They load extra missiles and scrap into your cargo bay.",
+            "autoReward": "missiles",
+            "autoRewardLevel": "MED"
+          }
+        }
+      ]
+    },
+    "PULSAR_BEACON": {
+      "text": "A derelict research probe orbits a spinning pulsar, broadcasting encrypted data.",
+      "choices": [
+        {
+          "text": "[BLUE BATTERY] Shield your systems with Backup Battery power and download the data.",
+          "req": "battery",
+          "lvl": 1,
+          "event": {
+            "text": "You extract valuable Federation coordinates and high-grade scrap!",
+            "autoReward": "standard",
+            "autoRewardLevel": "HIGH",
+            "quest": "QUEST_CACHE_REWARD"
+          }
+        },
+        {
+          "text": "Attempt a quick flyby salvage.",
+          "event": {
+            "text": "You grab a modest cache of scrap before the next pulse hits.",
+            "autoReward": "standard",
+            "autoRewardLevel": "MED"
+          }
+        }
+      ]
     }
   },
   "ship_events": {
@@ -6646,6 +7642,34 @@
       "surrender": true,
       "destroyed_text": "Slug ship destroyed!",
       "dead_crew_text": "Slug crew neutralized!"
+    },
+    "MANTIS_STD": {
+      "id": "MANTIS_STD",
+      "auto_blueprint": "MANTIS_FIGHTER",
+      "surrender": true,
+      "destroyed_text": "Mantis cruiser destroyed!",
+      "dead_crew_text": "Mantis crew eliminated!"
+    },
+    "ZOLTAN_STD": {
+      "id": "ZOLTAN_STD",
+      "auto_blueprint": "ENERGY_FIGHTER",
+      "surrender": true,
+      "destroyed_text": "Zoltan vessel destroyed!",
+      "dead_crew_text": "Zoltan crew neutralized!"
+    },
+    "AUTO_STD": {
+      "id": "AUTO_STD",
+      "auto_blueprint": "AUTO_ASSAULT",
+      "surrender": false,
+      "destroyed_text": "Auto-Assault neutralized!",
+      "dead_crew_text": "Auto-Assault neutralized!"
+    },
+    "LANIUS_STD": {
+      "id": "LANIUS_STD",
+      "auto_blueprint": "ANAEROBIC_SCOUT",
+      "surrender": true,
+      "destroyed_text": "Lanius scout destroyed!",
+      "dead_crew_text": "Lanius crew eliminated!"
     }
   },
   "sector_types": {
@@ -6717,6 +7741,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -6769,6 +7843,56 @@
         },
         {
           "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
           "min": 0,
           "max": 2
         }
@@ -6825,6 +7949,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -6877,6 +8051,56 @@
         },
         {
           "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
           "min": 0,
           "max": 2
         }
@@ -6933,6 +8157,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -6985,6 +8259,56 @@
         },
         {
           "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
           "min": 0,
           "max": 2
         }
@@ -7041,6 +8365,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -7093,6 +8467,56 @@
         },
         {
           "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
           "min": 0,
           "max": 2
         }
@@ -7149,6 +8573,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -7203,6 +8677,56 @@
           "name": "NEBULA_SMUGGLER",
           "min": 0,
           "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
+          "min": 0,
+          "max": 2
         }
       ],
       "startEvent": "START_BEACON"
@@ -7255,6 +8779,56 @@
         },
         {
           "name": "NEBULA_SMUGGLER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "GIANT_ALIEN_SPIDERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "MANTIS_SLAVER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ZOLTAN_BORDER",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "CRYSTAL_STASIS_POD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "AUTO_SHIPYARD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "REBEL_STRONGHOLD",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "ROCK_DISTRESS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "LANIUS_SCAVENGERS",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "FEDERATION_OUTPOST",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "name": "PULSAR_BEACON",
           "min": 0,
           "max": 2
         }

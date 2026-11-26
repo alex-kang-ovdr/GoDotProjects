@@ -339,7 +339,7 @@ func _show_hangar() -> void:
 	audio.play_track("title", false)
 
 	var prof_txt := " · 프로필: %d승/%d전" % [int(profile.stats.get("total_victories", 0)), int(profile.stats.get("total_games", 0))] if (profile != null and profile.loaded) else ""
-	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("내장 폴백 데이터 모드%s" % prof_txt))
+	hangar_refs["src_badge"].text = (("FTL 데이터 연결됨: %s (%d개 에셋)%s" % [pkg.archive_path.get_file(), pkg.entry_count, prof_txt]) if pkg.is_loaded else ("독립 실행 데이터팩 (%d함선 · %d무기 · %d이벤트)%s" % [db.ships.size(), db.weapons.size(), db.events.size(), prof_txt]))
 	hangar_refs["cont_btn"].visible = FileAccess.file_exists(SAVE_PATH)
 
 	var list_box: VBoxContainer = hangar_refs["ship_list"]
@@ -400,6 +400,9 @@ func _select_hangar_ship(idx: int) -> void:
 		tex = pkg.load_texture("ship/%s_base.png" % img_n)
 		if tex == null:
 			tex = pkg.load_texture("customizeUI/miniship_%s.png" % img_n)
+	if tex == null:
+		var lay := db.get_ship_layout(str(bp.get("layout", "kestral")))
+		tex = FTLStandaloneAssets.get_ship_preview_texture(str(lay.get("hull_style", "kestrel")))
 	hangar_refs["preview_tex"].texture = tex
 
 
