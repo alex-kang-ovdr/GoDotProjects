@@ -1,4 +1,7 @@
 /* Structural rooms, portable oxygen and productive work specialization. No DOM dependency. */
+import { breathingUnitsPerSecond } from './rules.js';
+import { canBreathe } from './environment.js';
+
 export const FRONTIER_BUILDINGS = {
   door: { name:'기밀문', icon:'door', description:'자동으로 여닫히며 닫혔을 때 기체와 물을 막습니다. 열림·잠금 모드도 선택할 수 있어요.', cost:{rock:6,metal:4}, color:'#b4c8cf' },
   oxygenDock: { name:'산소 충전소', icon:'oxygenDock', description:'8W로 주변의 실제 산소를 압축합니다. 대원이 방문해 휴대 산소통을 채우고 저산소 탐사에 사용해요.', cost:{rock:20,metal:12}, power:8, unlock:45, color:'#8ccfe2' },
@@ -16,7 +19,7 @@ const SKILLS=['dig','engineering','life'];
 const SKILL_NAMES={dig:'굴착',engineering:'공학',life:'생활'};
 const INDUSTRIAL=new Set(['generator','coalgen','hydrogenGen','research','purifier','electrolyzer','pump']);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
-const PORTABLE_CAPACITY=6,DOCK_CAPACITY=18,BREATH_RATE=.055,COMPRESS_RATE=.08,SOURCE_FLOOR=.35;
+const PORTABLE_CAPACITY=6,DOCK_CAPACITY=18,COMPRESS_RATE=.08,SOURCE_FLOOR=.35;
 const EPS=1e-8;
 const cap=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
 const number=(v,min=0,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
@@ -110,7 +113,7 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
 
   proto._addBuilding=function(...args){const b=base.add.apply(this,args);equipBuilding(b);return b;};
   proto._newCrew=function(...args){const c=base.newCrew.apply(this,args);equipCrew(c);return c;};
-  proto.reset=function(seed){this._frontierReady=false;const result=base.reset.call(this,seed);this.version=4;for(const k of FRONTIER_PRODUCTION_KEYS)this.production[k]=0;this.rooms=[];this.equipment=equipmentSnapshot(this);this.frontier=emptyFrontier();this._roomsDirty=true;this._frontierReady=true;this._syncRooms();this._updateDoors();this._updateStats();return result;};
+  proto.reset=function(seed,ruleset){this._frontierReady=false;const result=base.reset.call(this,seed,ruleset);this.version=4;for(const k of FRONTIER_PRODUCTION_KEYS)this.production[k]=0;this.rooms=[];this.equipment=equipmentSnapshot(this);this.frontier=emptyFrontier();this._roomsDirty=true;this._frontierReady=true;this._syncRooms();this._updateDoors();this._updateStats();return result;};
   proto._syncRooms=function(force=false){
     if(!this._frontierReady)return;
     if(force||this._roomsDirty){this.rooms=analyzeRooms(this);this._roomsDirty=false;this._roomIndex=new Map();for(const room of this.rooms)for(const i of room.cells)this._roomIndex.set(i,room);this._doorMap=new Map(this.buildings.filter(b=>b.type==='door'&&complete(b)).map(b=>[b.y*this.w+b.x,b]));}
@@ -164,9 +167,9 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
     this.equipment=equipmentSnapshot(this);
   };
   proto._portableBreath=function(c,p,dt){
-    c.usingPortable=false;if(!this._frontierReady||c.health<=0||c.maskMode!=='auto'||p.oxygen>.16&&p.water<.7)return false;
-    const needed=BREATH_RATE*dt,used=Math.min(needed,c.portableOxygen);if(used<=0)return 0;
-    c.portableOxygen=Math.max(0,c.portableOxygen-used);c.usingPortable=true;this.production.portableOxygenUsed+=used;this.production.protectedSeconds+=used/BREATH_RATE;return used/needed;
+    c.usingPortable=false;if(!this._frontierReady||c.health<=0||c.maskMode!=='auto'||canBreathe(p))return false;
+    const needed=this.breathRate*dt,used=Math.min(needed,c.portableOxygen);if(used<=0)return 0;
+    c.portableOxygen=Math.max(0,c.portableOxygen-used);c.usingPortable=true;this.production.portableOxygenUsed+=used;this.production.protectedSeconds+=used/this.breathRate;return used/needed;
   };
   proto.setCrewMaskMode=function(id,mode){const c=this.crew.find(c=>c.id===id&&c.health>0);if(!c||!MASK_MODES.includes(mode))return{ok:false,message:'대원과 자동 사용·사용 안 함 중 하나를 선택하세요.'};c.maskMode=mode;if(mode==='off'){c.usingPortable=false;if(c._job?.kind==='refillOxygen')this._release(c);}return{ok:true,message:`${c.name} · ${mode==='auto'?'저산소에서 휴대 산소를 자동 사용합니다.':'남은 산소를 보존하고 마스크를 사용하지 않습니다.'}`};};
   proto._choose=function(c){
@@ -236,7 +239,7 @@ export function installFrontier(Game,{BUILDINGS,OBJECTIVES}){
       if(c._job?.kind==='refillOxygen'&&(!Number.isInteger(c._job.targetId)||c.maskMode!=='auto'||c.health<=0||!s.buildings.some(b=>b.id===c._job.targetId&&b.type==='oxygenDock'&&complete(b))))fail('휴대 산소 충전 작업이 올바르지 않습니다.');
     }
     const ranks=rankSum(s.crew);if(Math.abs(s.production.trainingPointsSpent-ranks)>EPS||s.stats?.totalSkillRanks!==ranks)fail('배분한 기술 포인트 기록이 일치하지 않습니다.');
-    if(Math.abs(s.production.portableOxygenUsed-s.production.protectedSeconds*BREATH_RATE)>1e-5)fail('휴대 산소 소비와 보호 호흡 시간이 일치하지 않습니다.');
+    if(Math.abs(s.production.portableOxygenUsed-s.production.protectedSeconds*breathingUnitsPerSecond(s.ruleset))>1e-5)fail('휴대 산소 소비와 보호 호흡 시간이 일치하지 않습니다.');
     const rooms=analyzeRooms(s);if(!Array.isArray(s.rooms)||JSON.stringify(s.rooms)!==JSON.stringify(rooms)||s.stats.validRooms!==rooms.filter(r=>r.valid).length||s.stats.specializedRoomTypes!==new Set(rooms.filter(r=>r.valid).map(r=>r.type)).size)fail('방 정보가 실제 벽·문·설비와 일치하지 않습니다.');
     const equipment=equipmentSnapshot(s);if(!s.equipment||!Object.entries(equipment).every(([k,v])=>number(s.equipment[k])&&Math.abs(s.equipment[k]-v)<1e-5))fail('산소 장비 합계가 실제 저장량과 다릅니다.');
     if(Math.abs(s.production.oxygenRefilled-equipment.carried-s.production.portableOxygenUsed)>1e-5||s.production.oxygenCompressed+1e-5<equipment.stored+s.production.oxygenRefilled)fail('압축·충전·휴대 산소의 물질 수지가 일치하지 않습니다.');

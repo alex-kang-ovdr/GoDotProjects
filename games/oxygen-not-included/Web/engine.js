@@ -1,5 +1,8 @@
+import { ORIGINAL_RULES, LEGACY_RULES, ORIGINAL_POWER, BATTERY_LEAK_J_PER_S, MEALWOOD, breathingUnitsPerSecond, cycleSecondsFor } from './rules.js';
+import { GAS_KG_PER_UNIT, addGasKg, addWarmOxygen, canBreathe, conductivity, displaceForTile, materialFor, oxygenOutletSpace, stepEnvironment, NATURAL_MASS_KG, ORIGINAL_WATER_PER_CELL, WATER_PER_CELL } from './environment.js';
 import { UTILITY_BUILDINGS, installUtilities } from './utilities.js';
 import { COMMUNITY_BUILDINGS, installCommunity } from './community.js';
+import { GAS_BUILDINGS, installGasNetwork } from './gas-network.js';
 import { FRONTIER_BUILDINGS, installFrontier } from './frontier.js';
 /* BREATH COLONY — purpose-designed, DOM-free colony simulation. */
 export const WORLD_W=48, WORLD_H=28, CYCLE_SECONDS=120;
@@ -14,6 +17,7 @@ export const MATERIALS={
  algae:{name:'조류층',color:'#71a784',hardness:2.3,yield:'algae',amount:12},
  coal:{name:'석탄층',color:'#515368',hardness:3,yield:'coal',amount:10},
  ice:{name:'얼음',color:'#a8d6e0',hardness:2,yield:'water',amount:12},
+ abyssalite:{name:'심연석',color:'#635975',hardness:7,yield:'rock',amount:8},
  bedrock:{name:'기반암',color:'#353b50',hardness:999,yield:'rock',amount:0},
  tile:{name:'바닥 타일',color:'#a5b8bd',hardness:2,yield:'rock',amount:2}
 };
@@ -30,7 +34,7 @@ export const BUILDINGS={
  scrubber:{name:'탄소 정화기',icon:'filter',description:'주변 이산화탄소를 줄입니다. 연구 10, 전력 10W.',cost:cost(25,25),power:10,unlock:10,color:'#8ccac7'},
  coalgen:{name:'석탄 발전기',icon:'coal',description:'석탄으로 60W를 생산하며 열과 이산화탄소를 배출합니다.',cost:cost(35,35),power:-60,unlock:20,color:'#e8a275'}
 };
-Object.assign(BUILDINGS,UTILITY_BUILDINGS,COMMUNITY_BUILDINGS,FRONTIER_BUILDINGS);
+Object.assign(BUILDINGS,UTILITY_BUILDINGS,COMMUNITY_BUILDINGS,FRONTIER_BUILDINGS,GAS_BUILDINGS);
 const RESOURCE_KEYS=['rock','metal','algae','coal','water','food'];
 const ROLES=['balanced','dig','build','operate','farm','haul','cook'];
 const NAMES=['나루','모아','솔','루미','이안','보라','다온','하루'];
@@ -47,11 +51,22 @@ const OBJECTIVES=[
 function rngFor(seed){let t=seed>>>0;return()=>{t+=0x6d2b79f5;let a=Math.imul(t^t>>>15,1|t);a^=a+Math.imul(a^a>>>7,61|a);return((a^a>>>14)>>>0)/4294967296;};}
 
 export class Game {
- constructor(seed=73){this.reset(seed);}
- reset(seed=73){
+ constructor(seed=73,ruleset=ORIGINAL_RULES){this.reset(seed,ruleset);}
+ get originalRules(){return this.ruleset===ORIGINAL_RULES;}
+ get waterKgPerCell(){return this.originalRules?ORIGINAL_WATER_PER_CELL:WATER_PER_CELL;}
+ get cycleSeconds(){return cycleSecondsFor(this.ruleset);}
+ get breathRate(){return breathingUnitsPerSecond(this.ruleset);}
+ buildingPower(type){
+  if(this.originalRules && Object.hasOwn(ORIGINAL_POWER,type))return ORIGINAL_POWER[type];
+  return BUILDINGS[type]?.power||0;
+ }
+ reset(seed=73,ruleset=ORIGINAL_RULES){
+  if(ruleset!==ORIGINAL_RULES&&ruleset!==LEGACY_RULES)throw new Error('지원하지 않는 기지 규칙입니다.');
+  this.ruleset=ruleset;
   this.version=2;this.seed=Number.isFinite(Number(seed))?Number(seed)>>>0:73;this.w=WORLD_W;this.h=WORLD_H;
-  this.time=0;this.cycle=1;this.lost=false;this.won=false;this._nextId=1;this._envClock=0;this._statClock=0;this._networkDirty=true;this._networks=[];this._batteryPowered=false;this._navRevision=0;this._pathCache=null;
+  this.time=0;this.cycle=1;this.lost=false;this.won=false;this._nextId=1;this._stepRemainder=0;this._envClock=0;this._statClock=0;this._networkDirty=true;this._networks=[];this._batteryPowered=false;this._navRevision=0;this._pathCache=null;
   this.resources={rock:240,metal:140,algae:100,coal:30,water:60,food:35};
+  if(this.originalRules)this.resources.soil=40;
   this.power={stored:0,capacity:0,production:0,demand:0};
   this.stats={oxygen:100,temperature:22,foodDays:15,completedDigs:0,completedBuilds:0,research:0,population:3};
   this.buildings=[];this.tasks=[];this.crew=[];this.events=[];this.alerts=[];
@@ -61,7 +76,11 @@ export class Game {
    const x=i%this.w,y=Math.floor(i/this.w);let solid=y<12?'dirt':'rock';const r=rnd();
    if(r<.065)solid='copper';else if(r<.12)solid='algae';else if(r<.17)solid='coal';else if(x<9&&y>8&&y<18&&r<.29)solid='ice';
    if(x===0||y===0||x===this.w-1||y===this.h-1)solid='bedrock';
-   return{solid,oxygen:0,co2:0,temp:y>20?32+(y-20)*2:20+y*.16,water:0,revealed:x>=9&&x<=38&&y>=5&&y<=20,wire:false};
+   const coldPocket=x<9&&y>8&&y<18;
+   const thermalVent=x>36&&x<43&&y>20&&y<26;
+   if(x>=36&&x<=43&&y>=20&&y<=26&&!thermalVent)solid='abyssalite';
+   const temp=coldPocket?-12:thermalVent?142:y>20?32+(y-20)*2:20+y*.16;
+   return{solid,oxygen:0,co2:0,temp,water:0,frost:0,steam:0,revealed:x>=9&&x<=38&&y>=5&&y<=20,wire:false};
   });
   const carve=(x1,y1,x2,y2,o=.95)=>{for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++){Object.assign(this.cell(x,y),{solid:null,oxygen:o,co2:.02,temp:22,revealed:true});}};
   carve(12,8,35,11);carve(14,13,34,16,.90);
@@ -71,6 +90,13 @@ export class Game {
   carve(38,9,41,11,.20);for(let y=10;y<=11;y++)for(let x=38;x<=41;x++)this.cell(x,y).water=.85;
   for(let y=9;y<=11;y++)for(let x=9;x<=11;x++)this.cell(x,y).solid=(x===10?'copper':y===9?'algae':'dirt');
   for(let y=13;y<=16;y++)for(let x=35;x<=38;x++)if(this.cell(x,y).solid!=='bedrock')this.cell(x,y).solid=(x===36?'coal':'dirt');
+  // Fresh worlds expose two thermal frontiers beyond the starting galleries.
+  for(const [x1,y1,x2,y2,temp] of [[4,12,7,14,-12],[38,22,41,24,142]]){
+   for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++){
+    Object.assign(this.cell(x,y),{solid:null,oxygen:.12,co2:.04,water:y===y2?.65:0,temp});
+   }
+  }
+  Object.assign(this.cell(40,24),{steamVent:true,ventOutput:0});
   for(let x=14;x<=33;x++){this.cell(x,11).wire=true;this.cell(x,16).wire=true;}
   for(let y=11;y<=16;y++)this.cell(23,y).wire=true;
   this._addBuilding('core',24,11,true);
@@ -84,7 +110,7 @@ export class Game {
  cell(x,y){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<this.w&&y<this.h?this.cells[y*this.w+x]:null;}
  _id(){return this._nextId++;}
  _event(text,tone='info'){this.events.unshift({id:this._id(),time:this.time,text,tone});this.events.length=Math.min(this.events.length,25);}
- _addBuilding(type,x,y,starter=false,progress=1){const b={id:this._id(),type,x,y,progress,enabled:true,active:false,connected:false,status:progress<1?'건설 대기':'준비',starter,workerId:null,growth:0,charge:0,capacity:type==='battery'?1200:0};this.buildings.push(b);this._networkDirty=true;return b;}
+ _addBuilding(type,x,y,starter=false,progress=1){const b={id:this._id(),type,x,y,progress,enabled:true,active:false,connected:false,status:progress<1?'건설 대기':'준비',starter,workerId:null,growth:0,charge:0,capacity:type==='battery'?(this.originalRules?10000:1200):0};this.buildings.push(b);this._networkDirty=true;return b;}
  _newCrew(x,y){const n=this.crew.length;const c={id:this._id(),name:NAMES[n%NAMES.length]+(n>=NAMES.length?Math.floor(n/NAMES.length)+1:''),color:COLORS[n%COLORS.length],x:x+.5,y:y+.5,health:100,hunger:88,energy:90,stress:0,breath:100,action:'주변 살피는 중',role:'balanced',taskId:null,facing:1,path:[],_job:null,_idle:0};this.crew.push(c);return c;}
  _buildingAt(x,y){return this.buildings.find(b=>b.x===x&&b.y===y);}
  _ladder(x,y){return this.buildings.some(b=>b.type==='ladder'&&b.progress>=1&&b.x===x&&b.y===y);}
@@ -97,6 +123,12 @@ export class Game {
   const cell=this.cell(x,y),b=this._buildingAt(x,y),t=this.tasks.find(t=>t.x===x&&t.y===y);
   if(!cell.revealed)return{ok:false,message:'아직 탐사하지 않은 구역입니다.'};
   if(this.lost)return{ok:false,message:'모든 대원이 쓰러졌습니다. 새 기지를 시작하세요.'};
+  if(tool==='insulate'){
+   if(cell.solid!=='tile'||t)return{ok:false,message:'공사가 끝난 바닥 타일을 선택하세요.'};
+   if(cell.insulated)return{ok:false,message:'이미 단열 보강한 타일이에요.'};
+   if(this.resources.rock<6)return{ok:false,message:'단열 보강에 암석 6이 필요해요.'};
+   return{ok:true,message:'타일을 단열 보강했어요.'};
+  }
   if(tool==='cancel')return{ok:!!t||!!b&&b.progress<1,message:t||b?.progress<1?'작업을 취소합니다.':'취소할 작업이 없어요.'};
   if(tool==='priority')return{ok:!!t,message:t?'작업 우선순위를 높입니다.':'예정된 작업을 선택하세요.'};
   if(tool==='wire')return{ok:!cell.wire&&cell.solid!=='bedrock'&&this.resources.metal>=1,message:cell.wire?'이미 전선이 있어요.':this.resources.metal<1?'금속이 부족해요.':cell.solid==='bedrock'?'기반암에는 설치할 수 없어요.':'금속 1로 전선을 즉시 설치합니다.'};
@@ -105,13 +137,14 @@ export class Game {
   const def=BUILDINGS[tool];if(!def)return{ok:false,message:'사용할 수 없는 도구입니다.'};
   if(def.unlock&&this.stats.research<def.unlock)return{ok:false,message:`연구 ${def.unlock}이 필요해요.`};
   if(cell.solid||b||t)return{ok:false,message:'비어 있는 칸에 설치하세요.'};
-  if(tool!=='ladder'&&tool!=='tile'&&!this.cell(x,y+1)?.solid)return{ok:false,message:'설비 바로 아래에 바닥이 필요해요.'};
+  if(!['ladder','tile','gasPump','gasVent'].includes(tool)&&!this.cell(x,y+1)?.solid)return{ok:false,message:'설비 바로 아래에 바닥이 필요해요.'};
   if(!this._afford(def.cost))return{ok:false,message:'건설 자원이 부족해요.'};
   return{ok:true,message:`${def.name} 건설을 예약합니다.`};
  }
  queue(tool,x,y){
   const check=this.canPlace(tool,x,y);if(!check.ok)return check;
   const c=this.cell(x,y),b=this._buildingAt(x,y),t=this.tasks.find(t=>t.x===x&&t.y===y);
+  if(tool==='insulate'){this._pay({rock:6});c.insulated=true;return check;}
   if(tool==='wire'){c.wire=true;this.resources.metal-=1;this._networkDirty=true;return check;}
   if(tool==='cancel'){if(t)this._cancelTask(t,true);else if(b?.progress<1){this._pay(b.paidCost||BUILDINGS[b.type].cost,1);this.buildings=this.buildings.filter(v=>v!==b);}return{ok:true,message:'작업을 취소하고 예약 자원을 돌려받았어요.'};}
   if(tool==='priority'){t.priority=t.priority>=5?1:t.priority+1;return{ok:true,message:`우선순위 ${t.priority}`};}
@@ -140,14 +173,21 @@ export class Game {
   while(cursor!==start){path.unshift({x:cursor%this.w,y:Math.floor(cursor/this.w)});cursor=cache.prev.get(cursor);}return path;
  }
  _workGoals(x,y,inside=true){const out=[];if(inside&&this._standable(x,y))out.push({x,y});for(let dy=-2;dy<=2;dy++)for(let dx=-1;dx<=1;dx++){if(Math.abs(dx)+Math.abs(dy)>2||dx===0&&dy===0)continue;const nx=x+dx,ny=y+dy;if(!this._standable(nx,ny))continue;if(Math.abs(dy)===2&&this.cell(x,y+dy/2)?.solid)continue;if(dx&&dy&&this.cell(x+dx,y)?.solid&&this.cell(x,y+dy)?.solid)continue;out.push({x:nx,y:ny});}return out;}
+ _tileBlockReason(t){
+  if(t.type!=='build'||t.progress<.95)return null;
+  const b=this.buildings.find(v=>v.id===t.buildingId);
+  if(b?.type!=='tile')return null;
+  if(this.cell(t.x,t.y).frost>0)return '타일 건설 대기 · 바닥의 얼음이 녹아야 해요.';
+  return displaceForTile(this,t.x,t.y,false)?null:'타일 건설 대기 · 주변에 물과 기체가 이동할 공간이 필요해요.';
+ }
  _busy(id){return this.crew.some(c=>c.health>0&&c._job?.targetId===id);}
  _release(c){const t=this.tasks.find(t=>t.id===c.taskId);if(t&&t.assigned===c.id)t.assigned=null;c.taskId=null;c._job=null;c.path=[];c._idle=.2;}
  _assign(c,kind,path,extra={}){c._job={kind,path,elapsed:0,...extra};c.path=path;c._idle=0;if(extra.taskId){c.taskId=extra.taskId;const t=this.tasks.find(t=>t.id===extra.taskId);if(t)t.assigned=c.id;}}
  _needsGenerator(b){if(!b.enabled||!b.connected)return false;const n=this._networks[b.networkId];if(!n)return false;const consumers=n.buildings.some(v=>v.enabled&&v.progress>=1&&(BUILDINGS[v.type]?.power||0)>0);const bats=n.buildings.filter(v=>v.type==='battery'&&v.enabled);return consumers&&(bats.length===0||bats.reduce((s,v)=>s+v.charge,0)<bats.reduce((s,v)=>s+v.capacity,0)*.90);}
  _choose(c){
   const current=this.cell(Math.floor(c.x),Math.floor(c.y));
-  if(c.breath<45){const safe=[],thin=[];for(let y=1;y<this.h-1;y++)for(let x=1;x<this.w-1;x++){const p=this.cell(x,y);if(p.water<.5&&this._standable(x,y)){if(p.oxygen>.5)safe.push({x,y});else if(p.oxygen>.2)thin.push({x,y});}}const path=this._path(c,safe)||this._path(c,thin);if(path){this._assign(c,'breathe',path);return;}}
-  if(c.hunger<48&&(this.resources.food>=1||(this.resources.meals||0)>=1)){if(!this._chooseMeal?.(c))this._assign(c,'eat',[]);return;}
+  if(c.breath<45){const safe=[],thin=[];for(let y=1;y<this.h-1;y++)for(let x=1;x<this.w-1;x++){const p=this.cell(x,y);if(p.water<.5&&canBreathe(p)&&this._standable(x,y)){if(p.oxygen>.5)safe.push({x,y});else if(p.oxygen>.2)thin.push({x,y});}}const path=this._path(c,safe)||this._path(c,thin);if(path){this._assign(c,'breathe',path);return;}}
+  if(c.hunger<48&&Math.max(this.resources.food,this.resources.meals||0)>=(this.originalRules?1e-6:1)){if(!this._chooseMeal?.(c))this._assign(c,'eat',[]);return;}
   if(c.energy<24){const beds=this.buildings.filter(b=>b.type==='cot'&&b.progress>=1&&b.enabled&&!this._busy(b.id));for(const b of beds){const path=this._path(c,[{x:b.x,y:b.y}]);if(path){this._assign(c,'rest',path,{targetId:b.id});return;}}this._assign(c,'rest',[]);return;}
   if(this._chooseRoutine?.(c))return;
   const choices=[];
@@ -158,13 +198,25 @@ export class Game {
    if(!kind)continue;const path=this._path(c,this._workGoals(b.x,b.y));if(path)choices.push({kind,path,targetId:b.id,score:score+(c.role==='operate'&&['operate','research'].includes(kind)?12:0)+(c.role==='farm'&&kind==='harvest'?20:0)-path.length*.5});
   }
   this._communityChoices?.(c,choices);
-  for(const t of this.tasks){if(t.assigned!==null&&t.assigned!==c.id)continue;const path=this._path(c,this._workGoals(t.x,t.y,t.type!=='build'||this.buildings.find(b=>b.id===t.buildingId)?.type!=='tile'));if(path)choices.push({kind:t.type,path,taskId:t.id,score:t.priority*13+(c.role===t.type?18:0)-path.length*.5});}
+  for(const t of this.tasks){if((t.assigned!==null&&t.assigned!==c.id)||this._tileBlockReason(t))continue;const path=this._path(c,this._workGoals(t.x,t.y,t.type!=='build'||this.buildings.find(b=>b.id===t.buildingId)?.type!=='tile'));if(path)choices.push({kind:t.type,path,taskId:t.id,score:t.priority*13+(c.role===t.type?18:0)-path.length*.5});}
   choices.sort((a,b)=>b.score-a.score);if(choices.length){const q=choices[0];this._assign(c,q.kind,q.path,q);if(q.pileId){const pile=this.debris?.find(p=>p.id===q.pileId);if(pile)pile.reservedBy=c.id;}return;}
   c.action='기지 살피는 중';c._idle=.65;
  }
- _completeTask(t){const p=this.cell(t.x,t.y);if(t.type==='dig'){const m=MATERIALS[p.solid];if(m){if(this._minedResource)this._minedResource(m.yield,m.amount,t.x,t.y);else this.resources[m.yield]+=m.amount;p.solid=null;p.oxygen=.06;p.co2=.02;this.stats.completedDigs++;this._reveal(t.x,t.y);}}
-  else if(t.type==='build'){const b=this.buildings.find(b=>b.id===t.buildingId);if(b){b.progress=1;b.status='준비';if(b.type==='tile'){p.solid='tile';p.oxygen=0;p.co2=0;p.water=0;}this.stats.completedBuilds++;this._event(`${BUILDINGS[b.type].name} 완공!`,'good');}}
-  else{const b=this.buildings.find(b=>b.id===t.buildingId);if(b){for(const[k,v]of Object.entries(BUILDINGS[b.type]?.cost||{}))this.resources[k]+=Math.floor(v*.75);if(b.type==='tile')p.solid=null;this.buildings=this.buildings.filter(v=>v!==b);}else if(p.solid==='tile'){p.solid=null;this.resources.rock+=2;}}
+ _completeTask(t){const p=this.cell(t.x,t.y);if(t.type==='dig'){const m=MATERIALS[p.solid];if(m){
+   const resource=this.originalRules&&p.solid==='dirt'?'soil':m.yield;
+   const amount=this.originalRules?NATURAL_MASS_KG[p.solid]*0.5:m.amount;
+   if(this.originalRules&&p.solid==='ice')p.frost=amount/this.waterKgPerCell;
+   else if(this._minedResource)this._minedResource(resource,amount,t.x,t.y);
+   else this.resources[resource]+=amount;
+   p.solid=null;p.oxygen=0;p.co2=0;this.stats.completedDigs++;this._reveal(t.x,t.y);}}
+  else if(t.type==='build'){const b=this.buildings.find(b=>b.id===t.buildingId);if(b){
+    if(b.type==='tile'&&!displaceForTile(this,t.x,t.y)){
+     b.progress=t.progress=.95;
+     b.status=t.blockedReason=this._tileBlockReason(t);
+     return;
+    }
+    b.progress=1;b.status='준비';if(b.type==='tile')p.solid='tile';this.stats.completedBuilds++;this._event(`${BUILDINGS[b.type].name} 완공!`,'good');}}
+  else{const b=this.buildings.find(b=>b.id===t.buildingId);if(b){for(const[k,v]of Object.entries(BUILDINGS[b.type]?.cost||{}))this.resources[k]+=Math.floor(v*.75);if(b.type==='tile'){p.solid=null;delete p.insulated;}this.buildings=this.buildings.filter(v=>v!==b);}else if(p.solid==='tile'){p.solid=null;delete p.insulated;this.resources.rock+=2;}}
   this.tasks=this.tasks.filter(v=>v!==t);this._networkDirty=true;this._navRevision++;this._pathCache=null;
  }
  _crewStep(c,dt){
@@ -173,79 +225,212 @@ export class Game {
   const x=Math.floor(c.x),y=Math.floor(c.y),p=this.cell(x,y);if(!p){c.x=24.5;c.y=11.5;this._release(c);return;}
   if(p.solid){const spots=this._workGoals(x,y,false);if(spots.length){c.x=spots[0].x+.5;c.y=spots[0].y+.5;this._release(c);}return;}
   if(!this._standable(x,y)&&!this.cell(x,y+1)?.solid){c.y=Math.min(this.h-1.5,c.y+dt*3);this._release(c);c.action='아래로 내려오는 중';return;}
-  c.hunger=clamp(c.hunger-dt*.20,0,100);c.energy=clamp(c.energy-dt*(c._job?.kind==='rest' ? 0 : c._job?.path?.length ? .07 : c._job ? .11 : .025),0,100);
-  const portableFraction=this._portableBreath?.(c,p,dt)||0,breathable=portableFraction>=1||p.oxygen>.16&&p.water<.7;
-  if(portableFraction>0)c.breath=clamp(c.breath+dt*(18*portableFraction-7*(1-portableFraction)),0,100);
-  else if(breathable){const used=Math.min(p.oxygen,.055*dt);p.oxygen-=used;p.co2=Math.min(3,p.co2+used*.65);c.breath=clamp(c.breath+dt*18,0,100);}else c.breath=clamp(c.breath-dt*7,0,100);
+  c.hunger=clamp(c.hunger-dt*(this.originalRules?25/this.cycleSeconds:.20),0,100);c.energy=clamp(c.energy-dt*(c._job?.kind==='rest' ? 0 : c._job?.path?.length ? .07 : c._job ? .11 : .025),0,100);
+  const portableFraction=this._portableBreath?.(c,p,dt)||0,breathable=portableFraction>=1||canBreathe(p);
+  if(portableFraction>0){
+   if(this.originalRules)p.co2+=this.breathRate*dt*portableFraction*.02;
+   c.breath=clamp(c.breath+dt*(18*portableFraction-7*(1-portableFraction)),0,100);
+  }
+  else if(breathable){const used=Math.min(p.oxygen,this.breathRate*dt);p.oxygen-=used;p.co2+=used*.02;c.breath=clamp(c.breath+dt*18,0,100);}else c.breath=clamp(c.breath-dt*7,0,100);
   let hurt=(c.breath<=0?3:0)+(c.hunger<=0?.3:0)+(p.temp>46?(p.temp-46)*.08:0);c.health=clamp(c.health-hurt*dt+(hurt===0&&c.hunger>35?.018*dt:0),0,100);c.stress=clamp(c.stress+dt*(hurt>0?.5:!breathable?.16:c.energy<12?.08:-.035),0,100);
   if(c.health<=0){this._release(c);this._event(`${c.name} 대원이 쓰러졌습니다.`,'danger');return;}
   if(c.breath<25){if(c._job&&c._job.kind!=='breathe')this._release(c);if(!c._job)c._idle=0;}
   if(c._idle>0){c._idle=Math.max(0,c._idle-dt);return;}if(!c._job)this._choose(c);let j=c._job;if(!j)return;
-  if(j.kind==='breathe'){const end=j.path.at(-1)||{x,y},destination=this.cell(end.x,end.y);if(!destination||destination.oxygen<=.16||destination.water>=.7){this._release(c);c._idle=0;this._choose(c);j=c._job;if(!j)return;}}
+  if(j.kind==='breathe'){const end=j.path.at(-1)||{x,y},destination=this.cell(end.x,end.y);if(!canBreathe(destination)){this._release(c);c._idle=0;this._choose(c);j=c._job;if(!j)return;}}
   if(j.path.length){const next=j.path[0];if(!this._standable(next.x,next.y)){this._release(c);return;}const tx=next.x+.5,ty=next.y+.5,dx=tx-c.x,dy=ty-c.y,d=Math.hypot(dx,dy),move=dt*2.25*(1-.65*p.water);if(dx)c.facing=Math.sign(dx);if(d<=move){c.x=tx;c.y=ty;j.path.shift();}else{c.x+=dx/d*move;c.y+=dy/d*move;}c.action=this._communityTravelLabel?.(c)||'작업 장소로 이동';this._reveal(Math.floor(c.x),Math.floor(c.y),3);return;}
   const harvestMultiplier=j.kind==='harvest'?(this._harvestWorkMultiplier?.(c)||1):1;
   j.elapsed+=dt*harvestMultiplier;const b=this.buildings.find(v=>v.id===j.targetId);
   if(this._frontierWork?.(c,j,b,dt))return;
   if(this._communityWork?.(c,j,b,dt))return;
   if(['dig','build','deconstruct'].includes(j.kind)){const t=this.tasks.find(v=>v.id===j.taskId);if(!t){this._release(c);return;}const blocked=this._frontierTaskReason?.(t);if(blocked){t.blockedReason=blocked;c.action='해체 · 저장 공간 대기';this._release(c);return;}delete t.blockedReason;c.action=j.kind==='dig'?'채굴하는 중':j.kind==='build'?'건설하는 중':'해체하는 중';const hardness=j.kind==='dig'?(MATERIALS[this.cell(t.x,t.y).solid]?.hardness||2):j.kind==='build'?4:2.5,efficiency=(c.role===j.kind?1.25:1)*(this._workEfficiency?.(c)||1),previous=t.progress;t.progress=clamp(t.progress+dt/hardness*efficiency,0,1);this._gainExperience?.(c,(t.progress-previous)*hardness/efficiency);const target=this.buildings.find(v=>v.id===t.buildingId);if(t.type==='build'&&target)target.progress=t.progress;if(t.progress>=1){this._completeTask(t);this._release(c);}return;}
-  if(j.kind==='eat'){c.action='식사하는 중';if(j.elapsed>=2){if(this.resources.food>=1){this.resources.food-=1;c.hunger=clamp(c.hunger+24,0,100);if(this.production)this.production.mealsEaten+=1;}this._release(c);}return;}
+  if(j.kind==='eat'){c.action='식사하는 중';if(j.elapsed>=2){if(this.resources.food>=1){this.resources.food-=1;c.hunger=clamp(c.hunger+(this.originalRules?25:24),0,100);if(this.production)this.production.mealsEaten+=1;}this._release(c);}return;}
   if(j.kind==='rest'){c.action='잠깐 쉬는 중';c.energy=clamp(c.energy+dt*(b?3:1.2),0,100);if(b){b.active=true;b.workerId=c.id;}if(c.energy>=95)this._release(c);return;}
   if(j.kind==='breathe'){c.action='숨을 고르는 중';if(c.breath>=95)this._release(c);return;}
   if(!b||!b.enabled||b.progress<1){this._release(c);return;}b.workerId=c.id;if(this._sanitationWork?.(c,j,b,dt))return;
   if(j.kind==='operate'){c.action='발전기를 돌리는 중';if((!this._needsGenerator(b)&&j.elapsed>5)||c.energy<15||c.hunger<25)this._release(c);return;}
   if(j.kind==='research'){c.action=b.status==='가동 중'?'연구하는 중':'연구 · 전력 대기';if(this.stats.research>=100||c.energy<18||c.hunger<25||j.elapsed>80)this._release(c);return;}
-  if(j.kind==='harvest'){c.action='작물을 수확하는 중';if(b.growth>=1)this._gainExperience?.(c,Math.min(dt,Math.max(0,3-j.elapsed+dt*harvestMultiplier)/harvestMultiplier));if(j.elapsed>=3){if(b.growth>=1){this.resources.food+=1.5;b.growth=0;if(this.production)this.production.harvestedFood+=1.5;this._frontierHarvest?.(b);this._event('식량 +1.5 수확. 작은 정원이 자라고 있어요.','good');}this._release(c);}}
+  if(j.kind==='harvest'){c.action='작물을 수확하는 중';if(b.growth>=1)this._gainExperience?.(c,Math.min(dt,Math.max(0,3-j.elapsed+dt*harvestMultiplier)/harvestMultiplier));if(j.elapsed>=3){if(b.growth>=1){const yieldFood=this.originalRules?MEALWOOD.harvestKcal/1000:1.5;
+    this.resources.food+=yieldFood;b.growth=0;if(this.production)this.production.harvestedFood+=yieldFood;
+    this._frontierHarvest?.(b);this._event(this.originalRules?'끼니나무 수확 · 600 kcal':'식량 +1.5 수확. 작은 정원이 자라고 있어요.','good');}this._release(c);}}
  }
  _rebuildNetworks(){this._networkDirty=false;this._networks=[];const seen=new Set();for(let i=0;i<this.cells.length;i++){if(!this.cells[i].wire||seen.has(i))continue;const net={id:this._networks.length,cells:[],buildings:[]},q=[i];seen.add(i);for(let n=0;n<q.length;n++){const v=q[n];net.cells.push(v);const x=v%this.w,y=Math.floor(v/this.w);for(const[dx,dy]of DIRS){const p=this.cell(x+dx,y+dy),id=(y+dy)*this.w+x+dx;if(p?.wire&&!seen.has(id)){seen.add(id);q.push(id);}}}this._networks.push(net);}
   const map=new Map();for(const n of this._networks)for(const i of n.cells)map.set(i,n.id);
   for(const b of this.buildings){b.networkId=map.get(b.y*this.w+b.x)??-1;if(b.progress>=1&&b.networkId>=0)this._networks[b.networkId].buildings.push(b);}
-  for(const b of this.buildings){const n=this._networks[b.networkId];b.connected=!!n&&n.buildings.some(v=>['generator','coalgen','hydrogenGen','battery'].includes(v.type));}
+  for(const b of this.buildings){const n=this._networks[b.networkId];b.connected=!!n&&n.buildings.some(v=>['generator','coalgen','hydrogenGen','steamTurbine','battery'].includes(v.type));}
  }
- _consumerReady(b){const p=this.cell(b.x,b.y);const utilityReason=this._utilityReady?.(b,this._utilityDt||.1);if(utilityReason)return utilityReason;if(!b.enabled)return'수동 정지';if(p.temp>58)return'과열 · 냉각 필요';if(b.type==='diffuser'){if(this.resources.algae<=0)return'조류 부족';if(p.oxygen+p.co2>2.5)return'산소 충분 · 압력 대기';}if(b.type==='research'){if(this.stats.research>=100)return'연구 완료';if(this.resources.water<=0)return'물 부족';if(!b.workerId)return'연구원 대기';}if(b.type==='pump'&&!DIRS.some(([dx,dy])=>(this.cell(b.x+dx,b.y+dy)?.water||0)>.005))return'주변에 물이 없어요';return null;}
+  _consumerReady(b){const p=this.cell(b.x,b.y);const utilityReason=this._utilityReady?.(b,this._utilityDt||.1);if(utilityReason)return utilityReason;if(!b.enabled)return'수동 정지';if(!this.originalRules&&p.temp>58)return'과열 · 냉각 필요';if(b.type==='diffuser'){if(this.resources.algae<=0)return'조류 부족';if(oxygenOutletSpace(p,this.originalRules)<=1e-9)return'산소 충분 · 압력 대기';}if(b.type==='research'){if(this.stats.research>=100)return'연구 완료';if(this.resources.water<=0)return'물 부족';if(!b.workerId)return'연구원 대기';}if(b.type==='pump'&&!DIRS.some(([dx,dy])=>(this.cell(b.x+dx,b.y+dy)?.water||0)>.005))return'주변에 물이 없어요';return null;}
  _buildingStep(dt){if(this._networkDirty)this._rebuildNetworks();let totalStored=0,totalCap=0,totalProd=0,totalDemand=0;
-  for(const b of this.buildings){if(b.progress<1){b.status='건설 대기';continue;}if(!b.enabled){b.status='수동 정지';continue;}if(BUILDINGS[b.type]?.power>0&&!b.connected)b.status='전선 연결 필요';}
-  for(const n of this._networks){const bats=n.buildings.filter(b=>b.type==='battery'&&b.enabled),consumers=[];let production=0;
-   for(const b of n.buildings){if(!b.enabled)continue;if(BUILDINGS[b.type]?.power>0){const reason=this._consumerReady(b);if(reason)b.status=reason;else consumers.push(b);}}
-   const need=consumers.reduce((s,b)=>s+BUILDINGS[b.type].power,0),cap=bats.reduce((s,b)=>s+b.capacity,0),oldCharge=bats.reduce((s,b)=>s+b.charge,0);
-   for(const b of n.buildings){if(!b.enabled)continue;if(b.type==='generator'){b.active=!!b.workerId;b.status=b.active?'발전 중 · 45W':'발전 대원 대기';if(b.active){production+=45;this._gainExperience?.(this.crew.find(c=>c.id===b.workerId),dt);}}if(b.type==='coalgen'){b.active=this.resources.coal>0&&this._automationAllows(b)&&(need>0||oldCharge<cap*.95);b.status=b.active?'발전 중 · 60W':this.resources.coal<=0?'석탄 부족':'전력 충분';if(b.active){production+=60;this.resources.coal=Math.max(0,this.resources.coal-.025*dt);const p=this.cell(b.x,b.y);p.temp+=.12*dt;p.co2=Math.min(3,p.co2+.03*dt);}}}
-   for(const b of n.buildings)if(b.type==='hydrogenGen')production+=this._hydrogenPower?.(b,dt,need>0||oldCharge<cap*.95)||0;
-   let energy=production*dt+oldCharge;consumers.sort((a,b)=>(a.type==='diffuser'?-1:0)-(b.type==='diffuser'?-1:0));
-   for(const b of consumers){const watts=BUILDINGS[b.type].power;totalDemand+=watts;if(energy+1e-8>=watts*dt){energy-=watts*dt;b.active=true;b.status='가동 중';}else{b.active=false;b.status='전력 부족';}}
+  const original=this.originalRules;
+  const powerOf=type=>this.buildingPower?.(type)??BUILDINGS[type]?.power??0;
+  const diffuserOxygenRate=original?.5/GAS_KG_PER_UNIT:.35;
+  const diffuserAlgaeRate=original?.55:.025;
+  const electrolyzerWaterRate=original?1:.18;
+  if(original)for(const b of this.buildings){
+   if(b.type==='battery'&&b.progress>=1)b.charge=Math.max(0,b.charge-BATTERY_LEAK_J_PER_S*dt);
+  }
+  for(const b of this.buildings){b.activeFraction=0;if(b.progress<1){b.status='건설 대기';continue;}if(!b.enabled){b.status='수동 정지';continue;}if((powerOf(b.type)>0||b.type==='steamTurbine')&&!b.connected)b.status='전선 연결 필요';}
+  const reservedElectrolyzerWater=new Map();let reservedAlgae=0,reservedHydrogen=0;
+   for(const n of this._networks){const bats=n.buildings.filter(b=>b.type==='battery'&&b.enabled),consumers=[];let production=0;
+   for(const b of n.buildings){
+     if(!b.enabled||powerOf(b.type)<=0)continue;
+    const reason=this._consumerReady(b);
+    if(reason){b.status=reason;b.active=false;}
+    else consumers.push(b);
+   }
+   consumers.sort((a,b)=>(a.type==='diffuser'?-1:0)-(b.type==='diffuser'?-1:0));
+   const limits=new Map();
+   for(const b of consumers){
+    let limit=1;
+    if(b.type==='diffuser'){
+     const p=this.cell(b.x,b.y),room=oxygenOutletSpace(p,original);
+     limit=Math.max(0,Math.min(1,room/(diffuserOxygenRate*dt),(this.resources.algae-reservedAlgae)/(diffuserAlgaeRate*dt)));
+     reservedAlgae+=diffuserAlgaeRate*dt*limit;
+    }else if(b.type==='electrolyzer'){
+     const net=this._fluidNet(b,'water'),reserved=reservedElectrolyzerWater.get(net)||0;
+     limit=this._utilityPowerFraction?.(b,dt,{water:reserved,hydrogen:reservedHydrogen})??1;
+     reservedElectrolyzerWater.set(net,reserved+electrolyzerWaterRate*dt*limit);
+     reservedHydrogen+=electrolyzerWaterRate*.112*dt*limit;
+    }
+    limits.set(b,limit);
+   }
+   const need=consumers.reduce((s,b)=>s+powerOf(b.type)*limits.get(b),0);
+   const cap=bats.reduce((s,b)=>s+b.capacity,0),oldCharge=bats.reduce((s,b)=>s+b.charge,0);
+   for(const turbine of n.buildings)if(turbine.type==='steamTurbine'&&turbine.enabled){
+    production+=this._steamPower?.(turbine,dt,Math.max(0,need-production+(cap-oldCharge)/dt))||0;
+   }
+   for(const b of n.buildings){
+    if(!b.enabled)continue;
+    if(b.type==='generator'){
+     b.active=!!b.workerId;b.activeFraction=b.active?1:0;
+     const watts=Math.abs(powerOf('generator'));
+     b.status=b.active?`발전 중 · ${watts}W`:'발전 대원 대기';
+     if(b.active){production+=watts;this._gainExperience?.(this.crew.find(c=>c.id===b.workerId),dt);}
+    }
+    if(b.type==='coalgen'){
+     const p=this.cell(b.x,b.y),run=this.resources.coal>0&&this._automationAllows(b)
+      &&(original||need>0||oldCharge<cap*.95);
+     const coalRate=original?1:.025,co2Rate=original?.02:.03;
+     // EnergyGenerator.Emit adds its exhaust independently of the oxygen machines' pressure sensors.
+     const exhaustLimit=original?Infinity:Math.max(0,3-p.co2)/(co2Rate*dt);
+     const fuelLimit=this.resources.coal/(coalRate*dt);
+     const watts=Math.abs(powerOf('coalgen'));
+     const fraction=run?Math.max(0,Math.min(1,fuelLimit,exhaustLimit)):0;
+     b.activeFraction=fraction;b.active=fraction>1e-8;
+     b.status=b.active?`발전 중 · ${Math.round(watts*fraction)}W`:this.resources.coal<=0?'석탄 부족':exhaustLimit<=1e-8?'CO₂ 배출 대기':'전력 충분';
+     if(b.active){
+      production+=watts*fraction;
+      this.resources.coal=Math.max(0,this.resources.coal-coalRate*dt*fraction);
+      if(original)addGasKg(p,'co2',co2Rate*dt*fraction,Math.max(110,p.temp),this.waterKgPerCell);
+      else{p.co2+=co2Rate*dt*fraction;p.temp+=.12*dt*fraction;}
+     }
+    }
+   }
+   for(const b of n.buildings)if(b.type==='hydrogenGen'){
+    const maxHydrogenPower=Math.abs(powerOf('hydrogenGen'));
+    const chargeW=original?0:cap>oldCharge?Math.max(0,(cap*.95-oldCharge)/dt):0;
+    const requested=original?maxHydrogenPower:Math.min(maxHydrogenPower,Math.max(0,need-production)+chargeW);
+    production+=this._hydrogenPower?.(b,dt,requested)||0;
+   }
+   let energy=production*dt+oldCharge;
+   for(const b of consumers){
+    const watts=powerOf(b.type),limit=limits.get(b);
+    const fractional=['diffuser','electrolyzer'].includes(b.type);
+    const served=fractional?Math.min(limit,energy/(watts*dt)):(energy+1e-8>=watts*dt?1:0);
+    b.activeFraction=fractional?served:served?1:0;b.active=served>1e-8;
+    if(b.type==='diffuser')reservedAlgae=Math.max(0,reservedAlgae-diffuserAlgaeRate*dt*(limit-served));
+    if(b.type==='electrolyzer'){
+     const net=this._fluidNet(b,'water');
+     reservedElectrolyzerWater.set(net,Math.max(0,(reservedElectrolyzerWater.get(net)||0)-electrolyzerWaterRate*dt*(limit-served)));
+     reservedHydrogen=Math.max(0,reservedHydrogen-electrolyzerWaterRate*.112*dt*(limit-served));
+    }
+    energy-=watts*dt*served;totalDemand+=watts*served;
+    b.status=served<=1e-8?'전력 부족':fractional&&served<.999?'부분 가동 · 전력/공급 제한':'가동 중';
+   }
    energy=Math.min(cap,Math.max(0,energy));for(const b of bats){b.charge=cap>0?energy*b.capacity/cap:0;b.status=b.charge>1?`충전 ${Math.round(b.charge/b.capacity*100)}%`:'충전 대기';if(b.charge>10)this._batteryPowered=true;}
    totalStored+=energy;totalCap+=cap;totalProd+=production;
   }
   this.power={stored:totalStored,capacity:totalCap,production:totalProd,demand:totalDemand};
   for(const b of this.buildings){if(b.progress<1||!b.enabled)continue;const p=this.cell(b.x,b.y);
+   if(b.type==='farm'&&this.originalRules){
+    this._growMealwood(b,p,dt);
+    continue;
+   }
    if(b.type==='farm'){if(b.growth>=1){b.status='수확 준비 완료';continue;}const reason=this._utilityReady?.(b,dt)||(p.temp<12||p.temp>35?'생장 온도 이탈':p.oxygen<.12?'산소 부족':p.water>.5?'침수':this.resources.water<=0?'물 부족':null);if(reason){b.status=reason;continue;}b.active=true;if(!this._consumeWater(b,.012*dt))continue;b.growth=clamp(b.growth+dt/120*(this._farmGrowthMultiplier?.(b)||1),0,1);b.status=`성장 ${Math.floor(b.growth*100)}%`;}
    if(!b.active)continue;
-   if(b.type==='diffuser'){this.resources.algae=Math.max(0,this.resources.algae-.025*dt);p.oxygen=Math.min(3,p.oxygen+.35*dt);if(this.production)this.production.oxygenProduced+=.35*dt;p.temp+=.025*dt;}
+   if(b.type==='diffuser'){
+    const room=oxygenOutletSpace(p,original);
+    const fraction=Math.min(b.activeFraction,room/(diffuserOxygenRate*dt),this.resources.algae/(diffuserAlgaeRate*dt));
+    b.activeFraction=fraction;b.active=fraction>1e-8;
+    if(fraction>0){
+     const oxygen=diffuserOxygenRate*dt*fraction;
+     this.resources.algae=Math.max(0,this.resources.algae-diffuserAlgaeRate*dt*fraction);
+     if(original)addWarmOxygen(p,oxygen,30,this.waterKgPerCell);else p.oxygen+=oxygen;
+     if(this.production)this.production.oxygenProduced+=oxygen;
+     if(!original)p.temp+=.025*dt*fraction;
+     if(fraction<.999)b.status='부분 가동 · 산소 공간 제한';
+    }
+   }
    if(b.type==='research'){const prev=this.stats.research,worker=this.crew.find(c=>c.id===b.workerId),efficiency=this._workEfficiency?.(worker)||1;this.stats.research=Math.min(100,prev+.24*dt*efficiency);this._gainExperience?.(worker,(this.stats.research-prev)/(.24*efficiency));this._consumeWater(b,.008*dt);p.temp+=.015*dt;if(prev<10&&this.stats.research>=10)this._event('연구 10! 탄소 정화기를 건설할 수 있어요.','good');if(prev<20&&this.stats.research>=20)this._event('연구 20! 석탄 발전기가 해금됐어요.','good');}
    if(b.type==='pump')this._pumpWater?.(b,dt);
    if(b.type==='scrubber')for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const c=this.cell(b.x+dx,b.y+dy);if(c&&!c.solid)c.co2=Math.max(0,c.co2-dt*.035);}
   }
  }
- _environment(dt){const o=new Float64Array(this.cells.length),co=new Float64Array(this.cells.length),heat=new Float64Array(this.cells.length);for(let y=1;y<this.h-1;y++)for(let x=1;x<this.w-1;x++){const i=y*this.w+x,a=this.cells[i];for(const[dx,dy]of [[1,0],[0,1]]){const j=(y+dy)*this.w+x+dx,b=this.cells[j];let h=(a.temp-b.temp)*dt*.025;heat[i]-=h;heat[j]+=h;if(a.solid||b.solid||this._doorBlocksFluid?.(x,y)||this._doorBlocksFluid?.(x+dx,y+dy))continue;let f=(a.oxygen-b.oxygen)*dt*.32;o[i]-=f;o[j]+=f;let g=(a.co2-b.co2)*dt*.30;co[i]-=g;co[j]+=g;if(dy===1){const fall=Math.min(a.co2,dt*.015*a.co2);co[i]-=fall;co[j]+=fall;}}}
-  for(let i=0;i<this.cells.length;i++){const c=this.cells[i];c.temp=clamp(c.temp+heat[i],-20,150);if(!c.solid){c.oxygen=clamp(c.oxygen+o[i],0,3);c.co2=clamp(c.co2+co[i],0,3);}}
-  for(let y=this.h-2;y>0;y--)for(let x=1;x<this.w-1;x++){const a=this.cell(x,y);if(a.solid||a.water<=.001||this._doorBlocksFluid?.(x,y))continue;const down=this.cell(x,y+1);if(down&&!down.solid&&!this._doorBlocksFluid?.(x,y+1)){const m=Math.min(a.water,1-down.water,dt*2);if(m>0){a.water-=m;down.water+=m;}}for(const dx of (Math.floor(this.time)%2?[1,-1]:[-1,1])){const side=this.cell(x+dx,y);if(side&&!side.solid&&!this._doorBlocksFluid?.(x+dx,y)&&a.water>side.water+.02){const m=Math.min((a.water-side.water)*.5,dt*.25);a.water-=m;side.water+=m;}}}
+ _growMealwood(b,cell,dt){
+  b.active=false;
+  if(b.growth>=1){b.status='수확 준비 완료 · 600 kcal';return;}
+  if(cell.water>.5){b.status='침수';return;}
+  if(cell.temp<MEALWOOD.minC||cell.temp>MEALWOOD.maxC){b.status='생장 온도 이탈 · 10~30°C 필요';return;}
+  if((cell.oxygen+cell.co2)*GAS_KG_PER_UNIT<MEALWOOD.minGasKg||Math.max(cell.steam||0,cell.hydrogen||0)>Math.max(cell.oxygen,cell.co2)*GAS_KG_PER_UNIT){
+   b.status='생장 기체 부족 · 산소 또는 이산화탄소 150 g 이상 필요';return;
+  }
+  const fertilizer=MEALWOOD.dirtKgPerCycle/this.cycleSeconds;
+  const seconds=Math.min(dt,(1-b.growth)*MEALWOOD.growthSeconds,this.resources.soil/fertilizer);
+  if(seconds<=0){b.status='비료 부족 · 토양을 채굴해 흙을 운반하세요';return;}
+  this.resources.soil=Math.max(0,this.resources.soil-seconds*fertilizer);
+  b.growth=clamp(b.growth+seconds/MEALWOOD.growthSeconds,0,1);
+  b.active=true;b.status=`끼니나무 성장 ${Math.floor(b.growth*100)}% · 흙 10 kg/주기`;
  }
+ _environment(dt){stepEnvironment(this,dt,this.cycleSeconds);}
  _updateStats(){const alive=this.crew.filter(c=>c.health>0);const cells=[];const used=new Set();for(const c of alive)for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const x=Math.floor(c.x)+dx,y=Math.floor(c.y)+dy,i=y*this.w+x,p=this.cell(x,y);if(p&&!p.solid&&!used.has(i)){used.add(i);cells.push(p);}}
   this.stats.oxygen=cells.length?clamp(cells.reduce((s,c)=>s+clamp(c.oxygen/.8,0,1),0)/cells.length*100,0,100):0;this.stats.temperature=cells.length?cells.reduce((s,c)=>s+c.temp,0)/cells.length:22;this.stats.population=alive.length;this.stats.foodDays=(this.resources.food+(this.resources.meals||0))/Math.max(1,alive.length);
   if(alive.length===0&&!this.lost){this.lost=true;this._event('기지의 불빛이 조용해졌습니다. 저장을 불러오거나 다시 시작할 수 있어요.','danger');}
-  const counts={dig:this.stats.completedDigs,oxygen:this.buildings.filter(b=>b.type==='diffuser'&&b.progress>=1).length,battery:this._batteryPowered?1:0,farms:this.buildings.filter(b=>b.type==='farm'&&!b.starter&&b.progress>=1).length,research:this.stats.research,survive:alive.length>=3?Math.floor(this.time/CYCLE_SECONDS):0};
+  const counts={dig:this.stats.completedDigs,oxygen:this.buildings.filter(b=>b.type==='diffuser'&&b.progress>=1).length,battery:this._batteryPowered?1:0,farms:this.buildings.filter(b=>b.type==='farm'&&!b.starter&&b.progress>=1).length,research:this.stats.research,survive:alive.length>=3?Math.floor(this.time/this.cycleSeconds):0};
   for(const o of this.objectives){if(o.done)continue;o.progress=Math.min(o.target,counts[o.id]||0);if(o.progress>=o.target){o.done=true;const rewards={dig:{rock:40,metal:20},oxygen:{algae:20},battery:{metal:20,water:12},farms:{food:3,water:18},research:{coal:20,metal:20},survive:{}}[o.id]||{};this._pay(rewards,1);this._event(`목표 달성 · ${o.label}${Object.keys(rewards).length?' — 보급품이 도착했어요.':''}`,'good');}}
   if(this._allowBaseWin!==false&&this.objectives.every(o=>o.done)&&!this.won){this.won=true;this._event('다섯 번의 아침을 함께 만들었습니다. 기지는 계속 자랄 수 있어요!','good');}
   const alerts=[];if(this.stats.oxygen<35)alerts.push({id:'oxygen',text:'숨 쉴 산소가 줄고 있어요. 확산기와 전력을 확인하세요.',tone:'danger'});if(alive.some(c=>c.breath<30))alerts.push({id:'breath',text:'숨이 가쁜 대원이 있어요. 안전한 통로를 확보하세요.',tone:'danger'});if(this.stats.foodDays<2)alerts.push({id:'food',text:'식량이 얼마 남지 않았어요. 재배와 수확을 확인하세요.',tone:'warn'});if(this.buildings.some(b=>b.progress>=1&&b.enabled&&BUILDINGS[b.type]?.power>0&&!b.connected))alerts.push({id:'wire',text:'전선이 연결되지 않은 설비가 있어요.',tone:'warn'});if(this.buildings.some(b=>b.status==='전력 부족'))alerts.push({id:'power',text:'전력이 부족해요. 발전 대원과 축전지를 확인하세요.',tone:'warn'});if(this.stats.temperature>35)alerts.push({id:'heat',text:'기지가 더워지고 있어요. 열이 나는 설비를 분리하세요.',tone:'warn'});this.alerts=alerts;
  }
- step(dt){if(!finite(dt)||dt<0||dt>3600)throw new Error('시뮬레이션 시간은 0~3600초의 유한한 값이어야 합니다.');let left=dt;while(left>1e-8&&!this.lost){const d=Math.min(.1,left);left-=d;this.time+=d;this.cycle=Math.floor((this.time+1e-8)/CYCLE_SECONDS)+1;for(const b of this.buildings){b.active=false;b.workerId=null;}if(this._networkDirty)this._rebuildNetworks();this._startUtilities?.(d);this._startFrontier?.(d);for(const c of this.crew)this._crewStep(c,d);this._buildingStep(d);this._communityProduction?.(d);this._frontierProduction?.(d);this._finishUtilities?.(d);this._finishCommunity?.(d);this._finishFrontier?.(d);this._envClock+=d;this._statClock+=d;if(this._envClock>=.2){this._environment(this._envClock);this._envClock=0;}if(this._statClock>=.5){this._updateStats();this._statClock=0;}}}
- inspect(x,y){const c=this.cell(x,y);if(!c)return{title:'기지 밖',lines:[]};if(!c.revealed)return{title:'미탐사 구역',lines:['가까이 탐사하면 이곳의 지형을 알 수 있어요.']};const b=this._buildingAt(x,y),crew=this.crew.find(v=>Math.floor(v.x)===x&&Math.floor(v.y)===y);const lines=[`온도 ${c.temp.toFixed(1)}°C`,`산소 ${Math.round(clamp(c.oxygen/.8,0,1)*100)}% · 이산화탄소 ${c.co2.toFixed(2)}`,`물 ${Math.round(c.water*100)}%${c.wire?' · 전선 설치됨':''}`];if(b){lines.unshift(b.progress<1?`건설 ${Math.round(b.progress*100)}%`:b.status);if(b.type==='battery')lines.push(`저장 ${Math.round(b.charge)} / ${b.capacity}J`);if(BUILDINGS[b.type]?.power>0)lines.push(`필요 전력 ${BUILDINGS[b.type].power}W`);}if(crew)lines.push(`${crew.name} · ${crew.action}`,`건강 ${Math.round(crew.health)} · 포만 ${Math.round(crew.hunger)} · 에너지 ${Math.round(crew.energy)}`);const t=this.tasks.find(t=>t.x===x&&t.y===y);if(t)lines.push(`예정 작업 · 우선순위 ${t.priority} · ${Math.round(t.progress*100)}%`);return{title:b?(BUILDINGS[b.type]?.name||'기지 코어'):MATERIALS[c.solid]?.name||'열린 공간',lines,building:b,crew};}
- serialize(){return copy({version:this.version,seed:this.seed,w:this.w,h:this.h,time:this.time,cycle:this.cycle,cells:this.cells,buildings:this.buildings,tasks:this.tasks,crew:this.crew,resources:this.resources,power:this.power,stats:this.stats,objectives:this.objectives,events:this.events,alerts:this.alerts,lost:this.lost,won:this.won,_nextId:this._nextId,_envClock:this._envClock,_statClock:this._statClock,_batteryPowered:this._batteryPowered});}
+ step(dt){if(!finite(dt)||dt<0||dt>3600)throw new Error('시뮬레이션 시간은 0~3600초의 유한한 값이어야 합니다.');if(this.lost)return;
+  const elapsed=this._stepRemainder+dt;
+  const ticks=Math.floor((elapsed+1e-10)/.1), d=.1;
+  this._stepRemainder=Math.max(0,Number((elapsed-ticks*d).toFixed(12)));
+  for(let tick=0;tick<ticks&&!this.lost;tick++){this.time+=d;this.cycle=Math.floor((this.time+1e-8)/this.cycleSeconds)+1;for(const b of this.buildings){b.active=false;b.workerId=null;}if(this._networkDirty)this._rebuildNetworks();this._startUtilities?.(d);this._startFrontier?.(d);for(const c of this.crew)this._crewStep(c,d);this._buildingStep(d);this._communityProduction?.(d);this._frontierProduction?.(d);this._finishUtilities?.(d);this._finishCommunity?.(d);this._finishFrontier?.(d);this._envClock+=d;this._statClock+=d;if(this._envClock>=.2){this._environment(this._envClock);this._envClock=0;}if(this._statClock>=.5){this._updateStats();this._statClock=0;}}}
+ inspect(x,y){const c=this.cell(x,y);if(!c)return{title:'기지 밖',lines:[]};if(!c.revealed)return{title:'미탐사 구역',lines:['가까이 탐사하면 이곳의 지형을 알 수 있어요.']};const b=this._buildingAt(x,y),crew=this.crew.find(v=>Math.floor(v.x)===x&&Math.floor(v.y)===y);const lines=[`온도 ${c.temp.toFixed(1)}°C`];if(c.wire)lines.push('전선 설치됨');if(c.solid||c.water||c.frost||c.steam){
+   const material=materialFor(c);
+   if(this.originalRules&&Object.hasOwn(NATURAL_MASS_KG,c.solid)){
+    const mass=NATURAL_MASS_KG[c.solid];
+    lines.push(c.solid==='bedrock'?`지형 질량 ${mass} kg`:`지형 질량 ${mass} kg · 채굴 시 ${mass*.5} kg 회수`);
+   }
+   if(c.insulated)lines.push('단열 보강 타일');
+   lines.push(`비열 ${material.specificHeatCapacity} DTU/g/°C · 열전도도 ${Number(conductivity(c).toFixed(5))}`);
+  }
+  if(!c.solid)lines.push(`산소 ${(c.oxygen*GAS_KG_PER_UNIT).toFixed(3)} kg · 이산화탄소 ${(c.co2*GAS_KG_PER_UNIT).toFixed(3)} kg · ${canBreathe(c)?'호흡 가능':'호흡 곤란'}`);
+  if(!c.solid)lines.push(`물 ${(c.water*this.waterKgPerCell).toFixed(2)} L · 얼음 ${((c.frost||0)*this.waterKgPerCell).toFixed(2)} kg · 증기 ${(c.steam||0).toFixed(2)} kg`);
+  if(c.steamVent){
+   const phase=this.time%this.cycleSeconds;
+   lines.push(`증기 분출구 · ${phase<36?'분출기':'휴지기'} · 누적 ${c.ventOutput.toFixed(2)} kg`);
+   lines.push('주기 시작 후 36초간 165°C 증기 분출 · 증기 2.5 kg 또는 타일로 막으면 정지');
+  }
+  if(b){lines.unshift(b.progress<1?`건설 ${Math.round(b.progress*100)}%`:b.status);if(b.type==='battery')lines.push(`저장 ${Math.round(b.charge)} / ${b.capacity}J`);if(this.buildingPower(b.type)>0)lines.push(`필요 전력 ${this.buildingPower(b.type)}W`);}if(crew)lines.push(`${crew.name} · ${crew.action}`,`건강 ${Math.round(crew.health)} · 포만 ${Math.round(crew.hunger)} · 에너지 ${Math.round(crew.energy)}`);const t=this.tasks.find(t=>t.x===x&&t.y===y);if(t)lines.push(`예정 작업 · 우선순위 ${t.priority} · ${Math.round(t.progress*100)}%`);return{title:b?(BUILDINGS[b.type]?.name||'기지 코어'):MATERIALS[c.solid]?.name||'열린 공간',lines,building:b,crew};}
+ serialize(){return copy({version:this.version,ruleset:this.ruleset,seed:this.seed,w:this.w,h:this.h,time:this.time,cycle:this.cycle,cells:this.cells,buildings:this.buildings,tasks:this.tasks,crew:this.crew,resources:this.resources,power:this.power,stats:this.stats,objectives:this.objectives,events:this.events,alerts:this.alerts,lost:this.lost,won:this.won,_nextId:this._nextId,_stepRemainder:this._stepRemainder,_envClock:this._envClock,_statClock:this._statClock,_batteryPowered:this._batteryPowered});}
  load(object){
   const fail=(s)=>{throw new Error('저장 파일을 불러올 수 없어요: '+s);};
   if(!object||typeof object!=='object'||Array.isArray(object))fail('올바른 저장 데이터가 아닙니다.');
   let nodes=0;const walk=(v,depth=0)=>{if(++nodes>120000||depth>30)fail('데이터가 너무 복잡합니다.');if(typeof v==='number'&&!finite(v))fail('유효하지 않은 숫자가 있습니다.');if(v&&typeof v==='object')for(const[k,value]of Object.entries(v)){if(['__proto__','constructor','prototype'].includes(k))fail('지원하지 않는 데이터 키입니다.');walk(value,depth+1);}};walk(object);
   if(object.version!==2||object.w!==WORLD_W||object.h!==WORLD_H)fail('버전 또는 지도 크기가 맞지 않습니다.');
   if(!finite(object.time)||object.time<0||!Array.isArray(object.cells)||object.cells.length!==WORLD_W*WORLD_H)fail('시간 또는 지도 데이터가 손상되었습니다.');
-  for(const c of object.cells){if(!c||!(c.solid===null||Object.hasOwn(MATERIALS,c.solid))||!['oxygen','co2','temp','water'].every(k=>finite(c[k]))||c.oxygen<0||c.oxygen>10||c.co2<0||c.co2>10||c.water<0||c.water>1.001||c.temp< -100||c.temp>300||typeof c.revealed!=='boolean'||typeof c.wire!=='boolean')fail('지형 데이터가 올바르지 않습니다.');}
+  const waterKgPerCell=object.ruleset===ORIGINAL_RULES?ORIGINAL_WATER_PER_CELL:WATER_PER_CELL;
+  const maxRoomCO2=object.ruleset===ORIGINAL_RULES?1e9:10;
+  for(const c of object.cells){if(!c||!(c.solid===null||Object.hasOwn(MATERIALS,c.solid))||!['oxygen','co2','temp','water'].every(k=>finite(c[k]))||c.oxygen<0||c.oxygen>10||c.co2<0||c.co2>maxRoomCO2||c.water<0||c.water>1.001||('steamVent' in c&&(c.steamVent!==true||!finite(c.ventOutput)||c.ventOutput<0))||('insulated' in c&&(c.insulated!==true||c.solid!=='tile'))||('hydrogen' in c&&(!finite(c.hydrogen)||c.hydrogen<0||c.hydrogen>10.000001||c.solid&&c.hydrogen>0))||('frost' in c&&(!finite(c.frost)||c.frost<0||c.water+c.frost>1.001))||('steam' in c&&(!finite(c.steam)||c.steam<0||c.steam>waterKgPerCell+.00001))||c.temp< -100||c.temp>300||typeof c.revealed!=='boolean'||typeof c.wire!=='boolean')fail('지형 데이터가 올바르지 않습니다.');}
   if(!object.resources||!RESOURCE_KEYS.every(k=>finite(object.resources[k])&&object.resources[k]>=0&&object.resources[k]<=1e9))fail('자원 수치가 올바르지 않습니다.');
   if(!Array.isArray(object.crew)||object.crew.length<1||object.crew.length>12)fail('대원 목록이 올바르지 않습니다.');
   const unique=(arr)=>new Set(arr.map(v=>v.id)).size===arr.length;
@@ -264,10 +449,15 @@ export class Game {
   const maxId=Math.max(0,...object.crew.map(v=>v.id),...object.buildings.map(v=>v.id),...object.tasks.map(v=>v.id),...object.events.map(v=>v.id));
   if(object._nextId<=maxId)fail('개체 식별자가 올바르지 않습니다.');
   for(const c of object.crew){if(!Array.isArray(c.path)||!finite(c._idle)||c._idle<0||typeof c.action!=='string'||typeof c.color!=='string')fail('대원 행동 정보가 올바르지 않습니다.');if(c._job&&(!finite(c._job.elapsed)||c._job.elapsed<0))fail('대원 작업 시간이 올바르지 않습니다.');}
-  const saved=copy(object);for(const k of ['seed','w','h','time','cycle','cells','buildings','tasks','crew','resources','power','stats','objectives','events','alerts','lost','won','_nextId','_envClock','_statClock','_batteryPowered'])this[k]=saved[k];this.version=2;this._envClock=finite(this._envClock)?this._envClock:0;this._statClock=finite(this._statClock)?this._statClock:0;this._networkDirty=true;this._navRevision=0;this._pathCache=null;for(const c of this.crew)c.path=c._job?.path||[];this._rebuildNetworks();return true;
+  if('_stepRemainder' in object&&(!finite(object._stepRemainder)||object._stepRemainder<0||object._stepRemainder>=.1))fail('틱 진행 시간이 잘못되었어요.');
+  const ruleset=object.ruleset===undefined?LEGACY_RULES:object.ruleset;
+  if(ruleset!==ORIGINAL_RULES&&ruleset!==LEGACY_RULES)fail('지원하지 않는 기지 규칙입니다.');
+  if(ruleset===ORIGINAL_RULES&&(!finite(object.resources.soil)||object.resources.soil<0||object.resources.soil>1e9))fail('흙 비축량이 올바르지 않습니다.');
+  const saved=copy(object);this.ruleset=ruleset;for(const k of ['seed','w','h','time','cycle','cells','buildings','tasks','crew','resources','power','stats','objectives','events','alerts','lost','won','_nextId','_envClock','_statClock','_batteryPowered'])this[k]=saved[k];this._stepRemainder=saved._stepRemainder||0;this.version=2;this._envClock=finite(this._envClock)?this._envClock:0;this._statClock=finite(this._statClock)?this._statClock:0;this._networkDirty=true;this._navRevision=0;this._pathCache=null;for(const c of this.crew)c.path=c._job?.path||[];this._rebuildNetworks();return true;
  }
 }
 
 installUtilities(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS});
 installCommunity(Game,{BUILDINGS,OBJECTIVES,CYCLE_SECONDS});
 installFrontier(Game,{BUILDINGS,OBJECTIVES});
+installGasNetwork(Game);

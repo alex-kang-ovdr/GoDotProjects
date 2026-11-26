@@ -1,3 +1,4 @@
+import { canBreathe, GAS_KG_PER_UNIT } from './environment.js';
 import { BUILDINGS } from './engine.js';
 
 const TAU = Math.PI * 2;
@@ -19,6 +20,7 @@ const TERRAIN = {
   copper:  { base: '#685857', edge: '#b78377', dark: '#463e42', fleck: '#e3a78e' },
   algae:   { base: '#405c50', edge: '#6a9a70', dark: '#2c4640', fleck: '#b0c990' },
   coal:    { base: '#383d45', edge: '#656476', dark: '#292f38', fleck: '#9390ad' },
+  abyssalite: { base:'#564c68', edge:'#9e87b8', dark:'#332e44', fleck:'#b69bc8' },
   ice:     { base: '#788f9f', edge: '#c0d7d8', dark: '#546a83', fleck: '#e1e7e2' },
   bedrock: { base: '#34383f', edge: '#53505e', dark: '#232b33', fleck: '#77717d' },
   tile:    { base: '#65736d', edge: '#b2c3ac', dark: '#354a47', fleck: '#a9b6a5' },
@@ -26,14 +28,17 @@ const TERRAIN = {
 const PIPE_LAYERS = [
   { key:'pipe', stored:'cleanWater', flow:'pipeFlow', x:.35, y:.37, color:'#86d7e7', dark:'#315564', label:'청수' },
   { key:'wastepipe', stored:'dirtyWater', flow:'wasteFlow', x:.65, y:.59, color:'#d2b074', dark:'#675844', label:'오수' },
+  { key:'gaspipe', cellKey:'gasPipe', packet:'gasPacket', x:.5, y:.5, color:'#8bc8b7', dark:'#315b54', label:'기체', removeTool:'removeGasPipe' },
 ];
+const GAS_PORTS = {gasPump:'out',gasVent:'in',hydrogenGen:'in'};
 const FLUID_PORTS = {
   core:{water:'both'}, reservoir:{water:'both',waste:'both'}, pump:{water:'out'},
   farm:{water:'in'}, research:{water:'in'}, toilet:{water:'in',waste:'out'},
   sink:{water:'in',waste:'out'}, purifier:{water:'out',waste:'in'},
-  electrolyzer:{water:'in'}, cooler:{water:'in',waste:'out'}, kitchen:{water:'in'},
+  steamTurbine:{water:'out'}, electrolyzer:{water:'in'}, cooler:{water:'in',waste:'out'}, kitchen:{water:'in'},
 };
 const CARGO = {
+  soil:{label:'흙',color:'#ad8655',dark:'#594127'},
   rock:{label:'광석',color:'#c5ae89',dark:'#665746'},
   metal:{label:'금속',color:'#e0b4a1',dark:'#8a6461'},
   algae:{label:'조류',color:'#b6d494',dark:'#53765d'},
@@ -344,6 +349,9 @@ export class Renderer {
     const kind=TERRAIN[cell.solid]?cell.solid:'rock';
     const variant=Math.floor(noise(x,y,19)*4);
     ctx.drawImage(this._tiles[kind][variant],x,y,1,1);
+    if (cell.insulated) {
+      line(ctx,[[x+.08,y+.72],[x+.36,y+.28],[x+.64,y+.72],[x+.92,y+.28]],'#e8cd94',.07);
+    }
     if (kind!=='tile') {
       const depth=clamp((y-13)/45,0,.2);
       if(depth){ctx.fillStyle=`rgba(11,19,27,${depth})`;ctx.fillRect(x,y,1,1);}
@@ -382,6 +390,19 @@ export class Renderer {
     }
     const water=clamp(finite(cell.water),0,1);
     if(water>.005)this._water(ctx,x,y,water,t);
+    if(cell.frost>.005){
+      const depth=Math.min(1,cell.frost);
+      ctx.fillStyle='#a4d4dc';ctx.fillRect(x,y+1-depth,1,depth);
+      line(ctx,[[x,y+1-depth],[x+1,y+1-depth]],'#e3f6f6',.045);
+    }
+    if(cell.steam>.015){
+      ctx.fillStyle=`rgba(231,240,245,${Math.min(.55,.08+cell.steam*.08)})`;
+      ctx.fillRect(x,y,1,1);
+    }
+    if(cell.steamVent){
+      polygon(ctx,[[x+.05,y+.99],[x+.3,y+.74],[x+.43,y+.79],[x+.61,y+.71],[x+.95,y+.99]],'#846759');
+      line(ctx,[[x+.31,y+.8],[x+.49,y+.86],[x+.61,y+.76]],'#fbbd86',.055);
+    }
     if(cell.spring)this._spring(ctx,x,y,t);
   }
 
@@ -421,19 +442,25 @@ export class Renderer {
   _environmentOverlay(ctx,x0,y0,x1,y1) {
     for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++) {
       const c=this._cell(x,y);if(!c?.revealed)continue;
-      let color;
+      let color,h2Fraction=0;
       if(this.overlay==='oxygen') {
         if(c.solid)continue;
-        const o=clamp(finite(c.oxygen)/.8,0,1);
+        const o=canBreathe(c)?clamp(finite(c.oxygen)/.8,0,1):0;
         color=o>.65?`rgba(97,204,165,${.13+o*.16})`:o>.25?'rgba(222,183,102,.24)':'rgba(217,112,103,.27)';
-      } else {
+      } else if(this.overlay==='temperature') {
         const temp=finite(c.temp,20);
         color=temp<10?'rgba(123,157,211,.34)':temp<22?'rgba(105,184,176,.2)':temp<32?'rgba(219,180,107,.22)':temp<45?'rgba(229,130,92,.34)':'rgba(207,78,78,.44)';
+      } else {
+        const hydrogenKg=Math.max(0,finite(c.hydrogen));
+        const gasKg=Math.max(0,finite(c.oxygen))*GAS_KG_PER_UNIT+Math.max(0,finite(c.co2))*GAS_KG_PER_UNIT+Math.max(0,finite(c.steam))+hydrogenKg;
+        h2Fraction=gasKg>1e-9?clamp(hydrogenKg/gasKg,0,1):0;
+        color=h2Fraction>.001?`rgba(89,164,219,${.08+h2Fraction*.48})`:'rgba(122,153,158,.08)';
       }
       ctx.fillStyle=color;ctx.fillRect(x,y,1.01,1.01);
       if(this.cellSize>40 && !c.solid && x%2===0 && y%2===0) {
         ctx.fillStyle='rgba(236,242,228,.68)';ctx.font=`${8/this.cellSize}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(this.overlay==='oxygen'?`${Math.round(clamp(c.oxygen/.8,0,1)*100)}%`:`${Math.round(c.temp)}°`,x+.5,y+.5);
+        const label=this.overlay==='oxygen'?(canBreathe(c)?`${Math.round(clamp(c.oxygen/.8,0,1)*100)}%`:'×'):this.overlay==='temperature'?`${Math.round(c.temp)}°`:`${Math.round(h2Fraction*100)}% H₂`;
+        ctx.fillText(label,x+.5,y+.5);
       }
     }
   }
@@ -463,32 +490,36 @@ export class Renderer {
   _pipes(ctx,x0,y0,x1,y1,t) {
     const plumbing=this.overlay==='plumbing';
     for(const layer of PIPE_LAYERS){
-      const highlighted=plumbing||this.tool===layer.key||this.tool===(layer.key==='pipe'?'removePipe':'removeWastepipe');
+      const gas=layer.key==='gaspipe',highlighted=gas?this.overlay==='gas'||this.tool===layer.key||this.tool===layer.removeTool:plumbing||this.tool===layer.key||this.tool===(layer.key==='pipe'?'removePipe':'removeWastepipe');
       ctx.save();ctx.globalAlpha=highlighted?1:this.overlay==='normal'?.43:.18;
       for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-        const c=this._cell(x,y);if(!c?.revealed||!c[layer.key])continue;
+        const c=this._cell(x,y);if(!c?.revealed||!c[layer.cellKey||layer.key])continue;
         const px=x+layer.x,py=y+layer.y;
         for(const [dx,dy] of [[1,0],[0,1]]){
-          const n=this._cell(x+dx,y+dy);if(!n?.revealed||!n[layer.key])continue;
+          const n=this._cell(x+dx,y+dy);if(!n?.revealed||!n[layer.cellKey||layer.key])continue;
           const points=[[px,py],[px+dx,py+dy]];
           line(ctx,points,'#10242b',highlighted?.15:.105);
           line(ctx,points,layer.dark,highlighted?.105:.075);
           if(layer.key==='wastepipe')ctx.setLineDash([.115,.065]);
+          if(gas)ctx.setLineDash([.025,.045]);
           line(ctx,points,layer.color,highlighted?.055:.035);ctx.setLineDash([]);
         }
-        const filled=finite(c[layer.stored])>.001;
+        const packet=layer.packet&&c[layer.packet],filled=gas?!!packet:finite(c[layer.stored])>.001;
         if(layer.key==='pipe'){
           circle(ctx,px,py,highlighted?.075:.045,'#16333d',layer.color,highlighted?.025:.018);
           if(filled)circle(ctx,px,py,highlighted?.037:.02,'#b9e6df');
+        }else if(gas){
+          polygon(ctx,[[px,py-.09],[px+.09,py],[px,py+.09],[px-.09,py]],'#183b39',layer.color,highlighted?.03:.018);
+          if(filled){const colors={oxygen:'#c8f2df',co2:'#d5c5a2',steam:'#fff1cf',hydrogen:'#b9d7ef'};circle(ctx,px,py,.035,colors[packet.element]||'#d8eadb');}
         }else{
           rounded(ctx,px-.067,py-.067,.134,.134,.016,'#2f302b',layer.color,.023);
           if(filled)rounded(ctx,px-.03,py-.03,.06,.06,.006,'#e0c498');
         }
-        if(highlighted&&finite(c[layer.flow])>.0001){
+        if(highlighted&&(gas?filled:finite(c[layer.flow])>.0001)){
           // The public rate belongs to this cell; it does not establish the
           // direction or flux of any one of its neighboring segments.
           const pulse=.025+.018*(1+Math.sin(t*4+noise(x,y,17)*TAU));
-          circle(ctx,px,py,pulse,layer.key==='pipe'?'#e4f5df':'#fff0cc');
+          circle(ctx,px,py,pulse,gas?'#d9f3df':layer.key==='pipe'?'#e4f5df':'#fff0cc');
         }
       }
       ctx.restore();
@@ -946,6 +977,29 @@ export class Renderer {
         rounded(ctx,.27,.85,.58,.09,.025,'#476974');
         if(active)circle(ctx,.58,.25,.026,'#b7e6d5');
         break;
+      case 'gasPump':
+        line(ctx,[[.16,.9],[.16,.62],[.36,.62]],'#70a9b5',.12);
+        line(ctx,[[.16,.9],[.16,.62],[.36,.62]],'#355b68',.065);
+        rounded(ctx,.31,.35,.48,.51,.09,'#507b86',shadow,.04);
+        circle(ctx,.55,.58,.18,'#203e49','#b8d8d3',.025);
+        this._fan(ctx,.55,.58,.135,phase*2.2,'#9fd4d3');
+        line(ctx,[[.55,.34],[.55,.18],[.86,.18]],'#a5c7c1',.09);
+        rounded(ctx,.27,.85,.58,.09,.025,'#345a65');
+        if(active)circle(ctx,.58,.25,.026,'#bce9d8');
+        break;
+      case 'gasVent':
+        rounded(ctx,.1,.72,.8,.17,.045,'#547f79',shadow,.04);
+        rounded(ctx,.18,.28,.64,.48,.07,'#345a58','#a9d4bf',.035);
+        for(let i=0;i<5;i++){
+          const x=.27+i*.115;
+          line(ctx,[[x,.35],[x,.69]],active?'#d0e8c7':'#8ab5a6',.045);
+        }
+        line(ctx,[[.3,.2],[.3,.12],[.7,.12],[.7,.2]],'#b4d5c0',.045);
+        if(active)for(let i=0;i<3;i++){
+          const p=(t*.45+i*.31)%1,x=.32+i*.18;
+          ctx.save();ctx.globalAlpha*=1-p;line(ctx,[[x,.29-p*.12],[x+.025,.23-p*.12],[x,.18-p*.12]],'#c7ecd1',.022);ctx.restore();
+        }
+        break;
       case 'scrubber':
         rounded(ctx,.12,.45,.76,.45,.07,'#536d69',shadow,.04);
         for(const x of [.22,.59]) {
@@ -1051,6 +1105,18 @@ export class Renderer {
         }
         break;
       }
+      case 'steamTurbine': {
+        rounded(ctx,.05,.69,.88,.23,.04,'#64838c',shadow,.04);
+        rounded(ctx,.70,.46,.29,.13,.03,'#b0c7c8',shadow,.025);
+        circle(ctx,.48,.47,.29,'#263c47','#abc6c8',.055);
+        ctx.save();ctx.translate(.48,.47);ctx.rotate(phase*3);
+        for(let i=0;i<6;i++){
+          ctx.rotate(TAU/6);
+          polygon(ctx,[[.03,0],[.18,-.07],[.23,.02],[.07,.07]],'#89b1b5');
+        }
+        ctx.restore();circle(ctx,.48,.47,.06,'#d9c895');
+        break;
+      }
       case 'hydrogenGen': {
         rounded(ctx,.07,.8,.86,.13,.03,'#787d91',shadow,.045);
         rounded(ctx,.12,.2,.3,.57,.14,'#7d769c','#b6adc9',.035);
@@ -1123,6 +1189,8 @@ export class Renderer {
     if(!cell)return;
     const selected=[this.hover,this.selection].some(at=>at?.x===b.x&&at?.y===b.y);
     const plumbing=this.overlay==='plumbing'||['pipe','wastepipe','removePipe','removeWastepipe'].includes(this.tool)||this.tool===b.type;
+    const gasPort=GAS_PORTS[b.type],gasLayer=PIPE_LAYERS[2],gasInstalled=!!cell.gasPipe,gasVisible=this.overlay==='gas'||['gaspipe','removeGasPipe','gasPump','gasVent'].includes(this.tool)||selected;
+    if(gasPort&&(gasVisible||!gasInstalled)){const px=b.x+gasLayer.x,py=b.y+gasLayer.y,size=gasVisible||selected?.11:.075,color=gasInstalled?'#8bc8b7':'#eb9c87';circle(ctx,px,py,size,'#173934',color,.025);if(!gasInstalled){line(ctx,[[px-size*.38,py-size*.38],[px+size*.38,py+size*.38]],color,.025);line(ctx,[[px+size*.38,py-size*.38],[px-size*.38,py+size*.38]],color,.025);}else{const sign=gasPort==='in'?1:-1;polygon(ctx,[[px-sign*size*.43,py-size*.5],[px+sign*size*.45,py],[px-sign*size*.43,py+size*.5]],color);} }
     if(ports)for(const [kind,direction] of Object.entries(ports)){
       const clean=kind==='water',layer=PIPE_LAYERS[clean?0:1];
       const installed=!!cell[layer.key];
@@ -1466,13 +1534,13 @@ export class Renderer {
   _interaction(ctx,t) {
     const h=this.hover;
     const validCell=h&&h.x>=0&&h.y>=0&&h.x<this.game.w&&h.y<this.game.h;
-    const networkDrag=!!this.dragRect&&['wire','pipe','wastepipe'].includes(this.tool);
+    const networkDrag=!!this.dragRect&&['wire','pipe','wastepipe','gaspipe'].includes(this.tool);
     if(this.dragRect) {
       if(networkDrag)this._networkDrag(ctx,this.dragRect);
       else{
         const d=this.dragRect,x=Math.min(d.x1,d.x2),y=Math.min(d.y1,d.y2);
         const w=Math.abs(d.x2-d.x1)+1,ht=Math.abs(d.y2-d.y1)+1;
-        const cancel=['cancel','deconstruct','removePipe','removeWastepipe'].includes(this.tool);
+        const cancel=['cancel','deconstruct','removePipe','removeWastepipe','removeGasPipe'].includes(this.tool);
         ctx.save();ctx.setLineDash([.15,.12]);
         rounded(ctx,x+.02,y+.02,w-.04,ht-.04,.08,cancel?'rgba(230,139,117,.10)':'rgba(185,211,160,.09)',cancel?'#e6a18a':'#c6d9b1',.045);
         ctx.restore();
@@ -1501,19 +1569,20 @@ export class Renderer {
       line(ctx,[[x+.2,y+.72],[x+.8,y+.72]],ok?'#eed093':'#d68e7d',.065);
       circle(ctx,x+.5,y+.72,.07,ok?'#eed093':'#d68e7d');
     }
-    const pipeLayer=PIPE_LAYERS.find(v=>v.key===this.tool||(v.key==='pipe'?'removePipe':'removeWastepipe')===this.tool);
+    const pipeLayer=PIPE_LAYERS.find(v=>v.key===this.tool||v.removeTool===this.tool||(v.key==='pipe'?'removePipe':'removeWastepipe')===this.tool);
     if(pipeLayer&&!networkDrag){
       const px=x+pipeLayer.x,py=y+pipeLayer.y,removing=this.tool.startsWith('remove');
       const pipeColor=!ok||removing?'#e4a184':pipeLayer.color;
       ctx.save();ctx.setLineDash([.08,.07]);
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(this._cell(x+dx,y+dy)?.[pipeLayer.key])line(ctx,[[px,py],[px+dx*.5,py+dy*.5]],pipeColor,.065);
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(this._cell(x+dx,y+dy)?.[pipeLayer.cellKey||pipeLayer.key])line(ctx,[[px,py],[px+dx*.5,py+dy*.5]],pipeColor,.065);
       ctx.setLineDash([]);
       if(pipeLayer.key==='pipe')circle(ctx,px,py,.105,'#183641',pipeColor,.035);
+      else if(pipeLayer.key==='gaspipe')polygon(ctx,[[px,py-.12],[px+.12,py],[px,py+.12],[px-.12,py]],'#183b39',pipeColor,.035);
       else rounded(ctx,px-.1,py-.1,.2,.2,.02,'#3a3b30',pipeColor,.035);
       if(removing){line(ctx,[[px-.06,py-.06],[px+.06,py+.06]],pipeColor,.03);line(ctx,[[px+.06,py-.06],[px-.06,py+.06]],pipeColor,.03);}
       ctx.restore();
     }
-    const color=!ok?'#e49a83':['cancel','deconstruct','removePipe','removeWastepipe'].includes(this.tool)?'#e7a18c':this.tool==='dig'?'#e6ca8c':pipeLayer?pipeLayer.color:'#c7e4c9';
+    const color=!ok?'#e49a83':['cancel','deconstruct','removePipe','removeWastepipe','removeGasPipe'].includes(this.tool)?'#e7a18c':this.tool==='dig'?'#e6ca8c':pipeLayer?pipeLayer.color:'#c7e4c9';
     const tint=!ok?'rgba(216,122,104,.09)':this.tool==='dig'&&cell?.solid?'rgba(237,204,143,.14)':'rgba(183,225,193,.045)';
     rounded(ctx,x+.015,y+.015,.97,.97,.05,tint,color,.035);
     this._corners(ctx,x,y,color,.07);
@@ -1530,10 +1599,11 @@ export class Renderer {
     for(let x=x1;;x+=dx){cells.push({x,y:y1});if(x===x2)break;}
     if(y1!==y2)for(let y=y1+dy;;y+=dy){cells.push({x:x2,y});if(y===y2)break;}
     for(const {x,y} of cells){
-      const cell=this._cell(x,y);if(!cell)continue;let valid=!!cell[layer.key];
+      const cell=this._cell(x,y);if(!cell)continue;let valid=!!cell[layer.cellKey||layer.key];
       if(!valid){try{valid=this.game.canPlace(this.tool,x,y)?.ok===true;}catch{valid=false;}}
       const color=valid?layer.color:'#e69b83',px=x+layer.x,py=y+layer.y;
       if(layer.key==='wastepipe')rounded(ctx,px-.075,py-.075,.15,.15,.016,'#263a3a',color,.028);
+      else if(layer.key==='gaspipe')polygon(ctx,[[px,py-.065],[px+.065,py],[px,py+.065],[px-.065,py]],'#183b39',color,.028);
       else circle(ctx,px,py,.065,'#16313c',color,.028);
       if(!valid)line(ctx,[[px-.04,py-.04],[px+.04,py+.04]],color,.025);
     }
