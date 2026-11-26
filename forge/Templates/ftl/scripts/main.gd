@@ -931,6 +931,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_cloak_pressed()
 		elif kc == KEY_B:
 			_on_battery_pressed()
+		elif kc == KEY_K:
+			_on_crystal_lockdown_pressed()
 		elif kc == KEY_T:
 			_on_tp_send_pressed()
 		elif kc == KEY_Y:
@@ -1138,6 +1140,57 @@ func _on_battery_pressed() -> void:
 		_update_hud_labels()
 	else:
 		_banner("예비 배터리를 가동할 수 없습니다 (재충전 중 또는 손상).")
+
+
+func _on_crystal_lockdown_pressed() -> void:
+	if player_ship == null:
+		return
+	# Try selected boarder on enemy ship first, then selected player crew
+	if enemy_ship != null and in_combat and selected_boarder_id >= 0:
+		if enemy_ship.activate_crystal_lockdown(selected_boarder_id):
+			_banner("크리스탈 봉쇄 발동! (적 선실 12초간 출입 차단)")
+			return
+	for c in player_ship.crew:
+		if bool(c.is_player) and bool(c.selected) and str(c.species) == "crystal":
+			if player_ship.activate_crystal_lockdown(int(c.id)):
+				_banner("크리스탈 봉쇄 발동! (아군 선실 12초간 출입 차단)")
+				return
+			_banner("크리스탈 봉쇄 재충전 중 (%.0fs)" % float(c.get("lockdown_cooldown", 0.0)))
+			return
+	_banner("크리스탈 종족 승무원을 선택한 뒤 K 키를 누르세요.")
+
+
+func _show_out_of_fuel_modal() -> void:
+	_open_modal("out_of_fuel", 620, 320)
+	modal_box.add_child(_mk_label("OUT OF FUEL — EMERGENCY DISTRESS BEACON", 17, Color("ff8066")))
+	var body := _mk_label(
+		"FTL 연료가 모두 소진되어 점프할 수 없습니다!\n비상 구조 신호를 발신해 지나가는 함선에 도움을 요청하거나 조용히 대기할 수 있습니다.\n(대기 1턴마다 반란군 함대가 1회 전진합니다.)",
+		14, Color("e6eef5")
+	)
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	modal_box.add_child(body)
+	modal_box.add_child(_mk_btn("1. 비상 구조 신호 발신 (Distress Beacon ON — 연료 구조선/해적 조우)", func():
+		sector_map.rebel_fleet_x += 58.0
+		_close_modal()
+		if randf() < 0.65:
+			var f_gain := randi_range(3, 5)
+			player_ship.fuel += f_gain
+			audio.play_sfx("upgradeSystem")
+			_show_event_modal({
+				"text": "A friendly Federation supply tanker responds to your distress call and transfers +%d Fuel free of charge!" % f_gain,
+				"choices": [{"text": "Thank them and continue", "event": {}}],
+			})
+		else:
+			player_ship.fuel += 2
+			var eid := db.pick_enemy_ship_id(sector_map.current_sector_index, sector_map.current_sector_id)
+			_start_combat(eid, "A pirate ship intercepts your distress signal! You siphon +2 emergency Fuel as they open fire!")
+	, true))
+	modal_box.add_child(_mk_btn("2. 조용히 대기 (Wait Quietly — 표류 연료 +2 회수)", func():
+		sector_map.rebel_fleet_x += 58.0
+		player_ship.fuel += 2
+		_close_modal()
+		_banner("표류 잔해에서 비상 연료 +2를 회수했습니다. (반란군 함대 접근!)")
+	))
 
 
 func _show_surrender_modal(offer: Dictionary) -> void:
@@ -1379,7 +1432,10 @@ func _rebuild_crew_list() -> void:
 	var friendly := _get_friendly_crew()
 	for i in range(friendly.size()):
 		var m: Dictionary = friendly[i]
-		var btn := _mk_btn("%s (%d)" % [str(m.name), int(round(float(m.hp)))], func(): _on_crew_clicked(int(m.id)), bool(m.selected))
+		var stars := player_ship.get_crew_mastery_stars(m)
+		var star_tag := (" ★%d" % stars) if stars > 0 else ""
+		var cr_tag := " [K]" if str(m.species) == "crystal" else ""
+		var btn := _mk_btn("%s (%d)%s%s" % [str(m.name), int(round(float(m.hp))), star_tag, cr_tag], func(): _on_crew_clicked(int(m.id)), bool(m.selected))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size.y = 28
 		box.add_child(btn)
@@ -1412,7 +1468,13 @@ func _update_hud_labels() -> void:
 	hud_refs["sh_lbl"].text = "SHIELD %s" % (sh_dots if not sh_dots.is_empty() else "—")
 	hud_refs["res_lbl"].text = "FUEL %d  MSL %d  DRN %d  SCRAP %d" % [player_ship.fuel, player_ship.missiles, player_ship.drone_parts, player_ship.scrap]
 	hud_refs["stat_lbl"].text = "EVADE %d%%  O2 %d%%" % [player_ship.get_evasion(), int(round(player_ship.get_average_oxygen()))]
-	hud_refs["sec_lbl"].text = "SEC %d · %s" % [sector_map.current_sector_index + 1, sector_map.current_sector_name]
+	var haz_tag := ""
+	match battle_view.hazard_kind:
+		"ion_storm": haz_tag = " · ⚡ION STORM (50%)"
+		"asteroid": haz_tag = " · ASTEROID"
+		"sun": haz_tag = " · SOLAR FLARE"
+		"pulsar": haz_tag = " · PULSAR"
+	hud_refs["sec_lbl"].text = "SEC %d · %s%s" % [sector_map.current_sector_index + 1, sector_map.current_sector_name, haz_tag]
 	var bat_tag := (" +%dB" % player_ship.battery_bonus) if player_ship.battery_bonus > 0 else ""
 	hud_refs["react_lbl"].text = "%d / %d%s" % [player_ship.get_available_reactor_power(), player_ship.get_total_reactor_max(), bat_tag]
 	hud_refs["btn_jump"].text = "JUMP (J)" if (not in_combat or player_ship.ftl_charge >= 1.0) else "FTL %d%%" % int(player_ship.ftl_charge * 100.0)
@@ -1560,8 +1622,9 @@ func _on_beacon_jump_requested(bid: int) -> void:
 	if not sector_map.can_jump_to(bid):
 		return
 	if player_ship.fuel <= 0:
-		_banner("연료가 부족합니다! 비상 구조 신호를 켜거나 상점을 이용하세요.")
-		player_ship.fuel = 2
+		_close_modal()
+		_show_out_of_fuel_modal()
+		return
 	player_ship.fuel = maxi(0, player_ship.fuel - 1)
 	if in_combat:
 		player_ship.clear_hacking(enemy_ship)
@@ -1576,6 +1639,8 @@ func _on_beacon_jump_requested(bid: int) -> void:
 	if b.is_empty():
 		return
 	player_ship.on_ftl_jump()
+	player_ship.ion_storm_active = (str(b.hazard) == "ion_storm")
+	player_ship._clamp_reactor_power()
 	audio.play_sfx("jump")
 	battle_view.clear_combat_fx()
 	battle_view.set_backdrop(bid + sector_map.current_sector_index * 31, bool(b.nebula), str(b.hazard))
@@ -1664,6 +1729,8 @@ func _trigger_beacon_encounter(b: Dictionary) -> void:
 func _start_combat(enemy_bp_id: String, intro_text: String) -> void:
 	enemy_ship = FTLShip.new()
 	enemy_ship.init_from_blueprint(db, enemy_bp_id, false, sector_map.current_sector_index)
+	enemy_ship.ion_storm_active = (battle_view.hazard_kind == "ion_storm")
+	enemy_ship._clamp_reactor_power()
 	in_combat = true
 	player_ship.ftl_charge = 0.0
 	hazard_timer = 11.0

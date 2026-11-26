@@ -475,6 +475,12 @@ func _draw_backdrop(vp: Vector2) -> void:
 		var pulse := 0.4 + 0.4 * sin(anim_clock * 3.5)
 		draw_circle(Vector2(690.0, 140.0), 34.0 + pulse * 18.0, Color(0.35, 0.85, 1.0, 0.22))
 		draw_circle(Vector2(690.0, 140.0), 14.0, Color(0.75, 0.96, 1.0, 0.9))
+	elif hazard_kind == "ion_storm":
+		var flash := 0.08 + 0.10 * absf(sin(anim_clock * 5.2))
+		draw_rect(Rect2(Vector2.ZERO, vp), Color(0.22, 0.55, 1.0, flash))
+		for i in range(4):
+			var lx := fmod(float(i * 317 + 120) + anim_clock * 24.0, vp.x)
+			draw_line(Vector2(lx, 70.0), Vector2(lx + sin(anim_clock * 9.0 + i) * 35.0, 220.0), Color(0.55, 0.88, 1.0, 0.35), 2.0)
 
 
 func _draw_enemy_panel() -> void:
@@ -497,6 +503,21 @@ func _draw_enemy_panel() -> void:
 			draw_circle(ENEMY_BOX.position + Vector2(22 + s * 22, 54), 7.5, c)
 		if enemy_ship.zoltan_shield > 0:
 			draw_string(font, ENEMY_BOX.position + Vector2(130, 59), "ZOLTAN %d" % enemy_ship.zoltan_shield, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("7eff8b"))
+		# Sensor Lv3 (outside Nebula): display enemy weapon charge bars!
+		var sens_lvl := 0 if (is_nebula or player_ship == null) else player_ship.get_effective_system_power("sensors")
+		if sens_lvl >= 3 and not enemy_ship.weapons.is_empty():
+			var wx := ENEMY_BOX.position.x + 12.0
+			var wy := ENEMY_BOX.position.y + 68.0
+			for wi in range(mini(4, enemy_ship.weapons.size())):
+				var ew: Dictionary = enemy_ship.weapons[wi]
+				var wr := Rect2(wx + float(wi) * 98.0, wy, 92.0, 8.0)
+				draw_rect(wr, Color(0.15, 0.18, 0.24, 0.9), true)
+				if bool(ew.powered):
+					var ecd := enemy_ship.get_weapon_effective_cooldown(ew)
+					var eratio := clampf(float(ew.charge) / maxf(0.1, ecd), 0.0, 1.0)
+					draw_rect(Rect2(wr.position, Vector2(wr.size.x * eratio, wr.size.y)), Color("ff9e42") if eratio < 1.0 else Color("ff4444"), true)
+		if enemy_ship.fleeing:
+			draw_string(font, ENEMY_BOX.position + Vector2(220, 59), "FTL ESCAPE %d%%" % int(enemy_ship.flee_ftl_charge * 100.0), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("ffd54f"))
 
 
 func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool) -> void:
@@ -534,13 +555,22 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 		var fl_pos := img_rect.position + floor_off
 		draw_texture(floor_tex, fl_pos, Color(1, 1, 1, 0.92))
 
-	# 5. Rooms (deck grid, oxygen tint, room interior PNG, system icons, fire & breach)
-	var show_interior := is_player_side or (player_ship != null and player_ship.get_effective_system_power("sensors") >= 2) or true
+	# 5. Rooms (deck grid, oxygen tint, room interior PNG, system icons, fire & breach, Sensor Fog-of-War)
+	var sens_lvl := 0 if (is_nebula or player_ship == null) else player_ship.get_effective_system_power("sensors")
+	var has_slug := (player_ship != null and player_ship.has_slug_crew())
+	var show_interior := is_player_side or (sens_lvl >= 2)
 	for r in ship.rooms:
 		var rr := ship.get_room_rect_local(r)
+		var room_has_friendly := false
+		if not is_player_side:
+			for bc in ship.crew:
+				if bool(bc.is_player) and float(bc.hp) > 0.0 and int(bc.room_id) == int(r.id):
+					room_has_friendly = true
+					break
+		var room_visible := show_interior or room_has_friendly
 		var o2 := float(r.oxygen)
-		var bg := Color(0.84, 0.82, 0.76, 0.94)
-		if o2 < 50.0:
+		var bg := Color(0.84, 0.82, 0.76, 0.94) if room_visible else Color(0.28, 0.30, 0.34, 0.92)
+		if room_visible and o2 < 50.0:
 			var t := clampf((50.0 - o2) / 50.0, 0.0, 1.0)
 			bg = bg.lerp(Color(0.92, 0.42, 0.48, 0.94), t)
 		draw_rect(rr, bg, true)
@@ -554,7 +584,7 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 			draw_line(Vector2(rr.position.x, ly), Vector2(rr.end.x, ly), Color(0.58, 0.56, 0.52, 0.45), 1.0)
 
 		# Low-O2 diagonal hazard stripes
-		if o2 < 25.0:
+		if room_visible and o2 < 25.0:
 			for s_i in range(0, int(rr.size.x + rr.size.y), 14):
 				var p1 := Vector2(rr.position.x + float(s_i), rr.position.y)
 				var p2 := Vector2(rr.position.x, rr.position.y + float(s_i))
@@ -562,7 +592,7 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 
 		# Real room interior PNG overlay from ftl.dat.vanilla!
 		var sname := str(r.system)
-		if not sname.is_empty() and ship.systems.has(sname) and pkg != null and pkg.is_loaded:
+		if room_visible and not sname.is_empty() and ship.systems.has(sname) and pkg != null and pkg.is_loaded:
 			var simg := str(ship.systems[sname].get("img", ""))
 			if not simg.is_empty():
 				var itex := pkg.load_texture("ship/interior/%s.png" % simg)
@@ -577,10 +607,16 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 			_draw_room_system_icon(ship, ship.systems[sname], rr)
 
 		# Fires & breaches
-		if int(r.fires) > 0:
+		if room_visible and int(r.fires) > 0:
 			_draw_fire_in_room(rr, int(r.fires))
-		if int(r.breach) > 0:
+		if room_visible and int(r.breach) > 0:
 			_draw_breach_in_room(rr)
+
+		# Crystal Lockdown crystalline barrier!
+		if float(r.get("lockdown_timer", 0.0)) > 0.0:
+			var lock_a := 0.24 + 0.14 * absf(sin(anim_clock * 7.0))
+			draw_rect(rr, Color(0.35, 0.88, 1.0, lock_a), true)
+			draw_rect(rr, Color("8cf2ff"), false, 4.0)
 
 		# Hacking drone pod & purple pulse overlay
 		if ship.hacked_room == int(r.id):
@@ -595,11 +631,22 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 	for d in ship.doors:
 		_draw_door(d, ship.get_effective_system_power("doors"))
 
-	# 7. Crew sprites
-	if show_interior:
-		for c in ship.crew:
-			if c.hp > 0.0:
-				_draw_crew_member(c)
+	# 7. Crew sprites (respects Sensor Fog-of-War, Boarder room vision, and Slug Telepathy!)
+	for c in ship.crew:
+		if float(c.hp) <= 0.0:
+			continue
+		var c_vis := show_interior or bool(c.is_player)
+		if not c_vis and not is_player_side:
+			for bc in ship.crew:
+				if bool(bc.is_player) and float(bc.hp) > 0.0 and int(bc.room_id) == int(c.room_id):
+					c_vis = true
+					break
+		if c_vis:
+			_draw_crew_member(c)
+		elif has_slug and not is_player_side:
+			# Authentic Slug Telepathy: purple silhouette pulse even in Nebula / Lv1 Sensors!
+			draw_circle(c.pos as Vector2, 9.0, Color(0.85, 0.42, 1.0, 0.65))
+			draw_arc(c.pos as Vector2, 11.0 + sin(anim_clock * 6.0) * 1.5, 0, TAU, 16, Color("e070ff"), 1.8)
 
 	# 8. Cloak shimmer
 	if ship.cloak_timer > 0.0:

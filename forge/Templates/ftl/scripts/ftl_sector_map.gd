@@ -139,8 +139,11 @@ func _generate_beacons() -> void:
 			btype = "hostile"
 		var is_nebula := (current_sector_kind == "NEBULA" and randf() < 0.55) or (i in [7, 13] and randf() < 0.35)
 		var hazard := ""
-		if btype == "normal" and randf() < 0.14:
-			hazard = ["asteroid", "sun", "pulsar"][randi() % 3]
+		if btype == "normal":
+			if is_nebula and randf() < 0.28:
+				hazard = "ion_storm"
+			elif not is_nebula and randf() < 0.14:
+				hazard = ["asteroid", "sun", "pulsar"][randi() % 3]
 		var ev_id := ""
 		if not event_pool.is_empty():
 			ev_id = event_pool[randi() % event_pool.size()]

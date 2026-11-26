@@ -269,6 +269,36 @@ func _run() -> void:
 	_check(restored.scrap == expected_scrap and restored.systems.has("teleporter") and restored.systems.has("battery") and restored.has_augment("SCRAP_COLLECTOR") and int(restored.systems.shields.level) == int(adv_player.systems.shields.level),
 		"Ship serialize_state/deserialize_state preserves systems, upgrades & augments")
 
+	# 8j. Ion Storm halves base reactor power, Crystal Lockdown blocks movement, Slug telepathy & Flagship Phase 2 Drone Surge
+	var storm_base := restored.get_total_reactor_max()
+	restored.ion_storm_active = true
+	var storm_halved := restored.get_total_reactor_max()
+	restored.ion_storm_active = false
+	_check(storm_halved == int(storm_base / 2), "Ion Storm halves base reactor power", "base=%d storm=%d" % [storm_base, storm_halved])
+
+	var cr_member := restored.add_crew("crystal", int(restored.rooms[0].id), true, "Ruwen")
+	var sl_member := restored.add_crew("slug", int(restored.rooms[0].id), true, "Slocknog")
+	var lock_ok := restored.activate_crystal_lockdown(int(cr_member.id))
+	var start_pos: Vector2 = sl_member.pos
+	restored.command_crew_to_room(sl_member, int(restored.rooms[-1].id))
+	restored.step(0.5, null, false)
+	_check(lock_ok and float(restored.room_by_id[int(restored.rooms[0].id)].lockdown_timer) > 0.0 and sl_member.room_id == int(restored.rooms[0].id) and restored.has_slug_crew(),
+		"Crystal Lockdown blocks room exit & Slug telepathy detected")
+
+	var boss2 := FTLShip.new()
+	boss2.init_from_blueprint(db, "BOSS_2", false, 7)
+	boss2.is_boss = true
+	boss2.boss_phase = 2
+	boss2.boss_surge_timer = 0.1
+	boss2.ai_decision_timer = 0.0
+	boss2.pending_shots.clear()
+	boss2.step(0.5, restored, true)
+	var drone_surge_shots := 0
+	for sh_ev in boss2.pending_shots:
+		if str(sh_ev.weapon.get("id", "")) == "BOSS_DRONE_SURGE":
+			drone_surge_shots += 1
+	_check(drone_surge_shots >= 5, "Rebel Flagship Phase 2 fires 5-shot Drone Power Surge", "shots=%d" % drone_surge_shots)
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())
