@@ -14,8 +14,8 @@ func test() -> void:
 	if FileAccess.file_exists(progress_path):
 		DirAccess.remove_absolute(absolute_progress_path)
 	yard.configure_operations(progress_path)
-	verify(yard.mission_picker.item_count == 5 and yard.mission_picker.get_item_metadata(0) == "","free flight remains the default alongside four missions")
-	verify(yard.operations.missions.size() == 4,"four operation briefs are available")
+	verify(yard.mission_picker.item_count == 6 and yard.mission_picker.get_item_metadata(0) == "","free flight remains the default alongside five missions")
+	verify(yard.operations.missions.size() == 5,"five operation briefs are available")
 	verify(yard.operations.is_unlocked("skirmish") and not yard.operations.is_unlocked("disarm") and not yard.operations.is_unlocked("escort"),"mission chain locks later operations")
 	verify(yard.mission_record.get_global_rect().end.y <= root.get_visible_rect().end.y+1 and yard.depart_button.get_global_rect().end.y <= root.get_visible_rect().end.y+1,"mission selector and launch controls fit the 1240×800 yard")
 	await screenshot("operations_yard")

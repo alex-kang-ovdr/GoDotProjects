@@ -16,6 +16,7 @@ const OUTCOMES := {
 const ACTIONS := {
 	"shot":"발사", "hit":"명중", "destroyed":"부품 파괴", "delivery":"전력 전달",
 	"shield_hit":"방어막 요격", "shield_down":"방어막 붕괴", "intercept":"미사일 요격",
+	"fire_start":"화재 발생", "fire_out":"화재 진압",
 }
 const AIM := {"offline":"동력·인원 대기","out_of_range":"사거리 밖","out_of_arc":"포탑 사각","tracking":"조준 중","ready":"사격 가능"}
 
@@ -125,7 +126,7 @@ func build(host) -> void:
 	row.add_child(lab.label("집중 사격",17,lab.WHITE))
 	row.add_child(lab.button("적 함교",_choose_type.bind("cosmoteer.control_room_small")))
 	row.add_child(lab.button("적 무장",_choose_any.bind(CombatSystems.WEAPON_IDS)))
-	shield_target_button = lab.button("적 방어막",_choose_type.bind(CombatSystems.SHIELD_SMALL))
+	shield_target_button = lab.button("적 방어막",_choose_any.bind(CombatSystems.SHIELD_IDS))
 	row.add_child(shield_target_button)
 	row.add_child(lab.button("적 반응로",_choose_any.bind(CombatSystems.REACTOR_IDS)))
 	row.add_spacer(false)
@@ -236,6 +237,8 @@ func _play_new_sfx() -> void:
 			var part: Dictionary = side_ship.parts.get(int(ev.get("uid", -1)), {})
 			var wkind := str(part.get("stats", {}).get("weapon_kind", "laser"))
 			sfx.play("shot_" + wkind)
+		elif kind == "fire_start":
+			sfx.play("fire_ignite")
 		elif kind in ["shield_hit", "shield_down", "intercept", "destroyed"]:
 			sfx.play(kind)
 	_sfx_event_time = newest
@@ -432,12 +435,14 @@ func _update_flight_readout() -> void:
 		readiness.text = "상대 방위   %s %.0f°" % ["우현" if bearing >= 0 else "좌현",absf(rad_to_deg(bearing))]
 	readiness.text += "\n무장   " + ("파괴됨" if aim_states.is_empty() else " / ".join(aim_states))
 	var pdef: Dictionary = Battle.defense_state(ship)
-	if pdef.shield_count > 0 or pdef.pd_count > 0:
+	if pdef.shield_count > 0 or pdef.pd_count > 0 or pdef.active_fires > 0:
 		var def_parts := PackedStringArray()
 		if pdef.shield_count > 0:
 			def_parts.append("방어막 %d/%d" % [roundi(pdef.shield_hp), roundi(pdef.shield_max_hp)])
 		if pdef.pd_count > 0:
 			def_parts.append("PD 요격 %d" % int(pdef.pd_intercepts))
+		if pdef.active_fires > 0:
+			def_parts.append("화재 %d" % int(pdef.active_fires))
 		readiness.text += "\n" + " · ".join(def_parts)
 	var state: Dictionary = battle.propulsion_state(ship)
 	boost_button.visible = state.boost_count > 0

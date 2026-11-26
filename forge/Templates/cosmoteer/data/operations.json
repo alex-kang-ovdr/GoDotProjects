@@ -44,6 +44,17 @@
       "seconds": 0,
       "ai": "balanced",
       "requires": "escort"
+    },
+    {
+      "id": "dreadnought",
+      "title": "드레드노트 결전",
+      "summary": "이온 빔·레일건·대형 방어막으로 무장한 기함을 격파하세요.",
+      "objective": "duel",
+      "opponent": "dreadnought",
+      "distance": 180,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": "vanguard"
     }
   ]
 }

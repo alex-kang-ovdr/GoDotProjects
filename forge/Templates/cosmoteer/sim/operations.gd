@@ -83,7 +83,7 @@ func _load_catalog() -> void:
 			if not row[key] is String or row[key].strip_edges().is_empty():
 				load_error = "%s: mission %s has an invalid %s" % [CATALOG_PATH, row.id, key]
 				return
-		if row.objective not in ["duel", "disarm", "survive"] or row.opponent not in ["flight", "fast", "siege", "vanguard"] or row.ai not in ["balanced", "pursuit", "standoff"]:
+		if row.objective not in ["duel", "disarm", "survive"] or row.opponent not in ["flight", "fast", "siege", "vanguard", "dreadnought"] or row.ai not in ["balanced", "pursuit", "standoff"]:
 			load_error = "%s: mission %s has an unsupported objective, opponent, or AI" % [CATALOG_PATH, row.id]
 			return
 		if not (row.distance is int or row.distance is float) or not is_finite(float(row.distance)) or float(row.distance) <= 0:

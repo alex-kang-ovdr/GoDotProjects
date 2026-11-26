@@ -71,6 +71,9 @@ func _draw() -> void:
 	_draw_ship(battle.enemy, _camera_center, _zoom, viewport_center, int(battle.target_uid), false)
 	_draw_shields(battle.player, _camera_center, _zoom, viewport_center, Color("#5ce1ff"))
 	_draw_shields(battle.enemy, _camera_center, _zoom, viewport_center, Color("#ff9e7d"))
+	_draw_fires(battle.player, _camera_center, _zoom, viewport_center)
+	_draw_fires(battle.enemy, _camera_center, _zoom, viewport_center)
+	_draw_ion_beams(_camera_center, _zoom, viewport_center)
 	_draw_pd_beams(_camera_center, _zoom, viewport_center)
 	_draw_projectiles(_camera_center, _zoom, viewport_center)
 	_draw_effects(_camera_center, _zoom, viewport_center)
@@ -264,21 +267,45 @@ func _draw_thruster_plumes(ship: Dictionary, camera: Vector2, zoom: float, viewp
 
 
 func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2, tint: Color) -> void:
-	for uid in ship.get("ids", {}).get("cosmoteer.shield_gen_small", []):
-		var part: Dictionary = ship.parts[uid]
-		if float(part.get("hp", 0.0)) <= 0.0 or not part.get("shield_active", false):
+	for sid in ["cosmoteer.shield_gen_small", "cosmoteer.shield_gen_large"]:
+		for uid in ship.get("ids", {}).get(sid, []):
+			var part: Dictionary = ship.parts[uid]
+			if float(part.get("hp", 0.0)) <= 0.0 or not part.get("shield_active", false):
+				continue
+			var max_hp := maxf(1.0, float(part.get("shield_max_hp", 6000.0)))
+			var ratio := clampf(float(part.get("shield_hp", 0.0)) / max_hp, 0.0, 1.0)
+			var local_mount: Vector2 = part.get("mount_local", Vector2(part.cell) + Vector2(part.size) * 0.5)
+			var center := _world_to_screen(_grid_world(ship, local_mount), camera, zoom, viewport_center)
+			var radius := maxf(6.0, float(part.get("shield_radius", 7.5)) * zoom)
+			var facing := float(ship.heading) + float(part.get("rest_angle", 0.0))
+			var half_arc := float(part.get("shield_arc_rad", deg_to_rad(110.0))) * 0.5
+			var flash := clampf(float(part.get("shield_flash", 0.0)), 0.0, 1.0)
+			var glow := tint.lerp(Color.WHITE, flash * 0.7)
+			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, 0.18 + 0.28 * ratio + 0.25 * flash), maxf(4.0, zoom * 0.85), true)
+			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, 0.55 + 0.4 * ratio), maxf(1.8, zoom * 0.26), true)
+
+
+func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	for beam in battle.get("ion_beams"):
+		var a := _world_to_screen(beam.from, camera, zoom, viewport_center)
+		var b := _world_to_screen(beam.to, camera, zoom, viewport_center)
+		var outer := Color("#ff47a3") if beam.side == "player" else Color("#ff5b5b")
+		draw_line(a, b, Color(outer, 0.35), maxf(6.0, zoom * 1.1), true)
+		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.6, zoom * 0.42), true)
+		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16), true)
+		if beam.hit_kind != "miss":
+			draw_circle(b, maxf(3.5, zoom * 0.45), Color("#ffd6ef", 0.9))
+
+
+func _draw_fires(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	for part in ship.parts.values():
+		var f := float(part.get("fire", 0.0))
+		if f <= 0.05 or float(part.get("hp", 0.0)) <= 0.0:
 			continue
-		var max_hp := maxf(1.0, float(part.get("shield_max_hp", 6000.0)))
-		var ratio := clampf(float(part.get("shield_hp", 0.0)) / max_hp, 0.0, 1.0)
-		var local_mount: Vector2 = part.get("mount_local", Vector2(part.cell) + Vector2(part.size) * 0.5)
-		var center := _world_to_screen(_grid_world(ship, local_mount), camera, zoom, viewport_center)
-		var radius := maxf(6.0, float(part.get("shield_radius", 7.5)) * zoom)
-		var facing := float(ship.heading) + float(part.get("rest_angle", 0.0))
-		var half_arc := float(part.get("shield_arc_rad", deg_to_rad(110.0))) * 0.5
-		var flash := clampf(float(part.get("shield_flash", 0.0)), 0.0, 1.0)
-		var glow := tint.lerp(Color.WHITE, flash * 0.7)
-		draw_arc(center, radius, facing - half_arc, facing + half_arc, 28, Color(glow, 0.18 + 0.28 * ratio + 0.25 * flash), maxf(4.0, zoom * 0.75), true)
-		draw_arc(center, radius, facing - half_arc, facing + half_arc, 28, Color(glow, 0.55 + 0.4 * ratio), maxf(1.8, zoom * 0.24), true)
+		var center := _world_to_screen(_part_world(ship, int(part.uid)), camera, zoom, viewport_center)
+		var r := maxf(3.0, minf(part.size.x, part.size.y) * zoom * (0.28 + 0.18 * f))
+		draw_circle(center, r, Color("#ff6a2b", 0.55 * f))
+		draw_circle(center, r * 0.5, Color("#ffe066", 0.85 * f))
 
 
 func _draw_pd_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -308,6 +335,14 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 		elif kind == "cannon":
 			draw_line(a, tip, Color(AMBER, 0.6), maxf(3.5, zoom * 0.5), true)
 			draw_circle(tip, maxf(2.8, zoom * 0.28), AMBER)
+		elif kind == "railgun":
+			var back_r: Vector2 = tip - Vector2(bolt.velocity).normalized() * maxf(14.0, zoom * 2.8)
+			draw_line(back_r, tip, Color("#4dc8ff", 0.55), maxf(5.0, zoom * 0.85), true)
+			draw_line(back_r.lerp(tip, 0.2), tip, Color("#d4f7ff"), maxf(2.4, zoom * 0.32), true)
+			draw_circle(tip, maxf(2.8, zoom * 0.3), Color.WHITE)
+		elif kind == "disruptor":
+			draw_line(a, tip, Color("#c382ff", 0.65), maxf(3.8, zoom * 0.65), true)
+			draw_circle(tip, maxf(2.6, zoom * 0.26), Color("#f2d9ff"))
 		elif kind == "heavy_laser":
 			var heavy := Color("#66f2ff") if bolt.side == "player" else Color("#ff6e6e")
 			draw_line(a, tip, Color(heavy, 0.55), maxf(4.8, zoom * 0.82), true)
@@ -522,8 +557,16 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 
 
 func _part_color(id: String) -> Color:
-	if id == "cosmoteer.shield_gen_small":
+	if id == "cosmoteer.shield_gen_small" or id == "cosmoteer.shield_gen_large":
 		return Color("#5ce1ff")
+	if id == "cosmoteer.ion_beam_emitter":
+		return Color("#ff5ea8")
+	if id.contains("railgun"):
+		return Color("#4dc8ff")
+	if id == "cosmoteer.disruptor":
+		return Color("#c382ff")
+	if id == "cosmoteer.fire_extinguisher":
+		return Color("#ff6b57")
 	if id == "cosmoteer.missile_launcher":
 		return Color("#ff8a5c")
 	if id == "cosmoteer.point_defense":

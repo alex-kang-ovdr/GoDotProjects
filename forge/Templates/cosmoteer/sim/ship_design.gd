@@ -350,3 +350,35 @@ func shield_missile_cruiser() -> void:
 	place(CORRIDOR, Vector2i(10, 5))
 	for x in range(7, 13):
 		place(CORRIDOR, Vector2i(x, 6))
+
+
+func dreadnought_battleship() -> void:
+	_clear_layout()
+	place(CombatSystems.BUNK_MED, Vector2i(0, 3))
+	place(CombatSystems.BUNK_MED, Vector2i(0, 6))
+	place(CombatSystems.REACTOR_LARGE, Vector2i(3, 3))
+	place("cosmoteer.control_room_small", Vector2i(7, 3))
+	place(CombatSystems.FIRE_EXTINGUISHER, Vector2i(7, 5))
+	place(CombatSystems.SHIELD_LARGE, Vector2i(10, 3), 1)
+	place(CombatSystems.ION_BEAM, Vector2i(11, 0), 1)
+	place(CombatSystems.DISRUPTOR, Vector2i(7, 1), 1)
+	place(CombatSystems.RAILGUN_ACCEL, Vector2i(8, 8), 1)
+	place(CombatSystems.RAILGUN_LAUNCHER, Vector2i(11, 8), 1)
+	place(CombatSystems.POINT_DEFENSE, Vector2i(13, 6), 1)
+	place("cosmoteer.armor", Vector2i(15, 6))
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 8))
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 8))
+	for y in range(2, 8):
+		place(CORRIDOR, Vector2i(2, y))
+		place(CORRIDOR, Vector2i(9, y))
+	for x in range(3, 14):
+		if x != 9:
+			place(CORRIDOR, Vector2i(x, 2))
+	for x in range(3, 15):
+		if x != 9:
+			place(CORRIDOR, Vector2i(x, 7))
+	place(CORRIDOR, Vector2i(8, 5))
+	place(CORRIDOR, Vector2i(7, 6))
+	place(CORRIDOR, Vector2i(8, 6))

@@ -1,24 +1,39 @@
 extends RefCounted
 
 ## Combat expansion definitions & simulation helpers for PlayForge Cosmoteer:
-## Heavy Laser, Medium Cannon, Homing Missile Launcher, Small Shield Generator,
-## Point Defense Turret, Medium Reactor, Medium Crew Quarters, and 2x1 Armor.
+## Heavy Laser, Medium Cannon, Homing Missile Launcher, Disruptor, Ion Beam Emitter,
+## Modular Railgun (Launcher + Accelerator + Loader), Small & Large Shield Generators,
+## Point Defense Turret, Medium & Large Reactors, Medium Crew Quarters, 2x1 Armor,
+## and Fire / Extinguisher simulation.
+
+const Flight := preload("res://sim/flight_dynamics.gd")
 
 const LASER_SMALL := "cosmoteer.laser_blaster_small"
 const LASER_LARGE := "cosmoteer.laser_blaster_large"
 const CANNON_MED := "cosmoteer.cannon_med"
 const MISSILE_LAUNCHER := "cosmoteer.missile_launcher"
+const DISRUPTOR := "cosmoteer.disruptor"
+const ION_BEAM := "cosmoteer.ion_beam_emitter"
+const RAILGUN_LAUNCHER := "cosmoteer.railgun_launcher"
+const RAILGUN_ACCEL := "cosmoteer.railgun_accelerator"
+const RAILGUN_LOADER := "cosmoteer.railgun_loader"
 const SHIELD_SMALL := "cosmoteer.shield_gen_small"
+const SHIELD_LARGE := "cosmoteer.shield_gen_large"
 const POINT_DEFENSE := "cosmoteer.point_defense"
 const REACTOR_SMALL := "cosmoteer.reactor_small"
 const REACTOR_MED := "cosmoteer.reactor_med"
+const REACTOR_LARGE := "cosmoteer.reactor_large"
 const BUNK_SMALL := "cosmoteer.crew_quarters_small"
 const BUNK_MED := "cosmoteer.crew_quarters_med"
 const ARMOR_2X1 := "cosmoteer.armor_2x1"
+const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
 
-const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER]
-const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED]
+const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER]
+const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER]
+const SHIELD_IDS := [SHIELD_SMALL, SHIELD_LARGE]
+const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
 const BUNK_IDS := [BUNK_SMALL, BUNK_MED]
+const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
 
 const EXTRA_STATS := {
 	LASER_LARGE: {
@@ -64,6 +79,7 @@ const EXTRA_STATS := {
 		"homing": true,
 		"turn_rate_deg": 120.0,
 		"missile_hp": 240.0,
+		"ignite_intensity": 0.55,
 		"battery_capacity": 6000,
 		"crew_required": 2,
 		"resupply_threshold": 700,
@@ -81,6 +97,75 @@ const EXTRA_STATS := {
 		"rotate_speed_deg": 180.0,
 		"fire_threshold_deg": 180.0,
 	},
+	DISRUPTOR: {
+		"weapon_kind": "disruptor",
+		"shield_damage_mult": 3.0,
+		"shield_energy_drain": 450,
+		"battery_capacity": 4000,
+		"crew_required": 1,
+		"resupply_threshold": 400,
+		"fire_interval": 0.95,
+		"fire_delay": 0.30,
+		"battery_per_shot": 300,
+		"min_resources_used": 150,
+		"projectile_speed": 360.0,
+		"range": 270.0,
+		"damage": 450.0,
+		"structural_damage": 200.0,
+		"turret_location": [0.5, 0.6],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 180.0,
+		"rotate_speed_deg": 95.0,
+		"fire_threshold_deg": 2.0,
+	},
+	ION_BEAM: {
+		"weapon_kind": "ion",
+		"beam_weapon": true,
+		"beam_dps": 2400.0,
+		"beam_structural_dps": 1400.0,
+		"beam_power_per_sec": 750.0,
+		"ignite_intensity": 0.45,
+		"battery_capacity": 8000,
+		"crew_required": 2,
+		"resupply_threshold": 1000,
+		"min_resources_used": 100,
+		"projectile_speed": 100000.0,
+		"range": 310.0,
+		"turret_location": [1.0, 0.5],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 45.0,
+		"rotate_speed_deg": 60.0,
+		"fire_threshold_deg": 12.0,
+	},
+	RAILGUN_LAUNCHER: {
+		"weapon_kind": "railgun",
+		"pierce": 1,
+		"ignite_intensity": 0.65,
+		"battery_capacity": 6000,
+		"crew_required": 2,
+		"resupply_threshold": 800,
+		"fire_interval": 2.8,
+		"fire_delay": 0.45,
+		"battery_per_shot": 900,
+		"min_resources_used": 450,
+		"projectile_speed": 720.0,
+		"range": 420.0,
+		"damage": 2400.0,
+		"structural_damage": 2000.0,
+		"turret_location": [1.0, 0.5],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 32.0,
+		"rotate_speed_deg": 40.0,
+		"fire_threshold_deg": 8.0,
+	},
+	RAILGUN_ACCEL: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 500,
+	},
+	RAILGUN_LOADER: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 500,
+	},
 	SHIELD_SMALL: {
 		"battery_capacity": 6000,
 		"resupply_threshold": 1000,
@@ -93,6 +178,20 @@ const EXTRA_STATS := {
 		"drain_quantity": 120,
 		"reboot_delay": 2.5,
 		"turret_location": [1.0, 0.5],
+		"turret_rotation_deg": -90.0,
+	},
+	SHIELD_LARGE: {
+		"battery_capacity": 12000,
+		"resupply_threshold": 1500,
+		"shield_max_hp": 18000.0,
+		"shield_radius": 13.5,
+		"shield_arc_deg": 160.0,
+		"power_per_hp": 0.5,
+		"recharge_rate": 1600.0,
+		"drain_interval": 1.0,
+		"drain_quantity": 240,
+		"reboot_delay": 3.5,
+		"turret_location": [1.5, 0.8],
 		"turret_rotation_deg": -90.0,
 	},
 	POINT_DEFENSE: {
@@ -113,8 +212,17 @@ const EXTRA_STATS := {
 		"production_quantity": 2000,
 		"production_interval": 0.6666666666666666,
 	},
+	REACTOR_LARGE: {
+		"battery_capacity": 24000,
+		"pickup_quantity": 1000,
+		"production_quantity": 3000,
+		"production_interval": 0.6666666666666666,
+	},
 	BUNK_MED: {
 		"crew_capacity": 6,
+	},
+	FIRE_EXTINGUISHER: {
+		"extinguish_rate": 0.42,
 	},
 }
 
@@ -138,6 +246,10 @@ static func is_weapon(id: String) -> bool:
 	return id in WEAPON_IDS
 
 
+static func is_shield(id: String) -> bool:
+	return id in SHIELD_IDS
+
+
 static func is_reactor(id: String) -> bool:
 	return id in REACTOR_IDS
 
@@ -147,11 +259,17 @@ static func is_bunk(id: String) -> bool:
 
 
 static func is_walkable_expansion(id: String) -> bool:
-	return id in [LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, SHIELD_SMALL, POINT_DEFENSE, REACTOR_MED, BUNK_MED]
+	return id in [
+		LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM,
+		RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER,
+		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
+		REACTOR_MED, REACTOR_LARGE, BUNK_MED, FIRE_EXTINGUISHER,
+	]
 
 
 static func prepare_part(part: Dictionary) -> void:
-	if part.id == SHIELD_SMALL:
+	part["fire"] = 0.0
+	if is_shield(part.id):
 		part["shield_max_hp"] = float(part.stats.get("shield_max_hp", 6000.0))
 		part["shield_hp"] = 0.0
 		part["shield_active"] = false
@@ -162,54 +280,117 @@ static func prepare_part(part: Dictionary) -> void:
 	elif part.id == POINT_DEFENSE:
 		part["pd_cooldown"] = 0.0
 		part["pd_intercepts"] = 0
+	elif part.id == RAILGUN_LAUNCHER:
+		part["rail_accel_count"] = 0
+		part["rail_has_loader"] = false
+		part["rail_damage_mult"] = 1.0
+		part["rail_range_mult"] = 1.0
+		part["rail_speed_mult"] = 1.0
+		part["rail_reload_mult"] = 1.0
+	elif part.id == ION_BEAM:
+		part["ion_active"] = false
+		part["ion_power_accum"] = 0.0
+
+
+## Scan modular railgun chains: flush accelerators & loader directly behind each railgun_launcher.
+static func refresh_railguns(ship: Dictionary) -> void:
+	for uid in ship.ids.get(RAILGUN_LAUNCHER, []):
+		var launcher: Dictionary = ship.parts[uid]
+		var accel := 0
+		var has_loader := false
+		if launcher.hp > 0.0:
+			var rot: int = int(launcher.rotation)
+			var back_dir := Vector2i.DOWN
+			match rot:
+				0: back_dir = Vector2i.DOWN
+				1: back_dir = Vector2i.LEFT
+				2: back_dir = Vector2i.UP
+				3: back_dir = Vector2i.RIGHT
+			var cur: Dictionary = launcher
+			var visited := {uid: true}
+			for _depth in 8:
+				var probe_cell: Vector2i = cur.cell
+				if back_dir == Vector2i.DOWN:
+					probe_cell = Vector2i(cur.cell.x, cur.cell.y + cur.size.y)
+				elif back_dir == Vector2i.UP:
+					probe_cell = Vector2i(cur.cell.x, cur.cell.y - 1)
+				elif back_dir == Vector2i.LEFT:
+					probe_cell = Vector2i(cur.cell.x - 1, cur.cell.y)
+				elif back_dir == Vector2i.RIGHT:
+					probe_cell = Vector2i(cur.cell.x + cur.size.x, cur.cell.y)
+				var next_uid: int = int(ship.cells.get(probe_cell, -1))
+				if next_uid < 0 or visited.has(next_uid) or not ship.parts.has(next_uid):
+					break
+				var next_part: Dictionary = ship.parts[next_uid]
+				if next_part.hp <= 0.0 or int(next_part.rotation) != rot:
+					break
+				# Must be flush-aligned along perpendicular axis
+				var aligned: bool = (next_part.cell.x == cur.cell.x) if (rot % 2 == 0) else (next_part.cell.y == cur.cell.y)
+				if not aligned:
+					break
+				visited[next_uid] = true
+				if next_part.id == RAILGUN_ACCEL:
+					accel += 1
+					cur = next_part
+				elif next_part.id == RAILGUN_LOADER:
+					has_loader = true
+					break
+				else:
+					break
+		launcher.rail_accel_count = accel
+		launcher.rail_has_loader = has_loader
+		launcher.rail_damage_mult = 1.0 + 0.25 * float(accel)
+		launcher.rail_range_mult = 1.0 + 0.20 * float(accel)
+		launcher.rail_speed_mult = 1.0 + 0.20 * float(accel)
+		launcher.rail_reload_mult = 0.72 if has_loader else 1.0
 
 
 static func activate_initial_shields(ship: Dictionary) -> void:
-	for uid in ship.ids.get(SHIELD_SMALL, []):
-		var part: Dictionary = ship.parts[uid]
-		if part.hp > 0 and part.energy > 0:
-			var max_hp: float = part.shield_max_hp
-			var energy_ratio := clampf(float(part.energy) / maxf(1.0, float(part.capacity)), 0.0, 1.0)
-			part.shield_hp = max_hp * maxf(0.5, energy_ratio)
-			part.shield_active = part.shield_hp > 0.0
-			part.shield_reboot = 0.0
+	for sid in SHIELD_IDS:
+		for uid in ship.ids.get(sid, []):
+			var part: Dictionary = ship.parts[uid]
+			if part.hp > 0 and part.energy > 0:
+				var max_hp: float = part.shield_max_hp
+				var energy_ratio := clampf(float(part.energy) / maxf(1.0, float(part.capacity)), 0.0, 1.0)
+				part.shield_hp = max_hp * maxf(0.5, energy_ratio)
+				part.shield_active = part.shield_hp > 0.0
+				part.shield_reboot = 0.0
 
 
 static func tick_shields(ship: Dictionary, dt: float) -> void:
-	for uid in ship.ids.get(SHIELD_SMALL, []):
-		var part: Dictionary = ship.parts[uid]
-		if part.shield_flash > 0.0:
-			part.shield_flash = maxf(0.0, part.shield_flash - dt * 3.5)
-		if part.hp <= 0.0 or not ship.command:
-			part.shield_active = false
-			part.shield_hp = 0.0
-			continue
-		if part.shield_reboot > 0.0:
-			part.shield_reboot = maxf(0.0, part.shield_reboot - dt)
-			part.shield_active = false
-			continue
-		if part.energy <= 0:
-			if part.shield_hp <= 0.0:
+	for sid in SHIELD_IDS:
+		for uid in ship.ids.get(sid, []):
+			var part: Dictionary = ship.parts[uid]
+			if part.shield_flash > 0.0:
+				part.shield_flash = maxf(0.0, part.shield_flash - dt * 3.5)
+			if part.hp <= 0.0 or not ship.command:
 				part.shield_active = false
-			continue
-		# Idle upkeep drain
-		part.clock += 1
-		var drain_ticks := maxi(1, roundi(float(part.stats.get("drain_interval", 1.0)) * 60.0))
-		if part.clock >= drain_ticks:
-			part.clock = 0
-			var drain_qty := int(part.stats.get("drain_quantity", 120))
-			part.energy = maxi(0, part.energy - drain_qty)
-		# Recharge shield HP from internal battery
-		if part.shield_hp < part.shield_max_hp and part.energy > 0:
-			var rate := float(part.stats.get("recharge_rate", 900.0))
-			var power_per_hp := float(part.stats.get("power_per_hp", 0.5))
-			var needed := minf(rate * dt, part.shield_max_hp - part.shield_hp)
-			var affordable := float(part.energy) / maxf(0.01, power_per_hp)
-			var restored := minf(needed, affordable)
-			if restored > 0.0:
-				part.shield_hp = minf(part.shield_max_hp, part.shield_hp + restored)
-				part.energy = maxi(0, part.energy - roundi(restored * power_per_hp))
-		part.shield_active = part.shield_hp > 0.0
+				part.shield_hp = 0.0
+				continue
+			if part.shield_reboot > 0.0:
+				part.shield_reboot = maxf(0.0, part.shield_reboot - dt)
+				part.shield_active = false
+				continue
+			if part.energy <= 0:
+				if part.shield_hp <= 0.0:
+					part.shield_active = false
+				continue
+			part.clock += 1
+			var drain_ticks := maxi(1, roundi(float(part.stats.get("drain_interval", 1.0)) * 60.0))
+			if part.clock >= drain_ticks:
+				part.clock = 0
+				var drain_qty := int(part.stats.get("drain_quantity", 120))
+				part.energy = maxi(0, part.energy - drain_qty)
+			if part.shield_hp < part.shield_max_hp and part.energy > 0:
+				var rate := float(part.stats.get("recharge_rate", 900.0))
+				var power_per_hp := float(part.stats.get("power_per_hp", 0.5))
+				var needed := minf(rate * dt, part.shield_max_hp - part.shield_hp)
+				var affordable := float(part.energy) / maxf(0.01, power_per_hp)
+				var restored := minf(needed, affordable)
+				if restored > 0.0:
+					part.shield_hp = minf(part.shield_max_hp, part.shield_hp + restored)
+					part.energy = maxi(0, part.energy - roundi(restored * power_per_hp))
+			part.shield_active = part.shield_hp > 0.0
 
 
 static func shield_world_center(ship: Dictionary, part: Dictionary) -> Vector2:
@@ -221,46 +402,46 @@ static func shield_world_facing(ship: Dictionary, part: Dictionary) -> float:
 	return float(ship.heading) + float(part.get("rest_angle", 0.0))
 
 
-## Check if projectile segment [a, b] crosses an active shield arc on victim.
-## Returns {} or {"uid": shield_uid, "pos": world_hit_pos}.
 static func intercept_shield(victim: Dictionary, a: Vector2, b: Vector2) -> Dictionary:
 	var best := {}
 	var best_t := INF
 	var seg := b - a
 	var seg_len_sq := seg.length_squared()
-	for uid in victim.ids.get(SHIELD_SMALL, []):
-		var part: Dictionary = victim.parts[uid]
-		if part.hp <= 0.0 or not part.get("shield_active", false) or part.get("shield_hp", 0.0) <= 0.0:
-			continue
-		var center := shield_world_center(victim, part)
-		var r: float = part.shield_radius
-		var half_arc: float = part.shield_arc_rad * 0.5
-		var facing := shield_world_facing(victim, part)
-		var f := a - center
-		# Solve |f + t*seg|^2 = r^2
-		if seg_len_sq <= 1e-9:
-			continue
-		var qa := seg_len_sq
-		var qb := 2.0 * f.dot(seg)
-		var qc := f.length_squared() - r * r
-		var disc := qb * qb - 4.0 * qa * qc
-		if disc < 0.0:
-			continue
-		var sqrt_d := sqrt(disc)
-		for t_cand_raw in [(-qb - sqrt_d) / (2.0 * qa), (-qb + sqrt_d) / (2.0 * qa)]:
-			var t_cand: float = float(t_cand_raw)
-			if t_cand < 0.0 or t_cand > 1.0 or t_cand >= best_t:
+	if seg_len_sq <= 1e-9:
+		return best
+	for sid in SHIELD_IDS:
+		for uid in victim.ids.get(sid, []):
+			var part: Dictionary = victim.parts[uid]
+			if part.hp <= 0.0 or not part.get("shield_active", false) or part.get("shield_hp", 0.0) <= 0.0:
 				continue
-			var hit_pos: Vector2 = a + seg * t_cand
-			var angle_to_hit: float = (hit_pos - center).angle()
-			if absf(wrapf(angle_to_hit - facing, -PI, PI)) <= half_arc:
-				best_t = t_cand
-				best = {"uid": uid, "pos": hit_pos}
+			var center := shield_world_center(victim, part)
+			var r: float = part.shield_radius
+			var half_arc: float = part.shield_arc_rad * 0.5
+			var facing := shield_world_facing(victim, part)
+			var f := a - center
+			var qa := seg_len_sq
+			var qb := 2.0 * f.dot(seg)
+			var qc := f.length_squared() - r * r
+			var disc := qb * qb - 4.0 * qa * qc
+			if disc < 0.0:
+				continue
+			var sqrt_d := sqrt(disc)
+			for t_cand_raw in [(-qb - sqrt_d) / (2.0 * qa), (-qb + sqrt_d) / (2.0 * qa)]:
+				var t_cand: float = float(t_cand_raw)
+				if t_cand < 0.0 or t_cand > 1.0 or t_cand >= best_t:
+					continue
+				var hit_pos: Vector2 = a + seg * t_cand
+				var angle_to_hit: float = (hit_pos - center).angle()
+				if absf(wrapf(angle_to_hit - facing, -PI, PI)) <= half_arc:
+					best_t = t_cand
+					best = {"uid": uid, "pos": hit_pos}
 	return best
 
 
-static func apply_shield_damage(part: Dictionary, dmg: float) -> bool:
+static func apply_shield_damage(part: Dictionary, dmg: float, energy_drain: int = 0) -> bool:
 	part.shield_hp = maxf(0.0, float(part.shield_hp) - dmg)
+	if energy_drain > 0:
+		part.energy = maxi(0, int(part.energy) - energy_drain)
 	part.shield_flash = 1.0
 	if part.shield_hp <= 0.0:
 		part.shield_active = false
@@ -269,8 +450,99 @@ static func apply_shield_damage(part: Dictionary, dmg: float) -> bool:
 	return false
 
 
-## Tick Point Defense turrets on `ship`, shooting down enemy homing missiles.
-## Returns array of {"from": Vector2, "to": Vector2, "side": String, "destroyed_index": int, "pd_uid": int}.
+## Continuous Ion Beam trace & DPS application.
+## Returns array of beam hit records:
+## {"from", "to", "side", "source_uid", "hit_kind": "shield"|"hull"|"miss", "hit_uid", "collapsed": bool, "destroyed": bool, "ignited": bool}
+static func tick_ion_beams(ship: Dictionary, other: Dictionary, side: String, target: int, dt: float) -> Array[Dictionary]:
+	var beams: Array[Dictionary] = []
+	for uid in ship.ids.get(ION_BEAM, []):
+		var emitter: Dictionary = ship.parts[uid]
+		emitter.ion_active = false
+		var need_crew := int(emitter.stats.get("crew_required", 2))
+		if emitter.hp <= 0.0 or emitter.staffed < need_crew or not ship.command or emitter.energy < int(emitter.stats.get("min_resources_used", 100)) or target < 0 or not other.parts.has(target) or other.parts[target].hp <= 0.0:
+			emitter.aim_status = "offline"
+			continue
+		if not Flight.aim(ship, other, emitter, target, dt):
+			continue
+		emitter.ion_active = true
+		var power_cost := float(emitter.stats.get("beam_power_per_sec", 750.0)) * dt + float(emitter.ion_power_accum)
+		var spend := mini(int(emitter.energy), int(floor(power_cost)))
+		emitter.ion_power_accum = power_cost - float(spend)
+		emitter.energy -= spend
+		var muzzle := shield_world_center(ship, emitter)
+		var dir := Vector2.from_angle(float(ship.heading) + float(emitter.turret_angle_local))
+		var beam_range := float(emitter.stats.get("range", 310.0))
+		var far_end := muzzle + dir * beam_range
+		var shield_hit := intercept_shield(other, muzzle, far_end)
+		if not shield_hit.is_empty():
+			var suid: int = int(shield_hit.uid)
+			var collapsed := apply_shield_damage(other.parts[suid], float(emitter.stats.get("beam_dps", 2400.0)) * dt)
+			beams.append({
+				"from": muzzle, "to": Vector2(shield_hit.pos), "side": side,
+				"source_uid": uid, "hit_kind": "shield", "hit_uid": suid,
+				"collapsed": collapsed, "destroyed": false, "ignited": false,
+			})
+			continue
+		var hull_hit := Flight.trace(other, muzzle, far_end)
+		if not hull_hit.is_empty():
+			var huid: int = int(hull_hit.uid)
+			var part: Dictionary = other.parts[huid]
+			var dps := float(emitter.stats.get("beam_structural_dps", 1400.0)) if part.health_type == "Structural" else float(emitter.stats.get("beam_dps", 2400.0))
+			var was_alive: bool = part.hp > 0.0
+			part.hp = maxf(0.0, float(part.hp) - dps * dt)
+			var ignited := ignite_part(part, float(emitter.stats.get("ignite_intensity", 0.45)) * dt * 2.2)
+			beams.append({
+				"from": muzzle, "to": Vector2(hull_hit.pos), "side": side,
+				"source_uid": uid, "hit_kind": "hull", "hit_uid": huid,
+				"collapsed": false, "destroyed": was_alive and part.hp <= 0.0, "ignited": ignited,
+			})
+		else:
+			beams.append({
+				"from": muzzle, "to": far_end, "side": side,
+				"source_uid": uid, "hit_kind": "miss", "hit_uid": -1,
+				"collapsed": false, "destroyed": false, "ignited": false,
+			})
+	return beams
+
+
+static func ignite_part(part: Dictionary, add_intensity: float) -> bool:
+	if part.hp <= 0.0 or part.health_type == "Structural" or add_intensity <= 0.0:
+		return false
+	var was_burning: bool = float(part.get("fire", 0.0)) > 0.05
+	part["fire"] = clampf(float(part.get("fire", 0.0)) + add_intensity, 0.0, 1.0)
+	return (not was_burning) and float(part["fire"]) > 0.05
+
+
+## Tick active ship fires and automatic fire-extinguisher suppression.
+## Returns {"extinguished": Array[int], "destroyed": Array[int]}.
+static func tick_fires(ship: Dictionary, dt: float) -> Dictionary:
+	var extinguished: Array[int] = []
+	var destroyed: Array[int] = []
+	var suppress_rate := 0.06
+	for uid in ship.ids.get(FIRE_EXTINGUISHER, []):
+		var ext: Dictionary = ship.parts[uid]
+		if ext.hp > 0.0:
+			suppress_rate += float(ext.stats.get("extinguish_rate", 0.42))
+	for uid in ship.parts:
+		var part: Dictionary = ship.parts[uid]
+		var f: float = float(part.get("fire", 0.0))
+		if f <= 0.0:
+			continue
+		if part.hp <= 0.0:
+			part.fire = 0.0
+			continue
+		part.hp = maxf(0.0, float(part.hp) - 160.0 * f * dt)
+		if part.hp <= 0.0:
+			part.fire = 0.0
+			destroyed.append(int(uid))
+			continue
+		var next_f := maxf(0.0, f - suppress_rate * dt)
+		part.fire = next_f
+		if next_f <= 0.0:
+			extinguished.append(int(uid))
+	return {"extinguished": extinguished, "destroyed": destroyed}
+
+
 static func tick_point_defense(ship: Dictionary, side: String, projectiles: Array[Dictionary], dt: float) -> Array[Dictionary]:
 	var shots: Array[Dictionary] = []
 	var pd_uids: Array = ship.ids.get(POINT_DEFENSE, [])
@@ -330,15 +602,16 @@ static func shield_summary(ship: Dictionary) -> Dictionary:
 	var active := 0
 	var hp := 0.0
 	var max_hp := 0.0
-	for uid in ship.ids.get(SHIELD_SMALL, []):
-		var p: Dictionary = ship.parts[uid]
-		if p.hp <= 0.0:
-			continue
-		total += 1
-		max_hp += float(p.get("shield_max_hp", 0.0))
-		if p.get("shield_active", false):
-			active += 1
-			hp += float(p.get("shield_hp", 0.0))
+	for sid in SHIELD_IDS:
+		for uid in ship.ids.get(sid, []):
+			var p: Dictionary = ship.parts[uid]
+			if p.hp <= 0.0:
+				continue
+			total += 1
+			max_hp += float(p.get("shield_max_hp", 0.0))
+			if p.get("shield_active", false):
+				active += 1
+				hp += float(p.get("shield_hp", 0.0))
 	var pd_total := 0
 	var pd_intercepts := 0
 	for uid in ship.ids.get(POINT_DEFENSE, []):
@@ -346,6 +619,10 @@ static func shield_summary(ship: Dictionary) -> Dictionary:
 		if p.hp > 0.0:
 			pd_total += 1
 		pd_intercepts += int(p.get("pd_intercepts", 0))
+	var fires := 0
+	for p in ship.parts.values():
+		if float(p.get("fire", 0.0)) > 0.05 and p.hp > 0.0:
+			fires += 1
 	return {
 		"shield_count": total,
 		"shield_active": active,
@@ -353,4 +630,5 @@ static func shield_summary(ship: Dictionary) -> Dictionary:
 		"shield_max_hp": max_hp,
 		"pd_count": pd_total,
 		"pd_intercepts": pd_intercepts,
+		"active_fires": fires,
 	}

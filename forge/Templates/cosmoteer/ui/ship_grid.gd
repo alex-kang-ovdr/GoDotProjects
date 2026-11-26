@@ -226,13 +226,33 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 			draw_rect(bed, color.lightened(0.09), true)
 			draw_rect(Rect2(bed.position + Vector2(2, 2), Vector2(maxf(2, bunk_w * 0.25), bunk_h - 4)), PALE)
 			draw_rect(bed, Color(PALE, 0.6), false, 1.0)
-	elif id == "cosmoteer.shield_gen_small":
+	elif id == "cosmoteer.shield_gen_small" or id == "cosmoteer.shield_gen_large":
 		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
 		if _is_mirrored_battle():
 			rest_rot = PI - rest_rot
 		draw_circle(center, inset * 0.28, color.darkened(0.15))
 		draw_circle(center, inset * 0.14, PALE)
 		draw_arc(center, minf(rect.size.x, rect.size.y) * 0.44, rest_rot - 0.9, rest_rot + 0.9, 20, Color("#7ef2ff"), maxf(2.0, inset * 0.09), true)
+	elif id == "cosmoteer.ion_beam_emitter":
+		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(rest_rot)
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		draw_line(center - dir * inset * 0.5, center + dir * inset * 0.7, Color("#ff70b8"), maxf(3.0, inset * 0.2), true)
+		draw_circle(center, inset * 0.24, Color("#ffd6ef"))
+	elif id.contains("railgun"):
+		var rest_rot := deg_to_rad(-90.0) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(rest_rot)
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		var side_vec := dir.orthogonal()
+		for off in [-0.26, 0.26]:
+			draw_line(center + side_vec * inset * off - dir * inset * 0.6, center + side_vec * inset * off + dir * inset * 0.6, Color("#7ce0ff"), maxf(2.0, inset * 0.12), true)
+		draw_line(center - dir * inset * 0.5, center + dir * inset * 0.5, PALE, maxf(1.2, inset * 0.06), true)
+	elif id == "cosmoteer.fire_extinguisher":
+		draw_circle(center, inset * 0.26, Color("#ff6b57"))
+		draw_line(center - Vector2(0, inset * 0.15), center + Vector2(0, inset * 0.15), PALE, maxf(1.8, inset * 0.08), true)
+		draw_line(center - Vector2(inset * 0.15, 0), center + Vector2(inset * 0.15, 0), PALE, maxf(1.8, inset * 0.08), true)
 	elif id == "cosmoteer.missile_launcher":
 		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
 		var dir := Vector2.from_angle(rest_rot)
@@ -292,6 +312,10 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 		draw_line(Vector2(rect.end.x - 4, rect.position.y + 4), Vector2(rect.position.x + 4, rect.end.y - 4), RED, maxf(1.5, inset * 0.05))
 	elif part.get("thermal_trip",false):
 		draw_rect(rect.grow(-2),RED,false,2)
+	if not dead and float(part.get("fire", 0.0)) > 0.05:
+		var f := float(part.get("fire", 0.0))
+		draw_circle(center, inset * (0.22 + 0.14 * f), Color("#ff6a2b", 0.65 * f))
+		draw_circle(center, inset * 0.14, Color("#ffe066", 0.9 * f))
 
 func _draw_engine(center: Vector2, tile: float, part: Dictionary, nozzles: Array, color: Color) -> void:
 	var shape: Array = _part_def(part).size
@@ -358,8 +382,16 @@ func _part_color(id: String) -> Color:
 		return MINT
 	if id.contains("crew_quarters") or id.contains("bunk"):
 		return BLUE
-	if id == "cosmoteer.shield_gen_small":
+	if id == "cosmoteer.shield_gen_small" or id == "cosmoteer.shield_gen_large":
 		return Color("#5ce1ff")
+	if id == "cosmoteer.ion_beam_emitter":
+		return Color("#ff5ea8")
+	if id.contains("railgun"):
+		return Color("#4dc8ff")
+	if id == "cosmoteer.disruptor":
+		return Color("#c382ff")
+	if id == "cosmoteer.fire_extinguisher":
+		return Color("#ff6b57")
 	if id == "cosmoteer.missile_launcher":
 		return Color("#ff8a5c")
 	if id == "cosmoteer.point_defense":
