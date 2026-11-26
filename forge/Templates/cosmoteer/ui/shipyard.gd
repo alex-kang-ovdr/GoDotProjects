@@ -6,6 +6,7 @@ const Grid = preload("res://ui/ship_grid.gd")
 const Duel = preload("res://ui/engagement.gd")
 const RocketNetwork = preload("res://sim/rocket_network.gd")
 const EngineRoom = preload("res://sim/engine_room.gd")
+const CombatSystems = preload("res://sim/combat_systems.gd")
 const Operations = preload("res://sim/operations.gd")
 const RESULTS := {"win":"승리", "loss":"패배", "draw":"무승부"}
 const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함교 제압", "protected_bridge":"보호 대상 함교 파괴",
@@ -80,6 +81,8 @@ var undo_button: Button
 var erase_button: Button
 var mirror_button: Button
 var preset_picker := OptionButton.new()
+var paint_picker := OptionButton.new()
+var career_label: Label
 var selection := OptionButton.new()
 var parts_list := ItemList.new()
 var search := LineEdit.new()
@@ -123,6 +126,15 @@ func build(host) -> void:
 	var heading := HBoxContainer.new()
 	editor.add_child(heading)
 	heading.add_child(lab.label("함선 조립",28,lab.WHITE))
+	career_label = lab.label("0 CR  ·  명성 0",14,lab.GOLD)
+	heading.add_child(career_label)
+	var paint_keys := ["default", "fringe", "monolith", "io", "cabal", "imperium"]
+	for pk in paint_keys:
+		var idx_p := paint_picker.item_count
+		paint_picker.add_item("도색: " + str(CombatSystems.PAINT_LIVERIES[pk].name))
+		paint_picker.set_item_metadata(idx_p, pk)
+	paint_picker.item_selected.connect(_on_paint_selected)
+	heading.add_child(paint_picker)
 	heading.add_spacer(false)
 	heading.add_child(lab.button("설계 저장",_save_design))
 	load_button = lab.button("불러오기",_load_design)
@@ -264,6 +276,8 @@ func _mission(id: String) -> Dictionary:
 	return {}
 
 func _refresh_mission_card() -> void:
+	if career_label != null and operations != null:
+		career_label.text = "%d CR  ·  명성 %d" % [int(operations.career.get("credits", 0)), int(operations.career.get("fame", 0))]
 	if mission_brief == null or operations == null:
 		return
 	if not operations.load_error.is_empty():
@@ -313,8 +327,13 @@ func _on_battle_finished(result: String) -> void:
 	if selected_mission_id.is_empty():
 		return
 	var saved := true
+	var reward_line := ""
 	if result == "win":
 		saved = operations.record_win(selected_mission_id,duel.battle.elapsed,duel.battle.player.shots,duel.battle.player.hits)
+		if saved:
+			var rw: Dictionary = operations.record_career_reward(selected_mission_id, int(duel.battle.salvage_credits), int(duel.battle.mined_credits))
+			if not rw.is_empty():
+				reward_line = "\n보상 +%d CR (현상금 %d · 인양 %d · 채굴 %d) · 명성 +%d" % [int(rw.total), int(rw.bounty), int(rw.salvage), int(rw.mined), int(rw.fame)]
 	var mission := _mission(selected_mission_id)
 	var completed: Dictionary = operations.completed.get(selected_mission_id,{})
 	var record: String = "최고 기록 %.1f초 · 발사 %d · 명중 %d" % [float(completed.get("elapsed",0.0)),int(completed.get("shots",0)),int(completed.get("hits",0))] if not completed.is_empty() else "승리하면 첫 기록이 저장됩니다."
@@ -329,7 +348,7 @@ func _on_battle_finished(result: String) -> void:
 	for crew in duel.battle.player.crew:
 		crew_alive += int(crew.alive)
 	var refit := "전투 종료: %s · 손상 부품 %d · 생존 승무원 %d/%d" % [OUTCOMES.get(duel.battle.outcome_reason,"교전 종료"),damaged,crew_alive,duel.battle.player.crew.size()]
-	debrief_text.text = "%s · %s\n목표: %s\n전투 %.1f초 · 발사 %d · 명중 %d\n%s\n%s\n%s" % [mission.title,RESULTS.get(result,result),mission.summary,duel.battle.elapsed,duel.battle.player.shots,duel.battle.player.hits,refit,record,next_line]
+	debrief_text.text = "%s · %s\n목표: %s\n전투 %.1f초 · 발사 %d · 명중 %d%s\n%s\n%s\n%s" % [mission.title,RESULTS.get(result,result),mission.summary,duel.battle.elapsed,duel.battle.player.shots,duel.battle.player.hits,reward_line,refit,record,next_line]
 	debrief_layer.show()
 	_refresh_mission_picker()
 	_refresh_mission_card()
@@ -518,6 +537,14 @@ func _cruiser_preset() -> void:
 	design.shield_missile_cruiser()
 	note.text = "방어막 생성기·유도 미사일·근접 방어 포탑·중형 캐논을 탑재한 순양함 설계입니다."
 	_design_changed()
+
+func _on_paint_selected(index: int) -> void:
+	var pk := str(paint_picker.get_item_metadata(index))
+	if CombatSystems.PAINT_LIVERIES.has(pk):
+		design.paint = pk
+		grid.queue_redraw()
+		note.text = "선체 도색을 %s(으)로 변경했습니다." % str(CombatSystems.PAINT_LIVERIES[pk].name)
+
 
 func _on_advanced_preset(index: int) -> void:
 	match index:

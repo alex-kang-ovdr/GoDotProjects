@@ -53,6 +53,7 @@ var readiness: Label
 var fleet_readout: Label
 var shield_target_button: Button
 var missile_mode_button: Button
+var command_button: Button
 var sfx_button: Button
 var sfx
 var _sfx_event_time := -1.0
@@ -76,6 +77,9 @@ func build(host) -> void:
 	header.add_child(clock_label)
 	sfx_button = lab.button("음향 켬",_toggle_sfx)
 	header.add_child(sfx_button)
+	command_button = lab.button("명령: 수동",_cycle_command)
+	command_button.focus_mode = Control.FOCUS_NONE
+	header.add_child(command_button)
 	view_button = lab.button("함선 내부",_switch_view)
 	header.add_child(view_button)
 	pause_button = lab.button("일시 정지",_pause)
@@ -231,6 +235,14 @@ func _cycle_missile_mode() -> void:
 	var order := ["he", "emp", "nuke", "thermal", "mine"]
 	var idx := (order.find(battle.missile_mode) + 1) % order.size()
 	battle.set_missile_mode(order[idx])
+	_refresh()
+
+func _cycle_command() -> void:
+	if battle == null or battle.result != "active":
+		return
+	var order := ["manual", "attack", "standoff", "orbit", "salvage"]
+	var idx := (order.find(battle.player_command) + 1) % order.size()
+	battle.set_player_command(order[idx])
 	_refresh()
 
 func _play_new_sfx() -> void:
@@ -400,6 +412,8 @@ func _refresh() -> void:
 	var has_missiles: bool = not battle.player.ids.get(CombatSystems.MISSILE_LAUNCHER, []).is_empty()
 	missile_mode_button.visible = has_missiles
 	missile_mode_button.text = "탄두: " + battle.missile_mode.to_upper()
+	var cmd_labels := {"manual":"수동", "attack":"공격", "standoff":"원거리", "orbit":"선회", "salvage":"채굴·인양"}
+	command_button.text = "명령: " + str(cmd_labels.get(battle.player_command, "수동"))
 	var target: Dictionary = battle.enemy.parts.get(battle.target_uid,{})
 	var focus := "없음" if target.is_empty() else "%s  ·  HP %d / %d" % [lab.shipyard.display_name(target.id),target.hp,target.max_hp]
 	var goal := "적 함교 제압"

@@ -391,6 +391,35 @@ def extract_asteroids(data_root: Path) -> list[dict[str, Any]]:
     return out
 
 
+def extract_statuses(data_root: Path) -> list[str]:
+    sdir = data_root / "statuses"
+    if not sdir.is_dir():
+        return []
+    return [sub.name for sub in sorted(sdir.iterdir()) if sub.is_dir()]
+
+
+def extract_commands(data_root: Path) -> list[str]:
+    cdir = data_root / "commands"
+    if not cdir.is_dir():
+        return []
+    return [f.stem for f in sorted(cdir.glob("command_*.rules"))]
+
+
+def extract_formations(data_root: Path) -> list[str]:
+    fdir = data_root / "formations"
+    if not fdir.is_dir():
+        return []
+    return [f.stem for f in sorted(fdir.glob("formation_*.png"))]
+
+
+def extract_mission_categories(data_root: Path) -> list[str]:
+    p = data_root / "modes" / "career" / "mission_categories.rules"
+    if not p.is_file():
+        return []
+    text = _strip_comments(p.read_text(encoding="utf-8", errors="ignore"))
+    return re.findall(r"(?m)^\s*ID\s*=\s*([A-Za-z0-9_]+)", text)
+
+
 def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     strings = parse_en_strings(data_root)
     factions = extract_factions(data_root, strings)
@@ -404,9 +433,13 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     ai_profiles = extract_ai_profiles(data_root)
     resources = extract_resources(data_root, strings)
     asteroids = extract_asteroids(data_root)
+    statuses = extract_statuses(data_root)
+    commands = extract_commands(data_root)
+    formations = extract_formations(data_root)
+    mission_categories = extract_mission_categories(data_root)
 
     payload = {
-        "version": 3,
+        "version": 4,
         "summary": {
             "strings_loaded": len(strings),
             "factions_count": len(factions),
@@ -420,6 +453,10 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
             "ai_profiles_count": len(ai_profiles),
             "resources_count": len(resources),
             "asteroids_count": len(asteroids),
+            "statuses_count": len(statuses),
+            "commands_count": len(commands),
+            "formations_count": len(formations),
+            "mission_categories_count": len(mission_categories),
         },
         "factions": factions,
         "buffs": buffs,
@@ -430,6 +467,10 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
         "ai_profiles": ai_profiles,
         "resources": resources,
         "asteroids": asteroids,
+        "statuses": statuses,
+        "commands": commands,
+        "formations": formations,
+        "mission_categories": mission_categories,
         "shots": shots,
         "part_specs": part_specs,
     }

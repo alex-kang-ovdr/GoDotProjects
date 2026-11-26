@@ -6,6 +6,7 @@ const REQUIRED_FIELDS := ["id", "title", "summary", "objective", "opponent", "di
 
 var missions: Array[Dictionary] = []
 var completed: Dictionary = {}
+var career: Dictionary = {"credits": 0, "fame": 0, "salvage_total": 0, "faction_rep": {}}
 var load_error := ""
 var progress_error := ""
 var save_path := "user://lab_operations.json"
@@ -49,6 +50,29 @@ func record_win(id: String, elapsed: float, shots: int, hits: int) -> bool:
 			completed[id] = previous
 		return false
 	return true
+
+
+func record_career_reward(id: String, salvage: int, mined: int) -> Dictionary:
+	var mission := _mission(id)
+	if mission.is_empty():
+		return {}
+	var tier := 1
+	for idx in missions.size():
+		if missions[idx].id == id:
+			tier = idx + 1
+			break
+	var bounty := tier * 1500
+	var total_cr := bounty + maxi(0, salvage) + maxi(0, mined)
+	var fame_gain := 10 * tier
+	var fac := str(mission.get("faction", "fringe"))
+	career["credits"] = int(career.get("credits", 0)) + total_cr
+	career["fame"] = int(career.get("fame", 0)) + fame_gain
+	career["salvage_total"] = int(career.get("salvage_total", 0)) + maxi(0, salvage)
+	var rep: Dictionary = career.get("faction_rep", {})
+	rep[fac] = int(rep.get(fac, 0)) + 15
+	career["faction_rep"] = rep
+	_save_progress()
+	return {"bounty": bounty, "salvage": maxi(0, salvage), "mined": maxi(0, mined), "total": total_cr, "fame": fame_gain, "faction": fac}
 
 
 func _load_catalog() -> void:
@@ -159,6 +183,16 @@ func _load_progress() -> void:
 			progress_error = "작전 완료 기록에 선행 작전이 누락되었습니다."
 			return
 	completed = restored
+	var raw_career: Variant = json.data.get("career")
+	if raw_career is Dictionary:
+		career = {
+			"credits": int(raw_career.get("credits", 0)),
+			"fame": int(raw_career.get("fame", 0)),
+			"salvage_total": int(raw_career.get("salvage_total", 0)),
+			"faction_rep": (raw_career.get("faction_rep", {}) as Dictionary).duplicate(true) if raw_career.get("faction_rep") is Dictionary else {},
+		}
+	else:
+		career = {"credits": 0, "fame": 0, "salvage_total": 0, "faction_rep": {}}
 
 
 func _is_number(value: Variant) -> bool:
@@ -181,7 +215,7 @@ func _save_progress() -> bool:
 	if file == null:
 		progress_error = "작전 진행 파일을 저장할 수 없습니다."
 		return false
-	file.store_string(JSON.stringify({"version": SAVE_VERSION, "completed": completed}, "\t"))
+	file.store_string(JSON.stringify({"version": SAVE_VERSION, "completed": completed, "career": career}, "\t"))
 	file.flush()
 	var write_error := file.get_error()
 	file.close()

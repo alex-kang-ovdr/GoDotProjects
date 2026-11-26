@@ -320,13 +320,24 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			var uvs := PackedVector2Array()
 			for k in 4:
 				uvs.append(base_uv[posmod(k - rot_q, 4)])
-			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else Color.WHITE
+			var paint_id := str(battle.player_design.paint) if ship == battle.player and battle.player_design != null else "default"
+			var livery: Dictionary = CombatSystems.PAINT_LIVERIES.get(paint_id, CombatSystems.PAINT_LIVERIES["default"])
+			var base_tint := Color(str(livery.tint))
+			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else base_tint
 			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
-			draw_polyline(border, Color(color, 0.45), 1.0, true)
+			var edge_col := Color(str(livery.trim)) if paint_id != "default" and not dead else color
+			draw_polyline(border, Color(edge_col, 0.55), 1.1, true)
 		else:
 			draw_colored_polygon(quad, color.darkened(0.56))
 			draw_polyline(border, color.darkened(0.08), 1.4, true)
 			_draw_part_icon(ship, part, quad, color, zoom)
+		if not dead:
+			if float(part.get("scorched", 0.0)) > 0.0:
+				draw_colored_polygon(quad, Color("#ff6e14", 0.22))
+			if float(part.get("fire_foam", 0.0)) > 0.0:
+				draw_polyline(border, Color("#7bf5ff", 0.88), 2.0, true)
+			if float(part.get("disruptor_drain", 0.0)) > 0.0:
+				draw_polyline(border, Color("#c77dff", 0.9), 2.0, true)
 		_draw_hp_bar(quad, float(part.hp), float(part.max_hp))
 		if not dead and part.get("thermal_trip",false):
 			draw_polyline(border,ENEMY,2.0,true)
@@ -431,7 +442,13 @@ func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_cent
 	for sid in ["cosmoteer.shield_gen_small", "cosmoteer.shield_gen_large"]:
 		for uid in ship.get("ids", {}).get(sid, []):
 			var part: Dictionary = ship.parts[uid]
-			if float(part.get("hp", 0.0)) <= 0.0 or not part.get("shield_active", false):
+			if float(part.get("hp", 0.0)) <= 0.0:
+				continue
+			if float(part.get("shield_reboot", 0.0)) > 0.0 and not part.get("shield_active", false):
+				var oc := _world_to_screen(_part_world(ship, int(uid)), camera, zoom, viewport_center)
+				draw_arc(oc, maxf(6.0, zoom * 2.2), 0.0, TAU, 18, Color("#8cf7ff", 0.55), 1.6, true)
+				continue
+			if not part.get("shield_active", false):
 				continue
 			var max_hp := maxf(1.0, float(part.get("shield_max_hp", 6000.0)))
 			var ratio := clampf(float(part.get("shield_hp", 0.0)) / max_hp, 0.0, 1.0)

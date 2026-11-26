@@ -25,6 +25,10 @@ class ExtractedGameDataTests(unittest.TestCase):
         self.assertGreaterEqual(len(data["ai_profiles"]), 8)
         self.assertGreaterEqual(len(data["resources"]), 20)
         self.assertGreaterEqual(len(data["asteroids"]), 8)
+        self.assertGreaterEqual(len(data["statuses"]), 6)
+        self.assertGreaterEqual(len(data["commands"]), 6)
+        self.assertGreaterEqual(len(data["formations"]), 3)
+        self.assertGreaterEqual(len(data["mission_categories"]), 6)
 
         # Spot-check authentic extracted Cosmoteer values
         self.assertEqual(data["shots"]["bullet_deck"]["range"], 190.0)

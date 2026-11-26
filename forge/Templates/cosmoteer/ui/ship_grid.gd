@@ -7,6 +7,7 @@ signal hover_exited
 
 const GRID_SIZE := Vector2i(16, 10)
 const AssetLoader := preload("res://sim/asset_loader.gd")
+const CombatSystems := preload("res://sim/combat_systems.gd")
 const INK := Color("#09141d")
 const GRID := Color("#1b303d")
 const STEEL := Color("#527080")
@@ -190,6 +191,10 @@ func _draw_parts(parts: Array, cell_size: Vector2, origin: Vector2, live: bool) 
 		var max_hp := maxf(1.0, float(part.get("max_hp", _part_def(part).get("max_health", 1.0))))
 		var dead := live and hp <= 0.0
 		_draw_module(part, rect, cell_size, dead)
+		if not dead and not enemy_side and design != null and not (design is Dictionary):
+			var pk := str(design.paint)
+			if pk != "default" and CombatSystems.PAINT_LIVERIES.has(pk):
+				draw_rect(rect, Color(str(CombatSystems.PAINT_LIVERIES[pk].trim), 0.42), false, 1.5)
 		if live:
 			_draw_health(rect, hp, max_hp, dead)
 

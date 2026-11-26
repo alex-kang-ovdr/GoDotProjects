@@ -31,6 +31,8 @@ var cargo_total := 0
 var cargo_capacity := 25
 var mined_credits := 0
 var mining_goal := 0
+var salvage_credits := 0
+var player_command := "manual"
 var missile_mode := "he"
 var result := "idle"
 var outcome_reason := ""
@@ -66,6 +68,8 @@ func start(design, opponent = null, operation: Dictionary = {}) -> bool:
 	cargo_capacity = 25
 	mined_credits = 0
 	mining_goal = 0
+	salvage_credits = 0
+	player_command = "manual"
 	player.clear()
 	enemy.clear()
 	elapsed = 0.0
@@ -109,6 +113,13 @@ func set_missile_mode(mode: String) -> bool:
 	if not (mode in ["he", "emp", "nuke", "thermal", "mine"]):
 		return false
 	missile_mode = mode
+	return true
+
+
+func set_player_command(cmd: String) -> bool:
+	if not (cmd in ["manual", "attack", "standoff", "orbit", "salvage"]):
+		return false
+	player_command = cmd
 	return true
 
 
@@ -471,7 +482,13 @@ func step(seconds: float) -> void:
 		_tick += 1
 		elapsed = _tick * DT
 		var orders := Flight.ai_orders(enemy, player, elapsed, str(mission.get("ai", "balanced")))
-		Flight.advance(player, _move, _turn, DT)
+		var p_move := _move
+		var p_turn := _turn
+		if player_command != "manual" and p_move == Vector2.ZERO and absf(p_turn) < 0.001:
+			var p_orders := _player_autopilot_orders()
+			p_move = Vector2(p_orders.x, p_orders.y)
+			p_turn = p_orders.z
+		Flight.advance(player, p_move, p_turn, DT)
 		Flight.advance(enemy, Vector2(orders.x, orders.y), orders.z, DT)
 		Flight.resolve_contact(player, enemy)
 		_fly()
@@ -629,6 +646,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				ship.hits += 1
 			_record("shot", side, int(beam.source_uid), target)
 	var fire_report := CombatSystems.tick_fires(ship, DT)
+	CombatSystems.tick_statuses(ship, DT)
 	for ext_uid in fire_report.extinguished:
 		_record("fire_out", side, int(ext_uid), int(ext_uid))
 	for dead_uid in fire_report.destroyed:
@@ -867,8 +885,9 @@ func _fly() -> void:
 		else:
 			projectiles.remove_at(i)
 		var part: Dictionary = victim.parts[uid]
-		var damage: float = bolt.structural_damage if part.health_type == "Structural" else bolt.damage
+		var damage: float = (bolt.structural_damage if part.health_type == "Structural" else bolt.damage) * CombatSystems.damage_multiplier(part)
 		part.hp = maxf(0.0, part.hp - damage * bolt.power)
+		CombatSystems.apply_status_hit(part, str(bolt.get("kind", "")))
 		actor.hits += 1
 		_last_hit = _tick
 		_record("hit", bolt.side, uid, bolt.target_uid)
@@ -916,6 +935,9 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 	if part.id == Special.BOOST and part.boost_active:
 		Special.set_boost(victim, part, false)
 	Flight.refresh_mass(victim)
+	if victim == enemy and attacker_side == "player":
+		var row: Dictionary = victim.design.by_id.get(part.id, {})
+		salvage_credits += CombatSystems.part_salvage_value(row)
 	_record("destroyed", attacker_side, uid, target)
 	events[-1].pos = pos
 	if part.id == CombatSystems.EXPLOSIVE_CHARGE:
@@ -976,6 +998,22 @@ func _resolve() -> void:
 func _finish(outcome: String, reason: String) -> void:
 	result = outcome
 	outcome_reason = reason
+
+
+func _player_autopilot_orders() -> Vector3:
+	if player_command == "salvage" and not asteroids.is_empty():
+		var best_pos := Vector2(enemy.position)
+		var best_d := INF
+		for ast in asteroids:
+			if float(ast.hp) <= 0.0:
+				continue
+			var d := Vector2(player.position).distance_to(Vector2(ast.pos))
+			if d < best_d:
+				best_d = d
+				best_pos = Vector2(ast.pos)
+		var dummy := {"position": best_pos}
+		return Flight.ai_orders(player, dummy, elapsed, "pursuit")
+	return Flight.ai_orders(player, enemy, elapsed, player_command)
 
 
 func _record(kind: String, side: String, uid: int, target: int) -> void:

@@ -12,6 +12,7 @@ var parts: Array[Dictionary] = []
 var by_id: Dictionary = {}
 var crew_speed := 0.0
 var ship_physics: Dictionary = {}
+var paint := "default"
 var load_error := ""
 
 var _at: Dictionary = {}
@@ -226,7 +227,7 @@ func serialize() -> Dictionary:
 	var rows: Array[Dictionary] = []
 	for part in parts:
 		rows.append({"uid": part.uid, "id": part.id, "cell": [part.cell.x, part.cell.y], "rotation": part.rotation})
-	return {"version": 1, "parts": rows}
+	return {"version": 1, "paint": paint, "parts": rows}
 
 
 func restore(data: Variant) -> bool:
@@ -254,6 +255,7 @@ func restore(data: Variant) -> bool:
 		uids[uid] = part
 		highest = maxi(highest, uid)
 	parts = restored
+	paint = str(data.get("paint", "default"))
 	_at = occupied
 	_by_uid = uids
 	_next_uid = highest + 1

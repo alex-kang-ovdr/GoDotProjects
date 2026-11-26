@@ -106,6 +106,14 @@ const STORAGE_IDS := [STORAGE_2X2, STORAGE_3X2, STORAGE_3X3, STORAGE_4X3, STORAG
 const INDUSTRIAL_FACTORY_IDS := [FACTORY_STEEL, FACTORY_COIL, FACTORY_COIL2, FACTORY_TRISTEEL, FACTORY_DIAMOND, FACTORY_PROCESSOR, FACTORY_URANIUM]
 const FACTORY_IDS := [FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE, FACTORY_STEEL, FACTORY_COIL, FACTORY_COIL2, FACTORY_TRISTEEL, FACTORY_DIAMOND, FACTORY_PROCESSOR, FACTORY_URANIUM]
 const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
+const PAINT_LIVERIES := {
+	"default": {"name": "기본 선단", "tint": "#ffffff", "trim": "#70edc6"},
+	"fringe": {"name": "프린지 청록", "tint": "#d7fff5", "trim": "#00ff7f"},
+	"monolith": {"name": "모놀리스 강철", "tint": "#d9ecff", "trim": "#4cb2ff"},
+	"io": {"name": "아이오 황금", "tint": "#fff2cc", "trim": "#ffb833"},
+	"cabal": {"name": "카발 자수정", "tint": "#f0d9ff", "trim": "#b85cff"},
+	"imperium": {"name": "임페리움 진홍", "tint": "#ffd9df", "trim": "#ff2e55"},
+}
 
 static var _extracted_cache: Dictionary = {}
 
@@ -1456,9 +1464,54 @@ static func tick_flak_defense(ship: Dictionary, side: String, projectiles: Array
 static func ignite_part(part: Dictionary, add_intensity: float) -> bool:
 	if part.hp <= 0.0 or part.health_type == "Structural" or add_intensity <= 0.0:
 		return false
+	if float(part.get("fire_foam", 0.0)) > 0.0:
+		return false
 	var was_burning: bool = float(part.get("fire", 0.0)) > 0.05
 	part["fire"] = clampf(float(part.get("fire", 0.0)) + add_intensity, 0.0, 1.0)
+	part["scorched"] = maxf(float(part.get("scorched", 0.0)), 6.0)
 	return (not was_burning) and float(part["fire"]) > 0.05
+
+
+static func apply_status_hit(part: Dictionary, weapon_kind: String) -> void:
+	if float(part.hp) <= 0.0:
+		return
+	if weapon_kind in ["disruptor", "missile_emp"]:
+		part["disruptor_drain"] = maxf(float(part.get("disruptor_drain", 0.0)), 4.0)
+	elif weapon_kind in ["resonance", "ion", "missile_thermal", "missile_nuke"]:
+		part["scorched"] = maxf(float(part.get("scorched", 0.0)), 6.0)
+
+
+static func damage_multiplier(part: Dictionary) -> float:
+	return 1.15 if float(part.get("scorched", 0.0)) > 0.0 else 1.0
+
+
+static func tick_statuses(ship: Dictionary, dt: float) -> void:
+	for uid in ship.parts:
+		var part: Dictionary = ship.parts[uid]
+		if float(part.hp) <= 0.0:
+			part["fire_foam"] = 0.0
+			part["scorched"] = 0.0
+			part["disruptor_drain"] = 0.0
+			continue
+		var foam := float(part.get("fire_foam", 0.0))
+		if foam > 0.0:
+			part["fire_foam"] = maxf(0.0, foam - dt)
+		var sc := float(part.get("scorched", 0.0))
+		if sc > 0.0:
+			part["scorched"] = maxf(0.0, sc - dt)
+		var dd := float(part.get("disruptor_drain", 0.0))
+		if dd > 0.0:
+			part["disruptor_drain"] = maxf(0.0, dd - dt)
+			if int(part.energy) > 0:
+				part.energy = maxi(0, int(part.energy) - maxi(1, roundi(180.0 * dt)))
+
+
+static func part_salvage_value(row: Dictionary) -> int:
+	var res: Dictionary = row.get("resources", {})
+	var total := 0.0
+	for k in res:
+		total += float(res[k]) * resource_price(str(k))
+	return maxi(25, roundi(total * 0.35))
 
 
 ## Tick active ship fires and automatic fire-extinguisher suppression.
@@ -1467,10 +1520,12 @@ static func tick_fires(ship: Dictionary, dt: float) -> Dictionary:
 	var extinguished: Array[int] = []
 	var destroyed: Array[int] = []
 	var suppress_rate := 0.06
+	var has_ext := false
 	for uid in ship.ids.get(FIRE_EXTINGUISHER, []):
 		var ext: Dictionary = ship.parts[uid]
 		if ext.hp > 0.0:
 			suppress_rate += float(ext.stats.get("extinguish_rate", 0.42))
+			has_ext = true
 	for uid in ship.parts:
 		var part: Dictionary = ship.parts[uid]
 		var f: float = float(part.get("fire", 0.0))
@@ -1487,6 +1542,8 @@ static func tick_fires(ship: Dictionary, dt: float) -> Dictionary:
 		var next_f := maxf(0.0, f - suppress_rate * dt)
 		part.fire = next_f
 		if next_f <= 0.0:
+			if has_ext:
+				part["fire_foam"] = 10.0
 			extinguished.append(int(uid))
 	return {"extinguished": extinguished, "destroyed": destroyed}
 
