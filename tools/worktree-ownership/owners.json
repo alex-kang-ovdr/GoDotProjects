@@ -588,6 +588,14 @@
         "forge/Tools/dedicated-server/**",
         "docs/multiplayer/**"
       ]
+    },
+    "Forge-GameDev-DontStarveTogether": {
+      "role": "Don't Starve Together 원본 데이터 기반 역기획 및 PlayForge Godot 4.7.2 복원 프로젝트",
+      "owns": [
+        "references/dont-starve-together/**",
+        "forge/Templates/dont-starve-together/**",
+        "forge/Tests/dont-starve-together*.test.cjs"
+      ]
     }
   }
 }
