@@ -96,6 +96,21 @@ EXTENDED_RECIPES_2 = {
     "critter_pip": (["squirrel_build", "squirrel"], "squirrel", ["idle_loop", "walk_loop", "idle"], 72),
 }
 
+# 4th KAnim shard (Space, Ranching, Shipping, FirePole, OxygenMask, Sweepy, Gassy Moo)
+EXTENDED_RECIPES_3 = {
+    "telescope": (["telescope"], "telescope", ["working_loop", "on", "off"], 96),
+    "bunker_door": (["door_bunker"], "door_bunker", ["closed", "open", "off"], 88),
+    "fire_pole": (["firepole"], "firepole", ["off", "on"], 64),
+    "auto_sweeper": (["conveyor_transferarm"], "conveyor_transferarm", ["working_loop", "on", "off"], 84),
+    "sweep_bot": (["sweep_bot"], "sweep_bot", ["idle_loop", "walk_loop", "on"], 72),
+    "sweep_station": (["sweep_bot_base_station"], "sweep_bot_base_station", ["on", "off"], 88),
+    "conveyor_loader": (["conveyorin"], "conveyorin", ["on", "off"], 84),
+    "ranch_station": (["rancherstation"], "rancherstation", ["working_loop", "on", "off"], 92),
+    "incubator": (["incubator"], "incubator", ["working_loop", "on", "off"], 88),
+    "oxygen_dock": (["oxygen_mask_station"], "oxygen_mask_station", ["on", "off"], 88),
+    "critter_moo": (["gassy_moo_build", "gassy_moo"], "gassy_moo", ["idle_loop", "fly_loop", "idle"], 84),
+}
+
 # Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
 DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap"]
 
@@ -428,6 +443,7 @@ def main() -> int:
     all_recipes.update(BUILDING_RECIPES)
     all_recipes.update(EXTENDED_RECIPES)
     all_recipes.update(EXTENDED_RECIPES_2)
+    all_recipes.update(EXTENDED_RECIPES_3)
     for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
@@ -502,6 +518,7 @@ def main() -> int:
     out_buildings = {}
     out_buildings_ext = {}
     out_buildings_ext2 = {}
+    out_buildings_ext3 = {}
     preview_list = []
 
     for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
@@ -567,7 +584,7 @@ def main() -> int:
                     im_work = iw2
 
         if im_idle is not None:
-            target_dict = out_buildings if key in BUILDING_RECIPES else (out_buildings_ext if key in EXTENDED_RECIPES else out_buildings_ext2)
+            target_dict = out_buildings if key in BUILDING_RECIPES else (out_buildings_ext if key in EXTENDED_RECIPES else (out_buildings_ext2 if key in EXTENDED_RECIPES_2 else out_buildings_ext3))
             target_dict[key] = {
                 "size": out_sz,
                 "idle_clip": chosen_idle["name"],
@@ -689,9 +706,17 @@ def main() -> int:
     with open(ext2_path, "w", encoding="utf-8") as f:
         json.dump(ext2_doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext3_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext3,
+    }
+    ext3_path = os.path.join(args.out, "kanim_sprites_ext3_extracted.txt")
+    with open(ext3_path, "w", encoding="utf-8") as f:
+        json.dump(ext3_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
-        cols = 9
+        cols = 10
         rows = (len(preview_list) + cols - 1) // cols
         cell = 104
         sheet = Image.new("RGBA", (cols * cell, rows * cell), (22, 28, 36, 255))
@@ -706,11 +731,13 @@ def main() -> int:
         "buildings_composited_main": len(out_buildings),
         "buildings_composited_ext": len(out_buildings_ext),
         "buildings_composited_ext2": len(out_buildings_ext2),
-        "ext2_keys": list(out_buildings_ext2.keys()),
+        "buildings_composited_ext3": len(out_buildings_ext3),
+        "ext3_keys": list(out_buildings_ext3.keys()),
         "duplicants_composited": len(out_dupes),
         "main_file_bytes": os.path.getsize(out_path),
         "ext_file_bytes": os.path.getsize(ext_path),
         "ext2_file_bytes": os.path.getsize(ext2_path),
+        "ext3_file_bytes": os.path.getsize(ext3_path),
     }, ensure_ascii=False, indent=2))
     return 0
 

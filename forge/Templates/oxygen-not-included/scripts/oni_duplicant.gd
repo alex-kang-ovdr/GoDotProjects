@@ -22,6 +22,13 @@ var kcal := 4000.0
 var morale := 2
 var stress := 0.0
 var trait_ko := "조기 기상"
+var skill_level := 0
+var skill_name_ko := "신입 개척자"
+var xp := 80.0
+var prio_dig := true
+var prio_build := true
+var prio_operate := true
+var prio_research := true
 
 func _init(p_id: int, p_name: String, p_cell: Vector2i, p_color: Color, p_trait := "조기 기상") -> void:
 	id = p_id
@@ -30,6 +37,18 @@ func _init(p_id: int, p_name: String, p_cell: Vector2i, p_color: Color, p_trait 
 	pos = Vector2(p_cell.x, p_cell.y)
 	suit_color = p_color
 	trait_ko = p_trait
+
+func upgrade_skill() -> bool:
+	if xp < 100.0 or skill_level >= 4:
+		return false
+	xp -= 100.0
+	skill_level += 1
+	var titles: Array[String] = ["신입 개척자", "숙련 채굴가", "수석 건설가", "천재 연구원", "우주 비행사"]
+	skill_name_ko = titles[mini(skill_level, titles.size() - 1)]
+	return true
+
+func work_speed_mult() -> float:
+	return 1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.30)
 
 func step(world: OniWorld, dt: float) -> void:
 	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)
@@ -126,7 +145,11 @@ func _step_move(world: OniWorld, dt: float) -> void:
 	if absf(diff.x) > 0.01:
 		facing_left = diff.x < 0.0
 	var dist := diff.length()
-	var step_d := move_speed * dt
+	var spd := move_speed
+	# 소방봉(fire_pole) 하강 시 3배 초고속 슬라이드!
+	if diff.y > 0.1 and world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] == "fire_pole":
+		spd = move_speed * 3.0
+	var step_d := spd * dt
 	if dist <= step_d:
 		pos = target_v
 		cell = next_c
@@ -168,9 +191,11 @@ func _step_dig(world: OniWorld, dt: float) -> void:
 		return
 	var el_info := OniElements.get_element(world.solid_el[ti])
 	var dig_time := maxf(0.4, float(el_info.get("dig_time", 2.0)))
-	world.dig_progress[ti] += dt / dig_time
+	world.dig_progress[ti] += (dt * work_speed_mult()) / dig_time
+	xp = minf(400.0, xp + 6.0 * dt)
 	if world.dig_progress[ti] >= 1.0:
 		world.complete_dig(target_cell.x, target_cell.y)
+		xp = minf(400.0, xp + 18.0)
 		_clear_job()
 
 func _step_build(world: OniWorld, dt: float) -> void:
@@ -187,12 +212,14 @@ func _step_build(world: OniWorld, dt: float) -> void:
 		return
 	var bdef := OniElements.get_building(b_id)
 	var build_time := maxf(0.4, float(bdef.get("build_time", 1.8)))
-	world.build_progress[ti] += dt / build_time
+	world.build_progress[ti] += (dt * work_speed_mult()) / build_time
+	xp = minf(400.0, xp + 6.0 * dt)
 	if world.build_progress[ti] >= 1.0:
 		world.complete_build(target_cell.x, target_cell.y)
+		xp = minf(400.0, xp + 18.0)
 		_clear_job()
 
-func _step_operate(world: OniWorld, _dt: float) -> void:
+func _step_operate(world: OniWorld, dt: float) -> void:
 	if not world.in_bounds(target_cell.x, target_cell.y):
 		_clear_job()
 		return
@@ -201,12 +228,13 @@ func _step_operate(world: OniWorld, _dt: float) -> void:
 		_clear_job()
 		return
 	world.gen_active[ti] = 1
+	xp = minf(400.0, xp + 4.0 * dt)
 	state_ko = "발전(400W)"
 	# 배터리가 95% 이상 차고 소비기도 없으면 대기 복귀
 	if world.total_battery_cap_j > 0.0 and world.total_battery_j >= world.total_battery_cap_j * 0.96 and world.power_consumed_w <= 0.1:
 		_clear_job()
 
-func _step_research(world: OniWorld, _dt: float) -> void:
+func _step_research(world: OniWorld, dt: float) -> void:
 	if not world.in_bounds(target_cell.x, target_cell.y):
 		_clear_job()
 		return
@@ -215,6 +243,7 @@ func _step_research(world: OniWorld, _dt: float) -> void:
 		_clear_job()
 		return
 	world.research_active[ti] = 1
+	xp = minf(400.0, xp + 5.0 * dt)
 	state_ko = "연구 중"
 
 func _assign_next_job(world: OniWorld) -> void:
@@ -228,8 +257,8 @@ func _assign_next_job(world: OniWorld) -> void:
 	var best_target := Vector2i(-1, -1)
 	var best_type := ""
 
-	# 1) 스태미나 낮을 때 빈 침대 우선
-	if stamina < 28.0:
+	# 1) 야간 취침 스케줄 또는 스태미나 낮을 때 빈 침대 우선
+	if stamina < 28.0 or (world.is_night() and stamina < 82.0):
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
@@ -243,15 +272,15 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "sleep"
 
-	# 2) 채굴·건설 지시 탐색
-	if best_type.is_empty():
+	# 2) 채굴·건설 지시 탐색 (대원별 우선순위 토글 반영)
+	if best_type.is_empty() and (prio_dig or prio_build):
 		var dirs := [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
-				var is_dig := world.dig_order[i] == 1 and not world.solid_el[i].is_empty()
+				var is_dig := prio_dig and world.dig_order[i] == 1 and not world.solid_el[i].is_empty()
 				var b_id := world.build_order[i]
-				var is_build := not b_id.is_empty() and world.has_materials_for(b_id)
+				var is_build := prio_build and not b_id.is_empty() and world.has_materials_for(b_id)
 				if not is_dig and not is_build:
 					continue
 				var tcell := Vector2i(x, y)
@@ -276,7 +305,7 @@ func _assign_next_job(world: OniWorld) -> void:
 						best_type = "build" if is_build else "dig"
 
 	# 3) 수동 발전기 작동 (전력 필요하거나 배터리 70% 미만일 때)
-	if best_type.is_empty():
+	if best_type.is_empty() and prio_operate:
 		var need_power := (world.total_battery_cap_j > 0.0 and world.total_battery_j < world.total_battery_cap_j * 0.72) or (world.total_battery_cap_j <= 0.0)
 		if need_power:
 			for y in range(OniWorld.HEIGHT):
@@ -301,7 +330,7 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_type = "operate"
 
 	# 4) 연구 작업대 작동 (활성 연구가 있고 흙이 있을 때)
-	if best_type.is_empty() and not world.active_tech.is_empty() and float(world.inventory.get("Dirt", 0.0)) >= 5.0:
+	if best_type.is_empty() and prio_research and not world.active_tech.is_empty() and float(world.inventory.get("Dirt", 0.0)) >= 5.0:
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)

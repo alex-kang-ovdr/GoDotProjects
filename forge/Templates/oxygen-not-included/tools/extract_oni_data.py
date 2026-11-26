@@ -61,6 +61,7 @@ ELEMENT_COLORS = {
 # Mapping from original ONI tech IDs to playable buildings in our Godot template
 TECH_BUILDING_MAP = {
     "FarmingTech": ["farm_tile", "ration_box"],
+    "Ranching": ["ranch_station", "incubator"],
     "FoodRepurposing": ["electric_grill"],
     "InteriorDecor": ["ceiling_light", "flower_pot"],
     "Artistry": ["decor_painting", "sculpture"],
@@ -69,14 +70,16 @@ TECH_BUILDING_MAP = {
     "LiquidPiping": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir"],
     "GasPiping": ["gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
     "PowerRegulation": ["coal_gen", "battery"],
-    "ImprovedOxygen": ["electrolyzer"],
+    "ImprovedOxygen": ["electrolyzer", "oxygen_dock"],
     "Combustion": ["coal_gen"],
     "AdvancedPowerRegulation": ["hydrogen_gen"],
     "TemperatureModulation": ["insulated_tile"],
     "LiquidTemperature": ["thermo_aquatuner"],
-    "RefinedObjects": ["metal_refinery"],
+    "RefinedObjects": ["metal_refinery", "fire_pole"],
     "Plastics": ["oil_refinery"],
+    "SolidTransport": ["auto_sweeper", "sweep_station", "conveyor_loader"],
     "LogicControl": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"],
+    "SkyDetectors": ["telescope", "bunker_door"],
     "RenewableEnergy": ["steam_turbine", "solar_panel"],
 }
 
@@ -130,6 +133,15 @@ BUILDING_PREFAB_MAP = {
     "aetn": {"prefab": "MASSIVEHEATSINK", "cat": "poi", "cost_element": "IronOre", "cost_kg": 800.0, "build_time": 5.0, "needs_floor": True, "decor": 10.0},
     "poi_vending": {"prefab": "VENDINGMACHINE", "cat": "poi", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.0, "needs_floor": True, "decor": 10.0},
     "poi_desk": {"prefab": "HEADQUARTERS", "cat": "poi", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.0, "needs_floor": True, "decor": 15.0},
+    "fire_pole": {"prefab": "FIREPOLE", "cat": "base", "cost_element": "Cuprite", "cost_kg": 100.0, "build_time": 1.4, "climbable": True, "decor": -5.0},
+    "auto_sweeper": {"prefab": "SOLIDTRANSFERARM", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.4, "power_w": 120.0},
+    "sweep_station": {"prefab": "SWEEPBOTSTATION", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.4, "power_w": 240.0, "needs_floor": True},
+    "conveyor_loader": {"prefab": "SOLIDCONDUITINBOX", "cat": "auto", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.2, "power_w": 120.0, "needs_floor": True},
+    "ranch_station": {"prefab": "RANCHSTATION", "cat": "colony", "cost_element": "SandStone", "cost_kg": 200.0, "build_time": 2.2, "needs_floor": True},
+    "incubator": {"prefab": "EGGINCUBATOR", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.4, "power_w": 240.0, "needs_floor": True},
+    "oxygen_dock": {"prefab": "OXYGENMASKLOCKER", "cat": "base", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.2, "needs_floor": True},
+    "telescope": {"prefab": "TELESCOPE", "cat": "space", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.0, "power_w": 120.0, "needs_floor": True},
+    "bunker_door": {"prefab": "BUNKERDOOR", "cat": "space", "cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.0, "room_divider": True, "power_w": 120.0},
 }
 
 

@@ -29,6 +29,12 @@ var _codex_tab_buttons: Dictionary = {}
 var _print_panel: PanelContainer
 var _print_vbox: VBoxContainer
 var _print_btn: Button
+var _dupes_panel: PanelContainer
+var _dupes_vbox: VBoxContainer
+var _space_panel: PanelContainer
+var _space_vbox: VBoxContainer
+var _report_panel: PanelContainer
+var _report_vbox: VBoxContainer
 var _alert_lbl: Label
 var _preset_btn: Button
 var _atmo_shader_mat: ShaderMaterial
@@ -42,19 +48,19 @@ const CATEGORIES := [
 	{"id": "living", "label": "생활·장식"},
 	{"id": "power", "label": "전력·산소"},
 	{"id": "pipe", "label": "배관"},
-	{"id": "auto", "label": "자동화"},
-	{"id": "colony", "label": "농사·산업"},
+	{"id": "auto", "label": "자동화·운송"},
+	{"id": "colony", "label": "농사·목축·산업"},
 	{"id": "space", "label": "우주"},
 ]
 
 const CAT_TOOLS := {
-	"base": ["tile", "insulated_tile", "door", "ladder", "cot", "storage", "ceiling_light"],
+	"base": ["tile", "insulated_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light", "oxygen_dock"],
 	"living": ["outhouse", "wash_basin", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
 	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "wire"],
 	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
-	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"],
-	"colony": ["farm_tile", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery"],
-	"space": ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
+	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "sweep_station", "conveyor_loader"],
+	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery"],
+	"space": ["telescope", "bunker_door", "rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
 }
 
 const WORLD_PRESETS := ["terra", "rime", "oceana", "badlands"]
@@ -172,6 +178,7 @@ func _build_hud() -> void:
 		{"id": "normal", "label": "기본"},
 		{"id": "gas", "label": "기체G"},
 		{"id": "temp", "label": "온도T"},
+		{"id": "power", "label": "전력E"},
 		{"id": "pipe", "label": "배관P"},
 		{"id": "room", "label": "방M"},
 		{"id": "germ", "label": "세균J"},
@@ -188,13 +195,34 @@ func _build_hud() -> void:
 		top_hbox.add_child(obtn)
 		_overlay_buttons[oid] = obtn
 
+	# 상단 2줄째: 자원 요약 + 식민지 관리 패널 7종 (인쇄N · 연구R · 대원V · 우주U · 보고O · 도감I · 행성전환)
+	var res_panel := PanelContainer.new()
+	res_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	res_panel.offset_left = 216
+	res_panel.offset_top = 52
+	res_panel.offset_bottom = 86
+	_style_panel(res_panel, Color(0.08, 0.11, 0.16, 0.88))
+	_ui_root.add_child(res_panel)
+
+	var res_hbox := HBoxContainer.new()
+	res_hbox.add_theme_constant_override("separation", 4)
+	res_panel.add_child(res_hbox)
+
+	_res_info_lbl = Label.new()
+	_res_info_lbl.add_theme_font_size_override("font_size", 11)
+	res_hbox.add_child(_res_info_lbl)
+
+	var rspacer := Control.new()
+	rspacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	res_hbox.add_child(rspacer)
+
 	_print_btn = Button.new()
-	_print_btn.text = "인쇄N"
+	_print_btn.text = "★인쇄N"
 	_print_btn.pressed.connect(func():
 		audio.play_toggle()
 		_toggle_print_panel()
 	)
-	top_hbox.add_child(_print_btn)
+	res_hbox.add_child(_print_btn)
 
 	var res_btn := Button.new()
 	res_btn.text = "연구R"
@@ -202,7 +230,31 @@ func _build_hud() -> void:
 		audio.play_click()
 		_toggle_research_panel()
 	)
-	top_hbox.add_child(res_btn)
+	res_hbox.add_child(res_btn)
+
+	var dupes_btn := Button.new()
+	dupes_btn.text = "대원V"
+	dupes_btn.pressed.connect(func():
+		audio.play_click()
+		_toggle_dupes_panel()
+	)
+	res_hbox.add_child(dupes_btn)
+
+	var space_btn := Button.new()
+	space_btn.text = "우주U"
+	space_btn.pressed.connect(func():
+		audio.play_click()
+		_toggle_space_panel()
+	)
+	res_hbox.add_child(space_btn)
+
+	var rep_btn := Button.new()
+	rep_btn.text = "보고O"
+	rep_btn.pressed.connect(func():
+		audio.play_click()
+		_toggle_report_panel()
+	)
+	res_hbox.add_child(rep_btn)
 
 	var audit_btn := Button.new()
 	audit_btn.text = "도감I"
@@ -210,7 +262,7 @@ func _build_hud() -> void:
 		audio.play_toggle()
 		_toggle_audit_panel()
 	)
-	top_hbox.add_child(audit_btn)
+	res_hbox.add_child(audit_btn)
 
 	_preset_btn = Button.new()
 	_preset_btn.text = world.get_world_preset_label()
@@ -226,22 +278,11 @@ func _build_hud() -> void:
 		_refresh_hud()
 		renderer.request_redraw()
 	)
-	top_hbox.add_child(_preset_btn)
-
-	# 상단 2줄째 자원 요약 바 (PIE 좌측 오버레이와 겹치지 않도록 우측 편향 배치)
-	var res_panel := PanelContainer.new()
-	res_panel.position = Vector2(220, 54)
-	res_panel.custom_minimum_size = Vector2(640, 32)
-	_style_panel(res_panel, Color(0.08, 0.11, 0.16, 0.86))
-	_ui_root.add_child(res_panel)
-
-	_res_info_lbl = Label.new()
-	_res_info_lbl.add_theme_font_size_override("font_size", 12)
-	res_panel.add_child(_res_info_lbl)
+	res_hbox.add_child(_preset_btn)
 
 	# 식민지 실시간 경보 배너
 	_alert_lbl = Label.new()
-	_alert_lbl.position = Vector2(220, 88)
+	_alert_lbl.position = Vector2(220, 90)
 	_alert_lbl.add_theme_font_size_override("font_size", 12)
 	_alert_lbl.add_theme_color_override("font_color", Color(1.0, 0.90, 0.42))
 	_ui_root.add_child(_alert_lbl)
@@ -257,6 +298,42 @@ func _build_hud() -> void:
 	_print_vbox = VBoxContainer.new()
 	_print_vbox.add_theme_constant_override("separation", 8)
 	_print_panel.add_child(_print_vbox)
+
+	# 대원 우선순위·스킬 관리 팝업 (V)
+	_dupes_panel = PanelContainer.new()
+	_dupes_panel.position = Vector2(230, 110)
+	_dupes_panel.custom_minimum_size = Vector2(680, 320)
+	_dupes_panel.visible = false
+	_style_panel(_dupes_panel, Color(0.08, 0.12, 0.19, 0.97))
+	_ui_root.add_child(_dupes_panel)
+
+	_dupes_vbox = VBoxContainer.new()
+	_dupes_vbox.add_theme_constant_override("separation", 6)
+	_dupes_panel.add_child(_dupes_vbox)
+
+	# 우주 스타맵·로켓 발사 관제 팝업 (U)
+	_space_panel = PanelContainer.new()
+	_space_panel.position = Vector2(250, 110)
+	_space_panel.custom_minimum_size = Vector2(620, 310)
+	_space_panel.visible = false
+	_style_panel(_space_panel, Color(0.06, 0.09, 0.18, 0.97))
+	_ui_root.add_child(_space_panel)
+
+	_space_vbox = VBoxContainer.new()
+	_space_vbox.add_theme_constant_override("separation", 7)
+	_space_panel.add_child(_space_vbox)
+
+	# 주기 보고서·저장/불러오기 팝업 (O)
+	_report_panel = PanelContainer.new()
+	_report_panel.position = Vector2(300, 115)
+	_report_panel.custom_minimum_size = Vector2(520, 290)
+	_report_panel.visible = false
+	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
+	_ui_root.add_child(_report_panel)
+
+	_report_vbox = VBoxContainer.new()
+	_report_vbox.add_theme_constant_override("separation", 6)
+	_report_panel.add_child(_report_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
 	_research_panel = PanelContainer.new()
@@ -471,26 +548,200 @@ func _select_overlay(oid: String) -> void:
 		btn.modulate = Color(0.55, 0.95, 1.0) if String(k) == oid else Color(1, 1, 1)
 	renderer.request_redraw()
 
+func _close_all_modals(except: Control = null) -> void:
+	for p in [_research_panel, _audit_panel, _print_panel, _dupes_panel, _space_panel, _report_panel]:
+		if p != null and p != except:
+			p.visible = false
+
 func _toggle_research_panel() -> void:
 	_research_panel.visible = not _research_panel.visible
 	if _research_panel.visible:
-		_audit_panel.visible = false
-		_print_panel.visible = false
+		_close_all_modals(_research_panel)
 		_refresh_research_panel()
 
 func _toggle_audit_panel() -> void:
 	_audit_panel.visible = not _audit_panel.visible
 	if _audit_panel.visible:
-		_research_panel.visible = false
-		_print_panel.visible = false
+		_close_all_modals(_audit_panel)
 		_select_codex_tab(active_codex_tab)
 
 func _toggle_print_panel() -> void:
 	_print_panel.visible = not _print_panel.visible
 	if _print_panel.visible:
-		_research_panel.visible = false
-		_audit_panel.visible = false
+		_close_all_modals(_print_panel)
 		_refresh_print_panel()
+
+func _toggle_dupes_panel() -> void:
+	_dupes_panel.visible = not _dupes_panel.visible
+	if _dupes_panel.visible:
+		_close_all_modals(_dupes_panel)
+		_refresh_dupes_panel()
+
+func _toggle_space_panel() -> void:
+	_space_panel.visible = not _space_panel.visible
+	if _space_panel.visible:
+		_close_all_modals(_space_panel)
+		_refresh_space_panel()
+
+func _toggle_report_panel() -> void:
+	_report_panel.visible = not _report_panel.visible
+	if _report_panel.visible:
+		_close_all_modals(_report_panel)
+		_refresh_report_panel()
+
+func _refresh_dupes_panel() -> void:
+	for child in _dupes_vbox.get_children():
+		child.queue_free()
+	var hdr := Label.new()
+	hdr.text = "=== 복제체 우선순위 & 스킬 관리 (%d/8명 · 공식 스킬 56종 기반) ===" % world.duplicants.size()
+	hdr.add_theme_color_override("font_color", Color(0.55, 0.94, 1.0))
+	_dupes_vbox.add_child(hdr)
+	for d in world.duplicants:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 5)
+		var lbl := Label.new()
+		lbl.text = "%s[%s] Lv.%d %s (XP %.0f/100 · 사기 %d)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.morale]
+		lbl.custom_minimum_size = Vector2(315, 0)
+		lbl.add_theme_font_size_override("font_size", 11)
+		row.add_child(lbl)
+		for pr in [
+			{"k": "dig", "t": "채굴", "v": d.prio_dig},
+			{"k": "build", "t": "건설", "v": d.prio_build},
+			{"k": "operate", "t": "발전", "v": d.prio_operate},
+			{"k": "research", "t": "연구", "v": d.prio_research},
+		]:
+			var pb := Button.new()
+			pb.text = String(pr["t"])
+			pb.modulate = Color(0.45, 0.96, 0.62) if bool(pr["v"]) else Color(0.55, 0.58, 0.65)
+			var pk := String(pr["k"])
+			var dc: OniDuplicant = d
+			pb.pressed.connect(func():
+				audio.play_click()
+				if pk == "dig":
+					dc.prio_dig = not dc.prio_dig
+				elif pk == "build":
+					dc.prio_build = not dc.prio_build
+				elif pk == "operate":
+					dc.prio_operate = not dc.prio_operate
+				else:
+					dc.prio_research = not dc.prio_research
+				_refresh_dupes_panel()
+			)
+			row.add_child(pb)
+		var skb := Button.new()
+		skb.text = "+스킬" if d.xp >= 100.0 and d.skill_level < 4 else "XP부족"
+		skb.disabled = d.xp < 100.0 or d.skill_level >= 4
+		var dc2: OniDuplicant = d
+		skb.pressed.connect(func():
+			if dc2.upgrade_skill():
+				audio.play_level_up()
+				_refresh_dupes_panel()
+		)
+		row.add_child(skb)
+		_dupes_vbox.add_child(row)
+	var cb := Button.new()
+	cb.text = "닫기"
+	cb.pressed.connect(func():
+		audio.play_click()
+		_dupes_panel.visible = false
+	)
+	_dupes_vbox.add_child(cb)
+
+func _refresh_space_panel() -> void:
+	for child in _space_vbox.get_children():
+		child.queue_free()
+	var hdr := HBoxContainer.new()
+	var hl := Label.new()
+	var st_ko := "발사 준비 완료" if world.rocket_state == "READY" else ("발사 상승 중!" if world.rocket_state == "LAUNCHING" else ("우주 탐사 중 (%.0fs)" % world.rocket_mission_timer if world.rocket_state == "IN_SPACE" else "귀환 착륙 중!"))
+	hl.text = "우주 스타맵 관제 (110 목적지) · 로켓: %s · 데이터 뱅크 %d · 발사 %d회" % [st_ko, world.data_banks, world.rockets_launched]
+	hl.add_theme_color_override("font_color", Color(0.58, 0.88, 1.0))
+	hl.add_theme_font_size_override("font_size", 12)
+	hdr.add_child(hl)
+	_space_vbox.add_child(hdr)
+
+	var jump_btn := Button.new()
+	jump_btn.text = "▲ 우주 표면 발사대·망원경·태양광 위치로 카메라 이동"
+	jump_btn.pressed.connect(func():
+		audio.play_click()
+		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.8 * OniWorld.TILE_SIZE)
+		_clamp_camera()
+		_space_panel.visible = false
+	)
+	_space_vbox.add_child(jump_btn)
+
+	for mi in range(world.space_missions.size()):
+		var m: Dictionary = world.space_missions[mi]
+		var mb := Button.new()
+		mb.text = "[발사] [%s] %s — %s" % [String(m["dist"]), String(m["name_ko"]), String(m["desc"])]
+		mb.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		mb.disabled = world.rocket_state != "READY"
+		var cap_i: int = mi
+		mb.pressed.connect(func():
+			if world.launch_rocket(cap_i):
+				audio.play_warp()
+				audio.play_print_ok()
+				camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.8 * OniWorld.TILE_SIZE)
+				_clamp_camera()
+				_space_panel.visible = false
+				_refresh_hud()
+		)
+		_space_vbox.add_child(mb)
+	var cb := Button.new()
+	cb.text = "닫기"
+	cb.pressed.connect(func():
+		audio.play_click()
+		_space_panel.visible = false
+	)
+	_space_vbox.add_child(cb)
+
+func _refresh_report_panel() -> void:
+	for child in _report_vbox.get_children():
+		child.queue_free()
+	var title := Label.new()
+	title.text = "=== 식민지 주기 %d 보고서 & 브라우저 영속 저장 ===" % world.cycle
+	title.add_theme_color_override("font_color", Color(0.55, 0.94, 1.0))
+	_report_vbox.add_child(title)
+	var body := Label.new()
+	body.add_theme_font_size_override("font_size", 12)
+	body.text = "\n".join([
+		"행성: %s (시드 %d) · 현재 시간: %s" % [world.get_world_preset_label(), world.seed_value, "야간 취침" if world.is_night() else "주간 작업"],
+		"복제체: %d명 · 방 구획: %d개 (사기 보너스 +%d) · 야생 생물: %d마리" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size()],
+		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj],
+		"식량 비축: %.0f kcal · 채굴 완료: %d칸 · 건설 완료: %d건" % [world.food_kcal, world.report_digs, world.report_builds],
+		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks],
+		"저장 상태: %s" % (world.last_save_status if not world.last_save_status.is_empty() else "대기 중 (user://oni_save.json)"),
+	])
+	_report_vbox.add_child(body)
+	var brow := HBoxContainer.new()
+	brow.add_theme_constant_override("separation", 8)
+	var sbtn := Button.new()
+	sbtn.text = "식민지 저장"
+	sbtn.pressed.connect(func():
+		world.save_colony()
+		audio.play_work_chime()
+		_refresh_report_panel()
+	)
+	brow.add_child(sbtn)
+	var lbtn := Button.new()
+	lbtn.text = "불러오기"
+	lbtn.pressed.connect(func():
+		if world.load_colony():
+			audio.play_warp()
+			_preset_btn.text = world.get_world_preset_label()
+			_rebuild_tool_buttons()
+			_refresh_hud()
+			renderer.request_redraw()
+		_refresh_report_panel()
+	)
+	brow.add_child(lbtn)
+	var cbtn := Button.new()
+	cbtn.text = "닫기"
+	cbtn.pressed.connect(func():
+		audio.play_click()
+		_report_panel.visible = false
+	)
+	brow.add_child(cbtn)
+	_report_vbox.add_child(brow)
 
 func _refresh_print_panel() -> void:
 	for child in _print_vbox.get_children():
@@ -683,6 +934,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "temp" else "temp")
 		elif event.physical_keycode == KEY_P:
 			_select_overlay("normal" if renderer.overlay_mode == "pipe" else "pipe")
+		elif event.physical_keycode == KEY_E:
+			_select_overlay("normal" if renderer.overlay_mode == "power" else "power")
 		elif event.physical_keycode == KEY_M:
 			_select_overlay("normal" if renderer.overlay_mode == "room" else "room")
 		elif event.physical_keycode == KEY_J:
@@ -693,6 +946,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "decor" else "decor")
 		elif event.physical_keycode == KEY_N:
 			_toggle_print_panel()
+		elif event.physical_keycode == KEY_V:
+			_toggle_dupes_panel()
+		elif event.physical_keycode == KEY_U:
+			_toggle_space_panel()
+		elif event.physical_keycode == KEY_O:
+			_toggle_report_panel()
 		elif event.physical_keycode == KEY_R:
 			_toggle_research_panel()
 		elif event.physical_keycode == KEY_I:
@@ -797,13 +1056,13 @@ func _refresh_hud() -> void:
 		var td := OniElements.get_tech(world.active_tech)
 		tech_str = "%s %.0f/%.0f" % [String(td.get("name_ko", world.active_tech)), float(world.tech_progress.get(world.active_tech, 0.0)), float(td.get("cost_basic", 10.0))]
 
-	_res_info_lbl.text = "%s | %s | 사암 %.0f · 구리 %.0f · 조류 %.0f | 식량 %.0fkcal | 연구: %s" % [
-		OniElements.get_counts_summary(),
+	_res_info_lbl.text = "%s | 사암 %.0f · 구리 %.0f · 조류 %.0f | 식량 %.0fkcal | 뱅크 %d | 연구: %s" % [
 		OniMedia.get_media_summary(),
 		float(world.inventory.get("SandStone", 0.0)),
 		float(world.inventory.get("Cuprite", 0.0)),
 		float(world.inventory.get("Algae", 0.0)),
 		world.food_kcal,
+		world.data_banks,
 		tech_str,
 	]
 

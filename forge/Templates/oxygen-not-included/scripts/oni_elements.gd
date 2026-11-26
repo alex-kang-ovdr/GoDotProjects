@@ -124,6 +124,15 @@ const BUILDING_COLORS := {
 	"geyser_steam": Color(0.68, 0.80, 0.88, 1.0),
 	"geyser_water": Color(0.82, 0.32, 0.28, 1.0),
 	"geyser_hydrogen": Color(0.76, 0.38, 0.82, 1.0),
+	"fire_pole": Color(0.92, 0.62, 0.24, 1.0),
+	"auto_sweeper": Color(0.42, 0.84, 0.96, 1.0),
+	"sweep_station": Color(0.54, 0.78, 0.92, 1.0),
+	"conveyor_loader": Color(0.66, 0.60, 0.50, 1.0),
+	"ranch_station": Color(0.76, 0.58, 0.36, 1.0),
+	"incubator": Color(0.88, 0.72, 0.42, 1.0),
+	"oxygen_dock": Color(0.36, 0.82, 0.94, 1.0),
+	"telescope": Color(0.62, 0.74, 0.96, 1.0),
+	"bunker_door": Color(0.48, 0.54, 0.62, 1.0),
 }
 
 static func ensure_loaded() -> void:

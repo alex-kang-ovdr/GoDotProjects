@@ -176,7 +176,20 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
         "rooms_ko": collect_po_catalog("STRINGS.ROOMS.TYPES."),
         "personalities_ko": collect_po_catalog("STRINGS.DUPLICANTS.PERSONALITIES."),
         "duplicant_traits_ko": collect_po_catalog("STRINGS.DUPLICANTS.TRAITS."),
+        "roles_ko": collect_po_catalog("STRINGS.DUPLICANTS.ROLES."),
+        "chores_ko": collect_po_catalog("STRINGS.DUPLICANTS.CHORES."),
     }
+
+    # Nested 110 Space Destinations from PO (ASTEROIDS.*, ARTIFACT_POI.*, PLANETS.*)
+    space_destinations = {}
+    sp_pref = "STRINGS.UI.SPACEDESTINATIONS."
+    for k, v in ko.items():
+        if k.startswith(sp_pref) and k.endswith(".NAME"):
+            parts = k[len(sp_pref):-5].split(".")
+            if len(parts) == 2 and v:
+                sid = f"{parts[0]}.{parts[1]}"
+                sdesc = ko.get(f"{sp_pref}{sid}.DESCRIPTION", "")
+                space_destinations[sid] = {"name_ko": v, "cat": parts[0], "desc": sdesc[:120]}
 
     # 11) Extra worldgen & POI datasets (POIs 62, StoryTraits 17, Clusters 13, Noise 24, Features 13, Temperatures)
     pois = {}
@@ -234,6 +247,7 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
     personalities_detail = collect_po_with_desc("STRINGS.DUPLICANTS.PERSONALITIES.", ".DESC")
     rooms_detail = collect_po_with_desc("STRINGS.ROOMS.TYPES.", ".EFFECT")
     diseases_detail = collect_po_with_desc("STRINGS.DUPLICANTS.DISEASES.", ".DESCRIPTION")
+    roles_detail = collect_po_with_desc("STRINGS.DUPLICANTS.ROLES.", ".DESCRIPTION")
 
     return {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -243,6 +257,8 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
         "rooms_detail": rooms_detail,
         "diseases_detail": diseases_detail,
         "personalities_detail": personalities_detail,
+        "roles_detail": roles_detail,
+        "space_destinations": space_destinations,
         "worlds": worlds,
         "clusters": clusters,
         "traits": traits,
@@ -474,6 +490,9 @@ def main() -> int:
         "po_rooms_ko": world_codex["po_catalogs_counts"]["rooms_ko"],
         "po_personalities_ko": world_codex["po_catalogs_counts"]["personalities_ko"],
         "po_duplicant_traits_ko": world_codex["po_catalogs_counts"]["duplicant_traits_ko"],
+        "po_roles_ko": world_codex["po_catalogs_counts"]["roles_ko"],
+        "po_chores_ko": world_codex["po_catalogs_counts"]["chores_ko"],
+        "space_destinations": len(world_codex["space_destinations"]),
         "poi_templates": len(world_codex["pois"]),
         "clusters": len(world_codex["clusters"]),
         "story_traits_templates": len(world_codex["story_traits_templates"]),
@@ -489,7 +508,7 @@ def main() -> int:
     # Merge texture/kanim/audio totals if present
     kanim_ext_n = 0
     kanim_ext_dupes = 0
-    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt"]:
+    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt"]:
         ext_p = os.path.join(args.out, ext_fn)
         if os.path.exists(ext_p):
             with open(ext_p, "r", encoding="utf-8") as ef:

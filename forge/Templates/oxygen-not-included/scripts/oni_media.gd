@@ -36,7 +36,7 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
 
-	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt"]:
+	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt"]:
 		var ksp_doc: Variant = _load_json(kpath)
 		if ksp_doc is Dictionary:
 			var bs_v: Variant = ksp_doc.get("building_sprites", {})
@@ -112,6 +112,9 @@ static func ensure_loaded() -> void:
 			"rooms_ko": int((po_v as Dictionary).get("rooms_ko", 0)) if po_v is Dictionary else 0,
 			"personalities_ko": int((po_v as Dictionary).get("personalities_ko", 0)) if po_v is Dictionary else 0,
 			"duplicant_traits_ko": int((po_v as Dictionary).get("duplicant_traits_ko", 0)) if po_v is Dictionary else 0,
+			"roles_ko": int((po_v as Dictionary).get("roles_ko", 0)) if po_v is Dictionary else 0,
+			"chores_ko": int((po_v as Dictionary).get("chores_ko", 0)) if po_v is Dictionary else 0,
+			"space_destinations": (wc_doc.get("space_destinations", {}) as Dictionary).size(),
 		}
 
 	var fe_doc: Variant = _load_json("res://data/fmod_events_extracted.txt")
@@ -260,7 +263,7 @@ static func get_complete_audit_lines() -> Array[String]:
 		int(world_codex_summary.get("pois", 0)),
 		int(world_codex_summary.get("codex_files", 0)),
 	])
-	lines.append("[공식 한국어] 건물 %d · 생물 %d · 음식 %d · 방 %d · 질병 %d · 복제체 %d · 특성 %d" % [
+	lines.append("[공식 한국어] 건물 %d · 생물 %d · 음식 %d · 방 %d · 질병 %d · 복제체 %d · 특성 %d · 스킬 %d · 우주 %d" % [
 		int(world_codex_summary.get("buildings_ko", 0)),
 		int(world_codex_summary.get("creatures_ko", 0)),
 		int(world_codex_summary.get("foods_ko", 0)),
@@ -268,6 +271,8 @@ static func get_complete_audit_lines() -> Array[String]:
 		int(world_codex_summary.get("diseases_ko", 0)),
 		int(world_codex_summary.get("personalities_ko", 0)),
 		int(world_codex_summary.get("duplicant_traits_ko", 0)),
+		int(world_codex_summary.get("roles_ko", 0)),
+		int(world_codex_summary.get("space_destinations", 0)),
 	])
 	lines.append("[텍스처/메시] 임베딩 타일·FX %d종 (전체 %d) · 조립 KAnim %d종 (전체 %d)" % [
 		element_textures.size() + building_textures.size() + fx_textures.size(),

@@ -124,7 +124,7 @@ func tick_fx(delta: float) -> void:
 			m = 1
 		elif overlay_mode == "temp":
 			m = 2
-		elif overlay_mode in ["pipe", "room", "germ", "logic", "decor"]:
+		elif overlay_mode in ["pipe", "room", "germ", "logic", "decor", "power"]:
 			m = 3
 		_gas_mat.set_shader_parameter("mode", m)
 	if _gas_sprite != null:
@@ -302,12 +302,13 @@ func _update_gpu_textures() -> void:
 						var dens := clampf(gm / 1.65, 0.22, 1.0)
 						_gas_img.set_pixel(x, y, Color(ec.r, ec.g, ec.b, dens))
 
-			# 라이트맵 픽셀: 동굴 깊이 기본 조도 (미조명 동굴 0.80, 심부 암반 0.42) + 포인트 라이트 가산
+			# 라이트맵 픽셀: 동굴 깊이 기본 조도 + 야간 분위기 감쇠 + 포인트 라이트 가산
 			var cd: int = _cavity_dist[i]
-			var base_l := 0.80 if cd == 0 else clampf(0.79 - float(cd - 1) * 0.088, 0.42, 0.79)
-			var lr := base_l * 0.98
-			var lg := base_l * 1.00
-			var lb := base_l * 1.05
+			var night_m := 0.84 if world.is_night() else 1.0
+			var base_l := (0.86 if world.is_space_cell(x, y) else (0.80 * night_m)) if cd == 0 else clampf(0.79 - float(cd - 1) * 0.088, 0.42, 0.79)
+			var lr := base_l * (0.92 if world.is_night() else 0.98)
+			var lg := base_l * (0.96 if world.is_night() else 1.00)
+			var lb := base_l * (1.10 if world.is_night() else 1.05)
 			var cell_v := Vector2(float(x) + 0.5, float(y) + 0.5)
 			for lt: Dictionary in lights:
 				var lp: Vector2 = lt["pos"]
@@ -343,17 +344,40 @@ func _draw() -> void:
 	var ts := OniWorld.TILE_SIZE
 	var total_w := OniWorld.WIDTH * ts
 	var total_h := OniWorld.HEIGHT * ts
+	# 행성 외곽 및 상단 개방 우주 하늘(y < 0) 심우주 별빛 배경
+	draw_rect(Rect2(-480.0, -520.0, float(total_w) + 960.0, 524.0), Color(0.025, 0.035, 0.085, 1.0), true)
+	for si in range(95):
+		var sh1 := absf(fmod(sin(float(si * 47 + 13)) * 43758.5453, 1.0))
+		var sh2 := absf(fmod(sin(float(si * 83 + 29)) * 24634.6345, 1.0))
+		var sx := -240.0 + sh1 * (float(total_w) + 480.0)
+		var sy := -440.0 + sh2 * 436.0
+		var tw := 0.42 + 0.58 * sin(_anim_time * (1.4 + float(si % 4) * 0.5) + float(si))
+		var sc := Color(0.86, 0.94, 1.0, tw) if (si % 3 != 0) else Color(1.0, 0.90, 0.72, tw * 0.85)
+		draw_circle(Vector2(sx, sy), 1.6 if (si % 5 == 0) else 1.0, sc)
 	draw_rect(Rect2(0, 0, total_w, total_h), Color(0.05, 0.06, 0.09, 1.0), true)
 
-	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor"]
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
 
-	# Layer 0: 열린 동굴의 바이옴 천연 배경벽 + 다중 액체(물·오염수·원유·마그마)
+	# Layer 0: 우주 표면 별빛 배경(y<=3) + 열린 동굴의 바이옴 천연 배경벽 + 다중 액체(물·오염수·원유·마그마)
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			if not world.solid_el[i].is_empty():
 				continue
 			var rect := Rect2(x * ts, y * ts, ts, ts)
+			if world.is_space_cell(x, y):
+				# 원작 Klei/Stars 스타일 심우주 진공 배경 + 반짝이는 다중 별빛
+				draw_rect(rect, Color(0.025, 0.035, 0.085, 1.0), true)
+				for sk in range(3):
+					var h1 := fmod(sin(float(x * 37 + y * 91 + sk * 53)) * 43758.5453, 1.0)
+					var h2 := fmod(sin(float(x * 73 + y * 19 + sk * 29)) * 24634.6345, 1.0)
+					var sx := rect.position.x + absf(h1) * float(ts - 4) + 2.0
+					var sy := rect.position.y + absf(h2) * float(ts - 4) + 2.0
+					var tw := 0.45 + 0.55 * sin(_anim_time * (1.8 + float(sk)) + float(x + y * 5 + sk * 7))
+					var sr := 1.4 if sk == 0 else 0.9
+					var sc := Color(0.86, 0.93, 1.0, tw) if sk != 2 else Color(1.0, 0.90, 0.72, tw * 0.85)
+					draw_circle(Vector2(sx, sy), sr, sc)
+				continue
 			var bw_el := _biome_backwall_element(x, y)
 			var bw_tex := OniMedia.get_element_texture(bw_el)
 			var bw_mod := Color(0.14, 0.16, 0.20, 1.0) if dim_world else Color(0.24, 0.28, 0.34, 1.0)
@@ -402,7 +426,7 @@ func _draw_terrain_foreground() -> void:
 		return
 	var c := _terrain_fg_node
 	var ts := OniWorld.TILE_SIZE
-	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor"]
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
 
 	# 1) 4x4 월드-연속 심리스 고체 암반 (기체 볼륨 Layer 1 위에서 암반 경계로 완벽 마스킹)
 	for y in range(OniWorld.HEIGHT):
@@ -635,6 +659,45 @@ func _draw_overlay_front() -> void:
 	if overlay_mode == "pipe":
 		_draw_conduit_layers_on(_conduit_fg_node, ts, true)
 
+	# 전력망(E) 오버레이: 황금 발광 전력선 + 발전기(초록)/소비기(하늘)/배터리 노드 + 실시간 부하(W) 배지
+	if overlay_mode == "power":
+		var pdirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var i := world.idx(x, y)
+				var b := world.building[i]
+				var is_pw := world.has_wire[i] == 1
+				var is_gen := b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel"]
+				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper", "sweep_station", "incubator"]
+				var is_bat := b == "battery" or b == "smart_battery"
+				if not is_pw and not is_gen and not is_con and not is_bat:
+					continue
+				var cx := float(x * ts) + float(ts) * 0.5
+				var cy := float(y * ts) + float(ts) * 0.5
+				var wc := Color(1.0, 0.84, 0.22, 0.96)
+				if is_pw:
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 3.6, wc)
+					for d: Vector2i in pdirs:
+						var nx: int = x + d.x
+						var ny: int = y + d.y
+						if world.in_bounds(nx, ny):
+							var ni := world.idx(nx, ny)
+							if world.has_wire[ni] == 1 or world.building[ni] in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper"]:
+								_conduit_fg_node.draw_line(Vector2(cx, cy), Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5), wc, 4.2)
+				if is_gen or is_con or is_bat:
+					var nc := Color(0.28, 0.96, 0.48, 0.96) if is_gen else (Color(0.36, 0.86, 1.0, 0.96) if is_con else Color(1.0, 0.92, 0.34, 0.96))
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 7.0, Color(0.05, 0.08, 0.12, 0.92))
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 4.6, nc)
+					_conduit_fg_node.draw_arc(Vector2(cx, cy), 7.0, 0.0, TAU, 14, nc, 1.4)
+		var pfont := ThemeDB.fallback_font
+		if pfont != null:
+			var plbl := "전력망 부하: %.0f / 1000 W (발전 %.0fW · 축전 %.1fkJ)" % [world.power_consumed_w, world.power_produced_w, world.total_battery_j / 1000.0]
+			var bx := 24.0 * float(ts)
+			var by := 13.4 * float(ts)
+			_conduit_fg_node.draw_rect(Rect2(bx - 150.0, by - 12.0, 300.0, 24.0), Color(0.06, 0.09, 0.14, 0.92), true)
+			_conduit_fg_node.draw_rect(Rect2(bx - 150.0, by - 12.0, 300.0, 24.0), Color(1.0, 0.84, 0.22, 0.92), false, 1.5)
+			_conduit_fg_node.draw_string(pfont, Vector2(bx - 144.0, by + 4.0), plbl, HORIZONTAL_ALIGNMENT_CENTER, 288, 11, Color(1.0, 0.96, 0.78, 1.0))
+
 	# 자동화(L) 오버레이: ONI 네온 초록(활성)/크림슨 빨강(대기) 논리 회로 리본 + 원형 I/O 포트
 	if overlay_mode == "logic":
 		var ldirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
@@ -774,7 +837,7 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 	var rect := Rect2(x * ts, y * ts, ts, ts)
 	var p := rect.position
 	var running := world.machine_running[i] == 1
-	var dim := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor"]
+	var dim := overlay_mode in ["gas", "pipe", "room", "germ", "logic", "decor", "power"]
 	var mod := Color(0.55, 0.58, 0.65, 1.0) if dim else Color(1.0, 1.0, 1.0, 1.0)
 
 	# 인쇄기 (2x2 멀티타일 + 다층 방사형 발광 후광)
@@ -799,28 +862,44 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 	if ktex != null:
 		var draw_r := rect
 		if b in ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"]:
-			var dw := float(ts) * 2.2
+			if world.rocket_state == "IN_SPACE":
+				return
+			var dw := float(ts) * 2.15
+			var dh := float(ts) * 1.45 if b == "rocket_steam_engine" else (float(ts) * 1.35 if b == "rocket_research_module" else float(ts) * 1.65)
+			var lift := world.rocket_y_offset
+			var shake := sin(_anim_time * 50.0) * 1.8 if world.rocket_state in ["LAUNCHING", "LANDING"] else 0.0
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5 + shake, p.y + float(ts) - dh + 2.0 + lift, dw, dh)
+			if b == "rocket_steam_engine" and world.rocket_state in ["LAUNCHING", "LANDING"]:
+				var fx_c := Vector2(draw_r.position.x + dw * 0.5, draw_r.end.y)
+				var fl := 32.0 + 18.0 * sin(_anim_time * 36.0)
+				c.draw_colored_polygon(PackedVector2Array([fx_c + Vector2(-18, 0), fx_c + Vector2(18, 0), fx_c + Vector2(0, fl + 24)]), Color(1.0, 0.45, 0.08, 0.82))
+				c.draw_colored_polygon(PackedVector2Array([fx_c + Vector2(-11, 0), fx_c + Vector2(11, 0), fx_c + Vector2(0, fl + 8)]), Color(1.0, 0.88, 0.28, 0.92))
+				c.draw_circle(fx_c + Vector2(0, fl * 0.5), 14.0, Color(0.92, 0.95, 1.0, 0.42))
+		elif b in ["aetn"]:
+			var dw := float(ts) * 2.1
 			var dh := float(ts) * 2.1
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
 		elif b in ["geyser_steam", "geyser_water", "geyser_hydrogen"]:
 			var dw := float(ts) * 1.7
 			var dh := float(ts) * 1.7
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
-		elif b in ["aetn"]:
-			var dw := float(ts) * 2.1
-			var dh := float(ts) * 2.1
-			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
-		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_vending", "poi_desk"]:
-			var scale_w := 1.48 if b in ["steam_turbine", "solar_panel", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_desk"] else 1.30
-			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "outhouse", "water_sieve", "poi_vending", "oil_refinery"] else 1.26
+		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_vending", "poi_desk", "telescope", "ranch_station", "incubator", "oxygen_dock", "sweep_station"]:
+			var scale_w := 1.48 if b in ["steam_turbine", "solar_panel", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_desk", "telescope", "ranch_station"] else 1.30
+			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "outhouse", "water_sieve", "poi_vending", "oil_refinery", "telescope", "incubator", "oxygen_dock"] else 1.26
 			var dw := float(ts) * scale_w
 			var dh := float(ts) * scale_h
 			var jitter := sin(_anim_time * 20.0) * 0.7 if running else 0.0
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5 + jitter, p.y + float(ts) - dh + 1.0, dw, dh)
-		elif b == "door" or b == "mech_door":
-			var dw := float(ts) * 0.95
-			var dh := float(ts) * 1.32
+		elif b == "door" or b == "mech_door" or b == "bunker_door":
+			var dw := float(ts) * (1.45 if b == "bunker_door" else 0.95)
+			var dh := float(ts) * (0.95 if b == "bunker_door" else 1.32)
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
+		elif b == "fire_pole":
+			draw_r = Rect2(p.x + 2.0, p.y, float(ts) - 4.0, float(ts))
+		elif b == "auto_sweeper":
+			var dw := float(ts) * 1.25
+			var dh := float(ts) * 1.05
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + (float(ts) - dh) * 0.5, dw, dh)
 		elif b == "ceiling_light":
 			var dw := float(ts) * 0.92
 			var dh := float(ts) * 0.92
@@ -833,13 +912,13 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var dw := float(ts) * 0.78
 			var dh := float(ts) * 0.78
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + (float(ts) - dh) * 0.5, dw, dh)
-		elif b in ["battery", "smart_battery", "storage", "liquid_pump", "gas_pump", "wash_basin", "mess_table", "ration_box", "flower_pot", "sculpture"]:
+		elif b in ["battery", "smart_battery", "storage", "liquid_pump", "gas_pump", "wash_basin", "mess_table", "ration_box", "flower_pot", "sculpture", "conveyor_loader"]:
 			var dw := float(ts) * 1.15
 			var dh := float(ts) * 1.18
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
 
 		# 접지 그림자
-		if b != "ladder" and b != "liquid_vent" and b != "gas_vent" and b != "ceiling_light" and b != "decor_painting" and b != "atmo_sensor" and b != "thermo_sensor":
+		if b != "ladder" and b != "fire_pole" and b != "liquid_vent" and b != "gas_vent" and b != "ceiling_light" and b != "decor_painting" and b != "atmo_sensor" and b != "thermo_sensor" and b != "auto_sweeper" and not b.begins_with("rocket_"):
 			c.draw_rect(Rect2(draw_r.position.x + 4.0, p.y + float(ts) - 3.0, draw_r.size.x - 8.0, 4.0), Color(0.02, 0.03, 0.05, 0.42), true)
 		c.draw_texture_rect(ktex, draw_r, false, mod)
 

@@ -41,6 +41,21 @@ var print_offers: Array[Dictionary] = []
 var print_count := 0
 var alerts: Array[String] = []
 
+# 우주 표면 · 로켓 발사 · 식민지 주기 보고서
+var rocket_state := "READY" # READY, LAUNCHING, IN_SPACE, LANDING
+var rocket_y_offset := 0.0
+var rocket_mission_timer := 0.0
+var rocket_target_name := ""
+var rockets_launched := 0
+var data_banks := 0
+var space_missions: Array[Dictionary] = []
+var _eco_accum := 0.0
+var report_digs := 0
+var report_builds := 0
+var report_o2_kg := 0.0
+var report_power_kj := 0.0
+var last_save_status := ""
+
 var building: PackedStringArray = PackedStringArray()
 var has_wire: PackedByteArray = PackedByteArray()
 var has_liquid_pipe: PackedByteArray = PackedByteArray()
@@ -158,6 +173,18 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	print_ready_timer = 0.0
 	print_count = 0
 	alerts.clear()
+	rocket_state = "READY"
+	rocket_y_offset = 0.0
+	rocket_mission_timer = 0.0
+	rocket_target_name = ""
+	rockets_launched = 0
+	data_banks = 0
+	_eco_accum = 0.0
+	report_digs = 0
+	report_builds = 0
+	report_o2_kg = 0.0
+	report_power_kj = 0.0
+	_init_space_missions()
 	building.resize(total)
 	has_wire.resize(total)
 	has_liquid_pipe.resize(total)
@@ -243,7 +270,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 			germ_count[i] = 0.0
 			room_id[i] = -1
 
-			if x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1:
+			if x == 0 or x == WIDTH - 1 or y == HEIGHT - 1:
 				_set_solid(i, "Unobtanium" if OniElements.elements.has("Unobtanium") else "Granite", 21.0)
 				continue
 
@@ -446,6 +473,31 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	building[idx(11, 15)] = "poi_vending"
 	building[idx(12, 15)] = "mech_door"
 
+	# 최상단 우주 표면 바이옴 (y: 0..3 개방형 우주 진공 + 별빛 배경 + 로켓 발사대 + 태양광 + 망원경 + 벙커 문)
+	for sy in range(0, 4):
+		for sx in range(1, WIDTH - 1):
+			var si := idx(sx, sy)
+			solid_el[si] = ""
+			solid_mass[si] = 0.0
+			gas_el[si] = "Vacuum"
+			gas_mass[si] = 0.0
+			gas_prev_mass[si] = 0.0
+			temp_c[si] = -40.0
+	for sx in range(18, 30):
+		var pi := idx(sx, 4)
+		solid_el[pi] = ""
+		solid_mass[pi] = 0.0
+		building[pi] = "tile"
+		temp_c[pi] = -15.0
+	building[idx(20, 3)] = "solar_panel"
+	building[idx(23, 3)] = "rocket_steam_engine"
+	building[idx(23, 2)] = "rocket_research_module"
+	building[idx(23, 1)] = "rocket_command_module"
+	building[idx(26, 3)] = "telescope"
+	building[idx(28, 3)] = "bunker_door"
+	for swx in range(20, 29):
+		has_wire[idx(swx, 3)] = 1
+
 	# 우측 깨끗한 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
 	for y in range(17, 20):
 		for x in range(31, 36):
@@ -565,6 +617,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	critters.append({"id": "critter_drecko", "name_ko": "드레코", "pos": Vector2(39.5, 12.0), "dir": -1.0, "fly": false, "swim": false, "timer": 1.4})
 	critters.append({"id": "critter_slickster", "name_ko": "슬릭스터", "pos": Vector2(23.5, 22.0), "dir": 1.0, "fly": true, "swim": false, "timer": 1.1})
 	critters.append({"id": "critter_pip", "name_ko": "핍", "pos": Vector2(24.5, 16.0), "dir": -1.0, "fly": false, "swim": false, "timer": 0.9})
+	critters.append({"id": "critter_moo", "name_ko": "가스 무", "pos": Vector2(15.0, 2.2), "dir": 1.0, "fly": true, "swim": false, "timer": 1.3})
 
 	# 원작 공식 복제체 인격 3명 (미프, 에이다, 버블스)
 	duplicants.clear()
@@ -651,7 +704,195 @@ func is_passable(x: int, y: int) -> bool:
 func is_climbable(x: int, y: int) -> bool:
 	if not in_bounds(x, y):
 		return false
-	return building[idx(x, y)] == "ladder"
+	var b := building[idx(x, y)]
+	return b == "ladder" or b == "fire_pole"
+
+func is_night() -> bool:
+	return fmod(sim_time, OniElements.CYCLE_SECONDS) >= OniElements.CYCLE_SECONDS * 0.85
+
+func is_space_cell(x: int, y: int) -> bool:
+	return y >= 0 and y <= 3 and in_bounds(x, y)
+
+func _init_space_missions() -> void:
+	space_missions.clear()
+	OniMedia.ensure_loaded()
+	var sdest: Dictionary = OniMedia.world_codex_doc.get("space_destinations", {}) as Dictionary
+	var picks: Array[Dictionary] = [
+		{"id": "ASTEROIDS.CARBONACEOUSASTEROID", "fallback": "탄소질 소행성", "dist": "10,000 km", "reward_el": "Carbon", "reward_kg": 1600.0, "banks": 15},
+		{"id": "ASTEROIDS.METALLICASTEROID", "fallback": "금속 소행성", "dist": "20,000 km", "reward_el": "GoldAmalgam", "reward_kg": 1200.0, "banks": 25},
+		{"id": "ASTEROIDS.GOLDASTEROID", "fallback": "황금 소행성", "dist": "30,000 km", "reward_el": "IronOre", "reward_kg": 1800.0, "banks": 35},
+		{"id": "ARTIFACT_POI.GRAVITASSPACESTATION1", "fallback": "그라비타스 우주 정거장", "dist": "40,000 km", "reward_el": "Cuprite", "reward_kg": 1500.0, "banks": 50},
+	]
+	for p: Dictionary in picks:
+		var sid := String(p["id"])
+		var nm := String(p["fallback"])
+		var ds := "데이터 뱅크 +%d · %s %.0fkg" % [int(p["banks"]), OniElements.get_element_name(String(p["reward_el"])), float(p["reward_kg"])]
+		if sdest.has(sid):
+			var sd: Dictionary = sdest[sid]
+			nm = String(sd.get("name_ko", nm))
+		space_missions.append({
+			"id": sid,
+			"name_ko": nm,
+			"dist": String(p["dist"]),
+			"reward_el": String(p["reward_el"]),
+			"reward_kg": float(p["reward_kg"]),
+			"banks": int(p["banks"]),
+			"desc": ds,
+		})
+
+func launch_rocket(mission_idx: int) -> bool:
+	if rocket_state != "READY" or mission_idx < 0 or mission_idx >= space_missions.size():
+		return false
+	var m: Dictionary = space_missions[mission_idx]
+	rocket_state = "LAUNCHING"
+	rocket_y_offset = 0.0
+	rocket_mission_timer = 14.0
+	rocket_target_name = String(m["name_ko"])
+	set_meta("active_mission", m)
+	return true
+
+func _step_rocket(dt: float) -> void:
+	if rocket_state == "LAUNCHING":
+		rocket_y_offset -= 95.0 * dt
+		if rocket_y_offset <= -260.0:
+			rocket_state = "IN_SPACE"
+	elif rocket_state == "IN_SPACE":
+		rocket_mission_timer = maxf(0.0, rocket_mission_timer - dt)
+		if rocket_mission_timer <= 0.0:
+			rocket_state = "LANDING"
+	elif rocket_state == "LANDING":
+		rocket_y_offset = minf(0.0, rocket_y_offset + 85.0 * dt)
+		if rocket_y_offset >= 0.0:
+			rocket_y_offset = 0.0
+			rocket_state = "READY"
+			rockets_launched += 1
+			if has_meta("active_mission"):
+				var m: Dictionary = get_meta("active_mission")
+				var rel := String(m.get("reward_el", "GoldAmalgam"))
+				inventory[rel] = float(inventory.get(rel, 0.0)) + float(m.get("reward_kg", 1000.0))
+				data_banks += int(m.get("banks", 20))
+				add_research_points(12.0)
+
+func _step_ecology(dt: float) -> void:
+	# 원작 생물 생태계 (해치→석탄, 푸프→점액, 슬릭스터→원유, 가스 무→천연가스) + 자동 청소기 가동
+	for cr: Dictionary in critters:
+		var cid := String(cr["id"])
+		if cid == "critter_hatch":
+			inventory["Carbon"] = float(inventory.get("Carbon", 0.0)) + 2.5 * dt
+		elif cid == "critter_puft":
+			inventory["SlimeMold"] = float(inventory.get("SlimeMold", 0.0)) + 2.0 * dt
+		elif cid == "critter_slickster":
+			var cp: Vector2 = cr["pos"]
+			var sx := clampi(int(floor(cp.x)), 1, WIDTH - 2)
+			var sy := clampi(int(floor(cp.y)), 1, HEIGHT - 2)
+			var si := idx(sx, sy)
+			if gas_el[si] == "CarbonDioxide" and gas_mass[si] > 0.05:
+				gas_mass[si] = maxf(0.0, gas_mass[si] - 0.04 * dt)
+				if liquid_mass[si] < 400.0:
+					liquid_el[si] = "CrudeOil"
+					liquid_mass[si] += 4.0 * dt
+		elif cid == "critter_moo":
+			var cp: Vector2 = cr["pos"]
+			var mx := clampi(int(floor(cp.x)), 1, WIDTH - 2)
+			var my := clampi(int(floor(cp.y)), 1, HEIGHT - 2)
+			var mi := idx(mx, my)
+			if not is_space_cell(mx, my) and (gas_el[mi] == "Vacuum" or gas_el[mi] == "Methane"):
+				gas_el[mi] = "Methane"
+				gas_mass[mi] = minf(1.5, gas_mass[mi] + 0.03 * dt)
+
+func save_colony() -> bool:
+	var dupe_arr: Array = []
+	for d in duplicants:
+		dupe_arr.append({
+			"id": d.id, "name": d.dupe_name, "trait": d.trait_ko,
+			"x": d.cell.x, "y": d.cell.y,
+			"skill_level": d.skill_level, "skill_name": d.skill_name_ko, "xp": d.xp,
+			"prio_dig": d.prio_dig, "prio_build": d.prio_build, "prio_operate": d.prio_operate, "prio_research": d.prio_research,
+		})
+	var bld_map: Dictionary = {}
+	var w_list: Array = []
+	var lw_list: Array = []
+	var dig_cleared: Array = []
+	for i in range(WIDTH * HEIGHT):
+		if not building[i].is_empty():
+			bld_map[str(i)] = building[i]
+		if has_wire[i] == 1:
+			w_list.append(i)
+		if has_logic_wire[i] == 1:
+			lw_list.append(i)
+		if solid_el[i].is_empty():
+			dig_cleared.append(i)
+	var snap := {
+		"seed": seed_value, "preset": world_preset, "sim_time": sim_time, "cycle": cycle,
+		"food_kcal": food_kcal, "data_banks": data_banks, "rockets_launched": rockets_launched,
+		"inventory": inventory, "unlocked_techs": unlocked_techs, "active_tech": active_tech,
+		"duplicants": dupe_arr, "buildings": bld_map, "wires": w_list, "logic_wires": lw_list,
+		"report_digs": report_digs, "report_builds": report_builds,
+	}
+	var f := FileAccess.open("user://oni_save.json", FileAccess.WRITE)
+	if f == null:
+		last_save_status = "저장 실패"
+		return false
+	f.store_string(JSON.stringify(snap))
+	f.close()
+	last_save_status = "저장 완료 (주기 %d · 복제체 %d명)" % [cycle, duplicants.size()]
+	return true
+
+func load_colony() -> bool:
+	if not FileAccess.file_exists("user://oni_save.json"):
+		last_save_status = "저장된 식민지 파일이 없습니다"
+		return false
+	var txt := FileAccess.get_file_as_string("user://oni_save.json")
+	var parsed: Variant = JSON.parse_string(txt)
+	if not (parsed is Dictionary):
+		last_save_status = "저장 파일 손상"
+		return false
+	var snap: Dictionary = parsed
+	generate(int(snap.get("seed", 73)), String(snap.get("preset", "terra")))
+	sim_time = float(snap.get("sim_time", 0.0))
+	cycle = int(snap.get("cycle", 1))
+	food_kcal = float(snap.get("food_kcal", 6000.0))
+	data_banks = int(snap.get("data_banks", 0))
+	rockets_launched = int(snap.get("rockets_launched", 0))
+	report_digs = int(snap.get("report_digs", 0))
+	report_builds = int(snap.get("report_builds", 0))
+	var inv_v: Variant = snap.get("inventory", {})
+	if inv_v is Dictionary:
+		inventory = (inv_v as Dictionary).duplicate()
+	var ut_v: Variant = snap.get("unlocked_techs", {})
+	if ut_v is Dictionary:
+		unlocked_techs = (ut_v as Dictionary).duplicate()
+	active_tech = String(snap.get("active_tech", active_tech))
+	var bm_v: Variant = snap.get("buildings", {})
+	if bm_v is Dictionary:
+		var bm: Dictionary = bm_v
+		for k_v in bm.keys():
+			var idx_i := int(String(k_v))
+			if idx_i >= 0 and idx_i < WIDTH * HEIGHT:
+				building[idx_i] = String(bm[k_v])
+				solid_el[idx_i] = ""
+				solid_mass[idx_i] = 0.0
+	var dup_v: Variant = snap.get("duplicants", [])
+	if dup_v is Array and not (dup_v as Array).is_empty():
+		duplicants.clear()
+		for d_item in (dup_v as Array):
+			if d_item is Dictionary:
+				var dd: Dictionary = d_item
+				var nd := OniDuplicant.new(int(dd.get("id", 0)), String(dd.get("name", "미프")), Vector2i(int(dd.get("x", 23)), int(dd.get("y", 16))), Color(0.35, 0.72, 0.98), String(dd.get("trait", "조기 기상")))
+				nd.skill_level = int(dd.get("skill_level", 0))
+				nd.skill_name_ko = String(dd.get("skill_name", "신입 개척자"))
+				nd.xp = float(dd.get("xp", 80.0))
+				nd.prio_dig = bool(dd.get("prio_dig", true))
+				nd.prio_build = bool(dd.get("prio_build", true))
+				nd.prio_operate = bool(dd.get("prio_operate", true))
+				nd.prio_research = bool(dd.get("prio_research", true))
+				duplicants.append(nd)
+	_step_logic_network()
+	_recompute_decor()
+	_recompute_rooms()
+	_recompute_stats()
+	last_save_status = "불러오기 완료 (주기 %d · 복제체 %d명)" % [cycle, duplicants.size()]
+	return true
 
 func can_stand_at(x: int, y: int) -> bool:
 	if not is_passable(x, y):
@@ -762,6 +1003,7 @@ func complete_dig(x: int, y: int) -> void:
 	solid_mass[i] = 0.0
 	dig_order[i] = 0
 	dig_progress[i] = 0.0
+	report_digs += 1
 	gas_el[i] = "Vacuum"
 	gas_mass[i] = 0.0
 	gas_prev_mass[i] = 0.0
@@ -804,6 +1046,7 @@ func complete_build(x: int, y: int) -> void:
 			farm_growth[i] = 0.0
 	build_order[i] = ""
 	build_progress[i] = 0.0
+	report_builds += 1
 	_recompute_decor()
 	_recompute_rooms()
 	if on_build_completed.is_valid():
@@ -847,6 +1090,13 @@ func step(dt: float) -> void:
 	_step_power_and_machines(dt)
 	_step_farms(dt)
 	_step_geysers_and_critters(dt)
+	_step_rocket(dt)
+	report_power_kj += (power_produced_w * dt) / 1000.0
+
+	_eco_accum += dt
+	if _eco_accum >= 1.5:
+		_eco_accum = 0.0
+		_step_ecology(1.5)
 
 	if print_ready_timer > 0.0:
 		print_ready_timer = maxf(0.0, print_ready_timer - dt)
@@ -1745,6 +1995,7 @@ func _step_power_and_machines(dt: float) -> void:
 						inventory["Algae"] = maxf(0.0, float(inventory["Algae"]) - need_algae)
 						gas_el[ci] = "Oxygen"
 						gas_mass[ci] += OniElements.DIFFUSER_O2_KG_PER_S * dt
+						report_o2_kg += OniElements.DIFFUSER_O2_KG_PER_S * dt
 						temp_c[ci] = lerpf(temp_c[ci], OniElements.DIFFUSER_OUT_TEMP_C, 0.12)
 						machine_running[ci] = 1
 				elif b == "electrolyzer":
@@ -1907,13 +2158,15 @@ func _recompute_stats() -> void:
 	for y in range(HEIGHT):
 		for x in range(WIDTH):
 			var i := idx(x, y)
-			if not is_solid_cell(x, y) and liquid_mass[i] < 10.0:
+			if not is_solid_cell(x, y) and not is_space_cell(x, y) and liquid_mass[i] < 10.0:
 				open_cells += 1
 				if gas_el[i] == "Oxygen":
 					sum_o2 += gas_mass[i]
 	avg_oxygen_kg = sum_o2 / float(maxi(1, open_cells))
 
 	alerts.clear()
+	if rocket_state == "LAUNCHING" or rocket_state == "IN_SPACE" or rocket_state == "LANDING":
+		alerts.append("로켓 임무 중: %s" % rocket_target_name)
 	if print_ready_timer <= 0.0:
 		alerts.append("인쇄기 준비 완료! (N)")
 	if avg_oxygen_kg < 0.35:
