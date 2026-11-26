@@ -22,6 +22,7 @@ var enemy_side := false
 var selected_id := ""
 var rotation_quarters := 0
 var erase_mode := false
+var mirror_mode := false
 var planned_route: Array[Vector2i] = []
 var preview_path: Array[Vector2i] = []
 var _hover := Vector2i(-1, -1)
@@ -116,6 +117,9 @@ func _draw() -> void:
 	else:
 		_draw_parts(_design_parts(), cell_size, origin, false)
 		_draw_route(preview_path, cell_size, origin, Color("#67d9bc"), 0.31)
+		if mirror_mode:
+			var axis_y := origin.y + float(GRID_SIZE.y) * 0.5 * cell_size.y
+			draw_line(Vector2(origin.x, axis_y), Vector2(board_rect.end.x, axis_y), Color("#5ce1ff", 0.72), 2.0, true)
 		_draw_ghost(cell_size, origin)
 	if _hover.x >= 0:
 		var hrect := _cell_rect(_hover, Vector2i.ONE, cell_size, origin)
@@ -233,6 +237,27 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 		draw_circle(center, inset * 0.28, color.darkened(0.15))
 		draw_circle(center, inset * 0.14, PALE)
 		draw_arc(center, minf(rect.size.x, rect.size.y) * 0.44, rest_rot - 0.9, rest_rot + 0.9, 20, Color("#7ef2ff"), maxf(2.0, inset * 0.09), true)
+	elif id == "cosmoteer.ion_beam_prism":
+		var r := minf(rect.size.x, rect.size.y) * 0.34
+		var diamond := PackedVector2Array([center + Vector2(0, -r), center + Vector2(r, 0), center + Vector2(0, r), center + Vector2(-r, 0)])
+		draw_colored_polygon(diamond, Color("#ff8ad4", 0.75))
+		draw_polyline(PackedVector2Array([diamond[0], diamond[1], diamond[2], diamond[3], diamond[0]]), Color.WHITE, maxf(1.5, inset * 0.06), true)
+	elif id == "cosmoteer.flak_cannon_large":
+		var rest_rot := deg_to_rad(-90.0) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(rest_rot)
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		var side_vec := dir.orthogonal()
+		for off in [-0.3, 0.0, 0.3]:
+			draw_line(center + side_vec * inset * off, center + side_vec * inset * off + dir * inset * 0.65, color, maxf(2.0, inset * 0.14), true)
+		draw_circle(center, inset * 0.24, PALE)
+	elif id == "cosmoteer.chaingun" or id == "cosmoteer.chaingun_magazine":
+		var rest_rot := deg_to_rad(-90.0) + int(part.rotation) * PI * 0.5
+		var dir := Vector2.from_angle(rest_rot)
+		if _is_mirrored_battle():
+			dir.x = -dir.x
+		draw_line(center - dir * inset * 0.45, center + dir * inset * 0.65, color, maxf(2.5, inset * 0.18), true)
+		draw_circle(center, inset * 0.18, AMBER)
 	elif id == "cosmoteer.ion_beam_emitter":
 		var rest_rot := deg_to_rad(float(stats.get("turret_rotation_deg", -90))) + int(part.rotation) * PI * 0.5
 		var dir := Vector2.from_angle(rest_rot)
@@ -384,8 +409,12 @@ func _part_color(id: String) -> Color:
 		return BLUE
 	if id == "cosmoteer.shield_gen_small" or id == "cosmoteer.shield_gen_large":
 		return Color("#5ce1ff")
-	if id == "cosmoteer.ion_beam_emitter":
+	if id == "cosmoteer.ion_beam_emitter" or id == "cosmoteer.ion_beam_prism":
 		return Color("#ff5ea8")
+	if id == "cosmoteer.flak_cannon_large":
+		return Color("#e8c86e")
+	if id.contains("chaingun"):
+		return Color("#f09a4b")
 	if id.contains("railgun"):
 		return Color("#4dc8ff")
 	if id == "cosmoteer.disruptor":
@@ -445,6 +474,12 @@ func _draw_ghost(cell_size: Vector2, origin: Vector2) -> void:
 	draw_circle(center, minf(rect.size.x, rect.size.y) * 0.14, Color(color, 0.88))
 	var heading := Vector2.UP.rotated(float(rotation_quarters) * PI * 0.5)
 	draw_line(center, center + heading * minf(rect.size.x, rect.size.y) * 0.36, color, 3.0, true)
+	if mirror_mode:
+		var mcell := Vector2i(_hover.x, GRID_SIZE.y - dims.y - _hover.y)
+		if mcell != _hover:
+			var mrect := Rect2(origin + Vector2(mcell) * cell_size, Vector2(dims) * cell_size).grow(-2.0)
+			draw_rect(mrect, Color("#5ce1ff", 0.14), true)
+			draw_rect(mrect, Color("#5ce1ff", 0.8), false, 1.5)
 
 
 func _draw_route(route: Array, cell_size: Vector2, origin: Vector2, color: Color, alpha: float) -> void:

@@ -14,6 +14,10 @@ const CANNON_MED := "cosmoteer.cannon_med"
 const MISSILE_LAUNCHER := "cosmoteer.missile_launcher"
 const DISRUPTOR := "cosmoteer.disruptor"
 const ION_BEAM := "cosmoteer.ion_beam_emitter"
+const ION_PRISM := "cosmoteer.ion_beam_prism"
+const FLAK_CANNON := "cosmoteer.flak_cannon_large"
+const CHAINGUN := "cosmoteer.chaingun"
+const CHAINGUN_MAG := "cosmoteer.chaingun_magazine"
 const RAILGUN_LAUNCHER := "cosmoteer.railgun_launcher"
 const RAILGUN_ACCEL := "cosmoteer.railgun_accelerator"
 const RAILGUN_LOADER := "cosmoteer.railgun_loader"
@@ -28,8 +32,8 @@ const BUNK_MED := "cosmoteer.crew_quarters_med"
 const ARMOR_2X1 := "cosmoteer.armor_2x1"
 const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
 
-const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER]
-const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER]
+const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
+const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
 const SHIELD_IDS := [SHIELD_SMALL, SHIELD_LARGE]
 const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
 const BUNK_IDS := [BUNK_SMALL, BUNK_MED]
@@ -136,6 +140,63 @@ const EXTRA_STATS := {
 		"firing_arc_deg": 45.0,
 		"rotate_speed_deg": 60.0,
 		"fire_threshold_deg": 12.0,
+	},
+	ION_PRISM: {
+		"range": 340.0,
+		"turret_location": [1.0, 1.0],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 360.0,
+		"rotate_speed_deg": 180.0,
+		"fire_threshold_deg": 10.0,
+	},
+	FLAK_CANNON: {
+		"weapon_kind": "flak",
+		"flak_defense_range": 86.0,
+		"flak_defense_arc_deg": 100.0,
+		"flak_defense_interval": 0.45,
+		"flak_defense_damage": 300.0,
+		"battery_capacity": 6000,
+		"crew_required": 2,
+		"resupply_threshold": 700,
+		"fire_interval": 0.95,
+		"fire_delay": 0.20,
+		"battery_per_shot": 320,
+		"min_resources_used": 120,
+		"projectile_speed": 310.0,
+		"range": 225.0,
+		"damage": 1250.0,
+		"structural_damage": 1050.0,
+		"turret_location": [1.5, 0.9],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 100.0,
+		"rotate_speed_deg": 60.0,
+		"fire_threshold_deg": 3.5,
+	},
+	CHAINGUN: {
+		"weapon_kind": "chaingun",
+		"spin_up_rate": 0.45,
+		"spin_down_rate": 0.30,
+		"fire_interval_min": 0.09,
+		"battery_capacity": 6000,
+		"crew_required": 2,
+		"resupply_threshold": 600,
+		"fire_interval": 0.34,
+		"fire_delay": 0.06,
+		"battery_per_shot": 65,
+		"min_resources_used": 40,
+		"projectile_speed": 430.0,
+		"range": 250.0,
+		"damage": 320.0,
+		"structural_damage": 240.0,
+		"turret_location": [1.5, 0.8],
+		"turret_rotation_deg": -90.0,
+		"firing_arc_deg": 110.0,
+		"rotate_speed_deg": 80.0,
+		"fire_threshold_deg": 3.0,
+	},
+	CHAINGUN_MAG: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 500,
 	},
 	RAILGUN_LAUNCHER: {
 		"weapon_kind": "railgun",
@@ -260,7 +321,8 @@ static func is_bunk(id: String) -> bool:
 
 static func is_walkable_expansion(id: String) -> bool:
 	return id in [
-		LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM,
+		LASER_LARGE, CANNON_MED, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, ION_PRISM,
+		FLAK_CANNON, CHAINGUN, CHAINGUN_MAG,
 		RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER,
 		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
 		REACTOR_MED, REACTOR_LARGE, BUNK_MED, FIRE_EXTINGUISHER,
@@ -280,6 +342,12 @@ static func prepare_part(part: Dictionary) -> void:
 	elif part.id == POINT_DEFENSE:
 		part["pd_cooldown"] = 0.0
 		part["pd_intercepts"] = 0
+	elif part.id == FLAK_CANNON:
+		part["flak_cooldown"] = 0.0
+		part["flak_intercepts"] = 0
+	elif part.id == CHAINGUN:
+		part["chaingun_spin"] = 0.0
+		part["chaingun_mag_count"] = 0
 	elif part.id == RAILGUN_LAUNCHER:
 		part["rail_accel_count"] = 0
 		part["rail_has_loader"] = false
@@ -290,6 +358,31 @@ static func prepare_part(part: Dictionary) -> void:
 	elif part.id == ION_BEAM:
 		part["ion_active"] = false
 		part["ion_power_accum"] = 0.0
+
+
+static func refresh_chainguns(ship: Dictionary) -> void:
+	for uid in ship.ids.get(CHAINGUN, []):
+		var gun: Dictionary = ship.parts[uid]
+		var mags := 0
+		if gun.hp > 0.0:
+			var seen := {}
+			for x in range(gun.cell.x - 1, gun.cell.x + gun.size.x + 1):
+				for y in range(gun.cell.y - 1, gun.cell.y + gun.size.y + 1):
+					var inside_x: bool = x >= int(gun.cell.x) and x < int(gun.cell.x) + int(gun.size.x)
+					var inside_y: bool = y >= int(gun.cell.y) and y < int(gun.cell.y) + int(gun.size.y)
+					if inside_x and inside_y:
+						continue
+					if (not inside_x) and (not inside_y):
+						continue
+					var nuid: int = int(ship.cells.get(Vector2i(x, y), -1))
+					if nuid >= 0 and not seen.has(nuid) and ship.parts.has(nuid):
+						var np: Dictionary = ship.parts[nuid]
+						if np.id == CHAINGUN_MAG and np.hp > 0.0:
+							seen[nuid] = true
+							mags += 1
+		gun["chaingun_mag_count"] = mags
+		var base_cap := int(gun.stats.get("battery_capacity", 6000))
+		gun["capacity"] = base_cap + mags * 4000
 
 
 ## Scan modular railgun chains: flush accelerators & loader directly behind each railgun_launcher.
@@ -450,17 +543,62 @@ static func apply_shield_damage(part: Dictionary, dmg: float, energy_drain: int 
 	return false
 
 
-## Continuous Ion Beam trace & DPS application.
-## Returns array of beam hit records:
-## {"from", "to", "side", "source_uid", "hit_kind": "shield"|"hull"|"miss", "hit_uid", "collapsed": bool, "destroyed": bool, "ignited": bool}
+## Continuous Ion Beam trace with optional friendly Ion Prism combining (0.75^i diminishing returns).
 static func tick_ion_beams(ship: Dictionary, other: Dictionary, side: String, target: int, dt: float) -> Array[Dictionary]:
 	var beams: Array[Dictionary] = []
+	var prism_inputs: Dictionary = {}  # prism_uid -> Array of {"dps", "sdps", "ignite", "source_uid"}
+	var prisms: Array = ship.ids.get(ION_PRISM, [])
 	for uid in ship.ids.get(ION_BEAM, []):
 		var emitter: Dictionary = ship.parts[uid]
 		emitter.ion_active = false
 		var need_crew := int(emitter.stats.get("crew_required", 2))
 		if emitter.hp <= 0.0 or emitter.staffed < need_crew or not ship.command or emitter.energy < int(emitter.stats.get("min_resources_used", 100)) or target < 0 or not other.parts.has(target) or other.parts[target].hp <= 0.0:
 			emitter.aim_status = "offline"
+			continue
+		var muzzle := shield_world_center(ship, emitter)
+		var rest_world := shield_world_facing(ship, emitter)
+		# Check if a friendly alive Ion Prism sits in front of this emitter (within 42 deg cone, <= 20m)
+		var linked_prism := -1
+		var best_pdist := 22.0
+		for puid in prisms:
+			var prism: Dictionary = ship.parts[puid]
+			if prism.hp <= 0.0:
+				continue
+			var pcenter := shield_world_center(ship, prism)
+			var delta := pcenter - muzzle
+			var dist := delta.length()
+			if dist < 0.5 or dist >= best_pdist:
+				continue
+			if absf(wrapf(delta.angle() - rest_world, -PI, PI)) <= deg_to_rad(42.0):
+				best_pdist = dist
+				linked_prism = int(puid)
+		if linked_prism >= 0:
+			var prism_part: Dictionary = ship.parts[linked_prism]
+			var pcenter := shield_world_center(ship, prism_part)
+			var target_pos := Vector2(other.position)
+			if muzzle.distance_to(target_pos) > float(prism_part.stats.get("range", 340.0)) + 20.0:
+				emitter.aim_status = "out_of_range"
+				continue
+			emitter.aim_status = "ready"
+			emitter.ion_active = true
+			emitter.turret_angle_local = wrapf((pcenter - muzzle).angle() - float(ship.heading), -PI, PI)
+			var power_cost := float(emitter.stats.get("beam_power_per_sec", 750.0)) * dt + float(emitter.ion_power_accum)
+			var spend := mini(int(emitter.energy), int(floor(power_cost)))
+			emitter.ion_power_accum = power_cost - float(spend)
+			emitter.energy -= spend
+			if not prism_inputs.has(linked_prism):
+				prism_inputs[linked_prism] = []
+			prism_inputs[linked_prism].append({
+				"dps": float(emitter.stats.get("beam_dps", 2400.0)),
+				"sdps": float(emitter.stats.get("beam_structural_dps", 1400.0)),
+				"ignite": float(emitter.stats.get("ignite_intensity", 0.45)),
+				"source_uid": uid,
+			})
+			beams.append({
+				"from": muzzle, "to": pcenter, "side": side, "source_uid": uid,
+				"hit_kind": "prism", "hit_uid": linked_prism, "strength": 1.0,
+				"collapsed": false, "destroyed": false, "ignited": false,
+			})
 			continue
 		if not Flight.aim(ship, other, emitter, target, dt):
 			continue
@@ -469,40 +607,108 @@ static func tick_ion_beams(ship: Dictionary, other: Dictionary, side: String, ta
 		var spend := mini(int(emitter.energy), int(floor(power_cost)))
 		emitter.ion_power_accum = power_cost - float(spend)
 		emitter.energy -= spend
-		var muzzle := shield_world_center(ship, emitter)
 		var dir := Vector2.from_angle(float(ship.heading) + float(emitter.turret_angle_local))
-		var beam_range := float(emitter.stats.get("range", 310.0))
-		var far_end := muzzle + dir * beam_range
-		var shield_hit := intercept_shield(other, muzzle, far_end)
-		if not shield_hit.is_empty():
-			var suid: int = int(shield_hit.uid)
-			var collapsed := apply_shield_damage(other.parts[suid], float(emitter.stats.get("beam_dps", 2400.0)) * dt)
-			beams.append({
-				"from": muzzle, "to": Vector2(shield_hit.pos), "side": side,
-				"source_uid": uid, "hit_kind": "shield", "hit_uid": suid,
-				"collapsed": collapsed, "destroyed": false, "ignited": false,
-			})
-			continue
-		var hull_hit := Flight.trace(other, muzzle, far_end)
-		if not hull_hit.is_empty():
-			var huid: int = int(hull_hit.uid)
-			var part: Dictionary = other.parts[huid]
-			var dps := float(emitter.stats.get("beam_structural_dps", 1400.0)) if part.health_type == "Structural" else float(emitter.stats.get("beam_dps", 2400.0))
-			var was_alive: bool = part.hp > 0.0
-			part.hp = maxf(0.0, float(part.hp) - dps * dt)
-			var ignited := ignite_part(part, float(emitter.stats.get("ignite_intensity", 0.45)) * dt * 2.2)
-			beams.append({
-				"from": muzzle, "to": Vector2(hull_hit.pos), "side": side,
-				"source_uid": uid, "hit_kind": "hull", "hit_uid": huid,
-				"collapsed": false, "destroyed": was_alive and part.hp <= 0.0, "ignited": ignited,
-			})
-		else:
-			beams.append({
-				"from": muzzle, "to": far_end, "side": side,
-				"source_uid": uid, "hit_kind": "miss", "hit_uid": -1,
-				"collapsed": false, "destroyed": false, "ignited": false,
-			})
+		beams.append(_trace_ion_beam(muzzle, dir, float(emitter.stats.get("range", 310.0)), float(emitter.stats.get("beam_dps", 2400.0)), float(emitter.stats.get("beam_structural_dps", 1400.0)), float(emitter.stats.get("ignite_intensity", 0.45)), 1.0, other, side, uid, dt))
+	# Fire combined beams from energized Ion Prisms toward target (360-degree prism aim)
+	for puid in prism_inputs:
+		var prism: Dictionary = ship.parts[puid]
+		var feeds: Array = prism_inputs[puid]
+		feeds.sort_custom(func(a, b): return float(a.dps) > float(b.dps))
+		var total_dps := 0.0
+		var total_sdps := 0.0
+		var max_ignite := 0.0
+		var factor := 1.0
+		for feed in feeds:
+			total_dps += float(feed.dps) * factor
+			total_sdps += float(feed.sdps) * factor
+			max_ignite = maxf(max_ignite, float(feed.ignite))
+			factor *= 0.75
+		var origin := shield_world_center(ship, prism)
+		var target_pos := Vector2(other.position) + (Vector2(other.parts[target].cell) + Vector2(other.parts[target].size) * 0.5 - Vector2(other.center_of_mass)).rotated(other.heading)
+		var dir := (target_pos - origin).normalized()
+		prism.turret_angle_local = wrapf(dir.angle() - float(ship.heading), -PI, PI)
+		var strength := total_dps / 2400.0
+		beams.append(_trace_ion_beam(origin, dir, float(prism.stats.get("range", 340.0)), total_dps, total_sdps, max_ignite * minf(1.8, strength), strength, other, side, int(puid), dt))
 	return beams
+
+
+static func _trace_ion_beam(muzzle: Vector2, dir: Vector2, beam_range: float, dps: float, sdps: float, ignite_val: float, strength: float, other: Dictionary, side: String, source_uid: int, dt: float) -> Dictionary:
+	var far_end := muzzle + dir * beam_range
+	var shield_hit := intercept_shield(other, muzzle, far_end)
+	if not shield_hit.is_empty():
+		var suid: int = int(shield_hit.uid)
+		var collapsed := apply_shield_damage(other.parts[suid], dps * dt)
+		return {
+			"from": muzzle, "to": Vector2(shield_hit.pos), "side": side,
+			"source_uid": source_uid, "hit_kind": "shield", "hit_uid": suid, "strength": strength,
+			"collapsed": collapsed, "destroyed": false, "ignited": false,
+		}
+	var hull_hit := Flight.trace(other, muzzle, far_end)
+	if not hull_hit.is_empty():
+		var huid: int = int(hull_hit.uid)
+		var part: Dictionary = other.parts[huid]
+		var eff_dps := sdps if part.health_type == "Structural" else dps
+		var was_alive: bool = part.hp > 0.0
+		part.hp = maxf(0.0, float(part.hp) - eff_dps * dt)
+		var ignited := ignite_part(part, ignite_val * dt * 2.2)
+		return {
+			"from": muzzle, "to": Vector2(hull_hit.pos), "side": side,
+			"source_uid": source_uid, "hit_kind": "hull", "hit_uid": huid, "strength": strength,
+			"collapsed": false, "destroyed": was_alive and part.hp <= 0.0, "ignited": ignited,
+		}
+	return {
+		"from": muzzle, "to": far_end, "side": side,
+		"source_uid": source_uid, "hit_kind": "miss", "hit_uid": -1, "strength": strength,
+		"collapsed": false, "destroyed": false, "ignited": false,
+	}
+
+
+## Large Flak Cannon defensive flak burst: intercepts incoming enemy missiles & cannon shells.
+static func tick_flak_defense(ship: Dictionary, side: String, projectiles: Array[Dictionary], dt: float) -> Array[Dictionary]:
+	var shots: Array[Dictionary] = []
+	for uid in ship.ids.get(FLAK_CANNON, []):
+		var flak: Dictionary = ship.parts[uid]
+		if flak.hp <= 0.0 or not ship.command or flak.staffed < int(flak.stats.get("crew_required", 2)):
+			continue
+		if flak.flak_cooldown > 0.0:
+			flak.flak_cooldown = maxf(0.0, flak.flak_cooldown - dt)
+		if flak.flak_cooldown > 0.0:
+			continue
+		var origin := shield_world_center(ship, flak)
+		var f_range := float(flak.stats.get("flak_defense_range", 86.0))
+		var facing := shield_world_facing(ship, flak)
+		var half_arc := deg_to_rad(float(flak.stats.get("flak_defense_arc_deg", 100.0))) * 0.5
+		var best_idx := -1
+		var best_dist := f_range + 1.0
+		for i in projectiles.size():
+			var p: Dictionary = projectiles[i]
+			if p.side == side:
+				continue
+			var pk := str(p.get("kind", ""))
+			if pk != "missile" and pk != "cannon":
+				continue
+			var delta: Vector2 = Vector2(p.pos) - origin
+			var dist := delta.length()
+			if dist > f_range or dist >= best_dist:
+				continue
+			if absf(wrapf(delta.angle() - facing, -PI, PI)) > half_arc:
+				continue
+			best_dist = dist
+			best_idx = i
+		if best_idx >= 0 and flak.energy >= 80:
+			var target_proj: Dictionary = projectiles[best_idx]
+			flak.energy -= 80
+			flak.flak_cooldown = float(flak.stats.get("flak_defense_interval", 0.45))
+			flak.flak_intercepts += 1
+			shots.append({
+				"from": origin,
+				"to": Vector2(target_proj.pos),
+				"side": side,
+				"pd_uid": uid,
+				"killed": true,
+				"proj_index": best_idx,
+			})
+	return shots
 
 
 static func ignite_part(part: Dictionary, add_intensity: float) -> bool:

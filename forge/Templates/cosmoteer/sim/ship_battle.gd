@@ -107,6 +107,9 @@ static func _make_opponent(profile: String):
 	if profile == "dreadnought":
 		opponent.dreadnought_battleship()
 		return opponent
+	if profile == "prism":
+		opponent.prism_flak_destroyer()
+		return opponent
 	opponent.flight_starter()
 	match profile:
 		"fast":
@@ -304,6 +307,8 @@ static func _build_ship(design) -> Dictionary:
 		Special.refresh_network(ship)
 	if ship.ids.has(CombatSystems.RAILGUN_LAUNCHER):
 		CombatSystems.refresh_railguns(ship)
+	if ship.ids.has(CombatSystems.CHAINGUN):
+		CombatSystems.refresh_chainguns(ship)
 	EngineRoom.setup(ship)
 	return ship
 
@@ -475,6 +480,8 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 		if gun.hp <= 0 or gun.staffed < need_crew or not ship.command or gun.energy < gun.stats.min_resources_used or not _alive(other, target):
 			gun.aim_status = "offline"
 			gun.release = -1
+			if gun.id == CombatSystems.CHAINGUN:
+				gun.chaingun_spin = maxf(0.0, float(gun.get("chaingun_spin", 0.0)) - float(gun.stats.get("spin_down_rate", 0.3)) * DT)
 			continue
 		var is_homing := bool(gun.stats.get("homing", false))
 		var eff_range := float(gun.stats.range) * float(gun.get("rail_range_mult", 1.0))
@@ -489,7 +496,11 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			gun.turret_angle_local = gun.rest_angle
 		elif not Flight.aim(ship, other, gun, target, DT):
 			gun.release = -1
+			if gun.id == CombatSystems.CHAINGUN:
+				gun.chaingun_spin = maxf(0.0, float(gun.get("chaingun_spin", 0.0)) - float(gun.stats.get("spin_down_rate", 0.3)) * DT)
 			continue
+		if gun.id == CombatSystems.CHAINGUN:
+			gun.chaingun_spin = minf(1.0, float(gun.get("chaingun_spin", 0.0)) + float(gun.stats.get("spin_up_rate", 0.45)) * DT)
 		if not gun.acquired:
 			gun.acquired = true
 			if side == "enemy":
@@ -497,8 +508,11 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 		if gun.release < 0:
 			if _tick < gun.ready:
 				continue
+			var base_interval := float(gun.stats.fire_interval) * float(gun.get("rail_reload_mult", 1.0))
+			if gun.id == CombatSystems.CHAINGUN:
+				base_interval = lerpf(float(gun.stats.fire_interval), float(gun.stats.get("fire_interval_min", 0.09)), float(gun.get("chaingun_spin", 0.0)))
 			gun.release = _tick + roundi(gun.stats.fire_delay * HZ)
-			gun.ready = _tick + roundi(float(gun.stats.fire_interval) * float(gun.get("rail_reload_mult", 1.0)) * HZ)
+			gun.ready = _tick + maxi(1, roundi(base_interval * HZ))
 		if _tick >= gun.release:
 			gun.release = -1
 			var muzzle := grid_world(ship, gun.mount_local)
@@ -557,6 +571,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 		_on_part_destroyed(ship, int(dead_uid), attacker, int(dead_uid), part_world(ship, int(dead_uid)))
 	CombatSystems.tick_shields(ship, DT)
 	var pd_shots := CombatSystems.tick_point_defense(ship, side, projectiles, DT)
+	pd_shots.append_array(CombatSystems.tick_flak_defense(ship, side, projectiles, DT))
 	if not pd_shots.is_empty():
 		var killed_indices: Array[int] = []
 		for s in pd_shots:
@@ -795,6 +810,8 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 		Special.refresh_network(victim)
 	if part.id in CombatSystems.RAILGUN_PART_IDS:
 		CombatSystems.refresh_railguns(victim)
+	if part.id in [CombatSystems.CHAINGUN, CombatSystems.CHAINGUN_MAG]:
+		CombatSystems.refresh_chainguns(victim)
 	if part.id == Special.BOOST and part.boost_active:
 		Special.set_boost(victim, part, false)
 	Flight.refresh_mass(victim)

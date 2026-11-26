@@ -289,12 +289,13 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 	for beam in battle.get("ion_beams"):
 		var a := _world_to_screen(beam.from, camera, zoom, viewport_center)
 		var b := _world_to_screen(beam.to, camera, zoom, viewport_center)
+		var strength := clampf(float(beam.get("strength", 1.0)), 0.8, 3.0)
 		var outer := Color("#ff47a3") if beam.side == "player" else Color("#ff5b5b")
-		draw_line(a, b, Color(outer, 0.35), maxf(6.0, zoom * 1.1), true)
-		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.6, zoom * 0.42), true)
-		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16), true)
+		draw_line(a, b, Color(outer, 0.35), maxf(5.5, zoom * 1.05 * strength), true)
+		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.4, zoom * 0.40 * strength), true)
+		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16 * strength), true)
 		if beam.hit_kind != "miss":
-			draw_circle(b, maxf(3.5, zoom * 0.45), Color("#ffd6ef", 0.9))
+			draw_circle(b, maxf(3.5, zoom * 0.42 * strength), Color("#ffd6ef", 0.9))
 
 
 func _draw_fires(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
@@ -343,6 +344,12 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 		elif kind == "disruptor":
 			draw_line(a, tip, Color("#c382ff", 0.65), maxf(3.8, zoom * 0.65), true)
 			draw_circle(tip, maxf(2.6, zoom * 0.26), Color("#f2d9ff"))
+		elif kind == "flak":
+			draw_circle(tip, maxf(3.2, zoom * 0.34), Color("#ffe38a", 0.85))
+			draw_arc(tip, maxf(5.0, zoom * 0.55), 0.0, TAU, 12, Color("#ffb35c", 0.65), 1.4, true)
+		elif kind == "chaingun":
+			draw_line(a, tip, Color("#ffb85c", 0.85), maxf(1.8, zoom * 0.24), true)
+			draw_circle(tip, maxf(1.8, zoom * 0.18), Color("#fff2cc"))
 		elif kind == "heavy_laser":
 			var heavy := Color("#66f2ff") if bolt.side == "player" else Color("#ff6e6e")
 			draw_line(a, tip, Color(heavy, 0.55), maxf(4.8, zoom * 0.82), true)
@@ -559,8 +566,12 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 func _part_color(id: String) -> Color:
 	if id == "cosmoteer.shield_gen_small" or id == "cosmoteer.shield_gen_large":
 		return Color("#5ce1ff")
-	if id == "cosmoteer.ion_beam_emitter":
+	if id == "cosmoteer.ion_beam_emitter" or id == "cosmoteer.ion_beam_prism":
 		return Color("#ff5ea8")
+	if id == "cosmoteer.flak_cannon_large":
+		return Color("#e8c86e")
+	if id.contains("chaingun"):
+		return Color("#f09a4b")
 	if id.contains("railgun"):
 		return Color("#4dc8ff")
 	if id == "cosmoteer.disruptor":

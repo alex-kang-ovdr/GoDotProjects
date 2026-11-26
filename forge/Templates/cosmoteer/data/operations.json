@@ -55,6 +55,17 @@
       "seconds": 0,
       "ai": "balanced",
       "requires": "vanguard"
+    },
+    {
+      "id": "prism_fortress",
+      "title": "프리즘 요새 돌파",
+      "summary": "이온 프리즘·플랙 대공포·체인건 구축함의 함교를 제압하세요.",
+      "objective": "duel",
+      "opponent": "prism",
+      "distance": 170,
+      "seconds": 0,
+      "ai": "balanced",
+      "requires": "dreadnought"
     }
   ]
 }

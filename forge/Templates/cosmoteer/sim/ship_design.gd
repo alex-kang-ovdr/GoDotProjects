@@ -382,3 +382,34 @@ func dreadnought_battleship() -> void:
 	place(CORRIDOR, Vector2i(8, 5))
 	place(CORRIDOR, Vector2i(7, 6))
 	place(CORRIDOR, Vector2i(8, 6))
+
+
+static func mirror_vertical(cell: Vector2i, dims: Vector2i, rotation: int) -> Dictionary:
+	var mrot := 2 if rotation == 0 else (0 if rotation == 2 else rotation)
+	return {"cell": Vector2i(cell.x, GRID_SIZE.y - dims.y - cell.y), "rotation": mrot}
+
+
+func prism_flak_destroyer() -> void:
+	_clear_layout()
+	place(CombatSystems.BUNK_MED, Vector2i(0, 2))
+	place(CombatSystems.BUNK_MED, Vector2i(0, 5))
+	place(CombatSystems.REACTOR_LARGE, Vector2i(3, 3))
+	place("cosmoteer.control_room_small", Vector2i(7, 4))
+	place(CombatSystems.ION_BEAM, Vector2i(9, 4), 1)
+	place(CombatSystems.ION_PRISM, Vector2i(14, 4), 1)
+	place(CombatSystems.FLAK_CANNON, Vector2i(9, 0), 1)
+	place(CombatSystems.CHAINGUN, Vector2i(9, 7), 1)
+	place(CombatSystems.CHAINGUN_MAG, Vector2i(7, 8), 1)
+	place(CombatSystems.POINT_DEFENSE, Vector2i(7, 1), 1)
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 0), 2)
+	place("cosmoteer.thruster_small_3way", Vector2i(3, 8))
+	place("cosmoteer.thruster_small_3way", Vector2i(5, 8))
+	for y in range(1, 9):
+		place(CORRIDOR, Vector2i(2, y))
+	for x in range(3, 9):
+		place(CORRIDOR, Vector2i(x, 2))
+		place(CORRIDOR, Vector2i(x, 7))
+	for x in range(7, 15):
+		place(CORRIDOR, Vector2i(x, 3))
+		place(CORRIDOR, Vector2i(x, 6))

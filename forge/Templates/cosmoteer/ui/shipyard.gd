@@ -19,6 +19,9 @@ const CORE := {
 	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
 	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.missile_launcher":"미사일 발사기",
 	"cosmoteer.disruptor":"디스럽터", "cosmoteer.ion_beam_emitter":"이온 빔 방출기",
+	"cosmoteer.ion_beam_prism":"이온 빔 프리즘",
+	"cosmoteer.flak_cannon_large":"플랙 대공포",
+	"cosmoteer.chaingun":"체인건", "cosmoteer.chaingun_magazine":"체인건 탄창",
 	"cosmoteer.railgun_launcher":"레일건 발사부", "cosmoteer.railgun_accelerator":"레일건 가속기",
 	"cosmoteer.railgun_loader":"레일건 장전기",
 	"cosmoteer.shield_gen_small":"소형 방어막", "cosmoteer.shield_gen_large":"대형 방어막",
@@ -41,12 +44,15 @@ var depart_button: Button
 var load_button: Button
 var undo_button: Button
 var erase_button: Button
+var mirror_button: Button
+var preset_picker := OptionButton.new()
 var selection := OptionButton.new()
 var parts_list := ItemList.new()
 var search := LineEdit.new()
 var selected_id := "cosmoteer.corridor"
 var turn := 0
 var erasing := false
+var mirror_mode := false
 var history: Array[Dictionary] = []
 var save_path := "user://ship_design.json"
 var part_info: Label
@@ -99,6 +105,8 @@ func build(host) -> void:
 	var toolbar := HBoxContainer.new()
 	deck.add_child(toolbar)
 	toolbar.add_child(lab.button("회전  R",_rotate))
+	mirror_button = lab.button("대칭  M",_toggle_mirror)
+	toolbar.add_child(mirror_button)
 	erase_button = lab.button("철거",_toggle_erase)
 	toolbar.add_child(erase_button)
 	undo_button = lab.button("되돌리기",_undo)
@@ -106,8 +114,12 @@ func build(host) -> void:
 	toolbar.add_spacer(false)
 	toolbar.add_child(lab.button("기본 함선",_preset))
 	toolbar.add_child(lab.button("특수 추진 실험선",_special_preset))
-	toolbar.add_child(lab.button("방어막·미사일 함선",_cruiser_preset))
-	toolbar.add_child(lab.button("이온·레일건 전함",_dreadnought_preset))
+	preset_picker.add_item("고급 함선 선택")
+	preset_picker.add_item("방어막·미사일 함선")
+	preset_picker.add_item("이온·레일건 전함")
+	preset_picker.add_item("프리즘·플랙 구축함")
+	preset_picker.item_selected.connect(_on_advanced_preset)
+	toolbar.add_child(preset_picker)
 	toolbar.add_child(lab.button("비우기",_clear))
 	grid = Grid.new()
 	grid.design = design
@@ -331,8 +343,11 @@ func _sync_tool() -> void:
 	grid.selected_id = selected_id
 	grid.rotation_quarters = turn
 	grid.erase_mode = erasing
+	grid.mirror_mode = mirror_mode
 	grid.queue_redraw()
 	erase_button.modulate = lab.GOLD if erasing else Color.WHITE
+	if mirror_button != null:
+		mirror_button.modulate = lab.GREEN if mirror_mode else Color.WHITE
 	if selected_id.is_empty():
 		part_info.text = "일치하는 부품이 없습니다."
 		return
@@ -375,26 +390,49 @@ func _toggle_erase() -> void:
 	erasing = not erasing
 	_sync_tool()
 
+func _toggle_mirror() -> void:
+	mirror_mode = not mirror_mode
+	note.text = "상하 대칭 편집 켜짐 · 중심선(y=5) 기준으로 좌우 현에 동시 배치/철거합니다." if mirror_mode else "상하 대칭 편집 꺼짐."
+	_sync_tool()
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_visible_in_tree() or not editor.visible or search.has_focus():
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
-		_rotate()
-		get_viewport().set_input_as_handled()
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_R:
+			_rotate()
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_M:
+			_toggle_mirror()
+			get_viewport().set_input_as_handled()
 
 func _edit_cell(cell: Vector2i, erase: bool) -> void:
 	if not editor.visible:
 		return
 	var previous: Dictionary = design.serialize()
 	if erase or erasing:
-		if not design.remove_at(cell):
+		var removed: bool = design.remove_at(cell)
+		if mirror_mode:
+			var mcell := Vector2i(cell.x, Design.GRID_SIZE.y - 1 - cell.y)
+			if mcell != cell:
+				removed = design.remove_at(mcell) or removed
+		if not removed:
 			note.text = "철거할 부품이 없는 칸입니다."
 			return
-	elif selected_id.is_empty() or not design.place(selected_id,cell,turn):
-		note.text = "빈칸과 부품 크기를 확인하세요. 부품끼리 겹치거나 격자를 벗어날 수 없습니다."
-		return
+	else:
+		if selected_id.is_empty() or not design.place(selected_id,cell,turn):
+			note.text = "빈칸과 부품 크기를 확인하세요. 부품끼리 겹치거나 격자를 벗어날 수 없습니다."
+			return
+		if mirror_mode:
+			var row: Dictionary = design.by_id[selected_id]
+			var dims := Vector2i(int(row.size[0]), int(row.size[1]))
+			if turn % 2 == 1:
+				dims = Vector2i(dims.y, dims.x)
+			var mirrored := Design.mirror_vertical(cell, dims, turn)
+			if mirrored.cell != cell:
+				design.place(selected_id, mirrored.cell, int(mirrored.rotation))
 	_remember(previous)
-	note.text = "설계를 변경했습니다."
+	note.text = "대칭 설계를 변경했습니다." if mirror_mode else "설계를 변경했습니다."
 	_design_changed()
 	_hover(cell)
 
@@ -443,10 +481,23 @@ func _cruiser_preset() -> void:
 	note.text = "방어막 생성기·유도 미사일·근접 방어 포탑·중형 캐논을 탑재한 순양함 설계입니다."
 	_design_changed()
 
+func _on_advanced_preset(index: int) -> void:
+	match index:
+		1: _cruiser_preset()
+		2: _dreadnought_preset()
+		3: _prism_preset()
+	preset_picker.select(0)
+
 func _dreadnought_preset() -> void:
 	_remember(design.serialize())
 	design.dreadnought_battleship()
 	note.text = "이온 빔·모듈식 레일건·디스럽터·대형 방어막·소화기를 탑재한 전함 설계입니다."
+	_design_changed()
+
+func _prism_preset() -> void:
+	_remember(design.serialize())
+	design.prism_flak_destroyer()
+	note.text = "이온 빔 프리즘·플랙 대공포·체인건과 탄창을 탑재한 구축함 설계입니다."
 	_design_changed()
 
 func _design_changed() -> void:

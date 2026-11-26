@@ -107,11 +107,9 @@ test('Cosmoteer template exports to Godot Web (WASM) and runs interactively in h
     const shipyardPng = await canvas.screenshot({ path: path.join(evidenceDirectory, 'cosmoteer-shipyard.png') });
     assert.ok(shipyardPng.length > 15000, `shipyard screenshot unexpectedly small (${shipyardPng.length} bytes)`);
 
-    // Click "방어막·미사일 함선" preset button (x ~60.5%, y ~32.5% in 1240x800), then "전투 출격 →" (x ~93%, y ~14.5%).
+    // Click "전투 출격 →" button in top-right header (x ~93%, y ~14.5% in 1240x800).
     const bounds = await canvas.boundingBox();
     assert.ok(bounds && bounds.width > 100 && bounds.height > 100, 'canvas has valid bounding box');
-    await canvas.click({ position: { x: bounds.width * 0.605, y: bounds.height * 0.325 } });
-    await wait(500);
     await canvas.click({ position: { x: bounds.width * 0.93, y: bounds.height * 0.145 } });
     await canvas.focus();
     await wait(1400);

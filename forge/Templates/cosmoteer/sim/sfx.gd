@@ -13,6 +13,8 @@ const KINDS := [
 	"shot_disruptor",
 	"shot_ion",
 	"shot_railgun",
+	"shot_flak",
+	"shot_chaingun",
 	"shield_hit",
 	"shield_down",
 	"intercept",
@@ -46,6 +48,8 @@ func build_streams() -> void:
 	streams["shot_disruptor"] = _make_chime(0.10, 1320.0, 660.0, 0.28)
 	streams["shot_ion"] = _make_chime(0.12, 480.0, 960.0, 0.22)
 	streams["shot_railgun"] = _make_sweep(0.22, 1950.0, 140.0, 0.44, true)
+	streams["shot_flak"] = _make_sweep(0.14, 280.0, 85.0, 0.40, true)
+	streams["shot_chaingun"] = _make_sweep(0.05, 520.0, 180.0, 0.24, true)
 	streams["shield_hit"] = _make_chime(0.11, 980.0, 1480.0, 0.28)
 	streams["shield_down"] = _make_sweep(0.28, 660.0, 110.0, 0.38, false)
 	streams["intercept"] = _make_sweep(0.06, 1760.0, 920.0, 0.24, false)
