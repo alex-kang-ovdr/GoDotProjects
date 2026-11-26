@@ -2040,6 +2040,20 @@
       "owner": "Forge-Games-voxelFrontier"
     },
     {
+      "path": "forge/Tests/cosmoteer-godot.test.cjs",
+      "tier": "integration",
+      "suites": [
+        "godot",
+        "forge",
+        "game"
+      ],
+      "envs": [
+        "local",
+        "dev"
+      ],
+      "owner": "Forge-GameDev-Cosmoteer"
+    },
+    {
       "path": "forge/Tests/web-editor-wasm-release.test.cjs",
       "tier": "integration",
       "suites": [

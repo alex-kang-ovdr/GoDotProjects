@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#0b1218"/>
+  <rect x="10" y="10" width="108" height="108" rx="14" fill="#13232f" stroke="#324751" stroke-width="3"/>
+  <g stroke="#223847" stroke-width="1.5">
+    <line x1="34" y1="24" x2="34" y2="104"/>
+    <line x1="54" y1="24" x2="54" y2="104"/>
+    <line x1="74" y1="24" x2="74" y2="104"/>
+    <line x1="94" y1="24" x2="94" y2="104"/>
+    <line x1="24" y1="44" x2="104" y2="44"/>
+    <line x1="24" y1="64" x2="104" y2="64"/>
+    <line x1="24" y1="84" x2="104" y2="84"/>
+  </g>
+  <rect x="34" y="44" width="20" height="40" rx="3" fill="#2c5364" stroke="#81e3c1" stroke-width="2"/>
+  <circle cx="44" cy="64" r="6" fill="#81e3c1"/>
+  <rect x="54" y="54" width="20" height="20" rx="2" fill="#20483e" stroke="#81e3c1" stroke-width="2"/>
+  <polygon points="74,48 102,64 74,80" fill="#3b5e70" stroke="#ffc489" stroke-width="2.5"/>
+  <polygon points="22,50 34,54 34,74 22,78" fill="#ffc489"/>
+  <line x1="102" y1="64" x2="116" y2="64" stroke="#ff7a6b" stroke-width="4" stroke-linecap="round"/>
+</svg>

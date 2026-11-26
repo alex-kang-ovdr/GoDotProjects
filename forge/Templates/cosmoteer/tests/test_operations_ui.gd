@@ -4,8 +4,9 @@ func test() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() == 2 and args[0] == "--snapshot-dir":
 		screenshot_dir = args[1]
-	var lab = load("res://main.tscn").instantiate()
-	root.add_child(lab)
+	var scene = load("res://scenes/main.tscn").instantiate()
+	root.add_child(scene)
+	var lab = scene.get_node("UI/Laboratory")
 	await process_frame
 	var yard = lab.shipyard
 	var progress_path := "user://test_operations_%d.json" % OS.get_process_id()

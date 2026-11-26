@@ -1,0 +1,60 @@
+{
+  "id": "cosmoteer",
+  "name": "Cosmoteer: 함선 실험실 (Godot 4)",
+  "description": "Cosmoteer 원본 규칙 카탈로그를 기반으로 16×10 함선 조선소, 승무원 전력 보급·통로 경로 탐색, 일반/부스트/모듈식 로켓 추진, 엔진룸 오버클럭·발열, 60Hz 기동전투 및 임무 진행을 구현한 Godot 4.7.2 함선 실험실 프로젝트.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "assets/fonts/cosmoteer-ui.txt",
+    "assets/fonts/OFL.txt",
+    "data/catalog.json",
+    "data/operations.json",
+    "data/rule_graph.json",
+    "data/logic_trace.json"
+  ],
+  "guideOrder": [
+    "sim/engine_room.gd",
+    "sim/rocket_network.gd",
+    "sim/ship_design.gd",
+    "sim/power_range.gd",
+    "sim/flight_dynamics.gd",
+    "sim/special_propulsion.gd",
+    "sim/ship_battle.gd",
+    "sim/operations.gd",
+    "ui/range_view.gd",
+    "ui/catalog.gd",
+    "ui/ship_grid.gd",
+    "ui/flight_view.gd",
+    "ui/engagement.gd",
+    "ui/shipyard.gd",
+    "ui/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "cosmoteer",
+      "title": {
+        "ko": "Cosmoteer · 함선 실험실",
+        "en": "Cosmoteer: Ship Lab (Godot 4)"
+      },
+      "summary": {
+        "ko": "함선을 직접 조립하고 승무원 전력 보급, 일반·부스트·로켓 추진, 엔진룸 오버클럭과 발열을 운용하며 자유 교전 및 임무를 수행하는 Godot 4.7.2 함선 실험실입니다.",
+        "en": "Build modular starships on a 16x10 grid with crew power logistics, thruster/boost/rocket propulsion, engine-room overclocking and heat, 60Hz flight combat, and mission progression."
+      },
+      "instructions": {
+        "ko": "조선소에서 부품을 배치(좌클릭)·회전(R)·철거(우클릭)한 뒤 전투 출격을 누르세요. 전투 중 W/S 전후진, A/D 횡이동, Q/E 회전, B 부스트, O 오버클럭으로 기동하고 적 부품을 클릭해 집중 사격할 수 있습니다.",
+        "en": "Place (left-click), rotate (R), and remove (right-click) ship parts in the Shipyard, then Launch. Fly with W/S/A/D/Q/E, toggle Boost (B) and Overclock (O), and click enemy parts to focus fire."
+      },
+      "tags": ["strategy", "sandbox", "space", "shipbuilding", "simulation"],
+      "controls": ["keyboard", "mouse"],
+      "viewport": { "width": 1240, "height": 800, "orientation": "landscape", "resize": "fit" }
+    }
+  }
+}

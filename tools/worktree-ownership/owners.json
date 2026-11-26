@@ -374,6 +374,13 @@
         "forge/Tests/voxel-frontier.test.cjs"
       ]
     },
+    "Forge-GameDev-Cosmoteer": {
+      "role": "Cosmoteer 원본 규칙 카탈로그 기반 Godot 4.7.2 함선 실험실 프로젝트",
+      "owns": [
+        "forge/Templates/cosmoteer/**",
+        "forge/Tests/cosmoteer-godot.test.cjs"
+      ]
+    },
     "Forge-ISM-profile": {
       "role": "Unreal InstancedMesh ↔ Godot MultiMesh/Node3D 성능 비교 벤치마크 (실험)",
       "owns": [

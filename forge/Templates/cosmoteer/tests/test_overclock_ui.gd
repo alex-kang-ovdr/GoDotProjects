@@ -6,8 +6,9 @@ func test() -> void:
 		screenshot_dir = args[1]
 	if not screenshot_dir.is_empty():
 		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(screenshot_dir))
-	var lab = load("res://main.tscn").instantiate()
-	root.add_child(lab)
+	var scene = load("res://scenes/main.tscn").instantiate()
+	root.add_child(scene)
+	var lab = scene.get_node("UI/Laboratory")
 	await process_frame
 	var yard = lab.shipyard
 	var preset: Button

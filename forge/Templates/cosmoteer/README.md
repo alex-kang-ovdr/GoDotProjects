@@ -4,7 +4,7 @@
 
 ## 실행과 조작
 
-Windows에서 [Run.cmd](Run.cmd)를 실행하거나 Godot 4에서 [project.godot](project.godot)를 열고 **F5**를 누른다. 이 작업 폴더의 Godot 4.7.2에서 검증했다. 실행에는 프로젝트에 포함된 JSON을 사용한다.
+PlayForge 웹 고도 템플릿(`forge/Templates/cosmoteer`, 템플릿 ID `cosmoteer`)으로 통합되어 있다. PlayForge 서버에서 `cosmoteer` 템플릿으로 프로젝트를 생성해 웹 에디터/웹 런타임으로 열거나, Windows에서 [Run.cmd](Run.cmd) 또는 Godot 4.7.2에서 [project.godot](project.godot)을 열고 **F5**를 누른다. 통합 회귀 테스트는 저장소 루트에서 `node --test forge/Tests/cosmoteer-godot.test.cjs`로 실행한다. 실행에는 프로젝트에 포함된 JSON과 번들 한글 폰트(`assets/fonts/cosmoteer-ui.txt`)를 사용한다.
 
 - **조선소 · 전투**는 출격 가능한 기본 함선으로 열린다. 오른쪽 목록에서 부품을 골라 빈칸을 클릭하고 **R**로 다음 부품을 회전한다. 우클릭은 철거, **되돌리기**는 마지막 편집을 복원한다. **비우기**로 처음부터 만들 수 있다. **설계 저장**과 **불러오기**는 Godot 사용자 데이터의 `user://ship_design.json` 한 슬롯을 사용한다.
 - 기본 선택인 **자유 교전**에서 **전투 출격**을 누르면 즉시 기동전을 시작한다. **W/S**로 전진·후진, **A/D**로 좌현·우현 횡이동, **Q/E**로 좌회전·우회전한다. 화면의 조종 버튼을 길게 눌러도 된다. 키를 놓으면 남은 속도가 항력으로 줄어든다.

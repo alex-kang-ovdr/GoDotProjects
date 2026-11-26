@@ -29,8 +29,9 @@ func test() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() == 2 and args[0] == "--snapshot-dir":
 		snapshot_path = args[1].path_join("flight.png")
-	var lab = load("res://main.tscn").instantiate()
-	root.add_child(lab)
+	var scene = load("res://scenes/main.tscn").instantiate()
+	root.add_child(scene)
+	var lab = scene.get_node("UI/Laboratory")
 	await process_frame
 	var yard = lab.shipyard
 	yard.depart_button.pressed.emit()

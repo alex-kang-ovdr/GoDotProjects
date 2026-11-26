@@ -1,17 +1,30 @@
+; Engine configuration file.
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
 config_version=5
 
 [application]
+
 config/name="Cosmoteer · 함선 실험실"
-run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.4", "GL Compatibility")
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/icon.svg"
+
+[debug]
+
+gdscript/warnings/treat_warnings_as_errors=false
 
 [display]
+
 window/size/viewport_width=1240
 window/size/viewport_height=800
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 
 [input]
+
 flight_forward={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":87)]}
 flight_reverse={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":83)]}
 flight_port={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":65)]}
@@ -22,5 +35,7 @@ flight_boost={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":6
 flight_overclock={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":79)]}
 
 [rendering]
+
 renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.043, 0.071, 0.094, 1)

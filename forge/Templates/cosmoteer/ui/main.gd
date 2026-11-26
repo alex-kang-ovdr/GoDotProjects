@@ -35,9 +35,29 @@ var slider: HSlider
 var switches: Array[CheckButton] = []
 var meters: Array[Dictionary] = []
 
+func _load_ui_font() -> Font:
+	var sys := SystemFont.new()
+	sys.font_names = PackedStringArray(["Malgun Gothic", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Segoe UI", "DejaVu Sans", "sans-serif"])
+	var bundled: FontFile = null
+	if FileAccess.file_exists("res://assets/fonts/cosmoteer-ui.txt"):
+		var raw := FileAccess.get_file_as_string("res://assets/fonts/cosmoteer-ui.txt").strip_edges()
+		if not raw.is_empty():
+			bundled = FontFile.new()
+			bundled.data = Marshalls.base64_to_raw(raw)
+			if not OS.has_feature("web"):
+				bundled.fallbacks = [sys]
+	var chosen: Font = sys
+	if bundled != null:
+		var tuned := FontVariation.new()
+		tuned.base_font = bundled
+		tuned.spacing_top = -1
+		tuned.spacing_bottom = -1
+		chosen = tuned
+	ThemeDB.fallback_font = chosen
+	return chosen
+
 func _ready() -> void:
-	var face := SystemFont.new()
-	face.font_names = PackedStringArray(["Malgun Gothic","Noto Sans CJK KR","Apple SD Gothic Neo","Segoe UI"])
+	var face := _load_ui_font()
 	theme = Theme.new()
 	theme.default_font = face
 	theme.default_font_size = 16
