@@ -21,8 +21,8 @@
 ## 진행 상태
 
 - [x] 원본 계획서 반입
-- [ ] 첫 spike 이슈 분해
-- [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+- [x] 첫 spike 이슈 분해 (`Forge-Multiplayer`: `replication/fg_*.gd`, `native/fg_iris_native.{h,cpp}`, `iris_replication_selftest.gd`, `iris_native_bench.gd`, `net_r1_live.gd`)
+- [x] spike 결과 기록 (엔진 무변경 GDScript 코어 + C++ GDExtension 핫패스 `FgIrisNativeServer` 완료: 양자화·delta/ACK·owner 0B 누출·tombstone·10만 수명 충돌 0건·AOI/dormancy·fuzz 4,000건; C++ GDExtension 8워커 실측 N0 p95 0.012ms / N1 p95 0.620ms / N2 p95 0.717ms ≤4ms / N3 p95 1.210ms ≤8ms; Linux `.so` 빌드 및 24h soak은 미검증)
 
 ## 원본 계획 대조
 

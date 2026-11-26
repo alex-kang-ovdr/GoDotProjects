@@ -21,8 +21,8 @@
 ## 진행 상태
 
 - [x] 원본 계획서 반입
-- [ ] 첫 spike 이슈 분해
-- [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+- [x] 첫 spike 이슈 분해 (`Forge-Multiplayer`: `prediction/fg_*.gd`, `prediction_validator_selftest.gd`, `run-r1-matrix.cjs`)
+- [x] spike 결과 기록 (정적 월드 예측·reconcile/replay·화면 smoothing 분리·teleport/epoch 리셋·원격 보간 ring 구현; 실 UDP 프록시 LAN/150ms+1%/300ms+5% 모두 수렴 오차 0.000·hard correction 0건 실측; 동적 물리 resim/hit rewind·Android 실기기 미검증)
 
 ## 원본 계획 대조
 

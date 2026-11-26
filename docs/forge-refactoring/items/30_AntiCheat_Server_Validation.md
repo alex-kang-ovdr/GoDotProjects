@@ -23,8 +23,8 @@
 ## 진행 상태
 
 - [x] 원본 계획서 반입
-- [ ] 첫 spike 이슈 분해
-- [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+- [x] 첫 spike 이슈 분해 (`Forge-Multiplayer`: `validation/fg_server_validator.gd`, `prediction_validator_selftest.gd`)
+- [x] spike 결과 기록 (슬라이딩 rate limit·미래/과거 clock·NaN·과속 탐지·10,000건 중복 액션 idempotency 1회 커밋·정상 300ms/5% 지연 자동 제재 0건 검증; UGC OS 격리·빌드 게이트 연계는 `Forge-BuildExport` 후속 범위)
 
 ## 원본 계획 대조
 

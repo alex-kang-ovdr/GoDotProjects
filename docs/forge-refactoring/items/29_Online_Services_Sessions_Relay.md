@@ -22,8 +22,8 @@
 ## 진행 상태
 
 - [x] 원본 계획서 반입
-- [ ] 첫 spike 이슈 분해
-- [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+- [x] 첫 spike 이슈 분해 (`Forge-Multiplayer`: `join-ticket-service.cjs`, `join_ticket.gd`, `control-plane-join-ticket.godot.test.cjs`)
+- [x] spike 결과 기록 (외부 HTTP Control Plane `/sessions`·`/reserve`·`/join-ticket`·`/resume`·`/lease/renew`·`/keys/rotate`·`/results` 구현: 1,000회 슬롯 경합 중복 0건, stale leaseEpoch 거절, idempotent 결과 확정, 라이브 Godot DS 브로커 키링 무중단 `k1→k2` 로테이션 및 폐기 키 거절 검증 완료; 실 Hub 라우트 마운트·외부 계정 연동·WebRTC 릴레이는 후속 범위)
 
 ## 원본 계획 대조
 

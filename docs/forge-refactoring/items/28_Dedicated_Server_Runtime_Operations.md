@@ -37,8 +37,8 @@
 ## 진행 상태
 
 - [x] 원본 계획서 반입
-- [ ] 첫 spike 이슈 분해
-- [ ] spike 결과 기록 (실행한 검증과 미검증 구분)
+- [x] 첫 spike 이슈 분해 (`Forge-Multiplayer`: `run-ds-2clients.cjs`, `export-linux-ds.cjs`, `verify-linux-ds-sigterm.cjs`, `linux-ds-sigterm.workflow.yml`, `wss-reconnect.godot.test.cjs`)
+- [x] spike 결과 기록 (Windows ENet/WSS DS+2clients 23/23 PASS, Linux x86_64 ELF 73.5MB export 완료, Linux SIGTERM→drain 검증기 및 GitHub Actions `ubuntu-latest` 워크플로우 템플릿 작성·dry-run 검증 완료; 실제 Linux 호스트 실행·WSS Gateway는 미검증으로 구분 기록)
 
 ## 원본 계획 대조
 
