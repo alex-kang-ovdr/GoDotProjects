@@ -582,6 +582,8 @@ def main():
         "farmsoil": "Ground_noise_dirt.tex",
         "marsh": "mini_marsh_noise.tex",
         "ocean_ice": "ocean_noise.tex",
+        "cave": "noise_cave.tex",
+        "ruins": "noise_ruinsbrick.tex",
     }
     tiles_b64 = {}
     for tn, tex_fn in tile_sources.items():
@@ -620,6 +622,10 @@ def main():
         "carrot": "carrot.tex", "meat": "meat.tex", "monstermeat": "monstermeat.tex",
         "egg": "bird_egg.tex", "ice": "ice.tex", "meatballs": "meatballs.tex", "perogies": "perogies.tex",
         "baconeggs": "baconeggs.tex", "bonestew": "bonestew.tex", "wetgoop": "wetgoop.tex",
+        "nightsword": "nightsword.tex", "armorruins": "armorruins.tex", "thulecite": "thulecite.tex",
+        "nightmarefuel": "nightmarefuel.tex", "lightbulb": "lightbulb.tex", "honey": "honey.tex",
+        "dragonfruit": "dragonfruit.tex", "fish": "fish.tex", "dragonpie": "dragonpie.tex",
+        "honeyham": "honeyham.tex", "fishsticks": "fishsticks.tex",
     }
     inv_icons_b64 = {}
     total_atlas_elements = 0
@@ -693,11 +699,21 @@ def main():
         "researchlab": (["researchlab.zip"], None, ["idle", "researchlab"], 144),
         "cookpot": (["cook_pot.zip"], None, ["idle_empty", "idle", "cooking_loop"], 128),
         "farm_plot": (["farm_plant_carrot.zip", "farm_soil.zip"], None, ["crop_full", "full", "idle"], 112),
-        # Creatures & Bosses (4)
+        # Creatures & Bosses (8)
         "spider": (["spider_build.zip"], spider_anim, ["idle", "walk_loop"], 112),
         "hound": (["hound.zip"], hound_anim, ["idle", "run_loop"], 112),
+        "crawlinghorror": (["shadow_insanity1_basic.zip"], None, ["idle_loop", "walk_loop", "idle"], 128),
+        "terrorbeak": (["shadow_insanity2_basic.zip"], None, ["idle_loop", "walk_loop", "idle"], 128),
         "deerclops": (["deerclops_build.zip"], deerclops_anim, ["idle_loop", "walk_loop", "idle"], 160),
         "mutated_deerclops": (["deerclops_mutated.zip", "deerclops_build.zip"], deerclops_anim, ["idle_loop", "walk_loop", "idle"], 160),
+        "bearger": (["bearger_build.zip"], load_anim_zip(anim_dir, "bearger_basic.zip"), ["idle_loop", "walk_loop", "idle"], 160),
+        "dragonfly": (["dragonfly_build.zip"], load_anim_zip(anim_dir, "dragonfly_basic.zip"), ["idle", "idle_loop", "walk_loop"], 160),
+        "moose": (["goosemoose_build.zip"], load_anim_zip(anim_dir, "goosemoose_basic.zip"), ["idle", "idle_loop", "walk_loop"], 160),
+        # Caves & Ruins (4)
+        "cave_entrance": (["cave_entrance.zip"], None, ["open", "idle"], 128),
+        "ancient_altar": (["statue_ruins_gem.zip", "statue_ruins.zip"], None, ["idle_full", "full", "idle"], 144),
+        "mushtree": (["mushroom_tree_tall.zip"], None, ["idle_loop", "idle"], 144),
+        "lightflower": (["bulb_plant_triple.zip"], None, ["idle", "idle_loop"], 112),
     }
 
     kanim_sprites = {}

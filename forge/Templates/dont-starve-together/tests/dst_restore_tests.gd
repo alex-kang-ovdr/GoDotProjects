@@ -31,12 +31,12 @@ func _run() -> void:
 	_check(db.load_from_path("res://data/dst_tuning.json"), "DB_LOAD", "dst_tuning.json 로드")
 	_check(db.foods_by_id.has("meatballs") and db.foods_by_id.has("perogies"), "DB_FOODS", "핵심 요리 존재")
 
-	# 원작 추출 에셋(KTEX 타일 8 + 초상화 6 + 아이콘 32 + KAnim 21 + FSB5 SFX 10 + 셰이더 70) 검증
+	# 원작 추출 에셋(KTEX 타일 10 + 초상화 6 + 아이콘 46 + KAnim 30 + FSB5 SFX 10 + 셰이더 70) 검증
 	DSTMedia.ensure_loaded()
-	_check(DSTMedia.terrain_tiles.size() >= 8, "MEDIA_TILES", "tiles=%d" % DSTMedia.terrain_tiles.size())
+	_check(DSTMedia.terrain_tiles.size() >= 10, "MEDIA_TILES", "tiles=%d" % DSTMedia.terrain_tiles.size())
 	_check(DSTMedia.portraits.size() >= 6, "MEDIA_PORTRAITS", "portraits=%d" % DSTMedia.portraits.size())
-	_check(DSTMedia.icons.size() >= 32, "MEDIA_ICONS", "icons=%d" % DSTMedia.icons.size())
-	_check(DSTMedia.kanim_sprites.size() >= 21, "MEDIA_KANIM", "kanim=%d" % DSTMedia.kanim_sprites.size())
+	_check(DSTMedia.icons.size() >= 46, "MEDIA_ICONS", "icons=%d" % DSTMedia.icons.size())
+	_check(DSTMedia.kanim_sprites.size() >= 30, "MEDIA_KANIM", "kanim=%d" % DSTMedia.kanim_sprites.size())
 	_check(DSTMedia.sfx_streams.size() >= 10, "MEDIA_SFX", "sfx=%d" % DSTMedia.sfx_streams.size())
 	_check(DSTMedia.shader_count == 70, "MEDIA_SHADERS", "shaders=%d" % DSTMedia.shader_count)
 
@@ -233,6 +233,59 @@ func _run() -> void:
 	_check(seasons_seen.size() == 4, "M2_70DAY_4_SEASONS", str(seasons_seen.keys()))
 	_check(saw_deerclops, "M2_WINTER_DEERCLOPS_SPAWN")
 	_check(saw_oversized, "M2_FARM_OVERSIZED_HARVEST")
+
+	# 확장 4슬롯 요리 냄비 (생선스틱/꿀햄/용과파이 우선순위 검증)
+	_check(str(db.calculate_crockpot_recipe(["fish", "twigs", "berries", "berries"])["id"]) == "fishsticks", "COOK_FISHSTICKS")
+	_check(str(db.calculate_crockpot_recipe(["meat", "meat", "honey", "berries"])["id"]) == "honeyham", "COOK_HONEYHAM")
+	_check(str(db.calculate_crockpot_recipe(["dragonfruit", "twigs", "twigs", "twigs"])["id"]) == "dragonpie", "COOK_DRAGONPIE")
+
+	# M4: 동굴/고대 유적 2-Shard 전환 + 고대 제단 Tech Lv 3 + 악몽 주기(calm->warn->wild 공포부리 출현)
+	sim.init_world(db, 1011, "wilson")
+	_check(sim.toggle_shard() == "caves" and sim.shard == "caves", "M4_CAVES_ENTER")
+	sim.player_pos = Vector2(11.0, 0.0) # 고대 의사과학 기지 근처
+	_check(sim.get_nearby_tech_level() == 3, "M4_RUINS_TECH_LV3", "lvl=%d" % sim.get_nearby_tech_level())
+	sim.add_item("nightmarefuel", 6)
+	sim.add_item("thulecite", 6)
+	_check(sim.craft_recipe("nightsword") and sim.craft_recipe("armorruins"), "M4_RUINS_CRAFT_GEAR")
+	sim.nightmare_timer = 1.0
+	sim.step(2.0, Vector2.ZERO) # calm -> warn
+	_check(sim.nightmare_phase == "warn", "M4_NIGHTMARE_WARN", sim.nightmare_phase)
+	sim.nightmare_timer = 1.0
+	sim.step(2.0, Vector2.ZERO) # warn -> wild + terrorbeak spawn
+	var has_terrorbeak: bool = false
+	for cr in sim.creatures:
+		if str(cr["kind"]) == "terrorbeak":
+			has_terrorbeak = true
+	_check(sim.nightmare_phase == "wild" and has_terrorbeak, "M4_NIGHTMARE_WILD_TERRORBEAK", sim.nightmare_phase)
+	_check(sim.toggle_shard() == "master" and sim.shard == "master", "M4_CAVES_RETURN_MASTER")
+
+	# M2: 사계절 4대 보스 스탯 검증 (Bearger 6000 / Moose 6000 / Dragonfly 27500)
+	var b_bear: Dictionary = sim.spawn_creature("bearger", Vector2(10, 0))
+	var b_moose: Dictionary = sim.spawn_creature("moose", Vector2(12, 0))
+	var b_dfly: Dictionary = sim.spawn_creature("dragonfly", Vector2(14, 0))
+	_check(_approx(float(b_bear["max_hp"]), 6000.0) and _approx(float(b_moose["max_hp"]), 6000.0) and _approx(float(b_dfly["max_hp"]), 27500.0), "M2_4_SEASONAL_BOSSES")
+
+	# M3: 2인 협동 서버 권위 동기화(Replica/Classified) + 전원 유령 120s 리셋 + 동료 고백 심장 부활
+	sim.init_world(db, 1012, "wilson")
+	sim.spawn_creature("bearger", Vector2(8, 0))
+	var net: DSTNetSync = DSTNetSync.new()
+	net.init_coop_room(sim, "wilson")
+	net.join_peer(2, "wathgrithr", Vector2(2, 0))
+	var rep1: Dictionary = net.step_coop(0.5, {1: Vector2(1, 0), 2: Vector2(-1, 0)})
+	_check(rep1["peers"].size() == 2 and str(rep1["boss_id"]) == "bearger", "M3_COOP_REPLICA_SYNC")
+	var cls2: Dictionary = net.encode_classified_snapshot(2)
+	_check(int(cls2["owner_peer_id"]) == 2 and cls2.has("inventory") and not rep1["peers"][0].has("inventory"), "M3_COOP_CLASSIFIED_ISOLATION")
+	_check(net.peer_attack_boss(1, 500.0) and net.peer_attack_boss(2, 500.0) and _approx(float(sim.get_active_boss()["hp"]), 5000.0), "M3_COOP_SHARED_BOSS_DMG")
+	net.damage_peer(2, 999.0)
+	net.step_coop(1.0)
+	_check(net.all_ghost_reset_timer < 0.0, "M3_PARTIAL_GHOST_NO_RESET")
+	net.damage_peer(1, 999.0)
+	net.step_coop(1.0)
+	_check(_approx(net.all_ghost_reset_timer, 120.0), "M3_ALL_GHOST_RESET_120")
+	# 1번 생존 상태에서 2번 부활 시나리오 검증
+	net.peers[1]["is_ghost"] = false
+	net.peers[1]["health"] = 100.0
+	_check(net.revive_peer_with_heart(1, 2) and not bool(net.peers[2]["is_ghost"]) and _approx(float(net.peers[2]["health_penalty"]), 0.25) and net.all_ghost_reset_timer < 0.0, "M3_COOP_HEART_REVIVE")
 
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")

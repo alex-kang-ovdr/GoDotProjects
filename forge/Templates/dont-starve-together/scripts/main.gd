@@ -13,6 +13,8 @@ var sfx_player: AudioStreamPlayer
 var _sim_accum: float = 0.0
 var _hud_accum: float = 0.0
 var _char_keys: Array = ["wilson", "willow", "wolfgang", "wendy", "wathgrithr", "wx78"]
+var _boss_keys: Array = ["deerclops", "bearger", "moose", "dragonfly"]
+var _boss_idx: int = 0
 
 
 func _ready() -> void:
@@ -102,6 +104,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_hud_action("toggle_boat", "")
 		elif k == KEY_K:
 			_on_hud_action("toggle_skills", "")
+		elif k == KEY_V:
+			_on_hud_action("toggle_cook", "")
+		elif k == KEY_C:
+			_on_hud_action("toggle_shard", "")
 		elif k == KEY_M:
 			_on_hud_action("toggle_minimap", "")
 		elif k == KEY_G:
@@ -159,6 +165,14 @@ func _on_hud_action(action: String, arg: String) -> void:
 		"toggle_skills":
 			hud.toggle_skill_panel()
 			_play_sfx("ui_click")
+		"toggle_cook":
+			hud.toggle_cook_panel()
+			_play_sfx("ui_click")
+		"toggle_shard":
+			sim.toggle_shard()
+			_play_sfx("magic")
+		"play_sfx":
+			_play_sfx(arg)
 		"toggle_minimap":
 			hud.toggle_minimap()
 			_play_sfx("ui_click")
@@ -172,6 +186,11 @@ func _on_hud_action(action: String, arg: String) -> void:
 			sim.time_scale = 8.0 if sim.time_scale < 2.0 else 1.0
 			sim.push_log("시간 배속: %.0f×" % sim.time_scale)
 			_play_sfx("ui_click")
+		"spawn_seasonal_boss":
+			var bkind: String = str(_boss_keys[_boss_idx % _boss_keys.size()])
+			_boss_idx += 1
+			sim.spawn_creature(bkind, sim.player_pos + Vector2(9.0, 0.0))
+			_play_sfx("boss_roar")
 		"spawn_deerclops":
 			sim.spawn_creature("deerclops", sim.player_pos + Vector2(10.0, 0.0))
 			_play_sfx("boss_roar")

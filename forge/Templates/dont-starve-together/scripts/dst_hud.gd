@@ -34,6 +34,14 @@ var skill_panel: PanelContainer
 var skill_points_label: Label
 var skill_buttons: Dictionary = {}
 
+var cook_panel: PanelContainer
+var cook_slots: Array = [] # Array of up to 4 item_ids
+var cook_slot_buttons: Array = []
+var cook_picker_box: HFlowContainer
+var cook_preview_label: Label
+var cook_preview_icon: TextureRect
+var cook_go_btn: Button
+
 
 class StatusVignette extends Control:
 	var sim: DSTWorldSim
@@ -134,12 +142,17 @@ class MinimapWidget extends Control:
 		draw_rect(Rect2(Vector2.ZERO, size), Color(0.08, 0.17, 0.26, 0.94))
 		var c: Vector2 = size * 0.5
 		var scale_f: float = (min(size.x, size.y) * 0.45) / 68.0
-		# 본토 섬 윤곽 & 바이옴 구역
-		draw_circle(c, 54.0 * scale_f, Color(0.29, 0.42, 0.21, 0.95))
-		draw_circle(c + Vector2(-24.0, 22.0) * scale_f, 18.0 * scale_f, Color(0.16, 0.26, 0.15, 0.9))
-		draw_circle(c + Vector2(24.0, 20.0) * scale_f, 17.0 * scale_f, Color(0.58, 0.48, 0.24, 0.9))
-		draw_circle(c + Vector2(-24.0, -20.0) * scale_f, 16.0 * scale_f, Color(0.42, 0.40, 0.37, 0.9))
-		draw_circle(c + Vector2(36.0, -28.0) * scale_f, 14.0 * scale_f, Color(0.66, 0.78, 0.84, 0.95))
+		if sim.shard == "caves":
+			draw_rect(Rect2(Vector2.ZERO, size), Color(0.11, 0.10, 0.14, 0.96))
+			draw_circle(c, 50.0 * scale_f, Color(0.22, 0.23, 0.27, 0.95))
+			draw_rect(Rect2(c.x + 6.0 * scale_f, c.y - 36.0 * scale_f, 38.0 * scale_f, 72.0 * scale_f), Color(0.42, 0.34, 0.24, 0.9))
+		else:
+			# 본토 섬 윤곽 & 바이옴 구역
+			draw_circle(c, 54.0 * scale_f, Color(0.29, 0.42, 0.21, 0.95))
+			draw_circle(c + Vector2(-24.0, 22.0) * scale_f, 18.0 * scale_f, Color(0.16, 0.26, 0.15, 0.9))
+			draw_circle(c + Vector2(24.0, 20.0) * scale_f, 17.0 * scale_f, Color(0.58, 0.48, 0.24, 0.9))
+			draw_circle(c + Vector2(-24.0, -20.0) * scale_f, 16.0 * scale_f, Color(0.42, 0.40, 0.37, 0.9))
+			draw_circle(c + Vector2(36.0, -28.0) * scale_f, 14.0 * scale_f, Color(0.66, 0.78, 0.84, 0.95))
 
 		# 구조물 (주황/노랑)
 		for st in sim.structures:
@@ -176,6 +189,16 @@ func setup(world_sim: DSTWorldSim, on_action: Callable) -> void:
 func toggle_skill_panel() -> void:
 	if skill_panel != null:
 		skill_panel.visible = not skill_panel.visible
+		if skill_panel.visible and cook_panel != null:
+			cook_panel.visible = false
+		refresh()
+
+
+func toggle_cook_panel() -> void:
+	if cook_panel != null:
+		cook_panel.visible = not cook_panel.visible
+		if cook_panel.visible and skill_panel != null:
+			skill_panel.visible = false
 		refresh()
 
 
@@ -319,7 +342,8 @@ func _build_ui() -> void:
 
 	var row1: HBoxContainer = HBoxContainer.new()
 	tbox.add_child(row1)
-	_add_small_btn(row1, "요리(미트볼/피에로기)", "cook_meatballs")
+	_add_small_btn(row1, "4슬롯 요리(V)", "toggle_cook")
+	_add_small_btn(row1, "동굴/유적(C)", "toggle_shard")
 	_add_small_btn(row1, "스킬트리(K)", "toggle_skills")
 
 	var row2: HBoxContainer = HBoxContainer.new()
@@ -330,7 +354,7 @@ func _build_ui() -> void:
 
 	var row3: HBoxContainer = HBoxContainer.new()
 	tbox.add_child(row3)
-	_add_small_btn(row3, "외눈사슴", "spawn_deerclops")
+	_add_small_btn(row3, "4계절 보스", "spawn_seasonal_boss")
 	_add_small_btn(row3, "평면보스", "spawn_mutated")
 	_add_small_btn(row3, "연금술(G)", "transmute")
 
@@ -408,6 +432,85 @@ func _build_ui() -> void:
 	close_btn.pressed.connect(func() -> void: toggle_skill_panel())
 	sk_box.add_child(close_btn)
 
+	# 6. 중앙 4슬롯 인터랙티브 요리 냄비 팝업 패널 (V키 토글)
+	cook_panel = PanelContainer.new()
+	cook_panel.anchor_left = 0.5
+	cook_panel.anchor_right = 0.5
+	cook_panel.anchor_top = 0.5
+	cook_panel.anchor_bottom = 0.5
+	cook_panel.offset_left = -225
+	cook_panel.offset_right = 225
+	cook_panel.offset_top = -185
+	cook_panel.offset_bottom = 185
+	cook_panel.visible = false
+	add_child(cook_panel)
+
+	var cbox: VBoxContainer = VBoxContainer.new()
+	cook_panel.add_child(cbox)
+	var ctitle: Label = Label.new()
+	ctitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ctitle.text = "요리 냄비 4슬롯 조합 (Crock Pot · 우선순위/가중치)"
+	cbox.add_child(ctitle)
+
+	var slot_row: HBoxContainer = HBoxContainer.new()
+	slot_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	cbox.add_child(slot_row)
+	cook_slot_buttons.clear()
+	for si in range(4):
+		var sbtn: Button = Button.new()
+		sbtn.custom_minimum_size = Vector2(92, 48)
+		sbtn.text = "슬롯 %d" % (si + 1)
+		var slot_idx: int = si
+		sbtn.pressed.connect(func() -> void:
+			if slot_idx < cook_slots.size():
+				cook_slots.remove_at(slot_idx)
+				refresh()
+		)
+		slot_row.add_child(sbtn)
+		cook_slot_buttons.append(sbtn)
+
+	var prev_row: HBoxContainer = HBoxContainer.new()
+	prev_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	cbox.add_child(prev_row)
+	cook_preview_icon = TextureRect.new()
+	cook_preview_icon.custom_minimum_size = Vector2(44, 44)
+	cook_preview_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	cook_preview_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	prev_row.add_child(cook_preview_icon)
+	cook_preview_label = Label.new()
+	cook_preview_label.add_theme_font_size_override("font_size", 12)
+	prev_row.add_child(cook_preview_label)
+
+	cook_picker_box = HFlowContainer.new()
+	cook_picker_box.custom_minimum_size = Vector2(420, 110)
+	cbox.add_child(cook_picker_box)
+
+	var c_act: HBoxContainer = HBoxContainer.new()
+	cbox.add_child(c_act)
+	cook_go_btn = Button.new()
+	cook_go_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cook_go_btn.text = "요리 시작! (4재료 필요)"
+	cook_go_btn.pressed.connect(func() -> void:
+		if cook_slots.size() == 4:
+			var dish: Dictionary = sim.cook_in_pot(cook_slots.duplicate())
+			if not dish.is_empty():
+				cook_slots.clear()
+				action_callback.call("play_sfx", "eat")
+			refresh()
+	)
+	c_act.add_child(cook_go_btn)
+	var c_clear: Button = Button.new()
+	c_clear.text = "비우기"
+	c_clear.pressed.connect(func() -> void:
+		cook_slots.clear()
+		refresh()
+	)
+	c_act.add_child(c_clear)
+	var c_close: Button = Button.new()
+	c_close.text = "닫기 (V)"
+	c_close.pressed.connect(func() -> void: toggle_cook_panel())
+	c_act.add_child(c_close)
+
 
 func _add_small_btn(parent: HBoxContainer, label: String, action: String) -> void:
 	var b: Button = Button.new()
@@ -450,8 +553,9 @@ func refresh() -> void:
 	var sstate_txt: String = "계몽!" if sim.is_enlightened() else ("광기!" if sim.is_insane() else "정상")
 	var ghost_txt: String = (" [유령! 리셋 %.0fs · Space 부활]" % sim.world_reset_countdown) if sim.is_ghost else ""
 	var boat_txt: String = (" · 항해중(돛%d)" % sim.boat_masts) if sim.on_boat else ""
+	var shard_txt: String = (" [동굴·악몽:%s]" % sim.nightmare_phase.to_upper()) if sim.shard == "caves" else ""
 	stats_label.text = (
-		"Day %d (%s %d일) · %s · 달:%s · %.0f×\n" % [sim.day, sim.get_season_name().to_upper(), sim.day_in_season, sim.phase.to_upper(), sim.moon_phase, sim.time_scale]
+		"Day %d (%s %d일) · %s · 달:%s · %.0f×%s\n" % [sim.day, sim.get_season_name().to_upper(), sim.day_in_season, sim.phase.to_upper(), sim.moon_phase, sim.time_scale, shard_txt]
 		+ "%s%s (%s)%s%s\n" % [str(cdef["name"]), wform, sim.get_biome_at(sim.player_pos), boat_txt, ghost_txt]
 		+ "특성: %s\n" % str(cdef.get("trait", ""))
 		+ "체온 %.1f°C(세계 %.1f°C) · 습기 %.0f%s · %s · 인사이트 %dpt" % [sim.temperature, sim.world_temperature, sim.moisture, " [젖음]" if sim.is_wet else "", sstate_txt, sim.insight_points]
@@ -498,6 +602,52 @@ func refresh() -> void:
 			sb.disabled = unlocked or sim.insight_points < 1
 			if unlocked and not sb.text.begins_with("[해금]"):
 				sb.text = "[해금] " + sb.text
+
+	# 4슬롯 요리 냄비 팝업 갱신
+	if cook_panel != null and cook_panel.visible:
+		for si in range(4):
+			var sb: Button = cook_slot_buttons[si]
+			if si < cook_slots.size():
+				var iid: String = str(cook_slots[si])
+				sb.text = iid
+				sb.icon = DSTMedia.get_icon_texture(iid)
+				sb.expand_icon = true
+			else:
+				sb.text = "슬롯 %d" % (si + 1)
+				sb.icon = null
+		for ch in cook_picker_box.get_children():
+			ch.queue_free()
+		var cookables: Array = ["meat", "monstermeat", "egg", "carrot", "berries", "honey", "dragonfruit", "fish", "ice", "twigs"]
+		for cid in cookables:
+			var have: int = int(sim.inventory.get(cid, 0))
+			var used: int = cook_slots.count(cid)
+			if have - used <= 0:
+				continue
+			var pb: Button = Button.new()
+			pb.custom_minimum_size = Vector2(78, 36)
+			pb.add_theme_font_size_override("font_size", 11)
+			pb.icon = DSTMedia.get_icon_texture(cid)
+			pb.expand_icon = true
+			pb.text = "×%d" % (have - used)
+			var pick_id: String = cid
+			pb.pressed.connect(func() -> void:
+				if cook_slots.size() < 4:
+					cook_slots.append(pick_id)
+					refresh()
+			)
+			cook_picker_box.add_child(pb)
+		if cook_slots.size() == 4:
+			var pred: Dictionary = sim.db.calculate_crockpot_recipe(cook_slots, 0.0)
+			var pid: String = str(pred.get("id", "wetgoop"))
+			cook_preview_icon.texture = DSTMedia.get_icon_texture(pid)
+			cook_preview_label.text = "예상 요리: %s (HP%+.0f HU%+.0f SA%+.0f)" % [str(pred.get("name", pid)), float(pred.get("health", 0)), float(pred.get("hunger", 0)), float(pred.get("sanity", 0))]
+			cook_go_btn.disabled = false
+			cook_go_btn.text = "요리 시작! → %s" % str(pred.get("name", pid))
+		else:
+			cook_preview_icon.texture = null
+			cook_preview_label.text = "재료 %d/4 선택됨 (아래 재료를 클릭해 4칸을 채우세요)" % cook_slots.size()
+			cook_go_btn.disabled = true
+			cook_go_btn.text = "요리 시작! (4재료 필요)"
 
 	var recent: Array = sim.event_log.slice(max(0, sim.event_log.size() - 5), sim.event_log.size())
 	log_label.text = "\n".join(recent)

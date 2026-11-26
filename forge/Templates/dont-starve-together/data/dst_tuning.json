@@ -132,6 +132,8 @@
     { "id": "boat_item", "name": "보트 키트 (Boat Kit)", "tech": 1, "category": "SEAFARING", "ingredients": { "log": 4, "cutgrass": 4 }, "result_type": "boat" },
     { "id": "mast", "name": "돛 장착 (Mast 0.7^k)", "tech": 1, "category": "SEAFARING", "ingredients": { "log": 2, "twigs": 2, "cutgrass": 2 }, "result_type": "mast" },
     { "id": "telltale_heart", "name": "고백 심장 (Revive)", "tech": 0, "category": "RESTORATION", "ingredients": { "cutgrass": 3 }, "hp_cost": 40, "result_type": "item" },
+    { "id": "nightsword", "name": "어둠의 검 (Dark Sword)", "tech": 3, "category": "ANCIENT", "ingredients": { "nightmarefuel": 4, "log": 2 }, "result_type": "weapon" },
+    { "id": "armorruins", "name": "툴레사이트 갑옷 (Ruins)", "tech": 3, "category": "ANCIENT", "ingredients": { "thulecite": 4, "nightmarefuel": 2 }, "result_type": "armor" },
     { "id": "sword_lunarplant", "name": "브라이트셰이드 검", "tech": 2, "category": "WEAPONS", "ingredients": { "purebrilliance": 2, "log": 2 }, "result_type": "weapon" },
     { "id": "lunarplanthat", "name": "브라이트셰이드 투구", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "rocks": 2 }, "result_type": "armor" },
     { "id": "armor_lunarplant", "name": "브라이트셰이드 갑옷", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "log": 4 }, "result_type": "armor" }
@@ -143,18 +145,32 @@
     { "id": "monstermeat", "name": "괴물 고기", "health": -20.0, "hunger": 18.75, "sanity": -15.0, "perish_days": 6.0, "tags": { "meat": 1.0, "monster": 1.0 } },
     { "id": "egg", "name": "알", "health": 0.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 10.0, "tags": { "egg": 1.0 } },
     { "id": "ice", "name": "얼음", "health": 0.5, "hunger": 2.34, "sanity": 0.0, "perish_days": 3.0, "tags": { "frozen": 1.0 } },
+    { "id": "honey", "name": "꿀", "health": 3.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 40.0, "tags": { "sweetener": 1.0 } },
+    { "id": "dragonfruit", "name": "용과", "health": 3.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 6.0, "tags": { "fruit": 1.0 } },
+    { "id": "fish", "name": "생선", "health": 1.0, "hunger": 12.5, "sanity": 0.0, "perish_days": 3.0, "tags": { "meat": 0.5, "fish": 1.0 } },
     { "id": "meatballs", "name": "미트볼", "priority": -1, "weight": 1.0, "health": 3.0, "hunger": 62.5, "sanity": 5.0, "perish_days": 10.0, "cooktime": 0.75 },
     { "id": "perogies", "name": "피에로기", "priority": 5, "weight": 1.0, "health": 40.0, "hunger": 37.5, "sanity": 5.0, "perish_days": 20.0, "cooktime": 1.0 },
     { "id": "baconeggs", "name": "베이컨에그", "priority": 10, "weight": 1.0, "health": 20.0, "hunger": 75.0, "sanity": 5.0, "perish_days": 20.0, "cooktime": 2.0 },
     { "id": "bonestew", "name": "미트스튜", "priority": 0, "weight": 1.0, "health": 12.0, "hunger": 150.0, "sanity": 5.0, "perish_days": 10.0, "cooktime": 0.75 },
+    { "id": "dragonpie", "name": "용과파이", "priority": 1, "weight": 1.0, "health": 40.0, "hunger": 75.0, "sanity": 5.0, "perish_days": 15.0, "cooktime": 2.0 },
+    { "id": "honeyham", "name": "꿀 햄", "priority": 2, "weight": 1.0, "health": 30.0, "hunger": 75.0, "sanity": 5.0, "perish_days": 15.0, "cooktime": 2.0 },
+    { "id": "fishsticks", "name": "생선스틱", "priority": 10, "weight": 1.0, "health": 40.0, "hunger": 37.5, "sanity": 5.0, "perish_days": 10.0, "cooktime": 2.0 },
     { "id": "monsterlasagna", "name": "몬스터 라자냐", "priority": 10, "weight": 1.0, "health": -20.0, "hunger": 37.5, "sanity": -20.0, "perish_days": 6.0, "cooktime": 0.5 },
     { "id": "wetgoop", "name": "젖은 찌꺼기", "priority": -10, "weight": 1.0, "health": 0.0, "hunger": 0.0, "sanity": 0.0, "perish_days": 6.0, "cooktime": 0.25 }
   ],
+  "nightmare_cycle": {
+    "order": ["calm", "warn", "wild", "dawn"],
+    "durations": { "calm": 120.0, "warn": 30.0, "wild": 90.0, "dawn": 30.0 }
+  },
   "creatures": {
     "spider": { "name": "거미", "health": 100.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 3.0, "speed": 3.2, "range": 2.1, "planar_entity": false, "loot": { "monstermeat": 1, "silk": 1 } },
     "hound": { "name": "하운드", "health": 150.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 2.0, "speed": 5.8, "range": 2.2, "planar_entity": false, "loot": { "monstermeat": 1, "houndstooth": 1 } },
     "crawlinghorror": { "name": "기어다니는 공포", "health": 300.0, "damage": 20.0, "planar_damage": 0.0, "attack_period": 2.5, "speed": 3.8, "range": 2.4, "planar_entity": false, "loot": { "nightmarefuel": 2 } },
-    "deerclops": { "name": "외눈사슴 (Deerclops)", "health": 4000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 4.0, "speed": 3.4, "range": 4.2, "planar_entity": false, "boss": true, "loot": { "meat": 4, "purebrilliance": 2 } },
+    "terrorbeak": { "name": "공포부리", "health": 400.0, "damage": 50.0, "planar_damage": 0.0, "attack_period": 1.5, "speed": 6.2, "range": 2.6, "planar_entity": false, "loot": { "nightmarefuel": 3 } },
+    "deerclops": { "name": "외눈사슴 (겨울 보스)", "health": 4000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 4.0, "speed": 3.4, "range": 4.2, "planar_entity": false, "boss": true, "loot": { "meat": 4, "purebrilliance": 2 } },
+    "bearger": { "name": "곰소리 (가을 보스)", "health": 6000.0, "damage": 200.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.0, "speed": 4.2, "range": 4.5, "planar_entity": false, "boss": true, "loot": { "meat": 6, "honey": 3 } },
+    "moose": { "name": "큰사슴/거위 (봄 보스)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.0, "speed": 4.8, "range": 4.2, "planar_entity": false, "boss": true, "loot": { "meat": 6, "egg": 4 } },
+    "dragonfly": { "name": "용파리 (여름 레이드)", "health": 27500.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.5, "speed": 5.0, "range": 4.8, "planar_entity": false, "boss": true, "loot": { "meat": 8, "goldnugget": 8, "dragonfruit": 2 } },
     "mutated_deerclops": { "name": "결정화 외눈사슴 (Planar)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 30.0, "attack_period": 3.0, "speed": 3.8, "range": 4.5, "planar_entity": true, "boss": true, "loot": { "purebrilliance": 4, "meat": 4 } }
   }
 }

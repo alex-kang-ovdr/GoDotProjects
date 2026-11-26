@@ -18,6 +18,7 @@
     "scripts/dst_media.gd",
     "scripts/dst_database.gd",
     "scripts/dst_world_sim.gd",
+    "scripts/dst_net_sync.gd",
     "scripts/dst_camera.gd",
     "scripts/dst_renderer.gd",
     "scripts/dst_hud.gd",

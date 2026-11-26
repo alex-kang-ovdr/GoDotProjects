@@ -115,21 +115,35 @@ static func calc_electric_mult(base_mult: float, wet_mult: float, target_wet_rat
 	return base_mult + wet_mult * clamp(target_wet_ratio, 0.0, 1.0)
 
 
-## cooking.lua:238-288 — 냄비 4재료 우선순위 + 가중치 판정
-func calculate_crockpot_recipe(ingredients: Array, rng_roll: float = 0.0) -> Dictionary:
+## cooking.lua:238-288 — 냄비 4재료 태그 집계 및 우선순위 + 가중치 판정
+func get_crockpot_tags(ingredients: Array) -> Dictionary:
 	var tags: Dictionary = {
 		"meat": 0.0, "veggie": 0.0, "fruit": 0.0,
-		"egg": 0.0, "monster": 0.0, "frozen": 0.0, "inedible": 0.0,
+		"egg": 0.0, "monster": 0.0, "frozen": 0.0,
+		"sweetener": 0.0, "fish": 0.0, "inedible": 0.0,
+		"dragonfruit_cnt": 0, "twigs_cnt": 0,
 	}
 	for item_id in ingredients:
-		var f: Dictionary = foods_by_id.get(str(item_id), {})
+		var sid: String = str(item_id)
+		var f: Dictionary = foods_by_id.get(sid, {})
 		var ftags: Dictionary = f.get("tags", {})
 		for tk in ftags.keys():
 			tags[tk] = float(tags.get(tk, 0.0)) + float(ftags[tk])
-		if str(item_id) == "twigs":
+		if sid == "twigs":
 			tags["inedible"] = float(tags["inedible"]) + 1.0
+			tags["twigs_cnt"] = int(tags["twigs_cnt"]) + 1
+		elif sid == "dragonfruit":
+			tags["dragonfruit_cnt"] = int(tags["dragonfruit_cnt"]) + 1
+	return tags
+
+
+func calculate_crockpot_recipe(ingredients: Array, rng_roll: float = 0.0) -> Dictionary:
+	var tags: Dictionary = get_crockpot_tags(ingredients)
 
 	var candidates: Array = []
+	# fishsticks (priority 10): fish > 0 and twigs == 1 and inedible <= 1
+	if float(tags["fish"]) > 0.0 and int(tags["twigs_cnt"]) == 1 and float(tags["inedible"]) <= 1.0:
+		candidates.append(foods_by_id.get("fishsticks", {"id": "fishsticks", "priority": 10, "weight": 1.0}))
 	# monsterlasagna (priority 10): monster >= 2 and not inedible
 	if float(tags["monster"]) >= 2.0 and float(tags["inedible"]) <= 0.0:
 		candidates.append(foods_by_id.get("monsterlasagna", {"id": "monsterlasagna", "priority": 10, "weight": 1.0}))
@@ -139,6 +153,12 @@ func calculate_crockpot_recipe(ingredients: Array, rng_roll: float = 0.0) -> Dic
 	# perogies (priority 5): egg and meat and veggie and not inedible
 	if float(tags["egg"]) > 0.0 and float(tags["meat"]) > 0.0 and float(tags["veggie"]) > 0.0 and float(tags["inedible"]) <= 0.0:
 		candidates.append(foods_by_id.get("perogies", {"id": "perogies", "priority": 5, "weight": 1.0}))
+	# honeyham (priority 2): meat > 1.5 and sweetener > 0 and not inedible
+	if float(tags["meat"]) > 1.5 and float(tags["sweetener"]) > 0.0 and float(tags["inedible"]) <= 0.0:
+		candidates.append(foods_by_id.get("honeyham", {"id": "honeyham", "priority": 2, "weight": 1.0}))
+	# dragonpie (priority 1): dragonfruit >= 1 and meat == 0
+	if int(tags["dragonfruit_cnt"]) >= 1 and float(tags["meat"]) <= 0.0:
+		candidates.append(foods_by_id.get("dragonpie", {"id": "dragonpie", "priority": 1, "weight": 1.0}))
 	# bonestew (priority 0): meat >= 3 and not inedible
 	if float(tags["meat"]) >= 3.0 and float(tags["inedible"]) <= 0.0:
 		candidates.append(foods_by_id.get("bonestew", {"id": "bonestew", "priority": 0, "weight": 1.0}))

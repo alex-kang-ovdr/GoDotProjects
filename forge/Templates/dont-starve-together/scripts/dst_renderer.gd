@@ -29,6 +29,7 @@ var tex_cache: Dictionary = {}
 
 var _shadow_mesh: CylinderMesh
 var _shadow_mat: StandardMaterial3D
+var _ground_mat: ShaderMaterial
 var _weather_drops: Array = [] # Array of Dictionary { node, vel }
 var _floating_popups: Array = [] # Array of Dictionary { node, age, max_age }
 var _anim_time: float = 0.0
@@ -124,6 +125,7 @@ func _build_ground() -> void:
 		var sh: Shader = Shader.new()
 		sh.code = """
 shader_type spatial;
+uniform float is_caves = 0.0;
 uniform sampler2D biome_map : filter_nearest;
 uniform sampler2D tex_grass : repeat_enable, filter_linear_mipmap;
 uniform sampler2D tex_forest : repeat_enable, filter_linear_mipmap;
@@ -131,23 +133,33 @@ uniform sampler2D tex_savanna : repeat_enable, filter_linear_mipmap;
 uniform sampler2D tex_rocky : repeat_enable, filter_linear_mipmap;
 uniform sampler2D tex_moon : repeat_enable, filter_linear_mipmap;
 uniform sampler2D tex_ocean : repeat_enable, filter_linear_mipmap;
+uniform sampler2D tex_cave : repeat_enable, filter_linear_mipmap;
+uniform sampler2D tex_ruins : repeat_enable, filter_linear_mipmap;
 void fragment() {
-	vec4 bm = texture(biome_map, UV);
-	int bid = int(round(bm.r * 5.0));
 	vec2 tuv = UV * 26.0;
-	vec3 col = texture(tex_grass, tuv).rgb * vec3(0.46, 0.54, 0.34);
-	if (bid == 1) col = texture(tex_forest, tuv).rgb * vec3(0.36, 0.44, 0.30);
-	else if (bid == 2) col = texture(tex_savanna, tuv).rgb * vec3(0.68, 0.56, 0.32);
-	else if (bid == 3) col = texture(tex_rocky, tuv).rgb * vec3(0.56, 0.54, 0.50);
-	else if (bid == 4) col = texture(tex_moon, tuv).rgb * vec3(0.66, 0.76, 0.82);
-	else if (bid == 5) col = mix(texture(tex_ocean, tuv * 0.6 + vec2(TIME * 0.02, TIME * 0.015)).rgb, vec3(0.08, 0.24, 0.37), 0.72);
-	col = mix(col, vec3(0.76, 0.86, 0.90), bm.g * 0.40);
-	ALBEDO = col;
-	ROUGHNESS = 0.96;
+	if (is_caves > 0.5) {
+		float wx = (UV.x - 0.5) * 150.0;
+		vec3 ccol = (wx > 6.0) ? (texture(tex_ruins, tuv).rgb * vec3(0.68, 0.56, 0.42)) : (texture(tex_cave, tuv).rgb * vec3(0.42, 0.44, 0.48));
+		ALBEDO = ccol;
+		ROUGHNESS = 0.96;
+	} else {
+		vec4 bm = texture(biome_map, UV);
+		int bid = int(round(bm.r * 5.0));
+		vec3 col = texture(tex_grass, tuv).rgb * vec3(0.46, 0.54, 0.34);
+		if (bid == 1) col = texture(tex_forest, tuv).rgb * vec3(0.36, 0.44, 0.30);
+		else if (bid == 2) col = texture(tex_savanna, tuv).rgb * vec3(0.68, 0.56, 0.32);
+		else if (bid == 3) col = texture(tex_rocky, tuv).rgb * vec3(0.56, 0.54, 0.50);
+		else if (bid == 4) col = texture(tex_moon, tuv).rgb * vec3(0.66, 0.76, 0.82);
+		else if (bid == 5) col = mix(texture(tex_ocean, tuv * 0.6 + vec2(TIME * 0.02, TIME * 0.015)).rgb, vec3(0.08, 0.24, 0.37), 0.72);
+		col = mix(col, vec3(0.76, 0.86, 0.90), bm.g * 0.40);
+		ALBEDO = col;
+		ROUGHNESS = 0.96;
+	}
 }
 """
 		var smat: ShaderMaterial = ShaderMaterial.new()
 		smat.shader = sh
+		smat.set_shader_parameter("is_caves", 0.0)
 		smat.set_shader_parameter("biome_map", bmap_tex)
 		smat.set_shader_parameter("tex_grass", t_grass)
 		smat.set_shader_parameter("tex_forest", DSTMedia.terrain_tiles.get("forest", t_grass))
@@ -155,6 +167,9 @@ void fragment() {
 		smat.set_shader_parameter("tex_rocky", DSTMedia.terrain_tiles.get("rocky", t_grass))
 		smat.set_shader_parameter("tex_moon", DSTMedia.terrain_tiles.get("meteor", t_grass))
 		smat.set_shader_parameter("tex_ocean", DSTMedia.terrain_tiles.get("ocean_ice", t_grass))
+		smat.set_shader_parameter("tex_cave", DSTMedia.terrain_tiles.get("cave", t_grass))
+		smat.set_shader_parameter("tex_ruins", DSTMedia.terrain_tiles.get("ruins", t_grass))
+		_ground_mat = smat
 		ground.material_override = smat
 	else:
 		var mat: StandardMaterial3D = StandardMaterial3D.new()
@@ -353,19 +368,29 @@ func _spawn_floating_popup(pos: Vector2, text: String, col: Color) -> void:
 func sync_visuals(dt: float) -> void:
 	_anim_time += dt
 
-	# 1. 시간대/계절/정신력에 따른 조명(ColourCube 유사 컬러 그레이딩)
+	# 1. 시간대/계절/정신력/동굴 악몽 주기에 따른 조명(ColourCube 유사 컬러 그레이딩)
+	if _ground_mat != null:
+		_ground_mat.set_shader_parameter("is_caves", 1.0 if sim.shard == "caves" else 0.0)
 	var amb_col: Color = Color(0.88, 0.85, 0.76)
 	var sun_e: float = 1.15
-	if sim.phase == "dusk":
+	if sim.shard == "caves":
+		amb_col = Color(0.46, 0.50, 0.62)
+		sun_e = 0.62
+		if sim.nightmare_phase == "warn":
+			amb_col = amb_col.lerp(Color(0.72, 0.35, 0.42), 0.40)
+		elif sim.nightmare_phase == "wild":
+			amb_col = amb_col.lerp(Color(0.82, 0.20, 0.28), 0.58)
+	elif sim.phase == "dusk":
 		amb_col = Color(0.82, 0.50, 0.36)
 		sun_e = 0.65
 	elif sim.phase == "night":
 		amb_col = Color(0.32, 0.42, 0.62) if sim.moon_phase == "full" else Color(0.08, 0.10, 0.16)
 		sun_e = 0.45 if sim.moon_phase == "full" else 0.12
-	if sim.get_season_name() == "winter":
-		amb_col = amb_col.lerp(Color(0.68, 0.82, 0.98), 0.30)
-	elif sim.get_season_name() == "summer":
-		amb_col = amb_col.lerp(Color(1.0, 0.76, 0.48), 0.25)
+	if sim.shard != "caves":
+		if sim.get_season_name() == "winter":
+			amb_col = amb_col.lerp(Color(0.68, 0.82, 0.98), 0.30)
+		elif sim.get_season_name() == "summer":
+			amb_col = amb_col.lerp(Color(1.0, 0.76, 0.48), 0.25)
 	if sim.is_enlightened():
 		amb_col = amb_col.lerp(Color(0.75, 0.95, 1.0), 0.45)
 	elif sim.is_insane():
@@ -479,6 +504,8 @@ func sync_visuals(dt: float) -> void:
 			"grass_tuft": col = Color(0.72, 0.66, 0.24); h = 1.3; sh_s = 0.65
 			"berrybush": col = Color(0.24, 0.50, 0.24); h = 1.8; sh_s = 0.95
 			"lunar_crystal": col = Color(0.55, 0.92, 0.96); h = 2.6; sh_s = 1.0
+			"mushtree": col = Color(0.28, 0.62, 0.78); h = 3.5; sh_s = 1.2
+			"lightflower": col = Color(0.95, 0.92, 0.42); h = 1.8; sh_s = 0.7
 		return _make_entity_bundle(_get_sprite_tex(k, col), h, sh_s, false)
 	, true, false)
 
@@ -491,6 +518,8 @@ func sync_visuals(dt: float) -> void:
 			"campfire": col = Color(1.0, 0.52, 0.15); h = 2.1; sh_s = 1.15
 			"researchlab": col = Color(0.72, 0.58, 0.34); h = 3.4; sh_s = 1.35
 			"cookpot": col = Color(0.28, 0.28, 0.32); h = 2.6; sh_s = 1.15
+			"cave_entrance": col = Color(0.32, 0.30, 0.28); h = 2.9; sh_s = 1.8
+			"ancient_altar": col = Color(0.86, 0.72, 0.30); h = 3.6; sh_s = 1.6
 		return _make_entity_bundle(_get_sprite_tex(k, col), h, sh_s, false)
 	, false, false)
 
@@ -503,12 +532,15 @@ func sync_visuals(dt: float) -> void:
 		var col: Color = Color(0.16, 0.15, 0.18)
 		var h: float = 1.8
 		var sh_s: float = 0.9
-		if k == "hound":
-			col = Color(0.38, 0.26, 0.22); h = 1.9; sh_s = 0.95
-		elif k == "deerclops":
-			col = Color(0.76, 0.80, 0.86); h = 5.4; sh_s = 2.1
-		elif k == "mutated_deerclops":
-			col = Color(0.52, 0.84, 0.94); h = 5.8; sh_s = 2.2
+		match k:
+			"hound": col = Color(0.38, 0.26, 0.22); h = 1.9; sh_s = 0.95
+			"crawlinghorror": col = Color(0.12, 0.08, 0.16); h = 2.4; sh_s = 1.0
+			"terrorbeak": col = Color(0.20, 0.06, 0.14); h = 2.8; sh_s = 1.1
+			"deerclops": col = Color(0.76, 0.80, 0.86); h = 5.4; sh_s = 2.1
+			"mutated_deerclops": col = Color(0.52, 0.84, 0.94); h = 5.8; sh_s = 2.2
+			"bearger": col = Color(0.45, 0.42, 0.38); h = 5.6; sh_s = 2.3
+			"dragonfly": col = Color(0.88, 0.42, 0.22); h = 5.5; sh_s = 2.1
+			"moose": col = Color(0.68, 0.66, 0.62); h = 5.4; sh_s = 2.1
 		return _make_entity_bundle(_get_sprite_tex(k, col), h, sh_s, true)
 	, false, true)
 

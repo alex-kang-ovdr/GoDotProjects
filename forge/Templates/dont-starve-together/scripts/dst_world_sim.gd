@@ -62,6 +62,13 @@ var _wx_shock_timer: float = 0.0
 var insight_points: int = 3
 var unlocked_skills: Dictionary = {}
 
+# 지상(master) ↔ 동굴/유적(caves) 2-Shard 및 악몽 주기 (M4)
+var shard: String = "master" # "master" | "caves"
+var nightmare_phase: String = "calm" # calm -> warn -> wild -> dawn
+var nightmare_timer: float = 120.0
+var _master_state: Dictionary = {}
+var _caves_state: Dictionary = {}
+
 # 시각 피드백 큐 (렌더러가 소비)
 var floating_events: Array = [] # { pos: Vector2, text: String, color: Color }
 
@@ -131,6 +138,11 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 	insight_points = 3
 	unlocked_skills.clear()
 	floating_events.clear()
+	shard = "master"
+	nightmare_phase = "calm"
+	nightmare_timer = 120.0
+	_master_state.clear()
+	_caves_state.clear()
 
 	inventory = {
 		"twigs": 4,
@@ -141,16 +153,24 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 		"carrot": 2,
 		"meat": 2,
 		"egg": 2,
+		"honey": 2,
+		"dragonfruit": 1,
+		"fish": 1,
 		"rocks": 4,
 		"goldnugget": 2,
 		"pigskin": 1,
 		"purebrilliance": 2,
+		"thulecite": 2,
+		"nightmarefuel": 2,
 	}
 	food_freshness = {
 		"berries": 1.0,
 		"carrot": 1.0,
 		"meat": 1.0,
 		"egg": 1.0,
+		"honey": 1.0,
+		"dragonfruit": 1.0,
+		"fish": 1.0,
 	}
 	equip_hands = ""
 	equip_head = {}
@@ -206,6 +226,8 @@ func is_enlightened() -> bool:
 
 
 func get_biome_at(pos: Vector2) -> String:
+	if shard == "caves":
+		return "ruins" if pos.x > 6.0 else "cave"
 	if pos.length() > 54.0:
 		return "ocean"
 	if pos.x > 26.0 and pos.y < -18.0:
@@ -217,6 +239,71 @@ func get_biome_at(pos: Vector2) -> String:
 	if pos.x > 14.0 and pos.y > 10.0:
 		return "savanna"
 	return "grass"
+
+
+func toggle_shard() -> String:
+	if is_ghost:
+		return shard
+	if on_boat:
+		on_boat = false
+	if shard == "master":
+		_master_state = {
+			"pos": player_pos,
+			"resources": resources.duplicate(true),
+			"structures": structures.duplicate(true),
+			"creatures": creatures.duplicate(true),
+			"farm_plots": farm_plots.duplicate(true),
+		}
+		shard = "caves"
+		if _caves_state.is_empty():
+			_populate_caves_shard()
+			player_pos = Vector2(0.0, 2.0)
+		else:
+			player_pos = _caves_state["pos"]
+			resources = _caves_state["resources"].duplicate(true)
+			structures = _caves_state["structures"].duplicate(true)
+			creatures = _caves_state["creatures"].duplicate(true)
+			farm_plots = _caves_state["farm_plots"].duplicate(true)
+		push_log("동굴/고대 유적(Caves Shard)으로 하강했습니다! (악몽 주기: %s)" % nightmare_phase.to_upper())
+		push_floating(player_pos, "CAVES SHARD", Color(0.68, 0.52, 0.96))
+	else:
+		_caves_state = {
+			"pos": player_pos,
+			"resources": resources.duplicate(true),
+			"structures": structures.duplicate(true),
+			"creatures": creatures.duplicate(true),
+			"farm_plots": farm_plots.duplicate(true),
+		}
+		shard = "master"
+		player_pos = _master_state.get("pos", Vector2.ZERO)
+		resources = _master_state.get("resources", []).duplicate(true)
+		structures = _master_state.get("structures", []).duplicate(true)
+		creatures = _master_state.get("creatures", []).duplicate(true)
+		farm_plots = _master_state.get("farm_plots", []).duplicate(true)
+		push_log("지상(Master Shard)으로 복귀했습니다!")
+		push_floating(player_pos, "OVERWORLD", Color(0.78, 0.92, 0.55))
+	return shard
+
+
+func _populate_caves_shard() -> void:
+	resources.clear()
+	structures.clear()
+	creatures.clear()
+	farm_plots.clear()
+	# 동굴 출구(싱크홀) & 고대 의사과학 기지(Tech Lv 3)
+	structures.append({"id": _next_uid, "kind": "cave_entrance", "pos": Vector2(0.0, -4.0), "fuel": 0.0, "max_fuel": 0.0, "cook_timer": 0.0, "cook_result": ""}); _next_uid += 1
+	structures.append({"id": _next_uid, "kind": "ancient_altar", "pos": Vector2(12.0, 0.0), "fuel": 0.0, "max_fuel": 0.0, "cook_timer": 0.0, "cook_result": ""}); _next_uid += 1
+	# 동굴/유적 자원
+	for i in range(14):
+		var ang: float = float(i) * (TAU / 14.0) + 0.2
+		var rad: float = 8.0 + float(i % 3) * 6.0
+		resources.append({"id": _next_uid, "kind": "mushtree", "pos": Vector2(cos(ang), sin(ang)) * rad, "hp": 3, "max_hp": 3, "respawn_timer": 0.0}); _next_uid += 1
+	for i in range(10):
+		var ang: float = float(i) * (TAU / 10.0)
+		resources.append({"id": _next_uid, "kind": "lightflower", "pos": Vector2(cos(ang), sin(ang)) * 7.5, "hp": 1, "max_hp": 1, "respawn_timer": 0.0}); _next_uid += 1
+	for i in range(6):
+		resources.append({"id": _next_uid, "kind": "boulder", "pos": Vector2(14.0 + float(i % 3) * 4.5, -6.0 + float(i / 3) * 11.0), "hp": 3, "max_hp": 3, "respawn_timer": 0.0}); _next_uid += 1
+	spawn_creature("crawlinghorror", Vector2(15.0, 5.0))
 
 
 func push_log(msg: String) -> void:
@@ -348,6 +435,13 @@ func _populate_world() -> void:
 			})
 			_next_uid += 1
 
+	# 지상 동굴 입구(싱크홀) 배치
+	structures.append({
+		"id": _next_uid, "kind": "cave_entrance", "pos": Vector2(-9.0, -7.0),
+		"fuel": 0.0, "max_fuel": 0.0, "cook_timer": 0.0, "cook_result": "",
+	})
+	_next_uid += 1
+
 	# 초기 거미 4마리 배치 (외곽)
 	for i in range(4):
 		var ang: float = float(i) * (TAU / 4.0) + 0.5
@@ -393,13 +487,14 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 	attack_anim_timer = max(0.0, attack_anim_timer - dt)
 	player_hit_flash = max(0.0, player_hit_flash - dt)
 
-	# 1. 시계 / 달 / 계절 진행
+	# 1. 시계 / 달 / 계절 / 동굴 악몽 주기 진행
 	var total_day: float = float(db.data["clock"]["total_day_time"])
 	time_in_day += sim_dt
 	while time_in_day >= total_day:
 		time_in_day -= total_day
 		_advance_day()
 	_update_clock_and_moon()
+	_update_nightmare_cycle(sim_dt)
 
 	# 2. 이동 및 경계 (보트 승선 시 바다 항해 허용, WX-78 바이오 회로 이속 +15%)
 	var move_speed: float = 6.0 # WILSON_RUN_SPEED = 6
@@ -506,6 +601,23 @@ func _update_clock_and_moon() -> void:
 	var base_t: float = float(db.data["seasons"]["base_temp"][sname])
 	var phase_t: float = float(db.data["seasons"]["phase_temp"][phase])
 	world_temperature = clamp(base_t + phase_t + sin(_total_elapsed * 0.025) * 4.0, -25.0, 95.0)
+
+
+func _update_nightmare_cycle(dt: float) -> void:
+	var nc: Dictionary = db.data.get("nightmare_cycle", {})
+	var order: Array = nc.get("order", ["calm", "warn", "wild", "dawn"])
+	var durs: Dictionary = nc.get("durations", {"calm": 120.0, "warn": 30.0, "wild": 90.0, "dawn": 30.0})
+	nightmare_timer -= dt
+	if nightmare_timer <= 0.0:
+		var idx: int = (order.find(nightmare_phase) + 1) % order.size()
+		nightmare_phase = str(order[idx])
+		nightmare_timer = float(durs.get(nightmare_phase, 60.0))
+		if shard == "caves":
+			push_log("동굴 악몽 주기 전환: %s" % nightmare_phase.to_upper())
+			if nightmare_phase == "wild" and creatures.size() < 4 and not is_ghost:
+				var tb: Dictionary = spawn_creature("terrorbeak", player_pos + Vector2(11.0, 0.0))
+				tb["aggro"] = true
+				push_log("악몽 절정(WILD): 공포부리(Terrorbeak)가 균열에서 출현했습니다!")
 
 
 func set_sanity_mode(mode: int) -> void:
@@ -624,8 +736,14 @@ func _update_environment_and_stats(dt: float, fire_power: float) -> void:
 		if hunger <= 0.0:
 			apply_health_delta(-(max_health / float(surv["starve_kill_time"])), "hunger")
 
-	# 빛 & 어둠(찰리) & 정신력 (윌로우 라이터 상시 광원 + 불 근처 정신력 회복)
-	var has_light: bool = (phase != "night") or (moon_phase == "full") or (fire_power > 0.05) or (character_id == "willow") or (int(inventory.get("torch", 0)) > 0 and equip_hands == "torch")
+	# 빛 & 어둠(찰리) & 정신력 (윌로우 라이터, 동굴 빛꽃/고대제단 광원 포함)
+	var near_cave_light: bool = false
+	if shard == "caves":
+		for r in resources:
+			if str(r["kind"]) == "lightflower" and int(r["hp"]) > 0 and player_pos.distance_to(r["pos"]) < 11.0:
+				near_cave_light = true
+				break
+	var has_light: bool = (phase != "night" and shard != "caves") or near_cave_light or (moon_phase == "full" and shard != "caves") or (fire_power > 0.05) or (character_id == "willow") or (int(inventory.get("torch", 0)) > 0 and equip_hands == "torch")
 	var san_delta: float = 0.0
 	if sanity_mode == 0:
 		if phase == "dusk" or (phase == "night" and has_light):
@@ -790,8 +908,11 @@ func interact_nearest() -> bool:
 		revive_player(true)
 		return true
 
-	# 1. 모닥불 연료 보충 또는 농장 돌보기/수확
+	# 1. 동굴 입구(싱크홀) 이동, 모닥불 연료 보충 또는 농장 돌보기/수확
 	for s in structures:
+		if str(s["kind"]) == "cave_entrance" and player_pos.distance_to(s["pos"]) < 3.6:
+			toggle_shard()
+			return true
 		if str(s["kind"]) == "campfire" and player_pos.distance_to(s["pos"]) < 3.2:
 			if consume_item("log", 1):
 				s["fuel"] = min(float(s["max_fuel"]), float(s["fuel"]) + 90.0)
@@ -865,6 +986,14 @@ func interact_nearest() -> bool:
 				add_item("purebrilliance", 2 + bonus)
 				push_log("순수한 광채 결정 채광: ×%d" % (2 + bonus))
 				push_floating(res["pos"], "+%d 광채" % (2 + bonus), Color(0.55, 0.95, 1.0))
+			"mushtree":
+				add_item("log", 2 + bonus)
+				push_log("버섯나무 벌목: 통나무 ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 통나무" % (2 + bonus), Color(0.55, 0.85, 0.95))
+			"lightflower":
+				add_item("lightbulb", 2 + bonus)
+				push_log("빛꽃 채집: 빛구근 ×%d" % (2 + bonus))
+				push_floating(res["pos"], "+%d 빛구근" % (2 + bonus), Color(1.0, 0.96, 0.55))
 	else:
 		push_floating(res["pos"], "채집 (%d/%d)" % [int(res["max_hp"]) - int(res["hp"]), int(res["max_hp"])], Color(0.9, 0.9, 0.85))
 	return true
@@ -877,6 +1006,8 @@ func get_nearby_tech_level() -> int:
 			lvl = max(lvl, 1)
 		elif str(s["kind"]) == "lunar_forge" and player_pos.distance_to(s["pos"]) < 7.0:
 			lvl = max(lvl, 2)
+		elif str(s["kind"]) == "ancient_altar" and player_pos.distance_to(s["pos"]) < 8.5:
+			lvl = max(lvl, 3)
 	if get_biome_at(player_pos) == "moon_island":
 		lvl = max(lvl, 2)
 	return lvl
