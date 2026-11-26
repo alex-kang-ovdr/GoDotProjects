@@ -15,8 +15,9 @@ var index: Dictionary = {}
 var data_root := ""
 var extracted_root := ""
 var atlas_texture: Texture2D = null
-var atlas_parts: Dictionary = {}  # id -> {"cutaway": AtlasTexture, "roof": AtlasTexture}
-var direct_cache: Dictionary = {} # "id|variant" -> Texture2D
+var atlas_parts: Dictionary = {}   # id -> {"cutaway": AtlasTexture, "roof": AtlasTexture, "turret": AtlasTexture}
+var atlas_sprites: Dictionary = {} # key -> AtlasTexture (clouds, asteroids, crew, shots, explosions)
+var direct_cache: Dictionary = {}  # "id|variant" -> Texture2D
 var wav_cache: Dictionary = {}    # sfx_kind -> AudioStreamWAV
 var use_original_sprites := true
 var loaded_count := 0
@@ -120,6 +121,7 @@ func _on_web_png_done(result: int, code: int, _headers: PackedStringArray, body:
 func _apply_atlas(img: Image, meta: Dictionary) -> void:
 	atlas_texture = ImageTexture.create_from_image(img)
 	atlas_parts.clear()
+	atlas_sprites.clear()
 	var parts_dict: Dictionary = meta.get("parts", {})
 	for pid in parts_dict:
 		var variants: Dictionary = parts_dict[pid]
@@ -133,6 +135,14 @@ func _apply_atlas(img: Image, meta: Dictionary) -> void:
 				entry[vname] = at
 		if not entry.is_empty():
 			atlas_parts[pid] = entry
+	var sprites_dict: Dictionary = meta.get("sprites", {})
+	for skey in sprites_dict:
+		var sr: Array = sprites_dict[skey]
+		if sr.size() == 4:
+			var sat := AtlasTexture.new()
+			sat.atlas = atlas_texture
+			sat.region = Rect2(float(sr[0]), float(sr[1]), float(sr[2]), float(sr[3]))
+			atlas_sprites[skey] = sat
 	loaded_count = atlas_parts.size()
 	assets_ready.emit(loaded_count)
 
@@ -143,15 +153,25 @@ static func get_part_texture(part_id: String, variant: String = "cutaway") -> Te
 	return instance.resolve_part_texture(part_id, variant)
 
 
+static func get_sprite(key: String) -> Texture2D:
+	if instance == null or not instance.use_original_sprites:
+		return null
+	return instance.atlas_sprites.get(key, null)
+
+
 func resolve_part_texture(part_id: String, variant: String = "cutaway") -> Texture2D:
 	if atlas_parts.has(part_id):
 		var variants: Dictionary = atlas_parts[part_id]
+		if variant == "turret":
+			return variants.get("turret", null)
 		if variants.has(variant):
 			return variants[variant]
 		if variants.has("cutaway"):
 			return variants["cutaway"]
 		if variants.has("roof"):
 			return variants["roof"]
+	if variant == "turret":
+		return null
 	if data_root.is_empty() or index.is_empty():
 		return null
 	var cache_key := part_id + "|" + variant

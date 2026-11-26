@@ -50,6 +50,30 @@ test('Cosmoteer template exports to Godot Web (WASM) and runs interactively in h
     platformWorkspace: path.join(runDirectory, 'platform'),
     buildDirectory: path.join(runDirectory, 'builds'),
   });
+  const extractedAssetsDir = path.join(root, 'Templates', 'cosmoteer', 'extracted_assets');
+  let webAtlasFetched = false;
+  if (fs.existsSync(path.join(extractedAssetsDir, 'web_atlas.png'))) {
+    const prevListeners = server.listeners('request').slice();
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      if (req.url && req.url.startsWith('/cosmoteer-assets/')) {
+        const rel = path.basename(req.url.split('?')[0]);
+        if (rel === 'web_atlas.json' || rel === 'web_atlas.png') {
+          const fp = path.join(extractedAssetsDir, rel);
+          if (fs.existsSync(fp)) {
+            if (rel === 'web_atlas.png') webAtlasFetched = true;
+            res.writeHead(200, {
+              'Content-Type': rel.endsWith('.png') ? 'image/png' : 'application/json; charset=utf-8',
+              'Cross-Origin-Resource-Policy': 'same-origin',
+            });
+            fs.createReadStream(fp).pipe(res);
+            return;
+          }
+        }
+      }
+      for (const fn of prevListeners) fn.call(server, req, res);
+    });
+  }
   let browser;
   let passed = false;
   const closeServer = () => new Promise(resolve => {
@@ -124,6 +148,9 @@ test('Cosmoteer template exports to Godot Web (WASM) and runs interactively in h
 
     assert.deepEqual(pageErrors, [], `browser page errors:\n${pageErrors.join('\n')}`);
     assert.deepEqual(runtimeErrors, [], `Godot WASM runtime errors:\n${runtimeErrors.join('\n')}`);
+    if (fs.existsSync(path.join(extractedAssetsDir, 'web_atlas.png'))) {
+      assert.equal(webAtlasFetched, true, 'Web Godot runtime should fetch /cosmoteer-assets/web_atlas.png when present');
+    }
 
     fs.writeFileSync(path.join(evidenceDirectory, 'cosmoteer-runtime.json'), JSON.stringify({
       passed: true,

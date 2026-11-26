@@ -263,7 +263,8 @@
       "floor": "ships/terran/laser_blaster_small/floor.png",
       "roof": "ships/terran/laser_blaster_small/roof.png",
       "walls": "ships/terran/laser_blaster_small/walls.png",
-      "turret": "ships/terran/laser_blaster_small/doodads_on1.png",
+      "doodad": "ships/terran/laser_blaster_small/doodads_on1.png",
+      "turret": "ships/terran/laser_blaster_small/turret_doodads_off.png",
       "blueprint": "ships/terran/laser_blaster_small/blueprints.png"
     },
     "cosmoteer.laser_blaster_large": {
@@ -274,7 +275,8 @@
       "floor": "ships/terran/laser_blaster_large/floor.png",
       "roof": "ships/terran/laser_blaster_large/roof.png",
       "walls": "ships/terran/laser_blaster_large/walls.png",
-      "turret": "ships/terran/laser_blaster_large/doodads_on1.png",
+      "doodad": "ships/terran/laser_blaster_large/doodads_on1.png",
+      "turret": "ships/terran/laser_blaster_large/turret_doodads_off.png",
       "blueprint": "ships/terran/laser_blaster_large/blueprints.png"
     },
     "cosmoteer.disruptor": {
@@ -285,6 +287,7 @@
       "floor": "ships/terran/disruptor/floor.png",
       "roof": "ships/terran/disruptor/roof.png",
       "walls": "ships/terran/disruptor/walls.png",
+      "doodad": "ships/terran/disruptor/doodads_on1.png",
       "turret": "ships/terran/disruptor/turret.png",
       "blueprint": "ships/terran/disruptor/blueprints.png"
     },
@@ -316,7 +319,8 @@
       "floor": "ships/terran/resonance_beam_turret/floor.png",
       "roof": "ships/terran/resonance_beam_turret/roof.png",
       "walls": "ships/terran/resonance_beam_turret/walls.png",
-      "turret": "ships/terran/resonance_beam_turret/doodads_on1.png",
+      "doodad": "ships/terran/resonance_beam_turret/doodads_on1.png",
+      "turret": "ships/terran/resonance_beam_turret/turret_firing1.png",
       "blueprint": "ships/terran/resonance_beam_turret/blueprints.png"
     },
     "cosmoteer.thermal_dilation_pump": {
@@ -327,7 +331,7 @@
       "floor": "ships/terran/thermal_dilation_pump/floor.png",
       "roof": "ships/terran/thermal_dilation_pump/roof.png",
       "walls": "ships/terran/thermal_dilation_pump/walls.png",
-      "turret": "ships/terran/thermal_dilation_pump/doodads_on1.png",
+      "doodad": "ships/terran/thermal_dilation_pump/doodads_on1.png",
       "blueprint": "ships/terran/thermal_dilation_pump/blueprints_connected.png"
     },
     "cosmoteer.thermal_amplification_pump": {
@@ -338,7 +342,7 @@
       "floor": "ships/terran/thermal_amplification_pump/floor.png",
       "roof": "ships/terran/thermal_amplification_pump/roof.png",
       "walls": "ships/terran/thermal_amplification_pump/walls.png",
-      "turret": "ships/terran/thermal_amplification_pump/doodads_on1.png",
+      "doodad": "ships/terran/thermal_amplification_pump/doodads_on1.png",
       "blueprint": "ships/terran/thermal_amplification_pump/blueprints.png"
     },
     "cosmoteer.cannon_med": {
@@ -349,7 +353,7 @@
       "floor": "ships/terran/cannon_med/floor.png",
       "roof": "ships/terran/cannon_med/roof.png",
       "walls": "ships/terran/cannon_med/walls.png",
-      "turret": "ships/terran/cannon_med/turret_floor.png",
+      "turret": "ships/terran/cannon_med/barrel1.png",
       "blueprint": "ships/terran/cannon_med/blueprints.png"
     },
     "cosmoteer.cannon_large": {
@@ -360,7 +364,7 @@
       "floor": "ships/terran/cannon_large/floor.png",
       "roof": "ships/terran/cannon_large/roof.png",
       "walls": "ships/terran/cannon_large/walls.png",
-      "turret": "ships/terran/cannon_large/turret_floor.png",
+      "turret": "ships/terran/cannon_large/barrel1.png",
       "blueprint": "ships/terran/cannon_large/blueprints.png"
     },
     "cosmoteer.cannon_deck": {
@@ -371,7 +375,8 @@
       "floor": "ships/terran/cannon_deck/floor.png",
       "roof": "ships/terran/cannon_deck/roof.png",
       "walls": "ships/terran/cannon_deck/walls.png",
-      "turret": "ships/terran/cannon_deck/doodads_on1.png",
+      "doodad": "ships/terran/cannon_deck/doodads_on1.png",
+      "turret": "ships/terran/cannon_deck/barrel1.png",
       "blueprint": "ships/terran/cannon_deck/blueprints.png"
     },
     "cosmoteer.missile_launcher": {
@@ -382,7 +387,7 @@
       "floor": "ships/terran/missile_launcher/floor.png",
       "roof": "ships/terran/missile_launcher/roof.png",
       "walls": "ships/terran/missile_launcher/walls.png",
-      "turret": "ships/terran/missile_launcher/doodads_on1.png",
+      "doodad": "ships/terran/missile_launcher/doodads_on1.png",
       "blueprint": "ships/terran/missile_launcher/blueprints_he.png"
     },
     "cosmoteer.railgun_launcher": {
@@ -413,6 +418,7 @@
       "floor": "ships/terran/railgun_loader/floor.png",
       "roof": "ships/terran/railgun_loader/roof.png",
       "walls": "ships/terran/railgun_loader/walls.png",
+      "doodad": "ships/terran/railgun_loader/doodads_on1.png",
       "turret": "ships/terran/railgun_loader/weapon.png",
       "blueprint": "ships/terran/railgun_loader/blueprints.png"
     },
@@ -424,7 +430,8 @@
       "floor": "ships/terran/chaingun/floor.png",
       "roof": "ships/terran/chaingun/roof.png",
       "walls": "ships/terran/chaingun/walls.png",
-      "turret": "ships/terran/chaingun/doodads_on1.png",
+      "doodad": "ships/terran/chaingun/doodads_on1.png",
+      "turret": "ships/terran/chaingun/turret_barrel1.png",
       "blueprint": "ships/terran/chaingun/blueprints.png"
     },
     "cosmoteer.chaingun_magazine": {
@@ -445,7 +452,7 @@
       "floor": "ships/terran/shield_gen_small/floor.png",
       "roof": "ships/terran/shield_gen_small/roof.png",
       "walls": "ships/terran/shield_gen_small/walls.png",
-      "turret": "ships/terran/shield_gen_small/doodads_on1.png",
+      "doodad": "ships/terran/shield_gen_small/doodads_on1.png",
       "blueprint": "ships/terran/shield_gen_small/blueprints.png"
     },
     "cosmoteer.shield_gen_large": {
@@ -456,7 +463,7 @@
       "floor": "ships/terran/shield_gen_large/floor.png",
       "roof": "ships/terran/shield_gen_large/roof.png",
       "walls": "ships/terran/shield_gen_large/walls.png",
-      "turret": "ships/terran/shield_gen_large/doodads_on1.png",
+      "doodad": "ships/terran/shield_gen_large/doodads_on1.png",
       "blueprint": "ships/terran/shield_gen_large/blueprints.png"
     },
     "cosmoteer.flak_cannon_large": {
@@ -543,6 +550,7 @@
       "floor": "ships/terran/thruster_small/floor.png",
       "roof": "ships/terran/thruster_small/roof.png",
       "walls": "ships/terran/thruster_small/walls.png",
+      "doodad": "ships/terran/thruster_small/doodads_on1.png",
       "turret": "ships/terran/thruster_small/nozzle.png",
       "blueprint": "ships/terran/thruster_small/blueprints.png"
     },
@@ -554,6 +562,7 @@
       "floor": "ships/terran/thruster_small_2way/floor.png",
       "roof": "ships/terran/thruster_small_2way/roof.png",
       "walls": "ships/terran/thruster_small_2way/walls.png",
+      "doodad": "ships/terran/thruster_small_2way/doodads_on1.png",
       "turret": "ships/terran/thruster_small_2way/nozzle.png",
       "blueprint": "ships/terran/thruster_small_2way/blueprints.png"
     },
@@ -565,6 +574,7 @@
       "floor": "ships/terran/thruster_small_3way/floor.png",
       "roof": "ships/terran/thruster_small_3way/roof.png",
       "walls": "ships/terran/thruster_small_3way/walls.png",
+      "doodad": "ships/terran/thruster_small_3way/doodads_on1.png",
       "turret": "ships/terran/thruster_small_3way/nozzle.png",
       "blueprint": "ships/terran/thruster_small_3way/blueprints.png"
     },
@@ -576,6 +586,7 @@
       "floor": "ships/terran/thruster_med/floor.png",
       "roof": "ships/terran/thruster_med/roof.png",
       "walls": "ships/terran/thruster_med/walls.png",
+      "doodad": "ships/terran/thruster_med/doodads_on1.png",
       "turret": "ships/terran/thruster_med/nozzle.png",
       "blueprint": "ships/terran/thruster_med/blueprints.png"
     },
@@ -587,6 +598,7 @@
       "floor": "ships/terran/thruster_large/floor.png",
       "roof": "ships/terran/thruster_large/roof.png",
       "walls": "ships/terran/thruster_large/walls.png",
+      "doodad": "ships/terran/thruster_large/doodads_on1.png",
       "turret": "ships/terran/thruster_large/nozzle.png",
       "blueprint": "ships/terran/thruster_large/blueprints.png"
     },
@@ -598,6 +610,7 @@
       "floor": "ships/terran/thruster_huge/floor.png",
       "roof": "ships/terran/thruster_huge/roof.png",
       "walls": "ships/terran/thruster_huge/walls.png",
+      "doodad": "ships/terran/thruster_huge/doodads_on1.png",
       "turret": "ships/terran/thruster_huge/nozzle.png",
       "blueprint": "ships/terran/thruster_huge/blueprints.png"
     },
@@ -620,6 +633,7 @@
       "floor": "ships/terran/thruster_rocket_nozzle/floor.png",
       "roof": "ships/terran/thruster_rocket_nozzle/roof.png",
       "walls": "ships/terran/thruster_rocket_nozzle/walls.png",
+      "doodad": "ships/terran/thruster_rocket_nozzle/doodads_on1.png",
       "turret": "ships/terran/thruster_rocket_nozzle/nozzle.png",
       "blueprint": "ships/terran/thruster_rocket_nozzle/blueprints.png"
     },
@@ -631,7 +645,7 @@
       "floor": "ships/terran/thruster_rocket_extender/floor.png",
       "roof": "ships/terran/thruster_rocket_extender/roof.png",
       "walls": "ships/terran/thruster_rocket_extender/walls.png",
-      "turret": "ships/terran/thruster_rocket_extender/doodads_on1.png",
+      "doodad": "ships/terran/thruster_rocket_extender/doodads_on1.png",
       "blueprint": "ships/terran/thruster_rocket_extender/blueprints.png"
     },
     "cosmoteer.thruster_rocket_battery": {
@@ -652,7 +666,7 @@
       "floor": "ships/terran/engine_room/floor.png",
       "roof": "ships/terran/engine_room/roof.png",
       "walls": "ships/terran/engine_room/walls.png",
-      "turret": "ships/terran/engine_room/doodads_on1.png",
+      "doodad": "ships/terran/engine_room/doodads_on1.png",
       "blueprint": "ships/terran/engine_room/blueprints.png"
     },
     "cosmoteer.control_room_small": {
@@ -663,7 +677,7 @@
       "floor": "ships/terran/control_room_small/floor.png",
       "roof": "ships/terran/control_room_small/roof.png",
       "walls": "ships/terran/control_room_small/walls.png",
-      "turret": "ships/terran/control_room_small/doodads_on1.png",
+      "doodad": "ships/terran/control_room_small/doodads_on1.png",
       "blueprint": "ships/terran/control_room_small/blueprints.png"
     },
     "cosmoteer.control_room_med": {
@@ -674,7 +688,7 @@
       "floor": "ships/terran/control_room_med/floor.png",
       "roof": "ships/terran/control_room_med/roof.png",
       "walls": "ships/terran/control_room_med/walls.png",
-      "turret": "ships/terran/control_room_med/doodads_on1.png",
+      "doodad": "ships/terran/control_room_med/doodads_on1.png",
       "blueprint": "ships/terran/control_room_med/blueprints.png"
     },
     "cosmoteer.control_room_large": {
@@ -685,7 +699,7 @@
       "floor": "ships/terran/control_room_large/floor.png",
       "roof": "ships/terran/control_room_large/roof.png",
       "walls": "ships/terran/control_room_large/walls.png",
-      "turret": "ships/terran/control_room_large/doodads_on1.png",
+      "doodad": "ships/terran/control_room_large/doodads_on1.png",
       "blueprint": "ships/terran/control_room_large/blueprints.png"
     },
     "cosmoteer.hyperdrive_small": {
@@ -696,7 +710,7 @@
       "floor": "ships/terran/hyperdrive_small/floor.png",
       "roof": "ships/terran/hyperdrive_small/roof.png",
       "walls": "ships/terran/hyperdrive_small/walls.png",
-      "turret": "ships/terran/hyperdrive_small/doodads_on1.png",
+      "doodad": "ships/terran/hyperdrive_small/doodads_on1.png",
       "blueprint": "ships/terran/hyperdrive_small/blueprints.png"
     },
     "cosmoteer.hyperdrive_med": {
@@ -707,7 +721,7 @@
       "floor": "ships/terran/hyperdrive_med/floor.png",
       "roof": "ships/terran/hyperdrive_med/roof.png",
       "walls": "ships/terran/hyperdrive_med/walls.png",
-      "turret": "ships/terran/hyperdrive_med/doodads_on1.png",
+      "doodad": "ships/terran/hyperdrive_med/doodads_on1.png",
       "blueprint": "ships/terran/hyperdrive_med/blueprints.png"
     },
     "cosmoteer.hyperdrive_large": {
@@ -718,7 +732,7 @@
       "floor": "ships/terran/hyperdrive_large/floor.png",
       "roof": "ships/terran/hyperdrive_large/roof.png",
       "walls": "ships/terran/hyperdrive_large/walls.png",
-      "turret": "ships/terran/hyperdrive_large/doodads_on1.png",
+      "doodad": "ships/terran/hyperdrive_large/doodads_on1.png",
       "blueprint": "ships/terran/hyperdrive_large/blueprints.png"
     },
     "cosmoteer.crew_quarters_small": {
@@ -729,7 +743,7 @@
       "floor": "ships/terran/crew_quarters_small/floor_a.png",
       "roof": "ships/terran/crew_quarters_small/roof.png",
       "walls": "ships/terran/crew_quarters_small/walls_a.png",
-      "turret": "ships/terran/crew_quarters_small/doodads_on_a1.png",
+      "doodad": "ships/terran/crew_quarters_small/doodads_on_a1.png",
       "blueprint": "ships/terran/crew_quarters_small/blueprints.png"
     },
     "cosmoteer.crew_quarters_med": {
@@ -740,7 +754,7 @@
       "floor": "ships/terran/crew_quarters_med/floor.png",
       "roof": "ships/terran/crew_quarters_med/roof.png",
       "walls": "ships/terran/crew_quarters_med/walls.png",
-      "turret": "ships/terran/crew_quarters_med/doodads_on1.png",
+      "doodad": "ships/terran/crew_quarters_med/doodads_on1.png",
       "blueprint": "ships/terran/crew_quarters_med/blueprints.png"
     },
     "cosmoteer.crew_quarters_large": {
@@ -751,7 +765,7 @@
       "floor": "ships/terran/crew_quarters_large/floor.png",
       "roof": "ships/terran/crew_quarters_large/roof.png",
       "walls": "ships/terran/crew_quarters_large/walls.png",
-      "turret": "ships/terran/crew_quarters_large/doodads_on1.png",
+      "doodad": "ships/terran/crew_quarters_large/doodads_on1.png",
       "blueprint": "ships/terran/crew_quarters_large/blueprints.png"
     },
     "cosmoteer.airlock": {
@@ -808,7 +822,7 @@
       "floor": "ships/terran/power_storage/floor.png",
       "roof": "ships/terran/power_storage/roof.png",
       "walls": "ships/terran/power_storage/walls.png",
-      "turret": "ships/terran/power_storage/doodads_on1.png",
+      "doodad": "ships/terran/power_storage/doodads_on1.png",
       "blueprint": "ships/terran/power_storage/blueprints.png"
     },
     "cosmoteer.heat_pipe_adaptive": {
@@ -874,7 +888,7 @@
       "floor": "ships/terran/factory_ammo/floor.png",
       "roof": "ships/terran/factory_ammo/roof1.png",
       "walls": "ships/terran/factory_ammo/walls.png",
-      "turret": "ships/terran/factory_ammo/doodads_on1.png",
+      "doodad": "ships/terran/factory_ammo/doodads_on1.png",
       "blueprint": "ships/terran/factory_ammo/blueprints.png"
     },
     "cosmoteer.factory_he": {
@@ -885,7 +899,7 @@
       "floor": "ships/terran/factory_he/floor.png",
       "roof": "ships/terran/factory_he/roof1.png",
       "walls": "ships/terran/factory_he/walls.png",
-      "turret": "ships/terran/factory_he/doodads_on1.png",
+      "doodad": "ships/terran/factory_he/doodads_on1.png",
       "blueprint": "ships/terran/factory_he/blueprints.png"
     },
     "cosmoteer.factory_emp": {
@@ -896,7 +910,7 @@
       "floor": "ships/terran/factory_emp/floor.png",
       "roof": "ships/terran/factory_emp/roof1.png",
       "walls": "ships/terran/factory_emp/walls.png",
-      "turret": "ships/terran/factory_emp/doodads_on1.png",
+      "doodad": "ships/terran/factory_emp/doodads_on1.png",
       "blueprint": "ships/terran/factory_emp/blueprints.png"
     },
     "cosmoteer.factory_thermal": {
@@ -907,7 +921,7 @@
       "floor": "ships/terran/factory_thermal/floor.png",
       "roof": "ships/terran/factory_thermal/roof1.png",
       "walls": "ships/terran/factory_thermal/walls.png",
-      "turret": "ships/terran/factory_thermal/doodads_on1.png",
+      "doodad": "ships/terran/factory_thermal/doodads_on1.png",
       "blueprint": "ships/terran/factory_thermal/blueprints.png"
     },
     "cosmoteer.factory_nuke": {
@@ -918,7 +932,7 @@
       "floor": "ships/terran/factory_nuke/floor.png",
       "roof": "ships/terran/factory_nuke/roof1.png",
       "walls": "ships/terran/factory_nuke/walls.png",
-      "turret": "ships/terran/factory_nuke/doodads_on1.png",
+      "doodad": "ships/terran/factory_nuke/doodads_on1.png",
       "blueprint": "ships/terran/factory_nuke/blueprints.png"
     },
     "cosmoteer.factory_mine": {
@@ -929,7 +943,7 @@
       "floor": "ships/terran/factory_mine/floor.png",
       "roof": "ships/terran/factory_mine/roof1.png",
       "walls": "ships/terran/factory_mine/walls.png",
-      "turret": "ships/terran/factory_mine/doodads_on1.png",
+      "doodad": "ships/terran/factory_mine/doodads_on1.png",
       "blueprint": "ships/terran/factory_mine/blueprints.png"
     },
     "cosmoteer.factory_steel": {
@@ -940,7 +954,7 @@
       "floor": "ships/terran/factory_steel/floor.png",
       "roof": "ships/terran/factory_steel/roof1.png",
       "walls": "ships/terran/factory_steel/walls.png",
-      "turret": "ships/terran/factory_steel/doodads_on1.png",
+      "doodad": "ships/terran/factory_steel/doodads_on1.png",
       "blueprint": "ships/terran/factory_steel/blueprints.png"
     },
     "cosmoteer.factory_coil": {
@@ -951,7 +965,7 @@
       "floor": "ships/terran/factory_coil/floor.png",
       "roof": "ships/terran/factory_coil/roof1.png",
       "walls": "ships/terran/factory_coil/walls.png",
-      "turret": "ships/terran/factory_coil/doodads_on1.png",
+      "doodad": "ships/terran/factory_coil/doodads_on1.png",
       "blueprint": "ships/terran/factory_coil/blueprints.png"
     },
     "cosmoteer.factory_coil2": {
@@ -962,7 +976,7 @@
       "floor": "ships/terran/factory_coil2/floor.png",
       "roof": "ships/terran/factory_coil2/roof1.png",
       "walls": "ships/terran/factory_coil2/walls.png",
-      "turret": "ships/terran/factory_coil2/doodads_on1.png",
+      "doodad": "ships/terran/factory_coil2/doodads_on1.png",
       "blueprint": "ships/terran/factory_coil2/blueprints.png"
     },
     "cosmoteer.factory_tristeel": {
@@ -973,7 +987,7 @@
       "floor": "ships/terran/factory_tristeel/floor.png",
       "roof": "ships/terran/factory_tristeel/roof1.png",
       "walls": "ships/terran/factory_tristeel/walls.png",
-      "turret": "ships/terran/factory_tristeel/doodads_on1.png",
+      "doodad": "ships/terran/factory_tristeel/doodads_on1.png",
       "blueprint": "ships/terran/factory_tristeel/blueprints.png"
     },
     "cosmoteer.factory_diamond": {
@@ -994,7 +1008,7 @@
       "floor": "ships/terran/factory_processor/floor.png",
       "roof": "ships/terran/factory_processor/roof1.png",
       "walls": "ships/terran/factory_processor/walls.png",
-      "turret": "ships/terran/factory_processor/doodads_on1.png",
+      "doodad": "ships/terran/factory_processor/doodads_on1.png",
       "blueprint": "ships/terran/factory_processor/blueprints.png"
     },
     "cosmoteer.factory_uranium": {
@@ -1005,7 +1019,7 @@
       "floor": "ships/terran/factory_uranium/floor.png",
       "roof": "ships/terran/factory_uranium/roof1.png",
       "walls": "ships/terran/factory_uranium/walls.png",
-      "turret": "ships/terran/factory_uranium/doodads_on1.png",
+      "doodad": "ships/terran/factory_uranium/doodads_on1.png",
       "blueprint": "ships/terran/factory_uranium/blueprints.png"
     },
     "cosmoteer.storage_2x2": {
@@ -1076,7 +1090,8 @@
       "floor": "ships/terran/mining_laser_small/floor.png",
       "roof": "ships/terran/mining_laser_small/roof.png",
       "walls": "ships/terran/mining_laser_small/walls.png",
-      "turret": "ships/terran/mining_laser_small/doodads_on1.png",
+      "doodad": "ships/terran/mining_laser_small/doodads_on1.png",
+      "turret": "ships/terran/mining_laser_small/weapon_off.png",
       "blueprint": "ships/terran/mining_laser_small/blueprints.png"
     },
     "cosmoteer.manipulator_beam_emitter": {
@@ -1087,7 +1102,8 @@
       "floor": "ships/terran/manipulator_beam_emitter/floor.png",
       "roof": "ships/terran/manipulator_beam_emitter/roof.png",
       "walls": "ships/terran/manipulator_beam_emitter/walls.png",
-      "turret": "ships/terran/manipulator_beam_emitter/doodads_on.png",
+      "doodad": "ships/terran/manipulator_beam_emitter/doodads_on.png",
+      "turret": "ships/terran/manipulator_beam_emitter/turret_beam.png",
       "blueprint": "ships/terran/manipulator_beam_emitter/blueprints.png"
     },
     "cosmoteer.tractor_beam_emitter": {
@@ -1098,7 +1114,8 @@
       "floor": "ships/terran/tractor_beam_emitter/floor.png",
       "roof": "ships/terran/tractor_beam_emitter/roof.png",
       "walls": "ships/terran/tractor_beam_emitter/walls.png",
-      "turret": "ships/terran/tractor_beam_emitter/doodads_on1.png",
+      "doodad": "ships/terran/tractor_beam_emitter/doodads_on1.png",
+      "turret": "ships/terran/tractor_beam_emitter/turret_interior_off.png",
       "blueprint": "ships/terran/tractor_beam_emitter/blueprints.png"
     },
     "cosmoteer.sensor_array": {
@@ -1109,7 +1126,7 @@
       "floor": "ships/terran/sensor_array/floor.png",
       "roof": "ships/terran/sensor_array/roof.png",
       "walls": "ships/terran/sensor_array/walls.png",
-      "turret": "ships/terran/sensor_array/doodads_on1.png",
+      "doodad": "ships/terran/sensor_array/doodads_on1.png",
       "blueprint": "ships/terran/sensor_array/blueprints.png"
     },
     "cosmoteer.hyperdrive_beacon": {
@@ -1120,7 +1137,7 @@
       "floor": "ships/terran/hyperdrive_beacon/floor.png",
       "roof": "ships/terran/hyperdrive_beacon/roof.png",
       "walls": "ships/terran/hyperdrive_beacon/walls.png",
-      "turret": "ships/terran/hyperdrive_beacon/doodads_on1.png",
+      "doodad": "ships/terran/hyperdrive_beacon/doodads_on1.png",
       "blueprint": "ships/terran/hyperdrive_beacon/blueprints.png"
     },
     "cosmoteer.explosive_charge": {

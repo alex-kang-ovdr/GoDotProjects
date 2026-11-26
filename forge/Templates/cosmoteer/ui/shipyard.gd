@@ -7,6 +7,7 @@ const Duel = preload("res://ui/engagement.gd")
 const RocketNetwork = preload("res://sim/rocket_network.gd")
 const EngineRoom = preload("res://sim/engine_room.gd")
 const CombatSystems = preload("res://sim/combat_systems.gd")
+const AssetLoader = preload("res://sim/asset_loader.gd")
 const Operations = preload("res://sim/operations.gd")
 const RESULTS := {"win":"승리", "loss":"패배", "draw":"무승부"}
 const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함교 제압", "protected_bridge":"보호 대상 함교 파괴",
@@ -194,7 +195,8 @@ func build(host) -> void:
 	palette.add_child(search)
 	parts_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	parts_list.fixed_column_width = 235
-	parts_list.add_theme_constant_override("v_separation",6)
+	parts_list.fixed_icon_size = Vector2i(22, 22)
+	parts_list.add_theme_constant_override("v_separation",5)
 	parts_list.item_selected.connect(_pick_part)
 	palette.add_child(parts_list)
 	part_info = _wrap("",14,lab.SOFT)
@@ -379,7 +381,8 @@ func _populate() -> void:
 	for id in ids:
 		if not design.by_id.has(id) or (not query.is_empty() and not (id+" "+display_name(id)).to_lower().contains(query)):
 			continue
-		var idx := parts_list.add_item(display_name(id))
+		var icon_tex: Texture2D = AssetLoader.get_part_texture(id, "cutaway")
+		var idx := parts_list.add_item(display_name(id), icon_tex)
 		parts_list.set_item_metadata(idx,id)
 		if id == selected_id:
 			parts_list.select(idx)
@@ -389,6 +392,14 @@ func _populate() -> void:
 	elif parts_list.item_count == 0:
 		selected_id = ""
 	_sync_tool()
+
+
+func _refresh_palette_icons() -> void:
+	for i in parts_list.item_count:
+		var id := str(parts_list.get_item_metadata(i))
+		var icon_tex: Texture2D = AssetLoader.get_part_texture(id, "cutaway")
+		if icon_tex != null:
+			parts_list.set_item_icon(i, icon_tex)
 
 func _pick_part(index: int) -> void:
 	selected_id = parts_list.get_item_metadata(index)

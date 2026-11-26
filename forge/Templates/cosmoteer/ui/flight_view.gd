@@ -157,11 +157,32 @@ func _world_bounds() -> Rect2:
 
 
 func _draw_starfield(center: Vector2, zoom: float) -> void:
+	var star_tex: Texture2D = AssetLoader.get_sprite("star")
 	for star in _stars:
 		var parallax := center * zoom * star.z
 		var screen := Vector2(fposmod(star.x * size.x - parallax.x, size.x), fposmod(star.y * size.y - parallax.y, size.y))
-		var color := Color("#a7c7dd", lerpf(0.12, 0.34, star.z))
-		draw_circle(screen, lerpf(0.55, 1.15, star.z), color)
+		var color := Color("#a7c7dd", lerpf(0.16, 0.45, star.z))
+		if star_tex != null and star.z > 0.56:
+			var s := lerpf(3.0, 6.5, star.z)
+			draw_texture_rect(star_tex, Rect2(screen - Vector2(s, s) * 0.5, Vector2(s, s)), false, color)
+		else:
+			draw_circle(screen, lerpf(0.55, 1.15, star.z), color)
+	# Layer authentic Cosmoteer space nebula clouds tinted by sector palette
+	var cloud_tint := Color("#2a5d8f")
+	if battle != null and battle.mission is Dictionary and battle.mission.has("background"):
+		var bg: Dictionary = CombatSystems.get_background(str(battle.mission.background))
+		var pal: Array = bg.get("palette", [])
+		if not pal.is_empty():
+			cloud_tint = Color(str(pal[0]))
+	for ci in 4:
+		var ctex: Texture2D = AssetLoader.get_sprite("cloud_%d" % (ci + 1))
+		if ctex == null:
+			continue
+		var p := center * zoom * (0.04 + 0.015 * float(ci))
+		var cx := fposmod(size.x * (0.18 + 0.23 * float(ci)) - p.x, size.x + 240.0) - 120.0
+		var cy := fposmod(size.y * (0.22 + 0.19 * float(ci)) - p.y, size.y + 240.0) - 120.0
+		var cs := minf(size.x, size.y) * (0.42 + 0.08 * float(ci % 2))
+		draw_texture_rect(ctex, Rect2(Vector2(cx - cs * 0.5, cy - cs * 0.5), Vector2(cs, cs)), false, Color(cloud_tint, 0.14))
 
 
 func _draw_environment(center: Vector2, zoom: float) -> void:
@@ -237,20 +258,30 @@ func _draw_asteroids(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 			continue
 		var center := _world_to_screen(Vector2(ast.pos), camera, zoom, viewport_center)
 		var r := maxf(4.5, float(ast.radius) * zoom)
-		var pts := PackedVector2Array()
 		var seed_v := int(ast.get("seed", 1))
-		for k in 9:
-			var ang := TAU * float(k) / 9.0
-			var jitter := 0.78 + 0.34 * fposmod(sin(float(seed_v + k * 19)) * 43758.5, 1.0)
-			pts.append(center + Vector2.from_angle(ang) * r * jitter)
-		var rock_col := Color("#434b56")
 		var vein_col := Color(str(ast.get("color", "#9fb2c2")))
-		draw_colored_polygon(pts, rock_col)
-		var outline := PackedVector2Array(pts)
-		outline.append(pts[0])
-		draw_polyline(outline, vein_col.darkened(0.25), 1.4, true)
-		draw_circle(center + Vector2(-r * 0.22, -r * 0.12), maxf(1.8, r * 0.24), Color(vein_col, 0.85))
-		draw_circle(center + Vector2(r * 0.25, r * 0.18), maxf(1.5, r * 0.18), Color(vein_col.lightened(0.25), 0.9))
+		var rtype := str(ast.get("resource", "plain"))
+		var atex: Texture2D = AssetLoader.get_sprite("ast_" + rtype)
+		if atex == null:
+			atex = AssetLoader.get_sprite("ast_plain")
+		if atex != null:
+			var rot := fposmod(float(seed_v) * 0.73, TAU)
+			var sz := Vector2(r * 2.2, r * 2.2)
+			draw_set_transform(center, rot, Vector2.ONE)
+			draw_texture_rect(atex, Rect2(-sz * 0.5, sz), false, Color.WHITE)
+			draw_set_transform(Vector2.ZERO)
+		else:
+			var pts := PackedVector2Array()
+			for k in 9:
+				var ang := TAU * float(k) / 9.0
+				var jitter := 0.78 + 0.34 * fposmod(sin(float(seed_v + k * 19)) * 43758.5, 1.0)
+				pts.append(center + Vector2.from_angle(ang) * r * jitter)
+			draw_colored_polygon(pts, Color("#434b56"))
+			var outline := PackedVector2Array(pts)
+			outline.append(pts[0])
+			draw_polyline(outline, vein_col.darkened(0.25), 1.4, true)
+			draw_circle(center + Vector2(-r * 0.22, -r * 0.12), maxf(1.8, r * 0.24), Color(vein_col, 0.85))
+			draw_circle(center + Vector2(r * 0.25, r * 0.18), maxf(1.5, r * 0.18), Color(vein_col.lightened(0.25), 0.9))
 		var ratio := clampf(float(ast.hp) / maxf(1.0, float(ast.max_hp)), 0.0, 1.0)
 		if ratio < 0.999:
 			draw_arc(center, r + 3.0, -PI * 0.5, -PI * 0.5 + TAU * ratio, 20, vein_col, 1.8, true)
@@ -325,6 +356,15 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			var base_tint := Color(str(livery.tint))
 			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else base_tint
 			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
+			var turret_tex: Texture2D = AssetLoader.get_part_texture(id, "turret")
+			if turret_tex != null:
+				var p_dims := _part_screen_size(part, zoom)
+				var t_sz := Vector2(p_dims.y, p_dims.x) if (rot_q % 2 == 1) else p_dims
+				var local_t := float(part.get("turret_angle_local", float(rot_q - 1) * PI * 0.5))
+				var t_center := _center_of(quad)
+				draw_set_transform(t_center, float(ship.heading) + local_t + PI * 0.5, Vector2.ONE)
+				draw_texture_rect(turret_tex, Rect2(-t_sz * 0.5, t_sz), false, tint)
+				draw_set_transform(Vector2.ZERO)
 			var edge_col := Color(str(livery.trim)) if paint_id != "default" and not dead else color
 			draw_polyline(border, Color(edge_col, 0.55), 1.1, true)
 		else:
@@ -515,6 +555,32 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 		if direction.length_squared() < 0.01:
 			direction = bolt.velocity.normalized() * maxf(6.0, zoom * 1.5)
 		var tip := b if a.distance_to(b) > 1.5 else b + direction
+		var skey := ""
+		match kind:
+			"mine": skey = "shot_mine"
+			"missile": skey = "shot_missile_he"
+			"missile_emp": skey = "shot_missile_emp"
+			"missile_nuke": skey = "shot_missile_nuke"
+			"missile_thermal": skey = "shot_missile_thermal"
+			"cannon_deck", "cannon_large": skey = "shot_bullet_large"
+			"cannon": skey = "shot_bullet_med"
+			"railgun": skey = "shot_railgun"
+			"heavy_laser": skey = "shot_laser_large"
+			"laser": skey = "shot_laser_small"
+		var stex: Texture2D = AssetLoader.get_sprite(skey) if not skey.is_empty() else null
+		if stex != null:
+			var vel_ang := Vector2(bolt.velocity).angle() + PI * 0.5
+			var s_scale := clampf(zoom * 0.085, 0.28, 1.35)
+			if kind == "cannon_deck" or kind == "missile_nuke":
+				s_scale *= 1.35
+			elif kind == "mine":
+				var prox_r := maxf(8.0, float(bolt.get("proximity", 22.0)) * zoom * 0.18)
+				draw_arc(tip, prox_r, 0.0, TAU, 16, Color("#ff4757", 0.25), 1.1, true)
+			var s_sz := stex.get_size() * s_scale
+			draw_set_transform(tip, vel_ang, Vector2.ONE)
+			draw_texture_rect(stex, Rect2(-s_sz * 0.5, s_sz), false, Color.WHITE)
+			draw_set_transform(Vector2.ZERO)
+			continue
 		if kind == "mine":
 			var r_mine := maxf(3.6, zoom * 0.42)
 			var prox_r := maxf(8.0, float(bolt.get("proximity", 22.0)) * zoom * 0.18)
@@ -748,8 +814,12 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 		var kind := str(ev.get("kind", ""))
 		if kind == "destroyed":
 			var r := maxf(8.0, (2.5 + 8.5 * t) * zoom)
-			draw_circle(pos, r * 0.45, Color("#ffae52", alpha * 0.55))
-			draw_arc(pos, r, 0.0, TAU, 24, Color("#ff7354", alpha * 0.9), maxf(2.0, zoom * 0.35), true)
+			var etex: Texture2D = AssetLoader.get_sprite("exp_big")
+			if etex != null:
+				draw_texture_rect(etex, Rect2(pos - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color(1.0, 0.92, 0.82, alpha * 0.92))
+			else:
+				draw_circle(pos, r * 0.45, Color("#ffae52", alpha * 0.55))
+				draw_arc(pos, r, 0.0, TAU, 24, Color("#ff7354", alpha * 0.9), maxf(2.0, zoom * 0.35), true)
 		elif kind == "shield_down":
 			var r := maxf(10.0, (4.0 + 10.0 * t) * zoom)
 			draw_arc(pos, r, 0.0, TAU, 28, Color("#7ef2ff", alpha * 0.95), maxf(2.4, zoom * 0.4), true)
@@ -763,13 +833,19 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 		elif kind == "blast":
 			var br := maxf(8.0, float(ev.get("radius", 3.5)) * zoom * (0.4 + 0.75 * t))
 			var bk := str(ev.get("blast_kind", "he"))
-			var fill_c := Color("#a864ff", alpha * 0.36) if bk == "emp" else (Color("#ff3322", alpha * 0.48) if bk == "nuke" else Color("#ff7c2b", alpha * 0.38))
+			var btex: Texture2D = AssetLoader.get_sprite("exp_big" if bk == "nuke" else "exp_med")
+			if btex != null:
+				var btint := Color("#c48cff", alpha * 0.92) if bk == "emp" else (Color("#ff9966", alpha * 0.95) if bk == "nuke" else Color(1.0, 0.9, 0.75, alpha * 0.9))
+				draw_texture_rect(btex, Rect2(pos - Vector2(br, br), Vector2(br * 2.0, br * 2.0)), false, btint)
 			var ring_c := Color("#d8b4ff", alpha * 0.92) if bk == "emp" else (Color("#ffec80", alpha * 0.95) if bk == "nuke" else Color("#ffd166", alpha * 0.9))
-			draw_circle(pos, br * 0.55, fill_c)
 			draw_arc(pos, br, 0.0, TAU, 24, ring_c, maxf(2.0, zoom * 0.32), true)
 		elif kind == "hit":
 			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)
-			draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)
+			var stex_h: Texture2D = AssetLoader.get_sprite("exp_spark")
+			if stex_h != null:
+				draw_texture_rect(stex_h, Rect2(pos - Vector2(r * 1.4, r * 1.4), Vector2(r * 2.8, r * 2.8)), false, Color(1.0, 0.92, 0.75, alpha * 0.9))
+			else:
+				draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)
 
 
 func _part_color(id: String) -> Color:

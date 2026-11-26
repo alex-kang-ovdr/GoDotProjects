@@ -490,6 +490,13 @@ func _draw_ghost(cell_size: Vector2, origin: Vector2) -> void:
 	var color := MINT if placeable else RED
 	var rect := Rect2(origin + Vector2(_hover) * cell_size, Vector2(dims) * cell_size).grow(-2.0)
 	draw_rect(rect, Color(color, 0.19), true)
+	var ghost_tex: Texture2D = AssetLoader.get_part_texture(selected_id, "cutaway")
+	if ghost_tex != null:
+		var g_rot: int = posmod(rotation_quarters, 4)
+		var g_sz := Vector2(rect.size.y, rect.size.x) if (g_rot % 2 == 1) else rect.size
+		draw_set_transform(rect.get_center(), float(g_rot) * PI * 0.5, Vector2.ONE)
+		draw_texture_rect(ghost_tex, Rect2(-g_sz * 0.5, g_sz), false, Color(color.r, color.g, color.b, 0.62))
+		draw_set_transform(Vector2.ZERO)
 	draw_rect(rect, Color(color, 0.95), false, 2.0)
 	var center := rect.get_center()
 	if source.get("stats",{}).has("special_propulsion"):
@@ -545,6 +552,19 @@ func _draw_crew_member(center: Vector2, cell_size: float, member: Dictionary) ->
 	var role := str(member.get("role", "carrier"))
 	var radius := maxf(4.0, cell_size * 0.14)
 	var color := MINT if role == "carrier" else (AMBER if role == "gunner" else BLUE)
+	var carrying := role == "carrier" and int(member.get("cargo", 0)) > 0
+	var ckey := "crew_carry" if carrying else ("crew_operate" if role in ["pilot", "gunner", "rocket_operator"] else "crew_walk")
+	var ctex: Texture2D = AssetLoader.get_sprite(ckey)
+	if ctex != null:
+		var sz := maxf(10.0, cell_size * 0.42)
+		var ctint := color.lerp(Color.WHITE, 0.55)
+		draw_texture_rect(ctex, Rect2(center - Vector2(sz, sz) * 0.5, Vector2(sz, sz)), false, ctint)
+		if carrying:
+			var btex: Texture2D = AssetLoader.get_sprite("battery")
+			if btex != null:
+				var bsz := sz * 0.55
+				draw_texture_rect(btex, Rect2(center - Vector2(bsz, bsz) * 0.5, Vector2(bsz, bsz)), false, Color.WHITE)
+		return
 	if role == "pilot":
 		var pilot := PackedVector2Array([center + Vector2(0, -radius), center + Vector2(radius * 0.9, radius * 0.72), center - Vector2(radius * 0.9, -radius * 0.72)])
 		draw_colored_polygon(pilot, color)

@@ -106,7 +106,8 @@ def build_part_sprite_map(data_root: Path) -> dict[str, dict[str, Any]]:
         floor = pick_best_png(pdir, ["floor.png", "floor_on.png", "armor.png", "structure.png"])
         roof = pick_best_png(pdir, ["roof.png", "roof_lights.png", "armor.png", "structure.png"])
         walls = pick_best_png(pdir, ["walls.png"])
-        turret = pick_best_png(pdir, ["turret.png", "barrel.png", "weapon.png", "emitter.png", "nozzle.png", "doodads_on1.png", "doodads_on.png"])
+        doodad = pick_best_png(pdir, ["doodads_on1.png", "doodads_on_a1.png", "doodads_on.png", "doodad_external.png"])
+        turret = pick_best_png(pdir, ["turret.png", "barrel.png", "barrel1.png", "weapon.png", "emitter.png", "nozzle.png"])
         blueprint = pick_best_png(pdir, ["blueprints.png", "blueprints_he.png", "blueprint.png"])
         # Fallback to first non-normal PNG if still none
         if not any([floor, roof, blueprint]) and pdir.is_dir():
@@ -125,6 +126,8 @@ def build_part_sprite_map(data_root: Path) -> dict[str, dict[str, Any]]:
                 rec["roof"] = f"{rel_dir}/{roof}"
             if walls:
                 rec["walls"] = f"{rel_dir}/{walls}"
+            if doodad:
+                rec["doodad"] = f"{rel_dir}/{doodad}"
             if turret:
                 rec["turret"] = f"{rel_dir}/{turret}"
             if blueprint:
@@ -209,20 +212,104 @@ def build_audio_map(data_root: Path) -> dict[str, str]:
     return audio
 
 
-def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_dir: Path, cell_px: int = 36) -> dict[str, Any]:
-    """Build a composited RGBA sprite atlas for all 96 Terran parts for Web & Desktop runtime."""
+def _collect_extra_sprites(data_root: Path) -> list[tuple[str, Any]]:
+    """Load authentic Cosmoteer environment, asteroid, crew, projectile, and explosion sprites."""
+    specs: list[tuple[str, str, tuple[int, int]]] = [
+        ("cloud_1", "backgrounds/cloud1.png", (256, 256)),
+        ("cloud_2", "backgrounds/cloud2.png", (256, 256)),
+        ("cloud_3", "backgrounds/cloud3.png", (256, 256)),
+        ("cloud_4", "backgrounds/cloud4.png", (256, 256)),
+        ("star", "backgrounds/star.png", (32, 32)),
+        ("ast_iron", "doodads/asteroids/iron/asteroid_iron_m.png", (96, 96)),
+        ("ast_copper", "doodads/asteroids/copper/asteroid_copper_m.png", (96, 96)),
+        ("ast_carbon", "doodads/asteroids/carbon/asteroid_carbon_m.png", (96, 96)),
+        ("ast_gold", "doodads/asteroids/gold/asteroid_gold_m.png", (96, 96)),
+        ("ast_tristeel", "doodads/asteroids/tritanium/asteroid_tritanium_m.png", (96, 96)),
+        ("ast_uranium", "doodads/asteroids/uranium/asteroid_uranium_m.png", (96, 96)),
+        ("ast_diamond", "doodads/asteroids/sulfur/asteroid_sulfur_m.png", (96, 96)),
+        ("ast_hyperium", "doodads/asteroids/hyperium/asteroid_hyperium_m.png", (96, 96)),
+        ("ast_plain", "doodads/asteroids/plain/asteroid_m.png", (96, 96)),
+        ("crew_walk", "crew/walk_a1.png", (48, 48)),
+        ("crew_carry", "crew/carry_a1.png", (48, 48)),
+        ("crew_idle", "crew/idle_a1.png", (48, 48)),
+        ("crew_operate", "crew/operate_a1.png", (48, 48)),
+        ("battery", "resources/battery/battery_large.png", (36, 36)),
+        ("shot_laser_small", "shots/laser_bolt_small/laser_bolt_small.png", (24, 64)),
+        ("shot_laser_large", "shots/laser_bolt_large/laser_bolt_large.png", (32, 80)),
+        ("shot_bullet_med", "shots/bullet_med/bullet_med.png", (24, 48)),
+        ("shot_bullet_large", "shots/bullet_large/bullet_large.png", (36, 64)),
+        ("shot_railgun", "shots/bullet_railgun/bullet_railgun.png", (32, 96)),
+        ("shot_missile_he", "shots/missile_he/missile_he.png", (28, 64)),
+        ("shot_missile_emp", "shots/missile_emp/missile_emp.png", (28, 64)),
+        ("shot_missile_nuke", "shots/missile_nuke/missile_nuke.png", (36, 72)),
+        ("shot_missile_thermal", "shots/missile_thermal/missile_thermal.png", (28, 64)),
+        ("shot_mine", "shots/mine/mine_armed.png", (48, 48)),
+        ("shot_pd", "shots/pd_shot/pd_shot.png", (16, 36)),
+        ("shot_resonance", "shots/resonance_beam/resonance_beam.png", (32, 64)),
+        ("exp_small", "common_effects/particles/explosions/small_part_explode.png", (96, 96)),
+        ("exp_med", "common_effects/particles/explosions/med_part_explode.png", (128, 128)),
+        ("exp_big", "common_effects/particles/explosions/big_part_explode.png", (160, 160)),
+        ("exp_spark", "common_effects/particles/explode_spark.png", (48, 48)),
+    ]
+    out: list[tuple[str, Any]] = []
+    for key, rel, target_size in specs:
+        p = data_root / rel
+        if not p.is_file():
+            continue
+        try:
+            img = Image.open(p).convert("RGBA")
+            img.thumbnail(target_size, Image.Resampling.LANCZOS)
+            out.append((key, img))
+        except Exception:
+            continue
+    return out
+
+
+def _decode_cosmoteer_roof_mask(img: Any) -> Any:
+    """Convert Cosmoteer roof.png green-channel hull paint mask into neutral painted warship steel."""
+    rgba = img.convert("RGBA")
+    w, h = rgba.size
+    src = rgba.load()
+    out = Image.new("RGBA", (w, h))
+    dst = out.load()
+    for py in range(h):
+        for px in range(w):
+            r, g, b, a = src[px, py]
+            if a > 0 and g > r + 15 and g > b + 15:
+                base = r if r > b else b
+                mask = (g - base) / 255.0
+                nr = min(255, int(r + mask * 194.0))
+                ng = min(255, int(base + mask * 204.0))
+                nb = min(255, int(b + mask * 216.0))
+                dst[px, py] = (nr, ng, nb, a)
+            else:
+                dst[px, py] = (r, g, b, a)
+    return out
+
+
+def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_dir: Path, cell_px: int = 48) -> dict[str, Any]:
+    """Build a composited HD RGBA sprite atlas (96 Terran parts + turrets + environment/crew/shots/explosions)."""
     if Image is None:
         return {"generated": False, "reason": "Pillow not installed"}
+
+    TURRETED_PARTS = {
+        "cosmoteer.laser_blaster_small", "cosmoteer.laser_blaster_large",
+        "cosmoteer.cannon_med", "cosmoteer.cannon_large", "cosmoteer.cannon_deck",
+        "cosmoteer.disruptor", "cosmoteer.flak_cannon_large", "cosmoteer.chaingun",
+        "cosmoteer.point_defense", "cosmoteer.resonance_beam_turret",
+        "cosmoteer.mining_laser_small", "cosmoteer.ion_beam_prism",
+        "cosmoteer.tractor_beam_emitter", "cosmoteer.manipulator_beam_emitter",
+    }
 
     tiles: list[tuple[str, str, Any]] = []
     for pid, rec in sorted(part_map.items()):
         w_cells, h_cells = int(rec["size"][0]), int(rec["size"][1])
         tw, th = w_cells * cell_px, h_cells * cell_px
 
-        # Interior/cutaway composite: floor -> walls -> turret (fallback blueprint)
+        # Interior/cutaway composite: floor -> walls -> doodad -> turret (fallback blueprint)
         cutaway = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
         layered = False
-        for layer_key in ("floor", "walls", "turret"):
+        for layer_key in ("floor", "walls", "doodad", "turret"):
             rel = rec.get(layer_key)
             if not rel:
                 continue
@@ -245,22 +332,36 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
                 except Exception:
                     pass
         if layered:
-            tiles.append((pid, "cutaway", cutaway))
+            tiles.append(("part", f"{pid}|cutaway", cutaway))
 
-        # Exterior/roof composite: roof -> turret (fallback cutaway)
+        # Exterior/roof composite: decode Cosmoteer green hull-paint mask into clean painted warship steel
         if rec.get("roof"):
             p = data_root / rec["roof"]
             if p.is_file():
                 try:
-                    ext = Image.open(p).convert("RGBA").resize((tw, th), Image.Resampling.LANCZOS)
-                    if rec.get("turret"):
+                    ext = _decode_cosmoteer_roof_mask(Image.open(p)).resize((tw, th), Image.Resampling.LANCZOS)
+                    if rec.get("turret") and pid not in TURRETED_PARTS:
                         tp = data_root / rec["turret"]
                         if tp.is_file():
-                            timg = Image.open(tp).convert("RGBA").resize((tw, th), Image.Resampling.LANCZOS)
+                            timg = _decode_cosmoteer_roof_mask(Image.open(tp)).resize((tw, th), Image.Resampling.LANCZOS)
                             ext.alpha_composite(timg)
-                    tiles.append((pid, "roof", ext))
+                    tiles.append(("part", f"{pid}|roof", ext))
                 except Exception:
                     pass
+
+        # Separate rotating turret layer for turreted weapons
+        if pid in TURRETED_PARTS and rec.get("turret"):
+            tp = data_root / rec["turret"]
+            if tp.is_file():
+                try:
+                    timg = _decode_cosmoteer_roof_mask(Image.open(tp)).resize((tw, th), Image.Resampling.LANCZOS)
+                    tiles.append(("part", f"{pid}|turret", timg))
+                except Exception:
+                    pass
+
+    # Add environment, asteroid, crew, projectile, and explosion sprites
+    for skey, simg in _collect_extra_sprites(data_root):
+        tiles.append(("sprite", skey, simg))
 
     # Shelf-pack into a compact atlas (max width 2048)
     atlas_w = 2048
@@ -269,34 +370,41 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
     y = pad
     row_h = 0
     placements: list[tuple[str, str, int, int, int, int, Any]] = []
-    # Sort taller tiles first for tighter packing
     tiles.sort(key=lambda item: (-item[2].height, -item[2].width, item[0], item[1]))
-    for pid, variant, img in tiles:
+    for kind, ident, img in tiles:
         if x + img.width + pad > atlas_w:
             x = pad
             y += row_h + pad
             row_h = 0
-        placements.append((pid, variant, x, y, img.width, img.height, img))
+        placements.append((kind, ident, x, y, img.width, img.height, img))
         x += img.width + pad
         row_h = max(row_h, img.height)
     atlas_h = y + row_h + pad
 
     sheet = Image.new("RGBA", (atlas_w, atlas_h), (0, 0, 0, 0))
     rects: dict[str, dict[str, list[int]]] = {}
-    for pid, variant, px, py, pw, ph, img in placements:
+    sprite_rects: dict[str, list[int]] = {}
+    for kind, ident, px, py, pw, ph, img in placements:
         sheet.paste(img, (px, py))
-        rects.setdefault(pid, {})[variant] = [px, py, pw, ph]
+        if kind == "part":
+            pid, variant = ident.split("|", 1)
+            rects.setdefault(pid, {})[variant] = [px, py, pw, ph]
+        else:
+            sprite_rects[ident] = [px, py, pw, ph]
 
     atlas_png = out_dir / "web_atlas.png"
     atlas_json = out_dir / "web_atlas.json"
     sheet.save(atlas_png, format="PNG", optimize=True)
     meta = {
+        "version": 2,
         "cell_px": cell_px,
         "width": atlas_w,
         "height": atlas_h,
         "part_count": len(rects),
+        "sprite_count": len(sprite_rects),
         "tile_count": len(placements),
         "parts": rects,
+        "sprites": sprite_rects,
     }
     atlas_json.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
     return {
@@ -307,6 +415,7 @@ def build_web_atlas(data_root: Path, part_map: dict[str, dict[str, Any]], out_di
         "height": atlas_h,
         "png_bytes": atlas_png.stat().st_size,
         "part_count": len(rects),
+        "sprite_count": len(sprite_rects),
         "tile_count": len(placements),
     }
 

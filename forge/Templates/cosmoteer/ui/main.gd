@@ -114,6 +114,8 @@ func _ready() -> void:
 
 func _on_assets_ready(_count: int) -> void:
 	if shipyard != null:
+		if shipyard.has_method("_refresh_palette_icons"):
+			shipyard._refresh_palette_icons()
 		if shipyard.grid != null:
 			shipyard.grid.queue_redraw()
 		if shipyard.duel != null and shipyard.duel.flight_view != null:
