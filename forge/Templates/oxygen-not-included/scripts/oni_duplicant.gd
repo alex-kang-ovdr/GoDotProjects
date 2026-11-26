@@ -13,6 +13,7 @@ var target_cell := Vector2i(-1, -1)
 var job_type := "" # dig, build, operate, sleep
 var path: Array[Vector2i] = []
 var move_speed := 3.4 # cells/sec
+var facing_left := false
 var _repath_cooldown := 0.0
 
 var breath := 100.0
@@ -118,6 +119,8 @@ func _step_move(world: OniWorld, dt: float) -> void:
 		return
 	var target_v := Vector2(next_c.x, next_c.y)
 	var diff := target_v - pos
+	if absf(diff.x) > 0.01:
+		facing_left = diff.x < 0.0
 	var dist := diff.length()
 	var step_d := move_speed * dt
 	if dist <= step_d:

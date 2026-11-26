@@ -13,6 +13,7 @@
     "data/extraction_manifest.txt",
     "data/textures_extracted.txt",
     "data/kanim_meshes_extracted.txt",
+    "data/kanim_sprites_extracted.txt",
     "data/rendering_fx_extracted.txt",
     "data/audio_extracted.txt"
   ],
@@ -23,6 +24,7 @@
     "data/buildings_extracted.txt",
     "data/textures_extracted.txt",
     "data/kanim_meshes_extracted.txt",
+    "data/kanim_sprites_extracted.txt",
     "data/rendering_fx_extracted.txt",
     "data/audio_extracted.txt",
     "scripts/oni_elements.gd",

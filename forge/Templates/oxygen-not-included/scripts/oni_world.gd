@@ -278,6 +278,15 @@ func generate(p_seed := 73) -> void:
 	building[idx(23, 15)] = "pod"
 	building[idx(24, 15)] = "pod"
 
+	# 시작 핵심 설비 (수동 발전기 + 소형 배터리 + 산소 확산기 + 연구 작업대 + 전선 연결)
+	building[idx(20, 16)] = "generator"
+	building[idx(21, 16)] = "battery"
+	battery_j[idx(21, 16)] = 4500.0
+	building[idx(26, 16)] = "diffuser"
+	building[idx(27, 16)] = "research_station"
+	for wx in range(20, 28):
+		has_wire[idx(wx, 16)] = 1
+
 	# 우측 물 웅덩이 (x: 31..35, y: 17..19)
 	for y in range(17, 20):
 		for x in range(31, 36):

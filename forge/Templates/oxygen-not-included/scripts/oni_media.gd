@@ -11,6 +11,9 @@ static var _loaded := false
 static var element_textures: Dictionary = {}
 static var building_textures: Dictionary = {}
 static var fx_textures: Dictionary = {}
+static var kanim_building_idle: Dictionary = {}
+static var kanim_building_work: Dictionary = {}
+static var kanim_dupes: Array = []
 static var sfx_streams: Dictionary = {}
 static var kanim_builds: Dictionary = {}
 static var kanim_anims: Dictionary = {}
@@ -27,6 +30,34 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("element_textures", {}), element_textures)
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
+
+	var ksp_doc: Variant = _load_json("res://data/kanim_sprites_extracted.txt")
+	if ksp_doc is Dictionary:
+		var bs_v: Variant = ksp_doc.get("building_sprites", {})
+		if bs_v is Dictionary:
+			var bs: Dictionary = bs_v
+			for bk_v in bs.keys():
+				var bk := String(bk_v)
+				var bd: Dictionary = bs[bk]
+				var t_idle := _decode_png_b64(String(bd.get("idle_b64", "")))
+				var t_work := _decode_png_b64(String(bd.get("work_b64", "")))
+				if t_idle != null:
+					kanim_building_idle[bk] = t_idle
+					kanim_building_work[bk] = t_work if t_work != null else t_idle
+		var ds_v: Variant = ksp_doc.get("duplicant_sprites", [])
+		if ds_v is Array:
+			for d_v in ds_v:
+				if d_v is Dictionary:
+					var dd: Dictionary = d_v
+					var ti := _decode_png_b64(String(dd.get("idle_b64", "")))
+					var tw0 := _decode_png_b64(String(dd.get("walk0_b64", "")))
+					var tw1 := _decode_png_b64(String(dd.get("walk1_b64", "")))
+					if ti != null:
+						kanim_dupes.append({
+							"idle": ti,
+							"walk0": tw0 if tw0 != null else ti,
+							"walk1": tw1 if tw1 != null else ti,
+						})
 
 	var kanim_doc: Variant = _load_json("res://data/kanim_meshes_extracted.txt")
 	if kanim_doc is Dictionary:
@@ -76,6 +107,15 @@ static func _load_json(res_path: String) -> Variant:
 		return {}
 	return parsed
 
+static func _decode_png_b64(b64: String) -> Texture2D:
+	if b64.is_empty():
+		return null
+	var raw := Marshalls.base64_to_raw(b64)
+	var img := Image.new()
+	if img.load_png_from_buffer(raw) == OK:
+		return ImageTexture.create_from_image(img)
+	return null
+
 static func _decode_tex_dict(src_v: Variant, dst: Dictionary) -> void:
 	if not (src_v is Dictionary):
 		return
@@ -83,13 +123,30 @@ static func _decode_tex_dict(src_v: Variant, dst: Dictionary) -> void:
 	for k_v in src.keys():
 		var k := String(k_v)
 		var entry: Dictionary = src[k]
-		var b64 := String(entry.get("png_b64", ""))
-		if b64.is_empty():
-			continue
-		var raw := Marshalls.base64_to_raw(b64)
-		var img := Image.new()
-		if img.load_png_from_buffer(raw) == OK:
-			dst[k] = ImageTexture.create_from_image(img)
+		var tex := _decode_png_b64(String(entry.get("png_b64", "")))
+		if tex != null:
+			dst[k] = tex
+
+static func get_building_sprite(b_id: String, working := false) -> Texture2D:
+	ensure_loaded()
+	var dict := kanim_building_work if working else kanim_building_idle
+	var t: Variant = dict.get(b_id, null)
+	if t is Texture2D:
+		return t
+	return null
+
+static func get_duplicant_sprite(dupe_id: int, moving := false, phase := 0.0) -> Texture2D:
+	ensure_loaded()
+	if kanim_dupes.is_empty():
+		return null
+	var entry: Dictionary = kanim_dupes[dupe_id % kanim_dupes.size()]
+	var key := "idle"
+	if moving:
+		key = "walk0" if int(floor(phase * 6.0)) % 2 == 0 else "walk1"
+	var t: Variant = entry.get(key, null)
+	if t is Texture2D:
+		return t
+	return null
 
 static func get_element_texture(el_id: String) -> Texture2D:
 	ensure_loaded()
@@ -122,7 +179,7 @@ static func get_sfx_stream(sfx_key: String) -> AudioStreamWAV:
 static func get_media_summary() -> String:
 	ensure_loaded()
 	var tex_n: int = element_textures.size() + building_textures.size() + fx_textures.size()
-	var kanim_n: int = kanim_builds.size()
+	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size()
 	var sfx_n: int = sfx_streams.size()
 	var total_aud: int = int(audio_summary.get("total_samples", 0))
-	return "미디어: 텍스처 %d · KAnim %d · 음원 %d/%d" % [tex_n, kanim_n, sfx_n, total_aud]
+	return "미디어: 타일 %d · KAnim스프라이트 %d · 음원 %d/%d" % [tex_n, spr_n, sfx_n, total_aud]

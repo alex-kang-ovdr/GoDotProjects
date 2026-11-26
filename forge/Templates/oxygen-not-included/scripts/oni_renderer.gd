@@ -279,123 +279,112 @@ func _draw_building(x: int, y: int, i: int, b: String, ts: int) -> void:
 	var dim := overlay_mode == "gas" or overlay_mode == "pipe"
 	var mod := Color(0.52, 0.56, 0.62, 1.0) if dim else Color(1.0, 1.0, 1.0, 1.0)
 
-	match b:
-		"tile":
-			var btex := OniMedia.get_building_texture("tile")
-			if btex != null:
-				draw_texture_rect(btex, rect, false, mod)
+	# 1) 바닥 타일류 (추출 autotile 텍스처)
+	if b == "tile":
+		var btex := OniMedia.get_building_texture("tile")
+		if btex != null:
+			draw_texture_rect(btex, rect, false, mod)
+		else:
+			draw_rect(rect, Color(0.56, 0.60, 0.66, 1.0), true)
+		draw_rect(rect, Color(0.18, 0.22, 0.28, 0.45), false, 1.0)
+		return
+	elif b == "insulated_tile":
+		var itex := OniMedia.get_building_texture("insulated_tile")
+		if itex != null:
+			draw_texture_rect(itex, rect, false, mod)
+		else:
+			draw_rect(rect, Color(0.72, 0.62, 0.48, 1.0), true)
+		draw_rect(rect, Color(0.32, 0.24, 0.38, 0.55), false, 1.0)
+		return
+
+	# 2) 인쇄기 (2x2 멀티타일: 좌상단 (23, 15)에서만 한 번에 원작 hqbase KAnim 스프라이트 렌더링)
+	if b == "pod":
+		if x == 23 and y == 15:
+			var pod_rect := Rect2(x * ts - 10, y * ts - 14, ts * 2 + 20, ts * 2 + 16)
+			var pulse := 0.35 + 0.20 * sin(_anim_time * 2.6)
+			draw_circle(Vector2((x + 1) * ts, (y + 1) * ts - 4), 22.0, Color(0.40, 0.88, 1.0, pulse * 0.45))
+			var pod_tex := OniMedia.get_building_sprite("pod", int(floor(_anim_time * 2.0)) % 2 == 1)
+			if pod_tex != null:
+				draw_texture_rect(pod_tex, pod_rect, false, mod)
 			else:
-				draw_rect(rect, Color(0.56, 0.60, 0.66, 1.0), true)
-			draw_rect(rect, Color(0.18, 0.22, 0.28, 0.45), false, 1.0)
-		"insulated_tile":
-			var itex := OniMedia.get_building_texture("insulated_tile")
-			if itex != null:
-				draw_texture_rect(itex, rect, false, mod)
-			else:
-				draw_rect(rect, Color(0.72, 0.62, 0.48, 1.0), true)
-			draw_rect(rect, Color(0.32, 0.24, 0.38, 0.55), false, 1.0)
-		"farm_tile":
-			draw_rect(rect, Color(0.44, 0.34, 0.22, 1.0), true)
-			draw_rect(Rect2(p, Vector2(ts, 7)), Color(0.32, 0.68, 0.34, 1.0), true)
-			var g := clampf(world.farm_growth[i], 0.08, 1.0)
-			var h := 22.0 * g
-			var sway := sin(_anim_time * 2.2 + float(x)) * 1.8
-			draw_line(p + Vector2(ts * 0.5, 0), p + Vector2(ts * 0.5 + sway, -h), Color(0.44, 0.86, 0.42, 1.0), 3.0)
-			draw_circle(p + Vector2(ts * 0.5 + sway, -h), 3.5 + 3.0 * g, Color(0.56, 0.94, 0.46, 1.0))
-		"ladder":
-			var lc := Color(0.78, 0.60, 0.34, 1.0)
-			draw_line(p + Vector2(7, 0), p + Vector2(7, ts), lc, 3.0)
-			draw_line(p + Vector2(ts - 7, 0), p + Vector2(ts - 7, ts), lc, 3.0)
-			for ry: int in [6, 14, 22, 29]:
-				draw_line(p + Vector2(7, ry), p + Vector2(ts - 7, ry), lc, 2.0)
-		"pod":
-			var pulse := 0.72 + 0.22 * sin(_anim_time * 2.6)
-			draw_rect(rect.grow(-1), Color(0.20, 0.30, 0.44, 0.92), true)
-			draw_rect(rect.grow(-3), Color(0.44, 0.86, 1.0, pulse), false, 2.0)
-			draw_circle(p + Vector2(ts * 0.5, ts * 0.5), 5.0 + pulse * 1.2, Color(0.55, 0.94, 1.0, pulse))
-		"diffuser":
-			draw_rect(Rect2(p + Vector2(4, 6), Vector2(ts - 8, ts - 6)), Color(0.24, 0.58, 0.48, 1.0), true)
-			draw_rect(Rect2(p + Vector2(4, 6), Vector2(ts - 8, ts - 6)), Color(0.50, 0.92, 0.78, 1.0), false, 1.5)
-			var ang := _anim_time * 8.0 if running else 0.0
-			var c_center := p + Vector2(ts * 0.5, 16)
-			draw_circle(c_center, 6.0, Color(0.42, 0.95, 1.0, 1.0) if running else Color(0.25, 0.34, 0.36, 1.0))
-			if running:
-				draw_line(c_center - Vector2(cos(ang), sin(ang)) * 5.0, c_center + Vector2(cos(ang), sin(ang)) * 5.0, Color(0.10, 0.32, 0.38, 1.0), 2.0)
-		"electrolyzer":
-			draw_rect(Rect2(p + Vector2(3, 4), Vector2(ts - 6, ts - 4)), Color(0.20, 0.48, 0.72, 1.0), true)
-			draw_rect(Rect2(p + Vector2(3, 4), Vector2(ts - 6, ts - 4)), Color(0.56, 0.88, 1.0, 1.0), false, 1.5)
-			draw_circle(p + Vector2(11, 16), 4.0, Color(0.45, 0.94, 1.0, 1.0) if running else Color(0.28, 0.36, 0.42, 1.0))
-			draw_circle(p + Vector2(21, 16), 4.0, Color(0.92, 0.50, 0.96, 1.0) if running else Color(0.34, 0.28, 0.38, 1.0))
-		"generator":
-			var c := Color(0.95, 0.78, 0.28, 1.0) if running else Color(0.68, 0.54, 0.26, 1.0)
-			var g_center := p + Vector2(ts * 0.5, ts * 0.5)
-			draw_arc(g_center, 11.0, 0.0, TAU, 18, c, 3.0)
-			var spin := _anim_time * 9.0 if running else 0.0
-			draw_line(g_center, g_center + Vector2(cos(spin), sin(spin)) * 10.0, c, 2.0)
-			draw_circle(g_center, 3.0, c)
-		"coal_gen":
-			draw_rect(Rect2(p + Vector2(3, 6), Vector2(ts - 6, ts - 6)), Color(0.36, 0.30, 0.28, 1.0), true)
-			var glow := 0.8 + 0.2 * sin(_anim_time * 10.0) if running else 1.0
-			draw_rect(Rect2(p + Vector2(7, 12), Vector2(ts - 14, 10)), Color(1.0, 0.52 * glow, 0.16, 1.0) if running else Color(0.20, 0.18, 0.18, 1.0), true)
-		"hydrogen_gen":
-			draw_rect(Rect2(p + Vector2(3, 5), Vector2(ts - 6, ts - 5)), Color(0.48, 0.28, 0.58, 1.0), true)
-			draw_circle(p + Vector2(ts * 0.5, 16), 6.0, Color(0.96, 0.58, 1.0, 1.0) if running else Color(0.32, 0.22, 0.38, 1.0))
-		"steam_turbine":
-			draw_rect(Rect2(p + Vector2(2, 4), Vector2(ts - 4, ts - 4)), Color(0.62, 0.68, 0.74, 1.0), true)
-			draw_arc(p + Vector2(ts * 0.5, 16), 8.0, 0.0, TAU, 16, Color(0.35, 0.94, 1.0, 1.0) if running else Color(0.35, 0.40, 0.45, 1.0), 2.5)
-		"battery":
-			draw_rect(Rect2(p + Vector2(5, 4), Vector2(ts - 10, ts - 4)), Color(0.24, 0.30, 0.34, 1.0), true)
+				draw_rect(Rect2(x * ts, y * ts, ts * 2, ts * 2), Color(0.24, 0.34, 0.48, 0.92), true)
+		return
+
+	# 3) KAnim 조립 스프라이트 건물 공통 렌더링
+	var use_work := running and (int(floor(_anim_time * 4.5)) % 2 == 1)
+	var ktex := OniMedia.get_building_sprite(b, use_work)
+	if ktex != null:
+		var draw_r := rect
+		if b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "research_station", "cot"]:
+			# 설비는 타일 바닥에 맞춰 살짝 크고 선명하게 표시
+			var scale_w := 1.45 if b in ["steam_turbine", "research_station", "cot", "generator"] else 1.28
+			var scale_h := 1.38 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine"] else 1.25
+			var dw := float(ts) * scale_w
+			var dh := float(ts) * scale_h
+			var jitter := sin(_anim_time * 20.0) * 0.8 if running else 0.0
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5 + jitter, p.y + float(ts) - dh + 1.0, dw, dh)
+		elif b in ["battery", "storage", "liquid_pump", "gas_pump"]:
+			var dw := float(ts) * 1.12
+			var dh := float(ts) * 1.18
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
+		draw_texture_rect(ktex, draw_r, false, mod)
+
+		# 가동 상태 표시 글로우 & 배터리 게이지 / 화분 위 끼니나무 KAnim 스프라이트
+		if running and b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station"]:
+			draw_circle(p + Vector2(ts * 0.5, 4), 3.0, Color(0.38, 0.96, 0.65, 0.9))
+		if b == "battery":
 			var ratio := clampf(world.battery_j[i] / OniElements.BATTERY_CAPACITY_J, 0.0, 1.0)
-			var bh := (ts - 10) * ratio
-			draw_rect(Rect2(p + Vector2(8, ts - 3 - bh), Vector2(ts - 16, bh)), Color(0.32, 0.88, 0.44, 1.0), true)
-			draw_rect(Rect2(p + Vector2(5, 4), Vector2(ts - 10, ts - 4)), Color(0.60, 0.72, 0.78, 0.9), false, 1.5)
-		"liquid_pump":
-			draw_rect(Rect2(p + Vector2(5, 8), Vector2(ts - 10, ts - 10)), Color(0.18, 0.48, 0.84, 1.0), true)
-			draw_circle(p + Vector2(ts * 0.5, 18), 5.0, Color(0.55, 0.90, 1.0, 1.0) if running else Color(0.22, 0.32, 0.44, 1.0))
-		"liquid_vent":
-			draw_rect(Rect2(p + Vector2(8, 8), Vector2(ts - 16, 12)), Color(0.34, 0.72, 0.98, 1.0), true)
-		"gas_pump":
-			draw_rect(Rect2(p + Vector2(5, 8), Vector2(ts - 10, ts - 10)), Color(0.22, 0.66, 0.60, 1.0), true)
-			draw_circle(p + Vector2(ts * 0.5, 18), 5.0, Color(0.55, 0.98, 0.90, 1.0) if running else Color(0.22, 0.36, 0.34, 1.0))
-		"gas_vent":
-			draw_rect(Rect2(p + Vector2(8, 8), Vector2(ts - 16, 12)), Color(0.52, 0.92, 0.84, 1.0), true)
-		"research_station":
-			draw_rect(Rect2(p + Vector2(3, 6), Vector2(ts - 6, ts - 6)), Color(0.38, 0.34, 0.64, 1.0), true)
-			draw_rect(Rect2(p + Vector2(7, 10), Vector2(ts - 14, 10)), Color(0.56, 0.90, 1.0, 1.0) if running else Color(0.24, 0.24, 0.38, 1.0), true)
-		"cot":
-			draw_rect(Rect2(p + Vector2(2, 18), Vector2(ts - 4, 10)), Color(0.40, 0.58, 0.86, 1.0), true)
-			draw_rect(Rect2(p + Vector2(4, 14), Vector2(9, 5)), Color(0.88, 0.92, 0.98, 1.0), true)
-		"storage":
-			draw_rect(Rect2(p + Vector2(5, 6), Vector2(ts - 10, ts - 6)), Color(0.48, 0.52, 0.58, 1.0), true)
-			draw_line(p + Vector2(5, 14), p + Vector2(ts - 5, 14), Color(0.74, 0.78, 0.84, 1.0), 2.0)
+			var bh := (ts - 8) * ratio
+			draw_rect(Rect2(p.x + ts - 6, p.y + 4, 4, ts - 8), Color(0.10, 0.14, 0.18, 0.85), true)
+			draw_rect(Rect2(p.x + ts - 5, p.y + ts - 4 - bh, 2, bh), Color(0.32, 0.94, 0.46, 1.0), true)
+		elif b == "farm_tile":
+			var plant_tex := OniMedia.get_building_sprite("mealwood", false)
+			var g := clampf(world.farm_growth[i], 0.25, 1.0)
+			if plant_tex != null:
+				var pw := float(ts) * (0.65 + 0.45 * g)
+				var ph := float(ts) * (0.65 + 0.55 * g)
+				var sway := sin(_anim_time * 2.2 + float(x)) * 1.5
+				draw_texture_rect(plant_tex, Rect2(p.x + (float(ts) - pw) * 0.5 + sway, p.y - ph + 4.0, pw, ph), false, mod)
+		return
+
+	# 폴백 도형 렌더링 (스프라이트 미로드 시)
+	draw_rect(rect.grow(-4), Color(0.48, 0.56, 0.66, 0.9), true)
 
 func _draw_duplicant(dupe: OniDuplicant, ts: int) -> void:
-	var bob := sin(_anim_time * 9.0 + float(dupe.id) * 2.1) * (1.8 if dupe.state == "MOVE" else 0.4)
+	var moving := dupe.state == "MOVE"
+	var bob := sin(_anim_time * 9.0 + float(dupe.id) * 2.1) * (1.8 if moving else 0.4)
 	var px := dupe.pos.x * ts + ts * 0.5
 	var py := dupe.pos.y * ts + ts * 0.5 + bob
 
-	draw_rect(Rect2(px - 6, py - 2, 12, 13), dupe.suit_color, true)
-	draw_circle(Vector2(px, py - 8), 7.5, Color(0.96, 0.88, 0.78, 1.0))
-	draw_arc(Vector2(px, py - 8), 8.0, 0.0, TAU, 16, Color(0.75, 0.92, 1.0, 0.75), 1.5)
-	draw_circle(Vector2(px - 2.5, py - 8.5), 1.3, Color(0.10, 0.12, 0.16, 1.0))
-	draw_circle(Vector2(px + 2.5, py - 8.5), 1.3, Color(0.10, 0.12, 0.16, 1.0))
+	var dtex := OniMedia.get_duplicant_sprite(dupe.id, moving, _anim_time + float(dupe.id) * 0.3)
+	if dtex != null:
+		var dw := 40.0
+		var dh := 44.0
+		var top_y := dupe.pos.y * ts + float(ts) - dh + 2.0 + bob
+		if dupe.facing_left:
+			draw_texture_rect(dtex, Rect2(px + dw * 0.5, top_y, -dw, dh), false)
+		else:
+			draw_texture_rect(dtex, Rect2(px - dw * 0.5, top_y, dw, dh), false)
+	else:
+		draw_rect(Rect2(px - 6, py - 2, 12, 13), dupe.suit_color, true)
+		draw_circle(Vector2(px, py - 8), 7.5, Color(0.96, 0.88, 0.78, 1.0))
 
 	if (dupe.state == "DIG" or dupe.state == "BUILD") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 		var tx := dupe.target_cell.x * ts + ts * 0.5
 		var ty := dupe.target_cell.y * ts + ts * 0.5
 		var pulse := 0.65 + 0.35 * sin(_anim_time * 24.0)
 		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else Color(0.35, 0.92, 1.0, pulse)
-		draw_line(Vector2(px, py - 2), Vector2(tx, ty), beam_c, 2.8)
+		draw_line(Vector2(px, py - 4), Vector2(tx, ty), beam_c, 2.8)
 		draw_circle(Vector2(tx, ty), 4.0 * pulse, beam_c)
 
 	if dupe.breath < 85.0:
 		var bw := 18.0 * clampf(dupe.breath / 100.0, 0.0, 1.0)
-		draw_rect(Rect2(px - 9, py - 21, 18, 3), Color(0.15, 0.15, 0.18, 0.9), true)
-		draw_rect(Rect2(px - 9, py - 21, bw, 3), Color(0.35, 0.88, 1.0, 1.0), true)
+		draw_rect(Rect2(px - 9, py - 27, 18, 3), Color(0.15, 0.15, 0.18, 0.9), true)
+		draw_rect(Rect2(px - 9, py - 27, bw, 3), Color(0.35, 0.88, 1.0, 1.0), true)
 
 	var font := ThemeDB.fallback_font
 	if font != null:
-		draw_string(font, Vector2(px - 14, py - 23), dupe.dupe_name, HORIZONTAL_ALIGNMENT_CENTER, 28, 11, Color(0.95, 0.98, 1.0, 0.92))
+		draw_string(font, Vector2(px - 14, py - 29), dupe.dupe_name, HORIZONTAL_ALIGNMENT_CENTER, 28, 11, Color(0.95, 0.98, 1.0, 0.94))
 
 func _gas_overlay_color(el: String, mass: float) -> Color:
 	if el == "Vacuum" or mass < 0.005:
