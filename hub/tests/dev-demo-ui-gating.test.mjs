@@ -61,11 +61,12 @@ async function withChromeCdp(t, url, fn) {
   const proc = spawn(chrome, [
     '--headless=new',
     '--disable-gpu',
+    ...(process.platform === 'linux' ? ['--no-sandbox', '--disable-dev-shm-usage'] : []),
     '--no-first-run',
     '--no-default-browser-check',
     '--remote-debugging-port=0',
     `--user-data-dir=${profileDir}`,
-    url
+    'about:blank'
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
   let stderr = '';
   proc.stderr.on('data', d => { stderr += d.toString('utf8'); });
@@ -101,8 +102,14 @@ async function withChromeCdp(t, url, fn) {
   });
   let nextId = 1;
   const pending = new Map();
+  let loadResolvers = [];
   ws.addEventListener('message', e => {
     const msg = JSON.parse(String(e.data));
+    if (msg.method === 'Page.loadEventFired') {
+      const list = loadResolvers;
+      loadResolvers = [];
+      for (const resolve of list) resolve();
+    }
     if (msg.id && pending.has(msg.id)) {
       const { resolve, reject } = pending.get(msg.id);
       pending.delete(msg.id);
@@ -115,6 +122,10 @@ async function withChromeCdp(t, url, fn) {
     pending.set(id, { resolve, reject });
     ws.send(JSON.stringify({ id, method, params }));
   });
+  const waitForLoad = (timeoutMs = 15000) => new Promise(resolve => {
+    const timer = setTimeout(resolve, timeoutMs);
+    loadResolvers.push(() => { clearTimeout(timer); resolve(); });
+  });
   const evalJs = async expression => {
     const res = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
     if (res.exceptionDetails) {
@@ -125,9 +136,11 @@ async function withChromeCdp(t, url, fn) {
   try {
     await send('Page.enable');
     await send('Runtime.enable');
+    const loaded = waitForLoad();
     await send('Page.navigate', { url });
-    await delay(850);
-    return await fn({ send, evalJs });
+    await loaded;
+    await delay(300);
+    return await fn({ send, evalJs, waitForLoad });
   } finally {
     ws.close();
   }
@@ -210,10 +223,12 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
 
   // 1) Prod build: even with localStorage forced to '1', zero Dev toggle & zero Demo UI
   const prodUrl = await launchMode('prod');
-  await withChromeCdp(t, `${prodUrl}/?view=billing`, async ({ send, evalJs }) => {
+  await withChromeCdp(t, `${prodUrl}/?view=billing`, async ({ send, evalJs, waitForLoad }) => {
     await evalJs(`localStorage.setItem('playhub.dev.testDemoUi', '1');`);
+    const reloaded = waitForLoad();
     await send('Page.reload', { ignoreCache: true });
-    await delay(900);
+    await reloaded;
+    await delay(300);
     const state = await evalJs(`(async () => {
       for (let i = 0; i < 40; i++) {
         if (document.querySelector('[data-buy-sku]')) break;
@@ -235,13 +250,20 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
   // 2) Debug build: ZERO user-facing "데모 OFF" pills/cards; experimental UI stays OFF by default
   //    and is controlled via Admin (?devDemoUi=1 / PlayHubDevDemoUI API) with F5 persistence.
   const debugUrl = await launchMode('debug');
-  await withChromeCdp(t, `${debugUrl}/?view=account`, async ({ send, evalJs }) => {
-    const initial = await evalJs(`({
-      mode: window.PlayHubDevDemoUI?.getBuildMode?.(),
-      enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
-      hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
-      hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
-    })`);
+  await withChromeCdp(t, `${debugUrl}/?view=account`, async ({ send, evalJs, waitForLoad }) => {
+    const waitDevApi = `(async () => {
+      for (let i = 0; i < 80; i++) {
+        if (document.readyState === 'complete' && window.PlayHubDevDemoUI) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return {
+        mode: window.PlayHubDevDemoUI?.getBuildMode?.(),
+        enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
+        hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
+        hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
+      };
+    })()`;
+    const initial = await evalJs(waitDevApi);
     assert.equal(initial.mode, 'debug');
     assert.equal(initial.enabled, false, 'Debug build must default to OFF');
     assert.equal(initial.hasNavToggle, false, 'PlayHub user header must NOT render 데모 OFF button (Admin owns 실험기능 보기)');
@@ -250,13 +272,10 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     // Enable via Admin launch/API -> F5 reload -> verify ON persists without rendering user-facing 데모 buttons
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(true);`);
     await delay(100);
+    const reloadedOn = waitForLoad();
     await send('Page.reload', { ignoreCache: true });
-    await delay(800);
-    const afterF5On = await evalJs(`({
-      enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
-      hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
-      hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
-    })`);
+    await reloadedOn;
+    const afterF5On = await evalJs(waitDevApi);
     assert.equal(afterF5On.enabled, true, 'Admin-enabled experimental setting ON must persist after F5 reload');
     assert.equal(afterF5On.hasNavToggle, false);
     assert.equal(afterF5On.hasCard, false);
@@ -264,11 +283,10 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     // Disable -> F5 reload -> verify OFF persists
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(false);`);
     await delay(100);
+    const reloadedOff = waitForLoad();
     await send('Page.reload', { ignoreCache: true });
-    await delay(800);
-    const afterF5Off = await evalJs(`({
-      enabled: window.PlayHubDevDemoUI?.isEnabled?.()
-    })`);
+    await reloadedOff;
+    const afterF5Off = await evalJs(waitDevApi);
     assert.equal(afterF5Off.enabled, false, 'Setting OFF must persist after F5 reload');
   });
 });
@@ -319,7 +337,7 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
   const testScriptRes = await fetch(`${testForge}/OfficialGodot/dev-demo-ui.js`);
   assert.equal(testScriptRes.status, 200, 'Test build PlayForge must serve dev-demo-ui.js');
 
-  await withChromeCdp(t, `${testForge}/OfficialGodot/`, async ({ send, evalJs }) => {
+  await withChromeCdp(t, `${testForge}/OfficialGodot/`, async ({ send, evalJs, waitForLoad }) => {
     const before = await evalJs(`({
       mode: window.PlayForgeDevDemoUI?.getBuildMode?.(),
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),
@@ -347,8 +365,10 @@ test('PlayForge includes Test/Demo UI ONLY in dev/debug/test builds, hides by de
     // Enable via Admin launch/API -> verify visible -> F5 reload -> verify STILL ON & visible!
     await evalJs(`window.PlayForgeDevDemoUI.setEnabled(true);`);
     await delay(100);
+    const reloadedForge = waitForLoad();
     await send('Page.reload', { ignoreCache: true });
-    await delay(850);
+    await reloadedForge;
+    await delay(300);
 
     const afterF5 = await evalJs(`({
       enabled: window.PlayForgeDevDemoUI?.isEnabled?.(),

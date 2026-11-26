@@ -47,11 +47,12 @@ async function withChromeCdp(t, url, fn, { width = 1280, height = 900, mobile = 
   const proc = spawn(chrome, [
     '--headless=new',
     '--disable-gpu',
+    ...(process.platform === 'linux' ? ['--no-sandbox', '--disable-dev-shm-usage'] : []),
     '--no-first-run',
     '--no-default-browser-check',
     '--remote-debugging-port=0',
     `--user-data-dir=${profileDir}`,
-    url
+    'about:blank'
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
   let stderr = '';
@@ -91,8 +92,14 @@ async function withChromeCdp(t, url, fn, { width = 1280, height = 900, mobile = 
 
   let nextId = 1;
   const pending = new Map();
+  let loadResolvers = [];
   ws.addEventListener('message', event => {
     const msg = JSON.parse(String(event.data));
+    if (msg.method === 'Page.loadEventFired') {
+      const list = loadResolvers;
+      loadResolvers = [];
+      for (const resolve of list) resolve();
+    }
     if (msg.id && pending.has(msg.id)) {
       const { resolve, reject } = pending.get(msg.id);
       pending.delete(msg.id);
@@ -104,6 +111,10 @@ async function withChromeCdp(t, url, fn, { width = 1280, height = 900, mobile = 
     const id = nextId++;
     pending.set(id, { resolve, reject });
     ws.send(JSON.stringify({ id, method, params }));
+  });
+  const waitForLoad = (timeoutMs = 15000) => new Promise(resolve => {
+    const timer = setTimeout(resolve, timeoutMs);
+    loadResolvers.push(() => { clearTimeout(timer); resolve(); });
   });
   const evalJs = async expression => {
     const res = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
@@ -122,9 +133,11 @@ async function withChromeCdp(t, url, fn, { width = 1280, height = 900, mobile = 
       deviceScaleFactor: mobile ? 2 : 1,
       mobile
     });
+    const loaded = waitForLoad();
     await send('Page.navigate', { url });
-    await delay(900);
-    return await fn({ send, evalJs });
+    await loaded;
+    await delay(300);
+    return await fn({ send, evalJs, waitForLoad });
   } finally {
     ws.close();
   }
@@ -195,7 +208,7 @@ async function startBillingHub(t) {
 test('PlayCoin top-up dialog opens cleanly in Billing Shop (default demo OFF -> toggle ON + F5) & Avatar Shop', async t => {
   const { userBaseUrl } = await startBillingHub(t);
 
-  await withChromeCdp(t, `${userBaseUrl}/?view=billing`, async ({ send, evalJs }) => {
+  await withChromeCdp(t, `${userBaseUrl}/?view=billing`, async ({ send, evalJs, waitForLoad }) => {
     // 1) Default OFF in dev build: dialog opens cleanly, demo sign-in button hidden until Dev setting is ON
     const defaultOff = await evalJs(`(async () => {
       for (let i = 0; i < 40; i++) {
@@ -219,13 +232,21 @@ test('PlayCoin top-up dialog opens cleanly in Billing Shop (default demo OFF -> 
     assert.equal(defaultOff.dialogOpenedWhenOff, true, 'Checkout dialog must open even when Test/Demo UI is OFF');
     assert.equal(defaultOff.hasShopDemoBefore, false, 'Demo sign-in button must be hidden by default (OFF)');
     assert.equal(defaultOff.hasDialogDemoBefore, false, 'In-dialog demo button must be hidden by default (OFF)');
-    assert.equal(defaultOff.hasDevToggle, true, 'Dev build must render Dev Demo UI toggle');
+    assert.equal(defaultOff.hasDevToggle, false, 'PlayHub user header must not render 데모 OFF button (Admin owns 실험기능 보기)');
 
-    // 2) Turn ON via Dev toggle and F5 reload -> persists ON and shows demo UI
-    await evalJs(`document.getElementById('dev-demo-nav-toggle').click();`);
-    await delay(200);
+    // 2) Turn ON via PlayHubDevDemoUI API and F5 reload -> persists ON and shows demo UI
+    await evalJs(`(async () => {
+      for (let i = 0; i < 60; i++) {
+        if (window.PlayHubDevDemoUI) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      window.PlayHubDevDemoUI.setEnabled(true);
+    })()`);
+    await delay(100);
+    const reloaded = waitForLoad();
     await send('Page.reload', { ignoreCache: true });
-    await delay(900);
+    await reloaded;
+    await delay(300);
 
     const initial = await evalJs(`(async () => {
       for (let i = 0; i < 40; i++) {
@@ -318,7 +339,11 @@ test('PlayCoin top-up dialog opens cleanly in Billing Shop (default demo OFF -> 
     assert.equal(avatarOff.packsOff, 0, 'Instant dev test top-up packs must be hidden when Dev Demo UI is OFF');
 
     const avatarOn = await evalJs(`(async () => {
-      document.getElementById('dev-demo-nav-toggle').click();
+      for (let i = 0; i < 60; i++) {
+        if (window.PlayHubDevDemoUI) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      window.PlayHubDevDemoUI.setEnabled(true);
       await new Promise(r => setTimeout(r, 300));
       document.getElementById('avatar-topup-open').click();
       await new Promise(r => setTimeout(r, 250));
