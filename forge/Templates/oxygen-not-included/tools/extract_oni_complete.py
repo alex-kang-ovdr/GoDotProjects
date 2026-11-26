@@ -248,6 +248,13 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
     rooms_detail = collect_po_with_desc("STRINGS.ROOMS.TYPES.", ".EFFECT")
     diseases_detail = collect_po_with_desc("STRINGS.DUPLICANTS.DISEASES.", ".DESCRIPTION")
     roles_detail = collect_po_with_desc("STRINGS.DUPLICANTS.ROLES.", ".DESCRIPTION")
+    foods_detail = collect_po_with_desc("STRINGS.ITEMS.FOOD.", ".DESC")
+    meteor_showers_ko = {}
+    ms_pref = "STRINGS.UI.FRONTEND.CUSTOMGAMESETTINGSSCREEN.SETTINGS.METEORSHOWERS.LEVELS."
+    for k, v in ko.items():
+        if k.startswith(ms_pref) and k.endswith(".NAME"):
+            mid = k[len(ms_pref):-5]
+            meteor_showers_ko[mid] = {"name_ko": v, "desc": ko.get(f"{ms_pref}{mid}.TOOLTIP", "")[:140]}
 
     return {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -256,6 +263,8 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
         "rooms": rooms,
         "rooms_detail": rooms_detail,
         "diseases_detail": diseases_detail,
+        "foods_detail": foods_detail,
+        "meteor_showers_ko": meteor_showers_ko,
         "personalities_detail": personalities_detail,
         "roles_detail": roles_detail,
         "space_destinations": space_destinations,
@@ -508,7 +517,7 @@ def main() -> int:
     # Merge texture/kanim/audio totals if present
     kanim_ext_n = 0
     kanim_ext_dupes = 0
-    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt"]:
+    for ext_fn in ["kanim_sprites_ext_extracted.txt", "kanim_sprites_ext2_extracted.txt", "kanim_sprites_ext3_extracted.txt", "kanim_sprites_ext4_extracted.txt"]:
         ext_p = os.path.join(args.out, ext_fn)
         if os.path.exists(ext_p):
             with open(ext_p, "r", encoding="utf-8") as ef:
@@ -534,6 +543,9 @@ def main() -> int:
             "fmod_pcm16_samples": d.get("pcm16_samples", 0),
             "fmod_vorbis_samples": d.get("vorbis_samples", 0),
             "embedded_pcm16_sfx": len(d.get("sfx_pcm16", {})),
+        }),
+        ("bgm_extracted.txt", lambda d: {
+            "embedded_bgm_tracks": len(d.get("tracks", {})),
         }),
     ]:
         ep = os.path.join(args.out, extra_name)

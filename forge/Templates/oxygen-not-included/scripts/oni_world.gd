@@ -56,6 +56,18 @@ var report_o2_kg := 0.0
 var report_power_kj := 0.0
 var last_save_status := ""
 
+# 운석우 · 우주 스캐너 자동 방어 · 컨베이어 패킷
+var meteors: Array[Dictionary] = []
+var meteor_shower_active := false
+var meteor_shower_timer := 0.0
+var meteor_cooldown := 85.0
+var _meteor_spawn_accum := 0.0
+var meteors_blocked := 0
+var bunker_closed := false
+var conveyor_packets: Array[Dictionary] = []
+var on_meteor_alert: Callable
+var on_meteor_impact: Callable
+
 var building: PackedStringArray = PackedStringArray()
 var has_wire: PackedByteArray = PackedByteArray()
 var has_liquid_pipe: PackedByteArray = PackedByteArray()
@@ -184,6 +196,14 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	report_builds = 0
 	report_o2_kg = 0.0
 	report_power_kj = 0.0
+	meteors.clear()
+	meteor_shower_active = false
+	meteor_shower_timer = 0.0
+	meteor_cooldown = 85.0
+	_meteor_spawn_accum = 0.0
+	meteors_blocked = 0
+	bunker_closed = false
+	conveyor_packets.clear()
 	_init_space_missions()
 	building.resize(total)
 	has_wire.resize(total)
@@ -452,6 +472,32 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	has_logic_wire[idx(26, 15)] = 1
 	has_logic_wire[idx(26, 16)] = 1
 
+	# 본진 좌측 인접: 의료실·휴게실(병원 +2 사기) 데모 구획 (x: 14..19, y: 14..16, 수동 에어록으로 구획 분리)
+	for my in range(14, 17):
+		for mx in range(14, 20):
+			var mi := idx(mx, my)
+			solid_el[mi] = ""
+			solid_mass[mi] = 0.0
+			gas_el[mi] = "Oxygen"
+			gas_mass[mi] = 1.15
+			gas_prev_mass[mi] = 1.15
+			temp_c[mi] = 22.0
+	for mx in range(14, 20):
+		var mfi := idx(mx, 17)
+		solid_el[mfi] = ""
+		solid_mass[mfi] = 0.0
+		building[mfi] = "tile"
+		temp_c[mfi] = 22.0
+		has_wire[idx(mx, 16)] = 1
+	building[idx(14, 16)] = "water_cooler"
+	building[idx(15, 16)] = "medical_cot"
+	building[idx(16, 16)] = "apothecary"
+	building[idx(17, 16)] = "massage_table"
+	building[idx(18, 16)] = "jukebot"
+	building[idx(19, 14)] = "tile"
+	building[idx(19, 15)] = "door"
+	building[idx(19, 16)] = "door"
+
 	# 서쪽 빙하 바이옴: 원작 POI 유적 (Frozen AETN 반엔트로피 열중화기 + 그라비타스 자판기/책상 + 기계식 에어록)
 	for py in range(13, 17):
 		for px in range(5, 13):
@@ -483,20 +529,23 @@ func generate(p_seed := 73, p_preset := "") -> void:
 			gas_mass[si] = 0.0
 			gas_prev_mass[si] = 0.0
 			temp_c[si] = -40.0
-	for sx in range(18, 30):
+	for sx in range(18, 31):
 		var pi := idx(sx, 4)
 		solid_el[pi] = ""
 		solid_mass[pi] = 0.0
-		building[pi] = "tile"
+		building[pi] = "bunker_tile"
 		temp_c[pi] = -15.0
-	building[idx(20, 3)] = "solar_panel"
+	building[idx(19, 3)] = "solar_panel"
+	building[idx(21, 3)] = "telescope"
 	building[idx(23, 3)] = "rocket_steam_engine"
 	building[idx(23, 2)] = "rocket_research_module"
 	building[idx(23, 1)] = "rocket_command_module"
-	building[idx(26, 3)] = "telescope"
-	building[idx(28, 3)] = "bunker_door"
-	for swx in range(20, 29):
+	building[idx(26, 3)] = "bunker_door"
+	building[idx(28, 3)] = "space_scanner"
+	for swx in range(19, 29):
 		has_wire[idx(swx, 3)] = 1
+	for slx in range(26, 29):
+		has_logic_wire[idx(slx, 3)] = 1
 
 	# 우측 깨끗한 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
 	for y in range(17, 20):
@@ -694,7 +743,7 @@ func is_solid_cell(x: int, y: int) -> bool:
 	if not solid_el[i].is_empty():
 		return true
 	var b := building[i]
-	if b == "tile" or b == "insulated_tile" or b == "farm_tile":
+	if b == "tile" or b == "insulated_tile" or b == "farm_tile" or b == "bunker_tile":
 		return true
 	return false
 
@@ -772,6 +821,94 @@ func _step_rocket(dt: float) -> void:
 				inventory[rel] = float(inventory.get(rel, 0.0)) + float(m.get("reward_kg", 1000.0))
 				data_banks += int(m.get("banks", 20))
 				add_research_points(12.0)
+
+func trigger_meteor_shower() -> void:
+	meteor_shower_active = true
+	meteor_shower_timer = 16.0
+	_meteor_spawn_accum = 0.0
+	bunker_closed = true
+	for k in range(3):
+		_spawn_meteor(16.0 + float(k) * 5.2 + fmod(sim_time, 2.0), -1.8 - float(k) * 1.4)
+	if on_meteor_alert.is_valid():
+		on_meteor_alert.call()
+
+func _spawn_meteor(start_x: float, start_y: float) -> void:
+	var kind := "meteor_metal" if (meteors.size() + meteors_blocked) % 2 == 0 else "meteor_rock"
+	meteors.append({
+		"kind": kind,
+		"pos": Vector2(clampf(start_x, 4.0, float(WIDTH - 5)), start_y),
+		"vel": Vector2(1.45, 3.65),
+		"rot": 0.0,
+	})
+
+func _step_meteors(dt: float) -> void:
+	if not meteor_shower_active:
+		meteor_cooldown -= dt
+		if meteor_cooldown <= 0.0:
+			meteor_cooldown = 110.0
+			trigger_meteor_shower()
+	else:
+		meteor_shower_timer -= dt
+		_meteor_spawn_accum += dt
+		if _meteor_spawn_accum >= 1.8 and meteors.size() < 6:
+			_meteor_spawn_accum = 0.0
+			var rx := 14.0 + fmod(sim_time * 7.3 + float(meteors_blocked) * 4.1, 20.0)
+			_spawn_meteor(rx, -2.5)
+		if meteor_shower_timer <= 0.0:
+			meteor_shower_active = false
+			bunker_closed = false
+
+	var alive: Array[Dictionary] = []
+	for m: Dictionary in meteors:
+		var pos: Vector2 = m["pos"]
+		var vel: Vector2 = m["vel"]
+		pos += vel * dt
+		m["pos"] = pos
+		m["rot"] = float(m["rot"]) + dt * 5.5
+		var cx := clampi(int(floor(pos.x)), 1, WIDTH - 2)
+		var cy := int(floor(pos.y))
+		var hit := false
+		if cy >= 3:
+			if cy >= 4 or (in_bounds(cx, cy) and (is_solid_cell(cx, cy) or building[idx(cx, cy)] == "bunker_door")):
+				hit = true
+		if hit:
+			var hit_y := clampi(cy, 3, 4)
+			var blocked := bunker_closed or (in_bounds(cx, hit_y) and building[idx(cx, hit_y)] in ["bunker_door", "bunker_tile"])
+			if blocked:
+				meteors_blocked += 1
+			inventory["IronOre"] = float(inventory.get("IronOre", 0.0)) + (80.0 if String(m["kind"]) == "meteor_metal" else 35.0)
+			inventory["Regolith"] = float(inventory.get("Regolith", 0.0)) + 120.0
+			if on_meteor_impact.is_valid():
+				on_meteor_impact.call(Vector2i(cx, hit_y), blocked)
+		elif pos.y < float(HEIGHT) and pos.x < float(WIDTH + 2):
+			alive.append(m)
+	meteors = alive
+
+func _step_conveyors(dt: float) -> void:
+	# 컨베이어 로더/자동 청소기 -> 컨베이어 슈트/저장통 광물 패킷 실시간 이동
+	var loaders: Array[Vector2] = []
+	var chutes: Array[Vector2] = []
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var b := building[idx(x, y)]
+			if b == "conveyor_loader" or b == "auto_sweeper":
+				loaders.append(Vector2(x, y))
+			elif b == "conveyor_chute" or b == "storage":
+				chutes.append(Vector2(x, y))
+	if not loaders.is_empty() and not chutes.is_empty() and conveyor_packets.size() < 6 and fmod(sim_time, 1.8) < dt:
+		var src: Vector2 = loaders[int(sim_time) % loaders.size()]
+		var dst: Vector2 = chutes[0]
+		conveyor_packets.append({"pos": src, "from": src, "to": dst, "t": 0.0, "el": "Carbon"})
+	var next_pkts: Array[Dictionary] = []
+	for p: Dictionary in conveyor_packets:
+		var t: float = float(p["t"]) + dt * 0.45
+		if t >= 1.0:
+			inventory["Carbon"] = float(inventory.get("Carbon", 0.0)) + 15.0
+		else:
+			p["t"] = t
+			p["pos"] = (p["from"] as Vector2).lerp(p["to"] as Vector2, t)
+			next_pkts.append(p)
+	conveyor_packets = next_pkts
 
 func _step_ecology(dt: float) -> void:
 	# 원작 생물 생태계 (해치→석탄, 푸프→점액, 슬릭스터→원유, 가스 무→천연가스) + 자동 청소기 가동
@@ -1091,6 +1228,8 @@ func step(dt: float) -> void:
 	_step_farms(dt)
 	_step_geysers_and_critters(dt)
 	_step_rocket(dt)
+	_step_meteors(dt)
+	_step_conveyors(dt)
 	report_power_kj += (power_produced_w * dt) / 1000.0
 
 	_eco_accum += dt
@@ -1223,6 +1362,11 @@ func step_conduit_tick() -> void:
 			var i := idx(x, y)
 			if has_liquid_pipe[i] == 0 or lpipe_mass[i] <= 0.01:
 				continue
+			# 액체 필터: 오염수를 청수로 정화 및 세균 제거
+			if building[i] == "liquid_filter":
+				germ_count[i] = 0.0
+				germ_type[i] = ""
+				machine_running[i] = 1
 			# 배출구가 있으면 공간에 방출
 			if building[i] == "liquid_vent" and not is_solid_cell(x, y):
 				var space := maxf(0.0, 1000.0 - liquid_mass[i])
@@ -1262,6 +1406,11 @@ func step_conduit_tick() -> void:
 			var i := idx(x, y)
 			if has_gas_pipe[i] == 0 or gpipe_mass[i] <= 0.005 or gpipe_el[i] == "Vacuum":
 				continue
+			# 기체 필터: 오염된 산소/CO2를 정제 산소로 분류 정화
+			if building[i] == "gas_filter":
+				if gpipe_el[i] == "ContaminatedOxygen" or gpipe_el[i] == "CarbonDioxide":
+					next_ge[i] = "Oxygen"
+				machine_running[i] = 1
 			if building[i] == "gas_vent" and not is_solid_cell(x, y):
 				if (gas_el[i] == "Vacuum" or gas_el[i] == gpipe_el[i]) and gas_mass[i] < 2.0:
 					var out_m := minf(gpipe_mass[i], 2.0 - gas_mass[i])
@@ -1551,7 +1700,7 @@ func _is_logic_node(i: int) -> bool:
 	if has_logic_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"]
+	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door"]
 
 func _step_logic_network() -> void:
 	# 원작 자동화(Automation) 논리 회로 연결 컴포넌트 계산 (GREEN=1 / RED=0)
@@ -1586,6 +1735,10 @@ func _step_logic_network() -> void:
 				elif b == "thermo_sensor":
 					has_source = true
 					if temp_c[ci] > 26.0:
+						any_green = true
+				elif b == "space_scanner":
+					has_source = true
+					if meteor_shower_active:
 						any_green = true
 				for d: Vector2i in dirs:
 					var nx: int = cur.x + d.x
@@ -1734,7 +1887,17 @@ func _recompute_rooms() -> void:
 			var r_morale := 0
 			var r_col := Color(0.45, 0.72, 0.92, 0.24)
 			var has_decor := int(bcounts.get("decor_painting", 0)) > 0 or int(bcounts.get("flower_pot", 0)) > 0 or int(bcounts.get("sculpture", 0)) > 0
-			if int(bcounts.get("outhouse", 0)) > 0 and int(bcounts.get("wash_basin", 0)) > 0:
+			if int(bcounts.get("medical_cot", 0)) > 0 and (int(bcounts.get("apothecary", 0)) > 0 or int(bcounts.get("wash_sink", 0)) > 0 or int(bcounts.get("massage_table", 0)) > 0):
+				r_type = "hospital"
+				r_name = "병원"
+				r_morale = 2
+				r_col = Color(0.36, 0.94, 0.68, 0.28)
+			elif int(bcounts.get("jukebot", 0)) > 0 or int(bcounts.get("arcade_cabinet", 0)) > 0 or (int(bcounts.get("massage_table", 0)) > 0 and int(bcounts.get("water_cooler", 0)) > 0):
+				r_type = "rec_room"
+				r_name = "휴게실"
+				r_morale = 2
+				r_col = Color(0.84, 0.48, 0.98, 0.28)
+			elif int(bcounts.get("outhouse", 0)) > 0 and (int(bcounts.get("wash_basin", 0)) > 0 or int(bcounts.get("wash_sink", 0)) > 0):
 				r_type = "latrine"
 				r_name = "화장실"
 				r_morale = 1
@@ -2150,7 +2313,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "aetn"]
+	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0
@@ -2165,8 +2328,14 @@ func _recompute_stats() -> void:
 	avg_oxygen_kg = sum_o2 / float(maxi(1, open_cells))
 
 	alerts.clear()
+	if meteor_shower_active:
+		alerts.append("운석우 접근! 우주 스캐너·벙커 문 자동 방어 가동 (방어 %d)" % meteors_blocked)
 	if rocket_state == "LAUNCHING" or rocket_state == "IN_SPACE" or rocket_state == "LANDING":
 		alerts.append("로켓 임무 중: %s" % rocket_target_name)
+	for d in duplicants:
+		if not d.disease.is_empty():
+			alerts.append("질병 발생: %s (%s)" % [d.dupe_name, d.get_disease_ko()])
+			break
 	if print_ready_timer <= 0.0:
 		alerts.append("인쇄기 준비 완료! (N)")
 	if avg_oxygen_kg < 0.35:

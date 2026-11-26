@@ -65,6 +65,7 @@ BUILDING_TILE_TEX_MAP = {
     "tile": "tiles_solid",
     "insulated_tile": "tiles_insulated",
     "metal_tile": "tiles_metal",
+    "bunker_tile": "tiles_bunker",
 }
 
 FX_TEX_NAMES = [
@@ -93,7 +94,7 @@ KANIM_TARGETS = [
     "odor_fx",
 ]
 
-# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (18 SFX)
+# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (30 SFX)
 SFX_TARGETS = {
     "click": ("FX.bank", "SG_UI_click_small"),
     "drag": ("FX.bank", "SG_UI_dragTile_v02"),
@@ -113,6 +114,25 @@ SFX_TARGETS = {
     "print_ready": ("UI.bank", "SG_UI_notification_achievement_01"),
     "work_chime": ("UI.bank", "SG_workChime_13"),
     "new_buildable": ("UI.bank", "SG_UI_newBuildable_embellishment_v04"),
+    "rocket_launch": ("UI.bank", "SG_UI_clusterMap_Rocket Launching-001"),
+    "meteor_impact": ("Buildings.bank", " SG_Rocket Explosion_Metal vibrate-003"),
+    "scanner_ping": ("UI.bank", "WorldScanPing_1"),
+    "red_alert": ("UI.bank", "SG_HUD_redAlert_activate"),
+    "bunker_close": ("Buildings.bank", "SM_PressureDoor_Close_1"),
+    "heal_chime": ("UI.bank", "SG_UI_achievementUnlocked_musical_01"),
+    "view_gas": ("UI.bank", "SG_HUD_techView_oxygen_v02"),
+    "view_temp": ("UI.bank", "SG_HUD_techView_temperature_v02"),
+    "view_power": ("UI.bank", "SG_HUD_techView_power_v02"),
+    "view_pipe": ("UI.bank", "SG_HUD_techView_liquidVent_v02"),
+    "view_room": ("UI.bank", "SG_HUD_techView_rooms"),
+    "view_germ": ("UI.bank", "SG_HUD_techView_disease"),
+}
+
+BGM_TARGETS = {
+    "ambient_loop": ("UI.bank", "SG_UI_clusterMap_PayloadLP-003_EQed", 11025, 8.2, True),
+    "chime_1": ("UI.bank", "SG_UI_achievementUnlocked_musical_01", 16000, 0.85, False),
+    "chime_2": ("UI.bank", "SG_UI_achievementUnlocked_musical_03", 16000, 0.85, False),
+    "chime_3": ("UI.bank", "SG_UI_achievementUnlocked_musical_05", 16000, 0.85, False),
 }
 
 FREQ_TABLE = {
@@ -518,12 +538,16 @@ def extract_fmod_banks(streaming_dir: str) -> dict:
     target_by_bank = {}
     for key, (bf, sname) in SFX_TARGETS.items():
         target_by_bank.setdefault(bf, {})[sname] = key
+    bgm_by_bank = {}
+    for key, (bf, sname, thz, dur_s, do_loop) in BGM_TARGETS.items():
+        bgm_by_bank.setdefault(bf, {})[sname] = (key, thz, dur_s, do_loop)
 
     catalog = {}
     total_samples = 0
     total_pcm16 = 0
     total_vorbis = 0
     sfx_embedded = {}
+    bgm_embedded = {}
 
     for bf in bank_files:
         bp = os.path.join(streaming_dir, bf)
@@ -549,6 +573,7 @@ def extract_fmod_banks(streaming_dir: str) -> dict:
 
             sample_names = []
             want_map = target_by_bank.get(bf, {})
+            want_bgm = bgm_by_bank.get(bf, {})
             for k in range(n):
                 hdr64 = struct.unpack("<Q", raw[sh_pos : sh_pos + 8])[0]
                 sh_pos += 8
@@ -602,6 +627,34 @@ def extract_fmod_banks(streaming_dir: str) -> dict:
                         "samples": len(ds),
                         "pcm16_b64": base64.b64encode(ds.tobytes()).decode("ascii"),
                     }
+                if mode == 2 and sname in want_bgm:
+                    b_key, target_hz, dur_s, do_loop = want_bgm[sname]
+                    byte_len = nsamples * ch * 2
+                    pcm_bytes = raw[data_off + off_val : data_off + off_val + byte_len]
+                    arr = np.frombuffer(pcm_bytes, dtype=np.int16)
+                    if ch > 1:
+                        arr = arr.reshape(-1, ch).mean(axis=1).astype(np.int16)
+                    max_src = min(len(arr), int(freq * dur_s))
+                    arr = arr[:max_src]
+                    new_len = max(1, int(len(arr) * target_hz / freq))
+                    xs = np.linspace(0, len(arr) - 1, new_len)
+                    ds = np.interp(xs, np.arange(len(arr)), arr.astype(np.float32))
+                    if do_loop and len(ds) > target_hz:
+                        # Seamless cosine crossfade between tail and head for click-free ambient loop
+                        xf = int(target_hz * 0.55)
+                        fade = 0.5 * (1.0 - np.cos(np.linspace(0.0, np.pi, xf)))
+                        ds[:xf] = ds[:xf] * fade + ds[-xf:] * (1.0 - fade)
+                        ds = ds[:-xf]
+                    ds_i16 = np.clip(ds, -32767, 32767).astype(np.int16)
+                    bgm_embedded[b_key] = {
+                        "source_bank": bf,
+                        "source_name": sname,
+                        "orig_hz": freq,
+                        "mix_rate": target_hz,
+                        "loop": do_loop,
+                        "samples": len(ds_i16),
+                        "pcm16_b64": base64.b64encode(ds_i16.tobytes()).decode("ascii"),
+                    }
 
             bank_entries.append({
                 "mode": "PCM16" if mode == 2 else ("Vorbis" if mode == 15 else f"mode_{mode}"),
@@ -619,6 +672,7 @@ def extract_fmod_banks(streaming_dir: str) -> dict:
         "vorbis_samples": total_vorbis,
         "banks": catalog,
         "sfx_pcm16": sfx_embedded,
+        "bgm_pcm16": bgm_embedded,
     }
 
 
@@ -677,10 +731,17 @@ def main() -> int:
             json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
         return os.path.getsize(p)
 
+    bgm_tracks = audio_data.pop("bgm_pcm16", {})
+    bgm_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "tracks": bgm_tracks,
+    }
+
     sz_tex = write_txt("textures_extracted.txt", textures_doc)
     sz_kanim = write_txt("kanim_meshes_extracted.txt", kanim_doc)
     sz_render = write_txt("rendering_fx_extracted.txt", rendering_doc)
     sz_audio = write_txt("audio_extracted.txt", audio_data)
+    sz_bgm = write_txt("bgm_extracted.txt", bgm_doc)
 
     summary = {
         "textures_embedded": {
@@ -710,6 +771,8 @@ def main() -> int:
             "vorbis_samples": audio_data["vorbis_samples"],
             "sfx_embedded": list(audio_data["sfx_pcm16"].keys()),
             "file_bytes": sz_audio,
+            "bgm_tracks": list(bgm_tracks.keys()),
+            "bgm_file_bytes": sz_bgm,
         },
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))

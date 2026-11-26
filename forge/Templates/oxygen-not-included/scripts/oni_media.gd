@@ -15,6 +15,7 @@ static var kanim_building_idle: Dictionary = {}
 static var kanim_building_work: Dictionary = {}
 static var kanim_dupes: Array = []
 static var sfx_streams: Dictionary = {}
+static var bgm_streams: Dictionary = {}
 static var kanim_builds: Dictionary = {}
 static var kanim_anims: Dictionary = {}
 static var rendering_inventory: Dictionary = {}
@@ -36,7 +37,7 @@ static func ensure_loaded() -> void:
 		_decode_tex_dict(tex_doc.get("building_textures", {}), building_textures)
 		_decode_tex_dict(tex_doc.get("fx_textures", {}), fx_textures)
 
-	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt"]:
+	for kpath: String in ["res://data/kanim_sprites_extracted.txt", "res://data/kanim_sprites_ext_extracted.txt", "res://data/kanim_sprites_ext2_extracted.txt", "res://data/kanim_sprites_ext3_extracted.txt", "res://data/kanim_sprites_ext4_extracted.txt"]:
 		var ksp_doc: Variant = _load_json(kpath)
 		if ksp_doc is Dictionary:
 			var bs_v: Variant = ksp_doc.get("building_sprites", {})
@@ -146,6 +147,28 @@ static func ensure_loaded() -> void:
 				wav.data = Marshalls.base64_to_raw(b64)
 				sfx_streams[sk] = wav
 
+	var bgm_doc: Variant = _load_json("res://data/bgm_extracted.txt")
+	if bgm_doc is Dictionary:
+		var tr_v: Variant = bgm_doc.get("tracks", {})
+		if tr_v is Dictionary:
+			for bk_v in tr_v.keys():
+				var bk := String(bk_v)
+				var bd: Dictionary = tr_v[bk]
+				var b64 := String(bd.get("pcm16_b64", ""))
+				if b64.is_empty():
+					continue
+				var wav := AudioStreamWAV.new()
+				wav.format = AudioStreamWAV.FORMAT_16_BITS
+				wav.mix_rate = int(bd.get("mix_rate", 11025))
+				wav.stereo = false
+				var raw_pcm := Marshalls.base64_to_raw(b64)
+				wav.data = raw_pcm
+				if bool(bd.get("loop", false)):
+					wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+					wav.loop_begin = 0
+					wav.loop_end = raw_pcm.size() / 2
+				bgm_streams[bk] = wav
+
 static func _load_json(res_path: String) -> Variant:
 	if not FileAccess.file_exists(res_path):
 		return {}
@@ -235,13 +258,21 @@ static func get_sfx_stream(sfx_key: String) -> AudioStreamWAV:
 		return s
 	return null
 
+static func get_bgm_stream(bgm_key: String) -> AudioStreamWAV:
+	ensure_loaded()
+	var s: Variant = bgm_streams.get(bgm_key, null)
+	if s is AudioStreamWAV:
+		return s
+	return null
+
 static func get_media_summary() -> String:
 	ensure_loaded()
 	var tex_n: int = element_textures.size() + building_textures.size() + fx_textures.size()
 	var spr_n: int = kanim_building_idle.size() + kanim_dupes.size()
 	var sfx_n: int = sfx_streams.size()
+	var bgm_n: int = bgm_streams.size()
 	var sh_n: int = int(shaders_summary.get("shaders", 0))
-	return "에셋: 텍스처 %d · KAnim %d · 셰이더 %d · SFX %d" % [tex_n, spr_n, sh_n, sfx_n]
+	return "텍%d·KAnim%d·SFX%d·BGM%d" % [tex_n, spr_n, sfx_n, bgm_n]
 
 static func get_complete_audit_lines() -> Array[String]:
 	ensure_loaded()

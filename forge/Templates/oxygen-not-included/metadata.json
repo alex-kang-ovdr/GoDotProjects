@@ -1,7 +1,7 @@
 {
   "id": "oxygen-not-included",
   "name": "숨 · Oxygen Not Included",
-  "description": "2D underground colony survival simulator in Godot 4.7 with complete reverse-engineered ONI datasets (196 elements, 13 biomes, 57 buildings/POIs, 60 mobs, 23 geysers, 62 POIs, 110 space destinations, 97 techs, 56 skills, 52 personalities, 21 rooms, 14 diseases, 44 textures, 79 KAnim sprites, 81 Unity shaders / 5 ported .gdshaders, 15 FMOD banks / 18 PCM16 SFX).",
+  "description": "2D underground colony survival simulator in Godot 4.7 with complete reverse-engineered ONI datasets (196 elements, 13 biomes, 72 buildings/POIs, 60 mobs, 23 geysers, 62 POIs, 110 space destinations, 97 techs, 56 skills, 52 personalities, 21 rooms, 14 diseases, 45 textures, 96 KAnim sprites, 81 Unity shaders / 5 ported .gdshaders, 15 FMOD banks / 30 PCM16 SFX + 4 BGM/ambient tracks).",
   "dimension": "2d",
   "assetPaths": [
     "assets/icon.svg",
@@ -22,9 +22,11 @@
     "data/kanim_sprites_ext_extracted.txt",
     "data/kanim_sprites_ext2_extracted.txt",
     "data/kanim_sprites_ext3_extracted.txt",
+    "data/kanim_sprites_ext4_extracted.txt",
     "data/rendering_fx_extracted.txt",
     "data/shaders_materials_extracted.txt",
     "data/audio_extracted.txt",
+    "data/bgm_extracted.txt",
     "data/fmod_events_extracted.txt",
     "data/extraction_manifest.txt"
   ],
@@ -45,9 +47,11 @@
     "data/kanim_sprites_ext_extracted.txt",
     "data/kanim_sprites_ext2_extracted.txt",
     "data/kanim_sprites_ext3_extracted.txt",
+    "data/kanim_sprites_ext4_extracted.txt",
     "data/rendering_fx_extracted.txt",
     "data/shaders_materials_extracted.txt",
     "data/audio_extracted.txt",
+    "data/bgm_extracted.txt",
     "data/fmod_events_extracted.txt",
     "scripts/oni_elements.gd",
     "scripts/oni_media.gd",

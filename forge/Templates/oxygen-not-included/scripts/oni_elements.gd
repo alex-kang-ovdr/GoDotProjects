@@ -133,6 +133,22 @@ const BUILDING_COLORS := {
 	"oxygen_dock": Color(0.36, 0.82, 0.94, 1.0),
 	"telescope": Color(0.62, 0.74, 0.96, 1.0),
 	"bunker_door": Color(0.48, 0.54, 0.62, 1.0),
+	"space_scanner": Color(0.38, 0.86, 0.96, 1.0),
+	"bunker_tile": Color(0.42, 0.48, 0.56, 1.0),
+	"medical_cot": Color(0.86, 0.92, 0.96, 1.0),
+	"apothecary": Color(0.36, 0.90, 0.58, 1.0),
+	"massage_table": Color(0.46, 0.76, 0.94, 1.0),
+	"wash_sink": Color(0.48, 0.84, 0.92, 1.0),
+	"water_cooler": Color(0.34, 0.72, 0.96, 1.0),
+	"shower": Color(0.56, 0.88, 0.98, 1.0),
+	"flush_toilet": Color(0.76, 0.82, 0.88, 1.0),
+	"jukebot": Color(0.76, 0.42, 0.96, 1.0),
+	"arcade_cabinet": Color(0.88, 0.34, 0.68, 1.0),
+	"gas_filter": Color(0.44, 0.86, 0.56, 1.0),
+	"liquid_filter": Color(0.28, 0.66, 0.96, 1.0),
+	"conveyor_chute": Color(0.72, 0.62, 0.48, 1.0),
+	"rocket_cargo_bay": Color(0.78, 0.46, 0.36, 1.0),
+	"suit_maker": Color(0.92, 0.78, 0.34, 1.0),
 }
 
 static func ensure_loaded() -> void:
@@ -194,6 +210,11 @@ static func ensure_loaded() -> void:
 			"name_ko": "조종 모듈", "cat": "space", "desc": "로켓 상단 조종석 모듈",
 			"cost_element": "Cuprite", "cost_kg": 300.0, "build_time": 3.2,
 			"color": BUILDING_COLORS["rocket_command_module"],
+		},
+		"rocket_cargo_bay": {
+			"name_ko": "화물 베이", "cat": "space", "desc": "우주 소행성 광물 채취 화물 적재 모듈",
+			"cost_element": "IronOre", "cost_kg": 400.0, "build_time": 3.4,
+			"color": BUILDING_COLORS["rocket_cargo_bay"],
 		},
 		"geyser_steam": {
 			"name_ko": "증기 분출구", "cat": "natural", "desc": "155°C 증기 주기적 분출",

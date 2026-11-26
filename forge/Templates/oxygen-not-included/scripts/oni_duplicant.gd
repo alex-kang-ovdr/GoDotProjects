@@ -21,6 +21,8 @@ var stamina := 100.0
 var kcal := 4000.0
 var morale := 2
 var stress := 0.0
+var disease := "" # "", "FoodPoisoning", "SlimeLung"
+var disease_timer := 0.0
 var trait_ko := "조기 기상"
 var skill_level := 0
 var skill_name_ko := "신입 개척자"
@@ -48,11 +50,48 @@ func upgrade_skill() -> bool:
 	return true
 
 func work_speed_mult() -> float:
-	return 1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.30)
+	var sick_m := 0.72 if not disease.is_empty() else 1.0
+	var stress_m := 0.85 if stress >= 60.0 else 1.0
+	return (1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.35)) * sick_m * stress_m
+
+func get_disease_ko() -> String:
+	if disease == "SlimeLung":
+		return "점액폐"
+	if disease == "FoodPoisoning":
+		return "식중독"
+	return "건강"
 
 func step(world: OniWorld, dt: float) -> void:
 	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)
 	_step_breathing(world, dt)
+
+	# 1.5) 스트레스·질병 시뮬레이션 (세균 감염·저산소·사기 부족 -> 스트레스/질병 / 의료실·마사지·휴게실 해소)
+	var ci := world.idx(cell.x, cell.y)
+	if world.germ_count[ci] > 28000.0 and disease.is_empty():
+		var gt := world.germ_type[ci]
+		if gt == "SlimeLung" or gt == "FoodPoisoning":
+			disease = gt
+			disease_timer = 45.0
+	if not disease.is_empty():
+		disease_timer = maxf(0.0, disease_timer - dt)
+		if disease_timer <= 0.0:
+			disease = ""
+	var stress_delta := -0.35 * float(maxi(0, morale - skill_level * 2))
+	if breath < 65.0:
+		stress_delta += 1.6
+	if not disease.is_empty():
+		stress_delta += 0.9
+	if world.liquid_mass[ci] > 80.0:
+		stress_delta += 0.7
+	if state == "HEAL":
+		stress_delta = -8.5
+		if not disease.is_empty():
+			disease_timer = maxf(0.0, disease_timer - 9.0 * dt)
+			if disease_timer <= 0.0:
+				disease = ""
+	elif state == "SLEEP":
+		stress_delta = minf(stress_delta, -2.5)
+	stress = clampf(stress + stress_delta * dt, 0.0, 100.0)
 
 	# 2) 칼로리/스태미나 갱신 (배고프면 저장 식량에서 자동 섭취)
 	kcal = maxf(0.0, kcal - (OniElements.DUPE_KCAL_PER_CYCLE / OniElements.CYCLE_SECONDS) * dt)
@@ -95,6 +134,11 @@ func step(world: OniWorld, dt: float) -> void:
 		"SLEEP":
 			state_ko = "휴식"
 			if stamina >= 96.0:
+				_clear_job()
+		"HEAL":
+			state_ko = "치료·휴게"
+			stamina = minf(100.0, stamina + 8.0 * dt)
+			if stress <= 5.0 and disease.is_empty():
 				_clear_job()
 
 func _step_breathing(world: OniWorld, dt: float) -> void:
@@ -175,6 +219,9 @@ func _enter_job_work(world: OniWorld) -> void:
 	elif job_type == "sleep":
 		state = "SLEEP"
 		state_ko = "휴식"
+	elif job_type == "heal":
+		state = "HEAL"
+		state_ko = "치료·휴게"
 	else:
 		_clear_job()
 
@@ -257,8 +304,26 @@ func _assign_next_job(world: OniWorld) -> void:
 	var best_target := Vector2i(-1, -1)
 	var best_type := ""
 
+	# 0.5) 질병 감염 또는 고스트레스(>=30%) 시 병원(환자용 침대)/마사지 테이블/주크봇 우선 방문
+	if not disease.is_empty() or stress >= 30.0:
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				var b := world.building[i]
+				var match_med := (not disease.is_empty() and b in ["medical_cot", "apothecary", "wash_sink"])
+				var match_rel := (stress >= 30.0 and b in ["massage_table", "jukebot", "arcade_cabinet", "water_cooler"])
+				if match_med or match_rel:
+					var c := Vector2i(x, y)
+					if dists.has(c):
+						var sc := float(dists[c]) - 120.0
+						if sc < best_score:
+							best_score = sc
+							best_stand = c
+							best_target = c
+							best_type = "heal"
+
 	# 1) 야간 취침 스케줄 또는 스태미나 낮을 때 빈 침대 우선
-	if stamina < 28.0 or (world.is_night() and stamina < 82.0):
+	if best_type.is_empty() and (stamina < 28.0 or (world.is_night() and stamina < 82.0)):
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)

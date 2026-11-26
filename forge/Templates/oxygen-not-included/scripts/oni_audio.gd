@@ -4,19 +4,37 @@ class_name OniAudio
 # 원작 FMOD FSB5에서 추출한 실제 PCM16 AudioStreamWAV 우선 재생 + 절차형 합성음 폴백
 
 var muted := false
+var bgm_enabled := true
 var _wav_players: Array[AudioStreamPlayer] = []
 var _wav_cursor := 0
+var _bgm_player: AudioStreamPlayer
+var _chime_player: AudioStreamPlayer
+var _chime_timer := 18.0
+var _chime_idx := 0
 var _synth_player: AudioStreamPlayer
 var _playback: AudioStreamGeneratorPlayback
 var _sample_rate := 22050.0
 
 func _ready() -> void:
 	OniMedia.ensure_loaded()
-	for _i in range(4):
+	for _i in range(6):
 		var p := AudioStreamPlayer.new()
 		p.volume_db = -8.0
 		add_child(p)
 		_wav_players.append(p)
+
+	_bgm_player = AudioStreamPlayer.new()
+	_bgm_player.volume_db = -20.0
+	add_child(_bgm_player)
+	var amb := OniMedia.get_bgm_stream("ambient_loop")
+	if amb != null:
+		_bgm_player.stream = amb
+		if bgm_enabled and not muted:
+			_bgm_player.play()
+
+	_chime_player = AudioStreamPlayer.new()
+	_chime_player.volume_db = -17.0
+	add_child(_chime_player)
 
 	_synth_player = AudioStreamPlayer.new()
 	var gen := AudioStreamGenerator.new()
@@ -27,6 +45,31 @@ func _ready() -> void:
 	add_child(_synth_player)
 	_synth_player.play()
 	_playback = _synth_player.get_stream_playback() as AudioStreamGeneratorPlayback
+
+func _process(delta: float) -> void:
+	if muted or not bgm_enabled:
+		if _bgm_player != null and _bgm_player.playing:
+			_bgm_player.stop()
+		return
+	if _bgm_player != null and _bgm_player.stream != null and not _bgm_player.playing:
+		_bgm_player.play()
+	_chime_timer -= delta
+	if _chime_timer <= 0.0:
+		_chime_timer = 26.0
+		var keys := ["chime_1", "chime_2", "chime_3"]
+		var cs := OniMedia.get_bgm_stream(keys[_chime_idx % keys.size()])
+		_chime_idx += 1
+		if cs != null and _chime_player != null:
+			_chime_player.stream = cs
+			_chime_player.play()
+
+func toggle_bgm() -> bool:
+	bgm_enabled = not bgm_enabled
+	if not bgm_enabled and _bgm_player != null:
+		_bgm_player.stop()
+	elif bgm_enabled and not muted and _bgm_player != null and _bgm_player.stream != null:
+		_bgm_player.play()
+	return bgm_enabled
 
 func _play_extracted(key: String, fallback_freq: float, fallback_dur := 0.07) -> void:
 	if muted:
@@ -107,3 +150,38 @@ func play_work_chime() -> void:
 
 func play_new_buildable() -> void:
 	_play_extracted("new_buildable", 700.0, 0.10)
+
+func play_rocket_launch() -> void:
+	_play_extracted("rocket_launch", 180.0, 0.18)
+
+func play_meteor_impact() -> void:
+	_play_extracted("meteor_impact", 140.0, 0.18)
+
+func play_scanner_ping() -> void:
+	_play_extracted("scanner_ping", 880.0, 0.12)
+
+func play_red_alert() -> void:
+	_play_extracted("red_alert", 440.0, 0.16)
+
+func play_bunker_close() -> void:
+	_play_extracted("bunker_close", 220.0, 0.14)
+
+func play_heal_chime() -> void:
+	_play_extracted("heal_chime", 740.0, 0.14)
+
+func play_overlay_switch(oid: String) -> void:
+	match oid:
+		"gas":
+			_play_extracted("view_gas", 520.0, 0.06)
+		"temp":
+			_play_extracted("view_temp", 560.0, 0.06)
+		"power":
+			_play_extracted("view_power", 600.0, 0.06)
+		"pipe":
+			_play_extracted("view_pipe", 500.0, 0.06)
+		"room":
+			_play_extracted("view_room", 620.0, 0.06)
+		"germ":
+			_play_extracted("view_germ", 460.0, 0.06)
+		_:
+			_play_extracted("circuit_toggle", 580.0, 0.05)

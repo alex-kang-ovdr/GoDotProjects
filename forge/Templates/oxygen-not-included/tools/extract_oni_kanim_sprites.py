@@ -111,6 +111,27 @@ EXTENDED_RECIPES_3 = {
     "critter_moo": (["gassy_moo_build", "gassy_moo"], "gassy_moo", ["idle_loop", "fly_loop", "idle"], 84),
 }
 
+# 5th KAnim shard (Space Scanner, Meteors, Medical Clinic, Relaxation, Filters, Conveyor Chute, Rocket Cargo, Suit Forge)
+EXTENDED_RECIPES_4 = {
+    "space_scanner": (["meteor_detector"], "meteor_detector", ["working_loop", "on", "off"], 92),
+    "meteor_rock": (["meteor_rock"], "meteor_rock", ["fall_loop", "idle", "on"], 72),
+    "meteor_metal": (["meteor_metal"], "meteor_metal", ["fall_loop", "idle", "on"], 72),
+    "medical_cot": (["medical_cot"], "medical_cot", ["off", "on", "working_loop"], 92),
+    "apothecary": (["apothecary"], "apothecary", ["working_loop", "on", "off"], 92),
+    "massage_table": (["treatment_chair"], "treatment_chair", ["working_loop", "on", "off"], 92),
+    "wash_sink": (["wash_sink"], "wash_sink", ["on", "off"], 84),
+    "water_cooler": (["watercooler"], "watercooler", ["on", "off"], 84),
+    "shower": (["shower"], "shower", ["working_loop", "on", "off"], 88),
+    "flush_toilet": (["toiletflush"], "toiletflush", ["on", "off"], 84),
+    "jukebot": (["jukebot"], "jukebot", ["working_loop", "on", "off"], 92),
+    "arcade_cabinet": (["arcade_cabinet"], "arcade_cabinet", ["working_loop", "on", "off"], 88),
+    "gas_filter": (["filter_gas"], "filter_gas", ["working_loop", "on", "off"], 80),
+    "liquid_filter": (["filter_liquid"], "filter_liquid", ["working_loop", "on", "off"], 80),
+    "conveyor_chute": (["conveyorout"], "conveyorout", ["on", "off"], 80),
+    "rocket_cargo_bay": (["rocket_storage_solid"], "rocket_storage_solid", ["grounded", "on", "off"], 108),
+    "suit_maker": (["suit_maker"], "suit_maker", ["working_loop", "on", "off"], 96),
+}
+
 # Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
 DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap"]
 
@@ -444,6 +465,7 @@ def main() -> int:
     all_recipes.update(EXTENDED_RECIPES)
     all_recipes.update(EXTENDED_RECIPES_2)
     all_recipes.update(EXTENDED_RECIPES_3)
+    all_recipes.update(EXTENDED_RECIPES_4)
     for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
@@ -519,6 +541,7 @@ def main() -> int:
     out_buildings_ext = {}
     out_buildings_ext2 = {}
     out_buildings_ext3 = {}
+    out_buildings_ext4 = {}
     preview_list = []
 
     for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
@@ -584,7 +607,13 @@ def main() -> int:
                     im_work = iw2
 
         if im_idle is not None:
-            target_dict = out_buildings if key in BUILDING_RECIPES else (out_buildings_ext if key in EXTENDED_RECIPES else (out_buildings_ext2 if key in EXTENDED_RECIPES_2 else out_buildings_ext3))
+            target_dict = (
+                out_buildings if key in BUILDING_RECIPES else
+                out_buildings_ext if key in EXTENDED_RECIPES else
+                out_buildings_ext2 if key in EXTENDED_RECIPES_2 else
+                out_buildings_ext3 if key in EXTENDED_RECIPES_3 else
+                out_buildings_ext4
+            )
             target_dict[key] = {
                 "size": out_sz,
                 "idle_clip": chosen_idle["name"],
@@ -714,6 +743,14 @@ def main() -> int:
     with open(ext3_path, "w", encoding="utf-8") as f:
         json.dump(ext3_doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext4_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext4,
+    }
+    ext4_path = os.path.join(args.out, "kanim_sprites_ext4_extracted.txt")
+    with open(ext4_path, "w", encoding="utf-8") as f:
+        json.dump(ext4_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
         cols = 10
@@ -732,12 +769,14 @@ def main() -> int:
         "buildings_composited_ext": len(out_buildings_ext),
         "buildings_composited_ext2": len(out_buildings_ext2),
         "buildings_composited_ext3": len(out_buildings_ext3),
-        "ext3_keys": list(out_buildings_ext3.keys()),
+        "buildings_composited_ext4": len(out_buildings_ext4),
+        "ext4_keys": list(out_buildings_ext4.keys()),
         "duplicants_composited": len(out_dupes),
         "main_file_bytes": os.path.getsize(out_path),
         "ext_file_bytes": os.path.getsize(ext_path),
         "ext2_file_bytes": os.path.getsize(ext2_path),
         "ext3_file_bytes": os.path.getsize(ext3_path),
+        "ext4_file_bytes": os.path.getsize(ext4_path),
     }, ensure_ascii=False, indent=2))
     return 0
 

@@ -519,7 +519,7 @@ func _draw_terrain_foreground() -> void:
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var b := world.building[i]
-			if b != "tile" and b != "insulated_tile":
+			if b != "tile" and b != "insulated_tile" and b != "bunker_tile":
 				continue
 			var rect := Rect2(x * ts, y * ts, ts, ts)
 			var mod := Color(0.46, 0.50, 0.56, 1.0) if dim_world else Color(1.0, 1.0, 1.0, 1.0)
@@ -568,10 +568,14 @@ func _draw_foreground() -> void:
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
 			var b := world.building[i]
-			if not b.is_empty() and b != "tile" and b != "insulated_tile":
+			if not b.is_empty() and b != "tile" and b != "insulated_tile" and b != "bunker_tile":
 				_draw_building_on(_fg_node, x, y, i, b, ts)
 
-	# 생물(해치·푸프·빛벌레) & 대원
+	# 컨베이어 광물 패킷 & 우주 낙하 운석우
+	_draw_conveyor_packets_on(_fg_node, ts)
+	_draw_meteors_on(_fg_node, ts)
+
+	# 생물(해치·푸프·빛벌레·가스 무 등 8종) & 대원
 	for cr: Dictionary in world.critters:
 		_draw_critter_on(_fg_node, cr, ts)
 	for dupe in world.duplicants:
@@ -668,7 +672,7 @@ func _draw_overlay_front() -> void:
 				var b := world.building[i]
 				var is_pw := world.has_wire[i] == 1
 				var is_gen := b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel"]
-				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper", "sweep_station", "incubator"]
+				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "liquid_pump", "gas_pump", "research_station", "telescope", "auto_sweeper", "sweep_station", "incubator", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter", "suit_maker"]
 				var is_bat := b == "battery" or b == "smart_battery"
 				if not is_pw and not is_gen and not is_con and not is_bat:
 					continue
@@ -706,7 +710,7 @@ func _draw_overlay_front() -> void:
 				var i := world.idx(x, y)
 				var is_lw := world.has_logic_wire[i] == 1
 				var b := world.building[i]
-				var is_lb := b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door"]
+				var is_lb := b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door"]
 				if not is_lw and not is_lb:
 					continue
 				var sig := world.logic_signal[i] == 1
@@ -861,11 +865,11 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 	var ktex := OniMedia.get_building_sprite(b, use_work)
 	if ktex != null:
 		var draw_r := rect
-		if b in ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"]:
+		if b in ["rocket_steam_engine", "rocket_research_module", "rocket_command_module", "rocket_cargo_bay"]:
 			if world.rocket_state == "IN_SPACE":
 				return
 			var dw := float(ts) * 2.15
-			var dh := float(ts) * 1.45 if b == "rocket_steam_engine" else (float(ts) * 1.35 if b == "rocket_research_module" else float(ts) * 1.65)
+			var dh := float(ts) * 1.45 if b == "rocket_steam_engine" else (float(ts) * 1.35 if b in ["rocket_research_module", "rocket_cargo_bay"] else float(ts) * 1.65)
 			var lift := world.rocket_y_offset
 			var shake := sin(_anim_time * 50.0) * 1.8 if world.rocket_state in ["LAUNCHING", "LANDING"] else 0.0
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5 + shake, p.y + float(ts) - dh + 2.0 + lift, dw, dh)
@@ -883,9 +887,9 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var dw := float(ts) * 1.7
 			var dh := float(ts) * 1.7
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
-		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_vending", "poi_desk", "telescope", "ranch_station", "incubator", "oxygen_dock", "sweep_station"]:
-			var scale_w := 1.48 if b in ["steam_turbine", "solar_panel", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_desk", "telescope", "ranch_station"] else 1.30
-			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "outhouse", "water_sieve", "poi_vending", "oil_refinery", "telescope", "incubator", "oxygen_dock"] else 1.26
+		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_vending", "poi_desk", "telescope", "ranch_station", "incubator", "oxygen_dock", "sweep_station", "space_scanner", "medical_cot", "apothecary", "massage_table", "shower", "jukebot", "arcade_cabinet", "suit_maker"]:
+			var scale_w := 1.48 if b in ["steam_turbine", "solar_panel", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir", "thermo_aquatuner", "metal_refinery", "oil_refinery", "poi_desk", "telescope", "ranch_station", "space_scanner", "medical_cot", "massage_table", "suit_maker"] else 1.30
+			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "outhouse", "water_sieve", "poi_vending", "oil_refinery", "telescope", "incubator", "oxygen_dock", "space_scanner", "apothecary", "shower", "suit_maker"] else 1.26
 			var dw := float(ts) * scale_w
 			var dh := float(ts) * scale_h
 			var jitter := sin(_anim_time * 20.0) * 0.7 if running else 0.0
@@ -908,11 +912,11 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var dw := float(ts) * 1.08
 			var dh := float(ts) * 1.08
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + (float(ts) - dh) * 0.5, dw, dh)
-		elif b in ["atmo_sensor", "thermo_sensor"]:
-			var dw := float(ts) * 0.78
-			var dh := float(ts) * 0.78
+		elif b in ["atmo_sensor", "thermo_sensor", "gas_filter", "liquid_filter", "conveyor_chute"]:
+			var dw := float(ts) * (0.78 if b in ["atmo_sensor", "thermo_sensor"] else 1.08)
+			var dh := float(ts) * (0.78 if b in ["atmo_sensor", "thermo_sensor"] else 1.08)
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + (float(ts) - dh) * 0.5, dw, dh)
-		elif b in ["battery", "smart_battery", "storage", "liquid_pump", "gas_pump", "wash_basin", "mess_table", "ration_box", "flower_pot", "sculpture", "conveyor_loader"]:
+		elif b in ["battery", "smart_battery", "storage", "liquid_pump", "gas_pump", "wash_basin", "wash_sink", "water_cooler", "flush_toilet", "mess_table", "ration_box", "flower_pot", "sculpture", "conveyor_loader"]:
 			var dw := float(ts) * 1.15
 			var dh := float(ts) * 1.18
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
@@ -921,6 +925,25 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 		if b != "ladder" and b != "fire_pole" and b != "liquid_vent" and b != "gas_vent" and b != "ceiling_light" and b != "decor_painting" and b != "atmo_sensor" and b != "thermo_sensor" and b != "auto_sweeper" and not b.begins_with("rocket_"):
 			c.draw_rect(Rect2(draw_r.position.x + 4.0, p.y + float(ts) - 3.0, draw_r.size.x - 8.0, 4.0), Color(0.02, 0.03, 0.05, 0.42), true)
 		c.draw_texture_rect(ktex, draw_r, false, mod)
+
+		# 우주 스캐너 레이더 스캔 콘 & 벙커 문 자동 장갑 셔터
+		if b == "space_scanner":
+			var sc := Vector2(p.x + float(ts) * 0.5, p.y - 4.0)
+			var ang := -PI * 0.5 + sin(_anim_time * (4.5 if world.meteor_shower_active else 1.4)) * 0.55
+			var ray := Vector2(cos(ang), sin(ang)) * 78.0
+			var ray_l := Vector2(cos(ang - 0.18), sin(ang - 0.18)) * 78.0
+			var ray_r := Vector2(cos(ang + 0.18), sin(ang + 0.18)) * 78.0
+			var rcol := Color(1.0, 0.34, 0.24, 0.24) if world.meteor_shower_active else Color(0.28, 0.94, 0.88, 0.16)
+			c.draw_colored_polygon(PackedVector2Array([sc, sc + ray_l, sc + ray, sc + ray_r]), rcol)
+			c.draw_circle(sc, 3.2, Color(1.0, 0.28, 0.22, 0.95) if world.meteor_shower_active else Color(0.28, 0.96, 0.65, 0.90))
+		elif b == "bunker_door" and world.bunker_closed:
+			var shield_r := Rect2(p.x - float(ts) * 0.55, p.y - 3.0, float(ts) * 2.1, 8.0)
+			c.draw_rect(shield_r, Color(0.32, 0.38, 0.46, 0.95), true)
+			c.draw_rect(shield_r, Color(1.0, 0.72, 0.22, 0.95), false, 1.5)
+			c.draw_circle(Vector2(p.x + float(ts) * 0.5, p.y + 1.0), 3.0, Color(1.0, 0.76, 0.22, 1.0))
+		elif b == "jukebot" and not dim:
+			var jp := 0.65 + 0.35 * sin(_anim_time * 5.2)
+			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.4), 20.0, Color(0.76, 0.38, 1.0, 0.10 * jp))
 
 		if running and b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "aetn"]:
 			c.draw_circle(p + Vector2(ts * 0.5, 4), 2.8, Color(0.38, 0.96, 0.65, 0.92))
@@ -1001,6 +1024,47 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 		c.draw_rect(pill, Color(0.05, 0.08, 0.12, 0.78), true)
 		c.draw_rect(pill, Color(0.38, 0.56, 0.72, 0.58), false, 1.0)
 		c.draw_string(font, Vector2(px - 15, py - 28), dupe.dupe_name, HORIZONTAL_ALIGNMENT_CENTER, 30, 10, Color(0.96, 0.98, 1.0, 0.96))
+		if not dupe.disease.is_empty():
+			var dpill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(dpill, Color(0.28, 0.45, 0.08, 0.92), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), dupe.get_disease_ko(), HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(0.92, 1.0, 0.55, 1.0))
+		elif dupe.stress >= 30.0:
+			var spill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(spill, Color(0.55, 0.14, 0.18, 0.92), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "스트%.0f%%" % dupe.stress, HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.88, 0.88, 1.0))
+		elif dupe.state == "HEAL":
+			c.draw_circle(Vector2(px, py - 44), 4.0, Color(0.35, 0.98, 0.62, 0.92))
+
+func _draw_meteors_on(c: Node2D, ts: int) -> void:
+	if world.meteors.is_empty():
+		return
+	for m: Dictionary in world.meteors:
+		var pos: Vector2 = m["pos"]
+		var vel: Vector2 = m["vel"]
+		var kind := String(m.get("kind", "meteor_rock"))
+		var mp := Vector2(pos.x * float(ts), pos.y * float(ts))
+		var back := -vel.normalized()
+		var perp := Vector2(-back.y, back.x)
+		# 원작 스타일 테이퍼 화염 꼬리 (외곽 오렌지 -> 중심 백열)
+		c.draw_colored_polygon(PackedVector2Array([mp + perp * 10.0, mp - perp * 10.0, mp + back * 86.0]), Color(1.0, 0.36, 0.06, 0.48))
+		c.draw_colored_polygon(PackedVector2Array([mp + perp * 5.5, mp - perp * 5.5, mp + back * 56.0]), Color(1.0, 0.76, 0.22, 0.80))
+		c.draw_colored_polygon(PackedVector2Array([mp + perp * 2.5, mp - perp * 2.5, mp + back * 28.0]), Color(1.0, 0.96, 0.82, 0.95))
+		c.draw_circle(mp, 16.0, Color(1.0, 0.52, 0.14, 0.28))
+		var mtex := OniMedia.get_building_sprite(kind, int(floor(_anim_time * 8.0)) % 2 == 1)
+		if mtex != null:
+			var msz := 38.0
+			c.draw_texture_rect(mtex, Rect2(mp.x - msz * 0.5, mp.y - msz * 0.5, msz, msz), false)
+		else:
+			c.draw_circle(mp, 9.0, Color(1.0, 0.65, 0.22, 1.0))
+
+func _draw_conveyor_packets_on(c: Node2D, ts: int) -> void:
+	for p: Dictionary in world.conveyor_packets:
+		var pos: Vector2 = p["pos"]
+		var px := (pos.x + 0.5) * float(ts)
+		var py := (pos.y + 0.5) * float(ts)
+		c.draw_rect(Rect2(px - 6.0, py - 6.0, 12.0, 12.0), Color(0.22, 0.24, 0.28, 0.92), true)
+		c.draw_rect(Rect2(px - 6.0, py - 6.0, 12.0, 12.0), Color(0.95, 0.72, 0.30, 0.95), false, 1.5)
+		c.draw_circle(Vector2(px, py), 3.0, Color(0.92, 0.78, 0.36, 1.0))
 
 func _draw_fx_particles_on(c: Node2D) -> void:
 	for p: Dictionary in _fx_particles:

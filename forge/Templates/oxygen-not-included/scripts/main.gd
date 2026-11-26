@@ -37,6 +37,7 @@ var _report_panel: PanelContainer
 var _report_vbox: VBoxContainer
 var _alert_lbl: Label
 var _preset_btn: Button
+var _bgm_btn: Button
 var _atmo_shader_mat: ShaderMaterial
 var _tool_buttons: Dictionary = {}
 var _cat_buttons: Dictionary = {}
@@ -46,21 +47,23 @@ var _speed_buttons: Dictionary = {}
 const CATEGORIES := [
 	{"id": "base", "label": "기본"},
 	{"id": "living", "label": "생활·장식"},
+	{"id": "med", "label": "의료·휴게"},
 	{"id": "power", "label": "전력·산소"},
 	{"id": "pipe", "label": "배관"},
 	{"id": "auto", "label": "자동화·운송"},
-	{"id": "colony", "label": "농사·목축·산업"},
+	{"id": "colony", "label": "농사·산업"},
 	{"id": "space", "label": "우주"},
 ]
 
 const CAT_TOOLS := {
 	"base": ["tile", "insulated_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light", "oxygen_dock"],
-	"living": ["outhouse", "wash_basin", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
+	"living": ["outhouse", "wash_basin", "flush_toilet", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
+	"med": ["medical_cot", "apothecary", "massage_table", "wash_sink", "shower", "water_cooler", "jukebot", "arcade_cabinet"],
 	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "battery", "wire"],
-	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
-	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "sweep_station", "conveyor_loader"],
-	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery"],
-	"space": ["telescope", "bunker_door", "rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
+	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "liquid_filter", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir", "gas_filter"],
+	"auto": ["logic_wire", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "auto_sweeper", "sweep_station", "conveyor_loader", "conveyor_chute"],
+	"colony": ["farm_tile", "ranch_station", "incubator", "research_station", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker"],
+	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "rocket_steam_engine", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
 }
 
 const WORLD_PRESETS := ["terra", "rime", "oceana", "badlands"]
@@ -75,6 +78,8 @@ func _ready() -> void:
 	world = OniWorld.new(73)
 	world.on_dig_completed = Callable(self, "_on_dig_completed")
 	world.on_build_completed = Callable(self, "_on_build_completed")
+	world.on_meteor_alert = Callable(self, "_on_meteor_alert")
+	world.on_meteor_impact = Callable(self, "_on_meteor_impact")
 
 	renderer = OniRenderer.new()
 	renderer.world = world
@@ -189,16 +194,16 @@ func _build_hud() -> void:
 		obtn.text = String(ov["label"])
 		var oid := String(ov["id"])
 		obtn.pressed.connect(func():
-			audio.play_circuit_toggle()
+			audio.play_overlay_switch(oid)
 			_select_overlay(oid)
 		)
 		top_hbox.add_child(obtn)
 		_overlay_buttons[oid] = obtn
 
-	# 상단 2줄째: 자원 요약 + 식민지 관리 패널 7종 (인쇄N · 연구R · 대원V · 우주U · 보고O · 도감I · 행성전환)
+	# 상단 2줄째: 자원 요약 + 식민지 관리 패널 8종 (인쇄N · 연구R · 대원V · 우주U · 보고O · 도감I · 음악 · 행성전환)
 	var res_panel := PanelContainer.new()
 	res_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	res_panel.offset_left = 216
+	res_panel.offset_left = 196
 	res_panel.offset_top = 52
 	res_panel.offset_bottom = 86
 	_style_panel(res_panel, Color(0.08, 0.11, 0.16, 0.88))
@@ -263,6 +268,16 @@ func _build_hud() -> void:
 		_toggle_audit_panel()
 	)
 	res_hbox.add_child(audit_btn)
+
+	_bgm_btn = Button.new()
+	_bgm_btn.text = "음악"
+	_bgm_btn.modulate = Color(0.55, 0.96, 0.72)
+	_bgm_btn.pressed.connect(func():
+		var on := audio.toggle_bgm()
+		_bgm_btn.modulate = Color(0.55, 0.96, 0.72) if on else Color(0.62, 0.65, 0.72)
+		audio.play_click()
+	)
+	res_hbox.add_child(_bgm_btn)
 
 	_preset_btn = Button.new()
 	_preset_btn.text = world.get_world_preset_label()
@@ -600,8 +615,8 @@ func _refresh_dupes_panel() -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 5)
 		var lbl := Label.new()
-		lbl.text = "%s[%s] Lv.%d %s (XP %.0f/100 · 사기 %d)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.morale]
-		lbl.custom_minimum_size = Vector2(315, 0)
+		lbl.text = "%s[%s] Lv.%d %s (XP %.0f · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.stress, d.get_disease_ko()]
+		lbl.custom_minimum_size = Vector2(345, 0)
 		lbl.add_theme_font_size_override("font_size", 11)
 		row.add_child(lbl)
 		for pr in [
@@ -659,15 +674,31 @@ func _refresh_space_panel() -> void:
 	hdr.add_child(hl)
 	_space_vbox.add_child(hdr)
 
+	var act_row := HBoxContainer.new()
+	act_row.add_theme_constant_override("separation", 6)
 	var jump_btn := Button.new()
-	jump_btn.text = "▲ 우주 표면 발사대·망원경·태양광 위치로 카메라 이동"
+	jump_btn.text = "▲ 우주 발사대·스캐너 카메라 이동"
+	jump_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	jump_btn.pressed.connect(func():
 		audio.play_click()
-		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.8 * OniWorld.TILE_SIZE)
+		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.0 * OniWorld.TILE_SIZE)
 		_clamp_camera()
 		_space_panel.visible = false
 	)
-	_space_vbox.add_child(jump_btn)
+	act_row.add_child(jump_btn)
+
+	var met_btn := Button.new()
+	met_btn.text = "★ 운석우·벙커 방어 발동 (방어 %d)" % world.meteors_blocked
+	met_btn.modulate = Color(1.0, 0.72, 0.36)
+	met_btn.pressed.connect(func():
+		world.trigger_meteor_shower()
+		camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 2.6 * OniWorld.TILE_SIZE)
+		_clamp_camera()
+		_space_panel.visible = false
+		_refresh_hud()
+	)
+	act_row.add_child(met_btn)
+	_space_vbox.add_child(act_row)
 
 	for mi in range(world.space_missions.size()):
 		var m: Dictionary = world.space_missions[mi]
@@ -678,9 +709,9 @@ func _refresh_space_panel() -> void:
 		var cap_i: int = mi
 		mb.pressed.connect(func():
 			if world.launch_rocket(cap_i):
-				audio.play_warp()
+				audio.play_rocket_launch()
 				audio.play_print_ok()
-				camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.8 * OniWorld.TILE_SIZE)
+				camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 3.0 * OniWorld.TILE_SIZE)
 				_clamp_camera()
 				_space_panel.visible = false
 				_refresh_hud()
@@ -708,7 +739,7 @@ func _refresh_report_panel() -> void:
 		"복제체: %d명 · 방 구획: %d개 (사기 보너스 +%d) · 야생 생물: %d마리" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size()],
 		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj],
 		"식량 비축: %.0f kcal · 채굴 완료: %d칸 · 건설 완료: %d건" % [world.food_kcal, world.report_digs, world.report_builds],
-		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks],
+		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개 · 운석 방어: %d회" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks, world.meteors_blocked],
 		"저장 상태: %s" % (world.last_save_status if not world.last_save_status.is_empty() else "대기 중 (user://oni_save.json)"),
 	])
 	_report_vbox.add_child(body)
@@ -956,6 +987,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_toggle_research_panel()
 		elif event.physical_keycode == KEY_I:
 			_toggle_audit_panel()
+		elif event.physical_keycode == KEY_Y:
+			world.trigger_meteor_shower()
+			camera.position = Vector2(23.5 * OniWorld.TILE_SIZE, 2.6 * OniWorld.TILE_SIZE)
+			_clamp_camera()
+			_refresh_hud()
 		elif event.is_action_pressed("tool_dig"):
 			_select_tool("dig")
 		elif event.is_action_pressed("tool_cancel"):
@@ -1036,6 +1072,15 @@ func _on_build_completed(cell: Vector2i, _b_id: String) -> void:
 	audio.play_build_done()
 	renderer.spawn_burst(cell, "burst", Color(0.45, 0.94, 1.0, 0.95))
 
+func _on_meteor_alert() -> void:
+	audio.play_scanner_ping()
+	audio.play_red_alert()
+	audio.play_bunker_close()
+
+func _on_meteor_impact(cell: Vector2i, blocked: bool) -> void:
+	audio.play_meteor_impact()
+	renderer.spawn_burst(cell, "burst" if blocked else "dust", Color(1.0, 0.82, 0.32, 0.98) if blocked else Color(1.0, 0.42, 0.14, 0.98))
+
 func _refresh_hud() -> void:
 	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)
 	_top_info_lbl.text = "주%d(%.0fs)|O2 %.2f|%.0f/%.0fW|사기+%d" % [
@@ -1056,7 +1101,7 @@ func _refresh_hud() -> void:
 		var td := OniElements.get_tech(world.active_tech)
 		tech_str = "%s %.0f/%.0f" % [String(td.get("name_ko", world.active_tech)), float(world.tech_progress.get(world.active_tech, 0.0)), float(td.get("cost_basic", 10.0))]
 
-	_res_info_lbl.text = "%s | 사암 %.0f · 구리 %.0f · 조류 %.0f | 식량 %.0fkcal | 뱅크 %d | 연구: %s" % [
+	_res_info_lbl.text = "%s | 사암%.0f·구리%.0f·조류%.0f | %.0fkcal | 뱅크%d | %s" % [
 		OniMedia.get_media_summary(),
 		float(world.inventory.get("SandStone", 0.0)),
 		float(world.inventory.get("Cuprite", 0.0)),
