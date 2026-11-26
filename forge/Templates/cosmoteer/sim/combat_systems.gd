@@ -44,7 +44,31 @@ const RADIATOR := "cosmoteer.radiator"
 const SENSOR_ARRAY := "cosmoteer.sensor_array"
 const ENGINE_ROOM_REAL := "cosmoteer.engine_room"
 const ARMOR_2X1 := "cosmoteer.armor_2x1"
+const ARMOR_1X2_WEDGE := "cosmoteer.armor_1x2_wedge"
+const ARMOR_1X3_WEDGE := "cosmoteer.armor_1x3_wedge"
+const ARMOR_TRI := "cosmoteer.armor_tri"
+const STRUCTURE := "cosmoteer.structure"
+const STRUCTURE_WEDGE := "cosmoteer.structure_wedge"
+const ARMOR_HYBRID_1X1 := "cosmoteer.armor_structure_hybrid_1x1"
 const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
+const THERMAL_BATTERY := "cosmoteer.thermal_battery"
+const THERMAL_AMP_PUMP := "cosmoteer.thermal_amplification_pump"
+const THERMAL_DIL_PUMP := "cosmoteer.thermal_dilation_pump"
+const HEAT_PIPE := "cosmoteer.heat_pipe_adaptive"
+const HEAT_PIPE_CROSS := "cosmoteer.heat_pipe_crossing"
+const HEAT_EXCHANGER := "cosmoteer.heat_exchanger"
+const EXPLOSIVE_CHARGE := "cosmoteer.explosive_charge"
+const MANIPULATOR_BEAM := "cosmoteer.manipulator_beam_emitter"
+const AIRLOCK := "cosmoteer.airlock"
+const HYPERDRIVE_SMALL := "cosmoteer.hyperdrive_small"
+const HYPERDRIVE_MED := "cosmoteer.hyperdrive_med"
+const HYPERDRIVE_LARGE := "cosmoteer.hyperdrive_large"
+const FACTORY_AMMO := "cosmoteer.factory_ammo"
+const FACTORY_HE := "cosmoteer.factory_he"
+const FACTORY_EMP := "cosmoteer.factory_emp"
+const FACTORY_NUKE := "cosmoteer.factory_nuke"
+const FACTORY_THERMAL := "cosmoteer.factory_thermal"
+const FACTORY_MINE := "cosmoteer.factory_mine"
 
 const EXTRACTED_RULES_PATH := "res://data/extracted_rules.json"
 const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RESONANCE_LANCE, MINING_LASER, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
@@ -54,7 +78,9 @@ const SHIELD_IDS := [SHIELD_SMALL, SHIELD_LARGE]
 const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
 const BRIDGE_IDS := [BRIDGE_SMALL, BRIDGE_MED, BRIDGE_LARGE]
 const BUNK_IDS := [BUNK_SMALL, BUNK_MED, BUNK_LARGE]
-const CORRIDOR_IDS := ["cosmoteer.corridor", CONVEYOR]
+const CORRIDOR_IDS := ["cosmoteer.corridor", CONVEYOR, AIRLOCK]
+const HYPERDRIVE_IDS := [HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE]
+const FACTORY_IDS := [FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE]
 const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
 
 static var _extracted_cache: Dictionary = {}
@@ -422,6 +448,71 @@ const EXTRA_STATS := {
 	FIRE_EXTINGUISHER: {
 		"extinguish_rate": 0.42,
 	},
+	MANIPULATOR_BEAM: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 600,
+		"repair_dps": 220.0,
+		"turret_location": [1.0, 1.0],
+		"turret_rotation_deg": -90.0,
+	},
+	EXPLOSIVE_CHARGE: {
+		"blast_radius": 4.5,
+		"blast_damage": 2400.0,
+	},
+	HYPERDRIVE_SMALL: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 800,
+		"thrust_bonus": 0.12,
+	},
+	HYPERDRIVE_MED: {
+		"battery_capacity": 8000,
+		"resupply_threshold": 1200,
+		"thrust_bonus": 0.20,
+	},
+	HYPERDRIVE_LARGE: {
+		"battery_capacity": 12000,
+		"resupply_threshold": 1500,
+		"thrust_bonus": 0.30,
+	},
+	THERMAL_BATTERY: {
+		"heat_capacity_bonus": 60.0,
+	},
+	THERMAL_AMP_PUMP: {
+		"dps_bonus": 0.20,
+	},
+	THERMAL_DIL_PUMP: {
+		"range_bonus": 0.20,
+	},
+	FACTORY_AMMO: {
+		"battery_capacity": 4000,
+		"resupply_threshold": 800,
+		"reload_bonus": 0.15,
+	},
+	FACTORY_HE: {
+		"battery_capacity": 6000,
+		"resupply_threshold": 1000,
+		"reload_bonus": 0.20,
+	},
+	FACTORY_EMP: {
+		"battery_capacity": 6000,
+		"resupply_threshold": 1000,
+		"effect_bonus": 0.30,
+	},
+	FACTORY_NUKE: {
+		"battery_capacity": 8000,
+		"resupply_threshold": 1200,
+		"effect_bonus": 0.25,
+	},
+	FACTORY_THERMAL: {
+		"battery_capacity": 6000,
+		"resupply_threshold": 1000,
+		"effect_bonus": 0.25,
+	},
+	FACTORY_MINE: {
+		"battery_capacity": 6000,
+		"resupply_threshold": 1000,
+		"reload_bonus": 0.20,
+	},
 }
 
 
@@ -445,6 +536,40 @@ static func get_background(bg_id: String) -> Dictionary:
 		if str(bg.get("id", "")) == bg_id:
 			return bg
 	return {}
+
+
+static func get_nebula(nebula_id: String) -> Dictionary:
+	for n in extracted_rules().get("nebulas", []):
+		if str(n.get("id", "")) == nebula_id:
+			return n
+	return {}
+
+
+static func get_planet(planet_id: String) -> Dictionary:
+	for p in extracted_rules().get("planets", []):
+		if str(p.get("id", "")) == planet_id:
+			return p
+	return {}
+
+
+static func get_sector(sector_id: String) -> Dictionary:
+	for s in extracted_rules().get("sectors", []):
+		if str(s.get("id", "")) == sector_id:
+			return s
+	return {}
+
+
+static func nebula_environment(mission: Dictionary) -> Dictionary:
+	var nid := str(mission.get("nebula", ""))
+	match nid:
+		"cloudy":
+			return {"id": "cloudy", "label": "성운 지대 (시계 -10%)", "range_mult": 0.90, "shield_drain_dps": 0.0, "lightning": false, "color": "#5f8cc4"}
+		"electron":
+			return {"id": "electron", "label": "전자 성운 (시계 -15% · 방어막 간섭)", "range_mult": 0.85, "shield_drain_dps": 140.0, "lightning": false, "color": "#58d4ff"}
+		"ion_storm":
+			return {"id": "ion_storm", "label": "이온 폭풍 (시계 -20% · 방어막 교란)", "range_mult": 0.80, "shield_drain_dps": 220.0, "lightning": true, "color": "#b26eff"}
+		_:
+			return {"id": "", "label": "", "range_mult": 1.0, "shield_drain_dps": 0.0, "lightning": false, "color": ""}
 
 
 static func get_part_spec(part_id: String) -> Dictionary:
@@ -508,13 +633,70 @@ static func is_corridor(id: String) -> bool:
 static func is_walkable_expansion(id: String) -> bool:
 	return id in [
 		LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR,
-		ION_BEAM, ION_PRISM, RESONANCE_LANCE, MINING_LASER, TRACTOR_BEAM,
+		ION_BEAM, ION_PRISM, RESONANCE_LANCE, MINING_LASER, TRACTOR_BEAM, MANIPULATOR_BEAM,
 		FLAK_CANNON, CHAINGUN, CHAINGUN_MAG,
 		RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER,
 		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
 		REACTOR_MED, REACTOR_LARGE, BRIDGE_MED, BRIDGE_LARGE, BUNK_MED, BUNK_LARGE,
-		CONVEYOR, CAPACITOR, RADIATOR, SENSOR_ARRAY, ENGINE_ROOM_REAL, FIRE_EXTINGUISHER,
+		CONVEYOR, AIRLOCK, CAPACITOR, RADIATOR, SENSOR_ARRAY, ENGINE_ROOM_REAL, FIRE_EXTINGUISHER,
+		THERMAL_BATTERY, THERMAL_AMP_PUMP, THERMAL_DIL_PUMP, HEAT_PIPE, HEAT_PIPE_CROSS, HEAT_EXCHANGER,
+		HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE,
+		FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE,
 	]
+
+
+static func _has_alive_part(ship: Dictionary, part_id: String) -> bool:
+	if ship.is_empty():
+		return false
+	for uid in ship.get("ids", {}).get(part_id, []):
+		if float(ship.parts[uid].hp) > 0.0:
+			return true
+	return false
+
+
+static func _count_alive_parts(ship: Dictionary, part_id: String) -> int:
+	if ship.is_empty():
+		return 0
+	var n := 0
+	for uid in ship.get("ids", {}).get(part_id, []):
+		if float(ship.parts[uid].hp) > 0.0:
+			n += 1
+	return n
+
+
+static func hyperdrive_thrust_mult(ship: Dictionary) -> float:
+	if ship.is_empty() or not ship.get("command", false):
+		return 1.0
+	var bonus := 0.0
+	for hid in HYPERDRIVE_IDS:
+		for uid in ship.get("ids", {}).get(hid, []):
+			var p: Dictionary = ship.parts[uid]
+			if float(p.hp) > 0.0 and int(p.energy) > 0:
+				bonus += float(p.stats.get("thrust_bonus", 0.12))
+	return minf(1.45, 1.0 + bonus)
+
+
+static func thermal_resonance_bonuses(ship: Dictionary) -> Dictionary:
+	var amp := _count_alive_parts(ship, THERMAL_AMP_PUMP)
+	var dil := _count_alive_parts(ship, THERMAL_DIL_PUMP)
+	return {
+		"dps_mult": minf(1.80, 1.0 + 0.20 * float(amp)),
+		"range_mult": minf(1.60, 1.0 + 0.20 * float(dil)),
+	}
+
+
+static func factory_reload_mult(ship: Dictionary, gun_id: String, missile_mode: String = "he") -> float:
+	if ship.is_empty():
+		return 1.0
+	if gun_id in [CANNON_MED, CANNON_LARGE, CANNON_DECK, FLAK_CANNON, CHAINGUN]:
+		if _has_alive_part(ship, FACTORY_AMMO):
+			return 0.85
+	elif gun_id == MISSILE_LAUNCHER:
+		if missile_mode == "he" and _has_alive_part(ship, FACTORY_HE):
+			return 0.80
+		if missile_mode == "mine" and _has_alive_part(ship, FACTORY_MINE):
+			return 0.80
+	return 1.0
 
 
 static func sensor_range_mult(ship: Dictionary) -> float:
@@ -525,12 +707,13 @@ static func sensor_range_mult(ship: Dictionary) -> float:
 	return 1.0
 
 
-static func missile_warhead_profile(mode: String) -> Dictionary:
+static func missile_warhead_profile(mode: String, ship: Dictionary = {}) -> Dictionary:
 	var rules := extracted_rules()
 	var shots: Dictionary = rules.get("shots", {})
 	match mode:
 		"emp":
 			var emp: Dictionary = shots.get("missile_emp", {})
+			var drain_mult := 1.30 if _has_alive_part(ship, FACTORY_EMP) else 1.0
 			return {
 				"kind": "missile_emp",
 				"range": float(emp.get("range", 700.0)),
@@ -538,13 +721,16 @@ static func missile_warhead_profile(mode: String) -> Dictionary:
 				"damage": 400.0,
 				"structural_damage": 250.0,
 				"shield_damage_mult": 5.0,
-				"shield_energy_drain": 1800,
+				"shield_energy_drain": roundi(1800.0 * drain_mult),
 				"aoe_radius": minf(12.0, float(emp.get("aoe_radius", 18.0)) * 0.5),
 				"emp_aoe": true,
 				"ignite": 0.0,
+				"is_mine": false,
+				"proximity": 0.0,
 			}
 		"nuke":
 			var nk: Dictionary = shots.get("missile_nuke", {})
+			var rad_mult := 1.25 if _has_alive_part(ship, FACTORY_NUKE) else 1.0
 			return {
 				"kind": "missile_nuke",
 				"range": float(nk.get("range", 250.0)),
@@ -553,9 +739,45 @@ static func missile_warhead_profile(mode: String) -> Dictionary:
 				"structural_damage": 4200.0,
 				"shield_damage_mult": 1.6,
 				"shield_energy_drain": 0,
-				"aoe_radius": minf(8.5, float(nk.get("aoe_radius", 10.0)) * 0.8),
+				"aoe_radius": minf(10.5, float(nk.get("aoe_radius", 10.0)) * 0.8 * rad_mult),
 				"emp_aoe": false,
 				"ignite": 0.95,
+				"is_mine": false,
+				"proximity": 0.0,
+			}
+		"thermal":
+			var th: Dictionary = shots.get("missile_thermal", {})
+			var dmg_mult := 1.25 if _has_alive_part(ship, FACTORY_THERMAL) else 1.0
+			return {
+				"kind": "missile_thermal",
+				"range": float(th.get("range", 450.0)),
+				"speed": 175.0,
+				"damage": 2200.0 * dmg_mult,
+				"structural_damage": 1900.0 * dmg_mult,
+				"shield_damage_mult": 1.35,
+				"shield_energy_drain": 0,
+				"aoe_radius": 5.2,
+				"emp_aoe": false,
+				"ignite": 1.0,
+				"is_mine": false,
+				"proximity": 0.0,
+			}
+		"mine":
+			var mn: Dictionary = shots.get("mine", {})
+			var prox := 28.0 if _has_alive_part(ship, FACTORY_MINE) else 22.0
+			return {
+				"kind": "mine",
+				"range": maxf(240.0, float(mn.get("range", 150.0)) * 1.6),
+				"speed": 72.0,
+				"damage": 3400.0,
+				"structural_damage": 2800.0,
+				"shield_damage_mult": 1.25,
+				"shield_energy_drain": 0,
+				"aoe_radius": 7.0,
+				"emp_aoe": false,
+				"ignite": 0.70,
+				"is_mine": true,
+				"proximity": prox,
 			}
 		_:
 			return {
@@ -569,7 +791,42 @@ static func missile_warhead_profile(mode: String) -> Dictionary:
 				"aoe_radius": 4.0,
 				"emp_aoe": false,
 				"ignite": 0.55,
+				"is_mine": false,
+				"proximity": 0.0,
 			}
+
+
+static func tick_manipulator_beams(ship: Dictionary, side: String, dt: float) -> Array[Dictionary]:
+	var beams: Array[Dictionary] = []
+	for uid in ship.ids.get(MANIPULATOR_BEAM, []):
+		var mb: Dictionary = ship.parts[uid]
+		if float(mb.hp) <= 0.0 or not ship.command or int(mb.energy) < 60:
+			continue
+		var best_uid := -1
+		var worst_ratio := 0.999
+		for puid in ship.parts:
+			var p: Dictionary = ship.parts[puid]
+			if float(p.hp) <= 0.0 or float(p.hp) >= float(p.max_hp):
+				continue
+			var ratio := float(p.hp) / maxf(1.0, float(p.max_hp))
+			if ratio < worst_ratio:
+				worst_ratio = ratio
+				best_uid = int(puid)
+		if best_uid < 0:
+			continue
+		var target_part: Dictionary = ship.parts[best_uid]
+		var heal := float(mb.stats.get("repair_dps", 220.0)) * dt
+		target_part.hp = minf(float(target_part.max_hp), float(target_part.hp) + heal)
+		mb.energy = maxi(0, int(mb.energy) - maxi(1, roundi(90.0 * dt)))
+		var origin := shield_world_center(ship, mb)
+		var dest := shield_world_center(ship, target_part)
+		beams.append({
+			"from": origin, "to": dest, "side": side,
+			"source_uid": uid, "hit_kind": "repair", "beam_kind": "manipulator",
+			"hit_uid": best_uid, "strength": 0.9,
+			"collapsed": false, "destroyed": false, "ignited": false,
+		})
+	return beams
 
 
 static func tick_tractor_beams(ship: Dictionary, other: Dictionary, side: String, dt: float) -> Array[Dictionary]:
@@ -939,7 +1196,8 @@ static func tick_ion_beams(ship: Dictionary, other: Dictionary, side: String, ta
 			emitter.energy -= spend
 			var muzzle := shield_world_center(ship, emitter)
 			var dir := Vector2.from_angle(float(ship.heading) + float(emitter.turret_angle_local))
-			var beam := _trace_ion_beam(muzzle, dir, float(emitter.stats.get("range", 200.0)) * sensor_range_mult(ship), float(emitter.stats.get("beam_dps", 2000.0)), float(emitter.stats.get("beam_structural_dps", 1500.0)), float(emitter.stats.get("ignite_intensity", 0.5)), 1.35 if bid == RESONANCE_LANCE else 0.85, other, side, uid, dt)
+			var th_bonus := thermal_resonance_bonuses(ship) if bid == RESONANCE_LANCE else {"dps_mult": 1.0, "range_mult": 1.0}
+			var beam := _trace_ion_beam(muzzle, dir, float(emitter.stats.get("range", 200.0)) * sensor_range_mult(ship) * float(th_bonus.range_mult), float(emitter.stats.get("beam_dps", 2000.0)) * float(th_bonus.dps_mult), float(emitter.stats.get("beam_structural_dps", 1500.0)) * float(th_bonus.dps_mult), float(emitter.stats.get("ignite_intensity", 0.5)), 1.35 if bid == RESONANCE_LANCE else 0.85, other, side, uid, dt)
 			beam["beam_kind"] = str(emitter.stats.get("weapon_kind", "ion"))
 			beams.append(beam)
 	return beams
@@ -998,7 +1256,7 @@ static func tick_flak_defense(ship: Dictionary, side: String, projectiles: Array
 			if p.side == side:
 				continue
 			var pk := str(p.get("kind", ""))
-			if not pk.begins_with("missile") and pk != "cannon":
+			if not pk.begins_with("missile") and pk != "cannon" and pk != "mine":
 				continue
 			var delta: Vector2 = Vector2(p.pos) - origin
 			var dist := delta.length()

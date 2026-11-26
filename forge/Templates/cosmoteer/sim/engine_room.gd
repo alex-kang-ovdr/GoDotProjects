@@ -4,6 +4,10 @@ const ID := "cosmoteer.lab_engine_room"
 const REAL_ID := "cosmoteer.engine_room"
 const ALL_IDS := [ID, REAL_ID]
 const RADIATOR_ID := "cosmoteer.radiator"
+const THERMAL_BATTERY_ID := "cosmoteer.thermal_battery"
+const HEAT_PIPE_ID := "cosmoteer.heat_pipe_adaptive"
+const HEAT_PIPE_CROSS_ID := "cosmoteer.heat_pipe_crossing"
+const HEAT_EXCHANGER_ID := "cosmoteer.heat_exchanger"
 const RADIATOR_COOLING := 6.0
 const ROOM := {
 	"id": ID, "size": [2, 2], "max_health": 2600, "health_type": "Operational",
@@ -61,11 +65,11 @@ static func available(ship: Dictionary) -> bool:
 	return false
 
 
-static func apply_heat(engine: Dictionary, power_rate: float, overclock_load: float, dt: float, extra_cooling: float = 0.0) -> void:
+static func apply_heat(engine: Dictionary, power_rate: float, overclock_load: float, dt: float, extra_cooling: float = 0.0, heat_cap: float = HEAT_LIMIT) -> void:
 	engine.total_power_rate = power_rate
 	engine.heat_rate = minf(power_rate * HEAT_PER_POWER, STOCK_HEAT_LIMIT) + OVERCLOCK_HEAT * overclock_load
-	engine.heat = clampf(engine.heat + (engine.heat_rate - (IDLE_COOLING + extra_cooling)) * dt, 0, HEAT_LIMIT)
-	if engine.heat >= HEAT_LIMIT:
+	engine.heat = clampf(engine.heat + (engine.heat_rate - (IDLE_COOLING + extra_cooling)) * dt, 0, heat_cap)
+	if engine.heat >= heat_cap:
 		engine.thermal_trip = true
 	elif engine.heat <= RESET_HEAT:
 		engine.thermal_trip = false
@@ -76,7 +80,22 @@ static func radiator_cooling(ship: Dictionary) -> float:
 	for uid in ship.ids.get(RADIATOR_ID, []):
 		if ship.parts[uid].hp > 0:
 			bonus += RADIATOR_COOLING
+	for uid in ship.ids.get(HEAT_EXCHANGER_ID, []):
+		if ship.parts[uid].hp > 0:
+			bonus += 3.0
+	for pid in [HEAT_PIPE_ID, HEAT_PIPE_CROSS_ID]:
+		for uid in ship.ids.get(pid, []):
+			if ship.parts[uid].hp > 0:
+				bonus += 1.5
 	return bonus
+
+
+static func heat_limit(ship: Dictionary) -> float:
+	var bonus := 0.0
+	for uid in ship.ids.get(THERMAL_BATTERY_ID, []):
+		if ship.parts[uid].hp > 0:
+			bonus += 60.0
+	return minf(280.0, HEAT_LIMIT + bonus)
 
 
 static func snapshot(ship: Dictionary) -> Dictionary:

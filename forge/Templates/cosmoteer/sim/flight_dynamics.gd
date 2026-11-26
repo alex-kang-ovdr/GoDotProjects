@@ -114,6 +114,17 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 	var active: Array = []
 	var limits := Vector3.ZERO
 	var input := Vector3(move.x, move.y, turn)
+	var hyperdrive_mult := 1.0
+	if ship.get("command", false):
+		var hd_bonus := 0.0
+		for hid in ["cosmoteer.hyperdrive_small", "cosmoteer.hyperdrive_med", "cosmoteer.hyperdrive_large"]:
+			for huid in ship.get("ids", {}).get(hid, []):
+				var hp_part: Dictionary = ship.parts[huid]
+				if float(hp_part.hp) > 0.0 and int(hp_part.energy) > 0:
+					hd_bonus += float(hp_part.stats.get("thrust_bonus", 0.12))
+		hyperdrive_mult = minf(1.45, 1.0 + hd_bonus)
+	var extra_cool := EngineRoom.radiator_cooling(ship)
+	var h_cap := EngineRoom.heat_limit(ship)
 	for uid in ship.engines:
 		var engine: Dictionary = ship.parts[uid]
 		engine.overclocked = ship.overclock and ship.command and EngineRoom.linked(ship, engine)
@@ -205,7 +216,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 			n.activation *= fraction
 			engine.activation = maxf(engine.activation, n.activation)
 		var overclock_load: float = engine.activation if engine.overclocked else 0.0
-		EngineRoom.apply_heat(engine, engine.actual_fuel_rate + engine.boost_power_rate, overclock_load, dt, EngineRoom.radiator_cooling(ship))
+		EngineRoom.apply_heat(engine, engine.actual_fuel_rate + engine.boost_power_rate, overclock_load, dt, extra_cool, h_cap)
 		spent = spent * fraction + float(engine.fuel_fraction)
 		var units := floori(spent + 1e-8)
 		if engine.id == Special.ROCKET and units > 0:
@@ -215,8 +226,8 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 		engine.fuel_fraction = maxf(0.0, spent - units)
 		if engine.id == Special.BOOST and engine.boost_active and engine.energy == 0:
 			Special.set_boost(ship, engine, false)
-		force += applied * fraction
-		torque += moment * fraction
+		force += applied * fraction * hyperdrive_mult
+		torque += moment * fraction * hyperdrive_mult
 	var physics: Dictionary = ship.physics
 	var v: Vector2 = ship.velocity + force.rotated(ship.heading) / float(ship.mass) * dt
 	var speed := v.length()

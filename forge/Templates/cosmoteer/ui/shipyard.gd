@@ -12,7 +12,7 @@ const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함�
 	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 제거", "survived":"대피 시간 확보",
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착"}
 const CORE := {
-	"cosmoteer.corridor":"통로", "cosmoteer.conveyor":"컨베이어 통로",
+	"cosmoteer.corridor":"통로", "cosmoteer.conveyor":"컨베이어 통로", "cosmoteer.airlock":"에어록",
 	"cosmoteer.reactor_small":"소형 반응로",
 	"cosmoteer.reactor_med":"중형 반응로", "cosmoteer.reactor_large":"대형 반응로",
 	"cosmoteer.power_storage":"전력 축전기",
@@ -20,8 +20,17 @@ const CORE := {
 	"cosmoteer.crew_quarters_large":"대형 선실",
 	"cosmoteer.control_room_small":"소형 함교", "cosmoteer.control_room_med":"중형 함교",
 	"cosmoteer.control_room_large":"대형 함교",
+	"cosmoteer.hyperdrive_small":"소형 하이퍼드라이브", "cosmoteer.hyperdrive_med":"중형 하이퍼드라이브",
+	"cosmoteer.hyperdrive_large":"대형 하이퍼드라이브",
 	"cosmoteer.fire_extinguisher":"소화기", "cosmoteer.radiator":"방열판",
-	"cosmoteer.sensor_array":"센서 어레이",
+	"cosmoteer.thermal_battery":"열 배터리", "cosmoteer.heat_exchanger":"열교환기",
+	"cosmoteer.heat_pipe_adaptive":"열 파이프", "cosmoteer.heat_pipe_crossing":"교차 열 파이프",
+	"cosmoteer.thermal_amplification_pump":"열 증폭 펌프", "cosmoteer.thermal_dilation_pump":"열 팽창 펌프",
+	"cosmoteer.sensor_array":"센서 어레이", "cosmoteer.manipulator_beam_emitter":"수리 매니퓰레이터",
+	"cosmoteer.explosive_charge":"자폭 폭약",
+	"cosmoteer.factory_ammo":"탄약 공장", "cosmoteer.factory_he":"고폭탄 공장",
+	"cosmoteer.factory_emp":"EMP 공장", "cosmoteer.factory_nuke":"핵탄두 공장",
+	"cosmoteer.factory_thermal":"열탄두 공장", "cosmoteer.factory_mine":"기뢰 공장",
 	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
 	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.cannon_large":"대형 캐논",
 	"cosmoteer.cannon_deck":"갑판포", "cosmoteer.missile_launcher":"미사일 발사기",
@@ -35,6 +44,9 @@ const CORE := {
 	"cosmoteer.shield_gen_small":"소형 방어막", "cosmoteer.shield_gen_large":"대형 방어막",
 	"cosmoteer.point_defense":"근접 방어 포탑",
 	"cosmoteer.armor":"장갑", "cosmoteer.armor_2x1":"2×1 장갑", "cosmoteer.armor_wedge":"쐐기 장갑",
+	"cosmoteer.armor_1x2_wedge":"1×2 쐐기 장갑", "cosmoteer.armor_1x3_wedge":"1×3 쐐기 장갑",
+	"cosmoteer.armor_tri":"삼각 장갑", "cosmoteer.armor_structure_hybrid_1x1":"복합 장갑",
+	"cosmoteer.structure":"구조 프레임", "cosmoteer.structure_wedge":"쐐기 구조물",
 	"cosmoteer.thruster_small":"소형 추진기", "cosmoteer.thruster_small_2way":"2방향 소형 추진기",
 	"cosmoteer.thruster_small_3way":"3방향 소형 추진기", "cosmoteer.thruster_med":"중형 추진기",
 	"cosmoteer.thruster_large":"대형 추진기", "cosmoteer.thruster_huge":"초대형 추진기",
@@ -129,6 +141,7 @@ func build(host) -> void:
 	preset_picker.add_item("프리즘·플랙 구축함")
 	preset_picker.add_item("갑판포 중전함")
 	preset_picker.add_item("열공명·핵 타이탄")
+	preset_picker.add_item("기뢰·수리 모함")
 	preset_picker.item_selected.connect(_on_advanced_preset)
 	toolbar.add_child(preset_picker)
 	toolbar.add_child(lab.button("비우기",_clear))
@@ -499,7 +512,14 @@ func _on_advanced_preset(index: int) -> void:
 		3: _prism_preset()
 		4: _deck_brawler_preset()
 		5: _titan_preset()
+		6: _carrier_preset()
 	preset_picker.select(0)
+
+func _carrier_preset() -> void:
+	_remember(design.serialize())
+	design.mine_factory_carrier()
+	note.text = "기뢰·탄약 공장, 수리 매니퓰레이터, 하이퍼드라이브, 열 배터리, 자폭 폭약을 탑재한 모함 설계입니다."
+	_design_changed()
 
 func _titan_preset() -> void:
 	_remember(design.serialize())

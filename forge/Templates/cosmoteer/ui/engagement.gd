@@ -16,7 +16,7 @@ const OUTCOMES := {
 const ACTIONS := {
 	"shot":"발사", "hit":"명중", "destroyed":"부품 파괴", "delivery":"전력 전달",
 	"shield_hit":"방어막 요격", "shield_down":"방어막 붕괴", "intercept":"미사일 요격",
-	"fire_start":"화재 발생", "fire_out":"화재 진압",
+	"fire_start":"화재 발생", "fire_out":"화재 진압", "blast":"광역 폭발",
 }
 const AIM := {"offline":"동력·인원 대기","out_of_range":"사거리 밖","out_of_arc":"포탑 사각","tracking":"조준 중","ready":"사격 가능"}
 
@@ -228,7 +228,7 @@ func _toggle_sfx() -> void:
 func _cycle_missile_mode() -> void:
 	if battle == null or battle.result != "active":
 		return
-	var order := ["he", "emp", "nuke"]
+	var order := ["he", "emp", "nuke", "thermal", "mine"]
 	var idx := (order.find(battle.missile_mode) + 1) % order.size()
 	battle.set_missile_mode(order[idx])
 	_refresh()

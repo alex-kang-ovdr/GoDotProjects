@@ -71,6 +71,7 @@ func _draw() -> void:
 		_zoom = clampf(_zoom, 0.045, 18.0)
 		_camera_ready = true
 	_draw_starfield(_camera_center, _zoom)
+	_draw_environment(_camera_center, _zoom)
 	_draw_world_grid(_camera_center, _zoom)
 	var viewport_center := size * 0.5
 	_draw_thruster_plumes(battle.player, _camera_center, _zoom, viewport_center)
@@ -103,6 +104,14 @@ func _draw() -> void:
 	var grid_step := _grid_pitch(_zoom)
 	draw_line(Vector2(14, size.y - 15), Vector2(14 + grid_step * _zoom, size.y - 15), AXIS, 2.0, true)
 	draw_string(ThemeDB.fallback_font, Vector2(22 + grid_step * _zoom, size.y - 11), "그리드 %dm" % roundi(grid_step), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, TEXT)
+	if battle.mission is Dictionary:
+		var env_info := CombatSystems.nebula_environment(battle.mission)
+		if not str(env_info.label).is_empty():
+			var badge := str(env_info.label)
+			var bw := ThemeDB.fallback_font.get_string_size(badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x + 14.0
+			draw_rect(Rect2(Vector2(12, 10), Vector2(bw, 22)), Color("#07131d", 0.84), true)
+			draw_rect(Rect2(Vector2(12, 10), Vector2(bw, 22)), Color(str(env_info.color), 0.7), false, 1.2)
+			draw_string(ThemeDB.fallback_font, Vector2(19, 25), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(str(env_info.color)).lightened(0.25))
 	_draw_tactical_inset()
 
 
@@ -141,6 +150,73 @@ func _draw_starfield(center: Vector2, zoom: float) -> void:
 		var screen := Vector2(fposmod(star.x * size.x - parallax.x, size.x), fposmod(star.y * size.y - parallax.y, size.y))
 		var color := Color("#a7c7dd", lerpf(0.12, 0.34, star.z))
 		draw_circle(screen, lerpf(0.55, 1.15, star.z), color)
+
+
+func _draw_environment(center: Vector2, zoom: float) -> void:
+	if not (battle.mission is Dictionary):
+		return
+	var planet_id := str(battle.mission.get("planet", ""))
+	if not planet_id.is_empty():
+		var p_col := Color("#4f8ec9")
+		var halo_col := Color("#88d0ff")
+		var ringed := false
+		match planet_id:
+			"planet_lava":
+				p_col = Color("#b8411f")
+				halo_col = Color("#ff8a3d")
+			"planet_sun":
+				p_col = Color("#ffae33")
+				halo_col = Color("#ffe57a")
+			"planet_alien":
+				p_col = Color("#46a87a")
+				halo_col = Color("#7bffb8")
+			"planet_gas_ringed":
+				p_col = Color("#8f68b8")
+				halo_col = Color("#c89eff")
+				ringed = true
+			"planet_gas":
+				p_col = Color("#b88e5e")
+				halo_col = Color("#ffd599")
+			"planet_water":
+				p_col = Color("#246eb9")
+				halo_col = Color("#6be0ff")
+			"planet_rocky", "planet_sand":
+				p_col = Color("#9e8368")
+				halo_col = Color("#d4bc9c")
+		var p_pos := Vector2(size.x * 0.78, size.y * 0.24) - center * zoom * 0.04
+		var p_rad := clampf(minf(size.x, size.y) * 0.13, 36.0, 96.0)
+		draw_circle(p_pos, p_rad * 1.24, Color(halo_col, 0.09))
+		draw_circle(p_pos, p_rad * 1.10, Color(halo_col, 0.15))
+		draw_circle(p_pos, p_rad, Color(p_col, 0.42))
+		draw_circle(p_pos + Vector2(-p_rad * 0.22, -p_rad * 0.22), p_rad * 0.65, Color(halo_col, 0.18))
+		draw_arc(p_pos, p_rad, -PI * 0.85, PI * 0.15, 36, Color(halo_col, 0.36), 2.0, true)
+		if ringed:
+			var ring_pts := PackedVector2Array()
+			for k in 41:
+				var a := TAU * float(k) / 40.0
+				var local := Vector2(cos(a) * p_rad * 1.95, sin(a) * p_rad * 0.44).rotated(-0.34)
+				ring_pts.append(p_pos + local)
+			draw_polyline(ring_pts, Color(halo_col, 0.38), 3.2, true)
+			draw_polyline(ring_pts, Color(Color.WHITE, 0.18), 1.2, true)
+	var env_info := CombatSystems.nebula_environment(battle.mission)
+	if not str(env_info.id).is_empty():
+		var ncol := Color(str(env_info.color))
+		var t := float(battle.elapsed)
+		for i in 5:
+			var fx := fposmod(0.14 + float(i) * 0.21 + sin(t * 0.05 + float(i)) * 0.02, 1.0)
+			var fy := fposmod(0.22 + float(i) * 0.19, 1.0)
+			var npos := Vector2(fx * size.x, fy * size.y) - center * zoom * 0.07
+			npos = Vector2(fposmod(npos.x, size.x), fposmod(npos.y, size.y))
+			var nr := minf(size.x, size.y) * (0.20 + 0.05 * float(i % 3))
+			draw_circle(npos, nr, Color(ncol, 0.055))
+			draw_circle(npos + Vector2(nr * 0.35, -nr * 0.18), nr * 0.68, Color(ncol.lightened(0.2), 0.045))
+		if bool(env_info.lightning) and int(floor(t * 2.5)) % 5 == 0:
+			var seed_idx := int(floor(t * 2.5))
+			var start := Vector2(fposmod(float(seed_idx * 97), size.x), fposmod(float(seed_idx * 53), size.y * 0.6))
+			var mid := start + Vector2(46.0, 28.0)
+			var end_pt := mid + Vector2(-22.0, 52.0)
+			draw_line(start, mid, Color("#d4b3ff", 0.45), 2.4, true)
+			draw_line(mid, end_pt, Color("#ffffff", 0.55), 1.5, true)
 
 
 func _draw_world_grid(center: Vector2, zoom: float) -> void:
@@ -324,6 +400,8 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 			outer = Color("#ffe36e")
 		elif bkind == "tractor":
 			outer = Color("#59e8ff")
+		elif bkind == "manipulator":
+			outer = Color("#3dffaa")
 		draw_line(a, b, Color(outer, 0.35), maxf(5.5, zoom * 1.05 * strength), true)
 		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.4, zoom * 0.40 * strength), true)
 		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16 * strength), true)
@@ -361,9 +439,19 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 		if direction.length_squared() < 0.01:
 			direction = bolt.velocity.normalized() * maxf(6.0, zoom * 1.5)
 		var tip := b if a.distance_to(b) > 1.5 else b + direction
-		if kind == "missile" or kind == "missile_emp" or kind == "missile_nuke":
+		if kind == "mine":
+			var r_mine := maxf(3.6, zoom * 0.42)
+			var prox_r := maxf(8.0, float(bolt.get("proximity", 22.0)) * zoom * 0.18)
+			draw_arc(tip, prox_r, 0.0, TAU, 16, Color("#ff4757", 0.25), 1.1, true)
+			draw_circle(tip, r_mine, Color("#2c3846"))
+			draw_arc(tip, r_mine, 0.0, TAU, 12, Color("#ff6b6b", 0.9), 1.4, true)
+			for s in 8:
+				var ang := TAU * float(s) / 8.0
+				draw_line(tip + Vector2.from_angle(ang) * r_mine * 0.8, tip + Vector2.from_angle(ang) * r_mine * 1.45, Color("#ff9f6e"), 1.2)
+			draw_circle(tip, r_mine * 0.38, Color("#ff3b3b"))
+		elif kind == "missile" or kind == "missile_emp" or kind == "missile_nuke" or kind == "missile_thermal":
 			var back: Vector2 = tip - Vector2(bolt.velocity).normalized() * maxf(7.0, zoom * 1.4)
-			var plume := Color("#a864ff", 0.65) if kind == "missile_emp" else (Color("#ff2d2d", 0.78) if kind == "missile_nuke" else Color("#ff8a4c", 0.55))
+			var plume := Color("#a864ff", 0.65) if kind == "missile_emp" else (Color("#ff2d2d", 0.78) if kind == "missile_nuke" else (Color("#ff6e14", 0.82) if kind == "missile_thermal" else Color("#ff8a4c", 0.55)))
 			draw_line(back, tip, plume, maxf(3.5, zoom * (0.75 if kind == "missile_nuke" else 0.55)), true)
 			draw_line(back.lerp(tip, 0.35), tip, plume.lightened(0.35), maxf(2.0, zoom * 0.25), true)
 			draw_circle(tip, maxf(2.4, zoom * (0.32 if kind == "missile_nuke" else 0.24)), Color("#fff5e6"))
