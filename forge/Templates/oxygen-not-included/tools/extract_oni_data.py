@@ -60,9 +60,13 @@ ELEMENT_COLORS = {
 
 # Mapping from original ONI tech IDs to playable buildings in our Godot template
 TECH_BUILDING_MAP = {
-    "FarmingTech": ["farm_tile"],
-    "LiquidPiping": ["liquid_pipe", "liquid_pump", "liquid_vent"],
-    "GasPiping": ["gas_pipe", "gas_pump", "gas_vent"],
+    "FarmingTech": ["farm_tile", "ration_box"],
+    "FoodRepurposing": ["electric_grill"],
+    "InteriorDecor": ["ceiling_light"],
+    "SanitationSciences": ["water_sieve"],
+    "Distillation": ["co2_skimmer"],
+    "LiquidPiping": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir"],
+    "GasPiping": ["gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
     "PowerRegulation": ["coal_gen", "battery"],
     "ImprovedOxygen": ["electrolyzer"],
     "Combustion": ["coal_gen"],
@@ -71,15 +75,25 @@ TECH_BUILDING_MAP = {
     "RenewableEnergy": ["steam_turbine"],
 }
 
-# Building prefab ID -> template ID + measured DLL constants
+# Building prefab ID -> template ID + measured DLL constants (33 playable buildings)
 BUILDING_PREFAB_MAP = {
     "tile": {"prefab": "TILE", "cat": "base", "cost_element": "SandStone", "cost_kg": 100.0, "build_time": 1.6, "solid": True},
     "insulated_tile": {"prefab": "INSULATIONTILE", "cat": "base", "cost_element": "SandStone", "cost_kg": 400.0, "build_time": 2.2, "solid": True, "req_tech": "TemperatureModulation"},
+    "door": {"prefab": "MANUALPRESSUREDOOR", "cat": "base", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.0, "room_divider": True},
     "ladder": {"prefab": "LADDER", "cat": "base", "cost_element": "SandStone", "cost_kg": 50.0, "build_time": 1.2, "climbable": True},
     "cot": {"prefab": "BED", "cat": "base", "cost_element": "SandStone", "cost_kg": 100.0, "build_time": 2.0, "needs_floor": True},
     "storage": {"prefab": "STORAGELOCKER", "cat": "base", "cost_element": "SandStone", "cost_kg": 200.0, "build_time": 2.0, "needs_floor": True},
+    "ceiling_light": {"prefab": "CEILINGLIGHT", "cat": "base", "cost_element": "Cuprite", "cost_kg": 50.0, "build_time": 1.4, "power_w": 10.0, "req_tech": "InteriorDecor"},
+    "outhouse": {"prefab": "OUTHOUSE", "cat": "living", "cost_element": "Dirt", "cost_kg": 200.0, "build_time": 2.2, "needs_floor": True},
+    "wash_basin": {"prefab": "WASHBASIN", "cat": "living", "cost_element": "SandStone", "cost_kg": 200.0, "build_time": 1.8, "needs_floor": True},
+    "mess_table": {"prefab": "DININGTABLE", "cat": "living", "cost_element": "SandStone", "cost_kg": 200.0, "build_time": 1.8, "needs_floor": True},
+    "ration_box": {"prefab": "RATIONBOX", "cat": "living", "cost_element": "SandStone", "cost_kg": 150.0, "build_time": 1.8, "needs_floor": True},
+    "microbe_musher": {"prefab": "MICROBEMUSHER", "cat": "living", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.8, "power_w": 240.0, "needs_floor": True},
+    "electric_grill": {"prefab": "COOKINGSTATION", "cat": "living", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.8, "power_w": 60.0, "needs_floor": True, "req_tech": "FoodRepurposing"},
     "diffuser": {"prefab": "MINERALDEOXIDIZER", "cat": "power", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.0, "power_w": 120.0, "needs_floor": True},
     "electrolyzer": {"prefab": "ELECTROLYZER", "cat": "power", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.2, "power_w": 120.0, "needs_floor": True, "req_tech": "ImprovedOxygen"},
+    "co2_skimmer": {"prefab": "CO2SCRUBBER", "cat": "power", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.6, "power_w": 120.0, "needs_floor": True, "req_tech": "Distillation"},
+    "water_sieve": {"prefab": "WATERPURIFIER", "cat": "power", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.0, "power_w": 120.0, "needs_floor": True, "req_tech": "SanitationSciences"},
     "generator": {"prefab": "MANUALGENERATOR", "cat": "power", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.8, "power_w": -400.0, "needs_floor": True},
     "coal_gen": {"prefab": "GENERATOR", "cat": "power", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.5, "power_w": -600.0, "needs_floor": True, "req_tech": "PowerRegulation"},
     "hydrogen_gen": {"prefab": "HYDROGENGENERATOR", "cat": "power", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 3.5, "power_w": -800.0, "needs_floor": True, "req_tech": "AdvancedPowerRegulation"},
@@ -89,9 +103,11 @@ BUILDING_PREFAB_MAP = {
     "liquid_pipe": {"prefab": "LIQUIDCONDUIT", "cat": "pipe", "cost_element": "SandStone", "cost_kg": 50.0, "build_time": 0.8, "layer": "liquid_pipe", "req_tech": "LiquidPiping"},
     "liquid_pump": {"prefab": "LIQUIDPUMP", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.4, "power_w": 240.0, "req_tech": "LiquidPiping"},
     "liquid_vent": {"prefab": "LIQUIDVENT", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 100.0, "build_time": 1.4, "req_tech": "LiquidPiping"},
+    "liquid_reservoir": {"prefab": "LIQUIDRESERVOIR", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.6, "needs_floor": True, "req_tech": "LiquidPiping"},
     "gas_pipe": {"prefab": "GASCONDUIT", "cat": "pipe", "cost_element": "SandStone", "cost_kg": 50.0, "build_time": 0.8, "layer": "gas_pipe", "req_tech": "GasPiping"},
     "gas_pump": {"prefab": "GASPUMP", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.4, "power_w": 240.0, "req_tech": "GasPiping"},
     "gas_vent": {"prefab": "GASVENT", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 100.0, "build_time": 1.4, "req_tech": "GasPiping"},
+    "gas_reservoir": {"prefab": "GASRESERVOIR", "cat": "pipe", "cost_element": "Cuprite", "cost_kg": 400.0, "build_time": 2.6, "needs_floor": True, "req_tech": "GasPiping"},
     "farm_tile": {"prefab": "FARMTILE", "cat": "colony", "cost_element": "Dirt", "cost_kg": 100.0, "build_time": 1.8, "solid": True, "req_tech": "FarmingTech"},
     "research_station": {"prefab": "RESEARCHCENTER", "cat": "colony", "cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.8, "power_w": 60.0, "needs_floor": True},
 }
@@ -212,6 +228,8 @@ def extract_elements(streaming_dir: str, ko: dict) -> dict:
                 "low_target": item.get("lowTempTransitionTarget"),
                 "high_c": k_to_c(item.get("highTemp")),
                 "high_target": item.get("highTempTransitionTarget"),
+                "sublimate_id": item.get("sublimateId"),
+                "light_abs": round(float(item.get("lightAbsorptionFactor", 0.0)), 3),
                 "hardness": hardness,
                 "dig_time": dig_time,
                 "undiggable": undiggable,

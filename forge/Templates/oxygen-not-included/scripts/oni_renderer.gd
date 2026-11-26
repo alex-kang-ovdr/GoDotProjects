@@ -124,7 +124,7 @@ func tick_fx(delta: float) -> void:
 			m = 1
 		elif overlay_mode == "temp":
 			m = 2
-		elif overlay_mode == "pipe":
+		elif overlay_mode == "pipe" or overlay_mode == "room" or overlay_mode == "germ":
 			m = 3
 		_gas_mat.set_shader_parameter("mode", m)
 	if _gas_sprite != null:
@@ -245,11 +245,15 @@ func _update_gpu_textures() -> void:
 	for y in range(1, h - 1):
 		for x in range(1, w - 1):
 			var i := world.idx(x, y)
+			if world.liquid_mass[i] > 50.0 and world.liquid_el[i] == "Magma":
+				lights.append({"pos": Vector2(x + 0.5, y + 0.5), "radius": 4.4, "color": Color(0.42, 0.16, 0.04)})
 			if world.machine_running[i] == 1:
 				var b := world.building[i]
-				if b == "research_station" or b == "diffuser" or b == "electrolyzer":
+				if b == "ceiling_light":
+					lights.append({"pos": Vector2(x + 0.5, y + 0.8), "radius": 6.4, "color": Color(0.46, 0.42, 0.26)})
+				elif b == "research_station" or b == "diffuser" or b == "electrolyzer" or b == "water_sieve":
 					lights.append({"pos": Vector2(x + 0.5, y + 0.5), "radius": 4.6, "color": Color(0.18, 0.30, 0.36)})
-				elif b == "coal_gen":
+				elif b == "coal_gen" or b == "electric_grill":
 					lights.append({"pos": Vector2(x + 0.5, y + 0.5), "radius": 5.4, "color": Color(0.38, 0.20, 0.06)})
 				elif b == "geyser_steam" or b == "geyser_water" or b == "geyser_hydrogen":
 					lights.append({"pos": Vector2(x + 0.5, y + 0.5), "radius": 5.0, "color": Color(0.26, 0.22, 0.30)})
@@ -339,9 +343,9 @@ func _draw() -> void:
 	var total_h := OniWorld.HEIGHT * ts
 	draw_rect(Rect2(0, 0, total_w, total_h), Color(0.05, 0.06, 0.09, 1.0), true)
 
-	var dim_world := overlay_mode == "gas" or overlay_mode == "pipe"
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ"]
 
-	# Layer 0: 열린 동굴의 바이옴 천연 배경벽 + 수중 커스틱 액체 (기체 구름 Layer 1 아래 배치)
+	# Layer 0: 열린 동굴의 바이옴 천연 배경벽 + 다중 액체(물·오염수·원유·마그마)
 	for y in range(OniWorld.HEIGHT):
 		for x in range(OniWorld.WIDTH):
 			var i := world.idx(x, y)
@@ -356,31 +360,47 @@ func _draw() -> void:
 			else:
 				draw_rect(rect, Color(0.11, 0.14, 0.18, 1.0), true)
 
-			# 액체 물 (깊이 그라데이션 + 수중 커스틱 리플 + 출렁이는 수면 파동 & 거품 하이라이트)
+			# 다중 액체 (Water / DirtyWater / CrudeOil / Magma) + 커스틱 리플 + 수면 파동
 			var lm := world.liquid_mass[i]
 			if lm > 5.0:
+				var lel := world.liquid_el[i] if not world.liquid_el[i].is_empty() else "Water"
 				var h_ratio := clampf(lm / 1000.0, 0.18, 1.0)
 				var lh := float(ts) * h_ratio
 				var top_y := float((y + 1) * ts) - lh
-				var has_water_above := world.in_bounds(x, y - 1) and world.liquid_mass[world.idx(x, y - 1)] > 200.0
-				var alpha_m := 0.35 if overlay_mode == "pipe" else 0.86
-				var w_col := Color(0.08, 0.36, 0.66, alpha_m) if has_water_above else Color(0.16, 0.56, 0.86, alpha_m)
+				var has_liq_above := world.in_bounds(x, y - 1) and world.liquid_mass[world.idx(x, y - 1)] > 200.0
+				var alpha_m := 0.35 if overlay_mode == "pipe" else 0.88
+				var w_col := Color(0.08, 0.36, 0.66, alpha_m) if has_liq_above else Color(0.16, 0.56, 0.86, alpha_m)
+				var foam_c := Color(0.76, 0.96, 1.0, alpha_m)
+				var rip_c := Color(0.62, 0.92, 1.0, alpha_m * 0.24)
+				if lel == "DirtyWater":
+					w_col = Color(0.32, 0.40, 0.12, alpha_m) if has_liq_above else Color(0.46, 0.58, 0.18, alpha_m)
+					foam_c = Color(0.78, 0.88, 0.42, alpha_m)
+					rip_c = Color(0.72, 0.84, 0.36, alpha_m * 0.24)
+				elif lel == "CrudeOil":
+					w_col = Color(0.09, 0.08, 0.10, 0.94) if has_liq_above else Color(0.15, 0.12, 0.15, 0.92)
+					foam_c = Color(0.42, 0.34, 0.46, alpha_m)
+					rip_c = Color(0.38, 0.28, 0.42, alpha_m * 0.22)
+				elif lel == "Magma":
+					var mp := 0.85 + 0.15 * sin(_anim_time * 3.8 + float(x))
+					w_col = Color(0.95 * mp, 0.28, 0.05, 0.96) if has_liq_above else Color(1.0 * mp, 0.48, 0.08, 0.96)
+					foam_c = Color(1.0, 0.88, 0.36, 0.96)
+					rip_c = Color(1.0, 0.78, 0.25, 0.45)
 				draw_rect(Rect2(float(x * ts), top_y, float(ts), lh), w_col, true)
 				var cx_w := float(x * ts) + 5.0 + sin(_anim_time * 2.1 + float(x) * 1.7 + float(y) * 0.9) * 3.5
 				var cy_w := top_y + lh * 0.55
-				draw_line(Vector2(cx_w, cy_w), Vector2(cx_w + 13.0, cy_w - 2.0), Color(0.62, 0.92, 1.0, alpha_m * 0.24), 1.8)
-				if not has_water_above:
+				draw_line(Vector2(cx_w, cy_w), Vector2(cx_w + 13.0, cy_w - 2.0), rip_c, 1.8)
+				if not has_liq_above:
 					var w1 := sin(_anim_time * 3.2 + float(x) * 1.1) * 1.4
 					var w2 := sin(_anim_time * 3.2 + float(x + 1) * 1.1) * 1.4
-					draw_line(Vector2(float(x * ts), top_y + w1), Vector2(float((x + 1) * ts), top_y + w2), Color(0.76, 0.96, 1.0, alpha_m), 2.4)
-					draw_line(Vector2(float(x * ts), top_y + 3.0 + w1 * 0.5), Vector2(float((x + 1) * ts), top_y + 3.0 + w2 * 0.5), Color(0.38, 0.82, 0.98, alpha_m * 0.55), 1.6)
+					draw_line(Vector2(float(x * ts), top_y + w1), Vector2(float((x + 1) * ts), top_y + w2), foam_c, 2.4)
+					draw_line(Vector2(float(x * ts), top_y + 3.0 + w1 * 0.5), Vector2(float((x + 1) * ts), top_y + 3.0 + w2 * 0.5), Color(foam_c.r, foam_c.g, foam_c.b, alpha_m * 0.45), 1.6)
 
 func _draw_terrain_foreground() -> void:
 	if world == null or _terrain_fg_node == null:
 		return
 	var c := _terrain_fg_node
 	var ts := OniWorld.TILE_SIZE
-	var dim_world := overlay_mode == "gas" or overlay_mode == "pipe"
+	var dim_world := overlay_mode in ["gas", "pipe", "room", "germ"]
 
 	# 1) 4x4 월드-연속 심리스 고체 암반 (기체 볼륨 Layer 1 위에서 암반 경계로 완벽 마스킹)
 	for y in range(OniWorld.HEIGHT):
@@ -539,7 +559,7 @@ func _draw_overlay_front() -> void:
 		return
 	var ts := OniWorld.TILE_SIZE
 
-	# 기본 모드: 라이트맵 위에서 인쇄기·빛벌레 발광 블룸(Bloom)을 은은하게 가산 표현
+	# 기본 모드: 라이트맵 위에서 인쇄기·빛벌레·천장조명 발광 블룸(Bloom)을 은은하게 가산 표현
 	if overlay_mode == "normal":
 		var pod_pulse := 0.80 + 0.20 * sin(_anim_time * 2.4)
 		var pod_center := Vector2(24.0 * float(ts), 15.8 * float(ts))
@@ -553,6 +573,61 @@ func _draw_overlay_front() -> void:
 				var lglow := 0.78 + 0.22 * sin(_anim_time * 4.5)
 				_conduit_fg_node.draw_circle(Vector2(lx, ly), 54.0, Color(1.0, 0.92, 0.45, 0.08 * lglow))
 				_conduit_fg_node.draw_circle(Vector2(lx, ly), 24.0, Color(1.0, 0.97, 0.68, 0.14 * lglow))
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var i := world.idx(x, y)
+				if world.building[i] == "ceiling_light" and world.machine_running[i] == 1:
+					var lcx := (float(x) + 0.5) * float(ts)
+					var lcy := (float(y) + 0.4) * float(ts)
+					_conduit_fg_node.draw_colored_polygon(
+						PackedVector2Array([Vector2(lcx - 10, lcy), Vector2(lcx + 10, lcy), Vector2(lcx + 48, lcy + 88), Vector2(lcx - 48, lcy + 88)]),
+						Color(1.0, 0.96, 0.68, 0.075)
+					)
+					_conduit_fg_node.draw_circle(Vector2(lcx, lcy + 4), 16.0, Color(1.0, 0.97, 0.72, 0.16))
+
+	# 방(M) 오버레이: 구획된 원작 방(막사/식당/화장실/연구실/발전실) 색상 채움 + 중앙 배지
+	if overlay_mode == "room":
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var rid: int = world.room_id[world.idx(x, y)]
+				if rid >= 0 and rid < world.rooms_list.size():
+					var rc: Color = world.rooms_list[rid]["color"]
+					var rrect := Rect2(x * ts, y * ts, ts, ts)
+					_conduit_fg_node.draw_rect(rrect, Color(rc.r, rc.g, rc.b, 0.34), true)
+					_conduit_fg_node.draw_rect(rrect, Color(rc.r, rc.g, rc.b, 0.65), false, 1.0)
+		var rfont := ThemeDB.fallback_font
+		if rfont != null:
+			for rm: Dictionary in world.rooms_list:
+				var cpos: Vector2 = rm["center"]
+				var bx := cpos.x * float(ts)
+				var by := cpos.y * float(ts)
+				var mor: int = int(rm["morale"])
+				var lbl := "%s (%d칸%s)" % [String(rm["name_ko"]), int(rm["size"]), (" · 사기+%d" % mor) if mor > 0 else ""]
+				var bw := maxf(108.0, float(lbl.length()) * 8.5 + 16.0)
+				var bcol: Color = rm["color"]
+				_conduit_fg_node.draw_rect(Rect2(bx - bw * 0.5, by - 11.0, bw, 22.0), Color(0.05, 0.08, 0.13, 0.88), true)
+				_conduit_fg_node.draw_rect(Rect2(bx - bw * 0.5, by - 11.0, bw, 22.0), Color(bcol.r, bcol.g, bcol.b, 0.95), false, 1.5)
+				_conduit_fg_node.draw_string(rfont, Vector2(bx - bw * 0.5 + 6.0, by + 4.0), lbl, HORIZONTAL_ALIGNMENT_CENTER, int(bw - 12.0), 11, Color(0.98, 0.99, 1.0, 1.0))
+
+	# 세균(J) 오버레이: 식중독균(라임녹색) · 점액폐균(청록황색) 부유 포자 + 밀도 글로우
+	if overlay_mode == "germ":
+		for y in range(1, OniWorld.HEIGHT - 1):
+			for x in range(1, OniWorld.WIDTH - 1):
+				var i := world.idx(x, y)
+				var gc := world.germ_count[i]
+				if gc < 20.0:
+					continue
+				var gt := world.germ_type[i]
+				var dens := clampf(gc / 90000.0, 0.20, 0.95)
+				var gcol := Color(0.76, 0.96, 0.22, dens) if gt == "SlimeLung" else Color(0.28, 0.94, 0.42, dens)
+				var rect := Rect2(x * ts, y * ts, ts, ts)
+				_conduit_fg_node.draw_rect(rect, Color(gcol.r, gcol.g, gcol.b, dens * 0.36), true)
+				for k in range(3):
+					var ang := _anim_time * (1.8 + float(k) * 0.5) + float(x * 7 + y * 13 + k * 5)
+					var gx := rect.position.x + 16.0 + cos(ang) * (6.0 + float(k) * 2.5)
+					var gy := rect.position.y + 16.0 + sin(ang * 1.2) * (6.0 + float(k) * 2.0)
+					_conduit_fg_node.draw_circle(Vector2(gx, gy), 2.5 + dens * 1.5, Color(gcol.r, gcol.g, gcol.b, 0.85))
+					_conduit_fg_node.draw_arc(Vector2(gx, gy), 4.0 + dens * 2.0, 0.0, TAU, 8, Color(gcol.r, gcol.g, gcol.b, 0.55), 1.0)
 
 	# 배관(P) 오버레이: 라이트맵 위에서 선명하게 전선·액체관·기체관·패킷 표시
 	if overlay_mode == "pipe":
@@ -651,7 +726,7 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 	var rect := Rect2(x * ts, y * ts, ts, ts)
 	var p := rect.position
 	var running := world.machine_running[i] == 1
-	var dim := overlay_mode == "gas" or overlay_mode == "pipe"
+	var dim := overlay_mode in ["gas", "pipe", "room", "germ"]
 	var mod := Color(0.55, 0.58, 0.65, 1.0) if dim else Color(1.0, 1.0, 1.0, 1.0)
 
 	# 인쇄기 (2x2 멀티타일 + 다층 방사형 발광 후광)
@@ -683,24 +758,32 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var dw := float(ts) * 1.7
 			var dh := float(ts) * 1.7
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 2.0, dw, dh)
-		elif b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "research_station", "cot"]:
-			var scale_w := 1.48 if b in ["steam_turbine", "research_station", "cot", "generator"] else 1.32
-			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine"] else 1.28
+		elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "research_station", "cot", "outhouse", "microbe_musher", "electric_grill", "liquid_reservoir", "gas_reservoir"]:
+			var scale_w := 1.48 if b in ["steam_turbine", "research_station", "cot", "generator", "water_sieve", "liquid_reservoir", "gas_reservoir"] else 1.30
+			var scale_h := 1.42 if b in ["diffuser", "electrolyzer", "generator", "steam_turbine", "outhouse", "water_sieve"] else 1.26
 			var dw := float(ts) * scale_w
 			var dh := float(ts) * scale_h
 			var jitter := sin(_anim_time * 20.0) * 0.7 if running else 0.0
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5 + jitter, p.y + float(ts) - dh + 1.0, dw, dh)
-		elif b in ["battery", "storage", "liquid_pump", "gas_pump"]:
+		elif b == "door":
+			var dw := float(ts) * 0.95
+			var dh := float(ts) * 1.30
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
+		elif b == "ceiling_light":
+			var dw := float(ts) * 0.92
+			var dh := float(ts) * 0.92
+			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y - 2.0, dw, dh)
+		elif b in ["battery", "storage", "liquid_pump", "gas_pump", "wash_basin", "mess_table", "ration_box"]:
 			var dw := float(ts) * 1.15
-			var dh := float(ts) * 1.22
+			var dh := float(ts) * 1.18
 			draw_r = Rect2(p.x + (float(ts) - dw) * 0.5, p.y + float(ts) - dh + 1.0, dw, dh)
 
 		# 접지 그림자
-		if b != "ladder" and b != "liquid_vent" and b != "gas_vent":
+		if b != "ladder" and b != "liquid_vent" and b != "gas_vent" and b != "ceiling_light":
 			c.draw_rect(Rect2(draw_r.position.x + 4.0, p.y + float(ts) - 3.0, draw_r.size.x - 8.0, 4.0), Color(0.02, 0.03, 0.05, 0.42), true)
 		c.draw_texture_rect(ktex, draw_r, false, mod)
 
-		if running and b in ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station"]:
+		if running and b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station", "microbe_musher", "electric_grill"]:
 			c.draw_circle(p + Vector2(ts * 0.5, 4), 2.8, Color(0.38, 0.96, 0.65, 0.92))
 		if b == "battery":
 			var ratio := clampf(world.battery_j[i] / OniElements.BATTERY_CAPACITY_J, 0.0, 1.0)

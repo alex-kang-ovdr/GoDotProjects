@@ -6,6 +6,7 @@ const HEIGHT := 32
 const TILE_SIZE := 32
 
 var seed_value := 73
+var world_preset := "terra" # terra, rime, oceana, badlands
 var sim_time := 0.0
 var cycle := 1
 var gas_tick_count := 0
@@ -14,14 +15,22 @@ var _gas_accum := 0.0
 var _conduit_accum := 0.0
 var _heat_accum := 0.0
 var _liquid_accum := 0.0
+var _germ_accum := 0.0
+var _room_accum := 0.0
 
 var solid_el: PackedStringArray = PackedStringArray()
 var solid_mass: PackedFloat32Array = PackedFloat32Array()
 var gas_el: PackedStringArray = PackedStringArray()
 var gas_mass: PackedFloat32Array = PackedFloat32Array()
 var gas_prev_mass: PackedFloat32Array = PackedFloat32Array()
+var liquid_el: PackedStringArray = PackedStringArray()
 var liquid_mass: PackedFloat32Array = PackedFloat32Array()
 var temp_c: PackedFloat32Array = PackedFloat32Array()
+var germ_type: PackedStringArray = PackedStringArray()
+var germ_count: PackedFloat32Array = PackedFloat32Array()
+var room_id: PackedInt32Array = PackedInt32Array()
+var rooms_list: Array[Dictionary] = []
+var colony_morale_bonus := 0
 
 var building: PackedStringArray = PackedStringArray()
 var has_wire: PackedByteArray = PackedByteArray()
@@ -97,9 +106,22 @@ func _geo_noise(x: float, y: float, scale: float, s: int) -> float:
 	var d := _hash2(ix + 1, iy + 1, s)
 	return lerpf(lerpf(a, b, fx), lerpf(c, d, fx), fy)
 
-func generate(p_seed := 73) -> void:
+func get_world_preset_label() -> String:
+	match world_preset:
+		"rime":
+			return "라임(빙하)"
+		"oceana":
+			return "오세아나"
+		"badlands":
+			return "황무지"
+		_:
+			return "테라"
+
+func generate(p_seed := 73, p_preset := "") -> void:
 	OniElements.ensure_loaded()
 	seed_value = p_seed
+	if not p_preset.is_empty():
+		world_preset = p_preset
 	var rng := RandomNumberGenerator.new()
 	rng.seed = p_seed
 
@@ -109,8 +131,15 @@ func generate(p_seed := 73) -> void:
 	gas_el.resize(total)
 	gas_mass.resize(total)
 	gas_prev_mass.resize(total)
+	liquid_el.resize(total)
 	liquid_mass.resize(total)
 	temp_c.resize(total)
+	germ_type.resize(total)
+	germ_count.resize(total)
+	room_id.resize(total)
+	room_id.fill(-1)
+	rooms_list.clear()
+	colony_morale_bonus = 0
 	building.resize(total)
 	has_wire.resize(total)
 	has_liquid_pipe.resize(total)
@@ -139,6 +168,8 @@ func generate(p_seed := 73) -> void:
 	_conduit_accum = 0.0
 	_heat_accum = 0.0
 	_liquid_accum = 0.0
+	_germ_accum = 0.0
+	_room_accum = 0.0
 	food_kcal = 6000.0
 
 	unlocked_techs.clear()
@@ -184,10 +215,14 @@ func generate(p_seed := 73) -> void:
 			dig_progress[i] = 0.0
 			build_order[i] = ""
 			build_progress[i] = 0.0
+			liquid_el[i] = ""
 			liquid_mass[i] = 0.0
 			gas_el[i] = "Vacuum"
 			gas_mass[i] = 0.0
 			gas_prev_mass[i] = 0.0
+			germ_type[i] = ""
+			germ_count[i] = 0.0
+			room_id[i] = -1
 
 			if x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1:
 				_set_solid(i, "Unobtanium" if OniElements.elements.has("Unobtanium") else "Granite", 21.0)
@@ -245,21 +280,52 @@ func generate(p_seed := 73) -> void:
 				_set_solid(i, jel, 35.0 + (n_vein_a - 0.5) * 5.0)
 				continue
 
-			# 중앙: 원작 Sedimentary(사암) 바이옴 — 연속 사암 기저 + 덩어리진 흙·조류·구리·석탄·옥실라이트 광맥
+			# 중앙: 행성 프리셋별 기저 암반 + 유기적 광맥
+			var base_temp := 21.5
 			var el := "SandStone"
-			if n_vein_a > 0.65:
-				el = "Dirt"
-			elif n_vein_b > 0.70:
-				el = "Algae"
-			elif n_vein_c > 0.71:
-				el = "Cuprite"
-			elif y > 18 and n_vein_a < 0.25:
-				el = "Carbon"
-			elif y > 22 and n_vein_c < 0.26:
-				el = "IgneousRock"
-			elif n_vein_b < 0.16 and Vector2(float(x) - 24.0, float(y) - 15.0).length() < 9.5:
-				el = "OxyRock"
-			_set_solid(i, el, 21.5 + (n_vein_a - 0.5) * 2.5)
+			if world_preset == "rime":
+				base_temp = -8.0
+				el = "Ice" if n_vein_a > 0.56 else ("Granite" if n_vein_b > 0.62 else "SandStone")
+				if n_vein_c > 0.72:
+					el = "Wolframite"
+				elif n_vein_b < 0.24:
+					el = "Algae"
+				elif n_vein_a < 0.26:
+					el = "Dirt"
+			elif world_preset == "oceana":
+				base_temp = 23.0
+				el = "SedimentaryRock" if n_vein_a > 0.54 else "SandStone"
+				if n_vein_b > 0.66:
+					el = "Sand"
+				elif n_vein_c > 0.70:
+					el = "Algae"
+				elif n_vein_a < 0.28:
+					el = "Cuprite"
+			elif world_preset == "badlands":
+				base_temp = 29.0
+				el = "Granite" if n_vein_a > 0.48 else "IgneousRock"
+				if n_vein_b > 0.66:
+					el = "IronOre"
+				elif n_vein_c > 0.70:
+					el = "Obsidian"
+				elif n_vein_a < 0.24:
+					el = "Carbon"
+				elif n_vein_b < 0.22:
+					el = "Algae"
+			else:
+				if n_vein_a > 0.65:
+					el = "Dirt"
+				elif n_vein_b > 0.70:
+					el = "Algae"
+				elif n_vein_c > 0.71:
+					el = "Cuprite"
+				elif y > 18 and n_vein_a < 0.25:
+					el = "Carbon"
+				elif y > 22 and n_vein_c < 0.26:
+					el = "IgneousRock"
+				elif n_vein_b < 0.16 and Vector2(float(x) - 24.0, float(y) - 15.0).length() < 9.5:
+					el = "OxyRock"
+			_set_solid(i, el, base_temp + (n_vein_a - 0.5) * 2.5)
 
 	# 중앙 시작 공실: 원작 sandstoneBase.yaml 추출 셀 스탬프 적용
 	var sb_data: Dictionary = OniElements.worldgen.get("sandstone_base", {})
@@ -288,6 +354,7 @@ func generate(p_seed := 73) -> void:
 			elif cstate == "liquid":
 				solid_el[ci] = ""
 				solid_mass[ci] = 0.0
+				liquid_el[ci] = cel
 				liquid_mass[ci] = clampf(cmass, 100.0, 1000.0)
 			else:
 				solid_el[ci] = cel
@@ -318,16 +385,21 @@ func generate(p_seed := 73) -> void:
 	building[idx(23, 15)] = "pod"
 	building[idx(24, 15)] = "pod"
 
-	# 시작 핵심 설비 (수동 발전기 + 소형 배터리 + 산소 확산기 + 연구 작업대 + 전선 연결)
+	# 시작 핵심 설비 (수동 발전기 + 배터리 + 식량 상자 + 인쇄기 + 식탁 + 산소 확산기 + 연구 작업대 + 천장 조명)
 	building[idx(20, 16)] = "generator"
 	building[idx(21, 16)] = "battery"
 	battery_j[idx(21, 16)] = 4500.0
+	building[idx(22, 16)] = "ration_box"
+	building[idx(25, 16)] = "mess_table"
 	building[idx(26, 16)] = "diffuser"
 	building[idx(27, 16)] = "research_station"
+	building[idx(27, 14)] = "ceiling_light"
 	for wx in range(20, 28):
 		has_wire[idx(wx, 16)] = 1
+	has_wire[idx(27, 15)] = 1
+	has_wire[idx(27, 14)] = 1
 
-	# 우측 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
+	# 우측 깨끗한 물 웅덩이 (자연 동굴형 윤곽, x: 31..35, y: 17..19)
 	for y in range(17, 20):
 		for x in range(31, 36):
 			if y == 19 and (x == 31 or x == 35):
@@ -340,10 +412,53 @@ func generate(p_seed := 73) -> void:
 				gas_mass[i] = 0.9
 				gas_prev_mass[i] = 0.9
 			else:
+				liquid_el[i] = "Water"
 				liquid_mass[i] = 950.0
 				gas_el[i] = "Vacuum"
 				gas_mass[i] = 0.0
-			temp_c[i] = 20.5
+			temp_c[i] = 18.0 if world_preset != "rime" else 4.0
+
+	# 동쪽 늪지 오염된 물(DirtyWater) 웅덩이 + 식중독/점액폐균 (x: 38..42, y: 12..14)
+	for y in range(12, 15):
+		for x in range(38, 43):
+			if y == 14 and (x == 38 or x == 42):
+				continue
+			var i := idx(x, y)
+			solid_el[i] = ""
+			solid_mass[i] = 0.0
+			if y == 12:
+				gas_el[i] = "ContaminatedOxygen"
+				gas_mass[i] = 0.85
+				gas_prev_mass[i] = 0.85
+				germ_type[i] = "SlimeLung"
+				germ_count[i] = 45000.0
+			else:
+				liquid_el[i] = "DirtyWater"
+				liquid_mass[i] = 920.0
+				gas_el[i] = "Vacuum"
+				gas_mass[i] = 0.0
+				germ_type[i] = "FoodPoisoning"
+				germ_count[i] = 85000.0
+			temp_c[i] = 31.0
+
+	# 남서쪽 원유(CrudeOil) 웅덩이 (x: 10..15, y: 24..26)
+	for y in range(24, 27):
+		for x in range(10, 16):
+			if y == 26 and (x == 10 or x == 15):
+				continue
+			var i := idx(x, y)
+			solid_el[i] = ""
+			solid_mass[i] = 0.0
+			if y == 24:
+				gas_el[i] = "CarbonDioxide"
+				gas_mass[i] = 1.1
+				gas_prev_mass[i] = 1.1
+			else:
+				liquid_el[i] = "CrudeOil"
+				liquid_mass[i] = 870.0
+				gas_el[i] = "Vacuum"
+				gas_mass[i] = 0.0
+			temp_c[i] = 68.0
 
 	# 북쪽 수소 포켓 (자연 동굴 아치형)
 	for y in range(8, 10):
@@ -371,7 +486,7 @@ func generate(p_seed := 73) -> void:
 			gas_prev_mass[i] = 0.85
 			temp_c[i] = 24.0
 
-	# 남동쪽 증기 분출실 (x: 39..41, y: 25..26, 155°C 증기 + 실제 증기 간헐천)
+	# 남동쪽 증기 분출실 + 심부 마그마(Magma) 웅덩이
 	for y in range(25, 27):
 		for x in range(39, 42):
 			var i := idx(x, y)
@@ -381,19 +496,32 @@ func generate(p_seed := 73) -> void:
 			gas_mass[i] = 2.0
 			gas_prev_mass[i] = 2.0
 			temp_c[i] = 155.0
+	for x in range(38, 43):
+		var mi := idx(x, 28)
+		solid_el[mi] = ""
+		solid_mass[mi] = 0.0
+		liquid_el[mi] = "Magma"
+		liquid_mass[mi] = 980.0
+		gas_el[mi] = "Vacuum"
+		gas_mass[mi] = 0.0
+		temp_c[mi] = 1450.0
 	building[idx(40, 26)] = "geyser_steam"
 	building[idx(33, 17)] = "geyser_water"
 	building[idx(23, 9)] = "geyser_hydrogen"
 
-	# 원작 생물 3종 스폰 (해치, 푸프, 빛벌레)
+	# 원작 생물 6종 스폰 (해치, 푸프, 빛벌레, 파쿠, 드레코, 슬릭스터)
 	critters.clear()
-	critters.append({"id": "critter_hatch", "name_ko": "해치", "pos": Vector2(22.0, 16.0), "dir": 1.0, "fly": false, "timer": 1.2})
-	critters.append({"id": "critter_puft", "name_ko": "푸프", "pos": Vector2(25.5, 14.3), "dir": -1.0, "fly": true, "timer": 0.8})
-	critters.append({"id": "critter_lightbug", "name_ko": "빛벌레", "pos": Vector2(21.5, 14.5), "dir": 1.0, "fly": true, "timer": 1.5})
+	critters.append({"id": "critter_hatch", "name_ko": "해치", "pos": Vector2(22.0, 16.0), "dir": 1.0, "fly": false, "swim": false, "timer": 1.2})
+	critters.append({"id": "critter_puft", "name_ko": "푸프", "pos": Vector2(25.5, 14.3), "dir": -1.0, "fly": true, "swim": false, "timer": 0.8})
+	critters.append({"id": "critter_lightbug", "name_ko": "빛벌레", "pos": Vector2(21.5, 14.5), "dir": 1.0, "fly": true, "swim": false, "timer": 1.5})
+	critters.append({"id": "critter_pacu", "name_ko": "파쿠", "pos": Vector2(33.0, 18.1), "dir": 1.0, "fly": false, "swim": true, "timer": 1.0})
+	critters.append({"id": "critter_drecko", "name_ko": "드레코", "pos": Vector2(39.5, 12.0), "dir": -1.0, "fly": false, "swim": false, "timer": 1.4})
+	critters.append({"id": "critter_slickster", "name_ko": "슬릭스터", "pos": Vector2(23.5, 22.0), "dir": 1.0, "fly": true, "swim": false, "timer": 1.1})
 
-	# 대원 3명 생성
+	# 원작 공식 복제체 인격 3명 (미프, 에이다, 버블스)
 	duplicants.clear()
-	var names: Array[String] = ["민수", "서연", "지호"]
+	var names: Array[String] = ["미프", "에이다", "버블스"]
+	var dupe_traits: Array[String] = ["조기 기상", "빠른 학습자", "잠수부의 폐"]
 	var colors: Array[Color] = [
 		Color(0.35, 0.72, 0.98, 1.0),
 		Color(0.95, 0.56, 0.42, 1.0),
@@ -401,9 +529,10 @@ func generate(p_seed := 73) -> void:
 	]
 	var spawn_xs: Array[int] = [21, 22, 25]
 	for d_idx in range(3):
-		var dupe := OniDuplicant.new(d_idx, names[d_idx], Vector2i(spawn_xs[d_idx], 16), colors[d_idx])
+		var dupe := OniDuplicant.new(d_idx, names[d_idx], Vector2i(spawn_xs[d_idx], 16), colors[d_idx], dupe_traits[d_idx])
 		duplicants.append(dupe)
 
+	_recompute_rooms()
 	_recompute_stats()
 
 func _set_solid(i: int, el: String, p_temp: float) -> void:
@@ -678,6 +807,16 @@ func step(dt: float) -> void:
 		_step_heat(0.5)
 		_step_phase_change()
 
+	_germ_accum += dt
+	if _germ_accum >= 0.6:
+		_germ_accum = 0.0
+		_step_offgassing_and_germs(0.6)
+
+	_room_accum += dt
+	if _room_accum >= 1.2:
+		_room_accum = 0.0
+		_recompute_rooms()
+
 	_recompute_stats()
 
 func step_gas_tick() -> void:
@@ -767,6 +906,8 @@ func step_conduit_tick() -> void:
 				var space := maxf(0.0, 1000.0 - liquid_mass[i])
 				var out_m := minf(lpipe_mass[i], space)
 				if out_m > 0.01:
+					if liquid_mass[i] < 1.0 or liquid_el[i].is_empty():
+						liquid_el[i] = "Water"
 					liquid_mass[i] += out_m
 					next_lm[i] -= out_m
 					continue
@@ -834,33 +975,68 @@ func step_conduit_tick() -> void:
 	gpipe_mass = next_gm
 	gpipe_el = next_ge
 
+func _liquid_density(el: String) -> float:
+	match el:
+		"Magma":
+			return 1840.0
+		"Water":
+			return 1000.0
+		"DirtyWater":
+			return 990.0
+		"CrudeOil":
+			return 870.0
+		_:
+			return 950.0
+
 func _step_liquids() -> void:
 	for y in range(HEIGHT - 2, 0, -1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
 			var m := liquid_mass[i]
 			if m < 1.0 or is_solid_cell(x, y):
+				if m < 1.0:
+					liquid_el[i] = ""
 				continue
+			var lel := liquid_el[i]
+			if lel.is_empty():
+				lel = "Water"
+				liquid_el[i] = lel
 			if not is_solid_cell(x, y + 1):
 				var bi := idx(x, y + 1)
-				var cap: float = maxf(0.0, 1000.0 - liquid_mass[bi])
-				if cap > 1.0:
-					var flow: float = minf(m, cap)
-					liquid_mass[i] -= flow
-					liquid_mass[bi] += flow
-					if liquid_mass[bi] > 50.0:
-						gas_el[bi] = "Vacuum"
-						gas_mass[bi] = 0.0
+				var bel := liquid_el[bi]
+				if liquid_mass[bi] < 1.0 or bel == lel or bel.is_empty():
+					var cap: float = maxf(0.0, 1000.0 - liquid_mass[bi])
+					if cap > 1.0:
+						var flow: float = minf(m, cap)
+						liquid_mass[i] -= flow
+						liquid_mass[bi] += flow
+						liquid_el[bi] = lel
+						if liquid_mass[i] < 1.0:
+							liquid_mass[i] = 0.0
+							liquid_el[i] = ""
+						if liquid_mass[bi] > 50.0:
+							gas_el[bi] = "Vacuum"
+							gas_mass[bi] = 0.0
+						continue
+				elif _liquid_density(lel) > _liquid_density(bel) + 1.0:
+					# 무거운 액체(마그마>물>오염수>원유)가 아래로 침강하는 원작 다중 액체 층화
+					liquid_el[i] = bel
+					liquid_el[bi] = lel
+					var tm := liquid_mass[i]
+					liquid_mass[i] = liquid_mass[bi]
+					liquid_mass[bi] = tm
 					continue
 			var dirs: Array[int] = [-1, 1]
 			for dx: int in dirs:
 				if not is_solid_cell(x + dx, y):
 					var si := idx(x + dx, y)
-					var diff := liquid_mass[i] - liquid_mass[si]
-					if diff > 10.0:
-						var flow := diff * 0.25
-						liquid_mass[i] -= flow
-						liquid_mass[si] += flow
+					if liquid_mass[si] < 1.0 or liquid_el[si] == lel or liquid_el[si].is_empty():
+						var diff := liquid_mass[i] - liquid_mass[si]
+						if diff > 10.0:
+							var flow := diff * 0.25
+							liquid_mass[i] -= flow
+							liquid_mass[si] += flow
+							liquid_el[si] = lel
 
 func _step_heat(dt: float) -> void:
 	var total := WIDTH * HEIGHT
@@ -902,6 +1078,7 @@ func _step_phase_change() -> void:
 					var target_id := String(ht)
 					var tstate := String(OniElements.get_element(target_id).get("state", "solid"))
 					if tstate == "liquid":
+						liquid_el[i] = target_id
 						liquid_mass[i] += minf(solid_mass[i], 1000.0)
 						solid_el[i] = ""
 						solid_mass[i] = 0.0
@@ -912,21 +1089,27 @@ func _step_phase_change() -> void:
 						gas_mass[i] += minf(solid_mass[i], 5.0)
 						solid_el[i] = ""
 						solid_mass[i] = 0.0
-			# 액체 물 -> 기화(>100.35°C) / 결빙(<-1.65°C)
+			# 액체 상변화 (Water/DirtyWater/Magma)
 			elif liquid_mass[i] > 5.0:
-				var w_info := OniElements.get_element("Water")
+				var lel := liquid_el[i] if not liquid_el[i].is_empty() else "Water"
+				var w_info := OniElements.get_element(lel)
 				var wh: float = float(w_info.get("high_c", 99.35))
 				var wl: float = float(w_info.get("low_c", -0.65))
-				if t > wh + 1.0:
+				if t > wh + 1.0 and lel in ["Water", "DirtyWater"]:
 					var boil := minf(liquid_mass[i], 2.0)
 					liquid_mass[i] -= boil
+					if liquid_mass[i] < 1.0:
+						liquid_mass[i] = 0.0
+						liquid_el[i] = ""
 					if gas_el[i] == "Vacuum" or gas_el[i] == "Steam":
 						gas_el[i] = "Steam"
 						gas_mass[i] += boil
 				elif liquid_mass[i] > 200.0 and t < wl - 1.0 and building[i].is_empty():
-					solid_el[i] = "Ice"
+					var freeze_el := "IgneousRock" if lel == "Magma" else ("DirtyIce" if lel == "DirtyWater" else "Ice")
+					solid_el[i] = freeze_el
 					solid_mass[i] = liquid_mass[i]
 					liquid_mass[i] = 0.0
+					liquid_el[i] = ""
 			# 기체 -> 저온 응결 (Steam->Water 등)
 			elif gas_el[i] != "Vacuum" and gas_mass[i] > 0.05:
 				var g_info := OniElements.get_element(gas_el[i])
@@ -934,9 +1117,177 @@ func _step_phase_change() -> void:
 				var lt: Variant = g_info.get("low_target", null)
 				if lc != null and lt != null and t < float(lc) - 1.0:
 					if String(lt) == "Water":
+						liquid_el[i] = "Water"
 						liquid_mass[i] += gas_mass[i]
 						gas_mass[i] = 0.0
 						gas_el[i] = "Vacuum"
+
+func _step_offgassing_and_germs(dt: float) -> void:
+	# 원작 승화/오프개싱(OxyRock->O2, SlimeMold/DirtyWater->PO2, BleachStone->Cl2) + 세균(식중독/점액폐균) 증식·소독
+	var dirs: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var i := idx(x, y)
+			var sol := solid_el[i]
+			if sol == "OxyRock" or sol == "SlimeMold" or sol == "BleachStone":
+				var emit_el := "Oxygen" if sol == "OxyRock" else ("ContaminatedOxygen" if sol == "SlimeMold" else "ChlorineGas")
+				for d: Vector2i in dirs:
+					var nx: int = x + d.x
+					var ny: int = y + d.y
+					if not is_solid_cell(nx, ny):
+						var ni := idx(nx, ny)
+						if liquid_mass[ni] < 10.0 and gas_mass[ni] < 1.6 and (gas_el[ni] == "Vacuum" or gas_el[ni] == emit_el):
+							gas_el[ni] = emit_el
+							gas_mass[ni] += 0.025 * dt
+							solid_mass[i] = maxf(50.0, solid_mass[i] - 0.025 * dt)
+							if sol == "SlimeMold":
+								germ_type[ni] = "SlimeLung"
+								germ_count[ni] = minf(200000.0, germ_count[ni] + 1800.0 * dt)
+							break
+			elif liquid_mass[i] > 50.0 and liquid_el[i] == "DirtyWater":
+				germ_type[i] = "FoodPoisoning"
+				germ_count[i] = minf(250000.0, germ_count[i] + 1200.0 * dt)
+				if not is_solid_cell(x, y - 1):
+					var ui := idx(x, y - 1)
+					if liquid_mass[ui] < 10.0 and gas_mass[ui] < 1.5 and (gas_el[ui] == "Vacuum" or gas_el[ui] == "ContaminatedOxygen"):
+						gas_el[ui] = "ContaminatedOxygen"
+						gas_mass[ui] += 0.015 * dt
+
+			if building[i] == "outhouse":
+				germ_type[i] = "FoodPoisoning"
+				germ_count[i] = minf(120000.0, germ_count[i] + 900.0 * dt)
+			elif building[i] == "wash_basin" and germ_count[i] > 0.0:
+				germ_count[i] = maxf(0.0, germ_count[i] - 12000.0 * dt)
+
+			# 세균 자연 감쇠 / 염소·고온 살균 / 인접 기체 확산
+			var gc := germ_count[i]
+			if gc > 10.0:
+				var gt := germ_type[i]
+				if gas_el[i] == "ChlorineGas" or temp_c[i] > 65.0 or temp_c[i] < -15.0:
+					gc *= maxf(0.0, 1.0 - 0.38 * dt)
+				elif gt == "SlimeLung" and gas_el[i] == "Oxygen":
+					gc *= maxf(0.0, 1.0 - 0.04 * dt)
+				else:
+					gc *= maxf(0.0, 1.0 - 0.01 * dt)
+				germ_count[i] = gc
+				if gc < 20.0:
+					germ_count[i] = 0.0
+					germ_type[i] = ""
+				elif not is_solid_cell(x, y):
+					for d: Vector2i in dirs:
+						var nx: int = x + d.x
+						var ny: int = y + d.y
+						if not is_solid_cell(nx, ny):
+							var ni := idx(nx, ny)
+							if germ_count[ni] < gc * 0.6 and (germ_type[ni].is_empty() or germ_type[ni] == gt):
+								var share := (gc - germ_count[ni]) * 0.04 * dt
+								germ_count[i] -= share
+								germ_count[ni] += share
+								germ_type[ni] = gt
+
+func _is_room_boundary(x: int, y: int) -> bool:
+	if is_solid_cell(x, y):
+		return true
+	return building[idx(x, y)] == "door"
+
+func _recompute_rooms() -> void:
+	# 원작 방(Room) 구획 자동 탐지 (고체 암반·타일·수동 에어록으로 둘러싸인 6~96칸 실내)
+	var total := WIDTH * HEIGHT
+	room_id.fill(-1)
+	rooms_list.clear()
+	colony_morale_bonus = 0
+
+	var visited := PackedByteArray()
+	visited.resize(total)
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var next_rid := 0
+
+	for y in range(1, HEIGHT - 1):
+		for x in range(1, WIDTH - 1):
+			var si := idx(x, y)
+			if visited[si] == 1 or _is_room_boundary(x, y):
+				continue
+			var cells: Array[Vector2i] = []
+			var q: Array[Vector2i] = [Vector2i(x, y)]
+			visited[si] = 1
+			var head := 0
+			var touches_edge := false
+			var bcounts: Dictionary = {}
+			var sum_x := 0.0
+			var sum_y := 0.0
+			while head < q.size():
+				var cur: Vector2i = q[head]
+				head += 1
+				cells.append(cur)
+				sum_x += float(cur.x)
+				sum_y += float(cur.y)
+				if cur.x <= 1 or cur.x >= WIDTH - 2 or cur.y <= 1 or cur.y >= HEIGHT - 2:
+					touches_edge = true
+				var ci := idx(cur.x, cur.y)
+				var b := building[ci]
+				if not b.is_empty():
+					bcounts[b] = int(bcounts.get(b, 0)) + 1
+				for d: Vector2i in dirs:
+					var nx: int = cur.x + d.x
+					var ny: int = cur.y + d.y
+					if not in_bounds(nx, ny):
+						continue
+					var ni := idx(nx, ny)
+					if visited[ni] == 0 and not _is_room_boundary(nx, ny):
+						visited[ni] = 1
+						q.append(Vector2i(nx, ny))
+			var sz := cells.size()
+			if touches_edge or sz < 6 or sz > 96:
+				continue
+
+			var r_type := ""
+			var r_name := ""
+			var r_morale := 0
+			var r_col := Color(0.45, 0.72, 0.92, 0.24)
+			if int(bcounts.get("outhouse", 0)) > 0 and int(bcounts.get("wash_basin", 0)) > 0:
+				r_type = "latrine"
+				r_name = "화장실"
+				r_morale = 1
+				r_col = Color(0.32, 0.86, 0.72, 0.26)
+			elif int(bcounts.get("mess_table", 0)) > 0:
+				r_type = "mess_hall"
+				r_name = "식당"
+				r_morale = 3
+				r_col = Color(0.95, 0.76, 0.28, 0.26)
+			elif int(bcounts.get("cot", 0)) > 0:
+				r_type = "barracks"
+				r_name = "막사"
+				r_morale = 1
+				r_col = Color(0.42, 0.68, 0.96, 0.26)
+			elif int(bcounts.get("research_station", 0)) > 0 and (int(bcounts.get("ceiling_light", 0)) > 0 or int(bcounts.get("pod", 0)) > 0):
+				r_type = "laboratory"
+				r_name = "연구실"
+				r_morale = 1
+				r_col = Color(0.68, 0.52, 0.98, 0.26)
+			elif int(bcounts.get("battery", 0)) > 0 and (int(bcounts.get("generator", 0)) > 0 or int(bcounts.get("coal_gen", 0)) > 0 or int(bcounts.get("hydrogen_gen", 0)) > 0):
+				r_type = "power_plant"
+				r_name = "발전실"
+				r_morale = 0
+				r_col = Color(0.96, 0.54, 0.24, 0.24)
+			else:
+				continue
+
+			for cpos: Vector2i in cells:
+				room_id[idx(cpos.x, cpos.y)] = next_rid
+			rooms_list.append({
+				"id": next_rid,
+				"type": r_type,
+				"name_ko": r_name,
+				"morale": r_morale,
+				"color": r_col,
+				"size": sz,
+				"center": Vector2(sum_x / float(sz) + 0.5, sum_y / float(sz) + 0.5),
+			})
+			colony_morale_bonus += r_morale
+			next_rid += 1
+
+	for d in duplicants:
+		d.morale = 1 + colony_morale_bonus
 
 func _cell_conductivity(i: int) -> float:
 	if not solid_el[i].is_empty():
@@ -991,6 +1342,7 @@ func _step_geysers_and_critters(dt: float) -> void:
 			temp_c[gi] = lerpf(temp_c[gi], 160.0, 0.1)
 			machine_running[gi] = 1
 		elif gb == "geyser_water" and liquid_mass[gi] < 850.0:
+			liquid_el[gi] = "Water"
 			liquid_mass[gi] += 18.0 * dt
 			temp_c[gi] = lerpf(temp_c[gi], 35.0, 0.05)
 			machine_running[gi] = 1
@@ -999,17 +1351,22 @@ func _step_geysers_and_critters(dt: float) -> void:
 			gas_mass[gi] += 0.25 * dt
 			machine_running[gi] = 1
 
-	# 원작 생물 3종 자율 배회 AI
+	# 원작 생물 6종 자율 AI (육상 해치·드레코 / 비행 푸프·빛벌레·슬릭스터 / 수중 유영 파쿠)
 	for c: Dictionary in critters:
 		var pos: Vector2 = c["pos"]
 		var dir: float = float(c["dir"])
 		var fly: bool = bool(c["fly"])
-		var spd: float = 1.15 if fly else 0.75
+		var swim: bool = bool(c.get("swim", false))
+		var spd: float = 1.15 if (fly or swim) else 0.72
 		var nx := pos.x + dir * spd * dt
-		var ny := pos.y + (sin(sim_time * 2.4 + pos.x) * 0.35 * dt if fly else 0.0)
+		var ny := pos.y + (sin(sim_time * 2.4 + pos.x) * 0.30 * dt if (fly or swim) else 0.0)
 		var cx := int(floor(nx))
 		var cy := int(floor(ny))
-		var ok := is_passable(cx, cy) and (fly or is_solid_cell(cx, cy + 1))
+		var ok := false
+		if swim:
+			ok = in_bounds(cx, cy) and not is_solid_cell(cx, cy) and liquid_mass[idx(cx, cy)] > 200.0
+		else:
+			ok = is_passable(cx, cy) and (fly or is_solid_cell(cx, cy + 1)) and (not in_bounds(cx, cy) or liquid_mass[idx(cx, cy)] < 200.0)
 		if ok:
 			c["pos"] = Vector2(nx, ny)
 		else:
@@ -1108,7 +1465,7 @@ func _step_power_and_machines(dt: float) -> void:
 					bats.append(ci)
 					net_bat_j += battery_j[ci]
 					total_battery_cap_j += OniElements.BATTERY_CAPACITY_J
-				elif b in ["diffuser", "electrolyzer", "liquid_pump", "gas_pump", "research_station"]:
+				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "liquid_pump", "gas_pump", "research_station"]:
 					consumers.append(ci)
 
 			power_produced_w += net_gen_w
@@ -1187,6 +1544,62 @@ func _step_power_and_machines(dt: float) -> void:
 							inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
 							add_research_points(pts)
 							machine_running[ci] = 1
+				elif b == "ceiling_light":
+					var need_j := 10.0 * dt
+					if available_j - used_j >= need_j:
+						used_j += need_j
+						power_consumed_w += 10.0
+						machine_running[ci] = 1
+				elif b == "co2_skimmer":
+					var need_j := 120.0 * dt
+					if available_j - used_j >= need_j:
+						var cx := ci % WIDTH
+						var cy := ci / WIDTH
+						var scrubbed := false
+						for d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1)]:
+							var nx: int = cx + d.x
+							var ny: int = cy + d.y
+							if in_bounds(nx, ny):
+								var ni := idx(nx, ny)
+								if gas_el[ni] == "CarbonDioxide" and gas_mass[ni] > 0.02:
+									gas_mass[ni] = maxf(0.0, gas_mass[ni] - 0.30 * dt)
+									if gas_mass[ni] < 0.002:
+										gas_mass[ni] = 0.0
+										gas_el[ni] = "Vacuum"
+									scrubbed = true
+									break
+						if scrubbed:
+							used_j += need_j
+							power_consumed_w += 120.0
+							machine_running[ci] = 1
+				elif b == "water_sieve":
+					var need_j := 120.0 * dt
+					if available_j - used_j >= need_j:
+						var cx := ci % WIDTH
+						var cy := ci / WIDTH
+						for d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]:
+							var nx: int = cx + d.x
+							var ny: int = cy + d.y
+							if in_bounds(nx, ny):
+								var ni := idx(nx, ny)
+								if liquid_mass[ni] > 10.0 and liquid_el[ni] == "DirtyWater":
+									liquid_el[ni] = "Water"
+									germ_count[ni] = 0.0
+									germ_type[ni] = ""
+									used_j += need_j
+									power_consumed_w += 120.0
+									machine_running[ci] = 1
+									break
+				elif b == "microbe_musher" or b == "electric_grill":
+					var pw := 240.0 if b == "microbe_musher" else 60.0
+					var need_j := pw * dt
+					var need_dirt := 1.2 * dt
+					if available_j - used_j >= need_j and food_kcal < 12000.0 and float(inventory.get("Dirt", 0.0)) >= need_dirt:
+						used_j += need_j
+						power_consumed_w += pw
+						inventory["Dirt"] = maxf(0.0, float(inventory["Dirt"]) - need_dirt)
+						food_kcal += (28.0 if b == "microbe_musher" else 42.0) * dt
+						machine_running[ci] = 1
 
 			var net_delta_j := net_gen_w * dt - used_j
 			if not bats.is_empty():
@@ -1199,7 +1612,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "diffuser", "electrolyzer", "liquid_pump", "gas_pump", "research_station"]
+	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "liquid_pump", "gas_pump", "research_station"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0
@@ -1217,6 +1630,12 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 	if not in_bounds(x, y):
 		return {}
 	var i := idx(x, y)
+	var rid: int = room_id[i]
+	var r_name := ""
+	var r_morale := 0
+	if rid >= 0 and rid < rooms_list.size():
+		r_name = String(rooms_list[rid]["name_ko"])
+		r_morale = int(rooms_list[rid]["morale"])
 	return {
 		"x": x,
 		"y": y,
@@ -1225,8 +1644,13 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"gas_el": gas_el[i],
 		"gas_mass": gas_mass[i],
 		"gas_delta": gas_mass[i] - gas_prev_mass[i],
+		"liquid_el": liquid_el[i] if not liquid_el[i].is_empty() else "Water",
 		"liquid_mass": liquid_mass[i],
 		"temp_c": temp_c[i],
+		"germ_type": germ_type[i],
+		"germ_count": germ_count[i],
+		"room_name": r_name,
+		"room_morale": r_morale,
 		"building": building[i],
 		"has_wire": has_wire[i] == 1,
 		"has_liquid_pipe": has_liquid_pipe[i] == 1,

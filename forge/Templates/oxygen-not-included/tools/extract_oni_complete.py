@@ -157,23 +157,88 @@ def extract_world_and_codex(streaming_dir: str, ko: dict) -> dict:
                     cat[mid] = v
         return cat
 
+    def collect_po_with_desc(prefix: str, desc_suffix: str = ".DESC") -> dict:
+        cat = {}
+        plen = len(prefix)
+        for k, v in ko.items():
+            if k.startswith(prefix) and k.endswith(".NAME"):
+                mid = k[plen:-5]
+                if "." not in mid and v:
+                    desc = ko.get(f"{prefix}{mid}{desc_suffix}", ko.get(f"{prefix}{mid}.DESCRIPTION", ko.get(f"{prefix}{mid}.EFFECT", "")))
+                    cat[mid] = {"name_ko": v, "desc": desc[:140]}
+        return cat
+
     po_catalogs = {
         "buildings_ko": collect_po_catalog("STRINGS.BUILDINGS.PREFABS."),
         "creatures_ko": collect_po_catalog("STRINGS.CREATURES.SPECIES."),
         "foods_ko": collect_po_catalog("STRINGS.ITEMS.FOOD."),
         "diseases_ko": collect_po_catalog("STRINGS.DUPLICANTS.DISEASES."),
         "rooms_ko": collect_po_catalog("STRINGS.ROOMS.TYPES."),
+        "personalities_ko": collect_po_catalog("STRINGS.DUPLICANTS.PERSONALITIES."),
+        "duplicant_traits_ko": collect_po_catalog("STRINGS.DUPLICANTS.TRAITS."),
     }
+
+    # 11) Extra worldgen & POI datasets (POIs 62, StoryTraits 17, Clusters 13, Noise 24, Features 13, Temperatures)
+    pois = {}
+    for pp in sorted(glob.glob(os.path.join(streaming_dir, "templates", "poi", "**", "*.yaml"), recursive=True)):
+        rel = os.path.relpath(pp, os.path.join(streaming_dir, "templates", "poi")).replace("\\", "/")
+        pid = os.path.splitext(rel)[0]
+        try:
+            with open(pp, "r", encoding="utf-8") as f:
+                pd = yaml.safe_load(f) or {}
+            pois[pid] = {
+                "size": (pd.get("info") or {}).get("size", {}),
+                "cells": len(pd.get("cells") or []),
+                "buildings": len(pd.get("buildings") or []),
+            }
+        except Exception:
+            pass
+
+    story_traits_tpl = [
+        os.path.splitext(os.path.basename(p))[0]
+        for p in sorted(glob.glob(os.path.join(streaming_dir, "templates", "storytraits", "*.yaml")))
+    ]
+    clusters = {}
+    for cp in sorted(glob.glob(os.path.join(wg_dir, "clusters", "*.yaml"))):
+        cid = os.path.splitext(os.path.basename(cp))[0]
+        try:
+            with open(cp, "r", encoding="utf-8") as f:
+                cd = yaml.safe_load(f) or {}
+            clusters[cid] = {
+                "name_ko": ko.get(str(cd.get("name", "")), cid),
+                "worlds": len(cd.get("worldPlacements") or []),
+            }
+        except Exception:
+            pass
+    noise_defs = [
+        os.path.splitext(os.path.basename(p))[0]
+        for p in sorted(glob.glob(os.path.join(wg_dir, "noise", "*.yaml")))
+    ]
+    feature_defs = [
+        os.path.splitext(os.path.relpath(p, os.path.join(wg_dir, "features")).replace("\\", "/"))[0]
+        for p in sorted(glob.glob(os.path.join(wg_dir, "features", "**", "*.yaml"), recursive=True))
+    ]
+    personalities_detail = collect_po_with_desc("STRINGS.DUPLICANTS.PERSONALITIES.", ".DESC")
+    rooms_detail = collect_po_with_desc("STRINGS.ROOMS.TYPES.", ".EFFECT")
+    diseases_detail = collect_po_with_desc("STRINGS.DUPLICANTS.DISEASES.", ".DESCRIPTION")
 
     return {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "tuning": tuning,
         "mobs": mobs,
         "rooms": rooms,
+        "rooms_detail": rooms_detail,
+        "diseases_detail": diseases_detail,
+        "personalities_detail": personalities_detail,
         "worlds": worlds,
+        "clusters": clusters,
         "traits": traits,
         "subworlds": subworlds,
         "geysers": geysers,
+        "pois": pois,
+        "story_traits_templates": story_traits_tpl,
+        "noise_defs": noise_defs,
+        "feature_defs": feature_defs,
         "forest_base": forest_base,
         "codex": {"total_files": codex_total, "categories": {k: len(v) for k, v in codex_cats.items()}},
         "po_catalogs_counts": {k: len(v) for k, v in po_catalogs.items()},
@@ -393,22 +458,37 @@ def main() -> int:
         "po_foods_ko": world_codex["po_catalogs_counts"]["foods_ko"],
         "po_diseases_ko": world_codex["po_catalogs_counts"]["diseases_ko"],
         "po_rooms_ko": world_codex["po_catalogs_counts"]["rooms_ko"],
+        "po_personalities_ko": world_codex["po_catalogs_counts"]["personalities_ko"],
+        "po_duplicant_traits_ko": world_codex["po_catalogs_counts"]["duplicant_traits_ko"],
+        "poi_templates": len(world_codex["pois"]),
+        "clusters": len(world_codex["clusters"]),
+        "story_traits_templates": len(world_codex["story_traits_templates"]),
+        "noise_defs": len(world_codex["noise_defs"]),
+        "feature_defs": len(world_codex["feature_defs"]),
         "unity_shaders_total": shaders_mats["shader_count"],
         "klei_shaders_total": len(shaders_mats["klei_shaders"]),
         "unity_materials_total": shaders_mats["material_count"],
         "fmod_stdt_tokens": fmod_events["total_tokens"],
         "fmod_radix_nodes_est": fmod_events["radix_nodes_est"],
-        "godot_ported_shaders": 3,
+        "godot_ported_shaders": 5,
     })
     # Merge texture/kanim/audio totals if present
+    kanim_ext_n = 0
+    ext_p = os.path.join(args.out, "kanim_sprites_ext_extracted.txt")
+    if os.path.exists(ext_p):
+        with open(ext_p, "r", encoding="utf-8") as ef:
+            kanim_ext_n = len(json.load(ef).get("building_sprites", {}))
     for extra_name, key_map in [
+        ("buildings_extracted.txt", lambda d: {
+            "buildings": len(d),
+        }),
         ("textures_extracted.txt", lambda d: {
             "embedded_element_textures": len(d.get("element_textures", {})),
             "embedded_building_textures": len(d.get("building_textures", {})),
             "embedded_fx_textures": len(d.get("fx_textures", {})),
         }),
         ("kanim_sprites_extracted.txt", lambda d: {
-            "embedded_kanim_building_sprites": len(d.get("building_sprites", {})),
+            "embedded_kanim_building_sprites": len(d.get("building_sprites", {})) + kanim_ext_n,
             "embedded_kanim_duplicant_sprites": len(d.get("duplicant_sprites", [])),
         }),
         ("audio_extracted.txt", lambda d: {

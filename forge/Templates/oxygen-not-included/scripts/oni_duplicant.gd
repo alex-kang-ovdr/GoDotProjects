@@ -19,13 +19,17 @@ var _repath_cooldown := 0.0
 var breath := 100.0
 var stamina := 100.0
 var kcal := 4000.0
+var morale := 2
+var stress := 0.0
+var trait_ko := "조기 기상"
 
-func _init(p_id: int, p_name: String, p_cell: Vector2i, p_color: Color) -> void:
+func _init(p_id: int, p_name: String, p_cell: Vector2i, p_color: Color, p_trait := "조기 기상") -> void:
 	id = p_id
 	dupe_name = p_name
 	cell = p_cell
 	pos = Vector2(p_cell.x, p_cell.y)
 	suit_color = p_color
+	trait_ko = p_trait
 
 func step(world: OniWorld, dt: float) -> void:
 	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)

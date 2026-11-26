@@ -83,3 +83,15 @@ func play_print_ok() -> void:
 
 func play_research_done() -> void:
 	_play_extracted("research_done", 820.0, 0.14)
+
+func play_level_up() -> void:
+	_play_extracted("level_up", 760.0, 0.14)
+
+func play_plant_grow() -> void:
+	_play_extracted("plant_grow", 540.0, 0.08)
+
+func play_warp() -> void:
+	_play_extracted("warp", 480.0, 0.12)
+
+func play_circuit_toggle() -> void:
+	_play_extracted("circuit_toggle", 620.0, 0.06)

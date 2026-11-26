@@ -9,6 +9,7 @@ var paused := false
 var speed_mult := 1.0
 var active_tool := "select"
 var active_cat := "base"
+var active_codex_tab := "summary"
 var show_all_techs := false
 
 var _panning := false
@@ -24,6 +25,8 @@ var _research_panel: PanelContainer
 var _research_vbox: VBoxContainer
 var _audit_panel: PanelContainer
 var _audit_lbl: Label
+var _codex_tab_buttons: Dictionary = {}
+var _preset_btn: Button
 var _atmo_shader_mat: ShaderMaterial
 var _tool_buttons: Dictionary = {}
 var _cat_buttons: Dictionary = {}
@@ -32,6 +35,7 @@ var _speed_buttons: Dictionary = {}
 
 const CATEGORIES := [
 	{"id": "base", "label": "기본"},
+	{"id": "living", "label": "생활·위생"},
 	{"id": "power", "label": "전력·산소"},
 	{"id": "pipe", "label": "배관"},
 	{"id": "colony", "label": "농사·연구"},
@@ -39,12 +43,15 @@ const CATEGORIES := [
 ]
 
 const CAT_TOOLS := {
-	"base": ["tile", "insulated_tile", "ladder", "cot", "storage"],
-	"power": ["diffuser", "electrolyzer", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "wire"],
-	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "gas_pipe", "gas_pump", "gas_vent"],
+	"base": ["tile", "insulated_tile", "door", "ladder", "cot", "storage", "ceiling_light"],
+	"living": ["outhouse", "wash_basin", "mess_table", "ration_box", "microbe_musher", "electric_grill"],
+	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "steam_turbine", "battery", "wire"],
+	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir"],
 	"colony": ["farm_tile", "research_station"],
 	"space": ["rocket_steam_engine", "rocket_research_module", "rocket_command_module"],
 }
+
+const WORLD_PRESETS := ["terra", "rime", "oceana", "badlands"]
 
 func _ready() -> void:
 	_install_ui_font()
@@ -111,23 +118,23 @@ func _build_hud() -> void:
 	# 상단 바 (PIE 좌측 상단 오버레이 회피 + 1280px 폭 내 전 버튼 완전 노출)
 	var top_panel := PanelContainer.new()
 	top_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	top_panel.offset_left = 260
+	top_panel.offset_left = 256
 	top_panel.offset_bottom = 48
 	_style_panel(top_panel, Color(0.08, 0.11, 0.16, 0.92))
 	_ui_root.add_child(top_panel)
 
 	var top_hbox := HBoxContainer.new()
-	top_hbox.add_theme_constant_override("separation", 4)
+	top_hbox.add_theme_constant_override("separation", 3)
 	top_panel.add_child(top_hbox)
 
 	var title_lbl := Label.new()
-	title_lbl.text = "숨 · ONI 4.4"
-	title_lbl.add_theme_font_size_override("font_size", 15)
+	title_lbl.text = "숨·ONI"
+	title_lbl.add_theme_font_size_override("font_size", 14)
 	title_lbl.add_theme_color_override("font_color", Color(0.55, 0.90, 1.0))
 	top_hbox.add_child(title_lbl)
 
 	_top_info_lbl = Label.new()
-	_top_info_lbl.add_theme_font_size_override("font_size", 12)
+	_top_info_lbl.add_theme_font_size_override("font_size", 11)
 	top_hbox.add_child(_top_info_lbl)
 
 	var spacer := Control.new()
@@ -155,29 +162,19 @@ func _build_hud() -> void:
 		top_hbox.add_child(btn)
 		_speed_buttons[String(sp["id"])] = btn
 
-	var step_btn := Button.new()
-	step_btn.text = "+틱"
-	step_btn.pressed.connect(func():
-		audio.play_click()
-		paused = true
-		world.step_gas_tick()
-		_update_speed_buttons()
-		_refresh_hud()
-		renderer.request_redraw()
-	)
-	top_hbox.add_child(step_btn)
-
 	for ov in [
 		{"id": "normal", "label": "기본"},
 		{"id": "gas", "label": "기체(G)"},
 		{"id": "temp", "label": "온도(T)"},
 		{"id": "pipe", "label": "배관(P)"},
+		{"id": "room", "label": "방(M)"},
+		{"id": "germ", "label": "세균(J)"},
 	]:
 		var obtn := Button.new()
 		obtn.text = String(ov["label"])
 		var oid := String(ov["id"])
 		obtn.pressed.connect(func():
-			audio.play_click()
+			audio.play_circuit_toggle()
 			_select_overlay(oid)
 		)
 		top_hbox.add_child(obtn)
@@ -199,18 +196,21 @@ func _build_hud() -> void:
 	)
 	top_hbox.add_child(audit_btn)
 
-	var reset_btn := Button.new()
-	reset_btn.text = "새 기지"
-	reset_btn.pressed.connect(func():
-		audio.play_click()
-		world.generate(world.seed_value + 1)
+	_preset_btn = Button.new()
+	_preset_btn.text = world.get_world_preset_label()
+	_preset_btn.pressed.connect(func():
+		audio.play_warp()
+		var cur_i: int = WORLD_PRESETS.find(world.world_preset)
+		var next_preset := String(WORLD_PRESETS[(cur_i + 1) % WORLD_PRESETS.size()])
+		world.generate(world.seed_value + 1, next_preset)
+		_preset_btn.text = world.get_world_preset_label()
 		renderer.selected_cell = Vector2i(-1, -1)
 		_rebuild_tool_buttons()
 		_refresh_research_panel()
 		_refresh_hud()
 		renderer.request_redraw()
 	)
-	top_hbox.add_child(reset_btn)
+	top_hbox.add_child(_preset_btn)
 
 	# 상단 2줄째 자원 요약 바 (PIE 좌측 오버레이와 겹치지 않도록 우측 편향 배치)
 	var res_panel := PanelContainer.new()
@@ -241,25 +241,58 @@ func _build_hud() -> void:
 	res_scroll.add_child(_research_vbox)
 	_refresh_research_panel()
 
-	# 도감 / 셰이더 / 에셋 추출 완결 감사 팝업 (I)
+	# 인터랙티브 탭형 ONI 백과/도감 브라우저 (I)
 	_audit_panel = PanelContainer.new()
-	_audit_panel.position = Vector2(220, 96)
-	_audit_panel.custom_minimum_size = Vector2(620, 230)
+	_audit_panel.position = Vector2(210, 94)
+	_audit_panel.custom_minimum_size = Vector2(690, 390)
 	_audit_panel.visible = false
 	_style_panel(_audit_panel, Color(0.08, 0.12, 0.18, 0.96))
 	_ui_root.add_child(_audit_panel)
 
+	var codex_vbox := VBoxContainer.new()
+	codex_vbox.add_theme_constant_override("separation", 6)
+	_audit_panel.add_child(codex_vbox)
+
+	var codex_tabs := HBoxContainer.new()
+	codex_tabs.add_theme_constant_override("separation", 4)
+	codex_vbox.add_child(codex_tabs)
+	for ct in [
+		{"id": "summary", "label": "요약"},
+		{"id": "elements", "label": "원소"},
+		{"id": "buildings", "label": "건물"},
+		{"id": "creatures", "label": "생물·음식"},
+		{"id": "rooms", "label": "방"},
+		{"id": "diseases", "label": "질병"},
+		{"id": "personalities", "label": "복제체"},
+		{"id": "worlds", "label": "행성·POI"},
+		{"id": "shaders", "label": "셰이더"},
+	]:
+		var ctb := Button.new()
+		ctb.text = String(ct["label"])
+		var ctid := String(ct["id"])
+		ctb.pressed.connect(func():
+			audio.play_click()
+			_select_codex_tab(ctid)
+		)
+		codex_tabs.add_child(ctb)
+		_codex_tab_buttons[ctid] = ctb
+
+	var codex_scroll := ScrollContainer.new()
+	codex_scroll.custom_minimum_size = Vector2(666, 336)
+	codex_vbox.add_child(codex_scroll)
+
 	_audit_lbl = Label.new()
 	_audit_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_audit_lbl.custom_minimum_size = Vector2(648, 0)
 	_audit_lbl.add_theme_font_size_override("font_size", 12)
-	_audit_lbl.text = "\n".join(OniMedia.get_complete_audit_lines())
-	_audit_panel.add_child(_audit_lbl)
+	codex_scroll.add_child(_audit_lbl)
+	_select_codex_tab("summary")
 
 	# 우측 하단 타일 인스펙터
 	var insp_panel := PanelContainer.new()
 	insp_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	insp_panel.offset_left = -350
-	insp_panel.offset_top = -255
+	insp_panel.offset_left = -356
+	insp_panel.offset_top = -288
 	insp_panel.offset_right = -10
 	insp_panel.offset_bottom = -86
 	_style_panel(insp_panel, Color(0.08, 0.11, 0.16, 0.90))
@@ -413,7 +446,22 @@ func _toggle_audit_panel() -> void:
 	_audit_panel.visible = not _audit_panel.visible
 	if _audit_panel.visible:
 		_research_panel.visible = false
-		_audit_lbl.text = "\n".join(OniMedia.get_complete_audit_lines())
+		_select_codex_tab(active_codex_tab)
+
+func _select_codex_tab(tab_id: String) -> void:
+	active_codex_tab = tab_id
+	for k in _codex_tab_buttons.keys():
+		var btn: Button = _codex_tab_buttons[k]
+		btn.modulate = Color(0.55, 0.95, 1.0) if String(k) == tab_id else Color(1, 1, 1)
+	var lines := OniMedia.get_codex_tab_lines(tab_id)
+	if lines.size() > 80:
+		var clipped: Array[String] = []
+		for li in range(80):
+			clipped.append(lines[li])
+		clipped.append("... 외 %d건 추출 완료" % (lines.size() - 80))
+		_audit_lbl.text = "\n".join(clipped)
+	else:
+		_audit_lbl.text = "\n".join(lines)
 
 func _refresh_research_panel() -> void:
 	for child in _research_vbox.get_children():
@@ -553,6 +601,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_overlay("normal" if renderer.overlay_mode == "temp" else "temp")
 		elif event.physical_keycode == KEY_P:
 			_select_overlay("normal" if renderer.overlay_mode == "pipe" else "pipe")
+		elif event.physical_keycode == KEY_M:
+			_select_overlay("normal" if renderer.overlay_mode == "room" else "room")
+		elif event.physical_keycode == KEY_J:
+			_select_overlay("normal" if renderer.overlay_mode == "germ" else "germ")
 		elif event.physical_keycode == KEY_R:
 			_toggle_research_panel()
 		elif event.physical_keycode == KEY_I:
@@ -639,8 +691,9 @@ func _on_build_completed(cell: Vector2i, _b_id: String) -> void:
 
 func _refresh_hud() -> void:
 	var cyc_sec := fmod(world.sim_time, OniElements.CYCLE_SECONDS)
-	_top_info_lbl.text = "주기 %d (%.0fs) | 틱 #%d | O2 %.2fkg | 전력 %.0f/%.0fW" % [
-		world.cycle, cyc_sec, world.gas_tick_count, world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w
+	_top_info_lbl.text = "주기%d(%.0fs) | O2 %.2f | %.0f/%.0fW | 방%d(사기+%d)" % [
+		world.cycle, cyc_sec, world.avg_oxygen_kg, world.power_produced_w, world.power_consumed_w,
+		world.rooms_list.size(), world.colony_morale_bonus
 	]
 
 	var tech_str := "완료"
@@ -668,8 +721,8 @@ func _refresh_hud() -> void:
 			inspect_el = String(info["solid_el"])
 			lines.append("지형: %s (%.0f kg)" % [OniElements.get_element_name(inspect_el), float(info["solid_mass"])])
 		elif float(info["liquid_mass"]) > 1.0:
-			inspect_el = "Water"
-			lines.append("액체: 물 (%.0f kg)" % float(info["liquid_mass"]))
+			inspect_el = String(info.get("liquid_el", "Water"))
+			lines.append("액체: %s (%.0f kg)" % [OniElements.get_element_name(inspect_el), float(info["liquid_mass"])])
 		else:
 			inspect_el = String(info["gas_el"])
 			var gname := OniElements.get_element_name(inspect_el)
@@ -679,6 +732,13 @@ func _refresh_hud() -> void:
 		if not inspect_el.is_empty() and inspect_el != "Vacuum":
 			var ed := OniElements.get_element(inspect_el)
 			lines.append("물성: 비열 %.3f · 전도 %.4f · 몰 %.1f" % [float(ed.get("shc", 0.0)), float(ed.get("tc", 0.0)), float(ed.get("molar_mass", 0.0))])
+		var rname := String(info.get("room_name", ""))
+		if not rname.is_empty():
+			lines.append("방: %s (사기 +%d)" % [rname, int(info.get("room_morale", 0))])
+		var gcnt := float(info.get("germ_count", 0.0))
+		if gcnt >= 20.0:
+			var gtn := "점액폐균" if String(info.get("germ_type", "")) == "SlimeLung" else "식중독균"
+			lines.append("세균: %s %.0f" % [gtn, gcnt])
 		if not String(info["building"]).is_empty():
 			var b_id := String(info["building"])
 			var bname := "인쇄기" if b_id == "pod" else String(OniElements.get_building(b_id).get("name_ko", b_id))
@@ -689,7 +749,7 @@ func _refresh_hud() -> void:
 				extra = " (H2 버퍼 %.2f kg)" % float(info["h2_buffer_kg"])
 			elif b_id == "farm_tile":
 				extra = " (성장 %.0f%%)" % (float(info["farm_growth"]) * 100.0)
-			elif b_id in ["diffuser", "electrolyzer", "coal_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station"]:
+			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "steam_turbine", "liquid_pump", "gas_pump", "research_station"]:
 				extra = " [가동]" if bool(info["machine_running"]) else " [대기]"
 			lines.append("건물: %s%s" % [bname, extra])
 		if bool(info["has_liquid_pipe"]):
@@ -699,10 +759,10 @@ func _refresh_hud() -> void:
 		if bool(info["has_wire"]):
 			lines.append("배선: 전선 연결됨")
 	else:
-		lines.append("[타일 인스펙터] 칸을 클릭해 확인")
+		lines.append("[타일 인스펙터] 칸 클릭 · 방(M) · 세균(J) · 도감(I)")
 
-	lines.append("--- 대원 현황 ---")
+	lines.append("--- 복제체 현황 ---")
 	for d in world.duplicants:
-		lines.append("%s: %s | 호흡 %.0f%% | 체력 %.0f%%" % [d.dupe_name, d.state_ko, d.breath, d.stamina])
+		lines.append("%s[%s]: %s | 사기 %d | 호흡 %.0f%%" % [d.dupe_name, d.trait_ko, d.state_ko, d.morale, d.breath])
 
 	_inspector_lbl.text = "\n".join(lines)

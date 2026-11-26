@@ -93,7 +93,7 @@ KANIM_TARGETS = [
     "odor_fx",
 ]
 
-# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (10 SFX)
+# Key PCM16 (mode=2) real ONI sound effects to embed for WebAssembly playback (14 SFX)
 SFX_TARGETS = {
     "click": ("FX.bank", "SG_UI_click_small"),
     "drag": ("FX.bank", "SG_UI_dragTile_v02"),
@@ -105,6 +105,10 @@ SFX_TARGETS = {
     "door": ("Buildings.bank", "SM_PressureDoor_Open_1"),
     "print_ok": ("FX.bank", "SG_UI_Batering_Print_Success_01"),
     "research_done": ("UI.bank", "SG_UI_achievementUnlocked_impact_03"),
+    "level_up": ("DuplicantActions.bank", "SG_SFX_levelUp_v02"),
+    "plant_grow": ("Plants.bank", "SG_plant_coldBreather_grow_01"),
+    "warp": ("FX.bank", "SG_UI_dupeShuffle_warp_01"),
+    "circuit_toggle": ("Buildings.bank", "SG_logic_circuit_toggle_ON_25_v03"),
 }
 
 FREQ_TABLE = {
@@ -503,11 +507,10 @@ def parse_unity_assets(data_dir: str):
 
 
 def extract_fmod_banks(streaming_dir: str) -> dict:
-    """Scan all FMOD .bank files, build full FSB5 catalog, and extract real PCM16 SFX."""
-    bank_files = [
-        "FX.bank", "UI.bank", "Buildings.bank", "DuplicantActions.bank",
-        "DuplicantVoices.bank", "Environment.bank", "Ambiences.bank", "Music.bank",
-    ]
+    """Scan ALL 15 FMOD .bank files, build complete FSB5 catalog, and extract real PCM16 SFX."""
+    bank_files = sorted(
+        f for f in os.listdir(streaming_dir) if f.lower().endswith(".bank")
+    )
     target_by_bank = {}
     for key, (bf, sname) in SFX_TARGETS.items():
         target_by_bank.setdefault(bf, {})[sname] = key

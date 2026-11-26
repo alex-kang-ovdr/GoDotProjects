@@ -53,6 +53,29 @@ BUILDING_RECIPES = {
     "critter_lightbug": (["lightbug_build", "lightbug"], "lightbug", ["idle_loop", "fly_loop", "idle"], 72),
 }
 
+# Extended KAnim recipes emitted into 2nd shard data/kanim_sprites_ext_extracted.txt (stays well under 1MB/file)
+EXTENDED_RECIPES = {
+    "door": (["door_manual"], "door_manual", ["closed", "open", "off"], 80),
+    "outhouse": (["outhouse"], "outhouse", ["off", "on", "working_loop"], 88),
+    "wash_basin": (["wash_basin"], "wash_basin", ["on", "off", "working_loop"], 84),
+    "mess_table": (["diningtable"], "diningtable", ["off", "on"], 80),
+    "ration_box": (["rationbox"], "rationbox", ["off", "on"], 80),
+    "ceiling_light": (["ceilinglight"], "ceilinglight", ["on", "off"], 72),
+    "microbe_musher": (["microbemusher"], "microbemusher", ["working_loop", "on", "off"], 88),
+    "electric_grill": (["cookstation"], "cookstation", ["working_loop", "on", "off"], 88),
+    "co2_skimmer": (["co2filter"], "co2filter", ["working_loop", "on", "off"], 88),
+    "water_sieve": (["waterpurifier"], "waterpurifier", ["working_loop", "on", "off"], 96),
+    "liquid_reservoir": (["liquidreservoir"], "liquidreservoir", ["on", "off"], 92),
+    "gas_reservoir": (["gasstorage"], "gasstorage", ["on", "off"], 92),
+    "fridge": (["fridge"], "fridge", ["on", "off"], 80),
+    "compost": (["compost"], "compost", ["working_loop", "on", "off"], 84),
+    "bristle_blossom": (["bristleblossom"], "bristleblossom", ["idle_full", "grow", "idle"], 76),
+    "oxy_fern": (["oxy_fern"], "oxy_fern", ["idle_full", "grow", "idle"], 76),
+    "critter_drecko": (["drecko_build", "drecko"], "drecko", ["idle_loop", "walk_loop", "idle"], 72),
+    "critter_pacu": (["pacu_build", "pacu"], "pacu", ["swim_loop", "idle_loop", "idle"], 72),
+    "critter_slickster": (["oilfloater_build", "oilfloater"], "oilfloater", ["idle_loop", "hover_loop", "idle"], 72),
+}
+
 # Duplicant KAnim recipes (combine body_comp_default + body_swap + head_swap + hair_swap)
 DUPE_BUILD_SET = ["body_comp_default", "body_swap", "head_swap", "hair_swap"]
 
@@ -381,7 +404,10 @@ def main() -> int:
     need_builds = set(DUPE_BUILD_SET)
     need_anims = {"anim_idle_happy", "anim_loco_walk"}
     need_tex = set()
-    for _k, (blist, aname, _clips, _sz) in BUILDING_RECIPES.items():
+    all_recipes = {}
+    all_recipes.update(BUILDING_RECIPES)
+    all_recipes.update(EXTENDED_RECIPES)
+    for _k, (blist, aname, _clips, _sz) in all_recipes.items():
         for b in blist:
             need_builds.add(b)
         need_anims.add(aname)
@@ -453,9 +479,10 @@ def main() -> int:
     print(f"Loaded builds={len(builds_parsed)}, anims={len(anims_parsed)}, atlases={len(atlases_pil)}")
 
     out_buildings = {}
+    out_buildings_ext = {}
     preview_list = []
 
-    for key, (blist, aname, pref_clips, out_sz) in BUILDING_RECIPES.items():
+    for key, (blist, aname, pref_clips, out_sz) in all_recipes.items():
         clips = anims_parsed.get(aname, {})
         sources = []
         for b in blist:
@@ -518,7 +545,8 @@ def main() -> int:
                     im_work = iw2
 
         if im_idle is not None:
-            out_buildings[key] = {
+            target_dict = out_buildings if key in BUILDING_RECIPES else out_buildings_ext
+            target_dict[key] = {
                 "size": out_sz,
                 "idle_clip": chosen_idle["name"],
                 "work_clip": chosen_work["name"],
@@ -604,9 +632,17 @@ def main() -> int:
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
 
+    ext_doc = {
+        "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "building_sprites": out_buildings_ext,
+    }
+    ext_path = os.path.join(args.out, "kanim_sprites_ext_extracted.txt")
+    with open(ext_path, "w", encoding="utf-8") as f:
+        json.dump(ext_doc, f, ensure_ascii=False, separators=(",", ":"))
+
     # Build visual preview sheet
     if preview_list and args.preview:
-        cols = 7
+        cols = 8
         rows = (len(preview_list) + cols - 1) // cols
         cell = 104
         sheet = Image.new("RGBA", (cols * cell, rows * cell), (22, 28, 36, 255))
@@ -618,10 +654,12 @@ def main() -> int:
         sheet.save(args.preview)
 
     print(json.dumps({
-        "buildings_composited": len(out_buildings),
-        "building_keys": list(out_buildings.keys()),
+        "buildings_composited_main": len(out_buildings),
+        "buildings_composited_ext": len(out_buildings_ext),
+        "ext_keys": list(out_buildings_ext.keys()),
         "duplicants_composited": len(out_dupes),
-        "file_bytes": os.path.getsize(out_path),
+        "main_file_bytes": os.path.getsize(out_path),
+        "ext_file_bytes": os.path.getsize(ext_path),
     }, ensure_ascii=False, indent=2))
     return 0
 
