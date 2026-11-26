@@ -82,8 +82,13 @@ func _run() -> void:
 	# 6. Volatile Module Sub-Explosion + Raider Victory
 	assert(main.enemies.size() >= 1, "Initial scout raider should be present")
 	var raider: EnemyShip = main.enemies[0]
-	var test_armor: PartData = raider.model.add("armor", Vector2i(0, 3))
-	var test_ammo: PartData = raider.model.add("ammo_bay", Vector2i(0, 4))
+	var max_y: int = 0
+	for part in raider.model.parts:
+		for cell in part.cells():
+			if cell.x == 0 and cell.y > max_y:
+				max_y = cell.y
+	var test_armor: PartData = raider.model.add("armor", Vector2i(0, max_y + 1))
+	var test_ammo: PartData = raider.model.add("ammo_bay", Vector2i(0, max_y + 2))
 	raider.refresh_mass()
 	raider.damage_part(test_ammo, 999.0, Vector2.ZERO, null, true)
 	var blasts: Array[Dictionary] = raider.pop_volatile_blasts()

@@ -322,7 +322,7 @@
     if (e.kind === "typing" || (e.kind === "step" && e.clickLabel)) {
       cursor.caption = e.kind === "typing" ? "⌨ " + (e.text || "") : "클릭: " + String(e.clickLabel).slice(0, 60);
       cursor.captionKind = e.kind;
-      cursor.captionUntil = now + 1500;
+      cursor.captionUntil = now + 3000;
     }
     const showCaption = now < (cursor.captionUntil || 0);
     cursor.querySelector("em").textContent = showCaption ? cursor.caption : "";

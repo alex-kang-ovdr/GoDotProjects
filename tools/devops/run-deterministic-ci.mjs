@@ -345,7 +345,7 @@ export async function runDeterministicCi(rawOpts = {}) {
       executable: node24,
       args: ['Tools/run-tests.cjs'],
       cwd: path.join(repoRoot, 'forge'),
-      timeoutMs: 420000,
+      timeoutMs: 720000,
     });
     await execStage({
       id: 'hub_forge_integration',

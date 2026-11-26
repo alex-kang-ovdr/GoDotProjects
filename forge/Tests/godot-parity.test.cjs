@@ -10,7 +10,9 @@ const ROOT = path.resolve(__dirname, '..');
 const POC = path.join(ROOT, 'References', 'PlayForgeStudio', 'v18', 'TappyChicken', 'index.html');
 const GAME = path.join(ROOT, 'Projects', 'TappyChicken', 'Scripts', 'Game.gd');
 const runtimeAvailability = NativeRuntime.availability(ROOT);
-const skipReason = runtimeAvailability.available ? false : runtimeAvailability.error || 'Godot project is not available';
+const skipReason = !fs.existsSync(POC)
+  ? 'Preserved Studio JS PoC reference is not present in this checkout'
+  : (runtimeAvailability.available ? false : runtimeAvailability.error || 'Godot project is not available');
 
 test('GDScript Tappy Chicken matches preserved Studio JS PoC through the Godot runtime', { skip: skipReason }, async t => {
   const source = fs.readFileSync(GAME, 'utf8');

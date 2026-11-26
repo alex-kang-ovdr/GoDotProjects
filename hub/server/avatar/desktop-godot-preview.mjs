@@ -78,6 +78,7 @@ export function createDesktopGodotPreviewService({ forgeRoot, env = process.env,
   let disposed = false;
 
   function resolveBinary() {
+    if (process.platform === 'linux' && !env?.DISPLAY && !env?.WAYLAND_DISPLAY) return null;
     const exe = findGodotStudioExecutable(forgeRoot, env);
     if (!exe) return null;
     if (!fs.existsSync(path.join(projectDir, 'project.godot'))) return null;
