@@ -11,7 +11,7 @@ const SUBSYSTEMS := ["pilot", "sensors", "doors", "battery"]
 const SYSTEM_ORDER := [
 	"shields", "engines", "oxygen", "weapons", "drones",
 	"medbay", "clonebay", "teleporter", "cloaking", "artillery",
-	"hacking", "mind", "pilot", "sensors", "doors"
+	"hacking", "mind", "pilot", "sensors", "doors", "battery"
 ]
 const CREW_NAMES := [
 	"Charlie", "Kestrel", "Vance", "Sora", "Kael", "Nora", "Marek", "Talia",
@@ -52,7 +52,16 @@ var hacked_room: int = -1
 var hacked_active: bool = false
 var mind_active_timer: float = 0.0
 var mind_cooldown: float = 0.0
+var battery_timer: float = 0.0
+var battery_cooldown: float = 0.0
+var battery_bonus: int = 0
+var artillery_charge: float = 0.0
+var artillery_cooldown: float = 50.0
+var ion_storm_active: bool = false
 var ftl_charge: float = 1.0 # 0..1
+
+# Clonebay queue: Array[Dictionary] -> {crew: Dictionary, timer: float, max_time: float}
+var clone_queue: Array = []
 
 # Rooms: Array[Dictionary] -> {id, x, y, w, h, system, oxygen, fires, breach, repair_progress, breach_progress}
 var rooms: Array = []
@@ -80,6 +89,11 @@ var is_boss: bool = false
 var boss_phase: int = 1
 var boss_surge_timer: float = 18.0
 var ai_decision_timer: float = 0.6
+var surrender_offered: bool = false
+var surrender_declined: bool = false
+var fleeing: bool = false
+var flee_ftl_charge: float = 0.0
+var pending_surrender_offer: Dictionary = {}
 
 # Combat feedback events emitted to view/main
 var pending_shots: Array = []    # {from_ship, weapon, weapon_idx, target_room, beam_start, beam_end, beam_rooms}
@@ -259,7 +273,7 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 
 
 func _allocate_initial_power() -> void:
-	var priority := ["shields", "weapons", "engines", "oxygen", "medbay", "clonebay", "drones"]
+	var priority := ["shields", "weapons", "artillery", "engines", "oxygen", "medbay", "clonebay", "drones"]
 	for sname in priority:
 		if not systems.has(sname):
 			continue
@@ -299,6 +313,8 @@ func add_weapon(weapon_id: String) -> bool:
 			"autofire": false,
 			"fire_anim": 0.0,
 			"mount_idx": weapons.size(),
+			"chain_count": 0,
+			"charge_level": 0,
 		})
 		return true
 	if cargo_weapons.size() < 4:
@@ -381,8 +397,72 @@ func get_used_reactor_power() -> int:
 	return total
 
 
+func get_total_reactor_max() -> int:
+	var base := maxi(1, int(reactor_max / 2)) if ion_storm_active else reactor_max
+	return base + battery_bonus
+
+
 func get_available_reactor_power() -> int:
-	return maxi(0, reactor_max - get_used_reactor_power())
+	return maxi(0, get_total_reactor_max() - get_used_reactor_power())
+
+
+func _clamp_reactor_power() -> void:
+	var limit := get_total_reactor_max()
+	var used := get_used_reactor_power()
+	if used <= limit:
+		return
+	var drain_order := ["artillery", "drones", "medbay", "clonebay", "hacking", "mind", "teleporter", "cloaking", "engines", "oxygen", "weapons", "shields"]
+	for sname in drain_order:
+		if used <= limit:
+			break
+		if not systems.has(sname) or sname in SUBSYSTEMS:
+			continue
+		var s: Dictionary = systems[sname]
+		while int(s.power) > 0 and used > limit:
+			s.power -= 1
+			used -= 1
+	_enforce_weapon_drone_power()
+
+
+func activate_battery() -> bool:
+	if not systems.has("battery"):
+		return false
+	var lvl := get_effective_system_power("battery")
+	if lvl <= 0 or battery_timer > 0.0 or battery_cooldown > 0.0:
+		pending_sfx.append("powerUpFail")
+		return false
+	battery_bonus = 4 if lvl >= 2 else 2
+	battery_timer = 30.0
+	battery_cooldown = 20.0
+	pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.battery.room)), "text": "+%d BATTERY!" % battery_bonus, "color": Color("ffd54f")})
+	pending_sfx.append("powerUpSystem")
+	return true
+
+
+func get_weapon_effective_cooldown(w: Dictionary) -> float:
+	var base_cd := maxf(1.0, float(w.get("cooldown", 10.0)))
+	var btype := str(w.bp.get("boostType", ""))
+	if btype == "cooldown":
+		var bamt := float(w.bp.get("boostAmount", 0.0))
+		var bmax := int(w.bp.get("boostCount", 0))
+		var cnt := mini(bmax, int(w.get("chain_count", 0)))
+		return maxf(1.0, base_cd - float(cnt) * bamt)
+	return base_cd
+
+
+func on_ftl_jump() -> void:
+	# Authentic Clonebay jump-healing (+8 / +16 / +24 HP per jump)
+	if systems.has("clonebay") and int(systems.clonebay.damage) < int(systems.clonebay.level):
+		var heal := 8 * int(systems.clonebay.level)
+		for c in crew:
+			if c.is_player == is_player and c.hp > 0.0:
+				c.hp = minf(float(c.max_hp), float(c.hp) + float(heal))
+	# Reset weapon chain/charge stacks on jump
+	for w in weapons:
+		w.chain_count = 0
+		w.charge_level = 0
+		w.charge = 0.0
+	artillery_charge = 0.0
 
 
 func get_zoltan_bonus_in_room(room_id: int) -> int:
@@ -763,20 +843,29 @@ func install_system(sname: String) -> bool:
 	if systems.has(sname):
 		return false
 	var target_room := -1
-	for r in rooms:
-		if str(r.system).is_empty():
-			target_room = int(r.id)
-			break
+	var inherited_power := 0
+	if sname == "clonebay" and systems.has("medbay"):
+		# Replace medbay with clonebay in the same room (authentic FTL!)
+		target_room = int(systems.medbay.room)
+		inherited_power = mini(1, int(systems.medbay.power))
+		systems.erase("medbay")
+		room_by_id[target_room].system = ""
+	else:
+		for r in rooms:
+			if str(r.system).is_empty():
+				target_room = int(r.id)
+				break
 	if target_room < 0:
 		return false
 	var sbp: Dictionary = db.systems.get(sname, {})
-	var max_lvl := int(sbp.get("maxPower", 3))
+	var default_max := 2 if sname == "battery" else 3
+	var max_lvl := int(sbp.get("maxPower", default_max))
 	systems[sname] = {
 		"id": sname,
 		"room": target_room,
 		"level": 1,
 		"max_level": max_lvl,
-		"power": 0,
+		"power": inherited_power,
 		"damage": 0,
 		"ion_level": 0,
 		"ion_timer": 0.0,
@@ -786,6 +875,8 @@ func install_system(sname: String) -> bool:
 		"manned_by": -1,
 	}
 	room_by_id[target_room].system = sname
+	if sname == "drones":
+		drone_slots = maxi(2, drone_slots)
 	pending_sfx.append("upgradeSystem")
 	return true
 
@@ -1105,6 +1196,16 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 	elif mind_cooldown > 0.0:
 		mind_cooldown = maxf(0.0, mind_cooldown - delta)
 
+	if battery_timer > 0.0:
+		battery_timer = maxf(0.0, battery_timer - delta)
+		if battery_timer <= 0.0:
+			battery_bonus = 0
+			_clamp_reactor_power()
+	elif battery_cooldown > 0.0:
+		battery_cooldown = maxf(0.0, battery_cooldown - delta)
+
+	_clamp_reactor_power()
+
 	# 3. FTL Drive charge (charges when pilot + engines operational)
 	if ftl_charge < 1.0:
 		var pilot_ok := get_effective_system_power("pilot") > 0 and (int(systems.pilot.manned_by) != -1 or get_effective_system_power("pilot") >= 2)
@@ -1132,18 +1233,23 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 	# 5. Atmosphere (Oxygen, Airlocks, Fires, Breaches)
 	_step_atmosphere(delta)
 
-	# 6. Crew (movement, manning, repair, firefighting, healing, combat)
+	# 6. Crew (movement, manning, repair, firefighting, healing, combat) & Clonebay queue
 	_step_crew(delta)
+	_step_clone_queue(delta)
 
-	# 7. Weapons charging & firing
+	# 7. Weapons, Artillery & Drones charging & firing
 	var target_cloaked := (enemy_ship != null and enemy_ship.cloak_timer > 0.0)
 	if in_combat and enemy_ship != null and enemy_ship.hull > 0:
 		_step_weapons(delta, enemy_ship, target_cloaked)
+		_step_artillery(delta, enemy_ship)
 		_step_drones(delta, enemy_ship)
 	else:
 		for w in weapons:
 			w.charge = maxf(0.0, float(w.charge) - delta * 2.0)
 			w.fire_anim = maxf(0.0, float(w.fire_anim) - delta * 2.0)
+			w.chain_count = 0
+			w.charge_level = 0
+		artillery_charge = maxf(0.0, artillery_charge - delta * 2.0)
 
 	# 8. Enemy AI
 	if not is_player and in_combat and enemy_ship != null and hull > 0 and enemy_ship.hull > 0:
@@ -1349,17 +1455,51 @@ func _step_crew(delta: float) -> void:
 		var surviving: Array = []
 		for c in crew:
 			if int(c.id) in dead_ids:
-				# Clonebay revival!
+				# Authentic Clonebay revival queue (Lv1: 12s, Lv2: 9s, Lv3: 7s)
 				if c.is_player == is_player and systems.has("clonebay") and get_effective_system_power("clonebay") > 0:
-					c.hp = float(c.max_hp)
-					c.room_id = int(systems.clonebay.room)
-					c.pos = get_room_center_local(int(c.room_id))
+					var cb_lvl := get_effective_system_power("clonebay")
+					var clone_dur := 12.0 if cb_lvl == 1 else (9.0 if cb_lvl == 2 else 7.0)
+					c.hp = 0.0
 					c.path = []
-					surviving.append(c)
-					pending_popups.append({"ship": self, "pos_local": c.pos, "text": "CLONED!", "color": Color("7eff8b")})
+					clone_queue.append({"crew": c, "timer": clone_dur, "max_time": clone_dur, "death_timer": 3.0})
+					pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.clonebay.room)), "text": "CLONING %s..." % str(c.name), "color": Color("65e8ff")})
 			else:
 				surviving.append(c)
 		crew = surviving
+
+
+func _step_clone_queue(delta: float) -> void:
+	if clone_queue.is_empty():
+		return
+	var cb_pwr := get_effective_system_power("clonebay") if systems.has("clonebay") else 0
+	var item: Dictionary = clone_queue[0]
+	if cb_pwr > 0:
+		item.death_timer = 3.0
+		item.timer = maxf(0.0, float(item.timer) - delta)
+		if float(item.timer) <= 0.0:
+			var c: Dictionary = item.crew
+			c.hp = float(c.max_hp)
+			c.room_id = int(systems.clonebay.room)
+			c.pos = get_room_center_local(int(c.room_id))
+			c.path = []
+			c.mind_timer = 0.0
+			c.stun_timer = 0.0
+			# Slight skill decay on cloning (authentic FTL:AE)
+			for sk in c.skills.keys():
+				c.skills[sk] = maxi(0, int(c.skills[sk]) - 2)
+			crew.append(c)
+			_assign_room_tiles(int(c.room_id))
+			clone_queue.pop_front()
+			pending_popups.append({"ship": self, "pos_local": c.pos, "text": "CLONED!", "color": Color("7eff8b")})
+			pending_sfx.append("upgradeSystem")
+	else:
+		# Unpowered Clonebay loses DNA pattern if not repowered in 3s!
+		item.death_timer = float(item.get("death_timer", 3.0)) - delta
+		if float(item.death_timer) <= 0.0:
+			var lost_name := str(item.crew.get("name", "Crew"))
+			clone_queue.pop_front()
+			if systems.has("clonebay"):
+				pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.clonebay.room)), "text": "%s LOST!" % lost_name, "color": Color("ff5c5c")})
 
 
 func _crew_effective_player(c: Dictionary) -> bool:
@@ -1391,17 +1531,47 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 		w.fire_anim = maxf(0.0, float(w.fire_anim) - delta * 2.5)
 		if not bool(w.powered):
 			w.charge = maxf(0.0, float(w.charge) - delta * 2.5)
+			w.chain_count = 0
+			w.charge_level = 0
 			continue
+		var eff_cd := get_weapon_effective_cooldown(w)
+		var max_charges := maxi(1, int(w.bp.get("chargeLevels", 1)))
 		if not target_cloaked:
-			w.charge = minf(float(w.cooldown), float(w.charge) + delta * mult)
-		if float(w.charge) >= float(w.cooldown) and int(w.target_room) >= 0 and not target_cloaked:
+			if max_charges > 1:
+				if int(w.get("charge_level", 0)) < max_charges:
+					w.charge = float(w.charge) + delta * mult
+					if float(w.charge) >= eff_cd:
+						w.charge = 0.0
+						w.charge_level = mini(max_charges, int(w.get("charge_level", 0)) + 1)
+			else:
+				w.charge = minf(eff_cd, float(w.charge) + delta * mult)
+		var ready_to_fire := (int(w.get("charge_level", 0)) >= 1) if max_charges > 1 else (float(w.charge) >= eff_cd)
+		if ready_to_fire and int(w.target_room) >= 0 and not target_cloaked:
 			var mcost := int(w.bp.get("missiles", 0))
 			if mcost > 0 and missiles < mcost:
 				continue
 			if mcost > 0:
 				missiles -= mcost
+			var fired_charges := maxi(1, int(w.get("charge_level", 1))) if max_charges > 1 else 1
 			w.charge = 0.0
+			w.charge_level = 0
 			w.fire_anim = 1.0
+			# Build effective weapon payload (handles Chain damage & Charge multi-shot)
+			var fire_w := w
+			var btype := str(w.bp.get("boostType", ""))
+			var bamt := float(w.bp.get("boostAmount", 0.0))
+			var bmax := int(w.bp.get("boostCount", 0))
+			var cur_chain := int(w.get("chain_count", 0))
+			if fired_charges > 1 or (btype == "damage" and cur_chain > 0):
+				var mod_bp: Dictionary = w.bp.duplicate()
+				if fired_charges > 1:
+					mod_bp.shots = maxi(1, int(mod_bp.get("shots", 1))) * fired_charges
+				if btype == "damage" and cur_chain > 0:
+					mod_bp.damage = int(mod_bp.get("damage", 1)) + int(round(float(cur_chain) * bamt))
+				fire_w = w.duplicate()
+				fire_w.bp = mod_bp
+			if not btype.is_empty() and bmax > 0:
+				w.chain_count = mini(bmax, cur_chain + 1)
 			var target_rid := int(w.target_room)
 			var b_start: Vector2 = w.get("beam_start", Vector2.ZERO)
 			var b_end: Vector2 = w.get("beam_end", Vector2.ZERO)
@@ -1419,7 +1589,7 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 			pending_shots.append({
 				"from_ship": self,
 				"to_ship": enemy_ship,
-				"weapon": w,
+				"weapon": fire_w,
 				"weapon_idx": i,
 				"target_room": target_rid,
 				"beam_start": b_start,
@@ -1429,6 +1599,57 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 			var lsnds: Array = w.bp.get("launchSounds", [])
 			if not lsnds.is_empty():
 				pending_sfx.append(str(lsnds[randi() % lsnds.size()]))
+
+
+func _step_artillery(delta: float, enemy_ship: FTLShip) -> void:
+	if not systems.has("artillery"):
+		return
+	var apwr := get_effective_system_power("artillery")
+	if apwr <= 0:
+		artillery_charge = maxf(0.0, artillery_charge - delta * 2.0)
+		return
+	# Authentic FTL Artillery cooldown: Lv1 50s, Lv2 40s, Lv3 30s, Lv4 20s
+	artillery_cooldown = maxf(15.0, 60.0 - float(apwr) * 10.0)
+	if enemy_ship.cloak_timer <= 0.0:
+		artillery_charge = minf(artillery_cooldown, artillery_charge + delta)
+	if artillery_charge >= artillery_cooldown and not enemy_ship.rooms.is_empty():
+		artillery_charge = 0.0
+		var is_flak_art := (blueprint_id == "PLAYER_SHIP_FED_3")
+		var tr := int(enemy_ship.rooms[randi() % enemy_ship.rooms.size()].id)
+		if is_flak_art:
+			var flak_bp := {
+				"id": "ARTILLERY_FED_C", "type": "BURST", "damage": 1, "sysDamage": 0, "persDamage": 0,
+				"ion": 0, "shots": 7, "sp": 0, "fireChance": 0, "breachChance": 0, "stunChance": 0,
+				"radius": 55.0, "speed": 48.0, "color": Color("ff9e42"),
+				"hitShieldSounds": ["hitShield1"], "hitShipSounds": ["hitHull2"], "missSounds": ["miss"],
+			}
+			pending_shots.append({
+				"from_ship": self, "to_ship": enemy_ship,
+				"weapon": {"id": "ARTILLERY_FED_C", "bp": flak_bp, "mount_idx": 0},
+				"weapon_idx": -1, "target_room": tr,
+			})
+			pending_sfx.append("flak")
+			pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.artillery.room)), "text": "FLAK ARTILLERY!", "color": Color("ff9e42")})
+		else:
+			var beam_bp := {
+				"id": "ARTILLERY_FED", "type": "BEAM", "damage": 1, "sysDamage": 0, "persDamage": 0,
+				"ion": 0, "shots": 1, "sp": 5, "fireChance": 1, "breachChance": 0, "stunChance": 0,
+				"length": 140.0, "color": Color("ff4422"),
+				"hitShieldSounds": ["hitShield1"], "hitShipSounds": ["hitHull2"], "missSounds": ["miss"],
+			}
+			var r_start := enemy_ship.get_room_center_local(tr)
+			var r_end := r_start + Vector2(120.0, 45.0).rotated(randf() * TAU)
+			var hit_rooms := enemy_ship.compute_beam_rooms(r_start, r_end)
+			if hit_rooms.is_empty():
+				hit_rooms = [tr]
+			pending_shots.append({
+				"from_ship": self, "to_ship": enemy_ship,
+				"weapon": {"id": "ARTILLERY_FED", "bp": beam_bp, "mount_idx": 0},
+				"weapon_idx": -1, "target_room": tr,
+				"beam_start": r_start, "beam_end": r_end, "beam_rooms": hit_rooms,
+			})
+			pending_sfx.append("beam2")
+			pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.artillery.room)), "text": "ARTILLERY BEAM!", "color": Color("ff5c5c")})
 
 
 func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
@@ -1462,10 +1683,32 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 
 
 func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
+	# Enemy FTL escape charging (if fleeing and Pilot+Engines operational)
+	if fleeing and not is_boss:
+		var pilot_ok := get_effective_system_power("pilot") > 0 and (int(systems.pilot.manned_by) != -1 or get_effective_system_power("pilot") >= 2)
+		var eng_ok := get_effective_system_power("engines") > 0
+		if pilot_ok and eng_ok:
+			flee_ftl_charge = minf(1.0, flee_ftl_charge + (0.032 + float(get_effective_system_power("engines")) * 0.008) * delta)
+
 	ai_decision_timer -= delta
 	if ai_decision_timer > 0.0:
 		return
 	ai_decision_timer = 0.75
+
+	# Non-boss low-hull Surrender Offer or FTL Escape decision
+	if not is_boss and hull > 0 and float(hull) <= float(max_hull) * 0.30:
+		if not surrender_offered and not surrender_declined and randf() < 0.35:
+			surrender_offered = true
+			pending_surrender_offer = {
+				"scrap": maxi(12, int(max_hull * 1.4) + randi_range(4, 14)),
+				"fuel": randi_range(2, 5),
+				"missiles": randi_range(1, 4),
+				"drone_parts": randi_range(0, 2),
+				"weapon": (db.pick_store_weapons(1)[0] if randf() < 0.20 and not db.pick_store_weapons(1).is_empty() else ""),
+			}
+		elif not fleeing and surrender_declined and randf() < 0.30:
+			fleeing = true
+			pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "CHARGING FTL!", "color": Color("ffd54f")})
 
 	# Ensure weapons powered & targeted
 	var target_rooms: Array[int] = []
@@ -1642,4 +1885,127 @@ func has_living_crew() -> bool:
 	for c in crew:
 		if c.is_player == is_player and c.hp > 0.0:
 			return true
+	if not clone_queue.is_empty() and systems.has("clonebay") and get_effective_system_power("clonebay") > 0:
+		return true
 	return false
+
+
+func serialize_state() -> Dictionary:
+	var sys_out: Dictionary = {}
+	for sname in systems.keys():
+		var s: Dictionary = systems[sname]
+		sys_out[sname] = {
+			"room": int(s.room),
+			"level": int(s.level),
+			"max_level": int(s.max_level),
+			"power": int(s.power),
+			"damage": int(s.damage),
+		}
+	var w_out: Array = []
+	for w in weapons:
+		w_out.append({"id": str(w.id), "powered": bool(w.powered)})
+	var d_out: Array = []
+	for d in drones:
+		d_out.append({"id": str(d.id), "powered": bool(d.powered)})
+	var c_out: Array = []
+	for c in crew:
+		if bool(c.is_player) == is_player and float(c.hp) > 0.0:
+			c_out.append({
+				"name": str(c.name),
+				"species": str(c.species),
+				"room_id": int(c.room_id),
+				"hp": float(c.hp),
+				"skills": (c.skills as Dictionary).duplicate(),
+			})
+	return {
+		"blueprint_id": blueprint_id,
+		"ship_name": ship_name,
+		"hull": hull,
+		"max_hull": max_hull,
+		"scrap": scrap,
+		"fuel": fuel,
+		"missiles": missiles,
+		"drone_parts": drone_parts,
+		"reactor_max": reactor_max,
+		"drone_slots": drone_slots,
+		"systems": sys_out,
+		"weapons": w_out,
+		"cargo_weapons": cargo_weapons.duplicate(),
+		"drones": d_out,
+		"cargo_drones": cargo_drones.duplicate(),
+		"augments": augments.duplicate(),
+		"crew": c_out,
+	}
+
+
+func deserialize_state(data: Dictionary) -> void:
+	ship_name = str(data.get("ship_name", ship_name))
+	hull = clampi(int(data.get("hull", hull)), 1, max_hull)
+	scrap = int(data.get("scrap", scrap))
+	fuel = int(data.get("fuel", fuel))
+	missiles = int(data.get("missiles", missiles))
+	drone_parts = int(data.get("drone_parts", drone_parts))
+	reactor_max = clampi(int(data.get("reactor_max", reactor_max)), 5, 25)
+	drone_slots = maxi(drone_slots, int(data.get("drone_slots", drone_slots)))
+
+	var sys_data: Dictionary = data.get("systems", {})
+	if not sys_data.is_empty():
+		# First install any extra systems that were purchased during the run
+		for sname in sys_data.keys():
+			if not systems.has(sname):
+				install_system(str(sname))
+		for sname in sys_data.keys():
+			if systems.has(sname):
+				var sd: Dictionary = sys_data[sname]
+				systems[sname].level = clampi(int(sd.get("level", systems[sname].level)), 1, int(systems[sname].max_level))
+				systems[sname].damage = clampi(int(sd.get("damage", 0)), 0, int(systems[sname].level))
+				systems[sname].power = clampi(int(sd.get("power", systems[sname].power)), 0, get_system_usable_max(str(sname)))
+
+	var w_data: Array = data.get("weapons", [])
+	if not w_data.is_empty():
+		weapons.clear()
+		cargo_weapons.clear()
+		for wd in w_data:
+			var wid := str(wd.get("id", ""))
+			if add_weapon(wid) and not weapons.is_empty():
+				weapons[-1].powered = bool(wd.get("powered", false))
+		for cwid in data.get("cargo_weapons", []):
+			if cargo_weapons.size() < 4:
+				cargo_weapons.append(str(cwid))
+
+	var d_data: Array = data.get("drones", [])
+	if data.has("drones"):
+		drones.clear()
+		cargo_drones.clear()
+		for dd in d_data:
+			var did := str(dd.get("id", ""))
+			if add_drone(did) and not drones.is_empty():
+				drones[-1].powered = bool(dd.get("powered", false))
+		for cdid in data.get("cargo_drones", []):
+			if cargo_drones.size() < 4:
+				cargo_drones.append(str(cdid))
+
+	if data.has("augments"):
+		augments.clear()
+		for aid in data.get("augments", []):
+			augments.append(str(aid))
+		if has_augment("ENERGY_SHIELD"):
+			zoltan_shield_max = 5
+			zoltan_shield = zoltan_shield_max
+
+	var c_data: Array = data.get("crew", [])
+	if not c_data.is_empty():
+		crew.clear()
+		_next_crew_id = 1
+		for cd in c_data:
+			var rid := int(cd.get("room_id", rooms[0].id if not rooms.is_empty() else 0))
+			if not room_by_id.has(rid) and not rooms.is_empty():
+				rid = int(rooms[0].id)
+			var cm := add_crew(str(cd.get("species", "human")), rid, is_player, str(cd.get("name", "")))
+			cm.hp = clampf(float(cd.get("hp", cm.max_hp)), 1.0, float(cm.max_hp))
+			if cd.has("skills") and cd.skills is Dictionary:
+				cm.skills = (cd.skills as Dictionary).duplicate()
+
+	_clamp_reactor_power()
+	shield_max_layers = get_effective_system_power("shields") / 2
+	shield_layers = shield_max_layers

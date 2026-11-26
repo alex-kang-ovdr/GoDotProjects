@@ -155,18 +155,33 @@ func spawn_shot(shot: Dictionary) -> void:
 	var speed := maxf(25.0, float(bp.get("speed", 60.0)))
 	var dist := maxf(180.0, origin_world.distance_to(target_world))
 	var dur := clampf(dist / (speed * 11.0), 0.32, 1.35)
+	var is_flak := (wtype == "BURST" or float(bp.get("radius", 0.0)) > 0.0)
+	var flak_rad := maxf(28.0, float(bp.get("radius", 42.0)))
+	var target_local := to_ship.get_room_center_local(target_room)
 	for s_i in range(shots):
-		var jitter := Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0)) if shots > 1 else Vector2.ZERO
+		var impact_room := target_room
+		var end_w := target_world
+		var stagger := -float(s_i) * (0.04 if is_flak else 0.16)
+		if is_flak:
+			var ang := randf() * TAU
+			var r_off := sqrt(randf()) * flak_rad
+			var land_local := target_local + Vector2(cos(ang), sin(ang)) * r_off
+			var found_r := to_ship.find_room_at_local(land_local)
+			if found_r >= 0:
+				impact_room = found_r
+			end_w = ship_local_to_world(to_ship, land_local)
+		elif shots > 1:
+			end_w = target_world + Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0))
 		projectiles.append({
 			"from_ship": from_ship,
 			"to_ship": to_ship,
 			"bp": bp,
-			"target_room": target_room,
+			"target_room": impact_room,
 			"start_pos": origin_world,
-			"end_pos": target_world + jitter,
+			"end_pos": end_w,
 			"pos": origin_world,
-			"t": -float(s_i) * 0.16,
-			"dur": dur,
+			"t": stagger,
+			"dur": dur + (randf_range(-0.04, 0.06) if is_flak else 0.0),
 			"is_bomb": false,
 		})
 
@@ -794,11 +809,17 @@ func _draw_targeting_overlays() -> void:
 				draw_string(font, we + Vector2(8, -6), "%d (%dR)" % [i + 1, b_rooms.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, col)
 			continue
 		var tgt := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(int(w.target_room)))
-		draw_arc(tgt, 17.0, 0, TAU, 24, col, 2.2)
-		draw_line(tgt + Vector2(-22, 0), tgt + Vector2(-11, 0), col, 2.0)
-		draw_line(tgt + Vector2(11, 0), tgt + Vector2(22, 0), col, 2.0)
-		draw_line(tgt + Vector2(0, -22), tgt + Vector2(0, -11), col, 2.0)
-		draw_line(tgt + Vector2(0, 11), tgt + Vector2(0, 22), col, 2.0)
+		var w_rad := float(w.bp.get("radius", 0.0))
+		if str(w.bp.get("type", "")) == "BURST" or w_rad > 0.0:
+			var disp_r := maxf(24.0, w_rad) * _enemy_scale
+			draw_circle(tgt, disp_r, Color(1.0, 0.58, 0.18, 0.14))
+			draw_arc(tgt, disp_r, 0, TAU, 32, Color("ff9e42"), 2.2)
+		else:
+			draw_arc(tgt, 17.0, 0, TAU, 24, col, 2.2)
+			draw_line(tgt + Vector2(-22, 0), tgt + Vector2(-11, 0), col, 2.0)
+			draw_line(tgt + Vector2(11, 0), tgt + Vector2(22, 0), col, 2.0)
+			draw_line(tgt + Vector2(0, -22), tgt + Vector2(0, -11), col, 2.0)
+			draw_line(tgt + Vector2(0, 11), tgt + Vector2(0, 22), col, 2.0)
 		if font != null:
 			draw_string(font, tgt + Vector2(14, -12), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, col)
 
@@ -833,9 +854,18 @@ func _draw_targeting_overlays() -> void:
 		var eroom := enemy_ship.find_room_at_local(elocal)
 		if eroom >= 0:
 			var c := ship_local_to_world(enemy_ship, enemy_ship.get_room_center_local(eroom))
-			draw_arc(c, 22.0 + sin(anim_clock * 10.0) * 2.5, 0, TAU, 24, Color("7eff8b"), 2.4)
-			if _is_targeting_beam() and font != null:
-				draw_string(font, c + Vector2(-46, -26), "DRAG BEAM LINE", HORIZONTAL_ALIGNMENT_CENTER, 96, 12, Color("ffd54f"))
+			var tw: Dictionary = player_ship.weapons[targeting_weapon_idx] if targeting_weapon_idx < player_ship.weapons.size() else {}
+			var t_rad := float(tw.get("bp", {}).get("radius", 0.0))
+			if str(tw.get("bp", {}).get("type", "")) == "BURST" or t_rad > 0.0:
+				var dr := maxf(24.0, t_rad) * _enemy_scale
+				draw_circle(c, dr, Color(1.0, 0.62, 0.2, 0.16))
+				draw_arc(c, dr, 0, TAU, 32, Color("ffd54f"), 2.4)
+				if font != null:
+					draw_string(font, c + Vector2(-42, -dr - 8), "FLAK SCATTER", HORIZONTAL_ALIGNMENT_CENTER, 88, 12, Color("ffd54f"))
+			else:
+				draw_arc(c, 22.0 + sin(anim_clock * 10.0) * 2.5, 0, TAU, 24, Color("7eff8b"), 2.4)
+				if _is_targeting_beam() and font != null:
+					draw_string(font, c + Vector2(-46, -26), "DRAG BEAM LINE", HORIZONTAL_ALIGNMENT_CENTER, 96, 12, Color("ffd54f"))
 
 
 func _draw_combat_fx() -> void:

@@ -313,6 +313,24 @@ func _parse_blueprints_xml(xml_text: String) -> void:
 						float(resolve_text(_child(color_node, "b"), "40")) / 255.0,
 						1.0
 					)
+				var shots_val := maxi(1, int(resolve_text(_child(n, "shots"), "1")))
+				var proj_node := _child(n, "projectiles")
+				if not proj_node.is_empty():
+					var real_proj := 0
+					for pn in _children(proj_node, "projectile"):
+						if str(pn.attrs.get("fake", "false")) != "true":
+							real_proj += maxi(1, int(pn.attrs.get("count", "1")))
+					if real_proj > 0:
+						shots_val = real_proj
+				var boost_node := _child(n, "boost")
+				var boost_type := ""
+				var boost_amount := 0.0
+				var boost_count := 0
+				if not boost_node.is_empty():
+					boost_type = resolve_text(_child(boost_node, "type"), "")
+					boost_amount = float(resolve_text(_child(boost_node, "amount"), "0"))
+					boost_count = int(resolve_text(_child(boost_node, "count"), "0"))
+				var charge_levels := maxi(1, int(resolve_text(_child(n, "chargeLevels"), "1")))
 				weapons[name] = {
 					"id": name,
 					"type": resolve_text(_child(n, "type"), "LASER"),
@@ -323,7 +341,7 @@ func _parse_blueprints_xml(xml_text: String) -> void:
 					"sysDamage": int(resolve_text(_child(n, "sysDamage"), "0")),
 					"persDamage": int(resolve_text(_child(n, "persDamage"), "0")),
 					"ion": int(resolve_text(_child(n, "ion"), "0")),
-					"shots": maxi(1, int(resolve_text(_child(n, "shots"), "1"))),
+					"shots": shots_val,
 					"sp": int(resolve_text(_child(n, "sp"), "0")),
 					"fireChance": int(resolve_text(_child(n, "fireChance"), "0")),
 					"breachChance": int(resolve_text(_child(n, "breachChance"), "0")),
@@ -336,6 +354,10 @@ func _parse_blueprints_xml(xml_text: String) -> void:
 					"speed": float(resolve_text(_child(n, "speed"), "60")),
 					"length": float(resolve_text(_child(n, "length"), "80")),
 					"radius": float(resolve_text(_child(n, "radius"), "0")),
+					"boostType": boost_type,
+					"boostAmount": boost_amount,
+					"boostCount": boost_count,
+					"chargeLevels": charge_levels,
 					"image": resolve_text(_child(n, "image"), "laser_light1"),
 					"weaponArt": resolve_text(_child(n, "weaponArt"), "laser_burst_1"),
 					"color": beam_color,

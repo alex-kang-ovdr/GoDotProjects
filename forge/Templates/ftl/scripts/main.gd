@@ -560,6 +560,9 @@ func _build_hud_ui() -> void:
 	var cloak_btn := _mk_btn("CLOAK (C)", _on_cloak_pressed)
 	door_h.add_child(cloak_btn)
 	hud_refs["cloak_btn"] = cloak_btn
+	var battery_btn := _mk_btn("BAT (B)", _on_battery_pressed)
+	door_h.add_child(battery_btn)
+	hud_refs["battery_btn"] = battery_btn
 
 	# Pause / Status Banner
 	var banner := _mk_label("", 22, Color("ffd54f"))
@@ -660,13 +663,16 @@ func _continue_saved_run() -> void:
 	var sid := str(parsed.get("ship_id", "PLAYER_SHIP_HARD"))
 	player_ship = FTLShip.new()
 	player_ship.init_from_blueprint(db, sid, true, 0)
-	player_ship.ship_name = str(parsed.get("ship_name", player_ship.ship_name))
-	player_ship.hull = clampi(int(parsed.get("hull", player_ship.max_hull)), 1, player_ship.max_hull)
-	player_ship.scrap = int(parsed.get("scrap", 30))
-	player_ship.fuel = int(parsed.get("fuel", 16))
-	player_ship.missiles = int(parsed.get("missiles", 8))
-	player_ship.drone_parts = int(parsed.get("drone_parts", 2))
-	player_ship.reactor_max = int(parsed.get("reactor_max", player_ship.reactor_max))
+	if parsed.has("ship_state") and parsed.ship_state is Dictionary:
+		player_ship.deserialize_state(parsed.ship_state)
+	else:
+		player_ship.ship_name = str(parsed.get("ship_name", player_ship.ship_name))
+		player_ship.hull = clampi(int(parsed.get("hull", player_ship.max_hull)), 1, player_ship.max_hull)
+		player_ship.scrap = int(parsed.get("scrap", 30))
+		player_ship.fuel = int(parsed.get("fuel", 16))
+		player_ship.missiles = int(parsed.get("missiles", 8))
+		player_ship.drone_parts = int(parsed.get("drone_parts", 2))
+		player_ship.reactor_max = int(parsed.get("reactor_max", player_ship.reactor_max))
 	ships_defeated = int(parsed.get("ships_defeated", 0))
 	scrap_collected = int(parsed.get("scrap_collected", 0))
 	difficulty = int(parsed.get("difficulty", 0))
@@ -702,6 +708,7 @@ func _save_run() -> void:
 		"missiles": player_ship.missiles,
 		"drone_parts": player_ship.drone_parts,
 		"reactor_max": player_ship.reactor_max,
+		"ship_state": player_ship.serialize_state(),
 		"sector_index": sector_map.current_sector_index,
 		"ships_defeated": ships_defeated,
 		"scrap_collected": scrap_collected,
@@ -789,6 +796,30 @@ func _check_combat_outcome() -> void:
 		in_combat = false
 		audio.set_combat(false)
 		_show_end_modal(false)
+		return
+	# Enemy FTL Escape!
+	if in_combat and enemy_ship != null and enemy_ship.fleeing and enemy_ship.flee_ftl_charge >= 1.0:
+		player_ship.clear_hacking(enemy_ship)
+		in_combat = false
+		targeting_weapon_idx = -1
+		special_target_mode = ""
+		selected_boarder_id = -1
+		audio.set_combat(false)
+		audio.play_sfx("jump")
+		enemy_ship = null
+		battle_view.set_ships(player_ship, null)
+		_rebuild_crew_list()
+		_save_run()
+		_show_event_modal({
+			"text": "The enemy ship's FTL drive finishes charging and they jump away into hyperspace!\nYou were unable to stop their escape.",
+			"choices": [{"text": "Continue", "event": {}}],
+		})
+		return
+	# Enemy Surrender Offer!
+	if in_combat and enemy_ship != null and not enemy_ship.pending_surrender_offer.is_empty() and modal_kind.is_empty():
+		var offer: Dictionary = enemy_ship.pending_surrender_offer.duplicate()
+		enemy_ship.pending_surrender_offer.clear()
+		_show_surrender_modal(offer)
 		return
 	if in_combat and enemy_ship != null and (enemy_ship.hull <= 0 or not enemy_ship.has_living_crew()):
 		var dead_crew := not enemy_ship.has_living_crew() and enemy_ship.hull > 0
@@ -898,6 +929,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			player_ship.set_all_doors_open(false, true)
 		elif kc == KEY_C:
 			_on_cloak_pressed()
+		elif kc == KEY_B:
+			_on_battery_pressed()
 		elif kc == KEY_T:
 			_on_tp_send_pressed()
 		elif kc == KEY_Y:
@@ -1097,6 +1130,66 @@ func _on_cloak_pressed() -> void:
 			_banner("은폐 장치 가동! (회피 +60%)")
 
 
+func _on_battery_pressed() -> void:
+	if player_ship == null or not player_ship.systems.has("battery"):
+		return
+	if player_ship.activate_battery():
+		_banner("예비 배터리 가동! (30초간 원자로 전력 +%d)" % player_ship.battery_bonus)
+		_update_hud_labels()
+	else:
+		_banner("예비 배터리를 가동할 수 없습니다 (재충전 중 또는 손상).")
+
+
+func _show_surrender_modal(offer: Dictionary) -> void:
+	_open_modal("surrender", 620, 320)
+	modal_box.add_child(_mk_label("INCOMING TRANSMISSION — ENEMY SURRENDER", 17, Color("ffd54f")))
+	var w_id := str(offer.get("weapon", ""))
+	var w_line := ("\n  + Weapon: %s" % str(db.weapons.get(w_id, {}).get("title", w_id))) if not w_id.is_empty() else ""
+	var body := _mk_label(
+		"\"Please, hold your fire! Our hull is failing — take our cargo and spare our lives!\"\n\n" +
+		"Surrender Offer:\n  +%d Scrap, +%d Fuel, +%d Missiles, +%d Drone Parts%s" % [
+			int(offer.get("scrap", 15)), int(offer.get("fuel", 2)),
+			int(offer.get("missiles", 1)), int(offer.get("drone_parts", 0)), w_line
+		],
+		14, Color("e6eef5")
+	)
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	modal_box.add_child(body)
+	var btn_accept := _mk_btn("1. 항복 수락 (Accept Surrender & Take Tribute)", func():
+		var sg := int(offer.get("scrap", 15))
+		player_ship.scrap += sg
+		scrap_collected += sg
+		player_ship.fuel += int(offer.get("fuel", 2))
+		player_ship.missiles += int(offer.get("missiles", 1))
+		player_ship.drone_parts += int(offer.get("drone_parts", 0))
+		if not w_id.is_empty():
+			player_ship.add_weapon(w_id)
+		if enemy_ship != null:
+			player_ship.retrieve_all_boarders(enemy_ship)
+			player_ship.clear_hacking(enemy_ship)
+		in_combat = false
+		targeting_weapon_idx = -1
+		special_target_mode = ""
+		selected_boarder_id = -1
+		enemy_ship = null
+		battle_view.set_ships(player_ship, null)
+		audio.set_combat(false)
+		audio.play_sfx("upgradeSystem")
+		_close_modal()
+		_rebuild_hud_controls()
+		_save_run()
+		_banner("적의 항복을 수락했습니다! (+%d Scrap)" % sg)
+	, true)
+	modal_box.add_child(btn_accept)
+	var btn_refuse := _mk_btn("2. 거절하고 계속 공격 (We will not accept surrender!)", func():
+		if enemy_ship != null:
+			enemy_ship.surrender_declined = true
+		_close_modal()
+		_banner("항복 제안을 거절했습니다 — 전투 계속!")
+	)
+	modal_box.add_child(btn_refuse)
+
+
 func _on_tp_send_pressed() -> void:
 	if player_ship == null or not in_combat or not player_ship.systems.has("teleporter"):
 		return
@@ -1271,6 +1364,7 @@ func _rebuild_hud_controls() -> void:
 		drone_h.add_child(db_btn)
 
 	hud_refs["cloak_btn"].visible = player_ship.systems.has("cloaking")
+	hud_refs["battery_btn"].visible = player_ship.systems.has("battery")
 	hud_refs["tp_send_btn"].visible = player_ship.systems.has("teleporter")
 	hud_refs["tp_back_btn"].visible = player_ship.systems.has("teleporter")
 	hud_refs["hack_btn"].visible = player_ship.systems.has("hacking")
@@ -1289,6 +1383,11 @@ func _rebuild_crew_list() -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size.y = 28
 		box.add_child(btn)
+	# Show Clonebay queue entries if any
+	for q in player_ship.clone_queue:
+		var pct := int(round((1.0 - float(q.timer) / maxf(0.1, float(q.max_time))) * 100.0))
+		var clbl := _mk_label("[CLONE] %s %d%%" % [str(q.crew.name), pct], 12, Color("65e8ff"))
+		box.add_child(clbl)
 	# Also show friendly boarders deployed on the enemy ship
 	if enemy_ship != null and in_combat:
 		for c in enemy_ship.crew:
@@ -1314,7 +1413,8 @@ func _update_hud_labels() -> void:
 	hud_refs["res_lbl"].text = "FUEL %d  MSL %d  DRN %d  SCRAP %d" % [player_ship.fuel, player_ship.missiles, player_ship.drone_parts, player_ship.scrap]
 	hud_refs["stat_lbl"].text = "EVADE %d%%  O2 %d%%" % [player_ship.get_evasion(), int(round(player_ship.get_average_oxygen()))]
 	hud_refs["sec_lbl"].text = "SEC %d · %s" % [sector_map.current_sector_index + 1, sector_map.current_sector_name]
-	hud_refs["react_lbl"].text = "%d / %d" % [player_ship.get_available_reactor_power(), player_ship.reactor_max]
+	var bat_tag := (" +%dB" % player_ship.battery_bonus) if player_ship.battery_bonus > 0 else ""
+	hud_refs["react_lbl"].text = "%d / %d%s" % [player_ship.get_available_reactor_power(), player_ship.get_total_reactor_max(), bat_tag]
 	hud_refs["btn_jump"].text = "JUMP (J)" if (not in_combat or player_ship.ftl_charge >= 1.0) else "FTL %d%%" % int(player_ship.ftl_charge * 100.0)
 
 	var cur_b: Dictionary = sector_map.beacons[sector_map.current_beacon_id] if not sector_map.beacons.is_empty() else {}
@@ -1338,7 +1438,11 @@ func _update_hud_labels() -> void:
 				bars += "■"
 			else:
 				bars += "□"
-		btn.text = "%s\n%s\n%d/%d" % [sname.left(4).to_upper(), bars, eff, int(s.level)]
+		if sname == "artillery" and eff > 0 and in_combat:
+			var apct := int(round(clampf(player_ship.artillery_charge / maxf(1.0, player_ship.artillery_cooldown), 0.0, 1.0) * 100.0))
+			btn.text = "ARTI\n%s\n%d%%" % [bars, apct]
+		else:
+			btn.text = "%s\n%s\n%d/%d" % [sname.left(4).to_upper(), bars, eff, int(s.level)]
 
 	# Update weapon buttons
 	var wpn_h: HBoxContainer = hud_refs["wpn_h"]
@@ -1348,8 +1452,11 @@ func _update_hud_labels() -> void:
 		var wb: Button = wpn_h.get_child(i)
 		var w: Dictionary = player_ship.weapons[i]
 		var is_beam := str(w.bp.get("type", "")) == "BEAM"
-		var pct := int(round(clampf(float(w.charge) / maxf(0.1, float(w.cooldown)), 0.0, 1.0) * 100.0))
-		var st := "READY" if pct >= 100 else ("%d%%" % pct)
+		var eff_cd := player_ship.get_weapon_effective_cooldown(w)
+		var max_chg := maxi(1, int(w.bp.get("chargeLevels", 1)))
+		var cur_chg := int(w.get("charge_level", 0))
+		var pct := int(round(clampf(float(w.charge) / maxf(0.1, eff_cd), 0.0, 1.0) * 100.0))
+		var st := ("CHG %d/%d" % [cur_chg, max_chg]) if (max_chg > 1 and cur_chg > 0) else ("READY" if pct >= 100 else ("%d%%" % pct))
 		if not bool(w.powered):
 			st = "OFF"
 		elif targeting_weapon_idx == i:
@@ -1358,6 +1465,9 @@ func _update_hud_labels() -> void:
 			st += " x%d" % (w.get("beam_rooms", []) as Array).size()
 		elif int(w.target_room) >= 0:
 			st += " ◎"
+		var chain_cnt := int(w.get("chain_count", 0))
+		if chain_cnt > 0 and bool(w.powered):
+			st += " C%d" % chain_cnt
 		wb.text = "[%d] %s\nPWR:%d  %s" % [i + 1, str(w.bp.get("short", w.id)).left(13), int(w.bp.get("power", 1)), st]
 		var border := Color("7eff8b") if targeting_weapon_idx == i else (Color("ffcf5c") if bool(w.powered) else Color("3b4c5e"))
 		wb.add_theme_stylebox_override("normal", _box(Color("1c2d3d") if bool(w.powered) else Color("111820"), border, 5, 6))
@@ -1397,11 +1507,20 @@ func _update_hud_labels() -> void:
 			hud_refs["cloak_btn"].text = "CD %.0fs" % player_ship.cloak_cooldown
 		else:
 			hud_refs["cloak_btn"].text = "CLOAK (C)"
+	if player_ship.systems.has("battery"):
+		if player_ship.battery_timer > 0.0:
+			hud_refs["battery_btn"].text = "BAT %.0fs" % player_ship.battery_timer
+		elif player_ship.battery_cooldown > 0.0:
+			hud_refs["battery_btn"].text = "BAT CD %.0fs" % player_ship.battery_cooldown
+		else:
+			hud_refs["battery_btn"].text = "BAT (B)"
 
 	# Banner
 	var b_lbl: Label = hud_refs["banner"]
 	if paused:
 		b_lbl.text = "— PAUSED (Space 재개 · 전력/무기/승무원 명령 가능) —"
+	elif in_combat and enemy_ship != null and enemy_ship.fleeing:
+		b_lbl.text = "⚠ 적 함선 FTL 도주 충전 중 (%d%%) — 조종실/엔진을 파괴하세요!" % int(enemy_ship.flee_ftl_charge * 100.0)
 	elif status_banner_time > 0.0:
 		b_lbl.text = status_banner_text
 	else:
@@ -1456,6 +1575,7 @@ func _on_beacon_jump_requested(bid: int) -> void:
 	var b := sector_map.jump_to(bid)
 	if b.is_empty():
 		return
+	player_ship.on_ftl_jump()
 	audio.play_sfx("jump")
 	battle_view.clear_combat_fx()
 	battle_view.set_backdrop(bid + sector_map.current_sector_index * 31, bool(b.nebula), str(b.hazard))
@@ -1745,6 +1865,32 @@ func _open_upgrades() -> void:
 			)
 			modal_box.add_child(wb)
 
+	if not player_ship.cargo_drones.is_empty():
+		modal_box.add_child(_mk_label("CARGO DRONES (클릭해 장착/교체)", 14, Color("5ce1ff")))
+		for i in range(player_ship.cargo_drones.size()):
+			var did := player_ship.cargo_drones[i]
+			var db_btn := _mk_btn("Equip Drone: %s" % str(db.drones.get(did, {}).get("title", did)), func():
+				var swapped := player_ship.cargo_drones[i]
+				if player_ship.drones.size() < player_ship.drone_slots:
+					player_ship.cargo_drones.remove_at(i)
+					player_ship.add_drone(swapped)
+				elif not player_ship.drones.is_empty():
+					var old_id: String = player_ship.drones[-1].id
+					player_ship.drones.pop_back()
+					player_ship.cargo_drones[i] = old_id
+					player_ship.add_drone(swapped)
+				_rebuild_hud_controls()
+				_open_upgrades()
+			)
+			modal_box.add_child(db_btn)
+
+	if not player_ship.augments.is_empty():
+		modal_box.add_child(_mk_label("AUGMENTS (%d/3)" % player_ship.augments.size(), 14, Color("c8f0a0")))
+		for aid in player_ship.augments:
+			var abp: Dictionary = db.augments.get(aid, {})
+			var albl := _mk_label("• %s — %s" % [str(abp.get("title", aid)), str(abp.get("desc", "")).left(84)], 12, Color("d8e8f5"))
+			modal_box.add_child(albl)
+
 
 func _generate_store_inventory() -> Dictionary:
 	return {
@@ -1787,7 +1933,7 @@ func _open_store() -> void:
 			player_ship.scrap -= rep_cost; player_ship.hull += 1; audio.play_sfx("upgradeSystem"); _open_store()
 	, player_ship.hull < player_ship.max_hull and player_ship.scrap >= rep_cost))
 
-	modal_box.add_child(_mk_label("WEAPONS", 14, Color("ffd54f")))
+	modal_box.add_child(_mk_label("WEAPONS & DRONES", 14, Color("ffd54f")))
 	for wid in current_store_inventory.get("weapons", []):
 		var w: Dictionary = db.weapons.get(str(wid), {})
 		var cost := int(w.get("cost", 50))
@@ -1799,6 +1945,17 @@ func _open_store() -> void:
 				_rebuild_hud_controls()
 				_open_store()
 		, player_ship.scrap >= cost))
+	for did in current_store_inventory.get("drones", []):
+		var dr: Dictionary = db.drones.get(str(did), {})
+		var dcost := int(dr.get("cost", 50))
+		modal_box.add_child(_mk_btn("Drone: %s (%d PWR · %s · %d Scrap)" % [str(dr.get("title", did)), int(dr.get("power", 2)), str(dr.get("type", "COMBAT")), dcost], func():
+			if player_ship.scrap >= dcost and player_ship.add_drone(str(did)):
+				player_ship.scrap -= dcost
+				current_store_inventory.drones.erase(did)
+				audio.play_sfx("upgradeSystem")
+				_rebuild_hud_controls()
+				_open_store()
+		, player_ship.scrap >= dcost))
 
 	modal_box.add_child(_mk_label("CREW & AUGMENTS", 14, Color("93b9d8")))
 	var crew_sp := str(current_store_inventory.get("crew", ""))
@@ -1827,12 +1984,15 @@ func _open_store() -> void:
 				_open_store()
 		, player_ship.scrap >= acost))
 
-	# Installable Systems (Teleporter, Hacking, Mind Control, Cloaking)
+	# Installable Systems (Teleporter, Hacking, Mind Control, Cloaking, Battery, Drones, Clonebay)
 	var sys_catalog := [
 		{"id": "teleporter", "name": "Crew Teleporter (텔레포터 보딩)", "cost": 90},
 		{"id": "hacking", "name": "Hacking System (해킹 +2 드론부품)", "cost": 80},
 		{"id": "mind", "name": "Mind Control (마인드 컨트롤)", "cost": 75},
 		{"id": "cloaking", "name": "Cloaking (은폐 장치)", "cost": 150},
+		{"id": "battery", "name": "Backup Battery (예비 배터리 +2/+4 전력)", "cost": 35},
+		{"id": "drones", "name": "Drone Control (드론 관제 +2 드론부품)", "cost": 85},
+		{"id": "clonebay", "name": "Clone Bay (클론베이 · 의료실 대체)", "cost": 50},
 	]
 	var avail_sys: Array = []
 	for item in sys_catalog:
@@ -1851,7 +2011,7 @@ func _open_store() -> void:
 			var sbtn := _mk_btn("%s (%d Scrap)" % [str(item.name), scost], func():
 				if player_ship.scrap >= scost and player_ship.install_system(sid):
 					player_ship.scrap -= scost
-					if sid == "hacking":
+					if sid == "hacking" or sid == "drones":
 						player_ship.drone_parts += 2
 					audio.play_sfx("upgradeSystem")
 					_rebuild_hud_controls()
@@ -1859,6 +2019,46 @@ func _open_store() -> void:
 			, player_ship.scrap >= scost)
 			sbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			sgrid.add_child(sbtn)
+
+	# Sell Equipment (50% Scrap refund)
+	var has_sellable := not player_ship.cargo_weapons.is_empty() or not player_ship.cargo_drones.is_empty() or player_ship.weapons.size() > 1 or not player_ship.drones.is_empty() or not player_ship.augments.is_empty()
+	if has_sellable:
+		modal_box.add_child(_mk_label("SELL EQUIPMENT (장비 판매 · 50% 환급)", 14, Color("ff9e80")))
+		var sell_grid := GridContainer.new()
+		sell_grid.columns = 2
+		sell_grid.add_theme_constant_override("h_separation", 8)
+		sell_grid.add_theme_constant_override("v_separation", 5)
+		modal_box.add_child(sell_grid)
+		for i in range(player_ship.cargo_weapons.size()):
+			var cwid := player_ship.cargo_weapons[i]
+			var wbp: Dictionary = db.weapons.get(cwid, {})
+			var refund := maxi(10, int(wbp.get("cost", 40)) / 2)
+			sell_grid.add_child(_mk_btn("Sell [Cargo] %s (+%d)" % [str(wbp.get("short", cwid)), refund], func():
+				player_ship.cargo_weapons.remove_at(i)
+				player_ship.scrap += refund
+				audio.play_sfx("upgradeSystem")
+				_open_store()
+			))
+		for i in range(player_ship.cargo_drones.size()):
+			var cdid := player_ship.cargo_drones[i]
+			var dbp: Dictionary = db.drones.get(cdid, {})
+			var refund := maxi(10, int(dbp.get("cost", 50)) / 2)
+			sell_grid.add_child(_mk_btn("Sell [Cargo] %s (+%d)" % [str(dbp.get("short", cdid)), refund], func():
+				player_ship.cargo_drones.remove_at(i)
+				player_ship.scrap += refund
+				audio.play_sfx("upgradeSystem")
+				_open_store()
+			))
+		for i in range(player_ship.augments.size()):
+			var aid := player_ship.augments[i]
+			var abp: Dictionary = db.augments.get(aid, {})
+			var refund := maxi(10, int(abp.get("cost", 50)) / 2)
+			sell_grid.add_child(_mk_btn("Sell Aug: %s (+%d)" % [str(abp.get("title", aid)).left(18), refund], func():
+				player_ship.augments.remove_at(i)
+				player_ship.scrap += refund
+				audio.play_sfx("upgradeSystem")
+				_open_store()
+			))
 
 
 func _open_profile_modal() -> void:

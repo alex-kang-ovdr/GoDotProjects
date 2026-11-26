@@ -187,6 +187,88 @@ func _run() -> void:
 	_check(beam_hits.size() >= 2 and beam_hits.has(int(adv_enemy.rooms[0].id)) and beam_hits.has(int(adv_enemy.rooms[-1].id)),
 		"Beam drag-line segment intersects multiple exact rooms", "rooms=%s" % str(beam_hits))
 
+	# 8e. Backup Battery (+2 reactor power, 30s active, auto-reclaim on expiry)
+	var inst_bat := adv_player.install_system("battery")
+	var base_react := adv_player.get_total_reactor_max()
+	var bat_ok := adv_player.activate_battery()
+	var boosted_react := adv_player.get_total_reactor_max()
+	adv_player.step(30.5, adv_enemy, false)
+	_check(inst_bat and bat_ok and boosted_react == base_react + 2 and adv_player.battery_bonus == 0 and adv_player.battery_cooldown > 0.0,
+		"Backup Battery boosts reactor +2 and expires into cooldown", "base=%d boosted=%d" % [base_react, boosted_react])
+
+	# 8f. Federation Cruiser A Artillery Beam auto-charge & shield-piercing fire
+	var fed := FTLShip.new()
+	fed.init_from_blueprint(db, "PLAYER_SHIP_FED", true, 0)
+	if fed.systems.has("artillery") and fed.get_effective_system_power("artillery") <= 0:
+		fed.reactor_max += 1
+		fed.add_system_power("artillery")
+	fed.artillery_charge = 49.5
+	fed.pending_shots.clear()
+	fed.step(1.0, adv_enemy, true)
+	var art_fired := false
+	for sh_ev in fed.pending_shots:
+		if str(sh_ev.weapon.get("id", "")) == "ARTILLERY_FED" and int(sh_ev.weapon.bp.get("sp", 0)) >= 5:
+			art_fired = true
+	_check(fed.systems.has("artillery") and art_fired, "Federation A Artillery Beam charges and fires shield-piercing beam")
+
+	# 8g. AE Weapon Mechanics: Flak multi-projectile XML + Chain Vulcan cooldown reduction
+	var flak_bp: Dictionary = db.weapons.get("SHOTGUN", {})
+	_check(int(flak_bp.get("shots", 0)) >= 3 and float(flak_bp.get("radius", 0.0)) > 0.0,
+		"Flak I (SHOTGUN) parses real multi-projectile count & scatter radius", "shots=%d rad=%.0f" % [int(flak_bp.get("shots", 0)), float(flak_bp.get("radius", 0.0))])
+	var vulcan_ship := FTLShip.new()
+	vulcan_ship.init_from_blueprint(db, "PLAYER_SHIP_HARD", true, 0)
+	vulcan_ship.weapons.clear()
+	vulcan_ship.add_weapon("LASER_CHAINGUN_2")
+	var vw: Dictionary = vulcan_ship.weapons[0]
+	var cd0 := vulcan_ship.get_weapon_effective_cooldown(vw)
+	vw.chain_count = 5
+	var cd5 := vulcan_ship.get_weapon_effective_cooldown(vw)
+	_check(cd5 < cd0 and cd5 <= 2.0, "Chain Vulcan reduces effective cooldown across chain stacks", "cd0=%.1f cd5=%.1f" % [cd0, cd5])
+
+	# 8h. Clonebay replaces Medbay, queues dead crew revival, and heals on FTL jump
+	var cb_ship := FTLShip.new()
+	cb_ship.init_from_blueprint(db, "PLAYER_SHIP_HARD", true, 0)
+	var cb_inst := cb_ship.install_system("clonebay")
+	if cb_ship.get_effective_system_power("clonebay") <= 0:
+		cb_ship.reactor_max += 1
+		cb_ship.add_system_power("clonebay")
+	var dying_crew: Dictionary = cb_ship.crew[0]
+	var dying_name := str(dying_crew.name)
+	dying_crew.hp = 0.0
+	cb_ship.step(0.1, null, false)
+	var queued_ok := cb_ship.clone_queue.size() == 1 and cb_ship.has_living_crew()
+	for _ct in range(130):
+		cb_ship.step(0.1, null, false)
+	var revived := false
+	for c in cb_ship.crew:
+		if str(c.name) == dying_name and float(c.hp) >= float(c.max_hp):
+			revived = true
+	cb_ship.crew[0].hp = 50.0
+	cb_ship.on_ftl_jump()
+	_check(cb_inst and not cb_ship.systems.has("medbay") and queued_ok and revived and float(cb_ship.crew[0].hp) > 50.0,
+		"Clonebay replaces Medbay, revives via queue, and heals on FTL jump")
+
+	# 8i. Enemy FTL Escape charging & full Ship Save/Load round-trip
+	var flee_enemy := FTLShip.new()
+	flee_enemy.init_from_blueprint(db, adv_enemy.blueprint_id, false, 1)
+	flee_enemy.systems.pilot.level = 2
+	flee_enemy.systems.engines.power = 2
+	flee_enemy.fleeing = true
+	flee_enemy.flee_ftl_charge = 0.0
+	flee_enemy.step(2.0, adv_player, true)
+	_check(flee_enemy.flee_ftl_charge > 0.0, "Fleeing enemy charges FTL escape drive", "ftl=%.2f" % flee_enemy.flee_ftl_charge)
+
+	adv_player.scrap = 321
+	adv_player.upgrade_system("shields")
+	var expected_scrap := adv_player.scrap
+	adv_player.augments.append("SCRAP_COLLECTOR")
+	var saved_state := adv_player.serialize_state()
+	var restored := FTLShip.new()
+	restored.init_from_blueprint(db, adv_player.blueprint_id, true, 0)
+	restored.deserialize_state(saved_state)
+	_check(restored.scrap == expected_scrap and restored.systems.has("teleporter") and restored.systems.has("battery") and restored.has_augment("SCRAP_COLLECTOR") and int(restored.systems.shields.level) == int(adv_player.systems.shields.level),
+		"Ship serialize_state/deserialize_state preserves systems, upgrades & augments")
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())
