@@ -7,6 +7,7 @@ const RADIATOR_ID := "cosmoteer.radiator"
 const THERMAL_BATTERY_ID := "cosmoteer.thermal_battery"
 const HEAT_PIPE_ID := "cosmoteer.heat_pipe_adaptive"
 const HEAT_PIPE_CROSS_ID := "cosmoteer.heat_pipe_crossing"
+const HEAT_PIPE_STRUCT_ID := "cosmoteer.heat_pipe_adaptive_structure"
 const HEAT_EXCHANGER_ID := "cosmoteer.heat_exchanger"
 const RADIATOR_COOLING := 6.0
 const ROOM := {
@@ -83,7 +84,7 @@ static func radiator_cooling(ship: Dictionary) -> float:
 	for uid in ship.ids.get(HEAT_EXCHANGER_ID, []):
 		if ship.parts[uid].hp > 0:
 			bonus += 3.0
-	for pid in [HEAT_PIPE_ID, HEAT_PIPE_CROSS_ID]:
+	for pid in [HEAT_PIPE_ID, HEAT_PIPE_CROSS_ID, HEAT_PIPE_STRUCT_ID]:
 		for uid in ship.ids.get(pid, []):
 			if ship.parts[uid].hp > 0:
 				bonus += 1.5

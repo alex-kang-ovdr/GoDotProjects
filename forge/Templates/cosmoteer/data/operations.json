@@ -135,6 +135,23 @@
       "background": "bg_galaxy",
       "planet": "planet_gas_ringed",
       "nebula": "ion_storm"
+    },
+    {
+      "id": "asteroid_belt_rush",
+      "title": "소행성대 자원 채굴",
+      "summary": "소행성대에서 채굴 레이저와 정련 공장으로 목표 자원(2,500 CR)을 확보하세요.",
+      "objective": "mine",
+      "opponent": "miner",
+      "distance": 180,
+      "seconds": 0,
+      "ai": "standoff",
+      "requires": "ion_storm_armada",
+      "faction": "fringe",
+      "background": "bg_tan_teal_blue",
+      "planet": "planet_rocky",
+      "nebula": "cloudy",
+      "asteroids": 12,
+      "mining_goal": 2500
     }
   ]
 }

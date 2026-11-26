@@ -74,6 +74,9 @@ func _draw() -> void:
 	_draw_environment(_camera_center, _zoom)
 	_draw_world_grid(_camera_center, _zoom)
 	var viewport_center := size * 0.5
+	_draw_asteroids(_camera_center, _zoom, viewport_center)
+	_draw_ship_lights(battle.player, _camera_center, _zoom, viewport_center)
+	_draw_ship_lights(battle.enemy, _camera_center, _zoom, viewport_center)
 	_draw_thruster_plumes(battle.player, _camera_center, _zoom, viewport_center)
 	_draw_thruster_plumes(battle.enemy, _camera_center, _zoom, viewport_center)
 	_draw_ship(battle.player, _camera_center, _zoom, viewport_center, -1, false)
@@ -112,6 +115,15 @@ func _draw() -> void:
 			draw_rect(Rect2(Vector2(12, 10), Vector2(bw, 22)), Color("#07131d", 0.84), true)
 			draw_rect(Rect2(Vector2(12, 10), Vector2(bw, 22)), Color(str(env_info.color), 0.7), false, 1.2)
 			draw_string(ThemeDB.fallback_font, Vector2(19, 25), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(str(env_info.color)).lightened(0.25))
+	if not battle.asteroids.is_empty():
+		var mtext := "화물 %d/%d  ·  채굴 %d CR" % [int(battle.cargo_total), int(battle.cargo_capacity), int(battle.mined_credits)]
+		if int(battle.mining_goal) > 0:
+			mtext += " / %d CR" % int(battle.mining_goal)
+		var mw := ThemeDB.fallback_font.get_string_size(mtext, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x + 16.0
+		var mx := size.x - mw - 12.0
+		draw_rect(Rect2(Vector2(mx, 10), Vector2(mw, 22)), Color("#07131d", 0.86), true)
+		draw_rect(Rect2(Vector2(mx, 10), Vector2(mw, 22)), Color("#ffe36e", 0.72), false, 1.2)
+		draw_string(ThemeDB.fallback_font, Vector2(mx + 8, 25), mtext, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#ffe36e"))
 	_draw_tactical_inset()
 
 
@@ -217,6 +229,53 @@ func _draw_environment(center: Vector2, zoom: float) -> void:
 			var end_pt := mid + Vector2(-22.0, 52.0)
 			draw_line(start, mid, Color("#d4b3ff", 0.45), 2.4, true)
 			draw_line(mid, end_pt, Color("#ffffff", 0.55), 1.5, true)
+
+
+func _draw_asteroids(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	for ast in battle.asteroids:
+		if float(ast.hp) <= 0.0:
+			continue
+		var center := _world_to_screen(Vector2(ast.pos), camera, zoom, viewport_center)
+		var r := maxf(4.5, float(ast.radius) * zoom)
+		var pts := PackedVector2Array()
+		var seed_v := int(ast.get("seed", 1))
+		for k in 9:
+			var ang := TAU * float(k) / 9.0
+			var jitter := 0.78 + 0.34 * fposmod(sin(float(seed_v + k * 19)) * 43758.5, 1.0)
+			pts.append(center + Vector2.from_angle(ang) * r * jitter)
+		var rock_col := Color("#434b56")
+		var vein_col := Color(str(ast.get("color", "#9fb2c2")))
+		draw_colored_polygon(pts, rock_col)
+		var outline := PackedVector2Array(pts)
+		outline.append(pts[0])
+		draw_polyline(outline, vein_col.darkened(0.25), 1.4, true)
+		draw_circle(center + Vector2(-r * 0.22, -r * 0.12), maxf(1.8, r * 0.24), Color(vein_col, 0.85))
+		draw_circle(center + Vector2(r * 0.25, r * 0.18), maxf(1.5, r * 0.18), Color(vein_col.lightened(0.25), 0.9))
+		var ratio := clampf(float(ast.hp) / maxf(1.0, float(ast.max_hp)), 0.0, 1.0)
+		if ratio < 0.999:
+			draw_arc(center, r + 3.0, -PI * 0.5, -PI * 0.5 + TAU * ratio, 20, vein_col, 1.8, true)
+
+
+func _draw_ship_lights(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	if not ship.get("command", false):
+		return
+	for uid in ship.get("ids", {}).get(CombatSystems.ROOF_LIGHT, []):
+		var p: Dictionary = ship.parts[uid]
+		if float(p.hp) <= 0.0:
+			continue
+		var c := _world_to_screen(_part_world(ship, int(uid)), camera, zoom, viewport_center)
+		draw_circle(c, maxf(8.0, 6.0 * zoom), Color("#fff2cc", 0.10))
+	for uid in ship.get("ids", {}).get(CombatSystems.ROOF_HEADLIGHT, []):
+		var p: Dictionary = ship.parts[uid]
+		if float(p.hp) <= 0.0:
+			continue
+		var origin_w := _part_world(ship, int(uid))
+		var facing := float(ship.heading) + float(int(p.rotation) - 1) * PI * 0.5
+		var cone_len := 36.0
+		var p0 := _world_to_screen(origin_w, camera, zoom, viewport_center)
+		var p1 := _world_to_screen(origin_w + Vector2.from_angle(facing - 0.24) * cone_len, camera, zoom, viewport_center)
+		var p2 := _world_to_screen(origin_w + Vector2.from_angle(facing + 0.24) * cone_len, camera, zoom, viewport_center)
+		draw_colored_polygon(PackedVector2Array([p0, p1, p2]), Color("#d8f3ff", 0.09))
 
 
 func _draw_world_grid(center: Vector2, zoom: float) -> void:

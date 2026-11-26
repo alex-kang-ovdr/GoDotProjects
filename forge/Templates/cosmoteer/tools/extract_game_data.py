@@ -351,6 +351,46 @@ def extract_ai_profiles(data_root: Path) -> list[str]:
     return [f.stem for f in sorted(adir.glob("ai_*.rules"))]
 
 
+def extract_resources(data_root: Path, strings: dict[str, str]) -> dict[str, dict[str, Any]]:
+    rdir = data_root / "resources"
+    if not rdir.is_dir():
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for f in sorted(rdir.glob("*/*.rules")):
+        rid = f.parent.name
+        text = _strip_comments(f.read_text(encoding="utf-8", errors="ignore"))
+        price = _find_first_number(text, "BuyPrice") or _find_first_number(text, "BasePrice") or 0.0
+        max_stack = _find_first_number(text, "MaxStackSize") or 1.0
+        name_key = f"Resources/{rid.capitalize()}"
+        out[rid] = {
+            "id": rid,
+            "name_en": strings.get(name_key, rid.replace("_", " ").title()),
+            "price": round(float(price), 2),
+            "max_stack": int(max_stack),
+            "source_file": f.relative_to(data_root).as_posix(),
+        }
+    return out
+
+
+def extract_asteroids(data_root: Path) -> list[dict[str, Any]]:
+    adir = data_root / "doodads" / "asteroids"
+    if not adir.is_dir():
+        return []
+    out: list[dict[str, Any]] = []
+    for sub in sorted(adir.iterdir()):
+        if not sub.is_dir():
+            continue
+        variants = sorted(f.stem for f in sub.glob("*.rules"))
+        if not variants:
+            continue
+        out.append({
+            "resource": sub.name,
+            "variants": len(variants),
+            "sample": variants[0],
+        })
+    return out
+
+
 def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     strings = parse_en_strings(data_root)
     factions = extract_factions(data_root, strings)
@@ -362,9 +402,11 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
     planets = extract_planets(data_root)
     sectors = extract_sectors(data_root)
     ai_profiles = extract_ai_profiles(data_root)
+    resources = extract_resources(data_root, strings)
+    asteroids = extract_asteroids(data_root)
 
     payload = {
-        "version": 2,
+        "version": 3,
         "summary": {
             "strings_loaded": len(strings),
             "factions_count": len(factions),
@@ -376,6 +418,8 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
             "planets_count": len(planets),
             "sectors_count": len(sectors),
             "ai_profiles_count": len(ai_profiles),
+            "resources_count": len(resources),
+            "asteroids_count": len(asteroids),
         },
         "factions": factions,
         "buffs": buffs,
@@ -384,6 +428,8 @@ def extract_all_rules(data_root: Path, out_path: Path) -> dict[str, Any]:
         "planets": planets,
         "sectors": sectors,
         "ai_profiles": ai_profiles,
+        "resources": resources,
+        "asteroids": asteroids,
         "shots": shots,
         "part_specs": part_specs,
     }

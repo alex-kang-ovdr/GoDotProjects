@@ -9,7 +9,7 @@ const EngineRoom = preload("res://sim/engine_room.gd")
 const Operations = preload("res://sim/operations.gd")
 const RESULTS := {"win":"승리", "loss":"패배", "draw":"무승부"}
 const OUTCOMES := {"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함교 제압", "protected_bridge":"보호 대상 함교 파괴",
-	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 제거", "survived":"대피 시간 확보",
+	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 제거", "survived":"대피 시간 확보", "mined":"목표 자원 채굴 완료",
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착"}
 const CORE := {
 	"cosmoteer.corridor":"통로", "cosmoteer.conveyor":"컨베이어 통로", "cosmoteer.airlock":"에어록",
@@ -21,16 +21,25 @@ const CORE := {
 	"cosmoteer.control_room_small":"소형 함교", "cosmoteer.control_room_med":"중형 함교",
 	"cosmoteer.control_room_large":"대형 함교",
 	"cosmoteer.hyperdrive_small":"소형 하이퍼드라이브", "cosmoteer.hyperdrive_med":"중형 하이퍼드라이브",
-	"cosmoteer.hyperdrive_large":"대형 하이퍼드라이브",
+	"cosmoteer.hyperdrive_large":"대형 하이퍼드라이브", "cosmoteer.hyperdrive_beacon":"초공간 도약 비콘",
 	"cosmoteer.fire_extinguisher":"소화기", "cosmoteer.radiator":"방열판",
 	"cosmoteer.thermal_battery":"열 배터리", "cosmoteer.heat_exchanger":"열교환기",
 	"cosmoteer.heat_pipe_adaptive":"열 파이프", "cosmoteer.heat_pipe_crossing":"교차 열 파이프",
+	"cosmoteer.heat_pipe_adaptive_structure":"구조 열 파이프",
 	"cosmoteer.thermal_amplification_pump":"열 증폭 펌프", "cosmoteer.thermal_dilation_pump":"열 팽창 펌프",
 	"cosmoteer.sensor_array":"센서 어레이", "cosmoteer.manipulator_beam_emitter":"수리 매니퓰레이터",
 	"cosmoteer.explosive_charge":"자폭 폭약",
+	"cosmoteer.roof_light":"선체 조명", "cosmoteer.roof_headlight":"전방 탐조등",
+	"cosmoteer.storage_2x2":"2×2 화물 창고", "cosmoteer.storage_3x2":"3×2 화물 창고",
+	"cosmoteer.storage_3x3":"3×3 화물 창고", "cosmoteer.storage_4x3":"4×3 화물 창고",
+	"cosmoteer.storage_4x4":"4×4 화물 창고",
 	"cosmoteer.factory_ammo":"탄약 공장", "cosmoteer.factory_he":"고폭탄 공장",
 	"cosmoteer.factory_emp":"EMP 공장", "cosmoteer.factory_nuke":"핵탄두 공장",
 	"cosmoteer.factory_thermal":"열탄두 공장", "cosmoteer.factory_mine":"기뢰 공장",
+	"cosmoteer.factory_steel":"강철 공장", "cosmoteer.factory_coil":"코일 공장",
+	"cosmoteer.factory_coil2":"하이퍼 코일 공장", "cosmoteer.factory_tristeel":"트리스틸 공장",
+	"cosmoteer.factory_diamond":"다이아몬드 공장", "cosmoteer.factory_processor":"프로세서 공장",
+	"cosmoteer.factory_uranium":"농축 우라늄 공장",
 	"cosmoteer.laser_blaster_small":"소형 레이저", "cosmoteer.laser_blaster_large":"대형 레이저",
 	"cosmoteer.cannon_med":"중형 캐논", "cosmoteer.cannon_large":"대형 캐논",
 	"cosmoteer.cannon_deck":"갑판포", "cosmoteer.missile_launcher":"미사일 발사기",
@@ -46,7 +55,11 @@ const CORE := {
 	"cosmoteer.armor":"장갑", "cosmoteer.armor_2x1":"2×1 장갑", "cosmoteer.armor_wedge":"쐐기 장갑",
 	"cosmoteer.armor_1x2_wedge":"1×2 쐐기 장갑", "cosmoteer.armor_1x3_wedge":"1×3 쐐기 장갑",
 	"cosmoteer.armor_tri":"삼각 장갑", "cosmoteer.armor_structure_hybrid_1x1":"복합 장갑",
+	"cosmoteer.armor_structure_hybrid_1x2":"1×2 복합 장갑", "cosmoteer.armor_structure_hybrid_1x3":"1×3 복합 장갑",
+	"cosmoteer.armor_structure_hybrid_tri":"삼각 복합 장갑",
 	"cosmoteer.structure":"구조 프레임", "cosmoteer.structure_wedge":"쐐기 구조물",
+	"cosmoteer.structure_1x2_wedge":"1×2 쐐기 구조물", "cosmoteer.structure_1x3_wedge":"1×3 쐐기 구조물",
+	"cosmoteer.structure_tri":"삼각 구조물",
 	"cosmoteer.thruster_small":"소형 추진기", "cosmoteer.thruster_small_2way":"2방향 소형 추진기",
 	"cosmoteer.thruster_small_3way":"3방향 소형 추진기", "cosmoteer.thruster_med":"중형 추진기",
 	"cosmoteer.thruster_large":"대형 추진기", "cosmoteer.thruster_huge":"초대형 추진기",
@@ -142,6 +155,7 @@ func build(host) -> void:
 	preset_picker.add_item("갑판포 중전함")
 	preset_picker.add_item("열공명·핵 타이탄")
 	preset_picker.add_item("기뢰·수리 모함")
+	preset_picker.add_item("심우주 채굴·정련선")
 	preset_picker.item_selected.connect(_on_advanced_preset)
 	toolbar.add_child(preset_picker)
 	toolbar.add_child(lab.button("비우기",_clear))
@@ -513,7 +527,14 @@ func _on_advanced_preset(index: int) -> void:
 		4: _deck_brawler_preset()
 		5: _titan_preset()
 		6: _carrier_preset()
+		7: _miner_preset()
 	preset_picker.select(0)
+
+func _miner_preset() -> void:
+	_remember(design.serialize())
+	design.deep_space_miner()
+	note.text = "채굴 레이저 2문·화물 창고·강철/다이아몬드 정련 공장·전방 탐조등·수리 매니퓰레이터를 탑재한 채굴선입니다."
+	_design_changed()
 
 func _carrier_preset() -> void:
 	_remember(design.serialize())

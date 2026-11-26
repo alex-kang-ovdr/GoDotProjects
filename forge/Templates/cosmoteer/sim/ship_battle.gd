@@ -25,6 +25,12 @@ var events: Array[Dictionary] = []
 var projectiles: Array[Dictionary] = []
 var pd_beams: Array[Dictionary] = []
 var ion_beams: Array[Dictionary] = []
+var asteroids: Array[Dictionary] = []
+var cargo: Dictionary = {}
+var cargo_total := 0
+var cargo_capacity := 25
+var mined_credits := 0
+var mining_goal := 0
 var missile_mode := "he"
 var result := "idle"
 var outcome_reason := ""
@@ -54,6 +60,12 @@ func start(design, opponent = null, operation: Dictionary = {}) -> bool:
 	projectiles.clear()
 	pd_beams.clear()
 	ion_beams.clear()
+	asteroids.clear()
+	cargo.clear()
+	cargo_total = 0
+	cargo_capacity = 25
+	mined_credits = 0
+	mining_goal = 0
 	player.clear()
 	enemy.clear()
 	elapsed = 0.0
@@ -82,6 +94,11 @@ func start(design, opponent = null, operation: Dictionary = {}) -> bool:
 	Flight.deploy(enemy, Vector2(half_distance, 0), PI, opponent.ship_physics)
 	_prepare_engines(player)
 	_prepare_engines(enemy)
+	cargo_capacity = CombatSystems.cargo_capacity(player)
+	mining_goal = int(mission.get("mining_goal", 2500 if mission.get("objective") == "mine" else 0))
+	var ast_count := int(mission.get("asteroids", 10 if mission.get("objective") == "mine" else 0))
+	if ast_count > 0:
+		asteroids = CombatSystems.spawn_asteroid_field(ast_count, Vector2(-half_distance * 0.35, 0.0), maxf(85.0, half_distance * 0.9))
 	target_uid = _choose_target(enemy, CombatSystems.WEAPON_IDS if mission.get("objective") == "disarm" else [ARMOR, CombatSystems.ARMOR_2X1, GUN, CombatSystems.LASER_LARGE, CombatSystems.CANNON_MED, CombatSystems.CANNON_LARGE, CombatSystems.CANNON_DECK, CombatSystems.MISSILE_LAUNCHER, CombatSystems.RESONANCE_LANCE] + CombatSystems.BRIDGE_IDS)
 	enemy_target_uid = _choose_target(player, CombatSystems.BRIDGE_IDS)
 	result = "active"
@@ -126,6 +143,9 @@ static func _make_opponent(profile: String):
 		return opponent
 	if profile == "carrier":
 		opponent.mine_factory_carrier()
+		return opponent
+	if profile == "miner":
+		opponent.deep_space_miner()
 		return opponent
 	opponent.flight_starter()
 	match profile:
@@ -575,6 +595,20 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 	var active_ions := CombatSystems.tick_ion_beams(ship, other, side, target, DT)
 	active_ions.append_array(CombatSystems.tick_tractor_beams(ship, other, side, DT))
 	active_ions.append_array(CombatSystems.tick_manipulator_beams(ship, side, DT))
+	if side == "player" and not asteroids.is_empty():
+		var mine_rep := CombatSystems.tick_asteroid_mining(ship, asteroids, side, DT, mission.get("objective") == "mine")
+		active_ions.append_array(mine_rep.beams)
+		var earned := roundi(float(mine_rep.credits))
+		if earned > 0:
+			mined_credits += earned
+			_last_hit = _tick
+		for rkey in mine_rep.harvested:
+			var room := maxi(0, cargo_capacity - cargo_total)
+			var take := mini(room, int(mine_rep.harvested[rkey]))
+			if take > 0:
+				cargo[rkey] = int(cargo.get(rkey, 0)) + take
+				cargo_total += take
+				_record("mine", side, 0, 0)
 	for beam in active_ions:
 		ion_beams.append(beam)
 		if beam.hit_kind == "shield":
@@ -900,6 +934,14 @@ func _resolve() -> void:
 	var ours := _choose_target(player, CombatSystems.BRIDGE_IDS) >= 0
 	var theirs := _choose_target(enemy, CombatSystems.BRIDGE_IDS) >= 0
 	match mission.get("objective", "duel"):
+		"mine":
+			if not ours:
+				_finish("loss", "own_bridge")
+			elif mining_goal > 0 and mined_credits >= mining_goal:
+				_finish("win", "mined")
+			elif not theirs:
+				_finish("win", "enemy_bridge")
+			return
 		"survive":
 			if not ours:
 				_finish("loss", "own_bridge")

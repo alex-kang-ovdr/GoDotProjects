@@ -117,7 +117,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 	var hyperdrive_mult := 1.0
 	if ship.get("command", false):
 		var hd_bonus := 0.0
-		for hid in ["cosmoteer.hyperdrive_small", "cosmoteer.hyperdrive_med", "cosmoteer.hyperdrive_large"]:
+		for hid in ["cosmoteer.hyperdrive_small", "cosmoteer.hyperdrive_med", "cosmoteer.hyperdrive_large", "cosmoteer.hyperdrive_beacon"]:
 			for huid in ship.get("ids", {}).get(hid, []):
 				var hp_part: Dictionary = ship.parts[huid]
 				if float(hp_part.hp) > 0.0 and int(hp_part.energy) > 0:

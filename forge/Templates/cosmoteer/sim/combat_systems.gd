@@ -49,13 +49,20 @@ const ARMOR_1X3_WEDGE := "cosmoteer.armor_1x3_wedge"
 const ARMOR_TRI := "cosmoteer.armor_tri"
 const STRUCTURE := "cosmoteer.structure"
 const STRUCTURE_WEDGE := "cosmoteer.structure_wedge"
+const STRUCTURE_1X2_WEDGE := "cosmoteer.structure_1x2_wedge"
+const STRUCTURE_1X3_WEDGE := "cosmoteer.structure_1x3_wedge"
+const STRUCTURE_TRI := "cosmoteer.structure_tri"
 const ARMOR_HYBRID_1X1 := "cosmoteer.armor_structure_hybrid_1x1"
+const ARMOR_HYBRID_1X2 := "cosmoteer.armor_structure_hybrid_1x2"
+const ARMOR_HYBRID_1X3 := "cosmoteer.armor_structure_hybrid_1x3"
+const ARMOR_HYBRID_TRI := "cosmoteer.armor_structure_hybrid_tri"
 const FIRE_EXTINGUISHER := "cosmoteer.fire_extinguisher"
 const THERMAL_BATTERY := "cosmoteer.thermal_battery"
 const THERMAL_AMP_PUMP := "cosmoteer.thermal_amplification_pump"
 const THERMAL_DIL_PUMP := "cosmoteer.thermal_dilation_pump"
 const HEAT_PIPE := "cosmoteer.heat_pipe_adaptive"
 const HEAT_PIPE_CROSS := "cosmoteer.heat_pipe_crossing"
+const HEAT_PIPE_STRUCT := "cosmoteer.heat_pipe_adaptive_structure"
 const HEAT_EXCHANGER := "cosmoteer.heat_exchanger"
 const EXPLOSIVE_CHARGE := "cosmoteer.explosive_charge"
 const MANIPULATOR_BEAM := "cosmoteer.manipulator_beam_emitter"
@@ -63,12 +70,27 @@ const AIRLOCK := "cosmoteer.airlock"
 const HYPERDRIVE_SMALL := "cosmoteer.hyperdrive_small"
 const HYPERDRIVE_MED := "cosmoteer.hyperdrive_med"
 const HYPERDRIVE_LARGE := "cosmoteer.hyperdrive_large"
+const HYPERDRIVE_BEACON := "cosmoteer.hyperdrive_beacon"
+const ROOF_LIGHT := "cosmoteer.roof_light"
+const ROOF_HEADLIGHT := "cosmoteer.roof_headlight"
+const STORAGE_2X2 := "cosmoteer.storage_2x2"
+const STORAGE_3X2 := "cosmoteer.storage_3x2"
+const STORAGE_3X3 := "cosmoteer.storage_3x3"
+const STORAGE_4X3 := "cosmoteer.storage_4x3"
+const STORAGE_4X4 := "cosmoteer.storage_4x4"
 const FACTORY_AMMO := "cosmoteer.factory_ammo"
 const FACTORY_HE := "cosmoteer.factory_he"
 const FACTORY_EMP := "cosmoteer.factory_emp"
 const FACTORY_NUKE := "cosmoteer.factory_nuke"
 const FACTORY_THERMAL := "cosmoteer.factory_thermal"
 const FACTORY_MINE := "cosmoteer.factory_mine"
+const FACTORY_STEEL := "cosmoteer.factory_steel"
+const FACTORY_COIL := "cosmoteer.factory_coil"
+const FACTORY_COIL2 := "cosmoteer.factory_coil2"
+const FACTORY_TRISTEEL := "cosmoteer.factory_tristeel"
+const FACTORY_DIAMOND := "cosmoteer.factory_diamond"
+const FACTORY_PROCESSOR := "cosmoteer.factory_processor"
+const FACTORY_URANIUM := "cosmoteer.factory_uranium"
 
 const EXTRACTED_RULES_PATH := "res://data/extracted_rules.json"
 const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RESONANCE_LANCE, MINING_LASER, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
@@ -79,8 +101,10 @@ const REACTOR_IDS := [REACTOR_SMALL, REACTOR_MED, REACTOR_LARGE]
 const BRIDGE_IDS := [BRIDGE_SMALL, BRIDGE_MED, BRIDGE_LARGE]
 const BUNK_IDS := [BUNK_SMALL, BUNK_MED, BUNK_LARGE]
 const CORRIDOR_IDS := ["cosmoteer.corridor", CONVEYOR, AIRLOCK]
-const HYPERDRIVE_IDS := [HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE]
-const FACTORY_IDS := [FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE]
+const HYPERDRIVE_IDS := [HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE, HYPERDRIVE_BEACON]
+const STORAGE_IDS := [STORAGE_2X2, STORAGE_3X2, STORAGE_3X3, STORAGE_4X3, STORAGE_4X4]
+const INDUSTRIAL_FACTORY_IDS := [FACTORY_STEEL, FACTORY_COIL, FACTORY_COIL2, FACTORY_TRISTEEL, FACTORY_DIAMOND, FACTORY_PROCESSOR, FACTORY_URANIUM]
+const FACTORY_IDS := [FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE, FACTORY_STEEL, FACTORY_COIL, FACTORY_COIL2, FACTORY_TRISTEEL, FACTORY_DIAMOND, FACTORY_PROCESSOR, FACTORY_URANIUM]
 const RAILGUN_PART_IDS := [RAILGUN_LAUNCHER, RAILGUN_ACCEL, RAILGUN_LOADER]
 
 static var _extracted_cache: Dictionary = {}
@@ -513,6 +537,25 @@ const EXTRA_STATS := {
 		"resupply_threshold": 1000,
 		"reload_bonus": 0.20,
 	},
+	HYPERDRIVE_BEACON: {
+		"battery_capacity": 12000,
+		"resupply_threshold": 1500,
+		"thrust_bonus": 0.25,
+	},
+	STORAGE_2X2: {"cargo_slots": 40},
+	STORAGE_3X2: {"cargo_slots": 60},
+	STORAGE_3X3: {"cargo_slots": 90},
+	STORAGE_4X3: {"cargo_slots": 120},
+	STORAGE_4X4: {"cargo_slots": 160},
+	FACTORY_STEEL: {"battery_capacity": 6000, "resupply_threshold": 1000, "refines": "iron", "product": "steel", "value_mult": 1.65},
+	FACTORY_COIL: {"battery_capacity": 6000, "resupply_threshold": 1000, "refines": "copper", "product": "coil", "value_mult": 1.75},
+	FACTORY_COIL2: {"battery_capacity": 8000, "resupply_threshold": 1200, "refines": "copper", "product": "coil2", "value_mult": 2.10},
+	FACTORY_TRISTEEL: {"battery_capacity": 8000, "resupply_threshold": 1200, "refines": "tristeel", "product": "tristeel", "value_mult": 1.50},
+	FACTORY_DIAMOND: {"battery_capacity": 6000, "resupply_threshold": 1000, "refines": "carbon", "product": "diamond", "value_mult": 2.20},
+	FACTORY_PROCESSOR: {"battery_capacity": 6000, "resupply_threshold": 1000, "refines": "gold", "product": "processor", "value_mult": 2.00},
+	FACTORY_URANIUM: {"battery_capacity": 8000, "resupply_threshold": 1200, "refines": "uranium", "product": "enriched_uranium", "value_mult": 2.25},
+	ROOF_LIGHT: {"light_radius": 6.0},
+	ROOF_HEADLIGHT: {"light_range": 42.0},
 }
 
 
@@ -639,10 +682,132 @@ static func is_walkable_expansion(id: String) -> bool:
 		SHIELD_SMALL, SHIELD_LARGE, POINT_DEFENSE,
 		REACTOR_MED, REACTOR_LARGE, BRIDGE_MED, BRIDGE_LARGE, BUNK_MED, BUNK_LARGE,
 		CONVEYOR, AIRLOCK, CAPACITOR, RADIATOR, SENSOR_ARRAY, ENGINE_ROOM_REAL, FIRE_EXTINGUISHER,
-		THERMAL_BATTERY, THERMAL_AMP_PUMP, THERMAL_DIL_PUMP, HEAT_PIPE, HEAT_PIPE_CROSS, HEAT_EXCHANGER,
-		HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE,
+		THERMAL_BATTERY, THERMAL_AMP_PUMP, THERMAL_DIL_PUMP, HEAT_PIPE, HEAT_PIPE_CROSS, HEAT_PIPE_STRUCT, HEAT_EXCHANGER,
+		HYPERDRIVE_SMALL, HYPERDRIVE_MED, HYPERDRIVE_LARGE, HYPERDRIVE_BEACON,
+		STORAGE_2X2, STORAGE_3X2, STORAGE_3X3, STORAGE_4X3, STORAGE_4X4,
 		FACTORY_AMMO, FACTORY_HE, FACTORY_EMP, FACTORY_NUKE, FACTORY_THERMAL, FACTORY_MINE,
+		FACTORY_STEEL, FACTORY_COIL, FACTORY_COIL2, FACTORY_TRISTEEL, FACTORY_DIAMOND, FACTORY_PROCESSOR, FACTORY_URANIUM,
+		ROOF_LIGHT, ROOF_HEADLIGHT,
 	]
+
+
+static func cargo_capacity(ship: Dictionary) -> int:
+	var cap := 25
+	for sid in STORAGE_IDS:
+		for uid in ship.get("ids", {}).get(sid, []):
+			var p: Dictionary = ship.parts[uid]
+			if float(p.hp) > 0.0:
+				cap += int(p.stats.get("cargo_slots", 40))
+	return cap
+
+
+static func resource_price(res_id: String) -> float:
+	var res: Dictionary = extracted_rules().get("resources", {}).get(res_id, {})
+	var base := float(res.get("price", 0.0))
+	if base > 0.0:
+		return base
+	match res_id:
+		"iron": return 25.0
+		"steel": return 45.0
+		"copper": return 55.0
+		"carbon": return 70.0
+		"gold": return 140.0
+		"tristeel": return 180.0
+		"diamond": return 260.0
+		"uranium": return 220.0
+		"hyperium": return 320.0
+		_: return 40.0
+
+
+static func mining_value_mult(ship: Dictionary, res_id: String) -> float:
+	var mult := 1.0
+	for fid in INDUSTRIAL_FACTORY_IDS:
+		for uid in ship.get("ids", {}).get(fid, []):
+			var p: Dictionary = ship.parts[uid]
+			if float(p.hp) > 0.0 and str(p.stats.get("refines", "")) == res_id:
+				mult = maxf(mult, float(p.stats.get("value_mult", 1.5)))
+	return mult
+
+
+static func spawn_asteroid_field(count: int, center: Vector2, spread: float) -> Array[Dictionary]:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 0xC05A_7E37 + count * 31
+	var types := ["iron", "copper", "carbon", "gold", "tristeel", "uranium", "diamond", "hyperium"]
+	var colors := {
+		"iron": "#9fb2c2", "copper": "#d97c46", "carbon": "#6c7582", "gold": "#ffd84d",
+		"tristeel": "#8aa8d9", "uranium": "#63ff59", "diamond": "#7bf3ff", "hyperium": "#d16bff",
+	}
+	var out: Array[Dictionary] = []
+	for i in count:
+		var angle := TAU * float(i) / maxf(1.0, float(count)) + rng.randf_range(-0.22, 0.22)
+		var dist := rng.randf_range(spread * 0.22, spread * 0.85)
+		var pos := center + Vector2.from_angle(angle) * dist
+		var rtype: String = types[i % types.size()]
+		var rad := rng.randf_range(4.2, 7.6)
+		var ore := roundi(rad * 4.5)
+		out.append({
+			"uid": 9000 + i,
+			"pos": pos,
+			"radius": rad,
+			"resource": rtype,
+			"color": colors.get(rtype, "#9fb2c2"),
+			"hp": float(ore) * 120.0,
+			"max_hp": float(ore) * 120.0,
+			"ore": ore,
+			"ore_left": ore,
+			"seed": rng.randi(),
+		})
+	return out
+
+
+static func tick_asteroid_mining(ship: Dictionary, asteroids: Array[Dictionary], side: String, dt: float, allow_all_lasers: bool = false) -> Dictionary:
+	var beams: Array[Dictionary] = []
+	var harvested: Dictionary = {}
+	var credits_earned := 0.0
+	if asteroids.is_empty() or not ship.get("command", false):
+		return {"beams": beams, "harvested": harvested, "credits": 0.0}
+	var miner_ids: Array = [MINING_LASER]
+	if allow_all_lasers:
+		miner_ids.append(LASER_SMALL)
+		miner_ids.append(RESONANCE_LANCE)
+	for mid in miner_ids:
+		for uid in ship.get("ids", {}).get(mid, []):
+			var m: Dictionary = ship.parts[uid]
+			if float(m.hp) <= 0.0 or int(m.energy) < 40:
+				continue
+			var origin := shield_world_center(ship, m)
+			var mrange := float(m.stats.get("range", 150.0)) * sensor_range_mult(ship)
+			var best_idx := -1
+			var best_dist := mrange + 1.0
+			for i in asteroids.size():
+				var ast: Dictionary = asteroids[i]
+				if float(ast.hp) <= 0.0:
+					continue
+				var d := origin.distance_to(Vector2(ast.pos))
+				if d <= mrange and d < best_dist:
+					best_dist = d
+					best_idx = i
+			if best_idx < 0:
+				continue
+			var ast: Dictionary = asteroids[best_idx]
+			var dps := float(m.stats.get("beam_dps", 1400.0))
+			var prev_hp: float = float(ast.hp)
+			ast.hp = maxf(0.0, prev_hp - dps * dt)
+			m.energy = maxi(0, int(m.energy) - maxi(1, roundi(160.0 * dt)))
+			var new_ore_left := ceili(float(ast.ore) * (float(ast.hp) / maxf(1.0, float(ast.max_hp))))
+			var gained := maxi(0, int(ast.ore_left) - new_ore_left)
+			ast.ore_left = new_ore_left
+			if gained > 0:
+				var rtype := str(ast.resource)
+				harvested[rtype] = int(harvested.get(rtype, 0)) + gained
+				credits_earned += float(gained) * resource_price(rtype) * mining_value_mult(ship, rtype)
+			beams.append({
+				"from": origin, "to": Vector2(ast.pos), "side": side,
+				"source_uid": uid, "hit_kind": "asteroid", "beam_kind": "mining",
+				"hit_uid": int(ast.uid), "strength": 1.0,
+				"collapsed": false, "destroyed": float(ast.hp) <= 0.0, "ignited": false,
+			})
+	return {"beams": beams, "harvested": harvested, "credits": credits_earned}
 
 
 static func _has_alive_part(ship: Dictionary, part_id: String) -> bool:
@@ -700,11 +865,17 @@ static func factory_reload_mult(ship: Dictionary, gun_id: String, missile_mode: 
 
 
 static func sensor_range_mult(ship: Dictionary) -> float:
+	var mult := 1.0
 	for uid in ship.ids.get(SENSOR_ARRAY, []):
 		var p: Dictionary = ship.parts[uid]
 		if p.hp > 0.0 and ship.command:
-			return 1.0 + float(p.stats.get("range_bonus", 0.15))
-	return 1.0
+			mult += float(p.stats.get("range_bonus", 0.15))
+			break
+	if _has_alive_part(ship, FACTORY_PROCESSOR):
+		mult += 0.10
+	if _has_alive_part(ship, ROOF_HEADLIGHT):
+		mult += 0.05
+	return mult
 
 
 static func missile_warhead_profile(mode: String, ship: Dictionary = {}) -> Dictionary:

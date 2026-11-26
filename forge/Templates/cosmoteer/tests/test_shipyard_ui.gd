@@ -23,13 +23,13 @@ func test() -> void:
 	await process_frame
 	var yard = lab.shipyard
 	verify(yard.is_visible_in_tree() and not yard.depart_button.disabled,"shipyard is the launch scene")
-	verify(yard.parts_list.item_count==75,"operational palette includes 75 restored modules including factories, hyperdrives, thermal network, armor/structures, and lab engine room")
+	verify(yard.parts_list.item_count==97,"100% of all 96 Terran catalog modules and the lab engine room are operational in the core palette")
 	yard.selection.select(1)
 	yard.selection.item_selected.emit(1)
 	verify(yard.parts_list.item_count==97,"all 96 catalog modules and the lab engine room are offered")
 	yard.search.text="hyperdrive_beacon"
 	yard.search.text_changed.emit(yard.search.text)
-	verify(yard.parts_list.item_count>=1 and "고유 장치 동작 미구현" in yard.part_info.text,"passive catalog part marked")
+	verify(yard.parts_list.item_count>=1 and not ("고유 장치 동작 미구현" in yard.part_info.text),"hyperdrive_beacon is restored and operational")
 	yard.search.clear()
 	yard.selection.select(0)
 	yard.selection.item_selected.emit(0)

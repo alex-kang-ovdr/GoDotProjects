@@ -509,3 +509,41 @@ func mine_factory_carrier() -> void:
 		place(CORRIDOR, Vector2i(x, 3))
 	place(CORRIDOR, Vector2i(12, 2))
 	place(CORRIDOR, Vector2i(13, 2))
+
+
+func deep_space_miner() -> void:
+	_clear_layout()
+	place(CombatSystems.BUNK_LARGE, Vector2i(0, 3))
+	place(CombatSystems.ROOF_LIGHT, Vector2i(0, 2))
+	place(CombatSystems.HEAT_PIPE_STRUCT, Vector2i(2, 2))
+	place(CombatSystems.REACTOR_LARGE, Vector2i(4, 3))
+	place(CombatSystems.BRIDGE_MED, Vector2i(8, 4))
+	place("cosmoteer.thruster_small_3way", Vector2i(1, 0), 2)
+	place(CombatSystems.STORAGE_3X2, Vector2i(4, 0))
+	place(CombatSystems.STORAGE_2X2, Vector2i(7, 0))
+	place(CombatSystems.MANIPULATOR_BEAM, Vector2i(9, 0))
+	place(CombatSystems.MINING_LASER, Vector2i(11, 0), 1)
+	place(CombatSystems.ROOF_HEADLIGHT, Vector2i(14, 0), 1)
+	place(CombatSystems.STRUCTURE_TRI, Vector2i(14, 1))
+	place("cosmoteer.laser_blaster_small", Vector2i(13, 2), 1)
+	place(CombatSystems.FACTORY_STEEL, Vector2i(12, 3))
+	place(CombatSystems.ROOF_HEADLIGHT, Vector2i(15, 7), 1)
+	place("cosmoteer.thruster_small_3way", Vector2i(1, 8))
+	place("cosmoteer.thruster_small_3way", Vector2i(4, 8))
+	place(CombatSystems.FACTORY_DIAMOND, Vector2i(7, 8), 1)
+	place(CombatSystems.MINING_LASER, Vector2i(10, 8), 1)
+	place(CombatSystems.SHIELD_SMALL, Vector2i(13, 8), 1)
+	for y in range(2, 8):
+		place(CombatSystems.CONVEYOR, Vector2i(3, y), 2)
+	for x in range(4, 12):
+		place(CombatSystems.CONVEYOR, Vector2i(x, 7), 1)
+	for y in range(2, 7):
+		place(CombatSystems.CONVEYOR, Vector2i(11, y), 0)
+	for x in range(4, 11):
+		place(CORRIDOR, Vector2i(x, 2))
+	for x in range(8, 11):
+		place(CORRIDOR, Vector2i(x, 3))
+	place(CORRIDOR, Vector2i(12, 2))
+	place(CORRIDOR, Vector2i(12, 7))
+	place(CORRIDOR, Vector2i(13, 7))
+	place(CORRIDOR, Vector2i(14, 7))

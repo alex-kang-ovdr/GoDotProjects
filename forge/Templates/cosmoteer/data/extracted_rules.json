@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "summary": {
     "strings_loaded": 451,
     "factions_count": 5,
@@ -10,7 +10,9 @@
     "nebulas_count": 3,
     "planets_count": 9,
     "sectors_count": 5,
-    "ai_profiles_count": 11
+    "ai_profiles_count": 11,
+    "resources_count": 26,
+    "asteroids_count": 10
   },
   "factions": [
     {
@@ -357,6 +359,242 @@
     "ai_station_guard",
     "ai_trade_ship",
     "ai_wanderer"
+  ],
+  "resources": {
+    "battery": {
+      "id": "battery",
+      "name_en": "Battery",
+      "price": 0.0,
+      "max_stack": 1,
+      "source_file": "resources/battery/battery.rules"
+    },
+    "bullet": {
+      "id": "bullet",
+      "name_en": "Bullet",
+      "price": 4.0,
+      "max_stack": 20,
+      "source_file": "resources/bullet/bullet.rules"
+    },
+    "carbon": {
+      "id": "carbon",
+      "name_en": "Carbon",
+      "price": 160.0,
+      "max_stack": 5,
+      "source_file": "resources/carbon/carbon.rules"
+    },
+    "coil": {
+      "id": "coil",
+      "name_en": "Coil",
+      "price": 100.0,
+      "max_stack": 40,
+      "source_file": "resources/coil/coil.rules"
+    },
+    "coil2": {
+      "id": "coil2",
+      "name_en": "Coil2",
+      "price": 300.0,
+      "max_stack": 40,
+      "source_file": "resources/coil2/coil2.rules"
+    },
+    "copper": {
+      "id": "copper",
+      "name_en": "Copper",
+      "price": 80.0,
+      "max_stack": 5,
+      "source_file": "resources/copper/copper.rules"
+    },
+    "diamond": {
+      "id": "diamond",
+      "name_en": "Diamond",
+      "price": 4000.0,
+      "max_stack": 5,
+      "source_file": "resources/diamond/diamond.rules"
+    },
+    "enriched_uranium": {
+      "id": "enriched_uranium",
+      "name_en": "Enriched Uranium",
+      "price": 2000.0,
+      "max_stack": 10,
+      "source_file": "resources/enriched_uranium/enriched_uranium.rules"
+    },
+    "fake_resource": {
+      "id": "fake_resource",
+      "name_en": "Fake Resource",
+      "price": 0.0,
+      "max_stack": 1,
+      "source_file": "resources/fake_resource/fake_resource.rules"
+    },
+    "fire_extinguisher": {
+      "id": "fire_extinguisher",
+      "name_en": "Fire Extinguisher",
+      "price": 0.0,
+      "max_stack": 1,
+      "source_file": "resources/fire_extinguisher/fire_extinguisher.rules"
+    },
+    "gold": {
+      "id": "gold",
+      "name_en": "Gold",
+      "price": 500.0,
+      "max_stack": 5,
+      "source_file": "resources/gold/gold.rules"
+    },
+    "heat": {
+      "id": "heat",
+      "name_en": "Heat",
+      "price": 0.0,
+      "max_stack": 1,
+      "source_file": "resources/heat/heat.rules"
+    },
+    "hyperium": {
+      "id": "hyperium",
+      "name_en": "Hyperium",
+      "price": 50.0,
+      "max_stack": 20,
+      "source_file": "resources/hyperium/hyperium.rules"
+    },
+    "ion_energy": {
+      "id": "ion_energy",
+      "name_en": "Ion Energy",
+      "price": 0.0,
+      "max_stack": 1,
+      "source_file": "resources/ion_energy/ion_energy_overclocked.rules"
+    },
+    "iron": {
+      "id": "iron",
+      "name_en": "Iron",
+      "price": 20.0,
+      "max_stack": 5,
+      "source_file": "resources/iron/iron.rules"
+    },
+    "mine_part": {
+      "id": "mine_part",
+      "name_en": "Mine Part",
+      "price": 52.0,
+      "max_stack": 8,
+      "source_file": "resources/mine_part/mine_part.rules"
+    },
+    "missile_part_emp": {
+      "id": "missile_part_emp",
+      "name_en": "Missile Part Emp",
+      "price": 20.0,
+      "max_stack": 10,
+      "source_file": "resources/missile_part_emp/missile_part_emp.rules"
+    },
+    "missile_part_he": {
+      "id": "missile_part_he",
+      "name_en": "Missile Part He",
+      "price": 8.0,
+      "max_stack": 10,
+      "source_file": "resources/missile_part_he/missile_part_he.rules"
+    },
+    "missile_part_nuke": {
+      "id": "missile_part_nuke",
+      "name_en": "Missile Part Nuke",
+      "price": 36.0,
+      "max_stack": 10,
+      "source_file": "resources/missile_part_nuke/missile_part_nuke.rules"
+    },
+    "missile_part_thermal": {
+      "id": "missile_part_thermal",
+      "name_en": "Missile Part Thermal",
+      "price": 12.0,
+      "max_stack": 10,
+      "source_file": "resources/missile_part_thermal/missile_part_thermal.rules"
+    },
+    "processor": {
+      "id": "processor",
+      "name_en": "Processor",
+      "price": 2500.0,
+      "max_stack": 5,
+      "source_file": "resources/processor/processor.rules"
+    },
+    "steel": {
+      "id": "steel",
+      "name_en": "Steel",
+      "price": 25.0,
+      "max_stack": 40,
+      "source_file": "resources/steel/steel.rules"
+    },
+    "sulfur": {
+      "id": "sulfur",
+      "name_en": "Sulfur",
+      "price": 20.0,
+      "max_stack": 5,
+      "source_file": "resources/sulfur/sulfur.rules"
+    },
+    "tristeel": {
+      "id": "tristeel",
+      "name_en": "Tristeel",
+      "price": 200.0,
+      "max_stack": 40,
+      "source_file": "resources/tristeel/tristeel.rules"
+    },
+    "tritanium": {
+      "id": "tritanium",
+      "name_en": "Tritanium",
+      "price": 160.0,
+      "max_stack": 5,
+      "source_file": "resources/tritanium/tritanium.rules"
+    },
+    "uranium": {
+      "id": "uranium",
+      "name_en": "Uranium",
+      "price": 400.0,
+      "max_stack": 5,
+      "source_file": "resources/uranium/uranium.rules"
+    }
+  },
+  "asteroids": [
+    {
+      "resource": "carbon",
+      "variants": 5,
+      "sample": "doodad_asteroid_carbon_l"
+    },
+    {
+      "resource": "copper",
+      "variants": 5,
+      "sample": "doodad_asteroid_copper_l"
+    },
+    {
+      "resource": "gold",
+      "variants": 5,
+      "sample": "doodad_asteroid_gold_l"
+    },
+    {
+      "resource": "hyperium",
+      "variants": 5,
+      "sample": "doodad_asteroid_hyperium_l"
+    },
+    {
+      "resource": "iron",
+      "variants": 5,
+      "sample": "doodad_asteroid_iron_l"
+    },
+    {
+      "resource": "megaroid",
+      "variants": 2,
+      "sample": "doodad_megaroid_l"
+    },
+    {
+      "resource": "plain",
+      "variants": 5,
+      "sample": "doodad_asteroid_l"
+    },
+    {
+      "resource": "sulfur",
+      "variants": 5,
+      "sample": "doodad_asteroid_sulfur_l"
+    },
+    {
+      "resource": "tritanium",
+      "variants": 5,
+      "sample": "doodad_asteroid_tritanium_l"
+    },
+    {
+      "resource": "uranium",
+      "variants": 5,
+      "sample": "doodad_asteroid_uranium_l"
+    }
   ],
   "shots": {
     "bullet_deck": {

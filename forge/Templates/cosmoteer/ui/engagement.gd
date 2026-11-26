@@ -10,13 +10,13 @@ const FlightView = preload("res://ui/flight_view.gd")
 const RESULTS := {"win":"승리", "loss":"패배", "draw":"무승부"}
 const OUTCOMES := {
 	"own_bridge":"아군 함교 파괴", "enemy_bridge":"적 함교 제압", "protected_bridge":"보호할 적 함교 파괴",
-	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 모두 제거", "survived":"대피 시간 확보",
+	"own_weapons":"아군 무장 상실", "disarmed":"적 무장 모두 제거", "survived":"대피 시간 확보", "mined":"목표 자원 채굴 완료",
 	"mutual_bridge":"양쪽 함교 파괴", "mutual_weapons":"양쪽 무장 상실", "stalemate":"교전 교착",
 }
 const ACTIONS := {
 	"shot":"발사", "hit":"명중", "destroyed":"부품 파괴", "delivery":"전력 전달",
 	"shield_hit":"방어막 요격", "shield_down":"방어막 붕괴", "intercept":"미사일 요격",
-	"fire_start":"화재 발생", "fire_out":"화재 진압", "blast":"광역 폭발",
+	"fire_start":"화재 발생", "fire_out":"화재 진압", "blast":"광역 폭발", "mine":"자원 채굴",
 }
 const AIM := {"offline":"동력·인원 대기","out_of_range":"사거리 밖","out_of_arc":"포탑 사각","tracking":"조준 중","ready":"사격 가능"}
 
@@ -367,6 +367,8 @@ func _refresh() -> void:
 	clock_label.text = "T + %05.1f s    " % battle.elapsed
 	if active and mission.get("objective") == "survive":
 		clock_label.text = "대피까지 %.1f초  " % maxf(0.0, float(mission.seconds) - battle.elapsed)
+	elif active and mission.get("objective") == "mine":
+		clock_label.text = "채굴 %d / %d CR  " % [int(battle.mined_credits), int(battle.mining_goal)]
 	var sides := [battle.player,battle.enemy]
 	var hull_report := PackedStringArray()
 	for i in sides.size():
@@ -406,6 +408,8 @@ func _refresh() -> void:
 			goal = "적 무장 제거 · 적 함교 보호"
 		"survive":
 			goal = "대피 완료까지 아군 함교 유지"
+		"mine":
+			goal = "소행성 자원 채굴 (%d / %d CR)" % [int(battle.mined_credits), int(battle.mining_goal)]
 	target_label.text = "현재 표적  %s      ·      %s" % [focus,goal]
 	if not active:
 		target_label.text = "%s     ·     %.1f초     ·     발사 %d회     ·     명중 %d회" % [
