@@ -30,6 +30,9 @@ var targeting_weapon_idx: int = -1
 var special_target_mode: String = "" # "", "tp_send", "tp_back", "hack", "mind"
 var hover_pos: Vector2 = Vector2.ZERO
 var anim_clock: float = 0.0
+var screen_shake: float = 0.0
+var player_hit_flash: float = 0.0
+var enemy_hit_flash: float = 0.0
 
 # Beam drag-line aiming state (in enemy ship local coordinates)
 var beam_drag_active: bool = false
@@ -188,6 +191,9 @@ func spawn_shot(shot: Dictionary) -> void:
 
 func step_fx(delta: float) -> void:
 	anim_clock += delta
+	screen_shake = maxf(0.0, screen_shake - delta * 22.0)
+	player_hit_flash = maxf(0.0, player_hit_flash - delta * 3.5)
+	enemy_hit_flash = maxf(0.0, enemy_hit_flash - delta * 3.5)
 	_recompute_transforms()
 
 	# Drain ship-emitted popups & explosions
@@ -205,12 +211,18 @@ func step_fx(delta: float) -> void:
 			})
 		sh.pending_popups.clear()
 		for ex in sh.pending_explosions:
+			var is_big := bool(ex.big)
 			explosions.append({
 				"pos": ship_local_to_world(sh, ex.pos_local),
-				"life": 0.45 if bool(ex.big) else 0.3,
-				"max_life": 0.45 if bool(ex.big) else 0.3,
-				"radius": 34.0 if bool(ex.big) else 22.0,
+				"life": 0.45 if is_big else 0.3,
+				"max_life": 0.45 if is_big else 0.3,
+				"radius": 34.0 if is_big else 22.0,
 			})
+			screen_shake = minf(12.0, screen_shake + (7.5 if is_big else 4.0))
+			if sh == player_ship:
+				player_hit_flash = 1.0
+			else:
+				enemy_hit_flash = 1.0
 		sh.pending_explosions.clear()
 		for tp in sh.pending_teleports:
 			teleport_fx.append({
@@ -444,23 +456,28 @@ func handle_mouse_click(screen_pos: Vector2, button_index: int) -> bool:
 # ==================== RENDERING ====================
 func _draw() -> void:
 	var vp := get_viewport_rect().size
+	var shake_off := Vector2(sin(anim_clock * 57.0), cos(anim_clock * 63.0)) * screen_shake if screen_shake > 0.1 else Vector2.ZERO
 	# 1. Deep space backdrop
 	_draw_backdrop(vp)
 
 	# 2. Player ship
 	if player_ship != null:
-		_draw_ship(player_ship, _player_offset, _player_scale, true)
+		_draw_ship(player_ship, _player_offset + shake_off * 0.65, _player_scale, true)
 
 	# 3. Enemy target box & enemy ship
 	if enemy_ship != null and enemy_ship.hull > 0:
 		_draw_enemy_panel()
-		_draw_ship(enemy_ship, _enemy_offset, _enemy_scale, false)
+		_draw_ship(enemy_ship, _enemy_offset + shake_off * 0.45, _enemy_scale, false)
 
 	# 4. Weapon targeting lines & reticles
 	_draw_targeting_overlays()
 
 	# 5. Beams, projectiles, explosions, shield impacts, popups
 	_draw_combat_fx()
+
+	# 6. Authentic FTL Tactical Pause border frame
+	if paused:
+		draw_rect(Rect2(Vector2(3, 3), vp - Vector2(6, 6)), Color(0.45, 0.85, 1.0, 0.48), false, 4.0)
 
 
 func _draw_backdrop(vp: Vector2) -> void:
@@ -471,19 +488,25 @@ func _draw_backdrop(vp: Vector2) -> void:
 		bg_tex = pkg.load_texture(bg_name)
 	if bg_tex != null:
 		draw_texture_rect(bg_tex, Rect2(Vector2.ZERO, vp), false, Color(0.95, 0.96, 1.0, 1.0))
-	else:
-		# Clean starfield fallback
-		for i in range(90):
-			var sx := fmod(float(i * 197 + 41), vp.x)
-			var sy := fmod(float(i * 313 + 79), vp.y)
-			var b: float = 0.35 + 0.55 * absf(sin(anim_clock * 1.1 + float(i)))
-			draw_circle(Vector2(sx, sy), 1.0 + float(i % 2) * 0.6, Color(0.85, 0.92, 1.0, b))
+	# Subtle drifting space dust parallax (authentic FTL motion feel)
+	for i in range(42):
+		var spd := 4.5 + float(i % 4) * 3.2
+		var sx := fmod(float(i * 197 + 41) - anim_clock * spd + vp.x * 10.0, vp.x)
+		var sy := fmod(float(i * 313 + 79), vp.y)
+		var b: float = 0.22 + 0.38 * absf(sin(anim_clock * 1.4 + float(i)))
+		draw_circle(Vector2(sx, sy), 0.9 + float(i % 2) * 0.5, Color(0.85, 0.92, 1.0, b))
 
 	if is_nebula:
 		draw_rect(Rect2(Vector2.ZERO, vp), Color(0.32, 0.14, 0.42, 0.22))
 	if hazard_kind == "sun":
-		draw_circle(Vector2(180.0, 110.0), 95.0, Color(1.0, 0.48, 0.12, 0.25))
-		draw_circle(Vector2(180.0, 110.0), 46.0, Color(1.0, 0.85, 0.42, 0.82))
+		var sun_tex := pkg.load_texture("effects/glowing_star.png") if (pkg != null and pkg.is_loaded) else null
+		var pulse := 1.0 + 0.08 * sin(anim_clock * 2.8)
+		if sun_tex != null:
+			var ssz := Vector2(180.0, 180.0) * pulse
+			draw_texture_rect(sun_tex, Rect2(Vector2(180.0, 125.0) - ssz * 0.5, ssz), false, Color(1.0, 0.92, 0.78, 0.95))
+		else:
+			draw_circle(Vector2(180.0, 110.0), 95.0 * pulse, Color(1.0, 0.48, 0.12, 0.25))
+			draw_circle(Vector2(180.0, 110.0), 46.0, Color(1.0, 0.85, 0.42, 0.82))
 	elif hazard_kind == "asteroid":
 		for i in range(9):
 			var ax := fmod(anim_clock * (22.0 + float(i) * 4.0) + float(i * 173), vp.x + 80.0) - 40.0
@@ -496,8 +519,15 @@ func _draw_backdrop(vp: Vector2) -> void:
 				draw_circle(Vector2(ax, ay), 7.0 + float(i % 3) * 4.0, Color(0.46, 0.42, 0.38, 0.72))
 	elif hazard_kind == "pulsar":
 		var pulse := 0.4 + 0.4 * sin(anim_clock * 3.5)
-		draw_circle(Vector2(690.0, 140.0), 34.0 + pulse * 18.0, Color(0.35, 0.85, 1.0, 0.22))
-		draw_circle(Vector2(690.0, 140.0), 14.0, Color(0.75, 0.96, 1.0, 0.9))
+		var pb_tex := pkg.load_texture("effects/pulsar_backL.png") if (pkg != null and pkg.is_loaded) else null
+		var pf_tex := pkg.load_texture("effects/pulsar_frontL.png") if (pkg != null and pkg.is_loaded) else null
+		if pb_tex != null and pf_tex != null:
+			var psz := Vector2(130.0, 130.0) * (0.95 + pulse * 0.25)
+			draw_texture_rect(pb_tex, Rect2(Vector2(690.0, 145.0) - psz * 0.5, psz), false, Color(0.55, 0.92, 1.0, 0.65))
+			draw_texture_rect(pf_tex, Rect2(Vector2(690.0, 145.0) - psz * 0.42, psz * 0.84), false, Color(0.9, 0.98, 1.0, 0.92))
+		else:
+			draw_circle(Vector2(690.0, 140.0), 34.0 + pulse * 18.0, Color(0.35, 0.85, 1.0, 0.22))
+			draw_circle(Vector2(690.0, 140.0), 14.0, Color(0.75, 0.96, 1.0, 0.9))
 	elif hazard_kind == "ion_storm":
 		var flash := 0.08 + 0.10 * absf(sin(anim_clock * 5.2))
 		draw_rect(Rect2(Vector2.ZERO, vp), Color(0.22, 0.55, 1.0, flash))
@@ -549,21 +579,42 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 	var img_rect: Rect2 = ship.layout.get("img_rect", Rect2(-59, -103, 652, 418))
 	var floor_off: Vector2 = ship.layout.get("floor_offset", Vector2.ZERO)
 
-	# 1. Shield bubble
+	# 1. Shield dome (authentic FTL shield PNG texture + breathing glow!)
 	if ship.shield_layers > 0 or ship.zoltan_shield > 0:
-		var sh_color := Color(0.38, 0.98, 0.52, 0.24) if ship.zoltan_shield > 0 else Color(0.32, 0.78, 1.0, 0.14 + float(ship.shield_layers) * 0.04)
+		var breath := 0.88 + 0.12 * sin(anim_clock * 2.8)
+		var sh_color := Color(0.38, 0.98, 0.52, 0.58 * breath) if ship.zoltan_shield > 0 else Color(0.38, 0.82, 1.0, (0.38 + float(ship.shield_layers) * 0.11) * breath)
 		var ell: Dictionary = ship.layout.get("ellipse", {"rx": 320, "ry": 210, "ox": 0, "oy": 0})
 		var ec := bounds.get_center() + Vector2(float(ell.ox) * 0.25, float(ell.oy) * 0.25)
 		var rx := maxf(bounds.size.x * 0.64, float(ell.rx) * 0.85)
 		var ry := maxf(bounds.size.y * 0.74, float(ell.ry) * 0.85)
-		_draw_ellipse_glow(ec, rx, ry, sh_color)
+		var sh_tex: Texture2D = null
+		if pkg != null and pkg.is_loaded:
+			sh_tex = pkg.load_texture("ship/%s_shields1.png" % ship.img_name)
+			if sh_tex == null:
+				sh_tex = pkg.load_texture("ship/enemy_shields.png")
+		if sh_tex != null:
+			draw_texture_rect(sh_tex, Rect2(ec - Vector2(rx, ry), Vector2(rx * 2.0, ry * 2.0)), false, sh_color)
+		else:
+			_draw_ellipse_glow(ec, rx, ry, Color(sh_color.r, sh_color.g, sh_color.b, sh_color.a * 0.45))
+
+	# 1b. Engine Thruster Exhaust Glow when engines powered
+	if ship.get_effective_system_power("engines") > 0 and ship.cloak_timer <= 0.0:
+		var t_pulse := 0.75 + 0.25 * sin(anim_clock * 16.0)
+		var eng_y := bounds.get_center().y
+		var eng_x := img_rect.position.x + 14.0
+		var thr_tex := pkg.load_texture("effects/thrusters_on.png") if (pkg != null and pkg.is_loaded) else null
+		if thr_tex != null:
+			draw_texture_rect(thr_tex, Rect2(Vector2(eng_x - 36.0, eng_y - 22.0), Vector2(44.0 * t_pulse, 44.0)), false, Color(0.65, 0.88, 1.0, 0.75 * t_pulse))
+		else:
+			draw_circle(Vector2(eng_x - 8.0, eng_y), 14.0 * t_pulse, Color(0.35, 0.75, 1.0, 0.45))
 
 	# 2. Mounted weapon sprites behind hull edge
 	_draw_ship_weapons(ship, img_rect)
 
-	# 3. Ship hull sprite (from ftl.dat.vanilla!)
+	# 3. Ship hull sprite (from ftl.dat.vanilla, with red impact flash!)
 	var hull_tex: Texture2D = _load_ship_tex(ship.img_name, "base")
-	var hull_tint := Color(0.55, 0.85, 1.0, 0.42) if ship.cloak_timer > 0.0 else Color.WHITE
+	var flash := player_hit_flash if is_player_side else enemy_hit_flash
+	var hull_tint := Color(0.55, 0.85, 1.0, 0.42) if ship.cloak_timer > 0.0 else Color.WHITE.lerp(Color(1.0, 0.48, 0.42, 1.0), flash * 0.7)
 	if hull_tex != null:
 		draw_texture_rect(hull_tex, img_rect, false, hull_tint)
 	else:
@@ -841,6 +892,12 @@ func _draw_door(d: Dictionary, door_lvl: int) -> void:
 	else:
 		draw_rect(Rect2(center - sz * 0.5, sz), col, true)
 		draw_rect(Rect2(center - sz * 0.5, sz), Color(0.1, 0.12, 0.15), false, 1.2)
+		# Show Blast Door HP bar if intruder is breaking this door down
+		var dhp := float(d.get("hp", 100.0))
+		if dhp > 0.0 and dhp < 99.0 and not bool(d.airlock):
+			var dbr := Rect2(center + Vector2(-10, -14), Vector2(20, 3))
+			draw_rect(dbr, Color(0.08, 0.08, 0.1, 0.9), true)
+			draw_rect(Rect2(dbr.position, Vector2(dbr.size.x * clampf(dhp / 100.0, 0.0, 1.0), dbr.size.y)), Color("ffaa33"), true)
 
 
 func _draw_crew_member(c: Dictionary) -> void:
@@ -869,10 +926,27 @@ func _draw_crew_member(c: Dictionary) -> void:
 		if tex != null:
 			var fw := 35.0
 			var fh := 35.0
-			var frame := int(float(c.anim_t) * 6.0) % 4 if c.state == "walk" else 0
-			# Row 0 (top of image in Godot) in human_base.png = walking down; safely clamp inside texture
+			var st := str(c.get("state", "idle"))
+			var fvec: Vector2 = c.get("facing", Vector2.DOWN)
+			# Authentic FTL crew spritesheet rows: 0=Down, 1=Right, 2=Up, 3=Left, 4=Repair/Fire, 5=Fight
+			var row := 0
+			var frame := 0
+			if st == "walk":
+				if absf(fvec.x) > absf(fvec.y):
+					row = 1 if fvec.x >= 0.0 else 3
+				else:
+					row = 0 if fvec.y >= 0.0 else 2
+				frame = int(float(c.anim_t) * 8.0) % 4
+			elif st == "repair" or st == "fire":
+				row = 4
+				frame = int(float(c.anim_t) * 6.0) % 4
+			elif st == "fight" or st == "sabotage":
+				row = 5
+				frame = int(float(c.anim_t) * 7.0) % 4
+			var max_rows := maxi(1, int(tex.get_height() / fh))
+			var sy := float(mini(row, max_rows - 1)) * fh
 			var sx := fmod(float(frame) * fw, maxf(fw, tex.get_width()))
-			var src := Rect2(sx, 0.0, minf(fw, tex.get_width()), minf(fh, tex.get_height()))
+			var src := Rect2(sx, sy, minf(fw, tex.get_width()), minf(fh, tex.get_height()))
 			var tint := Color.WHITE if bool(c.is_player) else Color(1.0, 0.55, 0.55)
 			draw_texture_rect_region(tex, Rect2(pos - Vector2(16, 16), Vector2(32, 32)), src, tint)
 			drew = true
@@ -1002,7 +1076,7 @@ func _draw_combat_fx() -> void:
 		draw_rect(Rect2(p + Vector2(-18, -52), Vector2(36, 76)), col, true)
 		draw_rect(Rect2(p + Vector2(-8, -58), Vector2(16, 86)), Color(0.9, 1.0, 1.0, a * 0.85), true)
 
-	# Projectiles
+	# Projectiles (rotated real FTL missile/flak/crystal/laser sprites + glowing core!)
 	for p in projectiles:
 		if float(p.t) < 0.0:
 			continue
@@ -1014,17 +1088,32 @@ func _draw_combat_fx() -> void:
 			draw_circle(p.pos, 9.0 + pulse * 4.0, Color(1.0, 0.45, 0.15, 0.85))
 			draw_circle(p.pos, 5.0, Color.WHITE)
 		elif ion > 0:
-			draw_circle(p.pos, 9.0, Color(0.25, 0.82, 1.0, 0.45))
-			draw_circle(p.pos, 5.0, Color(0.85, 0.98, 1.0, 1.0))
+			draw_circle(p.pos, 10.0, Color(0.25, 0.82, 1.0, 0.42))
+			draw_circle(p.pos, 5.5, Color(0.88, 0.98, 1.0, 1.0))
 		elif wtype == "MISSILES":
-			var tip: Vector2 = p.pos + dir * 11.0
-			var tail: Vector2 = p.pos - dir * 10.0
-			draw_line(tail, tip, Color("ffcf5c"), 4.5)
-			draw_circle(tail, 4.0, Color(1.0, 0.45, 0.1, 0.85))
+			var mtex := pkg.load_texture("weapons/missile_1.png") if (pkg != null and pkg.is_loaded) else null
+			if mtex != null:
+				draw_set_transform(p.pos as Vector2, dir.angle(), Vector2.ONE)
+				draw_texture_rect(mtex, Rect2(Vector2(-16, -8), Vector2(32, 16)), false)
+				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			else:
+				var tip: Vector2 = p.pos + dir * 11.0
+				var tail: Vector2 = p.pos - dir * 10.0
+				draw_line(tail, tip, Color("ffcf5c"), 4.5)
+				draw_circle(tail, 4.0, Color(1.0, 0.45, 0.1, 0.85))
+		elif wtype == "BURST":
+			var ftex := pkg.load_texture("weapons/crystal_shot1.png") if (pkg != null and pkg.is_loaded) else null
+			if ftex != null:
+				draw_set_transform(p.pos as Vector2, dir.angle() + anim_clock * 6.0, Vector2.ONE)
+				draw_texture_rect(ftex, Rect2(Vector2(-9, -9), Vector2(18, 18)), false, Color("ffb86c"))
+				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			else:
+				draw_circle(p.pos, 5.5, Color("ff9e42"))
 		else:
 			var col: Color = p.bp.get("color", Color(1.0, 0.25, 0.2))
-			draw_line(p.pos - dir * 16.0, p.pos + dir * 12.0, Color(col.r, col.g, col.b, 0.65), 6.0)
-			draw_line(p.pos - dir * 12.0, p.pos + dir * 10.0, Color(1.0, 0.92, 0.92, 1.0), 2.5)
+			draw_line(p.pos - dir * 18.0, p.pos + dir * 12.0, Color(col.r, col.g, col.b, 0.45), 9.0)
+			draw_line(p.pos - dir * 14.0, p.pos + dir * 11.0, Color(col.r, col.g, col.b, 0.85), 5.0)
+			draw_line(p.pos - dir * 10.0, p.pos + dir * 9.0, Color(1.0, 0.95, 0.92, 1.0), 2.2)
 
 	# Shield ripples
 	for sh in shield_hits:

@@ -374,10 +374,10 @@ func _run() -> void:
 		var cp := "people/%s_base.png" % sp
 		if pkg.load_texture(cp) == null:
 			missing_assets.append(cp)
-	for fx_p in ["ship/drones/drone_combat_base.png", "ship/drones/drone_defense_base.png", "ship/drones/drone_hack_base.png", "effects/explosion_big1_strip10.png", "effects/explosion_small1_strip9.png", "people/mindcontrol_strip8.png", "asteroids/asteroid0.png"]:
+	for fx_p in ["ship/drones/drone_combat_base.png", "ship/drones/drone_defense_base.png", "ship/drones/drone_hack_base.png", "effects/explosion_big1_strip10.png", "effects/explosion_small1_strip9.png", "people/mindcontrol_strip8.png", "asteroids/asteroid0.png", "ship/enemy_shields.png", "effects/glowing_star.png", "effects/pulsar_frontL.png", "effects/pulsar_backL.png", "effects/thrusters_on.png", "weapons/missile_1.png", "weapons/crystal_shot1.png"]:
 		if pkg.load_texture(fx_p) == null:
 			missing_assets.append(fx_p)
-	_check(missing_assets.is_empty(), "Zero-missing core FTL sprite & icon assets decoded from PKG (117/117)", "missing=%s" % str(missing_assets))
+	_check(missing_assets.is_empty(), "Zero-missing core FTL sprite & icon assets decoded from PKG (124/124)", "missing=%s" % str(missing_assets))
 
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
