@@ -249,10 +249,11 @@ public struct VoxelAvatarCanvas: View {
             }
         }
         .gesture(
-            portraitMode ? nil : DragGesture(minimumDistance: 2)
+            DragGesture(minimumDistance: 2)
                 .onChanged { value in
                     yawOffset = min(max(value.translation.width / 120.0, -1.0), 1.0)
-                }
+                },
+            including: portraitMode ? .none : .all
         )
     }
 }
@@ -843,7 +844,7 @@ public struct ProfileMoreView: View {
                         Task { await store.restorePurchases() }
                     }
                     if vm.isFreeUsbMode {
-                        Text("Sign in with Apple / APNs는 유료 Developer(\$99/년) 전환 시 활성화됩니다.")
+                        Text("Sign in with Apple / APNs는 유료 Developer($99/년) 전환 시 활성화됩니다.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

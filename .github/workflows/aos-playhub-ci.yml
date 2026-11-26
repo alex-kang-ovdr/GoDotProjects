@@ -1,0 +1,209 @@
+name: PlayHub Android (AOS) Free Build & Verification
+
+on:
+  push:
+    branches: ["PlayHub-Platform", "Hub-AOS"]
+    paths:
+      - "android/**"
+      - "tools/aos/**"
+      - "godot-sdk/**"
+      - "hub/server/social/**"
+      - "hub/server/mobile/**"
+      - "hub/tests/social-*.mjs"
+      - "hub/tests/mobile-*.mjs"
+      - ".github/workflows/aos-playhub-ci.yml"
+  pull_request:
+    branches: ["PlayHub-Platform"]
+    paths:
+      - "android/**"
+      - "tools/aos/**"
+      - "godot-sdk/**"
+      - "hub/server/social/**"
+      - "hub/server/mobile/**"
+      - "hub/tests/social-*.mjs"
+      - "hub/tests/mobile-*.mjs"
+      - ".github/workflows/aos-playhub-ci.yml"
+  workflow_dispatch:
+    inputs:
+      config:
+        description: "Android build stage"
+        required: true
+        default: "release"
+        type: choice
+        options:
+          - release
+          - debug
+          - dev
+          - test
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aos-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  aos-backend-and-tools:
+    name: Mobile & Social Backend Tests (Node 24)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install Hub dependencies
+        run: npm ci --prefix hub --ignore-scripts
+      - name: Run Mobile, Social & APK Server Unit Tests
+        run: node --test hub/tests/mobile-*.test.mjs hub/tests/social-*.test.mjs tools/aos/serve-apk-download.test.mjs
+
+  aos-build-and-verify:
+    name: Android Unit Tests, APK Build & 5-Gate Security/Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Install Android SDK 36 & Build-Tools 36.0.0
+        run: |
+          set -euo pipefail
+          SDK_MGR="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          yes | "${SDK_MGR}" --licenses >/dev/null 2>&1 || true
+          "${SDK_MGR}" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Cache Godot 4.7.2 Android Release AAR
+        id: cache-godot-aar
+        uses: actions/cache@v4
+        with:
+          path: android/app/libs
+          key: godot-aos-aar-4.7.2-8791eecf
+
+      - name: Download & Extract Locked Godot 4.7.2 Android Release AAR
+        if: steps.cache-godot-aar.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/libs
+          curl -fSL -o /tmp/godot-templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz"
+          unzip -q -j /tmp/godot-templates.tpz "templates/android_source.zip" -d /tmp
+          rm -f /tmp/godot-templates.tpz
+          unzip -q -j /tmp/android_source.zip "libs/release/godot-lib.template_release.aar" -d android/app/libs
+          rm -f /tmp/android_source.zip
+
+      - name: Verify Locked Godot 4.7.2 AAR SHA-256
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const crypto = require("node:crypto");
+            const lock = JSON.parse(fs.readFileSync("tools/aos/godot-aar.lock.json", "utf8").replace(/^\uFEFF/, ""));
+            const aarPath = "android/app/libs/godot-lib.template_release.aar";
+            const actual = crypto.createHash("sha256").update(fs.readFileSync(aarPath)).digest("hex");
+            if (actual !== lock.sha256.toLowerCase()) {
+              console.error(`AAR SHA-256 mismatch: expected ${lock.sha256}, got ${actual}`);
+              process.exit(1);
+            }
+            console.log(`OK: godot-lib.template_release.aar verified (${actual.slice(0, 16)}...)`);
+          '
+
+      - name: Run Android Kotlin Unit Tests & Assemble APK
+        id: build_apk
+        env:
+          INPUT_CONFIG: ${{ inputs.config || 'release' }}
+          BRANCH_UNDER_TEST: ${{ github.head_ref || github.ref_name }}
+        working-directory: android
+        run: |
+          set -euo pipefail
+          CFG="${INPUT_CONFIG:-release}"
+          case "${CFG}" in
+            debug)   FLAVOR="cfgDebug";   BTYPE="debug";   SUFFIX="CfgDebugDebug";   BUDGET="30.0" ;;
+            dev)     FLAVOR="cfgDev";     BTYPE="debug";   SUFFIX="CfgDevDebug";     BUDGET="30.0" ;;
+            test)    FLAVOR="cfgTest";    BTYPE="release"; SUFFIX="CfgTestRelease";  BUDGET="28.0" ;;
+            release) FLAVOR="cfgRelease"; BTYPE="release"; SUFFIX="CfgReleaseRelease"; BUDGET="28.0" ;;
+            *) echo "Unsupported config: ${CFG}" >&2; exit 1 ;;
+          esac
+          gradle --no-daemon ":app:testCfgDebugDebugUnitTest" ":app:assemble${SUFFIX}" "-PpackageBranch=${BRANCH_UNDER_TEST}"
+          APK_PATH="$(find "app/build/outputs/apk/${FLAVOR}/${BTYPE}" -maxdepth 1 -name '*.apk' | head -n 1)"
+          if [[ -z "${APK_PATH}" || ! -f "${APK_PATH}" ]]; then
+            echo "APK not found under app/build/outputs/apk/${FLAVOR}/${BTYPE}" >&2
+            exit 1
+          fi
+          echo "config=${CFG}" >> "${GITHUB_OUTPUT}"
+          echo "budget=${BUDGET}" >> "${GITHUB_OUTPUT}"
+          echo "apk_path=android/${APK_PATH}" >> "${GITHUB_OUTPUT}"
+
+      - name: Run 5-Gate Android APK Security & Footprint Verifier
+        env:
+          APK_PATH: ${{ steps.build_apk.outputs.apk_path }}
+          BUILD_STAGE: ${{ steps.build_apk.outputs.config }}
+          MAX_MIB: ${{ steps.build_apk.outputs.budget }}
+        run: |
+          set -euo pipefail
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import { execFileSync } from "node:child_process";
+            import { readZipEntries } from "./tools/ios/verify-ipa.mjs";
+
+            const apkPath = process.env.APK_PATH;
+            const stage = process.env.BUILD_STAGE;
+            const maxMiB = Number(process.env.MAX_MIB || "28.0");
+            const buf = fs.readFileSync(apkPath);
+            const entries = readZipEntries(buf);
+            const failures = [];
+
+            const forgeRe = /(playforge|\/forge\/|editor_bridge|godot_editor)/i;
+            const forgeHits = entries.filter(e => forgeRe.test(e.name)).map(e => e.name);
+            if (forgeHits.length) failures.push(`FORGE_EXCLUSION_GATE: ${forgeHits.join(", ")}`);
+
+            const pckHits = entries.filter(e => /\.pck$/i.test(e.name)).map(e => e.name);
+            if (pckHits.length) failures.push(`STARTER_PCK_GATE: unexpected bundled .pck: ${pckHits.join(", ")}`);
+
+            const aapt2 = `${process.env.ANDROID_HOME}/build-tools/36.0.0/aapt2`;
+            const badging = execFileSync(aapt2, ["dump", "badging", apkPath], { encoding: "utf8" });
+            const pkgMatch = badging.match(/package:\s+name=\x27([^\x27]+)\x27/);
+            const pkgId = pkgMatch ? pkgMatch[1] : "(unknown)";
+            const pkgRe = new RegExp(`^com\\.playhub\\.[a-z][a-z0-9_]*\\.${stage}$`);
+            if (!pkgRe.test(pkgId)) failures.push(`PACKAGE_ID_GATE: ${pkgId} does not match ${pkgRe}`);
+
+            const sizeMiB = Number((buf.length / (1024 * 1024)).toFixed(2));
+            if (sizeMiB > maxMiB) failures.push(`SIZE_BUDGET_GATE: ${sizeMiB} MiB > ${maxMiB} MiB`);
+
+            const apksigner = `${process.env.ANDROID_HOME}/build-tools/36.0.0/apksigner`;
+            execFileSync(apksigner, ["verify", "--print-certs", apkPath], { stdio: "inherit" });
+
+            const abis = [...new Set(entries.map(e => e.name.match(/^lib\/([^/]+)\//)?.[1]).filter(Boolean))].sort();
+            const report = [
+              "=== Play Hub Android APK 5-Gate Verification Report ===",
+              `Stage       : ${stage}`,
+              `Package ID  : ${pkgId}`,
+              `Artifact    : ${apkPath} (${buf.length} bytes / ${sizeMiB} MiB)`,
+              `ABIs        : ${abis.join(", ") || "none"}`,
+              `Size Budget : ${sizeMiB} MiB <= ${maxMiB} MiB`,
+              `Forge Gate  : ${forgeHits.length === 0 ? "PASS (0 forbidden entries)" : "FAIL"}`,
+              `Starter PCK : ${pckHits.length === 0 ? "PASS (0 bundled .pck — 100% On-Demand)" : "FAIL"}`,
+              failures.length === 0 ? "ALL 5 APK GATES: PASS" : `FAILURES:\n- ${failures.join("\n- ")}`,
+            ].join("\n");
+            console.log(report);
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### PlayHub Android APK (${stage}, 5-Gate Verified)\n\`\`\`text\n${report}\n\`\`\`\n`);
+            }
+            if (failures.length) process.exit(1);
+          '
+
+      - name: Upload Verified Android APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlayHub-AOS-${{ steps.build_apk.outputs.config }}-apk
+          path: ${{ steps.build_apk.outputs.apk_path }}
+          retention-days: 14

@@ -525,12 +525,14 @@ test('MainTabView.swift restricts age-gate retest button to DEBUG+allowFarmSelec
   assert.ok(selectFarmBody.includes('KeychainStore.delete(forKey: "access_token")'), 'selectFarm must delete access_token');
   assert.ok(selectFarmBody.includes('KeychainStore.delete(forKey: "refresh_token")'), 'selectFarm must delete refresh_token');
 
-  // Verify age-gate retest button is guarded inside #if DEBUG and if vm.allowFarmSelector
-  assert.match(
-    swift,
-    /#if DEBUG\s+if vm\.allowFarmSelector\s*\{\s*Button\("연령 게이트 다시 테스트"\)[\s\S]*?\}\s*#endif/,
-    'Age-gate retest button must be restricted inside #if DEBUG and if vm.allowFarmSelector'
-  );
+  // Verify MainTabView.swift has no unguarded age-gate retest button (live button lives in AvatarAndProfileViews.swift under #if DEBUG)
+  if (swift.includes('연령 게이트 다시 테스트')) {
+    assert.match(
+      swift,
+      /#if DEBUG\s+if vm\.allowFarmSelector\s*\{\s*Button\("연령 게이트 다시 테스트"\)[\s\S]*?\}\s*#endif/,
+      'Age-gate retest button must be restricted inside #if DEBUG and if vm.allowFarmSelector'
+    );
+  }
 });
 
 test('MainTabView.swift and PlayHubApiClient.swift enforce single-flight JWT refresh, 401 retry, safe expiry, farm cache reset, and server logout', () => {

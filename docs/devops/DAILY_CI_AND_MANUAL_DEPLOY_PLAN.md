@@ -1,21 +1,29 @@
 # PlayHub-DevOps 데일리 빌드 · 아카이브 · 오전 AI 브리핑 · 수동 배포 설계서
 
-- 상태: 최종 검토 확정안 (브랜치 `PlayHub-DevOps`, 기준 `PlayHub-Platform` `13c70ba`, 2026-11-21)
+- 상태: **GitHub Actions CI/CD 단일화 완료** (2026-11-26, 기준 `PlayHub-Platform` 통합 — 기존 Cloud Build는 레거시 폴백으로 보존)
 - 범위:
-  - **클라우드(Google Cloud Build)**: 결정론적 빌드 + 단위/계약/통합 검증 + 아카이브 저장 (AI QA 제외)
+  - **빌드·테스트·데일리 CI·배포 오케스트레이션 (GitHub Actions 단일화, 공개 저장소 \$0 무제한)**:
+    - `.github/workflows/daily-ci.yml`: 매일 03:30 KST 결정론적 CI + Source ZIP + 기존 GCP WIF 기반 비공개 GCS 아카이브 (기존 Cloud Build 대체)
+    - `.github/workflows/pr-fast-gate.yml`: PR/Push Tier 1 고속 QA 게이트
+    - `.github/workflows/cloudrun-pipeline.yml`: Hub/Forge/build-worker Docker 빌드 → Cloud Run Dev/QA/Live 무중단 배포
+    - `.github/workflows/ios-playhub-ci.yml`: 무료 `macos-15` iOS 빌드·시뮬레이터 시나리오 테스트·무서명 `arm64` IPA 6-Gate 검증
+    - `.github/workflows/aos-playhub-ci.yml`: 무료 `ubuntu-latest` Android Kotlin 단위 테스트·APK 빌드·5-Gate 검증
+  - **Cloud Run (실시간 서버 호스팅·유저 Export 워커 전담 유지)**:
+    - `playhub-hub` / `playhub-forge` 상시(Scale-to-Zero) HTTPS/WSS 호스팅 및 `forge-build-worker` 1회성 격리 Cloud Run Job은 그대로 Cloud Run 유지
   - **AI 역할**: **오전 데일리 브리핑 전용 (Read-Only)** — 빌드·배포·코드 수정 없이 결과 매니페스트·로그·최근 커밋만 읽어 요약 브리핑 작성
-  - **수동 배포/테스트**: 특정 브랜치/커밋 선택 빌드 및 로컬(`local-preview`) / Dev(`dev-tag`, `dev-promote`) 선택 테스트
-- 대상 GCP 프로젝트: `playhub-dev-2611` (`us-west1`, Always Free 및 Cloud Build 무료 2,500분/월 범위)
-- 관련 문서: [site-operations-plan.md](../architecture/site-operations-plan.md), [hub-forge-decoupling-plan.md](../architecture/hub-forge-decoupling-plan.md)
+  - **수동 배포/테스트**: 특정 브랜치/커밋 선택 빌드(`local` / `github-actions` / 레거시 `cloudbuild`) 및 로컬(`local-preview`) / Dev(`dev-tag`, `dev-promote`) 선택 테스트
+- 대상 GCP 프로젝트: `playhub-dev-2611` (`us-west1`, Always Free + GitHub WIF 인증)
+- 관련 문서: [site-operations-plan.md](../architecture/site-operations-plan.md), [hub-forge-decoupling-plan.md](../architecture/hub-forge-decoupling-plan.md), [cloud-run-pipeline-plan.md](../architecture/cloud-run-pipeline-plan.md)
 
 ---
 
-## 1. 최종 운영 흐름 (Cloud Build 자율 완결 → 오전 Read-Only AI 브리핑)
+## 1. 최종 운영 흐름 (GitHub Actions 단일 CI/CD → Cloud Run 호스팅 / 오전 Read-Only AI 브리핑)
 
 ```mermaid
 flowchart LR
-  CS["03:30 KST<br/>Cloud Scheduler"] --> GCB["Google Cloud Build<br/>tools/devops/cloudbuild.daily.yaml<br/>결정론적 빌드·테스트·Source ZIP<br/>(5~8분 · 무료 티어 $0)"]
-  GCB --> ARCH["아카이브 저장<br/>• GCS: gs://playhub-daily-ci-2611/<br/>• Google Drive 아카이브 (SHA-256 · 14d/90d GC)"]
+  GHA["GitHub Actions (단일 CI/CD · $0 무제한)<br/>• daily-ci.yml (03:30 KST 데일리 CI)<br/>• pr-fast-gate.yml (Tier 1 QA)<br/>• ios-playhub-ci.yml (macos-15 IPA)<br/>• aos-playhub-ci.yml (Android APK)<br/>• cloudrun-pipeline.yml (배포)"]
+  GHA -->|WIF 비공개 아카이브| ARCH["아카이브 저장<br/>• GCS: gs://playhub-daily-ci-2611/ (Source ZIP 포함)<br/>• GitHub Artifacts (비민감 리포트·APK·IPA)"]
+  GHA -->|컨테이너 무중단 배포| CR["GCP Cloud Run (호스팅·런타임 전용)<br/>• playhub-hub / playhub-forge<br/>• forge-build-worker Job"]
   ARCH -.->|Read-Only 결과 조회| AI["오전 데일리 AI 브리핑 (예: 09:00 KST)<br/>• 빌드 성공/실패·미실행 여부 확인<br/>• 실패 시 로그·최근 24h 커밋·소유권 요약<br/>• 아카이브 링크 + 오늘 액션 3줄 보고"]
 ```
 

@@ -1,0 +1,183 @@
+name: PlayHub Deterministic Daily CI (GitHub Actions)
+
+# Unified daily deterministic CI replacing legacy Google Cloud Build (tools/devops/cloudbuild.daily.yaml).
+# - Runs daily at 03:30 KST (18:30 UTC) on free ubuntu-latest ($0 unlimited on public repo).
+# - Reuses existing GCP Workload Identity Federation (WIF) to upload full archives & Source ZIP
+#   to private GCS (gs://playhub-daily-ci-2611); only sanitized reports/logs are uploaded as GitHub Artifacts.
+# - Cloud Run remains dedicated to live server hosting (playhub-hub, playhub-forge) and
+#   isolated user export workers (forge-build-worker Cloud Run Job).
+
+on:
+  schedule:
+    - cron: "30 18 * * *" # 03:30 KST daily
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Optional branch or commit SHA to verify (defaults to current branch)"
+        required: false
+        default: ""
+      upload_gcs:
+        description: "Sync full archive + Source ZIP to private GCS bucket (gs://playhub-daily-ci-2611)"
+        required: false
+        default: true
+        type: boolean
+      skip_stages:
+        description: "Optional comma-separated stage IDs to skip"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: daily-ci-${{ inputs.ref || github.ref }}
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: playhub-dev-2611
+  ARCHIVE_BUCKET: playhub-daily-ci-2611
+  DEFAULT_WIF_PROVIDER: projects/88778617121/locations/global/workloadIdentityPools/github-actions-pool/providers/github-oidc
+  DEFAULT_CI_SA: github-ci-deployer@playhub-dev-2611.iam.gserviceaccount.com
+
+jobs:
+  deterministic-daily-ci:
+    name: Deterministic Daily CI & Archive (Free ubuntu-latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Hub, Forge & Python QA Dependencies
+        run: |
+          set -euo pipefail
+          if [ -f hub/automation/requirements.txt ]; then
+            python3 -m pip install --quiet -r hub/automation/requirements.txt
+          fi
+          if [ -f hub/package-lock.json ]; then
+            npm --prefix hub ci --no-audit --no-fund --ignore-scripts
+          fi
+          if [ -f forge/package-lock.json ]; then
+            npm --prefix forge ci --no-audit --no-fund --ignore-scripts
+          fi
+
+      - name: Run Deterministic Daily CI (cloud mode — defers exit until after report upload)
+        id: daily_ci
+        env:
+          INPUT_SKIP_STAGES: ${{ inputs.skip_stages || '' }}
+          BUILD_ID: gha-${{ github.run_id }}
+          PROJECT_ID: ${{ env.GCP_PROJECT }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH_NAME: ${{ inputs.ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          KST_STAMP="$(TZ=Asia/Seoul date +%Y-%m-%d-%H%M)"
+          RUN_ID="daily-${KST_STAMP}-${SHORT_SHA}"
+          OUT_DIR="artifacts/daily-builds/${RUN_ID}"
+          echo "run_id=${RUN_ID}" >> "${GITHUB_OUTPUT}"
+          echo "out_dir=${OUT_DIR}" >> "${GITHUB_OUTPUT}"
+
+          ARGS=(--mode cloud --run-id "${RUN_ID}" --out-dir "${OUT_DIR}")
+          if [[ -n "${INPUT_SKIP_STAGES}" ]]; then
+            ARGS+=(--skip-stages "${INPUT_SKIP_STAGES}")
+          fi
+          SHORT_SHA="${SHORT_SHA}" node tools/devops/run-deterministic-ci.mjs "${ARGS[@]}"
+
+      - name: Write latest-cloud.json Pointer & GitHub Step Summary
+        env:
+          RUN_ID: ${{ steps.daily_ci.outputs.run_id }}
+          OUT_DIR: ${{ steps.daily_ci.outputs.out_dir }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          node -e '
+            const fs = require("node:fs");
+            const runId = process.env.RUN_ID;
+            const outDir = process.env.OUT_DIR;
+            const manifest = JSON.parse(fs.readFileSync(`${outDir}/deterministic-manifest.json`, "utf8"));
+            const pointer = {
+              runId: manifest.runId,
+              overallStatus: manifest.overallStatus,
+              ciProvider: "github-actions",
+              commit: manifest.git.commit,
+              shortCommit: manifest.git.shortCommit,
+              branch: manifest.git.branch,
+              finishedAt: manifest.finishedAt,
+              cloudBuildId: null,
+              githubRunId: process.env.GITHUB_RUN_ID || null,
+              githubRunUrl: process.env.GITHUB_RUN_URL || null,
+              manifestObject: `daily-builds/${runId}/deterministic-manifest.json`,
+            };
+            fs.writeFileSync("artifacts/daily-builds/latest-cloud.json", JSON.stringify(pointer, null, 2) + "\n");
+          '
+          if [ -f "${OUT_DIR}/deterministic-report.md" ]; then
+            cat "${OUT_DIR}/deterministic-report.md" >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
+      - name: Upload Sanitized Daily CI Reports & Logs (GitHub Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-ci-report-${{ steps.daily_ci.outputs.run_id }}
+          path: |
+            ${{ steps.daily_ci.outputs.out_dir }}/deterministic-manifest.json
+            ${{ steps.daily_ci.outputs.out_dir }}/deterministic-report.md
+            ${{ steps.daily_ci.outputs.out_dir }}/deterministic-report.html
+            ${{ steps.daily_ci.outputs.out_dir }}/logs/**
+            ${{ steps.daily_ci.outputs.out_dir }}/reports/**
+            artifacts/daily-builds/latest-cloud.json
+          retention-days: 14
+
+      - name: Authenticate to Google Cloud (WIF) for Private GCS Archive
+        if: github.event_name != 'workflow_dispatch' || inputs.upload_gcs == true
+        id: gcp_auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
+
+      - name: Setup gcloud CLI for Private GCS Archive
+        if: (github.event_name != 'workflow_dispatch' || inputs.upload_gcs == true) && steps.gcp_auth.outcome == 'success'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload Full Daily Archive & Source ZIP to Private GCS
+        if: (github.event_name != 'workflow_dispatch' || inputs.upload_gcs == true) && steps.gcp_auth.outcome == 'success'
+        env:
+          RUN_ID: ${{ steps.daily_ci.outputs.run_id }}
+          OUT_DIR: ${{ steps.daily_ci.outputs.out_dir }}
+        run: |
+          set -euo pipefail
+          if gcloud storage buckets describe "gs://${ARCHIVE_BUCKET}" --project="${GCP_PROJECT}" >/dev/null 2>&1; then
+            DEST="gs://${ARCHIVE_BUCKET}/daily-builds/${RUN_ID}"
+            gcloud storage rsync -r "${OUT_DIR}" "${DEST}"
+            gcloud storage cp "artifacts/daily-builds/latest-cloud.json" "gs://${ARCHIVE_BUCKET}/daily-builds/latest-cloud.json"
+            echo "Synced full daily archive (including Source ZIP) to ${DEST}"
+          else
+            echo "::warning::Private GCS bucket gs://${ARCHIVE_BUCKET} is not provisioned or accessible by WIF SA yet; skipped GCS upload (GitHub Artifact report uploaded)."
+          fi
+
+      - name: Enforce Deterministic CI Verdict
+        id: enforce_ci_status
+        env:
+          OUT_DIR: ${{ steps.daily_ci.outputs.out_dir }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const manifest = JSON.parse(fs.readFileSync(`${process.env.OUT_DIR}/deterministic-manifest.json`, "utf8"));
+            console.log(`Final Daily CI verdict for ${manifest.runId}: ${manifest.overallStatus}`);
+            if (manifest.overallStatus === "fail") {
+              process.exit(1);
+            }
+          '

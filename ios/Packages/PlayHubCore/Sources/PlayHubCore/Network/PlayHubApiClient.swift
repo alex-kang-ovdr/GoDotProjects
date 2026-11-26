@@ -12,6 +12,13 @@ public struct MobileAgeCompliance: Codable, Equatable, Sendable {
     public let regionCode: String
     public let ageTier: String
     public let parentalConsentStatus: String
+
+    public init(completed: Bool, regionCode: String, ageTier: String, parentalConsentStatus: String) {
+        self.completed = completed
+        self.regionCode = regionCode
+        self.ageTier = ageTier
+        self.parentalConsentStatus = parentalConsentStatus
+    }
 }
 
 public struct MobileAuthProviders: Codable, Equatable, Sendable {
@@ -39,6 +46,12 @@ public struct MobileCatalogGameCompatibility: Codable, Equatable, Sendable {
     public let compatible: Bool
     public let reason: String?
     public let message: String?
+
+    public init(compatible: Bool, reason: String?, message: String?) {
+        self.compatible = compatible
+        self.reason = reason
+        self.message = message
+    }
 }
 
 public struct MobileCatalogGameMultiplayer: Codable, Equatable, Sendable {
@@ -114,6 +127,22 @@ public struct SocialPresence: Codable, Equatable, Sendable {
     public let gameTitle: String?
     public let roomCode: String?
     public let joinable: Bool
+
+    public init(
+        status: String,
+        online: Bool,
+        gameId: String?,
+        gameTitle: String?,
+        roomCode: String?,
+        joinable: Bool
+    ) {
+        self.status = status
+        self.online = online
+        self.gameId = gameId
+        self.gameTitle = gameTitle
+        self.roomCode = roomCode
+        self.joinable = joinable
+    }
 }
 
 public struct SocialProfile: Codable, Equatable, Sendable {
@@ -158,6 +187,22 @@ public struct SocialUserHit: Codable, Equatable, Identifiable, Sendable {
     public let isFriend: Bool
     public let presence: SocialPresence?
     public var id: String { principalId }
+
+    public init(
+        principalId: String,
+        displayName: String,
+        handle: String,
+        avatarColor: String,
+        isFriend: Bool = false,
+        presence: SocialPresence? = nil
+    ) {
+        self.principalId = principalId
+        self.displayName = displayName
+        self.handle = handle
+        self.avatarColor = avatarColor
+        self.isFriend = isFriend
+        self.presence = presence
+    }
 }
 
 public struct SocialSearchResponse: Codable, Equatable, Sendable {
@@ -174,6 +219,26 @@ public struct SocialFriend: Codable, Equatable, Identifiable, Sendable {
     public let lastMessageAt: String?
     public let lastMessageFromMe: Bool?
     public var id: String { principalId }
+
+    public init(
+        principalId: String,
+        displayName: String,
+        handle: String,
+        avatarColor: String,
+        presence: SocialPresence,
+        lastMessage: String? = nil,
+        lastMessageAt: String? = nil,
+        lastMessageFromMe: Bool? = nil
+    ) {
+        self.principalId = principalId
+        self.displayName = displayName
+        self.handle = handle
+        self.avatarColor = avatarColor
+        self.presence = presence
+        self.lastMessage = lastMessage
+        self.lastMessageAt = lastMessageAt
+        self.lastMessageFromMe = lastMessageFromMe
+    }
 }
 
 public struct SocialFriendRequest: Codable, Equatable, Identifiable, Sendable {

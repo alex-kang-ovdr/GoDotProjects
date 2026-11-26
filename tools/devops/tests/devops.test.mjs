@@ -435,3 +435,35 @@ test('common.runSubprocess handles synchronous spawn error without timer TDZ Ref
   assert.equal(res.code, 'START_FAILED');
   assert.equal(typeof res.error, 'string');
 });
+
+test('unified GitHub Actions workflows (daily-ci, ios-playhub-ci, aos-playhub-ci) and manual github-actions plan satisfy CI contracts', () => {
+  const ghaPlan = createManualTriggerPlan({
+    repoRoot: DEFAULT_REPO_ROOT,
+    ref: 'HEAD',
+    buildTarget: 'github-actions',
+    testTarget: 'dev-tag',
+  });
+  assert.equal(ghaPlan.cloudBuild, null);
+  assert.equal(ghaPlan.githubActions.workflow, '.github/workflows/daily-ci.yml');
+  assert.match(ghaPlan.githubActions.command, /^gh workflow run daily-ci\.yml /);
+  assert.equal(ghaPlan.githubActions.deployWorkflow, '.github/workflows/cloudrun-pipeline.yml');
+
+  const dailyYml = fs.readFileSync(path.join(DEFAULT_REPO_ROOT, '.github', 'workflows', 'daily-ci.yml'), 'utf8');
+  assert.match(dailyYml, /cron:\s*["']30 18 \* \* \*["']/);
+  assert.match(dailyYml, /run-deterministic-ci\.mjs/);
+  assert.match(dailyYml, /google-github-actions\/auth@v2/);
+  const uploadIdx = dailyYml.indexOf('Upload Full Daily Archive & Source ZIP to Private GCS');
+  const enforceIdx = dailyYml.indexOf('Enforce Deterministic CI Verdict');
+  assert.ok(uploadIdx > 0 && enforceIdx > uploadIdx, 'daily-ci.yml must enforce verdict after report & GCS uploads');
+
+  const iosYml = fs.readFileSync(path.join(DEFAULT_REPO_ROOT, '.github', 'workflows', 'ios-playhub-ci.yml'), 'utf8');
+  assert.match(iosYml, /runs-on:\s*macos-15/);
+  assert.match(iosYml, /PlayHub-Platform/);
+  assert.match(iosYml, /verify-ipa\.mjs/);
+
+  const aosYml = fs.readFileSync(path.join(DEFAULT_REPO_ROOT, '.github', 'workflows', 'aos-playhub-ci.yml'), 'utf8');
+  assert.match(aosYml, /PlayHub-Platform/);
+  assert.match(aosYml, /godot-aar\.lock\.json/);
+  assert.match(aosYml, /testCfgDebugDebugUnitTest/);
+  assert.match(aosYml, /ALL 5 APK GATES: PASS/);
+});

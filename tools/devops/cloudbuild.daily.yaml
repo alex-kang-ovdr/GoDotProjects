@@ -1,4 +1,7 @@
-# Google Cloud Build — PlayHub Deterministic Daily CI
+# [LEGACY FALLBACK] Google Cloud Build — PlayHub Deterministic Daily CI
+# Primary scheduled & manual daily CI has been consolidated into GitHub Actions:
+#   .github/workflows/daily-ci.yml (free unlimited ubuntu-latest on public repo + GCP WIF GCS sync)
+# This file is kept intact solely as an optional GCP Cloud Build fallback template.
 # Target project: playhub-dev-2611 (region: us-west1)
 # Triggered autonomously at 03:30 KST via Cloud Scheduler -> Cloud Build Trigger,
 # or manually with a specific branch/commit SHA.

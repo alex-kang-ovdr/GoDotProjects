@@ -72,14 +72,14 @@ export function validateGitRef(repoRoot = DEFAULT_REPO_ROOT, ref) {
 export function createManualTriggerPlan({
   repoRoot = DEFAULT_REPO_ROOT,
   ref = 'HEAD',
-  buildTarget = 'local', // local | cloudbuild
+  buildTarget = 'local', // local | github-actions | cloudbuild
   testTarget = 'local-preview', // none | local-preview | dev-tag | dev-promote
   localBasePort = 18280,
   gcpProject = 'playhub-dev-2611',
   gcpRegion = 'us-west1',
   archiveBucket = 'playhub-daily-ci-2611',
 } = {}) {
-  if (!['local', 'cloudbuild'].includes(buildTarget)) {
+  if (!['local', 'github-actions', 'cloudbuild'].includes(buildTarget)) {
     throw new Error(`Unsupported buildTarget: ${buildTarget}`);
   }
   if (!['none', 'local-preview', 'dev-tag', 'dev-promote'].includes(testTarget)) {
@@ -122,6 +122,19 @@ export function createManualTriggerPlan({
           ? `https://playhub-hub-<hash>.${gcpRegion}.run.app`
           : `http://127.0.0.1:${ports.userPort}/`,
     },
+    githubActions: buildTarget === 'github-actions'
+      ? {
+          workflow: '.github/workflows/daily-ci.yml',
+          inputs: {
+            ref: resolvedRef.ref,
+            upload_gcs: 'true',
+          },
+          command: `gh workflow run daily-ci.yml -f ref=${resolvedRef.ref} -f upload_gcs=true`,
+          deployWorkflow: ['dev-tag', 'dev-promote'].includes(testTarget)
+            ? '.github/workflows/cloudrun-pipeline.yml'
+            : null,
+        }
+      : null,
     cloudBuild: buildTarget === 'cloudbuild'
       ? {
           project: gcpProject,
@@ -177,7 +190,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         console.log(
           'Usage:\n' +
             '  node tools/devops/manual-build-test.mjs --list-refs\n' +
-            '  node tools/devops/manual-build-test.mjs --ref <branch|commit> [--build local|cloudbuild] [--test none|local-preview|dev-tag|dev-promote] [--port 18280] [--write-plan]',
+            '  node tools/devops/manual-build-test.mjs --ref <branch|commit> [--build local|github-actions|cloudbuild] [--test none|local-preview|dev-tag|dev-promote] [--port 18280] [--write-plan]',
         );
         process.exit(0);
       } else if (token === '--list-refs') listRefs = true;
