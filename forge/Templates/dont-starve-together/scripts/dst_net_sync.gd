@@ -11,6 +11,33 @@ var sim: DSTWorldSim
 var tick_seq: int = 0
 var peers: Dictionary = {} # peer_id(int) -> Dictionary
 var all_ghost_reset_timer: float = -1.0
+var transport_mode: String = "local" # local | enet | websocket
+var active_peer: MultiplayerPeer = null
+
+
+func create_enet_host(port: int = 10999, max_clients: int = 6) -> Dictionary:
+	var enet: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
+	var err: Error = enet.create_server(port, max_clients)
+	if err == OK:
+		active_peer = enet
+		transport_mode = "enet"
+	return {"ok": err == OK, "mode": "enet", "port": port, "error": err}
+
+
+func create_websocket_host(port: int = 10998) -> Dictionary:
+	var ws: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
+	var err: Error = ws.create_server(port)
+	if err == OK:
+		active_peer = ws
+		transport_mode = "websocket"
+	return {"ok": err == OK, "mode": "websocket", "port": port, "error": err}
+
+
+func close_transport() -> void:
+	if active_peer != null:
+		active_peer.close()
+		active_peer = null
+	transport_mode = "local"
 
 
 func init_coop_room(world_sim: DSTWorldSim, host_char: String = "wilson") -> void:

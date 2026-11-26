@@ -45,6 +45,15 @@ var dark_exposure_timer: float = 0.0
 var attack_cooldown: float = 0.0
 var attack_anim_timer: float = 0.0
 var player_hit_flash: float = 0.0
+var freeze_timer: float = 0.0
+
+# 보스 특수 패턴 텔레그래프 & 협동 AI 동료 (M2/M3)
+var boss_telegraphs: Array = [] # { id, kind, boss_kind, pos: Vector2, radius: float, timer: float, max_timer: float, color: Color }
+var coop_ally_active: bool = false
+var coop_ally_char: String = "wathgrithr"
+var coop_ally_pos: Vector2 = Vector2(-2.5, 1.5)
+var _coop_ally_cd: float = 0.0
+var _coop_ally_revive_timer: float = 0.0
 
 # 보트 & 바다 항해 (M4 + QA-09)
 var boat_active: bool = false
@@ -127,6 +136,12 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 	sanity_mode = 0
 	is_sane = true
 	player_hit_flash = 0.0
+	freeze_timer = 0.0
+	boss_telegraphs.clear()
+	coop_ally_active = false
+	coop_ally_pos = Vector2(-2.5, 1.5)
+	_coop_ally_cd = 0.0
+	_coop_ally_revive_timer = 0.0
 	boat_active = false
 	boat_pos = Vector2(18.0, -14.0)
 	boat_hp = float(db.data["boat"]["health"])
@@ -406,6 +421,17 @@ func get_active_boss() -> Dictionary:
 	return {}
 
 
+func toggle_coop_ally() -> bool:
+	coop_ally_active = not coop_ally_active
+	if coop_ally_active:
+		coop_ally_pos = player_pos + Vector2(-2.6, 1.4)
+		push_log("협동 동료 참전: 위그프리드 (공동 전투 · 유령 시 고백 심장 자동 부활)")
+		push_floating(coop_ally_pos, "CO-OP JOIN!", Color(0.50, 0.96, 0.55))
+	else:
+		push_log("협동 동료가 캠프로 복귀했습니다.")
+	return coop_ally_active
+
+
 func _populate_world() -> void:
 	# 초기 모닥불 자리 근처의 자원 배치
 	var kinds: Array = [
@@ -472,6 +498,7 @@ func spawn_creature(kind: String, pos: Vector2) -> Dictionary:
 		"loot": d.get("loot", {}),
 		"aggro": bool(d.get("boss", false)),
 		"hit_flash": 0.0,
+		"special_cd": 3.5 if bool(d.get("boss", false)) else 999.0,
 	}
 	_next_uid += 1
 	creatures.append(ent)
@@ -486,6 +513,7 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 	attack_cooldown = max(0.0, attack_cooldown - sim_dt)
 	attack_anim_timer = max(0.0, attack_anim_timer - dt)
 	player_hit_flash = max(0.0, player_hit_flash - dt)
+	freeze_timer = max(0.0, freeze_timer - sim_dt)
 
 	# 1. 시계 / 달 / 계절 / 동굴 악몽 주기 진행
 	var total_day: float = float(db.data["clock"]["total_day_time"])
@@ -509,7 +537,9 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 	if is_ghost:
 		move_speed = 7.5
 	var max_radius: float = 68.0 if on_boat else 53.0
-	if move_input.length_squared() > 0.001:
+	if freeze_timer > 0.0 and not is_ghost:
+		player_vel = Vector2.ZERO
+	elif move_input.length_squared() > 0.001:
 		var dir: Vector2 = move_input.normalized()
 		player_facing = dir
 		var next_pos: Vector2 = player_pos + dir * move_speed * sim_dt
@@ -556,10 +586,12 @@ func step(dt: float, move_input: Vector2 = Vector2.ZERO) -> void:
 	else:
 		_update_environment_and_stats(sim_dt, near_fire_power)
 
-	# 6. 자원 재생, 부패, 농사, 생물 AI
+	# 6. 자원 재생, 부패, 농사, 생물 AI, 보스 특수 텔레그래프, 협동 동료 AI
 	_update_resources_and_farms(sim_dt)
 	_update_perishables(sim_dt)
 	_update_creatures(sim_dt)
+	_update_boss_telegraphs(sim_dt)
+	_update_coop_ally(sim_dt)
 
 
 func _advance_day() -> void:
@@ -1244,6 +1276,13 @@ func _update_creatures(dt: float) -> void:
 				c["aggro"] = false
 
 		if bool(c["aggro"]) and not is_ghost:
+			# 보스 특수 패턴 텔레그래프 발동
+			if bool(c.get("boss", false)):
+				c["special_cd"] = max(0.0, float(c.get("special_cd", 4.0)) - dt)
+				if float(c["special_cd"]) <= 0.0 and dist < 11.0:
+					c["special_cd"] = 6.0
+					_trigger_boss_telegraph(c)
+
 			var r_atk: float = float(c["range"])
 			if dist > r_atk * 0.85:
 				var dir: Vector2 = (player_pos - c["pos"]).normalized()
@@ -1254,3 +1293,130 @@ func _update_creatures(dt: float) -> void:
 				var p_dmg: float = float(c["planar_damage"])
 				var res: Dictionary = receive_attack(eff_dmg, p_dmg, str(c["name"]))
 				push_log("%s의 공격! 피해 %.1f (흡수 %.0f%%)" % [str(c["name"]), float(res["total_damage"]), float(res["absorbed_percent"]) * 100.0])
+
+
+func _trigger_boss_telegraph(boss: Dictionary) -> void:
+	var bk: String = str(boss["kind"])
+	var t_kind: String = "ice_slam"
+	var rad: float = 5.5
+	var windup: float = 1.15
+	var col: Color = Color(0.45, 0.88, 1.0, 0.55)
+	var center: Vector2 = player_pos
+	match bk:
+		"deerclops", "mutated_deerclops":
+			t_kind = "ice_slam"; rad = 5.5; windup = 1.15; col = Color(0.45, 0.88, 1.0, 0.55); center = player_pos
+		"bearger":
+			t_kind = "ground_pound"; rad = 6.8; windup = 1.25; col = Color(0.95, 0.58, 0.18, 0.55); center = boss["pos"]
+		"dragonfly":
+			t_kind = "lava_ring"; rad = 6.2; windup = 1.15; col = Color(1.0, 0.28, 0.12, 0.58); center = boss["pos"]
+		"moose":
+			t_kind = "honk_gust"; rad = 6.5; windup = 1.10; col = Color(0.55, 0.96, 0.85, 0.52); center = boss["pos"]
+	boss_telegraphs.append({
+		"id": _next_uid, "kind": t_kind, "boss_kind": bk,
+		"pos": center, "radius": rad, "timer": windup, "max_timer": windup, "color": col,
+	})
+	_next_uid += 1
+	push_log("보스 특수 패턴 예고: %s (%s)" % [str(boss["name"]), t_kind.to_upper()])
+
+
+func _update_boss_telegraphs(dt: float) -> void:
+	for i in range(boss_telegraphs.size() - 1, -1, -1):
+		var tg: Dictionary = boss_telegraphs[i]
+		tg["timer"] = float(tg["timer"]) - dt
+		if float(tg["timer"]) <= 0.0:
+			var tpos: Vector2 = tg["pos"]
+			var rad: float = float(tg["radius"])
+			var tkind: String = str(tg["kind"])
+			var in_zone: bool = (not is_ghost) and (player_pos.distance_to(tpos) <= rad)
+			match tkind:
+				"ice_slam":
+					if in_zone:
+						var p_dmg: float = 25.0 if str(tg["boss_kind"]) == "mutated_deerclops" else 0.0
+						receive_attack(45.0, p_dmg, "ice_slam")
+						freeze_timer = 1.8
+						temperature = max(-10.0, temperature - 14.0)
+						push_floating(player_pos, "❄ 빙결!", Color(0.50, 0.92, 1.0))
+						push_log("외눈사슴 빙결 브레스 피격! 1.8초 빙결!")
+				"ground_pound":
+					# 원작 곰소리 충격파: 반경 내 나무/바위 자동 파괴 + 자원 드랍!
+					var felled: int = 0
+					for r in resources:
+						if int(r["hp"]) > 0 and r["pos"].distance_to(tpos) <= rad + 2.0:
+							r["hp"] = 0
+							r["respawn_timer"] = 180.0
+							if str(r["kind"]) == "evergreen":
+								add_item("log", 2)
+							elif str(r["kind"]) == "boulder":
+								add_item("rocks", 2)
+							felled += 1
+					if felled > 0:
+						push_floating(tpos, "충격파 파괴 ×%d!" % felled, Color(1.0, 0.72, 0.30))
+					if in_zone:
+						receive_attack(60.0, 0.0, "ground_pound")
+						var kb: Vector2 = (player_pos - tpos).normalized() * 4.5
+						if (player_pos + kb).length() <= 53.0:
+							player_pos += kb
+				"lava_ring":
+					if in_zone:
+						if character_id == "willow":
+							push_floating(player_pos, "화염 면역!", Color(1.0, 0.70, 0.30))
+							push_log("윌로우 화염 면역으로 용파리 용암 링을 무효화했습니다!")
+						else:
+							receive_attack(55.0, 0.0, "lava_ring")
+							temperature = min(90.0, temperature + 24.0)
+							push_floating(player_pos, "🔥 용암 화상!", Color(1.0, 0.38, 0.16))
+				"honk_gust":
+					if in_zone:
+						receive_attack(35.0, 0.0, "honk_gust")
+						var kb: Vector2 = (player_pos - tpos).normalized() * 6.0
+						if (player_pos + kb).length() <= 53.0:
+							player_pos += kb
+						push_floating(player_pos, "강풍 넉백!", Color(0.65, 0.98, 0.90))
+			boss_telegraphs.remove_at(i)
+
+
+func _update_coop_ally(dt: float) -> void:
+	if not coop_ally_active:
+		return
+	_coop_ally_cd = max(0.0, _coop_ally_cd - dt)
+	# 플레이어가 유령화되면 협동 동료가 달려와 고백 심장으로 자동 부활!
+	if is_ghost:
+		var d_p: float = coop_ally_pos.distance_to(player_pos)
+		if d_p > 1.8:
+			coop_ally_pos += (player_pos - coop_ally_pos).normalized() * 6.8 * dt
+		else:
+			_coop_ally_revive_timer += dt
+			if _coop_ally_revive_timer >= 1.5:
+				_coop_ally_revive_timer = 0.0
+				revive_player(true)
+				push_floating(player_pos, "동료 부활!", Color(0.55, 1.0, 0.65))
+				push_log("협동 동료 위그프리드가 고백 심장으로 부활시켰습니다!")
+		return
+	_coop_ally_revive_timer = 0.0
+
+	# 반경 14m 내 가장 가까운 적 추적 및 공동 타격
+	var best_idx: int = -1
+	var best_d: float = 14.0
+	for i in range(creatures.size()):
+		var d: float = coop_ally_pos.distance_to(creatures[i]["pos"])
+		if d < best_d:
+			best_d = d
+			best_idx = i
+	if best_idx != -1:
+		var t: Dictionary = creatures[best_idx]
+		if best_d > 2.4:
+			coop_ally_pos += (t["pos"] - coop_ally_pos).normalized() * 6.4 * dt
+		elif _coop_ally_cd <= 0.0:
+			_coop_ally_cd = 0.85
+			var dmg: float = 42.5
+			if bool(t.get("planar_entity", false)):
+				dmg = DSTDatabase.planar_entity_absorb(dmg)
+			t["hp"] = float(t["hp"]) - dmg
+			t["hit_flash"] = 0.18
+			push_floating(t["pos"], "동료 -%.0f" % dmg, Color(0.52, 0.96, 0.58))
+			if float(t["hp"]) <= 0.0:
+				_handle_creature_death(best_idx)
+	else:
+		var follow_target: Vector2 = player_pos + Vector2(-2.4, 1.6)
+		if coop_ally_pos.distance_to(follow_target) > 0.6:
+			coop_ally_pos = coop_ally_pos.lerp(follow_target, clamp(dt * 3.8, 0.0, 1.0))

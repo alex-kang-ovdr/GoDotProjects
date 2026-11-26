@@ -112,5 +112,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 72, `expected >= 72 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 78, `expected >= 78 checks, got ${summary.passed}\n${out}`);
 });

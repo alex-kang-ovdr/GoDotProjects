@@ -287,6 +287,32 @@ func _run() -> void:
 	net.peers[1]["health"] = 100.0
 	_check(net.revive_peer_with_heart(1, 2) and not bool(net.peers[2]["is_ghost"]) and _approx(float(net.peers[2]["health_penalty"]), 0.25) and net.all_ghost_reset_timer < 0.0, "M3_COOP_HEART_REVIVE")
 
+	# 보스 특수 패턴 텔레그래프 (외눈사슴 빙결 / 곰소리 충격파 벌목 / 용파리 윌로우 화염 면역) + 협동 동료 자동 부활
+	sim.init_world(db, 1013, "wilson")
+	var dc_boss: Dictionary = sim.spawn_creature("deerclops", Vector2(5.0, 0.0))
+	dc_boss["special_cd"] = 0.05
+	sim.step(0.2, Vector2.ZERO)
+	_check(sim.boss_telegraphs.size() >= 1 and str(sim.boss_telegraphs[0]["kind"]) == "ice_slam", "BOSS_ICE_SLAM_TELEGRAPH")
+	sim.step(1.3, Vector2.ZERO)
+	_check(sim.freeze_timer > 0.0, "BOSS_ICE_SLAM_FREEZE", "freeze=%.2f" % sim.freeze_timer)
+
+	sim.init_world(db, 1014, "willow")
+	var df_boss: Dictionary = sim.spawn_creature("dragonfly", Vector2(3.0, 0.0))
+	df_boss["cd"] = 5.0
+	df_boss["special_cd"] = 0.05
+	var willow_hp0: float = sim.health
+	sim.step(0.2, Vector2.ZERO)
+	sim.step(1.3, Vector2.ZERO)
+	_check(_approx(sim.health, willow_hp0), "BOSS_DRAGONFLY_WILLOW_FIRE_IMMUNE", "hp0=%.1f hp1=%.1f" % [willow_hp0, sim.health])
+
+	sim.init_world(db, 1015, "wilson")
+	_check(sim.toggle_coop_ally() and sim.coop_ally_active, "COOP_ALLY_TOGGLE")
+	sim.apply_health_delta(-999.0, "test_boss")
+	_check(sim.is_ghost, "COOP_ALLY_PLAYER_GHOST")
+	for _r in range(12):
+		sim.step(0.5, Vector2.ZERO)
+	_check(not sim.is_ghost, "COOP_ALLY_AUTO_REVIVE")
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

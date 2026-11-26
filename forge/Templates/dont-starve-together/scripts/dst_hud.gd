@@ -56,8 +56,8 @@ class StatusVignette extends Control:
 			col = Color(0.32, 0.05, 0.22, 0.24)
 		elif sim.is_enlightened():
 			col = Color(0.28, 0.78, 0.92, 0.20)
-		elif sim.temperature < 5.0:
-			col = Color(0.45, 0.78, 1.0, 0.24)
+		elif sim.freeze_timer > 0.0 or sim.temperature < 5.0:
+			col = Color(0.45, 0.85, 1.0, 0.34 if sim.freeze_timer > 0.0 else 0.24)
 		elif sim.temperature > 65.0:
 			col = Color(1.0, 0.42, 0.12, 0.24)
 		if col.a <= 0.001:
@@ -172,6 +172,10 @@ class MinimapWidget extends Control:
 			var cp: Vector2 = c + cr["pos"] * scale_f
 			var is_b: bool = bool(cr.get("boss", false))
 			draw_circle(cp, 4.5 if is_b else 2.0, Color(1.0, 0.22, 0.22) if is_b else Color(0.95, 0.45, 0.35))
+		# 협동 동료 (연두색)
+		if sim.coop_ally_active:
+			var ap: Vector2 = c + sim.coop_ally_pos * scale_f
+			draw_circle(ap, 3.2, Color(0.45, 0.98, 0.55))
 		# 플레이어 (흰색 + 검정 테두리)
 		var pp: Vector2 = c + sim.player_pos * scale_f
 		draw_circle(pp, 4.0, Color(0.05, 0.05, 0.05))
@@ -360,8 +364,8 @@ func _build_ui() -> void:
 
 	var row4: HBoxContainer = HBoxContainer.new()
 	tbox.add_child(row4)
-	_add_small_btn(row4, "달섬(계몽)", "teleport_moon")
-	_add_small_btn(row4, "본토(광기)", "teleport_home")
+	_add_small_btn(row4, "협동동료(P)", "toggle_ally")
+	_add_small_btn(row4, "달섬/본토", "toggle_moon")
 	_add_small_btn(row4, "미니맵(M)", "toggle_minimap")
 
 	log_label = Label.new()

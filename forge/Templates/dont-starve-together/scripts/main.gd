@@ -108,6 +108,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_hud_action("toggle_cook", "")
 		elif k == KEY_C:
 			_on_hud_action("toggle_shard", "")
+		elif k == KEY_P:
+			_on_hud_action("toggle_ally", "")
 		elif k == KEY_M:
 			_on_hud_action("toggle_minimap", "")
 		elif k == KEY_G:
@@ -170,6 +172,17 @@ func _on_hud_action(action: String, arg: String) -> void:
 			_play_sfx("ui_click")
 		"toggle_shard":
 			sim.toggle_shard()
+			_play_sfx("magic")
+		"toggle_ally":
+			sim.toggle_coop_ally()
+			_play_sfx("ui_click")
+		"toggle_moon":
+			if sim.get_biome_at(sim.player_pos) == "moon_island":
+				sim.player_pos = Vector2.ZERO
+				sim.push_log("본토 거점으로 복귀했습니다.")
+			else:
+				sim.player_pos = Vector2(34.0, -26.0)
+				sim.push_log("달섬으로 이동했습니다 (달 계몽 모드 활성).")
 			_play_sfx("magic")
 		"play_sfx":
 			_play_sfx(arg)

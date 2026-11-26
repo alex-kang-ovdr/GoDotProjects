@@ -21,6 +21,10 @@ var boat_mast_nodes: Array = []
 var abigail_root: Node3D
 var abigail_sprite: Sprite3D
 
+var ally_root: Node3D
+var ally_sprite: Sprite3D
+var telegraph_nodes: Dictionary = {} # uid -> { root, outer, inner }
+
 var resource_nodes: Dictionary = {} # uid -> Node3D { root, sprite }
 var structure_nodes: Dictionary = {}
 var creature_nodes: Dictionary = {} # uid -> { root, sprite, hp_label }
@@ -46,6 +50,7 @@ func setup(world_sim: DSTWorldSim) -> void:
 	_build_player_visual()
 	_build_boat_visual()
 	_build_abigail_visual()
+	_build_ally_visual()
 	_build_weather_pool()
 	sync_visuals(0.0)
 
@@ -262,6 +267,24 @@ func _build_abigail_visual() -> void:
 	abigail_root.add_child(abigail_sprite)
 
 
+func _build_ally_visual() -> void:
+	ally_root = Node3D.new()
+	ally_root.visible = false
+	add_child(ally_root)
+	ally_root.add_child(_make_shadow(1.05))
+	ally_sprite = _make_billboard(_get_sprite_tex("wathgrithr", Color(0.78, 0.28, 0.28)), 2.55)
+	ally_root.add_child(ally_sprite)
+	var lbl: Label3D = Label3D.new()
+	lbl.text = "동료: Wigfrid (P2)"
+	lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	lbl.font_size = 26
+	lbl.pixel_size = 0.011
+	lbl.modulate = Color(0.55, 0.98, 0.62)
+	lbl.outline_size = 6
+	lbl.position = Vector3(0.0, 2.95, 0.0)
+	ally_root.add_child(lbl)
+
+
 func _build_weather_pool() -> void:
 	var drop_mesh: BoxMesh = BoxMesh.new()
 	drop_mesh.size = Vector3(0.06, 0.55, 0.06)
@@ -420,10 +443,22 @@ func sync_visuals(dt: float) -> void:
 	player_sprite.flip_h = sim.player_facing.x < -0.15
 	if sim.player_hit_flash > 0.0:
 		player_sprite.modulate = Color(1.0, 0.35, 0.35, 1.0)
+	elif sim.freeze_timer > 0.0:
+		player_sprite.modulate = Color(0.55, 0.90, 1.0, 1.0)
 	elif sim.is_ghost:
 		player_sprite.modulate = Color(0.72, 0.94, 1.0, 0.82)
 	else:
 		player_sprite.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+	# 2b. 협동 AI 동료(Wigfrid) 동기화
+	ally_root.visible = sim.coop_ally_active
+	if sim.coop_ally_active:
+		ally_root.position = Vector3(sim.coop_ally_pos.x, 0.0, sim.coop_ally_pos.y)
+		ally_sprite.position.y = abs(sin(_anim_time * 9.5)) * 0.14
+		ally_sprite.flip_h = sim.player_pos.x < sim.coop_ally_pos.x
+
+	# 2c. 보스 특수 패턴 바닥 텔레그래프 링 동기화
+	_sync_telegraphs()
 
 	# 3. 보트 & 돛 3D 동기화
 	boat_root.visible = sim.boat_active
@@ -608,3 +643,49 @@ func _sync_entities(items: Array, cache: Dictionary, factory: Callable, hide_whe
 			var node: Node = cache[uid]["root"]
 			node.queue_free()
 			cache.erase(uid)
+
+
+func _sync_telegraphs() -> void:
+	var seen: Dictionary = {}
+	for tg in sim.boss_telegraphs:
+		var uid: int = int(tg["id"])
+		seen[uid] = true
+		var entry: Dictionary
+		if telegraph_nodes.has(uid):
+			entry = telegraph_nodes[uid]
+		else:
+			var rnode: Node3D = Node3D.new()
+			var col: Color = tg["color"]
+			var om: CylinderMesh = CylinderMesh.new()
+			om.top_radius = 1.0; om.bottom_radius = 1.0; om.height = 0.04
+			var omat: StandardMaterial3D = StandardMaterial3D.new()
+			omat.albedo_color = Color(col.r, col.g, col.b, 0.25)
+			omat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			omat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			var outer: MeshInstance3D = MeshInstance3D.new()
+			outer.mesh = om; outer.material_override = omat
+			rnode.add_child(outer)
+
+			var imat: StandardMaterial3D = StandardMaterial3D.new()
+			imat.albedo_color = Color(col.r, col.g, col.b, 0.52)
+			imat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			imat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			var inner: MeshInstance3D = MeshInstance3D.new()
+			inner.mesh = om; inner.material_override = imat
+			inner.position.y = 0.02
+			rnode.add_child(inner)
+			add_child(rnode)
+			entry = {"root": rnode, "outer": outer, "inner": inner}
+			telegraph_nodes[uid] = entry
+
+		var p: Vector2 = tg["pos"]
+		var rad: float = float(tg["radius"])
+		var prog: float = clamp(1.0 - float(tg["timer"]) / max(0.01, float(tg["max_timer"])), 0.1, 1.0)
+		entry["root"].position = Vector3(p.x, 0.05, p.y)
+		entry["outer"].scale = Vector3(rad, 1.0, rad)
+		entry["inner"].scale = Vector3(rad * prog, 1.0, rad * prog)
+
+	for uid in telegraph_nodes.keys():
+		if not seen.has(uid):
+			telegraph_nodes[uid]["root"].queue_free()
+			telegraph_nodes.erase(uid)
