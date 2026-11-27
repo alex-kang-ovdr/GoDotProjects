@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T10:16:04.233811+00:00",
+  "extractedAt": "2026-11-27T10:22:10.956226+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -129,6 +129,21 @@
       "vtable_va": "0x90d330",
       "slot_count": 70,
       "on_loop_va": "0x775c00"
+    },
+    "9CrewLaser": {
+      "vtable_va": "0x90d4d0",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "12CrewManifest": {
+      "vtable_va": "0x90a7ac",
+      "slot_count": 17,
+      "on_loop_va": null
+    },
+    "13CrewAnimation": {
+      "vtable_va": "0x90b20c",
+      "slot_count": 13,
+      "on_loop_va": null
     },
     "10Projectile": {
       "vtable_va": "0x9095cc",
@@ -636,5 +651,64 @@
       1.5
     ],
     "flatVictoryBonus": 0
+  },
+  "eventEngine": {
+    "vtableVa": "0x90c9d4",
+    "grammarRdataRange": "0x882670..0x882960",
+    "parserProofVa": "0x5e5c8b..0x5e7b90",
+    "supportedDirectives": [
+      "autoReward",
+      "item_modify",
+      "weapon",
+      "drone",
+      "augment",
+      "crewMember",
+      "removeCrew",
+      "upgrade",
+      "store",
+      "reveal_map",
+      "distressBeacon",
+      "modifyPursuit",
+      "damage",
+      "repair",
+      "environment",
+      "status",
+      "boarders",
+      "quest",
+      "secretSector"
+    ],
+    "environmentTypes": [
+      "asteroid",
+      "sun",
+      "nebula",
+      "storm",
+      "pulsar",
+      "PDS"
+    ],
+    "statusTypes": [
+      "limit",
+      "divide",
+      "loss",
+      "clear"
+    ],
+    "damageEffects": [
+      "fire",
+      "breach",
+      "all",
+      "random"
+    ]
+  },
+  "sectorPursuit": {
+    "starMapVtableVa": "0x90cdd0",
+    "normalJumpAdvancePx": 66.0,
+    "nebulaJumpAdvancePx": 36.0,
+    "modifyPursuitStepPx": 66.0
+  },
+  "sector8": {
+    "repairStationCount": 2,
+    "repairStationHullHeal": 15,
+    "repairStationScrap": 20,
+    "flagshipBaseTurnLimit": 3,
+    "flagshipMarchesToBase": true
   }
 }

@@ -678,6 +678,54 @@ func _run() -> void:
 		"Binary FTL 1.6 ShipRepairDrone (3..5 charges self-destruct) & ScoreKeeper (Easy/Normal/Hard)",
 		"hull=%d active=%s scores=%d/%d/%d" % [hr_ship.hull, str(hr_ship.drones[0].active), sc_easy, sc_norm, sc_hard])
 
+	# 8y. Wave 5 Binary Logic: 49 Vtables, EventGenerator XML Directives, Pursuit Delay/RevealMap, RemoveCrew Clone, Event Status & Sector 8 Repair/Flagship March
+	_check((spec_json.get("vtables", {}) as Dictionary).size() >= 49 and spec_json.has("eventEngine") and spec_json.has("sectorPursuit") and spec_json.has("sector8"),
+		"Wave 5 ftl_logic_spec.json includes 49 C++ vtables + eventEngine/sectorPursuit/sector8 tables")
+
+	var test_xml := "<event name=\"W5_TEST\"><text>Test</text><item_modify><item type=\"fuel\" min=\"3\" max=\"3\"/></item_modify><modifyPursuit amount=\"-2\"/><upgrade amount=\"1\" system=\"reactor\"/><reveal_map/><removeCrew><clone>false</clone></removeCrew><boarders min=\"2\" max=\"2\" class=\"mantis\"/><environment type=\"pulsar\"/><status type=\"divide\" target=\"player\" system=\"shields\" amount=\"2\"/><drone name=\"COMBAT_1\"/><repair/></event>"
+	var parsed_nodes := FTLDatabase.parse_xml_nodes(test_xml)
+	var ev5 := st_db._convert_event_node(parsed_nodes[0])
+	var ev5_ok := int(ev5.modifyPursuit) == -2 and bool(ev5.reveal_map) and bool(ev5.repair) and str(ev5.environment) == "pulsar" and str(ev5.drone) == "COMBAT_1" and (ev5.item_modify as Array).size() == 1 and str(ev5.upgrade.get("system", "")) == "reactor" and not bool(ev5.removeCrew.get("clone", true)) and int(ev5.boarders.get("min", 0)) == 2 and (ev5.status as Array).size() == 1
+	_check(ev5_ok, "Binary FTL 1.6 EventGenerator parses item_modify, modifyPursuit, upgrade, reveal_map, removeCrew, boarders, environment, status, drone & repair")
+
+	var p_before := smap.rebel_fleet_x
+	smap.modify_pursuit(-2)
+	var pursuit_ok := absf((p_before - smap.rebel_fleet_x) - 132.0) < 0.1
+	smap.reveal_all_beacons()
+	var all_exp := true
+	for sb in smap.beacons:
+		if not bool(sb.explored):
+			all_exp = false
+			break
+	# RemoveCrew respects Clonebay vs clone=false & Event status divide/limit
+	var ev5_ship := FTLShip.new()
+	ev5_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	ev5_ship.install_system("clonebay")
+	ev5_ship.systems.clonebay.power = 1
+	var lost_cl := ev5_ship.remove_random_crew(true)
+	var clone_queued := ev5_ship.clone_queue.size() == 1 and lost_cl.contains("(Cloning)")
+	var lost_perm := ev5_ship.remove_random_crew(false)
+	var perm_not_queued := ev5_ship.clone_queue.size() == 1 and not lost_perm.contains("(Cloning)")
+	ev5_ship.systems.shields.level = 4
+	ev5_ship.systems.shields.power = 4
+	ev5_ship.apply_event_status("divide", "shields", 2)
+	var status_div_ok := ev5_ship.get_effective_system_power("shields") == 2
+	# Sector 8 Repair Stations & Flagship March toward Base
+	var s8_map := FTLSectorMap.new()
+	s8_map.init_campaign(st_db)
+	s8_map.enter_sector(7, 0)
+	var rep_stations := 0
+	for b8 in s8_map.beacons:
+		if str(b8.type) == "repair":
+			rep_stations += 1
+	var f_start := s8_map.flagship_beacon_id
+	var first_link := int(s8_map.beacons[0].links[0])
+	s8_map.jump_to(first_link, false)
+	var f_moved := (s8_map.flagship_beacon_id != f_start) or (f_start == s8_map.base_beacon_id)
+	_check(pursuit_ok and all_exp and clone_queued and perm_not_queued and status_div_ok and rep_stations >= 2 and f_moved,
+		"Binary FTL 1.6 Campaign: modifyPursuit(-2), reveal_map, removeCrew(clone vs perm), status divide & Sector 8 Repair/Flagship March",
+		"pur=%s exp=%s cl=%s/%s st=%s rep=%d fmv=%s" % [str(pursuit_ok), str(all_exp), str(clone_queued), str(perm_not_queued), str(status_div_ok), rep_stations, str(f_moved)])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

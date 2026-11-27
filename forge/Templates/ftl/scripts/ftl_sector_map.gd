@@ -22,8 +22,10 @@ var beacons: Array = [] # {id, pos, type, visited, explored, rebel, nebula, haza
 var current_beacon_id: int = 0
 var rebel_fleet_x: float = -120.0
 var total_jumps: int = 0
+var base_beacon_id: int = 1
 var flagship_beacon_id: int = -1
 var flagship_phase: int = 1
+var flagship_base_turns: int = 0
 
 
 func init_campaign(p_db: FTLDatabase) -> void:
@@ -189,8 +191,29 @@ func _generate_beacons() -> void:
 		beacons[best_b].links.append(best_a)
 
 	current_beacon_id = 0
+	base_beacon_id = 1
+	flagship_base_turns = 0
 	if current_sector_index == 7:
-		flagship_beacon_id = 1
+		# Authentic FTL 1.6 Sector 8 (The Last Stand): 2 Federation Repair Stations + Flagship marching toward Federation Base!
+		var rep_placed := 0
+		for b in beacons:
+			if int(b.id) >= 2 and str(b.type) == "normal" and rep_placed < 2:
+				b.type = "repair"
+				b.explored = true
+				rep_placed += 1
+		# Place Flagship ~3 hops away from Federation Base (or farthest reachable beacon)
+		var best_fid := 1
+		var best_dist := -1.0
+		var base_pos: Vector2 = beacons[base_beacon_id].pos
+		for b in beacons:
+			if int(b.id) > 1 and str(b.type) != "repair":
+				var d := (b.pos as Vector2).distance_to(base_pos)
+				if d > best_dist:
+					best_dist = d
+					best_fid = int(b.id)
+		flagship_beacon_id = best_fid
+		beacons[base_beacon_id].explored = true
+		beacons[flagship_beacon_id].explored = true
 	_reveal_neighbors(0)
 
 
@@ -245,14 +268,59 @@ func jump_to(bid: int, adv_ftl_nav: bool = false) -> Dictionary:
 	b.visited = true
 	_reveal_neighbors(bid)
 
-	# Advance Rebel Fleet wave (slower inside Nebula beacons!)
+	# Advance Rebel Fleet wave (slower inside Nebula beacons!) or Sector 8 Flagship march toward Federation Base
 	var step := 36.0 if bool(b.nebula) else 66.0
 	if current_sector_index < 7:
 		rebel_fleet_x += step
 		for item in beacons:
 			if float(item.pos.x) <= rebel_fleet_x and str(item.type) != "exit":
 				item.rebel = true
+	elif flagship_beacon_id >= 0:
+		if flagship_beacon_id == base_beacon_id:
+			flagship_base_turns += 1
+		elif flagship_beacon_id != current_beacon_id:
+			var fpath := _shortest_beacon_path(flagship_beacon_id, base_beacon_id)
+			if not fpath.is_empty():
+				flagship_beacon_id = int(fpath[0])
+				beacons[flagship_beacon_id].explored = true
 	return b
+
+
+func modify_pursuit(delta_jumps: int) -> void:
+	# Authentic FTL 1.6 <modifyPursuit amount="..."/> (0x5e6fb7): negative delays Rebel Fleet, positive accelerates!
+	rebel_fleet_x += float(delta_jumps) * 66.0
+	for item in beacons:
+		if str(item.type) != "exit":
+			item.rebel = (float(item.pos.x) <= rebel_fleet_x)
+
+
+func reveal_all_beacons() -> void:
+	# Authentic FTL 1.6 <reveal_map/> (0x5e6f65): reveals all beacons in the current sector!
+	for item in beacons:
+		item.explored = true
+
+
+func _shortest_beacon_path(start_id: int, goal_id: int) -> Array[int]:
+	if start_id == goal_id or start_id < 0 or goal_id < 0:
+		return []
+	var q: Array[int] = [start_id]
+	var prev: Dictionary = {start_id: -1}
+	while not q.is_empty():
+		var cur: int = q.pop_front()
+		if cur == goal_id:
+			break
+		for nb in beacons[cur].links:
+			if not prev.has(nb):
+				prev[nb] = cur
+				q.append(nb)
+	if not prev.has(goal_id):
+		return []
+	var path: Array[int] = []
+	var c := goal_id
+	while c != start_id and c != -1:
+		path.push_front(c)
+		c = int(prev[c])
+	return path
 
 
 func add_quest_beacon(event_id: String) -> int:

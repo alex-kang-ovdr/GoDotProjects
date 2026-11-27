@@ -612,15 +612,27 @@ func _convert_event_node(n: Dictionary) -> Dictionary:
 		"text": resolve_text(_child(n, "text"), ""),
 		"store": not _child(n, "store").is_empty(),
 		"distress": not _child(n, "distressBeacon").is_empty(),
+		"reveal_map": not _child(n, "reveal_map").is_empty(),
+		"repair": not _child(n, "repair").is_empty(),
 		"ship": "",
 		"hostile": false,
 		"autoReward": "",
 		"autoRewardLevel": "MED",
 		"damage": 0,
+		"damage_system": "",
+		"damage_effect": "",
 		"weapon": "",
+		"drone": "",
 		"crew": "",
 		"augment": "",
 		"quest": "",
+		"modifyPursuit": 0,
+		"item_modify": [],
+		"upgrade": {},
+		"removeCrew": {},
+		"boarders": {},
+		"environment": "",
+		"status": [],
 		"choices": [],
 	}
 	var q_node := _child(n, "quest")
@@ -637,15 +649,64 @@ func _convert_event_node(n: Dictionary) -> Dictionary:
 	var dmg := _child(n, "damage")
 	if not dmg.is_empty():
 		ev.damage = int(dmg.attrs.get("amount", "0"))
+		ev.damage_system = str(dmg.attrs.get("system", ""))
+		ev.damage_effect = str(dmg.attrs.get("effect", ""))
 	var wpn := _child(n, "weapon")
 	if not wpn.is_empty():
 		ev.weapon = str(wpn.attrs.get("name", ""))
+	var drn := _child(n, "drone")
+	if not drn.is_empty():
+		ev.drone = str(drn.attrs.get("name", ""))
 	var cm := _child(n, "crewMember")
 	if not cm.is_empty():
 		ev.crew = str(cm.attrs.get("class", "human"))
 	var ag := _child(n, "augment")
 	if not ag.is_empty():
 		ev.augment = str(ag.attrs.get("name", ""))
+	var mp := _child(n, "modifyPursuit")
+	if not mp.is_empty():
+		ev.modifyPursuit = int(mp.attrs.get("amount", "0"))
+	var im := _child(n, "item_modify")
+	if not im.is_empty():
+		var mods: Array = []
+		for it in _children(im, "item"):
+			mods.append({
+				"type": str(it.attrs.get("type", "scrap")),
+				"min": int(it.attrs.get("min", "0")),
+				"max": int(it.attrs.get("max", it.attrs.get("min", "0"))),
+			})
+		ev.item_modify = mods
+	var upg := _child(n, "upgrade")
+	if not upg.is_empty():
+		ev.upgrade = {
+			"system": str(upg.attrs.get("system", "reactor")),
+			"amount": int(upg.attrs.get("amount", "1")),
+		}
+	var rc := _child(n, "removeCrew")
+	if not rc.is_empty():
+		var cl_node := _child(rc, "clone")
+		ev.removeCrew = {
+			"enabled": true,
+			"clone": (resolve_text(cl_node, "true") != "false"),
+		}
+	var bd := _child(n, "boarders")
+	if not bd.is_empty():
+		ev.boarders = {
+			"min": maxi(1, int(bd.attrs.get("min", "1"))),
+			"max": maxi(1, int(bd.attrs.get("max", bd.attrs.get("min", "2")))),
+			"species": str(bd.attrs.get("class", "human")),
+		}
+	var env_node := _child(n, "environment")
+	if not env_node.is_empty():
+		var et := str(env_node.attrs.get("type", "")).to_lower()
+		ev.environment = "ion_storm" if et == "storm" else et
+	for st_node in _children(n, "status"):
+		ev.status.append({
+			"type": str(st_node.attrs.get("type", "limit")),
+			"target": str(st_node.attrs.get("target", "player")),
+			"system": str(st_node.attrs.get("system", "shields")),
+			"amount": int(st_node.attrs.get("amount", "1")),
+		})
 
 	for ch in _children(n, "choice"):
 		var sub_ev := _child(ch, "event")

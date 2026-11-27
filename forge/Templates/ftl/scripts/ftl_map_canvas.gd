@@ -94,10 +94,14 @@ func _draw() -> void:
 		var reachable := sector_map.can_jump_to(bid, has_adv_ftl_nav)
 
 		var col := Color("c8d8e8")
-		if bool(b.rebel):
+		if sector_map.current_sector_index == 7 and bid == sector_map.flagship_beacon_id:
+			col = Color("ff4c44")
+		elif bool(b.rebel):
 			col = Color("ff4c44")
 		elif btype == "exit" or btype == "boss_base":
 			col = Color("ffd54f")
+		elif btype == "repair":
+			col = Color("5ce1ff")
 		elif bool(b.get("quest", false)) and not bool(b.visited):
 			col = Color("ffda55")
 		elif btype == "store":
@@ -112,7 +116,7 @@ func _draw() -> void:
 		elif bid == hover_beacon_id:
 			draw_arc(pos, 14.0, 0, TAU, 20, Color.WHITE if reachable else Color("99aacc"), 2.0)
 
-		draw_circle(pos, 7.5 if (btype in ["exit", "boss_base", "store"]) else 6.0, col)
+		draw_circle(pos, 7.5 if (btype in ["exit", "boss_base", "store", "repair"] or bid == sector_map.flagship_beacon_id) else 6.0, col)
 		draw_circle(pos, 3.0, Color(0.08, 0.1, 0.14))
 
 		# Overlay authentic FTL map beacon icons when embedded/loaded!
@@ -121,7 +125,7 @@ func _draw() -> void:
 				var stex := pkg.load_texture("map/map_icon_ship.png")
 				if stex != null:
 					draw_texture_rect(stex, Rect2(pos - Vector2(14, 14), Vector2(28, 28)), false)
-			elif btype == "boss_base":
+			elif sector_map.current_sector_index == 7 and bid == sector_map.flagship_beacon_id:
 				var btex := pkg.load_texture("map/map_icon_boss.png")
 				if btex != null:
 					draw_texture_rect(btex, Rect2(pos - Vector2(14, 14), Vector2(28, 28)), false)
@@ -133,20 +137,23 @@ func _draw() -> void:
 				var qtex := pkg.load_texture("map/map_icon_diamond_yellow.png")
 				if qtex != null:
 					draw_texture_rect(qtex, Rect2(pos - Vector2(11, 11), Vector2(22, 22)), false)
-			elif btype == "exit":
+			elif btype == "exit" or btype == "boss_base":
 				var etex := pkg.load_texture("map/map_icon_diamond_blue.png")
 				if etex != null:
 					draw_texture_rect(etex, Rect2(pos - Vector2(11, 11), Vector2(22, 22)), false)
 
 		if font != null:
 			var tag := ""
-			if btype == "exit": tag = "EXIT"
-			elif btype == "boss_base": tag = "FLAGSHIP"
+			if sector_map.current_sector_index == 7 and bid == sector_map.flagship_beacon_id:
+				tag = "FLAGSHIP" if bid != sector_map.base_beacon_id else ("BASE (%d/3)" % sector_map.flagship_base_turns)
+			elif btype == "exit": tag = "EXIT"
+			elif btype == "boss_base": tag = "FED BASE"
+			elif btype == "repair": tag = "REPAIR"
 			elif bool(b.get("quest", false)) and not bool(b.visited): tag = "QUEST"
 			elif btype == "store" and (bool(b.explored) or bool(b.visited)): tag = "STORE"
 			elif btype == "distress": tag = "DISTRESS"
 			elif bool(b.rebel): tag = "REBEL"
-			elif not str(b.hazard).is_empty() and bool(b.explored): tag = str(b.hazard).to_upper()
+			elif not str(b.hazard).is_empty() and (bool(b.visited) or (has_long_scanners and bool(b.explored))): tag = str(b.hazard).to_upper()
 			elif has_long_scanners and bool(b.explored) and not bool(b.visited) and btype == "hostile": tag = "!SHIP"
 			if not tag.is_empty():
 				draw_string(font, pos + Vector2(-26, -11), tag, HORIZONTAL_ALIGNMENT_CENTER, 56, 11, col)

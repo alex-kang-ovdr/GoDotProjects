@@ -101,7 +101,8 @@ def main():
         b"12WeaponSystem", b"11DroneSystem", b"10SpaceDrone", b"12DefenseDrone",
         b"11CombatDrone", b"12BoarderDrone", b"15BoarderPodDrone", b"11BattleDrone",
         b"11RepairDrone", b"15ShipRepairDrone", b"16SuperShieldDrone", b"12HackingDrone",
-        b"9CrewDrone", b"10Projectile", b"10BeamWeapon", b"14BombProjectile",
+        b"9CrewDrone", b"9CrewLaser", b"12CrewManifest", b"13CrewAnimation",
+        b"10Projectile", b"10BeamWeapon", b"14BombProjectile",
         b"10LaserBlast", b"7Missile", b"17ProjectileFactory", b"15WeaponBlueprint",
         b"14DroneBlueprint", b"10CrewMember", b"11ShipManager", b"12CompleteShip",
         b"8BossShip", b"7StarMap", b"6CEvent", b"4Door", b"4Room", b"4Fire",
@@ -179,6 +180,17 @@ def main():
     o2_masks_mult = read_f32_array(0x879120, 1)[0]             # 0.5
     slug_gel_rate = read_f32_array(0x885FB4, 1)[0]             # -7.0
     assert suffocation_o2_threshold == 5.0 and suffocation_dmg_tick == -0.4 and o2_masks_mult == 0.5 and slug_gel_rate == -7.0
+
+    # Wave 5 binary verification: EventGenerator XML grammar strings in .rdata (0x882670..0x882960)
+    ev_grammar_slice = rbytes[(0x882670 - r_va) : (0x882960 - r_va)]
+    required_event_tags = [
+        "autoReward", "item_modify", "weapon", "drone", "augment", "crewMember",
+        "removeCrew", "upgrade", "store", "reveal_map", "distressBeacon",
+        "modifyPursuit", "damage", "repair", "environment", "status", "boarders",
+        "quest", "secretSector",
+    ]
+    for etag in required_event_tags:
+        assert (b"\x00" + etag.encode("ascii") + b"\x00") in ev_grammar_slice, f"Missing EventGenerator tag in .rdata: {etag}"
 
     spec = {
         "schemaVersion": 1,
@@ -413,6 +425,28 @@ def main():
             "difficultyMultiplier": [1.0, 1.25, 1.50],
             "flatVictoryBonus": 0,
         },
+        "eventEngine": {
+            "vtableVa": vtables.get("6CEvent", {}).get("vtable_va"),
+            "grammarRdataRange": "0x882670..0x882960",
+            "parserProofVa": "0x5e5c8b..0x5e7b90",
+            "supportedDirectives": required_event_tags,
+            "environmentTypes": ["asteroid", "sun", "nebula", "storm", "pulsar", "PDS"],
+            "statusTypes": ["limit", "divide", "loss", "clear"],
+            "damageEffects": ["fire", "breach", "all", "random"],
+        },
+        "sectorPursuit": {
+            "starMapVtableVa": vtables.get("7StarMap", {}).get("vtable_va"),
+            "normalJumpAdvancePx": 66.0,
+            "nebulaJumpAdvancePx": 36.0,
+            "modifyPursuitStepPx": 66.0,
+        },
+        "sector8": {
+            "repairStationCount": 2,
+            "repairStationHullHeal": 15,
+            "repairStationScrap": 20,
+            "flagshipBaseTurnLimit": 3,
+            "flagshipMarchesToBase": True,
+        },
     }
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
@@ -420,7 +454,7 @@ def main():
         json.dump(spec, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 22 system rule tables -> {args.out}")
+    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 25 system rule tables -> {args.out}")
 
 
 if __name__ == "__main__":

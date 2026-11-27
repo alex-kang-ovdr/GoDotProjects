@@ -1450,6 +1450,53 @@ func dismiss_crew(cid: int) -> bool:
 	return false
 
 
+func remove_random_crew(allow_clone: bool = true) -> String:
+	# Authentic FTL 1.6 <removeCrew> (0x5e69d3): revives via Clonebay unless <clone>false</clone>!
+	var friendly: Array = []
+	for c in crew:
+		if bool(c.is_player) == is_player and float(c.hp) > 0.0:
+			friendly.append(c)
+	if friendly.is_empty():
+		return ""
+	var victim: Dictionary = friendly[randi() % friendly.size()]
+	var vname := str(victim.name)
+	crew.erase(victim)
+	var cb_lvl := get_effective_system_power("clonebay") if systems.has("clonebay") else 0
+	if allow_clone and systems.has("clonebay") and (cb_lvl > 0 or has_augment("BACKUP_DNA")):
+		var clone_dur := float(CLONE_TIME_SEC[clampi(maxi(1, cb_lvl) - 1, 0, CLONE_TIME_SEC.size() - 1)])
+		victim.hp = 0.0
+		victim.path = []
+		clone_queue.append({"crew": victim, "timer": clone_dur, "max_time": clone_dur, "death_timer": 3.0})
+		return "%s (Cloning)" % vname
+	return vname
+
+
+func apply_event_status(st_type: String, sys_name: String, amount: int) -> void:
+	# Authentic FTL 1.6 <status type="limit|divide|loss|clear" system="..." amount="..."/> (0x5e745a)
+	if not systems.has(sys_name):
+		return
+	var s: Dictionary = systems[sys_name]
+	if st_type == "clear":
+		s.ion_level = 0
+		s.ion_timer = 0.0
+		return
+	var cur_usable := get_system_usable_max(sys_name)
+	var lock_bars := 0
+	if st_type == "limit":
+		lock_bars = maxi(0, cur_usable - maxi(0, amount))
+	elif st_type == "divide":
+		var div := maxi(1, amount)
+		lock_bars = maxi(0, cur_usable - int(cur_usable / div))
+	elif st_type == "loss":
+		lock_bars = maxi(0, amount)
+	if lock_bars > 0:
+		s.ion_timer = minf(ION_MAX_LOCK_SEC, maxf(float(s.ion_timer), float(lock_bars) * ION_SEC_PER_DMG))
+		s.ion_level = mini(int(s.level), int(ceil(float(s.ion_timer) / ION_SEC_PER_DMG)))
+		if int(s.power) > get_system_usable_max(sys_name):
+			s.power = get_system_usable_max(sys_name)
+		_enforce_weapon_drone_power()
+
+
 func _assign_room_tiles(room_id: int) -> void:
 	var friendly_idx := 0
 	var enemy_idx := 0

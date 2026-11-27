@@ -1818,8 +1818,41 @@ func _jump_next_sector(sector_idx: int, node_idx: int) -> void:
 
 func _trigger_beacon_encounter(b: Dictionary) -> void:
 	var btype := str(b.type)
-	if btype == "boss_base":
+	# Authentic FTL 1.6 Sector 8: Flagship destroys Federation Base after 3 turns on the Base!
+	if sector_map.current_sector_index == 7 and sector_map.flagship_base_turns >= 3:
+		mode = "defeat"
+		in_combat = false
+		audio.set_combat(false)
+		_show_end_modal(false)
+		return
+	if sector_map.current_sector_index == 7 and int(b.id) == sector_map.flagship_beacon_id:
 		_start_boss_fight(sector_map.flagship_phase)
+		return
+	if btype == "boss_base":
+		if sector_map.current_sector_index == 7 and sector_map.flagship_beacon_id != int(b.id):
+			_show_event_modal({
+				"text": "You arrive at the Federation Base! The Rebel Flagship is advancing through this sector — intercept it before it spends 3 turns attacking the Base!",
+				"choices": [
+					{"text": "Engage Flagship directly (즉시 기함 요격)", "action": "next_boss_phase"},
+					{"text": "Open Star Map (성도에서 기함/수리기지 확인)", "action": "open_map"},
+				],
+			})
+			return
+		_start_boss_fight(sector_map.flagship_phase)
+		return
+	if btype == "repair":
+		b.type = "normal"
+		player_ship.hull = mini(player_ship.max_hull, player_ship.hull + 15)
+		player_ship.scrap += 20
+		scrap_collected += 20
+		player_ship.fuel += 2
+		player_ship.missiles += 2
+		player_ship.drone_parts += 2
+		audio.play_sfx("upgradeSystem")
+		_show_event_modal({
+			"text": "Federation Forward Repair Station! Engineers rush aboard to weld hull plating and restock your armory.\n\n[+15 Hull, +20 Scrap, +2 Fuel, +2 Missiles, +2 Drone Parts]",
+			"choices": [{"text": "Thank them and continue", "event": {}}],
+		})
 		return
 	if btype == "store":
 		current_store_inventory = _generate_store_inventory()
@@ -1988,12 +2021,12 @@ func _choose_event_option(ch: Dictionary) -> void:
 		_close_modal()
 		return
 
-	# Apply immediate rewards/effects
+	# Apply immediate rewards/effects (Authentic FTL 1.6 EventGenerator 0x5e5c8b..0x5e7b90)
 	var summary_lines: Array[String] = []
 	var ar := str(nxt.get("autoReward", ""))
 	if not ar.is_empty():
 		var mult := 0.7 if str(nxt.get("autoRewardLevel", "MED")) == "LOW" else (1.35 if str(nxt.get("autoRewardLevel", "MED")) == "HIGH" else 1.0)
-		var sc := int(round((15 + sector_map.current_sector_index * 8) * mult))
+		var sc := int(round((15 + sector_map.current_sector_index * 8) * mult * float(SCRAP_MULT_BY_DIFF[clampi(difficulty, 0, 2)])))
 		player_ship.scrap += sc
 		scrap_collected += sc
 		summary_lines.append("+%d Scrap" % sc)
@@ -2003,22 +2036,123 @@ func _choose_event_option(ch: Dictionary) -> void:
 		if ar in ["standard", "missiles", "missiles_only"]:
 			player_ship.missiles += 2
 			summary_lines.append("+2 Missiles")
+		if ar in ["standard", "droneparts", "droneparts_only"]:
+			player_ship.drone_parts += 1
+			summary_lines.append("+1 Drone Part")
+	for im_item in nxt.get("item_modify", []):
+		var itype := str(im_item.get("type", "scrap"))
+		var lo := int(im_item.get("min", 0))
+		var hi := int(im_item.get("max", lo))
+		var delta_val := randi_range(mini(lo, hi), maxi(lo, hi))
+		if delta_val == 0:
+			continue
+		if itype == "scrap":
+			player_ship.scrap = maxi(0, player_ship.scrap + delta_val)
+			if delta_val > 0:
+				scrap_collected += delta_val
+			summary_lines.append("%+d Scrap" % delta_val)
+		elif itype == "fuel":
+			player_ship.fuel = maxi(0, player_ship.fuel + delta_val)
+			summary_lines.append("%+d Fuel" % delta_val)
+		elif itype == "missiles":
+			player_ship.missiles = maxi(0, player_ship.missiles + delta_val)
+			summary_lines.append("%+d Missiles" % delta_val)
+		elif itype == "drones":
+			player_ship.drone_parts = maxi(0, player_ship.drone_parts + delta_val)
+			summary_lines.append("%+d Drones" % delta_val)
+	if bool(nxt.get("repair", false)):
+		player_ship.hull = mini(player_ship.max_hull, player_ship.hull + 15)
+		summary_lines.append("+15 Hull Repair")
 	var dmg := int(nxt.get("damage", 0))
 	if dmg != 0:
 		player_ship.hull = clampi(player_ship.hull - dmg, 1, player_ship.max_hull)
 		summary_lines.append("%+d Hull" % (-dmg))
+		var dsys := str(nxt.get("damage_system", ""))
+		var deff := str(nxt.get("damage_effect", ""))
+		if not dsys.is_empty() and player_ship.systems.has(dsys):
+			var drid := int(player_ship.systems[dsys].room)
+			if dmg > 0:
+				player_ship.apply_system_damage(dsys, mini(2, dmg))
+			if player_ship.room_by_id.has(drid):
+				if deff in ["fire", "all"]:
+					player_ship.room_by_id[drid].fires = mini(2, int(player_ship.room_by_id[drid].fires) + 1)
+					player_ship.room_by_id[drid].fire_hp = 100.0
+				if deff in ["breach", "all"]:
+					player_ship.room_by_id[drid].breach = 1
+					player_ship.room_by_id[drid].breach_hp = 100.0
+	var mp_val := int(nxt.get("modifyPursuit", 0))
+	if mp_val != 0:
+		sector_map.modify_pursuit(mp_val)
+		summary_lines.append("Rebel Fleet %s %d Jump(s)" % ["Delayed" if mp_val < 0 else "Advanced", abs(mp_val)])
+	if bool(nxt.get("reveal_map", false)):
+		sector_map.reveal_all_beacons()
+		summary_lines.append("Sector Map Revealed")
+	var upg_d: Dictionary = nxt.get("upgrade", {})
+	if not upg_d.is_empty():
+		var usys := str(upg_d.get("system", "reactor"))
+		var uamt := maxi(1, int(upg_d.get("amount", 1)))
+		if usys == "reactor":
+			player_ship.reactor_max = mini(25, player_ship.reactor_max + uamt)
+			summary_lines.append("+%d Reactor" % uamt)
+		elif player_ship.systems.has(usys):
+			var sd: Dictionary = player_ship.systems[usys]
+			sd.level = mini(int(sd.max_level), int(sd.level) + uamt)
+			summary_lines.append("+%d %s" % [uamt, usys.capitalize()])
 	var wpn := str(nxt.get("weapon", ""))
 	if not wpn.is_empty():
 		var wid := wpn if db.weapons.has(wpn) else (db.pick_store_weapons(1)[0] if not db.pick_store_weapons(1).is_empty() else "")
 		if not wid.is_empty() and player_ship.add_weapon(wid):
 			summary_lines.append("+Weapon: %s" % str(db.weapons[wid].title))
 			_rebuild_hud_controls()
+	var drn := str(nxt.get("drone", ""))
+	if not drn.is_empty():
+		var did := drn if db.drones.has(drn) else (db.pick_store_drones(1)[0] if not db.pick_store_drones(1).is_empty() else "")
+		if not did.is_empty() and player_ship.add_drone(did):
+			summary_lines.append("+Drone: %s" % str(db.drones[did].title))
+			_rebuild_hud_controls()
+	var aug_id := str(nxt.get("augment", ""))
+	if not aug_id.is_empty():
+		var aid := aug_id if db.augments.has(aug_id) else (db.pick_store_augments(1)[0] if not db.pick_store_augments(1).is_empty() else "")
+		if not aid.is_empty():
+			if player_ship.augments.size() < 3:
+				player_ship.augments.append(aid)
+				summary_lines.append("+Augment: %s" % str(db.augments.get(aid, {}).get("title", aid)))
+			else:
+				player_ship.scrap += 25
+				scrap_collected += 25
+				summary_lines.append("+25 Scrap (Duplicate/Full Augments)")
 	var cm := str(nxt.get("crew", ""))
 	if not cm.is_empty() and _get_friendly_crew().size() < 8:
 		var sp := cm if db.crew_species.has(cm) else "human"
 		player_ship.add_crew(sp, player_ship.rooms[0].id, true)
 		summary_lines.append("+Crew: %s" % sp.capitalize())
 		_rebuild_hud_controls()
+	var rc_d: Dictionary = nxt.get("removeCrew", {})
+	if bool(rc_d.get("enabled", false)):
+		var lost := player_ship.remove_random_crew(bool(rc_d.get("clone", true)))
+		if not lost.is_empty():
+			summary_lines.append("-Crew: %s" % lost)
+			_rebuild_hud_controls()
+	var bd_d: Dictionary = nxt.get("boarders", {})
+	if not bd_d.is_empty() and not player_ship.rooms.is_empty():
+		var bcnt := randi_range(int(bd_d.get("min", 1)), int(bd_d.get("max", 2)))
+		var bsp := str(bd_d.get("species", "human"))
+		if not db.crew_species.has(bsp):
+			bsp = "human"
+		for _bi in range(bcnt):
+			var br := int(player_ship.rooms[randi() % player_ship.rooms.size()].id)
+			player_ship.add_crew(bsp, br, false, "Intruder")
+		summary_lines.append("INTRUDERS (%d %s)!" % [bcnt, bsp.capitalize()])
+	var ev_env := str(nxt.get("environment", ""))
+	if not ev_env.is_empty():
+		var is_neb := (ev_env == "nebula" or ev_env == "ion_storm")
+		battle_view.set_backdrop(sector_map.current_beacon_id + 7, is_neb, "" if ev_env == "nebula" else ev_env)
+		player_ship.ion_storm_active = (ev_env == "ion_storm")
+		player_ship._clamp_reactor_power()
+		summary_lines.append("Hazard: %s" % ev_env.to_upper())
+	for st_item in nxt.get("status", []):
+		if str(st_item.get("target", "player")) == "player":
+			player_ship.apply_event_status(str(st_item.get("type", "limit")), str(st_item.get("system", "")), int(st_item.get("amount", 1)))
 	var q_ev := str(nxt.get("quest", ""))
 	if not q_ev.is_empty():
 		var qbid := sector_map.add_quest_beacon(q_ev)
