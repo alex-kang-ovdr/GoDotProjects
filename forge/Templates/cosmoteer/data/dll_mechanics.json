@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "assembly_sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
-  "traced_methods": 60,
+  "traced_methods": 76,
   "penetration": {
     "source_class": "Cosmoteer.Bullets.Hits.BulletPenetratingHit",
     "projectiles": {
@@ -141,5 +141,26 @@
     "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
     "capacitor_share_per_sec": 600.0,
     "min_reserve_ratio": 0.15
+  },
+  "thermal_subnetwork": {
+    "source_class": "Cosmoteer.Ships.Networks.PartSubnetwork`2",
+    "pipe_cooling_bonus": 1.25,
+    "amp_pump_bonus": 0.25,
+    "dilation_pump_capacity_bonus": 0.3
+  },
+  "ai_flee": {
+    "source_class": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule",
+    "critical_bridge_ratio": 0.25,
+    "flee_when_disarmed": true
+  },
+  "crew_self_repair": {
+    "source_class": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule",
+    "base_repair_per_sec_per_airlock": 45.0,
+    "max_repair_per_sec": 180.0
+  },
+  "kill_crew_effect": {
+    "source_class": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
+    "intense_fire_threshold": 0.85,
+    "bridge_crew_protected": true
   }
 }

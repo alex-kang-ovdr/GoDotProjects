@@ -22,9 +22,9 @@ func _check(ok: bool, label: String) -> void:
 func test() -> void:
 	# 1. Verify reverse-engineered logic_trace.json & dll_mechanics.json load cleanly
 	var trace = JSON.parse_string(FileAccess.get_file_as_string("res://data/logic_trace.json"))
-	_check(trace is Dictionary and trace.get("methods", []).size() >= 56, "expanded logic_trace.json traces >= 56 Cosmoteer.dll methods")
+	_check(trace is Dictionary and trace.get("methods", []).size() >= 72, "expanded logic_trace.json traces >= 72 Cosmoteer.dll methods")
 	var mech := CombatSystems.get_dll_mechanics()
-	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 56, "dll_mechanics.json v3 loads reverse-engineered constants")
+	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 72, "dll_mechanics.json v4 loads reverse-engineered constants")
 
 	# 2. BulletPenetratingHit: exact projectile penetration & part resistance
 	_check(is_equal_approx(CombatSystems.projectile_penetration("cannon"), 5.0), "medium cannon penetration == 5.0")
@@ -188,6 +188,40 @@ func test() -> void:
 	# 12. Weapon.GetAIFirepowerRating: computes positive ship combat rating
 	var fp_full := CombatSystems.ship_firepower_rating(battle.player)
 	_check(fp_full > 100.0, "ship_firepower_rating computes positive combat firepower: %.1f" % fp_full)
+
+	# 13. PartSubnetwork`2: connected thermal heat-pipe + radiator + pump subnetwork
+	var th_ship := {
+		"parts": {
+			40: {"id": CombatSystems.HEAT_PIPE, "hp": 500.0, "cell": Vector2i(2, 2), "size": Vector2i(1, 1), "severed": false},
+			41: {"id": CombatSystems.RADIATOR, "hp": 800.0, "cell": Vector2i(3, 2), "size": Vector2i(2, 1), "severed": false},
+			42: {"id": CombatSystems.THERMAL_AMP_PUMP, "hp": 800.0, "cell": Vector2i(1, 2), "size": Vector2i(1, 1), "severed": false},
+		},
+		"cells": {Vector2i(2, 2): 40, Vector2i(3, 2): 41, Vector2i(4, 2): 41, Vector2i(1, 2): 42},
+	}
+	var tnet := CombatSystems.thermal_subnetwork_summary(th_ship)
+	_check(int(tnet.subnetworks) == 1 and int(tnet.connected_pipes) == 1 and float(tnet.cooling_mult) > 1.2 and float(tnet.amp_mult) > 1.2, "thermal_subnetwork_summary groups connected pipes, radiators, and amp pumps")
+
+	# 14. AIFleeFromEnemiesModule: disarmed ship triggers evasive flee
+	var flee_ship := {"parts": {1: {"id": CombatSystems.BRIDGE_SMALL, "hp": 4000.0, "max_hp": 4000.0, "severed": false}}}
+	_check(CombatSystems.should_ai_flee(flee_ship), "AIFleeFromEnemiesModule flees when disarmed")
+	_check(not CombatSystems.should_ai_flee(battle.player), "armed healthy ship does not flee")
+
+	# 15. AISelfRepairModule + SpaceCrew: airlock-equipped ship repairs damaged module
+	var rep_ship := {
+		"command": true,
+		"ids": {CombatSystems.AIRLOCK: [50]},
+		"crew": [{"alive": true}],
+		"parts": {
+			50: {"id": CombatSystems.AIRLOCK, "hp": 1000.0, "max_hp": 1000.0, "fire": 0.0, "severed": false},
+			51: {"id": "cosmoteer.corridor", "hp": 500.0, "max_hp": 1000.0, "fire": 0.0, "severed": false},
+		},
+	}
+	var healed := CombatSystems.tick_crew_self_repair(rep_ship, 1.0)
+	_check(healed > 40.0 and float(rep_ship.parts[51].hp) > 540.0, "Airlock crew self-repair patches damaged hull module")
+
+	# 16. KillCrewEffect: bridge crew protected vs corridor crew exposed
+	_check(CombatSystems.is_crew_protected_in_part({"id": CombatSystems.BRIDGE_SMALL}), "KillCrewEffect protects bridge crew")
+	_check(not CombatSystems.is_crew_protected_in_part({"id": "cosmoteer.corridor"}), "KillCrewEffect exposes corridor crew")
 
 	print("DLL mechanics checks: %d; failures: %d" % [checks, failed])
 	quit(1 if failed else 0)

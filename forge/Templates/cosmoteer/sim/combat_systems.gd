@@ -1367,6 +1367,148 @@ static func ship_firepower_rating(ship: Dictionary) -> float:
 	return total
 
 
+## Cosmoteer.Ships.Networks.PartSubnetwork`2: connected thermal pipe subnetwork summary.
+const THERMAL_NET_IDS := [
+	HEAT_PIPE, HEAT_PIPE_CROSS, HEAT_PIPE_STRUCT, HEAT_EXCHANGER,
+	THERMAL_BATTERY, RADIATOR, THERMAL_AMP_PUMP, THERMAL_DIL_PUMP,
+	ENGINE_ROOM_REAL, "cosmoteer.lab_engine_room", RESONANCE_LANCE,
+]
+
+static func thermal_subnetwork_summary(ship: Dictionary) -> Dictionary:
+	var cells_map: Dictionary = ship.get("cells", {})
+	var visited := {}
+	var subnetworks := 0
+	var connected_pipes := 0
+	var amp_pumps := 0
+	var dil_pumps := 0
+	var cooling_mult := 1.0
+	var cfg: Dictionary = get_dll_mechanics().get("thermal_subnetwork", {})
+	for uid_key in ship.get("parts", {}):
+		var uid := int(uid_key)
+		if visited.has(uid):
+			continue
+		var part: Dictionary = ship.parts[uid]
+		if float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false)) or not (str(part.id) in THERMAL_NET_IDS):
+			continue
+		subnetworks += 1
+		var queue: Array[int] = [uid]
+		visited[uid] = true
+		var net_nodes: Array[int] = []
+		var q_i := 0
+		while q_i < queue.size():
+			var cur_uid := queue[q_i]
+			q_i += 1
+			net_nodes.append(cur_uid)
+			var cp: Dictionary = ship.parts[cur_uid]
+			var pc: Vector2i = cp.cell
+			var ps: Vector2i = cp.size
+			for x in range(pc.x - 1, pc.x + ps.x + 1):
+				for y in range(pc.y - 1, pc.y + ps.y + 1):
+					var in_x := x >= pc.x and x < pc.x + ps.x
+					var in_y := y >= pc.y and y < pc.y + ps.y
+					if (in_x and in_y) or ((not in_x) and (not in_y)):
+						continue
+					var nuid := int(cells_map.get(Vector2i(x, y), -1))
+					if nuid >= 0 and not visited.has(nuid) and ship.parts.has(nuid):
+						var np: Dictionary = ship.parts[nuid]
+						if float(np.get("hp", 0.0)) > 0.0 and not bool(np.get("severed", false)) and str(np.id) in THERMAL_NET_IDS:
+							visited[nuid] = true
+							queue.append(nuid)
+		var has_sink := false
+		var has_pipe := false
+		for nuid in net_nodes:
+			var nid := str(ship.parts[nuid].id)
+			if nid in [HEAT_PIPE, HEAT_PIPE_CROSS, HEAT_PIPE_STRUCT]:
+				has_pipe = true
+				connected_pipes += 1
+			elif nid in [RADIATOR, HEAT_EXCHANGER, THERMAL_BATTERY]:
+				has_sink = true
+			elif nid == THERMAL_AMP_PUMP:
+				amp_pumps += 1
+			elif nid == THERMAL_DIL_PUMP:
+				dil_pumps += 1
+		if has_pipe and has_sink:
+			cooling_mult = maxf(cooling_mult, float(cfg.get("pipe_cooling_bonus", 1.25)))
+	return {
+		"subnetworks": subnetworks,
+		"connected_pipes": connected_pipes,
+		"amp_pumps": amp_pumps,
+		"dil_pumps": dil_pumps,
+		"cooling_mult": cooling_mult,
+		"amp_mult": 1.0 + float(amp_pumps) * float(cfg.get("amp_pump_bonus", 0.25)),
+		"capacity_mult": 1.0 + float(dil_pumps) * float(cfg.get("dilation_pump_capacity_bonus", 0.30)),
+	}
+
+
+## Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule: decide whether AI ship should evade/flee.
+static func should_ai_flee(ship: Dictionary) -> bool:
+	var cfg: Dictionary = get_dll_mechanics().get("ai_flee", {})
+	var alive_weapons := 0
+	var bridge_hp := 0.0
+	var bridge_max := 0.0
+	for part in ship.get("parts", {}).values():
+		if float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false)):
+			continue
+		var id := str(part.id)
+		if is_weapon(id):
+			alive_weapons += 1
+		elif is_bridge(id):
+			bridge_hp += float(part.hp)
+			bridge_max += float(part.max_hp)
+	if bool(cfg.get("flee_when_disarmed", true)) and alive_weapons == 0:
+		return true
+	if bridge_max > 0.0 and (bridge_hp / bridge_max) < float(cfg.get("critical_bridge_ratio", 0.25)) and alive_weapons <= 1:
+		return true
+	return false
+
+
+## Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule + SpaceCrew.UpdateCrewBeam:
+## Airlock-equipped ships with surviving crew gradually patch light hull damage.
+static func tick_crew_self_repair(ship: Dictionary, dt: float) -> float:
+	if not bool(ship.get("command", false)):
+		return 0.0
+	var airlocks := 0
+	for auid in ship.get("ids", {}).get(AIRLOCK, []):
+		var ap: Dictionary = ship.parts[auid]
+		if float(ap.hp) > 0.0 and not bool(ap.get("severed", false)):
+			airlocks += 1
+	if airlocks <= 0:
+		return 0.0
+	var alive_crew := 0
+	for c in ship.get("crew", []):
+		if c.get("alive", false):
+			alive_crew += 1
+	if alive_crew <= 0:
+		return 0.0
+	var cfg: Dictionary = get_dll_mechanics().get("crew_self_repair", {})
+	var rate := minf(float(cfg.get("max_repair_per_sec", 180.0)), float(airlocks) * float(cfg.get("base_repair_per_sec_per_airlock", 45.0)))
+	var worst_uid := -1
+	var worst_ratio := 0.999
+	for uid_key in ship.parts:
+		var p: Dictionary = ship.parts[uid_key]
+		if float(p.hp) <= 0.0 or bool(p.get("severed", false)) or float(p.get("fire", 0.0)) > 0.05:
+			continue
+		var ratio := float(p.hp) / maxf(1.0, float(p.max_hp))
+		if ratio < worst_ratio:
+			worst_ratio = ratio
+			worst_uid = int(uid_key)
+	if worst_uid < 0:
+		return 0.0
+	var target_p: Dictionary = ship.parts[worst_uid]
+	var before := float(target_p.hp)
+	target_p.hp = minf(float(target_p.max_hp), before + rate * dt)
+	return float(target_p.hp) - before
+
+
+## Cosmoteer.Simulation.HitEffects.KillCrewEffect: intense room fire hazards crew unless protected.
+static func is_crew_protected_in_part(part: Dictionary) -> bool:
+	var cfg: Dictionary = get_dll_mechanics().get("kill_crew_effect", {})
+	var id := str(part.get("id", ""))
+	if bool(cfg.get("bridge_crew_protected", true)) and is_bridge(id):
+		return true
+	return id.contains("armor")
+
+
 static func prepare_part(part: Dictionary) -> void:
 	part["fire"] = 0.0
 	if is_shield(part.id):

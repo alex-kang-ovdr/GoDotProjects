@@ -278,6 +278,12 @@ static func ai_orders(ship: Dictionary, other: Dictionary, time: float, behavior
 		"orbit":
 			preferred_range = 100.0
 			lateral_speed = 11.0
+		"flee":
+			var away := -forward
+			var flee_vel := away * 22.0 + lateral * (6.0 * sin(time * 0.35))
+			var flee_move := ((flee_vel - Vector2(ship.velocity)).rotated(-ship.heading) / 8.0).limit_length(1.0)
+			var flee_turn := clampf(angle_difference(ship.heading, away.angle()) * 2.0 - ship.angular_velocity * 1.15, -0.7, 0.7)
+			return Vector3(flee_move.x, flee_move.y, flee_turn)
 	var station := clampf((delta.length() - preferred_range) * 0.25, -12.0, 17.0)
 	var patrol := lateral_speed if behavior == "orbit" else lateral_speed * sin(time * 0.22)
 	var desired := forward * station + lateral * patrol

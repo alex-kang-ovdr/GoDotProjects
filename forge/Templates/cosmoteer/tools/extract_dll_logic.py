@@ -96,6 +96,23 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Ships.Parts.Sensors.SensorManager", "ClearCaches"),
     ("Cosmoteer.Ships.Parts.Logic.PartDamageTrigger", "OnPartHealthChanged"),
     ("Cosmoteer.Ships.Parts.Defenses.ArcShield", "RecalculateArcRadius"),
+    # Wave 4: part subnetworks (thermal/power), AI strategy modules (aggro/flee/self-repair), EVA space crew & KillCrewEffect
+    ("Cosmoteer.Ships.Networks.ShipPartNetworkManager`3", "ProcessPendingOperationsOnce"),
+    ("Cosmoteer.Ships.Networks.PartSubnetwork`2", "Rebuild"),
+    ("Cosmoteer.Ships.Networks.Queries.SubnetworkResourceSinkQueryResult`2", "PushResources"),
+    ("Cosmoteer.Ships.Networks.Queries.SubnetworkResourceSourceQueryResult`2", "PullResources"),
+    ("Cosmoteer.Ships.Networks.PartNetworkPort", "Connect"),
+    ("Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule", "FindBestTarget"),
+    ("Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule", "OnAITick"),
+    ("Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule", "GetFtlDestination"),
+    ("Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule", "TryRepairObject"),
+    ("Cosmoteer.Crew.CrewSoul", "UpdateJob"),
+    ("Cosmoteer.Crew.CrewSoul", "Kill"),
+    ("Cosmoteer.Crew.CrewSoul", "DiscardCarriedResources"),
+    ("Cosmoteer.Crew.SpaceCrew", "UpdateCrewBeam"),
+    ("Cosmoteer.Crew.SimCrewManager", "FixedUpdateSpaceCrew"),
+    ("Cosmoteer.Simulation.HitEffects.KillCrewEffect", "IsCrewImmune"),
+    ("Cosmoteer.Simulation.HitEffects.KillCrewEffect", "DoEffect"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -356,7 +373,7 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     jump_eff_pct = _read_float_rule(data_root / "ships/terran/hyperdrive_small/hyperdrive_small.rules", r"JumpEfficiency\s*=\s*([0-9.]+)%", 50.0)
 
     mechanics = {
-        "version": 3,
+        "version": 4,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -480,6 +497,27 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
             "capacitor_share_per_sec": 600.0,
             "min_reserve_ratio": 0.15,
+        },
+        "thermal_subnetwork": {
+            "source_class": "Cosmoteer.Ships.Networks.PartSubnetwork`2",
+            "pipe_cooling_bonus": 1.25,
+            "amp_pump_bonus": 0.25,
+            "dilation_pump_capacity_bonus": 0.30,
+        },
+        "ai_flee": {
+            "source_class": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule",
+            "critical_bridge_ratio": 0.25,
+            "flee_when_disarmed": True,
+        },
+        "crew_self_repair": {
+            "source_class": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule",
+            "base_repair_per_sec_per_airlock": 45.0,
+            "max_repair_per_sec": 180.0,
+        },
+        "kill_crew_effect": {
+            "source_class": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
+            "intense_fire_threshold": 0.85,
+            "bridge_crew_protected": True,
         },
     }
     return logic_trace, mechanics

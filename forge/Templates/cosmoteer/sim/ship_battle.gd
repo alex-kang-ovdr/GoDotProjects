@@ -481,7 +481,10 @@ func step(seconds: float) -> void:
 			break
 		_tick += 1
 		elapsed = _tick * DT
-		var orders := Flight.ai_orders(enemy, player, elapsed, str(mission.get("ai", "balanced")))
+		var ai_mode := str(mission.get("ai", "balanced"))
+		if (ai_mode in ["skirmish", "evasive", "cautious"] or bool(mission.get("allow_flee", false))) and CombatSystems.should_ai_flee(enemy):
+			ai_mode = "flee"
+		var orders := Flight.ai_orders(enemy, player, elapsed, ai_mode)
 		var p_move := _move
 		var p_turn := _turn
 		if player_command != "manual" and p_move == Vector2.ZERO and absf(p_turn) < 0.001:
@@ -515,6 +518,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			part.energy = mini(part.capacity, part.energy + int(part.stats.production_quantity))
 			part.clock = 0
 	CombatSystems.tick_capacitor_distribution(ship, DT)
+	CombatSystems.tick_crew_self_repair(ship, DT)
 	for id in CombatSystems.BRIDGE_IDS + [Special.ROCKET] + CombatSystems.WEAPON_IDS:
 		for uid in ship.ids.get(id, []):
 			ship.parts[uid].staffed = 0

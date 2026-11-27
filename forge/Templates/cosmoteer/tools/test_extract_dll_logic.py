@@ -16,7 +16,7 @@ class DllLogicExtractionTests(unittest.TestCase):
 
         trace = json.loads(LOGIC_TRACE_PATH.read_text(encoding="utf-8"))
         self.assertEqual(trace["assembly"], "Cosmoteer")
-        self.assertGreaterEqual(len(trace["methods"]), 56)
+        self.assertGreaterEqual(len(trace["methods"]), 72)
         method_keys = {(m["type"], m["name"]) for m in trace["methods"]}
         for required in [
             ("Cosmoteer.Ships.Parts.Weapons.BulletEmitter", "Emit"),
@@ -36,6 +36,11 @@ class DllLogicExtractionTests(unittest.TestCase):
             ("Cosmoteer.Ships.Parts.Weapons.FixedWeapon", "GetEnemyPartInSights"),
             ("Cosmoteer.Ships.Parts.Weapons.TurretWeapon", "AcquireTarget"),
             ("Cosmoteer.Ships.Crew.Jobs.RepairPartJob", "OnCrewArrived"),
+            ("Cosmoteer.Ships.Networks.PartSubnetwork`2", "Rebuild"),
+            ("Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule", "OnAITick"),
+            ("Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule", "TryRepairObject"),
+            ("Cosmoteer.Crew.SpaceCrew", "UpdateCrewBeam"),
+            ("Cosmoteer.Simulation.HitEffects.KillCrewEffect", "IsCrewImmune"),
         ]:
             self.assertIn(required, method_keys, f"missing traced DLL method: {required}")
 

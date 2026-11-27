@@ -2,7 +2,7 @@
   "assembly": "Cosmoteer",
   "sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
   "module_id": "fa6be9cc-2b84-4c21-9785-52d5c53c9c4c",
-  "method_count": 60,
+  "method_count": 76,
   "methods": [
     {
       "type": "Cosmoteer.Ships.Parts.Weapons.BulletEmitter",
@@ -15227,6 +15227,4340 @@
           "op": "call",
           "target": "Halfling.Physics2D.Dynamics.Body.Add",
           "token": "0x0A001013"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.Networks.ShipPartNetworkManager`3",
+      "name": "ProcessPendingOperationsOnce",
+      "token": "0x06001A6A",
+      "il_bytes": 476,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 17,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000873).Alloc",
+          "token": "0x0A0019E5"
+        },
+        {
+          "offset": 29,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000873).Alloc",
+          "token": "0x0A0019E5"
+        },
+        {
+          "offset": 41,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00083C).Alloc",
+          "token": "0x0A0018F1"
+        },
+        {
+          "offset": 53,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00083C).Alloc",
+          "token": "0x0A0018F1"
+        },
+        {
+          "offset": 66,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___DeregisterComponents|46_0",
+          "token": "0x0A0019EA"
+        },
+        {
+          "offset": 74,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___DeregisterPorts|46_1",
+          "token": "0x0A0019EB"
+        },
+        {
+          "offset": 89,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___DeregisterRoutes|46_2",
+          "token": "0x0A0019EC"
+        },
+        {
+          "offset": 97,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___DeregisterDirectRoutes|46_3",
+          "token": "0x0A0019ED"
+        },
+        {
+          "offset": 105,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___RegisterComponents|46_4",
+          "token": "0x0A0019EE"
+        },
+        {
+          "offset": 113,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___RegisterPorts|46_5",
+          "token": "0x0A0019EF"
+        },
+        {
+          "offset": 128,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___RegisterRoutes|46_6",
+          "token": "0x0A0019F0"
+        },
+        {
+          "offset": 136,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00085F).<ProcessPendingOperationsOnce>g___RegisterDirectRoutes|46_7",
+          "token": "0x0A0019F1"
+        },
+        {
+          "offset": 154,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000864).Clear",
+          "token": "0x0A0019F2"
+        },
+        {
+          "offset": 165,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000864).Clear",
+          "token": "0x0A0019F2"
+        },
+        {
+          "offset": 176,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000865).Clear",
+          "token": "0x0A0019F3"
+        },
+        {
+          "offset": 187,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000865).Clear",
+          "token": "0x0A0019F3"
+        },
+        {
+          "offset": 198,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000866).Clear",
+          "token": "0x0A0019F4"
+        },
+        {
+          "offset": 209,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000867).Clear",
+          "token": "0x0A0019F5"
+        },
+        {
+          "offset": 220,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000804).Clear",
+          "token": "0x0A00189E"
+        },
+        {
+          "offset": 231,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000804).Clear",
+          "token": "0x0A00189E"
+        },
+        {
+          "offset": 261,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B00080A)..ctor",
+          "token": "0x0A0019F6"
+        },
+        {
+          "offset": 266,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000FE).Invoke",
+          "token": "0x0A0019F7"
+        },
+        {
+          "offset": 308,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000808)..ctor",
+          "token": "0x0A0019F8"
+        },
+        {
+          "offset": 313,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000FD).Invoke",
+          "token": "0x0A0019F9"
+        },
+        {
+          "offset": 324,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00082D).GetEnumerator",
+          "token": "0x0A001933"
+        },
+        {
+          "offset": 334,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000848).get_Current",
+          "token": "0x0A001934"
+        },
+        {
+          "offset": 356,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000101).OnNetworkRegistered",
+          "token": "0x0A0019FA"
+        },
+        {
+          "offset": 363,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000848).MoveNext",
+          "token": "0x0A001935"
+        },
+        {
+          "offset": 380,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 409,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 429,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 449,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 469,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.Networks.PartSubnetwork`2",
+      "name": "Rebuild",
+      "token": "0x060019F9",
+      "il_bytes": 294,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 2,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).set_IsUpdating",
+          "token": "0x0A0018ED"
+        },
+        {
+          "offset": 8,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).<Rebuild>g___ClearNonMemberNodes|35_1",
+          "token": "0x0A001900"
+        },
+        {
+          "offset": 14,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).<Rebuild>g___GetRebuildOriginNode|35_0",
+          "token": "0x0A001901"
+        },
+        {
+          "offset": 30,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).<Rebuild>g___RemoveMembers|35_2",
+          "token": "0x0A001902"
+        },
+        {
+          "offset": 41,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00082D).Clear",
+          "token": "0x0A001903"
+        },
+        {
+          "offset": 52,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000830).Clear",
+          "token": "0x0A001904"
+        },
+        {
+          "offset": 58,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000840).Alloc",
+          "token": "0x0A001905"
+        },
+        {
+          "offset": 71,
+          "op": "call",
+          "target": "Halfling.Collections.ExtensionsHashSet.AddRange",
+          "token": "0x2B0002B4"
+        },
+        {
+          "offset": 83,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00082D).Clear",
+          "token": "0x0A001903"
+        },
+        {
+          "offset": 94,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000830).Clear",
+          "token": "0x0A001904"
+        },
+        {
+          "offset": 100,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000832).BuildFrom",
+          "token": "0x0A0018D5"
+        },
+        {
+          "offset": 107,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000841).GetEnumerator",
+          "token": "0x0A001906"
+        },
+        {
+          "offset": 117,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000842).get_Current",
+          "token": "0x0A001907"
+        },
+        {
+          "offset": 130,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000843).Deconstruct",
+          "token": "0x0A001908"
+        },
+        {
+          "offset": 145,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.SubnetworkNodePromotion.get_AccessFlags",
+          "token": "0x06001A23"
+        },
+        {
+          "offset": 161,
+          "op": "call",
+          "target": "System.Enum.HasFlag",
+          "token": "0x0A0016AC"
+        },
+        {
+          "offset": 171,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).AddMemberNode",
+          "token": "0x0A001909"
+        },
+        {
+          "offset": 179,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000844).Remove",
+          "token": "0x0A00190A"
+        },
+        {
+          "offset": 189,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.SubnetworkNodePromotion.get_AccessFlags",
+          "token": "0x06001A23"
+        },
+        {
+          "offset": 205,
+          "op": "call",
+          "target": "System.Enum.HasFlag",
+          "token": "0x0A0016AC"
+        },
+        {
+          "offset": 215,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).AddAccessibleNode",
+          "token": "0x0A00190B"
+        },
+        {
+          "offset": 223,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000842).MoveNext",
+          "token": "0x0A00190C"
+        },
+        {
+          "offset": 240,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 248,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).<Rebuild>g___RemoveMembers|35_2",
+          "token": "0x0A001902"
+        },
+        {
+          "offset": 255,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00082C).set_IsUpdating",
+          "token": "0x0A0018ED"
+        },
+        {
+          "offset": 266,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000831).OnSubnetworkRebuild",
+          "token": "0x0A0018D7"
+        },
+        {
+          "offset": 277,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 287,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.Networks.Queries.SubnetworkResourceSinkQueryResult`2",
+      "name": "PushResources",
+      "token": "0x06001AF2",
+      "il_bytes": 303,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 9,
+          "op": "newobj",
+          "target": "System.NotSupportedException..ctor",
+          "token": "0x0A000577"
+        },
+        {
+          "offset": 20,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000898).Alloc",
+          "token": "0x0A001A9E"
+        },
+        {
+          "offset": 51,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B00089A)..ctor",
+          "token": "0x0A001AA2"
+        },
+        {
+          "offset": 63,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor.Distribute",
+          "token": "0x2B0002C2"
+        },
+        {
+          "offset": 70,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00089B).get_Count",
+          "token": "0x0A001AA3"
+        },
+        {
+          "offset": 97,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000831).OnResourceOperationStart",
+          "token": "0x0A001AA5"
+        },
+        {
+          "offset": 103,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00089B).GetEnumerator",
+          "token": "0x0A001AA6"
+        },
+        {
+          "offset": 113,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00089C).get_Current",
+          "token": "0x0A001AA7"
+        },
+        {
+          "offset": 126,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00089D).Deconstruct",
+          "token": "0x0A001AA8"
+        },
+        {
+          "offset": 141,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSinkData.get_DataSource",
+          "token": "0x06001AFF"
+        },
+        {
+          "offset": 163,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Networks.Queries.ISubnetworkResourceSinkQueryResult.PushResources",
+          "token": "0x06001B10"
+        },
+        {
+          "offset": 173,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSinkData.get_DataSource",
+          "token": "0x06001AFF"
+        },
+        {
+          "offset": 180,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Networks.IPartNetworkResourceSink.AddResources",
+          "token": "0x060018B9"
+        },
+        {
+          "offset": 188,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSinkData.get_DataSource",
+          "token": "0x06001AFF"
+        },
+        {
+          "offset": 193,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00088E).UpdateDataFor",
+          "token": "0x0A001AA9"
+        },
+        {
+          "offset": 200,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00089C).MoveNext",
+          "token": "0x0A001AAA"
+        },
+        {
+          "offset": 217,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 236,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000831).OnResourceOperationEnd",
+          "token": "0x0A001AAB"
+        },
+        {
+          "offset": 259,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000006).Invoke",
+          "token": "0x0A0003E6"
+        },
+        {
+          "offset": 282,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000006).Invoke",
+          "token": "0x0A0003E6"
+        },
+        {
+          "offset": 295,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.Networks.Queries.SubnetworkResourceSourceQueryResult`2",
+      "name": "PullResources",
+      "token": "0x06001B19",
+      "il_bytes": 281,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 9,
+          "op": "newobj",
+          "target": "System.NotSupportedException..ctor",
+          "token": "0x0A000577"
+        },
+        {
+          "offset": 20,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0008A2).Alloc",
+          "token": "0x0A001AC3"
+        },
+        {
+          "offset": 52,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0008A4)..ctor",
+          "token": "0x0A001AC7"
+        },
+        {
+          "offset": 64,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor.Distribute",
+          "token": "0x2B0002C3"
+        },
+        {
+          "offset": 71,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0008A5).get_Count",
+          "token": "0x0A001AC8"
+        },
+        {
+          "offset": 98,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000831).OnResourceOperationStart",
+          "token": "0x0A001AA5"
+        },
+        {
+          "offset": 104,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0008A5).GetEnumerator",
+          "token": "0x0A001ACA"
+        },
+        {
+          "offset": 114,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0008A6).get_Current",
+          "token": "0x0A001ACB"
+        },
+        {
+          "offset": 127,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0008A7).Deconstruct",
+          "token": "0x0A001ACC"
+        },
+        {
+          "offset": 142,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSourceData.get_DataSource",
+          "token": "0x06001B25"
+        },
+        {
+          "offset": 164,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Networks.Queries.ISubnetworkResourceSourceQueryResult.PullResources",
+          "token": "0x06001B35"
+        },
+        {
+          "offset": 174,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSourceData.get_DataSource",
+          "token": "0x06001B25"
+        },
+        {
+          "offset": 181,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Networks.IPartNetworkResourceSource.RemoveResources",
+          "token": "0x060018C0"
+        },
+        {
+          "offset": 189,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.Queries.NetworkResourceSourceData.get_DataSource",
+          "token": "0x06001B25"
+        },
+        {
+          "offset": 194,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00088C).UpdateDataFor",
+          "token": "0x0A001ACD"
+        },
+        {
+          "offset": 201,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0008A6).MoveNext",
+          "token": "0x0A001ACE"
+        },
+        {
+          "offset": 218,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 237,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000831).OnResourceOperationEnd",
+          "token": "0x0A001AAB"
+        },
+        {
+          "offset": 260,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000006).Invoke",
+          "token": "0x0A0003E6"
+        },
+        {
+          "offset": 273,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.Networks.PartNetworkPort",
+      "name": "Connect",
+      "token": "0x0600190F",
+      "il_bytes": 155,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 9,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.PartNetworkPort.CanRouteToEndpoint",
+          "token": "0x06001915"
+        },
+        {
+          "offset": 20,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.BasePartNetworkPort.get_RouteSource",
+          "token": "0x06001864"
+        },
+        {
+          "offset": 32,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0000D9)..ctor",
+          "token": "0x0A001860"
+        },
+        {
+          "offset": 37,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).add_NetworkNodeChanged",
+          "token": "0x0A001861"
+        },
+        {
+          "offset": 43,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000DA).get_RouteEndpoint",
+          "token": "0x0A001863"
+        },
+        {
+          "offset": 55,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0000D9)..ctor",
+          "token": "0x0A001860"
+        },
+        {
+          "offset": 60,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).add_NetworkNodeChanged",
+          "token": "0x0A001861"
+        },
+        {
+          "offset": 66,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.BasePartNetworkPort.get_RouteSource",
+          "token": "0x06001864"
+        },
+        {
+          "offset": 71,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).get_NetworkNode",
+          "token": "0x0A001859"
+        },
+        {
+          "offset": 79,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000DA).get_RouteEndpoint",
+          "token": "0x0A001863"
+        },
+        {
+          "offset": 84,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).get_NetworkNode",
+          "token": "0x0A001859"
+        },
+        {
+          "offset": 93,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.BasePartNetworkPort.get_RouteSource",
+          "token": "0x06001864"
+        },
+        {
+          "offset": 98,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).get_NetworkNode",
+          "token": "0x0A001859"
+        },
+        {
+          "offset": 104,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000DA).get_RouteEndpoint",
+          "token": "0x0A001863"
+        },
+        {
+          "offset": 109,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0000D8).get_NetworkNode",
+          "token": "0x0A001859"
+        },
+        {
+          "offset": 115,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000810)..ctor",
+          "token": "0x0A001864"
+        },
+        {
+          "offset": 126,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Parts.PartComponent.get_Ship",
+          "token": "0x0600241E"
+        },
+        {
+          "offset": 131,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_PartNetworks",
+          "token": "0x06000D45"
+        },
+        {
+          "offset": 142,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000521).RegisterDirectRoute",
+          "token": "0x0A001865"
+        },
+        {
+          "offset": 149,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Networks.PartNetworkPort.set_IsToggleOn",
+          "token": "0x0600190A"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule",
+      "name": "FindBestTarget",
+      "token": "0x060034D8",
+      "il_bytes": 1033,
+      "floats": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "calls": [
+        {
+          "offset": 1,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 8,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 15,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 23,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.ClampAIDestination",
+          "token": "0x06003930"
+        },
+        {
+          "offset": 31,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 40,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.Equals",
+          "token": "0x0A0008CA"
+        },
+        {
+          "offset": 50,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 65,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 78,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_BasePhysicalValue",
+          "token": "0x06000D8F"
+        },
+        {
+          "offset": 95,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000271).get_HasValue",
+          "token": "0x0A0001E0"
+        },
+        {
+          "offset": 104,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000271).GetValueOrDefault",
+          "token": "0x0A0001E1"
+        },
+        {
+          "offset": 122,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000271)..ctor",
+          "token": "0x0A0002BC"
+        },
+        {
+          "offset": 133,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 139,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 144,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_Team",
+          "token": "0x06000F00"
+        },
+        {
+          "offset": 149,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.TeamHasUnlimitedSightRange",
+          "token": "0x0600392A"
+        },
+        {
+          "offset": 160,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Sensors",
+          "token": "0x06000D3E"
+        },
+        {
+          "offset": 165,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Sensors.SensorManager.get_DetWorldSightCircle",
+          "token": "0x060028C9"
+        },
+        {
+          "offset": 173,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Sensors",
+          "token": "0x06000D3E"
+        },
+        {
+          "offset": 178,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Sensors.SensorManager.get_DetWorldRadarCircle",
+          "token": "0x060028CB"
+        },
+        {
+          "offset": 195,
+          "op": "newobj",
+          "target": "Halfling.Geometry.Circle..ctor",
+          "token": "0x0A0006D7"
+        },
+        {
+          "offset": 201,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000302).Alloc",
+          "token": "0x0A00059C"
+        },
+        {
+          "offset": 209,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Ships",
+          "token": "0x060004F8"
+        },
+        {
+          "offset": 219,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0002E8)..ctor",
+          "token": "0x0A000543"
+        },
+        {
+          "offset": 225,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimShipsManager.DetFindIntersectingWith",
+          "token": "0x2B0000D1"
+        },
+        {
+          "offset": 231,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 256,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 271,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).Contains",
+          "token": "0x0A001619"
+        },
+        {
+          "offset": 284,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 294,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Sensors",
+          "token": "0x06000D3E"
+        },
+        {
+          "offset": 299,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Sensors.SensorManager.get_DetWorldRadarCircle",
+          "token": "0x060028CB"
+        },
+        {
+          "offset": 308,
+          "op": "call",
+          "target": "Halfling.Geometry.Circle.IntersectsWith",
+          "token": "0x0A0006D8"
+        },
+        {
+          "offset": 323,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).Add",
+          "token": "0x0A0005C9"
+        },
+        {
+          "offset": 329,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Ships",
+          "token": "0x060004F8"
+        },
+        {
+          "offset": 335,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 340,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 345,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimShipsManager.GetShipsForPlayer",
+          "token": "0x0600059A"
+        },
+        {
+          "offset": 352,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00033E).Alloc",
+          "token": "0x0A000679"
+        },
+        {
+          "offset": 361,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000021).GetEnumerator",
+          "token": "0x0A000065"
+        },
+        {
+          "offset": 372,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000025).get_Current",
+          "token": "0x0A000064"
+        },
+        {
+          "offset": 386,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 391,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.get_CurConfirmedCommand",
+          "token": "0x06002075"
+        },
+        {
+          "offset": 409,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.BaseFollowCommand.get_Target",
+          "token": "0x06001FBF"
+        },
+        {
+          "offset": 420,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.BaseFollowCommand.get_Target",
+          "token": "0x06001FBF"
+        },
+        {
+          "offset": 425,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0002FF).Add",
+          "token": "0x0A0005C2"
+        },
+        {
+          "offset": 433,
+          "op": "callvirt",
+          "target": "System.Collections.IEnumerator.MoveNext",
+          "token": "0x0A000047"
+        },
+        {
+          "offset": 448,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 472,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 491,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).get_Item",
+          "token": "0x0A0005DE"
+        },
+        {
+          "offset": 509,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.IsAlliesWith",
+          "token": "0x06000DCB"
+        },
+        {
+          "offset": 518,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 523,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.get_CurConfirmedCommand",
+          "token": "0x06002075"
+        },
+        {
+          "offset": 546,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.BaseFollowCommand.get_Target",
+          "token": "0x06001FBF"
+        },
+        {
+          "offset": 551,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).Contains",
+          "token": "0x0A001619"
+        },
+        {
+          "offset": 563,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.Command.IsValid",
+          "token": "0x06002024"
+        },
+        {
+          "offset": 577,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.BaseFollowCommand.get_Target",
+          "token": "0x06001FBF"
+        },
+        {
+          "offset": 582,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).Add",
+          "token": "0x0A0005C9"
+        },
+        {
+          "offset": 595,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.IsEnemiesWith",
+          "token": "0x06000DC9"
+        },
+        {
+          "offset": 606,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 614,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.AllowAIToAttack",
+          "token": "0x06003931"
+        },
+        {
+          "offset": 638,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 663,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 668,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 673,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.IsWithinRadarOfPlayer",
+          "token": "0x06000DC7"
+        },
+        {
+          "offset": 688,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 693,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 698,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.IsWithinSightOfPlayer",
+          "token": "0x06000DC4"
+        },
+        {
+          "offset": 711,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 717,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 728,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 738,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.ShouldAIAvoidLocation",
+          "token": "0x0600055A"
+        },
+        {
+          "offset": 757,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 766,
+          "op": "call",
+          "target": "Halfling.Geometry.Circle.DistanceTo",
+          "token": "0x0A001550"
+        },
+        {
+          "offset": 776,
+          "op": "call",
+          "target": "Halfling.Mathx.Max",
+          "token": "0x0A0001D9"
+        },
+        {
+          "offset": 783,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 793,
+          "op": "call",
+          "target": "Halfling.Mathx.Pow",
+          "token": "0x0A000483"
+        },
+        {
+          "offset": 803,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.GetShipFirepowerRating",
+          "token": "0x060034D9"
+        },
+        {
+          "offset": 811,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 821,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.ModifyAIAttackValue",
+          "token": "0x06003932"
+        },
+        {
+          "offset": 835,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Parts",
+          "token": "0x06000D34"
+        },
+        {
+          "offset": 840,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000176).get_Mass",
+          "token": "0x0A000CF3"
+        },
+        {
+          "offset": 854,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0002FF).Contains",
+          "token": "0x0A0009FC"
+        },
+        {
+          "offset": 864,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 880,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 906,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 922,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIAggroEnemiesModule.get_Rules",
+          "token": "0x060034D2"
+        },
+        {
+          "offset": 955,
+          "op": "call",
+          "target": "System.Object.Equals",
+          "token": "0x0A00055C"
+        },
+        {
+          "offset": 990,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).get_Count",
+          "token": "0x0A00059D"
+        },
+        {
+          "offset": 1012,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 1024,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule",
+      "name": "OnAITick",
+      "token": "0x060034FD",
+      "il_bytes": 872,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 1,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 16,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 29,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 40,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Sensors",
+          "token": "0x06000D3E"
+        },
+        {
+          "offset": 45,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Sensors.SensorManager.get_RadarRadius",
+          "token": "0x060028C6"
+        },
+        {
+          "offset": 50,
+          "op": "call",
+          "target": "Halfling.Mathx.Min",
+          "token": "0x0A000485"
+        },
+        {
+          "offset": 59,
+          "op": "newobj",
+          "target": "Halfling.Geometry.Circle..ctor",
+          "token": "0x0A0006D7"
+        },
+        {
+          "offset": 72,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000302).Alloc",
+          "token": "0x0A00059C"
+        },
+        {
+          "offset": 79,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 84,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Ships",
+          "token": "0x060004F8"
+        },
+        {
+          "offset": 93,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0002E8)..ctor",
+          "token": "0x0A000543"
+        },
+        {
+          "offset": 99,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimShipsManager.DetFindIntersectingWith",
+          "token": "0x2B0000D1"
+        },
+        {
+          "offset": 112,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000303).GetEnumerator",
+          "token": "0x0A0005CA"
+        },
+        {
+          "offset": 123,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000315).get_Current",
+          "token": "0x0A0005CB"
+        },
+        {
+          "offset": 137,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_IsSignificant",
+          "token": "0x06000D6B"
+        },
+        {
+          "offset": 147,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.IsEnemiesWith",
+          "token": "0x06000DC9"
+        },
+        {
+          "offset": 160,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 169,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Subtraction",
+          "token": "0x0A0001BA"
+        },
+        {
+          "offset": 178,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.Normalize",
+          "token": "0x0A0001D4"
+        },
+        {
+          "offset": 187,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_AdditionAssignment",
+          "token": "0x0A0001C6"
+        },
+        {
+          "offset": 201,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000315).MoveNext",
+          "token": "0x0A0005CC"
+        },
+        {
+          "offset": 218,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 236,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 252,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Crew",
+          "token": "0x06000D3F"
+        },
+        {
+          "offset": 257,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrewManager.get_OffShipAssigned",
+          "token": "0x06001CB0"
+        },
+        {
+          "offset": 262,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0003D1).get_Count",
+          "token": "0x0A0008C9"
+        },
+        {
+          "offset": 274,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 291,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.GetTransferJobs",
+          "token": "0x06001596"
+        },
+        {
+          "offset": 296,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000720)..ctor",
+          "token": "0x0A001D3E"
+        },
+        {
+          "offset": 301,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000720).GetEnumerator",
+          "token": "0x0A001578"
+        },
+        {
+          "offset": 312,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000727).get_Current",
+          "token": "0x0A001579"
+        },
+        {
+          "offset": 321,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_Source",
+          "token": "0x06001E38"
+        },
+        {
+          "offset": 333,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.IResourceSource.get_Ship",
+          "token": "0x0600154F"
+        },
+        {
+          "offset": 343,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_Sink",
+          "token": "0x06001E39"
+        },
+        {
+          "offset": 348,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.IResourceSink.get_Ship",
+          "token": "0x0600151C"
+        },
+        {
+          "offset": 363,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.Cancel",
+          "token": "0x06001E66"
+        },
+        {
+          "offset": 371,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000727).MoveNext",
+          "token": "0x0A00157E"
+        },
+        {
+          "offset": 388,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 395,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 402,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.GetSalvageJobs",
+          "token": "0x060015A6"
+        },
+        {
+          "offset": 407,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000722)..ctor",
+          "token": "0x0A001577"
+        },
+        {
+          "offset": 412,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000722).GetEnumerator",
+          "token": "0x0A00157F"
+        },
+        {
+          "offset": 423,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000728).get_Current",
+          "token": "0x0A001580"
+        },
+        {
+          "offset": 433,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.SalvageJob.Cancel",
+          "token": "0x06001E9D"
+        },
+        {
+          "offset": 440,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000728).MoveNext",
+          "token": "0x0A001583"
+        },
+        {
+          "offset": 457,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 464,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 469,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.get_CurConfirmedCommand",
+          "token": "0x06002075"
+        },
+        {
+          "offset": 485,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 490,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_LogicalTime",
+          "token": "0x0600051D"
+        },
+        {
+          "offset": 507,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000316).get_HasValue",
+          "token": "0x0A000A7A"
+        },
+        {
+          "offset": 521,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000316).GetValueOrDefault",
+          "token": "0x0A000A7C"
+        },
+        {
+          "offset": 526,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_GreaterThanOrEqual",
+          "token": "0x0A000688"
+        },
+        {
+          "offset": 535,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.GetFtlDestination",
+          "token": "0x060034FF"
+        },
+        {
+          "offset": 544,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0004CA).get_HasValue",
+          "token": "0x0A000C8C"
+        },
+        {
+          "offset": 553,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0004CA).GetValueOrDefault",
+          "token": "0x0A000C82"
+        },
+        {
+          "offset": 561,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 568,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 574,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.AllocGlobalCommandID",
+          "token": "0x060020AC"
+        },
+        {
+          "offset": 582,
+          "op": "newobj",
+          "target": "Cosmoteer.Ships.Commands.FtlLocalJumpCommand..ctor",
+          "token": "0x06002142"
+        },
+        {
+          "offset": 589,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.EnqueueCommand",
+          "token": "0x0600208D"
+        },
+        {
+          "offset": 600,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 613,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Crew",
+          "token": "0x06000D3F"
+        },
+        {
+          "offset": 618,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrewManager.get_OffShipAssigned",
+          "token": "0x06001CB0"
+        },
+        {
+          "offset": 623,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0003D1).get_Count",
+          "token": "0x0A0008C9"
+        },
+        {
+          "offset": 641,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Inequality",
+          "token": "0x0A0005DB"
+        },
+        {
+          "offset": 652,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 666,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00091A).get_HasValue",
+          "token": "0x0A001C66"
+        },
+        {
+          "offset": 675,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00091A).GetValueOrDefault",
+          "token": "0x0A0026E1"
+        },
+        {
+          "offset": 688,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000316).GetValueOrDefault",
+          "token": "0x0A000A7C"
+        },
+        {
+          "offset": 701,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000316).get_HasValue",
+          "token": "0x0A000A7A"
+        },
+        {
+          "offset": 709,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 714,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_LogicalTime",
+          "token": "0x0600051D"
+        },
+        {
+          "offset": 720,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Rand",
+          "token": "0x06000D5C"
+        },
+        {
+          "offset": 727,
+          "op": "callvirt",
+          "target": "Halfling.Random.Rand.Time",
+          "token": "0x0A000A24"
+        },
+        {
+          "offset": 732,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Addition",
+          "token": "0x0A00062F"
+        },
+        {
+          "offset": 742,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000316)..ctor",
+          "token": "0x0A0005CF"
+        },
+        {
+          "offset": 757,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule.get_Rules",
+          "token": "0x060034FA"
+        },
+        {
+          "offset": 767,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Multiply",
+          "token": "0x0A0001C5"
+        },
+        {
+          "offset": 776,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Addition",
+          "token": "0x0A0001C8"
+        },
+        {
+          "offset": 784,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 791,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Commands",
+          "token": "0x06000D48"
+        },
+        {
+          "offset": 797,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.AllocGlobalCommandID",
+          "token": "0x060020AC"
+        },
+        {
+          "offset": 804,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0002FA)..ctor",
+          "token": "0x0A00060E"
+        },
+        {
+          "offset": 823,
+          "op": "newobj",
+          "target": "Cosmoteer.Ships.Commands.MoveCommand..ctor",
+          "token": "0x0600216C"
+        },
+        {
+          "offset": 830,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Commands.CommandManager.EnqueueCommand",
+          "token": "0x0600208D"
+        },
+        {
+          "offset": 863,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.AI.StrategyModules.AIFleeFromEnemiesModule",
+      "name": "GetFtlDestination",
+      "token": "0x060034FF",
+      "il_bytes": 509,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 0,
+          "op": "newobj",
+          "target": "<>c__DisplayClass9_0..ctor",
+          "token": "0x06006BA0"
+        },
+        {
+          "offset": 19,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Ftl",
+          "token": "0x06000D3C"
+        },
+        {
+          "offset": 24,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Ftl.FtlManager.get_HasFtlDrives",
+          "token": "0x06002FA3"
+        },
+        {
+          "offset": 41,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000C54).Alloc",
+          "token": "0x0A0026E2"
+        },
+        {
+          "offset": 53,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 76,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000C55)..ctor",
+          "token": "0x0A0026E3"
+        },
+        {
+          "offset": 91,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Special.Landmark.GetLandmarks",
+          "token": "0x06001382"
+        },
+        {
+          "offset": 96,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000C56).GetEnumerator",
+          "token": "0x0A0026E4"
+        },
+        {
+          "offset": 105,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000C57).get_Current",
+          "token": "0x0A0026E5"
+        },
+        {
+          "offset": 118,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 129,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipComponent.get_Ship",
+          "token": "0x06000E64"
+        },
+        {
+          "offset": 134,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldCenter",
+          "token": "0x06000D8A"
+        },
+        {
+          "offset": 143,
+          "op": "call",
+          "target": "Halfling.Geometry.Circle.DistanceTo",
+          "token": "0x0A000D08"
+        },
+        {
+          "offset": 154,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Rules",
+          "token": "0x06000D31"
+        },
+        {
+          "offset": 172,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Ftl",
+          "token": "0x06000D3C"
+        },
+        {
+          "offset": 179,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipComponent.get_Ship",
+          "token": "0x06000E64"
+        },
+        {
+          "offset": 186,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Ftl.FtlManager.GetFtlLocalJumpFuelCost",
+          "token": "0x06002FAD"
+        },
+        {
+          "offset": 197,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Ftl",
+          "token": "0x06000D3C"
+        },
+        {
+          "offset": 202,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Ftl.FtlManager.GetTotalFuel",
+          "token": "0x06002FAA"
+        },
+        {
+          "offset": 212,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipComponent.get_Ship",
+          "token": "0x06000E64"
+        },
+        {
+          "offset": 217,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimObject.get_UniqueID",
+          "token": "0x0600046C"
+        },
+        {
+          "offset": 222,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000C58).Add",
+          "token": "0x0A0026E6"
+        },
+        {
+          "offset": 228,
+          "op": "callvirt",
+          "target": "System.Collections.IEnumerator.MoveNext",
+          "token": "0x0A000047"
+        },
+        {
+          "offset": 244,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 256,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 279,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000C59)..ctor",
+          "token": "0x0A0026E7"
+        },
+        {
+          "offset": 294,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Special.StasisLandmark.GetLandmarks",
+          "token": "0x06001405"
+        },
+        {
+          "offset": 299,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0006D2).GetEnumerator",
+          "token": "0x0A00146B"
+        },
+        {
+          "offset": 310,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0006D3).get_Current",
+          "token": "0x0A00146C"
+        },
+        {
+          "offset": 323,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 334,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.ObjectIndicatorSource.get_WorldLocation",
+          "token": "0x060003D7"
+        },
+        {
+          "offset": 343,
+          "op": "call",
+          "target": "Halfling.Geometry.Circle.DistanceTo",
+          "token": "0x0A000D08"
+        },
+        {
+          "offset": 354,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Rules",
+          "token": "0x06000D31"
+        },
+        {
+          "offset": 372,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Ftl",
+          "token": "0x06000D3C"
+        },
+        {
+          "offset": 379,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.ObjectIndicatorSource.get_WorldLocation",
+          "token": "0x060003D7"
+        },
+        {
+          "offset": 386,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Ftl.FtlManager.GetFtlLocalJumpFuelCost",
+          "token": "0x06002FAE"
+        },
+        {
+          "offset": 397,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Ftl",
+          "token": "0x06000D3C"
+        },
+        {
+          "offset": 402,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.Ftl.FtlManager.GetTotalFuel",
+          "token": "0x06002FAA"
+        },
+        {
+          "offset": 412,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Special.StasisLandmark.get_StasisSpawner",
+          "token": "0x060013E3"
+        },
+        {
+          "offset": 417,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.Stasis.StasisSpawner.get_ReservedObjectID",
+          "token": "0x0600065D"
+        },
+        {
+          "offset": 422,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000C58).Add",
+          "token": "0x0A0026E6"
+        },
+        {
+          "offset": 429,
+          "op": "callvirt",
+          "target": "System.Collections.IEnumerator.MoveNext",
+          "token": "0x0A000047"
+        },
+        {
+          "offset": 444,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 451,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000C58).get_Count",
+          "token": "0x0A0026E8"
+        },
+        {
+          "offset": 465,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Rand",
+          "token": "0x06000D5C"
+        },
+        {
+          "offset": 471,
+          "op": "callvirt",
+          "target": "Halfling.Random.Rand.SelectElement",
+          "token": "0x2B0004A6"
+        },
+        {
+          "offset": 476,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0004CA)..ctor",
+          "token": "0x0A0011EE"
+        },
+        {
+          "offset": 501,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule",
+      "name": "TryRepairObject",
+      "token": "0x06003515",
+      "il_bytes": 540,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 1,
+          "op": "call",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.Alloc",
+          "token": "0x06001072"
+        },
+        {
+          "offset": 53,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.TryRebuildPart",
+          "token": "0x0600105E"
+        },
+        {
+          "offset": 66,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule.get_Rules",
+          "token": "0x06003510"
+        },
+        {
+          "offset": 85,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.TryRebuildDoor",
+          "token": "0x0600105F"
+        },
+        {
+          "offset": 98,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule.get_Rules",
+          "token": "0x06003510"
+        },
+        {
+          "offset": 114,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.RepairPart",
+          "token": "0x0600105D"
+        },
+        {
+          "offset": 120,
+          "op": "call",
+          "target": "Cosmoteer.Ships.AI.StrategyModules.AISelfRepairModule.get_Rules",
+          "token": "0x06003510"
+        },
+        {
+          "offset": 136,
+          "op": "newobj",
+          "target": "System.Runtime.CompilerServices.DefaultInterpolatedStringHandler..ctor",
+          "token": "0x0A0001F2"
+        },
+        {
+          "offset": 150,
+          "op": "call",
+          "target": "System.Runtime.CompilerServices.DefaultInterpolatedStringHandler.AppendLiteral",
+          "token": "0x0A0001F4"
+        },
+        {
+          "offset": 158,
+          "op": "callvirt",
+          "target": "System.Object.GetType",
+          "token": "0x0A0001AB"
+        },
+        {
+          "offset": 163,
+          "op": "call",
+          "target": "System.Runtime.CompilerServices.DefaultInterpolatedStringHandler.AppendFormatted",
+          "token": "0x2B000013"
+        },
+        {
+          "offset": 175,
+          "op": "call",
+          "target": "System.Runtime.CompilerServices.DefaultInterpolatedStringHandler.AppendLiteral",
+          "token": "0x0A0001F4"
+        },
+        {
+          "offset": 182,
+          "op": "call",
+          "target": "System.Runtime.CompilerServices.DefaultInterpolatedStringHandler.ToStringAndClear",
+          "token": "0x0A0001F7"
+        },
+        {
+          "offset": 187,
+          "op": "newobj",
+          "target": "System.Exception..ctor",
+          "token": "0x0A000303"
+        },
+        {
+          "offset": 199,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.GetTotalPhysicalCost",
+          "token": "0x06001050"
+        },
+        {
+          "offset": 206,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 211,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 217,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.GetConstructionMode",
+          "token": "0x060038FA"
+        },
+        {
+          "offset": 225,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 230,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 239,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipCost.CanPlayerAfford",
+          "token": "0x06000E81"
+        },
+        {
+          "offset": 267,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000501).GetEnumerator",
+          "token": "0x0A000ED6"
+        },
+        {
+          "offset": 278,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000579).get_Current",
+          "token": "0x0A000ED7"
+        },
+        {
+          "offset": 291,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00057A).Deconstruct",
+          "token": "0x0A000ED8"
+        },
+        {
+          "offset": 310,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 319,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.GetUsableConstructionResourceTotal",
+          "token": "0x060015BC"
+        },
+        {
+          "offset": 334,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000579).MoveNext",
+          "token": "0x0A000ED9"
+        },
+        {
+          "offset": 351,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 371,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.CanQueuePhysical",
+          "token": "0x06001045"
+        },
+        {
+          "offset": 387,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.QueuePhysical",
+          "token": "0x0600104B"
+        },
+        {
+          "offset": 398,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.CanApplyPhysical",
+          "token": "0x06001044"
+        },
+        {
+          "offset": 416,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000501).GetEnumerator",
+          "token": "0x0A000ED6"
+        },
+        {
+          "offset": 427,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000579).get_Current",
+          "token": "0x0A000ED7"
+        },
+        {
+          "offset": 440,
+          "op": "call",
+          "target": "TypeSpecification(0x1B00057A).Deconstruct",
+          "token": "0x0A000ED8"
+        },
+        {
+          "offset": 459,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.get_Ship",
+          "token": "0x0600102F"
+        },
+        {
+          "offset": 464,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 473,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.SpendConstructionResources",
+          "token": "0x060015C8"
+        },
+        {
+          "offset": 480,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000579).MoveNext",
+          "token": "0x0A000ED9"
+        },
+        {
+          "offset": 497,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 506,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_IsHumanPlayerShip",
+          "token": "0x06000D6E"
+        },
+        {
+          "offset": 512,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipUpdateInfo.ApplyPhysical",
+          "token": "0x0600104A"
+        },
+        {
+          "offset": 523,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 533,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Crew.CrewSoul",
+      "name": "UpdateJob",
+      "token": "0x06005869",
+      "il_bytes": 862,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 3,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 14,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 19,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 24,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 35,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 40,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Metadata",
+          "token": "0x06000D32"
+        },
+        {
+          "offset": 45,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipMetadata.get_PlayerIndex",
+          "token": "0x06000EFC"
+        },
+        {
+          "offset": 50,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_PlayerIndex",
+          "token": "0x0600582A"
+        },
+        {
+          "offset": 56,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CurrentShip",
+          "token": "0x06005822"
+        },
+        {
+          "offset": 62,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 73,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 78,
+          "op": "callvirt",
+          "target": "ICrewForm.get_DetWorldLocation",
+          "token": "0x06007E50"
+        },
+        {
+          "offset": 87,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 92,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_DetWorldBoundingCircle",
+          "token": "0x06000D8C"
+        },
+        {
+          "offset": 100,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.DistanceTo",
+          "token": "0x0A000623"
+        },
+        {
+          "offset": 106,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Rules",
+          "token": "0x0600581D"
+        },
+        {
+          "offset": 119,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 126,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 131,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Crew",
+          "token": "0x06000D3F"
+        },
+        {
+          "offset": 139,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrewManager.UnassignCrew",
+          "token": "0x06001CC2"
+        },
+        {
+          "offset": 145,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 150,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Crew",
+          "token": "0x060004FE"
+        },
+        {
+          "offset": 157,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SimCrewManager.OnCrewAbandoned",
+          "token": "0x060058C2"
+        },
+        {
+          "offset": 165,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HasDistanceWarning",
+          "token": "0x0600583D"
+        },
+        {
+          "offset": 181,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0013F7).TryGetValue",
+          "token": "0x0A003EC5"
+        },
+        {
+          "offset": 189,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 194,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_LogicalTime",
+          "token": "0x0600051D"
+        },
+        {
+          "offset": 201,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0008D5).op_Implicit",
+          "token": "0x0A003EC6"
+        },
+        {
+          "offset": 206,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_GreaterThanOrEqual",
+          "token": "0x0A000688"
+        },
+        {
+          "offset": 214,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.FindNewHomeShip",
+          "token": "0x0600586A"
+        },
+        {
+          "offset": 220,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 225,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_LogicalTime",
+          "token": "0x0600051D"
+        },
+        {
+          "offset": 232,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Rules",
+          "token": "0x0600581D"
+        },
+        {
+          "offset": 242,
+          "op": "callvirt",
+          "target": "Halfling.Random.Rand.Time",
+          "token": "0x0A000A24"
+        },
+        {
+          "offset": 247,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Addition",
+          "token": "0x0A00062F"
+        },
+        {
+          "offset": 260,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B0008D5)..ctor",
+          "token": "0x0A001B88"
+        },
+        {
+          "offset": 275,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0013F7).Add",
+          "token": "0x0A003EC7"
+        },
+        {
+          "offset": 286,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B0008D5).set_Value",
+          "token": "0x0A001B8C"
+        },
+        {
+          "offset": 303,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.<UpdateJob>g___CreateDistWarning|170_0",
+          "token": "0x06005872"
+        },
+        {
+          "offset": 319,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.<UpdateJob>g___DestroyDistWarning|170_1",
+          "token": "0x06005873"
+        },
+        {
+          "offset": 325,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Destination",
+          "token": "0x06005837"
+        },
+        {
+          "offset": 342,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 358,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 363,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Crew",
+          "token": "0x060004FE"
+        },
+        {
+          "offset": 368,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_RefillO2Job",
+          "token": "0x060058B4"
+        },
+        {
+          "offset": 374,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.IsValidFor",
+          "token": "0x06001DA6"
+        },
+        {
+          "offset": 385,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 402,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 423,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_ResourceType",
+          "token": "0x06001E4A"
+        },
+        {
+          "offset": 429,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 439,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000328).op_Equality",
+          "token": "0x0A000604"
+        },
+        {
+          "offset": 448,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_Sink",
+          "token": "0x06001E39"
+        },
+        {
+          "offset": 453,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.IResourceSink.get_Ship",
+          "token": "0x0600151C"
+        },
+        {
+          "offset": 462,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_Source",
+          "token": "0x06001E38"
+        },
+        {
+          "offset": 475,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_TradeType",
+          "token": "0x06001E46"
+        },
+        {
+          "offset": 486,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 498,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UnassignCrew",
+          "token": "0x06001DB2"
+        },
+        {
+          "offset": 504,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 518,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 526,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob.get_Sink",
+          "token": "0x06001E39"
+        },
+        {
+          "offset": 532,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 544,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.CarriedResourceTransfer",
+          "token": "0x06001598"
+        },
+        {
+          "offset": 556,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 568,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UnassignCrew",
+          "token": "0x06001DB2"
+        },
+        {
+          "offset": 574,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 579,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Crew",
+          "token": "0x060004FE"
+        },
+        {
+          "offset": 584,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_RefillO2Job",
+          "token": "0x060058B4"
+        },
+        {
+          "offset": 590,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.AssignCrew",
+          "token": "0x06001DB1"
+        },
+        {
+          "offset": 601,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 634,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 648,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 654,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_UniqueID",
+          "token": "0x06005806"
+        },
+        {
+          "offset": 666,
+          "op": "newobj",
+          "target": "System.Action..ctor",
+          "token": "0x0A0003F5"
+        },
+        {
+          "offset": 671,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.EnqueueDeterministic",
+          "token": "0x06000542"
+        },
+        {
+          "offset": 679,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 687,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 695,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 700,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Jobs",
+          "token": "0x06000D4A"
+        },
+        {
+          "offset": 705,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.JobManager.get_IdleJob",
+          "token": "0x06001DCB"
+        },
+        {
+          "offset": 711,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.AssignCrew",
+          "token": "0x06001DB1"
+        },
+        {
+          "offset": 719,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 724,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Crew",
+          "token": "0x060004FE"
+        },
+        {
+          "offset": 729,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_HomelessJob",
+          "token": "0x060058B3"
+        },
+        {
+          "offset": 735,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.AssignCrew",
+          "token": "0x06001DB1"
+        },
+        {
+          "offset": 741,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 749,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 755,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 761,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.ExistsInSim",
+          "token": "0x06001DA5"
+        },
+        {
+          "offset": 769,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 775,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.IsValidFor",
+          "token": "0x06001DA6"
+        },
+        {
+          "offset": 783,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 789,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UnassignCrew",
+          "token": "0x06001DB2"
+        },
+        {
+          "offset": 796,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Destination",
+          "token": "0x06005837"
+        },
+        {
+          "offset": 805,
+          "op": "call",
+          "target": "Cosmoteer.Crew.Destination.get_HasDestination",
+          "token": "0x06005874"
+        },
+        {
+          "offset": 813,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Destination",
+          "token": "0x06005837"
+        },
+        {
+          "offset": 821,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 829,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UpdateDestinationOf",
+          "token": "0x06001DA9"
+        },
+        {
+          "offset": 837,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_Destination",
+          "token": "0x06005838"
+        },
+        {
+          "offset": 845,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 851,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.GetDestination",
+          "token": "0x06001DA8"
+        },
+        {
+          "offset": 856,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_Destination",
+          "token": "0x06005838"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Crew.CrewSoul",
+      "name": "Kill",
+      "token": "0x06005845",
+      "il_bytes": 485,
+      "floats": [
+        1.0,
+        0.0
+      ],
+      "calls": [
+        {
+          "offset": 10,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Rules",
+          "token": "0x0600581D"
+        },
+        {
+          "offset": 22,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 29,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 34,
+          "op": "callvirt",
+          "target": "ICrewForm.get_Parent",
+          "token": "0x06007E4D"
+        },
+        {
+          "offset": 39,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldUniformScale",
+          "token": "0x0A000669"
+        },
+        {
+          "offset": 48,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Rules",
+          "token": "0x0600581D"
+        },
+        {
+          "offset": 60,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 65,
+          "op": "callvirt",
+          "target": "ICrewForm.get_Parent",
+          "token": "0x06007E4D"
+        },
+        {
+          "offset": 91,
+          "op": "newobj",
+          "target": "System.ArgumentOutOfRangeException..ctor",
+          "token": "0x0A00029F"
+        },
+        {
+          "offset": 105,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 110,
+          "op": "callvirt",
+          "target": "ICrewForm.get_WorldVisualLocation",
+          "token": "0x06007E4E"
+        },
+        {
+          "offset": 115,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.TransformPointFromWorld",
+          "token": "0x0A0009EB"
+        },
+        {
+          "offset": 124,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 129,
+          "op": "callvirt",
+          "target": "ICrewForm.get_WorldVisualRotation",
+          "token": "0x06007E4F"
+        },
+        {
+          "offset": 134,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.TransformRotationFromWorld",
+          "token": "0x0A000DED"
+        },
+        {
+          "offset": 149,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.Alloc",
+          "token": "0x060007B7"
+        },
+        {
+          "offset": 158,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 167,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 173,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 178,
+          "op": "callvirt",
+          "target": "ICrewForm.get_WorldVelocity",
+          "token": "0x06007E52"
+        },
+        {
+          "offset": 183,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_FrameOfReference",
+          "token": "0x06000780"
+        },
+        {
+          "offset": 189,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_IsOnShip",
+          "token": "0x06005823"
+        },
+        {
+          "offset": 198,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 204,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CurrentShip",
+          "token": "0x06005822"
+        },
+        {
+          "offset": 209,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_HitShip",
+          "token": "0x0600078E"
+        },
+        {
+          "offset": 216,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 222,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_RoofOpacitySource",
+          "token": "0x06000798"
+        },
+        {
+          "offset": 228,
+          "op": "call",
+          "target": "Halfling.DataStack.PushStackFrame",
+          "token": "0x2B000827"
+        },
+        {
+          "offset": 237,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.PlayOneShot",
+          "token": "0x060007B8"
+        },
+        {
+          "offset": 253,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
+        },
+        {
+          "offset": 260,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 274,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 279,
+          "op": "callvirt",
+          "target": "ICrewForm.get_DetWorldLocation",
+          "token": "0x06007E50"
+        },
+        {
+          "offset": 298,
+          "op": "newobj",
+          "target": "Halfling.Geometry.RotRect..ctor",
+          "token": "0x0A0005DC"
+        },
+        {
+          "offset": 306,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Game",
+          "token": "0x06005805"
+        },
+        {
+          "offset": 318,
+          "op": "call",
+          "target": "Cosmoteer.Game.GameRoot.get_Mode",
+          "token": "0x06004A09"
+        },
+        {
+          "offset": 324,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_PlayerIndex",
+          "token": "0x06005829"
+        },
+        {
+          "offset": 329,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.GameModeManager.IsHumanPlayerIndex",
+          "token": "0x06003863"
+        },
+        {
+          "offset": 337,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 342,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Nuggets",
+          "token": "0x06000500"
+        },
+        {
+          "offset": 348,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 359,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 382,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 387,
+          "op": "callvirt",
+          "target": "ICrewForm.get_WorldVelocity",
+          "token": "0x06007E52"
+        },
+        {
+          "offset": 392,
+          "op": "callvirt",
+          "target": "Cosmoteer.Resources.SimNuggetManager.DropNuggets",
+          "token": "0x06003642"
+        },
+        {
+          "offset": 399,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 406,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Form",
+          "token": "0x0600581E"
+        },
+        {
+          "offset": 411,
+          "op": "callvirt",
+          "target": "ICrewForm.get_DetWorldLocation",
+          "token": "0x06007E50"
+        },
+        {
+          "offset": 419,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_ShipCrew",
+          "token": "0x06005820"
+        },
+        {
+          "offset": 431,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Crew.ShipCrew.get_Ship",
+          "token": "0x06001C55"
+        },
+        {
+          "offset": 439,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 447,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Crew",
+          "token": "0x060004FE"
+        },
+        {
+          "offset": 454,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SimCrewManager.OnCrewKilled",
+          "token": "0x060058C1"
+        },
+        {
+          "offset": 461,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.Delete",
+          "token": "0x06005844"
+        },
+        {
+          "offset": 467,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 479,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.OnCrewKilled",
+          "token": "0x06003927"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Crew.CrewSoul",
+      "name": "DiscardCarriedResources",
+      "token": "0x0600586D",
+      "il_bytes": 437,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 1,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 15,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 23,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CarriedResource.get_TypeRules",
+          "token": "0x060057F3"
+        },
+        {
+          "offset": 45,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_CarriedResource",
+          "token": "0x0600583A"
+        },
+        {
+          "offset": 52,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_SpaceCrew",
+          "token": "0x06005821"
+        },
+        {
+          "offset": 65,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 76,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 87,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_DetWorldLocation",
+          "token": "0x060058D9"
+        },
+        {
+          "offset": 93,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_DetWorldRotation",
+          "token": "0x060058DC"
+        },
+        {
+          "offset": 99,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 111,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Ship.get_IsHumanPlayerShip",
+          "token": "0x06000D6E"
+        },
+        {
+          "offset": 123,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_Physics",
+          "token": "0x060058D8"
+        },
+        {
+          "offset": 128,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.Physics.ScenePhysicsWrapper.get_Body",
+          "token": "0x0A000B83"
+        },
+        {
+          "offset": 133,
+          "op": "callvirt",
+          "target": "Halfling.Physics2D.Dynamics.Body.get_LinearVelocity",
+          "token": "0x0A0009FE"
+        },
+        {
+          "offset": 141,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Implicit",
+          "token": "0x0A0003C5"
+        },
+        {
+          "offset": 167,
+          "op": "newobj",
+          "target": "Cosmoteer.Resources.Nugget..ctor",
+          "token": "0x060035DA"
+        },
+        {
+          "offset": 174,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 179,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Nuggets",
+          "token": "0x06000500"
+        },
+        {
+          "offset": 185,
+          "op": "callvirt",
+          "target": "Cosmoteer.Resources.SimNuggetManager.AddNugget",
+          "token": "0x06003638"
+        },
+        {
+          "offset": 200,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_CarriedResource",
+          "token": "0x0600583A"
+        },
+        {
+          "offset": 206,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_HomeShip",
+          "token": "0x06005824"
+        },
+        {
+          "offset": 216,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Ship.get_OptionalConstructionManager",
+          "token": "0x06000D38"
+        },
+        {
+          "offset": 227,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Construction.ConstructionManager.RegisterDeconstructionNugget",
+          "token": "0x06001F0B"
+        },
+        {
+          "offset": 234,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CurrentShip",
+          "token": "0x06005822"
+        },
+        {
+          "offset": 249,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_ShipCrew",
+          "token": "0x06005820"
+        },
+        {
+          "offset": 258,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrew.get_Ship",
+          "token": "0x06001C55"
+        },
+        {
+          "offset": 265,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrew.get_CurrentCell",
+          "token": "0x06001C61"
+        },
+        {
+          "offset": 270,
+          "op": "call",
+          "target": "Cosmoteer.Ships.Parts.Crew.Airlock.GetNearestContiguousWith",
+          "token": "0x06003045"
+        },
+        {
+          "offset": 282,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 294,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UnassignCrew",
+          "token": "0x06001DB2"
+        },
+        {
+          "offset": 301,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Resources",
+          "token": "0x06000D40"
+        },
+        {
+          "offset": 310,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 322,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Resources.ResourceManager.CarriedResourceTransfer",
+          "token": "0x06001598"
+        },
+        {
+          "offset": 330,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Sim",
+          "token": "0x06005804"
+        },
+        {
+          "offset": 335,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Mode",
+          "token": "0x060004F5"
+        },
+        {
+          "offset": 341,
+          "op": "callvirt",
+          "target": "Cosmoteer.Modes.SimModeManager.AllowDeleteCarriedResource",
+          "token": "0x06003905"
+        },
+        {
+          "offset": 358,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_CarriedResource",
+          "token": "0x0600583A"
+        },
+        {
+          "offset": 365,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 372,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Jobs",
+          "token": "0x06000D4A"
+        },
+        {
+          "offset": 377,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.JobManager.get_IdleJob",
+          "token": "0x06001DCB"
+        },
+        {
+          "offset": 385,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.get_Job",
+          "token": "0x06005835"
+        },
+        {
+          "offset": 397,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.UnassignCrew",
+          "token": "0x06001DB2"
+        },
+        {
+          "offset": 404,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Jobs",
+          "token": "0x06000D4A"
+        },
+        {
+          "offset": 409,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.JobManager.get_IdleJob",
+          "token": "0x06001DCB"
+        },
+        {
+          "offset": 415,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.Jobs.Job.AssignCrew",
+          "token": "0x06001DB1"
+        },
+        {
+          "offset": 431,
+          "op": "call",
+          "target": "Cosmoteer.Crew.CrewSoul.set_CarriedResource",
+          "token": "0x0600583A"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Crew.SpaceCrew",
+      "name": "UpdateCrewBeam",
+      "token": "0x06005927",
+      "il_bytes": 535,
+      "floats": [
+        1.0
+      ],
+      "calls": [
+        {
+          "offset": 6,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 17,
+          "op": "call",
+          "target": "Halfling.App.get_Clock",
+          "token": "0x0A0004DE"
+        },
+        {
+          "offset": 22,
+          "op": "callvirt",
+          "target": "Halfling.Timing.Clock.get_Time",
+          "token": "0x0A0004DF"
+        },
+        {
+          "offset": 33,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Subtraction",
+          "token": "0x0A0004EF"
+        },
+        {
+          "offset": 38,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Implicit",
+          "token": "0x0A0003E7"
+        },
+        {
+          "offset": 49,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Implicit",
+          "token": "0x0A0003E7"
+        },
+        {
+          "offset": 54,
+          "op": "call",
+          "target": "Halfling.Mathx.MirrorWave",
+          "token": "0x0A00215A"
+        },
+        {
+          "offset": 67,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_BeamLength",
+          "token": "0x060007A0"
+        },
+        {
+          "offset": 84,
+          "op": "call",
+          "target": "Halfling.App.get_Clock",
+          "token": "0x0A0004DE"
+        },
+        {
+          "offset": 89,
+          "op": "callvirt",
+          "target": "Halfling.Timing.Clock.get_Time",
+          "token": "0x0A0004DF"
+        },
+        {
+          "offset": 100,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Subtraction",
+          "token": "0x0A0004EF"
+        },
+        {
+          "offset": 105,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Implicit",
+          "token": "0x0A0003E7"
+        },
+        {
+          "offset": 116,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Implicit",
+          "token": "0x0A0003E7"
+        },
+        {
+          "offset": 121,
+          "op": "call",
+          "target": "Halfling.Mathx.MirrorWave",
+          "token": "0x0A00215A"
+        },
+        {
+          "offset": 132,
+          "op": "call",
+          "target": "Halfling.Geometry.Angle.op_Implicit",
+          "token": "0x0A0001BF"
+        },
+        {
+          "offset": 138,
+          "op": "call",
+          "target": "Halfling.Geometry.Direction.op_Addition",
+          "token": "0x0A0005C0"
+        },
+        {
+          "offset": 143,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.set_Rotation",
+          "token": "0x0A0007A0"
+        },
+        {
+          "offset": 154,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 160,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_Physics",
+          "token": "0x060058D8"
+        },
+        {
+          "offset": 165,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.Physics.ScenePhysicsWrapper.get_Body",
+          "token": "0x0A000B83"
+        },
+        {
+          "offset": 176,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldLocation",
+          "token": "0x0A000573"
+        },
+        {
+          "offset": 184,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Implicit",
+          "token": "0x0A0003AD"
+        },
+        {
+          "offset": 189,
+          "op": "callvirt",
+          "target": "Halfling.Physics2D.Dynamics.Body.GetLinearVelocityFromWorldPoint",
+          "token": "0x0A000B8A"
+        },
+        {
+          "offset": 197,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Implicit",
+          "token": "0x0A0003C5"
+        },
+        {
+          "offset": 202,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_FrameOfReference",
+          "token": "0x06000780"
+        },
+        {
+          "offset": 213,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 219,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_HitPart",
+          "token": "0x06000790"
+        },
+        {
+          "offset": 230,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 236,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.CommonBasePart.get_Ship",
+          "token": "0x0600222B"
+        },
+        {
+          "offset": 241,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_HitShip",
+          "token": "0x0600078E"
+        },
+        {
+          "offset": 258,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.CommonBasePart.get_Ship",
+          "token": "0x0600222B"
+        },
+        {
+          "offset": 274,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldLocation",
+          "token": "0x0A000573"
+        },
+        {
+          "offset": 288,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldRotation",
+          "token": "0x0A000576"
+        },
+        {
+          "offset": 293,
+          "op": "call",
+          "target": "Halfling.Geometry.Direction.op_Implicit",
+          "token": "0x0A00027B"
+        },
+        {
+          "offset": 298,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.FromAngle",
+          "token": "0x0A0001D8"
+        },
+        {
+          "offset": 313,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 318,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.get_BeamLength",
+          "token": "0x0600079F"
+        },
+        {
+          "offset": 323,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Multiply",
+          "token": "0x0A0001C5"
+        },
+        {
+          "offset": 332,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Addition",
+          "token": "0x0A0001C8"
+        },
+        {
+          "offset": 355,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.SimNode.get_Sim",
+          "token": "0x06000469"
+        },
+        {
+          "offset": 367,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldRotation",
+          "token": "0x0A000576"
+        },
+        {
+          "offset": 378,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.Alloc",
+          "token": "0x060007B7"
+        },
+        {
+          "offset": 388,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.set_Location",
+          "token": "0x0A00079F"
+        },
+        {
+          "offset": 400,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.get_WorldRotation",
+          "token": "0x0A000576"
+        },
+        {
+          "offset": 405,
+          "op": "callvirt",
+          "target": "Halfling.Scene2D.SceneNode.set_Rotation",
+          "token": "0x0A0007A0"
+        },
+        {
+          "offset": 411,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 417,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.CommonBasePart.get_Ship",
+          "token": "0x0600222B"
+        },
+        {
+          "offset": 422,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Ship.get_Physics",
+          "token": "0x06000D43"
+        },
+        {
+          "offset": 427,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.ShipPhysics.get_Body",
+          "token": "0x06000FA4"
+        },
+        {
+          "offset": 434,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Implicit",
+          "token": "0x0A0003AD"
+        },
+        {
+          "offset": 439,
+          "op": "callvirt",
+          "target": "Halfling.Physics2D.Dynamics.Body.GetLinearVelocityFromWorldPoint",
+          "token": "0x0A000B8A"
+        },
+        {
+          "offset": 447,
+          "op": "call",
+          "target": "Halfling.Geometry.Vector2.op_Implicit",
+          "token": "0x0A0003C5"
+        },
+        {
+          "offset": 452,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_FrameOfReference",
+          "token": "0x06000780"
+        },
+        {
+          "offset": 458,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 464,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Parts.CommonBasePart.get_Ship",
+          "token": "0x0600222B"
+        },
+        {
+          "offset": 469,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_HitShip",
+          "token": "0x0600078E"
+        },
+        {
+          "offset": 475,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.get_Parameters",
+          "token": "0x060007B3"
+        },
+        {
+          "offset": 481,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MediaEffectParams.set_HitPart",
+          "token": "0x06000790"
+        },
+        {
+          "offset": 503,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.PlayContinuous",
+          "token": "0x060007B9"
+        },
+        {
+          "offset": 522,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.MediaEffects.MultiMediaEffectNode.EndContinuous",
+          "token": "0x060007BB"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Crew.SimCrewManager",
+      "name": "FixedUpdateSpaceCrew",
+      "token": "0x060058C8",
+      "il_bytes": 373,
+      "floats": [
+        1.0
+      ],
+      "calls": [
+        {
+          "offset": 6,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Count",
+          "token": "0x0A00161D"
+        },
+        {
+          "offset": 16,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_CrewTime",
+          "token": "0x060058B0"
+        },
+        {
+          "offset": 22,
+          "op": "callvirt",
+          "target": "Halfling.Timing.FixedUpdater.get_Interval",
+          "token": "0x0A00073F"
+        },
+        {
+          "offset": 27,
+          "op": "call",
+          "target": "Halfling.Timing.Time.op_Implicit",
+          "token": "0x0A0003E7"
+        },
+        {
+          "offset": 33,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_Rules",
+          "token": "0x060058AD"
+        },
+        {
+          "offset": 47,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SimCrewManager.set_CrewTime",
+          "token": "0x060058B1"
+        },
+        {
+          "offset": 65,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_NextUpdateAt",
+          "token": "0x060058DD"
+        },
+        {
+          "offset": 80,
+          "op": "callvirt",
+          "target": "ISpaceCrewMembers.set_NextUpdateAt",
+          "token": "0x06007E7A"
+        },
+        {
+          "offset": 100,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Count",
+          "token": "0x0A00161D"
+        },
+        {
+          "offset": 127,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Item",
+          "token": "0x0A00161C"
+        },
+        {
+          "offset": 134,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.SpaceCrew.get_NextUpdateAt",
+          "token": "0x060058DD"
+        },
+        {
+          "offset": 140,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SimCrewManager.get_CrewTime",
+          "token": "0x060058B0"
+        },
+        {
+          "offset": 150,
+          "op": "call",
+          "target": "Cosmoteer.Crew.SimCrewManager.UpdateCrewJobs",
+          "token": "0x060058C9"
+        },
+        {
+          "offset": 177,
+          "op": "newobj",
+          "target": "Halfling.Performance.FastParallelAction..ctor",
+          "token": "0x0A0007D6"
+        },
+        {
+          "offset": 204,
+          "op": "call",
+          "target": "Halfling.Performance.FastParallel.For",
+          "token": "0x0A0007D7"
+        },
+        {
+          "offset": 222,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Item",
+          "token": "0x0A00161C"
+        },
+        {
+          "offset": 227,
+          "op": "callvirt",
+          "target": "ISpaceCrewMembers.Update",
+          "token": "0x06007E7E"
+        },
+        {
+          "offset": 246,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Count",
+          "token": "0x0A00161D"
+        },
+        {
+          "offset": 260,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Count",
+          "token": "0x0A00161D"
+        },
+        {
+          "offset": 285,
+          "op": "newobj",
+          "target": "Halfling.Performance.FastParallelAction..ctor",
+          "token": "0x0A0007D6"
+        },
+        {
+          "offset": 312,
+          "op": "call",
+          "target": "Halfling.Performance.FastParallel.For",
+          "token": "0x0A0007D7"
+        },
+        {
+          "offset": 323,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.SimComponent.get_Sim",
+          "token": "0x06000465"
+        },
+        {
+          "offset": 328,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.get_Nebulas",
+          "token": "0x06000502"
+        },
+        {
+          "offset": 341,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Item",
+          "token": "0x0A00161C"
+        },
+        {
+          "offset": 346,
+          "op": "callvirt",
+          "target": "Cosmoteer.Nebulas.SimNebulasManager.RefreshCrewNebulaType",
+          "token": "0x060036A5"
+        },
+        {
+          "offset": 365,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B00034E).get_Count",
+          "token": "0x0A00161D"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
+      "name": "IsCrewImmune",
+      "token": "0x06000A1E",
+      "il_bytes": 131,
+      "floats": [],
+      "calls": [
+        {
+          "offset": 1,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrew.get_Soul",
+          "token": "0x06001C53"
+        },
+        {
+          "offset": 6,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 48,
+          "op": "newobj",
+          "target": "TypeSpecification(0x1B000271)..ctor",
+          "token": "0x0A0002BC"
+        },
+        {
+          "offset": 56,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000271).get_HasValue",
+          "token": "0x0A0001E0"
+        },
+        {
+          "offset": 65,
+          "op": "call",
+          "target": "TypeSpecification(0x1B000271).GetValueOrDefault",
+          "token": "0x0A0001E1"
+        },
+        {
+          "offset": 86,
+          "op": "call",
+          "target": "TypeSpecification(0x1B0004BB).op_Implicit",
+          "token": "0x0A000C44"
+        },
+        {
+          "offset": 92,
+          "op": "callvirt",
+          "target": "Cosmoteer.Ships.Crew.ShipCrew.get_Soul",
+          "token": "0x06001C53"
+        },
+        {
+          "offset": 97,
+          "op": "callvirt",
+          "target": "Cosmoteer.Crew.CrewSoul.get_CarriedResource",
+          "token": "0x06005839"
+        },
+        {
+          "offset": 107,
+          "op": "call",
+          "target": "System.MemoryExtensions.Contains",
+          "token": "0x2B0000F1"
+        }
+      ]
+    },
+    {
+      "type": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
+      "name": "DoEffect",
+      "token": "0x06000A19",
+      "il_bytes": 94,
+      "floats": [
+        0.0
+      ],
+      "calls": [
+        {
+          "offset": 6,
+          "op": "call",
+          "target": "System.ArgumentNullException.ThrowIfNull",
+          "token": "0x0A000795"
+        },
+        {
+          "offset": 18,
+          "op": "callvirt",
+          "target": "TypeSpecification(0x1B000061).GetValue",
+          "token": "0x0A000B8C"
+        },
+        {
+          "offset": 34,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.HitEffects.KillCrewEffect.ValidateFilter",
+          "token": "0x06000A1F"
+        },
+        {
+          "offset": 43,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.HitEffects.HitEffectParams.get_Sim",
+          "token": "0x060009CD"
+        },
+        {
+          "offset": 49,
+          "op": "callvirt",
+          "target": "Cosmoteer.Simulation.SimRoot.PushCurrentActionSourcePlayer",
+          "token": "0x0600054D"
+        },
+        {
+          "offset": 66,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.HitEffects.KillCrewEffect.DoEffectOnPart",
+          "token": "0x06000A1B"
+        },
+        {
+          "offset": 76,
+          "op": "call",
+          "target": "Cosmoteer.Simulation.HitEffects.KillCrewEffect.DoEffectOnCell",
+          "token": "0x06000A1A"
+        },
+        {
+          "offset": 87,
+          "op": "callvirt",
+          "target": "System.IDisposable.Dispose",
+          "token": "0x0A000046"
         }
       ]
     }
