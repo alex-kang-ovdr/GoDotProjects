@@ -42,10 +42,24 @@ const GRAPPLE := {
 	"tension_slack": 3.0,
 	"tension_stiffness": 1800.0,
 	"tension_damping": 240.0,
-	"max_tension_force": 42000.0,
-	"break_slack": 420.0,
-	"hp": 32.0,
-	"hit_radius": 12.0
+	"max_tension_force": 126000.0,
+	"break_slack": 1260.0,
+	"hp": 288.0,
+	"hit_radius": 12.0,
+	"tow_min_mass_ratio": 0.55,
+	"tow_dominant_mass_ratio": 1.15,
+	"tow_dominant_thrust_ratio": 1.15,
+	"oscillation_flip_stress": 0.11,
+	"oscillation_tension_rate": 0.48,
+	"oscillation_decay_rate": 1.2,
+	"oscillation_tension_threshold": 900.0,
+	"position_correction_max": 42.0,
+	"tension_damp_rate": 5.0,
+	"max_stretch_ratio": 1.2,
+	"max_stretch_hp_drain_per_sec": 36.0,
+	"elastic_pull_stiffness": 10.0,
+	"reel_force": 12000.0,
+	"reel_speed": 220.0
 }
 const WORLD := {
 	"width": 24000.0, "height": 16000.0,

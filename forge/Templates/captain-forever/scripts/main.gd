@@ -193,6 +193,10 @@ func _input(event: InputEvent) -> void:
 	if developer_mode_active or (dialogue != null and dialogue.is_showing()):
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F9:
+			get_tree().change_scene_to_file("res://scenes/grapple_test_map.tscn")
+			get_viewport().set_input_as_handled()
+			return
 		if event.keycode in [KEY_P, KEY_ESCAPE] and not campaign_complete:
 			if event.keycode == KEY_ESCAPE and (tracking_order.active or tracking_order.dragging):
 				cancel_target_tracking()
@@ -856,7 +860,11 @@ func update_weapon_hud() -> void:
 	hud.missile_status = "AMMO %d / -2" % hud.missile_ammo if player.has_part("missile_launcher") else "NO RACK"
 	if player.missile_cooldown > 0.0: hud.missile_status = "CD %.1fs" % player.missile_cooldown
 	if grapple != null and is_instance_valid(grapple):
-		hud.grapple_label = "LINK %d%%" % roundi(grapple.hp / maxf(grapple.max_hp, 1.0) * 100.0)
+		grapple.set_reeling(grapple.connected and Input.is_key_pressed(KEY_V))
+		if grapple.reeling_in:
+			hud.grapple_label = "REEL %d%%" % roundi(grapple.hp / maxf(grapple.max_hp, 1.0) * 100.0)
+		else:
+			hud.grapple_label = "LINK %d%%" % roundi(grapple.hp / maxf(grapple.max_hp, 1.0) * 100.0)
 	else:
 		hud.grapple_label = "READY"
 
@@ -1223,7 +1231,7 @@ func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "",
 func set_zoom_level(next_zoom: float, show_toast: bool = true) -> void:
 	if camera == null:
 		return
-	var next := clampf(next_zoom, 1.0 / 3.0, 1.8)
+	var next := clampf(next_zoom, 1.0 / 4.5, 1.8)
 	if is_equal_approx(next, camera.zoom.x):
 		return
 	camera.zoom = Vector2.ONE * next

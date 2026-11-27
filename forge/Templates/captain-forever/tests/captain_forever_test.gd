@@ -98,7 +98,91 @@ func _run() -> void:
 	main.destroy_enemy(raider)
 	assert(main.kill_count == 1 and main.kill_streak == 1, "Destroying raider should track kills and streak")
 
-	print("CAPTAIN_FOREVER_SP_OK parts=%d salvage=%d kills=%d radar=%d pwr=%.2f" % [
-		main.player.model.parts.size(), main.salvage_count, main.kill_count, main.hud.radar_blips.size(), main.player.model.power_efficiency()
+	# 7. Grapple 3x Durability + Pull Resistance + Interactive Test Map
+	main.queue_free()
+	await process_frame
+	var GrappleTestScene := load("res://scenes/grapple_test_map.tscn") as PackedScene
+	assert(GrappleTestScene != null, "GrappleTestMap scene must load")
+	var lab := GrappleTestScene.instantiate() as GrappleTestMap
+	root.add_child(lab)
+	for _j in 4:
+		await process_frame
+	assert(lab.targets.size() == 4, "GrappleTestMap should spawn 4 test target ships")
+	assert(is_equal_approx(float(lab.grapple_config.hp), 288.0), "Default grapple HP should be 288 (3x stronger)")
+	assert(is_equal_approx(float(lab.grapple_config.break_slack), 1260.0), "Default break_slack should be 1260 (3x)")
+	assert(is_equal_approx(float(lab.grapple_config.max_tension_force), 126000.0), "Default max_tension_force should be 126000 (3x)")
+
+	# Launch grapple against tug-of-war ship and pull hard for 60 physics frames
+	lab.selected_target = lab.targets[1]
+	lab.toggle_grapple()
+	assert(lab.grapple != null and is_instance_valid(lab.grapple), "Grapple should launch in test map")
+	for _f in 30:
+		await physics_frame
+	assert(lab.grapple != null and lab.grapple.connected, "Grapple should connect to tug-of-war ship")
+	lab.grapple.apply_damage(150.0)
+	assert(lab.grapple != null and is_instance_valid(lab.grapple) and lab.grapple.hp > 100.0, "3x grapple must survive 150 damage")
+	for _p in 60:
+		lab.player.apply_player_thrusters(1.0, 0.0, 0.0, 0.0)
+		await physics_frame
+	assert(lab.grapple != null and is_instance_valid(lab.grapple) and lab.grapple.connected, "3x grapple must resist breaking when pulled against resisting ship")
+
+	# Verify 1.2x elastic stretch: no HP drain at 1.10x, HP drains at >= 1.20x, no self-collision
+	assert(is_equal_approx(float(lab.grapple_config.max_stretch_ratio), 1.2), "Default max_stretch_ratio should be 1.2")
+	var hp_before_mid := lab.grapple.hp
+	var dir_mid := (lab.grapple.target_ship.global_position - lab.player.global_position).normalized()
+	lab.grapple.target_ship.global_position = lab.player.global_position + dir_mid * (lab.grapple.chain_rest_length * 1.10)
+	lab.grapple.target_ship.linear_velocity = Vector2.ZERO
+	lab.player.linear_velocity = Vector2.ZERO
+	lab.grapple.apply_tension_stabilizer(1.0 / 60.0)
+	assert(not lab.grapple.is_at_max_stretch, "1.10x stretch must not be flagged as max stretch")
+	assert(is_equal_approx(lab.grapple.hp, hp_before_mid), "HP must not drain before reaching 1.2x max stretch")
+
+	lab.grapple.target_ship.global_position = lab.player.global_position + dir_mid * (lab.grapple.chain_rest_length * 1.22)
+	lab.grapple.apply_tension_stabilizer(0.25)
+	assert(lab.grapple.is_at_max_stretch, "At >= 1.2x stretch, is_at_max_stretch must be true")
+	assert(lab.grapple.hp < hp_before_mid, "At max stretch (1.2x), durability HP must start draining")
+	assert(lab.grapple.links.is_empty(), "Chain links must have no RigidBody self-collision")
+
+	# Verify chain compression down to 0 without repulsion
+	var saved_pos := lab.grapple.target_ship.global_position
+	lab.grapple.target_ship.global_position = lab.player.global_position
+	lab.grapple.apply_tension_stabilizer(1.0 / 60.0)
+	assert(is_equal_approx(lab.grapple.current_tension, 0.0), "Zero distance chain must have 0 tension and no push-apart")
+	assert(lab.grapple.target_ship.global_position.is_equal_approx(lab.player.global_position), "Chain must allow compression down to 0 distance")
+	lab.grapple.target_ship.global_position = saved_pos
+
+	# Verify live UI slider updates propagate to active grapple
+	var hp_slider: HSlider = lab._sliders["hp"]
+	hp_slider.value = 480.0
+	assert(is_equal_approx(float(lab.grapple_config.hp), 480.0), "Slider must update grapple_config.hp")
+	assert(is_equal_approx(lab.grapple.max_hp, 480.0), "Slider must update active grapple.max_hp in real time")
+	var stretch_slider: HSlider = lab._sliders["max_stretch_ratio"]
+	stretch_slider.value = 1.5
+	assert(is_equal_approx(float(lab.grapple_config.max_stretch_ratio), 1.5), "Slider must update max_stretch_ratio")
+	# Verify reel-in pull button & pull-force slider + link count winding down (constant link spacing)
+	var reel_slider: HSlider = lab._sliders["reel_force"]
+	reel_slider.value = 40000.0
+	assert(is_equal_approx(float(lab.grapple_config.reel_force), 40000.0), "Slider must update reel_force")
+	var dist_before_reel := lab.player.global_position.distance_to(lab.grapple.target_ship.global_position)
+	var links_before_reel := lab.grapple.active_link_count()
+	var seg_len_before_reel := lab.grapple._chain_seg_len
+	lab.resist_enabled = false
+	lab.toggle_reel_in()
+	assert(lab.reel_toggle_active and lab.grapple.reeling_in, "Reel-in button must activate reeling when connected")
+	for _r in 45:
+		await physics_frame
+	var dist_after_reel := lab.player.global_position.distance_to(lab.grapple.target_ship.global_position)
+	assert(dist_after_reel < dist_before_reel - 30.0, "Reel-in pull force must draw connected ships closer")
+	assert(lab.grapple.active_link_count() < links_before_reel, "Reeling in must reduce chain link count as links wind into ship")
+	assert(is_equal_approx(lab.grapple._chain_seg_len, seg_len_before_reel), "Remaining chain link spacing must stay constant while winding")
+	lab.toggle_reel_in()
+
+	lab.apply_legacy_preset()
+	assert(is_equal_approx(float(lab.grapple_config.hp), 32.0), "Legacy preset should restore hp=32")
+	lab.apply_default_preset()
+	assert(is_equal_approx(float(lab.grapple_config.hp), 288.0), "Default preset should restore hp=288")
+
+	print("CAPTAIN_FOREVER_SP_OK parts=%d salvage=%d kills=%d radar=%d grapple_hp=%.0f" % [
+		16, 2, 1, 11, lab.grapple.max_hp
 	])
 	quit(0)

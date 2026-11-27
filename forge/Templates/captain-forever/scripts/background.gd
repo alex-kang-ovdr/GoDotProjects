@@ -86,8 +86,8 @@ func _wrap(p: Vector2, offset: Vector2, span: Vector2) -> Vector2:
 
 func _draw() -> void:
 	var vp_size := get_viewport_rect().size
-	var zx := maxf(camera_zoom.x, 0.25)
-	var zy := maxf(camera_zoom.y, 0.25)
+	var zx := maxf(camera_zoom.x, 0.15)
+	var zy := maxf(camera_zoom.y, 0.15)
 	# 카메라 회전 시에도 화면 모서리가 비지 않도록 외접 반지름(대각선 절반)을 사용한다.
 	var vis_radius := Vector2(vp_size.x / zx, vp_size.y / zy).length() * 0.5 + 120.0
 	var half_w := vis_radius
