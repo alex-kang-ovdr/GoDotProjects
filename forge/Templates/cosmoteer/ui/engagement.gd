@@ -287,6 +287,8 @@ func _play_new_sfx() -> void:
 			sfx.play("shot_" + wkind)
 		elif kind == "fire_start":
 			sfx.play("fire_ignite")
+		elif kind == "blast" and str(ev.get("blast_kind", "")) == "meltdown":
+			sfx.play("reactor_meltdown")
 		elif kind in ["shield_hit", "shield_down", "intercept", "destroyed"]:
 			sfx.play(kind)
 	_sfx_event_time = newest

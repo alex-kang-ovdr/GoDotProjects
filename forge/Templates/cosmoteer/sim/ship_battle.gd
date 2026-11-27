@@ -585,9 +585,10 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			ship.shots += 1
 			var eff_speed := float(warhead.speed) if not warhead.is_empty() else float(gun.stats.projectile_speed) * float(gun.get("rail_speed_mult", 1.0))
 			var dmg_mult := float(gun.get("rail_damage_mult", 1.0))
+			var bolt_kind := str(warhead.kind) if not warhead.is_empty() else str(gun.stats.get("weapon_kind", "laser"))
 			projectiles.append({
 				"side": side, "source_uid": uid, "target_uid": target, "aim_uid": target, "progress": 0.0,
-				"kind": str(warhead.kind) if not warhead.is_empty() else str(gun.stats.get("weapon_kind", "laser")),
+				"kind": bolt_kind,
 				"homing": is_homing and not bool(warhead.get("is_mine", false)),
 				"is_mine": bool(warhead.get("is_mine", false)),
 				"proximity": float(warhead.get("proximity", 0.0)),
@@ -597,6 +598,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				"shield_energy_drain": int(warhead.shield_energy_drain) if not warhead.is_empty() else int(gun.stats.get("shield_energy_drain", 0)),
 				"emp_aoe": bool(warhead.get("emp_aoe", false)),
 				"pierce": int(gun.stats.get("pierce", 0)),
+				"penetration": CombatSystems.projectile_penetration(bolt_kind, dmg_mult),
 				"aoe_radius": float(warhead.aoe_radius) if not warhead.is_empty() else float(gun.stats.get("aoe_radius", 0.0)),
 				"hit_uids": {},
 				"ignite": float(warhead.ignite) if not warhead.is_empty() else float(gun.stats.get("ignite_intensity", 0.0)),
@@ -840,7 +842,10 @@ func _fly() -> void:
 				lock_uid = _choose_target(victim, [BRIDGE] + CombatSystems.WEAPON_IDS)
 				bolt.target_uid = lock_uid
 			if _alive(victim, lock_uid):
-				var desired := (part_world(victim, lock_uid) - Vector2(bolt.pos)).angle()
+				var t_pos := part_world(victim, lock_uid)
+				var lead_max := float(CombatSystems.get_dll_mechanics().get("homing", {}).get("lead_max_seconds", 0.85))
+				var t_lead := clampf(t_pos.distance_to(Vector2(bolt.pos)) / maxf(10.0, float(bolt.speed)), 0.0, lead_max)
+				var desired := (t_pos + Vector2(victim.velocity) * t_lead - Vector2(bolt.pos)).angle()
 				var vel: Vector2 = bolt.velocity
 				var cur_angle := vel.angle() if vel.length_squared() > 1e-6 else desired
 				var max_step := float(bolt.get("turn_rate", 2.0)) * dt
@@ -879,15 +884,28 @@ func _fly() -> void:
 				projectiles.remove_at(i)
 			continue
 		hit_uids[uid] = true
-		var pierce_left := int(bolt.get("pierce", 0))
-		if pierce_left > 0:
-			bolt["pierce"] = pierce_left - 1
-		else:
-			projectiles.remove_at(i)
 		var part: Dictionary = victim.parts[uid]
 		var damage: float = (bolt.structural_damage if part.health_type == "Structural" else bolt.damage) * CombatSystems.damage_multiplier(part)
-		part.hp = maxf(0.0, part.hp - damage * bolt.power)
+		var applied_dmg := damage * float(bolt.power)
+		part.hp = maxf(0.0, part.hp - applied_dmg)
 		CombatSystems.apply_status_hit(part, str(bolt.get("kind", "")))
+		var bkind := str(bolt.get("kind", ""))
+		if bkind in ["cannon", "cannon_large", "cannon_deck", "railgun"]:
+			CombatSystems.apply_hit_impulse(victim, Vector2(bolt.velocity), applied_dmg, "railgun_scale" if bkind == "railgun" else "cannon_scale")
+		# Cosmoteer.Bullets.Hits.BulletPenetratingHit: deplete penetration budget by part resistance
+		var pen_left := float(bolt.get("penetration", 0.0))
+		var pen_res := CombatSystems.part_penetration_resistance(part.id)
+		var pierce_left := int(bolt.get("pierce", 0))
+		var continues := false
+		if part.hp <= 0.0 and pen_left > pen_res:
+			bolt["penetration"] = pen_left - pen_res
+			continues = true
+		elif pierce_left > 0:
+			bolt["pierce"] = pierce_left - 1
+			bolt["penetration"] = maxf(0.0, pen_left - pen_res)
+			continues = true
+		if not continues:
+			projectiles.remove_at(i)
 		actor.hits += 1
 		_last_hit = _tick
 		_record("hit", bolt.side, uid, bolt.target_uid)
@@ -950,6 +968,24 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 		var chain_dead := CombatSystems.apply_aoe_splash(victim, pos, br, bd, uid)
 		for c_uid in chain_dead:
 			_on_part_destroyed(victim, c_uid, attacker_side, target, part_world(victim, c_uid))
+	elif CombatSystems.is_reactor(part.id) and not part.get("_melted", false):
+		part["_melted"] = true
+		var rm: Dictionary = CombatSystems.reactor_meltdown_profile(part.id)
+		var mr := float(rm.get("sim_radius", 4.2))
+		var md := float(rm.get("sim_damage", 2600.0))
+		var m_ignite := float(rm.get("ignite", 0.85))
+		_record("blast", attacker_side, uid, target)
+		events[-1].pos = pos
+		events[-1].radius = mr
+		events[-1].blast_kind = "meltdown"
+		CombatSystems.apply_hit_impulse(victim, Vector2(victim.position) - pos, md, "meltdown_scale")
+		var melt_dead := CombatSystems.apply_aoe_splash(victim, pos, mr, md, uid)
+		for nuid in victim.parts:
+			var np: Dictionary = victim.parts[nuid]
+			if float(np.hp) > 0.0 and part_world(victim, int(nuid)).distance_to(pos) <= mr:
+				CombatSystems.ignite_part(np, m_ignite)
+		for m_uid in melt_dead:
+			_on_part_destroyed(victim, m_uid, attacker_side, target, part_world(victim, m_uid))
 
 
 func _resolve() -> void:

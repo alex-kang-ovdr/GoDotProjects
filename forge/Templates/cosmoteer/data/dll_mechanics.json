@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "assembly_sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
+  "traced_methods": 28,
+  "penetration": {
+    "source_class": "Cosmoteer.Bullets.Hits.BulletPenetratingHit",
+    "projectiles": {
+      "cannon": 5.0,
+      "cannon_large": 7.0,
+      "cannon_deck": 9.0,
+      "railgun": 15.0
+    },
+    "resistance": {
+      "armor": 7.0,
+      "shield": 25.0,
+      "ion_beam_prism": 100.0,
+      "structure": 1.5,
+      "corridor": 1.5,
+      "default_part": 2.0
+    },
+    "armor_explosive_absorption": 0.55
+  },
+  "ion_prism": {
+    "source_class": "Cosmoteer.Ships.Parts.Weapons.BeamEmitter",
+    "factor_per_beam": 0.75,
+    "formula": "sum(sorted_desc(beams)[k] * (factor_per_beam ** k))"
+  },
+  "reactor_meltdown": {
+    "source_class": "Cosmoteer.Ships.Parts.Resources.ExplosiveResourceDrainSink",
+    "cosmoteer.reactor_small": {
+      "raw_radius": 6.0,
+      "raw_total_damage": 90000.0,
+      "shake_amount": 0.25,
+      "sim_radius": 4.2,
+      "sim_damage": 2600.0,
+      "ignite": 0.85
+    },
+    "cosmoteer.reactor_med": {
+      "raw_radius": 10.0,
+      "raw_total_damage": 270000.0,
+      "shake_amount": 0.5,
+      "sim_radius": 6.4,
+      "sim_damage": 4800.0,
+      "ignite": 0.95
+    },
+    "cosmoteer.reactor_large": {
+      "raw_radius": 18.0,
+      "raw_total_damage": 810000.0,
+      "shake_amount": 0.75,
+      "sim_radius": 9.2,
+      "sim_damage": 8500.0,
+      "ignite": 1.0
+    }
+  },
+  "homing": {
+    "source_class": "Cosmoteer.Bullets.Physics.BulletTargetHoming",
+    "raycast_angles_deg": [
+      0.0,
+      45.0,
+      -45.0,
+      90.0,
+      -90.0,
+      135.0,
+      -135.0,
+      180.0
+    ],
+    "lead_max_seconds": 0.85
+  },
+  "ai_value_targeter": {
+    "source_class": "Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule",
+    "weights": {
+      "bridge": 100.0,
+      "reactor": 88.0,
+      "shield": 76.0,
+      "weapon": 68.0,
+      "thruster": 34.0,
+      "factory": 42.0,
+      "corridor": 8.0,
+      "armor": 6.0,
+      "default": 20.0
+    }
+  },
+  "physics_impulse": {
+    "source_class": "Cosmoteer.Ships.ShipPhysics",
+    "cannon_scale": 0.012,
+    "railgun_scale": 0.02,
+    "blast_scale": 0.016,
+    "meltdown_scale": 0.026
+  }
+}

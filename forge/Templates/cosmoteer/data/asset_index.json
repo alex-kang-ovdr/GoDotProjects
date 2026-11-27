@@ -243,7 +243,7 @@
       }
     },
     "terran_parts_mapped": 96,
-    "audio_sfx_mapped": 16
+    "audio_sfx_mapped": 17
   },
   "part_sprites": {
     "cosmoteer.corridor": {
@@ -1385,15 +1385,17 @@
     "shield_down": "ships/terran/shield_gen_large/sounds/large_shield_alarm.wav",
     "intercept": "ships/terran/point_defense/sounds/point_defense_shot_01.wav",
     "fire_ignite": "statuses/fire/fire.wav",
-    "destroyed": "ships/terran/ion_beam_prism/sounds/explosion_part_energy/explosion_part_energy_01.wav"
+    "destroyed": "ships/terran/ion_beam_prism/sounds/explosion_part_energy/explosion_part_energy_01.wav",
+    "reactor_meltdown": "ships/terran/reactor_large/destroyed/reactor_destroyed_01.wav"
   },
   "web_sfx": {
-    "count": 16,
-    "total_bytes": 761288,
+    "count": 17,
+    "total_bytes": 814252,
     "files": {
       "destroyed": 52964,
       "fire_ignite": 52964,
       "intercept": 27270,
+      "reactor_meltdown": 52964,
       "shield_down": 52964,
       "shield_hit": 52964,
       "shot_cannon": 45398,

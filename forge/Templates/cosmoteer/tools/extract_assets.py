@@ -225,6 +225,11 @@ def build_audio_map(data_root: Path) -> dict[str, str]:
              "ships/terran/ion_beam_prism/sounds/explosion_part_energy/explosion_part_energy_01.wav"],
             "common_effects/sounds/*.wav",
         ),
+        "reactor_meltdown": (
+            ["ships/terran/reactor_small/sounds/destroyed/reactor_destroyed_01.wav",
+             "ships/terran/reactor_med/sounds/destroyed/reactor_destroyed_01.wav"],
+            "ships/terran/reactor_*/**/reactor_destroyed*.wav",
+        ),
     }
     audio: dict[str, str] = {}
     for key, (cands, pattern) in specs.items():

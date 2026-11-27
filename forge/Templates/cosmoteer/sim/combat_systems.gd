@@ -93,6 +93,7 @@ const FACTORY_PROCESSOR := "cosmoteer.factory_processor"
 const FACTORY_URANIUM := "cosmoteer.factory_uranium"
 
 const EXTRACTED_RULES_PATH := "res://data/extracted_rules.json"
+const DLL_MECHANICS_PATH := "res://data/dll_mechanics.json"
 const WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, ION_BEAM, RESONANCE_LANCE, MINING_LASER, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
 const PROJECTILE_WEAPON_IDS := [LASER_SMALL, LASER_LARGE, CANNON_MED, CANNON_LARGE, CANNON_DECK, MISSILE_LAUNCHER, DISRUPTOR, RAILGUN_LAUNCHER, FLAK_CANNON, CHAINGUN]
 const BEAM_WEAPON_IDS := [ION_BEAM, RESONANCE_LANCE, MINING_LASER]
@@ -116,6 +117,7 @@ const PAINT_LIVERIES := {
 }
 
 static var _extracted_cache: Dictionary = {}
+static var _dll_mechanics_cache: Dictionary = {}
 
 const EXTRA_STATS := {
 	LASER_LARGE: {
@@ -1050,11 +1052,131 @@ static func apply_aoe_splash(victim: Dictionary, center_world: Vector2, aoe_radi
 		if dist > aoe_radius:
 			continue
 		var falloff := clampf(1.0 - dist / (aoe_radius * 1.15), 0.18, 0.75)
+		var dmg := base_damage * falloff
+		# Cosmoteer armor ExplosiveDamageAbsorption dampens splash damage on armor plates
+		if str(part.id).contains("armor"):
+			var absorb := float(get_dll_mechanics().get("penetration", {}).get("armor_explosive_absorption", 0.55))
+			dmg *= (1.0 - clampf(absorb, 0.0, 0.85))
 		var was_alive: bool = part.hp > 0.0
-		part.hp = maxf(0.0, float(part.hp) - base_damage * falloff)
+		part.hp = maxf(0.0, float(part.hp) - dmg)
 		if was_alive and part.hp <= 0.0:
 			destroyed.append(int(uid))
 	return destroyed
+
+
+## Load reverse-engineered Cosmoteer.dll + .rules gameplay mechanics SSOT.
+static func get_dll_mechanics() -> Dictionary:
+	if not _dll_mechanics_cache.is_empty():
+		return _dll_mechanics_cache
+	if FileAccess.file_exists(DLL_MECHANICS_PATH):
+		var parsed = JSON.parse_string(FileAccess.get_file_as_string(DLL_MECHANICS_PATH))
+		if parsed is Dictionary:
+			_dll_mechanics_cache = parsed
+			return _dll_mechanics_cache
+	return {}
+
+
+## Cosmoteer.Bullets.Hits.BulletPenetratingHit: projectile penetration budget.
+static func projectile_penetration(kind: String, rail_mult: float = 1.0) -> float:
+	var projs: Dictionary = get_dll_mechanics().get("penetration", {}).get("projectiles", {})
+	var base := float(projs.get(kind, 0.0))
+	if kind == "railgun":
+		return base * maxf(1.0, rail_mult)
+	return base
+
+
+## Cosmoteer.Bullets.Hits.BulletPenetratingHit: per-part penetration resistance.
+static func part_penetration_resistance(part_id: String) -> float:
+	var res: Dictionary = get_dll_mechanics().get("penetration", {}).get("resistance", {})
+	if part_id == ION_PRISM:
+		return float(res.get("ion_beam_prism", 100.0))
+	if part_id.contains("armor"):
+		return float(res.get("armor", 7.0))
+	if is_shield(part_id):
+		return float(res.get("shield", 25.0))
+	if is_corridor(part_id):
+		return float(res.get("corridor", 1.5))
+	if part_id.contains("structure"):
+		return float(res.get("structure", 1.5))
+	return float(res.get("default_part", 2.0))
+
+
+## Cosmoteer.Ships.Parts.Weapons.BeamEmitter / ion_beam_prism: exact 0.75^k combining curve.
+static func combine_ion_beams(strengths: Array) -> float:
+	if strengths.is_empty():
+		return 0.0
+	var factor := float(get_dll_mechanics().get("ion_prism", {}).get("factor_per_beam", 0.75))
+	var sorted_s: Array[float] = []
+	for s in strengths:
+		var val := float(s)
+		if val > 0.0:
+			sorted_s.append(val)
+	sorted_s.sort()
+	sorted_s.reverse()
+	var total := 0.0
+	var mult := 1.0
+	for val in sorted_s:
+		total += val * mult
+		mult *= factor
+	return total
+
+
+## Cosmoteer.Ships.Parts.Resources.ExplosiveResourceDrainSink: reactor meltdown profile.
+static func reactor_meltdown_profile(part_id: String) -> Dictionary:
+	var rm: Dictionary = get_dll_mechanics().get("reactor_meltdown", {})
+	var entry = rm.get(part_id, {})
+	return entry if entry is Dictionary else {}
+
+
+## Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule: tactical value score.
+static func score_target_part(ship: Dictionary, part: Dictionary, attacker_pos: Vector2) -> float:
+	if float(part.get("hp", 0.0)) <= 0.0:
+		return -1.0
+	var weights: Dictionary = get_dll_mechanics().get("ai_value_targeter", {}).get("weights", {})
+	var id := str(part.get("id", ""))
+	var base := float(weights.get("default", 20.0))
+	if is_bridge(id):
+		base = float(weights.get("bridge", 100.0))
+	elif is_reactor(id):
+		base = float(weights.get("reactor", 88.0))
+	elif is_shield(id):
+		base = float(weights.get("shield", 76.0))
+	elif is_weapon(id):
+		base = float(weights.get("weapon", 68.0))
+	elif id in FACTORY_IDS:
+		base = float(weights.get("factory", 42.0))
+	elif id.contains("thruster"):
+		base = float(weights.get("thruster", 34.0))
+	elif is_corridor(id):
+		base = float(weights.get("corridor", 8.0))
+	elif id.contains("armor"):
+		base = float(weights.get("armor", 6.0))
+	var p_world: Vector2 = Vector2(ship.position) + (Vector2(part.cell) + Vector2(part.size) * 0.5 - Vector2(ship.center_of_mass)).rotated(float(ship.heading))
+	var dist := p_world.distance_to(attacker_pos)
+	var hp_bonus := 1.0 + (1.0 - clampf(float(part.hp) / maxf(1.0, float(part.max_hp)), 0.0, 1.0)) * 0.25
+	return base * hp_bonus - dist * 0.15
+
+
+static func choose_value_target(ship: Dictionary, attacker_pos: Vector2) -> int:
+	var best_uid := -1
+	var best_score := -INF
+	for uid in ship.parts:
+		var s := score_target_part(ship, ship.parts[uid], attacker_pos)
+		if s > best_score:
+			best_score = s
+			best_uid = int(uid)
+	return best_uid
+
+
+## Cosmoteer.Ships.ShipPhysics: rigid-body hit/blast knockback impulse transfer.
+static func apply_hit_impulse(victim: Dictionary, dir: Vector2, damage: float, scale_key: String = "cannon_scale") -> void:
+	if damage <= 0.0 or dir.length_squared() < 1e-6:
+		return
+	var phys: Dictionary = get_dll_mechanics().get("physics_impulse", {})
+	var scale := float(phys.get(scale_key, 0.012))
+	var mass := maxf(10.0, float(victim.get("mass", 40.0)))
+	var dv := dir.normalized() * clampf(damage * scale / mass, 0.0, 4.5)
+	victim["velocity"] = Vector2(victim.get("velocity", Vector2.ZERO)) + dv
 
 
 static func prepare_part(part: Dictionary) -> void:

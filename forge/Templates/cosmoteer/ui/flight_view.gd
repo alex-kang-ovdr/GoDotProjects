@@ -65,7 +65,7 @@ func _process(delta: float) -> void:
 		var ek := str(ev.get("kind", ""))
 		if ek == "blast":
 			var bk := str(ev.get("blast_kind", "he"))
-			_shake = minf(9.0, _shake + (6.5 if bk == "nuke" else 3.2))
+			_shake = minf(9.0, _shake + (8.0 if bk == "meltdown" else (6.5 if bk == "nuke" else 3.2)))
 		elif ek == "destroyed":
 			_shake = minf(9.0, _shake + 2.6)
 	_last_shake_time = newest_t
@@ -113,6 +113,7 @@ func _draw() -> void:
 	_draw_thruster_plumes(battle.enemy, _camera_center, _zoom, viewport_center)
 	_draw_ship(battle.player, _camera_center, _zoom, viewport_center, -1, false)
 	_draw_ship(battle.enemy, _camera_center, _zoom, viewport_center, int(battle.target_uid), false)
+	_draw_weapon_target_overlay(_camera_center, _zoom, viewport_center)
 	_draw_shields(battle.player, _camera_center, _zoom, viewport_center, Color("#5ce1ff"))
 	_draw_shields(battle.enemy, _camera_center, _zoom, viewport_center, Color("#ff9e7d"))
 	_draw_fires(battle.player, _camera_center, _zoom, viewport_center)
@@ -621,6 +622,13 @@ func _draw_shields(ship: Dictionary, camera: Vector2, zoom: float, viewport_cent
 			var flash := clampf(float(part.get("shield_flash", 0.0)), 0.0, 1.0)
 			var glow := tint.lerp(Color.WHITE, flash * 0.7)
 			var shimmer := 0.88 + 0.12 * sin(float(battle.elapsed) * 6.5 + float(uid))
+			var se_tex: Texture2D = AssetLoader.get_sprite("shield_energy")
+			if se_tex != null:
+				var se_pos := center + Vector2.from_angle(facing) * (radius * 0.86)
+				var se_sz := Vector2(radius * 0.62, radius * 1.15)
+				draw_set_transform(se_pos, facing, Vector2.ONE)
+				draw_texture_rect(se_tex, Rect2(-se_sz * 0.5, se_sz), false, Color(glow, (0.14 + 0.22 * ratio + 0.35 * flash) * shimmer))
+				draw_set_transform(Vector2.ZERO)
 			draw_arc(center, radius * 1.03, facing - half_arc, facing + half_arc, 32, Color(glow, (0.10 + 0.16 * ratio + 0.22 * flash) * shimmer), maxf(6.5, zoom * 1.25), true)
 			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow, (0.20 + 0.30 * ratio + 0.28 * flash) * shimmer), maxf(3.8, zoom * 0.75), true)
 			draw_arc(center, radius, facing - half_arc, facing + half_arc, 32, Color(glow.lightened(0.25), 0.58 + 0.38 * ratio), maxf(1.8, zoom * 0.26), true)
@@ -773,6 +781,27 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 			draw_line(a, tip, Color(tint, 0.52), maxf(3.0, zoom * 0.55), true)
 			draw_line(a, tip, tint, maxf(1.5, zoom * 0.17), true)
 			draw_circle(tip, maxf(2.0, zoom * 0.18), TEXT)
+
+
+func _draw_weapon_target_overlay(camera: Vector2, zoom: float, viewport_center: Vector2) -> void:
+	var tuid := int(battle.target_uid)
+	if tuid < 0 or not battle.enemy.parts.has(tuid):
+		return
+	var target_part: Dictionary = battle.enemy.parts[tuid]
+	if float(target_part.get("hp", 0.0)) <= 0.0:
+		return
+	var dst := _world_to_screen(_part_world(battle.enemy, tuid), camera, zoom, viewport_center)
+	for wid in CombatSystems.WEAPON_IDS:
+		for uid in battle.player.get("ids", {}).get(wid, []):
+			var gun: Dictionary = battle.player.parts[uid]
+			if float(gun.get("hp", 0.0)) <= 0.0:
+				continue
+			var st := str(gun.get("aim_status", "offline"))
+			if st != "ready" and st != "tracking":
+				continue
+			var src := _world_to_screen(_grid_world(battle.player, gun.get("mount_local", Vector2(gun.cell) + Vector2(gun.size) * 0.5)), camera, zoom, viewport_center)
+			var line_col := Color("#70edc6", 0.19) if st == "ready" else Color("#ffcb85", 0.12)
+			draw_line(src, dst, line_col, 1.1, true)
 
 
 func _draw_target(ship: Dictionary, uid: int, camera: Vector2, zoom: float, viewport_center: Vector2, color: Color) -> void:
@@ -1005,17 +1034,20 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 			var br := maxf(8.0, float(ev.get("radius", 3.5)) * zoom * (0.4 + 0.75 * t))
 			var bk := str(ev.get("blast_kind", "he"))
 			var bframe := clampi(int(floor(t * 4.0)), 0, 3)
-			var btex: Texture2D = AssetLoader.get_sprite(("exp_big_%d" if bk == "nuke" else "exp_med_%d") % bframe)
+			var is_huge := bk == "nuke" or bk == "meltdown"
+			var btex: Texture2D = AssetLoader.get_sprite(("exp_big_%d" if is_huge else "exp_med_%d") % bframe)
 			if btex == null:
-				btex = AssetLoader.get_sprite("exp_big" if bk == "nuke" else "exp_med")
+				btex = AssetLoader.get_sprite("exp_big" if is_huge else "exp_med")
 			if btex != null:
-				var btint := Color("#c48cff", alpha * 0.92) if bk == "emp" else (Color("#ff9966", alpha * 0.95) if bk == "nuke" else Color(1.0, 0.92, 0.78, alpha * 0.92))
+				var btint := Color("#7affc8", alpha * 0.96) if bk == "meltdown" else (Color("#c48cff", alpha * 0.92) if bk == "emp" else (Color("#ff9966", alpha * 0.95) if bk == "nuke" else Color(1.0, 0.92, 0.78, alpha * 0.92)))
 				draw_texture_rect(btex, Rect2(pos - Vector2(br, br), Vector2(br * 2.0, br * 2.0)), false, btint)
-			var sw_b: Texture2D = AssetLoader.get_sprite("reactor_shockwave" if bk == "nuke" else "shockwave")
+			if bk == "meltdown" and t < 0.45:
+				draw_circle(pos, br * (0.55 - t * 0.8), Color("#eafff6", (1.0 - t / 0.45) * 0.85))
+			var sw_b: Texture2D = AssetLoader.get_sprite("reactor_shockwave" if is_huge else "shockwave")
 			if sw_b != null:
-				var bsw_c := Color("#d8b4ff", alpha * 0.78) if bk == "emp" else (Color("#ffec80", alpha * 0.82) if bk == "nuke" else Color("#ffd166", alpha * 0.68))
-				draw_texture_rect(sw_b, Rect2(pos - Vector2(br * 1.15, br * 1.15), Vector2(br * 2.3, br * 2.3)), false, bsw_c)
-			var ring_c := Color("#d8b4ff", alpha * 0.92) if bk == "emp" else (Color("#ffec80", alpha * 0.95) if bk == "nuke" else Color("#ffd166", alpha * 0.9))
+				var bsw_c := Color("#88ffcf", alpha * 0.9) if bk == "meltdown" else (Color("#d8b4ff", alpha * 0.78) if bk == "emp" else (Color("#ffec80", alpha * 0.82) if bk == "nuke" else Color("#ffd166", alpha * 0.68)))
+				draw_texture_rect(sw_b, Rect2(pos - Vector2(br * 1.25, br * 1.25), Vector2(br * 2.5, br * 2.5)), false, bsw_c)
+			var ring_c := Color("#9dffdc", alpha * 0.95) if bk == "meltdown" else (Color("#d8b4ff", alpha * 0.92) if bk == "emp" else (Color("#ffec80", alpha * 0.95) if bk == "nuke" else Color("#ffd166", alpha * 0.9)))
 			draw_arc(pos, br, 0.0, TAU, 24, ring_c, maxf(2.0, zoom * 0.32), true)
 		elif kind == "hit":
 			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)

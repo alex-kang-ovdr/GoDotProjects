@@ -23,6 +23,7 @@ const KINDS := [
 	"intercept",
 	"fire_ignite",
 	"destroyed",
+	"reactor_meltdown",
 ]
 
 var enabled := true
@@ -60,6 +61,7 @@ func build_streams() -> void:
 	streams["intercept"] = _make_sweep(0.06, 1760.0, 920.0, 0.24, false)
 	streams["fire_ignite"] = _make_sweep(0.16, 420.0, 260.0, 0.26, true)
 	streams["destroyed"] = _make_sweep(0.32, 160.0, 38.0, 0.48, true)
+	streams["reactor_meltdown"] = _make_sweep(0.55, 190.0, 28.0, 0.58, true)
 	if AssetLoader.instance != null:
 		if not AssetLoader.instance.sfx_ready.is_connected(_on_sfx_ready):
 			AssetLoader.instance.sfx_ready.connect(_on_sfx_ready)

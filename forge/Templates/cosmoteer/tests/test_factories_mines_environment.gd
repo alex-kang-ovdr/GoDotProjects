@@ -67,10 +67,12 @@ func _test_mines_thermal_manipulator_and_ion_storm() -> void:
 	_check(CombatSystems.hyperdrive_thrust_mult(battle.player) > 1.0, "powered hyperdrive boosts ship thrust multiplier")
 	var saw_mine := false
 	var saw_manipulator := false
+	var peak_armor_hp := 500.0
 	for _i in 180:
 		if battle.result != "active":
 			break
 		battle.step(0.1)
+		peak_armor_hp = maxf(peak_armor_hp, float(battle.player.parts[armor_uid].hp))
 		for p in battle.projectiles:
 			if str(p.get("kind", "")) == "mine":
 				saw_mine = true
@@ -79,7 +81,7 @@ func _test_mines_thermal_manipulator_and_ion_storm() -> void:
 				saw_manipulator = true
 	_check(saw_mine, "missile launcher deploys proximity space mines in mine mode")
 	_check(saw_manipulator, "manipulator_beam_emitter fires green repair beam on damaged modules")
-	_check(float(battle.player.parts[armor_uid].hp) > 500.0 or battle.player.parts[armor_uid].hp == 0.0, "manipulator beam repairs damaged armor")
+	_check(peak_armor_hp > 500.0, "manipulator beam repairs damaged armor")
 
 	# Thermal missile warhead check
 	var b_th := ShipBattle.new()
