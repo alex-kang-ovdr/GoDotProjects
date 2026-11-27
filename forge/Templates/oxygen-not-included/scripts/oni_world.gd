@@ -38,6 +38,7 @@ var _rad_accum := 0.0
 var has_logic_wire: PackedByteArray = PackedByteArray()
 var logic_signal: PackedByteArray = PackedByteArray()
 var logic_buffer_timer: PackedFloat32Array = PackedFloat32Array()
+var logic_filter_timer: PackedFloat32Array = PackedFloat32Array()
 var logic_alarm_active := false
 
 var print_ready_timer := 0.0
@@ -84,6 +85,7 @@ var on_meteor_alert: Callable
 var on_meteor_impact: Callable
 
 var building: PackedStringArray = PackedStringArray()
+var building_mat: PackedStringArray = PackedStringArray()
 var has_wire: PackedByteArray = PackedByteArray()
 var wire_tier: PackedByteArray = PackedByteArray() # 1=일반(1kW), 2=전도성(2kW), 3=고전력(20kW)
 var door_state: PackedByteArray = PackedByteArray() # 0=Auto, 1=Opened, 2=Locked
@@ -97,14 +99,18 @@ var lpipe_el: PackedStringArray = PackedStringArray()
 var lpipe_mass: PackedFloat32Array = PackedFloat32Array()
 var lpipe_temp: PackedFloat32Array = PackedFloat32Array()
 var lpipe_hp: PackedFloat32Array = PackedFloat32Array()
+var lpipe_germs: PackedFloat32Array = PackedFloat32Array()
 var gpipe_el: PackedStringArray = PackedStringArray()
 var gpipe_mass: PackedFloat32Array = PackedFloat32Array()
 var gpipe_temp: PackedFloat32Array = PackedFloat32Array()
 var gpipe_hp: PackedFloat32Array = PackedFloat32Array()
+var gpipe_germs: PackedFloat32Array = PackedFloat32Array()
 var pipe_burst_count := 0
 var reservoir_el: PackedStringArray = PackedStringArray()
 var reservoir_mass: PackedFloat32Array = PackedFloat32Array()
 var reservoir_temp: PackedFloat32Array = PackedFloat32Array()
+var reservoir_germ_type: PackedStringArray = PackedStringArray()
+var reservoir_germs: PackedFloat32Array = PackedFloat32Array()
 
 var battery_j: PackedFloat32Array = PackedFloat32Array()
 var smart_bat_latch: PackedByteArray = PackedByteArray()
@@ -139,6 +145,7 @@ var tile_priority: PackedByteArray = PackedByteArray()
 
 var inventory: Dictionary = {}
 var food_kcal := 6000.0
+var colony_food_quality := 0
 var food_freshness := 100.0
 var food_preservation_ko := "상온 산소 (100%)"
 var food_rot_mult := 1.0
@@ -242,6 +249,8 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	logic_signal.fill(1)
 	logic_buffer_timer.resize(total)
 	logic_buffer_timer.fill(0.0)
+	logic_filter_timer.resize(total)
+	logic_filter_timer.fill(0.0)
 	logic_alarm_active = false
 	max_circuit_load_w = 0.0
 	circuit_overloaded = false
@@ -281,6 +290,8 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	eggs_hatched = 0
 	_init_space_missions()
 	building.resize(total)
+	building_mat.resize(total)
+	building_mat.fill("")
 	has_wire.resize(total)
 	wire_tier.resize(total)
 	wire_tier.fill(1)
@@ -297,15 +308,23 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	lpipe_temp.resize(total)
 	lpipe_hp.resize(total)
 	lpipe_hp.fill(100.0)
+	lpipe_germs.resize(total)
+	lpipe_germs.fill(0.0)
 	gpipe_el.resize(total)
 	gpipe_mass.resize(total)
 	gpipe_temp.resize(total)
 	gpipe_hp.resize(total)
 	gpipe_hp.fill(100.0)
+	gpipe_germs.resize(total)
+	gpipe_germs.fill(0.0)
 	pipe_burst_count = 0
 	reservoir_el.resize(total)
 	reservoir_mass.resize(total)
 	reservoir_temp.resize(total)
+	reservoir_germ_type.resize(total)
+	reservoir_germ_type.fill("")
+	reservoir_germs.resize(total)
+	reservoir_germs.fill(0.0)
 	battery_j.resize(total)
 	smart_bat_latch.resize(total)
 	smart_bat_latch.fill(1)
@@ -357,6 +376,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	_room_accum = 0.0
 	_decor_accum = 0.0
 	food_kcal = 6000.0
+	colony_food_quality = 0
 	food_freshness = 100.0
 	food_preservation_ko = "상온 산소 (100%)"
 	food_rot_mult = 1.0
@@ -387,6 +407,7 @@ func generate(p_seed := 73, p_preset := "") -> void:
 		"Steel": 0.0,
 		"Ceramic": 0.0,
 		"Petroleum": 0.0,
+		"Plastic": 0.0,
 		"MedicinePill": 2.0,
 		"RadPill": 2.0,
 		"AtmoSuitStock": 0.0,
@@ -1295,6 +1316,13 @@ func upgrade_wire_tier(x: int, y: int, target_tier: int = 0) -> int:
 		wire_tier[i] = (int(wire_tier[i]) % 3) + 1
 	return int(wire_tier[i])
 
+func set_building_material(x: int, y: int, mat_el: String) -> void:
+	if not in_bounds(x, y):
+		return
+	var i := idx(x, y)
+	building_mat[i] = mat_el
+	_recompute_decor()
+
 func is_climbable(x: int, y: int) -> bool:
 	if not in_bounds(x, y):
 		return false
@@ -2047,6 +2075,7 @@ func complete_build(x: int, y: int) -> void:
 		if bool(bdef.get("solid", false)):
 			_displace_gas_out(x, y)
 		building[i] = b_id
+		building_mat[i] = el
 		if b_id == "battery" or b_id == "smart_battery":
 			battery_j[i] = 1500.0
 			smart_bat_latch[i] = 1
@@ -2087,6 +2116,7 @@ func complete_deconstruct(x: int, y: int) -> void:
 			inventory[el] = float(inventory.get(el, 0.0)) + cost
 		removed_id = b_id
 		building[i] = ""
+		building_mat[i] = ""
 		battery_j[i] = 0.0
 		h2_buffer_kg[i] = 0.0
 		tube_charge_j[i] = 0.0
@@ -2096,8 +2126,11 @@ func complete_deconstruct(x: int, y: int) -> void:
 		farm_growth[i] = 0.0
 		reservoir_mass[i] = 0.0
 		reservoir_el[i] = ""
+		reservoir_germs[i] = 0.0
+		reservoir_germ_type[i] = ""
 		machine_running[i] = 0
 		logic_buffer_timer[i] = 0.0
+		logic_filter_timer[i] = 0.0
 		logic_switch_state.erase(i)
 		station_recipe.erase(i)
 		filter_target.erase(i)
@@ -2347,20 +2380,22 @@ func step_conduit_tick() -> void:
 	var flt_match_dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, -1)]
 	var flt_bypass_dirs: Array[Vector2i] = [Vector2i(0, 1), Vector2i(-1, 0)]
 
-	# 1) 다중 원소 액체관 동기식 1칸/틱 패킷 이동 (10kg/s), 액체 저장고(5,000kg) 버퍼링 및 배출구 방출
+	# 1) 다중 원소 액체관 동기식 1칸/틱 패킷 이동 (10kg/s), 세균 전파, 차단 밸브, 액체 저장고(5,000kg) 버퍼링 및 배출구 방출
 	var prev_lm := lpipe_mass.duplicate()
 	var prev_le := lpipe_el.duplicate()
 	var prev_lt := lpipe_temp.duplicate()
+	var prev_lg := lpipe_germs.duplicate()
 	var next_lm := lpipe_mass.duplicate()
 	var next_le := lpipe_el.duplicate()
 	var next_lt := lpipe_temp.duplicate()
+	var next_lg := lpipe_germs.duplicate()
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
 			if has_liquid_pipe[i] == 0:
 				continue
 			var b := building[i]
-			# 액체 저장고 (5,000 kg): 관 과잉 액체 흡수 / 관 부족 시 자동 방출
+			# 액체 저장고 (5,000 kg): 관 과잉 액체·세균 흡수 / 관 부족 시 자동 방출
 			if b == "liquid_reservoir":
 				var cur_m := next_lm[i]
 				var cur_e := next_le[i] if not next_le[i].is_empty() else "Water"
@@ -2371,10 +2406,17 @@ func step_conduit_tick() -> void:
 						reservoir_temp[i] = (reservoir_mass[i] * reservoir_temp[i] + store_m * next_lt[i]) / maxf(0.001, tot_r)
 						reservoir_mass[i] = tot_r
 						reservoir_el[i] = cur_e
+						if next_lg[i] > 1.0:
+							var move_rg := next_lg[i] * (store_m / maxf(0.01, cur_m))
+							reservoir_germs[i] += move_rg
+							if reservoir_germ_type[i].is_empty():
+								reservoir_germ_type[i] = "FoodPoisoning"
+							next_lg[i] = maxf(0.0, next_lg[i] - move_rg)
 						next_lm[i] -= store_m
 						if next_lm[i] < 0.05:
 							next_lm[i] = 0.0
 							next_le[i] = ""
+							next_lg[i] = 0.0
 				elif cur_m < 5.0 and reservoir_mass[i] > 0.1 and (cur_m < 0.05 or next_le[i].is_empty() or next_le[i] == reservoir_el[i]):
 					var out_r := minf(reservoir_mass[i], OniElements.LIQUID_PIPE_MAX_KG - cur_m)
 					if out_r > 0.05:
@@ -2382,10 +2424,16 @@ func step_conduit_tick() -> void:
 						next_lt[i] = (cur_m * next_lt[i] + out_r * reservoir_temp[i]) / maxf(0.001, tot_p)
 						next_lm[i] = tot_p
 						next_le[i] = reservoir_el[i]
+						if reservoir_germs[i] > 1.0:
+							var out_rg := reservoir_germs[i] * (out_r / maxf(0.01, reservoir_mass[i]))
+							next_lg[i] += out_rg
+							reservoir_germs[i] = maxf(0.0, reservoir_germs[i] - out_rg)
 						reservoir_mass[i] -= out_r
 						if reservoir_mass[i] < 0.05:
 							reservoir_mass[i] = 0.0
 							reservoir_el[i] = ""
+							reservoir_germs[i] = 0.0
+							reservoir_germ_type[i] = ""
 
 			# 동기식 스냅샷 기준: 이전 틱부터 이 칸에 있던 패킷만 이동 (1틱당 정확히 1칸 전진)
 			var avail_m := minf(prev_lm[i], next_lm[i])
@@ -2393,6 +2441,9 @@ func step_conduit_tick() -> void:
 				continue
 			var pel := prev_le[i] if not prev_le[i].is_empty() else (next_le[i] if not next_le[i].is_empty() else "Water")
 			next_le[i] = pel
+			# 액체 차단 밸브(LiquidLogicValve): 자동화 RED/무전력 시 흐름 완전 차단
+			if b == "liquid_shutoff" and machine_running[i] == 0:
+				continue
 			# 미처리 원료는 정화기/정유기에서 처리될 때까지 대기 (미정화 오염수 통과 차단)
 			if (b == "water_sieve" and pel == "DirtyWater") or (b == "oil_refinery" and pel == "CrudeOil"):
 				continue
@@ -2400,7 +2451,7 @@ func step_conduit_tick() -> void:
 			var is_lflt := b == "liquid_filter"
 			if is_lflt:
 				machine_running[i] = 1
-			# 액체 배출구: 실제 배관 원소(Water/DirtyWater/CrudeOil/Petroleum/Magma)와 온도 그대로 방출
+			# 액체 배출구: 실제 배관 원소(Water/DirtyWater/CrudeOil/Petroleum/Magma)와 온도·세균 그대로 방출
 			if b == "liquid_vent" and not is_solid_cell(x, y):
 				if liquid_mass[i] < 1.0 or liquid_el[i].is_empty() or liquid_el[i] == pel:
 					var space := maxf(0.0, 1000.0 - liquid_mass[i])
@@ -2410,13 +2461,20 @@ func step_conduit_tick() -> void:
 						temp_c[i] = (liquid_mass[i] * temp_c[i] + out_m * prev_lt[i]) / maxf(0.001, tot_cell)
 						liquid_el[i] = pel
 						liquid_mass[i] = tot_cell
+						if next_lg[i] > 1.0:
+							var vg := next_lg[i] * (out_m / maxf(0.01, next_lm[i]))
+							germ_count[i] = minf(250000.0, germ_count[i] + vg)
+							if germ_type[i].is_empty():
+								germ_type[i] = "FoodPoisoning"
+							next_lg[i] = maxf(0.0, next_lg[i] - vg)
 						next_lm[i] -= out_m
 						if next_lm[i] < 0.05:
 							next_lm[i] = 0.0
 							next_le[i] = ""
+							next_lg[i] = 0.0
 						continue
 			# 인접 액체관 중 같은 원소(또는 빈 관)이면서 질량이 적은 쪽으로 흐름
-			var is_proc_out := (b == "water_sieve" and pel == "Water") or (b == "oil_refinery" and pel == "Petroleum") or is_lflt
+			var is_proc_out := (b == "water_sieve" and pel == "Water") or (b == "oil_refinery" and pel == "Petroleum") or is_lflt or b == "liquid_shutoff"
 			var cand_dirs: Array[Vector2i] = dirs
 			if is_lflt:
 				var flt_el := get_filter_target(x, y)
@@ -2449,23 +2507,32 @@ func step_conduit_tick() -> void:
 				if move_m > 0.05:
 					var tot_n := next_lm[best_ni] + move_m
 					next_lt[best_ni] = (next_lm[best_ni] * next_lt[best_ni] + move_m * prev_lt[i]) / maxf(0.001, tot_n)
+					var avail_lg := minf(prev_lg[i], next_lg[i])
+					if avail_lg > 1.0:
+						var move_lg := avail_lg * (move_m / maxf(0.01, avail_m))
+						next_lg[i] = maxf(0.0, next_lg[i] - move_lg)
+						next_lg[best_ni] += move_lg
 					next_lm[i] -= move_m
 					next_lm[best_ni] = tot_n
 					next_le[best_ni] = pel
 					if next_lm[i] < 0.05:
 						next_lm[i] = 0.0
 						next_le[i] = ""
+						next_lg[i] = 0.0
 	lpipe_mass = next_lm
 	lpipe_el = next_le
 	lpipe_temp = next_lt
+	lpipe_germs = next_lg
 
-	# 2) 기체관 동기식 1칸/틱 패킷 이동 (1kg/s), 기체 저장고(150kg) 버퍼링 및 배출구 방출
+	# 2) 기체관 동기식 1칸/틱 패킷 이동 (1kg/s), 세균 전파, 차단 밸브, 기체 저장고(150kg) 버퍼링 및 배출구 방출
 	var prev_gm := gpipe_mass.duplicate()
 	var prev_ge := gpipe_el.duplicate()
 	var prev_gt := gpipe_temp.duplicate()
+	var prev_gg := gpipe_germs.duplicate()
 	var next_gm := gpipe_mass.duplicate()
 	var next_ge := gpipe_el.duplicate()
 	var next_gt := gpipe_temp.duplicate()
+	var next_gg := gpipe_germs.duplicate()
 	for y in range(1, HEIGHT - 1):
 		for x in range(1, WIDTH - 1):
 			var i := idx(x, y)
@@ -2482,10 +2549,17 @@ func step_conduit_tick() -> void:
 						reservoir_temp[i] = (reservoir_mass[i] * reservoir_temp[i] + store_g * next_gt[i]) / maxf(0.001, tot_gr)
 						reservoir_mass[i] = tot_gr
 						reservoir_el[i] = cur_ge
+						if next_gg[i] > 1.0:
+							var mv_gg := next_gg[i] * (store_g / maxf(0.005, cur_gm))
+							reservoir_germs[i] += mv_gg
+							if reservoir_germ_type[i].is_empty():
+								reservoir_germ_type[i] = "SlimeLung"
+							next_gg[i] = maxf(0.0, next_gg[i] - mv_gg)
 						next_gm[i] -= store_g
 						if next_gm[i] < 0.005:
 							next_gm[i] = 0.0
 							next_ge[i] = "Vacuum"
+							next_gg[i] = 0.0
 				elif cur_gm < 0.5 and reservoir_mass[i] > 0.02 and (cur_gm < 0.005 or cur_ge == "Vacuum" or cur_ge == reservoir_el[i]):
 					var out_g := minf(reservoir_mass[i], OniElements.GAS_PIPE_MAX_KG - cur_gm)
 					if out_g > 0.01:
@@ -2493,14 +2567,22 @@ func step_conduit_tick() -> void:
 						next_gt[i] = (cur_gm * next_gt[i] + out_g * reservoir_temp[i]) / maxf(0.001, tot_gp)
 						next_gm[i] = tot_gp
 						next_ge[i] = reservoir_el[i]
+						if reservoir_germs[i] > 1.0:
+							var out_gg := reservoir_germs[i] * (out_g / maxf(0.005, reservoir_mass[i]))
+							next_gg[i] += out_gg
+							reservoir_germs[i] = maxf(0.0, reservoir_germs[i] - out_gg)
 						reservoir_mass[i] -= out_g
 						if reservoir_mass[i] < 0.005:
 							reservoir_mass[i] = 0.0
 							reservoir_el[i] = ""
+							reservoir_germs[i] = 0.0
+							reservoir_germ_type[i] = ""
 
 			var avail_gm := minf(prev_gm[i], next_gm[i])
 			var pge := prev_ge[i]
 			if avail_gm <= 0.005 or pge == "Vacuum":
+				continue
+			if b == "gas_shutoff" and machine_running[i] == 0:
 				continue
 			var is_gflt := b == "gas_filter"
 			if is_gflt:
@@ -2512,10 +2594,17 @@ func step_conduit_tick() -> void:
 					temp_c[i] = (gas_mass[i] * temp_c[i] + out_m * prev_gt[i]) / maxf(0.001, tot_g)
 					gas_el[i] = pge
 					gas_mass[i] = tot_g
+					if next_gg[i] > 1.0:
+						var vgg := next_gg[i] * (out_m / maxf(0.005, next_gm[i]))
+						germ_count[i] = minf(250000.0, germ_count[i] + vgg)
+						if germ_type[i].is_empty():
+							germ_type[i] = "SlimeLung"
+						next_gg[i] = maxf(0.0, next_gg[i] - vgg)
 					next_gm[i] -= out_m
 					if next_gm[i] < 0.005:
 						next_gm[i] = 0.0
 						next_ge[i] = "Vacuum"
+						next_gg[i] = 0.0
 					continue
 			var g_dirs: Array[Vector2i] = dirs
 			if is_gflt:
@@ -2524,8 +2613,9 @@ func step_conduit_tick() -> void:
 					g_dirs = flt_match_dirs
 				else:
 					g_dirs = flt_bypass_dirs
+			var is_gout := is_gflt or b == "gas_shutoff"
 			var best_ni := -1
-			var lowest := OniElements.GAS_PIPE_MAX_KG if is_gflt else (avail_gm - 0.02)
+			var lowest := OniElements.GAS_PIPE_MAX_KG if is_gout else (avail_gm - 0.02)
 			for d: Vector2i in g_dirs:
 				var nx: int = x + d.x
 				var ny: int = y + d.y
@@ -2537,20 +2627,27 @@ func step_conduit_tick() -> void:
 					best_ni = ni
 			if best_ni >= 0:
 				var space_n := maxf(0.0, OniElements.GAS_PIPE_MAX_KG - next_gm[best_ni])
-				var gfrac := 1.0 if is_gflt else 0.5
+				var gfrac := 1.0 if is_gout else 0.5
 				var move_m := minf(avail_gm * gfrac, space_n)
 				if move_m > 0.01:
 					var tot_gn := next_gm[best_ni] + move_m
 					next_gt[best_ni] = (next_gm[best_ni] * next_gt[best_ni] + move_m * prev_gt[i]) / maxf(0.001, tot_gn)
+					var avail_gg := minf(prev_gg[i], next_gg[i])
+					if avail_gg > 1.0:
+						var move_gg := avail_gg * (move_m / maxf(0.005, avail_gm))
+						next_gg[i] = maxf(0.0, next_gg[i] - move_gg)
+						next_gg[best_ni] += move_gg
 					next_gm[i] -= move_m
 					next_gm[best_ni] = tot_gn
 					next_ge[best_ni] = pge
 					if next_gm[i] < 0.005:
 						next_gm[i] = 0.0
 						next_ge[i] = "Vacuum"
+						next_gg[i] = 0.0
 	gpipe_mass = next_gm
 	gpipe_el = next_ge
 	gpipe_temp = next_gt
+	gpipe_germs = next_gg
 	_step_conduit_thermal_and_phase(OniElements.CONDUIT_TICK_DT)
 
 func _step_conduit_thermal_and_phase(dt: float) -> void:
@@ -2871,6 +2968,14 @@ func _step_offgassing_and_germs(dt: float) -> void:
 				germ_count[i] = minf(120000.0, germ_count[i] + 900.0 * dt)
 			elif building[i] == "wash_basin" and germ_count[i] > 0.0:
 				germ_count[i] = maxf(0.0, germ_count[i] - 12000.0 * dt)
+			elif (building[i] == "liquid_reservoir" or building[i] == "gas_reservoir") and reservoir_germs[i] > 10.0:
+				# Assembly-CSharp.dll 염소실 저장고 살균 (DEATH_MAX 반감기 10.0초 지수 감소)
+				if gas_el[i] == "ChlorineGas" and gas_mass[i] >= 0.1:
+					var hl := OniElements.get_chlorine_halflife_s()
+					reservoir_germs[i] *= pow(0.5, dt / hl)
+					if reservoir_germs[i] < 20.0:
+						reservoir_germs[i] = 0.0
+						reservoir_germ_type[i] = ""
 
 			# Assembly-CSharp.dll Disease 온도 생존/증식 곡선 + 방사선(rad_kill_rate) 살균 + 염소 살균 + 확산
 			var gc := germ_count[i]
@@ -2927,7 +3032,10 @@ func _recompute_decor() -> void:
 			if b == "pod":
 				dv += 15.0
 			elif not b.is_empty():
-				dv += float(OniElements.get_building(b).get("decor", 0.0))
+				var b_dec := float(OniElements.get_building(b).get("decor", 0.0))
+				if b_dec > 0.0 and not building_mat[i].is_empty():
+					b_dec *= (1.0 + OniElements.get_material_decor_mult(building_mat[i]))
+				dv += b_dec
 			if has_wire[i] == 1:
 				dv -= 5.0
 			if absf(dv) >= 1.0:
@@ -2989,13 +3097,13 @@ func _recompute_radiation() -> void:
 								rads[idx(nx, ny)] += emit * maxf(0.0, 1.0 - d / 3.8)
 
 func _is_logic_gate(b: String) -> bool:
-	return b == "logic_and" or b == "logic_or" or b == "logic_not" or b == "logic_buffer"
+	return b == "logic_and" or b == "logic_or" or b == "logic_not" or b == "logic_xor" or b == "logic_buffer" or b == "logic_filter"
 
 func _is_logic_node(i: int) -> bool:
 	if has_logic_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"]
+	return b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "liquid_shutoff", "gas_shutoff", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_xor", "logic_buffer", "logic_filter", "logic_alarm"]
 
 func _is_logic_passive_node(i: int) -> bool:
 	if _is_logic_gate(building[i]):
@@ -3159,6 +3267,12 @@ func _step_logic_network(dt: float = 0.0) -> void:
 						any_one = true
 						break
 				out_sig = 0 if any_one else 1
+			elif gb == "logic_xor":
+				var ones := 0
+				for v: int in in_vals:
+					if v == 1:
+						ones += 1
+				out_sig = 1 if (ones % 2 == 1) else 0
 			elif gb == "logic_buffer":
 				var any_one := false
 				for v: int in in_vals:
@@ -3172,6 +3286,22 @@ func _step_logic_network(dt: float = 0.0) -> void:
 					if pass_idx == 0 and dt > 0.0 and logic_buffer_timer[gi] > 0.0:
 						logic_buffer_timer[gi] = maxf(0.0, logic_buffer_timer[gi] - dt)
 					out_sig = 1 if logic_buffer_timer[gi] > 0.0 else 0
+			elif gb == "logic_filter":
+				var any_one := false
+				for v: int in in_vals:
+					if v == 1:
+						any_one = true
+						break
+				var ms_d: Dictionary = OniElements.csharp_advanced.get("machines", {}) as Dictionary
+				var delay_s := float(ms_d.get("logic_filter_delay_s", 5.0))
+				if any_one:
+					if pass_idx == 0 and dt > 0.0:
+						logic_filter_timer[gi] = minf(delay_s + 1.0, logic_filter_timer[gi] + dt)
+					out_sig = 1 if logic_filter_timer[gi] >= delay_s else 0
+				else:
+					if pass_idx == 0:
+						logic_filter_timer[gi] = 0.0
+					out_sig = 0
 
 			logic_signal[gi] = out_sig
 			for oc: int in out_cells:
@@ -3430,7 +3560,7 @@ func _recompute_rooms() -> void:
 			next_rid += 1
 
 	for d in duplicants:
-		d.morale = 1 + colony_morale_bonus + d.decor_morale + d.shower_morale + d.rec_morale
+		d.morale = 1 + colony_morale_bonus + d.decor_morale + d.shower_morale + d.rec_morale + d.food_morale
 
 func _cell_thermal_mass(i: int) -> float:
 	if not solid_el[i].is_empty():
@@ -3692,7 +3822,7 @@ func _step_building_health(dt: float) -> void:
 		var b := building[i]
 		if b.is_empty():
 			continue
-		var oh_c := OniElements.get_building_overheat_c(b)
+		var oh_c := OniElements.get_effective_overheat_c(b, building_mat[i])
 		if oh_c < 9000.0 and temp_c[i] >= oh_c:
 			building_hp[i] = maxf(0.0, building_hp[i] - 4.0 * dt)
 			building_status[i] = "BROKEN" if building_hp[i] <= 0.0 else "OVERHEAT"
@@ -3814,6 +3944,36 @@ func _step_power_and_machines(dt: float) -> void:
 							gas_el[ci] = "CarbonDioxide"
 							gas_mass[ci] += OniElements.COAL_GEN_CO2_KG_PER_S * dt
 						temp_c[ci] = lerpf(temp_c[ci], OniElements.COAL_GEN_OUT_TEMP_C, 0.03)
+				elif b == "natgas_gen":
+					# Assembly-CSharp.dll MethaneGeneratorConfig: 800W, 메탄 0.09kg/s -> CO2 0.0225kg/s(110°C) + 오염수 0.0675kg/s(40°C)
+					var ng_sp := OniElements.get_advanced_machine_spec("natgas_gen")
+					var need_ch4 := float(ng_sp.get("methane_kg_s", 0.09)) * dt
+					var logic_ok := has_logic_wire[ci] == 0 or logic_signal[ci] == 1
+					var fueled := false
+					if logic_ok:
+						if has_gas_pipe[ci] == 1 and gpipe_el[ci] == "Methane" and gpipe_mass[ci] >= need_ch4:
+							gpipe_mass[ci] -= need_ch4
+							if gpipe_mass[ci] < 0.005:
+								gpipe_mass[ci] = 0.0
+								gpipe_el[ci] = "Vacuum"
+							fueled = true
+						elif gas_el[ci] == "Methane" and gas_mass[ci] >= need_ch4:
+							gas_mass[ci] -= need_ch4
+							if gas_mass[ci] < 0.001:
+								gas_mass[ci] = 0.0
+								gas_el[ci] = "Vacuum"
+							fueled = true
+					if fueled:
+						var pp_m := 1.10 if get_room_type_at(ci % WIDTH, ci / WIDTH) == "power_plant" else 1.0
+						net_gen_w += float(ng_sp.get("gen_w", 800.0)) * pp_m
+						machine_running[ci] = 1
+						if gas_el[ci] == "Vacuum" or gas_el[ci] == "CarbonDioxide":
+							gas_el[ci] = "CarbonDioxide"
+							gas_mass[ci] += float(ng_sp.get("co2_kg_s", 0.0225)) * dt
+						if liquid_mass[ci] < 400.0 and (liquid_mass[ci] < 1.0 or liquid_el[ci] == "DirtyWater" or liquid_el[ci].is_empty()):
+							liquid_el[ci] = "DirtyWater"
+							liquid_mass[ci] += float(ng_sp.get("dirty_water_kg_s", 0.0675)) * dt
+						temp_c[ci] = lerpf(temp_c[ci], float(ng_sp.get("co2_c", 110.0)), 0.04)
 				elif b == "petrol_gen":
 					# 석유 발전기 (2,000 W): 배관 석유/원유 또는 인벤토리 석유 소비 -> CO2 + 오염수 배출
 					var logic_ok := has_logic_wire[ci] == 0 or logic_signal[ci] == 1
@@ -3954,7 +4114,7 @@ func _step_power_and_machines(dt: float) -> void:
 					bats.append(ci)
 					net_bat_j += battery_j[ci]
 					total_battery_cap_j += OniElements.BATTERY_CAPACITY_J
-				elif b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "apothecary", "suit_maker", "incubator", "auto_sweeper", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "telescope", "space_scanner", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance", "massage_table", "sauna", "hottub", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter"]:
+				elif b in ["diffuser", "deodorizer", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "thermo_regulator", "metal_refinery", "oil_refinery", "polymer_press", "rock_crusher", "apothecary", "suit_maker", "incubator", "auto_sweeper", "liquid_pump", "gas_pump", "liquid_shutoff", "gas_shutoff", "research_station", "super_computer", "planetarium", "telescope", "space_scanner", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance", "massage_table", "sauna", "hottub", "jukebot", "arcade_cabinet", "gas_filter", "liquid_filter"]:
 					consumers.append(ci)
 
 			power_produced_w += net_gen_w
@@ -3963,7 +4123,7 @@ func _step_power_and_machines(dt: float) -> void:
 
 			for ci: int in consumers:
 				var b := building[ci]
-				if b != "space_scanner" and has_logic_wire[ci] == 1 and logic_signal[ci] == 0:
+				if b != "space_scanner" and (has_logic_wire[ci] == 1 or b in ["liquid_shutoff", "gas_shutoff"]) and logic_signal[ci] == 0:
 					continue
 				if building_hp[ci] <= 0.0:
 					building_status[ci] = "BROKEN"
@@ -4025,6 +4185,10 @@ func _step_power_and_machines(dt: float) -> void:
 							net_consumed_w += OniElements.LIQUID_PUMP_POWER_W
 							var tot_p := lpipe_mass[ci] + take
 							lpipe_temp[ci] = (lpipe_mass[ci] * lpipe_temp[ci] + take * temp_c[ci]) / maxf(0.001, tot_p)
+							if germ_count[ci] > 10.0:
+								var pg := germ_count[ci] * (take / maxf(0.1, liquid_mass[ci]))
+								lpipe_germs[ci] += pg
+								germ_count[ci] = maxf(0.0, germ_count[ci] - pg)
 							liquid_mass[ci] -= take
 							if liquid_mass[ci] < 0.5:
 								liquid_mass[ci] = 0.0
@@ -4042,6 +4206,10 @@ func _step_power_and_machines(dt: float) -> void:
 								net_consumed_w += OniElements.GAS_PUMP_POWER_W
 								var tot_gp := gpipe_mass[ci] + take
 								gpipe_temp[ci] = (gpipe_mass[ci] * gpipe_temp[ci] + take * temp_c[ci]) / maxf(0.001, tot_gp)
+								if germ_count[ci] > 10.0:
+									var pgg := germ_count[ci] * (take / maxf(0.01, gas_mass[ci]))
+									gpipe_germs[ci] += pgg
+									germ_count[ci] = maxf(0.0, germ_count[ci] - pgg)
 								gas_mass[ci] -= take
 								gpipe_el[ci] = gas_el[ci]
 								gpipe_mass[ci] = tot_gp
@@ -4056,10 +4224,12 @@ func _step_power_and_machines(dt: float) -> void:
 						var ry := ci / WIDTH
 						var lab_m := (1.0 + OniElements.get_lab_research_bonus()) if get_room_type_at(rx, ry) == "laboratory" else 1.0
 						var trait_rm := 1.0
+						var sci_m := 1.0
 						for dr in duplicants:
 							if dr.cell == Vector2i(rx, ry) and dr.state == "RESEARCH":
 								trait_rm = maxf(trait_rm, float(OniElements.get_trait_effect(dr.trait_ko).get("research_mult", 1.0)))
-						var pts := 0.5 * lab_m * trait_rm * dt
+								sci_m = maxf(sci_m, 1.0 + float(dr.skill_level) * OniElements.get_attr_converter("ResearchSpeed"))
+						var pts := 0.5 * lab_m * trait_rm * sci_m * dt
 						var need_dirt := 0.5 * dt * OniElements.RESEARCH_DIRT_PER_PT
 						if float(inventory.get("Dirt", 0.0)) >= need_dirt:
 							used_j += need_j
@@ -4074,10 +4244,12 @@ func _step_power_and_machines(dt: float) -> void:
 						var ry := ci / WIDTH
 						var lab_m := (1.0 + OniElements.get_lab_research_bonus()) if get_room_type_at(rx, ry) == "laboratory" else 1.0
 						var trait_rm := 1.0
+						var sci_m := 1.0
 						for dr in duplicants:
 							if dr.cell == Vector2i(rx, ry) and dr.state == "RESEARCH":
 								trait_rm = maxf(trait_rm, float(OniElements.get_trait_effect(dr.trait_ko).get("research_mult", 1.0)))
-						var pts := 1.2 * lab_m * trait_rm * dt
+								sci_m = maxf(sci_m, 1.0 + float(dr.skill_level) * OniElements.get_attr_converter("ResearchSpeed"))
+						var pts := 1.2 * lab_m * trait_rm * sci_m * dt
 						var fed := false
 						if has_liquid_pipe[ci] == 1 and lpipe_mass[ci] >= 0.5 * dt and (lpipe_el[ci] == "Water" or lpipe_el[ci].is_empty()):
 							lpipe_mass[ci] = maxf(0.0, lpipe_mass[ci] - 0.5 * dt)
@@ -4324,6 +4496,109 @@ func _step_power_and_machines(dt: float) -> void:
 						inventory[in_el] = maxf(0.0, float(inventory[in_el]) - need_in)
 						food_kcal += out_kcal * frac * kit_m
 						food_freshness = minf(100.0, food_freshness + 3.0 * dt)
+						var rid_f := String(rec.get("id", ""))
+						if OniElements.csharp_foods.has(rid_f):
+							colony_food_quality = int((OniElements.csharp_foods[rid_f] as Dictionary).get("quality", colony_food_quality))
+						elif rid_f == "MushBar":
+							colony_food_quality = -1
+						elif rid_f == "CookedMeat":
+							colony_food_quality = 3
+						if rid_f == "MushBar":
+							germ_type[ci] = "FoodPoisoning"
+							germ_count[ci] = minf(250000.0, germ_count[ci] + float(OniElements.csharp_advanced.get("mush_bar_germs", 1000)))
+						machine_running[ci] = 1
+				elif b == "deodorizer":
+					# Assembly-CSharp.dll AirFilterConfig (5W): 모래 0.1333kg/s + 오염산소 0.1kg/s -> 산소 0.09kg/s + 점토 0.1433kg/s
+					var df_sp := OniElements.get_advanced_machine_spec("deodorizer")
+					var df_pw := float(df_sp.get("power_w", 5.0))
+					var need_j := df_pw * dt
+					var need_sand := float(df_sp.get("sand_kg_s", 0.13333)) * dt
+					var po2_rate := float(df_sp.get("po2_kg_s", 0.1)) * dt
+					var o2_out := float(df_sp.get("o2_out_kg_s", 0.09)) * dt
+					var clay_out := float(df_sp.get("clay_out_kg_s", 0.14333)) * dt
+					if available_j - used_j >= need_j and float(inventory.get("Sand", 0.0)) >= need_sand:
+						var cx := ci % WIDTH
+						var cy := ci / WIDTH
+						var src_i := -1
+						for d_df: Vector2i in [Vector2i(0, 0), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]:
+							var nx: int = cx + d_df.x
+							var ny: int = cy + d_df.y
+							if in_bounds(nx, ny):
+								var ni := idx(nx, ny)
+								if gas_el[ni] == "ContaminatedOxygen" and gas_mass[ni] >= po2_rate:
+									src_i = ni
+									break
+						if src_i >= 0:
+							used_j += need_j
+							net_consumed_w += df_pw
+							inventory["Sand"] = maxf(0.0, float(inventory["Sand"]) - need_sand)
+							inventory["Clay"] = float(inventory.get("Clay", 0.0)) + clay_out
+							gas_mass[src_i] = maxf(0.0, gas_mass[src_i] - po2_rate)
+							if gas_mass[src_i] < 0.002:
+								gas_mass[src_i] = 0.0
+								gas_el[src_i] = "Vacuum"
+							if germ_type[src_i] == "SlimeLung":
+								germ_count[src_i] = maxf(0.0, germ_count[src_i] - 8000.0 * dt)
+							for d_o2: Vector2i in [Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 0)]:
+								var ox: int = cx + d_o2.x
+								var oy: int = cy + d_o2.y
+								if in_bounds(ox, oy) and not is_solid_cell(ox, oy):
+									var oi := idx(ox, oy)
+									if gas_el[oi] == "Vacuum" or gas_el[oi] == "Oxygen":
+										gas_el[oi] = "Oxygen"
+										gas_mass[oi] += o2_out
+										break
+							machine_running[ci] = 1
+				elif b == "thermo_regulator":
+					# Assembly-CSharp.dll AirConditionerConfig (240W, -14°C): 기체관 에너지 보존 열펌프
+					var tr_sp := OniElements.get_advanced_machine_spec("thermo_regulator")
+					var tr_pw := float(tr_sp.get("power_w", 240.0))
+					var tr_dt := absf(float(tr_sp.get("delta_c", -14.0)))
+					var need_j := tr_pw * dt
+					if available_j - used_j >= need_j and has_gas_pipe[ci] == 1 and gpipe_mass[ci] > 0.01 and gpipe_el[ci] != "Vacuum":
+						used_j += need_j
+						net_consumed_w += tr_pw
+						var pge := gpipe_el[ci]
+						var g_shc := maxf(0.1, float(OniElements.get_element(pge).get("shc", 1.005)))
+						var cooled_dt := minf(tr_dt * dt, maxf(0.0, gpipe_temp[ci] - (-250.0)))
+						var dq := gpipe_mass[ci] * g_shc * cooled_dt
+						gpipe_temp[ci] -= cooled_dt
+						var c_tile := maxf(2.0, _cell_thermal_mass(ci))
+						temp_c[ci] = clampf(temp_c[ci] + dq / c_tile, -270.0, 2200.0)
+						machine_running[ci] = 1
+				elif b == "polymer_press":
+					# Assembly-CSharp.dll PolymerizerConfig (240W): 석유 0.8333kg/s -> 플라스틱 0.5kg/s + 증기(200°C) + CO2(150°C)
+					var pm_sp := OniElements.get_advanced_machine_spec("polymer_press")
+					var pm_pw := float(pm_sp.get("power_w", 240.0))
+					var need_j := pm_pw * dt
+					var need_pet := float(pm_sp.get("petroleum_kg_s", 0.83333)) * dt
+					if available_j - used_j >= need_j:
+						var fed := false
+						if has_liquid_pipe[ci] == 1 and lpipe_el[ci] == "Petroleum" and lpipe_mass[ci] >= need_pet:
+							lpipe_mass[ci] -= need_pet
+							if lpipe_mass[ci] < 0.05:
+								lpipe_mass[ci] = 0.0
+								lpipe_el[ci] = ""
+							fed = true
+						elif float(inventory.get("Petroleum", 0.0)) >= need_pet:
+							inventory["Petroleum"] = maxf(0.0, float(inventory["Petroleum"]) - need_pet)
+							fed = true
+						if fed:
+							used_j += need_j
+							net_consumed_w += pm_pw
+							inventory["Plastic"] = float(inventory.get("Plastic", 0.0)) + float(pm_sp.get("plastic_kg_s", 0.5)) * dt
+							if gas_el[ci] == "Vacuum" or gas_el[ci] == "Steam" or gas_el[ci] == "CarbonDioxide":
+								gas_el[ci] = "Steam"
+								gas_mass[ci] += (float(pm_sp.get("steam_kg_s", 0.00833)) + float(pm_sp.get("co2_kg_s", 0.00833))) * dt
+							temp_c[ci] = minf(180.0, temp_c[ci] + 2.5 * dt)
+							machine_running[ci] = 1
+				elif b == "liquid_shutoff" or b == "gas_shutoff":
+					# Assembly-CSharp.dll LiquidLogicValveConfig / GasLogicValveConfig (10W): 자동화 GREEN+전력 시 개방
+					var sh_pw := float(OniElements.get_advanced_machine_spec("shutoff").get("power_w", 10.0))
+					var need_j := sh_pw * dt
+					if available_j - used_j >= need_j:
+						used_j += need_j
+						net_consumed_w += sh_pw
 						machine_running[ci] = 1
 				elif b == "thermo_aquatuner":
 					# Assembly-CSharp.dll LiquidConditioner (1200W, -14°C): 에너지 보존 열펌프 (ΔQ = m·SHC·14°C → 타일 방출)
@@ -4481,7 +4756,7 @@ func _is_power_node(i: int) -> bool:
 	if has_wire[i] == 1:
 		return true
 	var b := building[i]
-	return b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "battery", "smart_battery", "diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "apothecary", "incubator", "auto_sweeper", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "telescope", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]
+	return b in ["generator", "coal_gen", "natgas_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen", "battery", "smart_battery", "diffuser", "deodorizer", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "thermo_regulator", "metal_refinery", "oil_refinery", "polymer_press", "rock_crusher", "apothecary", "incubator", "auto_sweeper", "liquid_pump", "gas_pump", "liquid_shutoff", "gas_shutoff", "research_station", "super_computer", "planetarium", "telescope", "aetn", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]
 
 func _recompute_stats() -> void:
 	var sum_o2 := 0.0
@@ -4591,6 +4866,8 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"gpipe_hp": gpipe_hp[i],
 		"reservoir_el": reservoir_el[i],
 		"reservoir_mass": reservoir_mass[i],
+		"reservoir_germs": reservoir_germs[i],
+		"building_mat": building_mat[i],
 		"battery_j": battery_j[i],
 		"h2_buffer_kg": h2_buffer_kg[i],
 		"tube_charge_j": tube_charge_j[i],
@@ -4606,7 +4883,7 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"machine_running": machine_running[i] == 1,
 		"building_hp": building_hp[i],
 		"building_status": building_status[i],
-		"overheat_c": OniElements.get_building_overheat_c(building[i]) if not building[i].is_empty() else 9999.0,
+		"overheat_c": OniElements.get_effective_overheat_c(building[i], building_mat[i]) if not building[i].is_empty() else 9999.0,
 		"heat_kw": OniElements.get_building_heat_kw(building[i]) if not building[i].is_empty() else 0.0,
 		"floodable": OniElements.is_building_floodable(building[i]) if not building[i].is_empty() else false,
 		"recipe_name": String(rec.get("name_ko", "")) if not rec.is_empty() else "",
@@ -4656,10 +4933,10 @@ static func run_logic_self_test() -> Dictionary:
 	var ok1 := e_err < 0.0005 and (w.temp_c[i_rock] - 20.0) < 0.25 and w.temp_c[i_gas] < 95.0
 	if ok1:
 		passed += 1
-		details.append("PASS [1/38] 열역학 에너지 보존 (오차 %.5f%% · 암반ΔT %.3f°C · 기체 %.1f°C)" % [e_err * 100.0, w.temp_c[i_rock] - 20.0, w.temp_c[i_gas]])
+		details.append("PASS [1/44] 열역학 에너지 보존 (오차 %.5f%% · 암반ΔT %.3f°C · 기체 %.1f°C)" % [e_err * 100.0, w.temp_c[i_rock] - 20.0, w.temp_c[i_gas]])
 	else:
 		failed += 1
-		details.append("FAIL [1/38] 열역학 (오차 %.5f · 암반 %.2f · 기체 %.2f)" % [e_err, w.temp_c[i_rock], w.temp_c[i_gas]])
+		details.append("FAIL [1/44] 열역학 (오차 %.5f · 암반 %.2f · 기체 %.2f)" % [e_err, w.temp_c[i_rock], w.temp_c[i_gas]])
 
 	# 2) 다중 원소 액체 배관 원소 보존(CrudeOil) & 물 정화기(DirtyWater -> Water 40°C)
 	for lx in range(4, 9):
@@ -4710,10 +4987,10 @@ static func run_logic_self_test() -> Dictionary:
 	var oil_ok := w.liquid_el[w.idx(6, 9)] == "CrudeOil" and w.liquid_mass[w.idx(6, 9)] > 1.0
 	if sieve_ok and oil_ok:
 		passed += 1
-		details.append("PASS [2/38] 다중 원소 배관 (DirtyWater→Water 정화 & CrudeOil 원소 보존 배출)")
+		details.append("PASS [2/44] 다중 원소 배관 (DirtyWater→Water 정화 & CrudeOil 원소 보존 배출)")
 	else:
 		failed += 1
-		details.append("FAIL [2/38] 다중 원소 배관 (sieve=%s:%s oil=%s:%s)" % [str(sieve_ok), w.liquid_el[w.idx(7, 7)], str(oil_ok), w.liquid_el[w.idx(6, 9)]])
+		details.append("FAIL [2/44] 다중 원소 배관 (sieve=%s:%s oil=%s:%s)" % [str(sieve_ok), w.liquid_el[w.idx(7, 7)], str(oil_ok), w.liquid_el[w.idx(6, 9)]])
 
 	# 3) 액체 저장고(5,000kg) 양방향 버퍼링
 	var ir := w.idx(10, 7)
@@ -4734,10 +5011,10 @@ static func run_logic_self_test() -> Dictionary:
 	var discharged := w.lpipe_mass[ir]
 	if stored > 5.0 and discharged > 5.0 and w.lpipe_el[ir] == "Water":
 		passed += 1
-		details.append("PASS [3/38] 저장고 버퍼링 (흡수 %.1fkg → 재방출 %.1fkg Water)" % [stored, discharged])
+		details.append("PASS [3/44] 저장고 버퍼링 (흡수 %.1fkg → 재방출 %.1fkg Water)" % [stored, discharged])
 	else:
 		failed += 1
-		details.append("FAIL [3/38] 저장고 버퍼링 (stored=%.1f discharged=%.1f)" % [stored, discharged])
+		details.append("FAIL [3/44] 저장고 버퍼링 (stored=%.1f discharged=%.1f)" % [stored, discharged])
 
 	# 4) 진짜 불리언 논리 게이트 (AND / OR / NOT / BUFFER 5s / ALARM)
 	for gx in range(30, 44):
@@ -4783,10 +5060,10 @@ static func run_logic_self_test() -> Dictionary:
 	var buf_off := w.logic_signal[w.idx(41, 7)] == 0
 	if and_10 and and_11 and not_1 and not_0 and buf_on and buf_hold and buf_off:
 		passed += 1
-		details.append("PASS [4/38] 논리 게이트 진리표 (AND·NOT·BUFFER 5초 유지·ALARM 경보)")
+		details.append("PASS [4/44] 논리 게이트 진리표 (AND·NOT·BUFFER 5초 유지·ALARM 경보)")
 	else:
 		failed += 1
-		details.append("FAIL [4/38] 논리 게이트 (and=%s/%s not=%s/%s buf=%s/%s/%s)" % [str(and_10), str(and_11), str(not_1), str(not_0), str(buf_on), str(buf_hold), str(buf_off)])
+		details.append("FAIL [4/44] 논리 게이트 (and=%s/%s not=%s/%s buf=%s/%s/%s)" % [str(and_10), str(and_11), str(not_1), str(not_0), str(buf_on), str(buf_hold), str(buf_off)])
 
 	# 5) 태양광 주야 일조 곡선 & 전력 회로 과부하(>1000W) 감지
 	w.sim_time = 230.0
@@ -4806,10 +5083,10 @@ static func run_logic_self_test() -> Dictionary:
 	w._step_power_and_machines(0.5)
 	if solar_day > 0.9 and solar_night == 0.0 and w.circuit_overloaded and w.max_circuit_load_w > 1000.0:
 		passed += 1
-		details.append("PASS [5/38] 전력망 (태양광 주간 %.0f%%/야간 0%% · 과부하 %.0fW 감지)" % [solar_day * 100.0, w.max_circuit_load_w])
+		details.append("PASS [5/44] 전력망 (태양광 주간 %.0f%%/야간 0%% · 과부하 %.0fW 감지)" % [solar_day * 100.0, w.max_circuit_load_w])
 	else:
 		failed += 1
-		details.append("FAIL [5/38] 전력망 (day=%.2f night=%.2f ov=%s load=%.0f)" % [solar_day, solar_night, str(w.circuit_overloaded), w.max_circuit_load_w])
+		details.append("FAIL [5/44] 전력망 (day=%.2f night=%.2f ov=%s load=%.0f)" % [solar_day, solar_night, str(w.circuit_overloaded), w.max_circuit_load_w])
 
 	# 6) 건물 해체(Deconstruct) 100% 자원 환급
 	var idc := w.idx(25, 16) # mess_table (SandStone 100kg)
@@ -4822,10 +5099,10 @@ static func run_logic_self_test() -> Dictionary:
 	var inv_after := float(w.inventory.get(ref_el, 0.0))
 	if ord_dc and w.building[idc].is_empty() and absf((inv_after - inv_before) - ref_kg) < 0.01:
 		passed += 1
-		details.append("PASS [6/38] 건물 해체 100%% 환급 (+%.0fkg %s)" % [ref_kg, ref_el])
+		details.append("PASS [6/44] 건물 해체 100%% 환급 (+%.0fkg %s)" % [ref_kg, ref_el])
 	else:
 		failed += 1
-		details.append("FAIL [6/38] 건물 해체 (ord=%s diff=%.1f exp=%.1f)" % [str(ord_dc), inv_after - inv_before, ref_kg])
+		details.append("FAIL [6/44] 건물 해체 (ord=%s diff=%.1f exp=%.1f)" % [str(ord_dc), inv_after - inv_before, ref_kg])
 
 	# 7) 액체 닦기(Mop): 깊은 웅덩이 거부 vs 얕은 물(40kg) 허용 및 회수
 	var deep_reject := not w.order_mop(33, 18, 5)
@@ -4838,10 +5115,10 @@ static func run_logic_self_test() -> Dictionary:
 	var dw_after := float(w.inventory.get("DirtyWater", 0.0))
 	if deep_reject and shallow_ok and w.liquid_mass[mop_c] == 0.0 and absf((dw_after - dw_before) - 40.0) < 0.1:
 		passed += 1
-		details.append("PASS [7/38] 액체 닦기 규칙 (깊은 물 거부 · 얕은 40kg 닦기 회수)")
+		details.append("PASS [7/44] 액체 닦기 규칙 (깊은 물 거부 · 얕은 40kg 닦기 회수)")
 	else:
 		failed += 1
-		details.append("FAIL [7/38] 액체 닦기 (deep=%s shallow=%s mass=%.1f)" % [str(deep_reject), str(shallow_ok), w.liquid_mass[mop_c]])
+		details.append("FAIL [7/44] 액체 닦기 (deep=%s shallow=%s mass=%.1f)" % [str(deep_reject), str(shallow_ok), w.liquid_mass[mop_c]])
 
 	# 8) 타일 우선순위 1~9 정렬 (멀리 있는 우선9 > 가까운 우선2)
 	var w2 := OniWorld.new(73)
@@ -4864,10 +5141,10 @@ static func run_logic_self_test() -> Dictionary:
 	d0._assign_next_job(w2)
 	if d0.target_cell == Vector2i(27, 16) and d0.job_type == "dig":
 		passed += 1
-		details.append("PASS [8/38] 타일 우선순위 1~9 (먼 우선9 타일을 가까운 우선2보다 선점)")
+		details.append("PASS [8/44] 타일 우선순위 1~9 (먼 우선9 타일을 가까운 우선2보다 선점)")
 	else:
 		failed += 1
-		details.append("FAIL [8/38] 타일 우선순위 (picked=%s type=%s)" % [str(d0.target_cell), d0.job_type])
+		details.append("FAIL [8/44] 타일 우선순위 (picked=%s type=%s)" % [str(d0.target_cell), d0.job_type])
 
 	# 9) 제트복 360도 공중 비행 경로탐색 vs 일반 보행 제한
 	var w3 := OniWorld.new(73)
@@ -4882,10 +5159,10 @@ static func run_logic_self_test() -> Dictionary:
 	var jet_ok := reach_jet.has(air_target)
 	if walk_blocked and jet_ok:
 		passed += 1
-		details.append("PASS [9/38] 제트복 360° 공중 비행 (일반 보행 불가 공중 칸 비행 도달)")
+		details.append("PASS [9/44] 제트복 360° 공중 비행 (일반 보행 불가 공중 칸 비행 도달)")
 	else:
 		failed += 1
-		details.append("FAIL [9/38] 제트복 비행 (walk_blocked=%s jet_ok=%s)" % [str(walk_blocked), str(jet_ok)])
+		details.append("FAIL [9/44] 제트복 비행 (walk_blocked=%s jet_ok=%s)" % [str(walk_blocked), str(jet_ok)])
 
 	# 10) 4단계 스케줄 + 방광 -> 화장실 -> 손 씻기 루프
 	var w4 := OniWorld.new(73)
@@ -4915,10 +5192,10 @@ static func run_logic_self_test() -> Dictionary:
 	var washed_or_washing := (db.job_type == "wash" or db.state == "WASH" or (db.bladder < 10.0 and not db.needs_wash))
 	if s_work and s_down and s_bath and s_sleep and picked_toilet and washed_or_washing:
 		passed += 1
-		details.append("PASS [10/38] 4단계 스케줄 & 방광→화장실→손씻기 루프 검증 완료")
+		details.append("PASS [10/44] 4단계 스케줄 & 방광→화장실→손씻기 루프 검증 완료")
 	else:
 		failed += 1
-		details.append("FAIL [10/38] 스케줄/화장실 (sched=%s/%s/%s/%s toilet=%s wash=%s)" % [str(s_work), str(s_down), str(s_bath), str(s_sleep), str(picked_toilet), str(washed_or_washing)])
+		details.append("FAIL [10/44] 스케줄/화장실 (sched=%s/%s/%s/%s toilet=%s wash=%s)" % [str(s_work), str(s_down), str(s_bath), str(s_sleep), str(picked_toilet), str(washed_or_washing)])
 
 	# 11) Assembly-CSharp.dll 역공학 데이터 로드 (BuildingDef 과열/발열/침수 + TUNING + 크리터)
 	OniElements.ensure_loaded()
@@ -4933,10 +5210,10 @@ static func run_logic_self_test() -> Dictionary:
 	)
 	if cs_ok:
 		passed += 1
-		details.append("PASS [11/38] C# DLL 역공학 데이터 (건물 %d · TUNING %d · 크리터 %d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
+		details.append("PASS [11/44] C# DLL 역공학 데이터 (건물 %d · TUNING %d · 크리터 %d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
 	else:
 		failed += 1
-		details.append("FAIL [11/38] C# DLL 역공학 로드 (b=%d t=%d c=%d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
+		details.append("FAIL [11/44] C# DLL 역공학 로드 (b=%d t=%d c=%d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
 
 	# 12) C# Overheatable 과열 파손(>75°C) · Floodable 침수 차단(>350kg) · 복제체 자동 수리(REPAIR)
 	var w5 := OniWorld.new(73)
@@ -4966,10 +5243,10 @@ static func run_logic_self_test() -> Dictionary:
 	var repaired_ok := w5.building_hp[i_oh] >= 99.5
 	if oh_damaged and flood_blocked and picked_repair and repaired_ok:
 		passed += 1
-		details.append("PASS [12/38] C# 과열 손상(>75°C) · 침수 차단(>350kg) · 복제체 자동 수리")
+		details.append("PASS [12/44] C# 과열 손상(>75°C) · 침수 차단(>350kg) · 복제체 자동 수리")
 	else:
 		failed += 1
-		details.append("FAIL [12/38] 과열/침수/수리 (oh=%s fl=%s pick=%s rep=%s)" % [str(oh_damaged), str(flood_blocked), str(picked_repair), str(repaired_ok)])
+		details.append("FAIL [12/44] 과열/침수/수리 (oh=%s fl=%s pick=%s rep=%s)" % [str(oh_damaged), str(flood_blocked), str(picked_repair), str(repaired_ok)])
 
 	# 13) 불안정 고체 중력 붕괴 (Sand 낙하 vs SandStone 지지)
 	var w6 := OniWorld.new(73)
@@ -4994,10 +5271,10 @@ static func run_logic_self_test() -> Dictionary:
 	var rock_stayed := w6.solid_el[i_st_top] == "SandStone" and w6.solid_el[i_st_bot].is_empty()
 	if sand_fell and rock_stayed:
 		passed += 1
-		details.append("PASS [13/38] 불안정 고체 중력 붕괴 (Sand 낙하 800kg · SandStone 지지 유지)")
+		details.append("PASS [13/44] 불안정 고체 중력 붕괴 (Sand 낙하 800kg · SandStone 지지 유지)")
 	else:
 		failed += 1
-		details.append("FAIL [13/38] 고체 낙하 (sand_fell=%s rock_stayed=%s)" % [str(sand_fell), str(rock_stayed)])
+		details.append("FAIL [13/44] 고체 낙하 (sand_fell=%s rock_stayed=%s)" % [str(sand_fell), str(rock_stayed)])
 
 	# 14) 복제체 열생리학 (ScaldingMonitor >72°C 화상 피해 vs 특수복 완벽 방호)
 	var w7 := OniWorld.new(73)
@@ -5021,10 +5298,10 @@ static func run_logic_self_test() -> Dictionary:
 	var suit_safe := d_suit.thermal_status.is_empty() and d_suit.hp >= 99.9
 	if bare_scalded and suit_safe:
 		passed += 1
-		details.append("PASS [14/38] C# 열생리학 (95°C 일반복 화상 HP%.0f%% · 특수복 완벽 방호)" % d_bare.hp)
+		details.append("PASS [14/44] C# 열생리학 (95°C 일반복 화상 HP%.0f%% · 특수복 완벽 방호)" % d_bare.hp)
 	else:
 		failed += 1
-		details.append("FAIL [14/38] 열생리학 (bare=%s hp=%.1f suit=%s)" % [str(bare_scalded), d_bare.hp, str(suit_safe)])
+		details.append("FAIL [14/44] 열생리학 (bare=%s hp=%.1f suit=%s)" % [str(bare_scalded), d_bare.hp, str(suit_safe)])
 
 	# 15) C# 심층 카탈로그 로드 (음식 60 · 간헐천 27 · 질병 5 · 방 19 · 레시피 16 · 사기 기대치)
 	var r_ids: Array = OniElements.csharp_rooms.get("cs_room_ids", [])
@@ -5038,10 +5315,10 @@ static func run_logic_self_test() -> Dictionary:
 	)
 	if deep_ok:
 		passed += 1
-		details.append("PASS [15/38] C# 심층 카탈로그 (음식%d·간헐천%d·질병%d·방%d·제련레시피%d)" % [OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(), OniElements.csharp_diseases.size(), r_ids.size(), OniElements.get_station_recipes("metal_refinery").size()])
+		details.append("PASS [15/44] C# 심층 카탈로그 (음식%d·간헐천%d·질병%d·방%d·제련레시피%d)" % [OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(), OniElements.csharp_diseases.size(), r_ids.size(), OniElements.get_station_recipes("metal_refinery").size()])
 	else:
 		failed += 1
-		details.append("FAIL [15/38] C# 심층 카탈로그 (f=%d g=%d d=%d r=%d)" % [OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(), OniElements.csharp_diseases.size(), r_ids.size()])
+		details.append("FAIL [15/44] C# 심층 카탈로그 (f=%d g=%d d=%d r=%d)" % [OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(), OniElements.csharp_diseases.size(), r_ids.size()])
 
 	# 16) 배관 열교환 & 상변화 파손 (ConduitTemperatureManager + 비등/동결 파손)
 	var w8 := OniWorld.new(73)
@@ -5084,10 +5361,10 @@ static func run_logic_self_test() -> Dictionary:
 	var frz_ok := w8.lpipe_hp[ip_frz] < 80.0 and w8.liquid_mass[ip_frz] > 1.0
 	if th_ok and boil_ok and frz_ok:
 		passed += 1
-		details.append("PASS [16/38] 배관 열교환 & 비등/동결 파손 (열전달 %.1f°C · 파손 %d회)" % [w8.lpipe_temp[ip_th], w8.pipe_burst_count])
+		details.append("PASS [16/44] 배관 열교환 & 비등/동결 파손 (열전달 %.1f°C · 파손 %d회)" % [w8.lpipe_temp[ip_th], w8.pipe_burst_count])
 	else:
 		failed += 1
-		details.append("FAIL [16/38] 배관 열/파손 (th=%s:%.1f boil=%s:%.0f frz=%s:%.0f)" % [str(th_ok), w8.lpipe_temp[ip_th], str(boil_ok), w8.lpipe_hp[ip_boil], str(frz_ok), w8.lpipe_hp[ip_frz]])
+		details.append("FAIL [16/44] 배관 열/파손 (th=%s:%.1f boil=%s:%.0f frz=%s:%.0f)" % [str(th_ok), w8.lpipe_temp[ip_th], str(boil_ok), w8.lpipe_hp[ip_boil], str(frz_ok), w8.lpipe_hp[ip_frz]])
 
 	# 17) 음식 부패 & 보존 (Rottable: 상온 O2 부패 vs CO2 멸균 0% vs -20°C 급속냉동 0%)
 	var w9 := OniWorld.new(73)
@@ -5109,10 +5386,10 @@ static func run_logic_self_test() -> Dictionary:
 	var frz_safe := absf(w9.food_freshness - f_frz) < 0.001 and w9.food_rot_mult == 0.0
 	if o2_rotted and co2_safe and frz_safe:
 		passed += 1
-		details.append("PASS [17/38] 음식 보존/부패 (상온O2 %.1f%% · CO2멸균 0%% · -20°C냉동 0%%)" % f_co2)
+		details.append("PASS [17/44] 음식 보존/부패 (상온O2 %.1f%% · CO2멸균 0%% · -20°C냉동 0%%)" % f_co2)
 	else:
 		failed += 1
-		details.append("FAIL [17/38] 음식 부패 (o2=%s co2=%s frz=%s)" % [str(o2_rotted), str(co2_safe), str(frz_safe)])
+		details.append("FAIL [17/44] 음식 부패 (o2=%s co2=%s frz=%s)" % [str(o2_rotted), str(co2_safe), str(frz_safe)])
 
 	# 18) 간헐천 과압 차단(5kg) · 방사선 세균 살균 · 방 버프(수세식+2 vs 간이+1 · 연구실+10%)
 	var w10 := OniWorld.new(73)
@@ -5145,10 +5422,10 @@ static func run_logic_self_test() -> Dictionary:
 	var room_ok := lab_ok and wash_type == "washroom" and wash_mor == 2 and lat_type == "latrine" and lat_mor == 1
 	if geyser_cap_ok and rad_kill_ok and room_ok:
 		passed += 1
-		details.append("PASS [18/38] 간헐천 5kg 과압차단 · 방사살균 · 수세식(+2)/간이(+1)/연구실(+10%)")
+		details.append("PASS [18/44] 간헐천 5kg 과압차단 · 방사살균 · 수세식(+2)/간이(+1)/연구실(+10%)")
 	else:
 		failed += 1
-		details.append("FAIL [18/38] 간헐천/살균/방 (gey=%s rad=%.0f wash=%s:%d lat=%s:%d lab=%s)" % [str(geyser_cap_ok), w10.germ_count[igm], wash_type, wash_mor, lat_type, lat_mor, str(lab_ok)])
+		details.append("FAIL [18/44] 간헐천/살균/방 (gey=%s rad=%.0f wash=%s:%d lat=%s:%d lab=%s)" % [str(geyser_cap_ok), w10.germ_count[igm], wash_type, wash_mor, lat_type, lat_mor, str(lab_ok)])
 
 	# 19) 방사능 병(>=100rad) · 화장실 -100rad 배출 · 특성 효과(잠수부의 폐 -25% O2 & 철의 위장 면역)
 	var w11 := OniWorld.new(73)
@@ -5193,10 +5470,10 @@ static func run_logic_self_test() -> Dictionary:
 	var gut_ok := d_gut.disease.is_empty()
 	if got_rad_sick and rad_flushed and lung_ok and gut_ok:
 		passed += 1
-		details.append("PASS [19/38] 방사능병+화장실배출 · 잠수부의폐(%.0f%% O2) · 철의위장 면역" % [(o2_lung / o2_norm) * 100.0])
+		details.append("PASS [19/44] 방사능병+화장실배출 · 잠수부의폐(%.0f%% O2) · 철의위장 면역" % [(o2_lung / o2_norm) * 100.0])
 	else:
 		failed += 1
-		details.append("FAIL [19/38] 방사/특성 (sick=%s flush=%s:%.1f lung=%s gut=%s)" % [str(got_rad_sick), str(rad_flushed), d_rad.rad_dose, str(lung_ok), str(gut_ok)])
+		details.append("FAIL [19/44] 방사/특성 (sick=%s flush=%s:%.1f lung=%s gut=%s)" % [str(got_rad_sick), str(rad_flushed), d_rad.rad_dose, str(lung_ok), str(gut_ok)])
 
 	# 20) 스트레스 붕괴(100%→눈물·60% 복귀) · ComplexRecipe 전환(강철 제련 & 제약기 알약 즉효 치료)
 	var w12 := OniWorld.new(73)
@@ -5241,10 +5518,10 @@ static func run_logic_self_test() -> Dictionary:
 	var pill_cured := d_med.disease.is_empty()
 	if bd_ok and steel_ok and pill_crafted and pill_cured:
 		passed += 1
-		details.append("PASS [20/38] 스트레스 붕괴(눈물·60%%) · 강철 제련(%.1fkg) · 알약 즉효 치료" % float(w12.inventory.get("Steel", 0.0)))
+		details.append("PASS [20/44] 스트레스 붕괴(눈물·60%%) · 강철 제련(%.1fkg) · 알약 즉효 치료" % float(w12.inventory.get("Steel", 0.0)))
 	else:
 		failed += 1
-		details.append("FAIL [20/38] 붕괴/레시피 (bd=%s steel=%s:%.1f pill=%s cure=%s)" % [str(bd_ok), str(steel_ok), float(w12.inventory.get("Steel", 0.0)), str(pill_crafted), str(pill_cured)])
+		details.append("FAIL [20/44] 붕괴/레시피 (bd=%s steel=%s:%.1f pill=%s cure=%s)" % [str(bd_ok), str(steel_ok), float(w12.inventory.get("Steel", 0.0)), str(pill_crafted), str(pill_cured)])
 
 	# 21) C# 2차 심층 카탈로그 (다종 작물 5종 · 로켓 엔진 효율 · 산화제 탱크 · 청소기 반경 4 · 스킬 54종)
 	var r_eff: Dictionary = OniElements.csharp_rocketry.get("engine_efficiency", {}) as Dictionary
@@ -5259,10 +5536,10 @@ static func run_logic_self_test() -> Dictionary:
 	)
 	if cat2_ok:
 		passed += 1
-		details.append("PASS [21/38] C# 2차 카탈로그 (작물%d · 엔진효율20/40 · 청소기반경4 · 스킬%d종)" % [OniElements.csharp_botany.size(), (env_c.get("cs_skill_ids", []) as Array).size()])
+		details.append("PASS [21/44] C# 2차 카탈로그 (작물%d · 엔진효율20/40 · 청소기반경4 · 스킬%d종)" % [OniElements.csharp_botany.size(), (env_c.get("cs_skill_ids", []) as Array).size()])
 	else:
 		failed += 1
-		details.append("FAIL [21/38] C# 2차 카탈로그 (b=%d eff=%s sw=%d sk=%d)" % [OniElements.csharp_botany.size(), str(r_eff), int(env_c.get("auto_sweeper_range", 0)), (env_c.get("cs_skill_ids", []) as Array).size()])
+		details.append("FAIL [21/44] C# 2차 카탈로그 (b=%d eff=%s sw=%d sk=%d)" % [OniElements.csharp_botany.size(), str(r_eff), int(env_c.get("auto_sweeper_range", 0)), (env_c.get("cs_skill_ids", []) as Array).size()])
 
 	# 22) 다종 작물 식물학 (털꽃 빛+급수 · 황혼버섯 CO2+어둠 · 진눈깨비밀 저온<=5°C)
 	var w13 := OniWorld.new(73)
@@ -5318,10 +5595,10 @@ static func run_logic_self_test() -> Dictionary:
 	var sw_grew := w13.farm_status[isw].is_empty() and w13.farm_growth[isw] > 0.0
 	if bb_need_light and bb_grew and dc_need_co2 and dc_grew and sw_too_hot and sw_grew:
 		passed += 1
-		details.append("PASS [22/38] 다종 작물 식물학 (털꽃 빛필수 · 황혼버섯 CO2필수 · 진눈깨비밀 <=5°C)")
+		details.append("PASS [22/44] 다종 작물 식물학 (털꽃 빛필수 · 황혼버섯 CO2필수 · 진눈깨비밀 <=5°C)")
 	else:
 		failed += 1
-		details.append("FAIL [22/38] 식물학 (bb=%s/%s dc=%s/%s sw=%s/%s)" % [str(bb_need_light), str(bb_grew), str(dc_need_co2), str(dc_grew), str(sw_too_hot), str(sw_grew)])
+		details.append("FAIL [22/44] 식물학 (bb=%s/%s dc=%s/%s sw=%s/%s)" % [str(bb_need_light), str(bb_grew), str(dc_need_co2), str(dc_grew), str(sw_too_hot), str(sw_grew)])
 
 	# 23) 로켓 추진·연료·배기가스 (증기엔진 2만km 제한/증기배기 vs 석유엔진 5만km/CO2배기)
 	var w14 := OniWorld.new(73)
@@ -5337,10 +5614,10 @@ static func run_logic_self_test() -> Dictionary:
 	var petrol_exh_ok := w14.gas_el[w14.idx(23, 3)] == "CarbonDioxide" and w14.temp_c[w14.idx(23, 3)] >= 300.0
 	if steam_reject_30k and steam_ok_10k and steam_burn_ok and petrol_ok_50k and petrol_exh_ok:
 		passed += 1
-		details.append("PASS [23/38] 로켓 추진·연료·배기 (증기2만km제한·증기배기 / 석유5만km·CO2배기)")
+		details.append("PASS [23/44] 로켓 추진·연료·배기 (증기2만km제한·증기배기 / 석유5만km·CO2배기)")
 	else:
 		failed += 1
-		details.append("FAIL [23/38] 로켓 (rej=%s st=%s/%s pt=%s/%s)" % [str(steam_reject_30k), str(steam_ok_10k), str(steam_burn_ok), str(petrol_ok_50k), str(petrol_exh_ok)])
+		details.append("FAIL [23/44] 로켓 (rej=%s st=%s/%s pt=%s/%s)" % [str(steam_reject_30k), str(steam_ok_10k), str(steam_burn_ok), str(petrol_ok_50k), str(petrol_exh_ok)])
 
 	# 24) 목축·과밀(12칸/마리)·길들이기(wild->tame)·부화기(5x 알 부화)
 	var w15 := OniWorld.new(73)
@@ -5364,10 +5641,10 @@ static func run_logic_self_test() -> Dictionary:
 	var hatched_ok := w15.eggs_hatched >= 1 and w15.critters.size() == 2
 	if crowded_ok and tamed_ok and hatched_ok:
 		passed += 1
-		details.append("PASS [24/38] 목축 풀사이클 (12칸과밀차단 · 길들이기완료 · 부화기5x 부화)")
+		details.append("PASS [24/44] 목축 풀사이클 (12칸과밀차단 · 길들이기완료 · 부화기5x 부화)")
 	else:
 		failed += 1
-		details.append("FAIL [24/38] 목축 (crowd=%s tame=%s hatch=%s:%d)" % [str(crowded_ok), str(tamed_ok), str(hatched_ok), w15.critters.size()])
+		details.append("FAIL [24/44] 목축 (crowd=%s tame=%s hatch=%s:%d)" % [str(crowded_ok), str(tamed_ok), str(hatched_ok), w15.critters.size()])
 
 	# 25) 장식 사기(DecorMonitor -1..+12) & 환경 디버프(고막파열>4kg · 젖은발>15kg · 질식HP감소)
 	var w16 := OniWorld.new(73)
@@ -5400,10 +5677,10 @@ static func run_logic_self_test() -> Dictionary:
 	var debuff_ok := d_lo.eardrums_popped and d_lo.wet_status == "SOGGY" and d_lo.hp < 96.0 and d_lo.stress > 4.0
 	if decor_ok and debuff_ok:
 		passed += 1
-		details.append("PASS [25/38] 장식사기(+12/-1) · 고막파열(>4kg) · 젖은발(>15kg) · 질식 HP%.0f%%" % d_lo.hp)
+		details.append("PASS [25/44] 장식사기(+12/-1) · 고막파열(>4kg) · 젖은발(>15kg) · 질식 HP%.0f%%" % d_lo.hp)
 	else:
 		failed += 1
-		details.append("FAIL [25/38] 장식/디버프 (dec=%d/%d ear=%s wet=%s hp=%.1f st=%.1f)" % [d_hi.decor_morale, d_lo.decor_morale, str(d_lo.eardrums_popped), d_lo.wet_status, d_lo.hp, d_lo.stress])
+		details.append("FAIL [25/44] 장식/디버프 (dec=%d/%d ear=%s wet=%s hp=%.1f st=%.1f)" % [d_hi.decor_morale, d_lo.decor_morale, str(d_lo.eardrums_popped), d_lo.wet_status, d_lo.hp, d_lo.stress])
 
 	# 26) 스마트 배터리 히스테리시스(20%~90%) & 자동 청소기(SolidTransferArm 반경 4칸 수거)
 	var w17 := OniWorld.new(73)
@@ -5451,10 +5728,10 @@ static func run_logic_self_test() -> Dictionary:
 	var sweep_ok := absf((float(w17.inventory.get("Carbon", 0.0)) - carb_b) - 50.0) < 0.1 and w17.debris.size() == 1 and w17.sweeper_transfers == 1
 	if hyst_ok and sweep_ok:
 		passed += 1
-		details.append("PASS [26/38] 스마트배터리 20~90% 히스테리시스 & 자동청소기(반경4칸 +50kg 수거)")
+		details.append("PASS [26/44] 스마트배터리 20~90% 히스테리시스 & 자동청소기(반경4칸 +50kg 수거)")
 	else:
 		failed += 1
-		details.append("FAIL [26/38] 히스테리시스/청소기 (hyst=%s/%s/%s/%s/%s sweep=%s deb=%d)" % [str(h_15), str(h_60u), str(h_95), str(h_50d), str(h_15b), str(sweep_ok), w17.debris.size()])
+		details.append("FAIL [26/44] 히스테리시스/청소기 (hyst=%s/%s/%s/%s/%s sweep=%s deb=%d)" % [str(h_15), str(h_60u), str(h_95), str(h_50d), str(h_15b), str(sweep_ok), w17.debris.size()])
 
 	# 27) C# 3차 메커니즘 카탈로그 (아쿠아튜너 -14°C/1200W · 증기터빈 125~200°C/850W/95°C/100°C · 경도 8단계 · 전선 1/2/20kW)
 	var aq_c := OniElements.get_aquatuner_spec()
@@ -5473,10 +5750,10 @@ static func run_logic_self_test() -> Dictionary:
 	)
 	if cat3_ok:
 		passed += 1
-		details.append("PASS [27/38] C# 3차 메커니즘 (아쿠아튜너-14°C/1200W · 터빈125~200°C · 경도8단계 · 전선1/2/20kW)")
+		details.append("PASS [27/44] C# 3차 메커니즘 (아쿠아튜너-14°C/1200W · 터빈125~200°C · 경도8단계 · 전선1/2/20kW)")
 	else:
 		failed += 1
-		details.append("FAIL [27/38] C# 3차 카탈로그 (aq=%s st=%s h=%s)" % [str(aq_c), str(st_c), str(h_c)])
+		details.append("FAIL [27/44] C# 3차 카탈로그 (aq=%s st=%s h=%s)" % [str(aq_c), str(st_c), str(h_c)])
 
 	# 28) 에어록 기밀 차단 & 자동화 기계식 문 (Door.ControlState Auto/Opened/Locked)
 	var w18 := OniWorld.new(73)
@@ -5513,10 +5790,10 @@ static func run_logic_self_test() -> Dictionary:
 	var mech_opened := w18.is_passable(6, 21) and (not w18.is_fluid_blocked(6, 21))
 	if sealed_ok and opened_ok and mech_locked and mech_opened:
 		passed += 1
-		details.append("PASS [28/38] 에어록 기밀(자동 차단/개방 유통) & 자동화 기계식 문 통행·유체 제어")
+		details.append("PASS [28/44] 에어록 기밀(자동 차단/개방 유통) & 자동화 기계식 문 통행·유체 제어")
 	else:
 		failed += 1
-		details.append("FAIL [28/38] 에어록 (seal=%s open=%s mlock=%s mopen=%s)" % [str(sealed_ok), str(opened_ok), str(mech_locked), str(mech_opened)])
+		details.append("FAIL [28/44] 에어록 (seal=%s open=%s mlock=%s mopen=%s)" % [str(sealed_ok), str(opened_ok), str(mech_locked), str(mech_opened)])
 
 	# 29) 방향성 원소 필터 (ElementFilter: 가스 H2→우측/O2→하단 · 액체 CrudeOil→우측/Water→하단)
 	var w19 := OniWorld.new(73)
@@ -5568,10 +5845,10 @@ static func run_logic_self_test() -> Dictionary:
 	var lf_wat_down := w19.lpipe_el[ilf_d] == "Water" and w19.lpipe_mass[ilf_d] > 5.0
 	if gf_h2_right and gf_o2_down and lf_oil_right and lf_wat_down:
 		passed += 1
-		details.append("PASS [29/38] 방향성 원소 필터 (가스 H2→우/O2→하 · 액체 원유→우/물→하 분리)")
+		details.append("PASS [29/44] 방향성 원소 필터 (가스 H2→우/O2→하 · 액체 원유→우/물→하 분리)")
 	else:
 		failed += 1
-		details.append("FAIL [29/38] 원소 필터 (gf=%s/%s lf=%s/%s)" % [str(gf_h2_right), str(gf_o2_down), str(lf_oil_right), str(lf_wat_down)])
+		details.append("FAIL [29/44] 원소 필터 (gf=%s/%s lf=%s/%s)" % [str(gf_h2_right), str(gf_o2_down), str(lf_oil_right), str(lf_wat_down)])
 
 	# 30) 아쿠아튜너 에너지 보존 열펌프(-14°C/1200W) & 증기 터빈 온도별 출력 곡선(125°C→243W / 200°C→850W / 100°C 정지)
 	var w20 := OniWorld.new(73)
@@ -5649,10 +5926,10 @@ static func run_logic_self_test() -> Dictionary:
 	var st_ok := w_125 > 210.0 and w_125 < 290.0 and w_200 > 830.0 and st_hot_body and st_stall
 	if aq_ok and st_ok:
 		passed += 1
-		details.append("PASS [30/38] 아쿠아튜너(오차%.2f%%·물/원유%.1fx) & 터빈(125°C:%.0fW/200°C:%.0fW/100°C정지)" % [aq_q_err * 100.0, dt_wat / maxf(0.001, dt_oil), w_125, w_200])
+		details.append("PASS [30/44] 아쿠아튜너(오차%.2f%%·물/원유%.1fx) & 터빈(125°C:%.0fW/200°C:%.0fW/100°C정지)" % [aq_q_err * 100.0, dt_wat / maxf(0.001, dt_oil), w_125, w_200])
 	else:
 		failed += 1
-		details.append("FAIL [30/38] 열펌프/터빈 (aq=%s:%.3f/%.3f w125=%.0f w200=%.0f stall=%s)" % [str(aq_ok), dt_wat, dt_oil, w_125, w_200, str(st_stall)])
+		details.append("FAIL [30/44] 열펌프/터빈 (aq=%s:%.3f/%.3f w125=%.0f w200=%.0f stall=%s)" % [str(aq_ok), dt_wat, dt_oil, w_125, w_200, str(st_stall)])
 
 	# 31) 가변 센서 임계값(온도/기압) & 채굴 경도 스킬 티어(GameUtil.Hardness)
 	var w21 := OniWorld.new(73)
@@ -5690,10 +5967,10 @@ static func run_logic_self_test() -> Dictionary:
 	var m3_ok := d_m.can_dig_element("Obsidian") and (not d_m.can_dig_element("Unobtanium"))
 	if ts_lo and ts_hi and as_lo and as_hi and m0_ok and m2_ok and m3_ok:
 		passed += 1
-		details.append("PASS [31/38] 가변 임계값 센서(온도/기압) & 경도 채굴 티어(심연석Lv2·흑요석Lv3)")
+		details.append("PASS [31/44] 가변 임계값 센서(온도/기압) & 경도 채굴 티어(심연석Lv2·흑요석Lv3)")
 	else:
 		failed += 1
-		details.append("FAIL [31/38] 센서/경도 (ts=%s/%s as=%s/%s m=%s/%s/%s)" % [str(ts_lo), str(ts_hi), str(as_lo), str(as_hi), str(m0_ok), str(m2_ok), str(m3_ok)])
+		details.append("FAIL [31/44] 센서/경도 (ts=%s/%s as=%s/%s m=%s/%s/%s)" % [str(ts_lo), str(ts_hi), str(as_lo), str(as_hi), str(m0_ok), str(m2_ok), str(m3_ok)])
 
 	# 32) 전선 등급(1kW 과부하 → 2kW 전도성 해소) & 승화 1.8kg 기압 상한(Sublimates)
 	var w22 := OniWorld.new(73)
@@ -5730,10 +6007,10 @@ static func run_logic_self_test() -> Dictionary:
 	var sub_cap_ok := absf(w22.gas_mass[iox_u] - 1.85) < 0.001
 	if ov_1k and ok_2k and sub_emit and sub_cap_ok:
 		passed += 1
-		details.append("PASS [32/38] 전선 등급(1kW과부하→2kW전도성 해소) & 옥시라이트 1.8kg 승화 상한")
+		details.append("PASS [32/44] 전선 등급(1kW과부하→2kW전도성 해소) & 옥시라이트 1.8kg 승화 상한")
 	else:
 		failed += 1
-		details.append("FAIL [32/38] 전선/승화 (ov1k=%s ok2k=%s sub=%s/%s)" % [str(ov_1k), str(ok_2k), str(sub_emit), str(sub_cap_ok)])
+		details.append("FAIL [32/44] 전선/승화 (ov1k=%s ok2k=%s sub=%s/%s)" % [str(ov_1k), str(ok_2k), str(sub_emit), str(sub_cap_ok)])
 
 	# 33) C# 4차 유틸리티·설비 카탈로그 (탄소제거기·수세식변기·샤워·튜브·거치대·씨근풀·AETN·휴게·망원경)
 	var u_sk := OniElements.get_utility_spec("co2_skimmer")
@@ -5756,10 +6033,10 @@ static func run_logic_self_test() -> Dictionary:
 	)
 	if cat4_ok:
 		passed += 1
-		details.append("PASS [33/38] C# 4차 설비 카탈로그 (9개 서브시스템: 스키머·변기11.7kg·튜브40kJ·씨근풀480rad·AETN80kW)")
+		details.append("PASS [33/44] C# 4차 설비 카탈로그 (9개 서브시스템: 스키머·변기11.7kg·튜브40kJ·씨근풀480rad·AETN80kW)")
 	else:
 		failed += 1
-		details.append("FAIL [33/38] C# 4차 카탈로그 (sk=%s ft=%s tt=%s ww=%s ae=%s)" % [str(u_sk), str(u_ft), str(u_tt), str(u_ww), str(u_ae)])
+		details.append("FAIL [33/44] C# 4차 카탈로그 (sk=%s ft=%s tt=%s ww=%s ae=%s)" % [str(u_sk), str(u_ft), str(u_tt), str(u_ww), str(u_ae)])
 
 	# 34) 폐쇄 수질 루프 (탄소제거기 Water→DirtyWater 필수 & 수세식 변기 5kg→11.7kg 수분 증식)
 	var w23 := OniWorld.new(73)
@@ -5810,10 +6087,10 @@ static func run_logic_self_test() -> Dictionary:
 	var ft_ok := absf(dw_tot - 11.7) < 0.1
 	if sk_nowat and sk_ok and ft_ok:
 		passed += 1
-		details.append("PASS [34/38] 폐쇄 수질 루프 (탄소제거기 청수→오염수 1kg · 수세식변기 5kg→%.1fkg 증식)" % dw_tot)
+		details.append("PASS [34/44] 폐쇄 수질 루프 (탄소제거기 청수→오염수 1kg · 수세식변기 5kg→%.1fkg 증식)" % dw_tot)
 	else:
 		failed += 1
-		details.append("FAIL [34/38] 수질루프 (nowat=%s sk=%s co2=%.2f dw=%.1f)" % [str(sk_nowat), str(sk_ok), w23.gas_mass[isk], dw_tot])
+		details.append("FAIL [34/44] 수질루프 (nowat=%s sk=%s co2=%.2f dw=%.1f)" % [str(sk_nowat), str(sk_ok), w23.gas_mass[isk], dw_tot])
 
 	# 35) 수송 튜브 40kJ/10kJ 공압 발사(5배속 vs 미충전 1.5배속) & 제트복 거치대 배관 O2/석유 충전
 	var w24 := OniWorld.new(73)
@@ -5873,10 +6150,10 @@ static func run_logic_self_test() -> Dictionary:
 	var jd_ok := w24.dock_o2_kg[ijd] >= 0.95 and w24.dock_fuel_kg[ijd] >= 9.5 and w24.gpipe_mass[ijd] < 0.01 and w24.lpipe_mass[ijd] < 0.1
 	if tt_full and tt_cost_ok and tt_spd_ok and jd_ok:
 		passed += 1
-		details.append("PASS [35/38] 수송튜브(40kJ→10kJ발사 %.1fx) & 제트복거치대(O2 %.0fkg·석유 %.0fkg 충전)" % [dy_fast / maxf(0.01, dy_slow), w24.dock_o2_kg[ijd], w24.dock_fuel_kg[ijd]])
+		details.append("PASS [35/44] 수송튜브(40kJ→10kJ발사 %.1fx) & 제트복거치대(O2 %.0fkg·석유 %.0fkg 충전)" % [dy_fast / maxf(0.01, dy_slow), w24.dock_o2_kg[ijd], w24.dock_fuel_kg[ijd]])
 	else:
 		failed += 1
-		details.append("FAIL [35/38] 튜브/거치대 (full=%s cost=%s spd=%.2f/%.2f jd=%s:%.1f/%.1f)" % [str(tt_full), str(tt_cost_ok), dy_fast, dy_slow, str(jd_ok), w24.dock_o2_kg[ijd], w24.dock_fuel_kg[ijd]])
+		details.append("FAIL [35/44] 튜브/거치대 (full=%s cost=%s spd=%.2f/%.2f jd=%s:%.1f/%.1f)" % [str(tt_full), str(tt_cost_ok), dy_fast, dy_slow, str(jd_ok), w24.dock_o2_kg[ijd], w24.dock_fuel_kg[ijd]])
 
 	# 36) 씨근풀 기체 비열(SHC) 비례 냉각(H2 vs CO2 ~2.8x)·480rad & AETN 수소 연료(-80kDTU/s / 무연료 정지)
 	var w25 := OniWorld.new(73)
@@ -5933,10 +6210,10 @@ static func run_logic_self_test() -> Dictionary:
 	var aetn_run := w25.machine_running[iaetn] == 1 and absf(w25.gpipe_mass[iaetn] - 0.99) < 0.005 and w25.temp_c[iaetn] < 29.0
 	if ww_ok and aetn_nofuel and aetn_run:
 		passed += 1
-		details.append("PASS [36/38] 씨근풀(H2/CO2 %.2fx·%.0frad) & AETN(무수소정지·수소-80kW→%.1f°C)" % [ww_ratio, w25.rads[iw_h2], w25.temp_c[iaetn]])
+		details.append("PASS [36/44] 씨근풀(H2/CO2 %.2fx·%.0frad) & AETN(무수소정지·수소-80kW→%.1f°C)" % [ww_ratio, w25.rads[iw_h2], w25.temp_c[iaetn]])
 	else:
 		failed += 1
-		details.append("FAIL [36/38] 냉각기 (ww=%s:%.2f/%.0f aetn=%s/%s:%.1f)" % [str(ww_ok), ww_ratio, w25.rads[iw_h2], str(aetn_nofuel), str(aetn_run), w25.temp_c[iaetn]])
+		details.append("FAIL [36/44] 냉각기 (ww=%s:%.2f/%.0f aetn=%s/%s:%.1f)" % [str(ww_ok), ww_ratio, w25.rads[iw_h2], str(aetn_nofuel), str(aetn_run), w25.temp_c[iaetn]])
 
 	# 37) 샤워(+3 사기·젖음 제거) · 해변 의자(조명+8/어둠+5) · 온수 욕조(WarmTouch 영하 -10°C 면역)
 	var w26 := OniWorld.new(73)
@@ -5995,10 +6272,10 @@ static func run_logic_self_test() -> Dictionary:
 	var warm_immune := d_ht.rec_morale == 5 and d_ht.warm_touch_timer > 1700.0 and d_ht.thermal_status.is_empty()
 	if sh_ok and bc_dark and bc_lit and cold_hit and warm_immune:
 		passed += 1
-		details.append("PASS [37/38] 샤워(+3·젖음제거) · 해변의자(햇빛+8/어둠+5) · 온수욕조(WarmTouch -10°C 면역)")
+		details.append("PASS [37/44] 샤워(+3·젖음제거) · 해변의자(햇빛+8/어둠+5) · 온수욕조(WarmTouch -10°C 면역)")
 	else:
 		failed += 1
-		details.append("FAIL [37/38] 휴게/샤워 (sh=%s bc=%s/%s cold=%s warm=%s)" % [str(sh_ok), str(bc_dark), str(bc_lit), str(cold_hit), str(warm_immune)])
+		details.append("FAIL [37/44] 휴게/샤워 (sh=%s bc=%s/%s cold=%s warm=%s)" % [str(sh_ok), str(bc_dark), str(bc_lit), str(cold_hit), str(warm_immune)])
 
 	# 38) 우주 스캐너·망원경 시야 차폐(암반 0% vs 유리 타일 100%) & 망원경 미발견 목적지 탐색 완료
 	var w27 := OniWorld.new(73)
@@ -6025,9 +6302,351 @@ static func run_logic_self_test() -> Dictionary:
 	var tele_ok := bool(w27.space_missions[0].get("scanned", false)) and float(w27.scanned_destinations.get(String(w27.space_missions[0]["id"]), 0.0)) >= 1.0
 	if vis_open and vis_rock and scan_blocked and vis_glass and tele_ok:
 		passed += 1
-		details.append("PASS [38/38] 우주 광학 시야 (암반 0% 차단 · 유리타일 100% 투과 · 망원경 목적지 탐색 완료)")
+		details.append("PASS [38/44] 우주 광학 시야 (암반 0% 차단 · 유리타일 100% 투과 · 망원경 목적지 탐색 완료)")
 	else:
 		failed += 1
-		details.append("FAIL [38/38] 우주광학 (open=%s rock=%s blk=%s glass=%s tele=%s)" % [str(vis_open), str(vis_rock), str(scan_blocked), str(vis_glass), str(tele_ok)])
+		details.append("FAIL [38/44] 우주광학 (open=%s rock=%s blk=%s glass=%s tele=%s)" % [str(vis_open), str(vis_rock), str(scan_blocked), str(vis_glass), str(tele_ok)])
+
+	# 39) C# 5차 심층 카탈로그 (재질 과열/장식 보정 · 염소 반감기 10s · 음식품질 사기 -1..+16 · 속성 배율 · 5차 설비)
+	var cat5_ok := (
+		absf(OniElements.get_material_overheat_bonus("GoldAmalgam") - 50.0) < 0.1
+		and absf(OniElements.get_material_overheat_bonus("Steel") - 200.0) < 0.1
+		and absf(OniElements.get_material_overheat_bonus("Lead") - (-20.0)) < 0.1
+		and absf(OniElements.get_material_decor_mult("Granite") - 0.2) < 0.01
+		and absf(OniElements.get_material_decor_mult("Gold") - 0.5) < 0.01
+		and absf(OniElements.get_chlorine_halflife_s() - 10.0) < 0.1
+		and OniElements.get_food_quality_morale(-1) == -1
+		and OniElements.get_food_quality_morale(3) == 8
+		and OniElements.get_food_quality_morale(5) == 16
+		and absf(OniElements.get_attr_converter("ResearchSpeed") - 0.4) < 0.01
+		and absf(float(OniElements.get_advanced_machine_spec("natgas_gen").get("gen_w", 0.0)) - 800.0) < 1.0
+	)
+	if cat5_ok:
+		passed += 1
+		details.append("PASS [39/44] C# 5차 카탈로그 (재질과열+50/+200°C · 염소10s · 음식사기-1..+16 · 연구+40%/lv)")
+	else:
+		failed += 1
+		details.append("FAIL [39/44] C# 5차 카탈로그 (ga=%.0f st=%.0f cl=%.0f bbq=%d res=%.2f)" % [OniElements.get_material_overheat_bonus("GoldAmalgam"), OniElements.get_material_overheat_bonus("Steel"), OniElements.get_chlorine_halflife_s(), OniElements.get_food_quality_morale(3), OniElements.get_attr_converter("ResearchSpeed")])
+
+	# 40) 재질 과열 한계(Cuprite 75°C vs GoldAmalgam 125°C vs Steel 275°C) & 장식 재질 보정(Gold +50%)
+	var w28 := OniWorld.new(73)
+	w28.critters.clear()
+	for mx in range(4, 18):
+		for my in range(21, 26):
+			var mi := w28.idx(mx, my)
+			w28.solid_el[mi] = ""
+			w28.solid_mass[mi] = 0.0
+			w28.building[mi] = ""
+			w28.building_mat[mi] = ""
+			w28.has_wire[mi] = 0
+			w28.building_hp[mi] = 100.0
+	var ip_cu := w28.idx(6, 22)
+	var ip_ga := w28.idx(8, 22)
+	var ip_st := w28.idx(10, 22)
+	w28.building[ip_cu] = "liquid_pump"
+	w28.building_mat[ip_cu] = "Cuprite" # 75°C
+	w28.building[ip_ga] = "liquid_pump"
+	w28.building_mat[ip_ga] = "GoldAmalgam" # 125°C
+	w28.building[ip_st] = "liquid_pump"
+	w28.building_mat[ip_st] = "Steel" # 275°C
+	w28.temp_c[ip_cu] = 110.0
+	w28.temp_c[ip_ga] = 110.0
+	w28.temp_c[ip_st] = 110.0
+	w28._step_building_health(5.0)
+	var mat_110_ok := w28.building_hp[ip_cu] < 90.0 and w28.building_hp[ip_ga] >= 99.9 and w28.building_hp[ip_st] >= 99.9
+	w28.temp_c[ip_ga] = 150.0
+	w28.temp_c[ip_st] = 150.0
+	w28._step_building_health(5.0)
+	var mat_150_ok := w28.building_hp[ip_ga] < 90.0 and w28.building_hp[ip_st] >= 99.9
+	var isc1 := w28.idx(6, 24)
+	var isc2 := w28.idx(14, 24)
+	w28.building[isc1] = "sculpture"
+	w28.building_mat[isc1] = "SandStone" # +10%
+	w28.building[isc2] = "sculpture"
+	w28.building_mat[isc2] = "Gold" # +50%
+	w28._recompute_decor()
+	var mat_dec_ok := w28.decor_val[isc2] > w28.decor_val[isc1] * 1.3
+	if mat_110_ok and mat_150_ok and mat_dec_ok:
+		passed += 1
+		details.append("PASS [40/44] 재질 보정 (과열 구리75°C/금아말감125°C/강철275°C · 금 조각 장식 %.1f vs %.1f)" % [w28.decor_val[isc2], w28.decor_val[isc1]])
+	else:
+		failed += 1
+		details.append("FAIL [40/44] 재질 보정 (110=%s 150=%s dec=%.1f/%.1f)" % [str(mat_110_ok), str(mat_150_ok), w28.decor_val[isc2], w28.decor_val[isc1]])
+
+	# 41) 염소실(ChlorineGas) 저장고 살균(반감기 10초) & 배관 세균 전파
+	var w29 := OniWorld.new(73)
+	for cx in range(4, 15):
+		var ci := w29.idx(cx, 22)
+		w29.solid_el[ci] = ""
+		w29.solid_mass[ci] = 0.0
+		w29.building[ci] = ""
+		w29.has_wire[ci] = 0
+		w29.has_liquid_pipe[ci] = 0
+		w29.lpipe_mass[ci] = 0.0
+		w29.lpipe_el[ci] = ""
+		w29.lpipe_germs[ci] = 0.0
+		w29.reservoir_mass[ci] = 0.0
+		w29.reservoir_el[ci] = ""
+		w29.reservoir_germs[ci] = 0.0
+		w29.liquid_mass[ci] = 0.0
+		w29.liquid_el[ci] = ""
+		w29.germ_count[ci] = 0.0
+		w29.germ_type[ci] = ""
+	w29.building[w29.idx(4, 22)] = "battery"
+	w29.battery_j[w29.idx(4, 22)] = 10000.0
+	w29.has_wire[w29.idx(4, 22)] = 1
+	var ipmp := w29.idx(5, 22)
+	var ir_cl := w29.idx(6, 22)
+	var ir_o2 := w29.idx(12, 22)
+	w29.has_wire[ipmp] = 1
+	w29.building[ipmp] = "liquid_pump"
+	w29.has_liquid_pipe[ipmp] = 1
+	w29.liquid_el[ipmp] = "DirtyWater"
+	w29.liquid_mass[ipmp] = 200.0
+	w29.germ_type[ipmp] = "FoodPoisoning"
+	w29.germ_count[ipmp] = 100000.0
+	w29.building[ir_cl] = "liquid_reservoir"
+	w29.has_liquid_pipe[ir_cl] = 1
+	w29.gas_el[ir_cl] = "Oxygen"
+	w29.gas_mass[ir_cl] = 1.0
+	for _pg in range(3):
+		w29._step_power_and_machines(1.0)
+		w29.step_conduit_tick()
+	var pipe_germ_ok := w29.reservoir_germs[ir_cl] > 500.0
+	w29.building[ir_o2] = "liquid_reservoir"
+	w29.gas_el[ir_cl] = "ChlorineGas"
+	w29.gas_mass[ir_cl] = 1.0
+	w29.reservoir_germs[ir_cl] = 100000.0
+	w29.reservoir_germ_type[ir_cl] = "FoodPoisoning"
+	w29.gas_el[ir_o2] = "Oxygen"
+	w29.gas_mass[ir_o2] = 1.0
+	w29.reservoir_germs[ir_o2] = 100000.0
+	w29.reservoir_germ_type[ir_o2] = "FoodPoisoning"
+	for _cl in range(4):
+		w29._step_offgassing_and_germs(10.0)
+	var cl_kill_ok := w29.reservoir_germs[ir_cl] < 10000.0 and w29.reservoir_germs[ir_o2] >= 99000.0
+	if pipe_germ_ok and cl_kill_ok:
+		passed += 1
+		details.append("PASS [41/44] 염소실 저장고 살균 (배관세균유입 · Cl2 40s→%.0f vs O2 %.0f)" % [w29.reservoir_germs[ir_cl], w29.reservoir_germs[ir_o2]])
+	else:
+		failed += 1
+		details.append("FAIL [41/44] 염소살균 (pipe=%s cl=%.0f o2=%.0f)" % [str(pipe_germ_ok), w29.reservoir_germs[ir_cl], w29.reservoir_germs[ir_o2]])
+
+	# 42) 음식 품질 사기(-1..+16) & 곤죽 바 식중독균(1,000) / 바비큐 품질(+3 → 사기+8)
+	var w30 := OniWorld.new(73)
+	for fx in range(5, 10):
+		var fi := w30.idx(fx, 22)
+		w30.solid_el[fi] = ""
+		w30.solid_mass[fi] = 0.0
+		w30.building[fi] = ""
+		w30.has_wire[fi] = 1
+		w30.germ_count[fi] = 0.0
+		w30.germ_type[fi] = ""
+	w30.building[w30.idx(5, 22)] = "battery"
+	w30.battery_j[w30.idx(5, 22)] = 10000.0
+	w30.building[w30.idx(6, 22)] = "microbe_musher"
+	w30.food_kcal = 4000.0
+	w30.inventory["Dirt"] = 300.0
+	w30.inventory["Carbon"] = 300.0
+	w30._step_power_and_machines(1.0)
+	var mush_ok := w30.colony_food_quality == -1 and w30.germ_count[w30.idx(6, 22)] >= 500.0
+	w30.building[w30.idx(6, 22)] = ""
+	w30.building[w30.idx(8, 22)] = "electric_grill"
+	w30.cycle_station_recipe(8, 22)
+	w30.cycle_station_recipe(8, 22)
+	w30.cycle_station_recipe(8, 22) # CookedMeat (Barbecue, quality=3)
+	w30._step_power_and_machines(1.0)
+	var bbq_qual_ok := w30.colony_food_quality == 3
+	var d_f := OniDuplicant.new(50, "미식", Vector2i(22, 16), Color.WHITE, "조기 기상")
+	d_f.eat_meal(w30, -1)
+	var fm_neg := d_f.food_morale == -1
+	d_f.eat_meal(w30, 3)
+	var fm_bbq := d_f.food_morale == 8
+	d_f.eat_meal(w30, 5)
+	var fm_pep := d_f.food_morale == 16
+	if mush_ok and bbq_qual_ok and fm_neg and fm_bbq and fm_pep:
+		passed += 1
+		details.append("PASS [42/44] 음식 품질 사기 (곤죽-1+균1000 · 바비큐+8 · 후추빵+16)")
+	else:
+		failed += 1
+		details.append("FAIL [42/44] 음식품질 (mush=%s bbq=%s q=%d m=%s/%s/%s)" % [str(mush_ok), str(bbq_qual_ok), w30.colony_food_quality, str(fm_neg), str(fm_bbq), str(fm_pep)])
+
+	# 43) 5차 산업·열역학 설비 (탈취기 PO2→O2+점토 · 기체 열 조절기 -14°C · 천연가스 800W · 폴리머 압축기 플라스틱)
+	var w31 := OniWorld.new(73)
+	w31.sim_time = 540.0 # 야간 태양광 0W
+	for ix in range(4, 20):
+		for iy in range(21, 24):
+			var ii := w31.idx(ix, iy)
+			w31.solid_el[ii] = ""
+			w31.solid_mass[ii] = 0.0
+			w31.building[ii] = ""
+			w31.has_wire[ii] = 0
+			w31.has_gas_pipe[ii] = 0
+			w31.has_liquid_pipe[ii] = 0
+			w31.gas_el[ii] = "Vacuum"
+			w31.gas_mass[ii] = 0.0
+			w31.liquid_el[ii] = ""
+			w31.liquid_mass[ii] = 0.0
+			w31.temp_c[ii] = 20.0
+	# 탈취기 (6,22)
+	w31.building[w31.idx(5, 22)] = "battery"
+	w31.battery_j[w31.idx(5, 22)] = 10000.0
+	w31.has_wire[w31.idx(5, 22)] = 1
+	var idf := w31.idx(6, 22)
+	w31.has_wire[idf] = 1
+	w31.building[idf] = "deodorizer"
+	w31.gas_el[idf] = "ContaminatedOxygen"
+	w31.gas_mass[idf] = 1.0
+	w31.inventory["Sand"] = 50.0
+	w31.inventory["Clay"] = 0.0
+	# 기체 열 조절기 (10,22)
+	w31.building[w31.idx(9, 22)] = "battery"
+	w31.battery_j[w31.idx(9, 22)] = 10000.0
+	w31.has_wire[w31.idx(9, 22)] = 1
+	var itr := w31.idx(10, 22)
+	w31.has_wire[itr] = 1
+	w31.building[itr] = "thermo_regulator"
+	w31.has_gas_pipe[itr] = 1
+	w31.gpipe_el[itr] = "Hydrogen"
+	w31.gpipe_mass[itr] = 1.0
+	w31.gpipe_temp[itr] = 50.0
+	w31.liquid_el[itr] = "Water"
+	w31.liquid_mass[itr] = 100.0
+	var c_tr := w31._cell_thermal_mass(itr)
+	# 천연가스 발전기 (14,22)
+	var ing := w31.idx(14, 22)
+	w31.building[ing] = "natgas_gen"
+	w31.has_gas_pipe[ing] = 1
+	w31.gpipe_el[ing] = "Methane"
+	w31.gpipe_mass[ing] = 1.0
+	# 폴리머 압축기 (18,22)
+	w31.building[w31.idx(17, 22)] = "battery"
+	w31.battery_j[w31.idx(17, 22)] = 10000.0
+	w31.has_wire[w31.idx(17, 22)] = 1
+	var ipm := w31.idx(18, 22)
+	w31.has_wire[ipm] = 1
+	w31.building[ipm] = "polymer_press"
+	w31.inventory["Petroleum"] = 50.0
+	w31.inventory["Plastic"] = 0.0
+	w31._step_power_and_machines(1.0)
+	var df_ok := w31.gas_el[w31.idx(6, 21)] == "Oxygen" and w31.gas_mass[w31.idx(6, 21)] > 0.08 and float(w31.inventory.get("Clay", 0.0)) > 0.12
+	var tr_q_err := absf((w31.temp_c[itr] - 20.0) * c_tr - (1.0 * 2.4 * 14.0)) / (1.0 * 2.4 * 14.0)
+	var tr_ok := absf(w31.gpipe_temp[itr] - 36.0) < 0.1 and tr_q_err < 0.02
+	var ng_ok := w31.power_produced_w >= 795.0 and absf(w31.gpipe_mass[ing] - 0.91) < 0.01 and w31.gas_el[ing] == "CarbonDioxide" and w31.liquid_el[ing] == "DirtyWater"
+	var pm_ok := float(w31.inventory.get("Plastic", 0.0)) >= 0.45 and w31.gas_mass[ipm] > 0.01
+	if df_ok and tr_ok and ng_ok and pm_ok:
+		passed += 1
+		details.append("PASS [43/44] 5차 설비 (탈취기O2+점토 · 열조절기-14°C · 천연가스%.0fW · 플라스틱%.1fkg)" % [w31.power_produced_w, float(w31.inventory.get("Plastic", 0.0))])
+	else:
+		failed += 1
+		details.append("FAIL [43/44] 5차설비 (df=%s tr=%s:%.3f ng=%s:%.0f pm=%s:%.2f)" % [str(df_ok), str(tr_ok), tr_q_err, str(ng_ok), w31.power_produced_w, str(pm_ok), float(w31.inventory.get("Plastic", 0.0))])
+
+	# 44) 차단 밸브(RED차단/GREEN유통) · XOR/FILTER(5s) 게이트 · 속성 이동+40% · 우주 일광화상 · 폭식(BingeEater)
+	var w32 := OniWorld.new(73)
+	for ax in range(4, 20):
+		for ay in range(20, 24):
+			var ai := w32.idx(ax, ay)
+			w32.solid_el[ai] = ""
+			w32.solid_mass[ai] = 0.0
+			w32.building[ai] = ""
+			w32.has_wire[ai] = 0
+			w32.has_logic_wire[ai] = 0
+			w32.has_liquid_pipe[ai] = 0
+			w32.lpipe_mass[ai] = 0.0
+			w32.lpipe_el[ai] = ""
+			w32.logic_filter_timer[ai] = 0.0
+			w32.logic_switch_state.erase(ai)
+	# Liquid Shutoff at (6,22) controlled by logic_switch at (6,21), downstream pipe at (7,22)
+	w32.building[w32.idx(5, 22)] = "battery"
+	w32.battery_j[w32.idx(5, 22)] = 10000.0
+	w32.has_wire[w32.idx(5, 22)] = 1
+	var ilsh := w32.idx(6, 22)
+	var ilsh_o := w32.idx(7, 22)
+	w32.has_wire[ilsh] = 1
+	w32.building[ilsh] = "liquid_shutoff"
+	w32.has_liquid_pipe[ilsh] = 1
+	w32.has_liquid_pipe[ilsh_o] = 1
+	w32.lpipe_el[ilsh] = "Water"
+	w32.lpipe_mass[ilsh] = 10.0
+	w32.building[w32.idx(6, 21)] = "logic_switch"
+	w32.logic_switch_state[w32.idx(6, 21)] = false
+	w32._step_logic_network(0.0)
+	w32._step_power_and_machines(1.0)
+	w32.step_conduit_tick()
+	var shut_blk := w32.lpipe_mass[ilsh_o] < 0.05
+	w32.logic_switch_state[w32.idx(6, 21)] = true
+	w32._step_logic_network(0.0)
+	w32._step_power_and_machines(1.0)
+	w32.step_conduit_tick()
+	var shut_open := w32.lpipe_mass[ilsh_o] > 5.0
+	# XOR gate at (12,22): inputs (11,22) & (12,21), out (13,22)
+	w32.building[w32.idx(11, 22)] = "logic_switch"
+	w32.logic_switch_state[w32.idx(11, 22)] = true
+	w32.building[w32.idx(12, 21)] = "logic_switch"
+	w32.logic_switch_state[w32.idx(12, 21)] = false
+	w32.building[w32.idx(12, 22)] = "logic_xor"
+	w32.has_logic_wire[w32.idx(13, 22)] = 1
+	w32._step_logic_network(0.0)
+	var xor_10 := w32.logic_signal[w32.idx(13, 22)] == 1
+	w32.logic_switch_state[w32.idx(12, 21)] = true
+	w32._step_logic_network(0.0)
+	var xor_11 := w32.logic_signal[w32.idx(13, 22)] == 0
+	# FILTER gate at (17,22): input (16,22), out (18,22), 5.0s continuous GREEN
+	w32.building[w32.idx(16, 22)] = "logic_switch"
+	w32.logic_switch_state[w32.idx(16, 22)] = true
+	w32.building[w32.idx(17, 22)] = "logic_filter"
+	w32.has_logic_wire[w32.idx(18, 22)] = 1
+	w32._step_logic_network(2.0)
+	var flt_2s := w32.logic_signal[w32.idx(18, 22)] == 0
+	w32._step_logic_network(3.5)
+	var flt_5s := w32.logic_signal[w32.idx(18, 22)] == 1
+	w32.logic_switch_state[w32.idx(16, 22)] = false
+	w32._step_logic_network(0.1)
+	var flt_rst := w32.logic_signal[w32.idx(18, 22)] == 0
+	# MovementSpeed +10%/lvl (Lv0 vs Lv4 -> 1.4x)
+	var d_v0 := OniDuplicant.new(60, "느림", Vector2i(21, 16), Color.WHITE, "조기 기상")
+	var d_v4 := OniDuplicant.new(61, "빠름", Vector2i(21, 16), Color.WHITE, "조기 기상")
+	d_v0.skill_level = 0
+	d_v4.skill_level = 4
+	d_v0.path = [Vector2i(22, 16)]
+	d_v4.path = [Vector2i(22, 16)]
+	d_v0._step_move(w32, 0.1)
+	d_v4._step_move(w32, 0.1)
+	var spd_ratio := (d_v4.pos.x - 21.0) / maxf(0.001, d_v0.pos.x - 21.0)
+	var attr_ok := absf(spd_ratio - 1.4) < 0.05
+	# Sunburn (space exposed vs bunker_tile roof) + BingeEater stress reaction
+	w32.sim_time = 230.0
+	w32.rads.fill(0.0)
+	w32.building[w32.idx(25, 3)] = "bunker_tile"
+	w32.building[w32.idx(28, 3)] = "bunker_tile"
+	w32.building[w32.idx(28, 1)] = "bunker_tile"
+	for scx in [25, 28]:
+		var sci := w32.idx(scx, 2)
+		w32.gas_el[sci] = "Oxygen"
+		w32.gas_mass[sci] = 1.0
+		w32.temp_c[sci] = 20.0
+	var d_sun1 := OniDuplicant.new(62, "노천", Vector2i(25, 2), Color.WHITE, "조기 기상")
+	var d_sun2 := OniDuplicant.new(63, "차폐", Vector2i(28, 2), Color.WHITE, "조기 기상")
+	for _sk in range(6):
+		d_sun1._repath_cooldown = 99.0
+		d_sun2._repath_cooldown = 99.0
+		d_sun1.step(w32, 1.0)
+		d_sun2.step(w32, 1.0)
+	var sun_ok := d_sun1.disease == "SunburnSickness" and d_sun2.disease.is_empty()
+	var d_be := OniDuplicant.new(64, "폭식", Vector2i(22, 16), Color.WHITE, "조기 기상")
+	d_be.stress_trait = "BingeEater"
+	d_be.stress = 99.0
+	d_be.kcal = 3000.0
+	w32.food_kcal = 4000.0
+	w32.temp_c[w32.idx(22, 16)] = 95.0
+	d_be._repath_cooldown = 99.0
+	d_be.step(w32, 1.0)
+	var binge_ok := w32.food_kcal <= 3250.0 and d_be.stress <= 65.0
+	if shut_blk and shut_open and xor_10 and xor_11 and flt_2s and flt_5s and flt_rst and attr_ok and sun_ok and binge_ok:
+		passed += 1
+		details.append("PASS [44/44] 차단밸브 · XOR/FILTER(5s) · 이동속성(%.1fx) · 일광화상차폐 · 폭식붕괴" % spd_ratio)
+	else:
+		failed += 1
+		details.append("FAIL [44/44] 밸브/게이트/속성 (sh=%s/%s xor=%s/%s flt=%s/%s/%s attr=%.2f sun=%s binge=%s)" % [str(shut_blk), str(shut_open), str(xor_10), str(xor_11), str(flt_2s), str(flt_5s), str(flt_rst), spd_ratio, str(sun_ok), str(binge_ok)])
 
 	return {"passed": passed, "failed": failed, "total": passed + failed, "details": details}

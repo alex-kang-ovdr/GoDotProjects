@@ -736,8 +736,8 @@ func _draw_overlay_front() -> void:
 				var i := world.idx(x, y)
 				var b := world.building[i]
 				var is_pw := world.has_wire[i] == 1
-				var is_gen := b in ["generator", "coal_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen"]
-				var is_con := b in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "telescope", "auto_sweeper", "sweep_station", "incubator", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]
+				var is_gen := b in ["generator", "coal_gen", "natgas_gen", "hydrogen_gen", "steam_turbine", "solar_panel", "petrol_gen"]
+				var is_con := b in ["diffuser", "deodorizer", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "thermo_aquatuner", "thermo_regulator", "metal_refinery", "oil_refinery", "polymer_press", "rock_crusher", "liquid_pump", "gas_pump", "liquid_shutoff", "gas_shutoff", "research_station", "super_computer", "planetarium", "telescope", "auto_sweeper", "sweep_station", "incubator", "space_scanner", "bunker_door", "massage_table", "jukebot", "arcade_cabinet", "sauna", "hottub", "gas_filter", "liquid_filter", "suit_maker", "suit_dock", "jetsuit_dock", "oxygen_dock", "travel_tube_entrance"]
 				var is_bat := b == "battery" or b == "smart_battery"
 				if not is_pw and not is_gen and not is_con and not is_bat:
 					continue
@@ -787,7 +787,7 @@ func _draw_overlay_front() -> void:
 				var i := world.idx(x, y)
 				var is_lw := world.has_logic_wire[i] == 1
 				var b := world.building[i]
-				var is_lb := b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm"]
+				var is_lb := b in ["smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "space_scanner", "bunker_door", "liquid_shutoff", "gas_shutoff", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_xor", "logic_buffer", "logic_filter", "logic_alarm"]
 				if not is_lw and not is_lb:
 					continue
 				var sig := world.logic_signal[i] == 1
@@ -815,8 +815,14 @@ func _draw_overlay_front() -> void:
 							gtag = "OR"
 						elif b == "logic_not":
 							gtag = "NOT"
+						elif b == "logic_xor":
+							gtag = "XOR"
 						elif b == "logic_buffer":
 							gtag = "BUF%.0f" % world.logic_buffer_timer[i] if world.logic_buffer_timer[i] > 0.1 else "BUF"
+						elif b == "logic_filter":
+							gtag = "FLT%.0f" % world.logic_filter_timer[i] if world.logic_filter_timer[i] > 0.1 else "FLT"
+						elif b == "liquid_shutoff" or b == "gas_shutoff":
+							gtag = "VLV"
 						elif b == "logic_alarm":
 							gtag = "ALM"
 						elif b == "logic_switch":
@@ -870,7 +876,7 @@ func _draw_overlay_front() -> void:
 			var by := 12.6 * float(ts)
 			_conduit_fg_node.draw_rect(Rect2(bx - 160.0, by - 12.0, 320.0, 24.0), Color(0.04, 0.10, 0.08, 0.92), true)
 			_conduit_fg_node.draw_rect(Rect2(bx - 160.0, by - 12.0, 320.0, 24.0), Color(0.45, 1.0, 0.35, 0.92), false, 1.5)
-			_conduit_fg_node.draw_string(rfont2, Vector2(bx - 154.0, by + 4.0), "방사선(X): 우주 260rad(벙커 차폐) · 씨근풀 185rad · 플라네타륨 110rad", HORIZONTAL_ALIGNMENT_CENTER, 308, 10, Color(0.84, 1.0, 0.72, 1.0))
+			_conduit_fg_node.draw_string(rfont2, Vector2(bx - 154.0, by + 4.0), "방사선(X): 우주 260rad(벙커 차폐) · 씨근풀 480rad · 플라네타륨 110rad", HORIZONTAL_ALIGNMENT_CENTER, 308, 10, Color(0.84, 1.0, 0.72, 1.0))
 
 	# 채굴 / 건설 / 해체 / 닦기 지시 + 우선순위 배지 오버레이
 	var efont := ThemeDB.fallback_font

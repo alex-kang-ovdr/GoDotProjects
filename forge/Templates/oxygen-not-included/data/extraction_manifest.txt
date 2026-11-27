@@ -1,6 +1,6 @@
 {
   "source_path": "C:\\Temp\\Oxygen",
-  "extracted_at_utc": "2026-11-27T10:37:50.328160+00:00",
+  "extracted_at_utc": "2026-11-27T11:02:19.616344+00:00",
   "counts": {
     "ko_strings": 21114,
     "elements": 196,
@@ -51,7 +51,7 @@
     "csharp_typedefs": 17674,
     "csharp_constants": 6798,
     "csharp_tuning_classes": 155,
-    "csharp_building_defs": 98,
+    "csharp_building_defs": 106,
     "csharp_critter_tunings": 10,
     "csharp_crop_configs": 6,
     "csharp_foods": 60,

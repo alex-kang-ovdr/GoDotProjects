@@ -50,11 +50,13 @@ BUILDING_CONFIG_MAP = {
     "decor_painting": "CanvasConfig",
     "sculpture": "MarbleSculptureConfig",
     "diffuser": "MineralDeoxidizerConfig",
+    "deodorizer": "AirFilterConfig",
     "electrolyzer": "ElectrolyzerConfig",
     "co2_skimmer": "CO2ScrubberConfig",
     "water_sieve": "WaterPurifierConfig",
     "generator": "ManualGeneratorConfig",
     "coal_gen": "GeneratorConfig",
+    "natgas_gen": "MethaneGeneratorConfig",
     "hydrogen_gen": "HydrogenGeneratorConfig",
     "petrol_gen": "PetroleumGeneratorConfig",
     "steam_turbine": "SteamTurbineConfig2",
@@ -67,13 +69,17 @@ BUILDING_CONFIG_MAP = {
     "logic_and": "LogicGateAndConfig",
     "logic_or": "LogicGateOrConfig",
     "logic_not": "LogicGateNotConfig",
+    "logic_xor": "LogicGateXorConfig",
     "logic_buffer": "LogicGateBufferConfig",
+    "logic_filter": "LogicGateFilterConfig",
     "logic_alarm": "LogicAlarmConfig",
     "atmo_sensor": "LogicPressureSensorGasConfig",
     "thermo_sensor": "LogicTemperatureSensorConfig",
     "thermo_aquatuner": "LiquidConditionerConfig",
+    "thermo_regulator": "AirConditionerConfig",
     "metal_refinery": "MetalRefineryConfig",
     "oil_refinery": "OilRefineryConfig",
+    "polymer_press": "PolymerizerConfig",
     "rock_crusher": "RockCrusherConfig",
     "kiln": "KilnConfig",
     "aetn": "MassiveHeatSinkConfig",
@@ -82,11 +88,13 @@ BUILDING_CONFIG_MAP = {
     "liquid_vent": "LiquidVentConfig",
     "liquid_reservoir": "LiquidReservoirConfig",
     "liquid_filter": "LiquidFilterConfig",
+    "liquid_shutoff": "LiquidLogicValveConfig",
     "gas_pipe": "GasConduitConfig",
     "gas_pump": "GasPumpConfig",
     "gas_vent": "GasVentConfig",
     "gas_reservoir": "GasReservoirConfig",
     "gas_filter": "GasFilterConfig",
+    "gas_shutoff": "GasLogicValveConfig",
     "farm_tile": "FarmTileConfig",
     "hydroponic_tile": "HydroponicFarmConfig",
     "planter_box": "PlanterBoxConfig",
@@ -411,16 +419,16 @@ def main():
         # Non-floodable passive/structural/underwater defaults matching ONI BuildingTemplates
         if bid in ("tile", "insulated_tile", "metal_tile", "glass_tile", "bunker_tile", "door", "mech_door", "bunker_door",
                    "ladder", "fire_pole", "wire", "logic_wire", "liquid_pipe", "gas_pipe", "liquid_pump", "liquid_vent",
-                   "liquid_reservoir", "gas_reservoir", "hydroponic_tile", "farm_tile", "travel_tube", "aetn",
-                   "atmo_sensor", "thermo_sensor", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer",
+                   "liquid_reservoir", "gas_reservoir", "liquid_shutoff", "gas_shutoff", "hydroponic_tile", "farm_tile", "travel_tube", "aetn",
+                   "atmo_sensor", "thermo_sensor", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_xor", "logic_buffer", "logic_filter",
                    "rocket_steam_engine", "rocket_petroleum_engine", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"):
             floodable = False
         if bid in ("tile", "insulated_tile", "metal_tile", "glass_tile", "bunker_tile", "door", "mech_door", "bunker_door",
                    "ladder", "fire_pole", "wire", "logic_wire", "liquid_pipe", "gas_pipe", "cot", "mess_table", "storage",
                    "ration_box", "flower_pot", "decor_painting", "sculpture", "outhouse", "flush_toilet", "wash_basin",
                    "wash_sink", "shower", "water_cooler", "farm_tile", "hydroponic_tile", "planter_box", "wheezewort",
-                   "medical_cot", "beach_chair", "travel_tube", "aetn", "logic_switch", "logic_and", "logic_or", "logic_not",
-                   "logic_buffer", "atmo_sensor", "thermo_sensor", "kiln"):
+                   "medical_cot", "beach_chair", "travel_tube", "aetn", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_xor",
+                   "logic_buffer", "logic_filter", "atmo_sensor", "thermo_sensor", "kiln"):
             oh_c = 9999.0
 
         spec = {
@@ -929,6 +937,115 @@ def main():
         },
     }
 
+    # 19) Extract 5th-wave deep C# systems: Material overheat/decor mods, Chlorine disinfection,
+    # Food quality morale, AttributeConverters, Sunburn/Stress archetypes & 5th-wave industrial/valve specs
+    oh_mod = tuning_classes.get("TUNING.BUILDINGS.OVERHEAT_MATERIAL_MOD", {})
+    dec_mod = tuning_classes.get("TUNING.BUILDINGS.DECOR_MATERIAL_MOD", {})
+    dis_gf = tuning_classes.get("TUNING.DISEASE.GROWTH_FACTOR", {})
+    food_t = tuning_classes.get("TUNING.FOOD", {})
+    stress_t = tuning_classes.get("TUNING.STRESS", {})
+
+    af_lits = get_type_method_lits("AirFilterConfig", "ConfigureBuildingTemplate")
+    ac_lits = get_type_method_lits("AirConditionerConfig", "ConfigureBuildingTemplate")
+    mg_lits = get_type_method_lits("MethaneGeneratorConfig", "DoPostConfigureComplete")
+    pm_lits = get_type_method_lits("PolymerizerConfig", "ConfigureBuildingTemplate")
+    attr_lits = get_type_method_lits("Database.AttributeConverters", ".ctor")
+    sun_lits = get_type_method_lits("Klei.AI.Sunburn", ".ctor")
+
+    attr_conv = {}
+    for ai in range(len(attr_lits) - 2):
+        if isinstance(attr_lits[ai], str) and isinstance(attr_lits[ai + 2], float):
+            if attr_lits[ai] in ("MovementSpeed", "ConstructionSpeed", "DiggingSpeed", "MachinerySpeed", "HarvestSpeed", "ResearchSpeed"):
+                attr_conv[attr_lits[ai]] = float(attr_lits[ai + 2])
+
+    advanced_systems_cs = {
+        "material_overheat_c": {
+            "Lead": float(oh_mod.get("LOW_2", -20.0)),
+            "SandStone": float(oh_mod.get("NORMAL", 0.0)),
+            "Cuprite": float(oh_mod.get("NORMAL", 0.0)),
+            "Copper": float(oh_mod.get("NORMAL", 0.0)),
+            "IronOre": float(oh_mod.get("NORMAL", 0.0)),
+            "Iron": float(oh_mod.get("NORMAL", 0.0)),
+            "IgneousRock": float(oh_mod.get("HIGH_1", 15.0)),
+            "Obsidian": float(oh_mod.get("HIGH_1", 15.0)),
+            "GoldAmalgam": float(oh_mod.get("HIGH_2", 50.0)),
+            "Gold": float(oh_mod.get("HIGH_2", 50.0)),
+            "Wolframite": float(oh_mod.get("HIGH_2", 50.0)),
+            "Steel": float(oh_mod.get("HIGH_3", 200.0)),
+            "Ceramic": float(oh_mod.get("HIGH_3", 200.0)),
+            "Niobium": float(oh_mod.get("HIGH_4", 500.0)),
+            "TempConductorSolid": float(oh_mod.get("HIGH_5", 900.0)),
+        },
+        "material_decor_mult": {
+            "SandStone": float(dec_mod.get("HIGH_1", 0.1)),
+            "Copper": float(dec_mod.get("HIGH_1", 0.1)),
+            "GoldAmalgam": float(dec_mod.get("HIGH_1", 0.1)),
+            "Granite": float(dec_mod.get("HIGH_2", 0.2)),
+            "Ceramic": float(dec_mod.get("HIGH_2", 0.2)),
+            "Gold": float(dec_mod.get("HIGH_3", 0.5)),
+            "Diamond": float(dec_mod.get("HIGH_4", 1.0)),
+        },
+        "chlorine_halflife_s": float(dis_gf.get("DEATH_MAX", 10.0)),
+        "food_quality_morale": {"-1": -1, "0": 0, "1": 1, "2": 4, "3": 8, "4": 12, "5": 16, "6": 16},
+        "mush_bar_germs": int(food_t.get("MUSH_BAR_SPAWN_GERMS", 1000)),
+        "attribute_converters": {
+            "MovementSpeed": attr_conv.get("MovementSpeed", 0.1),
+            "ConstructionSpeed": attr_conv.get("ConstructionSpeed", 0.25),
+            "DiggingSpeed": attr_conv.get("DiggingSpeed", 0.25),
+            "MachinerySpeed": attr_conv.get("MachinerySpeed", 0.1),
+            "HarvestSpeed": attr_conv.get("HarvestSpeed", 0.05),
+            "ResearchSpeed": attr_conv.get("ResearchSpeed", 0.4),
+        },
+        "sunburn": {
+            "id": "SunburnSickness",
+            "duration_s": float(sun_lits[5]) if len(sun_lits) > 5 and isinstance(sun_lits[5], (int, float)) else 1020.0,
+            "stress_per_s": float(sun_lits[8]) if len(sun_lits) > 8 and isinstance(sun_lits[8], (int, float)) else 0.03333,
+            "exposure_threshold_s": 5.0,
+        },
+        "stress_reactions": {
+            "UglyCrier": {"vomit_kg": float(stress_t.get("VOMIT_AMOUNT", 0.9)), "tears_kg": 3.0},
+            "BingeEater": {"eat_kcal": 800.0},
+            "Destructive": {"damage_hp": 30.0},
+        },
+        "machines": {
+            "deodorizer": {
+                "power_w": float(buildings_cs.get("deodorizer", {}).get("energy_w", 5.0)),
+                "sand_kg_s": next((x for x in af_lits if isinstance(x, float) and abs(x - 0.1333) < 0.005), 0.13333),
+                "po2_kg_s": next((x for x in af_lits if isinstance(x, float) and abs(x - 0.1) < 0.005), 0.1),
+                "o2_out_kg_s": next((x for x in af_lits if isinstance(x, float) and abs(x - 0.09) < 0.005), 0.09),
+                "clay_out_kg_s": next((x for x in af_lits if isinstance(x, float) and abs(x - 0.1433) < 0.005), 0.14333),
+            },
+            "thermo_regulator": {
+                "power_w": float(buildings_cs.get("thermo_regulator", {}).get("energy_w", 240.0)),
+                "delta_c": float(ac_lits[0]) if ac_lits and isinstance(ac_lits[0], (int, float)) else -14.0,
+                "max_gas_kg_s": 1.0,
+            },
+            "natgas_gen": {
+                "gen_w": float(buildings_cs.get("natgas_gen", {}).get("gen_w", 800.0)),
+                "methane_kg_s": next((x for x in mg_lits if isinstance(x, float) and abs(x - 0.09) < 0.005), 0.09),
+                "dirty_water_kg_s": next((x for x in mg_lits if isinstance(x, float) and abs(x - 0.0675) < 0.005), 0.0675),
+                "co2_kg_s": next((x for x in mg_lits if isinstance(x, float) and abs(x - 0.0225) < 0.005), 0.0225),
+                "water_c": 40.0,
+                "co2_c": 110.0,
+            },
+            "polymer_press": {
+                "power_w": float(buildings_cs.get("polymer_press", {}).get("energy_w", 240.0)),
+                "petroleum_kg_s": next((x for x in pm_lits if isinstance(x, float) and abs(x - 0.8333) < 0.01), 0.83333),
+                "plastic_kg_s": next((x for x in pm_lits if isinstance(x, float) and abs(x - 0.5) < 0.01), 0.5),
+                "steam_kg_s": next((x for x in pm_lits if isinstance(x, float) and abs(x - 0.0083) < 0.002), 0.00833),
+                "co2_kg_s": next((x for x in pm_lits if isinstance(x, float) and abs(x - 0.0083) < 0.002), 0.00833),
+                "steam_c": 200.0,
+                "co2_c": 150.0,
+            },
+            "shutoff": {
+                "power_w": 10.0,
+                "liquid_kg_s": 10.0,
+                "gas_kg_s": 1.0,
+            },
+            "logic_filter_delay_s": 5.0,
+        },
+    }
+
     out_doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_dll": DLL_PATH,
@@ -949,6 +1066,7 @@ def main():
             "skills_extracted": len(cs_skill_ids),
             "hardness_tiers_extracted": len(mechanics_cs["hardness"]),
             "utilities_extracted": len(utilities_cs),
+            "advanced_systems_extracted": len(advanced_systems_cs),
             "shader_materials_extracted": len(visual_shaders_cs),
         },
         "duplicant_physiology": dupe_physiology,
@@ -961,6 +1079,7 @@ def main():
         "environment": environment_cs,
         "mechanics": mechanics_cs,
         "utilities": utilities_cs,
+        "advanced_systems": advanced_systems_cs,
         "foods": foods_cs,
         "geysers": geysers_cs,
         "diseases": diseases_cs,

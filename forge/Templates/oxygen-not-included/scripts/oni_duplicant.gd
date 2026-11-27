@@ -31,7 +31,11 @@ var shower_morale := 0
 var shower_buff_timer := 0.0
 var rec_morale := 0
 var rec_buff_timer := 0.0
+var food_morale := 0
+var food_buff_timer := 0.0
 var warm_touch_timer := 0.0
+var sun_exposure := 0.0
+var stress_trait := "UglyCrier" # UglyCrier, BingeEater, Destructive
 var eardrums_popped := false
 var wet_status := "" # "", "SOGGY", "SOPPING"
 var stress := 0.0
@@ -103,7 +107,14 @@ func get_disease_ko() -> String:
 		return "식중독"
 	if disease == "RadiationSickness":
 		return "방사능 병"
+	if disease == "SunburnSickness":
+		return "일광 화상"
 	return "건강"
+
+func eat_meal(world: OniWorld, quality: int = 0) -> void:
+	food_morale = OniElements.get_food_quality_morale(quality)
+	food_buff_timer = OniElements.CYCLE_SECONDS
+	morale = 1 + world.colony_morale_bonus + decor_morale + shower_morale + rec_morale + food_morale
 
 func step(world: OniWorld, dt: float) -> void:
 	# 0) Assembly-CSharp.dll 특성(Trait) 시간대별 작업속도/스트레스 효과 갱신
@@ -183,10 +194,23 @@ func step(world: OniWorld, dt: float) -> void:
 			rec_morale = 0
 	if warm_touch_timer > 0.0:
 		warm_touch_timer = maxf(0.0, warm_touch_timer - dt)
+	if food_buff_timer > 0.0:
+		food_buff_timer = maxf(0.0, food_buff_timer - dt)
+		if food_buff_timer <= 0.0:
+			food_morale = 0
+	# Assembly-CSharp.dll Klei.AI.Sunburn: 우주 노천 태양 직사광선(특수복/벙커 지붕 미차폐 시 일광 화상)
+	var sun_sp: Dictionary = OniElements.csharp_advanced.get("sunburn", {}) as Dictionary
+	if not wearing_suit and cell.y <= 3 and world.get_solar_factor() > 0.3 and world.get_sky_visibility(cell.x, cell.y, 0) >= 0.99:
+		sun_exposure += dt
+		if sun_exposure >= float(sun_sp.get("exposure_threshold_s", 5.0)) and disease.is_empty():
+			disease = "SunburnSickness"
+			disease_timer = float(sun_sp.get("duration_s", 1020.0))
+	else:
+		sun_exposure = maxf(0.0, sun_exposure - dt * 0.5)
 	var env_s := OniElements.get_env_spec()
 	avg_decor = lerpf(avg_decor, clampf(world.decor_val[ci], -60.0, 140.0), clampf(dt * 0.25, 0.0, 1.0))
 	decor_morale = OniElements.get_decor_morale_bonus(avg_decor)
-	morale = 1 + world.colony_morale_bonus + decor_morale + shower_morale + rec_morale
+	morale = 1 + world.colony_morale_bonus + decor_morale + shower_morale + rec_morale + food_morale
 	var exp_morale := get_morale_expectation()
 	overjoyed = morale >= exp_morale + OniElements.get_overjoyed_surplus() and stress < 30.0
 	var morale_diff := morale - exp_morale
@@ -249,14 +273,28 @@ func step(world: OniWorld, dt: float) -> void:
 		stress_delta = minf(stress_delta, -2.5)
 	stress = clampf(stress + stress_delta * dt, 0.0, 100.0)
 
-	# Assembly-CSharp.dll 스트레스 붕괴(100% -> 울음 발작: 오염수 3kg 배출 후 60% 복귀)
+	# Assembly-CSharp.dll 스트레스 붕괴(100% -> UglyCrier 오염수3kg / BingeEater 800kcal 폭식 / Destructive 설비-30HP 파손 후 60% 복귀)
 	var bd_thr := float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0))
 	if stress >= bd_thr:
 		stress = float(OniElements.csharp_traits.get("stress_reset_after_breakdown", 60.0))
 		stress_breakdowns += 1
-		if not world.is_solid_cell(cell.x, cell.y) and (world.liquid_mass[ci] < 1.0 or world.liquid_el[ci] == "DirtyWater" or world.liquid_el[ci].is_empty()):
-			world.liquid_el[ci] = "DirtyWater"
-			world.liquid_mass[ci] = minf(1000.0, world.liquid_mass[ci] + 3.0)
+		if stress_trait == "BingeEater":
+			var binge_k := minf(800.0, world.food_kcal)
+			world.food_kcal = maxf(0.0, world.food_kcal - binge_k)
+			kcal = minf(OniElements.DUPE_KCAL_MAX, kcal + binge_k)
+		elif stress_trait == "Destructive":
+			for off_d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0)]:
+				var dx_b := cell.x + off_d.x
+				var dy_b := cell.y + off_d.y
+				if world.in_bounds(dx_b, dy_b):
+					var bi_d := world.idx(dx_b, dy_b)
+					if not world.building[bi_d].is_empty() and world.building[bi_d] != "pod":
+						world.building_hp[bi_d] = maxf(0.0, world.building_hp[bi_d] - 30.0)
+						break
+		else:
+			if not world.is_solid_cell(cell.x, cell.y) and (world.liquid_mass[ci] < 1.0 or world.liquid_el[ci] == "DirtyWater" or world.liquid_el[ci].is_empty()):
+				world.liquid_el[ci] = "DirtyWater"
+				world.liquid_mass[ci] = minf(1000.0, world.liquid_mass[ci] + 3.0)
 		_clear_job()
 
 	# 2) 칼로리/스태미나/방광 갱신 (원작 주기당 방광 +100%, 100% 도달 시 실수->오염수 6.7kg + 식중독균)
@@ -265,6 +303,7 @@ func step(world: OniWorld, dt: float) -> void:
 		var eat := minf(1200.0, minf(world.food_kcal, OniElements.DUPE_KCAL_MAX - kcal))
 		world.food_kcal -= eat
 		kcal += eat
+		eat_meal(world, world.colony_food_quality)
 	if state == "SLEEP":
 		stamina = minf(100.0, stamina + 14.0 * dt)
 	else:
@@ -379,7 +418,8 @@ func _step_move(world: OniWorld, dt: float) -> void:
 		facing_left = diff.x < 0.0
 	var dist := diff.length()
 	var wet_m := 0.75 if wet_status == "SOPPING" else (0.85 if wet_status == "SOGGY" else 1.0)
-	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0) * wet_m
+	var ath_m := 1.0 + float(skill_level) * OniElements.get_attr_converter("MovementSpeed")
+	var spd := move_speed * ath_m * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0) * wet_m
 	# 수송 튜브(travel_tube) 이동: 입구 충전(10kJ/발사) 소비 시 5배 초고속 공압 이동!
 	if world.in_bounds(cell.x, cell.y):
 		var cur_i := world.idx(cell.x, cell.y)

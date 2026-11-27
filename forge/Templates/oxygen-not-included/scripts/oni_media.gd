@@ -504,6 +504,8 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 		lines.append("• 경도/전선/센서: 채굴경도(화강암50/심연석150/흑요석200/중성자255) · 전선등급(1kW/2kW/20kW) · 원소필터(우측분리/하단우회) · 가변센서")
 		lines.append("• 폐회로/냉각/휴게: 탄소스키머(물1kg+CO2→오염수) · 변기(5→11.7kg) · 씨근풀(-5°C·SHC비례·480rad) · AETN(H2→-80kW/-173°C)")
 		lines.append("• 수송/우주광학: 튜브충전(10kJ/발사·40kJ) · 슈트독(O2 200kg/석유100kg) · 휴게버프(비치체어+8/온수욕조WarmTouch) · 망원경/하늘가시성")
+		lines.append("• 재질/염소/음식품질: 과열보정(금아말감+50°C/강철+200°C/납-20°C) · 장식(화강암+20%/금+50%) · 염소실 저장고 살균(반감기10초) · 음식사기(-1~+16)")
+		lines.append("• 5차 설비/속성/일광화상: 탈취기(5W·PO2→90%O2+점토) · 열조절기(-14°C) · 천연가스발전(800W) · 폴리머(플라스틱) · 차단밸브 · XOR/FILTER · 속성(+40%연구/+10%이동) · 일광화상")
 		lines.append("• 열생리학/스트레스: 화상 %.0f°C · 저체온 %.0f°C · 침수 %.0fkg · 붕괴 %.0f%%(복귀%.0f%%) · 초생산성+%d · 연구실+%.0f%%" % [
 			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
 			float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0)),

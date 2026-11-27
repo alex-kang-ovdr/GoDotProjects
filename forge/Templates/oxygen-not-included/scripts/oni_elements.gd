@@ -78,6 +78,7 @@ static var csharp_ranching: Dictionary = {}
 static var csharp_env: Dictionary = {}
 static var csharp_mechanics: Dictionary = {}
 static var csharp_utilities: Dictionary = {}
+static var csharp_advanced: Dictionary = {}
 static var csharp_foods: Dictionary = {}
 static var csharp_geysers: Dictionary = {}
 static var csharp_diseases: Dictionary = {}
@@ -195,6 +196,14 @@ const BUILDING_COLORS := {
 	"sauna": Color(0.82, 0.56, 0.36, 1.0),
 	"hottub": Color(0.44, 0.78, 0.96, 1.0),
 	"beach_chair": Color(0.98, 0.84, 0.42, 1.0),
+	"deodorizer": Color(0.42, 0.92, 0.78, 1.0),
+	"thermo_regulator": Color(0.36, 0.82, 0.96, 1.0),
+	"natgas_gen": Color(0.86, 0.52, 0.22, 1.0),
+	"polymer_press": Color(0.74, 0.86, 0.36, 1.0),
+	"liquid_shutoff": Color(0.24, 0.72, 0.98, 1.0),
+	"gas_shutoff": Color(0.34, 0.94, 0.76, 1.0),
+	"logic_xor": Color(0.86, 0.56, 0.98, 1.0),
+	"logic_filter": Color(0.98, 0.72, 0.32, 1.0),
 }
 
 static func ensure_loaded() -> void:
@@ -277,6 +286,46 @@ static func ensure_loaded() -> void:
 			"cost_element": "Granite", "cost_kg": 0.0, "build_time": 1.0,
 			"color": BUILDING_COLORS["geyser_hydrogen"],
 		},
+		"deodorizer": {
+			"name_ko": "탈취기", "cat": "power", "desc": "모래+오염산소 → 산소(90%)+점토 정화 (5W)",
+			"cost_element": "SandStone", "cost_kg": 100.0, "build_time": 2.0, "needs_floor": true,
+			"color": BUILDING_COLORS["deodorizer"],
+		},
+		"thermo_regulator": {
+			"name_ko": "기체 열 조절기", "cat": "colony", "desc": "기체관 -14°C 에너지 보존 열펌프 (240W)",
+			"cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 2.6, "needs_floor": true,
+			"color": BUILDING_COLORS["thermo_regulator"],
+		},
+		"natgas_gen": {
+			"name_ko": "천연가스 발전기", "cat": "power", "desc": "천연가스 90g/s → 800W + CO2 + 오염수",
+			"cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.0, "needs_floor": true,
+			"color": BUILDING_COLORS["natgas_gen"],
+		},
+		"polymer_press": {
+			"name_ko": "폴리머 압축기", "cat": "colony", "desc": "석유 → 플라스틱 + 증기 + CO2 (240W)",
+			"cost_element": "Cuprite", "cost_kg": 200.0, "build_time": 3.0, "needs_floor": true,
+			"color": BUILDING_COLORS["polymer_press"],
+		},
+		"liquid_shutoff": {
+			"name_ko": "액체 차단 밸브", "cat": "pipe", "desc": "자동화 신호(초록=개방/빨강=차단) 액체관 제어 (10W)",
+			"cost_element": "Cuprite", "cost_kg": 50.0, "build_time": 1.4,
+			"color": BUILDING_COLORS["liquid_shutoff"],
+		},
+		"gas_shutoff": {
+			"name_ko": "기체 차단 밸브", "cat": "pipe", "desc": "자동화 신호(초록=개방/빨강=차단) 기체관 제어 (10W)",
+			"cost_element": "Cuprite", "cost_kg": 50.0, "build_time": 1.4,
+			"color": BUILDING_COLORS["gas_shutoff"],
+		},
+		"logic_xor": {
+			"name_ko": "XOR 게이트", "cat": "auto", "desc": "입력이 서로 다를 때만 초록 신호 출력",
+			"cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.2,
+			"color": BUILDING_COLORS["logic_xor"],
+		},
+		"logic_filter": {
+			"name_ko": "FILTER 게이트", "cat": "auto", "desc": "초록 신호 5초 이상 지속 시 초록 출력",
+			"cost_element": "Cuprite", "cost_kg": 25.0, "build_time": 1.2,
+			"color": BUILDING_COLORS["logic_filter"],
+		},
 	}
 	for ek_v in extra_buildings.keys():
 		var ek := String(ek_v)
@@ -312,6 +361,8 @@ static func ensure_loaded() -> void:
 			csharp_mechanics = raw_cs["mechanics"]
 		if raw_cs.get("utilities", {}) is Dictionary:
 			csharp_utilities = raw_cs["utilities"]
+		if raw_cs.get("advanced_systems", {}) is Dictionary:
+			csharp_advanced = raw_cs["advanced_systems"]
 		if raw_cs.get("foods", {}) is Dictionary:
 			csharp_foods = raw_cs["foods"]
 		if raw_cs.get("geysers", {}) is Dictionary:
@@ -532,6 +583,43 @@ static func get_recreation_spec(b_id: String) -> Dictionary:
 	var recs: Dictionary = csharp_utilities.get("recreation", {}) as Dictionary
 	var v: Variant = recs.get(b_id, {})
 	return v if v is Dictionary else {}
+
+static func get_material_overheat_bonus(mat_el: String) -> float:
+	ensure_loaded()
+	var m: Dictionary = csharp_advanced.get("material_overheat_c", {}) as Dictionary
+	return float(m.get(mat_el, 0.0))
+
+static func get_material_decor_mult(mat_el: String) -> float:
+	ensure_loaded()
+	var m: Dictionary = csharp_advanced.get("material_decor_mult", {}) as Dictionary
+	return float(m.get(mat_el, 0.0))
+
+static func get_effective_overheat_c(b_id: String, mat_el: String) -> float:
+	var base_oh := get_building_overheat_c(b_id)
+	if base_oh >= 9000.0:
+		return base_oh
+	return base_oh + get_material_overheat_bonus(mat_el)
+
+static func get_food_quality_morale(quality: int) -> int:
+	ensure_loaded()
+	var fm: Dictionary = csharp_advanced.get("food_quality_morale", {"-1": -1, "0": 0, "1": 1, "2": 4, "3": 8, "4": 12, "5": 16, "6": 16}) as Dictionary
+	var key := str(clampi(quality, -1, 6))
+	return int(fm.get(key, 0))
+
+static func get_attr_converter(key: String) -> float:
+	ensure_loaded()
+	var ac: Dictionary = csharp_advanced.get("attribute_converters", {}) as Dictionary
+	return float(ac.get(key, 0.1))
+
+static func get_advanced_machine_spec(key: String) -> Dictionary:
+	ensure_loaded()
+	var ms: Dictionary = csharp_advanced.get("machines", {}) as Dictionary
+	var v: Variant = ms.get(key, {})
+	return v if v is Dictionary else {}
+
+static func get_chlorine_halflife_s() -> float:
+	ensure_loaded()
+	return maxf(1.0, float(csharp_advanced.get("chlorine_halflife_s", 10.0)))
 
 static func get_counts_summary() -> String:
 	ensure_loaded()

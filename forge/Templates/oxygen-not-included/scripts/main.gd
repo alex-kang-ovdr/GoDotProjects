@@ -63,10 +63,10 @@ const CAT_TOOLS := {
 	"base": ["tile", "insulated_tile", "metal_tile", "glass_tile", "door", "ladder", "fire_pole", "cot", "storage", "ceiling_light"],
 	"living": ["outhouse", "wash_basin", "flush_toilet", "mess_table", "ration_box", "microbe_musher", "electric_grill", "flower_pot", "decor_painting", "sculpture"],
 	"med": ["medical_cot", "apothecary", "massage_table", "wash_sink", "shower", "water_cooler", "jukebot", "arcade_cabinet", "sauna", "hottub", "beach_chair"],
-	"power": ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "hydrogen_gen", "petrol_gen", "steam_turbine", "solar_panel", "battery", "wire"],
-	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "liquid_filter", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir", "gas_filter"],
-	"auto": ["logic_wire", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_buffer", "logic_alarm", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "travel_tube", "travel_tube_entrance", "auto_sweeper", "conveyor_loader", "conveyor_chute"],
-	"colony": ["farm_tile", "hydroponic_tile", "planter_box", "wheezewort", "ranch_station", "incubator", "research_station", "super_computer", "rock_crusher", "kiln", "thermo_aquatuner", "metal_refinery", "oil_refinery", "suit_maker", "suit_dock", "suit_checkpoint"],
+	"power": ["diffuser", "deodorizer", "electrolyzer", "co2_skimmer", "water_sieve", "generator", "coal_gen", "natgas_gen", "hydrogen_gen", "petrol_gen", "steam_turbine", "solar_panel", "battery", "wire"],
+	"pipe": ["liquid_pipe", "liquid_pump", "liquid_vent", "liquid_reservoir", "liquid_filter", "liquid_shutoff", "gas_pipe", "gas_pump", "gas_vent", "gas_reservoir", "gas_filter", "gas_shutoff"],
+	"auto": ["logic_wire", "logic_switch", "logic_and", "logic_or", "logic_not", "logic_xor", "logic_buffer", "logic_filter", "logic_alarm", "smart_battery", "atmo_sensor", "thermo_sensor", "mech_door", "travel_tube", "travel_tube_entrance", "auto_sweeper", "conveyor_loader", "conveyor_chute"],
+	"colony": ["farm_tile", "hydroponic_tile", "planter_box", "wheezewort", "ranch_station", "incubator", "research_station", "super_computer", "rock_crusher", "kiln", "thermo_aquatuner", "thermo_regulator", "metal_refinery", "oil_refinery", "polymer_press", "suit_maker", "suit_dock", "suit_checkpoint"],
 	"space": ["space_scanner", "bunker_tile", "bunker_door", "telescope", "planetarium", "jetsuit_dock", "jetsuit_checkpoint", "rocket_steam_engine", "rocket_petroleum_engine", "rocket_fuel_tank", "rocket_oxidizer_tank", "rocket_cargo_bay", "rocket_research_module", "rocket_command_module"],
 }
 
@@ -349,19 +349,19 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(226, 48)
-	_report_panel.custom_minimum_size = Vector2(716, 636)
+	_report_panel.position = Vector2(220, 42)
+	_report_panel.custom_minimum_size = Vector2(732, 668)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
 
 	var rep_scroll := ScrollContainer.new()
-	rep_scroll.custom_minimum_size = Vector2(696, 624)
+	rep_scroll.custom_minimum_size = Vector2(712, 656)
 	_report_panel.add_child(rep_scroll)
 
 	_report_vbox = VBoxContainer.new()
 	_report_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_report_vbox.add_theme_constant_override("separation", 1)
+	_report_vbox.add_theme_constant_override("separation", 0)
 	rep_scroll.add_child(_report_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
@@ -1478,7 +1478,9 @@ func _refresh_hud() -> void:
 			elif b_id == "liquid_reservoir" or b_id == "gas_reservoir":
 				var rm := float(info.get("reservoir_mass", 0.0))
 				var re := String(info.get("reservoir_el", ""))
-				extra = " (%s %.1f kg)" % [OniElements.get_element_name(re) if not re.is_empty() else "비어 있음", rm]
+				var rg := float(info.get("reservoir_germs", 0.0))
+				var rg_s := (" · 세균%.0f" % rg) if rg >= 20.0 else ""
+				extra = " (%s %.1f kg%s)" % [OniElements.get_element_name(re) if not re.is_empty() else "비어 있음", rm, rg_s]
 			elif b_id == "door" or b_id == "mech_door":
 				extra = " (%s · 클릭 전환)" % String(info.get("door_state_ko", "자동(기밀)"))
 			elif b_id == "gas_filter" or b_id == "liquid_filter":
@@ -1507,8 +1509,10 @@ func _refresh_hud() -> void:
 			var bst := String(info.get("building_status", ""))
 			if oh_c < 9000.0 or h_kw > 0.01 or bhp < 99.5 or not bst.is_empty():
 				var oh_s := "과열%.0f°C" % oh_c if oh_c < 9000.0 else "비과열"
+				var bmat := String(info.get("building_mat", ""))
+				var mat_s := (" · %s" % OniElements.get_element_name(bmat)) if not bmat.is_empty() else ""
 				var st_s := (" · [%s]" % bst) if not bst.is_empty() else ""
-				lines.append("C#스펙: HP%.0f%% · %s · 발열%.2fkW%s" % [bhp, oh_s, h_kw, st_s])
+				lines.append("C#스펙: HP%.0f%% · %s%s · 발열%.2fkW%s" % [bhp, oh_s, mat_s, h_kw, st_s])
 		if bool(info["has_liquid_pipe"]):
 			var lpe := String(info.get("lpipe_el", ""))
 			var lpm := float(info["lpipe_mass"])
