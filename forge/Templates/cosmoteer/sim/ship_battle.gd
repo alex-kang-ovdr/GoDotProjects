@@ -655,6 +655,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			_record("shot", side, int(beam.source_uid), target)
 	var fire_report := CombatSystems.tick_fires(ship, DT)
 	CombatSystems.tick_statuses(ship, DT)
+	CombatSystems.diffuse_cell_heat(ship, DT)
 	for ext_uid in fire_report.extinguished:
 		_record("fire_out", side, int(ext_uid), int(ext_uid))
 	for ign_uid in fire_report.get("ignited", []):

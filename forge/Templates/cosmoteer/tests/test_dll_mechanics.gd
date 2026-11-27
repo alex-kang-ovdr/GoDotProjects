@@ -22,9 +22,9 @@ func _check(ok: bool, label: String) -> void:
 func test() -> void:
 	# 1. Verify reverse-engineered logic_trace.json & dll_mechanics.json load cleanly
 	var trace = JSON.parse_string(FileAccess.get_file_as_string("res://data/logic_trace.json"))
-	_check(trace is Dictionary and trace.get("methods", []).size() >= 72, "expanded logic_trace.json traces >= 72 Cosmoteer.dll methods")
+	_check(trace is Dictionary and trace.get("methods", []).size() >= 88, "expanded logic_trace.json traces >= 88 Cosmoteer.dll methods")
 	var mech := CombatSystems.get_dll_mechanics()
-	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 72, "dll_mechanics.json v4 loads reverse-engineered constants")
+	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 88, "dll_mechanics.json v5 loads reverse-engineered constants")
 
 	# 2. BulletPenetratingHit: exact projectile penetration & part resistance
 	_check(is_equal_approx(CombatSystems.projectile_penetration("cannon"), 5.0), "medium cannon penetration == 5.0")
@@ -222,6 +222,37 @@ func test() -> void:
 	# 16. KillCrewEffect: bridge crew protected vs corridor crew exposed
 	_check(CombatSystems.is_crew_protected_in_part({"id": CombatSystems.BRIDGE_SMALL}), "KillCrewEffect protects bridge crew")
 	_check(not CombatSystems.is_crew_protected_in_part({"id": "cosmoteer.corridor"}), "KillCrewEffect exposes corridor crew")
+
+	# 17. StatusDiffuser & scorched crew slowdown
+	var sc_room := {"id": "cosmoteer.corridor", "rotation": 0, "walk_factor": 1.0, "fire": 0.0, "scorched": 6.0}
+	_check(absf(CombatSystems.crew_step_speed_factor(sc_room, Vector2i.RIGHT) - 0.5) < 0.02, "scorched status slows crew speed to 0.5x")
+	var h_ship := {
+		"parts": {
+			60: {"id": "cosmoteer.corridor", "hp": 1000.0, "heat": 100.0, "cell": Vector2i(2, 2), "size": Vector2i(1, 1), "severed": false},
+			61: {"id": "cosmoteer.corridor", "hp": 1000.0, "heat": 0.0, "cell": Vector2i(3, 2), "size": Vector2i(1, 1), "severed": false},
+		},
+		"cells": {Vector2i(2, 2): 60, Vector2i(3, 2): 61},
+	}
+	var h_moved := CombatSystems.diffuse_cell_heat(h_ship, 0.5)
+	_check(h_moved > 0.0 and float(h_ship.parts[61].heat) > 0.0 and float(h_ship.parts[60].heat) < 100.0, "StatusDiffuser diffuses heat between adjacent cells")
+
+	# 18. AttackCommand.EstimateFirepowerTowards & SetBestAttackRotation
+	var gun_uid: int = int(battle.player.ids[CombatSystems.LASER_SMALL][0])
+	var gun_rest: float = float(battle.player.parts[gun_uid].rest_angle)
+	var fp_front := CombatSystems.estimate_firepower_towards(battle.player, gun_rest)
+	var fp_back := CombatSystems.estimate_firepower_towards(battle.player, gun_rest + PI)
+	_check(fp_front > fp_back and fp_back == 0.0, "AttackCommand.EstimateFirepowerTowards scores weapon arc front higher than blind rear")
+	_check(absf(wrapf(CombatSystems.best_attack_rotation(battle.player) - gun_rest, -PI, PI)) < 0.05, "AttackCommand.SetBestAttackRotation aligns with primary weapon rest_angle")
+
+	# 19. CareerSimModeManager economy tiers, fame scaling, and surrender tribute
+	var rep_hostile := CombatSystems.reputation_economy_factors(-50000)
+	var rep_ally := CombatSystems.reputation_economy_factors(3000)
+	_check(is_equal_approx(float(rep_hostile.reward_factor), 0.6) and is_equal_approx(float(rep_hostile.buy_factor), 2.0), "Hostile reputation tier applies 60% reward / 200% buy cost")
+	_check(is_equal_approx(float(rep_ally.reward_factor), 1.3) and is_equal_approx(float(rep_ally.buy_factor), 0.7), "Allied reputation tier applies 130% reward / 70% buy cost")
+	_check(CombatSystems.fame_reward_multiplier(200) > CombatSystems.fame_reward_multiplier(0), "Fame level multiplier scales upward with fame")
+	var bribe_weak := CombatSystems.surrender_bribe_cost(1000.0, 500.0, 20000.0)
+	var bribe_strong := CombatSystems.surrender_bribe_cost(500.0, 2000.0, 80000.0)
+	_check(bribe_strong > bribe_weak and bribe_weak >= 1000, "CareerSimModeManager.GetSurrenderForPrice scales with enemy firepower & ship cost")
 
 	print("DLL mechanics checks: %d; failures: %d" % [checks, failed])
 	quit(1 if failed else 0)

@@ -113,6 +113,23 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Crew.SimCrewManager", "FixedUpdateSpaceCrew"),
     ("Cosmoteer.Simulation.HitEffects.KillCrewEffect", "IsCrewImmune"),
     ("Cosmoteer.Simulation.HitEffects.KillCrewEffect", "DoEffect"),
+    # Wave 5: status diffusion/application, tactical commands, career economy/surrender, doodad avoidance
+    ("Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser", "ApplyDiffusedValues"),
+    ("Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser", "GetNeighbourDelta"),
+    ("Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser", "DiffuseCell"),
+    ("Cosmoteer.Ships.Statuses.Subhandlers.StatusApplicator`1", "CombineStatus"),
+    ("Cosmoteer.Ships.Statuses.TileStatusHandler", "OnStatusesDiffused"),
+    ("Cosmoteer.Ships.Commands.Command", "GetDesiredLinearSRA"),
+    ("Cosmoteer.Ships.Commands.Command", "AdjustDesiredDestForAvoidance"),
+    ("Cosmoteer.Ships.Commands.AttackCommand", "SetBestAttackRadiusAndRotation"),
+    ("Cosmoteer.Ships.Commands.AttackCommand", "EstimateFirepowerTowards"),
+    ("Cosmoteer.Ships.Commands.AttackCommand", "SetBestAttackRotation"),
+    ("Cosmoteer.Ships.Commands.FollowCommand", "OnTargetShipSplit"),
+    ("Cosmoteer.Ships.Commands.SalvageCommand", "OnTargetShipSplit"),
+    ("Cosmoteer.Ships.Commands.CommandManager", "CreateCommand"),
+    ("Cosmoteer.Modes.Career.CareerSimModeManager", "GetSurrenderForPrice"),
+    ("Cosmoteer.Modes.Career.WantedManager", "FixedUpdate"),
+    ("Cosmoteer.Simulation.Doodads.SimDoodadsManager", "ShouldAvoidLocation"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -371,9 +388,17 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     shield_oc_pct = _read_float_rule(data_root / "ships/terran/shield_gen_small/shield_gen_small.rules", r"ARC_RADIUS_FACTOR\s*=\s*([0-9.]+)%", 150.0)
     radar_radius = _read_float_rule(data_root / "ships/terran/sensor_array/sensor_array.rules", r"RadarRadius\s*=\s*([0-9.]+)", 2400.0)
     jump_eff_pct = _read_float_rule(data_root / "ships/terran/hyperdrive_small/hyperdrive_small.rules", r"JumpEfficiency\s*=\s*([0-9.]+)%", 50.0)
+    heat_speed = _read_float_rule(data_root / "statuses/heat/heat.rules", r"SpeedFactor\s*=\s*([0-9.]+)", 0.01)
+    heat_thresh = _read_float_rule(data_root / "statuses/heat/heat.rules", r"MinDeltaThreshold\s*=\s*([0-9.]+)", 0.1)
+    heat_empty = _read_float_rule(data_root / "statuses/heat/heat.rules", r"EmptyCellSpeedFactor\s*=\s*([0-9.]+)", 0.004)
+    scorched_min = _read_float_rule(data_root / "statuses/scorched/scorched.rules", r"CrewSpeedFactor\s*=\s*\[\s*1\s*,\s*([0-9.]+)\s*\]", 0.5)
+    surrender_base = _read_float_rule(data_root / "modes/career/career.rules", r"PlayerSurrenderBaseCost\s*=\s*([0-9.]+)", 4000.0)
+    wanted_payoff = _read_float_rule(data_root / "modes/career/career.rules", r"PlayerWantedPayoffCost\s*=\s*([0-9.]+)", 6000.0)
+    surrender_fp_exp = _read_float_rule(data_root / "modes/career/career.rules", r"SurrenderFirepowerWeightExponent\s*=\s*([0-9.]+)", 0.6)
+    surrender_cost_exp = _read_float_rule(data_root / "modes/career/career.rules", r"SurrenderShipCostWeightExponent\s*=\s*([0-9.]+)", 0.4)
 
     mechanics = {
-        "version": 4,
+        "version": 5,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -518,6 +543,36 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "source_class": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
             "intense_fire_threshold": 0.85,
             "bridge_crew_protected": True,
+        },
+        "heat_diffusion": {
+            "source_class": "Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser",
+            "speed_factor": heat_speed,
+            "min_delta_threshold": heat_thresh,
+            "empty_cell_speed_factor": heat_empty,
+            "scorched_crew_speed_min": scorched_min,
+        },
+        "attack_command": {
+            "source_class": "Cosmoteer.Ships.Commands.AttackCommand",
+            "sample_headings_deg": [0.0, 90.0, 180.0, 270.0],
+        },
+        "career_economy": {
+            "source_class": "Cosmoteer.Modes.Career.CareerSimModeManager",
+            "surrender_base_cost": surrender_base,
+            "wanted_payoff_cost": wanted_payoff,
+            "surrender_firepower_exp": surrender_fp_exp,
+            "surrender_cost_exp": surrender_cost_exp,
+            "fame_multipliers": [1.0, 1.25, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.5, 8.5, 10.0],
+            "reputation_tiers": [
+                {"min_rep": -1000000, "label": "적대", "reward_factor": 0.60, "buy_factor": 2.00},
+                {"min_rep": -9999, "label": "혐오", "reward_factor": 0.70, "buy_factor": 1.75},
+                {"min_rep": -2499, "label": "불신", "reward_factor": 0.80, "buy_factor": 1.50},
+                {"min_rep": -499, "label": "경계", "reward_factor": 0.90, "buy_factor": 1.25},
+                {"min_rep": -99, "label": "중립", "reward_factor": 1.00, "buy_factor": 1.00},
+                {"min_rep": 100, "label": "우호", "reward_factor": 1.10, "buy_factor": 0.90},
+                {"min_rep": 500, "label": "신뢰", "reward_factor": 1.20, "buy_factor": 0.80},
+                {"min_rep": 2500, "label": "동맹", "reward_factor": 1.30, "buy_factor": 0.70},
+                {"min_rep": 10000, "label": "숭배", "reward_factor": 1.40, "buy_factor": 0.60},
+            ],
         },
     }
     return logic_trace, mechanics

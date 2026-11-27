@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 5,
   "assembly_sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
-  "traced_methods": 76,
+  "traced_methods": 92,
   "penetration": {
     "source_class": "Cosmoteer.Bullets.Hits.BulletPenetratingHit",
     "projectiles": {
@@ -162,5 +162,97 @@
     "source_class": "Cosmoteer.Simulation.HitEffects.KillCrewEffect",
     "intense_fire_threshold": 0.85,
     "bridge_crew_protected": true
+  },
+  "heat_diffusion": {
+    "source_class": "Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser",
+    "speed_factor": 0.01,
+    "min_delta_threshold": 0.1,
+    "empty_cell_speed_factor": 0.004,
+    "scorched_crew_speed_min": 0.5
+  },
+  "attack_command": {
+    "source_class": "Cosmoteer.Ships.Commands.AttackCommand",
+    "sample_headings_deg": [
+      0.0,
+      90.0,
+      180.0,
+      270.0
+    ]
+  },
+  "career_economy": {
+    "source_class": "Cosmoteer.Modes.Career.CareerSimModeManager",
+    "surrender_base_cost": 4000.0,
+    "wanted_payoff_cost": 6000.0,
+    "surrender_firepower_exp": 0.6,
+    "surrender_cost_exp": 0.4,
+    "fame_multipliers": [
+      1.0,
+      1.25,
+      1.5,
+      2.0,
+      2.5,
+      3.0,
+      4.0,
+      5.0,
+      6.5,
+      8.5,
+      10.0
+    ],
+    "reputation_tiers": [
+      {
+        "min_rep": -1000000,
+        "label": "\uc801\ub300",
+        "reward_factor": 0.6,
+        "buy_factor": 2.0
+      },
+      {
+        "min_rep": -9999,
+        "label": "\ud610\uc624",
+        "reward_factor": 0.7,
+        "buy_factor": 1.75
+      },
+      {
+        "min_rep": -2499,
+        "label": "\ubd88\uc2e0",
+        "reward_factor": 0.8,
+        "buy_factor": 1.5
+      },
+      {
+        "min_rep": -499,
+        "label": "\uacbd\uacc4",
+        "reward_factor": 0.9,
+        "buy_factor": 1.25
+      },
+      {
+        "min_rep": -99,
+        "label": "\uc911\ub9bd",
+        "reward_factor": 1.0,
+        "buy_factor": 1.0
+      },
+      {
+        "min_rep": 100,
+        "label": "\uc6b0\ud638",
+        "reward_factor": 1.1,
+        "buy_factor": 0.9
+      },
+      {
+        "min_rep": 500,
+        "label": "\uc2e0\ub8b0",
+        "reward_factor": 1.2,
+        "buy_factor": 0.8
+      },
+      {
+        "min_rep": 2500,
+        "label": "\ub3d9\ub9f9",
+        "reward_factor": 1.3,
+        "buy_factor": 0.7
+      },
+      {
+        "min_rep": 10000,
+        "label": "\uc22d\ubc30",
+        "reward_factor": 1.4,
+        "buy_factor": 0.6
+      }
+    ]
   }
 }

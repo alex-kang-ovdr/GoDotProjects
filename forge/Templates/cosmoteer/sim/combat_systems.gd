@@ -1259,6 +1259,10 @@ static func crew_step_speed_factor(part: Dictionary, move_dir: Vector2i) -> floa
 	if fire_lvl > 0.05:
 		var fire_min := float(dcs.get("fire_speed_min", 0.2))
 		base *= lerpf(1.0, fire_min, fire_lvl)
+	var scorch_t := float(part.get("scorched", 0.0))
+	if scorch_t > 0.0:
+		var sc_min := float(get_dll_mechanics().get("heat_diffusion", {}).get("scorched_crew_speed_min", 0.5))
+		base *= lerpf(1.0, sc_min, clampf(scorch_t / 6.0, 0.0, 1.0))
 	return maxf(0.1, base)
 
 
@@ -1507,6 +1511,114 @@ static func is_crew_protected_in_part(part: Dictionary) -> bool:
 	if bool(cfg.get("bridge_crew_protected", true)) and is_bridge(id):
 		return true
 	return id.contains("armor")
+
+
+## Cosmoteer.Ships.Statuses.Subhandlers.StatusDiffuser: diffuse cell heat between adjacent modules.
+static func diffuse_cell_heat(ship: Dictionary, dt: float) -> float:
+	var cfg: Dictionary = get_dll_mechanics().get("heat_diffusion", {})
+	var rate := clampf(float(cfg.get("speed_factor", 0.01)) * dt * 60.0, 0.0, 0.25)
+	var thresh := float(cfg.get("min_delta_threshold", 0.1))
+	var cells_map: Dictionary = ship.get("cells", {})
+	var deltas: Dictionary = {}
+	var moved := 0.0
+	for uid_key in ship.get("parts", {}):
+		var uid := int(uid_key)
+		var p: Dictionary = ship.parts[uid]
+		if float(p.get("hp", 0.0)) <= 0.0 or bool(p.get("severed", false)):
+			continue
+		var h_a := float(p.get("heat", 0.0))
+		if h_a <= thresh:
+			continue
+		var pc: Vector2i = p.cell
+		var ps: Vector2i = p.size
+		var seen := {}
+		for x in range(pc.x - 1, pc.x + ps.x + 1):
+			for y in range(pc.y - 1, pc.y + ps.y + 1):
+				var in_x := x >= pc.x and x < pc.x + ps.x
+				var in_y := y >= pc.y and y < pc.y + ps.y
+				if (in_x and in_y) or ((not in_x) and (not in_y)):
+					continue
+				var nuid := int(cells_map.get(Vector2i(x, y), -1))
+				if nuid >= 0 and nuid != uid and not seen.has(nuid) and ship.parts.has(nuid):
+					seen[nuid] = true
+					var np: Dictionary = ship.parts[nuid]
+					if float(np.get("hp", 0.0)) <= 0.0 or bool(np.get("severed", false)):
+						continue
+					var diff := h_a - float(np.get("heat", 0.0))
+					if diff >= thresh:
+						var flow := diff * rate
+						deltas[uid] = float(deltas.get(uid, 0.0)) - flow
+						deltas[nuid] = float(deltas.get(nuid, 0.0)) + flow
+						moved += flow
+	for duid in deltas:
+		var dp: Dictionary = ship.parts[duid]
+		dp["heat"] = maxf(0.0, float(dp.get("heat", 0.0)) + float(deltas[duid]))
+	return moved
+
+
+## Cosmoteer.Ships.Commands.AttackCommand.EstimateFirepowerTowards: DPS brought to bear along local angle.
+static func estimate_firepower_towards(ship: Dictionary, local_angle: float) -> float:
+	var total := 0.0
+	for part in ship.get("parts", {}).values():
+		if float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false)):
+			continue
+		var id := str(part.get("id", ""))
+		if not is_weapon(id):
+			continue
+		var st: Dictionary = part.get("stats", {})
+		var rest := float(part.get("rest_angle", deg_to_rad(float(st.get("turret_rotation_deg", -90.0))) + float(int(part.get("rotation", 0))) * PI * 0.5))
+		var half_arc := deg_to_rad(float(st.get("firing_arc_deg", st.get("fire_arc_deg", 90.0)))) * 0.5
+		var diff := absf(wrapf(local_angle - rest, -PI, PI))
+		if diff <= half_arc + 0.01 or bool(st.get("homing", false)):
+			var align_weight := 0.75 + 0.25 * cos(diff)
+			if st.has("beam_dps"):
+				total += float(st.beam_dps) * align_weight
+			elif float(st.get("fire_interval", 0.0)) > 0.0:
+				total += (float(st.get("damage", 0.0)) / float(st.fire_interval)) * align_weight
+	return total
+
+
+## Cosmoteer.Ships.Commands.AttackCommand.SetBestAttackRotation: pick local angle with highest firepower.
+static func best_attack_rotation(ship: Dictionary) -> float:
+	var best_ang := 0.0
+	var best_fp := -1.0
+	var samples: Array = get_dll_mechanics().get("attack_command", {}).get("sample_headings_deg", [0.0, 90.0, 180.0, 270.0])
+	for deg_val in samples:
+		var ang := deg_to_rad(float(deg_val))
+		var fp := estimate_firepower_towards(ship, ang)
+		if fp > best_fp:
+			best_fp = fp
+			best_ang = ang
+	return best_ang
+
+
+## Cosmoteer.Modes.Career: exact reputation reward & shop cost factors from career.rules.
+static func reputation_economy_factors(rep: int) -> Dictionary:
+	var tiers: Array = get_dll_mechanics().get("career_economy", {}).get("reputation_tiers", [])
+	var chosen := {"min_rep": -99, "label": "중립", "reward_factor": 1.0, "buy_factor": 1.0}
+	for t in tiers:
+		if rep >= int(t.get("min_rep", -1000000)):
+			chosen = t
+	return chosen
+
+
+static func fame_reward_multiplier(fame: int) -> float:
+	var mults: Array = get_dll_mechanics().get("career_economy", {}).get("fame_multipliers", [1.0, 1.25, 1.5, 2.0])
+	if mults.is_empty():
+		return 1.0
+	var idx := clampi(fame / 50, 0, mults.size() - 1)
+	return float(mults[idx])
+
+
+## Cosmoteer.Modes.Career.CareerSimModeManager.GetSurrenderForPrice: surrender tribute cost.
+static func surrender_bribe_cost(player_fp: float, enemy_fp: float, enemy_cost: float) -> int:
+	var cfg: Dictionary = get_dll_mechanics().get("career_economy", {})
+	var base := float(cfg.get("surrender_base_cost", 4000.0))
+	var fp_exp := float(cfg.get("surrender_firepower_exp", 0.6))
+	var cost_exp := float(cfg.get("surrender_cost_exp", 0.4))
+	var fp_ratio := clampf(enemy_fp / maxf(1.0, player_fp), 0.25, 4.0)
+	var raw := base * pow(fp_ratio, fp_exp) * pow(maxf(1.0, enemy_cost / 10000.0), cost_exp)
+	return maxi(1000, roundi(raw / 100.0) * 100)
 
 
 static func prepare_part(part: Dictionary) -> void:
