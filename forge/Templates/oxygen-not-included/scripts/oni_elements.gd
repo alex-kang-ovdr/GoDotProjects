@@ -68,6 +68,12 @@ static var techs: Dictionary = {}
 static var buildings: Dictionary = {}
 static var worldgen: Dictionary = {}
 static var manifest: Dictionary = {}
+static var csharp_logic: Dictionary = {}
+static var csharp_buildings: Dictionary = {}
+static var csharp_critters: Dictionary = {}
+static var csharp_crops: Dictionary = {}
+static var csharp_physiology: Dictionary = {}
+static var csharp_tuning: Dictionary = {}
 
 const BUILDING_COLORS := {
 	"tile": Color(0.60, 0.64, 0.70, 1.0),
@@ -273,6 +279,20 @@ static func ensure_loaded() -> void:
 	if raw_mf is Dictionary:
 		manifest = raw_mf
 
+	var raw_cs: Variant = _load_json("res://data/csharp_logic_extracted.txt")
+	if raw_cs is Dictionary and not raw_cs.is_empty():
+		csharp_logic = raw_cs
+		if raw_cs.get("buildings", {}) is Dictionary:
+			csharp_buildings = raw_cs["buildings"]
+		if raw_cs.get("critters", {}) is Dictionary:
+			csharp_critters = raw_cs["critters"]
+		if raw_cs.get("crops", {}) is Dictionary:
+			csharp_crops = raw_cs["crops"]
+		if raw_cs.get("duplicant_physiology", {}) is Dictionary:
+			csharp_physiology = raw_cs["duplicant_physiology"]
+		if raw_cs.get("tuning", {}) is Dictionary:
+			csharp_tuning = raw_cs["tuning"]
+
 static func _load_json(res_path: String) -> Variant:
 	if not FileAccess.file_exists(res_path):
 		return {}
@@ -313,7 +333,44 @@ static func get_tech(id: String) -> Dictionary:
 	ensure_loaded()
 	return techs.get(id, {})
 
+static func get_building_cs(id: String) -> Dictionary:
+	ensure_loaded()
+	return csharp_buildings.get(id, {})
+
+static func get_building_overheat_c(id: String) -> float:
+	var cs := get_building_cs(id)
+	if cs.is_empty():
+		return 9999.0
+	return float(cs.get("overheat_c", 9999.0))
+
+static func is_building_floodable(id: String) -> bool:
+	var cs := get_building_cs(id)
+	if cs.is_empty():
+		return false
+	return bool(cs.get("floodable", false))
+
+static func get_building_heat_kw(id: String) -> float:
+	var cs := get_building_cs(id)
+	if cs.is_empty():
+		return 0.0
+	return float(cs.get("self_heat_kw", 0.0)) + float(cs.get("exhaust_kw", 0.0))
+
+static func get_scalding_c() -> float:
+	ensure_loaded()
+	return float(csharp_physiology.get("scalding_threshold_c", 72.0))
+
+static func get_hypothermia_c() -> float:
+	ensure_loaded()
+	return float(csharp_physiology.get("hypothermia_threshold_c", 0.0))
+
+static func get_flood_threshold_kg() -> float:
+	ensure_loaded()
+	return float(csharp_physiology.get("flood_threshold_kg", 350.0))
+
+static func is_falling_solid(el: String) -> bool:
+	return el == "Sand" or el == "Regolith" or el == "Snow" or el == "CrushedIce"
+
 static func get_counts_summary() -> String:
 	ensure_loaded()
 	var biomes_d: Dictionary = worldgen.get("biomes", {})
-	return "원작 추출: 원소 %d · 기술 %d · 바이옴 %d" % [elements.size(), techs.size(), biomes_d.size()]
+	return "원작 추출: 원소 %d · 기술 %d · 바이옴 %d · C#건물 %d" % [elements.size(), techs.size(), biomes_d.size(), csharp_buildings.size()]

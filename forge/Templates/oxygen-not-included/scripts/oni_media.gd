@@ -354,11 +354,21 @@ static func get_complete_audit_lines() -> Array[String]:
 		kanim_building_idle.size() + kanim_dupes.size() + (0 if kanim_atmosuit_dupe.is_empty() else 1) + (0 if kanim_jetsuit_dupe.is_empty() else 1),
 		int(rendering_inventory.get("kanim_textassets_total", 0)),
 	])
-	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 5종" % [
+	lines.append("[셰이더/머티리얼] Unity 셰이더 %d종 (Klei 전용 %d) · 머티리얼 %d종 · Godot 포팅 6종" % [
 		int(shaders_summary.get("shaders", 0)),
 		klei_shader_names.size(),
 		int(shaders_summary.get("materials", 0)),
 	])
+	var cs_stats: Dictionary = OniElements.csharp_logic.get("assembly_stats", {}) as Dictionary
+	if not cs_stats.is_empty():
+		lines.append("[C# DLL 역공학] TypeDef %d · 상수 %d · TUNING %d클래스 · BuildingDef %d · 크리터 %d · 작물 %d" % [
+			int(cs_stats.get("typedefs_total", 0)),
+			int(cs_stats.get("constants_mapped", 0)),
+			int(cs_stats.get("tuning_classes_extracted", 0)),
+			int(cs_stats.get("buildings_extracted", 0)),
+			int(cs_stats.get("critters_extracted", 0)),
+			int(cs_stats.get("crops_extracted", 0)),
+		])
 	lines.append("[FMOD 사운드] 전체 %d뱅크 %d샘플 · STDT 토큰 %d · 실제 PCM16 SFX %d종 재생" % [
 		int(audio_summary.get("total_banks", 0)),
 		int(audio_summary.get("total_samples", 0)),
@@ -454,7 +464,30 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			var fk := String(fk_v)
 			lines.append("• [음식] %s (%s)" % [String(fd[fk]), fk])
 	elif tab_id == "shaders":
-		lines.append("=== 원작 Unity 6 Klei 셰이더 (%d종 / 전체 %d종 · Godot 포팅 5종) ===" % [klei_shader_names.size(), int(shaders_summary.get("shaders", 0))])
+		lines.append("=== 원작 Unity 6 Klei 셰이더 (%d종 / 전체 %d종 · Godot GPU 포팅 6종) ===" % [klei_shader_names.size(), int(shaders_summary.get("shaders", 0))])
+		lines.append("★ 활성 Godot 포팅: oni_gas_volume(Klei/GasTest+Grid), oni_biome_fx(Liquid+Frost+Ember), oni_light_compositor, oni_atmosphere_fx, oni_water_surface, oni_tile_surface")
 		for sh_v in klei_shader_names:
 			lines.append("• " + String(sh_v))
+	elif tab_id == "csharp":
+		var st: Dictionary = OniElements.csharp_logic.get("assembly_stats", {}) as Dictionary
+		lines.append("=== Assembly-CSharp.dll CIL 역공학 추출 (%d TypeDef · %d 상수 · %d TUNING · %d 건물) ===" % [
+			int(st.get("typedefs_total", 0)), int(st.get("constants_mapped", 0)),
+			int(st.get("tuning_classes_extracted", 0)), int(st.get("buildings_extracted", 0))
+		])
+		lines.append("• 복제체 열생리학: 화상 %.0f°C · 저체온 %.0f°C · 침수 기준 %.0fkg · 방사선 %s" % [
+			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
+			str(OniElements.csharp_physiology.get("rad_levels", {}))
+		])
+		var bkeys: Array = OniElements.csharp_buildings.keys()
+		bkeys.sort()
+		for bk_v in bkeys:
+			var bk := String(bk_v)
+			var cs: Dictionary = OniElements.csharp_buildings[bk]
+			var oh := float(cs.get("overheat_c", 9999.0))
+			var oh_s := "과열 %.0f°C" % oh if oh < 9000.0 else "비과열"
+			var fl_s := "침수O" if bool(cs.get("floodable", false)) else "침수X"
+			lines.append("• [%s] %s | 소비 %.0fW · 발전 %.0fW · 발열 %.2fkW | %s · %s" % [
+				bk, String(cs.get("cs_class", "")), float(cs.get("energy_w", 0.0)), float(cs.get("gen_w", 0.0)),
+				float(cs.get("self_heat_kw", 0.0)) + float(cs.get("exhaust_kw", 0.0)), oh_s, fl_s
+			])
 	return lines

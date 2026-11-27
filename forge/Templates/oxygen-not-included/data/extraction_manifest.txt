@@ -1,6 +1,6 @@
 {
   "source_path": "C:\\Temp\\Oxygen",
-  "extracted_at_utc": "2026-11-26T22:12:19.163110+00:00",
+  "extracted_at_utc": "2026-11-27T01:03:41.477222+00:00",
   "counts": {
     "ko_strings": 21114,
     "elements": 196,
@@ -36,7 +36,7 @@
     "unity_materials_total": 285,
     "fmod_stdt_tokens": 8322,
     "fmod_radix_nodes_est": 29697,
-    "godot_ported_shaders": 5,
+    "godot_ported_shaders": 6,
     "embedded_element_textures": 36,
     "embedded_building_textures": 5,
     "embedded_fx_textures": 5,
@@ -47,7 +47,13 @@
     "fmod_pcm16_samples": 653,
     "fmod_vorbis_samples": 13028,
     "embedded_pcm16_sfx": 36,
-    "embedded_bgm_tracks": 8
+    "embedded_bgm_tracks": 8,
+    "csharp_typedefs": 17674,
+    "csharp_constants": 6798,
+    "csharp_tuning_classes": 155,
+    "csharp_building_defs": 98,
+    "csharp_critter_tunings": 10,
+    "csharp_crop_configs": 6
   },
   "source_hashes_sha256": {
     "gas.yaml": "e606d65f24d2f2c2321344d9a401e7bad8f960d3784754046bcdb152f18fe406",

@@ -27,6 +27,11 @@ var _gas_tex: ImageTexture
 var _gas_mat: ShaderMaterial
 var _gas_sprite: Sprite2D
 
+var _biome_fx_img: Image
+var _biome_fx_tex: ImageTexture
+var _biome_fx_mat: ShaderMaterial
+var _biome_fx_sprite: Sprite2D
+
 var _light_img: Image
 var _light_tex: ImageTexture
 var _light_mat: ShaderMaterial
@@ -68,6 +73,26 @@ func _setup_render_layers() -> void:
 	_terrain_fg_node.z_index = 2
 	_terrain_fg_node.draw.connect(_draw_terrain_foreground)
 	add_child(_terrain_fg_node)
+
+	# Layer 3: GPU Klei/Liquid 커스틱·끓는 기포 + _FrostTex 결빙 광채 + _EmberTex 열기 아지랑이 (48x32 필드)
+	_biome_fx_img = Image.create_empty(OniWorld.WIDTH, OniWorld.HEIGHT, false, Image.FORMAT_RGBA8)
+	_biome_fx_img.fill(Color(0.0, 0.0, 0.0, 0.0))
+	_biome_fx_tex = ImageTexture.create_from_image(_biome_fx_img)
+	_biome_fx_sprite = Sprite2D.new()
+	_biome_fx_sprite.centered = false
+	_biome_fx_sprite.position = Vector2.ZERO
+	_biome_fx_sprite.scale = Vector2(ts_f, ts_f)
+	_biome_fx_sprite.texture = _biome_fx_tex
+	_biome_fx_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	_biome_fx_sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_DISABLED
+	_biome_fx_sprite.z_index = 3
+	if ResourceLoader.exists("res://shaders/oni_biome_fx.gdshader"):
+		var bsh: Variant = load("res://shaders/oni_biome_fx.gdshader")
+		if bsh is Shader:
+			_biome_fx_mat = ShaderMaterial.new()
+			_biome_fx_mat.shader = bsh
+			_biome_fx_sprite.material = _biome_fx_mat
+	add_child(_biome_fx_sprite)
 
 	# Layer 4: 전경 오브젝트 (건물·생물·대원·파티클)
 	_fg_node = Node2D.new()
@@ -133,6 +158,9 @@ func tick_fx(delta: float) -> void:
 
 	if _light_mat != null:
 		_light_mat.set_shader_parameter("overlay_bypass", 0.0 if overlay_mode == "normal" else 0.88)
+	if _biome_fx_mat != null:
+		_biome_fx_mat.set_shader_parameter("time_sec", _anim_time)
+		_biome_fx_mat.set_shader_parameter("fx_opacity", 1.0 if overlay_mode == "normal" else 0.12)
 
 	var alive: Array[Dictionary] = []
 	for p: Dictionary in _fx_particles:
@@ -151,11 +179,11 @@ func tick_fx(delta: float) -> void:
 
 	var ts := float(OniWorld.TILE_SIZE)
 	for dupe in world.duplicants:
-		if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
+		if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP" or dupe.state == "REPAIR") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 			if randf() < delta * 10.0:
 				var tx := (float(dupe.target_cell.x) + 0.5) * ts
 				var ty := (float(dupe.target_cell.y) + 0.5) * ts
-				var fcol := Color(1.0, 0.78, 0.32, 0.9) if dupe.state == "DIG" else (Color(1.0, 0.36, 0.32, 0.9) if dupe.state == "DECONSTRUCT" else (Color(0.35, 0.88, 1.0, 0.9) if dupe.state == "MOP" else Color(0.45, 0.94, 1.0, 0.9)))
+				var fcol := Color(1.0, 0.78, 0.32, 0.9) if dupe.state == "DIG" else (Color(1.0, 0.36, 0.32, 0.9) if dupe.state == "DECONSTRUCT" else (Color(0.35, 0.88, 1.0, 0.9) if dupe.state == "MOP" else (Color(0.42, 1.0, 0.62, 0.92) if dupe.state == "REPAIR" else Color(0.45, 0.94, 1.0, 0.9))))
 				spawn_fx(
 					Vector2(tx + randf_range(-6, 6), ty + randf_range(-6, 6)),
 					Vector2(randf_range(-28, 28), randf_range(-38, -8)),
@@ -168,7 +196,16 @@ func tick_fx(delta: float) -> void:
 		for y in range(1, OniWorld.HEIGHT - 1):
 			for x in range(1, OniWorld.WIDTH - 1):
 				var i := world.idx(x, y)
-				if world.machine_running[i] == 1 and world.building[i] in ["diffuser", "electrolyzer", "geyser_steam", "geyser_hydrogen"]:
+				if world.building_status[i] == "OVERHEAT" or world.building_status[i] == "BROKEN":
+					if randf() < 0.45:
+						spawn_fx(
+							Vector2((float(x) + 0.5) * ts + randf_range(-6, 6), (float(y) + 0.3) * ts),
+							Vector2(randf_range(-14, 14), randf_range(-36, -18)),
+							0.75,
+							"spark",
+							Color(1.0, 0.38, 0.14, 0.95)
+						)
+				elif world.machine_running[i] == 1 and world.building[i] in ["diffuser", "electrolyzer", "geyser_steam", "geyser_hydrogen"]:
 					if randf() < 0.35:
 						var bcol := Color(0.92, 0.58, 0.98, 0.85) if world.building[i] == "geyser_hydrogen" else (Color(0.90, 0.94, 0.98, 0.85) if world.building[i] == "geyser_steam" else Color(0.55, 0.94, 1.0, 0.85))
 						spawn_fx(
@@ -324,8 +361,21 @@ func _update_gpu_textures() -> void:
 					lb += lc.b * att
 			_light_img.set_pixel(x, y, Color(clampf(lr, 0.0, 1.0), clampf(lg, 0.0, 1.0), clampf(lb, 0.0, 1.0), 1.0))
 
+			# Klei/Liquid + _FrostTex + _EmberTex 48x32 GPU 바이옴 FX 필드 갱신
+			if _biome_fx_img != null:
+				var lm_v := world.liquid_mass[i]
+				var lel_v := world.liquid_el[i]
+				var tc_v := world.temp_c[i]
+				var r_caustic := clampf(lm_v / 600.0, 0.0, 1.0) if (lm_v > 15.0 and lel_v != "Magma") else 0.0
+				var g_boil := clampf((tc_v - 68.0) / 40.0, 0.0, 1.0) if (lm_v > 15.0 and tc_v > 68.0) else 0.0
+				var b_ember := 1.0 if (lm_v > 15.0 and lel_v == "Magma") else (clampf((tc_v - 70.0) / 55.0, 0.0, 0.85) if tc_v > 70.0 else 0.0)
+				var a_frost := clampf((2.0 - tc_v) / 20.0, 0.0, 1.0) if (tc_v < 2.0 and not world.is_space_cell(x, y)) else 0.0
+				_biome_fx_img.set_pixel(x, y, Color(r_caustic, g_boil, b_ember, a_frost))
+
 	_gas_tex.update(_gas_img)
 	_light_tex.update(_light_img)
+	if _biome_fx_tex != null and _biome_fx_img != null:
+		_biome_fx_tex.update(_biome_fx_img)
 
 func _biome_backwall_element(x: int, y: int) -> String:
 	if Vector2(x - 7, y - 14).length() < 6.8:
@@ -345,8 +395,21 @@ func _draw() -> void:
 	var ts := OniWorld.TILE_SIZE
 	var total_w := OniWorld.WIDTH * ts
 	var total_h := OniWorld.HEIGHT * ts
-	# 행성 외곽 및 상단 개방 우주 하늘(y < 0) 심우주 별빛 배경
+	# 행성 외곽 및 상단 개방 우주 하늘(y < 0) 심우주 별빛 + Klei/NorthernLights 오로라 커튼
 	draw_rect(Rect2(-480.0, -520.0, float(total_w) + 960.0, 524.0), Color(0.025, 0.035, 0.085, 1.0), true)
+	for ai in range(3):
+		var a_pts := PackedVector2Array()
+		var a_y0 := -165.0 + float(ai) * 48.0
+		var a_col := Color(0.16, 0.88, 0.68, 0.075) if ai == 0 else (Color(0.26, 0.68, 0.98, 0.065) if ai == 1 else Color(0.62, 0.36, 0.96, 0.055))
+		for seg in range(19):
+			var px_a := -120.0 + float(seg) * (float(total_w) + 240.0) / 18.0
+			var wave := sin(_anim_time * (0.45 + float(ai) * 0.16) + float(seg) * 0.55 + float(ai) * 1.9) * 26.0
+			a_pts.append(Vector2(px_a, a_y0 + wave))
+		for seg in range(18, -1, -1):
+			var px_a := -120.0 + float(seg) * (float(total_w) + 240.0) / 18.0
+			var wave := sin(_anim_time * (0.45 + float(ai) * 0.16) + float(seg) * 0.55 + float(ai) * 1.9) * 26.0
+			a_pts.append(Vector2(px_a, a_y0 + wave + 76.0))
+		draw_colored_polygon(a_pts, a_col)
 	for si in range(95):
 		var sh1 := absf(fmod(sin(float(si * 47 + 13)) * 43758.5453, 1.0))
 		var sh2 := absf(fmod(sin(float(si * 83 + 29)) * 24634.6345, 1.0))
@@ -690,7 +753,12 @@ func _draw_overlay_front() -> void:
 						if world.in_bounds(nx, ny):
 							var ni := world.idx(nx, ny)
 							if world._is_power_node(ni):
-								_conduit_fg_node.draw_line(Vector2(cx, cy), Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5), wc, 4.2)
+								var p1 := Vector2(cx, cy)
+								var p2 := Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5)
+								_conduit_fg_node.draw_line(p1, p2, wc, 4.2)
+								if world.power_produced_w > 1.0 and (d.x > 0 or d.y > 0):
+									var efrac := fmod(_anim_time * 1.8 + float(x + y) * 0.23, 1.0)
+									_conduit_fg_node.draw_circle(p1.lerp(p2, efrac), 2.3, Color(1.0, 0.98, 0.72, 0.96))
 				if is_gen or is_con or is_bat:
 					var nc := Color(0.28, 0.96, 0.48, 0.96) if is_gen else (Color(0.36, 0.86, 1.0, 0.96) if is_con else Color(1.0, 0.92, 0.34, 0.96))
 					_conduit_fg_node.draw_circle(Vector2(cx, cy), 7.0, Color(0.05, 0.08, 0.12, 0.92))
@@ -815,7 +883,20 @@ func _draw_overlay_front() -> void:
 				_conduit_fg_node.draw_line(rect.position + Vector2(6, 6), rect.end - Vector2(6, 6), Color(1.0, 0.75, 0.30, 0.85), 2.0)
 				_conduit_fg_node.draw_line(Vector2(rect.end.x - 6, rect.position.y + 6), Vector2(rect.position.x + 6, rect.end.y - 6), Color(1.0, 0.75, 0.30, 0.85), 2.0)
 				if world.dig_progress[i] > 0.01:
-					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * clampf(world.dig_progress[i], 0.0, 1.0), 4), Color(1.0, 0.85, 0.25, 1.0), true)
+					# Klei/Substance _DigMap 4단계 암반 균열 오버레이
+					var dp := clampf(world.dig_progress[i], 0.0, 1.0)
+					var cr_col := Color(0.06, 0.05, 0.04, 0.75 + 0.22 * dp)
+					var cc := rect.get_center()
+					_conduit_fg_node.draw_line(cc, cc + Vector2(-8, -9) * dp, cr_col, 1.8)
+					if dp > 0.25:
+						_conduit_fg_node.draw_line(cc, cc + Vector2(9, -6) * dp, cr_col, 1.8)
+						_conduit_fg_node.draw_line(cc + Vector2(-4, -5) * dp, cc + Vector2(-11, 2) * dp, cr_col, 1.4)
+					if dp > 0.55:
+						_conduit_fg_node.draw_line(cc, cc + Vector2(7, 10) * dp, cr_col, 2.0)
+						_conduit_fg_node.draw_line(cc, cc + Vector2(-9, 8) * dp, cr_col, 1.8)
+					if dp > 0.80:
+						_conduit_fg_node.draw_rect(rect.grow(-4), Color(1.0, 0.92, 0.68, 0.18), true)
+					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.end.y - 6, (ts - 6) * dp, 4), Color(1.0, 0.85, 0.25, 1.0), true)
 
 			var bo := world.build_order[i]
 			if not bo.is_empty():
@@ -849,6 +930,22 @@ func _draw_overlay_front() -> void:
 				var pcol := Color(1.0, 0.35, 0.25, 0.95) if pval >= 8 else (Color(1.0, 0.84, 0.28, 0.95) if pval >= 6 else Color(0.68, 0.78, 0.88, 0.92))
 				_conduit_fg_node.draw_rect(Rect2(rect.position.x + 1, rect.position.y + 1, 12, 12), Color(0.05, 0.08, 0.12, 0.90), true)
 				_conduit_fg_node.draw_string(efont, Vector2(rect.position.x + 3, rect.position.y + 10), str(pval), HORIZONTAL_ALIGNMENT_LEFT, 10, 9, pcol)
+
+			# Klei/StatusItem 건물 부유 상태 배지 (과열/파손/침수/무전력/연료) + 손상 HP 바
+			if not world.building[i].is_empty():
+				if world.building_hp[i] < 99.0:
+					var hpr := clampf(world.building_hp[i] / 100.0, 0.0, 1.0)
+					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.position.y + 1, ts - 6, 4), Color(0.08, 0.06, 0.08, 0.92), true)
+					_conduit_fg_node.draw_rect(Rect2(rect.position.x + 3, rect.position.y + 1, (ts - 6) * hpr, 4), Color(1.0, 0.32, 0.24, 1.0) if hpr < 0.4 else Color(1.0, 0.76, 0.24, 1.0), true)
+				var bst := world.building_status[i]
+				if not bst.is_empty() and bst != "OVERPRESSURE" and efont != null:
+					var st_txt := "과열!" if bst == "OVERHEAT" else ("파손!" if bst == "BROKEN" else ("침수" if bst == "FLOODED" else ("무전력" if bst == "NO_POWER" else "연료")))
+					var st_col := Color(1.0, 0.28, 0.22, 0.96) if (bst == "OVERHEAT" or bst == "BROKEN") else (Color(0.32, 0.78, 1.0, 0.95) if bst == "FLOODED" else Color(1.0, 0.80, 0.22, 0.95))
+					var bob_s := sin(_anim_time * 5.0 + float(x)) * 1.5
+					var srect_b := Rect2(rect.position.x - 2.0, rect.position.y - 14.0 + bob_s, 36.0, 12.0)
+					_conduit_fg_node.draw_rect(srect_b, Color(0.05, 0.07, 0.11, 0.90), true)
+					_conduit_fg_node.draw_rect(srect_b, st_col, false, 1.2)
+					_conduit_fg_node.draw_string(efont, Vector2(srect_b.position.x + 2.0, srect_b.position.y + 9.5), st_txt, HORIZONTAL_ALIGNMENT_CENTER, 32, 8, st_col)
 
 	# 호버 / 선택 / 드래그 프리뷰
 	if world.in_bounds(selected_cell.x, selected_cell.y):
@@ -913,7 +1010,15 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 						lcol = Color(0.98, 0.68, 0.18, 0.96)
 					elif lpel == "Magma":
 						lcol = Color(1.0, 0.42, 0.12, 0.98)
-					c.draw_circle(Vector2(cx, cy) + offset, 4.5, lcol)
+					# Klei/ConduitBall 유동 패킷 애니메이션
+					var pflow := fmod(_anim_time * 1.15 + float(x + y) * 0.37, 1.0)
+					var foff := Vector2.ZERO
+					for d2: Vector2i in dirs:
+						if world.in_bounds(x + d2.x, y + d2.y) and world.has_liquid_pipe[world.idx(x + d2.x, y + d2.y)] == 1:
+							foff = Vector2(float(d2.x), float(d2.y)) * float(ts) * 0.42 * (pflow - 0.5)
+							break
+					c.draw_circle(Vector2(cx, cy) + offset + foff, 4.8, lcol)
+					c.draw_circle(Vector2(cx, cy) + offset + foff + Vector2(-1.2, -1.2), 1.6, Color(1.0, 1.0, 1.0, 0.65))
 
 			if world.has_gas_pipe[i] == 1:
 				var gpc := Color(0.36, 0.90, 0.78, pipe_a)
@@ -926,7 +1031,14 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 						c.draw_line(Vector2(cx, cy) + offset, Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5) + offset, gpc, pipe_w)
 				if bright and world.gpipe_mass[i] > 0.01 and world.gpipe_el[i] != "Vacuum":
 					var pec: Color = OniElements.get_element_color(world.gpipe_el[i])
-					c.draw_circle(Vector2(cx, cy) + offset, 4.5, pec)
+					var gflow := fmod(_anim_time * 1.35 + float(x - y) * 0.31, 1.0)
+					var goff := Vector2.ZERO
+					for d2: Vector2i in dirs:
+						if world.in_bounds(x + d2.x, y + d2.y) and world.has_gas_pipe[world.idx(x + d2.x, y + d2.y)] == 1:
+							goff = Vector2(float(d2.x), float(d2.y)) * float(ts) * 0.42 * (gflow - 0.5)
+							break
+					c.draw_circle(Vector2(cx, cy) + offset + goff, 4.6, pec)
+					c.draw_arc(Vector2(cx, cy) + offset + goff, 4.6, 0.0, TAU, 10, Color(1.0, 1.0, 1.0, 0.55), 1.0)
 
 func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) -> void:
 	var rect := Rect2(x * ts, y * ts, ts, ts)
@@ -1144,11 +1256,11 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 			c.draw_arc(hc, 11.8, 0.0, TAU, 20, Color(0.56, 0.94, 1.0, 0.85), 1.6)
 			c.draw_arc(hc, 9.2, -2.5, -1.1, 10, Color(1.0, 1.0, 1.0, 0.72), 1.5)
 
-	if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
+	if (dupe.state == "DIG" or dupe.state == "BUILD" or dupe.state == "DECONSTRUCT" or dupe.state == "MOP" or dupe.state == "REPAIR") and world.in_bounds(dupe.target_cell.x, dupe.target_cell.y):
 		var tx := dupe.target_cell.x * ts + ts * 0.5
 		var ty := dupe.target_cell.y * ts + ts * 0.5
 		var pulse := 0.65 + 0.35 * sin(_anim_time * 24.0)
-		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else (Color(1.0, 0.32, 0.32, pulse) if dupe.state == "DECONSTRUCT" else (Color(0.32, 0.94, 1.0, pulse) if dupe.state == "MOP" else Color(0.35, 0.92, 1.0, pulse)))
+		var beam_c := Color(1.0, 0.72, 0.25, pulse) if dupe.state == "DIG" else (Color(1.0, 0.32, 0.32, pulse) if dupe.state == "DECONSTRUCT" else (Color(0.32, 0.94, 1.0, pulse) if dupe.state == "MOP" else (Color(0.42, 1.0, 0.62, pulse) if dupe.state == "REPAIR" else Color(0.35, 0.92, 1.0, pulse))))
 		c.draw_line(Vector2(px, py - 4), Vector2(tx, ty), beam_c, 3.0)
 		c.draw_circle(Vector2(tx, ty), 5.0 * pulse, beam_c)
 
@@ -1157,14 +1269,26 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 		c.draw_rect(Rect2(px - 10, py - 30, 20, 3), Color(0.12, 0.14, 0.18, 0.9), true)
 		c.draw_rect(Rect2(px - 10, py - 30, bw, 3), Color(0.35, 0.88, 1.0, 1.0), true)
 
-	# 깔끔한 다크 필 배경 + 대원 이름표 (대원 머리 바로 위 밀착)
+	# 깔끔한 다크 필 배경 + 대원 이름표 + Klei/StatusItem 부유 상태 배지
 	var font := ThemeDB.fallback_font
 	if font != null:
 		var pill := Rect2(px - 17, py - 38, 34, 13)
 		c.draw_rect(pill, Color(0.05, 0.08, 0.12, 0.78), true)
 		c.draw_rect(pill, Color(0.38, 0.56, 0.72, 0.58), false, 1.0)
 		c.draw_string(font, Vector2(px - 15, py - 28), dupe.dupe_name, HORIZONTAL_ALIGNMENT_CENTER, 30, 10, Color(0.96, 0.98, 1.0, 0.96))
-		if not dupe.disease.is_empty():
+		if dupe.thermal_status == "SCALDING":
+			var hpill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(hpill, Color(0.75, 0.16, 0.10, 0.95), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "화상!", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.92, 0.72, 1.0))
+		elif dupe.thermal_status == "CHILLY":
+			var cpill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(cpill, Color(0.10, 0.36, 0.65, 0.92), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "저체온", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(0.82, 0.96, 1.0, 1.0))
+		elif dupe.bladder >= 80.0:
+			var bpill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(bpill, Color(0.65, 0.48, 0.10, 0.92), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "화장실!", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.96, 0.78, 1.0))
+		elif not dupe.disease.is_empty():
 			var dpill := Rect2(px - 22, py - 52, 44, 12)
 			c.draw_rect(dpill, Color(0.28, 0.45, 0.08, 0.92), true)
 			c.draw_string(font, Vector2(px - 20, py - 43), dupe.get_disease_ko(), HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(0.92, 1.0, 0.55, 1.0))
@@ -1207,6 +1331,9 @@ func _draw_conveyor_packets_on(c: Node2D, ts: int) -> void:
 		c.draw_circle(Vector2(px, py), 3.0, Color(0.92, 0.78, 0.36, 1.0))
 
 func _draw_fx_particles_on(c: Node2D) -> void:
+	var bub_tex := OniMedia.get_fx_texture("liquid_surface_bubble_fx_0")
+	var dust_tex := OniMedia.get_fx_texture("contact_dust_fx_0")
+	var burst_tex := OniMedia.get_fx_texture("building_upgrade_fx_0")
 	for p: Dictionary in _fx_particles:
 		var pos: Vector2 = p["pos"]
 		var ratio := clampf(float(p["life"]) / maxf(0.01, float(p["max_life"])), 0.0, 1.0)
@@ -1214,12 +1341,21 @@ func _draw_fx_particles_on(c: Node2D) -> void:
 		var pc := Color(col.r, col.g, col.b, col.a * ratio)
 		var kind := String(p["kind"])
 		if kind == "bubble":
-			var r := 2.5 + (1.0 - ratio) * 2.5
-			c.draw_circle(pos, r, Color(pc.r, pc.g, pc.b, pc.a * 0.40))
-			c.draw_arc(pos, r, 0.0, TAU, 10, pc, 1.2)
+			var r := 4.0 + (1.0 - ratio) * 4.5
+			if bub_tex != null:
+				c.draw_texture_rect(bub_tex, Rect2(pos.x - r, pos.y - r, r * 2.0, r * 2.0), false, pc)
+			else:
+				c.draw_circle(pos, r, Color(pc.r, pc.g, pc.b, pc.a * 0.40))
+				c.draw_arc(pos, r, 0.0, TAU, 10, pc, 1.2)
 		elif kind == "burst":
-			var r := 4.0 + (1.0 - ratio) * 8.0
-			c.draw_arc(pos, r, 0.0, TAU, 12, pc, 1.8)
+			var r := 6.0 + (1.0 - ratio) * 10.0
+			if burst_tex != null:
+				c.draw_texture_rect(burst_tex, Rect2(pos.x - r, pos.y - r, r * 2.0, r * 2.0), false, pc)
+			else:
+				c.draw_arc(pos, r, 0.0, TAU, 12, pc, 1.8)
+		elif kind == "dust" and dust_tex != null:
+			var r := 4.5 + (1.0 - ratio) * 4.0
+			c.draw_texture_rect(dust_tex, Rect2(pos.x - r, pos.y - r, r * 2.0, r * 2.0), false, pc)
 		else:
 			c.draw_circle(pos, 2.2 + ratio * 1.8, pc)
 

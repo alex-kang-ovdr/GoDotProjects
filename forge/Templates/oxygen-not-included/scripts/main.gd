@@ -84,6 +84,7 @@ func _ready() -> void:
 	world.on_build_completed = Callable(self, "_on_build_completed")
 	world.on_deconstruct_completed = Callable(self, "_on_deconstruct_completed")
 	world.on_mop_completed = Callable(self, "_on_mop_completed")
+	world.on_building_repaired = Callable(self, "_on_building_repaired")
 	world.on_meteor_alert = Callable(self, "_on_meteor_alert")
 	world.on_meteor_impact = Callable(self, "_on_meteor_impact")
 	world.on_suit_equipped = Callable(self, "_on_suit_equipped")
@@ -348,8 +349,8 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(250, 94)
-	_report_panel.custom_minimum_size = Vector2(620, 390)
+	_report_panel.position = Vector2(230, 88)
+	_report_panel.custom_minimum_size = Vector2(650, 468)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
@@ -401,6 +402,7 @@ func _build_hud() -> void:
 		{"id": "personalities", "label": "복제체"},
 		{"id": "worlds", "label": "행성·POI"},
 		{"id": "shaders", "label": "셰이더"},
+		{"id": "csharp", "label": "C#로직"},
 		{"id": "music", "label": "사운드"},
 	]:
 		var ctb := Button.new()
@@ -653,7 +655,7 @@ func _refresh_dupes_panel() -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 4)
 		var lbl := Label.new()
-		lbl.text = "%s[%s] Lv.%d %s (XP%.0f · 방광%.0f%% · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.skill_name_ko, d.xp, d.bladder, d.stress, d.get_disease_ko()]
+		lbl.text = "%s[%s] Lv.%d (HP%.0f · 방광%.0f%% · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.hp, d.bladder, d.stress, d.get_disease_ko()]
 		lbl.custom_minimum_size = Vector2(365, 0)
 		lbl.add_theme_font_size_override("font_size", 11)
 		row.add_child(lbl)
@@ -1247,6 +1249,10 @@ func _on_mop_completed(cell: Vector2i, _el: String, _mass: float) -> void:
 	audio.play_work_chime()
 	renderer.spawn_burst(cell, "bubble", Color(0.36, 0.92, 1.0, 0.95))
 
+func _on_building_repaired(cell: Vector2i, _b_id: String) -> void:
+	audio.play_build_done()
+	renderer.spawn_burst(cell, "burst", Color(0.42, 1.0, 0.65, 0.95))
+
 func _on_meteor_alert() -> void:
 	audio.play_scanner_ping()
 	audio.play_red_alert()
@@ -1427,6 +1433,14 @@ func _refresh_hud() -> void:
 			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "petrol_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "rock_crusher", "kiln", "oil_refinery", "metal_refinery", "thermo_aquatuner", "space_scanner"]:
 				extra = " [가동]" if bool(info["machine_running"]) else " [대기]"
 			lines.append("건물: %s%s" % [bname, extra])
+			var bhp := float(info.get("building_hp", 100.0))
+			var oh_c := float(info.get("overheat_c", 9999.0))
+			var h_kw := float(info.get("heat_kw", 0.0))
+			var bst := String(info.get("building_status", ""))
+			if oh_c < 9000.0 or h_kw > 0.01 or bhp < 99.5 or not bst.is_empty():
+				var oh_s := "과열%.0f°C" % oh_c if oh_c < 9000.0 else "비과열"
+				var st_s := (" · [%s]" % bst) if not bst.is_empty() else ""
+				lines.append("C#스펙: HP%.0f%% · %s · 발열%.2fkW%s" % [bhp, oh_s, h_kw, st_s])
 		if bool(info["has_liquid_pipe"]):
 			var lpe := String(info.get("lpipe_el", ""))
 			var lpm := float(info["lpipe_mass"])

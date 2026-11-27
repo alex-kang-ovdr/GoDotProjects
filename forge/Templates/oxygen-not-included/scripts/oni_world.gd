@@ -97,6 +97,9 @@ var farm_growth: PackedFloat32Array = PackedFloat32Array()
 var gen_active: PackedByteArray = PackedByteArray()
 var research_active: PackedByteArray = PackedByteArray()
 var machine_running: PackedByteArray = PackedByteArray()
+var building_hp: PackedFloat32Array = PackedFloat32Array()
+var building_status: PackedStringArray = PackedStringArray()
+var _falling_accum := 0.0
 
 var dig_order: PackedByteArray = PackedByteArray()
 var dig_progress: PackedFloat32Array = PackedFloat32Array()
@@ -134,6 +137,7 @@ var on_dig_completed: Callable
 var on_build_completed: Callable
 var on_deconstruct_completed: Callable
 var on_mop_completed: Callable
+var on_building_repaired: Callable
 
 func _init(p_seed := 73) -> void:
 	seed_value = p_seed
@@ -259,6 +263,10 @@ func generate(p_seed := 73, p_preset := "") -> void:
 	gen_active.resize(total)
 	research_active.resize(total)
 	machine_running.resize(total)
+	building_hp.resize(total)
+	building_hp.fill(100.0)
+	building_status.resize(total)
+	_falling_accum = 0.0
 	dig_order.resize(total)
 	dig_progress.resize(total)
 	build_order.resize(total)
@@ -331,6 +339,8 @@ func generate(p_seed := 73, p_preset := "") -> void:
 			gen_active[i] = 0
 			research_active[i] = 0
 			machine_running[i] = 0
+			building_hp[i] = 100.0
+			building_status[i] = ""
 			dig_order[i] = 0
 			dig_progress[i] = 0.0
 			build_order[i] = ""
@@ -1126,6 +1136,16 @@ func _step_ecology(dt: float) -> void:
 			if not is_space_cell(mx, my) and (gas_el[mi] == "Vacuum" or gas_el[mi] == "Methane"):
 				gas_el[mi] = "Methane"
 				gas_mass[mi] = minf(1.5, gas_mass[mi] + 0.03 * dt)
+		elif cid == "critter_pokeshell":
+			# CrabTuning: 오염 흙/점액 소비 -> 모래(Sand) 배출
+			if float(inventory.get("SlimeMold", 0.0)) >= 1.5 * dt:
+				inventory["SlimeMold"] = maxf(0.0, float(inventory["SlimeMold"]) - 1.5 * dt)
+				inventory["Sand"] = float(inventory.get("Sand", 0.0)) + 1.5 * dt
+		elif cid == "critter_pacu":
+			# PacuTuning: 수중 조류 소량 소비 -> 식량 생산 기여
+			if float(inventory.get("Algae", 0.0)) >= 0.4 * dt and food_kcal < 14000.0:
+				inventory["Algae"] = maxf(0.0, float(inventory["Algae"]) - 0.4 * dt)
+				food_kcal += 12.0 * dt
 
 func save_colony() -> bool:
 	var dupe_arr: Array = []
@@ -1491,6 +1511,8 @@ func complete_build(x: int, y: int) -> void:
 			farm_growth[i] = 0.0
 	build_order[i] = ""
 	build_progress[i] = 0.0
+	building_hp[i] = 100.0
+	building_status[i] = ""
 	tile_priority[i] = 5
 	report_builds += 1
 	_step_logic_network(0.0)
@@ -1555,6 +1577,8 @@ func complete_deconstruct(x: int, y: int) -> void:
 			removed_id = "logic_wire"
 	deconstruct_order[i] = 0
 	deconstruct_progress[i] = 0.0
+	building_hp[i] = 100.0
+	building_status[i] = ""
 	tile_priority[i] = 5
 	_step_logic_network(0.0)
 	_recompute_decor()
@@ -1615,12 +1639,18 @@ func step(dt: float) -> void:
 
 	_step_logic_network(dt)
 	_step_power_and_machines(dt)
+	_step_building_health(dt)
 	_step_farms(dt)
 	_step_geysers_and_critters(dt)
 	_step_rocket(dt)
 	_step_meteors(dt)
 	_step_conveyors(dt)
 	report_power_kj += (power_produced_w * dt) / 1000.0
+
+	_falling_accum += dt
+	if _falling_accum >= 0.30:
+		_falling_accum = 0.0
+		_step_falling_solids()
 
 	_eco_accum += dt
 	if _eco_accum >= 1.5:
@@ -2780,13 +2810,75 @@ func _step_geysers_and_critters(dt: float) -> void:
 		else:
 			c["dir"] = -dir
 
-func _step_power_and_machines(dt: float) -> void:
+func _step_falling_solids() -> void:
+	# 원작 World.Sim 불안정 고체(Sand/Regolith/Snow/CrushedIce) 중력 붕괴 물리
+	for y in range(HEIGHT - 3, 0, -1):
+		for x in range(1, WIDTH - 1):
+			var i := idx(x, y)
+			var sol := solid_el[i]
+			if sol.is_empty() or not OniElements.is_falling_solid(sol):
+				continue
+			if not is_solid_cell(x, y + 1):
+				var bi := idx(x, y + 1)
+				if building[bi].is_empty():
+					solid_el[bi] = sol
+					solid_mass[bi] = solid_mass[i]
+					temp_c[bi] = temp_c[i]
+					dig_order[bi] = dig_order[i]
+					dig_progress[bi] = dig_progress[i]
+					tile_priority[bi] = tile_priority[i]
+					gas_el[bi] = "Vacuum"
+					gas_mass[bi] = 0.0
+					solid_el[i] = ""
+					solid_mass[i] = 0.0
+					dig_order[i] = 0
+					dig_progress[i] = 0.0
+					gas_el[i] = "Vacuum"
+					gas_mass[i] = 0.0
+
+func _step_building_health(dt: float) -> void:
+	# Assembly-CSharp.dll Overheatable(과열 임계 온도) 기반 실시간 과열 손상 판정
 	var total := WIDTH * HEIGHT
 	for i in range(total):
+		var b := building[i]
+		if b.is_empty():
+			continue
+		var oh_c := OniElements.get_building_overheat_c(b)
+		if oh_c < 9000.0 and temp_c[i] >= oh_c:
+			building_hp[i] = maxf(0.0, building_hp[i] - 4.0 * dt)
+			building_status[i] = "BROKEN" if building_hp[i] <= 0.0 else "OVERHEAT"
+		elif building_hp[i] <= 0.0:
+			building_status[i] = "BROKEN"
+
+func repair_building(x: int, y: int, amount: float) -> void:
+	if not in_bounds(x, y):
+		return
+	var i := idx(x, y)
+	if building[i].is_empty():
+		return
+	var was_damaged := building_hp[i] < 100.0
+	building_hp[i] = minf(100.0, building_hp[i] + amount)
+	if was_damaged and building_hp[i] >= 100.0:
+		if building_status[i] == "BROKEN":
+			building_status[i] = ""
+		if on_building_repaired.is_valid():
+			on_building_repaired.call(Vector2i(x, y), building[i])
+
+func _step_power_and_machines(dt: float) -> void:
+	var total := WIDTH * HEIGHT
+	var flood_kg := OniElements.get_flood_threshold_kg()
+	for i in range(total):
+		building_status[i] = ""
 		if building[i] != "farm_tile" and building[i] != "hydroponic_tile" and building[i] != "planter_box" and building[i] != "wheezewort":
 			machine_running[i] = 0
 		# 무전력 연료 가마(Kiln): 점토 + 석탄 -> 세라믹 제련
 		if building[i] == "kiln":
+			if building_hp[i] <= 0.0:
+				building_status[i] = "BROKEN"
+				continue
+			if OniElements.is_building_floodable("kiln") and liquid_mass[i] > flood_kg:
+				building_status[i] = "FLOODED"
+				continue
 			var need_cl := 1.5 * dt
 			var need_ca := 0.5 * dt
 			if float(inventory.get("Clay", 0.0)) >= need_cl and float(inventory.get("Carbon", 0.0)) >= need_ca:
@@ -2840,6 +2932,14 @@ func _step_power_and_machines(dt: float) -> void:
 
 			for ci: int in net:
 				var b := building[ci]
+				if b.is_empty():
+					continue
+				if building_hp[ci] <= 0.0:
+					building_status[ci] = "BROKEN"
+					continue
+				if OniElements.is_building_floodable(b) and liquid_mass[ci] > flood_kg:
+					building_status[ci] = "FLOODED"
+					continue
 				if b == "generator" and gen_active[ci] == 1:
 					net_gen_w += OniElements.MANUAL_GEN_POWER_W
 					machine_running[ci] = 1
@@ -2946,11 +3046,23 @@ func _step_power_and_machines(dt: float) -> void:
 				var b := building[ci]
 				if has_logic_wire[ci] == 1 and logic_signal[ci] == 0:
 					continue
+				if building_hp[ci] <= 0.0:
+					building_status[ci] = "BROKEN"
+					continue
+				if OniElements.is_building_floodable(b) and liquid_mass[ci] > flood_kg:
+					building_status[ci] = "FLOODED"
+					continue
 				if b == "diffuser":
 					var need_j := OniElements.DIFFUSER_POWER_W * dt
 					var need_algae := OniElements.DIFFUSER_ALGAE_KG_PER_S * dt
 					var can_emit := (gas_el[ci] == "Vacuum" or gas_el[ci] == "Oxygen") and gas_mass[ci] < OniElements.DIFFUSER_MAX_PRESSURE_KG
-					if can_emit and available_j - used_j >= need_j and float(inventory.get("Algae", 0.0)) >= need_algae:
+					if not can_emit:
+						building_status[ci] = "OVERPRESSURE"
+					elif float(inventory.get("Algae", 0.0)) < need_algae:
+						building_status[ci] = "NO_FUEL"
+					elif available_j - used_j < need_j:
+						building_status[ci] = "NO_POWER"
+					else:
 						used_j += need_j
 						net_consumed_w += OniElements.DIFFUSER_POWER_W
 						inventory["Algae"] = maxf(0.0, float(inventory["Algae"]) - need_algae)
@@ -3218,6 +3330,18 @@ func _step_power_and_machines(dt: float) -> void:
 				for ci_o: int in net:
 					overloaded_cells[ci_o] = 1
 
+			# Assembly-CSharp.dll SelfHeat + ExhaustHeat kDTU 발열 반영 및 무전력 상태 표기
+			for ci_h: int in net:
+				var bh := building[ci_h]
+				if machine_running[ci_h] == 1:
+					var h_kw := OniElements.get_building_heat_kw(bh)
+					if h_kw > 0.01:
+						var cm := maxf(12.0, _cell_thermal_mass(ci_h))
+						temp_c[ci_h] = clampf(temp_c[ci_h] + (h_kw * dt * 0.14) / cm, -270.0, 2200.0)
+				elif building_status[ci_h].is_empty() and available_j - used_j < 1.0 and bh in ["electrolyzer", "co2_skimmer", "water_sieve", "liquid_pump", "gas_pump", "thermo_aquatuner", "metal_refinery", "oil_refinery", "rock_crusher", "ceiling_light", "space_scanner"]:
+					if has_logic_wire[ci_h] == 0 or logic_signal[ci_h] == 1:
+						building_status[ci_h] = "NO_POWER"
+
 			var net_delta_j := net_gen_w * dt - used_j
 			if not bats.is_empty():
 				var per_bat := net_delta_j / float(bats.size())
@@ -3246,12 +3370,28 @@ func _recompute_stats() -> void:
 	alerts.clear()
 	if circuit_overloaded:
 		alerts.append("전력 회로 과부하! %.0f / 1000W" % max_circuit_load_w)
+	var has_overheat := false
+	var has_flooded := false
+	for i in range(WIDTH * HEIGHT):
+		var st := building_status[i]
+		if st == "OVERHEAT" or st == "BROKEN":
+			has_overheat = true
+		elif st == "FLOODED":
+			has_flooded = true
+	if has_overheat:
+		alerts.append("설비 과열·파손! (복제체 자동 수리)")
+	if has_flooded:
+		alerts.append("설비 침수 중단!")
 	if logic_alarm_active:
 		alerts.append("자동 알림 작동!")
 	if meteor_shower_active:
 		alerts.append("운석우 접근! 우주 스캐너·벙커 문 자동 방어 가동 (방어 %d)" % meteors_blocked)
 	if rocket_state == "LAUNCHING" or rocket_state == "IN_SPACE" or rocket_state == "LANDING":
 		alerts.append("로켓 임무 중: %s" % rocket_target_name)
+	for d in duplicants:
+		if d.thermal_status == "SCALDING":
+			alerts.append("복제체 화상 위험: %s (HP %.0f%%)" % [d.dupe_name, d.hp])
+			break
 	for d in duplicants:
 		if not d.disease.is_empty():
 			alerts.append("질병 발생: %s (%s)" % [d.dupe_name, d.get_disease_ko()])
@@ -3311,6 +3451,11 @@ func get_cell_summary(x: int, y: int) -> Dictionary:
 		"h2_buffer_kg": h2_buffer_kg[i],
 		"farm_growth": farm_growth[i],
 		"machine_running": machine_running[i] == 1,
+		"building_hp": building_hp[i],
+		"building_status": building_status[i],
+		"overheat_c": OniElements.get_building_overheat_c(building[i]) if not building[i].is_empty() else 9999.0,
+		"heat_kw": OniElements.get_building_heat_kw(building[i]) if not building[i].is_empty() else 0.0,
+		"floodable": OniElements.is_building_floodable(building[i]) if not building[i].is_empty() else false,
 		"dig_order": dig_order[i] == 1,
 		"build_order": build_order[i],
 		"deconstruct_order": deconstruct_order[i] == 1,
@@ -3354,10 +3499,10 @@ static func run_logic_self_test() -> Dictionary:
 	var ok1 := e_err < 0.0005 and (w.temp_c[i_rock] - 20.0) < 0.25 and w.temp_c[i_gas] < 95.0
 	if ok1:
 		passed += 1
-		details.append("PASS [1/10] 열역학 에너지 보존 (오차 %.5f%% · 암반ΔT %.3f°C · 기체 %.1f°C)" % [e_err * 100.0, w.temp_c[i_rock] - 20.0, w.temp_c[i_gas]])
+		details.append("PASS [1/14] 열역학 에너지 보존 (오차 %.5f%% · 암반ΔT %.3f°C · 기체 %.1f°C)" % [e_err * 100.0, w.temp_c[i_rock] - 20.0, w.temp_c[i_gas]])
 	else:
 		failed += 1
-		details.append("FAIL [1/10] 열역학 (오차 %.5f · 암반 %.2f · 기체 %.2f)" % [e_err, w.temp_c[i_rock], w.temp_c[i_gas]])
+		details.append("FAIL [1/14] 열역학 (오차 %.5f · 암반 %.2f · 기체 %.2f)" % [e_err, w.temp_c[i_rock], w.temp_c[i_gas]])
 
 	# 2) 다중 원소 액체 배관 원소 보존(CrudeOil) & 물 정화기(DirtyWater -> Water 40°C)
 	for lx in range(4, 9):
@@ -3408,10 +3553,10 @@ static func run_logic_self_test() -> Dictionary:
 	var oil_ok := w.liquid_el[w.idx(6, 9)] == "CrudeOil" and w.liquid_mass[w.idx(6, 9)] > 1.0
 	if sieve_ok and oil_ok:
 		passed += 1
-		details.append("PASS [2/10] 다중 원소 배관 (DirtyWater→Water 정화 & CrudeOil 원소 보존 배출)")
+		details.append("PASS [2/14] 다중 원소 배관 (DirtyWater→Water 정화 & CrudeOil 원소 보존 배출)")
 	else:
 		failed += 1
-		details.append("FAIL [2/10] 다중 원소 배관 (sieve=%s:%s oil=%s:%s)" % [str(sieve_ok), w.liquid_el[w.idx(7, 7)], str(oil_ok), w.liquid_el[w.idx(6, 9)]])
+		details.append("FAIL [2/14] 다중 원소 배관 (sieve=%s:%s oil=%s:%s)" % [str(sieve_ok), w.liquid_el[w.idx(7, 7)], str(oil_ok), w.liquid_el[w.idx(6, 9)]])
 
 	# 3) 액체 저장고(5,000kg) 양방향 버퍼링
 	var ir := w.idx(10, 7)
@@ -3432,10 +3577,10 @@ static func run_logic_self_test() -> Dictionary:
 	var discharged := w.lpipe_mass[ir]
 	if stored > 5.0 and discharged > 5.0 and w.lpipe_el[ir] == "Water":
 		passed += 1
-		details.append("PASS [3/10] 저장고 버퍼링 (흡수 %.1fkg → 재방출 %.1fkg Water)" % [stored, discharged])
+		details.append("PASS [3/14] 저장고 버퍼링 (흡수 %.1fkg → 재방출 %.1fkg Water)" % [stored, discharged])
 	else:
 		failed += 1
-		details.append("FAIL [3/10] 저장고 버퍼링 (stored=%.1f discharged=%.1f)" % [stored, discharged])
+		details.append("FAIL [3/14] 저장고 버퍼링 (stored=%.1f discharged=%.1f)" % [stored, discharged])
 
 	# 4) 진짜 불리언 논리 게이트 (AND / OR / NOT / BUFFER 5s / ALARM)
 	for gx in range(30, 44):
@@ -3481,10 +3626,10 @@ static func run_logic_self_test() -> Dictionary:
 	var buf_off := w.logic_signal[w.idx(41, 7)] == 0
 	if and_10 and and_11 and not_1 and not_0 and buf_on and buf_hold and buf_off:
 		passed += 1
-		details.append("PASS [4/10] 논리 게이트 진리표 (AND·NOT·BUFFER 5초 유지·ALARM 경보)")
+		details.append("PASS [4/14] 논리 게이트 진리표 (AND·NOT·BUFFER 5초 유지·ALARM 경보)")
 	else:
 		failed += 1
-		details.append("FAIL [4/10] 논리 게이트 (and=%s/%s not=%s/%s buf=%s/%s/%s)" % [str(and_10), str(and_11), str(not_1), str(not_0), str(buf_on), str(buf_hold), str(buf_off)])
+		details.append("FAIL [4/14] 논리 게이트 (and=%s/%s not=%s/%s buf=%s/%s/%s)" % [str(and_10), str(and_11), str(not_1), str(not_0), str(buf_on), str(buf_hold), str(buf_off)])
 
 	# 5) 태양광 주야 일조 곡선 & 전력 회로 과부하(>1000W) 감지
 	w.sim_time = 230.0
@@ -3504,10 +3649,10 @@ static func run_logic_self_test() -> Dictionary:
 	w._step_power_and_machines(0.5)
 	if solar_day > 0.9 and solar_night == 0.0 and w.circuit_overloaded and w.max_circuit_load_w > 1000.0:
 		passed += 1
-		details.append("PASS [5/10] 전력망 (태양광 주간 %.0f%%/야간 0%% · 과부하 %.0fW 감지)" % [solar_day * 100.0, w.max_circuit_load_w])
+		details.append("PASS [5/14] 전력망 (태양광 주간 %.0f%%/야간 0%% · 과부하 %.0fW 감지)" % [solar_day * 100.0, w.max_circuit_load_w])
 	else:
 		failed += 1
-		details.append("FAIL [5/10] 전력망 (day=%.2f night=%.2f ov=%s load=%.0f)" % [solar_day, solar_night, str(w.circuit_overloaded), w.max_circuit_load_w])
+		details.append("FAIL [5/14] 전력망 (day=%.2f night=%.2f ov=%s load=%.0f)" % [solar_day, solar_night, str(w.circuit_overloaded), w.max_circuit_load_w])
 
 	# 6) 건물 해체(Deconstruct) 100% 자원 환급
 	var idc := w.idx(25, 16) # mess_table (SandStone 100kg)
@@ -3520,10 +3665,10 @@ static func run_logic_self_test() -> Dictionary:
 	var inv_after := float(w.inventory.get(ref_el, 0.0))
 	if ord_dc and w.building[idc].is_empty() and absf((inv_after - inv_before) - ref_kg) < 0.01:
 		passed += 1
-		details.append("PASS [6/10] 건물 해체 100%% 환급 (+%.0fkg %s)" % [ref_kg, ref_el])
+		details.append("PASS [6/14] 건물 해체 100%% 환급 (+%.0fkg %s)" % [ref_kg, ref_el])
 	else:
 		failed += 1
-		details.append("FAIL [6/10] 건물 해체 (ord=%s diff=%.1f exp=%.1f)" % [str(ord_dc), inv_after - inv_before, ref_kg])
+		details.append("FAIL [6/14] 건물 해체 (ord=%s diff=%.1f exp=%.1f)" % [str(ord_dc), inv_after - inv_before, ref_kg])
 
 	# 7) 액체 닦기(Mop): 깊은 웅덩이 거부 vs 얕은 물(40kg) 허용 및 회수
 	var deep_reject := not w.order_mop(33, 18, 5)
@@ -3536,10 +3681,10 @@ static func run_logic_self_test() -> Dictionary:
 	var dw_after := float(w.inventory.get("DirtyWater", 0.0))
 	if deep_reject and shallow_ok and w.liquid_mass[mop_c] == 0.0 and absf((dw_after - dw_before) - 40.0) < 0.1:
 		passed += 1
-		details.append("PASS [7/10] 액체 닦기 규칙 (깊은 물 거부 · 얕은 40kg 닦기 회수)")
+		details.append("PASS [7/14] 액체 닦기 규칙 (깊은 물 거부 · 얕은 40kg 닦기 회수)")
 	else:
 		failed += 1
-		details.append("FAIL [7/10] 액체 닦기 (deep=%s shallow=%s mass=%.1f)" % [str(deep_reject), str(shallow_ok), w.liquid_mass[mop_c]])
+		details.append("FAIL [7/14] 액체 닦기 (deep=%s shallow=%s mass=%.1f)" % [str(deep_reject), str(shallow_ok), w.liquid_mass[mop_c]])
 
 	# 8) 타일 우선순위 1~9 정렬 (멀리 있는 우선9 > 가까운 우선2)
 	var w2 := OniWorld.new(73)
@@ -3562,10 +3707,10 @@ static func run_logic_self_test() -> Dictionary:
 	d0._assign_next_job(w2)
 	if d0.target_cell == Vector2i(27, 16) and d0.job_type == "dig":
 		passed += 1
-		details.append("PASS [8/10] 타일 우선순위 1~9 (먼 우선9 타일을 가까운 우선2보다 선점)")
+		details.append("PASS [8/14] 타일 우선순위 1~9 (먼 우선9 타일을 가까운 우선2보다 선점)")
 	else:
 		failed += 1
-		details.append("FAIL [8/10] 타일 우선순위 (picked=%s type=%s)" % [str(d0.target_cell), d0.job_type])
+		details.append("FAIL [8/14] 타일 우선순위 (picked=%s type=%s)" % [str(d0.target_cell), d0.job_type])
 
 	# 9) 제트복 360도 공중 비행 경로탐색 vs 일반 보행 제한
 	var w3 := OniWorld.new(73)
@@ -3580,10 +3725,10 @@ static func run_logic_self_test() -> Dictionary:
 	var jet_ok := reach_jet.has(air_target)
 	if walk_blocked and jet_ok:
 		passed += 1
-		details.append("PASS [9/10] 제트복 360° 공중 비행 (일반 보행 불가 공중 칸 비행 도달)")
+		details.append("PASS [9/14] 제트복 360° 공중 비행 (일반 보행 불가 공중 칸 비행 도달)")
 	else:
 		failed += 1
-		details.append("FAIL [9/10] 제트복 비행 (walk_blocked=%s jet_ok=%s)" % [str(walk_blocked), str(jet_ok)])
+		details.append("FAIL [9/14] 제트복 비행 (walk_blocked=%s jet_ok=%s)" % [str(walk_blocked), str(jet_ok)])
 
 	# 10) 4단계 스케줄 + 방광 -> 화장실 -> 손 씻기 루프
 	var w4 := OniWorld.new(73)
@@ -3613,9 +3758,115 @@ static func run_logic_self_test() -> Dictionary:
 	var washed_or_washing := (db.job_type == "wash" or db.state == "WASH" or (db.bladder < 10.0 and not db.needs_wash))
 	if s_work and s_down and s_bath and s_sleep and picked_toilet and washed_or_washing:
 		passed += 1
-		details.append("PASS [10/10] 4단계 스케줄 & 방광→화장실→손씻기 루프 검증 완료")
+		details.append("PASS [10/14] 4단계 스케줄 & 방광→화장실→손씻기 루프 검증 완료")
 	else:
 		failed += 1
-		details.append("FAIL [10/10] 스케줄/화장실 (sched=%s/%s/%s/%s toilet=%s wash=%s)" % [str(s_work), str(s_down), str(s_bath), str(s_sleep), str(picked_toilet), str(washed_or_washing)])
+		details.append("FAIL [10/14] 스케줄/화장실 (sched=%s/%s/%s/%s toilet=%s wash=%s)" % [str(s_work), str(s_down), str(s_bath), str(s_sleep), str(picked_toilet), str(washed_or_washing)])
+
+	# 11) Assembly-CSharp.dll 역공학 데이터 로드 (BuildingDef 과열/발열/침수 + TUNING + 크리터)
+	OniElements.ensure_loaded()
+	var cs_ok := (
+		OniElements.csharp_buildings.size() >= 90
+		and OniElements.csharp_tuning.size() >= 100
+		and OniElements.csharp_critters.size() >= 10
+		and absf(OniElements.get_building_overheat_c("electrolyzer") - 75.0) < 0.1
+		and absf(OniElements.get_building_overheat_c("thermo_aquatuner") - 125.0) < 0.1
+		and not OniElements.is_building_floodable("thermo_aquatuner")
+		and OniElements.is_building_floodable("coal_gen")
+	)
+	if cs_ok:
+		passed += 1
+		details.append("PASS [11/14] C# DLL 역공학 데이터 (건물 %d · TUNING %d · 크리터 %d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
+	else:
+		failed += 1
+		details.append("FAIL [11/14] C# DLL 역공학 로드 (b=%d t=%d c=%d)" % [OniElements.csharp_buildings.size(), OniElements.csharp_tuning.size(), OniElements.csharp_critters.size()])
+
+	# 12) C# Overheatable 과열 파손(>75°C) · Floodable 침수 차단(>350kg) · 복제체 자동 수리(REPAIR)
+	var w5 := OniWorld.new(73)
+	var i_oh := w5.idx(25, 16)
+	w5.building[i_oh] = "diffuser"
+	w5.building_hp[i_oh] = 100.0
+	w5.temp_c[i_oh] = 92.0 # > 75°C overheat threshold
+	w5._step_building_health(5.0)
+	var oh_damaged := w5.building_hp[i_oh] < 90.0 and w5.building_status[i_oh] == "OVERHEAT"
+	var i_fl := w5.idx(26, 16)
+	w5.liquid_el[i_fl] = "Water"
+	w5.liquid_mass[i_fl] = 500.0 # > 350kg flood threshold
+	w5._step_power_and_machines(0.5)
+	var flood_blocked := w5.building_status[i_fl] == "FLOODED" and w5.machine_running[i_fl] == 0
+	# 과열 냉각 후 복제체가 자동으로 수리(REPAIR) 수행 검증
+	w5.temp_c[i_oh] = 22.0
+	var dr: OniDuplicant = w5.duplicants[0]
+	dr.cell = Vector2i(25, 16)
+	dr.pos = Vector2(25, 16)
+	dr.bladder = 10.0
+	dr.stress = 0.0
+	dr.stamina = 100.0
+	dr._clear_job()
+	dr._assign_next_job(w5)
+	var picked_repair := dr.job_type == "repair" and dr.target_cell == Vector2i(25, 16)
+	dr.step(w5, 1.5)
+	var repaired_ok := w5.building_hp[i_oh] >= 99.5
+	if oh_damaged and flood_blocked and picked_repair and repaired_ok:
+		passed += 1
+		details.append("PASS [12/14] C# 과열 손상(>75°C) · 침수 차단(>350kg) · 복제체 자동 수리")
+	else:
+		failed += 1
+		details.append("FAIL [12/14] 과열/침수/수리 (oh=%s fl=%s pick=%s rep=%s)" % [str(oh_damaged), str(flood_blocked), str(picked_repair), str(repaired_ok)])
+
+	# 13) 불안정 고체 중력 붕괴 (Sand 낙하 vs SandStone 지지)
+	var w6 := OniWorld.new(73)
+	var i_top := w6.idx(22, 14)
+	var i_bot := w6.idx(22, 15)
+	w6.building[i_top] = ""
+	w6.building[i_bot] = ""
+	w6.solid_el[i_bot] = ""
+	w6.solid_mass[i_bot] = 0.0
+	w6.solid_el[i_top] = "Sand"
+	w6.solid_mass[i_top] = 800.0
+	var i_st_top := w6.idx(23, 14)
+	var i_st_bot := w6.idx(23, 15)
+	w6.building[i_st_top] = ""
+	w6.building[i_st_bot] = ""
+	w6.solid_el[i_st_bot] = ""
+	w6.solid_mass[i_st_bot] = 0.0
+	w6.solid_el[i_st_top] = "SandStone"
+	w6.solid_mass[i_st_top] = 1000.0
+	w6._step_falling_solids()
+	var sand_fell := w6.solid_el[i_top].is_empty() and w6.solid_el[i_bot] == "Sand" and w6.solid_mass[i_bot] == 800.0
+	var rock_stayed := w6.solid_el[i_st_top] == "SandStone" and w6.solid_el[i_st_bot].is_empty()
+	if sand_fell and rock_stayed:
+		passed += 1
+		details.append("PASS [13/14] 불안정 고체 중력 붕괴 (Sand 낙하 800kg · SandStone 지지 유지)")
+	else:
+		failed += 1
+		details.append("FAIL [13/14] 고체 낙하 (sand_fell=%s rock_stayed=%s)" % [str(sand_fell), str(rock_stayed)])
+
+	# 14) 복제체 열생리학 (ScaldingMonitor >72°C 화상 피해 vs 특수복 완벽 방호)
+	var w7 := OniWorld.new(73)
+	var d_bare: OniDuplicant = w7.duplicants[0]
+	var d_suit: OniDuplicant = w7.duplicants[2]
+	d_bare.wearing_suit = false
+	d_bare.wearing_jetsuit = false
+	d_bare.hp = 100.0
+	d_bare.stress = 0.0
+	d_bare.cell = Vector2i(22, 16)
+	d_bare.pos = Vector2(22, 16)
+	d_suit.wearing_suit = true
+	d_suit.hp = 100.0
+	d_suit.stress = 0.0
+	d_suit.cell = Vector2i(22, 16)
+	d_suit.pos = Vector2(22, 16)
+	w7.temp_c[w7.idx(22, 16)] = 95.0 # > 72°C scalding
+	d_bare.step(w7, 2.0)
+	d_suit.step(w7, 2.0)
+	var bare_scalded := d_bare.thermal_status == "SCALDING" and d_bare.hp < 95.0 and d_bare.stress > 5.0
+	var suit_safe := d_suit.thermal_status.is_empty() and d_suit.hp >= 99.9
+	if bare_scalded and suit_safe:
+		passed += 1
+		details.append("PASS [14/14] C# 열생리학 (95°C 일반복 화상 HP%.0f%% · 특수복 완벽 방호)" % d_bare.hp)
+	else:
+		failed += 1
+		details.append("FAIL [14/14] 열생리학 (bare=%s hp=%.1f suit=%s)" % [str(bare_scalded), d_bare.hp, str(suit_safe)])
 
 	return {"passed": passed, "failed": failed, "total": passed + failed, "details": details}

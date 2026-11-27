@@ -7,16 +7,18 @@ var cell := Vector2i.ZERO
 var pos := Vector2.ZERO
 var suit_color := Color(0.4, 0.75, 0.98, 1.0)
 
-var state := "IDLE" # IDLE, MOVE, DIG, BUILD, DECONSTRUCT, MOP, OPERATE, RESEARCH, SLEEP, HEAL, TOILET, WASH, RELAX
+var state := "IDLE" # IDLE, MOVE, DIG, BUILD, DECONSTRUCT, MOP, REPAIR, OPERATE, RESEARCH, SLEEP, HEAL, TOILET, WASH, RELAX
 var state_ko := "대기"
 var target_cell := Vector2i(-1, -1)
-var job_type := "" # dig, build, deconstruct, mop, operate, research, sleep, heal, toilet, wash, relax
+var job_type := "" # dig, build, deconstruct, mop, repair, operate, research, sleep, heal, toilet, wash, relax
 var path: Array[Vector2i] = []
 var move_speed := 3.4 # cells/sec
 var facing_left := false
 var _repath_cooldown := 0.0
 var _work_timer := 0.0
 
+var hp := 100.0
+var thermal_status := "" # "", "SCALDING", "CHILLY"
 var breath := 100.0
 var stamina := 100.0
 var kcal := 4000.0
@@ -90,11 +92,6 @@ func step(world: OniWorld, dt: float) -> void:
 			if world.on_suit_equipped.is_valid():
 				world.on_suit_equipped.call(cell)
 		suit_o2 = 100.0
-	elif not wearing_suit and (world.temp_c[ci] < 4.0 or world.temp_c[ci] > 50.0 or world.is_space_cell(cell.x, cell.y)):
-		# 극한 바이옴/우주 진입 시 거치대 보유 중이면 자동 특수복 착용
-		if world.has_suit_dock():
-			wearing_suit = true
-			suit_o2 = 100.0
 	if wearing_suit:
 		if world.gas_el[ci] == "Oxygen" and world.gas_mass[ci] > 0.6:
 			suit_o2 = minf(100.0, suit_o2 + 12.0 * dt)
@@ -117,6 +114,18 @@ func step(world: OniWorld, dt: float) -> void:
 		stress_delta += 0.9
 	if world.liquid_mass[ci] > 80.0 and not wearing_suit:
 		stress_delta += 0.7
+	# Assembly-CSharp.dll ScaldingMonitor(>72°C) & HypothermiaMonitor(<0°C) 열생리학
+	var t_here := world.temp_c[ci]
+	if not wearing_suit and t_here > OniElements.get_scalding_c():
+		thermal_status = "SCALDING"
+		hp = maxf(1.0, hp - 3.5 * dt)
+		stress_delta += 6.8
+	elif not wearing_suit and t_here < OniElements.get_hypothermia_c():
+		thermal_status = "CHILLY"
+		stress_delta += 1.5
+	else:
+		thermal_status = ""
+		hp = minf(100.0, hp + (6.0 if state == "HEAL" else 0.5) * dt)
 	if state == "HEAL":
 		stress_delta = -8.5
 		if not disease.is_empty():
@@ -175,6 +184,8 @@ func step(world: OniWorld, dt: float) -> void:
 			_step_deconstruct(world, dt)
 		"MOP":
 			_step_mop(world, dt)
+		"REPAIR":
+			_step_repair(world, dt)
 		"OPERATE":
 			_step_operate(world, dt)
 		"RESEARCH":
@@ -243,7 +254,7 @@ func _step_move(world: OniWorld, dt: float) -> void:
 	if absf(diff.x) > 0.01:
 		facing_left = diff.x < 0.0
 	var dist := diff.length()
-	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0)
+	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0)
 	# 수송 튜브(travel_tube) 이동 시 5배 초고속 공압 이동!
 	if world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] in ["travel_tube", "travel_tube_entrance"]:
 		spd = move_speed * 5.0
@@ -275,6 +286,9 @@ func _enter_job_work(world: OniWorld) -> void:
 	elif job_type == "mop":
 		state = "MOP"
 		state_ko = "닦기"
+	elif job_type == "repair":
+		state = "REPAIR"
+		state_ko = "수리"
 	elif job_type == "operate":
 		state = "OPERATE"
 		state_ko = "발전"
@@ -375,6 +389,24 @@ func _step_mop(world: OniWorld, dt: float) -> void:
 	xp = minf(400.0, xp + 5.0 * dt)
 	if world.mop_progress[ti] >= 1.0:
 		world.complete_mop(target_cell.x, target_cell.y)
+		xp = minf(400.0, xp + 12.0)
+		_clear_job()
+
+func _step_repair(world: OniWorld, dt: float) -> void:
+	if not world.in_bounds(target_cell.x, target_cell.y):
+		_clear_job()
+		return
+	var ti := world.idx(target_cell.x, target_cell.y)
+	if world.building[ti].is_empty() or world.building_hp[ti] >= 99.5:
+		_clear_job()
+		return
+	if abs(target_cell.x - cell.x) + abs(target_cell.y - cell.y) > 2:
+		_clear_job()
+		return
+	state_ko = "설비 수리"
+	world.repair_building(target_cell.x, target_cell.y, 28.0 * work_speed_mult() * dt)
+	xp = minf(400.0, xp + 6.0 * dt)
+	if world.building_hp[ti] >= 99.5:
 		xp = minf(400.0, xp + 12.0)
 		_clear_job()
 
@@ -502,13 +534,13 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "toilet"
 
-	# 0c) 질병 감염 또는 고스트레스(>=30%) 시 병원(환자용 침대)/마사지 테이블/주크봇 우선 방문
-	if best_type.is_empty() and (not disease.is_empty() or stress >= 30.0):
+	# 0c) 질병 감염, 화상/체력 저하(<75%), 또는 고스트레스(>=30%) 시 병원/휴게 설비 우선 방문
+	if best_type.is_empty() and (not disease.is_empty() or hp < 75.0 or stress >= 30.0):
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
 				var b := world.building[i]
-				var match_med := (not disease.is_empty() and b in ["medical_cot", "apothecary", "wash_sink"])
+				var match_med := ((not disease.is_empty() or hp < 75.0) and b in ["medical_cot", "apothecary", "wash_sink"])
 				var match_rel := (stress >= 30.0 and b in ["massage_table", "jukebot", "arcade_cabinet", "water_cooler", "sauna", "hottub", "beach_chair"])
 				if match_med or match_rel:
 					var c := Vector2i(x, y)
@@ -519,6 +551,24 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_stand = c
 							best_target = c
 							best_type = "heal"
+
+	# 0e) 과열·파손 설비(building_hp < 95) 자동 수리 작업 (우선순위 높음)
+	if best_type.is_empty() and prio_build:
+		var rdirs := [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]
+		for y in range(OniWorld.HEIGHT):
+			for x in range(OniWorld.WIDTH):
+				var i := world.idx(x, y)
+				if not world.building[i].is_empty() and world.building_hp[i] < 95.0:
+					var tcell := Vector2i(x, y)
+					for d: Vector2i in rdirs:
+						var stand: Vector2i = tcell + d
+						if dists.has(stand):
+							var sc := float(dists[stand]) - 50.0
+							if sc < best_score:
+								best_score = sc
+								best_stand = stand
+								best_target = tcell
+								best_type = "repair"
 
 	# 0d) 휴게 시간(DOWNTIME) 스케줄 오락·휴게 시설 방문
 	if best_type.is_empty() and sched == "DOWNTIME" and stress >= 5.0:
