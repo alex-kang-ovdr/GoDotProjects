@@ -192,6 +192,30 @@ def main():
     for etag in required_event_tags:
         assert (b"\x00" + etag.encode("ascii") + b"\x00") in ev_grammar_slice, f"Missing EventGenerator tag in .rdata: {etag}"
 
+    # Wave 6 exact binary tables: Weapon depower decay (0x40ddcf), 4Door HP x difficulty (0x471620),
+    # 4Fire spread & O2 extinction (0x49971e..0x4998f0), Crew medbay/fire rates (0x47c286..0x47c396)
+    weapon_depower_decay_tick = read_f32_array(0x876894, 1)[0]      # 0.375/tick -> 6.0 sec/sec!
+    weapon_hack_drain_tick = read_f32_array(0x876890, 1)[0]         # 0.0625/tick -> 1.0 sec/sec!
+    assert weapon_depower_decay_tick == 0.375 and weapon_hack_drain_tick == 0.0625
+
+    door_hp_lv3_diff = read_i32_array(0x878950, 3)                  # [20, 18, 15]
+    door_hp_lv2_diff = read_i32_array(0x87895C, 3)                  # [16, 12, 10]
+    door_hp_lv1_diff = read_i32_array(0x878968, 3)                  # [12, 8, 6]
+    assert door_hp_lv3_diff == [20, 18, 15] and door_hp_lv2_diff == [16, 12, 10] and door_hp_lv1_diff == [12, 8, 6]
+
+    fire_spread_rates = [
+        read_f32_array(0x879904, 1)[0],                             # 0.057143 (4/70)
+        read_f32_array(0x879908, 1)[0],                             # 0.08
+        read_f32_array(0x87990C, 1)[0],                             # 0.10
+        read_f32_array(0x879910, 1)[0],                             # 0.01 (Lv3 blast door barrier)
+    ]
+    fire_o2_extinct_threshold = read_f32_array(0x879914, 1)[0]      # 10.0%
+    crew_fire_dmg_tick = read_f32_array(0x8791AC, 1)[0]             # -0.133/tick
+    crew_medbay_base_tick = read_f32_array(0x8791B8, 1)[0]          # 0.4/tick -> 6.4 HP/s
+    crew_medbay_level_step = read_f32_array(0x8791B4, 1)[0]         # 1.5
+    assert fire_o2_extinct_threshold == 10.0 and abs(crew_fire_dmg_tick - (-0.133)) < 1e-5
+    assert crew_medbay_base_tick == 0.4 and crew_medbay_level_step == 1.5
+
     spec = {
         "schemaVersion": 1,
         "sourceBinary": os.path.basename(args.exe),
@@ -233,6 +257,11 @@ def main():
             "autoReloaderCooldownReduction": 0.10,
             "cloakFirePenaltyRatio": 0.20,
             "beamBreaksCloak": False,
+            "depowerChargeDecayPerSec": round(weapon_depower_decay_tick / tick_dt, 4),
+            "depowerChargeDecayProofVa": "0x40ddcf (0x876894=0.375)",
+            "hackedChargeDrainPerSec": round(weapon_hack_drain_tick / tick_dt, 4),
+            "hackedChargeDrainProofVa": "0x40dd4e (0x876890=0.0625)",
+            "preIgniterProofVa": "0x61d3cb",
         },
         "artillery": {
             "baseCooldownSec": 40.0,
@@ -308,6 +337,14 @@ def main():
         "doors": {
             "vtableVa": vtables.get("4Door", {}).get("vtable_va"),
             "hpByEffectiveLevel": [30.0, 60.0, 120.0, 240.0],
+            "binaryHitsByTierAndDifficulty": {
+                "sourceVa": "0x471620..0x4716c1 (0x878950..0x878968)",
+                "tier0": [4, 4, 4],
+                "tier1": door_hp_lv1_diff,
+                "tier2": door_hp_lv2_diff,
+                "tier3": door_hp_lv3_diff,
+            },
+            "preservesHpRatioOnLevelChange": True,
             "mannedLevelBonus": 1,
         },
         "bossShip": {
@@ -447,6 +484,18 @@ def main():
             "flagshipBaseTurnLimit": 3,
             "flagshipMarchesToBase": True,
         },
+        "firePhysics": {
+            "vtableVa": vtables.get("4Fire", {}).get("vtable_va"),
+            "proofVa": "0x4996a0..0x499944 (0x879904..0x879914)",
+            "initialFireHp": 100.0,
+            "lowOxygenExtinctionThreshold": fire_o2_extinct_threshold,
+            "spreadRatesByDoorBarrier": fire_spread_rates,
+            "crewFireDamagePerTick": crew_fire_dmg_tick,
+            "crewFireDamagePerSec": round(abs(crew_fire_dmg_tick) * ticks_per_sec, 4),
+            "medbayBaseHealPerTick": crew_medbay_base_tick,
+            "medbayLevelStep": crew_medbay_level_step,
+            "energyShieldResetOnJumpProofVa": "0x624bf8",
+        },
     }
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
@@ -454,7 +503,7 @@ def main():
         json.dump(spec, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 25 system rule tables -> {args.out}")
+    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 26 system rule tables -> {args.out}")
 
 
 if __name__ == "__main__":

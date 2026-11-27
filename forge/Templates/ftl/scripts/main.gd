@@ -670,6 +670,7 @@ func _close_modal() -> void:
 func _start_new_run() -> void:
 	var sid := db.player_ship_ids[selected_hangar_idx] if not db.player_ship_ids.is_empty() else "PLAYER_SHIP_HARD"
 	player_ship = FTLShip.new()
+	player_ship.difficulty = difficulty
 	player_ship.init_from_blueprint(db, sid, true, 0)
 	var custom_n := str(hangar_refs["name_edit"].text).strip_edges()
 	if not custom_n.is_empty():
@@ -715,6 +716,7 @@ func _continue_saved_run() -> void:
 		return
 	var sid := str(parsed.get("ship_id", "PLAYER_SHIP_HARD"))
 	player_ship = FTLShip.new()
+	player_ship.difficulty = difficulty
 	player_ship.init_from_blueprint(db, sid, true, 0)
 	if parsed.has("ship_state") and parsed.ship_state is Dictionary:
 		player_ship.deserialize_state(parsed.ship_state)
@@ -1912,9 +1914,12 @@ func _trigger_beacon_encounter(b: Dictionary) -> void:
 
 func _start_combat(enemy_bp_id: String, intro_text: String) -> void:
 	enemy_ship = FTLShip.new()
+	enemy_ship.difficulty = difficulty
 	enemy_ship.init_from_blueprint(db, enemy_bp_id, false, sector_map.current_sector_index)
 	enemy_ship.ion_storm_active = (battle_view.hazard_kind == "ion_storm")
 	enemy_ship._clamp_reactor_power()
+	player_ship.difficulty = difficulty
+	player_ship.apply_preigniter()
 	in_combat = true
 	player_ship.ftl_charge = 0.0
 	hazard_timer = 11.0
@@ -1931,7 +1936,10 @@ func _start_boss_fight(phase: int) -> void:
 	if not db.ships.has(bp_id):
 		bp_id = "BOSS_1"
 	enemy_ship = FTLShip.new()
+	enemy_ship.difficulty = difficulty
 	enemy_ship.init_from_blueprint(db, bp_id, false, 7)
+	player_ship.difficulty = difficulty
+	player_ship.apply_preigniter()
 	enemy_ship.is_boss = true
 	enemy_ship.boss_phase = phase
 	# Carry over surviving Flagship crew & AI state across phases (authentic FTL 1.6!)

@@ -726,6 +726,50 @@ func _run() -> void:
 		"Binary FTL 1.6 Campaign: modifyPursuit(-2), reveal_map, removeCrew(clone vs perm), status divide & Sector 8 Repair/Flagship March",
 		"pur=%s exp=%s cl=%s/%s st=%s rep=%d fmv=%s" % [str(pursuit_ok), str(all_exp), str(clone_queued), str(perm_not_queued), str(status_div_ok), rep_stations, str(f_moved)])
 
+	# 8z. Wave 6 Binary Logic: Gradual Weapon Depower Decay (-6.0/s @ 0x40ddcf), Pre-Igniter & Zoltan Shield Jump Reset, 4Door Difficulty HP Table & Fire <10% O2
+	_check(spec_json.has("firePhysics") and absf(float(spec_json.weapons.get("depowerChargeDecayPerSec", 0.0)) - 6.0) < 0.01 and absf(float(spec_json.firePhysics.get("lowOxygenExtinctionThreshold", 0.0)) - 10.0) < 0.01,
+		"Wave 6 ftl_logic_spec.json includes firePhysics, 6.0/s weapon depower decay & 4Door difficulty HP tables")
+
+	var w6_ship := FTLShip.new()
+	w6_ship.init_from_blueprint(st_db, "PLAYER_SHIP_ENERGY", true, 0)
+	w6_ship.augments.append("WEAPON_PREIGNITE")
+	w6_ship.zoltan_shield = 0
+	w6_ship.weapons[0].powered = true
+	w6_ship.weapons[0].charge = 0.0
+	w6_ship.on_ftl_jump()
+	var z_reset_ok := w6_ship.zoltan_shield == 5
+	var preig_ok := absf(float(w6_ship.weapons[0].charge) - w6_ship.get_weapon_effective_cooldown(w6_ship.weapons[0])) < 0.05
+	# Depowering weapon decays charge gradually at -6.0s/sec (0x40ddcf) instead of snapping to 0!
+	var ch_before := float(w6_ship.weapons[0].charge)
+	w6_ship.toggle_weapon_power(0)
+	var kept_on_toggle := absf(float(w6_ship.weapons[0].charge) - ch_before) < 0.05
+	w6_ship.step(0.5, def_tgt, true) # -3.0s charge decay
+	var decayed_3s := absf((ch_before - float(w6_ship.weapons[0].charge)) - 3.0) < 0.1
+	# 4Door binary difficulty HP table (0x471620: tier3 Easy=20/240HP, Normal=18/216HP, Hard=15/180HP)
+	w6_ship.systems.doors.level = 3
+	w6_ship.add_crew("human", int(w6_ship.systems.doors.room), true, "DGuard")
+	w6_ship.step(0.05, null, false)
+	w6_ship.difficulty = 0
+	var d_easy := w6_ship.get_door_binary_hits()
+	var hp_easy := w6_ship.get_door_max_hp()
+	w6_ship.difficulty = 1
+	var d_norm := w6_ship.get_door_binary_hits()
+	var hp_norm := w6_ship.get_door_max_hp()
+	w6_ship.difficulty = 2
+	var d_hard := w6_ship.get_door_binary_hits()
+	var hp_hard := w6_ship.get_door_max_hp()
+	# Fire extinguishes below 10.0% O2 (0x49980d, e.g. at 9.0% O2!)
+	var fr_r: Dictionary = w6_ship.rooms[0]
+	fr_r.oxygen = 9.0
+	fr_r.fires = 1
+	fr_r.fire_hp = 20.0
+	w6_ship.systems.oxygen.power = 0
+	w6_ship.step(1.0, null, false)
+	var fire_ext_ok := int(fr_r.fires) == 0
+	_check(z_reset_ok and preig_ok and kept_on_toggle and decayed_3s and d_easy == 20 and d_norm == 18 and d_hard == 15 and absf(hp_easy - 240.0) < 0.1 and absf(hp_norm - 216.0) < 0.1 and absf(hp_hard - 180.0) < 0.1 and fire_ext_ok,
+		"Binary FTL 1.6 Wave 6: ZoltanJumpReset(5), PreIgniter, WeaponDecay(-6/s), 4DoorDiff(20/18/15) & FireExt(<10% O2)",
+		"z=%s pi=%s dec=%s/%s door=%d/%d/%d fire=%s" % [str(z_reset_ok), str(preig_ok), str(kept_on_toggle), str(decayed_3s), d_easy, d_norm, d_hard, str(fire_ext_ok)])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

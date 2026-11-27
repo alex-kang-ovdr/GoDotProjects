@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T10:22:10.956226+00:00",
+  "extractedAt": "2026-11-27T11:00:14.130026+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -309,7 +309,12 @@
     },
     "autoReloaderCooldownReduction": 0.1,
     "cloakFirePenaltyRatio": 0.2,
-    "beamBreaksCloak": false
+    "beamBreaksCloak": false,
+    "depowerChargeDecayPerSec": 6.0,
+    "depowerChargeDecayProofVa": "0x40ddcf (0x876894=0.375)",
+    "hackedChargeDrainPerSec": 1.0,
+    "hackedChargeDrainProofVa": "0x40dd4e (0x876890=0.0625)",
+    "preIgniterProofVa": "0x61d3cb"
   },
   "artillery": {
     "baseCooldownSec": 40.0,
@@ -447,6 +452,30 @@
       120.0,
       240.0
     ],
+    "binaryHitsByTierAndDifficulty": {
+      "sourceVa": "0x471620..0x4716c1 (0x878950..0x878968)",
+      "tier0": [
+        4,
+        4,
+        4
+      ],
+      "tier1": [
+        12,
+        8,
+        6
+      ],
+      "tier2": [
+        16,
+        12,
+        10
+      ],
+      "tier3": [
+        20,
+        18,
+        15
+      ]
+    },
+    "preservesHpRatioOnLevelChange": true,
     "mannedLevelBonus": 1
   },
   "bossShip": {
@@ -710,5 +739,22 @@
     "repairStationScrap": 20,
     "flagshipBaseTurnLimit": 3,
     "flagshipMarchesToBase": true
+  },
+  "firePhysics": {
+    "vtableVa": "0x90c670",
+    "proofVa": "0x4996a0..0x499944 (0x879904..0x879914)",
+    "initialFireHp": 100.0,
+    "lowOxygenExtinctionThreshold": 10.0,
+    "spreadRatesByDoorBarrier": [
+      0.057143,
+      0.08,
+      0.1,
+      0.01
+    ],
+    "crewFireDamagePerTick": -0.133,
+    "crewFireDamagePerSec": 2.128,
+    "medbayBaseHealPerTick": 0.4,
+    "medbayLevelStep": 1.5,
+    "energyShieldResetOnJumpProofVa": "0x624bf8"
   }
 }

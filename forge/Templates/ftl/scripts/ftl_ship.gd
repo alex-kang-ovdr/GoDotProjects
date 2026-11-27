@@ -48,6 +48,10 @@ const FTL_CHARGE_TARGET := 50.0                                 # 0x63f5a9..0x63
 const FTL_ENG_MANNING_MULT := [1.10, 1.17, 1.25]                # 0x885fc8 / 0x885fcc / 0x885fc0 (0★/1★/2★)
 const SUFFOCATION_O2_THRESHOLD := 5.0                           # 0x8791a0
 const SUFFOCATION_DPS := 6.4                                    # 0x8791b0 (-0.4/tick * 16Hz)
+const WEAPON_DEPOWER_DECAY_PER_SEC := 6.0                       # 0x40ddcf (0x876894=0.375 / 0.0625)
+const WEAPON_HACK_DRAIN_PER_SEC := 1.0                          # 0x40dd4e (0x876890=0.0625 / 0.0625)
+const FIRE_O2_EXTINCT_THRESHOLD := 10.0                         # 0x49980d (0x879914=10.0%)
+const DOOR_BINARY_HITS := [[4, 4, 4], [12, 8, 6], [16, 12, 10], [20, 18, 15]] # 0x471620 (0x878950..0x878968)
 const SCORE_DIFF_MULT := [1.0, 1.25, 1.50]                      # ScoreKeeper (0x44ccb5): Easy/Normal/Hard
 
 
@@ -62,6 +66,7 @@ const CREW_NAMES := [
 
 var db: FTLDatabase
 var is_player: bool = true
+var difficulty: int = 0 # 0=Easy, 1=Normal, 2=Hard
 var blueprint_id: String = ""
 var ship_name: String = "The Kestrel"
 var class_name_str: String = "Kestrel Cruiser"
@@ -320,10 +325,7 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 	shield_max_layers = get_effective_system_power("shields") / 2
 	shield_layers = shield_max_layers
 	shield_charge = 0.0
-	if has_augment("WEAPON_PREIGNITE"):
-		for w in weapons:
-			if w.powered:
-				w.charge = w.cooldown
+	apply_preigniter()
 
 
 func _allocate_initial_power() -> void:
@@ -592,6 +594,20 @@ func get_weapon_effective_cooldown(w: Dictionary) -> float:
 	return base_cd
 
 
+func apply_preigniter() -> void:
+	# Authentic FTL 1.6 WEAPON_PREIGNITE (0x61d3cb): pre-charges all powered weapons at combat/jump start (Charge weapons get 1 charge!)
+	if not has_augment("WEAPON_PREIGNITE"):
+		return
+	for w in weapons:
+		if bool(w.powered):
+			var max_ch := maxi(1, int(w.bp.get("chargeLevels", 1)))
+			if max_ch > 1:
+				w.charge_level = maxi(1, int(w.get("charge_level", 0)))
+				w.charge = 0.0
+			else:
+				w.charge = get_weapon_effective_cooldown(w)
+
+
 func on_ftl_jump() -> void:
 	# Authentic FTL 1.6 Clonebay jump-healing (+8 / +16 / +25 HP per jump, 0x8861ec)
 	if systems.has("clonebay") and int(systems.clonebay.damage) < int(systems.clonebay.level):
@@ -600,12 +616,17 @@ func on_ftl_jump() -> void:
 		for c in crew:
 			if c.is_player == is_player and c.hp > 0.0:
 				c.hp = minf(float(c.max_hp), float(c.hp) + float(heal))
-	# Reset weapon chain/charge stacks on jump
+	# Authentic FTL 1.6 Zoltan SuperShield (ENERGY_SHIELD @ 0x624bf8): regenerates to full 5 layers on every FTL jump!
+	if has_augment("ENERGY_SHIELD"):
+		zoltan_shield_max = maxi(5, zoltan_shield_max)
+		zoltan_shield = zoltan_shield_max
+	# Reset weapon chain/charge stacks on jump, then apply WEAPON_PREIGNITE (0x61d3cb)
 	for w in weapons:
 		w.chain_count = 0
 		w.charge_level = 0
 		w.charge = 0.0
 	artillery_charge = 0.0
+	apply_preigniter()
 
 
 func get_zoltan_bonus_in_room(room_id: int) -> int:
@@ -685,7 +706,6 @@ func toggle_weapon_power(idx: int) -> bool:
 	var cost := int(w.bp.get("power", 1))
 	if w.powered:
 		w.powered = false
-		w.charge = 0.0
 		w.target_room = -1
 		pending_sfx.append("powerDownSystem")
 		return true
@@ -755,7 +775,6 @@ func _enforce_weapon_drone_power() -> void:
 		if weapons[i].powered:
 			used -= int(weapons[i].bp.get("power", 1))
 			weapons[i].powered = false
-			weapons[i].charge = 0.0
 			weapons[i].target_room = -1
 	var dr_cap := get_effective_system_power("drones")
 	var dused := 0
@@ -1274,12 +1293,24 @@ func toggle_door(door_idx: int) -> void:
 	pending_sfx.append("doorOpen" if doors[door_idx].open else "doorClose")
 
 
+func get_door_binary_hits(p_diff: int = -1) -> int:
+	# Authentic FTL 1.6 4Door HP table (0x471620, 0x878950..0x878968): tier0=[4,4,4], tier1=[12,8,6], tier2=[16,12,10], tier3=[20,18,15]
+	var dlvl := get_effective_system_power("doors")
+	var manned := systems.has("doors") and int(systems.doors.manned_by) != -1
+	var tier := clampi(dlvl + (1 if manned else 0) - 1, 0, 3)
+	var d_idx := clampi(difficulty if p_diff < 0 else p_diff, 0, 2)
+	return int(DOOR_BINARY_HITS[tier][d_idx])
+
+
 func get_door_max_hp() -> float:
-	# Authentic FTL 1.6 4Door HP levels (Lv1=30, Lv2=60, Lv3=120, Manned Lv3/Lv4=240)
+	# Authentic FTL 1.6 4Door HP levels scaled by difficulty ratio (Easy: 30/60/120/240, Normal/Hard scale via 0x878950..0x878968)
 	var dlvl := get_effective_system_power("doors")
 	var manned := systems.has("doors") and int(systems.doors.manned_by) != -1
 	var eff := clampi(dlvl + (1 if manned else 0), 1, DOOR_HP_BY_LEVEL.size())
-	return float(DOOR_HP_BY_LEVEL[eff - 1])
+	var base_easy := float(DOOR_HP_BY_LEVEL[eff - 1])
+	var tier := eff - 1
+	var ratio := float(DOOR_BINARY_HITS[tier][clampi(difficulty, 0, 2)]) / float(DOOR_BINARY_HITS[tier][0])
+	return base_easy * ratio
 
 
 func sell_weapon(idx: int, from_cargo: bool = false) -> int:
@@ -1647,8 +1678,9 @@ func _apply_hacking_pulse(delta: float, target_ship: FTLShip) -> void:
 				target_ship.shield_layers = maxi(0, target_ship.shield_layers - 1)
 				target_ship.shield_charge = 0.0
 	elif hsys == "weapons":
+		# Authentic FTL 1.6 Hacking Weapons drain (0x40dd4e: 0.0625/tick = -1.0s charge per sec!)
 		for w in target_ship.weapons:
-			w.charge = maxf(0.0, float(w.charge) - delta * 1.65)
+			w.charge = maxf(0.0, float(w.charge) - delta * WEAPON_HACK_DRAIN_PER_SEC)
 	elif hsys == "artillery":
 		target_ship.artillery_charge = maxf(0.0, target_ship.artillery_charge - delta * 1.5)
 	elif hsys == "medbay":
@@ -1722,7 +1754,7 @@ func _step_atmosphere(delta: float) -> void:
 			if float(r.fire_hp) <= 0.0:
 				r.fires = 0
 				continue
-		if float(r.oxygen) < 8.0 or int(r.breach) > 0:
+		if float(r.oxygen) < FIRE_O2_EXTINCT_THRESHOLD or int(r.breach) > 0:
 			r.fire_hp = maxf(0.0, float(r.fire_hp) - 35.0 * delta)
 			if float(r.fire_hp) <= 0.0:
 				r.fires = 0
@@ -1737,12 +1769,16 @@ func _step_atmosphere(delta: float) -> void:
 					if int(systems[sname].damage) >= int(systems[sname].level):
 						hull = maxi(0, hull - 1)
 						pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(r.id)), "text": "FIRE DESTROYED -1!", "color": Color("ff5c5c")})
-			# Fire spread through open doors to adjacent oxygenated rooms
-			r["fire_spread"] = float(r.get("fire_spread", 0.0)) + 0.07 * float(r.fires) * delta
+			# Authentic FTL 1.6 Fire Spread (0x49971e..0x4997c8): open doors spread quickly, Blast Doors resist fire spread (Lv3+ = 0.01x!)
+			var door_lvl_eff := get_effective_system_power("doors") + (1 if (systems.has("doors") and int(systems.doors.manned_by) != -1) else 0)
+			var closed_mult := 0.12 if door_lvl_eff >= 3 else (0.35 if door_lvl_eff == 2 else 0.60)
+			r["fire_spread"] = float(r.get("fire_spread", 0.0)) + 0.08 * float(r.fires) * delta
 			if float(r["fire_spread"]) >= 1.0:
 				r["fire_spread"] = 0.0
 				for d in doors:
-					if not bool(d.open) or bool(d.airlock):
+					if bool(d.airlock):
+						continue
+					if not bool(d.open) and randf() > closed_mult:
 						continue
 					var adj_id := int(d.room_b) if int(d.room_a) == int(r.id) else (int(d.room_a) if int(d.room_b) == int(r.id) else -1)
 					if adj_id >= 0 and room_by_id.has(adj_id):
@@ -1956,9 +1992,11 @@ func _step_clone_queue(delta: float) -> void:
 			c.path = []
 			c.mind_timer = 0.0
 			c.stun_timer = 0.0
-			# Slight skill decay on cloning (authentic FTL:AE)
+			# Authentic FTL 1.6 Clonebay proportional skill XP loss (~15-20% of 1-star tier per skill)
 			for sk in c.skills.keys():
-				c.skills[sk] = maxi(0, int(c.skills[sk]) - 2)
+				var th_arr: Array = SKILL_XP_THRESHOLDS.get(str(sk), [15, 30])
+				var penalty := maxi(1, int(ceil(float(th_arr[0]) * 0.15)))
+				c.skills[sk] = maxi(0, int(c.skills[sk]) - penalty)
 			crew.append(c)
 			_assign_room_tiles(int(c.room_id))
 			clone_queue.pop_front()
@@ -2005,9 +2043,11 @@ func _step_weapons(delta: float, enemy_ship: FTLShip, target_cloaked: bool) -> v
 		var w: Dictionary = weapons[i]
 		w.fire_anim = maxf(0.0, float(w.fire_anim) - delta * 2.5)
 		if not bool(w.powered):
-			w.charge = maxf(0.0, float(w.charge) - delta * 2.5)
-			w.chain_count = 0
-			w.charge_level = 0
+			# Authentic FTL 1.6 ProjectileFactory::Update (0x40ddcf, 0x876894=0.375/tick -> -6.0s charge/sec!)
+			w.charge = maxf(0.0, float(w.charge) - delta * WEAPON_DEPOWER_DECAY_PER_SEC)
+			if float(w.charge) <= 0.0:
+				w.chain_count = 0
+				w.charge_level = 0
 			continue
 		var eff_cd := get_weapon_effective_cooldown(w)
 		var max_charges := maxi(1, int(w.bp.get("chargeLevels", 1)))
@@ -2269,22 +2309,47 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 			fleeing = true
 			pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "CHARGING FTL!", "color": Color("ffd54f")})
 
-	# Ensure weapons powered & targeted
+	# Ensure weapons powered & targeted (Hard Mode smart targeting prioritizes Weapons/Shields/Pilot/Medbay/Oxygen!)
 	var target_rooms: Array[int] = []
-	for sname in ["weapons", "shields", "pilot", "engines", "medbay"]:
+	var smart_rooms: Array[int] = []
+	for sname in ["weapons", "shields", "pilot", "engines", "medbay", "clonebay", "oxygen"]:
 		if player_ship.systems.has(sname):
-			target_rooms.append(int(player_ship.systems[sname].room))
+			var srid := int(player_ship.systems[sname].room)
+			target_rooms.append(srid)
+			if sname in ["weapons", "shields", "pilot", "medbay", "clonebay"]:
+				smart_rooms.append(srid)
 	if target_rooms.is_empty():
 		for r in player_ship.rooms:
 			target_rooms.append(int(r.id))
 	for w in weapons:
 		if bool(w.powered) and int(w.target_room) < 0 and not target_rooms.is_empty():
-			w.target_room = target_rooms[randi() % target_rooms.size()]
+			if difficulty >= 2 and not smart_rooms.is_empty() and randf() < 0.72:
+				w.target_room = smart_rooms[randi() % smart_rooms.size()]
+			else:
+				w.target_room = target_rooms[randi() % target_rooms.size()]
 			w.autofire = true
 
-	# Activate cloaking occasionally on boss / cloaked enemies
-	if systems.has("cloaking") and cloak_cooldown <= 0.0 and cloak_timer <= 0.0 and randf() < 0.25:
-		activate_cloaking()
+	# Reactive Cloaking AI: prioritize cloaking when player weapons are nearly ready (>=88%)!
+	if systems.has("cloaking") and cloak_cooldown <= 0.0 and cloak_timer <= 0.0:
+		var player_about_to_fire := false
+		for pw in player_ship.weapons:
+			if bool(pw.powered):
+				var pcd := player_ship.get_weapon_effective_cooldown(pw)
+				if float(pw.charge) >= pcd * 0.88 or int(pw.get("charge_level", 0)) >= 1:
+					player_about_to_fire = true
+					break
+		if (player_about_to_fire and randf() < 0.65) or randf() < 0.14:
+			activate_cloaking()
+
+	# Authentic Enemy Teleporter Recall AI: recall critically injured enemy boarders (<28% HP) back home to heal!
+	if systems.has("teleporter") and get_effective_system_power("teleporter") > 0 and teleporter_cooldown <= 0.0:
+		var injured_room := -1
+		for pc in player_ship.crew:
+			if not bool(pc.is_player) and float(pc.hp) > 0.0 and float(pc.hp) < float(pc.max_hp) * 0.28:
+				injured_room = int(pc.room_id)
+				break
+		if injured_room >= 0:
+			teleport_retrieve(player_ship, injured_room)
 
 	# Authentic Enemy Teleporter Boarding AI (enemies with Teleporter or Flagship Phase 3!)
 	if (systems.has("teleporter") or (is_boss and boss_phase == 3)) and teleporter_cooldown <= 0.0 and player_ship.zoltan_shield <= 0 and not player_ship.rooms.is_empty():
