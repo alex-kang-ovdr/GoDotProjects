@@ -22,9 +22,9 @@ func _check(ok: bool, label: String) -> void:
 func test() -> void:
 	# 1. Verify reverse-engineered logic_trace.json & dll_mechanics.json load cleanly
 	var trace = JSON.parse_string(FileAccess.get_file_as_string("res://data/logic_trace.json"))
-	_check(trace is Dictionary and trace.get("methods", []).size() >= 100, "expanded logic_trace.json traces >= 100 Cosmoteer.dll methods")
+	_check(trace is Dictionary and trace.get("methods", []).size() >= 115, "expanded logic_trace.json traces >= 115 Cosmoteer.dll methods")
 	var mech := CombatSystems.get_dll_mechanics()
-	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 100, "dll_mechanics.json v6 loads reverse-engineered constants")
+	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 115, "dll_mechanics.json v7 loads reverse-engineered constants")
 
 	# 2. BulletPenetratingHit: exact projectile penetration & part resistance
 	_check(is_equal_approx(CombatSystems.projectile_penetration("cannon"), 5.0), "medium cannon penetration == 5.0")
@@ -277,6 +277,67 @@ func test() -> void:
 	var ord_bow := Flight2.ai_orders(battle.player, battle.enemy, 0.0, "attack", 0.0)
 	var ord_broad := Flight2.ai_orders(battle.player, battle.enemy, 0.0, "attack", PI * 0.5)
 	_check(absf(ord_bow.z - ord_broad.z) > 0.1, "Flight.ai_orders steers toward AttackCommand heading_offset")
+
+	# 23. BaseExplosiveEffectRules: angular-slice blast shielding (armor protects interior reactor behind it)
+	var blast_ship := {
+		"position": Vector2.ZERO, "center_of_mass": Vector2.ZERO, "heading": 0.0,
+		"parts": {
+			101: {"id": "cosmoteer.armor", "hp": 4000.0, "max_hp": 4000.0, "cell": Vector2i(2, 0), "size": Vector2i(1, 1)},
+			102: {"id": CombatSystems.REACTOR_SMALL, "hp": 4000.0, "max_hp": 4000.0, "cell": Vector2i(4, 0), "size": Vector2i(1, 1)},
+			103: {"id": CombatSystems.REACTOR_SMALL, "hp": 4000.0, "max_hp": 4000.0, "cell": Vector2i(-4, 0), "size": Vector2i(1, 1)},
+		},
+	}
+	CombatSystems.apply_aoe_splash(blast_ship, Vector2.ZERO, 10.0, 2000.0, -1)
+	var shielded_hp := float(blast_ship.parts[102].hp)
+	var exposed_hp := float(blast_ship.parts[103].hp)
+	_check(shielded_hp > exposed_hp + 200.0, "BaseExplosiveEffectRules angular slice armor shielding protects rear reactor (%.0f > %.0f)" % [shielded_hp, exposed_hp])
+
+	# 24. ExplosiveResourceDrainEffectRules: EMP blast drains nearby rooms & active shield + applies disruptor_drain
+	var emp_ship := {
+		"position": Vector2.ZERO, "center_of_mass": Vector2.ZERO, "heading": 0.0,
+		"parts": {
+			201: {"id": CombatSystems.LASER_SMALL, "hp": 1000.0, "energy": 3000, "cell": Vector2i(1, 0), "size": Vector2i(1, 1)},
+			202: {"id": CombatSystems.SHIELD_SMALL, "hp": 2000.0, "energy": 3000, "shield_active": true, "shield_hp": 900.0, "shield_flash": 0.0, "shield_reboot": 0.0, "stats": {"reboot_delay": 2.5}, "cell": Vector2i(2, 0), "size": Vector2i(1, 1)},
+		},
+	}
+	var emp_res := CombatSystems.apply_emp_drain(emp_ship, Vector2.ZERO, 12.0, 18000.0)
+	_check(int(emp_res.parts_drained) == 2 and int(emp_res.energy_drained) > 1000, "ExplosiveResourceDrainEffectRules drains multiple nearby powered modules")
+	_check(float(emp_ship.parts[201].get("disruptor_drain", 0.0)) >= 3.9, "EMP blast applies disruptor_drain status to affected rooms")
+	_check(202 in emp_res.shields_collapsed and not bool(emp_ship.parts[202].shield_active), "EMP blast collapses weakened active shield within radius")
+
+	# 25. AreaImpulseEffectRules & Tractor Newton's 3rd Law
+	var imp_ship := {
+		"position": Vector2.ZERO, "center_of_mass": Vector2.ZERO, "heading": 0.0,
+		"velocity": Vector2.ZERO, "angular_velocity": 0.0, "mass": 50.0, "inertia": 150.0,
+		"parts": {
+			1: {"id": "cosmoteer.armor", "hp": 1000.0, "cell": Vector2i(0, 4), "size": Vector2i(1, 1)},
+		},
+	}
+	CombatSystems.apply_area_impulse(imp_ship, Vector2(-3.0, 4.5), 10.0, 360.0)
+	_check(Vector2(imp_ship.velocity).x > 0.05 and absf(float(imp_ship.angular_velocity)) > 0.05, "AreaImpulseEffectRules imparts radial linear knockback and off-center torque")
+	var tb_ship := {
+		"command": true, "position": Vector2.ZERO, "center_of_mass": Vector2.ZERO, "heading": 0.0, "velocity": Vector2.ZERO, "mass": 50.0,
+		"ids": {CombatSystems.TRACTOR_BEAM: [301]},
+		"parts": {301: {"id": CombatSystems.TRACTOR_BEAM, "hp": 1000.0, "energy": 1000, "cell": Vector2i.ZERO, "size": Vector2i(1, 1), "stats": {"tractor_range": 300.0, "tractor_force": 4500.0}}},
+	}
+	var tb_target := {"position": Vector2(60.0, 0.0), "velocity": Vector2.ZERO, "mass": 100.0}
+	CombatSystems.tick_tractor_beams(tb_ship, tb_target, "player", 0.1)
+	_check(Vector2(tb_target.velocity).x < -0.5 and Vector2(tb_ship.velocity).x > 0.5, "Tractor beam pulls target and imparts Newton's 3rd-law reaction pull on emitter ship")
+
+	# 26. FtlManager: hyperdrive coverage efficiency & local jump fuel cost
+	var ftl_none := {"mass": 80.0, "ids": {}, "parts": {1: {"id": CombatSystems.BRIDGE_SMALL, "hp": 4000.0, "cell": Vector2i(0, 0), "size": Vector2i(2, 2), "severed": false}}}
+	var ftl_large := {
+		"mass": 80.0,
+		"ids": {CombatSystems.HYPERDRIVE_LARGE: [2]},
+		"parts": {
+			1: {"id": CombatSystems.BRIDGE_SMALL, "hp": 4000.0, "cell": Vector2i(0, 0), "size": Vector2i(2, 2), "severed": false},
+			2: {"id": CombatSystems.HYPERDRIVE_LARGE, "hp": 2000.0, "cell": Vector2i(2, 0), "size": Vector2i(4, 4), "severed": false},
+		},
+	}
+	var eff_none := CombatSystems.ftl_jump_efficiency(ftl_none)
+	var eff_large := CombatSystems.ftl_jump_efficiency(ftl_large)
+	_check(float(eff_none.efficiency) == 0.0 and is_equal_approx(float(eff_large.efficiency), 0.5), "FtlManager computes exact 50% jump efficiency inside hyperdrive_large range")
+	_check(CombatSystems.ftl_local_jump_fuel_cost(ftl_large, 500.0) < CombatSystems.ftl_local_jump_fuel_cost(ftl_none, 500.0), "Hyperdrive coverage lowers FTL local jump fuel cost")
 
 	print("DLL mechanics checks: %d; failures: %d" % [checks, failed])
 	quit(1 if failed else 0)

@@ -16,7 +16,7 @@ class DllLogicExtractionTests(unittest.TestCase):
 
         trace = json.loads(LOGIC_TRACE_PATH.read_text(encoding="utf-8"))
         self.assertEqual(trace["assembly"], "Cosmoteer")
-        self.assertGreaterEqual(len(trace["methods"]), 100)
+        self.assertGreaterEqual(len(trace["methods"]), 115)
         method_keys = {(m["type"], m["name"]) for m in trace["methods"]}
         for required in [
             ("Cosmoteer.Ships.Parts.Weapons.BulletEmitter", "Emit"),
@@ -49,6 +49,11 @@ class DllLogicExtractionTests(unittest.TestCase):
             ("Cosmoteer.Ships.Parts.Commands.CommandProvider", "OnPartAttached"),
             ("Cosmoteer.Bullets.Physics.BulletAcceleration", "FixedUpdate"),
             ("Cosmoteer.Bullets.Hits.BulletVolumeHit", "DoHitEffects"),
+            ("Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2", "InitSlices"),
+            ("Cosmoteer.Simulation.HitEffects.ExplosiveResourceDrainEffectRules", "FindDrainableStoragesOnShip"),
+            ("Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules", "PushShip"),
+            ("Cosmoteer.Ships.Parts.Ftl.FtlManager", "CalculateJumpCostFactor"),
+            ("Cosmoteer.Ships.Parts.Weapons.RailgunProjectile", "OnUpdateProjectile"),
         ]:
             self.assertIn(required, method_keys, f"missing traced DLL method: {required}")
 
@@ -79,6 +84,10 @@ class DllLogicExtractionTests(unittest.TestCase):
         self.assertAlmostEqual(mech["shield_overclock"]["arc_radius_factor"], 1.5, places=4)
         self.assertEqual(mech["sensor_array"]["radar_radius"], 2400.0)
         self.assertAlmostEqual(mech["hyperdrive_ftl"]["jump_efficiency"], 0.5, places=4)
+        self.assertEqual(mech["hyperdrive_ftl"]["drives"]["cosmoteer.hyperdrive_large"]["max_range"], 120.0)
+        self.assertEqual(mech["emp_drain"]["missile_emp_total_drain"], 18000.0)
+        self.assertEqual(mech["emp_drain"]["missile_emp_radius"], 18.0)
+        self.assertGreaterEqual(mech["explosive_slices"]["slice_count"], 16)
 
     @unittest.skipUnless(
         (COSMOTEER_ROOT / "Bin" / "Cosmoteer.dll").is_file(),

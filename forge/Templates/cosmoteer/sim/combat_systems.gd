@@ -1024,8 +1024,13 @@ static func tick_tractor_beams(ship: Dictionary, other: Dictionary, side: String
 			continue
 		tb.energy = maxi(0, int(tb.energy) - maxi(1, roundi(120.0 * dt)))
 		var pull_dir := -delta / maxf(dist, 0.001)
-		var accel := pull_dir * float(tb.stats.get("tractor_force", 4500.0)) / maxf(1.0, float(other.mass))
+		var force := float(tb.stats.get("tractor_force", 4500.0))
+		var accel := pull_dir * force / maxf(1.0, float(other.mass))
 		other.velocity = Vector2(other.velocity) + accel * dt
+		# Cosmoteer.Simulation.HitEffects.ImpulseEffectRules: Newton's 3rd-law reaction pull on emitter ship
+		var recoil_ratio := float(get_dll_mechanics().get("area_impulse", {}).get("tractor_recoil_ratio", 0.5))
+		var self_accel := -pull_dir * (force * recoil_ratio) / maxf(1.0, float(ship.get("mass", 40.0)))
+		ship["velocity"] = Vector2(ship.get("velocity", Vector2.ZERO)) + self_accel * dt
 		beams.append({
 			"from": origin, "to": Vector2(other.position), "side": side,
 			"source_uid": uid, "hit_kind": "tractor", "beam_kind": "tractor",
@@ -1035,12 +1040,21 @@ static func tick_tractor_beams(ship: Dictionary, other: Dictionary, side: String
 	return beams
 
 
-## Apply AoE blast splash damage to nearby alive modules within aoe_radius (meters).
+## Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2 (InitSlices/DrainSlices):
+## Apply AoE blast splash sorted by distance with angular-slice occlusion so armor shields interior parts.
 ## Returns array of newly destroyed part UIDs.
 static func apply_aoe_splash(victim: Dictionary, center_world: Vector2, aoe_radius: float, base_damage: float, exclude_uid: int) -> Array[int]:
 	var destroyed: Array[int] = []
 	if aoe_radius <= 0.1 or base_damage <= 0.0:
 		return destroyed
+	var mech := get_dll_mechanics()
+	var slice_cfg: Dictionary = mech.get("explosive_slices", {})
+	var slice_count := maxi(8, int(slice_cfg.get("slice_count", 16)))
+	var armor_drain := clampf(float(slice_cfg.get("armor_slice_drain", 0.65)), 0.0, 0.95)
+	var default_drain := clampf(float(slice_cfg.get("default_slice_drain", 0.25)), 0.0, 0.90)
+	var min_slice := clampf(float(slice_cfg.get("min_slice_factor", 0.10)), 0.01, 1.0)
+	var absorb := clampf(float(mech.get("penetration", {}).get("armor_explosive_absorption", 0.55)), 0.0, 0.85)
+	var candidates: Array[Dictionary] = []
 	for uid in victim.parts:
 		if int(uid) == exclude_uid:
 			continue
@@ -1048,20 +1062,184 @@ static func apply_aoe_splash(victim: Dictionary, center_world: Vector2, aoe_radi
 		if float(part.hp) <= 0.0:
 			continue
 		var pcenter: Vector2 = Vector2(victim.position) + (Vector2(part.cell) + Vector2(part.size) * 0.5 - Vector2(victim.center_of_mass)).rotated(victim.heading)
-		var dist := pcenter.distance_to(center_world)
+		var delta := pcenter - center_world
+		var dist := delta.length()
 		if dist > aoe_radius:
 			continue
+		candidates.append({"uid": int(uid), "dist": dist, "angle": delta.angle()})
+	candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a.dist) < float(b.dist))
+	var slices := PackedFloat32Array()
+	slices.resize(slice_count)
+	slices.fill(1.0)
+	for entry in candidates:
+		var uid := int(entry.uid)
+		var part: Dictionary = victim.parts[uid]
+		if float(part.hp) <= 0.0:
+			continue
+		var dist := float(entry.dist)
+		var s_idx := posmod(int(floor((float(entry.angle) + PI) / TAU * float(slice_count))), slice_count)
+		var slice_energy := float(slices[s_idx])
 		var falloff := clampf(1.0 - dist / (aoe_radius * 1.15), 0.18, 0.75)
-		var dmg := base_damage * falloff
+		var dmg := base_damage * falloff * slice_energy
+		var is_armor := str(part.id).contains("armor")
 		# Cosmoteer armor ExplosiveDamageAbsorption dampens splash damage on armor plates
-		if str(part.id).contains("armor"):
-			var absorb := float(get_dll_mechanics().get("penetration", {}).get("armor_explosive_absorption", 0.55))
-			dmg *= (1.0 - clampf(absorb, 0.0, 0.85))
+		if is_armor:
+			dmg *= (1.0 - absorb)
 		var was_alive: bool = part.hp > 0.0
 		part.hp = maxf(0.0, float(part.hp) - dmg)
 		if was_alive and part.hp <= 0.0:
-			destroyed.append(int(uid))
+			destroyed.append(uid)
+		var drain := armor_drain if is_armor else default_drain
+		slices[s_idx] = maxf(min_slice, slice_energy * (1.0 - drain))
 	return destroyed
+
+
+## Cosmoteer.Simulation.HitEffects.ExplosiveResourceDrainEffectRules / AreaResourceDrainEffectRules:
+## EMP blast drains battery energy from nearby enemy rooms & active shields with distance falloff.
+static func apply_emp_drain(victim: Dictionary, center_world: Vector2, aoe_radius: float, total_drain: float = -1.0) -> Dictionary:
+	var cfg: Dictionary = get_dll_mechanics().get("emp_drain", {})
+	var radius := aoe_radius if aoe_radius > 0.1 else float(cfg.get("missile_emp_radius", 18.0))
+	var budget := total_drain if total_drain > 0.0 else float(cfg.get("missile_emp_total_drain", 18000.0))
+	var shield_ratio := float(cfg.get("shield_drain_ratio", 0.55))
+	var parts_drained := 0
+	var energy_drained := 0
+	var shields_collapsed: Array[int] = []
+	var remaining := budget
+	for uid_key in victim.get("parts", {}):
+		if remaining <= 0.0:
+			break
+		var uid := int(uid_key)
+		var part: Dictionary = victim.parts[uid]
+		if float(part.get("hp", 0.0)) <= 0.0:
+			continue
+		var pcenter: Vector2 = Vector2(victim.position) + (Vector2(part.cell) + Vector2(part.size) * 0.5 - Vector2(victim.center_of_mass)).rotated(float(victim.heading))
+		var dist := pcenter.distance_to(center_world)
+		if dist > radius:
+			continue
+		var falloff := clampf(1.0 - dist / maxf(1.0, radius) * 0.75, 0.25, 1.0)
+		var drain_amt := minf(remaining, clampf(budget * 0.14 * falloff, 400.0, 3200.0))
+		part["disruptor_drain"] = maxf(float(part.get("disruptor_drain", 0.0)), 4.0)
+		var cur_e := int(part.get("energy", 0))
+		if cur_e > 0:
+			var take := mini(cur_e, roundi(drain_amt))
+			part.energy = cur_e - take
+			energy_drained += take
+			remaining -= float(take)
+			parts_drained += 1
+		if is_shield(str(part.id)) and bool(part.get("shield_active", false)):
+			var collapsed := apply_shield_damage(part, drain_amt * shield_ratio, 0)
+			if collapsed:
+				shields_collapsed.append(uid)
+	return {
+		"parts_drained": parts_drained,
+		"energy_drained": energy_drained,
+		"shields_collapsed": shields_collapsed,
+	}
+
+
+## Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules (PushShip / ApplyFalloff):
+## Per-part radial explosion impulse applying both linear knockback and true off-center rotational torque.
+static func apply_area_impulse(victim: Dictionary, center_world: Vector2, aoe_radius: float, impulse_mag: float) -> void:
+	if impulse_mag <= 0.0 or aoe_radius <= 0.1:
+		return
+	var cfg: Dictionary = get_dll_mechanics().get("area_impulse", {})
+	var ship_pos := Vector2(victim.get("position", Vector2.ZERO))
+	var lin_scale := float(cfg.get("linear_scale", 0.06))
+	var trq_scale := float(cfg.get("torque_scale", 0.04))
+	var mass := maxf(10.0, float(victim.get("mass", 40.0)))
+	var inertia := maxf(20.0, float(victim.get("inertia", 120.0)))
+	var reach := maxf(1.0, aoe_radius * 2.5)
+	var total_lin := Vector2.ZERO
+	var total_trq := 0.0
+	var hit_parts := 0
+	var parts_dict: Dictionary = victim.get("parts", {})
+	if not parts_dict.is_empty():
+		var com := Vector2(victim.get("center_of_mass", Vector2.ZERO))
+		var hdg := float(victim.get("heading", 0.0))
+		for part in parts_dict.values():
+			if float(part.get("hp", 0.0)) <= 0.0:
+				continue
+			var pcenter: Vector2 = ship_pos + (Vector2(part.cell) + Vector2(part.size) * 0.5 - com).rotated(hdg)
+			var delta := pcenter - center_world
+			var dist := delta.length()
+			if dist > reach:
+				continue
+			var dir := delta / dist if dist > 0.01 else (ship_pos - center_world).normalized()
+			if dir.length_squared() < 1e-6:
+				dir = Vector2.RIGHT
+			var falloff := clampf(1.0 - dist / reach, 0.15, 1.0)
+			total_lin += dir * falloff
+			var arm := pcenter - ship_pos
+			total_trq += arm.cross(dir * falloff)
+			hit_parts += 1
+	if hit_parts > 0:
+		var inv_n := 1.0 / float(hit_parts)
+		var imp_vec := total_lin * inv_n * impulse_mag * lin_scale
+		victim["velocity"] = Vector2(victim.get("velocity", Vector2.ZERO)) + (imp_vec / mass).limit_length(5.0)
+		var trq_val := total_trq * inv_n * impulse_mag * trq_scale
+		victim["angular_velocity"] = float(victim.get("angular_velocity", 0.0)) + clampf(trq_val / inertia, -0.55, 0.55)
+	else:
+		var delta := ship_pos - center_world
+		var dist := delta.length()
+		var dir := delta / dist if dist > 0.01 else Vector2.RIGHT
+		var falloff := clampf(1.0 - dist / reach, 0.15, 1.0)
+		var imp_vec := dir * impulse_mag * falloff * lin_scale
+		victim["velocity"] = Vector2(victim.get("velocity", Vector2.ZERO)) + (imp_vec / mass).limit_length(5.0)
+
+
+## Cosmoteer.Ships.Parts.Ftl.FtlManager (CalculateJumpCostFactor / GetFtlLocalJumpFuelCost):
+## Compute ship-wide FTL coverage efficiency from hyperdrive distance ranges and jump fuel cost.
+static func ftl_jump_efficiency(ship: Dictionary) -> Dictionary:
+	var cfg: Dictionary = get_dll_mechanics().get("hyperdrive_ftl", {})
+	var drives_cfg: Dictionary = cfg.get("drives", {})
+	var drives: Array[Dictionary] = []
+	for hid in HYPERDRIVE_IDS:
+		for uid in ship.get("ids", {}).get(hid, []):
+			var dp: Dictionary = ship.parts[uid]
+			if float(dp.get("hp", 0.0)) <= 0.0 or bool(dp.get("severed", false)):
+				continue
+			var dspec: Dictionary = drives_cfg.get(hid, {"efficiency": 0.5, "min_range": 5.0, "max_range": 30.0})
+			drives.append({
+				"center": Vector2(dp.cell) + Vector2(dp.size) * 0.5,
+				"eff": float(dspec.get("efficiency", 0.5)),
+				"min_r": float(dspec.get("min_range", 5.0)),
+				"max_r": float(dspec.get("max_range", 30.0)),
+			})
+	if drives.is_empty():
+		return {"drives": 0, "efficiency": 0.0, "cost_factor": 1.0}
+	var total_parts := 0
+	var eff_sum := 0.0
+	for part in ship.get("parts", {}).values():
+		if float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false)):
+			continue
+		total_parts += 1
+		var pcenter := Vector2(part.cell) + Vector2(part.size) * 0.5
+		var best_eff := 0.0
+		for d in drives:
+			var dist := pcenter.distance_to(Vector2(d.center))
+			var min_r := float(d.min_r)
+			var max_r := maxf(min_r + 0.1, float(d.max_r))
+			var e := 0.0
+			if dist <= min_r:
+				e = float(d.eff)
+			elif dist < max_r:
+				e = float(d.eff) * (1.0 - (dist - min_r) / (max_r - min_r))
+			best_eff = maxf(best_eff, e)
+		eff_sum += best_eff
+	var avg_eff := clampf(eff_sum / float(maxi(1, total_parts)), 0.0, 0.80)
+	return {
+		"drives": drives.size(),
+		"efficiency": avg_eff,
+		"cost_factor": clampf(1.0 - avg_eff, 0.20, 1.0),
+	}
+
+
+static func ftl_local_jump_fuel_cost(ship: Dictionary, distance: float) -> int:
+	var cfg: Dictionary = get_dll_mechanics().get("hyperdrive_ftl", {})
+	var base_rate := float(cfg.get("base_fuel_per_mass_per_100m", 0.25))
+	var mass := maxf(10.0, float(ship.get("mass", 40.0)))
+	var info := ftl_jump_efficiency(ship)
+	return maxi(1, roundi(mass * maxf(1.0, distance) / 100.0 * base_rate * float(info.cost_factor)))
 
 
 ## Load reverse-engineered Cosmoteer.dll + .rules gameplay mechanics SSOT.

@@ -940,11 +940,16 @@ func _fly() -> void:
 			events[-1].radius = aoe_r
 			events[-1].blast_kind = "emp" if bool(bolt.get("emp_aoe", false)) else ("nuke" if str(bolt.get("kind", "")) == "missile_nuke" else "he")
 			if bool(bolt.get("emp_aoe", false)):
-				for euid in victim.parts:
-					var ep: Dictionary = victim.parts[euid]
-					if ep.hp > 0.0 and int(ep.energy) > 0 and part_world(victim, int(euid)).distance_to(contact.pos) <= aoe_r:
-						ep.energy = maxi(0, int(ep.energy) - 1200)
+				var emp_rep := CombatSystems.apply_emp_drain(victim, contact.pos, aoe_r)
+				for c_suid in emp_rep.get("shields_collapsed", []):
+					_record("shield_down", bolt.side, int(c_suid), bolt.target_uid)
+					events[-1].pos = part_world(victim, int(c_suid))
+				var emp_imp := float(CombatSystems.get_dll_mechanics().get("area_impulse", {}).get("emp_impulse", 100.0))
+				CombatSystems.apply_area_impulse(victim, contact.pos, aoe_r, emp_imp)
 			else:
+				var imp_cfg: Dictionary = CombatSystems.get_dll_mechanics().get("area_impulse", {})
+				var imp_mag := float(imp_cfg.get("nuke_impulse", 360.0)) if str(bolt.get("kind", "")) == "missile_nuke" else float(imp_cfg.get("he_impulse", 120.0))
+				CombatSystems.apply_area_impulse(victim, contact.pos, aoe_r, imp_mag)
 				var splash_dead := CombatSystems.apply_aoe_splash(victim, contact.pos, aoe_r, float(bolt.damage) * float(bolt.power) * 0.45, uid)
 				for s_uid in splash_dead:
 					_on_part_destroyed(victim, s_uid, bolt.side, bolt.target_uid, part_world(victim, s_uid))
@@ -1000,6 +1005,8 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 		events[-1].radius = mr
 		events[-1].blast_kind = "meltdown"
 		CombatSystems.apply_hit_impulse(victim, Vector2(victim.position) - pos, md, "meltdown_scale")
+		var melt_imp := float(CombatSystems.get_dll_mechanics().get("area_impulse", {}).get("meltdown_impulse", 280.0))
+		CombatSystems.apply_area_impulse(victim, pos, mr, melt_imp)
 		var melt_dead := CombatSystems.apply_aoe_splash(victim, pos, mr, md, uid)
 		for nuid in victim.parts:
 			var np: Dictionary = victim.parts[nuid]

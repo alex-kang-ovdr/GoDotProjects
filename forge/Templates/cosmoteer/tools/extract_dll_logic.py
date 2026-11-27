@@ -143,6 +143,21 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Bullets.Death.BulletDeathByDistanceTraveled", "FixedUpdate"),
     ("Cosmoteer.Ships.Parts.Logic.PartHealthToggle", "OnPartHealthChanged"),
     ("Cosmoteer.Ships.Commands.FtlLocalJumpCommand", "GetJumpDestination"),
+    # Wave 7: slice-based blast shielding, explosive/area EMP resource drain, radial area impulse, railgun projectile, FTL fuel & efficiency
+    ("Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2", "InitSlices"),
+    ("Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2", "DrainSlices"),
+    ("Cosmoteer.Simulation.HitEffects.ExplosiveDamageEffectRules", "FindDamageablePartsOnShip"),
+    ("Cosmoteer.Simulation.HitEffects.ExplosiveResourceDrainEffectRules", "FindDrainableStoragesOnShip"),
+    ("Cosmoteer.Simulation.HitEffects.AreaResourceDrainEffectRules", "DrainResourcesFrom"),
+    ("Cosmoteer.Simulation.HitEffects.ResourceDrainEffectRules", "DoEffect"),
+    ("Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules", "PushShip"),
+    ("Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules", "ApplyFalloff"),
+    ("Cosmoteer.Simulation.HitEffects.ImpulseEffectRules", "PushShip"),
+    ("Cosmoteer.Ships.Parts.Weapons.RailgunProjectile", "OnUpdateProjectile"),
+    ("Cosmoteer.Ships.Parts.Ftl.FtlManager", "CalculateJumpCostFactor"),
+    ("Cosmoteer.Ships.Parts.Ftl.FtlManager", "GetFtlLocalJumpFuelCost"),
+    ("Cosmoteer.Ships.Parts.Ftl.FtlManager", "GetTotalFuel"),
+    ("Cosmoteer.Ships.Parts.Ftl.FtlDriveRules", "GetJumpEfficiency"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -414,9 +429,18 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     cp_large = _read_float_rule(data_root / "ships/terran/control_room_large/control_room_large.rules", r"CommandPoints\s*=\s*([0-9.]+)", 1000.0)
     m_he_accel = _read_float_rule(data_root / "shots/missile_he/missile_he.rules", r"Type\s*=\s*Acceleration[\s\S]{0,60}?Acceleration\s*=\s*([0-9.]+)", 65.0)
     m_emp_accel = _read_float_rule(data_root / "shots/missile_emp/missile_emp.rules", r"Type\s*=\s*Acceleration[\s\S]{0,60}?Acceleration\s*=\s*([0-9.]+)", 75.0)
+    emp_total_drain = _read_float_rule(data_root / "shots/missile_emp/missile_emp.rules", r"TotalDrain\s*=\s*\{\s*BaseValue\s*=\s*([0-9.]+)", 18000.0)
+    emp_radius = _read_float_rule(data_root / "shots/missile_emp/missile_emp.rules", r"Type\s*=\s*ExplosiveResourceDrain[\s\S]{0,160}?Radius\s*=\s*([0-9.]+)", 18.0)
+    emp_impulse = _read_float_rule(data_root / "shots/missile_emp/missile_emp.rules", r"Impulse\s*=\s*\{\s*BaseValue\s*=\s*([0-9.]+)", 100.0)
+    ftl_s_min = _read_float_rule(data_root / "ships/terran/hyperdrive_small/hyperdrive_small.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*([0-9.]+)", 5.0)
+    ftl_s_max = _read_float_rule(data_root / "ships/terran/hyperdrive_small/hyperdrive_small.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*[0-9.]+\s*,\s*([0-9.]+)", 30.0)
+    ftl_m_min = _read_float_rule(data_root / "ships/terran/hyperdrive_med/hyperdrive_med.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*([0-9.]+)", 10.0)
+    ftl_m_max = _read_float_rule(data_root / "ships/terran/hyperdrive_med/hyperdrive_med.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*[0-9.]+\s*,\s*([0-9.]+)", 60.0)
+    ftl_l_min = _read_float_rule(data_root / "ships/terran/hyperdrive_large/hyperdrive_large.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*([0-9.]+)", 20.0)
+    ftl_l_max = _read_float_rule(data_root / "ships/terran/hyperdrive_large/hyperdrive_large.rules", r"JumpEfficiencyDistanceRange\s*=\s*\[\s*[0-9.]+\s*,\s*([0-9.]+)", 120.0)
 
     mechanics = {
-        "version": 6,
+        "version": 7,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -532,9 +556,16 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "sight_overclock_factor": 1.5,
         },
         "hyperdrive_ftl": {
-            "source_class": "Cosmoteer.Ships.Parts.FtlDrive",
+            "source_class": "Cosmoteer.Ships.Parts.Ftl.FtlManager",
             "jump_efficiency": round(jump_eff_pct / 100.0, 4),
-            "distance_range": [5.0, 30.0],
+            "distance_range": [ftl_s_min, ftl_s_max],
+            "base_fuel_per_mass_per_100m": 0.25,
+            "drives": {
+                "cosmoteer.hyperdrive_small": {"efficiency": round(jump_eff_pct / 100.0, 4), "min_range": ftl_s_min, "max_range": ftl_s_max},
+                "cosmoteer.hyperdrive_med": {"efficiency": round(jump_eff_pct / 100.0, 4), "min_range": ftl_m_min, "max_range": ftl_m_max},
+                "cosmoteer.hyperdrive_large": {"efficiency": round(jump_eff_pct / 100.0, 4), "min_range": ftl_l_min, "max_range": ftl_l_max},
+                "cosmoteer.hyperdrive_beacon": {"efficiency": 0.65, "min_range": 25.0, "max_range": 140.0},
+            },
         },
         "resource_distributor": {
             "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
@@ -615,6 +646,30 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "missile_nuke": 55.0,
             "missile_thermal": m_he_accel,
             "launch_speed_factor": 0.45,
+        },
+        "explosive_slices": {
+            "source_class": "Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2",
+            "slice_count": 16,
+            "armor_slice_drain": 0.65,
+            "default_slice_drain": 0.25,
+            "min_slice_factor": 0.10,
+        },
+        "emp_drain": {
+            "source_class": "Cosmoteer.Simulation.HitEffects.ExplosiveResourceDrainEffectRules",
+            "missile_emp_total_drain": emp_total_drain,
+            "missile_emp_radius": emp_radius,
+            "missile_emp_impulse": emp_impulse,
+            "shield_drain_ratio": 0.55,
+        },
+        "area_impulse": {
+            "source_class": "Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules",
+            "he_impulse": 120.0,
+            "emp_impulse": emp_impulse,
+            "nuke_impulse": 360.0,
+            "meltdown_impulse": 280.0,
+            "linear_scale": 0.06,
+            "torque_scale": 0.04,
+            "tractor_recoil_ratio": 0.5,
         },
     }
     return logic_trace, mechanics

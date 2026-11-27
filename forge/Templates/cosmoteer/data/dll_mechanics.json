@@ -1,7 +1,7 @@
 {
-  "version": 6,
+  "version": 7,
   "assembly_sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
-  "traced_methods": 104,
+  "traced_methods": 118,
   "penetration": {
     "source_class": "Cosmoteer.Bullets.Hits.BulletPenetratingHit",
     "projectiles": {
@@ -130,12 +130,35 @@
     "sight_overclock_factor": 1.5
   },
   "hyperdrive_ftl": {
-    "source_class": "Cosmoteer.Ships.Parts.FtlDrive",
+    "source_class": "Cosmoteer.Ships.Parts.Ftl.FtlManager",
     "jump_efficiency": 0.5,
     "distance_range": [
       5.0,
       30.0
-    ]
+    ],
+    "base_fuel_per_mass_per_100m": 0.25,
+    "drives": {
+      "cosmoteer.hyperdrive_small": {
+        "efficiency": 0.5,
+        "min_range": 5.0,
+        "max_range": 30.0
+      },
+      "cosmoteer.hyperdrive_med": {
+        "efficiency": 0.5,
+        "min_range": 10.0,
+        "max_range": 60.0
+      },
+      "cosmoteer.hyperdrive_large": {
+        "efficiency": 0.5,
+        "min_range": 20.0,
+        "max_range": 120.0
+      },
+      "cosmoteer.hyperdrive_beacon": {
+        "efficiency": 0.65,
+        "min_range": 25.0,
+        "max_range": 140.0
+      }
+    }
   },
   "resource_distributor": {
     "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
@@ -278,5 +301,29 @@
     "missile_nuke": 55.0,
     "missile_thermal": 65.0,
     "launch_speed_factor": 0.45
+  },
+  "explosive_slices": {
+    "source_class": "Cosmoteer.Simulation.HitEffects.BaseExplosiveEffectRules`2",
+    "slice_count": 16,
+    "armor_slice_drain": 0.65,
+    "default_slice_drain": 0.25,
+    "min_slice_factor": 0.1
+  },
+  "emp_drain": {
+    "source_class": "Cosmoteer.Simulation.HitEffects.ExplosiveResourceDrainEffectRules",
+    "missile_emp_total_drain": 18000.0,
+    "missile_emp_radius": 18.0,
+    "missile_emp_impulse": 100.0,
+    "shield_drain_ratio": 0.55
+  },
+  "area_impulse": {
+    "source_class": "Cosmoteer.Simulation.HitEffects.AreaImpulseEffectRules",
+    "he_impulse": 120.0,
+    "emp_impulse": 100.0,
+    "nuke_impulse": 360.0,
+    "meltdown_impulse": 280.0,
+    "linear_scale": 0.06,
+    "torque_scale": 0.04,
+    "tractor_recoil_ratio": 0.5
   }
 }
