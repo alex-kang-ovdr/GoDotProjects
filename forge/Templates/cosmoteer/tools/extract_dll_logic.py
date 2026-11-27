@@ -130,6 +130,19 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Modes.Career.CareerSimModeManager", "GetSurrenderForPrice"),
     ("Cosmoteer.Modes.Career.WantedManager", "FixedUpdate"),
     ("Cosmoteer.Simulation.Doodads.SimDoodadsManager", "ShouldAvoidLocation"),
+    # Wave 6: Ship core, CommandPoints provider/consumer/toggle, missile acceleration & volume hits, FTL jump
+    ("Cosmoteer.Ships.Ship", "Load"),
+    ("Cosmoteer.Ships.Ship", "SaveDesign"),
+    ("Cosmoteer.Ships.Ship", "LoadMetrics"),
+    ("Cosmoteer.Ships.Parts.Commands.CommandProvider", "OnPartAttached"),
+    ("Cosmoteer.Ships.Parts.Commands.CommandConsumer", "OnOperational"),
+    ("Cosmoteer.Ships.Parts.Commands.CommandToggle", "OnPartAttached"),
+    ("Cosmoteer.Bullets.Physics.BulletAcceleration", "FixedUpdate"),
+    ("Cosmoteer.Bullets.Physics.BulletProximityAcceleration", "FixedUpdate"),
+    ("Cosmoteer.Bullets.Hits.BulletVolumeHit", "DoHitEffects"),
+    ("Cosmoteer.Bullets.Death.BulletDeathByDistanceTraveled", "FixedUpdate"),
+    ("Cosmoteer.Ships.Parts.Logic.PartHealthToggle", "OnPartHealthChanged"),
+    ("Cosmoteer.Ships.Commands.FtlLocalJumpCommand", "GetJumpDestination"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -396,9 +409,14 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     wanted_payoff = _read_float_rule(data_root / "modes/career/career.rules", r"PlayerWantedPayoffCost\s*=\s*([0-9.]+)", 6000.0)
     surrender_fp_exp = _read_float_rule(data_root / "modes/career/career.rules", r"SurrenderFirepowerWeightExponent\s*=\s*([0-9.]+)", 0.6)
     surrender_cost_exp = _read_float_rule(data_root / "modes/career/career.rules", r"SurrenderShipCostWeightExponent\s*=\s*([0-9.]+)", 0.4)
+    cp_small = _read_float_rule(data_root / "ships/terran/control_room_small/control_room_small.rules", r"CommandPoints\s*=\s*([0-9.]+)", 50.0)
+    cp_med = _read_float_rule(data_root / "ships/terran/control_room_med/control_room_med.rules", r"CommandPoints\s*=\s*([0-9.]+)", 250.0)
+    cp_large = _read_float_rule(data_root / "ships/terran/control_room_large/control_room_large.rules", r"CommandPoints\s*=\s*([0-9.]+)", 1000.0)
+    m_he_accel = _read_float_rule(data_root / "shots/missile_he/missile_he.rules", r"Type\s*=\s*Acceleration[\s\S]{0,60}?Acceleration\s*=\s*([0-9.]+)", 65.0)
+    m_emp_accel = _read_float_rule(data_root / "shots/missile_emp/missile_emp.rules", r"Type\s*=\s*Acceleration[\s\S]{0,60}?Acceleration\s*=\s*([0-9.]+)", 75.0)
 
     mechanics = {
-        "version": 5,
+        "version": 6,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -573,6 +591,30 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
                 {"min_rep": 2500, "label": "동맹", "reward_factor": 1.30, "buy_factor": 0.70},
                 {"min_rep": 10000, "label": "숭배", "reward_factor": 1.40, "buy_factor": 0.60},
             ],
+        },
+        "command_points": {
+            "source_class": "Cosmoteer.Ships.Parts.Commands.CommandProvider",
+            "providers": {
+                "cosmoteer.control_room_small": cp_small,
+                "cosmoteer.control_room_med": cp_med,
+                "cosmoteer.control_room_large": cp_large,
+            },
+            "costs": {
+                "weapon_capital": 12.0,
+                "weapon_standard": 4.0,
+                "shield": 6.0,
+                "reactor": 5.0,
+                "thruster": 2.0,
+                "utility": 3.0,
+            },
+        },
+        "bullet_acceleration": {
+            "source_class": "Cosmoteer.Bullets.Physics.BulletAcceleration",
+            "missile": m_he_accel,
+            "missile_emp": m_emp_accel,
+            "missile_nuke": 55.0,
+            "missile_thermal": m_he_accel,
+            "launch_speed_factor": 0.45,
         },
     }
     return logic_trace, mechanics

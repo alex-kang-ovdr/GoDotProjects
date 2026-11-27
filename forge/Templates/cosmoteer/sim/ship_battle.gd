@@ -591,6 +591,8 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 			var eff_speed := float(warhead.speed) if not warhead.is_empty() else float(gun.stats.projectile_speed) * float(gun.get("rail_speed_mult", 1.0))
 			var dmg_mult := float(gun.get("rail_damage_mult", 1.0))
 			var bolt_kind := str(warhead.kind) if not warhead.is_empty() else str(gun.stats.get("weapon_kind", "laser"))
+			var m_accel := CombatSystems.missile_acceleration(bolt_kind)
+			var init_speed := eff_speed * CombatSystems.missile_launch_speed_factor() if (is_homing and m_accel > 0.0) else eff_speed
 			projectiles.append({
 				"side": side, "source_uid": uid, "target_uid": target, "aim_uid": target, "progress": 0.0,
 				"kind": bolt_kind,
@@ -608,9 +610,11 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				"hit_uids": {},
 				"ignite": float(warhead.ignite) if not warhead.is_empty() else float(gun.stats.get("ignite_intensity", 0.0)),
 				"pos": muzzle, "previous_pos": muzzle,
-				"velocity": Flight.point_velocity(ship, muzzle) + direction * eff_speed,
+				"velocity": Flight.point_velocity(ship, muzzle) + direction * init_speed,
 				"travelled": 0.0, "range": eff_range,
-				"speed": eff_speed,
+				"speed": init_speed,
+				"max_speed": eff_speed,
+				"accel": m_accel,
 				"power": float(spent) / gun.stats.battery_per_shot,
 				"damage": float(warhead.damage) if not warhead.is_empty() else float(gun.stats.damage) * dmg_mult,
 				"structural_damage": float(warhead.structural_damage) if not warhead.is_empty() else float(gun.stats.structural_damage) * dmg_mult,
@@ -847,6 +851,9 @@ func _fly() -> void:
 			else:
 				bolt.velocity = Vector2(bolt.velocity).move_toward(to_enemy.normalized() * 14.0, 28.0 * dt)
 		elif bolt.get("homing", false):
+			var accel := float(bolt.get("accel", 0.0))
+			if accel > 0.0:
+				bolt["speed"] = minf(float(bolt.get("max_speed", bolt.speed)), float(bolt.speed) + accel * dt)
 			var lock_uid: int = int(bolt.target_uid)
 			if not _alive(victim, lock_uid):
 				lock_uid = _choose_target(victim, [BRIDGE] + CombatSystems.WEAPON_IDS)
@@ -1063,7 +1070,8 @@ func _player_autopilot_orders() -> Vector3:
 				best_pos = Vector2(ast.pos)
 		var dummy := {"position": best_pos}
 		return Flight.ai_orders(player, dummy, elapsed, "pursuit")
-	return Flight.ai_orders(player, enemy, elapsed, player_command)
+	var aim_offset := CombatSystems.best_attack_rotation(player) if player_command in ["attack", "standoff"] else 0.0
+	return Flight.ai_orders(player, enemy, elapsed, player_command, aim_offset)
 
 
 func _record(kind: String, side: String, uid: int, target: int) -> void:

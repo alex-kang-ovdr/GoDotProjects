@@ -1,6 +1,7 @@
 extends RefCounted
 
 const CATALOG_PATH := "res://data/operations.json"
+const CombatSystems := preload("res://sim/combat_systems.gd")
 const SAVE_VERSION := 1
 const REQUIRED_FIELDS := ["id", "title", "summary", "objective", "opponent", "distance", "seconds", "ai", "requires"]
 
@@ -61,18 +62,21 @@ func record_career_reward(id: String, salvage: int, mined: int) -> Dictionary:
 		if missions[idx].id == id:
 			tier = idx + 1
 			break
-	var bounty := tier * 1500
+	var fac := str(mission.get("faction", "fringe"))
+	var rep: Dictionary = career.get("faction_rep", {})
+	var cur_rep := int(rep.get(fac, 0))
+	var rep_eco := CombatSystems.reputation_economy_factors(cur_rep)
+	var fame_mult := CombatSystems.fame_reward_multiplier(int(career.get("fame", 0)))
+	var bounty := roundi(float(tier * 1500) * float(rep_eco.get("reward_factor", 1.0)) * minf(2.0, fame_mult))
 	var total_cr := bounty + maxi(0, salvage) + maxi(0, mined)
 	var fame_gain := 10 * tier
-	var fac := str(mission.get("faction", "fringe"))
 	career["credits"] = int(career.get("credits", 0)) + total_cr
 	career["fame"] = int(career.get("fame", 0)) + fame_gain
 	career["salvage_total"] = int(career.get("salvage_total", 0)) + maxi(0, salvage)
-	var rep: Dictionary = career.get("faction_rep", {})
-	rep[fac] = int(rep.get(fac, 0)) + 15
+	rep[fac] = cur_rep + 15
 	career["faction_rep"] = rep
 	_save_progress()
-	return {"bounty": bounty, "salvage": maxi(0, salvage), "mined": maxi(0, mined), "total": total_cr, "fame": fame_gain, "faction": fac}
+	return {"bounty": bounty, "salvage": maxi(0, salvage), "mined": maxi(0, mined), "total": total_cr, "fame": fame_gain, "faction": fac, "rep_label": str(rep_eco.get("label", "중립")), "reward_factor": float(rep_eco.get("reward_factor", 1.0))}
 
 
 func _load_catalog() -> void:

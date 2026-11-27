@@ -678,7 +678,8 @@ func _design_changed() -> void:
 				total_dps += float(st.beam_dps)
 			elif float(st.get("fire_interval", 0.0)) > 0.0:
 				total_dps += float(st.get("damage", 0.0)) / float(st.fire_interval)
-	resources.text = "부품 %d개 · 질량 %.0ft · 화력 %d DPS · 방어막 %d · 승무원 %d명   |   재료 %s" % [design.parts.size(), total_mass, roundi(total_dps), total_shield, total_crew, _cost_text(design.total_cost())]
+	var cp := CombatSystems.command_points_summary(design.parts)
+	resources.text = "부품 %d개 · 질량 %.0ft · 화력 %d DPS · 방어막 %d · 승무원 %d명 · 명령 %d/%d   |   재료 %s" % [design.parts.size(), total_mass, roundi(total_dps), total_shield, total_crew, int(cp.consumed), int(cp.provided), _cost_text(design.total_cost())]
 
 func _cost_text(cost: Dictionary) -> String:
 	var items := PackedStringArray()

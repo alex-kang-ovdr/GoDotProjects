@@ -1621,6 +1621,59 @@ static func surrender_bribe_cost(player_fp: float, enemy_fp: float, enemy_cost: 
 	return maxi(1000, roundi(raw / 100.0) * 100)
 
 
+## Cosmoteer.Ships.Parts.Commands.CommandProvider/CommandConsumer: Command Points budget & efficiency.
+static func command_points_summary(parts_list: Array) -> Dictionary:
+	var cfg: Dictionary = get_dll_mechanics().get("command_points", {})
+	var provs: Dictionary = cfg.get("providers", {})
+	var costs: Dictionary = cfg.get("costs", {})
+	var provided := 0.0
+	var consumed := 0.0
+	for part in parts_list:
+		if not (part is Dictionary):
+			continue
+		if part.has("hp") and (float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false))):
+			continue
+		var id := str(part.get("id", ""))
+		if provs.has(id):
+			provided += float(provs[id])
+			continue
+		if is_bridge(id):
+			provided += 50.0
+			continue
+		if is_corridor(id) or id.contains("armor") or id.contains("structure") or id.contains("storage_"):
+			continue
+		if id in [CANNON_DECK, CANNON_LARGE, RAILGUN_LAUNCHER, FLAK_CANNON, ION_BEAM, RESONANCE_LANCE]:
+			consumed += float(costs.get("weapon_capital", 12.0))
+		elif is_weapon(id):
+			consumed += float(costs.get("weapon_standard", 4.0))
+		elif is_shield(id):
+			consumed += float(costs.get("shield", 6.0))
+		elif is_reactor(id):
+			consumed += float(costs.get("reactor", 5.0))
+		elif id.contains("thruster"):
+			consumed += float(costs.get("thruster", 2.0))
+		else:
+			consumed += float(costs.get("utility", 3.0))
+	var eff := 1.0 if consumed <= 0.0 else (clampf(provided / consumed, 0.0, 1.0) if provided > 0.0 else 0.0)
+	return {
+		"provided": roundi(provided),
+		"consumed": roundi(consumed),
+		"efficiency": eff,
+		"overloaded": consumed > provided,
+	}
+
+
+## Cosmoteer.Bullets.Physics.BulletAcceleration: missile launch acceleration curve.
+static func missile_acceleration(kind: String) -> float:
+	var cfg: Dictionary = get_dll_mechanics().get("bullet_acceleration", {})
+	return float(cfg.get(kind, 0.0))
+
+
+static func missile_launch_speed_factor() -> float:
+	var cfg: Dictionary = get_dll_mechanics().get("bullet_acceleration", {})
+	return float(cfg.get("launch_speed_factor", 0.45))
+
+
 static func prepare_part(part: Dictionary) -> void:
 	part["fire"] = 0.0
 	if is_shield(part.id):

@@ -262,7 +262,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 	ship.heading = wrapf(ship.heading + ship.angular_velocity * dt, -PI, PI)
 
 
-static func ai_orders(ship: Dictionary, other: Dictionary, time: float, behavior: String = "balanced") -> Vector3:
+static func ai_orders(ship: Dictionary, other: Dictionary, time: float, behavior: String = "balanced", heading_offset: float = 0.0) -> Vector3:
 	var delta: Vector2 = other.position - ship.position
 	var forward := delta.normalized()
 	var lateral := Vector2(-forward.y, forward.x)
@@ -288,7 +288,8 @@ static func ai_orders(ship: Dictionary, other: Dictionary, time: float, behavior
 	var patrol := lateral_speed if behavior == "orbit" else lateral_speed * sin(time * 0.22)
 	var desired := forward * station + lateral * patrol
 	var move := ((desired - Vector2(ship.velocity)).rotated(-ship.heading) / 8.0).limit_length(1.0)
-	var turn := clampf(angle_difference(ship.heading, forward.angle()) * 2.0 - ship.angular_velocity * 1.15, -0.7, 0.7)
+	var desired_heading := wrapf(forward.angle() - heading_offset, -PI, PI)
+	var turn := clampf(angle_difference(ship.heading, desired_heading) * 2.0 - ship.angular_velocity * 1.15, -0.7, 0.7)
 	return Vector3(move.x, move.y, turn)
 
 

@@ -22,9 +22,9 @@ func _check(ok: bool, label: String) -> void:
 func test() -> void:
 	# 1. Verify reverse-engineered logic_trace.json & dll_mechanics.json load cleanly
 	var trace = JSON.parse_string(FileAccess.get_file_as_string("res://data/logic_trace.json"))
-	_check(trace is Dictionary and trace.get("methods", []).size() >= 88, "expanded logic_trace.json traces >= 88 Cosmoteer.dll methods")
+	_check(trace is Dictionary and trace.get("methods", []).size() >= 100, "expanded logic_trace.json traces >= 100 Cosmoteer.dll methods")
 	var mech := CombatSystems.get_dll_mechanics()
-	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 88, "dll_mechanics.json v5 loads reverse-engineered constants")
+	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 100, "dll_mechanics.json v6 loads reverse-engineered constants")
 
 	# 2. BulletPenetratingHit: exact projectile penetration & part resistance
 	_check(is_equal_approx(CombatSystems.projectile_penetration("cannon"), 5.0), "medium cannon penetration == 5.0")
@@ -253,6 +253,30 @@ func test() -> void:
 	var bribe_weak := CombatSystems.surrender_bribe_cost(1000.0, 500.0, 20000.0)
 	var bribe_strong := CombatSystems.surrender_bribe_cost(500.0, 2000.0, 80000.0)
 	_check(bribe_strong > bribe_weak and bribe_weak >= 1000, "CareerSimModeManager.GetSurrenderForPrice scales with enemy firepower & ship cost")
+
+	# 20. CommandProvider/CommandConsumer: Command Points budget & overload detection
+	var cp_starter := CombatSystems.command_points_summary(design.parts)
+	_check(int(cp_starter.provided) == 50 and int(cp_starter.consumed) > 0 and not bool(cp_starter.overloaded), "Starter ship has 50 Command Points and is not overloaded")
+	var cp_over := CombatSystems.command_points_summary([
+		{"id": CombatSystems.BRIDGE_SMALL},
+		{"id": CombatSystems.CANNON_DECK}, {"id": CombatSystems.CANNON_DECK},
+		{"id": CombatSystems.CANNON_DECK}, {"id": CombatSystems.CANNON_DECK},
+		{"id": CombatSystems.CANNON_DECK},
+	])
+	_check(bool(cp_over.overloaded) and float(cp_over.efficiency) < 1.0, "Exceeding 50 Command Points flags command overload and degrades efficiency")
+	var cp_cap := CombatSystems.command_points_summary([{"id": CombatSystems.BRIDGE_LARGE}])
+	_check(int(cp_cap.provided) == 1000, "Large control room provides 1000 Command Points")
+
+	# 21. BulletAcceleration: missile launch speed factor & acceleration
+	_check(is_equal_approx(CombatSystems.missile_acceleration("missile"), 65.0), "HE missile acceleration == 65.0")
+	_check(is_equal_approx(CombatSystems.missile_acceleration("missile_emp"), 75.0), "EMP missile acceleration == 75.0")
+	_check(CombatSystems.missile_launch_speed_factor() > 0.2 and CombatSystems.missile_launch_speed_factor() < 0.8, "Missile launches below cruise speed and accelerates")
+
+	# 22. Live AttackCommand heading_offset in Flight.ai_orders
+	var Flight2 := preload("res://sim/flight_dynamics.gd")
+	var ord_bow := Flight2.ai_orders(battle.player, battle.enemy, 0.0, "attack", 0.0)
+	var ord_broad := Flight2.ai_orders(battle.player, battle.enemy, 0.0, "attack", PI * 0.5)
+	_check(absf(ord_bow.z - ord_broad.z) > 0.1, "Flight.ai_orders steers toward AttackCommand heading_offset")
 
 	print("DLL mechanics checks: %d; failures: %d" % [checks, failed])
 	quit(1 if failed else 0)
