@@ -481,10 +481,19 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			int(st.get("typedefs_total", 0)), int(st.get("constants_mapped", 0)),
 			int(st.get("buildings_extracted", 0))
 		])
-		lines.append("• 심층 카탈로그: 음식 %d종 · 간헐천 %d종 · 질병 %d종 · 방 %d종 · 제작 레시피 %d종 (6스테이션)" % [
+		lines.append("• 심층 카탈로그: 음식 %d종 · 간헐천 %d종 · 질병 %d종 · 방 %d종 · 레시피 %d종 · 작물 %d종 · 스킬 %d종" % [
 			OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(),
-			OniElements.csharp_diseases.size(), r_ids.size(), rec_cnt
+			OniElements.csharp_diseases.size(), r_ids.size(), rec_cnt,
+			OniElements.csharp_botany.size(), (OniElements.csharp_env.get("cs_skill_ids", []) as Array).size()
 		])
+		lines.append("• 다종 작물(Botany): 끼니나무(10~30°C/흙) · 털꽃(5~30°C/물+빛) · 진눈깨비밀(-55~5°C/물+흙) · 황혼버섯(5~35°C/CO2+어둠+점액) · 핀차후추(35~85°C/오염수)")
+		var r_eff: Dictionary = OniElements.csharp_rocketry.get("engine_efficiency", {}) as Dictionary
+		lines.append("• 로켓/목축/자동화: 증기엔진(효율%.0f/2만km) · 석유엔진(효율%.0f/5만km/산화제%.0fkg) · 목축(12칸/마리·부화기5x) · 스마트배터리(20~90%%) · 청소기(반경%d칸)" % [
+			float(r_eff.get("steam", 20.0)), float(r_eff.get("petroleum", 40.0)),
+			float(OniElements.csharp_rocketry.get("oxidizer_tank_cap_kg", 2700.0)),
+			int(OniElements.csharp_env.get("auto_sweeper_range", 4))
+		])
+		lines.append("• 환경 디버프/장식: 장식사기(-1~+12, 상한120) · 고막파열(>4.0kg) · 젖은발(>15kg) · 흠뻑젖음(>300kg) · 질식/기아 HP손실")
 		lines.append("• 열생리학/스트레스: 화상 %.0f°C · 저체온 %.0f°C · 침수 %.0fkg · 붕괴 %.0f%%(복귀%.0f%%) · 초생산성+%d · 연구실+%.0f%%" % [
 			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
 			float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0)),

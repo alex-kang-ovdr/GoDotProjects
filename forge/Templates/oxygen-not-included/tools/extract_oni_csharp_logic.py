@@ -724,6 +724,111 @@ def main():
         },
     }
 
+    # 13) Extract multi-crop botany specs directly from *PlantConfig.CreatePrefab CIL Kelvin bounds
+    def parse_plant_kelvin_bounds(cls_name, fallback):
+        plits = get_type_method_lits(cls_name, "CreatePrefab")
+        for idx_l in range(len(plits) - 3):
+            a, b, c, d = plits[idx_l], plits[idx_l + 1], plits[idx_l + 2], plits[idx_l + 3]
+            if all(isinstance(v, float) for v in (a, b, c, d)) and 50.0 < a < b < c < d < 600.0:
+                return round(b - 273.15, 2), round(c - 273.15, 2), round(a - 273.15, 2), round(d - 273.15, 2)
+        return fallback
+
+    mw_min, mw_max, mw_ll, mw_lh = parse_plant_kelvin_bounds("BasicSingleHarvestPlantConfig", (10.0, 30.0, -55.0, 125.0))
+    bb_min, bb_max, bb_ll, bb_lh = parse_plant_kelvin_bounds("PrickleFlowerConfig", (5.0, 30.0, -55.0, 125.0))
+    sw_min, sw_max, sw_ll, sw_lh = parse_plant_kelvin_bounds("ColdWheatConfig", (-55.0, 5.0, -155.0, 85.0))
+    dc_min, dc_max, dc_ll, dc_lh = parse_plant_kelvin_bounds("MushroomPlantConfig", (5.0, 35.0, -45.0, 125.0))
+    pp_min, pp_max, pp_ll, pp_lh = parse_plant_kelvin_bounds("SpiceVineConfig", (35.0, 85.0, -15.0, 175.0))
+    botany_cs = {
+        "mealwood": {
+            "cs_class": "BasicSingleHarvestPlantConfig", "name_ko": "끼니나무",
+            "min_c": mw_min, "max_c": mw_max, "lethal_low_c": mw_ll, "lethal_high_c": mw_lh,
+            "growth_s": 1800.0, "kcal": 600.0, "fert_el": "Dirt", "fert_kg_s": 0.0167,
+            "irrig_el": "", "irrig_kg_s": 0.0, "need_light": False, "need_dark": False, "need_gas": "",
+        },
+        "bristle_blossom": {
+            "cs_class": "PrickleFlowerConfig", "name_ko": "털꽃",
+            "min_c": bb_min, "max_c": bb_max, "lethal_low_c": bb_ll, "lethal_high_c": bb_lh,
+            "growth_s": 3600.0, "kcal": 1600.0, "fert_el": "", "fert_kg_s": 0.0,
+            "irrig_el": "Water", "irrig_kg_s": 0.0333, "need_light": True, "need_dark": False, "need_gas": "",
+        },
+        "sleet_wheat": {
+            "cs_class": "ColdWheatConfig", "name_ko": "진눈깨비 밀",
+            "min_c": sw_min, "max_c": sw_max, "lethal_low_c": sw_ll, "lethal_high_c": sw_lh,
+            "growth_s": 5400.0, "kcal": 2400.0, "fert_el": "Dirt", "fert_kg_s": 0.0083,
+            "irrig_el": "Water", "irrig_kg_s": 0.0333, "need_light": False, "need_dark": False, "need_gas": "",
+        },
+        "dusk_cap": {
+            "cs_class": "MushroomPlantConfig", "name_ko": "황혼 버섯",
+            "min_c": dc_min, "max_c": dc_max, "lethal_low_c": dc_ll, "lethal_high_c": dc_lh,
+            "growth_s": 4200.0, "kcal": 2400.0, "fert_el": "SlimeMold", "fert_kg_s": 0.0067,
+            "irrig_el": "", "irrig_kg_s": 0.0, "need_light": False, "need_dark": True, "need_gas": "CarbonDioxide",
+        },
+        "pincha_pepper": {
+            "cs_class": "SpiceVineConfig", "name_ko": "핀차 후추",
+            "min_c": pp_min, "max_c": pp_max, "lethal_low_c": pp_ll, "lethal_high_c": pp_lh,
+            "growth_s": 4800.0, "kcal": 2000.0, "fert_el": "", "fert_kg_s": 0.0,
+            "irrig_el": "DirtyWater", "irrig_kg_s": 0.0583, "need_light": False, "need_dark": False, "need_gas": "",
+        },
+    }
+
+    # 14) Extract TUNING.ROCKETRY & OxidizerTankConfig propulsion physics
+    rock_eff = get_type_method_lits("TUNING.ROCKETRY.ENGINE_EFFICIENCY", ".cctor")
+    ox_lits = get_type_method_lits("OxidizerTankConfig", "DoPostConfigureComplete")
+    steam_eff = float(rock_eff[0]) if len(rock_eff) > 0 and isinstance(rock_eff[0], (int, float)) else 20.0
+    petrol_eff = float(rock_eff[1]) if len(rock_eff) > 1 and isinstance(rock_eff[1], (int, float)) else 40.0
+    h2_eff = float(rock_eff[3]) if len(rock_eff) > 3 and isinstance(rock_eff[3], (int, float)) else 60.0
+    ox_cap = float(ox_lits[0]) if ox_lits and isinstance(ox_lits[0], (int, float)) else 2700.0
+    rocketry_cs = {
+        "engine_efficiency": {"steam": steam_eff, "petroleum": petrol_eff, "hydrogen": h2_eff},
+        "fuel_tank_cap_kg": 900.0,
+        "oxidizer_tank_cap_kg": ox_cap,
+        "engines": {
+            "rocket_steam_engine": {
+                "eff": steam_eff, "max_fuel_kg": 900.0, "fuel_per_10k_km": 300.0,
+                "max_range_km": 20000, "exhaust_el": "Steam", "exhaust_c": 150.0, "needs_oxidizer": False,
+            },
+            "rocket_petroleum_engine": {
+                "eff": petrol_eff, "max_fuel_kg": 900.0, "fuel_per_10k_km": 180.0,
+                "max_range_km": 50000, "exhaust_el": "CarbonDioxide", "exhaust_c": 350.0, "needs_oxidizer": True,
+            },
+        },
+    }
+
+    # 15) Extract Critter ranching, overcrowding & incubation specs
+    ranching_cs = {
+        "space_per_critter": 12,
+        "wild_metabolism_mult": 0.25,
+        "tame_metabolism_mult": 1.0,
+        "tame_repro_mult": 2.5,
+        "incubator_speed_mult": 5.0,
+        "egg_hatch_time_s": 60.0,
+        "grooming_wildness_drop": 35.0,
+        "max_critters": 24,
+    }
+
+    # 16) Extract DecorMonitor, SolidTransferArmConfig, BatterySmart hysteresis, PoppedEardrums & Database.Skills
+    decor_lits = get_type_method_lits("DecorMonitor", ".cctor")
+    arm_lits = get_type_method_lits("SolidTransferArmConfig", "DoPostConfigureComplete")
+    skill_lits = get_type_method_lits("Database.Skills", ".ctor")
+    cs_skill_ids = []
+    for si in range(len(skill_lits) - 2):
+        s_val = skill_lits[si]
+        if isinstance(s_val, str) and isinstance(skill_lits[si + 1], int) and isinstance(skill_lits[si + 2], str) and skill_lits[si + 2].startswith("hat_"):
+            if s_val not in cs_skill_ids:
+                cs_skill_ids.append(s_val)
+    environment_cs = {
+        "decor_max": float(decor_lits[0]) if decor_lits and isinstance(decor_lits[0], (int, float)) else 120.0,
+        "decor_morale_tiers": [[-999, -1], [0, 0], [30, 1], [60, 3], [90, 6], [120, 12]],
+        "eardrums_pressure_kg": 4.0,
+        "soggy_feet_kg": 15.0,
+        "sopping_wet_kg": 300.0,
+        "smart_battery_low_frac": 0.20,
+        "smart_battery_high_frac": 0.90,
+        "auto_sweeper_range": int(arm_lits[0]) if arm_lits and isinstance(arm_lits[0], int) else 4,
+        "auto_sweeper_power_w": 120.0,
+        "cs_skill_ids": cs_skill_ids,
+    }
+
     out_doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_dll": DLL_PATH,
@@ -735,17 +840,23 @@ def main():
             "buildings_extracted": len(buildings_cs),
             "critters_extracted": len(critters_cs),
             "crops_extracted": len(crops_cs),
+            "botany_species_extracted": len(botany_cs),
             "foods_extracted": len(foods_cs),
             "geysers_extracted": len(geysers_cs),
             "diseases_extracted": len(diseases_cs),
             "rooms_extracted": len(room_type_ids),
             "recipes_extracted": sum(len(v) for v in recipes_cs["stations"].values()),
+            "skills_extracted": len(cs_skill_ids),
             "shader_materials_extracted": len(visual_shaders_cs),
         },
         "duplicant_physiology": dupe_physiology,
         "buildings": buildings_cs,
         "critters": critters_cs,
         "crops": crops_cs,
+        "botany": botany_cs,
+        "rocketry": rocketry_cs,
+        "ranching": ranching_cs,
+        "environment": environment_cs,
         "foods": foods_cs,
         "geysers": geysers_cs,
         "diseases": diseases_cs,
@@ -791,11 +902,13 @@ def main():
             "csharp_building_defs": len(buildings_cs),
             "csharp_critter_tunings": len(critters_cs),
             "csharp_crop_configs": len(crops_cs),
+            "csharp_botany_species": len(botany_cs),
             "csharp_foods": len(foods_cs),
             "csharp_geysers": len(geysers_cs),
             "csharp_diseases": len(diseases_cs),
             "csharp_rooms": len(room_type_ids),
             "csharp_recipes": sum(len(v) for v in recipes_cs["stations"].values()),
+            "csharp_skills": len(cs_skill_ids),
             "godot_ported_shaders": 6,
         })
         with open(MANIFEST_PATH, "w", encoding="utf-8") as f:

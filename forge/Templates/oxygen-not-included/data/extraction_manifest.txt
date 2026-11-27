@@ -1,6 +1,6 @@
 {
   "source_path": "C:\\Temp\\Oxygen",
-  "extracted_at_utc": "2026-11-27T08:39:54.788005+00:00",
+  "extracted_at_utc": "2026-11-27T09:20:15.331369+00:00",
   "counts": {
     "ko_strings": 21114,
     "elements": 196,
@@ -58,7 +58,9 @@
     "csharp_geysers": 27,
     "csharp_diseases": 5,
     "csharp_rooms": 19,
-    "csharp_recipes": 16
+    "csharp_recipes": 16,
+    "csharp_botany_species": 5,
+    "csharp_skills": 54
   },
   "source_hashes_sha256": {
     "gas.yaml": "e606d65f24d2f2c2321344d9a401e7bad8f960d3784754046bcdb152f18fe406",

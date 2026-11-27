@@ -349,19 +349,19 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(210, 74)
-	_report_panel.custom_minimum_size = Vector2(698, 530)
+	_report_panel.position = Vector2(205, 56)
+	_report_panel.custom_minimum_size = Vector2(710, 568)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
 
 	var rep_scroll := ScrollContainer.new()
-	rep_scroll.custom_minimum_size = Vector2(678, 514)
+	rep_scroll.custom_minimum_size = Vector2(690, 554)
 	_report_panel.add_child(rep_scroll)
 
 	_report_vbox = VBoxContainer.new()
 	_report_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_report_vbox.add_theme_constant_override("separation", 3)
+	_report_vbox.add_theme_constant_override("separation", 2)
 	rep_scroll.add_child(_report_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
@@ -737,10 +737,11 @@ func _refresh_space_panel() -> void:
 	var hdr := HBoxContainer.new()
 	var hl := Label.new()
 	var st_ko := "발사 준비 완료" if world.rocket_state == "READY" else ("발사 상승 중!" if world.rocket_state == "LAUNCHING" else ("우주 탐사 중 (%.0fs)" % world.rocket_mission_timer if world.rocket_state == "IN_SPACE" else "귀환 착륙 중!"))
-	var bonus_s := "화물 베이 2x 적재" if world.get_rocket_cargo_bonus() > 1.5 else "기본 적재 1x"
-	hl.text = "2D 우주 궤도 스타맵 (110 목적지) · %s · %s · 뱅크 %d" % [st_ko, bonus_s, world.data_banks]
+	var bonus_s := "화물2x" if world.get_rocket_cargo_bonus() > 1.5 else "기본1x"
+	var eng_ko := "석유엔진" if world.get_rocket_engine_id() == "rocket_petroleum_engine" else "증기엔진"
+	hl.text = "2D 우주 스타맵 · %s(%s·최대%dkm·연료%.0fkg) · %s · 뱅크%d" % [st_ko, eng_ko, world.get_rocket_max_range_km(), world.rocket_fuel_kg, bonus_s, world.data_banks]
 	hl.add_theme_color_override("font_color", Color(0.58, 0.88, 1.0))
-	hl.add_theme_font_size_override("font_size", 12)
+	hl.add_theme_font_size_override("font_size", 11)
 	hdr.add_child(hl)
 	_space_vbox.add_child(hdr)
 
@@ -790,7 +791,7 @@ func _refresh_space_panel() -> void:
 	act_row2.add_child(jump_btn)
 
 	var met_btn := Button.new()
-	met_btn.text = "★ 운석우·벙커 방어 발동 (방어 %d)" % world.meteors_blocked
+	met_btn.text = "★ 운석우·벙커 방어 (%d)" % world.meteors_blocked
 	met_btn.modulate = Color(1.0, 0.72, 0.36)
 	met_btn.pressed.connect(func():
 		world.trigger_meteor_shower()
@@ -800,6 +801,18 @@ func _refresh_space_panel() -> void:
 		_refresh_hud()
 	)
 	act_row2.add_child(met_btn)
+
+	var fuel_btn := Button.new()
+	fuel_btn.text = "연료 보급(+300kg)"
+	fuel_btn.modulate = Color(0.55, 0.96, 0.84)
+	fuel_btn.pressed.connect(func():
+		if world.refuel_rocket_manual():
+			audio.play_work_chime()
+		else:
+			audio.play_cancel()
+		_refresh_space_panel()
+	)
+	act_row2.add_child(fuel_btn)
 
 	var cb := Button.new()
 	cb.text = "닫기"
@@ -864,8 +877,8 @@ func _refresh_report_panel() -> void:
 	body.add_theme_font_size_override("font_size", 11)
 	var ov_txt := " [과부하!]" if world.circuit_overloaded else ""
 	body.text = "\n".join([
-		"행성: %s (시드 %d) · 스케줄: %s · 태양광: %.0f%% · 간헐천: %s" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0, world.get_geyser_phase_ko()],
-		"복제체: %d명 · 방 구획: %d개 (사기 +%d) · 생물: %d마리 · 회로 최대부하: %.0f/1000W%s" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size(), world.max_circuit_load_w, ov_txt],
+		"행성: %s (시드 %d) · 스케줄: %s · 태양광: %.0f%% · 간헐천: %s · 로켓연료 %.0fkg(%dkm)" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0, world.get_geyser_phase_ko(), world.rocket_fuel_kg, world.get_rocket_max_range_km()],
+		"복제체: %d명 · 방: %d개(사기+%d) · 생물: %d(알%d/부화%d) · 청소기이송 %d · 부하 %.0f/1000W%s" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size(), world.egg_incubations.size(), world.eggs_hatched, world.sweeper_transfers, world.max_circuit_load_w, ov_txt],
 		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ · 배관 파손: %d회" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj, world.pipe_burst_count],
 		"식량 비축: %.0f kcal · 신선도 %.0f%% (%s) · 채굴 %d · 건설 %d · 운석 방어 %d" % [world.food_kcal, world.food_freshness, world.food_preservation_ko, world.report_digs, world.report_builds, world.meteors_blocked],
 		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개 · 강철 %.0fkg · 알약 %.0f/%.0f" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks, float(world.inventory.get("Steel", 0.0)), float(world.inventory.get("MedicinePill", 0.0)), float(world.inventory.get("RadPill", 0.0))],
@@ -1188,7 +1201,12 @@ func _unhandled_input(event: InputEvent) -> void:
 								audio.play_toggle()
 								_status_lbl.text = "레시피 전환: %s" % next_rec
 							else:
-								audio.play_click()
+								var next_crop := world.cycle_farm_crop(cell.x, cell.y)
+								if not next_crop.is_empty():
+									audio.play_toggle()
+									_status_lbl.text = "작물 품종 전환: %s" % next_crop
+								else:
+									audio.play_click()
 					else:
 						renderer.drag_active = true
 						renderer.drag_start = cell
@@ -1437,7 +1455,10 @@ func _refresh_hud() -> void:
 			elif b_id == "hydrogen_gen":
 				extra = " (H2 버퍼 %.2f kg)" % float(info["h2_buffer_kg"])
 			elif b_id == "farm_tile" or b_id == "hydroponic_tile" or b_id == "planter_box":
-				extra = " (성장 %.0f%%)" % (float(info["farm_growth"]) * 100.0)
+				var cn := String(info.get("farm_crop_ko", "끼니나무"))
+				var fs := String(info.get("farm_status", ""))
+				var fs_s := "" if fs.is_empty() else (" [%s]" % fs)
+				extra = " (%s %.0f%%%s)" % [cn, float(info["farm_growth"]) * 100.0, fs_s]
 			elif b_id == "liquid_reservoir" or b_id == "gas_reservoir":
 				var rm := float(info.get("reservoir_mass", 0.0))
 				var re := String(info.get("reservoir_el", ""))

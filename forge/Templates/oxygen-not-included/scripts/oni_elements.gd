@@ -72,6 +72,10 @@ static var csharp_logic: Dictionary = {}
 static var csharp_buildings: Dictionary = {}
 static var csharp_critters: Dictionary = {}
 static var csharp_crops: Dictionary = {}
+static var csharp_botany: Dictionary = {}
+static var csharp_rocketry: Dictionary = {}
+static var csharp_ranching: Dictionary = {}
+static var csharp_env: Dictionary = {}
 static var csharp_foods: Dictionary = {}
 static var csharp_geysers: Dictionary = {}
 static var csharp_diseases: Dictionary = {}
@@ -294,6 +298,14 @@ static func ensure_loaded() -> void:
 			csharp_critters = raw_cs["critters"]
 		if raw_cs.get("crops", {}) is Dictionary:
 			csharp_crops = raw_cs["crops"]
+		if raw_cs.get("botany", {}) is Dictionary:
+			csharp_botany = raw_cs["botany"]
+		if raw_cs.get("rocketry", {}) is Dictionary:
+			csharp_rocketry = raw_cs["rocketry"]
+		if raw_cs.get("ranching", {}) is Dictionary:
+			csharp_ranching = raw_cs["ranching"]
+		if raw_cs.get("environment", {}) is Dictionary:
+			csharp_env = raw_cs["environment"]
 		if raw_cs.get("foods", {}) is Dictionary:
 			csharp_foods = raw_cs["foods"]
 		if raw_cs.get("geysers", {}) is Dictionary:
@@ -426,6 +438,42 @@ static func get_overjoyed_surplus() -> int:
 static func get_lab_research_bonus() -> float:
 	ensure_loaded()
 	return float(csharp_physiology.get("lab_research_bonus", 0.1))
+
+static func get_crop_ids() -> Array[String]:
+	return ["mealwood", "bristle_blossom", "sleet_wheat", "dusk_cap", "pincha_pepper"]
+
+static func get_crop_spec(crop_id: String) -> Dictionary:
+	ensure_loaded()
+	if csharp_botany.has(crop_id):
+		return csharp_botany[crop_id]
+	return csharp_botany.get("mealwood", {
+		"name_ko": "끼니나무", "min_c": 10.0, "max_c": 30.0, "growth_s": 1800.0,
+		"kcal": 600.0, "fert_el": "Dirt", "fert_kg_s": 0.0167, "irrig_el": "", "irrig_kg_s": 0.0,
+		"need_light": false, "need_dark": false, "need_gas": "",
+	})
+
+static func get_rocket_engine_spec(b_id: String) -> Dictionary:
+	ensure_loaded()
+	var engs: Dictionary = csharp_rocketry.get("engines", {}) as Dictionary
+	return engs.get(b_id, {})
+
+static func get_ranching_spec() -> Dictionary:
+	ensure_loaded()
+	return csharp_ranching
+
+static func get_env_spec() -> Dictionary:
+	ensure_loaded()
+	return csharp_env
+
+static func get_decor_morale_bonus(avg_decor: float) -> int:
+	ensure_loaded()
+	var tiers: Array = csharp_env.get("decor_morale_tiers", [[-999, -1], [0, 0], [30, 1], [60, 3], [90, 6], [120, 12]])
+	var res := 0
+	for t_v in tiers:
+		if t_v is Array and (t_v as Array).size() >= 2:
+			if avg_decor >= float((t_v as Array)[0]):
+				res = int((t_v as Array)[1])
+	return res
 
 static func get_counts_summary() -> String:
 	ensure_loaded()

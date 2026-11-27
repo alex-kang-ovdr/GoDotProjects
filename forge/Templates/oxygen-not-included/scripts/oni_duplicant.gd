@@ -25,6 +25,10 @@ var kcal := 4000.0
 var bladder := 20.0
 var needs_wash := false
 var morale := 2
+var avg_decor := 20.0
+var decor_morale := 0
+var eardrums_popped := false
+var wet_status := "" # "", "SOGGY", "SOPPING"
 var stress := 0.0
 var rad_dose := 0.0
 var overjoyed := false
@@ -143,7 +147,11 @@ func step(world: OniWorld, dt: float) -> void:
 		if disease_timer <= 0.0 and (disease != "RadiationSickness" or rad_dose < 100.0):
 			disease = ""
 
-	# 기대 사기(TUNING.ROLES) 기반 스트레스 변화 & 초생산성(Overjoyed) 판정
+	# 기대 사기(TUNING.ROLES) · 장식 사기(DecorMonitor) · 환경 디버프(고막 파열/젖은 발/질식/기아)
+	var env_s := OniElements.get_env_spec()
+	avg_decor = lerpf(avg_decor, clampf(world.decor_val[ci], -60.0, 140.0), clampf(dt * 0.25, 0.0, 1.0))
+	decor_morale = OniElements.get_decor_morale_bonus(avg_decor)
+	morale = 1 + world.colony_morale_bonus + decor_morale
 	var exp_morale := get_morale_expectation()
 	overjoyed = morale >= exp_morale + OniElements.get_overjoyed_surplus() and stress < 30.0
 	var morale_diff := morale - exp_morale
@@ -152,16 +160,33 @@ func step(world: OniWorld, dt: float) -> void:
 		stress_delta += float(teff["morning_stress_delta"])
 	if breath < 65.0 and not wearing_suit:
 		stress_delta += 1.6
+	if breath <= 0.5 and not wearing_suit:
+		hp = maxf(1.0, hp - 5.0 * dt)
+		stress_delta += 3.0
+	if kcal <= 1.0:
+		hp = maxf(1.0, hp - 4.0 * dt)
+		stress_delta += 2.5
 	if not disease.is_empty():
 		stress_delta += 1.2 if disease == "RadiationSickness" else 0.9
-	if world.liquid_mass[ci] > 80.0 and not wearing_suit:
-		stress_delta += 0.7
+	# Assembly-CSharp.dll PoppedEardrums(>4kg) & SoggyFeet(>15kg)/SoppingWet(>300kg)
+	eardrums_popped = (not wearing_suit) and world.gas_mass[ci] > float(env_s.get("eardrums_pressure_kg", 4.0))
+	if eardrums_popped:
+		stress_delta += 2.2
+	var lm_here := world.liquid_mass[ci]
+	if not wearing_suit and lm_here > float(env_s.get("sopping_wet_kg", 300.0)):
+		wet_status = "SOPPING"
+		stress_delta += 1.8
+	elif not wearing_suit and lm_here > float(env_s.get("soggy_feet_kg", 15.0)):
+		wet_status = "SOGGY"
+		stress_delta += 0.9
+	else:
+		wet_status = ""
 	# Assembly-CSharp.dll ScaldingMonitor(>72°C) & HypothermiaMonitor(<0°C) 열생리학
 	var t_here := world.temp_c[ci]
 	if not wearing_suit and t_here > OniElements.get_scalding_c():
 		thermal_status = "SCALDING"
 		hp = maxf(1.0, hp - 3.5 * dt)
-		stress_delta += 7.2
+		stress_delta += 9.5
 	elif not wearing_suit and t_here < OniElements.get_hypothermia_c():
 		thermal_status = "CHILLY"
 		stress_delta += 1.5
@@ -318,7 +343,8 @@ func _step_move(world: OniWorld, dt: float) -> void:
 	if absf(diff.x) > 0.01:
 		facing_left = diff.x < 0.0
 	var dist := diff.length()
-	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0)
+	var wet_m := 0.75 if wet_status == "SOPPING" else (0.85 if wet_status == "SOGGY" else 1.0)
+	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0) * wet_m
 	# 수송 튜브(travel_tube) 이동 시 5배 초고속 공압 이동!
 	if world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] in ["travel_tube", "travel_tube_entrance"]:
 		spd = move_speed * 5.0

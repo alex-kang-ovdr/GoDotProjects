@@ -1190,14 +1190,20 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 				var led := Color(0.22, 0.98, 0.44, 1.0) if world.logic_signal[i] == 1 else Color(0.98, 0.24, 0.30, 1.0)
 				c.draw_circle(p + Vector2(6, 6), 3.0, led)
 		elif b == "farm_tile" or b == "hydroponic_tile" or b == "planter_box":
-			var crop_key := "mealwood" if b == "farm_tile" else ("bristle_blossom" if (x % 2 == 1) else "sleet_wheat")
-			var plant_tex := OniMedia.get_building_sprite(crop_key, false)
+			var crop_key := world.farm_crop[i] if not world.farm_crop[i].is_empty() else "mealwood"
+			var sprite_key := crop_key if crop_key in ["mealwood", "bristle_blossom", "sleet_wheat"] else ("mealwood" if crop_key == "pincha_pepper" else "bristle_blossom")
+			var plant_tex := OniMedia.get_building_sprite(sprite_key, false)
 			var g := clampf(world.farm_growth[i], 0.35, 1.0)
 			if plant_tex != null:
 				var pw := float(ts) * (0.72 + 0.45 * g)
 				var ph := float(ts) * (0.72 + 0.55 * g)
 				var sway := sin(_anim_time * 2.2 + float(x)) * 1.5
-				c.draw_texture_rect(plant_tex, Rect2(p.x + (float(ts) - pw) * 0.5 + sway, p.y - ph + 4.0, pw, ph), false, mod)
+				var crop_tint := Color(0.76, 0.54, 1.0, 1.0) if crop_key == "dusk_cap" else (Color(1.0, 0.55, 0.32, 1.0) if crop_key == "pincha_pepper" else mod)
+				c.draw_texture_rect(plant_tex, Rect2(p.x + (float(ts) - pw) * 0.5 + sway, p.y - ph + 4.0, pw, ph), false, crop_tint)
+		elif b == "incubator" and not world.egg_incubations.is_empty():
+			var egg_p := clampf(float(world.egg_incubations[0].get("progress", 0.0)), 0.0, 1.0)
+			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, ts - 8, 4), Color(0.08, 0.12, 0.16, 0.90), true)
+			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, (ts - 8) * egg_p, 4), Color(1.0, 0.86, 0.38, 1.0), true)
 		elif b == "wheezewort" and not dim:
 			var cp := 0.5 + 0.5 * sin(_anim_time * 3.0 + float(x))
 			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.35), 22.0, Color(0.38, 0.90, 1.0, 0.12 * cp))
@@ -1308,6 +1314,18 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 			var spill := Rect2(px - 22, py - 52, 44, 12)
 			c.draw_rect(spill, Color(0.55, 0.14, 0.18, 0.92), true)
 			c.draw_string(font, Vector2(px - 20, py - 43), "스트%.0f%%" % dupe.stress, HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.88, 0.88, 1.0))
+		elif dupe.breath <= 10.0 and not dupe.wearing_suit:
+			var sp2 := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(sp2, Color(0.75, 0.10, 0.25, 0.96), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "질식!", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.92, 0.95, 1.0))
+		elif dupe.eardrums_popped:
+			var epill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(epill, Color(0.68, 0.26, 0.14, 0.92), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "고막!", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.92, 0.78, 1.0))
+		elif not dupe.wet_status.is_empty():
+			var wpill := Rect2(px - 22, py - 52, 44, 12)
+			c.draw_rect(wpill, Color(0.12, 0.42, 0.76, 0.90), true)
+			c.draw_string(font, Vector2(px - 20, py - 43), "젖음", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(0.84, 0.96, 1.0, 1.0))
 		elif dupe.overjoyed:
 			var jpill := Rect2(px - 24, py - 52, 48, 12)
 			c.draw_rect(jpill, Color(0.45, 0.34, 0.06, 0.90), true)
@@ -1338,6 +1356,15 @@ func _draw_meteors_on(c: Node2D, ts: int) -> void:
 			c.draw_circle(mp, 9.0, Color(1.0, 0.65, 0.22, 1.0))
 
 func _draw_conveyor_packets_on(c: Node2D, ts: int) -> void:
+	# 바닥 채굴 잔해(Solid Debris) 렌더링 (자동 청소기 수거 대상)
+	for db: Dictionary in world.debris:
+		var dp: Vector2i = db["pos"]
+		var dx := (float(dp.x) + 0.5) * float(ts)
+		var dy := (float(dp.y) + 0.82) * float(ts)
+		var dcol: Color = OniElements.get_element_color(String(db.get("el", "SandStone")))
+		c.draw_circle(Vector2(dx - 3.0, dy), 3.2, dcol)
+		c.draw_circle(Vector2(dx + 3.0, dy + 1.0), 2.5, dcol.lightened(0.18))
+		c.draw_arc(Vector2(dx - 3.0, dy), 3.2, 0.0, TAU, 8, Color(0.05, 0.07, 0.10, 0.8), 0.9)
 	for p: Dictionary in world.conveyor_packets:
 		var pos: Vector2 = p["pos"]
 		var px := (pos.x + 0.5) * float(ts)
