@@ -443,6 +443,59 @@ func _run() -> void:
 	fz = DSTLogicEngine.step_freezable(fz, 0.0, 20.0, 0.0) # 피격 20 >= 15 -> 즉시 파쇄 해동!
 	_check(str(fz["state"]) == "NORMAL", "LOGIC_FREEZABLE_SHATTER_BREAK", str(fz))
 
+	# 역공학 로직 검증 11: Pass 4 전투/평면압축/다중방어구(inventory.lua + planarentity.lua)
+	var hit_planar: Dictionary = DSTLogicEngine.resolve_combat_hit(100.0, 20.0, [], 1.0, true)
+	# (sqrt(100*4 + 64) - 8) * 4 = (sqrt(464) - 8) * 4 = 54.1627... + 20 planar = 74.1627
+	_check(_approx(float(hit_planar["phys_damage"]), 54.1627, 0.05) and _approx(float(hit_planar["planar_damage"]), 20.0), "LOGIC_PLANAR_ENTITY_SQRT_COMPRESS", str(hit_planar))
+	var multi_armors: Array = [
+		{"id": "lunarplanthat", "absorption": 0.80, "planar_defense": 10.0},
+		{"id": "armor_lunarplant", "absorption": 0.80, "planar_defense": 10.0},
+	]
+	var hit_multi: Dictionary = DSTLogicEngine.resolve_combat_hit(100.0, 30.0, multi_armors, 0.90, false)
+	# phys: 90 * 0.8 = 72 absorbed (each armor 36 wear), 18 leftover; planar: 27 - (10+10) = 7 leftover, each armor +10 wear => 46 wear each
+	_check(_approx(float(hit_multi["phys_damage"]), 18.0, 0.01) and _approx(float(hit_multi["planar_damage"]), 7.0, 0.01) and _approx(float(hit_multi["armor_wear"]["lunarplanthat"]), 46.0, 0.05), "LOGIC_MULTI_ARMOR_PLANAR_SPLIT", str(hit_multi))
+
+	# 역공학 로직 검증 12: perishable.lua 다중 배수 & 스택 희석 & edible.lua 위커바텀 감쇠
+	var pm_fridge_winter: float = DSTLogicEngine.calc_perish_rate_mult("fridge", false, -5.0, false) # 0.5 * 0.75 = 0.375
+	var pm_frozen_fridge: float = DSTLogicEngine.calc_perish_rate_mult("fridge", false, 15.0, true) # 0.0 (영구 보존)
+	var pm_ground_wet_sum: float = DSTLogicEngine.calc_perish_rate_mult("ground", true, 75.0, false) # 1.5 * 1.3 * 1.25 = 2.4375
+	_check(_approx(pm_fridge_winter, 0.375, 0.001) and _approx(pm_frozen_fridge, 0.0, 0.001) and _approx(pm_ground_wet_sum, 2.4375, 0.001), "LOGIC_PERISHABLE_MULT_MATRIX")
+	var dil_t: float = DSTLogicEngine.dilute_perish_stack(3, 100.0, 1, 20.0) # (300 + 20) / 4 = 80.0
+	_check(_approx(dil_t, 80.0, 0.01), "LOGIC_PERISHABLE_STACK_DILUTE", "got %.2f" % dil_t)
+	var ed_stale_wilson: Dictionary = DSTLogicEngine.eval_edible_with_spoilage({"health": 40.0, "hunger": 37.5, "sanity": 5.0}, 0.35, "wilson")
+	var ed_stale_wicker: Dictionary = DSTLogicEngine.eval_edible_with_spoilage({"health": 40.0, "hunger": 37.5, "sanity": 5.0}, 0.35, "wickerbottom")
+	_check(_approx(float(ed_stale_wilson["health"]), 13.32, 0.05) and _approx(float(ed_stale_wicker["health"]), 0.0) and _approx(float(ed_stale_wicker["hunger"]), 12.4875, 0.05), "LOGIC_EDIBLE_SPOILAGE_WICKERBOTTOM")
+
+	# 역공학 로직 검증 13: moisture.lua inSine/inExpo & sanity.lua 광기/계몽·유령 군집 저항
+	var m_rain: Dictionary = DSTLogicEngine.step_moisture(0.0, true, 1.0, 0.0, 0.0, 20.0, 60.0) # inSine(1)=0.75 * 60 = 45.0 (wet!)
+	var m_umbrel: Dictionary = DSTLogicEngine.step_moisture(0.0, true, 1.0, 1.0, 0.0, 20.0, 60.0) # 100% 방수 -> 0.0
+	var m_dry: Dictionary = DSTLogicEngine.step_moisture(50.0, false, 0.0, 0.0, 1.0, 30.0, 10.0) # 화로 건조 -> 감소
+	_check(_approx(float(m_rain["moisture"]), 45.0, 0.05) and bool(m_rain["is_wet"]) and _approx(float(m_umbrel["moisture"]), 0.0) and float(m_dry["moisture"]) < 35.0, "LOGIC_MOISTURE_INSINE_INEXPO")
+	var san_ins_dark: Dictionary = DSTLogicEngine.calc_sanity_rate(0, "night", false, 100.0, 0.0, 0.0, 2, 4, 1.0)
+	var san_lun_day: Dictionary = DSTLogicEngine.calc_sanity_rate(1, "day", true, 0.0, 0.0, 0.0, 0, 1, 1.0)
+	# ghost_resist = 1 - 2/4 = 0.5 -> ghost_mult = 2 * (1 - 0.25) = 1.5
+	_check(_approx(float(san_ins_dark["ghost_drain_mult"]), 1.5, 0.01) and float(san_ins_dark["rate"]) < -0.9 and float(san_lun_day["light_delta"]) > 0.01, "LOGIC_SANITY_DUAL_GHOST_RESIST", str(san_ins_dark))
+
+	# 역공학 로직 검증 14: domesticatable.lua 비팔로 길들이기 래치·성향 + sleeper.lua 점감 저항(0.2 하한)
+	var beef: Dictionary = {"domestication": 0.999, "obedience": 0.8, "min_obedience": 0.0, "domestication_latch": false, "domesticated": false, "time_since_gain": 0.0, "tendencies": {"RIDER": 0.5}}
+	beef = DSTLogicEngine.step_beefalo_domestication(beef, true, "RIDER", 0.2, 10.0)
+	_check(bool(beef["domestication_latch"]) and str(beef["dominant_tendency"]) == "RIDER", "LOGIC_BEEFALO_DOMESTICATION_LATCH", str(beef))
+	var slp: Dictionary = {"is_asleep": false, "sleepiness": 0.0, "resistance": 1.0, "extra_resist": 0.0, "sleep_timer": 0.0, "decay_accum": 0.0}
+	for _k in range(10):
+		slp = DSTLogicEngine.step_sleeper_diminishing(slp, 2.0, 10.0, 0.0)
+		slp["is_asleep"] = false
+	_check(_approx(float(slp["sleep_mult"]), 0.2, 0.001) and _approx(float(slp["sleep_timer"]), 2.0, 0.01), "LOGIC_SLEEPER_DIMINISHING_FLOOR_02", str(slp))
+
+	# 역공학 로직 검증 15: 18종 해양 물고기 낚시 스태미나 & 130종 월드젠 태스크셋(지상/동굴)
+	_check(db.logic.ocean_fish.size() == 18 and db.logic.worldgen_tasks.size() >= 125, "LOGIC_18_OCEANFISH_130_TASKS", "fish=%d tasks=%d" % [db.logic.ocean_fish.size(), db.logic.worldgen_tasks.size()])
+	var f_st: Dictionary = {"stamina": 1.0, "distance": 6.0, "struggling": true}
+	for _fs in range(6):
+		f_st = db.logic.step_ocean_fish_reel("oceanfish_small_1", f_st, true, 0.5)
+	_check(not bool(f_st["struggling"]) and float(f_st["distance"]) < 4.0, "LOGIC_OCEANFISH_REEL_STAMINA", str(f_st))
+	var ts_forest: Dictionary = db.logic.get_worldgen_taskset_plan("default")
+	var ts_caves: Dictionary = db.logic.get_worldgen_taskset_plan("cave_default")
+	_check(int(ts_forest["resolved_count"]) >= 12 and int(ts_caves["resolved_count"]) >= 25, "LOGIC_WORLDGEN_TASKSETS_FOREST_CAVES", "f=%d c=%d" % [int(ts_forest["resolved_count"]), int(ts_caves["resolved_count"])])
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

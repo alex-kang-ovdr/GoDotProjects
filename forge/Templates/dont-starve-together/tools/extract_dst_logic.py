@@ -51,6 +51,9 @@ def parse_tuning_constants(tuning_src: str) -> dict:
         "day_segs_default": 8.0,
         "dusk_segs_default": 6.0,
         "night_segs_default": 2.0,
+        "day_time": 300.0,
+        "dusk_time": 120.0,
+        "night_time": 60.0,
         "wilson_attack": 34.0,
         "wilson_health": 150.0,
         "calories_per_day": 75.0,
@@ -792,6 +795,95 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
                 "spice_salt": {"buff": "salt_heal", "health_bonus_mult": 1.25},
             },
         },
+        "combat_planar": {
+            "source_files": ["components/planarentity.lua", "components/inventory.lua", "components/combat.lua"],
+            "planar_absorb_formula": "(sqrt(damage * 4 + 64) - 8) * 4",
+            "multi_armor_formula": "absorbed = dmg * max(amt); wear[i] = absorbed * amt[i] / sum(amt); spdmg split evenly across spdefenders",
+            "verified_in_lua": (
+                "math.sqrt(damage * 4 + 64) - 8" in read_lua(scripts_dir, "components/planarentity.lua")
+                and "absorbed_damage * amt / total_absorption" in read_lua(scripts_dir, "components/inventory.lua")
+            ),
+        },
+        "perishable_edible": {
+            "source_files": ["components/perishable.lua", "components/edible.lua"],
+            "fresh_thresh": tuning.get("PERISH_FRESH", 0.5),
+            "stale_thresh": tuning.get("PERISH_STALE", 0.2),
+            "fridge_mult": tuning.get("PERISH_FRIDGE_MULT", 0.5),
+            "food_preserver_mult": tuning.get("PERISH_FOOD_PRESERVER_MULT", 0.75),
+            "ground_mult": tuning.get("PERISH_GROUND_MULT", 1.5),
+            "wet_mult": tuning.get("PERISH_WET_MULT", 1.3),
+            "winter_mult": tuning.get("PERISH_WINTER_MULT", 0.75),
+            "summer_mult": tuning.get("PERISH_SUMMER_MULT", 1.25),
+            "cold_frozen_mult": tuning.get("PERISH_COLD_FROZEN_MULT", 0.0),
+            "stale_hunger": tuning.get("STALE_FOOD_HUNGER", 0.667),
+            "stale_health": tuning.get("STALE_FOOD_HEALTH", 0.333),
+            "spoiled_hunger": tuning.get("SPOILED_FOOD_HUNGER", 0.5),
+            "spoiled_health": tuning.get("SPOILED_FOOD_HEALTH", 0.0),
+            "wickerbottom_stale_hunger": tuning.get("WICKERBOTTOM_STALE_FOOD_HUNGER", 0.333),
+            "wickerbottom_stale_health": tuning.get("WICKERBOTTOM_STALE_FOOD_HEALTH", 0.0),
+            "wickerbottom_spoiled_hunger": tuning.get("WICKERBOTTOM_SPOILED_FOOD_HUNGER", 0.167),
+            "verified_in_lua": (
+                "PERISH_FRIDGE_MULT" in read_lua(scripts_dir, "components/perishable.lua")
+                and "self.stale_hunger = TUNING.STALE_FOOD_HUNGER" in read_lua(scripts_dir, "components/edible.lua")
+            ),
+        },
+        "moisture_easing": {
+            "source_files": ["components/moisture.lua", "easing.lua"],
+            "max_moisture": 100.0,
+            "num_segs": 5,
+            "max_moisture_rate": 0.75,
+            "max_drying_rate": 0.1,
+            "optimal_player_temp_drying": 2.0,
+            "max_player_temp_drying": 5.0,
+            "optimal_drying_temp": 50.0,
+            "verified_in_lua": (
+                "easing.inSine(TheWorld.state.precipitationrate" in read_lua(scripts_dir, "components/moisture.lua")
+                and "easing.inExpo(self:GetMoisture()" in read_lua(scripts_dir, "components/moisture.lua")
+            ),
+        },
+        "sanity_dual": {
+            "source_files": ["components/sanity.lua"],
+            "moisture_penalty_max": round(tuning.get("MOISTURE_SANITY_PENALTY_MAX", -100.0 / 1800.0), 6),
+            "insanity_day": round(tuning.get("SANITY_DAY_GAIN", 0.0), 6),
+            "insanity_night_light": round(tuning.get("SANITY_NIGHT_LIGHT", -100.0 / 1200.0), 6),
+            "insanity_night_dark": round(tuning.get("SANITY_NIGHT_DARK", -100.0 / 120.0), 6),
+            "lunacy_day": round(tuning.get("SANITY_LUNACY_DAY_GAIN", 100.0 / 9600.0), 6),
+            "lunacy_night_light": round(tuning.get("SANITY_LUNACY_NIGHT_LIGHT", 0.0), 6),
+            "lunacy_night_dark": round(tuning.get("SANITY_LUNACY_NIGHT_DARK", -100.0 / 600.0), 6),
+            "ghost_player_drain": round(tuning.get("SANITY_GHOST_PLAYER_DRAIN", -100.0 / 1800.0), 6),
+            "max_ghost_drain_mult": tuning.get("MAX_SANITY_GHOST_PLAYER_DRAIN_MULT", 3.0),
+            "verified_in_lua": (
+                "group_resist * group_resist" in read_lua(scripts_dir, "components/sanity.lua")
+                and "MOISTURE_SANITY_PENALTY_MAX" in read_lua(scripts_dir, "components/sanity.lua")
+            ),
+        },
+        "beefalo_domestication": {
+            "source_files": ["components/domesticatable.lua"],
+            "decay_period": 10.0,
+            "obedience_decay_rate": round(-1.0 / (480.0 * 2.0), 8),
+            "feedback_decay_rate": round(-1.0 / (480.0 * 45.0), 8),
+            "gain_domestication_rate": round(tuning.get("BEEFALO_DOMESTICATION_GAIN_DOMESTICATION", 1.0 / (480.0 * 20.0)), 8),
+            "lose_domestication_rate": round(tuning.get("BEEFALO_DOMESTICATION_LOSE_DOMESTICATION", -1.0 / (480.0 * 4.0)), 8),
+            "max_loss_days": tuning.get("BEEFALO_DOMESTICATION_MAX_LOSS_DAYS", 10.0),
+            "latch_release_thresh": 0.95,
+            "tendencies": ["DEFAULT", "ORNERY", "RIDER", "PUDGY"],
+            "verified_in_lua": (
+                "self.domestication_latch = true" in read_lua(scripts_dir, "components/domesticatable.lua")
+                and "BEEFALO_DOMESTICATION_MAX_LOSS_DAYS" in read_lua(scripts_dir, "components/domesticatable.lua")
+            ),
+        },
+        "sleeper_nightmare": {
+            "source_files": ["components/sleeper.lua", "components/nightmareclock.lua"],
+            "sleep_min_mult": 0.2,
+            "sleep_resist_step": 0.1,
+            "sleep_decay_period": 30.0,
+            "nightmare_segs": {"calm": 12, "warn": 3, "wild": 5, "dawn": 2},
+            "nightmare_seg_variation": 3,
+            "verified_in_lua": (
+                "math.max(.2, 1 - self.extraresist * .1)" in read_lua(scripts_dir, "components/sleeper.lua")
+                and "NIGHTMARE_SEG_VARIATION" in read_lua(scripts_dir, "components/nightmareclock.lua")
+            ),
+        },
     }
 
 
@@ -849,6 +941,114 @@ def extract_worldgen_rooms(scripts_dir: Path) -> dict:
                     "source": str(fp.relative_to(scripts_dir)).replace("\\", "/"),
                 }
     return {"room_count": len(rooms), "rooms": rooms}
+
+
+# ---------------------------------------------------------------------------
+# 14. Extract ALL 18 Ocean Fish Definitions (prefabs/oceanfishdef.lua)
+# ---------------------------------------------------------------------------
+
+def extract_ocean_fish_defs(scripts_dir: Path) -> dict:
+    src = read_lua(scripts_dir, "prefabs/oceanfishdef.lua")
+    fish = {}
+    starts = list(re.finditer(r"^\t(oceanfish_[a-z0-9_]+)\s*=\s*\{", src, re.M))
+    for i, m in enumerate(starts):
+        fid = m.group(1)
+        s0 = m.end()
+        s1 = starts[i + 1].start() if i + 1 < len(starts) else len(src)
+        chunk = src[s0:s1]
+
+        def num(pat, default=0.0):
+            mm = re.search(pat, chunk)
+            return float(mm.group(1)) if mm else default
+
+        st_m = re.search(r"struggle_times\s*=\s*\{([^}]+)\}", chunk)
+        td_m = re.search(r"tired_times\s*=\s*\{([^}]+)\}", chunk)
+        ft_m = re.search(r'fishtype\s*=\s*"([^"]+)"', chunk)
+        loot_m = re.search(r"loot\s*=\s*LOOT\.([A-Z0-9_]+)", chunk)
+        cook_m = re.search(r"cooking_product\s*=\s*COOKING_PRODUCT\.([A-Z0-9_]+)", chunk)
+        lure_m = re.search(r"lures\s*=\s*TUNING\.OCEANFISH_LURE_PREFERENCE\.([A-Z0-9_]+)", chunk)
+
+        def pair_lh(sub):
+            if not sub:
+                return [2.0, 5.0]
+            lo = re.search(r"low\s*=\s*([0-9.]+)", sub)
+            hi = re.search(r"high\s*=\s*([0-9.]+)", sub)
+            return [float(lo.group(1)) if lo else 2.0, float(hi.group(1)) if hi else 5.0]
+
+        fish[fid] = {
+            "id": fid,
+            "size": "small" if "_small_" in fid else "medium",
+            "weight_min": num(r"weight_min\s*=\s*([0-9.]+)", 40.0),
+            "weight_max": num(r"weight_max\s*=\s*([0-9.]+)", 60.0),
+            "walkspeed": num(r"walkspeed\s*=\s*([0-9.]+)", 1.2),
+            "runspeed": num(r"runspeed\s*=\s*([0-9.]+)", 2.5),
+            "stamina_drain": num(r"drain_rate\s*=\s*([0-9.]+)", 0.1),
+            "stamina_recover": num(r"recover_rate\s*=\s*([0-9.]+)", 0.1),
+            "struggle_sec": pair_lh(st_m.group(1) if st_m else ""),
+            "tired_sec": pair_lh(td_m.group(1) if td_m else ""),
+            "fishtype": ft_m.group(1) if ft_m else "meat",
+            "loot_tier": loot_m.group(1) if loot_m else "SMALL",
+            "cooking_tier": cook_m.group(1) if cook_m else "SMALL",
+            "lure_pref": lure_m.group(1) if lure_m else "SMALL_OMNI",
+        }
+    return {"fish_count": len(fish), "fish": fish}
+
+
+# ---------------------------------------------------------------------------
+# 15. Extract ALL WorldGen Tasks & Forest/Caves TaskSets (map/tasks, tasksets)
+# ---------------------------------------------------------------------------
+
+def extract_worldgen_tasks(scripts_dir: Path) -> dict:
+    tasks = {}
+    task_re = re.compile(r'AddTask\(\s*"([^"]+)"\s*,\s*\{', re.S)
+    for fp in sorted((scripts_dir / "map" / "tasks").rglob("*.lua")):
+        src = fp.read_text(encoding="utf-8", errors="replace")
+        matches = list(task_re.finditer(src))
+        for i, m in enumerate(matches):
+            tname = m.group(1)
+            s0 = m.end()
+            s1 = matches[i + 1].start() if i + 1 < len(matches) else len(src)
+            chunk = src[s0:s1]
+            bg_tile = re.search(r"room_bg\s*=\s*WORLD_TILES\.([A-Z0-9_]+)", chunk)
+            bg_room = re.search(r'background_room\s*=\s*"([^"]+)"', chunk)
+            locks = re.findall(r"LOCKS\.([A-Z0-9_]+)", chunk)
+            keys = re.findall(r"KEYS\.([A-Z0-9_]+)", chunk)
+            rc_m = re.search(r"room_choices\s*=\s*\{(.*?)\}", chunk, re.S)
+            rc_rooms = re.findall(r'\["([^"]+)"\]', rc_m.group(1)) if rc_m else []
+            tasks[tname] = {
+                "tile": bg_tile.group(1) if bg_tile else "GRASS",
+                "background_room": bg_room.group(1) if bg_room else "",
+                "locks": sorted(set(locks)),
+                "keys_given": sorted(set(keys)),
+                "rooms": rc_rooms,
+            }
+        # Expand Lua dynamic loop `for i=1,10 do AddTask("CaveExitTask"..i, ...)`
+        if "CaveExitTask" in src:
+            sr_m = re.search(r"startrooms\s*=\s*\{([^}]+)\}", src, re.S)
+            startrooms = re.findall(r'"([^"]+)"', sr_m.group(1)) if sr_m else []
+            for idx in range(1, 11):
+                sroom = startrooms[idx - 1] if idx - 1 < len(startrooms) else "BGSinkhole"
+                tasks[f"CaveExitTask{idx}"] = {
+                    "tile": "SINKHOLE",
+                    "background_room": "BGSinkhole",
+                    "locks": ["ENTRANCE_INNER" if idx <= 4 else "ENTRANCE_OUTER"],
+                    "keys_given": [],
+                    "rooms": ["CaveExitRoom", sroom],
+                }
+
+    tasksets = {}
+    for rel, ts_key in [("map/tasksets/forest.lua", "default"), ("map/tasksets/caves.lua", "cave_default")]:
+        src = read_lua(scripts_dir, rel)
+        req_m = re.search(r"tasks\s*=\s*\{([^}]+)\}", src, re.S)
+        opt_m = re.search(r"optionaltasks\s*=\s*\{([^}]+)\}", src, re.S)
+        num_opt = re.search(r"numoptionaltasks\s*=\s*([0-9]+)", src)
+        tasksets[ts_key] = {
+            "source_file": rel,
+            "required_tasks": re.findall(r'"([^"]+)"', req_m.group(1)) if req_m else [],
+            "optional_tasks": re.findall(r'"([^"]+)"', opt_m.group(1)) if opt_m else [],
+            "num_optional": int(num_opt.group(1)) if num_opt else 0,
+        }
+    return {"task_count": len(tasks), "tasks": tasks, "tasksets": tasksets}
 
 
 def main():
@@ -977,9 +1177,17 @@ def main():
     loot_tables = extract_shared_loot_tables(sdir)
     print(f"  -> shared_loot_tables={loot_tables['table_count']}")
 
-    print("[11/11] Extracting ALL WorldGen Rooms across map/rooms/**/*.lua...")
+    print("[11/13] Extracting ALL WorldGen Rooms across map/rooms/**/*.lua...")
     world_rooms = extract_worldgen_rooms(sdir)
     print(f"  -> worldgen_rooms={world_rooms['room_count']}")
+
+    print("[12/13] Extracting ALL 18 Ocean Fish defs (prefabs/oceanfishdef.lua)...")
+    ocean_fish = extract_ocean_fish_defs(sdir)
+    print(f"  -> ocean_fish={ocean_fish['fish_count']}")
+
+    print("[13/13] Extracting ALL WorldGen Tasks & Forest/Caves TaskSets...")
+    world_tasks = extract_worldgen_tasks(sdir)
+    print(f"  -> worldgen_tasks={world_tasks['task_count']}, tasksets={len(world_tasks['tasksets'])}")
 
     bundle = {
         "meta": {
@@ -1005,6 +1213,8 @@ def main():
                 "wx78_modules": wx78_mods["module_count"],
                 "shared_loot_tables": loot_tables["table_count"],
                 "worldgen_rooms": world_rooms["room_count"],
+                "worldgen_tasks": world_tasks["task_count"],
+                "ocean_fish": ocean_fish["fish_count"],
             },
         },
         "tuning": key_tuning,
@@ -1038,9 +1248,14 @@ def main():
             "source_version": "763928",
             "shared_loot_tables": loot_tables["table_count"],
             "worldgen_rooms": world_rooms["room_count"],
+            "worldgen_tasks": world_tasks["task_count"],
+            "ocean_fish": ocean_fish["fish_count"],
         },
         "loot_tables": loot_tables["tables"],
         "worldgen_rooms": world_rooms["rooms"],
+        "worldgen_tasks": world_tasks["tasks"],
+        "worldgen_tasksets": world_tasks["tasksets"],
+        "ocean_fish": ocean_fish["fish"],
     }
 
     OUT_JSON.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")

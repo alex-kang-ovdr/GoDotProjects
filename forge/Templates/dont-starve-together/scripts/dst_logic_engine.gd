@@ -27,6 +27,9 @@ var recipes2_by_id: Dictionary = {}
 var skilltrees: Dictionary = {}
 var loot_tables: Dictionary = {}
 var worldgen_rooms: Dictionary = {}
+var worldgen_tasks: Dictionary = {}
+var worldgen_tasksets: Dictionary = {}
+var ocean_fish: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -68,6 +71,9 @@ func load_world_loot_from_path(path: String = "res://data/dst_worldgen_loot_extr
 		return false
 	loot_tables = parsed.get("loot_tables", {})
 	worldgen_rooms = parsed.get("worldgen_rooms", {})
+	worldgen_tasks = parsed.get("worldgen_tasks", {})
+	worldgen_tasksets = parsed.get("worldgen_tasksets", {})
+	ocean_fish = parsed.get("ocean_fish", {})
 	return true
 
 
@@ -565,3 +571,376 @@ func sample_worldgen_room_prefabs(room_name: String, count: int, rng: RandomNumb
 				out.append(str(k))
 				break
 	return out
+
+
+## easing.lua — Robert Penner 원작 inSine / inExpo 이징 함수
+static func ease_in_sine(t: float, b: float, c: float, d: float) -> float:
+	if d <= 0.0:
+		return b + c
+	return -c * cos((t / d) * (PI * 0.5)) + c + b
+
+
+static func ease_in_expo(t: float, b: float, c: float, d: float) -> float:
+	if t <= 0.0 or d <= 0.0:
+		return b
+	return c * pow(2.0, 10.0 * (t / d - 1.0)) + b - c * 0.001
+
+
+## components/inventory.lua:ApplyDamage + components/planarentity.lua:AbsorbDamage
+## 원작 다중 방어구 최대흡수 + 비례 내구도 분산 + 평면 개체 물리피해 압축 + 평면방어 균등 차감
+static func resolve_combat_hit(
+	raw_phys: float,
+	raw_planar: float,
+	armors: Array,
+	align_resist: float = 1.0,
+	target_is_planar: bool = false
+) -> Dictionary:
+	var phys: float = max(0.0, raw_phys) * align_resist
+	var absorbed_pct: float = 0.0
+	var total_abs: float = 0.0
+	for a in armors:
+		var amt: float = clamp(float(a.get("absorption", 0.0)), 0.0, 1.0)
+		absorbed_pct = max(absorbed_pct, amt)
+		total_abs += amt
+
+	var absorbed_dmg: float = phys * absorbed_pct
+	var leftover_phys: float = phys - absorbed_dmg
+	var wear: Dictionary = {}
+	if total_abs > 0.0:
+		for a in armors:
+			var aid: String = str(a.get("id", "armor"))
+			var amt: float = clamp(float(a.get("absorption", 0.0)), 0.0, 1.0)
+			wear[aid] = float(wear.get(aid, 0.0)) + absorbed_dmg * (amt / total_abs)
+
+	# PlanarEntity:AbsorbDamage — (sqrt(damage * 4 + 64) - 8) * 4
+	if target_is_planar and leftover_phys > 0.0:
+		leftover_phys = (sqrt(leftover_phys * 4.0 + 64.0) - 8.0) * 4.0
+
+	# Inventory:ApplyDamage — 평면 방어구 균등 분할 차감 루프
+	var sp_rem: float = max(0.0, raw_planar) * align_resist
+	var sp_defs: Dictionary = {}
+	for a in armors:
+		var pd: float = float(a.get("planar_defense", 0.0))
+		if pd > 0.0:
+			sp_defs[str(a.get("id", "armor"))] = pd
+	while sp_rem > 0.0001 and not sp_defs.is_empty():
+		var split_dmg: float = sp_rem / float(sp_defs.size())
+		var to_erase: Array = []
+		for aid in sp_defs.keys():
+			var def_v: float = float(sp_defs[aid])
+			var defended: float = split_dmg if def_v > split_dmg else def_v
+			if def_v > split_dmg:
+				sp_defs[aid] = def_v - split_dmg
+			else:
+				to_erase.append(aid)
+			sp_rem = max(0.0, sp_rem - defended)
+			wear[aid] = float(wear.get(aid, 0.0)) + defended
+		for k in to_erase:
+			sp_defs.erase(k)
+
+	return {
+		"phys_damage": leftover_phys,
+		"planar_damage": sp_rem,
+		"total_damage": leftover_phys + sp_rem,
+		"absorbed_damage": absorbed_dmg,
+		"armor_wear": wear,
+	}
+
+
+## components/perishable.lua:60-178 — 다중 부패 배수 & 스택 신선도 희석 공식
+static func calc_perish_rate_mult(
+	container_type: String = "inventory",
+	is_wet: bool = false,
+	ambient_temp: float = 20.0,
+	is_frozen: bool = false,
+	frozen_fire_mult: bool = false
+) -> float:
+	var modifier: float = 1.0
+	match container_type:
+		"fridge":
+			modifier = 0.0 if is_frozen else 0.5
+		"saltbox", "foodpreserver":
+			modifier = 0.25 if container_type == "saltbox" else 0.75
+		"ground":
+			modifier = 1.5
+		"spoiler":
+			modifier = 1.5
+	if is_wet:
+		modifier *= 1.3
+	if ambient_temp < 0.0:
+		if is_frozen and not frozen_fire_mult:
+			modifier = 0.0
+		else:
+			modifier *= 0.75
+	if frozen_fire_mult:
+		modifier *= 30.0
+	if ambient_temp > 70.0:
+		modifier *= 1.25
+	return modifier
+
+
+static func dilute_perish_stack(stack_n: int, cur_timeleft: float, add_n: int, add_timeleft: float) -> float:
+	var denom: float = float(max(1, stack_n + add_n))
+	return (float(stack_n) * cur_timeleft + float(add_n) * add_timeleft) / denom
+
+
+## components/edible.lua:72-143 — 신선/눅눅/상함(>=0.5 / >0.2 / <=0.2) + 위커바텀 엄격 감쇠
+static func eval_edible_with_spoilage(food: Dictionary, fresh_pct: float, eater_char_id: String = "wilson") -> Dictionary:
+	var hp: float = float(food.get("health", 0.0))
+	var hu: float = float(food.get("hunger", 0.0))
+	var sa: float = float(food.get("sanity", 0.0))
+	var tier: String = "fresh" if fresh_pct >= 0.5 else ("stale" if fresh_pct > 0.2 else "spoiled")
+
+	var is_wicker: bool = (eater_char_id == "wickerbottom")
+	var ignores_spoil: bool = (eater_char_id == "wx78")
+	var eff_hp: float = hp
+	var eff_hu: float = hu
+	var eff_sa: float = sa
+
+	if not ignores_spoil:
+		if tier == "stale":
+			if hp > 0.0:
+				eff_hp = hp * (0.0 if is_wicker else 0.333)
+			if hu > 0.0:
+				eff_hu = hu * (0.333 if is_wicker else 0.667)
+			if sa > 0.0:
+				eff_sa = 0.0
+		elif tier == "spoiled":
+			if hp > 0.0:
+				eff_hp = 0.0
+			if hu > 0.0:
+				eff_hu = hu * (0.167 if is_wicker else 0.5)
+			eff_sa = -10.0
+
+	return {"tier": tier, "health": eff_hp, "hunger": eff_hu, "sanity": eff_sa}
+
+
+## components/moisture.lua:212-372 — 원작 inSine 강수 습기 & inExpo 건조 공식
+static func step_moisture(
+	moisture: float,
+	is_raining: bool,
+	precip_rate: float,
+	waterproofness: float,
+	heater_power: float,
+	local_temp: float,
+	dt: float
+) -> Dictionary:
+	var max_m: float = 100.0
+	var wp: float = clamp(waterproofness, 0.0, 1.0)
+	var m_rate: float = 0.0
+	if is_raining and wp < 1.0:
+		m_rate = ease_in_sine(clamp(precip_rate, 0.0, 1.0), 0.0, 0.75, 1.0) * (1.0 - wp)
+	var d_rate: float = 0.0
+	if m_rate <= 0.0:
+		var segs: int = max(0, int(ceil((moisture / max_m) * 5.0 - 1.0)))
+		var p_temp_dry: float = 2.0 if segs < 3 else 5.0
+		d_rate = clamp(
+			clamp(heater_power, 0.0, 1.0) * p_temp_dry
+			+ (local_temp / 50.0) * 0.1
+			+ ease_in_expo(clamp(moisture, 0.0, max_m), 0.0, 1.0, max_m),
+			0.0,
+			5.1
+		)
+	var net_rate: float = m_rate - d_rate
+	var next_m: float = clamp(moisture + net_rate * dt, 0.0, max_m)
+	var next_segs: int = max(0, int(ceil((next_m / max_m) * 5.0 - 1.0)))
+	return {
+		"moisture": next_m,
+		"rate": net_rate,
+		"segs": next_segs,
+		"is_wet": next_segs >= 2,
+	}
+
+
+## components/sanity.lua:456-610 — 광기/계몽 이중 정신력 · inSine 습기 · 유령 군집 저항 공식
+static func calc_sanity_rate(
+	sanity_mode: int,
+	phase: String,
+	has_light: bool,
+	moisture: float,
+	dapperness: float = 0.0,
+	aura_delta: float = 0.0,
+	num_ghosts: int = 0,
+	num_alive: int = 1,
+	night_drain_mult: float = 1.0
+) -> Dictionary:
+	var moist_delta: float = ease_in_sine(clamp(moisture, 0.0, 100.0), 0.0, -100.0 / 1800.0, 100.0)
+	var light_delta: float = 0.0
+	if sanity_mode == 0:
+		if phase == "day":
+			light_delta = 0.0
+		elif has_light:
+			light_delta = (-100.0 / 1200.0) * night_drain_mult
+		else:
+			light_delta = (-100.0 / 120.0) * night_drain_mult
+	else:
+		if phase == "day":
+			light_delta = 100.0 / 9600.0
+		elif has_light:
+			light_delta = 0.0
+		else:
+			light_delta = (-100.0 / 600.0) * night_drain_mult
+
+	var ghost_mult: float = 0.0
+	if num_ghosts > 0:
+		var group_resist: float = (1.0 - float(num_ghosts) / float(num_alive)) if num_alive > num_ghosts else 0.0
+		ghost_mult = min(float(num_ghosts), 3.0) * (1.0 - group_resist * group_resist)
+	var ghost_delta: float = (-100.0 / 1800.0) * ghost_mult
+
+	var total_rate: float = dapperness + moist_delta + light_delta + aura_delta + ghost_delta
+	return {
+		"rate": total_rate,
+		"dapper_delta": dapperness,
+		"moisture_delta": moist_delta,
+		"light_delta": light_delta,
+		"aura_delta": aura_delta,
+		"ghost_delta": ghost_delta,
+		"ghost_drain_mult": ghost_mult,
+	}
+
+
+## components/domesticatable.lua:94-157 — 비팔로 길들이기(domestication_latch) · 순종도 · 3성향 감쇠
+static func step_beefalo_domestication(
+	st: Dictionary,
+	is_gaining: bool,
+	tendency_key: String = "",
+	tendency_delta: float = 0.0,
+	dt: float = 10.0
+) -> Dictionary:
+	var dom: float = float(st.get("domestication", 0.0))
+	var obed: float = float(st.get("obedience", 0.0))
+	var min_obed: float = float(st.get("min_obedience", 0.0))
+	var latch: bool = bool(st.get("domestication_latch", false))
+	var domesticated: bool = bool(st.get("domesticated", false))
+	var time_since_gain: float = float(st.get("time_since_gain", 0.0))
+	var tends: Dictionary = st.get("tendencies", {}).duplicate(true)
+
+	# 순종도 및 성향 자연 감쇠
+	obed = clamp(obed + (-1.0 / 960.0) * dt, min_obed, 1.0)
+	for tk in tends.keys():
+		tends[tk] = max(0.0, float(tends[tk]) + (-1.0 / 21600.0) * dt)
+	if tendency_key != "" and tendency_delta != 0.0:
+		tends[tendency_key] = max(0.0, float(tends.get(tendency_key, 0.0)) + tendency_delta)
+
+	if is_gaining:
+		time_since_gain = 0.0
+		dom = clamp(dom + (1.0 / 9600.0) * dt, 0.0, 1.0)
+	else:
+		time_since_gain += dt
+		var loss_ratio: float = min(time_since_gain / (10.0 * 480.0), 1.0)
+		dom = clamp(dom + (-1.0 / 1920.0) * loss_ratio * dt, 0.0, 1.0)
+
+	if not domesticated and dom >= 1.0:
+		latch = true
+		dom = 1.0
+	elif dom < 0.95:
+		latch = false
+
+	var best_tend: String = "DEFAULT"
+	var best_val: float = 0.1
+	for tk in tends.keys():
+		if float(tends[tk]) > best_val:
+			best_val = float(tends[tk])
+			best_tend = str(tk)
+
+	return {
+		"domestication": dom,
+		"obedience": obed,
+		"min_obedience": min_obed,
+		"domestication_latch": latch,
+		"domesticated": domesticated,
+		"time_since_gain": time_since_gain,
+		"tendencies": tends,
+		"dominant_tendency": best_tend,
+	}
+
+
+## components/sleeper.lua:248-308 — 수면 점감 저항(diminishingreturns, 하한 0.2x) 머신
+static func step_sleeper_diminishing(st: Dictionary, add_sleepiness: float, base_sleep_sec: float, dt: float) -> Dictionary:
+	var asleep: bool = bool(st.get("is_asleep", false))
+	var sleepiness: float = float(st.get("sleepiness", 0.0))
+	var resist: float = max(1.0, float(st.get("resistance", 1.0)))
+	var extra_resist: float = float(st.get("extra_resist", 0.0))
+	var timer: float = float(st.get("sleep_timer", 0.0))
+	var decay_accum: float = float(st.get("decay_accum", 0.0))
+
+	if add_sleepiness > 0.0:
+		sleepiness += add_sleepiness
+		if sleepiness >= resist:
+			if not asleep:
+				extra_resist = clamp(extra_resist + 1.0, 0.0, 10.0)
+			asleep = true
+			var mult: float = max(0.2, 1.0 - extra_resist * 0.1)
+			timer = base_sleep_sec * mult
+			sleepiness = 0.0
+
+	if asleep and dt > 0.0:
+		timer -= dt
+		if timer <= 0.0:
+			asleep = false
+			timer = 0.0
+
+	if extra_resist > 0.0 and dt > 0.0:
+		decay_accum += dt
+		while decay_accum >= 30.0 and extra_resist > 0.0:
+			decay_accum -= 30.0
+			extra_resist = max(0.0, extra_resist - 0.1)
+
+	return {
+		"is_asleep": asleep,
+		"sleepiness": sleepiness,
+		"resistance": resist,
+		"extra_resist": extra_resist,
+		"sleep_mult": max(0.2, 1.0 - extra_resist * 0.1),
+		"sleep_timer": timer,
+		"decay_accum": decay_accum,
+	}
+
+
+## prefabs/oceanfishdef.lua — 18종 해양 물고기 낚시 스태미나(struggle <-> tired) 시뮬레이터
+func step_ocean_fish_reel(fish_id: String, st: Dictionary, is_reeling: bool, dt: float) -> Dictionary:
+	var fdef: Dictionary = ocean_fish.get(fish_id, ocean_fish.get("oceanfish_small_1", {}))
+	var stamina: float = float(st.get("stamina", 1.0))
+	var dist: float = float(st.get("distance", 12.0))
+	var struggling: bool = bool(st.get("struggling", true))
+	var drain: float = float(fdef.get("stamina_drain", 0.1))
+	var recover: float = float(fdef.get("stamina_recover", 0.1))
+	var runspeed: float = float(fdef.get("runspeed", 2.5))
+	var walkspeed: float = float(fdef.get("walkspeed", 1.2))
+
+	if struggling:
+		stamina = max(0.0, stamina - drain * dt)
+		dist += (runspeed - (2.8 if is_reeling else 0.0)) * dt
+		if stamina <= 0.01:
+			struggling = false
+	else:
+		stamina = min(1.0, stamina + recover * dt)
+		dist = max(0.0, dist - ((4.5 if is_reeling else walkspeed * 0.5) * dt))
+		if stamina >= 0.99:
+			struggling = true
+
+	return {
+		"fish_id": fish_id,
+		"stamina": stamina,
+		"distance": max(0.0, dist),
+		"struggling": struggling,
+		"caught": dist <= 0.5,
+	}
+
+
+## map/tasksets/*.lua + map/tasks/*.lua — 지상/동굴 월드젠 태스크셋 청사진 조회
+func get_worldgen_taskset_plan(taskset_id: String = "default") -> Dictionary:
+	var ts: Dictionary = worldgen_tasksets.get(taskset_id, {})
+	var req: Array = ts.get("required_tasks", [])
+	var resolved: Array = []
+	for tname in req:
+		var td: Dictionary = worldgen_tasks.get(str(tname), {})
+		if not td.is_empty():
+			resolved.append({"task": str(tname), "tile": str(td.get("tile", "GRASS")), "rooms": td.get("rooms", [])})
+	return {
+		"taskset": taskset_id,
+		"required_count": req.size(),
+		"resolved_count": resolved.size(),
+		"optional_count": int(ts.get("num_optional", 0)),
+		"tasks": resolved,
+	}

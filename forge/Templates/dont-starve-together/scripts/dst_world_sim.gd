@@ -1216,14 +1216,15 @@ func eat_food(food_id: String) -> bool:
 	consume_item(food_id, 1)
 	var f: Dictionary = db.foods_by_id[food_id]
 	var fresh: float = float(food_freshness.get(food_id, 1.0))
-	var hu_mult: float = 1.0 if fresh > 0.5 else (0.667 if fresh > 0.2 else 0.5)
-	var hp_mult: float = 1.0 if fresh > 0.5 else (0.333 if fresh > 0.2 else 0.0)
-	var sa_val: float = float(f.get("sanity", 0.0)) if fresh > 0.5 else (0.0 if fresh > 0.2 else -10.0)
+	var ed: Dictionary = DSTLogicEngine.eval_edible_with_spoilage(f, fresh, character_id)
+	var eff_hp: float = float(ed["health"])
+	var eff_hu: float = float(ed["hunger"])
+	var sa_val: float = float(ed["sanity"])
 
-	apply_health_delta(float(f.get("health", 0.0)) * hp_mult, "food")
-	hunger = clamp(hunger + float(f.get("hunger", 0.0)) * hu_mult, 0.0, max_hunger)
+	apply_health_delta(eff_hp, "food")
+	hunger = clamp(hunger + eff_hu, 0.0, max_hunger)
 	delta_sanity(sa_val)
-	push_log("섭취: %s (HP%+.0f HU%+.0f SA%+.0f)" % [str(f.get("name", food_id)), float(f.get("health", 0.0)) * hp_mult, float(f.get("hunger", 0.0)) * hu_mult, sa_val])
+	push_log("섭취: %s (HP%+.0f HU%+.0f SA%+.0f)" % [str(f.get("name", food_id)), eff_hp, eff_hu, sa_val])
 	return true
 
 

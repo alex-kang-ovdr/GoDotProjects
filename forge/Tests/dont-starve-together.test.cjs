@@ -87,12 +87,20 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.meta.counts.wx78_modules, 23);
   assert.ok(logic.meta.counts.shared_loot_tables >= 220);
   assert.ok(logic.meta.counts.worldgen_rooms >= 220);
+  assert.ok(logic.meta.counts.worldgen_tasks >= 125);
+  assert.equal(logic.meta.counts.ocean_fish, 18);
   assert.equal(logic.meta.counts.spiced_foods_combinations, 316);
   assert.equal(logic.physics.propagator.verified_in_lua, true);
   assert.equal(logic.physics.temperature_insulation.verified_in_lua, true);
   assert.equal(logic.physics.freezable.verified_in_lua, true);
   assert.equal(logic.physics.seasons_clock_interp.verified_in_lua, true);
   assert.equal(logic.physics.spices.verified_in_lua, true);
+  assert.equal(logic.physics.combat_planar.verified_in_lua, true);
+  assert.equal(logic.physics.perishable_edible.verified_in_lua, true);
+  assert.equal(logic.physics.moisture_easing.verified_in_lua, true);
+  assert.equal(logic.physics.sanity_dual.verified_in_lua, true);
+  assert.equal(logic.physics.beefalo_domestication.verified_in_lua, true);
+  assert.equal(logic.physics.sleeper_nightmare.verified_in_lua, true);
   assert.equal(logic.stategraphs.deerclops.attack_hit_frame, 31);
   assert.equal(logic.stategraphs.wilson.attack_hit_frame, 6);
 });
@@ -145,5 +153,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 125, `expected >= 125 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 138, `expected >= 138 checks, got ${summary.passed}\n${out}`);
 });
