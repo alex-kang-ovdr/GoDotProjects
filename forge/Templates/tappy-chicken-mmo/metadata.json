@@ -45,12 +45,24 @@
   "publishDefaults": {
     "deployProfile": {
       "deployMode": "mmo",
-      "serverRuntime": "node-wss-v1",
+      "serverRuntime": "relay-spatial-v1",
       "specTier": "small",
       "lobbyMode": "stateless_ui",
+      "relayConfig": {
+        "dimensions": 1,
+        "aoiRadius": 520,
+        "aoiHysteresis": 60,
+        "maxPlayersPerChannel": 64,
+        "maxVisiblePeers": 12,
+        "flushIntervalMs": 50,
+        "maxPayloadBytes": 512,
+        "sharedRoomSeed": true,
+        "extrapolateVelocity": true,
+        "maxVelocity": 400
+      },
       "channelPolicy": {
         "autoChanneling": true,
-        "softCapPerChannel": 100,
+        "softCapPerChannel": 64,
         "hideChannelUiWhenSingle": true
       },
       "lifecycle": {

@@ -6511,6 +6511,23 @@
         "dev"
       ],
       "owner": "Hub-AOS"
+    },
+    {
+      "path": "hub/tests/contract.multiplayer-decoupling.test.mjs",
+      "tier": "fast",
+      "suites": [
+        "hub",
+        "forge",
+        "component",
+        "system",
+        "regression"
+      ],
+      "envs": [
+        "local",
+        "dev",
+        "live"
+      ],
+      "owner": "PlayHub-MultiplayerDecouple"
     }
   ]
 }

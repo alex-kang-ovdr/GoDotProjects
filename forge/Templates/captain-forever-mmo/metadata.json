@@ -21,5 +21,32 @@
     "scripts/main.gd",
     "scenes/main.tscn",
     "project.godot"
-  ]
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "mmo",
+      "serverRuntime": "node-wss-v1",
+      "specTier": "small",
+      "lobbyMode": "stateless_ui",
+      "runtimeConfig": {
+        "serverEntry": "server/entry.cjs",
+        "maxPlayersPerSession": 64,
+        "tickRateHz": 20,
+        "idleSleepSec": 600,
+        "resultCommitEnabled": false
+      },
+      "relayConfig": {
+        "dimensions": 2,
+        "aoiRadius": 2400,
+        "aoiHysteresis": 240,
+        "maxPlayersPerChannel": 64,
+        "maxVisiblePeers": 16,
+        "flushIntervalMs": 50,
+        "maxPayloadBytes": 1024,
+        "sharedRoomSeed": true,
+        "extrapolateVelocity": true,
+        "maxVelocity": 1200
+      }
+    }
+  }
 }

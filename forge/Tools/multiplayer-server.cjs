@@ -9,20 +9,22 @@ const { attachCaptainForeverMmo } = require('./captain-forever-mmo-multiplayer.c
 const { createOriginPolicy } = require('./origin-policy.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./hub-session-auth.cjs');
 const { createMultiplayerCompat, COMPAT_DECISIONS } = require('./multiplayer-compat.cjs');
+const { GameRuntimeHost } = require('./runtime-host/game-runtime-host.cjs');
 
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
 const MULTIPLAYER_HTTP_RE = /^\/api\/(brawllabs|fortress-war|tappy-chicken-mmo|captain-forever-mmo)\/rooms\/([a-f0-9]{12})$/;
 const MULTIPLAYER_WS_RE = /^\/(brawllabs|fortress-war|tappy-chicken-mmo|captain-forever-mmo)$/;
+const RUNTIME_WS_RE = /^\/ws\/runtime\/([a-zA-Z0-9_-]{4,64})$/;
 const ACCOUNT_KEY_RE = /^[a-f0-9]{64}$/;
 const PROJECT_ID_RE = /^[a-f0-9]{24}$/;
 const BUILD_ID_RE = /^[a-f0-9]{16}$/;
 
 function isMultiplayerHttpRoute(pathname) {
-  return typeof pathname === 'string' && MULTIPLAYER_HTTP_RE.test(pathname);
+  return typeof pathname === 'string' && (MULTIPLAYER_HTTP_RE.test(pathname) || pathname === '/api/pie/sessions');
 }
 
 function isMultiplayerWsRoute(pathname) {
-  return typeof pathname === 'string' && MULTIPLAYER_WS_RE.test(pathname);
+  return typeof pathname === 'string' && (MULTIPLAYER_WS_RE.test(pathname) || RUNTIME_WS_RE.test(pathname));
 }
 
 function normalizeBasePath(raw) {
@@ -115,6 +117,11 @@ function createMultiplayerServer(options = {}) {
   });
 
   const upgradeBus = new EventEmitter();
+  const runtimeHost = new GameRuntimeHost({
+    requireTicket: Boolean(options.requireRuntimeTicket ?? false),
+    ticketSecret: options.relayTicketSecret || process.env.PLAYHUB_RELAY_TICKET_SECRET || '',
+    now: options.now,
+  });
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('brawllabs'), compat });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('fortress-war'), compat });
   const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('tappy-chicken-mmo'), compat });
@@ -198,6 +205,24 @@ function createMultiplayerServer(options = {}) {
       return json(result.httpStatus, result);
     }
 
+    if (routePath === '/api/pie/sessions' && req.method === 'POST') {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      if (hubAuth) {
+        const auth = await hubAuth.verify(req, { requireCsrf: false });
+        if (!auth.authenticated) return json(auth.status, { ok: false, error: auth.error, loginUrl: auth.loginUrl });
+      }
+      let raw = '';
+      for await (const chunk of req) { raw += chunk.toString('utf8'); if (raw.length > 8192) return json(413, { ok: false, error: 'Payload too large' }); }
+      let body;
+      try { body = JSON.parse(raw || '{}'); } catch { return json(400, { ok: false, error: 'Invalid JSON' }); }
+      try {
+        const session = await runtimeHost.launchSession(String(body.gameId || ''), { sessionId: body.sessionId });
+        return json(201, { ok: true, session });
+      } catch (err) {
+        return json(400, { ok: false, error: err.message });
+      }
+    }
+
     const roomMatch = routePath.match(MULTIPLAYER_HTTP_RE);
     if (roomMatch && req.method === 'GET') {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
@@ -240,6 +265,7 @@ function createMultiplayerServer(options = {}) {
       }
     }
     if (!hubAuth) {
+      if (RUNTIME_WS_RE.test(pathname) && runtimeHost.handleUpgrade(req, socket, head)) return;
       upgradeBus.emit('upgrade', req, socket, head);
       return;
     }
@@ -250,6 +276,7 @@ function createMultiplayerServer(options = {}) {
       return;
     }
     req.hubAuth = auth;
+    if (RUNTIME_WS_RE.test(pathname) && runtimeHost.handleUpgrade(req, socket, head)) return;
     upgradeBus.emit('upgrade', req, socket, head);
   });
 
@@ -257,6 +284,7 @@ function createMultiplayerServer(options = {}) {
   const closeOwned = () => {
     if (closed) return;
     closed = true;
+    runtimeHost.shutdown();
     brawllabs.close();
     fortressWar.close();
     tappyChickenMmo.close();
@@ -264,6 +292,7 @@ function createMultiplayerServer(options = {}) {
   };
   server.on('close', closeOwned);
   server.compat = compat;
+  server.runtimeHost = runtimeHost;
   server.shutdown = () => {
     closeOwned();
     server.closeAllConnections?.();

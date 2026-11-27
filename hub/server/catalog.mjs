@@ -39,7 +39,8 @@ export function readCatalog(rootDir, db, options = {}) {
       publishedOn: validGameUpdateDate(manifest.publishedOn) ? manifest.publishedOn : undefined,
       updatedOn: validGameUpdateDate(manifest.updatedOn) ? manifest.updatedOn : undefined,
       buildId: `${manifest.version || '0.1.0'}-${digest(raw).slice(0, 12)}`,
-      deployMode: manifest.deployMode || 'singleplay'
+      deployMode: manifest.deployMode || manifest.deployProfile?.deployMode || 'singleplay',
+      ...(manifest.deployProfile && typeof manifest.deployProfile === 'object' ? { deployProfile: manifest.deployProfile } : {})
     };
   });
 
@@ -63,6 +64,13 @@ export function readCatalog(rootDir, db, options = {}) {
     const rawBaseUrl = String(row.artifact_base_url || '').replace(/\/?$/, '/');
     const ugcOrigin = typeof options?.ugcOrigin === 'string' && options.ugcOrigin ? options.ugcOrigin.replace(/\/+$/, '') : '';
     const baseUrl = ugcOrigin && rawBaseUrl.startsWith('/') ? `${ugcOrigin}${rawBaseUrl}` : rawBaseUrl;
+    let deployProfile = null;
+    if (row.deploy_profile_json) {
+      try {
+        const parsed = JSON.parse(row.deploy_profile_json);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) deployProfile = parsed;
+      } catch {}
+    }
     const cover = manifest.media?.cover ? `${baseUrl}${manifest.media.cover}` : '';
     ugcGames.push({
       id: row.game_id,
@@ -83,7 +91,8 @@ export function readCatalog(rootDir, db, options = {}) {
       updatedOn: validGameUpdateDate(manifest.updatedOn) ? manifest.updatedOn : undefined,
       buildId: `${manifest.version || '0.1.0'}-${String(row.artifact_sha256 || '').slice(0, 12) || digest(row.manifest_json).slice(0, 12)}`,
       source: 'ugc',
-      deployMode: row.deploy_mode || 'singleplay',
+      deployMode: row.deploy_mode || deployProfile?.deployMode || 'singleplay',
+      ...(deployProfile ? { deployProfile } : {}),
       visibility: row.visibility || 'public',
       publicationStatus: row.status,
       hostSlug: row.host_slug,

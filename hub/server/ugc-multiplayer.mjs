@@ -26,10 +26,20 @@ const {
   flushSocketQueue,
   SpatialMmoRoom,
 } = loadShared('mmo-room-core.cjs');
-const { GAME_ID_RE } = loadShared('publish-contract.cjs');
+const {
+  GenericSpatialRoom,
+  flushGenericSocketQueue,
+} = loadShared('generic-spatial-room.cjs');
+const { GAME_ID_RE, normalizeRelayConfig } = loadShared('publish-contract.cjs');
+const {
+  RelayTicketAuthority,
+  resolveClientIp,
+  extractTicketFromRequest,
+} = loadShared('relay-ticket.cjs');
 
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const SOCKET_PATH = '/ws/ugc-mmo';
+const GENERIC_RELAY_PATH = '/ws/relay-spatial';
 const ROOM_ID_RE = /^[a-f0-9]{12}$/;
 const PARTY_ROOM_CODE_RE = /^[A-Za-z0-9_-]{4,24}$/;
 const MAX_PAYLOAD = 64 * 1024;
@@ -75,6 +85,9 @@ class SimpleWsConnection {
     this.compactEvents = [];
     this.compactRemoved = [];
     this.compactPresence = null;
+    this._relayBatch = [];
+    this._relayRemoved = [];
+    this._relayPresence = null;
     this._onMessage = null;
     this._onClose = null;
 
@@ -317,14 +330,50 @@ class HubMmoRoom extends SpatialMmoRoom {
   }
 }
 
-export function buildMultiplayerDescriptor(game, socketPath = SOCKET_PATH) {
-  if (!game || game.deployMode !== 'mmo') return null;
-  return { transport: 'ws', wsPath: socketPath, gameId: game.id };
+export function buildMultiplayerDescriptor(game, socketPath = SOCKET_PATH, { relayPublicUrl = '' } = {}) {
+  if (!game) return null;
+  const dp = game.deployProfile && typeof game.deployProfile === 'object' ? game.deployProfile : {};
+  const mode = game.deployMode || dp.deployMode || 'singleplay';
+  const runtime = dp.serverRuntime || (mode === 'mmo' ? 'node-wss-v1' : 'none');
+
+  if (runtime === 'relay-spatial-v1') {
+    return {
+      transport: 'ws',
+      runtime: 'relay-spatial-v1',
+      protocol: 'playhub.relay.v1',
+      wsPath: GENERIC_RELAY_PATH,
+      matchPath: '/api/multiplayer/match',
+      ...(relayPublicUrl ? { wsUrl: relayPublicUrl } : {}),
+      gameId: game.id,
+      relayConfig: normalizeRelayConfig(dp.relayConfig),
+    };
+  }
+  if (mode === 'mo' && (runtime === 'node-wss-v1' || runtime === 'godot-linux-wss-v1')) {
+    return {
+      transport: 'ws',
+      runtime,
+      matchPath: '/api/multiplayer/match',
+      gameId: game.id,
+    };
+  }
+  if (mode !== 'mmo') return null;
+  return {
+    transport: 'ws',
+    runtime,
+    wsPath: socketPath,
+    matchPath: '/api/multiplayer/match',
+    gameId: game.id,
+  };
 }
 
 export function createUgcMultiplayer({
   now = Date.now,
   allowedOrigins = null,
+  trustedProxies = true,
+  ticketAuthority = null,
+  ticketSecret = process.env.PLAYHUB_RELAY_TICKET_SECRET || '',
+  requireTicket = process.env.PLAYHUB_REQUIRE_WS_TICKET === '1',
+  relayPublicUrl = process.env.PLAYHUB_RELAY_PUBLIC_URL || '',
   flushIntervalMs = DEFAULT_FLUSH_INTERVAL_MS,
   heartbeatIntervalMs = DEFAULT_HEARTBEAT_INTERVAL_MS,
   maxMissedPongs = DEFAULT_MAX_MISSED_PONGS,
@@ -332,14 +381,54 @@ export function createUgcMultiplayer({
   maxTotalSockets = DEFAULT_MAX_TOTAL_SOCKETS,
   maxSocketsPerIp = DEFAULT_MAX_SOCKETS_PER_IP,
 } = {}) {
+  const authority = ticketAuthority || new RelayTicketAuthority({
+    secret: ticketSecret || crypto.randomBytes(32),
+    now,
+  });
   const rooms = new Map();
   const partyRooms = new Map(); // `${gameId}:${PARTY_CODE}` -> roomId
   const socketsByRoom = new Map();
+  const genericRooms = new Map();
+  const genericPartyRooms = new Map();
+  const genericSocketsByRoom = new Map();
   const allSockets = new Set();
   const socketsByIp = new Map();
   const allowedOriginSet = Array.isArray(allowedOrigins) && allowedOrigins.length
     ? new Set(allowedOrigins.map(o => String(o).trim().replace(/\/$/, '')))
     : null;
+
+  function findOrCreateGenericChannel(gameId, rawConfig = {}) {
+    const cfg = normalizeRelayConfig(rawConfig);
+    for (const room of genericRooms.values()) {
+      if (room.gameId === gameId && !room.partyCode && room.players.size < room.config.maxPlayersPerChannel) {
+        return room;
+      }
+    }
+    if (genericRooms.size >= MAX_ROOMS) {
+      throw new Error('활성 멀티플레이 채널이 가득 찼습니다.');
+    }
+    const id = crypto.randomBytes(6).toString('hex');
+    const room = new GenericSpatialRoom(id, { gameId }, cfg, now);
+    genericRooms.set(id, room);
+    genericSocketsByRoom.set(id, new Set());
+    return room;
+  }
+
+  function findOrCreateGenericPartyChannel(gameId, rawPartyCode, rawConfig = {}) {
+    const partyCode = String(rawPartyCode || '').trim().toUpperCase();
+    const key = `${gameId}:${partyCode}`;
+    const existingId = genericPartyRooms.get(key);
+    if (existingId && genericRooms.has(existingId)) return genericRooms.get(existingId);
+    if (genericRooms.size >= MAX_ROOMS) throw new Error('활성 멀티플레이 채널이 가득 찼습니다.');
+    const id = crypto.randomBytes(6).toString('hex');
+    const seedHash = crypto.createHash('sha256').update(key).digest().readUInt32BE(0);
+    const defaultSeed = 10000 + (seedHash % 900000);
+    const room = new GenericSpatialRoom(id, { gameId, partyCode, defaultSeed }, normalizeRelayConfig(rawConfig), now);
+    genericRooms.set(id, room);
+    genericPartyRooms.set(key, id);
+    genericSocketsByRoom.set(id, new Set());
+    return room;
+  }
 
   function findOrCreateChannel(gameId, options = {}) {
     for (const room of rooms.values()) {
@@ -384,6 +473,12 @@ export function createUgcMultiplayer({
       if (!sockets) continue;
       for (const ws of sockets) flushSocketQueue(ws);
     }
+    for (const room of genericRooms.values()) {
+      room.flushPresence();
+      const sockets = genericSocketsByRoom.get(room.id);
+      if (!sockets) continue;
+      for (const ws of sockets) flushGenericSocketQueue(ws, s => Boolean(s && s.open));
+    }
   }, flushIntervalMs);
   flushTimer.unref();
 
@@ -402,7 +497,8 @@ export function createUgcMultiplayer({
   function handleUpgrade(req, socket, head) {
     let pathname = '';
     try { pathname = new URL(req.url || '/', 'http://localhost').pathname; } catch { return false; }
-    if (pathname !== SOCKET_PATH) return false;
+    const isGenericRelay = pathname === GENERIC_RELAY_PATH;
+    if (pathname !== SOCKET_PATH && !isGenericRelay) return false;
 
     const rawOrigin = req.headers.origin;
     if (rawOrigin !== undefined && rawOrigin !== '') {
@@ -420,18 +516,32 @@ export function createUgcMultiplayer({
       return true;
     }
 
-    const clientIp = req.socket?.remoteAddress || 'unknown';
+    const clientIp = resolveClientIp(req, { trustedProxies });
     const ipCount = socketsByIp.get(clientIp) || 0;
     if (allSockets.size >= maxTotalSockets || ipCount >= maxSocketsPerIp) {
       socket.end('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n');
       return true;
     }
 
+    const upgradeTicket = extractTicketFromRequest(req);
+    let verifiedTicket = null;
+    if (upgradeTicket) {
+      const check = authority.verify(upgradeTicket, { consume: true });
+      if (!check.ok) {
+        socket.end('HTTP/1.1 401 Unauthorized\r\nConnection: close\r\n\r\n');
+        return true;
+      }
+      verifiedTicket = check.payload;
+    }
+
     const accept = crypto.createHash('sha1').update(String(key).trim() + WS_GUID).digest('base64');
+    const reqProtos = String(req.headers['sec-websocket-protocol'] || '').split(',').map(s => s.trim());
+    const protoLine = reqProtos.includes('playhub.v1') ? 'Sec-WebSocket-Protocol: playhub.v1\r\n' : '';
     socket.write(
       'HTTP/1.1 101 Switching Protocols\r\n' +
       'Upgrade: websocket\r\n' +
       'Connection: Upgrade\r\n' +
+      protoLine +
       `Sec-WebSocket-Accept: ${accept}\r\n\r\n`
     );
 
@@ -443,11 +553,113 @@ export function createUgcMultiplayer({
     let rateViolations = 0;
     let activeRoom = null;
     let activePlayerId = null;
+    let authPayload = verifiedTicket;
 
     const joinTimeout = setTimeout(() => {
       if (!activePlayerId) ws.close(1008, 'Join required');
     }, 8000);
     joinTimeout.unref();
+
+    if (isGenericRelay) {
+      ws.onMessage(rawText => {
+        try {
+          const currentNow = now();
+          if (currentNow - rateAt > 1000) { rateAt = currentNow; msgCount = 0; }
+          if (++msgCount > maxMessagesPerSec) {
+            rateViolations += 1;
+            if (rateViolations >= 3) { ws.close(1008, 'Rate limit exceeded'); return; }
+            ws.send(JSON.stringify({ t: 'error', error: 'RATE_LIMITED' }));
+            return;
+          }
+          let msg;
+          try {
+            msg = JSON.parse(rawText);
+            if (!msg || typeof msg !== 'object' || Array.isArray(msg)) throw new Error();
+          } catch {
+            ws.send(JSON.stringify({ t: 'error', error: 'INVALID_JSON' }));
+            return;
+          }
+          const mType = msg.t || msg.type;
+          if (mType === 'join' || mType === 'auth') {
+            if (activeRoom) throw new Error('ALREADY_JOINED');
+            if (requireTicket && !authPayload) {
+              const inlineTicket = typeof msg.ticket === 'string' ? msg.ticket.trim() : '';
+              if (!inlineTicket) throw new Error('TICKET_REQUIRED');
+              const check = authority.verify(inlineTicket, { expectedRuntime: 'relay-spatial-v1', consume: true });
+              if (!check.ok) throw new Error(`TICKET_INVALID:${check.reason}`);
+              authPayload = check.payload;
+            }
+            const gameId = authPayload?.gameId || String(msg.gameId || '').trim();
+            const requestedRoom = authPayload?.roomId || String(msg.roomId || '').trim();
+            if (!GAME_ID_RE.test(gameId)) throw new Error('INVALID_GAME_ID');
+            let room;
+            if (!requestedRoom) {
+              room = findOrCreateGenericChannel(gameId, msg.config || {});
+            } else if (ROOM_ID_RE.test(requestedRoom)) {
+              room = genericRooms.get(requestedRoom);
+              if (!room || room.gameId !== gameId) throw new Error('ROOM_NOT_FOUND');
+            } else if (PARTY_ROOM_CODE_RE.test(requestedRoom)) {
+              room = findOrCreateGenericPartyChannel(gameId, requestedRoom, msg.config || {});
+            } else {
+              throw new Error('INVALID_ROOM_ID');
+            }
+            const joined = room.join({
+              sub: authPayload?.sub || '',
+              name: authPayload?.name || msg.name || '',
+              platform: authPayload?.platform || msg.platform || 'web',
+              pos: msg.p,
+              vel: msg.v,
+              moving: msg.m,
+              opaqueState: msg.d !== undefined ? msg.d : null,
+              sendImmediate: payload => ws.send(JSON.stringify(payload)),
+              queueEvent: encodedTuple => {
+                if (ws._relayBatch.length >= MAX_OUTBOUND_QUEUE) ws._relayBatch.shift();
+                ws._relayBatch.push(encodedTuple);
+              },
+              queueRemoved: shortId => {
+                if (ws._relayRemoved.length < MAX_OUTBOUND_QUEUE) ws._relayRemoved.push(shortId);
+              },
+              setPresence: (online, nearby) => { ws._relayPresence = [online, nearby]; },
+            });
+            genericSocketsByRoom.get(room.id).add(ws);
+            activeRoom = room;
+            activePlayerId = joined.peer.id;
+            clearTimeout(joinTimeout);
+            return;
+          }
+          if (!activeRoom || !activePlayerId) throw new Error('JOIN_REQUIRED');
+          if (mType === 'pub' || msg.p !== undefined || msg.d !== undefined) {
+            activeRoom.publish(activePlayerId, msg);
+            return;
+          }
+          throw new Error('UNSUPPORTED_MESSAGE');
+        } catch (err) {
+          ws.send(JSON.stringify({ t: 'error', error: err.message || 'RELAY_ERROR' }));
+        }
+      });
+      ws.onClose(() => {
+        clearTimeout(joinTimeout);
+        if (allSockets.delete(ws)) {
+          const remaining = (socketsByIp.get(clientIp) || 1) - 1;
+          if (remaining <= 0) socketsByIp.delete(clientIp);
+          else socketsByIp.set(clientIp, remaining);
+        }
+        ws._relayBatch.length = 0;
+        ws._relayRemoved.length = 0;
+        if (!activeRoom) return;
+        genericSocketsByRoom.get(activeRoom.id)?.delete(ws);
+        if (activePlayerId) activeRoom.leave(activePlayerId);
+        if (activeRoom.players.size === 0 && (genericSocketsByRoom.get(activeRoom.id)?.size || 0) === 0) {
+          genericRooms.delete(activeRoom.id);
+          genericSocketsByRoom.delete(activeRoom.id);
+          if (activeRoom.partyCode) genericPartyRooms.delete(`${activeRoom.gameId}:${activeRoom.partyCode}`);
+        }
+        activeRoom = null;
+        activePlayerId = null;
+      });
+      if (head && head.length) ws._onData(head);
+      return true;
+    }
 
     ws.onMessage(rawText => {
       try {
@@ -477,8 +689,15 @@ export function createUgcMultiplayer({
 
         if (msg.type === 'join') {
           if (activeRoom) throw new Error('이미 멀티플레이 채널에 참가 중입니다.');
-          const gameId = String(msg.gameId || 'tappy-chicken-mmo').trim();
-          const requestedRoom = typeof msg.roomId === 'string' ? msg.roomId.trim() : '';
+          if (requireTicket && !authPayload) {
+            const inlineTicket = typeof msg.ticket === 'string' ? msg.ticket.trim() : '';
+            if (!inlineTicket) throw new Error('인증 티켓이 필요합니다.');
+            const check = authority.verify(inlineTicket, { consume: true });
+            if (!check.ok) throw new Error(`티켓 검증 실패: ${check.reason}`);
+            authPayload = check.payload;
+          }
+          const gameId = authPayload?.gameId || String(msg.gameId || 'tappy-chicken-mmo').trim();
+          const requestedRoom = authPayload?.roomId || (typeof msg.roomId === 'string' ? msg.roomId.trim() : '');
           let room = null;
           if (requestedRoom) {
             if (ROOM_ID_RE.test(requestedRoom)) {
@@ -506,8 +725,8 @@ export function createUgcMultiplayer({
 
           ws.compact = Boolean(msg.compact);
           ws.supportsBatch = Boolean(msg.supportsBatch);
-          const joined = room.join(msg.name, {
-            platform: msg.platform,
+          const joined = room.join(authPayload?.name || msg.name, {
+            platform: authPayload?.platform || msg.platform,
             compact: ws.compact,
             speed: msg.speed,
             runDistance: msg.runDistance,
@@ -594,7 +813,50 @@ export function createUgcMultiplayer({
       });
       return true;
     }
+    const relayMatch = url.pathname.match(/^\/api\/relay\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\/rooms$/);
+    if (relayMatch && req.method === 'GET') {
+      const gameId = relayMatch[1];
+      const list = [...genericRooms.values()].filter(r => r.gameId === gameId).map(r => r.metadata({ publicView: true }));
+      const totalOnline = list.reduce((acc, r) => acc + r.online, 0);
+      json(res, 200, {
+        gameId,
+        wsPath: GENERIC_RELAY_PATH,
+        runtime: 'relay-spatial-v1',
+        totalOnline,
+        rooms: list,
+      });
+      return true;
+    }
     return false;
+  }
+
+  function issueMatchTicket({ sub, name = '', platform = 'web', game, partyCode = '', roomId = '', ttlSec = 60 } = {}) {
+    const descriptor = buildMultiplayerDescriptor(game, SOCKET_PATH, { relayPublicUrl });
+    if (!descriptor) {
+      throw new Error('GAME_NOT_MULTIPLAYER');
+    }
+    const targetRoom = String(roomId || partyCode || '').trim();
+    const issued = authority.issue({
+      sub,
+      name,
+      platform,
+      gameId: game.id,
+      runtime: descriptor.runtime,
+      roomId: targetRoom,
+      releaseId: game.buildId || '',
+      ttlSec,
+    });
+    return {
+      gameId: game.id,
+      runtime: descriptor.runtime,
+      protocol: descriptor.protocol || null,
+      wsPath: descriptor.wsPath || null,
+      ...(descriptor.wsUrl ? { wsUrl: descriptor.wsUrl } : {}),
+      roomId: targetRoom,
+      ...(descriptor.relayConfig ? { relayConfig: descriptor.relayConfig } : {}),
+      joinTicket: issued.token,
+      expiresAt: issued.expiresAt,
+    };
   }
 
   function close() {
@@ -606,12 +868,19 @@ export function createUgcMultiplayer({
     rooms.clear();
     partyRooms.clear();
     socketsByRoom.clear();
+    genericRooms.clear();
+    genericPartyRooms.clear();
+    genericSocketsByRoom.clear();
   }
 
   return {
     socketPath: SOCKET_PATH,
+    genericRelayPath: GENERIC_RELAY_PATH,
+    authority,
     rooms,
-    descriptorForGame: game => buildMultiplayerDescriptor(game, SOCKET_PATH),
+    genericRooms,
+    descriptorForGame: game => buildMultiplayerDescriptor(game, SOCKET_PATH, { relayPublicUrl }),
+    issueMatchTicket,
     handleUpgrade,
     publicRoute,
     close,

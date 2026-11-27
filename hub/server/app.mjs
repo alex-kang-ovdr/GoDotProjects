@@ -219,7 +219,14 @@ export function createApp(input, dependencies = {}) {
   // Build version identity, COMPAT_* compatibility gate, and per-target force/optional release policy.
   const versionCompat = createVersionCompat({ config, rootDir, platformRoot, now, audit, env: dependencies.env || process.env });
   // Hub-AOS (Android runtime-only Mobile API: Guest/Google JWT, Age Gate, Catalog, Saves). Inert unless config.mobile.enabled === true.
-  const ugcMultiplayer = createUgcMultiplayer({ now, allowedOrigins: config.userOrigins });
+  const ugcMultiplayer = createUgcMultiplayer({
+    now,
+    allowedOrigins: config.userOrigins,
+    trustedProxies: config.trustedProxies ?? true,
+    requireTicket: config.requireWsTicket ?? (env.PLAYHUB_REQUIRE_WS_TICKET === '1'),
+    ticketSecret: config.relayTicketSecret || env.PLAYHUB_RELAY_TICKET_SECRET || '',
+    relayPublicUrl: config.relayPublicUrl || env.PLAYHUB_RELAY_PUBLIC_URL || '',
+  });
   const dsControlPlane = createDsControlPlane({ platformRoot, now, audit, rate, requireSession: requireUnsanctionedSession, promote, verifyInternalAccess });
   const mobileAppConfig = Object.defineProperties({ ...config }, {
     _rootDir: { value: rootDir, enumerable: false },
@@ -540,6 +547,24 @@ export function createApp(input, dependencies = {}) {
       serverEvent('play_session_created',principal,game.id,id);
       const mp = ugcMultiplayer.descriptorForGame(game);
       json(res,201,{ id,gameId:game.id,entryUrl:game.entryUrl,deployMode:game.deployMode || 'singleplay',multiplayer:mp,kind:profile(principal).kind,saveSchemaVersion:game.saveSchemaVersion,buildId:game.buildId }); return;
+    }
+    if (path === '/api/multiplayer/match' && req.method === 'POST') {
+      assertNotPlatformSanctioned(s.principal_id);
+      rate(`mpmatch:${s.id_hash}`, 60, 60000);
+      const body = await readJson(req, 4096);
+      const game = findGame(rootDir, db, assertId(body.gameId), true, catalogOptions);
+      const principal = promote(s, req, res);
+      assertNotPlatformSanctioned(principal.principal_id);
+      const prof = profile(principal);
+      const matchPayload = ugcMultiplayer.issueMatchTicket({
+        sub: principal.principal_id,
+        name: prof.displayName || 'Player',
+        platform: typeof body.platform === 'string' ? body.platform : 'web',
+        game,
+        partyCode: typeof body.partyCode === 'string' ? body.partyCode : '',
+        roomId: typeof body.roomId === 'string' ? body.roomId : '',
+      });
+      json(res, 201, matchPayload); return;
     }
     const slotsPath=path.match(/^\/api\/saves\/([a-zA-Z0-9_-]+)\/slots$/);
     if(slotsPath && req.method==='GET'){

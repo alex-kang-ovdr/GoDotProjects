@@ -1,0 +1,14 @@
+# Cloudflare Workers + Durable Objects config for Type 1 Generic Spatial Relay (relay-spatial-v1)
+# Copy to spatial-relay.wrangler.toml and set PLAYHUB_RELAY_TICKET_SECRET via `wrangler secret put`.
+name = "playhub-spatial-relay"
+main = "spatial-relay-worker.mjs"
+compatibility_date = "2026-11-01"
+
+[durable_objects]
+bindings = [
+  { name = "SPATIAL_CHANNELS", class_name = "SpatialChannelDO" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SpatialChannelDO"]

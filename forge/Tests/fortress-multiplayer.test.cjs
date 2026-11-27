@@ -14,7 +14,7 @@ const root = path.resolve(__dirname, '..');
 
 test('packaged authoritative solver matches the original Fortress War source', () => {
   const original = path.join(root, '..', 'games', 'fortress-blue', 'Web', 'engine.js');
-  const packaged = path.join(root, 'Tools', 'fortress-engine.cjs');
+  const packaged = path.join(root, 'Templates', 'fortress-war', 'server', 'fortress-engine.cjs');
   const normalized = file => fs.readFileSync(file, 'utf8').replaceAll('\r\n', '\n');
   assert.equal(normalized(packaged), normalized(original));
 });

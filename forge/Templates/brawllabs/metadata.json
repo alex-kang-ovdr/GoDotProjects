@@ -25,6 +25,13 @@
       "serverRuntime": "node-wss-v1",
       "specTier": "micro",
       "lobbyMode": "stateless_ui",
+      "runtimeConfig": {
+        "serverEntry": "server/entry.cjs",
+        "maxPlayersPerSession": 18,
+        "tickRateHz": 20,
+        "idleSleepSec": 180,
+        "resultCommitEnabled": true
+      },
       "channelPolicy": {
         "autoChanneling": true,
         "softCapPerChannel": 12,

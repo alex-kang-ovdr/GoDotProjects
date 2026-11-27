@@ -588,6 +588,34 @@
         "forge/Tools/dedicated-server/**",
         "docs/multiplayer/**"
       ]
+    },
+    "PlayHub-MultiplayerDecouple": {
+      "role": "멀티플레이 플랫폼 탈결합(Type 1 범용 Spatial Relay + Type 2 격리 권위 런타임 호스트 + JoinTicket 인증 · 게임 서버 이관)",
+      "owns": [
+        "docs/architecture/multiplayer-platform-decoupling-design.md",
+        "tools/ugc-shared/**",
+        "hub/server/spatial-relay-service.mjs",
+        "hub/server/ugc-multiplayer.mjs",
+        "hub/server/catalog.mjs",
+        "hub/tests/contract.multiplayer-decoupling.test.mjs",
+        "deploy/cloudflare/spatial-relay-worker.mjs",
+        "deploy/cloudflare/spatial-relay.wrangler.toml.example",
+        "forge/Tools/runtime-host/**",
+        "forge/Tools/multiplayer-server.cjs",
+        "forge/Tools/brawllabs-multiplayer.cjs",
+        "forge/Tools/fortress-multiplayer.cjs",
+        "forge/Tools/fortress-engine.cjs",
+        "forge/Tools/captain-forever-mmo-multiplayer.cjs",
+        "forge/Tests/fortress-multiplayer.test.cjs",
+        "forge/Templates/tappy-chicken-mmo/metadata.json",
+        "forge/Templates/tappy-chicken-mmo/Scripts/MmoNetwork.gd",
+        "forge/Templates/brawllabs/metadata.json",
+        "forge/Templates/brawllabs/server/**",
+        "forge/Templates/fortress-war/metadata.json",
+        "forge/Templates/fortress-war/server/**",
+        "forge/Templates/captain-forever-mmo/metadata.json",
+        "forge/Templates/captain-forever-mmo/server/**"
+      ]
     }
   }
 }
