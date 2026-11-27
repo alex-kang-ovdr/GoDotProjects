@@ -22,21 +22,27 @@
 | **12인 스킬트리 방향성 그래프** | `scripts/prefabs/skilltree_*.lua` (12파일) | **12인 / 359노드**(`root`, `connects`, `parents`, `locks`, `group`, `tags`) 선행 의존 그래프 전수 추출 | 0 |
 | **WX-78 23종 회로 모듈** | `scripts/wx78_moduledefs.lua` | **23종** 회로(`slots`, `bar`, 생물 스캔 출처) + 6슬롯 전력 예산 규칙 전수 추출 | 0 |
 | **화재 전파 & 단열 열관성** | `components/propagator.lua`, `temperature.lua` | `flashpoint=100`, `prop_range=3.0`, 봄 `0.67×` 사거리 보정, `delta * SEG_TIME / (SEG_TIME + insulation)` 원작 공식 직접 검증 | 0 |
+| **전리품 드랍 테이블** | `scripts/prefabs/*.lua` (`SetSharedLootTable`) | **229종** 확률 드랍 테이블 전수 추출 (`deerclops` 눈알+고기8, `krampus` 1% 가방 등) | 0 |
+| **월드젠 룸 & 바이옴 가중치** | `scripts/map/rooms/**/*.lua` (`AddRoom`) | **222종** 지상·동굴·달섬 룸 타일 및 `distributeprefabs` 가중치 테이블 전수 추출 | 0 |
+| **양념(316조합)·빙결·계절보간** | `spicedfoods.lua`, `freezable.lua`, `seasons.lua` | 왈리 4종 양념(`spice_chili`/`garlic`/`sugar`/`salt`), 3상태 빙결 파쇄(`NORMAL→FROZEN→THAWING`), `0.5 - sin(PI*p)*0.5` 16세그 계절 시계 보간 공식 검증 | 0 |
 
 ---
 
 ## 2. 핵심 역공학 복원 엔진 (`DSTLogicEngine`)
 
-### 2.4 추가 복원 엔진 (Pass 2)
+### 2.4 추가 복원 엔진 (Pass 2 & Pass 3)
 - **950종 `Recipe2` & TechTree 검증기 (`can_craft_recipe2`)**: 64종 원작 `TECH.*` 티어, 캐릭터 전용 `builder_tag`(예: 윌로우 `pyromaniac` → `lighter`), 스킬 해금 조건(`builder_skill`), 정확한 재료 수량 검증
-- **12인 359노드 방향성 스킬트리 그래프 (`can_unlock_tree_node`)**: `root` 노드 선행 해금 후 `parents` 연결 노드만 해금 가능한 원작 DAG 위상 검증(예: `wilson_alchemy_1` → `wilson_alchemy_2` → `wilson_alchemy_5`)
+- **12인 360노드 방향성 스킬트리 그래프 (`can_unlock_tree_node`)**: `root` 노드 선행 해금 후 `parents` 연결 노드만 해금 가능한 원작 DAG 위상 검증(예: `wilson_alchemy_1` → `wilson_alchemy_2` → `wilson_alchemy_5`)
 - **WX-78 23종 회로 6슬롯 전력 예산 엔진 (`wx78_can_plug_module`, `wx78_calc_circuit_bonuses`)**: 6칸 초과 차단 및 `maxhealth2`/`movespeed2`/`nightvision`/`heat`/`cold` 스탯 합산
 - **열관성 단열 & 화재 열 전파 (`calc_insulated_temp_delta`, `step_fire_propagators`)**: `DSTWorldSim` 체온 루프에 원작 `30 / (30 + insulation)` 공식을 직접 적용하고(윌슨 수염 겨울 단열 `135`), 봄철 화재 사거리 `0.67×` 축소 및 `flashpoint=100` 점화 전파를 복원
+- **229종 확률 루트 & 222종 월드젠 룸 (`roll_shared_loot`, `sample_worldgen_room_prefabs`)**: 원작 `SetSharedLootTable` 확률 드랍 롤러 및 `AddRoom` 가중치 프리팹 샘플러 복원
+- **계절 16세그 사인 보간 & 왈리 4양념 & 3상태 빙결 파쇄 (`calc_interpolated_season_segs`, `apply_spice_to_food`, `step_freezable`)**: `DSTWorldSim.get_season_segs()`에 원작 일별 사인 보간 직접 적용
 
 ---
 
 ## 3. 자동화 회귀 검증 결과
 - Python 추출기 크로스체크: **12/12** 원작 레시피 조합 PASS (`ast_failures == 0`)
-- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **120개 체크 전체 PASS**
+- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **127개 체크 전체 PASS**
   - 79종 AST 요리, 14종 작물 N/P/K·7스트레스, 외눈사슴 31f 카이팅 회피, `hounded.lua` 웨이브 에스컬레이션
-  - 950종 `Recipe2` 윌로우 `pyromaniac` 태그 게이트, 12인 359노드 스킬트리 부모 선행 차단/해금, WX-78 23종 회로 6슬롯 상한, 단열 열관성 `-10 * 30/150 = -2.0`, 봄철 화재 전파 사거리(`0.67×`) 분리 검증
+  - 950종 `Recipe2` 윌로우 `pyromaniac` 태그 게이트, 12인 360노드 스킬트리 부모 선행 차단/해금, WX-78 23종 회로 6슬롯 상한, 단열 열관성 `-10 * 30/150 = -2.0`, 봄철 화재 전파 사거리(`0.67×`) 분리 검증
+  - 229종 루트 테이블(`deerclops` 눈알+고기 8), 222종 월드젠 룸(`Forest` 샘플링), 16세그 계절 보간, 왈리 4양념(`perogies+salt=50HP`, `chili=1.2×`, `garlic=0.67×`), 3상태 빙결 파쇄 검증

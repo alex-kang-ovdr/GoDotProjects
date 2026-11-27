@@ -25,6 +25,8 @@ var wx78_by_id: Dictionary = {}
 var physics: Dictionary = {}
 var recipes2_by_id: Dictionary = {}
 var skilltrees: Dictionary = {}
+var loot_tables: Dictionary = {}
+var worldgen_rooms: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -53,7 +55,19 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 			wx78_by_id[str(m["id"])] = m
 	physics = raw.get("physics", {})
 	load_ext_from_path("res://data/dst_recipes_skilltrees_extracted.json")
+	load_world_loot_from_path("res://data/dst_worldgen_loot_extracted.json")
 	loaded = true
+	return true
+
+
+func load_world_loot_from_path(path: String = "res://data/dst_worldgen_loot_extracted.json") -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	loot_tables = parsed.get("loot_tables", {})
+	worldgen_rooms = parsed.get("worldgen_rooms", {})
 	return true
 
 
@@ -420,3 +434,134 @@ static func step_fire_propagators(entities: Array, dt: float, is_spring: bool = 
 		elif h > 0.0:
 			ent["heat"] = max(0.0, h - dt * 1.0)
 	return newly_ignited
+
+
+## prefabs/*.lua SetSharedLootTable — 원작 확률 드랍 테이블 롤러
+func roll_shared_loot(table_id: String, rng: RandomNumberGenerator = null) -> Dictionary:
+	var out: Dictionary = {}
+	if not loot_tables.has(table_id):
+		return out
+	var entries: Array = loot_tables[table_id]
+	for e in entries:
+		if not (e is Array) or e.size() < 2:
+			continue
+		var item_id: String = str(e[0])
+		var chance: float = float(e[1])
+		if chance >= 1.0 or (rng != null and rng.randf() <= chance):
+			out[item_id] = int(out.get(item_id, 0)) + 1
+	return out
+
+
+## components/seasons.lua:140-159 — 계절 진행도 기반 16세그 사인 보간 공식
+static func calc_interpolated_season_segs(
+	season_idx: int,
+	day_in_season: int,
+	season_order: Array,
+	lengths: Dictionary,
+	default_segs: Dictionary
+) -> Dictionary:
+	var n: int = season_order.size()
+	if n == 0:
+		return {"day": 8, "dusk": 6, "night": 2}
+	var cur_idx: int = season_idx % n
+	var cur_name: String = str(season_order[cur_idx])
+	var total_days: float = max(1.0, float(lengths.get(cur_name, 20)))
+	var p: float = clamp(float(day_in_season - 1) / total_days, 0.0, 1.0)
+	var target_idx: int = (cur_idx - 1 + n) % n if p < 0.5 else (cur_idx + 1) % n
+	var from_s: Dictionary = default_segs.get(cur_name, {"day": 8, "dusk": 6, "night": 2})
+	var to_s: Dictionary = default_segs.get(str(season_order[target_idx]), from_s)
+	var p_smooth: float = 0.5 - sin(PI * p) * 0.5
+	var d_segs: int = int(floor(lerp(float(from_s["day"]), float(to_s["day"]), p_smooth) + 0.5))
+	var n_segs: int = int(floor(lerp(float(from_s["night"]), float(to_s["night"]), p_smooth) + 0.5))
+	var u_segs: int = max(0, 16 - d_segs - n_segs)
+	return {"day": d_segs, "dusk": u_segs, "night": n_segs}
+
+
+## spicedfoods.lua — 왈리 4종 양념(고추/마늘/꿀/소금) 버프 및 치유 증폭 적용
+func apply_spice_to_food(food: Dictionary, spice_id: String) -> Dictionary:
+	var out: Dictionary = food.duplicate(true)
+	var sp_defs: Dictionary = physics.get("spices", {}).get("defs", {})
+	if not sp_defs.has(spice_id):
+		return out
+	var sd: Dictionary = sp_defs[spice_id]
+	out["spice"] = spice_id
+	out["id"] = str(food.get("id", "food")) + "_" + spice_id
+	if spice_id == "spice_salt" and float(out.get("health", 0.0)) > 0.0:
+		out["health"] = float(out["health"]) * float(sd.get("health_bonus_mult", 1.25))
+	elif spice_id == "spice_chili":
+		out["buff"] = "buff_attack"
+		out["attack_mult"] = float(sd.get("attack_mult", 1.2))
+		out["buff_duration"] = float(sd.get("duration", 240.0))
+		out["temperature"] = float(sd.get("temp_bonus", 40.0))
+	elif spice_id == "spice_garlic":
+		out["buff"] = "buff_playerabsorption"
+		out["damage_taken_mult"] = float(sd.get("damage_taken_mult", 0.67))
+		out["buff_duration"] = float(sd.get("duration", 240.0))
+	elif spice_id == "spice_sugar":
+		out["buff"] = "buff_workeffectiveness"
+		out["work_mult"] = float(sd.get("work_mult", 2.0))
+		out["buff_duration"] = float(sd.get("duration", 240.0))
+	return out
+
+
+## components/freezable.lua:10-34 — 3상태 빙결(NORMAL->FROZEN->THAWING) 및 피격 파쇄 공식
+static func step_freezable(st: Dictionary, cold_delta: float, dmg_taken: float, dt: float) -> Dictionary:
+	var state: String = str(st.get("state", "NORMAL"))
+	var coldness: float = float(st.get("coldness", 0.0))
+	var resist: float = max(0.5, float(st.get("resistance", 1.0)))
+	var wear: float = float(st.get("wear_timer", 0.0))
+	var dmg_total: float = float(st.get("damage_total", 0.0))
+	var dmg_break: float = float(st.get("damage_to_break", 10.0))
+
+	if cold_delta > 0.0:
+		coldness += cold_delta
+		if coldness >= resist and state == "NORMAL":
+			state = "FROZEN"
+			wear = float(st.get("wearofftime", 10.0))
+			dmg_total = 0.0
+	if (state == "FROZEN" or state == "THAWING") and dmg_taken > 0.0:
+		dmg_total += abs(dmg_taken)
+		if dmg_total >= dmg_break:
+			state = "NORMAL"
+			coldness = 0.0
+			wear = 0.0
+			dmg_total = 0.0
+	elif state != "NORMAL" and dt > 0.0:
+		wear -= dt
+		if wear <= 0.0:
+			if state == "FROZEN":
+				state = "THAWING"
+				wear = float(st.get("wearofftime", 10.0)) * 0.5
+			else:
+				state = "NORMAL"
+				coldness = 0.0
+				wear = 0.0
+	elif coldness > 0.0 and dt > 0.0:
+		coldness = max(0.0, coldness - dt * 0.25)
+
+	return {
+		"state": state, "coldness": coldness, "resistance": resist,
+		"wear_timer": wear, "wearofftime": float(st.get("wearofftime", 10.0)),
+		"damage_total": dmg_total, "damage_to_break": dmg_break,
+	}
+
+
+## map/rooms/**/*.lua — 추출된 월드젠 룸 가중치 테이블 기반 프리팹 샘플러
+func sample_worldgen_room_prefabs(room_name: String, count: int, rng: RandomNumberGenerator) -> Array:
+	var out: Array = []
+	if not worldgen_rooms.has(room_name):
+		return out
+	var prefabs: Dictionary = worldgen_rooms[room_name].get("prefabs", {})
+	var total_w: float = 0.0
+	for w in prefabs.values():
+		total_w += float(w)
+	if total_w <= 0.0:
+		return out
+	for _i in range(count):
+		var pick: float = rng.randf() * total_w
+		for k in prefabs.keys():
+			pick -= float(prefabs[k])
+			if pick <= 0.0:
+				out.append(str(k))
+				break
+	return out

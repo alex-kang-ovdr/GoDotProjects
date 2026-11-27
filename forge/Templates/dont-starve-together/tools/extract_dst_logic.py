@@ -28,6 +28,7 @@ SCRIPTS_DIR_DEFAULT = TEMPLATE_ROOT / "extracted_assets" / "scripts_bundle" / "s
 DST_SCRIPTS_ZIP = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together\data\databundles\scripts.zip")
 OUT_JSON = TEMPLATE_ROOT / "data" / "dst_logic_extracted.json"
 OUT_EXT_JSON = TEMPLATE_ROOT / "data" / "dst_recipes_skilltrees_extracted.json"
+OUT_WORLD_JSON = TEMPLATE_ROOT / "data" / "dst_worldgen_loot_extracted.json"
 
 
 def read_lua(scripts_dir: Path, rel_path: str) -> str:
@@ -769,7 +770,85 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
             "verified_formula": "delta = delta * (SEG_TIME / (SEG_TIME + insulation))",
             "verified_in_lua": ("TUNING.SEG_TIME / (TUNING.SEG_TIME + winterInsulation)" in temp_src),
         },
+        "freezable": {
+            "source_file": "components/freezable.lua",
+            "states": ["NORMAL", "FROZEN", "THAWING"],
+            "default_resistance": 1.0,
+            "default_wearofftime": 10.0,
+            "verified_in_lua": ("self.damagetotal >= self.damagetobreak" in read_lua(scripts_dir, "components/freezable.lua")),
+        },
+        "seasons_clock_interp": {
+            "source_file": "components/seasons.lua",
+            "formula": "p_smooth = 0.5 - sin(PI * p) * 0.5; day = floor(lerp(from.day, to.day, p_smooth) + 0.5)",
+            "verified_in_lua": ("math.sin(PI * p) * .5" in read_lua(scripts_dir, "components/seasons.lua")),
+        },
+        "spices": {
+            "source_file": "spicedfoods.lua",
+            "verified_in_lua": ("SPICE_CHILI" in read_lua(scripts_dir, "spicedfoods.lua")),
+            "defs": {
+                "spice_chili": {"buff": "buff_attack", "attack_mult": tuning.get("BUFF_ATTACK_DAMAGEMODIFIER", 1.2), "duration": tuning.get("BUFF_ATTACK_DURATION", 240.0), "temp_bonus": tuning.get("HOT_FOOD_BONUS_TEMP", 40.0)},
+                "spice_garlic": {"buff": "buff_playerabsorption", "damage_taken_mult": round(1.0 - tuning.get("BUFF_PLAYERABSORPTION_MODIFIER", 0.33), 4), "duration": tuning.get("BUFF_PLAYERABSORPTION_DURATION", 240.0)},
+                "spice_sugar": {"buff": "buff_workeffectiveness", "work_mult": tuning.get("BUFF_WORKEFFECTIVENESS_MODIFIER", 2.0), "duration": tuning.get("BUFF_WORKEFFECTIVENESS_DURATION", 240.0)},
+                "spice_salt": {"buff": "salt_heal", "health_bonus_mult": 1.25},
+            },
+        },
     }
+
+
+# ---------------------------------------------------------------------------
+# 12. Extract ALL Shared Loot Tables (SetSharedLootTable across prefabs/*.lua)
+# ---------------------------------------------------------------------------
+
+def extract_shared_loot_tables(scripts_dir: Path) -> dict:
+    prefabs_dir = scripts_dir / "prefabs"
+    tables = {}
+    lt_re = re.compile(r"SetSharedLootTable\(\s*['\"]([^'\"]+)['\"]\s*,\s*\{(.*?)\}\s*\)", re.S)
+    entry_re = re.compile(r"\{\s*['\"]([^'\"]+)['\"]\s*,\s*([0-9]*\.?[0-9]+)\s*\}")
+    for fp in sorted(prefabs_dir.glob("*.lua")):
+        src = fp.read_text(encoding="utf-8", errors="replace")
+        if "SetSharedLootTable" not in src:
+            continue
+        for m in lt_re.finditer(src):
+            tid = m.group(1)
+            drops = []
+            for em in entry_re.finditer(m.group(2)):
+                drops.append([em.group(1), float(em.group(2))])
+            if drops:
+                tables[tid] = drops
+    return {"table_count": len(tables), "tables": tables}
+
+
+# ---------------------------------------------------------------------------
+# 13. Extract WorldGen Rooms (AddRoom across scripts/map/rooms/**/*.lua)
+# ---------------------------------------------------------------------------
+
+def extract_worldgen_rooms(scripts_dir: Path) -> dict:
+    rooms_dir = scripts_dir / "map" / "rooms"
+    rooms = {}
+    room_re = re.compile(r'AddRoom\(\s*"([^"]+)"\s*,\s*\{', re.S)
+    for fp in sorted(rooms_dir.rglob("*.lua")):
+        src = fp.read_text(encoding="utf-8", errors="replace")
+        matches = list(room_re.finditer(src))
+        for i, m in enumerate(matches):
+            rname = m.group(1)
+            s0 = m.end()
+            s1 = matches[i + 1].start() if i + 1 < len(matches) else len(src)
+            chunk = src[s0:s1]
+            tile_m = re.search(r"value\s*=\s*WORLD_TILES\.([A-Z0-9_]+)", chunk)
+            dp_m = re.search(r"distributepercent\s*=\s*([0-9]*\.?[0-9]+)", chunk)
+            prefabs_m = re.search(r"distributeprefabs\s*=\s*\{([^}]*)\}", chunk, re.S)
+            prefabs = {}
+            if prefabs_m:
+                for pm in re.finditer(r"([a-zA-Z0-9_]+)\s*=\s*([0-9]*\.?[0-9]+)", prefabs_m.group(1)):
+                    prefabs[pm.group(1)] = float(pm.group(2))
+            if tile_m:
+                rooms[rname] = {
+                    "tile": tile_m.group(1),
+                    "distribute_percent": float(dp_m.group(1)) if dp_m else 0.1,
+                    "prefabs": prefabs,
+                    "source": str(fp.relative_to(scripts_dir)).replace("\\", "/"),
+                }
+    return {"room_count": len(rooms), "rooms": rooms}
 
 
 def main():
@@ -890,9 +969,17 @@ def main():
     wx78_mods = extract_wx78_modules(read_lua(sdir, "wx78_moduledefs.lua"))
     print(f"  -> skilltrees={skilltrees['character_count']} chars ({skilltrees['total_nodes']} nodes), wx78_modules={wx78_mods['module_count']}")
 
-    print("[9/9] Extracting Fire Propagator & Thermal Insulation verified physics...")
+    print("[9/11] Extracting Fire Propagator, Thermal Insulation, Freezable, Seasons & Spices...")
     phys_rules = extract_physics_rules(sdir, tuning)
-    print(f"  -> propagator_verified={phys_rules['propagator']['verified_in_lua']}, insulation_verified={phys_rules['temperature_insulation']['verified_in_lua']}")
+    print(f"  -> propagator={phys_rules['propagator']['verified_in_lua']}, insulation={phys_rules['temperature_insulation']['verified_in_lua']}, freezable={phys_rules['freezable']['verified_in_lua']}, seasons={phys_rules['seasons_clock_interp']['verified_in_lua']}, spices={phys_rules['spices']['verified_in_lua']}")
+
+    print("[10/11] Extracting ALL Shared Loot Tables across prefabs/*.lua...")
+    loot_tables = extract_shared_loot_tables(sdir)
+    print(f"  -> shared_loot_tables={loot_tables['table_count']}")
+
+    print("[11/11] Extracting ALL WorldGen Rooms across map/rooms/**/*.lua...")
+    world_rooms = extract_worldgen_rooms(sdir)
+    print(f"  -> worldgen_rooms={world_rooms['room_count']}")
 
     bundle = {
         "meta": {
@@ -906,6 +993,7 @@ def main():
                 "prepared_foods_normal": len(pf_norm),
                 "prepared_foods_warly": len(pf_warly),
                 "prepared_foods_total": len(all_foods),
+                "spiced_foods_combinations": len(all_foods) * 4,
                 "farm_crops": len(crops),
                 "characters_19": len(chars19),
                 "stategraphs": len(sgs),
@@ -915,6 +1003,8 @@ def main():
                 "skilltree_characters": skilltrees["character_count"],
                 "skilltree_nodes_total": skilltrees["total_nodes"],
                 "wx78_modules": wx78_mods["module_count"],
+                "shared_loot_tables": loot_tables["table_count"],
+                "worldgen_rooms": world_rooms["room_count"],
             },
         },
         "tuning": key_tuning,
@@ -942,11 +1032,24 @@ def main():
         "skilltrees": skilltrees,
     }
 
+    world_bundle = {
+        "meta": {
+            "extracted_at": bundle["meta"]["extracted_at"],
+            "source_version": "763928",
+            "shared_loot_tables": loot_tables["table_count"],
+            "worldgen_rooms": world_rooms["room_count"],
+        },
+        "loot_tables": loot_tables["tables"],
+        "worldgen_rooms": world_rooms["rooms"],
+    }
+
     OUT_JSON.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
     OUT_EXT_JSON.write_text(json.dumps(ext_bundle, ensure_ascii=False), encoding="utf-8")
+    OUT_WORLD_JSON.write_text(json.dumps(world_bundle, ensure_ascii=False), encoding="utf-8")
     sz_kb = round(OUT_JSON.stat().st_size / 1024.0, 2)
     sz_ext_kb = round(OUT_EXT_JSON.stat().st_size / 1024.0, 2)
-    print(f"\n=== LOGIC EXTRACTION COMPLETE: {OUT_JSON.name} ({sz_kb} KB) + {OUT_EXT_JSON.name} ({sz_ext_kb} KB) ===")
+    sz_w_kb = round(OUT_WORLD_JSON.stat().st_size / 1024.0, 2)
+    print(f"\n=== LOGIC EXTRACTION COMPLETE: {OUT_JSON.name} ({sz_kb} KB) + {OUT_EXT_JSON.name} ({sz_ext_kb} KB) + {OUT_WORLD_JSON.name} ({sz_w_kb} KB) ===")
     print(json.dumps(bundle["meta"], ensure_ascii=False, indent=2))
 
 

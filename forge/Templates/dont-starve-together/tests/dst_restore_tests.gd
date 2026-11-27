@@ -423,6 +423,26 @@ func _run() -> void:
 	var ign_spring: Array = DSTLogicEngine.step_fire_propagators(fire_ents, 1.0, true) # 봄: range = 3*0.67 = 2.01 -> id=2만 발화, id=3(2.6m) 미발화!
 	_check(ign_spring.has(2) and not ign_spring.has(3), "LOGIC_PROPAGATOR_FIRE_SPRING_MOD", str(ign_spring))
 
+	# 역공학 로직 검증 9: 229종 SetSharedLootTable (외눈사슴 눈알+고기8 확정 드랍) & 222종 WorldGen 룸 샘플링
+	_check(db.logic.loot_tables.size() >= 220 and db.logic.worldgen_rooms.size() >= 220, "LOGIC_LOOT_229_ROOMS_222", "loot=%d rooms=%d" % [db.logic.loot_tables.size(), db.logic.worldgen_rooms.size()])
+	var dc_loot: Dictionary = db.logic.roll_shared_loot("deerclops", sim.rng)
+	_check(int(dc_loot.get("deerclops_eyeball", 0)) >= 1 and int(dc_loot.get("meat", 0)) >= 8, "LOGIC_LOOT_DEERCLOPS_EXACT", str(dc_loot))
+	var room_sample: Array = db.logic.sample_worldgen_room_prefabs("Forest", 5, sim.rng)
+	_check(room_sample.size() == 5, "LOGIC_WORLDGEN_FOREST_SAMPLE", str(room_sample))
+
+	# 역공학 로직 검증 10: seasons.lua 16세그 사인 보간 + spicedfoods.lua 4종 양념 + freezable.lua 3상태 파쇄
+	var seg_mid: Dictionary = DSTLogicEngine.calc_interpolated_season_segs(1, 8, db.data["seasons"]["order"], db.data["seasons"]["lengths"], db.data["seasons"]["clock_segs"])
+	_check(int(seg_mid["day"]) + int(seg_mid["dusk"]) + int(seg_mid["night"]) == 16, "LOGIC_SEASONS_SINE_16SEGS", str(seg_mid))
+	var sp_salt: Dictionary = db.logic.apply_spice_to_food(db.foods_by_id["perogies"], "spice_salt")
+	var sp_chili: Dictionary = db.logic.apply_spice_to_food(db.foods_by_id["meatballs"], "spice_chili")
+	var sp_garlic: Dictionary = db.logic.apply_spice_to_food(db.foods_by_id["meatballs"], "spice_garlic")
+	_check(_approx(float(sp_salt["health"]), 50.0) and _approx(float(sp_chili["attack_mult"]), 1.2) and _approx(float(sp_garlic["damage_taken_mult"]), 0.67, 0.01), "LOGIC_WARLY_SPICES_4")
+	var fz: Dictionary = {"state": "NORMAL", "coldness": 0.0, "resistance": 2.0, "wearofftime": 10.0, "damage_to_break": 15.0}
+	fz = DSTLogicEngine.step_freezable(fz, 2.5, 0.0, 0.0)
+	_check(str(fz["state"]) == "FROZEN", "LOGIC_FREEZABLE_ENTER_FROZEN", str(fz))
+	fz = DSTLogicEngine.step_freezable(fz, 0.0, 20.0, 0.0) # 피격 20 >= 15 -> 즉시 파쇄 해동!
+	_check(str(fz["state"]) == "NORMAL", "LOGIC_FREEZABLE_SHATTER_BREAK", str(fz))
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

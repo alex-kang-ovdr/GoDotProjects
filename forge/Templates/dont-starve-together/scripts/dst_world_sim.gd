@@ -230,6 +230,11 @@ func get_season_name() -> String:
 
 
 func get_season_segs() -> Dictionary:
+	if db != null and db.logic != null and db.logic.loaded:
+		return DSTLogicEngine.calc_interpolated_season_segs(
+			season_index, day_in_season,
+			db.data["seasons"]["order"], db.data["seasons"]["lengths"], db.data["seasons"]["clock_segs"]
+		)
 	return db.data["seasons"]["clock_segs"][get_season_name()]
 
 
