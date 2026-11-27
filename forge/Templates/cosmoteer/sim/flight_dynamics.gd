@@ -72,7 +72,7 @@ static func refresh_mass(ship: Dictionary) -> void:
 	var total := 0.0
 	var center := Vector2.ZERO
 	for p in ship.parts.values():
-		if p.hp > 0:
+		if p.hp > 0 and not bool(p.get("severed", false)):
 			total += p.mass
 			center += p.hit_rect.get_center() * p.mass
 	if total <= 0:
@@ -81,7 +81,7 @@ static func refresh_mass(ship: Dictionary) -> void:
 	var inertia := 0.0
 	var radius := 0.1
 	for p in ship.parts.values():
-		if p.hp <= 0:
+		if p.hp <= 0 or bool(p.get("severed", false)):
 			continue
 		var rect: Rect2 = p.hit_rect
 		var lever := center.distance_squared_to(rect.get_center())
@@ -108,6 +108,27 @@ static func point_velocity(ship: Dictionary, world_point: Vector2) -> Vector2:
 	return Vector2(ship.velocity) + Vector2(-radius.y, radius.x) * float(ship.angular_velocity)
 
 
+static func _engine_room_adj_mult(ship: Dictionary, thruster: Dictionary) -> float:
+	var er_uids: Array = ship.get("ids", {}).get("cosmoteer.engine_room", [])
+	if er_uids.is_empty() or float(thruster.get("hp", 0.0)) <= 0.0 or bool(thruster.get("severed", false)):
+		return 1.0
+	var tcell: Vector2i = thruster.cell
+	var tsize: Vector2i = thruster.size
+	var cells_map: Dictionary = ship.get("cells", {})
+	for x in range(tcell.x - 1, tcell.x + tsize.x + 1):
+		for y in range(tcell.y - 1, tcell.y + tsize.y + 1):
+			var in_x := x >= tcell.x and x < tcell.x + tsize.x
+			var in_y := y >= tcell.y and y < tcell.y + tsize.y
+			if (in_x and in_y) or ((not in_x) and (not in_y)):
+				continue
+			var nuid := int(cells_map.get(Vector2i(x, y), -1))
+			if nuid >= 0 and ship.parts.has(nuid):
+				var np: Dictionary = ship.parts[nuid]
+				if str(np.id) == "cosmoteer.engine_room" and float(np.hp) > 0.0 and not bool(np.get("severed", false)) and int(np.get("energy", 0)) > 0:
+					return 1.5
+	return 1.0
+
+
 static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> void:
 	ship.previous_position = ship.position
 	ship.previous_heading = ship.heading
@@ -127,7 +148,9 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 	var h_cap := EngineRoom.heat_limit(ship)
 	for uid in ship.engines:
 		var engine: Dictionary = ship.parts[uid]
-		engine.overclocked = ship.overclock and ship.command and EngineRoom.linked(ship, engine)
+		engine.overclocked = ship.overclock and ship.command and EngineRoom.linked(ship, engine) and not bool(engine.get("severed", false))
+		var er_mult := _engine_room_adj_mult(ship, engine)
+		engine["er_buff_mult"] = er_mult
 		engine.boost_power_rate = 0.0
 		if engine.id == Special.BOOST:
 			Special.tick_boost(ship, engine, dt)
@@ -136,7 +159,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 				engine.boost_power_rate = -float(data.boost_drain_quantity) / float(data.boost_drain_interval)
 		elif engine.id == Special.ROCKET:
 			Special.update_rocket(ship, engine)
-		if engine.hp > 0 and engine.stats.has("production_quantity"):
+		if engine.hp > 0 and not bool(engine.get("severed", false)) and engine.stats.has("production_quantity"):
 			engine.clock += dt
 			if engine.clock + 1e-7 >= engine.stats.production_interval:
 				engine.clock = 0.0
@@ -150,14 +173,14 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 			engine.fuel_online = false
 		for n in engine.nozzles:
 			n.requested = 0.0
-			if engine.hp <= 0 or not engine.fuel_online or not ship.command or engine.thermal_trip:
+			if engine.hp <= 0 or bool(engine.get("severed", false)) or not engine.fuel_online or not ship.command or engine.thermal_trip:
 				n.activation = 0.0
 				if engine.has("raw_activation"):
 					engine.raw_activation = 0.0
 					engine.raw_recovery = 0.0
 				continue
 			active.append(n)
-			var mount_force: Vector2 = n.direction_local * n.spec.thrust_force
+			var mount_force: Vector2 = n.direction_local * n.spec.thrust_force * er_mult
 			if engine.overclocked:
 				mount_force *= EngineRoom.FORCE_MULTIPLIER
 			var arm: Vector2 = n.location_local - ship.center_of_mass
@@ -188,7 +211,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 		var applied := Vector2.ZERO
 		var moment := 0.0
 		for n in engine.nozzles:
-			if engine.hp <= 0 or not engine.fuel_online or not ship.command or engine.thermal_trip:
+			if engine.hp <= 0 or bool(engine.get("severed", false)) or not engine.fuel_online or not ship.command or engine.thermal_trip:
 				continue
 			if engine.has("raw_activation"):
 				n.activation = Special.actuate(engine, n, dt)
@@ -200,7 +223,7 @@ static func advance(ship: Dictionary, move: Vector2, turn: float, dt: float) -> 
 				n.activation = move_toward(previous, demand, dt / ramp) if ramp > 0.0 else demand
 				if previous > 0 and n.activation == 0:
 					n.recovery = n.spec.recovery_time
-			var f: Vector2 = n.direction_local * (n.spec.thrust_force * n.activation)
+			var f: Vector2 = n.direction_local * (n.spec.thrust_force * float(engine.get("er_buff_mult", 1.0)) * n.activation)
 			applied += f
 			moment += (Vector2(n.location_local) - Vector2(ship.center_of_mass)).cross(f)
 			spent += n.spec.fuel_per_second * n.activation * dt

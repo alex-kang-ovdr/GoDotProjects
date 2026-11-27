@@ -535,7 +535,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 	for uid in _ids_of(ship, CombatSystems.PROJECTILE_WEAPON_IDS):
 		var gun: Dictionary = ship.parts[uid]
 		var need_crew := int(gun.stats.get("crew_required", 1))
-		if gun.hp <= 0 or gun.staffed < need_crew or not ship.command or gun.energy < gun.stats.min_resources_used or not _alive(other, target):
+		if gun.hp <= 0 or bool(gun.get("severed", false)) or gun.staffed < need_crew or not ship.command or gun.energy < gun.stats.min_resources_used or not _alive(other, target):
 			gun.aim_status = "offline"
 			gun.release = -1
 			if gun.id == CombatSystems.CHAINGUN:
@@ -651,6 +651,9 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 	CombatSystems.tick_statuses(ship, DT)
 	for ext_uid in fire_report.extinguished:
 		_record("fire_out", side, int(ext_uid), int(ext_uid))
+	for ign_uid in fire_report.get("ignited", []):
+		_record("fire_start", side, int(ign_uid), int(ign_uid))
+		events[-1].pos = part_world(ship, int(ign_uid))
 	for dead_uid in fire_report.destroyed:
 		var attacker := "enemy" if side == "player" else "player"
 		_on_part_destroyed(ship, int(dead_uid), attacker, int(dead_uid), part_world(ship, int(dead_uid)))
@@ -697,7 +700,7 @@ func _crew_tick(ship: Dictionary, crew: Dictionary, side: String) -> void:
 				crew.goal = -1
 			return
 		var floor_id: int = ship.cells[crew.at]
-		var factor: float = ship.parts[floor_id].walk_factor
+		var factor: float = CombatSystems.crew_step_speed_factor(ship.parts[floor_id], next - crew.at)
 		crew.pos = Vector2(crew.pos).move_toward(Vector2(next), ship.speed * factor * DT)
 		if not crew.pos.is_equal_approx(Vector2(next)):
 			return
@@ -952,6 +955,10 @@ func _on_part_destroyed(victim: Dictionary, uid: int, attacker_side: String, tar
 		CombatSystems.refresh_chainguns(victim)
 	if part.id == Special.BOOST and part.boost_active:
 		Special.set_boost(victim, part, false)
+	var newly_severed := CombatSystems.refresh_structural_contiguity(victim)
+	for sev_uid in newly_severed:
+		_record("severed", attacker_side, sev_uid, target)
+		events[-1].pos = part_world(victim, sev_uid)
 	Flight.refresh_mass(victim)
 	if victim == enemy and attacker_side == "player":
 		var row: Dictionary = victim.design.by_id.get(part.id, {})

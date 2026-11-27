@@ -1179,6 +1179,112 @@ static func apply_hit_impulse(victim: Dictionary, dir: Vector2, damage: float, s
 	victim["velocity"] = Vector2(victim.get("velocity", Vector2.ZERO)) + dv
 
 
+## Cosmoteer.Ships.Parts.StructureContiguityManager: sever parts disconnected from all live bridges.
+static func refresh_structural_contiguity(ship: Dictionary) -> Array[int]:
+	var newly_severed: Array[int] = []
+	var queue: Array[Vector2i] = []
+	var visited_cells := {}
+	var reached_uids := {}
+	for bid in BRIDGE_IDS:
+		for buid in ship.get("ids", {}).get(bid, []):
+			var bpart: Dictionary = ship.parts.get(buid, {})
+			if float(bpart.get("hp", 0.0)) <= 0.0:
+				continue
+			reached_uids[int(buid)] = true
+			var bcell: Vector2i = bpart.cell
+			var bsize: Vector2i = bpart.size
+			for dx in bsize.x:
+				for dy in bsize.y:
+					var c := bcell + Vector2i(dx, dy)
+					if not visited_cells.has(c):
+						visited_cells[c] = true
+						queue.append(c)
+	if reached_uids.is_empty():
+		return newly_severed
+	var q_idx := 0
+	var dirs := [Vector2i.RIGHT, Vector2i.LEFT, Vector2i.DOWN, Vector2i.UP]
+	var cells_map: Dictionary = ship.get("cells", {})
+	while q_idx < queue.size():
+		var cur := queue[q_idx]
+		q_idx += 1
+		for d: Vector2i in dirs:
+			var nxt := cur + d
+			if visited_cells.has(nxt):
+				continue
+			var nuid := int(cells_map.get(nxt, -1))
+			if nuid < 0 or not ship.parts.has(nuid):
+				continue
+			var np: Dictionary = ship.parts[nuid]
+			if float(np.get("hp", 0.0)) <= 0.0:
+				continue
+			visited_cells[nxt] = true
+			reached_uids[nuid] = true
+			queue.append(nxt)
+	for uid_key in ship.parts:
+		var uid := int(uid_key)
+		var part: Dictionary = ship.parts[uid]
+		if float(part.get("hp", 0.0)) <= 0.0:
+			part["severed"] = false
+			continue
+		var is_sev := not reached_uids.has(uid)
+		var was_sev := bool(part.get("severed", false))
+		part["severed"] = is_sev
+		if is_sev and not was_sev:
+			part.staffed = 0
+			part["shield_active"] = false
+			part["ion_active"] = false
+			newly_severed.append(uid)
+	return newly_severed
+
+
+## Cosmoteer.Ships.Parts.DirectionalCrewSpeeds: conveyor belt directional speed + fire slowdown.
+static func crew_step_speed_factor(part: Dictionary, move_dir: Vector2i) -> float:
+	var base := float(part.get("walk_factor", 1.0))
+	var dcs: Dictionary = get_dll_mechanics().get("directional_crew_speeds", {})
+	if str(part.get("id", "")) == CONVEYOR and move_dir != Vector2i.ZERO:
+		var rot := posmod(int(part.get("rotation", 0)), 4)
+		var fwd := Vector2i.UP
+		match rot:
+			1: fwd = Vector2i.RIGHT
+			2: fwd = Vector2i.DOWN
+			3: fwd = Vector2i.LEFT
+		var dot := move_dir.x * fwd.x + move_dir.y * fwd.y
+		if dot > 0:
+			base = float(dcs.get("conveyor_forward", 2.0))
+		elif dot < 0:
+			base = float(dcs.get("conveyor_backward", 0.25))
+		else:
+			base = float(dcs.get("conveyor_sideways", 0.75))
+	var fire_lvl := clampf(float(part.get("fire", 0.0)), 0.0, 1.0)
+	if fire_lvl > 0.05:
+		var fire_min := float(dcs.get("fire_speed_min", 0.2))
+		base *= lerpf(1.0, fire_min, fire_lvl)
+	return maxf(0.1, base)
+
+
+## Cosmoteer.Ships.Buffs.BuffManager: real engine_room (+50%) adjacency thrust buff.
+static func thruster_engine_room_buff(ship: Dictionary, thruster: Dictionary) -> float:
+	var er_uids: Array = ship.get("ids", {}).get(ENGINE_ROOM_REAL, [])
+	if er_uids.is_empty() or float(thruster.get("hp", 0.0)) <= 0.0 or bool(thruster.get("severed", false)):
+		return 1.0
+	var bonus := float(get_dll_mechanics().get("engine_room_buff", {}).get("thrust_bonus", 0.5))
+	var tcell: Vector2i = thruster.cell
+	var tsize: Vector2i = thruster.size
+	var cells_map: Dictionary = ship.get("cells", {})
+	for x in range(tcell.x - 1, tcell.x + tsize.x + 1):
+		for y in range(tcell.y - 1, tcell.y + tsize.y + 1):
+			var in_x := x >= tcell.x and x < tcell.x + tsize.x
+			var in_y := y >= tcell.y and y < tcell.y + tsize.y
+			if (in_x and in_y) or ((not in_x) and (not in_y)):
+				continue
+			var nuid := int(cells_map.get(Vector2i(x, y), -1))
+			if nuid >= 0 and ship.parts.has(nuid):
+				var np: Dictionary = ship.parts[nuid]
+				if str(np.id) == ENGINE_ROOM_REAL and float(np.hp) > 0.0 and not bool(np.get("severed", false)) and int(np.get("energy", 0)) > 0:
+					return 1.0 + bonus
+	return 1.0
+
+
 static func prepare_part(part: Dictionary) -> void:
 	part["fire"] = 0.0
 	if is_shield(part.id):
@@ -1636,18 +1742,24 @@ static func part_salvage_value(row: Dictionary) -> int:
 	return maxi(25, roundi(total * 0.35))
 
 
-## Tick active ship fires and automatic fire-extinguisher suppression.
-## Returns {"extinguished": Array[int], "destroyed": Array[int]}.
+## Tick active ship fires, Cosmoteer fire spread to adjacent cells, and extinguisher suppression.
+## Returns {"extinguished": Array[int], "destroyed": Array[int], "ignited": Array[int]}.
 static func tick_fires(ship: Dictionary, dt: float) -> Dictionary:
 	var extinguished: Array[int] = []
 	var destroyed: Array[int] = []
+	var ignited: Array[int] = []
 	var suppress_rate := 0.06
 	var has_ext := false
 	for uid in ship.ids.get(FIRE_EXTINGUISHER, []):
 		var ext: Dictionary = ship.parts[uid]
-		if ext.hp > 0.0:
+		if ext.hp > 0.0 and not bool(ext.get("severed", false)):
 			suppress_rate += float(ext.stats.get("extinguish_rate", 0.42))
 			has_ext = true
+	var fs_cfg: Dictionary = get_dll_mechanics().get("fire_spread", {})
+	var spread_rate := float(fs_cfg.get("spread_rate_per_sec", 0.16))
+	var min_src := float(fs_cfg.get("min_source_intensity", 0.35))
+	var cells_map: Dictionary = ship.get("cells", {})
+	var spread_heat: Dictionary = {}
 	for uid in ship.parts:
 		var part: Dictionary = ship.parts[uid]
 		var f: float = float(part.get("fire", 0.0))
@@ -1661,13 +1773,38 @@ static func tick_fires(ship: Dictionary, dt: float) -> Dictionary:
 			part.fire = 0.0
 			destroyed.append(int(uid))
 			continue
+		if f >= min_src and not cells_map.is_empty():
+			var pc: Vector2i = part.cell
+			var ps: Vector2i = part.size
+			var seen_adj := {}
+			for x in range(pc.x - 1, pc.x + ps.x + 1):
+				for y in range(pc.y - 1, pc.y + ps.y + 1):
+					var in_x := x >= pc.x and x < pc.x + ps.x
+					var in_y := y >= pc.y and y < pc.y + ps.y
+					if (in_x and in_y) or ((not in_x) and (not in_y)):
+						continue
+					var nuid := int(cells_map.get(Vector2i(x, y), -1))
+					if nuid >= 0 and nuid != int(uid) and not seen_adj.has(nuid) and ship.parts.has(nuid):
+						seen_adj[nuid] = true
+						var np: Dictionary = ship.parts[nuid]
+						if float(np.hp) > 0.0 and float(np.get("fire", 0.0)) <= 0.0 and float(np.get("fire_foam", 0.0)) <= 0.0 and not str(np.id).contains("armor"):
+							spread_heat[nuid] = float(spread_heat.get(nuid, 0.0)) + spread_rate * f * dt
 		var next_f := maxf(0.0, f - suppress_rate * dt)
 		part.fire = next_f
 		if next_f <= 0.0:
 			if has_ext:
 				part["fire_foam"] = 10.0
 			extinguished.append(int(uid))
-	return {"extinguished": extinguished, "destroyed": destroyed}
+	for suid in spread_heat:
+		var sp: Dictionary = ship.parts[suid]
+		var accum := float(sp.get("fire_spread_accum", 0.0)) + float(spread_heat[suid])
+		if accum >= 0.45:
+			sp["fire_spread_accum"] = 0.0
+			if ignite_part(sp, 0.45):
+				ignited.append(int(suid))
+		else:
+			sp["fire_spread_accum"] = accum
+	return {"extinguished": extinguished, "destroyed": destroyed, "ignited": ignited}
 
 
 static func tick_point_defense(ship: Dictionary, side: String, projectiles: Array[Dictionary], dt: float) -> Array[Dictionary]:

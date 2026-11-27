@@ -413,7 +413,8 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			var uvs := PackedVector2Array()
 			for k in 4:
 				uvs.append(base_uv[posmod(k - rot_q, 4)])
-			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else base_tint
+			var severed: bool = (not dead) and bool(part.get("severed", false))
+			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else (Color(0.54, 0.62, 0.72, 0.72) if severed else base_tint)
 			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
 			if not show_cutaway:
 				var turret_tex: Texture2D = AssetLoader.get_part_texture(id, "turret")

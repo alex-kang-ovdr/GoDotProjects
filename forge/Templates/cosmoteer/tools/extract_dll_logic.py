@@ -62,6 +62,25 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule", "FindBestPartTarget"),
     ("Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule", "GetPartTargetValue"),
     ("Cosmoteer.Ships.AI.TacticsModules.AIDefaultAttackRadiusAndRotationModule", "UpdateAttackRadiusAndRotation"),
+    # Wave 2 deep simulation architecture: structural contiguity, crew jobs/pathing, buffs, directional conveyors, thrusters
+    ("Cosmoteer.Ships.Parts.StructureContiguityManager", "SplitIntoNewShips"),
+    ("Cosmoteer.Ships.Crew.Pathing.PathContiguityManager", "ProcessPartsNeedingSets"),
+    ("Cosmoteer.Ships.Crew.Pathing.PathContiguityManager", "OnPartRemoving"),
+    ("Cosmoteer.Ships.Buffs.BuffManager", "CalculateReceiverValue"),
+    ("Cosmoteer.Ships.Buffs.BuffManager", "AddProviderArea"),
+    ("Cosmoteer.Ships.Parts.Buffs.PartBuffProvider", "AddToBuffManager"),
+    ("Cosmoteer.Ships.Parts.Buffs.PartBuffableValue", "OnPartBuffsChanged"),
+    ("Cosmoteer.Ships.Parts.DirectionalCrewSpeeds", "GetSpeed"),
+    ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "CalculateDesiredSRF"),
+    ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "ApplyThrusterForces"),
+    ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "CalculateRampTimes"),
+    ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "CommitActivationLevels"),
+    ("Cosmoteer.Ships.Crew.Jobs.JobManager", "GetCrewForJob"),
+    ("Cosmoteer.Ships.Crew.Jobs.JobManager", "FixedUpdate"),
+    ("Cosmoteer.Ships.Crew.Jobs.JobManager", "AssignCrewToJob"),
+    ("Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob", "DeliverResources"),
+    ("Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob", "PickupResources"),
+    ("Cosmoteer.Ships.Parts.Resources.IonEnergyStorage", "CalculateTotalResources"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -307,8 +326,15 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     r_med = _reactor_blast("ships/terran/reactor_med/reactor_med.rules", 10.0, 270000.0, 0.50)
     r_large = _reactor_blast("ships/terran/reactor_large/reactor_large.rules", 18.0, 810000.0, 0.75)
 
+    conv_up = _read_float_rule(data_root / "ships/terran/conveyor/conveyor.rules", r"CrewSpeedFactor[\s\S]{0,120}?Up\s*=\s*([0-9.]+)", 2.0)
+    conv_side = _read_float_rule(data_root / "ships/terran/conveyor/conveyor.rules", r"CrewSpeedFactor[\s\S]{0,120}?Left\s*=\s*([0-9.]+)", 0.75)
+    conv_down = _read_float_rule(data_root / "ships/terran/conveyor/conveyor.rules", r"CrewSpeedFactor[\s\S]{0,120}?Down\s*=\s*([0-9.]+)", 0.25)
+    fire_crew_min = _read_float_rule(data_root / "statuses/fire/fire.rules", r"CrewSpeedFactor\s*=\s*\[\s*1\s*,\s*([0-9.]+)\s*\]", 0.2)
+    fire_spread_base = _read_float_rule(data_root / "statuses/fire/fire.rules", r"BaseValue\s*=\s*([0-9.]+)\s*\*\s*\(&~/TickInterval\)", 0.16)
+    er_buff_pct = _read_float_rule(data_root / "ships/terran/engine_room/engine_room.rules", r"BuffType\s*=\s*Engine[\s\S]{0,80}?BuffAmount\s*=\s*([0-9.]+)%", 50.0)
+
     mechanics = {
-        "version": 1,
+        "version": 2,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -380,6 +406,29 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "railgun_scale": 0.020,
             "blast_scale": 0.016,
             "meltdown_scale": 0.026,
+        },
+        "structure_contiguity": {
+            "source_class": "Cosmoteer.Ships.Parts.StructureContiguityManager",
+            "sever_disconnected_from_bridge": True,
+        },
+        "directional_crew_speeds": {
+            "source_class": "Cosmoteer.Ships.Parts.DirectionalCrewSpeeds",
+            "conveyor_forward": conv_up,
+            "conveyor_sideways": conv_side,
+            "conveyor_backward": conv_down,
+            "fire_speed_min": fire_crew_min,
+        },
+        "fire_spread": {
+            "source_class": "Cosmoteer.Ships.Statuses",
+            "tick_interval": 0.25,
+            "spread_rate_per_sec": fire_spread_base,
+            "min_source_intensity": 0.35,
+            "foam_blocks_spread": True,
+        },
+        "engine_room_buff": {
+            "source_class": "Cosmoteer.Ships.Buffs.BuffManager",
+            "buff_type": "Engine",
+            "thrust_bonus": round(er_buff_pct / 100.0, 4),
         },
     }
     return logic_trace, mechanics

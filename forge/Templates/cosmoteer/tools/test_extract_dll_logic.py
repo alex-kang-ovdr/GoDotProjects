@@ -16,7 +16,7 @@ class DllLogicExtractionTests(unittest.TestCase):
 
         trace = json.loads(LOGIC_TRACE_PATH.read_text(encoding="utf-8"))
         self.assertEqual(trace["assembly"], "Cosmoteer")
-        self.assertGreaterEqual(len(trace["methods"]), 24)
+        self.assertGreaterEqual(len(trace["methods"]), 42)
         method_keys = {(m["type"], m["name"]) for m in trace["methods"]}
         for required in [
             ("Cosmoteer.Ships.Parts.Weapons.BulletEmitter", "Emit"),
@@ -26,6 +26,11 @@ class DllLogicExtractionTests(unittest.TestCase):
             ("Cosmoteer.Ships.Parts.Defenses.ArcShield", "ValidateShieldHit"),
             ("Cosmoteer.Ships.ShipPhysics", "ProcessUpdatedParts"),
             ("Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule", "GetPartTargetValue"),
+            ("Cosmoteer.Ships.Parts.StructureContiguityManager", "SplitIntoNewShips"),
+            ("Cosmoteer.Ships.Buffs.BuffManager", "CalculateReceiverValue"),
+            ("Cosmoteer.Ships.Parts.DirectionalCrewSpeeds", "GetSpeed"),
+            ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "CalculateDesiredSRF"),
+            ("Cosmoteer.Ships.Crew.Jobs.JobManager", "GetCrewForJob"),
         ]:
             self.assertIn(required, method_keys, f"missing traced DLL method: {required}")
 
@@ -43,6 +48,12 @@ class DllLogicExtractionTests(unittest.TestCase):
         self.assertEqual(mech["reactor_meltdown"]["cosmoteer.reactor_small"]["raw_radius"], 6.0)
         self.assertEqual(mech["reactor_meltdown"]["cosmoteer.reactor_med"]["raw_radius"], 10.0)
         self.assertEqual(mech["reactor_meltdown"]["cosmoteer.reactor_large"]["raw_radius"], 18.0)
+        self.assertEqual(mech["directional_crew_speeds"]["conveyor_forward"], 2.0)
+        self.assertEqual(mech["directional_crew_speeds"]["conveyor_sideways"], 0.75)
+        self.assertEqual(mech["directional_crew_speeds"]["conveyor_backward"], 0.25)
+        self.assertAlmostEqual(mech["directional_crew_speeds"]["fire_speed_min"], 0.2, places=4)
+        self.assertAlmostEqual(mech["engine_room_buff"]["thrust_bonus"], 0.5, places=4)
+        self.assertTrue(mech["structure_contiguity"]["sever_disconnected_from_bridge"])
 
     @unittest.skipUnless(
         (COSMOTEER_ROOT / "Bin" / "Cosmoteer.dll").is_file(),

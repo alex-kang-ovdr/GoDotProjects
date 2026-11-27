@@ -221,7 +221,8 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 				var fac_id := str(battle.mission.faction)
 				if CombatSystems.PAINT_LIVERIES.has(fac_id):
 					livery_tint = Color.WHITE.lerp(Color(str(CombatSystems.PAINT_LIVERIES[fac_id].tint)), 0.78)
-		var tint_tex := Color(0.42, 0.36, 0.42, 0.85) if dead else livery_tint
+		var severed: bool = (not dead) and bool(part.get("severed", false))
+		var tint_tex := Color(0.42, 0.36, 0.42, 0.85) if dead else (Color(0.56, 0.64, 0.74, 0.74) if severed else livery_tint)
 		draw_set_transform(rect.get_center(), float(rot_q) * PI * 0.5 * mirror_x, Vector2(mirror_x, 1.0))
 		draw_texture_rect(orig_tex, Rect2(-base_sz * 0.5, base_sz), false, tint_tex)
 		draw_set_transform(Vector2.ZERO)
