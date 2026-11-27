@@ -51,6 +51,8 @@ const SUFFOCATION_DPS := 6.4                                    # 0x8791b0 (-0.4
 const WEAPON_DEPOWER_DECAY_PER_SEC := 6.0                       # 0x40ddcf (0x876894=0.375 / 0.0625)
 const WEAPON_HACK_DRAIN_PER_SEC := 1.0                          # 0x40dd4e (0x876890=0.0625 / 0.0625)
 const FIRE_O2_EXTINCT_THRESHOLD := 10.0                         # 0x49980d (0x879914=10.0%)
+const REPAIR_BARS_PER_SEC := 0.08                               # 0x63af10 (0.5/tick * 16Hz / 100 = 12.5s/bar)
+const AUTO_REPAIR_DIVISOR := 3.0                                # 0x63af5f (0x885f30=3.0 -> 37.5s/bar)
 const DOOR_BINARY_HITS := [[4, 4, 4], [12, 8, 6], [16, 12, 10], [20, 18, 15]] # 0x471620 (0x878950..0x878968)
 const SCORE_DIFF_MULT := [1.0, 1.25, 1.50]                      # ScoreKeeper (0x44ccb5): Easy/Normal/Hard
 
@@ -1698,7 +1700,7 @@ func _apply_hacking_pulse(delta: float, target_ship: FTLShip) -> void:
 func _step_atmosphere(delta: float) -> void:
 	var o2_pwr := get_effective_system_power("oxygen")
 	var o2_hacked := hacked_active and systems.has("oxygen") and hacked_room == int(systems.oxygen.room)
-	# Authentic FTL 1.6 O2 rates (0x62cf00 / 0x88516c..0x885178): unpowered -1.2%/s, Lv1 +1.2%/s, Lv2 +4.8%/s, Lv3 +7.2%/s, hacked -6.0%/s ship-wide
+	# Authentic FTL 1.6 O2 rates (0x62cf00..0x62d1ae): unpowered -1.2%/s, Lv1 +1.2%/s, Lv2 +4.8%/s, Lv3 +8.4%/s ((3*(p-1)+1)*1.2), hacked -6.0%/s
 	for r in rooms:
 		var o2_delta := -1.2
 		if o2_hacked:
@@ -1708,7 +1710,7 @@ func _step_atmosphere(delta: float) -> void:
 		elif o2_pwr == 2:
 			o2_delta = 4.8
 		elif o2_pwr >= 3:
-			o2_delta = 7.2
+			o2_delta = 8.4
 		if int(r.breach) > 0:
 			o2_delta -= 14.0 * float(r.breach)
 		if int(r.fires) > 0:
@@ -1743,7 +1745,9 @@ func _step_atmosphere(delta: float) -> void:
 		if is_unmanned and int(r.breach) == 0 and not str(r.system).is_empty() and systems.has(str(r.system)):
 			var us: Dictionary = systems[str(r.system)]
 			if int(us.damage) > 0:
-				r.repair_progress = float(r.repair_progress) + 0.06 * delta
+				# Authentic FTL 1.6 PartialRepair (0x63af10): Auto-Ship repairs at 1/3 human speed (37.5s/bar), halved if actively hacked!
+				var auto_hack_mult := 0.5 if (hacked_active and hacked_room == int(r.id)) else 1.0
+				r.repair_progress = float(r.repair_progress) + (REPAIR_BARS_PER_SEC / AUTO_REPAIR_DIVISOR) * auto_hack_mult * delta
 				if float(r.repair_progress) >= 1.0:
 					r.repair_progress = 0.0
 					us.damage = maxi(0, int(us.damage) - 1)
@@ -1842,7 +1846,9 @@ func _step_crew(delta: float) -> void:
 			var cur_locked := float(r.get("lockdown_timer", 0.0)) > 0.0 if not r.is_empty() else false
 			var nxt_locked := float(room_by_id.get(next_rid, {}).get("lockdown_timer", 0.0)) > 0.0
 			var door_blocked := false
-			if not belongs_to_ship and not cur_locked and not nxt_locked:
+			var crossing_hacked_door := (hacked_room >= 0 and (int(c.room_id) == hacked_room or next_rid == hacked_room))
+			# Authentic FTL 1.6: closed Blast Doors block intruders AND attached Hacking Drone locks doors purple against own crew!
+			if (not belongs_to_ship or crossing_hacked_door) and not cur_locked and not nxt_locked:
 				var didx := get_door_between(int(c.room_id), next_rid)
 				if didx >= 0 and not bool(doors[didx].open):
 					door_blocked = true
@@ -1924,7 +1930,9 @@ func _step_crew(delta: float) -> void:
 			var sname := str(r.system)
 			if not sname.is_empty() and systems.has(sname) and int(systems[sname].damage) > 0:
 				c.state = "repair"
-				r.repair_progress = float(r.repair_progress) + 0.14 * rep_mult * delta
+				# Authentic FTL 1.6 10ShipSystem::PartialRepair (0x63af10): 0.08/s (12.5s/bar) for 1.0x Human, halved (0.5x) while actively hacked!
+				var r_hack_mult := 0.5 if (hacked_active and hacked_room == int(r.id)) else 1.0
+				r.repair_progress = float(r.repair_progress) + REPAIR_BARS_PER_SEC * rep_mult * r_hack_mult * delta
 				if float(r.repair_progress) >= 1.0:
 					r.repair_progress = 0.0
 					systems[sname].damage = maxi(0, int(systems[sname].damage) - 1)

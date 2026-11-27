@@ -770,6 +770,54 @@ func _run() -> void:
 		"Binary FTL 1.6 Wave 6: ZoltanJumpReset(5), PreIgniter, WeaponDecay(-6/s), 4DoorDiff(20/18/15) & FireExt(<10% O2)",
 		"z=%s pi=%s dec=%s/%s door=%d/%d/%d fire=%s" % [str(z_reset_ok), str(preig_ok), str(kept_on_toggle), str(decayed_3s), d_easy, d_norm, d_hard, str(fire_ext_ok)])
 
+	# 8aa. Wave 7 Binary Logic: 67 Vtables (100% Core Simulation), O2 Lv3 +8.4%/s (0x62d196), PartialRepair 12.5s/37.5s/Hacked 0.5x (0x63af10) & Hacked Door Lock
+	_check((spec_json.get("vtables", {}) as Dictionary).size() >= 67 and spec_json.has("systemRepair") and spec_json.has("speciesStats") and absf(float(spec_json.oxygen.get("level3PerSec", 0.0)) - 8.4) < 0.01,
+		"Wave 7 ftl_logic_spec.json includes 67 C++ vtables (100% core sim) + systemRepair/speciesStats & O2 Lv3=+8.4%/s")
+
+	var w7_ship := FTLShip.new()
+	w7_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	w7_ship.reactor_max += 6
+	w7_ship.systems.oxygen.level = 3
+	w7_ship.systems.oxygen.power = 3
+	var r7: Dictionary = w7_ship.rooms[0]
+	r7.oxygen = 50.0
+	w7_ship.step(1.0, null, false)
+	var o2_lv3_ok := absf(float(r7.oxygen) - 58.4) < 0.15
+	# PartialRepair (0x63af10): Human 0.08/s, Hacked 0.04/s (0.5x), Unmanned Auto-Ship 0.02667/s (1/3x)
+	var wpn_r7 := int(w7_ship.systems.weapons.room)
+	w7_ship.crew.clear()
+	w7_ship.add_crew("human", wpn_r7, true, "Tech")
+	w7_ship.systems.weapons.damage = 1
+	w7_ship.room_by_id[wpn_r7].repair_progress = 0.0
+	w7_ship.step(1.0, null, false)
+	var rep_norm := float(w7_ship.room_by_id[wpn_r7].repair_progress) # 0.08
+	w7_ship.hacked_room = wpn_r7
+	w7_ship.hacked_active = true
+	w7_ship.room_by_id[wpn_r7].repair_progress = 0.0
+	w7_ship.step(1.0, null, false)
+	var rep_hack := float(w7_ship.room_by_id[wpn_r7].repair_progress) # 0.04
+	# Hacked door blocks own crew from leaving hacked room until broken down!
+	w7_ship.set_all_doors_open(false, true)
+	var adj_r7 := -1
+	for dd7 in w7_ship.doors:
+		if not bool(dd7.airlock) and (int(dd7.room_a) == wpn_r7 or int(dd7.room_b) == wpn_r7):
+			adj_r7 = int(dd7.room_b) if int(dd7.room_a) == wpn_r7 else int(dd7.room_a)
+			dd7.hp = 60.0
+			break
+	w7_ship.command_crew_to_room(w7_ship.crew[0], adj_r7)
+	w7_ship.step(0.5, null, false)
+	var hack_door_locked := int(w7_ship.crew[0].room_id) == wpn_r7
+	# Unmanned Auto-Ship repair rate = 0.08 / 3.0 = 0.02667/s
+	w7_ship.crew.clear()
+	w7_ship.is_unmanned = true
+	w7_ship.hacked_active = false
+	w7_ship.room_by_id[wpn_r7].repair_progress = 0.0
+	w7_ship.step(1.0, null, false)
+	var rep_auto := float(w7_ship.room_by_id[wpn_r7].repair_progress) # ~0.02667
+	_check(o2_lv3_ok and absf(rep_norm - 0.08) < 0.005 and absf(rep_hack - 0.04) < 0.005 and absf(rep_auto - (0.08 / 3.0)) < 0.004 and hack_door_locked,
+		"Binary FTL 1.6 Wave 7: O2 Lv3(+8.4%/s), PartialRepair(0.08/0.04hack/0.027auto) & Hacked Door Lock",
+		"o2=%.1f rep=%.3f/%.3f/%.4f lock=%s" % [float(r7.oxygen), rep_norm, rep_hack, rep_auto, str(hack_door_locked)])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

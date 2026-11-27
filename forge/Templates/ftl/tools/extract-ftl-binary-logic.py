@@ -98,15 +98,19 @@ def main():
         b"10ShipSystem", b"7Shields", b"12EngineSystem", b"12OxygenSystem",
         b"12MedbaySystem", b"11CloneSystem", b"13BatterySystem", b"13HackingSystem",
         b"10MindSystem", b"14CloakingSystem", b"14TeleportSystem", b"15ArtillerySystem",
-        b"12WeaponSystem", b"11DroneSystem", b"10SpaceDrone", b"12DefenseDrone",
+        b"12WeaponSystem", b"11DroneSystem", b"5Drone", b"10SpaceDrone", b"12DefenseDrone",
         b"11CombatDrone", b"12BoarderDrone", b"15BoarderPodDrone", b"11BattleDrone",
         b"11RepairDrone", b"15ShipRepairDrone", b"16SuperShieldDrone", b"12HackingDrone",
-        b"9CrewDrone", b"9CrewLaser", b"12CrewManifest", b"13CrewAnimation",
+        b"8IonDrone", b"9CrewDrone", b"9CrewLaser", b"12CrewManifest", b"13CrewAnimation",
         b"10Projectile", b"10BeamWeapon", b"14BombProjectile",
-        b"10LaserBlast", b"7Missile", b"17ProjectileFactory", b"15WeaponBlueprint",
-        b"14DroneBlueprint", b"10CrewMember", b"11ShipManager", b"12CompleteShip",
+        b"10LaserBlast", b"7Missile", b"17ProjectileFactory", b"9Blueprint",
+        b"15WeaponBlueprint", b"14DroneBlueprint", b"15SystemBlueprint", b"16AugmentBlueprint",
+        b"10CrewMember", b"9EngiAlien", b"11MantisAlien", b"9RockAlien", b"11EnergyAlien",
+        b"9SlugAlien", b"12CrystalAlien", b"14AnaerobicAlien", b"5Ghost",
+        b"4Ship", b"9OuterHull", b"11ShipManager", b"12CompleteShip",
         b"8BossShip", b"7StarMap", b"6CEvent", b"4Door", b"4Room", b"4Fire",
-        b"8SpreaderI4FireE", b"7PDSFire", b"8Asteroid", b"5Store",
+        b"10Spreadable", b"8SpreaderI4FireE", b"10Repairable", b"10ShipRepair",
+        b"7PDSFire", b"8Asteroid", b"5Store",
     ]
     vtables = {}
     for cn in class_names:
@@ -216,6 +220,24 @@ def main():
     assert fire_o2_extinct_threshold == 10.0 and abs(crew_fire_dmg_tick - (-0.133)) < 1e-5
     assert crew_medbay_base_tick == 0.4 and crew_medbay_level_step == 1.5
 
+    # Wave 7 exact binary tables: OxygenSystem level step (0x885170=3.0 -> Lv3=+8.4%/s),
+    # ShipSystem::PartialRepair (0x63af10: 0.5/tick -> 8.0/s = 12.5s/bar, auto /3.0 = 37.5s/bar, hacked *0.5),
+    # and all 8 Alien subclass virtual getter floats (0x8788b0..0x8788bc, 0x87911c, 0x879124)
+    o2_level_step = read_f32_array(0x885170, 1)[0]                  # 3.0 -> (3*(p-1)+1) * 1.2%/s = [1.2, 4.8, 8.4]
+    repair_base_tick = read_f32_array(0x885F24, 1)[0]               # 0.5/tick -> 8.0/100 = 0.08/s (12.5s/bar)
+    repair_auto_divisor = read_f32_array(0x885F30, 1)[0]            # 3.0 -> 37.5s/bar
+    repair_bar_max = read_f32_array(0x885F2C, 1)[0]                 # 100.0
+    assert o2_level_step == 3.0 and repair_base_tick == 0.5 and repair_auto_divisor == 3.0 and repair_bar_max == 100.0
+
+    mantis_move = read_f32_array(0x8788B0, 1)[0]                    # 1.2
+    engi_repair = read_f32_array(0x8788B4, 1)[0]                    # 2.0
+    half_stat = read_f32_array(0x8788B8, 1)[0]                      # 0.5 (Engi combat, Mantis repair, Rock move)
+    mantis_combat = read_f32_array(0x8788BC, 1)[0]                  # 1.5
+    crystal_move = read_f32_array(0x87911C, 1)[0]                   # 0.8
+    lanius_move = read_f32_array(0x879124, 1)[0]                    # 0.85
+    assert mantis_move == 1.2 and engi_repair == 2.0 and half_stat == 0.5 and mantis_combat == 1.5
+    assert crystal_move == 0.8 and lanius_move == 0.85
+
     spec = {
         "schemaVersion": 1,
         "sourceBinary": os.path.basename(args.exe),
@@ -279,10 +301,11 @@ def main():
         "oxygen": {
             "unpoweredPerSec": round(o2_drain_tick * ticks_per_sec, 4),
             "level1PerSec": round(o2_refill_lv1_tick * ticks_per_sec, 4),
-            "level2PerSec": round(o2_refill_lv1_tick * 4.0 * ticks_per_sec, 4),
-            "level3PerSec": round(o2_refill_lv1_tick * 6.0 * ticks_per_sec, 4),
+            "level2PerSec": round(o2_refill_lv1_tick * (1.0 + o2_level_step) * ticks_per_sec, 4),
+            "level3PerSec": round(o2_refill_lv1_tick * (1.0 + 2.0 * o2_level_step) * ticks_per_sec, 4),
+            "levelStepFactor": o2_level_step,
             "hackedShipwideDrainPerSec": round(o2_hacked_drain_tick * ticks_per_sec, 4),
-            "sourceVa": "0x62cf00 (0x88516c..0x885178)",
+            "sourceVa": "0x62cf00..0x62d1ae (0x88516c..0x885178)",
         },
         "medbay": {
             "healPerSecByLevel": [6.4, 9.6, 19.2],
@@ -496,6 +519,29 @@ def main():
             "medbayLevelStep": crew_medbay_level_step,
             "energyShieldResetOnJumpProofVa": "0x624bf8",
         },
+        "systemRepair": {
+            "proofVa": "0x63af10..0x63afc4 (0x885f24/0x885f2c/0x885f30)",
+            "baseProgressPerTick": repair_base_tick,
+            "barTarget": repair_bar_max,
+            "humanBarsPerSec": round((repair_base_tick * ticks_per_sec) / repair_bar_max, 6),
+            "humanSecPerBar": round(repair_bar_max / (repair_base_tick * ticks_per_sec), 4),
+            "autoRepairDivisor": repair_auto_divisor,
+            "autoRepairSecPerBar": round((repair_bar_max * repair_auto_divisor) / (repair_base_tick * ticks_per_sec), 4),
+            "hackedRepairMultiplier": 0.50,
+            "hackedDoorsLockedForCrew": True,
+        },
+        "speciesStats": {
+            "proofVa": "0x7582a0..0x778385 / 0x477c00",
+            "human": {"maxHp": 100, "move": 1.0, "repair": 1.0, "combat": 1.0, "learningMult": 0.90},
+            "engi": {"vtableVa": vtables.get("9EngiAlien", {}).get("vtable_va"), "maxHp": 100, "move": 1.0, "repair": engi_repair, "combat": half_stat},
+            "mantis": {"vtableVa": vtables.get("11MantisAlien", {}).get("vtable_va"), "maxHp": 100, "move": mantis_move, "repair": half_stat, "combat": mantis_combat},
+            "rock": {"vtableVa": vtables.get("9RockAlien", {}).get("vtable_va"), "maxHp": 150, "move": half_stat, "repair": 1.0, "combat": 1.0, "fireImmune": True},
+            "energy": {"vtableVa": vtables.get("11EnergyAlien", {}).get("vtable_va"), "maxHp": 70, "move": 1.0, "repair": 1.0, "combat": 1.0, "bonusPower": 1, "deathBlast": 15.0},
+            "slug": {"vtableVa": vtables.get("9SlugAlien", {}).get("vtable_va"), "maxHp": 100, "move": 1.0, "repair": 1.0, "combat": 1.0, "telepathic": True, "mindControlImmune": True},
+            "crystal": {"vtableVa": vtables.get("12CrystalAlien", {}).get("vtable_va"), "maxHp": 125, "move": crystal_move, "repair": 1.0, "combat": 1.0, "suffocationMult": 0.50},
+            "anaerobic": {"vtableVa": vtables.get("14AnaerobicAlien", {}).get("vtable_va"), "maxHp": 100, "move": lanius_move, "repair": 1.0, "combat": 1.0, "noO2": True, "drainsO2": True},
+            "ghost": {"vtableVa": vtables.get("5Ghost", {}).get("vtable_va"), "maxHp": 50, "move": 1.0, "repair": 1.0, "combat": 1.0, "noO2": True},
+        },
     }
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
@@ -503,7 +549,7 @@ def main():
         json.dump(spec, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 26 system rule tables -> {args.out}")
+    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 28 system rule tables -> {args.out}")
 
 
 if __name__ == "__main__":

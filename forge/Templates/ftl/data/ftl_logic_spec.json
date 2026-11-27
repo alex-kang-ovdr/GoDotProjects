@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T11:00:14.130026+00:00",
+  "extractedAt": "2026-11-27T11:07:49.363356+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -75,6 +75,11 @@
       "slot_count": 45,
       "on_loop_va": "0x639a50"
     },
+    "5Drone": {
+      "vtable_va": "0x90c7d8",
+      "slot_count": 30,
+      "on_loop_va": null
+    },
     "10SpaceDrone": {
       "vtable_va": "0x90986c",
       "slot_count": 57,
@@ -124,6 +129,11 @@
       "vtable_va": "0x90ac48",
       "slot_count": 57,
       "on_loop_va": "0x756b30"
+    },
+    "8IonDrone": {
+      "vtable_va": "0x90d060",
+      "slot_count": 70,
+      "on_loop_va": "0x775c00"
     },
     "9CrewDrone": {
       "vtable_va": "0x90d330",
@@ -175,6 +185,11 @@
       "slot_count": 2,
       "on_loop_va": null
     },
+    "9Blueprint": {
+      "vtable_va": "0x90d2c4",
+      "slot_count": 6,
+      "on_loop_va": null
+    },
     "15WeaponBlueprint": {
       "vtable_va": "0x90c1c8",
       "slot_count": 6,
@@ -185,10 +200,70 @@
       "slot_count": 6,
       "on_loop_va": null
     },
+    "15SystemBlueprint": {
+      "vtable_va": "0x90c154",
+      "slot_count": 6,
+      "on_loop_va": null
+    },
+    "16AugmentBlueprint": {
+      "vtable_va": "0x90c250",
+      "slot_count": 6,
+      "on_loop_va": null
+    },
     "10CrewMember": {
       "vtable_va": "0x9092ec",
       "slot_count": 58,
       "on_loop_va": "0x755610"
+    },
+    "9EngiAlien": {
+      "vtable_va": "0x90d5a8",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "11MantisAlien": {
+      "vtable_va": "0x90a164",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "9RockAlien": {
+      "vtable_va": "0x90d7a0",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "11EnergyAlien": {
+      "vtable_va": "0x90a028",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "9SlugAlien": {
+      "vtable_va": "0x90d890",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "12CrystalAlien": {
+      "vtable_va": "0x90a840",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "14AnaerobicAlien": {
+      "vtable_va": "0x90b610",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "5Ghost": {
+      "vtable_va": "0x90c858",
+      "slot_count": 58,
+      "on_loop_va": "0x755610"
+    },
+    "4Ship": {
+      "vtable_va": "0x90c730",
+      "slot_count": 2,
+      "on_loop_va": null
+    },
+    "9OuterHull": {
+      "vtable_va": "0x90d724",
+      "slot_count": 25,
+      "on_loop_va": null
     },
     "11ShipManager": {
       "vtable_va": "0x90a3f4",
@@ -230,9 +305,24 @@
       "slot_count": 32,
       "on_loop_va": null
     },
+    "10Spreadable": {
+      "vtable_va": "0x9099e0",
+      "slot_count": 32,
+      "on_loop_va": null
+    },
     "8SpreaderI4FireE": {
       "vtable_va": "0x90d220",
       "slot_count": 2,
+      "on_loop_va": null
+    },
+    "10Repairable": {
+      "vtable_va": "0x9096a4",
+      "slot_count": 25,
+      "on_loop_va": null
+    },
+    "10ShipRepair": {
+      "vtable_va": "0x909760",
+      "slot_count": 14,
       "on_loop_va": null
     },
     "7PDSFire": {
@@ -333,9 +423,10 @@
     "unpoweredPerSec": -1.2,
     "level1PerSec": 1.2,
     "level2PerSec": 4.8,
-    "level3PerSec": 7.2,
+    "level3PerSec": 8.4,
+    "levelStepFactor": 3.0,
     "hackedShipwideDrainPerSec": -6.0,
-    "sourceVa": "0x62cf00 (0x88516c..0x885178)"
+    "sourceVa": "0x62cf00..0x62d1ae (0x88516c..0x885178)"
   },
   "medbay": {
     "healPerSecByLevel": [
@@ -756,5 +847,91 @@
     "medbayBaseHealPerTick": 0.4,
     "medbayLevelStep": 1.5,
     "energyShieldResetOnJumpProofVa": "0x624bf8"
+  },
+  "systemRepair": {
+    "proofVa": "0x63af10..0x63afc4 (0x885f24/0x885f2c/0x885f30)",
+    "baseProgressPerTick": 0.5,
+    "barTarget": 100.0,
+    "humanBarsPerSec": 0.08,
+    "humanSecPerBar": 12.5,
+    "autoRepairDivisor": 3.0,
+    "autoRepairSecPerBar": 37.5,
+    "hackedRepairMultiplier": 0.5,
+    "hackedDoorsLockedForCrew": true
+  },
+  "speciesStats": {
+    "proofVa": "0x7582a0..0x778385 / 0x477c00",
+    "human": {
+      "maxHp": 100,
+      "move": 1.0,
+      "repair": 1.0,
+      "combat": 1.0,
+      "learningMult": 0.9
+    },
+    "engi": {
+      "vtableVa": "0x90d5a8",
+      "maxHp": 100,
+      "move": 1.0,
+      "repair": 2.0,
+      "combat": 0.5
+    },
+    "mantis": {
+      "vtableVa": "0x90a164",
+      "maxHp": 100,
+      "move": 1.2,
+      "repair": 0.5,
+      "combat": 1.5
+    },
+    "rock": {
+      "vtableVa": "0x90d7a0",
+      "maxHp": 150,
+      "move": 0.5,
+      "repair": 1.0,
+      "combat": 1.0,
+      "fireImmune": true
+    },
+    "energy": {
+      "vtableVa": "0x90a028",
+      "maxHp": 70,
+      "move": 1.0,
+      "repair": 1.0,
+      "combat": 1.0,
+      "bonusPower": 1,
+      "deathBlast": 15.0
+    },
+    "slug": {
+      "vtableVa": "0x90d890",
+      "maxHp": 100,
+      "move": 1.0,
+      "repair": 1.0,
+      "combat": 1.0,
+      "telepathic": true,
+      "mindControlImmune": true
+    },
+    "crystal": {
+      "vtableVa": "0x90a840",
+      "maxHp": 125,
+      "move": 0.8,
+      "repair": 1.0,
+      "combat": 1.0,
+      "suffocationMult": 0.5
+    },
+    "anaerobic": {
+      "vtableVa": "0x90b610",
+      "maxHp": 100,
+      "move": 0.85,
+      "repair": 1.0,
+      "combat": 1.0,
+      "noO2": true,
+      "drainsO2": true
+    },
+    "ghost": {
+      "vtableVa": "0x90c858",
+      "maxHp": 50,
+      "move": 1.0,
+      "repair": 1.0,
+      "combat": 1.0,
+      "noO2": true
+    }
   }
 }
