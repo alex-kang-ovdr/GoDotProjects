@@ -361,7 +361,30 @@ func _draw_world_grid(center: Vector2, zoom: float) -> void:
 		draw_line(_world_to_screen(Vector2(left, world_y), center, zoom, size * 0.5), _world_to_screen(Vector2(right, world_y), center, zoom, size * 0.5), color, 1.0)
 
 
+func _ship_livery(ship: Dictionary) -> Dictionary:
+	var paint_id := "default"
+	if ship == battle.player:
+		if battle.player_design != null:
+			paint_id = str(battle.player_design.paint)
+	elif battle.mission is Dictionary and battle.mission.has("faction"):
+		var fac_id := str(battle.mission.faction)
+		if CombatSystems.PAINT_LIVERIES.has(fac_id):
+			paint_id = fac_id
+		else:
+			var fac: Dictionary = CombatSystems.get_faction(fac_id)
+			if not fac.is_empty():
+				var fc := Color(str(fac.get("color", "#ff8f85")))
+				return {"id": fac_id, "tint": Color.WHITE.lerp(fc, 0.24).to_html(false), "trim": fc.lightened(0.15).to_html(false)}
+	var base: Dictionary = CombatSystems.PAINT_LIVERIES.get(paint_id, CombatSystems.PAINT_LIVERIES["default"]).duplicate()
+	base["id"] = paint_id
+	return base
+
+
 func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center: Vector2, target_uid: int, inset: bool) -> void:
+	var livery := _ship_livery(ship)
+	var paint_id := str(livery.get("id", "default"))
+	var base_tint := Color(str(livery.get("tint", "#ffffff")))
+	var trim_col := Color(str(livery.get("trim", "#70edc6")))
 	for part in ship.parts.values():
 		var quad := _part_quad(ship, part, camera, zoom, viewport_center)
 		var id := str(part.id)
@@ -383,9 +406,6 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			var uvs := PackedVector2Array()
 			for k in 4:
 				uvs.append(base_uv[posmod(k - rot_q, 4)])
-			var paint_id := str(battle.player_design.paint) if ship == battle.player and battle.player_design != null else "default"
-			var livery: Dictionary = CombatSystems.PAINT_LIVERIES.get(paint_id, CombatSystems.PAINT_LIVERIES["default"])
-			var base_tint := Color(str(livery.tint))
 			var tint := Color(0.45, 0.38, 0.45, 0.85) if dead else base_tint
 			draw_polygon(quad, PackedColorArray([tint, tint, tint, tint]), uvs, orig_tex)
 			if not show_cutaway:
@@ -404,7 +424,7 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 				if crack_tex != null:
 					draw_polygon(quad, PackedColorArray([Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a), Color(0.14, 0.11, 0.09, dmg_a)]), uvs, crack_tex)
 			if paint_id != "default" and not dead:
-				draw_polyline(border, Color(str(livery.trim), 0.48), 1.1, true)
+				draw_polyline(border, Color(trim_col, 0.52), 1.15, true)
 			elif show_cutaway:
 				draw_polyline(border, Color("#1d3240", 0.55), 0.9, true)
 			else:
@@ -429,7 +449,14 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			_draw_destroyed(quad)
 		elif float(part.hp) < float(part.max_hp) * 0.35:
 			var sm_c := _center_of(quad) + Vector2(sin(float(battle.elapsed) * 2.2 + float(part.uid)) * 4.0, -fposmod(float(battle.elapsed) * 9.0 + float(part.uid) * 3.0, 14.0))
-			draw_circle(sm_c, maxf(2.2, zoom * 0.55), Color("#23272e", 0.36))
+			var sm_tex: Texture2D = AssetLoader.get_sprite("smoke")
+			if sm_tex != null:
+				var sm_sz := maxf(8.0, zoom * 1.45)
+				draw_set_transform(sm_c, float(battle.elapsed) * 0.7 + float(part.uid), Vector2.ONE)
+				draw_texture_rect(sm_tex, Rect2(-Vector2(sm_sz, sm_sz) * 0.5, Vector2(sm_sz, sm_sz)), false, Color(0.28, 0.30, 0.34, 0.44))
+				draw_set_transform(Vector2.ZERO)
+			else:
+				draw_circle(sm_c, maxf(2.2, zoom * 0.55), Color("#23272e", 0.36))
 	if show_cutaway and zoom >= 2.2:
 		for member in ship.get("crew", []):
 			if not member.get("alive", true):
@@ -540,6 +567,7 @@ func _draw_thruster_plumes(ship: Dictionary, camera: Vector2, zoom: float, viewp
 			elif part.id.ends_with("rocket_nozzle"):
 				hot = Color("#c0a2ff")
 			var flame_tex: Texture2D = AssetLoader.get_sprite("flame")
+			var core_tex: Texture2D = AssetLoader.get_sprite("thruster_plume")
 			if flame_tex != null:
 				var f_len := maxf(8.0, p0.distance_to(p1) * (1.18 + 0.14 * sin(float(battle.elapsed) * 32.0 + float(part.uid))))
 				var f_wid := maxf(4.0, zoom * 0.85 * activation)
@@ -548,6 +576,9 @@ func _draw_thruster_plumes(ship: Dictionary, camera: Vector2, zoom: float, viewp
 				draw_texture_rect(flame_tex, Rect2(-Vector2(f_wid * 0.5, f_len * 0.5), Vector2(f_wid, f_len)), false, Color(hot, 0.82 * activation))
 				draw_texture_rect(flame_tex, Rect2(-Vector2(f_wid * 0.28, f_len * 0.35), Vector2(f_wid * 0.56, f_len * 0.7)), false, Color(bright, 0.85 * activation))
 				draw_set_transform(Vector2.ZERO)
+				if core_tex != null:
+					var c_sz := maxf(4.5, zoom * 0.72 * activation)
+					draw_texture_rect(core_tex, Rect2(p0 - Vector2(c_sz, c_sz) * 0.5, Vector2(c_sz, c_sz)), false, Color(bright, 0.78 * activation))
 			else:
 				draw_line(p0, p1, Color(hot, 0.35 * activation), maxf(3.0, zoom * 0.68 * activation), true)
 				draw_line(p0, p0.lerp(p1, 0.72), hot.lightened(0.12), maxf(1.5, zoom * 0.24 * activation), true)
@@ -646,29 +677,37 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 			direction = bolt.velocity.normalized() * maxf(6.0, zoom * 1.5)
 		var tip := b if a.distance_to(b) > 1.5 else b + direction
 		var skey := ""
+		var anim_odd := (int(floor(float(battle.elapsed) * 20.0)) + int(bolt.get("uid", 0))) % 2 == 1
 		match kind:
 			"mine": skey = "shot_mine"
 			"missile": skey = "shot_missile_he"
 			"missile_emp": skey = "shot_missile_emp"
 			"missile_nuke": skey = "shot_missile_nuke"
 			"missile_thermal": skey = "shot_missile_thermal"
-			"cannon_deck", "cannon_large": skey = "shot_bullet_large"
+			"cannon_deck", "cannon_large": skey = "shot_bullet_large_1" if anim_odd else "shot_bullet_large"
 			"cannon": skey = "shot_bullet_med"
-			"railgun": skey = "shot_railgun"
-			"heavy_laser": skey = "shot_laser_large"
-			"laser": skey = "shot_laser_small"
+			"chaingun": skey = "shot_chaingun"
+			"railgun": skey = "shot_railgun_1" if anim_odd else "shot_railgun"
+			"heavy_laser": skey = "shot_laser_large_1" if anim_odd else "shot_laser_large"
+			"laser": skey = "shot_laser_small_1" if anim_odd else "shot_laser_small"
 		var stex: Texture2D = AssetLoader.get_sprite(skey) if not skey.is_empty() else null
 		if stex != null:
-			var vel_ang := Vector2(bolt.velocity).angle() + PI * 0.5
-			var s_scale := clampf(zoom * 0.085, 0.28, 1.35)
+			# Cosmoteer projectile sprites are authored pointing horizontally right (+X).
+			var vel_ang := Vector2(bolt.velocity).angle()
+			var s_scale := clampf(zoom * 0.068, 0.24, 1.15)
 			if kind == "cannon_deck" or kind == "missile_nuke":
-				s_scale *= 1.35
+				s_scale *= 1.32
+			elif kind == "heavy_laser" or kind == "railgun":
+				s_scale *= 1.12
 			elif kind == "mine":
 				var prox_r := maxf(8.0, float(bolt.get("proximity", 22.0)) * zoom * 0.18)
 				draw_arc(tip, prox_r, 0.0, TAU, 16, Color("#ff4757", 0.25), 1.1, true)
+			var s_tint := Color.WHITE
+			if kind == "laser" or kind == "heavy_laser":
+				s_tint = Color("#a8ffe4") if bolt.side == "player" else Color("#ff9a8c")
 			var s_sz := stex.get_size() * s_scale
 			draw_set_transform(tip, vel_ang, Vector2.ONE)
-			draw_texture_rect(stex, Rect2(-s_sz * 0.5, s_sz), false, Color.WHITE)
+			draw_texture_rect(stex, Rect2(-s_sz * 0.5, s_sz), false, s_tint)
 			draw_set_transform(Vector2.ZERO)
 			continue
 		if kind == "mine":
@@ -904,26 +943,42 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 		var kind := str(ev.get("kind", ""))
 		if kind == "destroyed":
 			var r := maxf(8.0, (2.5 + 8.5 * t) * zoom)
-			var etex: Texture2D = AssetLoader.get_sprite("exp_big")
+			var eframe := clampi(int(floor(t * 4.0)), 0, 3)
+			var etex: Texture2D = AssetLoader.get_sprite("exp_big_%d" % eframe)
+			if etex == null:
+				etex = AssetLoader.get_sprite("exp_big")
 			if etex != null:
-				draw_texture_rect(etex, Rect2(pos - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color(1.0, 0.92, 0.82, alpha * 0.92))
+				draw_texture_rect(etex, Rect2(pos - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color(1.0, 0.94, 0.85, alpha * 0.95))
 			else:
 				draw_circle(pos, r * 0.45, Color("#ffae52", alpha * 0.55))
 				draw_arc(pos, r, 0.0, TAU, 24, Color("#ff7354", alpha * 0.9), maxf(2.0, zoom * 0.35), true)
-			var dtex: Texture2D = AssetLoader.get_sprite("debris")
-			if dtex != null:
+			var sw_tex: Texture2D = AssetLoader.get_sprite("reactor_shockwave")
+			if sw_tex != null:
+				var sw_r := r * (0.85 + 0.55 * t)
+				draw_texture_rect(sw_tex, Rect2(pos - Vector2(sw_r, sw_r), Vector2(sw_r * 2.0, sw_r * 2.0)), false, Color(1.0, 0.82, 0.56, alpha * 0.65))
+			for di in 4:
+				var dtex: Texture2D = AssetLoader.get_sprite("debris_%d" % di)
+				if dtex == null:
+					dtex = AssetLoader.get_sprite("debris")
+				if dtex == null:
+					break
 				var dsz := maxf(5.0, zoom * 0.95)
-				for di in 4:
-					var dang := float(int(ev.get("uid", 1)) * 17 + di * 90) * 0.01745 + t * 1.4
-					var dpos := pos + Vector2.from_angle(dang) * (r * (0.55 + 0.65 * t))
-					draw_set_transform(dpos, dang * 2.4, Vector2.ONE)
-					draw_texture_rect(dtex, Rect2(-Vector2(dsz, dsz) * 0.5, Vector2(dsz, dsz)), false, Color(0.85, 0.82, 0.78, alpha * 0.85))
-				draw_set_transform(Vector2.ZERO)
+				var dang := float(int(ev.get("uid", 1)) * 17 + di * 90) * 0.01745 + t * 1.4
+				var dpos := pos + Vector2.from_angle(dang) * (r * (0.55 + 0.65 * t))
+				draw_set_transform(dpos, dang * 2.4, Vector2.ONE)
+				draw_texture_rect(dtex, Rect2(-Vector2(dsz, dsz) * 0.5, Vector2(dsz, dsz)), false, Color(0.88, 0.85, 0.80, alpha * 0.88))
+			draw_set_transform(Vector2.ZERO)
 		elif kind == "shield_down":
 			var r := maxf(10.0, (4.0 + 10.0 * t) * zoom)
+			var sw_sd: Texture2D = AssetLoader.get_sprite("shockwave")
+			if sw_sd != null:
+				draw_texture_rect(sw_sd, Rect2(pos - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color("#7ef2ff", alpha * 0.85))
 			draw_arc(pos, r, 0.0, TAU, 28, Color("#7ef2ff", alpha * 0.95), maxf(2.4, zoom * 0.4), true)
 		elif kind == "shield_hit":
 			var r := maxf(5.0, (1.5 + 4.5 * t) * zoom)
+			var sw_sh: Texture2D = AssetLoader.get_sprite("shockwave")
+			if sw_sh != null:
+				draw_texture_rect(sw_sh, Rect2(pos - Vector2(r, r), Vector2(r * 2.0, r * 2.0)), false, Color("#9af7ff", alpha * 0.68))
 			draw_arc(pos, r, 0.0, TAU, 18, Color("#9af7ff", alpha * 0.9), maxf(1.6, zoom * 0.24), true)
 		elif kind == "intercept":
 			var r := maxf(4.0, (1.2 + 3.8 * t) * zoom)
@@ -932,21 +987,32 @@ func _draw_effects(camera: Vector2, zoom: float, viewport_center: Vector2) -> vo
 		elif kind == "blast":
 			var br := maxf(8.0, float(ev.get("radius", 3.5)) * zoom * (0.4 + 0.75 * t))
 			var bk := str(ev.get("blast_kind", "he"))
-			var btex: Texture2D = AssetLoader.get_sprite("exp_big" if bk == "nuke" else "exp_med")
+			var bframe := clampi(int(floor(t * 4.0)), 0, 3)
+			var btex: Texture2D = AssetLoader.get_sprite(("exp_big_%d" if bk == "nuke" else "exp_med_%d") % bframe)
+			if btex == null:
+				btex = AssetLoader.get_sprite("exp_big" if bk == "nuke" else "exp_med")
 			if btex != null:
-				var btint := Color("#c48cff", alpha * 0.92) if bk == "emp" else (Color("#ff9966", alpha * 0.95) if bk == "nuke" else Color(1.0, 0.9, 0.75, alpha * 0.9))
+				var btint := Color("#c48cff", alpha * 0.92) if bk == "emp" else (Color("#ff9966", alpha * 0.95) if bk == "nuke" else Color(1.0, 0.92, 0.78, alpha * 0.92))
 				draw_texture_rect(btex, Rect2(pos - Vector2(br, br), Vector2(br * 2.0, br * 2.0)), false, btint)
+			var sw_b: Texture2D = AssetLoader.get_sprite("reactor_shockwave" if bk == "nuke" else "shockwave")
+			if sw_b != null:
+				var bsw_c := Color("#d8b4ff", alpha * 0.78) if bk == "emp" else (Color("#ffec80", alpha * 0.82) if bk == "nuke" else Color("#ffd166", alpha * 0.68))
+				draw_texture_rect(sw_b, Rect2(pos - Vector2(br * 1.15, br * 1.15), Vector2(br * 2.3, br * 2.3)), false, bsw_c)
 			var ring_c := Color("#d8b4ff", alpha * 0.92) if bk == "emp" else (Color("#ffec80", alpha * 0.95) if bk == "nuke" else Color("#ffd166", alpha * 0.9))
 			draw_arc(pos, br, 0.0, TAU, 24, ring_c, maxf(2.0, zoom * 0.32), true)
 		elif kind == "hit":
 			var r := maxf(3.5, (1.0 + 3.0 * t) * zoom)
-			var stex_h: Texture2D = AssetLoader.get_sprite("exp_spark")
+			var stex_h: Texture2D = AssetLoader.get_sprite("spark")
+			if stex_h == null:
+				stex_h = AssetLoader.get_sprite("exp_spark")
 			if stex_h != null:
-				draw_texture_rect(stex_h, Rect2(pos - Vector2(r * 1.4, r * 1.4), Vector2(r * 2.8, r * 2.8)), false, Color(1.0, 0.92, 0.75, alpha * 0.9))
+				draw_texture_rect(stex_h, Rect2(pos - Vector2(r * 1.4, r * 1.4), Vector2(r * 2.8, r * 2.8)), false, Color(1.0, 0.92, 0.75, alpha * 0.92))
 			else:
 				draw_arc(pos, r, 0.0, TAU, 14, Color("#ffd180", alpha * 0.8), 1.5, true)
 	# Brief muzzle flash on recent weapon shots
-	var mspark: Texture2D = AssetLoader.get_sprite("exp_spark")
+	var mspark: Texture2D = AssetLoader.get_sprite("spark")
+	if mspark == null:
+		mspark = AssetLoader.get_sprite("exp_spark")
 	for ev in battle.events:
 		if str(ev.get("kind", "")) != "shot":
 			continue

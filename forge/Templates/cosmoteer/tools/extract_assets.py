@@ -235,59 +235,88 @@ def build_audio_map(data_root: Path) -> dict[str, str]:
 
 
 def _collect_extra_sprites(data_root: Path) -> list[tuple[str, Any]]:
-    """Load authentic Cosmoteer environment, asteroid, crew, projectile, and explosion sprites."""
-    specs: list[tuple[str, str, tuple[int, int]]] = [
-        ("cloud_1", "backgrounds/cloud1.png", (256, 256)),
-        ("cloud_2", "backgrounds/cloud2.png", (256, 256)),
-        ("cloud_3", "backgrounds/cloud3.png", (256, 256)),
-        ("cloud_4", "backgrounds/cloud4.png", (256, 256)),
-        ("star", "backgrounds/star.png", (32, 32)),
-        ("ast_iron", "doodads/asteroids/iron/asteroid_iron_m.png", (96, 96)),
-        ("ast_copper", "doodads/asteroids/copper/asteroid_copper_m.png", (96, 96)),
-        ("ast_carbon", "doodads/asteroids/carbon/asteroid_carbon_m.png", (96, 96)),
-        ("ast_gold", "doodads/asteroids/gold/asteroid_gold_m.png", (96, 96)),
-        ("ast_tristeel", "doodads/asteroids/tritanium/asteroid_tritanium_m.png", (96, 96)),
-        ("ast_uranium", "doodads/asteroids/uranium/asteroid_uranium_m.png", (96, 96)),
-        ("ast_diamond", "doodads/asteroids/sulfur/asteroid_sulfur_m.png", (96, 96)),
-        ("ast_hyperium", "doodads/asteroids/hyperium/asteroid_hyperium_m.png", (96, 96)),
-        ("ast_plain", "doodads/asteroids/plain/asteroid_m.png", (96, 96)),
-        ("crew_walk", "crew/walk_a1.png", (48, 48)),
-        ("crew_carry", "crew/carry_a1.png", (48, 48)),
-        ("crew_idle", "crew/idle_a1.png", (48, 48)),
-        ("crew_operate", "crew/operate_a1.png", (48, 48)),
-        ("battery", "resources/battery/battery_large.png", (36, 36)),
-        ("shot_laser_small", "shots/laser_bolt_small/laser_bolt_small.png", (24, 64)),
-        ("shot_laser_large", "shots/laser_bolt_large/laser_bolt_large.png", (32, 80)),
-        ("shot_bullet_med", "shots/bullet_med/bullet_med.png", (24, 48)),
-        ("shot_bullet_large", "shots/bullet_large/bullet_large.png", (36, 64)),
-        ("shot_railgun", "shots/bullet_railgun/bullet_railgun.png", (32, 96)),
-        ("shot_missile_he", "shots/missile_he/missile_he.png", (28, 64)),
-        ("shot_missile_emp", "shots/missile_emp/missile_emp.png", (28, 64)),
-        ("shot_missile_nuke", "shots/missile_nuke/missile_nuke.png", (36, 72)),
-        ("shot_missile_thermal", "shots/missile_thermal/missile_thermal.png", (28, 64)),
-        ("shot_mine", "shots/mine/mine_armed.png", (48, 48)),
-        ("shot_pd", "shots/pd_shot/pd_shot.png", (16, 36)),
-        ("shot_resonance", "shots/resonance_beam/resonance_beam.png", (32, 64)),
-        ("exp_small", "common_effects/particles/explosions/small_part_explode.png", (96, 96)),
-        ("exp_med", "common_effects/particles/explosions/med_part_explode.png", (128, 128)),
-        ("exp_big", "common_effects/particles/explosions/big_part_explode.png", (160, 160)),
-        ("exp_spark", "common_effects/particles/explode_spark.png", (48, 48)),
-        ("fire_0", "statuses/fire/fire00.png", (64, 64)),
-        ("fire_1", "statuses/fire/fire04.png", (64, 64)),
-        ("fire_2", "statuses/fire/fire08.png", (64, 64)),
-        ("fire_3", "statuses/fire/fire12.png", (64, 64)),
-        ("debris", "common_effects/particles/debris.png", (64, 64)),
-        ("flame", "common_effects/particles/flame.png", (64, 96)),
-        ("damage_cracks", "common_effects/particles/noise_cracks.png", (96, 96)),
-        ("shield_energy", "ships/terran/shield_gen_small/shield_energy.png", (96, 96)),
+    """Load authentic Cosmoteer environment, asteroid, crew, cropped projectile, and animated VFX sprites."""
+    # Tuple format: (key, rel_path, target_size, optional_grid=(cols, rows, frame_idx))
+    specs: list[tuple[str, str, tuple[int, int], tuple[int, int, int] | None]] = [
+        ("cloud_1", "backgrounds/cloud1.png", (256, 256), None),
+        ("cloud_2", "backgrounds/cloud2.png", (256, 256), None),
+        ("cloud_3", "backgrounds/cloud3.png", (256, 256), None),
+        ("cloud_4", "backgrounds/cloud4.png", (256, 256), None),
+        ("star", "backgrounds/star.png", (32, 32), None),
+        ("ast_iron", "doodads/asteroids/iron/asteroid_iron_m.png", (96, 96), None),
+        ("ast_copper", "doodads/asteroids/copper/asteroid_copper_m.png", (96, 96), None),
+        ("ast_carbon", "doodads/asteroids/carbon/asteroid_carbon_m.png", (96, 96), None),
+        ("ast_gold", "doodads/asteroids/gold/asteroid_gold_m.png", (96, 96), None),
+        ("ast_tristeel", "doodads/asteroids/tritanium/asteroid_tritanium_m.png", (96, 96), None),
+        ("ast_uranium", "doodads/asteroids/uranium/asteroid_uranium_m.png", (96, 96), None),
+        ("ast_diamond", "doodads/asteroids/sulfur/asteroid_sulfur_m.png", (96, 96), None),
+        ("ast_hyperium", "doodads/asteroids/hyperium/asteroid_hyperium_m.png", (96, 96), None),
+        ("ast_plain", "doodads/asteroids/plain/asteroid_m.png", (96, 96), None),
+        ("crew_walk", "crew/walk_a1.png", (48, 48), None),
+        ("crew_carry", "crew/carry_a1.png", (48, 48), None),
+        ("crew_idle", "crew/idle_a1.png", (48, 48), None),
+        ("crew_operate", "crew/operate_a1.png", (48, 48), None),
+        ("battery", "resources/battery/battery_large.png", (36, 36), None),
+        # Properly cropped single-frame horizontal (+X) Cosmoteer projectile sprites
+        ("shot_laser_small", "shots/laser_bolt_small/laser_bolt_small.png", (64, 64), (2, 4, 0)),
+        ("shot_laser_small_1", "shots/laser_bolt_small/laser_bolt_small.png", (64, 64), (2, 4, 3)),
+        ("shot_laser_large", "shots/laser_bolt_large/laser_bolt_large.png", (84, 56), (2, 4, 0)),
+        ("shot_laser_large_1", "shots/laser_bolt_large/laser_bolt_large.png", (84, 56), (2, 4, 3)),
+        ("shot_bullet_med", "shots/bullet_med/bullet_med.png", (48, 48), None),
+        ("shot_bullet_large", "shots/bullet_large/bullet_large.png", (64, 64), (4, 4, 0)),
+        ("shot_bullet_large_1", "shots/bullet_large/bullet_large.png", (64, 64), (4, 4, 5)),
+        ("shot_railgun", "shots/bullet_railgun/bullet_railgun.png", (72, 72), (4, 4, 0)),
+        ("shot_railgun_1", "shots/bullet_railgun/bullet_railgun.png", (72, 72), (4, 4, 6)),
+        ("shot_chaingun", "shots/chaingun_shot/chaingun_trail.png", (64, 32), None),
+        ("shot_missile_he", "shots/missile_he/missile_he.png", (64, 32), None),
+        ("shot_missile_emp", "shots/missile_emp/missile_emp.png", (72, 38), None),
+        ("shot_missile_nuke", "shots/missile_nuke/missile_nuke.png", (78, 40), None),
+        ("shot_missile_thermal", "shots/missile_thermal/missile_thermal.png", (64, 32), None),
+        ("shot_mine", "shots/mine/mine_armed.png", (48, 48), None),
+        ("shot_pd", "shots/pd_shot/pd_shot.png", (64, 16), None),
+        # Properly cropped animated explosion sequences (4x8 = 32-frame sheets)
+        ("exp_small", "common_effects/particles/explosions/small_part_explode.png", (96, 96), (4, 8, 8)),
+        ("exp_med", "common_effects/particles/explosions/med_part_explode.png", (112, 112), (4, 8, 9)),
+        ("exp_med_0", "common_effects/particles/explosions/med_part_explode.png", (96, 96), (4, 8, 3)),
+        ("exp_med_1", "common_effects/particles/explosions/med_part_explode.png", (96, 96), (4, 8, 9)),
+        ("exp_med_2", "common_effects/particles/explosions/med_part_explode.png", (96, 96), (4, 8, 16)),
+        ("exp_med_3", "common_effects/particles/explosions/med_part_explode.png", (96, 96), (4, 8, 23)),
+        ("exp_big", "common_effects/particles/explosions/big_part_explode.png", (128, 128), (4, 8, 9)),
+        ("exp_big_0", "common_effects/particles/explosions/big_part_explode.png", (128, 128), (4, 8, 3)),
+        ("exp_big_1", "common_effects/particles/explosions/big_part_explode.png", (128, 128), (4, 8, 9)),
+        ("exp_big_2", "common_effects/particles/explosions/big_part_explode.png", (128, 128), (4, 8, 16)),
+        ("exp_big_3", "common_effects/particles/explosions/big_part_explode.png", (128, 128), (4, 8, 23)),
+        ("exp_spark", "common_effects/particles/explode_spark.png", (56, 56), (4, 4, 0)),
+        ("spark", "common_effects/particles/spark.png", (56, 56), None),
+        ("shockwave", "common_effects/particles/shockwave.png", (96, 96), None),
+        ("reactor_shockwave", "common_effects/particles/reactor_shockwave.png", (128, 128), None),
+        ("fire_0", "statuses/fire/fire00.png", (64, 64), None),
+        ("fire_1", "statuses/fire/fire04.png", (64, 64), None),
+        ("fire_2", "statuses/fire/fire08.png", (64, 64), None),
+        ("fire_3", "statuses/fire/fire12.png", (64, 64), None),
+        ("debris", "common_effects/particles/debris.png", (48, 48), (2, 2, 0)),
+        ("debris_0", "common_effects/particles/debris.png", (48, 48), (2, 2, 0)),
+        ("debris_1", "common_effects/particles/debris.png", (48, 48), (2, 2, 1)),
+        ("debris_2", "common_effects/particles/debris.png", (48, 48), (2, 2, 2)),
+        ("debris_3", "common_effects/particles/debris.png", (48, 48), (2, 2, 3)),
+        ("smoke", "common_effects/particles/smoke.png", (64, 64), (2, 4, 2)),
+        ("flame", "common_effects/particles/flame.png", (64, 64), None),
+        ("thruster_plume", "common_effects/particles/thruster.png", (64, 64), None),
+        ("damage_cracks", "common_effects/particles/noise_cracks.png", (96, 96), None),
+        ("shield_energy", "ships/terran/shield_gen_small/shield_energy.png", (96, 96), None),
     ]
     out: list[tuple[str, Any]] = []
-    for key, rel, target_size in specs:
+    for key, rel, target_size, grid in specs:
         p = data_root / rel
         if not p.is_file():
             continue
         try:
             img = Image.open(p).convert("RGBA")
+            if grid is not None:
+                cols, rows, fidx = grid
+                cw, ch = img.width // cols, img.height // rows
+                r, c = divmod(fidx, cols)
+                img = img.crop((c * cw, r * ch, (c + 1) * cw, (r + 1) * ch))
             img.thumbnail(target_size, Image.Resampling.LANCZOS)
             out.append((key, img))
         except Exception:
@@ -616,6 +645,7 @@ def extract_all(
     part_sprites = build_part_sprite_map(data_out)
     audio_map = build_audio_map(data_out)
     atlas_info = build_web_atlas(data_out, part_sprites, out_dir)
+    web_sfx_info = build_web_sfx(data_out, audio_map, out_dir)
 
     summary = {
         "source_root": str(source_root),
@@ -630,6 +660,7 @@ def extract_all(
         "by_extension": {k: {"files": ext_counts[k], "bytes": ext_bytes[k]} for k in sorted(ext_counts)},
         "by_category": {k: {"files": cat_counts[k], "bytes": cat_bytes[k]} for k in sorted(cat_counts)},
         "atlas": atlas_info,
+        "web_sfx": web_sfx_info,
     }
 
     full_manifest_path = out_dir / "full_manifest.json"
@@ -654,6 +685,7 @@ def extract_all(
         },
         "part_sprites": part_sprites,
         "audio_sfx": audio_map,
+        "web_sfx": web_sfx_info,
     }
     index_path.parent.mkdir(parents=True, exist_ok=True)
     index_path.write_text(json.dumps(index_payload, indent=2) + "\n", encoding="utf-8")

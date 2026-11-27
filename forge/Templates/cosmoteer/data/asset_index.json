@@ -243,7 +243,7 @@
       }
     },
     "terran_parts_mapped": 96,
-    "audio_sfx_mapped": 14
+    "audio_sfx_mapped": 16
   },
   "part_sprites": {
     "cosmoteer.corridor": {
@@ -1387,19 +1387,26 @@
     "fire_ignite": "statuses/fire/fire.wav",
     "destroyed": "ships/terran/ion_beam_prism/sounds/explosion_part_energy/explosion_part_energy_01.wav"
   },
-  "web_atlas": {
-    "generated": true,
-    "atlas_png": "web_atlas.png",
-    "atlas_json": "web_atlas.json",
-    "width": 2048,
-    "height": 1830,
-    "png_bytes": 4604039,
-    "part_count": 96,
-    "sprite_count": 43,
-    "tile_count": 242
-  },
   "web_sfx": {
     "count": 16,
-    "total_bytes": 761288
+    "total_bytes": 761288,
+    "files": {
+      "destroyed": 52964,
+      "fire_ignite": 52964,
+      "intercept": 27270,
+      "shield_down": 52964,
+      "shield_hit": 52964,
+      "shot_cannon": 45398,
+      "shot_cannon_deck": 52964,
+      "shot_cannon_large": 44130,
+      "shot_chaingun": 52964,
+      "shot_disruptor": 42674,
+      "shot_flak": 40508,
+      "shot_heavy_laser": 52964,
+      "shot_ion": 52964,
+      "shot_laser": 31668,
+      "shot_missile": 52964,
+      "shot_railgun": 52964
+    }
   }
 }

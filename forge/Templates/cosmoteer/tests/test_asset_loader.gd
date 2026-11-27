@@ -44,9 +44,9 @@ func test() -> void:
 		for tid in ["cosmoteer.cannon_deck", "cosmoteer.cannon_med", "cosmoteer.flak_cannon_large"]:
 			var tur := AssetLoader.get_part_texture(tid, "turret")
 			_check(tur != null and tur.get_width() > 0, "separate rotating turret sprite loads for " + tid)
-		for skey in ["cloud_1", "star", "ast_iron", "ast_gold", "crew_carry", "battery", "shot_missile_he", "shot_mine", "shot_railgun", "exp_big", "fire_0", "fire_3", "debris", "flame", "damage_cracks", "shield_energy"]:
+		for skey in ["cloud_1", "star", "ast_iron", "ast_gold", "crew_carry", "battery", "shot_laser_small", "shot_laser_small_1", "shot_chaingun", "shot_missile_he", "shot_mine", "shot_railgun", "exp_big", "exp_big_0", "exp_big_3", "exp_med_0", "shockwave", "reactor_shockwave", "spark", "smoke", "thruster_plume", "fire_0", "fire_3", "debris", "debris_3", "flame", "damage_cracks", "shield_energy"]:
 			var st := AssetLoader.get_sprite(skey)
-			_check(st != null and st.get_width() > 0, "extra visual sprite loads from v3 atlas: " + skey)
+			_check(st != null and st.get_width() > 0, "extra visual sprite loads from v4 atlas: " + skey)
 		var bank := SfxBank.new()
 		root.add_child(bank)
 		await process_frame

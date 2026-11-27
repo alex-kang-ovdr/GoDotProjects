@@ -211,7 +211,17 @@ func _draw_module(part: Dictionary, rect: Rect2, cell_size: Vector2, dead: bool)
 		var rot_q: int = posmod(int(part.get("rotation", 0)), 4)
 		var base_sz := Vector2(rect.size.y, rect.size.x) if (rot_q % 2 == 1) else rect.size
 		var mirror_x := -1.0 if _is_mirrored_battle() else 1.0
-		var tint_tex := Color(0.42, 0.36, 0.42, 0.85) if dead else Color.WHITE
+		var livery_tint := Color.WHITE
+		if not dead:
+			if not enemy_side and design != null and not (design is Dictionary):
+				var pk := str(design.paint)
+				if pk != "default" and CombatSystems.PAINT_LIVERIES.has(pk):
+					livery_tint = Color.WHITE.lerp(Color(str(CombatSystems.PAINT_LIVERIES[pk].tint)), 0.78)
+			elif enemy_side and battle != null and battle.mission is Dictionary and battle.mission.has("faction"):
+				var fac_id := str(battle.mission.faction)
+				if CombatSystems.PAINT_LIVERIES.has(fac_id):
+					livery_tint = Color.WHITE.lerp(Color(str(CombatSystems.PAINT_LIVERIES[fac_id].tint)), 0.78)
+		var tint_tex := Color(0.42, 0.36, 0.42, 0.85) if dead else livery_tint
 		draw_set_transform(rect.get_center(), float(rot_q) * PI * 0.5 * mirror_x, Vector2(mirror_x, 1.0))
 		draw_texture_rect(orig_tex, Rect2(-base_sz * 0.5, base_sz), false, tint_tex)
 		draw_set_transform(Vector2.ZERO)
