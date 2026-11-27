@@ -594,7 +594,8 @@
       "owns": [
         "references/dont-starve-together/**",
         "forge/Templates/dont-starve-together/**",
-        "forge/Tests/dont-starve-together*.test.cjs"
+        "forge/Tests/dont-starve-together*.test.cjs",
+        "games/forge-dont-starve-together/**"
       ]
     }
   }

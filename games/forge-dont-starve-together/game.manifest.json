@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-dont-starve-together",
+  "slug": "forge-dont-starve-together",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "돈 스타브 투게더 (Godot 4.7 복원)",
+    "en": "Don't Starve Together (Godot 4.7)",
+    "ja": "Don't Starve Together (Godot 4.7)",
+    "zh-CN": "Don't Starve Together (Godot 4.7)",
+    "fr": "Don't Starve Together (Godot 4.7)",
+    "es": "Don't Starve Together (Godot 4.7)",
+    "pt-BR": "Don't Starve Together (Godot 4.7)",
+    "hi": "Don't Starve Together (Godot 4.7)"
+  },
+  "summary": {
+    "ko": "16세그먼트 하루·20일 달 주기·4계절·이중 정신력(광기/달 계몽)·요리 냄비·7스트레스 농사·DST 방어구/평면 전투·외눈사슴/변이 거인 보스전을 재현한 2.5D 협동 생존 템플릿입니다.",
+    "en": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "ja": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "zh-CN": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "fr": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "es": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "pt-BR": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "hi": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters."
+  },
+  "instructions": {
+    "ko": "WASD로 이동, Space로 채집/수확/모닥불 연료 보충, F로 근접 공격(카이팅), Q/E로 카메라 ±45° 회전, 휠로 줌, 좌측 제작 메뉴 클릭으로 도구·방어구·과학기계·요리냄비 제작, 1~6 키로 인벤토리 사용/장착.",
+    "en": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "ja": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "zh-CN": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "fr": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "es": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "pt-BR": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6.",
+    "hi": "Move with WASD, gather/interact with Space, attack with F, rotate camera ±45° with Q/E, zoom with mouse wheel, craft via the left sidebar, and use/equip inventory with keys 1-6."
+  },
+  "rules": {
+    "ko": "16세그먼트 하루·20일 달 주기·4계절·이중 정신력(광기/달 계몽)·요리 냄비·7스트레스 농사·DST 방어구/평면 전투·외눈사슴/변이 거인 보스전을 재현한 2.5D 협동 생존 템플릿입니다.",
+    "en": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "ja": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "zh-CN": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "fr": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "es": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "pt-BR": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters.",
+    "hi": "2.5D survival template reproducing DST's 16-segment day/moon/season clock, Insanity vs Lunacy dual sanity, crock pot priority cooking, 7-stressor farming, DST armor/planar combat, and Deerclops boss encounters."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-27",
+  "updatedOn": "2026-11-27",
+  "tags": [
+    "forge",
+    "survival",
+    "crafting",
+    "sandbox",
+    "2.5d",
+    "boss"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (dont-starve-together)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

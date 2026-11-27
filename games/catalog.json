@@ -483,6 +483,14 @@
       "priority": 70,
       "kind": "imported",
       "displayName": "Voxel Frontier (Forge)"
+    },
+    {
+      "id": "forge-dont-starve-together",
+      "path": "forge-dont-starve-together",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "Don't Starve Together (Godot 4.7 Restoration) (Forge)"
     }
   ]
 }

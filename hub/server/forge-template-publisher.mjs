@@ -112,8 +112,10 @@ function copyTemplateSource(srcDir, dstDir) {
     const srcPath = path.join(srcDir, entry.name);
     const dstPath = path.join(dstDir, entry.name);
     if (entry.isSymbolicLink()) continue;
-    if (entry.isDirectory()) copyTemplateSource(srcPath, dstPath);
-    else if (entry.isFile()) fs.copyFileSync(srcPath, dstPath);
+    if (entry.isDirectory()) {
+      if (entry.name === 'tools' || fs.existsSync(path.join(srcPath, '.gdignore'))) continue;
+      copyTemplateSource(srcPath, dstPath);
+    } else if (entry.isFile()) fs.copyFileSync(srcPath, dstPath);
   }
 }
 
