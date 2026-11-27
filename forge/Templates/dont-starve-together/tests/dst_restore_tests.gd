@@ -387,6 +387,42 @@ func _run() -> void:
 	_check(str(hw_d60["tier"]) == "heavy" and str(hw_d60["variant"]) == "icehound", "LOGIC_HOUNDED_WINTER_HEAVY", str(hw_d60))
 	_check(str(hw_d120["tier"]) == "crazy" and str(hw_d120["variant"]) == "firehound" and float(hw_d120["warglet_upgrade_chance"]) >= 0.30, "LOGIC_HOUNDED_SUMMER_CRAZY", str(hw_d120))
 
+	# 역공학 로직 검증 4: recipes.lua 950+ Recipe2 TechTree & builder_tag 검증
+	_check(db.logic.recipes2_by_id.size() >= 940, "LOGIC_950_RECIPES2_LOADED", "cnt=%d" % db.logic.recipes2_by_id.size())
+	var r_lighter_fail: Dictionary = db.logic.can_craft_recipe2("lighter", {"rope": 1, "goldnugget": 1, "petals": 3}, 0, [])
+	_check(not bool(r_lighter_fail["ok"]) and str(r_lighter_fail["reason"]).begins_with("missing_builder_tag"), "LOGIC_RECIPE2_WILLOW_TAG_GATE", str(r_lighter_fail))
+	var r_lighter_ok: Dictionary = db.logic.can_craft_recipe2("lighter", {"rope": 1, "goldnugget": 1, "petals": 3}, 0, ["pyromaniac"])
+	_check(bool(r_lighter_ok["ok"]), "LOGIC_RECIPE2_WILLOW_LIGHTER_OK", str(r_lighter_ok))
+
+	# 역공학 로직 검증 5: 12인 359노드 스킬트리 방향성 그래프 선행 조건 검증 (Wilson alchemy_1 -> alchemy_2 -> alchemy_5)
+	_check(db.logic.skilltrees.size() == 12, "LOGIC_12_SKILLTREES_LOADED", "cnt=%d" % db.logic.skilltrees.size())
+	var sk_child_blocked: Dictionary = db.logic.can_unlock_tree_node("wilson", "wilson_alchemy_2", {}, 5)
+	_check(not bool(sk_child_blocked["ok"]) and str(sk_child_blocked["reason"]).begins_with("parent_required"), "LOGIC_SKILLTREE_PARENT_BLOCK", str(sk_child_blocked))
+	var sk_root_ok: Dictionary = db.logic.can_unlock_tree_node("wilson", "wilson_alchemy_1", {}, 5)
+	var sk_child_ok: Dictionary = db.logic.can_unlock_tree_node("wilson", "wilson_alchemy_2", {"wilson_alchemy_1": true}, 4)
+	_check(bool(sk_root_ok["ok"]) and bool(sk_child_ok["ok"]), "LOGIC_SKILLTREE_WILSON_GRAPH_UNLOCK")
+
+	# 역공학 로직 검증 6: WX-78 23종 회로 모듈 & 6슬롯 전력 예산 검증
+	_check(db.logic.wx78_by_id.size() == 23, "LOGIC_23_WX78_MODULES", "cnt=%d" % db.logic.wx78_by_id.size())
+	var wx_plug: Array = ["maxhealth2", "movespeed2"] # 2 + 3 = 5 slots
+	_check(db.logic.wx78_can_plug_module("chess", wx_plug), "LOGIC_WX78_PLUG_6TH_SLOT")
+	_check(not db.logic.wx78_can_plug_module("shielding", wx_plug), "LOGIC_WX78_REJECT_OVER_6_SLOTS")
+	var wx_bon: Dictionary = db.logic.wx78_calc_circuit_bonuses(wx_plug)
+	_check(_approx(float(wx_bon["hp_bonus"]), 150.0) and _approx(float(wx_bon["speed_mult"]), 1.25), "LOGIC_WX78_CIRCUIT_BONUSES", str(wx_bon))
+
+	# 역공학 로직 검증 7: temperature.lua 단열 열관성 공식 (30 / (30 + 120) = 0.2x)
+	var td_ins: float = DSTLogicEngine.calc_insulated_temp_delta(-10.0, 120.0, 0.0, 30.0)
+	_check(_approx(td_ins, -2.0, 0.01), "LOGIC_TEMP_INSULATION_FORMULA", "got %.3f" % td_ins)
+
+	# 역공학 로직 검증 8: propagator.lua 화재 열 전파 및 발화점(100) + 봄 사거리 감소(0.67x)
+	var fire_ents: Array = [
+		{"id": 1, "pos": Vector2(0, 0), "heat": 0.0, "flashpoint": 100.0, "burning": true, "heat_output": 20.0, "prop_range": 3.0, "fireimmune": false},
+		{"id": 2, "pos": Vector2(1.0, 0), "heat": 95.0, "flashpoint": 100.0, "burning": false, "heat_output": 5.0, "prop_range": 3.0, "fireimmune": false},
+		{"id": 3, "pos": Vector2(2.6, 0), "heat": 95.0, "flashpoint": 100.0, "burning": false, "heat_output": 5.0, "prop_range": 3.0, "fireimmune": false},
+	]
+	var ign_spring: Array = DSTLogicEngine.step_fire_propagators(fire_ents, 1.0, true) # 봄: range = 3*0.67 = 2.01 -> id=2만 발화, id=3(2.6m) 미발화!
+	_check(ign_spring.has(2) and not ign_spring.has(3), "LOGIC_PROPAGATOR_FIRE_SPRING_MOD", str(ign_spring))
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

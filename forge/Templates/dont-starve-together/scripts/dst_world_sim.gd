@@ -743,18 +743,17 @@ func _update_environment_and_stats(dt: float, fire_power: float) -> void:
 	# 습기 업데이트
 	update_moisture(dt, 1.0 if is_raining else 0.0, fire_power)
 
-	# 체온 업데이트 (temperature.lua 수렴 모델 + 윌슨 수염 단열 + 극한 단열 스킬)
+	# 체온 업데이트 (components/temperature.lua:71-80 원작 단열 열관성 공식 적용)
 	var moist_penalty: float = -(moisture / 100.0) * float(surv["moisture_temp_penalty"])
 	var target_temp: float = world_temperature + moist_penalty + fire_power * 48.0
-	if character_id == "wilson" and target_temp < 15.0:
-		target_temp += 15.0 # 수염 겨울 단열 보너스
+	var winter_insul: float = 135.0 if character_id == "wilson" else 0.0 # 윌슨 수염 겨울 단열 135
+	var summer_insul: float = 0.0
 	if unlocked_skills.has("survival_insulation"):
-		if target_temp < 20.0:
-			target_temp += 12.0
-		elif target_temp > 55.0:
-			target_temp -= 12.0
-	var diff: float = target_temp - temperature
-	temperature = clamp(temperature + clamp(diff, -1.0, 1.0) * dt * 1.2, float(surv["min_entity_temp"]), float(surv["max_entity_temp"]))
+		winter_insul += 120.0
+		summer_insul += 120.0
+	var raw_diff: float = clamp(target_temp - temperature, -1.0, 1.0) * dt * 1.2
+	var eff_delta: float = DSTLogicEngine.calc_insulated_temp_delta(raw_diff, winter_insul, summer_insul, 30.0)
+	temperature = clamp(temperature + eff_delta, float(surv["min_entity_temp"]), float(surv["max_entity_temp"]))
 
 	if temperature < float(surv["freezing_temp"]):
 		apply_health_delta(-(max_health / float(surv["freezing_kill_time"])) * dt, "cold")

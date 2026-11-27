@@ -31,6 +31,7 @@ test('DST Godot template exposes valid PlayForge metadata and ready/guided proje
   assert.ok(ready.files['scripts/dst_world_sim.gd']);
   assert.ok(ready.files['scripts/dst_net_sync.gd']);
   assert.ok(ready.files['data/dst_logic_extracted.json']);
+  assert.ok(ready.files['data/dst_recipes_skilltrees_extracted.json']);
   assert.ok(ready.files['scripts/dst_camera.gd']);
   assert.ok(ready.files['scripts/dst_renderer.gd']);
   assert.ok(ready.files['scripts/dst_hud.gd']);
@@ -79,6 +80,12 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.meta.counts.characters_19, 19);
   assert.equal(logic.meta.counts.stategraphs, 9);
   assert.equal(logic.meta.counts.brains, 7);
+  assert.ok(logic.meta.counts.recipes2_total >= 940);
+  assert.equal(logic.meta.counts.skilltree_characters, 12);
+  assert.ok(logic.meta.counts.skilltree_nodes_total >= 350);
+  assert.equal(logic.meta.counts.wx78_modules, 23);
+  assert.equal(logic.physics.propagator.verified_in_lua, true);
+  assert.equal(logic.physics.temperature_insulation.verified_in_lua, true);
   assert.equal(logic.stategraphs.deerclops.attack_hit_frame, 31);
   assert.equal(logic.stategraphs.wilson.attack_hit_frame, 6);
 });
@@ -131,5 +138,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 105, `expected >= 105 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 118, `expected >= 118 checks, got ${summary.passed}\n${out}`);
 });

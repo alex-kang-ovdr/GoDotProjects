@@ -20,6 +20,11 @@ var stategraphs: Dictionary = {}
 var brains: Dictionary = {}
 var hounded: Dictionary = {}
 var characters_19: Dictionary = {}
+var wx78_modules: Dictionary = {}
+var wx78_by_id: Dictionary = {}
+var physics: Dictionary = {}
+var recipes2_by_id: Dictionary = {}
+var skilltrees: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -41,7 +46,28 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 	brains = raw.get("brains", {})
 	hounded = raw.get("hounded", {})
 	characters_19 = raw.get("characters_19", {})
+	wx78_modules = raw.get("wx78_modules", {})
+	wx78_by_id.clear()
+	for m in wx78_modules.get("modules", []):
+		if m is Dictionary and m.has("id"):
+			wx78_by_id[str(m["id"])] = m
+	physics = raw.get("physics", {})
+	load_ext_from_path("res://data/dst_recipes_skilltrees_extracted.json")
 	loaded = true
+	return true
+
+
+func load_ext_from_path(path: String = "res://data/dst_recipes_skilltrees_extracted.json") -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	recipes2_by_id.clear()
+	for r in parsed.get("recipes2", {}).get("recipes", []):
+		if r is Dictionary and r.has("id"):
+			recipes2_by_id[str(r["id"])] = r
+	skilltrees = parsed.get("skilltrees", {}).get("trees", {})
 	return true
 
 
@@ -247,3 +273,150 @@ func calc_hound_wave(day_num: int, season: String, rng: RandomNumberGenerator = 
 		"warglet_upgrade_chance": up_prob,
 		"next_delay_days": float(chosen.get("delay_days_min", 5)) + (rng.randf() * float(chosen.get("delay_days_rand", 3)) if rng != null else 0.0),
 	}
+
+
+## recipes.lua (950+ Recipe2) — 원작 TechTree · builder_tag · builder_skill · 재료 검증기
+func get_recipe2_tech_level(tech_name: String) -> int:
+	if tech_name == "NONE" or tech_name == "":
+		return 0
+	if tech_name.begins_with("SCIENCE_ONE") or tech_name.begins_with("SEAFARING_ONE") or tech_name.begins_with("FISHING_ONE"):
+		return 1
+	if tech_name.begins_with("SCIENCE_TWO") or tech_name.begins_with("MAGIC_") or tech_name.begins_with("CELESTIAL_") or tech_name.begins_with("LUNARFORGING_"):
+		return 2
+	if tech_name.begins_with("ANCIENT_") or tech_name.begins_with("SHADOWFORGING_"):
+		return 3
+	return 1
+
+
+func can_craft_recipe2(
+	recipe_id: String,
+	inv: Dictionary,
+	nearby_tech: int = 0,
+	builder_tags: Array = [],
+	unlocked_skills: Dictionary = {}
+) -> Dictionary:
+	if not recipes2_by_id.has(recipe_id):
+		return {"ok": false, "reason": "unknown_recipe"}
+	var r: Dictionary = recipes2_by_id[recipe_id]
+	var req_tag: String = str(r.get("builder_tag", ""))
+	if req_tag != "" and not builder_tags.has(req_tag):
+		return {"ok": false, "reason": "missing_builder_tag:" + req_tag}
+	var req_skill: String = str(r.get("builder_skill", ""))
+	if req_skill != "" and not unlocked_skills.has(req_skill):
+		return {"ok": false, "reason": "missing_builder_skill:" + req_skill}
+	var req_tech: int = get_recipe2_tech_level(str(r.get("tech", "NONE")))
+	if nearby_tech < req_tech:
+		return {"ok": false, "reason": "tech_too_low:%d<%d" % [nearby_tech, req_tech]}
+	var ings: Dictionary = r.get("ingredients", {})
+	for k in ings.keys():
+		if int(inv.get(str(k), 0)) < int(ings[k]):
+			return {"ok": false, "reason": "missing_ingredient:" + str(k)}
+	return {"ok": true, "recipe": r}
+
+
+## prefabs/skilltree_*.lua (12인 359노드) — 방향성 스킬 그래프 선행 조건 검증기
+func can_unlock_tree_node(char_id: String, node_id: String, unlocked_nodes: Dictionary, insight_pts: int) -> Dictionary:
+	if not skilltrees.has(char_id):
+		return {"ok": false, "reason": "no_skilltree"}
+	var nodes: Dictionary = skilltrees[char_id].get("nodes", {})
+	if not nodes.has(node_id):
+		return {"ok": false, "reason": "unknown_node"}
+	if unlocked_nodes.has(node_id):
+		return {"ok": false, "reason": "already_unlocked"}
+	if insight_pts < 1:
+		return {"ok": false, "reason": "no_insight"}
+	var nd: Dictionary = nodes[node_id]
+	if bool(nd.get("root", false)):
+		return {"ok": true, "node": nd}
+	var parents: Array = nd.get("parents", [])
+	if parents.is_empty():
+		return {"ok": true, "node": nd}
+	for p in parents:
+		if unlocked_nodes.has(str(p)):
+			return {"ok": true, "node": nd}
+	return {"ok": false, "reason": "parent_required:" + ",".join(parents)}
+
+
+## wx78_moduledefs.lua (23종 모듈 · 6슬롯 전력 예산 엔진)
+func wx78_slots_used(plugged_ids: Array) -> int:
+	var used: int = 0
+	for mid in plugged_ids:
+		var m: Dictionary = wx78_by_id.get(str(mid), {})
+		used += int(m.get("slots", 0))
+	return used
+
+
+func wx78_can_plug_module(mod_id: String, plugged_ids: Array) -> bool:
+	if not wx78_by_id.has(mod_id):
+		return false
+	var max_s: int = int(wx78_modules.get("max_slots", 6))
+	return wx78_slots_used(plugged_ids) + int(wx78_by_id[mod_id]["slots"]) <= max_s
+
+
+func wx78_calc_circuit_bonuses(plugged_ids: Array) -> Dictionary:
+	var hp_bonus: float = 0.0
+	var speed_mult: float = 1.0
+	var winter_insul: float = 0.0
+	var summer_insul: float = 0.0
+	var has_nightvision: bool = false
+	for mid_v in plugged_ids:
+		var mid: String = str(mid_v)
+		match mid:
+			"maxhealth": hp_bonus += 50.0
+			"maxhealth2": hp_bonus += 150.0
+			"movespeed": speed_mult += 0.15
+			"movespeed2": speed_mult += 0.25
+			"nightvision": has_nightvision = true
+			"heat": winter_insul += 120.0
+			"cold": summer_insul += 120.0
+	return {
+		"slots_used": wx78_slots_used(plugged_ids),
+		"max_slots": int(wx78_modules.get("max_slots", 6)),
+		"hp_bonus": hp_bonus,
+		"speed_mult": speed_mult,
+		"winter_insulation": winter_insul,
+		"summer_insulation": summer_insul,
+		"nightvision": has_nightvision,
+	}
+
+
+## components/temperature.lua:71-80 — 원작 단열 열관성 공식
+## delta = delta * (SEG_TIME / (SEG_TIME + insulation))
+static func calc_insulated_temp_delta(raw_delta: float, winter_insulation: float, summer_insulation: float, seg_time: float = 30.0) -> float:
+	if raw_delta > 0.0:
+		return raw_delta * (seg_time / (seg_time + max(0.0, summer_insulation)))
+	return raw_delta * (seg_time / (seg_time + max(0.0, winter_insulation)))
+
+
+## components/propagator.lua:184-203 — 원작 화재 열 전파 및 발화점(flashpoint=100) 시뮬레이터
+## entities: Array of { id, pos: Vector2, heat: float, flashpoint: float, burning: bool, heat_output: float, prop_range: float, fireimmune: bool }
+static func step_fire_propagators(entities: Array, dt: float, is_spring: bool = false) -> Array:
+	var newly_ignited: Array = []
+	var spring_mod: float = 0.67 if is_spring else 1.0
+	# 1. 연소 중인 개체가 주변 개체에 열 전파
+	for src in entities:
+		if not bool(src.get("burning", false)):
+			continue
+		var prange: float = float(src.get("prop_range", 3.0)) * spring_mod
+		var prange_sq: float = prange * prange
+		var h_out: float = float(src.get("heat_output", 5.0))
+		var spos: Vector2 = src["pos"]
+		for dst in entities:
+			if int(dst["id"]) == int(src["id"]) or bool(dst.get("burning", false)) or bool(dst.get("fireimmune", false)):
+				continue
+			var dsq: float = spos.distance_squared_to(dst["pos"])
+			if dsq <= prange_sq and prange_sq > 0.0:
+				var pct: float = max(0.1, 1.0 - dsq / prange_sq)
+				dst["heat"] = float(dst.get("heat", 0.0)) + h_out * pct * dt
+	# 2. 발화점 초과 판정 및 냉각 감쇠
+	for ent in entities:
+		if bool(ent.get("burning", false)):
+			continue
+		var h: float = float(ent.get("heat", 0.0))
+		var fp: float = float(ent.get("flashpoint", 100.0))
+		if h > fp:
+			ent["burning"] = true
+			newly_ignited.append(int(ent["id"]))
+		elif h > 0.0:
+			ent["heat"] = max(0.0, h - dt * 1.0)
+	return newly_ignited

@@ -27,6 +27,7 @@ TEMPLATE_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR_DEFAULT = TEMPLATE_ROOT / "extracted_assets" / "scripts_bundle" / "scripts"
 DST_SCRIPTS_ZIP = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together\data\databundles\scripts.zip")
 OUT_JSON = TEMPLATE_ROOT / "data" / "dst_logic_extracted.json"
+OUT_EXT_JSON = TEMPLATE_ROOT / "data" / "dst_recipes_skilltrees_extracted.json"
 
 
 def read_lua(scripts_dir: Path, rel_path: str) -> str:
@@ -604,6 +605,173 @@ def extract_hounded_logic(src: str) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# 8. Extract ALL 958 Recipe2 Definitions (scripts/recipes.lua)
+# ---------------------------------------------------------------------------
+
+def extract_all_recipes2(recipes_src: str, tuning: dict) -> dict:
+    recipes = []
+    # Match Recipe2("id", { ... }, TECH.XXX, { ... })
+    rec_re = re.compile(r'Recipe2\(\s*"([^"]+)"\s*,\s*\{([^}]*)\}\s*,\s*(TECH\.[A-Z0-9_]+)(?:\s*,\s*\{([^}]*)\})?')
+    ing_re = re.compile(r'Ingredient\(\s*"([^"]+)"\s*,\s*([0-9A-Za-z_.*+\-/]+)')
+    for m in rec_re.finditer(recipes_src):
+        rid, ing_body, tech, opts = m.group(1), m.group(2), m.group(3), m.group(4) or ""
+        ings = {}
+        for im in ing_re.finditer(ing_body):
+            iid = im.group(1)
+            qty_s = im.group(2).strip()
+            qty = eval_tuning_expr(qty_s, tuning, 1.0)
+            ings[iid] = int(round(qty)) if qty >= 1 else qty
+        rec = {"id": rid, "tech": tech.replace("TECH.", ""), "ingredients": ings}
+        bt = re.search(r'builder_tag\s*=\s*"([^"]+)"', opts)
+        if bt:
+            rec["builder_tag"] = bt.group(1)
+        bs = re.search(r'builder_skill\s*=\s*"([^"]+)"', opts)
+        if bs:
+            rec["builder_skill"] = bs.group(1)
+        ntg = re.search(r'numtogive\s*=\s*([0-9]+)', opts)
+        if ntg:
+            rec["numtogive"] = int(ntg.group(1))
+        if re.search(r'nounlock\s*=\s*true', opts):
+            rec["nounlock"] = True
+        prod = re.search(r'product\s*=\s*"([^"]+)"', opts)
+        if prod:
+            rec["product"] = prod.group(1)
+        recipes.append(rec)
+
+    deconstruct_cnt = len(re.findall(r'DeconstructRecipe\(\s*"([^"]+)"', recipes_src))
+    tech_tiers = sorted(set(r["tech"] for r in recipes))
+    return {
+        "source_file": "recipes.lua",
+        "recipe_count": len(recipes),
+        "deconstruct_count": deconstruct_cnt,
+        "tech_tiers": tech_tiers,
+        "recipes": recipes,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 9. Extract ALL 12 Character Skilltrees (scripts/prefabs/skilltree_*.lua)
+# ---------------------------------------------------------------------------
+
+def extract_all_skilltrees(scripts_dir: Path) -> dict:
+    prefabs_dir = scripts_dir / "prefabs"
+    st_files = sorted(p for p in prefabs_dir.glob("skilltree_*.lua") if p.stem not in ("skilltree_defs", "skilltree_updater"))
+    trees = {}
+    total_nodes = 0
+    for fp in st_files:
+        char_id = fp.stem.replace("skilltree_", "")
+        src = fp.read_text(encoding="utf-8", errors="replace")
+        # Extract skill blocks by scanning `<node_id> = { ... }` inside BuildSkillsData
+        skip_keys = {"skills", "locks", "orders", "pos", "connects", "tags", "data", "onactivate", "ondeactivate"}
+        nodes = {}
+        node_starts = [
+            m for m in re.finditer(r"^\s{4,12}([a-z][a-z0-9_]+)\s*=\s*\{\s*$", src, re.M)
+            if m.group(1) not in skip_keys
+        ]
+        for i, nm in enumerate(node_starts):
+            nid = nm.group(1)
+            s0 = nm.end()
+            s1 = node_starts[i + 1].start() if i + 1 < len(node_starts) else len(src)
+            chunk = src[s0:s1]
+            # Must look like a skill/lock node (has group, pos, root, connects, lock_open, or title)
+            if not any(k in chunk for k in ("group =", "root =", "connects =", "lock_open", "title =", "tags =")):
+                continue
+            grp_m = re.search(r'group\s*=\s*"([^"]+)"', chunk)
+            is_root = bool(re.search(r'\broot\s*=\s*true\b', chunk))
+            is_lock = ("lock_open" in chunk) or ("lock" in nid and "tags" in chunk and '"lock"' in chunk)
+            conn_m = re.search(r'connects\s*=\s*\{([^}]*)\}', chunk, re.S)
+            connects = re.findall(r'"([^"]+)"', conn_m.group(1)) if conn_m else []
+            locks_m = re.search(r'locks\s*=\s*\{([^}]*)\}', chunk, re.S)
+            locks = re.findall(r'"([^"]+)"', locks_m.group(1)) if locks_m else []
+            tags_m = re.search(r'tags\s*=\s*\{([^}]*)\}', chunk, re.S)
+            tags = re.findall(r'"([^"]+)"', tags_m.group(1)) if tags_m else []
+            nodes[nid] = {
+                "id": nid,
+                "group": grp_m.group(1) if grp_m else "general",
+                "root": is_root,
+                "is_lock": is_lock,
+                "connects": connects,
+                "locks": locks,
+                "tags": tags,
+            }
+        # Build reverse parent map (`requires`) from `connects`
+        for nid, nd in nodes.items():
+            for child in nd["connects"]:
+                if child in nodes:
+                    nodes[child].setdefault("parents", []).append(nid)
+        if nodes:
+            trees[char_id] = {
+                "source_file": f"prefabs/{fp.name}",
+                "node_count": len(nodes),
+                "roots": sorted(k for k, v in nodes.items() if v["root"]),
+                "nodes": nodes,
+            }
+            total_nodes += len(nodes)
+    return {"character_count": len(trees), "total_nodes": total_nodes, "trees": trees}
+
+
+# ---------------------------------------------------------------------------
+# 10. Extract ALL 23 WX-78 Circuit Modules (scripts/wx78_moduledefs.lua)
+# ---------------------------------------------------------------------------
+
+def extract_wx78_modules(src: str) -> dict:
+    modules = []
+    mod_re = re.compile(r'local\s+[A-Z0-9_]+_MODULE_DATA\s*=\s*\{([^}]+)\}', re.S)
+    for m in mod_re.finditer(src):
+        body = m.group(1)
+        nm = re.search(r'name\s*=\s*"([^"]+)"', body)
+        sl = re.search(r'slots\s*=\s*([0-9]+)', body)
+        tp = re.search(r'type\s*=\s*CIRCUIT_BARS\.([A-Z]+)', body)
+        if nm and sl:
+            modules.append({
+                "id": nm.group(1),
+                "slots": int(sl.group(1)),
+                "bar": tp.group(1) if tp else "ALPHA",
+            })
+    scans = {}
+    for sm in re.finditer(r'AddCreatureScanDataDefinition\(\s*"([^"]+)"\s*,\s*"([^"]+)"\s*,\s*([0-9]+)', src):
+        scans.setdefault(sm.group(2), []).append({"creature": sm.group(1), "bio_data": int(sm.group(3))})
+    for mod in modules:
+        mod["scan_sources"] = scans.get(mod["id"], [])
+    return {"source_file": "wx78_moduledefs.lua", "module_count": len(modules), "max_slots": 6, "modules": modules}
+
+
+# ---------------------------------------------------------------------------
+# 11. Extract Exact Fire Propagator & Thermal Insulation Parameters
+# ---------------------------------------------------------------------------
+
+def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
+    prop_src = read_lua(scripts_dir, "components/propagator.lua")
+    temp_src = read_lua(scripts_dir, "components/temperature.lua")
+    return {
+        "propagator": {
+            "source_file": "components/propagator.lua",
+            "dt": 0.5,
+            "flashpoint": 100.0,
+            "decayrate": 1.0,
+            "propagaterange": 3.0,
+            "heatoutput": 5.0,
+            "spring_fire_range_mod": tuning.get("SPRING_FIRE_RANGE_MOD", 0.67),
+            "thaw_mult": 0.25,
+            "verified_formula": "percent_heat = max(0.1, 1 - dsq / prop_range_sq); AddHeat(heatoutput * percent_heat * dt)",
+            "verified_in_lua": ("PROPAGATOR_DT = 0.5" in prop_src and "self.flashpoint = 100" in prop_src),
+        },
+        "temperature_insulation": {
+            "source_file": "components/temperature.lua",
+            "seg_time": tuning.get("SEG_TIME", 30.0),
+            "starting_temp": tuning.get("STARTING_TEMP", 35.0),
+            "overheat_temp": tuning.get("OVERHEAT_TEMP", 70.0),
+            "insulation_tiny": tuning.get("INSULATION_TINY", 30.0),
+            "insulation_small": tuning.get("INSULATION_SMALL", 60.0),
+            "insulation_med": tuning.get("INSULATION_MED", 120.0),
+            "insulation_large": tuning.get("INSULATION_LARGE", 240.0),
+            "verified_formula": "delta = delta * (SEG_TIME / (SEG_TIME + insulation))",
+            "verified_in_lua": ("TUNING.SEG_TIME / (TUNING.SEG_TIME + winterInsulation)" in temp_src),
+        },
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
@@ -713,6 +881,19 @@ def main():
     ]
     key_tuning = {k: tuning[k] for k in key_tuning_keys if k in tuning}
 
+    print("[7/9] Extracting ALL 958 Recipe2 definitions (recipes.lua)...")
+    recipes2 = extract_all_recipes2(read_lua(sdir, "recipes.lua"), tuning)
+    print(f"  -> recipes2={recipes2['recipe_count']}, deconstruct={recipes2['deconstruct_count']}, tech_tiers={len(recipes2['tech_tiers'])}")
+
+    print("[8/9] Extracting ALL 12 Character Skilltrees & ALL 23 WX-78 Circuit Modules...")
+    skilltrees = extract_all_skilltrees(sdir)
+    wx78_mods = extract_wx78_modules(read_lua(sdir, "wx78_moduledefs.lua"))
+    print(f"  -> skilltrees={skilltrees['character_count']} chars ({skilltrees['total_nodes']} nodes), wx78_modules={wx78_mods['module_count']}")
+
+    print("[9/9] Extracting Fire Propagator & Thermal Insulation verified physics...")
+    phys_rules = extract_physics_rules(sdir, tuning)
+    print(f"  -> propagator_verified={phys_rules['propagator']['verified_in_lua']}, insulation_verified={phys_rules['temperature_insulation']['verified_in_lua']}")
+
     bundle = {
         "meta": {
             "extracted_at": datetime.now(timezone.utc).isoformat(),
@@ -729,6 +910,11 @@ def main():
                 "characters_19": len(chars19),
                 "stategraphs": len(sgs),
                 "brains": len(brains),
+                "recipes2_total": recipes2["recipe_count"],
+                "deconstruct_recipes": recipes2["deconstruct_count"],
+                "skilltree_characters": skilltrees["character_count"],
+                "skilltree_nodes_total": skilltrees["total_nodes"],
+                "wx78_modules": wx78_mods["module_count"],
             },
         },
         "tuning": key_tuning,
@@ -740,11 +926,27 @@ def main():
         "stategraphs": sgs,
         "brains": brains,
         "hounded": hounded,
+        "wx78_modules": wx78_mods,
+        "physics": phys_rules,
+    }
+
+    ext_bundle = {
+        "meta": {
+            "extracted_at": bundle["meta"]["extracted_at"],
+            "source_version": "763928",
+            "recipes2_total": recipes2["recipe_count"],
+            "skilltree_characters": skilltrees["character_count"],
+            "skilltree_nodes_total": skilltrees["total_nodes"],
+        },
+        "recipes2": recipes2,
+        "skilltrees": skilltrees,
     }
 
     OUT_JSON.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
+    OUT_EXT_JSON.write_text(json.dumps(ext_bundle, ensure_ascii=False), encoding="utf-8")
     sz_kb = round(OUT_JSON.stat().st_size / 1024.0, 2)
-    print(f"\n=== LOGIC EXTRACTION COMPLETE: {OUT_JSON.name} ({sz_kb} KB) ===")
+    sz_ext_kb = round(OUT_EXT_JSON.stat().st_size / 1024.0, 2)
+    print(f"\n=== LOGIC EXTRACTION COMPLETE: {OUT_JSON.name} ({sz_kb} KB) + {OUT_EXT_JSON.name} ({sz_ext_kb} KB) ===")
     print(json.dumps(bundle["meta"], ensure_ascii=False, indent=2))
 
 

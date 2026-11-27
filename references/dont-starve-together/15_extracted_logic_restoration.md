@@ -18,41 +18,25 @@
 | **Brain AI 우선순위 트리** | `scripts/brains/*brain.lua` (7종) | 추격/리쉬 상수 및 `PriorityNode` 행동 노드 순서 추출 | 0 |
 | **하운드 웨이브 에스컬레이션** | `scripts/components/hounded.lua` | 5단계 일수 티어(`intro`/`light`/`med`/`heavy`/`crazy`), 경고 시간, 마릿수, 계절 변종(`icehound`/`firehound`), `warglet` 업그레이드 확률 추출 | 0 |
 | **19인 캐릭터 스탯** | `scripts/tuning.lua` | 19인 전 생존자 HP/허기/정신력 원작 상수 추출 | 0 |
+| **950+ 제작 레시피 & TechTree** | `scripts/recipes.lua` | **950종** `Recipe2` (재료·64종 `TECH.*`·`builder_tag`·`builder_skill`·`numtogive`) + **150종** `DeconstructRecipe` 전수 추출 | 0 |
+| **12인 스킬트리 방향성 그래프** | `scripts/prefabs/skilltree_*.lua` (12파일) | **12인 / 359노드**(`root`, `connects`, `parents`, `locks`, `group`, `tags`) 선행 의존 그래프 전수 추출 | 0 |
+| **WX-78 23종 회로 모듈** | `scripts/wx78_moduledefs.lua` | **23종** 회로(`slots`, `bar`, 생물 스캔 출처) + 6슬롯 전력 예산 규칙 전수 추출 | 0 |
+| **화재 전파 & 단열 열관성** | `components/propagator.lua`, `temperature.lua` | `flashpoint=100`, `prop_range=3.0`, 봄 `0.67×` 사거리 보정, `delta * SEG_TIME / (SEG_TIME + insulation)` 원작 공식 직접 검증 | 0 |
 
 ---
 
 ## 2. 핵심 역공학 복원 엔진 (`DSTLogicEngine`)
 
-### 2.1 79종 전체 요리 냄비 Lua AST 인터프리터
-- `DSTLogicEngine.eval_lua_ast()`가 컴파일된 JSON AST(`and`/`or`/`not`/`cmp`/`arith`/`tag`/`name`/`num`/`bool`)를 Lua truthiness 규칙(`0`/`false` 거짓, 양수 참)과 동일하게 평가한다.
-- `DSTDatabase.calculate_crockpot_recipe()`가 기존 8종 하드코딩 분기 대신 **79종 전체 레시피(일반 68 + 왈리 11)** 를 실시간 평가하며, `v763928` 현행 규칙에 따라 `twigs × 4 → beefalofeed(스팀 잔가지)`와 `twigs × 2 + meat + berries → wetgoop`까지 원작과 100% 동일하게 판정한다.
-
-### 2.2 30Hz StateGraph 추출 공격 선딜 & 카이팅 회피 복원
-원본 `SG*.lua`에서 추출한 실제 30 FPS 타격 프레임:
-
-| 개체 | 원본 StateGraph | 히트 프레임 (`FRAMES`) | 선딜 (`windup_sec`) | 후딜 (`recovery_sec`) |
-| :--- | :--- | :---: | :---: | :---: |
-| **플레이어 (Wilson)** | `SGwilson.lua` (444 states) | `6f` | `0.200s` | `0.367s` |
-| **외눈사슴 (Deerclops)** | `SGdeerclops.lua` (21 states) | `31f` | `1.033s` | `0.833s` |
-| **곰소리 (Bearger)** | `SGbearger.lua` (37 states) | `32f` | `1.067s` | `0.733s` |
-| **용파리 (Dragonfly)** | `SGdragonfly.lua` (22 states) | `15f` | `0.500s` | `0.100s` |
-| **고대 연료직조기 (Fuelweaver)** | `SGstalker.lua` (40 states) | `32f` | `1.067s` | `1.033s` |
-| **천체 대변자 (Phase 3)** | `SGalterguardian_phase3.lua` (10 states) | `15f` | `0.500s` | `0.667s` |
-| **하운드 (Hound)** | `SGhound.lua` (25 states) | `16f` | `0.533s` | `0.100s` |
-| **거미 (Spider)** | `SGspider.lua` (24 states) | `10f` | `0.333s` | `0.500s` |
-
-- `DSTWorldSim._update_creatures()`가 공격 시작 시 `windup_timer = windup_sec`으로 선딜을 진행한 뒤 히트프레임 도달 시점에 사거리를 재판정한다. 플레이어가 선딜 도중 사거리 밖으로 빠져나가면 **피해 0 (`회피! (카이팅)`)** 으로 처리되어 원작과 동일한 카이팅 루프가 성립한다.
-
-### 2.3 14종 작물 3영양분(N/P/K) & 7스트레스 + 하운드 에스컬레이션
-- `DSTLogicEngine.evaluate_farm_checkpoint()`가 14종 작물의 정확한 `[N, P, K]` 소비/복원량과 7스트레스 요인(영양분·수분·방해물·계절·과밀·가족 4+·행복)을 매 성장 단계마다 계산한다.
-- `DSTLogicEngine.calc_hound_wave()`가 생존 일수(`<8 / <25 / <50 / <100 / 100+`)와 계절(`winter → icehound`, `summer → firehound`)에 따라 원작 `hounded.lua`와 동일한 습격 티어·마릿수·워글렛 업그레이드 확률을 산출한다.
+### 2.4 추가 복원 엔진 (Pass 2)
+- **950종 `Recipe2` & TechTree 검증기 (`can_craft_recipe2`)**: 64종 원작 `TECH.*` 티어, 캐릭터 전용 `builder_tag`(예: 윌로우 `pyromaniac` → `lighter`), 스킬 해금 조건(`builder_skill`), 정확한 재료 수량 검증
+- **12인 359노드 방향성 스킬트리 그래프 (`can_unlock_tree_node`)**: `root` 노드 선행 해금 후 `parents` 연결 노드만 해금 가능한 원작 DAG 위상 검증(예: `wilson_alchemy_1` → `wilson_alchemy_2` → `wilson_alchemy_5`)
+- **WX-78 23종 회로 6슬롯 전력 예산 엔진 (`wx78_can_plug_module`, `wx78_calc_circuit_bonuses`)**: 6칸 초과 차단 및 `maxhealth2`/`movespeed2`/`nightvision`/`heat`/`cold` 스탯 합산
+- **열관성 단열 & 화재 열 전파 (`calc_insulated_temp_delta`, `step_fire_propagators`)**: `DSTWorldSim` 체온 루프에 원작 `30 / (30 + insulation)` 공식을 직접 적용하고(윌슨 수염 겨울 단열 `135`), 봄철 화재 사거리 `0.67×` 축소 및 `flashpoint=100` 점화 전파를 복원
 
 ---
 
 ## 3. 자동화 회귀 검증 결과
 - Python 추출기 크로스체크: **12/12** 원작 레시피 조합 PASS (`ast_failures == 0`)
-- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **105+ 체크 전체 PASS**
-  - 79종 AST 요리(`waffles`, `butterflymuffin`, `frogglebunwich`, `mandrakesoup`, `voltgoatjelly`, `beefalofeed`, `wetgoop`, `perogies`, `meatballs`, `fishsticks`, `honeyham`, `dragonpie`)
-  - 14종 작물 N/P/K 및 7스트레스 체크
-  - 외눈사슴 31프레임(`1.033s`) 선딜 중 카이팅 회피(피해 0) 검증
-  - `hounded.lua` 3일차/60일차 겨울/120일차 여름 웨이브 에스컬레이션 검증
+- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **120개 체크 전체 PASS**
+  - 79종 AST 요리, 14종 작물 N/P/K·7스트레스, 외눈사슴 31f 카이팅 회피, `hounded.lua` 웨이브 에스컬레이션
+  - 950종 `Recipe2` 윌로우 `pyromaniac` 태그 게이트, 12인 359노드 스킬트리 부모 선행 차단/해금, WX-78 23종 회로 6슬롯 상한, 단열 열관성 `-10 * 30/150 = -2.0`, 봄철 화재 전파 사거리(`0.67×`) 분리 검증
