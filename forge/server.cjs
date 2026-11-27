@@ -1170,6 +1170,8 @@ function createServer(options = {}) {
           let zipBuffer = null;
           let projectSnapshot = null;
 
+          const maxUploadBodyBytes = gameDeploy.unlimitedSize ? Infinity : (64 * 1024 * 1024);
+
           if (contentType.includes('application/zip') || contentType.includes('application/octet-stream')) {
             const rawMeta = String(req.headers['x-playforge-deploy-meta'] || '').trim();
             if (rawMeta) {
@@ -1183,7 +1185,7 @@ function createServer(options = {}) {
             let total = 0;
             for await (const chunk of req) {
               total += chunk.length;
-              if (total > 64 * 1024 * 1024) {
+              if (total > maxUploadBodyBytes) {
                 return json(413, { ok: false, error: '프로젝트 ZIP 크기가 최대 한도(64MB)를 초과했습니다.' });
               }
               chunks.push(chunk);
@@ -1194,7 +1196,7 @@ function createServer(options = {}) {
             let total = 0;
             for await (const chunk of req) {
               total += chunk.length;
-              if (total > 64 * 1024 * 1024) {
+              if (total > maxUploadBodyBytes) {
                 return json(413, { ok: false, error: '요청 크기가 최대 한도를 초과했습니다.' });
               }
               chunks.push(chunk);

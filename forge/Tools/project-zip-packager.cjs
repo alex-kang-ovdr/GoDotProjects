@@ -182,12 +182,13 @@ function sanitizeZipEntryPath(rawName) {
  * Auto-strips a single top-level wrapper folder if project.godot lives one level deep.
  */
 function extractProjectZip(zipBuffer, destDir, options = {}) {
-  const maxZipBytes = options.maxZipBytes || MAX_PROJECT_ZIP_BYTES;
-  const maxExpandedBytes = options.maxExpandedBytes || MAX_PROJECT_EXPANDED_BYTES;
-  const maxEntries = options.maxEntries || MAX_PROJECT_ENTRIES;
+  const unlimited = Boolean(options.unlimitedSize);
+  const maxZipBytes = unlimited ? Infinity : (options.maxZipBytes || MAX_PROJECT_ZIP_BYTES);
+  const maxExpandedBytes = unlimited ? Infinity : (options.maxExpandedBytes || MAX_PROJECT_EXPANDED_BYTES);
+  const maxEntries = unlimited ? Infinity : (options.maxEntries || MAX_PROJECT_ENTRIES);
 
   if (!Buffer.isBuffer(zipBuffer) || zipBuffer.length < 22 || zipBuffer.length > maxZipBytes) {
-    throw Object.assign(new Error('유효하지 않거나 용량 한도(64MB)를 초과한 프로젝트 ZIP 파일입니다.'), {
+    throw Object.assign(new Error(unlimited ? '유효하지 않은 프로젝트 ZIP 파일입니다.' : '유효하지 않거나 용량 한도(64MB)를 초과한 프로젝트 ZIP 파일입니다.'), {
       code: 'INVALID_PROJECT_ZIP',
       status: 400,
     });
@@ -417,6 +418,7 @@ async function packageProjectForPlatforms({
   platforms = DEFAULT_PLATFORMS,
   sourceZipSha256 = '',
   controls = [],
+  unlimitedSize = false,
   godotBin = null,
   exporter = null,
   onProgress = () => {},
@@ -597,7 +599,7 @@ async function packageProjectForPlatforms({
   const tZipStart = Date.now();
   const entries = collectFilesRecursive(outputDir).filter(([rel]) => rel !== 'PlayHub-GameDeploy.zip').sort(([a], [b]) => a.localeCompare(b, 'en'));
   const bundleZipBuffer = zipFilesCompressed(entries);
-  const validation = validateDeploymentZip(bundleZipBuffer);
+  const validation = validateDeploymentZip(bundleZipBuffer, { unlimitedSize });
   fs.writeFileSync(path.join(outputDir, 'PlayHub-GameDeploy.zip'), bundleZipBuffer);
   timings.zipMs = Date.now() - tZipStart;
   timings.totalMs = Date.now() - startedAt;

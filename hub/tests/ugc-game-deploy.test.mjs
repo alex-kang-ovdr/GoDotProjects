@@ -14,10 +14,12 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { createApp } from '../server/app.mjs';
+import { validateAndExtractDeploymentZip } from '../server/artifact-storage.mjs';
 
 const require = createRequire(import.meta.url);
 const { createServer: createForgeServer } = require('../../forge/server.cjs');
 const { zipFiles } = require('../../forge/Tools/export-godot-project.cjs');
+const { validateDeploymentZip } = require('../../forge/Tools/deployment-zip-validator.cjs');
 const {
   isFarmSelectorAllowed,
   normalizeFarmUrl,
@@ -188,11 +190,13 @@ test('Web Forge uploads Project ZIP -> server packages Web/Android/Desktop/iOS -
     forgeServer.once('close', resolve);
   }));
 
-  // 1. Fetch deploy config (Dev mode => farmSelectorAllowed: true)
+  // 1. Fetch deploy config (Dev mode => farmSelectorAllowed: true, unlimitedSize: true)
   const cfgRes = await fetch(`${forgeBase}/api/platform/game-deploy/config`);
   assert.equal(cfgRes.status, 200);
   const cfg = await cfgRes.json();
   assert.equal(cfg.farmSelectorAllowed, true);
+  assert.equal(cfg.unlimitedSize, true);
+  assert.equal(cfg.maxZipBytes, null);
   assert.deepEqual(cfg.supportedPlatforms, ['web', 'android', 'desktop', 'ios']);
 
   // 2. Probe custom Dev Farm health via Forge server
@@ -379,6 +383,8 @@ test('Live Hub channel and Live Forge mode fail-closed against farm selection & 
 
   const cfg = await (await fetch(`${forgeBase}/api/platform/game-deploy/config`)).json();
   assert.equal(cfg.farmSelectorAllowed, false);
+  assert.equal(cfg.unlimitedSize, false);
+  assert.equal(cfg.maxZipBytes, 64 * 1024 * 1024);
 
   const probeRes = await fetch(`${forgeBase}/api/platform/game-deploy/probe-farm`, {
     method: 'POST',
@@ -473,4 +479,36 @@ test('Browser notification formatter includes full deploy stats in Dev builds an
   );
   assert.match(liveFailPayload.title, /^\[배포 실패\]/);
   assert.doesNotMatch(liveFailPayload.body, /RAM|CPU|디스크/);
+});
+
+test('Dev/Local unlimitedSize bypasses 64MB/128MB caps while Live keeps strict limits and Zip-Slip checks remain enforced', (t) => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-unlimited-zip-'));
+  t.after(() => fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 4, retryDelay: 100 }));
+
+  // 1. Local & Dev stages report unlimitedSize: true
+  assert.equal(isFarmSelectorAllowed('local'), true);
+  assert.equal(isFarmSelectorAllowed('dev'), true);
+  assert.equal(isFarmSelectorAllowed('live'), false);
+
+  // 2. Small cap test: reject when capped (maxZipBytes=100), allow when unlimitedSize=true
+  const bundleZip = zipFiles([
+    ['index.html', '<!doctype html><html><body>OK</body></html>'],
+    ['index.pck', makeFakePck('large-test-' + 'x'.repeat(2048))],
+  ]);
+  assert.throws(
+    () => validateDeploymentZip(bundleZip, { maxZipBytes: 100 }),
+    /unsafe_deployment_zip/
+  );
+  const okDevBundle = validateDeploymentZip(bundleZip, { unlimitedSize: true });
+  assert.equal(okDevBundle.entryPoint, 'index.html');
+
+  const okHubBundle = validateAndExtractDeploymentZip(bundleZip, { unlimitedSize: true });
+  assert.equal(okHubBundle.entryPoint, 'index.html');
+
+  // 3. Even with unlimitedSize=true, Zip-Slip path traversal is STILL blocked!
+  const traversalZip = zipFiles([['../evil.txt', 'x'], ['project.godot', 'config_version=5\n']]);
+  assert.throws(
+    () => extractProjectZip(traversalZip, path.join(tmp, 'evil'), { unlimitedSize: true }),
+    /안전하지 않은 ZIP|허용되지 않는 ZIP/
+  );
 });

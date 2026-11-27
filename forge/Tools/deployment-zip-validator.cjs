@@ -5,14 +5,18 @@ const bad=()=>Object.assign(new Error('unsafe_deployment_zip'),{code:'unsafe_dep
 const table=Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
 function crc32(b){let n=0xffffffff;for(const x of b)n=table[(n^x)&255]^(n>>>8);return (n^0xffffffff)>>>0;}
 const ext=/\.(html|js|mjs|css|json|wasm|pck|bin|png|jpg|jpeg|webp|gif|svg|ico|ogg|wav|mp3|mp4|webm|ttf|woff|woff2|glb|gltf|txt)$/i;
-function parseAndValidateDeploymentZip(buffer,collectContents=false){
+function parseAndValidateDeploymentZip(buffer,collectContents=false,options={}){
  try{
-  if(!Buffer.isBuffer(buffer)||buffer.length<22||buffer.length>MAX_ZIP_BYTES)throw bad();
+  const unlimited=Boolean(options&&options.unlimitedSize);
+  const maxZipBytes=unlimited?Infinity:(Number(options&&options.maxZipBytes)||MAX_ZIP_BYTES);
+  const maxExpanded=unlimited?Infinity:(Number(options&&options.maxExpandedBytes)||MAX_EXPANDED);
+  const maxEntries=unlimited?Infinity:(Number(options&&options.maxEntries)||2048);
+  if(!Buffer.isBuffer(buffer)||buffer.length<22||buffer.length>maxZipBytes)throw bad();
   const end=buffer.length-22;
   // Deliberately restricted ZIP profile: no comments, ZIP64, encryption, descriptors or extras.
   if(buffer.readUInt32LE(end)!==0x06054b50||buffer.readUInt16LE(end+4)||buffer.readUInt16LE(end+6)||buffer.readUInt16LE(end+20))throw bad();
   const count=buffer.readUInt16LE(end+10),offset=buffer.readUInt32LE(end+16),size=buffer.readUInt32LE(end+12);
-  if(!count||count>2048||count!==buffer.readUInt16LE(end+8)||offset+size!==end)throw bad();
+  if(!count||count>maxEntries||count!==buffer.readUInt16LE(end+8)||offset+size!==end)throw bad();
   let pos=offset,expanded=0;const names=new Set(),ranges=[],entries=[],files=collectContents?[]:null;
   for(let i=0;i<count;i++){
    if(pos+46>end||buffer.readUInt32LE(pos)!==0x02014b50)throw bad();
@@ -23,7 +27,7 @@ function parseAndValidateDeploymentZip(buffer,collectContents=false){
    if(!nl||name.length>240||/[\\:\x00-\x1f\x7f%?#]/.test(name)||parts.some(x=>!x||x.startsWith('.')||/[. ]$/.test(x)||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(x)))throw bad();
    const normalized=name.normalize('NFC').toLowerCase().replace(/\/$/,'');if(names.has(normalized))throw bad();names.add(normalized);
    if(!dir&&!ext.test(name)||mode===0x4000&&!dir)throw bad();
-   expanded+=length;if(expanded>MAX_EXPANDED||length>MAX_ZIP_BYTES||length>Math.max(compressed*200,1024*1024))throw bad();
+   expanded+=length;if(expanded>maxExpanded||length>maxZipBytes||length>Math.max(compressed*200,1024*1024))throw bad();
    if(local+30>offset||buffer.readUInt32LE(local)!==0x04034b50||buffer.readUInt16LE(local+6)!==flags||buffer.readUInt16LE(local+8)!==method||buffer.readUInt32LE(local+14)!==crc||buffer.readUInt32LE(local+18)!==compressed||buffer.readUInt32LE(local+22)!==length||buffer.readUInt16LE(local+26)!==nl||buffer.readUInt16LE(local+28)!==0)throw bad();
    const start=local+30+nl,stop=start+compressed;if(stop>offset||!buffer.subarray(local+30,start).equals(raw))throw bad();
    const packed=buffer.subarray(start,stop);const content=method===0?packed:zlib.inflateRawSync(packed,{maxOutputLength:Math.max(length,1)});
@@ -38,11 +42,11 @@ function parseAndValidateDeploymentZip(buffer,collectContents=false){
   return {sha256:crypto.createHash('sha256').update(buffer).digest('hex'),bytes:buffer.length,entries:entries.length,expandedBytes:expanded,entryPoint:'index.html',runnableVerified:false,...(files?{files}:{})};
  }catch{throw bad();}
 }
-function validateDeploymentZip(buffer){
- return parseAndValidateDeploymentZip(buffer,false);
+function validateDeploymentZip(buffer,options={}){
+ return parseAndValidateDeploymentZip(buffer,false,options);
 }
-function extractValidatedDeploymentZip(buffer,outputDir){
- const parsed=parseAndValidateDeploymentZip(buffer,true);
+function extractValidatedDeploymentZip(buffer,outputDir,options={}){
+ const parsed=parseAndValidateDeploymentZip(buffer,true,options);
  const root=path.resolve(outputDir);
  fs.mkdirSync(root,{recursive:true});
  const extractedFiles=[];

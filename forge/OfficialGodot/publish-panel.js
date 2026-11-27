@@ -362,7 +362,8 @@
         presetFarms: [],
         supportedPlatforms: ["web", "android", "desktop", "ios"],
         defaultPlatforms: ["web", "android", "desktop"],
-        maxZipBytes: 64 * 1024 * 1024
+        unlimitedSize: true,
+        maxZipBytes: null
       },
       sourceMode: "forge-project", // 'forge-project' | 'zip-upload'
       uploadedZipFile: null,
@@ -1195,11 +1196,14 @@
         )
       );
       if (state.sourceMode === "zip-upload") {
+        const limitText = (dcfg.unlimitedSize || dcfg.maxZipBytes === null)
+          ? "Dev/로컬 용량 상한 없음"
+          : `최대 ${formatSize(dcfg.maxZipBytes)}`;
         sourceBox.append(
           el("div", { className: "pf-upload-drop" },
             el("span", { text: state.uploadedZipFile
               ? `선택됨: ${state.uploadedZipFile.name} (${formatBytes(state.uploadedZipFile.size)})`
-              : "project.godot가 포함된 프로젝트 .zip 파일을 선택하세요 (최대 64 MB)" }),
+              : `project.godot가 포함된 프로젝트 .zip 파일을 선택하세요 (${limitText})` }),
             el("input", {
               type: "file",
               accept: ".zip,application/zip",

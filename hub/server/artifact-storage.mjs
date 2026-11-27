@@ -72,10 +72,13 @@ function readExact(fd, length, position) {
  * Streaming file-backed strict ZIP validator and extractor.
  * Never buffers the full archive or all extracted files in RAM simultaneously.
  */
-export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expectedSha256 = null } = {}) {
+export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expectedSha256 = null, unlimitedSize = false } = {}) {
+  const maxZipBytes = unlimitedSize ? Infinity : MAX_ZIP_BYTES;
+  const maxExpandedBytes = unlimitedSize ? Infinity : MAX_EXPANDED_BYTES;
+  const maxEntries = unlimitedSize ? Infinity : MAX_ENTRIES;
   if (typeof zipFilePath !== 'string' || !zipFilePath) throw unsafeZip();
   const stat = fs.lstatSync(zipFilePath);
-  if (stat.isSymbolicLink() || !stat.isFile() || stat.size < 22 || stat.size > MAX_ZIP_BYTES) throw unsafeZip();
+  if (stat.isSymbolicLink() || !stat.isFile() || stat.size < 22 || stat.size > maxZipBytes) throw unsafeZip();
   const fileSize = stat.size;
   const fd = fs.openSync(zipFilePath, 'r');
   try {
@@ -106,7 +109,7 @@ export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expe
     const count = eocd.readUInt16LE(10);
     const offset = eocd.readUInt32LE(16);
     const size = eocd.readUInt32LE(12);
-    if (!count || count > MAX_ENTRIES || count !== eocd.readUInt16LE(8) || offset + size !== end || size > 4 * 1024 * 1024) {
+    if (!count || count > maxEntries || count !== eocd.readUInt16LE(8) || offset + size !== end || (!unlimitedSize && size > 4 * 1024 * 1024)) {
       throw unsafeZip();
     }
 
@@ -161,7 +164,7 @@ export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expe
 
       if ((!isDir && !ALLOWED_EXT_RE.test(name)) || (mode === 0x4000 && !isDir)) throw unsafeZip();
       expandedBytes += length;
-      if (expandedBytes > MAX_EXPANDED_BYTES || length > MAX_ZIP_BYTES || length > Math.max(compressed * 200, 1024 * 1024)) {
+      if (expandedBytes > maxExpandedBytes || length > maxZipBytes || length > Math.max(compressed * 200, 1024 * 1024)) {
         throw unsafeZip();
       }
 
@@ -261,8 +264,11 @@ export function validateAndExtractDeploymentZipFile(zipFilePath, destDir, { expe
 
 const unsafeZip = (reason = 'UNSAFE_DEPLOYMENT_ZIP') => Object.assign(new Error(reason), { code: 'UNSAFE_DEPLOYMENT_ZIP', status: 400 });
 
-export function validateAndExtractDeploymentZip(buffer) {
-  if (!Buffer.isBuffer(buffer) || buffer.length < 22 || buffer.length > MAX_ZIP_BYTES) throw unsafeZip();
+export function validateAndExtractDeploymentZip(buffer, { unlimitedSize = false } = {}) {
+  const maxZipBytes = unlimitedSize ? Infinity : MAX_ZIP_BYTES;
+  const maxExpandedBytes = unlimitedSize ? Infinity : MAX_EXPANDED_BYTES;
+  const maxEntries = unlimitedSize ? Infinity : MAX_ENTRIES;
+  if (!Buffer.isBuffer(buffer) || buffer.length < 22 || buffer.length > maxZipBytes) throw unsafeZip();
   const end = buffer.length - 22;
   // Strict ZIP profile: no comments, ZIP64, encryption, data descriptors or extra fields.
   if (buffer.readUInt32LE(end) !== 0x06054b50
@@ -274,7 +280,7 @@ export function validateAndExtractDeploymentZip(buffer) {
   const count = buffer.readUInt16LE(end + 10);
   const offset = buffer.readUInt32LE(end + 16);
   const size = buffer.readUInt32LE(end + 12);
-  if (!count || count > MAX_ENTRIES || count !== buffer.readUInt16LE(end + 8) || offset + size !== end) {
+  if (!count || count > maxEntries || count !== buffer.readUInt16LE(end + 8) || offset + size !== end) {
     throw unsafeZip();
   }
 
@@ -327,7 +333,7 @@ export function validateAndExtractDeploymentZip(buffer) {
 
     if ((!isDir && !ALLOWED_EXT_RE.test(name)) || (mode === 0x4000 && !isDir)) throw unsafeZip();
     expandedBytes += length;
-    if (expandedBytes > MAX_EXPANDED_BYTES || length > MAX_ZIP_BYTES || length > Math.max(compressed * 200, 1024 * 1024)) {
+    if (expandedBytes > maxExpandedBytes || length > maxZipBytes || length > Math.max(compressed * 200, 1024 * 1024)) {
       throw unsafeZip();
     }
     if (local + 30 > offset
@@ -412,12 +418,12 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     return path.join(rootDir, hostSlug, releaseId);
   }
 
-  function putReleaseBundle({ hostSlug, releaseId, zipBuffer = null, zipFilePath = null, expectedSha256 = null, releaseManifest = null, gameManifest = null }) {
+  function putReleaseBundle({ hostSlug, releaseId, zipBuffer = null, zipFilePath = null, expectedSha256 = null, releaseManifest = null, gameManifest = null, unlimitedSize = false }) {
     assertSlugAndRelease(hostSlug, releaseId);
     const useFileMode = typeof zipFilePath === 'string' && zipFilePath.length > 0;
     let extracted = null;
     if (!useFileMode) {
-      extracted = validateAndExtractDeploymentZip(zipBuffer);
+      extracted = validateAndExtractDeploymentZip(zipBuffer, { unlimitedSize });
       if (expectedSha256 && expectedSha256.toLowerCase() !== extracted.sha256) {
         throw Object.assign(new Error('ARTIFACT_SHA256_MISMATCH'), { code: 'ARTIFACT_SHA256_MISMATCH', status: 409 });
       }
@@ -466,7 +472,7 @@ export function createLocalArtifactStorage({ dataDir, publicBasePrefix = '/play-
     fs.mkdirSync(tempDir, { recursive: true });
     try {
       if (useFileMode) {
-        extracted = validateAndExtractDeploymentZipFile(zipFilePath, tempDir, { expectedSha256 });
+        extracted = validateAndExtractDeploymentZipFile(zipFilePath, tempDir, { expectedSha256, unlimitedSize });
       } else {
         for (const [relativePath, content] of extracted.files.entries()) {
           const dest = path.join(tempDir, relativePath);

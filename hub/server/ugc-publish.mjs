@@ -432,12 +432,15 @@ export function createUgcPublish({
     config.publish?.devDirectDeployToken || env?.PLAYHUB_DEV_GAME_DEPLOY_TOKEN || ''
   ).trim();
 
+  const isUnlimitedDeploySize = !isLiveChannel;
+
   async function readRawBody(req, maxBytes = 64 * 1024 * 1024) {
+    const unlimited = maxBytes === Infinity || maxBytes === null;
     const chunks = [];
     let total = 0;
     for await (const chunk of req) {
       total += chunk.length;
-      if (total > maxBytes) {
+      if (!unlimited && total > maxBytes) {
         throw new ApiError(413, 'PAYLOAD_TOO_LARGE', '업로드 번들이 최대 크기(64MB)를 초과했습니다.');
       }
       chunks.push(chunk);
@@ -787,9 +790,15 @@ export function createUgcPublish({
               throw new ApiError(400, 'INVALID_DEPLOY_META', 'X-PlayHub-Deploy-Meta 헤더를 파싱할 수 없습니다.');
             }
           }
-          zipBuffer = await readRawBody(req, 64 * 1024 * 1024);
+          zipBuffer = await readRawBody(req, isUnlimitedDeploySize ? Infinity : (64 * 1024 * 1024));
         } else {
-          const body = await readJson(req, 64 * 1024 * 1024);
+          const rawJsonBuf = await readRawBody(req, isUnlimitedDeploySize ? Infinity : (64 * 1024 * 1024));
+          let body = {};
+          try {
+            body = rawJsonBuf.length ? JSON.parse(rawJsonBuf.toString('utf8')) : {};
+          } catch {
+            throw new ApiError(400, 'INVALID_JSON');
+          }
           meta = body;
           if (typeof body.bundleZipBase64 === 'string' && body.bundleZipBase64.length > 0) {
             zipBuffer = Buffer.from(body.bundleZipBase64, 'base64');
@@ -857,7 +866,8 @@ export function createUgcPublish({
             zipBuffer,
             expectedSha256,
             releaseManifest: { releaseId, packaging: 'server-multi-platform', platforms: meta.platforms || ['web'] },
-            gameManifest
+            gameManifest,
+            unlimitedSize: isUnlimitedDeploySize
           });
         } catch (err) {
           recordDeployMetric({

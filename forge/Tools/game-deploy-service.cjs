@@ -99,6 +99,7 @@ class GameDeployService {
     this.forgeRoot = forgeRoot;
     this.directory = directory || path.join(forgeRoot, 'Saved', 'GameDeploys');
     this.buildMode = normalizeStage(buildMode);
+    this.unlimitedSize = isFarmSelectorAllowed(this.buildMode);
     this.defaultFarmUrl = String(defaultFarmUrl || '').trim().replace(/\/+$/, '');
     this.extraFarms = Array.isArray(extraFarms) ? extraFarms : [];
     this.devDeployToken = String(devDeployToken || '').trim();
@@ -125,7 +126,8 @@ class GameDeployService {
       }),
       supportedPlatforms: [...SUPPORTED_PLATFORMS],
       defaultPlatforms: [...DEFAULT_PLATFORMS],
-      maxZipBytes: MAX_PROJECT_ZIP_BYTES,
+      unlimitedSize: this.unlimitedSize,
+      maxZipBytes: this.unlimitedSize ? null : MAX_PROJECT_ZIP_BYTES,
     };
   }
 
@@ -179,7 +181,7 @@ class GameDeployService {
     const sourceZip = Buffer.isBuffer(zipBuffer) && zipBuffer.length > 0
       ? zipBuffer
       : buildSnapshotProjectZip(projectSnapshot);
-    if (sourceZip.length > MAX_PROJECT_ZIP_BYTES) {
+    if (!this.unlimitedSize && sourceZip.length > MAX_PROJECT_ZIP_BYTES) {
       throw Object.assign(new Error('프로젝트 ZIP 용량이 제한(64MB)을 초과했습니다.'), { code: 'PROJECT_ZIP_TOO_LARGE', status: 413 });
     }
 
@@ -371,7 +373,7 @@ class GameDeployService {
     try {
       fs.mkdirSync(jobDir, { recursive: true });
       const tExtract = Date.now();
-      const extracted = extractProjectZip(sourceZip, projectDir);
+      const extracted = extractProjectZip(sourceZip, projectDir, { unlimitedSize: this.unlimitedSize });
       extractMs = Date.now() - tExtract;
       extractedBytes = extracted.expandedBytes || 0;
       sampleMem();
@@ -392,6 +394,7 @@ class GameDeployService {
         platforms: job.targetPlatforms,
         sourceZipSha256: extracted.sourceZipSha256,
         controls: job.controls,
+        unlimitedSize: this.unlimitedSize,
         exporter: this.exporter,
         onProgress: (_stage, msg) => {
           job.step = msg;
