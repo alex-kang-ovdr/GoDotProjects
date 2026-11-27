@@ -719,7 +719,8 @@ func _update_structures(dt: float) -> float:
 	for s in structures:
 		if str(s["kind"]) == "campfire":
 			if float(s["fuel"]) > 0.0:
-				s["fuel"] = max(0.0, float(s["fuel"]) - dt)
+				var fb: Dictionary = DSTLogicEngine.step_fueled_burn(float(s["fuel"]), dt, is_raining, 1.0 if is_raining else 0.0)
+				s["fuel"] = float(fb["fuel_sec"])
 				var dist: float = player_pos.distance_to(s["pos"])
 				if dist < 9.0:
 					heater_power = max(heater_power, 1.0 - dist / 9.0)
@@ -870,7 +871,7 @@ func receive_attack(raw_damage: float, raw_planar: float = 0.0, source_name: Str
 	if not equip_body.is_empty():
 		armors.append(equip_body)
 
-	var res: Dictionary = DSTDatabase.apply_armor_and_planar(raw_damage, raw_planar, armors, align_resist)
+	var res: Dictionary = DSTLogicEngine.resolve_combat_hit(raw_damage, raw_planar, armors, align_resist, false)
 	var wear: Dictionary = res["armor_wear"]
 	for slot_armor in [equip_head, equip_body]:
 		if not slot_armor.is_empty():

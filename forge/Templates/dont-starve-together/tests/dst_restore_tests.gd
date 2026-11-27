@@ -549,6 +549,33 @@ func _run() -> void:
 	var gr_ko: Dictionary = DSTLogicEngine.step_grogginess(gr_st, 2.0, 0.0)
 	_check(_approx(float(gr_st["speed_mult"]), 0.4) and bool(gr_ko["knocked_out"]) and _approx(float(gr_ko["ko_timer"]), 10.0), "LOGIC_GROGGINESS_04X_KO10S", str(gr_ko))
 
+	# 역공학 로직 검증 22: 웬디 9종 유령 비약 + 워톡스 영혼 치유(완다 제외)·과부하 + 우디 3변신
+	_check(db.logic.ghostly_elixirs.size() == 9 and db.logic.tool_uses.size() >= 25, "LOGIC_9_ELIXIRS_AND_TOOL_USES", "el=%d tl=%d" % [db.logic.ghostly_elixirs.size(), db.logic.tool_uses.size()])
+	var el_fast: Dictionary = db.logic.eval_ghostly_elixir("ghostlyelixir_fastregen", 30.0)
+	var el_spd: Dictionary = db.logic.eval_ghostly_elixir("ghostlyelixir_speed", 10.0)
+	_check(_approx(float(el_fast["total_heal"]), 600.0, 0.1) and _approx(float(el_spd["speed_mult"]), 1.75, 0.01), "LOGIC_WENDY_GHOSTLY_ELIXIRS", str(el_fast))
+	var wx_heal: Dictionary = DSTLogicEngine.eval_wortox_soul_heal([
+		{"char_id": "wilson", "is_hurt": true, "is_ghost": false},
+		{"char_id": "wendy", "is_hurt": true, "is_ghost": false},
+		{"char_id": "wanda", "is_hurt": true, "is_ghost": false}, # 완다 제외 -> 2명, 각 20 - 2*(2-1) = 18 HP
+	])
+	var wx_ov: Dictionary = DSTLogicEngine.step_wortox_souls(19, 3) # 22 > 20 -> 과부하 -20 정신력, 11개 드랍
+	_check(int(wx_heal["healed_count"]) == 2 and _approx(float(wx_heal["heal_per_target"]), 18.0) and bool(wx_ov["overloaded"]) and _approx(float(wx_ov["sanity_delta"]), -20.0), "LOGIC_WORTOX_SOUL_HEAL_AND_OVERLOAD")
+	var wd_fm: Dictionary = DSTLogicEngine.step_woodie_wereness({"current": 0.0, "weremode": "none"}, 0.0, false, true)
+	var wd_gs: Dictionary = DSTLogicEngine.step_woodie_wereness({"current": 100.0, "weremode": "weregoose"}, 15.0, true, false)
+	_check(str(wd_fm["weremode"]) == "werebeaver" and _approx(float(wd_gs["run_speed"]), 8.4) and _approx(float(wd_gs["current"]), 90.0, 0.1), "LOGIC_WOODIE_WERENESS_3FORMS")
+
+	# 역공학 로직 검증 23: 맥스웰 그림자 분신 예산 + 사막/달폭풍 0.4x 고글 면역 + 개미사자 분노 + 도구 내구도
+	var mx_b: Dictionary = DSTLogicEngine.calc_maxwell_puppet_budget(200.0, 4, 2, 0) # 6*0.15 = 0.90 -> 20 max sanity
+	_check(_approx(float(mx_b["effective_penalty"]), 0.90, 0.001) and _approx(float(mx_b["effective_max_sanity"]), 20.0, 0.1) and not bool(mx_b["can_summon_more"]), "LOGIC_MAXWELL_PUPPET_BUDGET", str(mx_b))
+	var st_raw: Dictionary = DSTLogicEngine.calc_storm_speed_mult(0.85, false)
+	var st_gog: Dictionary = DSTLogicEngine.calc_storm_speed_mult(0.85, true)
+	_check(_approx(float(st_raw["speed_mult"]), 0.4) and _approx(float(st_gog["speed_mult"]), 1.0), "LOGIC_STORM_04X_GOGGLES_IMMUNE")
+	var ant_e: Dictionary = DSTLogicEngine.step_antlion_rage(500.0, 600.0, 0.0) # 분노 폭발 -> 2016 * 0.8 = 1612.8s
+	_check(bool(ant_e["erupted"]) and _approx(float(ant_e["rage_sec"]), 1612.8, 0.5), "LOGIC_ANTLION_RAGE_ERUPT", str(ant_e))
+	var tl_br: Dictionary = db.logic.step_tool_durability("goldenaxe", 400, 1)
+	_check(int(tl_br["max_uses"]) == 400 and int(tl_br["uses"]) == 399 and not bool(tl_br["broken"]), "LOGIC_TOOL_FINITE_USES", str(tl_br))
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

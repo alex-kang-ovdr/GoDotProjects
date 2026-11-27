@@ -956,6 +956,43 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
             "speed_mult": 0.4,
             "verified_in_lua": ("self.knockoutduration = math.max(self.knockoutduration" in read_lua(scripts_dir, "components/grogginess.lua")),
         },
+        "wortox_souls": {
+            "source_file": "prefabs/wortox_soul_common.lua",
+            "max_souls": int(tuning.get("WORTOX_MAX_SOULS", 20)),
+            "heal_range": tuning.get("WORTOX_SOULHEAL_RANGE", 8.0),
+            "heal_base": tuning.get("HEALING_MED", 20.0),
+            "loss_per_player": tuning.get("WORTOX_SOULHEAL_LOSS_PER_PLAYER", 2.0),
+            "min_heal": tuning.get("WORTOX_SOULHEAL_MINIMUM_HEAL", 5.0),
+            "verified_in_lua": ("WORTOX_SOULHEAL_LOSS_PER_PLAYER" in read_lua(scripts_dir, "prefabs/wortox_soul_common.lua") and "health_as_oldage" in read_lua(scripts_dir, "prefabs/wortox_soul_common.lua")),
+        },
+        "woodie_wereness": {
+            "source_file": "components/wereness.lua",
+            "max": 100.0,
+            "base_drain_time": tuning.get("BEAVER_DRAIN_TIME", 15.0),
+            "beaver_speed": tuning.get("BEAVER_RUN_SPEED", 6.6),
+            "moose_speed": tuning.get("WEREMOOSE_RUN_SPEED", 5.4),
+            "goose_speed": tuning.get("WEREGOOSE_RUN_SPEED", 8.4),
+            "beaver_damage": tuning.get("BEAVER_DAMAGE", 27.2),
+            "verified_in_lua": ("self.weremode = weremode" in read_lua(scripts_dir, "components/wereness.lua")),
+        },
+        "maxwell_puppets": {
+            "source_file": "tuning.lua",
+            "worker_penalty": 0.15,
+            "protector_penalty": 0.15,
+            "duelist_penalty": 0.35,
+            "protector_duration": tuning.get("SHADOWWAXWELL_PROTECTOR_DURATION", 120.0),
+            "verified_in_lua": ("SHADOWWORKER = .15" in read_lua(scripts_dir, "tuning.lua")),
+        },
+        "storms_antlion": {
+            "source_files": ["components/stormwatcher.lua", "prefabs/antlion.lua"],
+            "sandstorm_full_level": tuning.get("SANDSTORM_FULL_LEVEL", 0.7),
+            "sandstorm_speed_mod": tuning.get("SANDSTORM_SPEED_MOD", 0.4),
+            "antlion_rage_init": tuning.get("ANTLION_RAGE_TIME_INITIAL", 2016.0),
+            "antlion_rage_min": tuning.get("ANTLION_RAGE_TIME_MIN", 480.0),
+            "antlion_rage_max": tuning.get("ANTLION_RAGE_TIME_MAX", 2880.0),
+            "antlion_fail_scale": tuning.get("ANTLION_RAGE_TIME_FAILURE_SCALE", 0.8),
+            "verified_in_lua": ("math.floor(stormlevel * 7 + .5)" in read_lua(scripts_dir, "components/stormwatcher.lua")),
+        },
     }
 
 
@@ -1295,6 +1332,64 @@ def extract_bird_spawner(scripts_dir: Path) -> dict:
     return {"source_file": "components/birdspawner.lua", "tile_count": len(tiles), "tile_birds": tiles}
 
 
+# ---------------------------------------------------------------------------
+# 22. Extract ALL 9 Wendy Ghostly Elixirs (prefabs/ghostly_elixirs.lua)
+# ---------------------------------------------------------------------------
+
+def extract_ghostly_elixirs(scripts_dir: Path, tuning: dict) -> dict:
+    src = read_lua(scripts_dir, "prefabs/ghostly_elixirs.lua")
+    elixirs = {}
+    starts = list(re.finditer(r"^\s{1,4}(ghostlyelixir_[a-z0-9_]+)\s*=\s*\{", src, re.M))
+    for i, m in enumerate(starts):
+        eid = m.group(1)
+        s0 = m.end()
+        s1 = starts[i + 1].start() if i + 1 < len(starts) else len(src)
+        chunk = src[s0:s1]
+        dm = re.search(r"DURATION\s*=\s*([A-Za-z0-9_.*]+)", chunk)
+        dur = eval_tuning_expr(dm.group(1), tuning, 480.0) if dm else 480.0
+        heal_per_sec = 0.0
+        speed_mult = 1.0
+        retaliate_dmg = 0.0
+        if eid == "ghostlyelixir_slowregen":
+            heal_per_sec = tuning.get("GHOSTLYELIXIR_SLOWREGEN_HEALING", 2.0)
+        elif eid == "ghostlyelixir_fastregen":
+            heal_per_sec = tuning.get("GHOSTLYELIXIR_FASTREGEN_HEALING", 20.0)
+        elif eid == "ghostlyelixir_speed":
+            speed_mult = tuning.get("GHOSTLYELIXIR_SPEED_LOCO_MULT", 1.75)
+        elif eid == "ghostlyelixir_retaliation":
+            retaliate_dmg = tuning.get("GHOSTLYELIXIR_RETALIATION_DAMAGE", 20.0)
+        elixirs[eid] = {
+            "id": eid,
+            "duration_sec": dur,
+            "heal_per_sec": heal_per_sec,
+            "speed_mult": speed_mult,
+            "retaliate_dmg": retaliate_dmg,
+            "is_aligned": ("shadow" in eid or "lunar" in eid),
+        }
+    return {"source_file": "prefabs/ghostly_elixirs.lua", "elixir_count": len(elixirs), "elixirs": elixirs}
+
+
+# ---------------------------------------------------------------------------
+# 23. Extract Core Tool & Weapon Finite Uses Table (tuning.lua)
+# ---------------------------------------------------------------------------
+
+def extract_tool_uses(tuning: dict) -> dict:
+    tools = {}
+    for k, v in sorted(tuning.items()):
+        if k.endswith("_USES") and isinstance(v, (int, float)) and v > 0:
+            tid = k[:-5].lower()
+            tools[tid] = int(round(v))
+    gfac = int(round(tuning.get("GOLDENTOOLFACTOR", 4.0)))
+    for base_k, gold_k in [
+        ("axe", "goldenaxe"), ("pickaxe", "goldenpickaxe"),
+        ("shovel", "goldenshovel"), ("pitchfork", "goldenpitchfork"),
+        ("farm_hoe", "golden_farm_hoe"),
+    ]:
+        if base_k in tools and gold_k not in tools:
+            tools[gold_k] = tools[base_k] * gfac
+    return {"source_file": "tuning.lua", "tool_count": len(tools), "uses": tools}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
@@ -1453,9 +1548,17 @@ def main():
     trinkets = extract_trinket_gold_values(tuning_src)
     print(f"  -> trinkets={trinkets['trinket_count']}")
 
-    print("[19/19] Extracting Seasonal Bird Spawner tile table...")
+    print("[19/21] Extracting Seasonal Bird Spawner tile table...")
     birds = extract_bird_spawner(sdir)
     print(f"  -> bird_tiles={birds['tile_count']}")
+
+    print("[20/21] Extracting ALL 9 Wendy Ghostly Elixirs...")
+    elixirs = extract_ghostly_elixirs(sdir, tuning)
+    print(f"  -> ghostly_elixirs={elixirs['elixir_count']}")
+
+    print("[21/21] Extracting Tool & Weapon finite uses table...")
+    tool_uses = extract_tool_uses(tuning)
+    print(f"  -> tool_uses={tool_uses['tool_count']}")
 
     bundle = {
         "meta": {
@@ -1490,6 +1593,8 @@ def main():
                 "slingshot_ammos": slingshot["ammo_count"],
                 "trinkets_gold": trinkets["trinket_count"],
                 "bird_spawner_tiles": birds["tile_count"],
+                "ghostly_elixirs": elixirs["elixir_count"],
+                "tool_uses": tool_uses["tool_count"],
             },
         },
         "tuning": key_tuning,
@@ -1505,6 +1610,8 @@ def main():
         "slingshot_ammos": slingshot["ammos"],
         "trinkets_gold": trinkets["trinkets"],
         "bird_spawner": birds["tile_birds"],
+        "ghostly_elixirs": elixirs["elixirs"],
+        "tool_uses": tool_uses["uses"],
         "stategraphs": sgs,
         "brains": brains,
         "hounded": hounded,

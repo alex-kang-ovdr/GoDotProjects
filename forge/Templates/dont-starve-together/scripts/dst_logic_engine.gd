@@ -37,6 +37,8 @@ var books: Dictionary = {}
 var slingshot_ammos: Dictionary = {}
 var trinkets_gold: Dictionary = {}
 var bird_spawner: Dictionary = {}
+var ghostly_elixirs: Dictionary = {}
+var tool_uses: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -61,6 +63,8 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 	slingshot_ammos = raw.get("slingshot_ammos", {})
 	trinkets_gold = raw.get("trinkets_gold", {})
 	bird_spawner = raw.get("bird_spawner", {})
+	ghostly_elixirs = raw.get("ghostly_elixirs", {})
+	tool_uses = raw.get("tool_uses", {})
 	stategraphs = raw.get("stategraphs", {})
 	brains = raw.get("brains", {})
 	hounded = raw.get("hounded", {})
@@ -656,6 +660,7 @@ static func resolve_combat_hit(
 		"phys_damage": leftover_phys,
 		"planar_damage": sp_rem,
 		"total_damage": leftover_phys + sp_rem,
+		"absorbed_percent": absorbed_pct,
 		"absorbed_damage": absorbed_dmg,
 		"armor_wear": wear,
 	}
@@ -1296,3 +1301,107 @@ static func step_grogginess(st: Dictionary, add_grog: float, dt: float) -> Dicti
 		"ko_timer": ko_t,
 		"speed_mult": speed_mult,
 	}
+
+
+## prefabs/ghostly_elixirs.lua — 웬디 9종 아비게일 유령 비약 버프 평가기
+func eval_ghostly_elixir(elixir_id: String, elapsed_sec: float = 0.0) -> Dictionary:
+	if not ghostly_elixirs.has(elixir_id):
+		return {"ok": false}
+	var e: Dictionary = ghostly_elixirs[elixir_id]
+	var dur: float = float(e.get("duration_sec", 480.0))
+	var hps: float = float(e.get("heal_per_sec", 0.0))
+	var active_sec: float = min(max(0.0, elapsed_sec), dur)
+	return {
+		"ok": true,
+		"elixir_id": elixir_id,
+		"duration_sec": dur,
+		"total_heal": hps * active_sec,
+		"speed_mult": float(e.get("speed_mult", 1.0)),
+		"retaliate_dmg": float(e.get("retaliate_dmg", 0.0)),
+		"expired": elapsed_sec >= dur,
+	}
+
+
+## prefabs/wortox_soul_common.lua — 워톡스 영혼 치유(완다 제외·인원당 -2·최소 5) 및 20영혼 과부하
+static func eval_wortox_soul_heal(targets: Array) -> Dictionary:
+	var eligible: Array = []
+	for t in targets:
+		var cid: String = str(t.get("char_id", "wilson"))
+		var hurt: bool = bool(t.get("is_hurt", true))
+		var ghost: bool = bool(t.get("is_ghost", false))
+		if hurt and not ghost and cid != "wanda": # health_as_oldage 태그 제외
+			eligible.append(cid)
+	var cnt: int = eligible.size()
+	var heal_each: float = max(5.0, 20.0 - 2.0 * float(cnt - 1)) if cnt > 0 else 0.0
+	return {"healed_count": cnt, "heal_per_target": heal_each, "targets": eligible}
+
+
+static func step_wortox_souls(current_souls: int, add_souls: int) -> Dictionary:
+	var next_s: int = max(0, current_souls + add_souls)
+	var overloaded: bool = next_s > 20
+	var sanity_penalty: float = 0.0
+	var dropped: int = 0
+	if overloaded:
+		dropped = int(floor(float(next_s) * 0.5))
+		next_s = next_s - dropped
+		sanity_penalty = -20.0
+	return {"souls": next_s, "overloaded": overloaded, "dropped": dropped, "sanity_delta": sanity_penalty}
+
+
+## components/wereness.lua — 우디 3변신(werebeaver/weremoose/weregoose) 게이지 & 속도
+static func step_woodie_wereness(st: Dictionary, dt: float, is_active_action: bool = false, is_full_moon: bool = false) -> Dictionary:
+	var cur: float = float(st.get("current", 100.0))
+	var mode: String = str(st.get("weremode", "none"))
+	if is_full_moon and mode == "none":
+		mode = "werebeaver"
+		cur = 100.0
+	if mode != "none" and dt > 0.0:
+		# 기본 15초 완전 소모(100/15 = 6.667/s), 행동 중(전투/질주) 10x 지속 연장
+		var eff_time: float = 15.0 * (10.0 if is_active_action else 1.0)
+		cur = max(0.0, cur - (100.0 / eff_time) * dt)
+		if cur <= 0.0:
+			mode = "none"
+	var speed: float = 6.0
+	match mode:
+		"werebeaver": speed = 6.6
+		"weremoose": speed = 5.4
+		"weregoose": speed = 8.4
+	return {"current": cur, "weremode": mode, "run_speed": speed}
+
+
+## tuning.lua SHADOWWAXWELL_SANITY_PENALTY + sanity.lua:208 — 맥스웰 그림자 분신 정신력 예산
+static func calc_maxwell_puppet_budget(max_sanity: float, workers: int, protectors: int, duelists: int = 0) -> Dictionary:
+	var raw_pen: float = float(workers) * 0.15 + float(protectors) * 0.15 + float(duelists) * 0.35
+	var max_allowed_pen: float = max(0.0, 1.0 - (5.0 / max(10.0, max_sanity)))
+	var clamped_pen: float = min(raw_pen, max_allowed_pen)
+	return {
+		"raw_penalty": raw_pen,
+		"effective_penalty": clamped_pen,
+		"effective_max_sanity": max_sanity * (1.0 - clamped_pen),
+		"can_summon_more": (raw_pen + 0.15) <= max_allowed_pen,
+	}
+
+
+## components/stormwatcher.lua — 사막 모래폭풍/달폭풍 7단계 양자화 & 고글 면역 감속 공식
+static func calc_storm_speed_mult(raw_level: float, has_goggles: bool = false) -> Dictionary:
+	var q_lvl: float = floor(clamp(raw_level, 0.0, 1.0) * 7.0 + 0.5) / 7.0
+	var slowed: bool = (q_lvl >= 0.7) and not has_goggles
+	return {"quantized_level": q_lvl, "speed_mult": 0.4 if slowed else 1.0, "blinded": slowed}
+
+
+## prefabs/antlion.lua — 여름 개미사자 분노 타이머(4.2일 초기, 1~6일 범위, 공물 연장)
+static func step_antlion_rage(rage_sec: float, dt: float, tribute_bonus_sec: float = 0.0) -> Dictionary:
+	var t: float = clamp(rage_sec + tribute_bonus_sec, 480.0, 2880.0)
+	t -= max(0.0, dt)
+	var erupted: bool = t <= 0.0
+	if erupted:
+		t = 2016.0 * 0.8 # ANTLION_RAGE_TIME_FAILURE_SCALE = 0.8
+	var mood: String = "happy" if t >= 2880.0 * 0.95 else ("unhappy" if t < 2016.0 * 0.6 else "neutral")
+	return {"rage_sec": t, "erupted": erupted, "mood": mood}
+
+
+## components/finiteuses.lua + tuning.lua — 원작 도구·무기 내구도 차감기
+func step_tool_durability(tool_id: String, cur_uses: int, consume: int = 1) -> Dictionary:
+	var max_u: int = int(tool_uses.get(tool_id, 100))
+	var rem: int = max(0, cur_uses - consume)
+	return {"tool_id": tool_id, "uses": rem, "max_uses": max_u, "percent": float(rem) / float(max(1, max_u)), "broken": rem <= 0}
