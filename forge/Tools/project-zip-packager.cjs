@@ -21,9 +21,68 @@ const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { findGodot } = require('./native-runtime.cjs');
-const { zipFiles } = require('./export-godot-project.cjs');
-const { validateDeploymentZip } = require('./deployment-zip-validator.cjs');
+const { validateDeploymentZip, crc32 } = require('./deployment-zip-validator.cjs');
 const { isSealedAvatarPath } = require('./avatar-seal.cjs');
+
+/**
+ * Builds a strict deployment ZIP compatible with deployment-zip-validator & artifact-storage,
+ * using raw DEFLATE (method 8) when it reduces payload size (critical for Godot index.wasm ~39MB -> ~11MB)
+ * and STORE (method 0) otherwise.
+ */
+function zipFilesCompressed(entries) {
+  const locals = [];
+  const centrals = [];
+  let offset = 0;
+  for (const [name, raw] of entries) {
+    const nameBuf = Buffer.from(name, 'utf8');
+    const data = Buffer.isBuffer(raw) ? raw : Buffer.from(raw, 'utf8');
+    const crc = crc32(data);
+    let method = 0;
+    let payload = data;
+    if (data.length >= 256) {
+      const deflated = zlib.deflateRawSync(data, { level: 6 });
+      if (deflated.length < data.length * 0.96) {
+        method = 8;
+        payload = deflated;
+      }
+    }
+    const flags = 0x0800; // UTF-8 filename
+    const lh = Buffer.alloc(30);
+    lh.writeUInt32LE(0x04034b50, 0);
+    lh.writeUInt16LE(20, 4);
+    lh.writeUInt16LE(flags, 6);
+    lh.writeUInt16LE(method, 8);
+    lh.writeUInt32LE(crc, 14);
+    lh.writeUInt32LE(payload.length, 18);
+    lh.writeUInt32LE(data.length, 22);
+    lh.writeUInt16LE(nameBuf.length, 26);
+    locals.push(lh, nameBuf, payload);
+
+    const ch = Buffer.alloc(46);
+    ch.writeUInt32LE(0x02014b50, 0);
+    ch.writeUInt16LE(20, 4);
+    ch.writeUInt16LE(20, 6);
+    ch.writeUInt16LE(flags, 8);
+    ch.writeUInt16LE(method, 10);
+    ch.writeUInt32LE(crc, 16);
+    ch.writeUInt32LE(payload.length, 20);
+    ch.writeUInt32LE(data.length, 24);
+    ch.writeUInt16LE(nameBuf.length, 28);
+    ch.writeUInt32LE(0x80000000, 38);
+    ch.writeUInt32LE(offset, 42);
+    centrals.push(ch, nameBuf);
+
+    offset += lh.length + nameBuf.length + payload.length;
+  }
+  const cd = Buffer.concat(centrals);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(cd.length, 12);
+  eocd.writeUInt32LE(offset, 16);
+  return Buffer.concat([...locals, cd, eocd]);
+}
 
 const SUPPORTED_PLATFORMS = Object.freeze(['web', 'android', 'desktop', 'ios']);
 const DEFAULT_PLATFORMS = Object.freeze(['web', 'android', 'desktop']);
@@ -537,7 +596,7 @@ async function packageProjectForPlatforms({
   onProgress('zipping', '배포 번들 검증 및 패키징 중…');
   const tZipStart = Date.now();
   const entries = collectFilesRecursive(outputDir).filter(([rel]) => rel !== 'PlayHub-GameDeploy.zip').sort(([a], [b]) => a.localeCompare(b, 'en'));
-  const bundleZipBuffer = zipFiles(entries);
+  const bundleZipBuffer = zipFilesCompressed(entries);
   const validation = validateDeploymentZip(bundleZipBuffer);
   fs.writeFileSync(path.join(outputDir, 'PlayHub-GameDeploy.zip'), bundleZipBuffer);
   timings.zipMs = Date.now() - tZipStart;
@@ -549,7 +608,7 @@ async function packageProjectForPlatforms({
     bundleSha256: validation.sha256,
     bundleBytes: validation.bytes,
     expandedBytes: validation.expandedBytes,
-    entryCount: validation.entryCount,
+    entryCount: validation.entries,
     platformManifest: unifiedManifest,
     platforms: platformPackages,
     metrics: {
@@ -560,7 +619,7 @@ async function packageProjectForPlatforms({
         dedupSavedBytes,
         bundleBytes: validation.bytes,
         expandedBytes: validation.expandedBytes,
-        entryCount: validation.entryCount,
+        entryCount: validation.entries,
       },
     },
     log: logs.join('\n').slice(-120000),
